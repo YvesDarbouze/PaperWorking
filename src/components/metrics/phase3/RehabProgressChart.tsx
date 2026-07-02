@@ -106,7 +106,7 @@ export default function RehabProgressChart({ projectedRehabCost, costs, classNam
       className={`rounded-lg p-6 ${className}`}
       style={{
         background: 'var(--pw-surface)',
-        border: `1px solid ${isOverBudget ? '#ef4444' : 'var(--pw-border)'}`,
+        border: `1px solid ${isOverBudget ? '#F06543' : 'var(--pw-border)'}`,
       }}
     >
       <div className="flex items-start justify-between mb-4">
@@ -115,7 +115,7 @@ export default function RehabProgressChart({ projectedRehabCost, costs, classNam
           <p className="text-xs mt-0.5" style={{ color: 'var(--pw-subtle)' }}>Budget vs Approved vs Spent by category</p>
         </div>
         {isOverBudget && (
-          <div className="flex items-center gap-1.5 px-2 py-1 rounded-md text-xs font-semibold" style={{ background: '#fef2f2', color: '#ef4444' }}>
+          <div className="flex items-center gap-1.5 px-2 py-1 rounded-md text-xs font-semibold" style={{ background: '#fef2f2', color: '#F06543' }}>
             <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
               <path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z" />
               <line x1="12" y1="9" x2="12" y2="13" />
@@ -137,7 +137,7 @@ export default function RehabProgressChart({ projectedRehabCost, costs, classNam
             animate={{ width: `${pctComplete}%` }}
             transition={{ duration: 0.8, ease: 'easeOut' }}
             className="h-full rounded-full"
-            style={{ background: isOverBudget ? '#ef4444' : 'var(--pw-accent)' }}
+            style={{ background: isOverBudget ? '#F06543' : 'var(--pw-accent)' }}
           />
         </div>
       </div>
@@ -188,7 +188,7 @@ export default function RehabProgressChart({ projectedRehabCost, costs, classNam
           <p className="text-xs" style={{ color: 'var(--pw-muted)' }}>Spent</p>
         </div>
         <div>
-          <p className="font-mono text-sm font-semibold" style={{ color: totalVariance >= 0 ? '#22c55e' : '#ef4444' }}>
+          <p className="font-mono text-sm font-semibold" style={{ color: totalVariance >= 0 ? '#3f7d20' : '#F06543' }}>
             {totalVariance >= 0 ? '+' : ''}{fmt(totalVariance)}
           </p>
           <p className="text-xs" style={{ color: 'var(--pw-muted)' }}>Variance</p>

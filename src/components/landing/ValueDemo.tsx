@@ -184,7 +184,7 @@ function CleanDashboard() {
           <div className="px-4 py-2.5 bg-dashboard border-t border-phase-1 flex items-center justify-between">
             <div className="flex items-center space-x-2">
               <div className="w-1.5 h-1.5 bg-phase-4 rounded-full" />
-              <span className="text-xs font-bold uppercase tracking-widest text-phase-3">Phase 1 — Find & Fund</span>
+              <span className="text-xs font-bold uppercase tracking-widest text-phase-3">Phase 1 — Acquisition</span>
             </div>
             <span className="text-xs text-phase-4 font-bold">Active</span>
           </div>

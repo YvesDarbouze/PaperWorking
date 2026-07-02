@@ -18,6 +18,8 @@ import {
   Lock,
 } from 'lucide-react';
 import type { ClosingChecklistItem, ClosingChecklistItemType } from '@/types/schema';
+import toast from 'react-hot-toast';
+import FileDropzone from '@/components/shared/FileDropzone';
 
 /* ═══════════════════════════════════════════════════════
    Closing Checklist — Final Settlement Validation
@@ -70,6 +72,7 @@ export default function ClosingChecklist() {
     () => currentProject?.closingChecklist ?? DEFAULT_CHECKLIST.map(c => ({ ...c }))
   );
   const [expanded, setExpanded] = useState(true);
+  const [activeUploadId, setActiveUploadId] = useState<string | null>(null);
 
   const persist = useCallback(
     (next: ClosingChecklistItem[]) => {
@@ -80,31 +83,43 @@ export default function ClosingChecklist() {
   );
 
   const toggleComplete = (id: string) => {
+    const item = items.find(i => i.id === id);
+    if (!item) return;
+    const completed = !item.completed;
     persist(
       items.map(item =>
         item.id === id
           ? {
               ...item,
-              completed: !item.completed,
-              completedAt: !item.completed ? new Date() : undefined,
+              completed,
+              completedAt: completed ? new Date() : undefined,
             }
           : item
       )
     );
+    toast.success(completed ? `${item.type} completed` : `${item.type} marked incomplete`);
   };
 
   const updateNotes = (id: string, notes: string) => {
     persist(items.map(item => (item.id === id ? { ...item, notes } : item)));
   };
 
-  const simulateUpload = (id: string) => {
+  const handleUploadComplete = (id: string, url: string) => {
+    const item = items.find(i => i.id === id);
+    if (!item) return;
     persist(
       items.map(item =>
         item.id === id
-          ? { ...item, documentUrl: undefined }
+          ? {
+              ...item,
+              documentUrl: url,
+              completed: true,
+              completedAt: new Date(),
+            }
           : item
       )
     );
+    toast.success(`${item.type} document uploaded`);
   };
 
   const completedCount = items.filter(i => i.completed).length;
@@ -201,18 +216,66 @@ export default function ClosingChecklist() {
                       <p className="text-xs text-text-secondary mt-1">{meta.description}</p>
 
                       {/* Document status */}
-                      <div className="flex items-center gap-3 mt-2">
+                      <div className="flex flex-col gap-2 mt-2 w-full">
                         {item.documentUrl ? (
-                          <span className="flex items-center gap-1 text-xs text-green-600 bg-green-50 border border-green-200 px-2 py-0.5 rounded">
-                            <FileText className="w-3 h-3" /> Document Uploaded
-                          </span>
+                          <div className="flex items-center gap-3">
+                            <span className="flex items-center gap-1 text-xs text-green-600 bg-green-50 border border-green-200 px-2 py-0.5 rounded">
+                              <FileText className="w-3 h-3" /> Document Uploaded
+                            </span>
+                            <button
+                              onClick={() => {
+                                persist(
+                                  items.map(i =>
+                                    i.id === item.id
+                                      ? { ...i, documentUrl: undefined, completed: false, completedAt: undefined }
+                                      : i
+                                  )
+                                );
+                                toast.success(`${item.type} document removed`);
+                              }}
+                              className="text-xs text-red-500 hover:text-red-400 hover:underline cursor-pointer"
+                            >
+                              Remove
+                            </button>
+                            {item.documentUrl.startsWith('http') && (
+                              <a
+                                href={item.documentUrl}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="text-xs text-blue-500 hover:underline flex items-center gap-0.5"
+                              >
+                                View File
+                              </a>
+                            )}
+                          </div>
+                        ) : activeUploadId === item.id ? (
+                          <div className="w-full max-w-md bg-surface-container/10 p-4 rounded-xl border border-border-accent">
+                            <FileDropzone
+                              projectId={currentProject?.id || 'unknown'}
+                              path="closing_docs"
+                              onUploadComplete={(res) => {
+                                handleUploadComplete(item.id, res.downloadUrl);
+                                setActiveUploadId(null);
+                              }}
+                            />
+                            <div className="flex justify-end mt-2">
+                              <button
+                                onClick={() => setActiveUploadId(null)}
+                                className="text-xs text-text-secondary hover:text-text-primary transition px-2 py-1 rounded"
+                              >
+                                Cancel
+                              </button>
+                            </div>
+                          </div>
                         ) : (
-                          <button
-                            onClick={() => simulateUpload(item.id)}
-                            className="flex items-center gap-1 text-xs text-text-secondary bg-bg-primary border border-border-accent px-2 py-0.5 rounded hover:bg-bg-primary transition"
-                          >
-                            <Upload className="w-3 h-3" /> Upload Document
-                          </button>
+                          <div className="flex items-center">
+                            <button
+                              onClick={() => setActiveUploadId(item.id)}
+                              className="flex items-center gap-1 text-xs text-text-secondary bg-bg-primary border border-border-accent px-2 py-0.5 rounded hover:bg-bg-primary transition"
+                            >
+                              <Upload className="w-3 h-3" /> Upload Document
+                            </button>
+                          </div>
                         )}
                         {item.completedAt && (
                           <span className="text-xs text-text-secondary">

@@ -3,7 +3,7 @@
 import React, { useMemo, lazy, Suspense } from 'react';
 import { Project } from '@/types/schema';
 import { useProjectStore } from '@/store/projectStore';
-import { computeNOIComponents, computeCapRate, computeDSCR, computeAnnualDebtService } from '@/lib/metrics/reiMetrics';
+import { computeNOIComponents, computeCapRate, computeDSCR, computeAnnualDebtService, deriveDualScopeMetrics } from '@/lib/metrics/reiMetrics';
 import { 
   LineChart, Line, BarChart, Bar, PieChart, Pie, Cell,
   XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend, AreaChart, Area
@@ -13,7 +13,9 @@ import {
   ShieldCheck, ArrowUpRight, ArrowDownRight, Compass, Home, Map
 } from 'lucide-react';
 
-const NOIDeepDive = lazy(() => import('./NOIDeepDive'));
+const NOIDeepDive      = lazy(() => import('./NOIDeepDive'));
+const CashFlowDeepDive = lazy(() => import('./CashFlowDeepDive'));
+const CapRateDeepDive  = lazy(() => import('./CapRateDeepDive'));
 
 /* ═══════════════════════════════════════════════════════════════
    LIFECYCLE METRICS DASHBOARD
@@ -39,18 +41,10 @@ export function derivePropertyFinancials(projects: Project[]) {
     }
 
     // Use the real metrics engine
-    const noiComponents = computeNOIComponents(financials);
-    const noi = noiComponents.noi;
-    
-    const purchasePrice = financials.purchasePrice ?? financials.estimatedARV ?? 0;
-    const capRate = computeCapRate(noi, purchasePrice);
-    
-    // Compute DSCR from real debt service
-    const loanAmount = financials.loanAmount ?? 0;
-    const loanInterestRate = financials.loanInterestRate ?? 0;
-    const loanTermMonths = 360; // 30-year conventional
-    const annualDebtService = computeAnnualDebtService(loanAmount, loanInterestRate, loanTermMonths);
-    const dscr = annualDebtService > 0 ? Math.round((noi / annualDebtService) * 100) / 100 : 0;
+    const { asset: metrics } = deriveDualScopeMetrics(financials, undefined, p.strategyType, p.currentPhase);
+    const noi = metrics.noi;
+    const capRate = metrics.capRate;
+    const dscr = metrics.dscr === Infinity ? 0 : Math.round(metrics.dscr * 100) / 100;
 
     return {
       name: (p.propertyName || 'Unknown').substring(0, 10),
@@ -81,7 +75,7 @@ const PropertyFinancialsAgent = ({ projects }: { projects: Project[] }) => {
         {data.length > 0 ? (
           <ResponsiveContainer width="100%" height="100%">
             <BarChart data={data} margin={{ top: 10, right: 10, left: -20, bottom: 20 }}>
-              <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#E5E7EB" />
+              <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#F2F2F2" />
               <XAxis dataKey="name" fontSize={10} tickLine={false} axisLine={false} angle={-45} textAnchor="end" height={40} />
               <YAxis yAxisId="left" fontSize={10} tickFormatter={(v) => `$${v / 1000}k`} tickLine={false} axisLine={false} width={40} />
               <YAxis yAxisId="right" orientation="right" fontSize={10} tickFormatter={(v) => `${v}%`} tickLine={false} axisLine={false} width={30} />
@@ -89,8 +83,8 @@ const PropertyFinancialsAgent = ({ projects }: { projects: Project[] }) => {
                 cursor={{ fill: 'rgba(0,0,0,0.02)' }}
                 contentStyle={{ borderRadius: '8px', border: 'none', boxShadow: '0 4px 6px -1px rgba(0,0,0,0.1)' }}
               />
-              <Bar yAxisId="left" dataKey="NOI" name="NOI" fill="#3B82F6" radius={[4, 4, 0, 0]} maxBarSize={40} />
-              <Bar yAxisId="right" dataKey="CapRate" name="Cap Rate (%)" fill="#10B981" radius={[4, 4, 0, 0]} maxBarSize={40} />
+              <Bar yAxisId="left" dataKey="NOI" name="NOI" fill="#7F7F7F" radius={[4, 4, 0, 0]} maxBarSize={40} />
+              <Bar yAxisId="right" dataKey="CapRate" name="Cap Rate (%)" fill="#595959" radius={[4, 4, 0, 0]} maxBarSize={40} />
             </BarChart>
           </ResponsiveContainer>
         ) : (
@@ -105,22 +99,22 @@ const PropertyFinancialsAgent = ({ projects }: { projects: Project[] }) => {
 export function deriveOperationalData(projects: Project[]) {
   // When projects have real data, use real OER from NOI components
   if (projects.length > 0 && projects.some(p => p.financials)) {
-    let totalGPI = 0;
+    let totalGrossRentalIncome = 0;
     let totalOpEx = 0;
     let totalVacancyLoss = 0;
     let totalMaintenance = 0;
 
     projects.forEach(p => {
       if (!p.financials) return;
-      const c = computeNOIComponents(p.financials);
-      totalGPI += c.grossRentalIncome + c.otherIncome;
+      const c = computeNOIComponents(p.financials, p.strategyType, p.currentPhase);
+      totalGrossRentalIncome += c.grossRentalIncome;
       totalOpEx += c.totalOperatingExpenses;
       totalVacancyLoss += c.vacancyLoss;
       totalMaintenance += c.maintenance;
     });
 
-    const oer = totalGPI > 0 ? Math.round((totalOpEx / totalGPI) * 100) : 0;
-    const occupancy = totalGPI > 0 ? Math.round((1 - totalVacancyLoss / totalGPI) * 100) : 100;
+    const oer = totalGrossRentalIncome > 0 ? Math.round((totalOpEx / totalGrossRentalIncome) * 100) : 0;
+    const occupancy = totalGrossRentalIncome > 0 ? Math.round((1 - totalVacancyLoss / totalGrossRentalIncome) * 100) : 100;
 
     // Project quarterly trends using real baseline
     return [
@@ -164,16 +158,16 @@ const OperationalDataAgent = ({ projects }: { projects: Project[] }) => {
           <AreaChart data={data} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
             <defs>
               <linearGradient id="colorOcc" x1="0" y1="0" x2="0" y2="1">
-                <stop offset="5%" stopColor="#10B981" stopOpacity={0.3}/>
-                <stop offset="95%" stopColor="#10B981" stopOpacity={0}/>
+                <stop offset="5%" stopColor="#595959" stopOpacity={0.3}/>
+                <stop offset="95%" stopColor="#595959" stopOpacity={0}/>
               </linearGradient>
             </defs>
-            <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#E5E7EB" />
+            <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#F2F2F2" />
             <XAxis dataKey="quarter" fontSize={10} tickLine={false} axisLine={false} />
             <YAxis fontSize={10} tickFormatter={(v) => `${v}%`} tickLine={false} axisLine={false} width={40} />
             <Tooltip contentStyle={{ borderRadius: '8px', border: 'none', boxShadow: '0 4px 6px -1px rgba(0,0,0,0.1)' }} />
-            <Area type="monotone" dataKey="Occupancy" stroke="#10B981" strokeWidth={2} fillOpacity={1} fill="url(#colorOcc)" />
-            <Line type="monotone" dataKey="OER" stroke="#F59E0B" strokeWidth={2} dot={{ r: 4 }} />
+            <Area type="monotone" dataKey="Occupancy" stroke="#595959" strokeWidth={2} fillOpacity={1} fill="url(#colorOcc)" />
+            <Line type="monotone" dataKey="OER" stroke="#A5A5A5" strokeWidth={2} dot={{ r: 4 }} />
           </AreaChart>
         </ResponsiveContainer>
       </div>
@@ -201,8 +195,8 @@ export function deriveMarketPortfolio(projects: Project[]) {
   }
 
   return [
-    { name: 'Debt (LTV)', value: ltv, fill: '#EF4444' },
-    { name: 'Equity', value: equity, fill: '#3B82F6' },
+    { name: 'Debt (LTV)', value: ltv, fill: '#F06543' },
+    { name: 'Equity', value: equity, fill: '#7F7F7F' },
   ];
 }
 
@@ -331,6 +325,28 @@ export default function LifecycleMetricsDashboard({ projects: propProjects }: Pr
         }
       >
         <NOIDeepDive projects={projects} />
+      </Suspense>
+
+      {/* ── Cash Flow Deep Dive Panel ── */}
+      <Suspense
+        fallback={
+          <div className="bg-bg-surface border border-border-accent rounded-xl p-8 text-center">
+            <div className="animate-pulse text-sm text-text-secondary">Loading Cash Flow analysis…</div>
+          </div>
+        }
+      >
+        <CashFlowDeepDive projects={projects} />
+      </Suspense>
+
+      {/* ── Cap Rate Deep Dive Panel ── */}
+      <Suspense
+        fallback={
+          <div className="bg-bg-surface border border-border-accent rounded-xl p-8 text-center">
+            <div className="animate-pulse text-sm text-text-secondary">Loading Cap Rate analysis…</div>
+          </div>
+        }
+      >
+        <CapRateDeepDive projects={projects} />
       </Suspense>
     </div>
   );

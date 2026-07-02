@@ -1,0 +1,55 @@
+{
+  "name": "expense-ratio-agent",
+  "description": "Expense Ratio (OER) Agent — manages operating expense data collection and intelligence visualization for the REIL Data Practice pipeline.",
+  "version": "1.0.0",
+  "metric": {
+    "id": "D9",
+    "name": "Expense Ratio",
+    "alias": "Operating Expense Ratio (OER)",
+    "formula": "(Operating Expenses ÷ Gross Rental Income) × 100",
+    "seed": "$9,276 ÷ $23,400 = 39.64%",
+    "note": "Excludes vacancy — vacancy is a revenue loss, not an operating expense"
+  },
+  "zones": {
+    "excellent": { "range": "<35%", "color": "#2dd4bf" },
+    "efficient": { "range": "35–45%", "color": "#fbbf24" },
+    "review":    { "range": ">45%", "color": "#f87171" }
+  },
+  "files": {
+    "formula": "src/lib/metrics/reiMetrics.ts#computeOER",
+    "terminal": "src/components/intelligence/ExpenseRatioCollectionTerminal.tsx",
+    "intelligencePage": "src/app/dashboard/intelligence/oer/page.tsx",
+    "dataRoomPage": "src/app/dashboard/data-room/page.tsx",
+    "schema": "src/types/schema.ts#ProjectFinancials"
+  },
+  "schemaFields": {
+    "inputs": [
+      "financials.monthlyGrossRent",
+      "financials.holdingCostTaxes",
+      "financials.holdingCostInsurance",
+      "financials.holdingCostUtilities",
+      "financials.propertyManagementFeePercent",
+      "financials.monthlyMaintenanceReserve"
+    ],
+    "computed": "financials.oer (derived, not stored)"
+  },
+  "dualScope": {
+    "project": "Individual property OER via ExpenseRatioCollectionTerminal on intelligence/oer page",
+    "dataRoom": "Portfolio-weighted OER via (totalOpEx / totalRent) × 100 in data-room/page.tsx:233"
+  },
+  "logicLens": {
+    "tests": 8,
+    "passed": 8,
+    "verifiedAt": "2026-05-30T17:42:35Z"
+  },
+  "config": {
+    "customAgent": {
+      "systemPromptSections": [
+        {
+          "title": "Agent System Instructions",
+          "content": "You are the Expense Ratio Agent for the PaperWorking REIL Data Practice pipeline.\n\n## Your Domain\nExpense Ratio = (Operating Expenses ÷ Gross Rental Income) × 100\nSeed: $9,276 ÷ $23,400 = 39.64%\nExcluding vacancy (not an expense).\n\n## Key Formula\ncomputeOER() at src/lib/metrics/reiMetrics.ts:339 already implements this.\n\n## Dual-Scope Representation\n- Project level: individual property expense tracking in the intelligence page\n- Data Room: cumulative portfolio aggregation (already wired in data-room/page.tsx:233)\n\n## Design Constraints\n- Luminous Glass aesthetic (backdrop-blur-xl, rgba(24,33,39,0.7) bg)\n- Hanken Grotesk font\n- No arbitrary Tailwind brackets\n- Sidebar navigation fixed contract\n\n## Key Files\n- Formula: src/lib/metrics/reiMetrics.ts (computeOER at line 339)\n- Intelligence Page: src/app/dashboard/intelligence/oer/page.tsx\n- Data Room: src/app/dashboard/data-room/page.tsx (already has OER donut at line 456)\n- Schema: src/types/schema.ts (ProjectFinancials at line 744)"
+        }
+      ]
+    }
+  }
+}

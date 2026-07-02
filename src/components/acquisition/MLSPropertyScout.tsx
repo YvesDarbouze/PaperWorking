@@ -28,8 +28,6 @@ export default function MLSPropertyScout({ currentAddress, currentListPrice, onA
   const [hasSearched, setHasSearched] = useState(false);
   const [credentialsMissing, setCredentialsMissing] = useState(false);
   const [isExpanded, setIsExpanded] = useState(true);
-  const [mlsSource, setMlsSource] = useState<string | null>(null);
-  const [mlsFetchedAt, setMlsFetchedAt] = useState<string | null>(null);
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const search = useCallback(async (q: string) => {
@@ -45,10 +43,6 @@ export default function MLSPropertyScout({ currentAddress, currentListPrice, onA
       const data = await res.json();
       setCredentialsMissing(!!data.credentialsMissing);
       setResults(data.results ?? []);
-      if (!data.credentialsMissing && data.source) {
-        setMlsSource(data.source);
-        setMlsFetchedAt(data.fetchedAt ?? null);
-      }
     } catch {
       setResults([]);
     } finally {
@@ -142,16 +136,9 @@ export default function MLSPropertyScout({ currentAddress, currentListPrice, onA
 
           {results.length > 0 && (
             <div className="space-y-2 mb-4 max-h-[400px] overflow-y-auto">
-              <div className="flex items-baseline justify-between mb-2">
-                <p className="text-[10px] font-bold uppercase tracking-[0.12em] text-text-secondary opacity-50">
-                  {results.length} MLS Listing{results.length !== 1 ? 's' : ''} Found
-                </p>
-                {mlsSource && (
-                  <p className="text-[9px] text-text-secondary opacity-40 tabular-nums">
-                    via {mlsSource}{mlsFetchedAt ? ` · ${new Date(mlsFetchedAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}` : ''}
-                  </p>
-                )}
-              </div>
+              <p className="text-[10px] font-bold uppercase tracking-[0.12em] text-text-secondary opacity-50 mb-2">
+                {results.length} MLS Listing{results.length !== 1 ? 's' : ''} Found
+              </p>
               {results.map((property) => {
                 const isAlreadyComp = savedComps.some(c => c.listingKey === property.listingKey);
                 return (

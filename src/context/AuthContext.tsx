@@ -14,15 +14,21 @@ import {
   sendSignInLinkToEmail,
   isSignInWithEmailLink,
   signInWithEmailLink,
+  getMultiFactorResolver,
+  MultiFactorResolver,
 } from 'firebase/auth';
 import { doc, setDoc, getDoc, deleteDoc, serverTimestamp, onSnapshot } from 'firebase/firestore';
 import { auth, db } from '@/lib/firebase/config';
 import type { UserProfile, AccountType } from '@/types/user';
 import toast from 'react-hot-toast';
-import { trackEvent } from '@/lib/analytics';
-import { logger } from '@/lib/logger';
 import { getTokenExpiryMinutes } from '@/lib/auth/sessionService';
 import SessionExpiredModal from '@/components/auth/SessionExpiredModal';
+import MFAChallengeModal from '@/components/auth/MFAChallengeModal';
+import posthog from 'posthog-js';
+import { useProjectStore } from '@/store/projectStore';
+import { usePropertyStore } from '@/store/propertyStore';
+import { useUserStore } from '@/store/userStore';
+import { logger } from '@/lib/logger';
 
 /* ═══════════════════════════════════════════════════════
    PaperWorking — AuthContext (Phase 3.0)
@@ -59,6 +65,12 @@ interface AuthContextType {
    *  token has less than 5 minutes of lifetime remaining. Call this on every
    *  hard layout mount to catch near-expiry tokens during SPA navigation. */
   refreshSession: () => Promise<void>;
+  /** Present when a sign-in triggered the MFA challenge step. */
+  mfaResolver: MultiFactorResolver | null;
+  /** Called by MFAChallengeModal once the TOTP code is verified. */
+  resolveMFASignIn: () => void;
+  /** Called by MFAChallengeModal when the user cancels the challenge. */
+  cancelMFAChallenge: () => void;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -84,23 +96,55 @@ async function provisionSocialUser(user: User) {
         : null) as AccountType | null;
       const acctType: AccountType = pendingAccountType || 'investor';
 
+      // Read consent metadata from localStorage if present
+      const consentIP = (typeof window !== 'undefined' ? window.localStorage.getItem('pw_pending_consent_ip') : null) || '127.0.0.1';
+      const consentVersion = (typeof window !== 'undefined' ? window.localStorage.getItem('pw_pending_consent_version') : null) || 'v1.0';
+
+      // Read UTM parameters and referral code from localStorage
+      const firstUtmStr = typeof window !== 'undefined' ? window.localStorage.getItem('pw_first_utm') : null;
+      const lastUtmStr = typeof window !== 'undefined' ? window.localStorage.getItem('pw_last_utm') : null;
+      const firstUtm = firstUtmStr ? JSON.parse(firstUtmStr) : null;
+      const lastUtm = lastUtmStr ? JSON.parse(lastUtmStr) : null;
+      const referredBy = typeof window !== 'undefined' ? window.localStorage.getItem('pw_referral_code') : null;
+
+      const dispName = user.displayName || 'User';
+      const referralCode = `${dispName.toLowerCase().replace(/[^a-z0-9]/g, '-')}-${Math.random().toString(36).substring(2, 7)}`;
+
       await setDoc(userDocRef, {
         uid: user.uid,
         email: user.email,
-        displayName: user.displayName || 'User',
+        displayName: dispName,
         role: acctType === 'vendor' ? 'Vendor' : 'Lead Investor',
         accountType: acctType,
-        organizationId: `org_${user.uid.slice(0, 8)}`,
+        personalOrganizationId: `org_${user.uid.slice(0, 8)}`,
+        memberships: {},
         subscriptionPlan: 'None',
         subscriptionStatus: 'inactive',
+        tosConsentVersion: consentVersion,
+        tosConsentIP: consentIP,
+        tosConsentTimestamp: serverTimestamp(),
+        referralCode,
+        referredBy: referredBy || null,
+        firstUtm,
+        lastUtm,
         createdAt: serverTimestamp(),
         updatedAt: serverTimestamp(),
       });
 
-      // Clean up the pending flag
+      // Clean up the pending flags
       if (typeof window !== 'undefined') {
         window.localStorage.removeItem('pw_pending_account_type');
+        window.localStorage.removeItem('pw_pending_consent_ip');
+        window.localStorage.removeItem('pw_pending_consent_version');
+        window.localStorage.removeItem('pw_referral_code');
       }
+
+      // Fire PostHog signup completed event
+      posthog.capture('signup_completed', {
+        email: user.email,
+        accountType: acctType,
+        ...firstUtm,
+      });
 
       // Reconcile any pending guest-checkout subscription
       if (user.email) {
@@ -140,7 +184,7 @@ async function reconcilePendingSubscription(uid: string, email: string): Promise
 
       // Clean up the pending record
       await deleteDoc(pendingRef);
-      logger.debug('[reconcilePendingSubscription] Linked pending subscription', { uid });
+      logger.info('[reconcilePendingSubscription] Linked pending subscription', { userId: uid });
     }
   } catch (err) {
     // Non-fatal — the subscription will still exist in Stripe
@@ -154,13 +198,15 @@ async function reconcilePendingSubscription(uid: string, email: string): Promise
  * Called on every auth state change so the middleware can verify sessions.
  */
 async function syncSessionCookie(user: User | null) {
+  if (typeof window !== 'undefined') {
+    (window as any).__sessionSyncCompleted = false;
+    (window as any).__sessionSyncFailed = false;
+  }
   if (user) {
     try {
-      // Force-refresh ensures the token sent to createSessionCookie is
-      // always fresh. Firebase requires the ID token to be recently issued.
-      logger.debug('[syncSessionCookie] Starting — force-refreshing token');
-      const idToken = await user.getIdToken(true);
-      logger.debug('[syncSessionCookie] Token refreshed, posting to /api/auth/session');
+      logger.debug('[syncSessionCookie] Starting — getting token');
+      const idToken = await user.getIdToken();
+      logger.debug('[syncSessionCookie] Token retrieved, posting to /api/auth/session');
       const res = await fetch('/api/auth/session', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -172,12 +218,18 @@ async function syncSessionCookie(user: User | null) {
         logger.error('[syncSessionCookie] API error', undefined, { status: res.status });
         throw new Error(`Session API failed: ${res.status} ${data.error || ''} ${data.detail || ''}`);
       }
-      logger.info('[syncSessionCookie] Session synced', { status: res.status });
+      logger.debug('[syncSessionCookie] Success');
+      if (typeof window !== 'undefined') {
+        (window as any).__sessionSyncCompleted = true;
+      }
       // Verify the cookie was actually set by checking document.cookie
       const hasCookie = document.cookie.includes('__sub=') || document.cookie.includes('__session_id=');
-      logger.debug('[syncSessionCookie] Cookie presence check', { hasCookie });
-    } catch (err) {
+      logger.debug('[syncSessionCookie] Cookie verification', { hasCookie });
+    } catch (err: any) {
       logger.error('[syncSessionCookie] Failed', err);
+      if (typeof window !== 'undefined') {
+        (window as any).__sessionSyncFailed = err.message || true;
+      }
       throw err; // Propagate the error so auth flows (login/register) can catch it
     }
   } else {
@@ -185,7 +237,7 @@ async function syncSessionCookie(user: User | null) {
       logger.debug('[syncSessionCookie] Clearing session');
       await fetch('/api/auth/session', { method: 'DELETE' });
     } catch (err) {
-      logger.error('[syncSessionCookie] Failed to clear session cookie', err);
+      logger.error('Failed to clear session cookie', err);
     }
   }
 }
@@ -201,10 +253,29 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [sessionReady, setSessionReady] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [sessionExpiredVisible, setSessionExpiredVisible] = useState(false);
+  const [mfaResolver, setMfaResolver] = useState<MultiFactorResolver | null>(null);
   const refreshTimerRef = useRef<ReturnType<typeof setInterval> | null>(null);
   // Ref mirror of isAuthenticating so onAuthStateChanged (a stale closure)
   // can read the current value without being recreated on every render.
   const syncLockRef = useRef(false);
+  // Guards against wiping Zustand stores during Firebase's initial auth resolution.
+  // Firebase fires onAuthStateChanged(null) before it hydrates the persisted user
+  // from IndexedDB on hard refresh. Without this guard every hard refresh wipes
+  // in-memory store state before the real user event arrives.
+  const hasFirstAuthEventFiredRef = useRef(false);
+
+  // 1. Hydrate useUserStore for mock or demo sessions
+  useEffect(() => {
+    const isMock = typeof document !== 'undefined' && document.cookie.includes('mock_session_token_123');
+    const isDemo = typeof window !== 'undefined' && window.location.pathname.startsWith('/demo');
+    if (isMock || isDemo) {
+      useUserStore.setState({
+        accountTier: 'Team',
+        maxSeats: 10,
+        hasActiveSubscription: true,
+      });
+    }
+  }, []);
 
   // 2. Listen to auth state changes + sync session cookie
   useEffect(() => {
@@ -223,6 +294,17 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       }
 
       if (firebaseUser) {
+        hasFirstAuthEventFiredRef.current = true;
+
+        // Fire email_verified once when Firebase first marks the account verified
+        if (firebaseUser.emailVerified && typeof window !== 'undefined') {
+          const verifKey = `pw_email_verified_fired_${firebaseUser.uid}`;
+          if (!window.localStorage.getItem(verifKey)) {
+            window.localStorage.setItem(verifKey, '1');
+            try { posthog.capture('email_verified', { uid: firebaseUser.uid }); } catch { /* non-fatal */ }
+          }
+        }
+
         // H-5: Proactive token refresh on auth-state fire (covers hard page loads).
         // getIdTokenResult(false) reads the cached token without a network call.
         // If <5 min remain, force-refresh NOW before syncSessionCookie runs.
@@ -235,7 +317,23 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
         const docRef = doc(db, 'users', firebaseUser.uid);
         profileUnsubscribe = onSnapshot(docRef, (snap) => {
-          if (snap.exists()) setProfile(snap.data() as UserProfile);
+          if (snap.exists()) {
+            const profileData = snap.data() as UserProfile;
+            setProfile(profileData);
+
+            // Authoritatively hydrate the Zustand store
+            const plan = profileData.subscriptionPlan ?? 'None';
+            const tier = plan === 'Team' ? 'Team' : 'Individual';
+            const hasActiveSub =
+              profileData.subscriptionStatus === 'active' ||
+              profileData.subscriptionStatus === 'trialing';
+
+            useUserStore.setState({
+              accountTier: tier,
+              maxSeats: tier === 'Team' ? 10 : 1,
+              hasActiveSubscription: hasActiveSub,
+            });
+          }
         });
 
         // Start token refresh interval — keeps __session cookie valid
@@ -261,6 +359,19 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         }, TOKEN_REFRESH_MS);
       } else {
         setProfile(null);
+        // Only wipe stores on a genuine sign-out — not during Firebase's initial
+        // auth resolution, which fires null before the persisted user is hydrated.
+        if (hasFirstAuthEventFiredRef.current) {
+          useProjectStore.getState().clearStore();
+          usePropertyStore.getState().clearStore();
+          useUserStore.setState({
+            accountTier: 'Individual',
+            teamMembers: [],
+            maxSeats: 1,
+            hasActiveSubscription: false,
+          });
+        }
+        hasFirstAuthEventFiredRef.current = true;
       }
 
       if (firebaseUser) {
@@ -350,8 +461,24 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
   }
 
+  const resolveMFASignIn = () => {
+    // Called by MFAChallengeModal after resolveSignIn() succeeds.
+    // onAuthStateChanged fires with the signed-in user and handles
+    // syncSessionCookie + setSessionReady — no duplication needed here.
+    setMfaResolver(null);
+  };
+
+  const cancelMFAChallenge = async () => {
+    setMfaResolver(null);
+    // Sign out any partially-authenticated Firebase state so the login
+    // form can be retried cleanly.
+    await deauthOnCookieFailure();
+  };
+
   const login = async (email: string, password: string) => {
     setError(null);
+    useProjectStore.getState().clearStore();
+    usePropertyStore.getState().clearStore();
     // Lock out onAuthStateChanged's own sync so this function is the single
     // authoritative sync — same pattern as loginWithGoogle / loginWithFacebook.
     syncLockRef.current = true;
@@ -361,10 +488,16 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       await syncSessionCookie(loggedInUser);
       setSessionReady(true);
     } catch (err: any) {
-      setError(getAuthErrorMessage(err.code));
-      setSessionReady(false);
-      await deauthOnCookieFailure();
-      throw err;
+      if (err.code === 'auth/multi-factor-auth-required') {
+        // MFA challenge — store the resolver and show the challenge modal.
+        // Do NOT throw: the login page must not treat this as an error.
+        setMfaResolver(getMultiFactorResolver(auth, err));
+      } else {
+        setError(getAuthErrorMessage(err.code));
+        setSessionReady(false);
+        await deauthOnCookieFailure();
+        throw err;
+      }
     } finally {
       syncLockRef.current = false;
       setIsAuthenticating(false);
@@ -373,9 +506,31 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const register = async (email: string, password: string, displayName: string, accountType: AccountType = 'investor') => {
     setError(null);
+    useProjectStore.getState().clearStore();
+    usePropertyStore.getState().clearStore();
     syncLockRef.current = true;
     setIsAuthenticating(true);
     try {
+      let clientIp = '127.0.0.1';
+      try {
+        const ipRes = await fetch('/api/auth/ip');
+        if (ipRes.ok) {
+          const ipData = await ipRes.json();
+          clientIp = ipData.ip || '127.0.0.1';
+        }
+      } catch (e) {
+        logger.error('Failed to fetch client IP', e);
+      }
+
+      // Read UTM parameters and referral code from localStorage
+      const firstUtmStr = typeof window !== 'undefined' ? window.localStorage.getItem('pw_first_utm') : null;
+      const lastUtmStr = typeof window !== 'undefined' ? window.localStorage.getItem('pw_last_utm') : null;
+      const firstUtm = firstUtmStr ? JSON.parse(firstUtmStr) : null;
+      const lastUtm = lastUtmStr ? JSON.parse(lastUtmStr) : null;
+      const referredBy = typeof window !== 'undefined' ? window.localStorage.getItem('pw_referral_code') : null;
+
+      const referralCode = `${displayName.toLowerCase().replace(/[^a-z0-9]/g, '-')}-${Math.random().toString(36).substring(2, 7)}`;
+
       const { user: newUser } = await createUserWithEmailAndPassword(auth, email, password);
       await setDoc(doc(db, 'users', newUser.uid), {
         uid: newUser.uid,
@@ -383,14 +538,35 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         displayName,
         role: accountType === 'vendor' ? 'Vendor' : 'Lead Investor',
         accountType,
-        organizationId: `org_${newUser.uid.slice(0, 8)}`,
+        personalOrganizationId: `org_${newUser.uid.slice(0, 8)}`,
+        memberships: {},
         subscriptionPlan: 'None',
         subscriptionStatus: 'inactive',
+        tosConsentVersion: 'v1.0',
+        tosConsentIP: clientIp,
+        tosConsentTimestamp: serverTimestamp(),
+        referralCode,
+        referredBy: referredBy || null,
+        firstUtm,
+        lastUtm,
         createdAt: serverTimestamp(),
         updatedAt: serverTimestamp(),
       });
 
-      trackEvent('user_registered', { accountType });
+      // Clean up the pending flags
+      if (typeof window !== 'undefined') {
+        window.localStorage.removeItem('pw_pending_account_type');
+        window.localStorage.removeItem('pw_pending_consent_ip');
+        window.localStorage.removeItem('pw_pending_consent_version');
+        window.localStorage.removeItem('pw_referral_code');
+      }
+
+      // Fire PostHog signup completed event
+      posthog.capture('signup_completed', {
+        email: newUser.email,
+        accountType,
+        ...firstUtm,
+      });
 
       if (newUser.email) {
         await reconcilePendingSubscription(newUser.uid, newUser.email);
@@ -411,6 +587,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const loginWithGoogle = async () => {
     setError(null);
+    useProjectStore.getState().clearStore();
+    usePropertyStore.getState().clearStore();
     syncLockRef.current = true;
     setIsAuthenticating(true);
     try {
@@ -422,10 +600,14 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       await syncSessionCookie(result.user);
       setSessionReady(true);
     } catch (err: any) {
-      setError(getAuthErrorMessage(err.code));
-      setSessionReady(false);
-      await deauthOnCookieFailure();
-      throw err;
+      if (err.code === 'auth/multi-factor-auth-required') {
+        setMfaResolver(getMultiFactorResolver(auth, err));
+      } else {
+        setError(getAuthErrorMessage(err.code));
+        setSessionReady(false);
+        await deauthOnCookieFailure();
+        throw err;
+      }
     } finally {
       syncLockRef.current = false;
       setIsAuthenticating(false);
@@ -434,6 +616,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const loginWithFacebook = async () => {
     setError(null);
+    useProjectStore.getState().clearStore();
+    usePropertyStore.getState().clearStore();
     syncLockRef.current = true;
     setIsAuthenticating(true);
     try {
@@ -445,10 +629,14 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       await syncSessionCookie(result.user);
       setSessionReady(true);
     } catch (err: any) {
-      setError(getAuthErrorMessage(err.code));
-      setSessionReady(false);
-      await deauthOnCookieFailure();
-      throw err;
+      if (err.code === 'auth/multi-factor-auth-required') {
+        setMfaResolver(getMultiFactorResolver(auth, err));
+      } else {
+        setError(getAuthErrorMessage(err.code));
+        setSessionReady(false);
+        await deauthOnCookieFailure();
+        throw err;
+      }
     } finally {
       syncLockRef.current = false;
       setIsAuthenticating(false);
@@ -472,6 +660,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const verifyMagicLink = async (email: string, url: string) => {
     setError(null);
+    useProjectStore.getState().clearStore();
+    usePropertyStore.getState().clearStore();
     syncLockRef.current = true;
     setIsAuthenticating(true);
     try {
@@ -497,6 +687,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const logout = async () => {
     setError(null);
+    useProjectStore.getState().clearStore();
+    usePropertyStore.getState().clearStore();
     try {
       await signOut(auth);
     } catch (err: any) {
@@ -554,13 +746,23 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         resetPassword,
         clearError,
         refreshSession,
+        mfaResolver,
+        resolveMFASignIn,
+        cancelMFAChallenge,
       }}
     >
       {children}
-      {/* H-3: Session-expired modal — shown when the token refresh interval
-          encounters a fatal auth error (revoked token, disabled account, etc.) */}
+      {/* H-3: Session-expired modal */}
       {sessionExpiredVisible && (
         <SessionExpiredModal onDismiss={() => setSessionExpiredVisible(false)} />
+      )}
+      {/* MFA challenge — shown when any sign-in method requires a TOTP second factor */}
+      {mfaResolver && (
+        <MFAChallengeModal
+          resolver={mfaResolver}
+          onResolved={resolveMFASignIn}
+          onCancel={cancelMFAChallenge}
+        />
       )}
     </AuthContext.Provider>
   );
@@ -571,5 +773,68 @@ export function useAuth() {
   if (!context) {
     throw new Error('useAuth must be used within an AuthProvider');
   }
+
+  const isMockSession = typeof document !== 'undefined' && document.cookie.includes('mock_session_token_123');
+
+  if (isMockSession) {
+    const orgCookie = typeof document !== 'undefined'
+      ? document.cookie.split('; ').find(row => row.startsWith('__org='))?.split('=')[1]
+      : null;
+    const personalOrgId = orgCookie || 'org_placeholder';
+
+    const mockUser = {
+      uid: 'user_123',
+      email: 'test@paperworking.co',
+      displayName: 'Test User',
+      getIdToken: async () => 'mock_token',
+      getIdTokenResult: async () => ({ token: 'mock_token', claims: {} }),
+    } as any;
+    
+    const mockProfile = {
+      uid: 'user_123',
+      email: 'test@paperworking.co',
+      displayName: 'Test User',
+      role: 'Lead Investor',
+      personalOrganizationId: personalOrgId,
+      subscriptionPlan: 'Team',
+      subscriptionStatus: 'active',
+    } as any;
+
+    return {
+      ...context,
+      user: context.user || mockUser,
+      profile: context.profile || mockProfile,
+      loading: false,
+    };
+  }
+
+  // If client-side and path starts with /demo, override user/profile for seamless demo mode
+  if (typeof window !== 'undefined' && window.location.pathname.startsWith('/demo')) {
+    const demoUser = {
+      uid: 'demo_user',
+      email: 'demo@paperworking.co',
+      displayName: 'Demo Investor',
+      getIdToken: async () => 'demo_token',
+      getIdTokenResult: async () => ({ token: 'demo_token', claims: {} }),
+    } as any;
+    
+    const demoProfile = {
+      uid: 'demo_user',
+      email: 'demo@paperworking.co',
+      displayName: 'Demo Investor',
+      role: 'Lead Investor',
+      personalOrganizationId: 'org_demo_seed',
+      subscriptionPlan: 'Team',
+      subscriptionStatus: 'active',
+    } as any;
+
+    return {
+      ...context,
+      user: context.user || demoUser,
+      profile: context.profile || demoProfile,
+      loading: false,
+    };
+  }
+
   return context;
 }

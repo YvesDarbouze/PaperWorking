@@ -2,12 +2,11 @@
 
 import React, { useMemo } from 'react';
 import { Project } from '@/types/schema';
-import { deriveAllMetrics, computeGRM } from '@/lib/metrics/reiMetrics';
+import { deriveDualScopeMetrics, computeGRM } from '@/lib/metrics/reiMetrics';
 import {
-  BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip,
-  ResponsiveContainer, ReferenceLine, Cell, Legend,
-  RadarChart, Radar, PolarGrid, PolarAngleAxis, PolarRadiusAxis,
+  RadarChart, Radar, PolarGrid, PolarAngleAxis, PolarRadiusAxis, ResponsiveContainer
 } from 'recharts';
+import GRMChart from '@/components/Charts/GRMChart';
 import {
   Filter, TrendingDown, AlertTriangle, Search,
   DollarSign, BarChart3, Info, ArrowDownUp,
@@ -57,22 +56,22 @@ function classifyGRM(grm: number): {
   if (grm <= 8) return {
     grade: 'excellent', label: 'Excellent — High Relative Rent',
     description: 'Strong rent relative to price. Worth full analysis.',
-    color: '#10B981', bgColor: 'rgba(16,185,129,0.08)', borderColor: 'rgba(16,185,129,0.2)',
+    color: '#595959', bgColor: 'rgba(89,89,89,0.08)', borderColor: 'rgba(89,89,89,0.2)',
   };
   if (grm <= 12) return {
     grade: 'strong', label: 'Acceptable — Typical Range',
     description: 'Reasonable rent-to-price. Common in stable markets.',
-    color: '#3B82F6', bgColor: 'rgba(59,130,246,0.08)', borderColor: 'rgba(59,130,246,0.2)',
+    color: '#7F7F7F', bgColor: 'rgba(127,127,127,0.08)', borderColor: 'rgba(127,127,127,0.2)',
   };
   if (grm <= 15) return {
     grade: 'moderate', label: 'Moderate — Run Deeper Numbers',
     description: 'Rent may not justify price. Verify with NOI and Cash Flow.',
-    color: '#F59E0B', bgColor: 'rgba(245,158,11,0.08)', borderColor: 'rgba(245,158,11,0.2)',
+    color: '#A5A5A5', bgColor: 'rgba(165,165,165,0.08)', borderColor: 'rgba(165,165,165,0.2)',
   };
   if (grm <= 20) return {
     grade: 'high', label: 'High — Appreciation Play?',
     description: 'Low rent relative to price. Only works if appreciation is strong.',
-    color: '#EF4444', bgColor: 'rgba(239,68,68,0.08)', borderColor: 'rgba(239,68,68,0.2)',
+    color: '#F06543', bgColor: 'rgba(239,68,68,0.08)', borderColor: 'rgba(239,68,68,0.2)',
   };
   return {
     grade: 'very-high', label: 'Very High — Proceed with Caution',
@@ -101,9 +100,15 @@ function deriveGRMBreakdowns(projects: Project[]): PropertyGRMData[] {
     .filter(p => p.financials)
     .map((p) => {
       const f = p.financials!;
-      const metrics = deriveAllMetrics(f);
+      const { asset: metrics } = deriveDualScopeMetrics(f, undefined, p.strategyType, p.currentPhase);
       const purchasePrice = f.purchasePrice ?? 0;
-      const monthlyRent = f.monthlyGrossRent ?? 0;
+      let monthlyRent = f.monthlyGrossRent ?? 0;
+      if (
+        (p.strategyType === 'Rent' || p.strategyType === 'Buy & Hold') &&
+        (p.currentPhase === 3 || p.currentPhase === 4)
+      ) {
+        monthlyRent = f.actualRentalIncome ?? monthlyRent;
+      }
       const grossAnnualRent = monthlyRent * 12;
 
       return {
@@ -122,28 +127,7 @@ function deriveGRMBreakdowns(projects: Project[]): PropertyGRMData[] {
     .slice(0, 8);
 }
 
-/* ── Custom tooltip ── */
-function GRMTooltip({ active, payload }: any) {
-  if (!active || !payload?.length) return null;
-  const d = payload[0].payload;
-  return (
-    <div
-      className="rounded-lg px-3 py-2 shadow-lg text-xs"
-      style={{ background: 'var(--bg-surface)', border: '1px solid var(--border-ui)' }}
-    >
-      <p className="font-bold" style={{ color: 'var(--text-primary)' }}>{d.name}</p>
-      <p className="tabular-nums" style={{ color: '#3B82F6' }}>
-        GRM: {(d.GRM ?? d.grm ?? 0).toFixed(1)}×
-      </p>
-      <p className="tabular-nums" style={{ color: '#10B981' }}>
-        Annual Rent: {fmtUSD(d.grossAnnualRent ?? 0)}
-      </p>
-      <p className="tabular-nums" style={{ color: 'var(--text-secondary)' }}>
-        Price: {fmtUSD(d.purchasePrice ?? 0)}
-      </p>
-    </div>
-  );
-}
+
 
 /* ═══════════════════════════════════════════════════════════════
    MAIN COMPONENT
@@ -175,6 +159,12 @@ export default function GRMDeepDive({ projects: propProjects }: Props) {
     };
   }, [breakdowns]);
 
+  const rankedBreakdowns = useMemo(() => {
+    return [...breakdowns]
+      .filter(b => b.grm > 0)
+      .sort((a, b) => a.grm - b.grm);
+  }, [breakdowns]);
+
   if (!aggregate || aggregate.totalRent === 0) {
     return (
       <div className="bg-bg-surface border border-border-accent rounded-xl p-8 text-center">
@@ -190,10 +180,10 @@ export default function GRMDeepDive({ projects: propProjects }: Props) {
 
   /* ── GRM gauge segments ── */
   const gaugeSegments = [
-    { min: 0, max: 8, label: '≤8', color: '#10B981', description: 'Excellent' },
-    { min: 8, max: 12, label: '8–12', color: '#3B82F6', description: 'Typical' },
-    { min: 12, max: 15, label: '12–15', color: '#F59E0B', description: 'Moderate' },
-    { min: 15, max: 20, label: '15–20', color: '#EF4444', description: 'High' },
+    { min: 0, max: 8, label: '≤8', color: '#595959', description: 'Excellent' },
+    { min: 8, max: 12, label: '8–12', color: '#7F7F7F', description: 'Typical' },
+    { min: 12, max: 15, label: '12–15', color: '#A5A5A5', description: 'Moderate' },
+    { min: 15, max: 20, label: '15–20', color: '#F06543', description: 'High' },
     { min: 20, max: 25, label: '20+', color: '#DC2626', description: 'Very High' },
   ];
 
@@ -237,11 +227,14 @@ export default function GRMDeepDive({ projects: propProjects }: Props) {
             <Filter className="w-5 h-5" style={{ color: classification.color }} />
           </div>
           <div>
-            <h3 className="text-sm font-bold text-text-primary">
+            <h3 className="text-sm font-bold text-text-primary flex items-center gap-2 flex-wrap">
               Gross Rent Multiplier (GRM) — Quick Screen
+              <span className="text-[10px] font-normal px-2 py-0.5 rounded bg-amber-500/10 text-amber-600 border border-amber-500/20">
+                Surface Screen Only
+              </span>
             </h3>
             <p className="text-xs text-text-secondary">
-              Property Price ÷ Annual Rent = how many years of rent to pay off the price
+              GRM = Property Price ÷ Gross Annual Rent (× multiplier). Lower is better.
             </p>
           </div>
         </div>
@@ -262,7 +255,7 @@ export default function GRMDeepDive({ projects: propProjects }: Props) {
             icon: Filter,
             label: 'Gross Rent Multiplier',
             value: `${aggregate.portfolioGRM.toFixed(1)}×`,
-            sublabel: `${fmtUSD(aggregate.totalPrice)} ÷ ${fmtUSD(aggregate.totalRent)}/yr`,
+            sublabel: `${fmtUSD(aggregate.totalPrice)} ÷ ${fmtUSD(aggregate.totalRent)} Gross Annual Rent`,
             color: classification.color,
           },
           {
@@ -277,7 +270,7 @@ export default function GRMDeepDive({ projects: propProjects }: Props) {
             label: 'Gross Annual Rent',
             value: fmtUSD(aggregate.totalRent),
             sublabel: `${fmtUSD(Math.round(aggregate.totalRent / 12))}/mo before expenses`,
-            color: '#10B981',
+            color: '#595959',
           },
           {
             icon: Search,
@@ -288,7 +281,7 @@ export default function GRMDeepDive({ projects: propProjects }: Props) {
               : aggregate.portfolioGRM <= 15
                 ? 'Borderline — verify with NOI and cash flow'
                 : 'High GRM — likely needs strong appreciation',
-            color: aggregate.portfolioGRM <= 12 ? '#10B981' : aggregate.portfolioGRM <= 15 ? '#F59E0B' : '#EF4444',
+            color: aggregate.portfolioGRM <= 12 ? '#595959' : aggregate.portfolioGRM <= 15 ? '#A5A5A5' : '#F06543',
           },
         ].map((kpi, i) => (
           <div
@@ -313,6 +306,14 @@ export default function GRMDeepDive({ projects: propProjects }: Props) {
             </p>
           </div>
         ))}
+      </div>
+
+      {/* ── Guardrail Warning ── */}
+      <div className="flex items-start gap-2.5 p-3 rounded-lg border border-amber-500/20 bg-amber-500/5 text-amber-600 text-xs">
+        <AlertTriangle className="w-4 h-4 mt-0.5 flex-shrink-0" />
+        <div>
+          <strong className="font-bold">Important Guardrail:</strong> GRM is a surface-level screening tool only. It completely ignores operating expenses, vacancy rates, maintenance, and financing costs. It is NOT a measure of net profitability.
+        </div>
       </div>
 
       {/* ── GRM Gauge ── */}
@@ -359,14 +360,14 @@ export default function GRMDeepDive({ projects: propProjects }: Props) {
         {radarData && (
           <div className="bg-bg-surface border border-border-accent rounded-xl p-5 flex flex-col items-center" style={{ minHeight: '280px' }}>
             <div className="flex items-center gap-2 mb-3 self-start">
-              <Info className="w-4 h-4" style={{ color: '#6366F1' }} />
+              <Info className="w-4 h-4" style={{ color: '#595959' }} />
               <h4 className="text-xs font-bold uppercase tracking-[0.15em] text-text-secondary">
                 GRM vs Deeper Metrics
               </h4>
             </div>
             <ResponsiveContainer width="100%" height={220}>
               <RadarChart data={radarData}>
-                <PolarGrid stroke="#E5E7EB" />
+                <PolarGrid stroke="#F2F2F2" />
                 <PolarAngleAxis
                   dataKey="metric"
                   tick={{ fontSize: 9, fontWeight: 700, fill: 'var(--text-secondary)' }}
@@ -380,8 +381,8 @@ export default function GRMDeepDive({ projects: propProjects }: Props) {
                 <Radar
                   name="Property Score"
                   dataKey="value"
-                  stroke="#3B82F6"
-                  fill="#3B82F6"
+                  stroke="#7F7F7F"
+                  fill="#7F7F7F"
                   fillOpacity={0.15}
                   strokeWidth={2}
                 />
@@ -396,7 +397,7 @@ export default function GRMDeepDive({ projects: propProjects }: Props) {
         {/* Price Sensitivity Table */}
         <div className="bg-bg-surface border border-border-accent rounded-xl p-5">
           <div className="flex items-center gap-2 mb-4">
-            <TrendingDown className="w-4 h-4" style={{ color: '#3B82F6' }} />
+            <TrendingDown className="w-4 h-4" style={{ color: '#7F7F7F' }} />
             <h4 className="text-xs font-bold uppercase tracking-[0.15em] text-text-secondary">
               GRM Sensitivity — "What If the Price Changes?"
             </h4>
@@ -472,52 +473,13 @@ export default function GRMDeepDive({ projects: propProjects }: Props) {
       </div>
 
       {/* ── Per-Property Comparison ── */}
-      {breakdowns.length > 1 && (
+      {rankedBreakdowns.length > 1 && (
         <div className="bg-bg-surface border border-border-accent rounded-xl p-5 flex flex-col" style={{ minHeight: '300px' }}>
           <h4 className="text-xs font-bold uppercase tracking-[0.15em] text-text-secondary mb-4">
-            GRM by Property — Lower = Better Rent-to-Price
+            GRM by Property — Portfolio Ranking View (Lower is Better)
           </h4>
-          <div className="flex-1 min-h-0">
-            <ResponsiveContainer width="100%" height="100%">
-              <BarChart
-                data={breakdowns.map(b => ({
-                  name: b.name,
-                  GRM: b.grm,
-                  grossAnnualRent: b.grossAnnualRent,
-                  purchasePrice: b.purchasePrice,
-                }))}
-                margin={{ top: 10, right: 10, left: -10, bottom: 30 }}
-              >
-                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#E5E7EB" />
-                <XAxis
-                  dataKey="name"
-                  fontSize={10}
-                  tickLine={false}
-                  axisLine={false}
-                  angle={-30}
-                  textAnchor="end"
-                  height={40}
-                />
-                <YAxis
-                  fontSize={10}
-                  tickFormatter={(v: number) => `${v}×`}
-                  tickLine={false}
-                  axisLine={false}
-                  width={35}
-                  domain={[0, 'auto']}
-                />
-                <Tooltip content={<GRMTooltip />} />
-                {/* Zone lines */}
-                <ReferenceLine y={8} stroke="#10B981" strokeDasharray="4 4" label={{ value: '8× excellent', position: 'right', fontSize: 9, fill: '#10B981' }} />
-                <ReferenceLine y={12} stroke="#3B82F6" strokeDasharray="4 4" label={{ value: '12× typical', position: 'right', fontSize: 9, fill: '#3B82F6' }} />
-                <ReferenceLine y={15} stroke="#F59E0B" strokeDasharray="4 4" label={{ value: '15× moderate', position: 'right', fontSize: 9, fill: '#F59E0B' }} />
-                <Bar dataKey="GRM" radius={[4, 4, 0, 0]} maxBarSize={36}>
-                  {breakdowns.map((b, i) => (
-                    <Cell key={i} fill={b.classification.color} />
-                  ))}
-                </Bar>
-              </BarChart>
-            </ResponsiveContainer>
+          <div className="flex-1 min-h-0 pt-4">
+            <GRMChart data={rankedBreakdowns} height="100%" />
           </div>
         </div>
       )}
@@ -526,33 +488,36 @@ export default function GRMDeepDive({ projects: propProjects }: Props) {
       <div
         className="rounded-xl p-5"
         style={{
-          background: 'rgba(245,158,11,0.04)',
-          border: '1px solid rgba(245,158,11,0.15)',
+          background: 'rgba(165,165,165,0.04)',
+          border: '1px solid rgba(165,165,165,0.15)',
         }}
       >
         <div className="flex items-start gap-3">
-          <AlertTriangle className="w-4 h-4 mt-0.5 flex-shrink-0" style={{ color: '#F59E0B' }} />
+          <AlertTriangle className="w-4 h-4 mt-0.5 flex-shrink-0" style={{ color: '#A5A5A5' }} />
           <div className="space-y-2 text-[11px] leading-relaxed" style={{ color: 'var(--text-secondary)' }}>
             <p>
-              <strong style={{ color: 'var(--text-primary)' }}>GRM is a screening tool, not a decision tool.</strong>{' '}
-              It answers "Is this property worth analyzing further?" — not "Is this a good investment?"
+              <strong style={{ color: 'var(--text-primary)' }}>GRM is a surface screen, not a profitability metric.</strong>{' '}
+              It serves as a high-level filter to compare properties before deep analysis. Because it completely ignores operating expenses (taxes, insurance, repairs), vacancy losses, and financing (mortgage terms), it cannot determine net profitability.
             </p>
             <p>
-              <strong style={{ color: '#EF4444' }}>What GRM ignores:</strong>{' '}
-              Operating expenses (taxes, insurance, maintenance, management), vacancy losses, financing costs (mortgage),
-              and closing costs. A property with a low GRM but sky-high maintenance could still lose money.
-            </p>
-            <p>
-              <strong style={{ color: '#10B981' }}>When to use:</strong>{' '}
-              Screen dozens of properties quickly. If GRM ≤ 12, run the full analysis (NOI → Cash Flow → Cap Rate → CoC Return).
-              If GRM &gt; 15, the property needs strong appreciation to make sense.
+              <strong style={{ color: '#F06543' }}>What GRM ignores:</strong>{' '}
+              All property-level costs. A low-GRM property in an area with high property taxes or structural issues could easily cash-flow worse than a higher-GRM property with low expenses.
             </p>
             <p>
               <strong style={{ color: 'var(--text-primary)' }}>Formula:</strong>{' '}
               <code className="px-1 py-0.5 rounded text-[10px]" style={{ background: 'var(--bg-surface)' }}>
-                GRM = Purchase Price ÷ Gross Annual Rent
-              </code>{' '}
-              — Lower is better. Think of it as "years of rent to pay off the price."
+                GRM = Property Price ÷ Gross Annual Rent
+              </code>
+            </p>
+            <p>
+              <strong style={{ color: 'var(--text-primary)' }}>Example:</strong>{' '}
+              <code className="px-1 py-0.5 rounded text-[10px]" style={{ background: 'var(--bg-surface)' }}>
+                $279,000 ÷ $23,400 gross annual rent = 11.9 GRM
+              </code>
+            </p>
+            <p>
+              <strong style={{ color: '#595959' }}>How to use:</strong>{' '}
+              Lower is better. Use GRM to filter out overpriced properties. If GRM is attractive (e.g. ≤ 12×), perform a complete cash flow and cap rate calculation.
             </p>
           </div>
         </div>

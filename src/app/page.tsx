@@ -1,27 +1,90 @@
 'use client';
 
-import { useState, useCallback } from 'react';
-import { motion, useScroll, useTransform } from 'framer-motion';
+import { useState, useCallback, useEffect, Suspense } from 'react';
+import { useRouter } from 'next/navigation';
+import Link from 'next/link';
 import LandingHeader from '@/components/landing/LandingHeader';
 import LandingHero from '@/components/landing/LandingHero';
+import MetricCarousel from '@/components/landing/MetricCarousel';
 import LandingFooter from '@/components/landing/LandingFooter';
-import PlatformOverview from '@/components/landing/PlatformOverview';
+import LandingNews from '@/components/landing/LandingNews';
+import FinalCTA from '@/components/landing/FinalCTA';
 import PricingSection from '@/components/landing/PricingSection';
 import { useAuth } from '@/context/AuthContext';
-import toast, { Toaster } from 'react-hot-toast';
+import toast from 'react-hot-toast';
+import { CustomToaster } from '@/components/ui/CustomToaster';
+import { useSearchParams } from 'next/navigation';
 
-export default function ParallaxLandingPage() {
-  const { user } = useAuth();
-  const [isProcessing, setIsProcessing] = useState<string | null>(null);
+/* ═══════════════════════════════════════════════════════
+   Landing Page — Stitch-aligned redesign.
+
+   Layout order matches "PaperWorking Landing Page (Desktop Redesign)":
+   1. Nav (LandingHeader)
+   2. Hero (centered, text-only)
+   3. Metric Carousel (verbatim positioning + 10 KPIs)
+   4. Dashboard Preview (standalone showcase)
+   5. REIL Phases + Risk Mitigation (PlatformOverview)
+   6. Pricing (PricingSection)
+   7. Footer
+   ═══════════════════════════════════════════════════════ */
+
+function SuccessModal() {
+  const searchParams = useSearchParams();
+  const [show, setShow] = useState(false);
+
+  useEffect(() => {
+    if (searchParams?.get('success') === 'true') {
+      setShow(true);
+    }
+  }, [searchParams]);
   
-  // Track scroll within the full page
-  const { scrollY } = useScroll();
+  if (!show) return null;
 
-  // The hero section's height is roughly 100vh.
-  // Transform the Y position to move it down slower than the scroll speed 
-  // (creating a deep parallax effect).
-  const heroY = useTransform(scrollY, [0, 1000], [0, 400]);
-  const heroOpacity = useTransform(scrollY, [0, 600], [1, 0]);
+  return (
+    <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/60 backdrop-blur-md">
+      <div className="bg-surface-container border border-outline/20 p-8 rounded-2xl shadow-2xl max-w-md w-full text-center relative overflow-hidden">
+        {/* Glow effect */}
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-32 h-32 bg-primary/20 rounded-full blur-3xl pointer-events-none" />
+        
+        <div className="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-6 relative">
+          <svg className="w-8 h-8 text-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+          </svg>
+        </div>
+        
+        <h2 className="text-2xl font-bold text-on-surface mb-3 tracking-tight">Your 14-Day Trial is Ready</h2>
+        <p className="text-on-surface-variant mb-8 text-sm leading-relaxed">
+          Welcome to the future of real estate investing. Your workspace is provisioned and ready for your first deal.
+        </p>
+
+        <Link
+          href="/dashboard"
+          className="luminous-button w-full flex items-center justify-center gap-2 py-3 rounded-lg font-label-md text-label-md"
+        >
+          <span>Enter My Command Center</span>
+          <span className="material-symbols-outlined text-base">arrow_forward</span>
+        </Link>
+        <button
+          onClick={() => setShow(false)}
+          className="mt-3 w-full text-sm text-on-surface-variant/60 hover:text-on-surface-variant transition-colors"
+        >
+          Close
+        </button>
+      </div>
+    </div>
+  );
+}
+
+export default function LandingPage() {
+  const { user, loading } = useAuth();
+  const router = useRouter();
+  const [isProcessing, setIsProcessing] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (!loading && user) {
+      router.replace('/dashboard');
+    }
+  }, [user, loading, router]);
 
   const handleSelectPlan = useCallback(async (planIdentifier: string) => {
     setIsProcessing(planIdentifier);
@@ -36,6 +99,7 @@ export default function ParallaxLandingPage() {
       : isMonthly
         ? planIdentifier.slice(0, -' Monthly'.length)
         : planIdentifier;
+
 
     try {
       // Guest checkout: CC is always required by Stripe (payment_method_collection: 'always')
@@ -70,46 +134,46 @@ export default function ParallaxLandingPage() {
   }, [user]);
 
   return (
-    <div className="bg-[var(--pw-bg)] min-h-screen text-[var(--pw-fg)] relative">
+    <div className="marketing-context bg-background min-h-screen text-on-background relative">
       {/* Loader Overlay */}
       {isProcessing && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-pw-black/60 backdrop-blur-md">
-          <div className="bg-bg-surface p-6 rounded-2xl shadow-2xl flex flex-col items-center">
-            <div className="w-8 h-8 border-4 border-pw-accent border-t-transparent rounded-full animate-spin mb-4" />
-            <p className="text-text-primary font-medium">Redirecting to Secure Checkout...</p>
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-md">
+          <div className="bg-surface-container p-6 rounded-xl shadow-2xl flex flex-col items-center">
+            <div className="w-8 h-8 border-4 border-primary border-t-transparent rounded-full animate-spin mb-4" />
+            <p className="text-on-surface font-medium">Redirecting to Secure Checkout...</p>
           </div>
         </div>
       )}
+
+      {/* Success Modal Overlay */}
+      <Suspense fallback={null}>
+        <SuccessModal />
+      </Suspense>
+
       <LandingHeader />
 
-      {/* 
-        This is the fixed height container for the hero. 
-        It reserves the space in the document flow while allowing the 
-        internal motion.div to parallax effectively.
-      */}
-      <div className="relative h-screen w-full overflow-hidden">
-        <motion.div 
-          style={{ y: heroY, opacity: heroOpacity }}
-          className="absolute inset-0 w-full h-full flex flex-col justify-center"
-        >
-          <LandingHero />
-        </motion.div>
-      </div>
+      {/* ── Hero — Centered text-only ── */}
+      <LandingHero />
 
-      {/* Foreground Content Layer - Scrolls normally over the fading background */}
-      <div className="relative z-10 w-full bg-[var(--pw-bg)] border-t border-[var(--pw-border)] shadow-2xl">
-        
-        {/* ── How It Works — Platform Overview (Primary Sales Funnel) ── */}
-        <PlatformOverview />
+      {/* ── The 10 Numbers Metric Carousel ── */}
+      <MetricCarousel />
 
-        {/* ── Pricing — Full Section (Cards + Comparison + Testimonials + FAQ) ── */}
+      {/* ── Foreground Content ── */}
+      <div className="relative z-10 w-full">
+
+        {/* ── Final CTA — Risk Mitigation Reframe ── */}
+        <FinalCTA />
+
+        {/* ── Pricing ── */}
         <PricingSection onSelectPlan={handleSelectPlan} />
 
-        {/* Footer */}
+        {/* ── News / Product Updates ── */}
+        <LandingNews />
+
         <LandingFooter />
       </div>
 
-      <Toaster position="bottom-center" />
+      <CustomToaster position="bottom-center" />
     </div>
   );
 }

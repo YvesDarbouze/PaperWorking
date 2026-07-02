@@ -1,7 +1,6 @@
 // Requires SOCRATA_APP_TOKEN in .env.local for higher rate limits (optional but recommended)
 import { z } from 'zod';
 import type { Permit } from '@/types/schema';
-import { logger } from '@/lib/logger';
 
 export const PermitLookupSchema = z.object({
   propertyAddress: z.string().min(1, 'Property address is required'),
@@ -101,13 +100,13 @@ class OpenDataSocrataAdapter implements IPermitAdapter {
       });
     } catch (err) {
       const detail = err instanceof Error ? err.message : String(err);
-      logger.error(`[PermitService] Network error fetching ${domain}/${datasetId}`, err instanceof Error ? err : undefined);
+      console.error(`[PermitService] Network error fetching ${domain}/${datasetId}:`, detail);
       throw new ExternalApiError(`Permit registry unreachable: ${detail}`);
     }
 
     if (!response.ok) {
       const body = await response.text().catch(() => '');
-      logger.error(`[PermitService] ${domain}/${datasetId} returned ${response.status}`, undefined, { body });
+      console.error(`[PermitService] ${domain}/${datasetId} returned ${response.status}:`, body);
       throw new ExternalApiError(`Permit registry returned HTTP ${response.status}`, response.status);
     }
 
@@ -152,39 +151,6 @@ class OpenDataSocrataAdapter implements IPermitAdapter {
   }
 }
 
-// MockPermitAdapter — selected when PERMIT_PROVIDER=mock.
-// Returns deterministic, varied statuses derived from the input so different
-// addresses/permit numbers produce different results (Approved, Pending, Denied).
-// The municipality label is clearly marked "(mock data — not live)" so the caller
-// can never mistake a mock response for a real government record.
-class MockPermitAdapter implements IPermitAdapter {
-  private static hashString(s: string): number {
-    let h = 0;
-    for (let i = 0; i < s.length; i++) h = ((h << 5) - h + s.charCodeAt(i)) | 0;
-    return Math.abs(h);
-  }
-
-  async fetchPermit(request: PermitLookupRequest): Promise<PermitLookupResponse> {
-    const h = MockPermitAdapter.hashString(
-      request.propertyAddress + '|' + request.jurisdictionId + '|' + (request.permitNumber ?? '')
-    );
-    // 5-element array with real-world frequency distribution: ~40% Approved, 40% Pending, 20% Denied
-    const statuses: Array<Permit['status']> = ['Approved', 'Pending', 'Pending', 'Approved', 'Denied'];
-    const status = statuses[h % statuses.length];
-
-    return {
-      id: `mock-${h.toString(16)}`,
-      name: request.permitNumber ?? `Permit — ${request.propertyAddress}`,
-      municipality: `${request.jurisdictionId} (mock data — not live)`,
-      status,
-      lastCheckedAt: new Date(),
-      propertyAddress: request.propertyAddress,
-      permitType: 'Building',
-      description: 'Mock permit record. Set PERMIT_PROVIDER=socrata for live municipal data.',
-    };
-  }
-}
-
 class FallbackAdapter implements IPermitAdapter {
   async fetchPermit(request: PermitLookupRequest): Promise<never> {
     throw new JurisdictionNotSupportedError(request.jurisdictionId);
@@ -212,8 +178,6 @@ const JURISDICTION_REGISTRY: Record<string, SocrataConfig> = {
 };
 
 function getPermitAdapter(jurisdictionId: string): IPermitAdapter {
-  // Explicit mock mode — use env flag to select; never the default
-  if (process.env.PERMIT_PROVIDER === 'mock') return new MockPermitAdapter();
   const config = JURISDICTION_REGISTRY[jurisdictionId.toLowerCase()];
   return config ? new OpenDataSocrataAdapter(config) : new FallbackAdapter();
 }

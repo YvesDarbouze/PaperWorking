@@ -6,6 +6,8 @@ import { z } from 'zod';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { CheckCircle2, AlertCircle, Copy, Check } from 'lucide-react';
+import { useAuth } from '@/context/AuthContext';
+import toast from 'react-hot-toast';
 
 const contactSchema = z.object({
   displayName: z.string().min(1, 'Name is required'),
@@ -17,45 +19,52 @@ const contactSchema = z.object({
 type ContactFormData = z.infer<typeof contactSchema>;
 
 interface AcquisitionTeamAssemblyProps {
+  projectId: string;
   teamMembers: ProjectTeamMember[];
-  onTeamMembersChange: (members: ProjectTeamMember[]) => void;
+  onRefresh: () => void;
 }
 
 const REQUIRED_ROLES: ProjectRole[] = ['Real Estate Attorney', 'Title Company/Escrow Officer'];
 
-export function AcquisitionTeamAssembly({ teamMembers, onTeamMembersChange }: AcquisitionTeamAssemblyProps) {
+export function AcquisitionTeamAssembly({ projectId, teamMembers, onRefresh }: AcquisitionTeamAssemblyProps) {
+  const { user } = useAuth();
 
-  const getMemberByRole = (role: ProjectRole) => teamMembers.find(m => m.projectRole === role);
+  const getMemberByRole = (role: ProjectRole) => teamMembers.find(m => m.projectRole === role && m.status !== 'removed');
 
-  const handleSaveMember = (role: ProjectRole, data: ContactFormData) => {
-    const existingIndex = teamMembers.findIndex(m => m.projectRole === role);
-    const updatedMembers = [...teamMembers];
-
-    const updatedMember: ProjectTeamMember = {
-      ...(existingIndex >= 0 ? updatedMembers[existingIndex] : {
-        id: crypto.randomUUID(),
-        projectRole: role,
-        permissions: { canView: true, canUpload: false, canComment: false },
-        assignedAt: new Date(),
-        status: 'active',
-      }),
-      displayName: data.displayName,
-      firm: data.firm,
-      email: data.email,
-      phoneNumber: data.phoneNumber,
-    };
-
-    if (existingIndex >= 0) {
-      updatedMembers[existingIndex] = updatedMember;
-    } else {
-      updatedMembers.push(updatedMember);
+  const handleSaveMember = async (role: ProjectRole, data: ContactFormData) => {
+    if (!user) {
+      toast.error('Not authenticated');
+      return;
     }
 
-    onTeamMembersChange(updatedMembers);
+    const existingMember = teamMembers.find(m => m.projectRole === role && m.status !== 'removed');
+    const actionType = existingMember ? 'update_member' : 'add';
+
+    const toastId = toast.loading('Saving contact details...');
+    try {
+      const idToken = await user.getIdToken();
+      const { mutateProjectTeam } = await import('@/actions');
+      const res = await mutateProjectTeam(idToken, projectId, actionType, {
+        email: data.email,
+        displayName: data.displayName,
+        projectRole: role,
+        phoneNumber: data.phoneNumber,
+        firm: data.firm,
+        memberId: existingMember?.id,
+        permissions: { canView: true, canUpload: false, canComment: false },
+      });
+
+      if (res.success) {
+        toast.success(`Saved contact for ${role}`, { id: toastId });
+        onRefresh();
+      }
+    } catch (err: any) {
+      toast.error(err.message || 'Failed to update team member.', { id: toastId });
+    }
   };
 
   return (
-    <div className="bg-white rounded-lg border shadow-sm" style={{ borderColor: 'var(--border-ui)' }}>
+    <div className="rounded-lg border shadow-sm" style={{ borderColor: 'var(--border-ui)', backgroundColor: 'var(--bg-surface)' }}>
       <div className="px-6 py-4 border-b" style={{ borderColor: 'var(--border-ui)', backgroundColor: 'var(--bg-surface)' }}>
         <h2 className="text-lg font-semibold" style={{ color: 'var(--text-primary)' }}>Acquisition Team Assembly</h2>
         <p className="text-sm mt-1" style={{ color: 'var(--text-secondary)' }}>
@@ -104,7 +113,7 @@ function TeamMemberCard({
   };
 
   return (
-    <div className="border border-gray-100 rounded-xl p-5 shadow-md bg-white transition-shadow hover:shadow-lg">
+    <div className="rounded-xl p-5 shadow-md transition-shadow hover:shadow-lg" style={{ border: '1px solid var(--border-ui)', backgroundColor: 'var(--bg-surface)' }}>
       <div className="flex items-center justify-between mb-4">
         <h3 className="font-medium text-base flex items-center gap-2" style={{ color: 'var(--text-primary)' }}>
           {role}
@@ -133,20 +142,22 @@ function TeamMemberCard({
               <label className="text-sm font-medium" style={{ color: 'var(--text-primary)' }}>Full Name *</label>
               <input 
                 {...register('displayName')}
-                className="w-full px-3 py-2 border rounded-md text-sm"
-                style={{ borderColor: 'var(--border-ui)', color: 'var(--text-primary)' }}
+                className="glass-input w-full px-3 py-2 text-sm"
+                style={{ color: 'var(--text-primary)' }}
                 placeholder="Jane Doe"
+                aria-invalid={!!errors.displayName}
               />
-              {errors.displayName && <p className="text-xs text-red-500">{errors.displayName.message}</p>}
+              {errors.displayName && <p className="text-xs pw-error-text">{errors.displayName.message}</p>}
             </div>
 
             <div className="space-y-2">
               <label className="text-sm font-medium" style={{ color: 'var(--text-primary)' }}>Firm / Company</label>
               <input 
                 {...register('firm')}
-                className="w-full px-3 py-2 border rounded-md text-sm"
-                style={{ borderColor: 'var(--border-ui)', color: 'var(--text-primary)' }}
+                className="glass-input w-full px-3 py-2 text-sm"
+                style={{ color: 'var(--text-primary)' }}
                 placeholder="ABC Law Firm"
+                aria-invalid={!!errors.firm}
               />
             </div>
             
@@ -154,22 +165,24 @@ function TeamMemberCard({
               <label className="text-sm font-medium" style={{ color: 'var(--text-primary)' }}>Email Address *</label>
               <input 
                 {...register('email')}
-                className="w-full px-3 py-2 border rounded-md text-sm"
-                style={{ borderColor: 'var(--border-ui)', color: 'var(--text-primary)' }}
+                className="glass-input w-full px-3 py-2 text-sm"
+                style={{ color: 'var(--text-primary)' }}
                 placeholder="jane@example.com"
+                aria-invalid={!!errors.email}
               />
-              {errors.email && <p className="text-xs text-red-500">{errors.email.message}</p>}
+              {errors.email && <p className="text-xs pw-error-text">{errors.email.message}</p>}
             </div>
 
             <div className="space-y-2">
               <label className="text-sm font-medium" style={{ color: 'var(--text-primary)' }}>Phone Number</label>
               <input 
                 {...register('phoneNumber')}
-                className="w-full px-3 py-2 border rounded-md text-sm"
-                style={{ borderColor: 'var(--border-ui)', color: 'var(--text-primary)' }}
+                className="glass-input w-full px-3 py-2 text-sm"
+                style={{ color: 'var(--text-primary)' }}
                 placeholder="(555) 123-4567"
+                aria-invalid={!!errors.phoneNumber}
               />
-              {errors.phoneNumber && <p className="text-xs text-red-500">{errors.phoneNumber.message}</p>}
+              {errors.phoneNumber && <p className="text-xs pw-error-text">{errors.phoneNumber.message}</p>}
             </div>
           </div>
 
@@ -178,7 +191,7 @@ function TeamMemberCard({
               <button 
                 type="button"
                 onClick={() => setIsEditing(false)}
-                className="px-4 py-2 border rounded-md text-sm hover:bg-gray-50 transition-colors"
+                className="px-4 py-2 border rounded-md text-sm hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
                 style={{ borderColor: 'var(--border-ui)', color: 'var(--text-primary)' }}
               >
                 Cancel
@@ -238,13 +251,13 @@ function CopyButton({ textToCopy }: { textToCopy: string }) {
   return (
     <button
       onClick={handleCopy}
-      className="p-1.5 rounded-md hover:bg-gray-100 transition-colors border border-transparent hover:border-gray-200"
+      className="p-1.5 rounded-md hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors border border-transparent hover:border-gray-200 dark:hover:border-gray-700"
       title="Copy to clipboard"
     >
       {copied ? (
         <Check className="w-3.5 h-3.5 text-green-600" />
       ) : (
-        <Copy className="w-3.5 h-3.5 text-gray-400 hover:text-gray-600" />
+        <Copy className="w-3.5 h-3.5 text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-300" />
       )}
     </button>
   );

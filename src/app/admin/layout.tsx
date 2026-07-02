@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useEffect, useState } from 'react';
+import React, { useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/context/AuthContext';
 import AdminSidebar from '@/components/admin/AdminSidebar';
@@ -12,13 +12,12 @@ import Logo from '@/components/brand/Logo';
 
    Auth + Role guard:
    • Must be authenticated
-   • Must have admin custom claim (set via Firebase Admin SDK)
-   • Falls back to ADMIN_ROLES Firestore check during migration
-
+   • Must have Platform Admin or Lead Investor role
+   
    Structure: Sidebar (240px) + Header (64px) + Main content
    ═══════════════════════════════════════════════════════ */
 
-const ADMIN_ROLES = ['Platform Admin', 'Admin'];
+const ADMIN_ROLES = ['Platform Admin', 'Admin', 'Lead Investor'];
 
 function AdminSkeleton() {
   return (
@@ -46,10 +45,10 @@ function AdminSkeleton() {
             <div className="h-4 w-32 animate-shimmer rounded" />
           </div>
         </header>
-        <main className="flex-1 p-6" style={{ background: 'var(--bg-canvas)' }}>
+        <main className="flex-1 px-margin-mobile py-gutter-mobile lg:px-margin-desktop lg:py-gutter-desktop" style={{ background: 'var(--bg-canvas)' }}>
           <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
             {[...Array(6)].map((_, i) => (
-              <div key={i} className="h-36 animate-shimmer rounded-lg" style={{ border: '1px solid var(--border-ui)', animationDelay: `${i * 80}ms` }} />
+              <div key={i} className="h-36 animate-shimmer rounded" style={{ border: '1px solid var(--border-ui)', animationDelay: `${i * 80}ms` }} />
             ))}
           </div>
         </main>
@@ -87,27 +86,20 @@ function AccessDenied() {
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
   const { user, profile, loading } = useAuth();
   const router = useRouter();
-  // null = still checking, true/false = resolved
-  const [isAdmin, setIsAdmin] = useState<boolean | null>(null);
 
   useEffect(() => {
     if (!loading && !user) {
       router.replace('/login');
-      return;
     }
-    if (!user) return;
+  }, [loading, user, router]);
 
-    // Primary: Firebase custom claim (token-level, cannot be spoofed by client writes)
-    user.getIdTokenResult().then((result) => {
-      const hasClaim = result.claims['admin'] === true;
-      // Fallback during migration: Firestore profile role (read server-side in server actions)
-      const hasRole = ADMIN_ROLES.includes((profile?.role as string) || '');
-      setIsAdmin(hasClaim || hasRole);
-    }).catch(() => setIsAdmin(false));
-  }, [loading, user, profile, router]);
+  if (loading || !user) return <AdminSkeleton />;
 
-  if (loading || !user || isAdmin === null) return <AdminSkeleton />;
-  if (!isAdmin) return <AccessDenied />;
+  // Role check — allow Platform Admin, Admin, and Lead Investor
+  const userRole = profile?.role || '';
+  if (!ADMIN_ROLES.includes(userRole)) {
+    return <AccessDenied />;
+  }
 
   return (
     <div
@@ -122,7 +114,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
       {/* Main Content */}
       <div className="flex-1 flex flex-col min-w-0">
         <AdminHeader />
-        <main className="flex-1 p-4 sm:p-6 lg:p-8" style={{ background: 'var(--bg-canvas)' }}>
+        <main className="flex-1 px-margin-mobile py-gutter-mobile lg:px-margin-desktop lg:py-gutter-desktop" style={{ background: 'var(--bg-canvas)' }}>
           {children}
         </main>
       </div>

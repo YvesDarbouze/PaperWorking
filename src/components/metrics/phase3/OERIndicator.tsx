@@ -5,7 +5,7 @@ import { motion } from 'framer-motion';
 
 interface OERIndicatorProps {
   operatingExpenses: number;
-  grossOperatingIncome: number;
+  grossRentalIncome: number;
   className?: string;
   isLoading?: boolean;
 }
@@ -18,10 +18,10 @@ interface ColorZone {
 }
 
 function getZone(oer: number): ColorZone {
-  if (oer < 35) return { label: 'Excellent', color: '#22c55e', bg: '#f0fdf4', range: '< 35%' };
-  if (oer <= 45) return { label: 'Good', color: '#1A73E8', bg: '#eff6ff', range: '35–45%' };
+  if (oer < 35) return { label: 'Excellent', color: '#3f7d20', bg: '#f0fdf4', range: '< 35%' };
+  if (oer <= 45) return { label: 'Good', color: '#454955', bg: '#eff6ff', range: '35–45%' };
   if (oer <= 55) return { label: 'Watch', color: '#f59e0b', bg: '#fffbeb', range: '45–55%' };
-  return { label: 'Poor', color: '#ef4444', bg: '#fef2f2', range: '> 55%' };
+  return { label: 'Poor', color: '#F06543', bg: '#fef2f2', range: '> 55%' };
 }
 
 function ArcGauge({ pct, color }: { pct: number; color: string }) {
@@ -50,10 +50,10 @@ function ArcGauge({ pct, color }: { pct: number; color: string }) {
   const fillAngle = startAngle - (clamped / 100) * totalArc;
 
   const zones = [
-    { from: 210, to: 210 - 240 * 0.292, color: '#22c55e' },
-    { from: 210 - 240 * 0.292, to: 210 - 240 * 0.458, color: '#1A73E8' },
+    { from: 210, to: 210 - 240 * 0.292, color: '#3f7d20' },
+    { from: 210 - 240 * 0.292, to: 210 - 240 * 0.458, color: '#454955' },
     { from: 210 - 240 * 0.458, to: 210 - 240 * 0.625, color: '#f59e0b' },
-    { from: 210 - 240 * 0.625, to: -30, color: '#ef4444' },
+    { from: 210 - 240 * 0.625, to: -30, color: '#F06543' },
   ];
 
   const needleTip = polarToCartesian(fillAngle);
@@ -71,11 +71,11 @@ function ArcGauge({ pct, color }: { pct: number; color: string }) {
   );
 }
 
-export default function OERIndicator({ operatingExpenses, grossOperatingIncome, className = '', isLoading = false }: OERIndicatorProps) {
+export default function OERIndicator({ operatingExpenses, grossRentalIncome, className = '', isLoading = false }: OERIndicatorProps) {
   const oer = useMemo(() => {
-    if (!grossOperatingIncome || grossOperatingIncome === 0) return 0;
-    return (operatingExpenses / grossOperatingIncome) * 100;
-  }, [operatingExpenses, grossOperatingIncome]);
+    if (!grossRentalIncome || grossRentalIncome === 0) return 0;
+    return (operatingExpenses / grossRentalIncome) * 100;
+  }, [operatingExpenses, grossRentalIncome]);
 
   const zone = useMemo(() => getZone(oer), [oer]);
 
@@ -96,7 +96,7 @@ export default function OERIndicator({ operatingExpenses, grossOperatingIncome, 
     >
       <p className="ag-label mb-1" style={{ color: 'var(--pw-muted)' }}>Operating Expense Ratio</p>
       <p className="text-xs mb-4" style={{ color: 'var(--pw-subtle)' }}>
-        OER = Operating Expenses ÷ Gross Operating Income
+        OER = Operating Expenses ÷ Gross Rental Income
       </p>
 
       <div className="flex flex-col items-center">
@@ -134,18 +134,18 @@ export default function OERIndicator({ operatingExpenses, grossOperatingIncome, 
         </div>
         <div>
           <p className="font-mono text-sm font-semibold" style={{ color: 'var(--pw-fg)' }}>
-            {new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', maximumFractionDigits: 0 }).format(grossOperatingIncome)}
+            {new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', maximumFractionDigits: 0 }).format(grossRentalIncome)}
           </p>
-          <p className="text-xs" style={{ color: 'var(--pw-muted)' }}>Gross Operating Income</p>
+          <p className="text-xs" style={{ color: 'var(--pw-muted)' }}>Gross Rental Income</p>
         </div>
       </div>
 
       <div className="mt-3 grid grid-cols-4 gap-1 text-center">
         {[
-          { label: 'Excellent', range: '< 35%', color: '#22c55e' },
-          { label: 'Good', range: '35–45%', color: '#1A73E8' },
+          { label: 'Excellent', range: '< 35%', color: '#3f7d20' },
+          { label: 'Good', range: '35–45%', color: '#454955' },
           { label: 'Watch', range: '45–55%', color: '#f59e0b' },
-          { label: 'Poor', range: '> 55%', color: '#ef4444' },
+          { label: 'Poor', range: '> 55%', color: '#F06543' },
         ].map((z) => (
           <div key={z.label} className="text-center">
             <div className="h-1 w-full rounded-full mb-1" style={{ background: z.color, opacity: zone.label === z.label ? 1 : 0.25 }} />

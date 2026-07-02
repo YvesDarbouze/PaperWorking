@@ -17,10 +17,10 @@ import {
 /* ═══════════════════════════════════════════════════════
    HowItWorksEntry — Top half of the /how-it-works page
 
-   Covers the two entry phases of the REI lifecycle:
-     Phase 01 — Analyze the Deal (MAO / ARV / 70% Rule)
-     Phase 02 — Build the Capital Stack
-     Phase 03 — Launch the LOI Wizard (crowdfunding commitments)
+   Covers the Acquisition and Fund phases of the REI lifecycle:
+     Phase 01 — Acquisition (Analyze the Deal)
+     Phase 02 — Fund (Build the Capital Stack)
+     Phase 03 — Fund (Launch the LOI Wizard)
 
    Palette (WCAG AA verified):
      #f2f2f2  bg-lightest   · text #595959 = 4.57:1 ✓
@@ -420,9 +420,9 @@ export default function HowItWorksEntry() {
             className="flex flex-wrap items-center justify-center gap-3"
           >
             {[
-              { href: '#phase-01', label: '01 · Analyze the Deal' },
-              { href: '#phase-02', label: '02 · Build the Capital Stack' },
-              { href: '#phase-03', label: '03 · Launch the LOI Wizard' },
+              { href: '#phase-01', label: '01 · Acquisition' },
+              { href: '#phase-02', label: '02 · Fund (Capital Stack)' },
+              { href: '#phase-03', label: '03 · Fund (LOI Wizard)' },
             ].map((pill) => (
               <a
                 key={pill.href}
@@ -448,7 +448,7 @@ export default function HowItWorksEntry() {
         </motion.div>
       </section>
 
-      {/* ── 2. Phase 01: Analyze the Deal ─────────────────── */}
+      {/* ── 2. Phase 01: Acquisition ─────────────────── */}
       <section id="phase-01" style={{ backgroundColor: '#f2f2f2' }}>
         <motion.div
           initial="hidden"
@@ -464,7 +464,7 @@ export default function HowItWorksEntry() {
               <StepBadge
                 number="01"
                 Icon={Calculator}
-                labelText="Analyze the Deal"
+                labelText="Acquisition"
                 accentBg="#595959"
                 accentText="#f2f2f2"
                 textSecondary="#7f7f7f"
@@ -518,7 +518,7 @@ export default function HowItWorksEntry() {
         </motion.div>
       </section>
 
-      {/* ── 3. Phase 02: Build the Capital Stack ──────────── */}
+      {/* ── 3. Phase 02: Fund (Capital Stack) ──────────── */}
       <section id="phase-02" style={{ backgroundColor: '#e6e6e6' }}>
         <motion.div
           initial="hidden"
@@ -539,7 +539,7 @@ export default function HowItWorksEntry() {
               <StepBadge
                 number="02"
                 Icon={Layers}
-                labelText="Build the Capital Stack"
+                labelText="Fund"
                 accentBg="#595959"
                 accentText="#f2f2f2"
                 textSecondary="#7f7f7f"
@@ -576,7 +576,7 @@ export default function HowItWorksEntry() {
         </motion.div>
       </section>
 
-      {/* ── 4. Phase 03: Launch the LOI Wizard ───────────── */}
+      {/* ── 4. Phase 03: Fund (LOI Wizard) ───────────── */}
       <section id="phase-03" style={{ backgroundColor: '#cccccc' }}>
         <motion.div
           initial="hidden"
@@ -592,7 +592,7 @@ export default function HowItWorksEntry() {
               <StepBadge
                 number="03"
                 Icon={FileSignature}
-                labelText="Launch the LOI Wizard"
+                labelText="Fund"
                 accentBg="#595959"
                 accentText="#f2f2f2"
                 textSecondary="#595959"
@@ -653,7 +653,7 @@ export default function HowItWorksEntry() {
                 Now comes the build — and the exit.
               </p>
               <p className="text-sm mt-1 font-medium" style={{ color: '#595959', opacity: 0.8 }}>
-                Continue to Phase 04 · Rehab &amp; Track Margins →
+                Continue to Phase 03 · Hold →
               </p>
             </motion.div>
 

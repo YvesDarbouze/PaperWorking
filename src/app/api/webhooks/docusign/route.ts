@@ -33,7 +33,7 @@ function verifySignature(body: string, signature: string | null, hmacKey: string
 export async function POST(req: NextRequest) {
   const hmacKey = process.env.DOCUSIGN_WEBHOOK_HMAC_KEY;
   if (!hmacKey) {
-    console.error('[DocuSign Webhook] DOCUSIGN_WEBHOOK_HMAC_KEY not configured — rejecting request');
+    logger.error('[DocuSign Webhook] DOCUSIGN_WEBHOOK_HMAC_KEY not configured — rejecting request');
     return NextResponse.json({ error: 'Webhook endpoint not configured' }, { status: 503 });
   }
 

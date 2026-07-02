@@ -1,0 +1,40 @@
+---
+description: Enforce the global persistent navigation contract on all PaperWorking screens
+globs: src/components/layout/Sidebar.tsx, src/components/layout/BottomNav.tsx, src/app/dashboard/layout.tsx, src/components/layout/TopAppBar.tsx
+---
+# GLOBAL NAVIGATION — FIXED CONTRACT FOR EVERY PAPERWORKING SCREEN
+
+The PaperWorking navigation is finalized. Do NOT redesign it, do NOT reorder it, do NOT rename items, do NOT add items, do NOT remove items, do NOT combine items, do NOT move items between groups, and do NOT change the active state pattern between screens. Every screen in this project must render the navigation exactly as defined below. Treat this as a fixed component reused across every screen, not as a design decision to revisit.
+
+## Contract Specification
+
+### Brand Area (Top):
+- PaperWorking logo mark
+- PaperWorking wordmark (Plus Jakarta Sans)
+
+### Primary Group (in this exact order, case-sensitive):
+1. **Portfolio** (path: `/dashboard/command-center`, icon: `folder_shared`)
+2. **Projects** (path: `/dashboard/projects`, icon: `assignment`)
+3. **Data Room** (path: `/dashboard/data-room`, icon: `inventory_2`)
+4. **Inbox** (with unread count badge, path: `/dashboard/inbox`, icon: `inbox`)
+5. **Team** (path: `/dashboard/team`, icon: `group`)
+6. **Reports** (path: `/dashboard/reports`, icon: `assessment`)
+7. **Deal Analyzer** (path: `/dashboard/deal-analyzer`, icon: `analytics`)
+
+### Section Divider:
+- Label "Account" (in uppercase/tracking uppercase)
+
+### Account Group (in this exact order, case-sensitive):
+1. **Profile** (path: `/dashboard/settings/profile`, icon: `account_circle`)
+2. **Billing** (path: `/dashboard/settings/billing`, icon: `payments`)
+3. **Settings** (path: `/dashboard/settings`, icon: `settings`)
+
+### Bottom Area:
+- Workspace Switcher showing text: `"acting as: Me / [Team Account]"` (exactly "acting as: Me" for personal accounts or "acting as: [Team Account Name]")
+- Profile Menu with avatar, display name, role, and a Logout trigger/button.
+
+## Rules for Code Alterations:
+1. The sidebar menu items list is identical across ALL dashboard screens.
+2. The active state for the current screen must receive a distinct visual treatment per the design system (background highlight `bg-primary/10`, indicator border `border-r-2 border-primary`, and color shift/weight change).
+3. Do not place any contextual buttons in the sidebar (like "Create Project"). The sidebar elements are fixed.
+4. If a screen needs an alternate sidebar layout or mobile sidebar, it must strictly match this component structure and styling.

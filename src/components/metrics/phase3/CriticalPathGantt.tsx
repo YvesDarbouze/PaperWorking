@@ -16,6 +16,7 @@ import {
   Loader2,
   Ban,
 } from 'lucide-react';
+import { Checkbox } from '../../ui';
 
 /* ═══════════════════════════════════════════════════════
    Critical Path Gantt — Hold Phase (Phase 3)
@@ -327,7 +328,7 @@ export default function CriticalPathGantt() {
                                   onBlur={() => setEditingId(null)}
                                   onKeyDown={e => { if (e.key === 'Enter') setEditingId(null); }}
                                   autoFocus
-                                  className="text-[10px] font-bold text-text-primary bg-transparent outline-none border-b border-pw-black w-full"
+                                  className="text-[10px] font-bold text-text-primary bg-transparent outline-none border-b border-pw-border w-full"
                                 />
                               ) : (
                                 <button
@@ -393,7 +394,7 @@ export default function CriticalPathGantt() {
                               initial={{ height: 0, opacity: 0 }}
                               animate={{ height: 'auto', opacity: 1 }}
                               exit={{ height: 0, opacity: 0 }}
-                              className="overflow-hidden ml-[180px] border-l-2 border-pw-black pl-3 pb-2 space-y-2"
+                              className="overflow-hidden ml-[180px] border-l-2 border-pw-border pl-3 pb-2 space-y-2"
                             >
                               <div className="grid grid-cols-4 gap-2">
                                 <div>
@@ -439,11 +440,9 @@ export default function CriticalPathGantt() {
                               </div>
                               <div className="flex items-center gap-3">
                                 <label className="flex items-center gap-1.5 cursor-pointer">
-                                  <input
-                                    type="checkbox"
+                                  <Checkbox
                                     checked={task.inspectionRequired ?? false}
                                     onChange={e => updateTask(task.id, { inspectionRequired: e.target.checked })}
-                                    className="w-3 h-3"
                                   />
                                   <span className="text-[9px] font-bold text-text-secondary">Requires Inspection</span>
                                 </label>

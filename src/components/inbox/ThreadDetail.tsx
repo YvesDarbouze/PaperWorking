@@ -1,7 +1,7 @@
 'use client';
 
-import React, { useEffect, useRef, useState } from 'react';
-import { Send, ArrowDown } from 'lucide-react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
+import { Send, ArrowLeft } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useAuth } from '@/context/AuthContext';
 import type { InboxThread, InboxMessage } from '@/hooks/useInboxThreads';
@@ -10,17 +10,82 @@ import type { InboxThread, InboxMessage } from '@/hooks/useInboxThreads';
    ThreadDetail — Right-pane message view with inline reply
    ═══════════════════════════════════════════════════════ */
 
+/* ── Thread-level MoreMenu ─────────────────────────────
+   Renders a ⋮ button that opens a small dropdown with
+   real actions. Actions must have an onClick handler.
+   ────────────────────────────────────────────────────── */
+interface MoreMenuProps {
+  onMarkUnread?: () => void;
+}
+
+function ThreadMoreMenu({ onMarkUnread }: MoreMenuProps) {
+  const [open, setOpen] = useState(false);
+  const ref = useRef<HTMLDivElement>(null);
+
+  // Close on outside click
+  useEffect(() => {
+    if (!open) return;
+    const handler = (e: MouseEvent) => {
+      if (ref.current && !ref.current.contains(e.target as Node)) {
+        setOpen(false);
+      }
+    };
+    document.addEventListener('mousedown', handler);
+    return () => document.removeEventListener('mousedown', handler);
+  }, [open]);
+
+  return (
+    <div ref={ref} className="relative">
+      <button
+        id="thread-more-menu-trigger"
+        onClick={() => setOpen((v) => !v)}
+        className="p-2 rounded-lg hover:bg-white/5 text-[#9E9DA0] transition-colors"
+        aria-label="Thread actions"
+        aria-expanded={open}
+        aria-haspopup="true"
+      >
+        <span className="material-symbols-outlined" style={{ fontVariationSettings: "'FILL' 0" }}>more_vert</span>
+      </button>
+
+      {open && (
+        <div
+          id="thread-more-menu"
+          role="menu"
+          className="absolute right-0 top-full mt-1 w-48 rounded-xl border border-white/10 bg-[#161318] shadow-[0_8px_32px_-4px_rgba(0,0,0,0.6)] z-50 py-1 overflow-hidden"
+        >
+          {onMarkUnread ? (
+            <button
+              id="thread-menu-mark-unread"
+              role="menuitem"
+              onClick={() => { onMarkUnread(); setOpen(false); }}
+              className="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-[#9E9DA0] hover:bg-white/5 hover:text-white transition-colors text-left"
+            >
+              <span className="material-symbols-outlined text-base" style={{ fontVariationSettings: "'FILL' 0" }}>mark_email_unread</span>
+              Mark as Unread
+            </button>
+          ) : (
+            <p className="px-4 py-2.5 text-xs text-[#9E9DA0]/40 select-none">No actions available</p>
+          )}
+        </div>
+      )}
+    </div>
+  );
+}
+
 interface ThreadDetailProps {
   thread: InboxThread;
   projectName?: string;
   onSendReply: (body: string) => Promise<void>;
+  onBack?: () => void;
+  /** Called when the user selects "Mark as Unread" from the ⋮ menu. */
+  onMarkThreadUnread?: () => void;
 }
 
 function MessageBubble({ message, isMe }: { message: InboxMessage; isMe: boolean }) {
   const typeBadge = message.type === 'EMAIL_INBOUND'
-    ? { label: 'Email', color: '#7F7F7F' }
+    ? { label: 'Email', color: '#9E9DA0' }
     : message.type === 'EMAIL_OUTBOUND'
-    ? { label: 'Sent', color: '#0d0d0d' }
+    ? { label: 'Sent', color: '#454955' }
     : null;
 
   return (
@@ -32,18 +97,19 @@ function MessageBubble({ message, isMe }: { message: InboxMessage; isMe: boolean
       <div className={`max-w-[70%] flex flex-col ${isMe ? 'items-end' : 'items-start'}`}>
         {/* Sender + Time */}
         <div className="flex items-center gap-2 mb-1 px-1">
-          <span className="text-xs font-bold" style={{ color: 'var(--text-primary)' }}>
+          <span className="text-xs font-bold text-[#9E9DA0]">
             {isMe ? 'You' : message.senderName}
           </span>
           {typeBadge && (
             <span
-              className="text-[10px] font-semibold uppercase tracking-wider px-1.5 py-0.5"
-              style={{ color: typeBadge.color, backgroundColor: '#F2F2F2' }}
+              className={`text-[10px] font-mono uppercase tracking-wider px-1.5 py-0.5 rounded-md border ${
+                isMe ? 'text-[#454955] border-[#454955]/30 bg-[#454955]/10' : 'text-[#9E9DA0] border-white/10 bg-white/5'
+              }`}
             >
               {typeBadge.label}
             </span>
           )}
-          <span className="text-xs font-medium" style={{ color: 'var(--text-secondary)' }}>
+          <span className="text-xs font-medium text-[#9E9DA0]">
             {message.createdAt.toLocaleTimeString('en-US', {
               hour: 'numeric',
               minute: '2-digit',
@@ -53,16 +119,11 @@ function MessageBubble({ message, isMe }: { message: InboxMessage; isMe: boolean
 
         {/* Bubble */}
         <div
-          className={`px-5 py-3.5 text-sm leading-relaxed shadow-sm whitespace-pre-wrap ${
+          className={`px-5 py-3.5 text-sm leading-relaxed whitespace-pre-wrap backdrop-blur-md border ${
             isMe
-              ? 'rounded-2xl rounded-tr-sm'
-              : 'rounded-2xl rounded-tl-sm border'
+              ? 'rounded-2xl rounded-tr-sm bg-[#454955]/10 border-[#454955]/20 text-[#9E9DA0] shadow-[inset_1px_1px_0px_rgba(69,73,85,0.1)]'
+              : 'rounded-2xl rounded-tl-sm bg-[#161318]/80 border-white/10 text-[#9E9DA0] shadow-[inset_1px_1px_0px_rgba(255,255,255,0.05)]'
           }`}
-          style={
-            isMe
-              ? { backgroundColor: '#0d0d0d', color: '#ffffff' }
-              : { backgroundColor: '#ffffff', color: '#595959', borderColor: 'var(--border-ui)' }
-          }
         >
           {message.body}
         </div>
@@ -71,7 +132,7 @@ function MessageBubble({ message, isMe }: { message: InboxMessage; isMe: boolean
   );
 }
 
-export default function ThreadDetail({ thread, projectName, onSendReply }: ThreadDetailProps) {
+export default function ThreadDetail({ thread, projectName, onSendReply, onBack, onMarkThreadUnread }: ThreadDetailProps) {
   const { user } = useAuth();
   const [replyText, setReplyText] = useState('');
   const [sending, setSending] = useState(false);
@@ -118,38 +179,37 @@ export default function ThreadDetail({ thread, projectName, onSendReply }: Threa
     || 'Conversation';
 
   return (
-    <>
-      {/* Header */}
-      <header
-        className="px-8 py-5 border-b flex items-center justify-between z-10"
-        style={{ borderColor: 'var(--border-ui)', backgroundColor: 'var(--bg-surface)' }}
-      >
+    <div className="flex-1 overflow-hidden z-10 flex flex-col bg-transparent">
+      {/* Header Actions */}
+      <div className="px-8 py-6 flex items-center justify-between border-b border-white/10 shrink-0 bg-[#0d0a0b]/50 backdrop-blur-sm">
         <div className="flex items-center gap-4">
-          <div
-            className="w-12 h-12 rounded-full flex items-center justify-center font-bold text-white shrink-0 shadow-sm"
-            style={{ backgroundColor: '#0d0d0d' }}
-          >
+          {onBack && (
+            <button onClick={onBack} className="md:hidden p-2 -ml-2 rounded-lg hover:bg-white/5 text-[#9E9DA0] transition-colors">
+              <ArrowLeft className="w-5 h-5" />
+            </button>
+          )}
+          <div className="h-12 w-12 rounded-xl bg-[#0d0a0b]/60 backdrop-blur-xl border border-[#454955]/30 shadow-[inset_1px_1px_0px_rgba(69,73,85,0.1),0_0_15px_rgba(69,73,85,0.15)] flex items-center justify-center text-[#454955] font-bold text-lg">
             {(thread.lastMessage.senderName?.[0] || 'P').toUpperCase()}
           </div>
           <div>
-            <h2 className="text-lg font-bold" style={{ color: 'var(--text-primary)' }}>
-              {displaySubject}
-            </h2>
-            <p className="text-xs font-medium" style={{ color: 'var(--text-secondary)' }}>
-              {thread.participantNames.slice(0, 3).join(', ')}
-              {thread.participantNames.length > 3 && ` +${thread.participantNames.length - 3}`}
-              {' · '}
-              {thread.messages.length} message{thread.messages.length !== 1 && 's'}
+            <h3 className="text-xl font-bold text-[#9E9DA0]">{displaySubject}</h3>
+            <p className="text-[10px] font-mono text-[#9E9DA0] uppercase flex items-center gap-2 mt-0.5">
+              <span>{thread.participantNames.slice(0, 3).join(', ')}</span>
+              {thread.participantNames.length > 3 && <span>(+{thread.participantNames.length - 3})</span>}
+              <span className="text-[#454955]">•</span>
+              <span>{thread.messages.length} message{thread.messages.length !== 1 && 's'}</span>
             </p>
           </div>
         </div>
-      </header>
+        <div className="flex gap-2">
+          <ThreadMoreMenu onMarkUnread={onMarkThreadUnread} />
+        </div>
+      </div>
 
       {/* Messages */}
       <div
         ref={scrollRef}
         className="flex-1 overflow-y-auto p-8 space-y-6"
-        style={{ backgroundColor: 'var(--bg-surface)' }}
       >
         <AnimatePresence>
           {sortedMessages.map((msg) => (
@@ -163,10 +223,7 @@ export default function ThreadDetail({ thread, projectName, onSendReply }: Threa
       </div>
 
       {/* Reply Area */}
-      <footer
-        className="p-6 border-t"
-        style={{ borderColor: 'var(--border-ui)', backgroundColor: 'var(--bg-surface)' }}
-      >
+      <footer className="p-6 border-t border-white/10 bg-[#0d0a0b]/50 backdrop-blur-sm shrink-0">
         <div className="relative max-w-4xl mx-auto">
           <textarea
             id="inbox-reply-input"
@@ -175,37 +232,19 @@ export default function ThreadDetail({ thread, projectName, onSendReply }: Threa
             onChange={(e) => setReplyText(e.target.value)}
             onKeyDown={handleKeyDown}
             disabled={sending}
-            className="w-full h-28 p-4 pr-16 rounded-xl border text-sm resize-none focus:outline-none transition-colors shadow-sm disabled:opacity-50"
-            style={{
-              backgroundColor: 'var(--bg-canvas)',
-              borderColor: 'var(--border-ui)',
-              color: 'var(--text-primary)',
-            }}
-            onFocus={(e) => {
-              e.currentTarget.style.borderColor = '#0d0d0d';
-            }}
-            onBlur={(e) => {
-              e.currentTarget.style.borderColor = 'var(--border-ui)';
-            }}
+            className="w-full h-28 p-4 pr-16 rounded-xl border border-white/10 bg-[#0d0a0b]/80 text-sm resize-none focus:outline-none focus:border-[#454955]/50 transition-colors shadow-[inset_0_2px_10px_rgba(0,0,0,0.5)] text-[#9E9DA0] disabled:opacity-50 placeholder:text-[#9E9DA0]/40"
           />
           <button
             id="inbox-send-reply"
             onClick={handleSend}
             disabled={!replyText.trim() || sending}
-            className="absolute bottom-4 right-4 p-3 rounded-full transition-colors shadow-md disabled:opacity-30"
-            style={{ backgroundColor: '#0d0d0d', color: '#ffffff' }}
-            onMouseEnter={(e) => {
-              if (!sending) e.currentTarget.style.backgroundColor = '#333333';
-            }}
-            onMouseLeave={(e) => {
-              e.currentTarget.style.backgroundColor = '#0d0d0d';
-            }}
+            className="absolute bottom-4 right-4 p-3 rounded-xl bg-[#454955] text-[#0d0a0b] transition-all disabled:opacity-30 disabled:hover:scale-100 hover:scale-105 active:scale-95 luminous-glow flex items-center justify-center"
             aria-label="Send reply"
           >
-            <Send className="w-4 h-4" />
+            <Send className="w-5 h-5" />
           </button>
         </div>
       </footer>
-    </>
+    </div>
   );
 }

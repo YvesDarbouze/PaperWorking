@@ -1,0 +1,71 @@
+# PaperWorking Command Center: Implementation Blueprint (Equinox OS)
+
+This document provides a structured breakdown of the "Obsidian Terminal" design system and the specific UI components required to bridge the gap between Google Stitch designs and the Antigravity codebase.
+
+## 1. Design Tokens (Obsidian Terminal)
+
+### Color Palette (CSS Variables)
+- `--color-background`: `#060f15` (Obsidian Black)
+- `--color-surface`: `#0b141a` (Obsidian Slate)
+- `--color-primary`: `#2dd4bf` (Luminous Teal)
+- `--color-secondary`: `#adc6ff` (Electric Blue)
+- `--color-tertiary`: `#ffd1aa` (Gold/Amber)
+- `--color-error`: `#ffb4ab` (Red Alert)
+- `--color-glass-bg`: `rgba(255, 255, 255, 0.03)`
+- `--color-glass-border`: `rgba(255, 255, 255, 0.08)`
+
+### Typography
+- **Display/Headlines**: `Plus Jakarta Sans`
+  - `text-headline-xl`: 3rem (48px), bold, -0.02em tracking
+  - `text-headline-lg`: 2rem (32px), bold, -0.02em tracking
+  - `text-headline-md`: 1.5rem (24px), semibold
+- **Data/Mono**: `JetBrains Mono`
+  - Used for: Metric values, currency, terminal audit feed, state badges.
+- **Labels/Body**: `Hanken Grotesk`
+  - `text-label-md`: 0.875rem, medium, uppercase, 0.05em tracking
+  - `text-label-sm`: 0.75rem, medium
+
+### Spacing & Layout
+- `gutter-desktop`: `2rem` (32px)
+- `stack-lg`: `2.5rem` (40px)
+- `stack-md`: `1.5rem` (24px)
+- `stack-sm`: `0.75rem` (12px)
+
+---
+
+## 2. Component Construction Guide
+
+### Step 2A: Metric Card Strip (KPIs)
+- **Visuals**: High-gloss frosted glass cards (`bg-glass-bg` + `backdrop-blur-xl`).
+- **Health Band**: A 4px solid left-border using semantic colors (Teal = Good, Amber = Warning, Red = Critical).
+- **State Label**: A small badge in the top-right using `JetBrains Mono` showing `PROJECTED`, `LIVE`, or `REALIZED`.
+- **Wiring**: Driven by `deriveAllMetrics()`.
+
+### Step 2B: Performance Chart
+- **Visuals**: Area chart with a gradient fill (`primary` to transparent).
+- **Wiring**: Connect to `usePortfolioMetricSnapshots`. Toggles (Property/My Share) must trigger a re-fetch or filter of the snapshot data.
+
+### Step 2C: Phase Pipeline Band
+- **Visuals**: Horizontal segmented bar. Each segment matches the phase color (Acquisition = Teal, Purchase = Blue, Hold = Amber, Exit = Slate).
+- **Wiring**: Count and cash-basis totals derived from `projects` store.
+
+### Step 2D: Project Folder Grid
+- **Visuals**: Cards styled as file folders with an asymmetric tab (Top-left radius: `0.5rem`, Top-right radius: `2rem`).
+- **Metadata**: Show Strategy (Badge), Ownership %, and Phase Progress (Linear gauge).
+- **Interactivity**: Clicking "opens" the folder (navigates to `/projects/[id]`).
+
+### Step 2E: Terminal Audit Widget (Activity Feed)
+- **Visuals**: Pure black container, `JetBrains Mono` text.
+- **Styling**: Log entries should be color-coded by type (`[SUCCESS]`, `[INFO]`, `[ERROR]`).
+- **Wiring**: Real-time listener on `activity` collection.
+
+---
+
+## 3. Global Header & Navigation
+- **Persistent Actions**: Global "Create Project" button (Teal solid), "Quick Insight" (Teal ghost), and Global Search.
+- **Layout**: Left-side vertical nav on desktop; Bottom fixed nav on mobile.
+
+## 4. Feature Headings (PaperWorking.co Consistency)
+- Use "Portfolio Performance" for the KPI/Chart section.
+- Use "Active Pipeline" for the Phase/Folder section.
+- Use "System Activity" for the Terminal Audit feed.

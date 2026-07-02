@@ -104,5 +104,25 @@ screenshot-dashboard.mjs
 jest.setup 2.ts
 /playwright-report/
 
+# Google Cloud SDK
+google-cloud-sdk/
 
+# Firebase key credentials
+firebase-key.json
+firebase-key*.json
 
+# Stitch screens dot directory
+.stitch-screens/
+stitch_downloads/
+
+# Root HTML mockups & reports
+/*.html
+/MOCKED_FEATURES_REPORT.md
+/MOCK_HUNTER_UNIMPLEMENTED_REPORT.md
+/QA_GAP_REPORT.md
+/QA_REPORT.md
+/mockhunter-report.md
+/design_catalog.md
+/ui_design_audit.md
+/DEPLOYS.md
+/NAVIGATION.md

@@ -2,6 +2,9 @@
 
 import { adminAuth, adminDb } from '@/lib/firebase/admin';
 import { FieldValue } from 'firebase-admin/firestore';
+import { isSubscriptionActive } from '@/lib/stripe/subscription';
+import type { UserProfile } from '@/types/user';
+import type { ProjectTeamMember, ProjectRole, ExternalAccessPermission, ProjectMember } from '@/types/schema';
 
 /**
  * Validates the caller via the supplied ID Token and returns user data
@@ -108,6 +111,12 @@ export async function approveLedgerItem(idToken: string, projectId: string, item
 export async function createNewDeal(idToken: string, rawDealData: any) {
   const user = await verifyActionAuth(idToken);
   
+  // Gate check: only Individual (Standard) or Team plans can create projects
+  const userProfile = user as unknown as UserProfile;
+  if (!['Individual', 'Team'].includes(userProfile.subscriptionPlan || '') || !isSubscriptionActive(userProfile)) {
+    throw new Error('Upgrade required: only Standard (Individual) or Team plan holders with active subscriptions can create projects.');
+  }
+
   // Base configuration guarantees the timeline clock initiates safely server-side
   const serverTime = FieldValue.serverTimestamp();
   
@@ -141,6 +150,8 @@ export async function createNewDeal(idToken: string, rawDealData: any) {
     financials: {
       purchasePrice: rawDealData.purchasePrice || 0,
       estimatedARV: rawDealData.estimatedARV || 0,
+      leadSource: rawDealData.leadSource || 'Referral',
+      costs: [],
       // ... default zeroes omitted for brevity
     }
   };
@@ -208,7 +219,7 @@ export async function closeProjectAndArchiveServerAction(idToken: string, projec
     let isAlreadyClosed = ['closed_won', 'closed_lost'].includes(projectData?.status);
     let closedCount = closedProjectsSnap.docs.length + (isAlreadyClosed ? 0 : 1);
 
-    closedProjectsSnap.forEach(docSnap => {
+    closedProjectsSnap.docs.forEach(docSnap => {
       // Don't double count the current project if it's already in the query results
       if (docSnap.id === projectId) return;
 
@@ -235,5 +246,162 @@ export async function closeProjectAndArchiveServerAction(idToken: string, projec
     });
 
     return { success: true, message: 'Project successfully closed and archived' };
+  });
+}
+
+/**
+ * AUTHORITATIVE PROJECT TEAM MUTATION
+ * Securely modifies project team members, verifying permissions, and syncing project.members for storage access
+ */
+export async function mutateProjectTeam(
+  idToken: string,
+  projectId: string,
+  action: 'add' | 'remove' | 'update_permissions' | 'update_member',
+  payload: {
+    email: string;
+    displayName?: string;
+    projectRole?: ProjectRole;
+    permissions?: ExternalAccessPermission;
+    phoneNumber?: string;
+    firm?: string;
+    memberId?: string;
+  }
+): Promise<{ success: boolean; projectTeam: ProjectTeamMember[] }> {
+  const user = await verifyActionAuth(idToken);
+
+  const allowedRoles = ['Admin', 'Lead Investor'];
+  const projectRef = adminDb.collection('projects').doc(projectId);
+
+  return adminDb.runTransaction(async (transaction) => {
+    const projectSnap = await transaction.get(projectRef);
+    if (!projectSnap.exists) {
+      throw new Error('Project not found');
+    }
+    const projectData = projectSnap.data()!;
+
+    // Cross-tenant data isolation check
+    if (projectData.organizationId !== user.organizationId) {
+      throw new Error('Cross-Tenant Data Security Exception');
+    }
+
+    // Role check: Only project-level Lead Investors/Admins or org-level Admins/Leads or owner can edit the team
+    const callerMember = projectData.members?.[user.uid];
+    const isProjectLead = callerMember?.role === 'Lead Investor' || callerMember?.role === 'Admin';
+    const isOrgAdmin = allowedRoles.includes(user.role);
+    const isOwner = projectData.ownerUid === user.uid;
+
+    if (!isProjectLead && !isOrgAdmin && !isOwner) {
+      throw new Error('Only Lead Investors and Admins may manage the deal team.');
+    }
+
+    let projectTeam: ProjectTeamMember[] = projectData.projectTeam || [];
+    let members: Record<string, ProjectMember> = projectData.members || {};
+
+    const targetEmail = payload.email.toLowerCase();
+
+    // Query to find if a user exists with this email
+    const userQuery = await adminDb.collection('users')
+      .where('email', '==', targetEmail)
+      .limit(1)
+      .get();
+    let uid: string | undefined = undefined;
+    if (!userQuery.empty) {
+      uid = userQuery.docs[0].id;
+    }
+
+    if (action === 'add') {
+      const existing = projectTeam.find(m => m.email.toLowerCase() === targetEmail && m.status !== 'removed');
+      if (existing) {
+        throw new Error('This user is already a member of the deal team.');
+      }
+
+      const newMember: ProjectTeamMember = {
+        id: payload.memberId || `tm_${Date.now()}`,
+        email: targetEmail,
+        displayName: payload.displayName || targetEmail.split('@')[0],
+        projectRole: payload.projectRole!,
+        permissions: payload.permissions || { canView: true, canUpload: false, canComment: false },
+        assignedAt: new Date(),
+        status: 'invited',
+        uid,
+        phoneNumber: payload.phoneNumber,
+        firm: payload.firm,
+      };
+
+      projectTeam = [...projectTeam, newMember];
+
+      if (uid) {
+        members[uid] = {
+          uid,
+          role: payload.projectRole!,
+          joinedAt: new Date(),
+        };
+      }
+    } else if (action === 'remove') {
+      const memberId = payload.memberId;
+      if (!memberId) throw new Error('Missing member ID');
+
+      const member = projectTeam.find(m => m.id === memberId);
+      if (!member) throw new Error('Member not found in project team');
+
+      projectTeam = projectTeam.map(m =>
+        m.id === memberId ? { ...m, status: 'removed' as const } : m
+      );
+
+      const memberUid = member.uid;
+      if (memberUid) {
+        delete members[memberUid];
+      }
+      if (uid && members[uid]) {
+        delete members[uid];
+      }
+    } else if (action === 'update_permissions') {
+      const memberId = payload.memberId;
+      if (!memberId) throw new Error('Missing member ID');
+
+      projectTeam = projectTeam.map(m =>
+        m.id === memberId ? { ...m, permissions: payload.permissions! } : m
+      );
+    } else if (action === 'update_member') {
+      const memberId = payload.memberId;
+      if (!memberId) throw new Error('Missing member ID');
+
+      const existingIndex = projectTeam.findIndex(m => m.id === memberId);
+      if (existingIndex === -1) throw new Error('Member not found');
+
+      const existingMember = projectTeam[existingIndex];
+      const oldUid = existingMember.uid;
+
+      const updatedMember: ProjectTeamMember = {
+        ...existingMember,
+        displayName: payload.displayName || existingMember.displayName,
+        firm: payload.firm || existingMember.firm,
+        email: targetEmail,
+        phoneNumber: payload.phoneNumber || existingMember.phoneNumber,
+        permissions: payload.permissions || existingMember.permissions,
+        uid,
+      };
+
+      projectTeam[existingIndex] = updatedMember;
+
+      if (oldUid && oldUid !== uid) {
+        delete members[oldUid];
+      }
+      if (uid) {
+        members[uid] = {
+          uid,
+          role: payload.projectRole || existingMember.projectRole,
+          joinedAt: existingMember.assignedAt || new Date(),
+        };
+      }
+    }
+
+    transaction.update(projectRef, {
+      projectTeam,
+      members,
+      updatedAt: FieldValue.serverTimestamp(),
+    });
+
+    return { success: true, projectTeam };
   });
 }

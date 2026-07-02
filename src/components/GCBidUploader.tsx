@@ -30,18 +30,18 @@ const CATEGORY_COLORS: Record<string, string> = {
   Foundation: 'bg-amber-50 text-amber-700 border-amber-200',
   Framing: 'bg-orange-50 text-orange-700 border-orange-200',
   Roofing: 'bg-blue-50 text-blue-700 border-blue-200',
-  Plumbing: 'bg-cyan-50 text-cyan-700 border-cyan-200',
+  Plumbing: 'bg-[#F0F1F4] text-[#454955] border-[#C8CAD1]',
   Electrical: 'bg-yellow-50 text-yellow-700 border-yellow-200',
-  HVAC: 'bg-purple-50 text-purple-700 border-purple-200',
+  HVAC: 'bg-slate-50 text-slate-700 border-slate-200',
   Insulation: 'bg-lime-50 text-lime-700 border-lime-200',
   Drywall: 'bg-stone-50 text-stone-700 border-stone-200',
-  Flooring: 'bg-teal-50 text-teal-700 border-teal-200',
-  'Cabinets & Counters': 'bg-indigo-50 text-indigo-700 border-indigo-200',
+  Flooring: 'bg-[#F0F1F4] text-[#454955] border-[#C8CAD1]',
+  'Cabinets & Counters': 'bg-zinc-50 text-zinc-700 border-zinc-200',
   'Paint & Finish': 'bg-pink-50 text-pink-700 border-pink-200',
   'Windows & Doors': 'bg-sky-50 text-sky-700 border-sky-200',
   Landscaping: 'bg-green-50 text-green-700 border-green-200',
   'Permit Fees': 'bg-rose-50 text-rose-700 border-rose-200',
-  Labor: 'bg-violet-50 text-violet-700 border-violet-200',
+  Labor: 'bg-[#454955]/10 text-[#454955] border-[#454955]/20',
   Materials: 'bg-emerald-50 text-emerald-700 border-emerald-200',
   Other: 'bg-bg-primary text-text-secondary border-border-accent',
 };
@@ -315,29 +315,36 @@ export default function GCBidUploader({ projectId, onBidSaved }: Props) {
               onDragLeave={() => setDragOver(false)}
               onDrop={handleDrop}
               onClick={() => !isUploading && !isProcessing && fileInputRef.current?.click()}
-              className={`border-2 border-dashed rounded-xl p-8 text-center cursor-pointer transition-colors ${
-                dragOver
-                  ? 'border-blue-400 bg-blue-50'
-                  : 'border-border-accent hover:border-gray-400 hover:bg-bg-primary'
-              }`}
+              className="relative rounded-xl p-8 text-center cursor-pointer transition-all bg-surface-container/30 backdrop-blur-xl border-t border-l border-white/10 shadow-lg min-h-[180px] flex flex-col items-center justify-center overflow-hidden group"
             >
+              {/* Inner Dashed Border Indicator */}
+              <div className={`absolute inset-3 border-2 border-dashed rounded-lg transition-all duration-300 pointer-events-none ${
+                dragOver 
+                  ? 'border-primary bg-primary/10' 
+                  : 'border-outline-variant/40 group-hover:border-primary/40 group-hover:bg-primary/5'
+              }`} />
+
               {selectedFile ? (
-                <div className="flex flex-col items-center gap-2">
-                  <FileCheck2 className="w-8 h-8 text-emerald-500" />
+                <div className="relative z-10 flex flex-col items-center gap-2">
+                  <div className="w-14 h-14 mb-1 rounded-full bg-surface-container-highest flex items-center justify-center text-emerald-500 shadow-lg shadow-emerald-500/10">
+                    <FileCheck2 className="w-6 h-6" />
+                  </div>
                   <p className="text-sm font-medium text-text-primary">{selectedFile.name}</p>
                   <p className="text-xs text-text-secondary">{(selectedFile.size / 1024).toFixed(0)} KB</p>
                   {!isUploading && !isProcessing && (
                     <button
                       onClick={e => { e.stopPropagation(); setSelectedFile(null); }}
-                      className="mt-1 text-text-secondary hover:text-red-500 transition"
+                      className="mt-1 text-text-secondary hover:text-red-500 transition cursor-pointer active:scale-95 p-1 rounded-full hover:bg-white/10"
                     >
                       <X className="w-4 h-4" />
                     </button>
                   )}
                 </div>
               ) : (
-                <div className="flex flex-col items-center gap-2">
-                  <Upload className="w-8 h-8 text-text-secondary" />
+                <div className="relative z-10 flex flex-col items-center gap-2">
+                  <div className="w-14 h-14 mb-1 rounded-full bg-surface-container-highest flex items-center justify-center text-primary shadow-lg shadow-primary/10 group-hover:scale-110 transition-transform duration-300">
+                    <Upload className="w-6 h-6" />
+                  </div>
                   <p className="text-sm font-medium text-text-primary">Drop GC bid here or click to browse</p>
                   <p className="text-xs text-text-secondary">PDF, JPEG, PNG, WebP — AI extracts line items automatically</p>
                 </div>
@@ -360,7 +367,7 @@ export default function GCBidUploader({ projectId, onBidSaved }: Props) {
               <button
                 onClick={handleUploadAndParse}
                 disabled={isUploading || isProcessing}
-                className="mt-3 w-full flex items-center justify-center gap-2 bg-gray-900 text-white py-3 rounded-lg text-sm font-semibold hover:bg-gray-800 transition disabled:opacity-40 active:scale-[0.99]"
+                className="mt-3 w-full flex items-center justify-center gap-2 luminous-button py-3 rounded-lg text-sm font-semibold disabled:opacity-40"
               >
                 {isUploading ? (
                   <>

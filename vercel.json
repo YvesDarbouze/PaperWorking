@@ -1,0 +1,28 @@
+{
+  "crons": [
+    {
+      "path": "/api/cron/process-email-notifications",
+      "schedule": "*/5 * * * *"
+    },
+    {
+      "path": "/api/cron/process-daily-kpis",
+      "schedule": "0 0 * * *"
+    },
+    {
+      "path": "/api/cron/process-team-invites",
+      "schedule": "0 1 * * *"
+    },
+    {
+      "path": "/api/cron/snapshots",
+      "schedule": "0 2 * * *"
+    },
+    {
+      "path": "/api/cron/lifecycle-alerts",
+      "schedule": "0 8 * * *"
+    },
+    {
+      "path": "/api/cron/process-deletions",
+      "schedule": "0 * * * *"
+    }
+  ]
+}

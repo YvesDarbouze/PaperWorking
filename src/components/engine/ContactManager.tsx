@@ -12,12 +12,13 @@ import {
 } from 'firebase/firestore';
 import { db } from '@/lib/firebase/config';
 import { useAuth } from '@/context/AuthContext';
+import { useTenant } from '@/context/TenantContext';
 import { useProjectStore } from '@/store/projectStore';
 import toast from 'react-hot-toast';
 import type { CRMContact, ContactRole } from '@/types/schema';
 
 const ROLE_CONFIG: Record<ContactRole, { label: string; icon: React.ReactNode; color: string }> = {
-  'Lawyer':             { label: 'Lawyer',           icon: <Scale className="w-4 h-4" />,    color: 'bg-purple-50 text-purple-700 border-purple-200' },
+  'Lawyer':             { label: 'Lawyer',           icon: <Scale className="w-4 h-4" />,    color: 'bg-[#454955]/10 text-[#1e7874] border-[#454955]/20' },
   'Real Estate Agent':  { label: 'Real Estate Agent', icon: <Home className="w-4 h-4" />,     color: 'bg-blue-50 text-blue-700 border-blue-200' },
   'Lender / Bank':      { label: 'Lender / Bank',     icon: <Landmark className="w-4 h-4" />, color: 'bg-emerald-50 text-emerald-700 border-emerald-200' },
   'Appraiser':          { label: 'Appraiser',         icon: <Briefcase className="w-4 h-4" />, color: 'bg-amber-50 text-amber-700 border-amber-200' },
@@ -45,6 +46,7 @@ const BLANK_FORM = {
 
 export default function ContactManager() {
   const { user, profile } = useAuth();
+  const { activeTenantId } = useTenant();
   const projects = useProjectStore(s => s.projects);
 
   const [contacts, setContacts] = useState<CRMContact[]>([]);
@@ -56,7 +58,7 @@ export default function ContactManager() {
   const [saving, setSaving] = useState(false);
   const [openMenuId, setOpenMenuId] = useState<string | null>(null);
 
-  const orgId: string = profile?.organizationId || `org_${user?.uid?.slice(0, 8)}` || '';
+  const orgId: string = activeTenantId || `org_${user?.uid?.slice(0, 8)}` || '';
 
   // Real-time Firestore subscription
   useEffect(() => {
@@ -204,7 +206,7 @@ export default function ContactManager() {
               <div>
                 <label className="block text-xs font-medium text-text-primary mb-1">Role *</label>
                 <select
-                  className="w-full border border-border-accent rounded-md text-sm py-2 px-3 focus:ring-indigo-500 focus:border-indigo-500"
+                  className="w-full border border-border-accent rounded-md text-sm py-2 px-3 focus:ring-[#454955] focus:border-[#454955]"
                   value={form.role}
                   onChange={e => setForm(f => ({ ...f, role: e.target.value as ContactRole }))}
                 >
@@ -218,7 +220,7 @@ export default function ContactManager() {
                   <label className="block text-xs font-medium text-text-primary mb-1">First Name *</label>
                   <input
                     type="text"
-                    className="w-full border border-border-accent rounded-md text-sm py-2 px-3 focus:ring-indigo-500 focus:border-indigo-500"
+                    className="w-full border border-border-accent rounded-md text-sm py-2 px-3 focus:ring-[#454955] focus:border-[#454955]"
                     placeholder="Jane"
                     value={form.firstName}
                     onChange={e => setForm(f => ({ ...f, firstName: e.target.value }))}
@@ -228,7 +230,7 @@ export default function ContactManager() {
                   <label className="block text-xs font-medium text-text-primary mb-1">Last Name</label>
                   <input
                     type="text"
-                    className="w-full border border-border-accent rounded-md text-sm py-2 px-3 focus:ring-indigo-500 focus:border-indigo-500"
+                    className="w-full border border-border-accent rounded-md text-sm py-2 px-3 focus:ring-[#454955] focus:border-[#454955]"
                     placeholder="Smith"
                     value={form.lastName}
                     onChange={e => setForm(f => ({ ...f, lastName: e.target.value }))}
@@ -242,7 +244,7 @@ export default function ContactManager() {
                   <label className="block text-xs font-medium text-text-primary mb-1">Email *</label>
                   <input
                     type="email"
-                    className="w-full border border-border-accent rounded-md text-sm py-2 px-3 focus:ring-indigo-500 focus:border-indigo-500"
+                    className="w-full border border-border-accent rounded-md text-sm py-2 px-3 focus:ring-[#454955] focus:border-[#454955]"
                     placeholder="jane@firm.com"
                     value={form.email}
                     onChange={e => setForm(f => ({ ...f, email: e.target.value }))}
@@ -252,7 +254,7 @@ export default function ContactManager() {
                   <label className="block text-xs font-medium text-text-primary mb-1">Phone</label>
                   <input
                     type="tel"
-                    className="w-full border border-border-accent rounded-md text-sm py-2 px-3 focus:ring-indigo-500 focus:border-indigo-500"
+                    className="w-full border border-border-accent rounded-md text-sm py-2 px-3 focus:ring-[#454955] focus:border-[#454955]"
                     placeholder="+1 (555) 000-0000"
                     value={form.phone}
                     onChange={e => setForm(f => ({ ...f, phone: e.target.value }))}
@@ -266,7 +268,7 @@ export default function ContactManager() {
                   <label className="block text-xs font-medium text-text-primary mb-1">Company / Firm</label>
                   <input
                     type="text"
-                    className="w-full border border-border-accent rounded-md text-sm py-2 px-3 focus:ring-indigo-500 focus:border-indigo-500"
+                    className="w-full border border-border-accent rounded-md text-sm py-2 px-3 focus:ring-[#454955] focus:border-[#454955]"
                     placeholder="Smith & Associates"
                     value={form.companyName}
                     onChange={e => setForm(f => ({ ...f, companyName: e.target.value }))}
@@ -276,7 +278,7 @@ export default function ContactManager() {
                   <label className="block text-xs font-medium text-text-primary mb-1">License #</label>
                   <input
                     type="text"
-                    className="w-full border border-border-accent rounded-md text-sm py-2 px-3 focus:ring-indigo-500 focus:border-indigo-500"
+                    className="w-full border border-border-accent rounded-md text-sm py-2 px-3 focus:ring-[#454955] focus:border-[#454955]"
                     placeholder="RE-1234567"
                     value={form.licenseNumber}
                     onChange={e => setForm(f => ({ ...f, licenseNumber: e.target.value }))}
@@ -314,7 +316,7 @@ export default function ContactManager() {
                 <label className="block text-xs font-medium text-text-primary mb-1">Notes</label>
                 <textarea
                   rows={2}
-                  className="w-full border border-border-accent rounded-md text-sm py-2 px-3 focus:ring-indigo-500 focus:border-indigo-500 resize-none"
+                  className="w-full border border-border-accent rounded-md text-sm py-2 px-3 focus:ring-[#454955] focus:border-[#454955] resize-none"
                   placeholder="Specializes in distressed properties…"
                   value={form.notes}
                   onChange={e => setForm(f => ({ ...f, notes: e.target.value }))}

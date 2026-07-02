@@ -19,11 +19,11 @@ function MeterBar({ position }: { position: number }) {
     <div className="relative w-full h-3 rounded-full overflow-hidden" style={{ background: 'var(--pw-border)' }}>
       <div
         className="absolute inset-y-0 left-0 w-1/2 rounded-l-full"
-        style={{ background: 'linear-gradient(to right, #ef4444, #fca5a5)' }}
+        style={{ background: 'linear-gradient(to right, #F06543, #fca5a5)' }}
       />
       <div
         className="absolute inset-y-0 right-0 w-1/2 rounded-r-full"
-        style={{ background: 'linear-gradient(to right, #86efac, #22c55e)' }}
+        style={{ background: 'linear-gradient(to right, #86efac, #3f7d20)' }}
       />
       <div
         className="absolute inset-y-0 w-0.5 rounded-full"
@@ -33,7 +33,7 @@ function MeterBar({ position }: { position: number }) {
         className="absolute top-1/2 w-3 h-3 rounded-full shadow-md border-2"
         style={{
           background: 'var(--pw-surface)',
-          borderColor: position >= 0 ? '#22c55e' : '#ef4444',
+          borderColor: position >= 0 ? '#3f7d20' : '#F06543',
           left: `${pct}%`,
           transform: 'translate(-50%, -50%)',
         }}
@@ -68,17 +68,17 @@ export default function CashFlowMeter({ noi, annualDebtService, className = '' }
       className={`rounded-lg p-6 ${className}`}
       style={{
         background: 'var(--pw-surface)',
-        border: `1px solid ${isPositive ? 'var(--pw-border)' : '#ef4444'}`,
+        border: `1px solid ${isPositive ? 'var(--pw-border)' : '#F06543'}`,
       }}
     >
       {!isPositive && (
         <div className="flex items-center gap-2 mb-3 px-3 py-2 rounded-md" style={{ background: '#fef2f2' }}>
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#ef4444" strokeWidth="2">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#F06543" strokeWidth="2">
             <path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z" />
             <line x1="12" y1="9" x2="12" y2="13" />
             <line x1="12" y1="17" x2="12.01" y2="17" />
           </svg>
-          <span className="text-xs font-semibold" style={{ color: '#ef4444' }}>Negative Cash Flow — Review debt service</span>
+          <span className="text-xs font-semibold" style={{ color: '#F06543' }}>Negative Cash Flow — Review debt service</span>
         </div>
       )}
 
@@ -96,7 +96,7 @@ export default function CashFlowMeter({ noi, annualDebtService, className = '' }
                 initial={{ opacity: 0, y: 8 }}
                 animate={{ opacity: 1, y: 0 }}
                 className="text-5xl font-semibold font-mono"
-                style={{ color: '#22c55e' }}
+                style={{ color: '#3f7d20' }}
               >
                 {fmt(monthlyCashFlow)}
               </motion.p>
@@ -108,7 +108,7 @@ export default function CashFlowMeter({ noi, annualDebtService, className = '' }
               initial={{ opacity: 0, y: 8 }}
               animate={{ opacity: 1, y: 0 }}
               className="text-5xl font-semibold font-mono"
-              style={{ color: '#ef4444' }}
+              style={{ color: '#F06543' }}
             >
               {fmt(monthlyCashFlow)}
             </motion.p>
@@ -134,7 +134,7 @@ export default function CashFlowMeter({ noi, annualDebtService, className = '' }
           <p className="text-xs" style={{ color: 'var(--pw-muted)' }}>Debt Service / mo</p>
         </div>
         <div className="text-center">
-          <p className="font-mono text-sm font-semibold" style={{ color: isPositive ? '#22c55e' : '#ef4444' }}>
+          <p className="font-mono text-sm font-semibold" style={{ color: isPositive ? '#3f7d20' : '#F06543' }}>
             {fmt(monthlyCashFlow)}
           </p>
           <p className="text-xs" style={{ color: 'var(--pw-muted)' }}>Net / mo</p>

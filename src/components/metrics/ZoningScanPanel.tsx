@@ -29,20 +29,20 @@ const SEVERITY_META: Record<
 > = {
   high: {
     label: 'High',
-    color: '#dc2626',
-    bg: '#fef2f2',
+    color: 'var(--color-error)',
+    bg: 'var(--color-error-container)',
     Icon: AlertTriangle,
   },
   medium: {
     label: 'Medium',
-    color: '#d97706',
-    bg: '#fffbeb',
+    color: 'var(--color-tertiary)',
+    bg: 'var(--color-tertiary-container)',
     Icon: Info,
   },
   low: {
     label: 'Low',
-    color: '#16a34a',
-    bg: '#f0fdf4',
+    color: 'var(--color-deep-forest)',
+    bg: 'var(--color-secondary-container)',
     Icon: CheckCircle2,
   },
 };
@@ -73,8 +73,8 @@ function RECRow({ rec }: { rec: RecognizedEnvironmentalCondition }) {
       >
         {/* Severity badge */}
         <div
-          className="flex items-center gap-1 px-2 py-0.5 rounded shrink-0 text-[9px] font-bold uppercase tracking-wide"
-          style={{ color, background: bg }}
+          className="flex items-center gap-1 px-2 py-0.5 rounded-[var(--radius-sm)] border shrink-0 text-[9px] font-bold uppercase tracking-wide"
+          style={{ color, background: bg, borderColor: color }}
         >
           <Icon className="w-2.5 h-2.5" aria-hidden="true" />
           {rec.severity}
@@ -142,14 +142,13 @@ function ZoningBanner({ result }: { result: ZoningScanResult }) {
 
   return (
     <div
-      className="rounded-lg p-4 border"
+      className="rounded-[var(--radius-lg)] p-4 border bg-[var(--pw-glass-bg)] backdrop-blur-xl"
       style={{
-        borderColor: isNA ? 'var(--pw-border)' : '#d4d4d4',
-        background: isNA ? 'var(--bg-canvas)' : 'var(--pw-surface)',
+        borderColor: 'var(--pw-border)',
       }}
     >
       <div className="flex items-start gap-3">
-        <MapPin className="w-4 h-4 mt-0.5 shrink-0" style={{ color: isNA ? 'var(--pw-muted)' : '#1a73e8' }} />
+        <MapPin className="w-4 h-4 mt-0.5 shrink-0" style={{ color: isNA ? 'var(--pw-muted)' : 'var(--pw-ocean)' }} />
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-2 flex-wrap">
             <span
@@ -160,8 +159,7 @@ function ZoningBanner({ result }: { result: ZoningScanResult }) {
             </span>
             {result.permittedUnitDensity != null && (
               <span
-                className="text-[9px] font-bold uppercase tracking-widest px-2 py-0.5 rounded"
-                style={{ background: '#eff6ff', color: '#1a73e8' }}
+                className="text-[9px] font-bold uppercase tracking-widest px-2 py-0.5 rounded-[var(--radius-sm)] border border-[var(--pw-border)] bg-[var(--pw-glass-bg)] text-[var(--pw-ocean)]"
               >
                 {result.permittedUnitDensity} units/acre
               </span>
@@ -177,8 +175,8 @@ function ZoningBanner({ result }: { result: ZoningScanResult }) {
               {result.overlayDistricts.map((d) => (
                 <span
                   key={d}
-                  className="text-[8px] font-bold uppercase tracking-widest px-2 py-0.5 rounded"
-                  style={{ background: 'var(--bg-canvas)', color: 'var(--pw-subtle)' }}
+                  className="text-[8px] font-bold uppercase tracking-widest px-2 py-0.5 rounded-[var(--radius-sm)] border border-[var(--pw-border)] bg-[var(--pw-glass-bg)]"
+                  style={{ color: 'var(--pw-subtle)' }}
                 >
                   {d}
                 </span>
@@ -228,8 +226,7 @@ function ZoningBanner({ result }: { result: ZoningScanResult }) {
               href={result.source}
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex items-center gap-1 mt-2 text-[9px] font-medium hover:underline"
-              style={{ color: '#1a73e8' }}
+              className="inline-flex items-center gap-1 mt-2 text-[9px] font-medium hover:underline text-[var(--pw-ocean)]"
             >
               <ExternalLink className="w-2.5 h-2.5" />
               View GIS Portal
@@ -407,7 +404,7 @@ export default function ZoningScanPanel({
 
   return (
     <div
-      className={`rounded-lg border overflow-hidden ${className}`}
+      className={`rounded-[var(--radius-lg)] border overflow-hidden ${className}`}
       style={{ borderColor: 'var(--pw-border)', background: 'var(--pw-surface)' }}
     >
       {/* Header */}
@@ -450,11 +447,7 @@ export default function ZoningScanPanel({
             onDragOver={(e) => { e.preventDefault(); setDragOver(true); }}
             onDragLeave={() => setDragOver(false)}
             onDrop={handleDrop}
-            className="border-2 border-dashed rounded-lg p-5 text-center transition-colors cursor-pointer"
-            style={{
-              borderColor: dragOver ? '#1a73e8' : 'var(--pw-border)',
-              background: dragOver ? 'rgba(26, 115, 232, 0.04)' : 'var(--bg-canvas)',
-            }}
+            className="relative rounded-xl p-5 text-center cursor-pointer transition-all bg-surface-container/30 backdrop-blur-xl border border-white/10 shadow-lg min-h-[120px] flex flex-col items-center justify-center overflow-hidden group"
             onClick={() => {
               if (isUploading || isExtracting) return;
               const input = document.createElement('input');
@@ -467,33 +460,45 @@ export default function ZoningScanPanel({
               input.click();
             }}
           >
+            {/* Inner Dashed Border Indicator */}
+            <div className={`absolute inset-2 border border-dashed rounded-lg transition-all duration-300 pointer-events-none ${
+              dragOver 
+                ? 'border-primary bg-primary/10' 
+                : 'border-outline-variant/40 group-hover:border-primary/40 group-hover:bg-primary/5'
+            }`} />
+
             {uploadFile ? (
-              <div className="flex items-center justify-center gap-2">
-                <FileCheck2 className="w-4 h-4 shrink-0" style={{ color: '#16a34a' }} />
-                <span className="text-[10px] font-medium" style={{ color: 'var(--text-primary)' }}>
-                  {uploadFile.name}
-                </span>
-                <span className="text-[9px]" style={{ color: 'var(--pw-subtle)' }}>
-                  ({(uploadFile.size / 1024).toFixed(0)} KB)
-                </span>
-                {!isUploading && !isExtracting && (
-                  <button
-                    type="button"
-                    onClick={(e) => { e.stopPropagation(); setUploadFile(null); }}
-                    className="ml-1 transition-colors hover:opacity-70"
-                    style={{ color: 'var(--pw-subtle)' }}
-                  >
-                    <X className="w-3 h-3" />
-                  </button>
-                )}
+              <div className="relative z-10 flex flex-col items-center gap-1.5">
+                <div className="w-10 h-10 mb-1 rounded-full bg-surface-container-highest flex items-center justify-center text-emerald-500 shadow-lg shadow-emerald-500/10">
+                  <FileCheck2 className="w-4 h-4 shrink-0" />
+                </div>
+                <div className="flex items-center justify-center gap-1.5">
+                  <span className="text-[10px] font-medium text-text-primary">
+                    {uploadFile.name}
+                  </span>
+                  <span className="text-[8px] text-text-secondary">
+                    ({(uploadFile.size / 1024).toFixed(0)} KB)
+                  </span>
+                  {!isUploading && !isExtracting && (
+                    <button
+                      type="button"
+                      onClick={(e) => { e.stopPropagation(); setUploadFile(null); }}
+                      className="ml-1 transition-colors hover:text-red-500 cursor-pointer p-0.5 rounded-full hover:bg-white/10"
+                    >
+                      <X className="w-3 h-3" />
+                    </button>
+                  )}
+                </div>
               </div>
             ) : (
-              <div>
-                <Upload className="w-5 h-5 mx-auto mb-1.5" style={{ color: 'var(--pw-subtle)' }} />
-                <p className="text-[10px]" style={{ color: 'var(--pw-subtle)' }}>
+              <div className="relative z-10 flex flex-col items-center gap-1">
+                <div className="w-10 h-10 mb-1 rounded-full bg-surface-container-highest flex items-center justify-center text-primary shadow-lg shadow-primary/10 group-hover:scale-110 transition-transform duration-300">
+                  <Upload className="w-4 h-4" />
+                </div>
+                <p className="text-[10px] font-medium text-text-primary">
                   Drop Phase I ESA report here or click to browse
                 </p>
-                <p className="text-[8px] mt-0.5" style={{ color: 'var(--pw-border)' }}>
+                <p className="text-[8px] mt-0.5 text-text-secondary">
                   PDF, JPEG, PNG — AI extracts text for REC analysis
                 </p>
               </div>
@@ -506,12 +511,7 @@ export default function ZoningScanPanel({
               type="button"
               onClick={processPhaseIOCR}
               disabled={isUploading || isExtracting}
-              className="mt-2 w-full flex items-center justify-center gap-2 py-2.5 rounded text-[10px] font-semibold transition-all active:scale-[0.98] disabled:opacity-60 disabled:cursor-not-allowed"
-              style={{
-                background: '#1a73e8',
-                color: '#ffffff',
-                letterSpacing: '0.04em',
-              }}
+              className="mt-2 w-full flex items-center justify-center gap-2 py-2.5 rounded-full text-[10px] font-bold tracking-wider uppercase transition-all disabled:opacity-60 disabled:cursor-not-allowed luminous-button"
             >
               {isUploading ? (
                 <>
@@ -539,7 +539,7 @@ export default function ZoningScanPanel({
             type="button"
             onClick={() => setShowPhaseIInput((v) => !v)}
             className="flex items-center gap-2 text-[10px] font-semibold transition-colors hover:opacity-80"
-            style={{ color: '#1a73e8' }}
+            style={{ color: 'var(--pw-ocean)' }}
           >
             <FileText className="w-3.5 h-3.5" />
             {showPhaseIInput ? 'Hide manual text input' : 'Or paste Phase I ESA text manually'}
@@ -585,10 +585,10 @@ export default function ZoningScanPanel({
           type="button"
           onClick={runScan}
           disabled={isScanning || isUploading || isExtracting}
-          className="flex items-center justify-center gap-2 w-full py-3 rounded font-semibold text-xs transition-all active:scale-[0.98] disabled:opacity-60 disabled:cursor-not-allowed"
+          className="flex items-center justify-center gap-2 w-full py-3 rounded-[var(--radius-full)] font-semibold text-xs transition-all active:scale-[0.98] disabled:opacity-60 disabled:cursor-not-allowed"
           style={{
             background: 'var(--pw-black)',
-            color: '#ffffff',
+            color: 'var(--pw-white)',
             letterSpacing: '0.04em',
           }}
         >
@@ -608,10 +608,13 @@ export default function ZoningScanPanel({
         {/* Error state */}
         {error && (
           <div
-            className="flex items-start gap-2 rounded p-3 text-xs"
-            style={{ background: '#fef2f2', color: '#dc2626', border: '1px solid #fecaca' }}
+            className="flex items-start gap-2 rounded-[var(--radius-lg)] p-4 text-xs border bg-[var(--pw-glass-bg)] backdrop-blur-xl"
+            style={{
+              borderColor: 'var(--color-error, #F06543)',
+              color: 'var(--color-error, #F06543)',
+            }}
           >
-            <AlertTriangle className="w-3.5 h-3.5 mt-0.5 shrink-0" />
+            <AlertTriangle className="w-3.5 h-3.5 mt-0.5 shrink-0 text-[var(--color-error)]" />
             <span>{error}</span>
           </div>
         )}
@@ -630,32 +633,32 @@ export default function ZoningScanPanel({
                 </p>
                 {highCount > 0 && (
                   <span
-                    className="text-[9px] font-bold px-2 py-0.5 rounded"
-                    style={{ background: '#fef2f2', color: '#dc2626' }}
+                    className="text-[9px] font-bold px-2 py-0.5 rounded-[var(--radius-sm)] border"
+                    style={{ background: 'var(--color-error-container)', color: 'var(--color-error)', borderColor: 'var(--color-error)' }}
                   >
                     {highCount} High
                   </span>
                 )}
                 {medCount > 0 && (
                   <span
-                    className="text-[9px] font-bold px-2 py-0.5 rounded"
-                    style={{ background: '#fffbeb', color: '#d97706' }}
+                    className="text-[9px] font-bold px-2 py-0.5 rounded-[var(--radius-sm)] border"
+                    style={{ background: 'var(--color-tertiary-container)', color: 'var(--color-tertiary)', borderColor: 'var(--color-tertiary)' }}
                   >
                     {medCount} Medium
                   </span>
                 )}
                 {scanResult.recs.filter((r) => r.severity === 'low').length > 0 && (
                   <span
-                    className="text-[9px] font-bold px-2 py-0.5 rounded"
-                    style={{ background: '#f0fdf4', color: '#16a34a' }}
+                    className="text-[9px] font-bold px-2 py-0.5 rounded-[var(--radius-sm)] border"
+                    style={{ background: 'var(--color-secondary-container)', color: 'var(--color-deep-forest)', borderColor: 'var(--color-deep-forest)' }}
                   >
                     {scanResult.recs.filter((r) => r.severity === 'low').length} Low
                   </span>
                 )}
                 {scanResult.recs.length === 0 && (
                   <span
-                    className="text-[9px] font-bold px-2 py-0.5 rounded"
-                    style={{ background: '#f0fdf4', color: '#16a34a' }}
+                    className="text-[9px] font-bold px-2 py-0.5 rounded-[var(--radius-sm)] border"
+                    style={{ background: 'var(--color-secondary-container)', color: 'var(--color-deep-forest)', borderColor: 'var(--color-deep-forest)' }}
                   >
                     No RECs identified
                   </span>
@@ -666,10 +669,13 @@ export default function ZoningScanPanel({
             {/* No RECs clean bill */}
             {scanResult.recs.length === 0 && !phaseIText && (
               <div
-                className="flex items-center gap-2 rounded p-3 text-[10px]"
-                style={{ background: '#f0fdf4', color: '#16a34a', border: '1px solid #bbf7d0' }}
+                className="flex items-center gap-2 rounded-[var(--radius-lg)] p-4 text-[10px] border bg-[var(--pw-glass-bg)] backdrop-blur-xl"
+                style={{
+                  borderColor: 'var(--color-secondary-container, #D3E7DF)',
+                  color: 'var(--color-deep-forest, #0B3F2D)',
+                }}
               >
-                <CheckCircle2 className="w-3.5 h-3.5 shrink-0" />
+                <CheckCircle2 className="w-3.5 h-3.5 shrink-0 text-[var(--color-deep-forest)]" />
                 No RECs extracted — paste Phase I ESA text above for automated environmental analysis.
               </div>
             )}

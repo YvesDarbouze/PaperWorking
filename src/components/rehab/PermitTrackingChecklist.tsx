@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
-import { FileText, CheckCircle, Clock, AlertTriangle, Plus, ExternalLink } from 'lucide-react';
+import { FileText, CheckCircle, Clock, AlertTriangle, Plus } from 'lucide-react';
 import toast from 'react-hot-toast';
 
 /* ═══════════════════════════════════════════════════════
@@ -30,7 +30,7 @@ const STATUS_CONFIG: Record<PermitStatus, { color: string; bg: string; icon: Rea
   'Under Review': { color: 'text-yellow-600', bg: 'bg-yellow-50', icon: <Clock className="w-3.5 h-3.5" /> },
   Approved: { color: 'text-emerald-600', bg: 'bg-emerald-50', icon: <CheckCircle className="w-3.5 h-3.5" /> },
   Denied: { color: 'text-red-600', bg: 'bg-red-50', icon: <AlertTriangle className="w-3.5 h-3.5" /> },
-  'Inspection Scheduled': { color: 'text-purple-600', bg: 'bg-purple-50', icon: <FileText className="w-3.5 h-3.5" /> },
+  'Inspection Scheduled': { color: 'text-[#1e7874]', bg: 'bg-[#454955]/10', icon: <FileText className="w-3.5 h-3.5" /> },
 };
 
 const INITIAL_PERMITS: PermitItem[] = [
@@ -56,7 +56,7 @@ export default function PermitTrackingChecklist() {
     setPermits([
       ...permits,
       {
-        id: Math.random().toString(36).slice(2, 8),
+        id: crypto.randomUUID(),
         type: newPermitType,
         municipality: 'Miami-Dade County',
         status: 'Not Filed',

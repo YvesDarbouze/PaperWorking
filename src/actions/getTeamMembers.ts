@@ -5,7 +5,9 @@ import type { OrgTeamMember } from '@/types/schema';
 
 /* ═══════════════════════════════════════════════════════
    getTeamMembers — Server Action
-   Fetches team members for the authenticated user's org.
+   Fetches team members for the authenticated user's org,
+   enriched with lastSeenAt from their most-recent session
+   document in users/{uid}/sessions/*.
    ═══════════════════════════════════════════════════════ */
 
 export interface TeamMembersResult {
@@ -22,6 +24,31 @@ const EMPTY_RESULT: TeamMembersResult = {
 
 function hasAdminCredentials(): boolean {
   return !!(process.env.FIREBASE_PROJECT_ID && process.env.FIREBASE_CLIENT_EMAIL && process.env.FIREBASE_PRIVATE_KEY);
+}
+
+/**
+ * Fetch the lastSeenAt ISO string from the most-recent session doc for a uid.
+ * Returns null if the user has no sessions or the query fails (non-fatal).
+ */
+async function fetchLastSeenAt(
+  adminDb: FirebaseFirestore.Firestore,
+  uid: string,
+): Promise<string | null> {
+  try {
+    const snap = await adminDb
+      .collection('users')
+      .doc(uid)
+      .collection('sessions')
+      .orderBy('lastSeenAt', 'desc')
+      .limit(1)
+      .get();
+    if (snap.empty) return null;
+    const ts = snap.docs[0].data().lastSeenAt;
+    return ts?.toDate?.()?.toISOString() ?? null;
+  } catch {
+    // Non-fatal: missing index, permissions, etc. → honest null
+    return null;
+  }
 }
 
 export async function getTeamMembers(): Promise<TeamMembersResult> {
@@ -44,7 +71,7 @@ export async function getTeamMembers(): Promise<TeamMembersResult> {
     const orgData = orgSnap.data();
 
     const membersSnap = await adminDb.collection('users').where('organizationId', '==', orgId).get();
-    const members: OrgTeamMember[] = membersSnap.docs.map((doc) => {
+    const rawMembers: OrgTeamMember[] = membersSnap.docs.map((doc) => {
       const d = doc.data();
       return {
         id: doc.id, uid: d.uid || doc.id, email: d.email || '',
@@ -56,6 +83,16 @@ export async function getTeamMembers(): Promise<TeamMembersResult> {
       };
     });
 
+    // Enrich each member with their last recorded session timestamp.
+    // Runs in parallel — N reads for an N-seat team (max 10 for Team tier).
+    const members = await Promise.all(
+      rawMembers.map(async (m) => {
+        const uid = m.uid ?? m.id;
+        const lastSeenAt = uid ? await fetchLastSeenAt(adminDb, uid) : null;
+        return { ...m, lastSeenAt };
+      }),
+    );
+
     const active = members.filter((m) => m.status !== 'removed');
     const tier = orgData?.accountTier || (active.length > 1 ? 'Team' : 'Individual');
     return { members, orgName: orgData?.name || '', seatCount: active.length, maxSeats: tier === 'Team' ? 10 : 1, accountTier: tier };
@@ -64,3 +101,4 @@ export async function getTeamMembers(): Promise<TeamMembersResult> {
     return EMPTY_RESULT;
   }
 }
+

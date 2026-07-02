@@ -7,7 +7,7 @@ import React, {
   useRef,
   useId,
 } from 'react';
-import { ArrowRight, ArrowLeft, CheckCircle2, ChevronDown } from 'lucide-react';
+import { ArrowRight, ArrowLeft, CheckCircle2 } from 'lucide-react';
 import ConvCurrencyInput from './ConvCurrencyInput';
 import type {
   QuestionDef,
@@ -136,7 +136,7 @@ function ConvNumberInput({
   unit,
   placeholder,
   readOnly,
-  precision = 0,
+  precision: _precision = 0,
 }: {
   value:       number | undefined;
   onChange:    (v: number) => void;
@@ -255,13 +255,23 @@ export default function ConversationalForm({
   const validate = (): boolean => {
     if (current.optional) return true;
     if (current.type === 'info') return true;
+
     const val = currentValue;
-    if (val === undefined || val === '' || val === 0) {
-      if (!current.optional) {
-        // Only warn — don't hard-block (optional path still open via "Skip")
-        return true; // soft pass for now
-      }
+
+    if (val === undefined || val === '' || val === null) {
+      setError('This field is required.');
+      return false;
     }
+
+    // Numeric fields (currency, percent, integer): 0 is never a valid required
+    // financial input (purchasePrice, loanAmount, etc.). Prevents division-by-zero.
+    const isNumericType = current.type === 'currency' || current.type === 'percent' || current.type === 'integer';
+    if (isNumericType && Number(val) === 0) {
+      setError('Please enter a value greater than 0.');
+      return false;
+    }
+
+    setError('');
     return true;
   };
 

@@ -72,7 +72,7 @@ function buildWaterfall(fin: ProjectFinancials): WaterfallBar[] {
     end: salePrice,
     pct: 100,
     isTotal: false,
-    color: '#595959',
+    color: 'var(--pw-accent)',
   });
 
   let running = salePrice;
@@ -86,7 +86,7 @@ function buildWaterfall(fin: ProjectFinancials): WaterfallBar[] {
       end,
       pct: (d.amount / salePrice) * 100,
       isTotal: false,
-      color: '#CCCCCC',
+      color: 'var(--pw-muted)',
     });
     running = end;
   });
@@ -99,13 +99,13 @@ function buildWaterfall(fin: ProjectFinancials): WaterfallBar[] {
     end: netProceeds,
     pct: (netProceeds / salePrice) * 100,
     isTotal: true,
-    color: netProceeds >= 0 ? '#1A73E8' : '#A5A5A5',
+    color: netProceeds >= 0 ? 'var(--pw-accent)' : 'var(--color-error)',
   });
 
   return bars;
 }
 
-const shimmerCls = 'animate-pulse bg-pw-border/30 rounded';
+const shimmerCls = 'animate-pulse bg-pw-border/30';
 
 interface CustomTooltipProps {
   active?: boolean;
@@ -116,10 +116,10 @@ function CustomTooltip({ active, payload }: CustomTooltipProps) {
   if (!active || !payload?.length) return null;
   const bar = payload[0].payload;
   return (
-    <div className="bg-pw-surface border border-pw-border rounded-xl px-4 py-3 shadow-lg text-xs">
-      <p className="font-mono text-[9px] text-pw-muted uppercase tracking-widest mb-1">{bar.name}</p>
-      <p className="font-mono text-pw-black text-base">{fmtDollar(Math.abs(bar.value))}</p>
-      <p className="text-pw-muted mt-0.5">{bar.pct.toFixed(1)}% of sale price</p>
+    <div className="bg-bg-surface/90 backdrop-blur-md border border-pw-border px-4 py-3 shadow-lg text-xs">
+      <p className="font-black text-[9px] text-text-secondary uppercase tracking-widest mb-1">{bar.name}</p>
+      <p className="font-black text-text-primary text-base font-mono">{fmtDollar(Math.abs(bar.value))}</p>
+      <p className="text-text-secondary mt-0.5 uppercase tracking-wider text-[9px]">{bar.pct.toFixed(1)}% of sale price</p>
     </div>
   );
 }
@@ -129,7 +129,7 @@ export function ExitWaterfallChart({ financials, isLoading, className }: ExitWat
 
   if (isLoading) {
     return (
-      <div className={`rounded-2xl border border-pw-border bg-pw-surface p-6 space-y-4 ${className ?? ''}`}>
+      <div className={`glass-card border border-pw-border bg-bg-surface p-6 space-y-4 ${className ?? ''}`}>
         <div className={`h-4 w-40 ${shimmerCls}`} />
         <div className={`h-56 w-full ${shimmerCls}`} />
       </div>
@@ -143,25 +143,25 @@ export function ExitWaterfallChart({ financials, isLoading, className }: ExitWat
       initial={{ opacity: 0, y: 12 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5, ease: 'easeOut' }}
-      className={`rounded-2xl border border-pw-border bg-pw-surface p-6 space-y-5 ${className ?? ''}`}
+      className={`glass-card border border-pw-border bg-bg-surface p-6 space-y-5 ${className ?? ''}`}
     >
       <div>
-        <p className="text-[10px] font-mono tracking-widest text-pw-subtle uppercase">Exit Waterfall</p>
-        <p className="text-[10px] text-pw-muted mt-0.5">Proceeds distribution from sale price to net</p>
+        <p className="text-[10px] font-black tracking-widest text-text-secondary uppercase">Exit Waterfall</p>
+        <p className="text-[10px] text-text-secondary mt-0.5 uppercase tracking-wider">Proceeds distribution from sale price to net</p>
       </div>
 
       {bars.length === 0 ? (
-        <div className="flex items-center justify-center h-48 text-pw-muted text-xs">
+        <div className="flex items-center justify-center h-48 text-text-secondary text-xs uppercase tracking-widest font-black">
           No exit financials available
         </div>
       ) : (
         <div className="h-64 w-full">
           <ResponsiveContainer width="100%" height="100%">
             <ComposedChart data={bars} margin={{ top: 8, right: 8, left: -10, bottom: 0 }}>
-              <CartesianGrid strokeDasharray="4 4" stroke="#F2F2F2" vertical={false} />
+              <CartesianGrid strokeDasharray="4 4" stroke="var(--pw-border)" vertical={false} />
               <XAxis
                 dataKey="name"
-                tick={{ fill: '#7F7F7F', fontSize: 9, fontWeight: 700 }}
+                tick={{ fill: 'var(--pw-muted)', fontSize: 9, fontWeight: 700 }}
                 axisLine={false}
                 tickLine={false}
                 dy={6}
@@ -172,16 +172,16 @@ export function ExitWaterfallChart({ financials, isLoading, className }: ExitWat
               />
               <YAxis
                 tickFormatter={fmtDollar}
-                tick={{ fill: '#A5A5A5', fontSize: 9, fontFamily: 'monospace' }}
+                tick={{ fill: 'var(--pw-muted)', fontSize: 9, fontFamily: 'monospace' }}
                 axisLine={false}
                 tickLine={false}
                 domain={[0, salePrice * 1.05]}
               />
-              <Tooltip content={<CustomTooltip />} cursor={{ fill: '#F2F2F2', opacity: 0.5 }} />
-              <ReferenceLine y={0} stroke="#CCCCCC" strokeWidth={1} />
+              <Tooltip content={<CustomTooltip />} cursor={{ fill: 'var(--pw-border)', opacity: 0.5 }} />
+              <ReferenceLine y={0} stroke="var(--pw-border)" strokeWidth={1} />
 
               <Bar dataKey="start" stackId="waterfall" fill="transparent" isAnimationActive={false} />
-              <Bar dataKey="value" stackId="waterfall" radius={[3, 3, 0, 0]} maxBarSize={40} isAnimationActive>
+              <Bar dataKey="value" stackId="waterfall" radius={[0, 0, 0, 0]} maxBarSize={40} isAnimationActive>
                 {bars.map((bar, i) => (
                   <Cell key={i} fill={bar.color} />
                 ))}
@@ -192,16 +192,16 @@ export function ExitWaterfallChart({ financials, isLoading, className }: ExitWat
       )}
 
       {bars.length > 0 && (
-        <div className="space-y-1.5 pt-1">
+        <div className="space-y-2 pt-2 border-t border-pw-border">
           {bars.map((bar, i) => (
-            <div key={i} className="flex items-center justify-between text-[11px]">
+            <div key={i} className="flex items-center justify-between text-[11px] uppercase tracking-wider">
               <div className="flex items-center gap-2">
-                <div className="w-2 h-2 rounded-sm flex-shrink-0" style={{ backgroundColor: bar.color }} />
-                <span className="text-pw-subtle">{bar.name}</span>
+                <div className="w-2.5 h-2.5 flex-shrink-0" style={{ backgroundColor: bar.color }} />
+                <span className="text-text-primary font-bold">{bar.name}</span>
               </div>
               <div className="flex items-center gap-3">
-                <span className="text-pw-muted text-[9px] font-mono">{bar.pct.toFixed(1)}%</span>
-                <span className="font-mono text-pw-fg w-20 text-right">{fmtDollar(Math.abs(bar.value))}</span>
+                <span className="text-text-secondary text-[9px] font-mono">{bar.pct.toFixed(1)}%</span>
+                <span className="font-bold font-mono text-text-primary w-20 text-right">{fmtDollar(Math.abs(bar.value))}</span>
               </div>
             </div>
           ))}

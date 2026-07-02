@@ -78,7 +78,7 @@ export function generateInvestorPledgeEmail({
     </table>
 
     <a href="${appUrl}/dashboard/projects/${projectId}" class="btn-primary" style="display:inline-block;background-color:#0d0d0d;color:#ffffff;text-decoration:none;padding:14px 28px;font-weight:600;font-size:14px;">
-      View Capital Stack
+      View in PaperWorking
     </a>
   `;
 

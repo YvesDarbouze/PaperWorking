@@ -26,7 +26,7 @@ export default function SeventyPercentRule() {
   return (
     <div className="bg-bg-surface border border-border-accent rounded-xl p-6 shadow-sm">
       <div className="flex items-center space-x-2 border-b pb-4 mb-4 text-text-primary">
-        <Calculator className="w-5 h-5 text-indigo-600" />
+        <Calculator className="w-5 h-5 text-[#454955]" />
         <h3 className="text-lg font-semibold">70% Rule Engine</h3>
       </div>
       
@@ -39,7 +39,7 @@ export default function SeventyPercentRule() {
            <span className="text-text-secondary">x 0.70 Threshold:</span>
            <span className="font-medium text-text-primary">${(arv * 0.70).toLocaleString()}</span>
         </div>
-        <div className="flex justify-between items-center text-sm border-b pb-2 text-red-600">
+        <div className="flex justify-between items-center text-sm border-b pb-2 text-[#F06543]">
            <span>- Est. Repairs:</span>
            <span>-${rehabCosts.toLocaleString()}</span>
         </div>

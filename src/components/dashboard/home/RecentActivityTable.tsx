@@ -70,12 +70,12 @@ export default function RecentActivityTable() {
        project.loiDocuments?.forEach(doc => {
          activities.push({
            id: `loi-${doc.id}`,
-           name: doc.fileName || 'LOI Document',
+           name: 'LOI Document',
            type: 'LOI',
            date: new Date(doc.createdAt || new Date()).toLocaleDateString(),
-           amount: doc.amount || 0,
-           status: doc.status === 'Accepted' || doc.status === 'Signed' ? 'Complete' : 'Pending',
-           fileUrl: doc.documentUrl,
+           amount: doc.investmentAmount || 0,
+           status: doc.status === 'Signed' ? 'Complete' : 'Pending',
+           fileUrl: doc.signatureDataUrl,
            projectId: project.id,
            projectName: project.propertyName,
          });
@@ -106,7 +106,7 @@ export default function RecentActivityTable() {
            type: 'Expense',
            date: new Date(item.createdAt || new Date()).toLocaleDateString(),
            amount: item.amount || 0,
-           status: item.status === 'Approved' || item.status === 'Settled' ? 'Complete' : item.status === 'Rejected' ? 'Overdue' : 'Pending',
+           status: item.status === 'Approved' ? 'Complete' : item.status === 'Rejected' ? 'Overdue' : 'Pending',
            fileUrl: item.receiptUrl,
            projectId: project.id,
            projectName: project.propertyName,
@@ -131,55 +131,55 @@ export default function RecentActivityTable() {
     <div className="flex gap-6 relative w-full h-[600px]">
       {/* Table Container */}
       <div className={`transition-all duration-300 ease-in-out h-full overflow-hidden ${selectedDoc ? 'w-full lg:w-2/3' : 'w-full'}`}>
-        <Card className="h-full flex flex-col overflow-hidden">
+        <Card className="h-full flex flex-col overflow-hidden bg-pw-glass-bg border-pw-border">
           <div className="p-6 pb-0 mb-4 flex-shrink-0">
-            <h2 className="text-xl font-medium text-[#1A1A1A]">Deal Activity</h2>
-            <p className="text-sm text-[#7F7F7F] mt-1">Documents, tasks, and expenses across your portfolio.</p>
+            <h2 className="text-xl font-medium text-pw-black">Deal Activity</h2>
+            <p className="text-sm text-pw-muted mt-1">Documents, tasks, and expenses across your portfolio.</p>
           </div>
           <div className="flex-1 overflow-auto px-6 pb-6 relative">
             <Table>
-              <TableHeader className="sticky top-0 z-10 bg-[#FFFFFF] after:content-[''] after:absolute after:bottom-0 after:left-0 after:right-0 after:border-b after:border-[#A5A5A5]/20">
-                <TableRow className="hover:bg-transparent">
-                  <TableHead className="font-semibold text-[#7F7F7F]">Activity</TableHead>
-                  <TableHead className="font-semibold text-[#7F7F7F]">Project</TableHead>
-                  <TableHead className="font-semibold text-[#7F7F7F]">Type</TableHead>
-                  <TableHead className="font-semibold text-[#7F7F7F]">Date</TableHead>
-                  <TableHead className="font-semibold text-[#7F7F7F]">Status</TableHead>
-                  <TableHead className="text-right font-semibold text-[#7F7F7F]">Value</TableHead>
+              <TableHeader>
+                <TableRow className="hover:bg-transparent border-pw-border">
+                  <TableHead>Activity</TableHead>
+                  <TableHead>Project</TableHead>
+                  <TableHead>Type</TableHead>
+                  <TableHead>Date</TableHead>
+                  <TableHead>Status</TableHead>
+                  <TableHead className="text-right">Value</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
                 {recentActivities.length === 0 ? (
                   <TableRow>
-                    <TableCell colSpan={6} className="text-center py-8 text-[#7F7F7F]">
+                    <TableCell colSpan={6} className="text-center py-8 text-pw-muted">
                       Activity will appear here as you add deals and upload documents.
                     </TableCell>
                   </TableRow>
                 ) : (
-                  recentActivities.map((activity, index) => (
+                  recentActivities.map((activity) => (
                     <TableRow 
                       key={activity.id} 
-                      className={`cursor-pointer group hover:bg-[#F2F2F2]/80 transition-colors ${index % 2 === 1 ? 'bg-[#F2F2F2]/30' : 'bg-[#FFFFFF]'}`}
+                      className="cursor-pointer group border-b border-pw-border last:border-b-0"
                       onClick={() => setSelectedDoc(activity)}
                       data-state={selectedDoc?.id === activity.id ? "selected" : undefined}
                     >
-                      <TableCell className="font-medium text-[#1A1A1A]">
+                      <TableCell className="font-medium text-pw-black">
                         <div className="flex items-center gap-3">
-                          <FileText className="w-4 h-4 text-[#A5A5A5] group-hover:text-[#1A1A1A] transition-colors" />
+                          <FileText className="w-4 h-4 text-pw-muted group-hover:text-pw-black transition-colors" />
                           <span className="truncate max-w-[150px] sm:max-w-[200px]" title={activity.name}>{activity.name}</span>
                         </div>
                       </TableCell>
-                      <TableCell className="text-[#7F7F7F]">
+                      <TableCell className="text-pw-muted">
                         <span className="truncate max-w-[120px] block" title={activity.projectName || 'Unknown'}>{activity.projectName || '-'}</span>
                       </TableCell>
-                      <TableCell className="text-[#7F7F7F]">{activity.type}</TableCell>
-                      <TableCell className="text-[#7F7F7F]">{activity.date}</TableCell>
+                      <TableCell className="text-pw-muted">{activity.type}</TableCell>
+                      <TableCell className="text-pw-muted">{activity.date}</TableCell>
                       <TableCell>
                         <Badge variant={getBadgeVariant(activity.status)}>
                           {activity.status}
                         </Badge>
                       </TableCell>
-                      <TableCell className="text-right tabular-nums text-[#7F7F7F]">
+                      <TableCell className="text-right tabular-nums text-pw-muted">
                         {activity.amount > 0 ? new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(activity.amount) : '-'}
                       </TableCell>
                     </TableRow>
@@ -194,23 +194,23 @@ export default function RecentActivityTable() {
       {/* Split Pane Preview */}
       {selectedDoc && (
         <div className="hidden lg:flex w-1/3 h-full animate-in slide-in-from-right-8 duration-300">
-          <Card className="w-full h-full flex flex-col overflow-hidden border-[#A5A5A5]/50 bg-[#F2F2F2]/30">
-            <div className="p-4 flex items-center justify-between border-b border-[#A5A5A5]/20 bg-[#FFFFFF]">
+          <Card className="w-full h-full flex flex-col overflow-hidden border-pw-border bg-pw-glass-bg">
+            <div className="p-4 flex items-center justify-between border-b border-pw-border bg-pw-glass-bg backdrop-blur-md">
               <div className="flex items-center gap-2">
-                <FileText className="w-4 h-4 text-[#1A1A1A]" />
-                <span className="text-sm font-semibold text-[#1A1A1A] truncate w-40" title={selectedDoc.name}>{selectedDoc.name}</span>
+                <FileText className="w-4 h-4 text-pw-black" />
+                <span className="text-sm font-semibold text-pw-black truncate w-40" title={selectedDoc.name}>{selectedDoc.name}</span>
               </div>
               <div className="flex items-center gap-1">
                 {selectedDoc.fileUrl && (
-                  <a href={selectedDoc.fileUrl} target="_blank" rel="noopener noreferrer" className="p-1.5 text-[#7F7F7F] hover:text-[#1A1A1A] hover:bg-[#F2F2F2] rounded-md transition-colors" title="Download">
+                  <a href={selectedDoc.fileUrl} target="_blank" rel="noopener noreferrer" className="p-1.5 text-pw-muted hover:text-pw-black hover:bg-white/5 rounded-md transition-colors" title="Download">
                     <Download className="w-4 h-4" />
                   </a>
                 )}
-                <button className="p-1.5 text-[#7F7F7F] hover:text-[#1A1A1A] hover:bg-[#F2F2F2] rounded-md transition-colors" title="Share">
+                <button className="p-1.5 text-pw-muted hover:text-pw-black hover:bg-white/5 rounded-md transition-colors" title="Share">
                   <Share2 className="w-4 h-4" />
                 </button>
                 <button 
-                  className="p-1.5 text-[#7F7F7F] hover:text-[#1A1A1A] hover:bg-[#F2F2F2] rounded-md transition-colors ml-2" 
+                  className="p-1.5 text-pw-muted hover:text-pw-black hover:bg-white/5 rounded-md transition-colors ml-2" 
                   onClick={() => setSelectedDoc(null)}
                   title="Close Preview"
                 >

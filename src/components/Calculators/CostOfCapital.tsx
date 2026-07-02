@@ -35,7 +35,7 @@ export default function CostOfCapital() {
   return (
     <div className="bg-bg-surface border border-border-accent rounded-xl p-6 shadow-sm">
       <div className="flex items-center space-x-2 border-b pb-4 mb-4 text-text-primary">
-        <Banknote className="w-5 h-5 text-indigo-600" />
+        <Banknote className="w-5 h-5 text-[#454955]" />
         <h3 className="text-lg font-semibold">Cost of Capital Terms</h3>
       </div>
       
@@ -47,7 +47,7 @@ export default function CostOfCapital() {
           <div className="relative rounded-md shadow-sm">
             <input
               type="number"
-              className="block w-full rounded-md border-border-accent pl-3 pr-8 focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm h-10 border"
+              className="block w-full rounded-md border-border-accent pl-3 pr-8 focus:border-[#454955] focus:ring-[#454955] sm:text-sm h-10 border"
               placeholder="e.g. 12"
               value={interestRate}
               onChange={(e) => setInterestRate(e.target.value)}
@@ -66,7 +66,7 @@ export default function CostOfCapital() {
           <div className="relative rounded-md shadow-sm">
             <input
               type="number"
-              className="block w-full rounded-md border-border-accent pl-3 pr-8 focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm h-10 border"
+              className="block w-full rounded-md border-border-accent pl-3 pr-8 focus:border-[#454955] focus:ring-[#454955] sm:text-sm h-10 border"
               placeholder="e.g. 2"
               value={points}
               onChange={(e) => setPoints(e.target.value)}
@@ -85,7 +85,7 @@ export default function CostOfCapital() {
           <div className="relative rounded-md shadow-sm">
             <input
               type="number"
-              className="block w-full rounded-md border-border-accent pl-3 pr-16 focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm h-10 border"
+              className="block w-full rounded-md border-border-accent pl-3 pr-16 focus:border-[#454955] focus:ring-[#454955] sm:text-sm h-10 border"
               placeholder="e.g. 6"
               value={timeline}
               onChange={(e) => setTimeline(e.target.value)}

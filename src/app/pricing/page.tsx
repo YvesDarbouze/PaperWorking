@@ -5,7 +5,8 @@ import LandingHeader from '@/components/landing/LandingHeader';
 import LandingFooter from '@/components/landing/LandingFooter';
 import PricingSection from '@/components/landing/PricingSection';
 import { useAuth } from '@/context/AuthContext';
-import toast, { Toaster } from 'react-hot-toast';
+import toast from 'react-hot-toast';
+import { CustomToaster } from '@/components/ui/CustomToaster';
 
 /**
  * /pricing — Standalone pricing page.
@@ -67,7 +68,7 @@ export default function PricingPage() {
   }, [user]);
 
   return (
-    <div className="min-h-screen font-sans text-[var(--pw-fg)] relative" style={{ backgroundColor: '#f2f2f2' }}>
+    <div className="min-h-screen font-sans text-on-surface relative bg-background dark">
 
       {/* Loader Overlay */}
       {isProcessing && (
@@ -88,7 +89,7 @@ export default function PricingPage() {
       {/* Same footer as the landing page */}
       <LandingFooter />
 
-      <Toaster position="bottom-center" />
+      <CustomToaster position="bottom-center" />
     </div>
   );
 }

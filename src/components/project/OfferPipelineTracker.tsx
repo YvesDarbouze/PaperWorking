@@ -2,6 +2,7 @@
 
 import React, { useState } from 'react';
 import { DollarSign, GripHorizontal } from 'lucide-react';
+import toast from 'react-hot-toast';
 
 export const OFFER_STAGES = [
   'Drafting',
@@ -94,7 +95,7 @@ export function OfferPipelineTracker({
   const submitCounterOffer = () => {
     const parsedAmount = Number(counterPriceInput.replace(/[^0-9.]/g, ''));
     if (isNaN(parsedAmount) || parsedAmount <= 0) {
-      alert('Please enter a valid counter price.');
+      toast.error('Please enter a valid counter price.');
       return;
     }
     const priceCents = Math.round(parsedAmount * 100);

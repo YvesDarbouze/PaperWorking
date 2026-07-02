@@ -10,10 +10,12 @@ import {
   doc,
   updateDoc,
   arrayUnion,
+  arrayRemove,
   Timestamp,
 } from 'firebase/firestore';
 import { db } from '@/lib/firebase/config';
 import { useAuth } from '@/context/AuthContext';
+import { useTenant } from '@/context/TenantContext';
 import type { MessageType } from '@/types/schema';
 
 /* ═══════════════════════════════════════════════════════
@@ -54,16 +56,19 @@ interface UseInboxThreadsReturn {
   error: string | null;
   unreadTotal: number;
   markAsRead: (projectId: string) => Promise<void>;
+  /** Marks the most-recent message in the thread as unread for the current user. */
+  markAsUnread: (projectId: string) => Promise<void>;
 }
 
 export function useInboxThreads(): UseInboxThreadsReturn {
-  const { user, profile } = useAuth();
+  const { user } = useAuth();
+  const { activeTenantId } = useTenant();
   const [threads, setThreads] = useState<InboxThread[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
   const uid = user?.uid;
-  const organizationId = profile?.organizationId;
+  const organizationId = activeTenantId;
 
   useEffect(() => {
     if (!uid || !organizationId) {
@@ -202,7 +207,27 @@ export function useInboxThreads(): UseInboxThreadsReturn {
     [uid, threads],
   );
 
+  // Mark the most-recent message in a thread as unread for the current user
+  const markAsUnread = useCallback(
+    async (projectId: string) => {
+      if (!uid) return;
+      const thread = threads.find((t) => t.projectId === projectId);
+      if (!thread || thread.messages.length === 0) return;
+
+      // Remove uid from readByUid on the newest message — makes the thread appear unread
+      const newestMessage = [...thread.messages].sort(
+        (a, b) => b.createdAt.getTime() - a.createdAt.getTime(),
+      )[0];
+
+      await updateDoc(
+        doc(db, 'projects', projectId, 'messages', newestMessage.id),
+        { readByUid: arrayRemove(uid) },
+      );
+    },
+    [uid, threads],
+  );
+
   const unreadTotal = threads.reduce((sum, t) => sum + t.unreadCount, 0);
 
-  return { threads, loading, error, unreadTotal, markAsRead };
+  return { threads, loading, error, unreadTotal, markAsRead, markAsUnread };
 }

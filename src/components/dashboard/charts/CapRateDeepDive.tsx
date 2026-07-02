@@ -3,15 +3,11 @@
 import React, { useMemo } from 'react';
 import { Project } from '@/types/schema';
 import {
-  deriveAllMetrics,
+  deriveDualScopeMetrics,
   computeCapRate,
   computeNOIComponents,
 } from '@/lib/metrics/reiMetrics';
-import {
-  BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip,
-  ResponsiveContainer, ReferenceLine, Cell, Legend,
-  RadialBarChart, RadialBar,
-} from 'recharts';
+import CapRateCompareChart from '@/components/Charts/CapRateCompareChart';
 import {
   Target, TrendingUp, AlertTriangle, ShieldCheck,
   Info, ArrowRight, Gauge, Building2,
@@ -59,27 +55,27 @@ function classifyCapRate(rate: number): {
   if (rate < 4) return {
     zone: 'premium', label: 'Premium / Appreciating Market',
     description: 'Low yield but strong appreciation potential — gateway cities, Class A assets',
-    color: '#6366F1', bgColor: 'rgba(99,102,241,0.08)', borderColor: 'rgba(99,102,241,0.2)',
+    color: '#595959', bgColor: 'rgba(89,89,89,0.08)', borderColor: 'rgba(89,89,89,0.2)',
   };
   if (rate < 6) return {
     zone: 'stable', label: 'Stable / Low-Risk Market',
     description: 'Sweet spot for SFR investors — steady returns, predictable appreciation',
-    color: '#10B981', bgColor: 'rgba(16,185,129,0.08)', borderColor: 'rgba(16,185,129,0.2)',
+    color: '#595959', bgColor: 'rgba(89,89,89,0.08)', borderColor: 'rgba(89,89,89,0.2)',
   };
   if (rate < 8) return {
     zone: 'balanced', label: 'Balanced Market',
     description: 'Good cash flow with moderate appreciation — suburban and secondary markets',
-    color: '#3B82F6', bgColor: 'rgba(59,130,246,0.08)', borderColor: 'rgba(59,130,246,0.2)',
+    color: '#7F7F7F', bgColor: 'rgba(127,127,127,0.08)', borderColor: 'rgba(127,127,127,0.2)',
   };
   if (rate < 10) return {
     zone: 'yield', label: 'Higher-Yield Market',
     description: 'Strong cash flow but may carry higher vacancy or deferred maintenance risk',
-    color: '#F59E0B', bgColor: 'rgba(245,158,11,0.08)', borderColor: 'rgba(245,158,11,0.2)',
+    color: '#A5A5A5', bgColor: 'rgba(165,165,165,0.08)', borderColor: 'rgba(165,165,165,0.2)',
   };
   return {
     zone: 'high-yield', label: 'Aggressive / High-Risk',
     description: 'Very high yield often signals distressed areas or significant property risk',
-    color: '#EF4444', bgColor: 'rgba(239,68,68,0.08)', borderColor: 'rgba(239,68,68,0.2)',
+    color: '#F06543', bgColor: 'rgba(239,68,68,0.08)', borderColor: 'rgba(239,68,68,0.2)',
   };
 }
 
@@ -99,10 +95,10 @@ function deriveCapRateBreakdowns(projects: Project[]): PropertyCapRateData[] {
     .filter(p => p.financials)
     .map((p) => {
       const f = p.financials!;
-      const metrics = deriveAllMetrics(f);
+      const { asset: metrics } = deriveDualScopeMetrics(f, undefined, p.strategyType, p.currentPhase);
       const purchasePrice = f.purchasePrice ?? 0;
       const estimatedARV = f.estimatedARV ?? purchasePrice;
-      const arvCapRate = estimatedARV > 0 ? computeCapRate(metrics.noi, estimatedARV) : 0;
+      const arvCapRate = metrics.arvCapRate;
 
       return {
         name: (p.propertyName || p.address || 'Unknown').substring(0, 16),
@@ -117,27 +113,7 @@ function deriveCapRateBreakdowns(projects: Project[]): PropertyCapRateData[] {
     .slice(0, 8);
 }
 
-/* ── Custom tooltip ── */
-function CapRateTooltip({ active, payload }: any) {
-  if (!active || !payload?.length) return null;
-  const d = payload[0].payload;
-  return (
-    <div
-      className="rounded-lg px-3 py-2 shadow-lg text-xs"
-      style={{ background: 'var(--bg-surface)', border: '1px solid var(--border-ui)' }}
-    >
-      <p className="font-bold" style={{ color: 'var(--text-primary)' }}>{d.name}</p>
-      <p className="tabular-nums" style={{ color: '#3B82F6' }}>
-        Cap Rate: {fmtPct(d['Cap Rate'] ?? d.capRate ?? d.value)}
-      </p>
-      {d['ARV Cap Rate'] != null && (
-        <p className="tabular-nums" style={{ color: '#8B5CF6' }}>
-          ARV Cap Rate: {fmtPct(d['ARV Cap Rate'])}
-        </p>
-      )}
-    </div>
-  );
-}
+
 
 /* ── Gauge component ── */
 function CapRateGauge({ capRate }: { capRate: number }) {
@@ -147,11 +123,11 @@ function CapRateGauge({ capRate }: { capRate: number }) {
 
   // Zone colors for the gauge background
   const zones = [
-    { start: 0, end: 4, color: '#6366F1', label: '<4%' },
-    { start: 4, end: 6, color: '#10B981', label: '4-6%' },
-    { start: 6, end: 8, color: '#3B82F6', label: '6-8%' },
-    { start: 8, end: 10, color: '#F59E0B', label: '8-10%' },
-    { start: 10, end: 15, color: '#EF4444', label: '10%+' },
+    { start: 0, end: 4, color: '#595959', label: '<4%' },
+    { start: 4, end: 6, color: '#595959', label: '4-6%' },
+    { start: 6, end: 8, color: '#7F7F7F', label: '6-8%' },
+    { start: 8, end: 10, color: '#A5A5A5', label: '8-10%' },
+    { start: 10, end: 15, color: '#F06543', label: '10%+' },
   ];
 
   return (
@@ -384,14 +360,14 @@ export default function CapRateDeepDive({ projects: propProjects }: Props) {
               label: 'ARV Cap Rate',
               value: fmtPct(aggregate.arvCapRate),
               sublabel: `NOI ÷ ARV ${fmtUSD(aggregate.totalARV)}`,
-              color: '#8B5CF6',
+              color: '#454955',
             },
             {
               icon: Gauge,
               label: 'Annual NOI',
               value: fmtUSD(aggregate.totalNOI),
               sublabel: `${fmtUSD(Math.round(aggregate.totalNOI / 12))}/mo operational income`,
-              color: '#10B981',
+              color: '#595959',
             },
             {
               icon: Building2,
@@ -429,7 +405,7 @@ export default function CapRateDeepDive({ projects: propProjects }: Props) {
       {/* ── Sensitivity Matrix ── */}
       <div className="bg-bg-surface border border-border-accent rounded-xl p-5">
         <div className="flex items-center gap-2 mb-4">
-          <Gauge className="w-4 h-4" style={{ color: '#3B82F6' }} />
+          <Gauge className="w-4 h-4" style={{ color: '#7F7F7F' }} />
           <h4 className="text-xs font-bold uppercase tracking-[0.15em] text-text-secondary">
             Cap Rate Sensitivity — "What If" Analysis
           </h4>
@@ -447,52 +423,14 @@ export default function CapRateDeepDive({ projects: propProjects }: Props) {
             Cap Rate by Property — Portfolio Comparison
           </h4>
           <div className="flex-1 min-h-0">
-            <ResponsiveContainer width="100%" height="100%">
-              <BarChart
-                data={breakdowns.map(b => ({
-                  name: b.name,
-                  'Cap Rate': b.capRate,
-                  'ARV Cap Rate': b.arvCapRate,
-                }))}
-                margin={{ top: 10, right: 10, left: -10, bottom: 30 }}
-              >
-                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#E5E7EB" />
-                <XAxis
-                  dataKey="name"
-                  fontSize={10}
-                  tickLine={false}
-                  axisLine={false}
-                  angle={-30}
-                  textAnchor="end"
-                  height={40}
-                />
-                <YAxis
-                  fontSize={10}
-                  tickFormatter={(v: number) => `${v}%`}
-                  tickLine={false}
-                  axisLine={false}
-                  width={40}
-                  domain={[0, 'auto']}
-                />
-                <Tooltip content={<CapRateTooltip />} />
-                <Legend
-                  verticalAlign="top"
-                  height={30}
-                  iconType="circle"
-                  wrapperStyle={{ fontSize: '10px' }}
-                />
-                {/* Reference zones */}
-                <ReferenceLine y={4} stroke="#10B981" strokeDasharray="4 4" label={{ value: '4%', position: 'right', fontSize: 9, fill: '#10B981' }} />
-                <ReferenceLine y={6} stroke="#3B82F6" strokeDasharray="4 4" label={{ value: '6%', position: 'right', fontSize: 9, fill: '#3B82F6' }} />
-                <ReferenceLine y={10} stroke="#EF4444" strokeDasharray="4 4" label={{ value: '10%', position: 'right', fontSize: 9, fill: '#EF4444' }} />
-                <Bar dataKey="Cap Rate" fill="#3B82F6" radius={[4, 4, 0, 0]} maxBarSize={36}>
-                  {breakdowns.map((b, i) => (
-                    <Cell key={i} fill={b.classification.color} />
-                  ))}
-                </Bar>
-                <Bar dataKey="ARV Cap Rate" fill="#8B5CF6" radius={[4, 4, 0, 0]} maxBarSize={36} />
-              </BarChart>
-            </ResponsiveContainer>
+            <CapRateCompareChart
+              data={breakdowns.map(b => ({
+                name: b.name,
+                capRate: b.capRate,
+                arvCapRate: b.arvCapRate,
+                color: b.classification.color
+              }))}
+            />
           </div>
         </div>
       )}
@@ -501,8 +439,8 @@ export default function CapRateDeepDive({ projects: propProjects }: Props) {
       <div
         className="px-4 py-3 rounded-lg text-[11px] leading-relaxed"
         style={{
-          background: 'rgba(99,102,241,0.05)',
-          border: '1px solid rgba(99,102,241,0.15)',
+          background: 'rgba(89,89,89,0.05)',
+          border: '1px solid rgba(89,89,89,0.15)',
           color: 'var(--text-secondary)',
         }}
       >
@@ -512,11 +450,11 @@ export default function CapRateDeepDive({ projects: propProjects }: Props) {
         </code>
         <br />
         <strong style={{ color: 'var(--text-primary)' }}>Reading the zones:</strong>{' '}
-        <span style={{ color: '#6366F1' }}>■ &lt;4% Premium/Appreciating</span> •{' '}
-        <span style={{ color: '#10B981' }}>■ 4–6% Stable/Low-Risk</span> •{' '}
-        <span style={{ color: '#3B82F6' }}>■ 6–8% Balanced</span> •{' '}
-        <span style={{ color: '#F59E0B' }}>■ 8–10% Higher-Yield</span> •{' '}
-        <span style={{ color: '#EF4444' }}>■ 10%+ Aggressive</span>
+        <span style={{ color: '#595959' }}>■ &lt;4% Premium/Appreciating</span> •{' '}
+        <span style={{ color: '#595959' }}>■ 4–6% Stable/Low-Risk</span> •{' '}
+        <span style={{ color: '#7F7F7F' }}>■ 6–8% Balanced</span> •{' '}
+        <span style={{ color: '#A5A5A5' }}>■ 8–10% Higher-Yield</span> •{' '}
+        <span style={{ color: '#F06543' }}>■ 10%+ Aggressive</span>
         <br />
         <strong style={{ color: 'var(--text-primary)' }}>When to use:</strong>{' '}
         Cap rate works best for comparing two properties of the same type in the same market.

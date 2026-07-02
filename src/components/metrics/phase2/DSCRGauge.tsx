@@ -26,7 +26,7 @@ interface GaugeZone {
 }
 
 const ZONES: GaugeZone[] = [
-  { from: 0, to: 1.0, color: '#f87171', label: 'Break-Even Risk' },
+  { from: 0, to: 1.0, color: '#F06543', label: 'Break-Even Risk' },
   { from: 1.0, to: 1.25, color: '#fde047', label: 'Caution' },
   { from: 1.25, to: 1.5, color: '#86efac', label: 'Lender Benchmark' },
   { from: 1.5, to: 2.0, color: '#4ade80', label: 'Excellent' },
@@ -99,7 +99,7 @@ export default function DSCRGauge({
               className="px-2.5 py-1 rounded text-[10px] font-bold uppercase tracking-widest"
               style={{
                 background: activeZone.color + '33',
-                color: activeZone.color === '#fde047' ? '#92400e' : activeZone.color === '#f87171' ? '#7f1d1d' : '#166534',
+                color: activeZone.color === '#fde047' ? '#92400e' : activeZone.color === '#F06543' ? '#7f1d1d' : '#166534',
               }}
             >
               {activeZone.label}
@@ -114,18 +114,18 @@ export default function DSCRGauge({
               style={{
                 width: `${fillPct * 100}%`,
                 background: dscr > 0
-                  ? `linear-gradient(90deg, #f87171 0%, #f87171 ${(1.0 / MAX_DSCR) * 100}%, #fde047 ${(1.0 / MAX_DSCR) * 100}%, #fde047 ${(1.25 / MAX_DSCR) * 100}%, #86efac ${(1.25 / MAX_DSCR) * 100}%, #4ade80 100%)`
+                  ? `linear-gradient(90deg, #F06543 0%, #F06543 ${(1.0 / MAX_DSCR) * 100}%, #fde047 ${(1.0 / MAX_DSCR) * 100}%, #fde047 ${(1.25 / MAX_DSCR) * 100}%, #86efac ${(1.25 / MAX_DSCR) * 100}%, #4ade80 100%)`
                   : 'transparent',
               }}
             />
 
             <div
-              className="absolute inset-y-0 w-0.5 bg-[#1A73E8]"
+              className="absolute inset-y-0 w-0.5 bg-[#454955]"
               style={{ left: `${(1.0 / MAX_DSCR) * 100}%` }}
               title="Break-even (1.0x)"
             />
             <div
-              className="absolute inset-y-0 w-0.5 bg-[#1A73E8]"
+              className="absolute inset-y-0 w-0.5 bg-[#454955]"
               style={{ left: `${(1.25 / MAX_DSCR) * 100}%` }}
               title="Lender benchmark (1.25x)"
             />
@@ -164,7 +164,7 @@ export default function DSCRGauge({
 
         <div className="grid grid-cols-3 gap-2 mt-3">
           {[
-            { level: '1.0x', desc: 'Break-even', color: '#f87171' },
+            { level: '1.0x', desc: 'Break-even', color: '#F06543' },
             { level: '1.25x', desc: 'Lender min', color: '#fde047' },
             { level: '1.5x', desc: 'Excellent', color: '#4ade80' },
           ].map((b) => (

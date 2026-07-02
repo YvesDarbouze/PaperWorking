@@ -250,7 +250,7 @@ export function TargetIdentification({
                   value={formData.squareFootage}
                   onChange={(e) => setFormData({ ...formData, squareFootage: e.target.value })}
                   className={`w-full rounded-lg px-4 py-3 text-sm font-medium transition-all focus:outline-none focus-visible:ring-2 focus-visible:ring-black/20 ${errors.squareFootage ? 'border-red-500 ring-1 ring-red-500' : ''}`}
-                  style={{ background: 'var(--bg-canvas)', border: errors.squareFootage ? '1px solid #ef4444' : '1px solid var(--border-ui)', color: 'var(--text-primary)' }}
+                  style={{ background: 'var(--bg-canvas)', border: errors.squareFootage ? '1px solid #F06543' : '1px solid var(--border-ui)', color: 'var(--text-primary)' }}
                   placeholder="e.g. 1500"
                 />
                 {errors.squareFootage && <p className="text-red-500 text-[10px] mt-1 font-bold">{errors.squareFootage}</p>}
@@ -263,7 +263,7 @@ export function TargetIdentification({
                   value={formData.yearBuilt}
                   onChange={(e) => setFormData({ ...formData, yearBuilt: e.target.value })}
                   className={`w-full rounded-lg px-4 py-3 text-sm font-medium transition-all focus:outline-none focus-visible:ring-2 focus-visible:ring-black/20 ${errors.yearBuilt ? 'border-red-500 ring-1 ring-red-500' : ''}`}
-                  style={{ background: 'var(--bg-canvas)', border: errors.yearBuilt ? '1px solid #ef4444' : '1px solid var(--border-ui)', color: 'var(--text-primary)' }}
+                  style={{ background: 'var(--bg-canvas)', border: errors.yearBuilt ? '1px solid #F06543' : '1px solid var(--border-ui)', color: 'var(--text-primary)' }}
                   placeholder="e.g. 1995"
                 />
                 {errors.yearBuilt && <p className="text-red-500 text-[10px] mt-1 font-bold">{errors.yearBuilt}</p>}
@@ -276,7 +276,7 @@ export function TargetIdentification({
                   value={formData.listedPrice}
                   onChange={(e) => setFormData({ ...formData, listedPrice: e.target.value })}
                   className={`w-full rounded-lg px-4 py-3 text-sm font-medium transition-all focus:outline-none focus-visible:ring-2 focus-visible:ring-black/20 ${errors.listedPrice ? 'border-red-500 ring-1 ring-red-500' : ''}`}
-                  style={{ background: 'var(--bg-canvas)', border: errors.listedPrice ? '1px solid #ef4444' : '1px solid var(--border-ui)', color: 'var(--text-primary)' }}
+                  style={{ background: 'var(--bg-canvas)', border: errors.listedPrice ? '1px solid #F06543' : '1px solid var(--border-ui)', color: 'var(--text-primary)' }}
                   placeholder="e.g. 250000"
                 />
                 {errors.listedPrice && <p className="text-red-500 text-[10px] mt-1 font-bold">{errors.listedPrice}</p>}

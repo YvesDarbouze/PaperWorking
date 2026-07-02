@@ -1,6 +1,7 @@
 import React from 'react';
 import { PurchaseReadinessItem, PurchaseReadinessItemType } from '@/types/schema';
 import { CheckCircle2 } from 'lucide-react';
+import toast from 'react-hot-toast';
 
 interface PurchaseReadinessChecklistProps {
   items?: PurchaseReadinessItem[];
@@ -42,6 +43,7 @@ export function PurchaseReadinessChecklist({ items = [], onItemChange, phaseColo
       return item;
     });
     onItemChange(updated);
+    toast.success(!toggledItem.completed ? `${toggledItem.type} completed` : `${toggledItem.type} marked incomplete`);
   };
 
   const completedCount = displayItems.filter(i => i.completed).length;

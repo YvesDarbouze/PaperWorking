@@ -1,0 +1,444 @@
+<!DOCTYPE html><html class="dark" lang="en"><head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1.0" name="viewport">
+<title>PaperWorking - Marketplaces</title>
+<!-- Material Symbols -->
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<style>
+        .material-symbols-outlined {
+            font-family: 'Material Symbols Outlined';
+            font-weight: normal;
+            font-style: normal;
+            font-size: 24px;
+            line-height: 1;
+            letter-spacing: normal;
+            text-transform: none;
+            display: inline-block;
+            white-space: nowrap;
+            word-wrap: normal;
+            direction: ltr;
+            -webkit-font-feature-settings: 'liga';
+            -webkit-font-smoothing: antialiased;
+        }
+    </style>
+<!-- Tailwind CSS -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<!-- Tailwind Theme Config -->
+<script id="tailwind-config">
+        tailwind.config = {
+          darkMode: "class",
+          theme: {
+            extend: {
+              "colors": {
+                      "surface-variant": "#2d363d",
+                      "on-error": "#690005",
+                      "primary-fixed-dim": "#3cddc7",
+                      "surface-bright": "#313a41",
+                      "on-background": "#dae4ec",
+                      "surface-container-low": "#141d23",
+                      "error": "#ffb4ab",
+                      "background": "#0b141a",
+                      "secondary": "#adc6ff",
+                      "on-primary-container": "#00574d",
+                      "surface-container-highest": "#2d363d",
+                      "on-primary": "#003731",
+                      "on-error-container": "#ffdad6",
+                      "on-secondary-fixed-variant": "#004395",
+                      "tertiary-fixed": "#ffdcc0",
+                      "tertiary-container": "#ffac5a",
+                      "surface-dim": "#0b141a",
+                      "tertiary": "#ffd1aa",
+                      "inverse-on-surface": "#293238",
+                      "surface-container": "#182127",
+                      "secondary-fixed-dim": "#adc6ff",
+                      "on-secondary-fixed": "#001a42",
+                      "primary": "#57f1db",
+                      "surface-container-lowest": "#060f15",
+                      "on-secondary-container": "#e6ecff",
+                      "error-container": "#93000a",
+                      "surface-container-high": "#222b32",
+                      "on-primary-fixed": "#00201c",
+                      "outline": "#859490",
+                      "on-tertiary-container": "#744000",
+                      "on-secondary": "#002e6a",
+                      "on-surface-variant": "#bacac5",
+                      "inverse-surface": "#dae4ec",
+                      "on-surface": "#dae4ec",
+                      "surface-tint": "#3cddc7",
+                      "primary-container": "#2dd4bf",
+                      "on-tertiary": "#4b2800",
+                      "tertiary-fixed-dim": "#ffb875",
+                      "outline-variant": "#3c4a46",
+                      "primary-fixed": "#62fae3",
+                      "on-tertiary-fixed-variant": "#6b3b00",
+                      "inverse-primary": "#006b5f",
+                      "secondary-fixed": "#d8e2ff",
+                      "on-tertiary-fixed": "#2d1600",
+                      "surface": "#0b141a",
+                      "on-primary-fixed-variant": "#005047",
+                      "secondary-container": "#0566d9"
+              },
+              "borderRadius": {
+                      "DEFAULT": "0.25rem",
+                      "lg": "0.5rem",
+                      "xl": "0.75rem",
+                      "full": "9999px"
+              },
+              "spacing": {
+                      "margin-mobile": "20px",
+                      "margin-desktop": "40px",
+                      "gutter-mobile": "16px",
+                      "gutter-desktop": "24px",
+                      "container-max": "1280px",
+                      "unit": "8px",
+                      "stack-md": "16px",
+                      "stack-sm": "8px",
+                      "stack-lg": "32px"
+              },
+              "fontFamily": {
+                      "headline-lg": ["Plus Jakarta Sans"],
+                      "label-sm": ["Plus Jakarta Sans"],
+                      "body-md": ["Plus Jakarta Sans"],
+                      "label-md": ["Plus Jakarta Sans"],
+                      "headline-lg-mobile": ["Plus Jakarta Sans"],
+                      "headline-md": ["Plus Jakarta Sans"],
+                      "body-lg": ["Plus Jakarta Sans"],
+                      "headline-xl": ["Plus Jakarta Sans"],
+                      "body-sm": ["Plus Jakarta Sans"]
+              },
+              "fontSize": {
+                      "headline-lg": ["32px", {"lineHeight": "40px", "letterSpacing": "-0.01em", "fontWeight": "700"}],
+                      "label-sm": ["12px", {"lineHeight": "14px", "letterSpacing": "0.05em", "fontWeight": "500"}],
+                      "body-md": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+                      "label-md": ["14px", {"lineHeight": "16px", "letterSpacing": "0.02em", "fontWeight": "600"}],
+                      "headline-lg-mobile": ["28px", {"lineHeight": "36px", "fontWeight": "700"}],
+                      "headline-md": ["24px", {"lineHeight": "32px", "fontWeight": "600"}],
+                      "body-lg": ["18px", {"lineHeight": "28px", "fontWeight": "400"}],
+                      "headline-xl": ["48px", {"lineHeight": "56px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                      "body-sm": ["14px", {"lineHeight": "20px", "fontWeight": "400"}]
+              }
+            }
+          }
+        }
+    </script>
+<!-- Google Fonts -->
+<link href="https://fonts.googleapis.com" rel="preconnect">
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect">
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<style>
+        /* Custom Glass Effects and Scrollbar */
+        body {
+            background-image: 
+                radial-gradient(circle at 15% 50%, rgba(87, 241, 219, 0.03), transparent 25%),
+                radial-gradient(circle at 85% 30%, rgba(5, 102, 217, 0.03), transparent 25%);
+        }
+        
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #2d363d;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #3c4a46;
+        }
+
+        .glass-card {
+            background: linear-gradient(135deg, rgba(45, 54, 61, 0.4) 0%, rgba(20, 29, 35, 0.6) 100%);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            box-shadow: inset 1px 1px 0 0 rgba(255, 255, 255, 0.05);
+        }
+        
+        .luminous-button {
+            box-shadow: 0 0 20px -5px rgba(87, 241, 219, 0.4);
+        }
+        
+        .luminous-progress {
+            box-shadow: 0 0 10px 0 rgba(87, 241, 219, 0.5);
+        }
+    </style>
+</head>
+<body class="bg-background text-on-background font-body-md antialiased flex min-h-screen">
+<!-- SideNavBar (Shared Component) -->
+<nav class="h-screen w-64 fixed left-0 top-0 flex flex-col bg-surface-container-low/90 backdrop-blur-2xl border-r border-white/10 shadow-2xl py-stack-lg z-50">
+<!-- Header -->
+<div class="px-6 mb-stack-lg flex items-center gap-4">
+<div class="w-10 h-10 rounded-lg bg-surface-variant flex items-center justify-center shadow-inner border border-white/5">
+<span class="material-symbols-outlined text-primary-fixed" style="font-variation-settings: 'FILL' 1;">hexagon</span>
+</div>
+<div>
+<h1 class="font-headline-sm text-headline-sm text-primary-fixed leading-tight">Capital Alpha</h1>
+<p class="font-label-sm text-label-sm text-on-surface-variant">Institutional Grade</p>
+</div>
+</div>
+<!-- Main Navigation -->
+<div class="flex-1 flex flex-col gap-1 px-2">
+<a class="text-on-surface-variant hover:text-on-surface flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-white/5 transition-all duration-300 group" href="#">
+<span class="material-symbols-outlined group-hover:translate-x-1 duration-300">dashboard</span>
+<span class="font-label-md text-label-md">Dashboard</span>
+</a>
+<a class="text-on-surface-variant hover:text-on-surface flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-white/5 transition-all duration-300 group" href="#">
+<span class="material-symbols-outlined group-hover:translate-x-1 duration-300">folder_open</span>
+<span class="font-label-md text-label-md">Projects</span>
+</a>
+<!-- Active Tab -->
+<a class="bg-primary-container/20 text-primary-fixed border-r-4 border-primary-fixed flex items-center gap-3 px-4 py-3 rounded-lg group" href="#">
+<span class="material-symbols-outlined">storefront</span>
+<span class="font-label-md text-label-md">Marketplaces</span>
+</a>
+<a class="text-on-surface-variant hover:text-on-surface flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-white/5 transition-all duration-300 group" href="#">
+<span class="material-symbols-outlined group-hover:translate-x-1 duration-300">query_stats</span>
+<span class="font-label-md text-label-md">Intelligence</span>
+</a>
+</div>
+<!-- Quick Action -->
+<div class="px-4 mb-stack-md">
+<button class="w-full flex items-center justify-center gap-2 py-3 bg-surface-variant text-on-surface font-label-md text-label-md rounded-lg border border-white/10 hover:bg-white/5 transition-all duration-300">
+<span class="material-symbols-outlined text-[18px]">bolt</span>
+                Quick Insight
+            </button>
+</div>
+<!-- Footer Navigation -->
+<div class="flex flex-col gap-1 px-2 mt-auto">
+<a class="text-on-surface-variant hover:text-on-surface flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-white/5 transition-all duration-300 group" href="#">
+<span class="material-symbols-outlined group-hover:translate-x-1 duration-300">settings</span>
+<span class="font-label-md text-label-md">Settings</span>
+</a>
+<a class="text-on-surface-variant hover:text-on-surface flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-white/5 transition-all duration-300 group" href="#">
+<span class="material-symbols-outlined group-hover:translate-x-1 duration-300">help</span>
+<span class="font-label-md text-label-md">Support</span>
+</a>
+</div>
+</nav>
+<!-- Main Content Area -->
+<main class="flex-1 ml-64 flex flex-col min-h-screen">
+<!-- TopAppBar (Shared Component) -->
+<header class="w-full sticky top-0 z-40 bg-background/80 backdrop-blur-xl border-b border-white/10 shadow-[0_0_20px_-5px_rgba(87,241,219,0.15)] flex justify-between items-center px-gutter-desktop h-16">
+<!-- Left: Search (from JSON: search_bar: "on_left") -->
+<div class="flex-1 max-w-md">
+<div class="relative flex items-center">
+<span class="material-symbols-outlined absolute left-3 text-on-surface-variant text-[20px]">search</span>
+<input class="w-full bg-surface-variant/50 border border-white/10 text-on-surface font-body-sm text-body-sm rounded-full pl-10 pr-4 py-2 focus:outline-none focus:border-primary/50 focus:bg-surface-variant transition-all placeholder:text-on-surface-variant/70" placeholder="Search opportunities..." type="text">
+</div>
+</div>
+<!-- Right: Actions & Profile -->
+<div class="flex items-center gap-4">
+<button class="text-on-surface-variant hover:text-on-surface hover:bg-white/5 p-2 rounded-full transition-colors active:scale-95 duration-200">
+<span class="material-symbols-outlined">notifications</span>
+</button>
+<button class="text-on-surface-variant hover:text-on-surface hover:bg-white/5 p-2 rounded-full transition-colors active:scale-95 duration-200">
+<span class="material-symbols-outlined">settings</span>
+</button>
+<div class="w-px h-6 bg-white/10 mx-2"></div>
+<button class="bg-primary text-on-primary font-label-md text-label-md px-5 py-2 rounded-full hover:bg-primary-fixed-dim transition-colors active:scale-95 duration-200 luminous-button font-bold flex items-center gap-2">
+<span class="material-symbols-outlined text-[18px]">add</span>
+                    Create Project
+                </button>
+<div class="w-9 h-9 rounded-full bg-surface-container-high border border-white/20 overflow-hidden ml-2 cursor-pointer hover:ring-2 ring-primary/50 transition-all">
+<!-- Placeholder for User Profile Image -->
+<img alt="User account profile" class="w-full h-full object-cover" data-alt="A close-up portrait of a professional individual in a dimly lit, high-end office environment. The lighting is dramatic, with subtle cool blue and teal rim light illuminating the edge of their profile against a dark, moody background. The aesthetic is modern, serious, and deeply integrated with a high-tech corporate atmosphere." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCl_Q3lcJC0jpghjksH1NHRiL3-jiXJGL7xS8qWhVEgzdg8iYbETBQqMSXV4Swpka8qmtxoQbpxEm-yfJQjJuvCSa7jj9sx5W-P9H4t_dI4d8nB16InW25uvDtJ34vfvUdY4-EY0Vmn9sV8aoc-bLIxSWSNIWPciJ1CI5smUmx0AS2H0U-Hu5PdnCZH2YjkDtm3JSZQrEWmiLj8h6nwKdd41FyauKXGyvPUxE7CY4ktRap7LXWp9ELnMjdqOW86CzAhzrCRIEsSSHCs">
+</div>
+</div>
+</header>
+<!-- Filters & Page Header -->
+<div class="px-margin-desktop py-stack-lg border-b border-white/5 bg-surface-container-lowest/50">
+<div class="flex flex-col gap-6 md:flex-row md:items-end justify-between">
+<div>
+<h2 class="font-headline-lg text-headline-lg text-on-surface mb-2">Deal Marketplace</h2>
+<p class="font-body-md text-body-md text-on-surface-variant max-w-2xl">Access institutional-grade real estate opportunities. Filter by strategy, asset class, and projected yields to build your portfolio.</p>
+</div>
+<!-- Filter Controls -->
+<div class="flex flex-wrap items-center gap-4">
+<!-- Strategy Segmented Control -->
+<div class="flex p-1 bg-surface-container-highest border border-white/10 rounded-lg backdrop-blur-md">
+<button class="px-4 py-1.5 rounded-md bg-surface-variant text-on-surface font-label-md text-label-md shadow-sm border border-white/10">All</button>
+<button class="px-4 py-1.5 rounded-md text-on-surface-variant hover:text-on-surface font-label-md text-label-md transition-colors">Rental</button>
+<button class="px-4 py-1.5 rounded-md text-on-surface-variant hover:text-on-surface font-label-md text-label-md transition-colors">Flip</button>
+</div>
+<!-- Asset Class Dropdown (Visual only) -->
+<button class="flex items-center gap-2 px-4 py-2 bg-surface-container-high border border-white/10 rounded-lg text-on-surface font-label-md text-label-md hover:bg-white/5 transition-colors">
+                        Asset Class
+                        <span class="material-symbols-outlined text-[18px] text-on-surface-variant">expand_more</span>
+</button>
+<button class="flex items-center gap-2 px-4 py-2 bg-surface-container-high border border-white/10 rounded-lg text-on-surface font-label-md text-label-md hover:bg-white/5 transition-colors">
+<span class="material-symbols-outlined text-[18px] text-on-surface-variant">filter_list</span>
+                        More Filters
+                    </button>
+</div>
+</div>
+</div>
+<!-- Deal Grid Canvas -->
+<div class="flex-1 p-margin-desktop overflow-y-auto">
+<div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+<!-- Card 1 -->
+<article class="glass-card rounded-xl overflow-hidden flex flex-col group border-t border-l border-white/10 border-b-transparent border-r-transparent transition-all duration-300 hover:shadow-[0_8px_30px_rgb(0,0,0,0.5)] hover:-translate-y-1 relative">
+<!-- Status Chip -->
+<div class="absolute top-4 right-4 z-10 px-3 py-1 bg-background/80 backdrop-blur-md border border-white/10 rounded-full flex items-center gap-1.5">
+<div class="w-2 h-2 rounded-full bg-primary luminous-progress"></div>
+<span class="font-label-sm text-label-sm text-primary-fixed">Funding Open</span>
+</div>
+<!-- Image Header -->
+<div class="h-48 w-full relative overflow-hidden bg-surface-variant">
+<div class="absolute inset-0 bg-gradient-to-t from-surface-container-lowest to-transparent z-10"></div>
+<img alt="Modern office building" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" data-alt="A dramatic low-angle architectural photograph of a sleek, modern glass skyscraper reaching into a dark, twilight sky. The building's sharp geometric lines are illuminated by glowing interior lights that reflect the teal and deep blue hues of our dark mode UI aesthetic. The mood is powerful, corporate, and cutting-edge, emphasizing institutional scale." src="https://lh3.googleusercontent.com/aida-public/AB6AXuD_Y14Vc5L9Ov-Vt93O8alrV6SQzu0ZVcwncHXOwn70R7tt-Cy-aWwanNkmq1ImWs0x37PJEh_DktPd-lZzt43Y_CjkvbIcqdiYQhX6sBzDwqUkdtr1WqWhe9BP7-f2G1uHhNG7zIO1wgtW9FhC_eTBcfawd86wapSYJN6h9KauIO6XUt7yePnwS_nbhBq6KRBgceSoOhmP2XDYhZ27dTzAFi-QumyOWPj2HWWG4EYdmktdEu_68COZ4ZswecTQb7ilA9VKmeDMzit7">
+</div>
+<!-- Content Body -->
+<div class="p-6 flex flex-col flex-1 relative z-20 -mt-8">
+<div class="mb-4">
+<span class="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider mb-1 block">Value-Add Multifamily</span>
+<h3 class="font-headline-md text-headline-md text-on-surface">The Aurora Complex</h3>
+<div class="flex items-center gap-1 mt-1 text-on-surface-variant">
+<span class="material-symbols-outlined text-[16px]">location_on</span>
+<span class="font-body-sm text-body-sm">Austin, TX</span>
+</div>
+</div>
+<!-- Financial Grid (Bento Style) -->
+<div class="grid grid-cols-3 gap-3 mb-6 bg-surface-container/50 p-4 rounded-lg border border-white/5">
+<div>
+<p class="font-label-sm text-label-sm text-on-surface-variant mb-1">Target IRR</p>
+<p class="font-headline-md text-headline-md text-primary">16.4%</p>
+</div>
+<div>
+<p class="font-label-sm text-label-sm text-on-surface-variant mb-1">Term</p>
+<p class="font-headline-md text-headline-md text-on-surface">36 <span class="text-body-sm text-on-surface-variant">mo</span></p>
+</div>
+<div>
+<p class="font-label-sm text-label-sm text-on-surface-variant mb-1">Minimum</p>
+<p class="font-headline-md text-headline-md text-on-surface">$25k</p>
+</div>
+</div>
+<!-- Progress Section -->
+<div class="mt-auto">
+<div class="flex justify-between items-end mb-2">
+<span class="font-body-sm text-body-sm text-on-surface-variant">Capital Raised</span>
+<span class="font-label-md text-label-md text-on-surface">$4.2M / <span class="text-on-surface-variant font-normal">$5.0M</span></span>
+</div>
+<!-- Progress Bar -->
+<div class="h-1.5 w-full bg-surface-container-high rounded-full overflow-hidden">
+<div class="h-full bg-primary luminous-progress rounded-full" style="width: 84%;"></div>
+</div>
+<div class="flex justify-between items-center mt-4">
+<span class="font-label-sm text-label-sm text-on-surface-variant">84% Funded</span>
+<button class="text-primary-fixed font-label-md text-label-md flex items-center gap-1 hover:text-primary transition-colors">
+                                    View Details
+                                    <span class="material-symbols-outlined text-[18px]">arrow_forward</span>
+</button>
+</div>
+</div>
+</div>
+</article>
+<!-- Card 2 -->
+<article class="glass-card rounded-xl overflow-hidden flex flex-col group border-t border-l border-white/10 border-b-transparent border-r-transparent transition-all duration-300 hover:shadow-[0_8px_30px_rgb(0,0,0,0.5)] hover:-translate-y-1 relative">
+<div class="absolute top-4 right-4 z-10 px-3 py-1 bg-background/80 backdrop-blur-md border border-white/10 rounded-full flex items-center gap-1.5">
+<div class="w-2 h-2 rounded-full bg-tertiary-container"></div>
+<span class="font-label-sm text-label-sm text-tertiary">Closing Soon</span>
+</div>
+<div class="h-48 w-full relative overflow-hidden bg-surface-variant">
+<div class="absolute inset-0 bg-gradient-to-t from-surface-container-lowest to-transparent z-10"></div>
+<img alt="Industrial warehouse space" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" data-alt="A vast, empty industrial warehouse space characterized by polished concrete floors and heavy steel support beams. Harsh, volumetric light streams through skylights, contrasting sharply with deep shadows in the corners. The color grading emphasizes stark metallic grays and cold blues, reflecting an industrial, heavy-duty commercial real estate asset in a dark UI context." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDK3nNVsJiL-Laghb8ChTRKaoddJ1-7ZFLMA8ZmhKVsmRstI0mpHv0qyyMCGoCJCDUK8fdQcw0ttAu1qxz2llJLZPnmdrcO-s7eVcGQw0Nqff67ykipWILh5HcXxxp4thbiT3ktEn_2ToXqWI3bkDXA-Wp-SxdHB8XZjjjCFX8Vq1BQp8RppeBZqlZWnAl8Fp9ptjwN9SAotolhI1dEtxPfnSnTv2QsyCaSdvSbYDyqd3ex14PdBTHip7FJa2J2Zh7UvdZO3CTpv-F-">
+</div>
+<div class="p-6 flex flex-col flex-1 relative z-20 -mt-8">
+<div class="mb-4">
+<span class="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider mb-1 block">Industrial Logistics</span>
+<h3 class="font-headline-md text-headline-md text-on-surface">Zenith Distribution Center</h3>
+<div class="flex items-center gap-1 mt-1 text-on-surface-variant">
+<span class="material-symbols-outlined text-[16px]">location_on</span>
+<span class="font-body-sm text-body-sm">Denver, CO</span>
+</div>
+</div>
+<div class="grid grid-cols-3 gap-3 mb-6 bg-surface-container/50 p-4 rounded-lg border border-white/5">
+<div>
+<p class="font-label-sm text-label-sm text-on-surface-variant mb-1">Target IRR</p>
+<p class="font-headline-md text-headline-md text-primary">14.2%</p>
+</div>
+<div>
+<p class="font-label-sm text-label-sm text-on-surface-variant mb-1">Term</p>
+<p class="font-headline-md text-headline-md text-on-surface">60 <span class="text-body-sm text-on-surface-variant">mo</span></p>
+</div>
+<div>
+<p class="font-label-sm text-label-sm text-on-surface-variant mb-1">Minimum</p>
+<p class="font-headline-md text-headline-md text-on-surface">$50k</p>
+</div>
+</div>
+<div class="mt-auto">
+<div class="flex justify-between items-end mb-2">
+<span class="font-body-sm text-body-sm text-on-surface-variant">Capital Raised</span>
+<span class="font-label-md text-label-md text-on-surface">$11.8M / <span class="text-on-surface-variant font-normal">$12.0M</span></span>
+</div>
+<div class="h-1.5 w-full bg-surface-container-high rounded-full overflow-hidden">
+<div class="h-full bg-tertiary-container rounded-full" style="width: 98%;"></div>
+</div>
+<div class="flex justify-between items-center mt-4">
+<span class="font-label-sm text-label-sm text-on-surface-variant">98% Funded</span>
+<button class="text-primary-fixed font-label-md text-label-md flex items-center gap-1 hover:text-primary transition-colors">
+                                    View Details
+                                    <span class="material-symbols-outlined text-[18px]">arrow_forward</span>
+</button>
+</div>
+</div>
+</div>
+</article>
+<!-- Card 3 -->
+<article class="glass-card rounded-xl overflow-hidden flex flex-col group border-t border-l border-white/10 border-b-transparent border-r-transparent transition-all duration-300 hover:shadow-[0_8px_30px_rgb(0,0,0,0.5)] hover:-translate-y-1 relative opacity-75 hover:opacity-100">
+<div class="absolute top-4 right-4 z-10 px-3 py-1 bg-background/80 backdrop-blur-md border border-white/10 rounded-full flex items-center gap-1.5">
+<div class="w-2 h-2 rounded-full bg-surface-variant border border-on-surface-variant"></div>
+<span class="font-label-sm text-label-sm text-on-surface-variant">Upcoming</span>
+</div>
+<div class="h-48 w-full relative overflow-hidden bg-surface-variant">
+<div class="absolute inset-0 bg-gradient-to-t from-surface-container-lowest to-transparent z-10"></div>
+<img alt="Luxury residential exterior" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 grayscale-[30%]" data-alt="A modern luxury residential property viewed at dusk. The architecture features flat roofs, expansive glass walls, and a minimalist landscaping design. Soft, warm amber light glows from within the interior spaces, providing a striking contrast to the deep, desaturated twilight blues of the exterior environment, perfectly complementing a high-end dark interface." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBnUkBh5kczVQU8h8Jxz1_mdfi7I3unT80_36sYNbISxxFL1zc91ZgTPomlQvkNxIBQvGNLs5lmQfZdPVzys7PhL3SCkmJE7Jqp2ITzMyxqFAq9fVKQ-0Rd6u5OJYNLeP_eDN9DZ24Zy0EbafSHzfRCXvRybpqoWtEWar0fV7R-6JjAF_cYv8L9GG9L1NzUv1rnS5fype8d4ID2HJeKcDDF1sUu_7_LYOSNXTG90w7OpBKJJ001qSGflQFxWg2Rc5X0iIVVBQLIEejo">
+</div>
+<div class="p-6 flex flex-col flex-1 relative z-20 -mt-8">
+<div class="mb-4">
+<span class="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider mb-1 block">Luxury Single Family (Flip)</span>
+<h3 class="font-headline-md text-headline-md text-on-surface">The Paradigm Estate</h3>
+<div class="flex items-center gap-1 mt-1 text-on-surface-variant">
+<span class="material-symbols-outlined text-[16px]">location_on</span>
+<span class="font-body-sm text-body-sm">Scottsdale, AZ</span>
+</div>
+</div>
+<div class="grid grid-cols-3 gap-3 mb-6 bg-surface-container/50 p-4 rounded-lg border border-white/5">
+<div>
+<p class="font-label-sm text-label-sm text-on-surface-variant mb-1">Target IRR</p>
+<p class="font-headline-md text-headline-md text-on-surface-variant">22.0%</p>
+</div>
+<div>
+<p class="font-label-sm text-label-sm text-on-surface-variant mb-1">Term</p>
+<p class="font-headline-md text-headline-md text-on-surface">12 <span class="text-body-sm text-on-surface-variant">mo</span></p>
+</div>
+<div>
+<p class="font-label-sm text-label-sm text-on-surface-variant mb-1">Minimum</p>
+<p class="font-headline-md text-headline-md text-on-surface">$100k</p>
+</div>
+</div>
+<div class="mt-auto">
+<div class="flex justify-between items-end mb-2">
+<span class="font-body-sm text-body-sm text-on-surface-variant">Target Capital</span>
+<span class="font-label-md text-label-md text-on-surface">$2.5M</span>
+</div>
+<div class="h-1.5 w-full bg-surface-container-high rounded-full overflow-hidden">
+<div class="h-full bg-surface-variant rounded-full" style="width: 0%;"></div>
+</div>
+<div class="flex justify-between items-center mt-4">
+<span class="font-label-sm text-label-sm text-on-surface-variant">Opens in 14 days</span>
+<button class="text-primary-fixed font-label-md text-label-md flex items-center gap-1 hover:text-primary transition-colors">
+                                    Notify Me
+                                    <span class="material-symbols-outlined text-[18px]">notifications_active</span>
+</button>
+</div>
+</div>
+</div>
+</article>
+</div>
+</div>
+</main>
+
+
+</body></html>

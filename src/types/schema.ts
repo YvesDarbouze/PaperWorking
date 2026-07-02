@@ -1,5 +1,7 @@
 // PaperWorking Project Schema
 
+import type { NotificationCategory, CategoryPreference } from './user';
+
 // ── Phase Pipeline Snapshots ─────────────────────────────────
 // Written once (immutable) when a user advances past a phase.
 // Sub-collection path: projects/{projectId}/phaseSnapshots/{phaseKey}
@@ -96,7 +98,38 @@ export interface TransactionLedger {
   updatedAt?: Date;
 }
 
-// 1. Roles Definition
+// 1. Roles & Permissions Definition
+// 1.0 Atomic Permissions Catalog
+export type Permission = 
+  | 'projects.view'
+  | 'projects.create'
+  | 'projects.edit'
+  | 'projects.delete'
+  | 'tasks.view'
+  | 'tasks.create'
+  | 'tasks.edit'
+  | 'tasks.assign'
+  | 'reports.view'
+  | 'reports.export'
+  | 'billing.manage'
+  | 'team.invite'
+  | 'team.manage_members'
+  | 'team.manage_roles'
+  | 'vendors.manage'
+  | 'deal_marketplace.post'
+  | 'crowdfunding.manage'
+  | 'settings.manage';
+
+// 1.0.1 Custom Role Schema (Stored in /organizations/{orgId}/roles/{roleId})
+export interface CustomRole {
+  id: string;
+  name: string;
+  description: string;
+  permissions: Permission[];
+  createdAt: Date;
+  updatedAt: Date;
+}
+
 export type Role =
   | 'Lead Investor'      // Admin (Read/Write all)
   | 'Platform Admin'     // PaperWorking Site-wide Admin
@@ -106,6 +139,8 @@ export type Role =
   | 'Accountant'         // Viewer/Export (Read all, no edits unless authorized)
   | 'Lender'              // Read-Only (Read specific financial data)
   | 'Vendor'              // External Professional (Marketplace access)
+  | 'Analyst'             // Read-Only viewer
+  | 'Observer'            // Read-Only viewer
   | 'Standard'            // General user
   | 'Guest';              // Very limited view
 
@@ -141,9 +176,17 @@ export interface OrgTeamMember {
   email: string;
   displayName: string;
   internalRole: InternalRole;
+  customPermissions?: Permission[];
+  scope?: 'tenant' | 'project';
   assignedProjectIds: string[]; // Projects this member leads (Project Lead only)
+  /** Authoritative scoped project list set at invite time — enforced server-side */
+  scopedProjectIds?: string[];
+  /** true when the member was invited with explicit project-scope restrictions */
+  isScoped?: boolean;
   invitedAt: Date;
-  status: 'active' | 'invited' | 'removed';
+  status: 'active' | 'invited' | 'removed' | 'suspended';
+  /** ISO string from users/{uid}/sessions sub-collection; null = no recorded session */
+  lastSeenAt?: string | null;
 }
 
 // 1.5. Organization Schema
@@ -172,8 +215,11 @@ export interface ApplicationUser {
   uid: string;
   email: string;
   displayName: string;
-  organizationId: string; // REQUIRED: Enforces strict data containment to the Organization
-  orgRole: OrgRole; // Account-holder self-designation
+  personalOrganizationId: string; // The user's default "Me" workspace
+  organizationId?: string; // DEPRECATED: Transitioning to personalOrganizationId
+  memberships?: Record<string, OrgRole | string>; // Map of tenant ID to role
+  orgRole: OrgRole | string; // Account-holder self-designation or Custom Role ID
+  orgPermissions?: Permission[]; // RBAC: Denormalized org-level permissions for rule enforcement
   subscriptionPlan: 'None' | 'Individual' | 'Team' | 'Vendor Network';
   subscriptionStatus: 'inactive' | 'active' | 'past_due' | 'canceled' | 'trialing' | 'incomplete' | 'paused';
   accountType?: 'investor' | 'vendor';
@@ -184,7 +230,21 @@ export interface ApplicationUser {
   stripeCustomerId?: string;
   stripeSubscriptionId?: string;
   lastFour?: string;
-  cardBrand?: string;
+  // Integration Metadata
+  googleCalendarRefreshToken?: string;
+
+  /* ── Push & Email Notifications Preferences ── */
+  preferences?: {
+    pushEnabled?: boolean;
+    emailEnabled?: boolean;
+    quietHours?: {
+      enabled: boolean;
+      start: string;
+      end: string;
+      timezone: string;
+    };
+    categories?: Record<NotificationCategory, CategoryPreference>;
+  };
 
   createdAt: Date;
   updatedAt: Date;
@@ -230,6 +290,44 @@ export interface CrowdfundInvitation {
   status: 'pending' | 'accepted' | 'expired' | 'declined';
   createdAt: Date;
   expiresAt: Date;
+}
+
+// 2.6.4 Audit Log
+export interface AuditLog {
+  id: string;
+  organizationId: string;
+  actorUid: string;
+  actorName: string;
+  action: 'MEMBER_INVITED' | 'MEMBER_ROLE_CHANGED' | 'MEMBER_SUSPENDED' | 'MEMBER_REMOVED' | 'MEMBER_PERMISSIONS_CHANGED' | 'PROJECT_SCOPE_CHANGED';
+  targetUid?: string;
+  targetEmail?: string;
+  metadata: Record<string, any>;
+  createdAt: Date;
+}
+
+// 2.6.5 Team Invitation
+export interface TeamInvitation {
+  id: string;
+  token: string; // Unique token for the invite link
+  organizationId: string;
+  organizationName: string;
+  email: string;
+  role: InternalRole;
+  status: 'pending' | 'accepted' | 'expired' | 'revoked';
+  invitedByUid: string;
+  invitedByName: string;
+  createdAt: Date;
+  expiresAt: Date;
+  day3ReminderSent?: boolean;
+  day6ReminderSent?: boolean;
+  invitedToTaskId?: string;
+  /** @deprecated use scopedProjectIds */
+  invitedToProjectId?: string;
+  /** Authoritative scoped project list — written at invite time */
+  scopedProjectIds?: string[];
+  /** true when an explicit project-scope restriction was configured */
+  isScoped?: boolean;
+  lastSentAt?: Date;
 }
 
 // ── Find & Fund Module Types ──────────────────────────
@@ -434,7 +532,156 @@ export interface RoleLinkedDocument {
   notes: string;
 }
 
-export type PhaseStatus = 'Phase 1: Find & Fund' | 'Phase 2: Acquisition' | 'Phase 3: Holding & Rehab' | 'Phase 4: Closing & Exit';
+export type PhaseStatus =
+  | 'Phase 1: Find & Fund'
+  | 'Phase 2: Acquisition'
+  | 'Phase 3: Holding & Rehab'
+  | 'Phase 4: Closing & Exit'
+  | 'Phase 3: Rehab & Hold'
+  | 'Phase 4: Realized'
+  | 'Phase 1: Acquisition'
+  | 'Phase 2: Transaction'
+  | 'Phase 2: Closing'
+  | 'Phase 3: Rehab'
+  | 'Phase 4: Hold / Exit';
+
+
+// ── REIL v2 Types ──────────────────────────────────────────
+
+export interface TransactionVendorAssignment {
+  vendorType: 'real_estate_lawyer' | 'loan_processor';
+  vendorId: string;
+  assignedAt: any;
+  status: string;
+}
+
+export interface ProjectTransaction {
+  financingType?: 'Financed' | 'All Cash';
+  closingCosts?: number;
+  totalCashInvested?: number;
+  loanProcessorName?: string;
+  closingAttorneyName?: string;
+  inspectionCost?: number;
+  titleSearchCost?: number;
+  insuranceCost?: number;
+  hoaMonthly?: number;
+  vendorAssignments?: TransactionVendorAssignment[];
+}
+
+export interface RehabLineItem {
+  label: string;
+  amount: number;
+  tier: 'Staging' | 'Minor' | 'Rehab' | 'Gut' | 'Construction';
+  vendor: string;
+  status: string;
+  photos: string[];
+  receipts: string[];
+}
+
+export interface RehabVendorAssignment {
+  vendorType: 'general_contractor' | 'specialty_contractor';
+  vendorId: string;
+  assignedAt: any;
+  status: string;
+}
+
+export interface ProjectRehab {
+  lineItems?: RehabLineItem[];
+  vendorAssignments?: RehabVendorAssignment[];
+  tier?: 'Staging' | 'Minor' | 'Rehab' | 'Gut' | 'Construction';
+  startDate?: any;
+  completedDate?: any;
+  versionHistory?: any[];
+
+  // Legacy fields from RehabModule to prevent typescript compile errors in workspaces
+  scopeOfWork?: any[];
+  contractorBids?: any[];
+  drawSchedule?: any[];
+  currentStage?: string;
+  baseBudget?: number;
+  contingencyBufferPercentage?: number;
+  tasks?: any[];
+  permits?: any[];
+  pendingReceipts?: any[];
+  drawRequests?: any[];
+}
+
+export interface OtherHoldCost {
+  label: string;
+  amount: number;
+}
+
+export interface HoldCostPeriod {
+  period: string; // YYYY-MM
+  phaseAtPeriod: 'acquisition' | 'transaction' | 'rehab' | 'hold_exit';
+  insurance: number;
+  propertyTax: number;
+  maintenance: number;
+  housekeeping: number;
+  utilities: number;
+  hoa: number;
+  debtService: number;
+  otherCosts: OtherHoldCost[];
+  total: number;
+}
+
+export interface ProjectHoldCost {
+  periods: HoldCostPeriod[];
+}
+
+export interface SaleData {
+  salePrice: number;
+  saleDate: string;
+  sellingCosts: number;
+}
+
+export interface StabilizedRevenue {
+  period: string;
+  modality: string;
+  grossRevenue: number;
+}
+
+export interface ExitModalitySpecificFields {
+  monthlyRent?: number;
+  leaseTerm?: number | string;
+  tenantId?: string;
+  nightlyRate?: number;
+  occupiedNights?: number;
+  totalNights?: number;
+  platform?: 'airbnb' | 'vrbo' | 'both';
+  salePrice?: number;
+  saleDate?: string;
+  sellingCosts?: number;
+  monthlyLease?: number;
+  lesseeId?: string;
+}
+
+export interface ExitModalityPeriod {
+  period: string;
+  modality: 'sale' | 'long_term_rental' | 'lease' | 'short_term_rental' | 'none';
+  modalityStartDate: string;
+  modalitySpecificFields: ExitModalitySpecificFields;
+}
+
+export interface ProjectExit {
+  currentModality: 'sale' | 'long_term_rental' | 'lease' | 'short_term_rental' | 'none';
+  modalityHistory: ExitModalityPeriod[];
+  sale: SaleData | null;
+  stabilizedRevenue: StabilizedRevenue[];
+}
+
+export interface DataCompletionTask {
+  taskId: string;
+  projectId: string;
+  assignedToUserId: string;
+  fieldPath: string;
+  expectedFrequency: 'monthly' | 'one_off';
+  lastSatisfiedAt: any;
+  nextDueAt: any;
+  missedCount: number;
+  escalationLevel: 'none' | 'warning' | 'alert';
+}
+
 
 // Phase 1: Mandatory Document Checklist (Purchase Readiness)
 export type PurchaseReadinessItemType = 'Operating Agreement' | 'Proof of Funds' | 'Title Commitment' | 'Entity Documents (LLC/Inc)';
@@ -456,9 +703,19 @@ export interface Project {
   organizationId: string; // REQUIRED: Maps project to exactly one tenant for B2B data isolation
   propertyName: string;
   address: string;
+  zip?: string;
+  phase?: string;
+  name?: string;
+  numberOfUnits?: number;
+  occupiedUnits?: number;
   squareFootage?: number; // Core metric for sqft-based reporting
   status: 'Active' | 'Lead' | 'Under Contract' | 'Renovating' | 'Listed' | 'Sold' | 'Rented' | 'closed_won' | 'closed_lost';
   phaseStatus?: PhaseStatus; // High-level horizontal phase tracker
+  strategyType?: 'Sell' | 'Rent' | 'Fix & Flip' | 'Buy & Hold';
+  assetClass?: 'Residential' | 'Multi-Family' | 'Commercial' | 'Land';
+  leadEmail?: string;
+  partnerEmails?: string;
+  vision?: string;
   yearBuilt?: number;
   members: Record<string, ProjectMember>; // Map of user UIDs to their role in the project
   financials: ProjectFinancials;
@@ -485,15 +742,40 @@ export interface Project {
   closingChecklist?: ClosingChecklistItem[]; // Phase 2: Closing Checklist
   isClearToClose?: boolean; // Milestone gate
   
-  // Phase progression (1=Acquisition, 2=Purchase, 3=Hold, 4=Exit)
   currentPhase?: number;
+  transaction?: ProjectTransaction;
+  rehab?: ProjectRehab;
+  holdCost?: ProjectHoldCost;
+  exit?: ProjectExit;
+  
+  propertyFacts?: {
+    beds?: number;
+    baths?: number;
+    sqft?: number;
+    propertyType?: string;
+    estRentCents?: number;
+    listPriceCents?: number;
+    [key: string]: any;
+  };
 
   actionItems?: any[]; // Persistent storage for ProjectTodoList tasks
+  lenderVaultDocuments?: {
+    id: string;
+    name: string;
+    status: 'pending' | 'verified';
+    fileUrl?: string;
+    storagePath?: string;
+    uploadedAt?: string;
+  }[];
 
   // Phase 4 Exit & Settlement
   settlementDocuments?: SettlementDocument[]; // HUD-1, Closing Disclosures
 
   locked?: boolean; // Global read-only lock after closure
+  lastSyncedAt?: string | Date;
+  valueSyncedAt?: string | Date;
+  rentSyncedAt?: string | Date;
+  marketSyncedAt?: string | Date;
   createdAt: Date;
   updatedAt: Date;
   lastPhaseTransitionAt?: Date; // Phase 6: Tracks time spent in a specific lifecycle state
@@ -503,7 +785,8 @@ export interface Project {
 
 export interface ProjectMember {
   uid: string;
-  role: Role;
+  role: Role | string;
+  projectPermissions?: Permission[]; // RBAC: Denormalized project-level permissions
   joinedAt: Date;
 }
 
@@ -582,6 +865,23 @@ export interface InspectionItem {
   loggedBy?: string; // UID
 }
 
+// ── Title Search Checklist ─────────────────────────────────────
+// Promoted from TitleSearchClearance.tsx to allow Firestore persistence + type-sharing.
+export type ClearanceStatus = 'Pending' | 'In Review' | 'Cleared' | 'Issue Found';
+
+export interface TitleCheckItem {
+  id: string;
+  name: string;
+  status: ClearanceStatus;
+  notes?: string;
+  /** UID of the team member who last set this to Cleared / Issue Found */
+  clearedByUid?: string;
+  /** Display name of that member */
+  clearedByName?: string;
+  /** ISO 8601 timestamp when the status was last changed to a terminal state */
+  clearedAt?: string;
+}
+
 export interface ClosingRoom {
   titleInsuranceUrl: string | null;
   closingDisclosureUrl: string | null;
@@ -590,6 +890,12 @@ export interface ClosingRoom {
   lawyerVerified: boolean;
   blockchainTxHash: string | null;
   chainOfTitleStatus: 'pending' | 'verified' | 'failed';
+  verifiedByUid?: string | null;
+  verifiedByName?: string | null;
+  verifiedAt?: string | null;
+  verifiedRole?: string | null;
+  /** Per-check title clearance status, persisted to Firestore, attributed per member */
+  titleChecks?: TitleCheckItem[];
 }
 
 export type LeadSource =
@@ -600,7 +906,8 @@ export type LeadSource =
   | 'Auction'
   | 'Probate'
   | 'Driving for Dollars'
-  | 'Referral';
+  | 'Referral'
+  | 'Manual';
 
 export interface ComparableSale {
   id: string;
@@ -619,12 +926,36 @@ export interface DistressedIndicators {
 }
 
 export type FundingCategory = 'Hard Money Loans' | 'Private Money' | 'Conventional Financing';
+export type FundingSourceStatus = 'Exploring' | 'Pre-Approved' | 'Applied' | 'Approved' | 'Funded' | 'Declined';
 
 export interface CapitalSource {
   id: string;
   category: FundingCategory;
   amount: number;
   interestRate: number; // e.g., 12 for 12%
+  // Optional enrichment fields (added by FundingSourceTracker)
+  lenderName?: string;
+  termMonths?: number;
+  status?: FundingSourceStatus;
+  notes?: string;
+}
+
+// ── R3 Hold Agent — Rehab Tier Classification ─────────────
+export type RehabTier =
+  | 'Staging'                // $1k–$5k
+  | 'Minor Cosmetic'         // $5k–$20k
+  | 'Minor Rehab'            // $15k–$50k
+  | 'Full Rehab'             // $40k–$100k
+  | 'Gut Renovation'         // $75k–$200k
+  | 'Ground-Up Construction'; // $150k+
+
+// R3 Hold Agent — Field-level edit history for versioned data
+export interface HoldEditHistoryEntry {
+  field: string;
+  oldValue: any;
+  newValue: any;
+  editedAt: Date;
+  editedByUid: string;
 }
 
 export interface ProjectFinancials {
@@ -633,6 +964,18 @@ export interface ProjectFinancials {
   arv?: number;         // Shorthand alias — calculation components may write here; consumers should prefer estimatedARV
   listedPrice?: number; // Current Listed Price (if applicable)
   costs: CostEntry[]; // Ledger of costs
+
+  // Phase-specific fields (Project lifecycle spine)
+  targetPurchasePrice?: number;
+  capitalRaiseTarget?: number;
+  committedCapital?: number;
+  actualRehabCost?: number;
+  rehabBudget?: number;
+  rehabActual?: number;
+  rehabDoneDate?: any;
+  actualRentalIncome?: number;
+  daysOccupied?: number;
+  totalHoldDays?: number;
 
   // Phase 1 Deal Analyzer — Sourcing intelligence
   acquisitionDate?: Date;          // Explicit close/acquisition date for timeline tracking
@@ -646,7 +989,7 @@ export interface ProjectFinancials {
   emdClearedDate?: Date;
   emdVerified?: boolean;
   distressedIndicators?: DistressedIndicators;
-  offerStatus?: string;
+  offerStatus?: 'Draft' | 'Sent' | 'Countered' | 'Accepted' | 'Expired' | 'Withdrawn' | 'No' | 'Drafting' | 'Offer Sent' | 'Rejected' | 'Pending';
   counterPriceCents?: number;
   counterTerms?: string;
   
@@ -702,6 +1045,18 @@ export interface ProjectFinancials {
   propertyManagerEmail?: string;
   leasingFee?: number; // up-front leasing fee / tenant placement fee
   longTermMortgagePayment?: number; // per month
+  occupancyRate?: number;
+  grossRentMultiplier?: number;
+  projectedMonthlyRentSource?: string;
+
+  // Supplemental metrics fields
+  capitalReserves?: number;
+  tenantTurnoverRate?: number;
+  leaseRenewalRate?: number;
+  numberOfMoveOuts?: number;
+  numberOfRenewals?: number;
+  daysOnMarket?: number;
+
 
   // Deal Calculator Detailed Fields
   grossIncomeBaseRent?: number;
@@ -755,17 +1110,88 @@ export interface ProjectFinancials {
   capRate?: number;
   cashOnCashReturn?: number;
   closedOutcome?: 'won' | 'lost'; // Explicit performance outcome tracked post-closing
+
+  // Projected Underwriting Fields (Phase 1 Acquisition Guided Interview)
+  targetPrice?: number;
+  projectedRent?: number;
+  projectedSalePrice?: number;
+  projectedOpex?: number;
+  raiseTarget?: number;
+  equitySplit?: number;
+  investorInvites?: string[];
+  marketplaceListing?: boolean;
+  offerAmount?: number;
+  offerDate?: any; // Can be Date, string, or firestore Timestamp
+
+  // Phase 2 Purchase Actuals (Guided Interview)
+  financingType?: 'Financed' | 'All Cash'; // Router — gates loan questions; prevents DSCR divide-by-zero for all-cash
+  closingCosts?: number;                    // Total buy-side closing costs (title, escrow, recording, transfer tax)
+  totalCashInvested?: number;               // Down payment + closing costs — drives D4 CoC Return, D7 IRR (t₀)
+  loanProcessorName?: string;               // Vendor assignment: loan processor / loan officer
+  closingAttorneyName?: string;             // Vendor assignment: real estate closing attorney
+
+  // R2 Purchase Diligence — Optional cost tracking
+  inspectionCost?: number;                  // Licensed home inspection fee
+  titleSearchCost?: number;                 // Title search & commitment fee
+  insuranceCost?: number;                   // Annual hazard insurance premium
+  hoaMonthly?: number;                      // Monthly HOA/condo fees (if applicable)
+
+  // Phase 4 Exit Realized Fields
+  exitType?: 'Sale' | 'Stabilization' | 'Refinance';
+  sellingCosts?: number;
+  isStabilized?: boolean;
+  stabilizationDate?: any;
+  refiLoanAmount?: number;
+  refiInterestRate?: number;
+  refiLoanTermYears?: number;
+  refiCashOut?: number;
+  refiDate?: any;
+  isRefinanced?: boolean;
+
+  // R0 — Ownership & Capital Structure
+  ownershipPercentage?: number;           // 0-100, default 100. Reduced by crowdfund commitments.
+  ownerCashInvested?: number;             // Actual cash the owner put in (may differ from totalCashInvested)
+  entryPath?: 'new_acquisition' | 'already_owned' | 'backdated';
+
+  // R3 — Hold Agent: Rehab Tier & Extended Holding Costs
+  rehabTier?: RehabTier;                  // Selected rehab scope classification
+  rehabTierBudgetLow?: number;            // Auto-populated template low-end for selected tier
+  rehabTierBudgetHigh?: number;           // Auto-populated template high-end for selected tier
+  holdingCostMaintenance?: number;        // Monthly maintenance/CapEx during hold (non-rental)
+  holdingCostManagement?: number;         // Monthly management fee during hold (non-rental PM)
+  totalMonthlyHoldingCost?: number;       // Derived: sum of all itemized monthly holding costs
+  holdStartDate?: any;                    // Explicit hold clock start (defaults to acquisitionDate)
+
+  // R4 — Exit/Rent Agent
+  rentalMarketingCost?: number;           // Marketing spend for rental tenant placement
+  exitAttorneyFees?: number;              // Sell-side attorney fees
+  exitMarketingCost?: number;             // Sale-side marketing spend
+  realizedGrossProfit?: number;           // Derived: salePrice - purchasePrice
+  realizedNetProceeds?: number;           // Derived: salePrice - allSellCosts
+  realizedROI?: number;                   // Derived: netProfit / totalCashInvested * 100
+  taxEstimateSnapshot?: TaxEstimate;      // Frozen tax estimate at time of sale finalization
+
+  // Phase 2 Closing Cost Model — per-line overrides (keyed by ClosingCostLine.id)
+  closingCostOverrides?: Record<string, number>;
+
+  // Schedule E Depreciation & Tax
+  taxAssessedLandValue?: number;
+  taxAssessedImprovementValue?: number;
+  placedInServiceDate?: string;
+  annualAdvertisingExpense?: number;     // Recurring advertising / vacancy-listing costs (Schedule E Line 5)
 }
 
 export interface ExitAssets {
   stagingImages?: string[];
   mlsListingLink?: string;
+  mlsListingStatus?: 'pending_integration' | 'syndicated' | 'failed' | 'draft';
 }
 
 // Updating Project Model to include Exit Assets
 declare module './schema' {
   interface Project {
     exitAssets?: ExitAssets;
+    exitEditHistory?: HoldEditHistoryEntry[];
   }
 }
 
@@ -1052,7 +1478,7 @@ declare module './schema' {
   interface Project {
     stateCode?: string; // e.g. FL, TX
     closingPortal?: ClosingPortalState;
-    rehab?: RehabModule;
+    rehab?: ProjectRehab;
     // NOTE: privateFinancials lives as a SUB-COLLECTION, not an inline field.
     // Access via: projects/{projectId}/privateFinancials/summary
     // This ensures Contractors are blocked at the Firestore Rules level.
@@ -1075,6 +1501,10 @@ declare module './schema' {
         permits: { id: string; url: string };
       };
     };
+
+    // R3 — Hold Agent: Versioned edit history & tier
+    holdEditHistory?: HoldEditHistoryEntry[]; // Append-only audit trail for hold field edits
+    rehabTier?: RehabTier;                     // Top-level convenience alias
   }
 }
 
@@ -1150,8 +1580,27 @@ export interface CommunicationThread {
 
 // ── Phase 11: Vendor Marketplace Types ──────────────────
 
-export type VendorType = 'Lawyer' | 'Appraiser';
-export type RequestStatus = 'PENDING' | 'QUOTED' | 'ACCEPTED' | 'COMPLETED' | 'DECLINED';
+export type VendorType = 'Lawyer' | 'Appraiser' | 'Lender' | 'Inspector' | 'Title' | 'Insurance' | 'Contractor' | 'Property Manager' | 'Listing Agent';
+export type RequestStatus = 'PENDING' | 'QUOTED' | 'ACCEPTED' | 'COMPLETED' | 'DECLINED' | 'CANCELLED';
+export type AssignmentStatus = 'PENDING' | 'ACCEPTED' | 'DECLINED' | 'COMPLETED' | 'CANCELLED';
+
+export interface VendorAssignment {
+  id: string;
+  projectId: string;
+  vendorId: string;                // vendor's Firestore UID
+  vendorName: string;              // denormalized for display
+  vendorCompanyName: string;       // denormalized for display
+  serviceType: VendorType;         // type of service requested
+  requestedBy: string;             // investor UID who created the assignment
+  requestedByName: string;         // denormalized for display
+  status: AssignmentStatus;
+  message?: string;                // optional context from investor
+  quotedFee?: number;              // fee quoted by vendor
+  respondedAt?: Date;              // when vendor accepted/declined
+  completedAt?: Date;              // when work was completed
+  createdAt: Date;
+  updatedAt: Date;
+}
 
 export interface VendorProfile {
   id: string;
@@ -1159,6 +1608,7 @@ export interface VendorProfile {
   type: VendorType;
   companyName: string;
   licensingStates: string[];
+  serviceAreas?: string[]; // Array of zip codes
   specialties: string[];
   bio: string;
   avgTurnaroundDays: number;
@@ -1217,6 +1667,7 @@ export interface DealDocument {
   category: DealDocumentCategory;
   fileName: string;
   fileUrl?: string;
+  storagePath?: string;    // Firebase Storage path — for re-OCR and archive
   fileSize?: number;
   mimeType?: string;
   uploadedByUid: string;
@@ -1258,3 +1709,96 @@ export interface CRMContact {
 
 // Legacy alias — keeps older tests and scripts compatible with the renamed Project type
 export type PropertyDeal = Project;
+
+// ── KPI & Analytics Types ──────────────────────────────
+
+// Sub-Collection Model: organizations/{organizationId}/metricSnapshots/{dateKey}
+export interface MetricSnapshot {
+  id: string; // The dateKey (e.g., "2026-05-20")
+  organizationId: string;
+  date: Date;
+  
+  // The daily metrics
+  totalDocuments: number;
+  pendingSignatures: number;
+  teamEfficiencyScore: number; // e.g., 94 for 94%
+  storageUsageBytes: number; 
+  
+  createdAt: Date;
+}
+
+export interface PropertyMetricSnapshot {
+  id: string; // Format: `${projectId}_${period}`
+  projectId: string;
+  organizationId: string;
+  period: string; // "YYYY-MM" (monthly), "YYYY-QX" (quarterly), or "YYYY" (annual)
+  periodType: 'monthly' | 'quarterly' | 'annual';
+  date: Date; // The first day of the period, saved as Timestamp/Date
+  
+  // 10 core financial metrics + IRR
+  noi: number | null;
+  annualCashFlow: number | null;
+  monthlyCashFlow: number | null;
+  capRate: number | null;
+  arvCapRate: number | null;
+  cashOnCashReturn: number | null;
+  grossRentMultiplier: number | null;
+  dscr: number | null;
+  ltv: number | null;
+  oer: number | null;
+  occupancyRate: number | null;
+  irr: number | null;
+  appreciation: number | null;
+  isAppreciationRealized: boolean | null;
+
+  // Raw component fields used for portfolio weighting
+  propertyValue: number | null;
+  totalCashInvested: number | null;
+  grossRentalIncome: number | null;
+  annualDebtService: number | null;
+  loanAmount: number | null;
+  totalOperatingExpenses: number | null;
+  grossOperatingIncome: number | null;
+  occupiedUnits: number | null;
+  numberOfUnits: number | null;
+
+  // R0 — Investor-scope fields
+  ownershipPercentage: number | null;
+  investorNOI: number | null;
+  investorCashFlow: number | null;
+  investorCoCReturn: number | null;
+
+  createdAt: Date;
+}
+
+// ── R0 — Field Edit History (Audit Trail) ─────────────────────────────────────
+
+export interface FieldEditEntry {
+  id?: string;                   // Firestore auto-generated
+  field: string;                 // e.g. "purchasePrice"
+  previousValue: number;
+  newValue: number;
+  changedAt: Date;
+  changedByUid: string;
+  reason?: string;               // Optional user-supplied justification
+}
+
+// ── R0 — Dual-Scope Metrics ──────────────────────────────────────────────────
+
+export interface InvestorMetrics {
+  ownershipPercentage: number;     // The % used for scaling (0-100)
+  ownerCashInvested: number;       // Actual cash the owner put in
+  investorNOI: number;             // NOI × ownership%
+  investorAnnualCashFlow: number;  // CashFlow × ownership%
+  investorMonthlyCashFlow: number;
+  investorCapRate: number;         // Same as asset (property-level metric)
+  investorCoCReturn: number;       // investorAnnualCashFlow / ownerCashInvested
+  investorNetProfit: number;       // netProfit × ownership%
+  investorROI: number;             // investorNetProfit / ownerCashInvested
+  investorEquityValue: number;     // propertyValue × ownership%
+}
+
+export interface DualScopeMetrics {
+  asset: import('@/lib/metrics/reiMetrics').DerivedMetrics;
+  investor: InvestorMetrics;
+}

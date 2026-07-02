@@ -22,6 +22,7 @@ import { projectsService } from '@/lib/firebase/projects';
 import { Loader2, Save } from 'lucide-react';
 import LOIGenerator from './LOIGenerator';
 import { useRouter } from 'next/navigation';
+import { Switch } from '../ui';
 
 /* ═══════════════════════════════════════════════════════════════
    ProjectCalculator — Financial Analysis Container
@@ -843,10 +844,7 @@ export default function ProjectCalculator({ phaseColor, projectId, propertyAddre
               ].map((indicator, idx) => (
                 <label key={idx} className={`flex items-center justify-between p-3 rounded-md transition-colors ${readOnly ? 'opacity-60 cursor-not-allowed' : 'cursor-pointer'}`} style={{ border: '1px solid var(--border-ui)', background: indicator.value ? `${phaseColor}10` : 'transparent' }}>
                   <span className="text-[12px] font-bold" style={{ color: 'var(--text-primary)' }}>{indicator.label}</span>
-                  <div className={`w-9 h-5 rounded-full flex items-center p-0.5 transition-colors duration-200 ${indicator.value ? 'justify-end' : 'justify-start'}`} style={{ background: indicator.value ? phaseColor : 'var(--border-ui)' }}>
-                    <div className="w-4 h-4 rounded-full bg-white shadow-sm" />
-                  </div>
-                  <input type="checkbox" className="hidden" checked={indicator.value} onChange={(e) => indicator.setter(e.target.checked)} disabled={readOnly} />
+                  <Switch checked={indicator.value} onChange={(e) => indicator.setter(e.target.checked)} disabled={readOnly} />
                 </label>
               ))}
             </div>

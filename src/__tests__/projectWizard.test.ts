@@ -1,0 +1,508 @@
+/**
+ * @jest-environment jsdom
+ */
+
+import { renderHook } from '@testing-library/react';
+import {
+  PROJECT_WIZARD_QUESTIONS,
+  getActiveQuestions,
+  setNestedField,
+  getNestedField,
+  WizardQuestion
+} from '@/lib/utils/projectWizardSchema';
+import { useProjectFormValidation } from '@/hooks/useProjectFormValidation';
+
+describe('Project Creation Wizard Schema & Branching', () => {
+  describe('setNestedField & getNestedField', () => {
+    it('handles flat assignments', () => {
+      const obj: any = {};
+      setNestedField(obj, 'propertyName', 'Test Project');
+      expect(obj.propertyName).toBe('Test Project');
+      expect(getNestedField(obj, 'propertyName')).toBe('Test Project');
+    });
+
+    it('handles nested dotted paths', () => {
+      const obj: any = {};
+      setNestedField(obj, 'financials.purchasePrice', 500000);
+      expect(obj.financials).toBeDefined();
+      expect(obj.financials.purchasePrice).toBe(500000);
+      expect(getNestedField(obj, 'financials.purchasePrice')).toBe(500000);
+    });
+
+    it('returns undefined for non-existent path', () => {
+      const obj = { financials: { price: 100 } };
+      expect(getNestedField(obj, 'financials.nonExistent')).toBeUndefined();
+      expect(getNestedField(obj, 'other.nested.field')).toBeUndefined();
+    });
+  });
+
+  describe('getActiveQuestions - Branching Conditions', () => {
+    it('includes basic questions by default', () => {
+      const answers = {
+        isBackdated: 'no',
+        startingPhase: 1,
+        financingIntent: 'financing',
+      };
+      const active = getActiveQuestions(answers);
+      const activeIds = active.map(q => q.id);
+
+      expect(activeIds).toContain('location');
+      expect(activeIds).toContain('propertyName');
+      expect(activeIds).toContain('strategyType');
+      expect(activeIds).toContain('financingIntent');
+    });
+
+    it('excludes financing questions for all-cash projects', () => {
+      const answers = {
+        isBackdated: 'no',
+        startingPhase: 1,
+        financingIntent: 'all-cash',
+      };
+      const active = getActiveQuestions(answers);
+      const activeIds = active.map(q => q.id);
+
+      expect(activeIds).not.toContain('loanAmount');
+      expect(activeIds).not.toContain('loanInterestRate');
+      expect(activeIds).not.toContain('loanTermYears');
+    });
+
+    it('includes financing questions for financed projects', () => {
+      const answers = {
+        isBackdated: 'no',
+        startingPhase: 1,
+        financingIntent: 'financing',
+      };
+      const active = getActiveQuestions(answers);
+      const activeIds = active.map(q => q.id);
+
+      expect(activeIds).toContain('loanAmount');
+      expect(activeIds).toContain('loanInterestRate');
+      expect(activeIds).toContain('loanTermYears');
+    });
+
+    it('excludes sale/exit questions for backdated projects that are not entering at Phase 4', () => {
+      const answers = {
+        isBackdated: 'yes',
+        startingPhase: 3, // Rehab & Hold
+        financingIntent: 'all-cash',
+      };
+      const active = getActiveQuestions(answers);
+      const activeIds = active.map(q => q.id);
+
+      expect(activeIds).not.toContain('dateOfSale');
+      expect(activeIds).not.toContain('actualSalePrice');
+      expect(activeIds).toContain('acquisitionDate');
+    });
+
+    it('includes sale/exit questions for backdated projects entering at Phase 4', () => {
+      const answers = {
+        isBackdated: 'yes',
+        startingPhase: 4, // Closing & Exit
+        financingIntent: 'all-cash',
+        isCompleted: true,
+      };
+      const active = getActiveQuestions(answers);
+      const activeIds = active.map(q => q.id);
+
+      expect(activeIds).toContain('dateOfSale');
+      expect(activeIds).toContain('actualSalePrice');
+      expect(activeIds).toContain('acquisitionDate');
+    });
+
+    it('excludes closeDate when the project is backdated', () => {
+      const answers = {
+        isBackdated: 'yes',
+        startingPhase: 3,
+        financingIntent: 'all-cash',
+      };
+      const active = getActiveQuestions(answers);
+      const activeIds = active.map(q => q.id);
+
+      expect(activeIds).not.toContain('closeDate');
+    });
+
+    it('includes closeDate when the project is not backdated', () => {
+      const answers = {
+        isBackdated: 'no',
+        startingPhase: 1,
+        financingIntent: 'all-cash',
+      };
+      const active = getActiveQuestions(answers);
+      const activeIds = active.map(q => q.id);
+
+      expect(activeIds).toContain('closeDate');
+    });
+
+    it('includes capital raising questions only when raisingOutsideCapital is yes', () => {
+      const activeNo = getActiveQuestions({ raisingOutsideCapital: 'no' }).map(q => q.id);
+      expect(activeNo).not.toContain('capitalRaiseTarget');
+      expect(activeNo).not.toContain('equitySplit');
+
+      const activeYes = getActiveQuestions({ raisingOutsideCapital: 'yes' }).map(q => q.id);
+      expect(activeYes).toContain('capitalRaiseTarget');
+      expect(activeYes).toContain('equitySplit');
+    });
+
+    it('includes rehabActual only for backdated projects entering at Phase 3 or later', () => {
+      const activeNoPhase = getActiveQuestions({ isBackdated: 'yes', startingPhase: 2 }).map(q => q.id);
+      expect(activeNoPhase).not.toContain('rehabActual');
+
+      const activeNoBackdated = getActiveQuestions({ isBackdated: 'no', startingPhase: 3 }).map(q => q.id);
+      expect(activeNoBackdated).not.toContain('rehabActual');
+
+      const activeYes = getActiveQuestions({ isBackdated: 'yes', startingPhase: 3 }).map(q => q.id);
+      expect(activeYes).toContain('rehabActual');
+    });
+
+    it('includes requiredContingencies only for prospective projects starting at Phase 1 or 2', () => {
+      const activeBackdated = getActiveQuestions({ isBackdated: 'yes', startingPhase: 1 }).map(q => q.id);
+      expect(activeBackdated).not.toContain('requiredContingencies');
+
+      const activePhase3 = getActiveQuestions({ isBackdated: 'no', startingPhase: 3 }).map(q => q.id);
+      expect(activePhase3).not.toContain('requiredContingencies');
+
+      const activeYes = getActiveQuestions({ isBackdated: 'no', startingPhase: 2 }).map(q => q.id);
+      expect(activeYes).toContain('requiredContingencies');
+    });
+
+    it('sorts questions dynamically by weight', () => {
+      const active = getActiveQuestions({
+        isBackdated: 'no',
+        startingPhase: 1,
+        financingIntent: 'financing',
+        raisingOutsideCapital: 'yes',
+      });
+      const weights = active.map(q => typeof q.weight === 'function' ? (q.weight as any)({}) : (q.weight ?? 100));
+      for (let i = 0; i < weights.length - 1; i++) {
+        expect(weights[i]).toBeLessThanOrEqual(weights[i + 1]);
+      }
+    });
+  });
+
+  describe('useProjectFormValidation Hook', () => {
+    const defaultQuestion: WizardQuestion = {
+      id: 'propertyName',
+      prompt: 'What should we call this Project?',
+      type: 'text',
+      field: 'propertyName',
+      required: true,
+    };
+
+    it('validates required text fields', () => {
+      const { result: r1 } = renderHook(() =>
+        useProjectFormValidation({ propertyName: '' }, defaultQuestion)
+      );
+      expect(r1.current.isValid).toBe(false);
+      expect(r1.current.validationError).toContain('required');
+
+      const { result: r2 } = renderHook(() =>
+        useProjectFormValidation({ propertyName: 'My Flip' }, defaultQuestion)
+      );
+      expect(r2.current.isValid).toBe(true);
+      expect(r2.current.validationError).toBeNull();
+    });
+
+    it('validates email structure for leadEmail', () => {
+      const question: WizardQuestion = {
+        id: 'leadEmail',
+        prompt: 'What is the lead email?',
+        type: 'text',
+        field: 'leadEmail',
+        required: true,
+      };
+
+      const { result: r1 } = renderHook(() =>
+        useProjectFormValidation({ leadEmail: 'bademail' }, question)
+      );
+      expect(r1.current.isValid).toBe(false);
+      expect(r1.current.validationError).toContain('valid email');
+
+      const { result: r2 } = renderHook(() =>
+        useProjectFormValidation({ leadEmail: 'test@example.com' }, question)
+      );
+      expect(r2.current.isValid).toBe(true);
+      expect(r2.current.validationError).toBeNull();
+    });
+
+    it('validates numeric / currency constraints', () => {
+      const question: WizardQuestion = {
+        id: 'purchasePrice',
+        prompt: 'What is the purchase price?',
+        type: 'currency',
+        field: 'financials.purchasePrice',
+        required: true,
+      };
+
+      const { result: r1 } = renderHook(() =>
+        useProjectFormValidation({ financials: { purchasePrice: 'abc' } }, question)
+      );
+      expect(r1.current.isValid).toBe(false);
+      expect(r1.current.validationError).toContain('must be a valid number');
+
+      const { result: r2 } = renderHook(() =>
+        useProjectFormValidation({ financials: { purchasePrice: '-500' } }, question)
+      );
+      expect(r2.current.isValid).toBe(false);
+      expect(r2.current.validationError).toContain('cannot be negative');
+
+      const { result: r3 } = renderHook(() =>
+        useProjectFormValidation({ financials: { purchasePrice: '0' } }, question)
+      );
+      expect(r3.current.isValid).toBe(false);
+      expect(r3.current.validationError).toContain('must be greater than zero');
+
+      const { result: r4 } = renderHook(() =>
+        useProjectFormValidation({ financials: { purchasePrice: '250000' } }, question)
+      );
+      expect(r4.current.isValid).toBe(true);
+      expect(r4.current.validationError).toBeNull();
+    });
+
+    it('validates acquisition date limits', () => {
+      const question: WizardQuestion = {
+        id: 'acquisitionDate',
+        prompt: 'Acquisition Date',
+        type: 'date',
+        field: 'financials.acquisitionDate',
+        required: true,
+      };
+
+      const getLocalDateStr = (d: Date) => {
+        const year = d.getFullYear();
+        const month = String(d.getMonth() + 1).padStart(2, '0');
+        const day = String(d.getDate()).padStart(2, '0');
+        return `${year}-${month}-${day}`;
+      };
+
+      // Today
+      const todayStr = getLocalDateStr(new Date());
+      const { result: r1 } = renderHook(() =>
+        useProjectFormValidation({ financials: { acquisitionDate: todayStr } }, question)
+      );
+      expect(r1.current.isValid).toBe(true);
+
+      // Future date
+      const tomorrow = new Date();
+      tomorrow.setDate(tomorrow.getDate() + 1);
+      const tomorrowStr = getLocalDateStr(tomorrow);
+      const { result: r2 } = renderHook(() =>
+        useProjectFormValidation({ financials: { acquisitionDate: tomorrowStr } }, question)
+      );
+      expect(r2.current.isValid).toBe(false);
+      expect(r2.current.validationError).toContain('cannot be in the future');
+
+      // More than 1 year ago
+      const twoYearsAgo = new Date();
+      twoYearsAgo.setFullYear(twoYearsAgo.getFullYear() - 2);
+      const twoYearsAgoStr = getLocalDateStr(twoYearsAgo);
+      const { result: r3 } = renderHook(() =>
+        useProjectFormValidation({ financials: { acquisitionDate: twoYearsAgoStr } }, question)
+      );
+      expect(r3.current.isValid).toBe(false);
+      expect(r3.current.validationError).toContain('cannot be older than 1 year');
+    });
+
+    it('validates address completeness for address type questions', () => {
+      const question: WizardQuestion = {
+        id: 'address',
+        prompt: 'Where is the property?',
+        type: 'address',
+        field: 'address',
+        required: true,
+      };
+
+      // Incomplete manual address
+      const { result: r1 } = renderHook(() =>
+        useProjectFormValidation({ street: '123 Main St', city: 'Miami' }, question)
+      );
+      expect(r1.current.isValid).toBe(false);
+      expect(r1.current.validationError).toContain('valid property address');
+
+      // Complete manual address
+      const { result: r2 } = renderHook(() =>
+        useProjectFormValidation({ street: '123 Main St', city: 'Miami', state: 'FL', zip: '33101' }, question)
+      );
+      expect(r2.current.isValid).toBe(true);
+
+      // MLS listing provided
+      const { result: r3 } = renderHook(() =>
+        useProjectFormValidation({ address: '123 Main St, Miami, FL 33101', mlsListingKey: 'mls-123' }, question)
+      );
+      expect(r3.current.isValid).toBe(true);
+    });
+
+    it('validates multi-select fields when required', () => {
+      const question: WizardQuestion = {
+        id: 'requiredContingencies',
+        prompt: 'Contingencies',
+        type: 'multi-select',
+        field: 'financials.requiredContingencies',
+        required: true,
+      };
+
+      // Empty array
+      const { result: r1 } = renderHook(() =>
+        useProjectFormValidation({ financials: { requiredContingencies: [] } }, question)
+      );
+      expect(r1.current.isValid).toBe(false);
+      expect(r1.current.validationError).toContain('required');
+
+      // Non-array
+      const { result: r2 } = renderHook(() =>
+        useProjectFormValidation({ financials: { requiredContingencies: null } }, question)
+      );
+      expect(r2.current.isValid).toBe(false);
+
+      // Selected option
+      const { result: r3 } = renderHook(() =>
+        useProjectFormValidation({ financials: { requiredContingencies: ['inspection'] } }, question)
+      );
+      expect(r3.current.isValid).toBe(true);
+    });
+  });
+
+  // ── P1 Acquisition Phase Gating Tests ──────────────────────────────────
+  describe('P1 Acquisition Phase - Projected Underwriting Gating', () => {
+    it('includes targetPrice for prospective projects, excludes for backdated', () => {
+      const prospective = getActiveQuestions({
+        isBackdated: 'no', startingPhase: 1, financingIntent: 'all-cash',
+      }).map(q => q.id);
+      expect(prospective).toContain('targetPrice');
+
+      const backdated = getActiveQuestions({
+        isBackdated: 'yes', startingPhase: 1, financingIntent: 'all-cash',
+      }).map(q => q.id);
+      expect(backdated).not.toContain('targetPrice');
+    });
+
+    it('includes projectedRent only for prospective Rent/BRRRR strategies', () => {
+      const rental = getActiveQuestions({
+        isBackdated: 'no', strategyType: 'Rent', startingPhase: 1,
+      }).map(q => q.id);
+      expect(rental).toContain('projectedRent');
+
+      const brrrr = getActiveQuestions({
+        isBackdated: 'no', strategyType: 'BRRRR', startingPhase: 1,
+      }).map(q => q.id);
+      expect(brrrr).toContain('projectedRent');
+
+      const flip = getActiveQuestions({
+        isBackdated: 'no', strategyType: 'Fix & Flip', startingPhase: 1,
+      }).map(q => q.id);
+      expect(flip).not.toContain('projectedRent');
+
+      const backdatedRental = getActiveQuestions({
+        isBackdated: 'yes', strategyType: 'Rent', startingPhase: 1,
+      }).map(q => q.id);
+      expect(backdatedRental).not.toContain('projectedRent');
+    });
+
+    it('includes projectedSalePrice only for prospective Flip strategies', () => {
+      const flip = getActiveQuestions({
+        isBackdated: 'no', strategyType: 'Fix & Flip', startingPhase: 1,
+      }).map(q => q.id);
+      expect(flip).toContain('projectedSalePrice');
+
+      const rental = getActiveQuestions({
+        isBackdated: 'no', strategyType: 'Rent', startingPhase: 1,
+      }).map(q => q.id);
+      expect(rental).not.toContain('projectedSalePrice');
+
+      const backdatedFlip = getActiveQuestions({
+        isBackdated: 'yes', strategyType: 'Fix & Flip', startingPhase: 1,
+      }).map(q => q.id);
+      expect(backdatedFlip).not.toContain('projectedSalePrice');
+    });
+
+    it('includes projectedOpex only for prospective projects', () => {
+      const prospective = getActiveQuestions({
+        isBackdated: 'no', startingPhase: 1,
+      }).map(q => q.id);
+      expect(prospective).toContain('projectedOpex');
+
+      const backdated = getActiveQuestions({
+        isBackdated: 'yes', startingPhase: 1,
+      }).map(q => q.id);
+      expect(backdated).not.toContain('projectedOpex');
+    });
+
+    it('includes investorInvites and marketplaceListing only when raising capital + prospective', () => {
+      const raising = getActiveQuestions({
+        raisingOutsideCapital: 'yes', isBackdated: 'no', startingPhase: 1,
+      }).map(q => q.id);
+      expect(raising).toContain('investorInvites');
+      expect(raising).toContain('marketplaceListing');
+
+      const notRaising = getActiveQuestions({
+        raisingOutsideCapital: 'no', isBackdated: 'no', startingPhase: 1,
+      }).map(q => q.id);
+      expect(notRaising).not.toContain('investorInvites');
+      expect(notRaising).not.toContain('marketplaceListing');
+
+      const backdatedRaising = getActiveQuestions({
+        raisingOutsideCapital: 'yes', isBackdated: 'yes', startingPhase: 1,
+      }).map(q => q.id);
+      expect(backdatedRaising).not.toContain('investorInvites');
+      expect(backdatedRaising).not.toContain('marketplaceListing');
+    });
+
+    it('includes offerAmount and offerDate only when offer has been sent or accepted', () => {
+      const offerSent = getActiveQuestions({
+        isBackdated: 'no', startingPhase: 1,
+        financials: { offerStatus: 'Offer Sent' },
+      }).map(q => q.id);
+      expect(offerSent).toContain('offerAmount');
+      expect(offerSent).toContain('offerDate');
+
+      const accepted = getActiveQuestions({
+        isBackdated: 'no', startingPhase: 1,
+        financials: { offerStatus: 'Accepted' },
+      }).map(q => q.id);
+      expect(accepted).toContain('offerAmount');
+      expect(accepted).toContain('offerDate');
+
+      const noOffer = getActiveQuestions({
+        isBackdated: 'no', startingPhase: 1,
+        financials: { offerStatus: 'No' },
+      }).map(q => q.id);
+      expect(noOffer).not.toContain('offerAmount');
+      expect(noOffer).not.toContain('offerDate');
+
+      const drafting = getActiveQuestions({
+        isBackdated: 'no', startingPhase: 1,
+        financials: { offerStatus: 'Drafting' },
+      }).map(q => q.id);
+      expect(drafting).not.toContain('offerAmount');
+      expect(drafting).not.toContain('offerDate');
+    });
+
+    it('restricts purchasePrice to backdated projects only', () => {
+      const backdated = getActiveQuestions({
+        isBackdated: 'yes', startingPhase: 2, financingIntent: 'all-cash',
+      }).map(q => q.id);
+      expect(backdated).toContain('purchasePrice');
+
+      const prospective = getActiveQuestions({
+        isBackdated: 'no', startingPhase: 1, financingIntent: 'all-cash',
+      }).map(q => q.id);
+      expect(prospective).not.toContain('purchasePrice');
+    });
+
+    it('restricts estimatedARV to backdated Flip strategies only', () => {
+      const backdatedFlip = getActiveQuestions({
+        isBackdated: 'yes', strategyType: 'Fix & Flip', startingPhase: 2,
+      }).map(q => q.id);
+      expect(backdatedFlip).toContain('estimatedARV');
+
+      const backdatedRental = getActiveQuestions({
+        isBackdated: 'yes', strategyType: 'Rent', startingPhase: 2,
+      }).map(q => q.id);
+      expect(backdatedRental).not.toContain('estimatedARV');
+
+      const prospectiveFlip = getActiveQuestions({
+        isBackdated: 'no', strategyType: 'Fix & Flip', startingPhase: 1,
+      }).map(q => q.id);
+      expect(prospectiveFlip).not.toContain('estimatedARV');
+    });
+  });
+});

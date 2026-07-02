@@ -1,60 +1,38 @@
 import { Metadata } from 'next';
 import Link from 'next/link';
 import { ArrowRight } from 'lucide-react';
-import MarketingNavbar from '@/components/marketing/MarketingNavbar';
+import LandingHeader from '@/components/landing/LandingHeader';
 import LandingFooter from '@/components/landing/LandingFooter';
 
 /* ═══════════════════════════════════════════════════════
-   /careers — No current openings
-
-   Honest "no roles right now" state. The page is
-   intentionally NOT indexed (noindex) until real
-   positions are posted — prevents it appearing in
-   search as an empty/broken page.
-
-   TO GO LIVE:
-     1. Remove the `robots` export below.
-     2. Add role objects to the OPEN_ROLES array.
-     3. Update metadata description.
+   /careers — Careers placeholder
+   
+   Obsidian glass theme. Unified LandingHeader navigation.
    ═══════════════════════════════════════════════════════ */
 
 export const metadata: Metadata = {
   title: 'Careers | PaperWorking',
   description:
     'Join the team building the deal-intelligence platform for modern real estate investors.',
-  // ── Noindex until real roles are posted ─────────────
-  // Remove this block when the first position goes live.
-  robots: {
-    index: false,
-    follow: false,
-  },
+  robots: { index: false, follow: false },
 };
 
 export default function CareersPage() {
   return (
-    <div className="min-h-screen" style={{ background: 'var(--bg-canvas)' }}>
-      <MarketingNavbar />
+    <div className="min-h-screen bg-background text-on-surface dark">
+      <LandingHeader />
 
-      <main className="max-w-4xl mx-auto px-6 pt-32 pb-24">
+      <main className="max-w-4xl mx-auto px-6 md:px-margin-desktop pt-32 pb-24">
         {/* ── Header ── */}
         <section className="mb-20">
-          <p
-            className="text-[10px] font-black uppercase tracking-[0.35em] mb-6"
-            style={{ color: 'var(--text-secondary)' }}
-          >
+          <p className="font-label-sm text-label-sm text-primary uppercase tracking-widest mb-6">
             Careers
           </p>
-          <h1
-            className="text-5xl sm:text-6xl font-black tracking-tighter leading-none mb-8"
-            style={{ color: 'var(--text-primary)' }}
-          >
+          <h1 className="font-headline-lg text-headline-lg text-on-surface tracking-tight leading-none mb-8">
             Build something <br className="hidden sm:block" />
             investors rely on.
           </h1>
-          <p
-            className="text-lg leading-relaxed max-w-2xl"
-            style={{ color: 'var(--text-secondary)' }}
-          >
+          <p className="font-body-lg text-body-lg text-on-surface-variant leading-relaxed max-w-2xl">
             PaperWorking is a small, focused team solving a real problem: the
             operational chaos that costs real estate investors time and money on
             every deal. We&apos;re looking for people who ship fast, care about
@@ -64,16 +42,16 @@ export default function CareersPage() {
 
         {/* ── Culture values ── */}
         <section
-          className="rounded-xl p-10 sm:p-14 mb-20"
+          className="rounded-2xl p-10 sm:p-14 mb-20"
           style={{
-            background: 'var(--bg-surface)',
-            border: '1px solid var(--border-ui)',
+            background: 'linear-gradient(135deg, rgba(34,43,50,0.4), rgba(22,19,24,0.8))',
+            backdropFilter: 'blur(16px)',
+            WebkitBackdropFilter: 'blur(16px)',
+            borderTop: '1px solid rgba(255,255,255,0.12)',
+            borderLeft: '1px solid rgba(255,255,255,0.12)',
           }}
         >
-          <p
-            className="text-[10px] font-black uppercase tracking-[0.35em] mb-6"
-            style={{ color: 'var(--text-secondary)' }}
-          >
+          <p className="font-label-sm text-label-sm text-primary uppercase tracking-widest mb-6">
             How We Work
           </p>
           <ul className="space-y-6">
@@ -92,16 +70,10 @@ export default function CareersPage() {
               },
             ].map((v) => (
               <li key={v.title}>
-                <h3
-                  className="text-sm font-bold tracking-tight mb-1"
-                  style={{ color: 'var(--text-primary)' }}
-                >
+                <h3 className="font-label-md text-label-md text-on-surface mb-1">
                   {v.title}
                 </h3>
-                <p
-                  className="text-sm leading-relaxed"
-                  style={{ color: 'var(--text-secondary)' }}
-                >
+                <p className="font-body-sm text-body-sm text-on-surface-variant leading-relaxed">
                   {v.body}
                 </p>
               </li>
@@ -111,19 +83,25 @@ export default function CareersPage() {
 
         {/* ── Open roles CTA ── */}
         <section
-          className="rounded-xl p-10 sm:p-14 text-center"
-          style={{ background: '#0d0d0d', color: '#FFFFFF' }}
+          className="rounded-2xl p-10 sm:p-14 text-center"
+          style={{
+            background: 'linear-gradient(135deg, rgba(34,43,50,0.6), rgba(22,19,24,0.95))',
+            backdropFilter: 'blur(16px)',
+            WebkitBackdropFilter: 'blur(16px)',
+            borderTop: '1px solid rgba(255,255,255,0.12)',
+            borderLeft: '1px solid rgba(255,255,255,0.12)',
+          }}
         >
-          <h2 className="text-2xl font-bold tracking-tight mb-3">
+          <h2 className="font-headline-md text-headline-md text-on-surface tracking-tight mb-3">
             No open roles right now — but we&apos;re always listening.
           </h2>
-          <p className="text-sm text-white/60 mb-8 max-w-md mx-auto">
+          <p className="font-body-sm text-body-sm text-on-surface-variant mb-8 max-w-md mx-auto">
             If you&apos;re an engineer, designer, or domain expert in real estate
             finance and think you can contribute, reach out directly.
           </p>
           <a
             href="mailto:careers@paperworking.co"
-            className="inline-flex items-center gap-2 px-8 py-3 bg-white text-[#0d0d0d] rounded-full text-xs font-bold uppercase tracking-widest hover:bg-white/90 transition-colors"
+            className="luminous-button inline-flex items-center gap-2 px-8 py-3 rounded-lg font-label-md text-label-md tracking-wide active:scale-95 transition-all duration-150"
           >
             careers@paperworking.co
             <ArrowRight className="w-4 h-4" />

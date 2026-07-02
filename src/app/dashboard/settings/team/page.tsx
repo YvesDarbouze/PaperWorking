@@ -1,18 +1,18 @@
 'use client';
 
-import { useState } from 'react';
-import { UserPlus, Trash2, Shield, Loader2, Mail, CheckCircle2, AlertTriangle, Users } from 'lucide-react';
+import { useState, useEffect } from 'react';
+import { UserPlus, Trash2, Shield, Loader2, Mail, CheckCircle2, AlertTriangle, Users, Ban, PlayCircle, Activity } from 'lucide-react';
 import Link from 'next/link';
 import { useAuth } from '@/context/AuthContext';
 import { useUserStore } from '@/store/userStore';
 import { usePermissions } from '@/hooks/usePermissions';
-import type { OrgTeamMember, InternalRole } from '@/types/schema';
+import type { OrgTeamMember, InternalRole, AuditLog, Permission } from '@/types/schema';
+import { Checkbox } from '@/components/ui';
+import toast from 'react-hot-toast';
 
 /* ═══════════════════════════════════════════════════════
    Team & Role Management Settings
-
-   Refactored to render inside the settings layout shell.
-   Dynamically adapts based on billing tier (Individual vs Team).
+   (Luminous Glass Terminal)
    ═══════════════════════════════════════════════════════ */
 
 const ROLE_OPTIONS: InternalRole[] = ['CEO', 'President', 'CFO', 'COO', 'Admin', 'Deal Lead'];
@@ -26,61 +26,203 @@ const ROLE_DESCRIPTION: Record<InternalRole, string> = {
   'Deal Lead': 'Manage assigned deals only; no billing or team admin access.',
 };
 
+const ALL_PERMISSIONS: Permission[] = [
+  'projects.view', 'projects.create', 'projects.edit', 'projects.delete',
+  'tasks.view', 'tasks.create', 'tasks.edit', 'tasks.assign',
+  'reports.view', 'reports.export',
+  'billing.manage', 'team.invite', 'team.manage_members', 'team.manage_roles',
+  'vendors.manage', 'deal_marketplace.post', 'crowdfunding.manage', 'settings.manage'
+];
+
 function MemberRow({
   member,
   onRemove,
   onRoleChange,
+  onSuspend,
+  onScopeChange,
+  onPermissionsChange,
 }: {
   member: OrgTeamMember;
-  onRemove: (id: string) => void;
-  onRoleChange: (id: string, role: InternalRole) => void;
+  onRemove: (id: string) => Promise<void>;
+  onRoleChange: (id: string, role: InternalRole) => Promise<void>;
+  onSuspend: (id: string, suspend: boolean) => Promise<void>;
+  onScopeChange: (id: string, scope: 'tenant' | 'project') => Promise<void>;
+  onPermissionsChange: (id: string, permissions: Permission[]) => Promise<void>;
 }) {
+  const [loading, setLoading] = useState(false);
+  const [showPermissions, setShowPermissions] = useState(false);
+
+  const handleAction = async (
+    action: () => Promise<void>,
+    loadingMsg?: string,
+    successMsg?: string
+  ) => {
+    const tid = loadingMsg ? toast.loading(loadingMsg) : undefined;
+    setLoading(true);
+    try {
+      await action();
+      if (successMsg) {
+        if (tid) toast.success(successMsg, { id: tid });
+        else toast.success(successMsg);
+      } else if (tid) {
+        toast.dismiss(tid);
+      }
+    } catch (e) {
+      const errMsg = (e as Error).message;
+      if (tid) toast.error(errMsg, { id: tid });
+      else toast.error(errMsg);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const initials = member.displayName
     ? member.displayName.split(' ').map((n) => n[0]).join('').toUpperCase().slice(0, 2)
     : member.email[0].toUpperCase();
 
+  const isSuspended = member.status === 'suspended';
+
   const statusCls =
-    member.status === 'active'  ? 'bg-green-50  text-green-700  border-green-200' :
-    member.status === 'invited' ? 'bg-amber-50  text-amber-700  border-amber-200' :
-                                  'bg-bg-primary  text-text-secondary   border-border-accent';
+    member.status === 'active'  ? 'bg-pw-primary/10 text-pw-primary border-pw-primary/20' :
+    member.status === 'invited' ? 'bg-amber-500/10 text-amber-500 border-amber-500/20 animate-pulse' :
+    isSuspended ? 'bg-error/10 text-error border-error/20' :
+                                  'bg-pw-glass-bg text-pw-muted border-pw-border/50';
 
   return (
-    <div className="flex items-center gap-4 py-4 border-b border-border-accent last:border-0">
-      {/* Avatar */}
-      <div className="w-9 h-9 rounded-full bg-pw-fg text-white flex items-center justify-center text-xs font-bold flex-shrink-0">
-        {initials}
+    <div className="flex flex-col border-b border-pw-border/30 last:border-0">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 py-4">
+        {/* Left Side: Avatar & Info */}
+        <div className="flex items-center gap-3 min-w-0">
+          <div className="w-10 h-10 rounded-lg bg-pw-primary/10 border border-pw-primary/20 text-pw-primary flex items-center justify-center text-xs font-bold flex-shrink-0 shadow-[0_0_10px_rgba(69,73,85,0.1)]">
+            {initials}
+          </div>
+          <div className="min-w-0">
+            <p className="text-sm font-semibold text-pw-black truncate">{member.displayName || member.email}</p>
+            <p className="text-xs text-pw-muted truncate font-mono mt-0.5">{member.email}</p>
+          </div>
+        </div>
+
+        {/* Right Side: Selectors & Actions */}
+        <div className="flex flex-wrap items-center gap-3 justify-start sm:justify-end">
+          {/* Role selector */}
+          <select
+            value={member.internalRole}
+            onChange={(e) => handleAction(
+              () => onRoleChange(member.id, e.target.value as InternalRole),
+              'Updating clearance role...',
+              `Clearance role updated to ${e.target.value}`
+            )}
+            disabled={loading}
+            className="glass-input text-xs px-2.5 py-1.5 text-pw-black disabled:opacity-50 bg-pw-surface"
+          >
+            {ROLE_OPTIONS.map((r) => (
+              <option key={r} value={r} className="bg-pw-surface text-pw-black">{r}</option>
+            ))}
+          </select>
+
+          {/* Scope selector */}
+          <select
+            value={member.scope || 'project'}
+            onChange={(e) => handleAction(
+              () => onScopeChange(member.id, e.target.value as 'tenant' | 'project'),
+              'Updating member scope...',
+              `Scope updated to ${e.target.value === 'tenant' ? 'Tenant Wide' : 'Project Scoped'}`
+            )}
+            disabled={loading}
+            className="glass-input text-xs px-2.5 py-1.5 text-pw-black disabled:opacity-50 bg-pw-surface"
+          >
+            <option value="tenant" className="bg-pw-surface text-pw-black">Tenant Wide</option>
+            <option value="project" className="bg-pw-surface text-pw-black">Project Scoped</option>
+          </select>
+
+          {/* Permissions toggle */}
+          <button
+            onClick={() => setShowPermissions(!showPermissions)}
+            className={`text-xs px-2.5 py-1.5 rounded-lg border transition-colors disabled:opacity-50 ${
+              showPermissions 
+                ? 'bg-pw-primary/20 text-pw-primary border-pw-primary/30 font-medium' 
+                : 'bg-pw-glass-bg border-pw-border text-pw-muted hover:bg-pw-primary/10 hover:text-pw-primary'
+            }`}
+            disabled={loading}
+          >
+            Permissions
+          </button>
+
+          {/* Status badge */}
+          <span className={`inline-flex text-[10px] font-bold uppercase tracking-wider border px-2 py-0.5 rounded-full ${statusCls}`}>
+            {member.status}
+          </span>
+
+          {/* Action buttons */}
+          <div className="flex items-center gap-1">
+            {/* Suspend */}
+            <button
+              onClick={() => handleAction(
+                () => onSuspend(member.id, member.status !== 'suspended'),
+                member.status === 'suspended' ? 'Unsuspending member...' : 'Suspending member...',
+                member.status === 'suspended' ? 'Member unsuspended' : 'Member suspended'
+              )}
+              disabled={loading}
+              className={`p-2 rounded-lg transition-colors disabled:opacity-50 ${
+                isSuspended 
+                  ? 'text-pw-primary hover:bg-pw-primary/10' 
+                  : 'text-pw-muted hover:text-amber-500 hover:bg-pw-glass-bg'
+              }`}
+              aria-label={isSuspended ? 'Unsuspend member' : 'Suspend member'}
+              title={isSuspended ? 'Unsuspend Member' : 'Suspend Member'}
+            >
+              {isSuspended ? <PlayCircle className="w-4 h-4" /> : <Ban className="w-4 h-4" />}
+            </button>
+
+            {/* Remove */}
+            <button
+              onClick={() => handleAction(
+                () => onRemove(member.id),
+                'Removing member...',
+                'Member removed from team'
+              )}
+              disabled={loading}
+              className="p-2 rounded-lg text-pw-muted hover:text-error hover:bg-pw-glass-bg transition-colors disabled:opacity-50"
+              aria-label="Remove member"
+              title="Remove Member"
+            >
+              <Trash2 className="w-4 h-4" />
+            </button>
+          </div>
+        </div>
       </div>
 
-      {/* Info */}
-      <div className="flex-1 min-w-0">
-        <p className="text-sm font-medium text-text-primary truncate">{member.displayName || member.email}</p>
-        <p className="text-xs text-text-secondary truncate">{member.email}</p>
-      </div>
-
-      {/* Role selector */}
-      <select
-        value={member.internalRole}
-        onChange={(e) => onRoleChange(member.id, e.target.value as InternalRole)}
-        className="text-xs bg-bg-primary border border-border-accent px-2 py-1.5 text-text-primary focus:outline-none focus:ring-1 focus:ring-pw-black"
-      >
-        {ROLE_OPTIONS.map((r) => (
-          <option key={r} value={r}>{r}</option>
-        ))}
-      </select>
-
-      {/* Status badge */}
-      <span className={`hidden sm:inline-flex text-xs font-medium border px-2 py-0.5 ${statusCls}`}>
-        {member.status}
-      </span>
-
-      {/* Remove */}
-      <button
-        onClick={() => onRemove(member.id)}
-        className="p-1.5 text-text-secondary hover:text-red-600 transition-colors"
-        aria-label="Remove member"
-      >
-        <Trash2 className="w-4 h-4" />
-      </button>
+      {showPermissions && (
+        <div className="p-4 bg-pw-glass-bg/30 border border-pw-border/50 rounded-xl mt-2 mb-4 text-xs animate-fadeIn shadow-inner">
+          <p className="font-bold text-pw-primary mb-3 uppercase tracking-widest text-[10px] flex items-center gap-1.5">
+            <Shield className="w-3.5 h-3.5" />
+            Custom Authorization Scopes
+          </p>
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3">
+            {ALL_PERMISSIONS.map((p) => {
+              const isChecked = member.customPermissions?.includes(p) || false;
+              return (
+                <label key={p} className="flex items-center gap-2 cursor-pointer select-none py-1 px-1.5 rounded hover:bg-pw-glass-bg transition-colors">
+                  <Checkbox
+                    checked={isChecked}
+                    disabled={loading}
+                    onChange={(e) => {
+                      const current = member.customPermissions || [];
+                      const next = e.target.checked ? [...current, p] : current.filter((c) => c !== p);
+                      handleAction(
+                        () => onPermissionsChange(member.id, next),
+                        'Updating permissions...',
+                        'Permissions updated'
+                      );
+                    }}
+                  />
+                  <span className="text-pw-black truncate" title={p}>{p.split('.').join(' > ')}</span>
+                </label>
+              );
+            })}
+          </div>
+        </div>
+      )}
     </div>
   );
 }
@@ -88,7 +230,7 @@ function MemberRow({
 export default function TeamManagementPage() {
   const { profile } = useAuth();
   const { isLead } = usePermissions();
-  const { teamMembers, maxSeats, addTeamMember, removeTeamMember, updateMemberRole } = useUserStore();
+  const { teamMembers, maxSeats, addTeamMember, removeTeamMember, updateMemberRole, suspendTeamMember, updateMemberScope, updateMemberPermissions } = useUserStore();
 
   const [email,       setEmail]       = useState('');
   const [displayName, setDisplayName] = useState('');
@@ -96,10 +238,54 @@ export default function TeamManagementPage() {
   const [inviting,    setInviting]    = useState(false);
   const [inviteError, setInviteError] = useState<string | null>(null);
   const [invited,     setInvited]     = useState(false);
+  const [auditLogs,   setAuditLogs]   = useState<AuditLog[]>([]);
+
+  useEffect(() => {
+    if (isLead) {
+      import('@/actions/team').then(({ getAuditLogs }) => {
+        getAuditLogs().then(setAuditLogs).catch(console.error);
+      });
+    }
+  }, [isLead]);
+
+  const activeMembers = teamMembers.filter((m) => m.status !== 'removed');
+
+  const handleRemove = async (id: string) => {
+    const { removeTeamMember: serverRemove } = await import('@/actions/team');
+    await serverRemove(id);
+    removeTeamMember(id);
+  };
+
+  const handleRoleChange = async (id: string, newRole: InternalRole) => {
+    const { updateMemberRoleAndPermissions } = await import('@/actions/team');
+    await updateMemberRoleAndPermissions(id, newRole);
+    updateMemberRole(id, newRole);
+  };
+
+  const handleSuspend = async (id: string, suspend: boolean) => {
+    const { suspendTeamMember: serverSuspend } = await import('@/actions/team');
+    await serverSuspend(id, suspend);
+    suspendTeamMember(id, suspend);
+  };
+
+  const handleScopeChange = async (id: string, scope: 'tenant' | 'project') => {
+    const member = activeMembers.find(m => m.id === id);
+    if (!member) return;
+    const { updateMemberScope: serverUpdateScope } = await import('@/actions/team');
+    await serverUpdateScope(id, scope, member.assignedProjectIds);
+    updateMemberScope(id, scope);
+  };
+
+  const handlePermissionsChange = async (id: string, permissions: Permission[]) => {
+    const member = activeMembers.find(m => m.id === id);
+    if (!member) return;
+    const { updateMemberRoleAndPermissions } = await import('@/actions/team');
+    await updateMemberRoleAndPermissions(id, member.internalRole, permissions);
+    updateMemberPermissions(id, permissions);
+  };
 
   const plan          = profile?.subscriptionPlan ?? 'None';
   const isTeamPlan    = plan === 'Team';
-  const activeMembers = teamMembers.filter((m) => m.status !== 'removed');
   const usedSeats     = activeMembers.length;
   const seatsLeft     = maxSeats - usedSeats;
   const seatPercent   = maxSeats > 0 ? Math.round((usedSeats / maxSeats) * 100) : 0;
@@ -107,16 +293,18 @@ export default function TeamManagementPage() {
   // Gate: only Lead Investors on the Team plan may manage members
   if (!isLead || !isTeamPlan) {
     return (
-      <div className="flex items-center justify-center py-20">
-        <div className="bg-bg-surface border border-border-accent p-8 max-w-sm text-center space-y-4">
-          <Shield className="w-10 h-10 text-text-secondary mx-auto" />
-          <h2 className="text-lg font-medium text-text-primary">Team Plan Required</h2>
-          <p className="text-sm text-text-secondary leading-relaxed">
+      <div className="flex items-center justify-center py-20 px-4">
+        <div className="glass-card border border-pw-border p-8 max-w-sm text-center space-y-4 rounded-2xl shadow-2xl">
+          <div className="w-12 h-12 rounded-full bg-pw-primary/10 border border-pw-primary/20 flex items-center justify-center mx-auto text-pw-primary shadow-[0_0_15px_rgba(69,73,85,0.2)] animate-pulse">
+            <Shield className="w-6 h-6" />
+          </div>
+          <h2 className="text-lg font-bold text-pw-black">Team Plan Required</h2>
+          <p className="text-xs text-pw-muted leading-relaxed">
             Team management is available exclusively on the Investor Team plan for Lead Investors.
           </p>
           <Link
-            href="/pricing"
-            className="inline-flex items-center gap-2 bg-pw-black text-white text-sm font-medium px-5 py-2.5 hover:opacity-90 transition"
+            href="/dashboard/settings/billing"
+            className="luminous-button inline-flex items-center justify-center gap-2 text-sm font-bold px-6 py-3 rounded-xl w-full transition-all duration-300"
           >
             Upgrade to Team →
           </Link>
@@ -152,6 +340,9 @@ export default function TeamManagementPage() {
         displayName:        displayName.trim() || email.trim(),
         internalRole:       role,
         assignedProjectIds: [],
+        scopedProjectIds:   [],
+        isScoped:           false,
+        scope:              'tenant',
         invitedAt:          new Date(),
         status:             'invited',
       };
@@ -175,151 +366,229 @@ export default function TeamManagementPage() {
   };
 
   return (
-    <div className="space-y-6">
-
-      {/* ═══ Seat Tracker ═══ */}
-      <section className="bg-bg-surface border border-border-accent p-6">
-        <div className="flex items-center justify-between mb-3">
-          <h2 className="text-xs font-bold uppercase tracking-widest text-text-secondary">Seat Usage</h2>
-          <span className="text-xs font-bold uppercase tracking-widest text-text-secondary">
-            {usedSeats} of {maxSeats} Seats Filled
-          </span>
-        </div>
-        {/* Progress bar */}
-        <div className="w-full h-2.5 bg-bg-primary rounded-full overflow-hidden">
-          <div
-            className={`h-full transition-all duration-500 ease-out ${
-              seatPercent >= 90 ? 'bg-red-500' : seatPercent >= 70 ? 'bg-amber-500' : 'bg-pw-fg'
-            }`}
-            style={{ width: `${Math.min(seatPercent, 100)}%` }}
-          />
-        </div>
-        <p className="text-xs text-text-secondary mt-2">
-          {seatsLeft > 0
-            ? `${seatsLeft} seat${seatsLeft !== 1 ? 's' : ''} remaining on your Team plan.`
-            : 'All seats are occupied. Remove a member or upgrade to add more.'}
-        </p>
-      </section>
-
-      {/* ═══ Role Permissions Legend ═══ */}
-      <section className="bg-bg-surface border border-border-accent p-6">
-        <h2 className="text-xs font-bold uppercase tracking-widest text-text-secondary mb-4">Role Permissions</h2>
-        <div className="space-y-3">
-          {ROLE_OPTIONS.map((r) => (
-            <div key={r} className="flex items-start gap-3">
-              <Shield className="w-4 h-4 text-text-secondary flex-shrink-0 mt-0.5" />
-              <div>
-                <p className="text-sm font-medium text-text-primary">{r}</p>
-                <p className="text-xs text-text-secondary">{ROLE_DESCRIPTION[r]}</p>
-              </div>
+    <div className="w-full space-y-8">
+      {/* ─── Grid Layout ─── */}
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-stack-md items-start">
+        
+        {/* Left Column (col-span-7) */}
+        <div className="lg:col-span-7 space-y-stack-md">
+          
+          {/* Card 1: Seat Usage */}
+          <section className="glass-card glass-card-bright p-8 rounded-2xl flex flex-col relative overflow-hidden">
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="font-label-md text-label-md font-bold uppercase tracking-wider text-pw-primary flex items-center gap-2">
+                <span className="material-symbols-outlined text-lg select-none">groups</span>
+                Seat Usage
+              </h3>
+              <span className="font-label-sm text-label-sm font-bold uppercase tracking-wider text-pw-primary font-mono">
+                {usedSeats} of {maxSeats} Seats Filled
+              </span>
             </div>
-          ))}
-        </div>
-      </section>
-
-      {/* ═══ Active Directory ═══ */}
-      <section className="bg-bg-surface border border-border-accent p-6">
-        <h2 className="text-xs font-bold uppercase tracking-widest text-text-secondary mb-1">
-          Team Members
-        </h2>
-        <p className="text-xs text-text-secondary mb-5">{seatsLeft} seat{seatsLeft !== 1 ? 's' : ''} remaining</p>
-
-        {activeMembers.length === 0 ? (
-          <div className="text-center py-8 text-text-secondary">
-            <Users className="w-8 h-8 mx-auto mb-3 opacity-40" />
-            <p className="text-sm">No team members yet. Invite your first collaborator below.</p>
-          </div>
-        ) : (
-          <div>
-            {activeMembers.map((m) => (
-              <MemberRow
-                key={m.id}
-                member={m}
-                onRemove={removeTeamMember}
-                onRoleChange={updateMemberRole}
-              />
-            ))}
-          </div>
-        )}
-      </section>
-
-      {/* ═══ Invite Hub ═══ */}
-      <section className="bg-bg-surface border border-border-accent p-6">
-        <h2 className="text-xs font-bold uppercase tracking-widest text-text-secondary mb-5">
-          Invite a Team Member
-        </h2>
-
-        <form onSubmit={handleInvite} className="space-y-4">
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            <div>
-              <label className="block text-xs font-semibold text-text-secondary mb-1">Email Address *</label>
-              <input
-                type="email"
-                required
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                placeholder="jane@realtycorp.com"
-                className="w-full text-sm bg-bg-primary border border-border-accent px-3 py-2.5 focus:outline-none focus:ring-1 focus:ring-pw-black"
+            
+            {/* Progress bar */}
+            <div className="w-full h-2.5 bg-pw-glass-bg border border-pw-border rounded-full overflow-hidden">
+              <div
+                className={`h-full rounded-full transition-all duration-500 ease-out shadow-[0_0_12px_rgba(69,73,85,0.3)] ${
+                  seatPercent >= 90 ? 'bg-error' : seatPercent >= 70 ? 'bg-amber-500' : 'bg-pw-primary'
+                }`}
+                style={{ width: `${Math.min(seatPercent, 100)}%` }}
               />
             </div>
-            <div>
-              <label className="block text-xs font-semibold text-text-secondary mb-1">Display Name</label>
-              <input
-                type="text"
-                value={displayName}
-                onChange={(e) => setDisplayName(e.target.value)}
-                placeholder="Jane Realty"
-                className="w-full text-sm bg-bg-primary border border-border-accent px-3 py-2.5 focus:outline-none focus:ring-1 focus:ring-pw-black"
-              />
-            </div>
-          </div>
-
-          <div>
-            <label className="block text-xs font-semibold text-text-secondary mb-1">Role</label>
-            <select
-              value={role}
-              onChange={(e) => setRole(e.target.value as InternalRole)}
-              className="w-full text-sm bg-bg-primary border border-border-accent px-3 py-2.5 focus:outline-none focus:ring-1 focus:ring-pw-black"
-            >
-              {ROLE_OPTIONS.map((r) => (
-                <option key={r} value={r}>{r} — {ROLE_DESCRIPTION[r]}</option>
-              ))}
-            </select>
-          </div>
-
-          {inviteError && (
-            <div className="flex items-start gap-2 text-sm text-red-600 bg-red-50 border border-red-200 px-3 py-2">
-              <AlertTriangle className="w-4 h-4 flex-shrink-0 mt-0.5" />
-              {inviteError}
-            </div>
-          )}
-
-          {invited && (
-            <div className="flex items-center gap-2 text-sm text-green-700 bg-green-50 border border-green-200 px-3 py-2">
-              <CheckCircle2 className="w-4 h-4" /> Invitation sent successfully.
-            </div>
-          )}
-
-          <button
-            type="submit"
-            disabled={inviting || seatsLeft <= 0}
-            className="inline-flex items-center gap-2 bg-pw-black text-white text-sm font-medium px-5 py-2.5 hover:opacity-90 transition disabled:opacity-50"
-          >
-            {inviting ? (
-              <><Loader2 className="w-4 h-4 animate-spin" /> Sending invite…</>
-            ) : (
-              <><UserPlus className="w-4 h-4" /> Send Invite <Mail className="w-3.5 h-3.5" /></>
-            )}
-          </button>
-
-          {seatsLeft <= 0 && (
-            <p className="text-xs text-text-secondary">
-              Seat limit reached. Remove a member or{' '}
-              <Link href="/dashboard/settings/billing" className="underline">upgrade your plan</Link>.
+            <p className="text-xs text-pw-muted mt-3 font-mono">
+              {seatsLeft > 0
+                ? `${seatsLeft} seat${seatsLeft !== 1 ? 's' : ''} remaining on your Team plan.`
+                : 'All seats are occupied. Remove a member or upgrade to add more.'}
             </p>
-          )}
-        </form>
-      </section>
+          </section>
+
+          {/* Card 2: Personnel Registry */}
+          <section className="glass-card glass-card-bright p-8 rounded-2xl flex flex-col relative overflow-hidden">
+            <div className="mb-6">
+              <h3 className="font-label-md text-label-md font-bold uppercase tracking-wider text-pw-primary flex items-center gap-2">
+                <span className="material-symbols-outlined text-lg select-none">badge</span>
+                Personnel Registry
+              </h3>
+              <p className="text-xs text-pw-muted mt-1">Manage active workspace users and invite clearances.</p>
+            </div>
+
+            {activeMembers.length === 0 ? (
+              <div className="text-center py-12 text-pw-muted">
+                <Users className="w-10 h-10 mx-auto mb-3 opacity-20" />
+                <p className="text-sm">No team members yet. Invite your first collaborator below.</p>
+              </div>
+            ) : (
+              <div className="divide-y divide-pw-border/30">
+                {activeMembers.map((m) => (
+                  <MemberRow
+                    key={m.id}
+                    member={m}
+                    onRemove={handleRemove}
+                    onRoleChange={handleRoleChange}
+                    onSuspend={handleSuspend}
+                    onScopeChange={handleScopeChange}
+                    onPermissionsChange={handlePermissionsChange}
+                  />
+                ))}
+              </div>
+            )}
+          </section>
+
+          {/* Card 3: Invite Team Personnel */}
+          <section className="glass-card glass-card-bright p-8 rounded-2xl flex flex-col relative overflow-hidden">
+            <div className="mb-6">
+              <h3 className="font-label-md text-label-md font-bold uppercase tracking-wider text-pw-primary flex items-center gap-2">
+                <span className="material-symbols-outlined text-lg select-none">person_add</span>
+                Invite Team Personnel
+              </h3>
+              <p className="text-xs text-pw-muted mt-1">Add new members to your corporate investment organization.</p>
+            </div>
+
+            <form onSubmit={handleInvite} className="space-y-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-xs font-bold uppercase tracking-wider text-pw-muted mb-2">Email Address *</label>
+                  <input
+                    type="email"
+                    required
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    placeholder="jane@realtycorp.com"
+                    className="glass-input w-full text-sm px-4 py-3 text-pw-black placeholder:text-pw-muted/40"
+                  />
+                </div>
+                <div>
+                  <label className="block text-xs font-bold uppercase tracking-wider text-pw-muted mb-2">Display Name</label>
+                  <input
+                    type="text"
+                    value={displayName}
+                    onChange={(e) => setDisplayName(e.target.value)}
+                    placeholder="Jane Realty"
+                    className="glass-input w-full text-sm px-4 py-3 text-pw-black placeholder:text-pw-muted/40"
+                  />
+                </div>
+              </div>
+
+              <div>
+                <label className="block text-xs font-bold uppercase tracking-wider text-pw-muted mb-2">Assigned Clearance Role</label>
+                <select
+                  value={role}
+                  onChange={(e) => setRole(e.target.value as InternalRole)}
+                  className="glass-input w-full text-sm px-4 py-3 text-pw-black bg-pw-surface"
+                >
+                  {ROLE_OPTIONS.map((r) => (
+                    <option key={r} value={r} className="bg-pw-surface text-pw-black">
+                      {r} — {ROLE_DESCRIPTION[r]}
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              {inviteError && (
+                <div className="flex items-start gap-2.5 text-xs text-error bg-error/10 border border-error/20 px-4 py-3 rounded-xl">
+                  <AlertTriangle className="w-4 h-4 flex-shrink-0 mt-0.5" />
+                  <span>{inviteError}</span>
+                </div>
+              )}
+
+              {invited && (
+                <div className="flex items-center gap-2 text-xs text-pw-primary bg-pw-primary/10 border border-pw-primary/20 px-4 py-3 rounded-xl">
+                  <CheckCircle2 className="w-4 h-4" /> <span>Invitation sent successfully.</span>
+                </div>
+              )}
+
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pt-2">
+                <button
+                  type="submit"
+                  disabled={inviting || seatsLeft <= 0}
+                  className="luminous-button rounded-xl font-label-md text-label-md font-bold transition-all duration-300 disabled:opacity-50 inline-flex items-center gap-2 cursor-pointer"
+                >
+                  {inviting ? (
+                    <><Loader2 className="w-4 h-4 animate-spin" /> <span>Sending invite…</span></>
+                  ) : (
+                    <><UserPlus className="w-4 h-4" /> <span>Send Invite</span> <Mail className="w-3.5 h-3.5" /></>
+                  )}
+                </button>
+
+                {seatsLeft <= 0 && (
+                  <p className="text-xs text-pw-muted font-mono text-right">
+                    Seat limit reached. Remove a member or{' '}
+                    <Link href="/dashboard/settings/billing" className="underline hover:text-pw-primary">upgrade your plan</Link>.
+                  </p>
+                )}
+              </div>
+            </form>
+          </section>
+        </div>
+
+        {/* Right Column (col-span-5) */}
+        <div className="lg:col-span-5 space-y-stack-md">
+          
+          {/* Card 4: Role Designation Legend */}
+          <section className="glass-card glass-card-bright p-8 rounded-2xl flex flex-col relative overflow-hidden">
+            <h3 className="font-label-md text-label-md font-bold uppercase tracking-wider text-pw-primary mb-5 flex items-center gap-1.5">
+              <span className="material-symbols-outlined text-lg select-none">shield</span>
+              Clearance Roles Legend
+            </h3>
+            <div className="flex flex-col gap-4">
+              {ROLE_OPTIONS.map((r) => (
+                <div key={r} className="p-4 bg-pw-glass-bg/40 border border-pw-border/50 rounded-xl flex items-start gap-3 hover:bg-pw-glass-bg/75 transition-colors">
+                  <Shield className="w-4 h-4 text-pw-primary/70 flex-shrink-0 mt-0.5" />
+                  <div>
+                    <p className="text-xs font-bold text-pw-black">{r}</p>
+                    <p className="text-[11px] text-pw-muted leading-relaxed mt-1">{ROLE_DESCRIPTION[r]}</p>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </section>
+
+          {/* Card 5: Audit Ledger */}
+          <section className="glass-card glass-card-bright p-8 rounded-2xl flex flex-col relative overflow-hidden">
+            <h3 className="font-label-md text-label-md font-bold uppercase tracking-wider text-pw-primary mb-5 flex items-center gap-2">
+              <Activity className="w-4 h-4 text-pw-primary" /> Audit Ledger
+            </h3>
+
+            {auditLogs.length === 0 ? (
+              <p className="text-xs text-pw-muted font-mono">No audit logs available.</p>
+            ) : (
+              <div className="relative pl-6 space-y-5 before:content-[''] before:absolute before:left-[3px] before:top-2 before:bottom-2 before:w-[1px] before:bg-pw-border/30">
+                {auditLogs.map((log) => {
+                  const isSecurityAlert = log.action.toLowerCase().includes('suspend') || log.action.toLowerCase().includes('fail') || log.action.toLowerCase().includes('remove');
+                  return (
+                    <div key={log.id} className="relative flex flex-col justify-between gap-1">
+                      {/* Timeline Dot */}
+                      <div className={`absolute left-[-26px] top-1.5 w-2 h-2 rounded-full border ${
+                        isSecurityAlert 
+                          ? 'border-error bg-error/20 shadow-[0_0_8px_rgba(255,100,100,0.6)]' 
+                          : 'border-pw-primary bg-pw-primary/20 shadow-[0_0_8px_rgba(69,73,85,0.6)]'
+                      }`}></div>
+
+                      <div>
+                        <p className="text-xs text-pw-black leading-relaxed">
+                          <span className="font-bold text-pw-primary">{log.actorName}</span> performed <span className="font-semibold text-pw-muted">{log.action}</span>
+                        </p>
+                        <p className="text-[10px] text-pw-muted font-mono mt-1 flex flex-wrap gap-x-2 gap-y-1">
+                          <span>Target: {log.targetEmail || log.targetUid || 'N/A'}</span>
+                        </p>
+                        {log.metadata && (
+                          <div className="text-[9px] text-pw-muted/65 font-mono bg-pw-glass-bg border border-pw-border/50 rounded p-1.5 mt-1 overflow-x-auto whitespace-pre">
+                            {JSON.stringify(log.metadata, null, 2)}
+                          </div>
+                        )}
+                      </div>
+                      <time className="text-[10px] text-pw-muted/60 font-mono whitespace-nowrap mt-1">
+                        {new Date(log.createdAt).toLocaleString()}
+                      </time>
+                    </div>
+                  );
+                })}
+              </div>
+            )}
+          </section>
+
+        </div>
+
+      </div>
     </div>
   );
 }

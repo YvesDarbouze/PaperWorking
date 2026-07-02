@@ -10,8 +10,8 @@ const FAQS = [
     answer: "Spreadsheets leak money. A formula breaks, a tab gets deleted, and suddenly your cost basis is off by $30K. PaperWorking replaces all of that with one system that tracks every dollar from acquisition to exit, so you catch mistakes before they hit your bottom line."
   },
   {
-    question: "Will this help me raise capital from investors faster?",
-    answer: "Yes. Capital follows professionalism. Share a secure deal portal with potential partners where they can review your track record, projected returns, and offering docs. It gives private lenders the confidence they need to wire funds today, not next week."
+    question: "Will this help me connect with investors who want in on my Deals?",
+    answer: "Yes. PaperWorking's Deal Marketplace lets you list your Deal with its underwriting — Cap Rate, COC, projected IRR — so other investors can discover it and signal interest. You see interest accumulate in real time. PaperWorking facilitates introductions and interest tracking only; no funds are transacted on the platform."
   },
   {
     question: "How does PaperWorking protect my profit margins?",

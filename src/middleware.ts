@@ -28,14 +28,60 @@ const SESSION_COOKIE = '__session';
 const ACCT_COOKIE    = '__acct';
 const AUTH_PATHS     = new Set(['/login', '/register', '/forgot-password']);
 
+/**
+ * Prevent Next.js from caching middleware responses.
+ * Without this, a stale "redirect to /login" can be served from cache
+ * even after the __session cookie has been set — causing a redirect loop.
+ */
+function withNoCache(response: NextResponse): NextResponse {
+  response.headers.set('x-middleware-cache', 'no-cache');
+  return response;
+}
+
+function nextWithHeader(request: NextRequest, pathname: string): NextResponse {
+  const requestHeaders = new Headers(request.headers);
+  requestHeaders.set('x-pathname', pathname);
+  return NextResponse.next({
+    request: {
+      headers: requestHeaders,
+    }
+  });
+}
+
 export function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
   const hasSession = !!request.cookies.get(SESSION_COOKIE)?.value;
   const acct       = request.cookies.get(ACCT_COOKIE)?.value; // 'investor' | 'vendor'
 
+  const isDev = process.env.NODE_ENV === 'development' || 
+                request.nextUrl.hostname === 'localhost' || 
+                request.nextUrl.hostname === '127.0.0.1';
+
+  // ── Local Development Bypass ──────────────────────────
+  if (isDev && !hasSession && (pathname.startsWith('/dashboard') || pathname.startsWith('/vendor-portal') || pathname.startsWith('/onboarding') || pathname === '/login')) {
+    const url = request.nextUrl.clone();
+    if (pathname === '/login') {
+      url.pathname = '/dashboard/command-center';
+    }
+    const response = NextResponse.redirect(url);
+    response.cookies.set(SESSION_COOKIE, 'mock_session_token_123', {
+      path: '/',
+      maxAge: 60 * 60 * 24 * 14, // 14 days
+      httpOnly: false, // Must be accessible client-side by useAuth() check!
+    });
+    if (!acct) {
+      response.cookies.set(ACCT_COOKIE, 'investor', {
+        path: '/',
+        maxAge: 60 * 60 * 24 * 14,
+        httpOnly: false,
+      });
+    }
+    return withNoCache(response);
+  }
+
   // ── Guest Portal — always public ──────────────────────
   if (pathname.startsWith('/invest')) {
-    return NextResponse.next();
+    return withNoCache(nextWithHeader(request, pathname));
   }
 
   // ── Vendor Portal ──────────────────────────────────────
@@ -43,12 +89,25 @@ export function middleware(request: NextRequest) {
     if (!hasSession) {
       const url = new URL('/login', request.url);
       url.searchParams.set('redirectTo', pathname);
-      return NextResponse.redirect(url);
+      return withNoCache(NextResponse.redirect(url));
     }
     if (acct === 'investor') {
-      return NextResponse.redirect(new URL('/dashboard', request.url));
+      return withNoCache(NextResponse.redirect(new URL('/dashboard', request.url)));
     }
-    return NextResponse.next();
+    return withNoCache(nextWithHeader(request, pathname));
+  }
+
+  // ── Projects ───────────────────────────────────────────
+  if (pathname.startsWith('/projects')) {
+    if (!hasSession) {
+      const url = new URL('/login', request.url);
+      url.searchParams.set('redirectTo', request.nextUrl.pathname + request.nextUrl.search);
+      return withNoCache(NextResponse.redirect(url));
+    }
+    if (acct === 'vendor') {
+      return withNoCache(NextResponse.redirect(new URL('/vendor-portal', request.url)));
+    }
+    return withNoCache(nextWithHeader(request, pathname));
   }
 
   // ── Dashboard ──────────────────────────────────────────
@@ -56,12 +115,12 @@ export function middleware(request: NextRequest) {
     if (!hasSession) {
       const url = new URL('/login', request.url);
       url.searchParams.set('redirectTo', request.nextUrl.pathname + request.nextUrl.search);
-      return NextResponse.redirect(url);
+      return withNoCache(NextResponse.redirect(url));
     }
     if (acct === 'vendor') {
-      return NextResponse.redirect(new URL('/vendor-portal', request.url));
+      return withNoCache(NextResponse.redirect(new URL('/vendor-portal', request.url)));
     }
-    return NextResponse.next();
+    return withNoCache(nextWithHeader(request, pathname));
   }
 
   // ── Auth pages — server-redirect only when redirectTo is explicit ──
@@ -71,17 +130,19 @@ export function middleware(request: NextRequest) {
   if (AUTH_PATHS.has(pathname) && hasSession) {
     const redirectTo = request.nextUrl.searchParams.get('redirectTo');
     if (redirectTo && redirectTo.startsWith('/') && !AUTH_PATHS.has(redirectTo)) {
-      return NextResponse.redirect(new URL(redirectTo, request.url));
+      return withNoCache(NextResponse.redirect(new URL(redirectTo, request.url)));
     }
   }
 
-  return NextResponse.next();
+  return withNoCache(nextWithHeader(request, pathname));
 }
 
 export const config = {
   matcher: [
     '/dashboard/:path*',
+    '/projects/:path*',
     '/vendor-portal/:path*',
+    '/onboarding/:path*',
     '/login',
     '/register',
     '/forgot-password',

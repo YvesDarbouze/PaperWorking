@@ -102,7 +102,7 @@ export interface AdminTicketEntry {
 
 // ── Constants ────────────────────────────────────────
 
-const ADMIN_ROLES = ['Platform Admin', 'Admin'];
+const ADMIN_ROLES = ['Platform Admin', 'Admin', 'Lead Investor'];
 
 const PLAN_COLORS: Record<string, string> = {
   Individual: '#A5A5A5',
@@ -123,13 +123,11 @@ async function verifyAdmin(): Promise<{ uid: string } | null> {
     const decoded = await adminAuth.verifyIdToken(session.value);
     if (!decoded.uid) return null;
 
-    // Primary check: Firebase custom claim (set only via Admin SDK — cannot be spoofed)
-    // Provision via: adminAuth.setCustomUserClaims(uid, { admin: true })
-    if (decoded.admin === true) return { uid: decoded.uid };
-
-    // Fallback during migration: Firestore role checked via Admin SDK (server-side only)
+    // Check role from Firestore user doc
     const userSnap = await adminDb.collection('users').doc(decoded.uid).get();
-    const role = (userSnap.data()?.role as string) || '';
+    const userData = userSnap.data();
+    const role = userData?.role || '';
+
     if (!ADMIN_ROLES.includes(role)) return null;
 
     return { uid: decoded.uid };
@@ -313,12 +311,14 @@ export async function getAdminRevenueStats(): Promise<AdminRevenueStats> {
       return EMPTY_REVENUE_STATS;
     }
 
+    const { adminDb } = await import('@/lib/firebase/admin');
+
     // Get MRR from active Stripe subscriptions
     let mrr = 0;
     const recentSubscriptions: AdminRevenueStats['recentSubscriptions'] = [];
 
     const allSubs: Stripe.Subscription[] = [];
-    for await (const sub of stripe.subscriptions.list({ status: 'all', limit: 100, expand: ['data.customer'] }) as any) {
+    for await (const sub of stripe.subscriptions.list({ status: 'all', limit: 100, expand: ['data.customer'] })) {
       allSubs.push(sub);
     }
 
@@ -374,7 +374,7 @@ export async function getAdminRevenueStats(): Promise<AdminRevenueStats> {
     for await (const charge of stripe.charges.list({
       created: { gte: Math.floor(startOfLastMonth.getTime() / 1000) },
       limit: 100,
-    }) as any) {
+    })) {
       if (charge.status !== 'succeeded') continue;
       const chargeDate = new Date(charge.created * 1000);
       const amount = charge.amount / 100;
@@ -448,6 +448,7 @@ export async function getAdminActivityStats(): Promise<AdminActivityStats> {
       if (createdAt) {
         if (typeof createdAt.toDate === 'function') createdDate = createdAt.toDate();
         else if (createdAt._seconds !== undefined) createdDate = new Date(createdAt._seconds * 1000);
+        else if (createdAt instanceof Date) createdDate = createdAt;
         else if (typeof createdAt === 'string') createdDate = new Date(createdAt);
       }
       if (createdDate && createdDate >= thirtyDaysAgo) projectsCreatedLast30++;

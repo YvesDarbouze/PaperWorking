@@ -74,7 +74,7 @@ const ProfessionalListingDashboard: React.FC<ProfessionalListingDashboardProps> 
       <div className="flex flex-col md:flex-row md:items-end justify-between border-b border-border-accent pb-16 gap-10">
         <div className="space-y-6">
           <div className="flex items-center gap-4">
-            <div className="w-10 h-10 bg-pw-black flex items-center justify-center border border-pw-black">
+            <div className="w-10 h-10 bg-pw-black flex items-center justify-center border border-pw-border">
               <Sparkles className="w-4 h-4 text-pw-accent" />
             </div>
             <span className="text-sm font-black text-text-primary uppercase tracking-[0.4em]">AI Listing Review</span>
@@ -90,12 +90,12 @@ const ProfessionalListingDashboard: React.FC<ProfessionalListingDashboardProps> 
           <button 
             onClick={ingestMLSData}
             disabled={loading}
-            className="flex items-center gap-4 px-10 py-5 bg-pw-black text-pw-white text-sm font-black uppercase tracking-[0.3em] hover:bg-pw-accent transition-all disabled:opacity-20 border border-pw-black"
+            className="flex items-center gap-4 px-10 py-5 bg-pw-black text-pw-white text-sm font-black uppercase tracking-[0.3em] hover:bg-pw-accent transition-all disabled:opacity-20 border border-pw-border"
           >
             <Database className={`w-4 h-4 ${loading ? 'animate-spin' : ''}`} />
             <span>{loading ? 'SYNCHRONIZING...' : 'SYNC_MLS_CORE'}</span>
           </button>
-          <button className="p-5 border border-border-accent text-text-secondary hover:text-text-primary hover:border-pw-black transition-all bg-bg-primary">
+          <button className="p-5 border border-border-accent text-text-secondary hover:text-text-primary hover:border-pw-border transition-all bg-bg-primary">
             <Share2 className="w-5 h-5" />
           </button>
         </div>
@@ -130,7 +130,7 @@ const ProfessionalListingDashboard: React.FC<ProfessionalListingDashboardProps> 
               </div>
               <button 
                 onClick={handleGenerateAI}
-                className="text-xs font-black bg-bg-surface hover:bg-pw-black hover:text-pw-white px-6 py-3 border border-pw-black uppercase tracking-[0.2em] flex items-center gap-3 transition-all active:scale-95"
+                className="text-xs font-black bg-bg-surface hover:bg-pw-black hover:text-pw-white px-6 py-3 border border-pw-border uppercase tracking-[0.2em] flex items-center gap-3 transition-all active:scale-95"
               >
                 {generating ? <RefreshCw className="w-3 h-3 animate-spin" /> : <Sparkles className="w-3 h-3 text-pw-accent" />}
                 <span>{generating ? 'COMPILING...' : 'RE-INDEX AI'}</span>
@@ -219,7 +219,7 @@ const ProfessionalListingDashboard: React.FC<ProfessionalListingDashboardProps> 
                  <span className="text-2xl text-pw-accent">$</span>
                  {((deal.financials.estimatedARV || 0) / 100).toLocaleString()}
                </p>
-               <button className="w-full bg-pw-black text-pw-white text-sm font-black py-5 uppercase tracking-[0.3em] hover:bg-pw-accent border border-pw-black transition-all shadow-xl">
+               <button className="w-full bg-pw-black text-pw-white text-sm font-black py-5 uppercase tracking-[0.3em] hover:bg-pw-accent border border-pw-border transition-all shadow-xl">
                  COMMIT_ARV_LOG
                </button>
             </div>

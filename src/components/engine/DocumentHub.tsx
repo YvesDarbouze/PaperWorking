@@ -9,7 +9,8 @@ import {
   collection, query, where, onSnapshot, addDoc, updateDoc,
   doc, serverTimestamp, deleteDoc,
 } from 'firebase/firestore';
-import { db } from '@/lib/firebase/config';
+import { ref, uploadBytesResumable, getDownloadURL } from 'firebase/storage';
+import { db, storage } from '@/lib/firebase/config';
 import { useAuth } from '@/context/AuthContext';
 import { useProjectStore } from '@/store/projectStore';
 import toast from 'react-hot-toast';
@@ -49,6 +50,7 @@ export default function DocumentHub() {
   const [documents, setDocuments] = useState<DealDocument[]>([]);
   const [isDragging, setIsDragging] = useState(false);
   const [uploading, setUploading] = useState(false);
+  const [uploadProgress, setUploadProgress] = useState(0);
   const [showUploadForm, setShowUploadForm] = useState(false);
   const [uploadForm, setUploadForm] = useState({
     category: 'Offer Letter' as DealDocumentCategory,
@@ -109,15 +111,41 @@ export default function DocumentHub() {
   const handleUpload = async () => {
     if (!pendingFile || !selectedProjectId || !user) return;
     setUploading(true);
+    setUploadProgress(0);
     try {
-      // In production: upload to Firebase Storage or S3, get fileUrl
-      // For now we store metadata; fileUrl would come from the storage upload
+      // 1. Upload binary to Firebase Storage
+      const safeFileName = pendingFile.name.replace(/[^a-zA-Z0-9._-]/g, '_');
+      const storagePath = `projects/${selectedProjectId}/documents/${Date.now()}_${safeFileName}`;
+      const storageRef = ref(storage, storagePath);
+      const uploadTask = uploadBytesResumable(storageRef, pendingFile, {
+        contentType: pendingFile.type,
+      });
+
+      // Track progress
+      await new Promise<void>((resolve, reject) => {
+        uploadTask.on(
+          'state_changed',
+          (snapshot) => {
+            const pct = Math.round((snapshot.bytesTransferred / snapshot.totalBytes) * 100);
+            setUploadProgress(pct);
+          },
+          reject,
+          resolve,
+        );
+      });
+
+      // 2. Get the permanent download URL
+      const fileUrl = await getDownloadURL(uploadTask.snapshot.ref);
+
+      // 3. Write Firestore metadata with the real fileUrl
       const docData: Omit<DealDocument, 'id'> = {
         projectId: selectedProjectId,
         category: uploadForm.category,
         fileName: pendingFile.name,
         fileSize: pendingFile.size,
         mimeType: pendingFile.type,
+        fileUrl,
+        storagePath,
         uploadedByUid: user.uid,
         uploadedByName: user.displayName || user.email || 'User',
         uploadedAt: new Date(),
@@ -128,12 +156,15 @@ export default function DocumentHub() {
         ...docData,
         uploadedAt: serverTimestamp(),
       });
+
       toast.success(`${pendingFile.name} uploaded`);
       setShowUploadForm(false);
       setPendingFile(null);
+      setUploadProgress(0);
       setUploadForm({ category: 'Offer Letter', notes: '', eSignStatus: 'Not Required' });
-    } catch {
-      toast.error('Upload failed');
+    } catch (err) {
+      console.error('[DocumentHub] Upload failed:', err);
+      toast.error('Upload failed. Please try again.');
     } finally {
       setUploading(false);
     }
@@ -189,7 +220,7 @@ export default function DocumentHub() {
         <div className="flex items-center gap-3">
           {projects.length > 0 && (
             <select
-              className="border border-border-accent rounded-md text-sm py-2 pl-3 pr-8 focus:ring-indigo-500 focus:border-indigo-500 bg-bg-surface"
+              className="border border-border-accent rounded-md text-sm py-2 pl-3 pr-8 focus:ring-[#454955] focus:border-[#454955] bg-bg-surface"
               value={selectedProjectId}
               onChange={e => {
                 setSelectedProjectId(e.target.value);
@@ -272,10 +303,13 @@ export default function DocumentHub() {
                 </button>
               </div>
             ) : (
-              <label className="block mb-4 cursor-pointer">
-                <div className="border-2 border-dashed border-border-accent rounded-lg p-6 text-center hover:border-gray-400 transition">
-                  <Upload className="w-8 h-8 text-text-secondary mx-auto mb-2" />
-                  <p className="text-sm text-text-secondary">Click to select a file</p>
+              <label className="block mb-4 cursor-pointer relative group">
+                <div className="relative rounded-lg p-6 text-center transition-all bg-surface-container/30 backdrop-blur-xl border-t border-l border-white/10 shadow-md overflow-hidden">
+                  <div className={`absolute inset-2 border border-dashed rounded transition-all duration-300 pointer-events-none border-outline-variant/40 group-hover:border-primary/40 group-hover:bg-primary/5`} />
+                  <div className="relative z-10">
+                    <Upload className="w-6 h-6 text-text-secondary mx-auto mb-2 group-hover:scale-110 transition-transform" />
+                    <p className="text-sm text-text-secondary">Click to select a file</p>
+                  </div>
                 </div>
                 <input type="file" className="hidden" onChange={handleFileSelect} />
               </label>
@@ -285,7 +319,7 @@ export default function DocumentHub() {
               <div>
                 <label className="block text-xs font-medium text-text-primary mb-1">Category</label>
                 <select
-                  className="w-full border border-border-accent rounded-md text-sm py-2 px-3 focus:ring-indigo-500 focus:border-indigo-500"
+                  className="w-full border border-border-accent rounded-md text-sm py-2 px-3 focus:ring-[#454955] focus:border-[#454955]"
                   value={uploadForm.category}
                   onChange={e => setUploadForm(f => ({ ...f, category: e.target.value as DealDocumentCategory }))}
                 >
@@ -295,7 +329,7 @@ export default function DocumentHub() {
               <div>
                 <label className="block text-xs font-medium text-text-primary mb-1">eSignature Required?</label>
                 <select
-                  className="w-full border border-border-accent rounded-md text-sm py-2 px-3 focus:ring-indigo-500 focus:border-indigo-500"
+                  className="w-full border border-border-accent rounded-md text-sm py-2 px-3 focus:ring-[#454955] focus:border-[#454955]"
                   value={uploadForm.eSignStatus}
                   onChange={e => setUploadForm(f => ({ ...f, eSignStatus: e.target.value as ESignStatus }))}
                 >
@@ -307,7 +341,7 @@ export default function DocumentHub() {
                 <label className="block text-xs font-medium text-text-primary mb-1">Notes (optional)</label>
                 <textarea
                   rows={2}
-                  className="w-full border border-border-accent rounded-md text-sm py-2 px-3 focus:ring-indigo-500 focus:border-indigo-500 resize-none"
+                  className="w-full border border-border-accent rounded-md text-sm py-2 px-3 focus:ring-[#454955] focus:border-[#454955] resize-none"
                   placeholder="Any additional context…"
                   value={uploadForm.notes}
                   onChange={e => setUploadForm(f => ({ ...f, notes: e.target.value }))}
@@ -325,34 +359,58 @@ export default function DocumentHub() {
               <button
                 onClick={handleUpload}
                 disabled={!pendingFile || uploading}
-                className="px-4 py-2 text-sm font-medium text-white bg-gray-900 rounded-lg hover:bg-gray-700 transition disabled:opacity-50"
+                className="px-4 py-2 rounded-lg text-sm font-medium disabled:opacity-50 luminous-button min-w-[120px]"
               >
-                {uploading ? 'Uploading…' : 'Save Document'}
+                {uploading ? `${uploadProgress}%` : 'Save Document'}
               </button>
             </div>
+
+            {/* Upload progress bar */}
+            {uploading && (
+              <div className="mt-3 h-1.5 w-full rounded-full overflow-hidden" style={{ background: 'rgba(255,255,255,0.08)' }}>
+                <div
+                  className="h-full rounded-full transition-all duration-300"
+                  style={{
+                    width: `${uploadProgress}%`,
+                    background: 'linear-gradient(90deg, #454955, #454955)',
+                    boxShadow: '0 0 8px rgba(69,73,85,0.4)',
+                  }}
+                />
+              </div>
+            )}
           </div>
         </div>
       )}
 
-      {/* Drop Zone + Document List */}
       <div
         onDragOver={handleDragOver}
         onDragLeave={handleDragLeave}
         onDrop={handleDrop}
-        className={`relative min-h-[300px] rounded-xl border-2 transition-all ${
-          isDragging ? 'border-indigo-400 bg-indigo-50' : 'border-dashed border-border-accent bg-bg-primary/50'
-        }`}
+        className="upload-zone relative min-h-[300px] rounded-xl transition-all bg-surface-container/30 backdrop-blur-xl border-t border-l border-white/10 shadow-lg overflow-hidden group"
       >
+        {/* Inner border indicator */}
+        {(filtered.length === 0 || isDragging) && (
+          <div className={`absolute inset-3 border-2 border-dashed rounded-lg transition-all duration-300 pointer-events-none ${
+            isDragging 
+              ? 'border-primary bg-primary/10 z-20' 
+              : 'border-outline-variant/40 group-hover:border-primary/40 group-hover:bg-primary/5'
+          }`} />
+        )}
+
         {isDragging && (
-          <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none z-10">
-            <Upload className="w-10 h-10 text-indigo-500 mb-2" />
-            <p className="text-sm font-medium text-indigo-600">Drop to upload</p>
+          <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none z-30 bg-surface-container/40 backdrop-blur-sm">
+            <div className="w-14 h-14 mb-2 rounded-full bg-surface-container-highest flex items-center justify-center text-primary shadow-lg shadow-primary/10 animate-bounce">
+              <Upload className="w-6 h-6" />
+            </div>
+            <p className="text-sm font-semibold text-text-primary">Drop to upload</p>
           </div>
         )}
 
         {filtered.length === 0 ? (
-          <div className="flex flex-col items-center justify-center min-h-[300px] text-center">
-            <FileText className="w-12 h-12 text-gray-300 mb-3" />
+          <div className="relative z-10 flex flex-col items-center justify-center min-h-[300px] text-center p-6">
+            <div className="w-14 h-14 mb-3 rounded-full bg-surface-container-highest flex items-center justify-center text-text-secondary shadow-md group-hover:scale-110 transition-transform duration-300">
+              <FileText className="w-6 h-6" />
+            </div>
             <p className="text-sm font-medium text-text-secondary">No {CATEGORIES.find(c => c.key === activeCategory)?.label} uploaded yet</p>
             <p className="text-xs text-text-secondary mt-1">Drag & drop files here or use the Upload button</p>
           </div>
@@ -388,7 +446,7 @@ export default function DocumentHub() {
                       <button
                         onClick={() => handleRequestESign(doc.id)}
                         title="Request eSignature"
-                        className="p-1.5 text-text-secondary hover:text-indigo-600 rounded-md hover:bg-indigo-50 transition"
+                        className="p-1.5 text-text-secondary hover:text-[#454955] rounded-md hover:bg-[#454955]/10 transition"
                       >
                         <FilePen className="w-4 h-4" />
                       </button>

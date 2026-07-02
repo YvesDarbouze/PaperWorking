@@ -2,19 +2,15 @@
 
 import React, { useState, useRef, useEffect } from 'react';
 import Link from 'next/link';
-import { Search, Bell, ChevronDown, User, LogOut, Loader2 } from 'lucide-react';
+import { Search, Bell, ChevronDown, User, LogOut, Loader2, LayoutGrid } from 'lucide-react';
 import { useAuth } from '@/context/AuthContext';
 import { useUserStore } from '@/store/userStore';
 import { useRouter } from 'next/navigation';
 import Logo from '@/components/brand/Logo';
-import { useInboxThreads } from '@/hooks/useInboxThreads';
+import { useNotification } from '@/context/NotificationContext';
 
 /* ═══════════════════════════════════════════════════════
    TopHeader — Sticky Dashboard Banner
-
-   Layout:  [Logo (mobile)] [Search ·····] [Bell] [Badge] [Avatar ▾]
-   Palette: Inherits .dashboard-context CSS vars
-   Height:  64px — matches sidebar logo row for alignment
    ═══════════════════════════════════════════════════════ */
 
 /* ── Tier label map ── */
@@ -27,7 +23,7 @@ export default function TopHeader() {
   const { user, logout } = useAuth();
   const { accountTier } = useUserStore();
   const router = useRouter();
-  const { unreadTotal } = useInboxThreads();
+  const { unreadTotal } = useNotification();
 
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [isLoggingOut, setIsLoggingOut] = useState(false);
@@ -77,235 +73,152 @@ export default function TopHeader() {
   return (
     <header
       id="top-header"
-      className="sticky top-0 z-50 w-full backdrop-blur-md"
-      style={{
-        height: 64,
-        background: 'color-mix(in srgb, var(--bg-surface) 85%, transparent)',
-        borderBottom: '1px solid var(--border-ui)',
-      }}
+      className="w-full h-20 sticky top-0 z-50 flex items-center justify-between px-margin-mobile lg:px-10 bg-glass-bg backdrop-blur-xl border-b border-outline-variant"
       role="banner"
     >
-      <div className="flex h-16 items-center gap-4 px-4 sm:px-6">
-
-        {/* ══════ Mobile Logo ══════ */}
-        <div className="flex-shrink-0 lg:hidden">
+      {/* ══════ Left Content ══════ */}
+      <div className="flex items-center gap-4">
+        {/* Mobile Logo */}
+        <div className="flex-shrink-0 lg:hidden mr-4">
           <Logo href="/dashboard" size="sm" />
         </div>
+        <h2 className="hidden lg:block font-headline-md text-headline-md text-on-surface">Portfolio Dashboard</h2>
+      </div>
 
-        {/* ══════ Global Search ══════ */}
-        <div className="flex-1 max-w-xl">
-          <div className="relative">
-            <Search
-              className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 pointer-events-none"
-              style={{ color: 'var(--text-secondary)' }}
-              aria-hidden="true"
-            />
-            <input
-              id="global-search"
-              type="search"
-              placeholder="Search deals, files, or team…"
-              className="w-full pl-10 pr-4 py-2 text-sm rounded-lg transition-all duration-150 outline-none"
-              style={{
-                background: 'var(--bg-surface)',
-                border: '1px solid var(--border-ui)',
-                color: 'var(--text-primary)',
-              }}
-              onFocus={(e) => {
-                e.currentTarget.style.borderColor = '#0d0d0d';
-                e.currentTarget.style.boxShadow = '0 0 0 2px rgba(13,13,13,0.08)';
-              }}
-              onBlur={(e) => {
-                e.currentTarget.style.borderColor = 'var(--border-ui)';
-                e.currentTarget.style.boxShadow = 'none';
-              }}
-              aria-label="Search deals, files, or team"
-            />
-          </div>
+      {/* ══════ Right Controls (Search + User Menu) ══════ */}
+      <div className="flex items-center gap-6 flex-shrink-0">
+        {/* Global Search */}
+        <div className="hidden md:flex items-center gap-3 bg-surface-container px-4 py-2 rounded-full border border-outline-variant transition-all focus-within:border-primary">
+          <Search className="w-4 h-4 text-outline" aria-hidden="true" />
+          <input
+            id="global-search"
+            type="search"
+            placeholder="Search assets..."
+            className="bg-transparent border-none focus:ring-0 text-sm w-48 text-on-surface-variant placeholder:text-outline"
+            aria-label="Search deals, files, or team"
+          />
         </div>
 
-        {/* ══════ Right Controls ══════ */}
-        <div className="flex items-center gap-2 sm:gap-3 flex-shrink-0">
-
+        <div className="flex items-center gap-2">
           {/* ── Notification Bell ── */}
           <Link
             id="header-notifications"
             href="/dashboard/inbox"
-            className="relative flex items-center justify-center w-9 h-9 rounded-lg transition-colors"
-            style={{ color: 'var(--text-secondary)' }}
-            onMouseEnter={(e) => {
-              e.currentTarget.style.background = '#e8e8e8';
-              e.currentTarget.style.color = 'var(--text-primary)';
-            }}
-            onMouseLeave={(e) => {
-              e.currentTarget.style.background = 'transparent';
-              e.currentTarget.style.color = 'var(--text-secondary)';
-            }}
+            className="relative p-2 text-on-surface-variant hover:text-primary transition-all rounded-full hover:bg-white/5"
             aria-label={`Inbox${unreadTotal > 0 ? ` — ${unreadTotal} unread` : ''}`}
             title={`Inbox${unreadTotal > 0 ? ` — ${unreadTotal} unread` : ''}`}
           >
-            <Bell className="w-[18px] h-[18px]" />
+            <Bell className="w-[20px] h-[20px]" />
             {/* Unread badge — shows count when messages exist */}
             {unreadTotal > 0 && (
               <span
-                className="absolute -top-0.5 -right-0.5 flex items-center justify-center min-w-[18px] h-[18px] rounded-full text-[10px] font-bold"
-                style={{ background: '#0d0d0d', color: '#ffffff', border: '2px solid var(--bg-surface)', padding: '0 3px' }}
+                className="absolute top-1 right-1 flex items-center justify-center min-w-[16px] h-[16px] rounded-full text-[9px] font-bold bg-error text-on-error border border-surface"
                 aria-label={`${unreadTotal} unread messages`}
               >
-                {unreadTotal > 99 ? '99+' : unreadTotal}
+                {unreadTotal > 9 ? '9+' : unreadTotal}
               </span>
             )}
           </Link>
+        </div>
 
-          {/* ── Subscription Badge ── */}
-          <span
-            id="header-tier-badge"
-            className="hidden sm:inline-flex items-center px-2.5 py-1 text-[10px] font-bold uppercase tracking-[0.15em] rounded-full select-none"
-            style={{
-              background: '#0d0d0d',
-              color: '#ffffff',
-              letterSpacing: '0.1em',
-            }}
-            title={`Account tier: ${tierLabel}`}
+        {/* ── Subscription Badge ── */}
+        <span
+          id="header-tier-badge"
+          className="hidden sm:inline-flex items-center px-2.5 py-1 text-[10px] font-bold uppercase tracking-[0.15em] select-none rounded bg-primary-container/20 text-primary border border-outline-variant"
+          title={`Account tier: ${tierLabel}`}
+        >
+          {tierLabel}
+        </span>
+
+        {/* ── User Avatar + Dropdown ── */}
+        <div className="relative" ref={dropdownRef}>
+          <button
+            id="header-user-menu"
+            onClick={() => setDropdownOpen((prev) => !prev)}
+            className="flex items-center gap-2 transition-all duration-200 hover:opacity-80"
+            aria-expanded={dropdownOpen}
+            aria-haspopup="true"
+            aria-label={`Account menu for ${displayName}`}
           >
-            {tierLabel}
-          </span>
-
-          {/* ── Divider ── */}
-          <div
-            className="hidden sm:block w-px h-6"
-            style={{ background: 'var(--border-ui)' }}
-            aria-hidden="true"
-          />
-
-          {/* ── User Avatar + Dropdown ── */}
-          <div className="relative" ref={dropdownRef}>
-            <button
-              id="header-user-menu"
-              onClick={() => setDropdownOpen((prev) => !prev)}
-              className="flex items-center gap-2 rounded-lg px-2 py-1.5 transition-colors"
-              style={{ color: 'var(--text-primary)' }}
-              onMouseEnter={(e) => {
-                e.currentTarget.style.background = '#e8e8e8';
-              }}
-              onMouseLeave={(e) => {
-                e.currentTarget.style.background = 'transparent';
-              }}
-              aria-expanded={dropdownOpen}
-              aria-haspopup="true"
-              aria-label={`Account menu for ${displayName}`}
+            {/* Avatar container */}
+            <div
+              className="flex h-10 w-10 items-center justify-center rounded-full text-sm font-bold shrink-0 border-2 border-primary bg-primary-container/20 text-primary hover:opacity-90 transition-opacity"
+              aria-hidden="true"
             >
-              {/* Avatar circle */}
+              {initial}
+            </div>
+            <ChevronDown
+              className="w-3.5 h-3.5 shrink-0 transition-transform duration-150 text-on-surface-variant"
+              style={{
+                transform: dropdownOpen ? 'rotate(180deg)' : 'rotate(0deg)',
+              }}
+              aria-hidden="true"
+            />
+          </button>
+
+          {/* ── Dropdown Menu ── */}
+          {dropdownOpen && (
+            <div
+              className="pw-dropdown-overlay absolute right-0 top-full mt-2 w-56 py-1.5 z-50 rounded-xl bg-surface-container border border-outline-variant shadow-2xl"
+              role="menu"
+              aria-label="User menu"
+            >
+              {/* User info header */}
               <div
-                className="flex h-8 w-8 items-center justify-center rounded-full text-xs font-semibold shrink-0"
-                style={{ background: '#0d0d0d', color: '#ffffff' }}
-                aria-hidden="true"
+                className="px-3 py-2.5 mb-1 border-b border-outline-variant"
               >
-                {initial}
+                <p
+                  className="text-sm font-bold truncate text-on-surface"
+                >
+                  {displayName}
+                </p>
+                {user?.email && user.displayName && (
+                  <p
+                    className="text-xs truncate mt-0.5 text-on-surface-variant"
+                  >
+                    {user.email}
+                  </p>
+                )}
               </div>
-              {/* Name — hidden on small screens */}
-              <span
-                className="hidden lg:inline text-sm font-medium truncate max-w-[120px]"
-                style={{ color: 'var(--text-primary)' }}
+
+              {/* Profile link */}
+              <Link
+                href="/dashboard/settings/profile"
+                className="pw-dropdown-item flex items-center gap-2.5 px-3 py-2 text-sm text-on-surface hover:bg-surface-variant transition-colors"
+                role="menuitem"
+                onClick={() => setDropdownOpen(false)}
               >
-                {displayName}
-              </span>
-              <ChevronDown
-                className="w-3.5 h-3.5 shrink-0 transition-transform duration-150"
-                style={{
-                  color: 'var(--text-secondary)',
-                  transform: dropdownOpen ? 'rotate(180deg)' : 'rotate(0deg)',
-                }}
+                <User className="w-4 h-4 text-on-surface-variant" />
+                Profile
+              </Link>
+
+              {/* Divider */}
+              <div
+                className="my-1 border-t border-outline-variant"
                 aria-hidden="true"
               />
-            </button>
 
-            {/* ── Dropdown Menu ── */}
-            {dropdownOpen && (
-              <div
-                className="absolute right-0 top-full mt-1.5 w-56 rounded-lg py-1.5 shadow-lg"
-                style={{
-                  background: 'var(--bg-surface)',
-                  border: '1px solid var(--border-ui)',
-                  zIndex: 100,
-                }}
-                role="menu"
-                aria-label="User menu"
+              {/* Log out */}
+              <button
+                onClick={handleLogout}
+                disabled={isLoggingOut}
+                className="pw-dropdown-item flex w-full items-center gap-2.5 px-3 py-2 text-sm text-on-surface hover:bg-surface-variant transition-colors disabled:opacity-50"
+                role="menuitem"
               >
-                {/* User info header */}
-                <div
-                  className="px-3 py-2.5 mb-1"
-                  style={{ borderBottom: '1px solid var(--border-ui)' }}
-                >
-                  <p
-                    className="text-sm font-semibold truncate"
-                    style={{ color: 'var(--text-primary)' }}
-                  >
-                    {displayName}
-                  </p>
-                  {user?.email && user.displayName && (
-                    <p
-                      className="text-xs truncate mt-0.5"
-                      style={{ color: 'var(--text-secondary)' }}
-                    >
-                      {user.email}
-                    </p>
-                  )}
-                </div>
-
-                {/* Profile link */}
-                <Link
-                  href="/dashboard/profile"
-                  className="flex items-center gap-2.5 px-3 py-2 text-sm transition-colors"
-                  style={{ color: 'var(--text-primary)' }}
-                  onMouseEnter={(e) => {
-                    e.currentTarget.style.background = '#f0f0f0';
-                  }}
-                  onMouseLeave={(e) => {
-                    e.currentTarget.style.background = 'transparent';
-                  }}
-                  role="menuitem"
-                  onClick={() => setDropdownOpen(false)}
-                >
-                  <User className="w-4 h-4" style={{ color: 'var(--text-secondary)' }} />
-                  Profile
-                </Link>
-
-                {/* Divider */}
-                <div
-                  className="my-1"
-                  style={{ borderTop: '1px solid var(--border-ui)' }}
-                  aria-hidden="true"
-                />
-
-                {/* Log out */}
-                <button
-                  onClick={handleLogout}
-                  disabled={isLoggingOut}
-                  className="flex w-full items-center gap-2.5 px-3 py-2 text-sm transition-colors disabled:opacity-50"
-                  style={{ color: 'var(--text-primary)' }}
-                  onMouseEnter={(e) => {
-                    if (!isLoggingOut) e.currentTarget.style.background = '#f0f0f0';
-                  }}
-                  onMouseLeave={(e) => {
-                    e.currentTarget.style.background = 'transparent';
-                  }}
-                  role="menuitem"
-                >
-                  {isLoggingOut ? (
-                    <>
-                      <Loader2 className="w-4 h-4 animate-spin" style={{ color: 'var(--text-secondary)' }} />
-                      Signing out…
-                    </>
-                  ) : (
-                    <>
-                      <LogOut className="w-4 h-4" style={{ color: 'var(--text-secondary)' }} />
-                      Log Out
-                    </>
-                  )}
-                </button>
-              </div>
-            )}
-          </div>
+                {isLoggingOut ? (
+                  <>
+                    <Loader2 className="w-4 h-4 animate-spin text-on-surface-variant" />
+                    Signing out…
+                  </>
+                ) : (
+                  <>
+                    <LogOut className="w-4 h-4 text-on-surface-variant" />
+                    Log Out
+                  </>
+                )}
+              </button>
+            </div>
+          )}
         </div>
       </div>
     </header>

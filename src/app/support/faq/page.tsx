@@ -2,6 +2,7 @@
 
 import { useState, useMemo } from 'react';
 import Link from 'next/link';
+import { useSearchParams } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
   ArrowLeft, Plus, Minus, Search, BookOpen, ChevronRight,
@@ -12,11 +13,13 @@ import { FAQ_ITEMS, FAQ_CATEGORIES, type FAQCategory } from '@/lib/cms/faqData';
    /support/faq — Dedicated FAQ Page
    
    Features:
-   • Category filter tabs
+   • Category filter tabs (reads ?category= from URL)
    • Search bar with instant filtering
    • Collapsible accordion sections
    • FAQPage JSON-LD structured data
    ═══════════════════════════════════════════════════════ */
+
+const VALID_CATEGORIES = new Set<string>(FAQ_CATEGORIES.map((c) => c.id));
 
 const fadeUp = {
   hidden: { opacity: 0, y: 24 },
@@ -29,7 +32,14 @@ const stagger = {
 };
 
 export default function FAQPage() {
-  const [activeCategory, setActiveCategory] = useState<FAQCategory | 'all'>('all');
+  const searchParams = useSearchParams();
+  const initialCategory = searchParams.get('category');
+  const defaultCategory: FAQCategory | 'all' =
+    initialCategory && VALID_CATEGORIES.has(initialCategory)
+      ? (initialCategory as FAQCategory)
+      : 'all';
+
+  const [activeCategory, setActiveCategory] = useState<FAQCategory | 'all'>(defaultCategory);
   const [searchQuery, setSearchQuery] = useState('');
   const [openIndex, setOpenIndex] = useState<number | null>(0); // first FAQ open by default
 

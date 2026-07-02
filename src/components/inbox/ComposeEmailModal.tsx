@@ -174,8 +174,7 @@ export default function ComposeEmailModal({
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
-          className="fixed inset-0 z-[200] flex items-center justify-center"
-          style={{ backgroundColor: 'rgba(0,0,0,0.5)' }}
+          className="fixed inset-0 z-[200] flex items-center justify-center bg-black/65 backdrop-blur-md"
           onClick={(e) => {
             if (e.target === e.currentTarget) onClose();
           }}
@@ -185,34 +184,16 @@ export default function ComposeEmailModal({
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: 24, scale: 0.97 }}
             transition={{ duration: 0.2 }}
-            className="w-full max-w-2xl mx-4 flex flex-col overflow-hidden shadow-2xl"
-            style={{
-              backgroundColor: 'var(--bg-surface)',
-              border: '1px solid var(--border-ui)',
-              maxHeight: 'calc(100vh - 80px)',
-            }}
+            className="w-full max-w-2xl mx-4 flex flex-col overflow-hidden shadow-2xl bg-pw-glass-bg border border-pw-border backdrop-blur-[20px] rounded-2xl max-h-[calc(100vh-80px)]"
           >
             {/* Header */}
-            <div
-              className="flex items-center justify-between px-6 py-4 border-b"
-              style={{ borderColor: 'var(--border-ui)' }}
-            >
-              <h2
-                className="text-lg font-bold tracking-tight"
-                style={{ color: 'var(--text-primary)' }}
-              >
+            <div className="flex items-center justify-between px-6 py-4 border-b border-pw-border bg-pw-glass-bg/90 text-pw-black">
+              <h2 className="text-lg font-bold tracking-tight">
                 Compose
               </h2>
               <button
                 onClick={onClose}
-                className="w-8 h-8 flex items-center justify-center rounded-lg transition-colors"
-                style={{ color: 'var(--text-secondary)' }}
-                onMouseEnter={(e) => {
-                  e.currentTarget.style.backgroundColor = '#F2F2F2';
-                }}
-                onMouseLeave={(e) => {
-                  e.currentTarget.style.backgroundColor = 'transparent';
-                }}
+                className="w-8 h-8 flex items-center justify-center rounded-full transition-colors text-pw-black hover:bg-pw-glass-bg/25"
                 aria-label="Close compose"
               >
                 <X className="w-4 h-4" />
@@ -225,8 +206,7 @@ export default function ComposeEmailModal({
               <div>
                 <label
                   htmlFor="compose-to"
-                  className="text-xs font-semibold uppercase tracking-wider mb-1.5 block"
-                  style={{ color: 'var(--text-secondary)' }}
+                  className="block text-[10px] font-black text-pw-muted uppercase tracking-[0.3em] mb-1.5"
                 >
                   To
                 </label>
@@ -236,18 +216,7 @@ export default function ComposeEmailModal({
                   placeholder="email@example.com, team@example.com"
                   value={to}
                   onChange={(e) => setTo(e.target.value)}
-                  className="w-full px-4 py-2.5 text-sm border outline-none transition-colors"
-                  style={{
-                    backgroundColor: 'var(--bg-canvas)',
-                    borderColor: 'var(--border-ui)',
-                    color: 'var(--text-primary)',
-                  }}
-                  onFocus={(e) => {
-                    e.currentTarget.style.borderColor = '#0d0d0d';
-                  }}
-                  onBlur={(e) => {
-                    e.currentTarget.style.borderColor = 'var(--border-ui)';
-                  }}
+                  className="glass-input w-full px-4 py-2.5 text-sm rounded-2xl focus:outline-none transition-colors"
                 />
               </div>
 
@@ -255,8 +224,7 @@ export default function ComposeEmailModal({
               <div>
                 <label
                   htmlFor="compose-project"
-                  className="text-xs font-semibold uppercase tracking-wider mb-1.5 block"
-                  style={{ color: 'var(--text-secondary)' }}
+                  className="block text-[10px] font-black text-pw-muted uppercase tracking-[0.3em] mb-1.5"
                 >
                   Project (optional)
                 </label>
@@ -264,12 +232,7 @@ export default function ComposeEmailModal({
                   id="compose-project"
                   value={projectId}
                   onChange={(e) => setProjectId(e.target.value)}
-                  className="w-full px-4 py-2.5 text-sm border outline-none transition-colors appearance-none cursor-pointer"
-                  style={{
-                    backgroundColor: 'var(--bg-canvas)',
-                    borderColor: 'var(--border-ui)',
-                    color: 'var(--text-primary)',
-                  }}
+                  className="glass-input w-full px-4 py-2.5 text-sm rounded-2xl focus:outline-none transition-colors appearance-none cursor-pointer"
                 >
                   <option value="">— Select project —</option>
                   {activeProjects.map((p) => (
@@ -284,8 +247,7 @@ export default function ComposeEmailModal({
               <div>
                 <label
                   htmlFor="compose-subject"
-                  className="text-xs font-semibold uppercase tracking-wider mb-1.5 block"
-                  style={{ color: 'var(--text-secondary)' }}
+                  className="block text-[10px] font-black text-pw-muted uppercase tracking-[0.3em] mb-1.5"
                 >
                   Subject
                 </label>
@@ -295,18 +257,7 @@ export default function ComposeEmailModal({
                   placeholder="Enter subject..."
                   value={subject}
                   onChange={(e) => setSubject(e.target.value)}
-                  className="w-full px-4 py-2.5 text-sm border outline-none transition-colors"
-                  style={{
-                    backgroundColor: 'var(--bg-canvas)',
-                    borderColor: 'var(--border-ui)',
-                    color: 'var(--text-primary)',
-                  }}
-                  onFocus={(e) => {
-                    e.currentTarget.style.borderColor = '#0d0d0d';
-                  }}
-                  onBlur={(e) => {
-                    e.currentTarget.style.borderColor = 'var(--border-ui)';
-                  }}
+                  className="glass-input w-full px-4 py-2.5 text-sm rounded-2xl focus:outline-none transition-colors"
                 />
               </div>
 
@@ -315,26 +266,14 @@ export default function ComposeEmailModal({
                 <div className="flex items-center justify-between mb-1.5">
                   <label
                     htmlFor="compose-body"
-                    className="text-xs font-semibold uppercase tracking-wider"
-                    style={{ color: 'var(--text-secondary)' }}
+                    className="block text-[10px] font-black text-pw-muted uppercase tracking-[0.3em]"
                   >
                     Message
                   </label>
                   <button
                     onClick={handleAIDraft}
                     disabled={aiLoading}
-                    className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold transition-colors disabled:opacity-50"
-                    style={{
-                      backgroundColor: '#F2F2F2',
-                      color: 'var(--text-primary)',
-                      border: '1px solid var(--border-ui)',
-                    }}
-                    onMouseEnter={(e) => {
-                      e.currentTarget.style.backgroundColor = '#E5E5E5';
-                    }}
-                    onMouseLeave={(e) => {
-                      e.currentTarget.style.backgroundColor = '#F2F2F2';
-                    }}
+                    className="pw-btn pw-btn--secondary pw-btn--pill flex items-center gap-1.5 px-3 py-1.5 text-xs transition-colors disabled:opacity-50"
                   >
                     {aiLoading ? (
                       <Loader2 className="w-3 h-3 animate-spin" />
@@ -351,42 +290,21 @@ export default function ComposeEmailModal({
                   onChange={(e) => setBody(e.target.value)}
                   onKeyDown={handleKeyDown}
                   rows={10}
-                  className="w-full px-4 py-3 text-sm border outline-none transition-colors resize-none"
-                  style={{
-                    backgroundColor: 'var(--bg-canvas)',
-                    borderColor: 'var(--border-ui)',
-                    color: 'var(--text-primary)',
-                    lineHeight: 1.7,
-                  }}
-                  onFocus={(e) => {
-                    e.currentTarget.style.borderColor = '#0d0d0d';
-                  }}
-                  onBlur={(e) => {
-                    e.currentTarget.style.borderColor = 'var(--border-ui)';
-                  }}
+                  className="glass-input w-full px-4 py-3 text-sm rounded-2xl focus:outline-none transition-colors resize-none"
+                  style={{ lineHeight: 1.7 }}
                 />
               </div>
             </div>
 
             {/* Footer */}
-            <div
-              className="flex items-center justify-between px-6 py-4 border-t"
-              style={{ borderColor: 'var(--border-ui)' }}
-            >
-              <p className="text-xs" style={{ color: '#CCCCCC' }}>
+            <div className="flex items-center justify-between px-6 py-4 border-t border-pw-border bg-pw-glass-bg/50 text-pw-black">
+              <p className="text-xs text-pw-muted">
                 ⌘+Enter to send
               </p>
               <div className="flex items-center gap-3">
                 <button
                   onClick={onClose}
-                  className="px-4 py-2 text-sm font-medium transition-colors"
-                  style={{ color: 'var(--text-secondary)' }}
-                  onMouseEnter={(e) => {
-                    e.currentTarget.style.color = 'var(--text-primary)';
-                  }}
-                  onMouseLeave={(e) => {
-                    e.currentTarget.style.color = 'var(--text-secondary)';
-                  }}
+                  className="pw-btn pw-btn--ghost pw-btn--pill px-4 py-2 text-sm transition-colors"
                 >
                   Discard
                 </button>
@@ -394,14 +312,7 @@ export default function ComposeEmailModal({
                   id="compose-send-btn"
                   onClick={handleSend}
                   disabled={sending}
-                  className="flex items-center gap-2 px-5 py-2.5 text-sm font-semibold transition-colors disabled:opacity-50"
-                  style={{ backgroundColor: '#0d0d0d', color: '#ffffff' }}
-                  onMouseEnter={(e) => {
-                    if (!sending) e.currentTarget.style.backgroundColor = '#333333';
-                  }}
-                  onMouseLeave={(e) => {
-                    e.currentTarget.style.backgroundColor = '#0d0d0d';
-                  }}
+                  className="pw-btn pw-btn--primary pw-btn--pill flex items-center gap-2 px-5 py-2.5 text-sm font-semibold transition-colors disabled:opacity-50 text-pw-white"
                 >
                   {sending ? (
                     <Loader2 className="w-4 h-4 animate-spin" />

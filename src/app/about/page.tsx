@@ -1,14 +1,13 @@
 import { Metadata } from 'next';
 import Link from 'next/link';
 import { ArrowRight, Shield, Target, Zap, Users } from 'lucide-react';
-import MarketingNavbar from '@/components/marketing/MarketingNavbar';
+import LandingHeader from '@/components/landing/LandingHeader';
 import LandingFooter from '@/components/landing/LandingFooter';
 
 /* ═══════════════════════════════════════════════════════
    /about — Company page
    
-   Communicates why PaperWorking exists and who it serves.
-   Follows Antigravity grayscale design system.
+   Obsidian glass theme. Unified LandingHeader navigation.
    ═══════════════════════════════════════════════════════ */
 
 export const metadata: Metadata = {
@@ -42,29 +41,20 @@ const VALUES = [
 
 export default function AboutPage() {
   return (
-    <div className="min-h-screen" style={{ background: 'var(--bg-canvas)' }}>
-      <MarketingNavbar />
+    <div className="min-h-screen bg-background text-on-surface dark">
+      <LandingHeader />
 
-      <main className="max-w-5xl mx-auto px-6 pt-32 pb-24">
+      <main className="max-w-5xl mx-auto px-6 md:px-margin-desktop pt-32 pb-24">
         {/* ── Hero ── */}
         <section className="mb-28">
-          <p
-            className="text-[10px] font-black uppercase tracking-[0.35em] mb-6"
-            style={{ color: 'var(--text-secondary)' }}
-          >
+          <p className="font-label-sm text-label-sm text-primary uppercase tracking-widest mb-6">
             About PaperWorking
           </p>
-          <h1
-            className="text-5xl sm:text-6xl font-black tracking-tighter leading-none mb-8"
-            style={{ color: 'var(--text-primary)' }}
-          >
+          <h1 className="font-headline-lg text-headline-lg text-on-surface tracking-tight leading-none mb-8">
             The paperwork was <br className="hidden sm:block" />
             always the problem.
           </h1>
-          <p
-            className="text-lg leading-relaxed max-w-2xl"
-            style={{ color: 'var(--text-secondary)' }}
-          >
+          <p className="font-body-lg text-body-lg text-on-surface-variant leading-relaxed max-w-2xl">
             Real estate investors don&apos;t lose deals because they lack ambition.
             They lose deals because critical information lives in fourteen different
             places — spreadsheets, email threads, shared drives, and the back of a
@@ -75,22 +65,19 @@ export default function AboutPage() {
         {/* ── Mission ── */}
         <section className="mb-28">
           <div
-            className="rounded-xl p-10 sm:p-14"
+            className="rounded-2xl p-10 sm:p-14"
             style={{
-              background: 'var(--bg-surface)',
-              border: '1px solid var(--border-ui)',
+              background: 'linear-gradient(135deg, rgba(34,43,50,0.4), rgba(22,19,24,0.8))',
+              backdropFilter: 'blur(16px)',
+              WebkitBackdropFilter: 'blur(16px)',
+              borderTop: '1px solid rgba(255,255,255,0.12)',
+              borderLeft: '1px solid rgba(255,255,255,0.12)',
             }}
           >
-            <p
-              className="text-[10px] font-black uppercase tracking-[0.35em] mb-4"
-              style={{ color: 'var(--text-secondary)' }}
-            >
+            <p className="font-label-sm text-label-sm text-primary uppercase tracking-widest mb-4">
               Our Mission
             </p>
-            <p
-              className="text-2xl sm:text-3xl font-medium tracking-tight leading-snug"
-              style={{ color: 'var(--text-primary)' }}
-            >
+            <p className="font-headline-sm text-headline-sm text-on-surface tracking-tight leading-snug">
               Give every investor — from first flip to a 50-door portfolio —
               the same deal-intelligence infrastructure that used to require a
               back-office team and six-figure software budgets.
@@ -100,37 +87,30 @@ export default function AboutPage() {
 
         {/* ── Values ── */}
         <section className="mb-28">
-          <p
-            className="text-[10px] font-black uppercase tracking-[0.35em] mb-10"
-            style={{ color: 'var(--text-secondary)' }}
-          >
+          <p className="font-label-sm text-label-sm text-primary uppercase tracking-widest mb-10">
             What We Stand For
           </p>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
             {VALUES.map((v) => (
               <div
                 key={v.title}
-                className="rounded-xl p-8"
+                className="rounded-2xl p-8 transition-all duration-300 hover:scale-[1.02]"
                 style={{
-                  background: 'var(--bg-surface)',
-                  border: '1px solid var(--border-ui)',
+                  background: 'linear-gradient(135deg, rgba(34,43,50,0.4), rgba(22,19,24,0.8))',
+                  backdropFilter: 'blur(16px)',
+                  WebkitBackdropFilter: 'blur(16px)',
+                  borderTop: '1px solid rgba(255,255,255,0.12)',
+                  borderLeft: '1px solid rgba(255,255,255,0.12)',
                 }}
               >
                 <v.icon
-                  className="w-6 h-6 mb-5"
-                  style={{ color: 'var(--text-primary)' }}
+                  className="w-6 h-6 mb-5 text-primary"
                   aria-hidden="true"
                 />
-                <h3
-                  className="text-sm font-bold tracking-tight mb-2"
-                  style={{ color: 'var(--text-primary)' }}
-                >
+                <h3 className="font-label-md text-label-md text-on-surface mb-2">
                   {v.title}
                 </h3>
-                <p
-                  className="text-sm leading-relaxed"
-                  style={{ color: 'var(--text-secondary)' }}
-                >
+                <p className="font-body-sm text-body-sm text-on-surface-variant leading-relaxed">
                   {v.body}
                 </p>
               </div>
@@ -140,23 +120,15 @@ export default function AboutPage() {
 
         {/* ── CTA ── */}
         <section className="text-center">
-          <h2
-            className="text-3xl font-bold tracking-tight mb-4"
-            style={{ color: 'var(--text-primary)' }}
-          >
+          <h2 className="font-headline-md text-headline-md text-on-surface tracking-tight mb-4">
             Ready to stop losing money to bad data?
           </h2>
-          <p
-            className="text-sm mb-8 max-w-md mx-auto"
-            style={{ color: 'var(--text-secondary)' }}
-          >
-            Join thousands of investors who track every dollar from acquisition
-            through exit — in one workspace.
+          <p className="font-body-sm text-body-sm text-on-surface-variant mb-8 max-w-md mx-auto">
+            Join real estate operators tracking deal metrics from acquisition to exit.
           </p>
           <Link
-            href="/pricing"
-            className="inline-flex items-center gap-2 px-8 py-3 rounded-full text-xs font-bold uppercase tracking-widest transition-colors"
-            style={{ background: '#0d0d0d', color: '#FFFFFF' }}
+            href="/register"
+            className="luminous-button inline-flex items-center gap-2 px-8 py-3 rounded-lg font-label-md text-label-md tracking-wide active:scale-95 transition-all duration-150"
           >
             Get Started Free
             <ArrowRight className="w-4 h-4" />

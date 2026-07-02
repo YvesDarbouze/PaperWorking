@@ -4,6 +4,7 @@ import React, { useEffect } from 'react';
 import { DueDiligenceItem } from '@/types/schema';
 import { Check, Circle } from 'lucide-react';
 import { projectsService } from '@/lib/firebase/deals';
+import toast from 'react-hot-toast';
 
 const REQUIRED_ITEMS = [
   "Credit Report",
@@ -23,7 +24,7 @@ export function DueDiligenceChecklist({ projectId, items, onChange }: DueDiligen
   useEffect(() => {
     if (!items || items.length === 0) {
       const initialItems: DueDiligenceItem[] = REQUIRED_ITEMS.map((label) => ({
-        id: crypto.randomUUID ? crypto.randomUUID() : Math.random().toString(36).substring(7),
+        id: crypto.randomUUID(),
         label,
         completed: false,
       }));
@@ -36,9 +37,12 @@ export function DueDiligenceChecklist({ projectId, items, onChange }: DueDiligen
   }, [items, onChange, projectId]);
 
   const toggleItem = async (id: string) => {
+    const toggledItem = items.find(item => item.id === id);
+    if (!toggledItem) return;
+    const completed = !toggledItem.completed;
+
     const newItems = items.map(item => {
       if (item.id === id) {
-        const completed = !item.completed;
         return {
           ...item,
           completed,
@@ -55,9 +59,13 @@ export function DueDiligenceChecklist({ projectId, items, onChange }: DueDiligen
     if (projectId) {
       try {
         await projectsService.updateProject(projectId, { dueDiligenceChecklist: newItems });
+        toast.success(completed ? `${toggledItem.label} completed` : `${toggledItem.label} marked incomplete`);
       } catch (error) {
         console.error('Failed to update due diligence checklist in database', error);
+        toast.error(`Failed to update ${toggledItem.label}`);
       }
+    } else {
+      toast.success(completed ? `${toggledItem.label} completed` : `${toggledItem.label} marked incomplete`);
     }
   };
 

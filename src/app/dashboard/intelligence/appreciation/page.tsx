@@ -1,0 +1,590 @@
+'use client';
+
+import React, { useState, useMemo, useCallback, useRef } from 'react';
+import ReactECharts from 'echarts-for-react';
+import { SampleDataBanner } from '@/components/intelligence/SampleDataBanner';
+import { ArrowUpRight, Download } from 'lucide-react';
+import Link from 'next/link';
+import { useAllDealsSync } from '@/hooks/useAllProjectsSync';
+import { useMetricSeries, useMetricCurrent, usePortfolioInputs } from '@/lib/intelligence/selectors';
+import { AppreciationCollectionTerminal } from '@/components/intelligence/AppreciationCollectionTerminal';
+import type { AppreciationValues } from '@/components/intelligence/AppreciationCollectionTerminal';
+
+/* ═══════════════════════════════════════════════════════════════
+   Appreciation Intelligence — Value Trajectory vs. Baseline
+   12-column grid:
+     Left  4/12: Hero card + KPI stack
+     Right 8/12: Dual-line chart (Portfolio Value vs Market Baseline)
+   Bottom: Value by Property table
+   ═══════════════════════════════════════════════════════════════ */
+
+type Period = 'Month' | 'Quarter' | 'Year' | 'Overall';
+type Scope  = 'Property' | 'My Share';
+
+const defaultAppreciation   = 12.5;
+const defaultCurrentValue  = 545500;
+const defaultOriginalBasis = 485000;
+const defaultUnrealizedGain = defaultCurrentValue - defaultOriginalBasis; // 60500
+
+const defaultMonthsLabels = ['May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec', 'Jan', 'Feb', 'Mar', 'Apr'];
+
+// Portfolio value: ascending from purchase price to current estimated value
+const defaultPortfolioValue = [
+  485000, 490200, 496000, 502500, 508800, 515000,
+  520200, 525800, 531000, 536500, 541200, 545500,
+];
+
+// Market baseline: flatter appreciation (~5% annual = ~0.4%/month)
+const defaultMarketBaseline = [
+  485000, 487000, 489000, 491000, 493000, 495000,
+  497000, 499000, 501000, 503000, 505000, 507000,
+];
+
+const defaultProperties = [
+  { address: '421 Oak St, Brooklyn', purchase: 485000, current: 545500, gain: 60500,  gainPct: 12.5, yoy: 12.5 },
+  { address: '1248 Oakwood Ave',      purchase: 320000, current: 368000, gain: 48000,  gainPct: 15.0, yoy: 15.0 },
+  { address: '77 Prospect Heights',   purchase: 820000, current: 890000, gain: 70000,  gainPct: 8.5,  yoy:  8.5 },
+  { address: '310 Atlantic Ave',      purchase: 280000, current: 295000, gain: 15000,  gainPct: 5.4,  yoy:  5.4 },
+];
+
+/* ── Dual-Line Appreciation Chart ── */
+function AppreciationChart({
+  labels,
+  portfolioData,
+  baselineData,
+  whatIfData,
+}: {
+  labels: string[];
+  portfolioData: number[];
+  baselineData: number[];
+  whatIfData?: number[] | null;
+}) {
+  // Shaded area between the two lines represents alpha generated
+  const seriesList = [
+    {
+      name: 'Portfolio Value',
+      type: 'line',
+      data: portfolioData,
+      smooth: true,
+      lineStyle: { width: 2.5, color: '#454955' },
+      itemStyle: { color: '#454955' },
+      areaStyle: {
+        color: {
+          type: 'linear', x: 0, y: 0, x2: 0, y2: 1,
+          colorStops: [
+            { offset: 0, color: 'rgba(69, 73, 85,0.22)' },
+            { offset: 1, color: 'rgba(69, 73, 85,0.03)' },
+          ],
+        },
+      },
+      symbol: 'none',
+      symbolSize: 7,
+    },
+    {
+      name: 'Market Baseline',
+      type: 'line',
+      data: baselineData,
+      smooth: true,
+      lineStyle: { width: 1.8, color: 'rgba(148,163,184,0.55)', type: 'dashed' },
+      itemStyle: { color: 'rgba(148,163,184,0.55)' },
+      areaStyle: {
+        color: {
+          type: 'linear', x: 0, y: 0, x2: 0, y2: 1,
+          colorStops: [
+            { offset: 0, color: 'rgba(148,163,184,0.08)' },
+            { offset: 1, color: 'transparent' },
+          ],
+        },
+      },
+      symbol: 'none',
+    },
+  ];
+
+  if (whatIfData) {
+    seriesList.push({
+      name: 'Hypothetical Value',
+      type: 'line',
+      data: whatIfData,
+      smooth: true,
+      lineStyle: { width: 2.5, color: '#fb923c', type: 'dashed' },
+      itemStyle: { color: '#fb923c' },
+      areaStyle: {
+        color: {
+          type: 'linear', x: 0, y: 0, x2: 0, y2: 1,
+          colorStops: [
+            { offset: 0, color: 'rgba(251, 146, 60, 0.15)' },
+            { offset: 1, color: 'transparent' },
+          ],
+        },
+      },
+      symbol: 'none',
+      symbolSize: 7,
+    } as any);
+  }
+
+  const option = {
+    backgroundColor: 'transparent',
+    tooltip: {
+      trigger: 'axis',
+      backgroundColor: '#1e1b20',
+      borderColor: 'rgba(255,255,255,0.1)',
+      textStyle: { color: '#9E9DA0', fontSize: 11 },
+      formatter: (params: any[]) => {
+        const label = params[0].axisValue;
+        const lines = params
+          .map((p: any) => `<span style="color:${p.color}">─</span> ${p.seriesName}: <b>$${Number(p.value).toLocaleString()}</b>`)
+          .join('<br/>');
+        return `${label}<br/>${lines}`;
+      },
+    },
+    legend: {
+      top: 0,
+      right: 0,
+      icon: 'line',
+      textStyle: { color: '#9E9DA0', fontSize: 10 },
+    },
+    grid: { top: 36, right: 16, bottom: 24, left: 0, containLabel: true },
+    xAxis: {
+      type: 'category',
+      data: labels,
+      axisLine: { show: false },
+      axisTick: { show: false },
+      axisLabel: { color: '#64748b', fontSize: 10 },
+    },
+    yAxis: {
+      type: 'value',
+      axisLabel: {
+        color: '#64748b',
+        fontSize: 10,
+        formatter: (v: number) => `$${(v / 1000).toFixed(0)}k`,
+      },
+      splitLine: { lineStyle: { color: 'rgba(255,255,255,0.04)' } },
+    },
+    series: seriesList,
+  };
+  return <ReactECharts option={option} style={{ height: 280, width: '100%' }} opts={{ renderer: 'canvas' }} />;
+}
+
+export default function AppreciationIntelligencePage() {
+  useAllDealsSync();
+  const [period, setPeriod] = useState<Period>('Year');
+  const [scope, setScope]   = useState<Scope>('Property');
+
+  const appCurrentResult = useMetricCurrent('APPRECIATION', { scope: scope === 'My Share' ? 'myShare' : 'property' });
+  const appSeriesResult = useMetricSeries('APPRECIATION', undefined, { scope: scope === 'My Share' ? 'myShare' : 'property' });
+  const portfolioInputsResult = usePortfolioInputs({ scope: scope === 'My Share' ? 'myShare' : 'property' });
+
+  /* ── Reactive state from Collection Terminal ── */
+  const [collectedValues, setCollectedValues] = useState<AppreciationValues | null>(null);
+  const [hasInteracted, setHasInteracted] = useState(false);
+  const initialAppRef = useRef<number | null>(null);
+
+  const handleCollectionChange = useCallback((v: AppreciationValues) => {
+    if (initialAppRef.current === null) {
+      initialAppRef.current = v.annualizedRate;
+    } else if (Math.abs(v.annualizedRate - initialAppRef.current) > 0.01) {
+      setHasInteracted(true);
+    }
+    setCollectedValues(v);
+  }, []);
+
+  const portfolioDefaults = useMemo(() => {
+    if (portfolioInputsResult.status !== 'ready') {
+      return {
+        purchasePrice: defaultOriginalBasis,
+        acquisitionCosts: 0,
+        currentEstimate: defaultCurrentValue,
+        holdYears: 5,
+      };
+    }
+    const projects = portfolioInputsResult.data.projects;
+    const withEquity = projects.filter((p) => (p.financials?.purchasePrice ?? (0)) > 0);
+    if (withEquity.length > 0) {
+      const totalPurchase = withEquity.reduce((sum, p) => sum + (p.financials?.purchasePrice ?? 0), 0);
+      const totalCurrent = withEquity.reduce((sum, p) => sum + (p.financials?.estimatedCurrentValue ?? p.financials?.estimatedARV ?? p.financials?.purchasePrice ?? 0), 0);
+      return {
+        purchasePrice: Math.round(totalPurchase),
+        acquisitionCosts: 0,
+        currentEstimate: Math.round(totalCurrent),
+        holdYears: 5,
+      };
+    }
+    return {
+      purchasePrice: defaultOriginalBasis,
+      acquisitionCosts: 0,
+      currentEstimate: defaultCurrentValue,
+      holdYears: 5,
+    };
+  }, [portfolioInputsResult]);
+
+  const {
+    isUsingDemoData,
+    appreciationRate,
+    currentValue,
+    originalBasis,
+    unrealizedGain,
+    annualRate,
+    chartLabels,
+    portfolioSeries,
+    baselineSeries,
+  } = useMemo(() => {
+    if (
+      appSeriesResult.status === 'ready' &&
+      appCurrentResult.status === 'ready' &&
+      portfolioInputsResult.status === 'ready' &&
+      portfolioInputsResult.data.snapshots.length >= 2
+    ) {
+      const sorted = [...portfolioInputsResult.data.snapshots]
+        .sort((a, b) => a.date.getTime() - b.date.getTime())
+        .slice(-12);
+      const appVals  = sorted.map((s) => s.appreciation ?? (0));
+      const valVals  = sorted.map((s) => s.propertyValue ?? (0));
+      const labels   = sorted.map((s) => s.date.toLocaleDateString('en-US', { month: 'short' }));
+      const lastApp  = appCurrentResult.data;
+      const lastVal  = valVals[valVals.length - 1] ?? (0);
+      const firstVal = valVals[0] ?? (0);
+      const gain     = lastVal - firstVal;
+      // Baseline = linear appreciation at 5% annual
+      const baselineVals = valVals.map((_, i) => {
+        return Math.round(firstVal * (1 + (0.05 / 12) * i));
+      });
+      return {
+        isUsingDemoData: false,
+        appreciationRate: lastApp,
+        currentValue: lastVal,
+        originalBasis: firstVal,
+        unrealizedGain: gain,
+        annualRate: lastApp,
+        chartLabels: labels,
+        portfolioSeries: valVals,
+        baselineSeries: baselineVals,
+      };
+    }
+    return {
+      isUsingDemoData: true,
+      appreciationRate: collectedValues?.annualizedRate ?? defaultAppreciation,
+      currentValue: collectedValues?.currentEstimate ?? defaultCurrentValue,
+      originalBasis: collectedValues?.totalBasis ?? defaultOriginalBasis,
+      unrealizedGain: collectedValues?.totalGain ?? defaultUnrealizedGain,
+      annualRate: collectedValues?.annualizedRate ?? defaultAppreciation,
+      chartLabels: defaultMonthsLabels,
+      portfolioSeries: defaultPortfolioValue,
+      baselineSeries: defaultMarketBaseline,
+    };
+  }, [appSeriesResult, appCurrentResult, portfolioInputsResult, collectedValues]);
+
+  const whatIfApp = useMemo(() => {
+    if (hasInteracted && collectedValues) {
+      return {
+        appreciationRate: collectedValues.annualizedRate,
+        currentValue: collectedValues.currentEstimate,
+        originalBasis: collectedValues.totalBasis,
+        unrealizedGain: collectedValues.totalGain,
+      };
+    }
+    return null;
+  }, [hasInteracted, collectedValues]);
+
+  const displayAppreciationRate = whatIfApp?.appreciationRate ?? appreciationRate;
+  const displayCurrentValue = whatIfApp?.currentValue ?? currentValue;
+  const displayOriginalBasis = whatIfApp?.originalBasis ?? originalBasis;
+  const displayUnrealizedGain = whatIfApp?.unrealizedGain ?? unrealizedGain;
+
+  const whatIfPortfolioSeries = useMemo(() => {
+    if (!whatIfApp) return null;
+    const pts = portfolioSeries.length;
+    const firstVal = whatIfApp.originalBasis;
+    const lastVal = whatIfApp.currentValue;
+    const trajectory = [];
+    for (let i = 0; i < pts; i++) {
+      const t = i / (pts - 1 || 1);
+      const val = firstVal + (lastVal - firstVal) * t;
+      trajectory.push(Math.round(val));
+    }
+    return trajectory;
+  }, [whatIfApp, portfolioSeries]);
+
+  const propertiesTableData = useMemo(() => {
+    if (portfolioInputsResult.status !== 'ready') {
+      return defaultProperties;
+    }
+    const projects = portfolioInputsResult.data.projects;
+    const withEquity = projects.filter((p) => (p.financials?.purchasePrice ?? (0)) > 0);
+    if (withEquity.length > 0) {
+      return withEquity.map((p) => {
+        const purchase = p.financials?.purchasePrice ?? (0);
+        const current = p.financials?.estimatedCurrentValue ?? p.financials?.estimatedARV ?? purchase;
+        const gain = current - purchase;
+        const gainPct = purchase > 0 ? (gain / purchase) * 100 : 0;
+        return {
+          address: p.address || p.propertyName || 'Unknown Property',
+          purchase,
+          current,
+          gain,
+          gainPct,
+          yoy: gainPct,
+        };
+      });
+    }
+    return defaultProperties;
+  }, [portfolioInputsResult]);
+
+  const fmt = (n: number) => `$${n.toLocaleString()}`;
+  const fmtPct = (n: number) => `${n >= 0 ? '+' : ''}${n.toFixed(1)}%`;
+
+  // Alpha = portfolio appreciation vs market baseline
+  const alphaVsPct = ((displayCurrentValue - (baselineSeries[baselineSeries.length - 1] ?? displayCurrentValue)) / (baselineSeries[baselineSeries.length - 1] ?? displayCurrentValue) * 100);
+  const alphaDollar = displayCurrentValue - (baselineSeries[baselineSeries.length - 1] ?? displayCurrentValue);
+
+  return (
+    <div className="min-h-full px-6 lg:px-8 py-8 space-y-6" style={{ background: 'var(--bg-canvas)', color: 'var(--text-primary)' }}>
+
+      {/* ── Header ── */}
+      <div className="flex flex-col md:flex-row md:items-end justify-between gap-4">
+        <div>
+          <div className="flex items-center gap-2 mb-1 text-xs text-[#6B6870] font-semibold uppercase tracking-widest">
+            <Link href="/dashboard/reports" className="hover:text-[#6E7480] transition-colors">Reports</Link>
+            <span>›</span>
+            <span className="text-[#6E7480]">Appreciation Intelligence</span>
+          </div>
+          <h1 className="text-4xl font-bold text-white tracking-tight">Appreciation Intelligence</h1>
+          <p className="text-sm text-[#6B6870] mt-1">Value trajectory vs. market baseline — unrealized gain analysis</p>
+        </div>
+        <div className="flex flex-wrap gap-3">
+          <div className="flex gap-1 p-1 rounded-xl bg-white/5 border border-white/10">
+            {(['Property', 'My Share'] as Scope[]).map((s) => (
+              <button
+                key={s}
+                onClick={() => setScope(s)}
+                className={`px-4 py-1.5 rounded-md text-xs font-bold uppercase tracking-wider transition-all ${
+                  scope === s ? 'bg-[#454955] text-black' : 'text-[#9E9DA0] hover:text-slate-200'
+                }`}
+              >{s}</button>
+            ))}
+          </div>
+          <div className="flex gap-1 p-1 rounded-xl bg-white/5 border border-white/10">
+            {(['Month', 'Quarter', 'Year', 'Overall'] as Period[]).map((p) => (
+              <button
+                key={p}
+                onClick={() => setPeriod(p)}
+                className={`px-3 py-1.5 rounded-md text-xs font-semibold uppercase tracking-wider transition-all ${
+                  period === p ? 'bg-white/10 text-[#6E7480] font-bold' : 'text-[#9E9DA0] hover:text-slate-200'
+                }`}
+              >{p}</button>
+            ))}
+          </div>
+          <button className="px-4 py-2 rounded-xl bg-white/5 border border-white/10 text-sm font-semibold text-[#C0BEC2] hover:border-[#454955]/40 hover:text-[#6E7480] transition-all flex items-center gap-2">
+            <Download className="w-4 h-4" />
+            Export
+          </button>
+        </div>
+      </div>
+
+      <SampleDataBanner show={isUsingDemoData} />
+
+      {/* ── Main 12-column grid ── */}
+      <div className="grid grid-cols-1 md:grid-cols-12 gap-5">
+
+        {/* ── Left 4/12: Hero + KPI Stack ── */}
+        <div className="md:col-span-4 space-y-4">
+
+          {/* Hero Appreciation Card */}
+          <div className="rounded-xl border border-white/10 p-6" style={{ background: 'rgba(24,33,39,0.7)' }}>
+            <div className="flex justify-between items-start mb-2">
+              <span className="text-[11px] font-bold uppercase tracking-widest text-[#6B6870]">
+                Appreciation Rate
+              </span>
+              <span className="px-2.5 py-1 rounded-lg text-[10px] font-extrabold uppercase tracking-wider text-[#6E7480] bg-[#6E7480]/10 border border-[#6E7480]/20">
+                Above Market Avg
+              </span>
+            </div>
+
+            <div className="flex items-baseline gap-3 mb-3">
+              <span className="text-6xl font-bold tabular-nums tracking-tighter leading-none" style={{ color: whatIfApp != null ? '#fb923c' : '#6E7480' }}>
+                {fmtPct(displayAppreciationRate)}
+              </span>
+              {whatIfApp != null && (
+                <span className="px-1.5 py-0.5 rounded text-[9px] font-extrabold tracking-widest uppercase" style={{ background: 'rgba(251,146,60,0.12)', color: '#fb923c', border: '1px solid rgba(251,146,60,0.3)' }}>
+                  WHAT-IF
+                </span>
+              )}
+            </div>
+
+            <div className="flex items-center gap-2 mb-4">
+              {whatIfApp != null ? (
+                <div className="px-2 py-0.5 rounded border border-orange-400/20 bg-orange-400/10 flex items-center gap-1.5">
+                  <span className="w-1.5 h-1.5 rounded-full bg-orange-400" />
+                  <span className="text-[9px] font-extrabold tracking-widest text-orange-400">HYPOTHETICAL</span>
+                </div>
+              ) : (
+                <div className="px-2 py-0.5 rounded border border-[#6E7480]/20 bg-[#6E7480]/10 flex items-center gap-1.5">
+                  <span className="w-1.5 h-1.5 rounded-full bg-[#6E7480] animate-pulse" />
+                  <span className="text-[9px] font-extrabold tracking-widest text-[#6E7480]">LIVE</span>
+                </div>
+              )}
+              <div className="text-sm font-bold" style={{ color: whatIfApp != null ? '#fb923c' : '#6E7480' }}>
+                {fmt(Math.abs(displayUnrealizedGain))} Unrealized Gain
+              </div>
+            </div>
+
+            {/* Alpha vs market */}
+            {alphaDollar > 0 && (
+              <div className="pt-3 border-t border-white/[0.06]">
+                <div className="flex items-center justify-between">
+                  <span className="text-xs text-[#6B6870]">Alpha vs Market</span>
+                  <span className="text-xs font-bold tabular-nums" style={{ color: whatIfApp != null ? '#fb923c' : '#6E7480' }}>
+                    +{fmtPct(alphaVsPct)} · +{fmt(alphaDollar)}
+                  </span>
+                </div>
+              </div>
+            )}
+          </div>
+
+          {/* KPI Stack */}
+          <div className="rounded-xl border border-white/10 p-6" style={{ background: 'rgba(24,33,39,0.7)' }}>
+            <span className="text-[11px] font-bold uppercase tracking-widest text-[#6B6870] block mb-4">
+              Portfolio Value KPIs
+            </span>
+            <div className="space-y-4">
+              {[
+                {
+                  label: 'Current Value',
+                  value: fmt(displayCurrentValue),
+                  color: whatIfApp != null ? '#fb923c' : '#454955',
+                },
+                {
+                  label: 'Original Basis',
+                  value: fmt(displayOriginalBasis),
+                  color: whatIfApp != null ? '#fb923c' : '#9E9DA0',
+                },
+                {
+                  label: 'Unrealized Gain',
+                  value: `+${fmt(Math.abs(displayUnrealizedGain))}`,
+                  color: whatIfApp != null ? '#fb923c' : '#454955',
+                },
+                {
+                  label: 'Annual Apprec. Rate',
+                  value: `${displayAppreciationRate.toFixed(1)}%`,
+                  color: whatIfApp != null ? '#fb923c' : '#454955',
+                },
+              ].map((kpi) => (
+                <div key={kpi.label} className="flex items-center justify-between py-2 border-b border-white/[0.04]">
+                  <span className="text-xs text-[#6B6870] font-semibold">{kpi.label}</span>
+                  <span className="text-sm font-bold tabular-nums" style={{ color: kpi.color }}>
+                    {kpi.value}
+                  </span>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+
+        {/* ── Right 8/12: Trajectory Chart ── */}
+        <div className="md:col-span-8">
+          <div className="rounded-xl border border-white/10 p-6 h-full" style={{ background: 'rgba(24,33,39,0.7)' }}>
+            <div className="flex items-center justify-between mb-1">
+              <span className="text-[11px] font-bold uppercase tracking-widest text-[#6B6870]">
+                Value Trajectory vs. Market Baseline
+              </span>
+              <div className="flex items-center gap-3 text-[10px] text-[#6B6870] font-semibold">
+                <span className="flex items-center gap-1.5">
+                  <span className="w-6 h-0.5 inline-block rounded" style={{ background: '#454955' }} />
+                  Portfolio Value
+                </span>
+                <span className="flex items-center gap-1.5">
+                  <span
+                    className="w-6 h-0.5 inline-block"
+                    style={{ borderTop: '2px dashed rgba(148,163,184,0.6)' }}
+                  />
+                  Market Baseline
+                </span>
+              </div>
+            </div>
+            <p className="text-[10px] text-slate-600 mb-4">
+              Shaded area between lines = alpha generated above market appreciation rate
+            </p>
+            <AppreciationChart
+              labels={chartLabels}
+              portfolioData={portfolioSeries}
+              baselineData={baselineSeries}
+              whatIfData={whatIfPortfolioSeries}
+            />
+
+            {/* Alpha callout */}
+            {alphaDollar > 0 && (
+              <div className="mt-4 p-3 rounded-lg border border-[#6E7480]/15 bg-[#6E7480]/5 flex items-center justify-between">
+                <div>
+                  <span className="text-[10px] font-bold uppercase tracking-widest text-[#6E7480]/70">
+                    Alpha vs. 5% Market Baseline
+                  </span>
+                  <div className="flex items-center gap-2 mt-0.5">
+                    <span className="text-base font-extrabold text-[#6E7480] tabular-nums">
+                      +{fmtPct(alphaVsPct)}
+                    </span>
+                    <span className="text-sm font-bold text-[#6E7480]/70 tabular-nums">
+                      +{fmt(alphaDollar)}
+                    </span>
+                  </div>
+                </div>
+                <ArrowUpRight className="w-6 h-6 text-[#6E7480]" />
+              </div>
+            )}
+          </div>
+        </div>
+      </div>
+
+      {/* ── Appreciation Collection Terminal ── */}
+      <AppreciationCollectionTerminal
+        defaults={portfolioDefaults}
+        onValuesChange={handleCollectionChange}
+      />
+
+      {/* ── Bottom: Value by Property Table ── */}
+      <div className="rounded-xl border border-white/10 p-6" style={{ background: 'rgba(24,33,39,0.7)' }}>
+        <div className="flex items-center justify-between mb-5">
+          <span className="text-[11px] font-bold uppercase tracking-widest text-[#6B6870]">
+            Value by Property
+          </span>
+          <span className="text-[10px] text-slate-600 font-semibold uppercase tracking-wider">
+            {propertiesTableData.length} properties
+          </span>
+        </div>
+
+        <div className="overflow-x-auto">
+          <table className="w-full text-sm">
+            <thead>
+              <tr className="border-b border-white/[0.06]">
+                <th className="text-left py-2 px-3 text-[10px] font-bold uppercase tracking-widest text-[#6B6870]">Address</th>
+                <th className="text-right py-2 px-3 text-[10px] font-bold uppercase tracking-widest text-[#6B6870]">Purchase Price</th>
+                <th className="text-right py-2 px-3 text-[10px] font-bold uppercase tracking-widest text-[#6B6870]">Current Value</th>
+                <th className="text-right py-2 px-3 text-[10px] font-bold uppercase tracking-widest text-[#6B6870]">Gain $</th>
+                <th className="text-right py-2 px-3 text-[10px] font-bold uppercase tracking-widest text-[#6B6870]">Gain %</th>
+                <th className="text-right py-2 px-3 text-[10px] font-bold uppercase tracking-widest text-[#6B6870]">YoY %</th>
+              </tr>
+            </thead>
+            <tbody>
+              {propertiesTableData.map((prop) => (
+                <tr key={prop.address} className="border-b border-white/[0.04] hover:bg-white/[0.02] transition-colors">
+                  <td className="py-3 px-3 font-semibold text-white">{prop.address}</td>
+                  <td className="py-3 px-3 text-right text-[#9E9DA0] tabular-nums">{fmt(prop.purchase)}</td>
+                  <td className="py-3 px-3 text-right text-white tabular-nums font-semibold">{fmt(prop.current)}</td>
+                  <td className="py-3 px-3 text-right text-[#6E7480] tabular-nums font-bold">+{fmt(prop.gain)}</td>
+                  <td className="py-3 px-3 text-right">
+                    <div className="flex items-center justify-end gap-1">
+                      <ArrowUpRight className="w-3 h-3 text-[#6E7480]" />
+                      <span className="text-[#6E7480] font-bold tabular-nums">+{prop.gainPct.toFixed(1)}%</span>
+                    </div>
+                  </td>
+                  <td className="py-3 px-3 text-right">
+                    <span className="text-[#6E7480]/80 font-semibold tabular-nums">+{prop.yoy.toFixed(1)}%</span>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+    </div>
+  );
+}

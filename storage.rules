@@ -3,12 +3,28 @@ rules_version = '2';
 service firebase.storage {
   match /b/{bucket}/o {
 
-    // Deals — PDF and receipt uploads scoped by deal ID
-    match /deals/{dealId}/{allPaths=**} {
-      allow read: if request.auth != null;
+    // Helper: Check if user is a member of the project in Firestore and respects scope
+    function isProjectMember(projectId) {
+      let userUri = /databases/(default)/documents/users/$(request.auth.uid);
+      let projectUri = /databases/(default)/documents/projects/$(projectId);
+      return request.auth != null
+        && firestore.exists(projectUri)
+        && request.auth.uid in firestore.get(projectUri).data.members
+        && (
+          !firestore.exists(userUri)
+          || !('membershipScopes' in firestore.get(userUri).data)
+          || !(firestore.get(projectUri).data.organizationId in firestore.get(userUri).data.membershipScopes)
+          || !firestore.get(userUri).data.membershipScopes[firestore.get(projectUri).data.organizationId].isScoped
+          || (projectId in firestore.get(userUri).data.membershipScopes[firestore.get(projectUri).data.organizationId].scopedProjectIds)
+        );
+    }
+
+    // Projects folder: project-scoped document and photography uploads
+    match /projects/{projectId}/{allPaths=**} {
+      allow read: if request.auth != null && isProjectMember(projectId);
       allow write: if request.auth != null
-                   && request.resource.size < 25 * 1024 * 1024
-                   && request.resource.contentType.matches('application/pdf|image/.*');
+                   && isProjectMember(projectId)
+                   && request.resource.size < 25 * 1024 * 1024; // 25 MB limit
     }
 
     // User profile images
@@ -19,9 +35,18 @@ service firebase.storage {
                    && request.resource.size < 5 * 1024 * 1024;
     }
 
+    // Legacy Deals folder: PDF and receipt uploads scoped by deal ID
+    match /deals/{dealId}/{allPaths=**} {
+      allow read: if request.auth != null;
+      allow write: if request.auth != null
+                   && request.resource.size < 25 * 1024 * 1024
+                   && request.resource.contentType.matches('application/pdf|image/.*');
+    }
+
     // Default: deny all
     match /{allPaths=**} {
       allow read, write: if false;
     }
   }
 }
+

@@ -1,40 +1,50 @@
 'use client';
 
 import React from 'react';
-import MarketingNavbar from '@/components/marketing/MarketingNavbar';
+import LandingHeader from '@/components/landing/LandingHeader';
+import LandingFooter from '@/components/landing/LandingFooter';
 import { BLOG_POSTS, BlogPost } from '@/lib/cms/blogData';
 import Link from 'next/link';
-import { ArrowUpRight, Clock, User } from 'lucide-react';
+import { ArrowUpRight, Clock } from 'lucide-react';
 import { motion } from 'framer-motion';
+
+/* ═══════════════════════════════════════════════════════
+   /blog — Blog Index
+   
+   Obsidian glass theme. Unified LandingHeader navigation.
+   ═══════════════════════════════════════════════════════ */
 
 export default function BlogIndexPage() {
   return (
-    <div className="min-h-screen bg-bg-surface">
-      <MarketingNavbar />
-      
-      <main className="max-w-7xl mx-auto px-12 py-32">
-        {/* Institutional Header Section */}
-        <div className="max-w-3xl mb-32">
-          <p className="text-xs font-black uppercase tracking-[0.4em] text-text-secondary mb-6">
-            Operator intelligence ledger
+    <div className="min-h-screen bg-background text-on-surface dark">
+      <LandingHeader />
+
+      <main className="max-w-7xl mx-auto px-6 md:px-margin-desktop pt-32 pb-24">
+        {/* ── Header ── */}
+        <div className="max-w-3xl mb-24">
+          <p className="font-label-sm text-label-sm text-primary uppercase tracking-widest mb-6">
+            Operator Intelligence Ledger
           </p>
-          <h1 className="text-6xl sm:text-7xl font-black tracking-tighter text-text-primary leading-none uppercase mb-10">
+          <h1 className="font-headline-lg text-headline-lg text-on-surface tracking-tight leading-none mb-6">
             The Knowledge <br />
             Baseline.
           </h1>
-          <p className="text-text-secondary font-medium text-base leading-relaxed max-w-xl">
-            Technical breakdowns, market reconnaissance, and operational protocols for modern high-yield real estate. 
-            Scaling from initial acquisition to profitable exit.
+          <p className="font-body-lg text-body-lg text-on-surface-variant leading-relaxed max-w-xl">
+            Technical breakdowns, market reconnaissance, and operational
+            protocols for modern high-yield real estate. Scaling from initial
+            acquisition to profitable exit.
           </p>
         </div>
 
-        {/* Masonry Grid Layout - Professionalized */}
-        <div className="columns-1 md:columns-2 lg:columns-3 gap-12 space-y-12">
+        {/* ── Masonry Grid ── */}
+        <div className="columns-1 md:columns-2 lg:columns-3 gap-8 space-y-8">
           {BLOG_POSTS.map((post, idx) => (
             <BlogCard key={post.slug} post={post} index={idx} />
           ))}
         </div>
       </main>
+
+      <LandingFooter />
     </div>
   );
 }
@@ -48,43 +58,63 @@ function BlogCard({ post, index }: { post: BlogPost; index: number }) {
       transition={{ delay: index * 0.05 }}
       className="break-inside-avoid"
     >
-      <Link href={`/blog/${post.slug}`} className="group block border border-border-accent transition-all hover:border-pw-black">
-        <div className="relative aspect-[16/10] overflow-hidden bg-pw-dashboard">
-          <img 
-            src={post.thumbnailUrl} 
+      <Link
+        href={`/blog/${post.slug}`}
+        className="group block rounded-2xl overflow-hidden transition-all duration-300 hover:scale-[1.01]"
+        style={{
+          background:
+            'linear-gradient(135deg, rgba(34,43,50,0.4), rgba(22,19,24,0.8))',
+          backdropFilter: 'blur(16px)',
+          WebkitBackdropFilter: 'blur(16px)',
+          borderTop: '1px solid rgba(255,255,255,0.12)',
+          borderLeft: '1px solid rgba(255,255,255,0.12)',
+        }}
+      >
+        {/* Thumbnail */}
+        <div className="relative aspect-[16/10] overflow-hidden">
+          <img
+            src={post.thumbnailUrl}
             alt={post.title}
-            className="w-full h-full object-cover grayscale transition-all group-hover:grayscale-0 group-hover:scale-105"
+            className="w-full h-full object-cover transition-all duration-500 group-hover:scale-105"
           />
-          <div className="absolute top-0 left-0">
-            <span className="bg-pw-black text-white px-4 py-2 text-xs font-black uppercase tracking-widest block">
-              {post.category}
-            </span>
-          </div>
+          <div className="absolute inset-0 bg-gradient-to-t from-[#0d0a0b]/60 to-transparent" />
+          <span className="absolute top-3 left-3 px-3 py-1 rounded-full text-[10px] font-semibold uppercase tracking-wider bg-primary/20 text-primary backdrop-blur-sm border border-primary/20">
+            {post.category}
+          </span>
         </div>
 
-        <div className="p-10 space-y-6 bg-bg-surface">
-          <div className="flex items-center gap-6 text-text-secondary text-xs font-black uppercase tracking-widest">
-            <span className="flex items-center gap-1.5"><Clock className="w-3 h-3" /> {post.readTime}</span>
-            <span className="w-1 h-1 bg-pw-border" />
+        {/* Content */}
+        <div className="p-6 space-y-4">
+          <div className="flex items-center gap-4 font-body-sm text-body-sm text-on-surface-variant">
+            <span className="flex items-center gap-1.5">
+              <Clock className="w-3 h-3" /> {post.readTime}
+            </span>
+            <span className="w-1 h-1 rounded-full bg-on-surface-variant/40" />
             <span>{post.date}</span>
           </div>
 
-          <h3 className="text-2xl font-black tracking-tighter text-text-primary leading-tight uppercase group-hover:bg-pw-black group-hover:text-white transition-all px-0 group-hover:px-2 inline-block">
+          <h3 className="font-label-md text-label-md text-on-surface leading-snug group-hover:text-primary transition-colors">
             {post.title}
           </h3>
 
-          <p className="text-text-secondary text-sm font-medium leading-relaxed line-clamp-3">
+          <p className="font-body-sm text-body-sm text-on-surface-variant leading-relaxed line-clamp-3">
             {post.excerpt}
           </p>
 
-          <div className="pt-6 flex items-center justify-between border-t border-pw-dashboard">
-            <div className="flex items-center gap-3">
-              <div className="w-6 h-6 border border-border-accent overflow-hidden">
-                <img src={post.author.avatarUrl} className="w-full h-full object-cover grayscale" alt="" />
+          <div className="pt-4 flex items-center justify-between border-t border-white/8">
+            <div className="flex items-center gap-2.5">
+              <div className="w-6 h-6 rounded-full overflow-hidden ring-1 ring-white/10">
+                <img
+                  src={post.author.avatarUrl}
+                  className="w-full h-full object-cover"
+                  alt=""
+                />
               </div>
-              <span className="text-xs font-black text-text-primary uppercase tracking-widest">{post.author.name}</span>
+              <span className="font-body-sm text-body-sm text-on-surface">
+                {post.author.name}
+              </span>
             </div>
-            <ArrowUpRight className="w-4 h-4 text-text-secondary group-hover:text-text-primary transition-all" />
+            <ArrowUpRight className="w-4 h-4 text-on-surface-variant group-hover:text-primary transition-colors" />
           </div>
         </div>
       </Link>

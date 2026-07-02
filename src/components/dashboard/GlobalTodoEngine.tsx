@@ -226,8 +226,8 @@ export default function GlobalTodoEngine({ projects, onNavigateToDeal }: GlobalT
               onClick={() => setActiveFilter(tab.key)}
               className={`px-5 py-2 text-[10px] font-bold uppercase tracking-widest rounded-full border transition-all duration-300 ${
                 activeFilter === tab.key
-                  ? 'bg-pw-black text-pw-white border-pw-black shadow-lg shadow-pw-black/10'
-                  : 'bg-bg-primary text-text-secondary border-border-accent/30 hover:border-pw-black hover:text-text-primary'
+                  ? 'bg-pw-black text-pw-white border-pw-border shadow-lg shadow-pw-black/10'
+                  : 'bg-bg-primary text-text-secondary border-border-accent/30 hover:border-pw-border hover:text-text-primary'
               }`}
             >
               {tab.label}

@@ -2,9 +2,7 @@
 
 import React from 'react';
 import { useAuth } from '@/context/AuthContext';
-import { useProjectStore } from '@/store/projectStore';
-import { HardDrive, AlertTriangle, ArrowRight } from 'lucide-react';
-import Link from 'next/link';
+import { useMetricSnapshots } from '@/hooks/useMetricSnapshots';
 
 const PLAN_LIMITS_GB: Record<string, number> = {
   'Individual': 5.0,
@@ -13,124 +11,95 @@ const PLAN_LIMITS_GB: Record<string, number> = {
   'None': 1.0,
 };
 
-// Mocking 2.5MB per document across the system
-const AVG_DOC_SIZE_MB = 2.5;
-
 export function CloudStorageMeter() {
   const { profile } = useAuth();
-  const projects = useProjectStore(state => state.projects);
-  const settlementDocuments = useProjectStore(state => state.ledgerItems); // This isn't exactly where settlement docs are, let's check store
+  const { snapshots } = useMetricSnapshots(1);
 
   const plan = profile?.subscriptionPlan ?? 'None';
   const limitGB = PLAN_LIMITS_GB[plan] || 1.0;
   
-  // Aggregate real file sizes across all potential document locations
-  let totalSizeBytes = 0;
-  
-  projects.forEach(p => {
-    // 1. Role Linked Documents (Project Vault)
-    p.roleLinkedDocuments?.forEach(doc => {
-      totalSizeBytes += doc.fileSize || (AVG_DOC_SIZE_MB * 1024 * 1024);
-    });
-
-    // 2. Purchase Readiness Documents
-    p.purchaseReadinessChecklist?.forEach(item => {
-      if (item.documentUrl) {
-        totalSizeBytes += item.fileSize || (AVG_DOC_SIZE_MB * 1024 * 1024);
-      }
-    });
-
-    // 3. Closing Checklist Documents
-    p.closingChecklist?.forEach(item => {
-      if (item.documentUrl) {
-        totalSizeBytes += item.fileSize || (AVG_DOC_SIZE_MB * 1024 * 1024);
-      }
-    });
-
-    // 4. Financial Documents (Settlement Statements)
-    p.settlementDocuments?.forEach(doc => {
-      totalSizeBytes += doc.fileSize || (AVG_DOC_SIZE_MB * 1024 * 1024);
-    });
-  });
+  const latestSnapshot = snapshots.length > 0 ? snapshots[snapshots.length - 1] : null;
+  const totalSizeBytes = latestSnapshot ? latestSnapshot.storageUsageBytes : 0;
 
   const usageGB = totalSizeBytes / (1024 * 1024 * 1024);
   const usagePercent = Math.min((usageGB / limitGB) * 100, 100);
   const isNearLimit = usagePercent > 90;
 
-  // Colors per requirements
-  const trackColor = "#CCCCCC";
-  const fillColor = isNearLimit ? "#DC2626" : "#595959"; // Using red-600 for warning
+  // Glass theme colors
+  const trackColor = "var(--color-glass-bg)";
+  const fillColor = isNearLimit ? "var(--color-error)" : "var(--color-primary)";
 
   return (
-    <section className="bg-white border border-border-accent p-8 flex flex-col mt-8 rounded-[8px]">
-      <div className="flex items-center gap-2 mb-6">
-        <HardDrive className="w-5 h-5 text-[#1A1A1A]" />
-        <h2 className="text-sm font-bold uppercase tracking-widest text-[#1A1A1A]">
+    <section className="glass-card glass-card-bright p-6 sm:p-8 flex flex-col rounded-2xl relative overflow-hidden">
+      <div className="flex items-center justify-between mb-6">
+        <h2 className="text-xs font-bold uppercase tracking-widest text-pw-primary flex items-center gap-2">
+          <span className="material-symbols-outlined text-base select-none">storage</span>
           Cloud Storage Meter
         </h2>
       </div>
 
       <div className="mb-4 flex items-end justify-between">
         <div>
-          <span className="text-3xl font-normal text-[#1A1A1A]">
+          <span className="text-3xl font-light text-pw-black">
             {usageGB.toFixed(2)} GB
           </span>
-          <span className="text-base text-[#7F7F7F] ml-2">
+          <span className="text-sm text-pw-muted ml-2 font-body-md">
             of {limitGB.toFixed(0)} GB total
           </span>
         </div>
-        <span className={`text-sm font-bold ${isNearLimit ? 'text-red-600' : 'text-[#7F7F7F]'}`}>
+        <span className={`text-xs font-bold tracking-wider ${isNearLimit ? 'text-error' : 'text-pw-muted'}`}>
           {usagePercent.toFixed(1)}% CAPACITY
         </span>
       </div>
 
-      {/* Progress Bar per requirements: #CCCCCC track, #595959 fill */}
+      {/* Progress Bar with glow effect */}
       <div 
-        className="w-full h-3 overflow-hidden mb-6" 
-        style={{ backgroundColor: trackColor, borderRadius: '4px' }}
+        className="w-full h-2 overflow-hidden mb-6 border border-pw-border bg-pw-glass-bg rounded-full"
       >
         <div 
-          className="h-full transition-all duration-700 ease-in-out"
+          className="h-full transition-all duration-700 ease-in-out rounded-full"
           style={{ 
             width: `${usagePercent}%`, 
             backgroundColor: fillColor,
-            boxShadow: isNearLimit ? '0 0 10px rgba(220, 38, 38, 0.2)' : 'none'
+            boxShadow: isNearLimit ? '0 0 10px rgba(186, 26, 26, 0.4)' : '0 0 10px rgba(69, 73, 85, 0.3)'
           }}
         />
       </div>
 
       {isNearLimit ? (
-        <div className="flex items-start gap-4 bg-red-50 border border-red-100 p-4 mb-6">
-          <AlertTriangle className="w-5 h-5 text-red-600 mt-0.5 flex-shrink-0" />
+        <div className="flex items-start gap-3 bg-error/10 border border-error/20 p-4 mb-6 rounded-xl">
+          <span className="material-symbols-outlined text-xl text-error flex-shrink-0 select-none">warning</span>
           <div className="flex-1">
-            <p className="text-sm text-red-800 font-bold">Storage Threshold Warning</p>
-            <p className="text-xs text-red-700 mt-1 leading-relaxed">
+            <p className="text-xs font-bold text-error">Storage Threshold Warning</p>
+            <p className="text-[11px] text-pw-muted mt-1 leading-relaxed">
               Your organization has consumed over 90% of its storage allocation. 
               To prevent document upload interruptions, please upgrade to a higher tier.
             </p>
           </div>
         </div>
       ) : (
-        <p className="text-xs text-[#7F7F7F] mb-6 leading-relaxed max-w-2xl font-medium">
+        <p className="text-xs text-pw-muted mb-6 leading-relaxed max-w-2xl font-medium font-body-sm">
           The Cloud Storage Meter aggregates all transactional documents, legal contracts, 
           and financial disclosures stored across your project vaults.
         </p>
       )}
 
-      <div className="flex gap-4">
+      <div className="flex flex-col sm:flex-row gap-stack-md">
         {isNearLimit && (
           <button 
-            className="inline-flex items-center justify-center gap-2 text-sm font-bold px-6 py-3 bg-red-600 text-white hover:bg-red-700 transition"
+            className="luminous-button px-6 py-3 rounded-xl font-label-md text-label-md font-bold cursor-pointer flex items-center justify-center gap-2"
           >
-            UPGRADE CAPACITY <ArrowRight className="w-4 h-4" />
+            Upgrade Capacity 
+            <span className="material-symbols-outlined text-sm select-none">arrow_forward</span>
           </button>
         )}
         <button 
-          className="inline-flex items-center justify-center gap-2 text-sm font-bold px-6 py-3 bg-[#F2F2F2] border border-[#CCCCCC] text-[#1A1A1A] hover:bg-[#E6E6E6] transition"
+          className="px-6 py-3 rounded-xl font-label-md text-label-md font-bold border border-white/10 hover:bg-white/5 transition-all cursor-pointer text-pw-black shadow-sm flex items-center justify-center"
         >
-          VIEW DOCUMENT AUDIT
+          View Document Audit
         </button>
       </div>
     </section>
   );
 }
+

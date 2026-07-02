@@ -12,6 +12,7 @@ import { db } from '@/lib/firebase/config';
 export type ActivityType =
   | 'deal_created'
   | 'phase_change'
+  | 'doc_uploaded'
   | 'ledger_item'
   | 'member_joined'
   | 'deal_sold';

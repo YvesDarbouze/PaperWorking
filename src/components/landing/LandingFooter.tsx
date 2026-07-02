@@ -4,194 +4,177 @@ import Link from 'next/link';
 import Logo from '@/components/brand/Logo';
 
 /* ═══════════════════════════════════════════════════════
-   LandingFooter — Antigravity Design System
-   
-   Multi-column footer with newsletter CTA, nav links,
-   social icons, and legal. Strict grayscale palette.
+   LandingFooter — Antigravity-style sitemap footer.
+
+   5-column desktop grid:
+     Brand  |  Main Navigation  |  Support & Resources  |  Authentication  |  Legal
    ═══════════════════════════════════════════════════════ */
 
-/* ── Inline SVGs ── */
-function XIcon({ className }: { className?: string }) {
-  return (
-    <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" className={className}>
-      <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.746l7.73-8.835L1.254 2.25H8.08l4.261 5.632 5.903-5.632Zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
-    </svg>
-  );
+interface FooterColumn {
+  heading: string;
+  links: { label: string; href: string; external?: boolean }[];
 }
 
-function FacebookIcon({ className }: { className?: string }) {
-  return (
-    <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" className={className}>
-      <path d="M24 12.073C24 5.405 18.627 0 12 0S0 5.405 0 12.073C0 18.1 4.388 23.094 10.125 24v-8.437H7.078v-3.49h3.047V9.41c0-3.025 1.792-4.696 4.533-4.696 1.312 0 2.686.236 2.686.236v2.97h-1.513c-1.491 0-1.956.93-1.956 1.874v2.25h3.328l-.532 3.49h-2.796V24C19.612 23.094 24 18.1 24 12.073z" />
-    </svg>
-  );
-}
-
-function LinkedInIcon({ className }: { className?: string }) {
-  return (
-    <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" className={className}>
-      <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 01-2.063-2.065 2.064 2.064 0 112.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z" />
-    </svg>
-  );
-}
-
-/* ── Footer Link Columns ── */
-const footerColumns = [
+const FOOTER_COLUMNS: FooterColumn[] = [
   {
-    title: 'Product',
+    heading: 'Main Navigation',
     links: [
-      { label: 'How It Works', href: '/#how-it-works' },
-      { label: 'Pricing', href: '/#pricing' },
-      { label: 'Dashboard', href: '/dashboard' },
-      { label: 'News', href: '/#news' },
+      { label: 'How It Works',  href: '/how-it-works' },
+      { label: 'Marketplaces',  href: '/marketplaces' },
+      { label: 'Pricing',       href: '/pricing'      },
+      { label: 'Support',       href: '/support'      },
     ],
   },
   {
-    title: 'Company',
+    heading: 'Support & Resources',
     links: [
-      { label: 'About', href: '/about' },
-      { label: 'Careers', href: '/careers' },
-      { label: 'Blog', href: '/blog' },
-      { label: 'Contact', href: '/contact' },
+      { label: 'Support Center',     href: '/support'               },
+      { label: 'Knowledge Base',     href: '/help'                  },
+      { label: 'Help Center',        href: '/help'                  },
+      { label: 'Company Blog',       href: '/blog'                  },
+      { label: 'Case Studies',       href: '/blog'                  },
+      { label: 'Changelog',          href: '/changelog'             },
     ],
   },
   {
-    title: 'Legal',
+    heading: 'Account',
     links: [
-      { label: 'Privacy Policy', href: '/privacy' },
-      { label: 'Terms of Service', href: '/terms' },
-      { label: 'Cookie Policy', href: '/cookies' },
+      { label: 'Start 14 Day Trial',      href: '/pricing'          },
+      { label: 'Sign In',                 href: '/login'            },
+      { label: 'Create Account',          href: '/pricing'          },
+      { label: 'Forgot Password',         href: '/forgot-password'  },
+      { label: 'Accept Team Invite',      href: '/invite'           },
+    ],
+  },
+  {
+    heading: 'Company & Legal',
+    links: [
+      { label: 'About',            href: '/about'          },
+      { label: 'Careers',          href: '/careers'        },
+      { label: 'Contact',          href: '/contact'        },
+      { label: 'Privacy Policy',   href: '/privacy'        },
+      { label: 'Terms of Service', href: '/terms'          },
+      { label: 'Cookie Policy',    href: '/cookies'        },
     ],
   },
 ];
 
-const socialLinks = [
-  { label: 'X (Twitter)', href: 'https://x.com', icon: XIcon },
-  { label: 'Facebook', href: 'https://facebook.com', icon: FacebookIcon },
-  { label: 'LinkedIn', href: 'https://linkedin.com', icon: LinkedInIcon },
-];
+function FooterCol({ heading, links }: FooterColumn) {
+  return (
+    <div>
+      <p
+        className="mb-4 text-[11px] font-semibold uppercase tracking-[0.07em]"
+        style={{ color: 'var(--color-on-surface-variant)' }}
+      >
+        {heading}
+      </p>
+      <ul className="space-y-2.5">
+        {links.map(({ label, href, external }) => (
+          <li key={label}>
+            <Link
+              href={href}
+              target={external ? '_blank' : undefined}
+              rel={external ? 'noopener noreferrer' : undefined}
+              className="text-[13.5px] transition-opacity duration-150"
+              style={{ color: 'var(--color-on-surface-variant)', opacity: 0.8, textDecoration: 'none' }}
+              onMouseEnter={e => { (e.currentTarget as HTMLAnchorElement).style.opacity = '1'; (e.currentTarget as HTMLAnchorElement).style.color = 'var(--color-on-surface)'; }}
+              onMouseLeave={e => { (e.currentTarget as HTMLAnchorElement).style.opacity = '0.8'; (e.currentTarget as HTMLAnchorElement).style.color = 'var(--color-on-surface-variant)'; }}
+            >
+              {label}
+            </Link>
+          </li>
+        ))}
+      </ul>
+    </div>
+  );
+}
 
 export default function LandingFooter() {
   return (
-    <footer className="bg-pw-black text-pw-white">
-      {/* ── Main Footer Content ── */}
-      <div className="mx-auto max-w-7xl px-6 lg:px-8 pt-16 pb-12">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-12 gap-12 lg:gap-8">
+    <footer
+      className="w-full"
+      style={{ borderTop: '1px solid color-mix(in srgb, var(--color-on-background) 7%, transparent)' }}
+    >
+      <div className="max-w-[1280px] mx-auto px-5 md:px-10 pt-16 pb-12">
 
-          {/* ── Brand Column ── */}
-          <div className="lg:col-span-4 space-y-6">
-            <div className="text-pw-white">
-              <Logo size="sm" />
-            </div>
-            <p className="text-sm leading-relaxed text-pw-white/50 max-w-xs">
-              Deal pipeline, rehab tracking, and closing docs — all in one place.
-              Built for serious real estate investors.
+        {/* ── Top: Brand + Columns ── */}
+        <div className="grid grid-cols-2 md:grid-cols-5 gap-10 md:gap-8 mb-16">
+
+          {/* Brand column */}
+          <div className="col-span-2 md:col-span-1">
+            <Logo href="/" size="sm" className="mb-5" />
+            <p
+              className="text-[13.5px] leading-relaxed mb-6"
+              style={{ color: 'var(--color-on-surface-variant)', opacity: 0.75, maxWidth: '200px' }}
+            >
+              Precision deal management for serious real estate investors.
             </p>
 
-            {/* ── Newsletter ── */}
-            <div className="space-y-3 pt-2">
-              <p className="text-xs font-semibold uppercase tracking-[0.15em] text-pw-white/40">
-                Get investor insights
-              </p>
-              <form
-                onSubmit={(e) => e.preventDefault()}
-                className="flex items-stretch gap-0 max-w-xs"
+            {/* CTA */}
+            <Link
+              href="/pricing"
+              className="inline-flex items-center gap-1.5 text-[12.5px] font-semibold transition-opacity duration-150 active:scale-[0.98]"
+              style={{
+                background: 'var(--color-on-surface)',
+                color: 'var(--color-surface)',
+                borderRadius: '9999px',
+                padding: '8px 16px',
+                textDecoration: 'none',
+              }}
+              onMouseEnter={e => (e.currentTarget.style.opacity = '0.85')}
+              onMouseLeave={e => (e.currentTarget.style.opacity = '1')}
+            >
+              Start Free Trial
+              <span
+                className="material-symbols-outlined text-[13px]"
+                style={{ fontVariationSettings: "'FILL' 0, 'wght' 400" }}
               >
-                <input
-                  type="email"
-                  placeholder="you@email.com"
-                  aria-label="Email for newsletter"
-                  className="flex-1 min-w-0 bg-pw-white/[0.07] border border-pw-white/10 text-sm text-pw-white placeholder:text-pw-white/30 px-4 py-2.5 rounded-l-full focus:outline-none focus:border-pw-white/30 transition-colors"
-                />
-                <button
-                  type="submit"
-                  className="px-5 py-2.5 bg-pw-white text-pw-black text-xs font-bold uppercase tracking-widest rounded-r-full hover:bg-pw-white/90 transition-colors cursor-pointer whitespace-nowrap"
-                >
-                  Join
-                </button>
-              </form>
-            </div>
+                arrow_forward
+              </span>
+            </Link>
           </div>
 
-          {/* ── Link Columns ── */}
-          {footerColumns.map((col) => (
-            <div key={col.title} className="lg:col-span-2">
-              <h3 className="text-xs font-bold uppercase tracking-[0.15em] text-pw-white/40 mb-5">
-                {col.title}
-              </h3>
-              <ul className="space-y-3">
-                {col.links.map((link) => (
-                  <li key={link.label}>
-                    <Link
-                      href={link.href}
-                      className="text-sm text-pw-white/60 hover:text-pw-white transition-colors duration-200"
-                    >
-                      {link.label}
-                    </Link>
-                  </li>
-                ))}
-              </ul>
-            </div>
+          {/* Link columns */}
+          {FOOTER_COLUMNS.map(col => (
+            <FooterCol key={col.heading} {...col} />
           ))}
-
-          {/* ── Support + Social Column ── */}
-          <div className="lg:col-span-2">
-            <h3 className="text-xs font-bold uppercase tracking-[0.15em] text-pw-white/40 mb-5">
-              Support
-            </h3>
-            <ul className="space-y-3">
-              <li>
-                <Link
-                  href="/support"
-                  className="text-sm text-pw-white/60 hover:text-pw-white transition-colors duration-200"
-                >
-                  Help Center
-                </Link>
-              </li>
-              <li>
-                <Link
-                  href="/support#faq"
-                  className="text-sm text-pw-white/60 hover:text-pw-white transition-colors duration-200"
-                >
-                  FAQ
-                </Link>
-              </li>
-              <li>
-                <a
-                  href="mailto:support@paperworking.co"
-                  className="text-sm text-pw-white/60 hover:text-pw-white transition-colors duration-200"
-                >
-                  support@paperworking.co
-                </a>
-              </li>
-            </ul>
-          </div>
         </div>
-      </div>
 
-      {/* ── Bottom Bar ── */}
-      <div className="border-t border-pw-white/10">
-        <div className="mx-auto max-w-7xl px-6 lg:px-8 py-6 flex flex-col sm:flex-row items-center justify-between gap-4">
-          <span className="text-xs text-pw-white/30">
+        {/* ── Bottom bar ── */}
+        <div
+          className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 pt-8"
+          style={{ borderTop: '1px solid color-mix(in srgb, var(--color-on-background) 6%, transparent)' }}
+        >
+          {/* Copyright */}
+          <p
+            className="text-[12.5px]"
+            style={{ color: 'var(--color-on-surface-variant)', opacity: 0.55 }}
+          >
             © {new Date().getFullYear()} PaperWorking Corp. All rights reserved.
-          </span>
+          </p>
 
-          {/* ── Social Icons ── */}
+          {/* Bottom links */}
           <div className="flex items-center gap-5">
-            {socialLinks.map(({ label, href, icon: Icon }) => (
-              <a
+            {[
+              { label: 'Privacy',     href: '/privacy'        },
+              { label: 'Terms',       href: '/terms'          },
+              { label: 'Cookies',     href: '/cookies'        },
+              { label: 'Subprocessors', href: '/subprocessors' },
+            ].map(({ label, href }) => (
+              <Link
                 key={label}
                 href={href}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-pw-white/30 hover:text-pw-white transition-colors duration-200"
-                aria-label={label}
+                className="text-[12.5px] transition-opacity duration-150"
+                style={{ color: 'var(--color-on-surface-variant)', opacity: 0.55, textDecoration: 'none' }}
+                onMouseEnter={e => (e.currentTarget.style.opacity = '0.9')}
+                onMouseLeave={e => (e.currentTarget.style.opacity = '0.55')}
               >
-                <Icon className="h-4 w-4" />
-              </a>
+                {label}
+              </Link>
             ))}
           </div>
         </div>
+
       </div>
     </footer>
   );

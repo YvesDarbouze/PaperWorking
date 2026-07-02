@@ -16,6 +16,7 @@ import {
   CalendarDays,
 } from 'lucide-react';
 import type { SiteVisitLog } from '@/types/schema';
+import toast from 'react-hot-toast';
 
 /* ═══════════════════════════════════════════════════════
    Site Visit Checklist — Phase 3 (The Engine Room)
@@ -27,7 +28,7 @@ type VisitType = SiteVisitLog['type'];
 
 const VISIT_TYPE_COLORS: Record<VisitType, string> = {
   'Daily Check': 'bg-blue-100 text-blue-700',
-  'Weekly Inspection': 'bg-purple-100 text-purple-700',
+  'Weekly Inspection': 'bg-[#454955]/15 text-[#1e7874]',
   'Milestone Review': 'bg-green-100 text-green-700',
   'Issue Report': 'bg-red-100 text-red-700',
 };
@@ -76,14 +77,20 @@ export default function SiteVisitChecklist() {
     setNewPhotos('0');
     setNewIssues('0');
     setShowForm(false);
+    toast.success('Site visit logged');
   };
 
   const toggleResolved = (id: string) => {
-    persist(visits.map(v => (v.id === id ? { ...v, resolved: !v.resolved } : v)));
+    const visit = visits.find(v => v.id === id);
+    if (!visit) return;
+    const resolved = !visit.resolved;
+    persist(visits.map(v => (v.id === id ? { ...v, resolved } : v)));
+    toast.success(resolved ? 'Site visit marked as resolved' : 'Site visit marked as unresolved');
   };
 
   const removeVisit = (id: string) => {
     persist(visits.filter(v => v.id !== id));
+    toast.success('Site visit removed');
   };
 
   const totalIssues = visits.reduce((s, v) => s + v.issuesFound, 0);

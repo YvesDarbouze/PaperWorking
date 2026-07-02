@@ -17,7 +17,7 @@ export default function InspectionChecklist() {
   ]);
 
   const addRow = () => {
-    setItems([...items, { id: Math.random().toString(), category: 'New Line Item', estimatedCost: 0, actualCost: 0 }]);
+    setItems([...items, { id: crypto.randomUUID(), category: 'New Line Item', estimatedCost: 0, actualCost: 0 }]);
   };
 
   const totalEstimate = items.reduce((sum, item) => sum + item.estimatedCost, 0);

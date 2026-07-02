@@ -49,42 +49,42 @@ export default function FinalProfitVisualization({ deal }: FinalProfitVisualizat
   };
 
   return (
-    <div className="bg-bg-surface border border-pw-black rounded-lg overflow-hidden shadow-sm">
+    <div className="glass-card border border-pw-border overflow-hidden bg-bg-surface">
       {/* ── Banner Header ── */}
-      <div className="bg-pw-black px-6 py-4 flex items-center justify-between">
-        <div className="flex items-center gap-2 text-pw-white">
-          <Activity className="w-5 h-5" />
-          <h2 className="text-sm font-black uppercase tracking-[0.2em]">Final Project Outcome</h2>
+      <div className="bg-bg-surface/80 px-6 py-4 flex items-center justify-between border-b border-pw-border backdrop-blur-md">
+        <div className="flex items-center gap-2 text-text-primary">
+          <Activity className="w-5 h-5 text-pw-accent" />
+          <h2 className="text-xs font-black uppercase tracking-[0.2em]">Final Project Outcome</h2>
         </div>
         <div className="flex items-center gap-2">
-          <span className="text-[10px] font-bold text-text-secondary uppercase tracking-[0.15em]">
+          <span className="text-[10px] font-black text-text-secondary uppercase tracking-[0.15em]">
             Margin: {fmtPercent(metrics.profitMargin)}
           </span>
         </div>
       </div>
 
       {/* ── Hero Net Profit Display ── */}
-      <div className={`p-10 flex flex-col items-center justify-center border-b border-border-subtle ${isProfit ? 'bg-gradient-to-b from-green-50/50 to-transparent' : 'bg-gradient-to-b from-red-50/50 to-transparent'}`}>
-        <p className="text-xs font-black text-text-secondary uppercase tracking-[0.3em] mb-2">Net Profit Output</p>
+      <div className="p-10 flex flex-col items-center justify-center border-b border-pw-border bg-pw-bg/20">
+        <p className="text-[10px] font-black text-text-secondary uppercase tracking-[0.3em] mb-2">Net Profit Output</p>
         <div className="flex items-center justify-center gap-4">
           {isProfit ? (
-            <TrendingUp className="w-10 h-10 text-green-600" />
+            <TrendingUp className="w-10 h-10 text-pw-accent" />
           ) : (
-            <TrendingDown className="w-10 h-10 text-red-600" />
+            <TrendingDown className="w-10 h-10 text-red-500" />
           )}
-          <h1 className={`text-6xl md:text-8xl font-black font-mono tracking-tighter ${isProfit ? 'text-green-700' : 'text-red-700'}`}>
+          <h1 className={`text-6xl md:text-8xl font-black font-mono tracking-tighter ${isProfit ? 'text-pw-accent' : 'text-red-500'}`}>
             {fmtCurrency(netProfit)}
           </h1>
         </div>
         
         <div className="flex items-center gap-8 mt-8">
           <div className="flex flex-col items-center">
-            <span className="text-[10px] font-bold text-text-tertiary uppercase tracking-widest mb-1">Final Sale Price</span>
+            <span className="text-[9px] font-black text-text-secondary uppercase tracking-widest mb-1">Final Sale Price</span>
             <span className="text-xl font-black text-text-primary font-mono">{fmtCurrency(finalSalePrice)}</span>
           </div>
-          <div className="h-8 w-px bg-border-subtle" />
+          <div className="h-8 w-px bg-pw-border" />
           <div className="flex flex-col items-center">
-            <span className="text-[10px] font-bold text-text-tertiary uppercase tracking-widest mb-1">All-In Cost</span>
+            <span className="text-[9px] font-black text-text-secondary uppercase tracking-widest mb-1">All-In Cost</span>
             <span className="text-xl font-black text-text-primary font-mono">{fmtCurrency(allInCost)}</span>
           </div>
         </div>
@@ -94,19 +94,19 @@ export default function FinalProfitVisualization({ deal }: FinalProfitVisualizat
       <div className="p-8">
         <h3 className="text-[10px] font-black text-text-secondary uppercase tracking-widest mb-4">Capital Stack & Profit Visualization</h3>
         
-        <div className="relative h-4 w-full bg-border-subtle rounded-full overflow-hidden flex mb-6 shadow-inner">
+        <div className="relative h-4 w-full bg-pw-border/30 overflow-hidden flex mb-6">
           {/* Stacked segments for All-In Cost */}
-          {pctPurchase > 0 && <div className="h-full bg-gray-300 transition-all duration-500" style={{ width: `${pctPurchase}%` }} title={`Purchase: ${fmtCurrency(metrics.purchasePrice)}`} />}
-          {pctAcquisition > 0 && <div className="h-full bg-gray-400 transition-all duration-500" style={{ width: `${pctAcquisition}%` }} title={`Acq: ${fmtCurrency(metrics.acquisitionCosts)}`} />}
-          {pctRehab > 0 && <div className="h-full bg-gray-500 transition-all duration-500" style={{ width: `${pctRehab}%` }} title={`Rehab: ${fmtCurrency(metrics.actualRehabCost)}`} />}
-          {pctHolding > 0 && <div className="h-full bg-gray-600 transition-all duration-500" style={{ width: `${pctHolding}%` }} title={`Holding: ${fmtCurrency(metrics.holdingCosts)}`} />}
-          {pctSelling > 0 && <div className="h-full bg-gray-800 transition-all duration-500" style={{ width: `${pctSelling}%` }} title={`Marketing/Selling: ${fmtCurrency(metrics.sellClosingCosts)}`} />}
+          {pctPurchase > 0 && <div className="h-full bg-pw-muted/20 transition-all duration-500" style={{ width: `${pctPurchase}%` }} title={`Purchase: ${fmtCurrency(metrics.purchasePrice)}`} />}
+          {pctAcquisition > 0 && <div className="h-full bg-pw-muted/40 transition-all duration-500" style={{ width: `${pctAcquisition}%` }} title={`Acq: ${fmtCurrency(metrics.acquisitionCosts)}`} />}
+          {pctRehab > 0 && <div className="h-full bg-pw-muted/60 transition-all duration-500" style={{ width: `${pctRehab}%` }} title={`Rehab: ${fmtCurrency(metrics.actualRehabCost)}`} />}
+          {pctHolding > 0 && <div className="h-full bg-pw-muted/80 transition-all duration-500" style={{ width: `${pctHolding}%` }} title={`Holding: ${fmtCurrency(metrics.holdingCosts)}`} />}
+          {pctSelling > 0 && <div className="h-full bg-pw-muted transition-all duration-500" style={{ width: `${pctSelling}%` }} title={`Marketing/Selling: ${fmtCurrency(metrics.sellClosingCosts)}`} />}
           
           {/* Net Profit Segment (if profit) */}
           {isProfit && pctProfit > 0 && (
-            <div className="h-full bg-green-500 transition-all duration-500" style={{ width: `${pctProfit}%` }} title={`Net Profit: ${fmtCurrency(netProfit)}`} />
+            <div className="h-full bg-pw-accent transition-all duration-500" style={{ width: `${pctProfit}%` }} title={`Net Profit: ${fmtCurrency(netProfit)}`} />
           )}
-          {/* Net Loss Segment (if loss, it overlays or replaces part of the bar conceptually, but for simplicity we append it in red) */}
+          {/* Net Loss Segment (if loss) */}
           {!isProfit && pctLoss > 0 && (
             <div className="h-full bg-red-500 transition-all duration-500" style={{ width: `${pctLoss}%` }} title={`Net Loss: ${fmtCurrency(netProfit)}`} />
           )}
@@ -114,29 +114,29 @@ export default function FinalProfitVisualization({ deal }: FinalProfitVisualizat
 
         {/* Legend Grid */}
         <div className="grid grid-cols-2 md:grid-cols-6 gap-4">
-          <div className="flex flex-col gap-1 border-l-2 border-gray-300 pl-3">
-            <span className="text-[9px] font-bold text-text-tertiary uppercase tracking-wider">Purchase</span>
+          <div className="flex flex-col gap-1 border-l-2 border-pw-muted/20 pl-3">
+            <span className="text-[9px] font-black text-text-secondary uppercase tracking-wider">Purchase</span>
             <span className="text-sm font-bold font-mono text-text-primary">{fmtCurrency(metrics.purchasePrice)}</span>
           </div>
-          <div className="flex flex-col gap-1 border-l-2 border-gray-400 pl-3">
-            <span className="text-[9px] font-bold text-text-tertiary uppercase tracking-wider">Acquisition</span>
+          <div className="flex flex-col gap-1 border-l-2 border-pw-muted/40 pl-3">
+            <span className="text-[9px] font-black text-text-secondary uppercase tracking-wider">Acquisition</span>
             <span className="text-sm font-bold font-mono text-text-primary">{fmtCurrency(metrics.acquisitionCosts)}</span>
           </div>
-          <div className="flex flex-col gap-1 border-l-2 border-gray-500 pl-3">
-            <span className="text-[9px] font-bold text-text-tertiary uppercase tracking-wider">Rehab</span>
+          <div className="flex flex-col gap-1 border-l-2 border-pw-muted/60 pl-3">
+            <span className="text-[9px] font-black text-text-secondary uppercase tracking-wider">Rehab</span>
             <span className="text-sm font-bold font-mono text-text-primary">{fmtCurrency(metrics.actualRehabCost)}</span>
           </div>
-          <div className="flex flex-col gap-1 border-l-2 border-gray-600 pl-3">
-            <span className="text-[9px] font-bold text-text-tertiary uppercase tracking-wider">Holding</span>
+          <div className="flex flex-col gap-1 border-l-2 border-pw-muted/80 pl-3">
+            <span className="text-[9px] font-black text-text-secondary uppercase tracking-wider">Holding</span>
             <span className="text-sm font-bold font-mono text-text-primary">{fmtCurrency(metrics.holdingCosts)}</span>
           </div>
-          <div className="flex flex-col gap-1 border-l-2 border-gray-800 pl-3">
-            <span className="text-[9px] font-bold text-text-tertiary uppercase tracking-wider">Selling</span>
+          <div className="flex flex-col gap-1 border-l-2 border-pw-muted pl-3">
+            <span className="text-[9px] font-black text-text-secondary uppercase tracking-wider">Selling</span>
             <span className="text-sm font-bold font-mono text-text-primary">{fmtCurrency(metrics.sellClosingCosts)}</span>
           </div>
-          <div className={`flex flex-col gap-1 border-l-2 pl-3 ${isProfit ? 'border-green-500' : 'border-red-500'}`}>
-            <span className="text-[9px] font-bold text-text-tertiary uppercase tracking-wider">{isProfit ? 'Net Profit' : 'Net Loss'}</span>
-            <span className={`text-sm font-bold font-mono ${isProfit ? 'text-green-600' : 'text-red-600'}`}>{fmtCurrency(netProfit)}</span>
+          <div className={`flex flex-col gap-1 border-l-2 pl-3 ${isProfit ? 'border-pw-accent' : 'border-red-500'}`}>
+            <span className="text-[9px] font-black text-text-secondary uppercase tracking-wider">{isProfit ? 'Net Profit' : 'Net Loss'}</span>
+            <span className={`text-sm font-bold font-mono ${isProfit ? 'text-pw-accent' : 'text-red-500'}`}>{fmtCurrency(netProfit)}</span>
           </div>
         </div>
 

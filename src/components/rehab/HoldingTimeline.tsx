@@ -173,7 +173,7 @@ export default function HoldingTimeline() {
   }
 
   return (
-    <div className="space-y-0 border border-pw-black overflow-hidden">
+    <div className="space-y-0 border border-pw-border overflow-hidden">
 
       {/* ── Header ── */}
       <div className="px-6 py-4 bg-pw-black flex items-center justify-between">
@@ -238,7 +238,7 @@ export default function HoldingTimeline() {
               Acquisition Date
             </label>
             <div className="flex items-center gap-3">
-              <div className="border border-border-accent bg-bg-primary focus-within:border-pw-black transition-colors flex-1">
+              <div className="pw-input-wrapper flex-1">
                 <input
                   type="date"
                   value={acquisitionDateInput}
@@ -448,7 +448,7 @@ export default function HoldingTimeline() {
             />
 
             {/* Divider + Total */}
-            <div className="border-t-2 border-pw-black pt-4 mt-2">
+            <div className="border-t-2 border-pw-border pt-4 mt-2">
               <div className="flex items-end justify-between">
                 <div>
                   <p className="text-[9px] font-black text-text-secondary uppercase tracking-[0.3em] mb-1">

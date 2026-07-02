@@ -30,7 +30,7 @@ export interface BillingInvoice {
 function getStripe() {
   const key = process.env.STRIPE_SECRET_KEY;
   if (!key) throw new Error('STRIPE_SECRET_KEY is not set');
-  return new Stripe(key, { apiVersion: '2026-03-25.dahlia' });
+  return new Stripe(key, { apiVersion: '2026-04-22.dahlia' });
 }
 
 function fmtAmount(amount: number, currency: string): string {
@@ -62,13 +62,12 @@ export async function POST(request: Request) {
     }
 
     const stripe = getStripe();
-    const { data } = await stripe.invoices.list({
-      customer: stripeCustomerId,
-      limit: 24,
-      status: undefined,
-    });
+    const [invoiceList, subscriptions] = await Promise.all([
+      stripe.invoices.list({ customer: stripeCustomerId, limit: 24, status: undefined }),
+      stripe.subscriptions.list({ customer: stripeCustomerId, status: 'active', limit: 1 }),
+    ]);
 
-    const invoices: BillingInvoice[] = data.map((inv) => ({
+    const invoices: BillingInvoice[] = invoiceList.data.map((inv) => ({
       id: inv.id,
       number: inv.number,
       date: new Date(inv.created * 1000).toLocaleDateString('en-US', {
@@ -82,7 +81,12 @@ export async function POST(request: Request) {
       hostedUrl: inv.hosted_invoice_url ?? null,
     }));
 
-    return NextResponse.json({ invoices }, { status: 200 });
+    const activeSub = subscriptions.data[0] ?? null;
+    const currentPeriodEnd: number | null = activeSub
+      ? (activeSub as any).current_period_end ?? null
+      : null;
+
+    return NextResponse.json({ invoices, currentPeriodEnd }, { status: 200 });
   } catch (err: unknown) {
     const msg = err instanceof Error ? err.message : 'Unknown error';
     console.error('[Stripe/Invoices] Error:', msg);

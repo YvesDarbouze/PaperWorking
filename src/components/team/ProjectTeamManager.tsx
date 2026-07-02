@@ -5,6 +5,7 @@ import { useProjectStore } from '@/store/projectStore';
 import { UserPlus, X, Briefcase, Scale, Landmark, Building } from 'lucide-react';
 import type { ProjectTeamMember, ProjectRole } from '@/types/schema';
 import toast from 'react-hot-toast';
+import { useAuth } from '@/context/AuthContext';
 
 /* ═══════════════════════════════════════════════════════
    ProjectTeamManager — Per-Deal Team Assignment
@@ -29,6 +30,7 @@ export default function ProjectTeamManager({ projectId }: Props) {
   const currentProject = useProjectStore((s) => s.projects.find((d) => d.id === projectId));
   const updateProjectTeam = useProjectStore((s) => s.updateProjectTeam);
   const team = currentProject?.projectTeam || [];
+  const { user } = useAuth();
 
   const [editingRole, setEditingRole] = useState<ProjectRole | null>(null);
   const [inviteEmail, setInviteEmail] = useState('');
@@ -37,32 +39,65 @@ export default function ProjectTeamManager({ projectId }: Props) {
   const getMemberForRole = (role: ProjectRole) =>
     team.find((m) => m.projectRole === role && m.status !== 'removed');
 
-  const handleAssign = (role: ProjectRole) => {
+  const handleAssign = async (role: ProjectRole) => {
     if (!inviteEmail.trim()) return;
+    if (!user) {
+      toast.error('Not authenticated');
+      return;
+    }
 
-    const newMember: ProjectTeamMember = {
-      id: `tm_${Date.now()}`,
-      email: inviteEmail.trim(),
-      displayName: inviteName.trim() || inviteEmail.split('@')[0],
-      projectRole: role,
-      permissions: { canView: true, canUpload: false, canComment: false },
-      assignedAt: new Date(),
-      status: 'invited',
-    };
+    const name = inviteName.trim() || inviteEmail.split('@')[0];
+    const email = inviteEmail.trim();
 
-    updateProjectTeam(projectId, [...team, newMember]);
-    toast.success(`${role} invited: ${newMember.displayName}`);
+    const toastId = toast.loading('Inviting deal team member...');
+    try {
+      const idToken = await user.getIdToken();
+      const { mutateProjectTeam } = await import('@/actions');
+      const res = await mutateProjectTeam(idToken, projectId, 'add', {
+        email,
+        displayName: name,
+        projectRole: role,
+        permissions: { canView: true, canUpload: false, canComment: false },
+      });
+
+      if (res.success && res.projectTeam) {
+        updateProjectTeam(projectId, res.projectTeam);
+        toast.success(`${role} invited: ${name}`, { id: toastId });
+      }
+    } catch (err: any) {
+      toast.error(err.message || 'Failed to update deal team.', { id: toastId });
+    }
+
     setInviteEmail('');
     setInviteName('');
     setEditingRole(null);
   };
 
-  const handleRemove = (memberId: string) => {
-    const updated = team.map((m) =>
-      m.id === memberId ? { ...m, status: 'removed' as const } : m
-    );
-    updateProjectTeam(projectId, updated);
-    toast.success('Team member removed.');
+  const handleRemove = async (memberId: string) => {
+    if (!user) {
+      toast.error('Not authenticated');
+      return;
+    }
+
+    const member = team.find(m => m.id === memberId);
+    if (!member) return;
+
+    const toastId = toast.loading('Removing deal team member...');
+    try {
+      const idToken = await user.getIdToken();
+      const { mutateProjectTeam } = await import('@/actions');
+      const res = await mutateProjectTeam(idToken, projectId, 'remove', {
+        email: member.email,
+        memberId,
+      });
+
+      if (res.success && res.projectTeam) {
+        updateProjectTeam(projectId, res.projectTeam);
+        toast.success('Team member removed.', { id: toastId });
+      }
+    } catch (err: any) {
+      toast.error(err.message || 'Failed to update deal team.', { id: toastId });
+    }
   };
 
   return (
@@ -89,7 +124,7 @@ export default function ProjectTeamManager({ projectId }: Props) {
                 member
                   ? 'border-border-accent bg-bg-primary/50'
                   : isEditing
-                  ? 'border-indigo-300 bg-indigo-50/30'
+                  ? 'border-[#454955]/30 bg-[#454955]/5'
                   : 'border-dashed border-border-accent hover:border-border-accent'
               }`}
             >
@@ -97,7 +132,7 @@ export default function ProjectTeamManager({ projectId }: Props) {
                 <div className="flex items-center gap-3">
                   <div
                     className={`w-8 h-8 rounded-lg flex items-center justify-center ${
-                      member ? 'bg-indigo-100 text-indigo-600' : 'bg-bg-primary text-text-secondary'
+                      member ? 'bg-[#454955]/10 text-[#454955]' : 'bg-bg-primary text-text-secondary'
                     }`}
                   >
                     {icon}
@@ -118,7 +153,7 @@ export default function ProjectTeamManager({ projectId }: Props) {
                 {member ? (
                   <button
                     onClick={() => handleRemove(member.id)}
-                    className="p-1.5 rounded-md hover:bg-red-50 text-text-secondary hover:text-red-500 transition"
+                    className="p-1.5 rounded-md hover:bg-[#F06543]/10 text-text-secondary hover:text-[#F06543] transition"
                     title="Remove"
                   >
                     <X className="w-3.5 h-3.5" />
@@ -126,7 +161,7 @@ export default function ProjectTeamManager({ projectId }: Props) {
                 ) : !isEditing ? (
                   <button
                     onClick={() => setEditingRole(role)}
-                    className="flex items-center gap-1.5 px-3 py-1.5 text-sm font-semibold text-indigo-600 bg-indigo-50 rounded-md hover:bg-indigo-100 transition"
+                    className="flex items-center gap-1.5 px-3 py-1.5 text-sm font-semibold text-[#454955] bg-[#454955]/10 rounded-md hover:bg-[#454955]/20 transition"
                   >
                     <UserPlus className="w-3 h-3" /> Invite
                   </button>
@@ -141,19 +176,19 @@ export default function ProjectTeamManager({ projectId }: Props) {
                     value={inviteName}
                     onChange={(e) => setInviteName(e.target.value)}
                     placeholder="Name"
-                    className="flex-1 border border-border-accent rounded-md px-3 py-2 text-xs focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition"
+                    className="flex-1 border border-border-accent rounded-md px-3 py-2 text-xs focus:border-[#454955] focus:ring-1 focus:ring-[#454955] transition"
                   />
                   <input
                     type="email"
                     value={inviteEmail}
                     onChange={(e) => setInviteEmail(e.target.value)}
                     placeholder="email@company.com"
-                    className="flex-[2] border border-border-accent rounded-md px-3 py-2 text-xs focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition"
+                    className="flex-[2] border border-border-accent rounded-md px-3 py-2 text-xs focus:border-[#454955] focus:ring-1 focus:ring-[#454955] transition"
                   />
                   <button
                     onClick={() => handleAssign(role)}
                     disabled={!inviteEmail.trim()}
-                    className="px-4 py-2 bg-black text-white text-xs font-medium rounded-md hover:bg-gray-800 disabled:bg-gray-300 disabled:cursor-not-allowed transition"
+                    className="px-4 py-2 bg-[#454955] text-white text-xs font-medium rounded-md hover:bg-[#454955]/90 disabled:bg-gray-300 disabled:cursor-not-allowed transition"
                   >
                     Assign
                   </button>

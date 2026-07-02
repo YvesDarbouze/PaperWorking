@@ -2,6 +2,8 @@
 
 import React, { useRef, useEffect, useState } from 'react';
 import { Check, X, Star } from 'lucide-react';
+import { Switch } from '@/components/ui/Switch';
+
 
 interface PricingCardsProps {
   isAnnual: boolean;
@@ -34,16 +36,16 @@ interface PlanTier {
 
 const tiers: PlanTier[] = [
   {
-    id: 'individual',
-    name: 'Individual',
-    tagline: 'Built for solo investors who want full pipeline visibility without a team subscription.',
-    monthlyPrice: 59,
-    annualPrice: 499,
-    ctaLabel: 'Start Free Trial',
+    id: 'vendor',
+    name: 'Vendor',
+    tagline: 'For professionals who want qualified investor leads in their service area.',
+    monthlyPrice: 39,
+    annualPrice: 390,
+    ctaLabel: 'Join the Marketplace',
     ctaMicrocopy: 'Cancel anytime during trial',
     isAnchored: false,
     features: [
-      { label: 'Unlimited Property Tracking', included: true },
+      { label: 'Up to 5 active project pipelines', included: true },
       { label: 'Full 4-Phase Lifecycle Kanban', included: true },
       { label: 'Engine Room Ledger', included: true },
       { label: 'Standard Financial Reports', included: true },
@@ -61,54 +63,50 @@ const tiers: PlanTier[] = [
     ],
   },
   {
+    id: 'individual',
+    name: 'Investor',
+    tagline: 'Built for solo investors who want full pipeline visibility without a team subscription.',
+    monthlyPrice: 59,
+    annualPrice: 499,
+    ctaLabel: 'Start Investor Trial',
+    ctaMicrocopy: 'Cancel anytime during trial',
+    isAnchored: true,
+    anchorBadge: 'Most Popular',
+    socialProof: {
+      quote: '"I used to underwrite on spreadsheets that broke on every new column. This gets the math right in seconds."',
+      author: '— R. Miller, Solo Operator',
+    },
+    features: [
+      { label: 'Unlimited active project pipelines', included: true },
+      { label: 'Full 4-Phase Lifecycle Kanban', included: true },
+      { label: 'Engine Room Ledger & reports', included: true },
+      { label: 'CPA-Ready CSV & P&L exports', included: true },
+      { label: 'Document OCR Upload (Confirm & Harden)', included: true },
+      { label: '1 partner seat (Read-only)', included: true },
+      {
+        label: 'Team Invites & RBAC',
+        included: false,
+        lossAversion: 'Role-based access and audit logs are Team-only. Your contractors will see your financials.',
+      },
+    ],
+  },
+  {
     id: 'team',
-    name: 'Team',
+    name: 'Investment Team',
     tagline: 'For investor teams who need role-based access, shared workflows, and complete financial separation.',
     monthlyPrice: 99,
     annualPrice: 999,
     ctaLabel: 'Start Team Trial',
     ctaMicrocopy: 'Cancel anytime during trial',
-    isAnchored: true,
-    anchorBadge: 'Most teams choose Team',
-    socialProof: {
-      quote: '"We closed 3 extra projects last quarter just by putting everyone in the same workspace."',
-      author: '— J. Rivera, Valor Capital Partners',
-    },
+    isAnchored: false,
     features: [
-      { label: 'Everything in Individual', included: true },
+      { label: 'Everything in Investor', included: true },
       { label: 'Team Member Invites (Agents, GCs)', included: true },
       { label: 'Granular Role-Based Data Isolation', included: true },
       { label: 'Advanced Vendor Management', included: true },
       { label: 'Google Drive Provisioning', included: true },
       { label: 'Advanced Financial Reports', included: true },
       { label: 'Escrow Integration & API Access', included: true },
-    ],
-  },
-  {
-    id: 'vendor',
-    name: 'Vendor Marketplace',
-    tagline: 'For professionals — lawyers, loan processors, contractors, appraisers — who want deal flow from active investors.',
-    monthlyPrice: 39,
-    annualPrice: 390,
-    ctaLabel: 'Join the Marketplace',
-    ctaMicrocopy: 'Cancel anytime',
-    isAnchored: false,
-    features: [
-      { label: 'Localized Deal Request Pipeline', included: true },
-      { label: 'Closing Room Document Access', included: true },
-      { label: 'Client Communication Hub', included: true },
-      { label: 'Title Search & Verification Tools', included: true },
-      { label: 'Report Upload & Verification', included: true },
-      {
-        label: 'Multi-state Licensing Hub',
-        included: false,
-        lossAversion: 'Multi-state deal routing requires a Team plan invitation.',
-      },
-      {
-        label: 'Automated Compliance Checks',
-        included: false,
-        lossAversion: 'AI compliance checks are only available as an Enterprise add-on.',
-      },
     ],
   },
 ];
@@ -153,6 +151,7 @@ function SavingsPill({
   visible: boolean;
 }) {
   const yearlySavings = monthlyPrice * 12 - annualPrice;
+  const pct = Math.round((yearlySavings / (monthlyPrice * 12)) * 100);
 
   return (
     <span
@@ -162,7 +161,7 @@ function SavingsPill({
           : 'opacity-0 -translate-x-2 scale-95 pointer-events-none'
       }`}
     >
-      Save ${yearlySavings}
+      Save ${yearlySavings} ({pct}%)
     </span>
   );
 }
@@ -176,32 +175,27 @@ export default function PricingCards({
 }: PricingCardsProps) {
   return (
     <div className="w-full max-w-7xl mx-auto px-6 lg:px-8">
-      {/* ── Billing Toggle ── */}
+      {/* ── Billing Toggle-Switch ── */}
       <div className="flex justify-center mb-8">
-        <div className="flex items-center p-1 bg-phase-1">
-          <button
-            onClick={() => onToggleAnnual(false)}
-            className={`px-6 py-2.5 text-sm font-medium transition-all ${
-              !isAnnual
-                ? 'bg-white shadow-sm text-phase-4'
-                : 'text-phase-3 hover:text-phase-4'
-            }`}
-          >
+        <div className="flex items-center gap-3 py-2 px-4 bg-surface-container/20 rounded-full border border-outline-variant/30">
+          <span className={`text-sm font-semibold transition-colors duration-200 ${
+            !isAnnual ? 'text-on-surface' : 'text-on-surface-variant'
+          }`}>
             Monthly
-          </button>
-          <button
-            onClick={() => onToggleAnnual(true)}
-            className={`flex items-center px-6 py-2.5 text-sm font-medium transition-all ${
-              isAnnual
-                ? 'bg-white shadow-sm text-phase-4'
-                : 'text-phase-3 hover:text-phase-4'
-            }`}
-          >
+          </span>
+          <Switch
+            checked={isAnnual}
+            onChange={(e) => onToggleAnnual(e.target.checked)}
+            aria-label="Toggle annual pricing"
+          />
+          <span className={`text-sm font-semibold transition-colors duration-200 flex items-center gap-1.5 ${
+            isAnnual ? 'text-primary' : 'text-on-surface-variant'
+          }`}>
             Annual
-            <span className="ml-2 text-xs uppercase tracking-wider text-phase-4 font-bold bg-dashboard border border-phase-1 px-2 py-0.5">
-              Save 20%
+            <span className="bg-primary/15 text-primary px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider">
+              Save Up to 29%
             </span>
-          </button>
+          </span>
         </div>
       </div>
 
@@ -211,8 +205,9 @@ export default function PricingCards({
         className="grid grid-cols-1 md:grid-cols-3 gap-0 border border-phase-1 bg-white shadow-sm"
       >
         {tiers.map((tier, tierIdx) => {
-          const price = isAnnual ? tier.annualPrice : tier.monthlyPrice;
-          const period = isAnnual ? '/yr' : '/mo';
+          const displayPrice = isAnnual
+            ? (tier.id === 'individual' ? 41 : tier.id === 'team' ? 83 : 32)
+            : tier.monthlyPrice;
           const planLabel = `${tier.name} ${isAnnual ? 'Annual' : 'Monthly'}`;
           const isLast = tierIdx === tiers.length - 1;
 
@@ -246,11 +241,16 @@ export default function PricingCards({
               {/* ── Price ── */}
               <div className="mt-8 mb-1">
                 <span className="text-5xl font-medium text-black tracking-tight tabular-nums">
-                  <AnimatedPrice value={price} />
+                  <AnimatedPrice value={displayPrice} />
                 </span>
                 <span className="text-sm font-medium text-phase-2 ml-1">
-                  {period}
+                  /mo
                 </span>
+                {isAnnual && (
+                  <div className="text-xs font-semibold text-phase-2 mt-1">
+                    Billed ${tier.annualPrice}/yr
+                  </div>
+                )}
               </div>
 
               {/* ── Savings Badge ── */}
@@ -308,7 +308,9 @@ export default function PricingCards({
               <div className="mt-8 flex-1">
                 <p className="text-xs font-bold uppercase tracking-widest text-phase-2 mb-5">
                   {tier.id === 'team'
-                    ? 'Everything in Individual, plus:'
+                    ? 'Everything in Investor, plus:'
+                    : tier.id === 'individual'
+                    ? 'Everything in Solo, plus:'
                     : 'Includes'}
                 </p>
                 <ul className="space-y-3">

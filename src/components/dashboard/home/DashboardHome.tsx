@@ -48,6 +48,7 @@ import MobileBottomNav from '../MobileBottomNav';
 const PerformanceChart = lazy(() => import('./PerformanceChart'));
 
 import toast from 'react-hot-toast';
+import { computeAutopsyMetrics } from '@/lib/metrics';
 import { Project } from '@/types/schema';
 
 /* ═══════════════════════════════════════════════════════════════
@@ -239,7 +240,14 @@ export default function DashboardHome() {
     );
   });
 
-  const dealsClosedCount = portfolioProjects.filter(p => p.status === 'Sold').length;
+  const dealsClosedCount = portfolioProjects.filter(
+    p => p.status === 'Sold' || p.status === 'closed_won' || p.status === 'Rented'
+  ).length;
+
+  const winsCount = portfolioProjects.filter(p => {
+    if (p.status !== 'Sold' && p.status !== 'closed_won') return false;
+    try { return computeAutopsyMetrics(p).netProfit > 0; } catch { return false; }
+  }).length;
 
   const uniqueMembers = new Set<string>();
   portfolioProjects.forEach(p => {

@@ -3,6 +3,8 @@
 import React, { useState } from 'react';
 import Link from 'next/link';
 import { ArrowRight, Check } from 'lucide-react';
+import { Switch } from '@/components/ui/Switch';
+
 
 /**
  * PricingPreview
@@ -78,36 +80,30 @@ export default function PricingPreview() {
           </p>
         </div>
 
-        {/* Toggle */}
-        <div className="flex items-center justify-center mb-12">
-          <span className={`text-xs font-medium transition-colors duration-300 ${
-            !isAnnual ? 'text-text-primary' : 'text-phase-2'
+        {/* Toggle-Switch */}
+        <div className="flex items-center justify-center gap-3 mb-12">
+          <span className={`text-sm font-semibold transition-colors duration-200 ${
+            !isAnnual ? 'text-on-surface' : 'text-on-surface-variant'
           }`}>
             Monthly
           </span>
-          <button
-            onClick={() => setIsAnnual(!isAnnual)}
-            className="relative mx-4 w-14 h-7 bg-phase-1 cursor-pointer transition-colors duration-300 focus:outline-none"
-            role="switch"
-            aria-checked={isAnnual}
+          <Switch
+            checked={isAnnual}
+            onChange={(e) => setIsAnnual(e.target.checked)}
             aria-label="Toggle annual pricing"
-          >
-            <div className={`absolute top-0.5 left-0.5 w-6 h-6 bg-black transition-transform duration-300 ease-in-out ${
-              isAnnual ? 'translate-x-7' : 'translate-x-0'
-            }`} />
-          </button>
-          <span className={`text-xs font-medium transition-colors duration-300 ${
-            isAnnual ? 'text-text-primary' : 'text-phase-2'
+          />
+          <span className={`text-sm font-semibold transition-colors duration-200 flex items-center gap-1.5 ${
+            isAnnual ? 'text-primary' : 'text-on-surface-variant'
           }`}>
             Annual
-          </span>
-          {/* Savings badge */}
-          <span className={`ml-3 text-xs font-bold uppercase tracking-widest px-2 py-1 transition-all duration-300 ${
-            isAnnual
-              ? 'bg-black text-white opacity-100 translate-y-0'
-              : 'bg-phase-1 text-phase-2 opacity-0 -translate-y-1'
-          }`}>
-            Save 20%
+            {/* Savings badge */}
+            <span className={`text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full transition-all duration-300 ${
+              isAnnual
+                ? 'bg-primary/15 text-primary opacity-100 scale-100'
+                : 'bg-surface-container-high text-on-surface-variant/40 opacity-0 scale-90 pointer-events-none'
+            }`}>
+              Save 20%
+            </span>
           </span>
         </div>
 

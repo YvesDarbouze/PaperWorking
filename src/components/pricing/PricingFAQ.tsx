@@ -40,7 +40,7 @@ const faqItems: FAQItem[] = [
       'Yes. Every new account starts with a 14-day free trial of the Team plan with access to all features. A credit card is collected at signup, but you won\u2019t be charged until your trial ends. At the end of the trial, choose the plan that fits \u2014 or cancel before you\u2019re billed.',
   },
   {
-    question: 'Can I switch between Individual, Team, and Lawyer plans?',
+    question: 'Can I switch between Investor, Investment Team, and Vendor plans?',
     answer:
       'Yes. Upgrades take effect immediately with a prorated charge for the rest of your billing cycle. Downgrades apply at the start of your next billing period. Your data stays intact in both directions.',
   },

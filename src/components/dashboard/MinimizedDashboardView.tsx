@@ -11,6 +11,7 @@ import {
 import DealFolder from './DealFolder';
 import { usePermissions } from '@/hooks/usePermissions';
 import toast from 'react-hot-toast';
+import { EmptyState } from '../ui/empty-states/EmptyState';
 
 /* ═══════════════════════════════════════════════════════
    MinimizedDashboardView — Board Overlay
@@ -165,9 +166,11 @@ function BoardColumn({
       {/* Deal cards */}
       <div className="flex-1 p-2.5 space-y-2 min-h-[120px] max-h-[calc(100vh-280px)] overflow-y-auto">
         {projects.length === 0 ? (
-          <div className="h-20 flex items-center justify-center text-sm text-text-secondary italic">
-            No projects
-          </div>
+          <EmptyState
+            title="No projects"
+            variant="inline"
+            className="py-6"
+          />
         ) : (
           projects.map((deal) => (
             <DealCard key={deal.id} deal={deal} onClick={() => onDealClick(deal)} />
@@ -226,7 +229,11 @@ function MobileColumn({
           >
             <div className="p-3 space-y-2">
               {projects.length === 0 ? (
-                <p className="text-sm text-text-secondary italic text-center py-3">No projects in this phase</p>
+                <EmptyState
+                  title="No projects in this phase"
+                  variant="inline"
+                  className="py-3"
+                />
               ) : (
                 projects.map((deal) => (
                   <DealCard key={deal.id} deal={deal} onClick={() => onDealClick(deal)} />
@@ -245,13 +252,13 @@ function DealCard({ deal, onClick }: { deal: Project; onClick: () => void }) {
   const { can } = usePermissions();
 
   return (
-    <div className={`${!can('VIEW_FOLDER') && 'opacity-60 cursor-not-allowed'}`}>
+    <div className={`${!can('projects.view') && 'opacity-60 cursor-not-allowed'}`}>
       <DealFolder
         deal={deal}
         size="sm"
         showPrice
         onClick={() => {
-          if (can('VIEW_FOLDER')) {
+          if (can('projects.view')) {
             onClick();
           } else {
             toast.error('You do not have permission to view this project folder.');

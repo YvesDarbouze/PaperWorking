@@ -1,0 +1,212 @@
+{
+  "name": "reil-screen-orchestrator",
+  "description": "Master REIL Screen Orchestrator — manages all 10 datapoint screen catalogs from StitchMCP, curates the best functional versions, and integrates them as production components across the Dashboard intelligence pages and Data Room.",
+  "version": "1.0.0",
+  "capabilities": [
+    "screen-catalog-management",
+    "version-curation",
+    "dashboard-integration",
+    "data-room-aggregation",
+    "stitch-mcp-ingestion"
+  ],
+  "metrics": {
+    "D1_NOI": {
+      "formula": "NOI = Gross Income − Operating Expenses",
+      "seed": "$23,400 − $10,914 = $12,486",
+      "route": "/dashboard/intelligence/noi",
+      "component": "NOICollectionTerminal",
+      "dataRoom": true,
+      "screens": {
+        "collection": [
+          { "id": "noi-collection-mobile", "type": "collection", "device": "mobile", "status": "integrated" },
+          { "id": "noi-collection-desktop", "type": "collection", "device": "desktop", "status": "integrated" }
+        ],
+        "intelligence": [
+          { "id": "noi-intelligence-card", "type": "intelligence", "device": "mobile", "status": "integrated" },
+          { "id": "noi-intelligence-dashboard", "type": "intelligence", "device": "desktop", "status": "integrated" }
+        ]
+      }
+    },
+    "D2_CashFlow": {
+      "formula": "Cash Flow = NOI − Debt Service",
+      "seed": "$12,486 − $10,764 = $1,722 annual",
+      "route": "/dashboard/intelligence/cash-flow",
+      "component": "CashFlowAnalysisDashboard",
+      "dataRoom": true,
+      "screens": {
+        "collection": [
+          { "id": "5e7029087bec47cfaf2e4dfce2e988d9", "title": "Cash Flow Analysis (Desktop)", "device": "desktop", "status": "cataloged" },
+          { "id": "b48d517a7c434d288a82fea474ded32e", "title": "Financing: Debt Service & Cash Flow Input (Desktop)", "device": "desktop", "status": "cataloged" }
+        ],
+        "intelligence": [
+          { "id": "ddac50d975d1487d84b28a211127c130", "title": "Cash Flow Intelligence Card (Desktop)", "device": "desktop", "status": "cataloged" },
+          { "id": "71f11e94173546759173f3f7384f96bc", "title": "Cash Flow Intelligence Card (Mobile)", "device": "mobile", "status": "cataloged" }
+        ]
+      }
+    },
+    "D3_CapRate": {
+      "formula": "Cap Rate = NOI ÷ Purchase Price",
+      "seed": "$12,486 ÷ $279,000 = 4.5%",
+      "route": "/dashboard/intelligence/cap-rate",
+      "component": "CapRateCollectionTerminal",
+      "dataRoom": true,
+      "screens": {
+        "collection": [
+          { "id": "c33118f3cb9546e3ab942360bf33e4d1", "title": "Cap Rate Collection: Deal Terms & Closing (Mobile)", "device": "mobile", "status": "cataloged" },
+          { "id": "cd4fb824ba6646af92ed1ca1b55e139c", "title": "Cap Rate Collection: Deal Terms & Closing (Desktop)", "device": "desktop", "status": "cataloged" }
+        ],
+        "intelligence": [
+          { "id": "c54c6c5893f945ab9ba16e9959532d86", "title": "Cap Rate Intelligence: Gauge & Trend Analysis (Desktop)", "device": "desktop", "status": "cataloged" },
+          { "id": "4f7741bcaa054b4aa980224d2c704f9e", "title": "Cap Rate Intelligence: Gauge & Trend Analysis", "device": "mobile", "status": "cataloged" }
+        ]
+      }
+    },
+    "D4_COC": {
+      "formula": "COC = Annual Pre-Tax Cash Flow ÷ Total Cash Invested",
+      "seed": "$1,722 ÷ $60,000 = 2.87%",
+      "route": "/dashboard/intelligence/coc",
+      "component": "COCCollectionTerminal",
+      "dataRoom": true,
+      "screens": {
+        "collection": [
+          { "id": "3a3b7af47ef34a1586458a66d0b05d76", "title": "Investment Basis: Cash Deployed Terminal (Mobile)", "device": "mobile", "status": "cataloged" },
+          { "id": "578be32ef93148e897b5b3168e07e6b0", "title": "Investment Basis: Cash Deployed Terminal (Desktop)", "device": "desktop", "status": "cataloged" }
+        ],
+        "intelligence": [
+          { "id": "f69a5b0ae4f64815b900995458df4d22", "title": "COC Intelligence: Performance Gap Analysis (Mobile)", "device": "mobile", "status": "cataloged" },
+          { "id": "9e1ec0b4cf0547f09c2ca1068bd1d283", "title": "COC Intelligence: Performance Gap Analysis (Desktop)", "device": "desktop", "status": "cataloged" }
+        ]
+      }
+    },
+    "D5_GRM": {
+      "formula": "GRM = Property Price ÷ Gross Annual Rent",
+      "seed": "$279,000 ÷ $23,400 = 11.9",
+      "route": "/dashboard/intelligence/grm",
+      "component": "GRMCollectionTerminal",
+      "dataRoom": true,
+      "screens": {
+        "collection": [
+          { "id": "2af717054b7841c8a11eab06a1f27803", "title": "Quick Screen: A-Phase Triage Terminal (Mobile)", "device": "mobile", "status": "cataloged" },
+          { "id": "ef49ad26421b4e1fbe5421fb6154b689", "title": "Quick Screen: A-Phase Triage Terminal (Desktop)", "device": "desktop", "status": "cataloged" }
+        ],
+        "intelligence": [
+          { "id": "c43f4a7392714d899a69fb810276855a", "title": "Deal Compare: Multi-Property GRM Screen", "device": "mobile", "status": "cataloged" },
+          { "id": "44ae2c5bc9984717b9e061fe0d65efe8", "title": "Deal Compare: Multi-Property GRM (Desktop)", "device": "desktop", "status": "cataloged" },
+          { "id": "d3151f1fb7554b05a2ee49d513c45b04", "title": "Portfolio: Deal Comparison Board (Mobile)", "device": "mobile", "status": "cataloged" },
+          { "id": "b95eff70dacb43eb8f748e72e6a5f36a", "title": "Portfolio: Deal Comparison Board (Desktop)", "device": "desktop", "status": "cataloged" }
+        ]
+      }
+    },
+    "D6_DSCR": {
+      "formula": "DSCR = NOI ÷ Annual Debt Service",
+      "seed": "$12,486 ÷ $10,764 = 1.16x",
+      "route": "/dashboard/intelligence/dscr",
+      "component": "DSCRCollectionTerminal",
+      "dataRoom": true,
+      "screens": {
+        "collection": [
+          { "id": "79a55fe7911d46f1ba5adaf15f19548e", "title": "Financing Terminal: DSCR Risk Strip Integration", "device": "mobile", "status": "cataloged" },
+          { "id": "6afc0a21cdc54be291dbc939027a0366", "title": "Financing Terminal: DSCR Risk Strip (Desktop)", "device": "desktop", "status": "cataloged" },
+          { "id": "54e24aeb794842429aa0050df3a2150e", "title": "Financing Terminal: DSCR Risk Strip (Branded)", "device": "desktop", "status": "cataloged" }
+        ],
+        "intelligence": [
+          { "id": "d070623f69694caab0bbdc995050232a", "title": "DSCR Threshold Analysis (Desktop Refined)", "device": "desktop", "status": "cataloged" },
+          { "id": "9cc64d78d6d6465e8ff9860308f5c1e6", "title": "DSCR Threshold Intelligence Card (Refined)", "device": "mobile", "status": "cataloged" }
+        ]
+      }
+    },
+    "D7_IRR": {
+      "formula": "IRR = discount rate where NPV of all hold-period cash flows = 0",
+      "seed": "−$60,000 at t0; +$1,722/yr; projected sale proceeds at exit",
+      "route": "/dashboard/intelligence/irr",
+      "component": "IRRCollectionTerminal",
+      "dataRoom": true,
+      "screens": {
+        "collection": [
+          { "id": "85b67466052942e785e689b40bc325e3", "title": "Exit Assumptions & IRR Analysis (Mobile)", "device": "mobile", "status": "cataloged" },
+          { "id": "a28d6d8adca54cc590ad9647d83290c6", "title": "Exit Assumptions & IRR Analysis (Mobile) v2", "device": "mobile", "status": "cataloged" }
+        ],
+        "intelligence": [
+          { "id": "ab4d950e638044aeadb8ef388dfa9e39", "title": "IRR Intelligence: Strategic Scenario Terminal (Desktop)", "device": "desktop", "status": "cataloged", "preferred": true },
+          { "id": "bb322b1f572840f19d38cdf4244ca486", "title": "IRR Intelligence: Scenario Comparison (Mobile)", "device": "mobile", "status": "cataloged" },
+          { "id": "06a30c96679747e9bf1db1759f8b7c26", "title": "IRR Intelligence: Strategic Scenario Terminal (Desktop) v2", "device": "desktop", "status": "cataloged" },
+          { "id": "8d2ab03131a64739934a0ad5ccaf2deb", "title": "Portfolio Dashboard: IRR Strategic Integration (Desktop)", "device": "desktop", "status": "cataloged" },
+          { "id": "193cfa7c40b44aa6963c993f1d620c1b", "title": "Portfolio Dashboard: IRR Scenario Integration (Mobile)", "device": "mobile", "status": "cataloged" }
+        ]
+      }
+    },
+    "D8_Occupancy": {
+      "formula": "Occupancy = (Days Occupied ÷ Total Days) × 100",
+      "seed": "92% over trailing 12 months (29 vacant days of 365)",
+      "route": "/dashboard/intelligence/occupancy",
+      "component": "OccupancyCollectionTerminal",
+      "dataRoom": true,
+      "screens": {
+        "collection": [
+          { "id": "40fd10156a16406996a460fdde1adcb5", "title": "Tenants & Leases: Occupancy Collection (Mobile)", "device": "mobile", "status": "cataloged" },
+          { "id": "5d26659a2f4b4366b908537284018103", "title": "Tenants & Leases: Occupancy Collection (Desktop)", "device": "desktop", "status": "cataloged" },
+          { "id": "fedb8e0adfbf423e925808b73be7d1ee", "title": "Tenants & Leases: Occupancy Collection (Mobile) v2", "device": "mobile", "status": "cataloged" },
+          { "id": "529657b8d9d74cce9cfc87e22fb0187c", "title": "Tenants & Leases: Occupancy Collection (Desktop) v2", "device": "desktop", "status": "cataloged" }
+        ],
+        "intelligence": []
+      }
+    },
+    "D9_OER": {
+      "formula": "Expense Ratio = (Operating Expenses ÷ Gross Rental Income) × 100",
+      "seed": "$9,276 ÷ $23,400 = 40% (excluding vacancy)",
+      "route": "/dashboard/intelligence/oer",
+      "component": "ExpenseRatioCollectionTerminal",
+      "dataRoom": true,
+      "screens": {
+        "collection": [
+          { "id": "b2999537339d45bf9838cabd9bd6c2d2", "title": "Operations: Expense Ratio Collection (Desktop)", "device": "desktop", "status": "cataloged", "imageFile": "oer/oer-collection-desktop.png" },
+          { "id": "9ef56065ff5646ad9ee960ec15206820", "title": "Operations: Expense Ratio Collection (Desktop) v2", "device": "desktop", "status": "cataloged" },
+          { "id": "3366fb36bbf1407784e28554f7e128be", "title": "Operations: Expense Ratio Collection (Mobile)", "device": "mobile", "status": "cataloged" },
+          { "id": "9470be000b6d49a89704b0edb802dc18", "title": "Operations: Expense Ratio Collection (Mobile) v2", "device": "mobile", "status": "cataloged", "imageFile": "oer/oer-collection-mobile.png" },
+          { "id": "729580eb50bf4d17918b10b88ac619d0", "title": "Operations: Expense Ratio Collection (generic)", "device": "desktop", "status": "cataloged" },
+          { "id": "2ab3abe78aef43f1a0d625676bfe402b", "title": "Operations: Obsidian Expense Ratio Terminal", "device": "desktop", "status": "cataloged" }
+        ],
+        "intelligence": [
+          { "id": "02159e1a97bc4abd94980d9a1fbc34db", "title": "Expense Ratio Intelligence Card (Mobile)", "device": "mobile", "status": "cataloged" },
+          { "id": "0d8c4058bae14a22bf6207319b193d19", "title": "Expense Ratio Intelligence Dashboard (Desktop)", "device": "desktop", "status": "cataloged" },
+          { "id": "36fead3013d64d2db72d1c8e94aca115", "title": "Expense Ratio Intelligence Card (Mobile) v2", "device": "mobile", "status": "cataloged", "imageFile": "oer/oer-card-mobile.png" },
+          { "id": "9ecf002154e14e638124b2bbb49588fb", "title": "Expense Ratio Intelligence Dashboard (Desktop) v2", "device": "desktop", "status": "cataloged", "imageFile": "oer/oer-dashboard-desktop.png" },
+          { "id": "f00bb382444c452683f5a375a3fc51b8", "title": "Expense Ratio Intelligence Card (generic)", "device": "mobile", "status": "cataloged" },
+          { "id": "0b56a96d3d7b49d6a828fd2ec52d542b", "title": "Expense Ratio Intelligence Card (Mobile) v3", "device": "mobile", "status": "cataloged" },
+          { "id": "a2aa457ecbf3479a9e34d9c413b06247", "title": "Expense Ratio Intelligence Dashboard (Desktop) v3", "device": "desktop", "status": "cataloged" },
+          { "id": "824149f1f4714e52b5465747a0bdd77e", "title": "Expense Ratio Intelligence: Multi-Category Analysis (Mobile)", "device": "mobile", "status": "cataloged" },
+          { "id": "814b388615994f35ab89562554e79d02", "title": "Expense Ratio Intelligence: Multi-Category Analysis (Desktop)", "device": "desktop", "status": "cataloged" }
+        ]
+      }
+    },
+    "D10_Appreciation": {
+      "formula": "Annualized % change = ((EndValue / Basis) ^ (1 / Years)) − 1",
+      "seed": "$279,000 → $295,000 over 2 years = ~2.83% annualized",
+      "route": "/dashboard/intelligence/appreciation",
+      "component": "AppreciationCollectionTerminal",
+      "dataRoom": true,
+      "screens": {
+        "collection": [
+          { "id": "9c5faaaa0a5b44ba862fad2140e4df27", "title": "Hold Workspace: Valuation Collection (Mobile)", "device": "mobile", "status": "cataloged", "imageFile": "appreciation/valuation-mobile.png" },
+          { "id": "8c1bfd48c38044fcb2097489e2459eb7", "title": "Hold Workspace: Valuation Collection (Desktop)", "device": "desktop", "status": "cataloged", "imageFile": "appreciation/valuation-desktop.png" }
+        ],
+        "intelligence": [
+          { "id": "6be0595aa2d74c56adfd2c48e09fba4f", "title": "Appreciation Intelligence Card (Mobile)", "device": "mobile", "status": "cataloged", "imageFile": "appreciation/appreciation-card-mobile.png" }
+        ]
+      }
+    }
+  },
+  "dataRoom": {
+    "route": "/dashboard/data-room",
+    "aggregation": "Cumulative portfolio-level metrics across all active projects",
+    "metrics": ["NOI", "CashFlow", "CapRate", "COC", "GRM", "DSCR", "IRR", "Occupancy", "OER", "Appreciation"]
+  },
+  "projectScreenBase": "src/scratch/stitch-screens/",
+  "stitchProjectId": "11643693106955298243",
+  "totalScreensCataloged": 62,
+  "curationStrategy": {
+    "prefer": "Screens with the highest design fidelity AND responsive coverage (mobile + desktop pair)",
+    "selectBest": "For each metric, keep 1 collection screen and 1 intelligence screen per breakpoint",
+    "archive": "Lower-fidelity duplicates are kept in catalog for reference but not integrated"
+  }
+}

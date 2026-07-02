@@ -74,8 +74,8 @@ export function NumberInput({
         </label>
       )}
       <div
-        className={`relative flex items-center border border-border-accent bg-bg-primary focus-within:border-pw-black transition-colors ${
-          disabled ? 'opacity-60 cursor-not-allowed' : ''
+        className={`pw-input-wrapper ${
+          disabled ? 'disabled' : ''
         }`}
       >
         {prefix && (

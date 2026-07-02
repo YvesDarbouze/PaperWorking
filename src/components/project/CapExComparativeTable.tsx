@@ -55,20 +55,20 @@ export function CapExComparativeTable({ tasks, onChange }: CapExComparativeTable
   const isOverBudgetOverall = totalActual > totalEstimated;
 
   return (
-    <div className="p-6 rounded-lg shadow-sm border" style={{ backgroundColor: 'var(--bg-surface)', borderColor: 'var(--border-ui)' }}>
+    <div className="p-6 border border-pw-border bg-pw-glass-bg shadow-none">
       <div className="flex items-center justify-between mb-6">
         <div className="flex items-center gap-3">
-          <Hammer className="w-5 h-5" style={{ color: 'var(--text-secondary)' }} />
-          <h2 className="text-lg font-semibold" style={{ color: 'var(--text-primary)' }}>CapEx Comparative Budget</h2>
+          <Hammer className="w-5 h-5 text-pw-muted" />
+          <h2 className="text-lg font-medium text-pw-black">CapEx Comparative Budget</h2>
         </div>
         <div className="text-right flex items-center gap-6">
           <div>
-            <p className="text-sm" style={{ color: 'var(--text-secondary)' }}>Estimated Total</p>
-            <p className="font-semibold text-lg" style={{ color: 'var(--text-primary)' }}>${totalEstimated.toLocaleString()}</p>
+            <p className="text-sm text-pw-muted">Estimated Total</p>
+            <p className="font-semibold text-lg text-pw-black">${totalEstimated.toLocaleString()}</p>
           </div>
           <div>
-            <p className="text-sm" style={{ color: 'var(--text-secondary)' }}>Actual Total</p>
-            <p className={`font-semibold text-lg flex items-center gap-1 ${isOverBudgetOverall ? 'text-red-600' : 'text-green-600'}`}>
+            <p className="text-sm text-pw-muted">Actual Total</p>
+            <p className={`font-semibold text-lg flex items-center gap-1 ${isOverBudgetOverall ? 'text-error' : 'text-green-600'}`}>
               ${totalActual.toLocaleString()}
               {isOverBudgetOverall && <AlertTriangle className="w-4 h-4" />}
             </p>
@@ -79,14 +79,14 @@ export function CapExComparativeTable({ tasks, onChange }: CapExComparativeTable
       <div className="overflow-x-auto">
         <table className="w-full text-left border-collapse">
           <thead>
-            <tr className="border-b" style={{ borderColor: 'var(--border-subtle)' }}>
-              <th className="pb-3 text-sm font-medium" style={{ color: 'var(--text-secondary)' }}>Line Item</th>
-              <th className="pb-3 text-sm font-medium" style={{ color: 'var(--text-secondary)' }}>Category</th>
-              <th className="pb-3 text-sm font-medium" style={{ color: 'var(--text-secondary)' }}>Status</th>
-              <th className="pb-3 text-sm font-medium text-right" style={{ color: 'var(--text-secondary)' }}>Estimated Cost</th>
-              <th className="pb-3 text-sm font-medium text-right" style={{ color: 'var(--text-secondary)' }}>Actual Cost</th>
-              <th className="pb-3 text-sm font-medium text-right" style={{ color: 'var(--text-secondary)' }}>Variance</th>
-              <th className="pb-3 text-sm font-medium text-right" style={{ color: 'var(--text-secondary)' }}>Actions</th>
+            <tr className="border-b border-pw-border bg-surface-container-highest/50 backdrop-blur-md">
+              <th className="px-6 py-4 font-label-md text-label-md uppercase tracking-wider text-outline">Line Item</th>
+              <th className="px-6 py-4 font-label-md text-label-md uppercase tracking-wider text-outline">Category</th>
+              <th className="px-6 py-4 font-label-md text-label-md uppercase tracking-wider text-outline">Status</th>
+              <th className="px-6 py-4 font-label-md text-label-md uppercase tracking-wider text-outline text-right">Estimated Cost</th>
+              <th className="px-6 py-4 font-label-md text-label-md uppercase tracking-wider text-outline text-right">Actual Cost</th>
+              <th className="px-6 py-4 font-label-md text-label-md uppercase tracking-wider text-outline text-right">Variance</th>
+              <th className="px-6 py-4 font-label-md text-label-md uppercase tracking-wider text-outline text-right">Actions</th>
             </tr>
           </thead>
           <tbody className="divide-y divide-[var(--border-subtle)]">
@@ -97,75 +97,81 @@ export function CapExComparativeTable({ tasks, onChange }: CapExComparativeTable
               const isOverBudget = variance > 0;
 
               return (
-                <tr key={task.id} className={isOverBudget ? 'bg-red-50/50' : ''}>
-                  <td className="py-4">
+                <tr 
+                  key={task.id} 
+                  className={`border-b border-pw-border last:border-b-0 transition-colors duration-200 ${
+                    isOverBudget 
+                      ? 'bg-error/10 hover:bg-error/15' 
+                      : 'hover:bg-white/5'
+                  }`}
+                >
+                  <td className="px-6 py-4">
                     <input 
                       type="text" 
                       value={task.title}
                       onChange={(e) => updateTask(task.id, { title: e.target.value })}
-                      className="bg-transparent border-none focus:ring-1 focus:ring-blue-500 rounded p-1 w-full text-sm font-medium"
-                      style={{ color: 'var(--text-primary)' }}
+                      className="bg-transparent border-none focus:ring-1 focus:ring-pw-accent/50 rounded-sm p-1 w-full text-sm font-medium text-pw-black focus:outline-none"
                     />
                   </td>
-                  <td className="py-4">
+                  <td className="px-6 py-4">
                     <select 
                       value={task.category}
                       onChange={(e) => updateTask(task.id, { category: e.target.value as RehabTask['category'] })}
-                      className="bg-transparent border-none focus:ring-1 focus:ring-blue-500 rounded p-1 text-sm text-gray-600"
+                      className="bg-transparent border-none focus:ring-1 focus:ring-pw-accent/50 rounded-sm p-1 text-sm text-pw-muted focus:outline-none"
                     >
-                      {CATEGORIES.map(c => <option key={c} value={c}>{c}</option>)}
+                      {CATEGORIES.map(c => <option key={c} value={c} className="bg-surface-container text-pw-black">{c}</option>)}
                     </select>
                   </td>
-                  <td className="py-4">
+                  <td className="px-6 py-4">
                     <select 
                       value={task.status}
                       onChange={(e) => updateTask(task.id, { status: e.target.value as RehabTask['status'] })}
-                      className={`bg-transparent border-none focus:ring-1 focus:ring-blue-500 rounded p-1 text-sm font-medium ${
-                        task.status === 'Complete' ? 'text-green-600' : task.status === 'In Progress' ? 'text-blue-600' : 'text-gray-500'
+                      className={`bg-transparent border-none focus:ring-1 focus:ring-pw-accent/50 rounded-sm p-1 text-sm font-medium focus:outline-none ${
+                        task.status === 'Complete' ? 'text-green-600' : task.status === 'In Progress' ? 'text-pw-accent' : 'text-pw-muted'
                       }`}
                     >
-                      <option value="Pending">Pending</option>
-                      <option value="In Progress">In Progress</option>
-                      <option value="Complete">Complete</option>
+                      <option value="Pending" className="bg-surface-container text-pw-muted">Pending</option>
+                      <option value="In Progress" className="bg-surface-container text-pw-accent">In Progress</option>
+                      <option value="Complete" className="bg-surface-container text-green-600">Complete</option>
                     </select>
                   </td>
-                  <td className="py-4 text-right">
+                  <td className="px-6 py-4 text-right">
                     <div className="flex items-center justify-end gap-1">
-                      <span className="text-gray-500">$</span>
+                      <span className="text-pw-muted">$</span>
                       <input 
                         type="number" 
                         value={task.estimatedCost || ''}
                         onChange={(e) => updateTask(task.id, { estimatedCost: Number(e.target.value) })}
-                        className="bg-transparent border border-transparent hover:border-gray-200 focus:bg-white focus:border-blue-500 focus:ring-1 focus:ring-blue-500 rounded p-1 w-24 text-right text-sm"
+                        className="bg-transparent border border-transparent hover:border-pw-border focus:bg-white/5 focus:border-pw-accent/50 focus:ring-1 focus:ring-pw-accent/50 rounded-sm p-1 w-24 text-right text-sm text-pw-black focus:outline-none"
                       />
                     </div>
                   </td>
-                  <td className="py-4 text-right">
+                  <td className="px-6 py-4 text-right">
                     <div className="flex items-center justify-end gap-1">
-                      <span className="text-gray-500">$</span>
+                      <span className="text-pw-muted">$</span>
                       <input 
                         type="number" 
                         value={task.actualCost || ''}
                         onChange={(e) => updateTask(task.id, { actualCost: Number(e.target.value) })}
-                        className={`bg-transparent border border-transparent hover:border-gray-200 focus:bg-white focus:border-blue-500 focus:ring-1 focus:ring-blue-500 rounded p-1 w-24 text-right text-sm font-semibold ${
-                          isOverBudget ? 'text-red-600' : 'text-gray-900'
+                        className={`bg-transparent border border-transparent hover:border-pw-border focus:bg-white/5 focus:border-pw-accent/50 focus:ring-1 focus:ring-pw-accent/50 rounded-sm p-1 w-24 text-right text-sm font-semibold focus:outline-none ${
+                          isOverBudget ? 'text-error' : 'text-pw-black'
                         }`}
                       />
                     </div>
                   </td>
-                  <td className="py-4 text-right">
+                  <td className="px-6 py-4 text-right">
                     <span className={`text-sm font-medium flex items-center justify-end gap-1 ${
-                      isOverBudget ? 'text-red-600' : variance < 0 ? 'text-green-600' : 'text-gray-500'
+                      isOverBudget ? 'text-error' : variance < 0 ? 'text-green-600' : 'text-pw-muted'
                     }`}>
                       {variance > 0 ? '+' : ''}{variance.toLocaleString()}
                       {isOverBudget && <AlertTriangle className="w-3.5 h-3.5" />}
                       {variance < 0 && <CheckCircle2 className="w-3.5 h-3.5" />}
                     </span>
                   </td>
-                  <td className="py-4 text-right">
+                  <td className="px-6 py-4 text-right">
                     <button 
                       onClick={() => handleDelete(task.id)} 
-                      className="p-1.5 text-red-600 hover:bg-red-50 rounded-md transition-colors" 
+                      className="p-1.5 text-error hover:bg-white/5 rounded-sm transition-colors" 
                       title="Delete Line Item"
                     >
                       <Trash2 className="w-4 h-4" />
@@ -184,71 +190,71 @@ export function CapExComparativeTable({ tasks, onChange }: CapExComparativeTable
             )}
             
             {isAdding && (
-              <tr className="bg-blue-50/50">
-                <td className="py-3 px-2">
+              <tr className="bg-pw-accent/5 border-b border-pw-border">
+                <td className="py-3 px-6">
                   <input
                     type="text"
                     placeholder="e.g., Roof Replacement"
                     value={newTask.title}
                     onChange={e => setNewTask({...newTask, title: e.target.value})}
-                    className="w-full px-2 py-1.5 rounded border focus:ring-2 focus:ring-blue-500 focus:outline-none text-sm bg-white"
+                    className="w-full px-3 py-1.5 rounded-sm border border-pw-border focus:ring-1 focus:ring-pw-accent/50 focus:outline-none text-sm bg-white/5 text-pw-black"
                   />
                 </td>
-                <td className="py-3 px-2">
+                <td className="py-3 px-6">
                   <select
                     value={newTask.category}
                     onChange={e => setNewTask({...newTask, category: e.target.value as RehabTask['category']})}
-                    className="w-full px-2 py-1.5 rounded border focus:ring-2 focus:ring-blue-500 focus:outline-none text-sm bg-white"
+                    className="w-full px-3 py-1.5 rounded-sm border border-pw-border focus:ring-1 focus:ring-pw-accent/50 focus:outline-none text-sm bg-white/5 text-pw-black"
                   >
-                    {CATEGORIES.map(c => <option key={c} value={c}>{c}</option>)}
+                    {CATEGORIES.map(c => <option key={c} value={c} className="bg-surface-container text-pw-black">{c}</option>)}
                   </select>
                 </td>
-                <td className="py-3 px-2">
+                <td className="py-3 px-6">
                   <select
                     value={newTask.status}
                     onChange={e => setNewTask({...newTask, status: e.target.value as RehabTask['status']})}
-                    className="w-full px-2 py-1.5 rounded border focus:ring-2 focus:ring-blue-500 focus:outline-none text-sm bg-white"
+                    className="w-full px-3 py-1.5 rounded-sm border border-pw-border focus:ring-1 focus:ring-pw-accent/50 focus:outline-none text-sm bg-white/5 text-pw-black"
                   >
-                    <option value="Pending">Pending</option>
-                    <option value="In Progress">In Progress</option>
-                    <option value="Complete">Complete</option>
+                    <option value="Pending" className="bg-surface-container">Pending</option>
+                    <option value="In Progress" className="bg-surface-container">In Progress</option>
+                    <option value="Complete" className="bg-surface-container">Complete</option>
                   </select>
                 </td>
-                <td className="py-3 px-2">
-                  <div className="flex items-center gap-1">
-                    <span className="text-gray-500">$</span>
+                <td className="py-3 px-6">
+                  <div className="flex items-center gap-1 justify-end">
+                    <span className="text-pw-muted">$</span>
                     <input
                       type="number"
                       placeholder="0"
                       value={newTask.estimatedCost || ''}
                       onChange={e => setNewTask({...newTask, estimatedCost: Number(e.target.value)})}
-                      className="w-full px-2 py-1.5 rounded border focus:ring-2 focus:ring-blue-500 focus:outline-none text-sm text-right bg-white"
+                      className="w-24 px-3 py-1.5 rounded-sm border border-pw-border focus:ring-1 focus:ring-pw-accent/50 focus:outline-none text-sm text-right bg-white/5 text-pw-black"
                     />
                   </div>
                 </td>
-                <td className="py-3 px-2">
-                  <div className="flex items-center gap-1">
-                    <span className="text-gray-500">$</span>
+                <td className="py-3 px-6">
+                  <div className="flex items-center gap-1 justify-end">
+                    <span className="text-pw-muted">$</span>
                     <input
                       type="number"
                       placeholder="0"
                       value={newTask.actualCost || ''}
                       onChange={e => setNewTask({...newTask, actualCost: Number(e.target.value)})}
-                      className="w-full px-2 py-1.5 rounded border focus:ring-2 focus:ring-blue-500 focus:outline-none text-sm text-right bg-white"
+                      className="w-24 px-3 py-1.5 rounded-sm border border-pw-border focus:ring-1 focus:ring-pw-accent/50 focus:outline-none text-sm text-right bg-white/5 text-pw-black"
                     />
                   </div>
                 </td>
-                <td colSpan={2} className="py-3 px-2 text-right">
+                <td colSpan={2} className="py-3 px-6 text-right">
                   <div className="flex items-center justify-end gap-2">
                     <button
                       onClick={() => setIsAdding(false)}
-                      className="px-3 py-1.5 text-xs font-medium text-gray-600 hover:text-gray-800"
+                      className="px-3 py-1.5 text-xs font-semibold uppercase tracking-wider text-pw-muted hover:text-pw-black transition-colors"
                     >
                       Cancel
                     </button>
                     <button
                       onClick={handleAdd}
-                      className="px-3 py-1.5 text-xs font-medium text-white bg-blue-600 hover:bg-blue-700 rounded transition-colors"
+                      className="pw-interactive pw-btn pw-btn--primary pw-btn--sm py-1.5 px-3 text-xs font-semibold uppercase tracking-wider"
                     >
                       Save
                     </button>
@@ -263,11 +269,10 @@ export function CapExComparativeTable({ tasks, onChange }: CapExComparativeTable
       {!isAdding && (
         <button
           onClick={() => setIsAdding(true)}
-          className="mt-4 w-full py-3 rounded-md border-2 border-dashed flex items-center justify-center gap-2 hover:bg-gray-50 transition-colors"
-          style={{ borderColor: 'var(--border-ui)', color: 'var(--text-secondary)' }}
+          className="mt-4 w-full py-3 border border-dashed border-pw-border flex items-center justify-center gap-2 hover:bg-white/5 transition-colors text-pw-muted hover:text-pw-black"
         >
           <Plus className="w-4 h-4" />
-          <span className="font-medium text-sm">Add CapEx Line Item</span>
+          <span className="font-semibold text-xs uppercase tracking-wider">Add CapEx Line Item</span>
         </button>
       )}
     </div>

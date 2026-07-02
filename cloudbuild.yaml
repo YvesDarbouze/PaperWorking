@@ -48,8 +48,7 @@ steps:
           --image "us-east4-docker.pkg.dev/${_PROJECT_ID}/${_REPOSITORY}/${_SERVICE_NAME}:$${TAG}" \
           --region ${_REGION} \
           --platform managed \
-          --allow-unauthenticated \
-          --update-secrets=FIREBASE_PROJECT_ID=FIREBASE_PROJECT_ID:latest,FIREBASE_CLIENT_EMAIL=FIREBASE_CLIENT_EMAIL:latest,FIREBASE_PRIVATE_KEY=FIREBASE_PRIVATE_KEY:latest
+          --allow-unauthenticated
 
 # Default values for substitutions
 substitutions:

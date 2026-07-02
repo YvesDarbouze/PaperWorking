@@ -1,34 +1,39 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { CreditCard, CheckCircle2, AlertTriangle, Loader2, ExternalLink, Download, FileText, Lock } from 'lucide-react';
 import Link from 'next/link';
 import { useAuth } from '@/context/AuthContext';
+import { CloudStorageMeter } from '@/components/settings/CloudStorageMeter';
+import AccountTierSettings from '@/components/settings/AccountTierSettings';
 
 /* ═══════════════════════════════════════════════════════
-   Billing & Subscription Settings
-
-   Refactored to render inside the settings layout shell.
-   Four cards:
-   1. Current Plan Overview — tier + pricing + next billing
-   2. Payment Method — masked card on file
-   3. Invoice History — downloadable table
-   4. Account Details — summary info
+   Billing & Subscription Settings (Luminous Glass Terminal)
    ═══════════════════════════════════════════════════════ */
 
 const PLAN_PRICING: Record<string, { label: string; price: string; period: string }> = {
-  'Individual':      { label: 'Individual',          price: '$59',  period: '/mo' },
-  'Team':            { label: 'Investor Team',       price: '$99',  period: '/mo' },
-  'Vendor Network':  { label: 'Vendor Marketplace',  price: '$39',  period: '/mo' },
-  'None':            { label: 'No active plan',      price: '—',    period: ''    },
+  'Individual':      { label: 'Investor',         price: '$59', period: '/mo' },
+  'Team':            { label: 'Investment Team',  price: '$99', period: '/mo' },
+  'Vendor Network':  { label: 'Vendor',           price: '$39', period: '/mo' },
+  'None':            { label: 'No active plan',   price: '—',   period: ''    },
 };
 
-const STATUS_BADGE: Record<string, { label: string; cls: string; Icon: typeof CheckCircle2 }> = {
-  active:   { label: 'Active',   cls: 'bg-green-50  text-green-700 border-green-200',  Icon: CheckCircle2  },
-  trialing: { label: 'Trial',    cls: 'bg-blue-50   text-blue-700  border-blue-200',   Icon: CheckCircle2  },
-  past_due: { label: 'Past Due', cls: 'bg-amber-50  text-amber-700 border-amber-200',  Icon: AlertTriangle },
-  canceled: { label: 'Canceled', cls: 'bg-red-50    text-red-700   border-red-200',     Icon: AlertTriangle },
-  inactive: { label: 'Inactive', cls: 'bg-bg-primary  text-text-secondary  border-border-accent',   Icon: AlertTriangle },
+// Plans available for switching — names and prices from live Stripe catalog
+const PLAN_SWITCH_OPTIONS = [
+  { id: 'individual', displayName: 'Investor',         monthlyPrice: 59, canonicalKey: 'Individual',     description: 'Solo flippers tired of spreadsheet chaos.' },
+  { id: 'team',       displayName: 'Investment Team',  monthlyPrice: 99, canonicalKey: 'Team',           description: 'Scaling REI businesses managing multiple deals.' },
+  { id: 'vendor',     displayName: 'Vendor',           monthlyPrice: 39, canonicalKey: 'Vendor Network', description: 'Appraisers, Inspectors, GCs, and tradespeople.' },
+];
+
+const CANONICAL_PRICES: Record<string, number> = {
+  'Individual': 59, 'Team': 99, 'Vendor Network': 39, 'None': 0,
+};
+
+const STATUS_BADGE: Record<string, { label: string; cls: string; iconName: string }> = {
+  active:   { label: 'Active',   cls: 'bg-pw-primary/10 text-pw-primary border-pw-primary/30 shadow-sm shadow-pw-primary/10', iconName: 'check_circle' },
+  trialing: { label: 'Trial',    cls: 'bg-pw-primary/10 text-pw-primary border-pw-primary/30', iconName: 'check_circle' },
+  past_due: { label: 'Past Due', cls: 'bg-amber-500/10 text-amber-600 border-amber-500/30', iconName: 'warning' },
+  canceled: { label: 'Canceled', cls: 'bg-error/10 text-error border-error/30', iconName: 'warning' },
+  inactive: { label: 'Inactive', cls: 'bg-pw-glass-bg text-pw-muted border-pw-border', iconName: 'warning' },
 };
 
 interface BillingInvoice {
@@ -41,42 +46,129 @@ interface BillingInvoice {
   hostedUrl: string | null;
 }
 
+interface PaymentMethodData {
+  brand: string;
+  last4: string;
+  expMonth: number;
+  expYear: number;
+  funding: string;
+}
+
 export default function BillingSettingsPage() {
   const { user, profile } = useAuth();
-  const [portalLoading, setPortalLoading] = useState(false);
-  const [portalError, setPortalError]     = useState<string | null>(null);
+  const [portalLoading, setPortalLoading]     = useState(false);
+  const [portalError, setPortalError]         = useState<string | null>(null);
+  const [planChangeLoading, setPlanChangeLoading] = useState<string | null>(null);
+  const [planChangeError, setPlanChangeError]     = useState<string | null>(null);
+  const [tokenError, setTokenError]               = useState<string | null>(null);
   const [invoices, setInvoices]           = useState<BillingInvoice[]>([]);
   const [invoicesLoading, setInvoicesLoading] = useState(false);
+  const [currentPeriodEnd, setCurrentPeriodEnd] = useState<number | null>(null);
+  const [subscriptionLoading, setSubscriptionLoading] = useState(false);
+  const [paymentMethod, setPaymentMethod] = useState<PaymentMethodData | null>(null);
+  const [pmLoading, setPmLoading]         = useState(false);
+  const [pmFetched, setPmFetched]         = useState(false);
+  const [rentcastUsage, setRentcastUsage] = useState<{ count: number; limit: number } | null>(null);
+  const [usageLoading, setUsageLoading] = useState(false);
 
   useEffect(() => {
     if (!user) return;
+    
+    setTokenError(null);
     setInvoicesLoading(true);
-    user.getIdToken().then((idToken) =>
-      fetch('/api/stripe/invoices', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ idToken }),
+    setSubscriptionLoading(true);
+    setPmLoading(true);
+    setUsageLoading(true);
+    
+    user.getIdToken()
+      .then((idToken: string) => {
+        fetch('/api/stripe/invoices', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ idToken }),
+        })
+          .then((r) => r.json())
+          .then((data) => { if (data.invoices) setInvoices(data.invoices); })
+          .catch(() => {})
+          .finally(() => setInvoicesLoading(false));
+
+        fetch('/api/stripe/subscription', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ idToken }),
+        })
+          .then((r) => r.json())
+          .then((data) => { if (data.currentPeriodEnd) setCurrentPeriodEnd(data.currentPeriodEnd); })
+          .catch(() => {})
+          .finally(() => setSubscriptionLoading(false));
+
+        fetch('/api/stripe/payment-method', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ idToken }),
+        })
+          .then((r) => r.json())
+          .then((data) => { if (data.paymentMethod) setPaymentMethod(data.paymentMethod); })
+          .catch(() => {})
+          .finally(() => { setPmLoading(false); setPmFetched(true); });
+
+        fetch('/api/admin/rentcast-usage', {
+          headers: { 'Authorization': `Bearer ${idToken}` },
+        })
+          .then((r) => r.json())
+          .then((data) => {
+            if (data.success) {
+              setRentcastUsage({ count: data.count, limit: data.limit });
+            }
+          })
+          .catch((err: any) => console.error(err))
+          .finally(() => setUsageLoading(false));
       })
-        .then((r) => r.json())
-        .then((data) => { if (data.invoices) setInvoices(data.invoices); })
-        .catch(() => {})
-        .finally(() => setInvoicesLoading(false))
-    );
+      .catch((err: any) => {
+        console.error('Failed to retrieve authentication token:', err);
+        setInvoicesLoading(false);
+        setSubscriptionLoading(false);
+        setPmLoading(false);
+        setUsageLoading(false);
+        setTokenError('Failed to refresh authentication token. Please refresh the page or log in again.');
+      });
   }, [user]);
 
   const plan    = profile?.subscriptionPlan   ?? 'None';
   const status  = profile?.subscriptionStatus ?? 'inactive';
-  const lastFour = profile?.lastFour ?? '4242';
-  const cardBrand = profile?.cardBrand ?? 'Visa';
+
+  // Prefer live Stripe data, fall back to profile, show nothing while loading
+  const lastFour  = paymentMethod?.last4  ?? (pmFetched ? null : profile?.lastFour);
+  const cardBrand = paymentMethod?.brand  ?? (pmFetched ? null : profile?.cardBrand);
+  const expMonth  = paymentMethod?.expMonth;
+  const expYear   = paymentMethod?.expYear;
+  const hasCard   = pmFetched ? !!paymentMethod : !!(profile?.stripeCustomerId || plan !== 'None');
 
   const planInfo    = PLAN_PRICING[plan]   ?? PLAN_PRICING['None'];
   const statusBadge = STATUS_BADGE[status] ?? STATUS_BADGE['inactive'];
-  const StatusIcon  = statusBadge.Icon;
 
-  // Calculate next billing date (mock: 1st of next month)
-  const now = new Date();
-  const nextBilling = new Date(now.getFullYear(), now.getMonth() + 1, 1);
-  const nextBillingStr = nextBilling.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
+  // Format next billing date from actual stripe subscription data
+  const nextBillingStr = currentPeriodEnd
+    ? new Date(currentPeriodEnd * 1000).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })
+    : subscriptionLoading
+      ? 'Loading...'
+      : 'N/A';
+
+  // Trial & cancellation state
+  const isTrialing = status === 'trialing';
+  const trialEnd = profile?.trialEnd;
+  const trialEndStr = trialEnd
+    ? new Date(trialEnd).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })
+    : null;
+  const isCanceling = profile?.cancelAtPeriodEnd ?? false;
+
+  const handleDownloadAll = () => {
+    const downloadable = invoices.filter((inv) => inv.pdfUrl ?? inv.hostedUrl);
+    downloadable.forEach((inv, i) => {
+      const url = (inv.pdfUrl ?? inv.hostedUrl)!;
+      setTimeout(() => window.open(url, '_blank', 'noopener,noreferrer'), i * 300);
+    });
+  };
 
   const openPortal = async () => {
     if (!user) return;
@@ -99,168 +191,448 @@ export default function BillingSettingsPage() {
     }
   };
 
+  const handleChangePlan = async (targetPlanName: string) => {
+    if (!user) return;
+    setPlanChangeLoading(targetPlanName);
+    setPlanChangeError(null);
+    try {
+      const idToken = await user.getIdToken();
+      const res = await fetch('/api/stripe/checkout', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          plan: targetPlanName,
+          billingInterval: 'monthly',
+          idToken,
+          userId: user.uid,
+          ...(user.email ? { userEmail: user.email } : {}),
+        }),
+      });
+      const data = await res.json();
+      if (!res.ok || !data.url) throw new Error(data.error || 'Could not start plan change.');
+      window.location.href = data.url;
+    } catch (err: any) {
+      setPlanChangeError(err.message);
+      setPlanChangeLoading(null);
+    }
+  };
+
+  const currentPrice = CANONICAL_PRICES[plan] ?? 0;
+
+  // maxSeats is derived from the Firestore-authoritative plan, not Zustand.
+  // The actual used-seat count lives in organizations/{orgId}/teamMembers;
+  // that data is managed on the Team settings page.
+  const maxSeats = plan === 'Team' ? 10 : 1;
+
   return (
-    <div className="dashboard-context space-y-8">
-      
-      {/* ═══ Card 1: Subscription Overview ═══ */}
-      <section className="bg-white border border-border-accent p-8 rounded-[8px] shadow-sm">
-        <div className="flex items-center justify-between mb-8">
-          <div>
-            <h2 className="text-[10px] font-bold uppercase tracking-widest text-[#7F7F7F] mb-1">Current Subscription</h2>
-            <p className="text-xl font-bold text-[#1A1A1A]">{planInfo.label}</p>
-          </div>
-          <span className={`inline-flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-widest border px-3 py-1 rounded-full ${statusBadge.cls}`}>
-            <StatusIcon className="w-3.5 h-3.5" />
-            {statusBadge.label}
-          </span>
+    <div className="w-full space-y-8">
+      {tokenError && (
+        <div className="text-xs text-error bg-error/10 border border-error/30 rounded-lg px-4 py-3 flex items-center gap-2">
+          <span className="material-symbols-outlined text-sm select-none">error</span>
+          <span>{tokenError}</span>
         </div>
+      )}
+      {/* ─── 12-Column Bento Grid ─── */}
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-8 pt-8 border-t border-gray-100">
-          <div>
-            <p className="text-[10px] font-bold uppercase tracking-widest text-[#7F7F7F] mb-2">Monthly Commitment</p>
-            <div className="flex items-baseline gap-1">
-              <span className="text-3xl font-normal text-[#1A1A1A]">{planInfo.price}</span>
-              <span className="text-sm text-[#7F7F7F]">{planInfo.period}</span>
+        {/* ━━━ 1. Hero Plan Card (col-span-8) ━━━ */}
+        <section className="lg:col-span-8 glass-card rounded-2xl p-8 relative overflow-hidden min-h-[280px] flex flex-col justify-between">
+          {/* Glow blob */}
+          <div className="absolute -top-24 -right-24 w-64 h-64 bg-pw-primary/10 rounded-full blur-3xl pointer-events-none" />
+
+          <div className="relative z-10">
+            <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6 mb-8">
+              <div>
+                <span className="inline-block px-3 py-1 bg-pw-primary/10 text-pw-primary text-[10px] font-extrabold uppercase tracking-widest rounded-full border border-pw-primary/20 mb-3">
+                  Current Plan
+                </span>
+                <h3 className="text-3xl font-bold text-pw-black flex items-center gap-3">
+                  {planInfo.label}
+                  <span className="material-symbols-outlined text-pw-primary text-2xl" style={{ fontVariationSettings: "'FILL' 1" }}>verified</span>
+                </h3>
+              </div>
+              <div className="text-left md:text-right">
+                <p className="text-xs font-semibold text-pw-muted uppercase tracking-wider mb-1">Next Billing Date</p>
+                <p className="font-headline-md text-headline-md text-pw-black">{nextBillingStr}</p>
+                <p className="font-body-md text-body-md text-pw-muted mt-1">{planInfo.price}{planInfo.period} USD / month</p>
+              </div>
             </div>
+
+            {/* Trial Status Banner */}
+            {isTrialing && (
+              <div className="bg-pw-primary/5 border border-pw-primary/20 rounded-lg px-5 py-4 mb-6 flex items-start gap-3">
+                <span className="material-symbols-outlined text-pw-primary text-xl mt-0.5" style={{ fontVariationSettings: "'FILL' 1" }}>hourglass_top</span>
+                <div>
+                  <p className="font-label-md text-label-md text-pw-black">Free Trial Active</p>
+                  <p className="font-body-sm text-body-sm text-pw-muted mt-0.5">
+                    Your trial {trialEndStr ? `ends on ${trialEndStr}` : 'is active'}. You won&apos;t be charged until your trial period ends.
+                  </p>
+                </div>
+              </div>
+            )}
+
+            {/* Cancellation Warning */}
+            {isCanceling && !isTrialing && (
+              <div className="bg-amber-500/5 border border-amber-500/20 rounded-lg px-5 py-4 mb-6 flex items-start gap-3">
+                <span className="material-symbols-outlined text-amber-600 text-xl mt-0.5" style={{ fontVariationSettings: "'FILL' 1" }}>warning</span>
+                <div>
+                  <p className="font-label-md text-label-md text-pw-black">Subscription Canceling</p>
+                  <p className="font-body-sm text-body-sm text-pw-muted mt-0.5">
+                    Your plan will remain active until {nextBillingStr}. After that, you&apos;ll lose access to paid features.
+                  </p>
+                  <button
+                    onClick={openPortal}
+                    disabled={portalLoading}
+                    className="mt-2 text-pw-primary font-label-md text-label-md hover:text-pw-primary/80 transition-colors cursor-pointer"
+                  >
+                    Reactivate Subscription →
+                  </button>
+                </div>
+              </div>
+            )}
+
+            {/* Seat Limit */}
+            {plan !== 'None' && (
+              <div className="bg-pw-glass-bg/50 rounded-lg p-6 border border-white/5">
+                <div className="flex justify-between items-end mb-4">
+                  <div>
+                    <h4 className="font-label-md text-label-md text-pw-black mb-1">Seat Limit</h4>
+                    <p className="font-body-sm text-body-sm text-pw-muted">
+                      Up to{' '}
+                      <span className="text-pw-primary font-bold">{maxSeats}</span>{' '}
+                      {maxSeats === 1 ? 'seat' : 'seats'} on this plan
+                    </p>
+                  </div>
+                </div>
+                <div className="mt-2 flex justify-between items-center">
+                  <Link href="/dashboard/settings/team" className="font-label-md text-label-md text-pw-muted hover:text-pw-black flex items-center gap-2 transition-colors cursor-pointer">
+                    <span className="material-symbols-outlined text-[18px]">group_add</span> Manage Team
+                  </Link>
+                  <button
+                    onClick={openPortal}
+                    disabled={portalLoading}
+                    className="luminous-button px-6 py-2.5 rounded-lg font-label-md text-label-md font-bold disabled:opacity-50 cursor-pointer flex items-center gap-2"
+                  >
+                    {portalLoading ? (
+                      <span className="material-symbols-outlined animate-spin text-sm select-none">progress_activity</span>
+                    ) : (
+                      <span className="material-symbols-outlined text-[18px] select-none">add</span>
+                    )}
+                    {portalLoading ? 'Synchronizing…' : 'Add Seats'}
+                  </button>
+                </div>
+              </div>
+            )}
           </div>
-          
-          {plan !== 'None' && (
-            <div>
-              <p className="text-[10px] font-bold uppercase tracking-widest text-[#7F7F7F] mb-2">Next Billing Date</p>
-              <p className="text-sm font-bold text-[#1A1A1A]">{nextBillingStr}</p>
+
+          {/* Manage Subscription button for 'None' plan or secondary action */}
+          {plan === 'None' && (
+            <div className="flex flex-col sm:flex-row gap-4 mt-6 relative z-10">
+              <Link href="/pricing" className="luminous-button inline-flex items-center justify-center gap-2 text-xs font-bold uppercase tracking-wider px-6 py-3 rounded-xl">
+                Choose a Plan
+              </Link>
             </div>
           )}
-        </div>
+        </section>
 
-        <button
-          onClick={openPortal}
-          disabled={portalLoading}
-          className="ag-button !w-auto !px-8 !py-3 !text-xs font-bold uppercase tracking-widest"
-        >
-          {portalLoading ? (
-            <><Loader2 className="w-4 h-4 animate-spin mr-2" /> Synchronizing…</>
+        {/* ━━━ 2. Payment Method (col-span-4) ━━━ */}
+        <section className="lg:col-span-4 glass-card rounded-2xl p-6 flex flex-col justify-between min-h-[280px]">
+          <h4 className="font-headline-md text-headline-md text-pw-black mb-6">Payment Method</h4>
+
+          {pmLoading ? (
+            /* Skeleton while loading */
+            <div className="flex-1 flex flex-col justify-between">
+              <div className="bg-pw-glass-bg/50 rounded-lg p-5 border border-white/5 flex items-start gap-4 mb-4 animate-pulse">
+                <div className="w-12 h-8 bg-pw-glass-bg rounded shrink-0 mt-1" />
+                <div className="flex-1 space-y-2">
+                  <div className="h-4 bg-pw-glass-bg rounded w-32" />
+                  <div className="h-3 bg-pw-glass-bg rounded w-20" />
+                </div>
+              </div>
+              <div className="h-12 bg-pw-glass-bg rounded-lg animate-pulse" />
+            </div>
+          ) : hasCard && lastFour ? (
+            <div className="flex-1 flex flex-col justify-between">
+              {/* Card display */}
+              <div className="bg-pw-glass-bg/50 rounded-lg p-5 border border-white/5 flex items-start gap-4 mb-4 relative overflow-hidden group">
+                {/* Abstract blob effect */}
+                <div className="absolute -right-8 -top-8 w-24 h-24 bg-pw-primary/20 rounded-full blur-xl group-hover:bg-pw-primary/30 transition-colors" />
+                <div className="w-12 h-8 bg-pw-glass-bg rounded flex items-center justify-center border border-white/10 shrink-0 mt-1">
+                  <span className="font-mono text-xs font-bold italic text-pw-black/80">{(cardBrand ?? 'Card').toUpperCase()}</span>
+                </div>
+                <div className="flex-1 relative z-10">
+                  <p className="font-label-md text-label-md text-pw-black flex items-center gap-2">
+                    <span className="font-mono tracking-widest">•••• {lastFour}</span>
+                    <span className="px-2 py-0.5 bg-pw-primary/10 text-pw-primary text-[10px] font-bold rounded-full border border-pw-primary/20">DEFAULT</span>
+                  </p>
+                  <p className="font-body-sm text-body-sm text-pw-muted mt-1">
+                    {expMonth && expYear
+                      ? `Expires ${String(expMonth).padStart(2, '0')}/${String(expYear).slice(-2)}`
+                      : 'Expiry unavailable'}
+                  </p>
+                </div>
+              </div>
+
+              {/* Update button */}
+              <button
+                onClick={openPortal}
+                disabled={portalLoading}
+                className="w-full py-3 rounded-lg border border-white/10 text-pw-black font-label-md text-label-md hover:bg-white/5 hover:border-white/20 transition-all flex items-center justify-center gap-2 cursor-pointer"
+              >
+                <span className="material-symbols-outlined text-[18px]">credit_card</span>
+                Update Payment Method
+              </button>
+            </div>
           ) : (
-            <>Manage Subscription <ExternalLink className="w-4 h-4 ml-2" /></>
+            <div className="text-center py-8 border border-dashed border-pw-border rounded-2xl bg-pw-glass-bg/50 flex-1 flex flex-col justify-center items-center">
+              <span className="material-symbols-outlined text-3xl text-pw-muted mb-2 select-none">credit_card</span>
+              <p className="text-sm text-pw-muted mb-4">No payment method on file.</p>
+              <Link href="/pricing" className="luminous-button inline-flex items-center justify-center gap-2 text-xs font-bold uppercase tracking-wider px-6 py-3 rounded-lg">
+                Configure Payment
+              </Link>
+            </div>
           )}
-        </button>
-      </section>
 
-      {/* ═══ Card 2: Payment Method (Credit Card Manager) ═══ */}
-      <section className="bg-white border border-border-accent p-8 rounded-[8px] shadow-sm">
-        <h2 className="text-[10px] font-bold uppercase tracking-widest text-[#7F7F7F] mb-6">Payment Method</h2>
+          {portalError && (
+            <p className="text-xs text-error bg-error/10 border border-error/30 rounded-lg px-4 py-3 mt-4 flex items-center gap-2">
+              <span className="material-symbols-outlined text-sm select-none">error</span>
+              {portalError}
+            </p>
+          )}
+        </section>
 
-        {(profile?.stripeCustomerId || plan !== 'None') ? (
-          <div className="flex flex-col md:flex-row items-center gap-6 p-6 bg-gray-50 border border-border-accent rounded-[8px]">
-            <div className="w-16 h-10 bg-[#595959] rounded flex items-center justify-center shadow-md">
-              <CreditCard className="w-6 h-6 text-white" />
-            </div>
-            <div className="flex-1 text-center md:text-left">
-              <p className="text-sm font-bold text-[#1A1A1A]">{cardBrand} ending in •••• {lastFour}</p>
-              <p className="text-xs text-[#7F7F7F] flex items-center justify-center md:justify-start gap-1 mt-1">
-                <Lock className="w-3 h-3" /> Secure Payment via Stripe
-              </p>
-            </div>
+        {/* ━━━ 3. Billing Info (col-span-4) ━━━ */}
+        <section className="lg:col-span-4 glass-card rounded-2xl p-6">
+          <div className="flex justify-between items-center mb-6">
+            <h4 className="font-headline-md text-headline-md text-pw-black">Billing Info</h4>
             <button
               onClick={openPortal}
-              className="text-xs font-bold text-[#1A1A1A] uppercase tracking-widest hover:underline px-4 py-2"
+              disabled={portalLoading}
+              className="text-pw-muted hover:text-pw-primary transition-colors p-1 cursor-pointer"
             >
-              Update Card
+              <span className="material-symbols-outlined text-[20px]">edit</span>
             </button>
           </div>
-        ) : (
-          <div className="text-center py-8 border-2 border-dashed border-gray-200 rounded-[8px]">
-            <CreditCard className="w-8 h-8 text-[#A5A5A5] mx-auto mb-3" />
-            <p className="text-sm text-[#7F7F7F] mb-4">No payment method on file.</p>
-            <Link href="/pricing" className="ag-button !w-auto !px-6 !text-xs">
-              Configure Payment
-            </Link>
+          <div className="space-y-4">
+            <div>
+              <p className="text-xs font-semibold text-pw-muted uppercase tracking-wider mb-1">Company Name</p>
+              <p className="font-body-md text-body-md text-pw-black">{profile?.displayName ?? 'Not configured'}</p>
+            </div>
+            <div>
+              <p className="text-xs font-semibold text-pw-muted uppercase tracking-wider mb-1">Billing Email</p>
+              <p className="font-body-md text-body-md text-pw-black">{profile?.email ?? user?.email ?? '—'}</p>
+            </div>
+            <div>
+              <p className="text-xs font-semibold text-pw-muted uppercase tracking-wider mb-1">Status</p>
+              <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10px] font-bold border ${statusBadge.cls}`}>
+                <span className="material-symbols-outlined text-[14px]" style={{ fontVariationSettings: "'FILL' 1" }}>{statusBadge.iconName}</span>
+                {statusBadge.label}
+              </span>
+            </div>
           </div>
-        )}
+        </section>
 
-        {portalError && (
-          <div className="mt-4 p-4 bg-red-50 border border-red-100 text-red-600 text-xs font-bold rounded-[8px]">
-            {portalError}
-          </div>
-        )}
-      </section>
-
-      {/* ═══ Card 3: Billing Archive (Invoices) ═══ */}
-      <section className="bg-white border border-border-accent p-8 rounded-[8px] shadow-sm">
-        <div className="flex items-center justify-between mb-8">
-          <h2 className="text-[10px] font-bold uppercase tracking-widest text-[#7F7F7F]">Billing Archive</h2>
-          {plan !== 'None' && (
-            <button className="text-[10px] font-bold text-[#1A1A1A] uppercase tracking-widest hover:underline">
-              Download All
-            </button>
-          )}
+        {/* ━━━ Account Tier (col-span-4) ━━━ */}
+        <div className="lg:col-span-4">
+          <AccountTierSettings />
         </div>
 
-        {invoicesLoading ? (
-          <div className="flex items-center justify-center py-10">
-            <Loader2 className="w-5 h-5 animate-spin text-[#A5A5A5]" />
+        {/* ━━━ RentCast API Call Volume (col-span-4) ━━━ */}
+        <section className="lg:col-span-4 glass-card rounded-2xl p-6 min-h-[220px] flex flex-col justify-between">
+          <div>
+            <div className="flex justify-between items-center mb-6">
+              <h4 className="font-headline-md text-headline-md text-pw-black">API Usage</h4>
+              <span className="material-symbols-outlined text-pw-muted text-xl select-none">api</span>
+            </div>
+
+            {usageLoading ? (
+              <div className="flex items-center justify-center py-6">
+                <span className="material-symbols-outlined animate-spin text-xl text-pw-muted select-none">progress_activity</span>
+              </div>
+            ) : rentcastUsage ? (
+              <div className="space-y-4">
+                <div>
+                  <p className="text-xs font-semibold text-pw-muted uppercase tracking-wider mb-1">RentCast API Volume</p>
+                  <p className="text-2xl font-bold text-pw-black">
+                    <span className="text-pw-primary font-extrabold">{rentcastUsage.count}</span>
+                    <span className="text-sm text-pw-muted font-normal"> / {rentcastUsage.limit} calls</span>
+                  </p>
+                  <p className="font-body-sm text-body-sm text-pw-muted mt-1 leading-relaxed">
+                    Safety threshold to limit automated/sourcing API spend.
+                  </p>
+                </div>
+
+                {/* Progress Bar */}
+                <div className="h-2 w-full rounded-full bg-pw-glass-bg overflow-hidden shadow-inner">
+                  <div
+                    className={`h-full rounded-full transition-all duration-500 ${
+                      rentcastUsage.count >= rentcastUsage.limit * 0.8
+                        ? 'bg-red-500 shadow-[0_0_8px_rgba(239,68,68,0.5)]'
+                        : rentcastUsage.count >= rentcastUsage.limit * 0.5
+                        ? 'bg-amber-500 shadow-[0_0_8px_rgba(245,158,11,0.5)]'
+                        : 'bg-pw-primary shadow-[0_0_8px_rgba(50,121,249,0.5)]'
+                    }`}
+                    style={{ width: `${Math.min((rentcastUsage.count / rentcastUsage.limit) * 100, 100)}%` }}
+                  />
+                </div>
+              </div>
+            ) : (
+              <p className="text-xs text-pw-muted">Usage data currently unavailable.</p>
+            )}
           </div>
-        ) : plan === 'None' || invoices.length === 0 ? (
-          <div className="text-center py-8">
-            <FileText className="w-8 h-8 text-[#A5A5A5] mx-auto mb-3 opacity-20" />
-            <p className="text-sm text-[#7F7F7F]">No transactional history recorded.</p>
+        </section>
+
+        {/* ━━━ 4. Change Plan (col-span-12) ━━━ */}
+        <section className="lg:col-span-12 glass-card rounded-2xl p-8">
+          <h3 className="text-xl font-bold text-pw-black mb-2">Change Your Plan</h3>
+          <p className="font-body-sm text-body-sm text-pw-muted mb-6">
+            Switch plans at any time. You&apos;ll be taken to checkout — Stripe handles proration automatically.
+          </p>
+
+          {planChangeError && (
+            <p className="text-xs text-error bg-error/10 border border-error/30 rounded-lg px-4 py-3 mb-6 flex items-center gap-2">
+              <span className="material-symbols-outlined text-sm select-none">error</span>
+              {planChangeError}
+            </p>
+          )}
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            {PLAN_SWITCH_OPTIONS.map((option) => {
+              const isCurrent  = plan === option.canonicalKey;
+              const isUpgrade  = option.monthlyPrice > currentPrice && !isCurrent;
+              const isLoading  = planChangeLoading === option.displayName;
+
+              const buttonLabel = isCurrent
+                ? 'Current Plan'
+                : isUpgrade
+                  ? `Upgrade to ${option.displayName}`
+                  : `Downgrade to ${option.displayName}`;
+
+              return (
+                <div
+                  key={option.id}
+                  className={`rounded-xl p-6 border transition-all ${
+                    isCurrent
+                      ? 'bg-pw-primary/5 border-pw-primary/30'
+                      : 'bg-pw-glass-bg/30 border-white/10 hover:border-white/20'
+                  }`}
+                >
+                  <div className="flex items-start justify-between mb-3">
+                    <div>
+                      <p className="font-label-md text-label-md text-pw-black">{option.displayName}</p>
+                      <p className="font-body-sm text-body-sm text-pw-muted mt-0.5">{option.description}</p>
+                    </div>
+                    <p className="font-headline-md text-headline-md text-pw-black tabular-nums shrink-0 ml-4">
+                      ${option.monthlyPrice}<span className="text-xs text-pw-muted font-normal">/mo</span>
+                    </p>
+                  </div>
+
+                  <button
+                    onClick={() => !isCurrent && handleChangePlan(option.displayName)}
+                    disabled={isCurrent || isLoading || !!planChangeLoading}
+                    className={`w-full py-2.5 rounded-lg font-label-md text-label-md transition-all flex items-center justify-center gap-2 ${
+                      isCurrent
+                        ? 'bg-pw-primary/10 text-pw-primary border border-pw-primary/20 cursor-default'
+                        : isUpgrade
+                          ? 'luminous-button disabled:opacity-50'
+                          : 'border border-white/10 text-pw-black hover:bg-white/5 disabled:opacity-50'
+                    }`}
+                  >
+                    {isLoading && (
+                      <span className="material-symbols-outlined animate-spin text-sm select-none">progress_activity</span>
+                    )}
+                    {buttonLabel}
+                  </button>
+                </div>
+              );
+            })}
           </div>
-        ) : (
-          <div className="overflow-x-auto -mx-8">
-            <table className="w-full text-left">
-              <thead>
-                <tr className="border-b border-gray-100 bg-gray-50/50">
-                  <th className="px-8 py-4 text-[10px] font-bold uppercase tracking-widest text-[#7F7F7F]">Statement</th>
-                  <th className="px-8 py-4 text-[10px] font-bold uppercase tracking-widest text-[#7F7F7F]">Issue Date</th>
-                  <th className="px-8 py-4 text-[10px] font-bold uppercase tracking-widest text-[#7F7F7F]">Amount</th>
-                  <th className="px-8 py-4 text-[10px] font-bold uppercase tracking-widest text-[#7F7F7F]">Status</th>
-                  <th className="px-8 py-4 text-right"></th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-gray-50">
-                {invoices.map((inv) => (
-                  <tr key={inv.id} className="group hover:bg-gray-50/50 transition-colors">
-                    <td className="px-8 py-4">
-                      <span className="flex items-center gap-2 text-sm font-bold text-[#1A1A1A]">
-                        <FileText className="w-4 h-4 text-[#A5A5A5]" />
-                        {inv.number ?? inv.id}
-                      </span>
-                    </td>
-                    <td className="px-8 py-4 text-sm text-[#7F7F7F]">{inv.date}</td>
-                    <td className="px-8 py-4 text-sm font-bold text-[#1A1A1A]">{inv.amount}</td>
-                    <td className="px-8 py-4">
-                      <span className={`inline-flex px-2 py-0.5 text-[9px] font-bold uppercase tracking-widest border rounded-sm ${
-                        inv.status === 'paid'
-                          ? 'bg-green-50 text-green-700 border-green-100'
-                          : inv.status === 'open'
-                          ? 'bg-amber-50 text-amber-700 border-amber-100'
-                          : 'bg-gray-50 text-[#7F7F7F] border-gray-100'
-                      }`}>
-                        {inv.status}
-                      </span>
-                    </td>
-                    <td className="px-8 py-4 text-right">
-                      {inv.pdfUrl ? (
-                        <a
-                          href={inv.pdfUrl}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="p-2 text-[#A5A5A5] hover:text-[#1A1A1A] transition-colors inline-block"
-                        >
-                          <Download className="w-4 h-4" />
-                        </a>
-                      ) : (
-                        <span className="p-2 text-[#CCCCCC] inline-block">
-                          <Download className="w-4 h-4" />
-                        </span>
-                      )}
-                    </td>
+        </section>
+
+        {/* ━━━ 5. Billing History (col-span-8) ━━━ */}
+        <section className="lg:col-span-8 glass-card rounded-2xl p-8">
+          <div className="flex justify-between items-center mb-6">
+            <h3 className="text-xl font-bold text-pw-black">Billing History</h3>
+            {plan !== 'None' && invoices.length > 0 && (
+              <button
+                onClick={handleDownloadAll}
+                className="font-label-md text-label-md text-pw-primary flex items-center gap-2 hover:text-pw-primary/80 transition-colors cursor-pointer"
+              >
+                <span className="material-symbols-outlined text-[18px]">download</span>
+                Download All
+              </button>
+            )}
+          </div>
+
+          {invoicesLoading ? (
+            <div className="flex items-center justify-center py-10">
+              <span className="material-symbols-outlined animate-spin text-2xl text-pw-muted select-none">progress_activity</span>
+            </div>
+          ) : plan === 'None' || invoices.length === 0 ? (
+            <div className="text-center py-8">
+              <span className="material-symbols-outlined text-3xl text-pw-muted/20 mb-2 select-none">description</span>
+              <p className="text-sm text-pw-muted">No transactional history recorded.</p>
+            </div>
+          ) : (
+            <div className="overflow-x-auto">
+              <table className="w-full text-left border-collapse">
+                <thead>
+                  <tr className="border-b border-white/10">
+                    <th className="pb-4 pl-4 text-xs font-semibold text-pw-muted uppercase tracking-wider">Date</th>
+                    <th className="pb-4 text-xs font-semibold text-pw-muted uppercase tracking-wider">Invoice ID</th>
+                    <th className="pb-4 text-right text-xs font-semibold text-pw-muted uppercase tracking-wider">Amount</th>
+                    <th className="pb-4 text-xs font-semibold text-pw-muted uppercase tracking-wider">Status</th>
+                    <th className="pb-4 text-center text-xs font-semibold text-pw-muted uppercase tracking-wider w-16">Invoice</th>
                   </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        )}
-      </section>
+                </thead>
+                <tbody className="font-mono text-sm">
+                  {invoices.map((inv) => (
+                    <tr key={inv.id} className="border-b border-white/5 hover:bg-white/[0.02] transition-colors">
+                      <td className="py-4 pl-4 text-pw-black">{inv.date}</td>
+                      <td className="py-4 text-pw-muted">{inv.number ?? inv.id.substring(0, 12)}</td>
+                      <td className="py-4 text-right text-pw-black">{inv.amount}</td>
+                      <td className="py-4">
+                        <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold border ${
+                          inv.status === 'paid'
+                            ? 'bg-green-500/10 text-green-400 border-green-500/20'
+                            : inv.status === 'open'
+                            ? 'bg-amber-500/10 text-amber-600 border-amber-500/20'
+                            : 'bg-pw-glass-bg text-pw-muted border-pw-border'
+                        }`}>
+                          {inv.status.toUpperCase()}
+                        </span>
+                      </td>
+                      <td className="py-4 text-center">
+                        {inv.pdfUrl ? (
+                          <a
+                            href={inv.pdfUrl}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="text-pw-muted hover:text-pw-primary transition-colors p-1 rounded-md hover:bg-white/5 inline-block"
+                            title="Download PDF statement"
+                          >
+                            <span className="material-symbols-outlined text-[20px]">receipt_long</span>
+                          </a>
+                        ) : (
+                          <span className="p-1 text-pw-muted/20 inline-block">
+                            <span className="material-symbols-outlined text-[20px]">receipt_long</span>
+                          </span>
+                        )}
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          )}
+        </section>
+
+        {/* ━━━ 5. Cloud Storage Meter (col-span-12) ━━━ */}
+        <div className="lg:col-span-12">
+          <CloudStorageMeter />
+        </div>
+
+      </div>
     </div>
   );
 }

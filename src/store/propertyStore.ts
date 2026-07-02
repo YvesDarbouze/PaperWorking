@@ -30,6 +30,7 @@ interface PropertyState {
   // Actions - Transactions
   addTransaction: (transaction: FinancialTransaction) => void;
   deleteTransaction: (transactionId: string) => void;
+  clearStore: () => void;
 }
 
 export const usePropertyStore = create<PropertyState>((set) => ({
@@ -98,5 +99,12 @@ export const usePropertyStore = create<PropertyState>((set) => ({
 
   deleteTransaction: (transactionId) => set((state) => ({
     transactions: state.transactions.filter(t => t.id !== transactionId)
-  }))
+  })),
+
+  clearStore: () => set({
+    properties: [],
+    transactions: [],
+    isLoading: false,
+    error: null,
+  })
 }));

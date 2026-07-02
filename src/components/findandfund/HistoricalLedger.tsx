@@ -82,7 +82,7 @@ export default function HistoricalLedger() {
   };
 
   return (
-    <section className="bg-bg-surface border border-pw-black overflow-hidden flex flex-col">
+    <section className="bg-bg-surface border border-pw-border overflow-hidden flex flex-col">
       {/* Header */}
       <button
         onClick={() => setExpanded(!expanded)}
@@ -159,7 +159,7 @@ export default function HistoricalLedger() {
 
           {/* Intake Form */}
           {showForm ? (
-            <div className="border border-pw-black p-8 bg-bg-primary flex flex-col gap-8 animate-in fade-in duration-300">
+            <div className="border border-pw-border p-8 bg-bg-primary flex flex-col gap-8 animate-in fade-in duration-300">
               <div className="flex items-center justify-between border-b border-border-accent pb-4">
                 <h3 className="text-xs font-black text-text-primary uppercase tracking-[0.4em]">INIT_LOG_PROTOCOL</h3>
                 <button onClick={() => setShowForm(false)} className="text-text-secondary hover:text-text-primary transition-colors">
@@ -177,7 +177,7 @@ export default function HistoricalLedger() {
                     value={form.address}
                     onChange={(e) => set('address', e.target.value)}
                     placeholder="E.G. 123 MAIN ST, MIAMI, FL"
-                    className="w-full border border-border-accent bg-bg-surface px-5 py-4 text-sm font-black uppercase tracking-widest focus:border-pw-black focus:outline-none transition-all"
+                    className="w-full border border-border-accent bg-bg-surface px-5 py-4 text-sm font-black uppercase tracking-widest focus:border-pw-border focus:outline-none transition-all"
                   />
                 </div>
 
@@ -197,14 +197,14 @@ export default function HistoricalLedger() {
                       value={form[key] || ''}
                       onChange={(e) => set(key, parseFloat(e.target.value) || 0)}
                       placeholder="0.00"
-                      className="w-full border border-border-accent bg-bg-surface px-5 py-4 text-sm font-black font-mono tracking-tighter focus:border-pw-black focus:outline-none transition-all"
+                      className="w-full border border-border-accent bg-bg-surface px-5 py-4 text-sm font-black font-mono tracking-tighter focus:border-pw-border focus:outline-none transition-all"
                     />
                   </div>
                 ))}
               </div>
 
               {/* Computed State */}
-              <div className="flex items-center justify-between bg-pw-black px-6 py-5 border border-pw-black">
+              <div className="flex items-center justify-between bg-pw-black px-6 py-5 border border-pw-border">
                 <div className="flex items-center gap-3 text-xs font-black text-pw-white uppercase tracking-widest">
                   <TrendingUp className="w-4 h-4 text-pw-accent" />
                   DELTA_NET_PROJECTION
@@ -225,7 +225,7 @@ export default function HistoricalLedger() {
           ) : (
             <button
               onClick={() => setShowForm(true)}
-              className="flex items-center justify-center gap-3 w-full py-6 border border-dashed border-border-accent text-xs font-black text-text-secondary hover:text-text-primary hover:border-pw-black transition-all uppercase tracking-[0.3em]"
+              className="flex items-center justify-center gap-3 w-full py-6 border border-dashed border-border-accent text-xs font-black text-text-secondary hover:text-text-primary hover:border-pw-border transition-all uppercase tracking-[0.3em]"
             >
               <Plus className="w-4 h-4 text-pw-accent" /> LOG_PAST_ACQUISITION
             </button>

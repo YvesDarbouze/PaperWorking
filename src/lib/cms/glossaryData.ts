@@ -33,7 +33,7 @@ export const GLOSSARY_CATEGORIES: { id: GlossaryCategory; label: string }[] = [
   { id: 'platform', label: 'PaperWorking Platform' },
 ];
 
-export const GLOSSARY_TERMS: GlossaryTerm[] = [
+export const GLOSSARY_TERMS: GlossaryTerm[] = ([
   // ── Financial Metrics ──
   {
     term: 'After-Repair Value (ARV)',
@@ -473,4 +473,4 @@ export const GLOSSARY_TERMS: GlossaryTerm[] = [
     relatedTerms: ['Lien Waiver', 'Scope of Work'],
     platformFeature: 'Vendor Portal',
   },
-].sort((a, b) => a.term.localeCompare(b.term));
+] as GlossaryTerm[]).sort((a, b) => a.term.localeCompare(b.term));

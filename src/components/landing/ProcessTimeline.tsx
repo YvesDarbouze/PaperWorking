@@ -6,7 +6,7 @@ import React from 'react';
    ProcessTimeline — Simplifying the Complex
 
    Horizontal 4-phase progress line:
-   Find → Acquire → Renovate → Exit
+   Acquisition → Fund → Hold → Exit
 
    Responsive: horizontal on sm+, stacked vertical on mobile.
    ═══════════════════════════════════════════════════════════════ */
@@ -20,17 +20,17 @@ interface Phase {
 const phases: Phase[] = [
   {
     number: 1,
-    label: 'Find',
+    label: 'Acquisition',
     description: 'Source and evaluate projects with real-time market data.',
   },
   {
     number: 2,
-    label: 'Acquire',
+    label: 'Fund',
     description: 'Execute closings with automated document workflows.',
   },
   {
     number: 3,
-    label: 'Renovate',
+    label: 'Hold',
     description: 'Track budgets, contractors, and timelines in one place.',
   },
   {

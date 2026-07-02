@@ -4,11 +4,10 @@ export interface Todo {
   label: string;
   description: string;
   completed: boolean;
-  /** ISO timestamp set when the user explicitly marks the item complete. */
-  completedAt?: string;
   actionText: string;
   assignee?: string | null;
   allowedRoles?: string[];
+  needsReassignment?: boolean;
 }
 
 export const DEFAULT_TODOS: Record<number, Todo[]> = {

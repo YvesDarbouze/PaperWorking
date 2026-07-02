@@ -93,19 +93,19 @@ export default function EscrowReconciliation({ projectId }: EscrowReconciliation
   const totalBuyerCredit = useMemo(() => items.reduce((s, i) => s + i.buyerCredit, 0), [items]);
 
   return (
-    <div className="bg-bg-surface border border-border-accent relative overflow-hidden">
+    <div className="glass-card border border-pw-border relative overflow-hidden">
       {/* Header */}
-      <div className="flex items-center justify-between px-6 py-4 border-b border-border-accent">
+      <div className="flex items-center justify-between px-6 py-4 border-b border-pw-border bg-pw-black text-pw-white">
         <div className="flex items-center gap-2">
-          <Scale className="w-3.5 h-3.5 text-pw-accent" />
-          <h3 className="text-xs font-black tracking-[0.3em] text-text-primary uppercase">
+          <Scale className="w-3.5 h-3.5" />
+          <h3 className="text-xs font-black tracking-[0.3em] uppercase">
             Escrow_Reconciliation
           </h3>
         </div>
       </div>
 
       {/* Closing Date */}
-      <div className="px-6 py-4 bg-bg-primary border-b border-border-accent">
+      <div className="px-6 py-4 bg-pw-glass-bg/50 border-b border-pw-border">
         <label className="text-[9px] font-black text-text-secondary uppercase tracking-widest block mb-2">
           Closing_Date
         </label>
@@ -123,7 +123,7 @@ export default function EscrowReconciliation({ projectId }: EscrowReconciliation
       {/* Prorated Items */}
       <div className="divide-y divide-pw-border">
         {items.map(item => (
-          <div key={item.id} className="px-6 py-4 grid grid-cols-12 gap-3 items-center hover:bg-bg-primary/50 transition-colors">
+          <div key={item.id} className="px-6 py-4 grid grid-cols-12 gap-3 items-center hover:bg-pw-glass-bg/30 transition-colors">
             {/* Type Selector */}
             <div className="col-span-3">
               <select
@@ -159,16 +159,16 @@ export default function EscrowReconciliation({ projectId }: EscrowReconciliation
 
             {/* Seller Credit */}
             <div className="col-span-2 text-right">
-              <label className="text-[8px] font-black text-red-400 uppercase block mb-0.5">Seller</label>
-              <span className="text-xs font-mono font-black text-red-600">
+              <label className="text-[8px] font-black text-color-error uppercase block mb-0.5">Seller</label>
+              <span className="text-xs font-mono font-semibold text-color-error">
                 ${item.sellerCredit.toLocaleString(undefined, { minimumFractionDigits: 2 })}
               </span>
             </div>
 
             {/* Buyer Credit */}
             <div className="col-span-2 text-right">
-              <label className="text-[8px] font-black text-blue-400 uppercase block mb-0.5">Buyer</label>
-              <span className="text-xs font-mono font-black text-blue-600">
+              <label className="text-[8px] font-black text-pw-accent uppercase block mb-0.5">Buyer</label>
+              <span className="text-xs font-mono font-semibold text-pw-accent">
                 ${item.buyerCredit.toLocaleString(undefined, { minimumFractionDigits: 2 })}
               </span>
             </div>
@@ -177,7 +177,7 @@ export default function EscrowReconciliation({ projectId }: EscrowReconciliation
             <div className="col-span-1 text-center">
               <button
                 onClick={() => handleRemoveItem(item.id)}
-                className="p-1 text-text-secondary hover:text-red-500 transition-colors"
+                className="p-1 text-text-secondary hover:text-color-error transition-colors"
                 aria-label={`Remove ${item.type}`}
               >
                 <Trash2 className="w-3.5 h-3.5" />
@@ -188,25 +188,25 @@ export default function EscrowReconciliation({ projectId }: EscrowReconciliation
       </div>
 
       {/* Footer */}
-      <div className="border-t-2 border-pw-black px-6 py-4 bg-bg-primary">
-        <div className="flex items-center justify-between mb-3">
+      <div className="border-t border-pw-border px-6 py-4 bg-pw-glass-bg/30">
+        <div className="flex items-center justify-between mb-4">
           <button
             onClick={handleAddItem}
-            className="flex items-center gap-1.5 text-[10px] font-black text-pw-accent uppercase tracking-widest hover:text-text-primary transition-colors"
+            className="flex items-center gap-1.5 pw-btn pw-btn--secondary pw-btn--sm text-[9px] font-black uppercase tracking-wider py-1.5 px-3"
           >
             <Plus className="w-3.5 h-3.5" /> Add_Prorated_Item
           </button>
         </div>
 
         <div className="grid grid-cols-2 gap-4">
-          <div className="p-3 border border-border-accent bg-bg-surface">
-            <p className="text-[9px] font-black text-red-500 uppercase tracking-widest mb-0.5">Seller_Owes</p>
+          <div className="p-3 border border-pw-border bg-pw-glass-bg/40">
+            <p className="text-[9px] font-black text-color-error uppercase tracking-widest mb-0.5">Seller_Owes</p>
             <p className="text-lg font-black font-mono tracking-tighter text-text-primary">
               ${totalSellerCredit.toLocaleString(undefined, { minimumFractionDigits: 2 })}
             </p>
           </div>
-          <div className="p-3 border border-border-accent bg-bg-surface">
-            <p className="text-[9px] font-black text-blue-500 uppercase tracking-widest mb-0.5">Buyer_Owes</p>
+          <div className="p-3 border border-pw-border bg-pw-glass-bg/40">
+            <p className="text-[9px] font-black text-pw-accent uppercase tracking-widest mb-0.5">Buyer_Owes</p>
             <p className="text-lg font-black font-mono tracking-tighter text-text-primary">
               ${totalBuyerCredit.toLocaleString(undefined, { minimumFractionDigits: 2 })}
             </p>

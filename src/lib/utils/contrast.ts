@@ -53,7 +53,7 @@ export const PW_COLORS = {
   fg:            '#3d3d3d',
   muted:         '#7f7f7f',
   subtle:        '#a5a5a5',
-  accent:        '#1a73e8',
+  accent:        '#454955',
 
   // Deal lifecycle phases
   phaseSourceing: '#f2f2f2',

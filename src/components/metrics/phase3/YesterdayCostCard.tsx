@@ -89,7 +89,7 @@ export default function YesterdayCostCard() {
       const dayTotal = dailyInterest + dailyHolding + dailyRehab;
 
       points.push({
-        day: dayIndex + 1,
+        day: sparkDays - i + 1,
         total: Math.round(dayTotal * 100) / 100,
         interest: Math.round(dailyInterest * 100) / 100,
         holding: Math.round(dailyHolding * 100) / 100,

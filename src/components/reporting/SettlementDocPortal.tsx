@@ -155,7 +155,7 @@ export default function SettlementDocPortal() {
       const extractedData = await processOCR(downloadUrl, uploadFile.type, uploadFile.name);
 
       const newDoc: SettlementDocument = {
-        id: `sd-${Date.now()}`,
+        id: crypto.randomUUID(),
         projectId: selectedDealId,
         type: uploadType,
         fileName: uploadFile.name,
@@ -238,7 +238,7 @@ export default function SettlementDocPortal() {
         const exists = existingExitCosts.some(e => e.label === fee.label);
         if (!exists) {
           newExitCosts.push({
-            id: `fee-${Date.now()}-${Math.random().toString(36).substr(2, 5)}`,
+            id: crypto.randomUUID(),
             category: fee.category,
             label: fee.label,
             amount: fee.amount,
@@ -330,9 +330,7 @@ export default function SettlementDocPortal() {
             onDragOver={e => { e.preventDefault(); setDragOver(true); }}
             onDragLeave={() => setDragOver(false)}
             onDrop={handleDrop}
-            className={`border-2 border-dashed rounded-xl p-8 text-center transition-colors cursor-pointer ${
-              dragOver ? 'border-blue-400 bg-blue-50' : 'border-border-accent hover:border-gray-400'
-            }`}
+            className="relative rounded-xl p-8 text-center cursor-pointer transition-all bg-surface-container/30 backdrop-blur-xl border-t border-l border-white/10 shadow-lg min-h-[180px] flex flex-col items-center justify-center overflow-hidden group"
             onClick={() => {
               const input = document.createElement('input');
               input.type = 'file';
@@ -344,17 +342,30 @@ export default function SettlementDocPortal() {
               input.click();
             }}
           >
+            {/* Inner Dashed Border Indicator */}
+            <div className={`absolute inset-3 border-2 border-dashed rounded-lg transition-all duration-300 pointer-events-none ${
+              dragOver 
+                ? 'border-primary bg-primary/10' 
+                : 'border-outline-variant/40 group-hover:border-primary/40 group-hover:bg-primary/5'
+            }`} />
+
             {uploadFile ? (
-              <div className="flex items-center justify-center gap-2">
-                <FileCheck2 className="w-5 h-5 text-emerald-600" />
-                <span className="text-sm font-medium text-text-primary">{uploadFile.name}</span>
-                <span className="text-xs text-text-secondary">({(uploadFile.size / 1024).toFixed(0)} KB)</span>
+              <div className="relative z-10 flex flex-col items-center gap-2">
+                <div className="w-14 h-14 mb-1 rounded-full bg-surface-container-highest flex items-center justify-center text-emerald-500 shadow-lg shadow-emerald-500/10">
+                  <FileCheck2 className="w-6 h-6" />
+                </div>
+                <div className="flex items-center justify-center gap-2">
+                  <span className="text-sm font-medium text-text-primary">{uploadFile.name}</span>
+                  <span className="text-xs text-text-secondary">({(uploadFile.size / 1024).toFixed(0)} KB)</span>
+                </div>
               </div>
             ) : (
-              <div>
-                <Upload className="w-8 h-8 text-text-secondary mx-auto mb-2" />
-                <p className="text-sm text-text-secondary">Drop file here or click to browse</p>
-                <p className="text-xs text-text-secondary mt-1">PDF, JPEG, PNG — Max 25MB</p>
+              <div className="relative z-10 flex flex-col items-center gap-2">
+                <div className="w-14 h-14 mb-1 rounded-full bg-surface-container-highest flex items-center justify-center text-primary shadow-lg shadow-primary/10 group-hover:scale-110 transition-transform duration-300">
+                  <Upload className="w-6 h-6" />
+                </div>
+                <p className="text-sm font-medium text-text-primary">Drop file here or click to browse</p>
+                <p className="text-xs text-text-secondary">PDF, JPEG, PNG — Max 25MB</p>
               </div>
             )}
           </div>
@@ -363,7 +374,7 @@ export default function SettlementDocPortal() {
           <button
             onClick={handleUpload}
             disabled={!uploadFile || isUploading || isProcessing}
-            className="w-full bg-gray-900 text-white py-3 rounded-lg text-sm font-semibold hover:bg-gray-800 transition disabled:opacity-40 active:scale-[0.99] flex items-center justify-center gap-2"
+            className="w-full luminous-button py-3 rounded-lg text-sm font-semibold disabled:opacity-40 flex items-center justify-center gap-2"
           >
             {isUploading ? (
               <>

@@ -13,7 +13,7 @@ export const PW_COLORS = {
   transactional: '#cccccc',
   bg:            '#f2f2f2',
   surface:       '#ffffff',
-  accent:        '#1a73e8',
+  accent:        '#454955',
 } as const;
 
 export type PwColor = typeof PW_COLORS[keyof typeof PW_COLORS];

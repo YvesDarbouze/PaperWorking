@@ -79,16 +79,44 @@ export default function ChatbotWidget() {
         )}
       </AnimatePresence>
 
+      {/* pw-interactive-custom opts out of the global button CSS that would
+          inject bg-primary (green) onto any unstyled button element */}
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="w-14 h-14 bg-pw-black hover:bg-pw-black/90 text-pw-white rounded-full shadow-lg flex items-center justify-center focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-pw-black transition-transform hover:scale-105 active:scale-95"
-        aria-label={isOpen ? "Close chat" : "Open chat"}
+        className="pw-interactive-custom w-14 h-14 rounded-full flex items-center justify-center transition-all duration-200 hover:scale-105 active:scale-95 focus:outline-none focus:ring-2 focus:ring-offset-2"
+        style={{
+          backgroundColor: isOpen
+            ? 'var(--color-on-surface)'
+            : 'var(--color-surface-container-high)',
+          color: 'var(--color-on-surface)',
+          border: '1px solid color-mix(in srgb, var(--color-on-surface) 18%, transparent)',
+          boxShadow: '0 4px 24px rgba(0,0,0,0.35)',
+        }}
+        aria-label={isOpen ? 'Close chat' : 'Open chat'}
         aria-expanded={isOpen}
+        onMouseEnter={e => {
+          (e.currentTarget as HTMLButtonElement).style.backgroundColor =
+            isOpen
+              ? 'var(--color-on-surface)'
+              : 'var(--color-surface-container-highest)';
+        }}
+        onMouseLeave={e => {
+          (e.currentTarget as HTMLButtonElement).style.backgroundColor =
+            isOpen
+              ? 'var(--color-on-surface)'
+              : 'var(--color-surface-container-high)';
+        }}
       >
         {isOpen ? (
-          <X className="w-6 h-6" />
+          <X
+            className="w-5 h-5"
+            style={{ color: 'var(--color-surface)', strokeWidth: 2.5 }}
+          />
         ) : (
-          <MessageSquare className="w-6 h-6" />
+          <MessageSquare
+            className="w-6 h-6"
+            style={{ color: 'var(--color-primary)', strokeWidth: 2 }}
+          />
         )}
       </button>
     </div>

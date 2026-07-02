@@ -1,0 +1,5 @@
+{
+  "artifactType":  "ARTIFACT_TYPE_OTHER",
+  "summary":  "Appreciation Agent (D10) definition — manages Long-Term Appreciation Potential datapoint. Formula: CAGR = ((EndValue / Basis) ^ (1/Years)) - 1. Seed: $279,000 → $295,000 over 2yr = ~2.83%. Links to AppreciationCollectionTerminal component, /intelligence/appreciation route, computeAnnualizedAppreciationRate function, and 3 Stitch screens.",
+  "updatedAt":  "2026-05-30T22:51:28.577969Z"
+}

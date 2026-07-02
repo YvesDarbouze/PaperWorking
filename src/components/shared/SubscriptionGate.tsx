@@ -30,8 +30,8 @@ export default function SubscriptionGate({ children, projectId, dealName }: Prop
       {/* Gate Overlay */}
       <div className="absolute inset-0 flex flex-col items-center justify-center bg-bg-surface/40 backdrop-blur-sm z-10">
         <div className="bg-bg-surface rounded-2xl shadow-xl border border-border-accent p-8 max-w-sm text-center">
-          <div className="w-12 h-12 bg-indigo-100 rounded-full flex items-center justify-center mx-auto mb-4">
-            <Lock className="w-6 h-6 text-indigo-600" />
+          <div className="w-12 h-12 bg-[#454955]/10 rounded-full flex items-center justify-center mx-auto mb-4">
+            <Lock className="w-6 h-6 text-[#454955]" />
           </div>
           <h3 className="text-lg font-semibold text-text-primary mb-2">Subscription Required</h3>
           <p className="text-sm text-text-secondary mb-6 leading-relaxed">
@@ -41,7 +41,7 @@ export default function SubscriptionGate({ children, projectId, dealName }: Prop
           </p>
           <a
             href={checkoutUrl}
-            className="inline-flex items-center gap-2 px-6 py-3 bg-black text-white text-sm font-medium rounded-lg hover:bg-gray-800 transition shadow-sm"
+            className="inline-flex items-center gap-2 px-6 py-3 bg-[#454955] text-white text-sm font-medium rounded-lg hover:bg-[#454955]/90 transition shadow-sm"
           >
             <CreditCard className="w-4 h-4" />
             Subscribe to View

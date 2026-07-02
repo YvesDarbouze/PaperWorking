@@ -4,6 +4,7 @@ import React from 'react';
 import { usePathname, useRouter } from 'next/navigation';
 import { Check, Lock } from 'lucide-react';
 import type { PhaseStatus } from '@/types/schema';
+import { useFeatureFlags } from '@/hooks/useFeatureFlags';
 
 /* ═══════════════════════════════════════════════════════════════
    PhaseProgressTracker
@@ -53,7 +54,7 @@ export const PHASE_STEPS: PhaseStep[] = [
   },
   {
     index: 1, number: 2,
-    label: 'Purchase',    sublabel: 'Closing & Docs',
+    label: 'Fund',        sublabel: 'Capital & Closing',
     path: 'phase-2',
     phaseKey: 'Phase 2: Acquisition',
   },
@@ -72,9 +73,13 @@ export const PHASE_STEPS: PhaseStep[] = [
 ];
 
 /* ─── Helper: resolve deal progress index ────────────────────── */
-function dealPhaseIndex(phaseStatus?: PhaseStatus): number {
-  const idx = PHASE_STEPS.findIndex((s) => s.phaseKey === phaseStatus);
-  return idx >= 0 ? idx : 0;
+function dealPhaseIndex(phaseStatus?: string): number {
+  if (!phaseStatus) return 0;
+  if (phaseStatus.includes('Phase 1')) return 0;
+  if (phaseStatus.includes('Phase 2')) return 1;
+  if (phaseStatus.includes('Phase 3')) return 2;
+  if (phaseStatus.includes('Phase 4')) return 3;
+  return 0;
 }
 
 /* ─── Step state type ────────────────────────────────────────── */
@@ -277,23 +282,119 @@ export function PhaseProgressTrackerSkeleton() {
   );
 }
 
-/* ─── Main export ────────────────────────────────────────────── */
-interface PhaseProgressTrackerProps {
-  phaseStatus?: PhaseStatus;
-  projectId:    string;
+export interface PhaseProgressTrackerProps {
+  phaseStatus?: string;
+  projectId: string;
 }
 
+/* ─── Main export ────────────────────────────────────────────── */
 export function PhaseProgressTracker({
   phaseStatus,
   projectId,
 }: PhaseProgressTrackerProps) {
   const router   = useRouter();
   const pathname = usePathname();
+  const { fourPhases, rehabPhase } = useFeatureFlags();
 
-  /* Resolve indices */
-  const dealIndex    = dealPhaseIndex(phaseStatus);
-  const viewingStep  = PHASE_STEPS.find((s) => pathname?.includes(s.path));
-  const viewingIndex = viewingStep?.index ?? dealIndex;
+  /* Build steps list dynamically based on feature flags */
+  const steps: PhaseStep[] = React.useMemo(() => {
+    if (fourPhases) {
+      if (rehabPhase) {
+        return [
+          {
+            index: 0, number: 1,
+            label: 'Acquisition', sublabel: 'Find & Fund',
+            path: 'phase-1',
+            phaseKey: 'Phase 1: Acquisition',
+          },
+          {
+            index: 1, number: 2,
+            label: 'Closing',     sublabel: 'Closing & Docs',
+            path: 'phase-2',
+            phaseKey: 'Phase 2: Closing',
+          },
+          {
+            index: 2, number: 3,
+            label: 'Rehab',        sublabel: 'Rehab Scope',
+            path: 'phase-3',
+            phaseKey: 'Phase 3: Rehab',
+          },
+          {
+            index: 3, number: 4,
+            label: 'Hold / Exit',  sublabel: 'Manage & Sell',
+            path: 'phase-4',
+            phaseKey: 'Phase 4: Hold / Exit',
+          },
+        ];
+      } else {
+        return [
+          {
+            index: 0, number: 1,
+            label: 'Acquisition', sublabel: 'Find & Fund',
+            path: 'phase-1',
+            phaseKey: 'Phase 1: Acquisition',
+          },
+          {
+            index: 1, number: 2,
+            label: 'Closing',     sublabel: 'Closing & Docs',
+            path: 'phase-2',
+            phaseKey: 'Phase 2: Closing',
+          },
+          {
+            index: 2, number: 3,
+            label: 'Hold / Exit',  sublabel: 'Manage & Sell',
+            path: 'phase-4',
+            phaseKey: 'Phase 4: Hold / Exit',
+          },
+        ];
+      }
+    } else {
+      return [
+        {
+          index: 0, number: 1,
+          label: 'Find & Fund', sublabel: 'Find & Fund',
+          path: 'phase-1',
+          phaseKey: 'Phase 1: Find & Fund',
+        },
+        {
+          index: 1, number: 2,
+          label: 'Acquisition',  sublabel: 'Closing & Docs',
+          path: 'phase-2',
+          phaseKey: 'Phase 2: Acquisition',
+        },
+        {
+          index: 2, number: 3,
+          label: 'Holding & Rehab', sublabel: 'Rehab & Manage',
+          path: 'phase-3',
+          phaseKey: 'Phase 3: Holding & Rehab',
+        },
+        {
+          index: 3, number: 4,
+          label: 'Closing & Exit',  sublabel: 'Sell or Refi',
+          path: 'phase-4',
+          phaseKey: 'Phase 4: Closing & Exit',
+        },
+      ];
+    }
+  }, [fourPhases, rehabPhase]);
+
+  /* Resolve dynamic indices */
+  const resolveStepIndex = React.useCallback((phaseKey?: string): number => {
+    if (!phaseKey) return 0;
+    if (phaseKey.includes('Phase 1')) return 0;
+    if (phaseKey.includes('Phase 2')) return 1;
+    if (phaseKey.includes('Phase 3')) {
+      return rehabPhase ? 2 : 2; // maps to Hold/Exit if Rehab phase is disabled
+    }
+    if (phaseKey.includes('Phase 4')) {
+      return rehabPhase ? 3 : 2; // maps to Hold/Exit if Rehab phase is disabled
+    }
+    return 0;
+  }, [rehabPhase]);
+
+  const dealIndex    = resolveStepIndex(phaseStatus);
+  const viewingStep  = steps.find((s) => pathname?.includes(s.path));
+  const viewingIndex = viewingStep ? steps.indexOf(viewingStep) : dealIndex;
 
   const navigateTo = (step: PhaseStep) => {
     router.push(`/dashboard/projects/${projectId}/${step.path}`);
@@ -312,10 +413,10 @@ export function PhaseProgressTracker({
     >
       {/* ── Stepper row ── */}
       <div className="flex items-start px-8 py-5 pb-6 gap-0">
-        {PHASE_STEPS.map((step, idx) => {
-          const state      = resolveStepState(step.index, dealIndex, viewingIndex);
-          const isViewing  = step.index === viewingIndex;
-          const isLast     = idx === PHASE_STEPS.length - 1;
+        {steps.map((step, idx) => {
+          const state      = resolveStepState(idx, dealIndex, viewingIndex);
+          const isViewing  = idx === viewingIndex;
+          const isLast     = idx === steps.length - 1;
 
           return (
             <StepNode
@@ -336,13 +437,13 @@ export function PhaseProgressTracker({
         aria-hidden="true"
       >
         <span className="text-[9px] font-bold uppercase tracking-[0.12em]" style={{ color: 'var(--text-secondary)' }}>
-          Step {viewingIndex + 1} of 4
+          Step {viewingIndex + 1} of {steps.length}
         </span>
         <div className="flex-1 h-1.5 rounded-full" style={{ background: '#E8E8E8' }}>
           <div
             className="h-full rounded-full transition-all duration-500"
             style={{
-              width:      `${((dealIndex + 1) / 4) * 100}%`,
+              width:      `${((dealIndex + 1) / steps.length) * 100}%`,
               background: '#1A1A1A',
             }}
           />
@@ -351,7 +452,7 @@ export function PhaseProgressTracker({
           className="text-[9px] font-bold uppercase tracking-[0.12em]"
           style={{ color: '#1A1A1A' }}
         >
-          {PHASE_STEPS[viewingIndex]?.label}
+          {steps[viewingIndex]?.label}
         </span>
       </div>
     </div>

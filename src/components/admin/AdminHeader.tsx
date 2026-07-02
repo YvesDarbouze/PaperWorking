@@ -34,7 +34,7 @@ export default function AdminHeader() {
       }}
       role="banner"
     >
-      <div className="flex h-16 items-center justify-between px-4 sm:px-6">
+      <div className="flex h-16 items-center justify-between px-margin-mobile lg:px-margin-desktop">
         {/* Breadcrumb + Title */}
         <div className="flex items-center gap-3">
           <nav aria-label="Breadcrumb" className="flex items-center gap-2">
@@ -79,7 +79,7 @@ export default function AdminHeader() {
             {/* Notification dot */}
             <span
               className="absolute top-1.5 right-1.5 w-2 h-2 rounded-full"
-              style={{ background: '#ef4444' }}
+              style={{ background: '#F06543' }}
               aria-label="3 unread notifications"
             />
           </button>
@@ -89,7 +89,6 @@ export default function AdminHeader() {
             className="flex items-center gap-2 px-3 py-1.5"
             style={{
               border: '1px solid var(--border-ui)',
-              borderRadius: 'var(--radius-sm)',
             }}
           >
             <div
@@ -102,7 +101,7 @@ export default function AdminHeader() {
               <p className="text-xs font-semibold leading-none" style={{ color: 'var(--text-primary)' }}>
                 {profile?.displayName || 'Admin'}
               </p>
-              <p className="text-[10px] mt-0.5" style={{ color: 'var(--text-secondary)' }}>
+              <p className="text-xs mt-0.5" style={{ color: 'var(--text-secondary)' }}>
                 Platform Admin
               </p>
             </div>

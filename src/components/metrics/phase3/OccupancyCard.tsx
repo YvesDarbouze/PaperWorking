@@ -23,9 +23,9 @@ interface OccupancyZone {
 }
 
 function getOccupancyZone(vacancyRate: number): OccupancyZone {
-  if (vacancyRate < 5) return { label: 'Strong', color: '#22c55e', bg: '#f0fdf4', benchmark: '< 5% vacancy is strong performance' };
+  if (vacancyRate < 5) return { label: 'Strong', color: '#3f7d20', bg: '#f0fdf4', benchmark: '< 5% vacancy is strong performance' };
   if (vacancyRate <= 10) return { label: 'Fair', color: '#f59e0b', bg: '#fffbeb', benchmark: '5–10% vacancy is market average' };
-  return { label: 'High', color: '#ef4444', bg: '#fef2f2', benchmark: '> 10% vacancy needs attention' };
+  return { label: 'High', color: '#F06543', bg: '#fef2f2', benchmark: '> 10% vacancy needs attention' };
 }
 
 export default function OccupancyCard({ occupiedUnits, totalUnits, monthlyRentPerUnit, className = '', isLoading = false }: OccupancyCardProps) {
@@ -114,13 +114,13 @@ export default function OccupancyCard({ occupiedUnits, totalUnits, monthlyRentPe
 
       <div className="grid grid-cols-3 gap-3 pt-4" style={{ borderTop: '1px solid var(--pw-border)' }}>
         <div>
-          <p className="font-mono text-sm font-semibold" style={{ color: '#22c55e' }}>
+          <p className="font-mono text-sm font-semibold" style={{ color: '#3f7d20' }}>
             {fmt(occupiedUnits * monthlyRentPerUnit)}
           </p>
           <p className="text-xs" style={{ color: 'var(--pw-muted)' }}>Monthly Revenue</p>
         </div>
         <div>
-          <p className="font-mono text-sm font-semibold" style={{ color: '#ef4444' }}>
+          <p className="font-mono text-sm font-semibold" style={{ color: '#F06543' }}>
             {vacancyCostMonthly > 0 ? `−${fmt(vacancyCostMonthly)}` : fmt(0)}
           </p>
           <p className="text-xs" style={{ color: 'var(--pw-muted)' }}>Vacancy Cost</p>

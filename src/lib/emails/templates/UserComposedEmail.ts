@@ -56,7 +56,7 @@ ${messageBody}
     </p>
 
     <a href="${appUrl}/dashboard/inbox?thread=${projectId}" class="btn-primary" style="display:inline-block;background-color:#0d0d0d;color:#ffffff;text-decoration:none;padding:14px 28px;font-weight:600;font-size:14px;">
-      Reply in App
+      View in PaperWorking
     </a>
   `;
 

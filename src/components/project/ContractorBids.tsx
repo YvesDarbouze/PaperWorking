@@ -46,8 +46,21 @@ export function ContractorBids({ bids, baseBudget, onChange }: ContractorBidsPro
   };
 
   const updateStatus = (id: string, status: 'Pending' | 'Approved' | 'Rejected') => {
+    const bid = bids.find(b => b.id === id);
     // If approving, we might want to reject all others, but we'll leave that to the user for now
     onChange(bids.map(b => b.id === id ? { ...b, status } : b));
+    if (bid) {
+      toast.success(`Bid by ${bid.contractorName} ${status.toLowerCase()}`);
+      if (status === 'Approved') {
+        try {
+          import('@/store/uiStore').then(({ useUIStore }) => {
+            useUIStore.getState().triggerSuccessfulAction('bid_approved');
+          });
+        } catch (err) {
+          console.error('Failed to trigger bid_approved successful action:', err);
+        }
+      }
+    }
   };
 
   return (

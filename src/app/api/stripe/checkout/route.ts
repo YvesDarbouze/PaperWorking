@@ -15,7 +15,7 @@ function getStripe() {
   const key = process.env.STRIPE_SECRET_KEY;
   if (!key) throw new Error('STRIPE_SECRET_KEY is not set');
   // @ts-ignore - using latest api version locally
-  return new Stripe(key, { apiVersion: '2026-03-25.dahlia' });
+  return new Stripe(key, { apiVersion: '2026-04-22.dahlia' });
 }
 
 /**
@@ -24,13 +24,13 @@ function getStripe() {
  * Creates a Stripe Checkout Session for subscription sign-up.
  * Supports guest checkout (no auth required) and authenticated checkout.
  *
- * Body: { plan, billingInterval?, userId?, userEmail?, idToken? }
+ * Body: { plan, billingInterval?, userEmail?, idToken? }
  * Returns: { url: string }
  */
 export async function POST(request: Request) {
   try {
     const stripe = getStripe();
-    const { plan, billingInterval = 'monthly', userId, userEmail, idToken } = await request.json();
+    const { plan, billingInterval = 'monthly', userEmail, idToken } = await request.json();
 
     if (!plan) {
       return NextResponse.json({ error: 'Missing required `plan` field.' }, { status: 400 });
@@ -47,13 +47,12 @@ export async function POST(request: Request) {
       );
     }
 
-    // ── Auth Verification (optional — guest checkout allowed) ──
-    if (idToken && userId) {
+    // ── Auth Verification & Identity Derivation ──
+    let verifiedUserId: string | undefined = undefined;
+    if (idToken) {
       try {
-        const decoded = await adminAuth.verifyIdToken(idToken);
-        if (decoded.uid !== userId) {
-          return NextResponse.json({ error: 'Token / user mismatch.' }, { status: 401 });
-        }
+        const decoded = await adminAuth.verifyIdToken(idToken, true);
+        verifiedUserId = decoded.uid;
       } catch {
         return NextResponse.json({ error: 'Invalid auth token.' }, { status: 401 });
       }
@@ -80,23 +79,48 @@ export async function POST(request: Request) {
     const session = await stripe.checkout.sessions.create({
       line_items: [{ price: priceId, quantity: 1 }],
       mode: 'subscription',
+
+      // Always collect a payment method — even during a free trial.
+      // The card is saved and authorised but NOT charged until the trial ends.
       payment_method_collection: 'always',
+
       success_url: `${appUrl}/checkout/success?session_id={CHECKOUT_SESSION_ID}`,
       cancel_url: `${appUrl}/pricing`,
       customer_email: userEmail ?? undefined,
-      client_reference_id: userId ?? undefined,
+      client_reference_id: verifiedUserId ?? undefined,
       allow_promotion_codes: true,
       billing_address_collection: 'auto',
+      automatic_tax: { enabled: true },
+      tax_id_collection: { enabled: true },
+
+      // Cast to any: the dahlia API version exposes payment_settings and
+      // trial_settings fields that the current @types/stripe hasn't caught up to.
       subscription_data: {
+        // 14-day free trial — card collected but not charged until day 15.
         trial_period_days: trialDays > 0 ? trialDays : undefined,
+
+        // Cancel if the card fails at trial end (no silent free-ride).
+        ...(trialDays > 0 && {
+          trial_settings: {
+            end_behavior: { missing_payment_method: 'cancel' },
+          },
+        }),
+
+        // Save the collected card as the default payment method so Stripe
+        // can charge it automatically when the trial converts on day 15.
+        payment_settings: {
+          save_default_payment_method: 'on_subscription',
+        },
+
         metadata: {
-          userId: userId || 'guest',
+          userId: verifiedUserId || 'guest',
           plan: canonicalPlan,
           planId,
         },
-      },
+      } as any,
+
       metadata: {
-        userId: userId || 'guest',
+        userId: verifiedUserId || 'guest',
         plan: canonicalPlan,
         planId,
         billingInterval: interval,

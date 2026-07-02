@@ -1,5 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { adminAuth, adminDb } from '@/lib/firebase/admin';
+import { isSubscriptionActive } from '@/lib/stripe/subscription';
+import type { UserProfile } from '@/types/user';
 
 export async function POST(request: NextRequest) {
   try {
@@ -18,13 +20,92 @@ export async function POST(request: NextRequest) {
 
     const dealSnap = await adminDb.collection('projects').doc(projectId).get();
     if (!dealSnap.exists) {
-        return NextResponse.json({ error: 'Deal not found.' }, { status: 404 });
+      return NextResponse.json({ error: 'Deal not found.' }, { status: 404 });
+    }
+    const dealData = dealSnap.data();
+
+    // Fetch user profile
+    const userSnap = await adminDb.collection('users').doc(uid).get();
+    if (!userSnap.exists) {
+      return NextResponse.json({ error: 'User profile not found.' }, { status: 404 });
+    }
+    const profile = userSnap.data() as UserProfile;
+
+    const targetOrgId = dealData?.organizationId;
+    let hasAccess = false;
+    if (targetOrgId) {
+      if (profile?.personalOrganizationId === targetOrgId) hasAccess = true;
+      else if (profile?.organizationId === targetOrgId) hasAccess = true;
+      else if (profile?.memberships && profile.memberships[targetOrgId]) hasAccess = true;
     }
 
     // Tenant check
-    const userSnap = await adminDb.collection('users').doc(uid).get();
-    if (userSnap.exists && dealSnap.data()?.organizationId !== userSnap.data()?.organizationId) {
-        return NextResponse.json({ error: 'Cross-tenant access denied.' }, { status: 403 });
+    if (!hasAccess) {
+      return NextResponse.json({ error: 'Cross-tenant access denied.' }, { status: 403 });
+    }
+
+    const hasActiveSub = isSubscriptionActive(profile);
+    const plan = hasActiveSub ? (profile?.subscriptionPlan || 'None') : 'None';
+    const isVendor = profile?.role === 'Vendor' || profile?.accountType === 'vendor';
+    const isReadOnly = isVendor || plan === 'Vendor Network';
+
+    const currentActionItems = dealData?.actionItems || [];
+
+    // Verify each todo item change against plan and role limitations
+    for (const proposedTodo of todos) {
+      const currentTodo = currentActionItems.find((t: any) => t.id === proposedTodo.id);
+
+      // 1. Check completed status changes
+      const wasCompleted = currentTodo?.completed || false;
+      const isCompleted = proposedTodo.completed || false;
+      if (wasCompleted !== isCompleted) {
+        if (plan === 'None' || isReadOnly) {
+          return NextResponse.json(
+            { error: 'Your current subscription plan or role does not permit completing action items.' },
+            { status: 403 },
+          );
+        }
+      }
+
+      // 2. Check assignee changes
+      const currentAssignee = currentTodo?.assignee || '';
+      const proposedAssignee = proposedTodo.assignee || '';
+      if (currentAssignee !== proposedAssignee) {
+        if (plan === 'None' || isReadOnly) {
+          return NextResponse.json(
+            { error: 'Your current subscription plan or role does not permit assigning tasks.' },
+            { status: 403 },
+          );
+        }
+
+        if (plan === 'Individual') {
+          const userEmail = profile?.email || decoded.email || '';
+          if (proposedAssignee !== '' && proposedAssignee !== userEmail) {
+            return NextResponse.json(
+              { error: 'Individual plan users can only assign tasks to themselves.' },
+              { status: 403 },
+            );
+          }
+        }
+
+        if (plan === 'Team') {
+          const userEmail = profile?.email || decoded.email || '';
+          if (proposedAssignee !== '') {
+            const projectTeam = dealData?.projectTeam || [];
+            const activeTeamEmails = projectTeam
+              .filter((m: any) => m.status === 'active')
+              .map((m: any) => m.email);
+
+            const allowedEmails = [userEmail, ...activeTeamEmails];
+            if (!allowedEmails.includes(proposedAssignee)) {
+              return NextResponse.json(
+                { error: 'Assignee must be the current user or an active member of the project team.' },
+                { status: 403 },
+              );
+            }
+          }
+        }
+      }
     }
 
     await adminDb.collection('projects').doc(projectId).update({

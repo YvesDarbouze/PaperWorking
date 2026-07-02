@@ -43,34 +43,40 @@ export default function PropertyDiscovery({ onPropertySelected }: Props) {
   const [showResults, setShowResults] = useState(false);
   const [results, setResults] = useState<PropertyResult[]>([]);
   const [loading, setLoading] = useState(false);
+  const [searchError, setSearchError] = useState<string | null>(null);
+  const [noResults, setNoResults] = useState(false);
   const [selectedProperty, setSelectedProperty] = useState<PropertyResult | null>(null);
   const [targetPrice, setTargetPrice] = useState('');
   const [rehabBudget, setRehabBudget] = useState('');
-  const [credentialsMissing, setCredentialsMissing] = useState(false);
-  const [mlsSource, setMlsSource] = useState<string | null>(null);
 
   useEffect(() => {
     if (!searchQuery.trim() || searchQuery.length < 2) {
       setResults([]);
+      setNoResults(false);
+      setSearchError(null);
       return;
     }
 
     const timer = setTimeout(async () => {
       setLoading(true);
+      setSearchError(null);
+      setNoResults(false);
       try {
         const res = await fetch(`/api/mls/search?q=${encodeURIComponent(searchQuery)}`);
-        const data = await res.json();
-        if (data.credentialsMissing) {
-          setCredentialsMissing(true);
+        if (res.ok) {
+          const data = await res.json();
+          const list = Array.isArray(data) ? data : [];
+          setResults(list);
+          setNoResults(list.length === 0);
+        } else {
+          const body = await res.json().catch(() => ({}));
           setResults([]);
-          return;
+          setSearchError(body.error || 'MLS search unavailable — check back shortly.');
         }
-        setCredentialsMissing(false);
-        if (data.source) setMlsSource(data.source);
-        setResults(Array.isArray(data.results) ? data.results : []);
       } catch (err) {
         console.error('Search failed', err);
         setResults([]);
+        setSearchError('Could not reach MLS. Check your connection and try again.');
       } finally {
         setLoading(false);
       }
@@ -118,30 +124,32 @@ export default function PropertyDiscovery({ onPropertySelected }: Props) {
           onChange={(e) => { setSearchQuery(e.target.value); setShowResults(true); }}
           onFocus={() => setShowResults(true)}
           placeholder="Search MLS by address, city, or zip..."
-          className="w-full pl-11 pr-4 py-3 bg-bg-primary border border-border-accent rounded-xl text-sm focus:border-teal-500 focus:ring-1 focus:ring-teal-500 transition placeholder:text-text-secondary"
+          className="w-full pl-11 pr-4 py-3 bg-bg-primary border border-border-accent rounded-xl text-sm focus:border-[#454955] focus:ring-1 focus:ring-[#454955] transition placeholder:text-text-secondary"
         />
 
-        {/* Credentials warning */}
-        {credentialsMissing && (
-          <div className="absolute z-20 top-full mt-2 w-full bg-amber-50 border border-amber-200 rounded-xl shadow-lg px-4 py-3">
-            <p className="text-xs font-semibold text-amber-800">MLS live search inactive — Bridge credentials not configured</p>
-            <p className="text-[10px] text-amber-700 mt-0.5">Contact your admin to enable live MLS data</p>
-          </div>
-        )}
-
-        {/* Dropdown Results */}
-        {showResults && results.length > 0 && (
+        {/* Dropdown Results / States */}
+        {showResults && searchQuery.length >= 2 && (
           <div className="absolute z-20 top-full mt-2 w-full bg-bg-surface border border-border-accent rounded-xl shadow-lg overflow-hidden">
-            {mlsSource && (
-              <p className="text-[9px] text-text-secondary opacity-50 px-4 pt-2 pb-0">via {mlsSource}</p>
+            {loading && (
+              <div className="flex items-center gap-2 px-4 py-3 text-sm text-text-secondary">
+                <Loader2 className="w-4 h-4 animate-spin" /> Searching MLS…
+              </div>
             )}
-            {results.map(p => (
+            {!loading && searchError && (
+              <div className="px-4 py-3 text-sm text-red-600">{searchError}</div>
+            )}
+            {!loading && !searchError && noResults && (
+              <div className="px-4 py-3 text-sm text-text-secondary">
+                No active listings found for &ldquo;{searchQuery}&rdquo;.
+              </div>
+            )}
+            {!loading && results.map(p => (
               <button
                 key={p.id}
                 onClick={() => handleSelect(p)}
-                className="w-full flex items-center gap-3 px-4 py-3 hover:bg-teal-50 transition text-left"
+                className="w-full flex items-center gap-3 px-4 py-3 hover:bg-[#F0F1F4] transition text-left"
               >
-                <MapPin className="w-4 h-4 text-teal-600 shrink-0" />
+                <MapPin className="w-4 h-4 text-[#3a3e4a] shrink-0" />
                 <div className="flex-1 min-w-0">
                   <p className="text-sm font-medium text-text-primary truncate">{p.address}</p>
                   <p className="text-xs text-text-secondary">{p.city}, {p.state} {p.zip} · {p.beds}bd/{p.baths}ba · {p.sqft.toLocaleString()} sqft</p>
@@ -158,8 +166,8 @@ export default function PropertyDiscovery({ onPropertySelected }: Props) {
       {selectedProperty && (
         <div className="bg-bg-surface border border-border-accent rounded-2xl overflow-hidden">
           {/* Property Header */}
-          <div className="relative h-32 bg-gradient-to-br from-teal-100 to-cyan-50 flex items-center justify-center">
-            <Home className="w-12 h-12 text-teal-300" />
+          <div className="relative h-32 bg-gradient-to-br from-[#E8E9ED] to-[#F0F1F4] flex items-center justify-center">
+            <Home className="w-12 h-12 text-[#8a8e9a]" />
             <button
               onClick={handleClear}
               className="absolute top-3 right-3 p-1.5 bg-bg-surface/80 rounded-full hover:bg-bg-surface transition"
@@ -201,38 +209,38 @@ export default function PropertyDiscovery({ onPropertySelected }: Props) {
               <div>
                 <label className="ag-label mb-1.5 block">Target Price (MAO)</label>
                 <div className="relative">
-                  <DollarSign className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-teal-500" />
+                  <DollarSign className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-[#454955]" />
                   <input
                     type="number"
                     value={targetPrice}
                     onChange={(e) => setTargetPrice(e.target.value)}
                     placeholder="0"
-                    className="w-full pl-8 pr-3 py-2.5 bg-bg-surface border border-border-accent rounded-lg text-sm focus:border-teal-500 focus:ring-1 focus:ring-teal-500 transition"
+                    className="w-full pl-8 pr-3 py-2.5 bg-bg-surface border border-border-accent rounded-lg text-sm focus:border-[#454955] focus:ring-1 focus:ring-[#454955] transition"
                   />
                 </div>
               </div>
               <div>
                 <label className="ag-label mb-1.5 block">Rehab Budget</label>
                 <div className="relative">
-                  <DollarSign className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-teal-500" />
+                  <DollarSign className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-[#454955]" />
                   <input
                     type="number"
                     value={rehabBudget}
                     onChange={(e) => setRehabBudget(e.target.value)}
                     placeholder="0"
-                    className="w-full pl-8 pr-3 py-2.5 bg-bg-surface border border-border-accent rounded-lg text-sm focus:border-teal-500 focus:ring-1 focus:ring-teal-500 transition"
+                    className="w-full pl-8 pr-3 py-2.5 bg-bg-surface border border-border-accent rounded-lg text-sm focus:border-[#454955] focus:ring-1 focus:ring-[#454955] transition"
                   />
                 </div>
               </div>
             </div>
 
             {/* Summary */}
-            <div className="flex items-center justify-between bg-teal-50 rounded-xl px-4 py-3">
+            <div className="flex items-center justify-between bg-[#F0F1F4] rounded-xl px-4 py-3">
               <div className="flex items-center gap-2">
-                <TrendingUp className="w-4 h-4 text-teal-600" />
-                <span className="text-sm font-medium text-teal-800">Total Capital Needed</span>
+                <TrendingUp className="w-4 h-4 text-[#3a3e4a]" />
+                <span className="text-sm font-medium text-[#2E3140]">Total Capital Needed</span>
               </div>
-              <span className="text-lg font-bold text-teal-900">${totalCapitalNeeded.toLocaleString()}</span>
+              <span className="text-lg font-bold text-[#FDFFFC]">${totalCapitalNeeded.toLocaleString()}</span>
             </div>
 
             {/* Apply Button */}
@@ -250,8 +258,8 @@ export default function PropertyDiscovery({ onPropertySelected }: Props) {
       {/* Empty State */}
       {!selectedProperty && (
         <div className="flex flex-col items-center justify-center py-10 text-center">
-          <div className="w-14 h-14 bg-teal-50 rounded-2xl flex items-center justify-center mb-3">
-            <MapPin className="w-6 h-6 text-teal-400" />
+          <div className="w-14 h-14 bg-[#F0F1F4] rounded-2xl flex items-center justify-center mb-3">
+            <MapPin className="w-6 h-6 text-[#6E7480]" />
           </div>
           <p className="text-sm font-medium text-text-secondary mb-1">No property selected</p>
           <p className="text-xs text-text-secondary">Search the MLS to find your next deal</p>

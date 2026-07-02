@@ -54,7 +54,7 @@ describe('rentalSetupSchema — validation', () => {
     const r = rentalSetupSchema.safeParse(minimal);
     expect(r.success).toBe(true);
     if (r.success) {
-      expect(r.data.vacancyRate).toBe(5);
+      expect(r.data.vacancyRate).toBe(7);
       expect(r.data.maintenanceReserves).toBe(0);
     }
   });

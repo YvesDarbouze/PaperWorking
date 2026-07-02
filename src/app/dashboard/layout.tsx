@@ -1,199 +1,89 @@
-'use client';
+import React from "react";
+import { Sidebar } from "@/components/layout/Sidebar";
+import { BottomNav } from "@/components/layout/BottomNav";
+import { TopAppBar } from "@/components/layout/TopAppBar";
+import { NotificationProvider } from "@/context/NotificationContext";
+import { OnboardingRedirectGuard } from "@/components/onboarding/OnboardingRedirectGuard";
+import { PaywallRedirectGuard } from "@/components/dashboard/PaywallRedirectGuard";
+import SupportWidget from "@/components/support/SupportWidget";
+import { cookies, headers } from "next/headers";
+import { redirect } from "next/navigation";
+import { adminAuth, adminDb } from "@/lib/firebase/admin";
 
-import React, { useMemo, Suspense, useEffect } from 'react';
-import { useRouter, useSearchParams } from 'next/navigation';
-import { AnimatePresence } from 'framer-motion';
-import { Toaster } from 'react-hot-toast';
-import { useAuth } from '@/context/AuthContext';
-import { usePanelContext, PanelProvider, LaneDef } from '@/components/dashboard/HorizontalPanelShell';
-import { useProjectStore } from '@/store/projectStore';
-import Logo from '@/components/brand/Logo';
-import LaneIndicator from '@/components/dashboard/LaneIndicator';
-import MinimizedDashboardView from '@/components/dashboard/MinimizedDashboardView';
-import AppSidebar from '@/components/layout/AppSidebar';
-import TopHeader from '@/components/layout/TopHeader';
-import { ErrorBoundary } from '@/components/ui/ErrorBoundary';
-import CheckoutSuccessHandler from '@/components/billing/CheckoutSuccessHandler';
-import { PhaseGateProvider } from '@/context/PhaseGateContext';
-import PhaseGateSyncer from '@/components/dashboard/PhaseGateSyncer';
-/* ═══════════════════════════════════════════════════════
-   Dashboard Layout — Persistent Kanban Navigation Shell
+export default async function DashboardLayout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
+  // ── Server-Side Paywall Gating ──
+  const cookieStore = await cookies();
+  const sessionCookie = cookieStore.get("__session")?.value;
 
-   PanelProvider lives HERE so that:
-   • Header PhaseNav can read/write activeIndex
-   • Board overlay can read viewMode
-   • Bottom mobile nav can read activeIndex
-   ═══════════════════════════════════════════════════════ */
+  if (!sessionCookie) {
+    redirect("/login");
+  }
 
-const LANES: LaneDef[] = [
-  { id: 'findandfund', label: 'Acquisition',          shortLabel: 'Acquisition' },
-  { id: 'pipeline',    label: 'Deal Pipeline',        shortLabel: 'Pipeline' },
-  { id: 'evaluation',  label: 'Capital & Evaluation', shortLabel: 'Eval' },
-  { id: 'closing',     label: 'Purchase',             shortLabel: 'Purchase' },
-  { id: 'rehab',       label: 'Hold',                 shortLabel: 'Hold'   },
-  { id: 'engine',      label: 'The Engine Room',      shortLabel: 'Engine' },
-  { id: 'exit',        label: 'The Exit Hub',         shortLabel: 'Exit' },
-];
+  // Get current pathname from x-pathname header (set in middleware)
+  const headersList = await headers();
+  const pathname = headersList.get("x-pathname") || "";
 
-function DashboardSkeleton() {
-  return (
-    <div className="dashboard-context flex min-h-screen font-sans" style={{ background: 'var(--bg-canvas)' }}>
-      {/* Sidebar skeleton */}
-      <aside
-        className="hidden lg:flex flex-col shrink-0 h-screen sticky top-0"
-        style={{ width: 240, background: 'var(--bg-canvas)', borderRight: '1px solid var(--border-ui)' }}
-        aria-hidden="true"
-      >
-        <div className="flex items-center px-5 h-16 shrink-0" style={{ borderBottom: '1px solid var(--border-ui)' }}>
-          <div className="opacity-30"><Logo size="sm" /></div>
-        </div>
-        <div className="flex-1 px-3 py-4 space-y-3">
-          {[...Array(5)].map((_, i) => (
-            <div key={i} className="h-8 animate-shimmer rounded" style={{ animationDelay: `${i * 60}ms` }} />
-          ))}
-        </div>
-      </aside>
+  // Exclude billing and profile settings from server-side redirect checks
+  const isExempt =
+    pathname.startsWith("/dashboard/settings/billing") ||
+    pathname.startsWith("/dashboard/settings/profile") ||
+    pathname === "/dashboard/settings" ||
+    pathname.startsWith("/dashboard/settings/general");
 
-      {/* Main area skeleton */}
-      <div className="flex-1 flex flex-col min-w-0">
-        <header
-          className="sticky top-0 z-50 w-full backdrop-blur-md"
-          style={{ height: 64, background: 'color-mix(in srgb, var(--bg-surface) 80%, transparent)', borderBottom: '1px solid var(--border-ui)' }}
-          role="banner"
-        >
-          <div className="flex h-16 items-center justify-between px-4 sm:px-6">
-            <div className="flex items-center gap-8">
-              <div className="lg:hidden opacity-30"><Logo size="sm" /></div>
-              <div className="hidden lg:flex items-center gap-6">
-                {[24, 32, 28, 28, 20].map((w, i) => (
-                  <div key={i} className="h-4 animate-shimmer rounded" style={{ width: `${w * 4}px` }} />
-                ))}
-              </div>
-            </div>
-            <div className="flex items-center gap-3">
-              <div className="h-8 w-8 animate-shimmer rounded-full" />
-              <div className="hidden sm:block h-4 w-20 animate-shimmer rounded" />
-            </div>
-          </div>
-        </header>
-        <main className="flex-1 p-4 sm:p-6 md:p-8" style={{ background: 'var(--bg-canvas)' }}>
-          <div className="mb-6 space-y-3">
-            <div className="h-8 w-48 sm:w-64 animate-shimmer rounded" />
-            <div className="h-4 w-full sm:w-96 animate-shimmer rounded" />
-          </div>
-          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-            {[...Array(6)].map((_, i) => (
-              <div
-                key={i}
-                className="h-40 animate-shimmer rounded-lg"
-                style={{ border: '1px solid var(--border-ui)', animationDelay: `${i * 80}ms` }}
-              />
-            ))}
-          </div>
-        </main>
-      </div>
-    </div>
-  );
-}
+  const isMock = sessionCookie === "mock_session_token_123";
 
-export default function DashboardLayout({ children }: { children: React.ReactNode }) {
-  const { user, loading, refreshSession } = useAuth();
-  const router = useRouter();
+  if (!isExempt && !isMock) {
+    try {
+      const decoded = await adminAuth.verifySessionCookie(sessionCookie);
+      if (decoded?.uid) {
+        const userDoc = await adminDb.collection("users").doc(decoded.uid).get();
+        const userData = userDoc.data();
+        const status = userData?.subscriptionStatus;
+        const isPaid = status === "active" || status === "trialing" || status === "past_due";
+        const isGuest = userData?.inviteToken && userData?.invitedToProjectId;
 
-  useEffect(() => {
-    if (!loading && !user) {
-      router.replace('/login');
+        if (!isPaid && !isGuest) {
+          redirect("/pricing");
+        }
+      } else {
+        redirect("/login");
+      }
+    } catch (err) {
+      console.error("[DashboardLayout Server Gate] Auth verification failed:", err);
+      redirect("/login");
     }
-  }, [loading, user, router]);
-
-  // H-5: On every SPA navigation into the dashboard, check whether the ID token
-  // is about to expire. onAuthStateChanged only fires on hard browser reloads, so
-  // SPA transitions can arrive with a token that the 50-min interval hasn't
-  // refreshed yet. refreshSession() is a no-op when >5 min remain.
-  useEffect(() => {
-    if (user) refreshSession();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [user]);
-
-  if (loading || !user) return <DashboardSkeleton />;
+  }
 
   return (
-    <ErrorBoundary name="Dashboard Layout">
-      <PhaseGateProvider>
-        <Suspense fallback={<DashboardSkeleton />}>
-          <DashboardLayoutInner>{children}</DashboardLayoutInner>
-        </Suspense>
-      </PhaseGateProvider>
-    </ErrorBoundary>
-  );
-}
+    <NotificationProvider>
+      <OnboardingRedirectGuard />
+      <PaywallRedirectGuard />
+      <div className="dashboard-context mesh-bg flex flex-col md:flex-row h-screen overflow-hidden text-on-surface">
+        {/* Sidebar (Desktop) */}
+        <Sidebar />
 
-function DashboardLayoutInner({ children }: { children: React.ReactNode }) {
-  const searchParams = useSearchParams();
-  const laneParam = searchParams.get('lane');
+        {/* Main Content Area */}
+        <div className="flex-1 flex flex-col h-screen relative overflow-hidden">
+          {/* Top App Bar (Mobile & Desktop) */}
+          <TopAppBar />
 
-  const initialLane = useMemo(() => {
-    if (!laneParam) return 0;
-    const idx = LANES.findIndex((l) => l.id === laneParam);
-    return idx >= 0 ? idx : 0;
-  }, [laneParam]);
-
-  return (
-    <PanelProvider lanes={LANES} initialLane={initialLane}>
-      <PhaseGateSyncer />
-      <div
-        className="dashboard-context horizontal-dashboard flex min-h-screen font-sans"
-        style={{ background: 'var(--bg-canvas)', color: 'var(--text-primary)' }}
-      >
-        {/* ══════ Fixed Left Sidebar (desktop only) ══════ */}
-        <div className="hidden lg:block">
-          <AppSidebar />
-        </div>
-
-
-        {/* ══════ Main Content Area ══════ */}
-        <div className="flex-1 flex flex-col min-w-0">
-          {/* ── Sticky Top Header ── */}
-          <TopHeader />
-
-
-          {/* ── Main Scrollable Content ── */}
-          <main
-            className="flex-1"
-            style={{ background: 'var(--bg-canvas)' }}
-          >
+          {/* Scrollable Content Canvas */}
+          <div className="flex-1 overflow-y-auto pb-24 md:pb-8 custom-scrollbar">
             {children}
-          </main>
+          </div>
         </div>
 
-        {/* ── Board Overlay (minimized mode) ── */}
-        <BoardOverlay />
-
-        {/* ── Mobile Bottom Nav ── */}
-        <LaneIndicator />
-
-        {/* ── Post-Checkout Success Overlay ── */}
-        <CheckoutSuccessHandler />
-
-        <Toaster position="bottom-left" />
+        {/* Bottom Nav (Mobile) */}
+        <BottomNav />
+        
+        {/* Support Chat Widget */}
+        <SupportWidget />
       </div>
-    </PanelProvider>
+    </NotificationProvider>
   );
 }
 
-/* ─── Board overlay reads viewMode from context ─── */
-function BoardOverlay() {
-  const { viewMode } = usePanelContext();
-  const projects = useProjectStore((state) => state.projects);
-
-  return (
-    <AnimatePresence>
-      {viewMode === 'minimized' && (
-        <MinimizedDashboardView
-          projects={projects}
-          onSelectDeal={() => {}} // Deal selection handled via scrollToPanel inside the component
-        />
-      )}
-    </AnimatePresence>
-  );
-}

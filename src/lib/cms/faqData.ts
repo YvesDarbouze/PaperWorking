@@ -18,25 +18,27 @@ export type FAQCategory =
   | 'financials'
   | 'billing'
   | 'security'
-  | 'vendors';
+  | 'vendors'
+  | 'industry-data';
 
 export const FAQ_CATEGORIES: { id: FAQCategory; label: string }[] = [
   { id: 'getting-started', label: 'Getting Started' },
   { id: 'acquisition', label: 'Phase 1: Acquisition' },
-  { id: 'purchase', label: 'Phase 2: Purchase' },
-  { id: 'hold-rehab', label: 'Phase 3: Hold & Rehab' },
+  { id: 'purchase', label: 'Phase 2: Fund' },
+  { id: 'hold-rehab', label: 'Phase 3: Hold' },
   { id: 'exit', label: 'Phase 4: Exit' },
   { id: 'financials', label: 'Financial Reporting' },
   { id: 'billing', label: 'Billing & Plans' },
   { id: 'security', label: 'Security & Permissions' },
   { id: 'vendors', label: 'Vendor Portal' },
+  { id: 'industry-data', label: 'Industry Insights' },
 ];
 
 export const FAQ_ITEMS: FAQItem[] = [
   // ── Getting Started ──
   {
     question: 'What is PaperWorking?',
-    answer: 'PaperWorking is an operating system for real estate investors. It covers every phase of the deal lifecycle — Acquisition, Purchase, Hold, and Exit — with every dollar tracked from day one. Less risk, faster closings, numbers you can actually trust.',
+    answer: 'PaperWorking is an operating system for real estate investors. It covers every phase of the deal lifecycle — Acquisition, Fund, Hold, and Exit — with every dollar tracked from day one. Less risk, faster closings, numbers you can actually trust.',
     category: 'getting-started',
   },
   {
@@ -67,7 +69,7 @@ export const FAQ_ITEMS: FAQItem[] = [
   },
   {
     question: 'How do I transition a property from Prospect to Under Contract?',
-    answer: 'Once an Offer Letter is marked "Accepted" and the Earnest Money Deposit (EMD) is logged in the Negotiation Ledger, the Phase Transition button unlocks. Click it to move the deal to Phase 2: Purchase.',
+    answer: 'Once an Offer Letter is marked "Accepted" and the Earnest Money Deposit (EMD) is logged in the Negotiation Ledger, the Phase Transition button unlocks. Click it to move the deal to Phase 2: Fund.',
     category: 'acquisition',
   },
   {
@@ -85,7 +87,7 @@ export const FAQ_ITEMS: FAQItem[] = [
     answer: 'A built-in calculator that applies the fix-and-flip guideline: Maximum Purchase Price = (ARV × 0.70) – Repair Costs. It helps you quickly assess whether a deal meets your investment criteria.',
     category: 'acquisition',
   },
-  // ── Phase 2: Purchase ──
+  // ── Phase 2: Fund ──
   {
     question: 'How does the Contingency Tracker work?',
     answer: 'The Contingency Tracker monitors your inspection, financing, and appraisal deadlines during due diligence. It sends automated alerts before each deadline so you never risk losing your EMD by missing a contingency window.',
@@ -98,7 +100,7 @@ export const FAQ_ITEMS: FAQItem[] = [
   },
   {
     question: 'How do I manage title search documents?',
-    answer: 'In the Purchase Panel, use the Title & Chain of Title section to upload title commitments, note any exceptions, and track resolution status. All documents are stored in the Document Vault with version history.',
+    answer: 'In the Fund Panel, use the Title & Chain of Title section to upload title commitments, note any exceptions, and track resolution status. All documents are stored in the Document Vault with version history.',
     category: 'purchase',
   },
   {
@@ -106,7 +108,7 @@ export const FAQ_ITEMS: FAQItem[] = [
     answer: 'Yes. The Capital & Evaluation panel allows you to input and compare multiple loan term sheets side by side, including interest rates, points, origination fees, and LTV ratios to find the best financing option.',
     category: 'purchase',
   },
-  // ── Phase 3: Hold & Rehab ──
+  // ── Phase 3: Hold ──
   {
     question: 'How does a General Contractor submit a milestone for payment?',
     answer: 'The GC logs into the Field Manager portal, marks a Rehab Task as "Complete," and uploads the required "After" photo and invoice. This triggers a Pending Receipt review for the Admin or Lead Investor to approve the draw.',
@@ -221,5 +223,56 @@ export const FAQ_ITEMS: FAQItem[] = [
     question: 'How does the milestone payment system work?',
     answer: 'Payments are tied to verified milestones defined in the Scope of Work. When a contractor marks a task as complete and uploads proof (photos + invoice), the Admin reviews and approves the payment, which triggers an Escrow Draw request if applicable.',
     category: 'vendors',
+  },
+  // ── Industry Insights & Data (ATTOM Q2 2024) ──
+  {
+    question: "What's a realistic ROI to expect on a house flip right now?",
+    answer: "The current national average is 30.4% gross ROI on a typical flip, per ATTOM's Q2 2024 data. That's down from the 40%+ ROIs of the 2020 market but still strong relative to most other asset classes. Be cautious of guides that promise 50%+ — those numbers usually exclude holding costs, financing carry, and the long tail of \"small\" expenses that quietly erode margins. A more conservative 10–20% net is what most working flippers actually clear once everything is accounted for. PaperWorking's Exit Formula calculator pulls every cost from acquisition through close, so the ROI you see modeled is the ROI you actually realize.",
+    category: 'industry-data',
+  },
+  {
+    question: 'How long does a typical flip take from acquisition to sale?',
+    answer: "166 days — roughly 5.5 months from purchase to closing — is the national average as of Q2 2024. That's two days longer than Q1 but a meaningful improvement on 2023's 178-day average. Every extra week on market eats into your margin through insurance, utilities, taxes, and debt service. PaperWorking's Holding Cost Clock tracks daily burn against your original projection in real time, so you know exactly what a delay is costing you before the deal is underwater.",
+    category: 'industry-data',
+  },
+  {
+    question: 'How much does the average flipper actually make per year?',
+    answer: "The most credible industry estimate puts the average full-time flipper at around $117,000 in annual income, though the spread across operators is enormous. What you earn comes down to flip volume (one deal a year vs. five), local market dynamics, acquisition discipline, and how tightly you control rehab budgets. The flippers who clear the upper end of that range almost universally run their deals like a business — pipeline tracked, expenses categorized, exits modeled before they close on the buy.",
+    category: 'industry-data',
+  },
+  {
+    question: 'Is house flipping still profitable in 2024?',
+    answer: 'Yes, and the trend is improving. Q2 2024 gross profits hit roughly $73,500 per flip nationally — the strongest number in two years, after the 2022–2023 margin compression. Profits dipped to $65,000 in 2021, sat at $67,900 in 2022, and bottomed at $66,000 in 2023 before recovering. The market now favors operators who can move quickly and price accurately; sloppy underwriting and slow closings get punished harder than they did three years ago. Discipline beats speculation in this market.',
+    category: 'industry-data',
+  },
+  {
+    question: 'What percentage of flips actually lose money?',
+    answer: "Around 12% of flips sell at break-even or a loss before all expenses are factored in, per the most-cited industry data. The real failure rate is likely higher once you include opportunity cost and unaccounted holding expenses. The most common culprits: underestimated rehab scope, missed contingency deadlines, and properties sitting too long on market. PaperWorking's Compliance Vault flags contingency dates before they expire, and the Rehab Budget Manager tracks variance against original scope in real time — the two failure modes most responsible for flips going underwater.",
+    category: 'industry-data',
+  },
+  {
+    question: 'Should I finance my flips or pay cash?',
+    answer: "Nationally, 63% of flips are now paid in cash and 37% are financed — cash has trended up about three percentage points year-over-year. Cash closes faster, wins more competitive bids, and removes interest carry from your daily holding costs. Financing preserves capital for running multiple deals in parallel and accelerates scaling, but adds debt service to your monthly burn. The right answer depends on deal flow and your leverage tolerance. PaperWorking's Find & Fund Pipeline tracks capital commitments from your syndicate so you always know what's available to deploy across deals in progress.",
+    category: 'industry-data',
+  },
+  {
+    question: 'Which markets have the most flip activity right now?',
+    answer: 'The highest flip rates cluster in the Southeast and Rust Belt. Warner Robins, Georgia leads the country at 20.7% of all home sales, followed by Macon (15.4%), Atlanta (13.4%), Columbus, GA (13.2%), Memphis (12.8%), Birmingham (11.7%), Cleveland (11%), and Columbus, OH (10.7%). The lowest activity is on the West Coast and Hawaii — Portland (4.2%), San Jose (4.1%), Seattle (4%), Honolulu (3.5%), and Hilo (3.3%) all under 5%. High flip-rate markets typically mean more inventory but more competition; low-activity markets often translate to longer holding periods, which matters for your carrying costs.',
+    category: 'industry-data',
+  },
+  {
+    question: 'How big is the flipping market overall?',
+    answer: 'Between 241,000 and 407,000 single-family homes and condos have been flipped annually in the U.S. over the past five years. 2022 was the recent peak at 407,417 properties — the highest volume since 2005. 2023 cooled to 308,922. Q1 2024 came in at 67,817 properties and Q2 at 79,540, suggesting the market is finding its footing after the post-pandemic correction.',
+    category: 'industry-data',
+  },
+  {
+    question: 'What does it cost to flip a condo versus a single-family home?',
+    answer: "Most published data blends single-family and condo flips, so condo-specific numbers require some triangulation. Combining ATTOM's average flip margin of 27.5% with the 2023 average condo sale price of $348,300 puts the typical all-in cost of a condo flip around $252,500, with roughly $95,800 in gross profit. Condos add wrinkles single-families don't: HOA dues during the hold period, restrictions on exterior work, and special-assessment exposure. Model these explicitly in your acquisition analysis rather than assuming a condo flip behaves like a house flip with a smaller footprint.",
+    category: 'industry-data',
+  },
+  {
+    question: 'What are the biggest reasons flips fail?',
+    answer: "The recurring failure modes across the industry are consistent: capital that's too expensive (high-rate hard money eating the margin), rehab scope that expands past the original budget, properties that sit too long because they were priced wrong at listing, and missed contingency deadlines on the contract side that force a forced sale or earnest money loss. Each of these is preventable with disciplined tracking. The reason PaperWorking is built around four phases (acquisition, purchase, hold, exit) rather than as a generic project tool is that each phase has its own failure mode, and the answers live in different places — capital stack data, document deadlines, daily burn rate, and final reconciliation. Mixing them in spreadsheets is how flips quietly lose money.",
+    category: 'industry-data',
   },
 ];

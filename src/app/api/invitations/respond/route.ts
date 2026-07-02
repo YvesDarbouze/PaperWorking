@@ -91,6 +91,29 @@ export async function POST(request: NextRequest) {
 
     await invRef.update(update);
 
+    // ── Create commitment on acceptance ─────────────────────
+    if (action === 'accept') {
+      const commitmentRef = adminDb
+        .collection('projects')
+        .doc(inv.projectId)
+        .collection('commitments')
+        .doc();
+
+      const amountCents = Math.round((inv.proposedAmount || 0) * 100);
+
+      await commitmentRef.set({
+        projectId: inv.projectId,
+        name: inv.name || 'Anonymous Investor',
+        amountCents,
+        status: 'pledged',
+        email: inv.email || null,
+        notes: 'Crowdfund invitation accepted via Inbox',
+        createdByUid: inv.invitedByUid || 'system',
+        createdAt: now,
+        updatedAt: now,
+      });
+    }
+
     // ── Notify deal owner ───────────────────────────────────
     const [projectSnap, ownerSnap] = await Promise.all([
       adminDb.collection('projects').doc(inv.projectId).get(),

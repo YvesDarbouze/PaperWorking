@@ -53,7 +53,7 @@ function ChartCard({
   children: React.ReactNode;
 }) {
   return (
-    <div className="border-2 border-pw-black bg-bg-surface shadow-md overflow-hidden transition-all hover:bg-bg-primary group relative">
+    <div className="border-2 border-pw-border bg-bg-surface shadow-md overflow-hidden transition-all hover:bg-bg-primary group relative">
       <div className="absolute top-0 left-0 w-full h-[1px] bg-pw-black/5 group-hover:bg-pw-accent transition-colors"></div>
       <div className="px-6 py-5 border-b border-border-accent bg-bg-primary/30">
         <div className="flex items-center gap-3">
@@ -71,7 +71,7 @@ function ChartCard({
       <div className="p-6 min-h-[280px]">
         {children}
       </div>
-      <div className="absolute bottom-0 right-0 w-4 h-4 border-b border-r border-pw-black/10 group-hover:border-pw-accent/40 transition-colors"></div>
+      <div className="absolute bottom-0 right-0 w-4 h-4 border-b border-r border-pw-border/10 group-hover:border-pw-accent/40 transition-colors"></div>
     </div>
   );
 }
@@ -109,7 +109,7 @@ export default function AnalyticsSuite({ projects }: AnalyticsSuiteProps) {
   return (
     <div className="space-y-5">
       {/* Header */}
-      <div className="flex items-center justify-between border-b-2 border-pw-black pb-4">
+      <div className="flex items-center justify-between border-b-2 border-pw-border pb-4">
         <div>
           <h3 className="text-sm font-black text-text-primary uppercase tracking-[0.4em]">
             Visual_Analytics_Suite

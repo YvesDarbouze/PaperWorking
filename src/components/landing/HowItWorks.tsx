@@ -1,492 +1,308 @@
 'use client';
 
-import React from 'react';
-import Link from 'next/link';
+import { useRef, useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
-import {
-  Play,
-  Landmark,
-  ShieldCheck,
-  Clock,
-  BarChart3,
-  ArrowRight,
-} from 'lucide-react';
+import Link from 'next/link';
 
-/* ═══════════════════════════════════════════════════════
-   HowItWorks — "How-It-Works-Architect"
+/* ═══════════════════════════════════════════════════════════════
+   HowItWorks — The REIL System
 
-   Vertical scroll section placed directly below the Hero.
-   Three sub-components:
-     1. Thesis Statement (section header)
-     2. 4-Step Sequential Flow (zigzag with video placeholders)
-     3. Buy Box CTA (bottom conversion block)
+   Structure:
+   1. Hero block (kicker + headline + body — verbatim copy)
+   2. Kanban-style 4-column board: Acquisition → Fund → Hold → Exit
+      with cards drawn from the seeded demo dataset
+   3. Three feature callouts anchored to their respective phases
+   4. Final CTA
+   ═══════════════════════════════════════════════════════════════ */
 
-   Palette: #f2f2f2, #e6e6e6, #cccccc, #a5a5a5, #7f7f7f, #595959
-   All text/bg combos verified for WCAG AA (≥ 4.5:1 for body, ≥ 3:1 for large text).
-   ═══════════════════════════════════════════════════════ */
+/* ─── Demo data cards (sourced from scripts/seed-demo.ts) ────── */
 
-/* ─── Step Data ─── */
-const STEPS = [
+interface DealCard {
+  name: string;
+  address: string;
+  strategy: string;
+  metric?: string;
+  metricValue?: string;
+}
+
+const KANBAN_DATA: { phase: string; color: string; icon: string; cards: DealCard[] }[] = [
   {
-    number: '01',
-    title: 'Acquisition',
-    label: 'The Capital Gateway',
-    icon: Landmark,
-    videoDuration: '2:34',
-    bg: '#f2f2f2',
-    textPrimary: '#595959', // 4.57:1 on #f2f2f2 — AA ✓
-    textSecondary: '#7f7f7f', // 3.29:1 on #f2f2f2 — AA large text ✓
-    accentBg: '#595959',
-    accentText: '#f2f2f2',
-    copy: {
-      headline: 'Centralized Deal Sourcing & Syndication.',
-      body: 'Find the deal, run the numbers, and collect capital commitments from your syndicate. Every dollar is sourced, documented, and attributed before you make an offer. No spreadsheets. No email chains.',
-      bullets: [
-        'Centralized prospect tracking with market filters',
-        'Partner crowdfunding with real-time capital commitments',
-        'Automated MAO calculation and offer letter generation',
-      ],
-    },
+    phase: 'Acquisition',
+    color: 'primary',
+    icon: 'search',
+    cards: [
+      { name: 'Skyline Lofts', address: '456 Skyline Dr, Denver CO', strategy: 'Fix & Flip', metric: 'Cap Rate', metricValue: '6.2%' },
+      { name: 'Cedar Park Duplex', address: '789 Cedar Ct, Austin TX', strategy: 'Buy & Hold', metric: 'GRM', metricValue: '9.5' },
+    ],
   },
   {
-    number: '02',
-    title: 'Purchase',
-    label: 'The Compliance Vault',
-    icon: ShieldCheck,
-    videoDuration: '3:12',
-    bg: '#cccccc',
-    textPrimary: '#595959', // 2.62:1 — for large text
-    textSecondary: '#595959',
-    accentBg: '#595959',
-    accentText: '#f2f2f2',
-    copy: {
-      headline: 'Eliminate Closing Chaos.',
-      body: 'Loan docs, attorney sign-offs, title commitments, and contingency deadlines live in one workspace. You stop chasing PDFs through email and start closing on time.',
-      bullets: [
-        'Encrypted document vault with role-based access',
-        'Vendor assignment & attorney coordination tracking',
-        'Title search, lien verification, and deadline management',
-      ],
-    },
+    phase: 'Fund',
+    color: 'secondary',
+    icon: 'account_balance',
+    cards: [
+      { name: '123 Main Street Flip', address: '123 Main St, Miami FL', strategy: 'Fix & Flip', metric: 'DSCR', metricValue: '1.42' },
+      { name: 'Skyline Lofts', address: '456 Skyline Dr, Denver CO', strategy: 'Fix & Flip', metric: 'Cash Invested', metricValue: '$112,500' },
+    ],
   },
   {
-    number: '03',
-    title: 'Hold',
-    label: 'Margin Protection',
-    icon: Clock,
-    videoDuration: '2:58',
-    bg: '#a5a5a5',
-    textPrimary: '#ffffff', // 2.68:1 on #a5a5a5 — large only; using white for max contrast
-    textSecondary: '#f2f2f2',
-    accentBg: '#f2f2f2',
-    accentText: '#595959',
-    copy: {
-      headline: 'Protect Your Profit From the Silent Killer: Time.',
-      body: 'Your daily holding costs, rehab timeline, and burn rate update automatically from the day you close. The 70% Rule runs in real time, and the platform flags budget overruns before they eat your profit.',
-      bullets: [
-        'Daily burn-rate tracking from day of close',
-        '70% Rule calculator with live threshold alerts',
-        '10–15% contingency buffers built into every budget',
-      ],
-    },
+    phase: 'Hold',
+    color: 'tertiary',
+    icon: 'construction',
+    cards: [
+      { name: 'Cedar Park Duplex', address: '789 Cedar Ct, Austin TX', strategy: 'Buy & Hold', metric: 'Occupancy', metricValue: '100%' },
+      { name: '123 Main Street Flip', address: '123 Main St, Miami FL', strategy: 'Fix & Flip', metric: 'Budget Used', metricValue: '68%' },
+      { name: 'Skyline Lofts', address: '456 Skyline Dr, Denver CO', strategy: 'Fix & Flip', metric: 'Cash Flow', metricValue: '$8,750/mo' },
+    ],
   },
   {
-    number: '04',
-    title: 'Exit',
-    label: 'Financial Reconciliation',
-    icon: BarChart3,
-    videoDuration: '3:45',
-    bg: '#7f7f7f',
-    textPrimary: '#ffffff', // 4.02:1 on #7f7f7f — AA large text ✓
-    textSecondary: '#f2f2f2',
-    accentBg: '#f2f2f2',
-    accentText: '#595959',
-    copy: {
-      headline: 'We Finalize the Math.',
-      body: 'Whether holding for rental flow or selling the asset, the platform aggregates all historical project costs, visualizes final metrics, and automatically generates clean, exportable tax documentation.',
-      bullets: [
-        'Automated ROI and net-profit calculation',
-        'Partner waterfall distribution reports',
-        'Tax-ready documentation export',
-      ],
-    },
+    phase: 'Exit',
+    color: 'outline',
+    icon: 'trending_up',
+    cards: [
+      { name: '123 Main Street Flip', address: '123 Main St, Miami FL', strategy: 'Fix & Flip', metric: 'IRR', metricValue: '24.8%' },
+      { name: 'Cedar Park Duplex', address: '789 Cedar Ct, Austin TX', strategy: 'Buy & Hold', metric: 'Appreciation', metricValue: '4.5%/yr' },
+    ],
   },
 ];
 
-/* ─── Reveal Animation Variants ─── */
-const fadeUp = {
-  hidden: { opacity: 0, y: 40 },
-  visible: {
-    opacity: 1,
-    y: 0,
-    transition: { duration: 0.7, ease: [0.19, 1, 0.22, 1] },
+/* ─── Feature callouts ──────────────────────────────────────── */
+
+const CALLOUTS = [
+  {
+    phase: 'Acquisition',
+    title: 'Deal Analyzer',
+    body: 'Underwrite from a single address entry; live Cap Rate, COC, and projected IRR.',
+    icon: 'calculate',
+    color: 'primary',
   },
-};
-
-const stagger = {
-  visible: {
-    transition: { staggerChildren: 0.12 },
+  {
+    phase: 'Fund',
+    title: 'Deal Marketplace / Crowdfund',
+    body: 'share a Deal with the PaperWorking investor community and track interest.',
+    icon: 'storefront',
+    color: 'secondary',
   },
-};
+  {
+    phase: 'Hold',
+    title: 'Automated Rent Payment Tracking',
+    body: 'Rent receipts tracked automatically; missed-rent alerts before a late month becomes a lost quarter.',
+    icon: 'receipt_long',
+    color: 'tertiary',
+  },
+];
 
-/* ═══════════════════════════════════════════════════════
-   Sub-Component: VideoPlaceholderBlock
-   ═══════════════════════════════════════════════════════ */
-function VideoPlaceholderBlock({
-  duration,
-  stepTitle,
-  accentBg,
-  accentText,
-}: {
-  duration: string;
-  stepTitle: string;
-  accentBg: string;
-  accentText: string;
-}) {
-  return (
-    <div
-      className="relative w-full overflow-hidden group cursor-pointer"
-      style={{ aspectRatio: '16 / 9', borderRadius: '24px' }}
-    >
-      {/* Background gradient */}
-      <div
-        className="absolute inset-0 transition-all duration-500 group-hover:scale-[1.02]"
-        style={{
-          background: `linear-gradient(135deg, ${accentBg}22 0%, ${accentBg}44 100%)`,
-          backdropFilter: 'blur(1px)',
-        }}
-      />
+/* ─── Phase color map ───────────────────────────────────────── */
 
-      {/* Subtle grid pattern */}
-      <div
-        className="absolute inset-0 opacity-[0.04]"
-        style={{
-          backgroundImage: `linear-gradient(to right, ${accentBg} 1px, transparent 1px), 
-                            linear-gradient(to bottom, ${accentBg} 1px, transparent 1px)`,
-          backgroundSize: '40px 40px',
-        }}
-      />
-
-      {/* Play button */}
-      <div className="absolute inset-0 flex items-center justify-center z-10">
-        <div
-          className="w-20 h-20 flex items-center justify-center transition-all duration-500 group-hover:scale-110 group-hover:shadow-2xl"
-          style={{
-            backgroundColor: accentBg,
-            color: accentText,
-            borderRadius: '9999px',
-            boxShadow: `0 8px 32px ${accentBg}33`,
-          }}
-        >
-          <Play className="w-7 h-7 ml-1" fill="currentColor" />
-        </div>
-      </div>
-
-      {/* Bottom metadata bar */}
-      <div className="absolute bottom-0 left-0 right-0 px-6 py-4 flex items-center justify-between z-10">
-        <span
-          className="text-xs font-bold uppercase tracking-[0.2em]"
-          style={{ color: accentBg, opacity: 0.6 }}
-        >
-          {stepTitle} — Explainer
-        </span>
-        <span
-          className="text-xs font-medium tabular-nums px-3 py-1"
-          style={{
-            color: accentText,
-            backgroundColor: accentBg,
-            borderRadius: '9999px',
-            opacity: 0.8,
-          }}
-        >
-          {duration}
-        </span>
-      </div>
-    </div>
-  );
+function phaseAccent(color: string) {
+  const map: Record<string, { bg: string; border: string; text: string; badge: string }> = {
+    primary:   { bg: 'bg-primary/8',   border: 'border-primary/20',   text: 'text-primary',   badge: 'bg-primary/15 text-primary' },
+    secondary: { bg: 'bg-secondary/8', border: 'border-secondary/20', text: 'text-secondary', badge: 'bg-secondary/15 text-secondary' },
+    tertiary:  { bg: 'bg-tertiary/8',  border: 'border-tertiary/20',  text: 'text-tertiary',  badge: 'bg-tertiary/15 text-tertiary' },
+    outline:   { bg: 'bg-outline/8',   border: 'border-outline/20',   text: 'text-outline',   badge: 'bg-outline/15 text-outline' },
+  };
+  return map[color] ?? map.primary;
 }
 
-/* ═══════════════════════════════════════════════════════
-   Sub-Component: StepBlock (Zigzag Row)
-   ═══════════════════════════════════════════════════════ */
-function StepBlock({
-  step,
-  index,
-}: {
-  step: (typeof STEPS)[number];
-  index: number;
-}) {
-  const Icon = step.icon;
-  const isReversed = index % 2 !== 0;
+/* ─── Component ─────────────────────────────────────────────── */
 
-  return (
-    <section
-      id={`how-step-${step.number}`}
-      style={{ backgroundColor: step.bg }}
-    >
-      <motion.div
-        initial="hidden"
-        whileInView="visible"
-        viewport={{ once: true, margin: '-80px' }}
-        variants={stagger}
-        className="mx-auto max-w-7xl px-6 lg:px-8 py-24 sm:py-32"
-      >
-        <div
-          className={`grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-20 items-center`}
-        >
-          {/* ── Text Side ── */}
-          <motion.div
-            variants={fadeUp}
-            className={isReversed ? 'lg:order-2' : 'lg:order-1'}
-          >
-            {/* Step badge */}
-            <div className="flex items-center space-x-3 mb-8">
-              <div
-                className="w-10 h-10 flex items-center justify-center"
-                style={{
-                  backgroundColor: step.accentBg,
-                  color: step.accentText,
-                  borderRadius: '12px',
-                }}
-              >
-                <Icon className="w-5 h-5" />
-              </div>
-              <span
-                className="text-xs font-bold uppercase tracking-[0.25em]"
-                style={{ color: step.textSecondary }}
-              >
-                Phase {step.number}
-              </span>
-            </div>
-
-            {/* Title */}
-            <h3
-              className="text-3xl sm:text-4xl lg:text-5xl font-black tracking-tighter leading-[0.95] mb-2"
-              style={{ color: step.textPrimary }}
-            >
-              {step.title}
-            </h3>
-
-            {/* Label */}
-            <p
-              className="text-sm font-bold uppercase tracking-[0.2em] mb-6"
-              style={{ color: step.textSecondary, opacity: 0.7 }}
-            >
-              {step.label}
-            </p>
-
-            {/* Headline */}
-            <p
-              className="text-lg sm:text-xl font-semibold leading-snug mb-4"
-              style={{ color: step.textPrimary, opacity: 0.9 }}
-            >
-              {step.copy.headline}
-            </p>
-
-            {/* Body */}
-            <p
-              className="text-base leading-relaxed mb-8"
-              style={{ color: step.textSecondary }}
-            >
-              {step.copy.body}
-            </p>
-
-            {/* Bullet points */}
-            <ul className="space-y-3">
-              {step.copy.bullets.map((bullet, i) => (
-                <li key={i} className="flex items-start space-x-3">
-                  <span
-                    className="w-1.5 h-1.5 mt-2 flex-shrink-0"
-                    style={{
-                      backgroundColor: step.accentBg,
-                      borderRadius: '9999px',
-                    }}
-                  />
-                  <span
-                    className="text-sm font-medium leading-relaxed"
-                    style={{ color: step.textPrimary, opacity: 0.85 }}
-                  >
-                    {bullet}
-                  </span>
-                </li>
-              ))}
-            </ul>
-          </motion.div>
-
-          {/* ── Video Side ── */}
-          <motion.div
-            variants={fadeUp}
-            className={isReversed ? 'lg:order-1' : 'lg:order-2'}
-          >
-            <VideoPlaceholderBlock
-              duration={step.videoDuration}
-              stepTitle={step.title}
-              accentBg={step.accentBg}
-              accentText={step.accentText}
-            />
-          </motion.div>
-        </div>
-      </motion.div>
-    </section>
-  );
-}
-
-/* ═══════════════════════════════════════════════════════
-   Main Export: HowItWorks
-   ═══════════════════════════════════════════════════════ */
 export default function HowItWorks() {
+  const scrollRef = useRef<HTMLDivElement>(null);
+  const [isMobile, setIsMobile] = useState(false);
+
+  useEffect(() => {
+    const check = () => setIsMobile(window.innerWidth < 768);
+    check();
+    window.addEventListener('resize', check);
+    return () => window.removeEventListener('resize', check);
+  }, []);
+
   return (
-    <div id="how-it-works">
-      {/* ── 1. Thesis Statement ── */}
-      <section style={{ backgroundColor: '#e6e6e6' }}>
-        <motion.div
-          initial="hidden"
-          whileInView="visible"
-          viewport={{ once: true, margin: '-60px' }}
-          variants={stagger}
-          className="mx-auto max-w-5xl px-6 lg:px-8 py-28 sm:py-36 text-center"
-        >
-          <motion.p
-            variants={fadeUp}
-            className="text-xs font-bold uppercase tracking-[0.3em] mb-4"
-            style={{ color: '#7f7f7f' }}
-          >
-            Platform Overview
-          </motion.p>
+    <div className="bg-background text-on-background">
 
-          <motion.h2
-            variants={fadeUp}
-            className="text-3xl sm:text-4xl lg:text-5xl font-black tracking-tighter leading-[0.95] mb-8"
-            style={{ color: '#595959' }}
-          >
-            The Real Estate Investment
-            <br />
-            Operating System
-          </motion.h2>
+      {/* ════════════ HERO ════════════ */}
+      <section className="relative min-h-[60vh] flex items-center justify-center py-24 sm:py-32 overflow-hidden">
+        {/* Ambient glow */}
+        <div className="absolute top-1/3 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[700px] h-[700px] bg-primary/5 rounded-full blur-[140px] pointer-events-none" />
 
-          <motion.p
-            variants={fadeUp}
-            className="text-base sm:text-lg lg:text-xl leading-relaxed text-balance max-w-3xl mx-auto"
-            style={{ color: '#7f7f7f' }}
-          >
-            Most investors manage six- and seven-figure deals on spreadsheets that
-            break when you add a column. PaperWorking replaces that mess with one
-            system organized around how deals actually work: four phases,
-            acquisition through exit, with every dollar tracked along the way.
-            Because when your tools match how you operate, you stop losing money
-            to bad data.
-          </motion.p>
+        <div className="relative z-10 max-w-3xl mx-auto px-6 text-center">
+          {/* Kicker */}
+          <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-primary/10 border border-primary/20 text-xs font-semibold text-primary uppercase tracking-widest mb-8">
+            <span className="material-symbols-rounded text-sm">hub</span>
+            The REIL System
+          </div>
 
-          {/* Visual divider */}
-          <motion.div
-            variants={fadeUp}
-            className="mx-auto mt-12"
-            style={{
-              width: '64px',
-              height: '3px',
-              backgroundColor: '#595959',
-              borderRadius: '9999px',
-            }}
-          />
-        </motion.div>
+          {/* Headline — verbatim */}
+          <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-[3.25rem] font-extrabold tracking-tight leading-[1.1] mb-8">
+            Institutional Organization for the Serious Real Estate Investor.
+          </h1>
+
+          {/* Body — verbatim */}
+          <p className="text-base sm:text-lg text-on-surface-variant leading-relaxed max-w-2xl mx-auto">
+            PaperWorking is project management built specifically for the Real Estate Investment Lifecycle. It organizes your entire investment process — and professionalizes how you manage it. Visualize your real estate the way stocks and commodities are visualized: a full-spectrum view of your portfolio, across all four phases of the lifecycle.
+          </p>
+        </div>
       </section>
 
-      {/* ── 2. Four-Step Sequential Flow ── */}
-      {STEPS.map((step, index) => (
-        <StepBlock key={step.number} step={step} index={index} />
-      ))}
+      {/* ════════════ KANBAN BOARD ════════════ */}
+      <section className="relative py-16 sm:py-24 border-t border-white/5 overflow-hidden">
+        <div className="absolute bottom-0 right-0 w-[500px] h-[500px] bg-secondary/5 rounded-full blur-[120px] pointer-events-none" />
 
-      {/* ── 3. Value Proposition + CTA ── */}
-      <section
-        style={{ backgroundColor: '#595959' }}
-        className="relative overflow-hidden"
-      >
-        {/* Subtle grid overlay */}
-        <div
-          className="absolute inset-0 opacity-[0.04]"
-          style={{
-            backgroundImage:
-              'linear-gradient(to right, #fff 1px, transparent 1px), linear-gradient(to bottom, #fff 1px, transparent 1px)',
-            backgroundSize: '48px 48px',
-          }}
-        />
-
-        <motion.div
-          initial="hidden"
-          whileInView="visible"
-          viewport={{ once: true, margin: '-60px' }}
-          variants={stagger}
-          className="relative z-10 mx-auto max-w-4xl px-6 lg:px-8 py-28 sm:py-36 text-center"
-        >
-          {/* Signal badge */}
-          <motion.div variants={fadeUp} className="flex justify-center mb-4">
-            <div className="inline-flex items-center space-x-2">
-              <span
-                className="w-2 h-2 animate-pulse"
-                style={{
-                  backgroundColor: '#f2f2f2',
-                  borderRadius: '9999px',
-                }}
-              />
-              <span
-                className="text-xs font-bold uppercase tracking-[0.25em]"
-                style={{ color: '#a5a5a5' }}
-              >
-                The Value Proposition
+        <div className="max-w-[1400px] mx-auto px-4 sm:px-6 md:px-10">
+          {/* Section label */}
+          <div className="text-center mb-12">
+            <h2 className="text-2xl sm:text-3xl font-bold tracking-tight mb-3">
+              Four Phases. One Board.
+            </h2>
+            <p className="text-sm text-on-surface-variant/70 max-w-lg mx-auto">
+              Every Deal moves through Acquisition → Fund → Hold → Exit. Track them all from a single command center.
+            </p>
+            <div className="mt-4 flex justify-center">
+              <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded bg-white/5 border border-white/5 text-[10px] font-bold text-on-surface-variant/60 uppercase tracking-widest select-none">
+                <span className="w-1.5 h-1.5 rounded-full bg-primary animate-pulse" />
+                Illustrative Demo Data
               </span>
             </div>
-          </motion.div>
+          </div>
 
-          {/* Headline */}
-          <motion.h2
-            variants={fadeUp}
-            className="text-3xl sm:text-4xl lg:text-5xl font-black tracking-tighter leading-[0.95] mb-6"
-            style={{ color: '#f2f2f2' }}
+          {/* Board — horizontal scroll on mobile, grid on desktop */}
+          <div
+            ref={scrollRef}
+            className="flex md:grid md:grid-cols-4 gap-4 sm:gap-5 overflow-x-auto md:overflow-visible pb-6 md:pb-0 snap-x snap-mandatory scroll-smooth"
+            style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
           >
-            Not a project management tool.
-            <br />
-            <span style={{ color: '#cccccc' }}>A risk mitigation platform.</span>
-          </motion.h2>
+            {KANBAN_DATA.map((col, colIdx) => {
+              const accent = phaseAccent(col.color);
+              return (
+                <motion.div
+                  key={col.phase}
+                  initial={{ opacity: 0, y: 24 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ duration: 0.5, delay: colIdx * 0.08 }}
+                  className="flex-shrink-0 w-[280px] sm:w-[300px] md:w-auto snap-start flex flex-col"
+                >
+                  {/* Column Header */}
+                  <div className={`flex items-center gap-2.5 px-4 py-3 rounded-t-xl ${accent.bg} border ${accent.border} border-b-0`}>
+                    <span className={`material-symbols-rounded text-lg ${accent.text}`}>{col.icon}</span>
+                    <span className={`text-sm font-bold ${accent.text} uppercase tracking-wider`}>{col.phase}</span>
+                    <span className={`ml-auto text-[10px] font-bold px-2 py-0.5 rounded-full ${accent.badge}`}>
+                      {col.cards.length}
+                    </span>
+                  </div>
 
-          {/* Subtext */}
-          <motion.p
-            variants={fadeUp}
-            className="text-base sm:text-lg leading-relaxed mb-12 mx-auto max-w-2xl"
-            style={{ color: '#a5a5a5' }}
+                  {/* Cards */}
+                  <div className="flex-1 flex flex-col gap-3 p-3 rounded-b-xl border border-white/8 bg-surface-container-low/30 backdrop-blur-sm min-h-[260px]">
+                    {col.cards.map((card, cIdx) => (
+                      <div
+                        key={`${col.phase}-${cIdx}`}
+                        className="relative glass-card rounded-xl p-4 border border-white/6 hover:border-white/12 transition-all duration-200 group"
+                      >
+                        {/* Demo Data label */}
+                        <div className="absolute top-2.5 right-2.5 flex items-center gap-1 px-1.5 py-0.5 rounded bg-white/5 border border-white/5 text-[8px] font-medium text-on-surface-variant/50 uppercase tracking-widest select-none">
+                          <span className="w-1 h-1 rounded-full bg-primary/50" />
+                          Demo Data
+                        </div>
+
+                        <div className="text-[13px] font-semibold text-on-surface leading-tight mb-0.5 pr-16">
+                          {card.name}
+                        </div>
+                        <div className="text-[10px] text-on-surface-variant/60 mb-2.5 font-medium">
+                          {card.address}
+                        </div>
+
+                        <div className="flex items-center justify-between">
+                          <span className="text-[9px] font-semibold text-on-surface-variant/40 uppercase tracking-widest">
+                            {card.strategy}
+                          </span>
+                          {card.metric && (
+                            <div className="text-right">
+                              <div className="text-[9px] text-on-surface-variant/40 uppercase tracking-wider">{card.metric}</div>
+                              <div className={`text-sm font-bold ${accent.text}`}>{card.metricValue}</div>
+                            </div>
+                          )}
+                        </div>
+
+                        {/* Illustrative demo data footer */}
+                        <div className="mt-2 pt-2 border-t border-white/5">
+                          <div className="text-[8px] text-on-surface-variant/30 uppercase tracking-wider select-none">
+                            Illustrative demo data
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </motion.div>
+              );
+            })}
+          </div>
+        </div>
+      </section>
+
+      {/* ════════════ FEATURE CALLOUTS ════════════ */}
+      <section className="relative py-20 sm:py-28 border-t border-white/5 overflow-hidden">
+        <div className="absolute top-1/4 left-0 w-[400px] h-[400px] bg-tertiary/5 rounded-full blur-[100px] pointer-events-none" />
+
+        <div className="max-w-5xl mx-auto px-6 md:px-10">
+          <div className="text-center mb-14">
+            <h2 className="text-2xl sm:text-3xl font-bold tracking-tight mb-3">
+              Built for Every Phase
+            </h2>
+            <p className="text-sm text-on-surface-variant/70 max-w-md mx-auto">
+              Features anchored exactly where they belong in the lifecycle.
+            </p>
+          </div>
+
+          <div className="grid sm:grid-cols-3 gap-6 sm:gap-8">
+            {CALLOUTS.map((callout, idx) => {
+              const accent = phaseAccent(callout.color);
+              return (
+                <motion.div
+                  key={callout.title}
+                  initial={{ opacity: 0, y: 20 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ duration: 0.5, delay: idx * 0.1 }}
+                  className={`glass-card rounded-2xl p-6 sm:p-8 border border-white/8 hover:border-white/15 transition-all duration-300 flex flex-col`}
+                >
+                  {/* Phase badge */}
+                  <div className={`inline-flex self-start items-center gap-1.5 px-2.5 py-1 rounded-full text-[10px] font-bold uppercase tracking-widest mb-5 ${accent.badge} border ${accent.border}`}>
+                    <span className="material-symbols-rounded text-xs">{callout.icon}</span>
+                    {callout.phase}
+                  </div>
+
+                  <h3 className="text-lg font-bold text-on-surface mb-3 leading-tight">
+                    {callout.title}
+                  </h3>
+
+                  <p className="text-sm text-on-surface-variant leading-relaxed flex-1">
+                    {callout.body}
+                  </p>
+                </motion.div>
+              );
+            })}
+          </div>
+        </div>
+      </section>
+
+      {/* ════════════ FINAL CTA ════════════ */}
+      <section className="relative py-24 sm:py-32 border-t border-white/5 overflow-hidden">
+        <div className="absolute inset-0 bg-gradient-to-b from-transparent via-primary/3 to-transparent pointer-events-none" />
+
+        <div className="relative z-10 max-w-2xl mx-auto px-6 text-center">
+          <h2 className="text-2xl sm:text-3xl md:text-4xl font-extrabold tracking-tight mb-6">
+            Ready to professionalize your portfolio?
+          </h2>
+          <p className="text-base text-on-surface-variant mb-10 max-w-lg mx-auto">
+            Start managing your real estate investments the way institutions do — organized, measured, and under control.
+          </p>
+          <Link
+            href="/signup"
+            className="inline-flex items-center gap-2 px-8 py-4 rounded-xl bg-primary text-on-primary font-bold text-sm tracking-wide hover:brightness-110 transition-all duration-200 shadow-lg shadow-primary/20"
           >
-            Lost documents. Untracked holding costs. Last-minute closings where
-            nobody can find the right version of the HUD-1. That's what happens
-            when your deal management lives in five different places. PaperWorking
-            puts it all under one roof so you can scale without the chaos.
-            You're running a business. Your tools should reflect that.
-          </motion.p>
-
-          {/* CTA Button */}
-          <motion.div variants={fadeUp}>
-            <Link
-              href="/#pricing"
-              className="inline-flex items-center justify-center space-x-3 px-12 py-5 text-sm font-bold uppercase tracking-[0.2em] transition-all duration-500 hover:scale-[1.03] hover:shadow-2xl"
-              style={{
-                backgroundColor: '#f2f2f2',
-                color: '#595959',
-                borderRadius: '9999px',
-                boxShadow: '0 8px 32px rgba(0,0,0,0.25)',
-              }}
-            >
-              <span>Start Your 14-Day Trial</span>
-              <ArrowRight className="w-4 h-4" />
-            </Link>
-          </motion.div>
-
-          {/* Trust line */}
-          <motion.p
-            variants={fadeUp}
-            className="mt-8 text-xs"
-            style={{ color: '#7f7f7f' }}
-          >
-            Credit card required · No charge for 14 days
-          </motion.p>
-        </motion.div>
+            <span className="material-symbols-rounded text-lg">rocket_launch</span>
+            Start Your 14-Day Trial
+          </Link>
+        </div>
       </section>
     </div>
   );

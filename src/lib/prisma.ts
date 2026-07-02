@@ -6,9 +6,33 @@
 import { PrismaClient } from '@prisma/client';
 import { PrismaNeonHttp } from '@prisma/adapter-neon';
 
-(BigInt.prototype as any).toJSON = function () {
-  return this.toString();
-};
+export function sanitizeDbRecord<T>(record: T): any {
+  if (record === null || record === undefined) return record;
+
+  if (typeof record === 'bigint') {
+    return record <= BigInt(Number.MAX_SAFE_INTEGER)
+      ? Number(record)
+      : record.toString();
+  }
+
+  if (record instanceof Date) {
+    return record;
+  }
+
+  if (Array.isArray(record)) {
+    return record.map(sanitizeDbRecord);
+  }
+
+  if (typeof record === 'object') {
+    const result: Record<string, any> = {};
+    for (const key of Object.keys(record)) {
+      result[key] = sanitizeDbRecord((record as any)[key]);
+    }
+    return result;
+  }
+
+  return record;
+}
 
 function createPrismaClient(): PrismaClient {
   const url = process.env.DATABASE_URL;

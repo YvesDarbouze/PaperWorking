@@ -1,12 +1,17 @@
 /**
  * Canonical Plan Catalog — Single Source of Truth
  *
+ * Prices mirror the actual Stripe product catalog (confirmed 2026-06-01):
+ *   Vendor          → $39/mo  / $390/yr
+ *   Investor        → $59/mo  / $499/yr
+ *   Investment Team → $99/mo  / $999/yr
+ *
  * Used by:
  *   - /api/stripe/checkout      (price ID resolution)
  *   - /api/stripe/webhook       (plan metadata sync)
- *   - PricingCards.tsx           (display data)
- *   - PricingSection.tsx         (landing page display data)
- *   - SubscriptionGate.tsx       (price microcopy)
+ *   - PricingCards.tsx          (display data)
+ *   - PricingSection.tsx        (landing page display data)
+ *   - SubscriptionGate.tsx      (price microcopy)
  */
 
 /* ═══════════════════════════════════════════════════════
@@ -25,13 +30,13 @@ export interface PlanConfig {
   id: PlanId;
   /** Canonical name stored in Firestore `subscriptionPlan` */
   canonicalName: string;
-  /** Human-readable display name */
+  /** Human-readable display name (matches Stripe product name) */
   displayName: string;
-  /** Monthly price in USD (display only) */
+  /** Monthly price in USD — must match actual Stripe price object */
   monthlyPrice: number;
-  /** Annual price in USD (display only) */
+  /** Annual price in USD — must match actual Stripe price object */
   annualPrice: number;
-  /** Trial period in days (0 = no trial) */
+  /** Trial period in days */
   trialDays: number;
   /** Environment variable names for Stripe Price IDs */
   envVars: {
@@ -45,10 +50,14 @@ export interface PlanConfig {
    ═══════════════════════════════════════════════════════ */
 
 export const PLAN_CATALOG: Record<PlanId, PlanConfig> = {
+  /**
+   * individual → Stripe product "Investor / Monthly" & "Investor / Annual"
+   * $59/mo / $499/yr
+   */
   individual: {
     id: 'individual',
     canonicalName: 'Individual',
-    displayName: 'Individual Investor',
+    displayName: 'Investor',
     monthlyPrice: 59,
     annualPrice: 499,
     trialDays: 14,
@@ -57,10 +66,15 @@ export const PLAN_CATALOG: Record<PlanId, PlanConfig> = {
       annual: ['STRIPE_PRICE_INDIVIDUAL_ANNUAL'],
     },
   },
+
+  /**
+   * team → Stripe product "Investment Team / Monthly" & "Investment Team / Annual"
+   * $99/mo / $999/yr
+   */
   team: {
     id: 'team',
     canonicalName: 'Team',
-    displayName: 'Team / Firm',
+    displayName: 'Investment Team',
     monthlyPrice: 99,
     annualPrice: 999,
     trialDays: 14,
@@ -69,10 +83,15 @@ export const PLAN_CATALOG: Record<PlanId, PlanConfig> = {
       annual: ['STRIPE_PRICE_TEAM_ANNUAL'],
     },
   },
+
+  /**
+   * vendor → Stripe product "Vendor / Monthly" & "Vendor (annual)"
+   * $39/mo / $390/yr
+   */
   vendor: {
     id: 'vendor',
     canonicalName: 'Vendor Network',
-    displayName: 'Vendor Marketplace',
+    displayName: 'Vendor',
     monthlyPrice: 39,
     annualPrice: 390,
     trialDays: 14,
@@ -85,30 +104,35 @@ export const PLAN_CATALOG: Record<PlanId, PlanConfig> = {
 
 /* ═══════════════════════════════════════════════════════
    Display Name → Plan ID Resolution
-   ═══════════════════════════════════════════════════════
 
    Maps every known display name and alias to a canonical
-   PlanId. This handles the fact that landing page, pricing
-   page, and CTA components may send different strings.
+   PlanId. Case-insensitive. Used by /api/stripe/checkout
+   to resolve any string a pricing surface might send.
    ═══════════════════════════════════════════════════════ */
 
 const DISPLAY_NAME_ALIASES: Record<string, PlanId> = {
-  // Canonical IDs (self-referencing)
+  // Canonical plan IDs (self-referencing)
   'individual': 'individual',
   'team': 'team',
   'vendor': 'vendor',
 
-  // Landing page PricingSection display names
+  // Stripe product names (source of truth)
+  'investor': 'individual',
+  'investment team': 'team',
+  'investment team plan': 'team',
+
+  // Legacy and alternate display names (backward compat)
   'individual investor': 'individual',
+  'solo': 'individual',
+  'investor team': 'team',
   'team / firm': 'team',
   'team/firm': 'team',
   'vendor network': 'vendor',
   'vendor marketplace': 'vendor',
+  'enterprise': 'team',
+  'enterprise plan': 'team',
 
-  // PricingCards display names
-  'investor team': 'team',
-
-  // Lawyer is a vendor role, not a separate plan — route to vendor
+  // Lawyer is a marketplace-vendor role — route to vendor plan
   'lawyer': 'vendor',
   'lawyer lead-gen': 'vendor',
 };

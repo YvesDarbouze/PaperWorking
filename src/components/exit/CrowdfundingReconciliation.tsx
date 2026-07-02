@@ -32,32 +32,32 @@ export default function CrowdfundingReconciliation({ deal }: CrowdfundingReconci
   };
 
   return (
-    <div className="bg-bg-surface border border-pw-black shadow-xl overflow-hidden mt-8">
+    <div className="glass-card border border-pw-border mt-8">
       {/* ── Header ── */}
-      <div className="bg-pw-black px-6 py-4 flex items-center justify-between border-b border-pw-white/10">
-        <div className="flex items-center gap-2 text-pw-white">
+      <div className="bg-pw-black px-6 py-4 flex items-center justify-between border-b border-pw-border text-pw-white">
+        <div className="flex items-center gap-2">
           <Users className="w-5 h-5" />
-          <h2 className="text-sm font-black uppercase tracking-[0.2em]">Crowdfunding Reconciliation</h2>
+          <h2 className="text-xs font-black tracking-[0.3em] uppercase">Crowdfunding Reconciliation</h2>
         </div>
         <div className="flex items-center gap-2">
-          <span className="text-[10px] font-bold text-text-secondary uppercase tracking-[0.15em]">
+          <span className="text-[10px] font-bold text-text-secondary uppercase tracking-widest">
             Investors: {investors.length}
           </span>
         </div>
       </div>
 
       <div className="p-8">
-        <div className="mb-6 pb-6 border-b border-border-subtle flex items-end justify-between">
+        <div className="mb-6 pb-6 border-b border-pw-border flex items-end justify-between">
           <div>
-            <p className="text-[10px] font-black text-text-secondary uppercase tracking-widest mb-1">
+            <p className="text-[10px] font-bold text-text-secondary uppercase tracking-wider mb-1">
               Realized Net Profit
             </p>
-            <p className={`text-3xl font-black font-mono tracking-tighter ${netProfit >= 0 ? 'text-green-600' : 'text-red-600'}`}>
+            <p className={`text-3xl font-black font-mono tracking-tighter ${netProfit >= 0 ? 'text-pw-accent' : 'text-color-error'}`}>
               {fmtCurrency(netProfit)}
             </p>
           </div>
           <div className="text-right">
-            <p className="text-[10px] font-black text-text-tertiary uppercase tracking-widest max-w-[250px]">
+            <p className="text-xs font-normal text-text-secondary max-w-[250px] leading-relaxed">
               Final payouts are calculated by adding the investor's original contribution to their proportional profit share.
             </p>
           </div>
@@ -66,29 +66,29 @@ export default function CrowdfundingReconciliation({ deal }: CrowdfundingReconci
         {/* ── Table ── */}
         <div className="overflow-x-auto">
           <table className="w-full text-left border-collapse">
-            <thead>
-              <tr className="border-b-2 border-pw-black">
-                <th className="pb-3 text-[10px] font-black uppercase tracking-widest text-text-secondary">Investor</th>
-                <th className="pb-3 text-[10px] font-black uppercase tracking-widest text-text-secondary text-right">Equity %</th>
-                <th className="pb-3 text-[10px] font-black uppercase tracking-widest text-text-secondary text-right">Original Contrib</th>
-                <th className="pb-3 text-[10px] font-black uppercase tracking-widest text-text-secondary text-right">Profit Share</th>
-                <th className="pb-3 text-[10px] font-black uppercase tracking-widest text-text-secondary text-right">Final Wire Payout</th>
+            <thead className="border-b border-pw-border bg-pw-glass-bg/50 backdrop-blur-md sticky top-0 z-10">
+              <tr className="text-[10px] font-bold text-text-secondary uppercase tracking-wider">
+                <th className="pb-3 text-left">Investor</th>
+                <th className="pb-3 text-right">Equity %</th>
+                <th className="pb-3 text-right">Original Contrib</th>
+                <th className="pb-3 text-right">Profit Share</th>
+                <th className="pb-3 text-right">Final Wire Payout</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-border-subtle">
+            <tbody className="divide-y divide-pw-border">
               {investors.map((inv) => {
                 const profitShare = netProfit * (inv.equityPercentage / 100);
                 const totalPayout = inv.contributionAmount + profitShare;
                 const isProfit = profitShare >= 0;
 
                 return (
-                  <tr key={inv.id} className="hover:bg-bg-primary/50 transition-colors group">
+                  <tr key={inv.id} className="hover:bg-pw-glass-bg/20 border-b border-pw-border last:border-b-0 transition-colors group">
                     <td className="py-4 pr-4">
-                      <p className="text-sm font-bold text-text-primary">{inv.name}</p>
+                      <p className="text-sm font-semibold text-text-primary">{inv.name}</p>
                       <p className="text-[10px] font-medium text-text-secondary font-mono">{inv.email}</p>
                     </td>
                     <td className="py-4 px-2 text-right">
-                      <span className="text-xs font-bold font-mono text-text-primary bg-bg-primary px-2 py-1 rounded border border-border-subtle">
+                      <span className="text-xs font-bold font-mono text-text-primary bg-pw-glass-bg px-2 py-1 border border-pw-border">
                         {fmtPercent(inv.equityPercentage)}
                       </span>
                     </td>
@@ -98,13 +98,13 @@ export default function CrowdfundingReconciliation({ deal }: CrowdfundingReconci
                       </span>
                     </td>
                     <td className="py-4 px-2 text-right">
-                      <span className={`text-sm font-bold font-mono ${isProfit ? 'text-green-600' : 'text-red-600'}`}>
+                      <span className={`text-sm font-bold font-mono ${isProfit ? 'text-pw-accent' : 'text-color-error'}`}>
                         {isProfit ? '+' : '-'}{fmtCurrency(Math.abs(profitShare))}
                       </span>
                     </td>
                     <td className="py-4 pl-4 text-right">
                       <div className="flex items-center justify-end gap-2">
-                        <ArrowRight className="w-3 h-3 text-text-tertiary opacity-0 group-hover:opacity-100 transition-opacity" />
+                        <ArrowRight className="w-3 h-3 text-text-secondary opacity-0 group-hover:opacity-100 transition-opacity" />
                         <span className="text-lg font-black font-mono text-text-primary">
                           {fmtCurrency(totalPayout)}
                         </span>
@@ -116,15 +116,15 @@ export default function CrowdfundingReconciliation({ deal }: CrowdfundingReconci
             </tbody>
             {/* ── Totals Footer ── */}
             <tfoot>
-              <tr className="border-t-2 border-pw-black bg-bg-primary">
-                <td className="py-3 font-black text-xs uppercase tracking-widest text-text-primary">Totals</td>
+              <tr className="border-t border-pw-border bg-pw-glass-bg/30">
+                <td className="py-3 font-bold text-[10px] uppercase tracking-wider text-text-primary">Totals</td>
                 <td className="py-3 text-right font-black font-mono text-xs text-text-primary">
                   {fmtPercent(investors.reduce((sum, inv) => sum + inv.equityPercentage, 0))}
                 </td>
                 <td className="py-3 text-right font-black font-mono text-sm text-text-secondary">
                   {fmtCurrency(investors.reduce((sum, inv) => sum + inv.contributionAmount, 0))}
                 </td>
-                <td className={`py-3 text-right font-black font-mono text-sm ${netProfit >= 0 ? 'text-green-600' : 'text-red-600'}`}>
+                <td className={`py-3 text-right font-black font-mono text-sm ${netProfit >= 0 ? 'text-pw-accent' : 'text-color-error'}`}>
                   {fmtCurrency(netProfit * (investors.reduce((sum, inv) => sum + inv.equityPercentage, 0) / 100))}
                 </td>
                 <td className="py-3 text-right font-black font-mono text-lg text-text-primary">
@@ -137,12 +137,12 @@ export default function CrowdfundingReconciliation({ deal }: CrowdfundingReconci
       </div>
       
       {/* ── Footer ── */}
-      <div className="bg-bg-primary border-t border-border-subtle p-4 flex items-center justify-between">
-         <p className="text-[9px] font-bold text-text-tertiary uppercase tracking-widest">
+      <div className="bg-pw-glass-bg/20 border-t border-pw-border p-4 flex items-center justify-between">
+         <p className="text-[9px] font-bold text-text-secondary uppercase tracking-widest">
            Reconciliation automatically calculated via Phase 4 Net Engine output.
          </p>
-         <button className="bg-pw-black text-pw-white text-[10px] font-black uppercase tracking-[0.2em] px-6 py-2 hover:bg-pw-accent transition-colors active:scale-95 flex items-center gap-2">
-           <DollarSign className="w-3 h-3" />
+         <button className="pw-btn pw-btn--secondary pw-btn--sm text-[10px] font-black uppercase tracking-[0.2em] px-6 py-2 transition-colors flex items-center gap-2">
+           <DollarSign className="w-3 h-3 text-pw-accent" />
            Export Wire Instructions
          </button>
       </div>

@@ -1,5 +1,6 @@
 import { useAuth } from '@/context/AuthContext';
-import { Role } from '@/types/schema';
+import { Role, Permission, ProjectMember } from '@/types/schema';
+import { AuthorizationService } from '@/lib/auth/AuthorizationService';
 
 /* ═══════════════════════════════════════════════════════
    usePermissions Hook — SSA-Grade Access Control
@@ -7,68 +8,27 @@ import { Role } from '@/types/schema';
    Centralized logic for gating dashboard actions.
    Usage:
    const { can, role } = usePermissions();
-   if (can('EDIT_FINANCIALS')) { ... }
+   if (can('projects.edit')) { ... }
    ═══════════════════════════════════════════════════════ */
 
-export type Permission = 
-  | 'ADD_DEAL'
-  | 'EDIT_FINANCIALS'
-  | 'APPROVE_COSTS'
-  | 'SUBMIT_RECEIPTS'
-  | 'VERIFY_DOCUMENTS'
-  | 'EXECUTE_SALE'
-  | 'VIEW_PRIVATE_ROI'
-  | 'VIEW_FOLDER';
-
-const ROLE_PERMISSIONS: Record<Role, Permission[]> = {
-  'Lead Investor': [
-    'ADD_DEAL', 'EDIT_FINANCIALS', 'APPROVE_COSTS', 'SUBMIT_RECEIPTS',
-    'VERIFY_DOCUMENTS', 'EXECUTE_SALE', 'VIEW_PRIVATE_ROI', 'VIEW_FOLDER'
-  ],
-  'Platform Admin': [
-    'ADD_DEAL', 'EDIT_FINANCIALS', 'APPROVE_COSTS', 'SUBMIT_RECEIPTS',
-    'VERIFY_DOCUMENTS', 'EXECUTE_SALE', 'VIEW_PRIVATE_ROI', 'VIEW_FOLDER'
-  ],
-  'Admin': [
-    'ADD_DEAL', 'EDIT_FINANCIALS', 'APPROVE_COSTS', 'SUBMIT_RECEIPTS',
-    'VERIFY_DOCUMENTS', 'EXECUTE_SALE', 'VIEW_PRIVATE_ROI', 'VIEW_FOLDER'
-  ],
-  'General Contractor': [
-    'SUBMIT_RECEIPTS', 'VIEW_FOLDER'
-  ],
-  'Real Estate Agent': [
-    'SUBMIT_RECEIPTS', 'VERIFY_DOCUMENTS', 'VIEW_FOLDER'
-  ],
-  'Accountant': [
-    'VIEW_PRIVATE_ROI', 'VIEW_FOLDER'
-  ],
-  'Lender': [
-    'VIEW_PRIVATE_ROI', 'VIEW_FOLDER'
-  ],
-  'Vendor': [],
-  'Guest': [],
-  'Standard': ['VIEW_FOLDER'],
-};
-
-export function usePermissions() {
+export function usePermissions(projectMember?: ProjectMember) {
   const { profile } = useAuth();
   
   // Default to a safe fallback role if user profile is missing role
-  // In production, this should come from user documentation in Firestore.
-  // Changed to 'Lead Investor' to ensure new signups hit the Command Center and can test project creation.
-  const role: Role = profile?.role || 'Lead Investor';
+  const role: Role = profile?.role || profile?.orgRole || 'Guest';
 
   const can = (permission: Permission) => {
-    return ROLE_PERMISSIONS[role]?.includes(permission) || false;
+    return AuthorizationService.can({ user: profile as any, projectMember }, permission);
   };
 
-  const isLead = role === 'Lead Investor' || role === 'Admin';
+  const isLead = role === 'Lead Investor' || role === 'Admin' || role === 'Platform Admin';
   const isAdmin = role === 'Admin' || role === 'Platform Admin';
   const isContractor = role === 'General Contractor';
   const isFinanceTeam = isLead || role === 'Accountant';
   const isLender = role === 'Lender';
+  
   // Convenience: can the current user edit project content (todos, financials)?
-  const canEdit = can('EDIT_FINANCIALS') || can('SUBMIT_RECEIPTS');
+  const canEdit = can('projects.edit');
 
   return { 
     can, 

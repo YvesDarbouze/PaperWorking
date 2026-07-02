@@ -73,7 +73,7 @@ export default function ContractorUploadZone({ projectId }: ContractorUploadZone
             setAmount('');
             setLineItem('');
             setFile(null);
-        } catch (err: any) {
+        } catch (err) {
             console.error('Failed to upload receipt:', err);
             toast.error('Failed to upload receipt. Please try again.');
         } finally {
@@ -83,7 +83,7 @@ export default function ContractorUploadZone({ projectId }: ContractorUploadZone
 
     return (
         <div className="bg-bg-surface rounded-xl shadow-lg border border-border-accent overflow-hidden max-w-sm w-full mx-auto sm:max-w-md">
-            <div className="bg-slate-900 p-6 text-white text-center">
+            <div className="bg-[#161318] p-6 text-white text-center">
                 <div className="mx-auto w-12 h-12 bg-bg-surface/10 rounded-full flex items-center justify-center mb-3">
                     <Camera className="w-6 h-6 text-blue-400" />
                 </div>
@@ -111,7 +111,7 @@ export default function ContractorUploadZone({ projectId }: ContractorUploadZone
                 </div>
 
                 <div>
-                    <label className="block text-sm font-medium text-text-primary mb-1 flex items-center"><List className="w-4 h-4 mr-1 text-purple-600"/> Budget Line Item</label>
+                    <label className="block text-sm font-medium text-text-primary mb-1 flex items-center"><List className="w-4 h-4 mr-1 text-[#454955]"/> Budget Line Item</label>
                     <select
                         value={lineItem}
                         onChange={(e) => setLineItem(e.target.value)}

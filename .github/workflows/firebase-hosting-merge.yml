@@ -17,6 +17,11 @@ jobs:
           NODE_OPTIONS: "--max-old-space-size=8192"
           NEXT_TELEMETRY_DISABLED: "1"
           TURBOPACK: "0"
+      - name: Authenticate and Deploy Firebase Rules
+        run: |
+          echo '${{ secrets.FIREBASE_SERVICE_ACCOUNT_PAPERWORKING_97055 }}' > sa.json
+          GOOGLE_APPLICATION_CREDENTIALS=sa.json npx -y firebase-tools@latest deploy --only firestore,storage
+          rm sa.json
       - uses: FirebaseExtended/action-hosting-deploy@v0
         with:
           repoToken: ${{ secrets.GITHUB_TOKEN }}
@@ -25,3 +30,4 @@ jobs:
           projectId: paperworking-97055
         env:
           FIREBASE_CLI_EXPERIMENTS: webframeworks
+

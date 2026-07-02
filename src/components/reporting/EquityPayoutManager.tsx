@@ -1,3 +1,5 @@
+"use client";
+
 import React, { useState } from 'react';
 import { useProjectStore } from '@/store/projectStore';
 import { Users, AlertCircle, DollarSign, Wallet } from 'lucide-react';

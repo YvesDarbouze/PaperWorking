@@ -24,15 +24,31 @@ function ensureInitialized() {
   const privateKey  = process.env.FIREBASE_PRIVATE_KEY?.replace(/\\n/g, '\n');
 
   if (clientEmail && privateKey) {
-    admin.initializeApp({
-      credential: admin.credential.cert({ projectId: projectId!, clientEmail, privateKey }),
-    });
-  } else {
-    // No explicit key — rely on ADC (works out-of-the-box in Firebase App Hosting).
+    try {
+      admin.initializeApp({
+        credential: admin.credential.cert({ projectId: projectId!, clientEmail, privateKey }),
+      });
+      console.log('[AdminSDK] Initialized with explicit service account credentials');
+      return;
+    } catch (certErr: any) {
+      // Explicit cert failed (bad key encoding, invalid PEM, etc.)
+      // Fall through to ADC below rather than crashing.
+      console.error('[AdminSDK] Explicit cert init FAILED:', certErr.message);
+      console.warn('[AdminSDK] Falling back to Application Default Credentials (ADC)...');
+    }
+  }
+
+  // No explicit key OR explicit key failed — rely on ADC
+  // (works out-of-the-box in Firebase App Hosting / Cloud Run).
+  try {
     admin.initializeApp({
       credential: admin.credential.applicationDefault(),
       projectId,
     });
+    console.log('[AdminSDK] Initialized with Application Default Credentials (ADC)');
+  } catch (adcErr: any) {
+    console.error('[AdminSDK] ADC init also FAILED:', adcErr.message);
+    throw adcErr; // Nothing else to try
   }
 }
 
@@ -51,3 +67,20 @@ export const adminAuth = new Proxy({} as admin.auth.Auth, {
     return typeof val === 'function' ? val.bind(admin.auth()) : val;
   }
 });
+
+export const adminStorage = new Proxy({} as admin.storage.Storage, {
+  get(_target, prop) {
+    ensureInitialized();
+    const val = (admin.storage() as any)[prop];
+    return typeof val === 'function' ? val.bind(admin.storage()) : val;
+  }
+});
+
+export const adminMessaging = new Proxy({} as admin.messaging.Messaging, {
+  get(_target, prop) {
+    ensureInitialized();
+    const val = (admin.messaging() as any)[prop];
+    return typeof val === 'function' ? val.bind(admin.messaging()) : val;
+  }
+});
+

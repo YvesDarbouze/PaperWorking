@@ -9,6 +9,7 @@ import {
 import type { ProjectTeamMember, ProjectRole, ExternalAccessPermission } from '@/types/schema';
 import AccessGateToggle from './AccessGateToggle';
 import toast from 'react-hot-toast';
+import { useAuth } from '@/context/AuthContext';
 
 /* ═══════════════════════════════════════════════════════
    ProjectRoster — 8-Slot External Stakeholder Directory
@@ -85,6 +86,7 @@ export default function ProjectRoster({ projectId }: Props) {
   const currentProject = useProjectStore(s => s.projects.find(d => d.id === projectId));
   const updateProjectTeam = useProjectStore(s => s.updateProjectTeam);
   const team = currentProject?.projectTeam || [];
+  const { user } = useAuth();
 
   const [editingRole, setEditingRole] = useState<ProjectRole | null>(null);
   const [inviteEmail, setInviteEmail] = useState('');
@@ -95,39 +97,93 @@ export default function ProjectRoster({ projectId }: Props) {
 
   const activeCount = team.filter(m => m.status !== 'removed').length;
 
-  const handleAssign = (role: ProjectRole) => {
+  const handleAssign = async (role: ProjectRole) => {
     if (!inviteEmail.trim()) return;
+    if (!user) {
+      toast.error('Not authenticated');
+      return;
+    }
 
-    const newMember: ProjectTeamMember = {
-      id: `tm_${Date.now()}`,
-      email: inviteEmail.trim(),
-      displayName: inviteName.trim() || inviteEmail.split('@')[0],
-      projectRole: role,
-      permissions: { ...DEFAULT_PERMISSIONS },
-      assignedAt: new Date(),
-      status: 'invited',
-    };
+    const name = inviteName.trim() || inviteEmail.split('@')[0];
+    const email = inviteEmail.trim();
 
-    updateProjectTeam(projectId, [...team, newMember]);
-    toast.success(`${role} invited: ${newMember.displayName}`);
+    const toastId = toast.loading('Inviting deal team member...');
+    try {
+      const idToken = await user.getIdToken();
+      const { mutateProjectTeam } = await import('@/actions');
+      const res = await mutateProjectTeam(idToken, projectId, 'add', {
+        email,
+        displayName: name,
+        projectRole: role,
+        permissions: { ...DEFAULT_PERMISSIONS },
+      });
+
+      if (res.success && res.projectTeam) {
+        updateProjectTeam(projectId, res.projectTeam);
+        toast.success(`${role} invited: ${name}`, { id: toastId });
+      }
+    } catch (err: any) {
+      toast.error(err.message || 'Failed to update deal team.', { id: toastId });
+    }
+
     setInviteEmail('');
     setInviteName('');
     setEditingRole(null);
   };
 
-  const handleRemove = (memberId: string) => {
-    const updated = team.map(m =>
-      m.id === memberId ? { ...m, status: 'removed' as const } : m
-    );
-    updateProjectTeam(projectId, updated);
-    toast.success('Stakeholder removed from deal.');
+  const handleRemove = async (memberId: string) => {
+    if (!user) {
+      toast.error('Not authenticated');
+      return;
+    }
+
+    const member = team.find(m => m.id === memberId);
+    if (!member) return;
+
+    const toastId = toast.loading('Removing deal team member...');
+    try {
+      const idToken = await user.getIdToken();
+      const { mutateProjectTeam } = await import('@/actions');
+      const res = await mutateProjectTeam(idToken, projectId, 'remove', {
+        email: member.email,
+        memberId,
+      });
+
+      if (res.success && res.projectTeam) {
+        updateProjectTeam(projectId, res.projectTeam);
+        toast.success('Team member removed.', { id: toastId });
+      }
+    } catch (err: any) {
+      toast.error(err.message || 'Failed to update deal team.', { id: toastId });
+    }
   };
 
-  const handlePermissionChange = (memberId: string, permissions: ExternalAccessPermission) => {
-    const updated = team.map(m =>
-      m.id === memberId ? { ...m, permissions } : m
-    );
-    updateProjectTeam(projectId, updated);
+  const handlePermissionChange = async (memberId: string, permissions: ExternalAccessPermission) => {
+    if (!user) {
+      toast.error('Not authenticated');
+      return;
+    }
+
+    const member = team.find(m => m.id === memberId);
+    if (!member) return;
+
+    const toastId = toast.loading('Updating permissions...');
+    try {
+      const idToken = await user.getIdToken();
+      const { mutateProjectTeam } = await import('@/actions');
+      const res = await mutateProjectTeam(idToken, projectId, 'update_permissions', {
+        email: member.email,
+        memberId,
+        permissions,
+      });
+
+      if (res.success && res.projectTeam) {
+        updateProjectTeam(projectId, res.projectTeam);
+        toast.success('Permissions updated.', { id: toastId });
+      }
+    } catch (err: any) {
+      toast.error(err.message || 'Failed to update permissions.', { id: toastId });
+    }
   };
 
   return (

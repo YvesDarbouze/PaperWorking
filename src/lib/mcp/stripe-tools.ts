@@ -4,6 +4,8 @@ import { z } from 'zod';
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY || '', {
   // @ts-ignore - using latest api version
   apiVersion: '2026-03-25.dahlia',
+  timeout: 30000,
+  maxNetworkRetries: 3,
 });
 
 /**

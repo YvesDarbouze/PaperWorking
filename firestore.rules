@@ -21,9 +21,35 @@ service cloud.firestore {
       return request.auth.uid in project.members;
     }
 
+    // Check if user has access to a specific tenant/organization
+    function hasTenantAccess(orgId) {
+      let userDoc = getUserDoc();
+      return request.auth != null && (
+        (userDoc.memberships != null && orgId in userDoc.memberships) ||
+        orgId == userDoc.personalOrganizationId ||
+        orgId == userDoc.organizationId
+      );
+    }
+
     // Check if user belongs to the same organization as the project
     function isInProjectOrg(data) {
-      return request.auth != null && data.organizationId == getUserDoc().organizationId;
+      return hasTenantAccess(data.organizationId);
+    }
+
+    // Check if the user has scoped project access (if scoped)
+    function hasProjectScopeAccess(projectId, projectData) {
+      let userDoc = getUserDoc();
+      let orgId = projectData.organizationId;
+      return userDoc == null
+        || !('membershipScopes' in userDoc)
+        || !(orgId in userDoc.membershipScopes)
+        || !userDoc.membershipScopes[orgId].isScoped
+        || (projectId in userDoc.membershipScopes[orgId].scopedProjectIds);
+    }
+
+    // Check if user belongs to the same organization as the project and has scope access
+    function canAccessProject(projectId, projectData) {
+      return hasTenantAccess(projectData.organizationId) && hasProjectScopeAccess(projectId, projectData);
     }
 
     // Role hierarchy checks — returns true if user's project role is in the allowed set
@@ -36,16 +62,38 @@ service cloud.firestore {
       return get(/databases/$(database)/documents/projects/$(projectId)).data.status in ['closed_won', 'closed_lost'];
     }
 
+    // ─── NEW: Vendor type helper ────────────────────────────────────────
+    // Returns the vendor type from the project's members map for the current user.
+    // Vendor type is stored in members[uid].role (e.g. 'Vendor', 'Lender')
+    // or more granularly in members[uid].vendorType for scoped writes.
+    function getProjectMemberData(projectId) {
+      let project = get(/databases/$(database)/documents/projects/$(projectId)).data;
+      return project.members[request.auth.uid];
+    }
+
+    // Check if the current user is the project owner
+    function isProjectOwner(projectId) {
+      return get(/databases/$(database)/documents/projects/$(projectId)).data.ownerUid == request.auth.uid;
+    }
+
     // ─── Organizations ─────────────────────────────────────────────────
     // Only the organization owner can write; members can read their own org.
     match /organizations/{orgId} {
       allow read: if request.auth != null
-                  && getUserDoc().organizationId == orgId;
+                  && hasTenantAccess(orgId);
       allow create: if request.auth != null
                     && request.resource.data.ownerUid == request.auth.uid;
       allow update: if request.auth != null
                     && resource.data.ownerUid == request.auth.uid;
       allow delete: if false; // Orgs are never client-deleted
+
+      // ─── Metric Snapshots (Org Sub-Collection) ─────────────────────
+      // Read-only for org members. Writes are server-side (Admin SDK).
+      match /metricSnapshots/{snapshotId} {
+        allow read: if request.auth != null
+                    && hasTenantAccess(orgId);
+        allow write: if false; // Admin SDK only
+      }
     }
 
     // ─── Users ─────────────────────────────────────────────────────────
@@ -55,6 +103,29 @@ service cloud.firestore {
       allow create: if request.auth != null && request.auth.uid == userId;
       allow update: if request.auth != null && request.auth.uid == userId;
       allow delete: if false; // User docs are never client-deleted
+
+      // ─── Sessions (Sub-Collection) ───────────────────────────────────
+      match /sessions/{sessionId} {
+        allow read: if request.auth != null && request.auth.uid == userId;
+        allow create: if request.auth != null && request.auth.uid == userId;
+        allow update: if request.auth != null && request.auth.uid == userId && request.resource.data.isValid == false;
+        allow delete: if request.auth != null && request.auth.uid == userId;
+      }
+
+      // ─── Vendor Inbox (Sub-Collection) ──────────────────────────────
+      // Vendors can read their own inbox items and update status only.
+      // Creates are server-side via Admin SDK (batch writes).
+      match /vendorInbox/{inboxItemId} {
+        allow read: if request.auth != null && request.auth.uid == userId;
+
+        // Vendor can update status field only (accept/decline)
+        allow update: if request.auth != null
+                      && request.auth.uid == userId
+                      && request.resource.data.diff(resource.data).affectedKeys()
+                         .hasOnly(['status']);
+
+        allow create, delete: if false; // Server-side only
+      }
     }
 
     // ─── Projects ──────────────────────────────────────────────────────
@@ -63,30 +134,33 @@ service cloud.firestore {
     // Only Lead Investor can delete.
     match /projects/{projectId} {
       allow read: if request.auth != null
-                  && isInProjectOrg(resource.data);
+                  && canAccessProject(projectId, resource.data);
 
       allow create: if request.auth != null
-                    && request.resource.data.ownerUid == request.auth.uid;
+                    && request.resource.data.ownerUid == request.auth.uid
+                    && (getUserDoc().subscriptionPlan in ['Individual', 'Team'])
+                    && (getUserDoc().subscriptionStatus in ['active', 'trialing', 'past_due']);
 
       allow update: if request.auth != null
                     && hasRole(projectId, ['Lead Investor', 'General Contractor'])
-                    && isInProjectOrg(resource.data)
+                    && canAccessProject(projectId, resource.data)
                     && !isProjectClosed(projectId);
 
       allow delete: if request.auth != null
                     && hasRole(projectId, ['Lead Investor'])
+                    && canAccessProject(projectId, resource.data)
                     && !isProjectClosed(projectId);
 
       // ─── Ledger Items (Sub-Collection) ─────────────────────────────
       // All project members can read. Only finance-authorized roles can write.
       match /ledgerItems/{itemId} {
         allow read: if request.auth != null
-                    && isInProjectOrg(get(/databases/$(database)/documents/projects/$(projectId)).data);
+                    && canAccessProject(projectId, get(/databases/$(database)/documents/projects/$(projectId)).data);
 
         // Lead Investor, General Contractor, and Accountant can create items
         allow create: if request.auth != null
                       && hasRole(projectId, ['Lead Investor', 'General Contractor', 'Accountant'])
-                      && request.resource.data.organizationId == getUserDoc().organizationId
+                      && canAccessProject(projectId, get(/databases/$(database)/documents/projects/$(projectId)).data)
                       && !isProjectClosed(projectId);
 
         // Only Lead Investor and Accountant can approve/reject (update)
@@ -104,7 +178,7 @@ service cloud.firestore {
       // Snapshots are immutable once captured to preserve historical accuracy.
       match /phaseSnapshots/{phaseKey} {
         allow read: if request.auth != null
-                    && isInProjectOrg(get(/databases/$(database)/documents/projects/$(projectId)).data);
+                    && canAccessProject(projectId, get(/databases/$(database)/documents/projects/$(projectId)).data);
 
         // Allow Lead Investor to create a snapshot, but not update or delete it
         allow create: if request.auth != null
@@ -114,6 +188,58 @@ service cloud.firestore {
         allow update, delete: if false;
       }
 
+      // ─── Vendor Requests (Sub-Collection) ──────────────────────────
+      // ENHANCED: Tighter read/write with vendor-scoped access.
+      // Read: project org members OR the referenced vendor
+      // Create: authenticated project org members (subscription enforced in API)
+      // Update: project org members (for status changes) OR the referenced vendor (for submitting quotes)
+      match /vendorRequests/{requestId} {
+        allow read: if request.auth != null
+                    && (canAccessProject(projectId, get(/databases/$(database)/documents/projects/$(projectId)).data)
+                        || request.auth.uid == resource.data.vendorUid);
+
+        allow create: if request.auth != null
+                      && canAccessProject(projectId, get(/databases/$(database)/documents/projects/$(projectId)).data);
+
+        // Vendors can update quote-related fields only; org members can update status
+        allow update: if request.auth != null
+                      && (
+                        // Org members (Lead Investor etc.) can update any field
+                        canAccessProject(projectId, get(/databases/$(database)/documents/projects/$(projectId)).data)
+                        // The vendor can only update quote-related fields
+                        || (request.auth.uid == resource.data.vendorUid
+                            && request.resource.data.diff(resource.data).affectedKeys()
+                               .hasOnly(['status', 'quotedFee', 'message', 'quotedAt']))
+                      );
+
+        allow delete: if false; // Vendor requests are never client-deleted
+      }
+
+      // ─── Vendor Assignments (Sub-Collection) ──────────────────────
+      // Project-scoped vendor assignment lifecycle.
+      match /vendorAssignments/{assignmentId} {
+        allow read: if request.auth != null
+                    && (canAccessProject(projectId, get(/databases/$(database)/documents/projects/$(projectId)).data)
+                        || request.auth.uid == resource.data.vendorId);
+
+        // Only project org members can create assignments
+        allow create: if request.auth != null
+                      && canAccessProject(projectId, get(/databases/$(database)/documents/projects/$(projectId)).data)
+                      && !isProjectClosed(projectId);
+
+        // Vendors can accept/decline (status only); project members can update more
+        allow update: if request.auth != null
+                      && !isProjectClosed(projectId)
+                      && (
+                        canAccessProject(projectId, get(/databases/$(database)/documents/projects/$(projectId)).data)
+                        || (request.auth.uid == resource.data.vendorId
+                            && request.resource.data.diff(resource.data).affectedKeys()
+                               .hasOnly(['status', 'respondedAt', 'quotedFee', 'updatedAt']))
+                      );
+
+        allow delete: if false;
+      }
+
       // ─── Private Financials (Sub-Collection) ───────────────────────
       // This is the True Field-Level Security workaround.
       // Only Lead Investor, Accountant, and Lender can read.
@@ -121,12 +247,76 @@ service cloud.firestore {
       // as a fallback for the Engine Room recalculation.
       match /privateFinancials/{docId} {
         allow read: if request.auth != null
-                    && isInProjectOrg(get(/databases/$(database)/documents/projects/$(projectId)).data);
+                    && canAccessProject(projectId, get(/databases/$(database)/documents/projects/$(projectId)).data);
 
         allow write: if request.auth != null
                      && hasRole(projectId, ['Lead Investor'])
                      && !isProjectClosed(projectId);
       }
+
+      // ─── Investors (Sub-Collection) ───────────────────────────────
+      // ENHANCED: Investor commitment tracking.
+      // Read: all project org members.
+      // Create: Lead Investor (invites) or the investor themselves (self-commitment).
+      // Update: investors can only update their own commitment entry.
+      match /investors/{investorId} {
+        allow read: if request.auth != null
+                    && canAccessProject(projectId, get(/databases/$(database)/documents/projects/$(projectId)).data);
+
+        // Lead Investor can create commitment entries (invitations)
+        allow create: if request.auth != null
+                      && (hasRole(projectId, ['Lead Investor'])
+                          || request.auth.uid == investorId);
+
+        // Investors can only update their own commitment
+        // (confirming pledge, updating amount)
+        allow update: if request.auth != null
+                      && request.auth.uid == investorId
+                      && request.resource.data.diff(resource.data).affectedKeys()
+                         .hasOnly(['status', 'confirmedAt', 'contributionAmount', 'equityPercentage']);
+
+        allow delete: if request.auth != null
+                      && hasRole(projectId, ['Lead Investor']);
+      }
+
+      // ─── Messages (Sub-Collection) ────────────────────────────────
+      // Project-level message board.
+      match /messages/{messageId} {
+        allow read: if request.auth != null
+                    && canAccessProject(projectId, get(/databases/$(database)/documents/projects/$(projectId)).data);
+
+        allow create: if request.auth != null
+                      && canAccessProject(projectId, get(/databases/$(database)/documents/projects/$(projectId)).data);
+
+        allow update, delete: if false; // Messages are immutable
+      }
+
+      // ─── Field History (Sub-Collection) ────────────────────────────
+      // Audit trail for field-level changes.
+      match /fieldHistory/{historyId} {
+        allow read: if request.auth != null
+                    && canAccessProject(projectId, get(/databases/$(database)/documents/projects/$(projectId)).data);
+
+        allow write: if false; // Server-side only
+      }
+    }
+
+    // ─── Property Metric Snapshots ─────────────────────────────────────
+    // ENHANCED: Top-level collection. Client reads require project access.
+    // Client writes are DENIED — only Cloud Functions / Admin SDK can write.
+    match /propertyMetricSnapshots/{snapshotId} {
+      allow read: if request.auth != null
+                  && hasTenantAccess(resource.data.organizationId);
+
+      // Deny all client writes — only Admin SDK / Cloud Functions
+      allow create, update, delete: if false;
+    }
+
+    // ─── Stripe Events ────────────────────────────────────────────────
+    // ENHANCED: Fully locked. Only accessible via Admin SDK (webhook handler).
+    // No client should ever read or write billing/payment event data.
+    match /stripe_events/{eventId} {
+      allow read, write: if false;
     }
 
     // ─── Waitlist (Landing Page Lead Capture) ──────────────────────────
@@ -136,12 +326,150 @@ service cloud.firestore {
       allow read, update, delete: if false;
     }
 
+    // ─── Inbox Items ───────────────────────────────────────────────────
+    // Top-level collection. Server (Admin SDK) creates and deletes items.
+    // Recipients can read their own items and update state fields only.
+    match /inboxItems/{itemId} {
+      allow read: if request.auth != null
+                  && resource.data.recipientUid == request.auth.uid;
+
+      // Recipients can update read/archived/actionTaken/readAt only
+      allow update: if request.auth != null
+                    && resource.data.recipientUid == request.auth.uid
+                    && request.resource.data.diff(resource.data).affectedKeys()
+                       .hasOnly(['read', 'archived', 'actionTaken', 'readAt']);
+
+      // Creates and deletes are server-side only (Admin SDK bypasses rules)
+      allow create, delete: if false;
+    }
+
+    // ─── Notifications ─────────────────────────────────────────────────
+    // ENHANCED: Top-level collection. Server (Admin SDK) creates and deletes items.
+    // Recipients can read their own notifications and update state fields only.
+    // Uses recipientId field (not userId) per NotificationService.
+    match /notifications/{notificationId} {
+      allow read: if request.auth != null
+                  && resource.data.recipientId == request.auth.uid;
+
+      // Recipients can update read/archived/readAt only
+      allow update: if request.auth != null
+                    && resource.data.recipientId == request.auth.uid
+                    && request.resource.data.diff(resource.data).affectedKeys()
+                       .hasOnly(['read', 'archived', 'readAt']);
+
+      // Creates and deletes are server-side only (Admin SDK bypasses rules)
+      allow create, delete: if false;
+    }
+
+    // ─── Invitations ──────────────────────────────────────────────────
+    // Server-managed. No client reads/writes (Admin SDK bypasses rules).
+    match /invitations/{invitationId} {
+      allow read, write: if false;
+    }
+
+    // ─── Team Invitations ─────────────────────────────────────────────
+    // ENHANCED: Server-managed lifecycle. No client reads/writes.
+    match /teamInvitations/{invitationId} {
+      allow read, write: if false;
+    }
+
     // ─── Audit Log ─────────────────────────────────────────────────────
     // Immutable append-only log. Only server should write, but we allow
     // authenticated creates. No reads, updates, or deletes from client.
     match /auditLog/{logId} {
       allow create: if request.auth != null;
       allow read, update, delete: if false;
+    }
+
+    // ─── Audit Logs (alternate collection names) ──────────────────────
+    // Some code paths may reference these; lock them down identically.
+    match /auditLogs/{logId} {
+      allow create: if request.auth != null;
+      allow read, update, delete: if false;
+    }
+
+    match /audit_logs/{logId} {
+      allow create: if request.auth != null;
+      allow read, update, delete: if false;
+    }
+
+    // ─── Queued Emails ────────────────────────────────────────────────
+    // Server-side only. Processed by cron jobs and Cloud Functions.
+    match /queued_emails/{emailId} {
+      allow read, write: if false;
+    }
+
+    // ─── Pending Subscriptions ────────────────────────────────────────
+    // Server-side only. Created during Stripe checkout flow.
+    match /pending_subscriptions/{subId} {
+      allow read, write: if false;
+    }
+
+    // ─── Support Tickets ──────────────────────────────────────────────
+    // Users can create support tickets. Only read own tickets.
+    match /support_tickets/{ticketId} {
+      allow read: if request.auth != null
+                  && resource.data.userId == request.auth.uid;
+
+      allow create: if request.auth != null
+                    && request.resource.data.userId == request.auth.uid;
+
+      allow update, delete: if false; // Admin SDK only
+    }
+
+    // ─── Support Messages ─────────────────────────────────────────────
+    // Users can read messages on their own tickets. Creates are server-side.
+    match /support_messages/{messageId} {
+      allow read: if request.auth != null
+                  && resource.data.userId == request.auth.uid;
+
+      allow create: if request.auth != null
+                    && request.resource.data.userId == request.auth.uid;
+
+      allow update, delete: if false;
+    }
+
+    // ─── Investment Tokens ────────────────────────────────────────────
+    // Guest portal access tokens. Server-managed.
+    match /investmentTokens/{tokenId} {
+      allow read, write: if false;
+    }
+
+    // ─── LOI Documents ────────────────────────────────────────────────
+    // Letter of Intent documents. Server-managed.
+    match /loi/{loiId} {
+      allow read, write: if false;
+    }
+
+    // ─── Vendor Assignments (top-level, if referenced) ────────────────
+    // Legacy or cross-project vendor assignment queries.
+    match /vendorAssignments/{assignmentId} {
+      allow read, write: if false; // Use project subcollection instead
+    }
+
+    // ─── Vendor Inbox (top-level, if referenced) ──────────────────────
+    // Legacy reference. Actual inbox is users/{uid}/vendorInbox.
+    match /vendorInbox/{itemId} {
+      allow read, write: if false; // Use user subcollection instead
+    }
+
+    // ─── Financials (top-level, if referenced) ────────────────────────
+    match /financials/{docId} {
+      allow read, write: if false; // Use project subcollection privateFinancials
+    }
+
+    // ─── Metric Snapshots (top-level, legacy) ─────────────────────────
+    // Legacy top-level collection. Prefer org subcollection.
+    match /metricSnapshots/{snapshotId} {
+      allow read: if request.auth != null
+                  && hasTenantAccess(resource.data.organizationId);
+      allow write: if false; // Admin SDK only
+    }
+
+    // ─── Demo Mode (Public document for guest read-only view) ─────────────────
+    match /demo/default {
+      allow read: if true;
+      allow write: if false;
     }
 
     // ─── Default: Deny All ─────────────────────────────────────────────

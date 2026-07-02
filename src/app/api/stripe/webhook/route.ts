@@ -2,15 +2,39 @@ import { NextResponse } from 'next/server';
 import Stripe from 'stripe';
 import { adminDb } from '@/lib/firebase/admin';
 import { FieldValue } from 'firebase-admin/firestore';
+import { Resend } from 'resend';
+import { enforceProjectLimitsOnDowngrade } from '@/lib/entitlements/server';
+import { CommunicationEngine } from '@/lib/engine/CommunicationEngine';
 
 // Webhook must never be cached and may need extra time for Firestore batch writes
 export const dynamic = 'force-dynamic';
 export const maxDuration = 30;
 
+const resend = process.env.RESEND_API_KEY ? new Resend(process.env.RESEND_API_KEY) : null;
+const FROM_EMAIL = process.env.RESEND_FROM_EMAIL || 'notifications@paperworking.co';
+
+async function sendStripeEmail(to: string, subject: string, html: string) {
+  if (!resend) {
+    console.log(`[Stripe Webhook] Email mocked (no RESEND_API_KEY). To: ${to}, Subject: ${subject}`);
+    return;
+  }
+  try {
+    await resend.emails.send({
+      from: FROM_EMAIL,
+      to,
+      subject,
+      html,
+    });
+    console.log(`[Stripe Webhook] Email sent successfully to ${to}`);
+  } catch (error) {
+    console.error('[Stripe Webhook] Non-fatal error sending email:', error);
+  }
+}
+
 function getStripe() {
   const key = process.env.STRIPE_SECRET_KEY;
   if (!key) throw new Error('STRIPE_SECRET_KEY is not set');
-  return new Stripe(key, { apiVersion: '2026-03-25.dahlia' });
+  return new Stripe(key, { apiVersion: '2026-04-22.dahlia' });
 }
 
 const endpointSecret = process.env.STRIPE_WEBHOOK_SECRET;
@@ -90,6 +114,78 @@ async function updateUserAndOrg(
   await batch.commit();
 }
 
+/**
+ * Applies the 'referral-one-month-free' coupon to both referee and referrer.
+ */
+async function applyReferralRewards(
+  refereeUid: string,
+  _refereeStripeCustomerId: string,
+  refereeSubscriptionId: string,
+  stripe: Stripe
+): Promise<void> {
+  const refereeDocRef = adminDb.collection('users').doc(refereeUid);
+  const refereeDoc = await refereeDocRef.get();
+  const refereeData = refereeDoc.data();
+
+  if (!refereeData || refereeData.referralRewardApplied || !refereeData.referredBy) {
+    return;
+  }
+
+  const referrerCode = refereeData.referredBy;
+  console.log(`[Referrals] Applying rewards: Referee ${refereeUid} referred by code ${referrerCode}`);
+
+  // 1. Find the referrer by their referralCode
+  const referrerQuery = await adminDb
+    .collection('users')
+    .where('referralCode', '==', referrerCode)
+    .limit(1)
+    .get();
+
+  if (referrerQuery.empty) {
+    console.warn(`[Referrals] Referrer not found for code: ${referrerCode}`);
+    return;
+  }
+
+  const referrerDoc = referrerQuery.docs[0];
+  const referrerUid = referrerDoc.id;
+  const referrerData = referrerDoc.data();
+
+  // 2. Apply Coupon to Referee's active subscription
+  try {
+    await stripe.subscriptions.update(refereeSubscriptionId, {
+      discounts: [{ coupon: 'referral-one-month-free' }],
+    });
+    console.log(`[Referrals] Applied coupon to Referee subscription: ${refereeSubscriptionId}`);
+  } catch (err: any) {
+    console.error(`[Referrals] Failed to apply coupon to Referee subscription:`, err.message);
+  }
+
+  // 3. Apply Coupon to Referrer
+  if (referrerData?.stripeSubscriptionId) {
+    try {
+      await stripe.subscriptions.update(referrerData.stripeSubscriptionId, {
+        discounts: [{ coupon: 'referral-one-month-free' }],
+      });
+      console.log(`[Referrals] Applied coupon to Referrer active subscription: ${referrerData.stripeSubscriptionId}`);
+    } catch (err: any) {
+      console.error(`[Referrals] Failed to apply coupon to Referrer subscription:`, err.message);
+    }
+  }
+
+  // 4. Update Referee user document to mark reward as applied
+  await refereeDocRef.update({
+    referralRewardApplied: true,
+    referralRewardAppliedAt: FieldValue.serverTimestamp(),
+  });
+
+  // 5. Increment Referrer count
+  await adminDb.collection('users').doc(referrerUid).update({
+    referralCount: FieldValue.increment(1),
+  });
+
+  console.log(`[Referrals] Successfully recorded referral reward applications.`);
+}
+
 /* ═══════════════════════════════════════════════════════
    POST /api/stripe/webhook
    ═══════════════════════════════════════════════════════ */
@@ -154,11 +250,11 @@ export async function POST(request: Request) {
             // No user found — store the session for later linking when user signs in
             console.log(`[Stripe Webhook] Guest checkout for ${session.customer_details.email} — will link on sign-in`);
             await adminDb.collection('pending_subscriptions').doc(session.customer_details.email).set({
-              plan,
-              stripeCustomerId: session.customer as string,
-              stripeSubscriptionId: session.subscription as string,
+              plan: plan || null,
+              stripeCustomerId: session.customer ? (session.customer as string) : null,
+              stripeSubscriptionId: session.subscription ? (session.subscription as string) : null,
               subscriptionStatus: actualStatus,
-              trialEnd,
+              trialEnd: trialEnd || null,
               sessionId: session.id,
               customerEmail: session.customer_details.email,
               createdAt: FieldValue.serverTimestamp(),
@@ -175,48 +271,124 @@ export async function POST(request: Request) {
             stripeSubscriptionId: session.subscription as string,
             ...(trialEnd ? { trialEnd } : {}),
           });
+
+          // Apply referral reward if immediately active
+          if (actualStatus === 'active' && session.subscription) {
+            await applyReferralRewards(userId, session.customer as string, session.subscription as string, stripe);
+          }
+
+          // Send welcome/subscription created email
+          const userDoc = await adminDb.collection('users').doc(userId).get();
+          const email = userDoc.data()?.email;
+          if (email) {
+            const subject = 'Welcome to PaperWorking Pro!';
+            const html = '<p>Your subscription is now active. Thank you for upgrading!</p>';
+            // Non-blocking fire and forget
+            sendStripeEmail(email, subject, html).catch(() => {});
+          }
         }
         break;
       }
 
       // =========================================================
-      // TRIAL ENDING SOON — 3 days before trial converts to paid
-      // Stripe fires this automatically; log it for email triggers.
+      // TRIAL ENDING SOON — Stripe fires 3 days before trial converts.
+      // Tell the user exactly when they will be charged and how much.
       // =========================================================
       case 'customer.subscription.trial_will_end': {
         const subscription = event.data.object as Stripe.Subscription;
         const stripeCustomerId = subscription.customer as string;
 
+        console.log(`[Stripe Webhook] trial_will_end for customer: ${stripeCustomerId}`);
+
         const uid = await resolveUidFromStripeCustomer(stripeCustomerId);
         if (uid) {
-          const trialEndDate = subscription.trial_end
-            ? new Date(subscription.trial_end * 1000).toISOString()
-            : null;
+          const trialEndTs  = subscription.trial_end ?? null;
+          const trialEndIso = trialEndTs ? new Date(trialEndTs * 1000).toISOString() : null;
+          const trialEndFmt = trialEndTs
+            ? new Date(trialEndTs * 1000).toLocaleDateString('en-US', {
+                month: 'long', day: 'numeric', year: 'numeric',
+              })
+            : 'soon';
+
+          // Resolve charge amount from the first subscription item
+          const unitAmount  = subscription.items.data[0]?.price?.unit_amount ?? 0;
+          const currency    = (subscription.items.data[0]?.price?.currency ?? 'usd').toUpperCase();
+          const amountFmt   = new Intl.NumberFormat('en-US', {
+            style: 'currency', currency,
+          }).format(unitAmount / 100);
+
           await updateUserAndOrg(uid, {
             trialEndingSoon: true,
-            trialEnd: trialEndDate,
+            trialEnd: trialEndIso,
           });
-          console.log(`[Stripe Webhook] Trial ending soon for user ${uid}, trial_end: ${trialEndDate}`);
-          // TODO: trigger transactional email via your email provider here
+
+          console.log(`[Stripe Webhook] Trial ending soon for user ${uid}, trial_end: ${trialEndIso}, charge: ${amountFmt}`);
+
+          const userDoc = await adminDb.collection('users').doc(uid).get();
+          const email   = userDoc.data()?.email;
+          if (email) {
+            const appUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://paperworking.co';
+            const subject = `Your PaperWorking Trial Ends ${trialEndFmt}`;
+            const html = `
+              <p>Your 14-day free trial ends on <strong>${trialEndFmt}</strong>.</p>
+              <p>On that date your card on file will be charged <strong>${amountFmt}</strong> and your subscription will continue automatically.</p>
+              <p>If you'd like to cancel before being charged, you can do so at any time from your
+              <a href="${appUrl}/dashboard/settings/billing">billing settings</a>.</p>
+            `;
+            CommunicationEngine.sendRawEmail([email], subject, html).catch(() => {});
+          }
         }
         break;
       }
 
       // =========================================================
-      // INVOICE PAID — Renewal confirmation (skip initial create)
+      // INVOICE PAID — Renewal confirmation.
+      //
+      // Fires for every paid invoice EXCEPT the initial subscription_create
+      // (already handled in checkout.session.completed). This includes:
+      //   • subscription_cycle  — trial-to-paid conversion OR monthly/annual renewal
+      //   • manual              — one-off invoices
+      //
+      // Trial conversion (first real charge on day 15) is emailed from
+      // customer.subscription.updated below. We detect it here by checking
+      // whether trial_end is within the last 24 h and skip the renewal email
+      // to avoid a duplicate "Subscription Renewed" message.
       // =========================================================
       case 'invoice.payment_succeeded': {
         const invoice = event.data.object as Stripe.Invoice;
         const stripeCustomerId = invoice.customer as string;
 
-        // Skip the initial subscription creation invoice — already handled above
+        // Skip initial subscription creation — handled in checkout.session.completed
         if (invoice.billing_reason === 'subscription_create') break;
+
+        // Skip trial-conversion invoice — subscription.updated handles that email.
+        // Cast to any: the dahlia API version surfaces subscription on the
+        // parent object; using any avoids a brittle version-specific shape.
+        const invoiceAny = invoice as any;
+        const invoiceSubId: string | null = invoiceAny.subscription ?? invoiceAny.parent?.subscription_details?.subscription ?? null;
+        if (invoice.billing_reason === 'subscription_cycle' && invoiceSubId) {
+          try {
+            const sub = await stripe.subscriptions.retrieve(invoiceSubId);
+            const trialEndedRecently =
+              sub.trial_end !== null &&
+              Date.now() / 1000 - sub.trial_end < 86_400; // within 24 h
+            if (trialEndedRecently) break;
+          } catch (e) {
+            console.warn('[Stripe Webhook] Could not check trial_end for dedup:', e);
+          }
+        }
 
         const uid = await resolveUidFromStripeCustomer(stripeCustomerId);
         if (uid) {
-          await updateUserAndOrg(uid, {
-            subscriptionStatus: 'active',
-          });
+          await updateUserAndOrg(uid, { subscriptionStatus: 'active' });
+
+          const userDoc = await adminDb.collection('users').doc(uid).get();
+          const email   = userDoc.data()?.email;
+          if (email) {
+            const subject = 'Your PaperWorking Subscription Renewed';
+            const html    = '<p>Your subscription has been successfully renewed. You can view your invoice in your billing settings.</p>';
+            sendStripeEmail(email, subject, html).catch(() => {});
+          }
         }
         break;
       }
@@ -233,12 +405,23 @@ export async function POST(request: Request) {
           await updateUserAndOrg(uid, {
             subscriptionStatus: 'past_due',
           });
+
+          // Alert the user about the failed payment
+          const userDoc = await adminDb.collection('users').doc(uid).get();
+          const email = userDoc.data()?.email;
+          if (email) {
+            const subject = 'Action Required: Payment Failed';
+            const html = '<p>We were unable to process your latest payment. Please update your payment method in billing settings to avoid service interruption.</p>';
+            sendStripeEmail(email, subject, html).catch(() => {});
+          }
         }
         break;
       }
 
       // =========================================================
-      // SUBSCRIPTION DELETED — Full cancellation
+      // SUBSCRIPTION DELETED — Full cancellation + graceful downgrade
+      // Projects are never deleted. Excess projects beyond the
+      // new plan's limit are marked readOnly (visible + exportable).
       // =========================================================
       case 'customer.subscription.deleted': {
         const subscription = event.data.object as Stripe.Subscription;
@@ -251,6 +434,22 @@ export async function POST(request: Request) {
             subscriptionPlan: 'None',
             stripeSubscriptionId: null,
           });
+
+          // Graceful downgrade: mark excess projects as readOnly
+          const { markedReadOnly } = await enforceProjectLimitsOnDowngrade(uid, 'none');
+          if (markedReadOnly.length > 0) {
+            console.log(
+              `[Stripe Webhook] Downgrade: ${markedReadOnly.length} projects marked readOnly for user ${uid}`
+            );
+          }
+
+          const userDoc = await adminDb.collection('users').doc(uid).get();
+          const email = userDoc.data()?.email;
+          if (email) {
+            const subject = 'Your PaperWorking Subscription Has Been Canceled';
+            const html = '<p>Your subscription has been canceled. You can resubscribe at any time from your billing settings.</p>';
+            sendStripeEmail(email, subject, html).catch(() => {});
+          }
         }
         break;
       }
@@ -280,14 +479,65 @@ export async function POST(request: Request) {
           // Track cancellation scheduling
           if (subscription.cancel_at_period_end) {
             updateData.cancelAtPeriodEnd = true;
-            updateData.currentPeriodEnd = subscription.current_period_end
-              ? new Date(subscription.current_period_end * 1000).toISOString()
+            updateData.currentPeriodEnd = (subscription as any).current_period_end
+              ? new Date((subscription as any).current_period_end * 1000).toISOString()
               : null;
           } else {
             updateData.cancelAtPeriodEnd = false;
           }
 
           await updateUserAndOrg(uid, updateData);
+
+          // Detect trialing → active conversion (trial ended, card charged on day 15)
+          const previousStatus = (event.data.previous_attributes as any)?.status;
+          if (previousStatus === 'trialing' && mappedStatus === 'active') {
+            // Resolve charge amount for the "you were charged" email
+            const unitAmount = subscription.items.data[0]?.price?.unit_amount ?? 0;
+            const currency   = (subscription.items.data[0]?.price?.currency ?? 'usd').toUpperCase();
+            const amountFmt  = new Intl.NumberFormat('en-US', {
+              style: 'currency', currency,
+            }).format(unitAmount / 100);
+
+            // Mark conversion date in Firestore (used by invoice dedup logic)
+            await updateUserAndOrg(uid, { trialConvertedAt: FieldValue.serverTimestamp() });
+
+            // Send "your card was charged today" email
+            const userDoc2 = await adminDb.collection('users').doc(uid).get();
+            const email2   = userDoc2.data()?.email;
+            if (email2) {
+              const appUrl  = process.env.NEXT_PUBLIC_APP_URL || 'https://paperworking.co';
+              const subject = 'Your PaperWorking Trial Has Ended — You\'ve Been Charged';
+              const html    = `
+                <p>Your 14-day free trial has ended.</p>
+                <p>Your card on file has been charged <strong>${amountFmt}</strong> for your
+                ${planFromMeta ?? 'PaperWorking'} subscription.</p>
+                <p>Your subscription will renew automatically each billing period.
+                You can manage or cancel at any time from your
+                <a href="${appUrl}/dashboard/settings/billing">billing settings</a>.</p>
+              `;
+              sendStripeEmail(email2, subject, html).catch(() => {});
+            }
+
+            // PostHog: trial_converted_to_paid
+            const phKey = process.env.NEXT_PUBLIC_POSTHOG_KEY;
+            if (phKey) {
+              fetch('https://app.posthog.com/capture/', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                  api_key: phKey,
+                  event: 'trial_converted_to_paid',
+                  distinct_id: uid,
+                  properties: { plan: planFromMeta ?? 'unknown', subscriptionId: subscription.id },
+                }),
+              }).catch(() => { /* non-fatal */ });
+            }
+          }
+
+          // Apply referral reward when subscription transitions to active
+          if (mappedStatus === 'active') {
+            await applyReferralRewards(uid, stripeCustomerId, subscription.id, stripe);
+          }
         }
         break;
       }

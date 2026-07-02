@@ -1,211 +1,366 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
-import { motion, useScroll, useTransform, AnimatePresence } from 'framer-motion';
-import { Menu, X } from 'lucide-react';
+import { AnimatePresence, motion } from 'framer-motion';
 import Logo from '@/components/brand/Logo';
+import { useTheme } from '@/lib/utils/ThemeProvider';
 
 /* ═══════════════════════════════════════════════════════
-   LandingHeader — Responsive with mobile hamburger menu
-   
-   Breakpoints:
-     < md  → hamburger (mobile / small tablet)
-     ≥ md  → full horizontal nav
+   LandingHeader — Antigravity-style sticky nav.
+
+   Desktop nav (L → R):
+     Logo  |  Home  How It Works▾  Pricing  Support  |  Sign In  [Start 14-Day Free Trial]
+
+   Scroll behaviour:
+     default  → bg/92 + blur(16px) + border-b
+     scrolled → bg/96 + blur(20px) + border-b + subtle shadow
    ═══════════════════════════════════════════════════════ */
+
+const HOW_IT_WORKS_ITEMS = [
+  { icon: 'search_home', title: 'Acquisition', subtitle: 'Source deals and secure capital.' },
+  { icon: 'verified_user', title: 'Fund', subtitle: 'Contracts, title and compliance.' },
+  { icon: 'construction', title: 'Hold', subtitle: 'Budgets, bids and contractor tracking.' },
+  { icon: 'account_balance', title: 'Exit', subtitle: 'NOI tracking and ROI reporting.' },
+];
 
 export default function LandingHeader() {
   const [mobileOpen, setMobileOpen] = useState(false);
-  const { scrollY } = useScroll();
-  const headerOpacity = useTransform(scrollY, [0, 50], [0, 0.92]);
-  const backdropFilter = useTransform(
-    scrollY,
-    [0, 50],
-    ['blur(0px)', 'blur(12px)']
-  );
+  const [scrolled, setScrolled]     = useState(false);
+  const [howOpen, setHowOpen]       = useState(false);
+  const dropRef  = useRef<HTMLDivElement>(null);
+  const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const { theme, toggleTheme } = useTheme();
+  const [mounted, setMounted] = useState(false);
+  const isDark = theme === 'dark';
+
+  useEffect(() => {
+    setMounted(true);
+    const onScroll = () => setScrolled(window.scrollY > 40);
+    window.addEventListener('scroll', onScroll, { passive: true });
+    return () => window.removeEventListener('scroll', onScroll);
+  }, []);
+
+  useEffect(() => {
+    const onOut = (e: MouseEvent) => {
+      if (dropRef.current && !dropRef.current.contains(e.target as Node)) {
+        setHowOpen(false);
+      }
+    };
+    document.addEventListener('mousedown', onOut);
+    return () => document.removeEventListener('mousedown', onOut);
+  }, []);
+
+  const enterDrop = () => { if (timerRef.current) clearTimeout(timerRef.current); setHowOpen(true); };
+  const leaveDrop = () => { timerRef.current = setTimeout(() => setHowOpen(false), 100); };
 
   return (
     <>
-      <motion.header className="fixed w-full top-0 z-50 border-b border-transparent">
-        <motion.div
-          style={{ opacity: headerOpacity, backdropFilter }}
-          className="absolute inset-0 bg-[var(--pw-bg)]"
-        />
-        <div className="relative mx-auto max-w-7xl px-5 sm:px-6 lg:px-8">
-          <div className="flex h-16 sm:h-20 items-center justify-between">
-            {/* ── Logo ── */}
-            <div className="flex items-center gap-8 shrink-0">
-              <Logo size="sm" />
-            </div>
+      {/* ──────────────────────── HEADER ──────────────────────── */}
+      <header
+        className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
+          scrolled
+            ? 'shadow-[0_1px_12px_0_rgba(0,0,0,0.08)] dark:shadow-[0_1px_12px_0_rgba(0,0,0,0.4)]'
+            : ''
+        }`}
+        style={{
+          /* Light mode: warm white / Dark mode: warm black — both with blur */
+          backgroundColor: scrolled
+            ? 'color-mix(in srgb, var(--color-background) 96%, transparent)'
+            : 'color-mix(in srgb, var(--color-background) 90%, transparent)',
+          backdropFilter: `blur(${scrolled ? '20px' : '16px'})`,
+          WebkitBackdropFilter: `blur(${scrolled ? '20px' : '16px'})`,
+          borderBottom: '1px solid color-mix(in srgb, var(--color-on-background) 7%, transparent)',
+        }}
+      >
+        <nav
+          className="flex items-center justify-between h-16 md:h-[72px] px-5 md:px-10 max-w-[1280px] mx-auto"
+          aria-label="Main navigation"
+        >
 
-            {/* ── Desktop Nav (≥ md) ── */}
-            <nav className="hidden md:flex gap-10 items-center" aria-label="Global">
-              <Link
-                href="/#how-it-works"
-                className="text-sm font-medium text-[var(--pw-subtle)] hover:text-[var(--pw-black)] transition-colors"
-              >
-                How It Works
-              </Link>
-              <Link
-                href="/#pricing"
-                className="text-sm font-medium text-[var(--pw-subtle)] hover:text-[var(--pw-black)] transition-colors"
-              >
-                Pricing
-              </Link>
-              <Link
-                href="/#news"
-                className="text-sm font-medium text-[var(--pw-subtle)] hover:text-[var(--pw-black)] transition-colors"
-              >
-                News
-              </Link>
-              <Link
-                href="/support"
-                className="text-sm font-medium text-[var(--pw-subtle)] hover:text-[var(--pw-black)] transition-colors"
-              >
-                Help
-              </Link>
-            </nav>
+          {/* ── Logo ── */}
+          <Logo href="/" size="sm" />
 
-            {/* ── Desktop Auth Buttons (≥ md) ── */}
-            <div className="hidden md:flex items-center gap-4">
-              <Link
-                href="/login"
-                className="inline-flex items-center justify-center gap-2 cursor-pointer text-sm font-medium transition-all duration-200 hover:opacity-80 active:scale-[0.97]"
+          {/* ── Desktop center links ── */}
+          <div className="hidden md:flex items-center gap-7">
+
+            <Link
+              href="/how-it-works"
+              className="text-[13.5px] font-medium transition-opacity duration-150"
+              style={{ color: 'var(--color-on-surface)', opacity: 0.7, textDecoration: 'none' }}
+              onMouseEnter={e => (e.currentTarget.style.opacity = '1')}
+              onMouseLeave={e => (e.currentTarget.style.opacity = '0.7')}
+            >
+              How It Works
+            </Link>
+
+            <Link
+              href="/marketplaces"
+              className="text-[13.5px] font-medium transition-opacity duration-150"
+              style={{ color: 'var(--color-on-surface)', opacity: 0.7, textDecoration: 'none' }}
+              onMouseEnter={e => (e.currentTarget.style.opacity = '1')}
+              onMouseLeave={e => (e.currentTarget.style.opacity = '0.7')}
+            >
+              Marketplaces
+            </Link>
+
+            <Link
+              href="/pricing"
+              className="text-[13.5px] font-medium transition-opacity duration-150"
+              style={{ color: 'var(--color-on-surface)', opacity: 0.7, textDecoration: 'none' }}
+              onMouseEnter={e => (e.currentTarget.style.opacity = '1')}
+              onMouseLeave={e => (e.currentTarget.style.opacity = '0.7')}
+            >
+              Pricing
+            </Link>
+
+            <Link
+              href="/support"
+              className="text-[13.5px] font-medium transition-opacity duration-150"
+              style={{ color: 'var(--color-on-surface)', opacity: 0.7, textDecoration: 'none' }}
+              onMouseEnter={e => (e.currentTarget.style.opacity = '1')}
+              onMouseLeave={e => (e.currentTarget.style.opacity = '0.7')}
+            >
+              Support
+            </Link>
+          </div>
+
+          {/* ── Right actions ── */}
+          <div className="flex items-center gap-3">
+
+            {/* Theme Toggle Button */}
+            <button
+              type="button"
+              onClick={toggleTheme}
+              aria-label={`Switch to ${mounted && isDark ? 'light' : 'dark'} mode`}
+              className="flex items-center justify-center w-10 h-10 rounded-full transition-all duration-200 group"
+              style={{
+                background: 'transparent',
+                color: 'var(--color-on-surface)',
+                border: 'none',
+                cursor: 'pointer',
+              }}
+            >
+              <span
+                className="material-symbols-outlined text-[20px] transition-transform duration-300"
                 style={{
-                  backgroundColor: 'transparent',
-                  color: 'var(--pw-black)',
-                  border: '1px solid var(--pw-border)',
-                  padding: '0.625rem 1.5rem',
-                  borderRadius: '9999px',
+                  fontVariationSettings: (mounted && isDark) ? "'FILL' 1" : "'FILL' 0",
+                  transform: (mounted && isDark) ? 'rotate(0deg)' : 'rotate(180deg)',
+                  opacity: 0.7,
                 }}
               >
-                Sign In
-              </Link>
-              <Link
-                href="/#pricing"
-                className="inline-flex items-center justify-center gap-2 cursor-pointer text-sm font-medium transition-all duration-200 hover:opacity-88 hover:-translate-y-px active:scale-[0.97]"
+                {!mounted || isDark ? 'light_mode' : 'dark_mode'}
+              </span>
+              <span
+                className="absolute inset-0 rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-150 pointer-events-none"
                 style={{
-                  backgroundColor: 'var(--pw-black)',
-                  color: 'var(--pw-white)',
-                  padding: '0.625rem 1.5rem',
-                  borderRadius: '9999px',
+                  background: mounted && isDark
+                    ? 'rgba(255, 255, 255, 0.08)'
+                    : 'rgba(0, 0, 0, 0.06)',
                 }}
-              >
-                Start Free Trial
-              </Link>
-            </div>
+              />
+            </button>
 
-            {/* ── Mobile Hamburger (< md) ── */}
+            {/* Sign In — text link */}
+            <Link
+              href="/login"
+              className="hidden md:inline-flex text-[13.5px] font-medium transition-opacity duration-150"
+              style={{ color: 'var(--color-on-surface)', opacity: 0.7, textDecoration: 'none' }}
+              onMouseEnter={e => (e.currentTarget.style.opacity = '1')}
+              onMouseLeave={e => (e.currentTarget.style.opacity = '0.7')}
+            >
+              Sign In
+            </Link>
+
+            {/* Primary CTA — pill button */}
+            <Link
+              href="/pricing"
+              className="hidden md:inline-flex items-center gap-1.5 text-[13px] font-semibold transition-all duration-150 active:scale-[0.98] whitespace-nowrap"
+              style={{
+                background: 'var(--color-on-surface)',
+                color: 'var(--color-surface)',
+                borderRadius: '9999px',
+                padding: '9px 20px',
+                textDecoration: 'none',
+                letterSpacing: '-0.01em',
+              }}
+              onMouseEnter={e => (e.currentTarget.style.opacity = '0.88')}
+              onMouseLeave={e => (e.currentTarget.style.opacity = '1')}
+            >
+              Start 14 Day Trial
+              <span className="material-symbols-outlined text-[14px]" style={{ fontVariationSettings: "'FILL' 0, 'wght' 400" }}>
+                arrow_forward
+              </span>
+            </Link>
+
+            {/* Mobile hamburger */}
             <button
               type="button"
               onClick={() => setMobileOpen(!mobileOpen)}
-              className="md:hidden flex items-center justify-center w-10 h-10 rounded-xl hover:bg-black/5 transition-colors"
+              className="md:hidden flex items-center justify-center w-10 h-10 rounded-xl transition-colors duration-150"
+              style={{ color: 'var(--color-on-surface)', background: 'none', border: 'none', cursor: 'pointer' }}
+              onMouseEnter={e => (e.currentTarget.style.background = 'color-mix(in srgb, var(--color-on-background) 6%, transparent)')}
+              onMouseLeave={e => (e.currentTarget.style.background = 'none')}
               aria-label={mobileOpen ? 'Close menu' : 'Open menu'}
             >
-              {mobileOpen ? (
-                <X className="w-5 h-5 text-[var(--pw-black)]" />
-              ) : (
-                <Menu className="w-5 h-5 text-[var(--pw-black)]" />
-              )}
+              <span className="material-symbols-outlined text-[22px]">
+                {mobileOpen ? 'close' : 'menu'}
+              </span>
             </button>
           </div>
-        </div>
-      </motion.header>
+        </nav>
+      </header>
 
-      {/* ── Mobile Drawer Overlay (< md) ── */}
+      {/* ──────────────────────── MOBILE DRAWER ──────────────────────── */}
       <AnimatePresence>
         {mobileOpen && (
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            transition={{ duration: 0.2 }}
+            transition={{ duration: 0.15 }}
             className="fixed inset-0 z-[60] md:hidden"
           >
             {/* Backdrop */}
             <div
-              className="absolute inset-0 bg-black/40 backdrop-blur-sm"
+              className="absolute inset-0"
+              style={{ background: 'rgba(0,0,0,0.5)', backdropFilter: 'blur(4px)' }}
               onClick={() => setMobileOpen(false)}
             />
 
-            {/* Drawer panel */}
+            {/* Slide-in panel */}
             <motion.nav
               initial={{ x: '-100%' }}
               animate={{ x: 0 }}
               exit={{ x: '-100%' }}
-              transition={{ duration: 0.4, ease: [0.19, 1, 0.22, 1] }}
-              className="absolute top-0 left-0 bottom-0 w-4/5 max-w-sm bg-[var(--pw-surface)] shadow-2xl border-r border-[var(--pw-border)] flex flex-col"
+              transition={{ duration: 0.3, ease: [0.19, 1, 0.22, 1] }}
+              className="absolute top-0 left-0 bottom-0 w-4/5 max-w-[320px] flex flex-col"
+              style={{
+                background: 'var(--color-surface)',
+                borderRight: '1px solid color-mix(in srgb, var(--color-on-background) 7%, transparent)',
+              }}
             >
-              <div className="p-6 flex items-center justify-between border-b border-[var(--pw-border)] shrink-0">
-                <Logo size="sm" />
+              {/* Drawer header */}
+              <div
+                className="flex items-center justify-between px-5 py-4"
+                style={{ borderBottom: '1px solid color-mix(in srgb, var(--color-on-background) 7%, transparent)' }}
+              >
+                <Logo href="/" size="sm" />
                 <button
                   type="button"
                   onClick={() => setMobileOpen(false)}
-                  className="flex items-center justify-center w-10 h-10 rounded-xl hover:bg-black/5 transition-colors"
+                  className="flex items-center justify-center w-9 h-9 rounded-lg"
+                  style={{ color: 'var(--color-on-surface)', background: 'none', border: 'none', cursor: 'pointer' }}
                   aria-label="Close menu"
                 >
-                  <X className="w-5 h-5 text-[var(--pw-black)]" />
+                  <span className="material-symbols-outlined text-[20px]">close</span>
                 </button>
               </div>
 
-              <div className="p-6 flex flex-col gap-6 flex-grow overflow-y-auto">
+              {/* Links */}
+              <div className="flex-1 overflow-y-auto px-3 py-4 space-y-1">
+                {/* How It Works */}
                 <Link
-                  href="/#how-it-works"
+                  href="/how-it-works"
                   onClick={() => setMobileOpen(false)}
-                  className="text-lg font-medium text-[var(--pw-fg)] hover:text-[var(--pw-black)] transition-colors"
+                  className="flex items-center gap-3 px-4 py-2.5 rounded-xl text-[14px] font-semibold transition-colors duration-150"
+                  style={{ color: 'var(--color-on-surface)', textDecoration: 'none' }}
+                  onMouseEnter={e => (e.currentTarget.style.background = 'color-mix(in srgb, var(--color-on-background) 5%, transparent)')}
+                  onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
                 >
                   How It Works
                 </Link>
+
+                {/* Marketplaces */}
                 <Link
-                  href="/#pricing"
+                  href="/marketplaces"
                   onClick={() => setMobileOpen(false)}
-                  className="text-lg font-medium text-[var(--pw-fg)] hover:text-[var(--pw-black)] transition-colors"
+                  className="flex items-center gap-3 px-4 py-2.5 rounded-xl text-[14px] font-semibold transition-colors duration-150"
+                  style={{ color: 'var(--color-on-surface)', textDecoration: 'none' }}
+                  onMouseEnter={e => (e.currentTarget.style.background = 'color-mix(in srgb, var(--color-on-background) 5%, transparent)')}
+                  onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
+                >
+                  Marketplaces
+                </Link>
+
+                {/* Pricing */}
+                <Link
+                  href="/pricing"
+                  onClick={() => setMobileOpen(false)}
+                  className="flex items-center gap-3 px-4 py-2.5 rounded-xl text-[14px] font-semibold transition-colors duration-150"
+                  style={{ color: 'var(--color-on-surface)', textDecoration: 'none' }}
+                  onMouseEnter={e => (e.currentTarget.style.background = 'color-mix(in srgb, var(--color-on-background) 5%, transparent)')}
+                  onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
                 >
                   Pricing
                 </Link>
-                <Link
-                  href="/#news"
-                  onClick={() => setMobileOpen(false)}
-                  className="text-lg font-medium text-[var(--pw-fg)] hover:text-[var(--pw-black)] transition-colors"
-                >
-                  News
-                </Link>
+
+                {/* Support */}
                 <Link
                   href="/support"
                   onClick={() => setMobileOpen(false)}
-                  className="text-lg font-medium text-[var(--pw-fg)] hover:text-[var(--pw-black)] transition-colors"
+                  className="flex items-center gap-3 px-4 py-2.5 rounded-xl text-[14px] font-semibold transition-colors duration-150"
+                  style={{ color: 'var(--color-on-surface)', textDecoration: 'none' }}
+                  onMouseEnter={e => (e.currentTarget.style.background = 'color-mix(in srgb, var(--color-on-background) 5%, transparent)')}
+                  onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
                 >
-                  Help
+                  Support
                 </Link>
 
-                <div className="border-t border-[var(--pw-border)] my-4" />
+                {/* Theme toggle row for mobile */}
+                <div
+                  className="flex items-center justify-between px-4 py-2.5 rounded-xl text-[14px] font-medium mt-3"
+                  style={{ color: 'var(--color-on-surface)' }}
+                >
+                  <span>Theme</span>
+                  <button
+                    type="button"
+                    onClick={toggleTheme}
+                    className="flex items-center justify-center w-10 h-10 rounded-lg transition-colors"
+                    style={{
+                      color: 'var(--color-on-surface)',
+                      background: 'color-mix(in srgb, var(--color-on-background) 6%, transparent)',
+                      border: 'none',
+                      cursor: 'pointer',
+                    }}
+                    aria-label={`Switch to ${mounted && isDark ? 'light' : 'dark'} mode`}
+                  >
+                    <span className="material-symbols-outlined text-[20px]">
+                      {!mounted || isDark ? 'light_mode' : 'dark_mode'}
+                    </span>
+                  </button>
+                </div>
+              </div>
 
+              {/* CTA area */}
+              <div
+                className="px-4 pb-6 pt-4 space-y-3"
+                style={{ borderTop: '1px solid color-mix(in srgb, var(--color-on-background) 7%, transparent)' }}
+              >
                 <Link
                   href="/login"
                   onClick={() => setMobileOpen(false)}
-                  className="inline-flex items-center justify-center gap-2 cursor-pointer text-base font-medium text-center transition-all duration-200 hover:opacity-80 active:scale-[0.97]"
+                  className="flex items-center justify-center px-4 py-3 rounded-xl text-[14px] font-medium transition-colors duration-150"
                   style={{
-                    backgroundColor: 'transparent',
-                    color: 'var(--pw-black)',
-                    border: '1px solid var(--pw-border)',
-                    padding: '0.875rem 1.75rem',
-                    borderRadius: '9999px',
+                    color: 'var(--color-on-surface)',
+                    border: '1px solid color-mix(in srgb, var(--color-on-background) 12%, transparent)',
+                    textDecoration: 'none',
                   }}
                 >
                   Sign In
                 </Link>
                 <Link
-                  href="/#pricing"
+                  href="/pricing"
                   onClick={() => setMobileOpen(false)}
-                  className="inline-flex items-center justify-center gap-2 cursor-pointer text-base font-medium text-center transition-all duration-200 hover:opacity-88 hover:-translate-y-px active:scale-[0.97]"
+                  className="flex items-center justify-center gap-1.5 px-4 py-3 rounded-xl text-[14px] font-semibold transition-opacity duration-150 active:scale-[0.98]"
                   style={{
-                    backgroundColor: 'var(--pw-black)',
-                    color: 'var(--pw-white)',
-                    padding: '0.875rem 1.75rem',
+                    background: 'var(--color-on-surface)',
+                    color: 'var(--color-surface)',
+                    textDecoration: 'none',
                     borderRadius: '9999px',
                   }}
                 >
-                  Start Free Trial
+                  Start 14 Day Trial
                 </Link>
               </div>
             </motion.nav>

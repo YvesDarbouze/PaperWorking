@@ -45,13 +45,13 @@ export default function DealListInline({ projects, onSelectDeal }: DealListInlin
                 <button
                   key={deal.id}
                   onClick={() => {
-                    if (can('VIEW_FOLDER')) {
+                    if (can('projects.view')) {
                       onSelectDeal(deal.id);
                     } else {
                       toast.error('You do not have permission to view this project folder.');
                     }
                   }}
-                  className={`group flex items-center justify-between w-full p-3 sm:p-4 hover:bg-bg-primary/80 transition-colors text-left ${!can('VIEW_FOLDER') && 'opacity-60 cursor-not-allowed'}`}
+                  className={`group flex items-center justify-between w-full p-3 sm:p-4 hover:bg-bg-primary/80 transition-colors text-left ${!can('projects.view') && 'opacity-60 cursor-not-allowed'}`}
                 >
                   {/* ── Standardized Deal Folder ── */}
                   <DealFolder

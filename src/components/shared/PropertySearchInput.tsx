@@ -90,7 +90,7 @@ export default function PropertySearchInput({
           value={query}
           onChange={handleChange}
           onFocus={() => results.length > 0 && setIsOpen(true)}
-          className="w-full border border-border-accent bg-bg-primary pl-12 pr-6 py-5 text-sm font-black uppercase tracking-widest focus:border-pw-black focus:outline-none transition-all placeholder:text-text-secondary/30"
+          className="w-full border border-border-accent bg-bg-primary pl-12 pr-6 py-5 text-sm font-black uppercase tracking-widest focus:border-pw-border focus:outline-none transition-all placeholder:text-text-secondary/30"
           placeholder={placeholder}
           autoComplete="off"
         />
@@ -103,7 +103,7 @@ export default function PropertySearchInput({
       </div>
 
       {isOpen && (
-        <div className="absolute z-50 top-full left-0 right-0 border border-border-accent border-t-0 bg-bg-surface shadow-lg max-h-80 overflow-y-auto">
+        <div className="pw-dropdown-overlay absolute z-50 top-full left-0 right-0 max-h-80 overflow-y-auto">
           {credentialsMissing && (
             <div className="px-6 py-3 bg-amber-50 border-b border-border-accent">
               <p className="text-xs font-black text-amber-700 uppercase tracking-widest">
@@ -123,7 +123,7 @@ export default function PropertySearchInput({
               key={property.listingKey}
               type="button"
               onPointerDown={() => handleSelect(property)}
-              className="w-full text-left px-6 py-4 hover:bg-bg-primary transition-all border-b border-border-accent last:border-b-0 group"
+              className="pw-dropdown-item w-full text-left px-6 py-4 hover:bg-bg-primary transition-all border-b border-border-accent last:border-b-0 group"
             >
               <div className="flex items-start gap-4">
                 {property.thumbnailUrl ? (

@@ -4,6 +4,7 @@ import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { X, UserPlus, Mail, Shield, ChevronRight, Check, AlertCircle, Loader2 } from 'lucide-react';
 import { useProjectStore } from '@/store/projectStore';
+import { useAuth } from '@/context/AuthContext';
 
 type Role = 'OWNER' | 'PARTNER' | 'ANALYST' | 'VIEWER';
 
@@ -15,6 +16,7 @@ interface InvestorInviteModalProps {
 }
 
 export default function InvestorInviteModal({ isOpen, onClose, projectId, propertyName }: InvestorInviteModalProps) {
+  const { user } = useAuth();
   const projects = useProjectStore(state => state.projects);
   const [email, setEmail] = useState('');
   const [role, setRole] = useState<Role>('VIEWER');
@@ -30,9 +32,14 @@ export default function InvestorInviteModal({ isOpen, onClose, projectId, proper
     setIsLoading(true);
     setError(null);
     try {
+      const headers: Record<string, string> = { 'Content-Type': 'application/json' };
+      if (user) {
+        const token = await user.getIdToken();
+        headers['Authorization'] = `Bearer ${token}`;
+      }
       const res = await fetch(`/api/reil/projects/${effectiveProjectId}/invite`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers,
         body: JSON.stringify({ email: email.trim(), role }),
       });
       if (!res.ok) {

@@ -7,7 +7,7 @@ import { Search, ShieldAlert, Hammer, TrendingUp } from 'lucide-react';
 const PHASES = [
   {
     id: '01',
-    title: 'Find and Fund',
+    title: 'Acquisition',
     icon: Search,
     bg: '#f2f2f2', // --phase-sourcing
     text: '#595959',
@@ -19,7 +19,7 @@ const PHASES = [
   },
   {
     id: '02',
-    title: 'Acquisition & Due Diligence',
+    title: 'Fund',
     icon: ShieldAlert,
     bg: '#cccccc', // --phase-contract
     text: '#595959',
@@ -30,7 +30,7 @@ const PHASES = [
   },
   {
     id: '03',
-    title: 'The Renovation',
+    title: 'Hold',
     icon: Hammer,
     bg: '#a5a5a5', // --phase-rehab
     text: '#f2f2f2',
@@ -41,7 +41,7 @@ const PHASES = [
   },
   {
     id: '04',
-    title: 'The Exit Strategy',
+    title: 'Exit',
     icon: TrendingUp,
     bg: '#7f7f7f', // --phase-listed
     text: '#f2f2f2',

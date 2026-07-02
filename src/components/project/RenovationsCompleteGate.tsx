@@ -1,5 +1,6 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { CheckSquare, AlertTriangle, ArrowRight, ClipboardCheck, HardHat, ShieldCheck } from 'lucide-react';
+import { Checkbox } from '../ui';
 
 interface RenovationsCompleteGateProps {
   onComplete: () => void;
@@ -16,7 +17,7 @@ export function RenovationsCompleteGate({ onComplete, unpaidInvoicesCount, uncom
   const isReady = !hasBlockers && finalInspectionPassed && lienWaiversSigned && allCostsLogged;
 
   return (
-    <div className="p-6 rounded-lg border-2 transition-colors duration-300" style={{ backgroundColor: 'var(--bg-surface)', borderColor: isReady ? 'var(--border-ui)' : '#fee2e2' }}>
+    <div className="p-6 border transition-colors duration-300" style={{ backgroundColor: 'var(--bg-surface)', borderColor: isReady ? 'var(--border-ui)' : '#fee2e2' }}>
       <div className="flex items-start gap-4">
         <div className={`p-3 rounded-full ${!hasBlockers ? 'bg-green-100 text-green-600' : 'bg-red-100 text-red-600'}`}>
           {!hasBlockers ? <ShieldCheck className="w-6 h-6" /> : <AlertTriangle className="w-6 h-6" />}
@@ -29,7 +30,7 @@ export function RenovationsCompleteGate({ onComplete, unpaidInvoicesCount, uncom
 
           {/* Automated Blockers */}
           {hasBlockers && (
-            <div className="mt-4 p-4 bg-red-50 border border-red-200 rounded-md">
+            <div className="mt-4 p-4 bg-red-50 border border-red-200">
               <h4 className="text-sm font-semibold text-red-800">Cannot complete phase yet</h4>
               <ul className="list-disc ml-5 mt-2 text-sm text-red-700 space-y-1">
                 {unpaidInvoicesCount > 0 && <li>There are <strong>{unpaidInvoicesCount} unpaid invoices</strong>. Please resolve all payments.</li>}
@@ -40,15 +41,14 @@ export function RenovationsCompleteGate({ onComplete, unpaidInvoicesCount, uncom
 
           {/* Manual Confirmations */}
           {!hasBlockers && (
-            <div className="mt-6 space-y-4 p-4 rounded-md border" style={{ borderColor: 'var(--border-ui)', backgroundColor: 'var(--bg-canvas)' }}>
+            <div className="mt-6 space-y-4 p-4 border" style={{ borderColor: 'var(--border-ui)', backgroundColor: 'var(--bg-canvas)' }}>
               <h4 className="text-sm font-semibold" style={{ color: 'var(--text-primary)' }}>Final Clearances</h4>
               
               <label className="flex items-start gap-3 cursor-pointer">
-                <input 
-                  type="checkbox" 
+                <Checkbox 
                   checked={finalInspectionPassed} 
                   onChange={(e) => setFinalInspectionPassed(e.target.checked)}
-                  className="mt-1 w-5 h-5 rounded border-gray-300 text-green-600 focus:ring-green-500"
+                  className="mt-1"
                 />
                 <div>
                   <div className="text-sm font-medium flex items-center gap-2" style={{ color: 'var(--text-primary)' }}>
@@ -61,11 +61,10 @@ export function RenovationsCompleteGate({ onComplete, unpaidInvoicesCount, uncom
               </label>
 
               <label className="flex items-start gap-3 cursor-pointer">
-                <input 
-                  type="checkbox" 
+                <Checkbox 
                   checked={lienWaiversSigned} 
                   onChange={(e) => setLienWaiversSigned(e.target.checked)}
-                  className="mt-1 w-5 h-5 rounded border-gray-300 text-green-600 focus:ring-green-500"
+                  className="mt-1"
                 />
                 <div>
                   <div className="text-sm font-medium flex items-center gap-2" style={{ color: 'var(--text-primary)' }}>
@@ -78,11 +77,10 @@ export function RenovationsCompleteGate({ onComplete, unpaidInvoicesCount, uncom
               </label>
 
               <label className="flex items-start gap-3 cursor-pointer">
-                <input 
-                  type="checkbox" 
+                <Checkbox 
                   checked={allCostsLogged} 
                   onChange={(e) => setAllCostsLogged(e.target.checked)}
-                  className="mt-1 w-5 h-5 rounded border-gray-300 text-green-600 focus:ring-green-500"
+                  className="mt-1"
                 />
                 <div>
                   <div className="text-sm font-medium flex items-center gap-2" style={{ color: 'var(--text-primary)' }}>
@@ -101,9 +99,9 @@ export function RenovationsCompleteGate({ onComplete, unpaidInvoicesCount, uncom
             <button
               onClick={onComplete}
               disabled={!isReady}
-              className={`flex items-center justify-center gap-2 w-full sm:w-auto px-8 py-3 rounded-md text-white font-semibold transition-all ${
+              className={`flex items-center justify-center gap-2 w-full sm:w-auto px-8 py-3 text-white font-semibold transition-all ${
                 isReady 
-                  ? 'bg-green-600 hover:bg-green-700 shadow-sm' 
+                  ? 'bg-green-600 hover:bg-green-700' 
                   : 'bg-gray-300 cursor-not-allowed'
               }`}
             >

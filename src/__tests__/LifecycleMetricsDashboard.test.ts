@@ -17,6 +17,7 @@ describe('LifecycleMetricsDashboard Aggregation Logic', () => {
         projectedMonthlyRent: 1500,
         loanAmount: 80000,
         loanInterestRate: 7,
+        costs: [],
         // No explicit expense fields -> NOI = rent * 12 - vacancyLoss(7%)
         // = 18000 - 1260 = 16740
       }
@@ -30,6 +31,7 @@ describe('LifecycleMetricsDashboard Aggregation Logic', () => {
         projectedMonthlyRent: 2000,
         loanAmount: 180000,
         loanInterestRate: 7,
+        costs: [],
         // NOI = 24000 - 1680(vacancy @7%) = 22320
       }
     }
@@ -107,6 +109,8 @@ describe('NOIDeepDive Breakdown Logic', () => {
       address: '123 Main St',
       financials: {
         purchasePrice: 279000,
+        estimatedARV: 300000,
+        costs: [],
         monthlyGrossRent: 1950,         // $1,950/mo = $23,400/yr
         vacancyRatePercent: 7,           // $1,638/yr
         monthlyMaintenanceReserve: 195,  // 10% of rent ≈ $2,340/yr

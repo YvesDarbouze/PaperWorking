@@ -14,6 +14,7 @@ import {
   DollarSign,
 } from 'lucide-react';
 import type { ExitCostLineItem, ExitCostCategory } from '@/types/schema';
+import { Checkbox } from '../ui';
 
 /* ═══════════════════════════════════════════════════════
    Exit Cost Ledger — Final Settlement Costs
@@ -33,7 +34,7 @@ const DEFAULT_EXIT_COSTS: ExitCostLineItem[] = [
 
 const CATEGORY_COLORS: Record<ExitCostCategory, string> = {
   'Broker Fee': 'text-blue-600 bg-blue-50',
-  Staging: 'text-purple-600 bg-purple-50',
+  Staging: 'text-[#454955] bg-[#454955]/10',
   Marketing: 'text-amber-600 bg-amber-50',
   'Buyer Concessions': 'text-red-600 bg-red-50',
   Other: 'text-text-secondary bg-bg-primary',
@@ -297,11 +298,9 @@ export default function ExitCostLedger() {
 
                 <div className="flex gap-3 items-center">
                   <label className="flex items-center gap-1.5 text-xs text-text-secondary cursor-pointer">
-                    <input
-                      type="checkbox"
+                    <Checkbox
                       checked={newIsPercentage}
                       onChange={e => setNewIsPercentage(e.target.checked)}
-                      className="rounded border-border-accent"
                     />
                     % of sale price
                   </label>

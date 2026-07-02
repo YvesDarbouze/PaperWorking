@@ -26,9 +26,9 @@ export default function ExitStrategyFork({ projectId, strategy, onStrategyChange
   };
 
   return (
-    <div className="bg-bg-surface border-2 border-pw-black p-6 relative overflow-hidden">
+    <div className="glass-card border border-pw-border p-6 relative overflow-hidden">
       {/* Header */}
-      <div className="flex items-center gap-2 mb-6 pb-4 border-b border-border-accent">
+      <div className="flex items-center gap-2 mb-6 pb-4 border-b border-pw-border">
         <ArrowRightLeft className="w-3.5 h-3.5 text-pw-accent" />
         <h3 className="text-xs font-black tracking-[0.3em] text-text-primary uppercase">
           Exit_Strategy_Fork
@@ -43,42 +43,38 @@ export default function ExitStrategyFork({ projectId, strategy, onStrategyChange
         {/* Sell Card */}
         <button
           onClick={() => handleToggle('Sell')}
-          className={`group relative p-6 border-2 transition-all duration-300 text-left ${
+          className={`group relative p-6 border transition-all duration-300 text-left ${
             strategy === 'Sell'
-              ? 'border-pw-black bg-pw-black text-pw-white shadow-[6px_6px_0px_rgba(0,0,0,0.1)]'
-              : 'border-border-accent bg-bg-primary text-text-primary hover:border-pw-accent'
+              ? 'border-pw-accent bg-pw-accent text-pw-white'
+              : 'border-pw-border bg-pw-glass-bg text-text-primary hover:border-pw-accent'
           }`}
         >
-          <TrendingUp className={`w-5 h-5 mb-3 ${strategy === 'Sell' ? 'text-pw-white' : 'text-text-secondary'}`} />
+          <TrendingUp className={`w-5 h-5 mb-3 ${strategy === 'Sell' ? 'text-pw-white' : 'text-text-secondary group-hover:text-pw-accent'}`} />
           <p className="text-sm font-black uppercase tracking-widest mb-1">Sell Property</p>
-          <p className={`text-[10px] font-bold uppercase tracking-wider leading-relaxed ${
-            strategy === 'Sell' ? 'text-text-secondary' : 'text-text-secondary'
-          }`}>
+          <p className="text-[10px] font-bold uppercase tracking-wider leading-relaxed text-text-secondary group-hover:text-pw-white/80">
             Liquidate asset → Settlement ledger → Net proceeds → Capital gains
           </p>
           {strategy === 'Sell' && (
-            <div className="absolute top-3 right-3 w-2 h-2 bg-green-400 rounded-full animate-pulse" />
+            <div className="absolute top-3 right-3 w-1.5 h-1.5 bg-pw-white rounded-full animate-pulse" />
           )}
         </button>
 
         {/* Hold Card */}
         <button
           onClick={() => handleToggle('Rent')}
-          className={`group relative p-6 border-2 transition-all duration-300 text-left ${
+          className={`group relative p-6 border transition-all duration-300 text-left ${
             strategy === 'Rent'
-              ? 'border-pw-black bg-pw-black text-pw-white shadow-[6px_6px_0px_rgba(0,0,0,0.1)]'
-              : 'border-border-accent bg-bg-primary text-text-primary hover:border-pw-accent'
+              ? 'border-pw-accent bg-pw-accent text-pw-white'
+              : 'border-pw-border bg-pw-glass-bg text-text-primary hover:border-pw-accent'
           }`}
         >
-          <Home className={`w-5 h-5 mb-3 ${strategy === 'Rent' ? 'text-pw-white' : 'text-text-secondary'}`} />
+          <Home className={`w-5 h-5 mb-3 ${strategy === 'Rent' ? 'text-pw-white' : 'text-text-secondary group-hover:text-pw-accent'}`} />
           <p className="text-sm font-black uppercase tracking-widest mb-1">Refinance & Hold</p>
-          <p className={`text-[10px] font-bold uppercase tracking-wider leading-relaxed ${
-            strategy === 'Rent' ? 'text-text-secondary' : 'text-text-secondary'
-          }`}>
+          <p className="text-[10px] font-bold uppercase tracking-wider leading-relaxed text-text-secondary group-hover:text-pw-white/80">
             Rental cash flow → Monthly NOI → Cash-on-cash return
           </p>
           {strategy === 'Rent' && (
-            <div className="absolute top-3 right-3 w-2 h-2 bg-blue-400 rounded-full animate-pulse" />
+            <div className="absolute top-3 right-3 w-1.5 h-1.5 bg-pw-white rounded-full animate-pulse" />
           )}
         </button>
       </div>

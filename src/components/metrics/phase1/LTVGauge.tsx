@@ -84,7 +84,7 @@ export default function LTVGauge({
     { from: 180, to: 180 - 65 * 1.8, color: '#86efac' },
     { from: 180 - 65 * 1.8, to: 180 - 75 * 1.8, color: '#fde047' },
     { from: 180 - 75 * 1.8, to: 180 - 80 * 1.8, color: '#fb923c' },
-    { from: 180 - 80 * 1.8, to: 0, color: '#f87171' },
+    { from: 180 - 80 * 1.8, to: 0, color: '#F06543' },
   ];
 
   const needleAngle = START_ANGLE - Math.min(ltv, 100) * 1.8;
@@ -129,7 +129,7 @@ export default function LTVGauge({
               y1={benchmarkInner.y}
               x2={benchmarkOuter.x}
               y2={benchmarkOuter.y}
-              stroke="#1A73E8"
+              stroke="#454955"
               strokeWidth={2}
               strokeDasharray="3 2"
             />
@@ -137,7 +137,7 @@ export default function LTVGauge({
               x={benchmarkOuter.x}
               y={benchmarkOuter.y - 4}
               textAnchor="middle"
-              fill="#1A73E8"
+              fill="#454955"
               fontSize={7}
               fontWeight={800}
               fontFamily="monospace"
@@ -192,7 +192,7 @@ export default function LTVGauge({
             { label: '0–65%', desc: 'Green', color: '#86efac' },
             { label: '65–75%', desc: 'Yellow', color: '#fde047' },
             { label: '75–80%', desc: 'Orange', color: '#fb923c' },
-            { label: '80%+', desc: 'Red', color: '#f87171' },
+            { label: '80%+', desc: 'Red', color: '#F06543' },
           ].map((z) => (
             <div key={z.label} className="flex items-center gap-1.5">
               <div className="w-2 h-2 rounded-full shrink-0" style={{ background: z.color }} />

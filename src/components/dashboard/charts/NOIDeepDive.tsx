@@ -3,11 +3,10 @@
 import React, { useMemo } from 'react';
 import { Project } from '@/types/schema';
 import { computeNOIComponents, type NOIComponents } from '@/lib/metrics/reiMetrics';
-import {
-  BarChart, Bar, PieChart, Pie, Cell,
-  XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend,
-  ReferenceLine
-} from 'recharts';
+import NOIWaterfallChart from '@/components/Charts/NOIWaterfallChart';
+import NOITrendChart from '@/components/Charts/NOITrendChart';
+import NOICompareChart from '@/components/Charts/NOICompareChart';
+import ExpenseDonutChart from '@/components/Charts/ExpenseDonutChart';
 import {
   DollarSign, TrendingDown, TrendingUp, BarChart3,
   AlertTriangle, CheckCircle, Info, ArrowRight
@@ -41,7 +40,7 @@ export function deriveNOIBreakdowns(projects: Project[]) {
     .filter(p => p.financials)
     .map((p) => {
       const f = p.financials!;
-      const components = computeNOIComponents(f);
+      const components = computeNOIComponents(f, p.strategyType, p.currentPhase);
       const grossPotentialIncome = components.grossRentalIncome + components.otherIncome;
       const fiftyPercentEstimate = grossPotentialIncome * 0.5;
 
@@ -60,50 +59,67 @@ export function deriveNOIBreakdowns(projects: Project[]) {
 /* ── Build the waterfall data for a single property or portfolio aggregate ── */
 function buildWaterfallData(c: NOIComponents) {
   return [
-    { name: 'Gross Rent', value: c.grossRentalIncome, fill: '#3B82F6', type: 'income' },
-    { name: 'Other Income', value: c.otherIncome, fill: '#6366F1', type: 'income' },
-    { name: 'Vacancy', value: -c.vacancyLoss, fill: '#F59E0B', type: 'loss' },
-    { name: 'Taxes', value: -c.propertyTaxes, fill: '#EF4444', type: 'expense' },
+    { name: 'Gross Rent', value: c.grossRentalIncome, fill: '#7F7F7F', type: 'income' },
+    { name: 'Other Income', value: c.otherIncome, fill: '#595959', type: 'income' },
+    { name: 'Vacancy', value: -c.vacancyLoss, fill: '#A5A5A5', type: 'loss' },
+    { name: 'Taxes', value: -c.propertyTaxes, fill: '#F06543', type: 'expense' },
     { name: 'Insurance', value: -c.insurance, fill: '#F97316', type: 'expense' },
-    { name: 'Utilities', value: -c.utilities, fill: '#8B5CF6', type: 'expense' },
+    { name: 'Utilities', value: -c.utilities, fill: '#454955', type: 'expense' },
     { name: 'Mgmt', value: -c.propertyManagement, fill: '#EC4899', type: 'expense' },
     { name: 'Maint/CapEx', value: -c.maintenance, fill: '#14B8A6', type: 'expense' },
     { name: 'HOA', value: -c.hoa, fill: '#A855F7', type: 'expense' },
-    { name: 'NOI', value: c.noi, fill: c.noi >= 0 ? '#10B981' : '#EF4444', type: 'result' },
+    { name: 'NOI', value: c.noi, fill: c.noi >= 0 ? '#595959' : '#F06543', type: 'result' },
   ];
 }
+
+/* ── Generate 12-month seasonal NOI estimates from annual components ── */
+const MONTHS = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+// Vacancy multipliers (fraction of base monthly vacancy per month — summer has less vacancy)
+const VAC_MULT  = [2.0, 1.0, 1.0, 1.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 1.0, 1.0];
+// Utilities multipliers (heating in winter, cooling in summer)
+const UTIL_MULT = [1.4, 1.4, 1.2, 1.0, 0.8, 0.8, 0.8, 0.8, 1.0, 1.2, 1.4, 1.6];
+// Extra maintenance dollars per month (spring/winter spikes)
+const MAINT_ADD = [155, 0, 55, 0, 105, 0, 0, 0, 5, 55, 0, 0];
+
+function generateMonthlyNOI(c: NOIComponents): { month: string; noi: number; benchmark: number }[] {
+  const baseVac   = c.vacancyLoss / 12;
+  const baseMaint = c.maintenance / 12;
+  const baseUtils = c.utilities / 12;
+  const baseMgmt  = c.propertyManagement / 12;
+  const baseTax   = c.propertyTaxes / 12;
+  const baseIns   = c.insurance / 12;
+  const baseHoa   = c.hoa / 12;
+  const monthlyGPI = (c.grossRentalIncome + c.otherIncome) / 12;
+  const benchmark  = Math.round(c.grossRentalIncome / 12 * 0.5);
+
+  return MONTHS.map((month, i) => {
+    const vac      = baseVac * VAC_MULT[i];
+    const maint    = baseMaint + MAINT_ADD[i];
+    const utils    = baseUtils * UTIL_MULT[i];
+    const expenses = baseTax + baseIns + utils + baseMgmt + maint + baseHoa;
+    const noi      = Math.round(monthlyGPI - vac - expenses);
+    return { month, noi, benchmark };
+  });
+}
+
+
 
 /* ── Build expense composition for donut ── */
 function buildExpenseDonut(c: NOIComponents) {
   const items = [
-    { name: 'Taxes', value: c.propertyTaxes, fill: '#EF4444' },
+    { name: 'Taxes', value: c.propertyTaxes, fill: '#F06543' },
     { name: 'Insurance', value: c.insurance, fill: '#F97316' },
-    { name: 'Utilities', value: c.utilities, fill: '#8B5CF6' },
+    { name: 'Utilities', value: c.utilities, fill: '#454955' },
     { name: 'Mgmt', value: c.propertyManagement, fill: '#EC4899' },
     { name: 'Maint/CapEx', value: c.maintenance, fill: '#14B8A6' },
     { name: 'HOA', value: c.hoa, fill: '#A855F7' },
-    { name: 'Vacancy', value: c.vacancyLoss, fill: '#F59E0B' },
+    { name: 'Vacancy', value: c.vacancyLoss, fill: '#A5A5A5' },
   ].filter(i => i.value > 0);
 
   return items;
 }
 
-/* ── Custom waterfall tooltip ── */
-function WaterfallTooltip({ active, payload }: any) {
-  if (!active || !payload?.length) return null;
-  const d = payload[0].payload;
-  return (
-    <div
-      className="rounded-lg px-3 py-2 shadow-lg text-xs"
-      style={{ background: 'var(--bg-surface)', border: '1px solid var(--border-ui)' }}
-    >
-      <p className="font-bold" style={{ color: 'var(--text-primary)' }}>{d.name}</p>
-      <p className="tabular-nums" style={{ color: d.value >= 0 ? '#10B981' : '#EF4444' }}>
-        {fmtUSD(d.value)}
-      </p>
-    </div>
-  );
-}
+
 
 /* ── Benchmark verdict badge ── */
 function BenchmarkBadge({ noi, estimate }: { noi: number; estimate: number }) {
@@ -112,9 +128,9 @@ function BenchmarkBadge({ noi, estimate }: { noi: number; estimate: number }) {
     <div
       className="flex items-center gap-2 px-3 py-2 rounded-lg text-xs font-bold"
       style={{
-        background: beating ? 'rgba(16,185,129,0.08)' : 'rgba(245,158,11,0.08)',
-        border: `1px solid ${beating ? 'rgba(16,185,129,0.2)' : 'rgba(245,158,11,0.2)'}`,
-        color: beating ? '#10B981' : '#F59E0B',
+        background: beating ? 'rgba(89,89,89,0.08)' : 'rgba(165,165,165,0.08)',
+        border: `1px solid ${beating ? 'rgba(89,89,89,0.2)' : 'rgba(165,165,165,0.2)'}`,
+        color: beating ? '#595959' : '#A5A5A5',
       }}
     >
       {beating ? (
@@ -151,7 +167,7 @@ function LineItemRow({
         background: isTotal ? 'var(--bg-inset)' : 'transparent',
         borderRadius: isTotal ? '6px' : '0',
         color: isTotal
-          ? annual >= 0 ? '#10B981' : '#EF4444'
+          ? annual >= 0 ? '#595959' : '#F06543'
           : isIncome
             ? 'var(--text-primary)'
             : 'var(--text-secondary)',
@@ -215,6 +231,10 @@ export default function NOIDeepDive({ projects: propProjects }: Props) {
   const fiftyPctEstimate = totalGPI * 0.5;
   const waterfallData = aggregate ? buildWaterfallData(aggregate) : [];
   const expenseDonut = aggregate ? buildExpenseDonut(aggregate) : [];
+  const monthlyNOIData = useMemo(
+    () => aggregate ? generateMonthlyNOI(aggregate) : [],
+    [aggregate]
+  );
 
   if (!aggregate) {
     return (
@@ -255,28 +275,28 @@ export default function NOIDeepDive({ projects: propProjects }: Props) {
             label: 'Gross Potential Income',
             value: fmtUSD(totalGPI),
             sublabel: `${fmtUSD(totalGPI / 12)} / mo`,
-            color: '#3B82F6',
+            color: '#7F7F7F',
           },
           {
             icon: TrendingDown,
             label: 'Total Operating Costs',
             value: fmtUSD(aggregate.totalOperatingExpenses + aggregate.vacancyLoss),
             sublabel: `${fmtUSD((aggregate.totalOperatingExpenses + aggregate.vacancyLoss) / 12)} / mo`,
-            color: '#EF4444',
+            color: '#F06543',
           },
           {
             icon: DollarSign,
             label: 'Net Operating Income',
             value: fmtUSD(aggregate.noi),
             sublabel: `${fmtUSD(aggregate.noi / 12)} / mo`,
-            color: '#10B981',
+            color: '#595959',
           },
           {
             icon: BarChart3,
             label: '50% Rule Estimate',
             value: fmtUSD(fiftyPctEstimate),
             sublabel: `Quick: ${fmtUSD(totalGPI)} ÷ 2`,
-            color: '#F59E0B',
+            color: '#A5A5A5',
           },
         ].map((kpi, i) => (
           <div
@@ -314,34 +334,7 @@ export default function NOIDeepDive({ projects: propProjects }: Props) {
             NOI Waterfall — Portfolio
           </h4>
           <div className="flex-1 min-h-0">
-            <ResponsiveContainer width="100%" height="100%">
-              <BarChart data={waterfallData} margin={{ top: 10, right: 10, left: -10, bottom: 30 }}>
-                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#E5E7EB" />
-                <XAxis
-                  dataKey="name"
-                  fontSize={9}
-                  tickLine={false}
-                  axisLine={false}
-                  angle={-45}
-                  textAnchor="end"
-                  height={50}
-                />
-                <YAxis
-                  fontSize={9}
-                  tickFormatter={fmtK}
-                  tickLine={false}
-                  axisLine={false}
-                  width={50}
-                />
-                <Tooltip content={<WaterfallTooltip />} />
-                <ReferenceLine y={0} stroke="#9CA3AF" strokeDasharray="3 3" />
-                <Bar dataKey="value" radius={[4, 4, 0, 0]} maxBarSize={48}>
-                  {waterfallData.map((entry, index) => (
-                    <Cell key={`cell-${index}`} fill={entry.fill} />
-                  ))}
-                </Bar>
-              </BarChart>
-            </ResponsiveContainer>
+            <NOIWaterfallChart data={waterfallData} />
           </div>
         </div>
 
@@ -354,48 +347,12 @@ export default function NOIDeepDive({ projects: propProjects }: Props) {
             Expense Composition
           </h4>
           <div className="flex-1 min-h-0 relative">
-            <ResponsiveContainer width="100%" height="100%">
-              <PieChart>
-                <Pie
-                  data={expenseDonut}
-                  cx="50%"
-                  cy="50%"
-                  innerRadius="50%"
-                  outerRadius="72%"
-                  paddingAngle={3}
-                  dataKey="value"
-                >
-                  {expenseDonut.map((entry, index) => (
-                    <Cell key={`cell-${index}`} fill={entry.fill} />
-                  ))}
-                </Pie>
-                <Tooltip
-                  formatter={(value: number) => fmtUSD(value)}
-                  contentStyle={{
-                    borderRadius: '8px',
-                    border: 'none',
-                    boxShadow: '0 4px 6px -1px rgba(0,0,0,0.1)',
-                    fontSize: '11px',
-                  }}
-                />
-                <Legend
-                  verticalAlign="bottom"
-                  height={36}
-                  iconType="circle"
-                  wrapperStyle={{ fontSize: '9px', paddingTop: '8px' }}
-                />
-              </PieChart>
-            </ResponsiveContainer>
-            <div className="absolute inset-0 flex items-center justify-center pointer-events-none pb-8">
-              <div className="text-center">
-                <span className="block text-xl font-bold text-text-primary">
-                  {fmtUSD(aggregate.totalOperatingExpenses + aggregate.vacancyLoss)}
-                </span>
-                <span className="block text-[9px] uppercase tracking-wider text-text-secondary">
-                  Total Costs
-                </span>
-              </div>
-            </div>
+            <ExpenseDonutChart
+              data={expenseDonut}
+              height={220}
+              centerText={fmtUSD(aggregate.totalOperatingExpenses + aggregate.vacancyLoss)}
+              centerSubtext="Total Costs"
+            />
           </div>
         </div>
       </div>
@@ -486,7 +443,7 @@ export default function NOIDeepDive({ projects: propProjects }: Props) {
         <div className="mt-2 mb-1 px-3">
           <div
             className="grid grid-cols-3 gap-4 py-2 px-3 text-xs font-bold rounded-md"
-            style={{ background: 'rgba(239,68,68,0.05)', color: '#EF4444' }}
+            style={{ background: 'rgba(239,68,68,0.05)', color: '#F06543' }}
           >
             <span>Total Operating Costs</span>
             <span className="text-right tabular-nums">
@@ -513,9 +470,9 @@ export default function NOIDeepDive({ projects: propProjects }: Props) {
           <div
             className="grid grid-cols-3 gap-4 py-2 px-3 text-xs font-medium rounded-md"
             style={{
-              background: 'rgba(245,158,11,0.05)',
-              border: '1px dashed rgba(245,158,11,0.3)',
-              color: '#F59E0B',
+              background: 'rgba(165,165,165,0.05)',
+              border: '1px dashed rgba(165,165,165,0.3)',
+              color: '#A5A5A5',
             }}
           >
             <span className="flex items-center gap-1">
@@ -552,6 +509,33 @@ export default function NOIDeepDive({ projects: propProjects }: Props) {
         </div>
       </div>
 
+      {/* ── Month-to-Month NOI Trend ── */}
+      {monthlyNOIData.length > 0 && (
+        <div
+          className="bg-bg-surface border border-border-accent rounded-xl p-5 flex flex-col"
+          style={{ minHeight: '320px' }}
+        >
+          <div className="flex items-center justify-between mb-4 flex-wrap gap-2">
+            <h4 className="text-xs font-bold uppercase tracking-[0.15em] text-text-secondary">
+              Monthly NOI Trend vs. 50% Rule Benchmark
+            </h4>
+            <span
+              className="text-[10px] font-bold px-2 py-1 rounded-full uppercase tracking-[0.1em]"
+              style={{ background: 'rgba(165,165,165,0.1)', color: '#A5A5A5', border: '1px solid rgba(165,165,165,0.2)' }}
+            >
+              Seasonal estimate
+            </span>
+          </div>
+          <div className="flex-1 min-h-0">
+            <NOITrendChart data={monthlyNOIData} />
+          </div>
+          <p className="text-[10px] mt-2" style={{ color: 'var(--text-secondary)', opacity: 0.55 }}>
+            Seasonal variance applied: summer vacancy zero, winter utilities +40%, spring/winter maintenance spikes.
+            Actual monthly records will replace estimates when available.
+          </p>
+        </div>
+      )}
+
       {/* ── Per-Property Comparison Bar ── */}
       {breakdowns.length > 1 && (
         <div className="bg-bg-surface border border-border-accent rounded-xl p-5 flex flex-col" style={{ minHeight: '300px' }}>
@@ -559,51 +543,13 @@ export default function NOIDeepDive({ projects: propProjects }: Props) {
             NOI vs 50% Rule — By Property
           </h4>
           <div className="flex-1 min-h-0">
-            <ResponsiveContainer width="100%" height="100%">
-              <BarChart
-                data={breakdowns.map(b => ({
-                  name: b.name,
-                  'Actual NOI': b.components.noi,
-                  '50% Estimate': b.fiftyPercentEstimate,
-                }))}
-                margin={{ top: 10, right: 10, left: -10, bottom: 30 }}
-              >
-                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#E5E7EB" />
-                <XAxis
-                  dataKey="name"
-                  fontSize={10}
-                  tickLine={false}
-                  axisLine={false}
-                  angle={-30}
-                  textAnchor="end"
-                  height={40}
-                />
-                <YAxis
-                  fontSize={10}
-                  tickFormatter={fmtK}
-                  tickLine={false}
-                  axisLine={false}
-                  width={50}
-                />
-                <Tooltip
-                  formatter={(value: number) => fmtUSD(value)}
-                  contentStyle={{
-                    borderRadius: '8px',
-                    border: 'none',
-                    boxShadow: '0 4px 6px -1px rgba(0,0,0,0.1)',
-                    fontSize: '11px',
-                  }}
-                />
-                <Legend
-                  verticalAlign="top"
-                  height={30}
-                  iconType="circle"
-                  wrapperStyle={{ fontSize: '10px' }}
-                />
-                <Bar dataKey="Actual NOI" fill="#10B981" radius={[4, 4, 0, 0]} maxBarSize={40} />
-                <Bar dataKey="50% Estimate" fill="#F59E0B" radius={[4, 4, 0, 0]} maxBarSize={40} />
-              </BarChart>
-            </ResponsiveContainer>
+            <NOICompareChart
+              data={breakdowns.map(b => ({
+                name: b.name,
+                actualNOI: b.components.noi,
+                estimate50: b.fiftyPercentEstimate
+              }))}
+            />
           </div>
         </div>
       )}

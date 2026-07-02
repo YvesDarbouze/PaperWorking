@@ -42,8 +42,10 @@ export function TenantProvider({ children }: { children: React.ReactNode }) {
     } else if (profile.organizationId) {
       setActiveTenantId(profile.organizationId);
     } else {
-      // Fallback if somehow none exist
-      setActiveTenantId(`org_${profile.uid.slice(0, 8)}`);
+      // Fallback if somehow none exist. uid can be missing on legacy/partial
+      // docs — never dereference it blindly or the provider throws.
+      const seed = profile.uid || profile.personalOrganizationId || 'unknown';
+      setActiveTenantId(`org_${seed.slice(0, 8)}`);
     }
   }, [profile]);
 

@@ -20,8 +20,15 @@ function ensureInitialized() {
 
   const projectId   = process.env.FIREBASE_PROJECT_ID || process.env.GOOGLE_CLOUD_PROJECT;
   const clientEmail = process.env.FIREBASE_CLIENT_EMAIL;
-  // Secret Manager may store the key with literal \n sequences — normalize them.
-  const privateKey  = process.env.FIREBASE_PRIVATE_KEY?.replace(/\\n/g, '\n');
+  // Keys pasted from the service-account JSON often drag along wrapping quotes
+  // and a trailing comma (`"-----BEGIN...\n",`), making the value start with `"`
+  // instead of `-----BEGIN` — OpenSSL then rejects it with `DECODER routines::
+  // unsupported`. Strip that, then normalize literal \n sequences to newlines.
+  const privateKey  = process.env.FIREBASE_PRIVATE_KEY
+    ?.trim()
+    .replace(/^['"]/, '')
+    .replace(/['"],?\s*$/, '')
+    .replace(/\\n/g, '\n');
 
   if (clientEmail && privateKey) {
     try {

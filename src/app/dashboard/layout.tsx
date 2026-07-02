@@ -38,7 +38,16 @@ export default async function DashboardLayout({
 
   if (!isExempt && !isMock) {
     try {
-      const decoded = await adminAuth.verifySessionCookie(sessionCookie);
+      // __session may hold a Firebase session cookie OR a raw ID token — the
+      // session route falls back to the ID token when createSessionCookie is
+      // unavailable. verifySessionCookie rejects ID tokens, so try both, else
+      // the fallback-issued cookie causes a loader→/login redirect loop.
+      let decoded: { uid?: string } | null;
+      try {
+        decoded = await adminAuth.verifySessionCookie(sessionCookie);
+      } catch {
+        decoded = await adminAuth.verifyIdToken(sessionCookie);
+      }
       if (decoded?.uid) {
         const userDoc = await adminDb.collection("users").doc(decoded.uid).get();
         const userData = userDoc.data();
@@ -53,6 +62,9 @@ export default async function DashboardLayout({
         redirect("/login");
       }
     } catch (err) {
+      // redirect() above throws NEXT_REDIRECT — never swallow it into /login,
+      // or the real /pricing redirect is lost.
+      if ((err as { digest?: string })?.digest?.startsWith?.("NEXT_REDIRECT")) throw err;
       console.error("[DashboardLayout Server Gate] Auth verification failed:", err);
       redirect("/login");
     }

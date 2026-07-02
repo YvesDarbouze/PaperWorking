@@ -1,6 +1,6 @@
 'use client';
 
-import React, { createContext, useContext, useEffect, useRef, useState } from 'react';
+import React, { createContext, useContext, useEffect, useRef, useState, useSyncExternalStore } from 'react';
 import {
   User,
   onAuthStateChanged,
@@ -319,7 +319,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         profileUnsubscribe = onSnapshot(docRef, (snap) => {
           if (snap.exists()) {
             const profileData = snap.data() as UserProfile;
-            setProfile(profileData);
+            // Legacy/partial docs may lack uid — the authenticated user is the
+            // source of truth. TenantContext relies on profile.uid existing.
+            setProfile({ ...profileData, uid: profileData.uid || firebaseUser.uid });
 
             // Authoritatively hydrate the Zustand store
             const plan = profileData.subscriptionPlan ?? 'None';
@@ -768,13 +770,32 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   );
 }
 
+// Stable no-op store subscription — the "is mounted" snapshot never changes
+// after hydration, so there is nothing to subscribe to.
+const noopSubscribe = () => () => {};
+
 export function useAuth() {
   const context = useContext(AuthContext);
+
+  // The mock-session and /demo overrides below read document.cookie /
+  // window.location — client-only signals that don't exist during SSR. Applying
+  // them on the first client render diverges from the server-rendered HTML and
+  // triggers a hydration mismatch (e.g. avatar initial "U" vs "T"). useSyncExternalStore
+  // returns the server snapshot (false) during SSR and the first hydration render,
+  // then the client snapshot (true), so the override applies only after hydration.
+  const mounted = useSyncExternalStore(
+    noopSubscribe,
+    () => true,
+    () => false
+  );
+
   if (!context) {
     throw new Error('useAuth must be used within an AuthProvider');
   }
 
-  const isMockSession = typeof document !== 'undefined' && document.cookie.includes('mock_session_token_123');
+  if (!mounted) return context;
+
+  const isMockSession = document.cookie.includes('mock_session_token_123');
 
   if (isMockSession) {
     const orgCookie = typeof document !== 'undefined'

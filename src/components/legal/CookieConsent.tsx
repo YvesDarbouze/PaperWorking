@@ -62,63 +62,75 @@ export default function CookieConsent() {
 
   return (
     <div
-      className="fixed bottom-6 right-6 z-50 max-w-md w-full rounded-2xl p-6 border border-white/12 shadow-2xl transition-all duration-300"
+      className="fixed bottom-6 right-6 z-50 w-[320px] rounded-[28px] p-6 border shadow-2xl transition-all duration-300 flex flex-col"
       style={{
-        background: 'linear-gradient(135deg, rgba(30,41,50,0.9), rgba(15,23,30,0.95))',
+        background: 'rgba(18, 16, 20, 0.85)',
         backdropFilter: 'blur(20px)',
         WebkitBackdropFilter: 'blur(20px)',
+        borderColor: 'rgba(255, 255, 255, 0.08)',
       }}
     >
       {!showCustomize ? (
-        <div>
-          <h3 className="font-label-md text-label-md text-on-surface mb-2">Cookie Preferences</h3>
-          <p className="font-body-sm text-body-sm text-on-surface-variant mb-6 leading-relaxed">
-            We use cookies to secure your sessions and analyze workspace traffic. By clicking &ldquo;Accept All&rdquo;, you consent to analytics and marketing tracking. Read our{' '}
-            <a href="/privacy" className="text-primary hover:underline">
+        <div className="flex flex-col gap-4">
+          <p className="font-body-sm text-[13px] leading-relaxed text-white/90">
+            We use cookies to enhance your development experience and keep your data secure.{' '}
+            <a href="/privacy" className="underline hover:text-white/80 transition-colors">
               Privacy Policy
-            </a>{' '}
-            for details.
+            </a>
           </p>
-          <div className="flex flex-wrap gap-3 justify-end">
+          
+          <button
+            onClick={handleAcceptAll}
+            className="w-full py-2.5 px-4 font-label-sm text-label-sm font-medium rounded-xl transition-all duration-200 border cursor-pointer text-center text-white"
+            style={{
+              background: 'linear-gradient(180deg, rgba(255, 255, 255, 0.08) 0%, rgba(255, 255, 255, 0.03) 100%)',
+              borderColor: 'rgba(255, 255, 255, 0.12)',
+            }}
+            onMouseOver={(e) => {
+              e.currentTarget.style.background = 'linear-gradient(180deg, rgba(255, 255, 255, 0.12) 0%, rgba(255, 255, 255, 0.06) 100%)';
+              e.currentTarget.style.borderColor = 'rgba(255, 255, 255, 0.18)';
+            }}
+            onMouseOut={(e) => {
+              e.currentTarget.style.background = 'linear-gradient(180deg, rgba(255, 255, 255, 0.08) 0%, rgba(255, 255, 255, 0.03) 100%)';
+              e.currentTarget.style.borderColor = 'rgba(255, 255, 255, 0.12)';
+            }}
+          >
+            OK
+          </button>
+          
+          <div className="text-center">
             <button
               onClick={() => setShowCustomize(true)}
-              className="px-4 py-2 font-label-sm text-label-sm text-on-surface-variant hover:text-on-surface hover:bg-white/5 rounded-lg transition-all"
+              className="text-xs text-white/60 hover:text-white/90 hover:underline transition-colors cursor-pointer"
             >
-              Customize
-            </button>
-            <button
-              onClick={handleRejectAll}
-              className="px-4 py-2 font-label-sm text-label-sm border border-white/10 hover:border-white/20 text-on-surface rounded-lg transition-all"
-            >
-              Essential Only
-            </button>
-            <button
-              onClick={handleAcceptAll}
-              className="px-4 py-2 font-label-sm text-label-sm bg-primary text-black hover:bg-primary-hover font-semibold rounded-lg shadow-lg shadow-primary/20 transition-all"
-            >
-              Accept All
+              Manage preferences
             </button>
           </div>
         </div>
       ) : (
-        <div>
-          <h3 className="font-label-md text-label-md text-on-surface mb-4 border-b border-white/10 pb-2">Customize Preferences</h3>
-          <div className="space-y-4 mb-6">
-            <div className="flex items-start justify-between gap-4">
+        <div className="flex flex-col gap-4 text-white">
+          <h3 className="font-label-md text-label-md text-white/90 border-b border-white/10 pb-2">
+            Customize Preferences
+          </h3>
+          
+          <div className="space-y-4">
+            <div className="flex items-start justify-between gap-3">
               <div>
-                <h4 className="font-label-sm text-label-sm text-on-surface">Essential Cookies</h4>
-                <p className="font-body-xs text-body-xs text-on-surface-variant leading-relaxed">
-                  Required for user login, MFA, and CSRF protection. Cannot be disabled.
+                <h4 className="font-label-sm text-[12px] text-white/90 font-medium">Essential Cookies</h4>
+                <p className="text-[10px] text-white/60 leading-relaxed mt-0.5">
+                  Required for user login, MFA, and CSRF protection.
                 </p>
               </div>
-              <span className="font-label-xs text-label-xs text-primary bg-primary/10 px-2 py-0.5 rounded-full uppercase tracking-wider">Required</span>
+              <span className="text-[9px] text-primary bg-primary/10 px-2 py-0.5 rounded-full uppercase tracking-wider font-semibold">
+                Req
+              </span>
             </div>
 
-            <div className="flex items-start justify-between gap-4 border-t border-white/5 pt-3">
+            <div className="flex items-start justify-between gap-3 border-t border-white/5 pt-3">
               <div>
-                <h4 className="font-label-sm text-label-sm text-on-surface">Analytics & Diagnostics</h4>
-                <p className="font-body-xs text-body-xs text-on-surface-variant leading-relaxed">
-                  Allows us to monitor route latencies and UI load times. Used to diagnose bugs.
+                <h4 className="font-label-sm text-[12px] text-white/90 font-medium">Analytics & Diagnostics</h4>
+                <p className="text-[10px] text-white/60 leading-relaxed mt-0.5">
+                  Allows us to monitor route latencies and UI load times.
                 </p>
               </div>
               <label className="relative inline-flex items-center cursor-pointer select-none">
@@ -128,15 +140,15 @@ export default function CookieConsent() {
                   onChange={(e) => setAnalytics(e.target.checked)}
                   className="sr-only peer"
                 />
-                <div className="w-9 h-5 bg-white/10 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-white/20 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-primary"></div>
+                <div className="w-8 h-4 bg-white/10 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-white/20 after:border after:rounded-full after:h-3 after:w-3 after:transition-all peer-checked:bg-primary"></div>
               </label>
             </div>
 
-            <div className="flex items-start justify-between gap-4 border-t border-white/5 pt-3">
+            <div className="flex items-start justify-between gap-3 border-t border-white/5 pt-3">
               <div>
-                <h4 className="font-label-sm text-label-sm text-on-surface">Marketing & Lead Referral</h4>
-                <p className="font-body-xs text-body-xs text-on-surface-variant leading-relaxed">
-                  Enables us to track onboarding attribution and campaign effectiveness.
+                <h4 className="font-label-sm text-[12px] text-white/90 font-medium">Marketing</h4>
+                <p className="text-[10px] text-white/60 leading-relaxed mt-0.5">
+                  Enables us to track onboarding attribution.
                 </p>
               </div>
               <label className="relative inline-flex items-center cursor-pointer select-none">
@@ -146,29 +158,30 @@ export default function CookieConsent() {
                   onChange={(e) => setMarketing(e.target.checked)}
                   className="sr-only peer"
                 />
-                <div className="w-9 h-5 bg-white/10 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-white/20 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-primary"></div>
+                <div className="w-8 h-4 bg-white/10 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-white/20 after:border after:rounded-full after:h-3 after:w-3 after:transition-all peer-checked:bg-primary"></div>
               </label>
             </div>
           </div>
-          <div className="flex justify-between items-center gap-3">
+
+          <div className="flex justify-between items-center gap-2 border-t border-white/10 pt-3 mt-1">
             <button
               onClick={() => setShowCustomize(false)}
-              className="font-label-sm text-label-sm text-on-surface-variant hover:text-on-surface transition-colors"
+              className="text-xs text-white/60 hover:text-white/90 transition-colors cursor-pointer"
             >
               ← Back
             </button>
-            <div className="flex gap-3">
+            <div className="flex gap-2">
               <button
                 onClick={handleRejectAll}
-                className="px-4 py-2 font-label-sm text-label-sm border border-white/10 hover:border-white/20 text-on-surface rounded-lg transition-all"
+                className="px-3 py-1.5 text-xs border border-white/10 hover:border-white/20 text-white rounded-lg transition-all cursor-pointer"
               >
                 Reject All
               </button>
               <button
                 onClick={handleSaveCustom}
-                className="px-4 py-2 font-label-sm text-label-sm bg-primary text-black hover:bg-primary-hover font-semibold rounded-lg shadow-lg shadow-primary/20 transition-all"
+                className="px-3 py-1.5 text-xs bg-primary text-black hover:bg-primary/90 font-medium rounded-lg shadow-md transition-all cursor-pointer"
               >
-                Save Preferences
+                Save
               </button>
             </div>
           </div>

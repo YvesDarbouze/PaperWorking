@@ -269,7 +269,7 @@ test.describe('PaperWorking E2E — Autonomous End-to-End Deep App Test', () => 
 
     // Dismiss Cookie banner if it appears
     try {
-      const cookieBtn = page.locator('button:has-text("Accept All"), button:has-text("Essential Only")').first();
+      const cookieBtn = page.locator('button:has-text("Accept All"), button:has-text("Essential Only"), button:has-text("OK")').first();
       if (await cookieBtn.isVisible()) {
         await cookieBtn.click();
       }

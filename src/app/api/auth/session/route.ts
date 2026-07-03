@@ -92,6 +92,7 @@ export async function POST(request: Request) {
     // checkRevoked omitted — it adds a network round-trip that can fail on cold starts;
     // the 1-hour token expiry provides equivalent protection for normal login flows.
     let decoded: { uid: string };
+    
     try {
       decoded = await adminAuth.verifyIdToken(idToken);
       console.log('[Session] Step 1 OK — verifyIdToken succeeded for uid:', decoded.uid);

@@ -18,8 +18,9 @@ import { CommunicationEngine, EmailStatus } from '@/lib/engine/CommunicationEngi
  *   email.bounced      → Bounced
  *   email.complained   → Failed
  *
- * Security: Validates the webhook signing secret (RESEND_WEBHOOK_SECRET)
- * if configured. Otherwise accepts all events (development mode).
+ * Security: RESEND_WEBHOOK_SECRET must be set — verification is mandatory,
+ * never conditional. A missing/empty secret, missing Svix headers, or an
+ * invalid signature all result in rejection with no payload processing.
  *
  * @see https://resend.com/docs/webhooks
  */
@@ -43,41 +44,48 @@ export async function POST(request: NextRequest) {
     // ── Webhook Signature Verification (Svix HMAC-SHA256) ───
     const webhookSecret = process.env.RESEND_WEBHOOK_SECRET;
 
-    if (webhookSecret) {
-      const signature = request.headers.get('svix-signature');
-      const svixId = request.headers.get('svix-id');
-      const svixTimestamp = request.headers.get('svix-timestamp');
-
-      if (!signature || !svixId || !svixTimestamp) {
-        return NextResponse.json(
-          { error: 'Missing webhook signature headers' },
-          { status: 401 },
-        );
-      }
-
-      // Svix signs: "${svixId}.${svixTimestamp}.${rawBody}"
-      // Secret is stored as "whsec_<base64>" — strip the prefix
-      const secretBytes = Buffer.from(
-        webhookSecret.startsWith('whsec_') ? webhookSecret.slice(6) : webhookSecret,
-        'base64',
+    if (!webhookSecret) {
+      console.error('[Resend Webhook] Signature verification failed: RESEND_WEBHOOK_SECRET is not configured on the server');
+      return NextResponse.json(
+        { error: 'Webhook signature verification is not configured on the server' },
+        { status: 500 }
       );
-      const toSign = `${svixId}.${svixTimestamp}.${rawBody}`;
-      const computed = createHmac('sha256', secretBytes).update(toSign).digest('base64');
+    }
 
-      // Svix header format: "v1,<base64sig> v1,<base64sig2> …"
-      const signatures = signature.split(' ').map((s) => s.replace(/^v\d+,/, ''));
-      const verified = signatures.some((sig) => {
-        try {
-          return timingSafeEqual(Buffer.from(computed), Buffer.from(sig));
-        } catch {
-          return false;
-        }
-      });
+    const signature = request.headers.get('svix-signature');
+    const svixId = request.headers.get('svix-id');
+    const svixTimestamp = request.headers.get('svix-timestamp');
 
-      if (!verified) {
-        console.warn('[Resend Webhook] Signature verification failed');
-        return NextResponse.json({ error: 'Invalid signature' }, { status: 401 });
+    if (!signature || !svixId || !svixTimestamp) {
+      console.warn('[Resend Webhook] Signature verification failed: missing signature headers');
+      return NextResponse.json(
+        { error: 'Missing webhook signature headers' },
+        { status: 401 },
+      );
+    }
+
+    // Svix signs: "${svixId}.${svixTimestamp}.${rawBody}"
+    // Secret is stored as "whsec_<base64>" — strip the prefix
+    const secretBytes = Buffer.from(
+      webhookSecret.startsWith('whsec_') ? webhookSecret.slice(6) : webhookSecret,
+      'base64',
+    );
+    const toSign = `${svixId}.${svixTimestamp}.${rawBody}`;
+    const computed = createHmac('sha256', secretBytes).update(toSign).digest('base64');
+
+    // Svix header format: "v1,<base64sig> v1,<base64sig2> …"
+    const signatures = signature.split(' ').map((s) => s.replace(/^v\d+,/, ''));
+    const verified = signatures.some((sig) => {
+      try {
+        return timingSafeEqual(Buffer.from(computed), Buffer.from(sig));
+      } catch {
+        return false;
       }
+    });
+
+    if (!verified) {
+      console.warn('[Resend Webhook] Signature verification failed: invalid signature');
+      return NextResponse.json({ error: 'Invalid signature' }, { status: 401 });
     }
 
     // ── Parse Event Payload ────────────────────────────────

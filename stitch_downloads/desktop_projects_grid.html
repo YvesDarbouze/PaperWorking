@@ -1,0 +1,519 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Projects | Command Center</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&amp;family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@100..900&amp;display=swap" rel="stylesheet"/>
+<style>
+        .glass-card {
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.08) 0%, rgba(255, 255, 255, 0.02) 100%);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.05);
+        }
+        .folder-cut {
+            clip-path: polygon(0% 0%, 85% 0%, 100% 15%, 100% 100%, 0% 100%);
+        }
+        .luminous-glow {
+            box-shadow: 0 0 20px -5px #57f1db;
+        }
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .active-glow {
+            box-shadow: 0 0 15px rgba(87, 241, 219, 0.3);
+        }
+        body {
+            background-color: #0b141a;
+            color: #dae4ec;
+            overflow-x: hidden;
+        }
+        /* Custom scrollbar */
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: #3c4a46; border-radius: 10px; }
+    </style>
+<script id="tailwind-config">
+        tailwind.config = {
+          darkMode: "class",
+          theme: {
+            extend: {
+              "colors": {
+                      "primary": "#57f1db",
+                      "error": "#ffb4ab",
+                      "on-secondary-fixed-variant": "#004395",
+                      "primary-fixed": "#62fae3",
+                      "on-surface-variant": "#bacac5",
+                      "surface-container-low": "#141d23",
+                      "surface": "#0b141a",
+                      "on-tertiary-fixed-variant": "#6b3b00",
+                      "background": "#0b141a",
+                      "inverse-primary": "#006b5f",
+                      "tertiary": "#ffd1aa",
+                      "on-secondary": "#002e6a",
+                      "surface-dim": "#0b141a",
+                      "surface-container-high": "#222b32",
+                      "outline-variant": "#3c4a46",
+                      "primary-fixed-dim": "#3cddc7",
+                      "error-container": "#93000a",
+                      "on-tertiary-container": "#744000",
+                      "on-secondary-container": "#e6ecff",
+                      "surface-container-highest": "#2d363d",
+                      "on-primary-fixed": "#00201c",
+                      "secondary-container": "#0566d9",
+                      "on-tertiary-fixed": "#2d1600",
+                      "on-primary": "#003731",
+                      "on-primary-fixed-variant": "#005047",
+                      "primary-container": "#2dd4bf",
+                      "surface-variant": "#2d363d",
+                      "on-primary-container": "#00574d",
+                      "outline": "#859490",
+                      "secondary-fixed": "#d8e2ff",
+                      "secondary": "#adc6ff",
+                      "secondary-fixed-dim": "#adc6ff",
+                      "on-error": "#690005",
+                      "tertiary-fixed-dim": "#ffb875",
+                      "on-surface": "#dae4ec",
+                      "inverse-on-surface": "#293238",
+                      "surface-container-lowest": "#060f15",
+                      "surface-tint": "#3cddc7",
+                      "on-tertiary": "#4b2800",
+                      "on-background": "#dae4ec",
+                      "tertiary-fixed": "#ffdcc0",
+                      "tertiary-container": "#ffac5a",
+                      "surface-bright": "#313a41",
+                      "on-error-container": "#ffdad6",
+                      "surface-container": "#182127",
+                      "on-secondary-fixed": "#001a42",
+                      "inverse-surface": "#dae4ec"
+              },
+              "borderRadius": {
+                      "DEFAULT": "0.25rem",
+                      "lg": "0.5rem",
+                      "xl": "0.75rem",
+                      "full": "9999px"
+              },
+              "spacing": {
+                      "stack-sm": "8px",
+                      "margin-mobile": "20px",
+                      "stack-md": "16px",
+                      "margin-desktop": "40px",
+                      "stack-lg": "32px",
+                      "unit": "8px",
+                      "gutter-desktop": "24px",
+                      "container-max": "1280px",
+                      "gutter-mobile": "16px"
+              },
+              "fontFamily": {
+                      "headline-md": ["Plus Jakarta Sans"],
+                      "body-md": ["Plus Jakarta Sans"],
+                      "body-lg": ["Plus Jakarta Sans"],
+                      "headline-lg": ["Plus Jakarta Sans"],
+                      "body-sm": ["Plus Jakarta Sans"],
+                      "label-md": ["Plus Jakarta Sans"],
+                      "headline-xl": ["Plus Jakarta Sans"],
+                      "headline-lg-mobile": ["Plus Jakarta Sans"],
+                      "label-sm": ["Plus Jakarta Sans"]
+              },
+              "fontSize": {
+                      "headline-md": ["24px", {"lineHeight": "32px", "fontWeight": "600"}],
+                      "body-md": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+                      "body-lg": ["18px", {"lineHeight": "28px", "fontWeight": "400"}],
+                      "headline-lg": ["32px", {"lineHeight": "40px", "letterSpacing": "-0.01em", "fontWeight": "700"}],
+                      "body-sm": ["14px", {"lineHeight": "20px", "fontWeight": "400"}],
+                      "label-md": ["14px", {"lineHeight": "16px", "letterSpacing": "0.02em", "fontWeight": "600"}],
+                      "headline-xl": ["48px", {"lineHeight": "56px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                      "headline-lg-mobile": ["28px", {"lineHeight": "36px", "fontWeight": "700"}],
+                      "label-sm": ["12px", {"lineHeight": "14px", "letterSpacing": "0.05em", "fontWeight": "500"}]
+              }
+            },
+          },
+        }
+    </script>
+</head>
+<body class="flex min-h-screen">
+<!-- NavigationDrawer (SideNav) -->
+<aside class="flex flex-col h-full p-unit-stack-gap h-screen w-64 border-r border-outline-variant bg-surface-container-low fixed left-0 top-0 z-50">
+<div class="px-4 py-8">
+<h1 class="font-headline-lg text-headline-lg text-primary">Command Center</h1>
+</div>
+<nav class="flex-1 space-y-2 px-2 overflow-y-auto">
+<a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:bg-surface-variant rounded-lg transition-colors group" href="#">
+<span class="material-symbols-outlined group-hover:text-primary">dashboard</span>
+<span class="font-label-md">Portfolio</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 bg-primary-container text-on-primary-container rounded-lg font-bold active-glow" href="#">
+<span class="material-symbols-outlined">account_tree</span>
+<span class="font-label-md">Projects</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:bg-surface-variant rounded-lg transition-colors group" href="#">
+<span class="material-symbols-outlined group-hover:text-primary">folder_shared</span>
+<span class="font-label-md">Data Room</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:bg-surface-variant rounded-lg transition-colors group" href="#">
+<span class="material-symbols-outlined group-hover:text-primary">inbox</span>
+<span class="font-label-md">Inbox</span>
+</a>
+<div class="pt-8 pb-4">
+<p class="px-4 text-[10px] uppercase tracking-widest text-outline">System</p>
+</div>
+<a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:bg-surface-variant rounded-lg transition-colors group" href="#">
+<span class="material-symbols-outlined group-hover:text-primary">person</span>
+<span class="font-label-md">Profile</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:bg-surface-variant rounded-lg transition-colors group" href="#">
+<span class="material-symbols-outlined group-hover:text-primary">payments</span>
+<span class="font-label-md">Billing</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:bg-surface-variant rounded-lg transition-colors group" href="#">
+<span class="material-symbols-outlined group-hover:text-primary">settings</span>
+<span class="font-label-md">Settings</span>
+</a>
+</nav>
+<div class="mt-auto p-4 border-t border-outline-variant">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-full bg-surface-container-highest flex items-center justify-center border border-primary/20">
+<span class="material-symbols-outlined text-primary">terminal</span>
+</div>
+<div>
+<p class="font-label-md text-on-surface">V0.9.2-Stable</p>
+<p class="text-[10px] text-outline">Terminal Connected</p>
+</div>
+</div>
+</div>
+</aside>
+<!-- Main Content Canvas -->
+<main class="ml-64 flex-1 min-h-screen bg-background relative">
+<!-- TopAppBar -->
+<header class="flex items-center justify-between px-container-padding w-full h-16 sticky top-0 z-40 bg-glass-bg backdrop-blur-xl border-b border-glass-border">
+<div class="flex items-center gap-4 px-8">
+<span class="material-symbols-outlined text-primary cursor-pointer">menu</span>
+<h2 class="font-title-md text-title-md text-primary">Portfolio Command Center</h2>
+</div>
+<div class="flex items-center gap-6 px-8">
+<div class="relative hidden lg:block">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-outline text-sm">search</span>
+<input class="bg-surface-container-highest border-none rounded-full pl-10 pr-4 py-2 text-sm focus:ring-1 focus:ring-primary w-64 transition-all" placeholder="Global Scan..." type="text"/>
+</div>
+<div class="flex gap-4 items-center">
+<div class="w-8 h-8 rounded-full border border-primary/30 p-0.5 overflow-hidden">
+<img alt="User Portrait" class="w-full h-full object-cover rounded-full" data-alt="A professional close-up portrait of a modern executive in a sleek tech-focused environment. The lighting is moody and cinematic with soft cyan and teal rim lights that match a high-fidelity glassmorphism UI. The background is a dark, sophisticated architectural office with soft-focus glass panels and glowing data screens." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCi82tDqUYGBjN1K2_BHNbY4pgNti2S-uqEjt2AjGwtuYJz--XLslSxrX6u32hIOBlrENFxTVsXDpzqrj6-c-X9717svmLIVDJg8I6IPKqF7CcRLBL8ExmC44UDOY6wzGnJGLZloVDnRh5xFyhWEB-GoiMVFFmZjL_tBlFK39_uNO15jOz7AQJKEqFji_ovrpF1xnZeaVTkclCZu5cUJMEe_4SfC41FGS9R8V5RiiV-T2bH6JEU5jfG4547SgP3WfCPE-SdG9Dl7O7V"/>
+</div>
+</div>
+</div>
+</header>
+<!-- Page Content -->
+<section class="p-stack-lg max-w-7xl mx-auto">
+<!-- Obsidian Filter/Sort Bar -->
+<div class="mb-stack-lg glass-card rounded-xl p-4 flex flex-col md:flex-row items-center justify-between gap-4">
+<div class="flex items-center gap-2">
+<button class="bg-surface-container-highest px-4 py-2 rounded-lg text-sm font-label-md flex items-center gap-2 border border-outline-variant hover:border-primary transition-all">
+<span class="material-symbols-outlined text-sm">filter_list</span>
+                        All Strategies
+                    </button>
+<button class="bg-surface-container-highest px-4 py-2 rounded-lg text-sm font-label-md flex items-center gap-2 border border-outline-variant hover:border-primary transition-all">
+<span class="material-symbols-outlined text-sm">trending_up</span>
+                        Performance
+                    </button>
+<div class="h-6 w-px bg-outline-variant mx-2"></div>
+<span class="text-outline text-xs uppercase tracking-widest font-bold">8 Projects Found</span>
+</div>
+<div class="flex items-center gap-4">
+<div class="flex items-center gap-1 bg-surface-container-lowest p-1 rounded-lg border border-outline-variant">
+<button class="p-1.5 rounded bg-primary/20 text-primary"><span class="material-symbols-outlined text-sm">grid_view</span></button>
+<button class="p-1.5 rounded text-outline hover:text-on-surface"><span class="material-symbols-outlined text-sm">list</span></button>
+</div>
+<button class="luminous-glow bg-primary text-on-primary px-6 py-2 rounded-lg font-bold text-sm flex items-center gap-2 hover:scale-105 transition-all">
+<span class="material-symbols-outlined text-sm" style="font-variation-settings: 'FILL' 1;">add</span>
+                        New Project
+                    </button>
+</div>
+</div>
+<!-- Responsive Bento Grid of Property Cards -->
+<div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-gutter-desktop">
+<!-- Card 1: 722 Oak Avenue -->
+<div class="glass-card folder-cut group hover:border-primary/50 transition-all duration-300 relative overflow-hidden">
+<div class="absolute top-0 right-0 w-32 h-32 bg-primary/10 blur-3xl rounded-full -mr-16 -mt-16 group-hover:bg-primary/20 transition-all"></div>
+<div class="p-6">
+<div class="flex justify-between items-start mb-6">
+<div>
+<span class="bg-primary/10 text-primary text-[10px] font-bold px-2 py-1 rounded uppercase tracking-widest border border-primary/20 mb-2 inline-block">Fix &amp; Flip</span>
+<h3 class="font-headline-md text-on-surface">722 Oak Avenue</h3>
+<p class="text-outline text-sm">Palo Alto, CA 94301</p>
+</div>
+<div class="text-right">
+<div class="font-headline-md text-primary">85%</div>
+<div class="text-[10px] text-outline uppercase tracking-tighter">Ownership</div>
+</div>
+</div>
+<div class="mb-8">
+<div class="flex justify-between items-end mb-2">
+<span class="text-xs text-outline">Renovation Progress</span>
+<span class="text-xs text-primary font-bold">Phase 3: MEP Rough-in</span>
+</div>
+<div class="w-full h-1.5 bg-surface-container-highest rounded-full overflow-hidden">
+<div class="h-full bg-primary luminous-glow rounded-full" style="width: 68%;"></div>
+</div>
+</div>
+<div class="grid grid-cols-2 gap-4 pt-4 border-t border-outline-variant">
+<div>
+<p class="text-[10px] text-outline uppercase">Acquisition</p>
+<p class="font-label-md">$1.24M</p>
+</div>
+<div>
+<p class="text-[10px] text-outline uppercase">Est. Exit</p>
+<p class="font-label-md text-primary">$1.98M</p>
+</div>
+</div>
+</div>
+<div class="px-6 py-4 bg-white/5 border-t border-white/10 flex justify-between items-center group-hover:bg-primary/5 transition-colors">
+<div class="flex -space-x-2">
+<img class="w-6 h-6 rounded-full border border-background" data-alt="A detailed headshot of a professional project manager with clear, optimistic features, set against a blurred high-tech workspace with teal neon accents." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBlot47dvHX9DaZ9bMMj6gauE5py7wOqQflFeKfxERUFbYVQIKMMw5gxeFbuDRULw7X6VWP2Mw_-cNAocRquqaUMp1mQsTFoSfVmqBx6DIy0sq5LBvMuPeYB3exvIT0vNeqg1fzH3gRnvgo1ne6S-ffWekaZUyURWmRC0KXmOKQeocdH4hsgr6-NoB1ZQJAfLGNKTRK5IfjJ5dOUsz1ipgLJ6eDedmG8PNw9LqPHVO2qtfpEXpzlezhVXBbhosaUVHLTZlX7-dOSKf7"/>
+<img class="w-6 h-6 rounded-full border border-background" data-alt="A modern professional portrait of a woman with a confident expression, set in a sleek tech office with glass reflections and futuristic lighting." src="https://lh3.googleusercontent.com/aida-public/AB6AXuD3irFqtbQTNOixOEPiZSsCcnaZbVBTF0cK62uPFmXBJfJYuSBmRwqGUVT6ASK1Vl8XhaD6JEdZYUjFz6L_xKuv0dFoQAwSfTvqftuhNrdEei5izyA0Hue5phEjXmchxbC2OkUNdA5Q6AAKFyIJXMrQeDbqG6sKbC-FuGlw5D24cDA5wxWiX7kcnGS8lojTnMsUrOk73UZZojzjWE-T2Rqt5VIfOHk5O7wPJNioTvG9SkRwt56BMduAxN9fxjtaK4jU8l-PThyRm2ht"/>
+</div>
+<button class="text-primary text-xs font-bold flex items-center gap-1 hover:underline">
+                            Details <span class="material-symbols-outlined text-xs">arrow_forward</span>
+</button>
+</div>
+</div>
+<!-- Card 2: 410 Bush St -->
+<div class="glass-card folder-cut group hover:border-primary/50 transition-all duration-300 relative overflow-hidden">
+<div class="absolute top-0 right-0 w-32 h-32 bg-primary/10 blur-3xl rounded-full -mr-16 -mt-16 group-hover:bg-primary/20 transition-all"></div>
+<div class="p-6">
+<div class="flex justify-between items-start mb-6">
+<div>
+<span class="bg-tertiary/10 text-tertiary text-[10px] font-bold px-2 py-1 rounded uppercase tracking-widest border border-tertiary/20 mb-2 inline-block">Rental</span>
+<h3 class="font-headline-md text-on-surface">410 Bush St</h3>
+<p class="text-outline text-sm">San Francisco, CA 94108</p>
+</div>
+<div class="text-right">
+<div class="font-headline-md text-primary">100%</div>
+<div class="text-[10px] text-outline uppercase tracking-tighter">Ownership</div>
+</div>
+</div>
+<div class="mb-8">
+<div class="flex justify-between items-end mb-2">
+<span class="text-xs text-outline">Portfolio Stability</span>
+<span class="text-xs text-primary font-bold">Stable Returns</span>
+</div>
+<div class="w-full h-1.5 bg-surface-container-highest rounded-full overflow-hidden">
+<div class="h-full bg-primary luminous-glow rounded-full" style="width: 95%;"></div>
+</div>
+</div>
+<div class="grid grid-cols-2 gap-4 pt-4 border-t border-outline-variant">
+<div>
+<p class="text-[10px] text-outline uppercase">Monthly Rev</p>
+<p class="font-label-md">$8.4k</p>
+</div>
+<div>
+<p class="text-[10px] text-outline uppercase">Cap Rate</p>
+<p class="font-label-md text-primary">5.2%</p>
+</div>
+</div>
+</div>
+<div class="px-6 py-4 bg-white/5 border-t border-white/10 flex justify-between items-center group-hover:bg-primary/5 transition-colors">
+<div class="flex -space-x-2">
+<img class="w-6 h-6 rounded-full border border-background" data-alt="A professional male figure in business attire, photographed in a futuristic setting with glowing teal data overlays and high-contrast lighting." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBhwHawYUlUqectVaRVRfRpfYDgbV58lWTAuqTjACnBqmtUgBypLs52Xa2i6jBkVR9LM0-IyMcFltZaBSKfP5wHeKYJ-43ASSz4F-6jWmwH5-JHumnOYs8Qm0lX9OQM4_o_4HV5FNaZhH52tX2-DG5LdSdz7jVKRctSLRpdEKp-LKvgMd9D1FYImd8EGMEhvOSw46GCgd0l7A6X8kqnCgxhxUMnM1bjGUQpyPm-_hL6vgxrRAnxu7XmxNn5SM1xDe7HHQXwnaqrpaeP"/>
+</div>
+<button class="text-primary text-xs font-bold flex items-center gap-1 hover:underline">
+                            Details <span class="material-symbols-outlined text-xs">arrow_forward</span>
+</button>
+</div>
+</div>
+<!-- Card 3: 1288 Mission Blvd -->
+<div class="glass-card folder-cut group hover:border-primary/50 transition-all duration-300 relative overflow-hidden">
+<div class="p-6">
+<div class="flex justify-between items-start mb-6">
+<div>
+<span class="bg-primary/10 text-primary text-[10px] font-bold px-2 py-1 rounded uppercase tracking-widest border border-primary/20 mb-2 inline-block">Fix &amp; Flip</span>
+<h3 class="font-headline-md text-on-surface">1288 Mission Blvd</h3>
+<p class="text-outline text-sm">Mission Bay, CA 94158</p>
+</div>
+<div class="text-right">
+<div class="font-headline-md text-primary">40%</div>
+<div class="text-[10px] text-outline uppercase tracking-tighter">Ownership</div>
+</div>
+</div>
+<div class="mb-8">
+<div class="flex justify-between items-end mb-2">
+<span class="text-xs text-outline">Renovation Progress</span>
+<span class="text-xs text-tertiary font-bold">Phase 1: Demolition</span>
+</div>
+<div class="w-full h-1.5 bg-surface-container-highest rounded-full overflow-hidden">
+<div class="h-full bg-tertiary rounded-full shadow-[0_0_10px_rgba(255,172,90,0.4)]" style="width: 15%;"></div>
+</div>
+</div>
+<div class="grid grid-cols-2 gap-4 pt-4 border-t border-outline-variant">
+<div>
+<p class="text-[10px] text-outline uppercase">Acquisition</p>
+<p class="font-label-md">$3.8M</p>
+</div>
+<div>
+<p class="text-[10px] text-outline uppercase">Est. Exit</p>
+<p class="font-label-md text-primary">$5.2M</p>
+</div>
+</div>
+</div>
+<div class="px-6 py-4 bg-white/5 border-t border-white/10 flex justify-between items-center group-hover:bg-primary/5 transition-colors">
+<div class="flex -space-x-2">
+<img class="w-6 h-6 rounded-full border border-background" data-alt="A portrait of a focused professional, set in a high-fidelity tech-noir environment with shimmering glass highlights and deep teal shadows." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAbb-vG_QZ-nLLXPuJ9xELsLzXNESOg9jyqFu6G4mQHlp46wteVmitdmSM-9cLt02Z_nKCDocOzmBZlqTmLN15k0hXl7jtd4B3vavtaiuNoBYc1WoKdF6EGbj9GisESyoQHA-DM6SQz69b9YYLdOLjZQSPDRxOQAgAzcSgR1B-5C96UTFkMM834HWhGsXgbYZ1iPHMip3QoMGVp15wZI1qn3GmB5caKmMKQdSNwwxxgCsJJKl0mHTd2hb0gPoP5fPWa04v4eTPdxfRl"/>
+<img class="w-6 h-6 rounded-full border border-background" data-alt="A high-quality image of a diverse tech team member in a minimalist office with neon light leaks and a premium dark aesthetic." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDSLXt9SFMxI3uSgNd-SJtzMDeFFAdW5U0l-jQUA8eJ7RFFDFPTIDPs4lsz1L85FZs9sDnZ0RpPZT8puJCpe3bJGTNrYUHkWcOwHfWNqimgW0n5sowo2Ml9jJLdVeVwhyBC2Ygzdnzw4Oj_-I1DsYeIw4NPSdrwWeaAhHvmCNoGaaLjpcBoxAFPsz1zJ3kFvlAD6rIWgWT82wCld0fi4dVLlwHa7ntmRoYpnCv4-j_CCqzx3nFlMr4G9O6ZQIpZU1AC2LBhMTX-YpEf"/>
+</div>
+<button class="text-primary text-xs font-bold flex items-center gap-1 hover:underline">
+                            Details <span class="material-symbols-outlined text-xs">arrow_forward</span>
+</button>
+</div>
+</div>
+<!-- Card 4: 955 Lincoln Ave -->
+<div class="glass-card folder-cut group hover:border-primary/50 transition-all duration-300 relative overflow-hidden">
+<div class="p-6">
+<div class="flex justify-between items-start mb-6">
+<div>
+<span class="bg-tertiary/10 text-tertiary text-[10px] font-bold px-2 py-1 rounded uppercase tracking-widest border border-tertiary/20 mb-2 inline-block">Rental</span>
+<h3 class="font-headline-md text-on-surface">955 Lincoln Ave</h3>
+<p class="text-outline text-sm">San Jose, CA 95125</p>
+</div>
+<div class="text-right">
+<div class="font-headline-md text-primary">60%</div>
+<div class="text-[10px] text-outline uppercase tracking-tighter">Ownership</div>
+</div>
+</div>
+<div class="mb-8">
+<div class="flex justify-between items-end mb-2">
+<span class="text-xs text-outline">Occupancy Rate</span>
+<span class="text-xs text-primary font-bold">Fully Leased</span>
+</div>
+<div class="w-full h-1.5 bg-surface-container-highest rounded-full overflow-hidden">
+<div class="h-full bg-primary luminous-glow rounded-full" style="width: 100%;"></div>
+</div>
+</div>
+<div class="grid grid-cols-2 gap-4 pt-4 border-t border-outline-variant">
+<div>
+<p class="text-[10px] text-outline uppercase">Monthly Rev</p>
+<p class="font-label-md">$4.2k</p>
+</div>
+<div>
+<p class="text-[10px] text-outline uppercase">LTV</p>
+<p class="font-label-md text-primary">62%</p>
+</div>
+</div>
+</div>
+<div class="px-6 py-4 bg-white/5 border-t border-white/10 flex justify-between items-center group-hover:bg-primary/5 transition-colors">
+<div class="flex -space-x-2">
+<img class="w-6 h-6 rounded-full border border-background" data-alt="Close-up of a sharp, modern professional in a minimalist setting with dark glass panels and subtle cyan glowing elements." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBGoSkmGJLZYy59jbW3D888Q_gWfedONjQN-oyHUh5nz-t-9l4rQ4NoVFcE1FYYSANmxu7tXDYbFFe8OwtjkiQZh9l6kfUhh2roSGVmk4zsZqSiVeB68v2uyrjKi2v-bGi_AzbIGSVHy_S114FSyvN_SeapaGoBzIeWXwJtWZagsVel-UBeV23Wh7l-gF0rJ0LZhASOQXgLC1EOs73haXomVNQpK4gGpAnvkbjWxLjPnd-zN9iJrHJPHS-QSneDhr7YQ7yDrF3TVFaE"/>
+</div>
+<button class="text-primary text-xs font-bold flex items-center gap-1 hover:underline">
+                            Details <span class="material-symbols-outlined text-xs">arrow_forward</span>
+</button>
+</div>
+</div>
+<!-- Card 5: 221 Broadway -->
+<div class="glass-card folder-cut group hover:border-primary/50 transition-all duration-300 relative overflow-hidden">
+<div class="p-6">
+<div class="flex justify-between items-start mb-6">
+<div>
+<span class="bg-primary/10 text-primary text-[10px] font-bold px-2 py-1 rounded uppercase tracking-widest border border-primary/20 mb-2 inline-block">Fix &amp; Flip</span>
+<h3 class="font-headline-md text-on-surface">221 Broadway</h3>
+<p class="text-outline text-sm">Oakland, CA 94607</p>
+</div>
+<div class="text-right">
+<div class="font-headline-md text-primary">25%</div>
+<div class="text-[10px] text-outline uppercase tracking-tighter">Ownership</div>
+</div>
+</div>
+<div class="mb-8">
+<div class="flex justify-between items-end mb-2">
+<span class="text-xs text-outline">Renovation Progress</span>
+<span class="text-xs text-primary font-bold">Phase 5: Finishing</span>
+</div>
+<div class="w-full h-1.5 bg-surface-container-highest rounded-full overflow-hidden">
+<div class="h-full bg-primary luminous-glow rounded-full" style="width: 88%;"></div>
+</div>
+</div>
+<div class="grid grid-cols-2 gap-4 pt-4 border-t border-outline-variant">
+<div>
+<p class="text-[10px] text-outline uppercase">Acquisition</p>
+<p class="font-label-md">$850k</p>
+</div>
+<div>
+<p class="text-[10px] text-outline uppercase">Est. Exit</p>
+<p class="font-label-md text-primary">$1.35M</p>
+</div>
+</div>
+</div>
+<div class="px-6 py-4 bg-white/5 border-t border-white/10 flex justify-between items-center group-hover:bg-primary/5 transition-colors">
+<div class="flex -space-x-2">
+<img class="w-6 h-6 rounded-full border border-background" data-alt="A portrait of a male professional with a confident look, set against a background of glowing architectural lines and dark glass surfaces in a futuristic office environment." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAVH_wEehdTsuKHmNahy84dXq1mnq_G0IF9N48vRMfGuq-iKfsKcchQ13j98KWT_5Eh6eEMXNYffJpyqjpUAaNK0Ib-Lny-uXUWn_ChizxaLjexbmWPbftTxCpr5g_WeXskZ7fOMvNUPJ-lhJ2bythek23nGSodxZYIjFbYj7_M-Vs0a94IIdZEaiVaJGA_zZ8KFHrdQzMefQgVW4Jp3A4lrxZxM58ZCcc9U_lM9CJA8eV7TikqPpP0wzTPEgcJvIGmKeUvABBAprzr"/>
+</div>
+<button class="text-primary text-xs font-bold flex items-center gap-1 hover:underline">
+                            Details <span class="material-symbols-outlined text-xs">arrow_forward</span>
+</button>
+</div>
+</div>
+<!-- Add New Card Placeholder -->
+<div class="glass-card folder-cut group border-dashed border-2 border-outline-variant hover:border-primary/50 transition-all cursor-pointer flex flex-col items-center justify-center p-12 min-h-[300px]">
+<div class="w-16 h-16 rounded-full bg-surface-container-highest flex items-center justify-center mb-4 group-hover:scale-110 group-hover:bg-primary/20 transition-all">
+<span class="material-symbols-outlined text-3xl text-outline group-hover:text-primary">add</span>
+</div>
+<p class="font-label-md text-outline group-hover:text-primary transition-colors">Add New Project</p>
+</div>
+</div>
+<!-- Terminal Stats Overlay (Bottom Floating) -->
+<div class="fixed bottom-8 left-1/2 -translate-x-1/2 w-full max-w-4xl px-4 z-40 hidden md:block">
+<div class="glass-card rounded-2xl p-4 flex items-center justify-between border border-primary/20 bg-surface/80">
+<div class="flex gap-8">
+<div>
+<p class="text-[10px] text-outline uppercase font-bold">Total Port. Value</p>
+<p class="font-headline-md text-primary">$24,582,000</p>
+</div>
+<div class="h-10 w-px bg-outline-variant"></div>
+<div>
+<p class="text-[10px] text-outline uppercase font-bold">Avg. Equity</p>
+<p class="font-headline-md text-on-surface">62.4%</p>
+</div>
+<div class="h-10 w-px bg-outline-variant"></div>
+<div>
+<p class="text-[10px] text-outline uppercase font-bold">Monthly ROI</p>
+<p class="font-headline-md text-tertiary">+12.8%</p>
+</div>
+</div>
+<div class="flex items-center gap-3">
+<span class="flex h-2 w-2 rounded-full bg-primary animate-pulse"></span>
+<span class="text-[10px] text-outline font-mono">LIVE_FEED_SYNCED_V92</span>
+</div>
+</div>
+</div>
+</section>
+</main>
+<script>
+        // Interactive Micro-interactions
+        document.querySelectorAll('.glass-card').forEach(card => {
+            card.addEventListener('mouseenter', () => {
+                // Subtle lift or effect if desired
+            });
+            
+            card.addEventListener('mousemove', (e) => {
+                const rect = card.getBoundingClientRect();
+                const x = e.clientX - rect.left;
+                const y = e.clientY - rect.top;
+                card.style.setProperty('--mouse-x', `${x}px`);
+                card.style.setProperty('--mouse-y', `${y}px`);
+            });
+        });
+
+        // Search Bar Focus Effect
+        const searchInput = document.querySelector('input[placeholder="Global Scan..."]');
+        searchInput.addEventListener('focus', () => {
+            searchInput.parentElement.classList.add('scale-105');
+            searchInput.classList.add('bg-surface-container-high');
+        });
+        searchInput.addEventListener('blur', () => {
+            searchInput.parentElement.classList.remove('scale-105');
+            searchInput.classList.remove('bg-surface-container-high');
+        });
+    </script>
+</body></html>

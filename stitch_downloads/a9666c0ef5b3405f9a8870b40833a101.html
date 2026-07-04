@@ -1,0 +1,461 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Deal Analyzer - Paper Working</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&amp;family=JetBrains+Mono:wght@400;500&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+          darkMode: "class",
+          theme: {
+            extend: {
+              "colors": {
+                      "surface-container": "#182127",
+                      "outline-variant": "#3c4a46",
+                      "outline": "#859490",
+                      "on-surface": "#dae4ec",
+                      "background": "#0b141a",
+                      "tertiary-fixed-dim": "#ffb875",
+                      "surface-variant": "#2d363d",
+                      "on-secondary-fixed-variant": "#004395",
+                      "tertiary-fixed": "#ffdcc0",
+                      "on-primary-container": "#00574d",
+                      "on-primary": "#003731",
+                      "secondary-fixed-dim": "#adc6ff",
+                      "inverse-primary": "#006b5f",
+                      "surface-tint": "#3cddc7",
+                      "on-primary-fixed-variant": "#005047",
+                      "surface-container-low": "#141d23",
+                      "inverse-surface": "#dae4ec",
+                      "secondary-container": "#0566d9",
+                      "on-background": "#dae4ec",
+                      "on-tertiary-fixed-variant": "#6b3b00",
+                      "on-error": "#690005",
+                      "on-tertiary": "#4b2800",
+                      "surface-dim": "#0b141a",
+                      "surface-container-highest": "#2d363d",
+                      "error-container": "#93000a",
+                      "secondary-fixed": "#d8e2ff",
+                      "surface-container-high": "#222b32",
+                      "on-surface-variant": "#bacac5",
+                      "on-secondary-container": "#e6ecff",
+                      "on-secondary": "#002e6a",
+                      "tertiary": "#ffd1aa",
+                      "surface-bright": "#313a41",
+                      "surface": "#0b141a",
+                      "on-tertiary-fixed": "#2d1600",
+                      "on-tertiary-container": "#744000",
+                      "on-primary-fixed": "#00201c",
+                      "surface-container-lowest": "#060f15",
+                      "primary": "#57f1db",
+                      "secondary": "#adc6ff",
+                      "inverse-on-surface": "#293238",
+                      "error": "#ffb4ab",
+                      "tertiary-container": "#ffac5a",
+                      "primary-fixed": "#62fae3",
+                      "primary-container": "#2dd4bf",
+                      "on-secondary-fixed": "#001a42",
+                      "primary-fixed-dim": "#3cddc7",
+                      "on-error-container": "#ffdad6"
+              },
+              "borderRadius": {
+                      "DEFAULT": "0.25rem",
+                      "lg": "0.5rem",
+                      "xl": "0.75rem",
+                      "full": "9999px"
+              },
+              "spacing": {
+                      "margin-mobile": "20px",
+                      "margin-desktop": "40px",
+                      "unit": "8px",
+                      "gutter-desktop": "24px",
+                      "stack-md": "16px",
+                      "stack-sm": "8px",
+                      "gutter-mobile": "16px",
+                      "stack-lg": "32px",
+                      "container-max": "1280px"
+              },
+              "fontFamily": {
+                      "headline-xl": [
+                              "Plus Jakarta Sans"
+                      ],
+                      "label-sm": [
+                              "Plus Jakarta Sans"
+                      ],
+                      "body-lg": [
+                              "Plus Jakarta Sans"
+                      ],
+                      "headline-lg": [
+                              "Plus Jakarta Sans"
+                      ],
+                      "body-sm": [
+                              "Plus Jakarta Sans"
+                      ],
+                      "headline-lg-mobile": [
+                              "Plus Jakarta Sans"
+                      ],
+                      "headline-md": [
+                              "Plus Jakarta Sans"
+                      ],
+                      "body-md": [
+                              "Plus Jakarta Sans"
+                      ],
+                      "label-md": [
+                              "Plus Jakarta Sans"
+                      ]
+              },
+              "fontSize": {
+                      "headline-xl": [
+                              "48px",
+                              {
+                                      "lineHeight": "56px",
+                                      "letterSpacing": "-0.02em",
+                                      "fontWeight": "700"
+                              }
+                      ],
+                      "label-sm": [
+                              "12px",
+                              {
+                                      "lineHeight": "14px",
+                                      "letterSpacing": "0.05em",
+                                      "fontWeight": "500"
+                              }
+                      ],
+                      "body-lg": [
+                              "18px",
+                              {
+                                      "lineHeight": "28px",
+                                      "fontWeight": "400"
+                              }
+                      ],
+                      "headline-lg": [
+                              "32px",
+                              {
+                                      "lineHeight": "40px",
+                                      "letterSpacing": "-0.01em",
+                                      "fontWeight": "700"
+                              }
+                      ],
+                      "body-sm": [
+                              "14px",
+                              {
+                                      "lineHeight": "20px",
+                                      "fontWeight": "400"
+                              }
+                      ],
+                      "headline-lg-mobile": [
+                              "28px",
+                              {
+                                      "lineHeight": "36px",
+                                      "fontWeight": "700"
+                              }
+                      ],
+                      "headline-md": [
+                              "24px",
+                              {
+                                      "lineHeight": "32px",
+                                      "fontWeight": "600"
+                              }
+                      ],
+                      "body-md": [
+                              "16px",
+                              {
+                                      "lineHeight": "24px",
+                                      "fontWeight": "400"
+                              }
+                      ],
+                      "label-md": [
+                              "14px",
+                              {
+                                      "lineHeight": "16px",
+                                      "letterSpacing": "0.02em",
+                                      "fontWeight": "600"
+                              }
+                      ]
+              }
+      },
+          },
+        }
+      </script>
+<style>
+        .glass-panel {
+            background: rgba(45, 54, 61, 0.4);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border-top: 1px solid rgba(255, 255, 255, 0.12);
+            border-left: 1px solid rgba(255, 255, 255, 0.12);
+        }
+        .glass-input {
+            background: rgba(20, 29, 35, 0.8);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            transition: all 0.2s ease;
+        }
+        .glass-input:focus-within {
+            border-color: #3cddc7;
+            box-shadow: inset 0 0 0 1px rgba(60, 221, 199, 0.2);
+        }
+        .luminous-btn {
+            background-color: #57f1db;
+            color: #003731;
+            box-shadow: 0 0 20px -5px rgba(87, 241, 219, 0.5);
+            transition: all 0.3s ease;
+        }
+        .luminous-btn:hover {
+            box-shadow: 0 0 25px -2px rgba(87, 241, 219, 0.7);
+            transform: translateY(-1px);
+        }
+        .font-mono-num {
+            font-family: 'JetBrains Mono', monospace;
+        }
+        
+        /* Navigation Drawer Custom Scrollbar */
+        .nav-scroll::-webkit-scrollbar {
+            width: 4px;
+        }
+        .nav-scroll::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        .nav-scroll::-webkit-scrollbar-thumb {
+            background: rgba(255,255,255,0.1);
+            border-radius: 4px;
+        }
+        .nav-scroll:hover::-webkit-scrollbar-thumb {
+            background: rgba(255,255,255,0.2);
+        }
+      </style>
+</head>
+<body class="bg-background text-on-surface font-body-md min-h-screen flex selection:bg-primary/30 selection:text-primary-fixed">
+<!-- Shared Component: NavigationDrawer -->
+<nav class="hidden md:flex bg-surface-container dark:bg-surface-container/60 backdrop-blur-2xl fixed left-0 top-0 h-full w-64 z-50 border-r border-white/10 shadow-2xl flex-col py-8 gap-2">
+<div class="px-margin-desktop mb-8">
+<span class="font-headline-lg text-headline-lg text-on-surface font-bold">Paper <span class="font-normal opacity-70">Working</span></span>
+</div>
+<div class="flex-1 overflow-y-auto nav-scroll px-4 flex flex-col gap-1">
+<a class="flex items-center gap-3 px-4 py-3 rounded-lg text-on-surface-variant hover:bg-white/5 hover:bg-surface-variant/30 transition-all duration-200 active:opacity-80" href="#">
+<span class="material-symbols-outlined text-[20px]">account_balance_wallet</span>
+<span class="font-label-md text-label-md">Portfolio</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 rounded-lg text-on-surface-variant hover:bg-white/5 hover:bg-surface-variant/30 transition-all duration-200 active:opacity-80" href="#">
+<span class="material-symbols-outlined text-[20px]">folder_open</span>
+<span class="font-label-md text-label-md">Projects</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 rounded-lg text-on-surface-variant hover:bg-white/5 hover:bg-surface-variant/30 transition-all duration-200 active:opacity-80" href="#">
+<span class="material-symbols-outlined text-[20px]">folder_shared</span>
+<span class="font-label-md text-label-md">Data Room</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 rounded-lg text-on-surface-variant hover:bg-white/5 hover:bg-surface-variant/30 transition-all duration-200 active:opacity-80" href="#">
+<span class="material-symbols-outlined text-[20px]">inbox</span>
+<span class="font-label-md text-label-md">Inbox</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 rounded-lg text-on-surface-variant hover:bg-white/5 hover:bg-surface-variant/30 transition-all duration-200 active:opacity-80" href="#">
+<span class="material-symbols-outlined text-[20px]">group</span>
+<span class="font-label-md text-label-md">Team</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 rounded-lg text-on-surface-variant hover:bg-white/5 hover:bg-surface-variant/30 transition-all duration-200 active:opacity-80" href="#">
+<span class="material-symbols-outlined text-[20px]">assessment</span>
+<span class="font-label-md text-label-md">Reports</span>
+</a>
+<!-- Active State -->
+<a class="flex items-center gap-3 px-4 py-3 rounded-lg bg-secondary-container/20 text-primary border-l-4 border-primary font-bold hover:bg-surface-variant/30 transition-all duration-200 active:opacity-80 mt-1" href="#">
+<span class="material-symbols-outlined text-[20px]">calculate</span>
+<span class="font-label-md text-label-md">Deal Analyzer</span>
+</a>
+</div>
+<div class="mt-auto px-4 flex flex-col gap-1 border-t border-white/5 pt-4">
+<a class="flex items-center gap-3 px-4 py-3 rounded-lg text-on-surface-variant hover:bg-white/5 hover:bg-surface-variant/30 transition-all duration-200 active:opacity-80" href="#">
+<span class="material-symbols-outlined text-[20px]">person</span>
+<span class="font-label-md text-label-md">Profile</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 rounded-lg text-on-surface-variant hover:bg-white/5 hover:bg-surface-variant/30 transition-all duration-200 active:opacity-80" href="#">
+<span class="material-symbols-outlined text-[20px]">payments</span>
+<span class="font-label-md text-label-md">Billing</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 rounded-lg text-on-surface-variant hover:bg-white/5 hover:bg-surface-variant/30 transition-all duration-200 active:opacity-80" href="#">
+<span class="material-symbols-outlined text-[20px]">settings</span>
+<span class="font-label-md text-label-md">Settings</span>
+</a>
+</div>
+</nav>
+<!-- Main Content Canvas -->
+<main class="flex-1 md:ml-64 min-h-screen flex flex-col relative bg-surface-container-lowest">
+<!-- Shared Component: TopAppBar -->
+<header class="hidden md:flex items-center justify-between px-margin-desktop h-16 bg-background/80 dark:bg-background/80 backdrop-blur-xl fixed top-0 w-[calc(100%-16rem)] z-40 border-b border-white/10 shadow-sm left-64">
+<div class="flex items-center gap-4">
+<span class="material-symbols-outlined text-primary dark:text-primary text-[24px]">analytics</span>
+<h1 class="font-headline-md text-headline-md text-on-surface">Deal Analyzer</h1>
+</div>
+<div>
+<button class="flex items-center gap-2 px-4 py-2 rounded-lg bg-white/5 hover:bg-white/10 text-on-surface transition-colors active:scale-95 duration-150 border border-white/10">
+<span class="font-label-md text-label-md">Save as Project</span>
+<span class="material-symbols-outlined text-[18px]">save</span>
+</button>
+</div>
+</header>
+<!-- Content Area -->
+<div class="pt-24 px-margin-desktop pb-margin-desktop max-w-container-max mx-auto w-full grid grid-cols-1 xl:grid-cols-12 gap-gutter-desktop items-start">
+<!-- Left Column: Input Controls -->
+<div class="xl:col-span-8 flex flex-col gap-stack-lg w-full">
+<!-- Strategy Toggle -->
+<div class="flex items-center gap-4 glass-panel p-2 rounded-xl inline-flex w-fit">
+<button class="px-6 py-2 rounded-lg bg-surface-variant text-on-surface font-label-md text-label-md shadow-inner transition-all border border-white/5">Rental</button>
+<button class="px-6 py-2 rounded-lg text-on-surface-variant hover:text-on-surface font-label-md text-label-md transition-all">Flip</button>
+</div>
+<!-- Section: Purchase Details -->
+<section class="flex flex-col gap-stack-md">
+<h2 class="font-headline-sm text-[20px] font-semibold text-on-surface flex items-center gap-2">
+<span class="w-2 h-2 rounded-full bg-primary/70"></span> Purchase Details
+                    </h2>
+<div class="glass-panel rounded-2xl p-6 grid grid-cols-1 md:grid-cols-2 gap-stack-md">
+<div class="flex flex-col gap-2">
+<label class="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider">Purchase Price</label>
+<div class="glass-input flex items-center px-4 py-3 rounded-lg">
+<span class="text-on-surface-variant mr-2 font-mono-num">$</span>
+<input class="bg-transparent border-none p-0 focus:ring-0 text-on-surface font-mono-num text-[16px] w-full outline-none" type="text" value="450,000"/>
+</div>
+</div>
+<div class="flex flex-col gap-2">
+<label class="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider">After Repair Value (ARV)</label>
+<div class="glass-input flex items-center px-4 py-3 rounded-lg">
+<span class="text-on-surface-variant mr-2 font-mono-num">$</span>
+<input class="bg-transparent border-none p-0 focus:ring-0 text-on-surface font-mono-num text-[16px] w-full outline-none" type="text" value="625,000"/>
+</div>
+</div>
+<div class="flex flex-col gap-2">
+<label class="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider">Repair Costs</label>
+<div class="glass-input flex items-center px-4 py-3 rounded-lg">
+<span class="text-on-surface-variant mr-2 font-mono-num">$</span>
+<input class="bg-transparent border-none p-0 focus:ring-0 text-on-surface font-mono-num text-[16px] w-full outline-none" type="text" value="35,000"/>
+</div>
+</div>
+<div class="flex flex-col gap-2">
+<label class="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider">Closing Costs</label>
+<div class="glass-input flex items-center px-4 py-3 rounded-lg">
+<span class="text-on-surface-variant mr-2 font-mono-num">%</span>
+<input class="bg-transparent border-none p-0 focus:ring-0 text-on-surface font-mono-num text-[16px] w-full outline-none" type="text" value="2.5"/>
+</div>
+</div>
+</div>
+</section>
+<!-- Section: Financing -->
+<section class="flex flex-col gap-stack-md">
+<h2 class="font-headline-sm text-[20px] font-semibold text-on-surface flex items-center gap-2">
+<span class="w-2 h-2 rounded-full bg-secondary"></span> Financing
+                    </h2>
+<div class="glass-panel rounded-2xl p-6 grid grid-cols-1 md:grid-cols-2 gap-stack-md">
+<div class="flex flex-col gap-2 md:col-span-2">
+<label class="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider">Down Payment</label>
+<div class="flex gap-4 items-center">
+<div class="glass-input flex items-center px-4 py-3 rounded-lg w-1/3">
+<input class="bg-transparent border-none p-0 focus:ring-0 text-on-surface font-mono-num text-[16px] w-full outline-none text-right" type="text" value="20"/>
+<span class="text-on-surface-variant ml-2 font-mono-num">%</span>
+</div>
+<span class="text-on-surface-variant font-mono-num">= $90,000</span>
+</div>
+</div>
+<div class="flex flex-col gap-2">
+<label class="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider">Interest Rate</label>
+<div class="glass-input flex items-center px-4 py-3 rounded-lg">
+<input class="bg-transparent border-none p-0 focus:ring-0 text-on-surface font-mono-num text-[16px] w-full outline-none" type="text" value="6.75"/>
+<span class="text-on-surface-variant ml-2 font-mono-num">%</span>
+</div>
+</div>
+<div class="flex flex-col gap-2">
+<label class="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider">Amortization</label>
+<div class="glass-input flex items-center px-4 py-3 rounded-lg">
+<input class="bg-transparent border-none p-0 focus:ring-0 text-on-surface font-mono-num text-[16px] w-full outline-none" type="text" value="30"/>
+<span class="text-on-surface-variant ml-2 font-label-sm">Years</span>
+</div>
+</div>
+</div>
+</section>
+<!-- Section: Income -->
+<section class="flex flex-col gap-stack-md">
+<h2 class="font-headline-sm text-[20px] font-semibold text-on-surface flex items-center gap-2">
+<span class="w-2 h-2 rounded-full bg-tertiary-container"></span> Income
+                    </h2>
+<div class="glass-panel rounded-2xl p-6 grid grid-cols-1 md:grid-cols-2 gap-stack-md">
+<div class="flex flex-col gap-2">
+<label class="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider">Gross Rent (Monthly)</label>
+<div class="glass-input flex items-center px-4 py-3 rounded-lg">
+<span class="text-on-surface-variant mr-2 font-mono-num">$</span>
+<input class="bg-transparent border-none p-0 focus:ring-0 text-on-surface font-mono-num text-[16px] w-full outline-none" type="text" value="3,800"/>
+</div>
+</div>
+<div class="flex flex-col gap-2">
+<label class="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider">Vacancy Rate</label>
+<div class="glass-input flex items-center px-4 py-3 rounded-lg">
+<input class="bg-transparent border-none p-0 focus:ring-0 text-on-surface font-mono-num text-[16px] w-full outline-none" type="text" value="5"/>
+<span class="text-on-surface-variant ml-2 font-mono-num">%</span>
+</div>
+</div>
+</div>
+</section>
+</div>
+<!-- Right Column: Live Results & Actions -->
+<div class="xl:col-span-4 relative">
+<div class="sticky top-24 flex flex-col gap-stack-md">
+<h3 class="font-headline-sm text-[18px] font-semibold text-on-surface mb-2">Deal Metrics</h3>
+<!-- Metrics Cards Grid -->
+<div class="grid grid-cols-2 gap-4">
+<!-- Metric: Cash Flow -->
+<div class="glass-panel rounded-xl p-5 flex flex-col gap-2 relative overflow-hidden group">
+<!-- Health band: Teal (Good) -->
+<div class="absolute left-0 top-0 bottom-0 w-1 bg-primary"></div>
+<span class="font-label-sm text-label-sm text-on-surface-variant ml-2 uppercase tracking-wide">Monthly Cash Flow</span>
+<div class="flex items-end gap-1 ml-2">
+<span class="font-headline-lg text-headline-lg text-on-surface font-mono-num font-bold">$425</span>
+<span class="text-on-surface-variant text-[12px] mb-2 font-mono-num">/mo</span>
+</div>
+</div>
+<!-- Metric: Cap Rate -->
+<div class="glass-panel rounded-xl p-5 flex flex-col gap-2 relative overflow-hidden group">
+<!-- Health band: Teal (Good) -->
+<div class="absolute left-0 top-0 bottom-0 w-1 bg-primary"></div>
+<span class="font-label-sm text-label-sm text-on-surface-variant ml-2 uppercase tracking-wide">Cap Rate</span>
+<div class="flex items-end gap-1 ml-2">
+<span class="font-headline-lg text-headline-lg text-on-surface font-mono-num font-bold">7.2</span>
+<span class="text-on-surface-variant text-[12px] mb-2 font-mono-num">%</span>
+</div>
+</div>
+<!-- Metric: Cash-on-Cash -->
+<div class="glass-panel rounded-xl p-5 flex flex-col gap-2 relative overflow-hidden group">
+<!-- Health band: Amber (Fair) -->
+<div class="absolute left-0 top-0 bottom-0 w-1 bg-tertiary-container"></div>
+<span class="font-label-sm text-label-sm text-on-surface-variant ml-2 uppercase tracking-wide">Cash-on-Cash</span>
+<div class="flex items-end gap-1 ml-2">
+<span class="font-headline-lg text-headline-lg text-on-surface font-mono-num font-bold">8.5</span>
+<span class="text-on-surface-variant text-[12px] mb-2 font-mono-num">%</span>
+</div>
+</div>
+<!-- Metric: DSCR -->
+<div class="glass-panel rounded-xl p-5 flex flex-col gap-2 relative overflow-hidden group">
+<!-- Health band: Teal (Good) -->
+<div class="absolute left-0 top-0 bottom-0 w-1 bg-primary"></div>
+<span class="font-label-sm text-label-sm text-on-surface-variant ml-2 uppercase tracking-wide">DSCR</span>
+<div class="flex items-end gap-1 ml-2">
+<span class="font-headline-lg text-headline-lg text-on-surface font-mono-num font-bold">1.35</span>
+<span class="text-on-surface-variant text-[12px] mb-2 font-mono-num">x</span>
+</div>
+</div>
+</div>
+<!-- Summary Box -->
+<div class="glass-panel rounded-xl p-5 mt-2 flex justify-between items-center">
+<span class="font-body-md text-on-surface-variant">Total Cash Needed</span>
+<span class="font-headline-md text-headline-md text-on-surface font-mono-num font-bold">$136,250</span>
+</div>
+<!-- Primary CTA -->
+<button class="luminous-btn w-full py-4 rounded-xl font-label-md text-label-md uppercase tracking-widest mt-6 flex justify-center items-center gap-2 group">
+                        Save as Project
+                        <span class="material-symbols-outlined transition-transform group-hover:translate-x-1">arrow_forward</span>
+</button>
+</div>
+</div>
+</div>
+</main>
+</body></html>

@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>PaperWorking - Notification Detail</title>
+<!-- Google Fonts: Plus Jakarta Sans -->
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<!-- Material Symbols Outlined -->
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Tailwind CSS -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<!-- Tailwind Configuration -->
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "on-error-container": "#ffdad6",
+                        "on-error": "#690005",
+                        "on-tertiary-fixed": "#2d1600",
+                        "error": "#ffb4ab",
+                        "surface-tint": "#3cddc7",
+                        "primary": "#57f1db",
+                        "surface-container-low": "#141d23",
+                        "tertiary-fixed": "#ffdcc0",
+                        "surface-container-high": "#222b32",
+                        "on-primary-fixed-variant": "#005047",
+                        "error-container": "#93000a",
+                        "surface-container-highest": "#2d363d",
+                        "background": "#0b141a",
+                        "on-tertiary-fixed-variant": "#6b3b00",
+                        "tertiary": "#ffd1aa",
+                        "on-background": "#dae4ec",
+                        "primary-container": "#2dd4bf",
+                        "on-tertiary": "#4b2800",
+                        "on-secondary-fixed": "#001a42",
+                        "surface-bright": "#313a41",
+                        "on-primary-fixed": "#00201c",
+                        "secondary-fixed-dim": "#adc6ff",
+                        "inverse-primary": "#006b5f",
+                        "tertiary-fixed-dim": "#ffb875",
+                        "surface": "#0b141a",
+                        "secondary-container": "#0566d9",
+                        "primary-fixed": "#62fae3",
+                        "on-primary-container": "#00574d",
+                        "on-secondary-container": "#e6ecff",
+                        "tertiary-container": "#ffac5a",
+                        "on-primary": "#003731",
+                        "inverse-on-surface": "#293238",
+                        "primary-fixed-dim": "#3cddc7",
+                        "on-secondary-fixed-variant": "#004395",
+                        "surface-variant": "#2d363d",
+                        "surface-container-lowest": "#060f15",
+                        "secondary-fixed": "#d8e2ff",
+                        "secondary": "#adc6ff",
+                        "on-surface": "#dae4ec",
+                        "on-tertiary-container": "#744000",
+                        "outline-variant": "#3c4a46",
+                        "inverse-surface": "#dae4ec",
+                        "surface-dim": "#0b141a",
+                        "surface-container": "#182127",
+                        "outline": "#859490",
+                        "on-surface-variant": "#bacac5",
+                        "on-secondary": "#002e6a"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "unit": "8px",
+                        "stack-lg": "32px",
+                        "margin-desktop": "40px",
+                        "stack-md": "16px",
+                        "stack-sm": "8px",
+                        "gutter-mobile": "16px",
+                        "container-max": "1280px",
+                        "margin-mobile": "20px",
+                        "gutter-desktop": "24px"
+                    },
+                    "fontFamily": {
+                        "label-md": ["Plus Jakarta Sans"],
+                        "headline-lg-mobile": ["Plus Jakarta Sans"],
+                        "headline-xl": ["Plus Jakarta Sans"],
+                        "headline-md": ["Plus Jakarta Sans"],
+                        "headline-lg": ["Plus Jakarta Sans"],
+                        "body-sm": ["Plus Jakarta Sans"],
+                        "body-md": ["Plus Jakarta Sans"],
+                        "body-lg": ["Plus Jakarta Sans"],
+                        "label-sm": ["Plus Jakarta Sans"]
+                    },
+                    "fontSize": {
+                        "label-md": ["14px", { "lineHeight": "16px", "letterSpacing": "0.02em", "fontWeight": "600" }],
+                        "headline-lg-mobile": ["28px", { "lineHeight": "36px", "fontWeight": "700" }],
+                        "headline-xl": ["48px", { "lineHeight": "56px", "letterSpacing": "-0.02em", "fontWeight": "700" }],
+                        "headline-md": ["24px", { "lineHeight": "32px", "fontWeight": "600" }],
+                        "headline-lg": ["32px", { "lineHeight": "40px", "letterSpacing": "-0.01em", "fontWeight": "700" }],
+                        "body-sm": ["14px", { "lineHeight": "20px", "fontWeight": "400" }],
+                        "body-md": ["16px", { "lineHeight": "24px", "fontWeight": "400" }],
+                        "body-lg": ["18px", { "lineHeight": "28px", "fontWeight": "400" }],
+                        "label-sm": ["12px", { "lineHeight": "14px", "letterSpacing": "0.05em", "fontWeight": "500" }]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        /* Base ethereal dark aesthetic overrides */
+        body {
+            background-color: theme('colors.surface-container-lowest');
+            color: theme('colors.on-surface');
+            -webkit-font-smoothing: antialiased;
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+</head>
+<body class="min-h-screen relative flex bg-surface-container-lowest text-on-surface">
+<!-- Mobile Menu Button & Overlay (Hidden on Desktop) -->
+<button aria-label="Open Navigation" class="lg:hidden fixed top-4 left-4 z-50 w-10 h-10 rounded-full flex items-center justify-center text-on-surface hover:bg-white/5 transition-colors bg-surface-container-lowest/80 backdrop-blur-xl border border-white/5 shadow-lg" id="mobile-menu-btn" onclick="document.getElementById('sidebar').classList.toggle('-translate-x-full'); document.getElementById('sidebar-overlay').classList.toggle('hidden');">
+<span class="material-symbols-outlined text-[24px]">menu</span>
+</button>
+<div class="lg:hidden fixed inset-0 bg-black/50 z-40 hidden backdrop-blur-sm transition-opacity" id="sidebar-overlay" onclick="document.getElementById('sidebar').classList.add('-translate-x-full'); document.getElementById('sidebar-overlay').classList.add('hidden');"></div>
+<!-- Sidebar Navigation -->
+<nav class="fixed inset-y-0 left-0 z-50 w-72 bg-[#060f15] border-r border-white/5 flex flex-col transition-transform duration-300 transform -translate-x-full lg:translate-x-0 lg:static shadow-[4px_0_24px_rgba(0,0,0,0.5)] lg:shadow-none" id="sidebar">
+<!-- Header -->
+<div class="h-20 flex items-center px-6 border-b border-white/5 shrink-0 gap-3">
+<img alt="Logo" class="w-8 h-8 rounded-lg object-cover" src="https://lh3.googleusercontent.com/aida/ADBb0ujB11RINnO37eguYGhIYpmIPAnTVU2w2hXc8JT5s9yE2JkLGtLf1yyAVUeHFN8bejMiEIPTzZYB16Ug9Ouv-A15avJCL3eA8BLUwYqi06Yqn1gVHcBoaN1IA4IAQH9YcSf57PFBQ-B6I2dgCJR3GSrgiLfEqkS6ULsGfsLW88XMTfHGqBD1tisaHO1W_zdq7IxSBt5sYUnlYRgKdg8Lr5DQ5R0wRRSeVYd5BUqD3xHTFP7WuHiIH2aZxWqN"/>
+<span class="font-headline-md text-headline-md text-on-surface font-semibold tracking-tight">PaperWorking</span>
+<button aria-label="Close Menu" class="lg:hidden ml-auto w-8 h-8 flex items-center justify-center text-on-surface-variant hover:text-on-surface" onclick="document.getElementById('sidebar').classList.add('-translate-x-full'); document.getElementById('sidebar-overlay').classList.add('hidden');">
+<span class="material-symbols-outlined">close</span>
+</button>
+</div>
+<!-- Navigation Links -->
+<div class="flex-1 overflow-y-auto py-6 px-4 flex flex-col gap-1 custom-scrollbar">
+<!-- Primary Group -->
+<a class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-on-surface-variant hover:text-on-surface hover:bg-white/5 transition-colors group font-label-md text-label-md" href="#">
+<span class="material-symbols-outlined text-[20px] group-hover:scale-110 transition-transform">folder_open</span>
+            Portfolio
+        </a>
+<a class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-on-surface-variant hover:text-on-surface hover:bg-white/5 transition-colors group font-label-md text-label-md" href="#">
+<span class="material-symbols-outlined text-[20px] group-hover:scale-110 transition-transform">view_kanban</span>
+            Projects
+        </a>
+<a class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-on-surface-variant hover:text-on-surface hover:bg-white/5 transition-colors group font-label-md text-label-md" href="#">
+<span class="material-symbols-outlined text-[20px] group-hover:scale-110 transition-transform">source</span>
+            Data Room
+        </a>
+<a class="flex items-center gap-3 px-3 py-2.5 rounded-lg bg-primary/10 text-primary border border-primary/20 transition-colors group font-label-md text-label-md shadow-[inset_0_1px_1px_rgba(255,255,255,0.1)] relative overflow-hidden" href="#">
+<div class="absolute inset-0 bg-gradient-to-r from-transparent via-white/5 to-transparent pointer-events-none"></div>
+<span class="material-symbols-outlined text-[20px] group-hover:scale-110 transition-transform" style="font-variation-settings: 'FILL' 1;">inbox</span>
+<span class="flex-1">Inbox</span>
+<span class="bg-primary text-on-primary text-[10px] font-bold px-1.5 py-0.5 rounded-full min-w-[20px] text-center">3</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-on-surface-variant hover:text-on-surface hover:bg-white/5 transition-colors group font-label-md text-label-md" href="#">
+<span class="material-symbols-outlined text-[20px] group-hover:scale-110 transition-transform">group</span>
+            Team
+        </a>
+<a class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-on-surface-variant hover:text-on-surface hover:bg-white/5 transition-colors group font-label-md text-label-md" href="#">
+<span class="material-symbols-outlined text-[20px] group-hover:scale-110 transition-transform">bar_chart</span>
+            Reports
+        </a>
+<a class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-on-surface-variant hover:text-on-surface hover:bg-white/5 transition-colors group font-label-md text-label-md" href="#">
+<span class="material-symbols-outlined text-[20px] group-hover:scale-110 transition-transform">analytics</span>
+            Deal Analyzer
+        </a>
+<!-- Divider -->
+<div class="mt-6 mb-2 px-3">
+<span class="font-label-sm text-label-sm text-on-surface-variant/50 uppercase tracking-wider">Account</span>
+</div>
+<!-- Account Group -->
+<a class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-on-surface-variant hover:text-on-surface hover:bg-white/5 transition-colors group font-label-md text-label-md" href="#">
+<span class="material-symbols-outlined text-[20px] group-hover:scale-110 transition-transform">person</span>
+            Profile
+        </a>
+<a class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-on-surface-variant hover:text-on-surface hover:bg-white/5 transition-colors group font-label-md text-label-md" href="#">
+<span class="material-symbols-outlined text-[20px] group-hover:scale-110 transition-transform">credit_card</span>
+            Billing
+        </a>
+<a class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-on-surface-variant hover:text-on-surface hover:bg-white/5 transition-colors group font-label-md text-label-md" href="#">
+<span class="material-symbols-outlined text-[20px] group-hover:scale-110 transition-transform">settings</span>
+            Settings
+        </a>
+</div>
+<!-- Footer / Workspace Switcher -->
+<div class="p-4 border-t border-white/5 shrink-0 bg-black/20">
+<button class="w-full flex flex-col items-start gap-1 p-3 rounded-xl hover:bg-white/5 transition-colors border border-transparent hover:border-white/5 text-left group">
+<div class="flex items-center justify-between w-full">
+<span class="font-label-sm text-label-sm text-on-surface-variant/70">Acting as:</span>
+<span class="material-symbols-outlined text-[16px] text-on-surface-variant group-hover:text-on-surface transition-colors">unfold_more</span>
+</div>
+<div class="flex items-center gap-2 w-full">
+<div class="w-6 h-6 rounded-full bg-primary/20 flex items-center justify-center text-primary font-bold text-xs shrink-0">
+                    JD
+                </div>
+<span class="font-label-md text-label-md text-on-surface truncate">Me / ACME Corp</span>
+</div>
+</button>
+</div>
+</nav>
+<style>
+    /* Custom Scrollbar for Sidebar */
+    .custom-scrollbar::-webkit-scrollbar {
+        width: 4px;
+    }
+    .custom-scrollbar::-webkit-scrollbar-track {
+        background: transparent;
+    }
+    .custom-scrollbar::-webkit-scrollbar-thumb {
+        background: rgba(255, 255, 255, 0.1);
+        border-radius: 4px;
+    }
+    .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+        background: rgba(255, 255, 255, 0.2);
+    }
+</style>
+<div class="flex-1 flex flex-col relative w-full lg:w-[calc(100%-18rem)] overflow-x-hidden">
+<!-- Detail View Custom Top Bar (Suppresses standard Shell per rule) -->
+<header class="w-full max-w-3xl mx-auto flex items-center justify-between px-margin-mobile md:px-margin-desktop h-20 sticky top-0 z-40 bg-surface-container-lowest/80 backdrop-blur-xl border-b border-white/5 pl-16 lg:pl-margin-desktop">
+<button aria-label="Go Back" class="w-10 h-10 rounded-full flex items-center justify-center text-on-surface hover:bg-white/5 transition-colors group">
+<span class="material-symbols-outlined text-[24px] group-hover:-translate-x-1 transition-transform">arrow_back</span>
+</button>
+<div class="flex items-center gap-gutter-mobile">
+<button aria-label="Archive" class="w-10 h-10 rounded-full flex items-center justify-center text-on-surface-variant hover:text-on-surface hover:bg-white/5 transition-colors">
+<span class="material-symbols-outlined text-[22px]">archive</span>
+</button>
+<button aria-label="Delete" class="w-10 h-10 rounded-full flex items-center justify-center text-error hover:bg-error/10 transition-colors">
+<span class="material-symbols-outlined text-[22px]">delete</span>
+</button>
+</div>
+</header>
+<main class="w-full max-w-3xl mx-auto px-margin-mobile md:px-margin-desktop mt-stack-md flex flex-col gap-stack-lg pb-margin-desktop">
+<!-- Context Header -->
+<section class="flex flex-col gap-stack-sm animate-fade-in">
+<div class="flex items-center gap-3 mb-2">
+<span class="inline-flex items-center justify-center w-8 h-8 rounded-full bg-primary/10 text-primary border border-primary/20">
+<span class="material-symbols-outlined text-[18px]">engineering</span>
+</span>
+<span class="font-label-md text-label-md text-primary uppercase tracking-widest">New Bid Received</span>
+</div>
+<h1 class="font-headline-lg-mobile md:font-headline-lg text-headline-lg-mobile md:text-headline-lg text-on-surface">ABC Inspections</h1>
+<div class="flex flex-wrap items-center gap-4 mt-1">
+<div class="flex items-center gap-1.5 text-on-surface-variant bg-white/5 px-3 py-1.5 rounded-full border border-white/5">
+<span class="material-symbols-outlined text-[16px]">location_on</span>
+<span class="font-label-sm text-label-sm">1423 Oak St</span>
+</div>
+<div class="flex items-center gap-1.5 text-on-surface-variant bg-white/5 px-3 py-1.5 rounded-full border border-white/5">
+<span class="material-symbols-outlined text-[16px]">schedule</span>
+<span class="font-label-sm text-label-sm">Just now</span>
+</div>
+</div>
+</section>
+<!-- Message Body (Glassmorphism Card) -->
+<section class="relative w-full rounded-[24px] bg-surface/90 backdrop-blur-2xl border border-white/[0.08] shadow-2xl p-6 md:p-8 overflow-hidden group">
+<!-- Ethereal inner lighting effect -->
+<div class="absolute top-0 left-0 w-full h-[1px] bg-gradient-to-r from-transparent via-white/20 to-transparent"></div>
+<div class="absolute -top-24 -right-24 w-48 h-48 bg-primary/10 rounded-full blur-[60px] pointer-events-none"></div>
+<div class="relative z-10 flex flex-col gap-stack-lg">
+<!-- Bid Highlight -->
+<div class="flex items-baseline gap-2 pb-6 border-b border-white/10">
+<span class="font-headline-xl text-headline-xl text-primary">$450</span>
+<span class="font-label-md text-label-md text-on-surface-variant">.00 Total Estimate</span>
+</div>
+<!-- Message Content -->
+<div class="space-y-4 font-body-md text-body-md text-on-surface-variant leading-relaxed">
+<p>Hello team, based on the preliminary walkthrough requested for <strong class="text-on-surface font-medium">1423 Oak St</strong>, we have compiled our comprehensive inspection bid.</p>
+<p>This includes full structural, electrical, and plumbing evaluations as per standard Class A commercial requirements. We have availability to commence work as early as next Tuesday.</p>
+</div>
+<!-- Structured Details -->
+<div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-2">
+<div class="flex flex-col gap-1 p-4 rounded-xl bg-black/40 border border-white/5">
+<span class="font-label-sm text-label-sm text-on-surface-variant/60 uppercase">Proposed Service Date</span>
+<div class="flex items-center gap-2 text-on-surface font-label-md text-label-md mt-1">
+<span class="material-symbols-outlined text-primary text-[18px]">calendar_today</span>
+                            Oct 24, 2023
+                        </div>
+</div>
+<div class="flex flex-col gap-1 p-4 rounded-xl bg-black/40 border border-white/5">
+<span class="font-label-sm text-label-sm text-on-surface-variant/60 uppercase">Payment Terms</span>
+<div class="flex items-center gap-2 text-on-surface font-label-md text-label-md mt-1">
+<span class="material-symbols-outlined text-primary text-[18px]">request_quote</span>
+                            Net 30 upon completion
+                        </div>
+</div>
+</div>
+</div>
+</section>
+<!-- Actions Container -->
+<section class="flex flex-col gap-gutter-mobile w-full mt-stack-md">
+<!-- Primary Luminous Button -->
+<button class="group relative w-full h-14 rounded-xl bg-primary text-on-primary font-label-md text-label-md flex items-center justify-center gap-2 overflow-hidden transition-all hover:scale-[1.02] active:scale-[0.98] shadow-[0_0_30px_-5px] shadow-primary/40 border border-primary/50">
+<span class="material-symbols-outlined text-[20px]" style="font-variation-settings: 'FILL' 1;">check_circle</span>
+                Review Bid &amp; Approve
+                
+                <!-- Shine effect on hover -->
+<div class="absolute inset-0 -translate-x-full bg-gradient-to-r from-transparent via-white/30 to-transparent group-hover:animate-[shimmer_1.5s_infinite]"></div>
+</button>
+<!-- Secondary Actions Grid -->
+<div class="grid grid-cols-2 gap-gutter-mobile">
+<button class="h-12 rounded-xl bg-surface-container hover:bg-surface-container-high border border-white/10 text-on-surface font-label-sm text-label-sm flex items-center justify-center gap-2 transition-colors">
+<span class="material-symbols-outlined text-[18px]">chat_bubble</span>
+                    Message Vendor
+                </button>
+<button class="h-12 rounded-xl bg-surface-container hover:bg-surface-container-high border border-white/10 text-on-surface font-label-sm text-label-sm flex items-center justify-center gap-2 transition-colors">
+<span class="material-symbols-outlined text-[18px]">forward</span>
+                    Forward to Partner
+                </button>
+</div>
+</section>
+</main>
+</div>
+<style>
+        @keyframes shimmer {
+            100% { transform: translateX(100%); }
+        }
+        .animate-fade-in {
+            animation: fadeIn 0.4s ease-out forwards;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+    </style>
+</body></html>

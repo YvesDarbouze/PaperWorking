@@ -1,0 +1,349 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>PaperWorking | Project Kickoff</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&amp;family=JetBrains+Mono:wght@400;600&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          "colors": {
+            "primary-fixed-dim": "#3cddc7",
+            "inverse-surface": "#dae4ec",
+            "on-surface-variant": "#bacac5",
+            "surface-container": "#182127",
+            "background": "#0b141a",
+            "surface": "#0b141a",
+            "secondary-fixed-dim": "#adc6ff",
+            "on-surface": "#dae4ec",
+            "on-error-container": "#ffdad6",
+            "on-background": "#dae4ec",
+            "primary-container": "#2dd4bf",
+            "on-secondary-container": "#e6ecff",
+            "on-primary-fixed": "#00201c",
+            "on-secondary-fixed-variant": "#004395",
+            "surface-tint": "#3cddc7",
+            "surface-dim": "#0b141a",
+            "secondary": "#adc6ff",
+            "on-tertiary-fixed": "#2d1600",
+            "inverse-primary": "#006b5f",
+            "surface-container-highest": "#2d363d",
+            "on-primary": "#003731",
+            "error": "#ffb4ab",
+            "surface-container-lowest": "#060f15",
+            "outline-variant": "#3c4a46",
+            "outline": "#859490",
+            "tertiary-fixed-dim": "#ffb875",
+            "on-tertiary-fixed-variant": "#6b3b00",
+            "tertiary-fixed": "#ffdcc0",
+            "secondary-fixed": "#d8e2ff",
+            "surface-bright": "#313a41",
+            "surface-variant": "#2d363d",
+            "on-tertiary-container": "#744000",
+            "primary-fixed": "#62fae3",
+            "tertiary-container": "#ffac5a",
+            "on-primary-fixed-variant": "#005047",
+            "on-error": "#690005",
+            "tertiary": "#ffd1aa",
+            "error-container": "#93000a",
+            "on-primary-container": "#00574d",
+            "surface-container-low": "#141d23",
+            "secondary-container": "#0566d9",
+            "on-secondary": "#002e6a",
+            "surface-container-high": "#222b32",
+            "primary": "#57f1db",
+            "on-tertiary": "#4b2800",
+            "on-secondary-fixed": "#001a42",
+            "inverse-on-surface": "#293238"
+          },
+          "borderRadius": {
+            "DEFAULT": "0.25rem",
+            "lg": "0.5rem",
+            "xl": "0.75rem",
+            "full": "9999px"
+          },
+          "spacing": {
+            "container-max": "1280px",
+            "stack-sm": "8px",
+            "margin-desktop": "40px",
+            "stack-md": "16px",
+            "stack-lg": "32px",
+            "gutter-desktop": "24px",
+            "margin-mobile": "20px",
+            "unit": "8px",
+            "gutter-mobile": "16px"
+          },
+          "fontFamily": {
+            "body-md": ["Plus Jakarta Sans"],
+            "headline-lg": ["Plus Jakarta Sans"],
+            "body-sm": ["Plus Jakarta Sans"],
+            "label-sm": ["Plus Jakarta Sans"],
+            "headline-xl": ["Plus Jakarta Sans"],
+            "headline-md": ["Plus Jakarta Sans"],
+            "headline-lg-mobile": ["Plus Jakarta Sans"],
+            "label-md": ["Plus Jakarta Sans"],
+            "body-lg": ["Plus Jakarta Sans"],
+            "mono": ["JetBrains Mono"]
+          },
+          "fontSize": {
+            "body-md": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+            "headline-lg": ["32px", {"lineHeight": "40px", "letterSpacing": "-0.01em", "fontWeight": "700"}],
+            "body-sm": ["14px", {"lineHeight": "20px", "fontWeight": "400"}],
+            "label-sm": ["12px", {"lineHeight": "14px", "letterSpacing": "0.05em", "fontWeight": "500"}],
+            "headline-xl": ["48px", {"lineHeight": "56px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+            "headline-md": ["24px", {"lineHeight": "32px", "fontWeight": "600"}],
+            "headline-lg-mobile": ["28px", {"lineHeight": "36px", "fontWeight": "700"}],
+            "label-md": ["14px", {"lineHeight": "16px", "letterSpacing": "0.02em", "fontWeight": "600"}],
+            "body-lg": ["18px", {"lineHeight": "28px", "fontWeight": "400"}]
+          }
+        },
+      },
+    }
+  </script>
+<style>
+    body {
+      background-color: #0b141a;
+      color: #dae4ec;
+      overflow-x: hidden;
+    }
+
+    .glass-card {
+      background: linear-gradient(135deg, rgba(255, 255, 255, 0.05) 0%, rgba(255, 255, 255, 0.01) 100%);
+      backdrop-filter: blur(24px);
+      -webkit-backdrop-filter: blur(24px);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+    }
+
+    .luminous-button {
+      background-color: #57f1db;
+      box-shadow: 0 0 20px -5px rgba(87, 241, 219, 0.5);
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .luminous-button:hover {
+      box-shadow: 0 0 32px -2px rgba(87, 241, 219, 0.7);
+      transform: translateY(-1px);
+    }
+
+    .luminous-button:active {
+      transform: scale(0.96);
+    }
+
+    .input-glass {
+      background: rgba(6, 15, 21, 0.6);
+      border: 1px solid rgba(133, 148, 144, 0.3);
+      transition: all 0.2s ease;
+    }
+
+    .input-glass:focus-within {
+      border-color: #57f1db;
+      box-shadow: inset 0 0 8px rgba(87, 241, 219, 0.2);
+    }
+
+    .progress-bar-glow {
+      box-shadow: 0 0 10px rgba(87, 241, 219, 0.4);
+    }
+
+    .material-symbols-outlined {
+      font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+    }
+
+    /* Data style */
+    .mono-data {
+      font-family: 'JetBrains Mono', monospace;
+    }
+
+    /* Atmosphere */
+    .bg-gradient-mesh {
+      position: fixed;
+      top: -20%;
+      right: -10%;
+      width: 60%;
+      height: 60%;
+      background: radial-gradient(circle, rgba(87, 241, 219, 0.08) 0%, transparent 70%);
+      z-index: -1;
+      pointer-events: none;
+    }
+  </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="font-body-md text-on-background">
+<div class="bg-gradient-mesh"></div>
+<!-- TopAppBar -->
+<header class="fixed top-0 w-full z-50 bg-surface/80 dark:bg-surface/80 backdrop-blur-xl border-b border-white/10 shadow-[0_0_20px_-5px_rgba(87,241,219,0.3)]">
+<div class="flex items-center justify-between px-margin-mobile md:px-margin-desktop h-16 w-full">
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-primary" style="font-variation-settings: 'FILL' 1;">terminal</span>
+<span class="font-headline-md text-headline-md font-bold tracking-tighter text-primary">PaperWorking</span>
+</div>
+<div class="hidden md:flex items-center gap-8">
+<nav class="flex gap-6">
+<a class="font-label-md text-label-md text-primary transition-colors" href="#">Dashboard</a>
+<a class="font-label-md text-label-md text-on-surface-variant hover:text-primary transition-colors" href="#">Projects</a>
+<a class="font-label-md text-label-md text-on-surface-variant hover:text-primary transition-colors" href="#">Market</a>
+<a class="font-label-md text-label-md text-on-surface-variant hover:text-primary transition-colors" href="#">Inbox</a>
+</nav>
+<div class="w-8 h-8 rounded-full bg-surface-container-highest border border-white/10 overflow-hidden">
+<img alt="User profile" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCiC0fSxPDg4oFZIgzVjNpS1B3nNlkSfpUnvs3jGal3Vy3spLzaMHD-r6BydeIMRKkYi-xQ1c2DgqVyrC3NNK7JRhOewKHx_hdgxTN-5oG-7yyxL0sWvykndUPhHjpoP91wCakcJpjNgXBiLUhPxKlcLJ7TIkf8gWuhioNclT-pep-cO3c9glI-pf9WBFlMaXvyDGEa76PWEOLfgc_mo2SEKYY3pjePgsHVk_1qdoy7YSoZYluK4CYvHc2VYis9mO_43IESBQV6Dc0E"/>
+</div>
+</div>
+<button class="md:hidden text-on-surface">
+<span class="material-symbols-outlined">menu</span>
+</button>
+</div>
+</header>
+<main class="pt-24 pb-32 px-margin-mobile md:px-margin-desktop min-h-screen flex flex-col items-center justify-center max-w-container-max mx-auto">
+<!-- Hero Section -->
+<div class="w-full max-w-3xl text-center mb-stack-lg animate-in fade-in slide-in-from-bottom-4 duration-700">
+<div class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full glass-card mb-stack-md">
+<span class="flex h-2 w-2 rounded-full bg-primary progress-bar-glow"></span>
+<span class="font-label-sm text-label-sm uppercase tracking-widest text-primary">Step 6 of 6</span>
+<span class="w-[1px] h-3 bg-white/20 mx-1"></span>
+<span class="font-label-sm text-label-sm text-on-surface-variant">Workspace Unlocked</span>
+</div>
+<h1 class="font-headline-lg-mobile md:font-headline-xl md:text-headline-xl mb-4 text-on-surface">
+        Project Initialized. <br/>
+<span class="text-primary/90">Let's establish your baseline.</span>
+</h1>
+<p class="font-body-lg text-body-lg text-on-surface-variant/80 max-w-xl mx-auto">
+        Define the critical financial and timing parameters to generate your first net operating income (NOI) forecast.
+      </p>
+</div>
+<!-- The Bridge: 4-Field Input Grid -->
+<div class="w-full max-w-4xl grid grid-cols-1 md:grid-cols-2 gap-gutter-desktop">
+<!-- Field 1: Closing Date -->
+<div class="glass-card p-6 rounded-xl flex flex-col gap-4 animate-in fade-in slide-in-from-left-4 duration-700 delay-100">
+<div class="flex items-center justify-between">
+<label class="font-label-md text-label-md text-on-surface-variant flex items-center gap-2">
+<span class="material-symbols-outlined text-[18px]">calendar_today</span>
+            Target Closing Date
+          </label>
+<span class="material-symbols-outlined text-on-surface-variant/40 text-[20px]">info</span>
+</div>
+<div class="input-glass rounded-lg px-4 py-3 flex items-center gap-3">
+<input class="bg-transparent border-none focus:ring-0 w-full mono-data text-primary p-0" type="date" value="2024-11-15"/>
+</div>
+</div>
+<!-- Field 2: Purchase Price -->
+<div class="glass-card p-6 rounded-xl flex flex-col gap-4 animate-in fade-in slide-in-from-right-4 duration-700 delay-100">
+<div class="flex items-center justify-between">
+<label class="font-label-md text-label-md text-on-surface-variant flex items-center gap-2">
+<span class="material-symbols-outlined text-[18px]">payments</span>
+            Estimated Purchase Price
+          </label>
+<span class="material-symbols-outlined text-on-surface-variant/40 text-[20px]">show_chart</span>
+</div>
+<div class="input-glass rounded-lg px-4 py-3 flex items-center gap-3">
+<span class="text-on-surface-variant mono-data">$</span>
+<input class="bg-transparent border-none focus:ring-0 w-full mono-data text-primary p-0" placeholder="0.00" type="text" value="1,240,000"/>
+</div>
+</div>
+<!-- Field 3: Initial Capital -->
+<div class="glass-card p-6 rounded-xl flex flex-col gap-4 animate-in fade-in slide-in-from-left-4 duration-700 delay-200">
+<div class="flex items-center justify-between">
+<label class="font-label-md text-label-md text-on-surface-variant flex items-center gap-2">
+<span class="material-symbols-outlined text-[18px]">account_balance</span>
+            Initial Capital Ready to Deploy
+          </label>
+<div class="px-2 py-0.5 rounded bg-primary/10 border border-primary/20">
+<span class="text-[10px] text-primary font-bold uppercase tracking-tighter">Liquid Asset</span>
+</div>
+</div>
+<div class="input-glass rounded-lg px-4 py-3 flex items-center gap-3">
+<span class="text-on-surface-variant mono-data">$</span>
+<input class="bg-transparent border-none focus:ring-0 w-full mono-data text-primary p-0" placeholder="0.00" type="text" value="350,000"/>
+</div>
+</div>
+<!-- Field 4: Hold Period -->
+<div class="glass-card p-6 rounded-xl flex flex-col gap-4 animate-in fade-in slide-in-from-right-4 duration-700 delay-200">
+<div class="flex items-center justify-between">
+<label class="font-label-md text-label-md text-on-surface-variant flex items-center gap-2">
+<span class="material-symbols-outlined text-[18px]">timelapse</span>
+            Target Hold Period
+          </label>
+<span class="material-symbols-outlined text-on-surface-variant/40 text-[20px]">expand_more</span>
+</div>
+<div class="input-glass rounded-lg px-4 py-3 flex items-center gap-3">
+<select class="bg-transparent border-none focus:ring-0 w-full mono-data text-primary p-0 appearance-none">
+<option class="bg-surface-container" value="short">&lt; 6 Months</option>
+<option class="bg-surface-container" selected="" value="mid">1-3 Years</option>
+<option class="bg-surface-container" value="long">5+ Years</option>
+<option class="bg-surface-container" value="forever">Forever</option>
+</select>
+</div>
+</div>
+</div>
+<!-- Background Decoration -->
+<div class="absolute inset-0 -z-20 overflow-hidden">
+<div class="absolute top-[20%] left-[10%] w-[300px] h-[300px] bg-primary/5 rounded-full blur-[100px]"></div>
+<div class="absolute bottom-[20%] right-[10%] w-[400px] h-[400px] bg-secondary/5 rounded-full blur-[120px]"></div>
+</div>
+</main>
+<!-- Bottom Action Bar -->
+<footer class="fixed bottom-0 w-full z-50 bg-surface-container-low/90 dark:bg-surface-container-low/90 backdrop-blur-2xl border-t border-white/5 shadow-[0_-8px_32px_0_rgba(0,0,0,0.8)] rounded-t-xl">
+<div class="flex justify-between items-center h-24 pb-safe px-margin-mobile md:px-margin-desktop max-w-container-max mx-auto">
+<div class="hidden sm:flex flex-col">
+<span class="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider">Project Name</span>
+<span class="font-body-md text-body-md text-on-surface font-semibold">Skyline Industrial Phase I</span>
+</div>
+<div class="flex items-center gap-4 w-full sm:w-auto">
+<button class="flex-1 sm:flex-none px-6 py-3 rounded-lg border border-white/10 font-label-md text-label-md text-on-surface-variant hover:bg-white/5 transition-all active:scale-95">
+          Save Progress
+        </button>
+<button class="flex-[2] sm:flex-none luminous-button px-8 py-3 rounded-lg font-label-md text-label-md text-[#00201c] font-bold flex items-center justify-center gap-2 group">
+          Enter Workspace &amp; Setup NOI
+          <span class="material-symbols-outlined transition-transform group-hover:translate-x-1">arrow_forward</span>
+</button>
+</div>
+</div>
+</footer>
+<!-- Mobile Nav Overlay (Hidden by Default) -->
+<nav class="md:hidden fixed bottom-0 w-full z-50 bg-surface-container-low/90 backdrop-blur-2xl border-t border-white/5 h-20 flex justify-around items-center hidden">
+<div class="flex flex-col items-center justify-center text-primary drop-shadow-[0_0_8px_rgba(87,241,219,0.5)]">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">dashboard</span>
+<span class="font-label-sm text-label-sm">Dashboard</span>
+</div>
+<div class="flex flex-col items-center justify-center text-on-surface-variant/60">
+<span class="material-symbols-outlined">folder_open</span>
+<span class="font-label-sm text-label-sm">Projects</span>
+</div>
+<div class="flex flex-col items-center justify-center text-on-surface-variant/60">
+<span class="material-symbols-outlined">storefront</span>
+<span class="font-label-sm text-label-sm">Market</span>
+</div>
+<div class="flex flex-col items-center justify-center text-on-surface-variant/60">
+<span class="material-symbols-outlined">mail</span>
+<span class="font-label-sm text-label-sm">Inbox</span>
+</div>
+</nav>
+<script>
+    // Micro-interaction for numeric formatting
+    const inputs = document.querySelectorAll('input[type="text"]');
+    inputs.forEach(input => {
+      input.addEventListener('input', (e) => {
+        let value = e.target.value.replace(/,/g, '');
+        if(!isNaN(value) && value.length > 0) {
+          e.target.value = parseFloat(value).toLocaleString('en-US');
+        }
+      });
+    });
+
+    // Subtle parallax on the background mesh
+    window.addEventListener('mousemove', (e) => {
+      const mesh = document.querySelector('.bg-gradient-mesh');
+      const x = e.clientX / window.innerWidth;
+      const y = e.clientY / window.innerHeight;
+      mesh.style.transform = `translate(${x * 20}px, ${y * 20}px)`;
+    });
+  </script>
+</body></html>

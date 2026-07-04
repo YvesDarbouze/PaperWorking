@@ -1,0 +1,363 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Debt &amp; Financing Setup | PaperWorking</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&amp;family=JetBrains+Mono:wght@400;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary-fixed-dim": "#3cddc7",
+                        "inverse-surface": "#dae4ec",
+                        "on-surface-variant": "#bacac5",
+                        "surface-container": "#182127",
+                        "background": "#0b141a",
+                        "surface": "#0b141a",
+                        "secondary-fixed-dim": "#adc6ff",
+                        "on-surface": "#dae4ec",
+                        "on-error-container": "#ffdad6",
+                        "on-background": "#dae4ec",
+                        "primary-container": "#2dd4bf",
+                        "on-secondary-container": "#e6ecff",
+                        "on-primary-fixed": "#00201c",
+                        "on-secondary-fixed-variant": "#004395",
+                        "surface-tint": "#3cddc7",
+                        "surface-dim": "#0b141a",
+                        "secondary": "#adc6ff",
+                        "on-tertiary-fixed": "#2d1600",
+                        "inverse-primary": "#006b5f",
+                        "surface-container-highest": "#2d363d",
+                        "on-primary": "#003731",
+                        "error": "#ffb4ab",
+                        "surface-container-lowest": "#060f15",
+                        "outline-variant": "#3c4a46",
+                        "outline": "#859490",
+                        "tertiary-fixed-dim": "#ffb875",
+                        "on-tertiary-fixed-variant": "#6b3b00",
+                        "tertiary-fixed": "#ffdcc0",
+                        "secondary-fixed": "#d8e2ff",
+                        "surface-bright": "#313a41",
+                        "surface-variant": "#2d363d",
+                        "on-tertiary-container": "#744000",
+                        "primary-fixed": "#62fae3",
+                        "tertiary-container": "#ffac5a",
+                        "on-primary-fixed-variant": "#005047",
+                        "on-error": "#690005",
+                        "tertiary": "#ffd1aa",
+                        "error-container": "#93000a",
+                        "on-primary-container": "#00574d",
+                        "surface-container-low": "#141d23",
+                        "secondary-container": "#0566d9",
+                        "on-secondary": "#002e6a",
+                        "surface-container-high": "#222b32",
+                        "primary": "#57f1db",
+                        "on-tertiary": "#4b2800",
+                        "on-secondary-fixed": "#001a42",
+                        "inverse-on-surface": "#293238"
+                    },
+                    spacing: {
+                        "container-max": "1280px",
+                        "stack-sm": "8px",
+                        "margin-desktop": "40px",
+                        "stack-md": "16px",
+                        "stack-lg": "32px",
+                        "gutter-desktop": "24px",
+                        "margin-mobile": "20px",
+                        "unit": "8px",
+                        "gutter-mobile": "16px"
+                    },
+                    fontFamily: {
+                        "body-md": ["Plus Jakarta Sans"],
+                        "headline-lg": ["Plus Jakarta Sans"],
+                        "body-sm": ["Plus Jakarta Sans"],
+                        "label-sm": ["Plus Jakarta Sans"],
+                        "headline-xl": ["Plus Jakarta Sans"],
+                        "headline-md": ["Plus Jakarta Sans"],
+                        "label-md": ["Plus Jakarta Sans"],
+                        "body-lg": ["Plus Jakarta Sans"],
+                        "mono": ["JetBrains Mono"]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        body {
+            background-color: #0b141a;
+            color: #dae4ec;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            -webkit-font-smoothing: antialiased;
+        }
+        .glass-panel {
+            background: rgba(20, 29, 35, 0.6);
+            backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.05);
+        }
+        .terminal-input {
+            background: rgba(6, 15, 21, 0.8);
+            border: 1px solid rgba(60, 74, 70, 1);
+            transition: all 0.2s ease;
+        }
+        .terminal-input:focus {
+            border-color: #57f1db;
+            box-shadow: 0 0 0 1px rgba(87, 241, 219, 0.3);
+            outline: none;
+        }
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .scanline {
+            width: 100%;
+            height: 2px;
+            background: rgba(87, 241, 219, 0.1);
+            position: absolute;
+            top: 0;
+            left: 0;
+            pointer-events: none;
+            animation: scan 8s linear infinite;
+        }
+        @keyframes scan {
+            from { top: 0; }
+            to { top: 100%; }
+        }
+        .luminous-glow {
+            text-shadow: 0 0 10px rgba(87, 241, 219, 0.4);
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="min-h-screen selection:bg-primary/30 selection:text-primary">
+<!-- Top Navigation Shell -->
+<header class="fixed top-0 z-50 w-full flex justify-between items-center px-margin-mobile h-16 bg-surface/80 dark:bg-surface/80 backdrop-blur-xl border-b border-white/10">
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-primary text-2xl" data-icon="terminal">terminal</span>
+<h1 class="font-headline-md text-headline-md font-bold tracking-tight text-primary dark:text-primary">PaperWorking</h1>
+</div>
+<div class="flex items-center gap-4">
+<div class="hidden md:flex gap-6 mr-4">
+<span class="font-label-md text-label-md text-primary cursor-pointer hover:opacity-80 transition-opacity">Pipeline</span>
+<span class="font-label-md text-label-md text-on-surface-variant cursor-pointer hover:text-on-surface transition-colors">Portfolios</span>
+<span class="font-label-md text-label-md text-on-surface-variant cursor-pointer hover:text-on-surface transition-colors">Risk</span>
+</div>
+<div class="w-8 h-8 rounded-full bg-surface-container-highest border border-outline-variant overflow-hidden">
+<img alt="User" class="w-full h-full" src="https://lh3.googleusercontent.com/aida-public/AB6AXuD95Dpyezwn-OqICEhdU20isQje-Uhz2FuHEnw0PMSUUf4XsKNLWjDMTKF43kt2LFmcIrE2ifwogOchT7mCce2RLJTh4D_dGz_vgGOQBtJL7-5IcUev-Qjg9UcU0crGmpM1NKo9-mKo0xClvKQ5NMT4EuY6fVA_fe_y2mUig37ySVpqqZQ4wCFlMArAI9El6XP-U6CSJEySYDZ0Gf2cyQzcA_ociqLIDKtT-D4eV97RfvaQs1_UBqz0kmfAB84oLNjEhD9KISfabFo6"/>
+</div>
+</div>
+</header>
+<main class="pt-24 pb-32 px-4 max-w-4xl mx-auto">
+<!-- Dashboard Header -->
+<div class="mb-stack-lg">
+<div class="flex items-center gap-2 mb-2">
+<span class="font-label-sm text-label-sm text-primary tracking-widest uppercase">Operational Terminal // Debt.Sys</span>
+</div>
+<h2 class="font-headline-xl text-headline-xl text-on-surface tracking-tight">Financing Configuration</h2>
+<p class="font-body-md text-body-md text-on-surface-variant mt-2">Adjust capital structure parameters and advanced leverage mechanics.</p>
+</div>
+<!-- Main Configuration Panel -->
+<div class="glass-panel rounded-xl p-6 relative overflow-hidden">
+<div class="scanline"></div>
+<div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+<!-- Loan Amount -->
+<div class="space-y-2">
+<label class="font-label-sm text-label-sm text-on-surface-variant block">LOAN AMOUNT</label>
+<div class="relative">
+<span class="absolute left-3 top-1/2 -translate-y-1/2 font-mono text-on-surface-variant">$</span>
+<input class="terminal-input w-full pl-8 py-3 rounded-lg font-mono text-on-surface" id="loanAmount" placeholder="0.00" type="number" value="450000"/>
+</div>
+</div>
+<!-- Interest Rate -->
+<div class="space-y-2">
+<label class="font-label-sm text-label-sm text-on-surface-variant block">ANNUAL RATE (%)</label>
+<div class="relative">
+<span class="absolute right-3 top-1/2 -translate-y-1/2 font-mono text-on-surface-variant">%</span>
+<input class="terminal-input w-full px-4 py-3 rounded-lg font-mono text-on-surface" id="interestRate" step="0.1" type="number" value="6.5"/>
+</div>
+</div>
+<!-- Term -->
+<div class="space-y-2">
+<label class="font-label-sm text-label-sm text-on-surface-variant block">TERM (MONTHS)</label>
+<div class="relative">
+<span class="absolute right-3 top-1/2 -translate-y-1/2 font-mono text-on-surface-variant">MO</span>
+<input class="terminal-input w-full px-4 py-3 rounded-lg font-mono text-on-surface" id="loanTerm" type="number" value="360"/>
+</div>
+</div>
+</div>
+<!-- Advanced Toggle Trigger -->
+<button class="group flex items-center gap-2 py-3 px-4 rounded-lg bg-white/5 border border-white/10 hover:bg-white/10 transition-all duration-300 w-full md:w-auto" onclick="toggleAdvanced()">
+<span class="material-symbols-outlined text-primary transition-transform duration-300" data-icon="add_circle" id="toggleIcon">add_circle</span>
+<span class="font-label-md text-label-md text-primary font-bold uppercase tracking-wider">Add Origination Fees &amp; Points</span>
+</button>
+<!-- Advanced Disclosure Panel -->
+<div class="hidden mt-6 overflow-hidden transition-all duration-500" id="advancedPanel">
+<div class="bg-surface-container-high rounded-xl p-6 border border-primary/20">
+<div class="flex items-center gap-2 mb-4">
+<span class="material-symbols-outlined text-primary text-sm" data-icon="settings_input_component">settings_input_component</span>
+<h3 class="font-label-sm text-label-sm text-primary font-bold uppercase tracking-widest">Leverage Mechanics</h3>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+<!-- Points Charged -->
+<div class="space-y-2">
+<div class="flex justify-between items-center">
+<label class="font-label-sm text-label-sm text-on-surface-variant">LENDER POINTS</label>
+<span class="font-mono text-label-sm text-primary" id="pointsValue">$6,750.00</span>
+</div>
+<div class="relative">
+<span class="absolute right-3 top-1/2 -translate-y-1/2 font-mono text-on-surface-variant">PTS</span>
+<input class="terminal-input w-full px-4 py-3 rounded-lg font-mono text-on-surface" id="lenderPoints" step="0.25" type="number" value="1.5"/>
+</div>
+</div>
+<!-- Junk Fees -->
+<div class="space-y-2">
+<label class="font-label-sm text-label-sm text-on-surface-variant block">OTHER LENDER / JUNK FEES</label>
+<div class="relative">
+<span class="absolute left-3 top-1/2 -translate-y-1/2 font-mono text-on-surface-variant">$</span>
+<input class="terminal-input w-full pl-8 py-3 rounded-lg font-mono text-on-surface" id="junkFees" placeholder="0.00" type="number" value="1200"/>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Visual Feedback Banner -->
+<div class="mt-8 pt-6 border-t border-white/5 flex flex-col md:flex-row md:items-center justify-between gap-6">
+<div>
+<div class="flex items-center gap-2 mb-1">
+<div class="w-2 h-2 rounded-full bg-primary animate-pulse"></div>
+<span class="font-label-sm text-label-sm text-on-surface-variant tracking-wider uppercase">Live Valuation Sync</span>
+</div>
+<div class="flex items-baseline gap-3">
+<span class="font-headline-lg text-headline-lg text-on-surface luminous-glow" id="cashToClose">$127,950.00</span>
+<span class="font-label-md text-label-md text-primary">TOTAL CASH TO CLOSE</span>
+</div>
+</div>
+<button class="bg-primary hover:bg-primary-fixed-dim text-on-primary-container font-label-md text-label-md px-8 py-4 rounded-lg font-bold shadow-[0_0_20px_rgba(87,241,219,0.3)] transition-all active:scale-95">
+                    EXECUTE STRUCTURE
+                </button>
+</div>
+</div>
+<!-- Meta Data Bento Grid -->
+<div class="grid grid-cols-1 md:grid-cols-3 gap-6 mt-6">
+<div class="glass-panel p-5 rounded-xl">
+<p class="font-label-sm text-label-sm text-on-surface-variant mb-2">MONTHLY P&amp;I</p>
+<p class="font-headline-md text-headline-md text-on-surface" id="monthlyPI">$2,844.31</p>
+</div>
+<div class="glass-panel p-5 rounded-xl">
+<p class="font-label-sm text-label-sm text-on-surface-variant mb-2">LOAN TO VALUE (LTV)</p>
+<p class="font-headline-md text-headline-md text-on-surface">75.0%</p>
+</div>
+<div class="glass-panel p-5 rounded-xl border-primary/20">
+<p class="font-label-sm text-label-sm text-on-surface-variant mb-2">TOTAL INTEREST</p>
+<p class="font-headline-md text-headline-md text-primary" id="totalInterest">$573,952</p>
+</div>
+</div>
+<!-- Decorative Card Content -->
+<div class="mt-12 grid grid-cols-1 md:grid-cols-2 gap-8">
+<div class="relative group h-48 rounded-2xl overflow-hidden glass-panel border-none">
+<img class="w-full h-full object-cover opacity-40 group-hover:opacity-60 transition-opacity duration-700" data-alt="A high-fidelity financial dashboard interface showing glowing data visualizations and complex candlestick charts in a dark terminal environment. The aesthetic is clean and futuristic with vibrant teal neon accents against a deep charcoal background. Motion blur effects suggest real-time data processing and high-tech efficiency." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBIYua2x6psrikTdkneu6maJxTwLktOq5VzF4uZ-W4gkA4tZLxDHVQWZezglsboPPUxDTKJVM-IG4D1mp-UW4OE6MO0Ea9onHbXaISCf2g27UuI9aHwuEfb4bKCEGae6Oh2zWkoNpNaLjl-VJfINZvcH1FJt-Xar5ixAebnUIndyg1dhg9y_iqIj9DH64Ysl1zl9qe0eb0BpXgLj9LPRwRUxzvFPLy-XGe2PHy4EekWOfOZtJDf-lX_9a8RBPCoTS0wpC7rBGsBwdOY"/>
+<div class="absolute inset-0 bg-gradient-to-t from-background via-transparent to-transparent"></div>
+<div class="absolute bottom-6 left-6">
+<span class="font-label-sm text-label-sm text-primary mb-2 block">MARKET INSIGHT</span>
+<h4 class="font-headline-md text-headline-md text-on-surface">Yield Curve Analysis</h4>
+</div>
+</div>
+<div class="relative group h-48 rounded-2xl overflow-hidden glass-panel border-none">
+<img class="w-full h-full object-cover opacity-40 group-hover:opacity-60 transition-opacity duration-700" data-alt="An abstract visualization of global networking and fiber optic connections spanning across a digital planet. Luminous teal and blue lines intersect over dark continents, creating a web of interconnected data. The atmosphere is cinematic and sophisticated, representing high-speed global finance and technological infrastructure." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCm_EjspLfD98cRt9QgfcZtEidMUNy8p6CBezDzlAtXgWE9pjcnUeSQAi2fDHG3X1XOZHB-TCl9HKQdiCexx3J1zMn8PEOioKa1NmfvMjzfXDzHnezWIBXvHsN19bhU5LPsq0GCd6jMvFfquD6KYpN-KINP5FTZMrQG21FEPYtXpIi-v4h6x-7DulWrd01PtwrEjnMfXOmTZ-54zEWe5NLVbRig6bckNmEpOe8oAix4ghPp1hBHNjeAGnuAUNXZ8PtWa7-ZSB30evTx"/>
+<div class="absolute inset-0 bg-gradient-to-t from-background via-transparent to-transparent"></div>
+<div class="absolute bottom-6 left-6">
+<span class="font-label-sm text-label-sm text-primary mb-2 block">SYSTEM STATUS</span>
+<h4 class="font-headline-md text-headline-md text-on-surface">Liquidity Engines Active</h4>
+</div>
+</div>
+</div>
+</main>
+<!-- Bottom Navigation Shell -->
+<nav class="fixed bottom-0 left-0 w-full flex justify-around items-center px-4 py-3 pb-safe bg-surface-container/90 dark:bg-surface-container/90 backdrop-blur-2xl border-t border-white/10 shadow-[0_-4px_20px_rgba(0,0,0,0.4)] z-50">
+<a class="flex flex-col items-center justify-center text-on-surface-variant hover:bg-white/5 p-2 rounded-xl transition-all" href="#">
+<span class="material-symbols-outlined" data-icon="analytics">analytics</span>
+<span class="font-label-sm text-label-sm mt-1">Market</span>
+</a>
+<a class="flex flex-col items-center justify-center text-primary dark:text-primary drop-shadow-[0_0_8px_rgba(87,241,219,0.4)] scale-110 transition-transform duration-300 p-2 rounded-xl" href="#">
+<span class="material-symbols-outlined" data-icon="domain" style="font-variation-settings: 'FILL' 1;">domain</span>
+<span class="font-label-sm text-label-sm mt-1">Assets</span>
+</a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant hover:bg-white/5 p-2 rounded-xl transition-all" href="#">
+<span class="material-symbols-outlined" data-icon="database">database</span>
+<span class="font-label-sm text-label-sm mt-1">Data</span>
+</a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant hover:bg-white/5 p-2 rounded-xl transition-all" href="#">
+<span class="material-symbols-outlined" data-icon="menu">menu</span>
+<span class="font-label-sm text-label-sm mt-1">More</span>
+</a>
+</nav>
+<script>
+        function toggleAdvanced() {
+            const panel = document.getElementById('advancedPanel');
+            const icon = document.getElementById('toggleIcon');
+            const isHidden = panel.classList.contains('hidden');
+            
+            if (isHidden) {
+                panel.classList.remove('hidden');
+                icon.style.transform = 'rotate(45deg)';
+                icon.innerText = 'add_circle';
+            } else {
+                panel.classList.add('hidden');
+                icon.style.transform = 'rotate(0deg)';
+                icon.innerText = 'add_circle';
+            }
+        }
+
+        const loanAmountInput = document.getElementById('loanAmount');
+        const interestRateInput = document.getElementById('interestRate');
+        const loanTermInput = document.getElementById('loanTerm');
+        const pointsInput = document.getElementById('lenderPoints');
+        const junkFeesInput = document.getElementById('junkFees');
+
+        function updateCalculations() {
+            const loan = parseFloat(loanAmountInput.value) || 0;
+            const rate = (parseFloat(interestRateInput.value) || 0) / 100 / 12;
+            const term = parseFloat(loanTermInput.value) || 0;
+            const points = parseFloat(pointsInput.value) || 0;
+            const junkFees = parseFloat(junkFeesInput.value) || 0;
+
+            // Points calc
+            const pointsDollar = loan * (points / 100);
+            document.getElementById('pointsValue').innerText = `$${pointsDollar.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})}`;
+
+            // Cash to Close (Simulated: 25% down + fees)
+            const downPayment = loan / 3; // Simplified proxy for 75% LTV
+            const totalCash = downPayment + pointsDollar + junkFees;
+            document.getElementById('cashToClose').innerText = `$${totalCash.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})}`;
+
+            // P&I
+            let pi = 0;
+            if (rate > 0) {
+                pi = (loan * rate * Math.pow(1 + rate, term)) / (Math.pow(1 + rate, term) - 1);
+            } else if (term > 0) {
+                pi = loan / term;
+            }
+            document.getElementById('monthlyPI').innerText = `$${pi.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})}`;
+
+            // Total Interest
+            const totalInt = (pi * term) - loan;
+            document.getElementById('totalInterest').innerText = `$${Math.max(0, totalInt).toLocaleString(undefined, {maximumFractionDigits: 0})}`;
+        }
+
+        [loanAmountInput, interestRateInput, loanTermInput, pointsInput, junkFeesInput].forEach(input => {
+            input.addEventListener('input', updateCalculations);
+        });
+
+        // Initialize
+        updateCalculations();
+    </script>
+</body></html>

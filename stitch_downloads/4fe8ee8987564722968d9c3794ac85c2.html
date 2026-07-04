@@ -1,0 +1,450 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Purchase Phase Diligence Ledger | PaperWorking</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&amp;display=swap" rel="stylesheet"/><link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,400;0,500;0,600;0,700;0,800;1,400&amp;family=JetBrains+Mono:wght@400;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<style>
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background-color: #060f15;
+            color: #dae4ec;
+            -webkit-font-smoothing: antialiased;
+        }
+        .mono {
+            font-family: 'JetBrains Mono', monospace;
+        }
+        .glass-panel {
+            background: rgba(24, 33, 39, 0.4);
+            backdrop-filter: blur(24px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.05);
+        }
+        .luminous-accent {
+            box-shadow: 0 0 20px -5px rgba(87, 241, 219, 0.3);
+        }
+        .scroll-hide::-webkit-scrollbar {
+            display: none;
+        }
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        
+        /* Mobile Drawer Transitions */
+        #mobile-drawer.open {
+            transform: translateX(0);
+        }
+        #mobile-overlay.open {
+            opacity: 1;
+            pointer-events: auto;
+        }
+    </style>
+<script id="tailwind-config">
+        tailwind.config = {
+          darkMode: "class",
+          theme: {
+            extend: {
+              "colors": {
+                "inverse-surface": "#dae4ec",
+                "surface-bright": "#313a41",
+                "on-tertiary-fixed-variant": "#6b3b00",
+                "inverse-primary": "#006b5f",
+                "surface": "#0b141a",
+                "surface-dim": "#0b141a",
+                "primary-fixed": "#62fae3",
+                "on-primary-fixed-variant": "#005047",
+                "on-tertiary-container": "#744000",
+                "on-surface": "#dae4ec",
+                "error": "#ffb4ab",
+                "surface-container-low": "#141d23",
+                "outline-variant": "#3c4a46",
+                "surface-variant": "#2d363d",
+                "on-error-container": "#ffdad6",
+                "on-secondary": "#002e6a",
+                "tertiary-container": "#ffac5a",
+                "primary-container": "#2dd4bf",
+                "inverse-on-surface": "#293238",
+                "background": "#0b141a",
+                "on-primary-fixed": "#00201c",
+                "on-error": "#690005",
+                "secondary-fixed-dim": "#adc6ff",
+                "on-primary-container": "#00574d",
+                "tertiary-fixed-dim": "#ffb875",
+                "surface-container-highest": "#2d363d",
+                "primary": "#57f1db",
+                "surface-container-lowest": "#060f15",
+                "secondary": "#adc6ff",
+                "outline": "#859490",
+                "surface-container": "#182127",
+                "on-tertiary-fixed": "#2d1600",
+                "on-secondary-fixed": "#001a42",
+                "surface-tint": "#3cddc7",
+                "on-secondary-container": "#e6ecff",
+                "primary-fixed-dim": "#3cddc7",
+                "on-primary": "#003731",
+                "error-container": "#93000a",
+                "on-background": "#dae4ec",
+                "tertiary": "#ffd1aa",
+                "on-secondary-fixed-variant": "#004395",
+                "tertiary-fixed": "#ffdcc0",
+                "on-tertiary": "#4b2800",
+                "secondary-fixed": "#d8e2ff",
+                "secondary-container": "#0566d9",
+                "on-surface-variant": "#bacac5",
+                "surface-container-high": "#222b32"
+              },
+              "borderRadius": {
+                "DEFAULT": "0.25rem",
+                "lg": "0.5rem",
+                "xl": "0.75rem",
+                "full": "9999px"
+              },
+              "spacing": {
+                "margin-desktop": "40px",
+                "stack-sm": "8px",
+                "stack-md": "16px",
+                "stack-lg": "32px",
+                "unit": "8px",
+                "margin-mobile": "20px",
+                "gutter-mobile": "16px",
+                "gutter-desktop": "24px",
+                "container-max": "1280px"
+              },
+              "fontFamily": {
+                "label-md": ["Plus Jakarta Sans"],
+                "headline-lg-mobile": ["Plus Jakarta Sans"],
+                "body-lg": ["Plus Jakarta Sans"],
+                "body-md": ["Plus Jakarta Sans"],
+                "label-sm": ["Plus Jakarta Sans"],
+                "headline-xl": ["Plus Jakarta Sans"],
+                "headline-md": ["Plus Jakarta Sans"],
+                "body-sm": ["Plus Jakarta Sans"],
+                "headline-lg": ["Plus Jakarta Sans"]
+              },
+              "fontSize": {
+                "label-md": ["14px", { "lineHeight": "16px", "letterSpacing": "0.02em", "fontWeight": "600" }],
+                "headline-lg-mobile": ["28px", { "lineHeight": "36px", "fontWeight": "700" }],
+                "body-lg": ["18px", { "lineHeight": "28px", "fontWeight": "400" }],
+                "body-md": ["16px", { "lineHeight": "24px", "fontWeight": "400" }],
+                "label-sm": ["12px", { "lineHeight": "14px", "letterSpacing": "0.05em", "fontWeight": "500" }],
+                "headline-xl": ["48px", { "lineHeight": "56px", "letterSpacing": "-0.02em", "fontWeight": "700" }],
+                "headline-md": ["24px", { "lineHeight": "32px", "fontWeight": "600" }],
+                "body-sm": ["14px", { "lineHeight": "20px", "fontWeight": "400" }],
+                "headline-lg": ["32px", { "lineHeight": "40px", "letterSpacing": "-0.01em", "fontWeight": "700" }]
+              }
+            }
+          }
+        }
+    </script>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+</head>
+<body class="bg-surface-container-lowest text-on-surface selection:bg-primary/30 min-h-screen flex">
+<!-- Mobile Overlay -->
+<div class="fixed inset-0 bg-black/50 backdrop-blur-sm z-[60] opacity-0 pointer-events-none transition-opacity duration-300 md:hidden" id="mobile-overlay"></div>
+<!-- Sidebar Navigation -->
+<aside class="fixed md:sticky top-0 left-0 h-screen w-[280px] bg-surface-container-lowest border-r border-white/10 z-[70] flex flex-col transform -translate-x-full md:translate-x-0 transition-transform duration-300 shadow-2xl md:shadow-none" id="mobile-drawer">
+<div class="p-6 flex items-center gap-3 border-b border-white/10 shrink-0 h-16">
+<img alt="PaperWorking Logo" class="w-8 h-8 object-contain" src="https://lh3.googleusercontent.com/aida/ADBb0ujB11RINnO37eguYGhIYpmIPAnTVU2w2hXc8JT5s9yE2JkLGtLf1yyAVUeHFN8bejMiEIPTzZYB16Ug9Ouv-A15avJCL3eA8BLUwYqi06Yqn1gVHcBoaN1IA4IAQH9YcSf57PFBQ-B6I2dgCJR3GSrgiLfEqkS6ULsGfsLW88XMTfHGqBD1tisaHO1W_zdq7IxSBt5sYUnlYRgKdg8Lr5DQ5R0wRRSeVYd5BUqD3xHTFP7WuHiIH2aZxWqN"/>
+<h1 class="font-['Plus_Jakarta_Sans'] text-xl tracking-tight text-primary flex items-center"><span class="font-semibold uppercase">Paper</span><span class="font-thin uppercase">Working</span></h1>
+<button class="md:hidden ml-auto text-on-surface-variant hover:text-primary transition-colors" id="close-drawer">
+<span class="material-symbols-outlined">close</span>
+</button>
+</div>
+<div class="flex-grow overflow-y-auto scroll-hide py-6 px-4 space-y-8">
+<!-- Primary Group -->
+<nav class="space-y-1">
+<a class="flex items-center gap-3 px-4 py-3 rounded-lg text-on-surface-variant hover:bg-white/5 hover:text-primary transition-all font-label-md" href="#">
+<span class="material-symbols-outlined text-xl" data-icon="pie_chart">pie_chart</span>
+<span>Portfolio</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 rounded-lg bg-primary/10 text-primary border border-primary/20 shadow-[0_0_10px_rgba(87,241,219,0.1)] transition-all font-label-md" href="#">
+<span class="material-symbols-outlined text-xl" data-icon="domain">domain</span>
+<span>Projects</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 rounded-lg text-on-surface-variant hover:bg-white/5 hover:text-primary transition-all font-label-md" href="#">
+<span class="material-symbols-outlined text-xl" data-icon="folder_open">folder_open</span>
+<span>Data Room</span>
+</a>
+<a class="flex items-center justify-between px-4 py-3 rounded-lg text-on-surface-variant hover:bg-white/5 hover:text-primary transition-all font-label-md" href="#">
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-xl" data-icon="terminal">terminal</span>
+<span>Inbox</span>
+</div>
+<span class="bg-primary text-on-primary text-xs font-bold px-2 py-0.5 rounded-full">3</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 rounded-lg text-on-surface-variant hover:bg-white/5 hover:text-primary transition-all font-label-md" href="#">
+<span class="material-symbols-outlined text-xl" data-icon="group">group</span>
+<span>Team</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 rounded-lg text-on-surface-variant hover:bg-white/5 hover:text-primary transition-all font-label-md" href="#">
+<span class="material-symbols-outlined text-xl" data-icon="analytics">analytics</span>
+<span>Reports</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 rounded-lg text-on-surface-variant hover:bg-white/5 hover:text-primary transition-all font-label-md" href="#">
+<span class="material-symbols-outlined text-xl" data-icon="troubleshoot">troubleshoot</span>
+<span>Deal Analyzer</span>
+</a>
+</nav>
+<!-- Account Group -->
+<div>
+<h3 class="px-4 font-label-sm text-on-surface-variant/50 uppercase tracking-wider mb-2">Account</h3>
+<nav class="space-y-1">
+<a class="flex items-center gap-3 px-4 py-3 rounded-lg text-on-surface-variant hover:bg-white/5 hover:text-primary transition-all font-label-md" href="#">
+<span class="material-symbols-outlined text-xl" data-icon="person">person</span>
+<span>Profile</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 rounded-lg text-on-surface-variant hover:bg-white/5 hover:text-primary transition-all font-label-md" href="#">
+<span class="material-symbols-outlined text-xl" data-icon="credit_card">credit_card</span>
+<span>Billing</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 rounded-lg text-on-surface-variant hover:bg-white/5 hover:text-primary transition-all font-label-md" href="#">
+<span class="material-symbols-outlined text-xl" data-icon="settings">settings</span>
+<span>Settings</span>
+</a>
+</nav>
+</div>
+</div>
+<!-- Bottom Workspace Switcher -->
+<div class="p-4 border-t border-white/10 shrink-0">
+<button class="w-full flex items-center justify-between p-3 rounded-lg hover:bg-white/5 transition-colors border border-transparent hover:border-white/10">
+<div class="flex items-center gap-3">
+<div class="w-8 h-8 rounded-full border border-primary/20 bg-surface-container-high overflow-hidden shrink-0">
+<img alt="User profile avatar" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCEPtXtXxWxrt93V4sVWl2Ez3W1fjfBhYor31tRj3pu3649tPGXq40iqEOAX4oBWbC-fpkwGoh0yCw_jMHf5fr4vph5uoxpZmqoXeql4XOtIkffE3SG4V5ZFjUkszwEILVE_ND3CkUJ7_1escbjQVe6xsWie7x6FSIHvShX1xAyqnx3ODEFaG1M1bkNkgd_Z8dDasVkWG6PHb_NGUlZIgdQahXMfEATWLSITLlumRX4WYT1tui5pW3rvquO0YIvkO3DzMPn0dFCzDIG"/>
+</div>
+<div class="text-left">
+<p class="font-label-sm text-on-surface-variant/70 text-[10px] uppercase tracking-wider">Acting as</p>
+<p class="font-label-md text-on-surface truncate w-32">Me</p>
+</div>
+</div>
+<span class="material-symbols-outlined text-on-surface-variant">unfold_more</span>
+</button>
+</div>
+</aside>
+<div class="flex-grow flex flex-col min-w-0">
+<!-- Mobile Header Bar -->
+<header class="md:hidden bg-surface-container-lowest/90 backdrop-blur-xl sticky top-0 z-[50] border-b border-white/10 h-16 flex items-center px-4 justify-between">
+<div class="flex items-center gap-3">
+<img alt="PaperWorking Logo" class="w-8 h-8 object-contain" src="https://lh3.googleusercontent.com/aida/ADBb0ujB11RINnO37eguYGhIYpmIPAnTVU2w2hXc8JT5s9yE2JkLGtLf1yyAVUeHFN8bejMiEIPTzZYB16Ug9Ouv-A15avJCL3eA8BLUwYqi06Yqn1gVHcBoaN1IA4IAQH9YcSf57PFBQ-B6I2dgCJR3GSrgiLfEqkS6ULsGfsLW88XMTfHGqBD1tisaHO1W_zdq7IxSBt5sYUnlYRgKdg8Lr5DQ5R0wRRSeVYd5BUqD3xHTFP7WuHiIH2aZxWqN"/>
+</div>
+<button class="text-on-surface-variant hover:text-primary transition-colors p-2 -mr-2" id="open-drawer">
+<span class="material-symbols-outlined text-2xl">menu</span>
+</button>
+</header>
+<main class="flex-grow w-full max-w-container-max mx-auto px-4 md:px-gutter-desktop py-8 mb-8 md:mb-24">
+<!-- Project Header Card -->
+<section class="mb-10 animate-in fade-in slide-in-from-bottom-4 duration-700">
+<div class="glass-panel rounded-xl p-6 flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
+<div class="flex flex-col">
+<div class="flex items-center gap-2 mb-1">
+<span class="material-symbols-outlined text-secondary text-sm" data-icon="location_on">location_on</span>
+<span class="font-label-md text-label-md text-secondary tracking-widest uppercase">Folder: 1248 Oakwood Ave</span>
+</div>
+<h2 class="font-headline-lg text-headline-lg text-on-surface">Purchase Phase Diligence Ledger</h2>
+</div>
+<div class="flex flex-col items-end gap-2 w-full md:w-auto">
+<div class="flex justify-between w-full md:w-64 mb-1">
+<span class="font-label-sm text-label-sm text-on-surface-variant">PHASE PROGRESS</span>
+<span class="mono text-primary text-label-md font-bold">92%</span>
+</div>
+<div class="w-full md:w-64 h-2 bg-white/5 rounded-full overflow-hidden">
+<div class="h-full bg-secondary luminous-accent transition-all duration-1000 ease-out" style="width: 92%"></div>
+</div>
+<span class="font-label-sm text-label-sm text-secondary/60 mt-1 uppercase">Phase: Acquisition / Diligence</span>
+</div>
+</div>
+</section>
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+<!-- Section 1: Lender Selection -->
+<div class="lg:col-span-8 space-y-8">
+<section class="space-y-4">
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-primary" data-icon="account_balance">account_balance</span>
+<h3 class="font-headline-md text-headline-md uppercase tracking-tight">Lender Selection</h3>
+</div>
+<div class="glass-panel rounded-xl overflow-hidden">
+<table class="w-full text-left border-collapse">
+<thead>
+<tr class="border-b border-white/10 bg-white/5">
+<th class="p-4 font-label-md text-label-md text-on-surface-variant">LOAN PARAMETERS</th>
+<th class="p-4 font-label-md text-label-md text-primary">PRIMARY OPTION (NEO)</th>
+<th class="p-4 font-label-md text-label-md text-on-surface-variant">ALT OPTION (LEGACY)</th>
+</tr>
+</thead>
+<tbody class="mono text-label-md">
+<tr class="border-b border-white/5 hover:bg-white/5 transition-colors">
+<td class="p-4 text-on-surface-variant">Interest Rate</td>
+<td class="p-4 text-primary font-bold">6.125%</td>
+<td class="p-4">6.450%</td>
+</tr>
+<tr class="border-b border-white/5 hover:bg-white/5 transition-colors">
+<td class="p-4 text-on-surface-variant">Points / Credits</td>
+<td class="p-4 text-primary font-bold">(0.25)</td>
+<td class="p-4">1.00</td>
+</tr>
+<tr class="border-b border-white/5 hover:bg-white/5 transition-colors">
+<td class="p-4 text-on-surface-variant">Lender Fees</td>
+<td class="p-4 text-primary font-bold">$1,450.00</td>
+<td class="p-4">$2,900.00</td>
+</tr>
+<tr class="hover:bg-white/5 transition-colors">
+<td class="p-4 text-on-surface-variant">Monthly P&amp;I</td>
+<td class="p-4 text-primary font-bold">$4,812.10</td>
+<td class="p-4">$5,021.44</td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<!-- Section 2: Diligence Stack -->
+<section class="space-y-4">
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-primary" data-icon="inventory_2">inventory_2</span>
+<h3 class="font-headline-md text-headline-md uppercase tracking-tight">Diligence Stack</h3>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+<!-- HUD-1 -->
+<div class="glass-panel p-5 rounded-xl flex flex-col justify-between hover:border-primary/40 transition-all cursor-default">
+<div class="flex justify-between items-start mb-4">
+<div>
+<p class="font-label-md text-label-md text-on-surface-variant mb-1">HUD-1 Settlement</p>
+<h4 class="font-headline-md text-headline-md">Drafting Ledger</h4>
+</div>
+<span class="bg-primary/20 text-primary px-3 py-1 rounded-full text-[10px] font-bold tracking-widest uppercase">Ready</span>
+</div>
+<a class="flex items-center gap-2 text-primary font-label-sm text-label-sm hover:translate-x-1 transition-transform" href="#">
+<span class="material-symbols-outlined text-sm" data-icon="link">link</span>
+                                CONTACT LAWYER
+                            </a>
+</div>
+<!-- Title Search -->
+<div class="glass-panel p-5 rounded-xl flex flex-col justify-between hover:border-secondary/40 transition-all cursor-default">
+<div class="flex justify-between items-start mb-4">
+<div>
+<p class="font-label-md text-label-md text-on-surface-variant mb-1">Title Search</p>
+<h4 class="font-headline-md text-headline-md">Chain of Custody</h4>
+</div>
+<span class="bg-secondary/20 text-secondary px-3 py-1 rounded-full text-[10px] font-bold tracking-widest uppercase">In Progress</span>
+</div>
+<a class="flex items-center gap-2 text-primary font-label-sm text-label-sm hover:translate-x-1 transition-transform" href="#">
+<span class="material-symbols-outlined text-sm" data-icon="explore">explore</span>
+                                VIEW REPOSITORY
+                            </a>
+</div>
+<!-- Inspection -->
+<div class="glass-panel p-5 rounded-xl flex flex-col justify-between hover:border-primary/40 transition-all cursor-default opacity-80">
+<div class="flex justify-between items-start mb-4">
+<div>
+<p class="font-label-md text-label-md text-on-surface-variant mb-1">General Inspection</p>
+<h4 class="font-headline-md text-headline-md">Structural Report</h4>
+</div>
+<div class="flex items-center gap-1 text-primary">
+<span class="material-symbols-outlined text-sm" data-icon="check_circle">check_circle</span>
+<span class="text-[10px] font-bold tracking-widest uppercase">Done</span>
+</div>
+</div>
+<a class="flex items-center gap-2 text-primary font-label-sm text-label-sm hover:translate-x-1 transition-transform" href="#">
+<span class="material-symbols-outlined text-sm" data-icon="search">search</span>
+                                FIND SURVEYOR
+                            </a>
+</div>
+<!-- Insurance -->
+<div class="glass-panel p-5 rounded-xl flex flex-col justify-between border-error/20 bg-error/5 hover:bg-error/10 transition-all cursor-default">
+<div class="flex justify-between items-start mb-4">
+<div>
+<p class="font-label-md text-label-md text-on-surface-variant mb-1">Insurance Binder</p>
+<h4 class="font-headline-md text-headline-md">Hazard &amp; Liability</h4>
+</div>
+<span class="bg-error-container text-error px-3 py-1 rounded-full text-[10px] font-bold tracking-widest uppercase">Needed</span>
+</div>
+<a class="flex items-center gap-2 text-primary font-label-sm text-label-sm hover:translate-x-1 transition-transform" href="#">
+<span class="material-symbols-outlined text-sm" data-icon="bolt">bolt</span>
+                                GENERATE QUOTES
+                            </a>
+</div>
+</div>
+</section>
+</div>
+<!-- Section 3: Cost Basis (Sidebar) -->
+<aside class="lg:col-span-4">
+<div class="sticky top-24 space-y-6">
+<div class="glass-panel rounded-xl p-6 border-primary/20 bg-primary/5">
+<div class="flex items-center gap-2 mb-6">
+<span class="material-symbols-outlined text-primary" data-icon="calculate">calculate</span>
+<h3 class="font-label-md text-label-md uppercase tracking-widest">Live Cost Basis</h3>
+</div>
+<div class="space-y-4 mb-8">
+<div class="flex justify-between items-end border-b border-white/5 pb-2">
+<span class="font-label-sm text-label-sm text-on-surface-variant uppercase">Property Price</span>
+<span class="mono text-on-surface text-body-lg">$845,000.00</span>
+</div>
+<div class="flex justify-between items-end border-b border-white/5 pb-2">
+<span class="font-label-sm text-label-sm text-on-surface-variant uppercase">Origination Fees</span>
+<span class="mono text-on-surface text-body-lg">$1,450.00</span>
+</div>
+<div class="flex justify-between items-end border-b border-white/5 pb-2">
+<span class="font-label-sm text-label-sm text-on-surface-variant uppercase">Recording Tax</span>
+<span class="mono text-on-surface text-body-lg">$4,225.00</span>
+</div>
+<div class="flex justify-between items-end border-b border-white/5 pb-2">
+<span class="font-label-sm text-label-sm text-on-surface-variant uppercase">Prepaids / Escrows</span>
+<span class="mono text-on-surface text-body-lg">$8,912.44</span>
+</div>
+</div>
+<div class="p-4 bg-white/5 rounded-lg border border-white/10 mb-6">
+<p class="font-label-sm text-label-sm text-primary uppercase mb-2">Total Closing Costs</p>
+<div class="flex items-baseline gap-2">
+<span class="mono text-headline-lg font-bold text-primary">$14,587.44</span>
+<span class="mono text-[10px] text-on-surface-variant">USD</span>
+</div>
+</div>
+<button class="w-full bg-primary text-on-primary font-label-md text-label-md py-4 rounded-xl flex items-center justify-center gap-2 hover:brightness-110 active:scale-95 transition-all shadow-[0_0_20px_-5px_rgba(87,241,219,0.5)] uppercase tracking-widest font-bold">
+<span class="material-symbols-outlined text-lg" data-icon="file_download">file_download</span>
+                            Export Closing Ledger
+                        </button>
+</div>
+<div class="glass-panel rounded-xl p-4 overflow-hidden relative h-48">
+<img alt="Property map" class="absolute inset-0 w-full h-full object-cover opacity-20" data-alt="A high-contrast, dark-mode architectural map of a suburban residential neighborhood. The map features minimalist white outlines of buildings and streets against a deep charcoal background, with a single bright cyan glowing dot indicating the property location at 1248 Oakwood Ave. The style is technical and clean, resembling a premium digital real estate platform." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDDsiyH5sR-hClFXVF-CSiM5DOBWx3TRZk2tGkHUHv1RfE2jtQEchyeT8R2o58hCE0ZAtWo0kSIzzl5k7Jd86LHqCCL6pnEdyoPdfOVL02hWIPn3Ccd2FzJbEXg4vx60nP1wj0FXCouKRhjZheXz7CXKE37aVlbMPYxH6pSH2bK0XV57oIoVq_9LxepJWYQirlnzuecVkyGKhLyQkW3JX1KFo0hFqO5wo5ii-j39MTGd6d3RMRKGdtx2h8s3Tq8ZkNmd1l-Fx7Cq_h-"/>
+<div class="relative z-10 h-full flex flex-col justify-end">
+<p class="font-label-sm text-label-sm text-on-surface-variant uppercase">Project Status</p>
+<h4 class="font-headline-md text-headline-md text-primary">In Final Diligence</h4>
+</div>
+</div>
+</div>
+</aside>
+</div>
+</main>
+</div>
+<script>
+        // Micro-interaction for table rows
+        document.querySelectorAll('tr').forEach(row => {
+            row.addEventListener('click', () => {
+                row.classList.add('scale-[0.99]', 'duration-75');
+                setTimeout(() => row.classList.remove('scale-[0.99]'), 75);
+            });
+        });
+
+        // Mobile drawer toggles
+        const openBtn = document.getElementById('open-drawer');
+        const closeBtn = document.getElementById('close-drawer');
+        const drawer = document.getElementById('mobile-drawer');
+        const overlay = document.getElementById('mobile-overlay');
+
+        function toggleDrawer() {
+            drawer.classList.toggle('open');
+            overlay.classList.toggle('open');
+            document.body.style.overflow = drawer.classList.contains('open') ? 'hidden' : '';
+        }
+
+        if(openBtn) openBtn.addEventListener('click', toggleDrawer);
+        if(closeBtn) closeBtn.addEventListener('click', toggleDrawer);
+        if(overlay) overlay.addEventListener('click', toggleDrawer);
+    </script>
+</body></html>

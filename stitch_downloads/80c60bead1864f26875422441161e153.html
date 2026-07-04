@@ -1,0 +1,398 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>PaperWorking Institutional Team Terminal</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&amp;family=JetBrains+Mono:wght@400;500;700&amp;family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<style>
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background-color: #0b141a;
+            color: #dae4ec;
+        }
+        .mono-system {
+            font-family: 'JetBrains Mono', monospace;
+        }
+        .glass-card {
+            background: linear-gradient(135deg, rgba(24, 33, 39, 0.4), rgba(6, 15, 21, 0.6));
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.05);
+        }
+        .glass-card:hover {
+            border-color: rgba(87, 241, 219, 0.3);
+            background: linear-gradient(135deg, rgba(24, 33, 39, 0.6), rgba(6, 15, 21, 0.8));
+        }
+        .luminous-glow {
+            box-shadow: 0 0 20px -5px rgba(87, 241, 219, 0.4);
+        }
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 4px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: rgba(87, 241, 219, 0.2);
+            border-radius: 10px;
+        }
+    </style>
+<script id="tailwind-config">
+        tailwind.config = {
+          darkMode: "class",
+          theme: {
+            extend: {
+              "colors": {
+                "on-tertiary": "#4b2800",
+                "surface-container": "#182127",
+                "surface-container-low": "#141d23",
+                "on-primary-fixed": "#00201c",
+                "surface-container-lowest": "#060f15",
+                "error-container": "#93000a",
+                "on-tertiary-fixed-variant": "#6b3b00",
+                "on-tertiary-fixed": "#2d1600",
+                "surface-container-high": "#222b32",
+                "background": "#0b141a",
+                "surface-dim": "#0b141a",
+                "tertiary-container": "#ffac5a",
+                "error": "#ffb4ab",
+                "on-error": "#690005",
+                "inverse-primary": "#006b5f",
+                "on-tertiary-container": "#744000",
+                "on-primary-fixed-variant": "#005047",
+                "tertiary": "#ffd1aa",
+                "primary-fixed": "#62fae3",
+                "on-primary-container": "#00574d",
+                "on-background": "#dae4ec",
+                "inverse-surface": "#dae4ec",
+                "surface-container-highest": "#2d363d",
+                "primary-fixed-dim": "#3cddc7",
+                "on-secondary-fixed": "#001a42",
+                "surface-tint": "#3cddc7",
+                "on-secondary": "#002e6a",
+                "surface-variant": "#2d363d",
+                "secondary": "#adc6ff",
+                "primary-container": "#2dd4bf",
+                "on-secondary-fixed-variant": "#004395",
+                "primary": "#57f1db",
+                "outline-variant": "#3c4a46",
+                "on-secondary-container": "#e6ecff",
+                "on-error-container": "#ffdad6",
+                "outline": "#859490",
+                "surface-bright": "#313a41",
+                "secondary-fixed": "#d8e2ff",
+                "surface": "#0b141a",
+                "tertiary-fixed": "#ffdcc0",
+                "secondary-fixed-dim": "#adc6ff",
+                "on-surface-variant": "#bacac5",
+                "on-surface": "#dae4ec",
+                "on-primary": "#003731",
+                "secondary-container": "#0566d9",
+                "inverse-on-surface": "#293238",
+                "tertiary-fixed-dim": "#ffb875"
+              },
+              "fontFamily": {
+                "body-lg": ["Plus Jakarta Sans"],
+                "headline-md": ["Plus Jakarta Sans"],
+                "label-sm": ["Plus Jakarta Sans"],
+                "label-md": ["Plus Jakarta Sans"],
+              },
+              "fontSize": {
+                "body-lg": ["18px", {"lineHeight": "28px", "fontWeight": "400"}],
+                "headline-md": ["24px", {"lineHeight": "32px", "fontWeight": "600"}],
+                "label-sm": ["12px", {"lineHeight": "14px", "letterSpacing": "0.05em", "fontWeight": "500"}],
+                "label-md": ["14px", {"lineHeight": "16px", "letterSpacing": "0.02em", "fontWeight": "600"}],
+              }
+            }
+          }
+        }
+    </script>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+</head>
+<body class="bg-background text-on-surface selection:bg-primary/30 selection:text-primary min-h-screen pb-24 lg:pb-0">
+<!-- TopAppBar -->
+<header class="bg-surface-container/80 backdrop-blur-xl docked full-width top-0 sticky z-40 border-b border-white/10 shadow-[0_0_15px_rgba(87,241,219,0.1)]">
+<div class="flex justify-between items-center px-gutter-desktop w-full max-w-container-max mx-auto h-16">
+<div class="flex items-center gap-4">
+<img alt="PaperWorking Logo" class="w-8 h-8 object-contain" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBCcMx3ZbsyqTJGJPoNiwzWr5MfsLZr5imJ1GjwcvPT6IPw3DyFxnYFEv_hH3FueMuAkR2sEd1BsGaO1-X-R2bvJ_-APm6OiaqkSc4B96NYlLMH_11xb4G6abw7gtmaayMr1DMa_pYYQ0uuWbaK2Ms4STOyl9XR93Ned9tIn8ccY7wX8-NooK-3Q5HG4CEVrV4u_TmH7Mh-BjKY6HhnlcZECbo4PVoKFuG4WPrIFQI9S5MtElQJTI5nD9_ksDtPXcAIB8jlPqjTve4s"/>
+<span class="font-display text-headline-md tracking-widest uppercase">
+<span class="font-semibold text-primary">PAPER</span><span class="font-thin text-primary/80">WORKING</span> <span class="text-primary">&gt;_</span>
+</span>
+</div>
+<nav class="hidden md:flex items-center gap-8">
+<a class="font-label-md text-label-md text-primary font-bold transition-colors" href="#">Team</a>
+<a class="font-label-md text-label-md text-on-surface-variant hover:text-primary transition-colors" href="#">System Logs</a>
+<a class="font-label-md text-label-md text-on-surface-variant hover:text-primary transition-colors" href="#">Audit Trail</a>
+</nav>
+<div class="flex items-center gap-4">
+<div class="hidden sm:block text-right">
+<p class="font-label-md text-label-md text-on-surface leading-tight">Admin_Root</p>
+<p class="font-label-sm text-label-sm text-primary uppercase tracking-tighter">Authorized</p>
+</div>
+<img alt="User profile avatar" class="w-10 h-10 rounded-full border border-primary/30 shadow-sm object-cover" data-alt="A professional close-up portrait of a tech executive in a dark studio. The lighting is dramatic with cool blue and teal highlights catching the side of his face. He is wearing a dark, high-quality knit sweater, embodying a sophisticated, modern industrial aesthetic. The background is a deep, textured charcoal grey." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBUpjQ6eEIEHjGkGYOfsvDQT90jSScmi7KhT1rrvbE4iXwV3qmqM6SugoakX_cl0yiuw1-V4iCiXY7DwE7LVnpvddKwzscS_jXVUFD89aN6ji75a-oKduNyQd3m6zSwPe-Nh_TUAiGXbG0tXJ_jmwvWop91arHvJ0jsE57ENVvrgZOLC2XLDj9zcUkj1V6bK-P8SWDbEZkeP20c30eFGaEHzS40aRCCoj-FGK9RHVG_vnjrt9vFyPxZYOmWllyvaI5_Qe8uZ9XmmkS2"/>
+</div>
+</div>
+</header>
+<main class="max-w-container-max mx-auto px-gutter-desktop py-stack-lg">
+<!-- Control Header -->
+<section class="flex flex-col md:flex-row justify-between items-start md:items-center gap-stack-md mb-stack-lg">
+<div class="w-full max-w-xl relative">
+<span class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-on-surface-variant" data-icon="search">search</span>
+<input class="w-full bg-surface-container-low border border-white/10 rounded-xl pl-12 pr-4 py-3 text-body-md focus:outline-none focus:border-primary/50 focus:ring-1 focus:ring-primary/20 transition-all placeholder:text-on-surface-variant/50" placeholder="Search team by name, role, or ID..." type="text"/>
+</div>
+<div class="flex items-center gap-4 w-full md:w-auto">
+<div class="mono-system text-[10px] text-on-surface-variant uppercase tracking-widest hidden lg:block bg-surface-container-high px-3 py-1 rounded-full border border-white/5">
+                    Node: <span class="text-primary">US-EAST-01</span> Status: <span class="text-primary">Stable</span>
+</div>
+<button class="bg-primary text-on-primary font-label-md text-label-md px-6 py-3 rounded-xl flex items-center gap-2 luminous-glow hover:scale-105 active:scale-95 transition-all w-full md:w-auto justify-center">
+<span class="material-symbols-outlined" data-icon="person_add">person_add</span>
+                    Invite Member
+                </button>
+</div>
+</section>
+<!-- Team List Terminal -->
+<div class="flex flex-col gap-4">
+<!-- Table Header (Desktop Only) -->
+<div class="hidden md:grid grid-cols-12 gap-4 px-6 py-2 text-on-surface-variant font-label-sm uppercase tracking-widest mono-system border-b border-white/5">
+<div class="col-span-4">Operator Entity</div>
+<div class="col-span-2">Permission Tier</div>
+<div class="col-span-4">Access Scope</div>
+<div class="col-span-2 text-right">Terminal Ops</div>
+</div>
+<!-- Member Cards -->
+<div class="flex flex-col gap-3">
+<!-- Row 1: Admin -->
+<div class="glass-card rounded-xl p-4 md:px-6 md:py-4 transition-all duration-300 grid grid-cols-1 md:grid-cols-12 gap-4 items-center">
+<div class="col-span-4 flex items-center gap-4">
+<img alt="Member Avatar" class="w-12 h-12 rounded-lg object-cover border border-white/10" data-alt="A crisp, high-detail portrait of a middle-aged male executive against a dark, minimal background. Soft teal rim lighting illuminates his professional attire. The image is clean and sharp, following a high-end corporate aesthetic with a futuristic tech-inspired atmosphere." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBPsY7oLwdVrYzMayNXbY-Kgbe_we4fOJLfnH39WssijVBTq1Li9V-E2HgpBc9Tfiral_TVdY_1TqtxX_pXQ7y4WzmVGohtss8ZKL8aYehUSVKj64tbFrual_fyCZfUGVmPSsWHFA9gPwZgDhs6Hm2r8d0MfA-hbWcQZbl9RnPRluvBvR-wCZLpdeGQ1CRH3cJ57PKC9xZmVfbEt-cajqnFIkVV03u376HoNiL1Wp343HXejIJu8qtwImqRbgsj3V-ZFr2J9w4nS8AI"/>
+<div>
+<h3 class="font-label-md text-label-md text-on-surface">Alex Chen</h3>
+<p class="mono-system text-[11px] text-primary/70 uppercase">UID: PW-001-ALPHA</p>
+</div>
+</div>
+<div class="col-span-2">
+<span class="mono-system text-[12px] bg-primary/10 text-primary px-2 py-1 rounded border border-primary/20">Administrator</span>
+</div>
+<div class="col-span-4">
+<div class="flex flex-wrap gap-2">
+<span class="text-[11px] bg-white/5 px-2 py-0.5 rounded text-on-surface-variant border border-white/10">All Projects</span>
+<span class="text-[11px] bg-white/5 px-2 py-0.5 rounded text-on-surface-variant border border-white/10">Global Ledger</span>
+</div>
+</div>
+<div class="col-span-2 flex justify-end items-center gap-3">
+<div class="flex items-center gap-2 bg-surface-container p-1 rounded-lg border border-white/5">
+<button class="p-1 hover:text-primary transition-colors text-on-surface-variant" title="Edit Permissions">
+<span class="material-symbols-outlined text-[18px]" data-icon="settings_suggest">settings_suggest</span>
+</button>
+<button class="p-1 hover:text-primary transition-colors text-on-surface-variant" title="View Activity">
+<span class="material-symbols-outlined text-[18px]" data-icon="history">history</span>
+</button>
+</div>
+</div>
+</div>
+<!-- Row 2: Analyst -->
+<div class="glass-card rounded-xl p-4 md:px-6 md:py-4 transition-all duration-300 grid grid-cols-1 md:grid-cols-12 gap-4 items-center">
+<div class="col-span-4 flex items-center gap-4">
+<img alt="Member Avatar" class="w-12 h-12 rounded-lg object-cover border border-white/10" data-alt="Close-up headshot of a focused female professional in a tech environment. Her face is softly lit by the glow of a computer screen, creating a cool teal and slate color palette. The background is a bokeh-blurred server room or modern office, maintaining a sophisticated, institutional-grade visual feel." src="https://lh3.googleusercontent.com/aida-public/AB6AXuD9HOPtLSgw3kRf2W5UkIlhZ6LZ5bh0R4wsFnbo7RmoKzOmt1_0PZ6NZ9l0rp7tPSvLfJQ5zBwPoJR0ydD2QONWnfKtpycg34kJstrsqImNQZFKFbfn1WvR_IbU8gvGGAL1yfZ6bmtkTQcbABb-NyjT_d1j1MpydePzrgPwQiyCDkemt4Mv2yc5UqeDUYNvwB8n3AjDhthplvouXBEz-zS5VXr4Au6osl1mSLPJfRUYOQLdqqdfHir5sFYMk8sbUZmKn_Fu5XwVluxQ"/>
+<div>
+<h3 class="font-label-md text-label-md text-on-surface">Sarah Jenkins</h3>
+<p class="mono-system text-[11px] text-on-surface-variant uppercase">UID: PW-429-BETA</p>
+</div>
+</div>
+<div class="col-span-2">
+<span class="mono-system text-[12px] bg-secondary/10 text-secondary px-2 py-1 rounded border border-secondary/20">Senior Analyst</span>
+</div>
+<div class="col-span-4">
+<div class="flex flex-wrap gap-2">
+<span class="text-[11px] bg-white/5 px-2 py-0.5 rounded text-on-surface-variant border border-white/10">1248 Oakwood Ave</span>
+<span class="text-[11px] bg-white/5 px-2 py-0.5 rounded text-on-surface-variant border border-white/10">Terminal_Dev</span>
+</div>
+</div>
+<div class="col-span-2 flex justify-end items-center gap-3">
+<div class="flex items-center gap-2 bg-surface-container p-1 rounded-lg border border-white/5">
+<button class="p-1 hover:text-primary transition-colors text-on-surface-variant">
+<span class="material-symbols-outlined text-[18px]" data-icon="edit">edit</span>
+</button>
+<div class="w-[1px] h-4 bg-white/10"></div>
+<label class="relative inline-flex items-center cursor-pointer px-1">
+<input checked="" class="sr-only peer" type="checkbox"/>
+<div class="w-8 h-4 bg-surface-container-highest rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[4px] after:left-[6px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-3 after:w-3 after:transition-all peer-checked:bg-primary"></div>
+</label>
+</div>
+</div>
+</div>
+<!-- Row 3: CPA -->
+<div class="glass-card rounded-xl p-4 md:px-6 md:py-4 transition-all duration-300 grid grid-cols-1 md:grid-cols-12 gap-4 items-center">
+<div class="col-span-4 flex items-center gap-4">
+<img alt="Member Avatar" class="w-12 h-12 rounded-lg object-cover border border-white/10" data-alt="A formal portrait of a male accountant in a sharp, dark suit. The atmosphere is clinical and professional, with a deep indigo and black color scheme. Soft, diffuse lighting creates a professional ambiance. The focus is sharp on the subject, representing high-stakes institutional management." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCLuwGPgmUpdZLJpCVbKVE1kijpZsbVowF4VLU7JamU5JDIdtKPqXyGI__5QCyX7oXy29FsuLaaFVm_Tn2YDQoa6GvOedYMl4BgQglZ-9qdGvLHvagu6tHy8oxBGymK99Sc7sPDXcazN3aERVAsqgBTv1cQnj80uxZFZ9Zt3r_OoACyewzCnPeBT4OeoGTyTYEAY6pSDxMe_40SnrLBXQy5oAMP8ON3jm9jWTpPhmngSrd3o02mbjXsujSt_HQNapFUBlOhaouUCgTq"/>
+<div>
+<h3 class="font-label-md text-label-md text-on-surface">Marcus Thorne</h3>
+<p class="mono-system text-[11px] text-on-surface-variant uppercase">UID: PW-102-SIGMA</p>
+</div>
+</div>
+<div class="col-span-2">
+<span class="mono-system text-[12px] bg-on-surface-variant/10 text-on-surface-variant px-2 py-1 rounded border border-white/10">Accountant/CPA</span>
+</div>
+<div class="col-span-4">
+<div class="flex flex-wrap gap-2">
+<span class="text-[11px] bg-white/5 px-2 py-0.5 rounded text-on-surface-variant border border-white/10">Tax Portals</span>
+<span class="text-[11px] bg-white/5 px-2 py-0.5 rounded text-on-surface-variant border border-white/10">Payroll_SEC_01</span>
+</div>
+</div>
+<div class="col-span-2 flex justify-end items-center gap-3">
+<div class="flex items-center gap-2 bg-surface-container p-1 rounded-lg border border-white/5">
+<button class="p-1 hover:text-primary transition-colors text-on-surface-variant">
+<span class="material-symbols-outlined text-[18px]" data-icon="edit">edit</span>
+</button>
+<div class="w-[1px] h-4 bg-white/10"></div>
+<label class="relative inline-flex items-center cursor-pointer px-1">
+<input class="sr-only peer" type="checkbox"/>
+<div class="w-8 h-4 bg-surface-container-highest rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[4px] after:left-[6px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-3 after:w-3 after:transition-all peer-checked:bg-primary"></div>
+</label>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Terminal System Status -->
+<footer class="mt-stack-lg border-t border-white/5 pt-6 hidden lg:block">
+<div class="grid grid-cols-4 gap-stack-md">
+<div class="glass-card p-3 rounded-lg border-white/5">
+<p class="mono-system text-[10px] uppercase text-on-surface-variant">Session Key</p>
+<p class="mono-system text-[12px] text-primary truncate">A9-F2-B4-E1-00-XX-YY-ZZ</p>
+</div>
+<div class="glass-card p-3 rounded-lg border-white/5">
+<p class="mono-system text-[10px] uppercase text-on-surface-variant">Active Instances</p>
+<p class="mono-system text-[12px] text-primary">12 Operators Online</p>
+</div>
+<div class="glass-card p-3 rounded-lg border-white/5">
+<p class="mono-system text-[10px] uppercase text-on-surface-variant">Data Sovereignty</p>
+<p class="mono-system text-[12px] text-primary">AES-256 E2EE Enabled</p>
+</div>
+<div class="glass-card p-3 rounded-lg border-white/5">
+<p class="mono-system text-[10px] uppercase text-on-surface-variant">Last Audit</p>
+<p class="mono-system text-[12px] text-primary">2023.10.27 14:02:11</p>
+</div>
+</div>
+</footer>
+</main>
+<!-- NavigationDrawer (Left Side Mobile Sidebar) -->
+<div class="h-full w-80 fixed left-0 top-0 bg-[#060f15] border-r border-white/10 z-[60] shadow-2xl transform -translate-x-full transition-transform duration-300 ease-out flex flex-col" id="navDrawer">
+<div class="p-6 flex items-center gap-3 border-b border-white/5">
+<img alt="PaperWorking Logo" class="w-8 h-8 object-contain" src="https://lh3.googleusercontent.com/aida/ADBb0ujB11RINnO37eguYGhIYpmIPAnTVU2w2hXc8JT5s9yE2JkLGtLf1yyAVUeHFN8bejMiEIPTzZYB16Ug9Ouv-A15avJCL3eA8BLUwYqi06Yqn1gVHcBoaN1IA4IAQH9YcSf57PFBQ-B6I2dgCJR3GSrgiLfEqkS6ULsGfsLW88XMTfHGqBD1tisaHO1W_zdq7IxSBt5sYUnlYRgKdg8Lr5DQ5R0wRRSeVYd5BUqD3xHTFP7WuHiIH2aZxWqN"/>
+<span class="font-display font-bold text-headline-md text-primary tracking-wide">PaperWorking</span>
+<button class="ml-auto text-on-surface hover:text-primary md:hidden" onclick="toggleDrawer()">
+<span class="material-symbols-outlined" data-icon="close">close</span>
+</button>
+</div>
+<div class="flex-1 overflow-y-auto custom-scrollbar px-4 py-4 flex flex-col gap-1">
+<!-- Primary Group -->
+<a class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-on-surface-variant hover:bg-white/5 hover:text-primary transition-all group" href="#">
+<span class="material-symbols-outlined text-[20px]" data-icon="pie_chart">pie_chart</span>
+<span class="font-label-md text-label-md">Portfolio</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-on-surface-variant hover:bg-white/5 hover:text-primary transition-all group" href="#">
+<span class="material-symbols-outlined text-[20px]" data-icon="domain">domain</span>
+<span class="font-label-md text-label-md">Projects</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-on-surface-variant hover:bg-white/5 hover:text-primary transition-all group" href="#">
+<span class="material-symbols-outlined text-[20px]" data-icon="folder_open">folder_open</span>
+<span class="font-label-md text-label-md">Data Room</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-on-surface-variant hover:bg-white/5 hover:text-primary transition-all group" href="#">
+<span class="material-symbols-outlined text-[20px]" data-icon="inbox">inbox</span>
+<span class="font-label-md text-label-md">Inbox</span>
+<span class="ml-auto bg-primary text-on-primary text-[10px] font-bold px-2 py-0.5 rounded-full">3</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2.5 rounded-lg bg-primary/10 text-primary transition-all group border border-primary/20 shadow-[inset_0_1px_1px_rgba(255,255,255,0.05)]" href="#">
+<span class="material-symbols-outlined text-[20px]" data-icon="group">group</span>
+<span class="font-label-md text-label-md">Team</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-on-surface-variant hover:bg-white/5 hover:text-primary transition-all group" href="#">
+<span class="material-symbols-outlined text-[20px]" data-icon="bar_chart">bar_chart</span>
+<span class="font-label-md text-label-md">Reports</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-on-surface-variant hover:bg-white/5 hover:text-primary transition-all group" href="#">
+<span class="material-symbols-outlined text-[20px]" data-icon="analytics">analytics</span>
+<span class="font-label-md text-label-md">Deal Analyzer</span>
+</a>
+<!-- Divider -->
+<div class="mt-6 mb-2 px-3">
+<span class="text-[10px] uppercase tracking-wider text-on-surface-variant/50 font-bold font-label-sm">Account</span>
+</div>
+<!-- Account Group -->
+<a class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-on-surface-variant hover:bg-white/5 hover:text-primary transition-all group" href="#">
+<span class="material-symbols-outlined text-[20px]" data-icon="person">person</span>
+<span class="font-label-md text-label-md">Profile</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-on-surface-variant hover:bg-white/5 hover:text-primary transition-all group" href="#">
+<span class="material-symbols-outlined text-[20px]" data-icon="receipt_long">receipt_long</span>
+<span class="font-label-md text-label-md">Billing</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-on-surface-variant hover:bg-white/5 hover:text-primary transition-all group" href="#">
+<span class="material-symbols-outlined text-[20px]" data-icon="settings">settings</span>
+<span class="font-label-md text-label-md">Settings</span>
+</a>
+</div>
+<!-- Bottom Workspace -->
+<div class="p-4 border-t border-white/10 bg-surface-container/30">
+<div class="flex items-center justify-between bg-white/5 border border-white/10 rounded-lg p-3 cursor-pointer hover:bg-white/10 transition-colors">
+<div class="flex items-center gap-3">
+<div class="w-8 h-8 rounded bg-primary/20 text-primary flex items-center justify-center font-bold text-label-md border border-primary/30">
+        TA
+      </div>
+<div class="flex flex-col">
+<span class="text-[10px] text-on-surface-variant uppercase">Acting as</span>
+<span class="font-label-md text-label-sm text-on-surface">Team Account</span>
+</div>
+</div>
+<span class="material-symbols-outlined text-on-surface-variant text-[18px]" data-icon="unfold_more">unfold_more</span>
+</div>
+</div>
+</div>
+<!-- BottomNavBar (Mobile Only) -->
+<nav class="md:hidden fixed bottom-0 left-0 w-full flex justify-around items-center px-4 py-2 bg-surface-container-lowest/90 backdrop-blur-2xl border-t border-white/10 z-50 rounded-t-xl shadow-[0_-4px_20px_rgba(0,0,0,0.4)]">
+<a class="flex flex-col items-center justify-center text-on-surface-variant p-2 hover:text-primary transition-all active:scale-90 duration-150" href="#">
+<span class="material-symbols-outlined" data-icon="pie_chart">pie_chart</span>
+<span class="font-label-sm text-label-sm uppercase mt-1">Portfolio</span>
+</a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant p-2 hover:text-primary transition-all active:scale-90 duration-150" href="#">
+<span class="material-symbols-outlined" data-icon="domain">domain</span>
+<span class="font-label-sm text-label-sm uppercase mt-1">Projects</span>
+</a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant p-2 hover:text-primary transition-all active:scale-90 duration-150" href="#">
+<span class="material-symbols-outlined" data-icon="folder_open">folder_open</span>
+<span class="font-label-sm text-label-sm uppercase mt-1">Data Room</span>
+</a>
+<button class="flex flex-col items-center justify-center text-on-surface-variant p-2 hover:text-primary transition-all active:scale-90 duration-150" onclick="toggleDrawer()">
+<span class="material-symbols-outlined" data-icon="menu">menu</span>
+<span class="font-label-sm text-label-sm uppercase mt-1">Menu</span>
+</button>
+</nav>
+<script>
+        function toggleDrawer() {
+            const drawer = document.getElementById('navDrawer');
+            if (drawer.style.transform === 'translateX(0px)') {
+                drawer.style.transform = 'translateX(-100%)';
+            } else {
+                drawer.style.transform = 'translateX(0px)';
+            }
+        }
+
+        // Close drawer when clicking outside
+        document.addEventListener('click', (e) => {
+            const drawer = document.getElementById('navDrawer');
+            const menuBtn = e.target.closest('button');
+            if (!drawer.contains(e.target) && !menuBtn && drawer.style.transform === 'translateX(0px)') {
+                drawer.style.transform = 'translateX(-100%)';
+            }
+        });
+    </script>
+</body></html>

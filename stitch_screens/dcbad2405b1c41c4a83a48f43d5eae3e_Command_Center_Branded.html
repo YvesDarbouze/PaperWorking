@@ -1,0 +1,404 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0, viewport-fit=cover" name="viewport"/>
+<title>PaperWorking | Command Center</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&amp;family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .glass-card {
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.03) 0%, rgba(255, 255, 255, 0) 100%);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+        }
+        .luminous-glow {
+            box-shadow: 0 0 15px -3px rgba(45, 212, 191, 0.3);
+        }
+        .hide-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        .hide-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+        body {
+            background-color: #060f15;
+            color: #dae4ec;
+        }
+    </style>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "surface-variant": "#2d363d",
+                        "primary-fixed-dim": "#3cddc7",
+                        "on-primary-fixed-variant": "#005047",
+                        "secondary": "#adc6ff",
+                        "on-error-container": "#ffdad6",
+                        "tertiary-fixed": "#e6ecff",
+                        "tertiary": "#bacac5",
+                        "on-surface-variant": "#bacac5",
+                        "on-secondary-fixed-variant": "#004395",
+                        "surface-bright": "#313a41",
+                        "background": "#060f15",
+                        "on-secondary-container": "#e6ecff",
+                        "on-primary-container": "#00574d",
+                        "outline": "#859490",
+                        "surface-container-lowest": "#060f15",
+                        "surface": "#0b141a",
+                        "surface-dim": "#0b141a",
+                        "secondary-container": "#0566d9",
+                        "on-tertiary-fixed": "#001a42",
+                        "on-error": "#690005",
+                        "outline-variant": "#3c4a46",
+                        "on-tertiary-container": "#00201c",
+                        "error": "#ffb4ab",
+                        "surface-container-low": "#141d23",
+                        "on-primary": "#003731",
+                        "surface-container-highest": "#2d363d",
+                        "surface-tint": "#3cddc7",
+                        "surface-container": "#182127",
+                        "on-background": "#dae4ec",
+                        "on-secondary-fixed": "#001a42",
+                        "on-surface": "#dae4ec",
+                        "tertiary-fixed-dim": "#adc6ff",
+                        "inverse-surface": "#dae4ec",
+                        "on-tertiary": "#003731",
+                        "primary": "#2dd4bf",
+                        "error-container": "#93000a",
+                        "surface-container-high": "#222b32",
+                        "secondary-fixed": "#d8e2ff",
+                        "inverse-on-surface": "#293238",
+                        "on-primary-fixed": "#00201c",
+                        "primary-container": "#2dd4bf",
+                        "on-secondary": "#002e6a",
+                        "on-tertiary-fixed-variant": "#005047",
+                        "inverse-primary": "#006b5f",
+                        "tertiary-container": "#2dd4bf",
+                        "secondary-fixed-dim": "#adc6ff",
+                        "primary-fixed": "#62fae3"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "gutter-mobile": "16px",
+                        "gutter-desktop": "24px",
+                        "stack-lg": "32px",
+                        "margin-desktop": "40px",
+                        "container-max": "1280px",
+                        "unit": "8px",
+                        "stack-sm": "8px",
+                        "stack-md": "16px",
+                        "margin-mobile": "20px"
+                    },
+                    "fontFamily": {
+                        "headline-md": ["Plus Jakarta Sans"],
+                        "label-sm": ["Plus Jakarta Sans"],
+                        "body-sm": ["Plus Jakarta Sans"],
+                        "body-md": ["Plus Jakarta Sans"],
+                        "headline-lg": ["Plus Jakarta Sans"],
+                        "body-lg": ["Plus Jakarta Sans"],
+                        "label-md": ["Plus Jakarta Sans"],
+                        "headline-lg-mobile": ["Plus Jakarta Sans"],
+                        "headline-xl": ["Plus Jakarta Sans"]
+                    },
+                    "fontSize": {
+                        "headline-md": ["24px", {"lineHeight": "32px", "fontWeight": "600"}],
+                        "label-sm": ["12px", {"lineHeight": "14px", "letterSpacing": "0.05em", "fontWeight": "500"}],
+                        "body-sm": ["14px", {"lineHeight": "20px", "fontWeight": "400"}],
+                        "body-md": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+                        "headline-lg": ["32px", {"lineHeight": "40px", "letterSpacing": "-0.01em", "fontWeight": "700"}],
+                        "body-lg": ["18px", {"lineHeight": "28px", "fontWeight": "400"}],
+                        "label-md": ["14px", {"lineHeight": "16px", "letterSpacing": "0.02em", "fontWeight": "600"}],
+                        "headline-lg-mobile": ["28px", {"lineHeight": "36px", "fontWeight": "700"}],
+                        "headline-xl": ["48px", {"lineHeight": "56px", "letterSpacing": "-0.02em", "fontWeight": "700"}]
+                    }
+                },
+            },
+        }
+    </script>
+</head>
+<body class="font-body-md text-on-surface selection:bg-primary/30">
+<!-- 1. TopAppBar -->
+<header class="fixed top-0 w-full z-50 bg-surface-container-lowest/80 backdrop-blur-xl border-b border-white/5 flex justify-between items-center px-gutter-mobile h-16">
+<div class="flex items-center gap-2">
+<img alt="PaperWorking Logo" class="w-8 h-8" src="https://lh3.googleusercontent.com/aida/ADBb0ujudTitz8Bv66g6ir0MNl5p-kxIGB0rCFNG0a0Yv1hJGTm832QinDG-7KIjy_4vpVRrRDGEICYXp2lV-NmXet5QQMVQodBy5C41w9OSjiJXbfgySZXBESLgk_4qqRm_4N3i5OyFpwiGvnzE0nSXWJ6MTCgX1O9v1IARTpJODZbpiLqaY1PDzoU9sHdrKKJCR-uBvFejraSGiK9jx1O_odjqRi5Dp3UkDNNUY6OihAK4mmO_oaHjfYuYuG9I"/>
+<span class="font-headline-md text-headline-md font-extrabold text-primary tracking-tighter font-['Plus_Jakarta_Sans']">PaperWorking</span>
+</div>
+<div class="flex items-center gap-4">
+<span class="material-symbols-outlined text-on-surface-variant" data-icon="search">search</span>
+<div class="w-8 h-8 rounded-lg border border-primary/20 bg-surface-container overflow-hidden">
+<img alt="Profile" class="w-full h-full object-cover grayscale contrast-125" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBvmn3X6gqmme_cOLErZxrY_quCkV09dI5tBh1tNia7t1TLxu1zGksP533i940kxiwTf2t7q0hUOOjxkbNFQfc-b4u1h2-qqC_0jDV-8MG7FAKjSARSibWywnupzrDeUF2XT_VxdRLtlRHwuLltavn63_KNxeDPCXcdwAp57ShiH7iTDdvmATXfjCehT6ycplRX5m7mNEj2p9IJwJ36E9T9pSjubkBODvRvw3s_rUrzKO5HwfL_ZfER6BDOD9eKHnKSc4r8ALF5BECO"/>
+</div>
+</div>
+</header>
+<main class="pt-20 pb-28 px-gutter-mobile space-y-6 max-w-container-max mx-auto">
+<!-- 2. Control Row & Quick Actions -->
+<section class="space-y-4">
+<div class="flex flex-col gap-4">
+<div class="flex justify-between items-center gap-3">
+<div class="flex-1 glass-card p-1 rounded-lg flex items-center h-10">
+<button class="flex-1 h-full rounded-md font-label-md text-label-md bg-primary text-on-primary font-bold">Property</button>
+<button class="flex-1 h-full rounded-md font-label-md text-label-md text-on-surface-variant">My Share</button>
+</div>
+<div class="flex-1 glass-card p-1 rounded-lg flex items-center h-10 overflow-hidden">
+<button class="flex-1 h-full font-label-sm text-[10px] text-on-surface-variant">M</button>
+<button class="flex-1 h-full font-label-sm text-[10px] text-on-surface-variant">Q</button>
+<button class="flex-1 h-full rounded-md bg-white/10 text-primary font-bold text-[10px]">Y</button>
+<button class="flex-1 h-full font-label-sm text-[10px] text-on-surface-variant">ALL</button>
+</div>
+</div>
+<div class="grid grid-cols-3 gap-2">
+<button class="h-10 glass-card rounded-lg flex items-center justify-center gap-2 text-primary active:scale-95 transition-transform text-[11px] font-bold uppercase tracking-wider">
+<span class="material-symbols-outlined text-sm" data-icon="add_circle">add_circle</span>
+                    Create
+                </button>
+<button class="h-10 glass-card rounded-lg flex items-center justify-center gap-2 text-primary active:scale-95 transition-transform text-[11px] font-bold uppercase tracking-wider">
+<span class="material-symbols-outlined text-sm" data-icon="sell">sell</span>
+                    Post Deal
+                </button>
+<button class="h-10 glass-card rounded-lg flex items-center justify-center gap-2 text-primary active:scale-95 transition-transform text-[11px] font-bold uppercase tracking-wider">
+<span class="material-symbols-outlined text-sm" data-icon="person_search">person_search</span>
+                    Vendor
+                </button>
+</div>
+</div>
+</section>
+<!-- 3. Metric Strip (Horizontal Grid/Scroll) -->
+<section class="overflow-x-auto hide-scrollbar -mx-gutter-mobile px-gutter-mobile">
+<div class="flex gap-3 w-max">
+<!-- 11 Metric Cards -->
+<div class="w-32 glass-card p-3 rounded-xl flex flex-col justify-between relative overflow-hidden border-b-2 border-primary/50">
+<span class="font-label-sm text-[10px] text-on-surface-variant block mb-1">NOI</span>
+<span class="font-headline-md text-headline-md text-primary font-bold">$42.8k</span>
+<div class="mt-2 h-4 w-full flex items-end gap-0.5 opacity-40">
+<div class="h-1 w-full bg-primary"></div><div class="h-2 w-full bg-primary"></div><div class="h-3 w-full bg-primary"></div><div class="h-4 w-full bg-primary"></div>
+</div>
+</div>
+<div class="w-32 glass-card p-3 rounded-xl flex flex-col justify-between relative overflow-hidden border-b-2 border-primary/50">
+<span class="font-label-sm text-[10px] text-on-surface-variant block mb-1">Cash Flow</span>
+<span class="font-headline-md text-headline-md text-primary font-bold">$12.1k</span>
+<div class="mt-2 h-4 w-full flex items-center opacity-40">
+<div class="w-full h-[1px] bg-primary"></div>
+</div>
+</div>
+<div class="w-32 glass-card p-3 rounded-xl flex flex-col justify-between relative overflow-hidden border-b-2 border-primary/50">
+<span class="font-label-sm text-[10px] text-on-surface-variant block mb-1">Cap Rate</span>
+<span class="font-headline-md text-headline-md text-primary font-bold">6.4%</span>
+<div class="mt-2 h-4 w-full bg-primary/5 rounded border border-primary/20"></div>
+</div>
+<div class="w-32 glass-card p-3 rounded-xl flex flex-col justify-between relative overflow-hidden border-b-2 border-error/50">
+<span class="font-label-sm text-[10px] text-on-surface-variant block mb-1">CoC</span>
+<span class="font-headline-md text-headline-md text-on-background font-bold">8.2%</span>
+<div class="mt-2 h-4 w-full bg-error/10 rounded border border-error/20"></div>
+</div>
+<div class="w-32 glass-card p-3 rounded-xl flex flex-col justify-between relative overflow-hidden border-b-2 border-primary/50">
+<span class="font-label-sm text-[10px] text-on-surface-variant block mb-1">GRM</span>
+<span class="font-headline-md text-headline-md text-primary font-bold">12.5</span>
+<div class="mt-2 h-4 w-full bg-primary/5 rounded"></div>
+</div>
+<div class="w-32 glass-card p-3 rounded-xl flex flex-col justify-between relative overflow-hidden border-b-2 border-primary/50">
+<span class="font-label-sm text-[10px] text-on-surface-variant block mb-1">DSCR</span>
+<span class="font-headline-md text-headline-md text-primary font-bold">1.45</span>
+<div class="mt-2 h-4 w-full bg-primary/5 rounded"></div>
+</div>
+<div class="w-32 glass-card p-3 rounded-xl flex flex-col justify-between relative overflow-hidden border-b-2 border-primary/50">
+<span class="font-label-sm text-[10px] text-on-surface-variant block mb-1">IRR</span>
+<span class="font-headline-md text-headline-md text-primary font-bold">18.2%</span>
+<div class="mt-2 h-4 w-full bg-primary/5 rounded"></div>
+</div>
+<div class="w-32 glass-card p-3 rounded-xl flex flex-col justify-between relative overflow-hidden border-b-2 border-error/50">
+<span class="font-label-sm text-[10px] text-on-surface-variant block mb-1">Occupancy</span>
+<span class="font-headline-md text-headline-md text-on-background font-bold">94%</span>
+<div class="mt-2 h-4 w-full bg-error/10 rounded"></div>
+</div>
+<div class="w-32 glass-card p-3 rounded-xl flex flex-col justify-between relative overflow-hidden border-b-2 border-primary/50">
+<span class="font-label-sm text-[10px] text-on-surface-variant block mb-1">Exp Ratio</span>
+<span class="font-headline-md text-headline-md text-primary font-bold">32%</span>
+<div class="mt-2 h-4 w-full bg-primary/5 rounded"></div>
+</div>
+<div class="w-32 glass-card p-3 rounded-xl flex flex-col justify-between relative overflow-hidden border-b-2 border-primary/50">
+<span class="font-label-sm text-[10px] text-on-surface-variant block mb-1">Appreciation</span>
+<span class="font-headline-md text-headline-md text-primary font-bold">5.2%</span>
+<div class="mt-2 h-4 w-full bg-primary/5 rounded"></div>
+</div>
+<div class="w-32 glass-card p-3 rounded-xl flex flex-col justify-between relative overflow-hidden border-b-2 border-primary/50">
+<span class="font-label-sm text-[10px] text-on-surface-variant block mb-1">Cap Raised</span>
+<span class="font-headline-md text-headline-md text-primary font-bold">$2.4M</span>
+<div class="mt-2 h-4 w-full bg-primary/5 rounded"></div>
+</div>
+</div>
+</section>
+<!-- 4. Performance Chart -->
+<section class="glass-card p-5 rounded-2xl space-y-4">
+<div class="flex justify-between items-center">
+<h3 class="font-label-md text-label-md text-on-surface font-bold uppercase tracking-widest text-[10px]">Portfolio Performance</h3>
+<span class="text-primary font-label-sm text-[11px] font-bold">+12.4% LY</span>
+</div>
+<div class="h-40 w-full relative">
+<svg class="w-full h-full" viewbox="0 0 400 150">
+<defs>
+<lineargradient id="p-gradient" x1="0%" x2="0%" y1="0%" y2="100%">
+<stop offset="0%" style="stop-color:rgba(45, 212, 191, 0.15); stop-opacity:1"></stop>
+<stop offset="100%" style="stop-color:rgba(45, 212, 191, 0); stop-opacity:0"></stop>
+</lineargradient>
+</defs>
+<path d="M 0 120 Q 50 110, 80 80 T 150 70 T 220 90 T 300 40 T 400 20 L 400 150 L 0 150 Z" fill="url(#p-gradient)"></path>
+<path d="M 0 120 Q 50 110, 80 80 T 150 70 T 220 90 T 300 40 T 400 20" fill="none" stroke="#2dd4bf" stroke-width="2.5"></path>
+<circle cx="300" cy="40" fill="#2dd4bf" r="3.5"></circle>
+<circle class="animate-pulse" cx="400" cy="20" fill="#2dd4bf" r="3.5"></circle>
+</svg>
+<div class="absolute bottom-0 left-0 w-full flex justify-between px-2 pt-2 border-t border-white/5 font-label-sm text-[9px] text-on-surface-variant font-mono">
+<span>01</span><span>03</span><span>05</span><span>07</span><span>09</span><span>11</span>
+</div>
+</div>
+</section>
+<!-- 5. Pipeline Band -->
+<section class="grid grid-cols-4 gap-2">
+<div class="glass-card p-2 rounded-xl text-center border-l-[3px] border-primary">
+<span class="block font-label-sm text-[9px] text-on-surface-variant uppercase tracking-tighter">Acquisition</span>
+<span class="block font-headline-md text-primary text-lg font-black leading-none mt-1">3</span>
+<span class="block font-label-sm text-[9px] text-on-surface-variant mt-0.5">$1.2M</span>
+</div>
+<div class="glass-card p-2 rounded-xl text-center border-l-[3px] border-secondary">
+<span class="block font-label-sm text-[9px] text-on-surface-variant uppercase tracking-tighter">Purchase</span>
+<span class="block font-headline-md text-secondary text-lg font-black leading-none mt-1">1</span>
+<span class="block font-label-sm text-[9px] text-on-surface-variant mt-0.5">$840k</span>
+</div>
+<div class="glass-card p-2 rounded-xl text-center border-l-[3px] border-on-surface-variant">
+<span class="block font-label-sm text-[9px] text-on-surface-variant uppercase tracking-tighter">Hold</span>
+<span class="block font-headline-md text-on-surface text-lg font-black leading-none mt-1">14</span>
+<span class="block font-label-sm text-[9px] text-on-surface-variant mt-0.5">$12.4M</span>
+</div>
+<div class="glass-card p-2 rounded-xl text-center border-l-[3px] border-error">
+<span class="block font-label-sm text-[9px] text-on-surface-variant uppercase tracking-tighter">Exit/Rent</span>
+<span class="block font-headline-md text-error text-lg font-black leading-none mt-1">2</span>
+<span class="block font-label-sm text-[9px] text-on-surface-variant mt-0.5">$950k</span>
+</div>
+</section>
+<!-- 6. Property Folders -->
+<section class="space-y-3">
+<h3 class="font-label-md text-label-md text-on-surface flex items-center gap-2 uppercase tracking-widest text-[10px] font-bold">
+<img alt="Logo" class="w-4 h-4" src="https://lh3.googleusercontent.com/aida/ADBb0ujudTitz8Bv66g6ir0MNl5p-kxIGB0rCFNG0a0Yv1hJGTm832QinDG-7KIjy_4vpVRrRDGEICYXp2lV-NmXet5QQMVQodBy5C41w9OSjiJXbfgySZXBESLgk_4qqRm_4N3i5OyFpwiGvnzE0nSXWJ6MTCgX1O9v1IARTpJODZbpiLqaY1PDzoU9sHdrKKJCR-uBvFejraSGiK9jx1O_odjqRi5Dp3UkDNNUY6OihAK4mmO_oaHjfYuYuG9I"/>
+            Active Portfolios
+        </h3>
+<div class="glass-card p-4 rounded-2xl flex items-center gap-4">
+<div class="w-11 h-11 rounded-lg bg-surface-container-high border border-primary/20 flex items-center justify-center text-primary">
+<span class="material-symbols-outlined" data-icon="home_work">home_work</span>
+</div>
+<div class="flex-1 min-w-0">
+<div class="flex justify-between items-center mb-1">
+<h4 class="font-label-md text-body-sm truncate text-on-surface font-bold">1248 Oakwood Ave</h4>
+<span class="px-2 py-0.5 rounded-sm bg-primary/10 text-primary text-[9px] font-black border border-primary/20">FLIP</span>
+</div>
+<div class="flex items-center gap-3 font-label-sm text-[10px] text-on-surface-variant mb-2">
+<span>Equity: 85%</span>
+<span>•</span>
+<span>Renovation</span>
+</div>
+<div class="w-full h-1 bg-surface-container rounded-full overflow-hidden">
+<div class="h-full bg-primary luminous-glow" style="width: 72%"></div>
+</div>
+</div>
+<span class="material-symbols-outlined text-on-surface-variant text-xl" data-icon="chevron_right">chevron_right</span>
+</div>
+<div class="glass-card p-4 rounded-2xl flex items-center gap-4">
+<div class="w-11 h-11 rounded-lg bg-surface-container-high border border-white/10 flex items-center justify-center text-on-surface-variant">
+<span class="material-symbols-outlined" data-icon="apartment">apartment</span>
+</div>
+<div class="flex-1 min-w-0">
+<div class="flex justify-between items-center mb-1">
+<h4 class="font-label-md text-body-sm truncate text-on-surface font-bold">92 Skyline Tower</h4>
+<span class="px-2 py-0.5 rounded-sm bg-white/5 text-on-surface-variant text-[9px] font-black border border-white/10 uppercase">Rental</span>
+</div>
+<div class="flex items-center gap-3 font-label-sm text-[10px] text-on-surface-variant mb-2">
+<span>Equity: 42%</span>
+<span>•</span>
+<span>Stabilized</span>
+</div>
+<div class="w-full h-1 bg-surface-container rounded-full overflow-hidden">
+<div class="h-full bg-on-surface-variant" style="width: 100%"></div>
+</div>
+</div>
+<span class="material-symbols-outlined text-on-surface-variant text-xl" data-icon="chevron_right">chevron_right</span>
+</div>
+</section>
+<!-- 7. Activity Feed -->
+<section class="space-y-3">
+<h3 class="font-label-md text-label-md text-on-surface uppercase tracking-widest text-[10px] font-bold">Audit Log</h3>
+<div class="space-y-3 px-1">
+<div class="flex items-start gap-4">
+<div class="w-1 h-1 rounded-full bg-primary mt-2"></div>
+<div class="min-w-0 border-l border-white/5 pl-4 pb-2">
+<p class="font-body-sm text-[13px] text-on-surface"><span class="text-primary font-bold">Sarah M.</span> updated docs for <span class="underline underline-offset-2 decoration-white/10">123 Skyline</span></p>
+<p class="font-label-sm text-[10px] text-on-surface-variant font-mono uppercase mt-0.5">02:44 PM</p>
+</div>
+</div>
+<div class="flex items-start gap-4">
+<div class="w-1 h-1 rounded-full bg-secondary mt-2"></div>
+<div class="min-w-0 border-l border-white/5 pl-4">
+<p class="font-body-sm text-[13px] text-on-surface"><span class="text-secondary font-bold">System</span> auto-cleared escrow for <span class="underline underline-offset-2 decoration-white/10">Oakwood</span></p>
+<p class="font-label-sm text-[10px] text-on-surface-variant font-mono uppercase mt-0.5">10:12 AM</p>
+</div>
+</div>
+</div>
+</section>
+</main>
+<!-- 8. BottomNavBar -->
+<nav class="fixed bottom-0 w-full z-50 rounded-t-2xl bg-surface-container-lowest/90 backdrop-blur-xl border-t border-white/5 flex justify-around items-center h-20 pb-safe px-2">
+<a class="flex flex-col items-center justify-center text-primary relative" href="#">
+<span class="material-symbols-outlined" data-icon="dashboard">dashboard</span>
+<span class="font-label-sm text-[10px] font-bold mt-1 uppercase tracking-tighter">Dashboard</span>
+<div class="absolute -bottom-2 w-1 h-1 bg-primary rounded-full shadow-[0_0_10px_#2dd4bf]"></div>
+</a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant opacity-70" href="#">
+<span class="material-symbols-outlined" data-icon="account_tree">account_tree</span>
+<span class="font-label-sm text-[10px] mt-1 uppercase tracking-tighter">Projects</span>
+</a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant opacity-70" href="#">
+<span class="material-symbols-outlined" data-icon="storefront">storefront</span>
+<span class="font-label-sm text-[10px] mt-1 uppercase tracking-tighter">Market</span>
+</a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant opacity-70" href="#">
+<span class="material-symbols-outlined" data-icon="mail">mail</span>
+<span class="font-label-sm text-[10px] mt-1 uppercase tracking-tighter">Inbox</span>
+</a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant opacity-70" href="#">
+<span class="material-symbols-outlined" data-icon="analytics">analytics</span>
+<span class="font-label-sm text-[10px] mt-1 uppercase tracking-tighter">Reports</span>
+</a>
+</nav>
+<!-- Hidden Extended Navigation Items (Logic for Sidebar simulation or Expandable menu) -->
+<div class="hidden">
+<span>Team</span>
+<span>Settings</span>
+</div>
+<script>
+    // Segment toggle interaction
+    document.querySelectorAll('.glass-card button').forEach(button => {
+        button.addEventListener('click', function() {
+            const parent = this.parentElement;
+            parent.querySelectorAll('button').forEach(btn => {
+                btn.classList.remove('bg-primary', 'text-on-primary', 'bg-white/10', 'text-primary', 'font-bold');
+                btn.classList.add('text-on-surface-variant');
+            });
+            if (this.textContent.length > 1 && !this.classList.contains('text-[10px]')) { 
+                this.classList.add('bg-primary', 'text-on-primary', 'font-bold');
+            } else { 
+                this.classList.add('bg-white/10', 'text-primary', 'font-bold');
+            }
+            this.classList.remove('text-on-surface-variant');
+        });
+    });
+</script>
+</body></html>

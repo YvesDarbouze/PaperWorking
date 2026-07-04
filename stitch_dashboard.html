@@ -1,0 +1,385 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Portfolio Command Center</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&amp;family=JetBrains+Mono:wght@400;700&amp;family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<style>
+        :root {
+            --glass-bg: rgba(20, 29, 35, 0.6);
+            --glass-border: rgba(255, 255, 255, 0.12);
+        }
+        body {
+            background-color: #060f15;
+            color: #dae4ec;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            overflow: hidden;
+        }
+        .jetbrains-mono {
+            font-family: 'JetBrains Mono', monospace;
+        }
+        .glass-card {
+            background: var(--glass-bg);
+            backdrop-filter: blur(24px);
+            border: 1px solid var(--glass-border);
+            box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.05);
+        }
+        .luminous-glow {
+            box-shadow: 0 0 20px -5px #57f1db;
+        }
+        .light-leak {
+            background: linear-gradient(135deg, rgba(87, 241, 219, 0.05) 0%, rgba(87, 241, 219, 0) 100%);
+        }
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 4px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: #3c4a46;
+            border-radius: 10px;
+        }
+    </style>
+<script id="tailwind-config">
+        tailwind.config = {
+          darkMode: "class",
+          theme: {
+            extend: {
+              "colors": {
+                      "primary": "#57f1db",
+                      "error": "#ffb4ab",
+                      "on-secondary-fixed-variant": "#004395",
+                      "primary-fixed": "#62fae3",
+                      "on-surface-variant": "#bacac5",
+                      "surface-container-low": "#141d23",
+                      "surface": "#0b141a",
+                      "on-tertiary-fixed-variant": "#6b3b00",
+                      "background": "#0b141a",
+                      "inverse-primary": "#006b5f",
+                      "tertiary": "#ffd1aa",
+                      "on-secondary": "#002e6a",
+                      "surface-dim": "#0b141a",
+                      "surface-container-high": "#222b32",
+                      "outline-variant": "#3c4a46",
+                      "primary-fixed-dim": "#3cddc7",
+                      "error-container": "#93000a",
+                      "on-tertiary-container": "#744000",
+                      "on-secondary-container": "#e6ecff",
+                      "surface-container-highest": "#2d363d",
+                      "on-primary-fixed": "#00201c",
+                      "secondary-container": "#0566d9",
+                      "on-tertiary-fixed": "#2d1600",
+                      "on-primary": "#003731",
+                      "on-primary-fixed-variant": "#005047",
+                      "primary-container": "#2dd4bf",
+                      "surface-variant": "#2d363d",
+                      "on-primary-container": "#00574d",
+                      "outline": "#859490",
+                      "secondary-fixed": "#d8e2ff",
+                      "secondary": "#adc6ff",
+                      "secondary-fixed-dim": "#adc6ff",
+                      "on-error": "#690005",
+                      "tertiary-fixed-dim": "#ffb875",
+                      "on-surface": "#dae4ec",
+                      "inverse-on-surface": "#293238",
+                      "surface-container-lowest": "#060f15",
+                      "surface-tint": "#3cddc7",
+                      "on-tertiary": "#4b2800",
+                      "on-background": "#dae4ec",
+                      "tertiary-fixed": "#ffdcc0",
+                      "tertiary-container": "#ffac5a",
+                      "surface-bright": "#313a41",
+                      "on-error-container": "#ffdad6",
+                      "surface-container": "#182127",
+                      "on-secondary-fixed": "#001a42",
+                      "inverse-surface": "#dae4ec"
+              },
+              "borderRadius": {
+                      "DEFAULT": "0.25rem",
+                      "lg": "0.5rem",
+                      "xl": "0.75rem",
+                      "full": "9999px"
+              },
+              "spacing": {
+                      "stack-sm": "8px",
+                      "margin-mobile": "20px",
+                      "stack-md": "16px",
+                      "margin-desktop": "40px",
+                      "stack-lg": "32px",
+                      "unit": "8px",
+                      "gutter-desktop": "24px",
+                      "container-max": "1280px",
+                      "gutter-mobile": "16px"
+              }
+            },
+          },
+        }
+    </script>
+</head>
+<body class="flex h-screen w-screen overflow-hidden">
+<!-- NavigationDrawer (Shared Component) -->
+<aside class="flex flex-col h-full p-8 border-r border-outline-variant bg-surface-container-lowest w-72 shrink-0">
+<div class="mb-12">
+<h1 class="font-headline-lg text-headline-lg text-primary">Command Center</h1>
+</div>
+<nav class="flex-1 space-y-2">
+<a class="flex items-center gap-4 px-4 py-3 bg-primary-container text-on-primary-container rounded-lg font-bold transition-all duration-200" href="#">
+<span class="material-symbols-outlined">dashboard</span>
+<span class="font-label-md text-label-md">Portfolio</span>
+</a>
+<a class="flex items-center gap-4 px-4 py-3 text-on-surface-variant hover:bg-surface-variant rounded-lg transition-colors group" href="#">
+<span class="material-symbols-outlined">account_tree</span>
+<span class="font-label-md text-label-md">Projects</span>
+</a>
+<a class="flex items-center gap-4 px-4 py-3 text-on-surface-variant hover:bg-surface-variant rounded-lg transition-colors group" href="#">
+<span class="material-symbols-outlined">folder_shared</span>
+<span class="font-label-md text-label-md">Data Room</span>
+</a>
+<a class="flex items-center gap-4 px-4 py-3 text-on-surface-variant hover:bg-surface-variant rounded-lg transition-colors group" href="#">
+<span class="material-symbols-outlined">inbox</span>
+<span class="font-label-md text-label-md">Inbox</span>
+</a>
+<a class="flex items-center gap-4 px-4 py-3 text-on-surface-variant hover:bg-surface-variant rounded-lg transition-colors group" href="#">
+<span class="material-symbols-outlined">person</span>
+<span class="font-label-md text-label-md">Profile</span>
+</a>
+</nav>
+<div class="pt-8 border-t border-outline-variant space-y-2">
+<a class="flex items-center gap-4 px-4 py-3 text-on-surface-variant hover:bg-surface-variant rounded-lg transition-colors group" href="#">
+<span class="material-symbols-outlined">payments</span>
+<span class="font-label-md text-label-md">Billing</span>
+</a>
+<a class="flex items-center gap-4 px-4 py-3 text-on-surface-variant hover:bg-surface-variant rounded-lg transition-colors group" href="#">
+<span class="material-symbols-outlined">settings</span>
+<span class="font-label-md text-label-md">Settings</span>
+</a>
+</div>
+</aside>
+<!-- Main Workspace -->
+<main class="flex-1 flex flex-col h-full min-w-0 bg-background overflow-hidden">
+<!-- TopAppBar (Shared Component) -->
+<header class="w-full h-20 sticky top-0 z-50 flex items-center justify-between px-10 bg-glass-bg backdrop-blur-xl border-b border-outline-variant">
+<div class="flex items-center gap-4">
+<span class="material-symbols-outlined text-primary cursor-pointer">menu</span>
+<h2 class="font-headline-md text-headline-md text-on-surface">Portfolio Dashboard</h2>
+</div>
+<div class="flex items-center gap-6">
+<div class="flex items-center gap-3 bg-surface-container px-4 py-2 rounded-full border border-outline-variant">
+<span class="material-symbols-outlined text-outline text-sm">search</span>
+<input class="bg-transparent border-none focus:ring-0 text-sm w-48 text-on-surface-variant placeholder:text-outline" placeholder="Search assets..." type="text"/>
+</div>
+<div class="w-10 h-10 rounded-full border-2 border-primary overflow-hidden hover:opacity-90 cursor-pointer transition-opacity">
+<img alt="User Profile" class="w-full h-full object-cover" data-alt="A sophisticated professional portrait of a tech executive in a dark minimalist studio environment. The lighting is dramatic and low-key with a soft teal rim light that matches the portfolio command center's neon aesthetic. The individual wears a sleek, dark charcoal blazer and has a confident, visionary expression, set against a deep obsidian background with subtle digital particle effects." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBfpWRLrfBGAP8PBiImG329fs2zBftW6rRDu3DiyDbzd6cy5qSnm5wjv5MKVxeqpVwYSByBvavyZiqZdzMKGyjXsHCO8fHPmoSoOtam05OTcWoSKIxxnZV_JhZHIhvLHlz-kMYYuDGIjS2qURVm05X1vrGBROFIc0NbGckkepOlGaufp8zHTH8hhYz37vUZRPjioH_gII-70VUr4YRoNyLndZPqR3fyl_nEWcLQVDN4ZgbqfSGdYlFSJzaqogPWzhLhne8KzI2k5qDk"/>
+</div>
+</div>
+</header>
+<!-- Content Area -->
+<div class="flex-1 flex overflow-hidden">
+<!-- Central Metrics and Chart (2 Columns Wide in the 3-column layout) -->
+<section class="flex-1 overflow-y-auto custom-scrollbar p-10 space-y-10">
+<!-- Performance Metrics Grid -->
+<div class="grid grid-cols-3 gap-6">
+<div class="glass-card rounded-xl p-6 light-leak">
+<div class="flex justify-between items-start mb-4">
+<span class="text-on-surface-variant font-label-md uppercase tracking-wider">Total Portfolio Value</span>
+<span class="material-symbols-outlined text-primary">account_balance_wallet</span>
+</div>
+<div class="jetbrains-mono text-3xl font-bold text-on-surface">$2.8M</div>
+<div class="mt-2 flex items-center gap-2 text-primary">
+<span class="material-symbols-outlined text-sm">trending_up</span>
+<span class="text-xs font-label-sm">+12.4% vs LY</span>
+</div>
+</div>
+<div class="glass-card rounded-xl p-6">
+<div class="flex justify-between items-start mb-4">
+<span class="text-on-surface-variant font-label-md uppercase tracking-wider">IRR</span>
+<span class="material-symbols-outlined text-primary">analytics</span>
+</div>
+<div class="jetbrains-mono text-3xl font-bold text-on-surface">18.2%</div>
+<div class="mt-2 flex items-center gap-2 text-primary">
+<span class="material-symbols-outlined text-sm">check_circle</span>
+<span class="text-xs font-label-sm">Above Target (15%)</span>
+</div>
+</div>
+<div class="glass-card rounded-xl p-6">
+<div class="flex justify-between items-start mb-4">
+<span class="text-on-surface-variant font-label-md uppercase tracking-wider">CoC Return</span>
+<span class="material-symbols-outlined text-primary">currency_exchange</span>
+</div>
+<div class="jetbrains-mono text-3xl font-bold text-on-surface">7.4%</div>
+<div class="mt-2 flex items-center gap-2 text-on-surface-variant">
+<span class="material-symbols-outlined text-sm">schedule</span>
+<span class="text-xs font-label-sm">Updated 2h ago</span>
+</div>
+</div>
+</div>
+<!-- Luminous Glass Performance Area Chart -->
+<div class="glass-card rounded-2xl p-8 h-[450px] relative overflow-hidden group">
+<div class="flex justify-between items-center mb-10">
+<div>
+<h3 class="font-headline-md text-headline-md text-on-surface">Equity Growth Projection</h3>
+<p class="text-on-surface-variant text-body-sm">Historical performance vs model forecast</p>
+</div>
+<div class="flex gap-2">
+<button class="px-4 py-2 rounded-lg bg-surface-container-high border border-outline-variant text-xs font-label-md text-on-surface hover:border-primary transition-colors">1M</button>
+<button class="px-4 py-2 rounded-lg bg-primary-container text-on-primary-container text-xs font-bold transition-colors">YTD</button>
+<button class="px-4 py-2 rounded-lg bg-surface-container-high border border-outline-variant text-xs font-label-md text-on-surface hover:border-primary transition-colors">ALL</button>
+</div>
+</div>
+<!-- Visual Chart Simulation -->
+<div class="absolute bottom-0 left-0 w-full h-2/3 flex items-end">
+<svg class="w-full h-full" preserveaspectratio="none" viewbox="0 0 1000 300">
+<defs>
+<lineargradient id="chartGradient" x1="0" x2="0" y1="0" y2="1">
+<stop offset="0%" stop-color="#57f1db" stop-opacity="0.3"></stop>
+<stop offset="100%" stop-color="#57f1db" stop-opacity="0"></stop>
+</lineargradient>
+</defs>
+<path d="M0,250 Q150,230 250,180 T500,140 T750,100 T1000,40 V300 H0 Z" fill="url(#chartGradient)"></path>
+<path d="M0,250 Q150,230 250,180 T500,140 T750,100 T1000,40" fill="none" stroke="#57f1db" stroke-linecap="round" stroke-width="4"></path>
+<!-- Simulated Data Points -->
+<circle class="animate-pulse" cx="250" cy="180" fill="#060f15" r="6" stroke="#57f1db" stroke-width="2"></circle>
+<circle cx="500" cy="140" fill="#060f15" r="6" stroke="#57f1db" stroke-width="2"></circle>
+<circle cx="750" cy="100" fill="#060f15" r="6" stroke="#57f1db" stroke-width="2"></circle>
+<circle class="luminous-glow" cx="1000" cy="40" fill="#57f1db" r="8"></circle>
+</svg>
+<!-- Tooltip Simulation -->
+<div class="absolute top-1/3 left-1/2 -translate-x-1/2 glass-card rounded-lg p-3 luminous-glow border-primary">
+<div class="text-[10px] text-on-surface-variant uppercase font-bold mb-1">Current Evaluation</div>
+<div class="jetbrains-mono text-primary font-bold text-lg">$2,842,000.00</div>
+</div>
+</div>
+</div>
+<!-- Asset Bento Grid -->
+<div class="grid grid-cols-2 gap-6 pb-10">
+<div class="glass-card rounded-xl p-6 h-64 relative group cursor-pointer overflow-hidden">
+<img class="absolute inset-0 w-full h-full object-cover opacity-20 group-hover:opacity-40 transition-opacity" data-alt="A low-angle cinematic architectural photograph of a futuristic glass and steel skyscraper reaching into a deep indigo night sky. The building is illuminated from within by cool cyan lights, reflecting the sleek tech-minimalism of the portfolio dashboard. Long exposure streaks of white and teal light from passing traffic create a sense of motion at the base, emphasizing a high-value real estate asset in a global financial hub." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAFHqwmUkC3PS5VHhJJSjF3XiCTyyJZqNhoH_Tl5UBS5FJkmZXy-llTrwFcvgoLAgNde1EUKF6Focm5RKSUoqCss_zP3DwfHRfnTShkN7nWc2P0GGX90tZ3G9rw25RqPoguIvmdjGNJq4WkyQGkfaUi-5vKnEIphcM6JN3TvH-TG7rK_HoszoYr6WuA0pWuafzJ-M2rs5SLhIXZi9tuKZ1IrG2YszfqaMBUOQNkpO_9z2bed0iNyN0OvbmeUCSco2CW3sSdR--16l5K"/>
+<div class="relative z-10 flex flex-col h-full">
+<span class="bg-primary/20 text-primary px-3 py-1 rounded-full text-[10px] font-bold w-fit mb-4">REAL ESTATE</span>
+<h4 class="text-xl font-bold mb-2">Nexus Alpha Plaza</h4>
+<p class="text-sm text-on-surface-variant flex-1">San Francisco, CA • Core Office</p>
+<div class="flex items-center justify-between mt-auto">
+<span class="jetbrains-mono text-lg font-bold text-on-surface">$1.2M</span>
+<span class="material-symbols-outlined text-primary">arrow_outward</span>
+</div>
+</div>
+</div>
+<div class="glass-card rounded-xl p-6 h-64 relative group cursor-pointer overflow-hidden">
+<img class="absolute inset-0 w-full h-full object-cover opacity-10 group-hover:opacity-30 transition-opacity" data-alt="A high-fidelity digital rendering of complex blockchain nodes interconnected by glowing teal crystalline structures. The background is a dense obsidian void, emphasizing the luminosity of the data network. Sharp geometric shapes and ethereal light-leaks create a feeling of futuristic wealth and high-tech alternative investments, perfectly aligned with the Obsidian Terminal design style." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAChj7MJ4bB_HlY4cxYrRaoD2koVqvcAYmeUByjyVeLIQ4TZpUJUuony-cdQ1_Tlet9SbuYSVOWdJklvPnKea9LKdOEjc1bmqhETh71TP5geYpofMad0pG_qDDYnwoDmW5_-i-7WMlPGssQe5M9V0RCN0dUWgA9_iG4BpcIbOHwp9YI2gOPExjmllihppBz-YHd8Fz1shUmL1tvOlgcKgYPMeQ96XefKRCfrbq44l7CGqK70bmsHvX8vLKT9l-kTEV5897Lf87jUBjZ"/>
+<div class="relative z-10 flex flex-col h-full">
+<span class="bg-tertiary/20 text-tertiary px-3 py-1 rounded-full text-[10px] font-bold w-fit mb-4">DIGITAL ASSETS</span>
+<h4 class="text-xl font-bold mb-2">Liquid Venture Pool</h4>
+<p class="text-sm text-on-surface-variant flex-1">Web3 Infrastructure • Series B</p>
+<div class="flex items-center justify-between mt-auto">
+<span class="jetbrains-mono text-lg font-bold text-on-surface">$640K</span>
+<span class="material-symbols-outlined text-primary">arrow_outward</span>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- Right Sidebar: System Activity Feed -->
+<aside class="w-96 border-l border-outline-variant bg-surface-container-low p-8 flex flex-col overflow-hidden">
+<div class="flex items-center justify-between mb-8">
+<h3 class="font-headline-md text-headline-md text-on-surface">System activity</h3>
+<span class="material-symbols-outlined text-on-surface-variant cursor-pointer">filter_list</span>
+</div>
+<div class="flex-1 overflow-y-auto custom-scrollbar space-y-6">
+<!-- Activity Item 1 -->
+<div class="flex gap-4">
+<div class="w-10 h-10 rounded-full bg-primary/10 border border-primary/30 flex items-center justify-center shrink-0">
+<span class="material-symbols-outlined text-primary text-sm" style="font-variation-settings: 'FILL' 1;">payments</span>
+</div>
+<div class="space-y-1">
+<p class="text-body-sm text-on-surface leading-tight"><span class="font-bold">Dividend payout</span> received for Nexus Alpha Plaza.</p>
+<div class="jetbrains-mono text-[11px] text-primary">+$14,240.55</div>
+<p class="text-[10px] text-outline">12 MINUTES AGO</p>
+</div>
+</div>
+<!-- Activity Item 2 -->
+<div class="flex gap-4">
+<div class="w-10 h-10 rounded-full bg-surface-container-highest border border-outline-variant flex items-center justify-center shrink-0">
+<span class="material-symbols-outlined text-on-surface-variant text-sm">description</span>
+</div>
+<div class="space-y-1">
+<p class="text-body-sm text-on-surface leading-tight">Monthly <span class="font-bold">Portfolio Report</span> for Q2 generated and synced to Data Room.</p>
+<p class="text-[10px] text-outline">1 HOUR AGO</p>
+</div>
+</div>
+<!-- Activity Item 3 -->
+<div class="flex gap-4">
+<div class="w-10 h-10 rounded-full bg-tertiary/10 border border-tertiary/30 flex items-center justify-center shrink-0">
+<span class="material-symbols-outlined text-tertiary text-sm" style="font-variation-settings: 'FILL' 1;">trending_up</span>
+</div>
+<div class="space-y-1">
+<p class="text-body-sm text-on-surface leading-tight"><span class="font-bold">Asset Revaluation</span> complete for Liquid Venture Pool.</p>
+<div class="jetbrains-mono text-[11px] text-tertiary">+8.2% Increase</div>
+<p class="text-[10px] text-outline">4 HOURS AGO</p>
+</div>
+</div>
+<!-- Activity Item 4 -->
+<div class="flex gap-4">
+<div class="w-10 h-10 rounded-full bg-surface-container-highest border border-outline-variant flex items-center justify-center shrink-0">
+<span class="material-symbols-outlined text-on-surface-variant text-sm">security</span>
+</div>
+<div class="space-y-1">
+<p class="text-body-sm text-on-surface leading-tight">External auditor <span class="font-bold">Jane Cooper</span> accessed Due Diligence folder.</p>
+<p class="text-[10px] text-outline">YESTERDAY, 4:15 PM</p>
+</div>
+</div>
+<!-- Activity Item 5 -->
+<div class="flex gap-4">
+<div class="w-10 h-10 rounded-full bg-primary/10 border border-primary/30 flex items-center justify-center shrink-0">
+<span class="material-symbols-outlined text-primary text-sm" style="font-variation-settings: 'FILL' 1;">account_balance</span>
+</div>
+<div class="space-y-1">
+<p class="text-body-sm text-on-surface leading-tight">Capital call initiated for <span class="font-bold">Green Energy Fund III</span>.</p>
+<div class="jetbrains-mono text-[11px] text-on-surface-variant">$250,000.00 Pending</div>
+<p class="text-[10px] text-outline">JUL 14, 2023</p>
+</div>
+</div>
+</div>
+<div class="mt-8 pt-6 border-t border-outline-variant">
+<button class="w-full py-3 rounded-lg border border-outline-variant hover:border-primary text-on-surface font-label-md transition-all flex items-center justify-center gap-2 group">
+<span>View Full Audit Log</span>
+<span class="material-symbols-outlined text-sm group-hover:translate-x-1 transition-transform">arrow_forward</span>
+</button>
+</div>
+</aside>
+</div>
+</main>
+<!-- Contextual FAB (Restricted to Home/Dashboard) -->
+<div class="fixed bottom-10 right-[420px] z-[60]">
+<button class="flex items-center gap-3 px-6 py-4 bg-primary text-on-primary-container rounded-full font-bold shadow-lg luminous-glow hover:scale-105 active:scale-95 transition-all">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">add</span>
+<span class="font-label-md">New Investment</span>
+</button>
+</div>
+<script>
+        // Micro-interaction for Glass Cards
+        document.querySelectorAll('.glass-card').forEach(card => {
+            card.addEventListener('mousemove', e => {
+                const rect = card.getBoundingClientRect();
+                const x = e.clientX - rect.left;
+                const y = e.clientY - rect.top;
+                card.style.setProperty('--mouse-x', `${x}px`);
+                card.style.setProperty('--mouse-y', `${y}px`);
+            });
+        });
+        
+        // Simple entry animation for dashboard
+        window.addEventListener('load', () => {
+            document.body.style.opacity = '0';
+            let opacity = 0;
+            const interval = setInterval(() => {
+                if (opacity >= 1) clearInterval(interval);
+                opacity += 0.1;
+                document.body.style.opacity = opacity;
+            }, 30);
+        });
+    </script>
+</body></html>

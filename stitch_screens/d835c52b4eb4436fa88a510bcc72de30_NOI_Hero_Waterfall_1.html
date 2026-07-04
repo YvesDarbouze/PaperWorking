@@ -1,0 +1,412 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>PaperWorking - NOI Control</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&amp;family=JetBrains+Mono:wght@400;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "surface-dim": "#0b141a",
+                        "surface-container-lowest": "#060f15",
+                        "primary-fixed": "#62fae3",
+                        "on-surface-variant": "#bacac5",
+                        "on-primary": "#003731",
+                        "on-secondary": "#002e6a",
+                        "surface": "#0b141a",
+                        "primary": "#57f1db",
+                        "tertiary-container": "#ffac5a",
+                        "inverse-primary": "#006b5f",
+                        "secondary": "#adc6ff",
+                        "on-primary-fixed": "#00201c",
+                        "on-surface": "#dae4ec",
+                        "inverse-surface": "#dae4ec",
+                        "inverse-on-surface": "#293238",
+                        "surface-container": "#182127",
+                        "on-primary-container": "#00574d",
+                        "secondary-container": "#0566d9",
+                        "on-error": "#690005",
+                        "surface-variant": "#2d363d",
+                        "error-container": "#93000a",
+                        "on-tertiary-fixed-variant": "#6b3b00",
+                        "on-tertiary": "#4b2800",
+                        "surface-bright": "#313a41",
+                        "secondary-fixed-dim": "#adc6ff",
+                        "on-secondary-fixed": "#001a42",
+                        "primary-fixed-dim": "#3cddc7",
+                        "on-secondary-fixed-variant": "#004395",
+                        "surface-container-high": "#222b32",
+                        "on-tertiary-fixed": "#2d1600",
+                        "on-tertiary-container": "#744000",
+                        "on-secondary-container": "#e6ecff",
+                        "error": "#ffb4ab",
+                        "outline-variant": "#3c4a46",
+                        "surface-container-low": "#141d23",
+                        "primary-container": "#2dd4bf",
+                        "tertiary-fixed-dim": "#ffb875",
+                        "surface-tint": "#3cddc7",
+                        "tertiary": "#ffd1aa",
+                        "secondary-fixed": "#d8e2ff",
+                        "outline": "#859490",
+                        "on-primary-fixed-variant": "#005047",
+                        "surface-container-highest": "#2d363d",
+                        "background": "#060f15",
+                        "tertiary-fixed": "#ffdcc0",
+                        "on-error-container": "#ffdad6",
+                        "on-background": "#dae4ec"
+                    },
+                    spacing: {
+                        "margin-desktop": "40px",
+                        "unit": "8px",
+                        "stack-lg": "32px",
+                        "margin-mobile": "20px",
+                        "stack-md": "16px",
+                        "gutter-desktop": "24px",
+                        "stack-sm": "8px",
+                        "gutter-mobile": "16px",
+                        "container-max": "1280px"
+                    },
+                    fontFamily: {
+                        "headline-xl": ["Plus Jakarta Sans"],
+                        "headline-md": ["Plus Jakarta Sans"],
+                        "body-sm": ["Plus Jakarta Sans"],
+                        "label-sm": ["Plus Jakarta Sans"],
+                        "body-md": ["Plus Jakarta Sans"],
+                        "label-md": ["Plus Jakarta Sans"],
+                        "headline-lg": ["Plus Jakarta Sans"],
+                        "mono": ["JetBrains Mono", "monospace"]
+                    },
+                    fontSize: {
+                        "headline-xl": ["48px", { "lineHeight": "56px", "letterSpacing": "-0.02em", "fontWeight": "700" }],
+                        "headline-md": ["24px", { "lineHeight": "32px", "fontWeight": "600" }],
+                        "body-sm": ["14px", { "lineHeight": "20px", "fontWeight": "400" }],
+                        "label-sm": ["12px", { "lineHeight": "14px", "letterSpacing": "0.05em", "fontWeight": "500" }],
+                        "body-md": ["16px", { "lineHeight": "24px", "fontWeight": "400" }],
+                        "label-md": ["14px", { "lineHeight": "16px", "letterSpacing": "0.02em", "fontWeight": "600" }],
+                        "headline-lg": ["32px", { "lineHeight": "40px", "letterSpacing": "-0.01em", "fontWeight": "700" }]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        .glass-card {
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.03) 0%, rgba(255, 255, 255, 0.01) 100%);
+            backdrop-filter: blur(24px);
+            border: 1px solid rgba(255, 255, 255, 0.12);
+        }
+        .luminous-teal {
+            box-shadow: 0 0 20px -5px rgba(45, 212, 191, 0.4);
+        }
+        .terminal-data {
+            font-family: 'JetBrains Mono', monospace;
+        }
+        .waterfall-step {
+            transition: transform 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .waterfall-step:hover {
+            transform: scaleX(1.02);
+            filter: brightness(1.2);
+        }
+        ::-webkit-scrollbar {
+            width: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #060f15;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #2d363d;
+            border-radius: 10px;
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background text-on-surface min-h-screen selection:bg-primary selection:text-on-primary overflow-x-hidden">
+<!-- Top AppBar (from Shared Components) -->
+<header class="fixed top-0 w-full z-50 bg-surface-container-lowest/80 backdrop-blur-xl border-b border-white/10 shadow-sm flex items-center justify-between px-gutter-desktop h-20">
+<div class="flex items-center gap-4">
+<span class="material-symbols-outlined text-primary" data-icon="terminal">terminal</span>
+<h1 class="font-headline-md text-headline-md font-bold tracking-tighter text-primary">Asset Ops / NOI Control</h1>
+</div>
+<div class="flex items-center gap-6">
+<nav class="hidden md:flex gap-6 items-center">
+<a class="font-label-md text-label-md text-primary font-bold" href="#">Portfolio</a>
+<a class="font-label-md text-label-md text-on-surface-variant hover:text-on-surface transition-colors" href="#">Analytics</a>
+<a class="font-label-md text-label-md text-on-surface-variant hover:text-on-surface transition-colors" href="#">Expenses</a>
+</nav>
+<div class="w-10 h-10 rounded-full bg-surface-variant flex items-center justify-center overflow-hidden border border-white/10">
+<img alt="User Portfolio Avatar" class="w-full h-full object-cover" data-alt="A professional headshot of a real estate operations manager in a high-tech office. The lighting is moody with cool blue and teal highlights, matching the obsidian terminal aesthetic. He wears a dark tailored suit, conveying expertise and precision in financial management. The background features blurred data screens and architectural glass." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCinRdXlYeF4JSiOofO2xyFWwLOo7Pm2ulmBj5qfDZr17vQHB7AeMAsCSBgjCKArk_onhNHkDVmZeYQN8iTXyAQ3GKy48Pwaz3ZBFF6uBDUa0XqV8RME431euTeDubKnNoiJD03t-EUUFRr8vz5gyX8XlHea4Qh5svj2Mg5SgJ1Rm8sdwTO_c4WYTQ1Qa_HROndVQCOVrJt9bsWrUvvALgd2uYIcQvehdtkl5olbFvylF8NQ1ijbG_O0ei2jO--qpKzAPzZpZzS_mbR"/>
+</div>
+</div>
+</header>
+<!-- Navigation Drawer (SideNav) -->
+<aside class="fixed left-0 top-20 h-[calc(100vh-80px)] w-72 bg-surface-container border-r border-white/5 shadow-2xl flex flex-col py-8 px-4 z-40 hidden lg:flex">
+<div class="flex items-center gap-4 mb-10 px-2">
+<div class="w-12 h-12 rounded-lg bg-primary-container/20 flex items-center justify-center">
+<span class="material-symbols-outlined text-primary" data-icon="dashboard">dashboard</span>
+</div>
+<div>
+<p class="font-label-md text-label-md text-on-surface font-bold">Operations Lead</p>
+<p class="text-[10px] text-on-surface-variant uppercase tracking-widest">Global Real Estate Fund</p>
+</div>
+</div>
+<nav class="flex-1 space-y-2">
+<a class="flex items-center gap-3 px-4 py-3 bg-primary-container text-on-primary-container font-bold rounded-lg transition-all duration-200" href="#">
+<span class="material-symbols-outlined" data-icon="dashboard">dashboard</span>
+<span class="font-label-md text-label-md">Portfolio</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:bg-white/5 hover:text-on-surface rounded-lg transition-all" href="#">
+<span class="material-symbols-outlined" data-icon="query_stats">query_stats</span>
+<span class="font-label-md text-label-md">Analytics</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:bg-white/5 hover:text-on-surface rounded-lg transition-all" href="#">
+<span class="material-symbols-outlined" data-icon="list_alt">list_alt</span>
+<span class="font-label-md text-label-md">Rent Roll</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:bg-white/5 hover:text-on-surface rounded-lg transition-all" href="#">
+<span class="material-symbols-outlined" data-icon="payments">payments</span>
+<span class="font-label-md text-label-md">Expenses</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:bg-white/5 hover:text-on-surface rounded-lg transition-all" href="#">
+<span class="material-symbols-outlined" data-icon="settings">settings</span>
+<span class="font-label-md text-label-md">Settings</span>
+</a>
+</nav>
+<div class="pt-4 border-t border-white/5 px-2">
+<p class="text-[10px] text-on-surface-variant font-mono uppercase tracking-widest">v4.2.0-stable</p>
+</div>
+</aside>
+<!-- Main Content Area -->
+<main class="lg:ml-72 pt-32 pb-24 px-gutter-mobile md:px-gutter-desktop min-h-screen">
+<div class="max-w-container-max mx-auto">
+<section class="mb-stack-lg">
+<h2 class="font-headline-lg text-headline-lg text-on-surface mb-stack-md">Financial Dashboard</h2>
+<!-- NOI Hero Card (The Tap Target) -->
+<div class="group relative w-full max-w-[360px] h-[220px] glass-card rounded-xl p-stack-md cursor-pointer active:scale-95 transition-all duration-200 overflow-hidden hover:border-primary/40" onclick="toggleSideSheet()">
+<!-- Top-right State Pill -->
+<div class="absolute top-4 right-4 bg-primary/10 border border-primary/30 rounded-full px-3 py-1 flex items-center gap-1.5">
+<span class="w-1.5 h-1.5 bg-primary rounded-full animate-pulse"></span>
+<span class="text-[10px] font-mono font-bold text-primary tracking-widest">LIVE</span>
+</div>
+<!-- Header -->
+<p class="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-widest mb-1">Annual NOI</p>
+<!-- Hero Number -->
+<div class="flex items-baseline gap-2 mb-2">
+<span class="terminal-data text-[48px] font-bold text-primary leading-[64px]">$12,486</span>
+<span class="font-label-md text-label-md text-on-surface-variant">/year</span>
+</div>
+<p class="terminal-data text-body-sm text-on-surface-variant -mt-3 mb-stack-md">$1,040 / month</p>
+<!-- Benchmark Capsule -->
+<div class="flex items-center justify-between bg-white/5 rounded-lg p-2 mb-stack-md border border-white/5">
+<div class="flex flex-col">
+<span class="text-[10px] text-on-surface-variant uppercase">50% Rule Estimate</span>
+<span class="terminal-data text-body-sm text-on-surface">$11,700</span>
+</div>
+<div class="h-8 w-px bg-white/10"></div>
+<div class="flex flex-col items-end">
+<div class="flex items-center gap-2">
+<span class="bg-primary/20 text-primary text-[10px] px-1.5 py-0.5 rounded font-bold">+6.7%</span>
+<span class="terminal-data text-body-sm text-on-surface">$12,486</span>
+</div>
+<span class="text-[10px] text-on-surface-variant uppercase">Your NOI</span>
+</div>
+</div>
+<!-- Footer Drift Strip -->
+<div class="mt-auto">
+<div class="relative h-1 w-full bg-surface-variant rounded-full overflow-hidden mb-2">
+<!-- Dash marker for underwritten (80% point for viz) -->
+<div class="absolute left-[80%] top-0 h-full w-0.5 bg-on-surface-variant/50 border-r border-dashed border-on-surface"></div>
+<!-- Solid marker for live -->
+<div class="absolute left-0 top-0 h-full w-[90%] bg-primary rounded-full luminous-teal"></div>
+</div>
+<p class="text-[10px] text-primary/80 font-mono italic">Tracking +$1,286 above your underwriting.</p>
+</div>
+</div>
+</section>
+<!-- Grid Placeholders -->
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-gutter-desktop opacity-40">
+<div class="glass-card h-48 rounded-xl p-6 flex flex-col justify-end">
+<p class="font-label-sm text-label-sm text-on-surface-variant mb-2">Portfolio Occupancy</p>
+<div class="terminal-data text-headline-md text-on-surface">94.2%</div>
+</div>
+<div class="glass-card h-48 rounded-xl p-6 flex flex-col justify-end">
+<p class="font-label-sm text-label-sm text-on-surface-variant mb-2">Gross Potential Rent</p>
+<div class="terminal-data text-headline-md text-on-surface">$24,800</div>
+</div>
+<div class="glass-card h-48 rounded-xl p-6 flex flex-col justify-end">
+<p class="font-label-sm text-label-sm text-on-surface-variant mb-2">OpEx Ratio</p>
+<div class="terminal-data text-headline-md text-on-surface">43.1%</div>
+</div>
+</div>
+</div>
+</main>
+<!-- NOI Waterfall Side Sheet -->
+<div class="fixed inset-y-0 right-0 w-full md:w-[520px] bg-surface-container-lowest border-l border-white/10 z-[60] transform translate-x-full transition-transform duration-500 ease-out shadow-[-20px_0_40px_rgba(0,0,0,0.5)]" id="sideSheet">
+<div class="flex flex-col h-full">
+<!-- Sheet Header -->
+<div class="p-stack-lg border-b border-white/5 flex items-center justify-between bg-surface-container-low/50 backdrop-blur-md">
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-primary" data-icon="calculate">calculate</span>
+<h3 class="font-headline-md text-headline-md text-on-surface">NOI Analysis</h3>
+</div>
+<button class="w-10 h-10 rounded-full hover:bg-white/10 flex items-center justify-center transition-colors" onclick="toggleSideSheet()">
+<span class="material-symbols-outlined" data-icon="close">close</span>
+</button>
+</div>
+<!-- Sheet Scrollable Content -->
+<div class="flex-1 overflow-y-auto p-stack-lg space-y-stack-lg">
+<!-- Vertical Waterfall Visualization -->
+<div class="relative min-h-[600px] py-4 pr-12">
+<!-- Benchmark Line (50% Rule) -->
+<div class="absolute left-0 right-10 top-[78%] border-t border-dashed border-on-surface-variant/40 z-0">
+<div class="absolute -right-2 top-0 transform translate-x-full -translate-y-1/2 flex items-center gap-2">
+<span class="text-[10px] font-mono text-on-surface-variant whitespace-nowrap">50% RULE ($11.7K)</span>
+<div class="bg-primary/20 text-primary px-1.5 py-0.5 rounded text-[10px] font-bold">+$786</div>
+</div>
+</div>
+<div class="space-y-4">
+<!-- Gross Income -->
+<div class="flex items-center gap-4">
+<div class="w-24 text-right"><span class="text-[10px] text-on-surface-variant font-mono">GROSS</span></div>
+<div class="flex-1 h-12 bg-primary/40 border border-primary/60 rounded flex items-center justify-end px-4 waterfall-step">
+<span class="terminal-data text-primary font-bold">+$23,400</span>
+</div>
+</div>
+<!-- Expense Steps (Indented) -->
+<div class="space-y-1 pl-24">
+<!-- Vacancy -->
+<div class="flex items-center gap-2 group cursor-pointer" onclick="window.location.href='#edit'">
+<div class="flex-1 h-10 bg-error/10 border border-error/30 rounded flex items-center justify-between px-4 waterfall-step hover:border-error/60" style="width: 93%; margin-left: auto;">
+<span class="text-body-sm font-label-md text-error group-hover:underline">Vacancy</span>
+<span class="terminal-data text-error">-$1,638</span>
+</div>
+</div>
+<!-- Maintenance -->
+<div class="flex items-center gap-2 group cursor-pointer" onclick="window.location.href='#edit'">
+<div class="flex-1 h-10 bg-error/10 border border-error/30 rounded flex items-center justify-between px-4 waterfall-step hover:border-error/60" style="width: 85%; margin-left: auto;">
+<span class="text-body-sm font-label-md text-error group-hover:underline">Maintenance</span>
+<span class="terminal-data text-error">-$2,340</span>
+</div>
+</div>
+<!-- Management -->
+<div class="flex items-center gap-2 group cursor-pointer" onclick="window.location.href='#edit'">
+<div class="flex-1 h-10 bg-error/10 border border-error/30 rounded flex items-center justify-between px-4 waterfall-step hover:border-error/60" style="width: 77%; margin-left: auto;">
+<span class="text-body-sm font-label-md text-error group-hover:underline">Management</span>
+<span class="terminal-data text-error">-$2,340</span>
+</div>
+</div>
+<!-- Taxes -->
+<div class="flex items-center gap-2 group cursor-pointer" onclick="window.location.href='#edit'">
+<div class="flex-1 h-10 bg-error/10 border border-error/30 rounded flex items-center justify-between px-4 waterfall-step hover:border-error/60" style="width: 68%; margin-left: auto;">
+<span class="text-body-sm font-label-md text-error group-hover:underline">Taxes</span>
+<span class="terminal-data text-error">-$2,400</span>
+</div>
+</div>
+<!-- Insurance -->
+<div class="flex items-center gap-2 group cursor-pointer" onclick="window.location.href='#edit'">
+<div class="flex-1 h-10 bg-error/10 border border-error/30 rounded flex items-center justify-between px-4 waterfall-step hover:border-error/60" style="width: 63%; margin-left: auto;">
+<span class="text-body-sm font-label-md text-error group-hover:underline">Insurance</span>
+<span class="terminal-data text-error">-$696</span>
+</div>
+</div>
+<!-- Utilities -->
+<div class="flex items-center gap-2 group cursor-pointer" onclick="window.location.href='#edit'">
+<div class="flex-1 h-10 bg-error/10 border border-error/30 rounded flex items-center justify-between px-4 waterfall-step hover:border-error/60" style="width: 58%; margin-left: auto;">
+<span class="text-body-sm font-label-md text-error group-hover:underline">Utilities</span>
+<span class="terminal-data text-error">-$1,500</span>
+</div>
+</div>
+</div>
+<!-- Net Income Cup -->
+<div class="flex items-center gap-4 pt-4">
+<div class="w-24 text-right"><span class="text-[10px] text-primary font-mono font-bold">NET NOI</span></div>
+<div class="flex-1 h-16 bg-primary border-2 border-primary-fixed rounded flex items-center justify-end px-6 shadow-[0_0_30px_rgba(45,212,191,0.2)]">
+<div class="text-right">
+<div class="terminal-data text-headline-md text-on-primary font-bold">$12,486</div>
+<div class="text-[10px] text-on-primary/80 font-bold uppercase tracking-wider">Annual Yield</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Analysis Breakdown -->
+<div class="glass-card rounded-xl p-stack-md border-primary/20 bg-primary/5">
+<h4 class="font-label-md text-label-md text-primary mb-2 flex items-center gap-2">
+<span class="material-symbols-outlined text-[18px]" data-icon="auto_awesome">auto_awesome</span>
+                        Efficiency Insights
+                    </h4>
+<p class="text-body-sm text-on-surface-variant">
+                        Your property is currently operating at <span class="text-primary font-bold terminal-data">6.7%</span> above the standard 50% Rule benchmark. The primary driver is lower-than-projected utility costs due to recent LED retrofitting.
+                    </p>
+</div>
+</div>
+<!-- Footer Action -->
+<div class="p-stack-lg border-t border-white/5 bg-surface-container-low">
+<button class="w-full bg-primary py-4 rounded-xl font-headline-md text-on-primary flex items-center justify-center gap-3 luminous-teal active:scale-[0.98] transition-transform">
+<span class="material-symbols-outlined" data-icon="ios_share">ios_share</span>
+                    Export Analysis
+                </button>
+</div>
+</div>
+</div>
+<!-- Overlay for side sheet -->
+<div class="fixed inset-0 bg-black/60 backdrop-blur-sm z-[55] hidden transition-opacity duration-500 opacity-0" id="sheetOverlay" onclick="toggleSideSheet()"></div>
+<!-- Bottom NavBar (Mobile) -->
+<nav class="md:hidden fixed bottom-0 w-full z-50 rounded-t-xl bg-surface-container-highest/90 backdrop-blur-2xl border-t border-primary/20 shadow-[0_-4px_20px_rgba(87,241,219,0.15)] flex justify-around items-center h-16 px-4">
+<div class="flex flex-col items-center justify-center text-primary font-bold">
+<span class="material-symbols-outlined" data-icon="attach_money">attach_money</span>
+<span class="font-label-sm text-label-sm">Income</span>
+</div>
+<div class="flex flex-col items-center justify-center text-on-surface-variant hover:text-primary-fixed-dim">
+<span class="material-symbols-outlined" data-icon="layers_clear">layers_clear</span>
+<span class="font-label-sm text-label-sm">Vacancy</span>
+</div>
+<div class="flex flex-col items-center justify-center text-on-surface-variant hover:text-primary-fixed-dim">
+<span class="material-symbols-outlined" data-icon="account_balance_wallet">account_balance_wallet</span>
+<span class="font-label-sm text-label-sm">Expenses</span>
+</div>
+<div class="flex flex-col items-center justify-center text-on-surface-variant hover:text-primary-fixed-dim">
+<span class="material-symbols-outlined" data-icon="calculate">calculate</span>
+<span class="font-label-sm text-label-sm">Summary</span>
+</div>
+</nav>
+<script>
+        function toggleSideSheet() {
+            const sheet = document.getElementById('sideSheet');
+            const overlay = document.getElementById('sheetOverlay');
+            
+            if (sheet.classList.contains('translate-x-full')) {
+                sheet.classList.remove('translate-x-full');
+                overlay.classList.remove('hidden');
+                setTimeout(() => overlay.classList.add('opacity-100'), 10);
+                document.body.style.overflow = 'hidden';
+            } else {
+                sheet.classList.add('translate-x-full');
+                overlay.classList.remove('opacity-100');
+                setTimeout(() => overlay.classList.add('hidden'), 500);
+                document.body.style.overflow = '';
+            }
+        }
+
+        // Add some atmospheric glowing movement
+        document.addEventListener('mousemove', (e) => {
+            const glow = document.createElement('div');
+            glow.className = 'fixed pointer-events-none w-64 h-64 bg-primary/5 rounded-full blur-[100px] z-[-1]';
+            glow.style.left = `${e.clientX - 128}px`;
+            glow.style.top = `${e.clientY - 128}px`;
+            document.body.appendChild(glow);
+            setTimeout(() => glow.remove(), 1000);
+        });
+    </script>
+</body></html>

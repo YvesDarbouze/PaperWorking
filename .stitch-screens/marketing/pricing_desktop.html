@@ -1,0 +1,469 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Pricing | PaperWorking</title>
+<!-- Fonts -->
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&amp;family=JetBrains+Mono:wght@400;700&amp;display=swap" rel="stylesheet"/>
+<!-- Material Symbols -->
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Tailwind CSS -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<!-- Tailwind Configuration -->
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "secondary-fixed": "#d8e2ff",
+                        "on-secondary-fixed": "#001a42",
+                        "on-primary-container": "#00574d",
+                        "inverse-surface": "#dae4ec",
+                        "surface-container-low": "#141d23",
+                        "on-secondary": "#002e6a",
+                        "on-primary-fixed-variant": "#005047",
+                        "surface-container": "#182127",
+                        "on-background": "#dae4ec",
+                        "secondary-container": "#0566d9",
+                        "inverse-on-surface": "#293238",
+                        "surface-container-highest": "#2d363d",
+                        "error-container": "#93000a",
+                        "tertiary": "#ffd1aa",
+                        "primary-fixed": "#62fae3",
+                        "secondary": "#adc6ff",
+                        "primary-fixed-dim": "#3cddc7",
+                        "tertiary-container": "#ffac5a",
+                        "on-tertiary-container": "#744000",
+                        "on-secondary-fixed-variant": "#004395",
+                        "on-primary-fixed": "#00201c",
+                        "on-error": "#690005",
+                        "on-error-container": "#ffdad6",
+                        "surface-container-lowest": "#060f15",
+                        "primary-container": "#2dd4bf",
+                        "on-secondary-container": "#e6ecff",
+                        "surface-tint": "#3cddc7",
+                        "surface-variant": "#2d363d",
+                        "secondary-fixed-dim": "#adc6ff",
+                        "background": "#0b141a",
+                        "surface": "#0b141a",
+                        "on-tertiary": "#4b2800",
+                        "error": "#ffb4ab",
+                        "outline": "#859490",
+                        "tertiary-fixed": "#ffdcc0",
+                        "on-tertiary-fixed-variant": "#6b3b00",
+                        "on-surface-variant": "#bacac5",
+                        "tertiary-fixed-dim": "#ffb875",
+                        "surface-container-high": "#222b32",
+                        "surface-dim": "#0b141a",
+                        "on-tertiary-fixed": "#2d1600",
+                        "inverse-primary": "#006b5f",
+                        "primary": "#57f1db",
+                        "outline-variant": "#3c4a46",
+                        "surface-bright": "#313a41",
+                        "on-primary": "#003731",
+                        "on-surface": "#dae4ec"
+                    },
+                    borderRadius: {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    spacing: {
+                        "gutter-desktop": "24px",
+                        "container-max": "1280px",
+                        "stack-lg": "32px",
+                        "gutter-mobile": "16px",
+                        "stack-sm": "8px",
+                        "margin-desktop": "40px",
+                        "unit": "8px",
+                        "stack-md": "16px",
+                        "margin-mobile": "20px"
+                    },
+                    fontFamily: {
+                        "headline-md": ["Plus Jakarta Sans"],
+                        "headline-lg": ["Plus Jakarta Sans"],
+                        "headline-xl": ["Plus Jakarta Sans"],
+                        "body-lg": ["Plus Jakarta Sans"],
+                        "label-md": ["Plus Jakarta Sans"],
+                        "body-md": ["Plus Jakarta Sans"],
+                        "body-sm": ["Plus Jakarta Sans"],
+                        "label-sm": ["Plus Jakarta Sans"],
+                        "headline-lg-mobile": ["Plus Jakarta Sans"],
+                        "mono": ["JetBrains Mono", "monospace"]
+                    },
+                    fontSize: {
+                        "headline-md": ["24px", { "lineHeight": "32px", "fontWeight": "600" }],
+                        "headline-lg": ["32px", { "lineHeight": "40px", "letterSpacing": "-0.01em", "fontWeight": "700" }],
+                        "headline-xl": ["48px", { "lineHeight": "56px", "letterSpacing": "-0.02em", "fontWeight": "700" }],
+                        "body-lg": ["18px", { "lineHeight": "28px", "fontWeight": "400" }],
+                        "label-md": ["14px", { "lineHeight": "16px", "letterSpacing": "0.02em", "fontWeight": "600" }],
+                        "body-md": ["16px", { "lineHeight": "24px", "fontWeight": "400" }],
+                        "body-sm": ["14px", { "lineHeight": "20px", "fontWeight": "400" }],
+                        "label-sm": ["12px", { "lineHeight": "14px", "letterSpacing": "0.05em", "fontWeight": "500" }],
+                        "headline-lg-mobile": ["28px", { "lineHeight": "36px", "fontWeight": "700" }]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        /* Glassmorphism utilities */
+        .glass-panel {
+            background: linear-gradient(135deg, rgba(45, 54, 61, 0.4) 0%, rgba(20, 29, 35, 0.6) 100%);
+            backdrop-filter: blur(24px);
+            -webkit-backdrop-filter: blur(24px);
+            border-top: 1px solid rgba(255, 255, 255, 0.12);
+            border-left: 1px solid rgba(255, 255, 255, 0.12);
+        }
+        
+        .luminous-button {
+            box-shadow: 0 0 20px -5px rgba(87, 241, 219, 0.4);
+        }
+        
+        .glow-text {
+            text-shadow: 0 0 10px rgba(87, 241, 219, 0.3);
+        }
+    </style>
+</head>
+<body class="bg-background text-on-surface font-body-md antialiased min-h-screen flex flex-col relative overflow-x-hidden selection:bg-primary/30 selection:text-primary">
+<!-- Global Background Ambient Effects -->
+<div class="fixed inset-0 pointer-events-none overflow-hidden z-[-1]">
+<div class="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-primary/5 rounded-full blur-[120px]"></div>
+<div class="absolute bottom-[10%] right-[-5%] w-[30%] h-[50%] bg-secondary/5 rounded-full blur-[150px]"></div>
+</div>
+<!-- TopNavBar -->
+<nav class="fixed top-0 w-full z-50 bg-surface/80 backdrop-blur-xl dark:bg-surface/80 border-b border-white/10 shadow-sm hidden md:block">
+<div class="flex justify-between items-center h-20 px-margin-desktop max-w-container-max mx-auto">
+<a class="font-headline-md text-headline-md text-on-surface dark:text-on-surface tracking-tight flex items-center gap-2" href="/">
+<span class="material-symbols-outlined text-primary" style="font-variation-settings: 'FILL' 1;">dataset</span>
+<span><strong>Paper</strong><span class="font-light">Working</span></span>
+</a>
+<div class="flex items-center gap-stack-lg">
+<a class="text-on-surface-variant hover:text-on-surface transition-colors font-label-md text-label-md hover:bg-white/5 px-3 py-2 rounded-lg duration-300" href="/how-it-works">How It Works</a>
+<a class="text-primary font-bold border-b-2 border-primary pb-1 font-label-md text-label-md" href="/pricing">Pricing</a>
+<a class="text-on-surface-variant hover:text-on-surface transition-colors font-label-md text-label-md hover:bg-white/5 px-3 py-2 rounded-lg duration-300" href="/news">News</a>
+<a class="text-on-surface-variant hover:text-on-surface transition-colors font-label-md text-label-md hover:bg-white/5 px-3 py-2 rounded-lg duration-300" href="/help">Help</a>
+</div>
+<div class="flex items-center gap-stack-md">
+<a class="text-on-surface hover:text-primary transition-colors font-label-md text-label-md" href="/login">Sign In</a>
+<a class="bg-primary text-on-primary font-label-md text-label-md px-6 py-2.5 rounded-lg luminous-button hover:opacity-90 active:scale-95 transition-all" href="/register">Sign In</a>
+</div>
+</div>
+</nav>
+<!-- Mobile Nav Header (Simplified) -->
+<header class="md:hidden flex items-center justify-between px-gutter-mobile h-16 border-b border-white/10 bg-surface/90 backdrop-blur-lg fixed top-0 w-full z-50">
+<a class="font-headline-md text-headline-md text-on-surface tracking-tight flex items-center gap-2" href="/">
+<span class="material-symbols-outlined text-primary" style="font-variation-settings: 'FILL' 1;">dataset</span>
+<span><strong>Paper</strong><span class="font-light">Working</span></span>
+</a>
+<button class="text-on-surface p-2">
+<span class="material-symbols-outlined">menu</span>
+</button>
+</header>
+<main class="flex-grow pt-24 md:pt-32 pb-stack-lg px-gutter-mobile md:px-margin-desktop max-w-container-max mx-auto w-full">
+<!-- Pricing Header -->
+<section class="text-center max-w-3xl mx-auto mb-stack-lg md:mb-24">
+<h1 class="font-headline-xl text-headline-xl mb-stack-md glow-text">Pick your plan. <br class="hidden md:block"/>Start closing more deals.</h1>
+<p class="font-body-lg text-body-lg text-on-surface-variant mb-stack-lg">14-day trial on every plan. Credit card required. No charge until day 15.</p>
+<!-- Billing Toggle -->
+<div class="inline-flex items-center p-1 bg-surface-container-high rounded-full border border-white/10 mb-stack-lg">
+<button class="px-6 py-2 rounded-full font-label-md text-label-md text-on-surface-variant hover:text-on-surface transition-colors">Monthly</button>
+<button class="px-6 py-2 rounded-full bg-surface-bright border border-white/10 font-label-md text-label-md text-primary shadow-sm flex items-center gap-2">
+                    Annually
+                    <span class="bg-primary/10 text-primary px-2 py-0.5 rounded-full text-[10px] uppercase tracking-wider">Save 20%</span>
+</button>
+</div>
+</section>
+<!-- Pricing Cards - 3 Tier Horizontal -->
+<section class="grid grid-cols-1 md:grid-cols-3 gap-gutter-desktop mb-32 items-start">
+<!-- Tier 1: Individual -->
+<div class="glass-panel rounded-xl p-stack-lg flex flex-col h-full hover:border-white/20 transition-all duration-300">
+<div class="mb-stack-lg border-b border-white/10 pb-stack-lg">
+<h3 class="font-headline-md text-headline-md mb-2">Individual Investor</h3>
+<p class="font-body-sm text-body-sm text-on-surface-variant h-10">Solo flippers tired of spreadsheet chaos.</p>
+</div>
+<div class="mb-stack-lg">
+<div class="flex items-baseline gap-1">
+<span class="font-headline-lg text-headline-lg">$50</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant">/mo</span>
+</div>
+<p class="font-body-sm text-body-sm text-on-surface-variant mt-1">Billed annually at $599/yr</p>
+</div>
+<a class="w-full text-center py-3 rounded-lg border border-primary text-primary font-label-md text-label-md hover:bg-primary/5 transition-colors mb-stack-lg" href="/register?plan=individual">Start 14-Day Free Trial</a>
+<div class="flex-grow">
+<p class="font-label-md text-label-md mb-stack-md text-on-surface uppercase tracking-wider">What's included</p>
+<ul class="space-y-3">
+<li class="flex items-start gap-3">
+<span class="material-symbols-outlined text-primary text-[20px]">check_circle</span>
+<span class="font-body-sm text-body-sm">1 User Seat</span>
+</li>
+<li class="flex items-start gap-3">
+<span class="material-symbols-outlined text-primary text-[20px]">check_circle</span>
+<span class="font-body-sm text-body-sm">Full REI Dashboard access</span>
+</li>
+<li class="flex items-start gap-3">
+<span class="material-symbols-outlined text-primary text-[20px]">check_circle</span>
+<span class="font-body-sm text-body-sm">Find &amp; Fund Pipeline</span>
+</li>
+<li class="flex items-start gap-3">
+<span class="material-symbols-outlined text-primary text-[20px]">check_circle</span>
+<span class="font-body-sm text-body-sm">Acquisition &amp; Due Diligence</span>
+</li>
+<li class="flex items-start gap-3">
+<span class="material-symbols-outlined text-primary text-[20px]">check_circle</span>
+<span class="font-body-sm text-body-sm">Rehab Tracking &amp; Budgets</span>
+</li>
+<li class="flex items-start gap-3">
+<span class="material-symbols-outlined text-primary text-[20px]">check_circle</span>
+<span class="font-body-sm text-body-sm">Exit Formula &amp; ROI Calculator</span>
+</li>
+</ul>
+</div>
+</div>
+<!-- Tier 2: Team (Highlighted) -->
+<div class="glass-panel rounded-xl p-stack-lg flex flex-col h-full border-primary/40 relative scale-100 md:scale-105 z-10 shadow-2xl shadow-primary/10 bg-surface-container-highest/80">
+<div class="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-primary text-on-primary px-4 py-1 rounded-full font-label-sm text-label-sm uppercase tracking-widest shadow-[0_0_15px_rgba(87,241,219,0.5)]">
+                    Most Popular
+                </div>
+<div class="mb-stack-lg border-b border-white/10 pb-stack-lg mt-2">
+<h3 class="font-headline-md text-headline-md mb-2 text-primary">Team / Firm</h3>
+<p class="font-body-sm text-body-sm text-on-surface-variant h-10">Scaling REI businesses managing multiple deals.</p>
+</div>
+<div class="mb-stack-lg">
+<div class="flex items-baseline gap-1">
+<span class="font-headline-xl text-headline-xl text-white">$83</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant">/mo</span>
+</div>
+<p class="font-body-sm text-body-sm text-primary/80 mt-1">Billed annually at $999/yr</p>
+</div>
+<a class="w-full text-center py-3 rounded-lg bg-primary text-on-primary font-label-md text-label-md hover:bg-primary/90 transition-colors mb-stack-lg luminous-button" href="/register?plan=team">Start 14-Day Free Trial</a>
+<div class="flex-grow">
+<p class="font-label-md text-label-md mb-stack-md text-on-surface uppercase tracking-wider">What's included</p>
+<ul class="space-y-3">
+<li class="flex items-start gap-3">
+<span class="material-symbols-outlined text-primary text-[20px]">check_circle</span>
+<span class="font-body-sm text-body-sm font-medium text-white">Up to 10 User Seats</span>
+</li>
+<li class="flex items-start gap-3">
+<span class="material-symbols-outlined text-primary text-[20px]">check_circle</span>
+<span class="font-body-sm text-body-sm">Role-Based Access Control</span>
+</li>
+<li class="flex items-start gap-3">
+<span class="material-symbols-outlined text-primary text-[20px]">check_circle</span>
+<span class="font-body-sm text-body-sm">Admin vs Deal Lead permissions</span>
+</li>
+<li class="flex items-start gap-3">
+<span class="material-symbols-outlined text-primary text-[20px]">check_circle</span>
+<span class="font-body-sm text-body-sm">Secure siloed account data</span>
+</li>
+<li class="flex items-start gap-3">
+<span class="material-symbols-outlined text-primary text-[20px]">check_circle</span>
+<span class="font-body-sm text-body-sm">Everything in Individual</span>
+</li>
+<li class="flex items-start gap-3">
+<span class="material-symbols-outlined text-primary text-[20px]">check_circle</span>
+<span class="font-body-sm text-body-sm text-primary">Priority onboarding support</span>
+</li>
+</ul>
+</div>
+</div>
+<!-- Tier 3: Vendor -->
+<div class="glass-panel rounded-xl p-stack-lg flex flex-col h-full hover:border-white/20 transition-all duration-300">
+<div class="mb-stack-lg border-b border-white/10 pb-stack-lg">
+<h3 class="font-headline-md text-headline-md mb-2">Vendor Marketplace</h3>
+<p class="font-body-sm text-body-sm text-on-surface-variant h-10">Appraisers, Inspectors, GCs, and tradespeople.</p>
+</div>
+<div class="mb-stack-lg">
+<div class="flex items-baseline gap-1">
+<span class="font-headline-lg text-headline-lg">$33</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant">/mo</span>
+</div>
+<p class="font-body-sm text-body-sm text-on-surface-variant mt-1">Billed annually at $390/yr</p>
+</div>
+<a class="w-full text-center py-3 rounded-lg border border-outline text-on-surface font-label-md text-label-md hover:bg-white/5 transition-colors mb-stack-lg" href="/register?plan=vendor">List Your Business</a>
+<div class="flex-grow">
+<p class="font-label-md text-label-md mb-stack-md text-on-surface uppercase tracking-wider">What's included</p>
+<ul class="space-y-3">
+<li class="flex items-start gap-3">
+<span class="material-symbols-outlined text-outline text-[20px]">check_circle</span>
+<span class="font-body-sm text-body-sm">Marketplace Directory Listing</span>
+</li>
+<li class="flex items-start gap-3">
+<span class="material-symbols-outlined text-outline text-[20px]">check_circle</span>
+<span class="font-body-sm text-body-sm">Lead generation inbox</span>
+</li>
+<li class="flex items-start gap-3">
+<span class="material-symbols-outlined text-outline text-[20px]">check_circle</span>
+<span class="font-body-sm text-body-sm">Receive work requests from Teams</span>
+</li>
+<li class="flex items-start gap-3">
+<span class="material-symbols-outlined text-outline text-[20px]">check_circle</span>
+<span class="font-body-sm text-body-sm">Direct messaging with REI Teams</span>
+</li>
+<li class="flex items-start gap-3">
+<span class="material-symbols-outlined text-outline text-[20px]">check_circle</span>
+<span class="font-body-sm text-body-sm">Professional profile page</span>
+</li>
+<li class="flex items-start gap-3">
+<span class="material-symbols-outlined text-outline text-[20px]">check_circle</span>
+<span class="font-body-sm text-body-sm">Service area customization</span>
+</li>
+</ul>
+</div>
+</div>
+</section>
+<!-- Feature Matrix -->
+<section class="mb-32 max-w-5xl mx-auto hidden md:block">
+<div class="text-center mb-stack-lg">
+<h2 class="font-headline-lg text-headline-lg mb-2">Every feature, side by side.</h2>
+<p class="font-body-md text-body-md text-on-surface-variant">See exactly which tools come with each plan.</p>
+</div>
+<div class="glass-panel rounded-xl overflow-hidden border border-white/10">
+<table class="w-full text-left font-mono text-[13px] border-collapse">
+<thead>
+<tr class="border-b border-white/10 bg-surface-container/50">
+<th class="p-4 font-normal text-on-surface-variant w-2/5">Feature</th>
+<th class="p-4 font-medium text-center w-1/5">Individual</th>
+<th class="p-4 font-bold text-primary text-center w-1/5">Team / Firm</th>
+<th class="p-4 font-medium text-center w-1/5 text-on-surface-variant">Vendor</th>
+</tr>
+</thead>
+<tbody class="divide-y divide-white/5">
+<tr class="hover:bg-white/5 transition-colors">
+<td class="p-4">Deal Pipeline Kanban</td>
+<td class="p-4 text-center"><span class="material-symbols-outlined text-on-surface text-[18px]">check</span></td>
+<td class="p-4 text-center"><span class="material-symbols-outlined text-primary text-[18px]">check</span></td>
+<td class="p-4 text-center"><span class="material-symbols-outlined text-outline/30 text-[18px]">remove</span></td>
+</tr>
+<tr class="hover:bg-white/5 transition-colors">
+<td class="p-4">Find &amp; Fund Module</td>
+<td class="p-4 text-center"><span class="material-symbols-outlined text-on-surface text-[18px]">check</span></td>
+<td class="p-4 text-center"><span class="material-symbols-outlined text-primary text-[18px]">check</span></td>
+<td class="p-4 text-center"><span class="material-symbols-outlined text-outline/30 text-[18px]">remove</span></td>
+</tr>
+<tr class="hover:bg-white/5 transition-colors">
+<td class="p-4">Acquisition Tracker</td>
+<td class="p-4 text-center"><span class="material-symbols-outlined text-on-surface text-[18px]">check</span></td>
+<td class="p-4 text-center"><span class="material-symbols-outlined text-primary text-[18px]">check</span></td>
+<td class="p-4 text-center"><span class="material-symbols-outlined text-outline/30 text-[18px]">remove</span></td>
+</tr>
+<tr class="hover:bg-white/5 transition-colors">
+<td class="p-4">Rehab Budget Manager</td>
+<td class="p-4 text-center"><span class="material-symbols-outlined text-on-surface text-[18px]">check</span></td>
+<td class="p-4 text-center"><span class="material-symbols-outlined text-primary text-[18px]">check</span></td>
+<td class="p-4 text-center"><span class="material-symbols-outlined text-outline/30 text-[18px]">remove</span></td>
+</tr>
+<tr class="hover:bg-white/5 transition-colors bg-surface-container-high/30">
+<td class="p-4 text-primary">Role-Based Access Control</td>
+<td class="p-4 text-center"><span class="material-symbols-outlined text-outline/30 text-[18px]">remove</span></td>
+<td class="p-4 text-center"><span class="material-symbols-outlined text-primary text-[18px]">check</span></td>
+<td class="p-4 text-center"><span class="material-symbols-outlined text-outline/30 text-[18px]">remove</span></td>
+</tr>
+<tr class="hover:bg-white/5 transition-colors bg-surface-container-high/30">
+<td class="p-4 text-primary">Siloed Data Environments</td>
+<td class="p-4 text-center"><span class="material-symbols-outlined text-outline/30 text-[18px]">remove</span></td>
+<td class="p-4 text-center"><span class="material-symbols-outlined text-primary text-[18px]">check</span></td>
+<td class="p-4 text-center"><span class="material-symbols-outlined text-outline/30 text-[18px]">remove</span></td>
+</tr>
+</tbody>
+</table>
+<div class="p-4 text-center border-t border-white/10 bg-surface-container/20">
+<button class="font-mono text-[12px] text-primary hover:text-white transition-colors flex items-center justify-center gap-2 mx-auto w-full">
+                        See all 16 features <span class="material-symbols-outlined text-[16px]">expand_more</span>
+</button>
+</div>
+</div>
+</section>
+<!-- FAQ Section -->
+<section class="max-w-3xl mx-auto mb-32">
+<div class="mb-stack-lg">
+<h2 class="font-headline-lg text-headline-lg mb-2">Before You Commit</h2>
+<p class="font-body-lg text-body-lg text-on-surface-variant">No surprises. No fine print.</p>
+</div>
+<div class="space-y-4">
+<!-- FAQ Item 1 -->
+<details class="group glass-panel rounded-lg p-6 [&amp;_summary::-webkit-details-marker]:hidden cursor-pointer">
+<summary class="flex justify-between items-center font-headline-md text-[18px]">
+                        Do Vendors get access to my financial data?
+                        <span class="material-symbols-outlined transition duration-300 group-open:-rotate-180 text-primary">expand_more</span>
+</summary>
+<div class="mt-4 font-body-md text-on-surface-variant leading-relaxed">
+                        No. Vendor accounts are structurally isolated. They can only see their marketplace listing, inbox messages, and work requests sent to them by REI Teams. They have zero visibility into any financial data, deal analytics, or capital stack information. Access is enforced at the database level, not just the UI.
+                    </div>
+</details>
+<!-- FAQ Item 2 -->
+<details class="group glass-panel rounded-lg p-6 [&amp;_summary::-webkit-details-marker]:hidden cursor-pointer">
+<summary class="flex justify-between items-center font-headline-md text-[18px]">
+                        Can I upgrade from Individual to Team later?
+                        <span class="material-symbols-outlined transition duration-300 group-open:-rotate-180 text-primary">expand_more</span>
+</summary>
+<div class="mt-4 font-body-md text-on-surface-variant leading-relaxed">
+                        Yes, upgrades take effect immediately. When you upgrade, we prorate the remaining balance of your current billing period and apply it to the Team plan. All your existing deals, documents, and financial records stay intact. No data migration needed.
+                    </div>
+</details>
+<!-- FAQ Item 3 -->
+<details class="group glass-panel rounded-lg p-6 [&amp;_summary::-webkit-details-marker]:hidden cursor-pointer">
+<summary class="flex justify-between items-center font-headline-md text-[18px]">
+                        How does the free trial work?
+                        <span class="material-symbols-outlined transition duration-300 group-open:-rotate-180 text-primary">expand_more</span>
+</summary>
+<div class="mt-4 font-body-md text-on-surface-variant leading-relaxed">
+                        Every new account starts with a full-access 14-day free trial. A credit card is collected at checkout, but you won't be charged until your trial ends. You get the complete Team-tier experience so you can evaluate every feature. At trial end, choose the plan that fits your workflow. If you don't convert, your data is preserved for 90 days in case you return.
+                    </div>
+</details>
+</div>
+</section>
+<!-- Bottom CTA -->
+<section class="glass-panel rounded-2xl p-12 text-center max-w-4xl mx-auto relative overflow-hidden">
+<div class="absolute inset-0 bg-gradient-to-r from-primary/10 to-transparent opacity-50"></div>
+<div class="relative z-10">
+<h2 class="font-headline-xl text-headline-xl mb-4 text-white">Stop bleeding margins to disorganized deals.</h2>
+<p class="font-body-lg text-body-lg text-on-surface-variant mb-8 max-w-2xl mx-auto">PaperWorking centralizes your pipeline, tracks real-time costs, and automates closing docs so you can close faster and scale without the chaos.</p>
+<a class="inline-flex items-center gap-2 bg-primary text-on-primary font-label-md text-[16px] px-8 py-4 rounded-xl luminous-button hover:opacity-90 active:scale-95 transition-all" href="/register">
+                    Start 14-Day Free Trial
+                    <span class="material-symbols-outlined text-[20px]">arrow_forward</span>
+</a>
+<p class="font-body-sm text-body-sm text-on-surface-variant mt-4 opacity-70">14-day trial · Credit card required · No charge until day 15</p>
+</div>
+</section>
+</main>
+<!-- Footer -->
+<footer class="bg-surface-container-lowest dark:bg-surface-container-lowest border-t border-white/5 w-full py-stack-lg mt-auto">
+<div class="grid grid-cols-2 md:grid-cols-4 gap-gutter-desktop px-margin-desktop max-w-container-max mx-auto">
+<div class="col-span-2 md:col-span-1 flex flex-col gap-4">
+<div class="font-headline-sm text-headline-sm font-bold text-on-surface flex items-center gap-2">
+<span class="material-symbols-outlined text-primary">dataset</span>
+                    PaperWorking
+                </div>
+<p class="font-body-sm text-body-sm text-on-surface-variant opacity-80">Deal pipeline, rehab tracking, and closing docs — all in one place. Built for serious real estate investors.</p>
+<p class="font-body-sm text-body-sm text-on-surface-variant mt-auto text-[11px]">© 2024 PaperWorking. All rights reserved.</p>
+</div>
+<div class="flex flex-col gap-3">
+<h4 class="font-label-md text-label-md text-on-surface uppercase tracking-wider mb-2">Product</h4>
+<a class="font-body-sm text-body-sm text-on-surface-variant hover:text-primary transition-colors opacity-80 hover:opacity-100" href="/how-it-works">How It Works</a>
+<a class="font-body-sm text-body-sm text-primary transition-colors opacity-100" href="/pricing">Pricing</a>
+<a class="font-body-sm text-body-sm text-on-surface-variant hover:text-primary transition-colors opacity-80 hover:opacity-100" href="/dashboard">Dashboard</a>
+<a class="font-body-sm text-body-sm text-on-surface-variant hover:text-primary transition-colors opacity-80 hover:opacity-100" href="/news">News</a>
+</div>
+<div class="flex flex-col gap-3">
+<h4 class="font-label-md text-label-md text-on-surface uppercase tracking-wider mb-2">Company</h4>
+<a class="font-body-sm text-body-sm text-on-surface-variant hover:text-primary transition-colors opacity-80 hover:opacity-100" href="/about">About</a>
+<a class="font-body-sm text-body-sm text-on-surface-variant hover:text-primary transition-colors opacity-80 hover:opacity-100" href="/careers">Careers</a>
+<a class="font-body-sm text-body-sm text-on-surface-variant hover:text-primary transition-colors opacity-80 hover:opacity-100" href="/blog">Blog</a>
+<a class="font-body-sm text-body-sm text-on-surface-variant hover:text-primary transition-colors opacity-80 hover:opacity-100" href="/contact">Contact</a>
+</div>
+<div class="flex flex-col gap-3">
+<h4 class="font-label-md text-label-md text-on-surface uppercase tracking-wider mb-2">Legal</h4>
+<a class="font-body-sm text-body-sm text-on-surface-variant hover:text-primary transition-colors opacity-80 hover:opacity-100" href="/privacy">Privacy Policy</a>
+<a class="font-body-sm text-body-sm text-on-surface-variant hover:text-primary transition-colors opacity-80 hover:opacity-100" href="/terms">Terms of Service</a>
+<a class="font-body-sm text-body-sm text-on-surface-variant hover:text-primary transition-colors opacity-80 hover:opacity-100" href="/cookies">Cookie Policy</a>
+</div>
+</div>
+</footer>
+</body></html>

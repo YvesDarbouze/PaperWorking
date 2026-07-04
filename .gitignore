@@ -103,6 +103,7 @@ firebase-key 2.json
 screenshot-dashboard.mjs
 jest.setup 2.ts
 /playwright-report/
+/google-cloud-sdk/
 
 # Google Cloud SDK
 google-cloud-sdk/

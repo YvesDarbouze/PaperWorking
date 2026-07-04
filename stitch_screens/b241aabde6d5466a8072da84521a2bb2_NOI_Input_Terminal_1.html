@@ -1,0 +1,441 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Asset Ops / NOI Control - PaperWorking</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&amp;family=JetBrains+Mono:wght@400;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "primary": "#57f1db",
+                        "on-tertiary-fixed": "#2d1600",
+                        "on-secondary": "#002e6a",
+                        "on-tertiary-container": "#744000",
+                        "on-secondary-fixed": "#001a42",
+                        "on-background": "#dae4ec",
+                        "tertiary-fixed": "#ffdcc0",
+                        "surface-variant": "#2d363d",
+                        "surface-container": "#182127",
+                        "surface-container-lowest": "#060f15",
+                        "surface-container-highest": "#2d363d",
+                        "error": "#ffb4ab",
+                        "tertiary-container": "#ffac5a",
+                        "on-primary-fixed-variant": "#005047",
+                        "primary-container": "#2dd4bf",
+                        "surface-container-low": "#141d23",
+                        "surface-bright": "#313a41",
+                        "on-primary": "#003731",
+                        "inverse-on-surface": "#293238",
+                        "outline-variant": "#3c4a46",
+                        "secondary-fixed-dim": "#adc6ff",
+                        "on-surface-variant": "#bacac5",
+                        "surface-container-high": "#222b32",
+                        "outline": "#859490",
+                        "surface-tint": "#3cddc7",
+                        "primary-fixed": "#62fae3",
+                        "inverse-primary": "#006b5f",
+                        "background": "#0b141a",
+                        "error-container": "#93000a",
+                        "on-error-container": "#ffdad6",
+                        "tertiary-fixed-dim": "#ffb875",
+                        "on-tertiary": "#4b2800",
+                        "on-secondary-container": "#e6ecff",
+                        "on-primary-container": "#00574d",
+                        "surface": "#0b141a",
+                        "surface-dim": "#0b141a",
+                        "on-primary-fixed": "#00201c",
+                        "on-secondary-fixed-variant": "#004395",
+                        "on-error": "#690005",
+                        "on-surface": "#dae4ec",
+                        "primary-fixed-dim": "#3cddc7",
+                        "secondary": "#adc6ff",
+                        "secondary-container": "#0566d9",
+                        "tertiary": "#ffd1aa",
+                        "secondary-fixed": "#d8e2ff",
+                        "inverse-surface": "#dae4ec",
+                        "on-tertiary-fixed-variant": "#6b3b00"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "gutter-mobile": "16px",
+                        "gutter-desktop": "24px",
+                        "margin-desktop": "40px",
+                        "margin-mobile": "20px",
+                        "stack-lg": "32px",
+                        "container-max": "1280px",
+                        "unit": "8px",
+                        "stack-sm": "8px",
+                        "stack-md": "16px"
+                    },
+                    "fontFamily": {
+                        "mono": ["JetBrains Mono", "monospace"],
+                        "label-sm": ["Plus Jakarta Sans"],
+                        "label-md": ["Plus Jakarta Sans"],
+                        "headline-md": ["Plus Jakarta Sans"],
+                        "body-lg": ["Plus Jakarta Sans"],
+                        "headline-lg-mobile": ["Plus Jakarta Sans"],
+                        "headline-xl": ["Plus Jakarta Sans"],
+                        "headline-lg": ["Plus Jakarta Sans"],
+                        "body-sm": ["Plus Jakarta Sans"],
+                        "body-md": ["Plus Jakarta Sans"]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        .glass-panel {
+            background: rgba(24, 33, 39, 0.6);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+        }
+        .mono-tabular {
+            font-family: 'JetBrains Mono', monospace;
+            font-variant-numeric: tabular-nums;
+        }
+        input[type=range]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            height: 18px;
+            width: 18px;
+            border-radius: 50%;
+            background: #57f1db;
+            cursor: pointer;
+            box-shadow: 0 0 10px rgba(87, 241, 219, 0.5);
+        }
+        ::-webkit-scrollbar {
+            width: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #0b141a;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #2d363d;
+            border-radius: 10px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #57f1db;
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background text-on-surface font-body-md selection:bg-primary/30 min-h-screen">
+<!-- TopAppBar -->
+<header class="fixed top-0 w-full z-50 bg-surface-container-lowest/80 backdrop-blur-xl text-primary font-headline-md text-headline-md border-b border-white/10 shadow-sm flex items-center justify-between px-gutter-desktop h-20">
+<div class="flex items-center gap-4">
+<span class="material-symbols-outlined text-primary text-3xl">terminal</span>
+<h1 class="font-bold tracking-tighter">Asset Ops / NOI Control</h1>
+</div>
+<div class="flex items-center gap-6">
+<nav class="hidden md:flex items-center gap-8">
+<a class="text-primary font-bold transition-colors" href="#">Portfolio</a>
+<a class="text-on-surface-variant hover:text-on-surface transition-colors" href="#">Analytics</a>
+<a class="text-on-surface-variant hover:text-on-surface transition-colors" href="#">Settings</a>
+</nav>
+<div class="w-10 h-10 rounded-full border border-primary/20 overflow-hidden">
+<img alt="User Portfolio Avatar" data-alt="A professional headshot of a real estate fund manager, styled with a high-fidelity obsidian digital filter. The lighting is dramatic and cinematic, with soft teal accents illuminating the side of the face against a deep black background. The overall aesthetic is sophisticated, modern, and aligned with a premium financial technology interface." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAEUMFj9Tarm6tt6L0SX3_o5iMMZ_mrv0WIpn3htfWRgFUBtjlxchE9-EgYlVqiHLBFAWcD8JWlAu0QlW2OVLBlQXWpNXvPZLN_vt_mSSgsd_uRhQoGfoHfic_MWcplkaZa_gUjBVw1QxdqKwk5N9mnEju7rLfORamoIMme4NXRPLikhjZZcZEZlH3vJeKnzswOFf-p9PNcqr4zL1qv3n27-gdPgY8LCbqn2aqRjGpV1Q-qJ7lZ3NjmtPcQH82IA3NnZUBQVb8chZnh"/>
+</div>
+</div>
+</header>
+<main class="pt-24 pb-32 px-gutter-mobile md:px-margin-desktop max-w-container-max mx-auto space-y-stack-lg">
+<!-- INCOME PANEL -->
+<section class="glass-panel rounded-xl overflow-hidden p-gutter-desktop">
+<div class="flex items-center gap-2 mb-6 border-l-4 border-primary pl-4">
+<h2 class="font-headline-md text-headline-md uppercase tracking-widest text-on-surface">Income</h2>
+<span class="text-xs text-primary/50 mono-tabular ml-auto">[ID: REV-2024-X]</span>
+</div>
+<!-- Rent Roll -->
+<div class="mb-10">
+<h3 class="font-label-md text-label-md text-on-surface-variant mb-4 flex items-center gap-2">
+<span class="material-symbols-outlined text-sm">list_alt</span> RENT ROLL
+                </h3>
+<div class="overflow-x-auto">
+<table class="w-full text-left border-collapse">
+<thead>
+<tr class="text-on-surface-variant border-b border-white/5 font-label-sm text-label-sm">
+<th class="py-3 px-2">UNIT</th>
+<th class="py-3 px-2">MONTHLY</th>
+<th class="py-3 px-2">ANNUAL (CALC)</th>
+<th class="py-3 px-2">LEASE STATUS</th>
+</tr>
+</thead>
+<tbody class="mono-tabular text-sm">
+<tr class="border-b border-white/5 hover:bg-white/5 transition-colors group">
+<td class="py-4 px-2 font-bold">Unit A</td>
+<td class="py-4 px-2 text-primary">$1,950.00</td>
+<td class="py-4 px-2 italic text-on-surface-variant/80">$23,400.00</td>
+<td class="py-4 px-2">
+<span class="px-3 py-1 bg-primary/10 text-primary border border-primary/20 rounded-full text-[10px] font-bold tracking-tighter uppercase">Occupied</span>
+</td>
+</tr>
+<tr class="border-b border-white/5 hover:bg-white/5 transition-colors group">
+<td class="py-4 px-2 font-bold">Unit B</td>
+<td class="py-4 px-2 text-primary">$2,100.00</td>
+<td class="py-4 px-2 italic text-on-surface-variant/80">$25,200.00</td>
+<td class="py-4 px-2">
+<span class="px-3 py-1 bg-surface-variant text-on-surface-variant border border-white/10 rounded-full text-[10px] font-bold tracking-tighter uppercase">Vacant</span>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<!-- Other Income -->
+<div class="mb-8">
+<h3 class="font-label-md text-label-md text-on-surface-variant mb-4 flex items-center gap-2">
+<span class="material-symbols-outlined text-sm">add_circle</span> OTHER INCOME
+                </h3>
+<div class="space-y-2">
+<div class="grid grid-cols-1 md:grid-cols-3 gap-4 items-center bg-surface-container-low p-4 rounded-lg border border-white/5">
+<div>
+<label class="block text-[10px] text-on-surface-variant uppercase font-bold mb-1">Label</label>
+<input class="bg-transparent border-none p-0 text-sm focus:ring-0 text-on-surface w-full" type="text" value="Laundry / Vending"/>
+</div>
+<div>
+<label class="block text-[10px] text-on-surface-variant uppercase font-bold mb-1">Monthly</label>
+<input class="bg-transparent border-none p-0 text-sm focus:ring-0 text-primary mono-tabular w-full" type="text" value="$150.00"/>
+</div>
+<div>
+<label class="block text-[10px] text-on-surface-variant uppercase font-bold mb-1">Notes</label>
+<input class="bg-transparent border-none p-0 text-sm focus:ring-0 text-on-surface-variant/60 w-full italic" placeholder="Add note..." type="text"/>
+</div>
+</div>
+<button class="w-full py-3 border-2 border-dashed border-white/10 rounded-lg text-on-surface-variant hover:text-primary hover:border-primary/50 transition-all text-sm font-label-md flex items-center justify-center gap-2">
+<span class="material-symbols-outlined">add</span> Add Row
+                    </button>
+</div>
+</div>
+<!-- Panel Footer -->
+<div class="mt-8 pt-6 border-t border-primary/20 flex flex-col items-end">
+<span class="text-[10px] uppercase font-bold text-on-surface-variant tracking-[0.2em] mb-1">Gross Annual Income</span>
+<div class="text-[24px] mono-tabular font-bold text-on-surface">
+                    $23,400.00
+                </div>
+</div>
+</section>
+<!-- VACANCY ASSUMPTION PANEL -->
+<section class="glass-panel rounded-xl p-gutter-desktop border-l-4 border-error/50">
+<div class="flex flex-col md:flex-row md:items-center justify-between gap-6">
+<div class="flex-1">
+<h2 class="font-headline-md text-headline-md text-on-surface mb-2">Vacancy Assumption</h2>
+<p class="font-body-sm text-body-sm text-on-surface-variant italic">
+                        U.S. residential norm is ~10%. A 5–7% assumption signals healthy demand.
+                    </p>
+</div>
+<div class="flex flex-col items-end min-w-[200px]">
+<span class="text-[10px] uppercase font-bold text-error tracking-tighter mb-1">Vacancy Losses (7%)</span>
+<div class="text-[20px] mono-tabular font-bold text-error">-$1,638.00</div>
+</div>
+</div>
+<div class="mt-8 relative h-12 flex items-center">
+<div class="absolute w-full h-1 bg-surface-variant rounded-full"></div>
+<div class="absolute h-1 bg-primary rounded-full" style="width: 35%;"></div>
+<input class="absolute w-full appearance-none bg-transparent focus:outline-none z-10" max="20" min="0" type="range" value="7"/>
+<div class="absolute top-8 left-0 text-[10px] text-on-surface-variant mono-tabular">0%</div>
+<div class="absolute top-8 right-0 text-[10px] text-on-surface-variant mono-tabular">20%</div>
+</div>
+</section>
+<!-- OPERATING EXPENSES PANEL -->
+<section class="glass-panel rounded-xl p-gutter-desktop">
+<div class="flex items-center gap-2 mb-8 border-l-4 border-white/20 pl-4">
+<h2 class="font-headline-md text-headline-md uppercase tracking-widest text-on-surface">Operating Expenses</h2>
+<span class="text-[10px] text-on-surface-variant mono-tabular ml-auto">ESTIMATED VS ACTUAL</span>
+</div>
+<div class="space-y-4">
+<!-- Header Labels -->
+<div class="grid grid-cols-12 gap-2 text-[10px] font-bold text-on-surface-variant uppercase tracking-tighter px-2 border-b border-white/5 pb-2">
+<div class="col-span-4">Category</div>
+<div class="col-span-2">Monthly</div>
+<div class="col-span-2">Annual (Auto)</div>
+<div class="col-span-2 text-center">E/A</div>
+<div class="col-span-2 text-center">Docs</div>
+</div>
+<!-- Seed Row: Property Taxes -->
+<div class="grid grid-cols-12 gap-2 items-center bg-white/5 p-3 rounded-lg border border-white/5 hover:border-primary/30 transition-all group">
+<div class="col-span-4 font-label-md text-label-md">Property Taxes</div>
+<div class="col-span-2 mono-tabular text-primary">$200.00</div>
+<div class="col-span-2 mono-tabular italic text-on-surface-variant/60">$2,400.00</div>
+<div class="col-span-2 flex justify-center">
+<button class="w-8 h-8 rounded-full bg-primary text-on-primary font-bold text-[10px] flex items-center justify-center">A</button>
+</div>
+<div class="col-span-2 flex justify-center">
+<button class="text-on-surface-variant hover:text-primary transition-colors">
+<span class="material-symbols-outlined text-lg">attach_file</span>
+</button>
+</div>
+</div>
+<!-- Static Seed Categories -->
+<div class="grid grid-cols-12 gap-2 items-center p-3 rounded-lg border border-white/5 hover:bg-white/5">
+<div class="col-span-4 font-label-md text-label-md">Maintenance &amp; CapEx</div>
+<div class="col-span-2 mono-tabular text-primary">$350.00</div>
+<div class="col-span-2 mono-tabular italic text-on-surface-variant/60">$4,200.00</div>
+<div class="col-span-2 flex justify-center">
+<button class="w-8 h-8 rounded-full border border-white/20 text-on-surface-variant font-bold text-[10px] flex items-center justify-center">E</button>
+</div>
+<div class="col-span-2 flex justify-center">
+<span class="text-on-surface-variant/20 material-symbols-outlined text-lg">attach_file</span>
+</div>
+</div>
+<div class="grid grid-cols-12 gap-2 items-center p-3 rounded-lg border border-white/5 hover:bg-white/5">
+<div class="col-span-4 font-label-md text-label-md">Property Management</div>
+<div class="col-span-2 mono-tabular text-primary">$150.00</div>
+<div class="col-span-2 mono-tabular italic text-on-surface-variant/60">$1,800.00</div>
+<div class="col-span-2 flex justify-center">
+<button class="w-8 h-8 rounded-full border border-white/20 text-on-surface-variant font-bold text-[10px] flex items-center justify-center">E</button>
+</div>
+<div class="col-span-2 flex justify-center">
+<span class="text-on-surface-variant/20 material-symbols-outlined text-lg">attach_file</span>
+</div>
+</div>
+<div class="grid grid-cols-12 gap-2 items-center p-3 rounded-lg border border-white/5 hover:bg-white/5">
+<div class="col-span-4 font-label-md text-label-md">Insurance</div>
+<div class="col-span-2 mono-tabular text-primary">$80.00</div>
+<div class="col-span-2 mono-tabular italic text-on-surface-variant/60">$960.00</div>
+<div class="col-span-2 flex justify-center">
+<button class="w-8 h-8 rounded-full bg-primary text-on-primary font-bold text-[10px] flex items-center justify-center">A</button>
+</div>
+<div class="col-span-2 flex justify-center">
+<span class="text-primary material-symbols-outlined text-lg">attach_file</span>
+</div>
+</div>
+<div class="grid grid-cols-12 gap-2 items-center p-3 rounded-lg border border-white/5 hover:bg-white/5">
+<div class="col-span-4 font-label-md text-label-md">HOA</div>
+<div class="col-span-2 mono-tabular text-primary">$75.00</div>
+<div class="col-span-2 mono-tabular italic text-on-surface-variant/60">$900.00</div>
+<div class="col-span-2 flex justify-center">
+<button class="w-8 h-8 rounded-full bg-primary text-on-primary font-bold text-[10px] flex items-center justify-center">A</button>
+</div>
+<div class="col-span-2 flex justify-center">
+<span class="text-primary material-symbols-outlined text-lg">attach_file</span>
+</div>
+</div>
+<div class="grid grid-cols-12 gap-2 items-center p-3 rounded-lg border border-white/5 hover:bg-white/5">
+<div class="col-span-4 font-label-md text-label-md">Utilities</div>
+<div class="col-span-2 mono-tabular text-primary">$54.50</div>
+<div class="col-span-2 mono-tabular italic text-on-surface-variant/60">$654.00</div>
+<div class="col-span-2 flex justify-center">
+<button class="w-8 h-8 rounded-full border border-white/20 text-on-surface-variant font-bold text-[10px] flex items-center justify-center">E</button>
+</div>
+<div class="col-span-2 flex justify-center">
+<span class="text-on-surface-variant/20 material-symbols-outlined text-lg">attach_file</span>
+</div>
+</div>
+</div>
+<!-- Panel Footer -->
+<div class="mt-8 pt-6 border-t border-white/10 flex flex-col items-end">
+<span class="text-[10px] uppercase font-bold text-on-surface-variant tracking-[0.2em] mb-1">Total Operating Expenses</span>
+<div class="text-[20px] mono-tabular font-bold text-on-surface">
+                    -$10,914.00
+                </div>
+</div>
+</section>
+</main>
+<!-- Navigation Drawer (Side) - hidden on small screens -->
+<aside class="hidden xl:flex fixed left-0 top-20 h-full w-72 flex-col py-8 px-4 bg-surface-container dark:bg-surface-container border-r border-white/5 shadow-2xl transition-all duration-200 ease-in-out z-40">
+<div class="mb-10 flex items-center gap-4 px-2">
+<div class="w-10 h-10 rounded-lg bg-primary-container/20 flex items-center justify-center">
+<span class="material-symbols-outlined text-primary">analytics</span>
+</div>
+<div>
+<p class="font-bold text-on-surface text-sm">Operations Lead</p>
+<p class="text-[10px] text-on-surface-variant">Global Real Estate Fund</p>
+</div>
+</div>
+<nav class="space-y-2">
+<a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:text-on-surface hover:bg-white/5 rounded-lg transition-all group" href="#">
+<span class="material-symbols-outlined text-sm">dashboard</span>
+<span class="font-label-md text-label-md">Portfolio</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:text-on-surface hover:bg-white/5 rounded-lg transition-all group" href="#">
+<span class="material-symbols-outlined text-sm">query_stats</span>
+<span class="font-label-md text-label-md">Analytics</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 bg-primary-container text-on-primary-container font-bold rounded-lg transition-all" href="#">
+<span class="material-symbols-outlined text-sm">list_alt</span>
+<span class="font-label-md text-label-md">Rent Roll</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:text-on-surface hover:bg-white/5 rounded-lg transition-all group" href="#">
+<span class="material-symbols-outlined text-sm">payments</span>
+<span class="font-label-md text-label-md">Expenses</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:text-on-surface hover:bg-white/5 rounded-lg transition-all group" href="#">
+<span class="material-symbols-outlined text-sm">settings</span>
+<span class="font-label-md text-label-md">Settings</span>
+</a>
+</nav>
+<div class="mt-auto px-4 pb-12">
+<span class="text-[10px] text-on-surface-variant/40 mono-tabular">v4.2.0-stable</span>
+</div>
+</aside>
+<!-- Sticky Footer -->
+<footer class="fixed bottom-0 w-full h-16 bg-surface-container-highest/90 backdrop-blur-2xl border-t border-primary/20 shadow-[0_-4px_20px_rgba(87,241,219,0.15)] z-[60] flex items-center px-4 md:px-margin-desktop">
+<div class="flex-1 flex flex-col md:flex-row md:items-center gap-1 md:gap-4 overflow-hidden">
+<div class="hidden sm:flex items-center gap-2 text-[10px] text-on-surface-variant uppercase font-bold tracking-tighter">
+<span>Gross $23,400</span>
+<span>−</span>
+<span class="text-error">Vacancy $1,638</span>
+<span>−</span>
+<span class="text-on-surface">OpEx $10,914</span>
+<span>=</span>
+</div>
+<div class="text-[18px] md:text-[22px] mono-tabular font-bold text-primary flex items-center gap-2">
+                $12,486 <span class="text-[10px] tracking-widest uppercase opacity-80">NOI</span>
+</div>
+</div>
+<button class="bg-primary text-on-primary font-bold px-6 py-2 rounded-lg text-sm hover:scale-105 active:scale-95 transition-transform flex items-center gap-2 shadow-[0_0_20px_-5px_#57f1db]">
+            Save &amp; view chart <span class="material-symbols-outlined text-sm">arrow_forward</span>
+</button>
+</footer>
+<!-- Bottom Navigation Bar (Mobile only) -->
+<nav class="md:hidden fixed bottom-16 w-full h-14 bg-surface-container-high/95 backdrop-blur-lg border-t border-white/5 flex justify-around items-center z-[55]">
+<div class="flex flex-col items-center justify-center text-on-surface-variant">
+<span class="material-symbols-outlined text-xl">attach_money</span>
+<span class="text-[8px] font-bold uppercase">Income</span>
+</div>
+<div class="flex flex-col items-center justify-center text-on-surface-variant">
+<span class="material-symbols-outlined text-xl">layers_clear</span>
+<span class="text-[8px] font-bold uppercase">Vacancy</span>
+</div>
+<div class="flex flex-col items-center justify-center text-on-surface-variant">
+<span class="material-symbols-outlined text-xl">account_balance_wallet</span>
+<span class="text-[8px] font-bold uppercase">Expenses</span>
+</div>
+<div class="flex flex-col items-center justify-center text-primary">
+<span class="material-symbols-outlined text-xl" style="font-variation-settings: 'FILL' 1;">calculate</span>
+<span class="text-[8px] font-bold uppercase">NOI Summary</span>
+</div>
+</nav>
+<script>
+        // Micro-interaction for slider
+        const slider = document.querySelector('input[type="range"]');
+        const vacancyLossReadout = document.querySelector('.text-error');
+        const vacancyPercentageReadout = document.querySelector('.uppercase.text-error');
+
+        slider.addEventListener('input', (e) => {
+            const val = e.target.value;
+            const loss = (23400 * (val / 100)).toFixed(2);
+            vacancyLossReadout.textContent = `-$${Number(loss).toLocaleString()}`;
+            vacancyPercentageReadout.textContent = `Vacancy Losses (${val}%)`;
+            
+            // Re-calculate NOI on bottom bar if we were doing dynamic updates
+            const noiValue = 23400 - loss - 10914;
+            document.querySelector('.text-primary.mono-tabular').firstChild.textContent = `$${Number(noiValue).toLocaleString()} `;
+        });
+    </script>
+</body></html>

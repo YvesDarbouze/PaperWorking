@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Step 5: Review &amp; Launch | PaperWorking</title>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&amp;family=JetBrains+Mono:wght@400;500&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "surface-dim": "#0b141a",
+                        "surface-container-lowest": "#060f15",
+                        "secondary-fixed-dim": "#adc6ff",
+                        "on-primary-container": "#00574d",
+                        "on-primary-fixed-variant": "#005047",
+                        "inverse-surface": "#dae4ec",
+                        "surface-tint": "#3cddc7",
+                        "on-secondary-fixed-variant": "#004395",
+                        "surface-container-high": "#222b32",
+                        "on-tertiary": "#4b2800",
+                        "error": "#ffb4ab",
+                        "on-secondary-container": "#e6ecff",
+                        "tertiary-fixed": "#ffdcc0",
+                        "primary": "#57f1db",
+                        "surface": "#0b141a",
+                        "on-tertiary-fixed": "#2d1600",
+                        "on-surface": "#dae4ec",
+                        "on-error-container": "#ffdad6",
+                        "surface-bright": "#313a41",
+                        "on-secondary": "#002e6a",
+                        "on-primary": "#003731",
+                        "on-tertiary-container": "#744000",
+                        "on-surface-variant": "#bacac5",
+                        "tertiary-fixed-dim": "#ffb875",
+                        "inverse-primary": "#006b5f",
+                        "surface-variant": "#2d363d",
+                        "tertiary-container": "#ffac5a",
+                        "on-primary-fixed": "#00201c",
+                        "on-error": "#690005",
+                        "surface-container-highest": "#2d363d",
+                        "secondary-fixed": "#d8e2ff",
+                        "secondary-container": "#0566d9",
+                        "primary-fixed-dim": "#3cddc7",
+                        "tertiary": "#ffd1aa",
+                        "inverse-on-surface": "#293238",
+                        "surface-container": "#182127",
+                        "on-secondary-fixed": "#001a42",
+                        "error-container": "#93000a",
+                        "primary-container": "#2dd4bf",
+                        "on-background": "#dae4ec",
+                        "outline-variant": "#3c4a46",
+                        "outline": "#859490",
+                        "surface-container-low": "#141d23",
+                        "on-tertiary-fixed-variant": "#6b3b00",
+                        "primary-fixed": "#62fae3",
+                        "secondary": "#adc6ff",
+                        "background": "#0b141a"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "stack-md": "16px",
+                        "margin-desktop": "40px",
+                        "stack-sm": "8px",
+                        "gutter-desktop": "24px",
+                        "margin-mobile": "20px",
+                        "unit": "8px",
+                        "stack-lg": "32px",
+                        "gutter-mobile": "16px",
+                        "container-max": "1280px"
+                    },
+                    "fontFamily": {
+                        "sans": ["Plus Jakarta Sans", "sans-serif"],
+                        "mono": ["JetBrains Mono", "monospace"],
+                        "label-sm": ["Plus Jakarta Sans"],
+                        "body-sm": ["Plus Jakarta Sans"],
+                        "headline-lg": ["Plus Jakarta Sans"],
+                        "headline-md": ["Plus Jakarta Sans"],
+                        "label-md": ["Plus Jakarta Sans"],
+                        "body-lg": ["Plus Jakarta Sans"],
+                        "body-md": ["Plus Jakarta Sans"],
+                        "headline-lg-mobile": ["Plus Jakarta Sans"],
+                        "headline-xl": ["Plus Jakarta Sans"]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        body {
+            background-color: #060f15;
+            color: #dae4ec;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        .glass-card {
+            background: rgba(11, 20, 26, 0.6);
+            backdrop-filter: blur(24px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.05);
+        }
+
+        .glass-card:hover {
+            border-color: rgba(87, 241, 219, 0.2);
+            background: rgba(11, 20, 26, 0.8);
+        }
+
+        .luminous-glow {
+            box-shadow: 0 0 30px -5px rgba(87, 241, 219, 0.4);
+        }
+
+        .modal-entrance {
+            animation: modalFadeScale 280ms cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        }
+
+        @keyframes modalFadeScale {
+            from {
+                opacity: 0;
+                transform: scale(0.96) translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: scale(1) translateY(0);
+            }
+        }
+
+        .progress-segment {
+            transition: all 400ms cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+            vertical-align: middle;
+        }
+    </style>
+</head>
+<body class="min-h-screen flex items-center justify-center p-6 bg-surface-container-lowest overflow-hidden">
+<!-- Top Navigation Anchor (Manual Mock based on JSON TopAppBar style) -->
+<header class="fixed top-0 w-full z-50 bg-background/80 backdrop-blur-xl border-b border-white/10 h-16 flex items-center justify-between px-margin-desktop">
+<div class="flex items-center gap-4">
+<span class="material-symbols-outlined text-on-surface-variant cursor-pointer hover:opacity-80 transition-opacity">close</span>
+<span class="font-headline-md text-headline-md font-bold text-primary">PaperWorking</span>
+</div>
+<div class="hidden md:flex items-center gap-8">
+<nav class="flex gap-6">
+<span class="font-label-md text-label-md text-on-surface-variant cursor-pointer">Properties</span>
+<span class="font-label-md text-label-md text-on-surface-variant cursor-pointer">Analysis</span>
+<span class="font-label-md text-label-md text-primary cursor-pointer">Wizard</span>
+</nav>
+</div>
+<div class="w-8 h-8 rounded-full bg-surface-variant border border-white/10"></div>
+</header>
+<!-- Main Wizard Modal -->
+<main class="modal-entrance w-full max-w-[720px] glass-card rounded-[24px] p-10 relative z-10">
+<!-- Header -->
+<header class="text-center mb-10">
+<h1 class="font-headline-xl text-headline-xl text-on-surface mb-3 tracking-tight">Ready to start.</h1>
+<p class="font-body-md text-body-md text-on-surface-variant max-w-[480px] mx-auto">
+                Here's what we set up. You can change anything from inside the Project.
+            </p>
+</header>
+<!-- Summary Grid -->
+<section class="grid grid-cols-1 md:grid-cols-2 gap-gutter-mobile mb-10">
+<!-- Property Card -->
+<div class="glass-card rounded-xl p-5 group transition-all">
+<div class="flex justify-between items-start mb-2">
+<span class="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-widest">Property</span>
+<button class="text-primary font-label-sm text-label-sm hover:underline opacity-60 group-hover:opacity-100 transition-opacity">Edit</button>
+</div>
+<p class="font-mono text-body-lg text-on-surface">1248 Oakwood Ave · SFR</p>
+</div>
+<!-- Phase Card -->
+<div class="glass-card rounded-xl p-5 group transition-all">
+<div class="flex justify-between items-start mb-2">
+<span class="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-widest">Phase</span>
+<button class="text-primary font-label-sm text-label-sm hover:underline opacity-60 group-hover:opacity-100 transition-opacity">Edit</button>
+</div>
+<div class="flex items-center gap-2">
+<div class="w-2 h-2 rounded-full bg-primary shadow-[0_0_8px_rgba(87,241,219,0.8)]"></div>
+<p class="font-mono text-body-lg text-on-surface">HOLD</p>
+</div>
+</div>
+<!-- Strategy Card -->
+<div class="glass-card rounded-xl p-5 group transition-all">
+<div class="flex justify-between items-start mb-2">
+<span class="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-widest">Strategy</span>
+<button class="text-primary font-label-sm text-label-sm hover:underline opacity-60 group-hover:opacity-100 transition-opacity">Edit</button>
+</div>
+<p class="font-mono text-body-lg text-on-surface">Rental</p>
+</div>
+<!-- Ownership Card -->
+<div class="glass-card rounded-xl p-5 group transition-all">
+<div class="flex justify-between items-start mb-2">
+<span class="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-widest">Ownership</span>
+<button class="text-primary font-label-sm text-label-sm hover:underline opacity-60 group-hover:opacity-100 transition-opacity">Edit</button>
+</div>
+<p class="font-mono text-body-lg text-on-surface">100% (solo)</p>
+</div>
+</section>
+<!-- Progress Component -->
+<section class="bg-surface-container-high/40 rounded-2xl p-6 border border-white/5 mb-10">
+<div class="flex justify-between items-end mb-4">
+<div>
+<h3 class="font-mono text-headline-md text-primary mb-1">21.7% READY</h3>
+<p class="font-body-sm text-body-sm text-on-surface-variant">
+                        You'll see your first metrics light up after 4 more fields. Up next: Operations.
+                    </p>
+</div>
+<span class="material-symbols-outlined text-primary-container text-[32px]">analytics</span>
+</div>
+<!-- Progress Bar -->
+<div class="flex gap-1.5 h-1.5 w-full">
+<div class="flex-1 bg-primary rounded-full"></div>
+<div class="flex-1 bg-primary rounded-full"></div>
+<div class="flex-1 bg-primary/20 rounded-full overflow-hidden relative">
+<div class="absolute inset-0 bg-primary/40 w-1/3"></div>
+</div>
+<div class="flex-1 bg-white/5 rounded-full"></div>
+<div class="flex-1 bg-white/5 rounded-full relative overflow-hidden" id="anim-segment">
+<div class="absolute inset-0 bg-primary transform -translate-x-full transition-transform duration-[240ms] ease-out delay-500" id="anim-fill"></div>
+</div>
+</div>
+</section>
+<!-- Actions -->
+<footer class="flex flex-col items-center gap-6">
+<button class="w-full md:w-auto px-12 py-4 bg-primary text-surface-container-lowest font-headline-md rounded-full luminous-glow hover:scale-[1.02] active:scale-95 transition-all flex items-center justify-center gap-3">
+                Enter the Hold workspace
+                <span class="material-symbols-outlined">arrow_forward</span>
+</button>
+<button class="font-label-md text-label-md text-on-surface-variant hover:text-on-surface transition-colors">
+                Save &amp; finish later
+            </button>
+</footer>
+<!-- Floating Back Button (Absolute Bottom Left) -->
+<button class="absolute bottom-10 left-10 flex items-center gap-2 font-label-md text-label-md text-on-surface-variant hover:text-on-surface transition-colors group">
+<span class="material-symbols-outlined text-[20px] group-hover:-translate-x-1 transition-transform">arrow_back</span>
+            Back
+        </button>
+</main>
+<!-- Bottom Navigation Mock (Mobile Fallback) -->
+<nav class="md:hidden fixed bottom-0 w-full z-50 rounded-t-xl bg-surface-container-low/60 backdrop-blur-2xl border-t border-white/12 px-8 py-4 flex justify-between items-center">
+<div class="flex flex-col items-center justify-center text-on-surface-variant px-6 py-2">
+<span class="material-symbols-outlined">arrow_back</span>
+<span class="font-label-md text-label-md">Back</span>
+</div>
+<div class="flex flex-col items-center justify-center text-on-surface-variant px-6 py-2">
+<span class="material-symbols-outlined">fast_forward</span>
+<span class="font-label-md text-label-md">Skip</span>
+</div>
+<div class="flex flex-col items-center justify-center bg-primary text-on-primary rounded-full px-6 py-2 shadow-[0_0_20px_-5px_rgba(87,241,219,0.5)]">
+<span class="material-symbols-outlined">arrow_forward</span>
+<span class="font-label-md text-label-md">Next</span>
+</div>
+</nav>
+<!-- Background Atmospheric Glows -->
+<div class="fixed top-[-10%] left-[-10%] w-[40%] h-[40%] bg-primary/5 blur-[120px] rounded-full pointer-events-none"></div>
+<div class="fixed bottom-[-10%] right-[-10%] w-[30%] h-[30%] bg-secondary-container/5 blur-[100px] rounded-full pointer-events-none"></div>
+<script>
+        // Micro-interaction: Animate the 5th progress segment on load
+        window.addEventListener('DOMContentLoaded', () => {
+            const fill = document.getElementById('anim-fill');
+            setTimeout(() => {
+                fill.style.transform = 'translateX(0)';
+            }, 600);
+        });
+
+        // Hover effect for cards to follow mouse (subtle)
+        document.querySelectorAll('.glass-card').forEach(card => {
+            card.addEventListener('mousemove', (e) => {
+                const rect = card.getBoundingClientRect();
+                const x = e.clientX - rect.left;
+                const y = e.clientY - rect.top;
+                card.style.setProperty('--mouse-x', `${x}px`);
+                card.style.setProperty('--mouse-y', `${y}px`);
+            });
+        });
+    </script>
+</body></html>

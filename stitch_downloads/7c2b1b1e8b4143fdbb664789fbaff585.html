@@ -1,0 +1,441 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Deal Analyzer - PaperWorking</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&amp;family=JetBrains+Mono:wght@400;500;600&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "error-container": "#93000a",
+                        "surface-container-highest": "#2d363d",
+                        "secondary-container": "#0566d9",
+                        "inverse-on-surface": "#293238",
+                        "on-background": "#dae4ec",
+                        "surface-container": "#182127",
+                        "on-secondary": "#002e6a",
+                        "on-primary-fixed-variant": "#005047",
+                        "surface-container-low": "#141d23",
+                        "inverse-surface": "#dae4ec",
+                        "on-primary-container": "#00574d",
+                        "on-secondary-fixed": "#001a42",
+                        "secondary-fixed": "#d8e2ff",
+                        "surface-variant": "#2d363d",
+                        "secondary-fixed-dim": "#adc6ff",
+                        "background": "#0b141a",
+                        "surface-tint": "#3cddc7",
+                        "surface-container-lowest": "#060f15",
+                        "primary-container": "#2dd4bf",
+                        "on-secondary-container": "#e6ecff",
+                        "on-error-container": "#ffdad6",
+                        "on-secondary-fixed-variant": "#004395",
+                        "on-primary-fixed": "#00201c",
+                        "on-error": "#690005",
+                        "tertiary-container": "#ffac5a",
+                        "on-tertiary-container": "#744000",
+                        "secondary": "#adc6ff",
+                        "primary-fixed-dim": "#3cddc7",
+                        "primary-fixed": "#62fae3",
+                        "tertiary": "#ffd1aa",
+                        "tertiary-fixed-dim": "#ffb875",
+                        "on-tertiary-fixed-variant": "#6b3b00",
+                        "on-surface-variant": "#bacac5",
+                        "tertiary-fixed": "#ffdcc0",
+                        "outline": "#859490",
+                        "error": "#ffb4ab",
+                        "surface": "#0b141a",
+                        "on-tertiary": "#4b2800",
+                        "on-surface": "#dae4ec",
+                        "surface-bright": "#313a41",
+                        "on-primary": "#003731",
+                        "outline-variant": "#3c4a46",
+                        "primary": "#57f1db",
+                        "on-tertiary-fixed": "#2d1600",
+                        "inverse-primary": "#006b5f",
+                        "surface-dim": "#0b141a",
+                        "surface-container-high": "#222b32"
+                    },
+                    borderRadius: {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    spacing: {
+                        "gutter-desktop": "24px",
+                        "container-max": "1280px",
+                        "stack-lg": "32px",
+                        "gutter-mobile": "16px",
+                        "stack-sm": "8px",
+                        "margin-desktop": "40px",
+                        "unit": "8px",
+                        "stack-md": "16px",
+                        "margin-mobile": "20px"
+                    },
+                    fontFamily: {
+                        "headline-xl": ["Plus Jakarta Sans"],
+                        "body-lg": ["Plus Jakarta Sans"],
+                        "label-md": ["Plus Jakarta Sans"],
+                        "body-md": ["Plus Jakarta Sans"],
+                        "headline-md": ["Plus Jakarta Sans"],
+                        "headline-lg": ["Plus Jakarta Sans"],
+                        "headline-lg-mobile": ["Plus Jakarta Sans"],
+                        "body-sm": ["Plus Jakarta Sans"],
+                        "label-sm": ["Plus Jakarta Sans"],
+                        "mono": ["JetBrains Mono", "monospace"]
+                    },
+                    fontSize: {
+                        "headline-xl": ["48px", { "lineHeight": "56px", "letterSpacing": "-0.02em", "fontWeight": "700" }],
+                        "body-lg": ["18px", { "lineHeight": "28px", "fontWeight": "400" }],
+                        "label-md": ["14px", { "lineHeight": "16px", "letterSpacing": "0.02em", "fontWeight": "600" }],
+                        "body-md": ["16px", { "lineHeight": "24px", "fontWeight": "400" }],
+                        "headline-md": ["24px", { "lineHeight": "32px", "fontWeight": "600" }],
+                        "headline-lg": ["32px", { "lineHeight": "40px", "letterSpacing": "-0.01em", "fontWeight": "700" }],
+                        "headline-lg-mobile": ["28px", { "lineHeight": "36px", "fontWeight": "700" }],
+                        "body-sm": ["14px", { "lineHeight": "20px", "fontWeight": "400" }],
+                        "label-sm": ["12px", { "lineHeight": "14px", "letterSpacing": "0.05em", "fontWeight": "500" }]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        .glass-card {
+            background: linear-gradient(135deg, rgba(24, 33, 39, 0.6) 0%, rgba(24, 33, 39, 0.3) 100%);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-top: 1px solid rgba(255, 255, 255, 0.08);
+            border-left: 1px solid rgba(255, 255, 255, 0.05);
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.2);
+        }
+        .glass-input {
+            background: rgba(11, 20, 26, 0.5);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            transition: all 0.2s ease;
+        }
+        .glass-input:focus-within {
+            border-color: #2dd4bf;
+            box-shadow: inset 0 0 0 1px rgba(45, 212, 191, 0.2);
+        }
+        .luminous-button {
+            box-shadow: 0 0 20px -5px rgba(45, 212, 191, 0.5);
+            transition: all 0.2s ease;
+        }
+        .luminous-button:active {
+            transform: scale(0.98);
+            box-shadow: 0 0 10px -2px rgba(45, 212, 191, 0.4);
+        }
+        .metric-glow-teal {
+            text-shadow: 0 0 10px rgba(45, 212, 191, 0.3);
+        }
+        .metric-glow-amber {
+            text-shadow: 0 0 10px rgba(255, 172, 90, 0.3);
+        }
+        
+        /* Drawer Mobile Transition */
+        #mobile-drawer {
+            transform: translateX(-100%);
+            transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        #mobile-drawer.open {
+            transform: translateX(0);
+        }
+        #drawer-overlay {
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s ease;
+        }
+        #drawer-overlay.open {
+            opacity: 1;
+            pointer-events: auto;
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-surface-container-lowest text-on-surface antialiased font-body-md min-h-screen flex flex-col md:flex-row overflow-x-hidden selection:bg-primary-container/30 selection:text-primary">
+<!-- TopAppBar (Mobile Only) -->
+<header class="md:hidden flex items-center justify-between px-margin-mobile h-16 bg-background/80 dark:bg-background/80 backdrop-blur-xl fixed top-0 w-full z-40 border-b border-white/10 shadow-sm">
+<div class="flex items-center gap-4">
+<button class="text-on-surface-variant hover:text-primary transition-colors active:scale-95 duration-150" id="menu-btn">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 0;">menu</span>
+</button>
+<div class="font-headline-md text-headline-md font-bold text-primary dark:text-primary flex items-center">
+<span class="font-bold">Paper</span><span class="font-light">Working</span>
+</div>
+</div>
+<button class="text-primary dark:text-primary active:scale-95 duration-150 font-label-md text-label-md flex items-center gap-1">
+<span class="material-symbols-outlined text-xl" style="font-variation-settings: 'FILL' 0;">save</span>
+<span class="hidden sm:inline">Save</span>
+</button>
+</header>
+<!-- NavigationDrawer Overlay (Mobile) -->
+<div class="md:hidden fixed inset-0 bg-black/60 backdrop-blur-sm z-40" id="drawer-overlay"></div>
+<!-- NavigationDrawer -->
+<nav class="fixed left-0 top-0 h-full w-64 z-50 bg-surface-container dark:bg-surface-container/60 backdrop-blur-2xl border-r border-white/10 shadow-2xl flex flex-col py-8 gap-2 md:translate-x-0 md:relative md:flex-shrink-0" id="mobile-drawer">
+<div class="px-6 mb-6 flex items-center justify-between">
+<div class="font-headline-lg text-headline-lg text-primary flex items-center">
+<span class="font-bold">Paper</span><span class="font-light text-on-surface-variant">Working</span>
+</div>
+<button class="md:hidden text-on-surface-variant hover:text-primary active:opacity-80" id="close-drawer-btn">
+<span class="material-symbols-outlined">close</span>
+</button>
+</div>
+<div class="flex-1 overflow-y-auto px-3 space-y-1">
+<!-- Portfolio -->
+<a class="flex items-center gap-3 px-4 py-3 rounded-lg text-on-surface-variant hover:bg-white/5 hover:bg-surface-variant/30 transition-all duration-200 active:opacity-80 font-label-md text-label-md" href="#">
+<span class="material-symbols-outlined">account_balance_wallet</span>
+<span>Portfolio</span>
+</a>
+<!-- Projects -->
+<a class="flex items-center gap-3 px-4 py-3 rounded-lg text-on-surface-variant hover:bg-white/5 hover:bg-surface-variant/30 transition-all duration-200 active:opacity-80 font-label-md text-label-md" href="#">
+<span class="material-symbols-outlined">folder_open</span>
+<span>Projects</span>
+</a>
+<!-- Data Room -->
+<a class="flex items-center gap-3 px-4 py-3 rounded-lg text-on-surface-variant hover:bg-white/5 hover:bg-surface-variant/30 transition-all duration-200 active:opacity-80 font-label-md text-label-md" href="#">
+<span class="material-symbols-outlined">folder_shared</span>
+<span>Data Room</span>
+</a>
+<!-- Inbox -->
+<a class="flex items-center gap-3 px-4 py-3 rounded-lg text-on-surface-variant hover:bg-white/5 hover:bg-surface-variant/30 transition-all duration-200 active:opacity-80 font-label-md text-label-md" href="#">
+<span class="material-symbols-outlined">inbox</span>
+<span>Inbox</span>
+</a>
+<!-- Team -->
+<a class="flex items-center gap-3 px-4 py-3 rounded-lg text-on-surface-variant hover:bg-white/5 hover:bg-surface-variant/30 transition-all duration-200 active:opacity-80 font-label-md text-label-md" href="#">
+<span class="material-symbols-outlined">group</span>
+<span>Team</span>
+</a>
+<!-- Reports -->
+<a class="flex items-center gap-3 px-4 py-3 rounded-lg text-on-surface-variant hover:bg-white/5 hover:bg-surface-variant/30 transition-all duration-200 active:opacity-80 font-label-md text-label-md" href="#">
+<span class="material-symbols-outlined">assessment</span>
+<span>Reports</span>
+</a>
+<!-- Deal Analyzer (ACTIVE) -->
+<a class="flex items-center gap-3 px-4 py-3 rounded-lg bg-secondary-container/20 text-primary border-l-4 border-primary font-bold hover:bg-surface-variant/30 transition-all duration-200 active:opacity-80 font-label-md text-label-md" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">calculate</span>
+<span>Deal Analyzer</span>
+</a>
+<div class="h-px bg-white/5 my-4 mx-4"></div>
+<!-- Profile -->
+<a class="flex items-center gap-3 px-4 py-3 rounded-lg text-on-surface-variant hover:bg-white/5 hover:bg-surface-variant/30 transition-all duration-200 active:opacity-80 font-label-md text-label-md" href="#">
+<span class="material-symbols-outlined">person</span>
+<span>Profile</span>
+</a>
+<!-- Billing -->
+<a class="flex items-center gap-3 px-4 py-3 rounded-lg text-on-surface-variant hover:bg-white/5 hover:bg-surface-variant/30 transition-all duration-200 active:opacity-80 font-label-md text-label-md" href="#">
+<span class="material-symbols-outlined">payments</span>
+<span>Billing</span>
+</a>
+<!-- Settings -->
+<a class="flex items-center gap-3 px-4 py-3 rounded-lg text-on-surface-variant hover:bg-white/5 hover:bg-surface-variant/30 transition-all duration-200 active:opacity-80 font-label-md text-label-md" href="#">
+<span class="material-symbols-outlined">settings</span>
+<span>Settings</span>
+</a>
+</div>
+</nav>
+<!-- Main Content Canvas -->
+<main class="flex-1 w-full pt-20 md:pt-8 pb-32 px-margin-mobile md:px-margin-desktop overflow-y-auto relative">
+<div class="max-w-3xl mx-auto space-y-stack-lg">
+<!-- Page Header & Mode Toggle -->
+<div class="flex flex-col md:flex-row md:items-end justify-between gap-6">
+<div>
+<h1 class="font-headline-lg-mobile md:font-headline-lg text-headline-lg-mobile md:text-headline-lg text-on-surface">Deal Analyzer</h1>
+<p class="font-body-sm text-body-sm text-on-surface-variant mt-1">Evaluate potential investments in real-time.</p>
+</div>
+<!-- Segmented Control -->
+<div class="glass-card p-1 rounded-lg flex inline-flex self-start md:self-end">
+<button class="px-6 py-2 rounded-md bg-surface-bright/50 shadow-sm border border-white/10 font-label-md text-label-md text-primary transition-all">Rental</button>
+<button class="px-6 py-2 rounded-md text-on-surface-variant hover:text-on-surface font-label-md text-label-md transition-all">Flip</button>
+</div>
+</div>
+<!-- Live Results Bento Grid -->
+<div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+<!-- Cash Flow -->
+<div class="glass-card rounded-xl p-4 flex flex-col justify-between relative overflow-hidden group">
+<div class="absolute top-0 right-0 p-3 opacity-20 group-hover:opacity-40 transition-opacity">
+<span class="material-symbols-outlined text-primary text-4xl">payments</span>
+</div>
+<span class="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider relative z-10">Monthly CF</span>
+<div class="mt-2 flex items-baseline gap-1 relative z-10">
+<span class="font-headline-md text-headline-md text-primary metric-glow-teal font-mono">$485</span>
+<span class="font-body-sm text-body-sm text-primary/70 font-mono">.20</span>
+</div>
+</div>
+<!-- Cap Rate -->
+<div class="glass-card rounded-xl p-4 flex flex-col justify-between relative overflow-hidden group">
+<div class="absolute top-0 right-0 p-3 opacity-20 group-hover:opacity-40 transition-opacity">
+<span class="material-symbols-outlined text-secondary text-4xl">trending_up</span>
+</div>
+<span class="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider relative z-10">Cap Rate</span>
+<div class="mt-2 flex items-baseline gap-1 relative z-10">
+<span class="font-headline-md text-headline-md text-on-surface font-mono">5.8</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant font-mono">%</span>
+</div>
+</div>
+<!-- Cash on Cash -->
+<div class="glass-card rounded-xl p-4 flex flex-col justify-between relative overflow-hidden group">
+<div class="absolute top-0 right-0 p-3 opacity-20 group-hover:opacity-40 transition-opacity">
+<span class="material-symbols-outlined text-primary text-4xl">percent</span>
+</div>
+<span class="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider relative z-10">Cash-on-Cash</span>
+<div class="mt-2 flex items-baseline gap-1 relative z-10">
+<span class="font-headline-md text-headline-md text-primary metric-glow-teal font-mono">8.2</span>
+<span class="font-body-sm text-body-sm text-primary/70 font-mono">%</span>
+</div>
+</div>
+<!-- DSCR -->
+<div class="glass-card rounded-xl p-4 flex flex-col justify-between relative overflow-hidden group">
+<div class="absolute top-0 right-0 p-3 opacity-20 group-hover:opacity-40 transition-opacity">
+<span class="material-symbols-outlined text-tertiary-container text-4xl">warning</span>
+</div>
+<span class="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider relative z-10">DSCR</span>
+<div class="mt-2 flex items-baseline gap-1 relative z-10">
+<span class="font-headline-md text-headline-md text-tertiary-container metric-glow-amber font-mono">1.25</span>
+<span class="font-body-sm text-body-sm text-tertiary-container/70 font-mono">x</span>
+</div>
+</div>
+</div>
+<!-- Input Form Area -->
+<div class="space-y-6">
+<!-- Group 1: Purchase Details -->
+<section class="glass-card rounded-xl p-5 md:p-6">
+<h2 class="font-label-md text-label-md text-on-surface mb-4 flex items-center gap-2">
+<span class="material-symbols-outlined text-primary text-sm">home_work</span>
+                        Purchase Details
+                    </h2>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+<div class="flex flex-col gap-1.5">
+<label class="font-label-sm text-label-sm text-on-surface-variant">Purchase Price</label>
+<div class="relative glass-input rounded-lg flex items-center px-3 h-12">
+<span class="text-on-surface-variant mr-2">$</span>
+<input class="bg-transparent border-none outline-none text-on-surface w-full font-mono focus:ring-0 p-0" type="text" value="450,000"/>
+</div>
+</div>
+<div class="flex flex-col gap-1.5">
+<label class="font-label-sm text-label-sm text-on-surface-variant">Closing Costs</label>
+<div class="relative glass-input rounded-lg flex items-center px-3 h-12">
+<input class="bg-transparent border-none outline-none text-on-surface w-full font-mono focus:ring-0 p-0 text-right pr-2" type="text" value="3"/>
+<span class="text-on-surface-variant">%</span>
+</div>
+</div>
+</div>
+</section>
+<!-- Group 2: Financing -->
+<section class="glass-card rounded-xl p-5 md:p-6">
+<h2 class="font-label-md text-label-md text-on-surface mb-4 flex items-center gap-2">
+<span class="material-symbols-outlined text-primary text-sm">account_balance</span>
+                        Financing
+                    </h2>
+<div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+<div class="flex flex-col gap-1.5">
+<label class="font-label-sm text-label-sm text-on-surface-variant">Down Payment</label>
+<div class="relative glass-input rounded-lg flex items-center px-3 h-12">
+<input class="bg-transparent border-none outline-none text-on-surface w-full font-mono focus:ring-0 p-0 text-right pr-2" type="text" value="20"/>
+<span class="text-on-surface-variant">%</span>
+</div>
+</div>
+<div class="flex flex-col gap-1.5">
+<label class="font-label-sm text-label-sm text-on-surface-variant">Interest Rate</label>
+<div class="relative glass-input rounded-lg flex items-center px-3 h-12">
+<input class="bg-transparent border-none outline-none text-on-surface w-full font-mono focus:ring-0 p-0 text-right pr-2" type="text" value="6.5"/>
+<span class="text-on-surface-variant">%</span>
+</div>
+</div>
+<div class="flex flex-col gap-1.5">
+<label class="font-label-sm text-label-sm text-on-surface-variant">Term (Years)</label>
+<div class="relative glass-input rounded-lg flex items-center px-3 h-12">
+<input class="bg-transparent border-none outline-none text-on-surface w-full font-mono focus:ring-0 p-0" type="text" value="30"/>
+</div>
+</div>
+</div>
+</section>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+<!-- Group 3: Income & Ops -->
+<section class="glass-card rounded-xl p-5 md:p-6">
+<h2 class="font-label-md text-label-md text-on-surface mb-4 flex items-center gap-2">
+<span class="material-symbols-outlined text-primary text-sm">request_quote</span>
+                            Income
+                        </h2>
+<div class="space-y-4">
+<div class="flex flex-col gap-1.5">
+<label class="font-label-sm text-label-sm text-on-surface-variant">Gross Monthly Rent</label>
+<div class="relative glass-input rounded-lg flex items-center px-3 h-12">
+<span class="text-on-surface-variant mr-2">$</span>
+<input class="bg-transparent border-none outline-none text-on-surface w-full font-mono focus:ring-0 p-0" type="text" value="3,200"/>
+</div>
+</div>
+<div class="flex flex-col gap-1.5">
+<label class="font-label-sm text-label-sm text-on-surface-variant">Vacancy Rate</label>
+<div class="relative glass-input rounded-lg flex items-center px-3 h-12">
+<input class="bg-transparent border-none outline-none text-on-surface w-full font-mono focus:ring-0 p-0 text-right pr-2" type="text" value="5"/>
+<span class="text-on-surface-variant">%</span>
+</div>
+</div>
+</div>
+</section>
+<!-- Group 4: Operating Expenses -->
+<section class="glass-card rounded-xl p-5 md:p-6">
+<h2 class="font-label-md text-label-md text-on-surface mb-4 flex items-center gap-2">
+<span class="material-symbols-outlined text-primary text-sm">receipt_long</span>
+                            Fixed Expenses (Annual)
+                        </h2>
+<div class="space-y-4">
+<div class="flex flex-col gap-1.5">
+<label class="font-label-sm text-label-sm text-on-surface-variant">Property Taxes</label>
+<div class="relative glass-input rounded-lg flex items-center px-3 h-12">
+<span class="text-on-surface-variant mr-2">$</span>
+<input class="bg-transparent border-none outline-none text-on-surface w-full font-mono focus:ring-0 p-0" type="text" value="4,200"/>
+</div>
+</div>
+<div class="flex flex-col gap-1.5">
+<label class="font-label-sm text-label-sm text-on-surface-variant">Insurance</label>
+<div class="relative glass-input rounded-lg flex items-center px-3 h-12">
+<span class="text-on-surface-variant mr-2">$</span>
+<input class="bg-transparent border-none outline-none text-on-surface w-full font-mono focus:ring-0 p-0" type="text" value="1,200"/>
+</div>
+</div>
+</div>
+</section>
+</div>
+</div>
+</div>
+</main>
+<!-- Sticky Bottom Action (Mobile) / FAB (Desktop) -->
+<div class="fixed bottom-0 left-0 md:left-64 right-0 p-margin-mobile md:p-margin-desktop bg-gradient-to-t from-surface-container-lowest via-surface-container-lowest/90 to-transparent pointer-events-none flex justify-center md:justify-end z-30">
+<button class="pointer-events-auto luminous-button bg-primary-container text-on-primary-container font-label-md text-label-md px-8 py-4 rounded-xl flex items-center justify-center gap-2 w-full max-w-sm md:w-auto hover:bg-primary transition-colors">
+            Save as Project
+            <span class="material-symbols-outlined text-sm">arrow_forward</span>
+</button>
+</div>
+<script>
+        // Drawer toggle logic for mobile
+        const menuBtn = document.getElementById('menu-btn');
+        const closeBtn = document.getElementById('close-drawer-btn');
+        const drawer = document.getElementById('mobile-drawer');
+        const overlay = document.getElementById('drawer-overlay');
+
+        function toggleDrawer() {
+            drawer.classList.toggle('open');
+            overlay.classList.toggle('open');
+            document.body.style.overflow = drawer.classList.contains('open') ? 'hidden' : '';
+        }
+
+        menuBtn.addEventListener('click', toggleDrawer);
+        closeBtn.addEventListener('click', toggleDrawer);
+        overlay.addEventListener('click', toggleDrawer);
+    </script>
+</body></html>

@@ -1,0 +1,332 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Pricing | PaperWorking - Real Estate Investment OS</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&amp;family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<style>
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background-color: #0b141a;
+            color: #dae4ec;
+            -webkit-font-smoothing: antialiased;
+        }
+        .glass-card {
+            background: rgba(24, 33, 39, 0.6);
+            backdrop-filter: blur(24px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+        }
+        .glass-card-highlight {
+            background: rgba(45, 54, 61, 0.7);
+            border: 1px solid rgba(87, 241, 219, 0.3);
+            position: relative;
+        }
+        .luminous-glow {
+            box-shadow: 0 0 20px -5px rgba(87, 241, 219, 0.5);
+        }
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .active-toggle {
+            background: rgba(87, 241, 219, 0.15);
+            color: #57f1db;
+            border: 1px solid rgba(87, 241, 219, 0.3);
+        }
+    </style>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "on-secondary-container": "#e6ecff",
+                        "background": "#0b141a",
+                        "surface-variant": "#2d363d",
+                        "on-error-container": "#ffdad6",
+                        "on-tertiary-fixed-variant": "#6b3b00",
+                        "primary-fixed-dim": "#3cddc7",
+                        "on-secondary-fixed": "#001a42",
+                        "on-secondary": "#002e6a",
+                        "surface-container-high": "#222b32",
+                        "surface-container-highest": "#2d363d",
+                        "outline": "#859490",
+                        "primary-fixed": "#62fae3",
+                        "on-surface-variant": "#bacac5",
+                        "tertiary-container": "#ffac5a",
+                        "on-error": "#690005",
+                        "error-container": "#93000a",
+                        "surface-container-low": "#141d23",
+                        "on-tertiary-container": "#744000",
+                        "surface": "#0b141a",
+                        "secondary-container": "#0566d9",
+                        "outline-variant": "#3c4a46",
+                        "secondary-fixed": "#d8e2ff",
+                        "primary": "#57f1db",
+                        "tertiary-fixed": "#ffdcc0",
+                        "on-primary": "#003731",
+                        "surface-container": "#182127",
+                        "on-tertiary": "#4b2800",
+                        "surface-dim": "#0b141a",
+                        "on-primary-container": "#00574d",
+                        "surface-container-lowest": "#060f15",
+                        "tertiary": "#ffd1aa",
+                        "surface-tint": "#3cddc7",
+                        "on-secondary-fixed-variant": "#004395",
+                        "inverse-on-surface": "#293238",
+                        "on-primary-fixed": "#00201c",
+                        "tertiary-fixed-dim": "#ffb875",
+                        "secondary": "#adc6ff",
+                        "on-primary-fixed-variant": "#005047",
+                        "on-surface": "#dae4ec",
+                        "primary-container": "#2dd4bf",
+                        "on-tertiary-fixed": "#2d1600",
+                        "error": "#ffb4ab",
+                        "surface-bright": "#313a41",
+                        "on-background": "#dae4ec",
+                        "inverse-primary": "#006b5f",
+                        "secondary-fixed-dim": "#adc6ff",
+                        "inverse-surface": "#dae4ec"
+                    },
+                    "spacing": {
+                        "gutter-mobile": "16px",
+                        "stack-sm": "8px",
+                        "container-max": "1280px",
+                        "stack-md": "16px",
+                        "gutter-desktop": "24px",
+                        "unit": "8px",
+                        "margin-desktop": "40px",
+                        "stack-lg": "32px",
+                        "margin-mobile": "20px"
+                    },
+                    "fontFamily": {
+                        "body-lg": ["Plus Jakarta Sans"],
+                        "body-sm": ["Plus Jakarta Sans"],
+                        "body-md": ["Plus Jakarta Sans"],
+                        "label-md": ["Plus Jakarta Sans"],
+                        "headline-lg-mobile": ["Plus Jakarta Sans"],
+                        "headline-lg": ["Plus Jakarta Sans"],
+                        "headline-xl": ["Plus Jakarta Sans"],
+                        "headline-md": ["Plus Jakarta Sans"],
+                        "label-sm": ["Plus Jakarta Sans"]
+                    },
+                    "fontSize": {
+                        "body-lg": ["18px", {"lineHeight": "28px", "fontWeight": "400"}],
+                        "body-sm": ["14px", {"lineHeight": "20px", "fontWeight": "400"}],
+                        "body-md": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+                        "label-md": ["14px", {"lineHeight": "16px", "letterSpacing": "0.02em", "fontWeight": "600"}],
+                        "headline-lg-mobile": ["28px", {"lineHeight": "36px", "fontWeight": "700"}],
+                        "headline-lg": ["32px", {"lineHeight": "40px", "letterSpacing": "-0.01em", "fontWeight": "700"}],
+                        "headline-xl": ["48px", {"lineHeight": "56px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                        "headline-md": ["24px", {"lineHeight": "32px", "fontWeight": "600"}],
+                        "label-sm": ["12px", {"lineHeight": "14px", "letterSpacing": "0.05em", "fontWeight": "500"}]
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-background text-on-background min-h-screen">
+<!-- TopAppBar (Shared Component Implementation) -->
+<header class="fixed top-0 w-full z-50 bg-surface/80 backdrop-blur-xl border-b border-white/10 shadow-[0_4px_30px_rgba(0,0,0,0.1)]">
+<div class="flex justify-between items-center px-gutter-mobile h-16 md:h-20 max-w-container-max mx-auto">
+<div class="flex items-center gap-2">
+<img alt="PaperWorking Logo" class="h-8 w-auto" src="https://lh3.googleusercontent.com/aida/ADBb0ujudTitz8Bv66g6ir0MNl5p-kxIGB0rCFNG0a0Yv1hJGTm832QinDG-7KIjy_4vpVRrRDGEICYXp2lV-NmXet5QQMVQodBy5C41w9OSjiJXbfgySZXBESLgk_4qqRm_4N3i5OyFpwiGvnzE0nSXWJ6MTCgX1O9v1IARTpJODZbpiLqaY1PDzoU9sHdrKKJCR-uBvFejraSGiK9jx1O_odjqRi5Dp3UkDNNUY6OihAK4mmO_oaHjfYuYuG9I"/>
+<span class="text-headline-md font-headline-lg tracking-tighter text-primary drop-shadow-[0_0_10px_rgba(87,241,219,0.5)]">PaperWorking</span>
+</div>
+<button class="bg-primary text-on-primary font-label-md text-label-md px-4 py-2 rounded-md luminous-glow active:scale-95 transition-all">Sign In</button>
+</div>
+</header>
+<main class="pt-24 pb-16 px-margin-mobile">
+<!-- Hero Section -->
+<section class="text-center mb-12">
+<h1 class="font-headline-lg-mobile text-headline-lg-mobile mb-4 leading-tight">Pick your plan. <br/><span class="text-primary">Start closing more deals.</span></h1>
+<p class="font-body-md text-body-md text-on-surface-variant mb-8">14-day trial on every plan. No charge until day 15.</p>
+<!-- Billing Toggle -->
+<div class="inline-flex p-1 bg-surface-container rounded-lg border border-white/5">
+<button class="px-6 py-2 rounded-md font-label-md text-label-md active-toggle transition-all duration-200" id="toggleMonthly">Monthly</button>
+<button class="px-6 py-2 rounded-md font-label-md text-label-md text-on-surface-variant hover:text-primary transition-all duration-200" id="toggleAnnually">Annually <span class="text-xs text-primary font-bold ml-1">Save 20%</span></button>
+</div>
+</section>
+<!-- Pricing Cards Vertical Stack -->
+<div class="flex flex-col gap-6">
+<!-- Individual Investor -->
+<div class="glass-card rounded-xl p-6 flex flex-col">
+<div class="flex items-center gap-3 mb-4">
+<span class="material-symbols-outlined text-primary" data-icon="person">person</span>
+<h3 class="font-headline-md text-headline-md">Individual Investor</h3>
+</div>
+<p class="font-body-sm text-body-sm text-on-surface-variant mb-6">Solo flippers tired of spreadsheet chaos.</p>
+<div class="mb-6">
+<span class="text-[40px] font-bold text-on-surface">$50</span>
+<span class="text-on-surface-variant font-label-md">/mo</span>
+<p class="text-xs text-on-surface-variant/60 mt-1">Billed annually at $599/yr</p>
+</div>
+<button class="w-full py-4 bg-white/5 border border-white/10 hover:bg-white/10 text-on-surface font-label-md rounded-lg mb-8 transition-all">Start 14-Day Free Trial</button>
+<ul class="space-y-4">
+<li class="flex items-center gap-3 font-body-sm text-body-sm">
+<span class="material-symbols-outlined text-primary text-sm" data-icon="check_circle">check_circle</span>
+                        1 User Seat
+                    </li>
+<li class="flex items-center gap-3 font-body-sm text-body-sm">
+<span class="material-symbols-outlined text-primary text-sm" data-icon="check_circle">check_circle</span>
+                        Full REI Dashboard access
+                    </li>
+<li class="flex items-center gap-3 font-body-sm text-body-sm">
+<span class="material-symbols-outlined text-primary text-sm" data-icon="check_circle">check_circle</span>
+                        Find &amp; Fund Pipeline
+                    </li>
+</ul>
+</div>
+<!-- Team / Firm (Most Popular) -->
+<div class="glass-card glass-card-highlight rounded-xl p-6 flex flex-col relative overflow-hidden">
+<div class="absolute top-0 right-0">
+<div class="bg-primary text-on-primary font-label-sm text-[10px] px-3 py-1 rounded-bl-lg uppercase tracking-wider font-bold">Most Popular</div>
+</div>
+<div class="flex items-center gap-3 mb-4">
+<span class="material-symbols-outlined text-primary" data-icon="groups">groups</span>
+<h3 class="font-headline-md text-headline-md">Team / Firm</h3>
+</div>
+<p class="font-body-sm text-body-sm text-on-surface-variant mb-6">Scaling REI businesses managing multiple deals.</p>
+<div class="mb-6">
+<span class="text-[40px] font-bold text-on-surface">$83</span>
+<span class="text-on-surface-variant font-label-md">/mo</span>
+<p class="text-xs text-on-surface-variant/60 mt-1">Billed annually at $999/yr</p>
+</div>
+<button class="w-full py-4 bg-primary text-on-primary font-label-md rounded-lg mb-8 luminous-glow active:scale-[0.98] transition-all">Start 14-Day Free Trial</button>
+<ul class="space-y-4">
+<li class="flex items-center gap-3 font-body-sm text-body-sm">
+<span class="material-symbols-outlined text-primary text-sm" data-icon="check_circle">check_circle</span>
+                        Up to 10 User Seats
+                    </li>
+<li class="flex items-center gap-3 font-body-sm text-body-sm">
+<span class="material-symbols-outlined text-primary text-sm" data-icon="check_circle">check_circle</span>
+                        Role-Based Access Control
+                    </li>
+<li class="flex items-center gap-3 font-body-sm text-body-sm">
+<span class="material-symbols-outlined text-primary text-sm" data-icon="check_circle">check_circle</span>
+                        Admin vs Deal Lead permissions
+                    </li>
+<li class="flex items-center gap-3 font-body-sm text-body-sm">
+<span class="material-symbols-outlined text-primary text-sm" data-icon="check_circle">check_circle</span>
+                        Secure siloed account data
+                    </li>
+<li class="flex items-center gap-3 font-body-sm text-body-sm">
+<span class="material-symbols-outlined text-primary text-sm" data-icon="check_circle">check_circle</span>
+                        Priority onboarding support
+                    </li>
+</ul>
+</div>
+<!-- Vendor Marketplace -->
+<div class="glass-card rounded-xl p-6 flex flex-col">
+<div class="flex items-center gap-3 mb-4">
+<span class="material-symbols-outlined text-primary" data-icon="storefront">storefront</span>
+<h3 class="font-headline-md text-headline-md">Vendor Marketplace</h3>
+</div>
+<p class="font-body-sm text-body-sm text-on-surface-variant mb-6">Appraisers, Inspectors, and GCs.</p>
+<div class="mb-6">
+<span class="text-[40px] font-bold text-on-surface">$33</span>
+<span class="text-on-surface-variant font-label-md">/mo</span>
+<p class="text-xs text-on-surface-variant/60 mt-1">Billed annually at $390/yr</p>
+</div>
+<button class="w-full py-4 bg-white/5 border border-white/10 hover:bg-white/10 text-on-surface font-label-md rounded-lg mb-8 transition-all">List Your Business</button>
+<ul class="space-y-4">
+<li class="flex items-center gap-3 font-body-sm text-body-sm">
+<span class="material-symbols-outlined text-primary text-sm" data-icon="check_circle">check_circle</span>
+                        Marketplace Directory Listing
+                    </li>
+<li class="flex items-center gap-3 font-body-sm text-body-sm">
+<span class="material-symbols-outlined text-primary text-sm" data-icon="check_circle">check_circle</span>
+                        Lead generation inbox
+                    </li>
+<li class="flex items-center gap-3 font-body-sm text-body-sm">
+<span class="material-symbols-outlined text-primary text-sm" data-icon="check_circle">check_circle</span>
+                        Direct messaging with Teams
+                    </li>
+</ul>
+</div>
+</div>
+<!-- FAQ Section -->
+<section class="mt-20">
+<div class="text-center mb-10">
+<h2 class="font-headline-md text-headline-md mb-2">Before You Commit</h2>
+<p class="font-body-sm text-body-sm text-on-surface-variant">No surprises. No fine print.</p>
+</div>
+<div class="space-y-4">
+<!-- FAQ Item 1 -->
+<div class="glass-card rounded-lg p-5">
+<button class="flex justify-between items-start w-full text-left gap-4" onclick="this.nextElementSibling.classList.toggle('hidden'); this.querySelector('.arrow').classList.toggle('rotate-180')">
+<span class="font-label-md text-label-md text-on-surface">Do Vendors get access to my financial data?</span>
+<span class="material-symbols-outlined text-primary transition-transform duration-200 arrow" data-icon="expand_more">expand_more</span>
+</button>
+<div class="mt-4 font-body-sm text-body-sm text-on-surface-variant hidden">
+                        No. Vendor accounts are structurally isolated. They can only see their marketplace listing, inbox messages, and work requests sent to them by REI Teams. They have zero visibility into any financial data.
+                    </div>
+</div>
+<!-- FAQ Item 2 -->
+<div class="glass-card rounded-lg p-5">
+<button class="flex justify-between items-start w-full text-left gap-4" onclick="this.nextElementSibling.classList.toggle('hidden'); this.querySelector('.arrow').classList.toggle('rotate-180')">
+<span class="font-label-md text-label-md text-on-surface">Can I upgrade later?</span>
+<span class="material-symbols-outlined text-primary transition-transform duration-200 arrow" data-icon="expand_more">expand_more</span>
+</button>
+<div class="mt-4 font-body-sm text-body-sm text-on-surface-variant hidden">
+                        Yes, upgrades take effect immediately. When you upgrade, we prorate the remaining balance of your current billing period and apply it to the new plan. All your existing data remains intact.
+                    </div>
+</div>
+</div>
+</section>
+<!-- Final CTA -->
+<section class="mt-16 bg-gradient-to-br from-surface-container-high to-surface-container rounded-2xl p-8 border border-white/5 text-center">
+<h2 class="font-headline-md text-headline-md mb-4">Ready to optimize your pipeline?</h2>
+<p class="font-body-md text-body-md text-on-surface-variant mb-8">Join hundreds of professional investors managing over $2B in deals.</p>
+<button class="bg-primary text-on-primary font-label-md px-8 py-4 rounded-lg luminous-glow w-full">Start Your 14-Day Trial</button>
+<p class="mt-4 text-[11px] text-on-surface-variant/50 uppercase tracking-widest">No credit card required for basic exploration</p>
+</section>
+</main>
+<!-- Footer (Shared Component Implementation) -->
+<footer class="w-full py-stack-lg bg-surface-container-lowest border-t border-white/5">
+<div class="grid grid-cols-2 gap-stack-md px-margin-mobile max-w-container-max mx-auto mb-10">
+<div>
+<h4 class="font-label-md text-primary mb-4">Product</h4>
+<ul class="space-y-2">
+<li><a class="font-label-sm text-on-surface-variant hover:text-primary transition-colors" href="#">How It Works</a></li>
+<li><a class="font-label-sm text-on-surface-variant hover:text-primary transition-colors" href="#">Pricing</a></li>
+<li><a class="font-label-sm text-on-surface-variant hover:text-primary transition-colors" href="#">Product</a></li>
+</ul>
+</div>
+<div>
+<h4 class="font-label-md text-primary mb-4">Company</h4>
+<ul class="space-y-2">
+<li><a class="font-label-sm text-on-surface-variant hover:text-primary transition-colors" href="#">Company</a></li>
+<li><a class="font-label-sm text-on-surface-variant hover:text-primary transition-colors" href="#">Legal</a></li>
+<li><a class="font-label-sm text-on-surface-variant hover:text-primary transition-colors" href="#">Support</a></li>
+</ul>
+</div>
+</div>
+<div class="px-margin-mobile text-center">
+<div class="text-headline-md font-headline-md text-primary mb-2">PaperWorking</div>
+<p class="font-body-sm text-body-sm text-on-surface-variant/60">© 2024 PaperWorking OS. All rights reserved.</p>
+</div>
+</footer>
+<script>
+        const btnMonthly = document.getElementById('toggleMonthly');
+        const btnAnnually = document.getElementById('toggleAnnually');
+
+        btnMonthly.addEventListener('click', () => {
+            btnMonthly.classList.add('active-toggle');
+            btnMonthly.classList.remove('text-on-surface-variant');
+            btnAnnually.classList.remove('active-toggle');
+            btnAnnually.classList.add('text-on-surface-variant');
+        });
+
+        btnAnnually.addEventListener('click', () => {
+            btnAnnually.classList.add('active-toggle');
+            btnAnnually.classList.remove('text-on-surface-variant');
+            btnMonthly.classList.remove('active-toggle');
+            btnMonthly.classList.add('text-on-surface-variant');
+        });
+    </script>
+</body></html>

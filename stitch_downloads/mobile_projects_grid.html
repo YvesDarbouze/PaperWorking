@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0, viewport-fit=cover" name="viewport"/>
+<title>PaperWorking - Projects</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&amp;family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@100..900&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "inverse-primary": "#006b5f",
+                    "tertiary-container": "#ffac5a",
+                    "surface-bright": "#313a41",
+                    "on-error-container": "#ffdad6",
+                    "on-background": "#dae4ec",
+                    "inverse-surface": "#dae4ec",
+                    "background": "#0b141a",
+                    "outline": "#859490",
+                    "surface-container-highest": "#2d363d",
+                    "surface": "#0b141a",
+                    "primary-container": "#2dd4bf",
+                    "on-tertiary-fixed": "#2d1600",
+                    "on-surface": "#dae4ec",
+                    "tertiary-fixed-dim": "#ffb875",
+                    "surface-dim": "#0b141a",
+                    "surface-container-low": "#141d23",
+                    "primary": "#57f1db",
+                    "on-primary-fixed": "#00201c",
+                    "on-error": "#690005",
+                    "on-surface-variant": "#bacac5",
+                    "on-tertiary": "#4b2800",
+                    "tertiary-fixed": "#ffdcc0",
+                    "outline-variant": "#3c4a46",
+                    "on-tertiary-container": "#744000",
+                    "on-primary-container": "#00574d",
+                    "tertiary": "#ffd1aa",
+                    "on-secondary": "#002e6a",
+                    "secondary": "#adc6ff",
+                    "surface-variant": "#2d363d",
+                    "primary-fixed-dim": "#3cddc7",
+                    "on-secondary-container": "#e6ecff",
+                    "secondary-fixed-dim": "#adc6ff",
+                    "secondary-container": "#0566d9",
+                    "on-primary-fixed-variant": "#005047",
+                    "surface-container-lowest": "#060f15",
+                    "on-secondary-fixed-variant": "#004395",
+                    "error": "#ffb4ab",
+                    "secondary-fixed": "#d8e2ff",
+                    "primary-fixed": "#62fae3",
+                    "surface-container": "#182127",
+                    "on-secondary-fixed": "#001a42",
+                    "surface-container-high": "#222b32",
+                    "on-tertiary-fixed-variant": "#6b3b00",
+                    "inverse-on-surface": "#293238",
+                    "error-container": "#93000a",
+                    "on-primary": "#003731",
+                    "surface-tint": "#3cddc7"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.25rem",
+                    "lg": "0.5rem",
+                    "xl": "0.75rem",
+                    "full": "9999px"
+            },
+            "spacing": {
+                    "stack-lg": "32px",
+                    "unit": "8px",
+                    "margin-mobile": "20px",
+                    "gutter-desktop": "24px",
+                    "container-max": "1280px",
+                    "stack-md": "16px",
+                    "margin-desktop": "40px",
+                    "stack-sm": "8px",
+                    "gutter-mobile": "16px"
+            },
+            "fontFamily": {
+                    "body-md": ["Plus Jakarta Sans"],
+                    "body-sm": ["Plus Jakarta Sans"],
+                    "label-sm": ["Plus Jakarta Sans"],
+                    "headline-lg-mobile": ["Plus Jakarta Sans"],
+                    "label-md": ["Plus Jakarta Sans"],
+                    "headline-md": ["Plus Jakarta Sans"],
+                    "headline-lg": ["Plus Jakarta Sans"],
+                    "body-lg": ["Plus Jakarta Sans"],
+                    "headline-xl": ["Plus Jakarta Sans"]
+            },
+            "fontSize": {
+                    "body-md": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+                    "body-sm": ["14px", {"lineHeight": "20px", "fontWeight": "400"}],
+                    "label-sm": ["12px", {"lineHeight": "14px", "letterSpacing": "0.05em", "fontWeight": "500"}],
+                    "headline-lg-mobile": ["28px", {"lineHeight": "36px", "fontWeight": "700"}],
+                    "label-md": ["14px", {"lineHeight": "16px", "letterSpacing": "0.02em", "fontWeight": "600"}],
+                    "headline-md": ["24px", {"lineHeight": "32px", "fontWeight": "600"}],
+                    "headline-lg": ["32px", {"lineHeight": "40px", "letterSpacing": "-0.01em", "fontWeight": "700"}],
+                    "body-lg": ["18px", {"lineHeight": "28px", "fontWeight": "400"}],
+                    "headline-xl": ["48px", {"lineHeight": "56px", "letterSpacing": "-0.02em", "fontWeight": "700"}]
+            }
+          },
+        },
+      }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .folder-clip {
+            clip-path: polygon(0% 0%, 65% 0%, 75% 15%, 100% 15%, 100% 100%, 0% 100%);
+        }
+        .glass-card {
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.08) 0%, rgba(255, 255, 255, 0.02) 100%);
+            backdrop-filter: blur(24px);
+            border-top: 1px solid rgba(255, 255, 255, 0.12);
+            border-left: 1px solid rgba(255, 255, 255, 0.12);
+        }
+        .luminous-glow {
+            box-shadow: 0 0 20px -5px rgba(87, 241, 219, 0.4);
+        }
+        body {
+            background-color: #0b141a;
+            color: #dae4ec;
+            -webkit-font-smoothing: antialiased;
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="font-body-md text-body-md overflow-x-hidden pb-24">
+<!-- Top AppBar (JSON Component) -->
+<header class="fixed top-0 w-full z-50 bg-surface/80 dark:bg-surface/80 backdrop-blur-xl border-b border-white/10 shadow-[0_4px_30px_rgba(0,0,0,0.1)] flex justify-between items-center px-margin-mobile md:px-margin-desktop h-16">
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-primary" data-icon="terminal">terminal</span>
+<h1 class="font-headline-md text-headline-md font-bold tracking-tighter text-primary">PaperWorking</h1>
+</div>
+<div class="w-8 h-8 rounded-full overflow-hidden border border-primary/30 ring-2 ring-primary/10">
+<img alt="User" data-alt="A professional headshot of a modern real estate investor with a confident expression, set against a dark, blurred architectural background with teal and cyan lighting highlights. The image is crisp, high-fidelity, and fits a premium tech-forward aesthetic." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCFjCcgUsOEh7J06AUYm-CF6KPU4dS4zgNky6TB6jiA88eOyhHY5Zd7ZvH6Qup-jejWUsiamSd4XojAKcdQRynIunNzfeWrreZYqdKkmsz_9Z6Nlv6yiudEAYQFm8t_vuoJcgDFNqbZkTmkbEn3weBjPADszCg1udtuG96mRWjMt6Sgcs6p1hrftfm7uh4MXMFGPoZ2cEzB2SUpgzhJsU0qnMnV0PAgLefT7Z_E4uKOABpYy8ZB1r7R3-JqCYyCK62F5urs_zu5NA84"/>
+</div>
+</header>
+<!-- Main Content Canvas -->
+<main class="pt-24 px-margin-mobile">
+<!-- Section Header -->
+<div class="flex items-end justify-between mb-stack-lg">
+<div>
+<span class="font-label-sm text-label-sm text-primary uppercase tracking-widest block mb-1">Active Portfolio</span>
+<h2 class="font-headline-lg-mobile text-headline-lg-mobile text-on-surface">Projects</h2>
+</div>
+<div class="flex gap-2">
+<button class="w-10 h-10 rounded-lg glass-card flex items-center justify-center text-primary-fixed-dim">
+<span class="material-symbols-outlined" data-icon="filter_list">filter_list</span>
+</button>
+</div>
+</div>
+<!-- Asymmetric Bento-style Folder Grid -->
+<div class="grid grid-cols-2 gap-gutter-mobile">
+<!-- Folder 1 (Large/Primary) -->
+<div class="col-span-2 relative group cursor-pointer active:scale-[0.98] transition-transform">
+<div class="folder-clip glass-card p-6 min-h-[180px] relative overflow-hidden">
+<!-- Progress Bar -->
+<div class="absolute bottom-0 left-0 h-1 bg-primary/20 w-full">
+<div class="h-full bg-primary luminous-glow" style="width: 84%"></div>
+</div>
+<div class="flex justify-between items-start mb-6">
+<div class="px-3 py-1 rounded-full bg-primary/10 border border-primary/20 text-primary text-[10px] font-bold uppercase tracking-tighter">
+                            Fix &amp; Flip
+                        </div>
+<span class="text-primary font-label-md">84%</span>
+</div>
+<h3 class="font-headline-md text-headline-md text-white mb-1">722 Oak Avenue</h3>
+<p class="text-on-surface-variant font-body-sm">Palo Alto, CA • High ROI</p>
+<div class="mt-4 flex items-center gap-4 text-on-surface-variant">
+<div class="flex items-center gap-1">
+<span class="material-symbols-outlined text-[16px]" data-icon="inventory_2">inventory_2</span>
+<span class="text-label-sm">v.4.2</span>
+</div>
+<div class="flex items-center gap-1">
+<span class="material-symbols-outlined text-[16px]" data-icon="event">event</span>
+<span class="text-label-sm">12d left</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Folder 2 -->
+<div class="col-span-1 relative group active:scale-[0.98] transition-transform">
+<div class="folder-clip glass-card p-4 min-h-[160px] relative">
+<div class="absolute bottom-0 left-0 h-1 bg-primary/20 w-full">
+<div class="h-full bg-secondary luminous-glow" style="width: 45%"></div>
+</div>
+<div class="mb-4">
+<div class="inline-block px-2 py-0.5 rounded-full bg-secondary/10 border border-secondary/20 text-secondary text-[9px] font-bold uppercase mb-2">
+                            Rental
+                        </div>
+<h3 class="font-label-md text-white leading-tight">410 Bush St.</h3>
+<p class="text-[11px] text-on-surface-variant">Austin, TX</p>
+</div>
+<div class="flex items-center gap-1 text-primary-fixed-dim">
+<span class="material-symbols-outlined text-[14px]" data-icon="database">database</span>
+<span class="text-[10px] font-bold">STABLE</span>
+</div>
+</div>
+</div>
+<!-- Folder 3 -->
+<div class="col-span-1 relative group active:scale-[0.98] transition-transform">
+<div class="folder-clip glass-card p-4 min-h-[160px] relative">
+<div class="absolute bottom-0 left-0 h-1 bg-primary/20 w-full">
+<div class="h-full bg-tertiary-container luminous-glow" style="width: 12%"></div>
+</div>
+<div class="mb-4">
+<div class="inline-block px-2 py-0.5 rounded-full bg-tertiary-container/10 border border-tertiary-container/20 text-tertiary-container text-[9px] font-bold uppercase mb-2">
+                            Strategy: N/A
+                        </div>
+<h3 class="font-label-md text-white leading-tight">18 Highgate</h3>
+<p class="text-[11px] text-on-surface-variant">London, UK</p>
+</div>
+<div class="flex items-center gap-1 text-on-surface-variant">
+<span class="material-symbols-outlined text-[14px]" data-icon="pending">pending</span>
+<span class="text-[10px] font-bold">DUE DILIGENCE</span>
+</div>
+</div>
+</div>
+<!-- Folder 4 -->
+<div class="col-span-2 relative group active:scale-[0.98] transition-transform">
+<div class="folder-clip glass-card p-6 min-h-[140px] relative flex justify-between items-center">
+<div class="absolute bottom-0 left-0 h-1 bg-primary/20 w-full">
+<div class="h-full bg-primary/60 luminous-glow" style="width: 98%"></div>
+</div>
+<div>
+<div class="px-3 py-1 rounded-full bg-primary/10 border border-primary/20 text-primary text-[10px] font-bold uppercase tracking-tighter mb-2 inline-block">
+                            Completed
+                        </div>
+<h3 class="font-headline-md text-headline-md text-white">99 Ocean Way</h3>
+<p class="text-on-surface-variant font-body-sm">Miami, FL • Exit Phase</p>
+</div>
+<div class="w-16 h-16 rounded-full border-4 border-primary/20 flex items-center justify-center relative">
+<svg class="absolute inset-0 w-full h-full -rotate-90">
+<circle class="text-primary" cx="32" cy="32" fill="transparent" r="28" stroke="currentColor" stroke-dasharray="175.9" stroke-dashoffset="1.7" stroke-width="4"></circle>
+</svg>
+<span class="text-[12px] font-bold text-primary">99%</span>
+</div>
+</div>
+</div>
+<!-- Empty State / Add New -->
+<div class="col-span-1 relative">
+<div class="folder-clip border-2 border-dashed border-white/10 p-4 min-h-[120px] flex flex-col items-center justify-center group hover:border-primary/40 transition-colors cursor-pointer">
+<span class="material-symbols-outlined text-on-surface-variant group-hover:text-primary transition-colors" data-icon="add_circle">add_circle</span>
+<span class="text-[10px] font-bold uppercase mt-2 text-on-surface-variant tracking-widest">New Vault</span>
+</div>
+</div>
+</div>
+<!-- Terminal Feed Simulation -->
+<div class="mt-stack-lg p-margin-mobile glass-card rounded-xl border-white/5 font-mono text-[11px] text-primary/60">
+<div class="flex items-center gap-2 mb-2">
+<div class="w-2 h-2 rounded-full bg-primary animate-pulse"></div>
+<span class="text-on-surface uppercase tracking-tighter font-bold">System Log</span>
+</div>
+<p>&gt; SYNCING ASSETS... [OK]</p>
+<p>&gt; UPDATING MARKET DELTAS... [2.4ms]</p>
+<p>&gt; 4 ACTIVE DEALS DETECTED</p>
+<p>&gt; TERMINAL READY_</p>
+</div>
+</main>
+<!-- FAB (Contextual) -->
+<button class="fixed right-6 bottom-28 w-14 h-14 bg-primary text-on-primary rounded-2xl flex items-center justify-center shadow-[0_0_25px_rgba(87,241,219,0.5)] z-40 active:scale-90 transition-transform">
+<span class="material-symbols-outlined font-bold" data-icon="post_add">post_add</span>
+</button>
+<!-- BottomNavBar (JSON Component) -->
+<!-- 'Assets' is mapped to 'Projects' intent in this context -->
+<nav class="fixed bottom-0 w-full z-50 rounded-t-xl bg-surface-container/90 dark:bg-surface-container/90 backdrop-blur-2xl border-t border-white/10 shadow-[0_-8px_32px_rgba(0,0,0,0.3)] flex justify-around items-center h-20 pb-safe px-4">
+<div class="flex flex-col items-center justify-center text-on-surface-variant/70 dark:text-on-surface-variant/70 px-4 py-1 hover:text-primary transition-all">
+<span class="material-symbols-outlined" data-icon="analytics">analytics</span>
+<span class="font-label-sm text-label-sm-mobile md:text-label-sm">Market</span>
+</div>
+<div class="flex flex-col items-center justify-center text-primary dark:text-primary bg-primary-container/20 rounded-xl px-4 py-1 shadow-[0_0_15px_rgba(87,241,219,0.3)] scale-95 transition-transform duration-150">
+<span class="material-symbols-outlined" data-icon="domain" style="font-variation-settings: 'FILL' 1;">domain</span>
+<span class="font-label-sm text-label-sm-mobile md:text-label-sm">Assets</span>
+</div>
+<div class="flex flex-col items-center justify-center text-on-surface-variant/70 dark:text-on-surface-variant/70 px-4 py-1 hover:text-primary transition-all">
+<span class="material-symbols-outlined" data-icon="database">database</span>
+<span class="font-label-sm text-label-sm-mobile md:text-label-sm">Data</span>
+</div>
+<div class="flex flex-col items-center justify-center text-on-surface-variant/70 dark:text-on-surface-variant/70 px-4 py-1 hover:text-primary transition-all">
+<span class="material-symbols-outlined" data-icon="menu">menu</span>
+<span class="font-label-sm text-label-sm-mobile md:text-label-sm">More</span>
+</div>
+</nav>
+<script>
+        // Micro-interactions for glass cards
+        document.querySelectorAll('.glass-card').forEach(card => {
+            card.addEventListener('touchstart', () => {
+                card.style.background = 'linear-gradient(135deg, rgba(255, 255, 255, 0.12) 0%, rgba(255, 255, 255, 0.05) 100%)';
+            });
+            card.addEventListener('touchend', () => {
+                card.style.background = '';
+            });
+        });
+    </script>
+</body></html>

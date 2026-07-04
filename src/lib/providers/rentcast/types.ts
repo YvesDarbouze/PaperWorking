@@ -74,6 +74,7 @@ export interface RentCastProperty extends RentCastAddress {
   squareFootage: number;
   lotSize: number;
   yearBuilt: number;
+  units?: number;
   assessorID?: string;
   legalDescription?: string;
   subdivision?: string;

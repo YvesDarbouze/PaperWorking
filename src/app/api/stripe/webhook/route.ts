@@ -4,6 +4,7 @@ import { adminDb } from '@/lib/firebase/admin';
 import { FieldValue } from 'firebase-admin/firestore';
 import { Resend } from 'resend';
 import { enforceProjectLimitsOnDowngrade } from '@/lib/entitlements/server';
+import { CommunicationEngine } from '@/lib/engine/CommunicationEngine';
 
 // Webhook must never be cached and may need extra time for Firestore batch writes
 export const dynamic = 'force-dynamic';
@@ -334,7 +335,7 @@ export async function POST(request: Request) {
               <p>If you'd like to cancel before being charged, you can do so at any time from your
               <a href="${appUrl}/dashboard/settings/billing">billing settings</a>.</p>
             `;
-            sendStripeEmail(email, subject, html).catch(() => {});
+            CommunicationEngine.sendRawEmail([email], subject, html).catch(() => {});
           }
         }
         break;

@@ -44,7 +44,7 @@ export default function VideoHero() {
           </h1>
 
           <p className="mx-auto max-w-3xl text-sm sm:text-base text-text-secondary font-black uppercase tracking-[0.2em] leading-loose mb-16 px-6">
-            Paperworking organizes the Real Estate Investment process <br className="hidden md:block"/>
+            PaperWorking organizes the Real Estate Investment process <br className="hidden md:block"/>
             to make property flipping simple, organized, and professional.
           </p>
 

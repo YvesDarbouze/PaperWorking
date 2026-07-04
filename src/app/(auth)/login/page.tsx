@@ -399,6 +399,7 @@ function LoginPageInner() {
                   <button
                     type="button"
                     onClick={() => setShowPassword(!showPassword)}
+                    aria-label={showPassword ? 'Hide password' : 'Show password'}
                     className="pw-interactive-custom absolute right-4 top-1/2 -translate-y-1/2 text-pw-muted hover:text-pw-primary transition-colors"
                   >
                     {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
@@ -495,6 +496,7 @@ function LoginPageInner() {
                   <button
                     type="button"
                     onClick={() => setShowPassword(!showPassword)}
+                    aria-label={showPassword ? 'Hide password' : 'Show password'}
                     className="pw-interactive-custom absolute right-4 top-1/2 -translate-y-1/2 text-pw-muted hover:text-pw-primary transition-colors"
                   >
                     {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
@@ -522,6 +524,7 @@ function LoginPageInner() {
                   <button
                     type="button"
                     onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                    aria-label={showConfirmPassword ? 'Hide confirm password' : 'Show confirm password'}
                     className="pw-interactive-custom absolute right-4 top-1/2 -translate-y-1/2 text-pw-muted hover:text-pw-primary transition-colors"
                   >
                     {showConfirmPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}

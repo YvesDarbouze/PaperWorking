@@ -56,7 +56,7 @@ export default function PermitTrackingChecklist() {
     setPermits([
       ...permits,
       {
-        id: Math.random().toString(36).slice(2, 8),
+        id: crypto.randomUUID(),
         type: newPermitType,
         municipality: 'Miami-Dade County',
         status: 'Not Filed',

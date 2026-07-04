@@ -16,10 +16,9 @@ export async function PATCH(req: NextRequest, { params }: Params) {
   const project = await getProject(id);
   if (!project) return NextResponse.json({ error: "Not found" }, { status: 404 });
 
-  const { hasProjectAccess } = await import("@/lib/auth/scopeGuard");
-  if (!(await hasProjectAccess(auth.uid, id))) {
-    return NextResponse.json({ error: "Forbidden" }, { status: 403 });
-  }
+  const isOwner  = project.createdById === auth.uid;
+  const isCollab = project.collaborators.some(c => c.userId === auth.uid);
+  if (!isOwner && !isCollab) return NextResponse.json({ error: "Forbidden" }, { status: 403 });
 
   const body = await req.json().catch(() => ({}));
   const { status } = body as { status?: "OPEN" | "FILLED" };

@@ -397,6 +397,15 @@ export const projectFinancialsSchema = z.object({
   /** Array of pre-approval document URLs */
   preApprovalDocuments: z.array(z.string()).optional(),
 
+  lenderVaultDocuments: z.array(z.object({
+    id: z.string(),
+    name: z.string(),
+    status: z.enum(['pending', 'verified']),
+    fileUrl: z.string().optional(),
+    storagePath: z.string().optional(),
+    uploadedAt: z.string().optional(),
+  })).optional(),
+
   /** Virtual Inspection Estimate vs Actual */
   inspections: z.array(z.object({
     id: z.string(),
@@ -509,6 +518,14 @@ export const projectFinancialsSchema = z.object({
   occupancyRate: percentWhole.optional(),
 
   grossRentMultiplier: z.number().nonnegative().optional(),
+
+  // Supplemental metrics input fields
+  capitalReserves: usdDollars.optional(),
+  tenantTurnoverRate: percentWhole.optional(),
+  leaseRenewalRate: percentWhole.optional(),
+  numberOfMoveOuts: z.number().nonnegative().optional(),
+  numberOfRenewals: z.number().nonnegative().optional(),
+  daysOnMarket: z.number().nonnegative().optional(),
 
   // ── Deal Calculator Detailed Fields ──
 
@@ -801,7 +818,7 @@ export const projectExitSchema = z.object({
  * Firestore `/projects/{projectId}` document schema.
  *
  * This is the core domain entity. Every deal flows through this
- * 4-phase lifecycle: Find & Fund → Acquisition → Hold & Rehab → Exit.
+ * 4-phase lifecycle: Acquisition → Fund → Hold → Exit.
  */
 export const projectSchema = z.object({
   /** Firestore document ID */
@@ -932,7 +949,7 @@ export const projectSchema = z.object({
 
   /**
    * Current lifecycle phase as a NUMBER (1-4) or string enum.
-   * 1 = Acquisition, 2 = Transaction, 3 = Rehab, 4 = Hold / Exit.
+   * 1 = Acquisition, 2 = Fund, 3 = Hold, 4 = Exit.
    * We support both number and string representation.
    */
   currentPhase: z.union([

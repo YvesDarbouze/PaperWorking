@@ -64,19 +64,11 @@ export async function PATCH(
 
       const orgData = orgSnap.data();
       const isOwner = orgData?.ownerUid === uid;
-      const teamMember = orgData?.teamMembers?.find((m: any) => m.id === uid && m.status === 'active');
+      const isTeamMember = orgData?.teamMembers?.some((m: any) => m.id === uid && m.status === 'active');
       const isProjectMember = !!projectData?.members?.[uid];
 
-      if (!isOwner && !teamMember && !isProjectMember) {
+      if (!isOwner && !isTeamMember && !isProjectMember) {
         return { status: 403, error: 'Access denied. You do not have write access to this project.' };
-      }
-
-      // Enforce scoped team member project restrictions
-      if (teamMember && teamMember.isScoped) {
-        const allowed = teamMember.scopedProjectIds ?? teamMember.assignedProjectIds ?? [];
-        if (!allowed.includes(projectId)) {
-          return { status: 403, error: 'Access denied. You do not have write access to this project.' };
-        }
       }
 
       // Build update payload — deep merge financials
@@ -140,15 +132,7 @@ export async function PATCH(
 
     // 4. Return updated snapshot after successful transaction
     const updatedSnap = await projectRef.get();
-    const updatedProject = { id: updatedSnap.id, ...updatedSnap.data() } as any;
-
-    // 5. Keep REIL-plane (Postgres) consistent
-    try {
-      const { financialsSyncService } = await import('@/lib/services/financialsSyncService');
-      await financialsSyncService.syncProjectFinancials(updatedProject);
-    } catch (err) {
-      console.error('[Projects PATCH] Failed to sync financials to Postgres:', err);
-    }
+    const updatedProject = { id: updatedSnap.id, ...updatedSnap.data() };
 
     return NextResponse.json({
       success: true,

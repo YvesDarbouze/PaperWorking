@@ -66,7 +66,7 @@ const PLANS: Plan[] = [
       { label: 'Full metric visualization of REI data' },
       { label: 'Tax Reporting & ledger exports' },
       { label: 'Deal Analysis & OCR document upload' },
-      { label: 'Crowdfund marketplace access' },
+      { label: 'Deal Marketplace access' },
       { label: '1 user account (solo operator)' },
     ],
     cta: 'Start Investor Trial',
@@ -118,78 +118,55 @@ const PLANS: Plan[] = [
     cta: 'Join the Marketplace',
     ctaStyle: 'outline',
   },
-  {
-    id: 'institutional',
-    stripeKey: '',
-    name: 'Institutional',
-    tagline: 'Your branded platform.',
-    persona: 'For institutional players who need API access, white-labeling, and custom SLAs.',
-    monthlyPrice: null,
-    annualPrice: null,
-    annualMonthly: null,
-    isFree: false,
-    isCustom: true,
-    highlighted: false,
-    features: [
-      { label: 'Unlimited deals + unlimited seats' },
-      { label: 'REST API + webhook integrations' },
-      { label: 'White-label dashboard' },
-      { label: 'Custom data retention + SLA' },
-      { label: 'Dedicated account manager' },
-      { label: 'Custom Stripe billing' },
-    ],
-    cta: 'Talk to our team',
-    ctaStyle: 'contact',
-  },
 ];
 
 /* ─── Comparison table ───────────────────────────────── */
-interface CompRow { label: string; vendor: boolean; investor: boolean; team: boolean; inst: boolean; proOnly?: boolean }
+interface CompRow { label: string; vendor: boolean; investor: boolean; team: boolean; proOnly?: boolean }
 
 const COMP_ROWS: { category: string; rows: CompRow[] }[] = [
   {
     category: 'Acquisition',
     rows: [
-      { label: 'Deal Analyzer (IRR, Cap Rate, CoC)', vendor: true, investor: true, team: true, inst: true },
-      { label: 'Active deal limit', vendor: true, investor: true, team: true, inst: true },
-      { label: 'LP Syndication Pitch Builder', vendor: false, investor: false, team: true, inst: true },
-      { label: 'Syndication Underwriter (debt sizing)', vendor: false, investor: false, team: true, inst: true },
+      { label: 'Deal Analyzer (IRR, Cap Rate, CoC)', vendor: true, investor: true, team: true },
+      { label: 'Active deal limit', vendor: true, investor: true, team: true },
+      { label: 'LP Syndication Pitch Builder', vendor: false, investor: false, team: true },
+      { label: 'Syndication Underwriter (debt sizing)', vendor: false, investor: false, team: true },
     ],
   },
   {
-    category: 'Closing',
+    category: 'Fund',
     rows: [
-      { label: 'Contingency Deadline Tracker', vendor: true, investor: true, team: true, inst: true },
-      { label: 'Earnest Money Alerts', vendor: false, investor: true, team: true, inst: true },
-      { label: 'Escrow Document Vault', vendor: true, investor: true, team: true, inst: true },
-      { label: 'Automated Diligence Checklist', vendor: false, investor: true, team: true, inst: true },
+      { label: 'Contingency Deadline Tracker', vendor: true, investor: true, team: true },
+      { label: 'Earnest Money Alerts', vendor: false, investor: true, team: true },
+      { label: 'Escrow Document Vault', vendor: true, investor: true, team: true },
+      { label: 'Automated Diligence Checklist', vendor: false, investor: true, team: true },
     ],
   },
   {
-    category: 'Hold / Rehab',
+    category: 'Hold',
     rows: [
-      { label: 'Budget vs. Actual — Real Time', vendor: true, investor: true, team: true, inst: true },
-      { label: 'Contractor Draw Log', vendor: true, investor: true, team: true, inst: true },
-      { label: 'Draw Submission Portal', vendor: false, investor: false, team: true, inst: true },
-      { label: 'Milestone Approvals (GC Workflows)', vendor: false, investor: true, team: true, inst: true },
+      { label: 'Budget vs. Actual — Real Time', vendor: true, investor: true, team: true },
+      { label: 'Contractor Draw Log', vendor: true, investor: true, team: true },
+      { label: 'Draw Submission Portal', vendor: false, investor: false, team: true },
+      { label: 'Milestone Approvals (GC Workflows)', vendor: false, investor: true, team: true },
     ],
   },
   {
-    category: 'Exit & Tax',
+    category: 'Exit',
     rows: [
-      { label: 'CPA-Ready P&L Export', vendor: true, investor: true, team: true, inst: true },
-      { label: 'Closing Cost Tracker', vendor: true, investor: true, team: true, inst: true },
-      { label: 'ROI Summary (actual vs. projected)', vendor: true, investor: true, team: true, inst: true },
-      { label: 'White-Label Exit Reports (PDF)', vendor: false, investor: false, team: true, inst: true },
+      { label: 'CPA-Ready P&L Export', vendor: true, investor: true, team: true },
+      { label: 'Closing Cost Tracker', vendor: true, investor: true, team: true },
+      { label: 'ROI Summary (actual vs. projected)', vendor: true, investor: true, team: true },
+      { label: 'White-Label Exit Reports (PDF)', vendor: false, investor: false, team: true },
     ],
   },
   {
     category: 'Team & API',
     rows: [
-      { label: 'Team Seats', vendor: false, investor: false, team: true, inst: true },
-      { label: 'Read-Only LP / Partner Access', vendor: false, investor: true, team: true, inst: true },
-      { label: 'REST API + Webhooks', vendor: false, investor: false, team: false, inst: true },
-      { label: 'White-Label Dashboard', vendor: false, investor: false, team: false, inst: true },
+      { label: 'Team Seats', vendor: false, investor: false, team: true },
+      { label: 'Read-Only LP / Partner Access', vendor: false, investor: true, team: true },
+      { label: 'REST API + Webhooks', vendor: false, investor: false, team: false },
+      { label: 'White-Label Dashboard', vendor: false, investor: false, team: false },
     ],
   },
 ];
@@ -198,7 +175,7 @@ const COMP_ROWS: { category: string; rows: CompRow[] }[] = [
 const FAQ = [
   {
     q: "I only close 3–4 deals a year. Can I justify $59/month?",
-    a: "Yes. A single missed contingency window can cost you $12,500 in lost earnest money — more than two years of Investor. If one contractor draw goes untracked and you're $40k over budget at closing, that's the equivalent of 56 years of the annual plan. The question isn't whether $59 is worth it. The question is what your last deal's blown timeline actually cost you.",
+    a: "Yes. A single missed contingency window can cost you $12,500 in lost earnest money — more than two years of Investor. If one contractor draw goes untracked and you're $40k over budget at closing, that's the equivalent of 80 years of the annual plan. The question isn't whether $59 is worth it. The question is what your last deal's blown timeline actually cost you.",
   },
   {
     q: "Is there a free trial? What happens to my data if I cancel?",
@@ -452,10 +429,10 @@ function ROICallout() {
         <div className="relative z-10 flex flex-col md:flex-row items-center gap-6 md:gap-10 text-center md:text-left">
           <div className="flex-shrink-0">
             <p className="font-extrabold text-[44px] leading-none tracking-[-0.04em] text-primary luminous-text font-tabular">
-              $468
+              $499
             </p>
             <p className="font-jetbrains text-[10px] text-primary/50 tracking-[0.06em] uppercase mt-1">
-              Pro · full year
+              Investor · full year
             </p>
           </div>
           <div className="text-on-surface-variant text-[28px] font-thin hidden md:block">vs</div>
@@ -469,7 +446,7 @@ function ROICallout() {
           </div>
           <div className="flex-1 md:border-l md:border-outline-variant md:pl-8">
             <p className="text-[15px] leading-[24px] font-normal text-on-surface-variant">
-              Pro costs less than one missed earnest money deposit. One untracked contractor draw can wipe{' '}
+              Investor costs less than one missed earnest money deposit. One untracked contractor draw can wipe{' '}
               <span className="text-on-surface font-semibold">$40,000</span> from your margin.
               This is the cheapest deal insurance you will ever buy.
             </p>
@@ -523,17 +500,16 @@ function ComparisonTable() {
               <th className="p-4 font-jetbrains text-[11px] uppercase tracking-[0.06em] text-on-surface-variant/50 w-[40%]">
                 Feature
               </th>
-              <th className="p-4 text-center font-bold text-[12px] text-primary w-[15%]">Investor</th>
-              <th className="p-4 text-center font-semibold text-[12px] text-on-surface-variant w-[15%]">Investment Team</th>
-              <th className="p-4 text-center font-semibold text-[12px] text-on-surface-variant w-[15%]">Vendor</th>
-              <th className="p-4 text-center font-semibold text-[12px] text-on-surface-variant w-[15%]">Institutional</th>
+              <th className="p-4 text-center font-bold text-[12px] text-primary w-[20%]">Investor</th>
+              <th className="p-4 text-center font-semibold text-[12px] text-on-surface-variant w-[20%]">Investment Team</th>
+              <th className="p-4 text-center font-semibold text-[12px] text-on-surface-variant w-[20%]">Vendor</th>
             </tr>
           </thead>
           <tbody>
             {visibleRows.map((section) => (
               <React.Fragment key={`cat-${section.category}`}>
                 <tr className="bg-surface-container-low/30">
-                  <td colSpan={5} className="px-4 py-2.5">
+                  <td colSpan={4} className="px-4 py-2.5">
                     <span className="font-jetbrains text-[10px] uppercase tracking-[0.08em] text-primary/60">
                       {section.category}
                     </span>
@@ -545,7 +521,6 @@ function ComparisonTable() {
                     <td className="p-4 text-center bg-primary/3"><Check yes={row.investor} isPortfolio /></td>
                     <td className="p-4 text-center"><Check yes={row.team} /></td>
                     <td className="p-4 text-center"><Check yes={row.vendor} /></td>
-                    <td className="p-4 text-center"><Check yes={row.inst} /></td>
                   </tr>
                 ))}
               </React.Fragment>
@@ -760,18 +735,18 @@ export default function PricingSection({ onSelectPlan }: { onSelectPlan?: (plan:
           whileInView="visible"
           viewport={{ once: true, margin: '-60px' }}
           variants={stagger}
-          className="max-w-3xl mx-auto px-6 lg:px-8 pt-10 pb-6 text-center"
+          className="max-w-4xl mx-auto px-6 lg:px-8 pt-10 pb-10 text-center"
         >
-          <motion.p variants={fadeUp} className="font-jetbrains text-[10px] uppercase tracking-[0.12em] text-primary/50 mb-3">
+          <motion.p variants={fadeUp} className="font-jetbrains text-[10px] uppercase tracking-[0.12em] text-primary/50 mb-4">
             Pricing
           </motion.p>
 
-          <motion.h2 variants={fadeUp} className="text-[28px] md:text-[36px] font-thin tracking-[-0.035em] text-on-surface leading-tight mb-3 font-display-hero">
-            Software that costs less than <span className="text-primary luminous-text font-thin">one missed deadline.</span>
-          </motion.h2>
+          <motion.h1 variants={fadeUp} className="text-3xl sm:text-4xl md:text-5xl font-extrabold tracking-tight text-on-surface leading-[1.15] mb-6 max-w-3xl mx-auto font-display-hero">
+            A $429,000 Investment Deserves Better Than a Spreadsheet.
+          </motion.h1>
 
-          <motion.p variants={fadeUp} className="text-[13px] md:text-[14px] leading-relaxed text-on-surface-variant max-w-2xl mx-auto">
-            Your next contingency window is worth $12,500 in earnest money. Start tracking properly.
+          <motion.p variants={fadeUp} className="text-sm sm:text-base leading-relaxed text-on-surface-variant max-w-3xl mx-auto">
+            The median U.S. home now sells for roughly $429,000 (National Association of Realtors, May 2026) — while the typical retail stock portfolio is a fraction of that. Yet stock investors get real-time dashboards, alerts, and professional-grade analytics, and real estate investors get a folder of PDFs and a spreadsheet from 2019. PaperWorking is the terminal for your real estate portfolio: see every dollar, deadline, and metric in one place, so you&apos;re proactive about the largest investments you own — not reactive.
           </motion.p>
         </motion.div>
 
@@ -788,7 +763,7 @@ export default function PricingSection({ onSelectPlan }: { onSelectPlan?: (plan:
           <span className={`text-[13px] font-medium transition-colors duration-200 flex items-center gap-2 ${isAnnual ? 'text-on-surface' : 'text-on-surface-variant/50'}`}>
             Annual
             <span className="text-[10px] font-bold uppercase tracking-wide bg-primary/12 text-primary px-2 py-0.5 rounded-full">
-              Save 20%
+              Save Up to 29%
             </span>
           </span>
         </div>
@@ -802,7 +777,7 @@ export default function PricingSection({ onSelectPlan }: { onSelectPlan?: (plan:
           className="max-w-7xl mx-auto px-6 lg:px-8 pb-6"
         >
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-5 items-start">
-            {PLANS.filter(p => p.id !== 'institutional').map((plan) => (
+            {PLANS.map((plan) => (
               <PricingCard
                 key={plan.id}
                 plan={plan}
@@ -812,34 +787,7 @@ export default function PricingSection({ onSelectPlan }: { onSelectPlan?: (plan:
             ))}
           </div>
 
-          {/* Google Ratings at the bottom below the columns and above the fold */}
-          <motion.div
-            variants={fadeUp}
-            className="mt-6 flex flex-col sm:flex-row items-center justify-center gap-3"
-          >
-            <div className="flex items-center gap-2 px-4 py-2 rounded-full bg-surface-container/30 border border-outline-variant/50 backdrop-blur-sm shadow-sm">
-              <svg className="w-4 h-4 flex-shrink-0" viewBox="0 0 24 24" fill="currentColor">
-                <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4" />
-                <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853" />
-                <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z" fill="#FBBC05" />
-                <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z" fill="#EA4335" />
-              </svg>
-              <span className="text-[12px] font-bold text-on-surface">Google</span>
-              <div className="flex items-center gap-0.5 ml-1">
-                {[...Array(5)].map((_, i) => (
-                  <span
-                    key={i}
-                    className="material-symbols-outlined text-[15px] text-[#00CE8E]"
-                    style={{ fontVariationSettings: "'FILL' 1, 'wght' 600" }}
-                  >
-                    star
-                  </span>
-                ))}
-              </div>
-              <span className="text-[12px] font-semibold text-on-surface">4.9/5 rating</span>
-              <span className="text-[11px] text-on-surface-variant/75 font-normal border-l border-outline-variant/60 pl-2 ml-1">(142 reviews)</span>
-            </div>
-          </motion.div>
+
         </motion.div>
 
 

@@ -389,6 +389,15 @@ export const projectFinancialsSchema = z.object({
   /** Array of pre-approval document URLs */
   preApprovalDocuments: z.array(z.string()).optional(),
 
+  lenderVaultDocuments: z.array(z.object({
+    id: z.string(),
+    name: z.string(),
+    status: z.enum(['pending', 'verified']),
+    fileUrl: z.string().optional(),
+    storagePath: z.string().optional(),
+    uploadedAt: z.string().optional(),
+  })).optional(),
+
   /** Virtual Inspection Estimate vs Actual */
   inspections: z.array(z.object({
     id: z.string(),

@@ -19,110 +19,6 @@ import type { VendorProfile } from '@/types/schema';
    Shows full vendor profile from Firestore or demo fallback.
    ═══════════════════════════════════════════════════════════════ */
 
-/* ── Demo vendor cards (mirrors marketplace page for fallback) ── */
-const DEMO_VENDORS: Record<
-  string,
-  {
-    id: string;
-    companyName: string;
-    category: string;
-    location: string;
-    rating: number;
-    bio: string;
-    specialties: string[];
-    totalReviews: number;
-    avgTurnaroundDays: number;
-    feeRangeLabel: string;
-    verified: boolean;
-    availability: string;
-  }
-> = {
-  'demo-1': {
-    id: 'demo-1',
-    companyName: 'Prime Structural Engineering',
-    category: 'Inspector',
-    location: 'Miami, FL',
-    rating: 4.8,
-    bio: 'Full-service structural and property inspection firm specializing in multi-family and commercial real estate due diligence. Our team of licensed engineers provides thorough assessments for acquisition, renovation, and compliance needs.',
-    specialties: ['Structural', 'Multi-Family', 'Due Diligence'],
-    totalReviews: 24,
-    avgTurnaroundDays: 3,
-    feeRangeLabel: '$400 – $1,200',
-    verified: true,
-    availability: 'Available',
-  },
-  'demo-2': {
-    id: 'demo-2',
-    companyName: 'Capital Bridge Lending',
-    category: 'Lender',
-    location: 'New York, NY',
-    rating: 4.9,
-    bio: 'Bridge and hard-money lender for real estate investors with fast closings and competitive rates across the Tri-State area. We specialize in BRRRR strategies, fix-and-flip financing, and ground-up construction loans.',
-    specialties: ['Bridge Loans', 'Hard Money', 'Fast Close'],
-    totalReviews: 42,
-    avgTurnaroundDays: 7,
-    feeRangeLabel: '2–4 points + 10–13% APR',
-    verified: true,
-    availability: 'Available',
-  },
-  'demo-3': {
-    id: 'demo-3',
-    companyName: 'Coastal Title & Escrow',
-    category: 'Attorney',
-    location: 'Fort Lauderdale, FL',
-    rating: 4.7,
-    bio: 'Full-service real estate law firm handling title, escrow, and closing services for residential and commercial transactions. Trusted by investors across South Florida for seamless closings.',
-    specialties: ['Title', 'Escrow', 'Closings'],
-    totalReviews: 31,
-    avgTurnaroundDays: 5,
-    feeRangeLabel: '$800 – $2,500',
-    verified: true,
-    availability: 'Available',
-  },
-  'demo-4': {
-    id: 'demo-4',
-    companyName: 'ProBuild Contractors',
-    category: 'Contractor',
-    location: 'Brooklyn, NY',
-    rating: 4.6,
-    bio: 'Licensed general contractors focused on value-add renovations, BRRRR rehabs, and multi-unit upgrades across the NYC metro. We handle full gut renovations and cosmetic refreshes with transparent pricing.',
-    specialties: ['BRRRR Rehab', 'Value-Add', 'Multi-Unit'],
-    totalReviews: 18,
-    avgTurnaroundDays: 45,
-    feeRangeLabel: '$15K – $150K+',
-    verified: true,
-    availability: 'Available',
-  },
-  'demo-5': {
-    id: 'demo-5',
-    companyName: 'Premier Property Group',
-    category: 'Property Manager',
-    location: 'Miami, FL',
-    rating: 4.8,
-    bio: 'Full-scope property management for residential portfolios — tenant screening, maintenance coordination, and financial reporting. Serving single-family, multi-family, and small commercial properties.',
-    specialties: ['Tenant Screening', 'Maintenance', 'Financials'],
-    totalReviews: 36,
-    avgTurnaroundDays: 2,
-    feeRangeLabel: '8–10% of monthly rent',
-    verified: true,
-    availability: 'Available',
-  },
-  'demo-6': {
-    id: 'demo-6',
-    companyName: 'NextGen Realty Partners',
-    category: 'Agent',
-    location: 'Newark, NJ',
-    rating: 4.7,
-    bio: 'Investor-focused real estate agents helping buyers identify off-market opportunities and negotiate acquisition deals. We specialize in multi-family and mixed-use properties in the NJ/NY metro.',
-    specialties: ['Off-Market', 'Buyer Rep', 'Negotiation'],
-    totalReviews: 15,
-    avgTurnaroundDays: 14,
-    feeRangeLabel: '2.5–3% commission',
-    verified: true,
-    availability: 'Available',
-  },
-};
-
 const CATEGORY_BADGE_STYLES: Record<string, string> = {
   Inspector:          'bg-sky-400/10 border-sky-400/20 text-sky-400',
   Lender:             'bg-[#6E7480]/10 border-[#6E7480]/20 text-[#6E7480]',
@@ -145,7 +41,6 @@ type VendorDetail = {
   feeRangeLabel: string;
   verified: boolean;
   availability: string;
-  isDemo: boolean;
 };
 
 export default function VendorDetailPage() {
@@ -161,15 +56,7 @@ export default function VendorDetailPage() {
     const loadVendor = async () => {
       setLoading(true);
 
-      /* Check demo vendors first */
-      const demo = DEMO_VENDORS[vendorId];
-      if (demo) {
-        setVendor({ ...demo, isDemo: true });
-        setLoading(false);
-        return;
-      }
-
-      /* Otherwise fetch from API / Firestore */
+      /* Fetch from API / Firestore */
       try {
         const res = await fetch(`/api/vendors?id=${encodeURIComponent(vendorId)}`);
         if (res.ok) {
@@ -190,7 +77,6 @@ export default function VendorDetailPage() {
               feeRangeLabel: match.feeRangeLabel ?? 'Contact for pricing',
               verified: match.verified ?? false,
               availability: match.availability ?? 'Unknown',
-              isDemo: false,
             });
             setLoading(false);
             return;
@@ -259,18 +145,6 @@ export default function VendorDetailPage() {
         <ArrowLeft className="w-4 h-4" />
         Back to Marketplace
       </button>
-
-      {/* ── Sample Data Banner ── */}
-      {vendor.isDemo && (
-        <div className="flex items-center gap-2 px-4 py-2.5 rounded-lg border border-sky-500/20 bg-sky-500/5">
-          <span className="px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider bg-sky-400/15 border border-sky-400/30 text-sky-400">
-            Sample Data
-          </span>
-          <p className="text-xs text-sky-400/80">
-            This is an example vendor profile. Real vendor data will appear once vendors register on the marketplace.
-          </p>
-        </div>
-      )}
 
       {/* ── Profile Header Card ── */}
       <div className="glass-card rounded-xl border border-pw-border p-6 space-y-5">

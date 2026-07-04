@@ -47,20 +47,26 @@ import { logger } from '@/lib/logger';
 
 // ─── Factory ─────────────────────────────────────────────────────────────────
 
+// Module-level singleton — one client per Node.js process.
+// undefined = not yet evaluated; null = key absent.
+let _sharedClient: RentCastClient | null | undefined;
+
 /**
- * Get a RentCastClient if RENTCAST_API_KEY is set, or null otherwise.
- * Callers that need fallback behavior (e.g., mock providers) should check
- * for null and branch accordingly.
+ * Returns the shared RentCastClient if RENTCAST_API_KEY is set, or null.
+ * Memoized — subsequent calls return the same instance.
  */
 export function getRentCastClient(): RentCastClient | null {
-  const apiKey = process.env.RENTCAST_API_KEY;
+  if (_sharedClient !== undefined) return _sharedClient;
 
+  const apiKey = process.env.RENTCAST_API_KEY;
   if (!apiKey) {
     logger.warn('[RentCast] RENTCAST_API_KEY is not set — client unavailable');
+    _sharedClient = null;
     return null;
   }
 
-  return new RentCastClient(apiKey);
+  _sharedClient = new RentCastClient(apiKey);
+  return _sharedClient;
 }
 
 /**

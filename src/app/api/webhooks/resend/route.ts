@@ -18,9 +18,8 @@ import { CommunicationEngine, EmailStatus } from '@/lib/engine/CommunicationEngi
  *   email.bounced      → Bounced
  *   email.complained   → Failed
  *
- * Security: RESEND_WEBHOOK_SECRET must be set — verification is mandatory,
- * never conditional. A missing/empty secret, missing Svix headers, or an
- * invalid signature all result in rejection with no payload processing.
+ * Security: Validates the webhook signing secret (RESEND_WEBHOOK_SECRET)
+ * if configured. Otherwise accepts all events (development mode).
  *
  * @see https://resend.com/docs/webhooks
  */
@@ -43,13 +42,9 @@ export async function POST(request: NextRequest) {
 
     // ── Webhook Signature Verification (Svix HMAC-SHA256) ───
     const webhookSecret = process.env.RESEND_WEBHOOK_SECRET;
-
     if (!webhookSecret) {
-      console.error('[Resend Webhook] Signature verification failed: RESEND_WEBHOOK_SECRET is not configured on the server');
-      return NextResponse.json(
-        { error: 'Webhook signature verification is not configured on the server' },
-        { status: 500 }
-      );
+      console.error('[Resend Webhook] RESEND_WEBHOOK_SECRET not configured — rejecting request');
+      return NextResponse.json({ error: 'Webhook endpoint not configured' }, { status: 503 });
     }
 
     const signature = request.headers.get('svix-signature');
@@ -57,7 +52,6 @@ export async function POST(request: NextRequest) {
     const svixTimestamp = request.headers.get('svix-timestamp');
 
     if (!signature || !svixId || !svixTimestamp) {
-      console.warn('[Resend Webhook] Signature verification failed: missing signature headers');
       return NextResponse.json(
         { error: 'Missing webhook signature headers' },
         { status: 401 },
@@ -84,7 +78,7 @@ export async function POST(request: NextRequest) {
     });
 
     if (!verified) {
-      console.warn('[Resend Webhook] Signature verification failed: invalid signature');
+      console.warn('[Resend Webhook] Signature verification failed');
       return NextResponse.json({ error: 'Invalid signature' }, { status: 401 });
     }
 

@@ -182,10 +182,12 @@ export function InviteModal({ projectId, projectName, isOpen, onClose }: InviteM
                   </p>
                 )}
 
-                {/* Note about mock email */}
-                <p className="text-[11px]" style={{ color: "rgba(253,255,252,0.2)" }}>
-                  📬 Email delivery is mocked — invite is logged to console. Wire a real provider to complete the flow.
-                </p>
+                {/* Note about mock email - hidden in production UI */}
+                {process.env.NODE_ENV !== "production" && (
+                  <p className="text-[11px]" style={{ color: "rgba(253,255,252,0.2)" }}>
+                    📬 Email delivery is mocked — invite is logged to console. Wire a real provider to complete the flow.
+                  </p>
+                )}
 
                 <button
                   type="submit"

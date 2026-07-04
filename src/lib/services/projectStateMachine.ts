@@ -108,7 +108,7 @@ export async function transitionProjectPhase(
       <li>Confirm your availability for showings and open house scheduling.</li>
       <li>Submit any outstanding documents to the Document Hub.</li>
     </ul>
-    <a href="${process.env.NEXT_PUBLIC_APP_URL || 'https://paperworking.co'}/dashboard?lane=engine"
+    <a href="${process.env.NEXT_PUBLIC_APP_URL || 'https://paperworking.co'}/dashboard/command-center"
        style="display:inline-block;background:#111;color:#fff;padding:12px 24px;text-decoration:none;font-weight:600;border-radius:6px;font-size:14px">
       Open Deal in PaperWorking →
     </a>

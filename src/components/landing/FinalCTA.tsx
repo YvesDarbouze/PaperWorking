@@ -40,24 +40,24 @@ export default function FinalCTA() {
               without the chaos.
             </p>
 
-            {/* Stats row */}
+            {/* Product truths row */}
             <div className="grid grid-cols-3 gap-px mb-8 max-w-md">
               <div className="glass-card rounded-l-lg py-4 px-3 text-center">
-                <p className="text-xl font-bold text-primary">12hrs</p>
-                <p className="text-xs text-on-surface-variant mt-1 uppercase tracking-wider font-medium">
-                  Saved/week
+                <p className="text-xs font-bold text-primary uppercase tracking-wider">Deadlines</p>
+                <p className="text-[10px] text-on-surface-variant mt-1 font-medium leading-tight">
+                  Every date tracked
                 </p>
               </div>
               <div className="glass-card py-4 px-3 text-center">
-                <p className="text-xl font-bold text-primary">3.2×</p>
-                <p className="text-xs text-on-surface-variant mt-1 uppercase tracking-wider font-medium">
-                  Faster closings
+                <p className="text-xs font-bold text-primary uppercase tracking-wider">Ledger</p>
+                <p className="text-[10px] text-on-surface-variant mt-1 font-medium leading-tight">
+                  Every dollar logged
                 </p>
               </div>
               <div className="glass-card rounded-r-lg py-4 px-3 text-center">
-                <p className="text-xl font-bold text-primary">$4.8K</p>
-                <p className="text-xs text-on-surface-variant mt-1 uppercase tracking-wider font-medium">
-                  Monthly savings
+                <p className="text-xs font-bold text-primary uppercase tracking-wider">History</p>
+                <p className="text-[10px] text-on-surface-variant mt-1 font-medium leading-tight">
+                  Fully archived
                 </p>
               </div>
             </div>

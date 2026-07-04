@@ -3,6 +3,7 @@ import { requireAuth, isAuthError } from '@/lib/firebase-admin/auth-guard';
 import { adminDb } from '@/lib/firebase/admin';
 import { getRentHistoryProvider } from '@/lib/providers/rentHistory';
 import telemetry from '@/lib/telemetry';
+import { logger } from '@/lib/logger';
 
 export const dynamic = 'force-dynamic';
 
@@ -78,7 +79,7 @@ export async function POST(req: NextRequest) {
     try {
       listings = await provider.getRentalHistory(address);
     } catch (apiErr: any) {
-      console.error('[RentCast Import Error] Failed to get rental history:', apiErr);
+      logger.error('[RentCast Import] Failed to get rental history', apiErr);
       
       // Emit failure event
       try {
@@ -93,7 +94,7 @@ export async function POST(req: NextRequest) {
         });
         await telemetry.flush();
       } catch (telErr) {
-        console.error('Failed to log telemetry:', telErr);
+        logger.error('Failed to log telemetry', telErr);
       }
 
       return NextResponse.json(
@@ -149,7 +150,7 @@ export async function POST(req: NextRequest) {
       });
       await telemetry.flush();
     } catch (telErr) {
-      console.error('Failed to log telemetry:', telErr);
+      logger.error('Failed to log telemetry', telErr);
     }
 
     return NextResponse.json({
@@ -158,7 +159,7 @@ export async function POST(req: NextRequest) {
     });
 
   } catch (error: any) {
-    console.error('[RentCast Import Handler Error]:', error);
+    logger.error('[RentCast Import] Handler error', error);
     return NextResponse.json(
       { error: 'Internal server error', details: error.message || String(error) },
       { status: 500 }

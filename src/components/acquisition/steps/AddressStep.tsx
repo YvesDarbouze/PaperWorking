@@ -66,12 +66,13 @@ export function AddressStep({ onNext }: { onNext: () => void }) {
     return () => document.removeEventListener("mousedown", handler);
   }, []);
 
-  const handleSelect = useCallback((s: AddressSuggestion) => {
+  const handleSelect = useCallback(async (s: AddressSuggestion) => {
     setSelected(s);
     setQuery(s.formattedAddress);
     setDisplayName(s.formattedAddress);
     setOpen(false);
     setSuggestions([]);
+    // Commit what we have immediately — components are already parsed from autocomplete text
     setAddress({
       placeId:          s.placeId,
       formattedAddress: s.formattedAddress,
@@ -83,6 +84,22 @@ export function AddressStep({ onNext }: { onNext: () => void }) {
       lat:              s.lat,
       lng:              s.lng,
     });
+    // Hydrate lat/lng and precise components from the details endpoint
+    if (defaultAddressProvider.getDetails) {
+      try {
+        const details = await defaultAddressProvider.getDetails(s.placeId);
+        setAddress({
+          addressLine: details.components.addressLine || s.components.addressLine,
+          city:        details.components.city        || s.components.city,
+          state:       details.components.state       || s.components.state,
+          zip:         details.components.zip         || s.components.zip,
+          lat:         details.lat,
+          lng:         details.lng,
+        });
+      } catch {
+        // Non-fatal — optimistic values from autocomplete text remain
+      }
+    }
   }, [setAddress]);
 
   const handleClear = useCallback(() => {

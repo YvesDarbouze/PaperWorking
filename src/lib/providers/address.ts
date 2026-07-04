@@ -1,12 +1,9 @@
 // Address Provider — abstraction layer for geocoding / place search.
 //
-// TODO: Swap MockAddressProvider for a real implementation:
-//   - Google Places Autocomplete: https://developers.google.com/maps/documentation/places/web-service/autocomplete
-//   - Mapbox Geocoding: https://docs.mapbox.com/api/search/geocoding/
-//   - HERE Geocoding: https://developer.here.com/documentation/geocoding-search-api/
-//   - Radar: https://radar.com/documentation/api#autocomplete
-//
-// Note: Zillow does not expose a public geocoding or address-lookup API.
+// Active provider is selected via NEXT_PUBLIC_ADDRESS_PROVIDER env var:
+//   'google' → GooglePlacesAddressProvider (calls /api/places/* server proxy, key never in client bundle)
+//   'mock'   → MockAddressProvider with 20 seeded test addresses (dev/test only)
+//   unset    → mock (safe fallback — never silently uses real API without configuration)
 
 export interface AddressComponents {
   streetNumber?: string;
@@ -28,6 +25,72 @@ export interface AddressSuggestion {
 export interface AddressProvider {
   /** Returns up to 5 suggestions matching the query, debounce on the caller side. */
   autocomplete(query: string): Promise<AddressSuggestion[]>;
+  /**
+   * Resolves a placeId to its full coordinates and structured components.
+   * Call this once when the user selects a suggestion to hydrate lat/lng.
+   * Callers should treat the result as a partial overlay onto the base suggestion.
+   */
+  getDetails?(placeId: string): Promise<Pick<AddressSuggestion, 'lat' | 'lng' | 'components'>>;
+}
+
+// ─── Google Places Provider ────────────────────────────────────────────────────
+// Calls /api/places/autocomplete and /api/places/details server proxies.
+// The GOOGLE_PLACES_API_KEY lives only on the server — never in this file.
+
+function parseComponents(mainText: string, secondaryText: string): AddressComponents {
+  // secondaryText format: "Brooklyn, NY 11201, USA" or "New York, NY, USA"
+  const cleaned = secondaryText.replace(', USA', '').replace(', United States', '');
+  const parts = cleaned.split(', ');
+  const city = parts[0] ?? '';
+  const stateZip = parts[1] ?? '';
+  const [state = '', zip = ''] = stateZip.split(' ');
+  return { addressLine: mainText, city, state, zip };
+}
+
+export class GooglePlacesAddressProvider implements AddressProvider {
+  async autocomplete(query: string): Promise<AddressSuggestion[]> {
+    if (query.trim().length < 2) return [];
+    try {
+      const res = await fetch('/api/places/autocomplete', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ input: query.trim() }),
+      });
+      if (!res.ok) return fallbackMock(query);
+      const data = await res.json();
+      const predictions: { placeId: string; description: string; mainText: string; secondaryText: string }[] =
+        data.predictions ?? [];
+      return predictions.slice(0, 5).map(p => ({
+        placeId: p.placeId,
+        formattedAddress: p.description,
+        lat: 0,
+        lng: 0,
+        components: parseComponents(p.mainText, p.secondaryText),
+      }));
+    } catch {
+      return fallbackMock(query);
+    }
+  }
+
+  async getDetails(placeId: string): Promise<Pick<AddressSuggestion, 'lat' | 'lng' | 'components'>> {
+    const res = await fetch('/api/places/details', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ placeId }),
+    });
+    if (!res.ok) throw new Error(`Places details error: ${res.status}`);
+    const d = await res.json();
+    return {
+      lat: d.lat ?? 0,
+      lng: d.lng ?? 0,
+      components: {
+        addressLine: d.street ?? '',
+        city: d.city ?? '',
+        state: d.state ?? '',
+        zip: d.zip ?? '',
+      },
+    };
+  }
 }
 
 // ─── Mock implementation ───────────────────────────────────────────────────────
@@ -55,19 +118,36 @@ const MOCK_ADDRESSES: AddressSuggestion[] = [
   { placeId: "mock_18", formattedAddress: "822 W 36th St, Baltimore, MD 21211",       lat: 39.3348, lng: -76.6412, components: { addressLine: "822 W 36th St",    city: "Baltimore",    state: "MD", zip: "21211" } },
   { placeId: "mock_19", formattedAddress: "1501 Delmar Blvd, St. Louis, MO 63103",    lat: 38.6341, lng: -90.2165, components: { addressLine: "1501 Delmar Blvd", city: "St. Louis",    state: "MO", zip: "63103" } },
   { placeId: "mock_20", formattedAddress: "4425 N Central Ave, Phoenix, AZ 85012",    lat: 33.5001, lng: -112.0732,components: { addressLine: "4425 N Central Ave", city: "Phoenix",   state: "AZ", zip: "85012" } },
-  { placeId: "mock_21", formattedAddress: "123 Main St, Los Angeles, CA 90001",   lat: 34.0522, lng: -118.2437,components: { addressLine: "123 Main St",    city: "Los Angeles", state: "CA", zip: "90001" } },
+  { placeId: "mock_21", formattedAddress: "123 Main St, Los Angeles, CA 90001",       lat: 34.0522, lng: -118.2437,components: { addressLine: "123 Main St",    city: "Los Angeles", state: "CA", zip: "90001" } },
 ];
+
+function fallbackMock(query: string): AddressSuggestion[] {
+  if (query.trim().length < 2) return [];
+  const q = query.toLowerCase();
+  return MOCK_ADDRESSES.filter(a => a.formattedAddress.toLowerCase().includes(q)).slice(0, 5);
+}
 
 export class MockAddressProvider implements AddressProvider {
   async autocomplete(query: string): Promise<AddressSuggestion[]> {
     if (query.trim().length < 2) return [];
-    // Simulate ~250ms network latency
     await new Promise(r => setTimeout(r, 250));
-    const q = query.toLowerCase();
-    return MOCK_ADDRESSES
-      .filter(a => a.formattedAddress.toLowerCase().includes(q))
-      .slice(0, 5);
+    return fallbackMock(query);
+  }
+
+  async getDetails(placeId: string): Promise<Pick<AddressSuggestion, 'lat' | 'lng' | 'components'>> {
+    const found = MOCK_ADDRESSES.find(a => a.placeId === placeId);
+    if (!found) throw new Error(`Mock: placeId ${placeId} not found`);
+    return { lat: found.lat, lng: found.lng, components: found.components };
   }
 }
 
-export const defaultAddressProvider: AddressProvider = new MockAddressProvider();
+// ─── Factory ───────────────────────────────────────────────────────────────────
+
+function getAddressProvider(): AddressProvider {
+  if (typeof process !== 'undefined' && process.env.NEXT_PUBLIC_ADDRESS_PROVIDER === 'google') {
+    return new GooglePlacesAddressProvider();
+  }
+  return new MockAddressProvider();
+}
+
+export const defaultAddressProvider: AddressProvider = getAddressProvider();

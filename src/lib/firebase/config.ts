@@ -27,3 +27,11 @@ if (typeof window !== 'undefined') {
 }
 
 export const storage = getStorage(app);
+
+// Expose helper on window to sign in E2E client with a custom token
+if (typeof window !== 'undefined') {
+  (window as any).signInWithCustomTokenForE2E = async (token: string) => {
+    const { signInWithCustomToken } = await import('firebase/auth');
+    await signInWithCustomToken(auth, token);
+  };
+}

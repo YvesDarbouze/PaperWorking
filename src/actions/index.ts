@@ -219,7 +219,7 @@ export async function closeProjectAndArchiveServerAction(idToken: string, projec
     let isAlreadyClosed = ['closed_won', 'closed_lost'].includes(projectData?.status);
     let closedCount = closedProjectsSnap.docs.length + (isAlreadyClosed ? 0 : 1);
 
-    closedProjectsSnap.forEach(docSnap => {
+    closedProjectsSnap.docs.forEach(docSnap => {
       // Don't double count the current project if it's already in the query results
       if (docSnap.id === projectId) return;
 

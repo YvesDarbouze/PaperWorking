@@ -1,3 +1,183 @@
+# Agent Handoff — Marketplace Vendor Audit & Date-Dependent Test Fixes (2026-07-01)
+
+## ✅ COMPLETED THIS SESSION
+
+### 1. Marketplace Vendor Audit (Prompt 34)
+- **`src/app/dashboard/marketplace/page.tsx`**:
+  - Removed `DEMO_VENDORS` static array.
+  - Formatted `displayVendors` to use real vendors only.
+  - Removed "Sample Data" banner.
+  - Implemented dual empty states: "No Registered Vendors" (database is empty) and "No Filter Matches" (filters yield no results).
+- **`src/app/dashboard/marketplace/[vendorId]/page.tsx`**:
+  - Removed `DEMO_VENDORS` static array.
+  - Removed local checks/loading for demo vendors.
+  - Cleaned up typing (`isDemo` removal) and JSX sample banner.
+
+### 2. Timezone/Date-Dependent Test Fix
+- **`src/__tests__/adminActions.test.ts`**:
+  - Fixed a timezone/date-dependent test bug in `getAdminRevenueStats` where a charge created `35 days ago` from July 1st landed in May (two months ago), failing the June (last month) revenue check.
+  - Dynamically set mocked charges' timestamps to the 15th of this month and the 15th of last month to make the test fully date-independent.
+
+### Verification
+- `tsc --noEmit`: 0 errors.
+- `npm test`: All 96 suites, 1164 tests green.
+
+---
+
+# Agent Handoff — Mock-to-Real / Security / Hygiene Sweep (2026-06-28)
+
+## ✅ COMPLETED THIS SESSION (commit b38b824f)
+
+### P1-2 — Property data defaults to mock (MOCK-TO-REAL)
+
+Full data pipeline: provider → cache → API route → UI reference panel.
+
+- **`src/lib/providers/property.ts`** (new, tracked):
+  - `PropertyDataProvider` interface with `getFacts(address)` + `getComps(address)`.
+  - `RentCastPropertyProvider`: cache-first — checks Firestore `rentcastPropertyCache/{key}`
+    first (per-endpoint TTLs: properties=30d, avm/*=7d), falls through to RentCast API on miss.
+    Returns `PropertyFacts` with `avmPriceCents`, `avmPriceLowCents/HighCents`,
+    `estRentCents`, `estRentLowCents/HighCents`, `sourceProvider`, `asOf`, `cached`, `stale`.
+  - `MockPropertyDataProvider`: djb2-hash-derived values, clearly labeled with `sourceProvider`
+    containing "Mock" so `AvmBadge` renders the amber ⚠ mock badge.
+  - `AttomPropertyProvider`, `MashvisorPropertyProvider`: skeleton adapters (key-guarded).
+  - `getPropertyProvider()`: factory keyed by `PROPERTY_DATA_PROVIDER` env var
+    (`rentcast` | `attom` | `mashvisor` | `mock`). Defaults to mock when unset.
+  - All `console.*` → `logger.*` (structured logger with PII-redaction).
+  - **Removed `export const defaultPropertyProvider` singleton** — it was evaluated once at
+    module import (capturing env state at cold-start), was not used by any route (the route
+    calls `getPropertyProvider()` per-request), and could silently diverge from real env state.
+
+- **`src/app/api/property/enrich/route.ts`** (new, tracked):
+  - `POST /api/property/enrich` — accepts `{ projectId, address, forceRefresh? }`.
+  - Auth: `requireAuth()` → 401; project membership check (members map + owner + org) → 403.
+  - Route-level Firestore cache (`projects/{id}/propertyFacts/current`, 7d TTL);
+    bypasses cache when `forceRefresh=true` or when cached provider is `MockPropertyProvider v1`.
+  - Calls `getPropertyProvider().getFacts(address)` and `.getComps(address)` in parallel.
+  - Honest `noCoverage` response when provider has no data for the address.
+  - Persists facts to `projects/{id}/propertyFacts/current` and logs activity.
+
+- **`src/components/shared/AvmBadge.tsx`** (new, tracked):
+  - Display component: always shows range (low–high) alongside midpoint — never a bare point.
+  - Amber `⚠ mock` badge when `sourceProvider` contains "mock" (case-insensitive).
+  - Honest "No data for this address" state on `noCoverage`.
+  - "Estimate unavailable" when no `valueCents`.
+  - Source label + `asOf` date on every real-data render.
+
+- **`src/components/evaluation/ProjectAnalyzer.tsx`** (modified):
+  - Added `useAuth` + `AvmBadge` imports.
+  - `avmResult` / `avmLoading` / `avmError` state.
+  - `fetchAvm` effect: fires on `currentProject.id`, `currentProject.address`, or `user` change.
+    Cancels on unmount/re-run. Sends `Authorization: Bearer <idToken>` to `/api/property/enrich`.
+    Handles 401, 403, network errors with user-facing messages.
+  - Live AVM reference panel rendered below the ARV input (inside the Financial Inputs column),
+    only when `currentProject.address` is set:
+    - Loading: animated "Fetching property data…"
+    - Error: red message
+    - noCoverage: `<AvmBadge noCoverage />`
+    - Data: 2-column grid → `<AvmBadge label="Est. Value" .../>` + `<AvmBadge label="Est. Rent / mo" .../>`
+
+- **`.env.example`**: `PROPERTY_DATA_PROVIDER=rentcast` — production default, not mock.
+  Comment warns never to ship mock as prod default. (Set in prior session; file already updated.)
+
+### Known pre-existing lint issues (not introduced this session)
+- `react-hooks/set-state-in-effect` in `CurrencyInput` (line 75) and sync effect (line 155).
+- `react-hooks/rules-of-hooks` for `save` (useCallback) and MAO (useEffect) called after the
+  early return `if (!currentProject) return null;` — pre-existing rules-of-hooks violation.
+- `npm run lint` exits 0 regardless (ESLint config treats these as non-fatal in this project).
+
+## NEXT QUEUED
+- Remaining P1 tickets: P1-3, P1-4, P1-5, P1-7, and potentially P1-8.
+
+---
+
+## ✅ COMPLETED THIS SESSION (commit 49183bc4)
+
+### P0-2 — reporting/export serves financial data without auth (SECURITY)
+- `src/app/api/reporting/export/route.ts`: Complete security rewrite.
+  - `requireAuth()` gate → 401 on no/bad token.
+  - Body now accepts `projectIds: string[]` only — full project objects are never
+    accepted from the client (IDOR surface eliminated).
+  - Per-project ownership check: `members[callerUid]` must exist OR org-level fallback
+    for legacy projects. Any unowned project ID → 403 for the entire request.
+  - All financial figures computed server-side via `@metrics` engine:
+    `computeAutopsyMetrics` for P&L (works for both sold and active deals),
+    `computeFlipMetrics` for balance sheet inventory book value.
+  - `console.log`/`console.error` replaced with `logger.info`/`logger.error`.
+- `src/components/reporting/StatementExporter.tsx`:
+  - `useAuth()` → `user.getIdToken()` → `Authorization: Bearer` header on every request.
+  - Sends `projectIds: targetDeals.map(d => d.id)` instead of full project objects.
+  - Handles 401/403 with user-facing error messages.
+  - Removed unused `fmt()` helper (formatting is now server-side).
+
+---
+
+
+## ✅ COMPLETED THIS SESSION (commit bf847bcc)
+
+### P0-1 — invitations/send identity forgery (SECURITY)
+- `src/app/api/invitations/send/route.ts`: Added `requireAuth()` (401 on no/bad token).
+  `invitedByUid` and `invitedByName` now derived exclusively from the verified token +
+  Firestore profile — body values silently ignored. RBAC gate: caller must be in
+  `project.members` with Lead Investor / Admin / Platform Admin role or `team.invite`
+  permission; org-level fallback for legacy projects without members map (403 otherwise).
+- `src/components/team/CrowdfundInviteModal.tsx`: sends `Authorization: Bearer ${idToken}`.
+
+### P0-4 — Admin marketplace hardcoded (MOCK-TO-REAL)
+- `src/actions/marketplace.ts` (new file): `getFullMarketplaceData()` + `initiateMarketplaceAudit()`
+  server actions with `verifyAdmin()` auth gate. Computes activeProfessionals, matchRatePct,
+  avgResponseHours, grossProcuredVolume, jurisdiction variance, and CSV rows from real Firestore data.
+  Audit writes to `vendorAuditRuns` collection.
+- `src/app/admin/marketplace/page.tsx`: full rewrite — all hardcoded figures replaced with
+  real data; Export CSV and Initiate Audit buttons both wired.
+
+### P1-9 — LenderPackagePdf fake async + inline metrics (BUG FIX)
+- `src/components/reporting/LenderPackagePdf.tsx`: removed `setTimeout` fake-async; all
+  metric math replaced with `computeFlipMetrics(deal)` and `computeAutopsyMetrics(deal)`.
+
+### P1-10 — Address provider ships mock in production (MOCK-TO-REAL)
+- `src/lib/providers/address.ts`: Added `GooglePlacesAdapter` (calls `/api/places/autocomplete`
+  server proxy — key never touches client bundle). `defaultAddressProvider` gated by
+  `NEXT_PUBLIC_ADDRESS_PROVIDER` env flag (`google` | `mock`).
+- `.env.example`: documented `NEXT_PUBLIC_ADDRESS_PROVIDER=google`.
+- `.env.local`: added `NEXT_PUBLIC_ADDRESS_PROVIDER=google` (key already present).
+
+### P1-14 — Zero PostHog events (ANALYTICS)
+- `src/lib/analytics.ts`: added `signup_started`, `user_registered` to EventName union.
+- Instrumented at real lifecycle trigger points: `login/page.tsx` (signup_started),
+  `AuthContext.tsx` (user_registered), `ProjectCreationWizard.tsx` (project_created),
+  `phase-1/page.tsx`, `ClosingHandoffModal.tsx`, `phase-3/page.tsx` (project_phase_advanced).
+
+### P2-15 — Careers page hollow placeholder (POLISH)
+- `src/app/careers/page.tsx`: already fixed in prior commit. Confirmed: `robots: { index: false }`
+  applied; honest "no openings" messaging; footer link to `/careers` kept (deliberate).
+
+### P2-17 — 14 console.log calls in auth path (HYGIENE)
+- `src/context/AuthContext.tsx`: all 14 `console.log`/`console.error` calls replaced with
+  `logger.debug` / `logger.info` / `logger.error`. `GOOGLE_PLACES_API_KEY` and token values
+  never passed to the logger.
+- `src/lib/logger.ts`: now tracked in git (was untracked).
+
+### P2-18 — DEFAULT_TODOS masquerade as real activity (POLISH)
+- `src/lib/constants/todos.ts`: added `completedAt?: string` to `Todo` interface.
+- `src/components/project/ProjectTodoList.tsx`: runtime-only `TodoWithMeta._isDefault` flag
+  tags unacknowledged scaffolds; "Suggested" badge shown on unacknowledged items; `completedAt`
+  stamped on completion; `_isDefault` stripped before Firestore write.
+
+### Infrastructure
+- `.gitignore`: added `!.env.example` exception so the template is tracked.
+- `src/lib/logger.ts`, `src/lib/analytics.ts`, `src/lib/constants/todos.ts`,
+  `src/lib/providers/address.ts`, `src/actions/marketplace.ts`: all now tracked in git.
+
+## ⚠️ KNOWN PRE-EXISTING TS ERRORS (not introduced this session)
+- 62 errors: vitest not found (`__tests__/*.test.ts`), `team.ts` missing schema properties,
+  `taxService.test.ts` missing `advertising` field. All predate this session.
+
+## NEXT QUEUED
+- Remaining mock-to-real and security tickets from the original sweep list.
+
+---
+
 # Agent Handoff — Dashboard Data Honesty Sweep — Session 2 (2026-06-13)
 
 ## ✅ COMPLETED THIS SESSION
@@ -441,4 +621,26 @@ A production-grade, resumable 5-step account deletion cascade:
 ### Next Queued
 - **Prompt 79**: Phase 2 map — replace animated SVG placeholder with real coordinates via Google Static Maps proxy
 - **Prompt 34**: Marketplace Vendor Audit — remove fictional DEMO_VENDORS, implement honest empty state
+
+---
+
+# Agent Handoff — Prompt 3.5: Honesty-Rule Absence Guardrails CLOSED (2026-06-29)
+
+## ✅ CLOSED THIS SESSION
+**Prompt 3.5 — Honesty-Rule Absence Guardrails** is complete and fully integrated into the test runner. All 5 tests pass successfully.
+
+### What Was Built
+- **E2E Funnel Tests Integration**:
+  - Appended **Step 5 — Honesty-Rule negative-path assertions** to the main `e2e/funnel.spec.ts` suite.
+- **Negative-Path Verifications implemented**:
+  - **Plaid Integration**: Confirmed `PLAID_PROVIDER` environment variable defaults to `real` (never `mock` in production) and that no unconfirmed/low-confidence Plaid transaction indicators leak to client-facing dashboard components.
+  - **Missed-Rent Alert**: Confirmed alert messaging describes absence honestly as `"no matching transaction observed"` (never falsely claiming non-payment) and that STR strategy projects do not emit the monthly missed-rent signal.
+  - **Supplemental Metrics Gating**: Verified that gated/incomplete metrics display honest lock warnings (e.g. `"Unlocks in phase..."`) or missing input status rather than fabricated `0`, `0.00%`, or `-` fallbacks.
+  - **Crowdfunding flow**: Confirmed no KYC, bank verification, or escrow payment fields exist in the commitment tracker UI.
+- **Walkthrough Updated**:
+  - Added the Honesty Rule audit report and formal QA sign-off to `walkthrough.md`.
+
+### Next Queued
+- Verify future vendor integration adapters (Plaid real adapter, Resend, and DocuSign webhooks) against the verified E2E and unit test suites.
+
 

@@ -6,6 +6,7 @@ import telemetry from '@/lib/telemetry';
 import { CommunicationEngine } from '@/lib/engine/CommunicationEngine';
 import { generateFirstMetricEmail } from '@/lib/emails/templates/FirstMetricEmail';
 import { generateSecondProjectEmail } from '@/lib/emails/templates/SecondProjectEmail';
+import { logger } from '@/lib/logger';
 
 /* ═══════════════════════════════════════════════════════
    Events API — POST /api/events
@@ -63,7 +64,7 @@ async function sendMilestoneEmail(opts: {
     // ── Idempotency guard ──────────────────────────────────
     const userSnap = await userRef.get();
     if (userSnap.data()?.[idempotencyField] === true) {
-      console.log(`[Events] Milestone email already sent: ${milestone} for ${uid}`);
+      logger.debug('[Events] Milestone email already sent', { milestone, userId: uid });
       return false;
     }
 
@@ -98,14 +99,11 @@ async function sendMilestoneEmail(opts: {
       sentAt: admin.firestore.FieldValue.serverTimestamp(),
     });
 
-    console.log(
-      `[Events] Milestone email sent: ${milestone} → ${to}` +
-        (mock ? ' (mocked — no RESEND_API_KEY)' : ''),
-    );
+    logger.info('[Events] Milestone email sent', { milestone, mock });
     return true;
   } catch (err) {
     // Email failure MUST NOT break event ingestion.
-    console.error(`[Events] Milestone email failed for ${milestone}/${uid}:`, err);
+    logger.error('[Events] Milestone email failed', err, { milestone, userId: uid });
     return false;
   }
 }
@@ -155,7 +153,7 @@ export async function POST(request: NextRequest) {
       });
       await telemetry.flush();
     } catch (telemetryErr) {
-      console.error('[Events API] Telemetry capture/flush failed:', telemetryErr);
+      logger.error('[Events API] Telemetry capture/flush failed', telemetryErr);
     }
 
     // ── Log to Firestore (Failure-Isolated) ──
@@ -168,7 +166,7 @@ export async function POST(request: NextRequest) {
       };
       await adminDb.collection('events').add(eventDoc);
     } catch (dbErr) {
-      console.error('[Events API] Firestore event logging failed:', dbErr);
+      logger.error('[Events API] Firestore event logging failed', dbErr);
     }
 
     // ── Milestone side-effects ──
@@ -186,7 +184,7 @@ export async function POST(request: NextRequest) {
               onboardingIntentAt: admin.firestore.FieldValue.serverTimestamp(),
               updatedAt: admin.firestore.FieldValue.serverTimestamp(),
             }, { merge: true });
-            console.log(`[Events] Milestone: onboarding_intent_selected saved for user ${uid}`);
+            logger.info('[Events] Milestone: onboarding_intent_selected saved', { userId: uid });
           }
           break;
         }
@@ -269,18 +267,18 @@ export async function POST(request: NextRequest) {
             onboardingCompleted: true,
             updatedAt: admin.firestore.FieldValue.serverTimestamp(),
           });
-          console.log(`[Events] Milestone: onboarding_completed for user ${uid}`);
+          logger.info('[Events] Milestone: onboarding_completed', { userId: uid });
           break;
         }
 
         default:
-          console.log(`[Events] Milestone: ${event} for user ${uid}`);
+          logger.info('[Events] Milestone fired', { event, userId: uid });
       }
     }
 
     return NextResponse.json({ success: true, event });
   } catch (err) {
-    console.error('[Events API] Error:', err);
+    logger.error('[Events API] Error', err);
     return NextResponse.json(
       { error: 'Internal server error' },
       { status: 500 }

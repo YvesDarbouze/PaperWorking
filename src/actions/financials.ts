@@ -28,7 +28,7 @@ interface FinancialsDoc extends FinancialsPayload {
 
 // ─── Auth helper (mirrors verifyActionAuth in actions/index.ts) ─
 async function verifyAuth(idToken: string) {
-  if (!idToken) throw new Error('Missing authentication token.');
+  if (!idToken) throw new Error('Unauthorized');
   try {
     const decoded = await adminAuth.verifyIdToken(idToken);
     const userSnap = await adminDb.collection('users').doc(decoded.uid).get();

@@ -276,6 +276,28 @@ export async function POST(request: NextRequest) {
         await doc.ref.update({ status: 'cancelled', cancelledAt: admin.firestore.FieldValue.serverTimestamp() });
       }
 
+      // Delete pending investor invitations sent by this user
+      const sentInvestorInvitesSnap = await adminDb
+        .collection('invitations')
+        .where('invitedByUid', '==', uid)
+        .where('status', '==', 'pending')
+        .get();
+      for (const doc of sentInvestorInvitesSnap.docs) {
+        await doc.ref.delete();
+      }
+
+      // Delete pending investor invitations associated with this user's email
+      if (userEmail) {
+        const receivedInvestorInvitesSnap = await adminDb
+          .collection('invitations')
+          .where('email', '==', userEmail)
+          .where('status', '==', 'pending')
+          .get();
+        for (const doc of receivedInvestorInvitesSnap.docs) {
+          await doc.ref.delete();
+        }
+      }
+
       // Delete users/{uid}/sessions subcollection
       const sessionsSnap = await adminDb.collection('users').doc(uid).collection('sessions').get();
       for (const doc of sessionsSnap.docs) {

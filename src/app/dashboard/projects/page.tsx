@@ -3,6 +3,7 @@
 import { useState, useMemo } from 'react';
 import { useProjectStore } from '@/store/projectStore';
 import { useRouter } from 'next/navigation';
+import { useTheme } from '@/lib/utils/ThemeProvider';
 import { deriveAllMetrics } from '@/lib/metrics/reiMetrics';
 import { Plus, FolderX, RotateCcw } from 'lucide-react';
 import type { Project } from '@/types/schema';
@@ -247,6 +248,8 @@ function FolderCard({ project, onClick }: { project: Project; onClick: () => voi
    ══════════════════════════════════════════ */
 export default function ProjectsPage() {
   const router = useRouter();
+  const { theme } = useTheme();
+  const isDark = theme === 'dark';
   const storeProjects = useProjectStore((state) => state.projects);
   const { open: openCreateWizard } = useCreateProjectModal();
 
@@ -413,9 +416,9 @@ export default function ProjectsPage() {
             onClick={handleCreateProject}
             className="flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-semibold transition-all duration-200 active:scale-95"
             style={{
-              background: 'var(--color-primary)',
-              color: '#FDFFFC',
-              boxShadow: '0 4px 16px rgba(90,170,63,0.25)',
+              background: isDark ? 'var(--color-primary)' : '#0b8649',
+              color: isDark ? '#0d0a0b' : '#FDFFFC',
+              boxShadow: isDark ? '0 4px 16px rgba(0,221,148,0.25)' : '0 4px 16px rgba(11,134,73,0.25)',
             }}
           >
             <span className="material-symbols-outlined text-[18px]" style={{ fontVariationSettings: "'FILL' 1" }}>add_circle</span>
@@ -439,6 +442,7 @@ export default function ProjectsPage() {
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             placeholder="Search by address or name…"
+            aria-label="Search projects"
             className="w-full py-2.5 pl-10 pr-4 text-sm rounded-xl transition-all duration-200 focus:outline-none"
             style={{
               background: 'rgba(255,255,255,0.04)',
@@ -452,6 +456,7 @@ export default function ProjectsPage() {
         <select
           value={sortBy}
           onChange={(e) => setSortBy(e.target.value)}
+          aria-label="Sort projects"
           className="py-2.5 px-3 rounded-xl text-sm focus:outline-none cursor-pointer"
           style={{
             background: 'rgba(255,255,255,0.04)',

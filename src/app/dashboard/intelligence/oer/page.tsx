@@ -3,13 +3,12 @@
 import React, { useState, useMemo, useCallback, useRef } from 'react';
 import ReactECharts from 'echarts-for-react';
 import { SampleDataBanner } from '@/components/intelligence/SampleDataBanner';
-import { ArrowDownRight, ArrowUpRight, Download, TrendingUp } from 'lucide-react';
+import { ArrowDownRight, ArrowUpRight, Download } from 'lucide-react';
 import Link from 'next/link';
 import { useAllDealsSync } from '@/hooks/useAllProjectsSync';
 import { useMetricSeries, useMetricCurrent, usePortfolioInputs } from '@/lib/intelligence/selectors';
 import { ExpenseRatioCollectionTerminal } from '@/components/intelligence/ExpenseRatioCollectionTerminal';
 import type { ExpenseRatioValues } from '@/components/intelligence/ExpenseRatioCollectionTerminal';
-import { deriveAllMetrics } from '@/lib/metrics/reiMetrics';
 
 /* ═══════════════════════════════════════════════════════════════
    OER Intelligence Page
@@ -17,6 +16,9 @@ import { deriveAllMetrics } from '@/lib/metrics/reiMetrics';
    Right 8/12: Historical trend line chart with zone bands
    Bottom: Expense breakdown horizontal bar
    ═══════════════════════════════════════════════════════════════ */
+
+const defaultTrend = [42.1, 41.5, 40.8, 39.9, 39.2, 38.8, 38.5, 38.2];
+const defaultMonths = ['Sep', 'Oct', 'Nov', 'Dec', 'Jan', 'Feb', 'Mar', 'Apr'];
 
 const EXPENSE_CATEGORIES = [
   { name: 'Property Taxes', pct: 12, color: '#454955' },
@@ -136,29 +138,7 @@ function TrendChart({ values, labels, whatIfOER }: { values: number[]; labels: s
   return <ReactECharts option={option} style={{ height: 240, width: '100%' }} opts={{ renderer: 'canvas' }} />;
 }
 
-function EmptyState() {
-  return (
-    <div className="rounded-2xl border border-white/10 p-8" style={{ background: 'rgba(22,19,24,0.4)' }}>
-      <div className="flex flex-col items-center justify-center gap-4 text-center border border-dashed border-white/10 rounded-xl p-12 min-h-[300px]">
-        <TrendingUp className="w-12 h-12 text-slate-600" strokeWidth={1} />
-        <div>
-          <p className="text-sm font-semibold text-[#C0BEC2] mb-1">Awaiting Portfolio Data</p>
-          <p className="text-xs text-[#6B6870] max-w-xs leading-relaxed">
-            Import deal data or complete Purchase phase tasks to generate Operating Expense Ratio analytics.
-          </p>
-        </div>
-        <Link
-          href="/dashboard/projects/new"
-          className="mt-2 px-5 py-2 rounded-full border border-[#454955]/30 text-[#6E7480] text-xs font-semibold hover:bg-[#454955]/10 transition-all"
-        >
-          Add First Deal
-        </Link>
-      </div>
-    </div>
-  );
-}
-
-function ExpenseChart({ categories }: { categories: typeof EXPENSE_CATEGORIES }) {
+function ExpenseChart() {
   const option = {
     backgroundColor: 'transparent',
     tooltip: {
@@ -178,7 +158,7 @@ function ExpenseChart({ categories }: { categories: typeof EXPENSE_CATEGORIES })
     },
     yAxis: {
       type: 'category',
-      data: categories.map((c) => c.name),
+      data: EXPENSE_CATEGORIES.map((c) => c.name),
       axisLine: { show: false },
       axisTick: { show: false },
       axisLabel: { color: '#94a3b8', fontSize: 10 },
@@ -186,7 +166,7 @@ function ExpenseChart({ categories }: { categories: typeof EXPENSE_CATEGORIES })
     series: [
       {
         type: 'bar',
-        data: categories.map((c) => ({
+        data: EXPENSE_CATEGORIES.map((c) => ({
           value: c.pct,
           itemStyle: { color: c.color, borderRadius: [0, 4, 4, 0] },
         })),
@@ -209,83 +189,6 @@ export default function OERIntelligencePage() {
   const oerCurrentResult = useMetricCurrent('OER');
   const oerSeriesResult = useMetricSeries('OER');
   const portfolioInputsResult = usePortfolioInputs();
-
-  const derivedExpenseCategories = useMemo(() => {
-    if (portfolioInputsResult.status !== 'ready') {
-      return [
-        { name: 'Property Taxes', pct: 0, color: '#454955' },
-        { name: 'Maintenance',    pct: 0,  color: '#38bdf8' },
-        { name: 'Insurance',      pct: 0,  color: '#818cf8' },
-        { name: 'Management',     pct: 0,  color: '#fb923c' },
-        { name: 'Other',          pct: 0,  color: '#94a3b8' },
-      ];
-    }
-    const projects = portfolioInputsResult.data.projects;
-    let gr = 0, pt = 0, ins = 0, pm = 0, mt = 0, other = 0;
-
-    for (const p of projects) {
-      const financials = p.financials || {};
-      const factor = (financials.ownershipPercentage ?? 100) / 100;
-      const comp = deriveAllMetrics(financials, undefined, p.strategyType, p.currentPhase).noiComponents;
-
-      gr += comp.grossRentalIncome * factor;
-      pt += comp.propertyTaxes * factor;
-      ins += comp.insurance * factor;
-      pm += comp.propertyManagement * factor;
-      mt += comp.maintenance * factor;
-      other += (comp.utilities + comp.hoa) * factor;
-    }
-
-    if (gr === 0) {
-      return [
-        { name: 'Property Taxes', pct: 0, color: '#454955' },
-        { name: 'Maintenance',    pct: 0,  color: '#38bdf8' },
-        { name: 'Insurance',      pct: 0,  color: '#818cf8' },
-        { name: 'Management',     pct: 0,  color: '#fb923c' },
-        { name: 'Other',          pct: 0,  color: '#94a3b8' },
-      ];
-    }
-
-    return [
-      { name: 'Property Taxes', pct: Math.round((pt / gr) * 100), color: '#454955' },
-      { name: 'Maintenance',    pct: Math.round((mt / gr) * 100),  color: '#38bdf8' },
-      { name: 'Insurance',      pct: Math.round((ins / gr) * 100), color: '#818cf8' },
-      { name: 'Management',     pct: Math.round((pm / gr) * 100),  color: '#fb923c' },
-      { name: 'Other',          pct: Math.round((other / gr) * 100), color: '#94a3b8' },
-    ];
-  }, [portfolioInputsResult]);
-
-  if (
-    oerCurrentResult.status === 'loading' ||
-    oerSeriesResult.status === 'loading' ||
-    portfolioInputsResult.status === 'loading'
-  ) {
-    return (
-      <div className="min-h-full px-6 lg:px-8 py-8 flex items-center justify-center" style={{ background: 'var(--bg-canvas)', color: 'var(--text-primary)' }}>
-        <p className="text-sm text-[#9E9DA0]">Loading OER data...</p>
-      </div>
-    );
-  }
-
-  if (
-    portfolioInputsResult.status === 'insufficient' ||
-    oerCurrentResult.status === 'insufficient' ||
-    oerSeriesResult.status === 'insufficient'
-  ) {
-    return (
-      <div className="min-h-full px-6 lg:px-8 py-8 space-y-6" style={{ background: 'var(--bg-canvas)', color: 'var(--text-primary)' }}>
-        <div>
-          <div className="flex items-center gap-2 mb-1 text-xs text-[#6B6870] font-semibold uppercase tracking-widest">
-            <Link href="/dashboard/reports" className="hover:text-[#6E7480] transition-colors">Reports</Link>
-            <span>›</span>
-            <span className="text-[#6E7480]">OER Intelligence</span>
-          </div>
-          <h1 className="text-4xl font-bold text-white tracking-tight">Operating Expense Ratio</h1>
-        </div>
-        <EmptyState />
-      </div>
-    );
-  }
 
   /* ── Reactive state from Collection Terminal ── */
   const [collectedValues, setCollectedValues] = useState<ExpenseRatioValues | null>(null);
@@ -338,8 +241,10 @@ export default function OERIntelligencePage() {
       const prev   = vals[vals.length - 2] ?? last;
       return { isUsingDemoData: false, currentOER: last, oerChange: last - prev, trendValues: vals, trendLabels: labels };
     }
-    return { isUsingDemoData: false, currentOER: 0, oerChange: 0, trendValues: [], trendLabels: [] };
-  }, [oerSeriesResult, oerCurrentResult, portfolioInputsResult]);
+    // Use collected values if available, otherwise demo
+    const oer = collectedValues?.expenseRatio ?? (38.2);
+    return { isUsingDemoData: true, currentOER: oer, oerChange: -(0.8), trendValues: defaultTrend, trendLabels: defaultMonths };
+  }, [oerSeriesResult, oerCurrentResult, portfolioInputsResult, collectedValues]);
 
   const displayOER = whatIfOER ?? currentOER;
 
@@ -487,9 +392,9 @@ export default function OERIntelligencePage() {
           <span className="text-[10px] text-slate-600">% of Gross Rental Income</span>
         </div>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <ExpenseChart categories={derivedExpenseCategories} />
+          <ExpenseChart />
           <div className="space-y-2">
-            {derivedExpenseCategories.map((cat) => (
+            {EXPENSE_CATEGORIES.map((cat) => (
               <div key={cat.name} className="flex items-center justify-between py-2 border-b border-white/[0.04]">
                 <div className="flex items-center gap-2">
                   <span className="w-2.5 h-2.5 rounded-full flex-shrink-0" style={{ background: cat.color }} />
@@ -501,7 +406,7 @@ export default function OERIntelligencePage() {
             <div className="flex items-center justify-between py-2 mt-1 border-t border-white/10">
               <span className="text-sm font-bold text-white">Total Operating Expenses</span>
               <span className="text-sm font-bold text-[#6E7480] tabular-nums">
-                {derivedExpenseCategories.reduce((s, c) => s + c.pct, 0)}%
+                {EXPENSE_CATEGORIES.reduce((s, c) => s + c.pct, 0)}%
               </span>
             </div>
           </div>

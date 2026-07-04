@@ -14,6 +14,7 @@ export const metadata: Metadata = {
   title: 'Careers | PaperWorking',
   description:
     'Join the team building the deal-intelligence platform for modern real estate investors.',
+  robots: { index: false, follow: false },
 };
 
 export default function CareersPage() {

@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import { createHmac, timingSafeEqual } from 'crypto';
+import { logger } from '@/lib/logger';
 
 export const dynamic = 'force-dynamic';
 
@@ -30,16 +31,18 @@ function verifyHmacSignature(body: string, signature: string | null, secret: str
 
 export async function POST(request: Request) {
   const webhookSecret = process.env.BRIDGE_WEBHOOK_SECRET;
-  const rawBody = await request.text();
+  if (!webhookSecret) {
+    logger.error('[Bridge Webhook] BRIDGE_WEBHOOK_SECRET not configured — rejecting request');
+    return NextResponse.json({ error: 'Webhook endpoint not configured' }, { status: 503 });
+  }
 
-  if (webhookSecret) {
-    const sig =
-      request.headers.get('x-bridge-signature') ??
-      request.headers.get('x-hub-signature-256');
-    if (!verifyHmacSignature(rawBody, sig, webhookSecret)) {
-      console.warn('⚠️ [BRIDGE WEBHOOK] HMAC signature mismatch. Rejecting payload.');
-      return NextResponse.json({ error: 'invalid_signature' }, { status: 401 });
-    }
+  const rawBody = await request.text();
+  const sig =
+    request.headers.get('x-bridge-signature') ??
+    request.headers.get('x-hub-signature-256');
+  if (!verifyHmacSignature(rawBody, sig, webhookSecret)) {
+    logger.warn('[Bridge Webhook] HMAC signature mismatch — rejecting payload');
+    return NextResponse.json({ error: 'invalid_signature' }, { status: 401 });
   }
 
   let payload: unknown;
@@ -52,11 +55,11 @@ export async function POST(request: Request) {
   try {
     const { jobQueue } = await import('@/lib/queue/jobQueue');
     const jobId = await jobQueue.enqueue('webhook_process', payload);
-    console.log(`📬 [BRIDGE WEBHOOK] Payload accepted → job ${jobId}`);
+    logger.info('[Bridge Webhook] Payload accepted', { jobId });
     return NextResponse.json({ accepted: true, jobId });
   } catch (queueError: any) {
     // Redis unavailable — fall back to inline processing so we never silently drop events.
-    console.warn('⚠️ [BRIDGE WEBHOOK] Queue unavailable — falling back to sync processing.', queueError.message);
+    logger.warn('[Bridge Webhook] Queue unavailable — falling back to sync processing', { detail: queueError.message });
     try {
       const { processWebhookPayload } = await import('@/lib/services/webhookProcessor');
       const result = await processWebhookPayload(payload);
@@ -65,7 +68,7 @@ export async function POST(request: Request) {
       }
       return NextResponse.json({ processed: true, affectedDeals: result.count });
     } catch (syncError) {
-      console.error('🔥 [BRIDGE WEBHOOK] Sync fallback failed:', syncError);
+      logger.error('[Bridge Webhook] Sync fallback failed', syncError);
       return NextResponse.json({ error: 'internal_server_error' }, { status: 500 });
     }
   }

@@ -32,29 +32,6 @@ const T = {
   tooltipBorder: 'rgba(69,73,85,0.2)',
 } as const;
 
-// ─── Demo / fallback data ─────────────────────────────────────
-const DEMO_ROI_MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
-const DEMO_ROI_VALUES = [920000, 940000, 910000, 970000, 985000, 1020000, 1050000, 1080000, 1100000, 1150000, 1190000, 1240000];
-
-const DEMO_ALLOCATION = [
-  { value: 45, name: 'Fix & Flip', itemStyle: { color: T.teal } },
-  { value: 35, name: 'Buy & Hold', itemStyle: { color: T.brandPrimary } },
-  { value: 20, name: 'BRRRR', itemStyle: { color: T.amber } },
-];
-
-const DEMO_CAP_MARKETS = ['Indianapolis', 'Memphis', 'Birmingham', 'Kansas City', 'Nashville'];
-const DEMO_CAP_VALUES = [8.1, 7.8, 7.2, 6.9, 6.4];
-
-const DEMO_COC_PERIODS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep'];
-const DEMO_COC_VALUES = [6.2, 7.1, 6.8, 8.2, 7.9, 8.4, 9.1, 8.8, 9.4];
-
-const DEMO_VELOCITY_QUARTERS = ['Q1', 'Q2', 'Q3', 'Q4'];
-const DEMO_VELOCITY_OPENED = [1, 2, 1, 2];
-const DEMO_VELOCITY_CLOSED = [0, 1, 0, 1];
-
-const DEMO_WATERFALL_LABELS = ['Gross Rent', 'Operating Exp.', 'Debt Service', 'Net Cash Flow'];
-const DEMO_WATERFALL_VALUES = [1200000, -342000, -189000, 669000];
-
 const PERIOD_TABS = [
   { id: 'ytd', label: 'YTD' },
   { id: '6m', label: '6M' },
@@ -90,9 +67,28 @@ function fmtPct(v: number | null, decimals = 2): string {
   return `${v.toFixed(decimals)}%`;
 }
 
+function toDate(v: any): Date | null {
+  if (!v) return null;
+  if (v instanceof Date) return v;
+  if (typeof v === 'object' && 'seconds' in v) return new Date(v.seconds * 1000);
+  try { return new Date(v); } catch { return null; }
+}
+
 // ─── Loading skeleton ─────────────────────────────────────────
 function ChartSkeleton({ height }: { height: number }) {
   return <div className="animate-pulse rounded-xl bg-white/5" style={{ height }} />;
+}
+
+// ─── Honest empty state ───────────────────────────────────────
+function EmptyChart({ message, height }: { message: string; height: number }) {
+  return (
+    <div
+      className="flex items-center justify-center text-center px-6"
+      style={{ height, color: T.textMuted, fontSize: 13 }}
+    >
+      {message}
+    </div>
+  );
 }
 
 // ─── Glass card wrapper ───────────────────────────────────────
@@ -165,7 +161,7 @@ function RoiTrendChart({
         values: valid.map((s) => s.propertyValue as number),
       };
     }
-    return { xLabels: DEMO_ROI_MONTHS, values: DEMO_ROI_VALUES };
+    return { xLabels: [] as string[], values: [] as number[] };
   }, [snapshots]);
 
   const option = {
@@ -211,14 +207,15 @@ function RoiTrendChart({
       <CardHeader
         icon={<TrendingUp className="w-3.5 h-3.5" style={{ color: T.teal }} />}
         title="Portfolio Value Trend"
-        badge={
-          <span className="text-[10px] font-mono font-bold px-2.5 py-1 rounded-full" style={{ background: 'rgba(69,73,85,0.15)', color: T.teal }}>
-            +14.2% YTD
-          </span>
-        }
       />
       <div className="p-4">
-        {loading ? <ChartSkeleton height={280} /> : <ReactECharts option={option} style={{ height: 280 }} opts={{ renderer: 'canvas' }} />}
+        {loading ? (
+          <ChartSkeleton height={280} />
+        ) : xLabels.length === 0 ? (
+          <EmptyChart message="No portfolio snapshots yet — add properties with values to start tracking." height={280} />
+        ) : (
+          <ReactECharts option={option} style={{ height: 280 }} opts={{ renderer: 'canvas' }} />
+        )}
       </div>
     </GlassCard>
   );
@@ -233,10 +230,10 @@ function AllocationChart({
   loading: boolean;
 }) {
   const { data, totalDeals } = useMemo(() => {
-    if (projects.length === 0) return { data: DEMO_ALLOCATION, totalDeals: 8 };
+    if (projects.length === 0) return { data: [] as { value: number; name: string; itemStyle: { color: string } }[], totalDeals: 0 };
     const counts: Record<string, number> = {};
     for (const p of projects) {
-      const type = (p as { dealType?: string }).dealType ?? 'Other';
+      const type = (p as { dealType?: string }).dealType ?? p.strategyType ?? 'Other';
       counts[type] = (counts[type] ?? 0) + 1;
     }
     const palette = [T.teal, T.brandPrimary, T.amber, '#fb923c', '#454955'];
@@ -284,14 +281,54 @@ function AllocationChart({
     <GlassCard className="col-span-12 lg:col-span-4">
       <CardHeader icon={<PieChart className="w-3.5 h-3.5" style={{ color: T.brandPrimary }} />} title="Asset Allocation" />
       <div className="p-4">
-        {loading ? <ChartSkeleton height={240} /> : <ReactECharts option={option} style={{ height: 240 }} opts={{ renderer: 'canvas' }} />}
+        {loading ? (
+          <ChartSkeleton height={240} />
+        ) : data.length === 0 ? (
+          <EmptyChart message="No projects yet." height={240} />
+        ) : (
+          <ReactECharts option={option} style={{ height: 240 }} opts={{ renderer: 'canvas' }} />
+        )}
       </div>
     </GlassCard>
   );
 }
 
-// ─── Cap Rate by Market horizontal bar ───────────────────────
-function CapRateChart({ loading }: { loading: boolean }) {
+// ─── Cap Rate by Market ───────────────────────────────────────
+// Derived from projects with actualRentalIncome + estimatedCurrentValue/ARV.
+function CapRateChart({ projects, loading }: { projects: Project[]; loading: boolean }) {
+  const { markets, values } = useMemo(() => {
+    const marketMap: Record<string, { sum: number; count: number }> = {};
+
+    for (const p of projects) {
+      const annualNOI = (p.financials?.actualRentalIncome ?? 0) * 12;
+      const value =
+        (p.financials as any)?.estimatedCurrentValue ??
+        p.financials?.estimatedARV ??
+        0;
+      if (annualNOI <= 0 || value <= 0) continue;
+
+      const capRate = (annualNOI / value) * 100;
+      // Extract city: "123 Main St, Dallas, TX 75001" → "Dallas"
+      const parts = p.address.split(',');
+      const city = (parts[1] ?? parts[0] ?? '').trim().replace(/\s+\w{2}\s+\d+.*$/, '').trim();
+      if (!city) continue;
+
+      if (!marketMap[city]) marketMap[city] = { sum: 0, count: 0 };
+      marketMap[city].sum += capRate;
+      marketMap[city].count++;
+    }
+
+    const entries = Object.entries(marketMap)
+      .map(([city, { sum, count }]) => ({ city, capRate: sum / count }))
+      .sort((a, b) => b.capRate - a.capRate)
+      .slice(0, 8);
+
+    return {
+      markets: entries.map((e) => e.city),
+      values: entries.map((e) => parseFloat(e.capRate.toFixed(1))),
+    };
+  }, [projects]);
+
   const option = {
     backgroundColor: 'transparent',
     grid: { top: 12, right: 64, bottom: 16, left: 110 },
@@ -300,11 +337,10 @@ function CapRateChart({ loading }: { loading: boolean }) {
       type: 'value',
       axisLabel: { ...AXIS_LABEL_STYLE, formatter: (v: number) => `${v}%` },
       splitLine: { lineStyle: { color: 'rgba(255,255,255,0.05)' } },
-      max: 10,
     },
     yAxis: {
       type: 'category',
-      data: DEMO_CAP_MARKETS,
+      data: markets,
       axisLabel: AXIS_LABEL_STYLE,
       axisLine: { show: false },
       axisTick: { show: false },
@@ -312,7 +348,7 @@ function CapRateChart({ loading }: { loading: boolean }) {
     series: [
       {
         type: 'bar',
-        data: DEMO_CAP_VALUES,
+        data: values,
         barMaxWidth: 20,
         itemStyle: {
           borderRadius: [0, 4, 4, 0],
@@ -334,7 +370,13 @@ function CapRateChart({ loading }: { loading: boolean }) {
     <GlassCard className="col-span-12 lg:col-span-6">
       <CardHeader icon={<BarChart3 className="w-3.5 h-3.5" style={{ color: T.teal }} />} title="Cap Rate by Market" />
       <div className="p-4">
-        {loading ? <ChartSkeleton height={240} /> : <ReactECharts option={option} style={{ height: 240 }} opts={{ renderer: 'canvas' }} />}
+        {loading ? (
+          <ChartSkeleton height={240} />
+        ) : markets.length === 0 ? (
+          <EmptyChart message="No cap rate data — add rental income and property values to your projects." height={240} />
+        ) : (
+          <ReactECharts option={option} style={{ height: 240 }} opts={{ renderer: 'canvas' }} />
+        )}
       </div>
     </GlassCard>
   );
@@ -358,7 +400,7 @@ function CocTrendChart({
         values: valid.map((s) => parseFloat((s.cashOnCashReturn as number).toFixed(2))),
       };
     }
-    return { xLabels: DEMO_COC_PERIODS, values: DEMO_COC_VALUES };
+    return { xLabels: [] as string[], values: [] as number[] };
   }, [snapshots]);
 
   const option = {
@@ -411,14 +453,52 @@ function CocTrendChart({
     <GlassCard className="col-span-12 lg:col-span-6">
       <CardHeader icon={<ArrowUpRight className="w-3.5 h-3.5" style={{ color: T.brandPrimary }} />} title="Cash-on-Cash Trend" />
       <div className="p-4">
-        {loading ? <ChartSkeleton height={240} /> : <ReactECharts option={option} style={{ height: 240 }} opts={{ renderer: 'canvas' }} />}
+        {loading ? (
+          <ChartSkeleton height={240} />
+        ) : xLabels.length === 0 ? (
+          <EmptyChart message="Not enough CoC history yet — needs at least 4 monthly snapshots." height={240} />
+        ) : (
+          <ReactECharts option={option} style={{ height: 240 }} opts={{ renderer: 'canvas' }} />
+        )}
       </div>
     </GlassCard>
   );
 }
 
 // ─── Deal Velocity grouped bar ────────────────────────────────
-function DealVelocityChart({ loading }: { loading: boolean }) {
+// Opened = createdAt in quarter; Closed = Sold/Rented/closed_won + updatedAt in quarter.
+function DealVelocityChart({ projects, loading }: { projects: Project[]; loading: boolean }) {
+  const { quarters, opened, closed } = useMemo(() => {
+    const now = new Date();
+    const qs: { label: string; start: Date; end: Date }[] = [];
+    for (let i = 5; i >= 0; i--) {
+      const d = new Date(now.getFullYear(), now.getMonth() - i * 3, 1);
+      const q = Math.floor(d.getMonth() / 3) + 1;
+      const yr = d.getFullYear();
+      qs.push({
+        label: `Q${q} '${String(yr).slice(2)}`,
+        start: new Date(yr, (q - 1) * 3, 1),
+        end: new Date(yr, q * 3, 0, 23, 59, 59),
+      });
+    }
+    const unique = qs.filter((q, i, arr) => i === arr.findIndex((x) => x.label === q.label));
+
+    const openedCounts = unique.map((q) =>
+      projects.filter((p) => {
+        const d = toDate(p.createdAt);
+        return d && d >= q.start && d <= q.end;
+      }).length
+    );
+    const closedCounts = unique.map((q) =>
+      projects.filter((p) => {
+        if (!['Sold', 'closed_won', 'Rented'].includes(p.status)) return false;
+        const d = toDate(p.updatedAt);
+        return d && d >= q.start && d <= q.end;
+      }).length
+    );
+    return { quarters: unique.map((q) => q.label), opened: openedCounts, closed: closedCounts };
+  }, [projects]);
+
   const option = {
     backgroundColor: 'transparent',
     grid: { top: 24, right: 24, bottom: 40, left: 40 },
@@ -435,7 +515,7 @@ function DealVelocityChart({ loading }: { loading: boolean }) {
     },
     xAxis: {
       type: 'category',
-      data: DEMO_VELOCITY_QUARTERS,
+      data: quarters,
       axisLabel: AXIS_LABEL_STYLE,
       axisLine: { lineStyle: { color: T.textMuted } },
       axisTick: { show: false },
@@ -450,14 +530,14 @@ function DealVelocityChart({ loading }: { loading: boolean }) {
       {
         name: 'Opened',
         type: 'bar',
-        data: DEMO_VELOCITY_OPENED,
+        data: opened,
         barMaxWidth: 28,
         itemStyle: { borderRadius: [3, 3, 0, 0], color: T.teal },
       },
       {
         name: 'Closed',
         type: 'bar',
-        data: DEMO_VELOCITY_CLOSED,
+        data: closed,
         barMaxWidth: 28,
         itemStyle: { borderRadius: [3, 3, 0, 0], color: T.amber },
       },
@@ -468,13 +548,21 @@ function DealVelocityChart({ loading }: { loading: boolean }) {
     <GlassCard className="col-span-12 lg:col-span-4">
       <CardHeader icon={<Activity className="w-3.5 h-3.5" style={{ color: T.amber }} />} title="Deal Velocity" />
       <div className="p-4">
-        {loading ? <ChartSkeleton height={240} /> : <ReactECharts option={option} style={{ height: 240 }} opts={{ renderer: 'canvas' }} />}
+        {loading ? (
+          <ChartSkeleton height={240} />
+        ) : projects.length === 0 ? (
+          <EmptyChart message="No projects yet." height={240} />
+        ) : (
+          <ReactECharts option={option} style={{ height: 240 }} opts={{ renderer: 'canvas' }} />
+        )}
       </div>
     </GlassCard>
   );
 }
 
 // ─── Revenue Waterfall ────────────────────────────────────────
+const WATERFALL_LABELS = ['Gross Rent', 'Operating Exp.', 'Debt Service', 'Net Cash Flow'];
+
 function WaterfallChart({
   snapshots,
   loading,
@@ -482,31 +570,27 @@ function WaterfallChart({
   snapshots: ReturnType<typeof usePortfolioMetricSnapshots>['snapshots'];
   loading: boolean;
 }) {
-  const { labels, barValues, barColors } = useMemo(() => {
+  const { barValues, barColors, hasData } = useMemo(() => {
     const latest = snapshots.length > 0 ? snapshots[snapshots.length - 1] : null;
-    let grossRent = 0, opEx = 0, debtSvc = 0, netCf = 0;
 
     if (
       latest &&
       latest.grossRentalIncome !== null &&
       latest.totalOperatingExpenses !== null &&
-      latest.annualDebtService !== null &&
       latest.annualCashFlow !== null
     ) {
-      grossRent = latest.grossRentalIncome;
-      opEx = -Math.abs(latest.totalOperatingExpenses);
-      debtSvc = -Math.abs(latest.annualDebtService ?? 0);
-      netCf = latest.annualCashFlow;
-    } else {
-      [grossRent, opEx, debtSvc, netCf] = DEMO_WATERFALL_VALUES;
+      const grossRent = latest.grossRentalIncome;
+      const opEx = -Math.abs(latest.totalOperatingExpenses);
+      const debtSvc = -Math.abs(latest.annualDebtService ?? 0);
+      const netCf = latest.annualCashFlow;
+      const vals = [grossRent, opEx, debtSvc, netCf];
+      const colors = vals.map((v, i) =>
+        i === vals.length - 1 ? T.teal : v >= 0 ? 'rgba(69,73,85,0.7)' : T.red
+      );
+      return { barValues: vals, barColors: colors, hasData: true };
     }
 
-    const vals = [grossRent, opEx, debtSvc, netCf];
-    const colors = vals.map((v, i) =>
-      i === vals.length - 1 ? T.teal : v >= 0 ? 'rgba(69,73,85,0.7)' : T.red
-    );
-
-    return { labels: DEMO_WATERFALL_LABELS, barValues: vals, barColors: colors };
+    return { barValues: [] as number[], barColors: [] as string[], hasData: false };
   }, [snapshots]);
 
   const option = {
@@ -520,7 +604,7 @@ function WaterfallChart({
     },
     xAxis: {
       type: 'category',
-      data: labels,
+      data: WATERFALL_LABELS,
       axisLabel: AXIS_LABEL_STYLE,
       axisLine: { lineStyle: { color: T.textMuted } },
       axisTick: { show: false },
@@ -551,7 +635,13 @@ function WaterfallChart({
     <GlassCard className="col-span-12 lg:col-span-8">
       <CardHeader icon={<DollarSign className="w-3.5 h-3.5" style={{ color: T.teal }} />} title="Revenue Waterfall" />
       <div className="p-4">
-        {loading ? <ChartSkeleton height={280} /> : <ReactECharts option={option} style={{ height: 280 }} opts={{ renderer: 'canvas' }} />}
+        {loading ? (
+          <ChartSkeleton height={280} />
+        ) : !hasData ? (
+          <EmptyChart message="No cash flow data yet — add rental income and expense data to your projects." height={280} />
+        ) : (
+          <ReactECharts option={option} style={{ height: 280 }} opts={{ renderer: 'canvas' }} />
+        )}
       </div>
     </GlassCard>
   );
@@ -577,15 +667,12 @@ export default function DataPage() {
 
   const kpis = useMemo(() => {
     const latest = snapshots.length > 0 ? snapshots[snapshots.length - 1] : null;
-    const totalARV = projects.reduce((sum, p) => {
-      const arv = (p as { financials?: { estimatedARV?: number } }).financials?.estimatedARV ?? 0;
-      return sum + arv;
-    }, 0);
+    const totalARV = projects.reduce((sum, p) => sum + (p.financials?.estimatedARV ?? 0), 0);
     return {
-      arv: totalARV > 0 ? fmtK(totalARV) : '$2.1M',
-      noi: latest?.monthlyCashFlow != null ? fmtK(latest.monthlyCashFlow) : '$40.2k',
-      capRate: latest?.capRate != null ? fmtPct(latest.capRate) : '5.85%',
-      dscr: latest?.dscr != null ? `${latest.dscr.toFixed(2)}x` : '1.42x',
+      arv: totalARV > 0 ? fmtK(totalARV) : '—',
+      noi: latest?.monthlyCashFlow != null ? fmtK(latest.monthlyCashFlow) : '—',
+      capRate: latest?.capRate != null ? fmtPct(latest.capRate) : '—',
+      dscr: latest?.dscr != null ? `${latest.dscr.toFixed(2)}x` : '—',
     };
   }, [projects, snapshots]);
 
@@ -664,9 +751,9 @@ export default function DataPage() {
       <div className="grid grid-cols-12 gap-5">
         <RoiTrendChart snapshots={snapshots} loading={loading} />
         <AllocationChart projects={projects} loading={loading} />
-        <CapRateChart loading={loading} />
+        <CapRateChart projects={projects} loading={loading} />
         <CocTrendChart snapshots={snapshots} loading={loading} />
-        <DealVelocityChart loading={loading} />
+        <DealVelocityChart projects={projects} loading={loading} />
         <WaterfallChart snapshots={snapshots} loading={loading} />
       </div>
     </div>

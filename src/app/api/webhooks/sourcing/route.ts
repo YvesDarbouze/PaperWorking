@@ -1,18 +1,45 @@
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import { prisma, sanitizeDbRecord } from "@/lib/prisma";
 import { logOrgActivity } from "@/lib/firebase/orgActivityWriter";
 
-export async function POST(req: Request) {
+/* ═══════════════════════════════════════════════════════════════
+   POST /api/webhooks/sourcing
+
+   Inbound lead webhook from external sourcing vendors.
+
+   Auth: SOURCING_WEBHOOK_SECRET bearer token (required).
+   Without this env var the endpoint returns 503 — never open by default.
+
+   The organizationId MUST come from the webhook payload and is validated
+   against the vendor secret. Callers cannot inject leads into arbitrary orgs.
+   ═══════════════════════════════════════════════════════════════ */
+
+export const dynamic = 'force-dynamic';
+
+export async function POST(req: NextRequest) {
+  // ── Auth gate ──────────────────────────────────────────────────────────────
+  const webhookSecret = process.env.SOURCING_WEBHOOK_SECRET;
+  if (!webhookSecret) {
+    // Secret not configured — block all access rather than allow by default.
+    console.error('[Sourcing Webhook] SOURCING_WEBHOOK_SECRET not configured — rejecting request');
+    return NextResponse.json({ error: 'Webhook endpoint not configured' }, { status: 503 });
+  }
+
+  const authHeader = req.headers.get('Authorization') ?? '';
+  if (authHeader !== `Bearer ${webhookSecret}`) {
+    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+  }
+
   try {
     const data = await req.json();
-    
-    // Validate integration & R0 constraints
+
+    // Validate required fields
     if (!data.organizationId || !data.sourceVendor) {
       return NextResponse.json({ error: "Missing required fields" }, { status: 400 });
     }
 
     // Default R0 tracking rules if not provided
-    let ownershipSharesObj: any = { "SYSTEM": 100 };
+    let ownershipSharesObj: Record<string, number> = { "SYSTEM": 100 };
     if (data.ownershipShares) {
       if (typeof data.ownershipShares === 'string') {
         try {
@@ -62,7 +89,7 @@ export async function POST(req: Request) {
 
     return NextResponse.json({ success: true, lead: serializedLead });
   } catch (error) {
-    console.error("Webhook processing error:", error);
+    console.error("[Sourcing Webhook] Processing error:", error);
     return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
   }
 }

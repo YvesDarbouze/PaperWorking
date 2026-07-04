@@ -20,7 +20,7 @@ const UPDATES = [
     category: 'Product',
     categoryColor: 'text-primary bg-primary/10',
     headline: 'REIL Lifecycle phase gates now enforced across all deal pipelines',
-    body: 'Deals now move through Acquisition → Purchase → Hold → Exit in strict order. Each phase gate requires the previous phase to be marked complete before advancing. This keeps your pipeline audit-ready and prevents data gaps that cause problems at closing or tax time.',
+    body: 'Deals now move through Acquisition → Fund → Hold → Exit in strict order. Each phase gate requires the previous phase to be marked complete before advancing. This keeps your pipeline audit-ready and prevents data gaps that cause problems at closing or tax time.',
     link: '/changelog',
   },
   {

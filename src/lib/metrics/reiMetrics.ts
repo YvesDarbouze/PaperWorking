@@ -1574,4 +1574,37 @@ export function deriveAllProjectMetrics(
   };
 }
 
+/**
+ * Debt Yield: NOI / Loan Amount * 100
+ */
+export function computeDebtYield(noi: number, loanAmount: number): number | null {
+  if (loanAmount <= 0) return null;
+  return Math.round((noi / loanAmount) * 100 * 100) / 100;
+}
+
+/**
+ * Equity Multiple: (Cumulative Cash Flow + Exit Value) / Total Cash Invested
+ */
+export function computeEquityMultiple(
+  totalCashInvested: number,
+  annualCashFlow: number,
+  propertyValue: number,
+  holdingYears: number = 10
+): number | null {
+  if (totalCashInvested <= 0) return null;
+  const totalReturn = (annualCashFlow * holdingYears) + propertyValue;
+  return Math.round((totalReturn / totalCashInvested) * 100) / 100;
+}
+
+/**
+ * Payback Period: Total Cash Invested / Annual Cash Flow
+ */
+export function computePaybackPeriod(
+  totalCashInvested: number,
+  annualCashFlow: number
+): number | null {
+  if (totalCashInvested <= 0 || annualCashFlow <= 0) return null;
+  return Math.round((totalCashInvested / annualCashFlow) * 100) / 100;
+}
+
 

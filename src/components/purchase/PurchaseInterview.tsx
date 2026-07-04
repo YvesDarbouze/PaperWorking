@@ -1277,7 +1277,7 @@ export default function PurchaseInterview({ deal }: PurchaseInterviewProps) {
         </div>
         {allCriteriaMet && (
           <p className="text-xs text-text-primary font-bold mt-3">
-            ✓ All criteria met — ready to advance to Phase 3: Hold & Rehab
+            ✓ All criteria met — ready to advance to Phase 3: Hold
           </p>
         )}
       </div>

@@ -8,18 +8,20 @@ interface ProfileWidgetProps {
   user: any;
   profile: any;
   teamMembersCount: number;
-  completedDeals: number;
+  /** Projects at Sold / closed_won / Rented status */
+  dealsClosedCount: number;
+  /** Subset of closedDeals where netProfit > 0 per computeAutopsyMetrics */
   winsCount: number;
   onInviteTeam?: () => void;
 }
 
-export default function ProfileWidget({ 
-  user, 
-  profile, 
-  teamMembersCount, 
-  completedDeals, 
+export default function ProfileWidget({
+  user,
+  profile,
+  teamMembersCount,
+  dealsClosedCount,
   winsCount,
-  onInviteTeam 
+  onInviteTeam,
 }: ProfileWidgetProps) {
   
   const { isLead, role } = usePermissions();
@@ -64,15 +66,15 @@ export default function ProfileWidget({
       </div>
 
       <div className="flex items-center justify-center gap-4 mt-8 w-full">
-        <div className="flex items-center gap-1.5 px-3 py-1.5 bg-white/5 rounded-full border border-white/10">
+        <div className="flex items-center gap-1.5 px-3 py-1.5 bg-white/5 rounded-full border border-white/10" title="Team members">
           <Users className="w-4 h-4 text-primary" />
           <span className="font-label-md text-label-md text-on-surface">{teamMembersCount}</span>
         </div>
-        <div className="flex items-center gap-1.5 px-3 py-1.5 bg-white/5 rounded-full border border-white/10">
+        <div className="flex items-center gap-1.5 px-3 py-1.5 bg-white/5 rounded-full border border-white/10" title="Deals closed (Sold / Rented)">
           <CheckCircle2 className="w-4 h-4 text-secondary-container" />
-          <span className="font-label-md text-label-md text-on-surface">{completedDeals}</span>
+          <span className="font-label-md text-label-md text-on-surface">{dealsClosedCount}</span>
         </div>
-        <div className="flex items-center gap-1.5 px-3 py-1.5 bg-white/5 rounded-full border border-white/10">
+        <div className="flex items-center gap-1.5 px-3 py-1.5 bg-white/5 rounded-full border border-white/10" title="Profitable exits (netProfit > 0)">
           <Trophy className="w-4 h-4 text-tertiary-container" />
           <span className="font-label-md text-label-md text-on-surface">{winsCount}</span>
         </div>

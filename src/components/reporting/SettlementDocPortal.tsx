@@ -155,7 +155,7 @@ export default function SettlementDocPortal() {
       const extractedData = await processOCR(downloadUrl, uploadFile.type, uploadFile.name);
 
       const newDoc: SettlementDocument = {
-        id: `sd-${Date.now()}`,
+        id: crypto.randomUUID(),
         projectId: selectedDealId,
         type: uploadType,
         fileName: uploadFile.name,
@@ -238,7 +238,7 @@ export default function SettlementDocPortal() {
         const exists = existingExitCosts.some(e => e.label === fee.label);
         if (!exists) {
           newExitCosts.push({
-            id: `fee-${Date.now()}-${Math.random().toString(36).substr(2, 5)}`,
+            id: crypto.randomUUID(),
             category: fee.category,
             label: fee.label,
             amount: fee.amount,

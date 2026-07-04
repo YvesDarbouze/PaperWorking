@@ -22,12 +22,33 @@ export async function POST(req: NextRequest, { params }: Params) {
   if (!project) {
     return NextResponse.json({ error: "Not found" }, { status: 404 });
   }
-  const { hasProjectAccess } = await import("@/lib/auth/scopeGuard");
-  if (!(await hasProjectAccess(auth.uid, id))) {
+  if (project.createdById !== auth.uid) {
     return NextResponse.json({ error: "Forbidden" }, { status: 403 });
   }
 
   const body = await req.json().catch(() => ({}));
+
+  // ── forceRefresh guard ─────────────────────────────────────────────────────
+  // Without forceRefresh, skip a re-fetch when data was synced within the last hour.
+  // forceRefresh=true is admin-only to prevent accidental/abusive API spend.
+  const STALE_THRESHOLD_MS = 60 * 60 * 1000; // 1 hour
+  const forceRefresh: boolean = body.forceRefresh === true;
+  if (forceRefresh) {
+    const isAdmin = (auth.token as Record<string, unknown>)?.['admin'] === true;
+    if (!isAdmin) {
+      return NextResponse.json({ error: 'forceRefresh requires admin claim' }, { status: 403 });
+    }
+  }
+  if (!forceRefresh && project.lastSyncedAt) {
+    const age = Date.now() - new Date(project.lastSyncedAt).getTime();
+    if (age < STALE_THRESHOLD_MS) {
+      return NextResponse.json({
+        cached: true,
+        lastSyncedAt: project.lastSyncedAt,
+        message: 'Property data is fresh (< 1 hour old). Pass forceRefresh: true with admin claim to override.',
+      });
+    }
+  }
 
   const providerType = (process.env.PROPERTY_DATA_PROVIDER || "mock").toLowerCase();
   
@@ -172,7 +193,7 @@ export async function POST(req: NextRequest, { params }: Params) {
         valueCents: BigInt(Math.round(facts.avmPriceCents)),
         valueLowCents: facts.avmPriceLowCents ? BigInt(Math.round(facts.avmPriceLowCents)) : BigInt(0),
         valueHighCents: facts.avmPriceHighCents ? BigInt(Math.round(facts.avmPriceHighCents)) : BigInt(0),
-        source: facts.taxSource ?? "rentcast",
+        source: facts.sourceProvider,
         fetchedAt: facts.fetchedAt,
       });
       logger.info("[Property Route] Appended valuation snapshot", { projectId: id, value: facts.avmPriceCents });

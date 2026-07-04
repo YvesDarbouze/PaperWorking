@@ -16,24 +16,23 @@ export default function ReinforcingStatement() {
           By The Numbers
         </p>
         <blockquote className="text-2xl sm:text-3xl lg:text-4xl font-medium text-white leading-tight tracking-tight text-balance">
-          Investor teams on PaperWorking reclaim{' '}
-          <span className="text-dashboard">12 hours a week</span>{' '}
-          — that&apos;s 624 hours a year back into your deal pipeline.
+          PaperWorking keeps your portfolio organized from acquisition to exit —{' '}
+          <span className="text-dashboard">no spreadsheets required</span>.
         </blockquote>
         <div className="mt-10 flex flex-col sm:flex-row items-center justify-center gap-8 sm:gap-12">
           <div>
-            <span className="text-3xl font-medium text-white tabular-nums">12 hrs</span>
-            <p className="text-xs font-bold uppercase tracking-widest text-phase-2 mt-1">Saved per Week</p>
+            <span className="text-xl font-bold text-white uppercase tracking-wider block">Every Deadline</span>
+            <p className="text-xs font-bold uppercase tracking-widest text-phase-2 mt-1">Tracked & Audited</p>
           </div>
           <div className="w-px h-8 bg-phase-3 hidden sm:block" />
           <div>
-            <span className="text-3xl font-medium text-white tabular-nums">$4,800</span>
-            <p className="text-xs font-bold uppercase tracking-widest text-phase-2 mt-1">Avg. Monthly Value</p>
+            <span className="text-xl font-bold text-white uppercase tracking-wider block">Every Dollar</span>
+            <p className="text-xs font-bold uppercase tracking-widest text-phase-2 mt-1">Logged & Categorized</p>
           </div>
           <div className="w-px h-8 bg-phase-3 hidden sm:block" />
           <div>
-            <span className="text-3xl font-medium text-white tabular-nums">3.2×</span>
-            <p className="text-xs font-bold uppercase tracking-widest text-phase-2 mt-1">ROI First Quarter</p>
+            <span className="text-xl font-bold text-white uppercase tracking-wider block">Every Partner</span>
+            <p className="text-xs font-bold uppercase tracking-widest text-phase-2 mt-1">Synced & Connected</p>
           </div>
         </div>
       </div>

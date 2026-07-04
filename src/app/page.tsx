@@ -5,8 +5,7 @@ import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import LandingHeader from '@/components/landing/LandingHeader';
 import LandingHero from '@/components/landing/LandingHero';
-
-import HowItWorks from '@/components/landing/HowItWorks';
+import MetricCarousel from '@/components/landing/MetricCarousel';
 import LandingFooter from '@/components/landing/LandingFooter';
 import LandingNews from '@/components/landing/LandingNews';
 import FinalCTA from '@/components/landing/FinalCTA';
@@ -22,10 +21,11 @@ import { useSearchParams } from 'next/navigation';
    Layout order matches "PaperWorking Landing Page (Desktop Redesign)":
    1. Nav (LandingHeader)
    2. Hero (centered, text-only)
-   3. Dashboard Preview (standalone showcase)
-   4. REIL Phases + Risk Mitigation (PlatformOverview)
-   5. Pricing (PricingSection)
-   6. Footer
+   3. Metric Carousel (verbatim positioning + 10 KPIs)
+   4. Dashboard Preview (standalone showcase)
+   5. REIL Phases + Risk Mitigation (PlatformOverview)
+   6. Pricing (PricingSection)
+   7. Footer
    ═══════════════════════════════════════════════════════ */
 
 function SuccessModal() {
@@ -86,22 +86,6 @@ export default function LandingPage() {
     }
   }, [user, loading, router]);
 
-  /* Scroll to hash section after Next.js client-side navigation from another route */
-  useEffect(() => {
-    if (typeof window === 'undefined') return;
-    const hash = window.location.hash.slice(1);
-    if (!hash) return;
-    const attempt = (tries: number) => {
-      const el = document.getElementById(hash);
-      if (el) {
-        el.scrollIntoView({ behavior: 'smooth' });
-      } else if (tries > 0) {
-        setTimeout(() => attempt(tries - 1), 120);
-      }
-    };
-    attempt(5);
-  }, []);
-
   const handleSelectPlan = useCallback(async (planIdentifier: string) => {
     setIsProcessing(planIdentifier);
 
@@ -115,6 +99,7 @@ export default function LandingPage() {
       : isMonthly
         ? planIdentifier.slice(0, -' Monthly'.length)
         : planIdentifier;
+
 
     try {
       // Guest checkout: CC is always required by Stripe (payment_method_collection: 'always')
@@ -170,12 +155,8 @@ export default function LandingPage() {
       {/* ── Hero — Centered text-only ── */}
       <LandingHero />
 
-
-
-      {/* ── How It Works — REIL walkthrough (scroll target) ── */}
-      <div id="how-it-works" className="scroll-mt-[72px]">
-        <HowItWorks />
-      </div>
+      {/* ── The 10 Numbers Metric Carousel ── */}
+      <MetricCarousel />
 
       {/* ── Foreground Content ── */}
       <div className="relative z-10 w-full">

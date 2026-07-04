@@ -24,7 +24,7 @@ export function DueDiligenceChecklist({ projectId, items, onChange }: DueDiligen
   useEffect(() => {
     if (!items || items.length === 0) {
       const initialItems: DueDiligenceItem[] = REQUIRED_ITEMS.map((label) => ({
-        id: crypto.randomUUID ? crypto.randomUUID() : Math.random().toString(36).substring(7),
+        id: crypto.randomUUID(),
         label,
         completed: false,
       }));

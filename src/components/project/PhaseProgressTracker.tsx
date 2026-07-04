@@ -54,7 +54,7 @@ export const PHASE_STEPS: PhaseStep[] = [
   },
   {
     index: 1, number: 2,
-    label: 'Closing',     sublabel: 'Closing & Docs',
+    label: 'Fund',        sublabel: 'Capital & Closing',
     path: 'phase-2',
     phaseKey: 'Phase 2: Acquisition',
   },

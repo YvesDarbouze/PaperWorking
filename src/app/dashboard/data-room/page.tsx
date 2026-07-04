@@ -10,9 +10,19 @@ import { useAllDealsSync } from "@/hooks/useAllProjectsSync";
 import { useProjectStore } from "@/store/projectStore";
 import { deriveDualScopeMetrics } from "@/lib/metrics/reiMetrics";
 import { computeIRRMetric } from "@/lib/metrics/computeIRR";
-import jsPDF from "jspdf";
-import autoTable from "jspdf-autotable";
-import toast from "react-hot-toast";
+import {
+  computeLTVMetric,
+  computeDebtYieldMetric,
+  computeEquityMultipleMetric,
+  computeBreakEvenOccupancyMetric,
+  computeCapitalReservesMetric,
+  computePaybackPeriodMetric,
+  computeTenantTurnoverMetric,
+  computeLeaseRenewalMetric,
+  computeMaintenanceCostPerUnitMetric,
+  computeDOMMetric,
+  computeBudgetVarianceMetric,
+} from "@/lib/metrics";
 
 // ─── Design Tokens (Luminous Glass Theme) ────────────────────────
 const T = {
@@ -244,13 +254,21 @@ export default function DataRoomPage() {
   const [sortKey, setSortKey] = useState<string>("propertyName");
   const [sortDesc, setSortDesc] = useState<boolean>(false);
   const [shareToast, setShareToast] = useState(false);
+  const [reportModalOpen, setReportModalOpen] = useState(false);
+  const [selectedProjectsForReport, setSelectedProjectsForReport] = useState<string[]>([]);
 
   const activeProjects = dbProjects;
+
+  useEffect(() => {
+    if (activeProjects.length > 0 && selectedProjectsForReport.length === 0) {
+      setSelectedProjectsForReport(activeProjects.map((p) => p.id));
+    }
+  }, [activeProjects, selectedProjectsForReport.length]);
 
   // ─── Derive individual project financial metrics ───────────────
   const projectMetrics = useMemo(() => {
     return activeProjects.map((p) => {
-      const f = p.financials || {};
+      const f = p.financials || {} as any;
       const { asset: assetMetrics } = deriveDualScopeMetrics(
         f,
         f.estimatedARV,
@@ -265,6 +283,19 @@ export default function DataRoomPage() {
       const irrResult = computeIRRMetric({ financials: f, currentPhase: p.currentPhase, strategyType: p.strategyType });
       const irr = irrResult.value ?? 0;
       const appreciation = assetMetrics.annualizedAppreciation || 0;
+
+      // Compute supplemental metrics
+      const ltv = computeLTVMetric(p).value ?? 0;
+      const debtYield = computeDebtYieldMetric(p).value ?? 0;
+      const equityMultiple = computeEquityMultipleMetric(p).value ?? 0;
+      const breakEvenOccupancy = computeBreakEvenOccupancyMetric(p).value ?? 0;
+      const capitalReserves = computeCapitalReservesMetric(p).value ?? 0;
+      const paybackPeriod = computePaybackPeriodMetric(p).value ?? 0;
+      const tenantTurnover = computeTenantTurnoverMetric(p).value ?? 0;
+      const leaseRenewal = computeLeaseRenewalMetric(p).value ?? 0;
+      const maintenanceCostPerUnit = computeMaintenanceCostPerUnitMetric(p).value ?? 0;
+      const dom = computeDOMMetric(p).value ?? 0;
+      const budgetVariance = computeBudgetVarianceMetric(p).value ?? 0;
 
       return {
         id: p.id,
@@ -288,6 +319,17 @@ export default function DataRoomPage() {
           grossRentalIncome: assetMetrics.noiComponents.grossRentalIncome,
           totalOperatingExpenses: assetMetrics.noiComponents.totalOperatingExpenses,
           annualDebtService: assetMetrics.annualDebtService,
+          ltv,
+          debtYield,
+          equityMultiple,
+          breakEvenOccupancy,
+          capitalReserves,
+          paybackPeriod,
+          tenantTurnover,
+          leaseRenewal,
+          maintenanceCostPerUnit,
+          dom,
+          budgetVariance,
         },
         investor: {
           noi: assetMetrics.noi * (ownershipPct / 100),
@@ -304,6 +346,17 @@ export default function DataRoomPage() {
           grossRentalIncome: assetMetrics.noiComponents.grossRentalIncome * (ownershipPct / 100),
           totalOperatingExpenses: assetMetrics.noiComponents.totalOperatingExpenses * (ownershipPct / 100),
           annualDebtService: assetMetrics.annualDebtService * (ownershipPct / 100),
+          ltv,
+          debtYield,
+          equityMultiple,
+          breakEvenOccupancy,
+          capitalReserves,
+          paybackPeriod,
+          tenantTurnover,
+          leaseRenewal,
+          maintenanceCostPerUnit: maintenanceCostPerUnit * (ownershipPct / 100),
+          dom,
+          budgetVariance,
         },
       };
     });
@@ -328,7 +381,7 @@ export default function DataRoomPage() {
     let weightedAppreciation = 0;
 
     activeProjects.forEach((p, idx) => {
-      const f = p.financials || {};
+      const f = p.financials || {} as any;
       const metrics = projectMetrics[idx];
       const factor = scope === "Property" ? 1 : (metrics.ownershipPct / 100);
 
@@ -465,7 +518,9 @@ export default function DataRoomPage() {
 
     const headers = [
       "Property Name", "Address", "NOI", "Cash Flow", "Cap Rate", "Cash-on-Cash",
-      "GRM", "DSCR", "IRR", "Occupancy", "OER", "Appreciation",
+      "GRM", "DSCR", "IRR", "Occupancy", "OER", "Appreciation", "LTV", "Debt Yield",
+      "Equity Multiple", "Break-Even Occupancy", "Capital Reserves", "Payback Period",
+      "Tenant Turnover", "Lease Renewal", "Maintenance Cost", "DOM", "Budget Variance"
     ];
 
     const rows = sortedProjects.map((proj) => {
@@ -475,7 +530,12 @@ export default function DataRoomPage() {
         data.noi.toFixed(2), data.cashFlow.toFixed(2), data.capRate.toFixed(2),
         data.coc.toFixed(2), data.grm.toFixed(2), data.dscr.toFixed(2),
         data.irr.toFixed(2), data.occupancy.toFixed(2), data.oer.toFixed(2),
-        data.appreciation.toFixed(2),
+        data.appreciation.toFixed(2), data.ltv.toFixed(2), data.debtYield.toFixed(2),
+        data.equityMultiple.toFixed(2), data.breakEvenOccupancy.toFixed(2),
+        data.capitalReserves.toFixed(2), data.paybackPeriod.toFixed(2),
+        data.tenantTurnover.toFixed(2), data.leaseRenewal.toFixed(2),
+        data.maintenanceCostPerUnit.toFixed(2), data.dom.toFixed(2),
+        data.budgetVariance.toFixed(2)
       ].join(",");
     });
 
@@ -499,131 +559,239 @@ export default function DataRoomPage() {
     });
   }, []);
 
-  const [isGeneratingPdf, setIsGeneratingPdf] = useState(false);
+  const handlePrintReport = useCallback(() => {
+    if (selectedProjectsForReport.length === 0) return;
+    const printWindow = window.open("", "_blank");
+    if (!printWindow) return;
 
-  const handleExportPDF = useCallback(async () => {
-    if (sortedProjects.length === 0) {
-      toast.error("No project data available to export.");
-      return;
-    }
+    const selectedProjs = activeProjects.filter((p) => selectedProjectsForReport.includes(p.id));
+    const metricsList = projectMetrics.filter((m) => selectedProjectsForReport.includes(m.id));
 
-    setIsGeneratingPdf(true);
-    const toastId = toast.loading("Generating PDF Report...");
+    let totalValue = 0;
+    let totalEquity = 0;
+    let totalNOI = 0;
+    let totalCashFlow = 0;
+    let totalUnits = 0;
+    let totalOccupiedUnits = 0;
 
-    try {
-      const doc = new jsPDF();
-      const dateStr = new Date().toLocaleDateString();
+    metricsList.forEach((metrics) => {
+      const p = activeProjects.find((ap) => ap.id === metrics.id);
+      if (!p) return;
+      const f = p.financials || {} as any;
+      const factor = scope === "Property" ? 1 : (metrics.ownershipPct / 100);
+      const data = scope === "Property" ? metrics.asset : metrics.investor;
 
-      // Header
-      doc.setFontSize(22);
-      doc.setTextColor(33, 33, 33);
-      doc.text("PORTFOLIO DATA ROOM REPORT", 14, 20);
+      totalValue += (f.estimatedARV ?? f.purchasePrice ?? 0) * factor;
+      totalEquity += ((f.estimatedARV ?? f.purchasePrice ?? 0) - (f.loanAmount ?? 0)) * factor;
+      totalNOI += data.noi;
+      totalCashFlow += data.cashFlow;
+      totalUnits += (f.numberOfUnits ?? 1) * factor;
+      totalOccupiedUnits += (f.occupiedUnits ?? (f.numberOfUnits ?? 1)) * factor;
+    });
 
-      doc.setFontSize(10);
-      doc.setTextColor(100, 100, 100);
-      doc.text(`Generated by PaperWorking · Date: ${dateStr} · Scope: ${scope}`, 14, 27);
-      doc.setDrawColor(200, 200, 200);
-      doc.setLineWidth(0.5);
-      doc.line(14, 30, 196, 30);
+    const dateStr = new Date().toLocaleDateString("en-US", {
+      year: "numeric",
+      month: "long",
+      day: "numeric",
+      hour: "2-digit",
+      minute: "2-digit",
+    });
 
-      // Section: Portfolio Summary
-      if (portfolioAggregates) {
-        doc.setFontSize(14);
-        doc.setTextColor(33, 33, 33);
-        doc.text("Portfolio Financial Summary", 14, 39);
+    const tableRows = metricsList.map((m) => {
+      const data = scope === "Property" ? m.asset : m.investor;
+      return `
+        <tr style="border-bottom: 1px solid #e5e7eb;">
+          <td style="padding: 10px 8px; font-weight: 500;">
+            <div style="font-size: 13px; color: #111827; font-family: sans-serif;">${m.propertyName}</div>
+            <div style="font-size: 10px; color: #6b7280; font-family: sans-serif;">${m.address}</div>
+          </td>
+          <td style="padding: 10px 8px; text-align: right; font-family: monospace;">${fmtUSD(data.noi)}</td>
+          <td style="padding: 10px 8px; text-align: right; font-family: monospace;">${fmtUSD(data.cashFlow)}</td>
+          <td style="padding: 10px 8px; text-align: right; font-family: monospace;">${fmtPct(data.capRate)}</td>
+          <td style="padding: 10px 8px; text-align: right; font-family: monospace;">${fmtPct(data.coc)}</td>
+          <td style="padding: 10px 8px; text-align: right; font-family: monospace;">${data.dscr.toFixed(2)}x</td>
+          <td style="padding: 10px 8px; text-align: right; font-family: monospace;">${fmtPct(data.occupancy)}</td>
+          <td style="padding: 10px 8px; text-align: right; font-family: monospace;">${fmtPct(data.oer)}</td>
+        </tr>
+      `;
+    }).join("");
 
-        const summaryBody = [
-          ["Total Properties", portfolioAggregates.propertyCount.toString()],
-          ["Total Portfolio Value", fmtUSD(portfolioAggregates.totalValue)],
-          ["Total Equity", fmtUSD(portfolioAggregates.totalEquity)],
-          ["Total Capital Raised", fmtUSD(portfolioAggregates.capitalRaised)],
-          ["Net Operating Income (NOI)", fmtUSD(portfolioAggregates.noi)],
-          ["Annual Cash Flow", fmtUSD(portfolioAggregates.cashFlow)],
-          ["Portfolio Cap Rate", fmtPct(portfolioAggregates.capRate)],
-          ["Cash-on-Cash Return (CoC)", fmtPct(portfolioAggregates.coc)],
-          ["Portfolio Occupancy Rate", fmtPct(portfolioAggregates.occupancy)],
-          ["Operating Expense Ratio (OER)", fmtPct(portfolioAggregates.oer)],
-          ["Weighted Appreciation", fmtPct(portfolioAggregates.appreciation)],
-        ];
+    const htmlContent = `
+      <!DOCTYPE html>
+      <html>
+      <head>
+        <title>PaperWorking - Data Room Report</title>
+        <style>
+          body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            color: #1f2937;
+            margin: 0;
+            padding: 40px;
+            line-height: 1.5;
+            background: #ffffff;
+          }
+          .header {
+            border-bottom: 2px solid #111827;
+            padding-bottom: 16px;
+            margin-bottom: 24px;
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end;
+          }
+          .header h1 {
+            margin: 0;
+            font-size: 24px;
+            font-weight: 700;
+            letter-spacing: -0.025em;
+            text-transform: uppercase;
+          }
+          .header .meta {
+            font-size: 11px;
+            color: #6b7280;
+            text-align: right;
+          }
+          .scope-badge {
+            display: inline-block;
+            background: #f3f4f6;
+            border: 1px solid #e5e7eb;
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-size: 10px;
+            font-weight: bold;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            margin-top: 4px;
+          }
+          .grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 16px;
+            margin-bottom: 32px;
+          }
+          .card {
+            border: 1px solid #e5e7eb;
+            border-radius: 8px;
+            padding: 12px 16px;
+            background: #f9fafb;
+          }
+          .card .label {
+            font-size: 9px;
+            font-weight: 700;
+            text-transform: uppercase;
+            color: #6b7280;
+            letter-spacing: 0.05em;
+            margin-bottom: 4px;
+          }
+          .card .value {
+            font-size: 18px;
+            font-weight: 700;
+            color: #111827;
+          }
+          table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 40px;
+            font-size: 11px;
+          }
+          th {
+            border-bottom: 1px solid #111827;
+            padding: 8px;
+            font-weight: 700;
+            text-transform: uppercase;
+            font-size: 9px;
+            color: #374151;
+            letter-spacing: 0.05em;
+          }
+          td {
+            padding: 8px;
+          }
+          .footer {
+            border-top: 1px solid #e5e7eb;
+            padding-top: 16px;
+            font-size: 9px;
+            color: #9ca3af;
+            text-align: center;
+            position: absolute;
+            bottom: 40px;
+            left: 40px;
+            right: 40px;
+          }
+          @media print {
+            body {
+              padding: 0;
+            }
+            .footer {
+              position: fixed;
+              bottom: 0;
+              left: 0;
+              right: 0;
+            }
+          }
+        </style>
+      </head>
+      <body>
+        <div class="header">
+          <div>
+            <h1>PaperWorking Portfolio Report</h1>
+            <div class="scope-badge">Scope: ${scope}</div>
+          </div>
+          <div class="meta">
+            <div>Generated on ${dateStr}</div>
+            <div>Total Properties: ${selectedProjs.length}</div>
+          </div>
+        </div>
 
-        if (portfolioAggregates.dscr !== null) {
-          summaryBody.push(["Debt Service Coverage Ratio (DSCR)", portfolioAggregates.dscr.toFixed(2)]);
-        }
+        <div class="grid">
+          <div class="card">
+            <div class="label">Portfolio Value</div>
+            <div class="value">${fmtUSD(totalValue)}</div>
+          </div>
+          <div class="card">
+            <div class="label">Total Equity</div>
+            <div class="value">${fmtUSD(totalEquity)}</div>
+          </div>
+          <div class="card">
+            <div class="label">Total NOI</div>
+            <div class="value">${fmtUSD(totalNOI)}</div>
+          </div>
+          <div class="card">
+            <div class="label">Total Cash Flow</div>
+            <div class="value">${fmtUSD(totalCashFlow)}</div>
+          </div>
+        </div>
 
-        autoTable(doc, {
-          startY: 43,
-          head: [["Portfolio Metric", "Aggregate Value"]],
-          body: summaryBody,
-          theme: "grid",
-          headStyles: { fillColor: [69, 73, 85], textColor: 255 },
-          styles: { fontSize: 10, cellPadding: 3 },
-          columnStyles: { 0: { cellWidth: 90 }, 1: { halign: "right" } },
-        });
-      }
+        <table>
+          <thead>
+            <tr>
+              <th style="text-align: left; width: 30%;">Property</th>
+              <th style="text-align: right;">NOI</th>
+              <th style="text-align: right;">Cash Flow</th>
+              <th style="text-align: right;">Cap Rate</th>
+              <th style="text-align: right;">CoC</th>
+              <th style="text-align: right;">DSCR</th>
+              <th style="text-align: right;">Occupancy</th>
+              <th style="text-align: right;">OER</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${tableRows}
+          </tbody>
+        </table>
 
-      // Section: Property Breakdown
-      const finalY = (doc as any).lastAutoTable?.finalY || 43;
-      doc.setFontSize(14);
-      doc.setTextColor(33, 33, 33);
-      doc.text("Individual Property Breakdown", 14, finalY + 12);
+        <div class="footer">
+          Confidential Portfolio Report &copy; ${new Date().getFullYear()} PaperWorking. All estimates, projections, and AVMs are for illustrative purposes and not formal appraisals.
+        </div>
+      </body>
+      </html>
+    `;
 
-      const tableHeaders = [
-        "Property",
-        "Price",
-        "NOI",
-        "Cash Flow",
-        "Cap Rate",
-        "CoC",
-        "IRR",
-        "Occ.",
-        "OER",
-      ];
-
-      const tableBody = sortedProjects.map((proj) => {
-        const data = scope === "Property" ? proj.asset : proj.investor;
-        return [
-          proj.propertyName,
-          fmtCompact(proj.purchasePrice),
-          fmtCompact(data.noi),
-          fmtCompact(data.cashFlow),
-          fmtPct(data.capRate),
-          fmtPct(data.coc),
-          fmtPct(data.irr),
-          `${data.occupancy.toFixed(0)}%`,
-          `${data.oer.toFixed(0)}%`,
-        ];
-      });
-
-      autoTable(doc, {
-        startY: finalY + 16,
-        head: [tableHeaders],
-        body: tableBody,
-        theme: "striped",
-        headStyles: { fillColor: [69, 73, 85], textColor: 255, fontSize: 8 },
-        styles: { fontSize: 8, cellPadding: 3 },
-        columnStyles: {
-          0: { cellWidth: 42 },
-          1: { halign: "right" },
-          2: { halign: "right" },
-          3: { halign: "right" },
-          4: { halign: "right" },
-          5: { halign: "right" },
-          6: { halign: "right" },
-          7: { halign: "right" },
-          8: { halign: "right" },
-        },
-      });
-
-      const filename = `data-room-${scope.toLowerCase().replace(" ", "-")}-${new Date().toISOString().slice(0, 10)}.pdf`;
-      doc.save(filename);
-      toast.success(`Generated PDF Report: ${filename}`, { id: toastId });
-    } catch (error) {
-      console.error(error);
-      toast.error("Failed to generate PDF Report.", { id: toastId });
-    } finally {
-      setIsGeneratingPdf(false);
-    }
-  }, [sortedProjects, scope, portfolioAggregates]);
+    printWindow.document.write(htmlContent);
+    printWindow.document.close();
+    setTimeout(() => {
+      printWindow.print();
+      printWindow.close();
+    }, 500);
+  }, [selectedProjectsForReport, activeProjects, scope, projectMetrics]);
 
   // ─── Loading / Empty state ────────────────────────────────────
   const isLoading = !hasHydrated;
@@ -641,6 +809,17 @@ export default function DataRoomPage() {
     { key: "occupancy", label: "Occupancy", format: fmtPct, align: "text-right" },
     { key: "oer", label: "OER", format: fmtPct, align: "text-right" },
     { key: "appreciation", label: "Appreciation", format: fmtPct, align: "text-right" },
+    { key: "ltv", label: "LTV", format: fmtPct, align: "text-right" },
+    { key: "debtYield", label: "Debt Yield", format: fmtPct, align: "text-right" },
+    { key: "equityMultiple", label: "Equity Mult", format: (v: number) => `${v.toFixed(2)}x`, align: "text-right" },
+    { key: "breakEvenOccupancy", label: "BE Occ", format: fmtPct, align: "text-right" },
+    { key: "capitalReserves", label: "Reserves", format: (v: number) => `${Math.round(v)} mo`, align: "text-right" },
+    { key: "paybackPeriod", label: "Payback", format: (v: number) => `${v.toFixed(1)} yr`, align: "text-right" },
+    { key: "tenantTurnover", label: "Turnover", format: fmtPct, align: "text-right" },
+    { key: "leaseRenewal", label: "Renewal", format: fmtPct, align: "text-right" },
+    { key: "maintenanceCostPerUnit", label: "Maint/Unit", format: fmtUSD, align: "text-right" },
+    { key: "dom", label: "DOM", format: (v: number) => `${Math.round(v)} d`, align: "text-right" },
+    { key: "budgetVariance", label: "Bud Var", format: fmtPct, align: "text-right" },
   ];
 
   return (
@@ -1106,8 +1285,7 @@ export default function DataRoomPage() {
             </div>
             <div className="flex items-center gap-3">
               <button
-                onClick={handleExportPDF}
-                disabled={isGeneratingPdf}
+                onClick={() => setReportModalOpen(true)}
                 className="px-5 py-2.5 rounded-xl text-xs font-bold uppercase tracking-widest flex items-center gap-2 transition-all"
                 style={{
                   background: "rgba(255,255,255,0.04)",
@@ -1161,6 +1339,223 @@ export default function DataRoomPage() {
               </div>
             </div>
           </section>
+
+          {/* Compiled report configuration modal */}
+          {reportModalOpen && (
+            <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-xs animate-in fade-in duration-200">
+              <div
+                className="w-full max-w-2xl border rounded-2xl shadow-2xl p-6 relative animate-in fade-in zoom-in-95 duration-150 flex flex-col max-h-[90vh]"
+                style={{
+                  background: "rgba(20, 24, 30, 0.95)",
+                  borderColor: T.border,
+                  color: T.textPrimary,
+                  backdropFilter: "blur(24px)",
+                }}
+              >
+                {/* Modal Close Button */}
+                <button
+                  onClick={() => setReportModalOpen(false)}
+                  className="absolute top-5 right-5 rounded-lg p-1.5 transition-all text-neutral-400 hover:text-white"
+                  style={{ background: "rgba(255,255,255,0.02)", border: `1px solid ${T.border}` }}
+                >
+                  <span className="material-symbols-outlined text-lg block">close</span>
+                </button>
+
+                {/* Modal Title */}
+                <div className="mb-6">
+                  <h3 className="text-lg font-bold tracking-tight mb-1 flex items-center gap-2">
+                    <span className="material-symbols-outlined text-teal" style={{ color: T.teal }}>
+                      analytics
+                    </span>
+                    Generate Portfolio Report
+                  </h3>
+                  <p className="text-xs" style={{ color: T.textMuted }}>
+                    Customize your export by selecting properties and report parameters.
+                  </p>
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6 overflow-y-auto pr-1 mb-6">
+                  {/* Left Column: Properties Selection */}
+                  <div className="space-y-4">
+                    <div className="flex items-center justify-between">
+                      <span className="text-[11px] font-bold uppercase tracking-wider" style={{ color: T.textSecondary }}>
+                        Properties ({selectedProjectsForReport.length}/{activeProjects.length})
+                      </span>
+                      <button
+                        onClick={() => {
+                          if (selectedProjectsForReport.length === activeProjects.length) {
+                            setSelectedProjectsForReport([]);
+                          } else {
+                            setSelectedProjectsForReport(activeProjects.map(p => p.id));
+                          }
+                        }}
+                        className="text-[10px] uppercase font-bold tracking-widest hover:underline"
+                        style={{ color: T.teal }}
+                      >
+                        {selectedProjectsForReport.length === activeProjects.length ? "Deselect All" : "Select All"}
+                      </button>
+                    </div>
+                    <div
+                      className="rounded-xl border p-3 space-y-2 max-h-60 overflow-y-auto"
+                      style={{ background: "rgba(255,255,255,0.02)", borderColor: T.border }}
+                    >
+                      {activeProjects.map((p) => {
+                        const isChecked = selectedProjectsForReport.includes(p.id);
+                        return (
+                          <label
+                            key={p.id}
+                            className="flex items-center gap-3 p-2 rounded-lg cursor-pointer transition-all hover:bg-white/5"
+                          >
+                            <input
+                              type="checkbox"
+                              checked={isChecked}
+                              onChange={() => {
+                                if (isChecked) {
+                                  setSelectedProjectsForReport(selectedProjectsForReport.filter(id => id !== p.id));
+                                } else {
+                                  setSelectedProjectsForReport([...selectedProjectsForReport, p.id]);
+                                }
+                              }}
+                              className="rounded border-neutral-700 bg-neutral-900 text-teal-600 focus:ring-teal-500 h-4 w-4 cursor-pointer"
+                              style={{ accentColor: T.teal }}
+                            />
+                            <div className="flex-1 min-w-0">
+                              <p className="text-xs font-bold truncate" style={{ color: T.textPrimary }}>
+                                {p.propertyName || "Unknown Property"}
+                              </p>
+                              <p className="text-[10px] truncate" style={{ color: T.textMuted }}>
+                                {p.address}
+                              </p>
+                            </div>
+                          </label>
+                        );
+                      })}
+                    </div>
+                  </div>
+
+                  {/* Right Column: Parameters & Live Preview */}
+                  <div className="space-y-6">
+                    {/* Scope selection */}
+                    <div className="space-y-2">
+                      <span className="text-[11px] font-bold uppercase tracking-wider" style={{ color: T.textSecondary }}>
+                        Report Scope
+                      </span>
+                      <div className="flex rounded-xl p-1 w-full" style={{ background: "rgba(255,255,255,0.04)", border: `1px solid ${T.border}` }}>
+                        {(["Property", "My Share"] as Scope[]).map((s) => (
+                          <button
+                            key={s}
+                            onClick={() => setScope(s)}
+                            className="flex-1 py-1.5 rounded-lg text-xs font-bold uppercase tracking-wider transition-all duration-200"
+                            style={{
+                              background: scope === s ? T.teal : "transparent",
+                              color: scope === s ? "#000" : T.textSecondary,
+                              boxShadow: scope === s ? "0 4px 12px rgba(69,73,85,0.2)" : "none",
+                            }}
+                          >
+                            {s}
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+
+                    {/* Quick Metrics Summary Preview */}
+                    <div className="space-y-2">
+                      <span className="text-[11px] font-bold uppercase tracking-wider" style={{ color: T.textSecondary }}>
+                        Live Estimation Summary
+                      </span>
+                      <div
+                        className="rounded-xl border p-4 grid grid-cols-2 gap-3"
+                        style={{ background: "rgba(255,255,255,0.02)", borderColor: T.border }}
+                      >
+                        <div>
+                          <span className="text-[9px] uppercase tracking-wider font-bold block" style={{ color: T.textMuted }}>
+                            Total Value
+                          </span>
+                          <span className="text-sm font-bold font-mono" style={{ color: T.textPrimary }}>
+                            {fmtUSD(
+                              projectMetrics
+                                .filter(m => selectedProjectsForReport.includes(m.id))
+                                .reduce((sum, m) => {
+                                  const p = activeProjects.find(ap => ap.id === m.id);
+                                  const f = p?.financials || {} as any;
+                                  const factor = scope === "Property" ? 1 : (m.ownershipPct / 100);
+                                  return sum + (f.estimatedARV ?? f.purchasePrice ?? 0) * factor;
+                                }, 0)
+                            )}
+                          </span>
+                        </div>
+                        <div>
+                          <span className="text-[9px] uppercase tracking-wider font-bold block" style={{ color: T.textMuted }}>
+                            Total NOI
+                          </span>
+                          <span className="text-sm font-bold font-mono" style={{ color: T.textPrimary }}>
+                            {fmtUSD(
+                              projectMetrics
+                                .filter(m => selectedProjectsForReport.includes(m.id))
+                                .reduce((sum, m) => {
+                                  const data = scope === "Property" ? m.asset : m.investor;
+                                  return sum + data.noi;
+                                }, 0)
+                            )}
+                          </span>
+                        </div>
+                        <div>
+                          <span className="text-[9px] uppercase tracking-wider font-bold block" style={{ color: T.textMuted }}>
+                            Cash Flow
+                          </span>
+                          <span className="text-sm font-bold font-mono" style={{ color: T.textPrimary }}>
+                            {fmtUSD(
+                              projectMetrics
+                                .filter(m => selectedProjectsForReport.includes(m.id))
+                                .reduce((sum, m) => {
+                                  const data = scope === "Property" ? m.asset : m.investor;
+                                  return sum + data.cashFlow;
+                                }, 0)
+                            )}
+                          </span>
+                        </div>
+                        <div>
+                          <span className="text-[9px] uppercase tracking-wider font-bold block" style={{ color: T.textMuted }}>
+                            Properties
+                          </span>
+                          <span className="text-sm font-bold" style={{ color: T.textPrimary }}>
+                            {selectedProjectsForReport.length} of {activeProjects.length}
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Modal Actions */}
+                <div className="flex items-center justify-end gap-3 pt-4 border-t" style={{ borderColor: T.border }}>
+                  <button
+                    onClick={() => setReportModalOpen(false)}
+                    className="px-4 py-2 rounded-xl text-xs font-bold uppercase tracking-widest transition-all"
+                    style={{ border: `1px solid ${T.border}`, color: T.textSecondary }}
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    onClick={() => {
+                      handlePrintReport();
+                      setReportModalOpen(false);
+                    }}
+                    disabled={selectedProjectsForReport.length === 0}
+                    className="px-5 py-2.5 rounded-xl text-xs font-bold uppercase tracking-widest flex items-center gap-2 transition-all disabled:opacity-40 disabled:cursor-not-allowed"
+                    style={{
+                      background: T.teal,
+                      color: "#000",
+                      boxShadow: "0 4px 16px rgba(69,73,85,0.2)",
+                    }}
+                  >
+                    <span className="material-symbols-outlined text-base">picture_as_pdf</span>
+                    Generate PDF Report
+                  </button>
+                </div>
+              </div>
+            </div>
+          )}
         </>
       )}
     </div>

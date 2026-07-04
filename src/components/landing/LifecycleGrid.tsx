@@ -30,7 +30,7 @@ const PHASES = [
     id:          '01',
     surfaceClass:'pw-phase-sourcing',  // #f2f2f2 → dark text
     label:       'Phase 1',
-    name:        'Source & Syndicate',
+    name:        'Acquisition',
     tagline:     'Assemble capital and generate LOIs.',
     detail:      'Build your investor roster, model capital stack scenarios, and issue Letters of Intent directly from your command center.',
     bullets:     ['Investor CRM', 'Capital stack modeling', 'LOI generation'],
@@ -40,7 +40,7 @@ const PHASES = [
     id:          '02',
     surfaceClass:'pw-phase-contract',  // #cccccc → dark text
     label:       'Phase 2',
-    name:        'Acquire & Organize',
+    name:        'Fund',
     tagline:     'Clear contingencies and manage the document vault.',
     detail:      'Track inspection deadlines, title search status, and financing milestones. Every document version-controlled in one place.',
     bullets:     ['Contingency tracker', 'Document vault', 'Closing checklist'],
@@ -50,7 +50,7 @@ const PHASES = [
     id:          '03',
     surfaceClass:'pw-phase-rehab',     // #a5a5a5 → dark text
     label:       'Phase 3',
-    name:        'Rehab & Track Margins',
+    name:        'Hold',
     tagline:     'Monitor burn rate and milestone payouts.',
     detail:      'Log contractor bids, set milestone-based payment triggers, and watch your 70% Rule margin in real time as costs accumulate.',
     bullets:     ['Burn rate monitor', 'Milestone payouts', '70% Rule gauge'],
@@ -60,7 +60,7 @@ const PHASES = [
     id:          '04',
     surfaceClass:'pw-phase-closed',    // #595959 → white text
     label:       'Phase 4',
-    name:        'Close & Reconcile',
+    name:        'Exit',
     tagline:     'Calculate net proceeds and export tax docs.',
     detail:      'Run prorated cost reconciliation, estimate capital gains exposure, and generate settlement ledgers ready for your CPA.',
     bullets:     ['Net proceeds calculator', 'Cap gains estimator', 'Tax doc export'],

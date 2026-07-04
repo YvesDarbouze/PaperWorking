@@ -460,7 +460,7 @@ export default function Phase3RehabPage() {
               <div className="flex justify-between items-end">
                 <div className="space-y-1">
                   <p className="text-[12px] leading-[14px] font-medium tracking-[0.05em] uppercase" style={{ color: PHASE_COLOR }}>
-                    Phase: Hold & Rehab
+                    Phase: Hold
                   </p>
                   <div className="flex items-center gap-2">
                     <span className="text-[14px] leading-[16px] font-semibold tracking-[0.02em] text-[#9E9DA0]">

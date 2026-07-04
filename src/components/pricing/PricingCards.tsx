@@ -151,6 +151,7 @@ function SavingsPill({
   visible: boolean;
 }) {
   const yearlySavings = monthlyPrice * 12 - annualPrice;
+  const pct = Math.round((yearlySavings / (monthlyPrice * 12)) * 100);
 
   return (
     <span
@@ -160,7 +161,7 @@ function SavingsPill({
           : 'opacity-0 -translate-x-2 scale-95 pointer-events-none'
       }`}
     >
-      Save ${yearlySavings}
+      Save ${yearlySavings} ({pct}%)
     </span>
   );
 }
@@ -192,7 +193,7 @@ export default function PricingCards({
           }`}>
             Annual
             <span className="bg-primary/15 text-primary px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider">
-              Save 20%
+              Save Up to 29%
             </span>
           </span>
         </div>
@@ -204,8 +205,9 @@ export default function PricingCards({
         className="grid grid-cols-1 md:grid-cols-3 gap-0 border border-phase-1 bg-white shadow-sm"
       >
         {tiers.map((tier, tierIdx) => {
-          const price = isAnnual ? tier.annualPrice : tier.monthlyPrice;
-          const period = isAnnual ? '/yr' : '/mo';
+          const displayPrice = isAnnual
+            ? (tier.id === 'individual' ? 41 : tier.id === 'team' ? 83 : 32)
+            : tier.monthlyPrice;
           const planLabel = `${tier.name} ${isAnnual ? 'Annual' : 'Monthly'}`;
           const isLast = tierIdx === tiers.length - 1;
 
@@ -239,11 +241,16 @@ export default function PricingCards({
               {/* ── Price ── */}
               <div className="mt-8 mb-1">
                 <span className="text-5xl font-medium text-black tracking-tight tabular-nums">
-                  <AnimatedPrice value={price} />
+                  <AnimatedPrice value={displayPrice} />
                 </span>
                 <span className="text-sm font-medium text-phase-2 ml-1">
-                  {period}
+                  /mo
                 </span>
+                {isAnnual && (
+                  <div className="text-xs font-semibold text-phase-2 mt-1">
+                    Billed ${tier.annualPrice}/yr
+                  </div>
+                )}
               </div>
 
               {/* ── Savings Badge ── */}

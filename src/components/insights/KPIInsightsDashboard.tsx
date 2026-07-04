@@ -25,6 +25,23 @@ import {
   computeNOIComponents,
   computeAnnualDebtService,
 } from "@/lib/metrics/reiMetrics";
+import {
+  computeLTVMetric,
+  computeDebtYieldMetric,
+  computeEquityMultipleMetric,
+  computeBreakEvenOccupancyMetric,
+  computeCapitalReservesMetric,
+  computePaybackPeriodMetric,
+  computeTenantTurnoverMetric,
+  computeLeaseRenewalMetric,
+  computeMaintenanceCostPerUnitMetric,
+  computeDOMMetric,
+  computeBudgetVarianceMetric,
+  computeIRRMetric,
+  computeAppreciationMetric,
+  computeCashFlowMetric,
+  computeOccupancyMetric,
+} from "@/lib/metrics";
 import type { Project } from "@/types/schema";
 import Link from "next/link";
 import { usePortfolioMetricSnapshots } from "@/hooks/usePortfolioMetricSnapshots";
@@ -58,19 +75,19 @@ interface TooltipDef {
 const TOOLTIPS: Record<string, TooltipDef> = {
   NOI: {
     theData:      "Total Income − Operating Expenses (excludes mortgage and income taxes)",
-    whyItMatters: "Isolates the property's pure operational performance to gauge baseline earning power.",
+    whyItMatters: "Net Operating Income is the foundation of your real estate wealth. It dictates your property’s market value, drives your Cap Rate, and proves your portfolio’s strength. If you can’t pull this number up in five seconds, you’re leaving money on the table. PaperWorking eliminates the data-entry homework, turning your daily milestone logs into instant financial clarity.",
     benchmark:    "Target depends on asset class. $500+/mo per unit is a common starting threshold.",
     goodSign:     "Rising NOI year-over-year signals rent growth and expense control.",
   },
   CAP_RATE: {
     theData:      "NOI ÷ Current Property Value",
-    whyItMatters: "Assesses the baseline return on investment and risk level without factoring in your specific loan structure.",
+    whyItMatters: "A bad deal can hide behind creative loan terms. Savvy investors look past the financing to measure the pure, cash-equivalent strength of the property itself. But when rehab milestones run over budget, your Cap Rate plummets without you knowing. The exact second you enter a cost against a Project milestone, PaperWorking recalculates your true Cap Rate — turning daily project management into an early-warning system.",
     benchmark:    "6–10% is typical for residential. Below 4% signals overpriced or low-yield market.",
     goodSign:     "Cap Rate above your target return threshold means the deal works without leverage.",
   },
   COC: {
     theData:      "Annual Pre-Tax Cash Flow ÷ Total Cash Invested",
-    whyItMatters: "Measures the actual return you make on the money you put in, taking your specific mortgage terms into account.",
+    whyItMatters: "Never fly blind on your actual returns. Command your capital efficiency with an automated dashboard that connects your daily workflow directly to your bottom line.",
     benchmark:    "8–12% is a healthy range. Below 6% may not justify the risk vs. alternatives.",
     goodSign:     "CoC above 10% with positive leverage means you're amplifying your equity return.",
   },
@@ -82,19 +99,19 @@ const TOOLTIPS: Record<string, TooltipDef> = {
   },
   DSCR: {
     theData:      "NOI ÷ Total Debt Service (Annual Mortgage Payments)",
-    whyItMatters: "Lenders look for a DSCR above 1.25 to ensure the property generates enough income to safely cover its loan payments.",
+    whyItMatters: "Stop letting complex bank underwriting slow down your portfolio growth. Command your leverage with a real-time index of your property’s true borrowing strength.",
     benchmark:    "Lenders require ≥ 1.20. Green zone starts at 1.25. Below 1.0 is a red flag.",
     goodSign:     "DSCR ≥ 1.25 means the property covers its debt with a 25% safety buffer.",
   },
   OER: {
     theData:      "Total Operating Expenses ÷ Gross Operating Income",
-    whyItMatters: "Highlights the cost-efficiency of the building; a high OER means a larger percentage of your income goes to maintenance and taxes.",
+    whyItMatters: "What percentage of your gross income do operating costs consume? Most investors can’t answer — and rising expenses quietly eat returns that look healthy on the surface. PaperWorking calculates your Expense Ratio live from the costs you’re already logging, so margin erosion shows up as a dashboard alert, not a year-end surprise.",
     benchmark:    "35–45% is typical for well-run residential. Above 60% signals expense problems.",
     goodSign:     "OER below 40% with stable rents indicates efficient operations and strong NOI margin.",
   },
   GRM: {
     theData:      "Property Price ÷ Gross Annual Rental Income",
-    whyItMatters: "A quick screening tool that estimates how many years it would take for the property to pay for itself in gross income.",
+    whyItMatters: "In a competitive market, listing prices can be misleading. GRM is a straight-to-the-point reality check — exactly how many years of gross rent it takes to cover the purchase price. PaperWorking visualizes it instantly, keeping your capital safe from bad valuations.",
     benchmark:    "GRM of 8–12 is common in mid-market. Below 8 is a strong deal; above 15 is pricey.",
     goodSign:     "A falling GRM across your portfolio means you're buying income more efficiently.",
   },
@@ -115,6 +132,90 @@ const TOOLTIPS: Record<string, TooltipDef> = {
     whyItMatters: "Indicates local liquidity; high DOM means you may have more leverage to negotiate a discount.",
     benchmark:    "Under 30 days is a hot market. 30–60 is moderate. Over 90 days signals softness.",
     goodSign:     "Low DOM in your target markets means faster exits and lower holding cost exposure. Add listing + closing dates to your project for exact figures.",
+  },
+  CASH_FLOW: {
+    theData:      "NOI − Annual Debt Service",
+    whyItMatters: "Stop guesstimating your margins. Command your portfolio like an institution with real-time liquidity tracking that requires zero accounting experience.",
+    benchmark:    "Positive cash flow is essential. Targets depend on cash-on-cash return goals.",
+    goodSign:     "Stable, positive monthly cash flow provides a buffer for maintenance and vacancies.",
+  },
+  IRR: {
+    theData:      "Solve NPV = 0 for all project cash flows (initial equity, annual cash flows, exit proceeds)",
+    whyItMatters: "Profit tells you how much. IRR tells you how fast — the metric institutions use to rank every deal, because a dollar returned this year beats a dollar returned in year five. Two Deals with identical profit can have wildly different IRRs. PaperWorking computes yours live from your actual cash-in and cash-out dates, so you rank opportunities the way professionals do.",
+    benchmark:    "12–15% is standard for real estate. Higher rates reflect development or repositioning risk.",
+    goodSign:     "A strong IRR shows that the combined cash flow and equity growth outperform index fund returns.",
+  },
+  OCCUPANCY: {
+    theData:      "Occupied Units ÷ Total Units (or Occupied Days ÷ Total Hold Days)",
+    whyItMatters: "Vacancy is the silent tax on your portfolio — invisible on a spreadsheet until the year is already lost. PaperWorking tracks occupancy across every unit you hold and shows you exactly what empty days are costing you, in dollars, right now.",
+    benchmark:    "90–95% is considered stabilized. Below 85% suggests pricing, leasing, or management issues.",
+    goodSign:     "Consistent high occupancy at market rents ensures top-line revenue targets are met.",
+  },
+  APPRECIATION: {
+    theData:      "CAGR of Property Value relative to Purchase Price",
+    whyItMatters: "Cash flow pays you monthly; appreciation builds your net worth. PaperWorking tracks your property’s estimated market value over time — powered by live market data — so your equity growth is visible on the same dashboard as your income, and your hold-versus-exit decision is a calculation, not a guess.",
+    benchmark:    "3–5% historically matches long-term inflation and real estate averages.",
+    goodSign:     "Value compounding above the local inflation rate increases equity multiple at exit.",
+  },
+  EQUITY_MULTIPLE: {
+    theData:      "Total Cash Return ÷ Initial Cash Invested",
+    whyItMatters: "Shows the total return multiple on your invested capital, including sale proceeds and cumulative cash flow.",
+    benchmark:    "≥ 2.0× over a standard 5-year hold period is considered strong.",
+    goodSign:     "A multiple above 2.5× means your capital has more than doubled over the lifecycle.",
+  },
+  PAYBACK_PERIOD: {
+    theData:      "Years to recoup initial cash investment from cumulative cash flows",
+    whyItMatters: "Measures capital recovery speed. Shorter payback periods lower the duration risk of the investment.",
+    benchmark:    "≤ 8–10 years for stabilized value-add acquisitions.",
+    goodSign:     "Fast payback allows you to recycle capital into new deals sooner.",
+  },
+  TENANT_TURNOVER: {
+    theData:      "Annual Tenant Move-outs ÷ Total Units",
+    whyItMatters: "High turnover dramatically increases leasing commissions, rehab costs, and vacancy loss.",
+    benchmark:    "≤ 15% is optimal; warning triggers above 25% overrun.",
+    goodSign:     "Low turnover indicates strong tenant retention and stable operations.",
+  },
+  LEASE_RENEWAL: {
+    theData:      "Renewed Leases ÷ Expiring Leases",
+    whyItMatters: "High lease renewals minimize turn costs (painting, repair) and leasing agent fees.",
+    benchmark:    "≥ 75% is healthy. Below 60% signals tenant retention friction.",
+    goodSign:     "High renewal rates keep occupancy steady and maintenance costs low.",
+  },
+  MAINTENANCE_COST_PER_UNIT: {
+    theData:      "Annual Maintenance & Repair Cost ÷ Number of Units",
+    whyItMatters: "Monitors if maintenance expenses are drifting above pro-forma targets on a per-door basis.",
+    benchmark:    "≤ $1,500–$1,800/yr per unit depending on asset age.",
+    goodSign:     "Stable or declining maintenance cost per unit indicates good preventative asset care.",
+  },
+  BUDGET_VARIANCE: {
+    theData:      "(Actual Rehab Spend − Budgeted Rehab Spend) ÷ Budgeted Rehab Spend",
+    whyItMatters: "Tracks construction and rehab budget overruns during the Acquisition/Fund phases.",
+    benchmark:    "≤ 0% variance is ideal; warning zone triggers above 5% overrun.",
+    goodSign:     "Zero or negative variance means rehab projects are executing on time and on budget.",
+  },
+  CAPITAL_RESERVES: {
+    theData:      "Liquid Reserves ÷ Monthly Operating Expenses",
+    whyItMatters: "Ensures the property has a cash cushion to cover unexpected repairs, tenant defaults, or economic defaults.",
+    benchmark:    "≥ 6–12 months of operating expenses + debt service funded in reserve.",
+    goodSign:     "Fully funded reserves ensure project solvency through major capital improvement cycles.",
+  },
+  LTV: {
+    theData:      "Current Loan Balance ÷ Current Property Value",
+    whyItMatters: "Indicates leverage and refinancing risk. Higher LTV ratios mean higher interest expense.",
+    benchmark:    "≤ 75% for initial acquisition; ≤ 65% for refinancing.",
+    goodSign:     "A declining LTV ratio over time indicates loan amortization and appreciation are building equity.",
+  },
+  DEBT_YIELD: {
+    theData:      "NOI ÷ Loan Amount",
+    whyItMatters: "The cash-on-cash return a lender would receive if they foreclosed and took 100% of the cash flow.",
+    benchmark:    "≥ 10% is preferred by commercial lenders. Below 8% limits refinancing options.",
+    goodSign:     "High debt yield makes the property highly attractive to refinance lenders.",
+  },
+  BREAK_EVEN_OCCUPANCY: {
+    theData:      "(Operating Expenses + Debt Service) ÷ Gross Potential Rent",
+    whyItMatters: "The minimum occupancy percentage required to cover all cash expenses without dipping into reserves.",
+    benchmark:    "≤ 75% occupancy. Lower break-even percentages provide a wider safety margin.",
+    goodSign:     "A break-even occupancy below 65% ensures solvency even during severe tenant defaults.",
   },
 };
 
@@ -831,40 +932,14 @@ function VacancyDOMStats({
       {stats.map((s) => {
         const color = statusColor(s.status);
         return (
-          <div
-            key={s.label}
-            className="flex items-start gap-3 p-3 rounded-xl"
-            style={{
-              background: isDark ? "rgba(255,255,255,0.04)" : "rgba(69,73,85,0.05)",
-              border: `1px solid ${isDark ? "rgba(230, 234, 240, 0.12)" : "rgba(33, 34, 38, 0.12)"}`,
-            }}
-          >
-            <div
-              className="w-9 h-9 rounded-lg flex items-center justify-center shrink-0"
-              style={{ background: `${color}18` }}
-            >
-              <span
-                className="material-symbols-outlined text-[18px]"
-                style={{ color, fontVariationSettings: "'FILL' 0" }}
-              >
-                {s.icon}
-              </span>
-            </div>
-            <div className="flex-1 min-w-0">
-              <div className="flex items-baseline gap-1.5 mb-0.5">
-                <span
-                  className="text-[1.5rem] font-bold leading-none tabular-nums"
-                  style={{ color: s.value === "—" ? mutedClr : color }}
-                >
-                  {s.value}
-                </span>
-                <span className="text-[10px] font-bold uppercase" style={{ color: mutedClr }}>
-                  {s.label}
-                </span>
+          <div key={s.label} className="p-4 rounded-xl border border-white/5 bg-white/[0.01]">
+            <div className="flex justify-between items-start">
+              <div>
+                <p className="text-xs text-[#9E9DA0]">{s.label}</p>
+                <p className="text-lg font-semibold mt-1" style={{ color }}>{s.value}</p>
+                <p className="text-[10px] text-[#6B6870] mt-0.5">{s.sub}</p>
               </div>
-              <p className="text-[11px] leading-snug" style={{ color: mutedClr }}>
-                {s.sub}
-              </p>
+              <span className="material-symbols-outlined text-lg" style={{ color }}>{s.icon}</span>
             </div>
           </div>
         );
@@ -872,8 +947,6 @@ function VacancyDOMStats({
     </div>
   );
 }
-
-// ─── Portfolio aggregation hook ────────────────────────────────────────────────
 
 interface PortfolioInsights {
   totalNOI:          number | null;
@@ -885,8 +958,21 @@ interface PortfolioInsights {
   priceToRent:       number | null;
   avgVacancyRate:    number | null;
   avgDOM:            number | null;
+  totalCashFlow:     number | null;
+  averageIRR:        number | null;
+  appreciationRate:  number | null;
   projectCount:      number;
   roiByProject:      Array<{ name: string; roi: number }>;
+}
+
+function getPhaseName(phaseNum: number): string {
+  switch (phaseNum) {
+    case 1: return "Acquisition";
+    case 2: return "Fund";
+    case 3: return "Hold";
+    case 4: return "Exit";
+    default: return "Acquisition";
+  }
 }
 
 function usePortfolioInsights(projects: Project[]): PortfolioInsights {
@@ -896,6 +982,7 @@ function usePortfolioInsights(projects: Project[]): PortfolioInsights {
         totalNOI: null, weightedCapRate: null, weightedCoC: null,
         portfolioDSCR: null, weightedOER: null, weightedGRM: null,
         priceToRent: null, avgVacancyRate: null, avgDOM: null,
+        totalCashFlow: null, averageIRR: null, appreciationRate: null,
         projectCount: 0, roiByProject: [],
       };
     }
@@ -913,6 +1000,10 @@ function usePortfolioInsights(projects: Project[]): PortfolioInsights {
     let vacancyWeight       = 0;
     let domTotal            = 0;
     let domCount            = 0;
+    let irrTotal            = 0;
+    let irrCount            = 0;
+    let appTotal            = 0;
+    let appCount            = 0;
     let roiByProject: Array<{ name: string; roi: number }> = [];
 
     for (const p of projects) {
@@ -950,7 +1041,6 @@ function usePortfolioInsights(projects: Project[]): PortfolioInsights {
         sumGrossRent += annualRent;
       }
 
-      // Vacancy: weight by gross rent; unit-weight fallback for projects with assumption but no income yet
       if (noiComp.grossRentalIncome > 0) {
         vacancyWeighted += m.vacancyRate * noiComp.grossRentalIncome;
         vacancyWeight   += noiComp.grossRentalIncome;
@@ -959,7 +1049,6 @@ function usePortfolioInsights(projects: Project[]): PortfolioInsights {
         vacancyWeight   += 1;
       }
 
-      // DOM — prefer actual listing-to-sale dates; fall back to comparable sales market data
       const fAny = f as any;
       if (fAny.listingDate && (fAny.closingDate || fAny.actualClosingDate || fAny.soldDate)) {
         const start = new Date(fAny.listingDate as string);
@@ -979,7 +1068,6 @@ function usePortfolioInsights(projects: Project[]): PortfolioInsights {
         }
       }
 
-      // Per-project ROI
       const name = (p.propertyName || p.address || `Project ${p.id.slice(0,4)}`).slice(0, 16);
       const flipROI = p.strategyType === "Fix & Flip" && m.totalCashInvested > 0
         ? ((propValue - (f.purchasePrice ?? 0) - (f.projectedRehabCost ?? 0)) / m.totalCashInvested) * 100
@@ -990,6 +1078,18 @@ function usePortfolioInsights(projects: Project[]): PortfolioInsights {
       const roi = flipROI ?? rentROI;
       if (roi !== null && Number.isFinite(roi)) {
         roiByProject.push({ name, roi: parseFloat(roi.toFixed(1)) });
+      }
+
+      const irrRes = computeIRRMetric(p);
+      if (irrRes.value !== null && irrRes.state !== 'n/a') {
+        irrTotal += irrRes.value;
+        irrCount++;
+      }
+
+      const appRes = computeAppreciationMetric(p);
+      if (appRes.value !== null && appRes.state !== 'n/a') {
+        appTotal += appRes.value;
+        appCount++;
       }
     }
 
@@ -1003,41 +1103,355 @@ function usePortfolioInsights(projects: Project[]): PortfolioInsights {
       priceToRent:     sumGrossRent > 0 ? sumPropPrice / sumGrossRent : null,
       avgVacancyRate:  vacancyWeight > 0 ? vacancyWeighted / vacancyWeight : null,
       avgDOM:          domCount > 0 ? domTotal / domCount : null,
+      totalCashFlow:    sumAnnualCashFlow,
+      averageIRR:       irrCount > 0 ? irrTotal / irrCount : null,
+      appreciationRate: appCount > 0 ? appTotal / appCount : null,
       projectCount:    projects.length,
       roiByProject,
     };
   }, [projects]);
 }
 
-// ─── Section separator ─────────────────────────────────────────────────────────
-
 function SectionLabel({ label, isDark }: { label: string; isDark: boolean }) {
-  const color  = isDark ? "rgba(253,255,252,0.35)" : "rgba(69,73,85,0.45)";
-  const border = isDark ? "rgba(230, 234, 240, 0.12)" : "rgba(33, 34, 38, 0.12)";
+  const lineClr = isDark ? "rgba(255,255,255,0.07)" : "rgba(69,73,85,0.11)";
+  const textClr = isDark ? "rgba(253,255,252,0.48)" : "rgba(69,73,85,0.65)";
   return (
-    <div className="flex items-center gap-3">
-      <p className="text-[10px] font-bold uppercase shrink-0" style={{ letterSpacing: "0.1em", color }}>
+    <div className="flex items-center gap-4 py-2 mt-4">
+      <h2
+        className="text-[12px] font-bold uppercase tracking-widest shrink-0"
+        style={{ color: textClr, letterSpacing: "0.18em" }}
+      >
         {label}
-      </p>
-      <div className="flex-1 h-px" style={{ background: border }} />
+      </h2>
+      <div className="h-[1px] w-full" style={{ background: lineClr }} />
     </div>
   );
 }
 
-// ─── Main export ───────────────────────────────────────────────────────────────
+function CashFlowIndicator({ cashFlow, isDark }: { cashFlow: number | null; isDark: boolean }) {
+  const status = cashFlow === null ? "neutral" : cashFlow >= 0 ? "good" : "bad";
+  const color = statusColor(status);
+  const mutedClr = isDark ? "rgba(253,255,252,0.38)" : "rgba(69,73,85,0.5)";
+  
+  return (
+    <div className="flex flex-col gap-3 py-2">
+      <div className="flex items-end gap-2">
+        <span
+          className="text-[2.2rem] font-bold leading-none tabular-nums"
+          style={{ color: cashFlow !== null ? color : mutedClr, letterSpacing: "-0.03em" }}
+        >
+          {cashFlow !== null ? `$${Math.round(cashFlow / 12).toLocaleString()}` : "—"}
+          <span className="text-sm font-normal text-[#9E9DA0] ml-1">/mo</span>
+        </span>
+      </div>
+      <div className="text-xs font-light text-[#9E9DA0]">
+        Annual projected: <span className="font-semibold text-white font-mono">{cashFlow !== null ? `$${Math.round(cashFlow).toLocaleString()}/yr` : "—"}</span>
+      </div>
+    </div>
+  );
+}
+
+function InsufficientDataState({
+  categoryName,
+  isDark,
+}: {
+  categoryName: string;
+  isDark: boolean;
+}) {
+  const cardBg = isDark ? "rgba(30,27,34,0.2)" : "rgba(69,73,85,0.02)";
+  const borderColor = isDark ? "rgba(253,255,252,0.05)" : "rgba(69,73,85,0.05)";
+  const subColor = isDark ? "rgba(253,255,252,0.40)" : "rgba(69,73,85,0.55)";
+
+  return (
+    <div
+      className="p-6 rounded-xl border border-dashed flex flex-col items-center justify-center text-center space-y-2 py-8"
+      style={{
+        background: cardBg,
+        borderColor,
+      }}
+    >
+      <span
+        className="material-symbols-outlined text-[#6B6870] text-3xl"
+        style={{ fontVariationSettings: "'FILL' 0" }}
+      >
+        lock
+      </span>
+      <h4 className="text-xs font-semibold text-white uppercase tracking-wider">
+        No Active {categoryName} Metrics
+      </h4>
+      <p className="text-[11px] max-w-md leading-relaxed" style={{ color: subColor }}>
+        The active project focus does not have data or is not in the correct REIL phases for this category yet. Advance the project phase or enter corresponding financials to unlock.
+      </p>
+    </div>
+  );
+}
+
+interface SupplementalMetricDisplay {
+  id: string;
+  name: string;
+  category: 'financial' | 'operational' | 'asset' | 'marketing' | 'risk';
+  benchmark: string;
+  phaseLabel: string;
+  value: number | null;
+  format: (v: number) => string;
+  description: string;
+  status: "good" | "warn" | "bad" | "neutral";
+}
+
+function SupplementalCard({
+  metric,
+  isDark,
+}: {
+  metric: SupplementalMetricDisplay;
+  isDark: boolean;
+}) {
+  const headingColor = isDark ? "rgba(253,255,252,0.90)" : "#0d0a0b";
+  const mutedColor   = isDark ? "rgba(253,255,252,0.40)" : "rgba(69,73,85,0.55)";
+  const cardBg       = isDark ? "rgba(30,27,34,0.4)" : "#FFFFFF";
+  const borderColor  = isDark ? "rgba(230, 234, 240, 0.08)" : "rgba(33, 34, 38, 0.08)";
+
+  const hasData = metric.value !== null;
+  const displayVal = hasData ? metric.format(metric.value!) : "—";
+  const color = hasData ? statusColor(metric.status) : mutedColor;
+
+  return (
+    <div
+      className="p-4 rounded-xl border flex flex-col justify-between h-[135px] relative group transition-all duration-200"
+      style={{
+        background: cardBg,
+        borderColor,
+      }}
+    >
+      <div className="space-y-1">
+        <div className="flex items-center justify-between">
+          <span className="text-[11px] font-bold uppercase tracking-wider text-[#9E9DA0] truncate max-w-[80%]">
+            {metric.name}
+          </span>
+          <span
+            className="text-[9px] font-bold px-1.5 py-0.5 rounded-full"
+            style={{
+              background: isDark ? "rgba(255,255,255,0.05)" : "rgba(0,0,0,0.04)",
+              color: mutedColor,
+            }}
+          >
+            {metric.phaseLabel}
+          </span>
+        </div>
+        <p className="text-[9px] text-[#9E9DA0] leading-snug line-clamp-2">
+          {metric.description}
+        </p>
+      </div>
+
+      <div className="flex items-baseline justify-between mt-2 pt-2 border-t border-white/[0.03]">
+        <span
+          className="text-2xl font-bold font-mono tracking-tight"
+          style={{ color }}
+        >
+          {displayVal}
+        </span>
+        <span className="text-[10px] text-[#9E9DA0]" style={{ letterSpacing: "0.02em" }}>
+          Target: {metric.benchmark}
+        </span>
+      </div>
+    </div>
+  );
+}
+
+// ─── Supplemental Accordions (5-category collapsible groups) ──────────────────
+
+const SUPPLEMENTAL_CATEGORIES = [
+  {
+    key: 'financial' as const,
+    label: 'Financial Performance',
+    icon: 'account_balance',
+    description: 'Return multiples and payback horizon',
+  },
+  {
+    key: 'operational' as const,
+    label: 'Operational Efficiency',
+    icon: 'precision_manufacturing',
+    description: 'Tenant retention, maintenance, and budget discipline',
+  },
+  {
+    key: 'asset' as const,
+    label: 'Asset & Portfolio Management',
+    icon: 'domain',
+    description: 'Capital reserves and vacancy tracking',
+  },
+  {
+    key: 'marketing' as const,
+    label: 'Marketing & Sales',
+    icon: 'storefront',
+    description: 'Market positioning and listing velocity',
+  },
+  {
+    key: 'risk' as const,
+    label: 'Risk Management & Compliance',
+    icon: 'shield',
+    description: 'Leverage exposure and debt coverage thresholds',
+  },
+];
+
+function SupplementalAccordions({
+  metrics,
+  isDark,
+}: {
+  metrics: SupplementalMetricDisplay[];
+  isDark: boolean;
+}) {
+  const [openCategory, setOpenCategory] = useState<string | null>(null);
+
+  const headingColor = isDark ? "rgba(253,255,252,0.90)" : "#0d0a0b";
+  const mutedColor   = isDark ? "rgba(253,255,252,0.40)" : "rgba(69,73,85,0.55)";
+  const divider      = isDark ? "rgba(230, 234, 240, 0.08)" : "rgba(33, 34, 38, 0.08)";
+  const panelBg      = isDark ? "rgba(30,27,34,0.4)" : "#FFFFFF";
+
+  return (
+    <div className="space-y-2">
+      {SUPPLEMENTAL_CATEGORIES.map((cat) => {
+        const catMetrics = metrics.filter((m) => m.category === cat.key);
+        const isOpen = openCategory === cat.key;
+        const hasData = catMetrics.some((m) => m.value !== null);
+
+        return (
+          <div
+            key={cat.key}
+            className="rounded-xl border overflow-hidden transition-all duration-200"
+            style={{
+              borderColor: divider,
+              background: isOpen ? panelBg : 'transparent',
+            }}
+          >
+            {/* Accordion header */}
+            <button
+              onClick={() => setOpenCategory(isOpen ? null : cat.key)}
+              className="w-full flex items-center justify-between px-5 py-4 text-left transition-all duration-150 cursor-pointer hover:bg-white/[0.02]"
+            >
+              <div className="flex items-center gap-3">
+                <span
+                  className="material-symbols-outlined text-[18px]"
+                  style={{
+                    color: isOpen ? headingColor : mutedColor,
+                    fontVariationSettings: isOpen ? "'FILL' 1" : "'FILL' 0",
+                  }}
+                >
+                  {cat.icon}
+                </span>
+                <div>
+                  <h3
+                    className="text-[13px] font-semibold"
+                    style={{ color: isOpen ? headingColor : mutedColor }}
+                  >
+                    {cat.label}
+                  </h3>
+                  <p className="text-[10px] mt-0.5" style={{ color: mutedColor }}>
+                    {cat.description}
+                  </p>
+                </div>
+              </div>
+
+              <div className="flex items-center gap-3">
+                <span
+                  className="text-[10px] font-bold px-2 py-0.5 rounded-full"
+                  style={{
+                    background: isDark ? "rgba(255,255,255,0.05)" : "rgba(0,0,0,0.04)",
+                    color: hasData ? C.green : mutedColor,
+                  }}
+                >
+                  {catMetrics.filter((m) => m.value !== null).length}/{catMetrics.length}
+                </span>
+                <span
+                  className="material-symbols-outlined text-[16px] transition-transform duration-200"
+                  style={{
+                    color: mutedColor,
+                    transform: isOpen ? "rotate(180deg)" : "rotate(0deg)",
+                    fontVariationSettings: "'FILL' 0",
+                  }}
+                >
+                  expand_more
+                </span>
+              </div>
+            </button>
+
+            {/* Accordion body */}
+            {isOpen && (
+              <div className="px-5 pb-5">
+                {catMetrics.length === 0 ? (
+                  <InsufficientDataState categoryName={cat.label} isDark={isDark} />
+                ) : (
+                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+                    {catMetrics.map((m) => (
+                      <SupplementalCard key={m.id} metric={m} isDark={isDark} />
+                    ))}
+                  </div>
+                )}
+              </div>
+            )}
+          </div>
+        );
+      })}
+    </div>
+  );
+}
 
 export function KPIInsightsDashboard() {
   const projects = useProjectStore((s) => s.projects);
+  const currentProject = useProjectStore((s) => s.currentProject);
+  const setDeal = useProjectStore((s) => s.setDeal);
+  const clearDeal = useProjectStore((s) => s.clearDeal);
+
   const { theme } = useTheme();
   const isDark   = theme === "dark";
-  const ins      = usePortfolioInsights(projects);
-  const { snapshots } = usePortfolioMetricSnapshots("monthly", projects);
+
+  const [globalPhaseFilter, setGlobalPhaseFilter] = useState<'all' | 'Acquisition' | 'Fund' | 'Hold' | 'Exit'>('all');
+  const [globalStrategyFilter, setGlobalStrategyFilter] = useState<'all' | 'LTR' | 'STR'>('all');
+  const [isProjectDropdownOpen, setIsProjectDropdownOpen] = useState(false);
+
+  const filteredProjects = useMemo(() => {
+    return projects.filter(p => {
+      if (globalPhaseFilter !== 'all') {
+        const phaseNum = p.currentPhase ?? 1;
+        const phaseLabel = getPhaseName(phaseNum);
+        if (phaseLabel !== globalPhaseFilter) {
+          return false;
+        }
+      }
+      if (globalStrategyFilter !== 'all') {
+        const strategy = p.strategyType || '';
+        const isLTR = strategy.toUpperCase().includes('LONG') || strategy.toUpperCase() === 'LTR';
+        const isSTR = strategy.toUpperCase().includes('SHORT') || strategy.toUpperCase() === 'STR';
+        if (globalStrategyFilter === 'LTR' && !isLTR) return false;
+        if (globalStrategyFilter === 'STR' && !isSTR) return false;
+      }
+      return true;
+    });
+  }, [projects, globalPhaseFilter, globalStrategyFilter]);
+
+  const focusedProjects = useMemo(() => {
+    if (currentProject) {
+      return [currentProject];
+    }
+    return filteredProjects;
+  }, [currentProject, filteredProjects]);
+
+  const filteredProjectsForDropdown = filteredProjects;
+
+  useEffect(() => {
+    if (currentProject) {
+      const isValid = filteredProjects.some(p => p.id === currentProject.id);
+      if (!isValid) {
+        clearDeal();
+      }
+    }
+  }, [filteredProjects, currentProject, clearDeal]);
+
+  const ins = usePortfolioInsights(focusedProjects);
+  const { snapshots } = usePortfolioMetricSnapshots("monthly", focusedProjects);
 
   const headingColor = isDark ? "rgba(253,255,252,0.95)" : "#0d0a0b";
   const subColor     = isDark ? "rgba(253,255,252,0.42)" : "rgba(69,73,85,0.58)";
   const divider      = isDark ? "rgba(230, 234, 240, 0.12)" : "rgba(33, 34, 38, 0.12)";
 
-  // Overall health count
   const healthBadge = useMemo(() => {
     const checks = [
       ins.portfolioDSCR !== null  && ins.portfolioDSCR  >= 1.25,
@@ -1050,19 +1464,254 @@ export function KPIInsightsDashboard() {
     return { passing, total: checks.length };
   }, [ins]);
 
+  const supplementalMetrics = useMemo(() => {
+    if (focusedProjects.length === 0) {
+      return {
+        ltv: null,
+        debtYield: null,
+        equityMultiple: null,
+        breakEvenOccupancy: null,
+        capitalReserves: null,
+        paybackPeriod: null,
+        tenantTurnover: null,
+        leaseRenewal: null,
+        maintenancePerUnit: null,
+        budgetVariance: null,
+      };
+    }
+
+    const ltvVals: number[] = [];
+    const dyVals: number[] = [];
+    const emVals: number[] = [];
+    const beoVals: number[] = [];
+    const crVals: number[] = [];
+    const pbVals: number[] = [];
+    const ttVals: number[] = [];
+    const lrVals: number[] = [];
+    const mcVals: number[] = [];
+    const bvVals: number[] = [];
+
+    for (const p of focusedProjects) {
+      const ltvRes = computeLTVMetric(p);
+      if (ltvRes.value !== null && ltvRes.state !== 'n/a' && !isNaN(ltvRes.value)) ltvVals.push(ltvRes.value);
+
+      const dyRes = computeDebtYieldMetric(p);
+      if (dyRes.value !== null && dyRes.state !== 'n/a' && !isNaN(dyRes.value)) dyVals.push(dyRes.value);
+
+      const emRes = computeEquityMultipleMetric(p);
+      if (emRes.value !== null && emRes.state !== 'n/a' && !isNaN(emRes.value)) emVals.push(emRes.value);
+
+      const beoRes = computeBreakEvenOccupancyMetric(p);
+      if (beoRes.value !== null && beoRes.state !== 'n/a' && !isNaN(beoRes.value)) beoVals.push(beoRes.value);
+
+      const crRes = computeCapitalReservesMetric(p);
+      if (crRes.value !== null && crRes.state !== 'n/a' && !isNaN(crRes.value)) crVals.push(crRes.value);
+
+      const pbRes = computePaybackPeriodMetric(p);
+      if (pbRes.value !== null && pbRes.state !== 'n/a' && !isNaN(pbRes.value)) pbVals.push(pbRes.value);
+
+      const ttRes = computeTenantTurnoverMetric(p);
+      if (ttRes.value !== null && ttRes.state !== 'n/a' && !isNaN(ttRes.value)) ttVals.push(ttRes.value);
+
+      const lrRes = computeLeaseRenewalMetric(p);
+      if (lrRes.value !== null && lrRes.state !== 'n/a' && !isNaN(lrRes.value)) lrVals.push(lrRes.value);
+
+      const mcRes = computeMaintenanceCostPerUnitMetric(p);
+      if (mcRes.value !== null && mcRes.state !== 'n/a' && !isNaN(mcRes.value)) mcVals.push(mcRes.value);
+
+      const bvRes = computeBudgetVarianceMetric(p);
+      if (bvRes.value !== null && bvRes.state !== 'n/a' && !isNaN(bvRes.value)) bvVals.push(bvRes.value);
+    }
+
+    const avg = (arr: number[]) => arr.length > 0 ? arr.reduce((a, b) => a + b, 0) / arr.length : null;
+
+    return {
+      ltv: avg(ltvVals),
+      debtYield: avg(dyVals),
+      equityMultiple: avg(emVals),
+      breakEvenOccupancy: avg(beoVals),
+      capitalReserves: avg(crVals),
+      paybackPeriod: avg(pbVals),
+      tenantTurnover: avg(ttVals),
+      leaseRenewal: avg(lrVals),
+      maintenancePerUnit: avg(mcVals),
+      budgetVariance: avg(bvVals),
+    };
+  }, [focusedProjects]);
+
+  const supplementalDisplayList = useMemo(() => {
+    const data = supplementalMetrics;
+    const list: Omit<SupplementalMetricDisplay, 'status'>[] = [
+      {
+        id: 'EQUITY_MULTIPLE',
+        name: 'Equity Multiple',
+        category: 'financial',
+        benchmark: '≥ 2.0×',
+        phaseLabel: 'Hold / Exit',
+        value: data.equityMultiple,
+        format: (v) => `${v.toFixed(2)}×`,
+        description: 'Pairs with IRR to measure total return divided by initial capital invested.',
+      },
+      {
+        id: 'PAYBACK_PERIOD',
+        name: 'Payback Period',
+        category: 'financial',
+        benchmark: '≤ 10 yrs',
+        phaseLabel: 'Hold / Exit',
+        value: data.paybackPeriod,
+        format: (v) => `${v.toFixed(1)} yrs`,
+        description: 'Horizon when cumulative cash flow matches initial cash invested.',
+      },
+      {
+        id: 'TENANT_TURNOVER',
+        name: 'Tenant Turnover Rate',
+        category: 'operational',
+        benchmark: '≤ 15%',
+        phaseLabel: 'Hold',
+        value: data.tenantTurnover,
+        format: (v) => `${v.toFixed(1)}%`,
+        description: 'Calculates historical annual move-outs relative to total asset units.',
+      },
+      {
+        id: 'LEASE_RENEWAL',
+        name: 'Lease Renewal Rate',
+        category: 'operational',
+        benchmark: '≥ 75%',
+        phaseLabel: 'Hold',
+        value: data.leaseRenewal,
+        format: (v) => `${v.toFixed(1)}%`,
+        description: 'Percentage of expiring leases successfully renewed without unit turnover.',
+      },
+      {
+        id: 'MAINTENANCE_COST_PER_UNIT',
+        name: 'Maintenance / Unit',
+        category: 'operational',
+        benchmark: '≤ $1,800/yr',
+        phaseLabel: 'Hold',
+        value: data.maintenancePerUnit,
+        format: (v) => `$${Math.round(v).toLocaleString()}/yr`,
+        description: 'Standardized annual maintenance cost allocated per leasable unit.',
+      },
+      {
+        id: 'BUDGET_VARIANCE',
+        name: 'Budget Variance',
+        category: 'operational',
+        benchmark: '≤ 0%',
+        phaseLabel: 'Acquisition / Fund',
+        value: data.budgetVariance,
+        format: (v) => `${v > 0 ? '+' : ''}${v.toFixed(1)}%`,
+        description: 'Measures project construction actuals against budgeted numbers.',
+      },
+      {
+        id: 'CAPITAL_RESERVES',
+        name: 'CapEx Funded Reserves',
+        category: 'asset',
+        benchmark: '≥ 12 mo',
+        phaseLabel: 'Hold',
+        value: data.capitalReserves,
+        format: (v) => `${Math.round(v)} months`,
+        description: 'Months of monthly maintenance reserves currently covered by liquid capital.',
+      },
+      {
+        id: 'VACANCY',
+        name: 'Vacancy Rate',
+        category: 'asset',
+        benchmark: '≤ 7%',
+        phaseLabel: 'Acquisition / Hold',
+        value: ins.avgVacancyRate,
+        format: (v) => `${v.toFixed(1)}%`,
+        description: 'Percentage of time the property sits empty, uncollected, or between tenant turnover.',
+      },
+      {
+        id: 'PRICE_TO_RENT',
+        name: 'Price-to-Rent Ratio',
+        category: 'marketing',
+        benchmark: '15–20',
+        phaseLabel: 'Acquisition',
+        value: ins.priceToRent,
+        format: (v) => `${v.toFixed(1)}`,
+        description: 'Price-to-Rent Ratio compares home purchase prices to average rental rates.',
+      },
+      {
+        id: 'DOM',
+        name: 'Days on Market (DOM)',
+        category: 'marketing',
+        benchmark: '≤ 45 days',
+        phaseLabel: 'Acquisition / Exit',
+        value: ins.avgDOM,
+        format: (v) => `${Math.round(v)} days`,
+        description: 'Market timeline benchmark for initial acquisition or disposition.',
+      },
+      {
+        id: 'LTV',
+        name: 'Loan-to-Value (LTV)',
+        category: 'risk',
+        benchmark: '≤ 75%',
+        phaseLabel: 'Fund / Hold',
+        value: data.ltv,
+        format: (v) => `${v.toFixed(1)}%`,
+        description: 'Represents the lender risk framework relative to the current valuation.',
+      },
+      {
+        id: 'DEBT_YIELD',
+        name: 'Debt Yield',
+        category: 'risk',
+        benchmark: '≥ 10%',
+        phaseLabel: 'Fund / Hold',
+        value: data.debtYield,
+        format: (v) => `${v.toFixed(1)}%`,
+        description: 'Measures cash-on-cash yield for the debt stack, ignoring underwriting terms.',
+      },
+      {
+        id: 'BREAK_EVEN_OCCUPANCY',
+        name: 'Break-Even Occupancy',
+        category: 'risk',
+        benchmark: '≤ 75%',
+        phaseLabel: 'Hold',
+        value: data.breakEvenOccupancy,
+        format: (v) => `${v.toFixed(1)}%`,
+        description: 'Required utilization to cover operating expenses and mortgage debt service.',
+      },
+    ];
+
+    return list.map(item => {
+      let status: "good" | "warn" | "bad" | "neutral" = "neutral";
+      const v = item.value;
+      if (v !== null) {
+        if (item.id === 'EQUITY_MULTIPLE') status = v >= 2.0 ? "good" : v >= 1.5 ? "warn" : "bad";
+        else if (item.id === 'PAYBACK_PERIOD') status = v <= 8 ? "good" : v <= 12 ? "warn" : "bad";
+        else if (item.id === 'TENANT_TURNOVER') status = v <= 15 ? "good" : v <= 25 ? "warn" : "bad";
+        else if (item.id === 'LEASE_RENEWAL') status = v >= 75 ? "good" : v >= 60 ? "warn" : "bad";
+        else if (item.id === 'MAINTENANCE_COST_PER_UNIT') status = v <= 1500 ? "good" : v <= 2500 ? "warn" : "bad";
+        else if (item.id === 'BUDGET_VARIANCE') status = v <= 0 ? "good" : v <= 5 ? "warn" : "bad";
+        else if (item.id === 'CAPITAL_RESERVES') status = v >= 12 ? "good" : v >= 6 ? "warn" : "bad";
+        else if (item.id === 'VACANCY') status = v <= 5 ? "good" : v <= 8 ? "warn" : "bad";
+        else if (item.id === 'PRICE_TO_RENT') status = v < 15 ? "good" : v < 20 ? "warn" : "bad";
+        else if (item.id === 'DOM') status = v <= 45 ? "good" : v <= 75 ? "warn" : "bad";
+        else if (item.id === 'LTV') status = v <= 70 ? "good" : v <= 80 ? "warn" : "bad";
+        else if (item.id === 'DEBT_YIELD') status = v >= 10 ? "good" : v >= 8 ? "warn" : "bad";
+        else if (item.id === 'BREAK_EVEN_OCCUPANCY') status = v <= 70 ? "good" : v <= 80 ? "warn" : "bad";
+      }
+      return { ...item, status };
+    });
+  }, [supplementalMetrics, ins]);
+
+  const occupancyRate = useMemo(() => {
+    return ins.avgVacancyRate !== null ? 100 - ins.avgVacancyRate : null;
+  }, [ins.avgVacancyRate]);
+
   return (
     <div className="px-5 py-6 lg:px-8 lg:py-7 max-w-[1400px] mx-auto space-y-6">
 
-      {/* ── Page header ─────────────────────────────────────────────────────── */}
       <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4">
         <div>
           <h1
-            className="text-[26px] font-bold leading-none mb-1"
+            className="text-[26px] font-bold leading-none mb-1 font-hanken"
             style={{ color: headingColor, letterSpacing: "-0.025em" }}
           >
             Insights
           </h1>
-          <p className="text-[13px]" style={{ color: subColor }}>
+          <p className="text-[13px] font-hanken" style={{ color: subColor }}>
             {ins.projectCount > 0
               ? `Portfolio analytics across ${ins.projectCount} project${ins.projectCount !== 1 ? "s" : ""} — ${new Date().toLocaleDateString("en-US", { month: "long", year: "numeric" })}`
               : "Add projects to unlock portfolio-wide KPI analytics."}
@@ -1107,10 +1756,122 @@ export function KPIInsightsDashboard() {
         )}
       </div>
 
-      {ins.projectCount === 0 ? (
-        /* ── Empty state ──────────────────────────────────────────────────── */
+      {projects.length > 0 && (
         <div
-          className="rounded-xl flex flex-col items-center justify-center py-20 text-center"
+          className="p-4 rounded-xl border flex flex-wrap items-center justify-between gap-4 font-hanken"
+          style={{
+            background: isDark ? "rgba(255,255,255,0.01)" : "rgba(69,73,85,0.02)",
+            borderColor: divider,
+          }}
+        >
+          <div className="flex flex-wrap items-center gap-4">
+            <div className="flex items-center gap-2">
+              <span className="text-[10px] uppercase tracking-wider font-bold" style={{ color: subColor }}>Focus Mode:</span>
+              <div className="relative">
+                <button
+                  onClick={() => setIsProjectDropdownOpen(!isProjectDropdownOpen)}
+                  className="flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs font-light hover:text-white transition-all duration-200 cursor-pointer"
+                  style={{
+                    background: isDark ? "#161318" : "#FFFFFF",
+                    border: `1px solid ${divider}`,
+                    color: isDark ? "#C0BEC2" : "rgba(69,73,85,0.8)",
+                  }}
+                >
+                  <span className="max-w-[150px] truncate">{currentProject ? currentProject.propertyName : 'All Projects (Roll-up)'}</span>
+                  <span className="material-symbols-outlined text-[14px]" style={{ color: subColor }}>
+                    keyboard_arrow_down
+                  </span>
+                </button>
+                {isProjectDropdownOpen && (
+                  <div
+                    className="absolute left-0 mt-1 w-60 rounded-xl p-1.5 shadow-2xl z-30 space-y-0.5"
+                    style={{
+                      background: isDark ? "#161318" : "#FFFFFF",
+                      border: `1px solid ${divider}`,
+                    }}
+                  >
+                    <button
+                      onClick={() => {
+                        clearDeal();
+                        setIsProjectDropdownOpen(false);
+                      }}
+                      className="flex items-center justify-between w-full px-3 py-1.5 rounded-lg text-left text-xs hover:bg-white/5 cursor-pointer"
+                      style={{ color: isDark ? "#C0BEC2" : "rgba(69,73,85,0.8)" }}
+                    >
+                      <span>All Projects (Roll-up)</span>
+                      {!currentProject && (
+                        <span className="material-symbols-outlined text-[14px]" style={{ color: C.blue }}>
+                          check
+                        </span>
+                      )}
+                    </button>
+                    {filteredProjectsForDropdown.map((p) => (
+                      <button
+                        key={p.id}
+                        onClick={() => {
+                          setDeal(p);
+                          setIsProjectDropdownOpen(false);
+                        }}
+                        className="flex items-center justify-between w-full px-3 py-1.5 rounded-lg text-left text-xs hover:bg-white/5 cursor-pointer"
+                        style={{ color: isDark ? "#C0BEC2" : "rgba(69,73,85,0.8)" }}
+                      >
+                        <span className="truncate">{p.propertyName ?? p.name}</span>
+                        {currentProject?.id === p.id && (
+                          <span className="material-symbols-outlined text-[14px]" style={{ color: C.blue }}>
+                            check
+                          </span>
+                        )}
+                      </button>
+                    ))}
+                  </div>
+                )}
+              </div>
+            </div>
+
+            <div className="flex items-center gap-2">
+              <span className="text-[10px] uppercase tracking-wider font-bold" style={{ color: subColor }}>Phase:</span>
+              <select
+                value={globalPhaseFilter}
+                onChange={(e) => setGlobalPhaseFilter(e.target.value as any)}
+                className="text-xs rounded-lg px-3 py-1.5 focus:outline-none font-light cursor-pointer"
+                style={{
+                  background: isDark ? "#161318" : "#FFFFFF",
+                  border: `1px solid ${divider}`,
+                  color: isDark ? "#C0BEC2" : "rgba(69,73,85,0.8)",
+                }}
+              >
+                <option value="all">All Phases</option>
+                <option value="Acquisition">Acquisition</option>
+                <option value="Fund">Fund</option>
+                <option value="Hold">Hold</option>
+                <option value="Exit">Exit</option>
+              </select>
+            </div>
+
+            <div className="flex items-center gap-2">
+              <span className="text-[10px] uppercase tracking-wider font-bold" style={{ color: subColor }}>Strategy:</span>
+              <select
+                value={globalStrategyFilter}
+                onChange={(e) => setGlobalStrategyFilter(e.target.value as any)}
+                className="text-xs rounded-lg px-3 py-1.5 focus:outline-none font-light cursor-pointer"
+                style={{
+                  background: isDark ? "#161318" : "#FFFFFF",
+                  border: `1px solid ${divider}`,
+                  color: isDark ? "#C0BEC2" : "rgba(69,73,85,0.8)",
+                }}
+              >
+                <option value="all">All Strategies</option>
+                <option value="LTR">Long-Term Rental (LTR)</option>
+                <option value="STR">Short-Term Rental (STR)</option>
+              </select>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {ins.projectCount === 0 ? (
+        <div
+          className="rounded-xl flex flex-col items-center justify-center py-20 text-center font-hanken"
           style={{
             background: isDark ? "rgba(30,27,34,0.7)" : "#FFFFFF",
             border: `1px solid ${divider}`,
@@ -1141,149 +1902,90 @@ export function KPIInsightsDashboard() {
         </div>
       ) : (
         <>
-          {/* ── Section 1: Income Health ─────────────────────────────────── */}
-          <SectionLabel label="Income & Efficiency" isDark={isDark} />
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-            {/* NOI Gauge */}
+          {/* ══════════════════════════════════════════════════════════════════ */}
+          {/*  HERO TIER — The 10 Key Performance Indicators                   */}
+          {/* ══════════════════════════════════════════════════════════════════ */}
+
+          <SectionLabel label="The 10 Key Performance Indicators" isDark={isDark} />
+
+          {/* Row 1: NOI (gauge) · Cash Flow · Cap Rate (gauge) · CoC (gauge) */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+            {/* NOI */}
             <KPICard
               title="Net Operating Income"
               tooltipId="NOI"
               isDark={isDark}
+              value={ins.totalNOI !== null ? `$${Math.round(ins.totalNOI).toLocaleString()}/yr` : undefined}
               status={
                 ins.totalNOI === null ? "neutral" :
-                ins.totalNOI > 0     ? "good"    : "bad"
+                ins.totalNOI > 0      ? "good"    : "bad"
               }
-              statusLabel={ins.totalNOI !== null ? (ins.totalNOI > 0 ? "Profitable" : "Negative") : undefined}
             >
-              <div className="flex flex-col items-center gap-1">
+              <div className="flex justify-center py-2">
                 <SvgGauge
-                  value={ins.totalNOI !== null
-                    ? Math.min(100, Math.max(0, ((ins.totalNOI + 12000) / 24000) * 100))
-                    : 0}
-                  label={ins.totalNOI !== null
-                    ? (Math.abs(ins.totalNOI) >= 12000
-                      ? `$${(ins.totalNOI / 12000).toFixed(1)}K/mo`
-                      : `$${Math.round(ins.totalNOI / 12).toLocaleString()}/mo`)
-                    : "—"}
-                  sublabel="Annual NOI"
+                  value={ins.totalNOI !== null ? Math.min((ins.totalNOI / 50000) * 100, 100) : 0}
+                  label={ins.totalNOI !== null ? `$${Math.round(ins.totalNOI / 1000)}k` : "—"}
+                  sublabel="annual"
                   color={ins.totalNOI !== null && ins.totalNOI > 0 ? C.green : C.red}
                   isDark={isDark}
-                  size={160}
                 />
-                {ins.totalNOI !== null && (
-                  <p className="text-[12px] text-center" style={{ color: subColor }}>
-                    ${Math.abs(ins.totalNOI).toLocaleString()} / year
-                  </p>
-                )}
               </div>
             </KPICard>
 
-            {/* OER Donut */}
+            {/* Cash Flow */}
             <KPICard
-              title="Operating Expense Ratio"
-              tooltipId="OER"
+              title="Cash Flow"
+              tooltipId="CASH_FLOW"
               isDark={isDark}
               status={
-                ins.weightedOER === null ? "neutral" :
-                ins.weightedOER < 40    ? "good"    :
-                ins.weightedOER < 55    ? "warn"    : "bad"
-              }
-              statusLabel={
-                ins.weightedOER !== null
-                  ? (ins.weightedOER < 40 ? "Efficient" : ins.weightedOER < 55 ? "Moderate" : "High")
-                  : undefined
+                ins.totalCashFlow === null ? "neutral" :
+                ins.totalCashFlow >= 0     ? "good"    : "bad"
               }
             >
-              <OERDonut oer={ins.weightedOER} isDark={isDark} />
+              <CashFlowIndicator cashFlow={ins.totalCashFlow} isDark={isDark} />
             </KPICard>
 
-            {/* DSCR */}
-            <KPICard
-              title="Debt Service Coverage Ratio"
-              tooltipId="DSCR"
-              isDark={isDark}
-              status={
-                ins.portfolioDSCR === null ? "neutral" :
-                ins.portfolioDSCR >= 1.25  ? "good"    :
-                ins.portfolioDSCR >= 1.0   ? "warn"    : "bad"
-              }
-              statusLabel={
-                ins.portfolioDSCR !== null
-                  ? (ins.portfolioDSCR >= 1.25 ? "Safe" : ins.portfolioDSCR >= 1.0 ? "Tight" : "At Risk")
-                  : undefined
-              }
-            >
-              <DSCRIndicator dscr={ins.portfolioDSCR} isDark={isDark} />
-            </KPICard>
-          </div>
-
-          {/* ── Section 2: Return Metrics ────────────────────────────────── */}
-          <SectionLabel label="Return Metrics" isDark={isDark} />
-
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
             {/* Cap Rate */}
             <KPICard
               title="Capitalization Rate"
               tooltipId="CAP_RATE"
               isDark={isDark}
-              value={ins.weightedCapRate !== null ? `${ins.weightedCapRate.toFixed(1)}%` : undefined}
               status={
                 ins.weightedCapRate === null ? "neutral" :
-                ins.weightedCapRate >= 7     ? "good"    :
+                ins.weightedCapRate >= 6     ? "good"    :
                 ins.weightedCapRate >= 4     ? "warn"    : "bad"
               }
             >
               <PercentageGauge
                 value={ins.weightedCapRate}
                 min={0} max={15}
-                warnMin={4} goodMin={7}
+                goodMin={6} warnMin={4}
                 isDark={isDark}
               />
             </KPICard>
 
-            {/* Cash-on-Cash */}
+            {/* CoC */}
             <KPICard
               title="Cash-on-Cash Return"
               tooltipId="COC"
               isDark={isDark}
-              value={ins.weightedCoC !== null ? `${ins.weightedCoC.toFixed(1)}%` : undefined}
               status={
                 ins.weightedCoC === null ? "neutral" :
-                ins.weightedCoC >= 10    ? "good"    :
-                ins.weightedCoC >= 6     ? "warn"    : "bad"
+                ins.weightedCoC >= 8     ? "good"    :
+                ins.weightedCoC >= 5     ? "warn"    : "bad"
               }
             >
               <PercentageGauge
                 value={ins.weightedCoC}
-                min={-5} max={25}
-                warnMin={6} goodMin={10}
+                min={0} max={20}
+                goodMin={8} warnMin={5}
                 isDark={isDark}
               />
             </KPICard>
-
-            {/* ROI Trend */}
-            <KPICard
-              title="Return on Investment"
-              tooltipId="ROI"
-              isDark={isDark}
-              value={
-                snapshots.length > 0
-                  ? `${((snapshots[snapshots.length - 1].cashOnCashReturn ?? 0) + (snapshots[snapshots.length - 1].appreciation ?? 0)).toFixed(1)}%`
-                  : undefined
-              }
-              status={
-                snapshots.length === 0 ? "neutral" :
-                ((snapshots[snapshots.length - 1].cashOnCashReturn ?? 0) + (snapshots[snapshots.length - 1].appreciation ?? 0)) >= 10 ? "good" : "warn"
-              }
-            >
-              <ROITrendLineChart snapshots={snapshots} isDark={isDark} />
-            </KPICard>
           </div>
 
-          {/* ── Section 3: Market Intelligence ──────────────────────────── */}
-          <SectionLabel label="Market Intelligence" isDark={isDark} />
-
+          {/* Row 2: GRM · DSCR · IRR · Occupancy */}
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
             {/* GRM */}
             <KPICard
@@ -1299,38 +2001,142 @@ export function KPIInsightsDashboard() {
               <GRMCounter grm={ins.weightedGRM} isDark={isDark} />
             </KPICard>
 
-            {/* Price-to-Rent */}
+            {/* DSCR */}
             <KPICard
-              title="Price-to-Rent Ratio"
-              tooltipId="PRICE_TO_RENT"
+              title="Debt Service Coverage"
+              tooltipId="DSCR"
               isDark={isDark}
               status={
-                ins.priceToRent === null ? "neutral" :
-                ins.priceToRent < 15     ? "good"    :
-                ins.priceToRent < 20     ? "warn"    : "bad"
+                ins.portfolioDSCR === null ? "neutral" :
+                ins.portfolioDSCR >= 1.25  ? "good"    :
+                ins.portfolioDSCR >= 1.0   ? "warn"    : "bad"
               }
             >
-              <PriceToRentIndicator ptr={ins.priceToRent} isDark={isDark} />
+              <DSCRIndicator dscr={ins.portfolioDSCR} isDark={isDark} />
             </KPICard>
 
-            {/* Vacancy + DOM spanning 2 cols */}
-            <div className="sm:col-span-1 lg:col-span-2">
-              <KPICard
-                title="Vacancy Rate & Days on Market"
-                tooltipId="VACANCY"
+            {/* IRR */}
+            <KPICard
+              title="Internal Rate of Return"
+              tooltipId="IRR"
+              isDark={isDark}
+              value={ins.averageIRR !== null ? `${ins.averageIRR.toFixed(1)}%` : undefined}
+              status={
+                ins.averageIRR === null ? "neutral" :
+                ins.averageIRR >= 15    ? "good"    :
+                ins.averageIRR >= 10    ? "warn"    : "bad"
+              }
+            >
+              <div className="flex flex-col gap-2 py-2">
+                <span
+                  className="text-[2.8rem] font-bold leading-none tabular-nums"
+                  style={{
+                    color: ins.averageIRR !== null
+                      ? statusColor(ins.averageIRR >= 15 ? "good" : ins.averageIRR >= 10 ? "warn" : "bad")
+                      : (isDark ? "rgba(253,255,252,0.38)" : "rgba(69,73,85,0.5)"),
+                    letterSpacing: "-0.03em",
+                  }}
+                >
+                  {ins.averageIRR !== null ? `${ins.averageIRR.toFixed(1)}` : "—"}
+                  <span className="text-lg font-semibold" style={{ color: isDark ? "rgba(253,255,252,0.38)" : "rgba(69,73,85,0.5)" }}>%</span>
+                </span>
+                <p className="text-[11px]" style={{ color: isDark ? "rgba(253,255,252,0.38)" : "rgba(69,73,85,0.5)" }}>
+                  {ins.averageIRR !== null ? "Weighted avg across portfolio" : "Add exit data or hold period to compute IRR."}
+                </p>
+              </div>
+            </KPICard>
+
+            {/* Occupancy Rate */}
+            <KPICard
+              title="Occupancy Rate"
+              tooltipId="OCCUPANCY"
+              isDark={isDark}
+              value={occupancyRate !== null ? `${occupancyRate.toFixed(1)}%` : undefined}
+              status={
+                occupancyRate === null ? "neutral" :
+                occupancyRate >= 90    ? "good"    :
+                occupancyRate >= 80    ? "warn"    : "bad"
+              }
+            >
+              <PercentageGauge
+                value={occupancyRate}
+                min={0} max={100}
+                goodMin={90} warnMin={80}
                 isDark={isDark}
-                span={1}
-              >
-                <VacancyDOMStats
-                  vacancyRate={ins.avgVacancyRate}
-                  dom={ins.avgDOM}
-                  isDark={isDark}
-                />
-              </KPICard>
-            </div>
+              />
+            </KPICard>
           </div>
 
-          {/* ── Section 4: Data Coverage — REIL Input Map ───────────────── */}
+          {/* Row 3: OER (donut) · Appreciation · ROI Trend (line chart, spans 2) */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+            {/* OER */}
+            <KPICard
+              title="Expense Ratio (OER)"
+              tooltipId="OER"
+              isDark={isDark}
+              status={
+                ins.weightedOER === null ? "neutral" :
+                ins.weightedOER < 40     ? "good"    :
+                ins.weightedOER < 55     ? "warn"    : "bad"
+              }
+            >
+              <OERDonut oer={ins.weightedOER} isDark={isDark} />
+            </KPICard>
+
+            {/* Appreciation */}
+            <KPICard
+              title="Long-Term Appreciation"
+              tooltipId="APPRECIATION"
+              isDark={isDark}
+              value={ins.appreciationRate !== null ? `${ins.appreciationRate.toFixed(1)}%/yr` : undefined}
+              status={
+                ins.appreciationRate === null ? "neutral" :
+                ins.appreciationRate >= 3     ? "good"    :
+                ins.appreciationRate >= 1     ? "warn"    : "bad"
+              }
+            >
+              <div className="flex flex-col gap-2 py-2">
+                <span
+                  className="text-[2.8rem] font-bold leading-none tabular-nums"
+                  style={{
+                    color: ins.appreciationRate !== null
+                      ? statusColor(ins.appreciationRate >= 3 ? "good" : ins.appreciationRate >= 1 ? "warn" : "bad")
+                      : (isDark ? "rgba(253,255,252,0.38)" : "rgba(69,73,85,0.5)"),
+                    letterSpacing: "-0.03em",
+                  }}
+                >
+                  {ins.appreciationRate !== null ? `${ins.appreciationRate.toFixed(1)}` : "—"}
+                  <span className="text-lg font-semibold" style={{ color: isDark ? "rgba(253,255,252,0.38)" : "rgba(69,73,85,0.5)" }}>%</span>
+                </span>
+                <p className="text-[11px]" style={{ color: isDark ? "rgba(253,255,252,0.38)" : "rgba(69,73,85,0.5)" }}>
+                  {ins.appreciationRate !== null ? "Annualized CAGR" : "Needs current value + purchase price."}
+                </p>
+              </div>
+            </KPICard>
+
+            {/* ROI Trend spanning 2 cols */}
+            <KPICard
+              title="Portfolio ROI Trend"
+              tooltipId="ROI"
+              isDark={isDark}
+              span={2}
+            >
+              <ROITrendLineChart snapshots={snapshots} isDark={isDark} />
+            </KPICard>
+          </div>
+
+          {/* ══════════════════════════════════════════════════════════════════ */}
+          {/*  SUPPLEMENTAL TIER — 5-category accordions                       */}
+          {/* ══════════════════════════════════════════════════════════════════ */}
+
+          <SectionLabel label="Supplemental Metrics" isDark={isDark} />
+
+          <SupplementalAccordions
+            metrics={supplementalDisplayList}
+            isDark={isDark}
+          />
+
+          {/* ── Data Coverage — REIL Input Map ───────────────────────────── */}
           <SectionLabel label="Formula → Input Mapping" isDark={isDark} />
           <DataCoveragePanel projects={projects} ins={ins} isDark={isDark} />
         </>

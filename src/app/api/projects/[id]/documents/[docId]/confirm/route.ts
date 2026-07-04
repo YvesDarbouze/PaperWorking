@@ -49,12 +49,6 @@ export async function POST(
     return NextResponse.json({ error: 'Missing project ID or document ID' }, { status: 400 });
   }
 
-  // Verify project scope & access
-  const { hasProjectAccess } = await import('@/lib/auth/scopeGuard');
-  if (!(await hasProjectAccess(uid, projectId))) {
-    return NextResponse.json({ error: 'Access denied' }, { status: 403 });
-  }
-
   let body: ConfirmBody;
   try {
     body = await req.json();

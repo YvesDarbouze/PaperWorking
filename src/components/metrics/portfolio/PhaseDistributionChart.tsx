@@ -25,9 +25,9 @@ export interface PhaseDistributionChartProps {
 }
 
 const PHASE_META: Record<number, { label: string; color: string; textColor: string }> = {
-  1: { label: 'Find & Fund',      color: '#CCCCCC', textColor: '#595959' },
-  2: { label: 'Acquisition',      color: '#A5A5A5', textColor: '#0D0D0D' },
-  3: { label: 'Hold & Rehab',     color: '#595959', textColor: '#FFFFFF' },
+  1: { label: 'Acquisition',      color: '#A5A5A5', textColor: '#0D0D0D' },
+  2: { label: 'Fund',             color: '#7A9EAA', textColor: '#FFFFFF' },
+  3: { label: 'Hold',             color: '#595959', textColor: '#FFFFFF' },
   4: { label: 'Exit',             color: '#0D0D0D', textColor: '#FFFFFF' },
 };
 

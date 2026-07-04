@@ -84,7 +84,7 @@ export function createDefaultState(): MockState {
 /**
  * Intercepts network calls to provide a reliable, hermetic testing environment
  */
-export async function setupMocks(page: Page, state: MockState, options?: { allowAuthRefreshes?: boolean }) {
+export async function setupMocks(page: Page, state: MockState, options?: { allowAuthRefreshes?: boolean; allowFirestore?: boolean }) {
   // Set session cookie to bypass middleware redirect.
   // __e2e_test=1 disables OnboardingRedirectGuard client-side redirect so
   // Playwright can navigate dashboard routes without Firebase auth state.
@@ -104,36 +104,38 @@ export async function setupMocks(page: Page, state: MockState, options?: { allow
   ]);
 
   // 1. Intercept Firebase Client SDK Auth token handshakes & session checks
-  await page.route('**/identitytoolkit/v3/relyingparty/verifyPassword**', async (route) => {
-    await route.fulfill({
-      status: 200,
-      contentType: 'application/json',
-      body: JSON.stringify({
-        localId: 'user_123',
-        email: 'testuser@paperworking.com',
-        displayName: 'Test User',
-        idToken: 'mock_token_123',
-        registered: true,
-      }),
-    });
-  });
-
-  await page.route('/api/auth/session', async (route) => {
-    if (route.request().method() === 'DELETE') {
-      await route.fulfill({ status: 200, json: { success: true } });
-    } else {
+  if (!options?.allowAuthRefreshes) {
+    await page.route('**/identitytoolkit/v3/relyingparty/verifyPassword**', async (route) => {
       await route.fulfill({
         status: 200,
-        json: {
-          user: {
-            uid: 'user_123',
-            email: 'testuser@paperworking.com',
-            displayName: 'Test User',
-          },
-        },
+        contentType: 'application/json',
+        body: JSON.stringify({
+          localId: 'user_123',
+          email: 'testuser@paperworking.com',
+          displayName: 'Test User',
+          idToken: 'mock_token_123',
+          registered: true,
+        }),
       });
-    }
-  });
+    });
+
+    await page.route('/api/auth/session', async (route) => {
+      if (route.request().method() === 'DELETE') {
+        await route.fulfill({ status: 200, json: { success: true } });
+      } else {
+        await route.fulfill({
+          status: 200,
+          json: {
+            user: {
+              uid: 'user_123',
+              email: 'testuser@paperworking.com',
+              displayName: 'Test User',
+            },
+          },
+        });
+      }
+    });
+  }
 
   // 2. Mock User Profile / Entitlements Check
   await page.route('/api/entitlements/**', async (route) => {
@@ -433,11 +435,13 @@ export async function setupMocks(page: Page, state: MockState, options?: { allow
     });
   }
 
-  // 15. Absorb Firestore gRPC-web calls — return empty responses so onSnapshot listeners
-  //     see "no data" and don't trigger profile-driven redirects.
-  await page.route('**/firestore.googleapis.com/**', async (route) => {
-    await route.abort('failed');
-  });
+  if (!options?.allowFirestore) {
+    // 15. Absorb Firestore gRPC-web calls — return empty responses so onSnapshot listeners
+    //     see "no data" and don't trigger profile-driven redirects.
+    await page.route('**/firestore.googleapis.com/**', async (route) => {
+      await route.abort('failed');
+    });
+  }
 }
 
 /**

@@ -82,9 +82,8 @@ function usePortfolioKPIs(projects: Project[]): PortfolioKPIs {
 
       // NOI — rental / hold-phase projects only
       const isRental =
-        p.strategyType === "Rent" ||
-        p.strategyType === "Buy & Hold" ||
-        (p.currentPhase ?? 1) === 4;
+        (p.strategyType === "Rent" || p.strategyType === "Buy & Hold") &&
+        ((p.currentPhase ?? 1) === 3 || (p.currentPhase ?? 1) === 4);
 
       if (isRental) {
         try {
@@ -168,8 +167,8 @@ function fmtPct(n: number | null): string {
 function tokens(isDark: boolean) {
   return {
     heading:    isDark ? "rgba(253,255,252,0.95)" : "#0d0a0b",
-    subtext:    isDark ? "rgba(253,255,252,0.42)" : "rgba(69,73,85,0.58)",
-    muted:      isDark ? "rgba(253,255,252,0.28)" : "rgba(69,73,85,0.42)",
+    subtext:    isDark ? "rgba(253,255,252,0.70)" : "rgba(55,59,69,0.80)",
+    muted:      isDark ? "rgba(253,255,252,0.58)" : "rgba(55,59,69,0.72)",
     divider:    isDark ? "rgba(230, 234, 240, 0.12)" : "rgba(33, 34, 38, 0.12)",
     link:       "#3279F9",
     panelBg:    isDark
@@ -1097,8 +1096,15 @@ export function CommandCenter() {
   const kpis     = usePortfolioKPIs(projects);
   const { theme } = useTheme();
   const isDark    = theme === "dark";
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => { setMounted(true); }, []);
+
   const t         = tokens(isDark);
   const [activeTab, setActiveTab] = useState<'overview' | 'assets' | 'transactions' | 'insights'>('overview');
+
+  if (!mounted) {
+    return <div className="p-8 animate-pulse h-screen" style={{ background: isDark ? "#0d0a0b" : "#FDFFFC" }} />;
+  }
 
   const irrVal = fmtPct(kpis.irr);
   const emVal  = kpis.equityMultiple !== null ? kpis.equityMultiple.toFixed(2) : "—";
@@ -1106,6 +1112,20 @@ export function CommandCenter() {
   const noiVal = kpis.totalNOI !== null ? fmtCompact(kpis.totalNOI) : "—";
   const cfVal  = kpis.portfolioCashFlow !== null ? fmtCompact(kpis.portfolioCashFlow) : "—";
   const cfNeg  = kpis.portfolioCashFlow !== null && kpis.portfolioCashFlow < 0;
+
+  // Derive caution projects for Project Health badge
+  const cautionProjects = useMemo(() => {
+    return projects.filter(p => {
+      const f = p.financials;
+      if (!f) return false;
+      const purchasePrice = f.purchasePrice ?? f.targetPrice ?? f.targetPurchasePrice ?? 0;
+      const propValue = f.estimatedCurrentValue ?? f.estimatedARV ?? purchasePrice;
+      const ltvVal = propValue > 0 ? ((f.loanAmount ?? 0) / propValue) * 100 : 0;
+      const derived = deriveAllMetrics(f, undefined, p.strategyType, p.currentPhase);
+      const dscrVal = derived.dscr;
+      return ltvVal > 80 || (dscrVal !== null && dscrVal < 1.15);
+    });
+  }, [projects]);
 
   return (
     <div className="w-full min-h-full">
@@ -1144,6 +1164,25 @@ export function CommandCenter() {
                   Live
                 </span>
               </span>
+
+              {/* Project Health pulse badge */}
+              {cautionProjects.length > 0 && (
+                <Link
+                  href="/dashboard/insights"
+                  className="flex items-center gap-1.5 px-2 py-0.5 rounded-full text-[10px] font-bold tracking-wide uppercase transition-all duration-150 active:scale-95 ml-2 cursor-pointer"
+                  style={{
+                    background: "rgba(240,101,67,0.15)",
+                    border: "1px solid rgba(240,101,67,0.3)",
+                    color: "#F06543",
+                  }}
+                >
+                  <span className="relative flex h-1.5 w-1.5">
+                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#F06543] opacity-75" />
+                    <span className="relative inline-flex rounded-full h-1.5 w-1.5 bg-[#F06543]" />
+                  </span>
+                  {cautionProjects.length} Caution
+                </Link>
+              )}
             </div>
             <p className="text-[13px]" style={{ color: t.subtext }}>
               {kpis.activeCount > 0

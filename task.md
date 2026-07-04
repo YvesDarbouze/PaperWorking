@@ -1,0 +1,16 @@
+- [x] P0-3: permits pure stub Socrata integration
+  - [x] Implement normalized jurisdiction mapping in `permitTrackerApi.ts`
+  - [x] Integrate `lookupPermit` into `syncPermitsFromMunicipality` in `permitTrackerApi.ts`
+  - [x] Run verification tests and verify TypeScript safety
+- [x] Phase 1 - P0 Ship Blockers Verification
+  - [x] ESignAction (P0-2) real DocuSign/mock integration and authentication checks
+  - [x] AnalyticsWidget (P0-3) real projects aggregation check
+  - [x] Admin Panel (P0-1) real Firestore/Stripe check
+  - [x] Admin Marketplace (P0-4) CSV export & Initiate Audit action check
+  - [x] Add ESign Provider unit test suite
+  - [x] Verify typesafety and check Jest test suite (283/283 green)
+- [x] Phase 2 - P1 Quick Wins
+  - [x] LenderPackagePdf (P1-9) route figures through @metrics, drop fake async
+  - [x] address.ts (P1-10) set google places as default address provider
+  - [x] Add Address Provider and LenderPackagePdf unit test suites
+  - [x] Verify typesafety and check Jest test suite (288/288 green)

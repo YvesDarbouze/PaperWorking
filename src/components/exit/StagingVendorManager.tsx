@@ -70,7 +70,7 @@ export default function StagingVendorManager() {
     setVendors([
       ...vendors,
       {
-        id: Math.random().toString(36).slice(2, 8),
+        id: crypto.randomUUID(),
         name: '',
         type: 'Staging Company',
         phone: '',

@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { requireAuth, isAuthError } from '@/lib/firebase-admin/auth-guard';
 
 /**
  * GET /api/map-tile?lat=<lat>&lng=<lng>&zoom=<zoom>&w=<w>&h=<h>
@@ -12,6 +13,9 @@ export const dynamic = 'force-dynamic';
 const PLACES_API_KEY = process.env.GOOGLE_PLACES_API_KEY;
 
 export async function GET(request: NextRequest) {
+  const auth = await requireAuth(request);
+  if (isAuthError(auth)) return auth;
+
   const { searchParams } = request.nextUrl;
 
   const lat  = parseFloat(searchParams.get('lat')  ?? '');

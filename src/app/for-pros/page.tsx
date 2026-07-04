@@ -4,10 +4,7 @@ import {
   ArrowRight,
   Shield,
   Zap,
-  Users,
-  TrendingUp,
   CheckCircle,
-  Star,
   MapPin,
 } from 'lucide-react';
 
@@ -19,11 +16,11 @@ import {
 export const metadata: Metadata = {
   title: 'For Professionals · PaperWorking',
   description:
-    'Join PaperWorking\'s vendor marketplace and get leads from real estate investors exactly when they need your services. Inspectors, attorneys, contractors, appraisers, and more.',
+    'PaperWorking connects real estate professionals with investors at the milestone that needs your trade. Milestone-matched leads, local by default, quotes in context.',
   openGraph: {
     title: 'For Professionals · PaperWorking',
     description:
-      'Get real estate investor leads delivered to your inbox. Sign up for PaperWorking\'s vendor marketplace.',
+      'Get connected to real estate investors near you at the moment they need your service, inside the workspace where their Projects live.',
     type: 'website',
   },
 };
@@ -42,21 +39,21 @@ const VENDOR_TYPES = [
 const VALUE_PROPS = [
   {
     icon: Zap,
-    title: 'Leads When They Need You',
+    title: 'Milestone-Matched Leads',
     description:
-      'Investors get matched to your specialty and service area at the exact moment they need to hire — during their deal lifecycle.',
+      'Surface to investors when their Project timeline calls for your trade.',
+  },
+  {
+    icon: MapPin,
+    title: 'Local by Default',
+    description:
+      'Reach investors working Deals in your service area.',
   },
   {
     icon: Shield,
-    title: 'Qualified Projects Only',
+    title: 'Quotes in Context',
     description:
-      'Every lead comes from an investor actively working a deal on PaperWorking — no cold calls, no tire kickers.',
-  },
-  {
-    icon: TrendingUp,
-    title: 'Grow Your Pipeline',
-    description:
-      'Your profile is surfaced contextually inside investor workspaces, so you\'re discovered at the right phase of their project.',
+      'Receive and respond to quote requests inside the Project, with full bidirectional sync.',
   },
 ];
 
@@ -81,24 +78,7 @@ const TIERS = [
   },
 ];
 
-const TESTIMONIALS = [
-  {
-    name: 'Marcus T.',
-    role: 'Home Inspector',
-    location: 'Miami, FL',
-    quote:
-      'I get 8-12 qualified leads per month from investors who are ready to book. Best marketing spend I have.',
-    rating: 5,
-  },
-  {
-    name: 'Elena R.',
-    role: 'RE Attorney',
-    location: 'Houston, TX',
-    quote:
-      'The leads come in with project context — I know the deal phase, timeline, and what they need before I even call.',
-    rating: 5,
-  },
-];
+/* Testimonials removed — Honesty Rule: no fabricated quotes or lead counts. */
 
 export default function ForProsPage() {
   return (
@@ -142,14 +122,18 @@ export default function ForProsPage() {
           For Real Estate Professionals
         </div>
         <h1 className="text-5xl md:text-7xl font-bold tracking-tight leading-[1.1] mb-6">
-          Leads exactly when
+          Investors Need You at
           <br />
-          <span className="text-[#454955]">investors need you</span>
+          <span className="text-[#454955]">Exactly the Right Moment. Be There.</span>
         </h1>
         <p className="text-lg md:text-xl text-[#9E9DA0] max-w-2xl mx-auto mb-10 leading-relaxed">
-          PaperWorking connects inspectors, attorneys, contractors, and other RE
-          professionals with investors at the exact moment they need to hire —
-          during their active deals.
+          PaperWorking&rsquo;s project management tools know when an investor hits the
+          milestone that needs your trade — inspection, rehab, staging, closing.
+          Subscribe as a Vendor and get connected to real estate investors near
+          you at the moment they need your service, inside the same workspace
+          where their Projects live. The same way conversations happen on social
+          platforms, PaperWorking lets you engage serious investors in your area
+          — with context, not cold calls.
         </p>
         <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
           <Link
@@ -260,43 +244,7 @@ export default function ForProsPage() {
         </div>
       </section>
 
-      {/* ── Social Proof ── */}
-      <section className="max-w-6xl mx-auto px-6 py-24">
-        <h2 className="text-3xl font-bold text-center mb-12">
-          Trusted by RE professionals
-        </h2>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-4xl mx-auto">
-          {TESTIMONIALS.map((t) => (
-            <div
-              key={t.name}
-              className="glass-card rounded-xl border border-white/[0.06] p-8"
-            >
-              <div className="flex items-center gap-1 mb-4">
-                {Array.from({ length: t.rating }).map((_, i) => (
-                  <Star
-                    key={i}
-                    className="w-4 h-4 fill-amber-400 text-amber-400"
-                  />
-                ))}
-              </div>
-              <p className="text-[#C0BEC2] leading-relaxed mb-6 italic">
-                &ldquo;{t.quote}&rdquo;
-              </p>
-              <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-full bg-[#454955]/10 border border-[#454955]/20 flex items-center justify-center text-[#454955] font-bold text-sm">
-                  {t.name.charAt(0)}
-                </div>
-                <div>
-                  <p className="text-sm font-bold">{t.name}</p>
-                  <p className="text-xs text-[#9E9DA0] flex items-center gap-1">
-                    {t.role} · <MapPin className="w-3 h-3" /> {t.location}
-                  </p>
-                </div>
-              </div>
-            </div>
-          ))}
-        </div>
-      </section>
+      {/* Social Proof section removed — Honesty Rule: fabricated testimonials prohibited. */}
 
       {/* ── Pricing ── */}
       <section id="pricing" className="border-y border-white/5 bg-white/[0.01]">
@@ -364,11 +312,11 @@ export default function ForProsPage() {
       {/* ── Final CTA ── */}
       <section className="max-w-6xl mx-auto px-6 py-24 text-center">
         <h2 className="text-3xl md:text-4xl font-bold mb-6">
-          Ready to grow your pipeline?
+          Ready to connect with serious investors?
         </h2>
         <p className="text-[#9E9DA0] max-w-xl mx-auto mb-10">
-          Join hundreds of real estate professionals already getting leads
-          through PaperWorking.
+          Subscribe as a Vendor and get milestone-matched connections to
+          real estate investors in your area.
         </p>
         <Link
           href="/register?type=vendor"

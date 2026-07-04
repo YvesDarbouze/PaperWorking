@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useRef, useCallback } from 'react';
+import { useState, useRef, useCallback, useMemo } from 'react';
 import Link from 'next/link';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
@@ -150,6 +150,15 @@ export default function SupportPage() {
 
   /* ── FAQ ──────────────────────────────────────────────── */
   const [openFaq, setOpenFaq] = useState<string | null>(null);
+  const [faqFilter, setFaqFilter] = useState('');
+
+  const filteredFaqs = useMemo(() => {
+    const lf = faqFilter.toLowerCase().trim();
+    if (!lf) return SUPPORT_FAQS;
+    return SUPPORT_FAQS.filter(
+      (f) => f.question.toLowerCase().includes(lf) || f.answer.toLowerCase().includes(lf)
+    );
+  }, [faqFilter]);
 
   /* ── All systems check ────────────────────────────────── */
   const allOk = SYSTEM_STATUS.every((s) => s.status === 'operational');
@@ -524,15 +533,43 @@ export default function SupportPage() {
           viewport={{ once: true, margin: '-40px' }}
           variants={stagger}
         >
-          <motion.div variants={fadeUp} className="mb-10 text-center">
+          <motion.div variants={fadeUp} className="mb-8 text-center">
             <p className="font-jetbrains text-[10px] uppercase tracking-[0.1em] text-primary/50 mb-1.5">Before you email us</p>
             <h2 className="text-[20px] md:text-[22px] font-bold tracking-[-0.02em] text-on-surface">
               Frequently asked questions
             </h2>
           </motion.div>
 
+          {/* FAQ search / filter */}
+          <motion.div variants={fadeUp} className="mb-6">
+            <div className="relative">
+              <span
+                className="absolute left-3.5 top-1/2 -translate-y-1/2 material-symbols-outlined text-[18px] text-on-surface-variant/30 pointer-events-none"
+                style={{ fontVariationSettings: "'FILL' 0, 'wght' 300" }}
+              >
+                search
+              </span>
+              <input
+                type="text"
+                placeholder="Filter questions…"
+                value={faqFilter}
+                onChange={(e) => { setFaqFilter(e.target.value); setOpenFaq(null); }}
+                className="w-full pl-10 pr-4 py-3 rounded-xl bg-surface-container-low/40 border border-white/8
+                  text-[13px] text-on-surface placeholder:text-on-surface-variant/30
+                  focus:outline-none focus:border-primary/30 focus:ring-1 focus:ring-primary/20 transition-all duration-200"
+              />
+            </div>
+          </motion.div>
+
+          {/* Accordion */}
           <motion.div variants={fadeUp} className="space-y-3">
-            {SUPPORT_FAQS.map((faq) => {
+            {filteredFaqs.length === 0 && (
+              <div className="text-center py-8">
+                <span className="material-symbols-outlined text-[28px] text-on-surface-variant/20 mb-2 block">search_off</span>
+                <p className="text-[13px] text-on-surface-variant/40">No questions match &ldquo;{faqFilter}&rdquo;</p>
+              </div>
+            )}
+            {filteredFaqs.map((faq) => {
               const isOpen = openFaq === faq.id;
               return (
                 <details
@@ -564,6 +601,69 @@ export default function SupportPage() {
                 </details>
               );
             })}
+          </motion.div>
+        </motion.div>
+      </section>
+
+      {/* ══════════════════════════════════════════════════
+          § 5b. DATA POINTS WE TRACK — 10 canonical KPIs
+          ══════════════════════════════════════════════════ */}
+      <section className="max-w-3xl mx-auto px-5 md:px-8 pb-16 md:pb-20">
+        <motion.div
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true, margin: '-40px' }}
+          variants={stagger}
+        >
+          <motion.div variants={fadeUp} className="mb-4 text-center">
+            <p className="font-jetbrains text-[10px] uppercase tracking-[0.1em] text-primary/50 mb-1.5">Metrics that matter</p>
+            <h2 className="text-[20px] md:text-[22px] font-bold tracking-[-0.02em] text-on-surface mb-4">
+              Data Points We Track
+            </h2>
+            <p className="text-[14px] leading-[24px] text-on-surface-variant max-w-xl mx-auto">
+              Do you know what your NOI, DSCR, or cash-on-cash return is right now? Your portfolio does. PaperWorking just makes it visible.
+            </p>
+          </motion.div>
+
+          <motion.div variants={fadeUp} className="mt-8 space-y-2">
+            {[
+              { name: 'Net Operating Income (NOI)',            tagline: 'Instant NOI. Zero Formulas. Total Control.',              anchor: 'noi' },
+              { name: 'Cash Flow',                            tagline: 'Your Cash Flow. Automated. Visualized. Certain.',         anchor: 'cash-flow' },
+              { name: 'Cap Rate',                             tagline: 'See the Asset\u2019s Raw Muscle. No Financing Tricks.',    anchor: 'cap-rate' },
+              { name: 'Cash-on-Cash Return',                  tagline: 'Your Real Cash Yield. Live. Visual. Certain.',            anchor: 'coc' },
+              { name: 'Gross Rent Multiplier (GRM)',           tagline: 'Compare Properties Instantly.',                           anchor: 'grm' },
+              { name: 'Debt Service Coverage Ratio (DSCR)',    tagline: 'Your DSCR. Automated. Fundable. Certain.',               anchor: 'dscr' },
+              { name: 'Internal Rate of Return (IRR)',         tagline: 'Your True Return. Time-Weighted. Undeniable.',            anchor: 'irr' },
+              { name: 'Occupancy Rate',                       tagline: 'Every Vacant Day Has a Price Tag.',                       anchor: 'occupancy' },
+              { name: 'Expense Ratio',                        tagline: 'Find the Leak Before It Sinks the Margin.',              anchor: 'expense-ratio' },
+              { name: 'Long-Term Appreciation',               tagline: 'The Return You Earn While Holding.',                      anchor: 'appreciation' },
+            ].map((kpi, idx) => (
+              <Link
+                key={kpi.anchor}
+                href={`/#metrics-${kpi.anchor}`}
+                className="flex items-center gap-4 px-5 py-4 rounded-xl glass-panel border border-white/8
+                  hover:border-primary/20 hover:bg-primary/3 transition-all duration-200 group"
+              >
+                <span className="flex-shrink-0 w-7 h-7 rounded-lg bg-primary/10 border border-primary/15
+                  flex items-center justify-center text-[11px] font-bold text-primary tabular-nums">
+                  {idx + 1}
+                </span>
+                <div className="flex-1 min-w-0">
+                  <div className="text-[14px] font-semibold text-on-surface leading-tight group-hover:text-primary transition-colors duration-200">
+                    {kpi.name}
+                  </div>
+                  <div className="text-[12px] text-on-surface-variant/60 mt-0.5 truncate">
+                    {kpi.tagline}
+                  </div>
+                </div>
+                <span
+                  className="material-symbols-outlined flex-shrink-0 text-[16px] text-on-surface-variant/20 group-hover:text-primary/50 transition-colors duration-200"
+                  style={{ fontVariationSettings: "'FILL' 0, 'wght' 300" }}
+                >
+                  arrow_forward
+                </span>
+              </Link>
+            ))}
           </motion.div>
         </motion.div>
       </section>

@@ -8,7 +8,7 @@
 ## 1. Product Overview
 
 - **One-liner:** PaperWorking is the operating system for real estate investors — tracking every dollar, every document, and every deadline from acquisition to exit.
-- **What it does:** Replaces the spreadsheet chaos that most REI operators live with. Covers the full deal lifecycle — Acquisition, Purchase, Hold/Rehab, and Exit — with financial tracking, team permissions, vendor management, and CPA-ready reporting baked in.
+- **What it does:** Replaces the spreadsheet chaos that most REI operators live with. Covers the full deal lifecycle — Acquisition, Fund, Hold, and Exit — with financial tracking, team permissions, vendor management, and CPA-ready reporting baked in.
 - **Product category:** Real estate investment management software
 - **Product type:** Vertical SaaS (B2B)
 - **Business model:** Subscription — Individual, Team, and Vendor tiers. 14-day free trial, no credit card required.
@@ -64,7 +64,7 @@
 ## 6. Differentiation
 
 - **Key differentiators:**
-  1. Full lifecycle coverage (Acquisition → Purchase → Hold → Exit) — not just one phase
+  1. Full lifecycle coverage (Acquisition → Fund → Hold → Exit) — not just one phase
   2. Built-in financial tracking that produces CPA-ready outputs
   3. Role-based access for investors, contractors, and accountants — each in their lane
   4. Vendor portal with milestone-based payment approval

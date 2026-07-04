@@ -25,7 +25,6 @@ export interface UserProfile {
   personalOrganizationId: string; // The user's default "Me" workspace
   organizationId?: string; // DEPRECATED: Transitioning to personalOrganizationId
   memberships?: Record<string, OrgRole | string>; // Map of tenant ID to role
-  membershipScopes?: Record<string, { isScoped: boolean; scopedProjectIds: string[] }>; // Map of tenant ID to project scopes
 
   /* ── Subscription ── */
   subscriptionPlan: SubscriptionPlan;

@@ -4,7 +4,9 @@ import {
   RentCastPropertyProvider,
   AttomPropertyProvider,
   MashvisorPropertyProvider,
+  UnavailablePropertyProvider,
 } from "../lib/providers/property";
+import { RentCastClient } from "../lib/providers/rentcast/client";
 
 jest.mock("../lib/providers/rentcast/cache", () => ({
   buildCacheKey: (endpoint: string, params: any) => `${endpoint}__${JSON.stringify(params)}`,
@@ -37,16 +39,10 @@ describe("Property Data Provider Abstraction & Skeletons", () => {
       expect(provider).toBeInstanceOf(MockPropertyDataProvider);
     });
 
-    it("should fallback to MockPropertyDataProvider and log a warning if RentCast is selected but API key is missing", () => {
+    it("should return UnavailablePropertyProvider if rentcast is selected but API key is missing", () => {
       delete process.env.RENTCAST_API_KEY;
-      const warnSpy = jest.spyOn(console, "warn").mockImplementation();
       const provider = getPropertyProvider("rentcast");
-
-      expect(provider).toBeInstanceOf(MockPropertyDataProvider);
-      expect(warnSpy).toHaveBeenCalledWith(
-        expect.stringContaining("[PROPERTY PROVIDER] RENTCAST_API_KEY is missing")
-      );
-      warnSpy.mockRestore();
+      expect(provider).toBeInstanceOf(UnavailablePropertyProvider);
     });
 
     it("should return RentCastPropertyProvider if rentcast is selected and key is present", () => {
@@ -55,16 +51,10 @@ describe("Property Data Provider Abstraction & Skeletons", () => {
       expect(provider).toBeInstanceOf(RentCastPropertyProvider);
     });
 
-    it("should fallback to MockPropertyDataProvider and log a warning if ATTOM is selected but API key is missing", () => {
+    it("should return UnavailablePropertyProvider if attom is selected but API key is missing", () => {
       delete process.env.ATTOM_API_KEY;
-      const warnSpy = jest.spyOn(console, "warn").mockImplementation();
       const provider = getPropertyProvider("attom");
-
-      expect(provider).toBeInstanceOf(MockPropertyDataProvider);
-      expect(warnSpy).toHaveBeenCalledWith(
-        expect.stringContaining("[PROPERTY PROVIDER] ATTOM_API_KEY is missing")
-      );
-      warnSpy.mockRestore();
+      expect(provider).toBeInstanceOf(UnavailablePropertyProvider);
     });
 
     it("should return AttomPropertyProvider if attom is selected and key is present", () => {
@@ -73,16 +63,10 @@ describe("Property Data Provider Abstraction & Skeletons", () => {
       expect(provider).toBeInstanceOf(AttomPropertyProvider);
     });
 
-    it("should fallback to MockPropertyDataProvider and log a warning if Mashvisor is selected but API key is missing", () => {
+    it("should return UnavailablePropertyProvider if mashvisor is selected but API key is missing", () => {
       delete process.env.MASHVISOR_API_KEY;
-      const warnSpy = jest.spyOn(console, "warn").mockImplementation();
       const provider = getPropertyProvider("mashvisor");
-
-      expect(provider).toBeInstanceOf(MockPropertyDataProvider);
-      expect(warnSpy).toHaveBeenCalledWith(
-        expect.stringContaining("[PROPERTY PROVIDER] MASHVISOR_API_KEY is missing")
-      );
-      warnSpy.mockRestore();
+      expect(provider).toBeInstanceOf(UnavailablePropertyProvider);
     });
 
     it("should return MashvisorPropertyProvider if mashvisor is selected and key is present", () => {
@@ -135,7 +119,7 @@ describe("Property Data Provider Abstraction & Skeletons", () => {
         return Promise.resolve({ ok: false });
       }) as any;
 
-      const provider = new RentCastPropertyProvider("test-key");
+      const provider = new RentCastPropertyProvider(new RentCastClient("test-key"));
       const facts = await provider.getFacts(address);
       const comps = await provider.getComps(address);
 

@@ -3,14 +3,12 @@
 import React, { useMemo, useState, useRef, useCallback } from 'react';
 import ReactECharts from 'echarts-for-react';
 import { SampleDataBanner } from '@/components/intelligence/SampleDataBanner';
-import { ArrowDownRight, ArrowUpRight, Download, TrendingUp } from 'lucide-react';
+import { ArrowDownRight, ArrowUpRight, Download } from 'lucide-react';
 import Link from 'next/link';
 import { useAllDealsSync } from '@/hooks/useAllProjectsSync';
 import { useMetricSeries, useMetricCurrent, usePortfolioInputs } from '@/lib/intelligence/selectors';
 import { GRMTriageTerminal } from '@/components/intelligence/GRMTriageTerminal';
 import { GRMComparisonCard } from '@/components/intelligence/GRMComparisonCard';
-import { useAuth } from '@/context/AuthContext';
-import { useQueries } from '@tanstack/react-query';
 
 /* ═══════════════════════════════════════════════════════════════
    GRM Intelligence Page
@@ -19,7 +17,13 @@ import { useQueries } from '@tanstack/react-query';
    Bottom: GRM by Property table
    ═══════════════════════════════════════════════════════════════ */
 
-type GRMPropertyRow = { address: string; value: number; annualRent: number; grm: number; marketGRM: number | null; signal: string };
+const defaultProperties = [
+  { address: '421 Oak St, Brooklyn',      value: 485000,  annualRent: 52800, grm: 9.2,  marketGRM: 10.5, signal: 'Buy'    },
+  { address: '1248 Oakwood Ave, Queens',  value: 620000,  annualRent: 59400, grm: 10.4, marketGRM: 10.5, signal: 'Hold'   },
+  { address: '77 Prospect Heights, BK',   value: 890000,  annualRent: 72000, grm: 12.4, marketGRM: 10.5, signal: 'Review' },
+  { address: '310 Atlantic Ave, Brooklyn',value: 340000,  annualRent: 40800, grm: 8.3,  marketGRM: 10.5, signal: 'Buy'    },
+  { address: '2100 Bedford Ave, BK',      value: 575000,  annualRent: 55200, grm: 10.4, marketGRM: 10.5, signal: 'Hold'   },
+];
 
 const SIGNAL_STYLES: Record<string, string> = {
   Buy:    'bg-[#6E7480]/10 border-[#6E7480]/20 text-[#6E7480]',
@@ -27,7 +31,7 @@ const SIGNAL_STYLES: Record<string, string> = {
   Review: 'bg-amber-400/10 border-amber-400/20 text-amber-400',
 };
 
-function GroupedBarChart({ properties, whatIfGRM }: { properties: GRMPropertyRow[]; whatIfGRM?: number | null }) {
+function GroupedBarChart({ properties, whatIfGRM }: { properties: typeof defaultProperties; whatIfGRM?: number | null }) {
   const labels = properties.map((p) => p.address.split(',')[0]);
   const option = {
     backgroundColor: 'transparent',
@@ -109,117 +113,17 @@ function GroupedBarChart({ properties, whatIfGRM }: { properties: GRMPropertyRow
   return <ReactECharts option={option} style={{ height: 260, width: '100%' }} opts={{ renderer: 'canvas' }} />;
 }
 
-function EmptyState() {
-  return (
-    <div className="rounded-2xl border border-white/10 p-8" style={{ background: 'rgba(22,19,24,0.4)' }}>
-      <div className="flex flex-col items-center justify-center gap-4 text-center border border-dashed border-white/10 rounded-xl p-12 min-h-[300px]">
-        <TrendingUp className="w-12 h-12 text-slate-600" strokeWidth={1} />
-        <div>
-          <p className="text-sm font-semibold text-[#C0BEC2] mb-1">Awaiting Portfolio Data</p>
-          <p className="text-xs text-[#6B6870] max-w-xs leading-relaxed">
-            Import deal data or complete Purchase phase tasks to generate Gross Rent Multiplier analytics.
-          </p>
-        </div>
-        <Link
-          href="/dashboard/projects/new"
-          className="mt-2 px-5 py-2 rounded-full border border-[#454955]/30 text-[#6E7480] text-xs font-semibold hover:bg-[#454955]/10 transition-all"
-        >
-          Add First Deal
-        </Link>
-      </div>
-    </div>
-  );
-}
-
 type Period = 'Quarter' | 'Year' | 'All Time';
 type Scope = 'Property' | 'My Share';
 
 export default function GRMIntelligencePage() {
   useAllDealsSync();
-  const { user } = useAuth();
   const [period, setPeriod] = useState<Period>('Year');
   const [scope, setScope]   = useState<Scope>('Property');
 
   const grmCurrentResult = useMetricCurrent('GRM', { scope: scope === 'My Share' ? 'myShare' : 'property' });
   const grmSeriesResult = useMetricSeries('GRM', undefined, { scope: scope === 'My Share' ? 'myShare' : 'property' });
   const portfolioInputsResult = usePortfolioInputs({ scope: scope === 'My Share' ? 'myShare' : 'property' });
-
-  const projects = portfolioInputsResult.status === 'ready' ? portfolioInputsResult.data.projects : [];
-
-  const uniqueZipCodes = useMemo(() => {
-    const zips = new Set<string>();
-    for (const p of projects) {
-      if (p.zipCode) {
-        zips.add(p.zipCode.trim());
-      }
-    }
-    return Array.from(zips);
-  }, [projects]);
-
-  const marketStatsQueries = useQueries({
-    queries: uniqueZipCodes.map((zip) => ({
-      queryKey: ['market-stats', zip],
-      queryFn: async () => {
-        const token = await user?.getIdToken();
-        if (!token) throw new Error('Not authenticated');
-        const res = await fetch(`/api/reil/market-stats?zipCode=${zip}`, {
-          headers: { Authorization: `Bearer ${token}` },
-        });
-        if (!res.ok) throw new Error(`Failed to fetch stats for ${zip}`);
-        return res.json();
-      },
-      enabled: !!user && !!zip,
-      staleTime: 5 * 60 * 1000,
-    })),
-  });
-
-  const zipToMarketGRM = useMemo(() => {
-    const mapping: Record<string, number> = {};
-    uniqueZipCodes.forEach((zip, idx) => {
-      const query = marketStatsQueries[idx];
-      if (query?.status === 'success' && query.data?.stats) {
-        const stats = query.data.stats;
-        const price = stats.saleData?.medianPrice || 0;
-        const rent = stats.rentalData?.medianPrice || 0;
-        if (price > 0 && rent > 0) {
-          mapping[zip] = price / (rent * 12);
-        }
-      }
-    });
-    return mapping;
-  }, [uniqueZipCodes, marketStatsQueries]);
-
-  if (
-    grmCurrentResult.status === 'loading' ||
-    grmSeriesResult.status === 'loading' ||
-    portfolioInputsResult.status === 'loading'
-  ) {
-    return (
-      <div className="min-h-full px-6 lg:px-8 py-8 flex items-center justify-center" style={{ background: 'var(--bg-canvas)', color: 'var(--text-primary)' }}>
-        <p className="text-sm text-[#9E9DA0]">Loading GRM data...</p>
-      </div>
-    );
-  }
-
-  if (
-    portfolioInputsResult.status === 'insufficient' ||
-    grmCurrentResult.status === 'insufficient' ||
-    grmSeriesResult.status === 'insufficient'
-  ) {
-    return (
-      <div className="min-h-full px-6 lg:px-8 py-8 space-y-6" style={{ background: 'var(--bg-canvas)', color: 'var(--text-primary)' }}>
-        <div>
-          <div className="flex items-center gap-2 mb-1 text-xs text-[#6B6870] font-semibold uppercase tracking-widest">
-            <Link href="/dashboard/reports" className="hover:text-[#6E7480] transition-colors">Reports</Link>
-            <span>›</span>
-            <span className="text-[#6E7480]">GRM Intelligence</span>
-          </div>
-          <h1 className="text-4xl font-bold text-white tracking-tight">Gross Rent Multiplier</h1>
-        </div>
-        <EmptyState />
-      </div>
-    );
-  }
 
   /* ── Interactive state from GRMTriageTerminal ── */
   const [triageGRM, setTriageGRM] = useState(0);
@@ -259,54 +163,67 @@ export default function GRMIntelligencePage() {
         return { isUsingDemoData: false, currentGRM: last, grmChange: last - prev };
       }
     }
-    return { isUsingDemoData: false, currentGRM: 0, grmChange: 0 };
+    return { isUsingDemoData: true, currentGRM: 9.2, grmChange: -0.3 };
   }, [grmSeriesResult, grmCurrentResult, portfolioInputsResult]);
 
   const isDecreasing = grmChange < 0;
 
   const propertyRows = useMemo(() => {
     if (portfolioInputsResult.status !== 'ready') {
-      return [];
+      return defaultProperties;
     }
     const projects = portfolioInputsResult.data.projects;
-    return projects.map((p) => {
-      const financials = p.financials || {};
-      const purchasePrice = financials.purchasePrice ?? financials.targetPrice ?? financials.targetPurchasePrice ?? 0;
-      const value = financials.estimatedCurrentValue ?? financials.estimatedARV ?? purchasePrice;
-      const annualRent = (financials.monthlyGrossRent ?? 0) * 12;
-      const grm = annualRent > 0 ? value / annualRent : 0;
-      const marketGRM: number | null = zipToMarketGRM[p.zipCode?.trim() ?? ''] ?? null;
-      const signal = grm === 0 || marketGRM === null ? 'Review' : grm < marketGRM * 0.9 ? 'Buy' : grm < marketGRM * 1.1 ? 'Hold' : 'Review';
-      return {
-        address: p.address || p.propertyName || 'Unknown Property',
-        value,
-        annualRent,
-        grm,
-        marketGRM,
-        signal,
-      };
-    });
-  }, [portfolioInputsResult, zipToMarketGRM]);
+    const withData = projects.filter((p) => p.financials?.grossRentMultiplier ?? p.financials?.purchasePrice);
+    if (withData.length >= 3) {
+      return withData.slice(0, 5).map((p) => {
+        const grm = p.financials?.grossRentMultiplier ?? (0);
+        const annualRent = (p.financials?.monthlyGrossRent ?? (0)) * 12;
+        const value = p.financials?.estimatedARV ?? p.financials?.purchasePrice ?? (0);
+        const signal = grm < 9.5 ? 'Buy' : grm < 11 ? 'Hold' : 'Review';
+        return {
+          address: p.address || p.propertyName || 'Unknown',
+          value,
+          annualRent,
+          grm,
+          marketGRM: 10.5,
+          signal,
+        };
+      });
+    }
+    return defaultProperties;
+  }, [portfolioInputsResult]);
 
   /* ── Deals for GRMComparisonCard ── */
   const comparisonDeals = useMemo(() => {
     if (portfolioInputsResult.status !== 'ready') {
-      return [];
+      return [
+        { id: '1', address: '421 Oak St, Brooklyn', propertyPrice: 485000, grossAnnualRent: 52800 },
+        { id: '2', address: '1248 Oakwood Ave, Queens', propertyPrice: 620000, grossAnnualRent: 59400 },
+        { id: '3', address: '77 Prospect Heights, BK', propertyPrice: 890000, grossAnnualRent: 72000 },
+        { id: '4', address: '310 Atlantic Ave, Brooklyn', propertyPrice: 340000, grossAnnualRent: 40800 },
+      ];
     }
     const projects = portfolioInputsResult.data.projects;
-    return projects.map((p) => {
-      const financials = p.financials || {};
-      const purchasePrice = financials.purchasePrice ?? financials.targetPrice ?? financials.targetPurchasePrice ?? 0;
-      const rent = (financials.monthlyGrossRent ?? 0) * 12;
-      const grm = rent > 0 ? purchasePrice / rent : 0;
-      return {
-        id: p.id || p.address || 'unknown',
-        address: p.address || p.propertyName || 'Unknown Property',
-        propertyPrice: purchasePrice,
-        grossAnnualRent: rent,
-        grm,
-      };
+    const withData = projects.filter((p) => {
+      const price = p.financials?.purchasePrice ?? p.financials?.targetPurchasePrice ?? (0);
+      const rent = (p.financials?.monthlyGrossRent ?? (0)) * 12;
+      return price > 0 && rent > 0;
     });
+    if (withData.length >= 2) {
+      return withData.slice(0, 6).map((p) => ({
+        id: p.id || p.address || 'unknown',
+        address: p.address || p.propertyName || 'Unknown',
+        propertyPrice: p.financials?.purchasePrice ?? p.financials?.targetPurchasePrice ?? (0),
+        grossAnnualRent: (p.financials?.monthlyGrossRent ?? (0)) * 12,
+        grm: p.financials?.grossRentMultiplier,
+      }));
+    }
+    return [
+      { id: '1', address: '421 Oak St, Brooklyn', propertyPrice: 485000, grossAnnualRent: 52800 },
+      { id: '2', address: '1248 Oakwood Ave, Queens', propertyPrice: 620000, grossAnnualRent: 59400 },
+      { id: '3', address: '77 Prospect Heights, BK', propertyPrice: 890000, grossAnnualRent: 72000 },
+      { id: '4', address: '310 Atlantic Ave, Brooklyn', propertyPrice: 340000, grossAnnualRent: 40800 },
+    ];
   }, [portfolioInputsResult]);
 
   /* ── Portfolio-derived defaults for triage ── */
@@ -324,61 +241,12 @@ export default function GRMIntelligencePage() {
     return { price: 0, rent: 0 }; // honest: no priced projects yet
   }, [portfolioInputsResult]);
 
-  const contextMetricsData = useMemo(() => {
-    if (portfolioInputsResult.status !== 'ready') {
-      return { totalPropertyValue: 0, totalAnnualRent: 0, averageMarketGRM: 0 };
-    }
-    const projects = portfolioInputsResult.data.projects;
-    let valSum = 0;
-    let rentSum = 0;
-    let marketGrmWeightSum = 0;
-    let marketGrmValSum = 0;
-
-    for (const p of projects) {
-      const financials = p.financials || {};
-      const factor = scope === 'My Share' ? (financials.ownershipPercentage ?? 100) / 100 : 1;
-      const purchasePrice = financials.purchasePrice ?? financials.targetPrice ?? financials.targetPurchasePrice ?? 0;
-      const propValue = financials.estimatedCurrentValue ?? financials.estimatedARV ?? purchasePrice;
-      const rent = (financials.monthlyGrossRent ?? 0) * 12;
-
-      valSum += propValue * factor;
-      rentSum += rent * factor;
-
-      const mGrm = zipToMarketGRM[p.zipCode?.trim() ?? ''] ?? null;
-      if (mGrm !== null) {
-        marketGrmValSum += mGrm * propValue * factor;
-        marketGrmWeightSum += propValue * factor;
-      }
-    }
-
-    const avgMarketGrm = marketGrmWeightSum > 0 ? marketGrmValSum / marketGrmWeightSum : 0;
-
-    return {
-      totalPropertyValue: valSum,
-      totalAnnualRent: rentSum,
-      averageMarketGRM: avgMarketGrm,
-    };
-  }, [portfolioInputsResult, zipToMarketGRM, scope]);
-
-  const contextMetrics = useMemo(() => {
-    const { totalPropertyValue, totalAnnualRent, averageMarketGRM } = contextMetricsData;
-    return [
-      {
-        label: 'Current Value',
-        value: totalPropertyValue >= 1_000_000
-          ? `$${(totalPropertyValue / 1_000_000).toFixed(1)}M`
-          : `$${(totalPropertyValue / 1000).toFixed(0)}k`,
-      },
-      {
-        label: 'Annual Rent',
-        value: totalAnnualRent >= 1_000_000
-          ? `$${(totalAnnualRent / 1_000_000).toFixed(1)}M`
-          : `$${(totalAnnualRent / 1000).toFixed(0)}k`,
-      },
-      { label: 'Portfolio GRM', value: `${currentGRM.toFixed(1)}x` },
-      { label: 'Market GRM', value: averageMarketGRM > 0 ? `${averageMarketGRM.toFixed(1)}x` : 'N/A' },
-    ];
-  }, [contextMetricsData, currentGRM]);
+  const contextMetrics = [
+    { label: 'Current Value',  value: '$485k' },
+    { label: 'Annual Rent',    value: '$52.8k' },
+    { label: 'Portfolio GRM',  value: `${currentGRM.toFixed(1)}x` },
+    { label: 'Market GRM',     value: '10.5x' },
+  ];
 
   return (
     <div className="min-h-full px-6 lg:px-8 py-8 space-y-6" style={{ background: 'var(--bg-canvas)', color: 'var(--text-primary)' }}>
@@ -437,7 +305,7 @@ export default function GRMIntelligencePage() {
                 </div>
               )}
               <span className="text-xs text-[#6B6870]">
-                Lower is better{contextMetricsData.averageMarketGRM > 0 ? ` (Market: ${contextMetricsData.averageMarketGRM.toFixed(1)}x)` : ''}
+                Lower is better (Market: 10.5x)
               </span>
             </div>
 
@@ -487,13 +355,13 @@ export default function GRMIntelligencePage() {
       {/* ── GRM Comparison + Triage Row ── */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-5">
         {/* Multi-Property Deal Compare */}
-        <GRMComparisonCard deals={comparisonDeals} marketGRM={contextMetricsData.averageMarketGRM} />
+        <GRMComparisonCard deals={comparisonDeals} marketGRM={10.5} />
 
         {/* A-Phase Triage Terminal */}
         <GRMTriageTerminal
           defaultPropertyPrice={portfolioDefaults.price}
           defaultMonthlyRent={portfolioDefaults.rent}
-          marketGRM={contextMetricsData.averageMarketGRM}
+          marketGRM={10.5}
           maxAcceptableGRM={13}
           onValuesChange={handleValuesChange}
         />
@@ -513,7 +381,7 @@ export default function GRMIntelligencePage() {
             </thead>
             <tbody>
               {propertyRows.map((row) => {
-                const diff = row.marketGRM !== null ? row.grm - row.marketGRM : null;
+                const diff = row.grm - row.marketGRM;
                 return (
                   <tr key={row.address} className="border-b border-white/[0.04] hover:bg-white/[0.02] transition-colors">
                     <td className="py-3 px-3 text-[#C0BEC2] font-medium">{row.address}</td>
@@ -524,8 +392,8 @@ export default function GRMIntelligencePage() {
                       ${(row.annualRent / 1000).toFixed(1)}k
                     </td>
                     <td className="py-3 px-3 text-[#6E7480] font-bold tabular-nums">{row.grm.toFixed(1)}x</td>
-                    <td className={`py-3 px-3 font-bold tabular-nums ${diff === null ? 'text-[#6B6870]' : diff <= 0 ? 'text-[#6E7480]' : 'text-red-400'}`}>
-                      {diff === null ? '—' : `${diff > 0 ? '+' : ''}${diff.toFixed(1)}x`}
+                    <td className={`py-3 px-3 font-bold tabular-nums ${diff <= 0 ? 'text-[#6E7480]' : 'text-red-400'}`}>
+                      {diff > 0 ? '+' : ''}{diff.toFixed(1)}x
                     </td>
                     <td className="py-3 px-3">
                       <span className={`px-2 py-0.5 rounded border text-[10px] font-bold uppercase tracking-wider ${SIGNAL_STYLES[row.signal] ?? SIGNAL_STYLES.Hold}`}>

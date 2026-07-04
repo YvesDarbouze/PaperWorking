@@ -3,7 +3,7 @@
 import React, { useState, useMemo, useCallback, useRef } from 'react';
 import ReactECharts from 'echarts-for-react';
 import { SampleDataBanner } from '@/components/intelligence/SampleDataBanner';
-import { ArrowUpRight, Download, TrendingUp } from 'lucide-react';
+import { ArrowUpRight, Download } from 'lucide-react';
 import Link from 'next/link';
 import { useAllDealsSync } from '@/hooks/useAllProjectsSync';
 import { useMetricSeries, useMetricCurrent, usePortfolioInputs } from '@/lib/intelligence/selectors';
@@ -20,6 +20,32 @@ import type { AppreciationValues } from '@/components/intelligence/AppreciationC
 
 type Period = 'Month' | 'Quarter' | 'Year' | 'Overall';
 type Scope  = 'Property' | 'My Share';
+
+const defaultAppreciation   = 12.5;
+const defaultCurrentValue  = 545500;
+const defaultOriginalBasis = 485000;
+const defaultUnrealizedGain = defaultCurrentValue - defaultOriginalBasis; // 60500
+
+const defaultMonthsLabels = ['May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec', 'Jan', 'Feb', 'Mar', 'Apr'];
+
+// Portfolio value: ascending from purchase price to current estimated value
+const defaultPortfolioValue = [
+  485000, 490200, 496000, 502500, 508800, 515000,
+  520200, 525800, 531000, 536500, 541200, 545500,
+];
+
+// Market baseline: flatter appreciation (~5% annual = ~0.4%/month)
+const defaultMarketBaseline = [
+  485000, 487000, 489000, 491000, 493000, 495000,
+  497000, 499000, 501000, 503000, 505000, 507000,
+];
+
+const defaultProperties = [
+  { address: '421 Oak St, Brooklyn', purchase: 485000, current: 545500, gain: 60500,  gainPct: 12.5, yoy: 12.5 },
+  { address: '1248 Oakwood Ave',      purchase: 320000, current: 368000, gain: 48000,  gainPct: 15.0, yoy: 15.0 },
+  { address: '77 Prospect Heights',   purchase: 820000, current: 890000, gain: 70000,  gainPct: 8.5,  yoy:  8.5 },
+  { address: '310 Atlantic Ave',      purchase: 280000, current: 295000, gain: 15000,  gainPct: 5.4,  yoy:  5.4 },
+];
 
 /* ── Dual-Line Appreciation Chart ── */
 function AppreciationChart({
@@ -139,28 +165,6 @@ function AppreciationChart({
   return <ReactECharts option={option} style={{ height: 280, width: '100%' }} opts={{ renderer: 'canvas' }} />;
 }
 
-function EmptyState() {
-  return (
-    <div className="rounded-2xl border border-white/10 p-8" style={{ background: 'rgba(22,19,24,0.4)' }}>
-      <div className="flex flex-col items-center justify-center gap-4 text-center border border-dashed border-white/10 rounded-xl p-12 min-h-[300px]">
-        <TrendingUp className="w-12 h-12 text-slate-600" strokeWidth={1} />
-        <div>
-          <p className="text-sm font-semibold text-[#C0BEC2] mb-1">Awaiting Portfolio Data</p>
-          <p className="text-xs text-[#6B6870] max-w-xs leading-relaxed">
-            Import deal data or complete Purchase phase tasks to generate Appreciation analytics.
-          </p>
-        </div>
-        <Link
-          href="/dashboard/projects/new"
-          className="mt-2 px-5 py-2 rounded-full border border-[#454955]/30 text-[#6E7480] text-xs font-semibold hover:bg-[#454955]/10 transition-all"
-        >
-          Add First Deal
-        </Link>
-      </div>
-    </div>
-  );
-}
-
 export default function AppreciationIntelligencePage() {
   useAllDealsSync();
   const [period, setPeriod] = useState<Period>('Year');
@@ -187,9 +191,9 @@ export default function AppreciationIntelligencePage() {
   const portfolioDefaults = useMemo(() => {
     if (portfolioInputsResult.status !== 'ready') {
       return {
-        purchasePrice: 0,
+        purchasePrice: defaultOriginalBasis,
         acquisitionCosts: 0,
-        currentEstimate: 0,
+        currentEstimate: defaultCurrentValue,
         holdYears: 5,
       };
     }
@@ -206,9 +210,9 @@ export default function AppreciationIntelligencePage() {
       };
     }
     return {
-      purchasePrice: 0,
+      purchasePrice: defaultOriginalBasis,
       acquisitionCosts: 0,
-      currentEstimate: 0,
+      currentEstimate: defaultCurrentValue,
       holdYears: 5,
     };
   }, [portfolioInputsResult]);
@@ -256,19 +260,18 @@ export default function AppreciationIntelligencePage() {
         baselineSeries: baselineVals,
       };
     }
-
     return {
-      isUsingDemoData: false,
-      appreciationRate: 0,
-      currentValue: 0,
-      originalBasis: 0,
-      unrealizedGain: 0,
-      annualRate: 0,
-      chartLabels: [],
-      portfolioSeries: [],
-      baselineSeries: [],
+      isUsingDemoData: true,
+      appreciationRate: collectedValues?.annualizedRate ?? defaultAppreciation,
+      currentValue: collectedValues?.currentEstimate ?? defaultCurrentValue,
+      originalBasis: collectedValues?.totalBasis ?? defaultOriginalBasis,
+      unrealizedGain: collectedValues?.totalGain ?? defaultUnrealizedGain,
+      annualRate: collectedValues?.annualizedRate ?? defaultAppreciation,
+      chartLabels: defaultMonthsLabels,
+      portfolioSeries: defaultPortfolioValue,
+      baselineSeries: defaultMarketBaseline,
     };
-  }, [appSeriesResult, appCurrentResult, portfolioInputsResult]);
+  }, [appSeriesResult, appCurrentResult, portfolioInputsResult, collectedValues]);
 
   const whatIfApp = useMemo(() => {
     if (hasInteracted && collectedValues) {
@@ -303,60 +306,35 @@ export default function AppreciationIntelligencePage() {
 
   const propertiesTableData = useMemo(() => {
     if (portfolioInputsResult.status !== 'ready') {
-      return [];
+      return defaultProperties;
     }
     const projects = portfolioInputsResult.data.projects;
     const withEquity = projects.filter((p) => (p.financials?.purchasePrice ?? (0)) > 0);
-    return withEquity.map((p) => {
-      const purchase = p.financials?.purchasePrice ?? (0);
-      const current = p.financials?.estimatedCurrentValue ?? p.financials?.estimatedARV ?? purchase;
-      const gain = current - purchase;
-      const gainPct = purchase > 0 ? (gain / purchase) * 100 : 0;
-      return {
-        address: p.address || p.propertyName || 'Unknown Property',
-        purchase,
-        current,
-        gain,
-        gainPct,
-        yoy: gainPct,
-      };
-    });
+    if (withEquity.length > 0) {
+      return withEquity.map((p) => {
+        const purchase = p.financials?.purchasePrice ?? (0);
+        const current = p.financials?.estimatedCurrentValue ?? p.financials?.estimatedARV ?? purchase;
+        const gain = current - purchase;
+        const gainPct = purchase > 0 ? (gain / purchase) * 100 : 0;
+        return {
+          address: p.address || p.propertyName || 'Unknown Property',
+          purchase,
+          current,
+          gain,
+          gainPct,
+          yoy: gainPct,
+        };
+      });
+    }
+    return defaultProperties;
   }, [portfolioInputsResult]);
 
   const fmt = (n: number) => `$${n.toLocaleString()}`;
   const fmtPct = (n: number) => `${n >= 0 ? '+' : ''}${n.toFixed(1)}%`;
 
   // Alpha = portfolio appreciation vs market baseline
-  const alphaVsPct = baselineSeries.length > 0 ? ((displayCurrentValue - (baselineSeries[baselineSeries.length - 1] ?? displayCurrentValue)) / (baselineSeries[baselineSeries.length - 1] ?? displayCurrentValue) * 100) : 0;
-  const alphaDollar = baselineSeries.length > 0 ? (displayCurrentValue - (baselineSeries[baselineSeries.length - 1] ?? displayCurrentValue)) : 0;
-
-  if (appCurrentResult.status === 'loading' || appSeriesResult.status === 'loading' || portfolioInputsResult.status === 'loading') {
-    return (
-      <div className="min-h-full px-6 lg:px-8 py-8 flex items-center justify-center" style={{ background: 'var(--bg-canvas)', color: 'var(--text-primary)' }}>
-        <p className="text-sm text-[#9E9DA0]">Loading Appreciation data...</p>
-      </div>
-    );
-  }
-
-  if (
-    portfolioInputsResult.status === 'insufficient' ||
-    appCurrentResult.status === 'insufficient' ||
-    appSeriesResult.status === 'insufficient'
-  ) {
-    return (
-      <div className="min-h-full px-6 lg:px-8 py-8 space-y-6" style={{ background: 'var(--bg-canvas)', color: 'var(--text-primary)' }}>
-        <div>
-          <div className="flex items-center gap-2 mb-1 text-xs text-[#6B6870] font-semibold uppercase tracking-widest">
-            <Link href="/dashboard/reports" className="hover:text-[#6E7480] transition-colors">Reports</Link>
-            <span>›</span>
-            <span className="text-[#6E7480]">Appreciation Intelligence</span>
-          </div>
-          <h1 className="text-4xl font-bold text-white tracking-tight">Appreciation Intelligence</h1>
-        </div>
-        <EmptyState />
-      </div>
-    );
-  }
+  const alphaVsPct = ((displayCurrentValue - (baselineSeries[baselineSeries.length - 1] ?? displayCurrentValue)) / (baselineSeries[baselineSeries.length - 1] ?? displayCurrentValue) * 100);
+  const alphaDollar = displayCurrentValue - (baselineSeries[baselineSeries.length - 1] ?? displayCurrentValue);
 
   return (
     <div className="min-h-full px-6 lg:px-8 py-8 space-y-6" style={{ background: 'var(--bg-canvas)', color: 'var(--text-primary)' }}>

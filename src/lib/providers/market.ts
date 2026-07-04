@@ -274,9 +274,8 @@ export class MockMarketDataProvider implements MarketDataProvider {
 export class RentCastMarketDataProvider implements MarketDataProvider {
   private client: import('@/lib/providers/rentcast').RentCastClient;
 
-  constructor(apiKey: string) {
-    const { RentCastClient } = require('@/lib/providers/rentcast');
-    this.client = new RentCastClient(apiKey);
+  constructor(client: import('@/lib/providers/rentcast').RentCastClient) {
+    this.client = client;
   }
 
   async getMarketStats(zipCode: string): Promise<MarketStats> {
@@ -314,6 +313,13 @@ export class RentCastMarketDataProvider implements MarketDataProvider {
   }
 }
 
+// ─── Unavailable provider — returned when a real provider is configured but the
+// API key is absent. Throws rather than silently serving mock data in prod.
+export class UnavailableMarketProvider implements MarketDataProvider {
+  constructor(private readonly reason: string) {}
+  async getMarketStats(): Promise<MarketStats> { throw new Error(this.reason); }
+}
+
 // ─── Factory ──────────────────────────────────────────────────────────────────
 
 export function getMarketProvider(type?: string): MarketDataProvider {
@@ -321,12 +327,14 @@ export function getMarketProvider(type?: string): MarketDataProvider {
 
   switch (providerType) {
     case "rentcast": {
-      const key = process.env.RENTCAST_API_KEY;
-      if (!key) {
-        logger.warn("⚠️ [MARKET PROVIDER] RENTCAST_API_KEY is missing. Falling back to MockMarketDataProvider.");
-        return new MockMarketDataProvider();
+      const client = getRentCastClient();
+      if (!client) {
+        return new UnavailableMarketProvider(
+          'PROPERTY_DATA_PROVIDER=rentcast but RENTCAST_API_KEY is not set. ' +
+          'Set the key or change PROPERTY_DATA_PROVIDER to "mock" for local dev.'
+        );
       }
-      return new RentCastMarketDataProvider(key);
+      return new RentCastMarketDataProvider(client);
     }
     case "mock":
     default:

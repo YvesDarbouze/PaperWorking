@@ -3,7 +3,7 @@
 /**
  * REILKanBan — 4-phase Real Estate Investment Lifecycle board.
  *
- * Columns: Acquisition → Purchase → Hold → Exit
+ * Columns: Acquisition → Fund → Hold → Exit
  * Each column shows FolderCards for projects in that phase.
  * Acquisition column has a featured "+" add button.
  */
@@ -27,7 +27,7 @@ export const REIL_PHASES = [
   {
     phase:       2,
     key:         "purchase",
-    label:       "Closing",
+    label:       "Fund",
     icon:        "account_balance",
     color:       "#7A9EAA",
     colorAlpha:  "rgba(122,158,170,",

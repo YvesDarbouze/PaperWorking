@@ -3,7 +3,7 @@ import { ApplicationUser } from '@/types/schema';
 import { useProjectStore } from '@/store/projectStore';
 import { X, ShieldCheck, Link, UploadCloud, Users, CheckCircle, Search, AlertTriangle } from 'lucide-react';
 import toast from 'react-hot-toast';
-import { pingDigitalRegistry } from '@/lib/web3RegistryHooks';
+import { pingDigitalRegistry, Web3ProviderNotConfiguredError } from '@/lib/web3RegistryHooks';
 import DealProgressTracker from '@/components/shared/DealProgressTracker';
 import ESignAction from '@/components/shared/ESignAction';
 import { usePermissions } from '@/hooks/usePermissions';
@@ -94,20 +94,24 @@ export default function ClosingRoomModal({ projectId, onClose }: ClosingRoomProp
         toast.loading('Verifying title on chain...', { id: 'web3' });
         try {
             const res = await pingDigitalRegistry(deal.address);
-            const updates = {
-                chainOfTitleStatus: res.chainOfTitleStatus,
-                blockchainTxHash: res.blockchainTxHash
-            };
+            // res.chainOfTitleStatus is always 'verified'|'failed'|'pending' here
+            // (the 'unavailable' case throws before reaching this point)
+            const status = res.chainOfTitleStatus as 'verified' | 'failed' | 'pending';
+            const updates = { chainOfTitleStatus: status, blockchainTxHash: res.blockchainTxHash };
             await projectsService.updateProject(deal.id, {
-                closingRoom: {
-                    ...closingRoom,
-                    ...updates
-                }
+                closingRoom: { ...closingRoom, ...updates }
             });
             updateClosingRoom(deal.id, updates);
-            toast.success(`Title Registry Verified! Hash: ${res.blockchainTxHash?.slice(0,10)}...`, { id: 'web3' });
+            toast.success(`Title Registry Verified! Hash: ${res.blockchainTxHash?.slice(0, 10)}…`, { id: 'web3' });
         } catch (err: any) {
-            toast.error('Failed to communicate with title nodes', { id: 'web3' });
+            if (err instanceof Web3ProviderNotConfiguredError) {
+                toast.error(
+                    'On-chain title verification is not enabled. Contact your administrator to configure a blockchain registry provider.',
+                    { id: 'web3', duration: 6000 }
+                );
+            } else {
+                toast.error('Failed to communicate with title registry nodes.', { id: 'web3' });
+            }
         } finally {
             setIsPinging(false);
         }
@@ -239,13 +243,16 @@ export default function ClosingRoomModal({ projectId, onClose }: ClosingRoomProp
                                 ) : (
                                     <>
                                        <p className="text-sm text-pw-muted">Pending immutable verification of property transfer chain.</p>
-                                       <button 
-                                          onClick={handleWeb3Ping} 
+                                       <button
+                                          onClick={handleWeb3Ping}
                                           disabled={isPinging}
                                           className="pw-btn pw-btn--primary pw-btn--pill w-full py-2 text-sm font-medium transition disabled:opacity-50"
                                        >
-                                          {isPinging ? 'Pinging Registry Nodes...' : 'Verify Chain of Title Now'}
+                                          {isPinging ? 'Pinging Registry Nodes…' : 'Verify Chain of Title Now'}
                                        </button>
+                                       <p className="text-[10px] text-pw-muted/70 text-center">
+                                          Requires a configured blockchain registry provider. Not available in all deployments.
+                                       </p>
                                     </>
                                 )}
                             </div>

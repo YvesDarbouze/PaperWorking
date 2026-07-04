@@ -661,7 +661,7 @@ export default function TeamDirectoryPage() {
           </div>
         </div>
 
-        {/* Right Column: Pending Invites (lg:col-span-4) */}
+        {/* Right Column: Pending Invites & Audit logs (lg:col-span-4) */}
         <aside className="lg:col-span-4 flex flex-col gap-6">
           
           {/* Pending Invitations Card */}

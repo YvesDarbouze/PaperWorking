@@ -44,7 +44,7 @@ import { PHASE_BACKGROUNDS } from '@/lib/constants/phaseMessages';
 
 export const PHASES = [
   { id: 1, title: 'Acquisition', bg: '#F2F2F2' },
-  { id: 2, title: 'Closing', bg: '#CCCCCC' },
+  { id: 2, title: 'Fund', bg: '#CCCCCC' },
   { id: 3, title: 'Hold', bg: '#A5A5A5' },
   { id: 4, title: 'Exit', bg: '#595959' },
 ];

@@ -105,7 +105,10 @@ function ThemeToggle({ isDark }: { isDark: boolean }) {
       onClick={toggleTheme}
       aria-label={`Switch to ${isDark ? "light" : "dark"} mode`}
       className="relative flex items-center gap-2.5 w-full px-3 py-2 rounded-lg transition-all duration-150 group"
-      style={{ color: isDark ? "rgba(253,255,252,0.45)" : "rgba(69,73,85,0.65)" }}
+      style={{
+        color: isDark ? "rgba(253,255,252,0.65)" : "rgba(55,59,69,0.82)",
+        background: isDark ? "#0d0a0b" : "#FDFFFC",
+      }}
     >
       <span
         className="material-symbols-outlined text-[18px] flex-shrink-0 transition-transform duration-300"
@@ -138,7 +141,7 @@ interface NavItemProps {
 
 function NavItem({ name, href, icon, isActive, badge, isDark, onClick }: NavItemProps) {
   const activeTextColor  = isDark ? "rgba(253,255,252,0.92)" : "#0d0a0b";
-  const inactiveTextColor = isDark ? "rgba(253,255,252,0.45)" : "rgba(69,73,85,0.75)";
+  const inactiveTextColor = isDark ? "rgba(253,255,252,0.65)" : "rgba(55,59,69,0.82)";
   const activeBg    = isDark ? "rgba(69,73,85,0.25)"  : "rgba(69,73,85,0.09)";
   const activeBorder = isDark ? "rgba(255,255,255,0.10)" : "rgba(33,34,38,0.14)";
 
@@ -212,7 +215,7 @@ function SectionLabel({ label, isDark }: { label: string; isDark: boolean }) {
         className="text-[10px] font-bold uppercase"
         style={{
           letterSpacing: "0.10em",
-          color: isDark ? "rgba(253,255,252,0.28)" : "rgba(69,73,85,0.45)",
+          color: isDark ? "rgba(253,255,252,0.50)" : "rgba(55,59,69,0.75)",
         }}
       >
         {label}
@@ -273,7 +276,7 @@ export function Sidebar() {
   const dividerColor = isDark ? "rgba(230,234,240,0.10)" : "rgba(33,34,38,0.10)";
   const selectBg     = isDark ? "rgba(255,255,255,0.04)" : "rgba(50,121,249,0.04)";
   const selectBorder = isDark ? "rgba(255,255,255,0.08)" : "rgba(50,121,249,0.10)";
-  const mutedText    = isDark ? "rgba(253,255,252,0.38)" : "rgba(69,73,85,0.55)";
+  const mutedText    = isDark ? "rgba(253,255,252,0.55)" : "rgba(55,59,69,0.72)";
 
   return (
     <>
@@ -301,8 +304,8 @@ export function Sidebar() {
           onClick={openWizard}
           className="flex items-center justify-center gap-2 w-full py-2.5 rounded-xl text-[13px] font-semibold transition-all duration-200 hover:opacity-90 active:scale-[0.98]"
           style={{
-            background: "var(--color-primary)",
-            color: "#FDFFFC",
+            background: isDark ? "var(--color-primary)" : "#0b8649",
+            color: isDark ? "#0d0a0b" : "#FDFFFC",
             letterSpacing: "-0.01em",
             boxShadow: "0 4px 16px rgba(var(--color-primary-rgb, 90,170,63),0.30)",
           }}
@@ -370,7 +373,7 @@ export function Sidebar() {
         style={{ borderTop: `1px solid ${dividerColor}` }}
       >
         {/* Theme toggle */}
-        <ThemeToggle isDark={isDark} />
+        {mounted ? <ThemeToggle isDark={isDark} /> : <div className="h-[36px]" />}
 
         {/* Auth skeleton */}
         {!mounted || authLoading || !user || !profile ? (
@@ -387,7 +390,7 @@ export function Sidebar() {
                 style={{ letterSpacing: "0.08em", color: mutedText }}
               >
                 acting as:{" "}
-                <span style={{ color: "var(--color-primary)", fontWeight: 800 }}>
+                <span style={{ color: isDark ? "var(--color-primary)" : "#047857", fontWeight: 800 }}>
                   {isPersonal ? "Me" : activeWorkspace?.name}
                 </span>
               </p>

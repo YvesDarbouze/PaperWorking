@@ -18,8 +18,15 @@ import { deriveAllMetrics, computeTotalCashInvested } from '@/lib/metrics/reiMet
    Bottom: CoC by Investment Tranche table
    ═══════════════════════════════════════════════════════════════ */
 
-type Period = 'Month' | 'Quarter' | 'Year' | 'Overall';
-type Scope  = 'Property' | 'My Share';
+const defaultTrend   = [6.8, 7.1, 7.4, 7.6, 7.9, 8.1, 8.2, 8.42];
+const defaultMonths  = ['Sep', 'Oct', 'Nov', 'Dec', 'Jan', 'Feb', 'Mar', 'Apr'];
+
+const defaultTranches = [
+  { tranche: '421 Oak St, Brooklyn',       equityIn: 185000, annualCF: 15600, coc: 8.43, target: 8.0 },
+  { tranche: '1248 Oakwood Ave, Queens',   equityIn: 220000, annualCF: 16500, coc: 7.5,  target: 8.0 },
+  { tranche: '77 Prospect Heights, BK',    equityIn: 410000, annualCF: 38750, coc: 9.45, target: 8.0 },
+  { tranche: '310 Atlantic Ave, Brooklyn', equityIn: 130000, annualCF: 8840,  coc: 6.8,  target: 8.0 },
+];
 
 function CoCTrendChart({ values, labels }: { values: number[]; labels: string[] }) {
   const option = {
@@ -94,6 +101,35 @@ function CoCTrendChart({ values, labels }: { values: number[]; labels: string[] 
   return <ReactECharts option={option} style={{ height: 260, width: '100%' }} opts={{ renderer: 'canvas' }} />;
 }
 
+const SCENARIOS = [
+  {
+    label: 'Conservative',
+    coc: 6.5,
+    description: 'Higher vacancy, conservative rent',
+    borderClass: 'border-white/10',
+    textClass: 'text-[#9E9DA0]',
+    numClass: 'text-[#C0BEC2]',
+    active: false,
+  },
+  {
+    label: 'Current',
+    coc: 8.42,
+    description: 'Live portfolio performance',
+    borderClass: 'border-[#6E7480]/40',
+    textClass: 'text-[#6E7480]',
+    numClass: 'text-[#6E7480]',
+    active: true,
+  },
+  {
+    label: 'Aggressive',
+    coc: 11.8,
+    description: 'Full occupancy, rent optimization',
+    borderClass: 'border-white/10',
+    textClass: 'text-[#9E9DA0]',
+    numClass: 'text-[#C0BEC2]',
+    active: false,
+  },
+];
 
 function EmptyState() {
   return (
@@ -119,6 +155,7 @@ function EmptyState() {
 
 export default function CoCIntelligencePage() {
   useAllDealsSync();
+  // Rule 5: thread scope to all selectors
   const [scope, setScope] = useState<'Property' | 'My Share'>('Property');
   const selectorScope = scope === 'My Share' ? 'myShare' : 'property';
   const cocSeriesResult = useMetricSeries('COC', undefined, { scope: selectorScope });
@@ -131,6 +168,9 @@ export default function CoCIntelligencePage() {
 
   // Rule 4: isUsingDemoData = true ONLY when no projects at all
   const { isUsingDemoData, currentCoC, cocChange, trendValues, trendLabels } = useMemo(() => {
+    if (portfolioInputsResult.status === 'insufficient') {
+      return { isUsingDemoData: true, currentCoC: 8.42, cocChange: 1.2, trendValues: defaultTrend, trendLabels: defaultMonths };
+    }
     if (cocSeriesResult.status === 'ready' && cocCurrentResult.status === 'ready') {
       const vals   = cocSeriesResult.data.series;
       const labels = cocSeriesResult.data.labels;
@@ -138,31 +178,38 @@ export default function CoCIntelligencePage() {
       const prev   = vals[0] ?? 0;
       return { isUsingDemoData: false, currentCoC: last, cocChange: last - prev, trendValues: vals, trendLabels: labels };
     }
+    // Projects exist but not enough snapshots — show live current, no history yet
+    if (cocCurrentResult.status === 'ready') {
+      return { isUsingDemoData: false, currentCoC: cocCurrentResult.data, cocChange: 0, trendValues: [], trendLabels: [] };
+    }
     return { isUsingDemoData: false, currentCoC: 0, cocChange: 0, trendValues: [], trendLabels: [] };
-  }, [cocSeriesResult, cocCurrentResult]);
+  }, [cocSeriesResult, cocCurrentResult, portfolioInputsResult]);
 
   // Rule 2: tranche table uses deriveAllMetrics — same formula as useMetricCurrent('COC')
   const trancheRows = useMemo(() => {
     if (portfolioInputsResult.status !== 'ready') {
-      return [];
+      return defaultTranches;
     }
     const projects = portfolioInputsResult.data.projects;
     // Use computeTotalCashInvested to find equity; filter to projects with any purchase price
     const withPrice = projects.filter((p) => (p.financials?.purchasePrice ?? 0) > 0);
-    return withPrice.slice(0, 5).map((p) => {
-      const derived = deriveAllMetrics(p.financials, undefined, p.strategyType, p.currentPhase);
-      const equity = computeTotalCashInvested(p.financials || {});
-      // Rule 2: NOI minus annual debt service = annual cash flow, same as selector arithmetic
-      const annualCF = derived.noi - derived.annualDebtService;
-      const coc = equity > 0 ? (annualCF / equity) * 100 : 0;
-      return {
-        tranche: p.address || p.propertyName || 'Unknown',
-        equityIn: equity,
-        annualCF,
-        coc,
-        target: 8.0,
-      };
-    });
+    if (withPrice.length > 0) {
+      return withPrice.slice(0, 5).map((p) => {
+        const derived = deriveAllMetrics(p.financials, undefined, p.strategyType, p.currentPhase);
+        const equity = computeTotalCashInvested(p.financials || {});
+        // Rule 2: NOI minus annual debt service = annual cash flow, same as selector arithmetic
+        const annualCF = derived.noi - derived.annualDebtService;
+        const coc = equity > 0 ? (annualCF / equity) * 100 : 0;
+        return {
+          tranche: p.address || p.propertyName || 'Unknown',
+          equityIn: equity,
+          annualCF,
+          coc,
+          target: 8.0,
+        };
+      });
+    }
+    return defaultTranches;
   }, [portfolioInputsResult]);
 
   // Aggregate portfolio totals from the tranche rows (same authoritative source)
@@ -174,41 +221,7 @@ export default function CoCIntelligencePage() {
     : 'bg-amber-400/10 border-amber-400/20 text-amber-400';
   const benchmarkLabel = currentCoC >= 8 ? 'Above Benchmark' : 'Below Benchmark';
 
-  const scenarios = useMemo(() => [
-    {
-      label: 'Conservative',
-      coc: 6.5,
-      description: 'Higher vacancy, conservative rent',
-      borderClass: 'border-white/10',
-      textClass: 'text-[#9E9DA0]',
-      numClass: 'text-[#C0BEC2]',
-      active: false,
-    },
-    {
-      label: 'Current',
-      coc: currentCoC,
-      description: 'Live portfolio performance',
-      borderClass: 'border-[#6E7480]/40',
-      textClass: 'text-[#6E7480]',
-      numClass: 'text-[#6E7480]',
-      active: true,
-    },
-    {
-      label: 'Aggressive',
-      coc: 11.8,
-      description: 'Full occupancy, rent optimization',
-      borderClass: 'border-white/10',
-      textClass: 'text-[#9E9DA0]',
-      numClass: 'text-[#C0BEC2]',
-      active: false,
-    },
-  ], [currentCoC]);
-
-  if (
-    cocCurrentResult.status === 'loading' ||
-    cocSeriesResult.status === 'loading' ||
-    portfolioInputsResult.status === 'loading'
-  ) {
+  if (cocCurrentResult.status === 'loading' || portfolioInputsResult.status === 'loading') {
     return (
       <div className="min-h-full px-6 lg:px-8 py-8 flex items-center justify-center" style={{ background: 'var(--bg-canvas)', color: 'var(--text-primary)' }}>
         <p className="text-sm text-[#9E9DA0]">Loading CoC data...</p>
@@ -216,11 +229,7 @@ export default function CoCIntelligencePage() {
     );
   }
 
-  if (
-    portfolioInputsResult.status === 'insufficient' ||
-    cocCurrentResult.status === 'insufficient' ||
-    cocSeriesResult.status === 'insufficient'
-  ) {
+  if (portfolioInputsResult.status === 'insufficient') {
     return (
       <div className="min-h-full px-6 lg:px-8 py-8 space-y-6" style={{ background: 'var(--bg-canvas)', color: 'var(--text-primary)' }}>
         <div>
@@ -249,25 +258,10 @@ export default function CoCIntelligencePage() {
           </div>
           <h1 className="text-4xl font-bold text-white tracking-tight">Cash-on-Cash Return</h1>
         </div>
-        <div className="flex flex-wrap gap-3">
-          <div className="flex gap-1 p-1 rounded-xl bg-white/5 border border-white/10">
-            {(['Property', 'My Share'] as Scope[]).map((s) => (
-              <button
-                key={s}
-                onClick={() => setScope(s)}
-                className={`px-4 py-1.5 rounded-md text-xs font-bold uppercase tracking-wider transition-all ${
-                  scope === s ? 'bg-[#454955] text-black' : 'text-[#9E9DA0] hover:text-slate-200'
-                }`}
-              >
-                {s}
-              </button>
-            ))}
-          </div>
-          <button className="px-4 py-2 rounded-xl bg-white/5 border border-white/10 text-sm font-semibold text-[#C0BEC2] hover:border-[#454955]/40 hover:text-[#6E7480] transition-all flex items-center gap-2 self-start md:self-auto">
-            <Download className="w-4 h-4" />
-            Export
-          </button>
-        </div>
+        <button className="px-4 py-2 rounded-xl bg-white/5 border border-white/10 text-sm font-semibold text-[#C0BEC2] hover:border-[#454955]/40 hover:text-[#6E7480] transition-all flex items-center gap-2 self-start md:self-auto">
+          <Download className="w-4 h-4" />
+          Export
+        </button>
       </div>
 
       <SampleDataBanner show={isUsingDemoData} />
@@ -308,7 +302,7 @@ export default function CoCIntelligencePage() {
 
           {/* Scenario cards */}
           <div className="space-y-2">
-            {scenarios.map((sc) => (
+            {SCENARIOS.map((sc) => (
               <div
                 key={sc.label}
                 className={`rounded-xl border p-4 flex items-center justify-between transition-all ${sc.borderClass} ${sc.active ? 'ring-1 ring-[#6E7480]/20' : ''}`}

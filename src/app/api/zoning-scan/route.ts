@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { requireAuth, isAuthError } from '@/lib/firebase-admin/auth-guard';
 import type {
   ZoningScanResult,
   RecognizedEnvironmentalCondition,
@@ -308,6 +309,9 @@ async function queryArcGIS(
 // ── Route handler ─────────────────────────────────────────────
 
 export async function POST(req: NextRequest) {
+  const auth = await requireAuth(req);
+  if (isAuthError(auth)) return auth;
+
   let body: {
     zip?: string;
     address?: string;

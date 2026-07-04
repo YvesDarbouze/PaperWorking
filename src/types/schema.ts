@@ -704,7 +704,6 @@ export interface Project {
   propertyName: string;
   address: string;
   zip?: string;
-  zipCode?: string;
   phase?: string;
   name?: string;
   numberOfUnits?: number;
@@ -760,6 +759,14 @@ export interface Project {
   };
 
   actionItems?: any[]; // Persistent storage for ProjectTodoList tasks
+  lenderVaultDocuments?: {
+    id: string;
+    name: string;
+    status: 'pending' | 'verified';
+    fileUrl?: string;
+    storagePath?: string;
+    uploadedAt?: string;
+  }[];
 
   // Phase 4 Exit & Settlement
   settlementDocuments?: SettlementDocument[]; // HUD-1, Closing Disclosures
@@ -1041,6 +1048,14 @@ export interface ProjectFinancials {
   occupancyRate?: number;
   grossRentMultiplier?: number;
   projectedMonthlyRentSource?: string;
+
+  // Supplemental metrics fields
+  capitalReserves?: number;
+  tenantTurnoverRate?: number;
+  leaseRenewalRate?: number;
+  numberOfMoveOuts?: number;
+  numberOfRenewals?: number;
+  daysOnMarket?: number;
 
 
   // Deal Calculator Detailed Fields

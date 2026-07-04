@@ -28,6 +28,7 @@ import posthog from 'posthog-js';
 import { useProjectStore } from '@/store/projectStore';
 import { usePropertyStore } from '@/store/propertyStore';
 import { useUserStore } from '@/store/userStore';
+import { logger } from '@/lib/logger';
 
 /* ═══════════════════════════════════════════════════════
    PaperWorking — AuthContext (Phase 3.0)
@@ -153,7 +154,7 @@ async function provisionSocialUser(user: User) {
   } catch (err) {
     // Non-fatal: user is already authenticated with Firebase Auth.
     // Profile doc can be created later via onSnapshot or server-side.
-    console.error('[provisionSocialUser] Firestore write failed (non-fatal):', err);
+    logger.error('[provisionSocialUser] Firestore write failed (non-fatal)', err);
   }
 }
 
@@ -183,12 +184,12 @@ async function reconcilePendingSubscription(uid: string, email: string): Promise
 
       // Clean up the pending record
       await deleteDoc(pendingRef);
-      console.log(`[reconcilePendingSubscription] Linked pending subscription to user ${uid}`);
+      logger.info('[reconcilePendingSubscription] Linked pending subscription', { userId: uid });
     }
   } catch (err) {
     // Non-fatal — the subscription will still exist in Stripe
     // and can be linked manually or on next webhook event.
-    console.error('[reconcilePendingSubscription] Failed (non-fatal):', err);
+    logger.error('[reconcilePendingSubscription] Failed (non-fatal)', err);
   }
 }
 
@@ -197,38 +198,46 @@ async function reconcilePendingSubscription(uid: string, email: string): Promise
  * Called on every auth state change so the middleware can verify sessions.
  */
 async function syncSessionCookie(user: User | null) {
+  if (typeof window !== 'undefined') {
+    (window as any).__sessionSyncCompleted = false;
+    (window as any).__sessionSyncFailed = false;
+  }
   if (user) {
     try {
-      // Force-refresh ensures the token sent to createSessionCookie is
-      // always fresh. Firebase requires the ID token to be recently issued.
-      console.log('[syncSessionCookie] Starting — force-refreshing token...');
-      const idToken = await user.getIdToken(true);
-      console.log('[syncSessionCookie] Token refreshed, posting to /api/auth/session...');
+      logger.debug('[syncSessionCookie] Starting — getting token');
+      const idToken = await user.getIdToken();
+      logger.debug('[syncSessionCookie] Token retrieved, posting to /api/auth/session');
       const res = await fetch('/api/auth/session', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ idToken }),
       });
-      console.log('[syncSessionCookie] Response status:', res.status);
+      logger.debug('[syncSessionCookie] Response received', { status: res.status });
       const data = await res.json().catch(() => ({}));
       if (!res.ok) {
-        console.error('[syncSessionCookie] API error:', res.status, data);
+        logger.error('[syncSessionCookie] API error', undefined, { status: res.status });
         throw new Error(`Session API failed: ${res.status} ${data.error || ''} ${data.detail || ''}`);
       }
-      console.log('[syncSessionCookie] ✅ Success:', data);
+      logger.debug('[syncSessionCookie] Success');
+      if (typeof window !== 'undefined') {
+        (window as any).__sessionSyncCompleted = true;
+      }
       // Verify the cookie was actually set by checking document.cookie
       const hasCookie = document.cookie.includes('__sub=') || document.cookie.includes('__session_id=');
-      console.log('[syncSessionCookie] Cookie verification — visible cookies present:', hasCookie);
-    } catch (err) {
-      console.error('[syncSessionCookie] Failed:', err);
+      logger.debug('[syncSessionCookie] Cookie verification', { hasCookie });
+    } catch (err: any) {
+      logger.error('[syncSessionCookie] Failed', err);
+      if (typeof window !== 'undefined') {
+        (window as any).__sessionSyncFailed = err.message || true;
+      }
       throw err; // Propagate the error so auth flows (login/register) can catch it
     }
   } else {
     try {
-      console.log('[syncSessionCookie] Clearing session...');
+      logger.debug('[syncSessionCookie] Clearing session');
       await fetch('/api/auth/session', { method: 'DELETE' });
     } catch (err) {
-      console.error('Failed to clear session cookie:', err);
+      logger.error('Failed to clear session cookie', err);
     }
   }
 }
@@ -335,7 +344,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
             await firebaseUser.getIdToken(true);
             await syncSessionCookie(firebaseUser);
           } catch (err: any) {
-            console.error('Token refresh failed:', err);
+            logger.error('Token refresh failed', err);
 
             if (err?.code === 'auth/network-request-failed') {
               // Transient network issue — surface a toast; session may still be valid
@@ -381,7 +390,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
             setSessionReady(true);
             setUser(firebaseUser);
           } catch (cookieErr) {
-            console.error('[AuthContext] syncSessionCookie failed — signing out to prevent redirect loop:', cookieErr);
+            logger.error('[AuthContext] syncSessionCookie failed — signing out to prevent redirect loop', cookieErr);
             setSessionReady(false);
             setUser(null);
             signOut(auth).catch(() => {});
@@ -512,7 +521,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           clientIp = ipData.ip || '127.0.0.1';
         }
       } catch (e) {
-        console.error('Failed to fetch client IP:', e);
+        logger.error('Failed to fetch client IP', e);
       }
 
       // Read UTM parameters and referral code from localStorage
@@ -789,6 +798,11 @@ export function useAuth() {
   const isMockSession = document.cookie.includes('mock_session_token_123');
 
   if (isMockSession) {
+    const orgCookie = typeof document !== 'undefined'
+      ? document.cookie.split('; ').find(row => row.startsWith('__org='))?.split('=')[1]
+      : null;
+    const personalOrgId = orgCookie || 'org_placeholder';
+
     const mockUser = {
       uid: 'user_123',
       email: 'test@paperworking.co',
@@ -802,7 +816,7 @@ export function useAuth() {
       email: 'test@paperworking.co',
       displayName: 'Test User',
       role: 'Lead Investor',
-      personalOrganizationId: 'org_placeholder',
+      personalOrganizationId: personalOrgId,
       subscriptionPlan: 'Team',
       subscriptionStatus: 'active',
     } as any;

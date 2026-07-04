@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { requireAuth, isAuthError } from '@/lib/firebase-admin/auth-guard';
 
 export const dynamic = 'force-dynamic';
 
@@ -34,6 +35,9 @@ function oDataString(value: string): string {
  * Returns up to 8 simplified PropertyResult objects.
  */
 export async function GET(request: NextRequest) {
+  const auth = await requireAuth(request);
+  if (isAuthError(auth)) return auth;
+
   const q = request.nextUrl.searchParams.get('q')?.trim() ?? '';
 
   if (q.length < 2) {

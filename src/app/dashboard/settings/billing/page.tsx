@@ -60,6 +60,7 @@ export default function BillingSettingsPage() {
   const [portalError, setPortalError]         = useState<string | null>(null);
   const [planChangeLoading, setPlanChangeLoading] = useState<string | null>(null);
   const [planChangeError, setPlanChangeError]     = useState<string | null>(null);
+  const [tokenError, setTokenError]               = useState<string | null>(null);
   const [invoices, setInvoices]           = useState<BillingInvoice[]>([]);
   const [invoicesLoading, setInvoicesLoading] = useState(false);
   const [currentPeriodEnd, setCurrentPeriodEnd] = useState<number | null>(null);
@@ -73,54 +74,64 @@ export default function BillingSettingsPage() {
   useEffect(() => {
     if (!user) return;
     
+    setTokenError(null);
     setInvoicesLoading(true);
     setSubscriptionLoading(true);
     setPmLoading(true);
     setUsageLoading(true);
     
-    user.getIdToken().then((idToken: string) => {
-      fetch('/api/stripe/invoices', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ idToken }),
-      })
-        .then((r) => r.json())
-        .then((data) => { if (data.invoices) setInvoices(data.invoices); })
-        .catch(() => {})
-        .finally(() => setInvoicesLoading(false));
-
-      fetch('/api/stripe/subscription', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ idToken }),
-      })
-        .then((r) => r.json())
-        .then((data) => { if (data.currentPeriodEnd) setCurrentPeriodEnd(data.currentPeriodEnd); })
-        .catch(() => {})
-        .finally(() => setSubscriptionLoading(false));
-
-      fetch('/api/stripe/payment-method', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ idToken }),
-      })
-        .then((r) => r.json())
-        .then((data) => { if (data.paymentMethod) setPaymentMethod(data.paymentMethod); })
-        .catch(() => {})
-        .finally(() => { setPmLoading(false); setPmFetched(true); });
-
-      fetch('/api/admin/rentcast-usage', {
-        headers: { 'Authorization': `Bearer ${idToken}` },
-      })
-        .then((r) => r.json())
-        .then((data) => {
-          if (data.success) {
-            setRentcastUsage({ count: data.count, limit: data.limit });
-          }
+    user.getIdToken()
+      .then((idToken: string) => {
+        fetch('/api/stripe/invoices', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ idToken }),
         })
-        .catch((err) => console.error(err))
-        .finally(() => setUsageLoading(false));
-    });
+          .then((r) => r.json())
+          .then((data) => { if (data.invoices) setInvoices(data.invoices); })
+          .catch(() => {})
+          .finally(() => setInvoicesLoading(false));
+
+        fetch('/api/stripe/subscription', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ idToken }),
+        })
+          .then((r) => r.json())
+          .then((data) => { if (data.currentPeriodEnd) setCurrentPeriodEnd(data.currentPeriodEnd); })
+          .catch(() => {})
+          .finally(() => setSubscriptionLoading(false));
+
+        fetch('/api/stripe/payment-method', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ idToken }),
+        })
+          .then((r) => r.json())
+          .then((data) => { if (data.paymentMethod) setPaymentMethod(data.paymentMethod); })
+          .catch(() => {})
+          .finally(() => { setPmLoading(false); setPmFetched(true); });
+
+        fetch('/api/admin/rentcast-usage', {
+          headers: { 'Authorization': `Bearer ${idToken}` },
+        })
+          .then((r) => r.json())
+          .then((data) => {
+            if (data.success) {
+              setRentcastUsage({ count: data.count, limit: data.limit });
+            }
+          })
+          .catch((err: any) => console.error(err))
+          .finally(() => setUsageLoading(false));
+      })
+      .catch((err: any) => {
+        console.error('Failed to retrieve authentication token:', err);
+        setInvoicesLoading(false);
+        setSubscriptionLoading(false);
+        setPmLoading(false);
+        setUsageLoading(false);
+        setTokenError('Failed to refresh authentication token. Please refresh the page or log in again.');
+      });
   }, [user]);
 
   const plan    = profile?.subscriptionPlan   ?? 'None';
@@ -215,6 +226,12 @@ export default function BillingSettingsPage() {
 
   return (
     <div className="w-full space-y-8">
+      {tokenError && (
+        <div className="text-xs text-error bg-error/10 border border-error/30 rounded-lg px-4 py-3 flex items-center gap-2">
+          <span className="material-symbols-outlined text-sm select-none">error</span>
+          <span>{tokenError}</span>
+        </div>
+      )}
       {/* ─── 12-Column Bento Grid ─── */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
 

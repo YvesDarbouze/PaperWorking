@@ -1,3 +1,8 @@
+// ─── Authoritative store names ────────────────────────────────────────────────
+// Firestore: "projects" collection, doc per project (fields under financials.*)
+// Prisma: ReilPropertyFacts table, ReilValuationSnapshot table
+// Valuation history subcollection: written via appendValuationSnapshot() in @/lib/db/projects
+
 // Property Data Provider — abstraction layer for property enrichment.
 //
 // Candidate integrations:
@@ -38,6 +43,9 @@ export interface PropertyFacts {
   avmPriceCents?:           number;  // AVM value estimate
   avmPriceLowCents?:        number;  // AVM value estimate low bound
   avmPriceHighCents?:       number;  // AVM value estimate high bound
+  // ─── Multi-family ────────────────────────────────────────────────────────
+  units?:                   number;  // Total unit count (multi-family only). estRentCents is per-unit.
+  totalBuildingRentCents?:  number;  // estRentCents × units (multi-family only). Absent for SFR.
   // ─── Meta ───────────────────────────────────────────────────────────────
   sourceProvider:           string;
   fetchedAt:                Date;
@@ -139,11 +147,18 @@ export class MockPropertyDataProvider implements PropertyDataProvider {
     const yearBuilt  = seeded(h + 3,   1940, 2020);
     const lotSqft    = seeded(h + 4,   3_000, 12_000);
     const typeIdx    = h % PROPERTY_TYPES.length;
+    const propType   = PROPERTY_TYPES[typeIdx];
     const listPrice  = seeded(h + 5,   250_000, 1_200_000);
     const estRent    = seeded(h + 6,   1_200, 4_500);
     const lastSold   = seeded(h + 7,   180_000, 950_000);
     const daysAgo    = seeded(h + 8,   30, 730);
     const photoIdx   = h % UNSPLASH_HOUSES.length;
+
+    // Multi-family: populate unit count so callers can distinguish per-unit vs building rent
+    const unitCount: number | undefined =
+      propType === 'Multi-Family' ? seeded(h + 10, 4, 8) :
+      propType === 'Duplex'       ? 2                    :
+      undefined;
 
     const landRatio = 0.15 + (h % 15) / 100; // 15% - 29% land allocation
     const landValCents = Math.round(listPrice * 0.85 * landRatio) * 100;
@@ -156,9 +171,11 @@ export class MockPropertyDataProvider implements PropertyDataProvider {
       sqft,
       yearBuilt,
       lotSqft,
-      propertyType:       PROPERTY_TYPES[typeIdx],
+      propertyType:       propType,
+      units:              unitCount,
       listPriceCents:     listPrice * 100,
       estRentCents:       estRent * 100,
+      totalBuildingRentCents: unitCount ? estRent * 100 * unitCount : undefined,
       lastSoldPriceCents: lastSold * 100,
       lastSoldDate:       new Date(Date.now() - daysAgo * 86_400_000),
       annualPropertyTaxCents: Math.round(listPrice * 0.015) * 100,
@@ -168,11 +185,11 @@ export class MockPropertyDataProvider implements PropertyDataProvider {
       taxYear:            new Date().getFullYear() - 1,
       hoaMonthlyCents:    (h % 3 === 0) ? seeded(h + 9, 50, 350) * 100 : undefined,
       taxSource:          'mock',
-      estRentLowCents:    Math.round(estRent * 0.9) * 100,
-      estRentHighCents:   Math.round(estRent * 1.1) * 100,
+      estRentLowCents:    Math.round(estRent * 0.85) * 100,
+      estRentHighCents:   Math.round(estRent * 1.15) * 100,
       avmPriceCents:      listPrice * 100,
-      avmPriceLowCents:   Math.round(listPrice * 0.95) * 100,
-      avmPriceHighCents:  Math.round(listPrice * 1.05) * 100,
+      avmPriceLowCents:   Math.round(listPrice * 0.85) * 100,
+      avmPriceHighCents:  Math.round(listPrice * 1.15) * 100,
       sourceProvider:     "MockPropertyProvider v1",
       fetchedAt:          new Date(),
     };
@@ -249,8 +266,8 @@ export class MockPropertyDataProvider implements PropertyDataProvider {
     const price = seeded(h, 250_000, 1_200_000);
     return {
       priceCents: price * 100,
-      priceLowCents: Math.round(price * 0.95) * 100,
-      priceHighCents: Math.round(price * 1.05) * 100,
+      priceLowCents: Math.round(price * 0.85) * 100,
+      priceHighCents: Math.round(price * 1.15) * 100,
       source: "mock",
       fetchedAt: new Date(),
     };
@@ -260,9 +277,8 @@ export class MockPropertyDataProvider implements PropertyDataProvider {
 export class RentCastPropertyProvider implements PropertyDataProvider {
   private client: import('@/lib/providers/rentcast').RentCastClient;
 
-  constructor(apiKey: string) {
-    const { RentCastClient } = require('@/lib/providers/rentcast');
-    this.client = new RentCastClient(apiKey);
+  constructor(client: import('@/lib/providers/rentcast').RentCastClient) {
+    this.client = client;
   }
 
   private async getRentEstimateWithWidening(address: string, maxRadius = 5, daysOld = 180): Promise<any> {
@@ -384,6 +400,11 @@ export class RentCastPropertyProvider implements PropertyDataProvider {
         ? Math.round(subject.hoa.fee * 100)
         : undefined;
 
+      // For multi-family, estRentCents is per-unit (RentCast lookupSubjectAttributes=true default).
+      const unitCount: number | undefined = (subject.units ?? 0) > 1 ? subject.units : undefined;
+      const estRentPerUnit = rentData?.rent ? Math.round(rentData.rent * 100) : undefined;
+      const totalBuildingRentCents = (estRentPerUnit && unitCount) ? estRentPerUnit * unitCount : undefined;
+
       return {
         photoUrl: undefined,
         beds:               subject.bedrooms  || undefined,
@@ -392,8 +413,10 @@ export class RentCastPropertyProvider implements PropertyDataProvider {
         yearBuilt:          subject.yearBuilt || undefined,
         lotSqft:            subject.lotSize   || undefined,
         propertyType:       subject.propertyType || undefined,
+        units:              unitCount,
+        totalBuildingRentCents,
         listPriceCents:     undefined,
-        estRentCents:       rentData?.rent ? Math.round(rentData.rent * 100) : undefined,
+        estRentCents:       estRentPerUnit,
         lastSoldPriceCents: lastSoldPrice ? Math.round(lastSoldPrice * 100) : undefined,
         lastSoldDate,
         annualPropertyTaxCents,
@@ -574,6 +597,17 @@ export class MashvisorPropertyProvider implements PropertyDataProvider {
   }
 }
 
+// ─── Unavailable provider — returned when a real provider is configured but the
+// API key is absent. Throws rather than silently falling back to mock data,
+// preventing prod deployments from serving fake data undetected.
+export class UnavailablePropertyProvider implements PropertyDataProvider {
+  constructor(private readonly reason: string) {}
+  async getFacts(): Promise<PropertyFacts> { throw new Error(this.reason); }
+  async getComps(): Promise<Comp[]> { throw new Error(this.reason); }
+  async getRentalComps(): Promise<RentalComp[]> { throw new Error(this.reason); }
+  async getValueEstimate(): Promise<ValueEstimate> { throw new Error(this.reason); }
+}
+
 // ─── Factory ──────────────────────────────────────────────────────────────────
 
 export function getPropertyProvider(type?: string): PropertyDataProvider {
@@ -581,26 +615,31 @@ export function getPropertyProvider(type?: string): PropertyDataProvider {
 
   switch (providerType) {
     case "rentcast": {
-      const key = process.env.RENTCAST_API_KEY;
-      if (!key) {
-        console.warn("⚠️ [PROPERTY PROVIDER] RENTCAST_API_KEY is missing. Falling back to MockPropertyDataProvider.");
-        return new MockPropertyDataProvider();
+      const { getRentCastClient } = require('@/lib/providers/rentcast');
+      const client = getRentCastClient();
+      if (!client) {
+        return new UnavailablePropertyProvider(
+          'PROPERTY_DATA_PROVIDER=rentcast but RENTCAST_API_KEY is not set. ' +
+          'Set the key or change PROPERTY_DATA_PROVIDER to "mock" for local dev.'
+        );
       }
-      return new RentCastPropertyProvider(key);
+      return new RentCastPropertyProvider(client);
     }
     case "attom": {
       const key = process.env.ATTOM_API_KEY;
       if (!key) {
-        console.warn("⚠️ [PROPERTY PROVIDER] ATTOM_API_KEY is missing. Falling back to MockPropertyDataProvider.");
-        return new MockPropertyDataProvider();
+        return new UnavailablePropertyProvider(
+          'PROPERTY_DATA_PROVIDER=attom but ATTOM_API_KEY is not set.'
+        );
       }
       return new AttomPropertyProvider(key);
     }
     case "mashvisor": {
       const key = process.env.MASHVISOR_API_KEY;
       if (!key) {
-        console.warn("⚠️ [PROPERTY PROVIDER] MASHVISOR_API_KEY is missing. Falling back to MockPropertyDataProvider.");
-        return new MockPropertyDataProvider();
+        return new UnavailablePropertyProvider(
+          'PROPERTY_DATA_PROVIDER=mashvisor but MASHVISOR_API_KEY is not set.'
+        );
       }
       return new MashvisorPropertyProvider(key);
     }

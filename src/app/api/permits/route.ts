@@ -1,4 +1,5 @@
-import { NextResponse } from 'next/server';
+import { NextRequest, NextResponse } from 'next/server';
+import { requireAuth, isAuthError } from '@/lib/firebase-admin/auth-guard';
 import { lookupPermit, PermitLookupSchema, JurisdictionNotSupportedError, ExternalApiError } from '@/lib/services/permitService';
 
 /**
@@ -15,7 +16,11 @@ import { lookupPermit, PermitLookupSchema, JurisdictionNotSupportedError, Extern
  */
 export const dynamic = 'force-dynamic';
 
-export async function GET(request: Request) {
+export async function GET(request: NextRequest) {
+  // ── Auth — property lookups require a valid session ──────────────────────────
+  const auth = await requireAuth(request);
+  if (isAuthError(auth)) return auth;
+
   const { searchParams } = new URL(request.url);
 
   const parse = PermitLookupSchema.safeParse({

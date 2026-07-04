@@ -59,7 +59,7 @@ const LIFECYCLE_STAGES = [
   },
   {
     key:         "hold",
-    label:       "Hold & Rehab",
+    label:       "Hold",
     description: "Renovation budget, holding costs, and operations.",
     icon:        "construction",
     color:       "#ffac5a",

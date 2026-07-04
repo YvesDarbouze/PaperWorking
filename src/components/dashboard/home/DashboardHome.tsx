@@ -48,6 +48,7 @@ import MobileBottomNav from '../MobileBottomNav';
 const PerformanceChart = lazy(() => import('./PerformanceChart'));
 
 import toast from 'react-hot-toast';
+import { computeAutopsyMetrics } from '@/lib/metrics';
 import { Project } from '@/types/schema';
 
 /* ═══════════════════════════════════════════════════════════════
@@ -197,6 +198,7 @@ export default function DashboardHome() {
 
   const [searchTerm, setSearchTerm] = useState('');
   const [isInviteModalOpen, setIsInviteModalOpen] = useState(false);
+  const [inviteProjectId, setInviteProjectId] = useState<string | undefined>();
   const [isPostDealOpen, setIsPostDealOpen] = useState(false);
   const [scope, setScope] = useState<ScopeMode>('property');
   const [period, setPeriod] = useState<PeriodFilter>('ALL');
@@ -238,7 +240,14 @@ export default function DashboardHome() {
     );
   });
 
-  const dealsClosedCount = portfolioProjects.filter(p => p.status === 'Sold').length;
+  const dealsClosedCount = portfolioProjects.filter(
+    p => p.status === 'Sold' || p.status === 'closed_won' || p.status === 'Rented'
+  ).length;
+
+  const winsCount = portfolioProjects.filter(p => {
+    if (p.status !== 'Sold' && p.status !== 'closed_won') return false;
+    try { return computeAutopsyMetrics(p).netProfit > 0; } catch { return false; }
+  }).length;
 
   const uniqueMembers = new Set<string>();
   portfolioProjects.forEach(p => {
@@ -331,13 +340,6 @@ export default function DashboardHome() {
             }
           </div>
         </section>
-      )}
-
-      {/* ── Portfolio KPI Summary Strip ── */}
-      {!isGuest && (
-        <ErrorBoundary name="KPI Grid">
-          <KPIGrid />
-        </ErrorBoundary>
       )}
 
       {/* ── Stitch Command Center Layout ── */}
@@ -451,7 +453,8 @@ export default function DashboardHome() {
       {isInviteModalOpen && (
         <InvestorInviteModal
           isOpen={isInviteModalOpen}
-          onClose={() => setIsInviteModalOpen(false)}
+          onClose={() => { setIsInviteModalOpen(false); setInviteProjectId(undefined); }}
+          projectId={inviteProjectId}
         />
       )}
       <PostDealModal

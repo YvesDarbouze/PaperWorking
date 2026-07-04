@@ -7,7 +7,7 @@ const UPDATES = [
     date: 'Jun 2026',
     category: 'Product',
     categoryColor: 'text-primary bg-primary/10',
-    headline: 'REIL Lifecycle now enforces Acquisition → Purchase → Hold → Exit phase gates',
+    headline: 'REIL Lifecycle now enforces Acquisition → Fund → Hold → Exit phase gates',
     body: 'Deals can no longer skip phases. Each gate requires the previous phase to be marked complete, keeping your pipeline audit-ready at every step.',
   },
   {

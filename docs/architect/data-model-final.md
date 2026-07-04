@@ -57,7 +57,7 @@ The PaperWorking data model is centered around a 4-phase real estate investment 
 ### 3. Project (`projectSchema.ts`)
 - **~600 lines** | The largest and most complex schema
 - Mirrors the monolithic `Project` + `ProjectFinancials` interfaces
-- 4-phase lifecycle: Find & Fund → Acquisition → Hold & Rehab → Exit
+- 4-phase lifecycle: Acquisition → Fund → Hold → Exit
 - `currentPhase` is a NUMBER (1-4), NOT a string
 - Embedded `financials` object with 100+ financial fields
 - All currency in USD dollars (float) — cents migration planned

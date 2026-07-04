@@ -32,25 +32,69 @@ export async function GET(
       }
     }
 
-    // Mock/default historical metrics if not already present on the token data
-    const noiHistory = data.noiHistory || [
-      { date: '2026-01-01', value: 120000 },
-      { date: '2026-02-01', value: 125000 }
-    ];
-    const capRateHistory = data.capRateHistory || [
-      { date: '2026-01-01', value: 6.5 },
-      { date: '2026-02-01', value: 6.7 }
-    ];
-    const cashFlowHistory = data.cashFlowHistory || [
-      { date: '2026-01-01', value: 8500 },
-      { date: '2026-02-01', value: 9200 }
-    ];
-    const burnRateHistory = data.burnRateHistory || [
-      { date: '2026-01-01', value: 1200 },
-      { date: '2026-02-01', value: 1100 }
-    ];
+    // Fetch actual historical metrics from database if not present on the token data
+    let noiHistory = data.noiHistory || [];
+    let capRateHistory = data.capRateHistory || [];
+    let cashFlowHistory = data.cashFlowHistory || [];
+    let burnRateHistory = data.burnRateHistory || [];
 
     const projectId = data.projectId || data.dealId;
+    if (projectId && (!noiHistory.length || !capRateHistory.length || !cashFlowHistory.length)) {
+      try {
+        const snapshotsSnap = await adminDb.collection('propertyMetricSnapshots')
+          .where('projectId', '==', projectId)
+          .where('periodType', '==', 'monthly')
+          .get();
+
+        if (!snapshotsSnap.empty) {
+          const sortedDocs = snapshotsSnap.docs
+            .map(doc => {
+              const d = doc.data();
+              const rawDate = d.date;
+              let dateObj: Date;
+              if (rawDate?.toDate) {
+                dateObj = rawDate.toDate();
+              } else if (rawDate) {
+                dateObj = new Date(rawDate);
+              } else {
+                dateObj = new Date(d.period + '-01T00:00:00Z');
+              }
+              const dateStr = !isNaN(dateObj.getTime())
+                ? dateObj.toISOString().split('T')[0]
+                : d.period + '-01';
+
+              return {
+                date: dateStr,
+                period: d.period,
+                noi: d.noi ?? null,
+                capRate: d.capRate ?? null,
+                monthlyCashFlow: d.monthlyCashFlow ?? null,
+              };
+            })
+            .sort((a, b) => a.period.localeCompare(b.period));
+
+          if (!noiHistory.length) {
+            noiHistory = sortedDocs
+              .filter(d => d.noi !== null)
+              .map(d => ({ date: d.date, value: d.noi as number }));
+          }
+
+          if (!capRateHistory.length) {
+            capRateHistory = sortedDocs
+              .filter(d => d.capRate !== null)
+              .map(d => ({ date: d.date, value: d.capRate as number }));
+          }
+
+          if (!cashFlowHistory.length) {
+            cashFlowHistory = sortedDocs
+              .filter(d => d.monthlyCashFlow !== null)
+              .map(d => ({ date: d.date, value: d.monthlyCashFlow as number }));
+          }
+        }
+      } catch (dbErr) {
+        console.error('Failed to fetch propertyMetricSnapshots:', dbErr);
+      }
+    }
     let realProjectData: any = null;
     let raiseTarget = 1200000;
     let raiseRaised = 840000;

@@ -1,7 +1,7 @@
 'use client';
 
-import React, { useState } from 'react';
-import { Camera, Image as ImageIcon, Trash2, Eye, Film } from 'lucide-react';
+import React, { useState, useEffect, useCallback } from 'react';
+import { Camera, Image as ImageIcon, Trash2, Eye, Film, Loader2 } from 'lucide-react';
 import toast from 'react-hot-toast';
 import FileDropzone from '@/components/shared/FileDropzone';
 
@@ -9,6 +9,8 @@ import FileDropzone from '@/components/shared/FileDropzone';
    Photography Upload Manager — Phase 4 Module
    Manages professional photography / virtual tour
    uploads for MLS syndication.
+
+   Persistence: Firestore projects/{projectId}/mediaAssets
    ═══════════════════════════════════════════════════════ */
 
 interface PhotoAsset {
@@ -16,17 +18,10 @@ interface PhotoAsset {
   name: string;
   type: 'Photo' | 'Video' | '3D Tour';
   room: string;
-  url: string; // Firebase Storage or placeholder URL
+  url: string;
+  storagePath?: string;
   uploaded: boolean;
 }
-
-const SAMPLE_ASSETS: PhotoAsset[] = [
-  { id: '1', name: 'hero_exterior_front.jpg', type: 'Photo', room: 'Exterior', url: 'https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=400&h=300&fit=crop', uploaded: true },
-  { id: '2', name: 'kitchen_wide_angle.jpg', type: 'Photo', room: 'Kitchen', url: 'https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?w=400&h=300&fit=crop', uploaded: true },
-  { id: '3', name: 'master_bath_detail.jpg', type: 'Photo', room: 'Master Bath', url: 'https://images.unsplash.com/photo-1600566753190-17f0baa2a6c3?w=400&h=300&fit=crop', uploaded: true },
-  { id: '4', name: 'aerial_drone_01.mp4', type: 'Video', room: 'Aerial', url: '', uploaded: false },
-  { id: '5', name: 'matterport_3d_tour', type: '3D Tour', room: 'Full Property', url: '', uploaded: false },
-];
 
 const TYPE_ICONS: Record<PhotoAsset['type'], React.ReactNode> = {
   Photo: <ImageIcon className="w-4 h-4" />,
@@ -39,29 +34,89 @@ interface Props {
 }
 
 export default function PhotographyUploadManager({ projectId }: Props) {
-  const [assets, setAssets] = useState<PhotoAsset[]>(SAMPLE_ASSETS);
+  const [assets, setAssets] = useState<PhotoAsset[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  // Load persisted assets from Firestore on mount
+  useEffect(() => {
+    let cancelled = false;
+    setLoading(true);
+    import('@/lib/firebase/config').then(({ db }) =>
+      import('firebase/firestore').then(({ collection, onSnapshot, query, orderBy }) => {
+        const q = query(
+          collection(db, 'projects', projectId, 'mediaAssets'),
+          orderBy('uploadedAt', 'asc'),
+        );
+        const unsub = onSnapshot(q, snap => {
+          if (cancelled) return;
+          setAssets(snap.docs.map(doc => ({ id: doc.id, ...(doc.data() as Omit<PhotoAsset, 'id'>) })));
+          setLoading(false);
+        }, () => {
+          if (!cancelled) setLoading(false);
+        });
+        return unsub;
+      })
+    ).catch(() => { if (!cancelled) setLoading(false); });
+    return () => { cancelled = true; };
+  }, [projectId]);
 
   const uploadedCount = assets.filter(a => a.uploaded).length;
   const photoCount = assets.filter(a => a.type === 'Photo' && a.uploaded).length;
   const videoCount = assets.filter(a => a.type === 'Video' && a.uploaded).length;
 
-  const handleRemove = (id: string) => {
-    setAssets(assets.filter(a => a.id !== id));
-  };
+  const handleRemove = useCallback(async (id: string) => {
+    try {
+      const { db } = await import('@/lib/firebase/config');
+      const { doc, deleteDoc } = await import('firebase/firestore');
+      await deleteDoc(doc(db, 'projects', projectId, 'mediaAssets', id));
+    } catch {
+      toast.error('Failed to remove asset');
+    }
+  }, [projectId]);
 
   const handleAddAsset = () => {
-    setAssets([
-      ...assets,
-      {
-        id: Math.random().toString(36).slice(2, 8),
-        name: '',
-        type: 'Photo',
-        room: '',
-        url: '',
-        uploaded: false,
-      },
-    ]);
+    // Add a pending (not yet uploaded) slot to local state; it gets persisted on upload
+    const tempId = Math.random().toString(36).slice(2, 8);
+    setAssets(prev => [...prev, { id: tempId, name: '', type: 'Photo', room: '', url: '', uploaded: false }]);
   };
+
+  const handleUploadComplete = useCallback(async (
+    tempId: string,
+    room: string,
+    assetType: PhotoAsset['type'],
+    res: { downloadUrl: string; storagePath: string },
+  ) => {
+    const name = res.storagePath.split('/').pop() || room || 'Asset';
+    const record: Omit<PhotoAsset, 'id'> = {
+      name,
+      type: assetType,
+      room,
+      url: res.downloadUrl,
+      storagePath: res.storagePath,
+      uploaded: true,
+    };
+    try {
+      const { db } = await import('@/lib/firebase/config');
+      const { collection, addDoc, serverTimestamp } = await import('firebase/firestore');
+      await addDoc(collection(db, 'projects', projectId, 'mediaAssets'), {
+        ...record,
+        uploadedAt: serverTimestamp(),
+      });
+      // Remove the local pending slot — onSnapshot will repopulate with the persisted doc
+      setAssets(prev => prev.filter(a => a.id !== tempId));
+      toast.success('Asset uploaded successfully');
+    } catch {
+      toast.error('Upload succeeded but failed to save — please try again');
+    }
+  }, [projectId]);
+
+  if (loading) {
+    return (
+      <div className="glass-card border border-pw-border p-6 flex items-center justify-center py-12">
+        <Loader2 className="w-5 h-5 animate-spin text-text-secondary" />
+      </div>
+    );
+  }
 
   return (
     <div className="glass-card border border-pw-border p-6">
@@ -121,6 +176,13 @@ export default function PhotographyUploadManager({ projectId }: Props) {
         </div>
       )}
 
+      {/* Empty state */}
+      {assets.length === 0 && (
+        <div className="py-8 text-center text-text-secondary text-xs">
+          No media assets yet. Add your first photo or video below.
+        </div>
+      )}
+
       {/* Pending Upload Items */}
       <div className="space-y-4">
         {assets.filter(a => !a.uploaded).map(asset => (
@@ -130,7 +192,7 @@ export default function PhotographyUploadManager({ projectId }: Props) {
                 <label className="text-[10px] uppercase font-bold text-text-secondary">Type</label>
                 <select
                   value={asset.type}
-                  onChange={e => setAssets(assets.map(a => a.id === asset.id ? { ...a, type: e.target.value as any } : a))}
+                  onChange={e => setAssets(prev => prev.map(a => a.id === asset.id ? { ...a, type: e.target.value as PhotoAsset['type'] } : a))}
                   className="w-full mt-1 text-xs border border-pw-border rounded px-2.5 py-1.5 bg-pw-glass-bg text-text-primary focus:outline-none"
                 >
                   <option value="Photo">Photo</option>
@@ -144,7 +206,7 @@ export default function PhotographyUploadManager({ projectId }: Props) {
                   type="text"
                   placeholder="e.g. Kitchen, Exterior"
                   value={asset.room}
-                  onChange={e => setAssets(assets.map(a => a.id === asset.id ? { ...a, room: e.target.value } : a))}
+                  onChange={e => setAssets(prev => prev.map(a => a.id === asset.id ? { ...a, room: e.target.value } : a))}
                   className="w-full mt-1 text-xs border border-pw-border rounded px-2.5 py-1.5 bg-pw-glass-bg text-text-primary focus:outline-none"
                 />
               </div>
@@ -162,20 +224,12 @@ export default function PhotographyUploadManager({ projectId }: Props) {
               }
               maxSize={asset.type === 'Video' ? 50 * 1024 * 1024 : 10 * 1024 * 1024}
               label={`Upload ${asset.type}`}
-              onUploadComplete={(res) => {
-                setAssets(assets.map(a => a.id === asset.id ? { 
-                  ...a, 
-                  name: res.storagePath.split('/').pop() || asset.room || 'Asset',
-                  url: res.downloadUrl, 
-                  uploaded: true 
-                } : a));
-                toast.success('Asset uploaded successfully');
-              }}
+              onUploadComplete={(res) => handleUploadComplete(asset.id, asset.room, asset.type, res)}
             />
 
             <div className="flex justify-end">
               <button
-                onClick={() => handleRemove(asset.id)}
+                onClick={() => setAssets(prev => prev.filter(a => a.id !== asset.id))}
                 className="text-xs text-color-error hover:text-color-error/80 flex items-center gap-1"
               >
                 <Trash2 className="w-3.5 h-3.5" /> Discard

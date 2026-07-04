@@ -127,6 +127,33 @@ function getBatchedContent(
   return { title, body };
 }
 
+interface QueuedEmailItem {
+  id: string;
+  ref: FirebaseFirestore.DocumentReference<FirebaseFirestore.DocumentData>;
+  recipientId: string;
+  isBatchable?: boolean;
+  sendEmail?: boolean;
+  sendPush?: boolean;
+  expiresAt?: any;
+  title?: string;
+  body?: string;
+  deepLinkUrl?: string;
+  subject?: string;
+  html?: string;
+  recipientEmail?: string;
+  retryCount?: number;
+  type: string;
+  projectId?: string;
+  dealAddress?: string;
+  actorName?: string;
+  amount?: number | string;
+  task?: string;
+  documentName?: string;
+  organizationName?: string;
+  phase?: string;
+  [key: string]: any;
+}
+
 async function processQueuedEmails() {
   const queuedSnapshot = await adminDb.collection('queued_emails')
     .where('status', '==', 'pending')
@@ -155,7 +182,7 @@ async function processQueuedEmails() {
 
   // 2. Filter, check expiration, check retry backoff, check DND
   const now = new Date();
-  const activeDocs: any[] = [];
+  const activeDocs: FirebaseFirestore.QueryDocumentSnapshot<FirebaseFirestore.DocumentData>[] = [];
 
   for (const doc of queuedSnapshot.docs) {
     const data = doc.data();
@@ -192,12 +219,12 @@ async function processQueuedEmails() {
   }
 
   // 3. Separate batchable and individual items
-  const batchableItems: any[] = [];
-  const individualItems: any[] = [];
+  const batchableItems: QueuedEmailItem[] = [];
+  const individualItems: QueuedEmailItem[] = [];
 
   for (const doc of activeDocs) {
     const data = doc.data();
-    const item = { id: doc.id, ref: doc.ref, ...data };
+    const item: QueuedEmailItem = { id: doc.id, ref: doc.ref, recipientId: data.recipientId || '', type: data.type || '', ...data };
     if (data.isBatchable === true) {
       batchableItems.push(item);
     } else {
@@ -224,7 +251,7 @@ async function processQueuedEmails() {
       let lockAcquired = false;
       try {
         await adminDb.runTransaction(async (transaction) => {
-          const freshDoc = (await transaction.get(item.ref as any)) as any;
+          const freshDoc = await transaction.get(item.ref);
           if (!freshDoc.exists || freshDoc.data()?.status !== 'pending') {
             throw new Error('Already processed or status changed');
           }
@@ -240,14 +267,14 @@ async function processQueuedEmails() {
         // Send email
         let providerMessageId = null;
         if (item.sendEmail && userData?.email) {
-          const res = await CommunicationEngine.sendRawEmail([item.recipientEmail], item.subject, item.html);
+          const res = await CommunicationEngine.sendRawEmail([item.recipientEmail || ''], item.subject || '', item.html || '');
           providerMessageId = res.id;
         }
 
         // Send push
         if (item.sendPush) {
           const expiresAtDate = item.expiresAt ? (item.expiresAt.toDate ? item.expiresAt.toDate() : new Date(item.expiresAt)) : undefined;
-          await sendPushNotification(item.recipientId, userData, item.title, item.body, item.deepLinkUrl, expiresAtDate);
+          await sendPushNotification(item.recipientId, userData, item.title || '', item.body || '', item.deepLinkUrl || '', expiresAtDate);
         }
 
         await item.ref.update({
@@ -288,7 +315,7 @@ async function processQueuedEmails() {
 
   // 5. Group batchable items
   // Group key: recipientId_type_projectId (or dealAddress if projectId is missing)
-  const groups = new Map<string, any[]>();
+  const groups = new Map<string, QueuedEmailItem[]>();
   for (const item of batchableItems) {
     const key = `${item.recipientId}_${item.type}_${item.projectId || item.dealAddress || 'global'}`;
     if (!groups.has(key)) {
@@ -314,9 +341,9 @@ async function processQueuedEmails() {
       let groupLocked = false;
       try {
         await adminDb.runTransaction(async (transaction) => {
-          const freshDocs = [];
+          const freshDocs: FirebaseFirestore.DocumentSnapshot<FirebaseFirestore.DocumentData>[] = [];
           for (const item of groupItems) {
-            const freshDoc = (await transaction.get(item.ref as any)) as any;
+            const freshDoc = await transaction.get(item.ref);
             if (!freshDoc.exists || freshDoc.data()?.status !== 'pending') {
               throw new Error(`Item ${item.id} already processed or status changed`);
             }
@@ -341,7 +368,7 @@ async function processQueuedEmails() {
         const { title, body } = getBatchedContent(
           firstItem.type,
           count,
-          firstItem.dealAddress,
+          firstItem.dealAddress || '',
           groupItems
         );
 
@@ -385,7 +412,7 @@ async function processQueuedEmails() {
             return min;
           }, null as Date | null);
 
-          await sendPushNotification(firstItem.recipientId, userData, title, pushBody, firstItem.deepLinkUrl, minExpiresAt || undefined);
+          await sendPushNotification(firstItem.recipientId, userData, title, pushBody, firstItem.deepLinkUrl || '', minExpiresAt || undefined);
         }
 
         // Update all documents status to sent

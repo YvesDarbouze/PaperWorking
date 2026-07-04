@@ -77,6 +77,10 @@ const PHASE_BADGE_COLORS: Record<string, { bg: string; text: string }> = {
   'Phase 2: Transaction':       { bg: 'rgba(37,99,235,0.10)', text: '#2563EB' },
   'Phase 3: Rehab':             { bg: 'rgba(234,88,12,0.10)', text: '#EA580C' },
   'Phase 4: Hold / Exit':       { bg: 'rgba(63, 125, 32,0.10)', text: '#3f7d20' },
+  // v3 equivalents
+  'Phase 2: Fund':              { bg: 'rgba(37,99,235,0.10)', text: '#2563EB' },
+  'Phase 3: Hold':              { bg: 'rgba(234,88,12,0.10)', text: '#EA580C' },
+  'Phase 4: Exit':              { bg: 'rgba(63, 125, 32,0.10)', text: '#3f7d20' },
 };
 
 /* ─── Phase-aware folder icon color ──────────────────────────── */
@@ -90,6 +94,10 @@ const PHASE_FOLDER_COLORS: Record<string, { bg: string; icon: string }> = {
   'Phase 2: Transaction':       { bg: '#2563EB', icon: '#FFFFFF' },
   'Phase 3: Rehab':             { bg: '#EA580C', icon: '#FFFFFF' },
   'Phase 4: Hold / Exit':       { bg: '#3f7d20', icon: '#FFFFFF' },
+  // v3 equivalents
+  'Phase 2: Fund':              { bg: '#2563EB', icon: '#FFFFFF' },
+  'Phase 3: Hold':              { bg: '#EA580C', icon: '#FFFFFF' },
+  'Phase 4: Exit':              { bg: '#3f7d20', icon: '#FFFFFF' },
 };
 
 /* ─── Status badge ───────────────────────────────────────────── */
@@ -539,7 +547,7 @@ function WorkspaceHeader({ project, onOpenMetric }: { project: Project; onOpenMe
 
 const PHASE_ACCENT: Record<number, { color: string; canvasTint: string; label: string }> = {
   1: { color: "#454955", canvasTint: "rgba(69,73,85,0.06)",    label: "Acquisition" },
-  2: { color: "#7A9EAA", canvasTint: "rgba(122,158,170,0.06)", label: "Closing"     },
+  2: { color: "#7A9EAA", canvasTint: "rgba(122,158,170,0.06)", label: "Fund"        },
   3: { color: "#ffac5a", canvasTint: "rgba(255,172,90,0.06)",  label: "Hold"        },
   4: { color: "#5aaa3f", canvasTint: "rgba(90,170,63,0.06)",   label: "Exit"        },
 };

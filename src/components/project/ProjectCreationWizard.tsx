@@ -256,12 +256,24 @@ export default function ProjectCreationWizard({
     }
   };
 
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
-    if (file && activeQuestion) {
-      // Simulate file upload and store file name/mock url
-      updateFormNested(activeQuestion.field, `/files/mock_${Date.now()}_${file.name}`);
-      toast.success(`File "${file.name}" uploaded successfully.`);
+    if (!file || !activeQuestion || !user) return;
+    const toastId = `wizard-upload-${activeQuestion.field}`;
+    toast.loading(`Uploading ${file.name}…`, { id: toastId });
+    try {
+      const { uploadFile } = await import('@/lib/storage/uploadService');
+      // Use a user-scoped temp path; the download URL is permanent and
+      // gets persisted into the project document when the wizard submits.
+      const result = await uploadFile({
+        projectId: `users/${user.uid}/wizard_uploads`,
+        path: activeQuestion.field,
+        file,
+      });
+      updateFormNested(activeQuestion.field, result.downloadUrl);
+      toast.success(`"${file.name}" uploaded successfully.`, { id: toastId });
+    } catch (err: any) {
+      toast.error(err.message || 'Upload failed. Please try again.', { id: toastId });
     }
   };
 

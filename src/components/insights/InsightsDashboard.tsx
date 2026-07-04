@@ -27,15 +27,156 @@ import {
   ShieldAlert,
   DollarSign,
   Calendar,
-  Landmark
+  Landmark,
+  Lock,
+  AlertTriangle
 } from 'lucide-react';
 import { InsightsEngineResult } from '@/lib/services/insightsEngine';
 import { REQUIRED_INSIGHTS_FIELDS } from '@/lib/projections/projectionEngine';
+import type { Project } from '@/types/schema';
+import {
+  computeLTVMetric,
+  computeDebtYieldMetric,
+  computeEquityMultipleMetric,
+  computeBreakEvenOccupancyMetric,
+  computeCapitalReservesMetric,
+  computePaybackPeriodMetric,
+  computeTenantTurnoverMetric,
+  computeLeaseRenewalMetric,
+  computeMaintenanceCostPerUnitMetric,
+  computeDOMMetric,
+  computeBudgetVarianceMetric,
+} from '@/lib/metrics';
 
 interface InsightsDashboardProps {
   data?: InsightsEngineResult;
   missingFields?: string[];
+  project?: Project;
 }
+
+interface SupplementalMetricConfig {
+  id: string;
+  name: string;
+  phases: number[];
+  phaseLabel: string;
+  benchmark: string;
+  format: (v: number) => string;
+  compute: (project: any) => any;
+  description: string;
+}
+
+const SUPPLEMENTAL_METRICS: SupplementalMetricConfig[] = [
+  {
+    id: 'LTV',
+    name: 'Loan-to-Value (LTV)',
+    phases: [2, 3],
+    phaseLabel: 'Fund / Hold',
+    benchmark: '≤ 75%',
+    format: (v) => `${v.toFixed(1)}%`,
+    compute: computeLTVMetric,
+    description: 'Represents the lender risk framework relative to the current valuation.',
+  },
+  {
+    id: 'DEBT_YIELD',
+    name: 'Debt Yield',
+    phases: [2, 3],
+    phaseLabel: 'Fund / Hold',
+    benchmark: '≥ 10%',
+    format: (v) => `${v.toFixed(1)}%`,
+    compute: computeDebtYieldMetric,
+    description: 'Measures cash-on-cash yield for the debt stack, ignoring underwriting terms.',
+  },
+  {
+    id: 'EQUITY_MULTIPLE',
+    name: 'Equity Multiple',
+    phases: [3, 4],
+    phaseLabel: 'Hold / Exit',
+    benchmark: '≥ 2.5×',
+    format: (v) => `${v.toFixed(2)}×`,
+    compute: computeEquityMultipleMetric,
+    description: 'Pairs with IRR to measure total return divided by initial capital invested.',
+  },
+  {
+    id: 'BREAK_EVEN_OCCUPANCY',
+    name: 'Break-Even Occupancy',
+    phases: [3],
+    phaseLabel: 'Hold',
+    benchmark: '≤ 75%',
+    format: (v) => `${v.toFixed(1)}%`,
+    compute: computeBreakEvenOccupancyMetric,
+    description: 'Required utilization to cover operating expenses and mortgage debt service.',
+  },
+  {
+    id: 'CAPITAL_RESERVES',
+    name: 'CapEx Funded Reserves',
+    phases: [3],
+    phaseLabel: 'Hold',
+    benchmark: '≥ 12 mo',
+    format: (v) => `${Math.round(v)} months`,
+    compute: computeCapitalReservesMetric,
+    description: 'Months of monthly maintenance reserves currently covered by liquid capital.',
+  },
+  {
+    id: 'PAYBACK_PERIOD',
+    name: 'Payback Period',
+    phases: [3, 4],
+    phaseLabel: 'Hold / Exit',
+    benchmark: '≤ 10 yrs',
+    format: (v) => `${v.toFixed(1)} years`,
+    compute: computePaybackPeriodMetric,
+    description: 'Horizon when cumulative cash flow matches initial cash invested.',
+  },
+  {
+    id: 'TENANT_TURNOVER',
+    name: 'Tenant Turnover Rate',
+    phases: [3],
+    phaseLabel: 'Hold',
+    benchmark: '≤ 15%',
+    format: (v) => `${v.toFixed(1)}%`,
+    compute: computeTenantTurnoverMetric,
+    description: 'Calculates historical annual move-outs relative to total asset units.',
+  },
+  {
+    id: 'LEASE_RENEWAL',
+    name: 'Lease Renewal Rate',
+    phases: [3],
+    phaseLabel: 'Hold',
+    benchmark: '≥ 75%',
+    format: (v) => `${v.toFixed(1)}%`,
+    compute: computeLeaseRenewalMetric,
+    description: 'Percentage of expiring leases successfully renewed without unit turnover.',
+  },
+  {
+    id: 'MAINTENANCE_COST_PER_UNIT',
+    name: 'Maintenance / Unit',
+    phases: [3],
+    phaseLabel: 'Hold',
+    benchmark: '≤ $1,800/yr',
+    format: (v) => `$${Math.round(v).toLocaleString()}/yr`,
+    compute: computeMaintenanceCostPerUnitMetric,
+    description: 'Standardized annual maintenance cost allocated per leasable unit.',
+  },
+  {
+    id: 'DOM',
+    name: 'Days on Market (DOM)',
+    phases: [1, 4],
+    phaseLabel: 'Acquisition / Exit',
+    benchmark: '≤ 45 days',
+    format: (v) => `${Math.round(v)} days`,
+    compute: computeDOMMetric,
+    description: 'Market timeline benchmark for initial acquisition or disposition.',
+  },
+  {
+    id: 'BUDGET_VARIANCE',
+    name: 'Budget Variance',
+    phases: [1, 2],
+    phaseLabel: 'Acquisition / Fund',
+    benchmark: '≤ 0%',
+    format: (v) => `${v > 0 ? '+' : ''}${v.toFixed(1)}%`,
+    compute: computeBudgetVarianceMetric,
+    description: 'Measures project construction actuals against budgeted numbers.',
+  },
+];
 
 // ── Donut Gauge Sub-component ──
 interface DonutGaugeProps {
@@ -121,7 +262,7 @@ function CustomTooltip({ active, payload, label, valueFormatter }: CustomTooltip
   return null;
 }
 
-export default function InsightsDashboard({ data, missingFields }: InsightsDashboardProps) {
+export default function InsightsDashboard({ data, missingFields, project }: InsightsDashboardProps) {
   if (!data) {
     const fields = missingFields ?? REQUIRED_INSIGHTS_FIELDS;
     return (
@@ -148,6 +289,30 @@ export default function InsightsDashboard({ data, missingFields }: InsightsDashb
   }
 
   const { shortTerm, longTerm, marketInsights } = data;
+
+  const activeProject = React.useMemo(() => {
+    if (project) return project;
+    // Construct simulation dummy project for Stress Simulator
+    return {
+      currentPhase: 3, // Hold
+      strategyType: 'Rent',
+      financials: {
+        purchasePrice: (shortTerm as any).purchasePrice ?? 300000,
+        loanAmount: (shortTerm as any).loanAmount ?? 240000,
+        loanInterestRate: 6.0,
+        loanTermYears: 30,
+        monthlyGrossRent: (shortTerm as any).grossScheduledIncome ? (shortTerm as any).grossScheduledIncome / 12 : 3000,
+        monthlyMaintenanceReserve: 150,
+        capitalReserves: 4500,
+        numberOfUnits: 1,
+        tenantTurnoverRate: 15,
+        leaseRenewalRate: 75,
+        daysOnMarket: 45,
+        rehabBudget: 30000,
+        rehabActual: 30000,
+      }
+    };
+  }, [project, shortTerm]);
 
   // ── Short-Term color thresholds ──
   
@@ -446,6 +611,109 @@ export default function InsightsDashboard({ data, missingFields }: InsightsDashb
         </div>
       </div>
 
+      {/* ── SECTION 4: Gated Secondary Diagnostics ── */}
+      <SecondaryDiagnosticsPanel project={activeProject} />
+
+    </div>
+  );
+}
+
+export function SecondaryDiagnosticsPanel({ project }: { project: any }) {
+  if (!project) return null;
+
+  return (
+    <div className="space-y-4 pt-4">
+      <div className="flex items-center justify-between border-b border-white/5 pb-2">
+        <div className="flex items-center gap-2">
+          <AlertTriangle className="w-5 h-5 text-amber-500" />
+          <h2 className="text-lg font-light text-white tracking-wide">
+            Secondary Diagnostics & Operational Context
+          </h2>
+        </div>
+        <span className="text-xs text-[#9E9DA0] font-light">
+          Gated by current REIL phase ({project.currentPhase !== undefined ? `Phase ${project.currentPhase}` : 'Simulation'})
+        </span>
+      </div>
+
+      <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+        {SUPPLEMENTAL_METRICS.map((metric) => {
+          const result = metric.compute(project);
+          const isGated = !metric.phases.includes(project.currentPhase ?? 3);
+          const isMissing = result.state === 'incomplete';
+
+          if (isGated) {
+            return (
+              <div
+                key={metric.id}
+                className="p-5 rounded-2xl bg-white/[0.01] border border-white/[0.03] opacity-40 relative group transition-all duration-300 flex flex-col justify-between min-h-[140px]"
+              >
+                <div className="flex items-start justify-between">
+                  <span className="text-[10px] text-[#9E9DA0] font-semibold tracking-widest uppercase">
+                    {metric.name}
+                  </span>
+                  <Lock className="w-3.5 h-3.5 text-[#6B6870]" />
+                </div>
+                <div className="text-sm font-light text-[#6B6870] mt-3">
+                  Unlocks in phase: {metric.phaseLabel}
+                </div>
+                <p className="text-[10px] text-[#6B6870] mt-2 leading-relaxed">
+                  {metric.description}
+                </p>
+              </div>
+            );
+          }
+
+          if (isMissing) {
+            return (
+              <div
+                key={metric.id}
+                className="p-5 rounded-2xl bg-white/[0.01] border border-dashed border-white/10 relative group transition-all duration-300 flex flex-col justify-between min-h-[140px]"
+              >
+                <div className="flex items-start justify-between">
+                  <span className="text-[10px] text-amber-400 font-semibold tracking-widest uppercase">
+                    {metric.name}
+                  </span>
+                  <HelpCircle className="w-3.5 h-3.5 text-amber-400/60" />
+                </div>
+                <div className="text-xs font-light text-[#9E9DA0] mt-2">
+                  Incomplete: requires{' '}
+                  <span className="font-mono text-amber-400/80">
+                    {result.inputsMissing.map((f: string) => f.replace('financials.', '')).join(', ')}
+                  </span>
+                </div>
+                <p className="text-[10px] text-[#9E9DA0] mt-2 leading-relaxed">
+                  {metric.description}
+                </p>
+              </div>
+            );
+          }
+
+          // Normal calculated state
+          return (
+            <div
+              key={metric.id}
+              className="p-5 rounded-2xl bg-white/[0.02] border border-white/5 relative group hover:border-white/10 transition-all duration-300 flex flex-col justify-between min-h-[140px]"
+            >
+              <div className="flex items-start justify-between">
+                <span className="text-[10px] text-[#9E9DA0] font-semibold tracking-widest uppercase">
+                  {metric.name}
+                </span>
+                <span className="text-[10px] font-mono text-[#5aaa3f] bg-[#5aaa3f]/10 px-2 py-0.5 rounded-full">
+                  Target: {metric.benchmark}
+                </span>
+              </div>
+
+              <div className="text-3xl font-light font-mono text-white tracking-tight mt-3">
+                {result.value !== null ? metric.format(result.value) : '--'}
+              </div>
+
+              <p className="text-[11px] text-[#9E9DA0] font-extralight mt-2 leading-relaxed">
+                {metric.description}
+              </p>
+            </div>
+          );
+        })}
+      </div>
     </div>
   );
 }

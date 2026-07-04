@@ -8,6 +8,7 @@ import { useUserStore } from '@/store/userStore';
 import { usePermissions } from '@/hooks/usePermissions';
 import type { OrgTeamMember, InternalRole, AuditLog, Permission } from '@/types/schema';
 import { Checkbox } from '@/components/ui';
+import toast from 'react-hot-toast';
 
 /* ═══════════════════════════════════════════════════════
    Team & Role Management Settings
@@ -51,9 +52,28 @@ function MemberRow({
   const [loading, setLoading] = useState(false);
   const [showPermissions, setShowPermissions] = useState(false);
 
-  const handleAction = async (action: () => Promise<void>) => {
+  const handleAction = async (
+    action: () => Promise<void>,
+    loadingMsg?: string,
+    successMsg?: string
+  ) => {
+    const tid = loadingMsg ? toast.loading(loadingMsg) : undefined;
     setLoading(true);
-    try { await action(); } catch (e) { alert((e as Error).message); } finally { setLoading(false); }
+    try {
+      await action();
+      if (successMsg) {
+        if (tid) toast.success(successMsg, { id: tid });
+        else toast.success(successMsg);
+      } else if (tid) {
+        toast.dismiss(tid);
+      }
+    } catch (e) {
+      const errMsg = (e as Error).message;
+      if (tid) toast.error(errMsg, { id: tid });
+      else toast.error(errMsg);
+    } finally {
+      setLoading(false);
+    }
   };
 
   const initials = member.displayName
@@ -87,7 +107,11 @@ function MemberRow({
           {/* Role selector */}
           <select
             value={member.internalRole}
-            onChange={(e) => handleAction(() => onRoleChange(member.id, e.target.value as InternalRole))}
+            onChange={(e) => handleAction(
+              () => onRoleChange(member.id, e.target.value as InternalRole),
+              'Updating clearance role...',
+              `Clearance role updated to ${e.target.value}`
+            )}
             disabled={loading}
             className="glass-input text-xs px-2.5 py-1.5 text-pw-black disabled:opacity-50 bg-pw-surface"
           >
@@ -99,7 +123,11 @@ function MemberRow({
           {/* Scope selector */}
           <select
             value={member.scope || 'project'}
-            onChange={(e) => handleAction(() => onScopeChange(member.id, e.target.value as 'tenant' | 'project'))}
+            onChange={(e) => handleAction(
+              () => onScopeChange(member.id, e.target.value as 'tenant' | 'project'),
+              'Updating member scope...',
+              `Scope updated to ${e.target.value === 'tenant' ? 'Tenant Wide' : 'Project Scoped'}`
+            )}
             disabled={loading}
             className="glass-input text-xs px-2.5 py-1.5 text-pw-black disabled:opacity-50 bg-pw-surface"
           >
@@ -129,7 +157,11 @@ function MemberRow({
           <div className="flex items-center gap-1">
             {/* Suspend */}
             <button
-              onClick={() => handleAction(() => onSuspend(member.id, member.status !== 'suspended'))}
+              onClick={() => handleAction(
+                () => onSuspend(member.id, member.status !== 'suspended'),
+                member.status === 'suspended' ? 'Unsuspending member...' : 'Suspending member...',
+                member.status === 'suspended' ? 'Member unsuspended' : 'Member suspended'
+              )}
               disabled={loading}
               className={`p-2 rounded-lg transition-colors disabled:opacity-50 ${
                 isSuspended 
@@ -144,7 +176,11 @@ function MemberRow({
 
             {/* Remove */}
             <button
-              onClick={() => handleAction(() => onRemove(member.id))}
+              onClick={() => handleAction(
+                () => onRemove(member.id),
+                'Removing member...',
+                'Member removed from team'
+              )}
               disabled={loading}
               className="p-2 rounded-lg text-pw-muted hover:text-error hover:bg-pw-glass-bg transition-colors disabled:opacity-50"
               aria-label="Remove member"
@@ -173,7 +209,11 @@ function MemberRow({
                     onChange={(e) => {
                       const current = member.customPermissions || [];
                       const next = e.target.checked ? [...current, p] : current.filter((c) => c !== p);
-                      handleAction(() => onPermissionsChange(member.id, next));
+                      handleAction(
+                        () => onPermissionsChange(member.id, next),
+                        'Updating permissions...',
+                        'Permissions updated'
+                      );
                     }}
                   />
                   <span className="text-pw-black truncate" title={p}>{p.split('.').join(' > ')}</span>

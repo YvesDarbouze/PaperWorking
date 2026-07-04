@@ -1,4 +1,18 @@
 /** @jest-environment node */
+/**
+ * Map Tile API Proxy tests
+ *
+ * The route requires Firebase auth (requireAuth) BEFORE checking for the API key.
+ * These tests mock the auth guard so they focus purely on the tile-proxy logic,
+ * which is the right testing boundary: auth correctness is covered in authenticationGates.
+ */
+
+// ── Mock auth guard so tests control auth state independently ────────────────
+jest.mock('../lib/firebase-admin/auth-guard', () => ({
+  requireAuth: jest.fn().mockResolvedValue({ uid: 'test-user-uid', email: 'test@test.com' }),
+  isAuthError: jest.fn().mockReturnValue(false),
+}));
+
 import { GET } from '../app/api/map-tile/route';
 import { NextRequest } from 'next/server';
 
@@ -29,6 +43,11 @@ describe('Map Tile API Proxy Endpoint', () => {
 
     // Reset module cache to trigger PLACES_API_KEY evaluation on require
     jest.resetModules();
+    // Re-mock auth in the fresh module scope
+    jest.mock('../lib/firebase-admin/auth-guard', () => ({
+      requireAuth: jest.fn().mockResolvedValue({ uid: 'test-user-uid' }),
+      isAuthError: jest.fn().mockReturnValue(false),
+    }));
     const { GET: freshGET } = require('../app/api/map-tile/route');
 
     const request = new NextRequest('http://localhost/api/map-tile?lat=40.7128&lng=-74.0060');
@@ -55,6 +74,10 @@ describe('Map Tile API Proxy Endpoint', () => {
     });
 
     jest.resetModules();
+    jest.mock('../lib/firebase-admin/auth-guard', () => ({
+      requireAuth: jest.fn().mockResolvedValue({ uid: 'test-user-uid' }),
+      isAuthError: jest.fn().mockReturnValue(false),
+    }));
     const { GET: freshGET } = require('../app/api/map-tile/route');
 
     const request = new NextRequest('http://localhost/api/map-tile?lat=40.7128&lng=-74.0060&zoom=15&w=640&h=256');
@@ -77,5 +100,19 @@ describe('Map Tile API Proxy Endpoint', () => {
     expect(fetchUrl.searchParams.get('key')).toBe('mock-google-key');
 
     process.env.GOOGLE_PLACES_API_KEY = originalKey;
+  });
+
+  it('returns 401 when no Firebase ID token is provided', async () => {
+    // Reset modules and re-apply auth guard to simulate unauthenticated
+    jest.resetModules();
+    const { NextResponse: NR } = require('next/server');
+    jest.mock('../lib/firebase-admin/auth-guard', () => ({
+      requireAuth: jest.fn().mockResolvedValue(NR.json({ error: 'Unauthorized' }, { status: 401 })),
+      isAuthError: jest.fn().mockReturnValue(true),
+    }));
+    const { GET: freshGET } = require('../app/api/map-tile/route');
+    const request = new NextRequest('http://localhost/api/map-tile?lat=40.7128&lng=-74.0060');
+    const response = await freshGET(request);
+    expect(response.status).toBe(401);
   });
 });

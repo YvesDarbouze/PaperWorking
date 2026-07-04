@@ -1,13 +1,16 @@
-import { NextResponse } from 'next/server';
+import { NextRequest, NextResponse } from 'next/server';
+import { requireAuth, isAuthError } from '@/lib/firebase-admin/auth-guard';
 import { bridgeResoService } from '@/lib/services/bridgeResoService';
 
 /**
  * GET /api/bridge/metadata
- * 
- * Exposes the list of accessible MLS fields by querying and parsing 
+ *
+ * Exposes the list of accessible MLS fields by querying and parsing
  * the Bridge Interactive OData $metadata definition.
  */
-export async function GET() {
+export async function GET(req: NextRequest) {
+  const auth = await requireAuth(req);
+  if (isAuthError(auth)) return auth;
   try {
     const fields = await bridgeResoService.getAccessibleFields();
     

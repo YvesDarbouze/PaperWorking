@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { requireAuth, isAuthError } from '@/lib/firebase-admin/auth-guard';
 
 export const dynamic = 'force-dynamic';
 
@@ -11,6 +12,9 @@ const PLACES_API_KEY = process.env.GOOGLE_PLACES_API_KEY;
  * Used to place agent offices and open house properties on maps.
  */
 export async function GET(request: NextRequest) {
+  const auth = await requireAuth(request);
+  if (isAuthError(auth)) return auth;
+
   const address = request.nextUrl.searchParams.get('address')?.trim();
 
   if (!address) {

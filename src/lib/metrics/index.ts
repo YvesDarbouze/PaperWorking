@@ -34,5 +34,35 @@ export { computeOccupancyMetric } from './computeOccupancy';
 export { computeExpenseRatioMetric } from './computeExpenseRatio';
 export { computeAppreciationMetric } from './computeAppreciation';
 
+// ── Supplemental metric wrappers ──────────────────────────────────────────────
+export {
+  computeLTVMetric,
+  computeDebtYieldMetric,
+  computeEquityMultipleMetric,
+  computeBreakEvenOccupancyMetric,
+  computeCapitalReservesMetric,
+  computePaybackPeriodMetric,
+  computeTenantTurnoverMetric,
+  computeLeaseRenewalMetric,
+  computeMaintenanceCostPerUnitMetric,
+  computeDOMMetric,
+  computeBudgetVarianceMetric,
+} from './computeSupplemental';
+
 // ── Change detection ──────────────────────────────────────────────────────────
 export { whatChanged, METRIC_DEPENDENCIES } from './whatChanged';
+
+// ── Taxonomy & classification ─────────────────────────────────────────────────
+export {
+  HERO_ORDER,
+  CATEGORY_ORDER,
+  METRIC_TAXONOMY,
+  getHeroMetrics,
+  getSupplementalByCategory,
+  getMetricEntry,
+} from './metricTaxonomy';
+export type { MetricCategory, MetricTier, MetricTaxonomyEntry } from './metricTaxonomy';
+
+// ── Demo projects data ────────────────────────────────────────────────────────
+export { DEMO_PROJECTS } from './demoProjects';
+

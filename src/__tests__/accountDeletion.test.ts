@@ -184,6 +184,8 @@ describe('Resumable GDPR Account Deletion Cascade API', () => {
     mockGet.mockResolvedValueOnce({ docs: [] }); // inboxItems get (sender)
     mockGet.mockResolvedValueOnce({ docs: [] }); // notifications get
     mockGet.mockResolvedValueOnce({ docs: [] }); // teamInvitations sent (chained where)
+    mockGet.mockResolvedValueOnce({ docs: [] }); // sent investor invitations (invitedByUid)
+    mockGet.mockResolvedValueOnce({ docs: [] }); // received investor invitations (email)
     mockDelete.mockResolvedValueOnce(undefined); // usersRef.delete
     mockUpdate.mockResolvedValueOnce(undefined); // jobRef.update to firestore_deleted
 
@@ -252,6 +254,8 @@ describe('Resumable GDPR Account Deletion Cascade API', () => {
     mockGet.mockResolvedValueOnce({ docs: [] }); // inboxItems sender
     mockGet.mockResolvedValueOnce({ docs: [] }); // notifications
     mockGet.mockResolvedValueOnce({ docs: [] }); // teamInvitations sent (chained where)
+    mockGet.mockResolvedValueOnce({ docs: [] }); // sent investor invitations (invitedByUid)
+    mockGet.mockResolvedValueOnce({ docs: [] }); // received investor invitations (email)
     mockDelete.mockResolvedValueOnce(undefined); // users doc
     mockUpdate.mockResolvedValueOnce(undefined); // jobRef → firestore_deleted
 
@@ -334,6 +338,8 @@ describe('Resumable GDPR Account Deletion Cascade API', () => {
     mockGet.mockResolvedValueOnce({ docs: [] }); // inboxItems sender
     mockGet.mockResolvedValueOnce({ docs: [] }); // notifications
     mockGet.mockResolvedValueOnce({ docs: [] }); // teamInvitations sent (chained where)
+    mockGet.mockResolvedValueOnce({ docs: [] }); // sent investor invitations (invitedByUid)
+    mockGet.mockResolvedValueOnce({ docs: [] }); // received investor invitations (email)
     mockDelete.mockResolvedValueOnce(undefined); // users/{user_789} doc
     mockUpdate.mockResolvedValueOnce(undefined); // → firestore_deleted
 

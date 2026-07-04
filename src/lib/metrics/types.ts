@@ -31,12 +31,17 @@ export interface MetricResult {
   inputsUsed: Record<string, number | string>;
   /** List of field paths that were missing, preventing full computation */
   inputsMissing: string[];
+  /** Optional project IDs included in the rollup calculation */
+  projectsIncluded?: string[];
+  /** Optional project IDs excluded from the rollup calculation */
+  projectsExcluded?: string[];
 }
 
 /**
- * All ten canonical REI datapoints exposed by PaperWorking.
+ * All canonical and supplemental REI datapoints exposed by PaperWorking.
  */
 export type MetricId =
+  // Hero 10
   | 'NOI'
   | 'CASH_FLOW'
   | 'CAP_RATE'
@@ -46,4 +51,16 @@ export type MetricId =
   | 'IRR'
   | 'OCCUPANCY'
   | 'OER'
-  | 'APPRECIATION';
+  | 'APPRECIATION'
+  // Supplemental 11
+  | 'LTV'
+  | 'DEBT_YIELD'
+  | 'EQUITY_MULTIPLE'
+  | 'BREAK_EVEN_OCCUPANCY'
+  | 'CAPITAL_RESERVES'
+  | 'PAYBACK_PERIOD'
+  | 'TENANT_TURNOVER'
+  | 'LEASE_RENEWAL'
+  | 'MAINTENANCE_COST_PER_UNIT'
+  | 'DOM'
+  | 'BUDGET_VARIANCE';

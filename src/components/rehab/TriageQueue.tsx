@@ -54,13 +54,21 @@ export default function TriageQueue() {
 
     const [isSyncingGcal, setIsSyncingGcal] = useState(false);
 
-    const handleGcalSync = () => {
+    const handleGcalSync = async () => {
         setIsSyncingGcal(true);
         toast.loading('Syncing inspection schedule to Google Calendar...', { id: 'gcal' });
-        setTimeout(() => {
+        try {
+            const res = await fetch('/api/calendar/sync', { method: 'POST' });
+            if (!res.ok) {
+                const data = await res.json().catch(() => ({}));
+                throw new Error(data.error || `Sync failed (${res.status})`);
+            }
             toast.success('Synced to Google Calendar!', { id: 'gcal' });
+        } catch (err: any) {
+            toast.error(err.message || 'Failed to sync calendar', { id: 'gcal' });
+        } finally {
             setIsSyncingGcal(false);
-        }, 1500);
+        }
     };
 
     return (

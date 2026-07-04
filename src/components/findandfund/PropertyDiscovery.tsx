@@ -43,6 +43,8 @@ export default function PropertyDiscovery({ onPropertySelected }: Props) {
   const [showResults, setShowResults] = useState(false);
   const [results, setResults] = useState<PropertyResult[]>([]);
   const [loading, setLoading] = useState(false);
+  const [searchError, setSearchError] = useState<string | null>(null);
+  const [noResults, setNoResults] = useState(false);
   const [selectedProperty, setSelectedProperty] = useState<PropertyResult | null>(null);
   const [targetPrice, setTargetPrice] = useState('');
   const [rehabBudget, setRehabBudget] = useState('');
@@ -50,22 +52,31 @@ export default function PropertyDiscovery({ onPropertySelected }: Props) {
   useEffect(() => {
     if (!searchQuery.trim() || searchQuery.length < 2) {
       setResults([]);
+      setNoResults(false);
+      setSearchError(null);
       return;
     }
 
     const timer = setTimeout(async () => {
       setLoading(true);
+      setSearchError(null);
+      setNoResults(false);
       try {
         const res = await fetch(`/api/mls/search?q=${encodeURIComponent(searchQuery)}`);
         if (res.ok) {
           const data = await res.json();
-          setResults(Array.isArray(data) ? data : []);
+          const list = Array.isArray(data) ? data : [];
+          setResults(list);
+          setNoResults(list.length === 0);
         } else {
+          const body = await res.json().catch(() => ({}));
           setResults([]);
+          setSearchError(body.error || 'MLS search unavailable — check back shortly.');
         }
       } catch (err) {
         console.error('Search failed', err);
         setResults([]);
+        setSearchError('Could not reach MLS. Check your connection and try again.');
       } finally {
         setLoading(false);
       }
@@ -116,10 +127,23 @@ export default function PropertyDiscovery({ onPropertySelected }: Props) {
           className="w-full pl-11 pr-4 py-3 bg-bg-primary border border-border-accent rounded-xl text-sm focus:border-[#454955] focus:ring-1 focus:ring-[#454955] transition placeholder:text-text-secondary"
         />
 
-        {/* Dropdown Results */}
-        {showResults && results.length > 0 && (
+        {/* Dropdown Results / States */}
+        {showResults && searchQuery.length >= 2 && (
           <div className="absolute z-20 top-full mt-2 w-full bg-bg-surface border border-border-accent rounded-xl shadow-lg overflow-hidden">
-            {results.map(p => (
+            {loading && (
+              <div className="flex items-center gap-2 px-4 py-3 text-sm text-text-secondary">
+                <Loader2 className="w-4 h-4 animate-spin" /> Searching MLS…
+              </div>
+            )}
+            {!loading && searchError && (
+              <div className="px-4 py-3 text-sm text-red-600">{searchError}</div>
+            )}
+            {!loading && !searchError && noResults && (
+              <div className="px-4 py-3 text-sm text-text-secondary">
+                No active listings found for &ldquo;{searchQuery}&rdquo;.
+              </div>
+            )}
+            {!loading && results.map(p => (
               <button
                 key={p.id}
                 onClick={() => handleSelect(p)}

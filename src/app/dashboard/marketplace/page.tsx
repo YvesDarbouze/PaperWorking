@@ -1,7 +1,7 @@
 'use client';
 
-import { useState, useEffect, useMemo, Suspense } from 'react';
-import { useSearchParams } from 'next/navigation';
+import React, { useState, useEffect, useMemo, Suspense } from 'react';
+import { useRouter, useSearchParams } from 'next/navigation';
 import {
   Search,
   MapPin,
@@ -9,7 +9,12 @@ import {
   AlertTriangle,
   Loader2,
 } from 'lucide-react';
+import { useProjectStore } from '@/store/projectStore';
 import { useAllDealsSync } from '@/hooks/useAllProjectsSync';
+import { useAuth } from '@/context/AuthContext';
+import { isSubscriptionActive } from '@/lib/stripe/subscription';
+import { projectsService } from '@/lib/firebase/deals';
+import { deriveAllMetrics, computeIRR, buildIRRCashFlows } from '@/lib/metrics/reiMetrics';
 import { VendorRequestModal } from '@/components/marketplace/VendorRequestModal';
 import VendorSideSheet, { type VendorSideSheetData } from '@/components/marketplace/VendorSideSheet';
 import { VendorProfile } from '@/types/schema';
@@ -40,27 +45,23 @@ const CATEGORY_TO_API_TYPE: Record<FilterCategory, string> = {
   Agents: 'Listing Agent',
 };
 
-/** Normalized display shape derived from a real VendorProfile. */
-type DisplayVendor = {
+interface DisplayVendor {
   id: string;
-  uid: string;
   companyName: string;
   category: string;
   location: string;
   rating: number;
   bio: string;
   specialties: string[];
-};
+}
 
 const CATEGORY_BADGE_STYLES: Record<string, string> = {
-  Inspector:          'bg-sky-400/10 border-sky-400/20 text-sky-400',
-  Lender:             'bg-[#6E7480]/10 border-[#6E7480]/20 text-[#6E7480]',
-  Attorney:           'bg-slate-400/10 border-slate-400/20 text-[#9E9DA0]',
-  Lawyer:             'bg-slate-400/10 border-slate-400/20 text-[#9E9DA0]',
-  Contractor:         'bg-orange-400/10 border-orange-400/20 text-orange-400',
+  Inspector:        'bg-sky-400/10 border-sky-400/20 text-sky-400',
+  Lender:           'bg-[#6E7480]/10 border-[#6E7480]/20 text-[#6E7480]',
+  Attorney:         'bg-slate-400/10 border-slate-400/20 text-[#9E9DA0]',
+  Contractor:       'bg-orange-400/10 border-orange-400/20 text-orange-400',
   'Property Manager': 'bg-amber-400/10 border-amber-400/20 text-amber-400',
-  Agent:              'bg-pink-400/10 border-pink-400/20 text-pink-400',
-  'Listing Agent':    'bg-pink-400/10 border-pink-400/20 text-pink-400',
+  Agent:            'bg-pink-400/10 border-pink-400/20 text-pink-400',
 };
 
 function VendorCard({
@@ -69,14 +70,17 @@ function VendorCard({
   onViewProfile,
 }: {
   vendor: DisplayVendor;
-  onRequestQuote: (v: DisplayVendor) => void;
+  onRequestQuote: (v: any) => void;
   onViewProfile: (vendorId: string) => void;
 }) {
   const badgeClass = CATEGORY_BADGE_STYLES[vendor.category] ?? 'bg-white/5 border-white/10 text-[#9E9DA0]';
+  const stars = Math.round(vendor.rating * 2) / 2;
 
   return (
-    <div className="glass-card rounded-xl border border-pw-border flex flex-col gap-4 p-5 transition-all duration-200 hover:border-[#454955]/30 hover:shadow-[0_0_24px_rgba(69,73,85,0.06)]">
-      {/* Top row: category badge + rating */}
+    <div
+      className="glass-card rounded-xl border border-pw-border flex flex-col gap-4 p-5 transition-all duration-200 hover:border-[#454955]/30 hover:shadow-[0_0_24px_rgba(69,73,85,0.06)]"
+    >
+      {/* Top row: category badge */}
       <div className="flex items-center justify-between">
         <span className={`px-2 py-0.5 rounded border text-[10px] font-bold uppercase tracking-wider ${badgeClass}`}>
           {vendor.category}
@@ -87,7 +91,7 @@ function VendorCard({
         </span>
       </div>
 
-      {/* Name + location */}
+      {/* Name */}
       <div>
         <h3 className="text-base font-bold text-white leading-snug">{vendor.companyName}</h3>
         <p className="flex items-center gap-1 text-xs text-[#6B6870] mt-0.5">
@@ -101,7 +105,7 @@ function VendorCard({
 
       {/* Specialty tags */}
       <div className="flex flex-wrap gap-1.5">
-        {vendor.specialties.slice(0, 3).map((tag) => (
+        {(vendor.specialties ?? []).slice(0, 3).map((tag) => (
           <span
             key={tag}
             className="px-2 py-0.5 rounded text-[10px] font-semibold text-[#9E9DA0] border border-white/[0.06] bg-white/[0.03]"
@@ -129,7 +133,7 @@ function VendorCard({
         </button>
       </div>
 
-      {/* Vetting disclaimer */}
+      {/* Vetting Disclaimer */}
       <p className="text-[10px] text-[#6B6870] border-t border-white/5 pt-2 leading-relaxed">
         PaperWorking does not vet vendors. You must verify credentials and references before engaging.
       </p>
@@ -150,34 +154,48 @@ function mapTypeParamToCategory(type: string | null): FilterCategory {
 }
 
 function MarketplaceContent() {
+  /* ── Preserved Firestore / data hooks ── */
   useAllDealsSync();
 
+  const router = useRouter();
   const searchParams = useSearchParams();
   const typeParam = searchParams.get('type');
   const projectIdParam = searchParams.get('projectId');
   const cityParam = searchParams.get('city');
+
+  const { profile, user } = useAuth();
+  const projects = useProjectStore((state) => state.projects);
+  const hasActiveSub = isSubscriptionActive(profile);
 
   /* ── Search & filter state ── */
   const [searchInput, setSearchInput] = useState('');
   const [searchQuery, setSearchQuery] = useState('');
   const [activeFilter, setActiveFilter] = useState<FilterCategory>('All');
 
+  // Sync state from query parameters on mount or when parameters change
   useEffect(() => {
-    if (typeParam) setActiveFilter(mapTypeParamToCategory(typeParam));
-    if (cityParam) { setSearchInput(cityParam); setSearchQuery(cityParam); }
+    if (typeParam) {
+      setActiveFilter(mapTypeParamToCategory(typeParam));
+    }
+    if (cityParam) {
+      setSearchInput(cityParam);
+      setSearchQuery(cityParam);
+    }
   }, [typeParam, cityParam]);
 
-  /* ── Real vendor data ── */
+  /* ── Vendor data state (preserved from original) ── */
   const [vendors, setVendors] = useState<VendorProfile[]>([]);
   const [loadingVendors, setLoadingVendors] = useState(false);
 
-  /* ── Modal / side-sheet state ── */
+  /* ── Quote modal state (preserved from original) ── */
   const [selectedVendor, setSelectedVendor] = useState<VendorProfile | null>(null);
   const [isQuoteModalOpen, setIsQuoteModalOpen] = useState(false);
+
+  /* ── Side sheet state ── */
   const [sideSheetVendor, setSideSheetVendor] = useState<VendorSideSheetData | null>(null);
   const [isSideSheetOpen, setIsSideSheetOpen] = useState(false);
 
-  /* ── Fetch real vendor profiles from Firestore via /api/vendors ── */
+  /* ── Fetch vendors from API (preserved from original) ── */
   useEffect(() => {
     const fetchVendors = async () => {
       setLoadingVendors(true);
@@ -202,11 +220,10 @@ function MarketplaceContent() {
     fetchVendors();
   }, [activeFilter, searchQuery]);
 
-  /* ── Map real VendorProfile[] to DisplayVendor[] — no demo fallback ── */
-  const displayVendors = useMemo((): DisplayVendor[] => {
-    let source: DisplayVendor[] = vendors.map((v) => ({
-      id: v.id ?? v.uid,
-      uid: v.uid ?? v.id,
+  /* ── Derive display list: API results ── */
+  const displayVendors = useMemo(() => {
+    let source = vendors.map((v) => ({
+      id: v.id ?? String(Math.random()),
       companyName: v.companyName ?? 'Unknown',
       category: (v.type as string) ?? 'Other',
       location: (v.licensingStates ?? []).slice(0, 1).join(', ') || 'N/A',
@@ -215,13 +232,16 @@ function MarketplaceContent() {
       specialties: v.specialties ?? [],
     }));
 
+    /* client-side filter on category pill */
     if (activeFilter !== 'All') {
       const apiType = CATEGORY_TO_API_TYPE[activeFilter];
       source = source.filter((v) => {
         const cat = v.category?.toLowerCase();
         return (
           cat === apiType.toLowerCase() ||
+          /* handle attorney/lawyer alias */
           (apiType === 'Lawyer' && (cat === 'attorney' || cat === 'lawyer')) ||
+          /* handle listing agent alias */
           (apiType === 'Listing Agent' && (cat === 'agent' || cat === 'listing agent'))
         );
       });
@@ -230,32 +250,36 @@ function MarketplaceContent() {
     return source;
   }, [vendors, activeFilter]);
 
-  const handleRequestQuote = (dv: DisplayVendor) => {
-    const full = vendors.find((v) => v.id === dv.id || v.uid === dv.uid);
-    setSelectedVendor(full ?? (dv as unknown as VendorProfile));
+  const handleRequestQuote = (vendor: any) => {
+    setSelectedVendor(vendor as VendorProfile);
     setIsQuoteModalOpen(true);
   };
 
   const handleViewProfile = (vendorId: string) => {
-    const v = vendors.find((vp) => vp.id === vendorId || vp.uid === vendorId);
-    if (!v) return;
-    setSideSheetVendor({
-      uid: v.uid ?? v.id,
-      companyName: v.companyName,
-      type: v.type ?? 'Other',
-      bio: v.bio ?? '',
-      specialties: v.specialties ?? [],
-      licensingStates: v.licensingStates ?? [],
-      serviceAreas: v.serviceAreas,
-      avgTurnaroundDays: v.avgTurnaroundDays ?? 3,
-      overallRating: v.overallRating ?? 4.5,
-      totalReviews: v.totalReviews ?? 0,
-      availability: v.availability ?? 'Available',
-      feeRangeLabel: v.feeRangeLabel ?? 'Contact for pricing',
-      verified: v.verified ?? false,
-      insuranceVerified: v.insuranceVerified ?? false,
-    });
-    setIsSideSheetOpen(true);
+    const apiVendor = vendors.find(v => v.id === vendorId);
+    if (apiVendor) {
+      setSideSheetVendor({
+        uid: apiVendor.uid ?? apiVendor.id,
+        companyName: apiVendor.companyName,
+        type: apiVendor.type ?? 'Other',
+        bio: apiVendor.bio ?? '',
+        specialties: apiVendor.specialties ?? [],
+        licensingStates: apiVendor.licensingStates ?? [],
+        serviceAreas: apiVendor.serviceAreas,
+        avgTurnaroundDays: apiVendor.avgTurnaroundDays ?? 3,
+        overallRating: apiVendor.overallRating ?? 4.5,
+        totalReviews: apiVendor.totalReviews ?? 0,
+        availability: apiVendor.availability ?? 'Available',
+        feeRangeLabel: apiVendor.feeRangeLabel ?? 'Contact for pricing',
+        verified: apiVendor.verified ?? false,
+        insuranceVerified: apiVendor.insuranceVerified ?? false,
+      });
+      setIsSideSheetOpen(true);
+    }
+  };
+
+  const handleFindVendors = () => {
+    setSearchQuery(searchInput);
   };
 
   return (
@@ -277,14 +301,14 @@ function MarketplaceContent() {
             placeholder="Search by City or Zip Code..."
             value={searchInput}
             onChange={(e) => setSearchInput(e.target.value)}
-            onKeyDown={(e) => e.key === 'Enter' && setSearchQuery(searchInput)}
+            onKeyDown={(e) => e.key === 'Enter' && handleFindVendors()}
             className="w-full pl-11 pr-4 py-3.5 bg-white/5 border border-white/10 border-r-0 text-sm text-text-primary placeholder-text-secondary focus:outline-none focus:border-[#454955]/55 transition-colors"
             style={{ borderRadius: '0.5rem 0 0 0.5rem' }}
           />
         </div>
         <button
           type="button"
-          onClick={() => setSearchQuery(searchInput)}
+          onClick={handleFindVendors}
           className="pw-interactive px-6 py-3.5 bg-[#454955] text-black text-sm font-bold hover:bg-[#454955]/90 transition-colors"
           style={{ borderRadius: '0 0.5rem 0.5rem 0' }}
         >
@@ -294,20 +318,23 @@ function MarketplaceContent() {
 
       {/* ── Filter Pills ── */}
       <div className="flex flex-wrap gap-2">
-        {FILTER_PILLS.map((pill) => (
-          <button
-            key={pill}
-            type="button"
-            onClick={() => setActiveFilter(pill)}
-            className={`px-4 py-1.5 rounded-full border text-xs font-bold transition-all ${
-              activeFilter === pill
-                ? 'bg-[#454955]/10 border-[#454955] text-[#454955]'
-                : 'border-white/10 text-[#9E9DA0] hover:border-[#454955]/40 hover:text-[#454955] bg-transparent'
-            }`}
-          >
-            {pill}
-          </button>
-        ))}
+        {FILTER_PILLS.map((pill) => {
+          const isActive = activeFilter === pill;
+          return (
+            <button
+              key={pill}
+              type="button"
+              onClick={() => setActiveFilter(pill)}
+              className={`px-4 py-1.5 rounded-full border text-xs font-bold transition-all ${
+                isActive
+                  ? 'bg-[#454955]/10 border-[#454955] text-[#454955]'
+                  : 'border-white/10 text-[#9E9DA0] hover:border-[#454955]/40 hover:text-[#454955] bg-transparent'
+              }`}
+            >
+              {pill}
+            </button>
+          );
+        })}
       </div>
 
       {/* ── Disclaimer Banner ── */}
@@ -325,26 +352,27 @@ function MarketplaceContent() {
           <Loader2 className="w-5 h-5 animate-spin" />
           <span className="text-sm">Loading vendors...</span>
         </div>
-      ) : displayVendors.length === 0 ? (
-        <div className="flex flex-col items-center justify-center py-24 gap-4 text-[#6B6870]">
-          <Search className="w-8 h-8 opacity-30" />
-          <div className="text-center space-y-1">
-            <p className="text-sm font-semibold text-[#9E9DA0]">No vendors found</p>
-            <p className="text-xs text-[#6B6870]">
-              {activeFilter !== 'All' || searchQuery
-                ? 'Try clearing your filters or searching a different area.'
-                : 'Vendors will appear here once they register on the marketplace.'}
-            </p>
+      ) : vendors.length === 0 ? (
+        <div className="flex flex-col items-center justify-center py-24 gap-4 text-center max-w-md mx-auto">
+          <div className="w-12 h-12 rounded-full bg-white/5 border border-white/10 flex items-center justify-center text-[#9E9DA0] mb-2">
+            <Search className="w-6 h-6 opacity-60" />
           </div>
-          {(activeFilter !== 'All' || searchQuery) && (
-            <button
-              type="button"
-              onClick={() => { setActiveFilter('All'); setSearchQuery(''); setSearchInput(''); }}
-              className="text-xs text-[#454955] hover:underline"
-            >
-              Clear filters
-            </button>
-          )}
+          <h3 className="text-lg font-bold text-white leading-snug">No Registered Vendors</h3>
+          <p className="text-xs text-[#9E9DA0] leading-relaxed">
+            There are currently no active service providers registered in the PaperWorking Marketplace. Once providers complete onboarding and their active status is verified, they will appear here.
+          </p>
+        </div>
+      ) : displayVendors.length === 0 ? (
+        <div className="flex flex-col items-center justify-center py-24 gap-3 text-[#6B6870]">
+          <Search className="w-8 h-8 opacity-30" />
+          <p className="text-sm">No vendors found for the selected filters.</p>
+          <button
+            type="button"
+            onClick={() => { setActiveFilter('All'); setSearchQuery(''); setSearchInput(''); }}
+            className="text-xs text-[#454955] hover:underline"
+          >
+            Clear filters
+          </button>
         </div>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
@@ -359,27 +387,34 @@ function MarketplaceContent() {
         </div>
       )}
 
-      {/* ── Quote Modal ── */}
+      {/* ── Quote Modal (preserved from original) ── */}
       <VendorRequestModal
         isOpen={isQuoteModalOpen}
         vendor={selectedVendor}
         projectId={projectIdParam || undefined}
-        onClose={() => { setIsQuoteModalOpen(false); setSelectedVendor(null); }}
+        onClose={() => {
+          setIsQuoteModalOpen(false);
+          setSelectedVendor(null);
+        }}
       />
 
-      {/* ── Vendor profile side sheet ── */}
+      {/* ── Side Sheet for quick vendor preview ── */}
       <VendorSideSheet
         vendor={sideSheetVendor}
         open={isSideSheetOpen}
-        onClose={() => { setIsSideSheetOpen(false); setSideSheetVendor(null); }}
+        onClose={() => {
+          setIsSideSheetOpen(false);
+          setSideSheetVendor(null);
+        }}
         onRequestQuote={(v) => {
           setIsSideSheetOpen(false);
           setSideSheetVendor(null);
+          // Convert VendorSideSheetData to VendorProfile shape for the modal
           setSelectedVendor({
             id: v.uid,
             uid: v.uid,
             companyName: v.companyName,
-            type: v.type as VendorProfile['type'],
+            type: v.type as any,
             bio: v.bio,
             specialties: v.specialties,
             licensingStates: v.licensingStates,
@@ -387,7 +422,7 @@ function MarketplaceContent() {
             avgTurnaroundDays: v.avgTurnaroundDays,
             overallRating: v.overallRating,
             totalReviews: v.totalReviews,
-            availability: v.availability as VendorProfile['availability'],
+            availability: v.availability as any,
             feeRangeLabel: v.feeRangeLabel,
             verified: v.verified,
             insuranceVerified: v.insuranceVerified,

@@ -56,7 +56,7 @@ export default function ProfessionalPricingSection({ onSelectPlan }: AppraiserPr
 
         <div className="p-8 flex flex-col items-center text-center border-t border-dashboard">
           <div className="mb-4">
-            <span className="text-4xl font-medium text-text-primary">$59</span>
+            <span className="text-4xl font-medium text-text-primary">$39</span>
             <span className="text-sm font-medium text-phase-2 ml-1">/mo flat fee</span>
           </div>
           <button

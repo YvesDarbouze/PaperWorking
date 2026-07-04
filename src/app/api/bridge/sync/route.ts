@@ -1,4 +1,5 @@
-import { NextResponse } from 'next/server';
+import { NextRequest, NextResponse } from 'next/server';
+import { requireAuth, isAuthError } from '@/lib/firebase-admin/auth-guard';
 
 export const dynamic = 'force-dynamic';
 
@@ -7,12 +8,16 @@ export const dynamic = 'force-dynamic';
  *
  * Enqueues a bridge_sync job and returns 202 Accepted immediately.
  * The actual sync is executed asynchronously by /api/worker/drain.
- *
- * This decouples the long-running MLS replication (potentially minutes)
- * from the HTTP request lifecycle, preventing gateway timeouts and freeing
- * the serverless function slot.
+ * Requires admin Firebase custom claim — triggers a platform-wide operation.
  */
-export async function POST() {
+export async function POST(req: NextRequest) {
+  const auth = await requireAuth(req);
+  if (isAuthError(auth)) return auth;
+
+  const isAdmin = (auth.token as Record<string, unknown>)?.['admin'] === true;
+  if (!isAdmin) {
+    return NextResponse.json({ error: 'Admin claim required to trigger MLS sync' }, { status: 403 });
+  }
   try {
     const { jobQueue } = await import('@/lib/queue/jobQueue');
     const jobId = await jobQueue.enqueue('bridge_sync', {});
@@ -35,7 +40,9 @@ export async function POST() {
  *
  * Returns the current sync watermark and queue depth.
  */
-export async function GET() {
+export async function GET(req: NextRequest) {
+  const auth = await requireAuth(req);
+  if (isAuthError(auth)) return auth;
   try {
     const prisma = (await import('@/lib/prisma')).default;
     const state = await prisma.bridgeSyncState.findUnique({ where: { id: 'replication_watermark' } });

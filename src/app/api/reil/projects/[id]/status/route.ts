@@ -13,14 +13,12 @@ export async function GET(req: NextRequest, { params }: Params) {
   if (isAuthError(auth)) return auth;
 
   const { id } = await params;
-  
-  const { hasProjectAccess } = await import("@/lib/auth/scopeGuard");
-  if (!(await hasProjectAccess(auth.uid, id))) {
-    return NextResponse.json({ error: "Forbidden" }, { status: 403 });
-  }
-
   const project = await getProject(id);
   if (!project) return NextResponse.json({ error: "Not found" }, { status: 404 });
+
+  const isOwner = project.createdById === auth.uid;
+  const isCollab = project.collaborators.some(c => c.userId === auth.uid);
+  if (!isOwner && !isCollab) return NextResponse.json({ error: "Forbidden" }, { status: 403 });
 
   const events = await listStatusEvents(id);
   return NextResponse.json(events);
@@ -33,14 +31,9 @@ export async function POST(req: NextRequest, { params }: Params) {
   if (isAuthError(auth)) return auth;
 
   const { id } = await params;
-
-  const { hasProjectAccess } = await import("@/lib/auth/scopeGuard");
-  if (!(await hasProjectAccess(auth.uid, id))) {
-    return NextResponse.json({ error: "Forbidden" }, { status: 403 });
-  }
-
   const project = await getProject(id);
   if (!project) return NextResponse.json({ error: "Not found" }, { status: 404 });
+  if (project.createdById !== auth.uid) return NextResponse.json({ error: "Forbidden" }, { status: 403 });
 
   const body = await req.json().catch(() => ({}));
   const { status, note } = body as { status?: AcquisitionStatus; note?: string };

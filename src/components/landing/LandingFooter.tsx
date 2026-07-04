@@ -20,6 +20,7 @@ const FOOTER_COLUMNS: FooterColumn[] = [
     heading: 'Main Navigation',
     links: [
       { label: 'How It Works',  href: '/how-it-works' },
+      { label: 'Marketplaces',  href: '/marketplaces' },
       { label: 'Pricing',       href: '/pricing'      },
       { label: 'Support',       href: '/support'      },
     ],

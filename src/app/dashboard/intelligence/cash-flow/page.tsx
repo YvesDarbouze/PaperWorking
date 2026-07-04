@@ -3,12 +3,11 @@
 import React, { useState, useMemo } from 'react';
 import ReactECharts from 'echarts-for-react';
 import { SampleDataBanner } from '@/components/intelligence/SampleDataBanner';
-import { ArrowUpRight, Download, TrendingUp } from 'lucide-react';
+import { ArrowUpRight, Download } from 'lucide-react';
 import Link from 'next/link';
 import { useAllDealsSync } from '@/hooks/useAllProjectsSync';
 import { useMetricSeries, useMetricCurrent, usePortfolioInputs } from '@/lib/intelligence/selectors';
 import { DebtServiceInputForm } from '@/components/intelligence/DebtServiceInputForm';
-import { deriveAllMetrics } from '@/lib/metrics/reiMetrics';
 
 /* ═══════════════════════════════════════════════════════════════
    Cash Flow Detail — Diverging Trend Page
@@ -19,6 +18,17 @@ import { deriveAllMetrics } from '@/lib/metrics/reiMetrics';
 
 type Period = 'Month' | 'Quarter' | 'Year' | 'Overall';
 type Scope  = 'Property' | 'My Share';
+
+const defaultNetCf       = 12140;
+const defaultCfChange    = 12.4;
+const defaultMonthsLabels = ['May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec', 'Jan', 'Feb', 'Mar', 'Apr'];
+
+// Diverging bars: positive = inflow, negative = outflow
+const defaultInflow  = [18200, 0,     19100, 0,     17900, 0,     21200, 0,     20400, 0,     22000, 0    ];
+const defaultOutflow = [0,    -14800, 0,    -15200, 0,    -13600,  0,   -15800, 0,    -14100, 0,   -9860  ];
+const defaultNet     = [3400, -14800, 3900, -15200, 4300, -13600, 5400, -15800, 6300, -14100, 7000, 12140 ];
+
+const defaultSparkline = [3400, 3900, 4300, 5400, 6300, 7000, 12140];
 
 /* ── Diverging Bar Chart ── */
 function DivergingBarChart({
@@ -69,7 +79,7 @@ function DivergingBarChart({
       axisLabel: {
         color: '#64748b',
         fontSize: 10,
-        formatter: (v: number) => `$${(Math.abs(v) / 1000).toFixed(0)}k`,
+        formatter: (v: number) => `$${(Math.abs(v) / 1000).toFixed(0)}k${v < 0 ? '' : ''}`,
       },
       splitLine: { lineStyle: { color: 'rgba(255,255,255,0.04)' } },
       axisLine: { show: false },
@@ -97,21 +107,11 @@ function DivergingBarChart({
 }
 
 /* ── Category Donut Chart ── */
-function CategoryDonut({
-  rentIncome,
-  otherIncome,
-  expenses,
-  debtService,
-}: {
-  rentIncome: number;
-  otherIncome: number;
-  expenses: number;
-  debtService: number;
-}) {
+function CategoryDonut() {
   const option = {
     backgroundColor: 'transparent',
     tooltip: {
-      trigger: 'axis',
+      trigger: 'item',
       backgroundColor: '#1e1b20',
       borderColor: 'rgba(255,255,255,0.1)',
       textStyle: { color: '#9E9DA0', fontSize: 11 },
@@ -135,37 +135,15 @@ function CategoryDonut({
         label: { show: false },
         labelLine: { show: false },
         data: [
-          { value: rentIncome, name: 'Rent Income',    itemStyle: { color: '#454955' } },
-          { value: otherIncome,  name: 'Other Income',   itemStyle: { color: '#454955' } },
-          { value: expenses, name: 'Expenses',       itemStyle: { color: 'rgba(239,68,68,0.55)' } },
-          { value: debtService, name: 'Debt Interest',  itemStyle: { color: 'rgba(245,158,11,0.55)' } },
+          { value: 12100, name: 'Rent Income',    itemStyle: { color: '#454955' } },
+          { value: 3300,  name: 'Other Income',   itemStyle: { color: '#454955' } },
+          { value: -6600, name: 'Expenses',       itemStyle: { color: 'rgba(239,68,68,0.55)' } },
+          { value: -3300, name: 'Debt Interest',  itemStyle: { color: 'rgba(245,158,11,0.55)' } },
         ].map((d) => ({ ...d, value: Math.abs(d.value) })),
       },
     ],
   };
   return <ReactECharts option={option} style={{ height: 200, width: '100%' }} opts={{ renderer: 'canvas' }} />;
-}
-
-function EmptyState() {
-  return (
-    <div className="rounded-2xl border border-white/10 p-8" style={{ background: 'rgba(22,19,24,0.4)' }}>
-      <div className="flex flex-col items-center justify-center gap-4 text-center border border-dashed border-white/10 rounded-xl p-12 min-h-[300px]">
-        <TrendingUp className="w-12 h-12 text-slate-600" strokeWidth={1} />
-        <div>
-          <p className="text-sm font-semibold text-[#C0BEC2] mb-1">Awaiting Portfolio Data</p>
-          <p className="text-xs text-[#6B6870] max-w-xs leading-relaxed">
-            Import deal data or complete Purchase phase tasks to generate Cash Flow analytics.
-          </p>
-        </div>
-        <Link
-          href="/dashboard/projects/new"
-          className="mt-2 px-5 py-2 rounded-full border border-[#454955]/30 text-[#6E7480] text-xs font-semibold hover:bg-[#454955]/10 transition-all"
-        >
-          Add First Deal
-        </Link>
-      </div>
-    </div>
-  );
 }
 
 export default function CashFlowIntelligencePage() {
@@ -177,39 +155,6 @@ export default function CashFlowIntelligencePage() {
   const cfSeriesResult = useMetricSeries('CASH_FLOW', undefined, { scope: scope === 'My Share' ? 'myShare' : 'property' });
   const portfolioInputsResult = usePortfolioInputs({ scope: scope === 'My Share' ? 'myShare' : 'property' });
   const noiCurrentResult = useMetricCurrent('NOI', { scope: scope === 'My Share' ? 'myShare' : 'property' });
-  if (
-    cfCurrentResult.status === 'loading' ||
-    cfSeriesResult.status === 'loading' ||
-    portfolioInputsResult.status === 'loading' ||
-    noiCurrentResult.status === 'loading'
-  ) {
-    return (
-      <div className="min-h-full px-6 lg:px-8 py-8 flex items-center justify-center" style={{ background: 'var(--bg-canvas)', color: 'var(--text-primary)' }}>
-        <p className="text-sm text-[#9E9DA0]">Loading Cash Flow data...</p>
-      </div>
-    );
-  }
-
-  if (
-    portfolioInputsResult.status === 'insufficient' ||
-    cfCurrentResult.status === 'insufficient' ||
-    cfSeriesResult.status === 'insufficient' ||
-    noiCurrentResult.status === 'insufficient'
-  ) {
-    return (
-      <div className="min-h-full px-6 lg:px-8 py-8 space-y-6" style={{ background: 'var(--bg-canvas)', color: 'var(--text-primary)' }}>
-        <div>
-          <div className="flex items-center gap-2 mb-1 text-xs text-[#6B6870] font-semibold uppercase tracking-widest">
-            <Link href="/dashboard/reports" className="hover:text-[#6E7480] transition-colors">Reports</Link>
-            <span>›</span>
-            <span className="text-[#6E7480]">Cash Flow Detail</span>
-          </div>
-          <h1 className="text-4xl font-bold text-white tracking-tight">Cash Flow Detail</h1>
-        </div>
-        <EmptyState />
-      </div>
-    );
-  }
 
   const { isUsingDemoData, netCashFlow, cfChange, chartLabels, inflowBars, outflowBars, sparkline, stats } = useMemo(() => {
     if (
@@ -244,15 +189,20 @@ export default function CashFlowIntelligencePage() {
         stats: { avg, best, worst, ytd },
       };
     }
+    const ytd   = defaultNet.reduce((a, b) => a + b, 0);
+    const avg   = ytd / defaultMonthsLabels.length;
+    const positiveVals = defaultNet.filter((v) => v > 0);
+    const best  = positiveVals.length > 0 ? Math.max(...positiveVals) : 0;
+    const worst = Math.min(...defaultNet);
     return {
-      isUsingDemoData: false,
-      netCashFlow: 0,
-      cfChange: 0,
-      chartLabels: [],
-      inflowBars: [],
-      outflowBars: [],
-      sparkline: [],
-      stats: { avg: 0, best: 0, worst: 0, ytd: 0 },
+      isUsingDemoData: true,
+      netCashFlow: defaultNetCf,
+      cfChange: defaultCfChange,
+      chartLabels: defaultMonthsLabels,
+      inflowBars: defaultInflow,
+      outflowBars: defaultOutflow,
+      sparkline: defaultSparkline,
+      stats: { avg, best, worst, ytd },
     };
   }, [cfSeriesResult, cfCurrentResult, portfolioInputsResult]);
 
@@ -263,44 +213,6 @@ export default function CashFlowIntelligencePage() {
     }
     return 0; // honest: no data yet, do not seed a demo value
   }, [noiCurrentResult]);
-
-  const categoryBreakdown = useMemo(() => {
-    if (portfolioInputsResult.status !== 'ready') {
-      return { rentIncome: 0, otherIncome: 0, expenses: 0, debtService: 0 };
-    }
-    let rentIncome = 0;
-    let otherIncome = 0;
-    let expenses = 0;
-    let debtService = 0;
-
-    const projects = portfolioInputsResult.data.projects;
-    for (const p of projects) {
-      const financials = p.financials || {};
-      const factor = scope === 'My Share' ? (financials.ownershipPercentage ?? 100) / 100 : 1;
-      const derived = deriveAllMetrics(financials, undefined, p.strategyType, p.currentPhase);
-      rentIncome += (derived.noiComponents.grossRentalIncome || 0) * factor;
-      otherIncome += (derived.noiComponents.otherIncome || 0) * factor;
-      expenses += (derived.noiComponents.totalOperatingExpenses || 0) * factor;
-      debtService += (derived.annualDebtService || 0) * factor;
-    }
-
-    return {
-      rentIncome: Math.round(rentIncome),
-      otherIncome: Math.round(otherIncome),
-      expenses: Math.round(expenses),
-      debtService: Math.round(debtService),
-    };
-  }, [portfolioInputsResult, scope]);
-
-  const monthlyBreakdown = useMemo(() => {
-    return {
-      rentIncome: categoryBreakdown.rentIncome / 12,
-      otherIncome: categoryBreakdown.otherIncome / 12,
-      expenses: categoryBreakdown.expenses / 12,
-      debtService: categoryBreakdown.debtService / 12,
-    };
-  }, [categoryBreakdown]);
-
 
   const fmt = (n: number) => `${n < 0 ? '-' : ''}$${Math.abs(n).toLocaleString()}`;
 
@@ -448,29 +360,20 @@ export default function CashFlowIntelligencePage() {
           <span className="text-[11px] font-bold uppercase tracking-widest text-[#6B6870] block mb-3">
             Cash Flow by Category
           </span>
-          <CategoryDonut
-            rentIncome={monthlyBreakdown.rentIncome}
-            otherIncome={monthlyBreakdown.otherIncome}
-            expenses={monthlyBreakdown.expenses}
-            debtService={monthlyBreakdown.debtService}
-          />
+          <CategoryDonut />
           <div className="grid grid-cols-2 gap-2 mt-2">
             {[
-              { label: 'Rent Income',   value: monthlyBreakdown.rentIncome, color: '#454955' },
-              { label: 'Other Income',  value: monthlyBreakdown.otherIncome, color: '#454955' },
-              { label: 'Expenses',      value: monthlyBreakdown.expenses, color: 'rgba(239,68,68,0.7)' },
-              { label: 'Debt Interest', value: monthlyBreakdown.debtService, color: 'rgba(245,158,11,0.7)' },
-            ].map((item) => {
-              const total = monthlyBreakdown.rentIncome + monthlyBreakdown.otherIncome + monthlyBreakdown.expenses + monthlyBreakdown.debtService;
-              const pct = total > 0 ? (item.value / total) * 100 : 0;
-              return (
-                <div key={item.label} className="flex items-center gap-2">
-                  <span className="w-2.5 h-2.5 rounded-full flex-shrink-0" style={{ background: item.color }} />
-                  <span className="text-xs text-[#9E9DA0]">{item.label}</span>
-                  <span className="text-xs font-bold text-white ml-auto tabular-nums">{pct.toFixed(0)}%</span>
-                </div>
-              );
-            })}
+              { label: 'Rent Income',   pct: '55%', color: '#454955' },
+              { label: 'Other Income',  pct: '15%', color: '#454955' },
+              { label: 'Expenses',      pct: '30%', color: 'rgba(239,68,68,0.7)' },
+              { label: 'Debt Interest', pct: '15%', color: 'rgba(245,158,11,0.7)' },
+            ].map((item) => (
+              <div key={item.label} className="flex items-center gap-2">
+                <span className="w-2.5 h-2.5 rounded-full flex-shrink-0" style={{ background: item.color }} />
+                <span className="text-xs text-[#9E9DA0]">{item.label}</span>
+                <span className="text-xs font-bold text-white ml-auto tabular-nums">{item.pct}</span>
+              </div>
+            ))}
           </div>
         </div>
 

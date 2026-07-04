@@ -15,9 +15,6 @@ interface VendorRequest {
   status: 'PENDING' | 'QUOTED' | 'ACCEPTED' | 'COMPLETED' | 'DECLINED' | 'CANCELLED';
   type: string;
   message?: string;
-  urgency?: 'standard' | 'rush' | 'asap';
-  desiredTimeline?: string | null;
-  requestedByName?: string;
   requestedAt: string;
   quotedFee?: number;
   sharedFolderId?: string;
@@ -422,25 +419,6 @@ export default function VendorPortalDashboard() {
                             &ldquo;{req.message}&rdquo;
                           </p>
                         )}
-
-                        {(req.urgency && req.urgency !== 'standard') || req.desiredTimeline ? (
-                          <div className="flex flex-wrap gap-2">
-                            {req.urgency && req.urgency !== 'standard' && (
-                              <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider border ${
-                                req.urgency === 'asap'
-                                  ? 'bg-red-500/10 border-red-500/30 text-red-400'
-                                  : 'bg-amber-500/10 border-amber-500/30 text-amber-400'
-                              }`}>
-                                {req.urgency === 'asap' ? '⚡ ASAP' : '⚡ Rush'}
-                              </span>
-                            )}
-                            {req.desiredTimeline && (
-                              <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[10px] font-mono text-[#9E9DA0] border border-white/10 bg-white/[0.03]">
-                                ⏱ {req.desiredTimeline}
-                              </span>
-                            )}
-                          </div>
-                        ) : null}
                       </div>
 
                       <div className="flex flex-col items-end gap-3 sm:text-right">

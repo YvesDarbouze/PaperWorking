@@ -448,6 +448,7 @@ export async function getAdminActivityStats(): Promise<AdminActivityStats> {
       if (createdAt) {
         if (typeof createdAt.toDate === 'function') createdDate = createdAt.toDate();
         else if (createdAt._seconds !== undefined) createdDate = new Date(createdAt._seconds * 1000);
+        else if (createdAt instanceof Date) createdDate = createdAt;
         else if (typeof createdAt === 'string') createdDate = new Date(createdAt);
       }
       if (createdDate && createdDate >= thirtyDaysAgo) projectsCreatedLast30++;

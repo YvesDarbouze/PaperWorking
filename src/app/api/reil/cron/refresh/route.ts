@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { requireAuth, isAuthError } from "@/lib/firebase-admin/auth-guard";
 import prisma from "@/lib/prisma";
 import { updateProjectSync, upsertPropertyFacts, appendValuationSnapshot } from "@/lib/db/projects";
-import { RentCastClient } from "@/lib/providers/rentcast/client";
+import { getRentCastClient } from "@/lib/providers/rentcast";
 import { adminDb } from "@/lib/firebase/admin";
 import telemetry from "@/lib/telemetry";
 import { logger } from "@/lib/logger";
@@ -30,12 +30,15 @@ export async function POST(req: NextRequest) {
     }
   }
 
-  // 2. If not authenticated via CRON_SECRET, check Firebase ID Token
+  // 2. If not authenticated via CRON_SECRET, require admin Firebase ID Token
   if (!isAuthenticated) {
     const auth = await requireAuth(req);
     if (!isAuthError(auth)) {
-      isAuthenticated = true;
-      userUid = auth.uid;
+      const isAdmin = (auth.token as Record<string, unknown>)?.['admin'] === true;
+      if (isAdmin) {
+        isAuthenticated = true;
+        userUid = auth.uid;
+      }
     }
   }
 
@@ -62,8 +65,7 @@ export async function POST(req: NextRequest) {
   const THIRTY_DAYS_MS = 30 * ONE_DAY_MS;
 
   const providerType = (process.env.PROPERTY_DATA_PROVIDER || "mock").toLowerCase();
-  const apiKey = process.env.RENTCAST_API_KEY || "mock-key";
-  const client = new RentCastClient(apiKey);
+  const client = getRentCastClient(); // null when RENTCAST_API_KEY is absent
 
   let apiCallsMade = 0;
   const syncedProjects: string[] = [];
@@ -106,18 +108,18 @@ export async function POST(req: NextRequest) {
         let avmPriceLowCents = 0;
         let avmPriceHighCents = 0;
 
-        if (providerType === "rentcast") {
+        if (providerType === "rentcast" && client) {
           apiCallsMade++;
           const valueData = await client.getValueEstimate({ address }, true);
           avmPriceCents = Math.round(valueData.price * 100);
           avmPriceLowCents = Math.round(valueData.priceRangeLow * 100);
           avmPriceHighCents = Math.round(valueData.priceRangeHigh * 100);
         } else {
-          // Mock generation
+          // Mock generation (±15% range matches MockPropertyDataProvider)
           const price = 250000 + (project.id.charCodeAt(0) * 1500) % 500000;
           avmPriceCents = price * 100;
-          avmPriceLowCents = Math.round(price * 0.95) * 100;
-          avmPriceHighCents = Math.round(price * 1.05) * 100;
+          avmPriceLowCents = Math.round(price * 0.85) * 100;
+          avmPriceHighCents = Math.round(price * 1.15) * 100;
         }
 
         // Save Value AVM to Prisma PropertyFacts
@@ -158,18 +160,18 @@ export async function POST(req: NextRequest) {
         let estRentLowCents = 0;
         let estRentHighCents = 0;
 
-        if (providerType === "rentcast") {
+        if (providerType === "rentcast" && client) {
           apiCallsMade++;
           const rentData = await client.getRentEstimate({ address }, true);
           estRentCents = Math.round(rentData.rent * 100);
           estRentLowCents = Math.round(rentData.rentRangeLow * 100);
           estRentHighCents = Math.round(rentData.rentRangeHigh * 100);
         } else {
-          // Mock generation
+          // Mock generation (±15% range matches MockPropertyDataProvider)
           const rent = 1200 + (project.id.charCodeAt(0) * 10) % 2500;
           estRentCents = rent * 100;
-          estRentLowCents = Math.round(rent * 0.9) * 100;
-          estRentHighCents = Math.round(rent * 1.1) * 100;
+          estRentLowCents = Math.round(rent * 0.85) * 100;
+          estRentHighCents = Math.round(rent * 1.15) * 100;
         }
 
         // Save Rent AVM to Prisma PropertyFacts
@@ -195,7 +197,7 @@ export async function POST(req: NextRequest) {
       if (marketExpired && zip && apiCallsMade < BUDGET_LIMIT) {
         logger.info(`[Cron Refresh] Refreshing Market Stats for zip ${zip} (project ${project.id})`);
 
-        if (providerType === "rentcast") {
+        if (providerType === "rentcast" && client) {
           apiCallsMade++;
           // Fetch market stats (updates vendor cache in Firestore)
           await client.getMarketStats({ zipCode: zip }, true);

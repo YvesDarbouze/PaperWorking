@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { logger } from '@/lib/logger';
 
 export const dynamic = 'force-dynamic';
 
@@ -16,12 +17,13 @@ export const dynamic = 'force-dynamic';
  */
 export async function POST(req: NextRequest) {
   const workerSecret = process.env.WORKER_SECRET;
-
-  if (workerSecret) {
-    const auth = req.headers.get('authorization') ?? '';
-    if (auth !== `Bearer ${workerSecret}`) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-    }
+  if (!workerSecret) {
+    logger.error('[Worker Drain] WORKER_SECRET not configured — rejecting request');
+    return NextResponse.json({ error: 'Worker endpoint not configured' }, { status: 503 });
+  }
+  const auth = req.headers.get('authorization') ?? '';
+  if (auth !== `Bearer ${workerSecret}`) {
+    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
 
   try {
@@ -40,7 +42,7 @@ export async function POST(req: NextRequest) {
 
     return NextResponse.json({ ok: true, results, remaining: depths });
   } catch (error: any) {
-    console.error('❌ [WORKER DRAIN] Uncaught error:', error);
+    logger.error('[Worker Drain] Uncaught error', error);
     return NextResponse.json({ error: 'drain_failed', detail: error.message }, { status: 500 });
   }
 }
@@ -51,12 +53,13 @@ export async function POST(req: NextRequest) {
  */
 export async function GET(req: NextRequest) {
   const workerSecret = process.env.WORKER_SECRET;
-
-  if (workerSecret) {
-    const auth = req.headers.get('authorization') ?? '';
-    if (auth !== `Bearer ${workerSecret}`) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-    }
+  if (!workerSecret) {
+    logger.error('[Worker Drain] WORKER_SECRET not configured — rejecting request');
+    return NextResponse.json({ error: 'Worker endpoint not configured' }, { status: 503 });
+  }
+  const auth = req.headers.get('authorization') ?? '';
+  if (auth !== `Bearer ${workerSecret}`) {
+    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
 
   try {

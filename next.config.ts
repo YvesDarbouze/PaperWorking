@@ -68,6 +68,39 @@ const nextConfig: NextConfig = {
       },
     ];
   },
+  async redirects() {
+    return [
+      {
+        // Unified FAQ: /faq → /support/faq (single source of truth)
+        source: '/faq',
+        destination: '/support/faq?category=industry-data',
+        permanent: true,
+      },
+      // ── Deprecated dashboard legacy routes ──────────────────────
+      // These sub-routes were consolidated into the Command Center.
+      // Server-side 308 redirects preserve bookmarks and email deep links.
+      {
+        source: '/dashboard/engine-room',
+        destination: '/dashboard/command-center',
+        permanent: true,
+      },
+      {
+        source: '/dashboard/closing-room',
+        destination: '/dashboard/command-center',
+        permanent: true,
+      },
+      {
+        source: '/dashboard/evaluation',
+        destination: '/dashboard/command-center',
+        permanent: true,
+      },
+      {
+        source: '/dashboard/exit-hub',
+        destination: '/dashboard/command-center',
+        permanent: true,
+      },
+    ];
+  },
   async rewrites() {
     return [
       {

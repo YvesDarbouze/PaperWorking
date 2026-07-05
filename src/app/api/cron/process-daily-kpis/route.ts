@@ -15,13 +15,16 @@ export const dynamic = 'force-dynamic';
  * Protected by Vercel CRON_SECRET or WORKER_SECRET.
  */
 export async function GET(req: NextRequest) {
-  const secret = process.env.CRON_SECRET || process.env.WORKER_SECRET;
+  const authHeader = req.headers.get('authorization');
+  const cronSecret = process.env.CRON_SECRET || process.env.WORKER_SECRET;
 
-  if (secret) {
-    const auth = req.headers.get('authorization') ?? '';
-    if (auth !== `Bearer ${secret}`) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-    }
+  if (!cronSecret) {
+    console.error('[Cron/ProcessDailyKPIs] CRON_SECRET env var not set');
+    return NextResponse.json({ error: 'Server misconfiguration' }, { status: 500 });
+  }
+
+  if (authHeader !== `Bearer ${cronSecret}`) {
+    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
 
   try {

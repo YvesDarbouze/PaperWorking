@@ -311,6 +311,65 @@ export default function SupportPage() {
         </motion.div>
       </section>
 
+      {/* ── Shortcut Resources Grid ── */}
+      <section className="max-w-container-max mx-auto px-5 md:px-8 pb-12">
+        <motion.div
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true, margin: '-40px' }}
+          variants={stagger}
+          className="grid grid-cols-1 md:grid-cols-2 gap-4"
+        >
+          <motion.div variants={fadeUp}>
+            <Link
+              href="/support/glossary"
+              className="flex items-center gap-5 p-5 glass-panel rounded-xl border border-white/8 hover:border-primary/20 transition-all duration-200 group text-decoration-none"
+            >
+              <div className="w-12 h-12 rounded-lg bg-primary/10 border border-primary/20 flex items-center justify-center flex-shrink-0 group-hover:scale-105 transition-transform duration-200">
+                <span className="material-symbols-outlined text-[24px] text-primary" style={{ fontVariationSettings: "'FILL' 0, 'wght' 300" }}>
+                  book_2
+                </span>
+              </div>
+              <div className="min-w-0 flex-1">
+                <h3 className="text-[15px] font-bold text-on-surface leading-snug group-hover:text-primary transition-colors mb-1">
+                  Real Estate Glossary
+                </h3>
+                <p className="text-[12px] text-on-surface-variant/60 leading-normal">
+                  Demystify industry terminology from ARV to Cap Rate.
+                </p>
+              </div>
+              <span className="material-symbols-outlined text-[16px] text-on-surface-variant/20 group-hover:text-primary transition-colors">
+                arrow_forward
+              </span>
+            </Link>
+          </motion.div>
+
+          <motion.div variants={fadeUp}>
+            <Link
+              href="/support/metrics"
+              className="flex items-center gap-5 p-5 glass-panel rounded-xl border border-white/8 hover:border-primary/20 transition-all duration-200 group text-decoration-none"
+            >
+              <div className="w-12 h-12 rounded-lg bg-primary/10 border border-primary/20 flex items-center justify-center flex-shrink-0 group-hover:scale-105 transition-transform duration-200">
+                <span className="material-symbols-outlined text-[24px] text-primary" style={{ fontVariationSettings: "'FILL' 0, 'wght' 300" }}>
+                  monitoring
+                </span>
+              </div>
+              <div className="min-w-0 flex-1">
+                <h3 className="text-[15px] font-bold text-on-surface leading-snug group-hover:text-primary transition-colors mb-1">
+                  The Playbook (33 Metrics)
+                </h3>
+                <p className="text-[12px] text-on-surface-variant/60 leading-normal">
+                  Executive guide to the 33 metrics tracked automatically by PaperWorking.
+                </p>
+              </div>
+              <span className="material-symbols-outlined text-[16px] text-on-surface-variant/20 group-hover:text-primary transition-colors">
+                arrow_forward
+              </span>
+            </Link>
+          </motion.div>
+        </motion.div>
+      </section>
+
       {/* ══════════════════════════════════════════════════
           § 2. POPULAR ARTICLES — zero-scroll quick wins
           ══════════════════════════════════════════════════ */}

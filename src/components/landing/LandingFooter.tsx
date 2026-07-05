@@ -30,6 +30,7 @@ const FOOTER_COLUMNS: FooterColumn[] = [
     links: [
       { label: 'Support Center',     href: '/support'               },
       { label: 'The Playbook (33 Metrics)', href: '/support/metrics' },
+      { label: 'Real Estate Glossary', href: '/support/glossary' },
       { label: 'Knowledge Base',     href: '/help'                  },
       { label: 'Help Center',        href: '/help'                  },
       { label: 'Company Blog',       href: '/blog'                  },

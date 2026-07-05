@@ -19,8 +19,6 @@ COPY . .
 
 # Generate Prisma Client
 RUN npx prisma generate
-RUN cat package.json
-RUN npm list --depth=0 || true
 
 # Build for production
 ENV NEXT_TELEMETRY_DISABLED=1

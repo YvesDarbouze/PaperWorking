@@ -54,13 +54,117 @@ interface PublicReview {
 }
 
 // ── Metadata ───────────────────────────────────────────────────
+// ── Helper: Firestore Fetch by Slug ──────────────────────────
+async function getVendorBySlug(slug: string): Promise<PublicVendor | null> {
+  try {
+    const { adminDb } = await import('@/lib/firebase/admin');
+    
+    // 1. Try fetching by document ID (uid)
+    const doc = await adminDb.collection('users').doc(slug).get();
+    if (doc.exists) {
+      const data = doc.data();
+      if (data && data.accountType === 'vendor') {
+        return {
+          uid: doc.id,
+          companyName: data.companyName || 'Anonymous Professional',
+          type: data.type || 'Professional',
+          bio: data.bio || 'No bio provided.',
+          specialties: data.specialties || [],
+          licensingStates: data.licensingStates || [],
+          serviceAreas: data.serviceAreas || [],
+          avgTurnaroundDays: data.avgTurnaroundDays ?? 3,
+          overallRating: data.overallRating ?? 5.0,
+          totalReviews: data.totalReviews ?? 0,
+          availability: data.availability || 'Available',
+          feeRangeLabel: data.feeRangeLabel || 'Inquire for pricing',
+          verified: !!data.verified,
+          insuranceVerified: !!data.insuranceVerified,
+          website: data.website || '',
+          phone: data.phone || '',
+          yearsExperience: data.yearsExperience ?? 0,
+          completedJobs: data.completedJobs ?? 0,
+        };
+      }
+    }
+    
+    // 2. If not found by doc ID, query by slug field
+    const slugQuery = await adminDb.collection('users')
+      .where('accountType', '==', 'vendor')
+      .where('slug', '==', slug)
+      .limit(1)
+      .get();
+    if (!slugQuery.empty) {
+      const doc = slugQuery.docs[0];
+      const data = doc.data();
+      return {
+        uid: doc.id,
+        companyName: data.companyName || 'Anonymous Professional',
+        type: data.type || 'Professional',
+        bio: data.bio || 'No bio provided.',
+        specialties: data.specialties || [],
+        licensingStates: data.licensingStates || [],
+        serviceAreas: data.serviceAreas || [],
+        avgTurnaroundDays: data.avgTurnaroundDays ?? 3,
+        overallRating: data.overallRating ?? 5.0,
+        totalReviews: data.totalReviews ?? 0,
+        availability: data.availability || 'Available',
+        feeRangeLabel: data.feeRangeLabel || 'Inquire for pricing',
+        verified: !!data.verified,
+        insuranceVerified: !!data.insuranceVerified,
+        website: data.website || '',
+        phone: data.phone || '',
+        yearsExperience: data.yearsExperience ?? 0,
+        completedJobs: data.completedJobs ?? 0,
+      };
+    }
+
+    // 3. Fallback: query by company name matching slug
+    const allVendorsQuery = await adminDb.collection('users')
+      .where('accountType', '==', 'vendor')
+      .get();
+    const match = allVendorsQuery.docs.find(d => {
+      const companyName = d.data().companyName || '';
+      const targetSlug = companyName.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
+      return targetSlug === slug;
+    });
+    if (match) {
+      const data = match.data();
+      return {
+        uid: match.id,
+        companyName: data.companyName || 'Anonymous Professional',
+        type: data.type || 'Professional',
+        bio: data.bio || 'No bio provided.',
+        specialties: data.specialties || [],
+        licensingStates: data.licensingStates || [],
+        serviceAreas: data.serviceAreas || [],
+        avgTurnaroundDays: data.avgTurnaroundDays ?? 3,
+        overallRating: data.overallRating ?? 5.0,
+        totalReviews: data.totalReviews ?? 0,
+        availability: data.availability || 'Available',
+        feeRangeLabel: data.feeRangeLabel || 'Inquire for pricing',
+        verified: !!data.verified,
+        insuranceVerified: !!data.insuranceVerified,
+        website: data.website || '',
+        phone: data.phone || '',
+        yearsExperience: data.yearsExperience ?? 0,
+        completedJobs: data.completedJobs ?? 0,
+      };
+    }
+  } catch (error) {
+    console.error('Failed to fetch vendor by slug from Firestore:', error);
+  }
+  return null;
+}
+
+// ── Metadata ───────────────────────────────────────────────────
 export async function generateMetadata({
   params,
 }: {
   params: Promise<{ slug: string }>;
 }): Promise<Metadata> {
   const { slug } = await params;
-  const displayName = slug.replace(/-/g, ' ');
+  const vendor = await getVendorBySlug(slug);
+  const displayName = vendor?.companyName || slug.replace(/-/g, ' ');
   return {
     title: `${displayName} · PaperWorking Marketplace`,
     description: `View ${displayName}'s profile, ratings, and specialties on PaperWorking's vendor marketplace.`,
@@ -145,8 +249,8 @@ export default async function VendorProfilePage({
   params: Promise<{ slug: string }>;
 }) {
   const { slug } = await params;
-  // TODO: Replace with Firestore fetch by slug
-  const vendor = getDemoVendor(slug);
+  const dbVendor = await getVendorBySlug(slug);
+  const vendor = dbVendor || getDemoVendor(slug);
   const reviews = getDemoReviews();
 
   return (

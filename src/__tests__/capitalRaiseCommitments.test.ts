@@ -33,6 +33,7 @@ import { NextRequest } from 'next/server';
    ────────────────────────────────────────────────────────────────────────── */
 var mockVerifyIdToken      = jest.fn();
 var mockProjectDocGet      = jest.fn();
+var mockProjectDocUpdate   = jest.fn();
 var mockUserDocGet         = jest.fn();
 var mockSubDocGet          = jest.fn();
 var mockSubDocSet          = jest.fn();
@@ -60,6 +61,7 @@ jest.mock('@/lib/firebase/admin', () => ({
       return {
         doc: () => ({
           get: (...args: any[]) => mockProjectDocGet(...args),
+          update: (...args: any[]) => mockProjectDocUpdate(...args),
           collection: () => ({
             doc: () => ({
               get:    (...args: any[]) => mockSubDocGet(...args),

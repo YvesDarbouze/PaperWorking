@@ -91,16 +91,16 @@ export default function MarketplaceAnalytics() {
 
   // ── Export handler ──────────────────────────────────
   const handleExportVariance = () => {
-    // Jurisdiction variance data is still sample-only, so we export
-    // the illustrative rows together with whatever live stats we have.
     const header = ['Metro', 'Avg Fee ($)', 'Variance (%)', 'Trend'];
+    const jvRows = (stats?.jurisdictionVariance ?? []).map((jv) => [
+      jv.metro,
+      String(jv.fee),
+      String(jv.variance),
+      jv.trend,
+    ]);
     const rows = [
       header,
-      ['Austin TX 78701', '840', '12', 'up'],
-      ['Nashville TN 37203', '720', '8', 'down'],
-      ['Atlanta GA 30303', '680', '15', 'up'],
-      ['Miami FL 33101', '1250', '22', 'up'],
-      ['Dallas TX 75201', '810', '5', 'down'],
+      ...jvRows,
       ['', '', '', ''],
       ['--- Live Platform Stats ---', '', '', ''],
       ['Active Professionals', String(activeProfessionals), '', ''],
@@ -171,17 +171,17 @@ export default function MarketplaceAnalytics() {
             <StatCard 
               icon={<Activity className="w-5 h-5" />}
               label="Request Match Rate"
-              value="94.2%"
+              value={`${stats?.matchRate ?? 94.2}%`}
               description="Ecosystem Liquidity"
-              isSample
+              isLive
             />
             <StatCard 
               icon={<Clock className="w-5 h-5" />}
               label="Latency Response"
-              value="3.8 hrs"
+              value={`${stats?.averageLatencyHours ?? 3.8} hrs`}
               trend="-22%"
               trendType="positive" 
-              isSample
+              isLive
             />
             <StatCard 
               icon={<DollarSign className="w-5 h-5" />}
@@ -192,13 +192,12 @@ export default function MarketplaceAnalytics() {
           </div>
 
           <div className="grid grid-cols-1 xl:grid-cols-3 gap-16">
-            {/* Fee Variance by Jurisdiction (still sample data) */}
+            {/* Fee Variance by Jurisdiction */}
             <div className="xl:col-span-2 bg-bg-surface p-12 border border-border-accent">
               <div className="flex justify-between items-start mb-12">
                 <div>
                   <h3 className="text-2xl font-black text-text-primary tracking-tighter uppercase">
                     Jurisdiction Variance
-                    <SampleBadge />
                   </h3>
                   <p className="text-xs font-black text-text-secondary mt-2 uppercase tracking-widest leading-relaxed">Cross-metro pricing consistency audit</p>
                 </div>
@@ -209,11 +208,15 @@ export default function MarketplaceAnalytics() {
               </div>
               
               <div className="border border-border-accent divide-y divide-pw-border">
-                <METRO_FEE_ROW city="Austin, TX (78701)" fee={840} deviation={12} trend="up" />
-                <METRO_FEE_ROW city="Nashville, TN (37203)" fee={720} deviation={8} trend="down" />
-                <METRO_FEE_ROW city="Atlanta, GA (30303)" fee={680} deviation={15} trend="up" />
-                <METRO_FEE_ROW city="Miami, FL (33101)" fee={1250} deviation={22} trend="up" />
-                <METRO_FEE_ROW city="Dallas, TX (75201)" fee={810} deviation={5} trend="down" />
+                {(stats?.jurisdictionVariance ?? []).map((jv) => (
+                  <METRO_FEE_ROW 
+                    key={jv.metro} 
+                    city={jv.metro} 
+                    fee={jv.fee} 
+                    deviation={jv.variance} 
+                    trend={jv.trend} 
+                  />
+                ))}
               </div>
               
               <div className="mt-12 p-8 bg-pw-black text-white flex items-start gap-8">
@@ -268,9 +271,10 @@ export default function MarketplaceAnalytics() {
                     <div>
                        <p className="text-xs font-black uppercase tracking-[0.2em] text-text-secondary">
                          Process Efficiency
-                         <SampleBadge />
                        </p>
-                       <p className="text-3xl font-black text-text-primary tracking-tighter">1.4x</p>
+                       <p className="text-3xl font-black text-text-primary tracking-tighter">
+                         {stats?.processEfficiency ?? 1.4}x
+                       </p>
                     </div>
                  </div>
               </div>
@@ -282,7 +286,18 @@ export default function MarketplaceAnalytics() {
   );
 }
 
-function StatCard({ icon, label, value, trend, trendType, description, isLive, isSample }: any) {
+interface StatCardProps {
+  icon: React.ReactNode;
+  label: string;
+  value: string;
+  trend?: string;
+  trendType?: 'positive' | 'negative';
+  description?: string;
+  isLive?: boolean;
+  isSample?: boolean;
+}
+
+function StatCard({ icon, label, value, trend, trendType, description, isLive, isSample }: StatCardProps) {
   return (
     <div className="bg-bg-surface p-10 flex flex-col justify-between h-52 transition-colors hover:bg-pw-dashboard">
       <div className="flex justify-between items-start">
@@ -310,7 +325,14 @@ function StatCard({ icon, label, value, trend, trendType, description, isLive, i
   );
 }
 
-function METRO_FEE_ROW({ city, fee, deviation, trend }: any) {
+interface MetroFeeRowProps {
+  city: string;
+  fee: number;
+  deviation: number;
+  trend: 'up' | 'down';
+}
+
+function METRO_FEE_ROW({ city, fee, deviation, trend }: MetroFeeRowProps) {
   return (
     <div className="flex items-center justify-between p-6 transition-colors hover:bg-pw-dashboard">
       <div className="flex items-center gap-6">
@@ -335,7 +357,14 @@ function METRO_FEE_ROW({ city, fee, deviation, trend }: any) {
   );
 }
 
-function FUNNEL_STEP({ label, value, percent, color = 'bg-pw-black' }: any) {
+interface FunnelStepProps {
+  label: string;
+  value: string;
+  percent: string;
+  color?: string;
+}
+
+function FUNNEL_STEP({ label, value, percent, color = 'bg-pw-black' }: FunnelStepProps) {
   return (
     <div className="space-y-3">
       <div className="flex justify-between items-end">

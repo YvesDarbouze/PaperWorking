@@ -23,6 +23,7 @@ steps:
       - |
         TAG=$(cat /workspace/BUILD_TAG)
         docker build \
+          --no-cache \
           -t "us-east4-docker.pkg.dev/${_PROJECT_ID}/${_REPOSITORY}/${_SERVICE_NAME}:$${TAG}" \
           -t "us-east4-docker.pkg.dev/${_PROJECT_ID}/${_REPOSITORY}/${_SERVICE_NAME}:latest" \
           .

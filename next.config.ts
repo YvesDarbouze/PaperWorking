@@ -99,6 +99,11 @@ const nextConfig: NextConfig = {
         destination: '/dashboard/command-center',
         permanent: true,
       },
+      {
+        source: '/projects',
+        destination: '/dashboard/projects',
+        permanent: true,
+      },
     ];
   },
   async rewrites() {
@@ -190,5 +195,5 @@ export default withSentryConfig(nextConfig, {
   silent: true,
   widenClientFileUpload: true,
   disableLogger: true,
-  automaticVercelMonitors: true,
+  automaticVercelMonitors: false,
 });

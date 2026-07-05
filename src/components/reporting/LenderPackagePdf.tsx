@@ -19,21 +19,23 @@ export default function LenderPackagePdf() {
       const doc = new jsPDF();
 
       // Header
-      doc.setFontSize(22);
-      doc.setTextColor(33, 33, 33);
-      doc.text("LENDER EXECUTIVE SUMMARY", 14, 20);
+      doc.addImage('/brand/PaperWorking_Black_full_Logo_.png', 'PNG', 14, 10, 30.4, 5);
 
-      doc.setFontSize(12);
+      doc.setFontSize(20);
+      doc.setTextColor(33, 33, 33);
+      doc.text("LENDER EXECUTIVE SUMMARY", 14, 25);
+
+      doc.setFontSize(11);
       doc.setTextColor(100, 100, 100);
-      doc.text(`Generated on: ${new Date().toLocaleDateString()}`, 14, 28);
+      doc.text(`Generated on: ${new Date().toLocaleDateString()}`, 14, 32);
 
       // Property Info
       doc.setFontSize(14);
       doc.setTextColor(33, 33, 33);
-      doc.text(`Target Property: ${deal.propertyName}`, 14, 40);
+      doc.text(`Target Property: ${deal.propertyName}`, 14, 44);
       doc.setFontSize(11);
-      doc.text(`Address: ${deal.address}`, 14, 46);
-      doc.text(`Current Phase: ${deal.status.toUpperCase()}`, 14, 52);
+      doc.text(`Address: ${deal.address}`, 14, 50);
+      doc.text(`Current Phase: ${deal.status.toUpperCase()}`, 14, 56);
 
       // Projected metrics via @metrics
       const flip = computeFlipMetrics(deal);
@@ -48,7 +50,7 @@ export default function LenderPackagePdf() {
 
       // Tables
       autoTable(doc, {
-        startY: 65,
+        startY: 69,
         head: [['Metric', 'Value']],
         body: [
           ['Purchase Price', `$${(deal.financials.purchasePrice || 0).toLocaleString()}`],

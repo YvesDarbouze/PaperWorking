@@ -95,7 +95,7 @@ export function renderEmailLayout({
               <table role="presentation" width="100%" cellpadding="0" cellspacing="0">
                 <tr>
                   <td>
-                    <span style="font-size:20px;font-weight:700;letter-spacing:-0.02em;color:#0d0d0d;">PaperWorking</span>
+                    <img src="${appUrl}/brand/PaperWorking_Black_full_Logo_.png" alt="PaperWorking" height="32" width="195" style="display:block;height:32px;width:auto;border:0;" />
                   </td>
                   <td align="right">
                     <span style="font-size:11px;font-weight:500;letter-spacing:0.12em;text-transform:uppercase;color:#7F7F7F;">

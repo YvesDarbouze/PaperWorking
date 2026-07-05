@@ -2,7 +2,7 @@
  * Metric Taxonomy — single source of truth for metric classification.
  *
  * Every metric that appears on PaperWorking Insights is classified into
- * exactly one of five categories, with the 10 canonical KPIs elevated
+ * exactly one of five categories, with the 33 canonical KPIs elevated
  * as the hero tier.
  *
  * Pure types + constants — no runtime code, no I/O imports.
@@ -28,7 +28,7 @@ export interface MetricTaxonomyEntry {
   id: MetricId | 'PRICE_TO_RENT' | 'VACANCY';
   /** Human-readable display name */
   name: string;
-  /** hero = top 10 KPIs, supplemental = supporting context */
+  /** hero = top 33 KPIs, supplemental = supporting context */
   tier: MetricTier;
   /** One of the five taxonomy categories */
   category: MetricCategory;
@@ -46,7 +46,7 @@ export interface MetricTaxonomyEntry {
 
 // ─── Hero Order (canonical, pinned) ─────────────────────────────────────────
 
-/** The 10 canonical KPIs in exact display order — do not reorder. */
+/** The 33 canonical KPIs in exact display order — do not reorder. */
 export const HERO_ORDER: MetricId[] = [
   'NOI',
   'CASH_FLOW',
@@ -74,7 +74,7 @@ export const CATEGORY_ORDER: MetricCategory[] = [
 // ─── Full Taxonomy ──────────────────────────────────────────────────────────
 
 export const METRIC_TAXONOMY: MetricTaxonomyEntry[] = [
-  // ── Hero Tier: Financial Performance (10 KPIs) ────────────────────────────
+  // ── Hero Tier: Financial Performance (33 KPIs) ────────────────────────────
 
   {
     id: 'NOI',
@@ -345,7 +345,7 @@ export const METRIC_TAXONOMY: MetricTaxonomyEntry[] = [
 
 // ─── Helpers ────────────────────────────────────────────────────────────────
 
-/** Returns only the 10 hero KPI entries in canonical order. */
+/** Returns only the 33 hero KPI entries in canonical order. */
 export function getHeroMetrics(): MetricTaxonomyEntry[] {
   return HERO_ORDER.map(
     (id) => METRIC_TAXONOMY.find((m) => m.id === id)!

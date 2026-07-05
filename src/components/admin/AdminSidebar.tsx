@@ -113,7 +113,7 @@ export default function AdminSidebar() {
     >
       {/* Logo */}
       <div className="flex items-center px-5 h-16 shrink-0 border-b border-black/10 dark:border-white/10">
-        <Logo href="/admin" size="sm" />
+        <Logo href="/admin" surface="app-sidebar" />
       </div>
 
       {/* Admin badge */}

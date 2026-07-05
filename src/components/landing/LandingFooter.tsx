@@ -29,6 +29,7 @@ const FOOTER_COLUMNS: FooterColumn[] = [
     heading: 'Support & Resources',
     links: [
       { label: 'Support Center',     href: '/support'               },
+      { label: 'The Playbook (33 Metrics)', href: '/support/metrics' },
       { label: 'Knowledge Base',     href: '/help'                  },
       { label: 'Help Center',        href: '/help'                  },
       { label: 'Company Blog',       href: '/blog'                  },
@@ -102,7 +103,7 @@ export default function LandingFooter() {
 
           {/* Brand column */}
           <div className="col-span-2 md:col-span-1">
-            <Logo href="/" size="sm" className="mb-5" />
+            <Logo href="/" surface="marketing-footer" className="mb-5" />
             <p
               className="text-[13.5px] leading-relaxed mb-6"
               style={{ color: 'var(--color-on-surface-variant)', opacity: 0.75, maxWidth: '200px' }}
@@ -150,7 +151,7 @@ export default function LandingFooter() {
             className="text-[12.5px]"
             style={{ color: 'var(--color-on-surface-variant)', opacity: 0.55 }}
           >
-            © {new Date().getFullYear()} PaperWorking Corp. All rights reserved.
+            © 2026 PaperWorking Corp. All rights reserved.
           </p>
 
           {/* Bottom links */}

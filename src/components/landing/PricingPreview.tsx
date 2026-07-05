@@ -76,7 +76,7 @@ export default function PricingPreview() {
             One price. Everything included.
           </h2>
           <p className="mx-auto mt-4 max-w-lg text-sm text-phase-3 leading-relaxed">
-            14-day trial on every plan. Credit card required. No charge until day 15.
+            14-day trial on every plan.
           </p>
         </div>
 

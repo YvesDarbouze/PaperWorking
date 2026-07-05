@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState, useMemo } from 'react';
+import Link from 'next/link';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ChevronLeft, ChevronRight, Activity, Globe, Monitor, Smartphone, Tablet } from 'lucide-react';
 import { DEMO_PROJECTS, computeNOIComponents } from '@/lib/metrics';
@@ -27,20 +28,20 @@ const HERO_KPIS: MetricCard[] = [
       'Vacancy in Dollars — Empty units translated into lost income, not abstract percentages.',
       'Trend Detection — Spot occupancy slipping early enough to act on it.',
     ],
-    device: 'desktop', // Slide 1: Desktop Browser
+    device: 'desktop',
   },
   {
     name: 'Net Operating Income',
     symbol: 'NOI',
     formula: 'Revenue − OpEx',
     tagline: 'Instant NOI. Zero Formulas. Total Control.',
-    body: 'Net Operating Income is the foundation of your real estate wealth. It dictates your property’s market value, drives your Cap Rate, and proves your portfolio’s strength. If you can’t pull this number up in five seconds, you’re leaving money on the table. PaperWorking eliminates the data-entry homework, turning your daily milestone logs into instant financial clarity.',
+    body: "Net Operating Income is the foundation of your real estate wealth. It dictates your property's market value, drives your Cap Rate, and proves your portfolio's strength. If you can't pull this number up in five seconds, you're leaving money on the table. PaperWorking eliminates the data-entry homework, turning your daily milestone logs into instant financial clarity.",
     bullets: [
       'Speed to Capital — Hand commercial lenders the exact, institutional-grade data they need to approve your funding faster.',
-      'Precision Valuation — Instantly know what your property is actually worth before making your next strategic move.',
+      "Precision Valuation — Instantly know what your property is actually worth before making your next strategic move.",
       'Automated Intelligence — Forget manual accounting. Your daily workflow automatically builds your performance metrics for you.',
     ],
-    device: 'tablet', // Slide 2: Tablet
+    device: 'tablet',
   },
   {
     name: 'Cash Flow',
@@ -49,37 +50,37 @@ const HERO_KPIS: MetricCard[] = [
     tagline: 'Your Cash Flow. Automated. Visualized. Certain.',
     body: 'Stop guesstimating your margins. Command your portfolio like an institution with real-time liquidity tracking that requires zero accounting experience.',
     bullets: [
-      'Instant Visibility — See exactly what you’re pocketing after debt service and expenses are deducted.',
+      "Instant Visibility — Know exactly what you're pocketing after debt service and expenses are deducted.",
       'Proactive Control — Spot downward cash trends early when milestone costs run high, protecting your capital reserves.',
       'Frictionless Reinvestment — Know your precise capital down to the penny, giving you the confidence to scale safely.',
     ],
-    device: 'phone', // Slide 3: Phone
+    device: 'phone',
   },
   {
     name: 'Cap Rate',
     symbol: 'CAP',
     formula: 'NOI ÷ Property Value',
-    tagline: 'See the Asset’s Raw Muscle. No Financing Tricks.',
-    body: 'A bad deal can hide behind creative loan terms. Savvy investors look past the financing to measure the pure, cash-equivalent strength of the property itself. But when rehab milestones run over budget, your Cap Rate plummets without you knowing. The exact second you enter a cost against a Project milestone, PaperWorking recalculates your true Cap Rate — turning daily project management into an early-warning system.',
+    tagline: "See the Asset's Raw Muscle. No Financing Tricks.",
+    body: "A bad deal can hide behind creative loan terms. Savvy investors look past the financing to measure the pure, cash-equivalent strength of the property itself. But when rehab milestones run over budget, your Cap Rate plummets without you knowing. The exact second you enter a cost against a Project milestone, PaperWorking recalculates your true Cap Rate — turning daily project management into an early-warning system.",
     bullets: [
       'Live Recalculation — Your yield adjusts in real time, not six months down the road.',
       'Financing-Blind Truth — Measure the asset itself, independent of loan terms.',
       'Early-Warning System — Milestone overruns surface in your Cap Rate the moment they happen.',
     ],
-    device: 'desktop', // Slide 4: Desktop Browser
+    device: 'desktop',
   },
   {
     name: 'Cash-on-Cash Return',
     symbol: 'CoC',
     formula: 'Annual Cash Flow ÷ Cash Invested',
     tagline: 'Your Real Cash Yield. Live. Visual. Certain.',
-    body: 'Never fly blind on your actual returns. Command your capital efficiency with an automated dashboard that connects your daily workflow directly to your bottom line.',
+    body: "Never fly blind on your actual returns. Command your capital efficiency with an automated dashboard that connects your daily workflow directly to your bottom line.",
     bullets: [
-      'Instant Visibility — See your exact return percentage on the literal cash you’ve deployed.',
+      "Instant Visibility — See your exact return percentage on the literal cash you've deployed.",
       'Early-Warning Shield — Catch budget leaks at the milestone level before they hurt your year-end payouts.',
       'Effortless Reporting — Your daily Project logs naturally build your financial visualizations and tax-ready reports.',
     ],
-    device: 'tablet', // Slide 5: Tablet
+    device: 'tablet',
   },
   {
     name: 'Gross Rent Multiplier',
@@ -88,24 +89,24 @@ const HERO_KPIS: MetricCard[] = [
     tagline: 'Compare Properties Instantly.',
     body: 'In a competitive market, listing prices can be misleading. GRM is a straight-to-the-point reality check — exactly how many years of gross rent it takes to cover the purchase price. PaperWorking visualizes it instantly, keeping your capital safe from bad valuations.',
     bullets: [
-      'Instant Market Triage — Know within five seconds if a prospective Deal is worth your attention.',
+      "Instant Market Triage — Know within five seconds if a prospective Deal is worth your attention.",
       'Frictionless Analytics — Raw market prices become instant, actionable investment intelligence.',
       'Buy with Confidence — Stop overpaying for assets that look better than they perform.',
     ],
-    device: 'phone', // Slide 6: Phone
+    device: 'phone',
   },
   {
     name: 'Debt Service Coverage Ratio',
     symbol: 'DSCR',
     formula: 'NOI ÷ Annual Debt Service',
     tagline: 'Your DSCR. Automated. Fundable. Certain.',
-    body: 'Stop letting complex bank underwriting slow down your portfolio growth. Command your leverage with a real-time index of your property’s true borrowing strength.',
+    body: "Stop letting complex bank underwriting slow down your portfolio growth. Command your leverage with a real-time index of your property's true borrowing strength.",
     bullets: [
-      'Immediate Bank Credibility — Hand lenders an audit-ready view of your property’s ability to cover its debt.',
+      "Immediate Bank Credibility — Hand lenders an audit-ready view of your property's ability to cover its debt.",
       'Frictionless Analytics — PaperWorking divides your live NOI by your financing inputs automatically.',
       'Tax-Ready Workflow — Every milestone expense that moves your DSCR flows into year-end reporting — saving weeks of bookkeeping.',
     ],
-    device: 'desktop', // Slide 7: Desktop Browser
+    device: 'desktop',
   },
   {
     name: 'Internal Rate of Return',
@@ -115,36 +116,36 @@ const HERO_KPIS: MetricCard[] = [
     body: 'Profit tells you how much. IRR tells you how fast — the metric institutions use to rank every deal, because a dollar returned this year beats a dollar returned in year five. Two Deals with identical profit can have wildly different IRRs. PaperWorking computes yours live from your actual cash-in and cash-out dates, so you rank opportunities the way professionals do.',
     bullets: [
       'Apples-to-Apples Ranking — Compare a six-month flip against a five-year hold on equal footing.',
-      'Live Recalculation — Timeline slips and milestone overruns update your projected IRR the moment they’re logged.',
+      "Live Recalculation — Timeline slips and milestone overruns update your projected IRR the moment they're logged.",
       'Exit Intelligence — See how holding longer — or selling sooner — changes your true return before you decide.',
     ],
-    device: 'tablet', // Slide 8: Tablet
+    device: 'tablet',
   },
   {
     name: 'Expense Ratio',
     symbol: 'OER',
     formula: 'OpEx ÷ Gross Income',
     tagline: 'Find the Leak Before It Sinks the Margin.',
-    body: 'What percentage of your gross income do operating costs consume? Most investors can’t answer — and rising expenses quietly eat returns that look healthy on the surface. PaperWorking calculates your Expense Ratio live from the costs you’re already logging, so margin erosion shows up as a dashboard alert, not a year-end surprise.',
+    body: "What percentage of your gross income do operating costs consume? Most investors can't answer — and rising expenses quietly eat returns that look healthy on the surface. PaperWorking calculates your Expense Ratio live from the costs you're already logging, so margin erosion shows up as a dashboard alert, not a year-end surprise.",
     bullets: [
       'Live Ratio — OpEx as a share of gross income, updated with every logged cost.',
       'Category Drill-Down — See exactly which expense line is growing faster than your rent.',
-      'Margin Protection — Catch creeping costs while they’re still fixable.',
+      'Margin Protection — Catch creeping costs while they\'re still fixable.',
     ],
-    device: 'phone', // Slide 9: Phone
+    device: 'phone',
   },
   {
     name: 'Long-Term Appreciation',
     symbol: 'LTA',
     formula: 'CAGR of Property Value',
     tagline: 'The Return You Earn While Holding.',
-    body: 'Cash flow pays you monthly; appreciation builds your net worth. PaperWorking tracks your property’s estimated market value over time — powered by live market data — so your equity growth is visible on the same dashboard as your income, and your hold-versus-exit decision is a calculation, not a guess.',
+    body: "Cash flow pays you monthly; appreciation builds your net worth. PaperWorking tracks your property's estimated market value over time — powered by live market data — so your equity growth is visible on the same dashboard as your income, and your hold-versus-exit decision is a calculation, not a guess.",
     bullets: [
       'Equity Trendline — Watch estimated value and equity build across your hold period.',
       'Market-Data Backed — Valuations grounded in live market data, clearly labeled as estimates.',
       'Exit Timing — Weigh appreciation against cash flow when deciding whether to hold or sell.',
     ],
-    device: 'desktop', // Slide 10: Desktop Browser
+    device: 'desktop',
   },
 ];
 
@@ -288,12 +289,22 @@ export default function MetricCarousel() {
           </div>
 
           <h2 className="text-3xl sm:text-4xl md:text-5xl font-extrabold tracking-tight text-on-background mb-6 leading-tight">
-            The 10 Numbers That Decide Whether Your Deal Makes Money
+            The 33 Numbers That Decide Whether Your Deal Makes Money
           </h2>
 
-          <p className="text-base sm:text-lg text-on-surface-variant leading-relaxed font-normal">
-            Ask a typical real estate investor for their NOI, their DSCR, or their cash-on-cash return, and most can't answer. They have a vague sense of profit or loss — and vague is expensive. Other platforms brag about tracking 33 metrics. PaperWorking gives you the ten key performance indicators that savvy investors actually use to buy, hold, borrow, and sell — calculated automatically from the work you're already doing.
+          <p className="text-base sm:text-lg text-on-surface-variant leading-relaxed font-normal mb-6">
+            Ask a typical real estate investor for their NOI, their DSCR, or their cash-on-cash return, and most can't answer. They have a vague sense of profit or loss — and vague is expensive. PaperWorking gives you the 33 key performance indicators that savvy investors actually use to buy, hold, borrow, and sell — calculated automatically from the work you're already doing.
           </p>
+
+          <Link
+            href="/support/metrics"
+            className="inline-flex items-center gap-1.5 text-xs font-bold uppercase tracking-wider text-primary hover:underline group cursor-pointer text-decoration-none"
+          >
+            Explore the Playbook (All 33 Metrics)
+            <span className="material-symbols-outlined text-[14px] transition-transform duration-150 group-hover:translate-x-0.5">
+              arrow_forward
+            </span>
+          </Link>
         </div>
 
         {/* Tab Selection Row */}

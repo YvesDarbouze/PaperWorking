@@ -63,10 +63,22 @@ function buildPdf(lines: ClosingCostLine[], total: number, address: string, date
   doc.setFillColor(...BRAND_DARK);
   doc.rect(0, 0, 210, 28, 'F');
 
-  doc.setFont('helvetica', 'bold');
-  doc.setFontSize(10);
-  doc.setTextColor(...BRAND_WHITE);
-  doc.text('PAPERWORKING', margin, 11);
+  const fs = require('fs');
+  const path = require('path');
+  let logoBase64 = '';
+  try {
+    const logoPath = path.join(process.cwd(), 'public/brand/PaperWorking_White_full_Logo_.png');
+    logoBase64 = `data:image/png;base64,${fs.readFileSync(logoPath).toString('base64')}`;
+  } catch {}
+
+  if (logoBase64) {
+    doc.addImage(logoBase64, 'PNG', margin, 7, 24.3, 4);
+  } else {
+    doc.setFont('helvetica', 'bold');
+    doc.setFontSize(10);
+    doc.setTextColor(...BRAND_WHITE);
+    doc.text('PAPERWORKING', margin, 11);
+  }
 
   doc.setFont('helvetica', 'normal');
   doc.setFontSize(7);

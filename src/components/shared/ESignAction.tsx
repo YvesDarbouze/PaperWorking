@@ -184,6 +184,19 @@ export default function ESignAction({
   }
 
   // ── Render: idle / error — show request button ───────────────────────────
+  if (!projectId || !documentId) {
+    return (
+      <button 
+        disabled={true}
+        title="E-Signature integration (DocuSign/HelloSign) coming soon"
+        className="flex items-center gap-1.5 bg-[#454955]/10 border border-[#454955]/20 text-[#454955]/60 px-3 py-1.5 rounded-lg text-xs font-semibold cursor-not-allowed opacity-50"
+      >
+        <PenTool className="w-3.5 h-3.5" />
+        E-Sign Coming Soon
+      </button>
+    );
+  }
+
   const isSending = localStatus === 'signing';
   return (
     <button

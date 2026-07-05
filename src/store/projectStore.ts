@@ -234,9 +234,19 @@ export const useProjectStore = create<ProjectState>()(
       // EvaluationPanel dispatches: purchasePrice, loanAmount, loanInterestRate, etc.
       // EnginePanel dispatches: costs (approved), rehab tasks, permit status
       // ExitPanel dispatches: actualSalePrice, commissions, finalClosingCosts
-      updateProjectFinancials: (projectId, updates) => {
+      updateProjectFinancials: async (projectId, updates) => {
         const { projects, currentProject } = get();
 
+        // 1. Snapshot previous state for rollback
+        const previousProjects = projects.map(d => ({
+          ...d,
+          financials: { ...d.financials }
+        }));
+        const previousCurrentProject = currentProject
+          ? { ...currentProject, financials: { ...currentProject.financials } }
+          : null;
+
+        // 2. Optimistic Update in Zustand store
         const updatedDeals = projects.map(d => {
           if (d.id === projectId) {
             return {
@@ -244,7 +254,7 @@ export const useProjectStore = create<ProjectState>()(
               financials: {
                 ...d.financials,
                 ...updates
-              }
+              } as Project['financials']
             };
           }
           return d;
@@ -256,6 +266,50 @@ export const useProjectStore = create<ProjectState>()(
           if (u) set({ currentProject: u });
         }
         get().recalculateMetrics();
+
+        // 3. Persist to authoritative store (Firestore via PATCH API)
+        try {
+          if (typeof window !== 'undefined' && window.location.pathname.startsWith('/demo')) {
+            // Demo mode is client-only
+            return;
+          }
+
+          const { auth } = await import('@/lib/firebase/config');
+          const token = await auth.currentUser?.getIdToken();
+          if (!token) {
+            throw new Error('Not authenticated. Please log in again.');
+          }
+
+          const res = await fetch(`/api/projects/${projectId}`, {
+            method: 'PATCH',
+            headers: {
+              'Content-Type': 'application/json',
+              Authorization: `Bearer ${token}`,
+            },
+            body: JSON.stringify({ financials: updates }),
+          });
+
+          if (!res.ok) {
+            const errData = await res.json().catch(() => ({}));
+            throw new Error(errData.error || `Server responded with ${res.status}`);
+          }
+
+          const result = await res.json();
+          if (!result.success) {
+            throw new Error(result.error || 'Server failed to save financials.');
+          }
+        } catch (err: any) {
+          console.error('[projectStore] updateProjectFinancials persist failed:', err);
+          const { default: toast } = await import('react-hot-toast');
+          toast.error(err.message || 'Failed to save changes. Reverting to server state.');
+
+          // 4. Rollback to persisted truth on failure
+          set({ projects: previousProjects });
+          if (previousCurrentProject) {
+            set({ currentProject: previousCurrentProject });
+          }
+          get().recalculateMetrics();
+        }
       },
 
       updateProjectExit: (projectId, updates) => {

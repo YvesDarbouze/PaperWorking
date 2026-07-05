@@ -541,7 +541,7 @@ export default function DealAnalyzerPage() {
             className="block text-[10px] font-bold uppercase tracking-widest mb-5"
             style={{ color: 'rgba(253, 255, 252, 0.35)' }}
           >
-            Instant Analysis — 10 Key Metrics
+            Instant Analysis — 33 Key Metrics
           </span>
 
           <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3">
@@ -666,7 +666,7 @@ export default function DealAnalyzerPage() {
               Enter a purchase price and monthly rent to begin analysis
             </p>
             <p className="text-xs mt-1" style={{ color: 'rgba(253, 255, 252, 0.3)' }}>
-              All 10 key investment metrics will compute instantly as you type.
+              All 33 key investment metrics will compute instantly as you type.
             </p>
           </div>
         </div>

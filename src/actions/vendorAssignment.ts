@@ -4,6 +4,7 @@ import { adminAuth, adminDb } from '@/lib/firebase/admin';
 import { FieldValue } from 'firebase-admin/firestore';
 import { isSubscriptionActive } from '@/lib/stripe/subscription';
 import { NotificationService } from '@/lib/services/notificationService';
+import { logOrgActivity } from '@/lib/firebase/orgActivityWriter';
 import type { UserProfile } from '@/types/user';
 import type { AssignmentStatus } from '@/types/schema';
 
@@ -198,18 +199,34 @@ export async function assignVendorToProject(
       .doc(assignmentId);
 
     batch.set(requestRef, {
+      id: assignmentId,
       projectId,
       vendorUid,
+      serviceType,
+      type: serviceType,
       message: message?.trim() || null,
       urgency: urgency ?? 'standard',
       desiredTimeline: desiredTimeline?.trim() || null,
       status: 'PENDING',
       requestedAt: FieldValue.serverTimestamp(),
       requestedBy: user.uid,
-      type: serviceType,
+      requestedByName: user.displayName || user.email || 'Investor',
     });
 
     await batch.commit();
+
+    // Log activity (non-blocking — never blocks the primary response)
+    if (projectData?.organizationId) {
+      logOrgActivity({
+        organizationId: projectData.organizationId,
+        type: 'phase_change',
+        actorId: user.uid,
+        actorName: user.displayName || user.email || 'Investor',
+        summary: `Requested ${serviceType} from ${vendorProfile?.companyName || vendorData?.displayName || 'a vendor'}`,
+        projectId,
+        projectName: projectData?.propertyName || projectData?.address?.street || undefined,
+      });
+    }
 
     // Send notification to the vendor (non-blocking)
     NotificationService.createNotification({

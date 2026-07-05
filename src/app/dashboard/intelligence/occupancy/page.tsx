@@ -20,7 +20,7 @@ import type { OccupancyValues, UnitOccupancy } from '@/components/intelligence/O
 const defaultMonths = ['May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec', 'Jan', 'Feb', 'Mar', 'Apr'];
 const defaultOccupancy = [88, 89, 90, 91, 90, 92, 91, 92, 93, 93, 94, 94.2];
 
-const defaultProperties = [
+const fallbackProperties = [
   { address: '421 Oak St, Brooklyn',       units: 12, occupied: 12, leaseRisk: 'Low'    },
   { address: '1248 Oakwood Ave, Queens',   units: 8,  occupied: 7,  leaseRisk: 'Medium' },
   { address: '77 Prospect Heights, BK',    units: 16, occupied: 14, leaseRisk: 'Low'    },
@@ -257,7 +257,7 @@ export default function OccupancyIntelligencePage() {
 
   const propertyRows = useMemo(() => {
     if (portfolioInputsResult.status !== 'ready') {
-      return defaultProperties;
+      return fallbackProperties;
     }
     const projectsList = portfolioInputsResult.data.projects;
     const withUnits = projectsList.filter((p) => (p.numberOfUnits ?? (0)) > 0);
@@ -270,7 +270,7 @@ export default function OccupancyIntelligencePage() {
         return { address: p.address || p.propertyName || 'Unknown', units, occupied: occ, leaseRisk: risk };
       });
     }
-    return defaultProperties;
+    return fallbackProperties;
   }, [portfolioInputsResult]);
 
   return (

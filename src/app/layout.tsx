@@ -34,6 +34,33 @@ const jetBrainsMono = JetBrains_Mono({
 export const metadata: Metadata = {
   title: "PaperWorking — Real Estate Investment Operating System",
   description: "Track deals, manage rehab budgets, and close faster. PaperWorking is the operating system for serious real estate investors — from sourcing to exit.",
+  openGraph: {
+    title: "PaperWorking — Real Estate Investment Operating System",
+    description: "Track deals, manage rehab budgets, and close faster. PaperWorking is the operating system for serious real estate investors — from sourcing to exit.",
+    url: "https://paperworking.co",
+    siteName: "PaperWorking",
+    images: [
+      {
+        url: "/opengraph-image.png",
+        width: 1200,
+        height: 630,
+        alt: "PaperWorking — Real Estate Investment Operating System",
+      },
+    ],
+    locale: "en_US",
+    type: "website",
+  },
+  icons: {
+    icon: [
+      { url: "/favicon.ico", sizes: "any" },
+      { url: "/icon-16.png", sizes: "16x16", type: "image/png" },
+      { url: "/icon-32.png", sizes: "32x32", type: "image/png" },
+      { url: "/brand/PaperWorking_White_Logo_Icon_32.png", sizes: "32x32", type: "image/png", media: "(prefers-color-scheme: dark)" },
+    ],
+    apple: [
+      { url: "/apple-touch-icon.png", sizes: "180x180", type: "image/png" },
+    ],
+  },
 };
 
 export default function RootLayout({

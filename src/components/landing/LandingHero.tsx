@@ -120,19 +120,15 @@ export default function LandingHero() {
             </span>
           </span>
 
-          {/* H1 — names the outcome, not the product category.
-              The investor doesn't want "OS" — they want protected margin. */}
+          {/* H1 — verbatim */}
           <h1 className="text-[40px] md:text-[52px] lg:text-[60px] leading-[46px] md:leading-[58px] lg:leading-[68px] font-bold tracking-[-0.04em] text-on-surface mb-6">
-            Stop losing money<br />
-            on deals you{' '}
-            <span className="text-primary luminous-text">should've caught.</span>
+            Manage the Project.<br />
+            PaperWorking <span className="text-primary luminous-text">Automates the Profits</span>
           </h1>
 
-          {/* Subhead — honest, direct. Names the exact fears. */}
+          {/* Subhead — verbatim */}
           <p className="text-[17px] md:text-[18px] leading-[27px] md:leading-[29px] font-normal text-on-surface-variant mb-8 max-w-[520px]">
-            Missed contingency deadlines. Contractor draws that blow your budget.
-            A tax season that takes six weeks. PaperWorking watches all of it —
-            so you don't have to.
+            Real estate is complex, and true profitability easily gets buried under daily operational chaos. To move past a vague understanding of your margins and speak the language that banks and lenders demand, you need precision. PaperWorking seamlessly bridges the gap between daily project management and sophisticated portfolio analytics. By simply organizing your project tasks and costs as they happen, you automatically generate the 33 vital KPIs (key performance indicators) used by top-tier real estate developers.
           </p>
 
           {/* ONE primary CTA — visually dominant, nothing competing */}
@@ -151,19 +147,16 @@ export default function LandingHero() {
                 arrow_forward
               </span>
             </Link>
-            {/* Secondary option — visually quiet */}
-            <span className="text-[13px] text-on-surface-variant/50">
-              Credit card required · Cancel before day 15 to avoid charge
-            </span>
+
           </div>
 
           {/* Social proof — three specific numbers, not marketing claims.
               Skeptics need evidence, not superlatives. */}
           <div className="flex flex-wrap gap-x-5 gap-y-2">
             {[
-              { icon: 'verified',    text: 'Every deadline tracked' },
-              { icon: 'trending_up', text: 'Every dollar logged' },
-              { icon: 'people',      text: 'Colleague & partner sharing' },
+              { icon: 'verified',    text: 'Every deadline tracked.' },
+              { icon: 'trending_up', text: 'Every dollar logged.' },
+              { icon: 'monitoring',  text: 'Every metric live.' },
             ].map(({ icon, text }) => (
               <span key={text} className="flex items-center gap-1.5 text-[12px] text-on-surface-variant/50">
                 <span

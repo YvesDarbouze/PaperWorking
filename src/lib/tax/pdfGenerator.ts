@@ -14,6 +14,19 @@ const COLOR = {
   accentRed: [220, 38, 38] as [number, number, number],
 };
 
+function getLogoBase64(): string {
+  try {
+    const fs = require('fs');
+    const path = require('path');
+    const logoPath = path.join(process.cwd(), 'public/brand/PaperWorking_White_full_Logo_.png');
+    const logoBuffer = fs.readFileSync(logoPath);
+    return `data:image/png;base64,${logoBuffer.toString('base64')}`;
+  } catch (err) {
+    console.error('Failed to load logo for PDF:', err);
+    return '';
+  }
+}
+
 const DISCLAIMER = "DISCLAIMER: This is not tax advice. Review with a licensed tax professional before filing. PaperWorking does not file taxes on your behalf.";
 
 function fmt$(n: number): string {
@@ -92,10 +105,15 @@ export function generateScheduleEPdf(
   doc.setFillColor(...COLOR.black);
   doc.rect(0, 0, 210, 28, 'F');
 
-  doc.setFont('helvetica', 'bold');
-  doc.setFontSize(10);
-  doc.setTextColor(...COLOR.white);
-  doc.text('PAPERWORKING TAX PACK', margin, 11);
+  const logoBase64 = getLogoBase64();
+  if (logoBase64) {
+    doc.addImage(logoBase64, 'PNG', margin, 7, 24.3, 4);
+  } else {
+    doc.setFont('helvetica', 'bold');
+    doc.setFontSize(10);
+    doc.setTextColor(...COLOR.white);
+    doc.text('PAPERWORKING TAX PACK', margin, 11);
+  }
 
   doc.setFont('helvetica', 'normal');
   doc.setFontSize(7);
@@ -257,10 +275,15 @@ export function generateProfitAndLossPdf(
   doc.setFillColor(...COLOR.black);
   doc.rect(0, 0, 210, 28, 'F');
 
-  doc.setFont('helvetica', 'bold');
-  doc.setFontSize(10);
-  doc.setTextColor(...COLOR.white);
-  doc.text('PAPERWORKING TAX PACK', margin, 11);
+  const logoBase64 = getLogoBase64();
+  if (logoBase64) {
+    doc.addImage(logoBase64, 'PNG', margin, 7, 24.3, 4);
+  } else {
+    doc.setFont('helvetica', 'bold');
+    doc.setFontSize(10);
+    doc.setTextColor(...COLOR.white);
+    doc.text('PAPERWORKING TAX PACK', margin, 11);
+  }
 
   doc.setFont('helvetica', 'normal');
   doc.setFontSize(7);

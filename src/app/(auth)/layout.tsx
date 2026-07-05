@@ -27,7 +27,7 @@ export default function AuthLayout({ children }: { children: React.ReactNode }) 
       {/* Simplified TopAppBar */}
       <nav className="fixed top-0 left-0 w-full z-50 flex justify-center items-center px-6 md:px-10 bg-[#0d0a0b]/40 backdrop-blur-md border-b border-white/5 h-16">
         <div className="w-full max-w-7xl flex items-center justify-between">
-          <Logo href="/" size="sm" className="text-white/60" />
+          <Logo href="/" size="sm" theme="dark" />
         </div>
       </nav>
 

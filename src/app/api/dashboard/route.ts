@@ -89,10 +89,17 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ error: 'Access denied' }, { status: 403 });
     }
 
-    // 4. Serve from Cache if available
-    const cached = getDashboardCache(organizationId);
-    if (cached) {
-      return NextResponse.json(cached);
+    // Check scope settings
+    const userScope = profile?.membershipScopes?.[organizationId];
+    const isScoped = userScope?.isScoped === true;
+    const allowedProjectIds = isScoped ? (userScope.scopedProjectIds || userScope.assignedProjectIds || []) : null;
+
+    // 4. Serve from Cache if available (only for unscoped users)
+    if (!isScoped) {
+      const cached = getDashboardCache(organizationId);
+      if (cached) {
+        return NextResponse.json(cached);
+      }
     }
 
     // 5. Query active projects
@@ -101,7 +108,11 @@ export async function GET(request: NextRequest) {
       .get();
 
     const allProjects = projectsSnap.docs.map(doc => ({ id: doc.id, ...doc.data() })) as any[];
-    const activeProjects = allProjects.filter(p => (p.status || '').toLowerCase() !== 'archived');
+    let activeProjects = allProjects.filter(p => (p.status || '').toLowerCase() !== 'archived');
+
+    if (isScoped && allowedProjectIds) {
+      activeProjects = activeProjects.filter(p => allowedProjectIds.includes(p.id));
+    }
 
     // NOI & Cash Flow calculations
     let currentMonthNOI = 0;
@@ -253,37 +264,44 @@ export async function GET(request: NextRequest) {
         .limit(8)
         .get();
 
-      recentActivity = logsSnap.docs.map(d => {
-        const log = d.data();
-        const date = parseDate(log.createdAt) || new Date();
-        const diffMin = Math.floor((now.getTime() - date.getTime()) / 60000);
-        let timeLabel = 'Just now';
-        if (diffMin >= 1440) timeLabel = `${Math.floor(diffMin / 1440)}d ago`;
-        else if (diffMin >= 60) timeLabel = `${Math.floor(diffMin / 60)}h ago`;
-        else if (diffMin > 0) timeLabel = `${diffMin}m ago`;
+      recentActivity = logsSnap.docs
+        .map(d => {
+          const log = d.data();
+          const targetProjId = log.metadata?.projectId || log.projectId;
+          if (isScoped && allowedProjectIds && !allowedProjectIds.includes(targetProjId)) {
+            return null;
+          }
 
-        let actionMessage = log.actorName;
-        switch (log.action) {
-          case 'MEMBER_INVITED':
-            actionMessage += ` invited ${log.targetEmail}`;
-            break;
-          case 'MEMBER_REMOVED':
-            actionMessage += ` removed ${log.targetEmail}`;
-            break;
-          case 'PROJECT_CREATED':
-            actionMessage += ` created project "${log.metadata?.projectName || 'Project'}"`;
-            break;
-          default:
-            actionMessage += ` performed ${log.action.toLowerCase().replace(/_/g, ' ')}`;
-        }
+          const date = parseDate(log.createdAt) || new Date();
+          const diffMin = Math.floor((now.getTime() - date.getTime()) / 60000);
+          let timeLabel = 'Just now';
+          if (diffMin >= 1440) timeLabel = `${Math.floor(diffMin / 1440)}d ago`;
+          else if (diffMin >= 60) timeLabel = `${Math.floor(diffMin / 60)}h ago`;
+          else if (diffMin > 0) timeLabel = `${diffMin}m ago`;
 
-        return {
-          id: d.id,
-          type: log.action,
-          message: actionMessage,
-          timestamp: timeLabel,
-        };
-      });
+          let actionMessage = log.actorName;
+          switch (log.action) {
+            case 'MEMBER_INVITED':
+              actionMessage += ` invited ${log.targetEmail}`;
+              break;
+            case 'MEMBER_REMOVED':
+              actionMessage += ` removed ${log.targetEmail}`;
+              break;
+            case 'PROJECT_CREATED':
+              actionMessage += ` created project "${log.metadata?.projectName || 'Project'}"`;
+              break;
+            default:
+              actionMessage += ` performed ${log.action.toLowerCase().replace(/_/g, ' ')}`;
+          }
+
+          return {
+            id: d.id,
+            type: log.action,
+            message: actionMessage,
+            timestamp: timeLabel,
+          };
+        })
+        .filter(Boolean);
     } catch (err) {
       console.warn('[Dashboard API] Failed to fetch audit logs (likely index missing):', err);
       // Fallback: simple user events
@@ -316,8 +334,10 @@ export async function GET(request: NextRequest) {
       recentActivity,
     };
 
-    // Cache the dynamic result
-    setDashboardCache(organizationId, payload);
+    // Cache the dynamic result (only for unscoped users)
+    if (!isScoped) {
+      setDashboardCache(organizationId, payload);
+    }
 
     return NextResponse.json(payload);
   } catch (error: any) {

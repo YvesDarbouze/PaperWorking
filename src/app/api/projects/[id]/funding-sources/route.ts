@@ -50,6 +50,50 @@ export async function PATCH(req: NextRequest, { params }: Params) {
     );
   }
 
+  // ── Load project and user profile ────────────────────────
+  const projectSnap = await adminDb.collection('projects').doc(projectId).get();
+  if (!projectSnap.exists) {
+    return NextResponse.json(
+      { success: false, error: 'Project not found' },
+      { status: 404 }
+    );
+  }
+  const projectData = projectSnap.data();
+  const orgId = projectData?.organizationId;
+
+  const userSnap = await adminDb.collection('users').doc(auth.uid).get();
+  if (!userSnap.exists) {
+    return NextResponse.json({ error: 'Access denied' }, { status: 403 });
+  }
+  const profile = userSnap.data();
+
+  // Helper to check project scoped access
+  function hasProjectAccess(
+    profile: any,
+    targetOrgId: string | undefined,
+    projectId?: string
+  ): boolean {
+    if (!targetOrgId) return false;
+    const orgMember =
+      profile.personalOrganizationId === targetOrgId ||
+      profile.organizationId === targetOrgId ||
+      (profile.memberships != null && Boolean(profile.memberships[targetOrgId]));
+
+    if (!orgMember) return false;
+
+    if (projectId && profile.membershipScopes) {
+      const scope = profile.membershipScopes[targetOrgId];
+      if (scope?.isScoped) {
+        return Array.isArray(scope.scopedProjectIds) && scope.scopedProjectIds.includes(projectId);
+      }
+    }
+    return true;
+  }
+
+  if (!hasProjectAccess(profile, orgId, projectId)) {
+    return NextResponse.json({ error: 'Access denied' }, { status: 403 });
+  }
+
   // ── Persist to Firestore ─────────────────────────────────
   try {
     await adminDb

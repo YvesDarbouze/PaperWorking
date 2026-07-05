@@ -346,6 +346,9 @@ export default function DashboardHome() {
       {!isGuest && (
         <div className="flex flex-col xl:flex-row gap-6 mb-8 items-stretch w-full">
           <section className="flex-1 flex flex-col space-y-6">
+            <ErrorBoundary name="KPI Grid">
+              <KPIGrid />
+            </ErrorBoundary>
             <ErrorBoundary name="Performance Metrics">
               <PerformanceMetrics />
             </ErrorBoundary>

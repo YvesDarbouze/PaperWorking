@@ -6,6 +6,7 @@ import { DollarSign, TrendingUp, FolderOpen, PlusCircle } from 'lucide-react';
 import { useTenant } from '@/context/TenantContext';
 import { useProjectStore } from '@/store/projectStore';
 import { calculatePortfolioSummary } from '@/lib/analyticsUtils';
+import { useAuth } from '@/context/AuthContext';
 
 function KPICardSkeleton() {
   return (
@@ -30,11 +31,12 @@ function KPICardSkeleton() {
 
 export default function KPIGrid() {
   const { activeTenantId } = useTenant();
+  const { loading: authLoading } = useAuth();
   const projects = useProjectStore((s) => s.projects);
   const projectsSynced = useProjectStore((s) => s.projectsSynced);
 
   const isLoading =
-    !!activeTenantId && activeTenantId !== 'org_placeholder' && !projectsSynced;
+    authLoading || (!!activeTenantId && activeTenantId !== 'org_placeholder' && !projectsSynced);
   const isEmpty = projectsSynced && projects.length === 0;
 
   if (isLoading) {

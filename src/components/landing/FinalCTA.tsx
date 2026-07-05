@@ -71,9 +71,7 @@ export default function FinalCTA() {
                 <span>Start 14 Day Trial</span>
                 <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
               </Link>
-              <span className="text-sm text-on-surface-variant/60 self-center">
-                Credit card required · No charge for 14 days
-              </span>
+
             </div>
           </div>
 

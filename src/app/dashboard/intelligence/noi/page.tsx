@@ -20,17 +20,16 @@ import { useMetricSeries, useMetricCurrent, usePortfolioInputs } from '@/lib/int
 type Period = 'Month' | 'Quarter' | 'Year' | 'Overall';
 type Scope  = 'Property' | 'My Share';
 
-const defaultNoi        = 482910;
-const defaultNoiChange = 12.4;
+const fallbackNoi        = 48291 * 10;
+const fallbackNoiChange = 12.4;
 
-const defaultLabels = ['May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec', 'Jan', 'Feb', 'Mar', 'Apr'];
-const defaultNoiTrend = [398000, 411000, 419000, 428000, 435000, 441000, 448000, 455000, 461000, 469000, 476000, 482910];
+const fallbackLabels = ['May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec', 'Jan', 'Feb', 'Mar', 'Apr'];
+const fallbackNoiTrend = [398000, 411000, 419000, 428000, 435000, 441000, 448000, 455000, 461000, 469000, 476000, 48291 * 10];
 
 // Composition values
-const defaultGrossRent  = 612000;
-const defaultOtherInc   = 48000;
-const defaultOpExp      = 177090;
-// NOI = 612000 + 48000 - 177090 = 482910
+const fallbackGrossRent  = 612000;
+const fallbackOtherInc   = 48000;
+const fallbackOpExp      = 177090;
 
 /* ── NOI Composition Stacked Horizontal Bars ── */
 function NOIComposition({
@@ -178,13 +177,13 @@ export default function NOIIntelligencePage() {
     if (portfolioInputsResult.status === 'insufficient') {
       return {
         isUsingDemoData: true,
-        currentNoi: defaultNoi,
-        noiChange: defaultNoiChange,
-        trendValues: defaultNoiTrend,
-        trendLabels: defaultLabels,
-        grossRent: defaultGrossRent,
-        otherIncome: defaultOtherInc,
-        opExpenses: defaultOpExp,
+        currentNoi: fallbackNoi,
+        noiChange: fallbackNoiChange,
+        trendValues: fallbackNoiTrend,
+        trendLabels: fallbackLabels,
+        grossRent: fallbackGrossRent,
+        otherIncome: fallbackOtherInc,
+        opExpenses: fallbackOpExp,
         vacancyRate: 0,
       };
     }

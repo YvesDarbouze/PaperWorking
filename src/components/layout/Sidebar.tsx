@@ -295,7 +295,7 @@ export function Sidebar() {
     >
       {/* ── Brand area ─────────────────────────────────────────────────── */}
       <div className="px-5 pt-6 pb-4">
-        <Logo size="lg" href="/dashboard/command-center" />
+        <Logo surface="app-sidebar" href="/dashboard/command-center" />
       </div>
 
       {/* ── Create Project — Featured CTA ───────────────────────────────── */}

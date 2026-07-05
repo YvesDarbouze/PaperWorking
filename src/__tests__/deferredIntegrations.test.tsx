@@ -33,6 +33,13 @@ jest.mock('jspdf-autotable', () => {
   return jest.fn();
 });
 
+// Mock AuthContext
+jest.mock('@/context/AuthContext', () => ({
+  useAuth: () => ({
+    user: { uid: 'test-user-id', email: 'test@example.com' },
+  }),
+}));
+
 // Mock react-hot-toast
 jest.mock('react-hot-toast', () => ({
   loading: jest.fn(() => 'toast-id'),
@@ -159,6 +166,10 @@ describe('Deferred Integrations and PDF Export', () => {
       expect(pdfButton.disabled).toBeFalsy();
 
       fireEvent.click(pdfButton);
+
+      // Click the Generate PDF Report button inside the opened modal
+      const modalPdfButton = screen.getAllByText('Generate PDF Report')[1] as HTMLButtonElement;
+      fireEvent.click(modalPdfButton);
 
       // Verify it invoked jsPDF methods to build and save the PDF
       const jsPDFMock = require('jspdf');

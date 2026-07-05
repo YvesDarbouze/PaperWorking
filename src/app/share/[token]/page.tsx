@@ -257,7 +257,7 @@ export default function CPASharePage() {
       {/* ── Navbar Header ── */}
       <header className="border-b border-white/5 bg-black/25 backdrop-blur-md px-6 py-4">
         <div className="max-w-7xl mx-auto flex items-center justify-between gap-4">
-          <Logo size="md" />
+          <Logo size="md" theme="dark" />
           <span className="text-[10px] md:text-xs font-bold uppercase tracking-widest text-[#6E7480] bg-[#454955]/10 border border-[#454955]/20 rounded-full px-3 py-1">
             Secure CPA Portal
           </span>

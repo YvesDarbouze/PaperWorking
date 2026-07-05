@@ -9,6 +9,7 @@ import Link from "next/link";
 import LogoutButton from "@/components/dashboard/LogoutButton";
 import toast from "react-hot-toast";
 import { useProjectStore } from "@/store/projectStore";
+import Logo from "@/components/brand/Logo";
 
 /* ═══════════════════════════════════════════════════════════════
    TopAppBar — Premium dashboard header
@@ -280,9 +281,7 @@ export function TopAppBar() {
       {/* Left: Mobile logo + Breadcrumb */}
       <div className="flex items-center gap-3">
         {/* Mobile: compact logo */}
-        <div className="md:hidden w-8 h-8 rounded-lg flex items-center justify-center" style={{ background: 'var(--color-primary-container)' }}>
-          <span className="material-symbols-outlined text-sm" style={{ fontVariationSettings: "'FILL' 1", color: '#0d0a0b' }}>dataset</span>
-        </div>
+        <Logo surface="app-topbar" href="/dashboard/command-center" className="md:hidden" />
 
         {/* Breadcrumb (desktop) */}
         <div className="hidden md:flex items-center gap-2">

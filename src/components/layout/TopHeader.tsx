@@ -80,7 +80,7 @@ export default function TopHeader() {
       <div className="flex items-center gap-4">
         {/* Mobile Logo */}
         <div className="flex-shrink-0 lg:hidden mr-4">
-          <Logo href="/dashboard" size="sm" />
+          <Logo surface="app-topbar" href="/dashboard" />
         </div>
         <h2 className="hidden lg:block font-headline-md text-headline-md text-on-surface">Portfolio Dashboard</h2>
       </div>

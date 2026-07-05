@@ -173,18 +173,18 @@ function generateItemizedPDF(deal: Project, tax: TaxEstimate, salePrice: number,
     `$${n.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
 
   // Header
-  doc.setFontSize(18);
-  doc.setFont('helvetica', 'bold');
-  doc.text('PAPERWORKING', 14, 20);
+  doc.addImage('/brand/PaperWorking_Black_full_Logo_.png', 'PNG', 14, 10, 30.4, 5);
 
   doc.setFontSize(10);
-  doc.setFont('helvetica', 'normal');
-  doc.setTextColor(100);
-  doc.text('CAPITAL GAINS TAX ESTIMATE & ITEMIZED LEDGER', 14, 26);
+  doc.setFont('helvetica', 'bold');
+  doc.setTextColor(33, 33, 33);
+  doc.text('CAPITAL GAINS TAX ESTIMATE & ITEMIZED LEDGER', 14, 22);
   
   doc.setFontSize(9);
-  doc.text(`Property: ${deal.propertyName || 'N/A'}`, 14, 34);
-  doc.text(`Generated: ${new Date().toLocaleDateString()}`, 14, 39);
+  doc.setFont('helvetica', 'normal');
+  doc.setTextColor(100);
+  doc.text(`Property: ${deal.propertyName || 'N/A'}`, 14, 30);
+  doc.text(`Generated: ${new Date().toLocaleDateString()}`, 14, 35);
 
   // Summary Data for AutoTable
   const summaryData = [

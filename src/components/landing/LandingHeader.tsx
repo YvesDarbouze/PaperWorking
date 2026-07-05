@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { AnimatePresence, motion } from 'framer-motion';
 import Logo from '@/components/brand/Logo';
 import { useTheme } from '@/lib/utils/ThemeProvider';
+import { useAuth } from '@/context/AuthContext';
 
 /* ═══════════════════════════════════════════════════════
    LandingHeader — Antigravity-style sticky nav.
@@ -33,6 +34,7 @@ export default function LandingHeader() {
   const { theme, toggleTheme } = useTheme();
   const [mounted, setMounted] = useState(false);
   const isDark = theme === 'dark';
+  const { user, logout } = useAuth();
 
   useEffect(() => {
     setMounted(true);
@@ -79,7 +81,7 @@ export default function LandingHeader() {
         >
 
           {/* ── Logo ── */}
-          <Logo href="/" size="sm" />
+          <Logo href="/" surface="marketing-nav" size="sm" />
 
           {/* ── Desktop center links ── */}
           <div className="hidden md:flex items-center gap-7">
@@ -112,6 +114,16 @@ export default function LandingHeader() {
               onMouseLeave={e => (e.currentTarget.style.opacity = '0.7')}
             >
               Pricing
+            </Link>
+
+            <Link
+              href="/support/metrics"
+              className="text-[13.5px] font-medium transition-opacity duration-150"
+              style={{ color: 'var(--color-on-surface)', opacity: 0.7, textDecoration: 'none' }}
+              onMouseEnter={e => (e.currentTarget.style.opacity = '1')}
+              onMouseLeave={e => (e.currentTarget.style.opacity = '0.7')}
+            >
+              Playbook
             </Link>
 
             <Link
@@ -161,37 +173,80 @@ export default function LandingHeader() {
               />
             </button>
 
-            {/* Sign In — text link */}
-            <Link
-              href="/login"
-              className="hidden md:inline-flex text-[13.5px] font-medium transition-opacity duration-150"
-              style={{ color: 'var(--color-on-surface)', opacity: 0.7, textDecoration: 'none' }}
-              onMouseEnter={e => (e.currentTarget.style.opacity = '1')}
-              onMouseLeave={e => (e.currentTarget.style.opacity = '0.7')}
-            >
-              Sign In
-            </Link>
-
-            {/* Primary CTA — pill button */}
-            <Link
-              href="/pricing"
-              className="hidden md:inline-flex items-center gap-1.5 text-[13px] font-semibold transition-all duration-150 active:scale-[0.98] whitespace-nowrap"
-              style={{
-                background: 'var(--color-on-surface)',
-                color: 'var(--color-surface)',
-                borderRadius: '9999px',
-                padding: '9px 20px',
-                textDecoration: 'none',
-                letterSpacing: '-0.01em',
-              }}
-              onMouseEnter={e => (e.currentTarget.style.opacity = '0.88')}
-              onMouseLeave={e => (e.currentTarget.style.opacity = '1')}
-            >
-              Start 14 Day Trial
-              <span className="material-symbols-outlined text-[14px]" style={{ fontVariationSettings: "'FILL' 0, 'wght' 400" }}>
-                arrow_forward
-              </span>
-            </Link>
+            {/* Sign In / Sign Up / Sign Out */}
+            {user ? (
+              <>
+                <button
+                  onClick={() => logout()}
+                  className="hidden md:inline-flex text-[13.5px] font-medium transition-opacity duration-150"
+                  style={{ color: 'var(--color-on-surface)', opacity: 0.7, textDecoration: 'none', background: 'none', border: 'none', cursor: 'pointer' }}
+                  onMouseEnter={e => (e.currentTarget.style.opacity = '1')}
+                  onMouseLeave={e => (e.currentTarget.style.opacity = '0.7')}
+                >
+                  Sign Out
+                </button>
+                <Link
+                  href="/dashboard"
+                  className="hidden md:inline-flex items-center gap-1.5 text-[13px] font-semibold transition-all duration-150 active:scale-[0.98] whitespace-nowrap"
+                  style={{
+                    background: 'var(--color-on-surface)',
+                    color: 'var(--color-surface)',
+                    borderRadius: '9999px',
+                    padding: '9px 20px',
+                    textDecoration: 'none',
+                    letterSpacing: '-0.01em',
+                  }}
+                  onMouseEnter={e => (e.currentTarget.style.opacity = '0.88')}
+                  onMouseLeave={e => (e.currentTarget.style.opacity = '1')}
+                >
+                  Dashboard
+                  <span className="material-symbols-outlined text-[14px]" style={{ fontVariationSettings: "'FILL' 0, 'wght' 400" }}>
+                    arrow_forward
+                  </span>
+                </Link>
+              </>
+            ) : (
+              <>
+                <Link
+                  href="/login"
+                  className="hidden md:inline-flex text-[13.5px] font-medium transition-opacity duration-150"
+                  style={{ color: 'var(--color-on-surface)', opacity: 0.7, textDecoration: 'none' }}
+                  onMouseEnter={e => (e.currentTarget.style.opacity = '1')}
+                  onMouseLeave={e => (e.currentTarget.style.opacity = '0.7')}
+                >
+                  Sign In
+                </Link>
+                <span className="hidden md:inline-block text-[13.5px] opacity-30 select-none">/</span>
+                <Link
+                  href="/register"
+                  className="hidden md:inline-flex text-[13.5px] font-medium transition-opacity duration-150"
+                  style={{ color: 'var(--color-on-surface)', opacity: 0.7, textDecoration: 'none' }}
+                  onMouseEnter={e => (e.currentTarget.style.opacity = '1')}
+                  onMouseLeave={e => (e.currentTarget.style.opacity = '0.7')}
+                >
+                  Sign Up
+                </Link>
+                <Link
+                  href="/pricing"
+                  className="hidden md:inline-flex items-center gap-1.5 text-[13px] font-semibold transition-all duration-150 active:scale-[0.98] whitespace-nowrap"
+                  style={{
+                    background: 'var(--color-on-surface)',
+                    color: 'var(--color-surface)',
+                    borderRadius: '9999px',
+                    padding: '9px 20px',
+                    textDecoration: 'none',
+                    letterSpacing: '-0.01em',
+                  }}
+                  onMouseEnter={e => (e.currentTarget.style.opacity = '0.88')}
+                  onMouseLeave={e => (e.currentTarget.style.opacity = '1')}
+                >
+                  Start 14 Day Trial
+                  <span className="material-symbols-outlined text-[14px]" style={{ fontVariationSettings: "'FILL' 0, 'wght' 400" }}>
+                    arrow_forward
+                  </span>
+                </Link>
+              </>
+            )}
 
             {/* Mobile hamburger */}
             <button
@@ -245,7 +300,7 @@ export default function LandingHeader() {
                 className="flex items-center justify-between px-5 py-4"
                 style={{ borderBottom: '1px solid color-mix(in srgb, var(--color-on-background) 7%, transparent)' }}
               >
-                <Logo href="/" size="sm" />
+                <Logo href="/" surface="marketing-nav" size="sm" />
                 <button
                   type="button"
                   onClick={() => setMobileOpen(false)}
@@ -295,6 +350,18 @@ export default function LandingHeader() {
                   Pricing
                 </Link>
 
+                {/* Playbook */}
+                <Link
+                  href="/support/metrics"
+                  onClick={() => setMobileOpen(false)}
+                  className="flex items-center gap-3 px-4 py-2.5 rounded-xl text-[14px] font-semibold transition-colors duration-150"
+                  style={{ color: 'var(--color-on-surface)', textDecoration: 'none' }}
+                  onMouseEnter={e => (e.currentTarget.style.background = 'color-mix(in srgb, var(--color-on-background) 5%, transparent)')}
+                  onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
+                >
+                  Playbook
+                </Link>
+
                 {/* Support */}
                 <Link
                   href="/support"
@@ -337,31 +404,78 @@ export default function LandingHeader() {
                 className="px-4 pb-6 pt-4 space-y-3"
                 style={{ borderTop: '1px solid color-mix(in srgb, var(--color-on-background) 7%, transparent)' }}
               >
-                <Link
-                  href="/login"
-                  onClick={() => setMobileOpen(false)}
-                  className="flex items-center justify-center px-4 py-3 rounded-xl text-[14px] font-medium transition-colors duration-150"
-                  style={{
-                    color: 'var(--color-on-surface)',
-                    border: '1px solid color-mix(in srgb, var(--color-on-background) 12%, transparent)',
-                    textDecoration: 'none',
-                  }}
-                >
-                  Sign In
-                </Link>
-                <Link
-                  href="/pricing"
-                  onClick={() => setMobileOpen(false)}
-                  className="flex items-center justify-center gap-1.5 px-4 py-3 rounded-xl text-[14px] font-semibold transition-opacity duration-150 active:scale-[0.98]"
-                  style={{
-                    background: 'var(--color-on-surface)',
-                    color: 'var(--color-surface)',
-                    textDecoration: 'none',
-                    borderRadius: '9999px',
-                  }}
-                >
-                  Start 14 Day Trial
-                </Link>
+                {user ? (
+                  <>
+                    <Link
+                      href="/dashboard"
+                      onClick={() => setMobileOpen(false)}
+                      className="flex items-center justify-center gap-1.5 px-4 py-3 rounded-xl text-[14px] font-semibold transition-opacity duration-150 active:scale-[0.98]"
+                      style={{
+                        background: 'var(--color-on-surface)',
+                        color: 'var(--color-surface)',
+                        textDecoration: 'none',
+                        borderRadius: '9999px',
+                      }}
+                    >
+                      Dashboard
+                    </Link>
+                    <button
+                      onClick={() => { logout(); setMobileOpen(false); }}
+                      className="w-full flex items-center justify-center px-4 py-3 rounded-xl text-[14px] font-medium transition-colors duration-150"
+                      style={{
+                        color: 'var(--color-on-surface)',
+                        border: '1px solid color-mix(in srgb, var(--color-on-background) 12%, transparent)',
+                        textDecoration: 'none',
+                        background: 'none',
+                        cursor: 'pointer',
+                      }}
+                    >
+                      Sign Out
+                    </button>
+                  </>
+                ) : (
+                  <>
+                    <div className="flex gap-2">
+                      <Link
+                        href="/login"
+                        onClick={() => setMobileOpen(false)}
+                        className="flex-1 flex items-center justify-center px-4 py-3 rounded-xl text-[14px] font-medium transition-colors duration-150"
+                        style={{
+                          color: 'var(--color-on-surface)',
+                          border: '1px solid color-mix(in srgb, var(--color-on-background) 12%, transparent)',
+                          textDecoration: 'none',
+                        }}
+                      >
+                        Sign In
+                      </Link>
+                      <Link
+                        href="/register"
+                        onClick={() => setMobileOpen(false)}
+                        className="flex-1 flex items-center justify-center px-4 py-3 rounded-xl text-[14px] font-medium transition-colors duration-150"
+                        style={{
+                          color: 'var(--color-on-surface)',
+                          border: '1px solid color-mix(in srgb, var(--color-on-background) 12%, transparent)',
+                          textDecoration: 'none',
+                        }}
+                      >
+                        Sign Up
+                      </Link>
+                    </div>
+                    <Link
+                      href="/pricing"
+                      onClick={() => setMobileOpen(false)}
+                      className="flex items-center justify-center gap-1.5 px-4 py-3 rounded-xl text-[14px] font-semibold transition-opacity duration-150 active:scale-[0.98]"
+                      style={{
+                        background: 'var(--color-on-surface)',
+                        color: 'var(--color-surface)',
+                        textDecoration: 'none',
+                        borderRadius: '9999px',
+                      }}
+                    >
+                      Start 14 Day Trial
+                    </Link>
+                  </>
+                )}
               </div>
             </motion.nav>
           </motion.div>

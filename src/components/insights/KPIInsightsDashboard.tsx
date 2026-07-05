@@ -1904,10 +1904,10 @@ export function KPIInsightsDashboard() {
         <>
 
           {/* ══════════════════════════════════════════════════════════════════ */}
-          {/*  HERO TIER — The 10 Key Performance Indicators                   */}
+          {/*  HERO TIER — The 33 Key Performance Indicators                   */}
           {/* ══════════════════════════════════════════════════════════════════ */}
 
-          <SectionLabel label="The 10 Key Performance Indicators" isDark={isDark} />
+          <SectionLabel label="The 33 Key Performance Indicators" isDark={isDark} />
 
           {/* Row 1: NOI (gauge) · Cash Flow · Cap Rate (gauge) · CoC (gauge) */}
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">

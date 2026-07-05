@@ -40,7 +40,7 @@ const defaultMarketBaseline = [
   497000, 499000, 501000, 503000, 505000, 507000,
 ];
 
-const defaultProperties = [
+const fallbackProperties = [
   { address: '421 Oak St, Brooklyn', purchase: 485000, current: 545500, gain: 60500,  gainPct: 12.5, yoy: 12.5 },
   { address: '1248 Oakwood Ave',      purchase: 320000, current: 368000, gain: 48000,  gainPct: 15.0, yoy: 15.0 },
   { address: '77 Prospect Heights',   purchase: 820000, current: 890000, gain: 70000,  gainPct: 8.5,  yoy:  8.5 },
@@ -306,7 +306,7 @@ export default function AppreciationIntelligencePage() {
 
   const propertiesTableData = useMemo(() => {
     if (portfolioInputsResult.status !== 'ready') {
-      return defaultProperties;
+      return fallbackProperties;
     }
     const projects = portfolioInputsResult.data.projects;
     const withEquity = projects.filter((p) => (p.financials?.purchasePrice ?? (0)) > 0);
@@ -326,7 +326,7 @@ export default function AppreciationIntelligencePage() {
         };
       });
     }
-    return defaultProperties;
+    return fallbackProperties;
   }, [portfolioInputsResult]);
 
   const fmt = (n: number) => `$${n.toLocaleString()}`;

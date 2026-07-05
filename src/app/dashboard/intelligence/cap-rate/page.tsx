@@ -25,7 +25,7 @@ const defaultTrend = [4.8, 5.1, 4.9, 5.3, 5.6, 5.2, 5.7, 5.85];
 const defaultMonths = ['Sep', 'Oct', 'Nov', 'Dec', 'Jan', 'Feb', 'Mar', 'Apr'];
 const defaultTarget = [5.5, 5.5, 5.5, 5.5, 5.5, 5.5, 5.5, 5.5];
 
-const defaultProperties = [
+const fallbackProperties = [
   { address: '421 Oak St, Brooklyn',   capRate: 6.42, value: '$1.2M',  change: +0.18, rank: 1 },
   { address: '1248 Oakwood Ave',        capRate: 5.85, value: '$850k',  change: +0.12, rank: 2 },
   { address: '77 Prospect Heights',     capRate: 5.21, value: '$2.1M',  change: -0.08, rank: 3 },
@@ -210,7 +210,7 @@ export default function CapRateIntelligencePage() {
 
   const propertyRankings = useMemo(() => {
     if (portfolioInputsResult.status !== 'ready') {
-      return defaultProperties;
+      return fallbackProperties;
     }
     const projects = portfolioInputsResult.data.projects;
     const withCapRate = projects.filter((p) => (p.financials?.capRate ?? (0)) > 0);
@@ -226,7 +226,7 @@ export default function CapRateIntelligencePage() {
           rank: i + 1,
         }));
     }
-    return defaultProperties;
+    return fallbackProperties;
   }, [portfolioInputsResult]);
 
   return (

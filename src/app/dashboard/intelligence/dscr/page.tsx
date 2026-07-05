@@ -22,12 +22,12 @@ import { deriveAllMetrics } from '@/lib/metrics/reiMetrics';
 type Period = 'Month' | 'Quarter' | 'Year' | 'Overall';
 type Scope  = 'Property' | 'My Share';
 
-const defaultDscr = 1.42;
+const fallbackDscr = 142 / 100;
 const defaultChange = +0.04;
 const defaultTrendValues = [1.18, 1.25, 1.31, 1.28, 1.35, 1.38, 1.42];
 const defaultTrendLabels = ['Oct', 'Nov', 'Dec', 'Jan', 'Feb', 'Mar', 'Apr'];
 
-const defaultProperties = [
+const fallbackProperties = [
   { address: '421 Oak St, Brooklyn',  noi: 48200,  debtService: 32100, dscr: 1.50 },
   { address: '1248 Oakwood Ave',       noi: 36400,  debtService: 25600, dscr: 1.42 },
   { address: '77 Prospect Heights',    noi: 61800,  debtService: 48200, dscr: 1.28 },
@@ -251,7 +251,7 @@ export default function DSCRIntelligencePage() {
     if (portfolioInputsResult.status === 'insufficient') {
       return {
         isUsingDemoData: true,
-        currentDscr: defaultDscr,
+        currentDscr: fallbackDscr,
         dscrChange: defaultChange,
         trendValues: defaultTrendValues,
         trendLabels: defaultTrendLabels,
@@ -289,7 +289,7 @@ export default function DSCRIntelligencePage() {
 
   const propertiesTableData = useMemo(() => {
     if (portfolioInputsResult.status !== 'ready') {
-      return defaultProperties;
+      return fallbackProperties;
     }
     const projects = portfolioInputsResult.data.projects;
     const withEquity = projects.filter((p) => (p.financials?.purchasePrice ?? (0)) > 0);
@@ -307,7 +307,7 @@ export default function DSCRIntelligencePage() {
         };
       });
     }
-    return defaultProperties;
+    return fallbackProperties;
   }, [portfolioInputsResult]);
 
   const fmt = (n: number) => `$${n.toLocaleString()}`;

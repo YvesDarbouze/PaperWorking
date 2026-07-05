@@ -91,7 +91,6 @@ const PLANS: Plan[] = [
       { label: 'Represent team as a company/corp in Marketplace' },
       { label: 'Role permissions: Admins, Editors, Viewers' },
       { label: 'Google Drive Provisioning' },
-      { label: 'Escrow Integration & API Access' },
     ],
     cta: 'Start Team Trial',
     ctaStyle: 'outline',
@@ -663,7 +662,7 @@ function BottomCTA() {
 
         <div className="relative z-10">
           <h2 className="text-[26px] md:text-[38px] font-thin tracking-[-0.035em] text-on-surface mb-5 leading-tight font-display-hero">
-            You&apos;re closing deals worth more<br className="hidden md:block" /> than this software costs.
+            Move your deals out of spreadsheets.<br className="hidden md:block" /> Your first deal is free — forever.
           </h2>
           <p className="text-[15px] md:text-[17px] leading-[26px] text-on-surface-variant max-w-xl mx-auto mb-9">
             Start tracking them properly. Every document, dollar, and deadline — from acquisition to exit.

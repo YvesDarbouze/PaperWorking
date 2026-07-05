@@ -53,9 +53,24 @@ export function generateWelcomeEmail({
 
     <hr class="divider" />
 
-    <p style="font-size:13px;color:#7F7F7F;margin:0;line-height:1.6;">
+    <p style="font-size:15px;font-weight:700;color:#0d0d0d;margin:0 0 12px 0;">
+      How the Trial Works:
+    </p>
+    <ul style="font-size:14px;color:#595959;margin:0 0 24px 0;padding-left:20px;line-height:1.7;">
+      <li style="margin-bottom:8px;"><strong>14 Days Free:</strong> You have full access to all features, including unlimited projects and live metric calculations.</li>
+      <li style="margin-bottom:8px;"><strong>Simple Billing:</strong> If you stay past day 14, you'll be billed for your selected plan.</li>
+      <li style="margin-bottom:0;"><strong>Cancel Anytime:</strong> You can cancel directly from your dashboard settings at any time during the 14 days.</li>
+    </ul>
+
+    <hr class="divider" />
+
+    <p style="font-size:13px;color:#7F7F7F;margin:0 0 24px 0;line-height:1.6;">
       <strong>What's next?</strong> Add a property address and a purchase price.
       PaperWorking will calculate your cap rate, cash-on-cash return, and more — instantly.
+    </p>
+
+    <p style="font-size:11px;color:#7F7F7F;margin:24px 0 0 0;line-height:1.6;font-style:italic;">
+      Credit card required · Cancel before day 15 to avoid charge
     </p>
   `;
 

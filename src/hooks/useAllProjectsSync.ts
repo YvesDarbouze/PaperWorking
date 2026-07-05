@@ -32,6 +32,7 @@ export function useAllDealsSync() {
         },
         (error) => {
           console.error('Guest Project Sync Error:', error);
+          setDeals([]);
         },
       );
       return () => unsubscribe();
@@ -49,6 +50,7 @@ export function useAllDealsSync() {
       setDeals(liveDeals);
     }, (error) => {
       console.error('All Deals Sync Error:', error);
+      setDeals([]);
     });
 
     return () => unsubscribe();

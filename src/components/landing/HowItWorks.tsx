@@ -8,14 +8,12 @@ import Link from 'next/link';
    HowItWorks — The REIL System
 
    Structure:
-   1. Hero block (kicker + headline + body — verbatim copy)
+   1. Hero block (kicker + headline + body + sub-line — verbatim copy)
    2. Kanban-style 4-column board: Acquisition → Fund → Hold → Exit
       with cards drawn from the seeded demo dataset
-   3. Three feature callouts anchored to their respective phases
-   4. Final CTA
+   3. The 4 Phase Steps (Step 01 - 04) verbatim copy and taglines
+   4. Closer text & Mid-scroll CTA
    ═══════════════════════════════════════════════════════════════ */
-
-/* ─── Demo data cards (sourced from scripts/seed-demo.ts) ────── */
 
 interface DealCard {
   name: string;
@@ -65,33 +63,56 @@ const KANBAN_DATA: { phase: string; color: string; icon: string; cards: DealCard
   },
 ];
 
-/* ─── Feature callouts ──────────────────────────────────────── */
-
-const CALLOUTS = [
+const STEPS = [
   {
-    phase: 'Acquisition',
-    title: 'Deal Analyzer',
-    body: 'Underwrite from a single address entry; live Cap Rate, COC, and projected IRR.',
-    icon: 'calculate',
+    phase: 'Step 01 · Acquisition',
     color: 'primary',
+    icon: 'search',
+    title: 'Underwrite the Deal. Not Your Patience.',
+    body: "Before you buy, you need to know if the deal works. PaperWorking's Deal Analyzer lets you drop in an address and get instant projected returns based on real, live property data.",
+    bullets: [
+      'Live property lookup',
+      'Automated valuation (AVM)',
+      'Instant projected Cap Rate & IRR',
+    ]
   },
   {
-    phase: 'Fund',
-    title: 'Deal Marketplace / Crowdfund',
-    body: 'share a Deal with the PaperWorking investor community and track interest.',
-    icon: 'storefront',
+    phase: 'Step 02 · Fund',
     color: 'secondary',
+    icon: 'account_balance',
+    title: 'Get the Capital. Keep the Control.',
+    body: "Lenders don't approve spreadsheets; they approve professional packages. PaperWorking organizes your contracts, title docs, and entity papers into an audit-ready vault. When you're ready, list your project on the Deal Marketplace to track soft interest from verified investors — with zero capital changes hands on our platform.",
+    bullets: [
+      'Audit-ready document vault',
+      'Interest-tracking marketplace',
+      'Institutional lender packages',
+    ]
   },
   {
-    phase: 'Hold',
-    title: 'Automated Rent Payment Tracking',
-    body: 'Rent receipts tracked automatically; missed-rent alerts before a late month becomes a lost quarter.',
-    icon: 'receipt_long',
+    phase: 'Step 03 · Hold',
     color: 'tertiary',
+    icon: 'construction',
+    title: 'Manage the Renovation. Protect the Yield.',
+    body: "Hold is where budgets go to die. PaperWorking links every project milestone — inspection, rehab, staging, leasing — to your live budget. Track contractor bids in context, log project expenses as they happen, and watch your metrics adjust in real time.",
+    bullets: [
+      'Milestone-budget linking',
+      'Contractor quote-bids in context',
+      'Rent payments logged automatically',
+    ]
   },
+  {
+    phase: 'Step 04 · Exit',
+    color: 'outline',
+    icon: 'trending_up',
+    title: 'Prove the Return. Sell or Refinance.',
+    body: "When the hold ends, the proof begins. Whether you're refinancing or selling, PaperWorking generates the exact performance reports your buyers or commercial lenders need. Turn your daily workflow into a verified record of return.",
+    bullets: [
+      'Verified ROI reporting',
+      'Frictionless bank handoffs',
+      'Complete project archives',
+    ]
+  }
 ];
-
-/* ─── Phase color map ───────────────────────────────────────── */
 
 function phaseAccent(color: string) {
   const map: Record<string, { bg: string; border: string; text: string; badge: string }> = {
@@ -102,8 +123,6 @@ function phaseAccent(color: string) {
   };
   return map[color] ?? map.primary;
 }
-
-/* ─── Component ─────────────────────────────────────────────── */
 
 export default function HowItWorks() {
   const scrollRef = useRef<HTMLDivElement>(null);
@@ -119,12 +138,12 @@ export default function HowItWorks() {
   return (
     <div className="bg-background text-on-background">
 
-      {/* ════════════ HERO ════════════ */}
-      <section className="relative min-h-[60vh] flex items-center justify-center py-24 sm:py-32 overflow-hidden">
+      {/* ════════════ HERO (REIL System Intro) ════════════ */}
+      <section className="relative flex items-center justify-center py-24 sm:py-32 overflow-hidden">
         {/* Ambient glow */}
         <div className="absolute top-1/3 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[700px] h-[700px] bg-primary/5 rounded-full blur-[140px] pointer-events-none" />
 
-        <div className="relative z-10 max-w-3xl mx-auto px-6 text-center">
+        <div className="relative z-10 max-w-4xl mx-auto px-6 text-center">
           {/* Kicker */}
           <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-primary/10 border border-primary/20 text-xs font-semibold text-primary uppercase tracking-widest mb-8">
             <span className="material-symbols-rounded text-sm">hub</span>
@@ -133,12 +152,17 @@ export default function HowItWorks() {
 
           {/* Headline — verbatim */}
           <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-[3.25rem] font-extrabold tracking-tight leading-[1.1] mb-8">
-            Institutional Organization for the Serious Real Estate Investor.
+            You Manage the Project. PaperWorking Does the Math.
           </h1>
 
           {/* Body — verbatim */}
-          <p className="text-base sm:text-lg text-on-surface-variant leading-relaxed max-w-2xl mx-auto">
-            PaperWorking is project management built specifically for the Real Estate Investment Lifecycle. It organizes your entire investment process — and professionalizes how you manage it. Visualize your real estate the way stocks and commodities are visualized: a full-spectrum view of your portfolio, across all four phases of the lifecycle.
+          <p className="text-base sm:text-lg text-on-surface-variant leading-relaxed max-w-3xl mx-auto mb-6">
+            PaperWorking isn't another project management tool, another calculator, or another CRM. It's the first platform built on the Real Estate Investment Lifecycle — the four phases every investment property moves through: Acquisition, Fund, Hold, Exit. Every investment lives in a Project: the organizing system that holds the Deal, its current phase, and every activity of the lifecycle...
+          </p>
+
+          {/* Sub-line — verbatim */}
+          <p className="text-sm sm:text-base text-on-surface-variant/70 leading-relaxed max-w-2xl mx-auto italic">
+            Run it solo on an Investor account — or as an Investment Team, where the Lead Investor invites team members, assigns them to specific phases, and controls exactly what each one can see and edit.
           </p>
         </div>
       </section>
@@ -148,18 +172,18 @@ export default function HowItWorks() {
         <div className="absolute bottom-0 right-0 w-[500px] h-[500px] bg-secondary/5 rounded-full blur-[120px] pointer-events-none" />
 
         <div className="max-w-[1400px] mx-auto px-4 sm:px-6 md:px-10">
-          {/* Section label */}
+          {/* Section label — verbatim stats */}
           <div className="text-center mb-12">
             <h2 className="text-2xl sm:text-3xl font-bold tracking-tight mb-3">
-              Four Phases. One Board.
+              Never miss a deadline. Never blow a budget.
             </h2>
-            <p className="text-sm text-on-surface-variant/70 max-w-lg mx-auto">
-              Every Deal moves through Acquisition → Fund → Hold → Exit. Track them all from a single command center.
+            <p className="text-sm font-semibold tracking-wide text-primary font-jetbrains uppercase">
+              From the demo deal: $48.8K net profit · 24.8% projected IRR
             </p>
             <div className="mt-4 flex justify-center">
               <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded bg-white/5 border border-white/5 text-[10px] font-bold text-on-surface-variant/60 uppercase tracking-widest select-none">
                 <span className="w-1.5 h-1.5 rounded-full bg-primary animate-pulse" />
-                Illustrative Demo Data
+                Live Demo Data View
               </span>
             </div>
           </div>
@@ -203,7 +227,7 @@ export default function HowItWorks() {
                           Demo Data
                         </div>
 
-                        <div className="text-[13px] font-semibold text-on-surface leading-tight mb-0.5 pr-16">
+                        <div className="text-[13px] font-semibold text-on-surface leading-tight mb-0.5 pr-16 font-hanken">
                           {card.name}
                         </div>
                         <div className="text-[10px] text-on-surface-variant/60 mb-2.5 font-medium">
@@ -211,20 +235,20 @@ export default function HowItWorks() {
                         </div>
 
                         <div className="flex items-center justify-between">
-                          <span className="text-[9px] font-semibold text-on-surface-variant/40 uppercase tracking-widest">
+                          <span className="text-[9px] font-semibold text-on-surface-variant/40 uppercase tracking-widest font-mono">
                             {card.strategy}
                           </span>
                           {card.metric && (
                             <div className="text-right">
-                              <div className="text-[9px] text-on-surface-variant/40 uppercase tracking-wider">{card.metric}</div>
-                              <div className={`text-sm font-bold ${accent.text}`}>{card.metricValue}</div>
+                              <div className="text-[9px] text-on-surface-variant/40 uppercase tracking-wider font-mono">{card.metric}</div>
+                              <div className={`text-sm font-bold ${accent.text} font-mono`}>{card.metricValue}</div>
                             </div>
                           )}
                         </div>
 
                         {/* Illustrative demo data footer */}
                         <div className="mt-2 pt-2 border-t border-white/5">
-                          <div className="text-[8px] text-on-surface-variant/30 uppercase tracking-wider select-none">
+                          <div className="text-[8px] text-on-surface-variant/30 uppercase tracking-wider select-none font-mono">
                             Illustrative demo data
                           </div>
                         </div>
@@ -238,45 +262,59 @@ export default function HowItWorks() {
         </div>
       </section>
 
-      {/* ════════════ FEATURE CALLOUTS ════════════ */}
+      {/* ════════════ THE 4 PHASE STEPS ════════════ */}
       <section className="relative py-20 sm:py-28 border-t border-white/5 overflow-hidden">
         <div className="absolute top-1/4 left-0 w-[400px] h-[400px] bg-tertiary/5 rounded-full blur-[100px] pointer-events-none" />
 
-        <div className="max-w-5xl mx-auto px-6 md:px-10">
-          <div className="text-center mb-14">
-            <h2 className="text-2xl sm:text-3xl font-bold tracking-tight mb-3">
-              Built for Every Phase
+        <div className="max-w-6xl mx-auto px-6 md:px-10">
+          <div className="text-center mb-16">
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#E3A34E]/10 border border-[#E3A34E]/20 text-xs font-semibold text-[#E3A34E] mb-4">
+              <span>Step-by-Step Execution</span>
+            </div>
+            <h2 className="text-3xl sm:text-4xl font-extrabold tracking-tight mb-4">
+              Built for Every Phase of the Lifecycle
             </h2>
-            <p className="text-sm text-on-surface-variant/70 max-w-md mx-auto">
-              Features anchored exactly where they belong in the lifecycle.
+            <p className="text-sm text-on-surface-variant/70 max-w-lg mx-auto">
+              Features anchored exactly where they belong in the lifecycle to give you total control.
             </p>
           </div>
 
-          <div className="grid sm:grid-cols-3 gap-6 sm:gap-8">
-            {CALLOUTS.map((callout, idx) => {
-              const accent = phaseAccent(callout.color);
+          <div className="grid sm:grid-cols-2 gap-6 sm:gap-8">
+            {STEPS.map((step, idx) => {
+              const accent = phaseAccent(step.color);
               return (
                 <motion.div
-                  key={callout.title}
+                  key={step.phase}
                   initial={{ opacity: 0, y: 20 }}
                   whileInView={{ opacity: 1, y: 0 }}
                   viewport={{ once: true }}
                   transition={{ duration: 0.5, delay: idx * 0.1 }}
-                  className={`glass-card rounded-2xl p-6 sm:p-8 border border-white/8 hover:border-white/15 transition-all duration-300 flex flex-col`}
+                  className="glass-card rounded-2xl p-6 sm:p-8 border border-white/8 hover:border-white/15 transition-all duration-300 flex flex-col justify-between"
                 >
-                  {/* Phase badge */}
-                  <div className={`inline-flex self-start items-center gap-1.5 px-2.5 py-1 rounded-full text-[10px] font-bold uppercase tracking-widest mb-5 ${accent.badge} border ${accent.border}`}>
-                    <span className="material-symbols-rounded text-xs">{callout.icon}</span>
-                    {callout.phase}
+                  <div>
+                    {/* Phase badge */}
+                    <div className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-widest mb-5 ${accent.badge} border ${accent.border}`}>
+                      <span className="material-symbols-rounded text-xs">{step.icon}</span>
+                      {step.phase}
+                    </div>
+
+                    <h3 className="text-xl font-bold text-on-surface mb-3 leading-tight font-hanken">
+                      {step.title}
+                    </h3>
+
+                    <p className="text-sm text-on-surface-variant leading-relaxed mb-6 font-normal">
+                      {step.body}
+                    </p>
                   </div>
 
-                  <h3 className="text-lg font-bold text-on-surface mb-3 leading-tight">
-                    {callout.title}
-                  </h3>
-
-                  <p className="text-sm text-on-surface-variant leading-relaxed flex-1">
-                    {callout.body}
-                  </p>
+                  <ul className="space-y-2 border-t border-white/5 pt-4">
+                    {step.bullets.map((bullet, bIdx) => (
+                      <li key={bIdx} className="flex items-center gap-2 text-xs text-on-surface-variant/90">
+                        <span className={`w-1.5 h-1.5 rounded-full ${accent.text} bg-current`} />
+                        <span>{bullet}</span>
+                      </li>
+                    ))}
+                  </ul>
                 </motion.div>
               );
             })}
@@ -284,24 +322,29 @@ export default function HowItWorks() {
         </div>
       </section>
 
-      {/* ════════════ FINAL CTA ════════════ */}
+      {/* ════════════ CLOSER & FINAL CTA ════════════ */}
       <section className="relative py-24 sm:py-32 border-t border-white/5 overflow-hidden">
         <div className="absolute inset-0 bg-gradient-to-b from-transparent via-primary/3 to-transparent pointer-events-none" />
 
-        <div className="relative z-10 max-w-2xl mx-auto px-6 text-center">
-          <h2 className="text-2xl sm:text-3xl md:text-4xl font-extrabold tracking-tight mb-6">
-            Ready to professionalize your portfolio?
-          </h2>
-          <p className="text-base text-on-surface-variant mb-10 max-w-lg mx-auto">
-            Start managing your real estate investments the way institutions do — organized, measured, and under control.
+        <div className="relative z-10 max-w-3xl mx-auto px-6 text-center">
+          <p className="text-lg sm:text-xl text-on-surface-variant font-medium mb-12 leading-relaxed italic max-w-2xl mx-auto">
+            "Then you do it again — smarter. Every completed Project sharpens the picture of your whole portfolio. That's the lifecycle. That's PaperWorking."
           </p>
-          <Link
-            href="/signup"
-            className="inline-flex items-center gap-2 px-8 py-4 rounded-xl bg-primary text-on-primary font-bold text-sm tracking-wide hover:brightness-110 transition-all duration-200 shadow-lg shadow-primary/20"
-          >
-            <span className="material-symbols-rounded text-lg">rocket_launch</span>
-            Start Your 14-Day Trial
-          </Link>
+
+          <div className="space-y-4">
+            <p className="text-sm text-on-surface-variant/60">
+              Already convinced? Start now — or keep reading to see what happens after you close.
+            </p>
+            <div className="flex justify-center">
+              <Link
+                href="/pricing"
+                className="inline-flex items-center gap-2 px-8 py-4 rounded-xl bg-primary text-on-primary font-bold text-sm tracking-wide hover:brightness-110 transition-all duration-200 shadow-lg shadow-primary/20"
+              >
+                <span className="material-symbols-rounded text-lg">arrow_forward</span>
+                Start Free 14 Day Trial
+              </Link>
+            </div>
+          </div>
         </div>
       </section>
     </div>

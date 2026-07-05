@@ -974,9 +974,17 @@ export default function InsightsPage() {
       </div>
       )}
 
-      {/* ── Stress Simulator tab (new content) ────────────────────────────────── */}
-      {view === "stress-test" && (
-        <StressTestProvider key={currentProject?.id || 'portfolio'} initialInputs={selectedInputs}>
+      {/* ── Stress Simulator tab ────────────────────────────────────────────── */}
+      {/* Gate: only open the stress tester when real portfolio inputs exist.    */}
+      {/* Without real data we show the honest missing-fields state instead of   */}
+      {/* charting the hardcoded default scenario.                               */}
+      {view === "stress-test" && !selectedInputs && (
+        <div className="p-6">
+          <InsightsDashboard missingFields={REQUIRED_INSIGHTS_FIELDS} />
+        </div>
+      )}
+      {view === "stress-test" && selectedInputs && (
+        <StressTestProvider key={currentProject?.id ?? 'portfolio'} initialInputs={selectedInputs}>
           <div className="p-5 lg:p-6 space-y-6">
             
             {/* Global Controls Toolbar for Stress Tester */}
@@ -1119,28 +1127,12 @@ function StressTestDashboardContent() {
   return <InsightsDashboard data={result} />;
 }
 
-// ─── Default fallback inputs for Stress Tester ───
-const DEFAULT_INPUTS: InsightsEngineInputs = {
-  purchasePrice: 300000,
-  rehabBudget: 30000,
-  downPayment: 60000,
-  interestRate: 6.0,
-  amortizationTerm: 30,
-  grossScheduledIncome: 36000,
-  operatingExpenses: 12000,
-  vacancyRate: 5.0,
-  marketData: {
-    daysOnMarket: 45,
-    medianHomePrice: 320000,
-    averageRent: 2200
-  }
-};
-
 // ─── Project mapper helper for Stress Tester ───
-function getInputsFromProjects(projectsList: Project[]): InsightsEngineInputs {
-  if (projectsList.length === 0) {
-    return DEFAULT_INPUTS;
-  }
+// Returns null when there are no projects with the required real-data inputs
+// (purchase price + scheduled income). Callers must show the honest gate
+// rather than charting any defaults.
+function getInputsFromProjects(projectsList: Project[]): InsightsEngineInputs | undefined {
+  if (projectsList.length === 0) return undefined;
   
   let totalPurchasePrice = 0;
   let totalRehabBudget = 0;
@@ -1194,27 +1186,27 @@ function getInputsFromProjects(projectsList: Project[]): InsightsEngineInputs {
     validCount++;
   }
 
-  if (validCount === 0) {
-    return DEFAULT_INPUTS;
-  }
+  // Gate: require at least one project that contributed purchase price and rent.
+  // Without both we cannot produce a meaningful pro-forma.
+  if (validCount === 0 || totalPurchasePrice === 0 || totalGrossScheduledIncome === 0) return undefined;
 
   const interestRate = totalLoanAmount > 0 
     ? weightedInterestRateSum / totalLoanAmount 
     : 6.0;
 
   return {
-    purchasePrice: totalPurchasePrice || 300000,
-    rehabBudget: totalRehabBudget || 30000,
-    downPayment: totalDownPayment || 60000,
+    purchasePrice: totalPurchasePrice,
+    rehabBudget: totalRehabBudget,
+    downPayment: totalDownPayment,
     interestRate,
     amortizationTerm: Math.round(totalAmortizationTerm / validCount),
-    grossScheduledIncome: totalGrossScheduledIncome || 36000,
-    operatingExpenses: totalOperatingExpenses || 12000,
+    grossScheduledIncome: totalGrossScheduledIncome,
+    operatingExpenses: totalOperatingExpenses,
     vacancyRate: totalVacancyRate / validCount,
     marketData: {
       daysOnMarket: domCount > 0 ? Math.round(totalDaysOnMarket / domCount) : 45,
-      medianHomePrice: totalMedianHomePrice / validCount || 320000,
-      averageRent: totalAverageRent / validCount || 2200
+      medianHomePrice: totalMedianHomePrice / validCount,
+      averageRent: totalAverageRent / validCount,
     }
   };
 }
@@ -1328,11 +1320,31 @@ function ProjectionsTabContent({ projects }: { projects: Project[] }) {
         />
       )}
 
+      {/* Assumptions panel — shows the real inputs driving the projection */}
+      {inputs && (
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 rounded-xl border border-white/5 p-4 bg-white/[0.02]">
+          {[
+            { label: 'Purchase Price',  value: `$${inputs.purchasePrice.toLocaleString()}` },
+            { label: 'Annual Rent',     value: `$${inputs.grossScheduledIncome.toLocaleString()}` },
+            { label: 'Interest Rate',   value: `${inputs.interestRate}%` },
+            { label: 'Vacancy Rate',    value: `${inputs.vacancyRate}%` },
+            { label: 'Down Payment',    value: `$${inputs.downPayment.toLocaleString()}` },
+            { label: 'Loan Term',       value: `${inputs.amortizationTerm} yr` },
+            { label: 'Annual OpEx',     value: `$${inputs.operatingExpenses.toLocaleString()}` },
+            { label: 'Rehab Budget',    value: `$${inputs.rehabBudget.toLocaleString()}` },
+          ].map(({ label, value }) => (
+            <div key={label} className="space-y-0.5">
+              <p className="text-[9px] uppercase tracking-widest text-[#9E9DA0] font-semibold">{label}</p>
+              <p className="text-xs font-mono text-white">{value}</p>
+            </div>
+          ))}
+        </div>
+      )}
+
       {/* Dashboard — real data or gate */}
       <InsightsDashboard
         data={result}
         missingFields={result ? undefined : REQUIRED_INSIGHTS_FIELDS}
-        project={selectedProject || undefined}
       />
     </div>
   );

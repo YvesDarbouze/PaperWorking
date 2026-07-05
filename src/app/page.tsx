@@ -21,7 +21,7 @@ import { useSearchParams } from 'next/navigation';
    Layout order matches "PaperWorking Landing Page (Desktop Redesign)":
    1. Nav (LandingHeader)
    2. Hero (centered, text-only)
-   3. Metric Carousel (verbatim positioning + 10 KPIs)
+   3. Metric Carousel (verbatim positioning + 33 KPIs)
    4. Dashboard Preview (standalone showcase)
    5. REIL Phases + Risk Mitigation (PlatformOverview)
    6. Pricing (PricingSection)

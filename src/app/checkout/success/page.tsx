@@ -289,7 +289,7 @@ function PageShell({ children }: { children: React.ReactNode }) {
 
       {/* Logo — top-left */}
       <div className="absolute top-6 left-8 z-20">
-        <Logo href="/" size="sm" />
+        <Logo href="/" surface="auth" size="sm" />
       </div>
 
       {/* Content */}

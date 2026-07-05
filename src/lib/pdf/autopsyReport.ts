@@ -51,10 +51,7 @@ export function generateAutopsyPDF(deal: Project, m: AutopsyMetrics): void {
   doc.setFillColor(...COLOR.black);
   doc.rect(0, 0, PAGE_W, 28, 'F');
 
-  doc.setFont('helvetica', 'bold');
-  doc.setFontSize(11);
-  doc.setTextColor(...COLOR.white);
-  doc.text('PAPERWORKING', MARGIN, 10);
+  doc.addImage('/brand/PaperWorking_White_full_Logo_.png', 'PNG', MARGIN, 6, 24.3, 4);
 
   doc.setFont('helvetica', 'normal');
   doc.setFontSize(7);

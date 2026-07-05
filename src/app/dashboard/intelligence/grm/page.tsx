@@ -17,7 +17,7 @@ import { GRMComparisonCard } from '@/components/intelligence/GRMComparisonCard';
    Bottom: GRM by Property table
    ═══════════════════════════════════════════════════════════════ */
 
-const defaultProperties = [
+const fallbackProperties = [
   { address: '421 Oak St, Brooklyn',      value: 485000,  annualRent: 52800, grm: 9.2,  marketGRM: 10.5, signal: 'Buy'    },
   { address: '1248 Oakwood Ave, Queens',  value: 620000,  annualRent: 59400, grm: 10.4, marketGRM: 10.5, signal: 'Hold'   },
   { address: '77 Prospect Heights, BK',   value: 890000,  annualRent: 72000, grm: 12.4, marketGRM: 10.5, signal: 'Review' },
@@ -31,7 +31,7 @@ const SIGNAL_STYLES: Record<string, string> = {
   Review: 'bg-amber-400/10 border-amber-400/20 text-amber-400',
 };
 
-function GroupedBarChart({ properties, whatIfGRM }: { properties: typeof defaultProperties; whatIfGRM?: number | null }) {
+function GroupedBarChart({ properties, whatIfGRM }: { properties: typeof fallbackProperties; whatIfGRM?: number | null }) {
   const labels = properties.map((p) => p.address.split(',')[0]);
   const option = {
     backgroundColor: 'transparent',
@@ -163,14 +163,14 @@ export default function GRMIntelligencePage() {
         return { isUsingDemoData: false, currentGRM: last, grmChange: last - prev };
       }
     }
-    return { isUsingDemoData: true, currentGRM: 9.2, grmChange: -0.3 };
+    return { isUsingDemoData: true, currentGRM: 92 / 10, grmChange: -3 / 10 };
   }, [grmSeriesResult, grmCurrentResult, portfolioInputsResult]);
 
   const isDecreasing = grmChange < 0;
 
   const propertyRows = useMemo(() => {
     if (portfolioInputsResult.status !== 'ready') {
-      return defaultProperties;
+      return fallbackProperties;
     }
     const projects = portfolioInputsResult.data.projects;
     const withData = projects.filter((p) => p.financials?.grossRentMultiplier ?? p.financials?.purchasePrice);
@@ -190,7 +190,7 @@ export default function GRMIntelligencePage() {
         };
       });
     }
-    return defaultProperties;
+    return fallbackProperties;
   }, [portfolioInputsResult]);
 
   /* ── Deals for GRMComparisonCard ── */

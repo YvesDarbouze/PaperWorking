@@ -40,11 +40,13 @@ export async function POST(request: NextRequest) {
     // ── Read raw body first (needed for HMAC verification) ──
     const rawBody = await request.text();
 
-    // ── Webhook Signature Verification (Svix HMAC-SHA256) ───
     const webhookSecret = process.env.RESEND_WEBHOOK_SECRET;
     if (!webhookSecret) {
-      console.error('[Resend Webhook] RESEND_WEBHOOK_SECRET not configured — rejecting request');
-      return NextResponse.json({ error: 'Webhook endpoint not configured' }, { status: 503 });
+      console.error('[Resend Webhook] Signature verification failed: RESEND_WEBHOOK_SECRET is not configured on the server');
+      return NextResponse.json(
+        { error: 'Webhook signature verification is not configured on the server' },
+        { status: 500 }
+      );
     }
 
     const signature = request.headers.get('svix-signature');

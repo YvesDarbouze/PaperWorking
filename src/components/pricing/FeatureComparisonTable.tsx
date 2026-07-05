@@ -47,13 +47,6 @@ const extendedFeatures: Feature[] = [
   { name: 'Title Search & Verification', individual: false, team: false, vendor: true },
   { name: 'Closing Room Document Access', individual: false, team: false, vendor: true },
   {
-    name: 'Escrow Integration & APIs',
-    tooltip: 'Direct escrow API connection that streamlines fund disbursement and title verification within the deal lifecycle.',
-    individual: false,
-    team: true,
-    vendor: true,
-  },
-  {
     name: 'SSO / SAML Authentication',
     tooltip: 'Single Sign-On lets your team log in using your organization\'s identity provider (Okta, Azure AD, Google Workspace).',
     individual: false,

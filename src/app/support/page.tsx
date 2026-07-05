@@ -665,6 +665,18 @@ export default function SupportPage() {
               </Link>
             ))}
           </motion.div>
+
+          <motion.div variants={fadeUp} className="mt-8 text-center">
+            <Link
+              href="/support/metrics"
+              className="inline-flex items-center gap-2 px-6 py-3 rounded-full bg-primary/10 border border-primary/20 text-xs font-bold uppercase tracking-wider text-primary hover:bg-primary/20 transition-all duration-200 text-decoration-none"
+            >
+              Explore the Playbook (All 33 Metrics)
+              <span className="material-symbols-outlined text-[14px]" style={{ fontVariationSettings: "'FILL' 0, 'wght' 400" }}>
+                arrow_forward
+              </span>
+            </Link>
+          </motion.div>
         </motion.div>
       </section>
 

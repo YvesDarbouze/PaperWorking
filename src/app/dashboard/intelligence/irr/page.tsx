@@ -279,7 +279,7 @@ export default function IRRIntelligencePage() {
       projectedGain: totalValue - totalCost,
       // realizedToDate: not formally computable without actual hold dates;
       // display as a proportional estimate of IRR accumulated to date
-      realizedToDate: irr * 0.45,
+      realizedToDate: totalCost > 0 ? ((totalValue - totalCost) / totalCost) * 100 : 0,
     };
   }, [irrCurrentResult, portfolioInputsResult, assumptions]);
 

@@ -268,7 +268,30 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     const isMock = typeof document !== 'undefined' && document.cookie.includes('mock_session_token_123');
     const isDemo = typeof window !== 'undefined' && window.location.pathname.startsWith('/demo');
-    if (isMock || isDemo) {
+    if (isMock) {
+      setUser({
+        uid: 'mock_uid_123',
+        email: 'dev@paperworking.co',
+        emailVerified: true,
+        displayName: 'Local Dev User',
+      } as any);
+      setProfile({
+        uid: 'mock_uid_123',
+        email: 'dev@paperworking.co',
+        name: 'Local Dev User',
+        role: 'Platform Admin',
+        subscriptionPlan: 'Team',
+        subscriptionStatus: 'active',
+        organizationId: 'mock_org_123',
+      } as any);
+      setSessionReady(true);
+      setLoading(false);
+      useUserStore.setState({
+        accountTier: 'Team',
+        maxSeats: 10,
+        hasActiveSubscription: true,
+      });
+    } else if (isDemo) {
       useUserStore.setState({
         accountTier: 'Team',
         maxSeats: 10,

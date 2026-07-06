@@ -87,6 +87,19 @@ function LoginPageInner() {
     }
   }, [sessionReason, user, loading, handledExpired, logout, router]);
 
+  // Redirect logged-in users (including dev mock session bypass)
+  useEffect(() => {
+    if (loading) return;
+    if (user && sessionReason !== 'session_expired') {
+      const dest = resolvePostAuthDestination({
+        isNewUser: false,
+        urlRedirectTo,
+        hasActiveSubscription: true,
+      });
+      router.replace(dest);
+    }
+  }, [user, loading, urlRedirectTo, router, sessionReason]);
+
   // Backward-compat: old live-site links used /login?plan=Individual%20Investor&redirectTo=/pricing.
   // If that param arrives and there's no newer sessionStorage intent, mint one now so the
   // post-auth redirect lands at /pricing and auto-resumes the Stripe checkout.

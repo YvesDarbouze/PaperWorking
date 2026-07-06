@@ -1,7 +1,7 @@
 'use client';
 
-import { useState } from 'react';
-import { useRouter } from 'next/navigation';
+import { useState, Suspense } from 'react';
+import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import { Building2, Wrench, CheckCircle2, ArrowRight } from 'lucide-react';
 import type { AccountType } from '@/types/user';
@@ -37,7 +37,17 @@ const accountTypes: {
 ];
 
 export default function RegisterPage() {
+  return (
+    <Suspense fallback={<div className="w-full animate-pulse" style={{ height: '480px' }} />}>
+      <RegisterPageInner />
+    </Suspense>
+  );
+}
+
+function RegisterPageInner() {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const invite = searchParams.get('invite');
   const [selectedType, setSelectedType] = useState<AccountType>('investor');
   const [isNavigating, setIsNavigating] = useState(false);
 
@@ -47,7 +57,10 @@ export default function RegisterPage() {
     if (typeof window !== 'undefined') {
       window.localStorage.setItem('pw_pending_account_type', selectedType);
     }
-    router.push(`/login?accountType=${selectedType}&mode=signup`);
+    const loginUrl = invite
+      ? `/login?accountType=${selectedType}&mode=signup&redirectTo=${encodeURIComponent('/invest/' + invite)}`
+      : `/login?accountType=${selectedType}&mode=signup`;
+    router.push(loginUrl);
   };
 
   return (
@@ -154,7 +167,7 @@ export default function RegisterPage() {
         </button>
 
         <Link
-          href="/login"
+          href={invite ? `/login?redirectTo=${encodeURIComponent('/invest/' + invite)}` : '/login'}
           className="text-xs md:text-sm hover:text-pw-primary transition-colors py-2 flex items-center gap-1 group"
           style={{
             fontFamily: "'Plus Jakarta Sans', system-ui, sans-serif",

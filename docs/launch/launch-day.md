@@ -31,12 +31,12 @@ The launch follows a structured progression to verify stability before inviting 
 
 | Time | Target Stage / Action | Active Owner | Expected Output & Verification |
 | :--- | :--- | :---: | :--- |
-| **T-60m** | **Deploy Production Build** | `@devops` | - Build and deploy build hash to Vercel and Cloud Functions.<br>- Verify deployment dashboard returns success (0 compilation errors). |
+| **T-60m** | **Deploy Production Build** | `@devops` | - Build and deploy build hash to Google Cloud Run.<br>- Verify deployment dashboard returns success (0 compilation errors). |
 | **T-45m** | **Database Migration Verification** | `@architect` | - Run Neon DB migrations.<br>- Validate database connection pool response. |
 | **T-30m** | **Post-Deploy Sanity Walkthrough** | `@qa` | - Access staging/preview urls to check pages `/terms`, `/privacy`, `/subprocessors`. |
 | **T-15m** | **Stripe Test Transaction** | `@billing` | - Complete a real $39 payment with a live credit card on the Solo plan.<br>- Verify transaction in Stripe.<br>- Issue refund immediately. |
 | **T-5m** | **Status Page Transition** | `@devops` | - Update `status.paperworking.co` indicating scheduled launch maintenance is concluding. |
-| **T-0** | **DNS Cutover** | `@devops` | - Point `paperworking.co` to Vercel CNAME.<br>- Point `api.paperworking.co` to Firebase Cloud Functions.<br>- Verify global DNS resolution and HTTPS handshake. |
+| **T-0** | **DNS Cutover** | `@devops` | - Point `paperworking.co` to Google Cloud Run custom domain / Firebase App Hosting.<br>- Point `api.paperworking.co` to Firebase Cloud Functions.<br>- Verify global DNS resolution and HTTPS handshake. |
 
 ---
 
@@ -88,9 +88,9 @@ Production alerts are automatically triggered and dispatched via PagerDuty (or c
 If a critical blocker is encountered post-DNS cutover (e.g. database pool depletion, billing payment flow failure, severe auth failure):
 
 ### Step 1: Mitigate Platform Outage
-1. Log in to Vercel Deployments dashboard.
-2. Locate the previous successful build deployment hash.
-3. Trigger **Instant Rollback**. Vercel will route 100% of incoming requests to the previous stable build within seconds.
+1. Log in to the Google Cloud Console for our project (`paperworking-97055`).
+2. Navigate to **Cloud Run** -> **paperworker** -> **Revisions**.
+3. Select the previous stable revision, and edit traffic routing to route 100% of traffic to it. (Alternatively, run `gcloud run services update-traffic paperworker --to-revisions=<stable-revision>=100 --region=us-east4`).
 
 ### Step 2: Enable Read-Only Mode (If Database-related)
 1. Go to PostHog Feature Flags panel.

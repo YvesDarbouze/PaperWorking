@@ -385,7 +385,7 @@ Escalation ladder: tactful at day N, firmer at day 2N, owner-CC at day 3N. Confi
 1. `src/app/api/cron/data-completion-scan/route.ts` — daily cron that evaluates each trigger scenario and creates/updates `dataCompletionTasks`
 2. `src/app/api/cron/data-completion-send/route.ts` — cron that reads open tasks, applies escalation logic, sends emails via Resend
 3. Email templates for each trigger scenario
-4. `vercel.json` cron entries for both routes
+4. Cloud Scheduler HTTP target triggers for both routes
 
 **Test gate:** Unit test for each trigger: project fixture with missing field → task created at correct `nextDueAt`. Integration test: task at escalation level 2 sends "firmer" email copy.
 

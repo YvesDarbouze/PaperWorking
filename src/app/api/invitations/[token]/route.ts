@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { adminDb } from '@/lib/firebase/admin';
+import { fetchPropertyMetricHistory, computeRaiseCountdown, computeRaiseProgress } from '@/lib/reporting/propertyMetricHistory';
 
 /* ═══════════════════════════════════════════════════════
    GET /api/invitations/[token]
@@ -43,13 +44,12 @@ export async function GET(
 
     const inv = invSnap.docs[0].data();
 
-    // 2. Validate lifecycle state
+    // 2. Validate lifecycle state.
+    //    'accepted'/'declined' invitations are still returned (with their status)
+    //    so the Guest Portal can render an "already responded" screen rather
+    //    than erroring out — only expiry is a hard rejection.
     const now = new Date();
     const expiresAt: Date = inv.expiresAt?.toDate ? inv.expiresAt.toDate() : new Date(inv.expiresAt);
-
-    if (inv.status === 'used') {
-      return NextResponse.json({ error: 'This invitation has already been used.' }, { status: 410 });
-    }
 
     if (inv.status === 'expired' || expiresAt < now) {
       // Mark as expired in Firestore lazily
@@ -67,7 +67,17 @@ export async function GET(
     const project = projectSnap.data()!;
     const fin = project.financials ?? {};
 
-    // 4. Return only the allowlisted fields needed by the Guest Portal
+    // 4. Additional computed fields for the Guest Portal's thesis/charts/raise sections.
+    //    Raise progress is computed from the real commitments subcollection (status-aware),
+    //    never from the legacy fractionalInvestors array.
+    const raiseTarget = fin.capitalRaiseTarget || fin.projectedRehabCost || 0;
+    const [metricHistory, raiseProgress] = await Promise.all([
+      fetchPropertyMetricHistory(inv.projectId),
+      computeRaiseProgress(inv.projectId, raiseTarget),
+    ]);
+    const { daysLeft, hoursLeft } = computeRaiseCountdown(project.createdAt);
+
+    // 5. Return only the allowlisted fields needed by the Guest Portal
     //    — no internal IDs, no organizationId, no Firestore doc references
     return NextResponse.json({
       // Investor identity
@@ -84,22 +94,38 @@ export async function GET(
       ]
         .filter(Boolean)
         .join(', ') || project.propertyAddress || '',
+      strategy: project.strategyType || 'Value-Add',
+      assetClass: project.assetClass || 'Multi-Family',
+      opportunitySummary: project.vision || inv.opportunitySummary || project.description || '',
 
       // Key metrics
       purchasePrice: fin.purchasePrice ?? 0,
-      estimatedARV: fin.estimatedARV ?? 0,
-      expectedROI: fin.expectedROI ?? 0,
+      estimatedARV: fin.estimatedARV ?? fin.estimatedCurrentValue ?? 0,
+      expectedROI: fin.expectedROI ?? fin.expectedIRR ?? fin.roi ?? 0,
 
       // LOI Terms (from invitation record — source of truth)
       investmentAmount: inv.proposedAmount ?? 0,
       equitySplit: inv.proposedEquityPercent ?? 0,
       interestRate: fin.interestRate ?? 0,
-      termMonths: fin.termMonths ?? 12,
+      termMonths: fin.termMonths ?? (fin.loanTermYears ? fin.loanTermYears * 12 : 12),
       legalEntity: project.legalEntity || inv.legalEntity || '',
+
+      // Raise progress (from commitments, status-aware)
+      raiseTarget,
+      raiseRaised: raiseProgress.raiseRaised,
+      raisePercentage: raiseProgress.raisePercentage,
+      daysLeft,
+      hoursLeft,
+
+      // Financial history for charts
+      noiHistory: metricHistory.noiHistory,
+      capRateHistory: metricHistory.capRateHistory,
+      cashFlowHistory: metricHistory.cashFlowHistory,
+      burnRateHistory: [] as { date: string; value: number }[],
 
       // Meta
       expiresAt: expiresAt.toISOString(),
-      status: inv.status as 'pending' | 'used' | 'expired',
+      status: inv.status as 'pending' | 'accepted' | 'declined' | 'expired',
     });
   } catch (error) {
     console.error('[GuestPortal] Token lookup failed:', error);

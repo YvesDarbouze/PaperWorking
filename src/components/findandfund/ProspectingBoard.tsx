@@ -51,7 +51,9 @@ export default function ProspectingBoard() {
   const [crowdfundTarget, setCrowdfundTarget] = useState<string | null>(null);
   const [form, setForm] = useState(EMPTY_PROSPECT);
 
-  const totalEquity = currentProject?.fractionalInvestors?.reduce((s, i) => s + i.equityPercentage, 0) || 0;
+  const totalEquity = currentProject?.fractionalInvestors
+    ?.filter((i) => i.status === 'confirmed')
+    .reduce((s, i) => s + i.equityPercentage, 0) || 0;
 
   const setField = useCallback(
     <K extends keyof typeof EMPTY_PROSPECT>(key: K, value: (typeof EMPTY_PROSPECT)[K]) =>

@@ -2,19 +2,25 @@
 
 import React, { useRef, useState, useEffect, useCallback } from 'react';
 import { useParams, useRouter } from 'next/navigation';
-import { CheckCircle2, XCircle, Shield, FileText, Home, Pen, FileDown, Mail, Send, Clock, Lock, TrendingUp, Coins, HelpCircle } from 'lucide-react';
+import { CheckCircle2, XCircle, Shield, FileText, Home, Pen, Mail, Send, Clock, Lock, TrendingUp, Coins, HelpCircle, MessageSquare } from 'lucide-react';
 import { useAuth } from '@/context/AuthContext';
 import { MetricChart } from '@/components/metrics/MetricChart';
-import { isSubscriptionActive } from '@/lib/stripe/subscription';
 import toast from 'react-hot-toast';
 
 /* ═══════════════════════════════════════════════════════
-   Guest Portal — External Investor View Reskin (Luminous Glass)
-   
+   Guest Portal — External Investor View (Luminous Glass)
+
    Route: /invest/[token]
-   
+
+   token = an `invitations` collection token (see
+   /api/invitations/[token], /respond, /ask, /updates).
+
    Renders the opportunity summary, bento metrics, terms,
-   financial charts, and provides an interactive LOI sign-off.
+   financial charts, and lets an investor record their
+   intention to invest (accept/decline). PaperWorking never
+   moves money here — accepting creates a `pledged` commitment
+   that the deal sponsor later confirms manually via
+   CrowdfundingTracker once funds actually arrive off-platform.
    ═══════════════════════════════════════════════════════ */
 
 interface DealTokenData {
@@ -31,13 +37,12 @@ interface DealTokenData {
   interestRate: number;
   legalEntity: string;
   expiresAt: string;
-  status: 'active' | 'used' | 'expired';
+  status: 'pending' | 'accepted' | 'declined' | 'expired';
   noiHistory: { date: string; value: number }[];
   capRateHistory: { date: string; value: number }[];
   cashFlowHistory: { date: string; value: number }[];
   burnRateHistory: { date: string; value: number }[];
-  
-  // Real-time project fields
+
   raiseTarget?: number;
   raiseRaised?: number;
   raisePercentage?: number;
@@ -48,48 +53,65 @@ interface DealTokenData {
   opportunitySummary?: string;
 }
 
+interface DealUpdate {
+  id: string;
+  title: string | null;
+  body: string;
+  authorName: string;
+  createdAt: string | null;
+}
+
 export default function GuestPortalPage() {
   const params = useParams();
   const token = params?.token as string;
   const router = useRouter();
-  
-  const { user, profile, loading: authLoading } = useAuth();
-  
+
+  const { user, loading: authLoading } = useAuth();
+
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const signatureSectionRef = useRef<HTMLDivElement>(null);
-  
+
   const [isDrawing, setIsDrawing] = useState(false);
   const [hasSigned, setHasSigned] = useState(false);
-  const [submitted, setSubmitted] = useState(false);
-  const [declined, setDeclined] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState<string | null>(null);
   const [dealData, setDealData] = useState<DealTokenData | null>(null);
   const [loading, setLoading] = useState(true);
   const [tokenInvalid, setTokenInvalid] = useState(false);
+  const [legacyLink, setLegacyLink] = useState(false);
 
-  // Capital commitment state
-  const [investmentAmountInput, setInvestmentAmountInput] = useState<string>('');
-  const [investmentAmount, setInvestmentAmount] = useState<number>(0);
-  const [inputError, setInputError] = useState<string | null>(null);
+  // Deal updates (sponsor-authored progress feed, read-only for guests)
+  const [dealUpdates, setDealUpdates] = useState<DealUpdate[]>([]);
 
   // Modals state
   const [showInsights, setShowInsights] = useState(false);
   const [showAskSponsor, setShowAskSponsor] = useState(false);
   const [sponsorMessage, setSponsorMessage] = useState('');
   const [sendingSponsorMsg, setSendingSponsorMsg] = useState(false);
+  const [askError, setAskError] = useState<string | null>(null);
 
-  // Load deal details
+  // The investment amount is set by the sponsor at invite time
+  // (invitation.proposedAmount) — the investor cannot edit it; the
+  // backend (`/api/invitations/respond`) ignores any client-supplied amount.
+  const investmentAmount = dealData?.investmentAmount ?? 0;
+
+  // Load deal details from the real invitations pipeline. A 404/410 there
+  // falls back to the legacy `investmentTokens` route only to distinguish
+  // "never existed" from "this is an old, now-retired link type."
   const fetchDealData = useCallback(() => {
     if (!token) return;
     setLoading(true);
-    fetch(`/api/invest/${token}`)
-      .then(res => res.json())
-      .then(data => {
-        if (data.success && data.deal) {
-          setDealData(data.deal as DealTokenData);
-          setInvestmentAmount(data.deal.investmentAmount || 25000);
-          setInvestmentAmountInput(String(data.deal.investmentAmount || 25000));
+    fetch(`/api/invitations/${token}`)
+      .then(async (res) => {
+        if (res.ok) {
+          const data = await res.json();
+          setDealData(data as DealTokenData);
+          return;
+        }
+        const legacyRes = await fetch(`/api/invest/${token}`);
+        const legacyData = await legacyRes.json().catch(() => ({}));
+        if (legacyData?.legacy) {
+          setLegacyLink(true);
         } else {
           setTokenInvalid(true);
         }
@@ -102,52 +124,21 @@ export default function GuestPortalPage() {
     fetchDealData();
   }, [fetchDealData]);
 
-  // Redirect unauthenticated guests
+  // Read-only guest updates feed — plain fetch, not a client Firestore
+  // subscription, so no public security rules are needed on the subcollection.
   useEffect(() => {
-    if (!authLoading && !user && token) {
-      router.push(`/login?redirectTo=/invest/${token}`);
-    }
-  }, [authLoading, user, router, token]);
+    if (!token || !dealData) return;
+    fetch(`/api/invitations/${token}/updates`)
+      .then((res) => res.json())
+      .then((data) => setDealUpdates(data.updates || []))
+      .catch(() => setDealUpdates([]));
+  }, [token, dealData]);
 
-  const hasActiveSub = profile ? isSubscriptionActive(profile) : false;
-  const isEligible = !!(
-    user &&
-    profile &&
-    profile.accountType === 'investor' &&
-    ['Individual', 'Team'].includes(profile.subscriptionPlan || '') &&
-    hasActiveSub
-  );
-
-  const isVendor = !!(
-    profile &&
-    (profile.accountType === 'vendor' ||
-     profile.subscriptionPlan === 'Vendor Network' ||
-     profile.role === 'Vendor')
-  );
-
-  // Handle capital allocation change
-  const handleAmountChange = (valStr: string) => {
-    setInvestmentAmountInput(valStr);
-    const val = Number(valStr);
-    if (isNaN(val) || val <= 0) {
-      setInputError('Please enter a valid investment amount');
-      return;
-    }
-    if (val < 25000) {
-      setInputError('Minimum investment target is $25,000');
-      return;
-    }
-    if (val % 1000 !== 0) {
-      setInputError('Commitment must be in incremental steps of $1,000');
-      return;
-    }
-    setInputError(null);
-    setInvestmentAmount(val);
-  };
+  const alreadyResponded = dealData?.status === 'accepted' || dealData?.status === 'declined';
 
   // Canvas drawing handlers
   const startDraw = useCallback((e: React.MouseEvent<HTMLCanvasElement> | React.TouchEvent<HTMLCanvasElement>) => {
-    if (!isEligible) return;
+    if (!user) return;
     const canvas = canvasRef.current;
     if (!canvas) return;
     const ctx = canvas.getContext('2d');
@@ -171,10 +162,10 @@ export default function GuestPortalPage() {
 
     ctx.beginPath();
     ctx.moveTo(clientX - rect.left, clientY - rect.top);
-  }, [isEligible]);
+  }, [user]);
 
   const draw = useCallback((e: React.MouseEvent<HTMLCanvasElement> | React.TouchEvent<HTMLCanvasElement>) => {
-    if (!isEligible || !isDrawing) return;
+    if (!user || !isDrawing) return;
     const canvas = canvasRef.current;
     if (!canvas) return;
     const ctx = canvas.getContext('2d');
@@ -200,7 +191,7 @@ export default function GuestPortalPage() {
     ctx.lineCap = 'round';
     ctx.stroke();
     setHasSigned(true);
-  }, [isDrawing, isEligible]);
+  }, [isDrawing, user]);
 
   const stopDraw = useCallback((e?: React.MouseEvent<HTMLCanvasElement> | React.TouchEvent<HTMLCanvasElement>) => {
     if (e && 'touches' in e) {
@@ -218,33 +209,27 @@ export default function GuestPortalPage() {
     setHasSigned(false);
   };
 
-  // Sign & commit
+  // Accept — records intention to invest (a `pledged` commitment). No money
+  // moves here; the sponsor confirms later once funds actually arrive.
   const handleSign = async () => {
-    if (!isEligible || !hasSigned || !canvasRef.current || !user) return;
-    if (inputError) {
-      toast.error('Please resolve the investment amount constraints.');
-      return;
-    }
+    if (!hasSigned || !canvasRef.current || !user) return;
 
     try {
       setSubmitting(true);
       setSubmitError(null);
       const dataURL = canvasRef.current.toDataURL('image/png');
-      const idToken = await user.getIdToken();
-      
-      const res = await fetch(`/api/invest/${token}`, {
+
+      const res = await fetch('/api/invitations/respond', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({ idToken, dataURL, investmentAmount })
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ token, action: 'accept', signatureDataUrl: dataURL }),
       });
-      
+
       const data = await res.json();
-      
+
       if (res.ok && data.success) {
-        setSubmitted(true);
-        toast.success('Funds committed successfully!');
+        setDealData((prev) => (prev ? { ...prev, status: 'accepted' } : prev));
+        toast.success('Your commitment has been recorded.');
       } else {
         setSubmitError(data.error || 'Failed to record signature.');
       }
@@ -258,48 +243,73 @@ export default function GuestPortalPage() {
 
   // Commit CTA in sidebar (scrolls to signature if not yet signed)
   const handleCommitCTA = () => {
-    if (!isEligible) {
-      toast.error('Please upgrade your subscription status first.');
+    if (!user) {
+      router.push(`/login?redirectTo=${encodeURIComponent('/invest/' + token)}`);
       return;
     }
     if (!hasSigned) {
       signatureSectionRef.current?.scrollIntoView({ behavior: 'smooth' });
-      toast('Draw your signature below to commit your capital.', { icon: '✍️' });
+      toast('Draw your signature below to record your commitment.', { icon: '✍️' });
       return;
     }
     handleSign();
   };
 
-  const handleDecline = () => {
-    setDeclined(true);
-    toast.success('Opportunity declined.');
+  // Decline — real, persisted response. The sponsor is notified server-side
+  // (real email via /api/invitations/respond), not by a client-side toast.
+  const handleDecline = async () => {
+    try {
+      setSubmitting(true);
+      setSubmitError(null);
+      const res = await fetch('/api/invitations/respond', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ token, action: 'decline' }),
+      });
+      const data = await res.json();
+      if (res.ok && data.success) {
+        setDealData((prev) => (prev ? { ...prev, status: 'declined' } : prev));
+      } else {
+        toast.error(data.error || 'Failed to record your response.');
+      }
+    } catch (err) {
+      console.error('Decline submission failed:', err);
+      toast.error('An unexpected error occurred. Please try again.');
+    } finally {
+      setSubmitting(false);
+    }
   };
 
-  const handleSendSponsorMessage = (e: React.FormEvent) => {
+  // Ask Sponsor — real, persisted question + real email to the sponsor.
+  const handleSendSponsorMessage = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!sponsorMessage.trim()) return;
     setSendingSponsorMsg(true);
-    setTimeout(() => {
-      setSendingSponsorMsg(false);
-      setSponsorMessage('');
-      setShowAskSponsor(false);
-      toast.success('Message successfully transmitted to Sponsor!');
-    }, 1200);
-  };
-
-  const triggerDownload = (filename: string) => {
-    toast.promise(
-      new Promise(resolve => setTimeout(resolve, 1500)),
-      {
-        loading: `Connecting to secure vault for ${filename}...`,
-        success: `Downloaded ${filename} successfully!`,
-        error: 'Failed to download document.'
+    setAskError(null);
+    try {
+      const res = await fetch(`/api/invitations/${token}/ask`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ message: sponsorMessage.trim() }),
+      });
+      const data = await res.json();
+      if (res.ok && data.success) {
+        setSponsorMessage('');
+        setShowAskSponsor(false);
+        toast.success('Your question was sent to the sponsor.');
+      } else {
+        setAskError(data.error || 'Failed to send your question.');
       }
-    );
+    } catch (err) {
+      console.error('Ask sponsor failed:', err);
+      setAskError('An unexpected error occurred. Please try again.');
+    } finally {
+      setSendingSponsorMsg(false);
+    }
   };
 
   // Loading Screen
-  if (authLoading || loading || (user && !profile)) {
+  if (authLoading || loading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-[#0d0a0b]">
         <div className="flex flex-col items-center gap-3">
@@ -310,11 +320,20 @@ export default function GuestPortalPage() {
     );
   }
 
-  // Not logged in (handled by redirection, but acts as a fallback)
-  if (!user) {
+  // Legacy Link Screen — an old investmentTokens-based link, no longer supported
+  if (legacyLink) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-[#0d0a0b]">
-        <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-[#454955]" />
+      <div className="min-h-screen flex items-center justify-center bg-[#0d0a0b] px-4"
+           style={{ backgroundImage: "radial-gradient(rgba(69, 73, 85, 0.04) 1px, transparent 1px)", backgroundSize: "24px 24px" }}>
+        <div className="text-center max-w-sm p-8 glass-card rounded-2xl border border-white/10 shadow-xl">
+          <div className="w-16 h-16 bg-white/5 border border-white/10 rounded-full flex items-center justify-center mx-auto mb-5 text-[#454955]">
+            <Shield className="w-8 h-8" />
+          </div>
+          <h1 className="text-xl font-bold text-white uppercase tracking-tight mb-2">Link No Longer Supported</h1>
+          <p className="text-xs text-[#8a9b9b] leading-relaxed">
+            This invitation link type is no longer supported. Please contact your sponsor for a new invitation.
+          </p>
+        </div>
       </div>
     );
   }
@@ -337,66 +356,57 @@ export default function GuestPortalPage() {
     );
   }
 
-  // Declined Screen
-  if (declined) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-[#0d0a0b] px-4"
-           style={{ backgroundImage: "radial-gradient(rgba(69, 73, 85, 0.04) 1px, transparent 1px)", backgroundSize: "24px 24px" }}>
-        <div className="text-center max-w-sm p-8 glass-card rounded-2xl border border-white/10 shadow-xl">
-          <div className="w-16 h-16 bg-red-950/20 border border-red-500/20 rounded-full flex items-center justify-center mx-auto mb-5 text-red-400">
-            <XCircle className="w-8 h-8" />
-          </div>
-          <h1 className="text-xl font-bold text-white uppercase tracking-tight mb-2">Offer Declined</h1>
-          <p className="text-xs text-[#8a9b9b] leading-relaxed">
-            You have officially declined this investment opportunity. The deal sponsor has been notified.
-          </p>
-        </div>
-      </div>
-    );
-  }
-
-  // Success Committed Screen
-  if (submitted) {
+  // Already Responded Screen — regardless of auth state, an invitation can only be answered once
+  if (alreadyResponded) {
+    const isAccepted = dealData.status === 'accepted';
     return (
       <div className="min-h-screen flex items-center justify-center bg-[#0d0a0b] px-4"
            style={{ backgroundImage: "radial-gradient(rgba(69, 73, 85, 0.04) 1px, transparent 1px)", backgroundSize: "24px 24px" }}>
         <div className="text-center max-w-md p-8 glass-card rounded-3xl border border-white/10 shadow-2xl space-y-6">
-          <div className="w-20 h-20 bg-[#454955]/10 border border-[#454955]/30 rounded-full flex items-center justify-center mx-auto text-[#454955] shadow-[0_0_20px_rgba(69,73,85,0.2)]">
-            <CheckCircle2 className="w-10 h-10" />
+          <div className={`w-20 h-20 rounded-full flex items-center justify-center mx-auto ${isAccepted ? 'bg-[#454955]/10 border border-[#454955]/30 text-[#454955] shadow-[0_0_20px_rgba(69,73,85,0.2)]' : 'bg-red-950/20 border border-red-500/20 text-red-400'}`}>
+            {isAccepted ? <CheckCircle2 className="w-10 h-10" /> : <XCircle className="w-10 h-10" />}
           </div>
           <div className="space-y-2">
-            <h1 className="text-2xl font-light text-white uppercase tracking-wider">Commitment Confirmed!</h1>
+            <h1 className="text-2xl font-light text-white uppercase tracking-wider">
+              {isAccepted ? 'Commitment Recorded' : 'Offer Declined'}
+            </h1>
             <p className="text-xs text-[#8a9b9b] leading-relaxed">
-              Your digital signature has been verified and registered. The sponsor will deliver the formal subscription papers directly to your workspace.
+              {isAccepted
+                ? 'Your intention to invest has been recorded and the sponsor has been notified. They will confirm once funds are received and follow up with formal subscription papers.'
+                : 'You have declined this investment opportunity. The deal sponsor has been notified.'}
             </p>
           </div>
-          <div className="bg-black/30 border border-white/15 p-5 rounded-2xl text-left space-y-3 font-mono text-xs">
-            <div className="flex justify-between border-b border-white/5 pb-2">
-              <span className="text-[#8a9b9b]">INVESTOR:</span>
-              <span className="font-bold text-white">{dealData.investorName}</span>
+          {isAccepted && (
+            <div className="bg-black/30 border border-white/15 p-5 rounded-2xl text-left space-y-3 font-mono text-xs">
+              <div className="flex justify-between border-b border-white/5 pb-2">
+                <span className="text-[#8a9b9b]">INVESTOR:</span>
+                <span className="font-bold text-white">{dealData.investorName}</span>
+              </div>
+              <div className="flex justify-between border-b border-white/5 pb-2">
+                <span className="text-[#8a9b9b]">ALLOCATION:</span>
+                <span className="font-bold text-[#454955]">${investmentAmount.toLocaleString()}</span>
+              </div>
+              <div className="flex justify-between border-b border-white/5 pb-2">
+                <span className="text-[#8a9b9b]">EQUITY SHARE:</span>
+                <span className="font-bold text-white">{dealData.equitySplit}%</span>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-[#8a9b9b]">STATUS:</span>
+                <span className="font-bold text-amber-400 flex items-center gap-1.5">
+                  <span className="w-1.5 h-1.5 rounded-full bg-amber-400 animate-pulse"></span>
+                  PLEDGED — AWAITING SPONSOR CONFIRMATION
+                </span>
+              </div>
             </div>
-            <div className="flex justify-between border-b border-white/5 pb-2">
-              <span className="text-[#8a9b9b]">ALLOCATION:</span>
-              <span className="font-bold text-[#454955]">${investmentAmount.toLocaleString()}</span>
-            </div>
-            <div className="flex justify-between border-b border-white/5 pb-2">
-              <span className="text-[#8a9b9b]">EQUITY SHARE:</span>
-              <span className="font-bold text-white">{dealData.equitySplit}%</span>
-            </div>
-            <div className="flex justify-between">
-              <span className="text-[#8a9b9b]">STATUS:</span>
-              <span className="font-bold text-[#454955] flex items-center gap-1.5">
-                <span className="w-1.5 h-1.5 rounded-full bg-[#454955] animate-pulse"></span>
-                COMMITTED
-              </span>
-            </div>
-          </div>
-          <button 
-            onClick={() => router.push('/dashboard')}
-            className="w-full py-3.5 rounded-xl border border-white/10 hover:bg-white/5 text-white font-bold text-xs uppercase tracking-wider transition-all"
-          >
-            Go to Workspace
-          </button>
+          )}
+          {user && (
+            <button
+              onClick={() => router.push('/dashboard')}
+              className="w-full py-3.5 rounded-xl border border-white/10 hover:bg-white/5 text-white font-bold text-xs uppercase tracking-wider transition-all"
+            >
+              Go to Workspace
+            </button>
+          )}
         </div>
       </div>
     );
@@ -427,24 +437,30 @@ export default function GuestPortalPage() {
       {/* Main Container */}
       <main className="pt-24 pb-32 px-6 md:px-12 max-w-6xl mx-auto">
         
-        {/* Account Validation Prompt Banner */}
-        {!isEligible && (
-          <div className="mb-8 p-4 border-2 border-dashed border-[#454955]/30 bg-[#454955]/5 rounded-xl flex flex-col md:flex-row items-center justify-between gap-4 animate-pulse">
+        {/* Anonymous Viewer Banner — sign in or register to respond */}
+        {!user && (
+          <div className="mb-8 p-4 border-2 border-dashed border-[#454955]/30 bg-[#454955]/5 rounded-xl flex flex-col md:flex-row items-center justify-between gap-4">
             <div className="flex items-center gap-3">
               <span className="material-symbols-outlined text-[#454955] select-none">verified_user</span>
               <p className="text-xs text-white">
-                {isVendor 
-                  ? "Standard Investor account required for final closing. Upgrade your vendor account to lock in allocations."
-                  : "Standard Investor account with an active Individual or Team plan is required to commit funds."}
+                Sign in or create a free account to accept or decline this invitation.
               </p>
             </div>
-            <Link
-              id="btn-upgrade-account"
-              href="/pricing"
-              className="bg-[#454955]/10 hover:bg-[#454955]/20 text-[#454955] px-6 py-2 rounded-lg font-mono text-[10px] uppercase font-bold transition-all border border-[#454955]/20"
-            >
-              Upgrade Now
-            </Link>
+            <div className="flex gap-2 shrink-0">
+              <Link
+                href={`/login?redirectTo=${encodeURIComponent('/invest/' + token)}`}
+                className="px-5 py-2 rounded-lg font-mono text-[10px] uppercase font-bold transition-all border border-white/10 text-white hover:bg-white/5"
+              >
+                Log In
+              </Link>
+              <button
+                id="btn-create-account"
+                onClick={() => router.push(`/register?invite=${token}`)}
+                className="bg-[#454955]/10 hover:bg-[#454955]/20 text-[#454955] px-5 py-2 rounded-lg font-mono text-[10px] uppercase font-bold transition-all border border-[#454955]/20"
+              >
+                Create Account
+              </button>
+            </div>
           </div>
         )}
 
@@ -465,7 +481,7 @@ export default function GuestPortalPage() {
               <div className="absolute bottom-6 left-6 right-6 flex flex-col md:flex-row md:items-end justify-between gap-4">
                 <div className="space-y-1">
                   <span className="bg-[#454955]/20 backdrop-blur-md text-[#454955] border border-[#454955]/30 px-3 py-0.5 rounded-full font-mono text-[9px] uppercase">
-                    {dealData.raisePercentage ?? 70}% Raised
+                    {dealData.raisePercentage ?? 0}% Raised
                   </span>
                   <h2 className="text-2xl font-light text-white tracking-tight uppercase">{dealData.dealName}</h2>
                   <p className="text-on-surface-variant flex items-center gap-1.5 text-xs">
@@ -497,7 +513,7 @@ export default function GuestPortalPage() {
             <section className="glass-card p-6 md:p-8 rounded-2xl space-y-3">
               <h3 className="font-mono text-[10px] font-bold text-[#454955] uppercase tracking-[0.2em]">Investment Thesis</h3>
               <p className="text-sm text-on-surface-variant leading-relaxed">
-                {dealData.opportunitySummary || 'Value-add multifamily redevelopment in a high-growth corridor. 123 Skyline Tower represents a unique opportunity to acquire an under-managed Class B asset in an institutional-grade submarket. Our strategy focuses on modernization of common areas and interior unit upgrades to capture a 25% rent premium, leveraging the influx of technology firms moving to the surrounding three-block radius.'}
+                {dealData.opportunitySummary || 'The sponsor has not yet published an investment thesis for this deal.'}
               </p>
             </section>
 
@@ -591,6 +607,36 @@ export default function GuestPortalPage() {
               </div>
             </section>
 
+            {/* Deal Updates — sponsor-authored progress feed (read-only for guests) */}
+            <section className="glass-card rounded-2xl overflow-hidden border border-white/10">
+              <div className="px-6 py-4 border-b border-white/5 bg-white/5 flex items-center gap-2">
+                <MessageSquare className="w-3.5 h-3.5 text-[#454955]" />
+                <h3 className="font-mono text-[10px] font-bold text-[#454955] uppercase tracking-[0.2em]">Deal Updates</h3>
+              </div>
+              {dealUpdates.length > 0 ? (
+                <div className="divide-y divide-white/5 max-h-[280px] overflow-y-auto no-scrollbar">
+                  {dealUpdates.map((u) => (
+                    <div key={u.id} className="px-6 py-4">
+                      <div className="flex items-center justify-between mb-1">
+                        <span className="text-[10px] font-bold text-white">{u.authorName}</span>
+                        {u.createdAt && (
+                          <span className="text-[9px] text-[#8a9b9b] font-mono">
+                            {new Date(u.createdAt).toLocaleDateString()}
+                          </span>
+                        )}
+                      </div>
+                      {u.title && <p className="text-xs font-semibold text-white mb-1">{u.title}</p>}
+                      <p className="text-xs text-on-surface-variant leading-relaxed whitespace-pre-wrap">{u.body}</p>
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <div className="px-6 py-8 text-center">
+                  <p className="text-xs text-[#8a9b9b] font-mono">No updates posted yet.</p>
+                </div>
+              )}
+            </section>
+
             {/* LOI Preview & Signature Box */}
             <section ref={signatureSectionRef} className="glass-card p-6 md:p-8 rounded-2xl space-y-6">
               <div className="flex items-center gap-2 border-b border-white/5 pb-3">
@@ -629,7 +675,7 @@ export default function GuestPortalPage() {
               <div className="space-y-3">
                 <div className="flex justify-between items-center">
                   <label className="block text-[9px] font-bold text-[#8a9b9b] uppercase tracking-wider">Draw Digital Signature</label>
-                  {hasSigned && isEligible && (
+                  {hasSigned && user && (
                     <button
                       onClick={clearSignature}
                       className="text-[9px] text-[#8a9b9b] hover:text-white transition uppercase font-mono border-b border-dashed border-[#8a9b9b]"
@@ -639,13 +685,13 @@ export default function GuestPortalPage() {
                   )}
                 </div>
 
-                <div className={`relative border border-dashed border-white/20 rounded-xl overflow-hidden bg-white ${!isEligible ? 'opacity-40' : ''}`}>
+                <div className={`relative border border-dashed border-white/20 rounded-xl overflow-hidden bg-white ${!user ? 'opacity-40' : ''}`}>
                   <canvas
                     id="loi-signature-canvas"
                     ref={canvasRef}
                     width={600}
                     height={120}
-                    className={`w-full cursor-crosshair h-[120px] ${!isEligible ? 'pointer-events-none' : ''}`}
+                    className={`w-full cursor-crosshair h-[120px] ${!user ? 'pointer-events-none' : ''}`}
                     onMouseDown={startDraw}
                     onMouseMove={draw}
                     onMouseUp={stopDraw}
@@ -675,7 +721,7 @@ export default function GuestPortalPage() {
                 <button
                   id="btn-commit-capital"
                   onClick={handleSign}
-                  disabled={!isEligible || !hasSigned || submitting}
+                  disabled={!user || !hasSigned || submitting}
                   className="flex-1 py-4 rounded-xl bg-[#454955] hover:bg-[#454955]/90 text-[#0d0a0b] font-bold text-xs uppercase tracking-wider transition-all disabled:opacity-50 flex items-center justify-center gap-2 shadow-[0_0_15px_rgba(69,73,85,0.3)] active:scale-98"
                 >
                   {submitting ? (
@@ -688,7 +734,8 @@ export default function GuestPortalPage() {
                 <button
                   id="btn-decline-offer"
                   onClick={handleDecline}
-                  className="py-4 px-6 rounded-xl border border-white/10 hover:bg-white/5 text-red-400 hover:text-red-300 font-bold text-xs uppercase tracking-wider transition-all active:scale-98"
+                  disabled={!user || submitting}
+                  className="py-4 px-6 rounded-xl border border-white/10 hover:bg-white/5 text-red-400 hover:text-red-300 font-bold text-xs uppercase tracking-wider transition-all active:scale-98 disabled:opacity-50"
                 >
                   Decline Offer
                 </button>
@@ -709,65 +756,54 @@ export default function GuestPortalPage() {
                     <div>
                       <span className="block text-[9px] font-bold text-[#8a9b9b] uppercase tracking-wider">Syndication Status</span>
                       <h4 className="text-2xl font-bold text-white tracking-tight mt-1">
-                        ${(dealData.raiseRaised ?? 850000).toLocaleString()}
+                        ${(dealData.raiseRaised ?? 0).toLocaleString()}
                       </h4>
                     </div>
-                    <span className="text-xs text-[#8a9b9b]">of ${(dealData.raiseTarget ?? 1200000).toLocaleString()}</span>
+                    <span className="text-xs text-[#8a9b9b]">of ${(dealData.raiseTarget ?? 0).toLocaleString()}</span>
                   </div>
 
                   {/* Progress Bar */}
                   <div className="relative">
                     <div className="w-full h-2.5 bg-white/5 rounded-full overflow-hidden">
-                      <div 
-                        className="h-full bg-[#454955] rounded-full transition-all duration-1000 shadow-[0_0_8px_#454955]" 
-                        style={{ width: `${dealData.raisePercentage ?? 70}%` }}
+                      <div
+                        className="h-full bg-[#454955] rounded-full transition-all duration-1000 shadow-[0_0_8px_#454955]"
+                        style={{ width: `${dealData.raisePercentage ?? 0}%` }}
                       ></div>
                     </div>
                   </div>
 
                   <div className="flex justify-between text-[11px] font-mono">
-                    <span className="text-[#454955] font-bold">{dealData.raisePercentage ?? 70}% Allocated</span>
+                    <span className="text-[#454955] font-bold">{dealData.raisePercentage ?? 0}% Allocated</span>
                     <span className="text-[#8a9b9b]">
-                      ${((dealData.raiseTarget ?? 1200000) - (dealData.raiseRaised ?? 850000)).toLocaleString()} Remaining
+                      ${Math.max(0, (dealData.raiseTarget ?? 0) - (dealData.raiseRaised ?? 0)).toLocaleString()} Remaining
                     </span>
                   </div>
                 </div>
 
-                {/* Investment Amount Form Input */}
+                {/* Investment Amount — set by the sponsor at invite time, not editable here */}
                 <div className="space-y-2 border-t border-white/5 pt-5">
-                  <label className="block text-[9px] font-bold text-[#8a9b9b] uppercase tracking-wider">Your Investment Allocation ($)</label>
-                  <div className="relative">
-                    <span className="absolute left-4 top-1/2 -translate-y-1/2 text-[#8a9b9b] font-mono text-sm">$</span>
-                    <input 
-                      id="input-investment-amount"
-                      type="number" 
-                      value={investmentAmountInput}
-                      onChange={(e) => handleAmountChange(e.target.value)}
-                      placeholder="25,000"
-                      className="w-full pl-8 pr-4 py-3.5 bg-[#0d0a0b]/80 border border-white/10 rounded-xl text-white font-mono text-sm focus:outline-none focus:border-[#454955] focus:ring-1 focus:ring-[#454955]/20 transition-all"
-                    />
+                  <label className="block text-[9px] font-bold text-[#8a9b9b] uppercase tracking-wider">Your Proposed Allocation</label>
+                  <div className="w-full px-4 py-3.5 bg-[#0d0a0b]/80 border border-white/10 rounded-xl text-white font-mono text-sm">
+                    ${investmentAmount.toLocaleString()}
                   </div>
-                  {inputError ? (
-                    <p className="text-[10px] text-red-400 font-mono">{inputError}</p>
-                  ) : (
-                    <p className="text-[10px] text-[#8a9b9b] font-mono">Incremental steps of $1,000 allowed.</p>
-                  )}
+                  <p className="text-[10px] text-[#8a9b9b] font-mono">Set by the sponsor for this invitation.</p>
                 </div>
 
                 {/* Submit Commit CTA */}
                 <button
                   onClick={handleCommitCTA}
-                  className="w-full py-4 rounded-xl bg-[#454955] hover:bg-[#454955]/90 text-[#0d0a0b] font-bold text-xs uppercase tracking-wider transition-all flex items-center justify-center gap-2 shadow-[0_0_15px_rgba(69,73,85,0.2)] active:scale-98"
+                  disabled={submitting}
+                  className="w-full py-4 rounded-xl bg-[#454955] hover:bg-[#454955]/90 text-[#0d0a0b] font-bold text-xs uppercase tracking-wider transition-all flex items-center justify-center gap-2 shadow-[0_0_15px_rgba(69,73,85,0.2)] active:scale-98 disabled:opacity-50"
                 >
                   <span className="material-symbols-outlined text-sm select-none">payments</span>
-                  COMMIT CAPITAL
+                  {user ? 'RECORD COMMITMENT' : 'SIGN IN TO RESPOND'}
                 </button>
 
                 {/* Timer Countdown */}
                 <div className="flex items-center gap-3 p-3 bg-white/5 rounded-xl border border-white/5 text-xs text-[#8a9b9b] font-mono">
                   <Clock className="w-4 h-4 text-[#454955]" />
                   <span>
-                    Deal closing in: <strong className="text-white font-bold">{dealData.daysLeft ?? 4}d {dealData.hoursLeft ?? 12}h</strong>
+                    Deal closing in: <strong className="text-white font-bold">{dealData.daysLeft ?? 0}d {dealData.hoursLeft ?? 0}h</strong>
                   </span>
                 </div>
 
@@ -798,16 +834,18 @@ export default function GuestPortalPage() {
           <span className="material-symbols-outlined text-xl select-none">arrow_back</span>
           Back
         </button>
-        <button 
+        <button
           onClick={handleDecline}
-          className="flex flex-col items-center justify-center text-on-surface-variant hover:text-red-400 transition-all font-mono text-[9px] uppercase font-bold"
+          disabled={!user || submitting}
+          className="flex flex-col items-center justify-center text-on-surface-variant hover:text-red-400 transition-all font-mono text-[9px] uppercase font-bold disabled:opacity-50"
         >
           <span className="material-symbols-outlined text-xl select-none">cancel</span>
           Decline
         </button>
-        <button 
+        <button
           onClick={handleCommitCTA}
-          className="bg-[#454955] text-[#0d0a0b] rounded-xl px-5 py-2.5 shadow-[0_0_15px_rgba(69,73,85,0.2)] active:scale-95 transition-all font-mono text-[10px] uppercase font-bold flex items-center gap-1.5"
+          disabled={submitting}
+          className="bg-[#454955] text-[#0d0a0b] rounded-xl px-5 py-2.5 shadow-[0_0_15px_rgba(69,73,85,0.2)] active:scale-95 transition-all font-mono text-[10px] uppercase font-bold flex items-center gap-1.5 disabled:opacity-50"
         >
           <span className="material-symbols-outlined text-sm select-none">payments</span>
           Commit
@@ -823,39 +861,21 @@ export default function GuestPortalPage() {
                 <h3 className="text-sm font-bold text-white uppercase tracking-wider font-mono">Secure Insights Vault</h3>
                 <p className="text-[10px] text-[#8a9b9b] mt-0.5">Project: {dealData.dealName}</p>
               </div>
-              <button 
+              <button
                 onClick={() => setShowInsights(false)}
                 className="material-symbols-outlined text-[#8a9b9b] hover:text-white select-none"
               >
                 close
               </button>
             </div>
-            
+
             <div className="p-6 space-y-4 max-h-[360px] overflow-y-auto no-scrollbar">
-              {[
-                { name: 'underwriting_model_v4.2.xlsx', size: '2.4 MB', type: 'EXCEL' },
-                { name: 'executive_summary_deck.pdf', size: '4.8 MB', type: 'PDF' },
-                { name: 'zoning_variance_approval.pdf', size: '1.1 MB', type: 'PDF' },
-                { name: 'phase_i_environmental_report.pdf', size: '12.6 MB', type: 'PDF' },
-                { name: 'title_commitment_draft.pdf', size: '890 KB', type: 'PDF' }
-              ].map((doc) => (
-                <div key={doc.name} className="flex justify-between items-center p-3 border border-white/5 bg-black/20 rounded-xl hover:border-[#454955]/30 transition-all">
-                  <div className="flex items-center gap-3">
-                    <span className="material-symbols-outlined text-[#454955] text-xl select-none">description</span>
-                    <div>
-                      <p className="text-xs font-semibold text-white font-mono">{doc.name}</p>
-                      <p className="text-[9px] text-[#8a9b9b] font-mono">{doc.type} · {doc.size}</p>
-                    </div>
-                  </div>
-                  <button 
-                    onClick={() => triggerDownload(doc.name)}
-                    className="p-2 rounded-lg bg-white/5 hover:bg-[#454955]/10 hover:text-[#454955] text-[#8a9b9b] transition-colors"
-                    title="Download Document"
-                  >
-                    <FileDown className="w-4 h-4" />
-                  </button>
-                </div>
-              ))}
+              <div className="flex flex-col items-center gap-2 py-8 text-center">
+                <FileText className="w-8 h-8 text-[#454955]/40" />
+                <p className="text-xs text-[#8a9b9b] font-mono">
+                  The sponsor hasn&apos;t shared any documents with investors yet.
+                </p>
+              </div>
             </div>
 
             <div className="p-5 border-t border-white/5 bg-[#0d0a0b]/50 flex justify-end">
@@ -888,6 +908,11 @@ export default function GuestPortalPage() {
             </div>
 
             <form onSubmit={handleSendSponsorMessage} className="p-6 space-y-4">
+              {askError && (
+                <div className="p-3 border border-red-500/20 bg-red-950/20 text-red-400 rounded-xl text-xs">
+                  {askError}
+                </div>
+              )}
               <div>
                 <label className="block text-[9px] font-bold text-[#8a9b9b] uppercase tracking-wider mb-2">Your Inquiry</label>
                 <textarea
@@ -896,6 +921,7 @@ export default function GuestPortalPage() {
                   onChange={(e) => setSponsorMessage(e.target.value)}
                   placeholder="Ask a question about the capital stack, construction timelines, zoning approvals, or underwriting models..."
                   rows={4}
+                  maxLength={2000}
                   required
                   className="w-full p-4 bg-[#0d0a0b]/80 border border-white/10 rounded-xl text-xs text-white focus:outline-none focus:border-[#454955] transition-all"
                 />

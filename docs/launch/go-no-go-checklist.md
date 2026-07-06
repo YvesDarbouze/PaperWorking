@@ -13,7 +13,7 @@
 | **4. Defect Backlog** | Quality | **GREEN** | **GREEN** | `@qa` | Bug Tracker review (0 open P0/P1 defects) |
 | **5. Platform Status** | Operations | **GREEN** | **GREEN** | `@devops` | Live status feed resolve at `https://status.paperworking.co` |
 | **6. Stripe Production** | Billing | **GREEN** | **GREEN** | `@billing` | Webhook logs, real keys mapped in production runtime |
-| **7. DNS & HTTPS** | Infrastructure | **GREEN** | **GREEN** | `@devops` | DNS dig logs resolving to Vercel/Firebase/BetterUptime |
+| **7. DNS & HTTPS** | Infrastructure | **GREEN** | **GREEN** | `@devops` | DNS dig logs resolving to Google Cloud Run/Firebase/BetterUptime |
 | **8. Legal Checklist** | Legal | **GREEN** | **GREEN** | `@security` | [legal-checklist.md](file:///Users/yvesdarbouze/Documents/PaperWorking/docs/launch/legal-checklist.md) (All 14 items checked) |
 | **9. Alerts Routing** | Security/Ops | **GREEN** | **GREEN** | `@devops` | Sentry integration page (PagerDuty dispatch latency < 60s) |
 | **10. Backup Drill** | Data | **GREEN** | **GREEN** | `@data` | [drill-outcome.md](file:///Users/yvesdarbouze/Documents/PaperWorking/docs/security/drill-outcome.md) (Executed 2026-05-31) |
@@ -74,7 +74,7 @@
 ### Item 7: DNS Cutover Testing
 - **Description**: DNS configuration verification for primary domains.
 - **Resolution Map**:
-  - `paperworking.co` ➔ Points to Vercel production hosting CNAME records
+  - `paperworking.co` ➔ Points to Google Cloud Run custom domain / Firebase App Hosting CNAME records
   - `api.paperworking.co` ➔ Resolves to Firebase Cloud Functions environment
   - `status.paperworking.co` ➔ Resolves to BetterUptime status page
 - **Sign-off**: Checked and verified on 2026-05-31 by `@devops`.

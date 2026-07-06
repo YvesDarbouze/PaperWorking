@@ -45,7 +45,7 @@ We monitor the following five indicators to gauge platform health and customer o
 ### Day 4: Performance & Latency Audit
 - **Goal**: Ensure the production environment conforms to Core Web Vitals targets under real user load.
 - **Monitoring Tasks**:
-  1. Analyze Vercel Analytics for LCP (Largest Contentful Paint) and INP (Interaction to Next Paint) scores.
+  1. Analyze Chrome UX Report / Google Analytics / PostHog metrics for LCP (Largest Contentful Paint) and INP (Interaction to Next Paint) scores.
   2. Optimize database query times in Prisma if any API endpoint latency exceeds 300ms.
   3. Verify static asset cache-control headers are caching images, styles, and scripts.
 

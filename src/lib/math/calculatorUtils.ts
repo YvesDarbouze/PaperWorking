@@ -243,12 +243,14 @@ export function calculateEquityPayout(deal: Project | undefined) {
   }
 
   const investors = deal.fractionalInvestors || [];
-  payouts = investors.map(inv => ({
-    investorId: inv.id,
-    name: inv.name,
-    equityPercentage: inv.equityPercentage,
-    amount: Math.max(0, targetProfit * (inv.equityPercentage / 100))
-  }));
+  payouts = investors
+    .filter(inv => inv.status === 'confirmed')
+    .map(inv => ({
+      investorId: inv.id,
+      name: inv.name,
+      equityPercentage: inv.equityPercentage,
+      amount: Math.max(0, targetProfit * (inv.equityPercentage / 100))
+    }));
 
   return { isSold, targetProfit, calculationStatus, payouts, investors };
 }

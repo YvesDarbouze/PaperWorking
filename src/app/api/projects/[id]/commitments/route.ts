@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { requireAuth, isAuthError } from '@/lib/firebase-admin/auth-guard';
 import { adminDb } from '@/lib/firebase/admin';
 import { FieldValue } from 'firebase-admin/firestore';
+import { syncFractionalInvestorFromCommitment } from '@/lib/firebase/syncFractionalInvestors';
 
 /* ═══════════════════════════════════════════════════════════════
    Capital Raise Commitments — collection under projects/{id}
@@ -122,6 +123,14 @@ export async function POST(
     };
 
     await docRef.set(doc);
+
+    await syncFractionalInvestorFromCommitment(projectId, {
+      id: docRef.id,
+      name: doc.name,
+      email: doc.email,
+      amountCents: doc.amountCents,
+      status: doc.status,
+    });
 
     return NextResponse.json({ id: docRef.id, ...doc }, { status: 201 });
   } catch (err: any) {

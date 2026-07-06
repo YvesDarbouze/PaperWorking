@@ -15,6 +15,7 @@ import { projectsService } from '@/lib/firebase/deals';
 import toast from 'react-hot-toast';
 import type { Phase1Snapshot, LoanStatus, PurchaseReadinessItem } from '@/types/schema';
 import { CrowdfundingTracker } from '@/components/project/CrowdfundingTracker';
+import { DealUpdateComposer } from '@/components/project/DealUpdateComposer';
 import LOIGenerator from '@/components/project/LOIGenerator';
 import { LoanProcessingPipeline } from '@/components/project/LoanProcessingPipeline';
 import { ProjectAnalyzer } from '@/components/project/ProjectAnalyzer';
@@ -872,6 +873,7 @@ export default function Phase1WorkspacePage() {
                     phaseColor={PHASE_COLOR}
                     onTotalChange={setTotalRaisedCents}
                   />
+                  <DealUpdateComposer projectId={projectId} phaseColor={PHASE_COLOR} />
                   <div className="flex flex-col gap-2">
                     <button
                       onClick={() => setShowInviteModal(true)}

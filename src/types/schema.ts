@@ -260,6 +260,10 @@ export interface FractionalInvestor {
   status: 'confirmed' | 'invited' | 'pending_subscription';
   invitedAt?: Date;
   confirmedAt?: Date;
+  /** projects/{id}/commitments doc id this entry is derived from, if any.
+   *  Used to upsert/match entries synced from the commitments pipeline
+   *  without colliding with manually-entered cap-table rows. */
+  commitmentId?: string;
 }
 
 // 2.5 Project-Specific Team Member (non-investor professionals)

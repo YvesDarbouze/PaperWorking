@@ -4,6 +4,7 @@ import { adminDb } from '@/lib/firebase/admin';
 import { Resend } from 'resend';
 import { generateInvestorResponseEmail } from '@/lib/emails/templates/InvestorResponseEmail';
 import { logOrgActivity } from '@/lib/firebase/orgActivityWriter';
+import { syncFractionalInvestorFromCommitment } from '@/lib/firebase/syncFractionalInvestors';
 
 /* ═══════════════════════════════════════════════════════════════
    POST /api/invitations/respond
@@ -101,10 +102,11 @@ export async function POST(request: NextRequest) {
         .doc();
 
       const amountCents = Math.round((inv.proposedAmount || 0) * 100);
+      const commitmentName = inv.name || 'Anonymous Investor';
 
       await commitmentRef.set({
         projectId: inv.projectId,
-        name: inv.name || 'Anonymous Investor',
+        name: commitmentName,
         amountCents,
         status: 'pledged',
         email: inv.email || null,
@@ -112,6 +114,17 @@ export async function POST(request: NextRequest) {
         createdByUid: inv.invitedByUid || 'system',
         createdAt: now,
         updatedAt: now,
+      });
+
+      // Keep the legacy fractionalInvestors[] view (read by equity/distribution
+      // calculators) in sync — this pledge shows up as 'invited' until the
+      // sponsor later confirms it via CrowdfundingTracker (cleared -> confirmed).
+      await syncFractionalInvestorFromCommitment(inv.projectId, {
+        id: commitmentRef.id,
+        name: commitmentName,
+        email: inv.email || null,
+        amountCents,
+        status: 'pledged',
       });
     }
 

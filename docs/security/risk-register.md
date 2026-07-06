@@ -43,11 +43,11 @@ This document tracks identified security risks, vulnerabilities, their threat le
 - **Affected Packages**: `@hono/node-server@<1.19.13`
 - **Mitigation/Control**:
   1. The dependency is isolated within `@prisma/dev` devDependencies, used solely for spinning up Prisma Studio locally.
-  2. Production servers and Vercel builds exclude devDependencies completely.
+  2. Production servers and Cloud Run container builds exclude devDependencies completely.
 
 ### SR-005: AI SDK Provider Utils Consumption (Moderate Severity)
 - **Vulnerability**: Uncontrolled resource consumption issue.
 - **Affected Packages**: `@ai-sdk/provider-utils@<=3.0.97`
 - **Mitigation/Control**:
   1. LLM requests are gated by strict rate limiting.
-  2. Vercel AI SDK calls are handled in backend-only server actions that authenticate requests before executing LLM logic.
+  2. AI SDK calls are handled in backend-only server actions that authenticate requests before executing LLM logic.

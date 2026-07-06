@@ -339,9 +339,9 @@
 **Owner**: @devops  
 **Effort**: M
 
-**What needs to happen**:
+- **What needs to happen**:
 1. Create `.github/workflows/ci.yml` with lint, type-check, test stages
-2. Create `.github/workflows/deploy.yml` for Vercel/Firebase deployment
+2. Create `.github/workflows/deploy.yml` for Google Cloud Run deployment
 3. Add Firestore rules deploy step
 4. Add Security rules validation step
 5. Add bundle size check

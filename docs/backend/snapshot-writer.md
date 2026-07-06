@@ -29,7 +29,7 @@ flowchart TD
         Diff["deepDiff.ts<br/>deepDiff()"]
         ALW["activityLogWriter.ts<br/>writeActivityLog()"]
         SW["snapshotWriter.ts<br/>writeMetricSnapshots()"]
-        Cron["GET /api/cron/snapshots<br/>(Vercel Cron @ 2AM UTC)"]
+        Cron["GET /api/cron/snapshots<br/>(Cloud Scheduler @ 2AM UTC)"]
     end
 
     subgraph "Metrics Engine"
@@ -74,7 +74,7 @@ User action → updateProjectWithTracking()
 ### Nightly Cron (Batch)
 
 ```
-Vercel Cron @ 2:00 AM UTC → GET /api/cron/snapshots
+Cloud Scheduler @ 2:00 AM UTC → GET /api/cron/snapshots
   ├── Verify CRON_SECRET bearer token
   ├── Query all active projects (max 100)
   ├── For each project: writeMetricSnapshots()
@@ -120,14 +120,12 @@ Top-level collection with deterministic document IDs. Each document contains all
 
 ## Cron Configuration
 
-In `vercel.json`:
+Configured via **Google Cloud Scheduler** hitting the Cloud Run service URL.
 
-```json
-{
-  "path": "/api/cron/snapshots",
-  "schedule": "0 2 * * *"
-}
-```
+- **URL**: `https://<service-url>/api/cron/snapshots`
+- **Schedule**: `0 2 * * *` (Daily at 2:00 AM UTC)
+- **HTTP Method**: `GET`
+- **Auth Header**: Custom header `Authorization: Bearer <CRON_SECRET>`
 
 | Setting | Value |
 |---------|-------|
@@ -137,7 +135,7 @@ In `vercel.json`:
 | Max duration | 60 seconds |
 | Idempotent | Yes (uses `merge: true` on snapshot docs) |
 
-**Required env var**: `CRON_SECRET` must be set in Vercel project settings.
+**Required env var**: `CRON_SECRET` must be set in Google Cloud Run environment variables or retrieved from Secret Manager.
 
 ---
 

@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { requireAuth, isAuthError } from '@/lib/firebase-admin/auth-guard';
 import { adminDb } from '@/lib/firebase/admin';
 import { FieldValue } from 'firebase-admin/firestore';
+import { syncFractionalInvestorFromCommitment, removeFractionalInvestorForCommitment } from '@/lib/firebase/syncFractionalInvestors';
 
 /* ═══════════════════════════════════════════════════════════════
    PATCH /api/projects/[id]/commitments/[cId]
@@ -87,6 +88,17 @@ export async function PATCH(
 
     await docRef.update(updates);
 
+    // Keep the legacy fractionalInvestors[] view (read by equity/distribution
+    // calculators) in sync with this commitment's latest status/amount.
+    const updated = existing.data()!;
+    await syncFractionalInvestorFromCommitment(projectId, {
+      id: cId,
+      name: updates.name ?? updated.name,
+      email: updates.email !== undefined ? updates.email : updated.email,
+      amountCents: updates.amountCents ?? updated.amountCents,
+      status: (updates.status ?? updated.status) as 'pledged' | 'transferred' | 'cleared',
+    });
+
     return NextResponse.json({ success: true });
   } catch (err: any) {
     console.error('[Commitments PATCH]', err.message);
@@ -122,6 +134,7 @@ export async function DELETE(
     }
 
     await docRef.delete();
+    await removeFractionalInvestorForCommitment(projectId, cId);
 
     return NextResponse.json({ success: true });
   } catch (err: any) {

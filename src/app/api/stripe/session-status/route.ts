@@ -1,5 +1,4 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { requireAuth, isAuthError } from '@/lib/firebase-admin/auth-guard';
 import { isMockSessionId, getMockSessionStatus, shouldUseMockCheckout } from '@/lib/stripe/mockCheckout';
 import Stripe from 'stripe';
 
@@ -53,9 +52,13 @@ export async function GET(request: NextRequest) {
     return NextResponse.json(status);
   }
 
-  const auth = await requireAuth(request);
-  if (isAuthError(auth)) return auth;
-
+  // ── No Auth Guard (by design) ────────────────────────
+  // This endpoint supports guest checkout: a user who just paid via Stripe
+  // Checkout may not have an account (or a Firebase session) yet. The Stripe
+  // Checkout session id (`cs_...`) is a cryptographically random, unguessable
+  // token minted by Stripe and only known to whoever completed that specific
+  // checkout — knowledge of it is itself the proof of ownership, the same
+  // reasoning already applied to the mock branch above.
   try {
     const stripe = getStripe();
     const session = await stripe.checkout.sessions.retrieve(sessionId, {

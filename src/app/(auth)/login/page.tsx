@@ -5,11 +5,35 @@ import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
+import { doc, getDoc } from 'firebase/firestore';
 import { loginSchema, type LoginFormValues, registerSchema, type RegisterFormValues } from '@/lib/validations/auth';
 import { useAuth } from '@/context/AuthContext';
+import { auth, db } from '@/lib/firebase/config';
 import { resolvePostAuthDestination } from '@/lib/auth/postAuthRedirect';
 import { Eye, EyeOff, Loader2, AlertCircle, CheckCircle2, ShieldAlert } from 'lucide-react';
 import toast from 'react-hot-toast';
+
+/**
+ * Fetches the just-authenticated user's subscription status directly from
+ * Firestore (one-time read via auth.currentUser, which Firebase sets
+ * synchronously on sign-in) and redirects. Deliberately not sourced from the
+ * AuthContext `profile` — that's populated by an onSnapshot listener that
+ * lags a beat behind sign-in, which raced a previous effect-based redirect
+ * and flashed already-subscribed users through /pricing.
+ */
+async function redirectAfterAuth(isNewUser: boolean, urlRedirectTo: string) {
+  let hasActiveSubscription = false;
+  const uid = auth.currentUser?.uid;
+  if (!isNewUser && uid) {
+    try {
+      const snap = await getDoc(doc(db, 'users', uid));
+      const status = snap.exists() ? (snap.data() as { subscriptionStatus?: string }).subscriptionStatus : undefined;
+      hasActiveSubscription = status === 'active' || status === 'trialing';
+    } catch { /* best effort — treat as unsubscribed */ }
+  }
+  const dest = resolvePostAuthDestination({ isNewUser, urlRedirectTo, hasActiveSubscription });
+  window.location.replace(dest);
+}
 
 export default function LoginPage() {
   return (
@@ -39,13 +63,7 @@ function LoginPageInner() {
     clearError,
     user,
     loading,
-    isAuthenticating,
-    sessionReady,
   } = useAuth();
-
-  // Prevents double router.replace: set to true by whichever code path
-  // (handleSocialLogin or the user-watcher useEffect) fires first.
-  const navigatingRef = useRef(false);
 
   const [handledExpired, setHandledExpired] = useState(false);
 
@@ -84,28 +102,11 @@ function LoginPageInner() {
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  // Compute the best redirect destination. See resolvePostAuthDestination for the
-  // full priority order. `isNewUser` is true only when this auth completed a
-  // sign-up — a brand-new account has no plan yet, so it lands on /pricing to
-  // pick a tier; a returning user goes to their portfolio (/dashboard).
-  const getRedirectDestination = (isNewUser = false): string =>
-    resolvePostAuthDestination({ isNewUser, urlRedirectTo });
-
   // Clear any stale auth errors from previous pages
   useEffect(() => {
     clearError();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
-
-  useEffect(() => {
-    // sessionReady: /api/auth/session POST confirmed — __session cookie is set.
-    if (!loading && user && sessionReady && !sessionReason && !isAuthenticating && !navigatingRef.current) {
-      navigatingRef.current = true;
-      const dest = getRedirectDestination();
-      window.location.replace(dest);
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [user, loading, sessionReady, sessionReason, isAuthenticating]);
 
   const [showPassword, setShowPassword]       = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
@@ -143,9 +144,7 @@ function LoginPageInner() {
     clearError();
     try {
       await login(data.email, data.password);
-      navigatingRef.current = true;
-      const dest = getRedirectDestination();
-      window.location.replace(dest);
+      await redirectAfterAuth(false, urlRedirectTo);
     } catch { /* error set via AuthContext */ }
     finally { setIsSubmitting(false); }
   };
@@ -155,9 +154,7 @@ function LoginPageInner() {
     clearError();
     try {
       await authRegister(data.email, data.password, data.fullName, urlAccountType);
-      navigatingRef.current = true;
-      const dest = getRedirectDestination(true); // new account → pick a tier on /pricing
-      window.location.replace(dest);
+      await redirectAfterAuth(true, urlRedirectTo); // new account → pick a tier on /pricing
     } catch { /* error set via AuthContext */ }
     finally { setIsSubmitting(false); }
   };
@@ -204,10 +201,8 @@ function LoginPageInner() {
     try {
       if (provider === 'google') await loginWithGoogle();
       else await loginWithFacebook();
-      navigatingRef.current = true;
       // Social sign-up (user was on the "create account" tab) → treat as new user.
-      const dest = getRedirectDestination(isSignUp);
-      window.location.replace(dest);
+      await redirectAfterAuth(isSignUp, urlRedirectTo);
     } catch (err) {
       const msg = (err instanceof Error ? err.message : null) || authError || 'Sign-in failed. Please try again.';
       toast.error(msg, { id: 'social-login-error', duration: 6000 });

@@ -1102,17 +1102,6 @@ export function CommandCenter() {
   const t         = tokens(isDark);
   const [activeTab, setActiveTab] = useState<'overview' | 'assets' | 'transactions' | 'insights'>('overview');
 
-  if (!mounted) {
-    return <div className="p-8 animate-pulse h-screen" style={{ background: isDark ? "#0d0a0b" : "#FDFFFC" }} />;
-  }
-
-  const irrVal = fmtPct(kpis.irr);
-  const emVal  = kpis.equityMultiple !== null ? kpis.equityMultiple.toFixed(2) : "—";
-  const capVal = fmtCompact(kpis.capitalDeployed);
-  const noiVal = kpis.totalNOI !== null ? fmtCompact(kpis.totalNOI) : "—";
-  const cfVal  = kpis.portfolioCashFlow !== null ? fmtCompact(kpis.portfolioCashFlow) : "—";
-  const cfNeg  = kpis.portfolioCashFlow !== null && kpis.portfolioCashFlow < 0;
-
   // Derive caution projects for Project Health badge
   const cautionProjects = useMemo(() => {
     return projects.filter(p => {
@@ -1126,6 +1115,17 @@ export function CommandCenter() {
       return ltvVal > 80 || (dscrVal !== null && dscrVal < 1.15);
     });
   }, [projects]);
+
+  if (!mounted) {
+    return <div className="p-8 animate-pulse h-screen" style={{ background: isDark ? "#0d0a0b" : "#FDFFFC" }} />;
+  }
+
+  const irrVal = fmtPct(kpis.irr);
+  const emVal  = kpis.equityMultiple !== null ? kpis.equityMultiple.toFixed(2) : "—";
+  const capVal = fmtCompact(kpis.capitalDeployed);
+  const noiVal = kpis.totalNOI !== null ? fmtCompact(kpis.totalNOI) : "—";
+  const cfVal  = kpis.portfolioCashFlow !== null ? fmtCompact(kpis.portfolioCashFlow) : "—";
+  const cfNeg  = kpis.portfolioCashFlow !== null && kpis.portfolioCashFlow < 0;
 
   return (
     <div className="w-full min-h-full">

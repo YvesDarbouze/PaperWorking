@@ -44,4 +44,17 @@ describe('resolvePostAuthDestination', () => {
     expect(resolvePostAuthDestination({ isNewUser: false })).toBe(PRICING_ROUTE);
     expect(sessionStorage.getItem('pw_auth_redirect')).toBeNull();
   });
+
+  it('sends an already-subscribed user to the dashboard and discards a stale pending plan', () => {
+    sessionStorage.setItem('pw_pending_plan', JSON.stringify({ plan: 'Pro' }));
+    expect(resolvePostAuthDestination({ hasActiveSubscription: true })).toBe(DASHBOARD_ROUTE);
+    expect(sessionStorage.getItem('pw_pending_plan')).toBeNull();
+  });
+
+  it('still honours an explicit redirectTo for an already-subscribed user', () => {
+    sessionStorage.setItem('pw_pending_plan', JSON.stringify({ plan: 'Pro' }));
+    expect(
+      resolvePostAuthDestination({ hasActiveSubscription: true, urlRedirectTo: '/dashboard/projects' }),
+    ).toBe('/dashboard/projects');
+  });
 });

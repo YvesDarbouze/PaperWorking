@@ -62,14 +62,19 @@ export async function POST(request: Request) {
     const stripe = getStripe();
 
     // ── Auth Verification & Identity Derivation ──
-    let verifiedUserId: string | undefined = undefined;
-    if (idToken) {
-      try {
-        const decoded = await adminAuth.verifyIdToken(idToken, true);
-        verifiedUserId = decoded.uid;
-      } catch {
-        return NextResponse.json({ error: 'Invalid auth token.' }, { status: 401 });
-      }
+    // A real Stripe Checkout session always requires a signed-in account: the
+    // subscription must attach to a Firebase uid, not an email guessed later.
+    // (The mock branch above is the only unauthenticated path, and only exists
+    // when Stripe itself is unconfigured.)
+    if (!idToken) {
+      return NextResponse.json({ error: 'Sign in required before checkout.' }, { status: 401 });
+    }
+    let verifiedUserId: string;
+    try {
+      const decoded = await adminAuth.verifyIdToken(idToken, true);
+      verifiedUserId = decoded.uid;
+    } catch {
+      return NextResponse.json({ error: 'Invalid auth token.' }, { status: 401 });
     }
 
     // ── Price ID Resolution ──────────────────────────────

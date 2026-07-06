@@ -85,14 +85,25 @@ export function useEntitlements() {
 
     (async () => {
       try {
-        const idToken = await user.getIdToken();
-        const res = await fetch('/api/entitlements/project-count', {
-          method: 'GET',
-          headers: {
-            'Content-Type': 'application/json',
-            Authorization: `Bearer ${idToken}`,
-          },
-        });
+        const fetchCount = async (forceRefresh: boolean) => {
+          const idToken = await user.getIdToken(forceRefresh);
+          return fetch('/api/entitlements/project-count', {
+            method: 'GET',
+            headers: {
+              'Content-Type': 'application/json',
+              Authorization: `Bearer ${idToken}`,
+            },
+          });
+        };
+
+        // A cached token can be near-expiry right after login/navigation,
+        // which the server rejects with 401 — retry once with a forced
+        // refresh instead of silently giving up.
+        let res = await fetchCount(false);
+        if (res.status === 401) {
+          res = await fetchCount(true);
+        }
+
         if (!cancelled && res.ok) {
           const data = await res.json();
           if (data?.count !== undefined) {

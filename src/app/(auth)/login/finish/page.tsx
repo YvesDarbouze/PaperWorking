@@ -2,7 +2,10 @@
 
 import { useEffect, useState, Suspense } from 'react';
 import { useRouter } from 'next/navigation';
+import { doc, getDoc } from 'firebase/firestore';
 import { useAuth } from '@/context/AuthContext';
+import { auth, db } from '@/lib/firebase/config';
+import { resolvePostAuthDestination } from '@/lib/auth/postAuthRedirect';
 import { Loader2, CheckCircle2, AlertCircle } from 'lucide-react';
 import Link from 'next/link';
 
@@ -27,20 +30,19 @@ function MagicLinkFinishInner() {
       await verifyMagicLink(email, window.location.href);
       setStatus('success');
       // Honour any checkout intent stored before the magic link was sent.
-      // Mirrors the getRedirectDestination logic in the login page.
-      let dest = '/dashboard';
-      if (typeof window !== 'undefined') {
-        if (sessionStorage.getItem('pw_pending_plan')) {
-          sessionStorage.removeItem('pw_auth_redirect');
-          dest = '/pricing';
-        } else {
-          const saved = sessionStorage.getItem('pw_auth_redirect');
-          if (saved && saved.startsWith('/')) {
-            sessionStorage.removeItem('pw_auth_redirect');
-            dest = saved;
-          }
-        }
+      // Read subscription status directly from Firestore via auth.currentUser
+      // (set synchronously on sign-in) rather than the AuthContext `profile`,
+      // which loads a beat later via an onSnapshot listener — see login/page.tsx.
+      let hasActiveSubscription = false;
+      const uid = auth.currentUser?.uid;
+      if (uid) {
+        try {
+          const snap = await getDoc(doc(db, 'users', uid));
+          const status = snap.exists() ? (snap.data() as { subscriptionStatus?: string }).subscriptionStatus : undefined;
+          hasActiveSubscription = status === 'active' || status === 'trialing';
+        } catch { /* best effort — treat as unsubscribed */ }
       }
+      const dest = resolvePostAuthDestination({ hasActiveSubscription });
       router.push(dest);
     } catch { setStatus('error'); }
   };

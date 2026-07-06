@@ -7,6 +7,54 @@ import toast from 'react-hot-toast';
 import { useAuth } from '@/context/AuthContext';
 import { useTenant } from '@/context/TenantContext';
 
+// Many components (CommandCenter, ProjectsWidget, DashboardHome, intelligence
+// pages) mount simultaneously and each used to open its own onSnapshot
+// listener for the identical `projects` query. This module-level singleton
+// ref-counts callers so only one live Firestore listener exists per scope
+// key, regardless of how many components call useAllDealsSync() at once.
+let dealsSubscriberCount = 0;
+let dealsListenerKey: string | null = null;
+let dealsUnsubscribe: (() => void) | null = null;
+
+function getDealsListenerKey(activeTenantId: string, inviteToken?: string, invitedToProjectId?: string) {
+  return `${activeTenantId}|${inviteToken ?? ''}|${invitedToProjectId ?? ''}`;
+}
+
+function startDealsListener(
+  activeTenantId: string,
+  inviteToken: string | undefined,
+  invitedToProjectId: string | undefined,
+  setDeals: (deals: Project[]) => void,
+) {
+  if (inviteToken && invitedToProjectId) {
+    const projectRef = doc(db, 'projects', invitedToProjectId);
+    return onSnapshot(
+      projectRef,
+      (snap) => {
+        setDeals(snap.exists() ? [{ id: snap.id, ...snap.data() } as Project] : []);
+      },
+      (error) => {
+        console.error('Guest Project Sync Error:', error);
+        setDeals([]);
+      },
+    );
+  }
+
+  const projectsRef = collection(db, 'projects');
+  const q = query(projectsRef, where('organizationId', '==', activeTenantId));
+
+  return onSnapshot(q, (snapshot) => {
+    const liveDeals: Project[] = [];
+    snapshot.forEach((d) => {
+      liveDeals.push({ id: d.id, ...d.data() } as Project);
+    });
+    setDeals(liveDeals);
+  }, (error) => {
+    console.error('All Deals Sync Error:', error);
+    setDeals([]);
+  });
+}
+
 export function useAllDealsSync() {
   const setDeals = useProjectStore((state) => state.setDeals);
   const setLedgerItems = useProjectStore((state) => state.setLedgerItems);
@@ -22,38 +70,35 @@ export function useAllDealsSync() {
     if (!activeTenantId) return;
     if (typeof window !== 'undefined' && window.location.pathname.startsWith('/demo')) return;
 
-    // Guest tier: user arrived via invite link — scope to their one invited project only
-    if (profile?.inviteToken && profile?.invitedToProjectId) {
-      const projectRef = doc(db, 'projects', profile.invitedToProjectId);
-      const unsubscribe = onSnapshot(
-        projectRef,
-        (snap) => {
-          setDeals(snap.exists() ? [{ id: snap.id, ...snap.data() } as Project] : []);
-        },
-        (error) => {
-          console.error('Guest Project Sync Error:', error);
-          setDeals([]);
-        },
-      );
-      return () => unsubscribe();
+    const key = getDealsListenerKey(activeTenantId, profile?.inviteToken, profile?.invitedToProjectId);
+
+    // Scope changed (or no listener yet) — tear down the stale one and start fresh.
+    if (dealsListenerKey !== key && dealsUnsubscribe) {
+      dealsUnsubscribe();
+      dealsUnsubscribe = null;
     }
 
-    // Owner / org-team tier: full portfolio scoped to the organization
-    const projectsRef = collection(db, 'projects');
-    const q = query(projectsRef, where('organizationId', '==', activeTenantId));
+    if (!dealsUnsubscribe) {
+      dealsListenerKey = key;
+      dealsUnsubscribe = startDealsListener(
+        activeTenantId,
+        profile?.inviteToken,
+        profile?.invitedToProjectId,
+        setDeals,
+      );
+    }
 
-    const unsubscribe = onSnapshot(q, (snapshot) => {
-      const liveDeals: Project[] = [];
-      snapshot.forEach((d) => {
-        liveDeals.push({ id: d.id, ...d.data() } as Project);
-      });
-      setDeals(liveDeals);
-    }, (error) => {
-      console.error('All Deals Sync Error:', error);
-      setDeals([]);
-    });
+    dealsSubscriberCount += 1;
 
-    return () => unsubscribe();
+    return () => {
+      dealsSubscriberCount -= 1;
+      if (dealsSubscriberCount <= 0 && dealsUnsubscribe) {
+        dealsSubscriberCount = 0;
+        dealsUnsubscribe();
+        dealsUnsubscribe = null;
+        dealsListenerKey = null;
+      }
+    };
   }, [setDeals, activeTenantId, profile?.inviteToken, profile?.invitedToProjectId]);
 
   // 2. Sync Active Deal's Ledger (Sub-collection)
@@ -65,13 +110,13 @@ export function useAllDealsSync() {
     const q = query(ledgerRef, orderBy('createdAt', 'desc'));
 
     const unsubscribe = onSnapshot(q, (snapshot) => {
-      const items = snapshot.docs.map(doc => ({ 
-        id: doc.id, 
+      const items = snapshot.docs.map(doc => ({
+        id: doc.id,
         ...doc.data(),
         // Convert Firestore timestamp to JS Date for the store
         createdAt: doc.data().createdAt?.toDate() || new Date()
       } as LedgerItem));
-      
+
       const newCount = items.length;
       const prevCount = prevLedgerCounts.current[currentProject.id] || 0;
 
@@ -82,7 +127,7 @@ export function useAllDealsSync() {
            style: { background: '#111', color: '#fff', border: '1px solid #333' }
          });
       }
-      
+
       prevLedgerCounts.current[currentProject.id] = newCount;
       setLedgerItems(currentProject.id, items);
     }, (error) => {

@@ -21,12 +21,32 @@ import type { NextRequest } from 'next/server';
    2. Account-type gating — __acct cookie routes vendors vs investors
    3. Auth pages (/login etc.) — bounce users who already have a session
       only when an explicit redirectTo param is present
-   4. /invest/* and all public routes — pass through untouched
+   4. /pricing — an already-subscribed, logged-in user is bounced to the
+      dashboard instead of seeing the plan picker (__sub cookie)
+   5. /invest/* and all public routes — pass through untouched
    ═══════════════════════════════════════════════════════ */
 
 const SESSION_COOKIE = '__session';
 const ACCT_COOKIE    = '__acct';
+const SUB_COOKIE     = '__sub';
 const AUTH_PATHS     = new Set(['/login', '/register', '/forgot-password']);
+
+/**
+ * Decodes the non-HttpOnly `__sub` cookie set by /api/auth/session
+ * (base64 JSON `{ plan, status }`) and reports whether it reflects an
+ * active or trialing subscription. Never throws — a missing/malformed
+ * cookie is simply treated as "not subscribed".
+ */
+function hasActiveSubscription(request: NextRequest): boolean {
+  const raw = request.cookies.get(SUB_COOKIE)?.value;
+  if (!raw) return false;
+  try {
+    const { status } = JSON.parse(atob(raw));
+    return status === 'active' || status === 'trialing';
+  } catch {
+    return false;
+  }
+}
 
 /**
  * Prevent Next.js from caching middleware responses.
@@ -58,26 +78,26 @@ export function proxy(request: NextRequest) {
                 request.nextUrl.hostname === '127.0.0.1';
 
   // ── Local Development Bypass ──────────────────────────
-  if (isDev && !hasSession && (pathname.startsWith('/dashboard') || pathname.startsWith('/vendor-portal') || pathname.startsWith('/onboarding') || pathname === '/login')) {
-    const url = request.nextUrl.clone();
-    if (pathname === '/login') {
-      url.pathname = '/dashboard/command-center';
-    }
-    const response = NextResponse.redirect(url);
-    response.cookies.set(SESSION_COOKIE, 'mock_session_token_123', {
-      path: '/',
-      maxAge: 60 * 60 * 24 * 14, // 14 days
-      httpOnly: false, // Must be accessible client-side by useAuth() check!
-    });
-    if (!acct) {
-      response.cookies.set(ACCT_COOKIE, 'investor', {
-        path: '/',
-        maxAge: 60 * 60 * 24 * 14,
-        httpOnly: false,
-      });
-    }
-    return withNoCache(response);
-  }
+  // if (isDev && !hasSession && (pathname.startsWith('/dashboard') || pathname.startsWith('/vendor-portal') || pathname.startsWith('/onboarding') || pathname === '/login')) {
+  //   const url = request.nextUrl.clone();
+  //   if (pathname === '/login') {
+  //     url.pathname = '/dashboard/command-center';
+  //   }
+  //   const response = NextResponse.redirect(url);
+  //   response.cookies.set(SESSION_COOKIE, 'mock_session_token_123', {
+  //     path: '/',
+  //     maxAge: 60 * 60 * 24 * 14, // 14 days
+  //     httpOnly: false, // Must be accessible client-side by useAuth() check!
+  //   });
+  //   if (!acct) {
+  //     response.cookies.set(ACCT_COOKIE, 'investor', {
+  //       path: '/',
+  //       maxAge: 60 * 60 * 24 * 14,
+  //       httpOnly: false,
+  //     });
+  //   }
+  //   return withNoCache(response);
+  // }
 
   // ── Guest Portal — always public ──────────────────────
   if (pathname.startsWith('/invest')) {
@@ -123,6 +143,12 @@ export function proxy(request: NextRequest) {
     return withNoCache(nextWithHeader(request, pathname));
   }
 
+  // ── Pricing — an already-subscribed, logged-in user never needs the
+  // plan picker; send them straight to their portfolio instead. ──────
+  if (pathname === '/pricing' && hasSession && hasActiveSubscription(request)) {
+    return withNoCache(NextResponse.redirect(new URL('/dashboard', request.url)));
+  }
+
   // ── Auth pages — server-redirect only when redirectTo is explicit ──
   // Without a redirectTo param, the client-side login page handles the
   // redirect — it has access to sessionStorage (pw_pending_plan,
@@ -142,6 +168,7 @@ export const config = {
     '/dashboard/:path*',
     '/projects/:path*',
     '/vendor-portal/:path*',
+    '/pricing',
     '/onboarding/:path*',
     '/login',
     '/register',

@@ -95,18 +95,23 @@ export default function LandingPage() {
         : planIdentifier;
 
 
-    try {
-      // Guest checkout: CC is always required by Stripe (payment_method_collection: 'always')
-      // Trial + auto-charge handled server-side. No login required at this step.
-      const body: Record<string, string> = { plan, billingInterval: interval };
+    // Require an account before Stripe Checkout: client_reference_id must be a
+    // real Firebase uid so the subscription attaches to an account deterministically.
+    // Guest checkout (pay first, register later) was removed — it relied on a
+    // fragile email match to reconcile the purchase with an account, which
+    // silently orphaned the subscription whenever the sign-up email differed
+    // from the checkout email.
+    if (!user) {
+      sessionStorage.setItem('pw_pending_plan', JSON.stringify({ plan, interval, identifier: planIdentifier }));
+      router.push(`/login?redirectTo=${encodeURIComponent('/pricing')}`);
+      return;
+    }
 
-      if (user) {
-        try {
-          body.idToken = await user.getIdToken();
-          body.userId = user.uid;
-          if (user.email) body.userEmail = user.email;
-        } catch { /* non-fatal — proceed as guest */ }
-      }
+    try {
+      const body: Record<string, string> = { plan, billingInterval: interval };
+      body.idToken = await user.getIdToken();
+      body.userId = user.uid;
+      if (user.email) body.userEmail = user.email;
 
       const res = await fetch('/api/stripe/checkout', {
         method: 'POST',

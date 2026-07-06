@@ -11,6 +11,11 @@
  *   - A returning user goes to their portfolio (a.k.a. the dashboard).
  *   - Explicit intent (pending Stripe checkout, an ?redirectTo= deep link, or a
  *     redirect stashed before a social-OAuth round-trip) always wins over both.
+ *   - EXCEPT: a user who already has an active subscription never gets routed
+ *     to /pricing to "resume" a checkout — that pending intent is almost always
+ *     stale (set before an earlier login, never cleaned up) and would otherwise
+ *     re-trigger a brand-new Stripe Checkout session for someone who's already
+ *     paying. Explicit redirectTo/OAuth-redirect intents still win in that case.
  */
 
 /** The user's real-estate "Portfolio" — traditionally called the dashboard. */
@@ -24,6 +29,8 @@ export interface PostAuthOptions {
   isNewUser?: boolean;
   /** Explicit ?redirectTo=/... param captured on the login page, if any. */
   urlRedirectTo?: string;
+  /** True when the authenticating account already has an active/trialing subscription. */
+  hasActiveSubscription?: boolean;
 }
 
 /**
@@ -34,14 +41,22 @@ export interface PostAuthOptions {
 export function resolvePostAuthDestination({
   isNewUser = false,
   urlRedirectTo = '',
+  hasActiveSubscription = false,
 }: PostAuthOptions = {}): string {
   // SSR / non-browser: no sessionStorage — fall back to explicit param or dashboard.
   if (typeof window === 'undefined') {
     return urlRedirectTo || DASHBOARD_ROUTE;
   }
 
+  // Already-paying account: a pending checkout intent can only be stale (left
+  // over from before an earlier login), so discard it instead of re-resuming
+  // checkout. Explicit redirect intents below still apply.
+  if (hasActiveSubscription) {
+    sessionStorage.removeItem('pw_pending_plan');
+  }
+
   // 1. Pending checkout intent → resume Stripe checkout on /pricing.
-  if (sessionStorage.getItem('pw_pending_plan')) {
+  if (!hasActiveSubscription && sessionStorage.getItem('pw_pending_plan')) {
     sessionStorage.removeItem('pw_auth_redirect'); // clean up
     return PRICING_ROUTE;
   }

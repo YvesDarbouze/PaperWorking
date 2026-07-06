@@ -16,7 +16,10 @@ let _handler: ((req: NextRequest) => Promise<Response>) | null = null;
 
 async function getHandler() {
   if (!_handler) {
-    const { createMcpHandler } = await import("@vercel/mcp-adapter");
+    // Use `mcp-handler` — the maintained successor to `@vercel/mcp-adapter`.
+    // The old 0.3.x adapter ships no `exports` map and Turbopack cannot resolve
+    // it under the production build, which broke Firebase App Hosting CI.
+    const { createMcpHandler } = await import("mcp-handler");
     const { McpServer } = await import("@modelcontextprotocol/sdk/server/mcp.js");
     const {
       list_active_projects,

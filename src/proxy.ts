@@ -48,7 +48,7 @@ function nextWithHeader(request: NextRequest, pathname: string): NextResponse {
   });
 }
 
-export function middleware(request: NextRequest) {
+export function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl;
   const hasSession = !!request.cookies.get(SESSION_COOKIE)?.value;
   const acct       = request.cookies.get(ACCT_COOKIE)?.value; // 'investor' | 'vendor'

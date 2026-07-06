@@ -7,6 +7,7 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { loginSchema, type LoginFormValues, registerSchema, type RegisterFormValues } from '@/lib/validations/auth';
 import { useAuth } from '@/context/AuthContext';
+import { resolvePostAuthDestination } from '@/lib/auth/postAuthRedirect';
 import { Eye, EyeOff, Loader2, AlertCircle, CheckCircle2, ShieldAlert } from 'lucide-react';
 import toast from 'react-hot-toast';
 
@@ -83,35 +84,12 @@ function LoginPageInner() {
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  // Compute the best redirect destination (priority order):
-  // 1. If pw_pending_plan exists in sessionStorage → go to /pricing (checkout resume)
-  // 2. If redirectTo URL param exists → use it
-  // 3. If pw_auth_redirect exists in sessionStorage (saved before social OAuth) → use it
-  // 4. Default → /dashboard
-  const getRedirectDestination = (): string => {
-    if (typeof window === 'undefined') return urlRedirectTo || '/dashboard';
-
-    // Highest priority: pending checkout intent
-    if (sessionStorage.getItem('pw_pending_plan')) {
-      sessionStorage.removeItem('pw_auth_redirect'); // clean up
-      return '/pricing';
-    }
-
-    // URL param (available for email/password login)
-    if (urlRedirectTo) {
-      sessionStorage.removeItem('pw_auth_redirect'); // clean up
-      return urlRedirectTo;
-    }
-
-    // Saved redirect from before social auth (survives the OAuth round-trip)
-    const savedRedirect = sessionStorage.getItem('pw_auth_redirect');
-    if (savedRedirect) {
-      sessionStorage.removeItem('pw_auth_redirect'); // one-time use
-      return savedRedirect;
-    }
-
-    return '/dashboard';
-  };
+  // Compute the best redirect destination. See resolvePostAuthDestination for the
+  // full priority order. `isNewUser` is true only when this auth completed a
+  // sign-up — a brand-new account has no plan yet, so it lands on /pricing to
+  // pick a tier; a returning user goes to their portfolio (/dashboard).
+  const getRedirectDestination = (isNewUser = false): string =>
+    resolvePostAuthDestination({ isNewUser, urlRedirectTo });
 
   // Clear any stale auth errors from previous pages
   useEffect(() => {
@@ -178,7 +156,7 @@ function LoginPageInner() {
     try {
       await authRegister(data.email, data.password, data.fullName, urlAccountType);
       navigatingRef.current = true;
-      const dest = getRedirectDestination();
+      const dest = getRedirectDestination(true); // new account → pick a tier on /pricing
       window.location.replace(dest);
     } catch { /* error set via AuthContext */ }
     finally { setIsSubmitting(false); }
@@ -227,7 +205,8 @@ function LoginPageInner() {
       if (provider === 'google') await loginWithGoogle();
       else await loginWithFacebook();
       navigatingRef.current = true;
-      const dest = getRedirectDestination();
+      // Social sign-up (user was on the "create account" tab) → treat as new user.
+      const dest = getRedirectDestination(isSignUp);
       window.location.replace(dest);
     } catch (err) {
       const msg = (err instanceof Error ? err.message : null) || authError || 'Sign-in failed. Please try again.';

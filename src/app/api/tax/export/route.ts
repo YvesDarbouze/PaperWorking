@@ -5,6 +5,7 @@ import { computeScheduleE, ScheduleEPreview } from '@/lib/tax/scheduleE';
 import { computeProjectProfitAndLoss, ProjectProfitAndLoss } from '@/lib/tax/profitAndLoss';
 import { aggregatePortfolioProfitAndLoss, aggregateScheduleE } from '@/lib/tax/portfolioSummary';
 import { generateScheduleEPdf, generateProfitAndLossPdf } from '@/lib/tax/pdfGenerator';
+import { getLogoBase64 } from '@/lib/tax/logo.server';
 import { parseDateSafe } from '@/lib/utils/taxService';
 import JSZip from 'jszip';
 import { Project, LedgerItem } from '@/types/schema';
@@ -140,9 +141,10 @@ export async function POST(request: NextRequest) {
     );
     const aggregatedPL = aggregatePortfolioProfitAndLoss(plReports, taxYear);
 
-    // 7. Generate PDFs
-    const schedEPdfBytes = generateScheduleEPdf(schedEPreviews, aggregatedSchedE, taxYear);
-    const plPdfBytes = generateProfitAndLossPdf(plReports, aggregatedPL, taxYear);
+    // 7. Generate PDFs (server-side → include the disk-read logo in the header)
+    const logoBase64 = getLogoBase64();
+    const schedEPdfBytes = generateScheduleEPdf(schedEPreviews, aggregatedSchedE, taxYear, logoBase64);
+    const plPdfBytes = generateProfitAndLossPdf(plReports, aggregatedPL, taxYear, logoBase64);
 
     // 8. Generate CSV
     let csvContent = 'Project Name,Date,Category,Description,Amount,Status,Receipt URL,Tax Category\n';

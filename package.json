@@ -27,7 +27,6 @@
     "@stripe/stripe-js": "^7.9.0",
     "@tanstack/react-query": "^5.101.0",
     "@types/jszip": "^3.4.0",
-    "@vercel/mcp-adapter": "^0.3.2",
     "ai": "^5.0.0",
     "axios": "^1.16.1",
     "chart.js": "^4.5.1",

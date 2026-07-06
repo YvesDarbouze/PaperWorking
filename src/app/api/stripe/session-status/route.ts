@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { requireAuth, isAuthError } from '@/lib/firebase-admin/auth-guard';
+import { isMockSessionId, getMockSessionStatus, shouldUseMockCheckout } from '@/lib/stripe/mockCheckout';
 import Stripe from 'stripe';
 
 export const dynamic = 'force-dynamic';
@@ -26,9 +27,6 @@ function getStripe() {
  *   { status, plan, customerEmail, subscriptionId, subscriptionStatus }
  */
 export async function GET(request: NextRequest) {
-  const auth = await requireAuth(request);
-  if (isAuthError(auth)) return auth;
-
   const url = new URL(request.url);
   const sessionId = url.searchParams.get('session_id');
 
@@ -38,6 +36,25 @@ export async function GET(request: NextRequest) {
       { status: 400 }
     );
   }
+
+  // ── Mock Fallback ────────────────────────────────────
+  // Mock ids are self-describing and only exist when Stripe is unconfigured
+  // (local dev). They carry no real user/subscription data, so no auth guard
+  // is needed — and the guest-checkout success flow has no token to present.
+  //
+  // Gate on shouldUseMockCheckout(): the prefix alone must NOT skip auth. When
+  // Stripe is live, a forged `cs_mock_` id falls through to the authenticated
+  // Stripe branch (and is rejected) instead of returning a fake "complete".
+  if (shouldUseMockCheckout() && isMockSessionId(sessionId)) {
+    const status = getMockSessionStatus(sessionId);
+    if (!status) {
+      return NextResponse.json({ error: 'Invalid or expired session' }, { status: 404 });
+    }
+    return NextResponse.json(status);
+  }
+
+  const auth = await requireAuth(request);
+  if (isAuthError(auth)) return auth;
 
   try {
     const stripe = getStripe();

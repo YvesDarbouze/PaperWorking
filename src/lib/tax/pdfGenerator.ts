@@ -14,18 +14,12 @@ const COLOR = {
   accentRed: [220, 38, 38] as [number, number, number],
 };
 
-function getLogoBase64(): string {
-  try {
-    const fs = require('fs');
-    const path = require('path');
-    const logoPath = path.join(process.cwd(), 'public/brand/PaperWorking_White_full_Logo_.png');
-    const logoBuffer = fs.readFileSync(logoPath);
-    return `data:image/png;base64,${logoBuffer.toString('base64')}`;
-  } catch (err) {
-    console.error('Failed to load logo for PDF:', err);
-    return '';
-  }
-}
+// NOTE: This module is imported by BOTH a server route and a client component
+// (phase-4 generates the PDF in the browser). It must therefore stay free of
+// Node built-ins (`fs`/`path`) — pulling them into the client bundle breaks the
+// production build ("Can't resolve 'fs'"). The header logo is read from disk
+// server-side and passed in via the `logoBase64` argument; the browser simply
+// omits it and falls back to the text header. See getLogoBase64 in logo.server.ts.
 
 const DISCLAIMER = "DISCLAIMER: This is not tax advice. Review with a licensed tax professional before filing. PaperWorking does not file taxes on your behalf.";
 
@@ -86,7 +80,8 @@ function initNewPage(ctx: PageContext, title: string, subtitle: string) {
 export function generateScheduleEPdf(
   previews: ScheduleEPreview[],
   aggregated: Omit<ScheduleEPreview, 'projectId' | 'propertyName' | 'physicalAddress' | 'propertyType'>,
-  taxYear: number
+  taxYear: number,
+  logoBase64: string = ''
 ): Uint8Array {
   // Standard A4: 210mm x 297mm
   const doc = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
@@ -105,7 +100,6 @@ export function generateScheduleEPdf(
   doc.setFillColor(...COLOR.black);
   doc.rect(0, 0, 210, 28, 'F');
 
-  const logoBase64 = getLogoBase64();
   if (logoBase64) {
     doc.addImage(logoBase64, 'PNG', margin, 7, 24.3, 4);
   } else {
@@ -257,7 +251,8 @@ export function generateScheduleEPdf(
 export function generateProfitAndLossPdf(
   plReports: ProjectProfitAndLoss[],
   aggregated: PortfolioTaxSummary | null,
-  taxYear: number
+  taxYear: number,
+  logoBase64: string = ''
 ): Uint8Array {
   const doc = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
   const margin = 15;
@@ -275,7 +270,6 @@ export function generateProfitAndLossPdf(
   doc.setFillColor(...COLOR.black);
   doc.rect(0, 0, 210, 28, 'F');
 
-  const logoBase64 = getLogoBase64();
   if (logoBase64) {
     doc.addImage(logoBase64, 'PNG', margin, 7, 24.3, 4);
   } else {

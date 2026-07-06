@@ -3,7 +3,15 @@ import { withSentryConfig } from "@sentry/nextjs";
 
 const nextConfig: NextConfig = {
   output: 'standalone',
-  serverExternalPackages: ['firebase-admin'],
+  // Server-only packages that must NOT be bundled by Turbopack. The MCP packages
+  // ship strict ESM `exports` maps that break dependency tracing under
+  // `output: 'standalone'` (Firebase App Hosting) — externalizing them lets Node
+  // resolve them natively at runtime, exactly as we do for firebase-admin.
+  serverExternalPackages: [
+    'firebase-admin',
+    'mcp-handler',
+    '@modelcontextprotocol/sdk',
+  ],
   typescript: {
     ignoreBuildErrors: true,
   },

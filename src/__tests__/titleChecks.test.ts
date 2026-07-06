@@ -235,7 +235,7 @@ describe('Prompt 53 — Title Search Checklist Persistence', () => {
       expect(route).not.toContain('body.idToken');
     });
 
-    it.skip('writes titleChecks to Firestore via adminDb', () => {
+    it('writes titleChecks to Firestore via adminDb', () => {
       expect(route).toContain('adminDb');
       expect(route).toContain('titleChecks');
     });

@@ -8,6 +8,7 @@ import {
   PLAN_CATALOG,
   type BillingInterval,
 } from '@/lib/stripe/plans';
+import { shouldUseMockCheckout, createMockCheckoutSession } from '@/lib/stripe/mockCheckout';
 
 export const dynamic = 'force-dynamic';
 
@@ -29,7 +30,6 @@ function getStripe() {
  */
 export async function POST(request: Request) {
   try {
-    const stripe = getStripe();
     const { plan, billingInterval = 'monthly', userEmail, idToken } = await request.json();
 
     if (!plan) {
@@ -47,6 +47,20 @@ export async function POST(request: Request) {
       );
     }
 
+    const interval: BillingInterval = billingInterval === 'annual' ? 'annual' : 'monthly';
+    const appUrl = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000';
+
+    // ── Mock Fallback (no Stripe credentials) ────────────
+    // Keeps the app runnable without a real Stripe key: simulate a completed
+    // Checkout Session and route to the success page, which resolves the mock
+    // session id via /api/stripe/session-status. See mockCheckout.ts.
+    if (shouldUseMockCheckout()) {
+      const { id } = createMockCheckoutSession({ planId, interval, email: userEmail });
+      return NextResponse.json({ url: `${appUrl}/checkout/success?session_id=${id}` });
+    }
+
+    const stripe = getStripe();
+
     // ── Auth Verification & Identity Derivation ──
     let verifiedUserId: string | undefined = undefined;
     if (idToken) {
@@ -59,7 +73,6 @@ export async function POST(request: Request) {
     }
 
     // ── Price ID Resolution ──────────────────────────────
-    const interval: BillingInterval = billingInterval === 'annual' ? 'annual' : 'monthly';
     const priceId = resolveStripePriceId(planId, interval);
 
     if (!priceId) {
@@ -74,7 +87,6 @@ export async function POST(request: Request) {
     // ── Session Creation ─────────────────────────────────
     const canonicalPlan = getCanonicalPlanName(planId);
     const trialDays = PLAN_CATALOG[planId].trialDays;
-    const appUrl = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000';
 
     const session = await stripe.checkout.sessions.create({
       line_items: [{ price: priceId, quantity: 1 }],
@@ -93,8 +105,13 @@ export async function POST(request: Request) {
       automatic_tax: { enabled: true },
       tax_id_collection: { enabled: true },
 
-      // Cast to any: the dahlia API version exposes payment_settings and
-      // trial_settings fields that the current @types/stripe hasn't caught up to.
+      // Cast to any: `trial_settings` isn't in the pinned @types/stripe yet.
+      // NOTE: do NOT add `payment_settings` here — it is a Subscriptions API
+      // field, not a valid `subscription_data` param, and Stripe rejects it
+      // ("Received unknown parameter: subscription_data[payment_settings]"),
+      // failing the whole request. In Checkout `mode: 'subscription'` the card
+      // collected is already saved as the subscription's default payment method
+      // and auto-charged when the trial converts on day 15.
       subscription_data: {
         // 14-day free trial — card collected but not charged until day 15.
         trial_period_days: trialDays > 0 ? trialDays : undefined,
@@ -105,12 +122,6 @@ export async function POST(request: Request) {
             end_behavior: { missing_payment_method: 'cancel' },
           },
         }),
-
-        // Save the collected card as the default payment method so Stripe
-        // can charge it automatically when the trial converts on day 15.
-        payment_settings: {
-          save_default_payment_method: 'on_subscription',
-        },
 
         metadata: {
           userId: verifiedUserId || 'guest',
@@ -129,9 +140,29 @@ export async function POST(request: Request) {
 
     return NextResponse.json({ url: session.url });
   } catch (error: any) {
-    console.error('[Stripe Checkout]', error);
+    // Stripe SDK errors carry structured, NON-secret identifiers (type/code/param).
+    // Log them fully so the cause is visible in server logs (App Hosting) even in prod.
+    const isStripeError = typeof error?.type === 'string' && error.type.startsWith('Stripe');
+    console.error('[Stripe Checkout] Session creation failed', {
+      name: error?.name,
+      type: error?.type,
+      code: error?.code,
+      param: error?.param,
+      statusCode: error?.statusCode,
+      message: error?.message,
+    });
+
+    // Return the actionable reason to the caller. A Stripe config error
+    // (e.g. automatic_tax not set up, or a live/test price-vs-key mismatch)
+    // is safe to surface — it contains no secret keys. Unexpected errors are
+    // only detailed outside production.
+    const showDetail = isStripeError || process.env.NODE_ENV !== 'production';
     return NextResponse.json(
-      { error: 'An error occurred while creating the checkout session. Please try again.' },
+      {
+        error: 'An error occurred while creating the checkout session. Please try again.',
+        ...(showDetail && error?.message ? { detail: error.message } : {}),
+        ...(isStripeError ? { type: error.type, code: error.code ?? null, param: error.param ?? null } : {}),
+      },
       { status: 500 }
     );
   }

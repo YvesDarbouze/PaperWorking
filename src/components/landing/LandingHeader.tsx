@@ -2,10 +2,12 @@
 
 import { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
+import { useRouter, usePathname } from 'next/navigation';
 import { AnimatePresence, motion } from 'framer-motion';
 import Logo from '@/components/brand/Logo';
 import { useTheme } from '@/lib/utils/ThemeProvider';
 import { useAuth } from '@/context/AuthContext';
+import { usePaywall } from '@/hooks/usePaywall';
 
 /* ═══════════════════════════════════════════════════════
    LandingHeader — Antigravity-style sticky nav.
@@ -35,6 +37,10 @@ export default function LandingHeader() {
   const [mounted, setMounted] = useState(false);
   const isDark = theme === 'dark';
   const { user, logout } = useAuth();
+  const { isPaid } = usePaywall();
+  const router = useRouter();
+  const pathname = usePathname();
+  const onPricingPage = pathname === '/pricing';
 
   useEffect(() => {
     setMounted(true);
@@ -177,7 +183,7 @@ export default function LandingHeader() {
             {user ? (
               <>
                 <button
-                  onClick={() => logout()}
+                  onClick={() => { logout(); router.push('/'); }}
                   className="hidden md:inline-flex text-[13.5px] font-medium transition-opacity duration-150"
                   style={{ color: 'var(--color-on-surface)', opacity: 0.7, textDecoration: 'none', background: 'none', border: 'none', cursor: 'pointer' }}
                   onMouseEnter={e => (e.currentTarget.style.opacity = '1')}
@@ -185,8 +191,9 @@ export default function LandingHeader() {
                 >
                   Sign Out
                 </button>
+                {!(onPricingPage && !isPaid) && (
                 <Link
-                  href="/dashboard"
+                  href={isPaid ? '/dashboard' : '/pricing'}
                   className="hidden md:inline-flex items-center gap-1.5 text-[13px] font-semibold transition-all duration-150 active:scale-[0.98] whitespace-nowrap"
                   style={{
                     background: 'var(--color-on-surface)',
@@ -199,11 +206,12 @@ export default function LandingHeader() {
                   onMouseEnter={e => (e.currentTarget.style.opacity = '0.88')}
                   onMouseLeave={e => (e.currentTarget.style.opacity = '1')}
                 >
-                  Dashboard
+                  {isPaid ? 'Dashboard' : 'Start 14 Day Trial'}
                   <span className="material-symbols-outlined text-[14px]" style={{ fontVariationSettings: "'FILL' 0, 'wght' 400" }}>
                     arrow_forward
                   </span>
                 </Link>
+                )}
               </>
             ) : (
               <>
@@ -406,21 +414,23 @@ export default function LandingHeader() {
               >
                 {user ? (
                   <>
-                    <Link
-                      href="/dashboard"
-                      onClick={() => setMobileOpen(false)}
-                      className="flex items-center justify-center gap-1.5 px-4 py-3 rounded-xl text-[14px] font-semibold transition-opacity duration-150 active:scale-[0.98]"
-                      style={{
-                        background: 'var(--color-on-surface)',
-                        color: 'var(--color-surface)',
-                        textDecoration: 'none',
-                        borderRadius: '9999px',
-                      }}
-                    >
-                      Dashboard
-                    </Link>
+                    {!(onPricingPage && !isPaid) && (
+                      <Link
+                        href={isPaid ? '/dashboard' : '/pricing'}
+                        onClick={() => setMobileOpen(false)}
+                        className="flex items-center justify-center gap-1.5 px-4 py-3 rounded-xl text-[14px] font-semibold transition-opacity duration-150 active:scale-[0.98]"
+                        style={{
+                          background: 'var(--color-on-surface)',
+                          color: 'var(--color-surface)',
+                          textDecoration: 'none',
+                          borderRadius: '9999px',
+                        }}
+                      >
+                        {isPaid ? 'Dashboard' : 'Start 14 Day Trial'}
+                      </Link>
+                    )}
                     <button
-                      onClick={() => { logout(); setMobileOpen(false); }}
+                      onClick={() => { logout(); setMobileOpen(false); router.push('/'); }}
                       className="w-full flex items-center justify-center px-4 py-3 rounded-xl text-[14px] font-medium transition-colors duration-150"
                       style={{
                         color: 'var(--color-on-surface)',

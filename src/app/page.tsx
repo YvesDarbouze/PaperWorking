@@ -76,15 +76,9 @@ function SuccessModal() {
 }
 
 export default function LandingPage() {
-  const { user, loading } = useAuth();
+  const { user } = useAuth();
   const router = useRouter();
   const [isProcessing, setIsProcessing] = useState<string | null>(null);
-
-  useEffect(() => {
-    if (!loading && user) {
-      router.replace('/dashboard');
-    }
-  }, [user, loading, router]);
 
   const handleSelectPlan = useCallback(async (planIdentifier: string) => {
     setIsProcessing(planIdentifier);

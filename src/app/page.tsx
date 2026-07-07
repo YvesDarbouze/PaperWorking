@@ -13,6 +13,7 @@ import PricingSection from '@/components/landing/PricingSection';
 import { useAuth } from '@/context/AuthContext';
 import toast from 'react-hot-toast';
 import { CustomToaster } from '@/components/ui/CustomToaster';
+import { buildSignupForPricingLoginUrl } from '@/lib/auth/postAuthRedirect';
 import { useSearchParams } from 'next/navigation';
 
 /* ═══════════════════════════════════════════════════════
@@ -103,7 +104,7 @@ export default function LandingPage() {
     // from the checkout email.
     if (!user) {
       sessionStorage.setItem('pw_pending_plan', JSON.stringify({ plan, interval, identifier: planIdentifier }));
-      router.push(`/login?redirectTo=${encodeURIComponent('/pricing')}`);
+      router.push(buildSignupForPricingLoginUrl());
       return;
     }
 

@@ -5,6 +5,7 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import { Building2, Wrench, CheckCircle2, ArrowRight } from 'lucide-react';
 import type { AccountType } from '@/types/user';
+import { buildSignupForPricingLoginUrl } from '@/lib/auth/postAuthRedirect';
 
 /* ═══════════════════════════════════════════════════════
    Account Type Selection — Stitch Schema: ccb42a8a (Black)
@@ -59,7 +60,7 @@ function RegisterPageInner() {
     }
     const loginUrl = invite
       ? `/login?accountType=${selectedType}&mode=signup&redirectTo=${encodeURIComponent('/invest/' + invite)}`
-      : `/login?accountType=${selectedType}&mode=signup`;
+      : buildSignupForPricingLoginUrl({ accountType: selectedType });
     router.push(loginUrl);
   };
 

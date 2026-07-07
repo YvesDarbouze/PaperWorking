@@ -8,7 +8,7 @@ import { PaywallRedirectGuard } from "@/components/dashboard/PaywallRedirectGuar
 import SupportWidget from "@/components/support/SupportWidget";
 import { cookies, headers } from "next/headers";
 import { redirect } from "next/navigation";
-import { adminAuth, adminDb } from "@/lib/firebase/admin";
+import { adminAuth } from "@/lib/firebase/admin";
 
 export default async function DashboardLayout({
   children,
@@ -48,19 +48,12 @@ export default async function DashboardLayout({
       } catch {
         decoded = await adminAuth.verifyIdToken(sessionCookie);
       }
-      if (decoded?.uid) {
-        const userDoc = await adminDb.collection("users").doc(decoded.uid).get();
-        const userData = userDoc.data();
-        const status = userData?.subscriptionStatus;
-        const isPaid = status === "active" || status === "trialing" || status === "past_due";
-        const isGuest = userData?.inviteToken && userData?.invitedToProjectId;
-
-        if (!isPaid && !isGuest) {
-          redirect("/pricing");
-        }
-      } else {
+      if (!decoded?.uid) {
         redirect("/login");
       }
+      // Subscription gating is handled client-side (PaywallRedirectGuard,
+      // feature-level gates, upgrade banners). Sign-in users must reach the
+      // portfolio without being bounced to /pricing by the server layout.
     } catch (err) {
       // redirect() above throws NEXT_REDIRECT — never swallow it into /login,
       // or the real /pricing redirect is lost.

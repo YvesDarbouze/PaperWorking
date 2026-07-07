@@ -65,7 +65,9 @@ describe('PricingPage — login-required checkout', () => {
       fireEvent.click(getByTestId('select-investor-monthly'));
     });
 
-    expect(mockPush).toHaveBeenCalledWith(`/login?redirectTo=${encodeURIComponent('/pricing')}`);
+    expect(mockPush).toHaveBeenCalledWith(
+      '/login?mode=signup&redirectTo=%2Fpricing',
+    );
     expect(global.fetch).not.toHaveBeenCalled();
 
     const stashed = JSON.parse(sessionStorage.getItem('pw_pending_plan')!);

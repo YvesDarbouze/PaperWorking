@@ -212,10 +212,13 @@ function LoginPageInner() {
       window.localStorage.setItem('pw_pending_account_type', urlAccountType);
     }
     try {
-      if (provider === 'google') await loginWithGoogle();
-      else await loginWithFacebook();
-      // Social sign-up (user was on the "create account" tab) → treat as new user.
-      await redirectAfterAuth(isSignUp, urlRedirectTo);
+      if (provider === 'google') {
+        const isNewUser = await loginWithGoogle();
+        await redirectAfterAuth(isNewUser, urlRedirectTo);
+      } else {
+        const isNewUser = await loginWithFacebook();
+        await redirectAfterAuth(isNewUser, urlRedirectTo);
+      }
     } catch (err) {
       const msg = (err instanceof Error ? err.message : null) || authError || 'Sign-in failed. Please try again.';
       toast.error(msg, { id: 'social-login-error', duration: 6000 });
@@ -621,7 +624,7 @@ function LoginPageInner() {
         {/* ── Sign-up footer ── */}
         <p className="mt-8 text-xs text-pw-muted font-body-sm text-center">
           New to PaperWorking?{' '}
-          <Link href="/#pricing" className="text-white font-semibold hover:text-pw-primary transition-colors">
+          <Link href="/pricing" className="text-white font-semibold hover:text-pw-primary transition-colors">
             Start your 14-day trial
           </Link>
         </p>

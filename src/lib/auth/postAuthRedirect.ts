@@ -24,6 +24,18 @@ export const DASHBOARD_ROUTE = '/dashboard';
 /** Tier-selection page a new user must visit before entering the app. */
 export const PRICING_ROUTE = '/pricing';
 
+/** Login URL for the sign-up → pricing → checkout funnel. */
+export function buildSignupForPricingLoginUrl(options?: {
+  accountType?: string;
+  redirectTo?: string;
+}): string {
+  const params = new URLSearchParams();
+  params.set('mode', 'signup');
+  params.set('redirectTo', options?.redirectTo ?? PRICING_ROUTE);
+  if (options?.accountType) params.set('accountType', options.accountType);
+  return `/login?${params.toString()}`;
+}
+
 export interface PostAuthOptions {
   /** True when this auth completed a sign-up (new account), not a sign-in. */
   isNewUser?: boolean;
@@ -56,7 +68,8 @@ export function resolvePostAuthDestination({
   }
 
   // 1. Pending checkout intent → resume Stripe checkout on /pricing.
-  if (!hasActiveSubscription && sessionStorage.getItem('pw_pending_plan')) {
+  //    Only for brand-new sign-ups — returning sign-ins must land on the portfolio.
+  if (isNewUser && !hasActiveSubscription && sessionStorage.getItem('pw_pending_plan')) {
     sessionStorage.removeItem('pw_auth_redirect'); // clean up
     return PRICING_ROUTE;
   }

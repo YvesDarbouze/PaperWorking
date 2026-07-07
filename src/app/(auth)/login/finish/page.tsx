@@ -27,7 +27,7 @@ function MagicLinkFinishInner() {
     setStatus('verifying');
     clearError();
     try {
-      await verifyMagicLink(email, window.location.href);
+      const isNewUser = await verifyMagicLink(email, window.location.href);
       setStatus('success');
       // Honour any checkout intent stored before the magic link was sent.
       // Read subscription status directly from Firestore via auth.currentUser
@@ -42,7 +42,7 @@ function MagicLinkFinishInner() {
           hasActiveSubscription = status === 'active' || status === 'trialing';
         } catch { /* best effort — treat as unsubscribed */ }
       }
-      const dest = resolvePostAuthDestination({ hasActiveSubscription });
+      const dest = resolvePostAuthDestination({ isNewUser, hasActiveSubscription });
       router.push(dest);
     } catch { setStatus('error'); }
   };

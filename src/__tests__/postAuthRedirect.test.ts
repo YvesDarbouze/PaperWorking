@@ -1,6 +1,7 @@
 /** @jest-environment jsdom */
 import {
   resolvePostAuthDestination,
+  buildSignupForPricingLoginUrl,
   DASHBOARD_ROUTE,
   PRICING_ROUTE,
 } from '../lib/auth/postAuthRedirect';
@@ -38,11 +39,12 @@ describe('resolvePostAuthDestination', () => {
     expect(resolvePostAuthDestination({ isNewUser: false })).toBe('/dashboard/inbox');
   });
 
-  it('lets a pending plan win over a saved OAuth redirect and clears the redirect', () => {
+  it('sends a returning user with a stale pending plan to /dashboard, not back to checkout', () => {
     sessionStorage.setItem('pw_pending_plan', JSON.stringify({ plan: 'Pro' }));
     sessionStorage.setItem('pw_auth_redirect', '/dashboard/inbox');
-    expect(resolvePostAuthDestination({ isNewUser: false })).toBe(PRICING_ROUTE);
+    expect(resolvePostAuthDestination({ isNewUser: false })).toBe('/dashboard/inbox');
     expect(sessionStorage.getItem('pw_auth_redirect')).toBeNull();
+    expect(sessionStorage.getItem('pw_pending_plan')).toBe(JSON.stringify({ plan: 'Pro' }));
   });
 
   it('sends an already-subscribed user to the dashboard and discards a stale pending plan', () => {
@@ -56,5 +58,17 @@ describe('resolvePostAuthDestination', () => {
     expect(
       resolvePostAuthDestination({ hasActiveSubscription: true, urlRedirectTo: '/dashboard/projects' }),
     ).toBe('/dashboard/projects');
+  });
+});
+
+describe('buildSignupForPricingLoginUrl', () => {
+  it('builds the sign-up login URL with pricing redirect', () => {
+    expect(buildSignupForPricingLoginUrl()).toBe('/login?mode=signup&redirectTo=%2Fpricing');
+  });
+
+  it('includes account type when provided', () => {
+    expect(buildSignupForPricingLoginUrl({ accountType: 'investor' })).toBe(
+      '/login?mode=signup&redirectTo=%2Fpricing&accountType=investor',
+    );
   });
 });

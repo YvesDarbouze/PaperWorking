@@ -54,10 +54,10 @@ interface AuthContextType {
   error: string | null;
   login: (email: string, password: string) => Promise<void>;
   register: (email: string, password: string, displayName: string, accountType?: AccountType) => Promise<void>;
-  loginWithGoogle: () => Promise<void>;
-  loginWithFacebook: () => Promise<void>;
+  loginWithGoogle: () => Promise<boolean>;
+  loginWithFacebook: () => Promise<boolean>;
   sendMagicLink: (email: string) => Promise<void>;
-  verifyMagicLink: (email: string, url: string) => Promise<void>;
+  verifyMagicLink: (email: string, url: string) => Promise<boolean>;
   logout: () => Promise<void>;
   resetPassword: (email: string) => Promise<void>;
   clearError: () => void;
@@ -84,7 +84,7 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
  * signed in with Firebase Auth, so we let them proceed to the dashboard
  * and the profile will be created on the next attempt or via server-side logic.
  */
-async function provisionSocialUser(user: User) {
+async function provisionSocialUser(user: User): Promise<boolean> {
   try {
     const userDocRef = doc(db, 'users', user.uid);
     const userDocSnap = await getDoc(userDocRef);
@@ -150,11 +150,16 @@ async function provisionSocialUser(user: User) {
       if (user.email) {
         await reconcilePendingSubscription(user.uid, user.email);
       }
+
+      return true;
     }
+
+    return false;
   } catch (err) {
     // Non-fatal: user is already authenticated with Firebase Auth.
     // Profile doc can be created later via onSnapshot or server-side.
     logger.error('[provisionSocialUser] Firestore write failed (non-fatal)', err);
+    return false;
   }
 }
 
@@ -632,7 +637,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
   };
 
-  const loginWithGoogle = async () => {
+  const loginWithGoogle = async (): Promise<boolean> => {
     setError(null);
     useProjectStore.getState().clearStore();
     usePropertyStore.getState().clearStore();
@@ -643,9 +648,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       provider.addScope('email');
       provider.addScope('profile');
       const result = await signInWithPopup(auth, provider);
-      await provisionSocialUser(result.user);
+      const isNewUser = await provisionSocialUser(result.user);
       await syncSessionCookie(result.user);
       setSessionReady(true);
+      return isNewUser;
     } catch (err: any) {
       if (err.code === 'auth/multi-factor-auth-required') {
         setMfaResolver(getMultiFactorResolver(auth, err));
@@ -661,7 +667,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
   };
 
-  const loginWithFacebook = async () => {
+  const loginWithFacebook = async (): Promise<boolean> => {
     setError(null);
     useProjectStore.getState().clearStore();
     usePropertyStore.getState().clearStore();
@@ -672,9 +678,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       provider.addScope('email');
       provider.addScope('public_profile');
       const result = await signInWithPopup(auth, provider);
-      await provisionSocialUser(result.user);
+      const isNewUser = await provisionSocialUser(result.user);
       await syncSessionCookie(result.user);
       setSessionReady(true);
+      return isNewUser;
     } catch (err: any) {
       if (err.code === 'auth/multi-factor-auth-required') {
         setMfaResolver(getMultiFactorResolver(auth, err));
@@ -705,7 +712,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
   };
 
-  const verifyMagicLink = async (email: string, url: string) => {
+  const verifyMagicLink = async (email: string, url: string): Promise<boolean> => {
     setError(null);
     useProjectStore.getState().clearStore();
     usePropertyStore.getState().clearStore();
@@ -714,10 +721,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     try {
       if (isSignInWithEmailLink(auth, url)) {
         const { user: magicUser } = await signInWithEmailLink(auth, email, url);
-        await provisionSocialUser(magicUser);
+        const isNewUser = await provisionSocialUser(magicUser);
         await syncSessionCookie(magicUser);
         setSessionReady(true);
         window.localStorage.removeItem('emailForSignIn');
+        return isNewUser;
       } else {
         throw new Error('Invalid magic link.');
       }

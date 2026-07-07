@@ -9,6 +9,7 @@ import { useBilling } from '@/hooks/useBilling';
 import { useRouter } from 'next/navigation';
 import toast from 'react-hot-toast';
 import { CustomToaster } from '@/components/ui/CustomToaster';
+import { buildSignupForPricingLoginUrl } from '@/lib/auth/postAuthRedirect';
 
 /**
  * /pricing — Standalone pricing page.
@@ -59,7 +60,7 @@ export default function PricingPage() {
     if (!user) {
       sessionStorage.setItem('pw_pending_plan', JSON.stringify({ plan, interval, identifier: planIdentifier }));
       setIsProcessing(null);
-      router.push(`/login?redirectTo=${encodeURIComponent('/pricing')}`);
+      router.push(buildSignupForPricingLoginUrl());
       return;
     }
 

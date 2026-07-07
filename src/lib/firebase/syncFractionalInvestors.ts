@@ -1,0 +1,93 @@
+import { adminDb } from '@/lib/firebase/admin';
+import type { FractionalInvestor } from '@/types/schema';
+
+/* ═══════════════════════════════════════════════════════════════
+   syncFractionalInvestors — Commitment → fractionalInvestors[] bridge
+
+   The commitments subcollection is the source of truth for capital
+   raises. Legacy equity/distribution calculators still read
+   project.fractionalInvestors[], so API routes call these helpers
+   after every commitment write to keep both views aligned.
+   ═══════════════════════════════════════════════════════════════ */
+
+export type CommitmentSyncInput = {
+  id: string;
+  name: string;
+  email: string | null;
+  amountCents: number;
+  status: 'pledged' | 'transferred' | 'cleared';
+};
+
+type LegacyInvestorStatus = FractionalInvestor['status'];
+
+const STATUS_MAP: Record<CommitmentSyncInput['status'], LegacyInvestorStatus> = {
+  pledged: 'invited',
+  transferred: 'pending_subscription',
+  cleared: 'confirmed',
+};
+
+function computeEquityPercentage(
+  contributionAmount: number,
+  fin: Record<string, number | undefined>,
+): number {
+  const equityBase =
+    fin.capitalRaiseTarget || fin.purchasePrice || fin.projectedRehabCost || 0;
+  if (equityBase <= 0) return 0;
+  return Number(((contributionAmount / equityBase) * 100).toFixed(4));
+}
+
+function buildInvestorEntry(
+  commitment: CommitmentSyncInput,
+  fin: Record<string, number | undefined>,
+): FractionalInvestor {
+  const contributionAmount = commitment.amountCents / 100;
+
+  return {
+    id: commitment.id,
+    email: commitment.email || '',
+    name: commitment.name,
+    equityPercentage: computeEquityPercentage(contributionAmount, fin),
+    contributionAmount,
+    status: STATUS_MAP[commitment.status],
+  };
+}
+
+export async function syncFractionalInvestorFromCommitment(
+  projectId: string,
+  commitment: CommitmentSyncInput,
+): Promise<void> {
+  const projectRef = adminDb.collection('projects').doc(projectId);
+  const snap = await projectRef.get();
+  if (!snap.exists) return;
+
+  const data = snap.data()!;
+  const fin = (data.financials ?? {}) as Record<string, number | undefined>;
+  const investor = buildInvestorEntry(commitment, fin);
+
+  const list: FractionalInvestor[] = [...(data.fractionalInvestors ?? [])];
+  const idx = list.findIndex((entry) => entry.id === commitment.id);
+
+  if (idx >= 0) {
+    list[idx] = { ...list[idx], ...investor };
+  } else {
+    list.push(investor);
+  }
+
+  await projectRef.update({ fractionalInvestors: list });
+}
+
+export async function removeFractionalInvestorForCommitment(
+  projectId: string,
+  commitmentId: string,
+): Promise<void> {
+  const projectRef = adminDb.collection('projects').doc(projectId);
+  const snap = await projectRef.get();
+  if (!snap.exists) return;
+
+  const data = snap.data()!;
+  const list: FractionalInvestor[] = (data.fractionalInvestors ?? []).filter(
+    (entry: FractionalInvestor) => entry.id !== commitmentId,
+  );
+
+  await projectRef.update({ fractionalInvestors: list });
+}

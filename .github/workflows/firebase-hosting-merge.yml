@@ -27,7 +27,7 @@ jobs:
           npx -y firebase-tools@latest --version
           npx -y firebase-tools@latest use
           npx -y firebase-tools@latest projects:list
-          echo "Configured storage bucket: paperworking-97055.firebasestorage.app"
+          echo "Configured storage bucket: paperworking-97055.firebasestorage.app (array format in firebase.json)"
 
       - name: Deploy Firebase Rules
         env:

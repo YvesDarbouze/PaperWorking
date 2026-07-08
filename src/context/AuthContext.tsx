@@ -655,6 +655,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     } catch (err: any) {
       if (err.code === 'auth/multi-factor-auth-required') {
         setMfaResolver(getMultiFactorResolver(auth, err));
+        return false;
       } else {
         setError(getAuthErrorMessage(err.code));
         setSessionReady(false);
@@ -685,6 +686,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     } catch (err: any) {
       if (err.code === 'auth/multi-factor-auth-required') {
         setMfaResolver(getMultiFactorResolver(auth, err));
+        return false;
       } else {
         setError(getAuthErrorMessage(err.code));
         setSessionReady(false);

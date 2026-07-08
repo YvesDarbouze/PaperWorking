@@ -28,6 +28,7 @@
     }
   },
   "storage": {
+    "bucket": "paperworking-97055.firebasestorage.app",
     "rules": "storage.rules"
   }
 }

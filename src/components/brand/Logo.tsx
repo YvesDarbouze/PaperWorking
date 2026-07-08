@@ -1,34 +1,24 @@
 'use client';
 
 import React from 'react';
-import Image from 'next/image';
 import Link from 'next/link';
 import { useTheme, useSurface } from '@/lib/utils/ThemeProvider';
+import { PaperWorkingIcon } from '@/components/brand/icons/PaperWorkingIcon';
+import { PaperWorkingLogotype } from '@/components/brand/icons/PaperWorkingLogotype';
 
 /* ═══════════════════════════════════════════════════════
-   PaperWorking — Brand Logo Component (v5 audited)
-   
-   Renders canonical PNG brand assets with surface-aware
-   theme, variant, and breakpoint resolution.
+   PaperWorking — Brand Logo Component (v6, vector)
 
-   Source resolution caveat
-   ────────────────────────
-   Full lockup sources are 225×37 px. Icon sources are
-   25×23 px. On Retina / HiDPI (every Mac, every modern
-   phone), an h-8 nav logo needs ~64 px-tall source to
-   render pixel-perfect. The current 37 px lockup will
-   appear slightly soft on HiDPI at sizes above ~18 px.
-   When higher-res exports (2×–4× from vector source)
-   become available, drop them in /public/brand/ under
-   the same filenames and the pipeline handles the rest.
-   `unoptimized` is set deliberately because upscaling
-   tiny PNGs through next/image optimization is
-   counter-productive.
+   Renders the canonical inline SVG icon/logotype with
+   surface-aware theme, variant, and breakpoint resolution.
+   Color is driven by CSS `color` (fill="currentColor" on
+   the source SVGs) — no more separate black/white asset
+   files, and no upscale-blur ceiling since these are vector.
 
-   Surface presets (v5 audit fixes)
+   Surface presets (unchanged from v5 audit)
    ────────────────────────────────
-   - marketing-nav:    auto theme (was hardcoded 'light' — Bug #1)
-   - marketing-footer: auto theme (was hardcoded 'dark' — Bug #2)
+   - marketing-nav:    auto theme
+   - marketing-footer: auto theme
    - app-sidebar:      auto theme
    - app-topbar:       auto theme
    - auth:             explicit 'dark' (bg is always #0d0a0b)
@@ -36,23 +26,22 @@ import { useTheme, useSurface } from '@/lib/utils/ThemeProvider';
    - loading:          auto theme
    - email:            explicit 'light' (email bg is always white)
    - pdf:              explicit 'light' (page bg is always white)
+
+   Note: email templates and jsPDF-based PDF exports can't
+   render inline/currentColor SVG (poor email-client SVG support,
+   and jsPDF.addImage requires a raster image) — those two
+   contexts continue to reference the raster PNGs in
+   /public/brand/ directly, regenerated from this same vector
+   source at proper resolution. See public/brand/README.md.
    ═══════════════════════════════════════════════════════ */
 
 type SizeKey = 'h-6' | 'h-8' | 'h-10' | 'h-12' | 'h-16' | 'sm' | 'md' | 'lg' | 'xl';
-
-/** Whether a surface is above-the-fold and should eagerly load. */
-const ABOVE_FOLD_SURFACES = new Set([
-  'marketing-nav',
-  'app-sidebar',
-  'app-topbar',
-  'auth',
-]);
 
 interface LogoProps {
   /** Target link when clicked. If omitted, renders non-interactively. */
   href?: string;
   /** Explicit variant override. Omit to let surface context decide. */
-  variant?: 'full' | 'icon' | 'wordmark';
+  variant?: 'full' | 'icon';
   /** Explicit theme override ('light' | 'dark' | 'auto'). Defaults to 'auto'. */
   theme?: 'light' | 'dark' | 'auto';
   /** Screen-reader alt text override. */
@@ -92,9 +81,8 @@ const heightMap: Record<SizeKey, number> = {
 };
 
 const ASPECT_RATIOS = {
-  full: 225 / 37,
-  icon: 25 / 23,
-  wordmark: 199 / 37,
+  full: 400 / 51.38,
+  icon: 512 / 474,
 };
 
 export default function Logo({
@@ -111,16 +99,14 @@ export default function Logo({
   const { theme: appTheme } = useTheme();
   const { isOnDark } = useSurface();
 
-  const isAboveFold = ABOVE_FOLD_SURFACES.has(surface);
-
   // Helper to render a single logo graphic with rigid dimensions
   const renderSingleGraphic = (
-    v: 'full' | 'icon' | 'wordmark',
+    v: 'full' | 'icon',
     t: 'light' | 'dark' | 'auto',
     s: SizeKey | number | undefined,
     extraClass: string = ''
   ) => {
-    // Resolve theme: 'light' (black assets) or 'dark' (white assets)
+    // Resolve theme: 'light' (black) or 'dark' (white)
     let resolvedTheme: 'light' | 'dark' = 'light';
     if (t === 'dark') {
       resolvedTheme = 'dark';
@@ -143,63 +129,33 @@ export default function Logo({
     }
 
     const resolvedWidth = Math.round(resolvedHeight * ASPECT_RATIOS[v]);
+    const color = resolvedTheme === 'dark' ? '#fff' : '#000';
 
-    // Choose image source path
-    let imgSrc = '';
-    let filterStyle: React.CSSProperties = {};
+    // Resolve accessibility: icon paired with visible text should not be
+    // double-announced by a screen reader; standalone graphics need a name.
+    const isDecorative = v === 'icon' && paired;
+    const resolvedAlt = alt ?? 'PaperWorking';
 
-    if (v === 'full') {
-      imgSrc = resolvedTheme === 'dark'
-        ? '/brand/PaperWorking_White_full_Logo_.png'
-        : '/brand/PaperWorking_Black_full_Logo_.png';
-    } else if (v === 'icon') {
-      imgSrc = resolvedTheme === 'dark'
-        ? '/brand/PaperWorking_White_Logo_Icon.png'
-        : '/brand/PaperWorking_Black_Logo_Icon.png';
-    } else if (v === 'wordmark') {
-      imgSrc = '/brand/PaperWorking_Logo_Logotype.png';
-      if (resolvedTheme === 'dark') {
-        filterStyle = { filter: 'brightness(0) invert(1)' };
-      }
-    }
-
-    // Resolve accessibility alt text
-    let resolvedAlt = alt ?? 'PaperWorking';
-    if (v === 'icon' && paired) {
-      resolvedAlt = '';
-    }
+    const SvgComponent = v === 'full' ? PaperWorkingLogotype : PaperWorkingIcon;
 
     return (
-      <Image
-        src={imgSrc}
-        alt={resolvedAlt}
+      <SvgComponent
         width={resolvedWidth}
         height={resolvedHeight}
-        unoptimized
-        loading={isAboveFold ? 'eager' : 'lazy'}
-        fetchPriority={isAboveFold ? 'high' : undefined}
-        style={{
-          height: `${resolvedHeight}px`,
-          width: 'auto',
-          flexShrink: 0,
-          ...filterStyle,
-        }}
+        role={isDecorative ? undefined : 'img'}
+        aria-label={isDecorative ? undefined : resolvedAlt}
+        aria-hidden={isDecorative ? true : undefined}
+        style={{ color, flexShrink: 0 }}
         className={`max-w-none select-none shrink-0 ${extraClass || 'block'}`}
       />
     );
   };
 
-  // ─── Surface rendering matrix ──────────────────────────────────
-  // Theme values here come from the Prompt 0 surface audit.
-  // Surfaces with themed (variable) backgrounds use `theme` (caller's
-  // value, defaulting to 'auto') so the auto resolver picks the
-  // correct variant. Surfaces with fixed backgrounds use explicit
-  // 'light' or 'dark'.
+  // ─── Surface rendering matrix (unchanged from v5 audit) ────────
 
   let logoContent: React.ReactNode = null;
 
   if (surface === 'marketing-nav') {
-    // BG: var(--color-background) — themed. Auto resolves correctly.
     const navSize = size ?? 'h-8';
     logoContent = (
       <>
@@ -208,11 +164,8 @@ export default function Logo({
       </>
     );
   } else if (surface === 'marketing-footer') {
-    // BG: inherits page var(--color-background) — themed.
-    // v4 hardcoded 'dark' here → white logo invisible on light theme.
     logoContent = renderSingleGraphic('full', theme, size ?? 'h-10');
   } else if (surface === 'app-sidebar') {
-    // BG: Dark: #121317→#0d0a0b gradient, Light: #FDFFFC — themed.
     if (collapsed) {
       logoContent = renderSingleGraphic('icon', theme, size ?? 'h-6');
     } else {
@@ -226,22 +179,16 @@ export default function Logo({
       );
     }
   } else if (surface === 'app-topbar') {
-    // BG: Dark: rgba(18,16,20,0.88), Light: rgba(253,255,252,0.92) — themed.
     logoContent = renderSingleGraphic('icon', theme, size ?? 'h-8');
   } else if (surface === 'auth') {
-    // BG: #0d0a0b — always dark. Explicit theme.
     logoContent = renderSingleGraphic('full', 'dark', size ?? 'h-12');
   } else if (surface === 'empty-state') {
-    // BG: themed canvas. Auto resolves.
     logoContent = renderSingleGraphic('icon', theme, size ?? 'h-12');
   } else if (surface === 'loading') {
-    // BG: themed canvas. Auto resolves.
     logoContent = renderSingleGraphic('icon', theme, size ?? 'h-8', 'animate-pulse');
   } else if (surface === 'email') {
-    // BG: #ffffff — always light. Explicit theme.
     logoContent = renderSingleGraphic('full', 'light', size ?? 'h-8');
   } else if (surface === 'pdf') {
-    // BG: white page — always light. Explicit theme.
     logoContent = renderSingleGraphic('full', 'light', size ?? 'h-8');
   } else {
     // Custom / Fallback

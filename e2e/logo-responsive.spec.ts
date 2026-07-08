@@ -4,10 +4,13 @@ import { setupMocks, createDefaultState, MockState } from './mocks';
 /* ═══════════════════════════════════════════════════════
    PaperWorking — Responsive Logo Variant + Theme Tests
 
-   Verifies the rendering matrix from the Prompt 2 audit:
-   - Variant: full vs icon based on breakpoint
-   - Theme: correct asset (Black = light bg, White = dark bg)
-     based on the surface's actual background
+   Verifies the rendering matrix from the Prompt 2 audit,
+   updated for the vector/inline-SVG logo (v6):
+   - Variant: full lockup vs icon, selected by viewBox
+     (icon = 512x474, full lockup = 400x51.38)
+   - Theme: correct color (black = light bg, white = dark bg),
+     applied via CSS `color` on the inline <svg> (currentColor),
+     not a separate asset file — asserted via computed CSS.
 
    Surfaces under test:
    1. Marketing nav  — responsive variant + theme-aware
@@ -18,6 +21,11 @@ import { setupMocks, createDefaultState, MockState } from './mocks';
    Viewports: 375 / 768 / 1280
    Themes: light + dark (where surface bg is theme-dependent)
    ═══════════════════════════════════════════════════════ */
+
+const ICON_SELECTOR = 'svg[viewBox="0 0 512 474"]';
+const FULL_SELECTOR = 'svg[viewBox="0 0 400 51.38"]';
+const BLACK = 'rgb(0, 0, 0)';
+const WHITE = 'rgb(255, 255, 255)';
 
 test.describe.configure({ mode: 'serial' });
 
@@ -38,7 +46,7 @@ test.describe('PaperWorking — Responsive Logo Verification', () => {
 
   // ─── 1. Marketing Nav (Light Theme) ──────────────────────────
 
-  test('Marketing Nav — Light theme: desktop shows black full, mobile shows black icon', async ({ page }) => {
+  test('Marketing Nav — Light theme: desktop shows black full lockup, mobile shows black icon', async ({ page }) => {
     await setTheme(page, 'light');
 
     // Desktop: full black lockup visible, icon hidden
@@ -46,22 +54,24 @@ test.describe('PaperWorking — Responsive Logo Verification', () => {
     await page.goto('/');
     await page.waitForLoadState('load');
 
-    const fullDesktop = page.locator('img[src*="Black_full_Logo"]').first();
-    const iconDesktop = page.locator('img[src*="Black_Logo_Icon"]').first();
+    const fullDesktop = page.locator(FULL_SELECTOR).first();
+    const iconDesktop = page.locator(ICON_SELECTOR).first();
     await expect(fullDesktop).toBeVisible();
+    await expect(fullDesktop).toHaveCSS('color', BLACK);
     await expect(iconDesktop).toBeHidden();
 
     // Mobile: icon visible, full hidden
     await page.setViewportSize({ width: 375, height: 800 });
-    const fullMobile = page.locator('img[src*="Black_full_Logo"]').first();
-    const iconMobile = page.locator('img[src*="Black_Logo_Icon"]').first();
+    const fullMobile = page.locator(FULL_SELECTOR).first();
+    const iconMobile = page.locator(ICON_SELECTOR).first();
     await expect(iconMobile).toBeVisible();
+    await expect(iconMobile).toHaveCSS('color', BLACK);
     await expect(fullMobile).toBeHidden();
   });
 
   // ─── 2. Marketing Nav (Dark Theme) — Bug #1 regression test ──
 
-  test('Marketing Nav — Dark theme: desktop shows WHITE full, mobile shows WHITE icon', async ({ page }) => {
+  test('Marketing Nav — Dark theme: desktop shows WHITE full lockup, mobile shows WHITE icon', async ({ page }) => {
     await setTheme(page, 'dark');
 
     // Desktop: white full lockup (NOT black — that was Bug #1)
@@ -69,16 +79,15 @@ test.describe('PaperWorking — Responsive Logo Verification', () => {
     await page.goto('/');
     await page.waitForLoadState('load');
 
-    const whiteFull = page.locator('img[src*="White_full_Logo"]').first();
-    const blackFull = page.locator('img[src*="Black_full_Logo"]').first();
-    await expect(whiteFull).toBeVisible();
-    // Black full should NOT be rendered in nav on dark theme
-    await expect(blackFull).toBeHidden();
+    const fullDesktop = page.locator(FULL_SELECTOR).first();
+    await expect(fullDesktop).toBeVisible();
+    await expect(fullDesktop).toHaveCSS('color', WHITE);
 
     // Mobile: white icon (NOT black)
     await page.setViewportSize({ width: 375, height: 800 });
-    const whiteIcon = page.locator('img[src*="White_Logo_Icon"]').first();
-    await expect(whiteIcon).toBeVisible();
+    const iconMobile = page.locator(ICON_SELECTOR).first();
+    await expect(iconMobile).toBeVisible();
+    await expect(iconMobile).toHaveCSS('color', WHITE);
   });
 
   // ─── 3. Login (Auth) — Always dark, always full white ────────
@@ -89,11 +98,12 @@ test.describe('PaperWorking — Responsive Logo Verification', () => {
       await page.goto('/login');
       await page.waitForLoadState('load');
 
-      const fullWhite = page.locator('img[src*="White_full_Logo"]');
-      const iconOnly = page.locator('img[src*="Logo_Icon"]');
+      const full = page.locator(FULL_SELECTOR);
+      const icon = page.locator(ICON_SELECTOR);
 
-      await expect(fullWhite.first()).toBeVisible();
-      await expect(iconOnly).toHaveCount(0);
+      await expect(full.first()).toBeVisible();
+      await expect(full.first()).toHaveCSS('color', WHITE);
+      await expect(icon).toHaveCount(0);
     }
   });
 
@@ -111,8 +121,9 @@ test.describe('PaperWorking — Responsive Logo Verification', () => {
 
     // Footer should have BLACK logo on light bg (Bug #2 was white-on-white)
     const footerSection = page.locator('footer');
-    const blackFooterLogo = footerSection.locator('img[src*="Black_full_Logo"]');
-    await expect(blackFooterLogo.first()).toBeVisible();
+    const footerLogo = footerSection.locator(FULL_SELECTOR).first();
+    await expect(footerLogo).toBeVisible();
+    await expect(footerLogo).toHaveCSS('color', BLACK);
   });
 
   test('Marketing Footer — Dark theme: renders WHITE full lockup', async ({ page }) => {
@@ -126,8 +137,9 @@ test.describe('PaperWorking — Responsive Logo Verification', () => {
     await page.waitForTimeout(500);
 
     const footerSection = page.locator('footer');
-    const whiteFooterLogo = footerSection.locator('img[src*="White_full_Logo"]');
-    await expect(whiteFooterLogo.first()).toBeVisible();
+    const footerLogo = footerSection.locator(FULL_SELECTOR).first();
+    await expect(footerLogo).toBeVisible();
+    await expect(footerLogo).toHaveCSS('color', WHITE);
   });
 
   // ─── 5. Dashboard Sidebar (requires auth) ────────────────────
@@ -138,7 +150,7 @@ test.describe('PaperWorking — Responsive Logo Verification', () => {
     await page.waitForLoadState('load');
 
     // Sidebar's full lockup (desktop ≥ md)
-    const sidebarLogo = page.locator('aside img[src*="full_Logo"]');
+    const sidebarLogo = page.locator('aside').locator(FULL_SELECTOR);
     await expect(sidebarLogo.first()).toBeVisible();
   });
 
@@ -147,7 +159,7 @@ test.describe('PaperWorking — Responsive Logo Verification', () => {
     await page.goto('/dashboard/command-center');
     await page.waitForLoadState('load');
 
-    const sidebarLogo = page.locator('aside img[src*="full_Logo"]');
+    const sidebarLogo = page.locator('aside').locator(FULL_SELECTOR);
     await expect(sidebarLogo.first()).toBeVisible();
   });
 });

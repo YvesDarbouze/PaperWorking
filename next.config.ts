@@ -3,6 +3,7 @@ import { withSentryConfig } from "@sentry/nextjs";
 
 const nextConfig: NextConfig = {
   output: 'standalone',
+  transpilePackages: ['framer-motion', 'motion-dom'],
   // Server-only packages that must NOT be bundled by Turbopack. The MCP packages
   // ship strict ESM `exports` maps that break dependency tracing under
   // `output: 'standalone'` (Firebase App Hosting) — externalizing them lets Node
@@ -16,8 +17,18 @@ const nextConfig: NextConfig = {
     ignoreBuildErrors: true,
   },
   experimental: {
-    optimizePackageImports: ['framer-motion', 'lucide-react', 'recharts'],
+    // Package import optimization disabled for dev webpack — it breaks lazy subpath
+    // imports (motion-dom, lucide-react) with "Element type is invalid" / SyntaxError.
     turbopackFileSystemCacheForDev: false,
+  },
+  webpack: (config) => {
+    // Ensure ESM packages (motion-dom) parse correctly under webpack dev
+    config.module.rules.push({
+      test: /\.mjs$/,
+      include: /node_modules/,
+      type: 'javascript/auto',
+    });
+    return config;
   },
   // webpack: (config, { dev }) => {
   //   if (dev) {

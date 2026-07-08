@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Script from "next/script";
 import { Inter, Merriweather, JetBrains_Mono } from "next/font/google";
 import "./globals.css";
 import PresenceHeartbeat from "@/components/shared/PresenceHeartbeat";
@@ -69,21 +70,28 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className={`${inter.variable} ${merriweather.variable} ${jetBrainsMono.variable} h-full dark`} data-theme="dark">
+    <html
+      lang="en"
+      suppressHydrationWarning
+      className={`${inter.variable} ${merriweather.variable} ${jetBrainsMono.variable} h-full`}
+    >
       <head>
         <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200&display=swap" />
-        <script
-          dangerouslySetInnerHTML={{
-            __html: `
-              try {
-                document.documentElement.setAttribute('data-theme', 'dark');
-                document.documentElement.classList.add('dark');
-              } catch (e) {}
-            `,
-          }}
-        />
       </head>
       <body suppressHydrationWarning className="min-h-full flex flex-col font-sans antialiased bg-pw-bg text-pw-black mesh-bg relative overflow-x-hidden">
+        <Script id="pw-theme-init" strategy="beforeInteractive">
+          {`
+            try {
+              var saved = localStorage.getItem('pw-theme');
+              var theme = (saved === 'light' || saved === 'dark')
+                ? saved
+                : (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+              document.documentElement.setAttribute('data-theme', theme);
+              document.documentElement.classList.remove('light', 'dark');
+              document.documentElement.classList.add(theme);
+            } catch (e) {}
+          `}
+        </Script>
         <div className="absolute inset-0 bg-[url('/noise.png')] opacity-[0.03] pointer-events-none z-[-1]" />
         <QueryProvider>
         <PostHogProvider>

@@ -111,6 +111,7 @@ google-cloud-sdk/
 # Firebase key credentials
 firebase-key.json
 firebase-key*.json
+*-firebase-adminsdk-*.json
 
 # Stitch screens dot directory
 .stitch-screens/
@@ -130,3 +131,4 @@ stitch_downloads/
 
 # Brand preflight original source assets
 /PaperWorking Logo/
+

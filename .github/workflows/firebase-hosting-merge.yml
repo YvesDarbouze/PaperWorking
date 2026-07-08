@@ -32,7 +32,7 @@ jobs:
       - name: Deploy Firebase Rules
         env:
           GOOGLE_APPLICATION_CREDENTIALS: sa.json
-        run: npx -y firebase-tools@latest deploy --only firestore,storage
+        run: npx -y firebase-tools@latest deploy --only firestore:rules,storage
 
       - name: Remove service account key
         if: always()

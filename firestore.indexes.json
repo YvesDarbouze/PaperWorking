@@ -55,13 +55,6 @@
       ]
     },
     {
-      "collectionGroup": "vendorRequests",
-      "queryScope": "COLLECTION",
-      "fields": [
-        { "fieldPath": "requestedAt", "order": "DESCENDING" }
-      ]
-    },
-    {
       "collectionGroup": "notifications",
       "queryScope": "COLLECTION",
       "fields": [
@@ -116,13 +109,6 @@
       ]
     },
     {
-      "collectionGroup": "vendorAssignments",
-      "queryScope": "COLLECTION",
-      "fields": [
-        { "fieldPath": "createdAt", "order": "DESCENDING" }
-      ]
-    },
-    {
       "collectionGroup": "ledgerItems",
       "queryScope": "COLLECTION",
       "fields": [
@@ -144,13 +130,6 @@
       "fields": [
         { "fieldPath": "emailNotificationSent", "order": "ASCENDING" },
         { "fieldPath": "createdAt", "order": "ASCENDING" }
-      ]
-    },
-    {
-      "collectionGroup": "metricSnapshots",
-      "queryScope": "COLLECTION",
-      "fields": [
-        { "fieldPath": "date", "order": "DESCENDING" }
       ]
     }
   ],

@@ -288,6 +288,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         subscriptionPlan: 'Team',
         subscriptionStatus: 'active',
         organizationId: 'mock_org_123',
+        onboardingCompleted: true,
+        onboardingIntent: 'investor',
       } as any);
       setSessionReady(true);
       setLoading(false);
@@ -326,6 +328,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           subscriptionPlan: 'Team',
           subscriptionStatus: 'active',
           organizationId: 'mock_org_123',
+          onboardingCompleted: true,
+          onboardingIntent: 'investor',
         } as any);
         setSessionReady(true);
         setLoading(false);
@@ -874,6 +878,8 @@ export function useAuth() {
       personalOrganizationId: personalOrgId,
       subscriptionPlan: 'Team',
       subscriptionStatus: 'active',
+      onboardingCompleted: true,
+      onboardingIntent: 'investor',
     } as any;
 
     return {

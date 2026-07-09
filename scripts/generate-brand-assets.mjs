@@ -63,13 +63,12 @@ async function renderOnSolid(iconHex, bgHex, canvasSize, scale) {
 /** Hand-rolled ICO container (PNG-in-ICO, supported by all modern browsers). */
 function buildIco(pngBuffers) {
   const count = pngBuffers.length;
-  const headerSize = 6 + 16 * count;
-  const header = Buffer.alloc(headerSize);
+  const header = Buffer.alloc(6);
   header.writeUInt16LE(0, 0); // reserved
   header.writeUInt16LE(1, 2); // type: icon
   header.writeUInt16LE(count, 4);
 
-  let offset = headerSize;
+  let offset = 6 + 16 * count;
   const entries = [];
   for (let i = 0; i < count; i++) {
     const { size, buffer } = pngBuffers[i];

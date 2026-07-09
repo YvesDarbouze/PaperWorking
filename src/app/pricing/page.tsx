@@ -106,7 +106,7 @@ export default function PricingPage() {
   }, [user, isSubscribed, handleSelectPlan]);
 
   return (
-    <div className="min-h-screen font-sans text-on-surface relative bg-background dark">
+    <div className="marketing-context min-h-screen font-sans text-on-surface relative bg-background">
 
       {/* Loader Overlay */}
       {isProcessing && (

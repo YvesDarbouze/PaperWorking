@@ -17,11 +17,26 @@ jobs:
           NODE_OPTIONS: "--max-old-space-size=8192"
           NEXT_TELEMETRY_DISABLED: "1"
           TURBOPACK: "0"
-      - name: Authenticate and Deploy Firebase Rules
+      - name: Authenticate Firebase CLI
+        run: echo '${{ secrets.FIREBASE_SERVICE_ACCOUNT_PAPERWORKING_97055 }}' > sa.json
+
+      - name: Firebase CLI diagnostics
+        env:
+          GOOGLE_APPLICATION_CREDENTIALS: sa.json
         run: |
-          echo '${{ secrets.FIREBASE_SERVICE_ACCOUNT_PAPERWORKING_97055 }}' > sa.json
-          GOOGLE_APPLICATION_CREDENTIALS=sa.json npx -y firebase-tools@latest deploy --only firestore,storage
-          rm sa.json
+          npx -y firebase-tools@latest --version
+          npx -y firebase-tools@latest use
+          npx -y firebase-tools@latest projects:list
+          echo "Configured storage bucket: paperworking-97055.firebasestorage.app (array format in firebase.json)"
+
+      - name: Deploy Firebase Rules
+        env:
+          GOOGLE_APPLICATION_CREDENTIALS: sa.json
+        run: npx -y firebase-tools@latest deploy --only firestore:rules,storage
+
+      - name: Remove service account key
+        if: always()
+        run: rm -f sa.json
       - uses: FirebaseExtended/action-hosting-deploy@v0
         with:
           repoToken: ${{ secrets.GITHUB_TOKEN }}

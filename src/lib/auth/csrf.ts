@@ -23,8 +23,10 @@ const PRODUCTION_ORIGINS: ReadonlySet<string> = new Set([
 const DEV_ORIGINS: ReadonlySet<string> = new Set([
   'http://localhost:3000',
   'http://localhost:3001',
+  'http://localhost:3002',
   'http://127.0.0.1:3000',
   'http://127.0.0.1:3001',
+  'http://127.0.0.1:3002',
 ]);
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
@@ -35,6 +37,22 @@ function allowedOrigins(): ReadonlySet<string> {
     return new Set([...PRODUCTION_ORIGINS, ...DEV_ORIGINS]);
   }
   return PRODUCTION_ORIGINS;
+}
+
+function isLocalDevOrigin(origin: string): boolean {
+  try {
+    const { protocol, hostname } = new URL(origin);
+    return protocol === 'http:' && (hostname === 'localhost' || hostname === '127.0.0.1');
+  } catch {
+    return false;
+  }
+}
+
+function isAllowedOrigin(origin: string): boolean {
+  if (allowedOrigins().has(origin)) return true;
+  // Next.js dev may bind to 3002, 3003, etc. when 3000 is taken
+  if (process.env.NODE_ENV !== 'production' && isLocalDevOrigin(origin)) return true;
+  return false;
 }
 
 function originFromUrl(raw: string): string | null {
@@ -74,7 +92,7 @@ export function validateCsrf(request: Request): CsrfResult {
   // ── 2. Origin header ───────────────────────────────────────────────────────
   const origin = request.headers.get('origin');
   if (origin) {
-    if (allowedOrigins().has(origin)) {
+    if (isAllowedOrigin(origin)) {
       return { ok: true };
     }
     console.warn('[CSRF] Rejected — unlisted Origin:', origin);
@@ -85,7 +103,7 @@ export function validateCsrf(request: Request): CsrfResult {
   const referer = request.headers.get('referer');
   if (referer) {
     const refOrigin = originFromUrl(referer);
-    if (refOrigin && allowedOrigins().has(refOrigin)) {
+    if (refOrigin && isAllowedOrigin(refOrigin)) {
       return { ok: true };
     }
     console.warn('[CSRF] Rejected — unlisted Referer:', referer);

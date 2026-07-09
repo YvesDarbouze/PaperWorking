@@ -27,7 +27,10 @@
       "region": "us-east1"
     }
   },
-  "storage": {
-    "rules": "storage.rules"
-  }
+  "storage": [
+    {
+      "bucket": "paperworking-97055.firebasestorage.app",
+      "rules": "storage.rules"
+    }
+  ]
 }

@@ -38,29 +38,91 @@ export interface MetricResult {
 }
 
 /**
+ * Machine-readable reason code for metrics that return null because
+ * their data instrument doesn't exist yet. Components render these
+ * as honest states (em-dash + tooltip), never as missing/error.
+ *
+ * KPI-33 §2 — three null classes:
+ *   1. INCOMPLETE: required input fields exist but are not yet populated
+ *   2. DEFERRED:   the instrument (ledger, market feed, checklist) isn't built
+ *   3. NOT_APPLICABLE: metric doesn't apply to this deal type
+ */
+export type MetricNullReason =
+  // Deferred instruments — data source not yet integrated
+  | 'REQUIRES_INCOME_LEDGER'        // Revenue Growth, AAR — need historical ledger entries
+  | 'REQUIRES_EXPENSE_LEDGER'       // CapEx — need PP&E ledger tracking
+  | 'MARKET_DATA_DEFERRED'          // YoY Sold Price, Sold/Inventory, Demand Growth — awaits RentCast / market feed
+  | 'REQUIRES_CRM'                  // Listing-to-Meeting, Avg Commission — awaits CRM integration
+  | 'REQUIRES_COMPLIANCE_CHECKLIST' // Compliance Rate — awaits DD checklist instrument
+  | 'REQUIRES_PORTFOLIO_CONTEXT'    // Avg Rent/Property, Portfolio Value Growth — needs multi-project aggregation
+  // Standard null classes (existing)
+  | 'INCOMPLETE'                    // Fields exist but not populated
+  | 'NOT_APPLICABLE';               // Metric doesn't apply (e.g. DSCR on all-cash)
+
+/**
+ * Extended metric result that includes a reason code when value is null.
+ */
+export interface MetricResultWithReason extends MetricResult {
+  /** Why this metric returned null — machine-readable, for honest UI states */
+  nullReason?: MetricNullReason;
+}
+
+/**
  * All canonical and supplemental REI datapoints exposed by PaperWorking.
+ *
+ * The 33 KPIs (numbered per the canonical source document) plus the
+ * 10 hero scorecard metrics. Note: APPRECIATION is hero #10 and is
+ * separate from the 33's numbering.
  */
 export type MetricId =
-  // Hero 10
-  | 'NOI'
-  | 'CASH_FLOW'
-  | 'CAP_RATE'
-  | 'COC'
-  | 'GRM'
-  | 'DSCR'
-  | 'IRR'
-  | 'OCCUPANCY'
-  | 'OER'
-  | 'APPRECIATION'
-  // Supplemental 11
-  | 'LTV'
+  // ── Hero 10 (Scorecard) ─────────────────────────────────────────────────
+  | 'NOI'                       // Hero 1  / KPI 1
+  | 'CASH_FLOW'                 // Hero 2  / KPI 5
+  | 'CAP_RATE'                  // Hero 3  / KPI 2
+  | 'COC'                       // Hero 4  / KPI 3
+  | 'GRM'                       // Hero 5  / KPI 6
+  | 'DSCR'                      // Hero 6  / KPI 7
+  | 'IRR'                       // Hero 7  / KPI 4
+  | 'OCCUPANCY'                 // Hero 8  / KPI 18
+  | 'OER'                       // Hero 9  / KPI 9
+  | 'APPRECIATION'              // Hero 10 / NOT in the 33's numbering — scorecard only
+
+  // ── Financial Performance (KPIs 1–17) — beyond hero overlap ─────────────
+  | 'LTV'                       // KPI 8
+  | 'EQUITY_TO_VALUE'           // KPI 10
+  | 'INTEREST_COVERAGE'         // KPI 11
+  | 'ROI'                       // KPI 12
+  | 'CAPEX'                     // KPI 13
+  | 'GOI'                       // KPI 14
+  | 'AAR'                       // KPI 15
+  | 'EQUITY_MULTIPLE'           // KPI 16
+  | 'REVENUE_GROWTH'            // KPI 17
+
+  // ── Operational Efficiency (KPIs 18–24) — beyond hero overlap ───────────
+  | 'TENANT_TURNOVER'           // KPI 19
+  | 'AVG_RENT_PER_PROPERTY'     // KPI 20
+  | 'LEASE_RENEWAL'             // KPI 21
+  | 'MAINTENANCE_COST_PER_UNIT' // KPI 22
+  | 'DOM'                       // KPI 23
+  | 'CONSTRUCTION_COST_SQFT'    // KPI 24
+
+  // ── Asset & Portfolio Management (KPIs 25–29) ───────────────────────────
+  | 'PORTFOLIO_VALUE_GROWTH'    // KPI 25
+  | 'PAYBACK_PERIOD'            // KPI 26
+  | 'YOY_SOLD_PRICE_VARIANCE'   // KPI 27
+  | 'SOLD_PER_INVENTORY'        // KPI 28
+  | 'DEMAND_GROWTH'             // KPI 29
+
+  // ── Marketing & Sales (KPIs 30–31) ──────────────────────────────────────
+  | 'LISTING_TO_MEETING'        // KPI 30
+  | 'AVG_COMMISSION'            // KPI 31
+
+  // ── Risk Management & Compliance (KPIs 32–33) ──────────────────────────
+  | 'RISK_SCORE'                // KPI 32
+  | 'COMPLIANCE_RATE'           // KPI 33
+
+  // ── Legacy supplemental (computed, not in the 33) ───────────────────────
   | 'DEBT_YIELD'
-  | 'EQUITY_MULTIPLE'
   | 'BREAK_EVEN_OCCUPANCY'
   | 'CAPITAL_RESERVES'
-  | 'PAYBACK_PERIOD'
-  | 'TENANT_TURNOVER'
-  | 'LEASE_RENEWAL'
-  | 'MAINTENANCE_COST_PER_UNIT'
-  | 'DOM'
   | 'BUDGET_VARIANCE';

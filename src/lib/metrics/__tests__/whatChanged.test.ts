@@ -26,7 +26,8 @@ const BASE_PROJECT = {
     numberOfUnits: 1,
     occupiedUnits: 1,
   },
-  strategyType: 'Rent',
+  dispositionType: 'RENT',
+  subStrategy: 'LONG_TERM',
   currentPhase: 1,
 };
 
@@ -96,9 +97,9 @@ describe('whatChanged', () => {
     expect(changed).toContain('OER');
   });
 
-  test('changing strategyType triggers multiple metrics', () => {
+  test('changing dispositionType triggers multiple metrics', () => {
     const after = clone(BASE_PROJECT);
-    after.strategyType = 'Fix & Flip';
+    after.dispositionType = 'SALE';
 
     const changed = whatChanged(BASE_PROJECT, after);
 
@@ -132,7 +133,7 @@ describe('whatChanged', () => {
     const ids: MetricId[] = ['NOI', 'CASH_FLOW', 'CAP_RATE', 'COC', 'GRM', 'DSCR', 'IRR', 'OCCUPANCY', 'OER', 'APPRECIATION'];
     for (const id of ids) {
       expect(METRIC_DEPENDENCIES[id]).toBeDefined();
-      expect(METRIC_DEPENDENCIES[id].length).toBeGreaterThan(0);
+      expect(METRIC_DEPENDENCIES[id]!.length).toBeGreaterThan(0);
     }
   });
 });

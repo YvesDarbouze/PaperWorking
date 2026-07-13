@@ -34,6 +34,8 @@ import {
   computeCapRate,
   computeCoCReturn,
   computeGRM,
+  computeOnePercentTest,
+  computeCompRollups,
   computeDSCR,
   computeLTV,
   computeOER,
@@ -43,6 +45,7 @@ import {
   computeARVSpread,
   computeMAO,
   computeAnnualDebtService,
+  deriveAllMetrics,
 } from '../lib/metrics/reiMetrics';
 import {
   computeNOIMetric,
@@ -54,25 +57,32 @@ import {
   computeExpenseRatioMetric,
 } from '../lib/metrics';
 
-// ── Golden dataset from spec: NOI $12,486 / Purchase $279,000 = 4.5% Cap Rate ─
+// ── Golden dataset from spec: NOI $12,486 (gross-basis PM fee, P6 canon) / Purchase $279,000 = 4.48% Cap Rate ─
+// Locked inputs (reil-metrics.md §1.1) — DO NOT MODIFY without updating the spec.
+// BUG-8 REVERT: PM fee on GROSS rent ($23,400 × 10% = $2,340), not effective rent.
+// OpEx = $2,400 + $696 + $1,500 + $2,340(PM) + $2,340(maint) = $9,276
+// NOI = $21,762(EGI) − $9,276(OpEx) = $12,486
 const GOLDEN = {
-  purchasePrice:             279_000,
-  noi:                        12_486,
-  monthlyGrossRent:            1_500,    // $18,000/yr gross
-  vacancyRatePercent:              5,    // 5% vacancy → $16,740 effective
-  propertyManagementFeePercent:   10,    // 10% of effective rent
-  holdingCostTaxes:              150,    // $150/mo
-  holdingCostInsurance:           80,    // $80/mo
-  monthlyMaintenanceReserve:      50,    // $50/mo
-  monthlyHOA:                      0,
-  loanAmount:                223_200,    // 80% LTV
-  annualDebtService:          14_400,    // $1,200/mo P&I
-  totalCashInvested:          55_800,    // 20% down + closing
-  annualCashFlow:             -1_914,    // NOI − debt service
-  grossAnnualRent:            18_000,
-  estimatedARV:              320_000,
-  rehabCost:                  35_000,
-  squareFootage:               1_200,
+  purchasePrice:                 279_000,
+  noi:                           12_486,
+  monthlyGrossRent:                1_950,    // $23,400/yr gross
+  vacancyRatePercent:                  7,    // 7% vacancy → $21,762 EGI
+  propertyManagementFeePercent:       10,    // 10% of GROSS rent (P6 canon — not effective)
+  holdingCostTaxes:                  200,    // $200/mo ($2,400/yr)
+  holdingCostInsurance:               58,    // $58/mo ($696/yr)
+  holdingCostUtilities:              125,    // $125/mo ($1,500/yr)
+  monthlyMaintenanceReserve:         195,    // $195/mo ($2,340/yr — 10% of gross)
+  monthlyHOA:                          0,
+  loanAmount:                    223_200,    // 80% LTV
+  loanInterestRate:                  6.5,    // 6.5% annual
+  loanTermYears:                      30,
+  annualDebtService:            16_929.31,   // Computed: 6.5% on $223,200 / 30yr
+  totalCashInvested:              60_000,    // $55,800 down + $4,200 closing
+  annualCashFlow:               -4_443.31,   // NOI($12,486) − debt($16,929.31)
+  grossAnnualRent:                23_400,
+  estimatedARV:                  320_000,
+  rehabCost:                      35_000,
+  squareFootage:                   1_200,
 };
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -87,12 +97,13 @@ describe('PaperWorking REI Metrics — Full Spec Validation', () => {
         propertyManagementFeePercent: GOLDEN.propertyManagementFeePercent,
         holdingCostTaxes:             GOLDEN.holdingCostTaxes,
         holdingCostInsurance:         GOLDEN.holdingCostInsurance,
+        holdingCostUtilities:         GOLDEN.holdingCostUtilities,
         monthlyMaintenanceReserve:    GOLDEN.monthlyMaintenanceReserve,
         monthlyHOA:                   GOLDEN.monthlyHOA,
       } as any);
-      // NOI must be positive (revenue > expenses in this scenario)
-      expect(components.noi).toBeGreaterThan(0);
-      // NOI = effectiveGrossIncome - operatingExpenses (no debt)
+      // NOI must exactly match the locked spec value (P6 gross-basis canon)
+      expect(components.noi).toBe(12_486); // $12,486 — locked (BUG-8 revert)
+      // Sanity: NOI = effectiveGrossIncome - operatingExpenses (no debt)
       expect(components.noi).toBeLessThan(GOLDEN.grossAnnualRent); // always < gross
     });
 
@@ -123,7 +134,7 @@ describe('PaperWorking REI Metrics — Full Spec Validation', () => {
   describe('2. Capitalization Rate (Cap Rate = NOI / Property Value × 100)', () => {
     it('should match spec formula with golden data (≈4.5%)', () => {
       const capRate = computeCapRate(GOLDEN.noi, GOLDEN.purchasePrice);
-      // 12486 / 279000 * 100 ≈ 4.477
+      // 12486 / 279000 * 100 = 4.4752... → rounds to 4.48 at 2dp (≈4.5% at 1dp) — P6 canon
       expect(capRate).toBeCloseTo(4.48, 1);
     });
 
@@ -151,8 +162,8 @@ describe('PaperWorking REI Metrics — Full Spec Validation', () => {
   describe('3. Cash-on-Cash Return (Annual Cash Flow / Total Cash Invested × 100)', () => {
     it('should match spec formula', () => {
       const coc = computeCoCReturn(GOLDEN.annualCashFlow, GOLDEN.totalCashInvested);
-      // -1914 / 55800 * 100 ≈ -3.43%
-      expect(coc).toBeCloseTo(-3.43, 1);
+      // -4443.31 / 60000 * 100 = -7.4055... → rounds to -7.41% — P6 canon (BUG-8 revert)
+      expect(coc).toBeCloseTo(-7.41, 1);
     });
 
     it('should return 0 when total cash invested is 0', () => {
@@ -197,11 +208,11 @@ describe('PaperWorking REI Metrics — Full Spec Validation', () => {
   describe('5. Cash Flow (Total Income − Total Expenses incl. debt)', () => {
     it('cash flow is NOI minus annual debt service', () => {
       // computeAnnualDebtService(loanAmount, annualRatePercent, termMonths)
-      const annualDebt = computeAnnualDebtService(GOLDEN.loanAmount, 7, 360);
-      expect(annualDebt).toBeGreaterThan(0);
-      // For 7% 30yr on $223k: monthly ≈ $1485, annually ≈ $17,820
-      expect(annualDebt).toBeGreaterThan(10_000);
-      expect(annualDebt).toBeLessThan(30_000);
+      const annualDebt = computeAnnualDebtService(
+        GOLDEN.loanAmount, GOLDEN.loanInterestRate, GOLDEN.loanTermYears * 12
+      );
+      // 6.5% 30yr on $223,200: monthly ≈ $1,410.78, annually ≈ $16,929.31
+      expect(annualDebt).toBeCloseTo(GOLDEN.annualDebtService, 0);
     });
 
     it('zero loan amount → zero debt service', () => {
@@ -213,9 +224,9 @@ describe('PaperWorking REI Metrics — Full Spec Validation', () => {
   // ── 6. GRM ────────────────────────────────────────────────────────────────
   describe('6. Gross Rent Multiplier (Property Price / Gross Annual Rent)', () => {
     it('should match spec formula', () => {
-      // 279000 / 18000 = 15.5
+      // 279000 / 23400 ≈ 11.92 — locked
       const grm = computeGRM(GOLDEN.purchasePrice, GOLDEN.grossAnnualRent);
-      expect(grm).toBeCloseTo(15.5, 1);
+      expect(grm).toBeCloseTo(11.92, 1);
     });
 
     it('lower price → lower GRM (more attractive)', () => {
@@ -234,12 +245,49 @@ describe('PaperWorking REI Metrics — Full Spec Validation', () => {
     });
   });
 
+  // ── 6a. 1% Rule Test ──────────────────────────────────────────────────────
+  describe('6a. 1% Rule Test (Monthly Gross Rent / Property Price * 100)', () => {
+    it('should calculate 1% rule correctly', () => {
+      const pct = computeOnePercentTest(200_000, 2_000);
+      expect(pct).toBe(1.0);
+    });
+
+    it('should return 0 when price is zero or negative', () => {
+      expect(computeOnePercentTest(0, 2_000)).toBe(0);
+      expect(computeOnePercentTest(-50_000, 2_000)).toBe(0);
+    });
+
+    it('should handle fractional percentages', () => {
+      expect(computeOnePercentTest(200_000, 1_500)).toBe(0.75);
+    });
+  });
+
+  // ── 6b. Comp Rollups Calculation ──────────────────────────────────────────
+  describe('6b. Comp Rollups Calculation', () => {
+    it('should aggregate average price per sqft and implied value correctly', () => {
+      const compsList = [
+        { soldPrice: 150_000, sqft: 1_000 },
+        { soldPrice: 180_000, sqft: 1_200 },
+        { soldPrice: 200_000, sqft: 1_000 }, // $/sqft = 150, 150, 200 => avg = 166.67
+      ];
+      const result = computeCompRollups(compsList, 1_500);
+      expect(result.avgPricePerSqft).toBeCloseTo(166.67, 1);
+      expect(result.impliedARV).toBe(Math.round(166.67 * 1_500));
+    });
+
+    it('should handle empty or invalid comps list gracefully', () => {
+      const result = computeCompRollups([], 1_500);
+      expect(result.avgPricePerSqft).toBe(0);
+      expect(result.impliedARV).toBe(0);
+    });
+  });
+
   // ── 7. DSCR ───────────────────────────────────────────────────────────────
   describe('7. Debt Service Coverage Ratio (NOI / Annual Debt Service)', () => {
     it('should match spec formula', () => {
-      // 12486 / 14400 ≈ 0.867 (below 1.0 — lender would not approve)
+      // 12486 / 16929.31 = 0.73748... → rounds to 0.737 at 3dp (≈0.74 at 2dp) — P6 canon
       const dscr = computeDSCR(GOLDEN.noi, GOLDEN.annualDebtService);
-      expect(dscr).toBeCloseTo(0.87, 1);
+      expect(dscr).toBeCloseTo(0.74, 1);
     });
 
     it('DSCR ≥ 1.25 is considered lender-safe', () => {
@@ -289,13 +337,13 @@ describe('PaperWorking REI Metrics — Full Spec Validation', () => {
   describe('9. Operating Expense Ratio (Operating Expenses / GOI × 100)', () => {
     it('should be between 0 and 100 for valid inputs', () => {
       // computeOER(totalOperatingExpenses, grossRentalIncome) — positional args
-      const grossRentalIncome = GOLDEN.monthlyGrossRent * 12; // $18,000
-      const totalExpenses = (GOLDEN.holdingCostTaxes + GOLDEN.holdingCostInsurance) * 12; // $2,760
+      const grossRentalIncome = GOLDEN.monthlyGrossRent * 12; // $23,400
+      const totalExpenses = (GOLDEN.holdingCostTaxes + GOLDEN.holdingCostInsurance) * 12; // $3,096
       const oer = computeOER(totalExpenses, grossRentalIncome);
       expect(oer).toBeGreaterThanOrEqual(0);
       expect(oer).toBeLessThanOrEqual(100);
-      // 2760 / 18000 * 100 ≈ 15.33%
-      expect(oer).toBeCloseTo(15.33, 1);
+      // 3096 / 23400 * 100 ≈ 13.23%
+      expect(oer).toBeCloseTo(13.23, 1);
     });
 
     it('zero expenses → 0% OER', () => {
@@ -336,7 +384,7 @@ describe('PaperWorking REI Metrics — Full Spec Validation', () => {
     });
 
     it('computeOccupancyMetric returns a valid state when unit counts are missing', () => {
-      // Without unit counts and without a strategyType, the metric falls back to
+      // Without unit counts and without a dispositionType, the metric falls back to
       // vacancy-rate-based computation or returns a projected state.
       // Any defined MetricState is acceptable — the test guards against crashes.
       const result = computeOccupancyMetric({ financials: {} });
@@ -364,7 +412,9 @@ describe('PaperWorking REI Metrics — Full Spec Validation', () => {
     it('should be between 0% and 100%', () => {
       // computeBreakEvenOccupancy(totalAnnualExpenses, annualDebtService, grossPotentialRent)
       const annualExpenses   = (GOLDEN.holdingCostTaxes + GOLDEN.holdingCostInsurance + GOLDEN.monthlyMaintenanceReserve) * 12;
-      const annualDebtService = computeAnnualDebtService(GOLDEN.loanAmount, 7, 360);
+      const annualDebtService = computeAnnualDebtService(
+        GOLDEN.loanAmount, GOLDEN.loanInterestRate, GOLDEN.loanTermYears * 12
+      );
       const grossPotentialRent = GOLDEN.monthlyGrossRent * 12;
       const beo = computeBreakEvenOccupancy(annualExpenses, annualDebtService, grossPotentialRent);
       expect(beo).toBeGreaterThanOrEqual(0);
@@ -450,6 +500,46 @@ describe('PaperWorking REI Metrics — Full Spec Validation', () => {
       const weightedCapRate = computeCapRate(totalNOI, totalValue);
       expect(weightedCapRate).toBeCloseTo(4.0, 1);
       expect(weightedCapRate).not.toBeCloseTo(5.5, 1); // not the simple average
+    });
+  });
+
+  // ── Golden-File Integration Test ───────────────────────────────────────────
+  describe('Golden-File Integration Test (deriveAllMetrics)', () => {
+    it('should verify the 5 locked outputs for the spec seed inputs', () => {
+      const financials = {
+        purchasePrice:                 GOLDEN.purchasePrice,
+        monthlyGrossRent:              GOLDEN.monthlyGrossRent,
+        vacancyRatePercent:            GOLDEN.vacancyRatePercent,
+        propertyManagementFeePercent:  GOLDEN.propertyManagementFeePercent,
+        holdingCostTaxes:              GOLDEN.holdingCostTaxes,
+        holdingCostInsurance:          GOLDEN.holdingCostInsurance,
+        holdingCostUtilities:          GOLDEN.holdingCostUtilities,
+        monthlyMaintenanceReserve:     GOLDEN.monthlyMaintenanceReserve,
+        monthlyHOA:                    GOLDEN.monthlyHOA,
+        loanAmount:                    GOLDEN.loanAmount,
+        loanInterestRate:              GOLDEN.loanInterestRate,
+        loanTermYears:                 GOLDEN.loanTermYears,
+        totalCashInvested:             GOLDEN.totalCashInvested,
+        estimatedARV:                  GOLDEN.estimatedARV,
+        projectedRehabCost:            GOLDEN.rehabCost,
+      };
+
+      const metrics = deriveAllMetrics(
+        financials as any,
+        GOLDEN.estimatedARV,
+        'RENT',
+        1,
+        new Date().toISOString()
+      );
+
+      // Verify the 5 locked outputs (NOI, Cap Rate, DSCR, GRM, CoC)
+      // BUG-8 REVERT: All values on gross-scheduled-rent basis per P6 canon.
+      // PM fee = 10% of $23,400 (gross) = $2,340; NOT 10% of $21,762 (effective).
+      expect(metrics.noi).toBe(12_486);
+      expect(metrics.capRate).toBe(4.48);
+      expect(metrics.dscr).toBe(0.738);
+      expect(metrics.grossRentMultiplier).toBe(11.92);
+      expect(metrics.cashOnCashReturn).toBe(-7.41);
     });
   });
 });

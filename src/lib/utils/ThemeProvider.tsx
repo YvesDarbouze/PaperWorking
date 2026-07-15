@@ -147,46 +147,30 @@ interface ThemeProviderProps {
  * Add this in src/app/layout.tsx around {children}.
  */
 export function ThemeProvider({ children }: ThemeProviderProps) {
-  const [theme, setThemeState] = useState<ThemeMode>('dark');
-
-  // Sync on mount from localStorage or system preference
-  useEffect(() => {
-    let saved: ThemeMode | null = null;
-    try {
-      saved = localStorage.getItem('pw-theme') as ThemeMode | null;
-    } catch { /* SSR guard */ }
-
-    const resolved: ThemeMode =
-      saved === 'light' || saved === 'dark'
-        ? saved
-        : (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
-
-    applyTheme(resolved);
-    setThemeState(resolved);
-  }, []);
+  const theme = 'dark';
 
   const applyTheme = useCallback((mode: ThemeMode) => {
     const root = document.documentElement;
-    root.setAttribute('data-theme', mode);
-    root.classList.remove('light', 'dark');
-    root.classList.add(mode);
-    try { localStorage.setItem('pw-theme', mode); } catch { /* SSR guard */ }
+    root.setAttribute('data-theme', 'dark');
+    root.classList.remove('light');
+    root.classList.add('dark');
+    try { localStorage.setItem('pw-theme', 'dark'); } catch { /* SSR guard */ }
   }, []);
 
-  const setTheme = useCallback((mode: ThemeMode) => {
-    applyTheme(mode);
-    setThemeState(mode);
+  // Sync on mount: always force dark theme
+  useEffect(() => {
+    applyTheme('dark');
   }, [applyTheme]);
+
+  const setTheme = useCallback((_mode: ThemeMode) => {
+    // No-op to lock to dark mode
+  }, []);
 
   const toggleTheme = useCallback(() => {
-    setThemeState(prev => {
-      const next: ThemeMode = prev === 'dark' ? 'light' : 'dark';
-      applyTheme(next);
-      return next;
-    });
-  }, [applyTheme]);
+    // No-op to lock to dark mode
+  }, []);
 
-  const bg = theme === 'dark' ? '#121014' : '#FDFFFC';
+  const bg = '#121014'; // Always dark background
 
   return (
     <ThemeToggleContext.Provider value={{ theme, toggleTheme, setTheme }}>

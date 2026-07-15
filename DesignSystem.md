@@ -7,9 +7,7 @@
 
 ## 1. Themes
 
-The app defaults to **dark mode**. The `<html>` tag carries `data-theme="dark"` and class `dark`. A toggle switches to light. **Both themes must look correct** — never hard-code dark-only hex values.
-
-Set theme via: `document.documentElement.setAttribute('data-theme', 'dark' | 'light')` + toggle `.dark` class.
+PaperWorking is night-theme only. Never generate a light variant. The `<html>` tag carries `data-theme="dark"` and class `dark` permanently. All styles are optimized for a high-fidelity obsidian/dark canvas.
 
 ---
 
@@ -19,72 +17,72 @@ All values are CSS custom properties. **Never hard-code a hex color that isn't a
 
 ### 2.1 Brand / Accent
 
-| Token | Light | Dark | Usage |
-|-------|-------|------|-------|
-| `--color-primary` | `#00CE8E` | `#00DD94` | All accents, CTAs, interactive highlights |
-| `--color-on-primary` | `#0d0a0b` | `#0d0a0b` | Text on primary-colored surfaces |
-| `--color-primary-container` | `rgba(0,206,142,0.08)` | `rgba(0,221,148,0.14)` | Tinted badge/chip backgrounds |
-| `--color-on-primary-container` | `#00CE8E` | `#00DD94` | Text inside primary containers |
-| `--color-inverse-primary` | `#00DD94` | `#00CE8E` | Accent on opposite-theme surfaces |
-| `--pw-accent` (alias) | `#00CE8E` | `#00DD94` | Use this alias in components |
+| Token | Night Value | Usage |
+|-------|-------------|-------|
+| `--color-primary` | `#00DD94` | All accents, CTAs, interactive highlights |
+| `--color-on-primary` | `#0d0a0b` | Text on primary-colored surfaces |
+| `--color-primary-container` | `rgba(0,221,148,0.14)` | Tinted badge/chip backgrounds |
+| `--color-on-primary-container` | `#00DD94` | Text inside primary containers |
+| `--color-inverse-primary` | `#00CE8E` | Accent on opposite-theme surfaces |
+| `--pw-accent` (alias) | `#00DD94` | Use this alias in components |
 
 > **Rule**: There is no purple, violet, or magenta anywhere in PaperWorking. If you see purple: it's a bug.
 
 ### 2.2 Surfaces
 
-| Token | Light | Dark |
-|-------|-------|------|
-| `--color-background` | `#FFFFFF` | `#0d0a0b` |
-| `--color-surface` | `#FFFFFF` | `#121317` |
-| `--color-surface-dim` | `#F8F9FC` | `#0d0a0b` |
-| `--color-surface-container-lowest` | `#FFFFFF` | `#0d0a0b` |
-| `--color-surface-container-low` | `#F8F9FC` | `#15161a` |
-| `--color-surface-container` | `#F8F9FC` | `#18191D` |
-| `--color-surface-container-high` | `#F0F1F5` | `#1f2127` |
-| `--color-surface-container-highest` | `#EFF2F7` | `#282a32` |
-| `--pw-bg` (alias) | `#FFFFFF` | `#0d0a0b` |
-| `--pw-surface` (alias) | `#FFFFFF` | `#121317` |
-| `--pw-forest` (alias) | `#F8F9FC` | `#18191D` |
+| Token | Night Value | Usage / Description |
+|-------|-------------|---------------------|
+| `--color-background` | `#0d0a0b` | Base page canvas background |
+| `--color-surface` | `#121317` | Standard surface container background |
+| `--color-surface-dim` | `#0d0a0b` | Dimmed surface background |
+| `--color-surface-container-lowest` | `#0d0a0b` | Lowest surface container background |
+| `--color-surface-container-low` | `#15161a` | Low surface container background |
+| `--color-surface-container` | `#18191D` | Default surface container background |
+| `--color-surface-container-high` | `#1f2127` | Elevated surface container background |
+| `--color-surface-container-highest` | `#282a32` | Highest surface container background |
+| `--pw-bg` (alias) | `#0d0a0b` | Primary backdrop alias |
+| `--pw-surface` (alias) | `#121317` | Standard container alias |
+| `--pw-forest` (alias) | `#18191D` | Deep surface alias |
 
 ### 2.3 On-Surface Text
 
-| Token | Light | Dark |
-|-------|-------|------|
-| `--color-on-surface` | `#121317` | `#FFFFFF` |
-| `--color-on-surface-variant` | `#45474D` | `#9E9DA0` |
-| `--pw-black` (alias) | `#121317` | `#FFFFFF` |
-| `--pw-muted` (alias) | `#45474D` | `#9E9DA0` |
+| Token | Night Value | Description |
+|-------|-------------|-------------|
+| `--color-on-surface` | `#FFFFFF` | Primary text color |
+| `--color-on-surface-variant` | `#9E9DA0` | Secondary / muted text color |
+| `--pw-black` (alias) | `#FFFFFF` | Primary text alias |
+| `--pw-muted` (alias) | `#9E9DA0` | Muted text alias |
 
 ### 2.4 Outlines / Borders
 
-| Token | Light | Dark |
-|-------|-------|------|
-| `--color-outline` | `#CDD4DC` | `#45474D` |
-| `--color-outline-variant` | `rgba(33,34,38,0.12)` | `rgba(230,234,240,0.12)` |
-| `--pw-border` (alias) | `rgba(33,34,38,0.12)` | `rgba(230,234,240,0.12)` |
+| Token | Night Value | Description |
+|-------|-------------|-------------|
+| `--color-outline` | `#45474D` | General borders |
+| `--color-outline-variant` | `rgba(230,234,240,0.12)` | Subtle borders |
+| `--pw-border` (alias) | `rgba(230,234,240,0.12)` | Component borders |
 
 ### 2.5 Semantic Colors
 
-| Token | Light | Dark | Usage |
-|-------|-------|------|-------|
-| `--color-positive` | `#3f7d20` | `#3f7d20` | Market up, gains, positive cash flow |
-| `--color-error` | `#C43D1A` | `#F06543` | Market down, losses, errors, negative cash flow |
-| `--color-tertiary` | `#7A5500` | `#C4A35A` | Warm amber — warnings, cautions |
+| Token | Night Value | Usage |
+|-------|-------------|-------|
+| `--color-positive` | `#3f7d20` | Market up, gains, positive cash flow |
+| `--color-error` | `#F06543` | Market down, losses, errors, negative cash flow |
+| `--color-tertiary` | `#C4A35A` | Warm amber — warnings, cautions |
 
 ### 2.6 Glass System Tokens
 
-| Token | Light | Dark |
-|-------|-------|------|
-| `--color-glass-bg` | `rgba(255,255,255,0.75)` | `rgba(18,19,29,0.65)` |
-| `--color-glass-border` | `rgba(33,34,38,0.12)` | `rgba(230,234,240,0.12)` |
-| `--color-glass-card-bg` | `linear-gradient(135deg, rgba(255,255,255,0.85), rgba(240,241,245,0.90))` | `linear-gradient(135deg, rgba(30,27,32,0.65), rgba(13,10,11,0.82))` |
-| `--color-glass-card-border` | `rgba(33,34,38,0.08)` | `rgba(253,255,252,0.08)` |
-| `--color-glass-card-shadow` | `0 8px 32px 0 rgba(69,73,85,0.08)` | `0 8px 32px 0 rgba(0,0,0,0.35)` |
-| `--color-glass-panel-bg` | `rgba(255,255,255,0.75)` | `rgba(255,255,255,0.03)` |
-| `--color-glass-panel-border` | `rgba(33,34,38,0.12)` | `rgba(255,255,255,0.10)` |
-| `--color-bento-bg` | `rgba(0,0,0,0.02)` | `rgba(255,255,255,0.02)` |
-| `--color-bento-border` | `rgba(33,34,38,0.08)` | `rgba(255,255,255,0.08)` |
-| `--pw-glass-bg` (alias) | → `--color-glass-bg` | → `--color-glass-bg` |
+| Token | Night Value | Description |
+|-------|-------------|-------------|
+| `--color-glass-bg` | `rgba(18,19,29,0.65)` | Backdrop glass fill |
+| `--color-glass-border` | `rgba(230,234,240,0.12)` | Subtle glass divider |
+| `--color-glass-card-bg` | `linear-gradient(135deg, rgba(30,27,32,0.65), rgba(13,10,11,0.82))` | Card glass gradient |
+| `--color-glass-card-border` | `rgba(253, 255, 252, 0.08)` | Card glass border |
+| `--color-glass-card-shadow` | `0 8px 32px 0 rgba(0,0,0,0.35)` | Elevation shadow |
+| `--color-glass-panel-bg` | `rgba(255,255,255,0.03)` | Dialog background |
+| `--color-glass-panel-border` | `rgba(255,255,255,0.10)` | Frosted dialog outline |
+| `--color-bento-bg` | `rgba(255,255,255,0.02)` | Grid cell backdrop |
+| `--color-bento-border` | `rgba(255,255,255,0.08)` | Bento grid divider |
+| `--pw-glass-bg` (alias) | `rgba(18,19,29,0.65)` | Glass fill alias |
 
 ---
 
@@ -170,7 +168,6 @@ backdrop-filter: blur(20px);
 /* Focus */
 border-color: var(--color-brand-primary);
 box-shadow: 0 0 8px var(--input-focus-glow-color);
-/* dark: rgba(0,221,148,0.4)  light: rgba(0,206,142,0.3) */
 ```
 
 ---
@@ -183,8 +180,7 @@ Three tiers + danger. All use CSS variables — **never hard-code button colors*
 
 | Theme | Background | Text | Shadow |
 |-------|-----------|------|--------|
-| Light | `#0d0a0b` (black) | `#FFFFFF` | `0 0 20px -5px rgba(69,73,85,0.4)` |
-| Dark | `#00DD94` (green) | `#0d0a0b` | same |
+| Night | `#00DD94` (green) | `#0d0a0b` | `0 0 20px -5px rgba(69,73,85,0.4)` |
 | Hover | shift bg + `translateY(-1px)` | — | stronger shadow |
 | Active | `scale(0.97)` | — | — |
 
@@ -202,7 +198,6 @@ Border radius: `rounded-xl` (12px) for CTA; `rounded-full` for pill buttons (`.a
 background: var(--pw-btn-secondary-bg);   /* glass bg */
 color: var(--pw-btn-secondary-text);
 border: 1px solid var(--pw-btn-secondary-border);
-/* hover bg: rgba(0,221,148,0.08) */
 ```
 
 ### Tertiary
@@ -210,16 +205,14 @@ border: 1px solid var(--pw-btn-secondary-border);
 ```css
 background: transparent;
 color: var(--pw-btn-tertiary-text);
-border: 1px solid rgba(0,221,148,0.15);  /* dark */
-         rgba(0,206,142,0.20);             /* light */
+border: 1px solid rgba(0,221,148,0.15);
 ```
 
 ### Danger
 
 ```css
-background: var(--color-error);  /* #C43D1A light / #F06543 dark */
-color: #FFFFFF;   /* light */
-color: #0d0a0b;   /* dark */
+background: var(--color-error);  /* #F06543 */
+color: #0d0a0b;
 ```
 
 ---
@@ -334,7 +327,7 @@ letter-spacing: wider; border-radius: var(--radius-full);
 ## 12. Financial Display Rules
 
 - Positive values: `color: var(--color-positive)` (`#3f7d20`)
-- Negative values: `color: var(--color-error)` (`#C43D1A` light / `#F06543` dark)
+- Negative values: `color: var(--color-error)` (`#F06543`)
 - All numbers: `font-family: var(--font-mono); font-variant-numeric: tabular-nums;`
 - Missing inputs: show `"Awaiting Purchase Price"` — never `$0`
 - Demo data: always show "Illustrative demo data" badge
@@ -352,8 +345,7 @@ letter-spacing: wider; border-radius: var(--radius-full);
 ```css
 /* WCAG 2.1 §2.4.11 */
 *:focus-visible {
-  outline: 2px solid rgba(253,255,252,0.75); /* dark */
-  outline: 2px solid #454955;                 /* light */
+  outline: 2px solid rgba(253,255,252,0.75);
   outline-offset: 3px;
   border-radius: var(--radius-sm);
 }
@@ -376,14 +368,14 @@ letter-spacing: wider; border-radius: var(--radius-full);
 
 | DO | DON'T |
 |----|-------|
-| Use `var(--color-primary)` for accents | Hard-code `#00DD94` or `#00CE8E` |
+| Use `var(--color-primary)` for accents | Hard-code `#00DD94` |
 | Use `.glass-card` / `.glass-panel` for surfaces | Plain `background-color` on floated panels |
 | Use `.luminous-button` for primary CTAs | Create bespoke button styles |
 | Match `border-radius` to context | Use `rounded-2xl` in the dashboard |
 | `var(--color-positive)` / `var(--color-error)` for financials | Hardcoded green/red |
 | `font-mono` + `tabular-nums` for all financial figures | `font-sans` for data display |
 | Uppercase + tracked labels for section heads | Mixed-case labels for data categories |
-| Both light and dark themes correct | Design for dark only |
+| PaperWorking is night-theme only. Never generate a light variant. | Generate or support a light variant |
 | "Illustrative demo data" badge on all demo surfaces | Display demo numbers without disclosure |
 
 ---
@@ -392,34 +384,32 @@ letter-spacing: wider; border-radius: var(--radius-full);
 
 ```
 PRIMARY ACCENT
-  Light: #00CE8E   Dark: #00DD94   → var(--color-primary)
+  Night: #00DD94   → var(--color-primary)
 
 BACKGROUND
-  Light: #FFFFFF   Dark: #0d0a0b   → var(--color-background)
+  Night: #0d0a0b   → var(--color-background)
 
 SURFACE
-  Light: #FFFFFF   Dark: #121317   → var(--color-surface)
+  Night: #121317   → var(--color-surface)
 
-SURFACE MID
-  Light: #F8F9FC   Dark: #18191D   → var(--color-surface-container)
+SURFACE CONTAINER
+  Night: #18191D   → var(--color-surface-container)
 
 TEXT PRIMARY
-  Light: #121317   Dark: #FFFFFF   → var(--color-on-surface)
+  Night: #FFFFFF   → var(--color-on-surface)
 
 TEXT MUTED
-  Light: #45474D   Dark: #9E9DA0   → var(--color-on-surface-variant)
+  Night: #9E9DA0   → var(--color-on-surface-variant)
 
 POSITIVE
-  Both:  #3f7d20                   → var(--color-positive)
+  Night: #3f7d20   → var(--color-positive)
 
 NEGATIVE
-  Light: #C43D1A   Dark: #F06543   → var(--color-error)
+  Night: #F06543   → var(--color-error)
 
 BORDER
-  Light: rgba(33,34,38,0.12)
-  Dark:  rgba(230,234,240,0.12)    → var(--pw-border)
+  Night: rgba(230,234,240,0.12)    → var(--pw-border)
 
 GLASS BG
-  Light: rgba(255,255,255,0.75)
-  Dark:  rgba(18,19,29,0.65)       → var(--color-glass-bg)
+  Night: rgba(18,19,29,0.65)       → var(--color-glass-bg)
 ```

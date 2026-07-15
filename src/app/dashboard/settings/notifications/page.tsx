@@ -20,8 +20,8 @@ const CATEGORY_ROWS: {
 }[] = [
   {
     key: 'syndication',
-    label: 'Syndication & Investing',
-    description: 'Syndication invites, pledge status updates, and LOI commitments.',
+    label: 'Investment Team & Co-Investing',
+    description: 'Investment Team invites, pledge status updates, and LOI commitments.',
     iconName: 'notifications'
   },
   {
@@ -54,12 +54,6 @@ const CATEGORY_ROWS: {
     description: 'Rehab budget overruns, daily burn rates, and phase transitions.',
     iconName: 'warning'
   }
-];
-
-const THEME_OPTIONS = [
-  { value: 'light' as const, label: 'Light Mode', iconName: 'light_mode', description: 'Default bright interface' },
-  { value: 'dark' as const, label: 'Dark Mode', iconName: 'dark_mode', description: 'Easier on the eyes at night' },
-  { value: 'system' as const, label: 'Sync with System', iconName: 'desktop_windows', description: 'Matches your OS preference' },
 ];
 
 const TIMEZONES = [

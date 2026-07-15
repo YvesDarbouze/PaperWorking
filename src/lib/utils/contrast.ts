@@ -64,6 +64,9 @@ export const PW_COLORS = {
 
   // Vault surface (external investor portal)
   vault:          '#1a1a1a',
+
+  // Night background token (locked theme)
+  nightBg:        '#121014',
 } as const;
 
 export type PWColor = (typeof PW_COLORS)[keyof typeof PW_COLORS];

@@ -27,12 +27,12 @@ import toast from "react-hot-toast";
 // ─── Navigation contract ──────────────────────────────────────────────────────
 
 const PRIMARY_NAV = [
-  { name: "Portfolio", href: "/dashboard/command-center", icon: "space_dashboard" },
-  { name: "Projects",  href: "/dashboard/projects",       icon: "folder"          },
-  { name: "Insights",  href: "/dashboard/insights",       icon: "monitoring"      },
-  { name: "Reports",   href: "/dashboard/reports",        icon: "bar_chart_4_bars"},
-  { name: "Inbox",     href: "/dashboard/inbox",          icon: "inbox"           },
-  { name: "Team",      href: "/dashboard/team",           icon: "group"           },
+  { name: "Portfolio",     href: "/dashboard/command-center", icon: "space_dashboard" },
+  { name: "Insights",      href: "/dashboard/insights",       icon: "monitoring"      },
+  { name: "Projects",      href: "/dashboard/projects",       icon: "folder"          },
+  { name: "Reports",       href: "/dashboard/reports",        icon: "bar_chart_4_bars"},
+  { name: "Inbox",         href: "/dashboard/inbox",          icon: "inbox"           },
+  { name: "Team",          href: "/dashboard/team",           icon: "group"           },
 ] as const;
 
 const ACCOUNT_NAV = [
@@ -95,37 +95,6 @@ function UserAvatar({ photoURL, displayName, email, size = 32, isDark }: AvatarP
   );
 }
 
-// ─── Theme toggle ─────────────────────────────────────────────────────────────
-
-function ThemeToggle({ isDark }: { isDark: boolean }) {
-  const { toggleTheme } = useTheme();
-
-  return (
-    <button
-      onClick={toggleTheme}
-      aria-label={`Switch to ${isDark ? "light" : "dark"} mode`}
-      className="relative flex items-center gap-2.5 w-full px-3 py-2 rounded-lg transition-all duration-150 group"
-      style={{
-        color: isDark ? "rgba(253,255,252,0.65)" : "rgba(55,59,69,0.82)",
-        background: isDark ? "#0d0a0b" : "#FDFFFC",
-      }}
-    >
-      <span
-        className="material-symbols-outlined text-[18px] flex-shrink-0 transition-transform duration-300"
-        style={{ fontVariationSettings: "'FILL' 1" }}
-      >
-        {isDark ? "light_mode" : "dark_mode"}
-      </span>
-      <span className="text-[12px]" style={{ fontWeight: 500, letterSpacing: "-0.01em" }}>
-        {isDark ? "Light mode" : "Dark mode"}
-      </span>
-      <span
-        className="absolute inset-0 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity duration-150 pointer-events-none"
-        style={{ background: isDark ? "rgba(255,255,255,0.05)" : "rgba(0,0,0,0.04)" }}
-      />
-    </button>
-  );
-}
 
 // ─── Nav item ─────────────────────────────────────────────────────────────────
 
@@ -322,7 +291,16 @@ export function Sidebar() {
 
       {/* ── Primary navigation ──────────────────────────────────────────── */}
       <nav className="flex-1 overflow-y-auto custom-scrollbar px-2 space-y-0.5">
-        {PRIMARY_NAV.map((item) => {
+        {PRIMARY_NAV.filter((item) => {
+          if (item.name === "Projects") {
+            const isVendor =
+              profile?.role === "Vendor" ||
+              profile?.accountType === "vendor" ||
+              profile?.subscriptionPlan === "Vendor Network";
+            return !isVendor;
+          }
+          return true;
+        }).map((item) => {
           const isActive =
             pathname.startsWith(item.href) ||
             (item.href === "/dashboard/command-center" && pathname === "/dashboard");
@@ -372,8 +350,6 @@ export function Sidebar() {
         className="px-2 pb-5 pt-3 space-y-1.5"
         style={{ borderTop: `1px solid ${dividerColor}` }}
       >
-        {/* Theme toggle */}
-        {mounted ? <ThemeToggle isDark={isDark} /> : <div className="h-[36px]" />}
 
         {/* Auth skeleton */}
         {!mounted || authLoading || !user || !profile ? (

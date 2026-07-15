@@ -4,6 +4,8 @@ import React, { useMemo } from 'react';
 import { ArrowUpRight, ArrowDownRight, Minus } from 'lucide-react';
 import { ProjectFinancials } from '@/types/schema';
 
+import { deriveAllMetrics } from '@/lib/metrics/reiMetrics';
+
 function formatCurrency(val: number) {
   const absVal = Math.abs(val);
   const sign = val < 0 ? '-' : '';
@@ -33,32 +35,21 @@ function buildMetrics(financials: ProjectFinancials): MetricTile[] {
     projectedRehabCost = 0,
     fixedAcquisitionCosts = 0,
     estimatedARV = 0,
-    projectedMonthlyRent,
-    vacancyRatePercent,
   } = financials;
 
   const allInCost = purchasePrice + projectedRehabCost + fixedAcquisitionCosts;
 
-  const mao = estimatedARV * 0.7 - projectedRehabCost;
+  // Use the canonical metrics engine to derive NOI, Cap Rate, and Cash Flow
+  const derived = deriveAllMetrics(financials);
+  const noi = derived.noi;
+  const capRate = derived.capRate;
+  const estimatedAnnualCashFlow = derived.annualCashFlow;
+
+  const mao = derived.mao ?? 0;
   const rulePass = purchasePrice > 0 && purchasePrice <= mao;
 
-  const grossRent = projectedMonthlyRent || 0;
-  const vacancyFactor = 1 - (vacancyRatePercent ?? 7) / 100;
-  const annualEffectiveIncome = grossRent * 12 * vacancyFactor;
-  const annualOperatingExpenses = annualEffectiveIncome * 0.35;
-  const noi = annualEffectiveIncome - annualOperatingExpenses;
-  const capRate = estimatedARV > 0 && noi > 0 ? (noi / estimatedARV) * 100 : 0;
-
-  const annualHoldingCosts =
-    (financials.holdingCostTaxes || 0) * 12 +
-    (financials.holdingCostInsurance || 0) * 12 +
-    (financials.holdingCostUtilities || 0) * 12;
-  const annualLoanInterest =
-    (financials.loanAmount || 0) *
-    ((financials.loanInterestRate || 0) / 100);
-  const estimatedAnnualCashFlow = noi - annualHoldingCosts - annualLoanInterest;
-
   const allInRatio = estimatedARV > 0 ? allInCost / estimatedARV : 0;
+
 
   const getTrend = (val: number, goodThreshold: number, badThreshold: number): 'up' | 'down' | 'neutral' => {
     if (val >= goodThreshold) return 'up';

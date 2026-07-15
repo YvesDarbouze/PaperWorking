@@ -8,6 +8,8 @@ import { toast } from 'react-hot-toast';
 import { ChevronLeft, ChevronRight, CheckCircle, Info, Calendar, AlertCircle, CircleDot } from 'lucide-react';
 import { RentEstimateCard } from './steps/RentEstimateCard';
 
+import { deriveAllMetrics } from '@/lib/metrics';
+
 interface AcquisitionInterviewProps {
   deal: Project;
 }
@@ -32,7 +34,8 @@ export default function AcquisitionInterview({ deal }: AcquisitionInterviewProps
   const [formData, setFormData] = useState<any>({
     propertyName: deal.propertyName || '',
     address: deal.address || '',
-    strategyType: deal.strategyType || 'Fix & Flip',
+    dispositionType: deal.dispositionType || 'SALE',
+    subStrategy: deal.subStrategy || 'FLIP',
     financials: {
       // R1: Entry path & ownership
       entryPath: deal.financials?.entryPath || '',
@@ -93,7 +96,8 @@ export default function AcquisitionInterview({ deal }: AcquisitionInterviewProps
     setFormData({
       propertyName: deal.propertyName || '',
       address: deal.address || '',
-      strategyType: deal.strategyType || 'Fix & Flip',
+      dispositionType: deal.dispositionType || 'SALE',
+      subStrategy: deal.subStrategy || 'FLIP',
       financials: {
         entryPath: deal.financials?.entryPath || '',
         ownershipPercentage: deal.financials?.ownershipPercentage ?? 100,
@@ -200,18 +204,60 @@ export default function AcquisitionInterview({ deal }: AcquisitionInterviewProps
 
     // ━━━ Q5: Strategy (always shown) ━━━
     {
-      id: 'strategyType',
-      question: "What investment strategy are you executing?",
-      description: "This drives all downstream metrics, cash flow analyses, and checklists.",
-      field: 'strategyType',
+      id: 'dispositionType',
+      question: "What is your disposition type?",
+      description: "How you plan to exit the property (Sale / Rent / Lease).",
+      field: 'dispositionType',
       type: 'select',
       options: [
-        { label: 'Fix & Flip', value: 'Fix & Flip' },
-        { label: 'Buy & Hold Rental', value: 'Buy & Hold' },
-        { label: 'BRRRR (Buy, Rehab, Rent, Refinance, Repeat)', value: 'Rent' },
-        { label: 'Wholesale / Direct Sell', value: 'Sell' },
+        { label: 'Sale', value: 'SALE' },
+        { label: 'Rent', value: 'RENT' },
+        { label: 'Lease', value: 'LEASE' },
       ],
       required: true,
+    },
+    {
+      id: 'subStrategySale',
+      question: "Select Sale Strategy",
+      description: "Specific strategy for selling the asset.",
+      field: 'subStrategy',
+      type: 'select',
+      options: [
+        { label: 'Fix & Flip', value: 'FLIP' },
+        { label: 'Wholesale / Direct Sell', value: 'WHOLESALE' },
+        { label: 'Build & Sell', value: 'BUILD_SELL' },
+      ],
+      required: true,
+      condition: (data: any) => data.dispositionType === 'SALE',
+    },
+    {
+      id: 'subStrategyRent',
+      question: "Select Rental Strategy",
+      description: "Specific strategy for renting the asset.",
+      field: 'subStrategy',
+      type: 'select',
+      options: [
+        { label: 'Long Term', value: 'LONG_TERM' },
+        { label: 'Short Term', value: 'SHORT_TERM' },
+        { label: 'Mid Term', value: 'MID_TERM' },
+        { label: 'BRRRR (Buy, Rehab, Rent, Refinance, Repeat)', value: 'BRRRR' },
+      ],
+      required: true,
+      condition: (data: any) => data.dispositionType === 'RENT',
+    },
+    {
+      id: 'subStrategyLease',
+      question: "Select Lease Strategy",
+      description: "Specific strategy for leasing the asset.",
+      field: 'subStrategy',
+      type: 'select',
+      options: [
+        { label: 'Triple Net (NNN)', value: 'NNN' },
+        { label: 'Ground Lease', value: 'GROUND' },
+        { label: 'Lease Option', value: 'LEASE_OPTION' },
+      ],
+      required: true,
+      condition: (data: any) => data.dispositionType === 'LEASE',
     },
 
     // ═══════════════════════════════════════════════════════
@@ -310,7 +356,7 @@ export default function AcquisitionInterview({ deal }: AcquisitionInterviewProps
       required: true,
       condition: (data: any) =>
         data.financials.entryPath === 'new_acquisition' &&
-        (data.strategyType === 'Buy & Hold' || data.strategyType === 'Rent'),
+        data.dispositionType === 'RENT',
     },
 
     // Estimated ARV (Flip / Wholesale only)
@@ -324,7 +370,7 @@ export default function AcquisitionInterview({ deal }: AcquisitionInterviewProps
       required: true,
       condition: (data: any) =>
         data.financials.entryPath === 'new_acquisition' &&
-        (data.strategyType === 'Fix & Flip' || data.strategyType === 'Sell'),
+        data.dispositionType === 'SALE',
     },
 
     // Projected Sale Price (Flip / Wholesale only)
@@ -338,7 +384,7 @@ export default function AcquisitionInterview({ deal }: AcquisitionInterviewProps
       required: true,
       condition: (data: any) =>
         data.financials.entryPath === 'new_acquisition' &&
-        (data.strategyType === 'Fix & Flip' || data.strategyType === 'Sell'),
+        data.dispositionType === 'SALE',
     },
 
     // Target Purchase Price (new acquisition only)
@@ -570,10 +616,14 @@ export default function AcquisitionInterview({ deal }: AcquisitionInterviewProps
       const isOwned = formData.financials.entryPath === 'already_owned';
       const selectedPhase = Number(formData.financials.startingPhase) || 1;
 
+      const dispositionType = formData.dispositionType;
+      const subStrategy = formData.subStrategy;
+
       const updates: Partial<Project> = {
         propertyName: formData.propertyName || `The ${formData.address.split(',')[0]?.trim() || 'Untitled'} Project`,
         address: formData.address,
-        strategyType: formData.strategyType,
+        dispositionType: dispositionType as any,
+        subStrategy: subStrategy as any,
         financials: {
           ...deal.financials,
           // R1: Entry path & ownership
@@ -738,14 +788,18 @@ export default function AcquisitionInterview({ deal }: AcquisitionInterviewProps
   };
 
   // ── Preview inline calculations for Max Offer (70% Rule) ──
-  const isARVandRehabPopulated = formData.strategyType === 'Fix & Flip' && formData.financials.estimatedARV && deal.financials?.projectedRehabCost;
+  const isARVandRehabPopulated = formData.dispositionType === 'SALE' && formData.subStrategy === 'FLIP' && formData.financials.estimatedARV && deal.financials?.projectedRehabCost;
   const computedMAO = useMemo(() => {
     if (!isARVandRehabPopulated) return 0;
     const arv = Number(formData.financials.estimatedARV) || 0;
     const rehab = deal.financials?.projectedRehabCost || 0;
-    const closing = deal.financials?.fixedAcquisitionCosts || 0;
-    return Math.round((arv * 0.70) - rehab - closing);
-  }, [formData.financials.estimatedARV, deal.financials?.projectedRehabCost, deal.financials?.fixedAcquisitionCosts, isARVandRehabPopulated]);
+    const tempFinancials = {
+      estimatedARV: arv,
+      projectedRehabCost: rehab,
+    };
+    const metrics = deriveAllMetrics(tempFinancials as any);
+    return metrics.mao ?? 0;
+  }, [formData.financials.estimatedARV, deal.financials?.projectedRehabCost, isARVandRehabPopulated]);
 
   // ── Crowdfunding ownership preview ──
   const equitySplitNum = Number(formData.financials.equitySplit) || 0;
@@ -755,7 +809,7 @@ export default function AcquisitionInterview({ deal }: AcquisitionInterviewProps
   const advanceCriteria = useMemo(() => {
     const hasAddress = !!formData.address?.trim();
     const hasOwnership = (Number(formData.financials.ownershipPercentage) || 0) > 0;
-    const hasStrategy = !!formData.strategyType;
+    const hasStrategy = !!formData.dispositionType && !!formData.subStrategy;
     const hasEntryPath = !!formData.financials.entryPath;
 
     if (isAlreadyOwned) {

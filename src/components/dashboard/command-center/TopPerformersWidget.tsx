@@ -48,7 +48,7 @@ function derivePerformers(projects: Project[]): PerformerRow[] {
         const m = deriveAllMetrics(
           f,
           f.estimatedCurrentValue || f.estimatedARV,
-          p.strategyType,
+          p.dispositionType,
           p.currentPhase,
           p.createdAt,
         );

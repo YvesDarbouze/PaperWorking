@@ -4,7 +4,7 @@ import React, { useState, useMemo } from 'react';
 import Link from 'next/link';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ChevronLeft, ChevronRight, Activity, Globe, Monitor, Smartphone, Tablet } from 'lucide-react';
-import { DEMO_PROJECTS, computeNOIComponents } from '@/lib/metrics';
+import { DEMO_PROJECTS, deriveAllMetrics } from '@/lib/metrics';
 
 interface MetricCard {
   name: string;
@@ -228,7 +228,7 @@ export default function MetricCarousel() {
 
   // Compute live occupancy rate from DEMO_PROJECTS
   const computedOccupancy = useMemo(() => {
-    const holdProjects = DEMO_PROJECTS.filter(p => p.strategyType === 'Buy & Hold' || p.strategyType === 'Rent');
+    const holdProjects = DEMO_PROJECTS.filter(p => p.dispositionType === 'RENT');
     const totalUnits = holdProjects.reduce((sum, p) => sum + (p.numberOfUnits ?? 0), 0);
     const occupiedUnits = holdProjects.reduce((sum, p) => sum + (p.occupiedUnits ?? 0), 0);
     return totalUnits > 0 ? (occupiedUnits / totalUnits) * 100 : 85.7;
@@ -236,7 +236,7 @@ export default function MetricCarousel() {
 
   // Compute live portfolio NOI components from DEMO_PROJECTS
   const computedNOI = useMemo(() => {
-    const holdProjects = DEMO_PROJECTS.filter(p => p.strategyType === 'Buy & Hold' || p.strategyType === 'Rent');
+    const holdProjects = DEMO_PROJECTS.filter(p => p.dispositionType === 'RENT');
     let totalGrossRentalIncome = 0;
     let totalOtherIncome = 0;
     let totalVacancyLoss = 0;
@@ -245,7 +245,8 @@ export default function MetricCarousel() {
     
     holdProjects.forEach(p => {
       if (p.financials) {
-        const comps = computeNOIComponents(p.financials as any, p.strategyType, p.currentPhase);
+        const metrics = deriveAllMetrics(p.financials as any, undefined, p.dispositionType, p.currentPhase);
+        const comps = metrics.noiComponents;
         totalGrossRentalIncome += comps.grossRentalIncome;
         totalOtherIncome += comps.otherIncome;
         totalVacancyLoss += comps.vacancyLoss;

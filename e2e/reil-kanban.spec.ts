@@ -19,6 +19,10 @@ test.describe('REIL KanBan Board', () => {
   let state: MockState;
 
   test.beforeEach(async ({ page }) => {
+    await page.addInitScript(() => {
+      window.localStorage.clear();
+      window.localStorage.setItem('pw_cookie_consent', JSON.stringify({ essential: true, analytics: true, marketing: true }));
+    });
     state = createDefaultState();
     await setupMocks(page, state);
   });
@@ -108,7 +112,7 @@ test.describe('REIL KanBan Board', () => {
 
     // Wizard step 1 heading
     await expect(
-      page.locator('h2').filter({ hasText: /where is the property/i }).first()
+      page.locator('h3').filter({ hasText: /Project Intake Router/i }).first()
     ).toBeVisible({ timeout: 8000 });
   });
 
@@ -161,7 +165,7 @@ test.describe('REIL KanBan Board', () => {
     // Additionally check for wizard heading as a strong signal
     const headingVisible = await page
       .locator('h2')
-      .filter({ hasText: /where is the property/i })
+      .filter({ hasText: /Let's start your Project/i })
       .first()
       .isVisible({ timeout: 2000 })
       .catch(() => false);

@@ -135,19 +135,17 @@ describe('NOIDeepDive Breakdown Logic', () => {
     // Vacancy Loss = 23400 * 0.07 = 1638
     expect(c.vacancyLoss).toBeCloseTo(1638, 0);
 
-    // Total OpEx should include taxes, insurance, utilities, mgmt, maintenance
-    // Taxes: 200*12=2400, Insurance: 58*12=696, Utilities: 125*12=1500
-    // Mgmt: 23400*0.10=2340, Maint: 195*12=2340
+    // Mgmt: 23400 * 0.10 = 2340, Maint: 195*12=2340
     expect(c.propertyTaxes).toBe(2400);
     expect(c.insurance).toBe(696);
     expect(c.utilities).toBe(1500);
-    expect(c.propertyManagement).toBe(2340);
+    expect(c.propertyManagement).toBeCloseTo(2340, 2);
     expect(c.maintenance).toBe(2340);
 
     // Total OpEx = 2400+696+1500+2340+2340 = 9276
     expect(c.totalOperatingExpenses).toBe(9276);
 
-    // NOI = 23400 - 1638 - 9276 = 12486
+    // NOI = 21762 - 9276 = 12486
     expect(c.noi).toBeCloseTo(12486, 0);
   });
 

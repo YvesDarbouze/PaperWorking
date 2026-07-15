@@ -9,7 +9,8 @@ describe('deriveAllProjectMetrics', () => {
     organizationId: 'org-1',
     status: 'Lead',
     phaseStatus: 'Phase 1: Acquisition',
-    strategyType: 'Buy & Hold',
+    dispositionType: 'RENT',
+    subStrategy: 'LONG_TERM',
     assetClass: 'Residential',
     createdAt: new Date(), // Set to now so elapsed is 0, falling back to estimatedTimelineDays (90)
     updatedAt: new Date(),

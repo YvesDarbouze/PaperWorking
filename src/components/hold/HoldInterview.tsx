@@ -97,7 +97,9 @@ const ALL_SECTIONS: SectionDef[] = [
 
 export default function HoldInterview({ deal }: HoldInterviewProps) {
   const { user } = useAuth();
-  const strategy = deal.strategyType || 'Fix & Flip';
+  const strategy = deal.dispositionType === 'RENT'
+    ? (deal.subStrategy === 'BRRRR' ? 'Rent' : 'Buy & Hold')
+    : (deal.subStrategy === 'WHOLESALE' ? 'Sell' : 'Fix & Flip');
 
   // ── Form State ──────────────────────────────────────
   const [formData, setFormData] = useState(() => buildFormData(deal));

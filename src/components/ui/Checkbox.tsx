@@ -35,6 +35,7 @@ const Checkbox = React.forwardRef<HTMLInputElement, CheckboxProps>(
           disabled={disabled}
           checked={activeChecked}
           onChange={handleChange}
+          onClick={(e) => e.stopPropagation()}
           {...props}
         />
         <span

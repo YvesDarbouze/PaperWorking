@@ -5,7 +5,7 @@ import {
   Home, Calendar, Users, AlertTriangle, CheckCircle2, XCircle,
   Plus, Trash2, BarChart3, Clock, Building2,
 } from 'lucide-react';
-import { computeOccupancyRateByDays } from '@/lib/metrics/reiMetrics';
+import { deriveAllMetrics } from '@/lib/metrics/reiMetrics';
 
 /* ═══════════════════════════════════════════════════════════════
    OCCUPANCY COLLECTION TERMINAL
@@ -191,7 +191,14 @@ export function OccupancyCollectionTerminal({
   /* ── Computations ── */
   const computed = useMemo(() => {
     const totalVacantDays = units.reduce((sum, u) => sum + u.vacantDays, 0);
-    const occupancyRate = computeOccupancyRateByDays(totalVacantDays, totalDays * units.length);
+    const totalPossibleDays = totalDays * units.length;
+    const vacancyRatePercent = totalPossibleDays > 0 ? (totalVacantDays / totalPossibleDays) * 100 : 0;
+    const tempFinancials = {
+      purchasePrice: 100000,
+      vacancyRatePercent,
+    };
+    const metrics = deriveAllMetrics(tempFinancials as any, undefined, 'RENT', 3);
+    const occupancyRate = metrics.occupancyRate;
     const totalOccupiedDays = (totalDays * units.length) - totalVacantDays;
     const occupiedUnitCount = units.filter(u => u.status === 'occupied').length;
 
@@ -209,7 +216,13 @@ export function OccupancyCollectionTerminal({
     const avgVacant = units.length > 0
       ? units.reduce((s, u) => s + u.vacantDays, 0) / units.length
       : 0;
-    return computeOccupancyRateByDays(Math.round(avgVacant), totalDays);
+    const vacancyRatePercent = totalDays > 0 ? (avgVacant / totalDays) * 100 : 0;
+    const tempFinancials = {
+      purchasePrice: 100000,
+      vacancyRatePercent,
+    };
+    const metrics = deriveAllMetrics(tempFinancials as any, undefined, 'RENT', 3);
+    return metrics.occupancyRate;
   }, [units, totalDays]);
 
   const stableOnChange = useCallback((values: OccupancyValues) => {

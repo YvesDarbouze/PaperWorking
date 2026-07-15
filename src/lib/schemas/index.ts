@@ -45,7 +45,6 @@ export {
 export {
   projectStatusEnum,
   phaseStatusEnum,
-  strategyTypeEnum,
   assetClassEnum,
   projectRoleEnum,
   loanStatusEnum,

@@ -263,14 +263,18 @@ async function seed() {
     id: DEAL_ID,
     organizationId: ORG_ID,
     ownerUid: LEAD_INVESTOR_UID,
-    propertyName: '123 Main Street Flip',
-    address: '123 Main Street, Miami, FL 33101',
-    status: 'Renovating',
+    propertyName: '742 Evergreen Terrace',
+    address: '742 Evergreen Terrace, Springfield, IL 62704',
+    status: 'Rented',
     currentPhase: 3,
     activePhase: 3,
     holdingCostClockStart: now,
     createdAt: now,
     updatedAt: now,
+    dispositionType: 'RENT',
+    subStrategy: 'LONG_TERM',
+    assetClass: 'Residential',
+    squareFootage: 1200,
     members: {
       [LEAD_INVESTOR_UID]: {
         uid: LEAD_INVESTOR_UID,
@@ -285,12 +289,24 @@ async function seed() {
     },
     assignedUsers: [LEAD_INVESTOR_UID, CONTRACTOR_UID],
     financials: {
-      purchasePrice: 200000,
-      estimatedARV: 340000,
-      loanInterestRate: 12,
-      loanOriginationPoints: 2,
-      estimatedTimelineDays: 180,
-      costs: [], // Legacy field — we now use the ledgerItems sub-collection
+      purchasePrice: 279000,
+      estimatedARV: 279000,
+      loanAmount: 223200,
+      loanInterestRate: 6.5,
+      loanTermYears: 30,
+      closingCosts: 4200,
+      totalCashInvested: 60000,
+      financingType: 'Financed',
+      projectedRehabCost: 35000,
+      gross_rent_per_unit: 1950,
+      vacancy_pct: 7,
+      tax: 200,
+      insurance: 58,
+      utilities: 125,
+      management_pct: 10,
+      maintenance: 195,
+      HOA: 0,
+      costs: [],
     },
   });
 
@@ -360,10 +376,12 @@ async function seed() {
   // ── 5. PrivateFinancials (Sub-Collection) ───────────────────────
   console.log('  → Writing PrivateFinancials summary...');
   
+  const purchasePrice = 279000;
+  const estimatedARV = 340000;
   const totalApprovedCosts = 8500 + 6200; // Only the 2 approved items
-  const totalInvestment = 200000 + totalApprovedCosts;
-  const netProfit = 340000 - totalInvestment;
-  const costOfCapital = 200000 * (12 / 100) * (180 / 365); // Simple interest over hold period
+  const totalInvestment = purchasePrice + totalApprovedCosts;
+  const netProfit = estimatedARV - totalInvestment;
+  const costOfCapital = 223200 * (6.5 / 100) * (180 / 365); // Simple interest on loanAmount
   const projectedROI = totalInvestment > 0 ? (netProfit / totalInvestment) * 100 : 0;
 
   await dealRef.collection('privateFinancials').doc('summary').set({

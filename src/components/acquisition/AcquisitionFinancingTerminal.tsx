@@ -30,6 +30,10 @@ export default function AcquisitionFinancingTerminal() {
   const annualDebtService = monthlyPayment * 12;
   const equityRequired = totalAcquisitionCost - loanAmount;
 
+  const estimatedNOI = purchasePrice * 0.07345;
+  const dscr = annualDebtService > 0 ? estimatedNOI / annualDebtService : 0;
+  const debtYield = loanAmount > 0 ? (estimatedNOI / loanAmount) * 100 : 0;
+
   const circumference = 251.32; // 2 * pi * 40
   const debtStrokeDasharray = `${(ltv / 100) * circumference} ${circumference}`;
   const equityStrokeDasharray = `${((100 - ltv) / 100) * circumference} ${circumference}`;
@@ -301,11 +305,11 @@ export default function AcquisitionFinancingTerminal() {
             <div className="grid grid-cols-2 gap-4">
               <div className="p-4 bg-[#0d0a0b] border border-white/5 rounded-lg">
                 <p className="text-[12px] text-on-surface-variant opacity-60 mb-1">DSCR (Est.)</p>
-                <p className="text-[20px] font-bold text-on-surface">1.45x</p>
+                <p className="text-[20px] font-bold text-on-surface">{dscr.toFixed(2)}x</p>
               </div>
               <div className="p-4 bg-[#0d0a0b] border border-white/5 rounded-lg">
                 <p className="text-[12px] text-on-surface-variant opacity-60 mb-1">Debt Yield</p>
-                <p className="text-[20px] font-bold text-on-surface">11.3%</p>
+                <p className="text-[20px] font-bold text-on-surface">{debtYield.toFixed(1)}%</p>
               </div>
             </div>
             

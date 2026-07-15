@@ -50,7 +50,7 @@ describe('Phase 3 Hold Underwriting, Metrics & Gating', () => {
         costs: [],
       };
 
-      const res = deriveAllMetrics(financials as any, undefined, 'Buy & Hold', 3);
+      const res = deriveAllMetrics(financials as any, undefined, 'RENT', 3);
       // 100 - vacancyRatePercent = 95
       expect(res.occupancyRate).toBe(95);
     });
@@ -58,10 +58,9 @@ describe('Phase 3 Hold Underwriting, Metrics & Gating', () => {
 
   describe('Hold to Exit Gating Rules', () => {
     const checkHoldGating = (deal: Partial<Project>) => {
-      const strategy = deal.strategyType;
-      const isFlip = strategy === 'Fix & Flip' || strategy === 'Sell';
-      const isRental = strategy === 'Buy & Hold' || strategy === 'Rent';
-      const isBRRRR = strategy === 'Rent';
+      const isFlip = deal.dispositionType === 'SALE';
+      const isRental = deal.dispositionType === 'RENT' && deal.subStrategy !== 'BRRRR';
+      const isBRRRR = deal.dispositionType === 'RENT' && deal.subStrategy === 'BRRRR';
 
       const missingHold: string[] = [];
 
@@ -93,7 +92,8 @@ describe('Phase 3 Hold Underwriting, Metrics & Gating', () => {
 
     it('enforces rehab completion and estimated value for Flip strategy', () => {
       const flipDeal: Partial<Project> = {
-        strategyType: 'Fix & Flip',
+        dispositionType: 'SALE',
+        subStrategy: 'FLIP',
         currentPhase: 3,
         financials: {
           rehabDoneDate: null,
@@ -115,7 +115,8 @@ describe('Phase 3 Hold Underwriting, Metrics & Gating', () => {
 
     it('enforces tenant placement and opex for Rental strategy', () => {
       const rentalDeal: Partial<Project> = {
-        strategyType: 'Buy & Hold',
+        dispositionType: 'RENT',
+        subStrategy: 'LONG_TERM',
         currentPhase: 3,
         financials: {
           daysOccupied: 0,
@@ -139,7 +140,8 @@ describe('Phase 3 Hold Underwriting, Metrics & Gating', () => {
 
     it('enforces all conditions for BRRRR strategy', () => {
       const brrrrDeal: Partial<Project> = {
-        strategyType: 'Rent',
+        dispositionType: 'RENT',
+        subStrategy: 'BRRRR',
         currentPhase: 3,
         financials: {
           rehabDoneDate: null,

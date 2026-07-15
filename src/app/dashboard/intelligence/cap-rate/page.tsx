@@ -170,7 +170,7 @@ export default function CapRateIntelligencePage() {
     }
     const withPrice = projects.filter(p => (p.financials?.purchasePrice ?? 0) > 0);
     const totalNoi = withPrice.reduce((sum, p) => {
-      const d = deriveAllMetrics(p.financials, undefined, p.strategyType, p.currentPhase);
+      const d = deriveAllMetrics(p.financials, undefined, p.dispositionType, p.currentPhase);
       return sum + d.noi;
     }, 0);
     const totalPrice = withPrice.reduce((sum, p) => sum + (p.financials?.purchasePrice ?? 0), 0);

@@ -2,7 +2,7 @@
 
 import { useMemo } from 'react';
 import { Project } from '@/types/schema';
-import { deriveAllMetrics, computeIRR, buildIRRCashFlows } from '@/lib/metrics/reiMetrics';
+import { computePortfolioKPIs } from '@/lib/metrics/reiMetrics';
 
 export type ScopeMode = 'property' | 'myShare';
 export type PeriodFilter = 'M' | 'Q' | 'Y' | 'ALL';
@@ -44,72 +44,12 @@ export default function CommandCenterKPIStrip({ projects, scope, period }: Comma
   }, [projects, period]);
 
   const kpis = useMemo(() => {
-    if (filteredProjects.length === 0) {
-      return { irr: 0, equityMultiple: 0, realizedProfit: 0, capitalDeployed: 0 };
-    }
-
-    let totalCashInvested = 0;
-    let totalPropertyValue = 0;
-    let totalPurchasePrice = 0;
-    let totalRealizedProfit = 0;
-    let totalCapitalDeployed = 0;
-    const allIRRFlows: number[][] = [];
-
-    for (const p of filteredProjects) {
-      const f = p.financials;
-      if (!f) continue;
-
-      const metrics = deriveAllMetrics(
-        f,
-        f.estimatedCurrentValue || f.estimatedARV,
-        p.strategyType,
-        p.currentPhase,
-        p.createdAt
-      );
-
-      const factor = scope === 'myShare' ? (f.ownershipPercentage ?? 100) / 100 : 1;
-      const purchasePrice = f.purchasePrice ?? f.targetPrice ?? f.targetPurchasePrice ?? 0;
-      const loanAmount = f.loanAmount ?? 0;
-      const currentValue = (f.estimatedCurrentValue || f.estimatedARV || purchasePrice || 0) * factor;
-
-      totalCashInvested += metrics.totalCashInvested * factor;
-      totalPropertyValue += currentValue;
-      totalPurchasePrice += purchasePrice * factor;
-      totalRealizedProfit += (metrics.annualCashFlow > 0 ? metrics.annualCashFlow * factor : 0);
-      totalCapitalDeployed += (purchasePrice - loanAmount) * factor;
-
-      const holdYears = f.loanTermYears ?? 5;
-      const flows = buildIRRCashFlows(
-        metrics.totalCashInvested * factor,
-        metrics.annualCashFlow * factor,
-        Math.min(holdYears, 10),
-        purchasePrice,
-        metrics.annualizedAppreciation || 3,
-        loanAmount * factor,
-        f.loanInterestRate ?? 0,
-        f.loanTermYears ?? 30,
-      );
-      if (flows.length >= 2) allIRRFlows.push(flows);
-    }
-
-    let portfolioIRR = 0;
-    if (allIRRFlows.length > 0) {
-      const maxLen = Math.max(...allIRRFlows.map(f => f.length));
-      const merged: number[] = Array(maxLen).fill(0);
-      for (const flows of allIRRFlows) {
-        for (let i = 0; i < flows.length; i++) merged[i] += flows[i];
-      }
-      const raw = computeIRR(merged);
-      portfolioIRR = raw != null ? raw * 100 : 0;
-    }
-
-    const equityMultiple = totalCashInvested > 0 ? totalPropertyValue / totalCashInvested : 0;
-
+    const results = computePortfolioKPIs(filteredProjects, scope);
     return {
-      irr: portfolioIRR,
-      equityMultiple,
-      realizedProfit: totalRealizedProfit,
-      capitalDeployed: totalCapitalDeployed,
+      irr: results.targetIRR,
+      equityMultiple: results.equityMultiple,
+      realizedProfit: results.realizedProfit,
+      capitalDeployed: results.capitalDeployed,
     };
   }, [filteredProjects, scope]);
 

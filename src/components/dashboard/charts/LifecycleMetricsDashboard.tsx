@@ -3,7 +3,7 @@
 import React, { useMemo, lazy, Suspense } from 'react';
 import { Project } from '@/types/schema';
 import { useProjectStore } from '@/store/projectStore';
-import { computeNOIComponents, computeCapRate, computeDSCR, computeAnnualDebtService, deriveDualScopeMetrics } from '@/lib/metrics/reiMetrics';
+import { deriveDualScopeMetrics } from '@/lib/metrics/reiMetrics';
 import { 
   LineChart, Line, BarChart, Bar, PieChart, Pie, Cell,
   XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend, AreaChart, Area
@@ -32,7 +32,7 @@ interface Props {
 }
 
 // ─── AGENT 1: Property-Level Financial Metrics ───
-// Now uses the real computeNOIComponents engine instead of the crude 50% rule
+// Now uses the real metrics engine instead of the crude 50% rule
 export function derivePropertyFinancials(projects: Project[]) {
   return projects.map((p) => {
     const financials = p.financials;
@@ -41,9 +41,9 @@ export function derivePropertyFinancials(projects: Project[]) {
     }
 
     // Use the real metrics engine
-    const { asset: metrics } = deriveDualScopeMetrics(financials, undefined, p.strategyType, p.currentPhase);
+    const { asset: metrics } = deriveDualScopeMetrics(financials, undefined, p.dispositionType, p.currentPhase);
     const noi = metrics.noi;
-    const capRate = metrics.capRate;
+    const capRate = metrics.capRate ?? 0;
     const dscr = metrics.dscr === Infinity ? 0 : Math.round(metrics.dscr * 100) / 100;
 
     return {
@@ -106,7 +106,8 @@ export function deriveOperationalData(projects: Project[]) {
 
     projects.forEach(p => {
       if (!p.financials) return;
-      const c = computeNOIComponents(p.financials, p.strategyType, p.currentPhase);
+      const { asset: metrics } = deriveDualScopeMetrics(p.financials, undefined, p.dispositionType, p.currentPhase);
+      const c = metrics.noiComponents;
       totalGrossRentalIncome += c.grossRentalIncome;
       totalOpEx += c.totalOperatingExpenses;
       totalVacancyLoss += c.vacancyLoss;

@@ -173,11 +173,11 @@ export const GLOSSARY_TERMS: GlossaryTerm[] = ([
     relatedTerms: ['Hard Money Loan', 'Closing Costs'],
   },
   {
-    term: 'Syndication',
-    definition: 'A method of pooling capital from multiple investors (Limited Partners) to fund a real estate deal, managed by a General Partner or Sponsor. Governed by SEC regulations.',
+    term: 'Co-Investment',
+    definition: 'A method of pooling capital from multiple co-investors to fund a real estate deal, managed by a Lead Investor. Governed by SEC regulations.',
     category: 'financing',
-    relatedTerms: ['Capital Stack', 'PPM', 'K-1'],
-    platformFeature: 'Capital Syndicate',
+    relatedTerms: ['Capital Stack', 'LOI', 'K-1'],
+    platformFeature: 'Co-Investment Hub',
   },
   // ── Due Diligence ──
   {
@@ -308,7 +308,7 @@ export const GLOSSARY_TERMS: GlossaryTerm[] = ([
     term: 'K-1 (Schedule K-1)',
     definition: 'An IRS tax form issued to partners in a partnership or members of an LLC, reporting their share of income, deductions, and credits for the tax year.',
     category: 'legal-compliance',
-    relatedTerms: ['Syndication', 'LLC'],
+    relatedTerms: ['Co-Investment', 'LLC'],
     platformFeature: 'Exit Hub',
   },
   {
@@ -322,13 +322,13 @@ export const GLOSSARY_TERMS: GlossaryTerm[] = ([
     term: 'Operating Agreement',
     definition: 'A legal document governing the internal operations of an LLC, including member roles, profit distribution, and decision-making authority.',
     category: 'legal-compliance',
-    relatedTerms: ['LLC', 'Syndication'],
+    relatedTerms: ['LLC', 'Co-Investment'],
   },
   {
     term: 'Private Placement Memorandum (PPM)',
-    definition: 'A legal document provided to prospective investors in a syndication, disclosing the terms, risks, and financial details of the investment offering. Required by SEC regulations.',
+    definition: 'A legal document provided to prospective investors in a co-investment, disclosing the terms, risks, and financial details of the investment offering. Required by SEC regulations.',
     category: 'legal-compliance',
-    relatedTerms: ['Syndication', 'Capital Stack'],
+    relatedTerms: ['Co-Investment', 'Capital Stack'],
     platformFeature: 'Document Vault',
   },
   {
@@ -345,10 +345,10 @@ export const GLOSSARY_TERMS: GlossaryTerm[] = ([
     platformFeature: 'Acquisition Panel',
   },
   {
-    term: 'Capital Syndicate',
+    term: 'Co-Investment Hub',
     definition: 'A PaperWorking feature that allows you to invite investors, collect soft commitments (Funding Pledges), and convert them into formal LOIs for a specific deal.',
     category: 'platform',
-    relatedTerms: ['LOI', 'Syndication', 'Guest Portal'],
+    relatedTerms: ['LOI', 'Co-Investment', 'Guest Portal'],
     platformFeature: 'Capital & Evaluation',
   },
   {
@@ -415,14 +415,14 @@ export const GLOSSARY_TERMS: GlossaryTerm[] = ([
     term: 'Funding Pledge',
     definition: 'A soft capital commitment from an investor recorded in PaperWorking before a formal LOI is generated. Tracks investor interest and projected capital availability.',
     category: 'platform',
-    relatedTerms: ['LOI', 'Capital Syndicate'],
+    relatedTerms: ['LOI', 'Co-Investment Hub'],
     platformFeature: 'Capital & Evaluation',
   },
   {
     term: 'Guest Portal',
     definition: 'A secure, read-only interface in PaperWorking where external parties (investors, attorneys, accountants) can review documents and sign LOIs without full platform access.',
     category: 'platform',
-    relatedTerms: ['RBAC', 'Capital Syndicate'],
+    relatedTerms: ['RBAC', 'Co-Investment Hub'],
   },
   {
     term: 'Hold Panel',

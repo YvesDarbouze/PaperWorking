@@ -64,7 +64,7 @@ export const FAQ_ITEMS: FAQItem[] = [
   // ── Phase 1: Acquisition ──
   {
     question: 'How do I generate a Letter of Intent (LOI)?',
-    answer: 'In the Acquisition Panel, select a prospect property and click "Generate LOI." The system pulls data from your underwriting model to create a formal, trackable LOI. Syndication partners receive a secure link through the Guest Portal to review and e-sign.',
+    answer: 'In the Acquisition Panel, select a prospect property and click "Generate LOI." The system pulls data from your underwriting model to create a formal, trackable LOI. Co-investing partners receive a secure link through the Guest Portal to review and e-sign.',
     category: 'acquisition',
   },
   {
@@ -73,8 +73,8 @@ export const FAQ_ITEMS: FAQItem[] = [
     category: 'acquisition',
   },
   {
-    question: 'How does the Capital Syndicate feature work?',
-    answer: 'Create a Capital Syndicate room from the Acquisition Panel to invite investors and collect soft commitments (Funding Pledges). Once you have enough committed capital, convert those pledges into formal LOIs with one click.',
+    question: 'How does the Co-Investment Hub feature work?',
+    answer: 'Create a Co-Investment Room from the Acquisition Panel to invite investors and collect soft commitments (Funding Pledges). Once you have enough committed capital, convert those pledges into formal LOIs with one click.',
     category: 'acquisition',
   },
   {
@@ -142,7 +142,7 @@ export const FAQ_ITEMS: FAQItem[] = [
   },
   {
     question: 'How do I distribute net proceeds to investors?',
-    answer: 'In the Exit Hub, generate individualized K-1 data prep sheets and distribution ledgers for each investor in your syndicate. The system calculates each partner\'s share based on the operating agreement terms.',
+    answer: 'In the Exit Hub, generate individualized K-1 data prep sheets and distribution ledgers for each investor in your co-investment group. The system calculates each partner\'s share based on the operating agreement terms.',
     category: 'exit',
   },
   {
@@ -195,7 +195,7 @@ export const FAQ_ITEMS: FAQItem[] = [
   // ── Security & Permissions ──
   {
     question: 'Can I restrict an Accountant from seeing investor data?',
-    answer: 'Yes. PaperWorking uses Role-Based Access Control (RBAC). Users with the "Accountant" role have read access to the Cost Basis Ledger and settlement items but cannot view individual investor pledges or syndicate details.',
+    answer: 'Yes. PaperWorking uses Role-Based Access Control (RBAC). Users with the "Accountant" role have read access to the Cost Basis Ledger and settlement items but cannot view individual investor pledges or co-investment details.',
     category: 'security',
   },
   {
@@ -252,7 +252,7 @@ export const FAQ_ITEMS: FAQItem[] = [
   },
   {
     question: 'Should I finance my flips or pay cash?',
-    answer: "Nationally, 63% of flips are now paid in cash and 37% are financed — cash has trended up about three percentage points year-over-year. Cash closes faster, wins more competitive bids, and removes interest carry from your daily holding costs. Financing preserves capital for running multiple deals in parallel and accelerates scaling, but adds debt service to your monthly burn. The right answer depends on deal flow and your leverage tolerance. PaperWorking's Find & Fund Pipeline tracks capital commitments from your syndicate so you always know what's available to deploy across deals in progress.",
+    answer: "Nationally, 63% of flips are now paid in cash and 37% are financed — cash has trended up about three percentage points year-over-year. Cash closes faster, wins more competitive bids, and removes interest carry from your daily holding costs. Financing preserves capital for running multiple deals in parallel and accelerates scaling, but adds debt service to your monthly burn. The right answer depends on deal flow and your leverage tolerance. PaperWorking's Find & Fund Pipeline tracks capital commitments from your partners so you always know what's available to deploy across deals in progress.",
     category: 'industry-data',
   },
   {

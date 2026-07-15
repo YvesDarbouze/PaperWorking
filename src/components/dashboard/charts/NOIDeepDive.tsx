@@ -2,7 +2,7 @@
 
 import React, { useMemo } from 'react';
 import { Project } from '@/types/schema';
-import { computeNOIComponents, type NOIComponents } from '@/lib/metrics/reiMetrics';
+import { deriveAllMetrics, type NOIComponents } from '@/lib/metrics/reiMetrics';
 import NOIWaterfallChart from '@/components/Charts/NOIWaterfallChart';
 import NOITrendChart from '@/components/Charts/NOITrendChart';
 import NOICompareChart from '@/components/Charts/NOICompareChart';
@@ -40,7 +40,8 @@ export function deriveNOIBreakdowns(projects: Project[]) {
     .filter(p => p.financials)
     .map((p) => {
       const f = p.financials!;
-      const components = computeNOIComponents(f, p.strategyType, p.currentPhase);
+      const metrics = deriveAllMetrics(f, undefined, p.dispositionType, p.currentPhase);
+      const components = metrics.noiComponents;
       const grossPotentialIncome = components.grossRentalIncome + components.otherIncome;
       const fiftyPercentEstimate = grossPotentialIncome * 0.5;
 

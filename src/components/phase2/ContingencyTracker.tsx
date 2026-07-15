@@ -135,22 +135,36 @@ export const ContingencyTracker: React.FC = () => {
                     {c.notes && <p className="text-xs text-text-secondary mt-1">Notes: {c.notes}</p>}
                   </div>
                   <div className="flex flex-col gap-2">
-                    <label className="flex items-center gap-2 text-sm text-text-primary cursor-pointer">
+                    <div className="flex items-center gap-2 text-sm text-text-primary">
                       <Checkbox
                         checked={c.isSatisfied}
                         onChange={() => handleToggleState(c.id, 'isSatisfied')}
                         disabled={c.isWaived}
                       />
-                      Satisfied
-                    </label>
-                    <label className="flex items-center gap-2 text-sm text-text-primary cursor-pointer">
+                      <span
+                        onClick={() => {
+                          if (!c.isWaived) handleToggleState(c.id, 'isSatisfied');
+                        }}
+                        className="cursor-pointer select-none"
+                      >
+                        Satisfied
+                      </span>
+                    </div>
+                    <div className="flex items-center gap-2 text-sm text-text-primary">
                       <Checkbox
                         checked={c.isWaived}
                         onChange={() => handleToggleState(c.id, 'isWaived')}
                         disabled={c.isSatisfied}
                       />
-                      Waived
-                    </label>
+                      <span
+                        onClick={() => {
+                          if (!c.isSatisfied) handleToggleState(c.id, 'isWaived');
+                        }}
+                        className="cursor-pointer select-none"
+                      >
+                        Waived
+                      </span>
+                    </div>
                   </div>
                 </div>
                 {!isResolved && (

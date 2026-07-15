@@ -295,7 +295,8 @@ export default function InsightsDashboard({ data, missingFields, project }: Insi
     // Construct simulation dummy project for Stress Simulator
     return {
       currentPhase: 3, // Hold
-      strategyType: 'Rent',
+      dispositionType: 'RENT',
+      subStrategy: 'BRRRR',
       financials: {
         purchasePrice: (shortTerm as any).purchasePrice ?? 300000,
         loanAmount: (shortTerm as any).loanAmount ?? 240000,

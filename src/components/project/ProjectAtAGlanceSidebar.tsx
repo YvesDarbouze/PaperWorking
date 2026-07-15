@@ -21,14 +21,7 @@ import {
 } from 'lucide-react';
 import type { Project, PropertyMetricSnapshot } from '@/types/schema';
 import { usePropertyMetricSnapshots } from '@/hooks/usePropertyMetricSnapshots';
-import {
-  computeNOIMetric,
-  computeCashFlowMetric,
-  computeCapRateMetric,
-  computeOccupancyMetric,
-  computeExpenseRatioMetric,
-  computeDSCRMetric
-} from '@/lib/metrics';
+import { deriveAllMetrics } from '@/lib/metrics/reiMetrics';
 
 interface ProjectAtAGlanceSidebarProps {
   project: Project;
@@ -280,16 +273,17 @@ export function ProjectAtAGlanceSidebar({ project }: ProjectAtAGlanceSidebarProp
     }
 
     // Fallback: use current live metric values from project object
-    const metricInput = {
-      financials: project.financials ?? {},
-      currentPhase: project.currentPhase,
-      strategyType: project.strategyType,
-    };
+    const derived = deriveAllMetrics(
+      project.financials ?? {},
+      undefined,
+      project.dispositionType,
+      project.currentPhase
+    );
 
-    const noiVal = computeNOIMetric(metricInput).value;
-    const cfVal = computeCashFlowMetric(metricInput).value;
-    const capVal = computeCapRateMetric(metricInput).value;
-    const occVal = computeOccupancyMetric(metricInput).value;
+    const noiVal = derived.noi;
+    const cfVal = derived.annualCashFlow;
+    const capVal = derived.capRate;
+    const occVal = derived.occupancyRate;
 
     const fallbackCandidates = [
       { label: 'NOI', cur: noiVal, pri: null, delta: 0, absDelta: 0, format: 'currency' },

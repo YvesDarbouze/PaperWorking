@@ -640,8 +640,23 @@ export default function ProjectCalculator({ phaseColor, projectId, propertyAddre
                 readOnly={readOnly}
               />
               <LOIGenerator 
-                propertyAddress={propertyAddress || ''} 
-                maoCents={maoCents > 0 ? maoCents : 0} 
+                project={{
+                  id: projectId,
+                  address: propertyAddress || '',
+                  financials: initialFinancials,
+                }}
+                onSave={async (updates) => {
+                  setIsSaving(true);
+                  try {
+                    const merged = { ...(initialFinancials ?? {}), ...updates };
+                    await projectsService.updateProject(projectId, { financials: merged as any });
+                    if (onSaveSuccess) onSaveSuccess(merged as any);
+                  } catch (err) {
+                    console.error('Failed to save LOI from ProjectCalculator:', err);
+                  } finally {
+                    setIsSaving(false);
+                  }
+                }}
                 phaseColor={phaseColor} 
               />
               <div className="mt-2 pt-4 flex flex-col gap-2" style={{ borderTop: '1px dashed var(--border-ui)' }}>

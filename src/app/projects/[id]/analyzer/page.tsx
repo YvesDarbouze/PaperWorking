@@ -48,7 +48,7 @@ export default async function ProjectAnalyzerPage({ params }: { params: Promise<
       loanAmount: financials?.loanAmount,
       interestRate: financials?.loanInterestRate,
     },
-    mode: projectData?.strategyType === 'Fix & Flip' || projectData?.strategyType === 'Sell' ? 'flip' as const : 'rental' as const,
+    mode: projectData?.dispositionType === 'SALE' ? 'flip' as const : 'rental' as const,
     arv: financials?.estimatedARV ?? financials?.arv,
     rehabEst: financials?.projectedRehabCost ?? financials?.rehabBudget,
     fixedCosts: financials?.fixedAcquisitionCosts,

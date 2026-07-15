@@ -2,7 +2,7 @@
 
 import React, { useRef, useState, useEffect, useCallback } from 'react';
 import { useParams, useRouter } from 'next/navigation';
-import { CheckCircle2, XCircle, Shield, FileText, Home, Pen, Mail, Send, Clock, Lock, TrendingUp, Coins, HelpCircle, MessageSquare } from 'lucide-react';
+import { CheckCircle2, XCircle, Shield, FileText, Home, Pen, Mail, Send, Clock, Lock, TrendingUp, Coins, HelpCircle, MessageSquare, Loader2 } from 'lucide-react';
 import { useAuth } from '@/context/AuthContext';
 import { MetricChart } from '@/components/metrics/MetricChart';
 import toast from 'react-hot-toast';
@@ -83,6 +83,11 @@ export default function GuestPortalPage() {
   // Deal updates (sponsor-authored progress feed, read-only for guests)
   const [dealUpdates, setDealUpdates] = useState<DealUpdate[]>([]);
 
+  // Subscribe Gate States
+  const [isSubscribedInSession, setIsSubscribedInSession] = useState(false);
+  const [subscribeForm, setSubscribeForm] = useState({ name: '', email: '' });
+  const [submittingSubscribe, setSubmittingSubscribe] = useState(false);
+
   // Modals state
   const [showInsights, setShowInsights] = useState(false);
   const [showAskSponsor, setShowAskSponsor] = useState(false);
@@ -95,6 +100,33 @@ export default function GuestPortalPage() {
   // backend (`/api/invitations/respond`) ignores any client-supplied amount.
   const investmentAmount = dealData?.investmentAmount ?? 0;
 
+  const handleSubscribeSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setSubmittingSubscribe(true);
+    try {
+      const res = await fetch(`/api/invitations/${token}/subscribe`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          name: subscribeForm.name,
+          email: subscribeForm.email,
+        }),
+      });
+      const data = await res.json();
+      if (res.ok && data.success) {
+        setIsSubscribedInSession(true);
+        toast.success('Subscription confirmed! Deal details unlocked.');
+      } else {
+        toast.error(data.error || 'Failed to confirm subscription.');
+      }
+    } catch (err) {
+      console.error(err);
+      toast.error('An error occurred during subscription.');
+    } finally {
+      setSubmittingSubscribe(false);
+    }
+  };
+
   // Load deal details from the real invitations pipeline. A 404/410 there
   // falls back to the legacy `investmentTokens` route only to distinguish
   // "never existed" from "this is an old, now-retired link type."
@@ -106,6 +138,10 @@ export default function GuestPortalPage() {
         if (res.ok) {
           const data = await res.json();
           setDealData(data as DealTokenData);
+          setSubscribeForm({
+            name: data.investorName || '',
+            email: data.investorEmail || '',
+          });
           return;
         }
         const legacyRes = await fetch(`/api/invest/${token}`);
@@ -435,10 +471,10 @@ export default function GuestPortalPage() {
       </header>
 
       {/* Main Container */}
-      <main className="pt-24 pb-32 px-6 md:px-12 max-w-6xl mx-auto">
+      <main className="pt-24 pb-32 px-6 md:px-12 max-w-6xl mx-auto relative">
         
         {/* Anonymous Viewer Banner — sign in or register to respond */}
-        {!user && (
+        {!user && isSubscribedInSession && (
           <div className="mb-8 p-4 border-2 border-dashed border-[#454955]/30 bg-[#454955]/5 rounded-xl flex flex-col md:flex-row items-center justify-between gap-4">
             <div className="flex items-center gap-3">
               <span className="material-symbols-outlined text-[#454955] select-none">verified_user</span>
@@ -464,8 +500,77 @@ export default function GuestPortalPage() {
           </div>
         )}
 
+        {/* ── Subscribe Gate Overlay ── */}
+        {!user && !isSubscribedInSession && (
+          <div className="absolute inset-0 bg-[#0d0a0b]/40 backdrop-blur-md z-[100] flex items-center justify-center p-4 min-h-[500px]">
+            <div className="w-full max-w-md bg-[#121014]/98 border border-white/10 rounded-3xl p-8 shadow-2xl space-y-6" id="subscribe-gate">
+              <div className="text-center space-y-2">
+                <div className="w-12 h-12 rounded-full bg-[#454955]/10 border border-[#454955]/20 flex items-center justify-center mx-auto text-[#454955]">
+                  <Lock className="w-6 h-6" />
+                </div>
+                <h3 className="text-lg font-bold text-white uppercase tracking-wider">Subscribe to View Deal</h3>
+                <p className="text-xs text-[#9E9DA0] leading-relaxed">
+                  This is a private investment opportunity. Enter your information to subscribe and unlock the full deal details, metrics, and projections.
+                </p>
+              </div>
+
+              <form onSubmit={handleSubscribeSubmit} className="space-y-4">
+                <div className="space-y-1 text-left">
+                  <label className="text-[10px] font-bold uppercase tracking-widest text-[#9E9DA0]">Full Name</label>
+                  <input
+                    required
+                    type="text"
+                    placeholder="Your Name"
+                    value={subscribeForm.name}
+                    onChange={(e) => setSubscribeForm((p) => ({ ...p, name: e.target.value }))}
+                    className="w-full px-4 py-3 rounded-lg bg-white/5 border border-white/10 text-white focus:outline-none focus:ring-1 focus:ring-[#454955]/60 text-sm"
+                    id="subscribe-name"
+                  />
+                </div>
+
+                <div className="space-y-1 text-left">
+                  <label className="text-[10px] font-bold uppercase tracking-widest text-[#9E9DA0]">Email Address</label>
+                  <input
+                    required
+                    type="email"
+                    disabled
+                    placeholder="your.email@example.com"
+                    value={subscribeForm.email}
+                    className="w-full px-4 py-3 rounded-lg bg-white/5 border border-white/10 text-[#9E9DA0] focus:outline-none text-sm cursor-not-allowed opacity-80"
+                    id="subscribe-email"
+                  />
+                </div>
+
+                <div className="flex items-start gap-2.5 pt-2 text-left">
+                  <input
+                    required
+                    type="checkbox"
+                    defaultChecked
+                    disabled
+                    className="mt-1 cursor-not-allowed accent-[#454955]"
+                    id="subscribe-consent"
+                  />
+                  <label className="text-[11px] text-[#9E9DA0]/80 leading-relaxed cursor-not-allowed">
+                    I consent to receive emails, project notifications, and co-investment updates for this project.
+                  </label>
+                </div>
+
+                <button
+                  type="submit"
+                  disabled={submittingSubscribe}
+                  id="btn-subscribe-unlock"
+                  className="w-full py-3 bg-[#454955] text-[#0d0a0b] font-bold text-xs uppercase tracking-wider rounded-xl hover:brightness-110 active:scale-97 transition-all flex items-center justify-center gap-2"
+                >
+                  {submittingSubscribe && <Loader2 className="w-4.5 h-4.5 animate-spin" />}
+                  Subscribe & Unlock Deal
+                </button>
+              </form>
+            </div>
+          </div>
+        )}
+
         {/* 12-Column Grid Layout */}
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
+        <div className={`grid grid-cols-1 lg:grid-cols-12 gap-8 ${!user && !isSubscribedInSession ? "filter blur-[8px] select-none pointer-events-none transition-all duration-300" : "transition-all duration-300"}`}>
           
           {/* Left Column: Details & Underwriting */}
           <div className="lg:col-span-8 space-y-8">
@@ -754,7 +859,7 @@ export default function GuestPortalPage() {
                 <div className="space-y-4">
                   <div className="flex justify-between items-end">
                     <div>
-                      <span className="block text-[9px] font-bold text-[#8a9b9b] uppercase tracking-wider">Syndication Status</span>
+                      <span className="block text-[9px] font-bold text-[#8a9b9b] uppercase tracking-wider">Co-Investment Status</span>
                       <h4 className="text-2xl font-bold text-white tracking-tight mt-1">
                         ${(dealData.raiseRaised ?? 0).toLocaleString()}
                       </h4>

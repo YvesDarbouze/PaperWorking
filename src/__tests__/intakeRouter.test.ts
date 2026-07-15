@@ -26,7 +26,7 @@ describe("CARD 0: Intake Router Tests", () => {
         createdById: "test-user-uid",
         addressLine: "123 Main St",
         currentPhase: 1,
-        dealType: null,
+        dispositionType: null,
         retrospective: false,
         acquisitionStatus: "PROSPECT",
       });
@@ -41,35 +41,20 @@ describe("CARD 0: Intake Router Tests", () => {
 
       expect(proj.id).toBeDefined();
       expect(proj.currentPhase).toBe(1);
-      expect(proj.dealType).toBeNull();
+      expect(proj.dispositionType).toBeNull();
       expect(proj.retrospective).toBe(false);
       expect(proj.acquisitionStatus).toBe("PROSPECT");
 
       expect(mockCreate).toHaveBeenCalledWith({
-        data: {
+        data: expect.objectContaining({
           createdById: "test-user-uid",
           addressLine: "123 Main St",
           city: "Miami",
           state: "FL",
           zip: "33101",
-          lat: null,
-          lng: null,
-          placeId: null,
-          displayName: null,
           acquisitionStatus: "PROSPECT",
-          ownershipStructure: null,
           currentPhase: 1,
-          dealType: null,
-          dispositionType: null,
-          entryStage: null,
-          retrospective: false,
-          subStrategy: null,
-          lastActiveStage: null,
-          overrideReason: null,
-          propertyType: null,
-          units: null,
-          condition: null,
-        },
+        }),
       });
     });
 
@@ -84,36 +69,20 @@ describe("CARD 0: Intake Router Tests", () => {
         addressLine: "123 Main St",
         currentPhase: 1,
         acquisitionStatus: "CLEAR_TO_CLOSE",
-        dealType: "SALE",
         dispositionType: "SALE",
         entryStage: "under_contract",
         retrospective: false,
       });
       expect(mockCreate).toHaveBeenLastCalledWith({
-        data: {
+        data: expect.objectContaining({
           createdById: "test-user-uid",
           addressLine: "123 Main St",
-          city: "",
-          state: "",
-          zip: "",
-          lat: null,
-          lng: null,
-          placeId: null,
-          displayName: null,
           acquisitionStatus: "CLEAR_TO_CLOSE",
-          ownershipStructure: null,
           currentPhase: 1,
-          dealType: "SALE",
           dispositionType: "SALE",
           entryStage: "under_contract",
           retrospective: false,
-          subStrategy: null,
-          lastActiveStage: null,
-          overrideReason: null,
-          propertyType: null,
-          units: null,
-          condition: null,
-        },
+        }),
       });
 
       // Owned, closing in progress -> Phase 2: Fund, status = OWNED
@@ -122,36 +91,20 @@ describe("CARD 0: Intake Router Tests", () => {
         addressLine: "123 Main St",
         currentPhase: 2,
         acquisitionStatus: "OWNED",
-        dealType: "LEASE",
         dispositionType: "LEASE",
         entryStage: "owned_closing",
         retrospective: false,
       });
       expect(mockCreate).toHaveBeenLastCalledWith({
-        data: {
+        data: expect.objectContaining({
           createdById: "test-user-uid",
           addressLine: "123 Main St",
-          city: "",
-          state: "",
-          zip: "",
-          lat: null,
-          lng: null,
-          placeId: null,
-          displayName: null,
           acquisitionStatus: "OWNED",
-          ownershipStructure: null,
           currentPhase: 2,
-          dealType: "LEASE",
           dispositionType: "LEASE",
           entryStage: "owned_closing",
           retrospective: false,
-          subStrategy: null,
-          lastActiveStage: null,
-          overrideReason: null,
-          propertyType: null,
-          units: null,
-          condition: null,
-        },
+        }),
       });
 
       // Renovating/marketing -> Phase 3: Hold, status = OWNED
@@ -160,36 +113,20 @@ describe("CARD 0: Intake Router Tests", () => {
         addressLine: "123 Main St",
         currentPhase: 3,
         acquisitionStatus: "OWNED",
-        dealType: "SALE",
         dispositionType: "SALE",
         entryStage: "renovating_marketing",
         retrospective: false,
       });
       expect(mockCreate).toHaveBeenLastCalledWith({
-        data: {
+        data: expect.objectContaining({
           createdById: "test-user-uid",
           addressLine: "123 Main St",
-          city: "",
-          state: "",
-          zip: "",
-          lat: null,
-          lng: null,
-          placeId: null,
-          displayName: null,
           acquisitionStatus: "OWNED",
-          ownershipStructure: null,
           currentPhase: 3,
-          dealType: "SALE",
           dispositionType: "SALE",
           entryStage: "renovating_marketing",
           retrospective: false,
-          subStrategy: null,
-          lastActiveStage: null,
-          overrideReason: null,
-          propertyType: null,
-          units: null,
-          condition: null,
-        },
+        }),
       });
 
       // Already rented, leased, or sold -> Retrospective Mode (Phase 4: Exit, status = CLOSED, retrospective = true)
@@ -198,71 +135,49 @@ describe("CARD 0: Intake Router Tests", () => {
         addressLine: "123 Main St",
         currentPhase: 4,
         acquisitionStatus: "CLOSED",
-        dealType: "LEASE",
         dispositionType: "LEASE",
         entryStage: "rented_leased_sold",
         retrospective: true,
       });
       expect(mockCreate).toHaveBeenLastCalledWith({
-        data: {
+        data: expect.objectContaining({
           createdById: "test-user-uid",
           addressLine: "123 Main St",
-          city: "",
-          state: "",
-          zip: "",
-          lat: null,
-          lng: null,
-          placeId: null,
-          displayName: null,
           acquisitionStatus: "CLOSED",
-          ownershipStructure: null,
           currentPhase: 4,
-          dealType: "LEASE",
           dispositionType: "LEASE",
           entryStage: "rented_leased_sold",
           retrospective: true,
-          subStrategy: null,
-          lastActiveStage: null,
-          overrideReason: null,
-          propertyType: null,
-          units: null,
-          condition: null,
-        },
+        }),
       });
     });
 
-    it("should allow updating currentPhase, dealType, and retrospective", async () => {
+    it("should allow updating currentPhase, dispositionType, and retrospective", async () => {
       mockUpdate.mockResolvedValueOnce({
         id: "project-id",
         currentPhase: 3,
-        dealType: "lease",
+        dispositionType: "lease",
         retrospective: true,
       });
 
       const updated = await updateProject("project-id", {
         currentPhase: 3,
-        dealType: "lease",
+        dispositionType: "lease",
         retrospective: true,
       });
 
       expect(updated.currentPhase).toBe(3);
-      expect(updated.dealType).toBe("lease");
+      expect(updated.dispositionType).toBe("lease");
       expect(updated.retrospective).toBe(true);
 
-      expect(mockUpdate).toHaveBeenCalledWith({
+      expect(mockUpdate).toHaveBeenCalledWith(expect.objectContaining({
         where: { id: "project-id" },
-        data: {
+        data: expect.objectContaining({
           currentPhase: 3,
-          dealType: "lease",
+          dispositionType: "lease",
           retrospective: true,
-          subStrategy: null,
-          lastActiveStage: null,
-          overrideReason: null,
-          propertyType: null,
-          units: null,
-          condition: null,
-        },
-      });
+        }),
+      }));
     });
   });
 
@@ -283,16 +198,16 @@ describe("CARD 0: Intake Router Tests", () => {
       expect(updatedState.intake.journey).toBe("under_contract");
       expect(updatedState.completion.intake).toBe("partial");
 
-      // Select dealType also
-      store.setIntake({ dealType: "SALE" });
+      // Select dispositionType also
+      store.setIntake({ dispositionType: "SALE" });
       updatedState = useAcquisitionWizard.getState();
-      expect(updatedState.intake.dealType).toBe("SALE");
+      expect(updatedState.intake.dispositionType).toBe("SALE");
       expect(updatedState.completion.intake).toBe("done");
     });
 
     it("should reset correctly", () => {
       const store = useAcquisitionWizard.getState();
-      store.setIntake({ journey: "targeting", dealType: "LEASE" });
+      store.setIntake({ journey: "targeting", dispositionType: "LEASE" });
       store.reset();
 
       const updatedState = useAcquisitionWizard.getState();

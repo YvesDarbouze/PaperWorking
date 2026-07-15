@@ -212,7 +212,7 @@ export default function IRRIntelligencePage() {
 
       // Derive annualCashFlow from deriveAllMetrics — same formula as useMetricCurrent('COC')
       const totalAnnualCF = withPrice.reduce((s, p) => {
-        const derived = deriveAllMetrics(p.financials, undefined, p.strategyType, p.currentPhase);
+        const derived = deriveAllMetrics(p.financials, undefined, p.dispositionType, p.currentPhase);
         return s + (derived.noi - derived.annualDebtService);
       }, 0);
 

@@ -142,11 +142,11 @@ export function DealAnalyzerTerminal({ data, isLoading = false }: DealAnalyzerTe
     };
   }, [storeProject]);
 
-  // Set strategy from project strategyType if it exists
+  // Set strategy from project dispositionType if it exists
   useEffect(() => {
-    if (storeProject?.strategyType) {
-      const type = storeProject.strategyType;
-      if (type === 'Sell' || type === 'Fix & Flip') {
+    if (storeProject?.dispositionType) {
+      const type = storeProject.dispositionType;
+      if (type === 'SALE') {
         setStrategy('flip');
       } else {
         setStrategy('rental');

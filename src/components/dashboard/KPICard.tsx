@@ -90,7 +90,7 @@ export default function KPICard({ title, value, trend, icon }: KPICardProps) {
             </div>
           )}
           <p
-            className="text-[10px] font-bold uppercase tracking-[0.18em] leading-tight"
+            className="text-label-sm font-bold uppercase tracking-[0.18em] leading-tight"
             style={{ color: 'var(--text-secondary)' }}
           >
             {title}
@@ -99,7 +99,7 @@ export default function KPICard({ title, value, trend, icon }: KPICardProps) {
 
         {/* Trend badge */}
         <div
-          className="flex items-center gap-1 px-2 py-1 rounded text-[10px] font-bold shrink-0"
+          className="flex items-center gap-1 px-2 py-1 rounded text-label-sm font-bold shrink-0"
           style={{ background: bgColor, color }}
         >
           <Icon className="w-3 h-3" aria-hidden="true" />
@@ -110,7 +110,7 @@ export default function KPICard({ title, value, trend, icon }: KPICardProps) {
       {/* ── Value ── */}
       <div className="mt-auto pt-6 relative z-10">
         <p
-          className="text-3xl font-normal tracking-tighter leading-none"
+          className="text-4xl font-bold tracking-tighter leading-none tabular-nums"
           style={{
             color: 'var(--text-primary)',
             fontFamily: 'ui-monospace, SFMono-Regular, "SF Mono", Menlo, monospace',

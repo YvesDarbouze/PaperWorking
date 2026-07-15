@@ -65,7 +65,8 @@ const mockProjects = [
     id: 'project-1',
     propertyName: 'Miami Oasis',
     address: '123 Ocean Drive, Miami, FL 33139',
-    strategyType: 'buy-and-hold',
+    dispositionType: 'RENT',
+    subStrategy: 'LONG_TERM',
     currentPhase: 'Closing',
     financials: {
       purchasePrice: 200000,

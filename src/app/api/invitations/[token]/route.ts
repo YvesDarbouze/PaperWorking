@@ -94,7 +94,7 @@ export async function GET(
       ]
         .filter(Boolean)
         .join(', ') || project.propertyAddress || '',
-      strategy: project.strategyType || 'Value-Add',
+      strategy: project.subStrategy || project.dispositionType || 'Value-Add',
       assetClass: project.assetClass || 'Multi-Family',
       opportunitySummary: project.vision || inv.opportunitySummary || project.description || '',
 

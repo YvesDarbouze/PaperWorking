@@ -105,18 +105,19 @@ letter-spacing: -0.011em;
 
 | Role | Tag / Class | Size | Weight | Line Height | Letter Spacing |
 |------|-------------|------|--------|-------------|----------------|
-| Display Hero | `.font-display-hero` | 72px | **100** (Thin) | 80px | −0.04em |
-| Headline XL | `h1` | 56px | **100** (Thin) | 64px | −0.03em |
+| Display Hero | `.font-display-hero` | 72px | **300** (Light) | 80px | −0.04em |
+| Headline XL | `h1` | 56px | **300** (Light) | 64px | −0.03em |
 | Headline LG | `h2` | 36px | **700** | 44px | −0.025em |
 | Headline LG Mobile | `h3` | 28px | **700** | 36px | −0.02em |
-| Headline MD | `h4` | 24px | **600** | 32px | −0.015em |
-| Title MD | `h4` variant | 20px | **500** | 28px | −0.01em |
+| Headline MD | `h4` | 24px | **700** | 32px | −0.015em |
+| Title MD | `h4` variant | 20px | **600** | 28px | −0.01em |
 | Body LG | `p` | 18px | 400 | 28px | — |
 | Body MD | — | 16px | 400 | 24px | — |
-| Body SM | — | 14px | 400 | 20px | — |
-| Label / Nav | `label`, `.ag-label` | 11–13px | **500–600** | 16px | +0.05–0.06em |
+| Body SM | — | 14px | **500** | 20px | — |
+| Label / Nav | `label`, `.ag-label` | 14px | **700** | 18px | +0.02em |
+| Caption / Badge | — | 12px | **600** | 16px | +0.06em |
 
-**Label pattern:** Always uppercase + tracked. `letter-spacing: 0.05–0.06em`.
+**Label pattern:** Always uppercase + tracked. `letter-spacing: 0.02–0.06em`.
 **Data values:** `font-family: var(--font-mono)` with `font-variant-numeric: tabular-nums`.
 
 ### Hero Headline Anatomy (from live site)

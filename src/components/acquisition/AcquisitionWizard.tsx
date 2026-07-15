@@ -17,6 +17,7 @@ import { PropertyStep }  from "./steps/PropertyStep";
 import { OwnershipStep } from "./steps/OwnershipStep";
 import { TermsStep }     from "./steps/TermsStep";
 import { ReviewStep }    from "./steps/ReviewStep";
+import { IntakeStep }    from "./steps/IntakeStep";
 
 // ─── API helpers ──────────────────────────────────────────────────────────────
 
@@ -104,7 +105,7 @@ export function AcquisitionWizard({ initialProjectId, onClose }: AcquisitionWiza
   const store = useAcquisitionWizard();
   const {
     projectId, currentStep, completion, savedAt, isSaving,
-    address, status, ownership, terms,
+    intake, address, status, ownership, terms,
     setProjectId, goToStep, setSaving, markSaved, reset,
   } = store;
 
@@ -126,6 +127,38 @@ export function AcquisitionWizard({ initialProjectId, onClose }: AcquisitionWiza
 
     try {
       const token = await user.getIdToken();
+
+      let computedPhase = 1;
+      let computedStatus = "PROSPECT";
+      let computedRetrospective = false;
+
+      if (intake.journey === "targeting") {
+        computedPhase = 1;
+        computedStatus = "PROSPECT";
+      } else if (intake.journey === "under_contract") {
+        computedPhase = 1;
+        computedStatus = "CLEAR_TO_CLOSE";
+      } else if (intake.journey === "owned_closing") {
+        computedPhase = 2;
+        computedStatus = "OWNED";
+      } else if (intake.journey === "renovating_marketing") {
+        computedPhase = 3;
+        computedStatus = "OWNED";
+      } else if (intake.journey === "rented_leased_sold") {
+        computedPhase = 4;
+        computedStatus = "CLOSED";
+        computedRetrospective = true;
+      }
+
+      let computedSubStrategy: string | null = null;
+      if (intake.dispositionType === "RENT") {
+        computedSubStrategy = "LONG_TERM";
+      } else if (intake.dispositionType === "SALE") {
+        computedSubStrategy = "FLIP";
+      } else if (intake.dispositionType === "LEASE") {
+        computedSubStrategy = "NNN";
+      }
+
       const payload = {
         addressLine:        address.addressLine,
         city:               address.city,
@@ -135,11 +168,23 @@ export function AcquisitionWizard({ initialProjectId, onClose }: AcquisitionWiza
         lng:                address.lng ?? null,
         placeId:            address.placeId ?? null,
         displayName:        address.displayName ?? null,
-        acquisitionStatus:  status.acquisitionStatus,
+        acquisitionStatus:  computedStatus,
         ownershipStructure: ownership.ownershipStructure ?? null,
         entityType:         ownership.entityType ?? null,
         entityName:         ownership.entityName ?? null,
         coOwners:           ownership.coOwners   ?? [],
+        currentPhase:       computedPhase,
+        dispositionType:    intake.dispositionType ?? null,
+        subStrategy:        computedSubStrategy,
+        entryStage:         intake.journey ?? null,
+        retrospective:      computedRetrospective,
+        apn:                address.apn ?? null,
+        propertyType:       address.propertyType ?? null,
+        units:              address.units ?? null,
+        sqft:               address.sqft ?? null,
+        lotSqft:            address.lotSqft ?? null,
+        yearBuilt:          address.yearBuilt ?? null,
+        condition:          address.condition ?? null,
       };
 
       if (!projectId) {
@@ -153,15 +198,15 @@ export function AcquisitionWizard({ initialProjectId, onClose }: AcquisitionWiza
       console.error("[AcquisitionWizard] save error:", err);
       setSaving(false);
     }
-  }, [user, projectId, address, status, ownership, setProjectId, setSaving, markSaved]);
+  }, [user, projectId, intake, address, status, ownership, setProjectId, setSaving, markSaved]);
 
   const scheduleSave = useCallback(() => {
     if (saveTimerRef.current) clearTimeout(saveTimerRef.current);
     saveTimerRef.current = setTimeout(save, 1_500);
   }, [save]);
 
-  // Trigger auto-save whenever address/status/ownership change
-  useEffect(() => { scheduleSave(); }, [address, status, ownership, scheduleSave]);
+  // Trigger auto-save whenever intake/address/status/ownership change
+  useEffect(() => { scheduleSave(); }, [intake, address, status, ownership, scheduleSave]);
 
   // ── Focus management — move focus to step heading on step change ────────────
   useEffect(() => {
@@ -174,9 +219,34 @@ export function AcquisitionWizard({ initialProjectId, onClose }: AcquisitionWiza
   const currentIdx = stepKeys.indexOf(currentStep);
 
   const goNext = useCallback(() => {
+    if (currentStep === "intake") {
+      goToStep("address");
+      return;
+    }
+
+    if (currentStep === "address") {
+      if (intake.journey === "under_contract") {
+        goToStep("terms");
+      } else if (
+        intake.journey === "owned_closing" ||
+        intake.journey === "renovating_marketing" ||
+        intake.journey === "rented_leased_sold"
+      ) {
+        goToStep("review");
+      } else {
+        goToStep("status");
+      }
+      return;
+    }
+
+    if (currentStep === "terms") {
+      goToStep("review");
+      return;
+    }
+
     const next = stepKeys[currentIdx + 1];
     if (next) goToStep(next as WizardStepKey);
-  }, [currentIdx, stepKeys, goToStep]);
+  }, [currentStep, currentIdx, stepKeys, goToStep, intake.journey]);
 
   // ── Save & exit ──────────────────────────────────────────────────────────────
   // When used as a modal overlay (onClose provided), closing returns to the
@@ -198,7 +268,7 @@ export function AcquisitionWizard({ initialProjectId, onClose }: AcquisitionWiza
     if (projectId) {
       reset();
       // Always navigate to the project workspace on submit
-      router.push(`/dashboard/projects/reil/${projectId}`);
+      router.push(`/dashboard/projects/${projectId}`);
       // Close the modal overlay after navigation completes (if in modal mode)
       onClose?.();
     }
@@ -208,6 +278,7 @@ export function AcquisitionWizard({ initialProjectId, onClose }: AcquisitionWiza
 
   function renderStep() {
     switch (currentStep) {
+      case "intake":    return <IntakeStep    onNext={goNext} />;
       case "address":   return <AddressStep   onNext={goNext} />;
       case "status":    return <StatusStep    onNext={goNext} />;
       case "property":  return <PropertyStep  onNext={goNext} />;

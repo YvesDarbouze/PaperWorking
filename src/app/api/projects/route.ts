@@ -75,7 +75,8 @@ const wizardSubmitSchema = z.object({
   lng: z.number().nullable().optional(),
   reiStatus: z.string().optional(),
   status: z.string().optional().default('Lead'),
-  strategyType: z.string().optional(),
+  dispositionType: z.string().optional(),
+  subStrategy: z.string().optional(),
   assetClass: z.string().optional(),
   leadEmail: z.string().optional(),
   partnerEmails: z.string().optional(),
@@ -139,23 +140,43 @@ export async function POST(request: NextRequest) {
     const data = validation.data;
     const organizationId = data.organizationId;
 
-    // 3. Verify org membership securely against organization document
+    // 3. Verify org membership — auto-create personal org if missing
     const orgSnap = await adminDb.collection('organizations').doc(organizationId).get();
     if (!orgSnap.exists) {
-      return NextResponse.json(
-        { error: 'Organization not found' },
-        { status: 404 }
-      );
-    }
-    const orgData = orgSnap.data();
-    const isOwner = orgData?.ownerUid === uid;
-    const isTeamMember = orgData?.teamMembers?.some((m: any) => m.id === uid && m.status === 'active');
+      // Check if this is the user's personal org that was never bootstrapped
+      const userSnap = await adminDb.collection('users').doc(uid).get();
+      const userData = userSnap.data();
+      const isPersonalOrg = userData?.personalOrganizationId === organizationId;
 
-    if (!isOwner && !isTeamMember) {
-      return NextResponse.json(
-        { error: 'Access denied. You are not an active member of this organization.' },
-        { status: 403 }
-      );
+      if (isPersonalOrg) {
+        // Auto-create the missing personal org document
+        await adminDb.collection('organizations').doc(organizationId).set({
+          ownerUid: uid,
+          name: `${userData?.displayName || 'User'}'s Workspace`,
+          type: 'personal',
+          subscriptionPlan: userData?.subscriptionPlan || 'None',
+          subscriptionStatus: userData?.subscriptionStatus || 'inactive',
+          createdAt: new Date(),
+          updatedAt: new Date(),
+        });
+      } else {
+        return NextResponse.json(
+          { error: 'Organization not found' },
+          { status: 404 }
+        );
+      }
+    } else {
+      // Org exists — verify membership
+      const orgData = orgSnap.data();
+      const isOwner = orgData?.ownerUid === uid;
+      const isTeamMember = orgData?.teamMembers?.some((m: any) => m.id === uid && m.status === 'active');
+
+      if (!isOwner && !isTeamMember) {
+        return NextResponse.json(
+          { error: 'Access denied. You are not an active member of this organization.' },
+          { status: 403 }
+        );
+      }
     }
 
     // 4. Entitlement check: project count limit

@@ -25,7 +25,7 @@ export interface CashFlowProjectInput {
     [key: string]: any;
   };
   currentPhase?: number;
-  strategyType?: string;
+  dispositionType?: string;
   [key: string]: any;
 }
 
@@ -39,7 +39,7 @@ export function computeCashFlowMetric(project: CashFlowProjectInput): MetricResu
     return incomplete(['financials.monthlyGrossRent']);
   }
 
-  const noi = computeNOI(fin as any, project.strategyType, project.currentPhase);
+  const noi = computeNOI(fin as any, project.dispositionType, project.currentPhase);
 
   // Debt service — zero for all-cash deals
   const loanAmount = num(fin?.loanAmount) ?? 0;

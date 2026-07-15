@@ -136,8 +136,8 @@ function NavItem({ name, href, icon, isActive, badge, isDark, onClick }: NavItem
 
       {/* Label */}
       <span
-        className="text-[13px] flex-1 min-w-0 truncate"
-        style={{ fontWeight: isActive ? 600 : 500, letterSpacing: "-0.01em" }}
+        className="text-label-md flex-1 min-w-0 truncate"
+        style={{ fontWeight: isActive ? 700 : 500, letterSpacing: "-0.01em" }}
       >
         {name}
       </span>
@@ -145,7 +145,7 @@ function NavItem({ name, href, icon, isActive, badge, isDark, onClick }: NavItem
       {/* Inbox unread badge */}
       {badge !== undefined && badge > 0 && (
         <span
-          className="relative flex items-center justify-center rounded-full text-[10px] font-bold flex-shrink-0"
+          className="relative flex items-center justify-center rounded-full text-label-sm font-bold flex-shrink-0"
           style={{
             minWidth: 18,
             height: 18,
@@ -181,7 +181,7 @@ function SectionLabel({ label, isDark }: { label: string; isDark: boolean }) {
   return (
     <div className="px-3 pt-5 pb-1.5">
       <p
-        className="text-[10px] font-bold uppercase"
+        className="text-label-sm font-bold uppercase"
         style={{
           letterSpacing: "0.10em",
           color: isDark ? "rgba(253,255,252,0.50)" : "rgba(55,59,69,0.75)",
@@ -362,7 +362,7 @@ export function Sidebar() {
             {/* Workspace switcher */}
             <div className="relative px-1 pt-0.5">
               <p
-                className="text-[10px] font-semibold uppercase mb-1 px-2"
+                className="text-label-sm font-semibold uppercase mb-1 px-2"
                 style={{ letterSpacing: "0.08em", color: mutedText }}
               >
                 acting as:{" "}
@@ -384,7 +384,7 @@ export function Sidebar() {
                     switchTenant(e.target.value);
                   }}
                   aria-label="Select Workspace"
-                  className="w-full appearance-none text-[12px] font-semibold py-2 pl-8 pr-7 rounded-lg focus:outline-none transition-all cursor-pointer truncate"
+                  className="w-full appearance-none text-body-sm font-semibold py-2 pl-8 pr-7 rounded-lg focus:outline-none transition-all cursor-pointer truncate"
                   style={{
                     background: selectBg,
                     border: `1px solid ${selectBorder}`,
@@ -435,7 +435,7 @@ export function Sidebar() {
                 />
                 <div className="flex flex-col overflow-hidden">
                   <span
-                    className="text-[12px] font-semibold truncate leading-tight"
+                    className="text-body-sm font-semibold truncate leading-tight"
                     style={{
                       color: isDark ? "rgba(253,255,252,0.90)" : "#0d0a0b",
                       letterSpacing: "-0.01em",
@@ -444,7 +444,7 @@ export function Sidebar() {
                     {profile?.displayName || user?.displayName || "User"}
                   </span>
                   <span
-                    className="text-[10px] truncate capitalize leading-tight"
+                    className="text-label-sm truncate capitalize leading-tight"
                     style={{ color: mutedText }}
                   >
                     {profile?.role || "Member"}

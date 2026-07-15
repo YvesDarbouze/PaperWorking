@@ -10,6 +10,7 @@ import { useProjectStore } from '@/store/projectStore';
 import InboxTabs from '@/components/inbox/InboxTabs';
 import InboxFeed from '@/components/inbox/InboxFeed';
 import ThreadDetail from '@/components/inbox/ThreadDetail';
+import NegotiationThreadDetail from '@/components/inbox/NegotiationThreadDetail';
 import ComposeEmailModal from '@/components/inbox/ComposeEmailModal';
 import toast from 'react-hot-toast';
 import { executeInboxAction } from '@/lib/services/inboxActionExecutor';
@@ -237,6 +238,10 @@ function InboxNotificationCenter() {
   // If we have an active thread from URL, use that, otherwise use selected notification
   const selectedItem = items.find(item => item.id === selectedNotificationId) || null;
 
+  const negotiationParamId = searchParams.get('negotiationId') || searchParams.get('negotiation') || null;
+  const activeNegotiationId = negotiationParamId || 
+    (selectedItem?.type === 'NEGOTIATION_UPDATE' ? (selectedItem.objectReference.metadata?.negotiationId as string) : null);
+
   const handleExecuteAction = async () => {
     if (!user || !selectedItem) return;
     setIsExecutingAction(true);
@@ -271,7 +276,7 @@ function InboxNotificationCenter() {
       <div className="flex w-full h-[calc(100vh-64px)] bg-[#0d0a0b] text-[#9E9DA0] overflow-hidden">
         
         {/* ═══ List Pane (Left) ═══ */}
-        <section className={`w-full md:w-[420px] border-r border-white/10 flex flex-col bg-[#161318]/50 shrink-0 ${ (activeThread || selectedItem) ? 'hidden md:flex' : 'flex' }`}>
+        <section className={`w-full md:w-[420px] border-r border-white/10 flex flex-col bg-[#161318]/50 shrink-0 ${ (activeThread || activeNegotiationId || selectedItem) ? 'hidden md:flex' : 'flex' }`}>
           <div className="p-6 space-y-4">
             <div className="flex items-center justify-between">
               <h3 className="text-2xl font-bold text-[#9E9DA0]">Inbox</h3>
@@ -340,7 +345,7 @@ function InboxNotificationCenter() {
         </section>
 
         {/* ═══ Reading/Action Pane (Right) ═══ */}
-        <section className={`flex-1 flex flex-col bg-[#0d0a0b] relative overflow-hidden ${ (activeThread || selectedItem) ? 'flex' : 'hidden md:flex' }`}>
+        <section className={`flex-1 flex flex-col bg-[#0d0a0b] relative overflow-hidden ${ (activeThread || activeNegotiationId || selectedItem) ? 'flex' : 'hidden md:flex' }`}>
           {/* Background Decorative Elements */}
           <div className="absolute -top-40 -right-40 w-96 h-96 bg-[#454955]/5 rounded-full blur-[100px] pointer-events-none"></div>
           <div className="absolute bottom-20 left-20 w-64 h-64 bg-[#7A9EAA]/5 rounded-full blur-[80px] pointer-events-none"></div>
@@ -352,6 +357,14 @@ function InboxNotificationCenter() {
               onSendReply={handleSendReply}
               onBack={() => router.push('/dashboard/inbox')}
               onMarkThreadUnread={() => markThreadAsUnread(activeThread.projectId)}
+            />
+          ) : activeNegotiationId ? (
+            <NegotiationThreadDetail
+              negotiationId={activeNegotiationId}
+              onBack={() => {
+                setSelectedNotificationId(null);
+                router.push('/dashboard/inbox');
+              }}
             />
           ) : selectedItem ? (
             <div className="flex-1 overflow-y-auto z-10 flex flex-col">

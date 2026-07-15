@@ -48,7 +48,7 @@ const SOURCED_DEALS: SourcedDeal[] = [
   { id: "d-2", title: "Chicago South Side Brick Duplex", submarketId: "sm-2", submarketName: "Chicago South Side", price: 135000, capRate: 8.5, coc: 11.4, type: "Duplex", source: "Apex Realty" },
   { id: "d-3", title: "Atlanta Value-Add Quadplex", submarketId: "sm-3", submarketName: "Atlanta Metro", price: 420000, capRate: 7.8, coc: 9.8, type: "Quadplex", source: "Capital Sourced" },
   { id: "d-4", title: "Indianapolis Turnkey SFR", submarketId: "sm-4", submarketName: "Indianapolis Suburbs", price: 115000, capRate: 7.2, coc: 8.1, type: "Single Family", source: "Midwest Deals" },
-  { id: "d-5", title: "Dallas North Luxury Triplex", submarketId: "sm-5", submarketName: "Dallas North", price: 310000, capRate: 6.5, coc: 6.2, type: "Triplex", source: "Lone Star Syndicate" },
+  { id: "d-5", title: "Dallas North Luxury Triplex", submarketId: "sm-5", submarketName: "Dallas North", price: 310000, capRate: 6.5, coc: 6.2, type: "Triplex", source: "Lone Star Group" },
 ];
 
 const MARKET_VENDORS: MarketVendor[] = [
@@ -270,7 +270,7 @@ export function MarketHeatmap() {
         {activeTab === "deals" && (
           <div className="flex-1 flex flex-col gap-2.5">
             <p className="text-[11px]" style={{ color: t.subtext }}>
-              Deals sourced from active real estate syndicates, local professionals, and vendors.
+              Deals sourced from active real estate co-investment groups, local professionals, and vendors.
             </p>
             <div className="space-y-2.5 flex-1 min-h-0">
               {SOURCED_DEALS.map((deal) => (

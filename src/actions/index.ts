@@ -208,8 +208,20 @@ export async function closeProjectAndArchiveServerAction(idToken: string, projec
       phaseStatus: 'Phase 4: Closing & Exit',
       'financials.closedOutcome': profit >= 0 ? 'won' : 'lost',
       locked: true,
+      activeListingId: null, // AQ-27: clear listing back-reference
       updatedAt: FieldValue.serverTimestamp(),
     });
+
+    // AQ-27: Auto-close any active marketplace listing
+    if (projectData?.activeListingId) {
+      const listingRef = adminDb.collection('dealListings').doc(projectData.activeListingId);
+      transaction.update(listingRef, {
+        status: 'closed',
+        closedReason: 'project_archived',
+        closedAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
+      });
+    }
 
     let totalProfit = 0;
     let totalAllInCost = 0;

@@ -111,6 +111,7 @@ html[data-theme="dark"],
 
   /* Legacy Aliases */
   --pw-bg: var(--color-background);
+  --pw-night-bg: #121014;
   --pw-primary: var(--color-primary-container);
   --pw-ocean: var(--color-primary);
   --pw-info: var(--color-status-info);
@@ -154,15 +155,15 @@ html[data-theme="dark"],
   --font-hanken: var(--font-inter), system-ui, sans-serif;
   --font-plus-jakarta: var(--font-inter), system-ui, sans-serif;
 
-  /* Display / Hero — Inter 100 Thin */
+  /* Display / Hero — Inter 300 Light */
   --text-display-hero-size: 72px;
-  --text-display-hero-weight: 100;
+  --text-display-hero-weight: 300;
   --text-display-hero-line-height: 80px;
   --text-display-hero-letter-spacing: -0.04em;
 
-  /* Headline XL — Inter 100 (primary section heads) */
+  /* Headline XL — Inter 300 Light */
   --text-display-lg-size: 56px;
-  --text-display-lg-weight: 100;
+  --text-display-lg-weight: 300;
   --text-display-lg-line-height: 64px;
   --text-display-lg-letter-spacing: -0.03em;
 
@@ -178,15 +179,15 @@ html[data-theme="dark"],
   --text-headline-lg-mobile-line-height: 36px;
   --text-headline-lg-mobile-letter-spacing: -0.02em;
 
-  /* Headline MD — Inter 600 SemiBold */
+  /* Headline MD — Inter 700 Bold */
   --text-headline-md-size: 24px;
-  --text-headline-md-weight: 600;
+  --text-headline-md-weight: 700;
   --text-headline-md-line-height: 32px;
   --text-headline-md-letter-spacing: -0.015em;
 
-  /* Title MD — Inter 500 Medium */
+  /* Title MD — Inter 600 SemiBold */
   --text-title-md-size: 20px;
-  --text-title-md-weight: 500;
+  --text-title-md-weight: 600;
   --text-title-md-line-height: 28px;
   --text-title-md-letter-spacing: -0.01em;
 
@@ -200,20 +201,20 @@ html[data-theme="dark"],
   --text-body-md-weight: 400;
   --text-body-md-line-height: 24px;
 
-  /* Body SM — Inter 400 Regular */
+  /* Body SM — Inter 500 Medium */
   --text-body-sm-size: 14px;
-  --text-body-sm-weight: 400;
+  --text-body-sm-weight: 500;
   --text-body-sm-line-height: 20px;
 
-  /* Label / Nav — Inter 600 SemiBold, tracked */
-  --text-label-md-size: 13px;
-  --text-label-md-weight: 600;
-  --text-label-md-line-height: 16px;
+  /* Label / Nav — Inter 700 Bold, tracked */
+  --text-label-md-size: 14px;
+  --text-label-md-weight: 700;
+  --text-label-md-line-height: 18px;
   --text-label-md-letter-spacing: 0.02em;
 
-  /* Caption / Badge — Inter 500 Medium, wide tracked */
-  --text-label-caps-size: 11px;
-  --text-label-caps-weight: 500;
+  /* Caption / Badge — Inter 600 SemiBold, wide tracked */
+  --text-label-caps-size: 12px;
+  --text-label-caps-weight: 600;
   --text-label-caps-line-height: 16px;
   --text-label-caps-letter-spacing: 0.06em;
 }
@@ -233,6 +234,7 @@ html[data-theme="dark"],
   --color-pw-glass-bg: var(--pw-glass-bg);
   --color-pw-muted: var(--pw-muted);
   --color-pw-accent: var(--pw-accent);
+  --color-pw-night-bg: var(--pw-night-bg);
 
   --color-bg-primary: var(--pw-bg);
   --color-text-primary: var(--pw-black);
@@ -292,6 +294,14 @@ html[data-theme="dark"],
 
   --font-size-label-sm: var(--text-label-caps-size);
   --font-size-label-sm--line-height: var(--text-label-caps-line-height);
+
+  /* Overrides for standard Tailwind typography scale (UX-2 Legibility) */
+  --font-size-xs: 0.875rem;
+  --font-size-xs--line-height: 1.125rem;
+  --font-size-sm: 1rem;
+  --font-size-sm--line-height: 1.25rem;
+  --font-size-base: 1rem;
+  --font-size-base--line-height: 1.5rem;
 
   /* Line Heights (Legacy compatibility) */
   --line-height-display-hero: var(--text-display-hero-line-height);

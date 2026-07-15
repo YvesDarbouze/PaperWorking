@@ -22,8 +22,6 @@ import { useProjectStore } from "@/store/projectStore";
 import { useTheme } from "@/lib/utils/ThemeProvider";
 import {
   deriveAllMetrics,
-  computeNOIComponents,
-  computeAnnualDebtService,
 } from "@/lib/metrics/reiMetrics";
 import {
   computeLTVMetric,
@@ -45,6 +43,7 @@ import {
 import type { Project } from "@/types/schema";
 import Link from "next/link";
 import { usePortfolioMetricSnapshots } from "@/hooks/usePortfolioMetricSnapshots";
+import { KPICategorySections } from "./KPICategoryCharts";
 
 // ─── Palette constants ─────────────────────────────────────────────────────────
 
@@ -1013,7 +1012,7 @@ function usePortfolioInsights(projects: Project[]): PortfolioInsights {
       const m = deriveAllMetrics(
         f,
         f.estimatedCurrentValue || f.estimatedARV,
-        p.strategyType,
+        p.dispositionType,
         p.currentPhase,
         p.createdAt,
       );
@@ -1021,12 +1020,8 @@ function usePortfolioInsights(projects: Project[]): PortfolioInsights {
       const propValue   = f.estimatedCurrentValue || f.estimatedARV || f.purchasePrice || f.targetPrice || 0;
       const propPrice   = f.purchasePrice || f.targetPrice || 0;
       const annualRent  = (f.monthlyGrossRent || f.projectedMonthlyRent || 0) * 12;
-      const debtService = computeAnnualDebtService(
-        f.loanAmount ?? 0,
-        f.loanInterestRate ?? 0,
-        (f.loanTermYears ?? 30) * 12,
-      );
-      const noiComp = computeNOIComponents(f, p.strategyType, p.currentPhase);
+      const debtService = m.annualDebtService;
+      const noiComp = m.noiComponents;
 
       sumNOI            += m.noi;
       sumPropertyValue  += propValue;
@@ -1069,7 +1064,7 @@ function usePortfolioInsights(projects: Project[]): PortfolioInsights {
       }
 
       const name = (p.propertyName || p.address || `Project ${p.id.slice(0,4)}`).slice(0, 16);
-      const flipROI = p.strategyType === "Fix & Flip" && m.totalCashInvested > 0
+      const flipROI = p.dispositionType === "SALE" && m.totalCashInvested > 0
         ? ((propValue - (f.purchasePrice ?? 0) - (f.projectedRehabCost ?? 0)) / m.totalCashInvested) * 100
         : null;
       const rentROI = m.totalCashInvested > 0
@@ -1417,9 +1412,9 @@ export function KPIInsightsDashboard() {
         }
       }
       if (globalStrategyFilter !== 'all') {
-        const strategy = p.strategyType || '';
-        const isLTR = strategy.toUpperCase().includes('LONG') || strategy.toUpperCase() === 'LTR';
-        const isSTR = strategy.toUpperCase().includes('SHORT') || strategy.toUpperCase() === 'STR';
+        const sub = p.subStrategy || '';
+        const isLTR = sub === 'LONG_TERM' || sub === 'BRRRR';
+        const isSTR = sub === 'SHORT_TERM' || sub === 'MID_TERM';
         if (globalStrategyFilter === 'LTR' && !isLTR) return false;
         if (globalStrategyFilter === 'STR' && !isSTR) return false;
       }
@@ -2129,11 +2124,13 @@ export function KPIInsightsDashboard() {
           {/*  SUPPLEMENTAL TIER — 5-category accordions                       */}
           {/* ══════════════════════════════════════════════════════════════════ */}
 
-          <SectionLabel label="Supplemental Metrics" isDark={isDark} />
+          <SectionLabel label="All 33 KPIs by Category" isDark={isDark} />
 
-          <SupplementalAccordions
-            metrics={supplementalDisplayList}
+          <KPICategorySections
+            project={currentProject}
+            projects={focusedProjects}
             isDark={isDark}
+            snapshots={snapshots}
           />
 
           {/* ── Data Coverage — REIL Input Map ───────────────────────────── */}

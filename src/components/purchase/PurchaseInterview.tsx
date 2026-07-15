@@ -70,7 +70,7 @@ export default function PurchaseInterview({ deal }: PurchaseInterviewProps) {
   const buildInitialData = useCallback(() => ({
     financials: {
       // S1: Price & P&S
-      purchasePrice: deal.financials?.purchasePrice || '',
+      purchasePrice: deal.financials?.purchasePrice || (deal.askingPriceCents ? deal.askingPriceCents / 100 : '') || (deal.propertyFacts?.listPriceCents ? Number(deal.propertyFacts.listPriceCents) / 100 : ''),
       emdAmount: deal.financials?.emdAmount || '',
       emdGoHardDate: formatDate(deal.financials?.emdGoHardDate),
       inspectionDeadline: '',

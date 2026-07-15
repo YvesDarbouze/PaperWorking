@@ -62,7 +62,7 @@ export async function onSnapshotWritten(
     const metrics: DerivedMetrics = deriveAllMetrics(
       financials,
       propertyValue,
-      projectData.strategyType,
+      projectData.dispositionType,
       projectData.currentPhase,
       projectData.createdAt
     );

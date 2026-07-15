@@ -133,7 +133,7 @@ export default function YesterdayCostCard() {
     >
       {/* Main content */}
       <div className="p-6 pb-2">
-        <p className="text-[9px] font-black text-white/40 uppercase tracking-[0.4em] mb-3">
+        <p className="text-label-sm font-black text-white/40 uppercase tracking-[0.4em] mb-3">
           Yesterday&apos;s Cost
         </p>
 
@@ -143,7 +143,7 @@ export default function YesterdayCostCard() {
         </p>
 
         {/* Breakdown line */}
-        <p className="text-[10px] text-white/50 font-bold mt-2 tracking-wide">
+        <p className="text-label-sm text-white/50 font-bold mt-2 tracking-wide">
           Interest {fmt(breakdown.interest, 0)}
           {' + '}Holding {fmt(breakdown.holding, 0)}
           {' + '}Rehab {fmt(breakdown.rehab, 0)}
@@ -188,7 +188,7 @@ export default function YesterdayCostCard() {
         {isUp && <TrendingUp className="w-3 h-3 text-[#595959]" />}
         {isDown && <TrendingDown className="w-3 h-3 text-[#1A1A1A]" />}
         {!isUp && !isDown && <Minus className="w-3 h-3 text-white/30" />}
-        <span className={`text-[9px] font-black tracking-wide ${
+        <span className={`text-label-sm font-black tracking-wide ${
           isUp ? 'text-[#595959]' : isDown ? 'text-[#1A1A1A]' : 'text-white/30'
         }`}>
           vs 7-day avg: {fmt(sevenDayAvg, 0)}

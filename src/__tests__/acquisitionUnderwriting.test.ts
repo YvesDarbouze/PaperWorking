@@ -109,7 +109,7 @@ describe('Phase 1 Acquisition Underwriting & Projections', () => {
     const checkGating = (deal: Partial<Project>) => {
       const missing: string[] = [];
       if (!deal.address) missing.push("Property Address");
-      if (!deal.strategyType) missing.push("Strategy Type");
+      if (!deal.dispositionType) missing.push("Strategy Type");
       const targetPrice = deal.financials?.targetPrice ?? deal.financials?.targetPurchasePrice ?? deal.financials?.purchasePrice;
       if (!targetPrice || targetPrice <= 0) missing.push("Projected Target Purchase Price");
       const offerStatus = deal.financials?.offerStatus;
@@ -122,7 +122,7 @@ describe('Phase 1 Acquisition Underwriting & Projections', () => {
     it('blocks transition when mandatory fields are missing', () => {
       const incompleteProject: Partial<Project> = {
         address: '',
-        strategyType: undefined,
+        dispositionType: undefined,
         status: 'Lead',
         currentPhase: 1,
         financials: {
@@ -142,7 +142,8 @@ describe('Phase 1 Acquisition Underwriting & Projections', () => {
     it('allows transition when all 4 criteria are met', () => {
       const completeProject: Partial<Project> = {
         address: '123 Main St, New York, NY 10001',
-        strategyType: 'Fix & Flip',
+        dispositionType: 'SALE',
+        subStrategy: 'FLIP',
         status: 'Lead',
         currentPhase: 1,
         financials: {

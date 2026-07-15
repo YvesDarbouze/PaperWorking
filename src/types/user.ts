@@ -52,6 +52,12 @@ export interface UserProfile {
   inviteToken?: string;
   invitedToProjectId?: string;
 
+  /* ── Buy-Box Thresholds (AQ-13) ── */
+  buyBoxTargetCapRate?: number;
+  buyBoxTargetCoc?: number;
+  buyBoxMinDscr?: number;
+  buyBoxMaxPurchasePrice?: number;
+
   /* ── Push Notifications ── */
   fcmTokens?: string[];
   lastActiveAt?: Timestamp;

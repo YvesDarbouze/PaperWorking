@@ -10,6 +10,7 @@ export const OFFER_STAGES = [
   'Countered',
   'Accepted',
   'Rejected',
+  'Expired',
 ] as const;
 
 export type OfferStage = typeof OFFER_STAGES[number];
@@ -20,7 +21,7 @@ interface OfferPipelineTrackerProps {
   offerAmountCents: number;
   propertyAddress: string;
   phaseColor?: string;
-  onCounterSubmit?: (priceCents: number, terms: string) => void;
+  onCounterSubmit?: (priceCents: number, terms: string, initiator: 'Buyer' | 'Seller') => void;
 }
 
 export function OfferPipelineTracker({
@@ -43,6 +44,7 @@ export function OfferPipelineTracker({
   const [isCounterModalOpen, setIsCounterModalOpen] = useState(false);
   const [counterPriceInput, setCounterPriceInput] = useState('');
   const [counterTermsInput, setCounterTermsInput] = useState('');
+  const [counterInitiator, setCounterInitiator] = useState<'Buyer' | 'Seller'>('Buyer');
 
   const formattedOffer = offerAmountCents > 0
     ? `$${(offerAmountCents / 100).toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}`
@@ -93,36 +95,70 @@ export function OfferPipelineTracker({
   };
 
   const submitCounterOffer = () => {
+    console.log('[OfferPipelineTracker] submitCounterOffer called, price input:', counterPriceInput);
     const parsedAmount = Number(counterPriceInput.replace(/[^0-9.]/g, ''));
+    console.log('[OfferPipelineTracker] parsedAmount:', parsedAmount);
     if (isNaN(parsedAmount) || parsedAmount <= 0) {
+      console.log('[OfferPipelineTracker] validation failed!');
       toast.error('Please enter a valid counter price.');
       return;
     }
     const priceCents = Math.round(parsedAmount * 100);
+    console.log('[OfferPipelineTracker] priceCents:', priceCents);
     if (onCounterSubmit) {
-      onCounterSubmit(priceCents, counterTermsInput);
+      console.log('[OfferPipelineTracker] calling onCounterSubmit');
+      onCounterSubmit(priceCents, counterTermsInput, counterInitiator);
+    } else {
+      console.log('[OfferPipelineTracker] calling onStatusChange(Countered)');
+      onStatusChange('Countered');
     }
-    onStatusChange('Countered');
     setIsCounterModalOpen(false);
     setCounterPriceInput('');
     setCounterTermsInput('');
+    setCounterInitiator('Buyer');
   };
 
   const cancelCounterOffer = () => {
     setIsCounterModalOpen(false);
     setCounterPriceInput('');
     setCounterTermsInput('');
+    setCounterInitiator('Buyer');
   };
 
   return (
     <div className="space-y-4">
-      <div className="flex flex-col gap-1">
-        <h3 className="text-xs font-bold uppercase tracking-[0.1em]" style={{ color: 'var(--text-primary)' }}>
-          Offer Pipeline
-        </h3>
-        <p className="text-[10px] text-gray-500 uppercase tracking-widest">
-          Drag the card to update status
-        </p>
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-2 border-b border-white/5">
+        <div className="flex flex-col gap-1">
+          <h3 className="text-xs font-bold uppercase tracking-[0.1em] text-white">
+            Offer Pipeline
+          </h3>
+          <p className="text-[10px] text-[#9E9DA0] uppercase tracking-widest">
+            Drag the card to update status or select below
+          </p>
+        </div>
+        <div className="flex items-center gap-2">
+          <span className="text-[10px] font-bold uppercase tracking-widest text-[#9E9DA0]">Status:</span>
+          <select
+            id="offer-status-select"
+            name="offerStatus"
+            value={activeStatus}
+            onChange={(e) => {
+              const val = e.target.value;
+              if (val === 'Countered') {
+                setIsCounterModalOpen(true);
+              } else {
+                onStatusChange(val);
+              }
+            }}
+            className="rounded-lg px-3 py-1.5 text-xs bg-[#241e26] border border-white/10 text-white focus:outline-none focus:border-[#454955] cursor-pointer"
+          >
+            {OFFER_STAGES.map((s) => (
+              <option key={s} value={s}>
+                {s}
+              </option>
+            ))}
+          </select>
+        </div>
       </div>
 
       {/* Kanban Board Container */}
@@ -202,6 +238,7 @@ export function OfferPipelineTracker({
                   <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500">$</span>
                   <input
                     type="text"
+                    id="counter-offer-price-input"
                     value={counterPriceInput}
                     onChange={(e) => setCounterPriceInput(e.target.value)}
                     placeholder="e.g. 150,000"
@@ -212,8 +249,37 @@ export function OfferPipelineTracker({
               </div>
 
               <div>
+                <label className="block text-[10px] font-bold uppercase tracking-widest text-gray-500 mb-1">Initiator</label>
+                <div className="flex gap-4">
+                  <label className="flex items-center gap-1.5 text-xs text-gray-700 cursor-pointer">
+                    <input
+                      type="radio"
+                      name="counterInitiator"
+                      value="Buyer"
+                      checked={counterInitiator === 'Buyer'}
+                      onChange={() => setCounterInitiator('Buyer')}
+                      className="text-[#454955] focus:ring-[#454955]"
+                    />
+                    Buyer
+                  </label>
+                  <label className="flex items-center gap-1.5 text-xs text-gray-700 cursor-pointer">
+                    <input
+                      type="radio"
+                      name="counterInitiator"
+                      value="Seller"
+                      checked={counterInitiator === 'Seller'}
+                      onChange={() => setCounterInitiator('Seller')}
+                      className="text-[#454955] focus:ring-[#454955]"
+                    />
+                    Seller
+                  </label>
+                </div>
+              </div>
+
+              <div>
                 <label className="block text-[10px] font-bold uppercase tracking-widest text-gray-500 mb-1">Updated Terms (Optional)</label>
                 <textarea
+                  id="counter-offer-terms-input"
                   value={counterTermsInput}
                   onChange={(e) => setCounterTermsInput(e.target.value)}
                   placeholder="e.g. Seller requests 10-day inspection instead of 15..."
@@ -226,12 +292,14 @@ export function OfferPipelineTracker({
             
             <div className="px-6 py-4 bg-gray-50 flex justify-end gap-3 border-t">
               <button
+                id="cancel-counter-btn"
                 onClick={cancelCounterOffer}
                 className="px-4 py-2 text-xs font-bold uppercase tracking-widest text-gray-500 hover:text-gray-700 transition-colors"
               >
                 Cancel
               </button>
               <button
+                id="save-counter-btn"
                 onClick={submitCounterOffer}
                 className="px-6 py-2 text-xs font-bold uppercase tracking-widest text-white rounded shadow-sm transition-opacity hover:opacity-90"
                 style={{ background: phaseColor }}

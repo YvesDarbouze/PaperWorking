@@ -54,6 +54,7 @@ export function projectScenarioCashFlows(
     0;
 
   const baseMonthlyRent =
+    safeNum(f.gross_rent_per_unit) ??
     safeNum(f.monthlyGrossRent) ??
     safeNum(f.projectedMonthlyRent) ??
     safeNum((f as any).projectedRent) ??
@@ -72,10 +73,10 @@ export function projectScenarioCashFlows(
 
   // Derive base-year operating expenses from the NOI computation so we
   // stay consistent with the rest of the engine.
-  const baseNOI = computeNOI(f as any, project.strategyType, project.currentPhase);
+  const baseNOI = computeNOI(f as any, project.dispositionType, project.currentPhase);
   const baseGrossRent = baseMonthlyRent * 12;
   // Vacancy already baked into NOI; strip it back out to get pure opex.
-  const baseVacancyLoss = baseGrossRent * ((f.vacancyRatePercent ?? 5) / 100);
+  const baseVacancyLoss = baseGrossRent * ((f.vacancy_pct ?? f.vacancyRatePercent ?? 5) / 100);
   const baseOperatingExpenses = Math.max(0, baseGrossRent - baseVacancyLoss - baseNOI);
 
   // Build year-by-year NOIs first so we know the final year's NOI for exit.

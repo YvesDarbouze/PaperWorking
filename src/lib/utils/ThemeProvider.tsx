@@ -170,7 +170,7 @@ export function ThemeProvider({ children }: ThemeProviderProps) {
     // No-op to lock to dark mode
   }, []);
 
-  const bg = '#121014'; // Always dark background
+  const bg = PW_COLORS.nightBg; // Locked night background token
 
   return (
     <ThemeToggleContext.Provider value={{ theme, toggleTheme, setTheme }}>

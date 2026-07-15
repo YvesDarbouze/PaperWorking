@@ -61,17 +61,14 @@ export const phaseStatusEnum = z.enum([
   'Phase 1: Acquisition',
   'Phase 2: Acquisition',
   'Phase 2: Transaction',
+  'Phase 2: Fund',
   'Phase 3: Rehab',
+  'Phase 3: Hold',
   'Phase 4: Hold / Exit',
+  'Phase 4: Exit',
 ]);
 
-/** Investment strategy — determines which metrics are relevant */
-export const strategyTypeEnum = z.enum([
-  'Sell',
-  'Rent',
-  'Fix & Flip',
-  'Buy & Hold',
-]);
+
 
 /** Asset classification */
 export const assetClassEnum = z.enum([
@@ -140,12 +137,11 @@ export const entryPathEnum = z.enum([
 
 /** Rehab scope classification — drives budget templates */
 export const rehabTierEnum = z.enum([
-  'Staging',
-  'Minor Cosmetic',
-  'Minor Rehab',
-  'Full Rehab',
-  'Gut Renovation',
-  'Ground-Up Construction',
+  'Stage',
+  'Refurbish',
+  'Renovate',
+  'Gut',
+  'Develop',
 ]);
 
 // ── Nested Schemas ─────────────────────────────────────────
@@ -352,6 +348,12 @@ export const projectFinancialsSchema = z.object({
   /** Counter-offer price in CENTS (exception to the dollars convention) */
   counterPriceCents: z.number().int().optional(),
   counterTerms: z.string().optional(),
+  scorecardAcknowledged: z.boolean().optional(),
+  acknowledgedInputsHash: z.string().optional(),
+  finalAgreedPrice: usdDollars.optional(),
+  fundingType: z.enum(['Solo', 'Syndicated']).optional(),
+  psaDocumentUrl: z.string().optional(),
+  psaDocumentName: z.string().optional(),
 
   // ── Equity Valuation Tracker ──
 
@@ -390,6 +392,7 @@ export const projectFinancialsSchema = z.object({
    * Whole number (e.g. 2 for 2 points).
    */
   loanOriginationPoints: percentWhole.optional(),
+  downPaymentPercent: percentWhole.optional(),
 
   /** Estimated holding period in days — used for holding cost projections */
   estimatedTimelineDays: z.number().int().nonnegative().optional(),
@@ -404,6 +407,12 @@ export const projectFinancialsSchema = z.object({
     fileUrl: z.string().optional(),
     storagePath: z.string().optional(),
     uploadedAt: z.string().optional(),
+    entryStage: z.string().optional(),
+    lastActiveStage: z.string().optional(),
+    overrideReason: z.string().optional(),
+    propertyType: z.string().optional(),
+    units: z.number().optional(),
+    condition: z.string().optional(),
   })).optional(),
 
   /** Virtual Inspection Estimate vs Actual */
@@ -565,6 +574,24 @@ export const projectFinancialsSchema = z.object({
    * Estimated annual property appreciation as whole number percentage.
    */
   annualAppreciationPercent: percentWhole.optional(),
+
+  // Canonical Group 2/3 Variables (reil-registry.md)
+  gross_rent_per_unit: usdDollars.optional(),
+  vacancy_pct: percentWhole.optional(),
+  other_income: usdDollars.optional(),
+  tax: usdDollars.optional(),
+  insurance: usdDollars.optional(),
+  security: usdDollars.optional(),
+  maintenance: usdDollars.optional(),
+  maintenance_pct: percentWhole.optional(),
+  utilities: usdDollars.optional(),
+  management: usdDollars.optional(),
+  management_pct: percentWhole.optional(),
+  HOA: usdDollars.optional(),
+  capex: usdDollars.optional(),
+  unitRents: z.array(z.number()).optional(),
+  taxBillUrl: z.string().optional(),
+  t12Url: z.string().optional(),
 
   // ── Holding Costs Calculator ──
 
@@ -820,7 +847,7 @@ export const projectExitSchema = z.object({
  * This is the core domain entity. Every deal flows through this
  * 4-phase lifecycle: Acquisition → Fund → Hold → Exit.
  */
-export const projectSchema = z.object({
+export const baseProjectSchema = z.object({
   /** Firestore document ID */
   id: z.string().min(1),
 
@@ -853,9 +880,6 @@ export const projectSchema = z.object({
 
   /** High-level horizontal phase tracker string */
   phaseStatus: phaseStatusEnum.optional(),
-
-  /** Investment strategy */
-  strategyType: strategyTypeEnum.optional(),
 
   /** Asset classification */
   assetClass: assetClassEnum.optional(),
@@ -957,6 +981,32 @@ export const projectSchema = z.object({
     z.enum(['acquisition', 'transaction', 'rehab', 'hold_exit'])
   ]).optional(),
 
+  /** Whether this is a retrospective/historical deal entry */
+  retrospective: z.boolean().optional(),
+
+  /** Canonical disposition type (SALE | LEASE | RENT) */
+  dispositionType: z.enum(['SALE', 'LEASE', 'RENT']).optional(),
+
+  /** Canonical sub-strategy under dispositionType */
+  subStrategy: z.enum([
+    'FLIP', 'WHOLESALE', 'BUILD_SELL',
+    'LONG_TERM', 'SHORT_TERM', 'MID_TERM', 'BRRRR',
+    'NNN', 'GROUND', 'LEASE_OPTION'
+  ]).optional().nullable(),
+
+  /** Record of where the project entered the lifecycle */
+  entryStage: z.string().optional(),
+
+  /** The last active/incomplete stage within Phase 1 (Acquisition) */
+  lastActiveStage: z.string().optional(),
+
+  /** Phase-gate override reason */
+  overrideReason: z.string().optional(),
+
+  propertyType: z.string().optional(),
+  units: z.number().optional(),
+  condition: z.string().optional(),
+
   /** Persistent storage for ProjectTodoList tasks */
   actionItems: z.array(z.any()).optional(),
 
@@ -1049,11 +1099,70 @@ export const projectSchema = z.object({
   rehabTier: rehabTierEnum.optional(),
 });
 
+export const projectSchema = baseProjectSchema.superRefine((data, ctx) => {
+  if (data.subStrategy) {
+    if (data.dispositionType === 'SALE') {
+      if (!['FLIP', 'WHOLESALE', 'BUILD_SELL'].includes(data.subStrategy)) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          message: `Invalid subStrategy "${data.subStrategy}" for disposition SALE`,
+          path: ['subStrategy'],
+        });
+      }
+    } else if (data.dispositionType === 'RENT') {
+      if (!['LONG_TERM', 'SHORT_TERM', 'MID_TERM', 'BRRRR'].includes(data.subStrategy)) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          message: `Invalid subStrategy "${data.subStrategy}" for disposition RENT`,
+          path: ['subStrategy'],
+        });
+      }
+    } else if (data.dispositionType === 'LEASE') {
+      if (!['NNN', 'GROUND', 'LEASE_OPTION'].includes(data.subStrategy)) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          message: `Invalid subStrategy "${data.subStrategy}" for disposition LEASE`,
+          path: ['subStrategy'],
+        });
+      }
+    }
+  }
+});
+
 /** Inferred TypeScript type from the Zod schema */
 export type Project = z.infer<typeof projectSchema>;
 
 /** Partial schema for Firestore updates */
-export const projectUpdateSchema = projectSchema.partial();
+export const projectUpdateSchema = baseProjectSchema.partial().superRefine((data, ctx) => {
+  if (data.subStrategy && data.dispositionType) {
+    if (data.dispositionType === 'SALE') {
+      if (!['FLIP', 'WHOLESALE', 'BUILD_SELL'].includes(data.subStrategy)) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          message: `Invalid subStrategy "${data.subStrategy}" for disposition SALE`,
+          path: ['subStrategy'],
+        });
+      }
+    } else if (data.dispositionType === 'RENT') {
+      if (!['LONG_TERM', 'SHORT_TERM', 'MID_TERM', 'BRRRR'].includes(data.subStrategy)) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          message: `Invalid subStrategy "${data.subStrategy}" for disposition RENT`,
+          path: ['subStrategy'],
+        });
+      }
+    } else if (data.dispositionType === 'LEASE') {
+      if (!['NNN', 'GROUND', 'LEASE_OPTION'].includes(data.subStrategy)) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          message: `Invalid subStrategy "${data.subStrategy}" for disposition LEASE`,
+          path: ['subStrategy'],
+        });
+      }
+    }
+  }
+});
+
 export type ProjectUpdate = z.infer<typeof projectUpdateSchema>;
 
 /** Type for the embedded financials object */

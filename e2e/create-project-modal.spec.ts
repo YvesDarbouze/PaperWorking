@@ -10,7 +10,8 @@ import { setupMocks, createDefaultState, safeGoto, MockState } from './mocks';
  *   - Sidebar <button onClick={openWizard}> → createProjectModalStore.open()
  *   - When isOpen=true, AcquisitionWizard mounts via React createPortal on document.body
  *   - The wizard container is fixed inset-0 z-[200] (covers the full viewport)
- *   - Step 1 (AddressStep) heading: "Where is the property?"
+ *   - Step 1 (IntakeStep) heading: "Project Intake Router"
+ *   - Step 2 (AddressStep) heading: "Let's start your Project. What's the property you're targeting?"
  *   - The wizard top bar shows REILPhaseStrip: Acquisition → Fund → Hold → Exit
  *   - The close button has aria-label="Close wizard"
  *
@@ -21,6 +22,10 @@ test.describe('Create Project Modal — Sidebar Entry Point', () => {
   let state: MockState;
 
   test.beforeEach(async ({ page }) => {
+    await page.addInitScript(() => {
+      window.localStorage.clear();
+      window.localStorage.setItem('pw_cookie_consent', JSON.stringify({ essential: true, analytics: true, marketing: true }));
+    });
     state = createDefaultState();
     await setupMocks(page, state);
   });
@@ -43,20 +48,17 @@ test.describe('Create Project Modal — Sidebar Entry Point', () => {
   test('2 — Clicking "Create Project" opens the fullscreen AcquisitionWizard overlay', async ({ page }) => {
     await safeGoto(page, '/dashboard/projects');
 
-    // Gate on the EmptyState heading — it only renders after React + Zustand hydrate,
-    // so its visibility confirms React event handlers are attached on the page.
-    await page.locator('h2').filter({ hasText: /your portfolio is empty/i }).first()
-      .waitFor({ state: 'visible', timeout: 10000 });
-
+    // Gate on the Create Project button visibility
     const createBtn = page
       .locator('button')
       .filter({ hasText: /create project/i })
       .first();
+    await createBtn.waitFor({ state: 'visible', timeout: 10000 });
     await createBtn.click();
 
-    // Step 1 (AddressStep) visible heading is "Where is the property?"
+    // Step 1 (IntakeStep) visible heading is "Project Intake Router"
     await expect(
-      page.locator('h2').filter({ hasText: /where is the property/i }).first()
+      page.locator('h3').filter({ hasText: /Project Intake Router/i }).first()
     ).toBeVisible({ timeout: 8000 });
   });
 
@@ -64,7 +66,7 @@ test.describe('Create Project Modal — Sidebar Entry Point', () => {
 
   test('3 — Wizard overlay covers at least 80% of the viewport', async ({ page }) => {
     await safeGoto(page, '/dashboard/projects');
-    await page.locator('h2').filter({ hasText: /your portfolio is empty/i }).first()
+    await page.locator('button').filter({ hasText: /create project/i }).first()
       .waitFor({ state: 'visible', timeout: 10000 });
 
     await page.locator('button').filter({ hasText: /create project/i }).first().click();
@@ -94,14 +96,14 @@ test.describe('Create Project Modal — Sidebar Entry Point', () => {
 
   test('4 — Wizard top bar shows REIL lifecycle phases: Acquisition, Fund, Hold, Exit', async ({ page }) => {
     await safeGoto(page, '/dashboard/projects');
-    await page.locator('h2').filter({ hasText: /your portfolio is empty/i }).first()
+    await page.locator('button').filter({ hasText: /create project/i }).first()
       .waitFor({ state: 'visible', timeout: 10000 });
 
     await page.locator('button').filter({ hasText: /create project/i }).first().click();
 
     // Wait for wizard heading to confirm it's open before checking the phase strip
     await expect(
-      page.locator('h2').filter({ hasText: /where is the property/i }).first()
+      page.locator('h3').filter({ hasText: /Project Intake Router/i }).first()
     ).toBeVisible({ timeout: 8000 });
 
     // REILPhaseStrip renders as hidden md:flex — visible at 1280px default viewport
@@ -116,12 +118,17 @@ test.describe('Create Project Modal — Sidebar Entry Point', () => {
 
   test('5 — First wizard step has an address search / text input', async ({ page }) => {
     await safeGoto(page, '/dashboard/projects');
-    await page.locator('h2').filter({ hasText: /your portfolio is empty/i }).first()
+    await page.locator('button').filter({ hasText: /create project/i }).first()
       .waitFor({ state: 'visible', timeout: 10000 });
 
     await page.locator('button').filter({ hasText: /create project/i }).first().click();
 
-    // Address input on the first step (placeholder "123 Main St, City, State")
+    // Complete IntakeStep first
+    await page.locator('button:has-text("Targeting")').first().click();
+    await page.locator('button:has-text("Rent")').first().click();
+    await page.locator('button:has-text("Continue")').first().click();
+
+    // Address input on the second step (placeholder "123 Main St, City, State")
     const addressInput = page
       .locator('input[type="text"], input[placeholder*="Main St"], input[placeholder*="ddress"]')
       .first();
@@ -135,14 +142,14 @@ test.describe('Create Project Modal — Sidebar Entry Point', () => {
 
   test('6 — Close button (aria-label="Close wizard") dismisses the wizard overlay', async ({ page }) => {
     await safeGoto(page, '/dashboard/projects');
-    await page.locator('h2').filter({ hasText: /your portfolio is empty/i }).first()
+    await page.locator('button').filter({ hasText: /create project/i }).first()
       .waitFor({ state: 'visible', timeout: 10000 });
 
     await page.locator('button').filter({ hasText: /create project/i }).first().click();
 
     // Confirm wizard is open
     await expect(
-      page.locator('h2').filter({ hasText: /where is the property/i }).first()
+      page.locator('h3').filter({ hasText: /Project Intake Router/i }).first()
     ).toBeVisible({ timeout: 8000 });
 
     // Use the specific aria-label set on the close button
@@ -161,7 +168,7 @@ test.describe('Create Project Modal — Sidebar Entry Point', () => {
     await expect(page).toHaveURL(/dashboard\/projects/);
     // Wizard heading is gone
     await expect(
-      page.locator('h2').filter({ hasText: /where is the property/i }).first()
+      page.locator('h3').filter({ hasText: /Project Intake Router/i }).first()
     ).not.toBeVisible({ timeout: 3000 });
   });
 });

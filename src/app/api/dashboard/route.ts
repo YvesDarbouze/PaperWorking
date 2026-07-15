@@ -139,7 +139,7 @@ export async function GET(request: NextRequest) {
       const assetMetrics = deriveAllMetrics(
         p.financials || {},
         undefined,
-        p.strategyType,
+        p.dispositionType,
         p.currentPhase,
         p.createdAt
       );
@@ -248,7 +248,8 @@ export async function GET(request: NextRequest) {
         id: item.project.id,
         propertyName: item.project.propertyName,
         address: item.project.address,
-        strategyType: item.project.strategyType,
+        dispositionType: item.project.dispositionType,
+        subStrategy: item.project.subStrategy,
         roi: item.projectMetrics.roi,
         capRate: item.assetMetrics.capRate,
       }))

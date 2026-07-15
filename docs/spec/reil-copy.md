@@ -60,22 +60,22 @@ not an academic, not a Silicon Valley pitch deck.
 | Phase | Title | Sub-caption |
 |-------|-------|-------------|
 | 1 | Acquisition | Know the real numbers before you sign. |
-| 2 | Transaction | Never blow a contingency deadline. |
-| 3 | Rehab | Manage contractor draws by milestone. |
-| 4 | Hold/Exit | CPA-Ready tax exports on closing. |
+| 2 | Fund | Capital raise, financing, and closing room. |
+| 3 | Hold | Renovation budget, holding costs, and operations. |
+| 4 | Exit | Sale, settlement, and realized ROI. |
 
 ### 3.2  Phase Body Copy
 
 **Phase 1 — Acquisition:**
 > "Calculate your projected IRR, Cap Rate, and cash-on-cash return with exact deal formulas. Build syndication pitches with real numbers that LPs trust."
 
-**Phase 2 — Transaction:**
-> "Track escrow deposits, title work, insurance binders, and closing timelines. Automated alerts remind you before earnest money gets hard."
+**Phase 2 — Fund:**
+> "Track escrow deposits, title work, earnest money deposits, and closing timelines. Secure capital and invite investors to your financing room."
 
-**Phase 3 — Rehab:**
-> "Log receipts, track change orders, and authorize contractor draws only when milestone checklists are verified. Keep your contingency fund green."
+**Phase 3 — Hold:**
+> "Log receipts, track renovation progress, and approve contractor draws by milestone. Monitor utility costs and occupancy status."
 
-**Phase 4 — Hold/Exit:**
+**Phase 4 — Exit:**
 > "Track monthly carrying costs, property valuations, and exit closing disclosures. Generate a single, clean cost-basis export for your accountant at tax time."
 
 ### 3.3  Phase Semantic Colors

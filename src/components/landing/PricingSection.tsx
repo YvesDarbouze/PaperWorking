@@ -128,8 +128,8 @@ const COMP_ROWS: { category: string; rows: CompRow[] }[] = [
     rows: [
       { label: 'Deal Analyzer (IRR, Cap Rate, CoC)', vendor: true, investor: true, team: true },
       { label: 'Active deal limit', vendor: true, investor: true, team: true },
-      { label: 'LP Syndication Pitch Builder', vendor: false, investor: false, team: true },
-      { label: 'Syndication Underwriter (debt sizing)', vendor: false, investor: false, team: true },
+      { label: 'Investment Team Pitch Builder', vendor: false, investor: false, team: true },
+      { label: 'Co-Investment Underwriter (debt sizing)', vendor: false, investor: false, team: true },
     ],
   },
   {
@@ -163,7 +163,7 @@ const COMP_ROWS: { category: string; rows: CompRow[] }[] = [
     category: 'Team & API',
     rows: [
       { label: 'Team Seats', vendor: false, investor: false, team: true },
-      { label: 'Read-Only LP / Partner Access', vendor: false, investor: true, team: true },
+      { label: 'Read-Only Co-Investor / Partner Access', vendor: false, investor: true, team: true },
       { label: 'REST API + Webhooks', vendor: false, investor: false, team: false },
       { label: 'White-Label Dashboard', vendor: false, investor: false, team: false },
     ],

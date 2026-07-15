@@ -24,47 +24,40 @@ export interface TierBudgetRange {
 }
 
 const TIER_BUDGET_MAP: Record<RehabTier, TierBudgetRange> = {
-  'Staging': {
+  'Stage': {
     low: 1_000,
     high: 5_000,
-    label: 'Staging Only',
+    label: 'Stage',
     emoji: '🛋️',
     description: 'Deep clean, paint touch-ups, staging furniture. Turnkey cosmetic.',
   },
-  'Minor Cosmetic': {
+  'Refurbish': {
     low: 5_000,
     high: 20_000,
-    label: 'Minor Cosmetic',
+    label: 'Refurbish',
     emoji: '🎨',
     description: 'Fresh paint, new fixtures, minor flooring. No permits needed.',
   },
-  'Minor Rehab': {
-    low: 15_000,
-    high: 50_000,
-    label: 'Minor Rehab',
-    emoji: '🔧',
-    description: 'Kitchen/bath refresh, new appliances, some drywall. Light permits.',
-  },
-  'Full Rehab': {
-    low: 40_000,
+  'Renovate': {
+    low: 20_000,
     high: 100_000,
-    label: 'Full Rehab',
-    emoji: '🏗️',
-    description: 'Gut kitchen/baths, new HVAC, electrical panel, full permits.',
+    label: 'Renovate',
+    emoji: '🔧',
+    description: 'Kitchen/bath refresh, new appliances, electrical panel. Permits needed.',
   },
-  'Gut Renovation': {
-    low: 75_000,
-    high: 200_000,
-    label: 'Gut Renovation',
+  'Gut': {
+    low: 100_000,
+    high: 250_000,
+    label: 'Gut',
     emoji: '💣',
     description: 'Down to studs. Full MEP, structural, layout changes. Major permits.',
   },
-  'Ground-Up Construction': {
-    low: 150_000,
+  'Develop': {
+    low: 250_000,
     high: Infinity,
-    label: 'Ground-Up Construction',
+    label: 'Develop',
     emoji: '🏛️',
-    description: 'Tear-down and rebuild. Full architectural plans, all permits.',
+    description: 'Tear-down and rebuild. Full architectural plans, ground-up development.',
   },
 };
 
@@ -80,12 +73,11 @@ export function getRehabTierBudgetRange(tier: RehabTier): TierBudgetRange {
  */
 export function getAllRehabTiers(): (TierBudgetRange & { tier: RehabTier })[] {
   const order: RehabTier[] = [
-    'Staging',
-    'Minor Cosmetic',
-    'Minor Rehab',
-    'Full Rehab',
-    'Gut Renovation',
-    'Ground-Up Construction',
+    'Stage',
+    'Refurbish',
+    'Renovate',
+    'Gut',
+    'Develop',
   ];
   return order.map(tier => ({ ...TIER_BUDGET_MAP[tier], tier }));
 }

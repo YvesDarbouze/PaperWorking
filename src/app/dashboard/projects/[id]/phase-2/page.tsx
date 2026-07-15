@@ -8,6 +8,7 @@ import { Project, LoanStatus, ClosingChecklistItem, ProjectTeamMember, CostBasis
 import { LoanProcessingPipeline } from '@/components/project/LoanProcessingPipeline';
 import { ClosingChecklist } from '@/components/project/ClosingChecklist';
 import { AcquisitionTeamAssembly } from '@/components/project/AcquisitionTeamAssembly';
+import InvestorEquityTable from '@/components/team/InvestorEquityTable';
 import { ProjectVendorsList } from '@/components/project/ProjectVendorsList';
 import { DueDiligenceChecklist } from '@/components/project/DueDiligenceChecklist';
 import { InspectionTracker } from '@/components/project/InspectionTracker';
@@ -21,10 +22,7 @@ import { Contingency } from '@/types/schema';
 import toast from 'react-hot-toast';
 import { PhaseExplainerVideo } from '@/components/project/PhaseExplainerVideo';
 import MarketVitals from '@/components/metrics/MarketVitals';
-import { computeDSCRMetric } from '@/lib/metrics/computeDSCR';
-import { computeCashFlowMetric } from '@/lib/metrics/computeCashFlow';
-import { computeCoCMetric } from '@/lib/metrics/computeCoC';
-import { computeAnnualDebtService } from '@/lib/metrics/reiMetrics';
+import { deriveAllMetrics, computeCompareLenderRates } from '@/lib/metrics/reiMetrics';
 import { MetricReadout } from '@/components/metrics/MetricReadout';
 import type { MetricResult } from '@/lib/metrics/types';
 import { LenderRatesAdmin } from '@/components/phase2/LenderRatesAdmin';
@@ -214,26 +212,29 @@ export default function Phase2AcquisitionPage() {
     const cashToClose = purchasePrice - loanAmount + closingCosts;
 
     // Auto-calculated debt service using reiMetrics engine
-    const loanTermYears = f.loanTermYears || 30;
-    const annualDS = computeAnnualDebtService(loanAmount, lenderRate, loanTermYears * 12);
+    const m = deriveAllMetrics(f, undefined, project?.dispositionType, project?.currentPhase);
+    const annualDS = m.annualDebtService;
     const monthlyPI = annualDS > 0 ? Math.round((annualDS / 12) * 100) / 100 : 0;
 
     return { purchasePrice, closingCosts, totalCostBasis, inspectionCredits, lenderRate, cashToClose, monthlyPI, annualDebtService: annualDS };
   }, [project?.financials, costBasisLedger, inspections]);
 
   /* ── Live Metric Readouts (DSCR, Cash Flow, CoC) ── */
-  const dscrResult: MetricResult = useMemo(
-    () => project ? computeDSCRMetric(project) : { value: null, state: 'incomplete' as const, inputsUsed: {}, inputsMissing: ['project'] },
-    [project]
-  );
-  const cashFlowResult: MetricResult = useMemo(
-    () => project ? computeCashFlowMetric(project) : { value: null, state: 'incomplete' as const, inputsUsed: {}, inputsMissing: ['project'] },
-    [project]
-  );
-  const cocResult: MetricResult = useMemo(
-    () => project ? computeCoCMetric(project) : { value: null, state: 'incomplete' as const, inputsUsed: {}, inputsMissing: ['project'] },
-    [project]
-  );
+  const derived = useMemo(() => {
+    if (!project?.financials) return null;
+    return deriveAllMetrics(project.financials, undefined, project.dispositionType, project.currentPhase);
+  }, [project?.financials, project?.dispositionType, project?.currentPhase]);
+
+  const wrapResult = (val: number | null): MetricResult => ({
+    value: val,
+    state: project?.currentPhase === 3 ? 'live' : project?.currentPhase === 4 ? 'realized' : 'projected',
+    inputsUsed: {},
+    inputsMissing: [],
+  });
+
+  const dscrResult = useMemo(() => wrapResult(derived?.dscr ?? null), [derived, project?.currentPhase]);
+  const cashFlowResult = useMemo(() => wrapResult(derived?.annualCashFlow ?? null), [derived, project?.currentPhase]);
+  const cocResult = useMemo(() => wrapResult(derived?.cashOnCashReturn ?? null), [derived, project?.currentPhase]);
 
   /* ── DD completion tracking ── */
   const ddProgress = useMemo(() => {
@@ -352,6 +353,51 @@ export default function Phase2AcquisitionPage() {
       <div className="min-h-screen flex items-center justify-center bg-[#0d0a0b]">
         <div className="text-center space-y-3">
           <p className="text-sm font-bold text-[#9E9DA0]">Project not found.</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (project?.entryStage === 'owned_closing') {
+    return (
+      <div className="min-h-screen bg-[#0d0a0b] relative p-8">
+        <div className="max-w-2xl mx-auto bg-[#161318] border border-white/10 rounded-2xl p-8 space-y-6 text-left">
+          <div className="flex items-center gap-3 text-[#7A9EAA]">
+            <span className="material-symbols-outlined text-3xl">construction</span>
+            <h1 className="text-2xl font-black text-white tracking-tight">Fund Workspace in Development</h1>
+          </div>
+          <p className="text-[#9E9DA0] text-sm">
+            This project was initialized directly at the <strong>Owned (Funding / Closing)</strong> stage. 
+            The operational checklist for the Fund Workspace is currently in development.
+          </p>
+
+          <hr className="border-white/5" />
+
+          <div>
+            <h3 className="text-xs font-bold uppercase tracking-widest text-[#9E9DA0] mb-3">Backfilled Project Data</h3>
+            <div className="space-y-3 bg-[#0d0a0b] p-4 rounded-xl border border-white/5 font-mono text-xs">
+              <div className="flex justify-between">
+                <span className="text-[#9E9DA0]">PROPERTY ADDRESS:</span>
+                <span className="text-white font-medium">{project.address}</span>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-[#9E9DA0]">CONTRACT PRICE:</span>
+                <span className="text-white font-medium">
+                  {project.financials?.purchasePrice ? `$${project.financials.purchasePrice.toLocaleString()}` : '—'}
+                </span>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-[#9E9DA0]">TARGET CLOSING:</span>
+                <span className="text-white font-medium">
+                  {project.financials?.acquisitionDate ? new Date(project.financials.acquisitionDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : '—'}
+                </span>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-[#9E9DA0]">ENTRY STAGE:</span>
+                <span className="text-[#7A9EAA] font-bold">OWNED — FUNDING/CLOSING</span>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     );
@@ -578,89 +624,94 @@ export default function Phase2AcquisitionPage() {
               )}
 
               {/* ── Populated state: real admin-maintained rates from Firestore ── */}
-              {lenderRates !== null && lenderRates.length > 0 && (
-                <>
-                  {/* Stale rates banner */}
-                  {lenderRates.some((r) => isRateStale(r.asOf)) && (
-                    <div className="mb-4 flex items-center gap-2 px-3 py-2 rounded-lg text-[10px] font-bold uppercase tracking-[0.1em] bg-amber-500/10 border border-amber-500/25 text-amber-400">
-                      <span className="material-symbols-outlined text-[14px]">warning</span>
-                      Rates may be stale — last updated over {30} days ago.
-                      {isRateAdmin && ' Use Edit Rates to refresh.'}
-                    </div>
-                  )}
+              {lenderRates !== null && lenderRates.length > 0 && (() => {
+                const ratesCompared = computeCompareLenderRates(
+                  project?.financials?.loanAmount ?? 0,
+                  project?.financials?.loanTermYears ?? 30,
+                  lenderRates
+                );
+                return (
+                  <>
+                    {/* Stale rates banner */}
+                    {lenderRates.some((r) => isRateStale(r.asOf)) && (
+                      <div className="mb-4 flex items-center gap-2 px-3 py-2 rounded-lg text-[10px] font-bold uppercase tracking-[0.1em] bg-amber-500/10 border border-amber-500/25 text-amber-400">
+                        <span className="material-symbols-outlined text-[14px]">warning</span>
+                        Rates may be stale — last updated over {30} days ago.
+                        {isRateAdmin && ' Use Edit Rates to refresh.'}
+                      </div>
+                    )}
 
-                  <div className="overflow-x-auto">
-                    <table className="w-full text-left text-xs border-collapse">
-                      <thead>
-                        <tr className="text-on-surface-variant/60 border-b border-white/5 uppercase tracking-wider text-[10px]">
-                          <th className="py-2.5">Parameter</th>
-                          {lenderRates.map((r, i) => (
-                            <th key={r.id} className="py-2.5 text-center">
-                              {r.name}
-                              {i === 0 && <span className="ml-1 opacity-50">(Primary)</span>}
-                            </th>
-                          ))}
-                        </tr>
-                      </thead>
-                      <tbody className="divide-y divide-white/5 text-on-surface font-mono">
-                        <tr className="hover:bg-white/[0.02]">
-                          <td className="py-3 font-sans text-xs">Interest Rate</td>
-                          {lenderRates.map((r, i) => (
-                            <td key={r.id} className={`py-3 text-center font-bold ${i === 0 ? 'text-primary' : 'text-on-surface-variant/80'}`}>
-                              {r.interestRate.toFixed(3)}%
-                            </td>
-                          ))}
-                        </tr>
-                        <tr className="hover:bg-white/[0.02]">
-                          <td className="py-3 font-sans text-xs">Points/Credits</td>
-                          {lenderRates.map((r, i) => (
-                            <td key={r.id} className={`py-3 text-center font-bold ${i === 0 ? 'text-primary' : 'text-on-surface-variant/80'}`}>
-                              {r.points % 1 === 0 ? r.points.toFixed(1) : r.points} Pt{r.points !== 1 ? 's' : ''}
-                            </td>
-                          ))}
-                        </tr>
-                        <tr className="hover:bg-white/[0.02]">
-                          <td className="py-3 font-sans text-xs">Lender Fees</td>
-                          {lenderRates.map((r, i) => (
-                            <td key={r.id} className={`py-3 text-center font-bold ${i === 0 ? 'text-primary' : 'text-on-surface-variant/80'}`}>
-                              ${(r.lenderFeesCents / 100).toLocaleString('en-US', { minimumFractionDigits: 0 })}
-                            </td>
-                          ))}
-                        </tr>
-                        <tr className="hover:bg-white/[0.02]">
-                          <td className="py-3 font-sans text-xs">Monthly P&amp;I</td>
-                          {lenderRates.map((r, i) => {
-                            const loanAmt   = project?.financials?.loanAmount ?? 0;
-                            const loanTermM = (project?.financials?.loanTermYears ?? 30) * 12;
-                            const annualDS  = computeAnnualDebtService(loanAmt, r.interestRate, loanTermM);
-                            const monthlyPI = annualDS > 0 ? Math.round(annualDS / 12) : null;
-                            return (
+                    <div className="overflow-x-auto">
+                      <table className="w-full text-left text-xs border-collapse">
+                        <thead>
+                          <tr className="text-on-surface-variant/60 border-b border-white/5 uppercase tracking-wider text-[10px]">
+                            <th className="py-2.5">Parameter</th>
+                            {lenderRates.map((r, i) => (
+                              <th key={r.id} className="py-2.5 text-center">
+                                {r.name}
+                                {i === 0 && <span className="ml-1 opacity-50">(Primary)</span>}
+                              </th>
+                            ))}
+                          </tr>
+                        </thead>
+                        <tbody className="divide-y divide-white/5 text-on-surface font-mono">
+                          <tr className="hover:bg-white/[0.02]">
+                            <td className="py-3 font-sans text-xs">Interest Rate</td>
+                            {lenderRates.map((r, i) => (
                               <td key={r.id} className={`py-3 text-center font-bold ${i === 0 ? 'text-primary' : 'text-on-surface-variant/80'}`}>
-                                {monthlyPI ? `$${monthlyPI.toLocaleString()}/mo` : '—'}
+                                {r.interestRate.toFixed(3)}%
                               </td>
-                            );
-                          })}
-                        </tr>
-                        {/* asOf row — shows the real admin-maintained as-of date */}
-                        <tr className="hover:bg-white/[0.02]">
-                          <td className="py-2 font-sans text-[10px] text-on-surface-variant/50">Rates as of</td>
-                          {lenderRates.map((r) => {
-                            const stale  = isRateStale(r.asOf);
-                            const never  = r.asOf.getTime() === 0;
-                            const label  = never ? 'Not set' : r.asOf.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
-                            return (
-                              <td key={r.id} className={`py-2 text-center text-[10px] font-mono ${stale ? 'text-amber-400' : 'text-on-surface-variant/50'}`}>
-                                {label}
-                                {stale && !never && ' ⚠'}
+                            ))}
+                          </tr>
+                          <tr className="hover:bg-white/[0.02]">
+                            <td className="py-3 font-sans text-xs">Points/Credits</td>
+                            {lenderRates.map((r, i) => (
+                              <td key={r.id} className={`py-3 text-center font-bold ${i === 0 ? 'text-primary' : 'text-on-surface-variant/80'}`}>
+                                {r.points % 1 === 0 ? r.points.toFixed(1) : r.points} Pt{r.points !== 1 ? 's' : ''}
                               </td>
-                            );
-                          })}
-                        </tr>
-                      </tbody>
-                    </table>
-                  </div>
-                </>
-              )}
+                            ))}
+                          </tr>
+                          <tr className="hover:bg-white/[0.02]">
+                            <td className="py-3 font-sans text-xs">Lender Fees</td>
+                            {lenderRates.map((r, i) => (
+                              <td key={r.id} className={`py-3 text-center font-bold ${i === 0 ? 'text-primary' : 'text-on-surface-variant/80'}`}>
+                                ${(r.lenderFeesCents / 100).toLocaleString('en-US', { minimumFractionDigits: 0 })}
+                              </td>
+                            ))}
+                          </tr>
+                          <tr className="hover:bg-white/[0.02]">
+                            <td className="py-3 font-sans text-xs">Monthly P&amp;I</td>
+                            {lenderRates.map((r, i) => {
+                              const comp = ratesCompared.find(rc => rc.id === r.id);
+                              const monthlyPI = comp?.monthlyPI ?? null;
+                              return (
+                                <td key={r.id} className={`py-3 text-center font-bold ${i === 0 ? 'text-primary' : 'text-on-surface-variant/80'}`}>
+                                  {monthlyPI ? `$${monthlyPI.toLocaleString()}/mo` : '—'}
+                                </td>
+                              );
+                            })}
+                          </tr>
+                          {/* asOf row — shows the real admin-maintained as-of date */}
+                          <tr className="hover:bg-white/[0.02]">
+                            <td className="py-2 font-sans text-[10px] text-on-surface-variant/50">Rates as of</td>
+                            {lenderRates.map((r) => {
+                              const stale  = isRateStale(r.asOf);
+                              const never  = r.asOf.getTime() === 0;
+                              const label  = never ? 'Not set' : r.asOf.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+                              return (
+                                <td key={r.id} className={`py-2 text-center text-[10px] font-mono ${stale ? 'text-amber-400' : 'text-on-surface-variant/50'}`}>
+                                  {label}
+                                  {stale && !never && ' ⚠'}
+                                </td>
+                              );
+                            })}
+                          </tr>
+                        </tbody>
+                      </table>
+                    </div>
+                  </>
+                );
+              })()}
             </div>
 
             {/* Select lender buttons — only shown when rates are available */}
@@ -907,6 +958,14 @@ export default function Phase2AcquisitionPage() {
             onRefresh={refresh}
           />
           <ProjectVendorsList projectId={projectId} />
+        </section>
+
+        {/* ── Investment Team / Cap Table ── */}
+        <section className="space-y-4 animate-in fade-in duration-200">
+          <h2 className="text-[24px] leading-[32px] font-semibold text-[#9E9DA0]">
+            Investment Team (Partners)
+          </h2>
+          <InvestorEquityTable projectId={projectId} />
         </section>
 
         {/* ── Loan Processing Pipeline ── */}

@@ -84,7 +84,7 @@ export const SUPPORT_CATEGORIES: SupportCategory[] = [
   },
   {
     id: 'partners',
-    title: 'Partners, Team Members & LP Access',
+    title: 'Partners, Team Members & Co-Investor Access',
     tagline: 'Give the right people the right level of visibility.',
     description:
       'Invite co-investors, assign team roles, grant read-only access to passive investors, and manage who can approve draws.',
@@ -230,7 +230,7 @@ export const SUPPORT_ARTICLES: SupportArticle[] = [
     categoryId: 'rehab',
     title: 'How do I log a change order that increases my budget?',
     excerpt:
-      'Change orders add to your approved budget. Learn how to document them, see the impact on your projected margin, and get LP sign-off if needed.',
+      'Change orders add to your approved budget. Learn how to document them, see the impact on your projected margin, and get partner sign-off if needed.',
     readTime: '5 min read',
     tags: ['change order', 'budget', 'scope change'],
   },
@@ -297,11 +297,11 @@ export const SUPPORT_ARTICLES: SupportArticle[] = [
   {
     id: 'lp-read-only',
     categoryId: 'partners',
-    title: 'How do I give a passive investor (LP) read-only access to a deal?',
+    title: 'How do I give a passive co-investor read-only access to a deal?',
     excerpt:
-      'LPs get a link to view your deal dashboard — they see cost basis, progress, and documents but cannot edit anything. No seat required.',
+      'Co-investors get a link to view your deal dashboard — they see cost basis, progress, and documents but cannot edit anything. No seat required.',
     readTime: '3 min read',
-    tags: ['LP', 'passive investor', 'read-only', 'link share'],
+    tags: ['Co-Investor', 'passive investor', 'read-only', 'link share'],
   },
   {
     id: 'draw-approval-permissions',
@@ -360,7 +360,7 @@ export const POPULAR_SEARCHES: string[] = [
   'CPA export',
   'Contractor draw',
   'Earnest money alert',
-  'LP access',
+  'Co-Investor access',
   'Cancel subscription',
 ];
 

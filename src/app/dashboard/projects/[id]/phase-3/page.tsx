@@ -20,10 +20,7 @@ import { ExitStrategyToggle } from '@/components/project/ExitStrategyToggle';
 import { RentalSetupForm } from '@/components/project/RentalSetupForm';
 import { DaysHeldClock } from '@/components/project/DaysHeldClock';
 import { deriveAllMetrics } from '@/lib/metrics/reiMetrics';
-import { computeNOIMetric } from '@/lib/metrics/computeNOI';
-import { computeOccupancyMetric } from '@/lib/metrics/computeOccupancy';
-import { computeExpenseRatioMetric } from '@/lib/metrics/computeExpenseRatio';
-import { computeCashFlowMetric } from '@/lib/metrics/computeCashFlow';
+
 import { MetricReadout } from '@/components/metrics/MetricReadout';
 import type { MetricResult } from '@/lib/metrics/types';
 import toast from 'react-hot-toast';
@@ -47,12 +44,11 @@ const PHASE_GLOW  = 'rgba(69, 73, 85, 0.4)';
 
 /* ── Rehab Tier Definitions ── */
 const REHAB_TIERS: { key: RehabTier; level: number; label: string; range: string }[] = [
-  { key: 'Staging',                level: 1, label: 'Staging',      range: '$1k–$5k' },
-  { key: 'Minor Cosmetic',        level: 2, label: 'Minor',        range: '$5k–$20k' },
-  { key: 'Minor Rehab',           level: 3, label: 'Rehab',        range: '$15k–$50k' },
-  { key: 'Full Rehab',            level: 4, label: 'Full Rehab',   range: '$40k–$100k' },
-  { key: 'Gut Renovation',        level: 5, label: 'Gut Reno',     range: '$75k–$200k' },
-  // Ground-Up not shown as tier button per schema (too rare for Hold phase)
+  { key: 'Stage',                  level: 1, label: 'Stage',      range: '$1k–$5k' },
+  { key: 'Refurbish',              level: 2, label: 'Refurbish',  range: '$5k–$20k' },
+  { key: 'Renovate',               level: 3, label: 'Renovate',   range: '$20k–$100k' },
+  { key: 'Gut',                    level: 4, label: 'Gut',        range: '$100k–$250k' },
+  { key: 'Develop',                level: 5, label: 'Develop',    range: '$250k+' },
 ];
 
 export default function Phase3RehabPage() {
@@ -119,32 +115,23 @@ export default function Phase3RehabPage() {
     return deriveAllMetrics(
       project.financials,
       project.financials.estimatedCurrentValue,
-      project.strategyType,
+      project.dispositionType,
       project.currentPhase,
       project.createdAt
     );
-  }, [project?.financials, project?.strategyType, project?.currentPhase, project?.createdAt]);
+  }, [project?.financials, project?.dispositionType, project?.currentPhase, project?.createdAt]);
 
-  /* ── Structured Metric Results (MetricResult wrappers) ── */
-  const noiResult: MetricResult = useMemo(() => {
-    if (!project) return { value: null, state: 'incomplete' as const, inputsUsed: {}, inputsMissing: ['project'] };
-    return computeNOIMetric(project);
-  }, [project]);
+  const wrapResult = (val: number | null): MetricResult => ({
+    value: val,
+    state: project?.currentPhase === 3 ? 'live' : project?.currentPhase === 4 ? 'realized' : 'projected',
+    inputsUsed: {},
+    inputsMissing: [],
+  });
 
-  const occupancyResult: MetricResult = useMemo(() => {
-    if (!project) return { value: null, state: 'incomplete' as const, inputsUsed: {}, inputsMissing: ['project'] };
-    return computeOccupancyMetric(project);
-  }, [project]);
-
-  const oerResult: MetricResult = useMemo(() => {
-    if (!project) return { value: null, state: 'incomplete' as const, inputsUsed: {}, inputsMissing: ['project'] };
-    return computeExpenseRatioMetric(project);
-  }, [project]);
-
-  const cashFlowResult: MetricResult = useMemo(() => {
-    if (!project) return { value: null, state: 'incomplete' as const, inputsUsed: {}, inputsMissing: ['project'] };
-    return computeCashFlowMetric(project);
-  }, [project]);
+  const noiResult: MetricResult = useMemo(() => wrapResult(liveMetrics?.noi ?? null), [liveMetrics, project?.currentPhase]);
+  const occupancyResult: MetricResult = useMemo(() => wrapResult(liveMetrics?.occupancyRate ?? null), [liveMetrics, project?.currentPhase]);
+  const oerResult: MetricResult = useMemo(() => wrapResult(liveMetrics?.oer ?? null), [liveMetrics, project?.currentPhase]);
+  const cashFlowResult: MetricResult = useMemo(() => wrapResult(liveMetrics?.annualCashFlow ?? null), [liveMetrics, project?.currentPhase]);
 
   /* ── Derived NOI formula components for footer ── */
   const noiFormula = useMemo(() => {
@@ -232,12 +219,11 @@ export default function Phase3RehabPage() {
     if (!project) return;
     // Budget ranges per tier
     const budgetMap: Record<RehabTier, [number, number]> = {
-      'Staging': [1000, 5000],
-      'Minor Cosmetic': [5000, 20000],
-      'Minor Rehab': [15000, 50000],
-      'Full Rehab': [40000, 100000],
-      'Gut Renovation': [75000, 200000],
-      'Ground-Up Construction': [150000, 500000],
+      'Stage': [1000, 5000],
+      'Refurbish': [5000, 20000],
+      'Renovate': [20000, 100000],
+      'Gut': [100000, 250000],
+      'Develop': [250000, 1000000],
     };
     const [low, high] = budgetMap[tier] || [0, 0];
     try {
@@ -425,6 +411,51 @@ export default function Phase3RehabPage() {
   const rehabDone = rehabTasks.filter(t => t.status === 'Complete').length;
   const rehabTotal = rehabTasks.length;
   const rehabPct = rehabTotal > 0 ? Math.round((rehabDone / rehabTotal) * 100) : 0;
+
+  if (project?.entryStage === 'renovating_marketing') {
+    return (
+      <div className="min-h-screen bg-[#0d0a0b] relative p-8">
+        <div className="max-w-2xl mx-auto bg-[#161318] border border-white/10 rounded-2xl p-8 space-y-6 text-left">
+          <div className="flex items-center gap-3 text-[#ffac5a]">
+            <span className="material-symbols-outlined text-3xl">construction</span>
+            <h1 className="text-2xl font-black text-white tracking-tight">Hold Workspace in Development</h1>
+          </div>
+          <p className="text-[#9E9DA0] text-sm">
+            This project was initialized directly at the <strong>Owned (Renovating / Marketing)</strong> stage. 
+            The operational checklist for the Hold Workspace is currently in development.
+          </p>
+
+          <hr className="border-white/5" />
+
+          <div>
+            <h3 className="text-xs font-bold uppercase tracking-widest text-[#9E9DA0] mb-3">Backfilled Project Data</h3>
+            <div className="space-y-3 bg-[#0d0a0b] p-4 rounded-xl border border-white/5 font-mono text-xs">
+              <div className="flex justify-between">
+                <span className="text-[#9E9DA0]">PROPERTY ADDRESS:</span>
+                <span className="text-white font-medium">{project.address}</span>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-[#9E9DA0]">CONTRACT PRICE:</span>
+                <span className="text-white font-medium">
+                  {project.financials?.purchasePrice ? `$${project.financials.purchasePrice.toLocaleString()}` : '—'}
+                </span>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-[#9E9DA0]">TARGET CLOSING:</span>
+                <span className="text-white font-medium">
+                  {project.financials?.acquisitionDate ? new Date(project.financials.acquisitionDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : '—'}
+                </span>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-[#9E9DA0]">ENTRY STAGE:</span>
+                <span className="text-[#ffac5a] font-bold">OWNED — RENOVATING/MARKETING</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-[#0d0a0b] relative">

@@ -42,7 +42,8 @@ describe('Tax Export Pipeline & Previews', () => {
     propertyName: 'Sunnyvale duplex',
     address: '123 Main St, Sunnyvale, CA',
     assetClass: 'Residential',
-    strategyType: 'Rent',
+    dispositionType: 'RENT',
+    subStrategy: 'LONG_TERM',
     status: 'Active',
     organizationId: 'org_abc',
     members: {},
@@ -123,7 +124,7 @@ describe('Tax Export Pipeline & Previews', () => {
       expect(getPropertyTypeCode({ ...mockProject, assetClass: 'Multi-Family' })).toBe(2);
       expect(getPropertyTypeCode({ ...mockProject, assetClass: 'Commercial' })).toBe(4);
       expect(getPropertyTypeCode({ ...mockProject, assetClass: 'Land' })).toBe(5);
-      expect(getPropertyTypeCode({ ...mockProject, strategyType: 'Buy & Hold' })).toBe(1);
+      expect(getPropertyTypeCode({ ...mockProject, dispositionType: 'RENT', subStrategy: 'LONG_TERM' })).toBe(1);
       expect(getPropertyTypeCode(mockProject)).toBe(1);
     });
 
@@ -196,7 +197,7 @@ describe('Tax Export Pipeline & Previews', () => {
 
         const req = new NextRequest('http://localhost/api/tax/share', {
           method: 'POST',
-          headers: { Authorization: 'Bearer mock-token' },
+          headers: { Authorization: 'Bearer token_123' },
           body: JSON.stringify({
             taxYear: 2024,
             projectIds: ['proj_123'],
@@ -238,7 +239,7 @@ describe('Tax Export Pipeline & Previews', () => {
 
         const req = new NextRequest('http://localhost/api/tax/share/revoke', {
           method: 'POST',
-          headers: { Authorization: 'Bearer mock-token' },
+          headers: { Authorization: 'Bearer token_123' },
           body: JSON.stringify({
             token: 'share_token_123',
           }),

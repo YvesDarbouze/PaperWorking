@@ -132,3 +132,5 @@ stitch_downloads/
 # Brand preflight original source assets
 /PaperWorking Logo/
 
+# Local cache files
+*financials_cache_store.json

@@ -517,7 +517,9 @@ export default function InsightsTab() {
                       <td className="px-6 py-4 font-medium text-neutral-900" style={{ fontFamily: "'Roboto', sans-serif" }}>
                         {p.propertyName}
                         <span className="block text-[10px] font-normal text-neutral-400 mt-0.5 uppercase tracking-wider">
-                          {p.strategyType} • Phase {p.currentPhase ?? 1}
+                          {p.dispositionType === 'RENT'
+                            ? (p.subStrategy === 'BRRRR' ? 'Rent' : 'Buy & Hold')
+                            : (p.subStrategy === 'WHOLESALE' ? 'Sell' : 'Fix & Flip')} • Phase {p.currentPhase ?? 1}
                         </span>
                       </td>
                       <td className="px-6 py-4 text-right font-mono font-medium text-neutral-900" style={{ fontFamily: "'PT Mono', monospace" }}>
@@ -585,7 +587,9 @@ export default function InsightsTab() {
                       <td className="px-6 py-4 font-medium text-neutral-900" style={{ fontFamily: "'Roboto', sans-serif" }}>
                         {p.propertyName}
                         <span className="block text-[10px] font-normal text-neutral-400 mt-0.5 uppercase tracking-wider">
-                          {p.strategyType} • Phase {p.currentPhase ?? 1}
+                          {p.dispositionType === 'RENT'
+                            ? (p.subStrategy === 'BRRRR' ? 'Rent' : 'Buy & Hold')
+                            : (p.subStrategy === 'WHOLESALE' ? 'Sell' : 'Fix & Flip')} • Phase {p.currentPhase ?? 1}
                         </span>
                       </td>
                       <td className="px-6 py-4 text-right font-mono font-medium" style={{ fontFamily: "'PT Mono', monospace" }}>

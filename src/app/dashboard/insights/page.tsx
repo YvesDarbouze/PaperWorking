@@ -7,7 +7,7 @@ import { StressTestProvider, RiskStressTester, useStressTest } from '@/component
 import InsightsDashboard, { SecondaryDiagnosticsPanel } from '@/components/insights/InsightsDashboard';
 import { useQuery } from '@tanstack/react-query';
 import { MarketContextPanel } from '@/components/project/MarketContextPanel';
-import { computeNOIComponents } from '@/lib/metrics/reiMetrics';
+import { deriveAllMetrics } from '@/lib/metrics/reiMetrics';
 import { InsightsEngineInputs, InsightsEngine } from '@/lib/services/insightsEngine';
 import { projectToInsightsInputs, REQUIRED_INSIGHTS_FIELDS } from '@/lib/projections/projectionEngine';
 import type { Project } from '@/types/schema';
@@ -92,9 +92,8 @@ export default function InsightsPage() {
       }
       // Strategy Filter (LTR vs STR)
       if (globalStrategyFilter !== 'all') {
-        const strategy = p.strategyType || '';
-        const isLTR = strategy.toUpperCase().includes('LONG') || strategy.toUpperCase() === 'LTR';
-        const isSTR = strategy.toUpperCase().includes('SHORT') || strategy.toUpperCase() === 'STR';
+        const isLTR = p.dispositionType === 'RENT' && p.subStrategy === 'LONG_TERM';
+        const isSTR = p.dispositionType === 'RENT' && p.subStrategy === 'SHORT_TERM';
         if (globalStrategyFilter === 'LTR' && !isLTR) return false;
         if (globalStrategyFilter === 'STR' && !isSTR) return false;
       }
@@ -230,7 +229,8 @@ export default function InsightsPage() {
       id: 'blended-portfolio',
       propertyName: 'Portfolio Roll-up',
       currentPhase: dominantPhase,
-      strategyType: 'Rent',
+      dispositionType: 'RENT',
+      subStrategy: 'LONG_TERM',
       numberOfUnits,
       financials: {
         purchasePrice,
@@ -618,7 +618,9 @@ export default function InsightsPage() {
                         const oerVar = (actualOer !== null && targetOer !== null) ? actualOer - targetOer : null;
                         const oerVarColor = oerVar !== null ? (oerVar <= 0 ? 'text-[#6E7480] bg-[#454955]/10' : 'text-red-400 bg-red-500/10') : 'text-[#6B6870]';
 
-                        const strategyLabel = p.strategyType || 'LTR';
+                        const strategyLabel = p.dispositionType === 'RENT'
+                          ? (p.subStrategy === 'BRRRR' ? 'Rent' : 'Buy & Hold')
+                          : (p.subStrategy === 'WHOLESALE' ? 'Sell' : 'Fix & Flip');
 
                         return (
                           <tr key={p.id} className="hover:bg-white/[0.02] transition-colors border-b border-white/5">
@@ -1171,8 +1173,8 @@ function getInputsFromProjects(projectsList: Project[]): InsightsEngineInputs | 
     const otherMonthlyIncome = f.otherMonthlyIncome ?? ((f.grossIncomeParking ?? 0) + (f.grossIncomeLaundry ?? 0));
     totalGrossScheduledIncome += (monthlyGrossRent + otherMonthlyIncome) * 12;
     
-    const noiComp = computeNOIComponents(f, p.strategyType, p.currentPhase);
-    totalOperatingExpenses += noiComp.totalOperatingExpenses;
+    const metrics = deriveAllMetrics(f, undefined, p.dispositionType, p.currentPhase);
+    totalOperatingExpenses += metrics.noiComponents.totalOperatingExpenses;
     
     totalVacancyRate += f.vacancyRatePercent ?? f.vacancyRate ?? 7.0;
     

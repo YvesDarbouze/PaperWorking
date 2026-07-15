@@ -29,7 +29,7 @@ export default function OccupancyDeepDive({ projects: propProjects }: Props) {
     const projects = propProjects || [];
     if (projects.length === 0) return false;
     const p = projects[0];
-    return p.strategyType === 'Fix & Flip' || p.strategyType === 'Sell';
+    return p.dispositionType === 'SALE';
   }, [propProjects]);
 
   const analysis = useMemo(() => {
@@ -37,9 +37,9 @@ export default function OccupancyDeepDive({ projects: propProjects }: Props) {
     if (projects.length === 0) return null;
 
     const breakdowns = projects
-      .filter(p => p.strategyType !== 'Fix & Flip' && p.strategyType !== 'Sell')
+      .filter(p => p.dispositionType !== 'SALE')
       .map(p => {
-        const { asset: m } = deriveDualScopeMetrics(p.financials!, undefined, p.strategyType, p.currentPhase);
+        const { asset: m } = deriveDualScopeMetrics(p.financials!, undefined, p.dispositionType, p.currentPhase);
         return {
           name: (p.propertyName || p.address || 'Unknown').substring(0, 16),
           occupancyRate: m.occupancyRate,

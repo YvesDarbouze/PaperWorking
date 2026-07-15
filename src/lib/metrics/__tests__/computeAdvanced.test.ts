@@ -103,7 +103,7 @@ describe('computeOccupancyMetric', () => {
       financials: {
         vacancyRatePercent: 7,
       },
-      strategyType: 'Rent',
+      dispositionType: 'RENT',
       currentPhase: 3,
     });
 
@@ -114,7 +114,7 @@ describe('computeOccupancyMetric', () => {
   test('flip strategy returns 0', () => {
     const result = computeOccupancyMetric({
       financials: {},
-      strategyType: 'Fix & Flip',
+      dispositionType: 'SALE',
     });
     expect(result.value).toBe(0);
   });
@@ -125,7 +125,7 @@ describe('computeOccupancyMetric', () => {
         daysOccupied: 300,
         totalHoldDays: 365,
       },
-      strategyType: 'Rent',
+      dispositionType: 'RENT',
       currentPhase: 3,
     });
 
@@ -138,7 +138,7 @@ describe('computeOccupancyMetric', () => {
         numberOfUnits: 4,
         occupiedUnits: 3,
       },
-      strategyType: 'Rent',
+      dispositionType: 'RENT',
     });
 
     expect(result.value).toBe(75);

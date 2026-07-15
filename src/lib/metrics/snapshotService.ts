@@ -110,7 +110,7 @@ export function computeProjectSnapshotData(
   // Property value resolution
   const propertyValue = financials.estimatedCurrentValue ?? financials.estimatedARV ?? financials.purchasePrice ?? 0;
   
-  const metrics = deriveAllMetrics(financials, financials.estimatedCurrentValue, project.strategyType, project.currentPhase);
+  const metrics = deriveAllMetrics(financials, financials.estimatedCurrentValue, project.dispositionType, project.currentPhase);
   
   const irrRaw = calculateIRRPercent(financials, metrics.totalCashInvested, metrics.annualCashFlow);
   

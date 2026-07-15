@@ -120,6 +120,6 @@ describe('ExitStrategyBoard Component', () => {
     });
 
     expect(screen.getByText('Listing Saved (Awaiting MLS Connection)')).toBeTruthy();
-    expect(screen.getByText(/Your changes have been saved. Listing updates will syndicate automatically/i)).toBeTruthy();
+    expect(screen.getByText(/Your changes have been saved. Listing updates will publish automatically/i)).toBeTruthy();
   });
 });

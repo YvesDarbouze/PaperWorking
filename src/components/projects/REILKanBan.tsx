@@ -237,6 +237,7 @@ export function REILKanBan({ projects, onAdd, renderCard }: REILKanBanProps) {
   const buckets = useMemo(() => {
     const map: Record<number, Project[]> = { 1: [], 2: [], 3: [], 4: [] };
     for (const p of projects) {
+      if (p.retrospective) continue;
       const ph = p.currentPhase ?? 1;
       const key = Math.min(Math.max(ph, 1), 4) as 1 | 2 | 3 | 4;
       map[key].push(p);

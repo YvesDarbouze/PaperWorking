@@ -4,6 +4,7 @@ import { persist, createJSONStorage } from "zustand/middleware";
 // ─── Step definitions ─────────────────────────────────────────────────────────
 
 export const WIZARD_STEPS = [
+  { key: "intake",    label: "Intake",     icon: "explore"       },
   { key: "address",   label: "Address",    icon: "location_on"   },
   { key: "status",    label: "Status",     icon: "flag"          },
   { key: "property",  label: "Property",   icon: "home"          },
@@ -17,6 +18,11 @@ export type StepCompletion = "empty" | "partial" | "done";
 
 // ─── Form data shapes ─────────────────────────────────────────────────────────
 
+export interface IntakeData {
+  journey: "targeting" | "under_contract" | "owned_closing" | "renovating_marketing" | "rented_leased_sold" | "";
+  dispositionType: "SALE" | "LEASE" | "RENT" | "";
+}
+
 export interface AddressData {
   placeId:          string;
   formattedAddress: string;
@@ -27,6 +33,13 @@ export interface AddressData {
   zip:              string;
   lat:              number;
   lng:              number;
+  apn?:             string;
+  propertyType?:    string;
+  units?:           number;
+  sqft?:            number;
+  lotSqft?:         number;
+  yearBuilt?:       number;
+  condition?:       string;
 }
 
 export interface StatusData {
@@ -62,6 +75,7 @@ interface WizardState {
   isSaving:    boolean;
 
   // Form data
+  intake:    Partial<IntakeData>;
   address:   Partial<AddressData>;
   status:    Partial<StatusData>;
   ownership: Partial<OwnershipData>;
@@ -70,6 +84,7 @@ interface WizardState {
   // Actions
   setProjectId:    (id: string) => void;
   goToStep:        (step: WizardStepKey) => void;
+  setIntake:       (data: Partial<IntakeData>) => void;
   setAddress:      (data: Partial<AddressData>) => void;
   setStatus:       (data: Partial<StatusData>) => void;
   setOwnership:    (data: Partial<OwnershipData>) => void;
@@ -84,6 +99,7 @@ interface WizardState {
 // ─── Initial / default state ──────────────────────────────────────────────────
 
 const INITIAL_COMPLETION: Record<WizardStepKey, StepCompletion> = {
+  intake:    "empty",
   address:   "empty",
   status:    "empty",
   property:  "empty",
@@ -98,11 +114,12 @@ export const useAcquisitionWizard = create<WizardState>()(
   persist(
     (set) => ({
       projectId:   null,
-      currentStep: "address",
+      currentStep: "intake",
       completion:  { ...INITIAL_COMPLETION },
       savedAt:     null,
       isSaving:    false,
 
+      intake:    {},
       address:   {},
       status:    {},
       ownership: {},
@@ -111,6 +128,19 @@ export const useAcquisitionWizard = create<WizardState>()(
       setProjectId: (id) => set({ projectId: id }),
 
       goToStep: (step) => set({ currentStep: step }),
+
+      setIntake: (data) =>
+        set((s) => {
+          const merged = { ...s.intake, ...data };
+          const isDone = !!merged.journey && !!merged.dispositionType;
+          return {
+            intake:     merged,
+            completion: {
+              ...s.completion,
+              intake: isDone ? "done" : "partial",
+            },
+          };
+        }),
 
       setAddress: (data) =>
         set((s) => ({
@@ -163,10 +193,11 @@ export const useAcquisitionWizard = create<WizardState>()(
       reset: () =>
         set({
           projectId:   null,
-          currentStep: "address",
+          currentStep: "intake",
           completion:  { ...INITIAL_COMPLETION },
           savedAt:     null,
           isSaving:    false,
+          intake:      {},
           address:     {},
           status:      {},
           ownership:   {},
@@ -174,7 +205,7 @@ export const useAcquisitionWizard = create<WizardState>()(
         }),
     }),
     {
-      name:    "reil-acquisition-wizard",
+      name:    "reil-acquisition-wizard-v2", // changed version to avoid caching issues with old format
       storage: createJSONStorage(() => localStorage),
     },
   ),

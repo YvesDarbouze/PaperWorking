@@ -199,13 +199,13 @@ describe('Cap Rate (D3) Metric Implementation', () => {
       expect(computeOER(4000, 0)).toBe(0);
     });
 
-    it('reconciles OER in deriveAllMetrics using Gross Rental Income and total operating expenses', () => {
+    it('reconciles OER in deriveAllMetrics using Gross Operating Income and total operating expenses', () => {
       const financials = {
         purchasePrice: 200000,
         // Rental income (Gross Rental Income = 2000 * 12 = 24000)
         monthlyGrossRent: 2000,
         // Other income
-        otherMonthlyIncome: 500, // 6000 annual (OER should ignore other income)
+        otherMonthlyIncome: 500, // 6000 annual — OER denominator is GOI (rental + other)
         vacancyRatePercent: 0,
         propertyManagementFeePercent: 10, // 2400 annual opex
         holdingCostTaxes: 100, // 1200 annual opex
@@ -216,9 +216,9 @@ describe('Cap Rate (D3) Metric Implementation', () => {
       const metrics = deriveAllMetrics(financials as any);
 
       // Total opex = 2400 (PM) + 1200 (Taxes) + 600 (Insurance) = 4200
-      // Gross Rental Income = 24000
-      // OER = 4200 / 24000 = 17.5%
-      expect(metrics.oer).toBe(17.5);
+      // GOI = Gross Rental Income + Other Income = 24000 + 6000 = 30000
+      // OER = 4200 / 30000 = 14%
+      expect(metrics.oer).toBe(14);
       expect(metrics.noiComponents.totalOperatingExpenses).toBe(4200);
       expect(metrics.noiComponents.grossRentalIncome).toBe(24000);
     });

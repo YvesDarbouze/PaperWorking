@@ -20,7 +20,6 @@ import {
   deriveAllMetrics,
   computeIRR,
   buildIRRCashFlows,
-  computeNOIComponents,
 } from "@/lib/metrics/reiMetrics";
 import type { Project } from "@/types/schema";
 
@@ -67,7 +66,7 @@ function usePortfolioKPIs(projects: Project[]): PortfolioKPIs {
       const metrics = deriveAllMetrics(
         f,
         f.estimatedCurrentValue || f.estimatedARV,
-        p.strategyType,
+        p.dispositionType,
         p.currentPhase,
         p.createdAt,
       );
@@ -82,22 +81,13 @@ function usePortfolioKPIs(projects: Project[]): PortfolioKPIs {
 
       // NOI — rental / hold-phase projects only
       const isRental =
-        (p.strategyType === "Rent" || p.strategyType === "Buy & Hold") &&
+        p.dispositionType === "RENT" &&
         ((p.currentPhase ?? 1) === 3 || (p.currentPhase ?? 1) === 4);
 
       if (isRental) {
-        try {
-          const noiComp = computeNOIComponents(
-            f,
-            p.strategyType ?? "Rent",
-            p.currentPhase ?? 4,
-          );
-          if (Number.isFinite(noiComp.noi) && noiComp.noi !== 0) {
-            totalNOI += noiComp.noi;
-            noiProjectCount++;
-          }
-        } catch {
-          // ignore — project may lack sufficient data
+        if (Number.isFinite(metrics.noi) && metrics.noi !== 0) {
+          totalNOI += metrics.noi;
+          noiProjectCount++;
         }
 
         if (Number.isFinite(metrics.annualCashFlow) && metrics.annualCashFlow !== 0) {
@@ -779,7 +769,7 @@ function EarningsLossesCard({ isDark, kpis }: { isDark: boolean; kpis: Portfolio
           <span className="text-[10px] font-bold uppercase tracking-wider" style={{ color: t.subtext }}>
             Portfolio Equity & Earnings
           </span>
-          <span className="material-symbols-outlined text-[20px]" style={{ color: isLoss ? "#F06543" : "#5aaa3f" }}>
+          <span className="material-symbols-outlined text-[20px]" style={{ color: isLoss ? "var(--color-trend-red)" : "var(--color-trend-green)" }}>
             {isLoss ? "trending_down" : "trending_up"}
           </span>
         </div>
@@ -801,7 +791,7 @@ function EarningsLossesCard({ isDark, kpis }: { isDark: boolean; kpis: Portfolio
             </div>
             <div>
               <span className="text-[10px] uppercase tracking-wider text-left block" style={{ color: t.muted }}>Net Equity Profit</span>
-              <span className="text-[16px] font-bold font-mono text-left block" style={{ color: isLoss ? "#F06543" : "#5aaa3f" }}>
+              <span className="text-[16px] font-bold font-mono text-left block" style={{ color: isLoss ? "var(--color-trend-red)" : "var(--color-trend-green)" }}>
                 {isLoss ? "-" : "+"}{profitVal}
               </span>
             </div>
@@ -815,7 +805,7 @@ function EarningsLossesCard({ isDark, kpis }: { isDark: boolean; kpis: Portfolio
           {roiPct !== null && (
             <span className="text-[11px] font-bold font-mono px-2 py-0.5 rounded-full" style={{
               background: isLoss ? "rgba(240, 101, 67, 0.12)" : "rgba(90, 170, 63, 0.12)",
-              color: isLoss ? "#F06543" : "#5aaa3f"
+              color: isLoss ? "var(--color-trend-red)" : "var(--color-trend-green)"
             }}>
               {roiPct.toFixed(1)}%
             </span>
@@ -1110,7 +1100,7 @@ export function CommandCenter() {
       const purchasePrice = f.purchasePrice ?? f.targetPrice ?? f.targetPurchasePrice ?? 0;
       const propValue = f.estimatedCurrentValue ?? f.estimatedARV ?? purchasePrice;
       const ltvVal = propValue > 0 ? ((f.loanAmount ?? 0) / propValue) * 100 : 0;
-      const derived = deriveAllMetrics(f, undefined, p.strategyType, p.currentPhase);
+      const derived = deriveAllMetrics(f, undefined, p.dispositionType, p.currentPhase);
       const dscrVal = derived.dscr;
       return ltvVal > 80 || (dscrVal !== null && dscrVal < 1.15);
     });
@@ -1287,7 +1277,7 @@ export function CommandCenter() {
         </section>
 
         {/* Tabs Navigation */}
-        <div className="flex border-b" style={{ borderColor: t.divider }}>
+        <div className="flex border-b" role="tablist" aria-label="Portfolio Sections" style={{ borderColor: t.divider }}>
           {([
             { id: 'overview', name: 'Overview', icon: 'space_dashboard' },
             { id: 'assets', name: 'Assets', icon: 'folder' },
@@ -1298,11 +1288,13 @@ export function CommandCenter() {
             return (
               <button
                 key={tab.id}
+                role="tab"
+                aria-selected={isActive}
                 onClick={() => setActiveTab(tab.id)}
-                className="flex items-center gap-2 px-5 py-3 border-b-2 font-semibold text-[13px] capitalize transition-all duration-150 focus:outline-none -mb-px"
+                className="pw-tab flex items-center gap-2 px-5 py-3 border-b-2 font-semibold text-[13px] capitalize transition-all duration-150 focus:outline-none -mb-px"
                 style={{
                   borderColor: isActive ? '#3279F9' : 'transparent',
-                  color: isActive ? t.heading : t.subtext,
+                  color: isActive ? 'var(--color-on-surface)' : 'var(--color-on-surface-variant)',
                 }}
               >
                 <span className="material-symbols-outlined text-[18px]" style={{ fontVariationSettings: isActive ? "'FILL' 1" : "'FILL' 0" }}>

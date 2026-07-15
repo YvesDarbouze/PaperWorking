@@ -2,10 +2,7 @@
 
 import React, { useMemo } from 'react';
 import { Project } from '@/types/schema';
-import {
-  deriveDualScopeMetrics, computeMAO, computeFlipNetProfit, computeFlipROI,
-  computeGrossMargin, computeDOM, computeRehabVariance, computeTotalCashInvested,
-} from '@/lib/metrics/reiMetrics';
+import { deriveAllMetrics } from '@/lib/metrics/reiMetrics';
 import {
   BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer,
   Cell, PieChart, Pie, Legend,
@@ -48,82 +45,47 @@ export default function FlipProfitabilityDashboard({ projects: propProjects }: P
 
     const p = projects[0];
     const f = p.financials!;
-    const { asset: metrics } = deriveDualScopeMetrics(f, undefined, p.strategyType, p.currentPhase);
+    
+    // Call unified engine:
+    const metrics = deriveAllMetrics(
+      f,
+      undefined,
+      p.dispositionType,
+      p.currentPhase,
+      p.createdAt,
+      undefined,
+      p
+    );
 
-    const purchasePrice = f.purchasePrice ?? f.targetPrice ?? f.targetPurchasePrice ?? 0;
-    const arv = f.estimatedARV ?? 0;
-    const rehabCost = f.projectedRehabCost ?? 0;
-    const closingCosts = f.fixedAcquisitionCosts ?? 0;
-    const actualSalePrice = f.actualSalePrice ?? f.projectedSalePrice ?? 0;
+    const fa = metrics.flipAnalytics;
+    if (!fa) return null;
 
-    // Costs breakdown
-    const holdingMonthly = (f.holdingCostTaxes ?? 0) + (f.holdingCostInsurance ?? 0) + (f.holdingCostUtilities ?? 0);
-    const holdMonths = f.projectedHoldTimeMonths ?? 0;
-    const totalHolding = f.totalHoldingCosts ?? (holdingMonthly * holdMonths);
-
-    const buyerComm = f.buyersAgentCommission ?? 3;
-    const sellerComm = f.sellersAgentCommission ?? 3;
-    const saleBase = actualSalePrice > 0 ? actualSalePrice : arv;
-    const sellingCosts = (f.finalClosingCosts ?? 0) +
-      (saleBase * (buyerComm / 100)) + (saleBase * (sellerComm / 100)) +
-      (f.stagingCosts ?? 0) + (f.photographyAndMedia ?? 0) + (f.mlsListingFees ?? 0);
-
-    const financingCosts = metrics.annualDebtService * (holdMonths / 12);
-    const loanPoints = (f.loanOriginationPoints ?? 0) / 100 * (f.loanAmount ?? 0);
-
-    const totalAllInCost = purchasePrice + closingCosts + rehabCost + totalHolding + sellingCosts + financingCosts + loanPoints;
-
-    // Core flip metrics
-    const mao = computeMAO(arv, rehabCost, closingCosts);
-    const salePrice = actualSalePrice > 0 ? actualSalePrice : arv;
-    const netProfit = computeFlipNetProfit(salePrice, totalAllInCost);
-    const totalCashInvested = computeTotalCashInvested(f);
-    const roi = computeFlipROI(netProfit, totalCashInvested);
-    const grossMargin = computeGrossMargin(salePrice, totalAllInCost);
-    const dom = computeDOM(f.listingDate, f.soldDate);
-
-    // Rehab variance
-    const projectedDays = f.estimatedTimelineDays ?? 0;
-    const tasks = f.rehabTasks ?? [];
-    const completedTasks = tasks.filter(t => t.status === 'Complete');
-    const actualRehabDays = completedTasks.length > 0 && projectedDays > 0 ? projectedDays : null;
-    const rehabVar = actualRehabDays != null ? computeRehabVariance(projectedDays, actualRehabDays) : null;
-
-    const classification = classifyROI(roi);
-
-    // Cost waterfall
-    const costBreakdown = [
-      { name: 'Purchase', value: purchasePrice, color: '#7F7F7F' },
-      { name: 'Closing', value: closingCosts, color: '#595959' },
-      { name: 'Rehab', value: rehabCost, color: '#A5A5A5' },
-      { name: 'Holding', value: totalHolding, color: '#F06543' },
-      { name: 'Financing', value: financingCosts + loanPoints, color: '#EC4899' },
-      { name: 'Selling', value: sellingCosts, color: '#454955' },
-    ].filter(c => c.value > 0);
-
-    // MAO scenarios
-    const maoScenarios = [60, 65, 70, 75, 80].map(pct => ({
-      pct, mao: computeMAO(arv, rehabCost, closingCosts, pct),
-      isCurrent: pct === 70,
-    }));
-
-    // ROI scenarios at different sale prices
-    const roiScenarios = [-10, -5, 0, 5, 10].map(delta => {
-      const sp = salePrice * (1 + delta / 100);
-      const np = computeFlipNetProfit(sp, totalAllInCost);
-      const r = computeFlipROI(np, totalCashInvested);
-      return { label: delta === 0 ? 'Current' : `${delta > 0 ? '+' : ''}${delta}%`, salePrice: sp, netProfit: np, roi: r, isCurrent: delta === 0 };
-    });
-
-    // Comps
     const comps = f.comparableSales ?? [];
 
     return {
-      purchasePrice, arv, rehabCost, mao, salePrice, netProfit, roi,
-      grossMargin, dom, totalAllInCost, totalCashInvested, totalHolding,
-      financingCosts: financingCosts + loanPoints, sellingCosts, classification,
-      costBreakdown, maoScenarios, roiScenarios, metrics,
-      rehabVar, projectedDays, comps, closingCosts,
+      purchasePrice: fa.purchasePrice,
+      arv: fa.arv,
+      rehabCost: fa.rehabCost,
+      mao: fa.mao,
+      salePrice: fa.salePrice,
+      netProfit: fa.netProfit,
+      roi: fa.roi,
+      grossMargin: fa.grossMargin,
+      dom: fa.dom,
+      totalAllInCost: fa.totalAllInCost,
+      totalCashInvested: fa.totalCashInvested,
+      totalHolding: fa.totalHolding,
+      financingCosts: fa.financingCosts,
+      sellingCosts: fa.sellingCosts,
+      classification: fa.classification,
+      costBreakdown: fa.costBreakdown,
+      maoScenarios: fa.maoScenarios,
+      roiScenarios: fa.roiScenarios,
+      metrics,
+      rehabVar: fa.rehabVar ? { varianceDays: fa.rehabVar, variancePercent: (fa.rehabVar / (fa.projectedDays || 1)) * 100 } : null,
+      projectedDays: fa.projectedDays,
+      comps,
+      closingCosts: fa.closingCosts,
     };
   }, [propProjects]);
 

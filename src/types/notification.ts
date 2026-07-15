@@ -18,7 +18,8 @@ export type NotificationType =
   | 'TEAM_INVITE_REMINDER'
   | 'OVER_IMPROVEMENT_ALERT'
   | 'BURN_RATE_WARNING'
-  | 'VENDOR_LEAD';
+  | 'VENDOR_LEAD'
+  | 'NEGOTIATION_UPDATE';
 
 export type NotificationUrgency = 'informational' | 'actionable' | 'critical';
 
@@ -215,12 +216,21 @@ export const NOTIFICATION_METADATA: Record<
       if (!params.dailyBurnRate) throw new Error('BURN_RATE_WARNING involves money and requires daily burn rate in the title.');
       return `${params.dealAddress} holding cost warning: burn rate is ${params.dailyBurnRate}/day`;
     }
+  },
+  NEGOTIATION_UPDATE: {
+    urgency: 'actionable',
+    channels: ['in-app', 'email'],
+    templateTitle: (params) => {
+      const subject = params.metadata?.subject || 'Terms update';
+      return `${params.dealAddress || 'Deal'}: ${subject}`;
+    }
   }
 };
 
 export function getNotificationCategory(type: NotificationType): NotificationCategory {
   switch (type) {
     case 'INVEST_INVITE':
+    case 'NEGOTIATION_UPDATE':
       return 'syndication';
     case 'VENDOR_LEAD':
     case 'VENDOR_BID':

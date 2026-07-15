@@ -1299,7 +1299,7 @@ function ProjectionsTabContent({ projects }: { projects: Project[] }) {
           }}
         >
           {projects.map((p) => (
-            <option key={p.id} value={p.id} style={{ background: '#121014' }}>
+            <option key={p.id} value={p.id} style={{ background: 'var(--pw-night-bg)' }}>
               {p.propertyName || p.address || p.id}
             </option>
           ))}

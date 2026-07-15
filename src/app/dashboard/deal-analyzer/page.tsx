@@ -933,7 +933,7 @@ export default function DealAnalyzerPage() {
                 onClick={() => setInputs((prev) => ({ ...prev, dispositionType: 'RENT' }))}
                 className={`flex-1 py-3 text-xs font-bold uppercase tracking-wider rounded-xl transition-all duration-200 flex items-center justify-center gap-1.5 ${
                   inputs.dispositionType === 'RENT'
-                    ? 'bg-primary text-on-primary shadow-lg shadow-primary/20'
+                    ? 'bg-white/10 text-white shadow-inner border border-white/15'
                     : 'text-[#9E9DA0] hover:text-white hover:bg-white/5'
                 }`}
               >
@@ -945,7 +945,7 @@ export default function DealAnalyzerPage() {
                 onClick={() => setInputs((prev) => ({ ...prev, dispositionType: 'SALE' }))}
                 className={`flex-1 py-3 text-xs font-bold uppercase tracking-wider rounded-xl transition-all duration-200 flex items-center justify-center gap-1.5 ${
                   inputs.dispositionType === 'SALE'
-                    ? 'bg-primary text-on-primary shadow-lg shadow-primary/20'
+                    ? 'bg-white/10 text-white shadow-inner border border-white/15'
                     : 'text-[#9E9DA0] hover:text-white hover:bg-white/5'
                 }`}
               >
@@ -1115,7 +1115,7 @@ export default function DealAnalyzerPage() {
                       onClick={() => setInputs((prev) => ({ ...prev, financingType: 'Financed' }))}
                       className={`flex-1 py-2.5 text-xs font-semibold rounded-xl border transition-all ${
                         inputs.financingType === 'Financed'
-                          ? 'bg-primary border-primary/20 text-on-primary font-bold'
+                          ? 'bg-white/10 border-white/15 text-white font-bold'
                           : 'bg-white/5 border-white/10 text-[#9E9DA0] hover:text-white'
                       }`}
                     >
@@ -1126,7 +1126,7 @@ export default function DealAnalyzerPage() {
                       onClick={() => setInputs((prev) => ({ ...prev, financingType: 'All Cash' }))}
                       className={`flex-1 py-2.5 text-xs font-semibold rounded-xl border transition-all ${
                         inputs.financingType === 'All Cash'
-                          ? 'bg-primary border-primary/20 text-on-primary font-bold'
+                          ? 'bg-white/10 border-white/15 text-white font-bold'
                           : 'bg-white/5 border-white/10 text-[#9E9DA0] hover:text-white'
                       }`}
                     >
@@ -1204,7 +1204,7 @@ export default function DealAnalyzerPage() {
                 <div className="p-5 space-y-6">
                   {/* Income Group */}
                   <div>
-                    <h4 className="text-[11px] font-bold uppercase tracking-wider text-primary border-b border-white/5 pb-2 mb-4">Gross Rental Income</h4>
+                    <h4 className="text-[11px] font-bold uppercase tracking-wider text-[#859490] border-b border-white/5 pb-2 mb-4">Gross Rental Income</h4>
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
                       <div>
                         <label className="block text-[10px] uppercase font-bold tracking-wider text-[#9E9DA0]/60 mb-1.5">Monthly rent ($)</label>
@@ -1248,7 +1248,7 @@ export default function DealAnalyzerPage() {
                   {/* Expenses Sub-Groups */}
                   <div className="space-y-6">
                     <div>
-                      <h4 className="text-[11px] font-bold uppercase tracking-wider text-primary border-b border-white/5 pb-2 mb-4">Taxes & Insurance</h4>
+                      <h4 className="text-[11px] font-bold uppercase tracking-wider text-[#859490] border-b border-white/5 pb-2 mb-4">Taxes & Insurance</h4>
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
                         <div>
                           <label className="block text-[10px] uppercase font-bold tracking-wider text-[#9E9DA0]/60 mb-1.5">Property Taxes ($/mo)</label>
@@ -1276,7 +1276,7 @@ export default function DealAnalyzerPage() {
                     </div>
 
                     <div>
-                      <h4 className="text-[11px] font-bold uppercase tracking-wider text-primary border-b border-white/5 pb-2 mb-4">Operations & Management</h4>
+                      <h4 className="text-[11px] font-bold uppercase tracking-wider text-[#859490] border-b border-white/5 pb-2 mb-4">Operations & Management</h4>
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
                         {/* Property Management */}
                         <div className="space-y-2">
@@ -1287,7 +1287,7 @@ export default function DealAnalyzerPage() {
                                 type="button"
                                 onClick={() => setInputs((prev) => ({ ...prev, managementType: 'percent' }))}
                                 className={`px-2 py-0.5 text-[9px] uppercase font-semibold transition-all ${
-                                  inputs.managementType === 'percent' ? 'bg-primary text-on-primary' : 'bg-white/5 text-[#9E9DA0]'
+                                  inputs.managementType === 'percent' ? 'bg-white/10 text-white' : 'bg-white/5 text-[#9E9DA0]'
                                 }`}
                               >
                                 % Rent
@@ -1296,7 +1296,7 @@ export default function DealAnalyzerPage() {
                                 type="button"
                                 onClick={() => setInputs((prev) => ({ ...prev, managementType: 'flat' }))}
                                 className={`px-2 py-0.5 text-[9px] uppercase font-semibold transition-all ${
-                                  inputs.managementType === 'flat' ? 'bg-primary text-on-primary' : 'bg-white/5 text-[#9E9DA0]'
+                                  inputs.managementType === 'flat' ? 'bg-white/10 text-white' : 'bg-white/5 text-[#9E9DA0]'
                                 }`}
                               >
                                 Flat ($)
@@ -1322,7 +1322,7 @@ export default function DealAnalyzerPage() {
                                 type="button"
                                 onClick={() => setInputs((prev) => ({ ...prev, maintenanceType: 'percent' }))}
                                 className={`px-2 py-0.5 text-[9px] uppercase font-semibold transition-all ${
-                                  inputs.maintenanceType === 'percent' ? 'bg-primary text-on-primary' : 'bg-white/5 text-[#9E9DA0]'
+                                  inputs.maintenanceType === 'percent' ? 'bg-white/10 text-white' : 'bg-white/5 text-[#9E9DA0]'
                                 }`}
                               >
                                 % Rent
@@ -1331,7 +1331,7 @@ export default function DealAnalyzerPage() {
                                 type="button"
                                 onClick={() => setInputs((prev) => ({ ...prev, maintenanceType: 'flat' }))}
                                 className={`px-2 py-0.5 text-[9px] uppercase font-semibold transition-all ${
-                                  inputs.maintenanceType === 'flat' ? 'bg-primary text-on-primary' : 'bg-white/5 text-[#9E9DA0]'
+                                  inputs.maintenanceType === 'flat' ? 'bg-white/10 text-white' : 'bg-white/5 text-[#9E9DA0]'
                                 }`}
                               >
                                 Flat ($)
@@ -1343,7 +1343,7 @@ export default function DealAnalyzerPage() {
                             inputMode="decimal"
                             value={inputs.maintenanceValue}
                             onChange={(e) => setInputs((prev) => ({ ...prev, maintenanceValue: e.target.value }))}
-                            placeholder={inputs.maintenanceType === 'percent' ? '10' : '195'}
+                            placeholder={inputs.maintenanceType === 'percent' ? '5' : '150'}
                             className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-sm text-white outline-none focus:border-primary/50 transition-colors"
                           />
                         </div>
@@ -1351,7 +1351,7 @@ export default function DealAnalyzerPage() {
                     </div>
 
                     <div>
-                      <h4 className="text-[11px] font-bold uppercase tracking-wider text-primary border-b border-white/5 pb-2 mb-4">Utilities & HOA</h4>
+                      <h4 className="text-[11px] font-bold uppercase tracking-wider text-[#859490] border-b border-white/5 pb-2 mb-4">Utilities & HOA</h4>
                       <div className="grid grid-cols-1 md:grid-cols-4 gap-5">
                         <div className="md:col-span-2">
                           <label className="block text-[10px] uppercase font-bold tracking-wider text-[#9E9DA0]/60 mb-1.5">Utilities ($/mo)</label>
@@ -1825,7 +1825,7 @@ export default function DealAnalyzerPage() {
                           {/* Wholesale dual output */}
                           {wholesaleActive && (
                             <div className="p-4 rounded-xl bg-primary/5 border border-primary/20 text-xs flex flex-col gap-2 font-mono">
-                              <span className="font-bold uppercase tracking-wider text-[10px] text-primary">🤝 Wholesale Pricing Assignment</span>
+                              <span className="font-bold uppercase tracking-wider text-[10px] text-[#859490]">🤝 Wholesale Pricing Assignment</span>
                               <div className="flex justify-between">
                                 <span className="text-[#9E9DA0]">Buyer Purchase Price:</span>
                                 <span className="font-bold text-white" id="wholesale-buyer-price">{formatCurrency((solveResult as any).solvedPrice || 0)}</span>
@@ -1903,7 +1903,7 @@ export default function DealAnalyzerPage() {
                                   <button
                                     type="button"
                                     onClick={() => handleAdjustCriterion(o.key, o.feasibleVal)}
-                                    className="flex-1 py-1.5 text-[9px] font-bold uppercase tracking-wider rounded bg-primary/10 border border-primary/20 text-primary hover:bg-primary/20 transition-colors"
+                                    className="flex-1 py-1.5 text-[9px] font-bold uppercase tracking-wider rounded bg-white/10 border border-white/15 text-white hover:bg-white/15 transition-colors"
                                   >
                                     Adjust to {o.feasibleValStr}
                                   </button>
@@ -1938,7 +1938,7 @@ export default function DealAnalyzerPage() {
                         : 'Hold-period analysis (accrued costs, profit, and ROI calculations).'}
                     </p>
                   </div>
-                  <span className="text-[10px] font-bold uppercase px-2 py-1 rounded bg-white/5 border border-white/10 text-primary">
+                  <span className="text-[10px] font-bold uppercase px-2 py-1 rounded bg-white/5 border border-white/10 text-white/80">
                     {inputs.dispositionType}
                   </span>
                 </div>
@@ -2171,7 +2171,7 @@ export default function DealAnalyzerPage() {
                   <span className="font-sans font-medium text-[#9E9DA0]">Projected Net Operating Income</span>
                   <div className="text-right">
                     {isRentMissing ? (
-                      <button onClick={() => focusInput('input-rent')} className="text-[10px] text-primary/60 hover:text-primary underline font-sans">
+                      <button onClick={() => focusInput('input-rent')} className="text-[10px] text-white/50 hover:text-white underline font-sans">
                         add rent
                       </button>
                     ) : (
@@ -2186,7 +2186,7 @@ export default function DealAnalyzerPage() {
                   <span className="font-sans font-medium text-[#9E9DA0]">Projected Monthly Cash Flow</span>
                   <div className="text-right">
                     {isRentMissing ? (
-                      <button onClick={() => focusInput('input-rent')} className="text-[10px] text-primary/60 hover:text-primary underline font-sans">
+                      <button onClick={() => focusInput('input-rent')} className="text-[10px] text-white/50 hover:text-white underline font-sans">
                         add rent
                       </button>
                     ) : (
@@ -2203,7 +2203,7 @@ export default function DealAnalyzerPage() {
                   <span className="font-sans font-medium text-[#9E9DA0]">Projected Cap Rate</span>
                   <div className="text-right">
                     {isPurchasePriceMissing ? (
-                      <button onClick={() => focusInput('input-purchase-price')} className="text-[10px] text-primary/60 hover:text-primary underline font-sans">
+                      <button onClick={() => focusInput('input-purchase-price')} className="text-[10px] text-white/50 hover:text-white underline font-sans">
                         add purchase
                       </button>
                     ) : (
@@ -2218,7 +2218,7 @@ export default function DealAnalyzerPage() {
                   <span className="font-sans font-medium text-[#9E9DA0]">Projected Cash-on-Cash Return</span>
                   <div className="text-right">
                     {isPurchasePriceMissing ? (
-                      <button onClick={() => focusInput('input-purchase-price')} className="text-[10px] text-primary/60 hover:text-primary underline font-sans">
+                      <button onClick={() => focusInput('input-purchase-price')} className="text-[10px] text-white/50 hover:text-white underline font-sans">
                         add purchase
                       </button>
                     ) : (
@@ -2235,11 +2235,11 @@ export default function DealAnalyzerPage() {
                   <span className="font-sans font-medium text-[#9E9DA0]">Projected Gross Rent Multiplier</span>
                   <div className="text-right">
                     {isRentMissing ? (
-                      <button onClick={() => focusInput('input-rent')} className="text-[10px] text-primary/60 hover:text-primary underline font-sans">
+                      <button onClick={() => focusInput('input-rent')} className="text-[10px] text-white/50 hover:text-white underline font-sans">
                         add rent
                       </button>
                     ) : isPurchasePriceMissing ? (
-                      <button onClick={() => focusInput('input-purchase-price')} className="text-[10px] text-primary/60 hover:text-primary underline font-sans">
+                      <button onClick={() => focusInput('input-purchase-price')} className="text-[10px] text-white/50 hover:text-white underline font-sans">
                         add purchase
                       </button>
                     ) : (
@@ -2256,11 +2256,11 @@ export default function DealAnalyzerPage() {
                       {isAllCash ? (
                         <span className="font-semibold text-white/50">N/A — all cash</span>
                       ) : isRentMissing ? (
-                        <button onClick={() => focusInput('input-rent')} className="text-[10px] text-primary/60 hover:text-primary underline font-sans">
+                        <button onClick={() => focusInput('input-rent')} className="text-[10px] text-white/50 hover:text-white underline font-sans">
                           add rent
                         </button>
                       ) : isLoanInfoMissing ? (
-                        <button onClick={() => focusInput('input-interest-rate')} className="text-[10px] text-primary/60 hover:text-primary underline font-sans">
+                        <button onClick={() => focusInput('input-interest-rate')} className="text-[10px] text-white/50 hover:text-white underline font-sans">
                           add loan info
                         </button>
                       ) : (
@@ -2284,11 +2284,11 @@ export default function DealAnalyzerPage() {
                   <span className="font-sans font-medium text-[#9E9DA0]">Projected IRR</span>
                   <div className="text-right">
                     {isRentMissing ? (
-                      <button onClick={() => focusInput('input-rent')} className="text-[10px] text-primary/60 hover:text-primary underline font-sans">
+                      <button onClick={() => focusInput('input-rent')} className="text-[10px] text-white/50 hover:text-white underline font-sans">
                         add rent
                       </button>
                     ) : isPurchasePriceMissing ? (
-                      <button onClick={() => focusInput('input-purchase-price')} className="text-[10px] text-primary/60 hover:text-primary underline font-sans">
+                      <button onClick={() => focusInput('input-purchase-price')} className="text-[10px] text-white/50 hover:text-white underline font-sans">
                         add purchase
                       </button>
                     ) : (
@@ -2302,7 +2302,7 @@ export default function DealAnalyzerPage() {
                   <span className="font-sans font-medium text-[#9E9DA0]">Projected Occupancy Rate</span>
                   <div className="text-right">
                     {isRentMissing ? (
-                      <button onClick={() => focusInput('input-rent')} className="text-[10px] text-primary/60 hover:text-primary underline font-sans">
+                      <button onClick={() => focusInput('input-rent')} className="text-[10px] text-white/50 hover:text-white underline font-sans">
                         add rent
                       </button>
                     ) : (
@@ -2316,7 +2316,7 @@ export default function DealAnalyzerPage() {
                   <span className="font-sans font-medium text-[#9E9DA0]">Projected Expense Ratio (OER)</span>
                   <div className="text-right">
                     {isRentMissing ? (
-                      <button onClick={() => focusInput('input-rent')} className="text-[10px] text-primary/60 hover:text-primary underline font-sans">
+                      <button onClick={() => focusInput('input-rent')} className="text-[10px] text-white/50 hover:text-white underline font-sans">
                         add rent
                       </button>
                     ) : (
@@ -2330,7 +2330,7 @@ export default function DealAnalyzerPage() {
                   <span className="font-sans font-medium text-[#9E9DA0]">Projected Long-Term Appreciation</span>
                   <div className="text-right">
                     {isPurchasePriceMissing ? (
-                      <button onClick={() => focusInput('input-purchase-price')} className="text-[10px] text-primary/60 hover:text-primary underline font-sans">
+                      <button onClick={() => focusInput('input-purchase-price')} className="text-[10px] text-white/50 hover:text-white underline font-sans">
                         add purchase
                       </button>
                     ) : (
@@ -2343,7 +2343,7 @@ export default function DealAnalyzerPage() {
           </div>
 
           {/* Sticky Bottom Sheet for Mobile/Tablet */}
-          <div className="xl:hidden fixed bottom-0 left-0 right-0 z-50 px-4 pb-4 pt-2 border-t border-white/10 bg-[#121014] shadow-2xl">
+          <div className="xl:hidden fixed bottom-0 left-0 right-0 z-50 px-4 pb-4 pt-2 border-t border-white/10 bg-pw-night-bg shadow-2xl">
             <div className="flex items-center justify-between">
               <div onClick={() => setIsBottomSheetOpen(!isBottomSheetOpen)} className="flex-1 cursor-pointer">
                 <div className="flex items-center gap-2">
@@ -2372,7 +2372,7 @@ export default function DealAnalyzerPage() {
 
             {/* Bottom Sheet overlay */}
             {isBottomSheetOpen && (
-              <div className="fixed inset-x-0 bottom-16 bg-[#121014] border-t border-white/10 p-5 space-y-4 max-h-[80vh] overflow-y-auto">
+              <div className="fixed inset-x-0 bottom-16 bg-pw-night-bg border-t border-white/10 p-5 space-y-4 max-h-[80vh] overflow-y-auto">
                 <h3 className="text-sm font-bold uppercase tracking-wider text-white">Full Underwriting Scorecard</h3>
                 
                 <div className="space-y-3 font-mono text-xs tabular-nums text-[#9E9DA0] pb-6">

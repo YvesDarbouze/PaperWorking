@@ -414,3 +414,10 @@ BORDER
 GLASS BG
   Night: rgba(18,19,29,0.65)       → var(--color-glass-bg)
 ```
+
+---
+
+## 17. Green Semantics Policy
+
+Green is reserved for exactly three uses: (1) a passing/success state, (2) a positive-signal status chip (e.g., LIVE), (3) the single primary call-to-action on a surface, at most one per view. Green never appears on headings, tab labels, section titles, borders-as-decoration, or body text. The Hold phase color is a distinct token and is exempt — but it is only used for phase identification, never for emphasis.
+

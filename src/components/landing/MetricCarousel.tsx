@@ -397,7 +397,7 @@ export default function MetricCarousel() {
               >
                 {/* ── Slide 1: Occupancy Rate — Desktop Browser Frame ── */}
                 {activeKpi.symbol === 'OCC' ? (
-                  <div className="w-full rounded-2xl border border-white/10 bg-[#121014] shadow-2xl overflow-hidden font-hanken">
+                  <div className="w-full rounded-2xl border border-white/10 bg-pw-night-bg shadow-2xl overflow-hidden font-hanken">
                     {/* Browser top-bar */}
                     <div className="flex items-center justify-between px-4 py-3 bg-[#1e1b22] border-b border-white/5">
                       <div className="flex items-center gap-1.5">
@@ -413,7 +413,7 @@ export default function MetricCarousel() {
                     </div>
 
                     {/* Browser content */}
-                    <div className="p-6 bg-gradient-to-br from-[#121014] to-[#18151c] flex flex-col items-center justify-center min-h-[220px]">
+                    <div className="p-6 bg-gradient-to-br from-pw-night-bg to-[#18151c] flex flex-col items-center justify-center min-h-[220px]">
                       {/* Obsidian Glass card containing the actual gauge */}
                       <div className="w-full max-w-[320px] rounded-xl border border-white/5 bg-white/[0.01] backdrop-blur-md p-5 flex flex-col gap-3 relative overflow-hidden">
                         {/* Header */}
@@ -451,12 +451,12 @@ export default function MetricCarousel() {
                     </div>
                   </div>
                 ) : activeKpi.symbol === 'NOI' ? (
-                  <div className="w-full max-w-[340px] mx-auto rounded-[32px] border-[10px] border-[#1e1b22] bg-[#121014] shadow-2xl overflow-hidden relative aspect-[3/4] flex flex-col font-hanken">
+                  <div className="w-full max-w-[340px] mx-auto rounded-[32px] border-[10px] border-[#1e1b22] bg-pw-night-bg shadow-2xl overflow-hidden relative aspect-[3/4] flex flex-col font-hanken">
                     {/* Camera bezel notch */}
                     <div className="absolute top-2 left-1/2 -translate-x-1/2 w-2 h-2 rounded-full bg-[#2a2730] z-20" />
                     
                     {/* Screen Content */}
-                    <div className="flex-1 p-5 bg-gradient-to-br from-[#121014] to-[#18151c] flex flex-col justify-between overflow-hidden">
+                    <div className="flex-1 p-5 bg-gradient-to-br from-pw-night-bg to-[#18151c] flex flex-col justify-between overflow-hidden">
                       {/* Top Bar / Status */}
                       <div className="flex justify-between items-center pb-2.5 border-b border-white/5">
                         <div className="text-[10px] text-on-surface-variant/40 font-mono">08:00 AM</div>
@@ -538,7 +538,7 @@ export default function MetricCarousel() {
                   </div>
                 ) : (
                   // Other slides: display a placeholder showing in-progress status, maintaining layout
-                  <div className="w-full rounded-2xl border border-white/10 bg-[#121014] shadow-2xl p-6 min-h-[260px] flex flex-col justify-between items-center text-center">
+                  <div className="w-full rounded-2xl border border-white/10 bg-pw-night-bg shadow-2xl p-6 min-h-[260px] flex flex-col justify-between items-center text-center">
                     <div className="flex flex-col items-center gap-3 mt-4">
                       {activeKpi.device === 'tablet' && <Tablet className="w-10 h-10 text-on-surface-variant/40" />}
                       {activeKpi.device === 'phone' && <Smartphone className="w-10 h-10 text-on-surface-variant/40" />}

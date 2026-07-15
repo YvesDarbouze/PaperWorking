@@ -179,7 +179,7 @@ export function RiskStressTester() {
         <select
           value={activePreset}
           onChange={(e) => applyPreset(e.target.value)}
-          className="w-full bg-[#121014] border border-white/10 text-xs rounded-xl p-3 text-white focus:border-amber-500 focus:outline-none font-light cursor-pointer"
+          className="w-full bg-pw-night-bg border border-white/10 text-xs rounded-xl p-3 text-white focus:border-amber-500 focus:outline-none font-light cursor-pointer"
         >
           <option value="stabilized">🟢 Baseline Stabilized (Ideal Underwrite)</option>
           <option value="downturn">🟡 Market Downturn (Surprise Carry)</option>

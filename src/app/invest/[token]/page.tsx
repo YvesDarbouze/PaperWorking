@@ -503,7 +503,7 @@ export default function GuestPortalPage() {
         {/* ── Subscribe Gate Overlay ── */}
         {!user && !isSubscribedInSession && (
           <div className="absolute inset-0 bg-[#0d0a0b]/40 backdrop-blur-md z-[100] flex items-center justify-center p-4 min-h-[500px]">
-            <div className="w-full max-w-md bg-[#121014]/98 border border-white/10 rounded-3xl p-8 shadow-2xl space-y-6" id="subscribe-gate">
+            <div className="w-full max-w-md bg-pw-night-bg/98 border border-white/10 rounded-3xl p-8 shadow-2xl space-y-6" id="subscribe-gate">
               <div className="text-center space-y-2">
                 <div className="w-12 h-12 rounded-full bg-[#454955]/10 border border-[#454955]/20 flex items-center justify-center mx-auto text-[#454955]">
                   <Lock className="w-6 h-6" />

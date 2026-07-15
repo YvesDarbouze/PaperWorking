@@ -132,7 +132,7 @@ export default function MarketplacesClient() {
 
               {/* Deal Graphic (Right side) */}
               <div className="lg:col-span-6 flex justify-center">
-                <div className="w-full max-w-[450px] rounded-2xl border border-white/10 bg-[#121014] shadow-2xl p-6 relative overflow-hidden font-hanken">
+                <div className="w-full max-w-[450px] rounded-2xl border border-white/10 bg-pw-night-bg shadow-2xl p-6 relative overflow-hidden font-hanken">
                   <div className="absolute top-0 right-0 w-40 h-40 bg-primary/10 rounded-full blur-[40px] pointer-events-none" />
                   
                   {/* Mock card preview */}
@@ -257,7 +257,7 @@ export default function MarketplacesClient() {
 
               {/* Vendor Graphic (Right side) */}
               <div className="lg:col-span-6 flex justify-center">
-                <div className="w-full max-w-[450px] rounded-2xl border border-white/10 bg-[#121014] shadow-2xl p-6 relative overflow-hidden font-hanken">
+                <div className="w-full max-w-[450px] rounded-2xl border border-white/10 bg-pw-night-bg shadow-2xl p-6 relative overflow-hidden font-hanken">
                   <div className="absolute top-0 right-0 w-40 h-40 bg-primary/10 rounded-full blur-[40px] pointer-events-none" />
                   
                   {/* Mock profile cards grid */}

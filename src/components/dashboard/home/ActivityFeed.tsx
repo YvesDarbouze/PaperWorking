@@ -106,7 +106,7 @@ export default function ActivityFeed() {
       <div 
         className={`w-full h-full p-8 flex flex-col overflow-hidden rounded-2xl min-h-[350px] transition-all duration-300 ${
           theme === 'dark' 
-            ? 'bg-[#121014]/98 border border-white/5 backdrop-blur-[24px]' 
+            ? 'bg-pw-night-bg/98 border border-white/5 backdrop-blur-[24px]' 
             : 'bg-[#FDFFFC] border border-[#454955]/10 shadow-[0_4px_20px_rgba(0,0,0,0.02)]'
         }`}
       >
@@ -137,7 +137,7 @@ export default function ActivityFeed() {
       <div 
         className={`w-full h-full p-8 flex flex-col justify-center items-center text-center gap-6 rounded-2xl min-h-[350px] transition-all duration-300 ${
           theme === 'dark' 
-            ? 'bg-[#121014]/98 border border-white/5 backdrop-blur-[24px]' 
+            ? 'bg-pw-night-bg/98 border border-white/5 backdrop-blur-[24px]' 
             : 'bg-[#FDFFFC] border border-[#454955]/10 shadow-[0_4px_20px_rgba(0,0,0,0.02)]'
         }`}
       >
@@ -200,7 +200,7 @@ export default function ActivityFeed() {
     <div 
       className={`w-full h-full p-8 flex flex-col overflow-hidden rounded-2xl min-h-[350px] transition-all duration-300 ${
         theme === 'dark' 
-          ? 'bg-[#121014]/98 border border-white/5 backdrop-blur-[24px]' 
+          ? 'bg-pw-night-bg/98 border border-white/5 backdrop-blur-[24px]' 
           : 'bg-[#FDFFFC] border border-[#454955]/10 shadow-[0_4px_20px_rgba(0,0,0,0.02)]'
       }`}
     >

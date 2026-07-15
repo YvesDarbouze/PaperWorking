@@ -211,7 +211,7 @@ export default function FinancialsTerminal() {
   if (loadStatus === "no-project") {
     return (
       <div className="min-h-screen bg-transparent text-on-surface font-body-md flex flex-col items-center justify-center gap-6">
-        <span className="material-symbols-outlined text-primary text-5xl">apartment</span>
+        <span className="material-symbols-outlined text-white/40 text-5xl">apartment</span>
         <h2 className="font-headline-md text-xl text-on-surface">No projects yet</h2>
         <p className="text-on-surface-variant text-center max-w-md">
           Create your first investment project to start tracking financials.
@@ -228,8 +228,8 @@ export default function FinancialsTerminal() {
       {/* TopAppBar */}
       <header className="sticky top-0 w-full z-50 bg-surface-container-lowest/80 backdrop-blur-xl border-b border-white/10 shadow-sm flex items-center justify-between px-6 h-20">
         <div className="flex items-center gap-4">
-          <span className="material-symbols-outlined text-primary text-2xl">terminal</span>
-          <h1 className="font-headline-md text-headline-md font-bold tracking-tighter text-primary">Financial Terminal</h1>
+          <span className="material-symbols-outlined text-white/40 text-2xl">terminal</span>
+          <h1 className="font-headline-md text-headline-md font-bold tracking-tighter text-white">Financial Terminal</h1>
         </div>
 
         {/* Project Selector + Auto-save Indicator */}
@@ -240,7 +240,7 @@ export default function FinancialsTerminal() {
               <><span className="inline-block w-2 h-2 rounded-full bg-yellow-400 animate-pulse" /><span className="text-on-surface-variant">Saving…</span></>
             )}
             {saveStatus === "saved" && (
-              <><span className="inline-block w-2 h-2 rounded-full bg-primary" /><span className="text-primary">Saved</span></>
+              <><span className="inline-block w-2 h-2 rounded-full bg-emerald-400" /><span className="text-emerald-400">Saved</span></>
             )}
             {saveStatus === "error" && (
               <><span className="inline-block w-2 h-2 rounded-full bg-error" /><span className="text-error">Error</span></>

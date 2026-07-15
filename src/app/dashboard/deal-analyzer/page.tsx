@@ -810,7 +810,7 @@ export default function DealAnalyzerPage() {
           <div className="flex items-center gap-2">
             <button
               onClick={handleLoadDemoFinancials}
-              className="px-3 py-1.5 text-xs font-semibold rounded-lg bg-white/5 hover:bg-white/10 border border-white/10 text-emerald-400 hover:text-emerald-300 transition-all active:scale-95 duration-200"
+              className="px-3 py-1.5 text-xs font-semibold rounded-lg bg-white/5 hover:bg-white/10 border border-white/10 text-pw-success hover:text-pw-success/80 transition-all active:scale-95 duration-200"
               id="btn-load-demo"
             >
               ✨ Load DEMO_FINANCIALS
@@ -857,8 +857,8 @@ export default function DealAnalyzerPage() {
                 }
 
                 const verdictColor = 
-                  listVerdict === 'STRONG BUY' ? 'text-primary border-primary/20 bg-primary/10' :
-                  listVerdict === 'BUY' ? 'text-emerald-400 border-emerald-500/20 bg-emerald-500/10' :
+                  listVerdict === 'STRONG BUY' ? 'text-pw-success border-pw-success-border bg-pw-success-container' :
+                  listVerdict === 'BUY' ? 'text-pw-success/90 border-pw-success-border/50 bg-pw-success-container/70' :
                   listVerdict === 'HOLD' ? 'text-amber-400 border-amber-500/20 bg-amber-500/10' :
                   listVerdict === 'PASS' ? 'text-rose-400 border-rose-500/20 bg-rose-500/10' :
                   'text-[#9E9DA0] border-white/10 bg-white/5';
@@ -900,7 +900,7 @@ export default function DealAnalyzerPage() {
                       </div>
                       <div>
                         <p className="text-[9px] uppercase text-[#9E9DA0]/50 tracking-wider">Cash Flow</p>
-                        <p className={`font-semibold mt-0.5 ${dealMetrics.monthlyCashFlow < 0 ? 'text-rose-400' : 'text-emerald-400'}`}>
+                        <p className={`font-semibold mt-0.5 ${dealMetrics.monthlyCashFlow < 0 ? 'text-rose-400' : 'text-pw-success'}`}>
                           {formatCurrency(dealMetrics.monthlyCashFlow)}/mo
                         </p>
                       </div>
@@ -1809,7 +1809,7 @@ export default function DealAnalyzerPage() {
                       {(solveResult as any).feasible ? (
                         <div className="space-y-4">
                           {/* Feasible Banner */}
-                          <div className="p-4 rounded-xl bg-emerald-500/5 border border-emerald-500/20 text-emerald-400 text-xs flex flex-col gap-1.5" id="solver-feasible-banner">
+                          <div className="p-4 rounded-xl bg-pw-success-container border border-pw-success-border text-pw-success text-xs flex flex-col gap-1.5" id="solver-feasible-banner">
                             <div className="flex justify-between items-center">
                               <span className="font-bold uppercase tracking-wider text-[10px]">✅ Hurdle Feasible</span>
                               <span className="font-mono text-lg font-bold text-white" id="solved-max-offer">
@@ -1836,7 +1836,7 @@ export default function DealAnalyzerPage() {
                               </div>
                               <div className="flex justify-between border-t border-white/5 pt-1.5 font-bold">
                                 <span className="text-[#9E9DA0]">Max Offer to Seller:</span>
-                                <span className="text-emerald-400" id="wholesale-seller-price">
+                                <span className="text-pw-success" id="wholesale-seller-price">
                                   {formatCurrency(((solveResult as any).solvedPrice || 0) - (parseFloat(targetAssignmentProfit) || 0))}
                                 </span>
                               </div>
@@ -1860,7 +1860,7 @@ export default function DealAnalyzerPage() {
                                     <td className="p-2 font-sans font-medium text-[#9E9DA0]">{m.label}</td>
                                     <td className="p-2 text-right">{m.computed}</td>
                                     <td className="p-2 text-right text-[#9E9DA0]">{m.target}</td>
-                                    <td className={`p-2 text-right font-bold ${m.satisfied ? 'text-emerald-400' : 'text-rose-400'}`}>
+                                    <td className={`p-2 text-right font-bold ${m.satisfied ? 'text-pw-success' : 'text-rose-400'}`}>
                                       {m.marginStr}
                                     </td>
                                   </tr>
@@ -1928,7 +1928,7 @@ export default function DealAnalyzerPage() {
 
             {/* ── Projections Engine Block (AQ-16) ── */}
             {derived && (
-              <div className="backdrop-blur-xl border border-white/[0.08] p-6 rounded-3xl space-y-6" style={{ background: 'linear-gradient(135deg, rgba(22,19,24,0.45) 0%, rgba(13,10,11,0.68) 100%)' }}>
+              <div className="backdrop-blur-xl border border-white/[0.08] p-6 rounded-3xl space-y-6" style={{ background: 'linear-gradient(135deg, rgba(22,19,24,0.45) 0%, rgba(13,0,11,0.68) 100%)' }}>
                 <div className="flex justify-between items-center border-b border-white/5 pb-4">
                   <div>
                     <h3 className="text-base font-bold text-white">Projections & Hold Horizon Analysis</h3>
@@ -2006,7 +2006,7 @@ export default function DealAnalyzerPage() {
                               <td className="p-3 font-sans font-medium text-[#9E9DA0]">Year {p.year}</td>
                               <td className="p-3 text-right">{formatCurrency(p.propertyValue)}</td>
                               <td className="p-3 text-right">{formatCurrency(p.loanBalance)}</td>
-                              <td className="p-3 text-right font-bold text-emerald-400">{formatCurrency(p.equity)}</td>
+                              <td className="p-3 text-right font-bold text-pw-success">{formatCurrency(p.equity)}</td>
                               <td className="p-3 text-right">{formatCurrency(p.annualCashFlow)}</td>
                               <td className="p-3 text-right">{formatCurrency(p.cumulativeCashFlow)}</td>
                               <td className="p-3 text-right font-sans font-semibold text-primary">
@@ -2052,7 +2052,7 @@ export default function DealAnalyzerPage() {
                             <div className="flex justify-between items-start">
                               <span className="text-xs font-bold text-white">{p.days} Days Hold</span>
                               {p.isBreakEven ? (
-                                <span className="text-[8px] uppercase font-bold px-1.5 py-0.5 rounded bg-emerald-500/10 border border-emerald-500/20 text-emerald-400">
+                                <span className="text-[8px] uppercase font-bold px-1.5 py-0.5 rounded bg-pw-success-container border border-pw-success-border text-pw-success">
                                   Break-Even
                                 </span>
                               ) : (
@@ -2071,12 +2071,12 @@ export default function DealAnalyzerPage() {
                           
                           <div className="border-t border-white/5 pt-2">
                             <p className="text-[9px] uppercase text-[#9E9DA0]/40 font-bold">Net Profit</p>
-                            <p className={`text-sm font-bold font-mono ${p.netProfit >= 0 ? 'text-emerald-400' : 'text-rose-400'}`}>
+                            <p className={`text-sm font-bold font-mono ${p.netProfit >= 0 ? 'text-pw-success' : 'text-rose-400'}`}>
                               {formatCurrency(p.netProfit)}
                             </p>
                             <div className="flex justify-between items-center text-[9px] mt-0.5">
                               <span className="text-[#9E9DA0]/60">Annualized ROI:</span>
-                              <span className={`font-mono font-bold ${p.annualizedRoi >= 0 ? 'text-emerald-400' : 'text-rose-400'}`}>
+                              <span className={`font-mono font-bold ${p.annualizedRoi >= 0 ? 'text-pw-success' : 'text-rose-400'}`}>
                                 {p.annualizedRoi.toFixed(1)}%
                               </span>
                             </div>
@@ -2128,8 +2128,8 @@ export default function DealAnalyzerPage() {
               {/* Verdict strip */}
               {filledCount >= 6 && derived ? (
                 <div className={`p-4 rounded-xl border flex flex-col gap-1.5 ${
-                  activeVerdict === 'STRONG BUY' ? 'bg-primary/5 border-primary/20 text-primary' :
-                  activeVerdict === 'BUY' ? 'bg-emerald-500/5 border-emerald-500/20 text-emerald-400' :
+                  activeVerdict === 'STRONG BUY' ? 'bg-pw-success-container border-pw-success-border text-pw-success' :
+                  activeVerdict === 'BUY' ? 'bg-pw-success-container/70 border-pw-success-border/50 text-pw-success/90' :
                   activeVerdict === 'HOLD' ? 'bg-amber-500/5 border-amber-500/20 text-amber-400' :
                   'bg-rose-500/5 border-rose-500/20 text-rose-400'
                 }`}>
@@ -2177,7 +2177,7 @@ export default function DealAnalyzerPage() {
                     ) : (
                       <span className="font-bold text-white">{formatCurrency(derived?.noi || 0)}</span>
                     )}
-                    {isDemoOrSeed && !isRentMissing && <p className="text-[10px] text-emerald-400/80">Target: $12,486</p>}
+                    {isDemoOrSeed && !isRentMissing && <p className="text-[10px] text-pw-success/80">Target: $12,486</p>}
                   </div>
                 </div>
 
@@ -2190,11 +2190,11 @@ export default function DealAnalyzerPage() {
                         add rent
                       </button>
                     ) : (
-                      <span className={`font-bold ${derived && derived.monthlyCashFlow < 0 ? 'text-rose-400' : 'text-emerald-400'}`}>
+                      <span className={`font-bold ${derived && derived.monthlyCashFlow < 0 ? 'text-rose-400' : 'text-pw-success'}`}>
                         {formatCurrency(derived?.monthlyCashFlow || 0)}/mo
                       </span>
                     )}
-                    {isDemoOrSeed && !isRentMissing && <p className="text-[10px] text-emerald-400/80">Target: -$370/mo</p>}
+                    {isDemoOrSeed && !isRentMissing && <p className="text-[10px] text-pw-success/80">Target: -$370/mo</p>}
                   </div>
                 </div>
 
@@ -2209,7 +2209,7 @@ export default function DealAnalyzerPage() {
                     ) : (
                       <span className="font-bold text-white">{(derived?.capRate || 0).toFixed(2)}%</span>
                     )}
-                    {isDemoOrSeed && !isPurchasePriceMissing && <p className="text-[10px] text-emerald-400/80">Target: 4.48%</p>}
+                    {isDemoOrSeed && !isPurchasePriceMissing && <p className="text-[10px] text-pw-success/80">Target: 4.48%</p>}
                   </div>
                 </div>
 
@@ -2226,7 +2226,7 @@ export default function DealAnalyzerPage() {
                         {(derived?.cashOnCashReturn || 0).toFixed(2)}%
                       </span>
                     )}
-                    {isDemoOrSeed && !isPurchasePriceMissing && <p className="text-[10px] text-emerald-400/80">Target: -7.41%</p>}
+                    {isDemoOrSeed && !isPurchasePriceMissing && <p className="text-[10px] text-pw-success/80">Target: -7.41%</p>}
                   </div>
                 </div>
 
@@ -2267,7 +2267,7 @@ export default function DealAnalyzerPage() {
                         <span className="font-bold text-white">{(derived?.dscr || 0).toFixed(2)}x</span>
                       )}
                       {isDemoOrSeed && !isAllCash && !isRentMissing && !isLoanInfoMissing && (
-                        <p className="text-[10px] text-emerald-400/80">Target: 0.74</p>
+                        <p className="text-[10px] text-pw-success/80">Target: 0.74</p>
                       )}
                     </div>
                   </div>
@@ -2348,8 +2348,8 @@ export default function DealAnalyzerPage() {
               <div onClick={() => setIsBottomSheetOpen(!isBottomSheetOpen)} className="flex-1 cursor-pointer">
                 <div className="flex items-center gap-2">
                   <span className={`text-xs font-bold uppercase tracking-wider ${
-                    activeVerdict === 'STRONG BUY' ? 'text-primary' :
-                    activeVerdict === 'BUY' ? 'text-emerald-400' :
+                    activeVerdict === 'STRONG BUY' ? 'text-pw-success' :
+                    activeVerdict === 'BUY' ? 'text-pw-success/90' :
                     activeVerdict === 'HOLD' ? 'text-amber-400' :
                     'text-rose-400'
                   }`}>
@@ -2387,7 +2387,7 @@ export default function DealAnalyzerPage() {
                   {/* Cash Flow */}
                   <div className="flex items-center justify-between border-b border-white/5 pb-2">
                     <span className="font-sans font-medium text-[#9E9DA0]">Projected Monthly Cash Flow</span>
-                    <span className={`font-bold ${derived?.monthlyCashFlow < 0 ? 'text-rose-400' : 'text-emerald-400'}`}>
+                    <span className={`font-bold ${derived?.monthlyCashFlow < 0 ? 'text-rose-400' : 'text-pw-success'}`}>
                       {isRentMissing ? '—' : derived ? `${formatCurrency(derived.monthlyCashFlow)}/mo` : '—'}
                     </span>
                   </div>

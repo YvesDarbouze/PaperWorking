@@ -126,6 +126,9 @@ html[data-theme="dark"],
   --pw-brand-secondary: var(--color-brand-secondary);
   --pw-brand-neutral: var(--color-brand-neutral);
   --pw-accent: var(--color-brand-primary);
+  --pw-success: #00DD94;
+  --pw-success-container: rgba(0, 221, 148, 0.1);
+  --pw-success-border: rgba(0, 221, 148, 0.2);
   
   /* Spacing */
   --spacing-unit: 4px;
@@ -235,6 +238,9 @@ html[data-theme="dark"],
   --color-pw-muted: var(--pw-muted);
   --color-pw-accent: var(--pw-accent);
   --color-pw-night-bg: var(--pw-night-bg);
+  --color-pw-success: var(--pw-success);
+  --color-pw-success-container: var(--pw-success-container);
+  --color-pw-success-border: var(--pw-success-border);
 
   --color-bg-primary: var(--pw-bg);
   --color-text-primary: var(--pw-black);

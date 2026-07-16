@@ -90,19 +90,19 @@ export function ClearToCloseMilestone({
               !unlocked
                 ? 'bg-gray-200 text-gray-400 cursor-not-allowed'
                 : isClearToClose
-                  ? 'bg-green-600 hover:bg-green-700 text-white shadow-md transform hover:scale-105'
+                  ? 'bg-pw-success hover:bg-pw-success/90 text-[#0d0a0b] shadow-md transform hover:scale-105'
                   : 'bg-blue-600 hover:bg-blue-700 text-white shadow-md transform hover:scale-105'
             }`}
             style={(!unlocked || isClearToClose) ? undefined : { backgroundColor: 'var(--color-blue-600, #2563eb)' }}
           >
-            <CheckCircle2 className={`w-6 h-6 ${isClearToClose ? 'text-white' : 'text-blue-100'}`} />
+            <CheckCircle2 className={`w-6 h-6 ${isClearToClose ? 'text-[#0d0a0b]' : 'text-blue-100'}`} />
             {isClearToClose ? 'Cleared to Close!' : 'Mark Clear to Close'}
           </button>
           
           {isClearToClose && onExecutePurchase && (
             <button
               onClick={onExecutePurchase}
-              className="flex items-center justify-center w-full px-8 py-3 rounded-lg font-bold shadow-md transform hover:scale-105 transition-all text-white bg-emerald-600 hover:bg-emerald-700 mt-2"
+              className="flex items-center justify-center w-full px-8 py-3 rounded-lg font-bold shadow-md transform hover:scale-105 transition-all text-[#0d0a0b] bg-pw-success hover:bg-pw-success/90 mt-2"
             >
               Confirm Purchase
             </button>

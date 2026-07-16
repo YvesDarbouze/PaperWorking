@@ -18,6 +18,9 @@ import { deriveAllMetrics, computeIRR, buildIRRCashFlows } from '@/lib/metrics/r
 import { VendorRequestModal } from '@/components/marketplace/VendorRequestModal';
 import VendorSideSheet, { type VendorSideSheetData } from '@/components/marketplace/VendorSideSheet';
 import { VendorProfile } from '@/types/schema';
+import type { DealListingTeaser } from '@/types/listing';
+import { getPublishedListings } from '@/actions/listings';
+import DealMap from '@/components/marketplace/DealMap';
 
 /* ═══════════════════════════════════════════════════════════════
    Vendor Marketplace — Stitch design: 3e7255323f7b493089506b6ecbf6cbf8
@@ -195,6 +198,32 @@ function MarketplaceContent() {
   const [sideSheetVendor, setSideSheetVendor] = useState<VendorSideSheetData | null>(null);
   const [isSideSheetOpen, setIsSideSheetOpen] = useState(false);
 
+  /* ── Tab View & Deals state (UX-11) ── */
+  const [activeTab, setActiveTab] = useState<'vendors' | 'deals'>('vendors');
+  const [deals, setDeals] = useState<DealListingTeaser[]>([]);
+  const [loadingDeals, setLoadingDeals] = useState(false);
+  const [dealsError, setDealsError] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (activeTab !== 'deals') return;
+    
+    const fetchDeals = async () => {
+      setLoadingDeals(true);
+      setDealsError(null);
+      try {
+        const data = await getPublishedListings();
+        setDeals(data);
+      } catch (err) {
+        console.error('Failed to fetch published deals:', err);
+        setDealsError('Unable to load active deals. Please try again.');
+      } finally {
+        setLoadingDeals(false);
+      }
+    };
+
+    fetchDeals();
+  }, [activeTab]);
+
   /* ── Fetch vendors from API (preserved from original) ── */
   useEffect(() => {
     const fetchVendors = async () => {
@@ -284,107 +313,169 @@ function MarketplaceContent() {
 
   return (
     <div className="min-h-full px-6 lg:px-8 py-8 space-y-6">
-      {/* ── Page Header ── */}
-      <div className="space-y-1">
-        <h1 className="text-4xl font-bold text-white tracking-tight">Vendor Marketplace</h1>
-        <p className="text-[#9E9DA0] text-sm">
-          Find trusted service providers for your real estate portfolio
-        </p>
-      </div>
-
-      {/* ── Search Bar ── */}
-      <div className="flex gap-0">
-        <div className="relative flex-1">
-          <MapPin className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-[#6B6870] pointer-events-none" />
-          <input
-            type="text"
-            placeholder="Search by City or Zip Code..."
-            value={searchInput}
-            onChange={(e) => setSearchInput(e.target.value)}
-            onKeyDown={(e) => e.key === 'Enter' && handleFindVendors()}
-            className="w-full pl-11 pr-4 py-3.5 bg-white/5 border border-white/10 border-r-0 text-sm text-text-primary placeholder-text-secondary focus:outline-none focus:border-[#454955]/55 transition-colors"
-            style={{ borderRadius: '0.5rem 0 0 0.5rem' }}
-          />
-        </div>
-        <button
-          type="button"
-          onClick={handleFindVendors}
-          className="pw-interactive px-6 py-3.5 bg-[#454955] text-black text-sm font-bold hover:bg-[#454955]/90 transition-colors"
-          style={{ borderRadius: '0 0.5rem 0.5rem 0' }}
-        >
-          Find Vendors
-        </button>
-      </div>
-
-      {/* ── Filter Pills ── */}
-      <div className="flex flex-wrap gap-2">
-        {FILTER_PILLS.map((pill) => {
-          const isActive = activeFilter === pill;
-          return (
-            <button
-              key={pill}
-              type="button"
-              onClick={() => setActiveFilter(pill)}
-              className={`px-4 py-1.5 rounded-full border text-xs font-bold transition-all ${
-                isActive
-                  ? 'bg-[#454955]/10 border-[#454955] text-[#454955]'
-                  : 'border-white/10 text-[#9E9DA0] hover:border-[#454955]/40 hover:text-[#454955] bg-transparent'
-              }`}
-            >
-              {pill}
-            </button>
-          );
-        })}
-      </div>
-
-      {/* ── Disclaimer Banner ── */}
-      <div className="flex items-start gap-3 px-4 py-3 rounded-lg border border-amber-500/20 bg-amber-500/5">
-        <AlertTriangle className="w-4 h-4 text-amber-500 flex-shrink-0 mt-0.5" />
-        <p className="text-xs text-amber-400/80 leading-relaxed">
-          <span className="font-bold text-amber-400">Disclaimer: </span>
-          PaperWorking does not vet vendors. You must verify credentials and references before engaging.
-        </p>
-      </div>
-
-      {/* ── Vendor Grid ── */}
-      {loadingVendors ? (
-        <div className="flex justify-center items-center py-24 gap-3 text-[#6B6870]">
-          <Loader2 className="w-5 h-5 animate-spin" />
-          <span className="text-sm">Loading vendors...</span>
-        </div>
-      ) : vendors.length === 0 ? (
-        <div className="flex flex-col items-center justify-center py-24 gap-4 text-center max-w-md mx-auto">
-          <div className="w-12 h-12 rounded-full bg-white/5 border border-white/10 flex items-center justify-center text-[#9E9DA0] mb-2">
-            <Search className="w-6 h-6 opacity-60" />
-          </div>
-          <h3 className="text-lg font-bold text-white leading-snug">No Registered Vendors</h3>
-          <p className="text-xs text-[#9E9DA0] leading-relaxed">
-            There are currently no active service providers registered in the PaperWorking Marketplace. Once providers complete onboarding and their active status is verified, they will appear here.
+      {/* ── Page Header & View Toggle ── */}
+      <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 border-b border-white/5 pb-5">
+        <div className="space-y-1">
+          <h1 className="text-4xl font-bold text-white tracking-tight">
+            {activeTab === 'vendors' ? 'Vendor Marketplace' : 'Deal Marketplace'}
+          </h1>
+          <p className="text-[#9E9DA0] text-sm">
+            {activeTab === 'vendors'
+              ? 'Find trusted service providers for your real estate portfolio'
+              : 'Browse active deal density across the United States'}
           </p>
         </div>
-      ) : displayVendors.length === 0 ? (
-        <div className="flex flex-col items-center justify-center py-24 gap-3 text-[#6B6870]">
-          <Search className="w-8 h-8 opacity-30" />
-          <p className="text-sm">No vendors found for the selected filters.</p>
+
+        {/* Tab view selection buttons */}
+        <div className="flex bg-white/5 border border-white/10 rounded-lg p-0.5 self-start md:self-center">
           <button
             type="button"
-            onClick={() => { setActiveFilter('All'); setSearchQuery(''); setSearchInput(''); }}
-            className="text-xs text-[#454955] hover:underline"
+            onClick={() => setActiveTab('vendors')}
+            className={`px-4 py-1.5 rounded-md text-xs font-bold transition-all ${
+              activeTab === 'vendors'
+                ? 'bg-[#454955] text-black shadow'
+                : 'text-[#9E9DA0] hover:text-white'
+            }`}
           >
-            Clear filters
+            Service Providers
+          </button>
+          <button
+            type="button"
+            onClick={() => setActiveTab('deals')}
+            className={`px-4 py-1.5 rounded-md text-xs font-bold transition-all ${
+              activeTab === 'deals'
+                ? 'bg-[#454955] text-black shadow'
+                : 'text-[#9E9DA0] hover:text-white'
+            }`}
+          >
+            Active Deals Map
           </button>
         </div>
-      ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
-          {displayVendors.map((vendor) => (
-            <VendorCard
-              key={vendor.id}
-              vendor={vendor}
-              onRequestQuote={handleRequestQuote}
-              onViewProfile={handleViewProfile}
-            />
-          ))}
+      </div>
+
+      {activeTab === 'deals' ? (
+        /* ── Deal Heatmap View ── */
+        <div className="space-y-6">
+          {loadingDeals ? (
+            <div className="w-full h-[500px] glass-card border border-pw-border rounded-2xl flex flex-col items-center justify-center gap-3 bg-[#121014]/50">
+              <Loader2 className="w-6 h-6 animate-spin text-[var(--color-primary)]" />
+              <span className="text-xs text-[var(--color-muted)] font-medium">Fetching active deal listings...</span>
+            </div>
+          ) : dealsError ? (
+            <div className="w-full h-[500px] glass-card border border-red-500/20 rounded-2xl flex flex-col items-center justify-center gap-3 text-center px-4">
+              <span className="material-symbols-outlined text-3xl text-red-400">error</span>
+              <p className="text-sm font-bold text-[var(--color-on-surface)]">Unable to Load Deals</p>
+              <p className="text-xs text-[var(--color-muted)] max-w-sm">{dealsError}</p>
+              <button
+                type="button"
+                onClick={() => setActiveTab('deals')}
+                className="mt-2 px-4 py-1.5 rounded-lg text-xs font-bold uppercase tracking-[0.05em] bg-[var(--color-primary)]/15 text-[var(--color-primary)] border border-[var(--color-primary)]/30 hover:bg-[var(--color-primary)]/25 transition-colors"
+              >
+                Retry
+              </button>
+            </div>
+          ) : (
+            <DealMap deals={deals} />
+          )}
         </div>
+      ) : (
+        /* ── Service Providers View ── */
+        <>
+          {/* ── Search Bar ── */}
+          <div className="flex gap-0">
+            <div className="relative flex-1">
+              <MapPin className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-[#6B6870] pointer-events-none" />
+              <input
+                type="text"
+                placeholder="Search by City or Zip Code..."
+                value={searchInput}
+                onChange={(e) => setSearchInput(e.target.value)}
+                onKeyDown={(e) => e.key === 'Enter' && handleFindVendors()}
+                className="w-full pl-11 pr-4 py-3.5 bg-white/5 border border-white/10 border-r-0 text-sm text-text-primary placeholder-text-secondary focus:outline-none focus:border-[#454955]/55 transition-colors"
+                style={{ borderRadius: '0.5rem 0 0 0.5rem' }}
+              />
+            </div>
+            <button
+              type="button"
+              onClick={handleFindVendors}
+              className="pw-interactive px-6 py-3.5 bg-[#454955] text-black text-sm font-bold hover:bg-[#454955]/90 transition-colors"
+              style={{ borderRadius: '0 0.5rem 0.5rem 0' }}
+            >
+              Find Vendors
+            </button>
+          </div>
+
+          {/* ── Filter Pills ── */}
+          <div className="flex flex-wrap gap-2">
+            {FILTER_PILLS.map((pill) => {
+              const isActive = activeFilter === pill;
+              return (
+                <button
+                  key={pill}
+                  type="button"
+                  onClick={() => setActiveFilter(pill)}
+                  className={`px-4 py-1.5 rounded-full border text-xs font-bold transition-all ${
+                    isActive
+                      ? 'bg-[#454955]/10 border-[#454955] text-[#454955]'
+                      : 'border-white/10 text-[#9E9DA0] hover:border-[#454955]/40 hover:text-[#454955] bg-transparent'
+                  }`}
+                >
+                  {pill}
+                </button>
+              );
+            })}
+          </div>
+
+          {/* ── Disclaimer Banner ── */}
+          <div className="flex items-start gap-3 px-4 py-3 rounded-lg border border-amber-500/20 bg-amber-500/5">
+            <AlertTriangle className="w-4 h-4 text-amber-500 flex-shrink-0 mt-0.5" />
+            <p className="text-xs text-amber-400/80 leading-relaxed">
+              <span className="font-bold text-amber-400">Disclaimer: </span>
+              PaperWorking does not vet vendors. You must verify credentials and references before engaging.
+            </p>
+          </div>
+
+          {/* ── Vendor Grid ── */}
+          {loadingVendors ? (
+            <div className="flex justify-center items-center py-24 gap-3 text-[#6B6870]">
+              <Loader2 className="w-5 h-5 animate-spin" />
+              <span className="text-sm">Loading vendors...</span>
+            </div>
+          ) : vendors.length === 0 ? (
+            <div className="flex flex-col items-center justify-center py-24 gap-4 text-center max-w-md mx-auto">
+              <div className="w-12 h-12 rounded-full bg-white/5 border border-white/10 flex items-center justify-center text-[#9E9DA0] mb-2">
+                <Search className="w-6 h-6 opacity-60" />
+              </div>
+              <h3 className="text-lg font-bold text-white leading-snug">No Registered Vendors</h3>
+              <p className="text-xs text-[#9E9DA0] leading-relaxed">
+                There are currently no active service providers registered in the PaperWorking Marketplace. Once providers complete onboarding and their active status is verified, they will appear here.
+              </p>
+            </div>
+          ) : displayVendors.length === 0 ? (
+            <div className="flex flex-col items-center justify-center py-24 gap-3 text-[#6B6870]">
+              <Search className="w-8 h-8 opacity-30" />
+              <p className="text-sm">No vendors found for the selected filters.</p>
+              <button
+                type="button"
+                onClick={() => { setActiveFilter('All'); setSearchQuery(''); setSearchInput(''); }}
+                className="text-xs text-[#454955] hover:underline"
+              >
+                Clear filters
+              </button>
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+              {displayVendors.map((vendor) => (
+                <VendorCard
+                  key={vendor.id}
+                  vendor={vendor}
+                  onRequestQuote={handleRequestQuote}
+                  onViewProfile={handleViewProfile}
+                />
+              ))}
+            </div>
+          )}
+        </>
       )}
 
       {/* ── Quote Modal (preserved from original) ── */}

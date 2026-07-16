@@ -143,7 +143,7 @@ export default function MarketplacesClient() {
                         <MapPin className="w-3.5 h-3.5 flex-shrink-0" /> Miami, FL
                       </p>
                     </div>
-                    <span className="px-2 py-0.5 rounded border border-emerald-400/20 bg-emerald-400/10 text-[9px] font-bold text-emerald-400 uppercase tracking-widest">
+                    <span className="px-2 py-0.5 rounded border border-pw-success-border bg-pw-success-container text-[9px] font-bold text-pw-success uppercase tracking-widest">
                       Active Target
                     </span>
                   </div>

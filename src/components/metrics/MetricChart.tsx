@@ -197,8 +197,8 @@ export function MetricChart({
     const trendColorClass = isZero
       ? 'text-pw-muted border-pw-border bg-pw-bg'
       : isPositive
-      ? 'text-emerald-600 border-emerald-600/30 bg-emerald-50 dark:text-emerald-400 dark:bg-emerald-950/20'
-      : 'text-rose-600 border-rose-600/30 bg-rose-50 dark:text-rose-400 dark:bg-rose-950/20';
+      ? 'text-pw-success border-pw-success-border bg-pw-success-container'
+      : 'text-rose-400 border-red-500/20 bg-red-500/5';
 
     const absDiffFormatted = formatValue(Math.abs(diff), unit);
     const pctFormatted = `${isPositive ? '+' : ''}${pctChange.toFixed(2)}%`;

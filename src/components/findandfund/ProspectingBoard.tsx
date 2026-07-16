@@ -26,7 +26,7 @@ const STATUS_COLORS: Record<ProspectStatus, string> = {
   Researching: 'bg-blue-50 text-blue-600',
   'Offer Sent': 'bg-amber-50 text-amber-600',
   Counter: 'bg-orange-50 text-orange-600',
-  Accepted: 'bg-emerald-50 text-emerald-600',
+  Accepted: 'bg-pw-success-container text-pw-success border border-pw-success-border',
   Dead: 'bg-red-50 text-red-500',
 };
 

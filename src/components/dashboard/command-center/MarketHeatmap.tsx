@@ -119,11 +119,11 @@ export function MarketHeatmap() {
               className="text-[10px] font-bold uppercase tracking-wider px-3 py-1.5 rounded-lg transition-all cursor-pointer"
               style={{
                 background: activeTab === tab
-                  ? (isDark ? "rgba(50,121,249,0.12)" : "rgba(50,121,249,0.08)")
+                  ? (isDark ? "rgba(98,124,133,0.12)" : "rgba(98,124,133,0.08)")
                   : "transparent",
-                color: activeTab === tab ? "#3279F9" : t.subtext,
+                color: activeTab === tab ? "#627C85" : t.subtext,
                 border: activeTab === tab
-                  ? "1px solid rgba(50,121,249,0.25)"
+                  ? "1px solid rgba(98,124,133,0.25)"
                   : "1px solid transparent"
               }}
             >
@@ -157,12 +157,12 @@ export function MarketHeatmap() {
                       className="rounded-xl p-3.5 text-left transition-all duration-200 hover:scale-[1.02] relative border cursor-pointer"
                       style={{
                         background: isSelected
-                          ? (isDark ? "rgba(50, 121, 249, 0.16)" : "rgba(50, 121, 249, 0.08)")
-                          : (isDark ? `rgba(50, 121, 249, 0.0${bgOpacity})` : `rgba(50, 121, 249, 0.0${bgOpacity})`),
+                          ? (isDark ? "rgba(98, 124, 133, 0.16)" : "rgba(98, 124, 133, 0.08)")
+                          : (isDark ? `rgba(98, 124, 133, 0.0${bgOpacity})` : `rgba(98, 124, 133, 0.0${bgOpacity})`),
                         borderColor: isSelected
-                          ? "#3279F9"
+                          ? "#627C85"
                           : (isDark ? "rgba(255,255,255,0.06)" : "rgba(69,73,85,0.1)"),
-                        boxShadow: isSelected ? "0 0 12px rgba(50, 121, 249, 0.2)" : "none",
+                        boxShadow: isSelected ? "0 0 12px rgba(98, 124, 133, 0.2)" : "none",
                       }}
                     >
                       <div className="flex items-center justify-between mb-1">
@@ -173,11 +173,11 @@ export function MarketHeatmap() {
                           className="text-[9px] font-bold px-1.5 py-0.5 rounded-full"
                           style={{
                             background: sm.yieldLevel === "Very High"
-                              ? "rgba(50, 121, 249, 0.15)"
+                              ? "rgba(98, 124, 133, 0.15)"
                               : sm.yieldLevel === "High"
-                              ? "rgba(50, 121, 249, 0.08)"
+                              ? "rgba(98, 124, 133, 0.08)"
                               : (isDark ? "rgba(255,255,255,0.04)" : "rgba(69,73,85,0.05)"),
-                            color: sm.yieldLevel === "Very High" || sm.yieldLevel === "High" ? "#3279F9" : t.subtext
+                            color: sm.yieldLevel === "Very High" || sm.yieldLevel === "High" ? "#627C85" : t.subtext
                           }}
                         >
                           {sm.yieldLevel} Yield
@@ -225,7 +225,7 @@ export function MarketHeatmap() {
                         <p className="text-[9px] uppercase tracking-wider font-bold" style={{ color: t.muted }}>
                           Cash-on-Cash
                         </p>
-                        <p className="text-[16px] font-extrabold" style={{ color: "#3279F9" }}>
+                        <p className="text-[16px] font-extrabold" style={{ color: "#627C85" }}>
                           {activeSubmarket.coc}%
                         </p>
                       </div>
@@ -242,9 +242,9 @@ export function MarketHeatmap() {
                     }}
                     className="w-full mt-4 py-2 rounded-lg text-xs font-semibold hover:bg-primary hover:text-white transition-all duration-150 cursor-pointer text-center"
                     style={{
-                      background: "rgba(50, 121, 249, 0.1)",
-                      color: "#3279F9",
-                      border: "1px solid rgba(50, 121, 249, 0.2)"
+                      background: "rgba(98, 124, 133, 0.1)",
+                      color: "#627C85",
+                      border: "1px solid rgba(98, 124, 133, 0.2)"
                     }}
                   >
                     View {activeSubmarket.density} Sourced Deals
@@ -304,14 +304,14 @@ export function MarketHeatmap() {
                         ${(deal.price / 1000).toFixed(0)}K
                       </p>
                       <p className="text-[9px]" style={{ color: t.muted }}>
-                        Cap: <span className="font-semibold" style={{ color: "#3279F9" }}>{deal.capRate}%</span> · CoC: <span className="font-semibold">{deal.coc}%</span>
+                        Cap: <span className="font-semibold" style={{ color: "#627C85" }}>{deal.capRate}%</span> · CoC: <span className="font-semibold">{deal.coc}%</span>
                       </p>
                     </div>
                     <button
                       onClick={() => handleAnalyzeDeal(deal.title)}
-                      className="px-3 py-1.5 rounded-lg text-[10px] font-bold tracking-wider uppercase transition-all duration-150 hover:scale-[1.02] active:scale-[0.98] cursor-pointer"
+                      className="px-3 py-1.5 rounded-lg text-[10px] font-bold tracking-wider uppercase transition-all duration-150 hover:bg-[#536A72] active:scale-95 cursor-pointer"
                       style={{
-                        background: "#3279F9",
+                        background: "#627C85",
                         color: "#FFFFFF"
                       }}
                     >

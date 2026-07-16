@@ -164,7 +164,7 @@ export default function MLSPropertyScout({ currentAddress, currentListPrice, onA
                       <p className="text-xs font-bold text-white truncate">{property.address}</p>
                       <div className="flex items-center gap-3 mt-1.5 flex-wrap">
                         {property.listPrice != null && (
-                          <span className="text-sm font-bold text-emerald-400 tabular-nums">
+                          <span className="text-sm font-bold text-pw-success tabular-nums">
                             {formatPrice(property.listPrice)}
                           </span>
                         )}
@@ -180,7 +180,7 @@ export default function MLSPropertyScout({ currentAddress, currentListPrice, onA
                         )}
                         {property.standardStatus && (
                           <span className={`text-[9px] font-bold uppercase tracking-[0.1em] px-1.5 py-0.5 rounded border ${
-                            property.standardStatus === 'Active' ? 'text-emerald-400 border-emerald-500/30 bg-emerald-500/10' :
+                            property.standardStatus === 'Active' ? 'text-pw-success border-pw-success-border bg-pw-success-container' :
                             property.standardStatus === 'Pending' ? 'text-amber-400 border-amber-500/30 bg-amber-500/10' :
                             property.standardStatus === 'Closed' ? 'text-red-400 border-red-500/30 bg-red-500/10' :
                             'text-gray-400 border-gray-600 bg-gray-800'
@@ -196,7 +196,7 @@ export default function MLSPropertyScout({ currentAddress, currentListPrice, onA
                             const delta = property.listPrice - currentListPrice;
                             const pct = Math.round((delta / currentListPrice) * 100);
                             return (
-                              <span className={`text-[9px] font-bold tabular-nums ${delta >= 0 ? 'text-emerald-400' : 'text-red-400'}`}>
+                              <span className={`text-[9px] font-bold tabular-nums ${delta >= 0 ? 'text-pw-success' : 'text-red-400'}`}>
                                 {delta >= 0 ? '+' : ''}{formatPrice(delta)} ({pct >= 0 ? '+' : ''}{pct}%) vs. your deal
                               </span>
                             );
@@ -256,7 +256,7 @@ export default function MLSPropertyScout({ currentAddress, currentListPrice, onA
                     <div className="flex-1 min-w-0">
                       <p className="text-[10px] font-bold text-white truncate">{comp.address}</p>
                       <div className="flex items-center gap-2 mt-0.5">
-                        <span className="text-[10px] text-emerald-400 tabular-nums font-bold">{formatPrice(comp.listPrice)}</span>
+                        <span className="text-[10px] text-pw-success tabular-nums font-bold">{formatPrice(comp.listPrice)}</span>
                         {comp.beds != null && <span className="text-[9px] text-gray-500">{comp.beds}bd/{comp.baths}ba</span>}
                       </div>
                     </div>
@@ -280,7 +280,7 @@ export default function MLSPropertyScout({ currentAddress, currentListPrice, onA
                     <p className="text-[9px] text-blue-400/60 mt-0.5">
                       Based on {savedComps.length} comp{savedComps.length !== 1 ? 's' : ''}, the average list price is <strong className="text-blue-300">{formatPrice(avgCompPrice)}</strong>.
                       {currentListPrice != null && currentListPrice > 0 && avgCompPrice > 0 && (
-                        <> Your deal at {formatPrice(currentListPrice)} is <strong className={avgCompPrice > currentListPrice ? 'text-emerald-400' : 'text-red-400'}>
+                        <> Your deal at {formatPrice(currentListPrice)} is <strong className={avgCompPrice > currentListPrice ? 'text-pw-success' : 'text-red-400'}>
                           {Math.abs(Math.round(((currentListPrice - avgCompPrice) / avgCompPrice) * 100))}% {avgCompPrice > currentListPrice ? 'below' : 'above'}
                         </strong> market.</>
                       )}

@@ -142,7 +142,7 @@ export default function BalanceSheet() {
             {line.label}
           </span>
           <span className={`font-mono text-sm ${
-            line.highlight ? (bs.ownerEquity >= 0 ? 'text-emerald-700 font-bold' : 'text-red-600 font-bold') :
+            line.highlight ? (bs.ownerEquity >= 0 ? 'text-pw-success font-bold' : 'text-red-600 font-bold') :
             line.bold ? 'font-semibold text-text-primary' :
             'text-text-primary'
           }`}>
@@ -186,7 +186,7 @@ export default function BalanceSheet() {
         <div className="h-px bg-gray-200" />
         {renderSection(liabilityLines, <Landmark className="w-4 h-4 text-amber-600" />)}
         <div className="h-px bg-gray-200" />
-        {renderSection(equityLines, <Wallet className="w-4 h-4 text-emerald-600" />)}
+        {renderSection(equityLines, <Wallet className="w-4 h-4 text-pw-success" />)}
       </div>
 
       {/* Breakdowns */}
@@ -205,7 +205,7 @@ export default function BalanceSheet() {
                   <div className="flex items-center gap-2">
                     <span className="text-text-primary font-medium">{a.name}</span>
                     <span className={`px-1.5 py-0.5 rounded text-xs font-bold uppercase ${
-                      a.status === 'Sold → Cash' ? 'bg-emerald-50 text-emerald-700' :
+                      a.status === 'Sold → Cash' ? 'bg-pw-success-container text-pw-success border border-pw-success-border/50' :
                       a.status === 'Renovating' ? 'bg-amber-50 text-amber-700' :
                       'bg-bg-primary text-text-secondary'
                     }`}>{a.status}</span>

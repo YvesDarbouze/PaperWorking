@@ -801,7 +801,7 @@ export default function DealAnalyzerPage() {
         {view === 'list' ? (
           <button
             onClick={() => handleStartAnalysis(null)}
-            className="flex items-center justify-center gap-2 px-4 py-2 text-xs font-semibold rounded-xl bg-primary text-on-primary hover:bg-primary/90 border border-primary/20 transition-all active:scale-95 duration-200"
+            className="flex items-center justify-center gap-2 px-4 py-2 min-h-[44px] text-xs font-semibold rounded-xl bg-primary text-on-primary hover:bg-primary/90 border border-primary/20 transition-all active:scale-95 duration-200"
           >
             <Plus className="w-4 h-4" />
             Analyze a new Deal
@@ -859,7 +859,7 @@ export default function DealAnalyzerPage() {
                 const verdictColor = 
                   listVerdict === 'STRONG BUY' ? 'text-pw-success border-pw-success-border bg-pw-success-container' :
                   listVerdict === 'BUY' ? 'text-pw-success/90 border-pw-success-border/50 bg-pw-success-container/70' :
-                  listVerdict === 'HOLD' ? 'text-amber-400 border-amber-500/20 bg-amber-500/10' :
+                  listVerdict === 'HOLD' ? 'text-rose-400 border-rose-500/20 bg-rose-500/10' :
                   listVerdict === 'PASS' ? 'text-rose-400 border-rose-500/20 bg-rose-500/10' :
                   'text-[#9E9DA0] border-white/10 bg-white/5';
 
@@ -973,7 +973,7 @@ export default function DealAnalyzerPage() {
                       value={inputs.address}
                       onChange={(e) => setInputs((prev) => ({ ...prev, address: e.target.value }))}
                       placeholder="123 Main St, Austin, TX 78701"
-                      className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-sm text-white placeholder-white/20 outline-none focus:border-primary/50 transition-colors"
+                      className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-sm text-white placeholder-white/20 outline-none focus:border-primary/50 transition-colors"
                     />
                   </div>
 
@@ -983,7 +983,7 @@ export default function DealAnalyzerPage() {
                       id="input-property-type"
                       value={inputs.propertyType}
                       onChange={(e) => setInputs((prev) => ({ ...prev, propertyType: e.target.value }))}
-                      className="w-full bg-[#161217] border border-white/10 rounded-xl px-4 py-2.5 text-sm text-white outline-none focus:border-primary/50 transition-colors"
+                      className="w-full bg-[#161217] border border-white/10 rounded-xl px-4 py-3 text-sm text-white outline-none focus:border-primary/50 transition-colors"
                     >
                       <option value="Residential">Residential</option>
                       <option value="Multi-Family">Multi-Family</option>
@@ -1010,7 +1010,7 @@ export default function DealAnalyzerPage() {
                           return updated;
                         });
                       }}
-                      className="w-full bg-[#161217] border border-white/10 rounded-xl px-4 py-2.5 text-sm text-white outline-none focus:border-primary/50 transition-colors"
+                      className="w-full bg-[#161217] border border-white/10 rounded-xl px-4 py-3 text-sm text-white outline-none focus:border-primary/50 transition-colors"
                     >
                       <option value="Turnkey">Turnkey</option>
                       <option value="Good">Good</option>
@@ -1027,7 +1027,7 @@ export default function DealAnalyzerPage() {
                       value={inputs.squareFootage}
                       onChange={(e) => setInputs((prev) => ({ ...prev, squareFootage: e.target.value }))}
                       placeholder="e.g. 1200"
-                      className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-sm text-white outline-none focus:border-primary/50 transition-colors"
+                      className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-sm text-white outline-none focus:border-primary/50 transition-colors"
                     />
                   </div>
 
@@ -1038,7 +1038,7 @@ export default function DealAnalyzerPage() {
                       value={inputs.yearBuilt}
                       onChange={(e) => setInputs((prev) => ({ ...prev, yearBuilt: e.target.value }))}
                       placeholder="e.g. 1995"
-                      className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-sm text-white outline-none focus:border-primary/50 transition-colors"
+                      className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-sm text-white outline-none focus:border-primary/50 transition-colors"
                     />
                   </div>
 
@@ -1049,7 +1049,7 @@ export default function DealAnalyzerPage() {
                       value={inputs.units}
                       onChange={(e) => setInputs((prev) => ({ ...prev, units: e.target.value }))}
                       placeholder="1"
-                      className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-sm text-white outline-none focus:border-primary/50 transition-colors"
+                      className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-sm text-white outline-none focus:border-primary/50 transition-colors"
                     />
                   </div>
 
@@ -1062,7 +1062,7 @@ export default function DealAnalyzerPage() {
                       value={inputs.purchasePrice}
                       onChange={(e) => setInputs((prev) => ({ ...prev, purchasePrice: e.target.value }))}
                       placeholder="e.g. 250000"
-                      className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-sm text-white outline-none focus:border-primary/50 transition-colors"
+                      className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-sm text-white outline-none focus:border-primary/50 transition-colors"
                     />
                   </div>
 
@@ -1075,7 +1075,7 @@ export default function DealAnalyzerPage() {
                       value={inputs.estimatedARV}
                       onChange={(e) => setInputs((prev) => ({ ...prev, estimatedARV: e.target.value }))}
                       placeholder="e.g. 320000"
-                      className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-sm text-white outline-none focus:border-primary/50 transition-colors"
+                      className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-sm text-white outline-none focus:border-primary/50 transition-colors"
                     />
                   </div>
 
@@ -1089,7 +1089,7 @@ export default function DealAnalyzerPage() {
                         value={inputs.projectedRehabCost}
                         onChange={(e) => setInputs((prev) => ({ ...prev, projectedRehabCost: e.target.value }))}
                         placeholder="e.g. 35000"
-                        className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-sm text-white outline-none focus:border-primary/50 transition-colors"
+                        className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-sm text-white outline-none focus:border-primary/50 transition-colors"
                       />
                     </div>
                   )}
@@ -1113,7 +1113,7 @@ export default function DealAnalyzerPage() {
                     <button
                       type="button"
                       onClick={() => setInputs((prev) => ({ ...prev, financingType: 'Financed' }))}
-                      className={`flex-1 py-2.5 text-xs font-semibold rounded-xl border transition-all ${
+                      className={`flex-1 py-3.5 text-xs font-semibold rounded-xl border transition-all ${
                         inputs.financingType === 'Financed'
                           ? 'bg-white/10 border-white/15 text-white font-bold'
                           : 'bg-white/5 border-white/10 text-[#9E9DA0] hover:text-white'
@@ -1124,7 +1124,7 @@ export default function DealAnalyzerPage() {
                     <button
                       type="button"
                       onClick={() => setInputs((prev) => ({ ...prev, financingType: 'All Cash' }))}
-                      className={`flex-1 py-2.5 text-xs font-semibold rounded-xl border transition-all ${
+                      className={`flex-1 py-3.5 text-xs font-semibold rounded-xl border transition-all ${
                         inputs.financingType === 'All Cash'
                           ? 'bg-white/10 border-white/15 text-white font-bold'
                           : 'bg-white/5 border-white/10 text-[#9E9DA0] hover:text-white'
@@ -1144,7 +1144,7 @@ export default function DealAnalyzerPage() {
                           value={inputs.downPaymentPercent}
                           onChange={(e) => setInputs((prev) => ({ ...prev, downPaymentPercent: e.target.value }))}
                           placeholder="25"
-                          className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-sm text-white outline-none focus:border-primary/50 transition-colors"
+                          className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-sm text-white outline-none focus:border-primary/50 transition-colors"
                         />
                       </div>
 
@@ -1158,7 +1158,7 @@ export default function DealAnalyzerPage() {
                           value={inputs.loanInterestRate}
                           onChange={(e) => setInputs((prev) => ({ ...prev, loanInterestRate: e.target.value }))}
                           placeholder="6.5"
-                          className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-sm text-white outline-none focus:border-primary/50 transition-colors"
+                          className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-sm text-white outline-none focus:border-primary/50 transition-colors"
                         />
                       </div>
 
@@ -1169,7 +1169,7 @@ export default function DealAnalyzerPage() {
                           value={inputs.loanTermYears}
                           onChange={(e) => setInputs((prev) => ({ ...prev, loanTermYears: e.target.value }))}
                           placeholder="30"
-                          className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-sm text-white outline-none focus:border-primary/50 transition-colors"
+                          className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-sm text-white outline-none focus:border-primary/50 transition-colors"
                         />
                       </div>
 
@@ -1181,7 +1181,7 @@ export default function DealAnalyzerPage() {
                           value={inputs.loanAmount}
                           onChange={(e) => setInputs((prev) => ({ ...prev, loanAmount: e.target.value }))}
                           placeholder="187500"
-                          className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-sm text-white outline-none focus:border-primary/50 transition-colors"
+                          className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-sm text-white outline-none focus:border-primary/50 transition-colors"
                         />
                       </div>
                     </div>
@@ -1215,7 +1215,7 @@ export default function DealAnalyzerPage() {
                           value={inputs.monthlyGrossRent}
                           onChange={(e) => setInputs((prev) => ({ ...prev, monthlyGrossRent: e.target.value }))}
                           placeholder="e.g. 2000"
-                          className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-sm text-white outline-none focus:border-primary/50 transition-colors"
+                          className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-sm text-white outline-none focus:border-primary/50 transition-colors"
                         />
                       </div>
 
@@ -1227,7 +1227,7 @@ export default function DealAnalyzerPage() {
                           value={inputs.otherMonthlyIncome}
                           onChange={(e) => setInputs((prev) => ({ ...prev, otherMonthlyIncome: e.target.value }))}
                           placeholder="e.g. 100"
-                          className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-sm text-white outline-none focus:border-primary/50 transition-colors"
+                          className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-sm text-white outline-none focus:border-primary/50 transition-colors"
                         />
                       </div>
 
@@ -1239,7 +1239,7 @@ export default function DealAnalyzerPage() {
                           value={inputs.vacancyRatePercent}
                           onChange={(e) => setInputs((prev) => ({ ...prev, vacancyRatePercent: e.target.value }))}
                           placeholder="5"
-                          className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-sm text-white outline-none focus:border-primary/50 transition-colors"
+                          className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-sm text-white outline-none focus:border-primary/50 transition-colors"
                         />
                       </div>
                     </div>
@@ -1258,7 +1258,7 @@ export default function DealAnalyzerPage() {
                             value={inputs.tax}
                             onChange={(e) => setInputs((prev) => ({ ...prev, tax: e.target.value }))}
                             placeholder="e.g. 200"
-                            className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-sm text-white outline-none focus:border-primary/50 transition-colors"
+                            className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-sm text-white outline-none focus:border-primary/50 transition-colors"
                           />
                         </div>
                         <div>
@@ -1269,7 +1269,7 @@ export default function DealAnalyzerPage() {
                             value={inputs.insurance}
                             onChange={(e) => setInputs((prev) => ({ ...prev, insurance: e.target.value }))}
                             placeholder="e.g. 58"
-                            className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-sm text-white outline-none focus:border-primary/50 transition-colors"
+                            className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-sm text-white outline-none focus:border-primary/50 transition-colors"
                           />
                         </div>
                       </div>
@@ -1286,7 +1286,7 @@ export default function DealAnalyzerPage() {
                               <button
                                 type="button"
                                 onClick={() => setInputs((prev) => ({ ...prev, managementType: 'percent' }))}
-                                className={`px-2 py-0.5 text-[9px] uppercase font-semibold transition-all ${
+                                className={`px-3 py-2 text-[10px] uppercase font-semibold transition-all min-h-[44px] flex items-center justify-center ${
                                   inputs.managementType === 'percent' ? 'bg-white/10 text-white' : 'bg-white/5 text-[#9E9DA0]'
                                 }`}
                               >
@@ -1295,7 +1295,7 @@ export default function DealAnalyzerPage() {
                               <button
                                 type="button"
                                 onClick={() => setInputs((prev) => ({ ...prev, managementType: 'flat' }))}
-                                className={`px-2 py-0.5 text-[9px] uppercase font-semibold transition-all ${
+                                className={`px-3 py-2 text-[10px] uppercase font-semibold transition-all min-h-[44px] flex items-center justify-center ${
                                   inputs.managementType === 'flat' ? 'bg-white/10 text-white' : 'bg-white/5 text-[#9E9DA0]'
                                 }`}
                               >
@@ -1309,7 +1309,7 @@ export default function DealAnalyzerPage() {
                             value={inputs.managementValue}
                             onChange={(e) => setInputs((prev) => ({ ...prev, managementValue: e.target.value }))}
                             placeholder={inputs.managementType === 'percent' ? '10' : '200'}
-                            className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-sm text-white outline-none focus:border-primary/50 transition-colors"
+                            className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-sm text-white outline-none focus:border-primary/50 transition-colors"
                           />
                         </div>
 
@@ -1321,7 +1321,7 @@ export default function DealAnalyzerPage() {
                               <button
                                 type="button"
                                 onClick={() => setInputs((prev) => ({ ...prev, maintenanceType: 'percent' }))}
-                                className={`px-2 py-0.5 text-[9px] uppercase font-semibold transition-all ${
+                                className={`px-3 py-2 text-[10px] uppercase font-semibold transition-all min-h-[44px] flex items-center justify-center ${
                                   inputs.maintenanceType === 'percent' ? 'bg-white/10 text-white' : 'bg-white/5 text-[#9E9DA0]'
                                 }`}
                               >
@@ -1330,7 +1330,7 @@ export default function DealAnalyzerPage() {
                               <button
                                 type="button"
                                 onClick={() => setInputs((prev) => ({ ...prev, maintenanceType: 'flat' }))}
-                                className={`px-2 py-0.5 text-[9px] uppercase font-semibold transition-all ${
+                                className={`px-3 py-2 text-[10px] uppercase font-semibold transition-all min-h-[44px] flex items-center justify-center ${
                                   inputs.maintenanceType === 'flat' ? 'bg-white/10 text-white' : 'bg-white/5 text-[#9E9DA0]'
                                 }`}
                               >
@@ -1344,7 +1344,7 @@ export default function DealAnalyzerPage() {
                             value={inputs.maintenanceValue}
                             onChange={(e) => setInputs((prev) => ({ ...prev, maintenanceValue: e.target.value }))}
                             placeholder={inputs.maintenanceType === 'percent' ? '5' : '150'}
-                            className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-sm text-white outline-none focus:border-primary/50 transition-colors"
+                            className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-sm text-white outline-none focus:border-primary/50 transition-colors"
                           />
                         </div>
                       </div>
@@ -1361,7 +1361,7 @@ export default function DealAnalyzerPage() {
                             value={inputs.utilities}
                             onChange={(e) => setInputs((prev) => ({ ...prev, utilities: e.target.value }))}
                             placeholder="e.g. 125"
-                            className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-sm text-white outline-none focus:border-primary/50 transition-colors"
+                            className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-sm text-white outline-none focus:border-primary/50 transition-colors"
                           />
                         </div>
 
@@ -1373,7 +1373,7 @@ export default function DealAnalyzerPage() {
                             value={inputs.HOA}
                             onChange={(e) => setInputs((prev) => ({ ...prev, HOA: e.target.value }))}
                             placeholder="e.g. 0"
-                            className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-sm text-white outline-none focus:border-primary/50 transition-colors"
+                            className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-sm text-white outline-none focus:border-primary/50 transition-colors"
                           />
                         </div>
 
@@ -1385,7 +1385,7 @@ export default function DealAnalyzerPage() {
                             value={inputs.security}
                             onChange={(e) => setInputs((prev) => ({ ...prev, security: e.target.value }))}
                             placeholder="e.g. 0"
-                            className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-sm text-white outline-none focus:border-primary/50 transition-colors"
+                            className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-sm text-white outline-none focus:border-primary/50 transition-colors"
                           />
                         </div>
                       </div>
@@ -1433,7 +1433,7 @@ export default function DealAnalyzerPage() {
                           setSensitivityActive(true);
                           setSensitivityInputs((prev) => ({ ...prev, purchasePrice: e.target.value }));
                         }}
-                        className="w-full accent-primary bg-white/10 h-1.5 rounded-lg appearance-none cursor-pointer"
+                        className="pw-slider"
                       />
                       <div className="flex justify-between text-[9px] text-[#9E9DA0]/40 font-mono">
                         <span>$50k</span>
@@ -1458,7 +1458,7 @@ export default function DealAnalyzerPage() {
                           setSensitivityActive(true);
                           setSensitivityInputs((prev) => ({ ...prev, monthlyGrossRent: e.target.value }));
                         }}
-                        className="w-full accent-primary bg-white/10 h-1.5 rounded-lg appearance-none cursor-pointer"
+                        className="pw-slider"
                       />
                       <div className="flex justify-between text-[9px] text-[#9E9DA0]/40 font-mono">
                         <span>$500</span>
@@ -1483,7 +1483,7 @@ export default function DealAnalyzerPage() {
                           setSensitivityActive(true);
                           setSensitivityInputs((prev) => ({ ...prev, vacancyRatePercent: e.target.value }));
                         }}
-                        className="w-full accent-primary bg-white/10 h-1.5 rounded-lg appearance-none cursor-pointer"
+                        className="pw-slider"
                       />
                       <div className="flex justify-between text-[9px] text-[#9E9DA0]/40 font-mono">
                         <span>0%</span>
@@ -1508,7 +1508,7 @@ export default function DealAnalyzerPage() {
                           setSensitivityActive(true);
                           setSensitivityInputs((prev) => ({ ...prev, projectedRehabCost: e.target.value }));
                         }}
-                        className="w-full accent-primary bg-white/10 h-1.5 rounded-lg appearance-none cursor-pointer"
+                        className="pw-slider"
                       />
                       <div className="flex justify-between text-[9px] text-[#9E9DA0]/40 font-mono">
                         <span>$0</span>
@@ -1533,7 +1533,7 @@ export default function DealAnalyzerPage() {
                           setSensitivityActive(true);
                           setSensitivityInputs((prev) => ({ ...prev, loanInterestRate: e.target.value }));
                         }}
-                        className="w-full accent-primary bg-white/10 h-1.5 rounded-lg appearance-none cursor-pointer"
+                        className="pw-slider"
                       />
                       <div className="flex justify-between text-[9px] text-[#9E9DA0]/40 font-mono">
                         <span>1%</span>
@@ -1558,7 +1558,7 @@ export default function DealAnalyzerPage() {
                           setSensitivityActive(true);
                           setSensitivityInputs((prev) => ({ ...prev, downPaymentPercent: e.target.value }));
                         }}
-                        className="w-full accent-primary bg-white/10 h-1.5 rounded-lg appearance-none cursor-pointer"
+                        className="pw-slider"
                       />
                       <div className="flex justify-between text-[9px] text-[#9E9DA0]/40 font-mono">
                         <span>0%</span>
@@ -1577,7 +1577,7 @@ export default function DealAnalyzerPage() {
                         setSensitivityActive(false);
                         toast.success('Exploration adjustments applied to underwriting form!');
                       }}
-                      className="flex-1 py-2 text-xs font-bold uppercase tracking-wider rounded-xl bg-primary text-on-primary hover:bg-primary/90 border border-primary/20 transition-all active:scale-95 duration-200"
+                      className="flex-1 py-3.5 text-xs font-bold uppercase tracking-wider rounded-xl bg-primary text-on-primary hover:bg-primary/90 border border-primary/20 transition-all active:scale-95 duration-200 flex items-center justify-center min-h-[44px]"
                     >
                       Apply Exploration
                     </button>
@@ -1589,7 +1589,7 @@ export default function DealAnalyzerPage() {
                         setSensitivityActive(false);
                         toast.success('Exploration sliders reset to original values.');
                       }}
-                      className="flex-1 py-2 text-xs font-bold uppercase tracking-wider rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 text-white transition-all active:scale-95 duration-200"
+                      className="flex-1 py-3.5 text-xs font-bold uppercase tracking-wider rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 text-white transition-all active:scale-95 duration-200 flex items-center justify-center min-h-[44px]"
                     >
                       Reset Sliders
                     </button>
@@ -1626,13 +1626,13 @@ export default function DealAnalyzerPage() {
                       </div>
                       {criteria.cashFlow.enabled && (
                         <div className="relative mt-1">
-                          <span className="absolute left-3 top-2.5 text-xs text-[#9E9DA0]">$</span>
+                          <span className="absolute left-3 top-3.5 text-xs text-[#9E9DA0]">$</span>
                           <input
                             type="number"
                             id="val-hurdle-cashflow"
                             value={criteria.cashFlow.value}
                             onChange={(e) => setCriteria(prev => ({ ...prev, cashFlow: { ...prev.cashFlow, value: parseFloat(e.target.value) || 0 } }))}
-                            className="w-full bg-white/5 border border-white/10 rounded-lg pl-6 pr-4 py-2 text-xs text-white outline-none focus:border-primary/50"
+                            className="w-full bg-white/5 border border-white/10 rounded-lg pl-6 pr-4 py-3 text-xs text-white outline-none focus:border-primary/50"
                           />
                         </div>
                       )}
@@ -1657,9 +1657,9 @@ export default function DealAnalyzerPage() {
                             id="val-hurdle-coc"
                             value={criteria.coc.value}
                             onChange={(e) => setCriteria(prev => ({ ...prev, coc: { ...prev.coc, value: parseFloat(e.target.value) || 0 } }))}
-                            className="w-full bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-xs text-white outline-none focus:border-primary/50 text-right"
+                            className="w-full bg-white/5 border border-white/10 rounded-lg px-3 py-3 text-xs text-white outline-none focus:border-primary/50 text-right"
                           />
-                          <span className="absolute right-3 top-2.5 text-xs text-[#9E9DA0]">%</span>
+                          <span className="absolute right-3 top-3.5 text-xs text-[#9E9DA0]">%</span>
                         </div>
                       )}
                     </div>
@@ -1683,9 +1683,9 @@ export default function DealAnalyzerPage() {
                             id="val-hurdle-cap"
                             value={criteria.capRate.value}
                             onChange={(e) => setCriteria(prev => ({ ...prev, capRate: { ...prev.capRate, value: parseFloat(e.target.value) || 0 } }))}
-                            className="w-full bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-xs text-white outline-none focus:border-primary/50 text-right"
+                            className="w-full bg-white/5 border border-white/10 rounded-lg px-3 py-3 text-xs text-white outline-none focus:border-primary/50 text-right"
                           />
-                          <span className="absolute right-3 top-2.5 text-xs text-[#9E9DA0]">%</span>
+                          <span className="absolute right-3 top-3.5 text-xs text-[#9E9DA0]">%</span>
                         </div>
                       )}
                     </div>
@@ -1710,9 +1710,9 @@ export default function DealAnalyzerPage() {
                             value={criteria.dscr.value}
                             step="0.05"
                             onChange={(e) => setCriteria(prev => ({ ...prev, dscr: { ...prev.dscr, value: parseFloat(e.target.value) || 0 } }))}
-                            className="w-full bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-xs text-white outline-none focus:border-primary/50 text-right font-mono"
+                            className="w-full bg-white/5 border border-white/10 rounded-lg px-3 py-3 text-xs text-white outline-none focus:border-primary/50 text-right font-mono"
                           />
-                          <span className="absolute right-3 top-2.5 text-xs text-[#9E9DA0]">x</span>
+                          <span className="absolute right-3 top-3.5 text-xs text-[#9E9DA0]">x</span>
                         </div>
                       )}
                     </div>
@@ -1732,13 +1732,13 @@ export default function DealAnalyzerPage() {
                         </div>
                         {criteria.netProfit.enabled && (
                           <div className="relative mt-1">
-                            <span className="absolute left-3 top-2.5 text-xs text-[#9E9DA0]">$</span>
+                            <span className="absolute left-3 top-3.5 text-xs text-[#9E9DA0]">$</span>
                             <input
                               type="number"
                               id="val-hurdle-profit"
                               value={criteria.netProfit.value}
                               onChange={(e) => setCriteria(prev => ({ ...prev, netProfit: { ...prev.netProfit, value: parseFloat(e.target.value) || 0 } }))}
-                              className="w-full bg-white/5 border border-white/10 rounded-lg pl-6 pr-4 py-2 text-xs text-white outline-none focus:border-primary/50 font-mono"
+                              className="w-full bg-white/5 border border-white/10 rounded-lg pl-6 pr-4 py-3 text-xs text-white outline-none focus:border-primary/50 font-mono"
                             />
                           </div>
                         )}
@@ -1759,13 +1759,13 @@ export default function DealAnalyzerPage() {
                       </div>
                       {criteria.cashNeeded.enabled && (
                         <div className="relative mt-1">
-                          <span className="absolute left-3 top-2.5 text-xs text-[#9E9DA0]">$</span>
+                          <span className="absolute left-3 top-3.5 text-xs text-[#9E9DA0]">$</span>
                           <input
                             type="number"
                             id="val-hurdle-cash"
                             value={criteria.cashNeeded.value}
                             onChange={(e) => setCriteria(prev => ({ ...prev, cashNeeded: { ...prev.cashNeeded, value: parseFloat(e.target.value) || 0 } }))}
-                            className="w-full bg-white/5 border border-white/10 rounded-lg pl-6 pr-4 py-2 text-xs text-white outline-none focus:border-primary/50 font-mono"
+                            className="w-full bg-white/5 border border-white/10 rounded-lg pl-6 pr-4 py-3 text-xs text-white outline-none focus:border-primary/50 font-mono"
                           />
                         </div>
                       )}
@@ -1790,13 +1790,13 @@ export default function DealAnalyzerPage() {
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-4 items-center">
                         <label className="text-xs text-[#9E9DA0]">Target Assignment Profit</label>
                         <div className="relative">
-                          <span className="absolute left-3 top-2 text-xs text-[#9E9DA0]">$</span>
+                          <span className="absolute left-3 top-3 text-xs text-[#9E9DA0]">$</span>
                           <input
                             type="number"
                             id="val-wholesale-profit"
                             value={targetAssignmentProfit}
                             onChange={(e) => setTargetAssignmentProfit(e.target.value)}
-                            className="w-full bg-white/5 border border-white/10 rounded-lg pl-6 pr-3 py-1.5 text-xs text-white outline-none focus:border-primary/50 font-mono"
+                            className="w-full bg-white/5 border border-white/10 rounded-lg pl-6 pr-3 py-3 text-xs text-white outline-none focus:border-primary/50 font-mono"
                           />
                         </div>
                       </div>
@@ -2130,7 +2130,7 @@ export default function DealAnalyzerPage() {
                 <div className={`p-4 rounded-xl border flex flex-col gap-1.5 ${
                   activeVerdict === 'STRONG BUY' ? 'bg-pw-success-container border-pw-success-border text-pw-success' :
                   activeVerdict === 'BUY' ? 'bg-pw-success-container/70 border-pw-success-border/50 text-pw-success/90' :
-                  activeVerdict === 'HOLD' ? 'bg-amber-500/5 border-amber-500/20 text-amber-400' :
+                  activeVerdict === 'HOLD' ? 'bg-rose-500/5 border-rose-500/20 text-rose-400' :
                   'bg-rose-500/5 border-rose-500/20 text-rose-400'
                 }`}>
                   <span className="text-[9px] uppercase font-bold tracking-wider">Overall Verdict</span>
@@ -2152,13 +2152,13 @@ export default function DealAnalyzerPage() {
               <div className="flex gap-2">
                 <button
                   onClick={() => handleSaveDeal(false)}
-                  className="flex-1 py-2 text-xs font-semibold rounded-lg bg-white/5 hover:bg-white/10 border border-white/10 text-white transition-all active:scale-95 duration-200"
+                  className="flex-1 py-3.5 text-xs font-semibold rounded-lg bg-white/5 hover:bg-white/10 border border-white/10 text-white transition-all active:scale-95 duration-200 flex items-center justify-center min-h-[44px]"
                 >
                   Save Deal
                 </button>
                 <button
                   onClick={() => handleSaveDeal(true)}
-                  className="flex-1 py-2 text-xs font-bold uppercase tracking-wider rounded-lg bg-primary text-on-primary hover:bg-primary/90 border border-primary/20 transition-all active:scale-95 duration-200"
+                  className="flex-1 py-3.5 text-xs font-bold uppercase tracking-wider rounded-lg bg-primary text-on-primary hover:bg-primary/90 border border-primary/20 transition-all active:scale-95 duration-200 flex items-center justify-center min-h-[44px]"
                 >
                   Continue in REIL
                 </button>
@@ -2343,14 +2343,14 @@ export default function DealAnalyzerPage() {
           </div>
 
           {/* Sticky Bottom Sheet for Mobile/Tablet */}
-          <div className="xl:hidden fixed bottom-0 left-0 right-0 z-50 px-4 pb-4 pt-2 border-t border-white/10 bg-pw-night-bg shadow-2xl">
+          <div className="xl:hidden fixed bottom-0 left-0 right-0 z-[100] px-4 pb-4 pt-2 border-t border-white/10 bg-pw-night-bg shadow-2xl">
             <div className="flex items-center justify-between">
               <div onClick={() => setIsBottomSheetOpen(!isBottomSheetOpen)} className="flex-1 cursor-pointer">
                 <div className="flex items-center gap-2">
                   <span className={`text-xs font-bold uppercase tracking-wider ${
                     activeVerdict === 'STRONG BUY' ? 'text-pw-success' :
                     activeVerdict === 'BUY' ? 'text-pw-success/90' :
-                    activeVerdict === 'HOLD' ? 'text-amber-400' :
+                    activeVerdict === 'HOLD' ? 'text-rose-400' :
                     'text-rose-400'
                   }`}>
                     {activeVerdict === 'PENDING' ? 'Verdict Pending' : activeVerdict}
@@ -2364,7 +2364,7 @@ export default function DealAnalyzerPage() {
 
               <button
                 onClick={() => handleSaveDeal(true)}
-                className="px-4 py-2 text-xs font-bold uppercase tracking-wider rounded-xl bg-primary text-on-primary border border-primary/20"
+                className="px-4 py-3.5 text-xs font-bold uppercase tracking-wider rounded-xl bg-primary text-on-primary border border-primary/20 flex items-center justify-center min-h-[44px]"
               >
                 Continue
               </button>
@@ -2468,7 +2468,7 @@ export default function DealAnalyzerPage() {
                 <div className="flex gap-2">
                   <button
                     onClick={() => handleSaveDeal(false)}
-                    className="flex-1 py-2.5 text-xs font-semibold rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 text-white"
+                    className="flex-1 py-3.5 text-xs font-semibold rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 text-white flex items-center justify-center min-h-[44px]"
                   >
                     Save Deal
                   </button>
@@ -2477,7 +2477,7 @@ export default function DealAnalyzerPage() {
                       setIsBottomSheetOpen(false);
                       handleSaveDeal(true);
                     }}
-                    className="flex-1 py-2.5 text-xs font-bold uppercase tracking-wider rounded-xl bg-primary text-on-primary border border-primary/20"
+                    className="flex-1 py-3.5 text-xs font-bold uppercase tracking-wider rounded-xl bg-primary text-on-primary border border-primary/20 flex items-center justify-center min-h-[44px]"
                   >
                     Continue in REIL
                   </button>

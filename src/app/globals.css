@@ -28,13 +28,13 @@ html[data-theme="dark"],
   --color-inverse-on-surface: #0d0a0b;
   --color-outline: #45474D;
   --color-outline-variant: rgba(230, 234, 240, 0.12);
-  --color-surface-tint: #00DD94;
-  /* Primary — green accent */
-  --color-primary: #00DD94; /* Primary Green 1 */
-  --color-on-primary: #0d0a0b; /* High-contrast black text on green accent */
-  --color-primary-container: rgba(0, 221, 148, 0.14);
-  --color-on-primary-container: #00DD94;
-  --color-inverse-primary: #00CE8E;
+  --color-surface-tint: #627C85;
+  /* Primary — slate-grey accent */
+  --color-primary: #627C85; /* Primary Slate-Grey */
+  --color-on-primary: #FFFFFF; /* High-contrast white text on accent */
+  --color-primary-container: rgba(98, 124, 133, 0.14);
+  --color-on-primary-container: #627C85;
+  --color-inverse-primary: #536A72;
   /* Secondary — steel blue-gray, NOT purple */
   --color-secondary: #9E9DA0;
   --color-on-secondary: #0d0a0b;
@@ -51,12 +51,12 @@ html[data-theme="dark"],
   --color-error-container: #5C1A00;
   --color-on-error-container: #FFCBB8;
   /* Positive / Market Up */
-  --color-positive: #3f7d20;
+  --color-positive: #00DD94;
   --color-on-positive: #FFFFFF;
-  --color-trend-green: #5aaa3f;
+  --color-trend-green: #00DD94;
   --color-trend-red: #F06543;
   --color-primary-fixed: #9298A8;
-  --color-primary-fixed-dim: #00DD94;
+  --color-primary-fixed-dim: #627C85;
   --color-on-primary-fixed: #0d0a0b;
   --color-on-primary-fixed-variant: #FFFFFF;
   --color-secondary-fixed: #18191D;
@@ -72,21 +72,21 @@ html[data-theme="dark"],
   --color-surface-variant: #18191D;
   --color-glass-bg: rgba(18, 19, 29, 0.65);
   --color-glass-border: rgba(230, 234, 240, 0.12);
-  --color-status-info: #00DD94;
-  --input-focus-glow-color: rgba(0, 221, 148, 0.4);
+  --color-status-info: #627C85;
+  --input-focus-glow-color: rgba(98, 124, 133, 0.4);
 
   /* ─── Button System Variables ─── */
-  --pw-btn-primary-bg: #00DD94;
-  --pw-btn-primary-hover-bg: #00CE8E;
-  --pw-btn-primary-text: #0d0a0b;
+  --pw-btn-primary-bg: #627C85;
+  --pw-btn-primary-hover-bg: #536A72;
+  --pw-btn-primary-text: #FFFFFF;
   --pw-btn-secondary-bg: var(--color-glass-bg);
-  --pw-btn-secondary-hover-bg: rgba(0, 221, 148, 0.08);
+  --pw-btn-secondary-hover-bg: rgba(98, 124, 133, 0.08);
   --pw-btn-secondary-text: var(--color-on-surface);
   --pw-btn-secondary-border: var(--color-glass-border);
   --pw-btn-tertiary-bg: transparent;
-  --pw-btn-tertiary-hover-bg: rgba(0, 221, 148, 0.05);
+  --pw-btn-tertiary-hover-bg: rgba(98, 124, 133, 0.05);
   --pw-btn-tertiary-text: var(--color-on-surface);
-  --pw-btn-tertiary-border: rgba(0, 221, 148, 0.15);
+  --pw-btn-tertiary-border: rgba(98, 124, 133, 0.15);
   --pw-btn-danger-bg: var(--color-error);
   --pw-btn-danger-hover-bg: #FF8060;
   --pw-btn-danger-text: #0d0a0b;
@@ -144,6 +144,11 @@ html[data-theme="dark"],
   --spacing-margin-desktop: 40px;
   --spacing-container-max: 1280px;
 
+  /* Button Spacing System */
+  --spacing-button-gap-related: 8px;
+  --spacing-button-gap-unrelated: 16px;
+  --spacing-button-gap-content: 24px;
+
   /* Border Radius */
   --radius-sm: 0.25rem;
   --radius-default: 0.5rem;
@@ -158,15 +163,15 @@ html[data-theme="dark"],
   --font-hanken: var(--font-inter), system-ui, sans-serif;
   --font-plus-jakarta: var(--font-inter), system-ui, sans-serif;
 
-  /* Display / Hero — Inter 300 Light */
+  /* Display / Hero — Inter 450 Medium/Regular-Plus */
   --text-display-hero-size: 72px;
-  --text-display-hero-weight: 300;
+  --text-display-hero-weight: 450;
   --text-display-hero-line-height: 80px;
   --text-display-hero-letter-spacing: -0.04em;
 
-  /* Headline XL — Inter 300 Light */
+  /* Headline XL — Inter 450 Medium/Regular-Plus */
   --text-display-lg-size: 56px;
-  --text-display-lg-weight: 300;
+  --text-display-lg-weight: 450;
   --text-display-lg-line-height: 64px;
   --text-display-lg-letter-spacing: -0.03em;
 
@@ -345,6 +350,11 @@ html[data-theme="dark"],
   --spacing-margin-mobile: var(--spacing-margin-mobile);
   --spacing-margin-desktop: var(--spacing-margin-desktop);
   --spacing-container-max: var(--spacing-container-max);
+
+  /* Spacing Map for Button Spacing System */
+  --spacing-btn-gap-related: var(--spacing-button-gap-related);
+  --spacing-btn-gap-unrelated: var(--spacing-button-gap-unrelated);
+  --spacing-btn-gap-content: var(--spacing-button-gap-content);
 
   --font-weight-display-hero: var(--text-display-hero-weight);
   --font-weight-display-lg: var(--text-display-lg-weight);
@@ -858,6 +868,68 @@ html {
   background: transparent;
 }
 
+/* ── pw-slider: premium range inputs with 44px touch targets and custom styling ── */
+.pw-slider {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 100%;
+  height: 44px; /* Ensure 44px touch target height */
+  background: transparent;
+  cursor: pointer;
+  outline: none;
+}
+
+/* Webkit track and thumb */
+.pw-slider::-webkit-slider-runnable-track {
+  width: 100%;
+  height: 6px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 9999px;
+}
+
+.pw-slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: #FDFFFC;
+  border: 2px solid #454955;
+  margin-top: -7px; /* (6px track / 2) - (20px thumb / 2) = -7px offset */
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+  cursor: pointer;
+  transition: transform 0.1s ease, background-color 0.1s ease;
+}
+
+.pw-slider::-webkit-slider-thumb:active {
+  transform: scale(1.2);
+  background: #454955;
+}
+
+/* Firefox track and thumb */
+.pw-slider::-moz-range-track {
+  width: 100%;
+  height: 6px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 9999px;
+}
+
+.pw-slider::-moz-range-thumb {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: #FDFFFC;
+  border: 2px solid #454955;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+  cursor: pointer;
+  transition: transform 0.1s ease, background-color 0.1s ease;
+}
+
+.pw-slider::-moz-range-thumb:active {
+  transform: scale(1.2);
+  background: #454955;
+}
+
 /* ── Accessibility & Contrast Utilities ── */
 .text-contrast-high {
   color: #1A1A1A;
@@ -891,6 +963,25 @@ button:not(.pw-tab):not(.pw-menu-item):not([role="tab"]):not(.pw-interactive-cus
   user-select: none;
   text-decoration: none; /* In case it's a link */
   box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.15); /* Subtle inner glow to enhance the 3D glass effect */
+  position: relative;
+}
+
+/* Enforce 40x40px minimum touch target without expanding visual size */
+button:not(.pw-tab):not(.pw-menu-item):not([role="tab"]):not(.pw-interactive-custom)::after,
+.pw-btn::after,
+.ag-button::after,
+.ag-button-secondary::after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  min-width: 40px;
+  min-height: 40px;
+  width: 100%;
+  height: 100%;
+  pointer-events: auto;
+  cursor: pointer;
 }
 
 /* Default interactive scale haptic feedback */
@@ -1117,6 +1208,7 @@ textarea,
 select:not(.bg-transparent):not(.border-none),
 .pw-input {
   width: 100%;
+  min-height: 44px;
   padding: 10px 14px;
   font-family: var(--font-sans);
   font-size: 0.875rem;
@@ -1557,6 +1649,14 @@ select {
 }
 .inner-glow {
   box-shadow: inset 0 0 12px rgba(255, 255, 255, 0.03);
+}
+
+/* Hide Next.js Dev Overlay globally to prevent E2E click interception */
+nextjs-portal {
+  display: none !important;
+  pointer-events: none !important;
+  visibility: hidden !important;
+  opacity: 0 !important;
 }
 
 

@@ -18,7 +18,7 @@ const STATUS_BADGES: Record<OfferLetterStatus, { bg: string; text: string; icon:
   Draft: { bg: 'bg-bg-primary', text: 'text-text-secondary', icon: Clock },
   Sent: { bg: 'bg-blue-50', text: 'text-blue-600', icon: Send },
   Countered: { bg: 'bg-amber-50', text: 'text-amber-600', icon: RotateCcw },
-  Accepted: { bg: 'bg-emerald-50', text: 'text-emerald-600', icon: Check },
+  Accepted: { bg: 'bg-pw-success-container', text: 'text-pw-success border border-pw-success-border', icon: Check },
   Expired: { bg: 'bg-red-50', text: 'text-red-500', icon: Clock },
   Withdrawn: { bg: 'bg-bg-primary', text: 'text-text-secondary', icon: Ban },
 };

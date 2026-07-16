@@ -48,7 +48,7 @@ import { KPICategorySections } from "./KPICategoryCharts";
 // ─── Palette constants ─────────────────────────────────────────────────────────
 
 const C = {
-  green:   "#5aaa3f",
+  green:   "#00DD94",
   amber:   "#ffac5a",
   red:     "#F06543",
   blue:    "#7A9EAA",
@@ -322,9 +322,32 @@ interface KPICardProps {
   children: React.ReactNode;
   isDark: boolean;
   span?: 1 | 2;
+  formula?: string;
+  benchmark?: string;
+  inputs?: string[];
+  statusNote?: string;
+  missingFields?: string[];
+  collectingRoute?: string;
+  collectingLabel?: string;
 }
 
-function KPICard({ title, tooltipId, value, status, statusLabel, children, isDark, span = 1 }: KPICardProps) {
+function KPICard({
+  title,
+  tooltipId,
+  value,
+  status,
+  statusLabel,
+  children,
+  isDark,
+  span = 1,
+  formula,
+  benchmark,
+  inputs,
+  statusNote,
+  missingFields,
+  collectingRoute,
+  collectingLabel,
+}: KPICardProps) {
   const panelBg = isDark
     ? "linear-gradient(145deg, rgba(30,27,34,0.72) 0%, rgba(18,16,20,0.90) 100%)"
     : "#FFFFFF";
@@ -332,9 +355,12 @@ function KPICard({ title, tooltipId, value, status, statusLabel, children, isDar
   const headingColor = isDark ? "rgba(253,255,252,0.90)" : "#0d0a0b";
   const mutedColor   = isDark ? "rgba(253,255,252,0.40)" : "rgba(69,73,85,0.55)";
 
+  const [isExpanded, setIsExpanded] = useState(false);
+
   return (
     <article
-      className={`rounded-xl flex flex-col overflow-hidden ${span === 2 ? "lg:col-span-2" : ""}`}
+      onClick={() => setIsExpanded(!isExpanded)}
+      className={`rounded-xl flex flex-col overflow-hidden transition-all duration-200 cursor-pointer ${span === 2 ? "lg:col-span-2" : ""} ${isExpanded ? "ring-1 ring-[#627C85]" : "hover:border-[#627C85]/50"}`}
       style={{
         background: panelBg,
         backdropFilter: isDark ? "blur(20px)" : undefined,
@@ -382,6 +408,64 @@ function KPICard({ title, tooltipId, value, status, statusLabel, children, isDar
       <div className="flex-1 p-4">
         {children}
       </div>
+
+      {/* Expanded metadata area */}
+      {isExpanded && (
+        <div
+          className="px-4 pb-4 pt-3 border-t border-white/[0.06] space-y-3 bg-white/[0.01] text-xs"
+          onClick={(e) => e.stopPropagation()} // Prevent clicking inner content from closing card
+        >
+          {formula && (
+            <div>
+              <span className="text-[9px] font-bold uppercase tracking-wider text-[#9E9DA0] block mb-0.5">Formula / Method</span>
+              <code className="text-white text-xs font-mono bg-white/[0.04] px-1.5 py-0.5 rounded">{formula}</code>
+            </div>
+          )}
+          {benchmark && (
+            <div>
+              <span className="text-[9px] font-bold uppercase tracking-wider text-[#9E9DA0] block mb-0.5">Target / Benchmark</span>
+              <span className="text-[var(--pw-success)] font-semibold">{benchmark}</span>
+            </div>
+          )}
+          {statusNote && (
+            <div>
+              <span className="text-[9px] font-bold uppercase tracking-wider text-[#9E9DA0] block mb-0.5">Status Detail</span>
+              <p className="text-[#C0BEC2] text-[11px] leading-relaxed">{statusNote}</p>
+            </div>
+          )}
+          {missingFields && missingFields.length > 0 && (
+            <div className="rounded-lg border border-amber-500/20 p-3 mt-2" style={{ background: 'rgba(245,158,11,0.03)' }}>
+              <span className="text-[9px] font-bold uppercase tracking-wider text-amber-400 block mb-1">Lacking Inputs (Honesty Rule)</span>
+              <ul className="space-y-1">
+                {missingFields.map((f) => (
+                  <li key={f} className="text-[11px] text-amber-300/70 flex items-center gap-1.5">
+                    <span className="w-1 h-1 rounded-full bg-amber-400/50 shrink-0" />
+                    {f}
+                  </li>
+                ))}
+              </ul>
+              {collectingRoute && (
+                <Link
+                  href={collectingRoute}
+                  className="inline-flex items-center gap-1 mt-2 text-[10px] font-bold text-amber-400 hover:text-amber-300 underline"
+                >
+                  Go to {collectingLabel || "Project"} to enter data
+                  <span className="material-symbols-outlined text-[12px]">arrow_forward</span>
+                </Link>
+              )}
+            </div>
+          )}
+          <div className="flex justify-end pt-1">
+            <button
+              onClick={() => setIsExpanded(false)}
+              className="text-[9px] font-bold uppercase text-[#9E9DA0] hover:text-white flex items-center gap-0.5 transition-colors"
+            >
+              <span className="material-symbols-outlined text-[12px]">keyboard_arrow_up</span>
+              Collapse
+            </button>
+          </div>
+        </div>
+      )}
     </article>
   );
 }
@@ -761,9 +845,9 @@ function ROITrendLineChart({ snapshots, isDark }: ROITrendProps) {
         <Line
           type="monotone"
           dataKey="roi"
-          stroke="#3279F9"
+          stroke="#627C85"
           strokeWidth={2}
-          dot={{ fill: "#3279F9", r: 3 }}
+          dot={{ fill: "#627C85", r: 3 }}
           activeDot={{ r: 5 }}
         />
       </LineChart>
@@ -1695,6 +1779,144 @@ export function KPIInsightsDashboard() {
     return ins.avgVacancyRate !== null ? 100 - ins.avgVacancyRate : null;
   }, [ins.avgVacancyRate]);
 
+  const getMetricData = (title: string) => {
+    const hasRent      = projects.some(p => (p.financials?.monthlyGrossRent ?? p.financials?.projectedMonthlyRent) != null);
+    const hasOpEx      = projects.some(p =>
+      (p.financials?.holdingCostTaxes ?? p.financials?.holdingCostInsurance ?? p.financials?.propertyManagementFeePercent) != null
+    );
+    const hasValue     = projects.some(p => (p.financials?.estimatedCurrentValue ?? p.financials?.estimatedARV ?? p.financials?.purchasePrice) != null && (p.financials?.estimatedCurrentValue ?? p.financials?.estimatedARV ?? p.financials?.purchasePrice)! > 0);
+    const hasLoan      = projects.some(p => (p.financials?.loanAmount ?? 0) > 0);
+    const hasRate      = projects.some(p => (p.financials?.loanInterestRate ?? 0) > 0);
+    const hasVacancy   = projects.some(p => p.financials?.vacancyRatePercent != null);
+    const hasOccupied  = projects.some(p => p.financials?.daysOccupied != null && p.financials?.totalHoldDays != null);
+    const hasPurchase  = projects.some(p => (p.financials?.purchasePrice ?? p.financials?.targetPurchasePrice ?? 0) > 0);
+
+    const firstProjectId = projects[0]?.id || "";
+    const collectingRoute = firstProjectId ? `/dashboard/projects/${firstProjectId}` : "/dashboard/projects";
+    const collectingLabel = firstProjectId ? "Project Workspace" : "Projects List";
+
+    let formula = "";
+    let benchmark = "";
+    let statusNote = "";
+    let missingFields: string[] = [];
+
+    switch (title) {
+      case "Net Operating Income":
+        formula = "Total Income − Operating Expenses";
+        benchmark = "Positive (> $0)";
+        statusNote = ins.totalNOI !== null && hasRent && hasOpEx 
+          ? "All income + expense inputs present — computing live."
+          : hasRent
+          ? "Rent found; add operating expense breakdown for a precise NOI."
+          : "Enter Monthly Gross Rent in the project to unlock NOI.";
+        if (ins.totalNOI === null || !hasRent || !hasOpEx) {
+          missingFields = ["Monthly Gross Rent", "Vacancy Rate %", "Taxes / Insurance / Utilities", "Property Mgmt Fee", "Maintenance Reserve"];
+        }
+        break;
+      case "Cash Flow":
+        formula = "NOI − Annual Debt Service";
+        benchmark = "Positive (> $0/mo)";
+        statusNote = ins.totalCashFlow !== null && ins.totalCashFlow >= 0
+          ? "Positive cash flow — operations are fully covered."
+          : "Add Monthly Gross Rent, operating expenses, and loan terms to compute net cash flow.";
+        if (ins.totalCashFlow === null) {
+          missingFields = ["Monthly Gross Rent", "Operating Expenses", "Loan Amount", "Interest Rate"];
+        }
+        break;
+      case "Capitalization Rate":
+        formula = "NOI ÷ Current Property Value";
+        benchmark = "4.0% - 8.0%";
+        statusNote = ins.weightedCapRate !== null
+          ? "Computing from NOI and estimated property value."
+          : "Set Estimated ARV or Current Value in the project financials.";
+        if (ins.weightedCapRate === null) {
+          missingFields = ["Estimated ARV / Current Value", "NOI (Monthly Gross Rent, Expenses)"];
+        }
+        break;
+      case "Cash-on-Cash Return":
+        formula = "Annual Cash Flow ÷ Total Cash Invested";
+        benchmark = "≥ 8.0%";
+        statusNote = ins.weightedCoC !== null
+          ? "Loan details found — computing leveraged cash-on-cash return."
+          : "Enter loan details in the project to unlock CoC Return.";
+        if (ins.weightedCoC === null) {
+          missingFields = ["Loan Amount", "Interest Rate", "Down Payment / Cash Invested"];
+        }
+        break;
+      case "Gross Rent Multiplier":
+        formula = "Property Price ÷ Gross Annual Rent";
+        benchmark = "8.0 - 12.0";
+        statusNote = ins.weightedGRM !== null
+          ? "GRM computing — use this to screen deals quickly against market comps."
+          : "Enter Purchase Price and Monthly Rent to compute GRM.";
+        if (ins.weightedGRM === null) {
+          missingFields = ["Purchase Price (or Target Price)", "Monthly Gross Rent"];
+        }
+        break;
+      case "Debt Service Coverage":
+        formula = "NOI ÷ Annual Debt Service";
+        benchmark = "≥ 1.25";
+        statusNote = ins.portfolioDSCR !== null
+          ? "DSCR is live — lender underwriting benchmark active."
+          : "Enter Loan Amount and Interest Rate in the project to unlock DSCR.";
+        if (ins.portfolioDSCR === null) {
+          missingFields = ["Loan Amount", "Interest Rate", "NOI"];
+        }
+        break;
+      case "Internal Rate of Return":
+        formula = "Annualized rate of return equating NPV to zero";
+        benchmark = "≥ 15.0%";
+        statusNote = ins.averageIRR !== null
+          ? "Weighted avg IRR across portfolio."
+          : "Add exit data or hold period to compute IRR.";
+        if (ins.averageIRR === null) {
+          missingFields = ["Purchase Price", "Rehab Cost", "Hold Period", "Exit Price"];
+        }
+        break;
+      case "Occupancy Rate":
+        formula = "Occupied Days ÷ Total Hold Days × 100";
+        benchmark = "≥ 90.0%";
+        statusNote = hasOccupied
+          ? "Using actual occupied / total hold day data."
+          : "Showing underwriting assumption (default 93%). Set Vacancy Rate % or enter actual hold-phase occupancy to refine.";
+        if (!hasOccupied) {
+          missingFields = ["Vacancy Rate % (assumption)", "Occupied Days + Total Hold Days (actual)"];
+        }
+        break;
+      case "Expense Ratio (OER)":
+        formula = "Total Operating Expenses ÷ Gross Operating Income";
+        benchmark = "≤ 45.0%";
+        statusNote = ins.weightedOER !== null
+          ? "OER computing from income and expense breakdown."
+          : "Enter income and at least one expense line to compute OER.";
+        if (ins.weightedOER === null) {
+          missingFields = ["Monthly Gross Rent", "Taxes / Insurance / Utilities", "Property Mgmt Fee"];
+        }
+        break;
+      case "Long-Term Appreciation":
+        formula = "Annualized CAGR of Property Value";
+        benchmark = "3.0% - 5.0% / yr";
+        statusNote = ins.appreciationRate !== null
+          ? "Appreciation rate CAGRs calculated."
+          : "Needs current value + purchase price.";
+        if (ins.appreciationRate === null) {
+          missingFields = ["Purchase Price", "Estimated Current Value"];
+        }
+        break;
+      default:
+        break;
+    }
+
+    return {
+      formula,
+      benchmark,
+      statusNote,
+      missingFields,
+      collectingRoute,
+      collectingLabel,
+    };
+  };
+
   return (
     <div className="px-5 py-6 lg:px-8 lg:py-7 max-w-[1400px] mx-auto space-y-6">
 
@@ -1916,6 +2138,7 @@ export function KPIInsightsDashboard() {
                 ins.totalNOI === null ? "neutral" :
                 ins.totalNOI > 0      ? "good"    : "bad"
               }
+              {...getMetricData("Net Operating Income")}
             >
               <div className="flex justify-center py-2">
                 <SvgGauge
@@ -1937,6 +2160,7 @@ export function KPIInsightsDashboard() {
                 ins.totalCashFlow === null ? "neutral" :
                 ins.totalCashFlow >= 0     ? "good"    : "bad"
               }
+              {...getMetricData("Cash Flow")}
             >
               <CashFlowIndicator cashFlow={ins.totalCashFlow} isDark={isDark} />
             </KPICard>
@@ -1951,6 +2175,7 @@ export function KPIInsightsDashboard() {
                 ins.weightedCapRate >= 6     ? "good"    :
                 ins.weightedCapRate >= 4     ? "warn"    : "bad"
               }
+              {...getMetricData("Capitalization Rate")}
             >
               <PercentageGauge
                 value={ins.weightedCapRate}
@@ -1970,6 +2195,7 @@ export function KPIInsightsDashboard() {
                 ins.weightedCoC >= 8     ? "good"    :
                 ins.weightedCoC >= 5     ? "warn"    : "bad"
               }
+              {...getMetricData("Cash-on-Cash Return")}
             >
               <PercentageGauge
                 value={ins.weightedCoC}
@@ -1992,6 +2218,7 @@ export function KPIInsightsDashboard() {
                 ins.weightedGRM <= 8     ? "good"    :
                 ins.weightedGRM <= 12    ? "warn"    : "bad"
               }
+              {...getMetricData("Gross Rent Multiplier")}
             >
               <GRMCounter grm={ins.weightedGRM} isDark={isDark} />
             </KPICard>
@@ -2006,6 +2233,7 @@ export function KPIInsightsDashboard() {
                 ins.portfolioDSCR >= 1.25  ? "good"    :
                 ins.portfolioDSCR >= 1.0   ? "warn"    : "bad"
               }
+              {...getMetricData("Debt Service Coverage")}
             >
               <DSCRIndicator dscr={ins.portfolioDSCR} isDark={isDark} />
             </KPICard>
@@ -2021,6 +2249,7 @@ export function KPIInsightsDashboard() {
                 ins.averageIRR >= 15    ? "good"    :
                 ins.averageIRR >= 10    ? "warn"    : "bad"
               }
+              {...getMetricData("Internal Rate of Return")}
             >
               <div className="flex flex-col gap-2 py-2">
                 <span
@@ -2052,6 +2281,7 @@ export function KPIInsightsDashboard() {
                 occupancyRate >= 90    ? "good"    :
                 occupancyRate >= 80    ? "warn"    : "bad"
               }
+              {...getMetricData("Occupancy Rate")}
             >
               <PercentageGauge
                 value={occupancyRate}
@@ -2074,6 +2304,7 @@ export function KPIInsightsDashboard() {
                 ins.weightedOER < 40     ? "good"    :
                 ins.weightedOER < 55     ? "warn"    : "bad"
               }
+              {...getMetricData("Expense Ratio (OER)")}
             >
               <OERDonut oer={ins.weightedOER} isDark={isDark} />
             </KPICard>
@@ -2089,6 +2320,7 @@ export function KPIInsightsDashboard() {
                 ins.appreciationRate >= 3     ? "good"    :
                 ins.appreciationRate >= 1     ? "warn"    : "bad"
               }
+              {...getMetricData("Long-Term Appreciation")}
             >
               <div className="flex flex-col gap-2 py-2">
                 <span
@@ -2115,6 +2347,9 @@ export function KPIInsightsDashboard() {
               tooltipId="ROI"
               isDark={isDark}
               span={2}
+              formula="Net Profit ÷ Total Investment Cost"
+              benchmark="≥ 15.0%"
+              statusNote="Trend of actual and projected ROI across the portfolio timeline."
             >
               <ROITrendLineChart snapshots={snapshots} isDark={isDark} />
             </KPICard>

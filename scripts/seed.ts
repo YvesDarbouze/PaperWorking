@@ -288,6 +288,32 @@ async function seed() {
       },
     },
     assignedUsers: [LEAD_INVESTOR_UID, CONTRACTOR_UID],
+    actionItems: [
+      {
+        id: 'todo_seed_01',
+        label: 'Upload Purchase & Sale Agreement',
+        description: 'Need fully executed PSA loaded to document vault.',
+        assignee: 'marcus@apexcapital.io',
+        completed: false,
+        phase: 1,
+      },
+      {
+        id: 'todo_seed_02',
+        label: 'Approve Contractor Bid',
+        description: 'Morales rehab scope needs formal review and approval.',
+        assignee: 'marcus@apexcapital.io',
+        completed: false,
+        phase: 3,
+      },
+      {
+        id: 'todo_seed_03',
+        label: 'Order Title Search',
+        description: 'Verify clear title with Coastal Title & Law.',
+        assignee: 'marcus@apexcapital.io',
+        completed: false,
+        phase: 2,
+      }
+    ],
     financials: {
       purchasePrice: 279000,
       estimatedARV: 279000,

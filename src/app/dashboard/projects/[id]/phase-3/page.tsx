@@ -872,14 +872,14 @@ export default function Phase3RehabPage() {
                 <p className="text-[10px] font-bold uppercase tracking-[0.12em] text-[#9E9DA0]">NOI</p>
                 <p
                   className="text-[20px] leading-[24px] font-bold"
-                  style={{ color: '#15803D', fontVariantNumeric: 'tabular-nums' }}
+                  style={{ color: 'var(--pw-success)', fontVariantNumeric: 'tabular-nums' }}
                 >
                   {fmtCurrency(Math.round(noiFormula.noi))}
                 </p>
               </div>
               <span className={`px-2 py-0.5 rounded-full text-[9px] font-bold uppercase tracking-wider ${
                 noiResult.state === 'live'
-                  ? 'bg-emerald-500/15 text-emerald-400'
+                  ? 'bg-pw-success-container text-pw-success'
                   : noiResult.state === 'incomplete'
                     ? 'bg-gray-500/15 text-gray-400'
                     : 'bg-amber-500/15 text-amber-400'

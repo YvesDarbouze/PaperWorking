@@ -1092,7 +1092,7 @@ function StaticPhase3({ deal, ledgerItems, canAdd }: StaticPhase3Props) {
                  <div key={s.stage} className="flex flex-col items-center text-center">
                    {/* Node */}
                    <div className={`w-16 h-16 rounded-2xl flex items-center justify-center text-2xl transition-all duration-500 ${
-                     s.isComplete ? 'bg-black/20 border-2 border-[#CCCCCC] shadow-lg shadow-emerald-500/20' :
+                     s.isComplete ? 'bg-black/20 border-2 border-[#CCCCCC] shadow-lg shadow-pw-success/20' :
                      s.isActive ? 'bg-[#F2F2F2]0/20 border-2 border-[#CCCCCC] animate-pulse shadow-lg shadow-blue-500/20' :
                      'bg-[#F2F2F2] border border-border-accent'
                    }`}>

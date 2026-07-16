@@ -262,3 +262,52 @@ export async function POST(request: NextRequest) {
     );
   }
 }
+
+export async function GET(request: NextRequest) {
+  const auth = await requireAuth(request);
+  if (isAuthError(auth)) return auth;
+  const { uid } = auth;
+
+  try {
+    const userSnap = await adminDb.collection('users').doc(uid).get();
+    if (!userSnap.exists) {
+      return NextResponse.json({ error: 'User profile not found' }, { status: 404 });
+    }
+    const userData = userSnap.data();
+    const organizationId = userData?.organizationId;
+
+    if (!organizationId) {
+      return NextResponse.json({ success: true, projects: [] });
+    }
+
+    const { searchParams } = new URL(request.url);
+    const queryParam = searchParams.get('q') || '';
+
+    let projectsQuery = adminDb
+      .collection('projects')
+      .where('organizationId', '==', organizationId);
+
+    const snapshot = await projectsQuery.get();
+    let projects = snapshot.docs.map(doc => ({
+      id: doc.id,
+      ...doc.data()
+    }));
+
+    if (queryParam) {
+      const q = queryParam.toLowerCase();
+      projects = projects.filter((p: any) => 
+        (p.propertyName && p.propertyName.toLowerCase().includes(q)) ||
+        (p.address && p.address.toLowerCase().includes(q))
+      );
+    }
+
+    return NextResponse.json({ success: true, projects });
+  } catch (error: unknown) {
+    const errMsg = error instanceof Error ? error.message : 'Unknown error';
+    console.error('[Projects GET] Error:', errMsg);
+    return NextResponse.json(
+      { error: 'Failed to fetch projects', details: errMsg },
+      { status: 500 }
+    );
+  }
+}

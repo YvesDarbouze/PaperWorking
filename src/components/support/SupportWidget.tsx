@@ -210,7 +210,7 @@ export default function SupportWidget() {
       {!isOpen && (
         <button
           onClick={() => setIsOpen(true)}
-          className="w-14 h-14 rounded-full bg-emerald-500 hover:bg-emerald-600 active:scale-95 shadow-xl hover:shadow-emerald-500/20 text-white flex items-center justify-center transition-all cursor-pointer border border-white/10"
+          className="w-14 h-14 rounded-full bg-pw-success hover:bg-pw-success/90 active:scale-95 shadow-xl hover:shadow-pw-success/20 text-[#0d0a0b] flex items-center justify-center transition-all cursor-pointer border border-white/10"
           aria-label="Open support chat"
         >
           <MessageSquare className="w-6 h-6 animate-pulse" />
@@ -228,13 +228,13 @@ export default function SupportWidget() {
           {/* Header */}
           <div className="p-4 border-b border-[var(--pw-border)] bg-white/5 flex items-center justify-between">
             <div className="flex items-center gap-2">
-              <div className="w-8 h-8 rounded-full bg-emerald-500/20 flex items-center justify-center border border-emerald-500/30">
-                <Sparkles className="w-4 h-4 text-emerald-400" />
+              <div className="w-8 h-8 rounded-full bg-pw-success-container flex items-center justify-center border border-pw-success-border/30">
+                <Sparkles className="w-4 h-4 text-pw-success" />
               </div>
               <div>
                 <h4 className="text-sm font-bold text-[var(--pw-black)]">PaperWorking Support</h4>
                 <div className="flex items-center gap-1 mt-0.5">
-                  <span className={`w-1.5 h-1.5 rounded-full ${isBusinessHours ? 'bg-emerald-500' : 'bg-amber-500'}`} />
+                  <span className={`w-1.5 h-1.5 rounded-full ${isBusinessHours ? 'bg-pw-success' : 'bg-amber-500'}`} />
                   <span className="text-[10px] text-[var(--pw-muted)]">
                     {isBusinessHours ? 'Live Chat Active' : `Offline (SLA: ${slaText})`}
                   </span>
@@ -256,7 +256,7 @@ export default function SupportWidget() {
                 <div
                   className={`max-w-[75%] rounded-xl px-3 py-2 text-xs leading-relaxed ${
                     msg.sender === 'user'
-                      ? 'bg-emerald-500 text-white rounded-br-none'
+                      ? 'bg-pw-success text-[#0d0a0b] rounded-br-none'
                       : 'bg-white/5 border border-[var(--pw-border)] text-[var(--pw-black)] rounded-bl-none'
                   }`}
                 >
@@ -269,9 +269,9 @@ export default function SupportWidget() {
             {isTyping && (
               <div className="flex justify-start">
                 <div className="bg-white/5 border border-[var(--pw-border)] rounded-xl rounded-bl-none px-3 py-2 text-xs text-[var(--pw-muted)] flex items-center gap-1">
-                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-bounce" />
-                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-bounce [animation-delay:0.2s]" />
-                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-bounce [animation-delay:0.4s]" />
+                  <span className="w-1.5 h-1.5 rounded-full bg-pw-success animate-bounce" />
+                  <span className="w-1.5 h-1.5 rounded-full bg-pw-success animate-bounce [animation-delay:0.2s]" />
+                  <span className="w-1.5 h-1.5 rounded-full bg-pw-success animate-bounce [animation-delay:0.4s]" />
                 </div>
               </div>
             )}
@@ -285,11 +285,11 @@ export default function SupportWidget() {
               placeholder="Ask a question..."
               value={message}
               onChange={(e) => setMessage(e.target.value)}
-              className="flex-1 bg-white/5 border border-[var(--pw-border)] rounded-lg px-3 py-2 text-xs focus:outline-none focus:border-emerald-400 transition-colors text-[var(--pw-black)] placeholder:text-[var(--pw-muted)]"
+              className="flex-1 bg-white/5 border border-[var(--pw-border)] rounded-lg px-3 py-2 text-xs focus:outline-none focus:border-pw-success transition-colors text-[var(--pw-black)] placeholder:text-[var(--pw-muted)]"
             />
             <button
               type="submit"
-              className="p-2 rounded-lg bg-emerald-500 hover:bg-emerald-600 text-white flex items-center justify-center transition-colors cursor-pointer"
+              className="p-2 rounded-lg bg-pw-success hover:bg-pw-success/90 text-[#0d0a0b] flex items-center justify-center transition-colors cursor-pointer"
             >
               <Send className="w-4 h-4" />
             </button>

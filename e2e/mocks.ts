@@ -192,12 +192,22 @@ export async function setupMocks(page: Page, state: MockState, options?: { allow
   });
 
   // 5. Mock Projects operations
-  await page.route(/\/api\/(reil\/)?projects$/, async (route) => {
+  await page.route(/\/api\/(reil\/)?projects(\?|$)/, async (route) => {
     const method = route.request().method();
     if (method === 'GET') {
+      const url = new URL(route.request().url());
+      const queryParam = url.searchParams.get('q') || '';
+      let filtered = state.projects;
+      if (queryParam) {
+        const q = queryParam.toLowerCase();
+        filtered = filtered.filter((p: any) =>
+          (p.propertyName && p.propertyName.toLowerCase().includes(q)) ||
+          (p.address && p.address.toLowerCase().includes(q))
+        );
+      }
       await route.fulfill({
         status: 200,
-        json: { projects: state.projects },
+        json: { success: true, projects: filtered },
       });
     } else if (method === 'POST') {
       const body = route.request().postDataJSON() || {};

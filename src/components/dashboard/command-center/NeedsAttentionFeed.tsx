@@ -224,7 +224,7 @@ export function NeedsAttentionFeed() {
           <span
             className="material-symbols-outlined text-[18px]"
             style={{
-              color: hasCritical ? "#F06543" : items.length > 0 ? "#ffac5a" : "#5aaa3f",
+              color: hasCritical ? "#F06543" : items.length > 0 ? "#ffac5a" : "var(--pw-success)",
               fontVariationSettings: "'FILL' 1",
             }}
           >
@@ -262,7 +262,7 @@ export function NeedsAttentionFeed() {
         <div className="flex flex-col items-center justify-center py-10 px-6 text-center">
           <span
             className="material-symbols-outlined text-4xl mb-3"
-            style={{ color: "#5aaa3f", fontVariationSettings: "'FILL' 1" }}
+            style={{ color: "var(--pw-success)", fontVariationSettings: "'FILL' 1" }}
           >
             check_circle
           </span>

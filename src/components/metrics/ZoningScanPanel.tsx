@@ -469,7 +469,7 @@ export default function ZoningScanPanel({
 
             {uploadFile ? (
               <div className="relative z-10 flex flex-col items-center gap-1.5">
-                <div className="w-10 h-10 mb-1 rounded-full bg-surface-container-highest flex items-center justify-center text-emerald-500 shadow-lg shadow-emerald-500/10">
+                <div className="w-10 h-10 mb-1 rounded-full bg-surface-container-highest flex items-center justify-center text-pw-success shadow-lg shadow-pw-success/10">
                   <FileCheck2 className="w-4 h-4 shrink-0" />
                 </div>
                 <div className="flex items-center justify-center gap-1.5">

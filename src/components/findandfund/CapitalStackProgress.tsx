@@ -41,7 +41,7 @@ export default function CapitalStackProgress({ capitalNeeded, capitalPledged, in
         </div>
         <div className="text-right">
           <span className="ag-label">{investorCount} Investor{investorCount !== 1 ? 's' : ''}</span>
-          <p className={`text-lg font-bold ${isFunded ? 'text-emerald-600' : 'text-phase-findandfund-accent'}`}>
+          <p className={`text-lg font-bold ${isFunded ? 'text-pw-success' : 'text-phase-findandfund-accent'}`}>
             {percent.toFixed(1)}%
           </p>
         </div>
@@ -54,7 +54,7 @@ export default function CapitalStackProgress({ capitalNeeded, capitalPledged, in
           style={{
             width: `${percent}%`,
             background: isFunded
-              ? 'linear-gradient(90deg, #059669, #3f7d20)'
+              ? 'var(--pw-success)'
               : 'linear-gradient(90deg, #0d9488, #454955)',
           }}
         />

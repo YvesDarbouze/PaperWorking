@@ -156,7 +156,7 @@ export default function CrowdfundInviteModal({
             {/* Available Equity Badge */}
             <div className="flex items-center justify-between bg-pw-glass-bg/50 border border-pw-border rounded-xl px-4 py-2.5">
               <span className="text-[10px] font-black text-pw-muted uppercase tracking-[0.2em]">Available Equity</span>
-              <span className={`text-sm font-semibold ${availableEquity > 0 ? 'text-emerald-600' : 'text-red-600'}`}>
+              <span className={`text-sm font-semibold ${availableEquity > 0 ? 'text-pw-success' : 'text-red-600'}`}>
                 {availableEquity.toFixed(1)}%
               </span>
             </div>

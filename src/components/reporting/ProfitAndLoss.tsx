@@ -155,9 +155,9 @@ export default function ProfitAndLoss() {
               </>
             ) : (
               <>
-                <Briefcase className="w-4 h-4 text-emerald-600" />
+                <Briefcase className="w-4 h-4 text-pw-success" />
                 <span>Portfolio View</span>
-                <ToggleRight className="w-5 h-5 text-emerald-500" />
+                <ToggleRight className="w-5 h-5 text-pw-success" />
               </>
             )}
           </button>
@@ -218,7 +218,7 @@ export default function ProfitAndLoss() {
                     {line.label}
                   </td>
                   <td className={`px-4 py-2.5 text-right font-mono ${
-                    line.highlight === 'positive' ? 'text-emerald-700 font-bold' :
+                    line.highlight === 'positive' ? 'text-pw-success font-bold' :
                     line.highlight === 'negative' ? 'text-red-600 font-bold' :
                     line.bold ? 'font-semibold text-text-primary' :
                     'text-text-primary'
@@ -242,14 +242,14 @@ export default function ProfitAndLoss() {
         </div>
         <div className="p-3 bg-bg-primary rounded-lg text-center border border-border-accent">
           <p className="text-xs uppercase tracking-widest text-text-secondary">Net Margin</p>
-          <p className={`text-lg font-normal flex items-center justify-center gap-1 ${pl.netProfit >= 0 ? 'text-emerald-700' : 'text-red-600'}`}>
+          <p className={`text-lg font-normal flex items-center justify-center gap-1 ${pl.netProfit >= 0 ? 'text-pw-success' : 'text-red-600'}`}>
             {pl.netProfit >= 0 ? <TrendingUp className="w-4 h-4" /> : <TrendingDown className="w-4 h-4" />}
             {pl.revenue > 0 ? ((pl.netProfit / pl.revenue) * 100).toFixed(1) : '0.0'}%
           </p>
         </div>
         <div className="p-3 bg-bg-primary rounded-lg text-center border border-border-accent">
           <p className="text-xs uppercase tracking-widest text-text-secondary">Net P&L</p>
-          <p className={`text-lg font-normal ${pl.netProfit >= 0 ? 'text-emerald-700' : 'text-red-600'}`}>
+          <p className={`text-lg font-normal ${pl.netProfit >= 0 ? 'text-pw-success' : 'text-red-600'}`}>
             {formatCurrency(pl.netProfit)}
           </p>
         </div>

@@ -144,8 +144,8 @@ export default function CommandCenterKPIStrip({ projects, scope, period }: Comma
                 <span
                   className="flex items-center gap-1 px-2 py-0.5 rounded-full font-semibold"
                   style={{
-                    background: card.deltaPositive ? 'rgba(63,125,32,0.15)' : 'rgba(240,101,67,0.15)',
-                    color: card.deltaPositive ? '#5aaa3f' : '#F06543',
+                    background: card.deltaPositive ? 'var(--pw-success-container)' : 'rgba(240,101,67,0.15)',
+                    color: card.deltaPositive ? 'var(--pw-success)' : '#F06543',
                   }}
                 >
                   <span className="material-symbols-outlined" style={{ fontSize: '14px' }}>

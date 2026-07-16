@@ -11,6 +11,8 @@ import {
   Home, DollarSign, Calendar, Users
 } from 'lucide-react';
 
+import { ButtonGroup } from '@/components/ui/ButtonGroup';
+
 // ══════════════════════════════════════════════════════════════════
 // R2 — Purchase Agent: Due-Diligence Guided Interview
 // ══════════════════════════════════════════════════════════════════
@@ -1230,7 +1232,7 @@ export default function PurchaseInterview({ deal }: PurchaseInterviewProps) {
               <ChevronLeft className="w-3.5 h-3.5" />
               Back
             </button>
-            <div className="flex items-center gap-3">
+            <ButtonGroup variant="related">
               {!activeStep.required && (
                 <button
                   onClick={() => {
@@ -1253,7 +1255,7 @@ export default function PurchaseInterview({ deal }: PurchaseInterviewProps) {
                 {isSaving ? 'Saving...' : isVeryLast ? 'Complete Purchase Setup' : isLastStepInSection ? `Complete ${activeSection?.title.split(' ')[0]}` : 'Next'}
                 {!isVeryLast && <ChevronRight className="w-3.5 h-3.5" />}
               </button>
-            </div>
+            </ButtonGroup>
           </div>
         </div>
       )}

@@ -82,7 +82,7 @@ export default async function SupportArticlePage({ params }: SupportArticlePageP
         <div 
           className="prose prose-lg prose-neutral max-w-none text-[var(--pw-subtle)] 
                      prose-headings:text-[var(--pw-black)] prose-headings:font-medium prose-headings:tracking-tight
-                     prose-a:text-emerald-600 prose-a:no-underline hover:prose-a:text-emerald-700
+                     prose-a:text-pw-success prose-a:no-underline hover:prose-a:text-pw-success/80
                      prose-strong:text-[var(--pw-black)] prose-strong:font-semibold
                      prose-li:marker:text-[var(--pw-muted)]"
           dangerouslySetInnerHTML={{ __html: article.content || `<p>${article.excerpt}</p><p>This article is currently being updated. Please check back later or contact support if you need immediate assistance.</p>` }}

@@ -184,7 +184,7 @@ export default function ActivityFeed() {
             </div>
             
             <div className="flex items-start gap-3">
-              <UserCheck className={`w-4 h-4 mt-0.5 shrink-0 ${theme === 'dark' ? 'text-primary' : 'text-emerald-600'}`} style={{ color: 'var(--color-primary)' }} />
+              <UserCheck className={`w-4 h-4 mt-0.5 shrink-0 ${theme === 'dark' ? 'text-primary' : 'text-pw-success'}`} style={{ color: 'var(--color-primary)' }} />
               <div>
                 <p className={`text-xs font-medium ${theme === 'dark' ? 'text-white/80' : 'text-black'}`}>Deal Intake</p>
                 <p className={`text-[10px] ${theme === 'dark' ? 'text-white/45' : 'text-gray-500'}`}>Creating new investment deals or leads</p>

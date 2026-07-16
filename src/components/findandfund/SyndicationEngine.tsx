@@ -25,7 +25,7 @@ const STATUS_CONFIG: Record<LOIStatus, { icon: React.ReactNode; color: string; b
   Drafted:  { icon: <Clock className="w-3.5 h-3.5" />,          color: 'text-text-secondary',   bg: 'bg-bg-primary' },
   Sent:     { icon: <Send className="w-3.5 h-3.5" />,           color: 'text-blue-600',   bg: 'bg-blue-50' },
   Viewed:   { icon: <Eye className="w-3.5 h-3.5" />,            color: 'text-amber-600',  bg: 'bg-amber-50' },
-  Signed:   { icon: <CheckCircle2 className="w-3.5 h-3.5" />,   color: 'text-emerald-600', bg: 'bg-emerald-50' },
+  Signed:   { icon: <CheckCircle2 className="w-3.5 h-3.5" />,   color: 'text-pw-success', bg: 'bg-pw-success-container border border-pw-success-border' },
   Declined: { icon: <XCircle className="w-3.5 h-3.5" />,        color: 'text-red-500',    bg: 'bg-red-50' },
 };
 

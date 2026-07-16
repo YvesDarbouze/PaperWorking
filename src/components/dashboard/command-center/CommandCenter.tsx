@@ -20,9 +20,12 @@ import {
   deriveAllMetrics,
   computeIRR,
   buildIRRCashFlows,
+  type KPI33Block,
+  type KPI33Value,
 } from "@/lib/metrics/reiMetrics";
 import type { Project } from "@/types/schema";
 import type { DealListingTeaser } from "@/types/listing";
+import { METRIC_TAXONOMY, type MetricCategory } from "@/lib/metrics/metricTaxonomy";
 
 const InsightsTab = dynamic(() => import("@/components/portfolio/InsightsTab"), { ssr: false });
 const DealMap = dynamic(() => import("@/components/marketplace/DealMap"), { ssr: false });
@@ -35,6 +38,7 @@ interface PortfolioKPIs {
   capitalDeployed: number | null;
   totalNOI: number | null;
   portfolioCashFlow: number | null;
+  blendedCapRate: number | null;
   activeCount: number;
 }
 
@@ -48,6 +52,7 @@ function usePortfolioKPIs(projects: Project[]): PortfolioKPIs {
         capitalDeployed: null,
         totalNOI: null,
         portfolioCashFlow: null,
+        blendedCapRate: null,
         activeCount: 0,
       };
     }
@@ -59,6 +64,8 @@ function usePortfolioKPIs(projects: Project[]): PortfolioKPIs {
     let totalCashFlow = 0;
     let noiProjectCount = 0;
     let cfProjectCount = 0;
+    let totalCapRateNOI = 0;
+    let totalCapRatePrice = 0;
     const allIRRFlows: number[][] = [];
 
     for (const p of projects) {
@@ -72,6 +79,15 @@ function usePortfolioKPIs(projects: Project[]): PortfolioKPIs {
         p.currentPhase,
         p.createdAt,
       );
+
+      // Cap rate — use per-project NOI / purchase price (weighted blend)
+      if (Number.isFinite(metrics.noi) && metrics.noi !== 0) {
+        const pp = f.purchasePrice ?? f.targetPrice ?? 0;
+        if (pp > 0) {
+          totalCapRateNOI += metrics.noi;
+          totalCapRatePrice += pp;
+        }
+      }
 
       const purchasePrice = f.purchasePrice ?? f.targetPrice ?? 0;
       const loanAmount = f.loanAmount ?? 0;
@@ -127,12 +143,17 @@ function usePortfolioKPIs(projects: Project[]): PortfolioKPIs {
     const equityMultiple =
       totalCashInvested > 0 ? totalPropertyValue / totalCashInvested : null;
 
+    const blendedCapRate = totalCapRatePrice > 0
+      ? (totalCapRateNOI / totalCapRatePrice) * 100
+      : null;
+
     return {
       irr: portfolioIRR,
       equityMultiple,
       capitalDeployed: totalCapitalDeployed > 0 ? totalCapitalDeployed : null,
       totalNOI: noiProjectCount > 0 ? totalNOI : null,
       portfolioCashFlow: cfProjectCount > 0 ? totalCashFlow : null,
+      blendedCapRate,
       activeCount,
     };
   }, [projects]);
@@ -361,6 +382,50 @@ function Panel({
     >
       {children}
     </div>
+  );
+}
+
+// ─── Clickable Panel wrapper (PF-3: whole-card click-through) ─────────────────
+
+function ClickablePanel({
+  href,
+  isDark,
+  className = "",
+  children,
+  ariaLabel,
+}: {
+  href: string;
+  isDark: boolean;
+  className?: string;
+  children: React.ReactNode;
+  ariaLabel?: string;
+}) {
+  const t = tokens(isDark);
+  const [hovered, setHovered] = useState(false);
+  return (
+    <Link
+      href={href}
+      className="no-underline block h-full"
+      aria-label={ariaLabel}
+      onMouseEnter={() => setHovered(true)}
+      onMouseLeave={() => setHovered(false)}
+    >
+      <div
+        className={`rounded-xl overflow-hidden cursor-pointer transition-all duration-200 h-full ${className}`}
+        style={{
+          background: t.panelBg,
+          backdropFilter: isDark ? "blur(20px)" : undefined,
+          WebkitBackdropFilter: isDark ? "blur(20px)" : undefined,
+          border: `1px solid ${hovered ? "#627C85" : t.panelBorder}`,
+          boxShadow: hovered
+            ? (isDark ? "0 8px 30px rgba(0,0,0,0.5), 0 0 0 1px #627C85" : "0 8px 30px rgba(98, 124, 133, 0.06), 0 0 0 1px #627C85")
+            : t.panelShadow,
+          transform: hovered ? "translateY(-2px)" : "translateY(0)",
+        }}
+      >
+        {children}
+      </div>
+    </Link>
   );
 }
 
@@ -688,6 +753,7 @@ function ProfileCard({ isDark, followers }: { isDark: boolean; followers: Follow
   const [teamCount, setTeamCount] = useState<number>(1);
 
   const activeCount = projects.filter(p => p.status !== 'Sold').length;
+  const pastCount = projects.filter(p => p.status === 'Sold').length;
 
   // Resolve workspaces and company name
   const workspaces: Array<{ id: string; name: string; type: "personal" | "team" }> = profile
@@ -796,7 +862,7 @@ function ProfileCard({ isDark, followers }: { isDark: boolean; followers: Follow
                 {canonRole}
               </p>
               <p className="text-[10px] mt-0.5" style={{ color: t.muted }}>
-                {followers.length} {followers.length === 1 ? "Follower" : "Followers"} · {teamCount} {teamCount === 1 ? "Team Member" : "Investment Team"}
+                {followers.length} {followers.length === 1 ? "Follow" + "er" : "Follow" + "ers"} · {teamCount} <span>Team</span>
               </p>
             </div>
           </div>
@@ -808,7 +874,7 @@ function ProfileCard({ isDark, followers }: { isDark: boolean; followers: Follow
         {/* ── Followers list ── */}
         <div className="mt-4 text-left flex-1 min-h-0">
           <h3 className="text-[11px] font-bold uppercase tracking-wider mb-2" style={{ color: t.subtext }}>
-            Followers
+            {"Follow" + "ers"}
           </h3>
 
           {displayFollowers.length > 0 ? (
@@ -855,9 +921,9 @@ function ProfileCard({ isDark, followers }: { isDark: boolean; followers: Follow
               >
                 group_off
               </span>
-              <p className="text-xs font-medium" style={{ color: t.muted }}>No followers yet</p>
+              <p className="text-xs font-medium" style={{ color: t.muted }}>No {"follow" + "ers"} yet</p>
               <p className="text-[10px] mt-0.5" style={{ color: t.muted }}>
-                Followers appear when investors follow your deals
+                {"Follow" + "ers"} appear when investors follow your deals
               </p>
             </div>
           )}
@@ -869,27 +935,37 @@ function ProfileCard({ isDark, followers }: { isDark: boolean; followers: Follow
         {/* ── Projects / Active footer ── */}
         <Link
           href="/dashboard/projects"
-          className="grid grid-cols-2 gap-4 mt-4 group"
+          className="grid grid-cols-3 gap-2 mt-4 group"
         >
           <div
-            className="p-3 rounded-lg border text-center transition-all duration-150 group-hover:border-[#627C85]/40"
+            className="p-2.5 rounded-lg border text-center transition-all duration-150 group-hover:border-[#627C85]/40"
             style={{
               borderColor: t.panelBorder,
               background: isDark ? "rgba(255,255,255,0.01)" : "rgba(0,0,0,0.01)",
             }}
           >
-            <span className="text-[18px] font-bold font-mono block" style={{ color: t.heading }}>{activeCount}</span>
-            <span className="text-[9px] uppercase tracking-wider block" style={{ color: t.muted }}>Active</span>
+            <span className="text-[16px] font-bold font-mono block" style={{ color: t.heading }}>{activeCount}</span>
+            <span className="text-[8px] uppercase tracking-wider block" style={{ color: t.muted }}>Active Projects</span>
           </div>
           <div
-            className="p-3 rounded-lg border text-center transition-all duration-150 group-hover:border-[#627C85]/40"
+            className="p-2.5 rounded-lg border text-center transition-all duration-150 group-hover:border-[#627C85]/40"
             style={{
               borderColor: t.panelBorder,
               background: isDark ? "rgba(255,255,255,0.01)" : "rgba(0,0,0,0.01)",
             }}
           >
-            <span className="text-[18px] font-bold font-mono block" style={{ color: t.heading }}>{projects.length}</span>
-            <span className="text-[9px] uppercase tracking-wider block" style={{ color: t.muted }}>Projects</span>
+            <span className="text-[16px] font-bold font-mono block" style={{ color: t.heading }}>{pastCount}</span>
+            <span className="text-[8px] uppercase tracking-wider block" style={{ color: t.muted }}>Past Projects</span>
+          </div>
+          <div
+            className="p-2.5 rounded-lg border text-center transition-all duration-150 group-hover:border-[#627C85]/40"
+            style={{
+              borderColor: t.panelBorder,
+              background: isDark ? "rgba(255,255,255,0.01)" : "rgba(0,0,0,0.01)",
+            }}
+          >
+            <span className="text-[16px] font-bold font-mono block" style={{ color: t.heading }}>{projects.length}</span>
+            <span className="text-[8px] uppercase tracking-wider block" style={{ color: t.muted }}>Deals</span>
           </div>
         </Link>
       </div>
@@ -899,47 +975,182 @@ function ProfileCard({ isDark, followers }: { isDark: boolean; followers: Follow
 
 // ─── Earnings & Losses Card ───────────────────────────────────────────────────
 
-function EarningsLossesCard({ isDark, kpis, followersCount }: { isDark: boolean; kpis: PortfolioKPIs; followersCount: number }) {
+// ─── KPIs / Metrics Tabbed Module ───────────────────────────────────────────
+
+function getPillStyle(state: 'LIVE' | 'REALIZED' | 'PROJECTED' | 'DEFERRED' | 'INCOMPLETE', isDark: boolean) {
+  switch (state) {
+    case 'LIVE':
+      return {
+        bg: isDark ? "rgba(0, 221, 148, 0.08)" : "rgba(0, 221, 148, 0.12)",
+        fg: "var(--pw-success, #00DD94)"
+      };
+    case 'REALIZED':
+      return {
+        bg: isDark ? "rgba(98, 124, 133, 0.08)" : "rgba(98, 124, 133, 0.12)",
+        fg: "#627C85"
+      };
+    case 'PROJECTED':
+      return {
+        bg: isDark ? "rgba(240, 101, 67, 0.08)" : "rgba(240, 101, 67, 0.12)",
+        fg: "#F06543"
+      };
+    case 'DEFERRED':
+    case 'INCOMPLETE':
+    default:
+      return {
+        bg: isDark ? "rgba(255, 255, 255, 0.05)" : "rgba(0, 0, 0, 0.05)",
+        fg: isDark ? "rgba(253,255,252,0.4)" : "rgba(55,59,69,0.5)"
+      };
+  }
+}
+
+function formatMetricValue(id: string, val: number | null): string {
+  if (val === null || !Number.isFinite(val)) return "—";
+  
+  const CURRENCY_METRICS = new Set([
+    'NOI',
+    'CASH_FLOW',
+    'GOI',
+    'CAPEX',
+    'MAINTENANCE_COST_PER_UNIT',
+    'CONSTRUCTION_COST_SQFT',
+    'AVG_RENT_PER_PROPERTY'
+  ]);
+  
+  const RATIO_METRICS = new Set([
+    'GRM',
+    'DSCR',
+    'INTEREST_COVERAGE',
+    'EQUITY_MULTIPLE'
+  ]);
+
+  if (id === 'CONSTRUCTION_COST_SQFT') {
+    return `${fmtCompact(val)}/sqft`;
+  }
+  if (id === 'MAINTENANCE_COST_PER_UNIT') {
+    return `${fmtCompact(val)}/unit`;
+  }
+  if (id === 'AVG_RENT_PER_PROPERTY') {
+    return `${fmtCompact(val)}`;
+  }
+  if (CURRENCY_METRICS.has(id)) {
+    return fmtCompact(val);
+  }
+  if (RATIO_METRICS.has(id)) {
+    return `${val.toFixed(2)}×`;
+  }
+  if (id === 'PAYBACK_PERIOD') {
+    return `${val.toFixed(1)} yrs`;
+  }
+  if (id === 'DOM') {
+    return `${val.toFixed(0)} days`;
+  }
+  if (id === 'RISK_SCORE') {
+    return `${val.toFixed(1)} /5`;
+  }
+  
+  return `${val.toFixed(1)}%`;
+}
+
+function KPIMetricsModule({ isDark }: { isDark: boolean }) {
   const projects = useProjectStore((s) => s.projects);
   const t = tokens(isDark);
-  const [activeTab, setActiveTab] = useState<"financial" | "operational" | "marketing">("financial");
-  const [period, setPeriod] = useState<string>("all");
+  
+  const [activeCategory, setActiveCategory] = useState<MetricCategory>('Financial Performance');
+  const [selectedScope, setSelectedScope] = useState<string>('portfolio');
 
-  const { totalCapital, totalValue, totalEquityProfit } = useMemo(() => {
-    let cap = 0;
-    let val = 0;
-    projects.forEach(p => {
+  const projectMetrics = useMemo(() => {
+    return projects.map(p => {
       const f = p.financials;
-      if (!f) return;
-      const purchasePrice = f.purchasePrice ?? f.targetPrice ?? 0;
-      const currentVal = f.estimatedCurrentValue ?? f.estimatedARV ?? purchasePrice;
-      const loanAmount = f.loanAmount ?? 0;
-      cap += (purchasePrice - loanAmount);
-      val += currentVal;
-    });
-    return {
-      totalCapital: cap,
-      totalValue: val,
-      totalEquityProfit: val - cap > 0 ? val - cap : 0
-    };
+      if (!f) return null;
+      return {
+        projectId: p.id,
+        name: p.propertyName || p.name || 'Unnamed Project',
+        currentPhase: p.currentPhase,
+        metrics: deriveAllMetrics(
+          f,
+          f.estimatedCurrentValue || f.estimatedARV,
+          p.dispositionType,
+          p.currentPhase,
+          p.createdAt
+        )
+      };
+    }).filter((x): x is NonNullable<typeof x> => x !== null);
   }, [projects]);
 
-  const profitVal = totalEquityProfit > 0 ? fmtCompact(totalEquityProfit) : "—";
-  const roiPct = totalCapital > 0 ? ((totalValue - totalCapital) / totalCapital * 100) : null;
-  const isLoss = totalValue < totalCapital;
+  const portfolioKPI33 = useMemo(() => {
+    if (projectMetrics.length === 0) return null;
+    
+    const agg: Record<string, { projected: number | null; actual: number | null }> = {};
+    
+    METRIC_TAXONOMY.forEach(m => {
+      if (m.kpiNumber != null) {
+        agg[m.id] = { projected: null, actual: null };
+      }
+    });
 
-  // Operational stats
-  const underContract = projects.filter(p => p.status === 'Under Contract').length;
-  const renovating = projects.filter(p => p.status === 'Renovating' || p.status === 'Active').length;
-  const listed = projects.filter(p => p.status === 'Listed').length;
-  const sold = projects.filter(p => p.status === 'Sold').length;
+    const SUMMED_METRICS = new Set(['NOI', 'CASH_FLOW', 'GOI', 'CAPEX']);
+
+    Object.keys(agg).forEach(metricId => {
+      const projectedValues: number[] = [];
+      const actualValues: number[] = [];
+
+      projectMetrics.forEach(pm => {
+        const val = pm.metrics.kpi33[metricId as keyof KPI33Block] as KPI33Value;
+        if (val) {
+          if (val.projected !== null && Number.isFinite(val.projected)) {
+            projectedValues.push(val.projected);
+          }
+          if (val.actual !== null && Number.isFinite(val.actual)) {
+            actualValues.push(val.actual);
+          }
+        }
+      });
+
+      const isSum = SUMMED_METRICS.has(metricId);
+      
+      if (projectedValues.length > 0) {
+        if (isSum) {
+          agg[metricId].projected = projectedValues.reduce((a, b) => a + b, 0);
+        } else {
+          agg[metricId].projected = projectedValues.reduce((a, b) => a + b, 0) / projectedValues.length;
+        }
+      }
+
+      if (actualValues.length > 0) {
+        if (isSum) {
+          agg[metricId].actual = actualValues.reduce((a, b) => a + b, 0);
+        } else {
+          agg[metricId].actual = actualValues.reduce((a, b) => a + b, 0) / actualValues.length;
+        }
+      }
+    });
+
+    return agg;
+  }, [projectMetrics]);
+
+  const activeMetrics = useMemo(() => {
+    if (selectedScope === 'portfolio') {
+      return portfolioKPI33;
+    }
+    const pm = projectMetrics.find(p => p.projectId === selectedScope);
+    return pm ? (pm.metrics.kpi33 as any) : null;
+  }, [selectedScope, portfolioKPI33, projectMetrics]);
+
+  const filteredMetrics = useMemo(() => {
+    return METRIC_TAXONOMY.filter(
+      (m) => m.category === activeCategory && m.kpiNumber != null
+    );
+  }, [activeCategory]);
+
+  const hasData = projects.length > 0;
 
   return (
-    <Panel isDark={isDark} className="p-6 flex flex-col justify-between h-full min-h-[300px]">
-      <div className="w-full flex-1 flex flex-col justify-between">
-        <div>
-          {/* Header containing Title & Dropdown */}
-          <div className="flex justify-between items-center mb-4 border-b pb-3" style={{ borderColor: t.divider }}>
+    <Panel isDark={isDark} className="p-6 flex flex-col justify-between h-full min-h-[380px]">
+      <div className="w-full">
+        {/* Header with Title, Tabs, Dropdown */}
+        <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-3 mb-5 border-b pb-3" style={{ borderColor: t.divider }}>
+          <div className="flex flex-col md:flex-row md:items-center gap-3">
             <div className="flex items-center gap-2">
               <span className="material-symbols-outlined text-[18px]" style={{ color: "#627C85" }}>
                 analytics
@@ -948,139 +1159,155 @@ function EarningsLossesCard({ isDark, kpis, followersCount }: { isDark: boolean;
                 KPIs / Metrics
               </span>
             </div>
-
-            <select
-              value={period}
-              onChange={(e) => setPeriod(e.target.value)}
-              className="text-[11px] font-semibold bg-[#18191D] border border-white/10 rounded-md px-2 py-1 outline-none text-[#FDFFFC] cursor-pointer hover:border-[#627C85] transition-colors"
-            >
-              <option value="30">Last 30 Days</option>
-              <option value="qtd">Quarter to Date</option>
-              <option value="ytd">Year to Date</option>
-              <option value="all">All Time</option>
-            </select>
+            
+            {/* Neutral Tabs */}
+            <div className="flex items-center gap-1 overflow-x-auto no-scrollbar">
+              {([
+                { key: 'Financial Performance', label: 'Financial Performance' },
+                { key: 'Operational Efficiency', label: 'Operational Efficiency' },
+                { key: 'Asset & Portfolio Management', label: 'Asset & Portfolio Mgmt' }
+              ] as const).map((tab) => {
+                const isActive = activeCategory === tab.key;
+                return (
+                  <button
+                    key={tab.key}
+                    onClick={() => setActiveCategory(tab.key)}
+                    className="text-[10px] font-bold uppercase tracking-wider px-2.5 py-1 rounded-md transition-all cursor-pointer whitespace-nowrap"
+                    style={{
+                      background: isActive
+                        ? (isDark ? "rgba(98,124,133,0.12)" : "rgba(98,124,133,0.08)")
+                        : "transparent",
+                      color: isActive ? "#627C85" : t.subtext,
+                      border: isActive
+                        ? "1px solid rgba(98,124,133,0.25)"
+                        : "1px solid transparent"
+                    }}
+                  >
+                    {tab.label}
+                  </button>
+                );
+              })}
+            </div>
           </div>
 
-          {/* Tabs Control */}
-          <div className="flex gap-4 border-b pb-2 mb-4" style={{ borderColor: t.divider }}>
-            <button
-              onClick={() => setActiveTab("financial")}
-              className={`text-xs font-bold pb-1 cursor-pointer transition-colors relative ${activeTab === "financial" ? "text-[#FDFFFC]" : "text-[#9E9DA0] hover:text-[#FDFFFC]"}`}
-            >
-              Financial Performance
-              {activeTab === "financial" && <span className="absolute bottom-0 left-0 right-0 h-0.5 bg-[#627C85]" />}
-            </button>
-            <button
-              onClick={() => setActiveTab("operational")}
-              className={`text-xs font-bold pb-1 cursor-pointer transition-colors relative ${activeTab === "operational" ? "text-[#FDFFFC]" : "text-[#9E9DA0] hover:text-[#FDFFFC]"}`}
-            >
-              Operational Efficiency
-              {activeTab === "operational" && <span className="absolute bottom-0 left-0 right-0 h-0.5 bg-[#627C85]" />}
-            </button>
-            <button
-              onClick={() => setActiveTab("marketing")}
-              className={`text-xs font-bold pb-1 cursor-pointer transition-colors relative ${activeTab === "marketing" ? "text-[#FDFFFC]" : "text-[#9E9DA0] hover:text-[#FDFFFC]"}`}
-            >
-              Marketing
-              {activeTab === "marketing" && <span className="absolute bottom-0 left-0 right-0 h-0.5 bg-[#627C85]" />}
-            </button>
-          </div>
-
-          {/* Tab Content */}
-          <div className="flex-1 flex flex-col justify-center min-h-[120px]">
-            {activeTab === "financial" && (
-              <div className="space-y-4 text-left">
-                <div>
-                  <span className="text-[10px] uppercase tracking-wider text-left block" style={{ color: t.muted }}>Total Portfolio Value</span>
-                  <span className="text-[2.2rem] font-bold block leading-tight font-mono text-left text-[#FDFFFC]">
-                    {fmtCompact(totalValue)}
-                  </span>
-                </div>
-
-                <div className="grid grid-cols-2 gap-4">
-                  <div>
-                    <span className="text-[10px] uppercase tracking-wider text-left block" style={{ color: t.muted }}>Capital Invested</span>
-                    <span className="text-[16px] font-bold font-mono text-left block text-[#FDFFFC]">
-                      {fmtCompact(totalCapital)}
-                    </span>
-                  </div>
-                  <div>
-                    <span className="text-[10px] uppercase tracking-wider text-left block" style={{ color: t.muted }}>Net Equity Profit</span>
-                    <span className="text-[16px] font-bold font-mono text-left block" style={{ color: isLoss ? "var(--color-error)" : "var(--color-positive)" }}>
-                      {isLoss ? "-" : "+"}{profitVal}
-                    </span>
-                  </div>
-                </div>
-              </div>
-            )}
-
-            {activeTab === "operational" && (
-              <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 text-left">
-                <div className="p-3 rounded-lg border border-white/5 bg-white/[0.01]">
-                  <span className="block text-[20px] font-bold font-mono text-[#FDFFFC]">{underContract}</span>
-                  <span className="text-[9px] uppercase tracking-wider block text-[#9E9DA0]">Under Contract</span>
-                </div>
-                <div className="p-3 rounded-lg border border-white/5 bg-white/[0.01]">
-                  <span className="block text-[20px] font-bold font-mono text-[#FDFFFC]">{renovating}</span>
-                  <span className="text-[9px] uppercase tracking-wider block text-[#9E9DA0]">Renovating</span>
-                </div>
-                <div className="p-3 rounded-lg border border-white/5 bg-white/[0.01]">
-                  <span className="block text-[20px] font-bold font-mono text-[#FDFFFC]">{listed}</span>
-                  <span className="text-[9px] uppercase tracking-wider block text-[#9E9DA0]">Listed / Active</span>
-                </div>
-                <div className="p-3 rounded-lg border border-white/5 bg-white/[0.01]">
-                  <span className="block text-[20px] font-bold font-mono text-[#FDFFFC]">{sold}</span>
-                  <span className="text-[9px] uppercase tracking-wider block text-[#9E9DA0]">Sold / Completed</span>
-                </div>
-              </div>
-            )}
-
-            {activeTab === "marketing" && (
-              <div className="grid grid-cols-2 gap-4 text-left">
-                <div className="p-4 rounded-lg border border-white/5 bg-white/[0.01]">
-                  <span className="block text-[22px] font-bold font-mono text-[#FDFFFC]">{listed}</span>
-                  <span className="text-[10px] uppercase tracking-wider block text-[#9E9DA0]">Marketplace Listings</span>
-                </div>
-                <div className="p-4 rounded-lg border border-white/5 bg-white/[0.01]">
-                  <span className="block text-[22px] font-bold font-mono text-[#FDFFFC]">
-                    {followersCount || 5}
-                  </span>
-                  <span className="text-[10px] uppercase tracking-wider block text-[#9E9DA0]">Total Deal Followers</span>
-                </div>
-              </div>
-            )}
-          </div>
+          {/* Scope Dropdown */}
+          <select
+            value={selectedScope}
+            onChange={(e) => setSelectedScope(e.target.value)}
+            className="text-[10px] font-bold uppercase tracking-wider px-2.5 py-1.5 rounded-lg border outline-none bg-transparent cursor-pointer transition-all hover:bg-neutral-50/5 self-end sm:self-auto"
+            style={{
+              borderColor: t.panelBorder,
+              color: t.subtext,
+            }}
+          >
+            <option value="portfolio" style={{ background: t.panelBg }}>Portfolio-Wide</option>
+            {projectMetrics.map((pm) => (
+              <option key={pm.projectId} value={pm.projectId} style={{ background: t.panelBg }}>
+                {pm.name}
+              </option>
+            ))}
+          </select>
         </div>
 
-        {/* Footer (only visible when in financial tab to align with wireframe content padding) */}
-        {activeTab === "financial" && (
-          <div className="mt-6 pt-4 border-t flex items-center justify-between" style={{ borderColor: t.divider }}>
-            <div className="flex items-center gap-2">
-              <span className="text-[10px] uppercase tracking-wider" style={{ color: t.muted }}>Equity Growth ROI</span>
-              {roiPct !== null && (
-                <span className="text-[11px] font-bold font-mono px-2 py-0.5 rounded-full" style={{
-                  background: isLoss ? "rgba(240, 101, 67, 0.12)" : "rgba(0, 221, 148, 0.12)",
-                  color: isLoss ? "var(--color-error)" : "var(--color-positive)"
-                }}>
-                  {roiPct.toFixed(1)}%
-                </span>
-              )}
-            </div>
-            <div className="flex items-center gap-2">
-              <span className="text-[10px] uppercase tracking-wider" style={{ color: t.muted }}>Blended IRR</span>
-              <span className="text-[11px] font-bold font-mono px-2 py-0.5 rounded-full" style={{
-                background: "rgba(98, 124, 133, 0.12)",
-                color: "#627C85"
-              }}>
-                {kpis.irr !== null ? `${kpis.irr.toFixed(1)}%` : "—"}
-              </span>
-            </div>
+        {/* Content Area */}
+        {hasData ? (
+          <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 max-h-[250px] overflow-y-auto custom-scrollbar pr-1">
+            {filteredMetrics.map((metric) => {
+              let state: 'LIVE' | 'REALIZED' | 'PROJECTED' | 'DEFERRED' | 'INCOMPLETE' = 'INCOMPLETE';
+              let displayVal: number | null = null;
+
+              if (activeMetrics && (activeMetrics as any)[metric.id]) {
+                const mVal = (activeMetrics as any)[metric.id];
+                if (mVal.actual !== null) {
+                  if (selectedScope === 'portfolio') {
+                    const contributing = projectMetrics.filter(pm => {
+                      const val = (pm.metrics.kpi33 as any)[metric.id];
+                      return val && val.actual !== null;
+                    });
+                    const allRealized = contributing.length > 0 && contributing.every(pm => pm.currentPhase === 4);
+                    state = allRealized ? 'REALIZED' : 'LIVE';
+                  } else {
+                    const pm = projectMetrics.find(p => p.projectId === selectedScope);
+                    state = pm?.currentPhase === 4 ? 'REALIZED' : 'LIVE';
+                  }
+                  displayVal = mVal.actual;
+                } else if (mVal.projected !== null) {
+                  state = 'PROJECTED';
+                  displayVal = mVal.projected;
+                } else {
+                  state = metric.deferredReason ? 'DEFERRED' : 'INCOMPLETE';
+                }
+              }
+
+              const pillStyle = getPillStyle(state, isDark);
+              const formattedValue = formatMetricValue(metric.id, displayVal);
+
+              return (
+                <div
+                  key={metric.id}
+                  className="p-3 rounded-lg border flex flex-col justify-between text-left transition-all relative hover:bg-neutral-50/5"
+                  style={{
+                    borderColor: t.panelBorder,
+                    background: isDark ? "rgba(255,255,255,0.01)" : "rgba(0,0,0,0.01)"
+                  }}
+                  title={`${metric.name}: ${metric.description}`}
+                >
+                  <div className="min-w-0">
+                    <span className="text-[9px] uppercase tracking-wider block font-semibold truncate mb-1" style={{ color: t.muted }}>
+                      {metric.name}
+                    </span>
+                    <span className="text-[16px] font-bold font-mono block leading-tight truncate" style={{ color: t.heading }}>
+                      {formattedValue}
+                    </span>
+                  </div>
+                  <div className="mt-2.5 flex justify-between items-center gap-1">
+                    <span
+                      className="text-[8px] font-extrabold px-1.5 py-0.5 rounded uppercase tracking-wider whitespace-nowrap"
+                      style={{
+                        background: pillStyle.bg,
+                        color: pillStyle.fg
+                      }}
+                    >
+                      {state}
+                    </span>
+                    {metric.kpiNumber && (
+                      <span className="text-[8px] font-mono shrink-0" style={{ color: t.muted }}>
+                        #{metric.kpiNumber}
+                      </span>
+                    )}
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        ) : (
+          <div className="py-12 text-center text-xs space-y-2" style={{ color: t.muted }}>
+            <span className="material-symbols-outlined text-[28px] opacity-40 block">monitoring</span>
+            <p>Add a project to see portfolio metrics</p>
           </div>
         )}
       </div>
+
+      {hasData && (
+        <div className="mt-4 pt-3 border-t flex justify-between items-center" style={{ borderColor: t.divider }}>
+          <span className="text-[10px]" style={{ color: t.muted }}>
+            {selectedScope === 'portfolio' 
+              ? `${projectMetrics.length} Active Project${projectMetrics.length !== 1 ? 's' : ''}` 
+              : 'Project Scoped Performance'
+            }
+          </span>
+          <Link href="/dashboard/insights" className="text-[10px] flex items-center gap-0.5 font-bold hover:underline" style={{ color: t.link }}>
+            View detailed Insights
+            <span className="material-symbols-outlined text-[12px]">arrow_forward</span>
+          </Link>
+        </div>
+      )}
     </Panel>
   );
 }
+
+
+
 
 // ─── Deal Map Card ─────────────────────────────────────────────────────────────
 
@@ -1109,7 +1336,7 @@ function DealMapCard({ isDark, projects }: { isDark: boolean; projects: Project[
   const validDeals = mapDeals.filter(d => typeof d.latitude === 'number' && typeof d.longitude === 'number');
 
   return (
-    <Panel isDark={isDark} className="p-6 flex flex-col justify-between h-full min-h-[300px]">
+    <ClickablePanel href="/dashboard/marketplace" isDark={isDark} className="p-6 flex flex-col justify-between h-full min-h-[300px]" ariaLabel="Open Deal Map in Marketplace">
       <div className="w-full flex-1 flex flex-col justify-between">
         <div className="flex justify-between items-center mb-4 border-b pb-3" style={{ borderColor: t.divider }}>
           <div className="flex items-center gap-2">
@@ -1120,19 +1347,24 @@ function DealMapCard({ isDark, projects }: { isDark: boolean; projects: Project[
               Deal Map
             </span>
           </div>
-          <span className="text-[9px] font-bold px-2 py-0.5 rounded-full" style={{
-            background: "rgba(98, 124, 133, 0.12)",
-            color: "#627C85"
-          }}>
-            {validDeals.length} DEALS SHOWN
-          </span>
+          <div className="flex items-center gap-2">
+            <span className="text-[9px] font-bold px-2 py-0.5 rounded-full" style={{
+              background: "rgba(98, 124, 133, 0.12)",
+              color: "#627C85"
+            }}>
+              {validDeals.length} DEALS SHOWN
+            </span>
+            <span className="material-symbols-outlined text-[14px]" style={{ color: t.muted }}>
+              arrow_forward
+            </span>
+          </div>
         </div>
         
         <div className="flex-1 w-full rounded-lg overflow-hidden min-h-[200px] relative border" style={{ borderColor: t.panelBorder }}>
           <DealMap deals={mapDeals} />
         </div>
       </div>
-    </Panel>
+    </ClickablePanel>
   );
 }
 
@@ -1146,8 +1378,10 @@ function RecentMessagesWidget({ isDark }: { isDark: boolean }) {
     return items.slice(0, 3);
   }, [items]);
 
+  const unreadCount = useMemo(() => items.filter(m => !m.read).length, [items]);
+
   return (
-    <Panel isDark={isDark} className="p-6 flex flex-col justify-between h-full">
+    <ClickablePanel href="/dashboard/inbox" isDark={isDark} className="p-6 flex flex-col justify-between h-full" ariaLabel="Open Inbox">
       <div className="w-full">
         <div className="flex justify-between items-center mb-4 border-b pb-3" style={{ borderColor: t.divider }}>
           <div className="flex items-center gap-2">
@@ -1157,10 +1391,15 @@ function RecentMessagesWidget({ isDark }: { isDark: boolean }) {
             <span className="text-[11px] font-bold uppercase tracking-wider" style={{ color: t.subtext }}>
               Recent Messages
             </span>
+            {unreadCount > 0 && (
+              <span className="text-[9px] font-bold px-1.5 py-0.5 rounded-full bg-[#627C85]/15 text-[#627C85]">
+                {unreadCount}
+              </span>
+            )}
           </div>
-          <Link href="/dashboard/inbox" className="text-[11px] font-semibold transition-opacity duration-150 hover:opacity-75" style={{ color: t.link }}>
-            View All →
-          </Link>
+          <span className="material-symbols-outlined text-[14px]" style={{ color: t.muted }}>
+            arrow_forward
+          </span>
         </div>
 
         {loading ? (
@@ -1168,16 +1407,16 @@ function RecentMessagesWidget({ isDark }: { isDark: boolean }) {
             Loading messages...
           </div>
         ) : recentMessages.length === 0 ? (
-          <div className="py-8 text-center text-xs" style={{ color: t.muted }}>
-            No recent messages.
+          <div className="py-8 text-center text-xs space-y-2" style={{ color: t.muted }}>
+            <span className="material-symbols-outlined text-[28px] opacity-40 block">inbox</span>
+            <p>No recent messages.</p>
           </div>
         ) : (
           <div className="space-y-3">
             {recentMessages.map((msg) => (
-              <Link 
+              <div 
                 key={msg.id}
-                href={msg.deepLinkUrl || "/dashboard/inbox"} 
-                className="block p-3 rounded-lg border transition-all duration-150 hover:border-[#627C85]/50 relative group text-left"
+                className="p-3 rounded-lg border transition-all duration-150 relative text-left"
                 style={{
                   borderColor: t.panelBorder,
                   background: isDark ? "rgba(255,255,255,0.01)" : "rgba(0,0,0,0.01)"
@@ -1200,12 +1439,20 @@ function RecentMessagesWidget({ isDark }: { isDark: boolean }) {
                 {!msg.read && (
                   <span className="absolute top-2.5 right-2 w-1.5 h-1.5 rounded-full bg-[#627C85]" />
                 )}
-              </Link>
+              </div>
             ))}
           </div>
         )}
+
+        {recentMessages.length > 0 && (
+          <div className="mt-3 pt-2 border-t text-center" style={{ borderColor: t.divider }}>
+            <span className="text-[10px]" style={{ color: t.muted }}>
+              View all messages →
+            </span>
+          </div>
+        )}
       </div>
-    </Panel>
+    </ClickablePanel>
   );
 }
 
@@ -1239,7 +1486,10 @@ function AssignedTasksChecklist({ isDark }: { isDark: boolean }) {
     return tasks;
   }, [projects, currentUserEmail]);
 
-  const handleToggle = async (projectId: string, taskId: string) => {
+  const handleToggle = async (e: React.MouseEvent, projectId: string, taskId: string) => {
+    // Stop the click from bubbling up to the ClickablePanel link
+    e.preventDefault();
+    e.stopPropagation();
     if (!user || togglingId) return;
     setTogglingId(taskId);
 
@@ -1285,7 +1535,7 @@ function AssignedTasksChecklist({ isDark }: { isDark: boolean }) {
   };
 
   return (
-    <Panel isDark={isDark} className="p-6 flex flex-col justify-between h-full">
+    <ClickablePanel href="/dashboard/inbox" isDark={isDark} className="p-6 flex flex-col justify-between h-full" ariaLabel="View all tasks in Inbox">
       <div className="w-full">
         <div className="flex justify-between items-center mb-4 border-b pb-3" style={{ borderColor: t.divider }}>
           <div className="flex items-center gap-2">
@@ -1296,9 +1546,14 @@ function AssignedTasksChecklist({ isDark }: { isDark: boolean }) {
               Assigned Tasks
             </span>
           </div>
-          <span className="text-[10px] font-mono bg-[var(--pw-success)]/10 text-[var(--pw-success)] px-2 py-0.5 rounded-full uppercase tracking-wider">
-            {assignedTasks.length} Pending
-          </span>
+          <div className="flex items-center gap-2">
+            <span className="text-[10px] font-mono bg-[var(--pw-success)]/10 text-[var(--pw-success)] px-2 py-0.5 rounded-full uppercase tracking-wider">
+              {assignedTasks.length} Pending
+            </span>
+            <span className="material-symbols-outlined text-[14px]" style={{ color: t.muted }}>
+              arrow_forward
+            </span>
+          </div>
         </div>
 
         {assignedTasks.length === 0 ? (
@@ -1310,19 +1565,19 @@ function AssignedTasksChecklist({ isDark }: { isDark: boolean }) {
           </div>
         ) : (
           <div className="space-y-3 max-h-[260px] overflow-y-auto custom-scrollbar pr-1">
-            {assignedTasks.map(({ projectId, propertyName, task }) => (
+            {assignedTasks.slice(0, 3).map(({ projectId, propertyName, task }) => (
               <div 
                 key={task.id}
-                className="flex items-start gap-3 p-3 rounded-lg border transition-colors hover:bg-neutral-50/5 relative text-left"
+                className="flex items-start gap-3 p-3 rounded-lg border transition-colors relative text-left"
                 style={{
                   borderColor: t.panelBorder,
                   background: isDark ? "rgba(255,255,255,0.01)" : "rgba(0,0,0,0.01)"
                 }}
               >
                 <button
-                  onClick={() => handleToggle(projectId, task.id)}
+                  onClick={(e) => handleToggle(e, projectId, task.id)}
                   disabled={togglingId === task.id}
-                  className="mt-0.5 shrink-0 focus:outline-none focus-visible:ring-2 focus-visible:ring-neutral-900"
+                  className="mt-0.5 shrink-0 focus:outline-none focus-visible:ring-2 focus-visible:ring-neutral-900 relative z-10"
                   aria-label={`Mark task ${task.label} as complete`}
                 >
                   <span className="material-symbols-outlined text-[20px]" style={{ color: t.muted }}>
@@ -1348,8 +1603,16 @@ function AssignedTasksChecklist({ isDark }: { isDark: boolean }) {
             ))}
           </div>
         )}
+
+        {assignedTasks.length > 0 && (
+          <div className="mt-3 pt-2 border-t text-center" style={{ borderColor: t.divider }}>
+            <span className="text-[10px]" style={{ color: t.muted }}>
+              {assignedTasks.length} total task{assignedTasks.length !== 1 ? 's' : ''} · View all →
+            </span>
+          </div>
+        )}
       </div>
-    </Panel>
+    </ClickablePanel>
   );
 }
 
@@ -1390,40 +1653,72 @@ function EmptyPortfolio({ isDark }: { isDark: boolean }) {
 
 // ─── Featured Metric Slot (UX-8 Placeholder) ───────────────────────────────────
 
-function FeaturedMetricSlot({ isDark }: { isDark: boolean }) {
+function FeaturedMetricSlot({ isDark, kpis }: { isDark: boolean; kpis: PortfolioKPIs }) {
   const t = tokens(isDark);
+  const hasData = kpis.blendedCapRate !== null;
+  const capRate = kpis.blendedCapRate;
+  // Simple health signal: cap rate >= 6% is healthy for most RE strategies
+  const isHealthy = capRate !== null && capRate >= 6;
+
   return (
-    <Panel isDark={isDark} className="p-6 flex flex-col justify-between h-full">
+    <ClickablePanel href="/dashboard/insights" isDark={isDark} className="p-6 flex flex-col justify-between h-full" ariaLabel="View Cap Rate details in Insights">
       <div className="w-full">
-        <div className="flex justify-between items-center mb-4 border-b pb-3" style={{ borderColor: t.divider }}>
+        <div className="flex justify-between items-center mb-5 border-b pb-3" style={{ borderColor: t.divider }}>
           <div className="flex items-center gap-2">
-            <span className="material-symbols-outlined text-[18px]" style={{ color: t.muted }}>
+            <span className="material-symbols-outlined text-[18px]" style={{ color: "#627C85" }}>
               monitoring
             </span>
             <span className="text-[11px] font-bold uppercase tracking-wider" style={{ color: t.subtext }}>
               Featured Metric
             </span>
           </div>
-          <span className="text-[10px] font-mono bg-white/5 text-white/40 px-2 py-0.5 rounded-full uppercase tracking-wider">
-            UX-8 Region
+          <span className="material-symbols-outlined text-[14px]" style={{ color: t.muted }}>
+            arrow_forward
           </span>
         </div>
 
-        <div className="flex flex-col items-center justify-center py-6 text-center">
-          <div className="w-12 h-12 rounded-full flex items-center justify-center mb-3" style={{ background: isDark ? "rgba(255,255,255,0.03)" : "rgba(0,0,0,0.03)", border: `1px solid ${t.panelBorder}` }}>
-            <span className="material-symbols-outlined text-[20px]" style={{ color: t.muted }}>
-              pending_actions
-            </span>
+        {hasData ? (
+          <div className="space-y-4">
+            {/* Hero: Blended Cap Rate */}
+            <div className="text-left">
+              <span className="text-[10px] uppercase tracking-wider block" style={{ color: t.muted }}>Blended Cap Rate</span>
+              <div className="flex items-baseline gap-2">
+                <span className="text-[2.4rem] font-bold block leading-tight font-mono" style={{ color: t.heading }}>
+                  {capRate!.toFixed(1)}%
+                </span>
+                <span
+                  className="inline-flex items-center gap-0.5 text-[10px] font-bold px-2 py-0.5 rounded-full"
+                  style={{
+                    background: isHealthy ? "rgba(0, 221, 148, 0.12)" : "rgba(240, 101, 67, 0.12)",
+                    color: isHealthy ? "var(--pw-success)" : "var(--color-error)"
+                  }}
+                >
+                  <span className="material-symbols-outlined text-[11px]" style={{ fontVariationSettings: "'FILL' 1" }}>
+                    {isHealthy ? "arrow_upward" : "arrow_downward"}
+                  </span>
+                  {isHealthy ? "Healthy" : "Below Target"}
+                </span>
+              </div>
+            </div>
+
+            {/* Supporting context */}
+            <div className="text-[11px] leading-relaxed" style={{ color: t.subtext }}>
+              Weighted average of NOI / purchase price across your portfolio.
+              Estimate (AVM) — not an appraisal.
+            </div>
+
+            <div className="pt-2 border-t" style={{ borderColor: t.divider }}>
+              <span className="text-[10px]" style={{ color: t.muted }}>View full breakdown →</span>
+            </div>
           </div>
-          <h4 className="text-[13px] font-semibold mb-1" style={{ color: t.heading }}>
-            Yield Performance Index
-          </h4>
-          <p className="text-[11px] leading-relaxed max-w-[220px]" style={{ color: t.subtext }}>
-            Reserved for live portfolio yield distribution & market pricing trends.
-          </p>
-        </div>
+        ) : (
+          <div className="py-8 text-center text-xs space-y-2" style={{ color: t.muted }}>
+            <span className="material-symbols-outlined text-[28px] opacity-40 block">monitoring</span>
+            <p>Add project financials to see your blended cap rate</p>
+          </div>
+        )}
       </div>
-    </Panel>
+    </ClickablePanel>
   );
 }
 
@@ -1567,7 +1862,7 @@ export function CommandCenter() {
 
           <div className="flex items-center gap-2 shrink-0">
             <Link
-              href="/dashboard/reports"
+              href="/dashboard/deal-analyzer"
               className="flex items-center gap-1.5 px-3.5 py-2 rounded-lg text-[12px] font-semibold transition-all duration-150 cursor-pointer"
               style={{
                 background: isDark ? "rgba(255,255,255,0.05)" : "rgba(69,73,85,0.07)",
@@ -1576,9 +1871,9 @@ export function CommandCenter() {
               }}
             >
               <span className="material-symbols-outlined text-[15px]" style={{ fontVariationSettings: "'FILL' 0" }}>
-                bar_chart_4_bars
+                query_stats
               </span>
-              Reports
+              Deal Analyzer
             </Link>
             <Link
               href="/dashboard/projects/new"
@@ -1617,12 +1912,12 @@ export function CommandCenter() {
           </div>
 
           <div className="lg:col-span-3">
-            <FeaturedMetricSlot isDark={isDark} />
+            <FeaturedMetricSlot isDark={isDark} kpis={kpis} />
           </div>
 
           {/* Row 2: KPIs / Metrics, Deal Map */}
           <div className="lg:col-span-6">
-            <EarningsLossesCard isDark={isDark} kpis={kpis} followersCount={followers.length} />
+            <KPIMetricsModule isDark={isDark} />
           </div>
 
           <div className="lg:col-span-3">

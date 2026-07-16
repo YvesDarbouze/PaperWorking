@@ -215,7 +215,7 @@ export default function InspectionUploadModule() {
 
             {uploadFile ? (
               <div className="relative z-10 flex flex-col items-center gap-2">
-                <div className="w-14 h-14 mb-1 rounded-full bg-surface-container-highest flex items-center justify-center text-emerald-500 shadow-lg shadow-emerald-500/10">
+                <div className="w-14 h-14 mb-1 rounded-full bg-surface-container-highest flex items-center justify-center text-pw-success shadow-lg shadow-pw-success/10">
                   <FileCheck2 className="w-6 h-6" />
                 </div>
                 <div className="flex items-center justify-center gap-2">
@@ -318,7 +318,7 @@ export default function InspectionUploadModule() {
                         <div className="flex items-start space-x-3">
                           <button
                             onClick={() => toggleResolved(issue.id)}
-                            className={`mt-0.5 flex-shrink-0 ${issue.resolved ? 'text-emerald-500' : 'text-gray-300 hover:text-text-secondary'}`}
+                            className={`mt-0.5 flex-shrink-0 ${issue.resolved ? 'text-pw-success' : 'text-gray-300 hover:text-text-secondary'}`}
                           >
                             <CheckCircle className="w-4.5 h-4.5" />
                           </button>

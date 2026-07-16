@@ -330,7 +330,7 @@ export default function OccupancyDeepDive({ projects: propProjects }: Props) {
                 ⚠️ **Vacancy Assumption in Use:** This property does not currently have historical tenancy records (days occupied/total hold days). The occupancy rate shown is derived from pro forma vacancy assumptions. Projections can be misleading; verify with real lease ledgers where possible.
               </span>
             ) : (
-              <span className="text-emerald-700 dark:text-emerald-400">
+              <span className="text-pw-success">
                 ✓ **Actual Records in Use:** This calculation is verified using real historical tenancy records (`daysOccupied` and `totalHoldDays`).
               </span>
             )}

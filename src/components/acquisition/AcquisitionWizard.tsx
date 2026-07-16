@@ -18,6 +18,7 @@ import { OwnershipStep } from "./steps/OwnershipStep";
 import { TermsStep }     from "./steps/TermsStep";
 import { ReviewStep }    from "./steps/ReviewStep";
 import { IntakeStep }    from "./steps/IntakeStep";
+import { ButtonGroup }   from "@/components/ui/ButtonGroup";
 
 // ─── API helpers ──────────────────────────────────────────────────────────────
 
@@ -368,7 +369,7 @@ export function AcquisitionWizard({ initialProjectId, onClose }: AcquisitionWiza
           </div>
 
           {/* Right: invite + save & exit + close (×) */}
-          <div className="flex items-center gap-2 flex-shrink-0">
+          <ButtonGroup variant="related" className="flex-shrink-0">
             {/* Invite teammate */}
             {projectId && (
               <button
@@ -414,7 +415,7 @@ export function AcquisitionWizard({ initialProjectId, onClose }: AcquisitionWiza
                 <span className="material-symbols-outlined text-[20px]">close</span>
               </button>
             )}
-          </div>
+          </ButtonGroup>
         </div>
 
         {/* Step content — aria-live so screen readers announce step changes */}

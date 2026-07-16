@@ -319,31 +319,31 @@ export default function InsightsDashboard({ data, missingFields, project }: Insi
   
   // Cap Rate: target 5% to 8% standard
   const capRateColor = shortTerm.capRate >= 5 && shortTerm.capRate <= 8
-    ? '#10b981' // emerald
-    : '#f59e0b'; // amber
+    ? '#00DD94' // brand success
+    : '#C4A35A'; // brand warning
 
   // Cash-on-Cash: target 8%+ (visual warning/crimson if negative)
   const cocColor = shortTerm.cashOnCash < 0
-    ? '#f43f5e' // crimson
+    ? '#F06543' // brand error
     : shortTerm.cashOnCash >= 8
-      ? '#10b981' // emerald
-      : '#f59e0b'; // amber
+      ? '#00DD94' // brand success
+      : '#C4A35A'; // brand warning
 
   // OER: below 35% green, 35%-50% amber, 50%+ red
   const oerColor = shortTerm.oer < 35
-    ? '#10b981' // emerald
+    ? '#00DD94' // brand success
     : shortTerm.oer <= 50
-      ? '#f59e0b' // amber
-      : '#f43f5e'; // crimson
+      ? '#C4A35A' // brand warning
+      : '#F06543'; // brand error
 
   // Vacancy Rate: below 5% green, 5%-10% amber, 10%+ red
   const vacancyRate = shortTerm.vacancyRate ?? 0;
   const displayVacancy = vacancyRate;
   const vacancyColor = displayVacancy < 5
-    ? '#10b981' // emerald
+    ? '#00DD94' // brand success
     : displayVacancy <= 10
-      ? '#f59e0b' // amber
-      : '#f43f5e'; // crimson
+      ? '#C4A35A' // brand warning
+      : '#F06543'; // brand error
 
   // ── Chart data transformation ──
   const projectionData = longTerm.years.map((y, idx) => ({
@@ -699,7 +699,7 @@ export function SecondaryDiagnosticsPanel({ project }: { project: any }) {
                 <span className="text-[10px] text-[#9E9DA0] font-semibold tracking-widest uppercase">
                   {metric.name}
                 </span>
-                <span className="text-[10px] font-mono text-[#5aaa3f] bg-[#5aaa3f]/10 px-2 py-0.5 rounded-full">
+                <span className="text-[10px] font-mono text-[var(--pw-success)] bg-[var(--pw-success)]/10 px-2 py-0.5 rounded-full">
                   Target: {metric.benchmark}
                 </span>
               </div>

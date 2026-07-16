@@ -275,8 +275,8 @@ export function OccupancyCollectionTerminal({
       {/* ── Header ── */}
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
-          <div className="w-8 h-8 rounded-lg bg-emerald-500/10 flex items-center justify-center">
-            <Building2 className="w-4 h-4 text-emerald-400" />
+          <div className="w-8 h-8 rounded-lg bg-pw-success-container border border-pw-success-border flex items-center justify-center">
+            <Building2 className="w-4 h-4 text-pw-success" />
           </div>
           <div>
             <h3 className="text-sm font-bold text-white">Tenants & Leases</h3>

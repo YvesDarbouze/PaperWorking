@@ -182,7 +182,7 @@ function FolderCard({ project, onClick }: { project: Project; onClick: () => voi
   }
 
   // Phase accent colors for top stripe (Stitch folder tab)
-  const phaseStripeColor = phase === 1 ? '#454955' : phase === 2 ? '#7A9EAA' : phase === 3 ? '#ffac5a' : '#5aaa3f';
+  const phaseStripeColor = phase === 1 ? '#454955' : phase === 2 ? '#7A9EAA' : phase === 3 ? '#ffac5a' : 'var(--pw-success)';
 
   return (
     <div
@@ -586,6 +586,48 @@ export default function ProjectsPage() {
     );
   }
 
+  if (storeProjects.length === 0) {
+    return (
+      <div className="min-h-full pb-28 md:pb-28">
+        {/* ── Page Header ── */}
+        <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-5 mb-8">
+          <div>
+            <h2
+              className="text-2xl font-bold tracking-tight"
+              style={{ color: 'rgba(253,255,252,0.95)', letterSpacing: '-0.01em' }}
+            >
+              Projects
+            </h2>
+            <p className="text-sm mt-1" style={{ color: 'rgba(253,255,252,0.45)' }}>
+              0 projects
+            </p>
+          </div>
+        </div>
+
+        <div
+          className="glass-card rounded-2xl p-12 text-center flex flex-col items-center justify-center min-h-[350px]"
+          style={{
+            background: 'var(--color-surface-container-low)',
+            border: '1px solid var(--color-glass-card-border)',
+            boxShadow: 'var(--color-glass-card-shadow)',
+          }}
+        >
+          <EmptyState
+            title="Start your real estate portfolio"
+            description="Create your first project to analyze financials, track the acquisition wizard, and manage the deal lifecycle."
+            icon={FolderX}
+            action={{
+              label: "Create First Project",
+              onClick: handleCreateProject,
+              icon: Plus,
+            }}
+            variant="card"
+          />
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-full pb-28 md:pb-28">
       {/* ── Page Header ── */}
@@ -866,8 +908,8 @@ export default function ProjectsPage() {
                           <span
                             className="px-2.5 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider"
                             style={{
-                              background: project.dispositionType === 'SALE' ? 'rgba(90,170,63,0.15)' : project.dispositionType === 'RENT' ? 'rgba(59,130,246,0.15)' : 'rgba(245,158,11,0.15)',
-                              color: project.dispositionType === 'SALE' ? '#5aaa3f' : project.dispositionType === 'RENT' ? '#3B82F6' : '#F59E0B',
+                              background: project.dispositionType === 'SALE' ? 'var(--pw-success-container)' : project.dispositionType === 'RENT' ? 'rgba(59,130,246,0.15)' : 'rgba(245,158,11,0.15)',
+                              color: project.dispositionType === 'SALE' ? 'var(--pw-success)' : project.dispositionType === 'RENT' ? '#3B82F6' : '#F59E0B',
                             }}
                           >
                             {project.dispositionType ?? 'Undecided'}

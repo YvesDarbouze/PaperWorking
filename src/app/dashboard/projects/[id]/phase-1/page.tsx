@@ -1141,7 +1141,7 @@ export default function Phase1WorkspacePage() {
                       active
                         ? 'bg-[#454955] text-black shadow-lg shadow-[#454955]/20 font-bold'
                         : stage.isComplete
-                        ? 'bg-[#5aaa3f]/15 text-[#5aaa3f] hover:bg-[#5aaa3f]/25'
+                        ? 'bg-[var(--pw-success)]/15 text-[var(--pw-success)] hover:bg-[var(--pw-success)]/25'
                         : unlocked
                         ? 'bg-white/5 text-white hover:bg-white/10'
                         : 'bg-transparent text-[#9E9DA0]/20 cursor-not-allowed'
@@ -1292,7 +1292,7 @@ export default function Phase1WorkspacePage() {
                     <label htmlFor="scorecard-ack-checkbox" className="text-xs font-semibold text-white tracking-wide cursor-pointer uppercase select-none flex items-center gap-2">
                       I have reviewed and acknowledge the 10-KPI Scorecard calculations
                       {project.financials?.scorecardAcknowledged && project.financials?.acknowledgedInputsHash === getScorecardInputsHash(project) && (
-                        <span className="text-[#5aaa3f] text-[10px] font-bold lowercase tracking-normal font-sans">(Acknowledged ✓)</span>
+                        <span className="text-[var(--pw-success)] text-[10px] font-bold lowercase tracking-normal font-sans">(Acknowledged ✓)</span>
                       )}
                     </label>
                   </div>
@@ -2082,7 +2082,7 @@ export default function Phase1WorkspacePage() {
                         <span className="text-sm font-medium text-white">{cond.label}</span>
                         <div className="flex items-center gap-2">
                           <span className={`text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full ${
-                            cond.met ? 'bg-[#5aaa3f]/20 text-[#5aaa3f]' : 'bg-[#F06543]/20 text-[#F06543]'
+                            cond.met ? 'bg-[var(--pw-success)]/20 text-[var(--pw-success)]' : 'bg-[#F06543]/20 text-[#F06543]'
                           }`}>
                             {cond.met ? 'Met' : 'Pending'}
                           </span>
@@ -2355,7 +2355,7 @@ export default function Phase1WorkspacePage() {
               <span
                 className={`shrink-0 px-2 py-0.5 rounded-full text-[9px] font-bold uppercase tracking-wider ${
                   noiResult.state === 'projected' ? 'bg-amber-500/15 text-amber-400'
-                  : noiResult.state === 'live' ? 'bg-emerald-500/15 text-emerald-400'
+                  : noiResult.state === 'live' ? 'bg-pw-success-container text-pw-success'
                   : noiResult.state === 'incomplete' ? 'bg-gray-500/15 text-gray-400'
                   : 'bg-blue-500/15 text-blue-400'
                 }`}

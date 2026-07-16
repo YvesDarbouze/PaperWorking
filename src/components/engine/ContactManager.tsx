@@ -20,7 +20,7 @@ import type { CRMContact, ContactRole } from '@/types/schema';
 const ROLE_CONFIG: Record<ContactRole, { label: string; icon: React.ReactNode; color: string }> = {
   'Lawyer':             { label: 'Lawyer',           icon: <Scale className="w-4 h-4" />,    color: 'bg-[#454955]/10 text-[#1e7874] border-[#454955]/20' },
   'Real Estate Agent':  { label: 'Real Estate Agent', icon: <Home className="w-4 h-4" />,     color: 'bg-blue-50 text-blue-700 border-blue-200' },
-  'Lender / Bank':      { label: 'Lender / Bank',     icon: <Landmark className="w-4 h-4" />, color: 'bg-emerald-50 text-emerald-700 border-emerald-200' },
+  'Lender / Bank':      { label: 'Lender / Bank',     icon: <Landmark className="w-4 h-4" />, color: 'bg-pw-success-container text-pw-success border-pw-success-border' },
   'Appraiser':          { label: 'Appraiser',         icon: <Briefcase className="w-4 h-4" />, color: 'bg-amber-50 text-amber-700 border-amber-200' },
   'Title Company':      { label: 'Title Company',     icon: <Building2 className="w-4 h-4" />, color: 'bg-orange-50 text-orange-700 border-orange-200' },
   'Insurance Agent':    { label: 'Insurance Agent',   icon: <Shield className="w-4 h-4" />,   color: 'bg-red-50 text-red-700 border-red-200' },

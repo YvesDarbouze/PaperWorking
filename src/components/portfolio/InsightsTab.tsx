@@ -193,7 +193,7 @@ export default function InsightsTab() {
             </div>
             <div className="mt-2">
               <div
-                className="text-[2.2rem] font-bold text-emerald-600 tracking-tight leading-none mb-1 font-mono"
+                className="text-[2.2rem] font-bold text-pw-success tracking-tight leading-none mb-1 font-mono"
                 style={{ fontFamily: "'PT Mono', monospace" }}
               >
                 {fmtPct(portfolioRollup.averageCoC)}
@@ -205,7 +205,7 @@ export default function InsightsTab() {
                 Cash-in to cash-out operational dividend yield
               </p>
             </div>
-            <div className="absolute top-0 right-0 w-[4px] h-full bg-emerald-600" />
+            <div className="absolute top-0 right-0 w-[4px] h-full bg-pw-success" />
           </article>
 
           {/* Operating Expense Ratio (OER) */}
@@ -528,7 +528,7 @@ export default function InsightsTab() {
                       <td className="px-6 py-4 text-right font-mono font-medium" style={{ fontFamily: "'PT Mono', monospace" }}>
                         {fmtPct(p.capRate)}
                       </td>
-                      <td className="px-6 py-4 text-right font-mono font-medium text-emerald-600" style={{ fontFamily: "'PT Mono', monospace" }}>
+                      <td className="px-6 py-4 text-right font-mono font-medium text-pw-success" style={{ fontFamily: "'PT Mono', monospace" }}>
                         {fmtPct(p.coc)}
                       </td>
                       <td className="px-6 py-4 text-right font-mono font-medium" style={{ fontFamily: "'PT Mono', monospace" }}>
@@ -604,7 +604,7 @@ export default function InsightsTab() {
                       <td className="px-6 py-4 text-right font-mono font-medium" style={{ fontFamily: "'PT Mono', monospace" }}>
                         {fmtCurrency(p.netProfit)}
                       </td>
-                      <td className="px-6 py-4 text-right font-mono font-medium text-emerald-600" style={{ fontFamily: "'PT Mono', monospace" }}>
+                      <td className="px-6 py-4 text-right font-mono font-medium text-pw-success" style={{ fontFamily: "'PT Mono', monospace" }}>
                         {fmtPct(p.roi)}
                       </td>
                     </tr>

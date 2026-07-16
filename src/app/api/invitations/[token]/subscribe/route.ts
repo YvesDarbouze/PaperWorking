@@ -1,0 +1,72 @@
+import { NextRequest, NextResponse } from 'next/server';
+import { adminDb } from '@/lib/firebase/admin';
+import { logger } from '@/lib/logger';
+
+export async function POST(
+  request: NextRequest,
+  { params }: { params: Promise<{ token: string }> }
+) {
+  const { token } = await params;
+  try {
+    const body = await request.json();
+    const { name, email } = body;
+
+    if (!token) {
+      return NextResponse.json({ error: 'Token missing.' }, { status: 400 });
+    }
+
+    // 1. Resolve invitation
+    const snap = await adminDb
+      .collection('invitations')
+      .where('token', '==', token)
+      .limit(1)
+      .get();
+
+    if (snap.empty) {
+      return NextResponse.json({ error: 'Invitation not found.' }, { status: 404 });
+    }
+
+    const invDoc = snap.docs[0];
+    const inv = invDoc.data();
+    const projectId = inv.projectId;
+
+    const emailLower = (email || inv.email || '').trim().toLowerCase();
+
+    // 2. Update investor_contacts
+    const contactsRef = adminDb.collection('projects').doc(projectId).collection('investor_contacts');
+    const contactsSnap = await contactsRef.where('email', '==', emailLower).get();
+    for (const doc of contactsSnap.docs) {
+      await doc.ref.update({ emailConsent: true, inAppConsent: true });
+    }
+
+    // 3. Update followers
+    const followersRef = adminDb.collection('projects').doc(projectId).collection('followers');
+    const followersSnap = await followersRef.where('email', '==', emailLower).get();
+    for (const doc of followersSnap.docs) {
+      await doc.ref.update({ emailConsent: true, inAppConsent: true });
+    }
+
+    // If they aren't in either, create them as follower or contact so consent is tracked
+    if (followersSnap.empty && contactsSnap.empty) {
+      const newContactId = `contact_${Date.now()}`;
+      await contactsRef.doc(newContactId).set({
+        id: newContactId,
+        name: name || inv.name || 'Unnamed Investor',
+        email: emailLower,
+        emailConsent: true,
+        inAppConsent: true,
+        createdAt: new Date().toISOString(),
+        relationship: 'Subscriber',
+        type: 'Individual',
+        potentialTicket: 0,
+      });
+    }
+
+    logger.info('[Subscribe] Subscribed & unlocked deal', { email: emailLower, projectId });
+
+    return NextResponse.json({ success: true, message: 'Successfully subscribed. Deal unlocked.' });
+  } catch (error) {
+    logger.error('[Subscribe] Error:', error);
+    return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
+  }
+}

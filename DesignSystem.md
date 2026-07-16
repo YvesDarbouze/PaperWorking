@@ -1,7 +1,11 @@
 # PaperWorking — Design System
-## Source of Truth: `src/app/globals.css` + live site https://paperworking.co
+## Source of Truth: `src/app/globals.css` + design reference https://antigravity.google/pricing
 
-> **Every UI decision must match what ships at paperworking.co.** This document is derived directly from `globals.css` (verified 2026-06-27). Where code and this doc conflict, **the code wins** — but flag and reconcile.
+> **Every UI decision must match what is defined here and in globals.css.** This document is derived directly from the design tokens and variables in `globals.css`. Where code and this doc conflict, **the code wins**.
+
+### Changelog
+* **2026-07-15**: Stitch palette retired, superseded by the Antigravity-reference design language.
+* **2026-06-27**: Document initialized with custom property tokens.
 
 ---
 
@@ -19,12 +23,12 @@ All values are CSS custom properties. **Never hard-code a hex color that isn't a
 
 | Token | Night Value | Usage |
 |-------|-------------|-------|
-| `--color-primary` | `#00DD94` | All accents, CTAs, interactive highlights |
-| `--color-on-primary` | `#0d0a0b` | Text on primary-colored surfaces |
-| `--color-primary-container` | `rgba(0,221,148,0.14)` | Tinted badge/chip backgrounds |
-| `--color-on-primary-container` | `#00DD94` | Text inside primary containers |
-| `--color-inverse-primary` | `#00CE8E` | Accent on opposite-theme surfaces |
-| `--pw-accent` (alias) | `#00DD94` | Use this alias in components |
+| `--color-primary` | `#3279F9` | Revalued brand blue accent, interactive highlights, primary CTAs |
+| `--color-on-primary` | `#FFFFFF` | Text on primary-colored surfaces |
+| `--color-primary-container` | `rgba(50,121,249,0.14)` | Tinted badge/chip backgrounds |
+| `--color-on-primary-container` | `#3279F9` | Text inside primary containers |
+| `--color-inverse-primary` | `#2269E9` | Accent on opposite-theme surfaces |
+| `--pw-accent` (alias) | `#3279F9` | Use this alias in components for brand-accented highlights |
 
 > **Rule**: There is no purple, violet, or magenta anywhere in PaperWorking. If you see purple: it's a bug.
 
@@ -65,7 +69,8 @@ All values are CSS custom properties. **Never hard-code a hex color that isn't a
 
 | Token | Night Value | Usage |
 |-------|-------------|-------|
-| `--color-positive` | `#3f7d20` | Market up, gains, positive cash flow |
+| `--pw-success` | `#00DD94` | The single surviving green success token, live indicator, positive change |
+| `--color-positive` | `#00DD94` | Maps directly to `--pw-success` |
 | `--color-error` | `#F06543` | Market down, losses, errors, negative cash flow |
 | `--color-tertiary` | `#C4A35A` | Warm amber — warnings, cautions |
 
@@ -105,8 +110,8 @@ letter-spacing: -0.011em;
 
 | Role | Tag / Class | Size | Weight | Line Height | Letter Spacing |
 |------|-------------|------|--------|-------------|----------------|
-| Display Hero | `.font-display-hero` | 72px | **300** (Light) | 80px | −0.04em |
-| Headline XL | `h1` | 56px | **300** (Light) | 64px | −0.03em |
+| Display Hero | `.font-display-hero` | 72px | **450** (Medium/Regular-Plus) | 80px | −0.04em |
+| Headline XL | `h1` | 56px | **450** (Medium/Regular-Plus) | 64px | −0.03em |
 | Headline LG | `h2` | 36px | **700** | 44px | −0.025em |
 | Headline LG Mobile | `h3` | 28px | **700** | 36px | −0.02em |
 | Headline MD | `h4` | 24px | **700** | 32px | −0.015em |
@@ -167,7 +172,7 @@ border-radius: var(--radius-DEFAULT); /* 8px */
 backdrop-filter: blur(20px);
 
 /* Focus */
-border-color: var(--color-brand-primary);
+border-color: var(--color-primary);
 box-shadow: 0 0 8px var(--input-focus-glow-color);
 ```
 
@@ -181,7 +186,7 @@ Three tiers + danger. All use CSS variables — **never hard-code button colors*
 
 | Theme | Background | Text | Shadow |
 |-------|-----------|------|--------|
-| Night | `#00DD94` (green) | `#0d0a0b` | `0 0 20px -5px rgba(69,73,85,0.4)` |
+| Night | `#3279F9` (blue) | `#FFFFFF` | `0 0 20px -5px rgba(69,73,85,0.4)` |
 | Hover | shift bg + `translateY(-1px)` | — | stronger shadow |
 | Active | `scale(0.97)` | — | — |
 
@@ -206,7 +211,7 @@ border: 1px solid var(--pw-btn-secondary-border);
 ```css
 background: transparent;
 color: var(--pw-btn-tertiary-text);
-border: 1px solid rgba(0,221,148,0.15);
+border: 1px solid rgba(50,121,249,0.15);
 ```
 
 ### Danger
@@ -305,7 +310,7 @@ Material Symbols Outlined (Google variable font).
 <span class="material-symbols-outlined"
       style="font-variation-settings:'FILL' 1; font-size: 20px;">
   arrow_forward
-</span>
+ </span>
 ```
 
 `FILL 0` = outlined. `FILL 1` = filled.
@@ -327,7 +332,7 @@ letter-spacing: wider; border-radius: var(--radius-full);
 
 ## 12. Financial Display Rules
 
-- Positive values: `color: var(--color-positive)` (`#3f7d20`)
+- Positive values: `color: var(--pw-success)` (`#00DD94`)
 - Negative values: `color: var(--color-error)` (`#F06543`)
 - All numbers: `font-family: var(--font-mono); font-variant-numeric: tabular-nums;`
 - Missing inputs: show `"Awaiting Purchase Price"` — never `$0`
@@ -335,7 +340,7 @@ letter-spacing: wider; border-radius: var(--radius-full);
 
 ```css
 .health-band-fill  { background: var(--color-primary); box-shadow: 0 0 10px var(--color-primary); }
-.health-band-positive { border-left: 4px solid var(--color-primary); }
+.health-band-positive { border-left: 4px solid var(--pw-success); }
 .health-band-warning  { border-left: 4px solid var(--color-tertiary-container); }
 ```
 
@@ -350,7 +355,7 @@ letter-spacing: wider; border-radius: var(--radius-full);
   outline-offset: 3px;
   border-radius: var(--radius-sm);
 }
-::selection { background: #454955; color: #FDFFFC; }
+::selection { background: var(--color-primary-container); color: var(--color-on-primary-container); }
 ```
 
 ---
@@ -358,7 +363,7 @@ letter-spacing: wider; border-radius: var(--radius-full);
 ## 14. Dashboard vs. Marketing Context
 
 | | `.marketing-context` | `.dashboard-context` |
-|--|---------------------|---------------------|
+|---|---------------------|---------------------|
 | Card radius | `--radius-2xl` to `--radius-3xl` | `--radius-lg` (16px) |
 | Feel | Soft, editorial, large | Sharp, FinTech, dense |
 | Glass blur | `blur(24–32px)` | `blur(20px)` |
@@ -369,11 +374,11 @@ letter-spacing: wider; border-radius: var(--radius-full);
 
 | DO | DON'T |
 |----|-------|
-| Use `var(--color-primary)` for accents | Hard-code `#00DD94` |
+| Use `var(--color-primary)` for accents/highlights | Hard-code `#3279F9` |
 | Use `.glass-card` / `.glass-panel` for surfaces | Plain `background-color` on floated panels |
 | Use `.luminous-button` for primary CTAs | Create bespoke button styles |
 | Match `border-radius` to context | Use `rounded-2xl` in the dashboard |
-| `var(--color-positive)` / `var(--color-error)` for financials | Hardcoded green/red |
+| `var(--pw-success)` / `var(--color-error)` for financials | Hardcoded green/red |
 | `font-mono` + `tabular-nums` for all financial figures | `font-sans` for data display |
 | Uppercase + tracked labels for section heads | Mixed-case labels for data categories |
 | PaperWorking is night-theme only. Never generate a light variant. | Generate or support a light variant |
@@ -384,8 +389,8 @@ letter-spacing: wider; border-radius: var(--radius-full);
 ## 16. Quick Reference — Token Cheat Sheet
 
 ```
-PRIMARY ACCENT
-  Night: #00DD94   → var(--color-primary)
+PRIMARY ACCENT (BLUE)
+  Night: #3279F9   → var(--color-primary)
 
 BACKGROUND
   Night: #0d0a0b   → var(--color-background)
@@ -402,10 +407,10 @@ TEXT PRIMARY
 TEXT MUTED
   Night: #9E9DA0   → var(--color-on-surface-variant)
 
-POSITIVE
-  Night: #3f7d20   → var(--color-positive)
+SUCCESS (GREEN)
+  Night: #00DD94   → var(--pw-success)
 
-NEGATIVE
+NEGATIVE (RED)
   Night: #F06543   → var(--color-error)
 
 BORDER
@@ -420,4 +425,40 @@ GLASS BG
 ## 17. Green Semantics Policy
 
 Green is reserved for exactly three uses: (1) a passing/success state, (2) a positive-signal status chip (e.g., LIVE), (3) the single primary call-to-action on a surface, at most one per view. Green never appears on headings, tab labels, section titles, borders-as-decoration, or body text. The Hold phase color is a distinct token and is exempt — but it is only used for phase identification, never for emphasis.
+
+---
+
+## 18. Spacing & Button Group Policy (UX-3)
+
+Buttons across the dashboard must follow a structured spacing system on the 8-pt grid:
+- **Related Buttons**: Minimum `8px` between related buttons in a group (mapped to `--spacing-btn-gap-related`).
+- **Unrelated Buttons**: `16px` between unrelated button groups (mapped to `--spacing-btn-gap-unrelated`).
+- **Content Spacing**: `24px` between a control group and adjacent content blocks (mapped to `--spacing-btn-gap-content`).
+
+All interactive button clusters must use the `<ButtonGroup>` layout primitive in `src/components/ui/ButtonGroup.tsx` which automatically enforces these gaps:
+```tsx
+import { ButtonGroup } from '@/components/ui';
+
+<ButtonGroup variant="related">
+  <button>Save</button>
+  <button>Cancel</button>
+</ButtonGroup>
+```
+
+### Touch Targets
+All buttons and icon buttons must have a minimum physical or virtual touch/click hit area of `40x40px` (applied via absolute positioning of the button's `::after` pseudo-element where appropriate, to avoid expanding visual dimensions).
+
+---
+
+## 19. Portfolio Navigation & Creation Policy (UX-5)
+
+### Navigation Tabs
+To prevent layout clutter and hierarchy confusion, secondary pill navigation tabs (e.g., Overview, Assets, Transactions, Insights) on main pages must be avoided. The default overview must render unconditionally, and other sections must be reachable via the primary left-side sidebar (e.g., Reports for Transactions and Insights for Yield Analytics).
+
+### Project Creation Controls
+To avoid visual redundancy, there must be **no more than 2** project creation controls on any single view:
+1. **Primary**: One control in the page header action area.
+2. **Contextual**: One control in the empty-state block (if zero projects exist).
+
+Both controls must be labeled identically as **"Create Project"**. All other secondary/inline project creation buttons (such as in Recent Projects list headers) must be removed.
 

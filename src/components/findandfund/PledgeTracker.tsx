@@ -22,7 +22,7 @@ import toast from 'react-hot-toast';
 const STATUS_CONFIG: Record<PledgeStatus, { label: string; color: string; bg: string; icon: React.ElementType }> = {
   pending: { label: 'Pending', color: 'text-amber-600', bg: 'bg-amber-50', icon: Clock },
   committed: { label: 'Committed', color: 'text-blue-600', bg: 'bg-blue-50', icon: HandCoins },
-  confirmed: { label: 'Confirmed', color: 'text-emerald-600', bg: 'bg-emerald-50', icon: CheckCircle2 },
+  confirmed: { label: 'Confirmed', color: 'text-pw-success', bg: 'bg-pw-success-container border border-pw-success-border', icon: CheckCircle2 },
   rejected: { label: 'Rejected', color: 'text-red-500', bg: 'bg-red-50', icon: XCircle },
 };
 
@@ -142,9 +142,9 @@ export default function PledgeTracker() {
                 <p className="text-xs font-bold text-text-secondary uppercase tracking-widest">Total Pledged</p>
                 <p className="text-lg font-semibold text-text-primary mt-0.5">${stats.totalPledged.toLocaleString()}</p>
               </div>
-              <div className="bg-emerald-50 rounded-lg px-4 py-3">
-                <p className="text-xs font-bold text-emerald-500 uppercase tracking-widest">Confirmed</p>
-                <p className="text-lg font-semibold text-emerald-700 mt-0.5">${stats.confirmedAmount.toLocaleString()}</p>
+              <div className="bg-pw-success-container border border-pw-success-border rounded-lg px-4 py-3">
+                <p className="text-xs font-bold text-pw-success uppercase tracking-widest">Confirmed</p>
+                <p className="text-lg font-semibold text-pw-success mt-0.5">${stats.confirmedAmount.toLocaleString()}</p>
               </div>
               <div className="bg-amber-50 rounded-lg px-4 py-3 col-span-2 md:col-span-1">
                 <p className="text-xs font-bold text-amber-500 uppercase tracking-widest">Awaiting Action</p>
@@ -210,7 +210,7 @@ export default function PledgeTracker() {
                               <>
                                 <button
                                   onClick={() => updatePledgeStatus(pledge.id, 'confirmed')}
-                                  className="flex items-center gap-1 px-2 py-1 text-xs font-semibold bg-emerald-50 text-emerald-600 rounded-md hover:bg-emerald-100 transition"
+                                  className="flex items-center gap-1 px-2 py-1 text-xs font-semibold bg-pw-success-container text-pw-success rounded-md hover:bg-pw-success/20 transition border border-pw-success-border"
                                 >
                                   <ShieldCheck className="w-3 h-3" /> Confirm
                                 </button>

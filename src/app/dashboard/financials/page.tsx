@@ -240,7 +240,7 @@ export default function FinancialsTerminal() {
               <><span className="inline-block w-2 h-2 rounded-full bg-yellow-400 animate-pulse" /><span className="text-on-surface-variant">Saving…</span></>
             )}
             {saveStatus === "saved" && (
-              <><span className="inline-block w-2 h-2 rounded-full bg-emerald-400" /><span className="text-emerald-400">Saved</span></>
+              <><span className="inline-block w-2 h-2 rounded-full bg-pw-success" /><span className="text-pw-success">Saved</span></>
             )}
             {saveStatus === "error" && (
               <><span className="inline-block w-2 h-2 rounded-full bg-error" /><span className="text-error">Error</span></>

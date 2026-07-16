@@ -40,7 +40,7 @@ function acqBand(v: number): Band {
 }
 
 const BAND_STYLE: Record<Band, { bg: string; text: string; border: string }> = {
-  green:  { bg: 'bg-[#F2F2F2]', text: 'text-emerald-700', border: 'border-[#CCCCCC]' },
+  green:  { bg: 'bg-pw-success-container', text: 'text-pw-success', border: 'border-pw-success-border' },
   yellow: { bg: 'bg-[#F2F2F2]',   text: 'text-amber-700',   border: 'border-[#CCCCCC]' },
   red:    { bg: 'bg-[#F2F2F2]',     text: 'text-red-700',     border: 'border-[#CCCCCC]' },
 };

@@ -19,6 +19,7 @@ import AddressAutocomplete, { type ParsedAddress } from '@/components/projects/A
 import PropertySearchInput from '@/components/shared/PropertySearchInput';
 import { DealHealthPreview } from '@/components/project/DealHealthPreview';
 import type { BridgeSearchResult } from '@/types/bridge';
+import { ButtonGroup } from '@/components/ui/ButtonGroup';
 
 /* ═══════════════════════════════════════════════════════════════
    ProjectCreationWizard — Stitch Schema Reskin
@@ -793,7 +794,7 @@ export default function ProjectCreationWizard({
                           id: 4, type: 'exit', title: 'Exit',
                           desc: 'Close it out or keep it producing income. This is where the whole lifecycle pays off.',
                           icon: 'trending_up',
-                          color: '#5aaa3f',
+                          color: 'var(--pw-success)',
                         },
                       ].map((phase) => {
                         const isSelected = formData.startingPhase === phase.id;
@@ -1223,7 +1224,7 @@ export default function ProjectCreationWizard({
             {activeIndex === 0 ? 'Exit' : 'Back'}
           </button>
 
-          <div className="flex items-center gap-4">
+          <ButtonGroup variant="unrelated">
             {/* Skip (only for non-required) */}
             {!isReviewStep && activeQuestion && !activeQuestion.required && (
               <button
@@ -1254,7 +1255,7 @@ export default function ProjectCreationWizard({
                 <ChevronRight className="w-5 h-5" />
               </button>
             )}
-          </div>
+          </ButtonGroup>
         </div>
       </nav>
       {/* ── Dismiss Confirmation Modal ── */}
@@ -1276,7 +1277,7 @@ export default function ProjectCreationWizard({
                 You have unsaved data in the wizard. Closing now will discard all entries.
               </p>
             </div>
-            <div className="flex gap-3">
+            <ButtonGroup variant="related" className="w-full">
               <button
                 onClick={() => setShowDismissConfirm(false)}
                 className="flex-1 rounded-xl px-5 py-3 text-[14px] font-semibold text-[#9E9DA0] border border-white/10 hover:border-white/20 transition-all active:scale-95 duration-150"
@@ -1293,7 +1294,7 @@ export default function ProjectCreationWizard({
               >
                 Discard & Exit
               </button>
-            </div>
+            </ButtonGroup>
           </div>
         </div>
       )}

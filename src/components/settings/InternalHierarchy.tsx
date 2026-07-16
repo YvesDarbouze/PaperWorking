@@ -30,8 +30,8 @@ const ROLE_META: Record<InternalRole, { color: string; bg: string; icon: React.R
     desc: 'President — leads company operations and organizational strategy',
   },
   'CFO': {
-    color: 'text-emerald-700',
-    bg: 'bg-emerald-50',
+    color: 'text-pw-success',
+    bg: 'bg-pw-success-container border border-pw-success-border/30',
     icon: <DollarSign className="w-3 h-3" />,
     desc: 'Chief Financial Officer — financial oversight and reporting',
   },

@@ -55,7 +55,7 @@ export const ContingencyTracker: React.FC = () => {
 
     if (hoursLeft < 0) return { color: 'bg-red-100 text-red-800', bar: 'bg-red-500', label: 'Overdue' };
     if (hoursLeft <= 48) return { color: 'bg-yellow-100 text-yellow-800', bar: 'bg-yellow-500', label: '< 48 Hours' };
-    return { color: 'bg-emerald-100 text-emerald-800', bar: 'bg-emerald-500', label: 'Safe' };
+    return { color: 'bg-pw-success-container text-pw-success border border-pw-success-border/50', bar: 'bg-pw-success', label: 'Safe' };
   };
 
   return (

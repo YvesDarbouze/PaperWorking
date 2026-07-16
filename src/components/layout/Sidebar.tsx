@@ -5,8 +5,8 @@
  * 240px fixed panel. Mobile navigation is handled by BottomNav + TopAppBar.
  * Exports: Sidebar (named + default)
  *
- * Nav contract (AGENTS.md v3 — 2026-06-06):
- *   Primary: Portfolio · Projects · Insights · Reports · Inbox · Team
+ * Nav contract (AGENTS.md v4 — 2026-07-16):
+ *   Primary: Portfolio · Projects · Data Room · Insights · Reports · Inbox · Team
  *   Account: Profile · Billing · Settings
  */
 
@@ -27,9 +27,10 @@ import toast from "react-hot-toast";
 // ─── Navigation contract ──────────────────────────────────────────────────────
 
 const PRIMARY_NAV = [
-  { name: "Portfolio",     href: "/dashboard/command-center", icon: "space_dashboard" },
-  { name: "Insights",      href: "/dashboard/insights",       icon: "monitoring"      },
+  { name: "Portfolio",     href: "/dashboard/command-center",  icon: "space_dashboard" },
   { name: "Projects",      href: "/dashboard/projects",       icon: "folder"          },
+  { name: "Data Room",     href: "/dashboard/data-room",      icon: "folder_shared"   },
+  { name: "Insights",      href: "/dashboard/insights",       icon: "monitoring"      },
   { name: "Reports",       href: "/dashboard/reports",        icon: "bar_chart_4_bars"},
   { name: "Inbox",         href: "/dashboard/inbox",          icon: "inbox"           },
   { name: "Team",          href: "/dashboard/team",           icon: "group"           },
@@ -263,34 +264,13 @@ export function Sidebar() {
       }}
     >
       {/* ── Brand area ─────────────────────────────────────────────────── */}
-      <div className="px-5 pt-6 pb-4">
+      <div className="px-5 flex items-center" style={{ height: '70px' }}>
         <Logo surface="app-sidebar" href="/dashboard/command-center" />
-      </div>
-
-      {/* ── Create Project — Featured CTA ───────────────────────────────── */}
-      <div className="px-3 pb-4">
-        <button
-          onClick={openWizard}
-          className="flex items-center justify-center gap-2 w-full py-2.5 rounded-xl text-[13px] font-semibold transition-all duration-200 hover:opacity-90 active:scale-[0.98]"
-          style={{
-            background: isDark ? "var(--color-primary)" : "#0b8649",
-            color: isDark ? "#0d0a0b" : "#FDFFFC",
-            letterSpacing: "-0.01em",
-            boxShadow: "0 4px 16px rgba(var(--color-primary-rgb, 90,170,63),0.30)",
-          }}
-        >
-          <span
-            className="material-symbols-outlined text-[18px] flex-shrink-0"
-            style={{ fontVariationSettings: "'FILL' 1" }}
-          >
-            add_circle
-          </span>
-          Create Project
-        </button>
       </div>
 
       {/* ── Primary navigation ──────────────────────────────────────────── */}
       <nav className="flex-1 overflow-y-auto custom-scrollbar px-2 space-y-0.5">
+        <SectionLabel label="Portfolio" isDark={isDark} />
         {PRIMARY_NAV.filter((item) => {
           if (item.name === "Projects") {
             const isVendor =
@@ -301,9 +281,11 @@ export function Sidebar() {
           }
           return true;
         }).map((item) => {
+          // Portfolio (command-center): exact match only so sub-routes don't false-highlight
           const isActive =
-            pathname.startsWith(item.href) ||
-            (item.href === "/dashboard/command-center" && pathname === "/dashboard");
+            item.href === "/dashboard/command-center"
+              ? pathname === "/dashboard/command-center" || pathname === "/dashboard"
+              : pathname.startsWith(item.href);
 
           return (
             <NavItem
@@ -366,7 +348,7 @@ export function Sidebar() {
                 style={{ letterSpacing: "0.08em", color: mutedText }}
               >
                 acting as:{" "}
-                <span style={{ color: isDark ? "var(--color-primary)" : "#047857", fontWeight: 800 }}>
+                <span style={{ color: "var(--color-primary)", fontWeight: 800 }}>
                   {isPersonal ? "Me" : activeWorkspace?.name}
                 </span>
               </p>

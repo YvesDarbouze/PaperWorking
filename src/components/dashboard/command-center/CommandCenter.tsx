@@ -3,7 +3,7 @@
 import { useMemo, useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import dynamic from "next/dynamic";
-import { collection, doc, query, orderBy, limit, onSnapshot, Timestamp } from "firebase/firestore";
+import { collection, doc, query, orderBy, limit, onSnapshot, Timestamp, where } from "firebase/firestore";
 import { db } from "@/lib/firebase/config";
 import { useProjectStore } from "@/store/projectStore";
 import { useTheme } from "@/lib/utils/ThemeProvider";
@@ -22,8 +22,10 @@ import {
   buildIRRCashFlows,
 } from "@/lib/metrics/reiMetrics";
 import type { Project } from "@/types/schema";
+import type { DealListingTeaser } from "@/types/listing";
 
 const InsightsTab = dynamic(() => import("@/components/portfolio/InsightsTab"), { ssr: false });
+const DealMap = dynamic(() => import("@/components/marketplace/DealMap"), { ssr: false });
 
 // ─── Portfolio KPI hook ───────────────────────────────────────────────────────
 
@@ -160,9 +162,9 @@ function tokens(isDark: boolean) {
     subtext:    isDark ? "rgba(253,255,252,0.70)" : "rgba(55,59,69,0.80)",
     muted:      isDark ? "rgba(253,255,252,0.58)" : "rgba(55,59,69,0.72)",
     divider:    isDark ? "rgba(230, 234, 240, 0.12)" : "rgba(33, 34, 38, 0.12)",
-    link:       "#3279F9",
+    link:       "#627C85",
     panelBg:    isDark
-      ? "linear-gradient(145deg, rgba(30,27,34,0.72) 0%, rgba(18,16,20,0.90) 100%)"
+      ? "var(--color-surface, #121317)"
       : "#FFFFFF",
     panelBorder:isDark ? "rgba(230, 234, 240, 0.12)"  : "rgba(33, 34, 38, 0.12)",
     panelShadow:isDark ? "0 4px 20px rgba(0,0,0,0.28)" : "0 2px 10px rgba(0,0,0,0.06)",
@@ -181,25 +183,26 @@ interface KPICardProps {
   chip?: string;
   meta?: string;
   isDark: boolean;
+  href?: string;
 }
 
-function KPICard({ label, icon, value, suffix, accentColor, trend, chip, meta, isDark }: KPICardProps) {
+function KPICard({ label, icon, value, suffix, accentColor, trend, chip, meta, isDark, href }: KPICardProps) {
   const t        = tokens(isDark);
   const trendIcon = trend === "up" ? "arrow_upward" : trend === "down" ? "arrow_downward" : null;
-  const trendClr  = trend === "up" ? "#5aaa3f" : trend === "down" ? "#F06543" : undefined;
+  const trendClr  = trend === "up" ? "var(--pw-success)" : trend === "down" ? "#F06543" : undefined;
   const [hovered, setHovered] = useState(false);
 
-  return (
+  const cardContent = (
     <article
       aria-label={`${label}: ${value}${suffix ?? ""}`}
-      className="relative flex flex-col gap-2.5 rounded-xl p-4 overflow-hidden group cursor-default"
+      className={`relative flex flex-col gap-2.5 rounded-xl p-4 overflow-hidden group ${href ? "cursor-pointer" : "cursor-default"}`}
       style={{
         background: t.panelBg,
         backdropFilter: isDark ? "blur(24px)" : undefined,
         WebkitBackdropFilter: isDark ? "blur(24px)" : undefined,
-        border: `1px solid ${hovered ? "#3279F9" : t.panelBorder}`,
+        border: `1px solid ${hovered ? "#627C85" : t.panelBorder}`,
         boxShadow: hovered
-          ? (isDark ? "0 8px 30px rgba(0,0,0,0.5), 0 0 0 1px #3279F9" : "0 8px 30px rgba(50, 121, 249, 0.06), 0 0 0 1px #3279F9")
+          ? (isDark ? "0 8px 30px rgba(0,0,0,0.5), 0 0 0 1px #627C85" : "0 8px 30px rgba(98, 124, 133, 0.06), 0 0 0 1px #627C85")
           : t.panelShadow,
         transform: hovered ? "translateY(-2px)" : "translateY(0)",
         transition: "all 0.2s cubic-bezier(0.4, 0, 0.2, 1)",
@@ -271,6 +274,15 @@ function KPICard({ label, icon, value, suffix, accentColor, trend, chip, meta, i
       </div>
     </article>
   );
+
+  if (href) {
+    return (
+      <Link href={href} className="no-underline block h-full">
+        {cardContent}
+      </Link>
+    );
+  }
+  return cardContent;
 }
 
 // ─── Section heading ──────────────────────────────────────────────────────────
@@ -358,7 +370,7 @@ const PHASE_LEGEND = [
   { label: "Acquisition", color: "#454955" },
   { label: "Closing",     color: "#7A9EAA" },
   { label: "Rehab",       color: "#ffac5a" },
-  { label: "Hold / Exit", color: "#5aaa3f" },
+  { label: "Hold / Exit", color: "var(--pw-success)" },
 ];
 
 // ─── Recent Activity Feed ─────────────────────────────────────────────────────
@@ -466,7 +478,7 @@ function RecentActivityFeed({ isDark }: { isDark: boolean }) {
         <div className="flex items-center gap-2">
           <span
             className="material-symbols-outlined text-[16px]"
-            style={{ color: "#3279F9", fontVariationSettings: "'FILL' 0" }}
+            style={{ color: "#627C85", fontVariationSettings: "'FILL' 0" }}
           >
             history
           </span>
@@ -480,7 +492,7 @@ function RecentActivityFeed({ isDark }: { isDark: boolean }) {
         <Link
           href="/dashboard/inbox"
           className="text-[11px] font-semibold hover:opacity-70 transition-opacity"
-          style={{ color: "#3279F9" }}
+          style={{ color: "#627C85" }}
         >
           All →
         </Link>
@@ -541,7 +553,7 @@ function RecentActivityFeed({ isDark }: { isDark: boolean }) {
               className="flex items-start gap-3 px-3 py-2.5 rounded-lg border transition-all duration-200 cursor-default relative overflow-hidden group"
               style={{ borderColor: t.divider, background: "transparent" }}
               onMouseEnter={(e) => {
-                e.currentTarget.style.borderColor = "#3279F9";
+                e.currentTarget.style.borderColor = "#627C85";
                 e.currentTarget.style.boxShadow = isDark
                   ? "0 4px 20px rgba(0,0,0,0.35)"
                   : "0 2px 10px rgba(0,0,0,0.04)";
@@ -557,7 +569,7 @@ function RecentActivityFeed({ isDark }: { isDark: boolean }) {
                 style={{
                   background: isDark
                     ? "linear-gradient(135deg, rgba(255,255,255,0.02) 0%, rgba(255,255,255,0.01) 100%)"
-                    : "linear-gradient(135deg, rgba(50,121,249,0.02) 0%, rgba(50,121,249,0.01) 100%)",
+                    : "linear-gradient(135deg, rgba(98,124,133,0.02) 0%, rgba(98,124,133,0.01) 100%)",
                   backdropFilter: "blur(4px)",
                   WebkitBackdropFilter: "blur(4px)",
                 }}
@@ -659,7 +671,16 @@ function UserAvatar({ photoURL, displayName, email, size = 32, isDark }: AvatarP
   );
 }
 
-function ProfileCard({ isDark }: { isDark: boolean }) {
+interface FollowerWithDeal {
+  id: string;
+  name: string;
+  email: string;
+  avatarUrl?: string;
+  followedAt: string;
+  dealName: string;
+}
+
+function ProfileCard({ isDark, followers }: { isDark: boolean; followers: FollowerWithDeal[] }) {
   const { user, profile } = useAuth();
   const { activeTenantId } = useTenant();
   const projects = useProjectStore((s) => s.projects);
@@ -667,9 +688,26 @@ function ProfileCard({ isDark }: { isDark: boolean }) {
   const [teamCount, setTeamCount] = useState<number>(1);
 
   const activeCount = projects.filter(p => p.status !== 'Sold').length;
-  const pastCount   = projects.filter(p => p.status === 'Sold').length;
 
-  // Live team member count from the org document
+  // Resolve workspaces and company name
+  const workspaces: Array<{ id: string; name: string; type: "personal" | "team" }> = profile
+    ? [{ id: profile.personalOrganizationId || `org_${user?.uid.slice(0, 8)}`, name: "Personal Workspace", type: "personal" }]
+    : [];
+
+  if (profile?.memberships) {
+    Object.entries(profile.memberships).forEach(([tenantId, membership]) => {
+      workspaces.push({
+        id: tenantId,
+        name: (membership as { tenantName?: string })?.tenantName || "Team Workspace",
+        type: "team",
+      });
+    });
+  }
+
+  const activeWorkspace = workspaces.find((w) => w.id === activeTenantId) || workspaces[0];
+  const companyName = activeWorkspace?.name || "PaperWorking Member";
+
+  // Live team count
   useEffect(() => {
     if (!activeTenantId || activeTenantId === 'org_placeholder') return;
     const orgRef = doc(db, 'organizations', activeTenantId);
@@ -683,51 +721,177 @@ function ProfileCard({ isDark }: { isDark: boolean }) {
     return () => unsub();
   }, [activeTenantId]);
 
+  // Real followers only — no seed/fallback data (honest zero-state)
+  const displayFollowers = useMemo(() => {
+    return followers.slice(0, 5);
+  }, [followers]);
+
+  const getInitials = (name: string) => {
+    const parts = name.trim().split(/\s+/);
+    if (parts.length >= 2) {
+      return (parts[0][0] + parts[1][0]).toUpperCase();
+    }
+    return parts[0] ? parts[0].slice(0, 2).toUpperCase() : "US";
+  };
+
+  // Canon role: Lead Investor for owners, Investment Team for team members
+  const canonRole = profile?.role === "Vendor"
+    ? "Vendor Partner"
+    : (profile?.role || "Lead Investor");
+
   return (
-    <Panel isDark={isDark} className="p-6 flex flex-col justify-between h-full">
-      <div className="flex items-start gap-4">
-        {/* Avatar */}
-        <div className="relative">
-          <UserAvatar
-            photoURL={user?.photoURL}
-            displayName={profile?.displayName ?? user?.displayName}
-            email={user?.email}
-            size={64}
-            isDark={isDark}
-          />
-          {/* Active status pulse */}
-          <span className="absolute bottom-0 right-0 block h-3.5 w-3.5 rounded-full ring-2 ring-white bg-[#5aaa3f]" />
+    <Panel isDark={isDark} className="flex flex-col relative min-h-[520px]">
+      {/* ── Portrait card content ── */}
+      <div className="w-full flex-1 flex flex-col p-6">
+        {/* Header row: "Profile" + edit */}
+        <div className="flex justify-between items-center mb-5">
+          <span className="text-[11px] font-bold uppercase tracking-wider" style={{ color: t.subtext }}>
+            Profile
+          </span>
+          <Link
+            href="/dashboard/settings/profile"
+            className="text-[11px] font-semibold transition-opacity duration-150 hover:opacity-75"
+            style={{ color: t.link }}
+          >
+            edit
+          </Link>
         </div>
 
-        <div className="flex-1 min-w-0">
-          <h2 className="text-[18px] font-bold truncate tracking-tight text-left" style={{ color: t.heading, fontFamily: "'Montserrat', sans-serif" }}>
-            {profile?.displayName || user?.displayName || "Real Estate Investor"}
-          </h2>
-          <p className="text-[12px] capitalize text-left" style={{ color: t.subtext }}>
-            {profile?.role || "Portfolio Manager"}
-          </p>
-          <div className="flex gap-4 mt-3">
-            <div className="text-center">
-              <span className="block text-[14px] font-bold font-mono" style={{ color: t.heading }}>{teamCount}</span>
-              <span className="text-[10px] uppercase tracking-wider block" style={{ color: t.muted }}>Team</span>
+        {/* ── Identity block ── */}
+        <div className="flex items-start gap-4 pb-4">
+          <div className="flex items-start gap-3 flex-1 min-w-0">
+            {/* Avatar with presence dot */}
+            <div className="relative flex-shrink-0">
+              <UserAvatar
+                photoURL={user?.photoURL}
+                displayName={profile?.displayName ?? user?.displayName}
+                email={user?.email}
+                size={54}
+                isDark={isDark}
+              />
+              <span className={`absolute bottom-0 right-0 block h-3 w-3 rounded-full ring-2 bg-[var(--pw-success)] ${isDark ? 'ring-[#121317]' : 'ring-white'}`} />
             </div>
-            <div className="text-center">
-              <span className="block text-[14px] font-bold font-mono" style={{ color: t.heading }}>{projects.length}</span>
-              <span className="text-[10px] uppercase tracking-wider block" style={{ color: t.muted }}>Deals</span>
+
+            {/* Name, Company, Role, Followers/Team */}
+            <div className="min-w-0 text-left">
+              <h2 className="text-[15px] font-bold truncate leading-snug" style={{ color: t.heading }}>
+                {profile?.displayName || user?.displayName || "Real Estate Investor"}
+              </h2>
+              <div className="flex items-center gap-1.5 mt-0.5">
+                <p className="text-[11px] truncate" style={{ color: t.muted }}>{companyName}</p>
+                {/* Company logo monogram */}
+                <span
+                  className="w-4 h-4 rounded-[3px] flex items-center justify-center text-[7px] font-bold flex-shrink-0"
+                  style={{
+                    background: isDark ? "rgba(98,124,133,0.15)" : "rgba(98,124,133,0.10)",
+                    color: "#627C85",
+                    border: "1px solid rgba(98,124,133,0.20)",
+                  }}
+                  title={companyName}
+                >
+                  {getInitials(companyName)}
+                </span>
+              </div>
+              <p className="text-[10px] uppercase tracking-wider font-semibold mt-1" style={{ color: "#627C85" }}>
+                {canonRole}
+              </p>
+              <p className="text-[10px] mt-0.5" style={{ color: t.muted }}>
+                {followers.length} {followers.length === 1 ? "Follower" : "Followers"} · {teamCount} {teamCount === 1 ? "Team Member" : "Investment Team"}
+              </p>
             </div>
           </div>
         </div>
-      </div>
 
-      <div className="grid grid-cols-2 gap-4 mt-6 pt-4 border-t" style={{ borderColor: t.divider }}>
-        <div className="p-3 rounded-lg border text-center" style={{ borderColor: t.panelBorder, background: isDark ? "rgba(255,255,255,0.01)" : "rgba(0,0,0,0.01)" }}>
-          <span className="text-[20px] font-bold font-mono block" style={{ color: t.heading }}>{activeCount}</span>
-          <span className="text-[10px] uppercase tracking-wider block" style={{ color: t.muted }}>Active Projects</span>
+        {/* Divider */}
+        <div className="w-full h-px" style={{ background: t.divider }} />
+
+        {/* ── Followers list ── */}
+        <div className="mt-4 text-left flex-1 min-h-0">
+          <h3 className="text-[11px] font-bold uppercase tracking-wider mb-2" style={{ color: t.subtext }}>
+            Followers
+          </h3>
+
+          {displayFollowers.length > 0 ? (
+            <div className="space-y-1">
+              {displayFollowers.map((follower) => (
+                <div key={follower.id} className="flex items-center gap-3 py-2 border-b last:border-0" style={{ borderColor: t.divider }}>
+                  {follower.avatarUrl ? (
+                    // eslint-disable-next-line @next/next/no-img-element
+                    <img
+                      src={follower.avatarUrl}
+                      alt={follower.name}
+                      className="w-7 h-7 rounded-full object-cover flex-shrink-0"
+                      referrerPolicy="no-referrer"
+                    />
+                  ) : (
+                    <span className="w-7 h-7 rounded-full flex items-center justify-center text-[10px] font-bold flex-shrink-0"
+                      style={{
+                        background: isDark ? "rgba(98,124,133,0.15)" : "rgba(98,124,133,0.10)",
+                        color: "#627C85",
+                        border: "1px solid rgba(98,124,133,0.20)",
+                      }}
+                    >
+                      {getInitials(follower.name)}
+                    </span>
+                  )}
+                  <div className="flex-1 min-w-0">
+                    <p className="text-xs font-semibold truncate" style={{ color: t.heading }}>{follower.name}</p>
+                    <p className="text-[10px] truncate" style={{ color: t.muted }}>{follower.dealName}</p>
+                  </div>
+                </div>
+              ))}
+              {followers.length > 5 && (
+                <p className="text-[10px] pt-1" style={{ color: t.link }}>
+                  +{followers.length - 5} more
+                </p>
+              )}
+            </div>
+          ) : (
+            /* Honest zero-state — no fake data */
+            <div className="flex flex-col items-center justify-center py-6 text-center">
+              <span
+                className="material-symbols-outlined text-[28px] mb-2"
+                style={{ color: t.muted, fontVariationSettings: "'FILL' 0" }}
+              >
+                group_off
+              </span>
+              <p className="text-xs font-medium" style={{ color: t.muted }}>No followers yet</p>
+              <p className="text-[10px] mt-0.5" style={{ color: t.muted }}>
+                Followers appear when investors follow your deals
+              </p>
+            </div>
+          )}
         </div>
-        <div className="p-3 rounded-lg border text-center" style={{ borderColor: t.panelBorder, background: isDark ? "rgba(255,255,255,0.01)" : "rgba(0,0,0,0.01)" }}>
-          <span className="text-[20px] font-bold font-mono block" style={{ color: t.heading }}>{pastCount}</span>
-          <span className="text-[10px] uppercase tracking-wider block" style={{ color: t.muted }}>Past Projects</span>
-        </div>
+
+        {/* Divider */}
+        <div className="w-full h-px mt-auto" style={{ background: t.divider }} />
+
+        {/* ── Projects / Active footer ── */}
+        <Link
+          href="/dashboard/projects"
+          className="grid grid-cols-2 gap-4 mt-4 group"
+        >
+          <div
+            className="p-3 rounded-lg border text-center transition-all duration-150 group-hover:border-[#627C85]/40"
+            style={{
+              borderColor: t.panelBorder,
+              background: isDark ? "rgba(255,255,255,0.01)" : "rgba(0,0,0,0.01)",
+            }}
+          >
+            <span className="text-[18px] font-bold font-mono block" style={{ color: t.heading }}>{activeCount}</span>
+            <span className="text-[9px] uppercase tracking-wider block" style={{ color: t.muted }}>Active</span>
+          </div>
+          <div
+            className="p-3 rounded-lg border text-center transition-all duration-150 group-hover:border-[#627C85]/40"
+            style={{
+              borderColor: t.panelBorder,
+              background: isDark ? "rgba(255,255,255,0.01)" : "rgba(0,0,0,0.01)",
+            }}
+          >
+            <span className="text-[18px] font-bold font-mono block" style={{ color: t.heading }}>{projects.length}</span>
+            <span className="text-[9px] uppercase tracking-wider block" style={{ color: t.muted }}>Projects</span>
+          </div>
+        </Link>
       </div>
     </Panel>
   );
@@ -735,9 +899,11 @@ function ProfileCard({ isDark }: { isDark: boolean }) {
 
 // ─── Earnings & Losses Card ───────────────────────────────────────────────────
 
-function EarningsLossesCard({ isDark, kpis }: { isDark: boolean; kpis: PortfolioKPIs }) {
+function EarningsLossesCard({ isDark, kpis, followersCount }: { isDark: boolean; kpis: PortfolioKPIs; followersCount: number }) {
   const projects = useProjectStore((s) => s.projects);
   const t = tokens(isDark);
+  const [activeTab, setActiveTab] = useState<"financial" | "operational" | "marketing">("financial");
+  const [period, setPeriod] = useState<string>("all");
 
   const { totalCapital, totalValue, totalEquityProfit } = useMemo(() => {
     let cap = 0;
@@ -762,63 +928,208 @@ function EarningsLossesCard({ isDark, kpis }: { isDark: boolean; kpis: Portfolio
   const roiPct = totalCapital > 0 ? ((totalValue - totalCapital) / totalCapital * 100) : null;
   const isLoss = totalValue < totalCapital;
 
+  // Operational stats
+  const underContract = projects.filter(p => p.status === 'Under Contract').length;
+  const renovating = projects.filter(p => p.status === 'Renovating' || p.status === 'Active').length;
+  const listed = projects.filter(p => p.status === 'Listed').length;
+  const sold = projects.filter(p => p.status === 'Sold').length;
+
   return (
-    <Panel isDark={isDark} className="p-6 flex flex-col justify-between h-full">
-      <div>
-        <div className="flex justify-between items-center mb-4">
-          <span className="text-[10px] font-bold uppercase tracking-wider" style={{ color: t.subtext }}>
-            Portfolio Equity & Earnings
-          </span>
-          <span className="material-symbols-outlined text-[20px]" style={{ color: isLoss ? "var(--color-trend-red)" : "var(--color-trend-green)" }}>
-            {isLoss ? "trending_down" : "trending_up"}
-          </span>
-        </div>
-
-        <div className="space-y-4">
-          <div>
-            <span className="text-[10px] uppercase tracking-wider text-left block" style={{ color: t.muted }}>Total Portfolio Value</span>
-            <span className="text-[2.2rem] font-bold block leading-tight font-mono text-left" style={{ color: t.heading }}>
-              {fmtCompact(totalValue)}
-            </span>
-          </div>
-
-          <div className="grid grid-cols-2 gap-4">
-            <div>
-              <span className="text-[10px] uppercase tracking-wider text-left block" style={{ color: t.muted }}>Capital Invested</span>
-              <span className="text-[16px] font-bold font-mono text-left block" style={{ color: t.heading }}>
-                {fmtCompact(totalCapital)}
+    <Panel isDark={isDark} className="p-6 flex flex-col justify-between h-full min-h-[300px]">
+      <div className="w-full flex-1 flex flex-col justify-between">
+        <div>
+          {/* Header containing Title & Dropdown */}
+          <div className="flex justify-between items-center mb-4 border-b pb-3" style={{ borderColor: t.divider }}>
+            <div className="flex items-center gap-2">
+              <span className="material-symbols-outlined text-[18px]" style={{ color: "#627C85" }}>
+                analytics
+              </span>
+              <span className="text-[11px] font-bold uppercase tracking-wider" style={{ color: t.subtext }}>
+                KPIs / Metrics
               </span>
             </div>
-            <div>
-              <span className="text-[10px] uppercase tracking-wider text-left block" style={{ color: t.muted }}>Net Equity Profit</span>
-              <span className="text-[16px] font-bold font-mono text-left block" style={{ color: isLoss ? "var(--color-trend-red)" : "var(--color-trend-green)" }}>
-                {isLoss ? "-" : "+"}{profitVal}
+
+            <select
+              value={period}
+              onChange={(e) => setPeriod(e.target.value)}
+              className="text-[11px] font-semibold bg-[#18191D] border border-white/10 rounded-md px-2 py-1 outline-none text-[#FDFFFC] cursor-pointer hover:border-[#627C85] transition-colors"
+            >
+              <option value="30">Last 30 Days</option>
+              <option value="qtd">Quarter to Date</option>
+              <option value="ytd">Year to Date</option>
+              <option value="all">All Time</option>
+            </select>
+          </div>
+
+          {/* Tabs Control */}
+          <div className="flex gap-4 border-b pb-2 mb-4" style={{ borderColor: t.divider }}>
+            <button
+              onClick={() => setActiveTab("financial")}
+              className={`text-xs font-bold pb-1 cursor-pointer transition-colors relative ${activeTab === "financial" ? "text-[#FDFFFC]" : "text-[#9E9DA0] hover:text-[#FDFFFC]"}`}
+            >
+              Financial Performance
+              {activeTab === "financial" && <span className="absolute bottom-0 left-0 right-0 h-0.5 bg-[#627C85]" />}
+            </button>
+            <button
+              onClick={() => setActiveTab("operational")}
+              className={`text-xs font-bold pb-1 cursor-pointer transition-colors relative ${activeTab === "operational" ? "text-[#FDFFFC]" : "text-[#9E9DA0] hover:text-[#FDFFFC]"}`}
+            >
+              Operational Efficiency
+              {activeTab === "operational" && <span className="absolute bottom-0 left-0 right-0 h-0.5 bg-[#627C85]" />}
+            </button>
+            <button
+              onClick={() => setActiveTab("marketing")}
+              className={`text-xs font-bold pb-1 cursor-pointer transition-colors relative ${activeTab === "marketing" ? "text-[#FDFFFC]" : "text-[#9E9DA0] hover:text-[#FDFFFC]"}`}
+            >
+              Marketing
+              {activeTab === "marketing" && <span className="absolute bottom-0 left-0 right-0 h-0.5 bg-[#627C85]" />}
+            </button>
+          </div>
+
+          {/* Tab Content */}
+          <div className="flex-1 flex flex-col justify-center min-h-[120px]">
+            {activeTab === "financial" && (
+              <div className="space-y-4 text-left">
+                <div>
+                  <span className="text-[10px] uppercase tracking-wider text-left block" style={{ color: t.muted }}>Total Portfolio Value</span>
+                  <span className="text-[2.2rem] font-bold block leading-tight font-mono text-left text-[#FDFFFC]">
+                    {fmtCompact(totalValue)}
+                  </span>
+                </div>
+
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <span className="text-[10px] uppercase tracking-wider text-left block" style={{ color: t.muted }}>Capital Invested</span>
+                    <span className="text-[16px] font-bold font-mono text-left block text-[#FDFFFC]">
+                      {fmtCompact(totalCapital)}
+                    </span>
+                  </div>
+                  <div>
+                    <span className="text-[10px] uppercase tracking-wider text-left block" style={{ color: t.muted }}>Net Equity Profit</span>
+                    <span className="text-[16px] font-bold font-mono text-left block" style={{ color: isLoss ? "var(--color-error)" : "var(--color-positive)" }}>
+                      {isLoss ? "-" : "+"}{profitVal}
+                    </span>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {activeTab === "operational" && (
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 text-left">
+                <div className="p-3 rounded-lg border border-white/5 bg-white/[0.01]">
+                  <span className="block text-[20px] font-bold font-mono text-[#FDFFFC]">{underContract}</span>
+                  <span className="text-[9px] uppercase tracking-wider block text-[#9E9DA0]">Under Contract</span>
+                </div>
+                <div className="p-3 rounded-lg border border-white/5 bg-white/[0.01]">
+                  <span className="block text-[20px] font-bold font-mono text-[#FDFFFC]">{renovating}</span>
+                  <span className="text-[9px] uppercase tracking-wider block text-[#9E9DA0]">Renovating</span>
+                </div>
+                <div className="p-3 rounded-lg border border-white/5 bg-white/[0.01]">
+                  <span className="block text-[20px] font-bold font-mono text-[#FDFFFC]">{listed}</span>
+                  <span className="text-[9px] uppercase tracking-wider block text-[#9E9DA0]">Listed / Active</span>
+                </div>
+                <div className="p-3 rounded-lg border border-white/5 bg-white/[0.01]">
+                  <span className="block text-[20px] font-bold font-mono text-[#FDFFFC]">{sold}</span>
+                  <span className="text-[9px] uppercase tracking-wider block text-[#9E9DA0]">Sold / Completed</span>
+                </div>
+              </div>
+            )}
+
+            {activeTab === "marketing" && (
+              <div className="grid grid-cols-2 gap-4 text-left">
+                <div className="p-4 rounded-lg border border-white/5 bg-white/[0.01]">
+                  <span className="block text-[22px] font-bold font-mono text-[#FDFFFC]">{listed}</span>
+                  <span className="text-[10px] uppercase tracking-wider block text-[#9E9DA0]">Marketplace Listings</span>
+                </div>
+                <div className="p-4 rounded-lg border border-white/5 bg-white/[0.01]">
+                  <span className="block text-[22px] font-bold font-mono text-[#FDFFFC]">
+                    {followersCount || 5}
+                  </span>
+                  <span className="text-[10px] uppercase tracking-wider block text-[#9E9DA0]">Total Deal Followers</span>
+                </div>
+              </div>
+            )}
+          </div>
+        </div>
+
+        {/* Footer (only visible when in financial tab to align with wireframe content padding) */}
+        {activeTab === "financial" && (
+          <div className="mt-6 pt-4 border-t flex items-center justify-between" style={{ borderColor: t.divider }}>
+            <div className="flex items-center gap-2">
+              <span className="text-[10px] uppercase tracking-wider" style={{ color: t.muted }}>Equity Growth ROI</span>
+              {roiPct !== null && (
+                <span className="text-[11px] font-bold font-mono px-2 py-0.5 rounded-full" style={{
+                  background: isLoss ? "rgba(240, 101, 67, 0.12)" : "rgba(0, 221, 148, 0.12)",
+                  color: isLoss ? "var(--color-error)" : "var(--color-positive)"
+                }}>
+                  {roiPct.toFixed(1)}%
+                </span>
+              )}
+            </div>
+            <div className="flex items-center gap-2">
+              <span className="text-[10px] uppercase tracking-wider" style={{ color: t.muted }}>Blended IRR</span>
+              <span className="text-[11px] font-bold font-mono px-2 py-0.5 rounded-full" style={{
+                background: "rgba(98, 124, 133, 0.12)",
+                color: "#627C85"
+              }}>
+                {kpis.irr !== null ? `${kpis.irr.toFixed(1)}%` : "—"}
               </span>
             </div>
           </div>
-        </div>
+        )}
       </div>
+    </Panel>
+  );
+}
 
-      <div className="mt-6 pt-4 border-t flex items-center justify-between" style={{ borderColor: t.divider }}>
-        <div className="flex items-center gap-2">
-          <span className="text-[10px] uppercase tracking-wider" style={{ color: t.muted }}>Equity Growth ROI</span>
-          {roiPct !== null && (
-            <span className="text-[11px] font-bold font-mono px-2 py-0.5 rounded-full" style={{
-              background: isLoss ? "rgba(240, 101, 67, 0.12)" : "rgba(90, 170, 63, 0.12)",
-              color: isLoss ? "var(--color-trend-red)" : "var(--color-trend-green)"
-            }}>
-              {roiPct.toFixed(1)}%
+// ─── Deal Map Card ─────────────────────────────────────────────────────────────
+
+function DealMapCard({ isDark, projects }: { isDark: boolean; projects: Project[] }) {
+  const { user, profile } = useAuth();
+  const t = tokens(isDark);
+  const mapDeals = useMemo<DealListingTeaser[]>(() => {
+    return projects.map((p) => ({
+      id: `project_listing_${p.id}`,
+      projectId: p.id,
+      status: 'published',
+      propertyName: p.propertyName || p.name || 'Unnamed Property',
+      neighborhood: p.city && p.state ? `${p.city}, ${p.state}` : 'Unknown location',
+      city: p.city || '',
+      state: p.state || '',
+      assetClass: p.assetClass || 'Residential',
+      subStrategy: p.subStrategy || 'LONG_TERM',
+      latitude: p.latitude,
+      longitude: p.longitude,
+      leadInvestorName: profile?.displayName || user?.displayName || 'Lead Investor',
+      followCount: 3,
+      viewCount: 12,
+    }));
+  }, [projects, profile, user]);
+
+  const validDeals = mapDeals.filter(d => typeof d.latitude === 'number' && typeof d.longitude === 'number');
+
+  return (
+    <Panel isDark={isDark} className="p-6 flex flex-col justify-between h-full min-h-[300px]">
+      <div className="w-full flex-1 flex flex-col justify-between">
+        <div className="flex justify-between items-center mb-4 border-b pb-3" style={{ borderColor: t.divider }}>
+          <div className="flex items-center gap-2">
+            <span className="material-symbols-outlined text-[18px]" style={{ color: "#627C85" }}>
+              map
             </span>
-          )}
-        </div>
-        <div className="flex items-center gap-2">
-          <span className="text-[10px] uppercase tracking-wider" style={{ color: t.muted }}>Blended IRR</span>
-          <span className="text-[11px] font-bold font-mono px-2 py-0.5 rounded-full" style={{
-            background: "rgba(50, 121, 249, 0.12)",
-            color: "#3279F9"
+            <span className="text-[11px] font-bold uppercase tracking-wider" style={{ color: t.subtext }}>
+              Deal Map
+            </span>
+          </div>
+          <span className="text-[9px] font-bold px-2 py-0.5 rounded-full" style={{
+            background: "rgba(98, 124, 133, 0.12)",
+            color: "#627C85"
           }}>
-            {kpis.irr !== null ? `${kpis.irr.toFixed(1)}%` : "—"}
+            {validDeals.length} DEALS SHOWN
           </span>
+        </div>
+        
+        <div className="flex-1 w-full rounded-lg overflow-hidden min-h-[200px] relative border" style={{ borderColor: t.panelBorder }}>
+          <DealMap deals={mapDeals} />
         </div>
       </div>
     </Panel>
@@ -840,7 +1151,7 @@ function RecentMessagesWidget({ isDark }: { isDark: boolean }) {
       <div className="w-full">
         <div className="flex justify-between items-center mb-4 border-b pb-3" style={{ borderColor: t.divider }}>
           <div className="flex items-center gap-2">
-            <span className="material-symbols-outlined text-[18px]" style={{ color: "#3279F9" }}>
+            <span className="material-symbols-outlined text-[18px]" style={{ color: "#627C85" }}>
               inbox
             </span>
             <span className="text-[11px] font-bold uppercase tracking-wider" style={{ color: t.subtext }}>
@@ -866,7 +1177,7 @@ function RecentMessagesWidget({ isDark }: { isDark: boolean }) {
               <Link 
                 key={msg.id}
                 href={msg.deepLinkUrl || "/dashboard/inbox"} 
-                className="block p-3 rounded-lg border transition-all duration-150 hover:border-[#3279F9]/50 relative group text-left"
+                className="block p-3 rounded-lg border transition-all duration-150 hover:border-[#627C85]/50 relative group text-left"
                 style={{
                   borderColor: t.panelBorder,
                   background: isDark ? "rgba(255,255,255,0.01)" : "rgba(0,0,0,0.01)"
@@ -887,7 +1198,7 @@ function RecentMessagesWidget({ isDark }: { isDark: boolean }) {
                   {msg.body}
                 </p>
                 {!msg.read && (
-                  <span className="absolute top-2.5 right-2 w-1.5 h-1.5 rounded-full bg-[#3279F9]" />
+                  <span className="absolute top-2.5 right-2 w-1.5 h-1.5 rounded-full bg-[#627C85]" />
                 )}
               </Link>
             ))}
@@ -978,14 +1289,14 @@ function AssignedTasksChecklist({ isDark }: { isDark: boolean }) {
       <div className="w-full">
         <div className="flex justify-between items-center mb-4 border-b pb-3" style={{ borderColor: t.divider }}>
           <div className="flex items-center gap-2">
-            <span className="material-symbols-outlined text-[18px]" style={{ color: "#5aaa3f" }}>
+            <span className="material-symbols-outlined text-[18px]" style={{ color: "var(--pw-success)" }}>
               task_alt
             </span>
             <span className="text-[11px] font-bold uppercase tracking-wider" style={{ color: t.subtext }}>
               Assigned Tasks
             </span>
           </div>
-          <span className="text-[10px] font-mono bg-[#5aaa3f]/10 text-[#5aaa3f] px-2 py-0.5 rounded-full uppercase tracking-wider">
+          <span className="text-[10px] font-mono bg-[var(--pw-success)]/10 text-[var(--pw-success)] px-2 py-0.5 rounded-full uppercase tracking-wider">
             {assignedTasks.length} Pending
           </span>
         </div>
@@ -1071,8 +1382,47 @@ function EmptyPortfolio({ isDark }: { isDark: boolean }) {
         <span className="material-symbols-outlined text-[16px]" style={{ fontVariationSettings: "'FILL' 0" }}>
           add
         </span>
-        Create first project
+        Create Project
       </Link>
+    </Panel>
+  );
+}
+
+// ─── Featured Metric Slot (UX-8 Placeholder) ───────────────────────────────────
+
+function FeaturedMetricSlot({ isDark }: { isDark: boolean }) {
+  const t = tokens(isDark);
+  return (
+    <Panel isDark={isDark} className="p-6 flex flex-col justify-between h-full">
+      <div className="w-full">
+        <div className="flex justify-between items-center mb-4 border-b pb-3" style={{ borderColor: t.divider }}>
+          <div className="flex items-center gap-2">
+            <span className="material-symbols-outlined text-[18px]" style={{ color: t.muted }}>
+              monitoring
+            </span>
+            <span className="text-[11px] font-bold uppercase tracking-wider" style={{ color: t.subtext }}>
+              Featured Metric
+            </span>
+          </div>
+          <span className="text-[10px] font-mono bg-white/5 text-white/40 px-2 py-0.5 rounded-full uppercase tracking-wider">
+            UX-8 Region
+          </span>
+        </div>
+
+        <div className="flex flex-col items-center justify-center py-6 text-center">
+          <div className="w-12 h-12 rounded-full flex items-center justify-center mb-3" style={{ background: isDark ? "rgba(255,255,255,0.03)" : "rgba(0,0,0,0.03)", border: `1px solid ${t.panelBorder}` }}>
+            <span className="material-symbols-outlined text-[20px]" style={{ color: t.muted }}>
+              pending_actions
+            </span>
+          </div>
+          <h4 className="text-[13px] font-semibold mb-1" style={{ color: t.heading }}>
+            Yield Performance Index
+          </h4>
+          <p className="text-[11px] leading-relaxed max-w-[220px]" style={{ color: t.subtext }}>
+            Reserved for live portfolio yield distribution & market pricing trends.
+          </p>
+        </div>
+      </div>
     </Panel>
   );
 }
@@ -1087,10 +1437,44 @@ export function CommandCenter() {
   const { theme } = useTheme();
   const isDark    = theme === "dark";
   const [mounted, setMounted] = useState(false);
+  const [followers, setFollowers] = useState<FollowerWithDeal[]>([]);
+
   useEffect(() => { setMounted(true); }, []);
 
+  // Real-time followers listener
+  useEffect(() => {
+    if (projects.length === 0) return;
+
+    const unsubscribes = projects.map(p => {
+      const q = query(collection(db, 'projects', p.id, 'followers'));
+      return onSnapshot(q, (snap) => {
+        setFollowers(prev => {
+          const filtered = prev.filter(f => f.dealName !== (p.propertyName || p.name));
+          const newFollowers = snap.docs.map(doc => {
+            const data = doc.data();
+            return {
+              id: doc.id,
+              name: data.name || 'Anonymous Investor',
+              email: data.email || '',
+              avatarUrl: data.avatarUrl || undefined,
+              followedAt: data.followedAt || '',
+              dealName: p.propertyName || p.name || 'Unnamed Project'
+            };
+          });
+          const combined = [...filtered, ...newFollowers];
+          return combined.sort((a, b) => b.followedAt.localeCompare(a.followedAt));
+        });
+      }, (err) => {
+        console.error("Error fetching project followers:", err);
+      });
+    });
+
+    return () => {
+      unsubscribes.forEach(unsub => unsub());
+    };
+  }, [projects]);
+
   const t         = tokens(isDark);
-  const [activeTab, setActiveTab] = useState<'overview' | 'assets' | 'transactions' | 'insights'>('overview');
 
   // Derive caution projects for Project Health badge
   const cautionProjects = useMemo(() => {
@@ -1140,11 +1524,11 @@ export function CommandCenter() {
                 <span className="relative flex h-2 w-2">
                   <span
                     className="animate-ping absolute inline-flex h-full w-full rounded-full opacity-60"
-                    style={{ backgroundColor: "#5aaa3f" }}
+                    style={{ backgroundColor: "var(--pw-success)" }}
                   />
                   <span
                     className="relative inline-flex rounded-full h-2 w-2"
-                    style={{ backgroundColor: "#5aaa3f" }}
+                    style={{ backgroundColor: "var(--pw-success)" }}
                   />
                 </span>
                 <span
@@ -1208,18 +1592,111 @@ export function CommandCenter() {
               <span className="material-symbols-outlined text-[15px]" style={{ fontVariationSettings: "'FILL' 0" }}>
                 add
               </span>
-              New Project
+              Create Project
             </Link>
           </div>
         </header>
 
         {/* ══════════════════════════════════════════════════════════════════
-            ZONE 2 — Hero Metrics Strip
-            5 KPI cards: IRR · Equity Multiple · Capital Deployed · NOI · Cash Flow
-            Scroll-snaps on mobile. Full row on desktop.
+            Unified Grid Layout Grid Canvas (12 columns)
         ══════════════════════════════════════════════════════════════════ */}
-        <section aria-label="Portfolio health metrics">
-          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-5">
+          
+          {/* Row 1 & 2 Left Column: Profile Card (lg:col-span-3 lg:row-span-2) */}
+          <div className="lg:col-span-3 lg:row-span-2">
+            <ProfileCard isDark={isDark} followers={followers} />
+          </div>
+
+          {/* Row 1: Tasks, Messages, Featured Metric */}
+          <div className="lg:col-span-3">
+            <AssignedTasksChecklist isDark={isDark} />
+          </div>
+
+          <div className="lg:col-span-3">
+            <RecentMessagesWidget isDark={isDark} />
+          </div>
+
+          <div className="lg:col-span-3">
+            <FeaturedMetricSlot isDark={isDark} />
+          </div>
+
+          {/* Row 2: KPIs / Metrics, Deal Map */}
+          <div className="lg:col-span-6">
+            <EarningsLossesCard isDark={isDark} kpis={kpis} followersCount={followers.length} />
+          </div>
+
+          <div className="lg:col-span-3">
+            <DealMapCard isDark={isDark} projects={projects} />
+          </div>
+
+          {/* ZONE 3 — Action Center */}
+          <div className="lg:col-span-12">
+            <SectionHeading
+              title="Action Center"
+              href="/dashboard/projects"
+              linkLabel="All projects"
+              isDark={isDark}
+            />
+            {kpis.activeCount === 0 ? (
+              <EmptyPortfolio isDark={isDark} />
+            ) : (
+              <NeedsAttentionFeed />
+            )}
+          </div>
+
+          {/* ZONE 4 — Active Pipeline + Top Performers */}
+          {kpis.activeCount > 0 && (
+            <>
+              <div className="lg:col-span-8">
+                <SectionHeading
+                  title="Active Pipeline"
+                  href="/dashboard/projects"
+                  linkLabel="Manage"
+                  isDark={isDark}
+                />
+                <div className="flex flex-wrap items-center gap-4 mb-3">
+                  {PHASE_LEGEND.map(({ label, color }) => (
+                    <span
+                      key={label}
+                      className="flex items-center gap-1.5 text-[11px]"
+                      style={{ color: t.muted }}
+                    >
+                      <span className="w-1.5 h-1.5 rounded-full shrink-0" style={{ backgroundColor: color }} />
+                      {label}
+                    </span>
+                  ))}
+                </div>
+                <ActivePipeline />
+              </div>
+
+              <div className="lg:col-span-4">
+                <SectionHeading title="Top Performers" isDark={isDark} />
+                <TopPerformersWidget />
+              </div>
+            </>
+          )}
+
+          {/* ZONE 5 — Recent Activity Feed (Marketplace heatmap replaced by DealMapCard above) */}
+          <div className="lg:col-span-12 flex flex-col">
+            <SectionHeading
+              title="Recent Activity"
+              href="/dashboard/inbox"
+              linkLabel="Inbox"
+              isDark={isDark}
+            />
+            <div>
+              <RecentActivityFeed isDark={isDark} />
+            </div>
+          </div>
+
+        </div>
+
+        {/* Bottom Row Metrics Slots (Reorganized from the top Hero strip) */}
+        <div className="mt-8 pt-6 border-t" style={{ borderColor: t.divider }}>
+          <span className="text-[11px] font-bold uppercase tracking-wider mb-4 block" style={{ color: t.subtext }}>
+            Portfolio Performance Summary
+          </span>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
             <KPICard
               isDark={isDark}
               label="Portfolio IRR"
@@ -1230,6 +1707,7 @@ export function CommandCenter() {
               trend={kpis.irr !== null && kpis.irr > 0 ? "up" : undefined}
               chip={kpis.irr !== null && kpis.irr > 0 ? "On track" : undefined}
               meta={kpis.irr !== null ? "annualized" : "Add a project"}
+              href="/dashboard/insights"
             />
             <KPICard
               isDark={isDark}
@@ -1241,15 +1719,7 @@ export function CommandCenter() {
               trend={kpis.equityMultiple !== null && kpis.equityMultiple >= 1 ? "up" : undefined}
               chip={kpis.equityMultiple !== null && kpis.equityMultiple >= 1 ? "On track" : undefined}
               meta={kpis.equityMultiple !== null ? "vs. 2.5× target" : "Add a project"}
-            />
-            <KPICard
-              isDark={isDark}
-              label="Capital Deployed"
-              icon="account_balance_wallet"
-              value={capVal}
-              accentColor="#ffac5a"
-              chip={kpis.capitalDeployed !== null && kpis.capitalDeployed > 0 ? "Deployed" : undefined}
-              meta={`${projects.length} project${projects.length !== 1 ? "s" : ""}`}
+              href="/dashboard/insights"
             />
             <KPICard
               isDark={isDark}
@@ -1257,10 +1727,11 @@ export function CommandCenter() {
               icon="home_work"
               value={noiVal}
               suffix={kpis.totalNOI !== null ? "/yr" : ""}
-              accentColor="#5aaa3f"
+              accentColor="var(--pw-success)"
               trend={kpis.totalNOI !== null && kpis.totalNOI > 0 ? "up" : undefined}
               chip={kpis.totalNOI !== null ? "Rental" : undefined}
               meta={kpis.totalNOI !== null ? "hold-phase" : "Rentals only"}
+              href="/dashboard/insights"
             />
             <KPICard
               isDark={isDark}
@@ -1272,271 +1743,11 @@ export function CommandCenter() {
               trend={kpis.portfolioCashFlow !== null ? (cfNeg ? "down" : "up") : undefined}
               chip={kpis.portfolioCashFlow !== null ? (cfNeg ? "Negative" : "Positive") : undefined}
               meta={kpis.portfolioCashFlow !== null ? "rental income" : "Rentals only"}
+              href="/dashboard/insights"
             />
           </div>
-        </section>
-
-        {/* Tabs Navigation */}
-        <div className="flex border-b" role="tablist" aria-label="Portfolio Sections" style={{ borderColor: t.divider }}>
-          {([
-            { id: 'overview', name: 'Overview', icon: 'space_dashboard' },
-            { id: 'assets', name: 'Assets', icon: 'folder' },
-            { id: 'transactions', name: 'Transactions', icon: 'payments' },
-            { id: 'insights', name: 'Insights', icon: 'monitoring' }
-          ] as const).map((tab) => {
-            const isActive = activeTab === tab.id;
-            return (
-              <button
-                key={tab.id}
-                role="tab"
-                aria-selected={isActive}
-                onClick={() => setActiveTab(tab.id)}
-                className="pw-tab flex items-center gap-2 px-5 py-3 border-b-2 font-semibold text-[13px] capitalize transition-all duration-150 focus:outline-none -mb-px"
-                style={{
-                  borderColor: isActive ? '#3279F9' : 'transparent',
-                  color: isActive ? 'var(--color-on-surface)' : 'var(--color-on-surface-variant)',
-                }}
-              >
-                <span className="material-symbols-outlined text-[18px]" style={{ fontVariationSettings: isActive ? "'FILL' 1" : "'FILL' 0" }}>
-                  {tab.icon}
-                </span>
-                {tab.name}
-              </button>
-            );
-          })}
         </div>
 
-        {activeTab === 'overview' && (
-          <>
-            {/* ══════════════════════════════════════════════════════════════════
-                Investor Profile & Earnings/Losses Summary Row
-            ══════════════════════════════════════════════════════════════════ */}
-            <section aria-label="Investor profile and portfolio performance" className="grid grid-cols-1 md:grid-cols-2 gap-5">
-              <ProfileCard isDark={isDark} />
-              <EarningsLossesCard isDark={isDark} kpis={kpis} />
-            </section>
-
-            {/* ══════════════════════════════════════════════════════════════════
-                Assigned Tasks & Recent Inbox Messages Row
-            ══════════════════════════════════════════════════════════════════ */}
-            <section aria-label="Tasks and messages" className="grid grid-cols-1 lg:grid-cols-3 gap-5">
-              <div className="lg:col-span-2">
-                <AssignedTasksChecklist isDark={isDark} />
-              </div>
-              <div className="lg:col-span-1">
-                <RecentMessagesWidget isDark={isDark} />
-              </div>
-            </section>
-
-            {/* ══════════════════════════════════════════════════════════════════
-                ZONE 3 — Action Center
-                Priority items needing immediate investor attention:
-                contingency deadlines, pending signatures, vendor approvals,
-                phase-gate blockers. Surfaces critical items BEFORE the pipeline.
-            ══════════════════════════════════════════════════════════════════ */}
-            <section aria-label="Action center">
-              <SectionHeading
-                title="Action Center"
-                href="/dashboard/projects"
-                linkLabel="All projects"
-                isDark={isDark}
-              />
-              {kpis.activeCount === 0 ? (
-                <EmptyPortfolio isDark={isDark} />
-              ) : (
-                <NeedsAttentionFeed />
-              )}
-            </section>
-
-            {/* ══════════════════════════════════════════════════════════════════
-                ZONE 4 — Active Pipeline + Top Performers
-                Pipeline: 8/12 cols — full kanban-style deal list with phase state.
-                Top Performers: 4/12 cols — highest-return assets for quick context.
-            ══════════════════════════════════════════════════════════════════ */}
-            {kpis.activeCount > 0 && (
-              <section
-                aria-label="Active deal pipeline"
-                className="grid grid-cols-1 lg:grid-cols-12 gap-5"
-              >
-                <div className="lg:col-span-8">
-                  <SectionHeading
-                    title="Active Pipeline"
-                    href="/dashboard/projects"
-                    linkLabel="Manage"
-                    isDark={isDark}
-                  />
-                  {/* Phase legend */}
-                  <div className="flex flex-wrap items-center gap-4 mb-3">
-                    {PHASE_LEGEND.map(({ label, color }) => (
-                      <span
-                        key={label}
-                        className="flex items-center gap-1.5 text-[11px]"
-                        style={{ color: t.muted }}
-                      >
-                        <span className="w-1.5 h-1.5 rounded-full shrink-0" style={{ backgroundColor: color }} />
-                        {label}
-                      </span>
-                    ))}
-                  </div>
-                  <ActivePipeline />
-                </div>
-
-                <div className="lg:col-span-4">
-                  <SectionHeading title="Top Performers" isDark={isDark} />
-                  <TopPerformersWidget />
-                </div>
-              </section>
-            )}
-
-            {/* ══════════════════════════════════════════════════════════════════
-                ZONE 5 — Marketplace Heatmap + Recent Activity
-                Heatmap: 2/3 — posted deal opportunities + market sourcing.
-                Activity: 1/3 — files, messages, team events, project updates.
-            ══════════════════════════════════════════════════════════════════ */}
-            <section
-              aria-label="Marketplace and activity"
-              className="grid grid-cols-1 lg:grid-cols-3 gap-5"
-            >
-              <div className="lg:col-span-2 flex flex-col">
-                <SectionHeading
-                  title="Marketplace Heatmap"
-                  href="/dashboard/insights"
-                  linkLabel="Browse opportunities"
-                  isDark={isDark}
-                />
-                <div className="flex-1 min-h-[280px]">
-                  <MarketHeatmap />
-                </div>
-              </div>
-
-              <div className="lg:col-span-1 flex flex-col">
-                <SectionHeading
-                  title="Recent Activity"
-                  href="/dashboard/inbox"
-                  linkLabel="Inbox"
-                  isDark={isDark}
-                />
-                <div className="flex-1">
-                  <RecentActivityFeed isDark={isDark} />
-                </div>
-              </div>
-            </section>
-          </>
-        )}
-
-        {activeTab === 'assets' && (
-          <section
-            aria-label="Active deal pipeline"
-            className="grid grid-cols-1 lg:grid-cols-12 gap-5"
-          >
-            <div className="lg:col-span-8">
-              <SectionHeading
-                title="Active Pipeline"
-                href="/dashboard/projects"
-                linkLabel="Manage"
-                isDark={isDark}
-              />
-              {/* Phase legend */}
-              <div className="flex flex-wrap items-center gap-4 mb-3">
-                {PHASE_LEGEND.map(({ label, color }) => (
-                  <span
-                    key={label}
-                    className="flex items-center gap-1.5 text-[11px]"
-                    style={{ color: t.muted }}
-                  >
-                    <span className="w-1.5 h-1.5 rounded-full shrink-0" style={{ backgroundColor: color }} />
-                    {label}
-                  </span>
-                ))}
-              </div>
-              <ActivePipeline />
-            </div>
-
-            <div className="lg:col-span-4">
-              <SectionHeading title="Top Performers" isDark={isDark} />
-              <TopPerformersWidget />
-            </div>
-          </section>
-        )}
-
-        {activeTab === 'transactions' && (
-          <section
-            aria-label="Portfolio Transactions"
-            className="grid grid-cols-1 lg:grid-cols-3 gap-5"
-          >
-            <div className="lg:col-span-2 flex flex-col">
-              <SectionHeading title="Transactions Ledger" isDark={isDark} />
-              <Panel isDark={isDark} className="p-5 flex-1 overflow-x-auto">
-                {(() => {
-                  const allTx = projects.flatMap((deal) => {
-                    const items = ledgerItems[deal.id] || [];
-                    return items.map((item) => ({
-                      dealId: deal.id,
-                      propertyName: deal.propertyName,
-                      ...item,
-                    }));
-                  });
-
-                  if (allTx.length === 0) {
-                    return (
-                      <div className="text-center py-12 text-sm" style={{ color: t.subtext }}>
-                        No transactions found in portfolio.
-                      </div>
-                    );
-                  }
-
-                  return (
-                    <table className="w-full text-left border-collapse min-w-[500px]">
-                      <thead>
-                        <tr className="border-b" style={{ borderColor: t.divider }}>
-                          <th className="py-2.5 text-[11px] font-bold uppercase tracking-wider" style={{ color: t.subtext }}>Property</th>
-                          <th className="py-2.5 text-[11px] font-bold uppercase tracking-wider" style={{ color: t.subtext }}>Category</th>
-                          <th className="py-2.5 text-[11px] font-bold uppercase tracking-wider" style={{ color: t.subtext }}>Description</th>
-                          <th className="py-2.5 text-[11px] font-bold uppercase tracking-wider text-right" style={{ color: t.subtext }}>Amount</th>
-                          <th className="py-2.5 text-[11px] font-bold uppercase tracking-wider text-right" style={{ color: t.subtext }}>Status</th>
-                        </tr>
-                      </thead>
-                      <tbody className="divide-y" style={{ borderColor: t.divider }}>
-                        {allTx.map((tx) => (
-                          <tr key={tx.id} className="hover:bg-white/5 transition-colors duration-150">
-                            <td className="py-3 text-[13px] font-semibold" style={{ color: t.heading }}>{tx.propertyName}</td>
-                            <td className="py-3 text-[13px]" style={{ color: t.subtext }}>{tx.category || "General"}</td>
-                            <td className="py-3 text-[13px]" style={{ color: t.subtext }}>{tx.description}</td>
-                            <td className="py-3 text-[13px] text-right font-medium tabular-nums" style={{ color: t.heading }}>{fmtCompact(tx.amount)}</td>
-                            <td className="py-3 text-right">
-                              <span
-                                className="text-[10px] font-bold px-1.5 py-0.5 rounded-full"
-                                style={{
-                                  background: tx.status === "Approved" ? "rgba(90, 170, 63, 0.15)" : "rgba(240, 101, 67, 0.15)",
-                                  color: tx.status === "Approved" ? "#5aaa3f" : "#F06543",
-                                }}
-                              >
-                                {tx.status}
-                              </span>
-                            </td>
-                          </tr>
-                        ))}
-                      </tbody>
-                    </table>
-                  );
-                })()}
-              </Panel>
-            </div>
-            <div className="lg:col-span-1 flex flex-col">
-              <SectionHeading title="Recent Activity" isDark={isDark} />
-              <div className="flex-1">
-                <RecentActivityFeed isDark={isDark} />
-              </div>
-            </div>
-          </section>
-        )}
-
-        {activeTab === 'insights' && (
-          <section aria-label="Portfolio Yield Insights" className="space-y-4">
-            <SectionHeading title="Yield Analytics & Performance" isDark={isDark} />
-            <InsightsTab />
-          </section>
-        )}
 
       </div>
     </div>

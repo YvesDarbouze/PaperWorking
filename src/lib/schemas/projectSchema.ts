@@ -38,33 +38,17 @@ const percentWhole = z.number().finite();
 
 /** Project lifecycle status — controls Kanban board columns */
 export const projectStatusEnum = z.enum([
-  'Active',
-  'Lead',
-  'Under Contract',
-  'Renovating',
-  'Listed',
-  'Sold',
-  'Rented',
-  'closed_won',
-  'closed_lost',
+  'acquisition',
+  'fund',
+  'hold',
+  'exit',
 ]);
 
 /** High-level horizontal phase tracker */
 export const phaseStatusEnum = z.enum([
-  // v1 legacy values (existing Firestore documents)
-  'Phase 1: Find & Fund',
-  'Phase 3: Holding & Rehab',
-  'Phase 4: Closing & Exit',
-  'Phase 3: Rehab & Hold',
-  'Phase 4: Realized',
-  // v2 REIL values (new documents + shared with v1)
   'Phase 1: Acquisition',
-  'Phase 2: Acquisition',
-  'Phase 2: Transaction',
   'Phase 2: Fund',
-  'Phase 3: Rehab',
   'Phase 3: Hold',
-  'Phase 4: Hold / Exit',
   'Phase 4: Exit',
 ]);
 

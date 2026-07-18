@@ -70,7 +70,7 @@ describe('Snapshot Service & Aggregation Calculations', () => {
       organizationId: 'org-456',
       propertyName: 'Test Property',
       address: '123 Main St',
-      status: 'Active',
+      status: 'acquisition',
       createdAt: new Date(),
       updatedAt: new Date(),
       financials: {

@@ -11,11 +11,10 @@ import { useAuth } from '@/context/AuthContext';
 import TransitionConfirmationModal from './TransitionConfirmationModal';
 
 const COLUMNS = [
-  { id: 'Sourcing', title: 'Sourcing' },
-  { id: 'Under Contract', title: 'Under Contract' },
-  { id: 'Rehab', title: 'Renovation' },
-  { id: 'Listed', title: 'Listed for Sale' },
-  { id: 'Closed', title: 'Closed / Exited' },
+  { id: 'acquisition', title: 'Acquisition' },
+  { id: 'fund', title: 'Fund' },
+  { id: 'hold', title: 'Hold' },
+  { id: 'exit', title: 'Exit' },
 ];
 
 const SWIPE_VELOCITY_THRESHOLD = 300;
@@ -23,14 +22,7 @@ const SWIPE_OFFSET_THRESHOLD = 80;
 
 // Map display column IDs to the actual status values in the Project type
 function getProjectsForColumn(colId: string, projects: Project[]): Project[] {
-  switch (colId) {
-    case 'Sourcing':      return projects.filter(d => d.status === 'Lead');
-    case 'Under Contract': return projects.filter(d => d.status === 'Under Contract');
-    case 'Rehab':          return projects.filter(d => d.status === 'Renovating');
-    case 'Listed':         return projects.filter(d => d.status === 'Listed');
-    case 'Closed':         return projects.filter(d => d.status === 'Sold');
-    default:               return [];
-  }
+  return projects.filter(d => d.status === colId);
 }
 
 export default function KanbanBoard() {

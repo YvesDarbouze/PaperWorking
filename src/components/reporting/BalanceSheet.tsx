@@ -45,7 +45,7 @@ export default function BalanceSheet() {
       const fin = deal.financials;
       if (!fin) return;
 
-      if (deal.status === 'Sold') {
+      if (deal.status === 'exit' && deal.dispositionType === 'SALE') {
         // Sold projects become cash
         const salePrice = fin.actualSalePrice || 0;
         const buyerComm = salePrice * ((fin.buyersAgentCommission || 0) / 100);

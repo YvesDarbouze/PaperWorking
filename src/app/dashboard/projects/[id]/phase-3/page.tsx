@@ -189,7 +189,9 @@ export default function Phase3RehabPage() {
     try {
       await handleSave();
       await projectsService.updateProject(projectId, {
-        phaseStatus: 'Phase 4: Closing & Exit',
+        phaseStatus: 'Phase 4: Exit',
+        currentPhase: 4,
+        status: 'exit',
         updatedAt: new Date()
       });
       toast.success('Phase 3 Complete! Transitioning to Phase 4...');

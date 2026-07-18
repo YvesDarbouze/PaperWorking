@@ -21,7 +21,7 @@ function makeProject(overrides: Partial<Project> = {}): Project {
     organizationId: 'org-001',
     propertyName: 'Test Property',
     address: '123 Main St, Miami FL 33101',
-    status: 'Active',
+    status: 'acquisition',
     members: {},
     financials: { purchasePrice: 0, estimatedARV: 0, costs: [] },
     createdAt: new Date('2024-01-01'),
@@ -269,7 +269,8 @@ describe('calculateEquityPayout', () => {
 
   it('distributes profit pro-rata among investors', () => {
     const deal = makeProject({
-      status: 'Sold',
+      status: 'exit',
+      dispositionType: 'SALE',
       financials: {
         purchasePrice: 200_000,
         estimatedARV: 350_000,

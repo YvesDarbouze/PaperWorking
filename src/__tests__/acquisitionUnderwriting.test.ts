@@ -113,7 +113,7 @@ describe('Phase 1 Acquisition Underwriting & Projections', () => {
       const targetPrice = deal.financials?.targetPrice ?? deal.financials?.targetPurchasePrice ?? deal.financials?.purchasePrice;
       if (!targetPrice || targetPrice <= 0) missing.push("Projected Target Purchase Price");
       const offerStatus = deal.financials?.offerStatus;
-      if (offerStatus !== 'Accepted' && deal.status !== 'Under Contract') {
+      if (offerStatus !== 'Accepted' && deal.status !== 'fund') {
          missing.push("Accepted Offer (Offer Status must be 'Accepted')");
       }
       return missing;
@@ -123,7 +123,7 @@ describe('Phase 1 Acquisition Underwriting & Projections', () => {
       const incompleteProject: Partial<Project> = {
         address: '',
         dispositionType: undefined,
-        status: 'Lead',
+        status: 'acquisition',
         currentPhase: 1,
         financials: {
           targetPrice: 0,
@@ -144,7 +144,7 @@ describe('Phase 1 Acquisition Underwriting & Projections', () => {
         address: '123 Main St, New York, NY 10001',
         dispositionType: 'SALE',
         subStrategy: 'FLIP',
-        status: 'Lead',
+        status: 'acquisition',
         currentPhase: 1,
         financials: {
           targetPrice: 250000,

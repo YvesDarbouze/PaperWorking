@@ -97,7 +97,7 @@ export default function CashFlowStatement() {
       });
 
       // Inflow — Sale Proceeds
-      if (deal.status === 'Sold' && fin.actualSalePrice && fin.soldDate) {
+      if (deal.status === 'exit' && deal.dispositionType === 'SALE' && fin.actualSalePrice && fin.soldDate) {
         const key = getMonthKey(fin.soldDate);
         ensureBucket(key);
         buckets[key].inflows += fin.actualSalePrice;

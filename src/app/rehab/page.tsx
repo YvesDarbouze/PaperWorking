@@ -12,7 +12,7 @@ export default function RehabPage() {
   useEffect(() => {
     if (!currentProject && projects.length > 0) {
       const rehabProject = projects.find(
-        (p) => p.phaseStatus === 'Phase 3: Holding & Rehab'
+        (p) => p.phaseStatus === 'Phase 3: Hold'
       );
       if (rehabProject) {
         setDeal(rehabProject);

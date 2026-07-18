@@ -59,7 +59,7 @@ const validProject = {
   organizationId: 'org_abc123',
   propertyName: '123 Elm Street',
   address: '123 Elm Street, Miami, FL 33101',
-  status: 'Active',
+  status: 'acquisition',
   members: {
     user_abc123: {
       uid: 'user_abc123',

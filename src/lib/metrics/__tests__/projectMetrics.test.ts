@@ -7,7 +7,7 @@ describe('deriveAllProjectMetrics', () => {
     propertyName: '123 Main St',
     address: '123 Main St, Anytown USA',
     organizationId: 'org-1',
-    status: 'Lead',
+    status: 'acquisition',
     phaseStatus: 'Phase 1: Acquisition',
     dispositionType: 'RENT',
     subStrategy: 'LONG_TERM',

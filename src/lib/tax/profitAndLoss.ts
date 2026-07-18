@@ -56,7 +56,7 @@ export function computeProjectProfitAndLoss(
   const schedE = computeScheduleE(project, ledgerItems, taxYear);
   const f = project.financials || {};
   const acqDate = parseDateSafe(f.acquisitionDate);
-  const soldDate = project.status === 'Sold' ? parseDateSafe(f.soldDate) : null;
+  const soldDate = (project.status === 'exit' && project.dispositionType === 'SALE') ? parseDateSafe(f.soldDate) : null;
   
   const yearStart = new Date(taxYear, 0, 1);
   const yearEnd = new Date(taxYear, 11, 31, 23, 59, 59, 999);

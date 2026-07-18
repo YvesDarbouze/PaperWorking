@@ -231,7 +231,7 @@ export default function DashboardHome() {
   );
 
   const activeDeals = portfolioProjects.filter(p => {
-    if (p.status === 'Sold' || p.status === 'Lead') return false;
+    if (p.status === 'exit' || p.status === 'acquisition') return false;
     if (!searchTerm) return true;
     const s = searchTerm.toLowerCase();
     return (
@@ -241,11 +241,11 @@ export default function DashboardHome() {
   });
 
   const dealsClosedCount = portfolioProjects.filter(
-    p => p.status === 'Sold' || p.status === 'closed_won' || p.status === 'Rented'
+    p => p.status === 'exit'
   ).length;
 
   const winsCount = portfolioProjects.filter(p => {
-    if (p.status !== 'Sold' && p.status !== 'closed_won') return false;
+    if (p.status !== 'exit' || p.dispositionType !== 'SALE') return false;
     try { return computeAutopsyMetrics(p).netProfit > 0; } catch { return false; }
   }).length;
 

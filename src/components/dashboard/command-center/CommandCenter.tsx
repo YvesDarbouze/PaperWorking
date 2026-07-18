@@ -752,8 +752,8 @@ function ProfileCard({ isDark, followers }: { isDark: boolean; followers: Follow
   const t = tokens(isDark);
   const [teamCount, setTeamCount] = useState<number>(1);
 
-  const activeCount = projects.filter(p => p.status !== 'Sold').length;
-  const pastCount = projects.filter(p => p.status === 'Sold').length;
+  const activeCount = projects.filter(p => p.status !== 'exit').length;
+  const pastCount = projects.filter(p => p.status === 'exit').length;
 
   // Resolve workspaces and company name
   const workspaces: Array<{ id: string; name: string; type: "personal" | "team" }> = profile

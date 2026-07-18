@@ -92,7 +92,7 @@ function aggregateTodos(projects: Project[]): TodoTask[] {
         id: `closing-${deal.id}-${item.id}`,
         label: item.type,
         category: 'Closing',
-        urgency: deal.status === 'Under Contract' ? 'overdue' : 'action',
+        urgency: deal.status === 'fund' ? 'overdue' : 'action',
         assignee: resolveAssignee(deal, 'closing'),
         dueDate: null,
         icon: <FileText className="w-3.5 h-3.5 text-[#7F7F7F]" />,

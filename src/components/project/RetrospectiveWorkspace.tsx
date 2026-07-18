@@ -181,7 +181,7 @@ export function RetrospectiveWorkspace({ project, refresh }: RetrospectiveWorksp
         address: addressLine,
         financials: updatedFinancials as any,
         roleLinkedDocuments: documents,
-        status: project.dispositionType === 'SALE' ? 'Sold' : 'Rented',
+        status: 'exit',
         phaseStatus: 'Phase 4: Exit',
         currentPhase: 4,
       });

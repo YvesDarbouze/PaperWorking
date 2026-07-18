@@ -68,7 +68,7 @@ export function computeScheduleE(
   
   const f = project.financials || {};
   const acqDate = parseDateSafe(f.acquisitionDate);
-  const soldDate = project.status === 'Sold' ? parseDateSafe(f.soldDate) : null;
+  const soldDate = (project.status === 'exit' && project.dispositionType === 'SALE') ? parseDateSafe(f.soldDate) : null;
   
   // Basic info
   const propertyName = project.propertyName || project.address || 'Unnamed Property';

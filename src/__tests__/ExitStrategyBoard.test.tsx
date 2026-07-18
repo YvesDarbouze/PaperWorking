@@ -108,7 +108,8 @@ describe('ExitStrategyBoard Component', () => {
   });
 
   it('displays Awaiting MLS Connection status banner in preview pane when status is pending_integration', async () => {
-    mockProjects[0].status = 'Listed';
+    mockProjects[0].status = 'hold';
+    mockProjects[0].dispositionType = 'SALE';
     mockProjects[0].exitAssets = {
       stagingImages: [],
       mlsListingLink: 'https://mls.com/sunset',

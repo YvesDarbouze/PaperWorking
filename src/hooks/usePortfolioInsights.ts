@@ -435,7 +435,7 @@ export function usePortfolioInsights(
       // - currentPhase <= 3 (acquisition, rehab, finding deals)
       const isWorkingCapital =
         p.dispositionType === "SALE" ||
-        p.status === "Renovating" ||
+        p.status === "hold" ||
         (p.currentPhase !== undefined && p.currentPhase <= 3);
 
       // Generate 10-year pro forma trajectory

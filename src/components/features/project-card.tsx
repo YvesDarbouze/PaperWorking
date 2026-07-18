@@ -54,8 +54,8 @@ type ProjectState = 'draft' | 'live' | 'realized';
 
 function classifyState(project: Project): ProjectState {
   const s = project.status;
-  if (s === 'Sold' || s === 'closed_won' || s === 'closed_lost') return 'realized';
-  if (s === 'Lead' || (!project.financials?.purchasePrice && !project.financials?.estimatedARV)) return 'draft';
+  if (s === 'exit') return 'realized';
+  if (s === 'acquisition' || (!project.financials?.purchasePrice && !project.financials?.estimatedARV)) return 'draft';
   return 'live';
 }
 

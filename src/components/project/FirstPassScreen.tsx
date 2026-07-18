@@ -80,11 +80,14 @@ export function FirstPassScreen({
 
       // If verdict is PASS, archive the project
       if (newVerdict === 'PASS') {
-        updates.status = 'closed_lost';
-      } else if (newVerdict === 'PURSUE' && project.status === 'closed_lost') {
-        updates.status = 'Active';
-      } else if (newVerdict === 'MAYBE' && project.status === 'closed_lost') {
-        updates.status = 'Active';
+        updates.status = 'exit';
+        updates.currentPhase = 4;
+      } else if (newVerdict === 'PURSUE' && project.status === 'exit') {
+        updates.status = 'acquisition';
+        updates.currentPhase = 1;
+      } else if (newVerdict === 'MAYBE' && project.status === 'exit') {
+        updates.status = 'acquisition';
+        updates.currentPhase = 1;
       }
 
       await onSave(updates);
@@ -126,7 +129,7 @@ export function FirstPassScreen({
     }).format(val);
   };
 
-  const isArchived = project.status === 'closed_lost';
+  const isArchived = project.status === 'exit';
 
   return (
     <div className="rounded-xl border border-white/5 bg-[#161217] overflow-hidden">

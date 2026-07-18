@@ -240,13 +240,13 @@ export default function ExitStrategyBoard({ projectId, onClose }: ExitStrategyBo
                <NetEngine deal={currentProject} isBrrrr={isBrrrr} />
                
                {/* MLS / Listing Live Preview Pane */}
-               {currentProject.status === 'Listed' || currentProject.status === 'Sold' ? (
+               {((currentProject.status === 'hold' && currentProject.dispositionType === 'SALE') || currentProject.status === 'exit') ? (
                   <div className="mt-6 border border-pw-border bg-[url('https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?ixlib=rb-4.0.3&auto=format&fit=crop&w=1400&q=80')] bg-cover bg-center h-48 relative overflow-hidden group">
                      <div className="absolute inset-0 bg-bg-primary/70 group-hover:bg-bg-primary/50 transition duration-500 flex flex-col items-center justify-center p-4 text-center">
                         <div className="bg-bg-surface/80 backdrop-blur-md px-6 py-3 border border-pw-border flex items-center space-x-3 mb-2">
                            <CheckCircle className={`w-4 h-4 text-pw-accent`} />
                            <span className="font-black text-text-primary tracking-widest uppercase text-xs">
-                             {currentProject.exitAssets?.mlsListingStatus === 'pending_integration' ? 'Listing Saved (Awaiting MLS Connection)' : `Property is ${currentProject.status}`}
+                             {currentProject.exitAssets?.mlsListingStatus === 'pending_integration' ? 'Listing Saved (Awaiting MLS Connection)' : `Property is ${currentProject.status === 'exit' ? 'EXIT' : 'HOLD'}`}
                            </span>
                         </div>
                         {currentProject.exitAssets?.mlsListingStatus === 'pending_integration' ? (

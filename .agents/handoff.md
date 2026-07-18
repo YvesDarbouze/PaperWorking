@@ -32,3 +32,13 @@ The rule specifies at most 2 entry points on this view:
 - **Primary Header Action**: Keep `New Project` link (`/dashboard/projects/new`) in the page header.
 - **Context-dependent Empty State CTA**: Keep `Create first project` link inside `EmptyPortfolio` component (which renders only when no projects exist).
 - **Secondary RecentProjects Button**: Remove the `+ New Project` button from `RecentProjects.tsx` (line 83) if projects exist to strictly limit total controls to at most 2.
+
+## Handoff for FD-2.5 — Phase Vocabulary Migration (COMPLETE)
+
+We have successfully migrated the legacy project status models (6-status and 7-index) into the canonical four-phase REIL model:
+- `acquisition` (formerly Sourcing / Lead)
+- `fund` (formerly Under Contract / Acquisition)
+- `hold` (formerly Renovating / Hold / Rehab / Listed)
+- `exit` (formerly Sold / Closed / Exited / Rented)
+
+All TypeScript compiler/typecheck checks (`npx tsc --noEmit`) and the entire Jest unit test suite (134 test suites, 1676 unit tests) pass 100% green. No legacy status fields remain active in component files, data layers, or schemas.

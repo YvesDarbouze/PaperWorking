@@ -41,7 +41,7 @@ export default function ComposeEmailModal({
   const [aiLoading, setAiLoading] = useState(false);
 
   // Active projects for the project dropdown
-  const activeProjects = deals.filter((d) => d.status !== 'closed_won' && d.status !== 'closed_lost');
+  const activeProjects = deals.filter((d) => d.status !== 'exit');
 
   const resetForm = useCallback(() => {
     setTo('');

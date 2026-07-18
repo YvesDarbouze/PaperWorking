@@ -21,7 +21,7 @@ const mockDeals: Project[] = [
     address: '123 Alpha St',
     propertyName: '123 Alpha St',
     organizationId: 'org1',
-    status: 'Lead',
+    status: 'acquisition',
     ownerUid: 'user1',
     members: { user1: { uid: 'user1', role: 'Lead Investor', joinedAt: new Date() } },
     financials: { purchasePrice: 0, estimatedARV: 0, costs: [] },

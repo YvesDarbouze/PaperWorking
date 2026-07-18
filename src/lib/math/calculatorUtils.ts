@@ -217,7 +217,7 @@ export function calculateEquityPayout(deal: Project | undefined) {
 
   if (!deal) return { isSold, targetProfit, calculationStatus, payouts, investors: [] };
 
-  if (deal.status === 'Sold') {
+  if (deal.status === 'exit' && deal.dispositionType === 'SALE') {
     isSold = true;
     const pPrice = deal.financials?.actualSalePrice || 0;
     const buyerComm = pPrice * ((deal.financials?.buyersAgentCommission || 0)/100);

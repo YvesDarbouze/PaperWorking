@@ -57,7 +57,7 @@ async function runVerification() {
     normalized.beds === 4,
     normalized.baths === 2.5, // 2 full + 1 half
     normalized.price === 750000,
-    normalized.status === 'Listed',
+    normalized.status === 'hold',
     normalized.photos.length === 2
   ];
 

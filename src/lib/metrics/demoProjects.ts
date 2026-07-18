@@ -7,7 +7,7 @@ export const DEMO_PROJECTS: Project[] = [
     ownerUid: 'demo_user',
     propertyName: 'Skyline Lofts',
     address: '456 Skyline Drive, Denver, CO 80202',
-    status: 'Active',
+    status: 'hold',
     currentPhase: 3, // Hold
     dispositionType: 'RENT',
     subStrategy: 'LONG_TERM',
@@ -55,7 +55,7 @@ export const DEMO_PROJECTS: Project[] = [
     ownerUid: 'demo_user',
     propertyName: 'Cedar Park Duplex',
     address: '789 Cedar Court, Austin, TX 78701',
-    status: 'Active',
+    status: 'hold',
     currentPhase: 3, // Hold
     dispositionType: 'RENT',
     subStrategy: 'LONG_TERM',
@@ -103,7 +103,7 @@ export const DEMO_PROJECTS: Project[] = [
     ownerUid: 'demo_user',
     propertyName: '123 Main Street Flip',
     address: '123 Main Street, Miami, FL 33101',
-    status: 'Renovating',
+    status: 'hold',
     currentPhase: 3, // Hold
     dispositionType: 'SALE',
     subStrategy: 'FLIP',

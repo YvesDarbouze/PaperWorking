@@ -105,7 +105,7 @@ function aggregateTasks(projects: Project[]): AggregatedTask[] {
         id: `closing-${deal.id}-${item.id}`,
         label: `${item.type}`,
         category: 'Closing',
-        urgency: deal.status === 'Under Contract' ? 'overdue' : 'action',
+        urgency: deal.status === 'fund' ? 'overdue' : 'action',
         assignee: resolveAssignee(deal, 'closing'),
         icon: <FileText className="w-3.5 h-3.5 text-[#595959]" />,
       });

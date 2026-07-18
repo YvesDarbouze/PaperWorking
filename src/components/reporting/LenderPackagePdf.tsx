@@ -43,7 +43,7 @@ export default function LenderPackagePdf() {
 
       // Realized metrics via @metrics (Sold deals only)
       let realizedROIHeadline = "N/A (Property Active)";
-      if (deal.status === 'Sold') {
+      if (deal.status === 'exit' && deal.dispositionType === 'SALE') {
         const autopsy = computeAutopsyMetrics(deal);
         realizedROIHeadline = `${autopsy.roi.toFixed(1)}% (Profit: $${Math.round(autopsy.netProfit).toLocaleString()})`;
       }

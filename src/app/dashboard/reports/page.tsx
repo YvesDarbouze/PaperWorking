@@ -1053,7 +1053,7 @@ export default function ReportsPage() {
     }
 
     if (hasProjects) {
-      const soldCount = projects.filter(p => p.status === 'Sold').length;
+      const soldCount = projects.filter(p => p.status === 'exit' && p.dispositionType === 'SALE').length;
       if (soldCount > 0) {
         alerts.push({
           title: '1031 Exchange Window',

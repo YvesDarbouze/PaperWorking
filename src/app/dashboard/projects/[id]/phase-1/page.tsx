@@ -366,7 +366,7 @@ export default function Phase1WorkspacePage() {
       return deriveAllMetrics(
         normalized,
         f.estimatedCurrentValue ? f.estimatedCurrentValue / 100 : undefined,
-        project.strategyType,
+        project.dispositionType,
         1, // Phase 1
         project.createdAt
       );
@@ -374,7 +374,7 @@ export default function Phase1WorkspacePage() {
       console.error('Failed to derive metrics on phase 1 page:', err);
       return null;
     }
-  }, [project?.financials, project?.strategyType, project?.createdAt]);
+  }, [project?.financials, project?.dispositionType, project?.createdAt]);
 
   const noiResult: MetricResult = useMemo(() => {
     const rent = project?.financials?.monthlyGrossRent ?? (project?.financials as any)?.monthlyRent ?? 0;
@@ -728,7 +728,7 @@ export default function Phase1WorkspacePage() {
   /* ── Task completion tracking ── */
   const taskStatuses = useMemo(() => {
     if (!project) return { details: false, financials: false, capital: false, financing: false };
-    const hasDetails = !!(project.propertyName && project.address && project.strategyType);
+    const hasDetails = !!(project.propertyName && project.address && project.dispositionType);
     const hasFinancials = !!(project.financials?.purchasePrice || project.financials?.targetPrice);
     const hasCapital = isFullyFunded;
     const hasFinancing = !!(project.financials?.loanAmount && project.financials?.loanInterestRate);
@@ -874,7 +874,11 @@ export default function Phase1WorkspacePage() {
       await projectsService.capturePhaseSnapshot(project.id, 'phase-1', snapshot);
       
       // Update the phase status so the badge and tracking correctly reflect Phase 2
-      await projectsService.updateProject(project.id, { phaseStatus: 'Phase 2: Acquisition' });
+      await projectsService.updateProject(project.id, { 
+        phaseStatus: 'Phase 2: Fund',
+        currentPhase: 2,
+        status: 'fund'
+      });
 
       // AQ-27: Auto-close any active marketplace listing when advancing out of Phase 1
       if (project.activeListingId && user) {
@@ -1192,7 +1196,8 @@ export default function Phase1WorkspacePage() {
                   }}
                   onRestore={async () => {
                     await projectsService.updateProject(projectId, {
-                      status: 'Active',
+                      status: 'acquisition',
+                      currentPhase: 1,
                       firstPassVerdict: 'PURSUE',
                     });
                     refresh();

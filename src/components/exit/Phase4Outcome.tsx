@@ -272,7 +272,7 @@ export default function Phase4Outcome({ projectId }: Phase4OutcomeProps) {
     }
   };
 
-  const isClosed = deal.status === 'closed_won' || deal.status === 'closed_lost' || deal.status === 'Sold' || deal.status === 'Rented';
+  const isClosed = deal.status === 'exit';
 
   return (
     <div className="w-full h-full flex flex-col p-8 sm:p-12 animate-in fade-in slide-in-from-bottom-8">

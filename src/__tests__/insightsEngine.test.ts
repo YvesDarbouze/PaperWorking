@@ -15,7 +15,7 @@ describe('Deterministic Insight Engine Rules', () => {
     propertyName: 'Palm Garden Villas',
     address: '456 Palms Ave, Miami FL',
     currentPhase: 3, // Hold
-    status: 'Active',
+    status: 'hold',
     dispositionType: 'RENT',
     subStrategy: 'LONG_TERM',
     createdAt: new Date('2025-01-01'),
@@ -44,7 +44,7 @@ describe('Deterministic Insight Engine Rules', () => {
     propertyName: 'Oakwood Apartments',
     address: '789 Oak St, Atlanta GA',
     currentPhase: 3, // Hold
-    status: 'Active',
+    status: 'hold',
     dispositionType: 'RENT',
     subStrategy: 'LONG_TERM',
     createdAt: new Date('2025-01-01'),

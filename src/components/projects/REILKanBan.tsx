@@ -26,7 +26,7 @@ export const REIL_PHASES = [
   },
   {
     phase:       2,
-    key:         "purchase",
+    key:         "fund",
     label:       "Fund",
     icon:        "account_balance",
     color:       "#7A9EAA",

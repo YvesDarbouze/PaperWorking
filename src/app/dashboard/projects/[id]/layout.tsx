@@ -64,47 +64,26 @@ export function useWorkspaceProject() {
 
 /* ─── Phase pill color ───────────────────────────────────────── */
 const PHASE_BADGE_COLORS: Record<string, { bg: string; text: string }> = {
-  'Phase 1: Find & Fund':       { bg: 'rgba(89,89,89,0.12)',  text: '#808080' },
-  'Phase 2: Acquisition':       { bg: 'rgba(37,99,235,0.10)', text: '#2563EB' },
-  'Phase 3: Holding & Rehab':   { bg: 'rgba(234,88,12,0.10)', text: '#EA580C' },
-  'Phase 4: Closing & Exit':    { bg: 'rgba(63, 125, 32,0.10)', text: '#3f7d20' },
-  // v2 equivalents
-  'Phase 1: Acquisition':       { bg: 'rgba(89,89,89,0.12)',  text: '#808080' },
-  'Phase 2: Transaction':       { bg: 'rgba(37,99,235,0.10)', text: '#2563EB' },
-  'Phase 3: Rehab':             { bg: 'rgba(234,88,12,0.10)', text: '#EA580C' },
-  'Phase 4: Hold / Exit':       { bg: 'rgba(63, 125, 32,0.10)', text: '#3f7d20' },
-  // v3 equivalents
-  'Phase 2: Fund':              { bg: 'rgba(37,99,235,0.10)', text: '#2563EB' },
-  'Phase 3: Hold':              { bg: 'rgba(234,88,12,0.10)', text: '#EA580C' },
-  'Phase 4: Exit':              { bg: 'rgba(63, 125, 32,0.10)', text: '#3f7d20' },
+  'Phase 1: Acquisition':       { bg: 'rgba(245,158,11,0.12)', text: '#F59E0B' },
+  'Phase 2: Fund':              { bg: 'rgba(59,130,246,0.10)',  text: '#3B82F6' },
+  'Phase 3: Hold':              { bg: 'rgba(249,115,22,0.10)',  text: '#F97316' },
+  'Phase 4: Exit':              { bg: 'rgba(16,185,129,0.10)',  text: '#10B981' },
 };
 
 /* ─── Phase-aware folder icon color ──────────────────────────── */
 const PHASE_FOLDER_COLORS: Record<string, { bg: string; icon: string }> = {
-  'Phase 1: Find & Fund':       { bg: '#595959', icon: '#FFFFFF' },
-  'Phase 2: Acquisition':       { bg: '#595959', icon: '#FFFFFF' },
-  'Phase 3: Holding & Rehab':   { bg: '#CCCCCC', icon: '#595959' },
-  'Phase 4: Closing & Exit':    { bg: '#595959', icon: '#FFFFFF' },
-  // v2 equivalents
-  'Phase 1: Acquisition':       { bg: '#595959', icon: '#FFFFFF' },
-  'Phase 2: Transaction':       { bg: '#2563EB', icon: '#FFFFFF' },
-  'Phase 3: Rehab':             { bg: '#EA580C', icon: '#FFFFFF' },
-  'Phase 4: Hold / Exit':       { bg: '#3f7d20', icon: '#FFFFFF' },
-  // v3 equivalents
-  'Phase 2: Fund':              { bg: '#2563EB', icon: '#FFFFFF' },
-  'Phase 3: Hold':              { bg: '#EA580C', icon: '#FFFFFF' },
-  'Phase 4: Exit':              { bg: '#3f7d20', icon: '#FFFFFF' },
+  'Phase 1: Acquisition':       { bg: '#F59E0B', icon: '#FFFFFF' },
+  'Phase 2: Fund':              { bg: '#3B82F6', icon: '#FFFFFF' },
+  'Phase 3: Hold':              { bg: '#F97316', icon: '#FFFFFF' },
+  'Phase 4: Exit':              { bg: '#10B981', icon: '#FFFFFF' },
 };
 
 /* ─── Status badge ───────────────────────────────────────────── */
 const STATUS_COLORS: Record<string, { bg: string; text: string }> = {
-  'Active':           { bg: '#DCFCE7', text: '#15803D' },
-  'Lead':             { bg: '#FEF9C3', text: '#854D0E' },
-  'Under Contract':   { bg: '#DBEAFE', text: '#1D4ED8' },
-  'Renovating':       { bg: '#FED7AA', text: '#C2410C' },
-  'Listed':           { bg: '#EDE9FE', text: '#6D28D9' },
-  'Sold':             { bg: '#F3F4F6', text: '#374151' },
-  'Rented':           { bg: '#CFFAFE', text: '#0E7490' },
+  'acquisition':   { bg: 'rgba(245,158,11,0.12)', text: '#F59E0B' },
+  'fund':          { bg: 'rgba(59,130,246,0.10)',  text: '#3B82F6' },
+  'hold':          { bg: 'rgba(249,115,22,0.10)',  text: '#F97316' },
+  'exit':          { bg: 'rgba(16,185,129,0.10)',  text: '#10B981' },
 };
 
 /* ─── formatTimeAgo Helper ──────────────────────────────────── */
@@ -271,11 +250,10 @@ function WorkspaceHeader({ project, onOpenMetric }: { project: Project; onOpenMe
   const folderColor = PHASE_FOLDER_COLORS[project.phaseStatus ?? ''] ?? PHASE_FOLDER_COLORS['Phase 1: Find & Fund'];
 
   // Only show the active counter if we have an acquisition date and the project hasn't been sold/closed
-  const isHolding = project.financials?.acquisitionDate && 
-                    !['Sold', 'Rented', 'closed_won', 'closed_lost'].includes(project.status);
+  const isHolding = project.financials?.acquisitionDate && project.status !== 'exit';
 
   // Strategy chip value
-  const strategy = project.strategyType ?? 'Rent';
+  const strategy = project.dispositionType === 'SALE' ? 'Sell' : (project.dispositionType === 'LEASE' ? 'Lease' : 'Rent');
 
   // Ownership structure calculation
   let ownershipLabel = 'Solo';
@@ -288,7 +266,7 @@ function WorkspaceHeader({ project, onOpenMetric }: { project: Project; onOpenMe
   const handleArchive = async () => {
     if (!confirm('Are you sure you want to archive this project?')) return;
     try {
-      await projectsService.updateProject(project.id, { status: 'closed_lost' });
+      await projectsService.updateProject(project.id, { status: 'exit' });
       toast.success('Project archived successfully');
       router.push('/dashboard/projects');
     } catch (err) {

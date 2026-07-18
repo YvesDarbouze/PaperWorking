@@ -30,7 +30,7 @@ function shortAddress(addr: string): string {
 function computeDOMData(projects: Project[]): DealDOM[] {
   const now = new Date();
   return projects
-    .filter(d => d.status !== 'Sold' && d.status !== 'Lead')
+    .filter(d => d.status === 'fund' || d.status === 'hold')
     .map(deal => {
       let listingDate: Date | null = null;
       if (deal.financials?.listingDate) {

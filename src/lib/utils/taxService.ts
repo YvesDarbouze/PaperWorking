@@ -95,7 +95,7 @@ export function auditTaxFields(project: Project): string[] {
     if (!f.loanTermYears) missing.push('Loan Term (Years)');
   }
 
-  if (project.status === 'Sold') {
+  if (project.status === 'exit' && project.dispositionType === 'SALE') {
     if (!f.soldDate) missing.push('Sold Date');
     if (!f.actualSalePrice || f.actualSalePrice <= 0) missing.push('Actual Sale Price');
   }
@@ -313,7 +313,7 @@ export function calculateProjectTaxReport(
   const propertyName = project.propertyName || project.address || 'Unnamed Project';
   
   const acqDate = parseDateSafe(f.acquisitionDate);
-  const soldDate = project.status === 'Sold' ? parseDateSafe(f.soldDate) : null;
+  const soldDate = (project.status === 'exit') ? parseDateSafe(f.soldDate) : null;
 
   const isSoldInPeriod = !!(soldDate && soldDate >= periodStart && soldDate <= periodEnd);
 

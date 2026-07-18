@@ -56,7 +56,7 @@ export default function MAOGaugeTracker({ projects }: MAOGaugeTrackerProps) {
   
   const deals = useMemo(() => {
     return projects
-      .filter(d => d.status !== 'Sold' && d.financials?.estimatedARV && d.financials.estimatedARV > 0)
+      .filter(d => d.status !== 'exit' && d.financials?.estimatedARV && d.financials.estimatedARV > 0)
       .map(deal => {
         const metrics = deriveAllMetrics(
           deal.financials!,

@@ -36,20 +36,18 @@ function derivePhaseFromREIStatus(reiStatus?: string): {
 } {
   switch (reiStatus) {
     case 'Target':
-      return { phaseStatus: 'Phase 1: Find & Fund', currentPhase: 1, status: 'Lead' };
+      return { phaseStatus: 'Phase 1: Acquisition', currentPhase: 1, status: 'acquisition' };
     case 'In Contract':
-      return { phaseStatus: 'Phase 2: Acquisition', currentPhase: 2, status: 'Under Contract' };
     case 'Acquired':
-      return { phaseStatus: 'Phase 2: Acquisition', currentPhase: 2, status: 'Under Contract' };
+      return { phaseStatus: 'Phase 2: Fund', currentPhase: 2, status: 'fund' };
     case 'Rehabbing':
     case 'Under Construction':
-      return { phaseStatus: 'Phase 3: Rehab & Hold', currentPhase: 3, status: 'Renovating' };
     case 'Renting':
-      return { phaseStatus: 'Phase 3: Rehab & Hold', currentPhase: 3, status: 'Rented' };
+      return { phaseStatus: 'Phase 3: Hold', currentPhase: 3, status: 'hold' };
     case 'For Sale':
-      return { phaseStatus: 'Phase 4: Closing & Exit', currentPhase: 4, status: 'Listed' };
+      return { phaseStatus: 'Phase 4: Exit', currentPhase: 4, status: 'exit' };
     default:
-      return { phaseStatus: 'Phase 1: Find & Fund', currentPhase: 1, status: 'Active' };
+      return { phaseStatus: 'Phase 1: Acquisition', currentPhase: 1, status: 'acquisition' };
   }
 }
 
@@ -193,7 +191,9 @@ export const projectsService = {
 
       // ── Automation Hook: Phase Progression ──
       if (updates.financials?.offerStatus === 'Accepted') {
-        updates.phaseStatus = 'Phase 2: Acquisition';
+        updates.phaseStatus = 'Phase 2: Fund';
+        updates.currentPhase = 2;
+        updates.status = 'fund';
       }
 
       const firestoreUpdates = JSON.parse(JSON.stringify(updates));

@@ -50,7 +50,7 @@ function evaluateDeal(deal: Project, alerts: GroomingAlert[]): void {
   // Purchase price is 0 and the deal has moved past Lead
   if (
     (!deal.financials?.purchasePrice || deal.financials.purchasePrice === 0) &&
-    deal.status !== 'Lead'
+    deal.status !== 'acquisition'
   ) {
     alerts.push({
       ...base,
@@ -67,7 +67,7 @@ function evaluateDeal(deal: Project, alerts: GroomingAlert[]): void {
   const now = new Date();
   const updatedAt = deal.updatedAt ? new Date(deal.updatedAt) : new Date(deal.createdAt || now);
   const daysSinceUpdate = Math.floor((now.getTime() - updatedAt.getTime()) / (1000 * 60 * 60 * 24));
-  if (daysSinceUpdate >= 14 && deal.status !== 'Sold') {
+  if (daysSinceUpdate >= 14 && deal.status !== 'exit') {
     alerts.push({
       ...base,
       id: `groom-stale-${deal.id}`,
@@ -80,7 +80,7 @@ function evaluateDeal(deal: Project, alerts: GroomingAlert[]): void {
 
   // ── Rule 3: Incomplete Closing Docs ─────────────────────
   // Status is Under Contract but closing checklist has uncompleted items
-  if (deal.status === 'Under Contract') {
+  if (deal.status === 'fund') {
     const uncompleted = deal.closingChecklist?.filter(i => !i.completed)?.length || 0;
     if (uncompleted > 0) {
       alerts.push({
@@ -127,7 +127,7 @@ function evaluateDeal(deal: Project, alerts: GroomingAlert[]): void {
   }
 
   // ── Rule 6: No Team Assigned ────────────────────────────
-  if ((!deal.projectTeam || deal.projectTeam.length === 0) && deal.status !== 'Lead') {
+  if ((!deal.projectTeam || deal.projectTeam.length === 0) && deal.status !== 'acquisition') {
     alerts.push({
       ...base,
       id: `groom-team-${deal.id}`,

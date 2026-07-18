@@ -89,7 +89,7 @@ interface YearMetrics {
 function computeYearlyMetrics(projects: Project[]): YearMetrics[] {
   // Only sold projects with soldDate
   const soldDeals = projects.filter(d =>
-    d.status === 'Sold' && d.financials?.soldDate
+    d.status === 'exit' && d.dispositionType === 'SALE' && d.financials?.soldDate
   );
 
   // Build per-deal snapshots

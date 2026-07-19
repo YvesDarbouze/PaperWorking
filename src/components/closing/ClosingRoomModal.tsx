@@ -15,6 +15,8 @@ import { collection, query, where, getDocs } from 'firebase/firestore';
 import { db } from '@/lib/firebase/config';
 import { foldersService } from '@/lib/firebase/folders';
 import { computeClosingCostLines } from '@/lib/math/closingCosts';
+import { ENABLE_OCR, IS_DEMO_MODE } from '@/lib/config/demo';
+
 
 interface ClosingRoomProps {
     projectId: string;
@@ -364,23 +366,7 @@ export default function ClosingRoomModal({ projectId, onClose }: ClosingRoomProp
             toast.success(`Scan complete! (Confidence: ${data.confidence})`, { id: toastId });
         } catch (err: any) {
             console.error('[CD OCR] Failed:', err);
-            
-            const purchasePrice = deal.financials?.purchasePrice || 0;
-            const loanAmount = deal.financials?.loanAmount || 0;
-            
-            const estTitle = Math.round(purchasePrice * 0.004);
-            const estTransfer = Math.round(purchasePrice * 0.001);
-            const estOrig = Math.round(loanAmount * 0.01);
-            const estClosingCosts = estTitle + estTransfer + estOrig;
-            const estPrepaids = Math.round(purchasePrice * 0.005 / 12) + Math.round((purchasePrice * 0.0125 / 12) * 3);
-            const totalEstCosts = estClosingCosts + estPrepaids;
-            const estCashToClose = Math.max(0, purchasePrice + totalEstCosts - loanAmount);
-
-            setCdFinalClosingCosts(totalEstCosts);
-            setCdPrepaidsReserves(estPrepaids);
-            setCdCashToClose(estCashToClose);
-
-            toast.success('Generated estimates based on deal underwriting.', { id: toastId });
+            toast.error('Gemini OCR scan failed to extract values. Please enter actual values manually.', { id: toastId });
         } finally {
             setIsOcrScanning(false);
         }
@@ -902,25 +888,27 @@ export default function ClosingRoomModal({ projectId, onClose }: ClosingRoomProp
                             </div>
 
                             {/* Run AI Scan button */}
-                            <div className="pt-4 border-t border-pw-border/50">
-                                <button
-                                    onClick={handleRunCDOcr}
-                                    disabled={isOcrScanning}
-                                    className="w-full flex items-center justify-center gap-2 pw-btn pw-btn--primary pw-btn--pill py-2.5 text-sm font-semibold transition disabled:opacity-50"
-                                >
-                                    {isOcrScanning ? (
-                                        <>
-                                            <Loader2 className="w-4 h-4 animate-spin" />
-                                            Scanning CD with Gemini AI...
-                                        </>
-                                    ) : (
-                                        <>
-                                            <Sparkles className="w-4 h-4" />
-                                            Run Gemini AI OCR Scan
-                                        </>
-                                    )}
-                                </button>
-                            </div>
+                            {ENABLE_OCR && (
+                                <div className="pt-4 border-t border-pw-border/50">
+                                    <button
+                                        onClick={handleRunCDOcr}
+                                        disabled={isOcrScanning}
+                                        className="w-full flex items-center justify-center gap-2 pw-btn pw-btn--primary pw-btn--pill py-2.5 text-sm font-semibold transition disabled:opacity-50"
+                                    >
+                                        {isOcrScanning ? (
+                                            <>
+                                                <Loader2 className="w-4 h-4 animate-spin" />
+                                                Scanning CD with Gemini AI...
+                                            </>
+                                        ) : (
+                                            <>
+                                                <Sparkles className="w-4 h-4" />
+                                                Run Gemini AI OCR Scan
+                                            </>
+                                        )}
+                                    </button>
+                                </div>
+                            )}
                         </div>
 
                         {/* Right Column: Capture Fields Form */}
@@ -949,6 +937,9 @@ export default function ClosingRoomModal({ projectId, onClose }: ClosingRoomProp
                                             className="w-full text-sm bg-transparent outline-none text-pw-black font-mono text-right pr-2"
                                         />
                                     </div>
+                                    <p className="text-[10px] text-pw-muted pl-1">
+                                        Projected (Underwriting Estimate): <span className="font-semibold text-pw-black">${(deal.financials?.closingCosts || 0).toLocaleString()}</span>
+                                    </p>
                                 </div>
 
                                 {/* Cash to Close */}
@@ -971,6 +962,9 @@ export default function ClosingRoomModal({ projectId, onClose }: ClosingRoomProp
                                             className="w-full text-sm bg-transparent outline-none text-pw-black font-mono text-right pr-2"
                                         />
                                     </div>
+                                    <p className="text-[10px] text-pw-muted pl-1">
+                                        Projected (Underwriting Estimate): <span className="font-semibold text-pw-black">${Math.max(0, (deal.financials?.purchasePrice || 0) + (deal.financials?.closingCosts || 0) + (Math.round((deal.financials?.purchasePrice || 0) * 0.005 / 12) + Math.round(((deal.financials?.purchasePrice || 0) * 0.0125 / 12) * 3)) - (deal.financials?.loanAmount || 0)).toLocaleString()}</span>
+                                    </p>
                                 </div>
 
                                 {/* Prepaids & Reserves */}
@@ -993,6 +987,9 @@ export default function ClosingRoomModal({ projectId, onClose }: ClosingRoomProp
                                             className="w-full text-sm bg-transparent outline-none text-pw-black font-mono text-right pr-2"
                                         />
                                     </div>
+                                    <p className="text-[10px] text-pw-muted pl-1">
+                                        Projected (Underwriting Estimate): <span className="font-semibold text-pw-black">${(Math.round((deal.financials?.purchasePrice || 0) * 0.005 / 12) + Math.round(((deal.financials?.purchasePrice || 0) * 0.0125 / 12) * 3)).toLocaleString()}</span>
+                                    </p>
                                 </div>
 
                                 {/* Metadata/Attestation Info */}
@@ -1022,6 +1019,7 @@ export default function ClosingRoomModal({ projectId, onClose }: ClosingRoomProp
                                         </>
                                     )}
                                 </button>
+
                                 <p className="text-[10px] text-pw-muted text-center mt-2 leading-normal">
                                     Actualizing will write these final figures directly to the deal's operational financials, overriding initial estimates and updating downstream cash flow, DSCR, and cash-on-cash calculations.
                                 </p>

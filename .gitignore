@@ -65,7 +65,8 @@ node_modules\ 2/
 .mcpjam/
 
 # Claude Code agent dirs
-.claude/
+.claude/*
+!.claude/skills/
 
 .next*
 .gstack/

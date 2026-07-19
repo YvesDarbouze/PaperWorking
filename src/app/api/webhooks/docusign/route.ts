@@ -2,6 +2,9 @@ import { NextRequest, NextResponse } from 'next/server';
 import { adminDb } from '@/lib/firebase/admin';
 import { logger } from '@/lib/logger';
 import { createHmac, timingSafeEqual } from 'crypto';
+import { FieldValue } from 'firebase-admin/firestore';
+import { syncFractionalInvestorFromCommitment } from '@/lib/firebase/syncFractionalInvestors';
+import { CommitmentStatus } from '@/types/schema';
 
 /**
  * POST /api/webhooks/docusign
@@ -115,6 +118,48 @@ export async function POST(req: NextRequest) {
         .collection('documents')
         .doc(envData.documentId as string)
         .update(docUpdates);
+
+      // Card F2.5 Subscriptions — if the document is a subscription agreement, reconcile the commitment status
+      const docIdStr = String(envData.documentId);
+      if (docIdStr.startsWith('sub_agreement_')) {
+        const commitmentId = docIdStr.replace('sub_agreement_', '');
+        const commitmentRef = adminDb
+          .collection('projects')
+          .doc(envData.projectId as string)
+          .collection('commitments')
+          .doc(commitmentId);
+
+        const commitmentSnap = await commitmentRef.get();
+        if (commitmentSnap.exists) {
+          const commitmentData = commitmentSnap.data()!;
+          const currentStatus = commitmentData.status;
+          const nextStatus = status === 'completed' ? 'signed' : (status === 'declined' ? 'soft-committed' : currentStatus);
+
+          if (nextStatus !== currentStatus) {
+            const transition = {
+              fromStatus: currentStatus || null,
+              toStatus: nextStatus,
+              timestamp: new Date().toISOString(),
+              actor: 'DocuSign Connect Webhook',
+              evidence: `Envelope ${envelopeId} reconciled with status ${status}`,
+            };
+
+            await commitmentRef.update({
+              status: nextStatus,
+              updatedAt: new Date(),
+              transitions: FieldValue.arrayUnion(transition),
+            });
+
+            await syncFractionalInvestorFromCommitment(envData.projectId as string, {
+              id: commitmentId,
+              name: commitmentData.name,
+              email: commitmentData.email ?? null,
+              amountCents: commitmentData.amountCents,
+              status: nextStatus as CommitmentStatus,
+            });
+          }
+        }
+      }
     }
 
     logger.info('[webhooks/docusign] Envelope reconciled', { envelopeId, status });

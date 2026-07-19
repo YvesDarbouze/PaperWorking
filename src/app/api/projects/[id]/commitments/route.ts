@@ -18,8 +18,17 @@ import { syncFractionalInvestorFromCommitment } from '@/lib/firebase/syncFractio
    Membership: caller must be project owner or member
    ═══════════════════════════════════════════════════════════════ */
 
-type CommitmentStatus = 'pledged' | 'transferred' | 'cleared';
-const VALID_STATUSES: CommitmentStatus[] = ['pledged', 'transferred', 'cleared'];
+import { CommitmentStatus } from '@/types/schema';
+
+const VALID_STATUSES: CommitmentStatus[] = [
+  'pledged',
+  'transferred',
+  'cleared',
+  'soft-committed',
+  'docs-out',
+  'signed',
+  'funds-confirmed'
+];
 
 async function verifyProjectMembership(projectId: string, uid: string) {
   const snap = await adminDb.collection('projects').doc(projectId).get();
@@ -92,7 +101,7 @@ export async function POST(
     }
 
     const body = await request.json();
-    const { name, amountCents, status = 'pledged', email, notes } = body;
+    const { name, amountCents, status = 'pledged', email, notes, partyType = 'Investor' } = body;
 
     if (!name || typeof name !== 'string' || !name.trim()) {
       return NextResponse.json({ error: 'name is required' }, { status: 422 });
@@ -102,6 +111,10 @@ export async function POST(
     }
     if (!VALID_STATUSES.includes(status)) {
       return NextResponse.json({ error: `status must be one of: ${VALID_STATUSES.join(', ')}` }, { status: 422 });
+    }
+    const VALID_PARTY_TYPES = ['Sponsor', 'Investor', 'Co-GP', 'Preferred Equity'];
+    if (!VALID_PARTY_TYPES.includes(partyType)) {
+      return NextResponse.json({ error: `partyType must be one of: ${VALID_PARTY_TYPES.join(', ')}` }, { status: 422 });
     }
 
     const docRef = adminDb
@@ -117,9 +130,19 @@ export async function POST(
       status,
       email: email?.trim() ?? null,
       notes: notes?.trim() ?? null,
+      partyType,
       createdByUid: uid,
       createdAt: FieldValue.serverTimestamp(),
       updatedAt: FieldValue.serverTimestamp(),
+      transitions: [
+        {
+          fromStatus: null,
+          toStatus: status,
+          timestamp: new Date().toISOString(),
+          actor: auth.token.email || auth.token.name || auth.uid,
+          evidence: 'Initial Commitment recorded'
+        }
+      ]
     };
 
     await docRef.set(doc);
@@ -130,6 +153,7 @@ export async function POST(
       email: doc.email,
       amountCents: doc.amountCents,
       status: doc.status,
+      partyType: doc.partyType as any,
     });
 
     return NextResponse.json({ id: docRef.id, ...doc }, { status: 201 });

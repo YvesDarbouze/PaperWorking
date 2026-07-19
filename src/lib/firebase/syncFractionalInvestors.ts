@@ -1,5 +1,5 @@
 import { adminDb } from '@/lib/firebase/admin';
-import type { FractionalInvestor } from '@/types/schema';
+import type { FractionalInvestor, CommitmentStatus, CapitalPartyType } from '@/types/schema';
 
 /* ═══════════════════════════════════════════════════════════════
    syncFractionalInvestors — Commitment → fractionalInvestors[] bridge
@@ -15,15 +15,20 @@ export type CommitmentSyncInput = {
   name: string;
   email: string | null;
   amountCents: number;
-  status: 'pledged' | 'transferred' | 'cleared';
+  status: CommitmentStatus;
+  partyType?: CapitalPartyType;
 };
 
 type LegacyInvestorStatus = FractionalInvestor['status'];
 
-const STATUS_MAP: Record<CommitmentSyncInput['status'], LegacyInvestorStatus> = {
+const STATUS_MAP: Record<CommitmentStatus, LegacyInvestorStatus> = {
   pledged: 'invited',
+  'soft-committed': 'invited',
   transferred: 'pending_subscription',
+  'docs-out': 'pending_subscription',
+  signed: 'pending_subscription',
   cleared: 'confirmed',
+  'funds-confirmed': 'confirmed',
 };
 
 function computeEquityPercentage(
@@ -49,6 +54,7 @@ function buildInvestorEntry(
     equityPercentage: computeEquityPercentage(contributionAmount, fin),
     contributionAmount,
     status: STATUS_MAP[commitment.status],
+    partyType: commitment.partyType || 'Investor',
   };
 }
 

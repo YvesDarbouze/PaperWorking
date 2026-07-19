@@ -46,7 +46,8 @@ export interface AmortizationResult {
 export function calculateAmortization(
   loanAmount: number,
   annualInterestRatePercent: number,
-  loanTermMonths: number
+  loanTermMonths: number,
+  interestOnly: boolean = false
 ): AmortizationResult {
   const schedule: AmortizationResult['schedule'] = [];
   if (loanAmount <= 0 || loanTermMonths <= 0) {
@@ -63,6 +64,35 @@ export function calculateAmortization(
   const totalPayments = loanTermMonths;
   let monthlyPayment = 0;
 
+  if (interestOnly) {
+    // Interest-only: no principal amortization
+    monthlyPayment = loanAmount * monthlyRate;
+
+    let firstYearInterest = 0;
+
+    for (let m = 1; m <= totalPayments; m++) {
+      const interest = loanAmount * monthlyRate;
+      if (m <= 12) firstYearInterest += interest;
+
+      schedule.push({
+        month: m,
+        payment: monthlyPayment,
+        principal: 0,
+        interest,
+        remainingBalance: loanAmount,
+      });
+    }
+
+    return {
+      monthlyPayment,
+      annualDebtService: monthlyPayment * 12,
+      firstYearInterest,
+      firstYearPrincipal: 0,
+      schedule,
+    };
+  }
+
+  // Standard fully-amortizing calculation
   if (monthlyRate > 0) {
     const pow = Math.pow(1 + monthlyRate, totalPayments);
     monthlyPayment = (loanAmount * monthlyRate * pow) / (pow - 1);

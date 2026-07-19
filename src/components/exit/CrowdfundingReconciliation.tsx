@@ -139,7 +139,7 @@ export default function CrowdfundingReconciliation({ deal }: CrowdfundingReconci
       {/* ── Footer ── */}
       <div className="bg-pw-glass-bg/20 border-t border-pw-border p-4 flex items-center justify-between">
          <p className="text-[9px] font-bold text-text-secondary uppercase tracking-widest">
-           Reconciliation automatically calculated via Phase 4 Net Engine output.
+           Reconciliation automatically calculated via Phase 4 Net Engine output. Distribution movements are recorded off-platform per Decision F-1.
          </p>
          <button className="pw-btn pw-btn--secondary pw-btn--sm text-[10px] font-black uppercase tracking-[0.2em] px-6 py-2 transition-colors flex items-center gap-2">
            <DollarSign className="w-3 h-3 text-pw-accent" />

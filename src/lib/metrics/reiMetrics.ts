@@ -984,11 +984,13 @@ export function deriveAllMetrics(
   const loanAmount = financials.loanAmount ?? 0;
   const loanInterestRate = financials.loanInterestRate ?? 0;
   const loanTermMonths = (financials.loanTermYears ?? 30) * 12;
-  const annualDebtService = computeAnnualDebtService(
-    loanAmount,
-    loanInterestRate,
-    loanTermMonths
-  );
+  const annualDebtService = typeof financials.annualDebtService === 'number'
+    ? financials.annualDebtService
+    : computeAnnualDebtService(
+        loanAmount,
+        loanInterestRate,
+        loanTermMonths
+      );
 
   // Cash flow
   const { annual: annualCashFlow, monthly: monthlyCashFlow } = computeCashFlow(
@@ -1304,14 +1306,50 @@ export function deriveAllMetrics(
   const holdingCosts = dailyBurn * holdDays;
 
   // ── actual calculations ──
-  const actualRent = sumIncome('rent');
+  const rentReceivedSum = (financials.rent_received || []).filter(e => e.confirmed).reduce((sum, e) => sum + e.amount, 0);
+  const leaseIncomeSum = (financials.lease_income || []).filter(e => e.confirmed).reduce((sum, e) => sum + e.amount, 0);
+
+  const actualRent = rentReceivedSum > 0 
+    ? rentReceivedSum 
+    : leaseIncomeSum > 0 
+      ? leaseIncomeSum 
+      : sumIncome('rent');
+
   const actualOther = sumIncome('other');
   const actualGOI = actualRent + actualOther;
-  const actualOpEx = expenseLedger
-    .filter(e => e.category !== 'capex')
-    .reduce((sum, e) => sum + e.amount, 0);
 
-  const hasLedger = incomeLedger.length > 0 || expenseLedger.length > 0;
+  const opexCategoriesSum = 
+    (financials.opex_tax || []).filter(e => e.confirmed).reduce((sum, e) => sum + e.amount, 0) +
+    (financials.opex_insurance || []).filter(e => e.confirmed).reduce((sum, e) => sum + e.amount, 0) +
+    (financials.opex_security || []).filter(e => e.confirmed).reduce((sum, e) => sum + e.amount, 0) +
+    (financials.opex_maintenance || []).filter(e => e.confirmed).reduce((sum, e) => sum + e.amount, 0) +
+    (financials.opex_utilities || []).filter(e => e.confirmed).reduce((sum, e) => sum + e.amount, 0) +
+    (financials.opex_management || []).filter(e => e.confirmed).reduce((sum, e) => sum + e.amount, 0) +
+    (financials.opex_hoa || []).filter(e => e.confirmed).reduce((sum, e) => sum + e.amount, 0);
+
+  const hasOpexCategories = 
+    (financials.opex_tax?.length || 0) > 0 ||
+    (financials.opex_insurance?.length || 0) > 0 ||
+    (financials.opex_security?.length || 0) > 0 ||
+    (financials.opex_maintenance?.length || 0) > 0 ||
+    (financials.opex_utilities?.length || 0) > 0 ||
+    (financials.opex_management?.length || 0) > 0 ||
+    (financials.opex_hoa?.length || 0) > 0 ||
+    (financials.opex_capex?.length || 0) > 0;
+
+  const actualOpEx = hasOpexCategories 
+    ? opexCategoriesSum 
+    : expenseLedger
+        .filter(e => e.category !== 'capex')
+        .reduce((sum, e) => sum + e.amount, 0);
+
+  const hasLedger = 
+    incomeLedger.length > 0 || 
+    expenseLedger.length > 0 || 
+    (financials.rent_received?.length || 0) > 0 || 
+    (financials.lease_income?.length || 0) > 0 || 
+    hasOpexCategories;
+
   const actualNOI = hasLedger ? actualGOI - actualOpEx : null;
 
   // #2 Cap Rate actual
@@ -1324,7 +1362,10 @@ export function deriveAllMetrics(
   // #3 CoC actual
   const actualCashToClose = financials.emdAmount ?? (purchasePrice * 0.2);
   const actualClosingCosts = financials.closingCosts ?? 0;
-  const actualRehabSpend = sumExpense('capex');
+  const opexCapexSum = (financials.opex_capex || []).filter(e => e.confirmed).reduce((sum, e) => sum + e.amount, 0);
+  const actualRehabSpend = hasOpexCategories 
+    ? opexCapexSum 
+    : sumExpense('capex');
   const actualCashInvested = actualCashToClose + actualClosingCosts + actualRehabSpend;
   const actualCashFlow = actualNOI !== null ? actualNOI - annualDebtService - actualRehabSpend : null;
   const actualCoC = actualCashFlow !== null && actualCashInvested > 0

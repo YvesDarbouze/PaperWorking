@@ -462,3 +462,37 @@ To avoid visual redundancy, there must be **no more than 2** project creation co
 
 Both controls must be labeled identically as **"Create Project"**. All other secondary/inline project creation buttons (such as in Recent Projects list headers) must be removed.
 
+---
+
+## 20. Appendices
+
+### Appendix A: Phase Ownership of Headline-10 Variables
+The headline-10 variables are aligned to the 33-metric collection matrix:
+- **NOI**: Acquisition (projected) / Exit (actual, rent-lease operations)
+- **Cash Flow**: First computable Fund (debt service)
+- **Cap Rate**: Acquisition
+- **Cash-on-Cash**: First computable Fund (cash invested + debt service)
+- **GRM**: Acquisition (screening)
+- **DSCR**: First computable Fund (a lender metric)
+- **IRR**: Projected Acquisition, actual Exit
+- **Occupancy**: Actual from operations (Exit for RENT; vacancy assumption proxies earlier)
+  > [!NOTE]
+  > Reconciliation note: an earlier matrix pass attributed occupancy to "Hold"; skill rule 14's event-triggered gate places operations in Exit — this doc follows the skill; FD-2/HD-1 verify the matrix doc's wording when committed.
+- **Expense Ratio**: Acquisition (projected) / Exit (actual)
+- **Long-Term Appreciation**: Hold + Exit value series
+
+### Appendix B: Canonical Enumerations
+All enum-like fields must adhere strictly to these values:
+- **Phases**: `Acquisition`, `Fund`, `Hold`, `Exit` (never use "Closing", "Hold & Rehab", or "Purchase")
+- **Renovation Tiers**: `Stage`, `Refurbish`, `Renovate`, `Gut`, `Develop`
+- **Disposition Type**: `SALE`, `LEASE`, `RENT` (one field, two doors: Card 0.4, Card 3.1)
+- **Expense Categories**: `tax`, `insurance`, `security`, `maintenance`, `utilities`, `management`, `HOA`, `capex`
+
+### Appendix C: Gate Summary
+- **Acquisition → Fund**: Checklist, live data (8 criteria above)
+- **Fund → Hold**: Checklist, live data (F6)
+- **Hold → Exit**: Event-triggered: first confirmed rent, activated lease, or sale under contract (automatic)
+
+### Appendix D: Extension Protocol
+The HD (Hold) and EX (Exit) build packs may extend Hold/Exit cards via committed addenda to this document, following the FD (Fund) pattern — committed before build, extending never overwriting, this document is always the card-level authority.
+

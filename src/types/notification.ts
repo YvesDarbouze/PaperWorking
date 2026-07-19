@@ -19,6 +19,7 @@ export type NotificationType =
   | 'OVER_IMPROVEMENT_ALERT'
   | 'BURN_RATE_WARNING'
   | 'VENDOR_LEAD'
+  | 'LOAN_STATUS_UPDATE'
   | 'NEGOTIATION_UPDATE';
 
 export type NotificationUrgency = 'informational' | 'actionable' | 'critical';
@@ -224,6 +225,13 @@ export const NOTIFICATION_METADATA: Record<
       const subject = params.metadata?.subject || 'Terms update';
       return `${params.dealAddress || 'Deal'}: ${subject}`;
     }
+  },
+  LOAN_STATUS_UPDATE: {
+    urgency: 'actionable',
+    channels: ['in-app', 'email'],
+    templateTitle: (params) => {
+      return `Loan status updated for ${params.dealAddress || 'the project'}`;
+    }
   }
 };
 
@@ -248,6 +256,7 @@ export function getNotificationCategory(type: NotificationType): NotificationCat
     case 'OVER_IMPROVEMENT_ALERT':
     case 'BURN_RATE_WARNING':
     case 'PHASE_TRANSITION':
+    case 'LOAN_STATUS_UPDATE':
       return 'alerts';
     default:
       return 'tasks';

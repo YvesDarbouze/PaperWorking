@@ -8,8 +8,21 @@ import { Project, LoanStatus, ClosingChecklistItem, ProjectTeamMember, CostBasis
 import { LoanProcessingPipeline } from '@/components/project/LoanProcessingPipeline';
 import { ClosingChecklist } from '@/components/project/ClosingChecklist';
 import { AcquisitionTeamAssembly } from '@/components/project/AcquisitionTeamAssembly';
+import { ClosingTimelineCard } from '@/components/project/ClosingTimelineCard';
 import InvestorEquityTable from '@/components/team/InvestorEquityTable';
+import { SubscriptionsTracker } from '@/components/project/SubscriptionsTracker';
+import { ContributionLedger } from '@/components/project/ContributionLedger';
+import { FinancingRouteCard } from '@/components/project/FinancingRouteCard';
+import { LenderPackageTracker } from '@/components/project/LenderPackageTracker';
+import { LoanEstimatesWorkflow } from '@/components/project/LoanEstimatesWorkflow';
+import { LockedTermsCard } from '@/components/project/LockedTermsCard';
+import { Sba504Card } from '@/components/project/Sba504Card';
+import { HardMoneyTermsCard } from '@/components/project/HardMoneyTermsCard';
 import { ProjectVendorsList } from '@/components/project/ProjectVendorsList';
+import { TitleClosingTeamCard } from '@/components/project/TitleClosingTeamCard';
+import { ClosingAttorneyCard } from '@/components/project/ClosingAttorneyCard';
+import { RfpBidsCard } from '@/components/project/RfpBidsCard';
+import { InsuranceBinderCard } from '@/components/project/InsuranceBinderCard';
 import { DueDiligenceChecklist } from '@/components/project/DueDiligenceChecklist';
 import { InspectionTracker } from '@/components/project/InspectionTracker';
 import { ContingencyTracker } from '@/components/project/ContingencyTracker';
@@ -958,6 +971,15 @@ export default function Phase2AcquisitionPage() {
             onRefresh={refresh}
           />
           <ProjectVendorsList projectId={projectId} />
+          <TitleClosingTeamCard projectId={projectId} />
+          <ClosingAttorneyCard projectId={projectId} />
+          <RfpBidsCard projectId={projectId} />
+          {project && (
+            <InsuranceBinderCard
+              project={project}
+              onSaveProject={handleImmediateSave}
+            />
+          )}
         </section>
 
         {/* ── Investment Team / Cap Table ── */}
@@ -966,20 +988,33 @@ export default function Phase2AcquisitionPage() {
             Investment Team (Partners)
           </h2>
           <InvestorEquityTable projectId={projectId} />
+          <SubscriptionsTracker projectId={projectId} />
+          <ContributionLedger projectId={projectId} />
+        </section>
+
+        {/* ── Financing Route Selection ── */}
+        <section className="space-y-4">
+          <FinancingRouteCard projectId={projectId} />
         </section>
 
         {/* ── Loan Processing Pipeline ── */}
+        {project?.financials?.financingType === 'Financed' && (
+          <section className="space-y-4 animate-in fade-in duration-200">
+            <h2 className="text-[24px] leading-[32px] font-semibold text-[#9E9DA0]">
+              Loan Processing
+            </h2>
+            <LoanProcessingPipeline projectId={projectId} />
+            <LenderPackageTracker projectId={projectId} />
+            <LoanEstimatesWorkflow projectId={projectId} />
+            <LockedTermsCard projectId={projectId} />
+            <Sba504Card projectId={projectId} />
+            <HardMoneyTermsCard projectId={projectId} />
+          </section>
+        )}
+
+        {/* ── Closing Timeline ── */}
         <section className="space-y-4">
-          <h2 className="text-[24px] leading-[32px] font-semibold text-[#9E9DA0]">
-            Loan Processing
-          </h2>
-          <LoanProcessingPipeline
-            currentStatus={loanStatus}
-            onStatusChange={(newStatus) => {
-              setLoanStatus(newStatus);
-              handleImmediateSave({ loanStatus: newStatus });
-            }}
-          />
+          <ClosingTimelineCard projectId={projectId} project={project} />
         </section>
 
         {/* ── Closing Checklist ── */}

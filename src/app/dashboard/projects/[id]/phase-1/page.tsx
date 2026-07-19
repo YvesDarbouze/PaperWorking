@@ -1625,8 +1625,7 @@ export default function Phase1WorkspacePage() {
                 {/* Loan Processing Pipeline */}
                 <div className="glass-card rounded-2xl p-6 border border-white/5 space-y-6">
                   <LoanProcessingPipeline
-                    currentStatus={project.loanStatus}
-                    onStatusChange={handleLoanStatusChange}
+                    projectId={project.id}
                   />
                 </div>
 

@@ -135,3 +135,5 @@ stitch_downloads/
 
 # Local cache files
 *financials_cache_store.json
+.claude/skills/*
+!.claude/skills/paperworking-reil/

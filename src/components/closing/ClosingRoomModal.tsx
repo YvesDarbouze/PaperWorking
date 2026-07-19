@@ -775,18 +775,11 @@ export default function ClosingRoomModal({ projectId, onClose }: ClosingRoomProp
                 deedRecordingInstrumentNumber: deedRecordingInstrumentNumberState,
             };
 
-            const nextPhaseUpdates = {
-                phaseStatus: 'Phase 3: Hold' as const,
-                currentPhase: 3,
-                status: 'hold' as const,
-            };
-
             await projectsService.updateProject(deal.id, {
                 closingRoom: {
                     ...closingRoom,
                     ...closingRoomUpdates
-                },
-                ...nextPhaseUpdates
+                }
             });
 
             // Progress the project state in the local store
@@ -796,20 +789,54 @@ export default function ClosingRoomModal({ projectId, onClose }: ClosingRoomProp
                 closingRoom: {
                     ...closingRoom,
                     ...closingRoomUpdates
-                },
-                ...nextPhaseUpdates
+                }
             };
             const updatedProjects = store.projects.map(p => p.id === deal.id ? updatedProject : p);
             store.setDeals(updatedProjects);
             store.setDeal(updatedProject);
 
             toast.success('Closing execution completed and archived to Data Room!', { id: toastId });
-            onClose();
+            // Note: We do not call onClose() here anymore because the user needs to click the Advance to Hold button in the gate view
         } catch (err: any) {
             console.error('[Complete Closing Execution] Failed:', err);
             toast.error(`Execution failed: ${err.message || 'Unknown error'}`, { id: toastId });
         } finally {
             setIsSavingExecution(false);
+        }
+    };
+
+    const [isAdvancingToHold, setIsAdvancingToHold] = useState(false);
+
+    const handleAdvanceToHold = async () => {
+        if (!isMember) return;
+        setIsAdvancingToHold(true);
+        const toastId = toast.loading('Advancing project to Phase 3 (Hold)...');
+        try {
+            const nextPhaseUpdates = {
+                phaseStatus: 'Phase 3: Hold' as const,
+                currentPhase: 3,
+                status: 'hold' as const,
+            };
+
+            await projectsService.updateProject(deal.id, nextPhaseUpdates);
+
+            // Progress the project state in the local store
+            const store = useProjectStore.getState();
+            const updatedProject = {
+                ...deal,
+                ...nextPhaseUpdates
+            };
+            const updatedProjects = store.projects.map(p => p.id === deal.id ? updatedProject : p);
+            store.setDeals(updatedProjects);
+            store.setDeal(updatedProject);
+
+            toast.success('Project advanced to Phase 3 (Hold) successfully!', { id: toastId });
+            onClose();
+        } catch (err: any) {
+            console.error('[Advance to Hold] Failed:', err);
+            toast.error(`Failed to advance: ${err.message || 'Unknown error'}`, { id: toastId });
+        } finally {
+            setIsAdvancingToHold(false);
         }
     };
 
@@ -1410,6 +1437,25 @@ export default function ClosingRoomModal({ projectId, onClose }: ClosingRoomProp
                                                 <span className="font-bold">Active Reconciliation Override:</span> &ldquo;{closingRoom.reconciliationOverrideReason}&rdquo;
                                             </div>
                                         )}
+                                        <div className="pt-4 border-t border-green-500/20 flex justify-end">
+                                            <button
+                                                onClick={handleAdvanceToHold}
+                                                disabled={isAdvancingToHold}
+                                                className="pw-btn pw-btn--primary pw-btn--pill px-6 py-2.5 text-xs font-semibold flex items-center gap-1.5 shadow-sm"
+                                            >
+                                                {isAdvancingToHold ? (
+                                                    <>
+                                                        <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                                                        <span>Advancing...</span>
+                                                    </>
+                                                ) : (
+                                                    <>
+                                                        <CheckCircle className="w-3.5 h-3.5" />
+                                                        <span>Advance to Phase 3 (Hold)</span>
+                                                    </>
+                                                )}
+                                            </button>
+                                        </div>
                                     </div>
                                 );
                             })()}

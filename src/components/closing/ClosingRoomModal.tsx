@@ -700,7 +700,7 @@ export default function ClosingRoomModal({ projectId, onClose }: ClosingRoomProp
         const toastId = toast.loading('Archiving closing package to Data Room & completing deal closing...');
 
         try {
-            // Find folder matching 'Under Contract' (or first project folder)
+            // Find folder matching 'Closing' (or first project folder)
             const q = query(
                 collection(db, 'projectFolders'),
                 where('projectId', '==', deal.id)
@@ -709,7 +709,7 @@ export default function ClosingRoomModal({ projectId, onClose }: ClosingRoomProp
             let folderId = '';
             querySnap.forEach((docSnap) => {
                 const data = docSnap.data();
-                if (data.name === 'Under Contract' || data.phase === 'Under Contract') {
+                if (data.name === 'Closing' || data.phase === 'Closing') {
                     folderId = docSnap.id;
                 }
             });

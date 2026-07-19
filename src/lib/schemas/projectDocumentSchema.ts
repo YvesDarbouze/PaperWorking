@@ -39,7 +39,7 @@ export const documentCategoryEnum = z.enum([
 /** Folder phases — one auto-provisioned per phase on project creation */
 export const folderPhaseEnum = z.enum([
   'Find & Fund',
-  'Under Contract',
+  'Closing',
   'Rehab',
   'Listed',
   'Sold',

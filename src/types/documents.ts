@@ -23,7 +23,7 @@ export type DocumentCategory =
 /** One folder is auto-provisioned for each phase when a project is created. */
 export type FolderPhase =
   | 'Find & Fund'
-  | 'Under Contract'
+  | 'Closing'
   | 'Rehab'
   | 'Listed'
   | 'Sold';

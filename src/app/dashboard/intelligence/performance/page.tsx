@@ -108,7 +108,7 @@ function EmptyState() {
         <div>
           <p className="text-sm font-semibold text-[#C0BEC2] mb-1">Awaiting Portfolio Data</p>
           <p className="text-xs text-[#6B6870] max-w-xs leading-relaxed">
-            Import deal data or complete Purchase phase tasks to generate performance analytics.
+            Import deal data or complete Fund phase tasks to generate performance analytics.
           </p>
         </div>
         <Link

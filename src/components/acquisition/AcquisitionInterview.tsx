@@ -958,7 +958,7 @@ export default function AcquisitionInterview({ deal }: AcquisitionInterviewProps
             <span>
               {isAlreadyOwned
                 ? `Ready — property will enter Phase ${startingPhase} on save.`
-                : 'All criteria met — ready to advance to Purchase phase.'
+                : 'All criteria met — ready to advance to the Fund phase.'
               }
             </span>
           </div>

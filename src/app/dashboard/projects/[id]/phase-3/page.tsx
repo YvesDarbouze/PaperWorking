@@ -100,7 +100,7 @@ export default function Phase3RehabPage() {
   const projectId = params.id as string;
 
   const { project, loading: isLoading, refresh } = useWorkspaceProject();
-  const exitStrategy = project?.dispositionType === 'RENT' || project?.dispositionType === 'LEASE' ? 'Rent' : 'Sell';
+  const exitStrategy = project?.dispositionType === 'RENT' ? 'Rent' : project?.dispositionType === 'LEASE' ? 'Lease' : 'Sell';
 
   const [isSaving, setIsSaving] = useState(false);
   const [rehabExpenses, setRehabExpenses] = useState<RehabExpense[]>([]);
@@ -1383,9 +1383,9 @@ export default function Phase3RehabPage() {
               <div className="space-y-4">
                 <div className="flex items-center justify-between">
                   <h2 className="text-[24px] leading-[32px] font-semibold text-[#9E9DA0]">
-                    {exitStrategy === 'Rent' ? 'Rental Income' : 'Exit Strategy'}
+                    {exitStrategy === 'Rent' ? 'Rental Income' : exitStrategy === 'Lease' ? 'Lease Income' : 'Exit Strategy'}
                   </h2>
-                  {exitStrategy === 'Rent' && (
+                  {(exitStrategy === 'Rent' || exitStrategy === 'Lease') && (
                     <span className="text-[10px] font-bold tracking-[0.12em] uppercase px-2 py-0.5 rounded bg-[#454955]/20 text-[#454955] border border-[#454955]/30">
                       ACTIVE
                     </span>

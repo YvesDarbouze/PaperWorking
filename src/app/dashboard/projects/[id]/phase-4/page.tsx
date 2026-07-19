@@ -253,15 +253,22 @@ export default function Phase4WorkspacePage() {
     }
   }, [project, user, projectId, localProject, isRealized, refresh]);
 
-  const strategy = (
-    project?.dispositionType === 'LEASE'
-  ) ? 'Lease' : (localProject?.financials?.exitStrategyType || 'Sell');
+  const strategy = project?.dispositionType === 'LEASE'
+    ? 'Lease'
+    : project?.dispositionType === 'RENT'
+    ? 'Rent'
+    : (localProject?.financials?.exitStrategyType || 'Sell');
   const ownershipPct = localProject?.financials?.ownershipPercentage ?? 100;
 
-  const handleStrategyChange = (next: 'Sell' | 'Rent') => {
+  const handleStrategyChange = (next: 'Sell' | 'Rent' | 'Lease') => {
     if (!project) return;
+    const disp = next === 'Lease' ? 'LEASE' : next === 'Rent' ? 'RENT' : 'SALE';
     projectsService.updateProject(projectId, {
-      financials: { ...project.financials, exitStrategyType: next }
+      dispositionType: disp,
+      financials: { 
+        ...project.financials, 
+        exitStrategyType: next === 'Lease' ? 'Rent' : next 
+      }
     }).then(() => refresh()).catch(console.error);
   };
 

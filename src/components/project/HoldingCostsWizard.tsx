@@ -3,6 +3,7 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { HelpCircle, Sparkles, Check, ArrowLeft, ArrowRight, DollarSign, Info, Calculator } from 'lucide-react';
 import toast from 'react-hot-toast';
+import { IS_DEMO_MODE } from '@/lib/config/demo';
 
 interface Props {
   projectId: string;
@@ -210,27 +211,30 @@ export function HoldingCostsWizard({ projectId, financials, onSaveCategory, onAl
         </p>
       </div>
 
-      {/* Dynamic Plaid Proposals Section */}
-      {proposal && (
-        <div className="border border-[#7A9EAA]/30 bg-[#7A9EAA]/5 p-3 rounded-lg flex items-center justify-between gap-3">
+      {/* Dynamic Plaid Proposals Section (Demo only) */}
+      {IS_DEMO_MODE && proposal && (
+        <div className="border border-[#7A9EAA]/30 bg-[#7A9EAA]/5 p-3 rounded-lg flex items-center justify-between gap-3 relative">
           <div className="flex items-center gap-2">
             <span className="relative flex h-2 w-2">
               <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#7A9EAA] opacity-75"></span>
               <span className="relative inline-flex rounded-full h-2 w-2 bg-[#7A9EAA]"></span>
             </span>
             <div className="text-[10px] text-[#9E9DA0]">
-              <span className="font-bold text-[#7A9EAA]">Plaid Cost Proposal:</span> Found recurring bill of{' '}
+              <span className="font-bold text-[#7A9EAA]">Plaid Cost Proposal (Demo):</span> Found recurring bill of{' '}
               <strong className="text-white">${(proposal.amount / 100).toFixed(2)}/mo</strong> from{' '}
               <strong className="text-white">{proposal.merchant}</strong>
             </div>
           </div>
-          <button
-            onClick={handleApplyProposal}
-            type="button"
-            className="text-[9px] font-bold bg-[#7A9EAA] hover:bg-[#7A9EAA]/80 text-white px-2 py-1 rounded transition shrink-0 flex items-center gap-0.5"
-          >
-            <Check className="w-3 h-3" /> Pre-fill
-          </button>
+          <div className="flex items-center gap-2">
+            <span className="text-[8px] font-bold text-amber-500 bg-amber-500/10 px-1.5 py-0.5 rounded border border-amber-500/20">Demo</span>
+            <button
+              onClick={handleApplyProposal}
+              type="button"
+              className="text-[9px] font-bold bg-[#7A9EAA] hover:bg-[#7A9EAA]/80 text-white px-2 py-1 rounded transition shrink-0 flex items-center gap-0.5"
+            >
+              <Check className="w-3 h-3" /> Pre-fill
+            </button>
+          </div>
         </div>
       )}
 

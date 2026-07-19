@@ -9,6 +9,7 @@ import { projectsService } from '@/lib/firebase/deals';
 import { ref, uploadBytesResumable, getDownloadURL } from 'firebase/storage';
 import { storage, auth as firebaseAuth } from '@/lib/firebase/config';
 import { useAuth } from '@/context/AuthContext';
+import { IS_DEMO_MODE } from '@/lib/config/demo';
 import toast from 'react-hot-toast';
 
 interface SaleOperationsCardProps {
@@ -215,10 +216,11 @@ export default function SaleOperationsCard({ project, refresh, isLocked = false 
     const toastId = toast.loading(`Uploading ${file.name}...`);
 
     try {
-      let downloadURL = `/mock/documents/${file.name}`;
+      let downloadURL = '';
 
-      // If actual storage upload is possible and not a test env
-      if (typeof window !== 'undefined' && !document.cookie.includes('__e2e_test')) {
+      if (IS_DEMO_MODE) {
+        downloadURL = `/mock/documents/${file.name}`;
+      } else {
         const uploadId = crypto.randomUUID();
         const fileRef = ref(storage, `projects/${project.id}/sale/${uploadId}_${file.name}`);
         const uploadTask = uploadBytesResumable(fileRef, file);

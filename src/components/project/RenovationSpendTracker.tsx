@@ -4,6 +4,7 @@ import React, { useState } from 'react';
 import { getAuth } from 'firebase/auth';
 import { Info, HelpCircle, AlertTriangle, Check, X, ShieldAlert, Sparkles, CheckCircle2, History } from 'lucide-react';
 import toast from 'react-hot-toast';
+import { IS_DEMO_MODE } from '@/lib/config/demo';
 import type { RehabSpendEntry, RehabSpendHistoryEntry } from '@/types/schema';
 
 interface Props {
@@ -163,15 +164,18 @@ export function RenovationSpendTracker({ projectId, rehabSpend, onSpendChange, t
 
   return (
     <div className="space-y-6">
-      {/* Dynamic Plaid Proposals Bar */}
-      {plaidProposals.length > 0 && (
-        <div className="border border-[#7A9EAA]/30 bg-[#7A9EAA]/5 p-4 rounded-xl space-y-3">
+      {/* Dynamic Plaid Proposals Bar (Demo only) */}
+      {IS_DEMO_MODE && plaidProposals.length > 0 && (
+        <div className="border border-[#7A9EAA]/30 bg-[#7A9EAA]/5 p-4 rounded-xl space-y-3 relative">
+          <div className="absolute top-2 right-2 flex items-center">
+            <span className="text-[8px] font-bold text-amber-500 bg-amber-500/10 px-1.5 py-0.5 rounded border border-amber-500/20">Demo</span>
+          </div>
           <div className="flex justify-between items-center">
             <span className="text-[12px] font-bold text-[#7A9EAA] flex items-center gap-1.5 uppercase tracking-wider">
-              <Sparkles className="w-4 h-4 animate-pulse" />
-              Plaid Auto-Attribution ({plaidProposals.length} Proposed Matches)
+              <Sparkles className="w-4 h-4 animate-pulse text-amber-500" />
+              Plaid Auto-Attribution ({plaidProposals.length} Proposed Matches) (Demo)
             </span>
-            <span className="text-[10px] text-[#9E9DA0]/80">Confirm category to add to ledger</span>
+            <span className="text-[10px] text-[#9E9DA0]/80 mr-12">Confirm category to add to ledger</span>
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">

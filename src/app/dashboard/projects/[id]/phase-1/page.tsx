@@ -1718,6 +1718,7 @@ export default function Phase1WorkspacePage() {
                 />
 
                 <ContingencyTracker
+                  projectId={project.id}
                   contingencies={contingencies}
                   onChange={async (updatedContingencies) => {
                     setContingencies(updatedContingencies);

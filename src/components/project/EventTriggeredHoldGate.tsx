@@ -4,6 +4,7 @@ import React, { useState, useEffect } from 'react';
 import { ShieldCheck, AlertCircle, Sparkles, DollarSign, FileText, CheckCircle, RefreshCw, PartyPopper } from 'lucide-react';
 import type { Project, IncomeLedgerEntry, TenantRegistryEntry } from '@/types/schema';
 import { computeAutopsyMetrics } from '@/lib/math/calculatorUtils';
+import { IS_DEMO_MODE } from '@/lib/config/demo';
 
 interface EventTriggeredHoldGateProps {
   project: Project;
@@ -201,8 +202,11 @@ export function EventTriggeredHoldGate({
           }`}>
             <div className="flex justify-between items-start">
               <div>
-                <span className="text-[9px] text-[#9E9DA0] uppercase font-bold tracking-wider">
+                <span className="text-[9px] text-[#9E9DA0] uppercase font-bold tracking-wider flex items-center gap-1.5">
                   Milestone Trigger 1
+                  {IS_DEMO_MODE && (
+                    <span className="text-[8px] font-bold text-amber-500 bg-amber-500/10 px-1.5 py-0.5 rounded border border-amber-500/20">Demo</span>
+                  )}
                 </span>
                 <h4 className="text-xs font-bold text-white uppercase tracking-wider mt-0.5">
                   Confirmed Rent
@@ -226,7 +230,7 @@ export function EventTriggeredHoldGate({
                   Rent of ${(rentEventValue!.amount / 100).toLocaleString()} confirmed on {rentEventValue!.date}.
                 </div>
               ) : (
-                activeForm !== 'rent' && (
+                IS_DEMO_MODE && activeForm !== 'rent' && (
                   <button
                     onClick={() => setActiveForm('rent')}
                     className="text-[9px] text-[#7A9EAA] hover:underline font-bold"
@@ -267,8 +271,11 @@ export function EventTriggeredHoldGate({
           }`}>
             <div className="flex justify-between items-start">
               <div>
-                <span className="text-[9px] text-[#9E9DA0] uppercase font-bold tracking-wider">
+                <span className="text-[9px] text-[#9E9DA0] uppercase font-bold tracking-wider flex items-center gap-1.5">
                   Milestone Trigger 2
+                  {IS_DEMO_MODE && (
+                    <span className="text-[8px] font-bold text-amber-500 bg-amber-500/10 px-1.5 py-0.5 rounded border border-amber-500/20">Demo</span>
+                  )}
                 </span>
                 <h4 className="text-xs font-bold text-white uppercase tracking-wider mt-0.5">
                   Activated Lease
@@ -292,7 +299,7 @@ export function EventTriggeredHoldGate({
                   Lease registered starting {leaseEventValue?.leaseStart || 'N/A'} for ${(leaseEventValue!.rentAmount / 100).toLocaleString()}/mo.
                 </div>
               ) : (
-                activeForm !== 'lease' && (
+                IS_DEMO_MODE && activeForm !== 'lease' && (
                   <button
                     onClick={() => setActiveForm('lease')}
                     className="text-[9px] text-[#7A9EAA] hover:underline font-bold"
@@ -346,8 +353,11 @@ export function EventTriggeredHoldGate({
           }`}>
             <div className="flex justify-between items-start">
               <div>
-                <span className="text-[9px] text-[#9E9DA0] uppercase font-bold tracking-wider">
+                <span className="text-[9px] text-[#9E9DA0] uppercase font-bold tracking-wider flex items-center gap-1.5">
                   Milestone Trigger 3
+                  {IS_DEMO_MODE && (
+                    <span className="text-[8px] font-bold text-amber-500 bg-amber-500/10 px-1.5 py-0.5 rounded border border-amber-500/20">Demo</span>
+                  )}
                 </span>
                 <h4 className="text-xs font-bold text-white uppercase tracking-wider mt-0.5">
                   Sale Contract
@@ -371,12 +381,14 @@ export function EventTriggeredHoldGate({
                   Property under contract at target list price of ${( (project.financials?.list_price_sale || 0) / 100).toLocaleString()}.
                 </div>
               ) : (
-                <button
-                  onClick={onMarkSaleUnderContract}
-                  className="text-[9px] text-[#7A9EAA] hover:underline font-bold"
-                >
-                  Mark Sale Under Contract
-                </button>
+                IS_DEMO_MODE && (
+                  <button
+                    onClick={onMarkSaleUnderContract}
+                    className="text-[9px] text-[#7A9EAA] hover:underline font-bold"
+                  >
+                    Mark Sale Under Contract
+                  </button>
+                )
               )}
             </div>
           </div>

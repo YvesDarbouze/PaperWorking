@@ -127,13 +127,13 @@ describe('LeaseOperationsCard component', () => {
   it('toggles Plaid Bank Feed and confirms proposed transaction', async () => {
     render(<LeaseOperationsCard project={mockProject} refresh={jest.fn()} />);
 
-    const plaidBtn = screen.getByText('Connect Plaid');
+    const plaidBtn = screen.getByText(/Connect Plaid/);
     await act(async () => {
       fireEvent.click(plaidBtn);
     });
 
-    expect(screen.getByText('Plaid Active')).toBeDefined();
-    expect(screen.getByText('Plaid Detected Lease Transaction')).toBeDefined();
+    expect(screen.getByText(/Plaid Active/)).toBeDefined();
+    expect(screen.getByText(/Plaid Detected Lease Transaction/)).toBeDefined();
     expect(screen.getByText('Lexington Tech Corp')).toBeDefined();
 
     const confirmBtns = screen.getAllByRole('button');

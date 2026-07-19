@@ -55,7 +55,7 @@ describe('RentRollCard component', () => {
 
     expect(screen.getByText('Rent Roll & Occupancy Tracker')).toBeDefined();
     expect(screen.getByText('Verified Rent Roll Ledger')).toBeDefined();
-    expect(screen.getByText('Connect Plaid')).toBeDefined();
+    expect(screen.getByText(/Connect Plaid/)).toBeDefined();
     expect(screen.getByText('Log Payment')).toBeDefined();
   });
 
@@ -110,13 +110,13 @@ describe('RentRollCard component', () => {
   it('toggles Plaid Bank Feed and confirms proposed transaction', async () => {
     render(<RentRollCard project={mockProject} refresh={jest.fn()} />);
 
-    const plaidBtn = screen.getByText('Connect Plaid');
+    const plaidBtn = screen.getByText(/Connect Plaid/);
     await act(async () => {
       fireEvent.click(plaidBtn);
     });
 
-    expect(screen.getByText('Plaid Feed Linked')).toBeDefined();
-    expect(screen.getByText('Plaid Auto-Attribution: Rent Payments Detected')).toBeDefined();
+    expect(screen.getByText(/Plaid Feed Linked/)).toBeDefined();
+    expect(screen.getByText(/Plaid Auto-Attribution: Rent Payments Detected/)).toBeDefined();
     expect(screen.getByText('Alice Vance (Unit 101)')).toBeDefined();
 
     const confirmBtns = screen.getAllByTitle('Confirm Payment');

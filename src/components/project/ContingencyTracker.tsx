@@ -2,17 +2,21 @@ import React, { useEffect, useState } from 'react';
 import { Contingency, ContingencyType } from '@/types/schema';
 import { Clock, AlertTriangle, CheckCircle, FileText, Bell, Plus, Trash2, Calendar, User } from 'lucide-react';
 import toast from 'react-hot-toast';
+import { uploadFile } from '@/lib/storage/uploadService';
+import { IS_DEMO_MODE } from '@/lib/config/demo';
 
 interface ContingencyTrackerProps {
   contingencies: Contingency[];
   onChange: (contingencies: Contingency[]) => void;
   readOnly?: boolean;
+  projectId?: string;
 }
 
 const DEFAULT_TYPES = ['Inspection', 'Financing', 'Appraisal'];
 
-export function ContingencyTracker({ contingencies = [], onChange, readOnly = false }: ContingencyTrackerProps) {
+export function ContingencyTracker({ contingencies = [], onChange, readOnly = false, projectId }: ContingencyTrackerProps) {
   const [activeReminders, setActiveReminders] = useState<{ [key: string]: string }>({});
+  const [uploadingIds, setUploadingIds] = useState<Record<string, boolean>>({});
 
   useEffect(() => {
     // Sync reminders log on mount or when contingencies change
@@ -90,12 +94,48 @@ export function ContingencyTracker({ contingencies = [], onChange, readOnly = fa
     toast('Removed contingency');
   };
 
-  const triggerMockUpload = (id: string) => {
-    updateContingency(id, {
-      satisfiedDocUrl: `/mock/documents/contingency_${id}.pdf`,
-      satisfiedDocName: 'contingency_proof_signed.pdf',
-    });
-    toast.success('Mock proof document uploaded');
+  const handleUploadDoc = async (id: string) => {
+    if (readOnly) return;
+    
+    if (IS_DEMO_MODE) {
+      setUploadingIds(prev => ({ ...prev, [id]: true }));
+      await new Promise((resolve) => setTimeout(resolve, 800));
+      updateContingency(id, {
+        satisfiedDocUrl: `/mock/documents/contingency_${id}.pdf`,
+        satisfiedDocName: 'contingency_proof_signed.pdf',
+      });
+      toast.success('Mock proof document uploaded! (Demo)');
+      setUploadingIds(prev => ({ ...prev, [id]: false }));
+      return;
+    }
+
+    const input = document.createElement('input');
+    input.type = 'file';
+    input.accept = '.pdf,image/*';
+    input.onchange = async (e: any) => {
+      const file = e.target.files?.[0];
+      if (!file) return;
+      setUploadingIds(prev => ({ ...prev, [id]: true }));
+      const toastId = toast.loading(`Uploading ${file.name}...`);
+      try {
+        const res = await uploadFile({
+          file,
+          path: 'contingency_proofs',
+          projectId: projectId || 'general',
+        });
+        updateContingency(id, {
+          satisfiedDocUrl: res.downloadUrl,
+          satisfiedDocName: file.name,
+        });
+        toast.success('Document uploaded successfully!', { id: toastId });
+      } catch (err: any) {
+        console.error('Upload failed:', err);
+        toast.error(`Upload failed: ${err.message || 'Unknown error'}`, { id: toastId });
+      } finally {
+        setUploadingIds(prev => ({ ...prev, [id]: false }));
+      }
+    };
+    input.click();
   };
 
   return (
@@ -296,7 +336,10 @@ export function ContingencyTracker({ contingencies = [], onChange, readOnly = fa
                       {c.satisfiedDocUrl ? (
                         <div className="flex items-center gap-2 text-green-400">
                           <FileText size={12} />
-                          <span className="font-mono text-[10px]">{c.satisfiedDocName}</span>
+                          <span className="font-mono text-[10px]">
+                            {c.satisfiedDocName}
+                            {IS_DEMO_MODE && <span className="ml-2 text-[8px] font-bold text-amber-500 bg-amber-500/10 px-1.5 py-0.5 rounded border border-amber-500/20 font-sans">Demo</span>}
+                          </span>
                         </div>
                       ) : c.explicitConfirmation ? (
                         <div className="flex items-center gap-2 text-[#454955]">
@@ -312,10 +355,11 @@ export function ContingencyTracker({ contingencies = [], onChange, readOnly = fa
                       <div className="flex items-center gap-3">
                         <button
                           type="button"
-                          onClick={() => triggerMockUpload(c.id)}
-                          className="px-2.5 py-1 bg-white/10 hover:bg-white/15 text-white font-medium text-[10px] rounded-lg transition-all"
+                          onClick={() => handleUploadDoc(c.id)}
+                          disabled={uploadingIds[c.id]}
+                          className="px-2.5 py-1 bg-white/10 hover:bg-white/15 text-white font-medium text-[10px] rounded-lg transition-all disabled:opacity-50"
                         >
-                          {c.satisfiedDocUrl ? 'Replace Doc' : 'Upload Proof Doc'}
+                          {uploadingIds[c.id] ? 'Uploading...' : c.satisfiedDocUrl ? `Replace Doc ${IS_DEMO_MODE ? '(Demo)' : ''}` : `Upload Proof Doc ${IS_DEMO_MODE ? '(Demo)' : ''}`}
                         </button>
                         <label className="flex items-center gap-1.5 text-[10px] text-[#9E9DA0] cursor-pointer">
                           <input

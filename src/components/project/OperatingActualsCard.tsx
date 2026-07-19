@@ -23,6 +23,7 @@ import {
 import toast from 'react-hot-toast';
 import { useProjectStore } from '@/store/projectStore';
 import posthog from 'posthog-js';
+import { IS_DEMO_MODE } from '@/lib/config/demo';
 
 interface OperatingActualsCardProps {
   project: Project;
@@ -404,90 +405,93 @@ export default function OperatingActualsCard({ project, refresh, isLocked }: Ope
         {/* Right Column: Ledger and Entry */}
         <div className="lg:col-span-8 space-y-6">
           {/* Plaid proposed transactions */}
-          <div 
-            className="rounded-[8px] border overflow-hidden" 
-            style={{ backgroundColor: 'var(--bg-surface)', borderColor: 'var(--border-ui)' }}
-          >
-            <div className="px-6 py-4 border-b flex justify-between items-center" style={{ borderColor: 'var(--border-ui)' }}>
-              <div>
-                <h3 className="text-sm font-bold tracking-tight text-[var(--text-primary)] flex items-center gap-2">
-                  <Sparkles className="w-4 h-4 text-amber-500" />
-                  Plaid Smart Attribution Feed
-                </h3>
-                <p className="text-[10px] uppercase tracking-[0.15em] mt-0.5 text-[var(--text-tertiary)]">
-                  Confirm proposed transactions matching {CATEGORY_META[activeCategory].label}
-                </p>
-              </div>
-              <button
-                type="button"
-                onClick={() => setIsPlaidConnected(!isPlaidConnected)}
-                className={`px-3 py-1 text-[10px] font-bold uppercase tracking-wider rounded border transition-colors ${
-                  isPlaidConnected 
-                    ? 'bg-emerald-500/10 text-emerald-500 border-emerald-500/30' 
-                    : 'bg-[var(--bg-canvas)] text-[var(--text-secondary)] border-[var(--border-ui)] hover:bg-[var(--bg-canvas)]/80'
-                }`}
-              >
-                {isPlaidConnected ? 'Plaid Connected' : 'Connect Plaid Bank Feed'}
-              </button>
-            </div>
-
-            {isPlaidConnected ? (
-              <div className="p-6 space-y-3">
-                {proposals.filter(p => p.category === activeCategory).length > 0 ? (
-                  proposals
-                    .filter(p => p.category === activeCategory)
-                    .map(prop => (
-                      <div 
-                        key={prop.id} 
-                        className="p-4 rounded-[8px] border bg-[var(--bg-canvas)] border-[var(--border-ui)] flex flex-col md:flex-row md:items-center justify-between gap-4"
-                      >
-                        <div>
-                          <div className="flex items-center gap-2">
-                            <span className="text-[9px] font-bold uppercase tracking-wider px-1.5 py-0.5 rounded bg-amber-500/10 text-amber-500">
-                              Proposed Attribution
-                            </span>
-                            <span className="text-[10px] font-mono text-[var(--text-tertiary)]">{prop.date}</span>
-                          </div>
-                          <p className="text-xs font-bold text-[var(--text-primary)] mt-1.5">{prop.description}</p>
-                        </div>
-                        <div className="flex items-center gap-4">
-                          <p className="text-sm font-bold font-mono text-[var(--text-primary)]">
-                            ${prop.amount.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
-                          </p>
-                          <div className="flex items-center gap-2">
-                            <button
-                              type="button"
-                              onClick={() => handleIgnoreProposal(prop.id)}
-                              className="p-1 text-[10px] font-bold uppercase text-[var(--text-tertiary)] hover:text-rose-500"
-                            >
-                              Ignore
-                            </button>
-                            <button
-                              type="button"
-                              onClick={() => handleConfirmProposal(prop)}
-                              disabled={isLocked}
-                              className="px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider bg-[var(--text-primary)] text-[var(--bg-surface)] rounded hover:opacity-90 disabled:opacity-50"
-                            >
-                              Confirm
-                            </button>
-                          </div>
-                        </div>
-                      </div>
-                    ))
-                ) : (
-                  <p className="text-xs text-[var(--text-tertiary)] italic text-center py-4">
-                    No pending Plaid proposals for {CATEGORY_META[activeCategory].label}.
+          {/* Plaid proposed transactions */}
+          {IS_DEMO_MODE && (
+            <div 
+              className="rounded-[8px] border overflow-hidden" 
+              style={{ backgroundColor: 'var(--bg-surface)', borderColor: 'var(--border-ui)' }}
+            >
+              <div className="px-6 py-4 border-b flex justify-between items-center" style={{ borderColor: 'var(--border-ui)' }}>
+                <div>
+                  <h3 className="text-sm font-bold tracking-tight text-[var(--text-primary)] flex items-center gap-2">
+                    <Sparkles className="w-4 h-4 text-amber-500" />
+                    Plaid Smart Attribution Feed
+                  </h3>
+                  <p className="text-[10px] uppercase tracking-[0.15em] mt-0.5 text-[var(--text-tertiary)]">
+                    Confirm proposed transactions matching {CATEGORY_META[activeCategory].label}
                   </p>
-                )}
+                </div>
+                <button
+                  type="button"
+                  onClick={() => setIsPlaidConnected(!isPlaidConnected)}
+                  className={`px-3 py-1 text-[10px] font-bold uppercase tracking-wider rounded border transition-colors ${
+                    isPlaidConnected 
+                      ? 'bg-emerald-500/10 text-emerald-500 border-emerald-500/30' 
+                      : 'bg-[var(--bg-canvas)] text-[var(--text-secondary)] border-[var(--border-ui)] hover:bg-[var(--bg-canvas)]/80'
+                  }`}
+                >
+                  {isPlaidConnected ? 'Plaid Connected' : 'Connect Plaid Bank Feed'}
+                </button>
               </div>
-            ) : (
-              <div className="p-8 text-center bg-[var(--bg-canvas)]/30">
-                <p className="text-xs text-[var(--text-secondary)]">
-                  Connect your Plaid bank feed to automatically scan and propose attribution for recurring property expenses.
-                </p>
-              </div>
-            )}
-          </div>
+
+              {isPlaidConnected ? (
+                <div className="p-6 space-y-3">
+                  {proposals.filter(p => p.category === activeCategory).length > 0 ? (
+                    proposals
+                      .filter(p => p.category === activeCategory)
+                      .map(prop => (
+                        <div 
+                          key={prop.id} 
+                          className="p-4 rounded-[8px] border bg-[var(--bg-canvas)] border-[var(--border-ui)] flex flex-col md:flex-row md:items-center justify-between gap-4"
+                        >
+                          <div>
+                            <div className="flex items-center gap-2">
+                              <span className="text-[9px] font-bold uppercase tracking-wider px-1.5 py-0.5 rounded bg-amber-500/10 text-amber-500">
+                                Proposed Attribution
+                              </span>
+                              <span className="text-[10px] font-mono text-[var(--text-tertiary)]">{prop.date}</span>
+                            </div>
+                            <p className="text-xs font-bold text-[var(--text-primary)] mt-1.5">{prop.description}</p>
+                          </div>
+                          <div className="flex items-center gap-4">
+                            <p className="text-sm font-bold font-mono text-[var(--text-primary)]">
+                              ${prop.amount.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                            </p>
+                            <div className="flex items-center gap-2">
+                              <button
+                                type="button"
+                                onClick={() => handleIgnoreProposal(prop.id)}
+                                className="p-1 text-[10px] font-bold uppercase text-[var(--text-tertiary)] hover:text-rose-500"
+                              >
+                                Ignore
+                              </button>
+                              <button
+                                type="button"
+                                onClick={() => handleConfirmProposal(prop)}
+                                disabled={isLocked}
+                                className="px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider bg-[var(--text-primary)] text-[var(--bg-surface)] rounded hover:opacity-90 disabled:opacity-50"
+                              >
+                                Confirm
+                              </button>
+                            </div>
+                          </div>
+                        </div>
+                      ))
+                  ) : (
+                    <p className="text-xs text-[var(--text-tertiary)] italic text-center py-4">
+                      No pending Plaid proposals for {CATEGORY_META[activeCategory].label}.
+                    </p>
+                  )}
+                </div>
+              ) : (
+                <div className="p-8 text-center bg-[var(--bg-canvas)]/30">
+                  <p className="text-xs text-[var(--text-secondary)]">
+                    Connect your Plaid bank feed to automatically scan and propose attribution for recurring property expenses.
+                  </p>
+                </div>
+              )}
+            </div>
+          )}
 
           {/* Manual Logger & ledger */}
           <div 

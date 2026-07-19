@@ -4,6 +4,8 @@ import React, { useState, useEffect } from 'react';
 import { Calendar, DollarSign, CheckCircle, Clock, ShieldAlert, Paperclip, Trash2 } from 'lucide-react';
 import type { Project } from '@/types/schema';
 import { toast } from 'react-hot-toast';
+import { uploadFile } from '@/lib/storage/uploadService';
+import { IS_DEMO_MODE } from '@/lib/config/demo';
 
 interface EarnestMoneyCardProps {
   project: Project;
@@ -36,6 +38,7 @@ export function EarnestMoneyCard({
   const [verified, setVerified] = useState(financials.emdVerified || false);
   const [receiptUrl, setReceiptUrl] = useState(financials.emdReceiptUrl || '');
   const [receiptName, setReceiptName] = useState(financials.emdReceiptName || '');
+  const [uploadingReceipt, setUploadingReceipt] = useState(false);
 
   // Helper to parse date to YYYY-MM-DD
   const parseDateStr = (d: any): string => {
@@ -105,17 +108,54 @@ export function EarnestMoneyCard({
     onSaveFinancials(updates);
   };
 
-  const uploadReceipt = () => {
+  const uploadReceipt = async () => {
     if (readOnly) return;
-    const mockUrl = '/mock/documents/Earnest_Money_Receipt_Signed.pdf';
-    const mockName = 'Earnest_Money_Receipt_Signed.pdf';
-    setReceiptUrl(mockUrl);
-    setReceiptName(mockName);
-    onSaveFinancials({
-      emdReceiptUrl: mockUrl,
-      emdReceiptName: mockName
-    });
-    toast.success('Earnest Money Receipt uploaded successfully');
+    
+    if (IS_DEMO_MODE) {
+      setUploadingReceipt(true);
+      await new Promise((resolve) => setTimeout(resolve, 800));
+      const mockUrl = '/mock/documents/Earnest_Money_Receipt_Signed.pdf';
+      const mockName = 'Earnest_Money_Receipt_Signed.pdf';
+      setReceiptUrl(mockUrl);
+      setReceiptName(mockName);
+      onSaveFinancials({
+        emdReceiptUrl: mockUrl,
+        emdReceiptName: mockName
+      });
+      toast.success('Earnest Money Receipt uploaded successfully! (Demo)');
+      setUploadingReceipt(false);
+      return;
+    }
+
+    const input = document.createElement('input');
+    input.type = 'file';
+    input.accept = '.pdf,image/*';
+    input.onchange = async (e: any) => {
+      const file = e.target.files?.[0];
+      if (!file) return;
+      setUploadingReceipt(true);
+      const toastId = toast.loading(`Uploading ${file.name}...`);
+      try {
+        const res = await uploadFile({
+          file,
+          path: 'escrow_receipts',
+          projectId: project.id,
+        });
+        setReceiptUrl(res.downloadUrl);
+        setReceiptName(file.name);
+        await onSaveFinancials({
+          emdReceiptUrl: res.downloadUrl,
+          emdReceiptName: file.name
+        });
+        toast.success('Document uploaded successfully!', { id: toastId });
+      } catch (err: any) {
+        console.error('Upload failed:', err);
+        toast.error(`Upload failed: ${err.message || 'Unknown error'}`, { id: toastId });
+      } finally {
+        setUploadingReceipt(false);
+      }
+    };
+    input.click();
   };
 
   const removeReceipt = () => {
@@ -263,7 +303,10 @@ export function EarnestMoneyCard({
               <div className="flex items-center gap-3">
                 <Paperclip className="w-5 h-5 text-[#454955]" />
                 <div>
-                  <p className="text-xs font-bold text-white" id="emd-receipt-filename">{receiptName}</p>
+                  <p className="text-xs font-bold text-white flex items-center gap-1.5" id="emd-receipt-filename">
+                    {receiptName}
+                    {IS_DEMO_MODE && <span className="text-[8px] font-bold text-amber-500 bg-amber-500/10 px-1.5 py-0.5 rounded border border-amber-500/20 font-sans">Demo</span>}
+                  </p>
                   <a href={receiptUrl} target="_blank" rel="noreferrer" className="text-[10px] text-[#454955] hover:underline block mt-0.5">Download File</a>
                 </div>
               </div>
@@ -283,10 +326,10 @@ export function EarnestMoneyCard({
               <button
                 onClick={uploadReceipt}
                 id="upload-emd-receipt-btn"
-                disabled={readOnly}
-                className="px-4 py-2 bg-white/5 border border-white/10 text-white rounded-lg text-xs font-bold uppercase tracking-wider hover:bg-white/10 transition-all"
+                disabled={readOnly || uploadingReceipt}
+                className="px-4 py-2 bg-white/5 border border-white/10 text-white rounded-lg text-xs font-bold uppercase tracking-wider hover:bg-white/10 transition-all disabled:opacity-50"
               >
-                Select &amp; Upload Receipt PDF
+                {uploadingReceipt ? 'Uploading...' : `Select & Upload Receipt PDF ${IS_DEMO_MODE ? '(Demo)' : ''}`}
               </button>
             </div>
           )}

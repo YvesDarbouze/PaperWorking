@@ -5,6 +5,7 @@ import { Project, ProjectFinancials, RentReceivedEntry } from '@/types/schema';
 import { DollarSign, Calendar, User, Plus, Trash2, Check, Activity, Building2, Sparkles, AlertCircle } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { useProjectStore } from '@/store/projectStore';
+import { IS_DEMO_MODE } from '@/lib/config/demo';
 
 interface RentRollCardProps {
   project: Project;
@@ -197,18 +198,20 @@ export default function RentRollCard({ project, refresh, isLocked }: RentRollCar
         </div>
 
         <div className="flex items-center gap-3">
-          <button
-            onClick={() => setIsPlaidConnected(!isPlaidConnected)}
-            className="flex items-center gap-1.5 px-3 py-1.5 rounded-md text-[10px] font-bold uppercase tracking-widest transition-all border"
-            style={{
-              backgroundColor: isPlaidConnected ? 'rgba(16,185,129,0.1)' : 'transparent',
-              borderColor: isPlaidConnected ? '#10b981' : 'var(--border-ui)',
-              color: isPlaidConnected ? '#10b981' : 'var(--text-secondary)',
-            }}
-          >
-            <Sparkles className="w-3 h-3" />
-            {isPlaidConnected ? 'Plaid Feed Linked' : 'Connect Plaid'}
-          </button>
+          {IS_DEMO_MODE && (
+            <button
+              onClick={() => setIsPlaidConnected(!isPlaidConnected)}
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded-md text-[10px] font-bold uppercase tracking-widest transition-all border"
+              style={{
+                backgroundColor: isPlaidConnected ? 'rgba(16,185,129,0.1)' : 'transparent',
+                borderColor: isPlaidConnected ? '#10b981' : 'var(--border-ui)',
+                color: isPlaidConnected ? '#10b981' : 'var(--text-secondary)',
+              }}
+            >
+              <Sparkles className="w-3 h-3 text-amber-500" />
+              {isPlaidConnected ? 'Plaid Feed Linked (Demo)' : 'Connect Plaid (Demo)'}
+            </button>
+          )}
 
           {!isLocked && (
             <button
@@ -224,14 +227,17 @@ export default function RentRollCard({ project, refresh, isLocked }: RentRollCar
 
       <div className="p-6 space-y-8">
         {/* Plaid proposals banner if connected */}
-        {isPlaidConnected && proposals.length > 0 && (
-          <div className="p-4 rounded-lg bg-[rgba(16,185,129,0.03)] border border-emerald-500/20 space-y-3">
+        {IS_DEMO_MODE && isPlaidConnected && proposals.length > 0 && (
+          <div className="p-4 rounded-lg bg-[rgba(16,185,129,0.03)] border border-emerald-500/20 space-y-3 relative">
+            <div className="absolute top-2 right-2 flex items-center">
+              <span className="text-[8px] font-bold text-amber-500 bg-amber-500/10 px-1.5 py-0.5 rounded border border-amber-500/20">Demo</span>
+            </div>
             <div className="flex items-center justify-between">
               <span className="text-[11px] font-bold uppercase tracking-widest text-emerald-400 flex items-center gap-1.5">
-                <Sparkles className="w-3.5 h-3.5 animate-pulse" />
-                Plaid Auto-Attribution: Rent Payments Detected
+                <Sparkles className="w-3.5 h-3.5 animate-pulse text-amber-500" />
+                Plaid Auto-Attribution: Rent Payments Detected (Demo)
               </span>
-              <span className="text-[10px] text-emerald-500/60 font-semibold">{proposals.length} pending</span>
+              <span className="text-[10px] text-emerald-500/60 font-semibold mr-12">{proposals.length} pending</span>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">

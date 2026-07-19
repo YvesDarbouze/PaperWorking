@@ -5,6 +5,7 @@ import { Project, ProjectFinancials, LeaseIncomeEntry, ActualLeaseTerms } from '
 import { DollarSign, Calendar, Plus, Trash2, Check, Sparkles, FileText, ArrowUpRight } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { useProjectStore } from '@/store/projectStore';
+import { IS_DEMO_MODE } from '@/lib/config/demo';
 
 interface LeaseOperationsCardProps {
   project: Project;
@@ -270,18 +271,20 @@ export default function LeaseOperationsCard({ project, refresh, isLocked }: Leas
           </div>
 
           <div className="flex items-center gap-2">
-            <button
-              onClick={() => setIsPlaidConnected(!isPlaidConnected)}
-              className="flex items-center gap-1 px-2.5 py-1.5 rounded text-[9px] font-bold uppercase tracking-widest border transition-all"
-              style={{
-                backgroundColor: isPlaidConnected ? 'rgba(16,185,129,0.1)' : 'transparent',
-                borderColor: isPlaidConnected ? '#10b981' : 'var(--border-ui)',
-                color: isPlaidConnected ? '#10b981' : 'var(--text-secondary)',
-              }}
-            >
-              <Sparkles className="w-3 h-3" />
-              {isPlaidConnected ? 'Plaid Active' : 'Connect Plaid'}
-            </button>
+            {IS_DEMO_MODE && (
+              <button
+                onClick={() => setIsPlaidConnected(!isPlaidConnected)}
+                className="flex items-center gap-1 px-2.5 py-1.5 rounded text-[9px] font-bold uppercase tracking-widest border transition-all"
+                style={{
+                  backgroundColor: isPlaidConnected ? 'rgba(16,185,129,0.1)' : 'transparent',
+                  borderColor: isPlaidConnected ? '#10b981' : 'var(--border-ui)',
+                  color: isPlaidConnected ? '#10b981' : 'var(--text-secondary)',
+                }}
+              >
+                <Sparkles className="w-3 h-3 text-amber-500" />
+                {isPlaidConnected ? 'Plaid Active (Demo)' : 'Connect Plaid (Demo)'}
+              </button>
+            )}
 
             {!isLocked && (
               <button
@@ -297,11 +300,14 @@ export default function LeaseOperationsCard({ project, refresh, isLocked }: Leas
 
         <div className="p-6 space-y-6">
           {/* Plaid Auto proposals */}
-          {isPlaidConnected && proposals.length > 0 && (
-            <div className="p-4 rounded-lg bg-[rgba(16,185,129,0.03)] border border-emerald-500/20 space-y-3">
+          {IS_DEMO_MODE && isPlaidConnected && proposals.length > 0 && (
+            <div className="p-4 rounded-lg bg-[rgba(16,185,129,0.03)] border border-emerald-500/20 space-y-3 relative">
+              <div className="absolute top-2 right-2 flex items-center">
+                <span className="text-[8px] font-bold text-amber-500 bg-amber-500/10 px-1.5 py-0.5 rounded border border-amber-500/20">Demo</span>
+              </div>
               <span className="text-[10px] font-bold uppercase tracking-widest text-emerald-400 flex items-center gap-1.5">
-                <Sparkles className="w-3.5 h-3.5" />
-                Plaid Detected Lease Transaction
+                <Sparkles className="w-3.5 h-3.5 text-amber-500 animate-pulse" />
+                Plaid Detected Lease Transaction (Demo)
               </span>
               {proposals.map(p => (
                 <div

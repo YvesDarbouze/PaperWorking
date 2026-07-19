@@ -6,6 +6,7 @@ import type { Project } from '@/types/schema';
 import { storage } from '@/lib/firebase/config';
 import { ref, uploadBytesResumable, getDownloadURL } from 'firebase/storage';
 import toast from 'react-hot-toast';
+import { IS_DEMO_MODE } from '@/lib/config/demo';
 
 interface ExpenseAssumptionsCardProps {
   project: Project;
@@ -103,8 +104,8 @@ export function ExpenseAssumptionsCard({
 
     setUploadingType(type);
     
-    // Simulate upload in E2E test mode
-    if (typeof window !== 'undefined' && document.cookie.includes('__e2e_test')) {
+    // Simulate upload in demo mode
+    if (IS_DEMO_MODE) {
       await new Promise((resolve) => setTimeout(resolve, 500));
       const mockUrl = `/mock_uploads/${file.name}`;
       if (type === 'taxBill') {
@@ -115,7 +116,7 @@ export function ExpenseAssumptionsCard({
         setT12Name(file.name);
       }
       setUploadingType(null);
-      toast.success(`${file.name} uploaded successfully (Mock)`);
+      toast.success(`${file.name} uploaded successfully (Demo)`);
       return;
     }
 
@@ -502,7 +503,10 @@ export function ExpenseAssumptionsCard({
                       <div className="flex items-center justify-center text-green-400">
                         <Check className="h-5 w-5" />
                       </div>
-                      <span className="block text-[8px] text-white/70 font-mono truncate max-w-[120px] mx-auto">{taxBillName}</span>
+                      <span className="block text-[8px] text-white/70 font-mono truncate max-w-[120px] mx-auto flex items-center justify-center gap-1">
+                        {taxBillName}
+                        {IS_DEMO_MODE && <span className="text-[7px] font-bold text-amber-500 bg-amber-500/10 px-1 py-0.2 rounded border border-amber-500/20 font-sans">Demo</span>}
+                      </span>
                       <button
                         onClick={() => removeAttachment('taxBill')}
                         className="text-[8px] font-bold text-red-400 hover:text-red-300 uppercase tracking-wider flex items-center justify-center gap-1 mx-auto"
@@ -514,7 +518,7 @@ export function ExpenseAssumptionsCard({
                     <label className="cursor-pointer block space-y-2">
                       <Upload className="h-4 w-4 text-[#9E9DA0] mx-auto opacity-60" />
                       <span className="block text-[9px] text-[#9E9DA0] font-bold uppercase tracking-wider">
-                        {uploadingType === 'taxBill' ? 'Uploading...' : 'Tax Bill'}
+                        {uploadingType === 'taxBill' ? 'Uploading...' : `Tax Bill ${IS_DEMO_MODE ? '(Demo)' : ''}`}
                       </span>
                       <input
                         type="file"
@@ -535,7 +539,10 @@ export function ExpenseAssumptionsCard({
                       <div className="flex items-center justify-center text-green-400">
                         <Check className="h-5 w-5" />
                       </div>
-                      <span className="block text-[8px] text-white/70 font-mono truncate max-w-[120px] mx-auto">{t12Name}</span>
+                      <span className="block text-[8px] text-white/70 font-mono truncate max-w-[120px] mx-auto flex items-center justify-center gap-1">
+                        {t12Name}
+                        {IS_DEMO_MODE && <span className="text-[7px] font-bold text-amber-500 bg-amber-500/10 px-1 py-0.2 rounded border border-amber-500/20 font-sans">Demo</span>}
+                      </span>
                       <button
                         onClick={() => removeAttachment('t12')}
                         className="text-[8px] font-bold text-red-400 hover:text-red-300 uppercase tracking-wider flex items-center justify-center gap-1 mx-auto"
@@ -547,7 +554,7 @@ export function ExpenseAssumptionsCard({
                     <label className="cursor-pointer block space-y-2">
                       <Upload className="h-4 w-4 text-[#9E9DA0] mx-auto opacity-60" />
                       <span className="block text-[9px] text-[#9E9DA0] font-bold uppercase tracking-wider">
-                        {uploadingType === 't12' ? 'Uploading...' : 'T-12 Statement'}
+                        {uploadingType === 't12' ? 'Uploading...' : `T-12 Statement ${IS_DEMO_MODE ? '(Demo)' : ''}`}
                       </span>
                       <input
                         type="file"

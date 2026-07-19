@@ -348,7 +348,7 @@ export default function Phase3RehabPage() {
 
       if (updates.rehab_budget !== undefined) {
         updatedFinancials.rehab_budget = updates.rehab_budget;
-        updatedFinancials.rehabBudget = updates.rehab_budget;
+        updatedFinancials.rehabBudget = updates.rehab_budget / 100;
       }
       if (updates.rehab_completion_target !== undefined) {
         updatedFinancials.rehab_completion_target = updates.rehab_completion_target;
@@ -401,7 +401,7 @@ export default function Phase3RehabPage() {
           rehabDoneDate: completedDate,
           rehab_spend_total: spendTotal,
           rehab_budget: spendTotal,
-          rehabBudget: spendTotal
+          rehabBudget: spendTotal / 100
         }
       });
       refresh();
@@ -441,7 +441,7 @@ export default function Phase3RehabPage() {
         [fieldName]: amount
       };
       if (legacyFieldName) {
-        updates[legacyFieldName] = amount;
+        updates[legacyFieldName] = amount / 100;
       }
       
       await projectsService.updateProject(projectId, {

@@ -1094,9 +1094,13 @@ export default function ReportsPage() {
       const arv       = (f.arv ?? f.purchasePrice ?? 0) * scale;
       const loan      = (f.loanAmount ?? ((f.arv ?? f.purchasePrice ?? 0) * 0.65)) * scale;
       const annualRent= ((f.monthlyGrossRent ?? 0) * 12) * scale;
-      const annualOpEx= (((f.holdingCostInsurance ?? 0) + (f.holdingCostTaxes ?? 0) + (f.holdingCostUtilities ?? 0)) * 12) * scale;
+      const insurance = (f.holding_cost_insurance ? f.holding_cost_insurance / 100 : f.holdingCostInsurance) ?? 0;
+      const tax = (f.holding_cost_tax ? f.holding_cost_tax / 100 : f.holdingCostTaxes) ?? 0;
+      const utilities = (f.holding_cost_utilities ? f.holding_cost_utilities / 100 : f.holdingCostUtilities) ?? 0;
+      const rehab = (f.rehab_budget ? f.rehab_budget / 100 : f.rehabBudget) ?? 0;
+      const annualOpEx= ((insurance + tax + utilities) * 12) * scale;
+      const cost      = ((f.purchasePrice ?? 0) + rehab) * scale;
       const annualDebt= ((f.longTermMortgagePayment ?? 0) * 12) * scale;
-      const cost      = ((f.purchasePrice ?? 0) + (f.rehabBudget ?? 0)) * scale;
       totalValue    += arv;
       totalLoan     += loan;
       totalGrossRent += annualRent;

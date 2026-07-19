@@ -332,19 +332,20 @@ export function computeNOIComponents(
     7;
   const vacancyLoss = grossRentalIncome * (vacancyPct / 100);
 
-  // Operating expenses (annual)
   const propertyTaxes =
     (financials.tax ??
-      financials.holdingCostTaxes ??
+      (financials.holding_cost_tax ? financials.holding_cost_tax / 100 : financials.holdingCostTaxes) ??
       financials.operatingExpenseTaxes ??
       0) * 12;
   const insurance =
     (financials.insurance ??
-      financials.holdingCostInsurance ??
+      (financials.holding_cost_insurance ? financials.holding_cost_insurance / 100 : financials.holdingCostInsurance) ??
       financials.operatingExpenseInsurance ??
       0) * 12;
   const utilities =
-    (financials.utilities ?? financials.holdingCostUtilities ?? 0) * 12;
+    (financials.utilities ??
+      (financials.holding_cost_utilities ? financials.holding_cost_utilities / 100 : financials.holdingCostUtilities) ??
+      0) * 12;
   const security = (financials.security ?? 0) * 12;
   const capex = (financials.capex ?? 0) * 12;
 
@@ -757,9 +758,9 @@ export function computeTotalCashInvested(financials: ProjectFinancials): number 
     const projectedRehabCost = financials.projectedRehabCost ?? 0;
 
     const monthlyHolding =
-      (financials.holdingCostTaxes ?? 0) +
-      (financials.holdingCostInsurance ?? 0) +
-      (financials.holdingCostUtilities ?? 0);
+      ((financials.holding_cost_tax ? financials.holding_cost_tax / 100 : financials.holdingCostTaxes) ?? 0) +
+      ((financials.holding_cost_insurance ? financials.holding_cost_insurance / 100 : financials.holdingCostInsurance) ?? 0) +
+      ((financials.holding_cost_utilities ? financials.holding_cost_utilities / 100 : financials.holdingCostUtilities) ?? 0);
     const holdMonths = financials.projectedHoldTimeMonths ?? 0;
 
     baseCash = (
@@ -1166,9 +1167,9 @@ export function deriveAllMetrics(
       const yrVacancyLoss = yrGrossRent * (vacancyPct / 100);
       
       // Expenses
-      const baseTaxes = (financials.tax ?? financials.holdingCostTaxes ?? financials.operatingExpenseTaxes ?? 0) * 12;
-      const baseInsurance = (financials.insurance ?? financials.holdingCostInsurance ?? financials.operatingExpenseInsurance ?? 0) * 12;
-      const baseUtilities = (financials.utilities ?? financials.holdingCostUtilities ?? 0) * 12;
+      const baseTaxes = (financials.tax ?? (financials.holding_cost_tax ? financials.holding_cost_tax / 100 : financials.holdingCostTaxes) ?? financials.operatingExpenseTaxes ?? 0) * 12;
+      const baseInsurance = (financials.insurance ?? (financials.holding_cost_insurance ? financials.holding_cost_insurance / 100 : financials.holdingCostInsurance) ?? financials.operatingExpenseInsurance ?? 0) * 12;
+      const baseUtilities = (financials.utilities ?? (financials.holding_cost_utilities ? financials.holding_cost_utilities / 100 : financials.holdingCostUtilities) ?? 0) * 12;
       const baseSecurity = (financials.security ?? 0) * 12;
       const baseCapex = (financials.capex ?? 0) * 12;
       const baseHOA = (financials.HOA ?? financials.monthlyHOA ?? 0) * 12;
@@ -1729,7 +1730,10 @@ export function deriveAllMetrics(
     const rehabCost = financials.projectedRehabCost ?? 0;
     const closingCosts = financials.fixedAcquisitionCosts ?? 0;
     
-    const holdingMonthly = (financials.holdingCostTaxes ?? 0) + (financials.holdingCostInsurance ?? 0) + (financials.holdingCostUtilities ?? 0);
+    const holdingMonthly =
+      ((financials.holding_cost_tax ? financials.holding_cost_tax / 100 : financials.holdingCostTaxes) ?? 0) +
+      ((financials.holding_cost_insurance ? financials.holding_cost_insurance / 100 : financials.holdingCostInsurance) ?? 0) +
+      ((financials.holding_cost_utilities ? financials.holding_cost_utilities / 100 : financials.holdingCostUtilities) ?? 0);
     const holdMonths = financials.projectedHoldTimeMonths ?? 0;
     const totalHolding = financials.totalHoldingCosts ?? (holdingMonthly * holdMonths);
 
@@ -1903,9 +1907,9 @@ export function computeContingencyBudget(
 
   // Monthly holding costs annualized by estimated timeline, or default 6 months
   const monthlyHolding =
-    (financials.holdingCostTaxes ?? financials.operatingExpenseTaxes ?? 0) +
-    (financials.holdingCostInsurance ?? financials.operatingExpenseInsurance ?? 0) +
-    (financials.holdingCostUtilities ?? 0);
+    ((financials.holding_cost_tax ? financials.holding_cost_tax / 100 : financials.holdingCostTaxes) ?? financials.operatingExpenseTaxes ?? 0) +
+    ((financials.holding_cost_insurance ? financials.holding_cost_insurance / 100 : financials.holdingCostInsurance) ?? financials.operatingExpenseInsurance ?? 0) +
+    ((financials.holding_cost_utilities ? financials.holding_cost_utilities / 100 : financials.holdingCostUtilities) ?? 0);
   const holdMonths = financials.estimatedTimelineDays
     ? Math.ceil(financials.estimatedTimelineDays / 30)
     : 6;
@@ -1954,9 +1958,9 @@ export function computeDailyBurnRate(financials: ProjectFinancials): BurnRateBre
     ? Math.round((loanAmount * (annualRate / 100)) / 12)
     : 0;
 
-  const monthlyInsurance = financials.holdingCostInsurance ?? financials.operatingExpenseInsurance ?? 0;
-  const monthlyTaxes = financials.holdingCostTaxes ?? financials.operatingExpenseTaxes ?? 0;
-  const monthlyUtilities = financials.holdingCostUtilities ?? 0;
+  const monthlyInsurance = (financials.holding_cost_insurance ? financials.holding_cost_insurance / 100 : financials.holdingCostInsurance) ?? financials.operatingExpenseInsurance ?? 0;
+  const monthlyTaxes = (financials.holding_cost_tax ? financials.holding_cost_tax / 100 : financials.holdingCostTaxes) ?? financials.operatingExpenseTaxes ?? 0;
+  const monthlyUtilities = (financials.holding_cost_utilities ? financials.holding_cost_utilities / 100 : financials.holdingCostUtilities) ?? 0;
   const monthlyOther = (financials.monthlyHOA ?? 0) + (financials.monthlyMaintenanceReserve ?? financials.maintenanceReserves ?? 0);
 
   const totalMonthlyBurn = monthlyLoanInterest + monthlyInsurance + monthlyTaxes + monthlyUtilities + monthlyOther;
@@ -2521,7 +2525,7 @@ export function deriveDualScopeMetrics(
   const propertyValue = currentPropertyValue ?? financials.estimatedARV ?? purchasePrice;
 
   // Net profit for flip deals: ARV - allInCost
-  const rehabCost = financials.rehabActual ?? financials.rehabBudget ?? 0;
+  const rehabCost = financials.rehabActual ?? (financials.rehab_budget ? financials.rehab_budget / 100 : financials.rehabBudget) ?? 0;
   const closingCosts = financials.closingCosts ?? 0;
   const sellingCosts = financials.sellingCosts ?? 0;
   const allInCost = purchasePrice + rehabCost + closingCosts;

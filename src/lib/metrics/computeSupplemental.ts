@@ -399,7 +399,7 @@ export function computeBudgetVarianceMetric(project: any): MetricResult {
   }
 
   const fin = project.financials;
-  const budget = num(fin?.rehabBudget) ?? num(fin?.projectedRehabCost);
+  const budget = (fin?.rehab_budget ? fin.rehab_budget / 100 : num(fin?.rehabBudget)) ?? num(fin?.projectedRehabCost);
   const actual = num(fin?.rehabActual) ?? num(fin?.actualRehabCost) ?? 0;
 
   if (!budget) {

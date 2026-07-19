@@ -118,6 +118,7 @@ export function RehabBudgetCard({
         'rehab.baseBudget': baseBudget,
         'rehab.contingencyBufferPercentage': contingencyPct / 100,
         'financials.rehabBudget': Math.round(totalBudget * 100),
+        'financials.rehab_budget': Math.round(totalBudget * 100),
         'financials.projectedRehabCost': Math.round(totalBudget * 100),
       };
 

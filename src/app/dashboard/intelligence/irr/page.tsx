@@ -271,7 +271,7 @@ export default function IRRIntelligencePage() {
     const irr = irrCurrentResult.data;
     const projects = portfolioInputsResult.data.projects;
     const totalValue = projects.reduce((s, p) => s + (p.financials?.estimatedCurrentValue ?? p.financials?.estimatedARV ?? p.financials?.purchasePrice ?? 0), 0);
-    const totalCost  = projects.reduce((s, p) => s + ((p.financials?.purchasePrice ?? 0) + (p.financials?.rehabBudget ?? 0)), 0);
+    const totalCost  = projects.reduce((s, p) => s + ((p.financials?.purchasePrice ?? 0) + ((p.financials?.rehab_budget ? p.financials.rehab_budget / 100 : p.financials?.rehabBudget) ?? 0)), 0);
 
     return {
       isUsingDemoData: false,

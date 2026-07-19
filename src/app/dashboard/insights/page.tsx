@@ -219,7 +219,7 @@ export default function InsightsPage() {
       tenantTurnoverRateSum += f.tenantTurnoverRate || 0;
       leaseRenewalRateSum += f.leaseRenewalRate || 0;
       daysOnMarketSum += f.daysOnMarket || 0;
-      rehabBudget += f.rehabBudget || 0;
+      rehabBudget += (f.rehab_budget ? f.rehab_budget / 100 : f.rehabBudget) || 0;
       rehabActual += f.rehabActual || 0;
     }
 
@@ -1157,7 +1157,7 @@ function getInputsFromProjects(projectsList: Project[]): InsightsEngineInputs | 
     if (!f) continue;
 
     const purchasePrice = f.purchasePrice || f.targetPurchasePrice || f.targetPrice || 0;
-    const rehabBudget = f.rehabBudget || f.projectedRehabCost || f.rehabActual || 0;
+    const rehabBudget = (f.rehab_budget ? f.rehab_budget / 100 : f.rehabBudget) || f.projectedRehabCost || f.rehabActual || 0;
     const loanAmount = f.loanAmount ?? Math.max(0, purchasePrice - (f.financingCashInvested ?? 0));
     const downPayment = Math.max(0, purchasePrice - loanAmount);
     

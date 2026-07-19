@@ -40,7 +40,7 @@ import type { F4VendorAssignment } from '@/types/schema';
 
 
 /* ═══════════════════════════════════════════════════════════════
-   /dashboard/projects/[id]/phase-3 — Hold & Rehab Workspace
+   /dashboard/projects/[id]/phase-3 — Hold Workspace
 
    Stitch Schemas: b795e973 (Hold Phase) + df9efa99 (Operations)
    "Luminous Glass" dark design — single-column mobile-first stack.

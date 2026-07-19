@@ -1,7 +1,7 @@
 /**
- * P2 Purchase Interview — Gating Tests
+ * P2 Fund Interview — Gating Tests
  * 
- * Validates that the PurchaseInterview question flow correctly gates
+ * Validates that the FundInterview question flow correctly gates
  * loan questions behind financingType === 'Financed', and that
  * all-cash deals skip loan-related questions entirely.
  */
@@ -9,10 +9,10 @@
 export {};
 
 
-// ── Inline question definitions matching PurchaseInterview.tsx ──
+// ── Inline question definitions matching FundInterview.tsx ──
 // We replicate the steps array here so tests run without React rendering.
 
-interface PurchaseStep {
+interface FundStep {
   id: string;
   question: string;
   field: string;
@@ -21,7 +21,7 @@ interface PurchaseStep {
   condition?: (data: any) => boolean;
 }
 
-const PURCHASE_STEPS: PurchaseStep[] = [
+const FUND_STEPS: FundStep[] = [
   {
     id: 'purchasePrice',
     question: "What was the actual purchase price?",
@@ -107,15 +107,15 @@ const PURCHASE_STEPS: PurchaseStep[] = [
 ];
 
 // Helper: compute active questions for a given form state
-function getActiveQuestions(formData: any): PurchaseStep[] {
-  return PURCHASE_STEPS.filter(s => !s.condition || s.condition(formData));
+function getActiveQuestions(formData: any): FundStep[] {
+  return FUND_STEPS.filter(s => !s.condition || s.condition(formData));
 }
 
 function getActiveIds(formData: any): string[] {
   return getActiveQuestions(formData).map(q => q.id);
 }
 
-describe('P2 Purchase Phase — Financing Type Gating', () => {
+describe('P2 Fund Phase — Financing Type Gating', () => {
 
   it('shows all 11 questions for financed deals', () => {
     const formData = {
@@ -230,7 +230,7 @@ describe('P2 Purchase Phase — Financing Type Gating', () => {
   });
 
   it('marks purchasePrice, closingCosts, totalCashInvested, financingType, and acquisitionDate as required', () => {
-    const allSteps = PURCHASE_STEPS;
+    const allSteps = FUND_STEPS;
     
     const requiredIds = ['purchasePrice', 'closingCosts', 'totalCashInvested', 'financingType', 'acquisitionDate'];
     for (const id of requiredIds) {

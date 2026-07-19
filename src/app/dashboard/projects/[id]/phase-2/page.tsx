@@ -48,9 +48,9 @@ import { type ClosingCostOverrides } from '@/lib/math/closingCosts';
 import { useAuth } from '@/context/AuthContext';
 
 /* ═══════════════════════════════════════════════════════════════
-   /dashboard/projects/[id]/phase-2 — Purchase Workspace
+   /dashboard/projects/[id]/phase-2 — Fund Workspace
 
-   Stitch Schema: 5a320feb + ca708b12 (Purchase Phase)
+   Stitch Schema: 5a320feb + ca708b12 (Fund Phase)
    "Luminous Glass" dark design — single-column mobile-first stack.
 
    Phase 2 color accent: #7A9EAA (secondary / blue)
@@ -61,7 +61,7 @@ import { useAuth } from '@/context/AuthContext';
    Project data is sourced from WorkspaceContext (no re-fetch).
    ═══════════════════════════════════════════════════════════════ */
 
-const PHASE_COLOR = '#7A9EAA';    // Purchase = blue/secondary
+const PHASE_COLOR = '#7A9EAA';    // Fund = blue/secondary
 const PHASE_GLOW  = 'rgba(173, 198, 255, 0.3)';
 
 export default function Phase2AcquisitionPage() {
@@ -423,7 +423,7 @@ export default function Phase2AcquisitionPage() {
 
       {/* ── Ambient Background Layer ── */}
       <div className="fixed inset-0 pointer-events-none -z-10 overflow-hidden">
-        {/* Purchase phase: teal-tinted ambient glow */}
+        {/* Fund phase: teal-tinted ambient glow */}
         <div className="absolute -top-[10%] -right-[5%] w-[40%] h-[40%] bg-[#454955]/5 blur-[120px] rounded-full" />
         <div className="absolute -bottom-[10%] -left-[5%] w-[30%] h-[30%] bg-[#7A9EAA]/8 blur-[100px] rounded-full" />
         <div
@@ -435,7 +435,7 @@ export default function Phase2AcquisitionPage() {
       {/* ── Explainer Video Banner ── */}
       <PhaseExplainerVideo
         phaseKey="phase-2"
-        title="Understanding Phase 2: Purchase"
+        title="Understanding Phase 2: Fund"
         description="Learn how to organize sale documents, process loans, and manage real estate attorneys to clear your deal to close."
         src="https://storage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4"
         duration="3:15"
@@ -454,7 +454,7 @@ export default function Phase2AcquisitionPage() {
                 className="text-[12px] leading-[14px] font-medium tracking-[0.05em] uppercase"
                 style={{ color: PHASE_COLOR }}
               >
-                Phase: Purchase
+                Phase: Fund
               </p>
               <div className="flex items-center gap-2">
                 <span className="text-[14px] leading-[16px] font-semibold tracking-[0.02em] text-[#9E9DA0]">
@@ -937,6 +937,7 @@ export default function Phase2AcquisitionPage() {
             Contingencies
           </h2>
           <ContingencyTracker
+            projectId={project?.id || ''}
             contingencies={contingencies}
             onChange={(newContingencies) => {
               setContingencies(newContingencies);

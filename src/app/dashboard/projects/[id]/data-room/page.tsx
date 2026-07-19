@@ -147,6 +147,22 @@ export default function ProjectDataRoomPage() {
     groups.push({ title: 'Compliance & Operations Documents', docs: compDocs });
   }
 
+  // Debt Documents
+  const debtDocs = subDocList.filter(d => d.category === 'Debt');
+  if (debtDocs.length > 0) {
+    groups.push({
+      title: 'Debt Documents',
+      docs: debtDocs.map(d => ({
+        name: d.fileName,
+        url: d.fileUrl,
+        source: 'Lender Checklist',
+        uploadedBy: d.uploadedByName || 'User',
+        uploadedAt: d.uploadedAt,
+        notes: d.notes,
+      })),
+    });
+  }
+
   // Dossier Snapshots
   const dossierDocs = subDocList.filter(d => d.category === 'Dossier Snapshot' || d.category === 'Other');
   if (dossierDocs.length > 0) {

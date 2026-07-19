@@ -23,7 +23,7 @@ async function runCheck() {
       console.log(`Project ID:        ${p.id}`);
       console.log(`Address:           ${p.addressLine || '(empty)'}`);
       console.log(`Phase Status:      ${p.acquisitionStatus}`);
-      console.log(`Current Phase:     Phase ${p.currentPhase}`);
+      console.log(`Status/Phase:      ${p.status}`);
       console.log(`Disposition Type:  ${p.dispositionType || 'N/A'}`);
       console.log(`Retrospective:     ${p.retrospective}`);
       console.log(`--------------------------------------------`);

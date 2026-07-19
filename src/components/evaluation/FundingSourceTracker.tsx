@@ -64,7 +64,7 @@ function SourceRow({
   disabled?: boolean;
 }) {
   const [expanded, setExpanded] = useState(false);
-  const statusColor = STATUS_COLORS[source.status ?? 'Exploring'];
+  const statusColor = (STATUS_COLORS as any)[source.status ?? 'Exploring'] || STATUS_COLORS.Exploring;
 
   return (
     <div className="rounded-xl border border-border-accent bg-bg-surface overflow-hidden">

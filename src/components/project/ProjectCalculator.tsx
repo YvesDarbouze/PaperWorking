@@ -255,7 +255,7 @@ export default function ProjectCalculator({ phaseColor, projectId, propertyAddre
 
     const isCapitalStackValid = capitalStack.every(source => 
       !isNaN(source.amount) && source.amount >= 0 && 
-      !isNaN(source.interestRate) && source.interestRate >= 0
+      source.interestRate !== undefined && !isNaN(source.interestRate) && source.interestRate >= 0
     );
 
     if (!isCapitalStackValid) {

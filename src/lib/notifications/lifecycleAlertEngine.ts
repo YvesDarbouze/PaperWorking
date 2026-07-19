@@ -18,6 +18,7 @@
 
 import { adminDb } from '@/lib/firebase/admin';
 import { FieldValue } from 'firebase-admin/firestore';
+import { LenderChecklistItem } from '@/types/schema';
 import { NotificationService } from '@/lib/services/notificationService';
 import {
   type LifecycleAlertType,
@@ -332,7 +333,88 @@ export async function evaluateLifecycleAlerts(
     }
   }
 
+  await evaluateLenderChecklistReminders(projectId, projectData);
+
   return { projectId, evaluations, alertsFired, alertsDebounced };
+}
+
+/**
+ * Evaluates periodic reminders for outstanding items in the lender checklist.
+ */
+async function evaluateLenderChecklistReminders(
+  projectId: string,
+  projectData: FirebaseFirestore.DocumentData
+): Promise<void> {
+  const checklist = projectData.lenderChecklist as LenderChecklistItem[] | undefined;
+  if (!checklist || checklist.length === 0) return;
+
+  const address = projectData.address ?? projectData.propertyName ?? 'Unknown Property';
+  const ownerUid = projectData.ownerUid;
+  if (!ownerUid) return;
+
+  let hasUpdates = false;
+  const updatedChecklist = [...checklist];
+
+  for (let i = 0; i < updatedChecklist.length; i++) {
+    const item = updatedChecklist[i];
+    if (item.status === 'uploaded' || item.reminderCadence === 'none') {
+      continue;
+    }
+
+    const lastReminder = item.lastReminderSentAt ? new Date(item.lastReminderSentAt) : null;
+    const now = new Date();
+
+    let shouldRemind = false;
+    if (!lastReminder) {
+      shouldRemind = true;
+    } else {
+      const elapsedMs = now.getTime() - lastReminder.getTime();
+      if (item.reminderCadence === 'daily' && elapsedMs >= 24 * 60 * 60 * 1000) {
+        shouldRemind = true;
+      } else if (item.reminderCadence === 'weekly' && elapsedMs >= 7 * 24 * 60 * 60 * 1000) {
+        shouldRemind = true;
+      } else if (item.reminderCadence === 'biweekly' && elapsedMs >= 14 * 24 * 60 * 60 * 1000) {
+        shouldRemind = true;
+      }
+    }
+
+    if (shouldRemind) {
+      try {
+        await NotificationService.createNotification({
+          recipientId: ownerUid,
+          type: 'NEGOTIATION_UPDATE',
+          actor: {
+            uid: 'system',
+            name: 'PaperWorking Lender Checklist',
+          },
+          objectReference: {
+            projectId,
+            dealAddress: address,
+            metadata: {
+              title: `Outstanding Lender Package Requirement: ${item.label}`,
+              body: `The lender requirement "${item.label}" is still pending. Please upload the document in Phase 2 (Fund).`,
+              alertType: 'LENDER_CHECKLIST_REMINDER',
+            },
+          },
+          deepLinkUrl: `/dashboard/projects/${projectId}/phase-2`,
+        });
+
+        updatedChecklist[i] = {
+          ...item,
+          lastReminderSentAt: now.toISOString(),
+        };
+        hasUpdates = true;
+      } catch (err) {
+        console.error(`[LifecycleAlertEngine] Failed to fire lender reminder for item ${item.id}:`, err);
+      }
+    }
+  }
+
+  if (hasUpdates) {
+    await adminDb.collection('projects').doc(projectId).update({
+      lenderChecklist: updatedChecklist,
+    });
+  }
 }
 
 // ── Batch Scanner (for cron) ──────────────────────────────────────────────────
@@ -355,13 +437,13 @@ export async function scanAllProjectsForLifecycleAlerts(
 
   // Query active projects (not closed/sold)
   let query = adminDb.collection('projects')
-    .where('status', 'in', ['Active', 'Under Contract', 'Renovating', 'Rented'])
+    .where('status', 'in', ['Active', 'Under Contract', 'Renovating', 'Rented', 'acquisition', 'fund', 'hold'])
     .limit(limit);
 
   if (organizationId) {
     query = adminDb.collection('projects')
       .where('organizationId', '==', organizationId)
-      .where('status', 'in', ['Active', 'Under Contract', 'Renovating', 'Rented'])
+      .where('status', 'in', ['Active', 'Under Contract', 'Renovating', 'Rented', 'acquisition', 'fund', 'hold'])
       .limit(limit);
   }
 

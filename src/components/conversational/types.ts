@@ -13,7 +13,10 @@ export type QuestionInputType =
   | 'percent'    // Percentage    → emits raw float (e.g. 8.5 = 8.5%)
   | 'integer'    // Whole number  → emits integer
   | 'select'     // Dropdown / pill selector
-  | 'info';      // Read-only display step (derived KPI, no input)
+  | 'info'      // Read-only display step (derived KPI, no input)
+  | 'scorecard' // Full KPI Scorecard display step (no input)
+  | 'text'       // Standard text/textarea input
+  | 'date';      // Standard HTML5 date input
 
 // ── Select option ────────────────────────────────────────────────────────────
 
@@ -34,6 +37,8 @@ interface QuestionBase {
   hint?: string;
   /** If true, the user may skip this step */
   optional?: boolean;
+  /** Optional condition to determine if step is visible */
+  condition?: (answers: Partial<FormAnswers>, project?: any) => boolean;
 }
 
 export interface CurrencyQuestion extends QuestionBase {
@@ -66,17 +71,35 @@ export interface InfoQuestion extends QuestionBase {
   valueLabel?: string;
 }
 
+export interface ScorecardQuestion extends QuestionBase {
+  type: 'scorecard';
+}
+
+export interface TextQuestion extends QuestionBase {
+  type: 'text';
+  placeholder?: string;
+  rows?: number;
+}
+
+export interface DateQuestion extends QuestionBase {
+  type: 'date';
+  placeholder?: string;
+}
+
 export type QuestionDef =
   | CurrencyQuestion
   | PercentQuestion
   | IntegerQuestion
   | SelectQuestion
-  | InfoQuestion;
+  | InfoQuestion
+  | ScorecardQuestion
+  | TextQuestion
+  | DateQuestion;
 
 // ── Form answers record ───────────────────────────────────────────────────────
 // Keys match QuestionDef.key values. Values are always number | string | undefined.
 
-export type FormAnswers = Record<string, number | string | undefined>;
+export type FormAnswers = Record<string, number | string | any | undefined>;
 
 // ── Transition direction ──────────────────────────────────────────────────────
 

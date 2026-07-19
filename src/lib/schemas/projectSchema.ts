@@ -262,6 +262,7 @@ export const projectFinancialsSchema = z.object({
    * Unit: USD dollars (float).
    */
   estimatedARV: usdDollars,
+  annualDebtService: z.number().optional(),
 
   /**
    * Shorthand alias for estimatedARV.
@@ -338,6 +339,33 @@ export const projectFinancialsSchema = z.object({
   fundingType: z.enum(['Solo', 'Syndicated']).optional(),
   psaDocumentUrl: z.string().optional(),
   psaDocumentName: z.string().optional(),
+  radonDocumentUrl: z.string().optional(),
+  radonDocumentName: z.string().optional(),
+  leadDocumentUrl: z.string().optional(),
+  leadDocumentName: z.string().optional(),
+  termiteDocumentUrl: z.string().optional(),
+  termiteDocumentName: z.string().optional(),
+  phaseIElected: z.boolean().optional(),
+  phaseIVendor: z.string().optional(),
+  phaseIOrderedDate: z.string().optional(),
+  phaseICompletedDate: z.string().optional(),
+  phaseIFindings: z.string().optional(),
+  phaseIDocumentUrl: z.string().optional(),
+  phaseIDocumentName: z.string().optional(),
+  phaseIWaived: z.boolean().optional(),
+  phaseIWaiverReason: z.string().optional(),
+  dd_decision: z.enum(['proceed', 'renegotiate', 'walk']).optional(),
+  dd_decision_reason: z.string().optional(),
+  capital_intent: z.enum(['solo', 'group', 'raise']).optional(),
+  one_pager_reviewed: z.boolean().optional(),
+  loi_log: z.array(z.object({
+    investor: z.string(),
+    amount: z.number(),
+    date: z.string(),
+    status: z.enum(['soft-committed'])
+  })).optional(),
+  equity_target: z.number().optional(),
+
 
   // ── Equity Valuation Tracker ──
 
@@ -376,6 +404,10 @@ export const projectFinancialsSchema = z.object({
    * Whole number (e.g. 2 for 2 points).
    */
   loanOriginationPoints: percentWhole.optional(),
+  actualLoanAmount: usdDollars.optional(),
+  actualLoanInterestRate: percentWhole.optional(),
+  actualLoanTermYears: z.number().positive().optional(),
+  actualLoanOriginationPoints: percentWhole.optional(),
   downPaymentPercent: percentWhole.optional(),
 
   /** Estimated holding period in days — used for holding cost projections */
@@ -713,6 +745,45 @@ export const projectFinancialsSchema = z.object({
   realizedROI: percentWhole.optional(),
 
   taxEstimateSnapshot: taxEstimateSchema.optional(),
+  vacancy_rate: z.number().optional(),
+  expense_tax: z.number().optional(),
+  expense_insurance: z.number().optional(),
+  expense_security: z.number().optional(),
+  expense_maintenance: z.number().optional(),
+  expense_utilities: z.number().optional(),
+  expense_management: z.number().optional(),
+  expense_hoa: z.number().optional(),
+  expense_capex: z.number().optional(),
+  has_professional_management: z.string().optional(),
+  expected_purchase_price: z.number().optional(),
+  down_payment_pct: z.number().optional(),
+  est_rate: z.number().optional(),
+  est_term_years: z.number().optional(),
+  closing_costs: z.number().optional(),
+  upfront_rehab_budget: z.number().optional(),
+  hold_period_years: z.number().optional(),
+  appreciation_rate: z.number().optional(),
+  offer_price: z.number().optional(),
+  earnest_money: z.number().optional(),
+  offer_terms: z.string().optional(),
+  offer_status: z.enum(['submitted', 'countered', 'accepted', 'rejected']).optional(),
+  accepted_price: z.number().optional(),
+  contract_executed_date: z.string().optional(),
+  inspection_status: z.enum(['pending', 'scheduled', 'completed', 'cancelled']).optional(),
+  inspection_findings: z.string().optional(),
+  radon_test_status: z.enum(['pending', 'ordered', 'completed', 'waived']).optional(),
+  radon_test_result: z.string().optional(),
+  lead_test_status: z.enum(['pending', 'ordered', 'completed', 'waived']).optional(),
+  lead_test_result: z.string().optional(),
+  termite_test_status: z.enum(['pending', 'ordered', 'completed', 'waived']).optional(),
+  termite_test_result: z.string().optional(),
+  inspector_flagged_specialty_tests: z.boolean().optional(),
+  age_conditional_tests_elected: z.boolean().optional(),
+  phase_i_esa_status: z.enum(['pending', 'ordered', 'completed', 'waived']).optional(),
+  phase_i_esa_findings: z.string().optional(),
+  has_hoa: z.boolean().optional(),
+  hoa_dues: z.number().optional(),
+  title_company: z.string().optional(),
 });
 
 // ── REIL v2 Sub-Schemas ────────────────────────────────────
@@ -821,6 +892,101 @@ export const projectExitSchema = z.object({
   modalityHistory: z.array(exitModalityPeriodSchema),
   sale: saleDataSchema.nullable(),
   stabilizedRevenue: z.array(stabilizedRevenueSchema),
+});
+
+// ── Fund Phase Schemas (FD-3) ─────────────────────────────────
+
+export const fundingPlanSchema = z.object({
+  modality: z.array(z.enum([
+    'solo_cash', 'co_buyer_equity', 'syndication_equity',
+    'conventional_loan', 'hard_money', 'bridge',
+    'sba_504_bank', 'sba_504_cdc', 'sba_504_injection'
+  ])),
+  status: z.string(),
+});
+
+export const fundCapitalSourceSchema = z.object({
+  id: z.string(),
+  projectId: z.string(),
+  type: z.enum([
+    'solo_cash', 'co_buyer_equity', 'syndication_equity',
+    'conventional_loan', 'hard_money', 'bridge',
+    'sba_504_bank', 'sba_504_cdc', 'sba_504_injection'
+  ]),
+  amount: z.number(),
+  seniority: z.number(),
+  status: z.enum(['committed', 'pending', 'confirmed']),
+  createdAt: z.any(),
+  updatedAt: z.any(),
+});
+
+export const equityPartySchema = z.object({
+  id: z.string(),
+  projectId: z.string(),
+  name: z.string(),
+  role: z.enum(['co_buyer', 'GP', 'LP']),
+  entityType: z.string(),
+  linkageUserId: z.string().optional().nullable(),
+  createdAt: z.any(),
+  updatedAt: z.any(),
+});
+
+export const loanRecordSchema = z.object({
+  id: z.string(),
+  projectId: z.string(),
+  lender: z.string(),
+  amount: z.number(),
+  rate: z.number(),
+  termYears: z.number(),
+  points: z.number(),
+  status: z.enum([
+    'application', 'processing', 'appraisal_ordered',
+    'appraisal_received', 'conditions_issued', 'clear_to_close'
+  ]),
+  createdAt: z.any(),
+  updatedAt: z.any(),
+});
+
+export const contributionEntrySchema = z.object({
+  id: z.string(),
+  projectId: z.string(),
+  partyId: z.string(),
+  amount: z.number(),
+  status: z.enum(['soft-committed', 'docs_out', 'signed', 'funds_confirmed']),
+  evidenceRef: z.string().optional().nullable(),
+  date: z.any().optional().nullable(),
+  createdAt: z.any(),
+  updatedAt: z.any(),
+});
+
+export const titleHoldingSchema = z.object({
+  holdingType: z.enum(['TIC', 'JTWROS']),
+  ownershipPct: z.record(z.string(), z.number()),
+});
+
+export const milestoneTimelineSchema = z.object({
+  milestones: z.array(z.object({
+    id: z.string(),
+    title: z.string(),
+    targetDate: z.any().optional(),
+    actualDate: z.any().optional(),
+    status: z.enum(['pending', 'completed']),
+  })),
+});
+
+export const closingRecordSchema = z.object({
+  closingDate: z.any().optional(),
+  executedDocsChecklist: z.object({
+    deed: z.boolean(),
+    note: z.boolean(),
+    settlementStatement: z.boolean(),
+    titlePolicy: z.boolean(),
+  }),
+  recordingConfirmation: z.object({
+    county: z.string(),
+    date: z.any(),
+    referenceNumber: z.string(),
+  }).optional(),
 });
 
 // ── Main Project Schema ────────────────────────────────────
@@ -950,10 +1116,33 @@ export const baseProjectSchema = z.object({
   dueDiligenceChecklist: z.array(z.any()).optional(),
 
   /** Phase 2: Closing Checklist */
-  closingChecklist: z.array(z.any()).optional(),
+  lenderChecklist: z.array(z.any()).optional(),
+  loanEstimates: z.array(z.any()).optional(),
+  termsLocked: z.boolean().optional(),
 
   /** Milestone gate — true when all pre-closing conditions are met */
   isClearToClose: z.boolean().optional(),
+  dd_decision: z.enum(['proceed', 'renegotiate', 'walk']).optional(),
+  dd_decision_reason: z.string().optional(),
+  capital_intent: z.enum(['solo', 'group', 'raise']).optional(),
+  one_pager_reviewed: z.boolean().optional(),
+  loi_log: z.array(z.object({
+    investor: z.string(),
+    amount: z.number(),
+    date: z.string(),
+    status: z.enum(['soft-committed'])
+  })).optional(),
+  equity_target: z.number().optional(),
+
+
+  fundingPlan: fundingPlanSchema.optional(),
+  capitalSources: z.array(fundCapitalSourceSchema).optional(),
+  equityParties: z.array(equityPartySchema).optional(),
+  loans: z.array(loanRecordSchema).optional(),
+  contributions: z.array(contributionEntrySchema).optional(),
+  titleHolding: titleHoldingSchema.optional(),
+  milestoneTimeline: milestoneTimelineSchema.optional(),
+  closingRecord: closingRecordSchema.optional(),
 
   /**
    * Current lifecycle phase as a NUMBER (1-4) or string enum.
@@ -970,6 +1159,7 @@ export const baseProjectSchema = z.object({
 
   /** Canonical disposition type (SALE | LEASE | RENT) */
   dispositionType: z.enum(['SALE', 'LEASE', 'RENT']).optional(),
+  disposition_type: z.enum(['SALE', 'LEASE', 'RENT']).optional(),
 
   /** Canonical sub-strategy under dispositionType */
   subStrategy: z.enum([
@@ -980,6 +1170,7 @@ export const baseProjectSchema = z.object({
 
   /** Record of where the project entered the lifecycle */
   entryStage: z.string().optional(),
+  project_entry_point: z.string().optional(),
 
   /** The last active/incomplete stage within Phase 1 (Acquisition) */
   lastActiveStage: z.string().optional(),
@@ -988,8 +1179,55 @@ export const baseProjectSchema = z.object({
   overrideReason: z.string().optional(),
 
   propertyType: z.string().optional(),
+  property_type: z.string().optional(),
   units: z.number().optional(),
+  unit_count: z.number().optional(),
   condition: z.string().optional(),
+  list_price: z.number().int().nonnegative().optional(),
+  askingPriceCents: z.number().int().nonnegative().optional(),
+  gross_annual_rent: z.number().int().nonnegative().optional(),
+  firstPassRentCents: z.number().int().nonnegative().optional(),
+  beds: z.number().int().nonnegative().optional(),
+  baths: z.number().nonnegative().optional(),
+  vacancy_rate: z.number().optional(),
+  expense_tax: z.number().optional(),
+  expense_insurance: z.number().optional(),
+  expense_security: z.number().optional(),
+  expense_maintenance: z.number().optional(),
+  expense_utilities: z.number().optional(),
+  expense_management: z.number().optional(),
+  expense_hoa: z.number().optional(),
+  expense_capex: z.number().optional(),
+  has_professional_management: z.string().optional(),
+  expected_purchase_price: z.number().optional(),
+  down_payment_pct: z.number().optional(),
+  est_rate: z.number().optional(),
+  est_term_years: z.number().optional(),
+  closing_costs: z.number().optional(),
+  upfront_rehab_budget: z.number().optional(),
+  hold_period_years: z.number().optional(),
+  appreciation_rate: z.number().optional(),
+  offer_price: z.number().optional(),
+  earnest_money: z.number().optional(),
+  offer_terms: z.string().optional(),
+  offer_status: z.enum(['submitted', 'countered', 'accepted', 'rejected']).optional(),
+  accepted_price: z.number().optional(),
+  contract_executed_date: z.string().optional(),
+  inspection_status: z.enum(['pending', 'scheduled', 'completed', 'cancelled']).optional(),
+  inspection_findings: z.string().optional(),
+  radon_test_status: z.enum(['pending', 'ordered', 'completed', 'waived']).optional(),
+  radon_test_result: z.string().optional(),
+  lead_test_status: z.enum(['pending', 'ordered', 'completed', 'waived']).optional(),
+  lead_test_result: z.string().optional(),
+  termite_test_status: z.enum(['pending', 'ordered', 'completed', 'waived']).optional(),
+  termite_test_result: z.string().optional(),
+  inspector_flagged_specialty_tests: z.boolean().optional(),
+  age_conditional_tests_elected: z.boolean().optional(),
+  phase_i_esa_status: z.enum(['pending', 'ordered', 'completed', 'waived']).optional(),
+  phase_i_esa_findings: z.string().optional(),
+  has_hoa: z.boolean().optional(),
+  hoa_dues: usdDollars.optional(),
+  title_company: z.string().optional(),
 
   /** Persistent storage for ProjectTodoList tasks */
   actionItems: z.array(z.any()).optional(),

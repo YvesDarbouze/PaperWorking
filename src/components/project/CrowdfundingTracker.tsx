@@ -432,6 +432,20 @@ export function CrowdfundingTracker({
           </div>
         </div>
 
+        {/* ── Non-Binding Disclosure Banner ── */}
+        <div
+          className="p-4 rounded-lg text-xs leading-relaxed space-y-1.5"
+          style={{ background: 'rgba(245, 158, 11, 0.05)', border: '1px solid rgba(245, 158, 11, 0.15)', color: 'var(--text-secondary)' }}
+          id="crowdfund-non-binding-disclosure"
+        >
+          <p className="font-bold text-amber-500 uppercase tracking-wider text-[9px] flex items-center gap-1.5">
+            <AlertCircle className="w-3.5 h-3.5 shrink-0" /> Non-Binding Disclosure
+          </p>
+          <p>
+            All interest, pledges, and soft-commitments logged here are strictly non-binding expressions of interest only. No actual investment contracts, escrow, KYC/AML verification, or payment transfers are processed. PaperWorking does not issue wiring instructions or handle capital funds.
+          </p>
+        </div>
+
         {/* ── Investor Table ── */}
         {commitments.length > 0 && (
           <div className="overflow-x-auto rounded-md" style={{ border: '1px solid var(--border-ui)' }}>

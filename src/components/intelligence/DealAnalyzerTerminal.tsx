@@ -2,7 +2,7 @@
 
 import React, { useState, useMemo, useEffect } from 'react';
 import { TrendingUp, Activity, DollarSign, Percent, ChevronRight, Save, Info, AlertTriangle, CheckCircle, Home, Layers, Landmark } from 'lucide-react';
-import { calculateCapRate, calculateCoC, calculateIRR, calculateROI } from '@/lib/utils/reiCalculators';
+import { calculateCapRate, calculateCoC, calculateIRR, calculateROI, calculateAmortization } from '@/lib/utils/reiCalculators';
 import { CashFlowChart } from './charts/CashFlowChart';
 import { EquityBuildupChart } from './charts/EquityBuildupChart';
 import { useProjectStore } from '@/store/projectStore';
@@ -248,12 +248,7 @@ export function DealAnalyzerTerminal({ data, isLoading = false }: DealAnalyzerTe
     const monthlyOpEx = r.monthlyTaxes + r.monthlyInsurance + r.monthlyMaintenance + mgmtFee;
     
     // Standard Amortizing Debt Service
-    const p = r.loanAmount;
-    const rate = r.interestRate / 100 / 12;
-    const n = r.loanTermYears * 12;
-    const monthlyDebtSvc = rate > 0 && n > 0
-      ? (p * rate * Math.pow(1 + rate, n)) / (Math.pow(1 + rate, n) - 1)
-      : p / (n || 1);
+    const monthlyDebtSvc = calculateAmortization(r.loanAmount, r.interestRate, r.loanTermYears * 12).monthlyPayment;
 
     const monthlyCF = effectiveRent - monthlyOpEx - monthlyDebtSvc;
     const annualCF = monthlyCF * 12;
@@ -396,12 +391,7 @@ export function DealAnalyzerTerminal({ data, isLoading = false }: DealAnalyzerTe
       const mgmtFee = effectiveRent * (rentalInputs.propertyMgmtPct / 100);
       const monthlyOpEx = rentalInputs.monthlyTaxes + rentalInputs.monthlyInsurance + rentalInputs.monthlyMaintenance + mgmtFee;
       
-      const p = rentalInputs.loanAmount;
-      const r = interestRate / 100 / 12;
-      const n = rentalInputs.loanTermYears * 12;
-      const monthlyDebtSvc = r > 0 && n > 0
-        ? (p * r * Math.pow(1 + r, n)) / (Math.pow(1 + r, n) - 1)
-        : p / (n || 1);
+      const monthlyDebtSvc = calculateAmortization(rentalInputs.loanAmount, interestRate, rentalInputs.loanTermYears * 12).monthlyPayment;
 
       const annualCF = (effectiveRent - monthlyOpEx - monthlyDebtSvc) * 12;
       const totalInvested = Math.max(rentalInputs.purchasePrice - rentalInputs.loanAmount, 0) + rentalInputs.rehabCost + (rentalInputs.purchasePrice * (rentalInputs.closingCostsPct / 100));
@@ -459,12 +449,7 @@ export function DealAnalyzerTerminal({ data, isLoading = false }: DealAnalyzerTe
     return rates.map(r => {
       const metrics = computeCocAndIrr(rentalInputs.monthlyRent, rentalInputs.vacancyRatePct, r);
       
-      const p = rentalInputs.loanAmount;
-      const rate = r / 100 / 12;
-      const n = rentalInputs.loanTermYears * 12;
-      const monthlyDebtSvc = rate > 0 && n > 0
-        ? (p * rate * Math.pow(1 + rate, n)) / (Math.pow(1 + rate, n) - 1)
-        : p / (n || 1);
+      const monthlyDebtSvc = calculateAmortization(rentalInputs.loanAmount, r, rentalInputs.loanTermYears * 12).monthlyPayment;
 
       const effectiveRent = rentalInputs.monthlyRent * (1 - rentalInputs.vacancyRatePct / 100);
       const mgmtFee = effectiveRent * (rentalInputs.propertyMgmtPct / 100);
@@ -491,12 +476,7 @@ export function DealAnalyzerTerminal({ data, isLoading = false }: DealAnalyzerTe
       const mgmtFee = effectiveRent * (rentalInputs.propertyMgmtPct / 100);
       const monthlyOpEx = rentalInputs.monthlyTaxes + rentalInputs.monthlyInsurance + rentalInputs.monthlyMaintenance + mgmtFee;
       
-      const p = rentalInputs.loanAmount;
-      const r = rentalInputs.interestRate / 100 / 12;
-      const n = rentalInputs.loanTermYears * 12;
-      const monthlyDebtSvc = r > 0 && n > 0
-        ? (p * r * Math.pow(1 + r, n)) / (Math.pow(1 + r, n) - 1)
-        : p / (n || 1);
+      const monthlyDebtSvc = calculateAmortization(rentalInputs.loanAmount, rentalInputs.interestRate, rentalInputs.loanTermYears * 12).monthlyPayment;
 
       const firstYearCF = (effectiveRent - monthlyOpEx - monthlyDebtSvc) * 12;
       return {
@@ -520,12 +500,7 @@ export function DealAnalyzerTerminal({ data, isLoading = false }: DealAnalyzerTe
       const mgmtFee = effectiveRent * (rentalInputs.propertyMgmtPct / 100);
       const monthlyOpEx = rentalInputs.monthlyTaxes + rentalInputs.monthlyInsurance + rentalInputs.monthlyMaintenance + mgmtFee;
       
-      const p = rentalInputs.loanAmount;
-      const r = rentalInputs.interestRate / 100 / 12;
-      const n = rentalInputs.loanTermYears * 12;
-      const monthlyDebtSvc = r > 0 && n > 0
-        ? (p * r * Math.pow(1 + r, n)) / (Math.pow(1 + r, n) - 1)
-        : p / (n || 1);
+      const monthlyDebtSvc = calculateAmortization(rentalInputs.loanAmount, rentalInputs.interestRate, rentalInputs.loanTermYears * 12).monthlyPayment;
 
       const firstYearCF = (effectiveRent - monthlyOpEx - monthlyDebtSvc) * 12;
       return {

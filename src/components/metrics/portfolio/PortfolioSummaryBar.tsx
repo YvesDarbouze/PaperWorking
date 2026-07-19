@@ -31,18 +31,18 @@ function computeCashDeployed(fin: ProjectFinancials): number {
 export function PortfolioSummaryBar({ projects, isLoading, className }: PortfolioSummaryBarProps) {
   const metrics = useMemo(() => {
     const acquisition = projects.filter(p => p.status === 'acquisition');
-    const purchase = projects.filter(p => p.status === 'fund');
+    const fund = projects.filter(p => p.status === 'fund');
     const hold = projects.filter(p => p.status === 'hold');
     const exit = projects.filter(p => p.status === 'exit');
 
     const acquisitionVal = acquisition.reduce((s, p) => s + computeCashDeployed(p.financials), 0);
-    const purchaseVal = purchase.reduce((s, p) => s + computeCashDeployed(p.financials), 0);
+    const fundVal = fund.reduce((s, p) => s + computeCashDeployed(p.financials), 0);
     const holdVal = hold.reduce((s, p) => s + computeCashDeployed(p.financials), 0);
     const exitVal = exit.reduce((s, p) => s + computeCashDeployed(p.financials), 0);
 
     return {
       acquisition: { count: acquisition.length, val: acquisitionVal },
-      purchase: { count: purchase.length, val: purchaseVal },
+      fund: { count: fund.length, val: fundVal },
       hold: { count: hold.length, val: holdVal },
       exit: { count: exit.length, val: exitVal },
     };
@@ -108,12 +108,12 @@ export function PortfolioSummaryBar({ projects, isLoading, className }: Portfoli
       pillClass: 'bg-surface-container-high border border-white/5 text-on-surface-variant font-label-sm text-label-sm',
     },
     {
-      key: 'purchase',
-      title: 'Purchase',
+      key: 'fund',
+      title: 'Fund',
       dotClass: 'bg-secondary-fixed-dim shadow-[0_0_8px_rgba(173,198,255,0.6)]',
       hoverTextClass: 'group-hover:text-secondary-fixed-dim',
-      value: metrics.purchase.val,
-      count: metrics.purchase.count,
+      value: metrics.fund.val,
+      count: metrics.fund.count,
       icon: 'gavel',
       pillClass: 'bg-surface-container-high border border-white/5 text-on-surface-variant font-label-sm text-label-sm',
     },

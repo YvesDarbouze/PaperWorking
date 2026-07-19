@@ -62,10 +62,12 @@ export interface ConversationalFormProps {
   initialAnswers?: Partial<FormAnswers>;
   phaseColor:      string;
   readOnly?:       boolean;
+  project?:        any;
   /** Called on each Next step — persist partial state to Firestore */
   onStepSave?:     (answers: Partial<FormAnswers>) => Promise<void>;
   /** Called when the user completes the final step */
   onComplete?:     (answers: FormAnswers) => void;
+  renderCustomStep?: (stepKey: string, answers: Partial<FormAnswers>) => React.ReactNode;
 }
 
 // ── Select Input component (inline) ──────────────────────────────────────────
@@ -224,8 +226,10 @@ export default function ConversationalForm({
   initialAnswers = {},
   phaseColor,
   readOnly = false,
+  project,
   onStepSave,
   onComplete,
+  renderCustomStep,
 }: ConversationalFormProps) {
   const [step, setStep]         = useState(0);
   const [answers, setAnswers]   = useState<Partial<FormAnswers>>(initialAnswers);
@@ -235,10 +239,36 @@ export default function ConversationalForm({
   const [error, setError]       = useState('');
   const [completed, setCompleted] = useState(false);
 
+  // Helper: check if a step is visible under current state
+  const isStepVisible = useCallback((idx: number, currentAnswers: Partial<FormAnswers>): boolean => {
+    const q = questions[idx];
+    if (!q) return false;
+    return !q.condition || q.condition(currentAnswers, project);
+  }, [questions, project]);
+
+  // Find all visible step indices
+  const visibleIndices = React.useMemo(() => {
+    const list: number[] = [];
+    for (let i = 0; i < questions.length; i++) {
+      if (isStepVisible(i, answers)) {
+        list.push(i);
+      }
+    }
+    // Safety check: if step is not in visibleIndices, make sure visibleIndices includes it
+    if (step >= 0 && step < questions.length && !list.includes(step)) {
+      list.push(step);
+      list.sort((a, b) => a - b);
+    }
+    return list;
+  }, [questions, answers, isStepVisible, step]);
+
+  const totalVisible = visibleIndices.length;
+  const currentVisibleIndex = visibleIndices.indexOf(step);
+
   const total   = questions.length;
   const current = questions[step];
-  const isLast  = step === total - 1;
-  const isFirst = step === 0;
+  const isLast  = currentVisibleIndex === totalVisible - 1;
+  const isFirst = currentVisibleIndex === 0;
 
   // ── Get/set answer for the current question ────────────────────────────────
   const currentValue = answers[current.key];
@@ -254,7 +284,7 @@ export default function ConversationalForm({
   // ── Validation ─────────────────────────────────────────────────────────────
   const validate = (): boolean => {
     if (current.optional) return true;
-    if (current.type === 'info') return true;
+    if (current.type === 'info' || current.type === 'scorecard') return true;
 
     const val = currentValue;
 
@@ -313,14 +343,20 @@ export default function ConversationalForm({
       return;
     }
 
-    await animateTo(step + 1, 'forward');
-  }, [saving, readOnly, validate, onStepSave, answers, isLast, animateTo, step, onComplete]);
+    const nextIndex = visibleIndices[currentVisibleIndex + 1];
+    if (nextIndex !== undefined) {
+      await animateTo(nextIndex, 'forward');
+    }
+  }, [saving, readOnly, validate, onStepSave, answers, isLast, animateTo, currentVisibleIndex, visibleIndices, onComplete]);
 
   // ── Back ───────────────────────────────────────────────────────────────────
   const handleBack = useCallback(async () => {
     if (isFirst || saving) return;
-    await animateTo(step - 1, 'backward');
-  }, [isFirst, saving, animateTo, step]);
+    const prevIndex = visibleIndices[currentVisibleIndex - 1];
+    if (prevIndex !== undefined) {
+      await animateTo(prevIndex, 'backward');
+    }
+  }, [isFirst, saving, animateTo, currentVisibleIndex, visibleIndices]);
 
   // ── Keyboard ───────────────────────────────────────────────────────────────
   useEffect(() => {
@@ -545,6 +581,34 @@ export default function ConversationalForm({
             />
           )}
 
+          {current.type === 'text' && (
+            <textarea
+              readOnly={readOnly}
+              value={(currentValue as string) ?? ''}
+              onChange={(e) => setCurrentValue(e.target.value)}
+              placeholder={current.placeholder ?? 'Type your answer here...'}
+              rows={current.rows ?? 3}
+              className="w-full max-w-xl p-4 rounded-xl text-lg font-medium bg-black/30 border border-white/10 text-white placeholder-white/20 focus:outline-none focus:border-white/30 transition-all resize-none"
+              style={{
+                caretColor: phaseColor,
+              }}
+            />
+          )}
+
+          {current.type === 'date' && (
+            <input
+              type="date"
+              readOnly={readOnly}
+              value={(currentValue as string) ?? ''}
+              onChange={(e) => setCurrentValue(e.target.value)}
+              className="w-full max-w-xl p-4 rounded-xl text-lg font-medium bg-black/30 border border-white/10 text-white focus:outline-none focus:border-white/30 transition-all"
+              style={{
+                colorScheme: 'dark',
+                caretColor: phaseColor,
+              }}
+            />
+          )}
+
           {current.type === 'info' && (
             <p
               style={{
@@ -559,6 +623,12 @@ export default function ConversationalForm({
             >
               {current.renderValue(answers)}
             </p>
+          )}
+
+          {current.type === 'scorecard' && renderCustomStep && (
+            <div style={{ width: '100%', marginTop: '16px' }}>
+              {renderCustomStep(current.key, answers)}
+            </div>
           )}
 
           {/* Inline error */}
@@ -628,16 +698,16 @@ export default function ConversationalForm({
             {/* Dot indicators */}
             {showDots && (
               <div style={{ display: 'flex', gap: '6px' }}>
-                {questions.map((_, i) => (
+                {visibleIndices.map((idx) => (
                   <div
-                    key={i}
+                    key={idx}
                     style={{
-                      width:        i === step ? '20px' : '7px',
+                      width:        idx === step ? '20px' : '7px',
                       height:       '7px',
                       borderRadius: '100px',
-                      background:   i <= step ? phaseColor : 'var(--border-ui)',
+                      background:   idx <= step ? phaseColor : 'var(--border-ui)',
                       transition:   `all ${TRANSITION_MS}ms ease`,
-                      opacity:      i < step ? 0.4 : 1,
+                      opacity:      idx < step ? 0.4 : 1,
                     }}
                   />
                 ))}
@@ -655,7 +725,7 @@ export default function ConversationalForm({
                 opacity:       0.5,
               }}
             >
-              Question {step + 1} of {total}
+              Question {currentVisibleIndex + 1} of {totalVisible}
             </span>
           </div>
 

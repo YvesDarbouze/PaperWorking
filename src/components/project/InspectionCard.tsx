@@ -28,6 +28,9 @@ export function InspectionCard({
   const [newReferral, setNewReferral] = useState('');
   const [decision, setDecision] = useState<'proceed' | 'renegotiate' | 'walk' | ''>(financials.inspectionDecision || '');
   const [note, setNote] = useState(financials.inspectionNote || '');
+  const [inspectionStatus, setInspectionStatus] = useState(financials.inspection_status || 'pending');
+  const [inspectionFindings, setInspectionFindings] = useState(financials.inspection_findings || '');
+  const [inspectorFlagged, setInspectorFlagged] = useState(financials.inspector_flagged_specialty_tests || false);
 
   // File Upload states
   const [uploadingReport, setUploadingReport] = useState(false);
@@ -41,6 +44,9 @@ export function InspectionCard({
     setReferrals(financials.inspectionReferrals || []);
     setDecision(financials.inspectionDecision || '');
     setNote(financials.inspectionNote || '');
+    setInspectionStatus(financials.inspection_status || 'pending');
+    setInspectionFindings(financials.inspection_findings || '');
+    setInspectorFlagged(financials.inspector_flagged_specialty_tests || false);
   }, [project]);
 
   // Compute Major-Item Cost Sum (Critical or Major severities)
@@ -142,7 +148,7 @@ export function InspectionCard({
         <span className="text-[10px] font-bold text-[#9E9DA0] uppercase tracking-wider">Due Diligence Phase</span>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         {/* Inspector Name */}
         <div>
           <label className="block text-xs font-bold text-[#9E9DA0] uppercase tracking-wider mb-2">Inspector (Vendor)</label>
@@ -175,6 +181,60 @@ export function InspectionCard({
               className="pl-10 pr-4 py-2 w-full bg-white/5 border border-white/10 rounded-lg text-sm text-white focus:outline-none focus:ring-2 focus:ring-[#454955] disabled:opacity-50"
             />
           </div>
+        </div>
+
+        {/* Inspection Status */}
+        <div>
+          <label className="block text-xs font-bold text-[#9E9DA0] uppercase tracking-wider mb-2">Inspection Status</label>
+          <select
+            id="inspection-status-select"
+            value={inspectionStatus}
+            onChange={(e) => {
+              const val = e.target.value as 'pending' | 'scheduled' | 'completed' | 'cancelled';
+              setInspectionStatus(val);
+              handleSaveField('inspection_status', val);
+            }}
+            disabled={readOnly}
+            className="px-4 py-2 w-full bg-white/5 border border-white/10 rounded-lg text-sm text-white focus:outline-none focus:ring-2 focus:ring-[#454955] disabled:opacity-50"
+          >
+            <option value="pending" className="bg-[#0d0a0b] text-white">Pending</option>
+            <option value="scheduled" className="bg-[#0d0a0b] text-white">Scheduled</option>
+            <option value="completed" className="bg-[#0d0a0b] text-white">Completed</option>
+            <option value="cancelled" className="bg-[#0d0a0b] text-white">Cancelled</option>
+          </select>
+        </div>
+      </div>
+
+      {/* Inspection Findings Summary */}
+      <div className="space-y-3">
+        <div>
+          <label className="block text-xs font-bold text-[#9E9DA0] uppercase tracking-wider mb-2">Inspection Findings (Summary)</label>
+          <textarea
+            id="inspection-findings-summary"
+            value={inspectionFindings}
+            onChange={(e) => setInspectionFindings(e.target.value)}
+            onBlur={() => handleSaveField('inspection_findings', inspectionFindings)}
+            disabled={readOnly}
+            placeholder="Enter a summary of findings (e.g. Roof needs repair, HVAC is in good condition)."
+            className="w-full h-20 p-3 rounded-lg bg-white/5 border border-white/10 text-white text-xs focus:outline-none focus:ring-2 focus:ring-[#454955] resize-none disabled:opacity-50"
+          />
+        </div>
+        <div className="flex items-center gap-2">
+          <input
+            type="checkbox"
+            id="inspector-flagged-specialty-tests"
+            checked={inspectorFlagged}
+            onChange={(e) => {
+              const val = e.target.checked;
+              setInspectorFlagged(val);
+              handleSaveField('inspector_flagged_specialty_tests', val);
+            }}
+            disabled={readOnly}
+            className="rounded border-white/10 bg-white/5 text-[#454955] focus:ring-0 focus:ring-offset-0 cursor-pointer"
+          />
+          <label htmlFor="inspector-flagged-specialty-tests" className="text-xs text-[#9E9DA0] select-none cursor-pointer">
+            Inspector recommended specialty tests (Radon, Lead, or Termite)
+          </label>
         </div>
       </div>
 

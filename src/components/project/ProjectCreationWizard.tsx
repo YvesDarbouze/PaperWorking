@@ -779,7 +779,7 @@ export default function ProjectCreationWizard({
                           color: '#454955',
                         },
                         {
-                          id: 2, type: 'purchase', title: 'Closing',
+                          id: 2, type: 'fund', title: 'Fund',
                           desc: 'You like the deal. Now fund it. Walk through closing, financing, and every cost before the keys change hands.',
                           icon: 'receipt_long',
                           color: '#7A9EAA',

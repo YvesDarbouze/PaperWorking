@@ -772,9 +772,17 @@ export default function GuestPortalPage() {
                 </div>
               </div>
 
-              <p className="text-[11px] text-[#8a9b9b] leading-relaxed">
-                This Letter of Intent represents your commitment to proceed under the terms outlined above, and is subject to the final execution of a definitive subscription agreement.
-              </p>
+              <div className="p-4 bg-amber-500/5 border border-amber-500/20 text-[#8a9b9b] rounded-xl text-[11px] leading-relaxed space-y-2" id="non-binding-loi-disclosure">
+                <p className="font-bold text-amber-500 uppercase tracking-wider text-[9px] flex items-center gap-1.5">
+                  <Shield className="w-3.5 h-3.5 shrink-0 text-amber-500" /> Non-Binding LOI Disclosure
+                </p>
+                <p>
+                  This Letter of Intent is strictly non-binding and represents a non-binding expression of interest only. It does not constitute a legal offer, contract, or commitment to invest, fund, or enter into any legally binding agreement.
+                </p>
+                <p className="font-semibold text-white">
+                  PaperWorking does not process payments, escrow, KYC/AML verification, or provide bank wiring instructions. No funds or payments should ever be sent on or through this platform.
+                </p>
+              </div>
 
               {/* Canvas Signature Pad */}
               <div className="space-y-3">
@@ -792,18 +800,18 @@ export default function GuestPortalPage() {
 
                 <div className={`relative border border-dashed border-white/20 rounded-xl overflow-hidden bg-white ${!user ? 'opacity-40' : ''}`}>
                   <canvas
-                    id="loi-signature-canvas"
-                    ref={canvasRef}
-                    width={600}
-                    height={120}
-                    className={`w-full cursor-crosshair h-[120px] ${!user ? 'pointer-events-none' : ''}`}
-                    onMouseDown={startDraw}
-                    onMouseMove={draw}
-                    onMouseUp={stopDraw}
-                    onMouseLeave={stopDraw}
-                    onTouchStart={startDraw}
-                    onTouchMove={draw}
-                    onTouchEnd={stopDraw}
+                     id="loi-signature-canvas"
+                     ref={canvasRef}
+                     width={600}
+                     height={120}
+                     className={`w-full cursor-crosshair h-[120px] ${!user ? 'pointer-events-none' : ''}`}
+                     onMouseDown={startDraw}
+                     onMouseMove={draw}
+                     onMouseUp={stopDraw}
+                     onMouseLeave={stopDraw}
+                     onTouchStart={startDraw}
+                     onTouchMove={draw}
+                     onTouchEnd={stopDraw}
                   />
                   {!hasSigned && (
                     <div className="absolute inset-0 flex items-center justify-center pointer-events-none select-none">
@@ -832,9 +840,9 @@ export default function GuestPortalPage() {
                   {submitting ? (
                     <span className="material-symbols-outlined text-sm animate-spin select-none">progress_activity</span>
                   ) : (
-                    <span className="material-symbols-outlined text-sm select-none">payments</span>
+                    <span className="material-symbols-outlined text-sm select-none">draw</span>
                   )}
-                  {submitting ? 'Recording Signature...' : 'Digitally Sign & Commit'}
+                  {submitting ? 'Recording Signature...' : 'Digitally Sign LOI'}
                 </button>
                 <button
                   id="btn-decline-offer"

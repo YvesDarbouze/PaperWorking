@@ -4,6 +4,7 @@ import { useState, useEffect, useCallback, useId, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useProjectStore } from '@/store/projectStore';
 import { ComparableSale, LeadSource, Project } from '@/types/schema';
+import { calculateAmortization } from '@/lib/utils/reiCalculators';
 import { useDealSync } from '@/hooks/useProjectSync';
 
 /* ═══════════════════════════════════════════════════════
@@ -484,11 +485,8 @@ export default function DealAnalyzer({ projectId, initialValues }: DealAnalyzerP
   const rentalMetrics = useMemo(() => {
     const r = rental;
     const loanAmount = r.purchasePrice * (1 - r.downPaymentPercent / 100);
-    const monthlyRate = r.interestRate / 100 / 12;
     const totalPayments = r.loanTermYears * 12;
-    const monthlyMortgage = monthlyRate > 0
-      ? loanAmount * (monthlyRate * Math.pow(1 + monthlyRate, totalPayments)) / (Math.pow(1 + monthlyRate, totalPayments) - 1)
-      : loanAmount / totalPayments;
+    const monthlyMortgage = calculateAmortization(loanAmount, r.interestRate, totalPayments).monthlyPayment;
 
     const grossMonthlyIncome = r.monthlyRent + r.otherIncome;
     const effectiveGrossIncome = grossMonthlyIncome * 12 * (1 - r.vacancyRate / 100);

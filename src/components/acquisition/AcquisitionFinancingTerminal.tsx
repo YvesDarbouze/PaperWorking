@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
+import { calculateAmortization } from "@/lib/utils/reiCalculators";
 
 export default function AcquisitionFinancingTerminal() {
   const [purchasePrice, setPurchasePrice] = useState<number>(12500000);
@@ -20,12 +21,7 @@ export default function AcquisitionFinancingTerminal() {
   const loanAmount = (purchasePrice * ltv) / 100;
   const originationFeeAmt = (loanAmount * originationFeePct) / 100;
   
-  // Approximate debt service
-  const monthlyRate = interestRate / 100 / 12;
-  const numPayments = 30 * 12; // Assume 30 year am
-  const monthlyPayment = monthlyRate > 0 
-    ? (loanAmount * monthlyRate * Math.pow(1 + monthlyRate, numPayments)) / (Math.pow(1 + monthlyRate, numPayments) - 1)
-    : loanAmount / numPayments;
+  const monthlyPayment = calculateAmortization(loanAmount, interestRate, 30 * 12).monthlyPayment;
   
   const annualDebtService = monthlyPayment * 12;
   const equityRequired = totalAcquisitionCost - loanAmount;

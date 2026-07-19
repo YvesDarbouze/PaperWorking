@@ -246,11 +246,9 @@ export async function advanceProjectPhaseGate(
       maxOffer: financials.maxOffer ?? 0,
     });
 
-    // 4. Update parent project document phase and properties
+    // 4. Update parent project document phase status (normalized)
     const updatePayload: Record<string, any> = {
-      currentPhase: 2,
-      phaseStatus: 'Phase 2: Fund',
-      status: 'Under Contract',
+      status: 'fund',
       riskScore,
       lastPhaseTransitionAt: FieldValue.serverTimestamp(),
       updatedAt: FieldValue.serverTimestamp(),

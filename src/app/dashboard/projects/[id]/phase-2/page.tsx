@@ -6,11 +6,14 @@ import { projectsService } from '@/lib/firebase/deals';
 import { useWorkspaceProject } from '@/app/dashboard/projects/[id]/layout';
 import { Project, LoanStatus, ClosingChecklistItem, ProjectTeamMember, CostBasisLedger, RoleLinkedDocument, DueDiligenceItem, InspectionItem } from '@/types/schema';
 import { LoanProcessingPipeline } from '@/components/project/LoanProcessingPipeline';
+import { LockedTermsSummary } from '@/components/project/LockedTermsSummary';
 import { ClosingChecklist } from '@/components/project/ClosingChecklist';
 import { AcquisitionTeamAssembly } from '@/components/project/AcquisitionTeamAssembly';
 import InvestorEquityTable from '@/components/team/InvestorEquityTable';
 import { ProjectVendorsList } from '@/components/project/ProjectVendorsList';
 import { DueDiligenceChecklist } from '@/components/project/DueDiligenceChecklist';
+import { LenderPackageChecklist } from '@/components/project/LenderPackageChecklist';
+import { LoanEstimatesComparison } from '@/components/project/LoanEstimatesComparison';
 import { InspectionTracker } from '@/components/project/InspectionTracker';
 import { ContingencyTracker } from '@/components/project/ContingencyTracker';
 import TitleSearchClearance from '@/components/closing/TitleSearchClearance';
@@ -33,6 +36,7 @@ import { db } from '@/lib/firebase/config';
 import { parseRatesDoc, isRateStale, type LenderRate } from '@/lib/providers/lenderRates';
 import { type ClosingCostOverrides } from '@/lib/math/closingCosts';
 import { useAuth } from '@/context/AuthContext';
+import { transitionLoanStatus } from '@/actions/financing';
 
 /* ═══════════════════════════════════════════════════════════════
    /dashboard/projects/[id]/phase-2 — Purchase Workspace
@@ -57,6 +61,7 @@ export default function Phase2AcquisitionPage() {
 
   /* ── Data from shared WorkspaceContext (fetched once by layout) ── */
   const { project, loading: isLoading, refresh } = useWorkspaceProject();
+  const activeLoan = project?.loans?.find((l) => !l.archived);
 
   const [isSaving, setIsSaving] = useState(false);
 
@@ -767,6 +772,24 @@ export default function Phase2AcquisitionPage() {
           </div>
         </section>
 
+        {/* ── Lender Package Checklist ── */}
+        <section className="space-y-4">
+          <LenderPackageChecklist
+            projectId={projectId}
+            checklist={project?.lenderChecklist || []}
+            loans={project?.loans || []}
+          />
+        </section>
+
+        {/* ── Loan Estimates Comparison ── */}
+        <section className="space-y-4">
+          <LoanEstimatesComparison
+            projectId={projectId}
+            project={project}
+            estimates={project?.loanEstimates || []}
+          />
+        </section>
+
         {/* ── Market Vitals: demographics + zoning scan ── */}
         <MarketVitals
           address={project.address}
@@ -974,11 +997,36 @@ export default function Phase2AcquisitionPage() {
             Loan Processing
           </h2>
           <LoanProcessingPipeline
-            currentStatus={loanStatus}
-            onStatusChange={(newStatus) => {
-              setLoanStatus(newStatus);
-              handleImmediateSave({ loanStatus: newStatus });
+            projectId={projectId}
+            activeLoan={activeLoan}
+            onStatusTransition={async (newStatus, val, docUrl, docName) => {
+              if (!activeLoan) return;
+              try {
+                await transitionLoanStatus({
+                  projectId,
+                  loanId: activeLoan.id,
+                  newStatus,
+                  appraisedValue: val,
+                  appraisalDocumentUrl: docUrl,
+                  appraisalDocumentName: docName
+                });
+                toast.success(`Loan status transitioned to ${newStatus.replace(/_/g, ' ')}`);
+                refresh();
+              } catch (err: any) {
+                toast.error(err.message || 'Failed to transition loan status');
+                throw err;
+              }
             }}
+          />
+        </section>
+
+        {/* ── Locked Financing Terms (Card F3.5) ── */}
+        <section className="space-y-4">
+          <LockedTermsSummary
+            projectId={projectId}
+            project={project}
+            activeLoan={activeLoan}
+            dscr={derived?.dscr ?? 0}
           />
         </section>
 

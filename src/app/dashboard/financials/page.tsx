@@ -10,15 +10,11 @@ import NOIWaterfallChart from "@/components/dashboard/financials/NOIWaterfallCha
 import CashFlowInputTerminal from "@/components/dashboard/financials/CashFlowInputTerminal";
 import CashFlowDeepDive from "@/components/dashboard/financials/CashFlowDeepDive";
 
+import { calculateAmortization } from "@/lib/utils/reiCalculators";
+
 function computeMonthlyPayment(principal: number, annualRatePercent: number, years: number) {
-  if (principal <= 0 || years <= 0) return 0;
-  if (annualRatePercent <= 0) return principal / (years * 12);
-  
-  const monthlyRate = annualRatePercent / 100 / 12;
-  const numPayments = years * 12;
-  
-  const payment = principal * (monthlyRate * Math.pow(1 + monthlyRate, numPayments)) / (Math.pow(1 + monthlyRate, numPayments) - 1);
-  return payment;
+  const result = calculateAmortization(principal, annualRatePercent, years * 12);
+  return result.monthlyPayment;
 }
 
 type SaveStatus = "idle" | "saving" | "saved" | "error";

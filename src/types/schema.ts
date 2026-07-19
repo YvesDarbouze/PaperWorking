@@ -447,7 +447,23 @@ export interface GuestPortalToken {
 
 // ── Acquisition & Due Diligence Module Types ──────────
 
-export type LoanStatus = 'Application-Submitted' | 'Appraisal-Ordered' | 'Underwriting-Review' | 'Clear-To-Close' | 'Pre-Approved' | 'In-Underwriting';
+export type LoanRecordStatus = 
+  | 'application_submitted'
+  | 'processing'
+  | 'appraisal_ordered'
+  | 'appraisal_received'
+  | 'conditions_issued'
+  | 'conditions_cleared'
+  | 'clear_to_close';
+
+export type LoanStatus = 
+  | 'Application-Submitted' 
+  | 'Appraisal-Ordered' 
+  | 'Underwriting-Review' 
+  | 'Clear-To-Close' 
+  | 'Pre-Approved' 
+  | 'In-Underwriting'
+  | LoanRecordStatus;
 
 export type NegotiationStatus = 'Pending' | 'Accepted' | 'Rejected';
 
@@ -710,14 +726,18 @@ export interface Project {
   status: ProjectPhaseKey;
   retrospective?: boolean;
   dispositionType?: 'SALE' | 'LEASE' | 'RENT';
+  disposition_type?: 'SALE' | 'LEASE' | 'RENT';
   dispositionMode?: string;
   city?: string;
   state?: string;
   entryStage?: string;
+  project_entry_point?: string;
   lastActiveStage?: string;
   overrideReason?: string;
   propertyType?: string;
+  property_type?: string;
   units?: number;
+  unit_count?: number;
   condition?: string;
   phaseStatus?: PhaseStatus; // High-level horizontal phase tracker
   subStrategy?: 'FLIP' | 'WHOLESALE' | 'BUILD_SELL' | 'LONG_TERM' | 'SHORT_TERM' | 'MID_TERM' | 'BRRRR' | 'NNN' | 'GROUND' | 'LEASE_OPTION';
@@ -726,14 +746,69 @@ export interface Project {
   assetClass?: 'Residential' | 'Multi-Family' | 'Commercial' | 'Land';
   latitude?: number;
   longitude?: number;
+  offer_price?: number;
+  earnest_money?: number;
+  offer_terms?: string;
+  offer_status?: 'submitted' | 'countered' | 'accepted' | 'rejected';
+  accepted_price?: number;
+  contract_executed_date?: string;
+  inspection_status?: 'pending' | 'scheduled' | 'completed' | 'cancelled';
+  inspection_findings?: string;
+  radon_test_status?: 'pending' | 'ordered' | 'completed' | 'waived';
+  radon_test_result?: 'passed' | 'failed' | 'elevated' | 'normal' | string;
+  lead_test_status?: 'pending' | 'ordered' | 'completed' | 'waived';
+  lead_test_result?: 'passed' | 'failed' | 'detected' | 'not_detected' | string;
+  termite_test_status?: 'pending' | 'ordered' | 'completed' | 'waived';
+  termite_test_result?: 'passed' | 'failed' | 'activity_detected' | 'no_activity' | string;
+  inspector_flagged_specialty_tests?: boolean;
+  age_conditional_tests_elected?: boolean;
+  phase_i_esa_status?: 'pending' | 'ordered' | 'completed' | 'waived';
+  phase_i_esa_findings?: string;
+  has_hoa?: boolean;
+  hoa_dues?: number;
+  title_company?: string;
+  radonDocumentUrl?: string;
+  radonDocumentName?: string;
+  leadDocumentUrl?: string;
+  leadDocumentName?: string;
+  termiteDocumentUrl?: string;
+  termiteDocumentName?: string;
+  loi_log?: { investor: string; amount: number; date: string; status: 'soft-committed' }[];
+  equity_target?: number;
+
 
   // AQ-5 Source Card
   leadSource?: string;
   listingUrl?: string;
   askingPriceCents?: number;
+  list_price?: number;
   subjectDom?: number;
   leadAgent?: string;
   dateIdentified?: string | Date;
+  gross_annual_rent?: number;
+  vacancy_rate?: number;
+  expense_tax?: number;
+  expense_insurance?: number;
+  expense_security?: number;
+  expense_maintenance?: number;
+  expense_utilities?: number;
+  expense_management?: number;
+  expense_hoa?: number;
+  expense_capex?: number;
+  has_professional_management?: string;
+  expected_purchase_price?: number;
+  down_payment_pct?: number;
+  est_rate?: number;
+  est_term_years?: number;
+  closing_costs?: number;
+  closingCosts?: number;
+  estClosingCostsCents?: number;
+  upfront_rehab_budget?: number;
+  projectedRehabCost?: number;
+  hold_period_years?: number;
+  appreciation_rate?: number;
+  beds?: number;
+  baths?: number;
 
   // AQ-5 Seller Card
   sellerName?: string;
@@ -784,7 +859,14 @@ export interface Project {
   contingencies?: Contingency[]; // Phase 2: Due Diligence contingencies
   dueDiligenceChecklist?: DueDiligenceItem[]; // Phase 2: Due Diligence Checklist
   closingChecklist?: ClosingChecklistItem[]; // Phase 2: Closing Checklist
+  lenderChecklist?: LenderChecklistItem[]; // Phase 2: Lender Checklist
+  loanEstimates?: LoanEstimateCandidate[]; // Phase 2: Loan estimates
+  termsLocked?: boolean; // Phase 2: Locked loan terms (Card F3.5)
   isClearToClose?: boolean; // Milestone gate
+  dd_decision?: 'proceed' | 'renegotiate' | 'walk';
+  dd_decision_reason?: string;
+  capital_intent?: 'solo' | 'group' | 'raise';
+  one_pager_reviewed?: boolean;
   
   currentPhase?: number;
   scenarioId?: string;             // Multi-scenario analysis: conservative / base / aggressive underwriting
@@ -793,6 +875,20 @@ export interface Project {
   holdCost?: ProjectHoldCost;
   exit?: ProjectExit;
   
+  fundingPlan?: FundingPlan;
+  funding_modality?: string[];
+  capitalSources?: FundCapitalSource[];
+  capital_source?: FundCapitalSource[];
+  equityParties?: EquityParty[];
+  equity_party?: EquityParty[];
+  loans?: LoanRecord[];
+  contributions?: ContributionEntry[];
+  titleHolding?: TitleHolding;
+  title_holding?: TitleHolding;
+  distribution_structure?: DistributionStructure;
+  milestoneTimeline?: MilestoneTimeline;
+  closingRecord?: ClosingRecord;
+
   propertyFacts?: {
     beds?: number;
     baths?: number;
@@ -1037,17 +1133,52 @@ export interface InsuranceQuote {
 export interface ProjectFinancials {
   purchasePrice: number;
   estimatedARV: number; // After-Repair Value (canonical field)
+  annualDebtService?: number; // Phase 2: Derived Annual Debt Service
   leaseStartDate?: Date;
   arv?: number;         // Shorthand alias — calculation components may write here; consumers should prefer estimatedARV
   listedPrice?: number; // Current Listed Price (if applicable)
   costs: CostEntry[]; // Ledger of costs
   offer_price?: number; // solved offer price in cents
+  earnest_money?: number;
+  offer_terms?: string;
+  offer_status?: 'submitted' | 'countered' | 'accepted' | 'rejected';
+  accepted_price?: number;
+  contract_executed_date?: string;
+  inspection_status?: 'pending' | 'scheduled' | 'completed' | 'cancelled';
+  inspection_findings?: string;
+  radon_test_status?: 'pending' | 'ordered' | 'completed' | 'waived';
+  radon_test_result?: 'passed' | 'failed' | 'elevated' | 'normal' | string;
+  lead_test_status?: 'pending' | 'ordered' | 'completed' | 'waived';
+  lead_test_result?: 'passed' | 'failed' | 'detected' | 'not_detected' | string;
+  termite_test_status?: 'pending' | 'ordered' | 'completed' | 'waived';
+  termite_test_result?: 'passed' | 'failed' | 'activity_detected' | 'no_activity' | string;
+  inspector_flagged_specialty_tests?: boolean;
+  age_conditional_tests_elected?: boolean;
+  phase_i_esa_status?: 'pending' | 'ordered' | 'completed' | 'waived';
+  phase_i_esa_findings?: string;
+  has_hoa?: boolean;
+  hoa_dues?: number;
+  title_company?: string;
   scorecardAcknowledged?: boolean;
   acknowledgedInputsHash?: string;
   finalAgreedPrice?: number;
   fundingType?: 'Solo' | 'Syndicated';
   psaDocumentUrl?: string;
   psaDocumentName?: string;
+  radonDocumentUrl?: string;
+  radonDocumentName?: string;
+  leadDocumentUrl?: string;
+  leadDocumentName?: string;
+  termiteDocumentUrl?: string;
+  termiteDocumentName?: string;
+  contingencies?: Contingency[];
+  dd_decision?: 'proceed' | 'renegotiate' | 'walk';
+  dd_decision_reason?: string;
+  capital_intent?: 'solo' | 'group' | 'raise';
+  one_pager_reviewed?: boolean;
+  loi_log?: { investor: string; amount: number; date: string; status: 'soft-committed' }[];
+  equity_target?: number;
+
 
   // Phase-specific fields (Project lifecycle spine)
   targetPurchasePrice?: number;
@@ -1090,6 +1221,26 @@ export interface ProjectFinancials {
   loiNonBinding?: boolean;
   loiUrl?: string;
   counterOffers?: any[];
+  gross_annual_rent?: number;
+  vacancy_rate?: number;
+  expense_tax?: number;
+  expense_insurance?: number;
+  expense_security?: number;
+  expense_maintenance?: number;
+  expense_utilities?: number;
+  expense_management?: number;
+  expense_hoa?: number;
+  expense_capex?: number;
+  has_professional_management?: string;
+  expected_purchase_price?: number;
+  down_payment_pct?: number;
+  est_rate?: number;
+  est_term_years?: number;
+  closing_costs?: number;
+  estClosingCostsCents?: number;
+  upfront_rehab_budget?: number;
+  hold_period_years?: number;
+  appreciation_rate?: number;
   
   // Stage 5 PSA & Earnest Money tracking
   psaEffectiveDate?: string;
@@ -1557,6 +1708,32 @@ export interface ClosingChecklistItem {
   notes: string;
 }
 
+export interface LenderChecklistItem {
+  id: string;
+  label: string;
+  status: 'pending' | 'uploaded';
+  fileUrl?: string;
+  storagePath?: string;
+  uploadedAt?: string;
+  reminderCadence: 'none' | 'daily' | 'weekly' | 'biweekly';
+  lastReminderSentAt?: string;
+}
+
+export interface LoanEstimateCandidate {
+  id: string;
+  lender: string;
+  amount: number;
+  rate: number;
+  termYears: number;
+  points: number;
+  estimatedCosts: number;
+  fileUrl?: string;
+  storagePath?: string;
+  fileName?: string;
+  uploadedAt: string;
+  isChosen: boolean;
+}
+
 // Exit Cost Ledger — final settlement costs
 export type ExitCostCategory = 'Broker Fee' | 'Staging' | 'Marketing' | 'Buyer Concessions' | 'Other';
 
@@ -1977,6 +2154,7 @@ export type DealDocumentCategory =
   | 'Inspection Report'
   | 'Insurance Binder'
   | 'Purchase Agreement'
+  | 'Debt'
   | 'Other';
 
 export type ESignStatus =
@@ -2213,4 +2391,128 @@ export interface SeededVariable {
   sourceTag: VariableSourceTag;
   /** Whether this is the projected (A) or actual (U) slot */
   slot: 'projected' | 'actual';
+}
+
+// ── Fund Phase Types (FD-3) ───────────────────────────────────
+
+export interface FundingPlan {
+  modality: ('solo_cash' | 'co_buyer_equity' | 'syndication_equity' | 'conventional_loan' | 'hard_money' | 'bridge' | 'sba_504_bank' | 'sba_504_cdc' | 'sba_504_injection')[];
+  status: string;
+}
+
+export interface FundCapitalSource {
+  id: string;
+  projectId: string;
+  type: 'solo_cash' | 'co_buyer_equity' | 'syndication_equity' | 'conventional_loan' | 'hard_money' | 'bridge' | 'sba_504_bank' | 'sba_504_cdc' | 'sba_504_injection';
+  amount: number;
+  seniority: number;
+  status: 'committed' | 'pending' | 'confirmed';
+  archived?: boolean;
+  pof_status?: 'requested' | 'received' | 'verified';
+  pof_doc_ref?: string | null;
+  pof_doc_name?: string | null;
+  createdAt: Date;
+  updatedAt: Date;
+}
+
+export interface EquityParty {
+  id: string;
+  projectId: string;
+  name: string;
+  role: 'co_buyer' | 'GP' | 'LP';
+  entityType: string;
+  linkageUserId?: string | null;
+  archived?: boolean;
+  createdAt: Date;
+  updatedAt: Date;
+}
+
+export interface LoanRecord {
+  id: string;
+  projectId: string;
+  lender: string;
+  amount: number;
+  rate: number;
+  termYears: number;
+  points: number;
+  status: LoanRecordStatus;
+  archived?: boolean;
+  appraisedValue?: number;
+  appraisalDocumentUrl?: string;
+  appraisalDocumentName?: string;
+  createdAt: Date;
+  updatedAt: Date;
+}
+
+export interface ContributionEntry {
+  id: string;
+  projectId: string;
+  partyId: string;
+  amount: number;
+  status: 'soft-committed' | 'docs_out' | 'signed' | 'funds_confirmed';
+  evidenceRef?: string | null;
+  evidenceName?: string | null;
+  date?: Date | null;
+  archived?: boolean;
+  createdAt: Date;
+  updatedAt: Date;
+  transitions?: {
+    fromStatus: string;
+    toStatus: string;
+    timestamp: string;
+    actorName: string;
+    actorEmail: string;
+    evidenceRef?: string | null;
+    evidenceName?: string | null;
+    method?: string;
+  }[];
+  esignEnvelopeId?: string | null;
+  esignStatus?: string | null;
+  method?: string | null;
+}
+
+export interface TitleHolding {
+  holdingType: 'TIC' | 'JTWROS';
+  ownershipPct: Record<string, number>;
+  coOwnershipDocName?: string | null;
+  coOwnershipDocRef?: string | null;
+  coOwnershipSignedStatus?: 'draft' | 'out_for_signature' | 'fully_executed';
+}
+
+export interface MilestoneTimeline {
+  milestones: {
+    id: string;
+    title: string;
+    targetDate?: Date;
+    actualDate?: Date;
+    status: 'pending' | 'completed';
+  }[];
+}
+
+export interface ClosingRecord {
+  closingDate?: Date;
+  executedDocsChecklist: {
+    deed: boolean;
+    note: boolean;
+    settlementStatement: boolean;
+    titlePolicy: boolean;
+  };
+  recordingConfirmation?: {
+    county: string;
+    date: Date;
+    referenceNumber: string;
+  };
+}
+
+export interface DistributionStructure {
+  type: 'straight_split' | 'preferred_return' | 'waterfall';
+  lpSplitPct: number;
+  gpSplitPct: number;
+  preferredRate?: number;
+  preferredType?: 'cumulative' | 'non_cumulative';
+  tiers?: {
+    lpSplitPct: number;
+    gpSplitPct: number;
+    thresholdPct: number;
+  }[];
 }

@@ -15,18 +15,18 @@ export function DeclareStrategyPanel({
   project,
   onSaveSuccess,
 }: DeclareStrategyPanelProps) {
-  const selectedDisp = project.dispositionType;
+  const selectedDisp = project.disposition_type || project.dispositionType;
   const selectedSub = project.subStrategy;
 
-  const [isEditing, setIsEditing] = useState(!project.dispositionType);
+  const [isEditing, setIsEditing] = useState(!selectedDisp);
   const [holdHorizon, setHoldHorizon] = useState<number | undefined>(project.holdHorizon ?? undefined);
   const [exitAssumption, setExitAssumption] = useState<string>(project.exitAssumption || '');
 
   useEffect(() => {
-    if (!project.dispositionType) {
+    if (!selectedDisp) {
       setIsEditing(true);
     }
-  }, [project.dispositionType]);
+  }, [selectedDisp]);
 
   useEffect(() => {
     setHoldHorizon(project.holdHorizon ?? undefined);
@@ -75,6 +75,7 @@ export function DeclareStrategyPanel({
     try {
       await projectsService.updateProject(project.id, {
         dispositionType: disp,
+        disposition_type: disp,
         subStrategy: sub as any,
       });
 
@@ -88,6 +89,7 @@ export function DeclareStrategyPanel({
         },
         body: JSON.stringify({
           dispositionType: disp,
+          disposition_type: disp,
           subStrategy: sub,
         }),
       });

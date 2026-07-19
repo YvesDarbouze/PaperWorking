@@ -15,7 +15,7 @@ async function checkPostgres() {
     });
     console.log(`Found ${projects.length} projects in Neon Postgres.`);
     projects.forEach(p => {
-      console.log(`Project: ID=${p.id}, Address="${p.addressLine}", Phase=${p.currentPhase}, DispositionType=${p.dispositionType}, Retrospective=${p.retrospective}`);
+      console.log(`Project: ID=${p.id}, Address="${p.addressLine}", Status/Phase=${p.status}, DispositionType=${p.dispositionType}, Retrospective=${p.retrospective}`);
     });
   } catch (error) {
     console.error('Error querying Neon Postgres:', error);

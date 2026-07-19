@@ -110,8 +110,7 @@ describe('Acquisition Phase Gate Server Actions', () => {
     // Verify project update includes overrideReason and currentPhase = 2
     expect(mockDocVal.update).toHaveBeenCalledWith(
       expect.objectContaining({
-        currentPhase: 2,
-        phaseStatus: 'Phase 2: Fund',
+        status: 'fund',
         riskScore: 1.75,
         overrideReason: 'Bypassing survey and HOA check for deal speed.',
       })

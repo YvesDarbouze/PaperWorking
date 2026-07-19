@@ -288,6 +288,10 @@ const GROUP_4_DEAL_CAPITAL: RegistryFieldDefinition[] = [
     required: false,
     description: 'Total loan principal',
     metricsConsumedBy: ['CASH_FLOW', 'DSCR', 'LTV', 'DEBT_YIELD'],
+    dualSlot: {
+      projectedField: 'financials.loanAmount',
+      actualField: 'financials.actualLoanAmount',
+    },
   },
   {
     id: 'loan_interest_rate',
@@ -299,6 +303,10 @@ const GROUP_4_DEAL_CAPITAL: RegistryFieldDefinition[] = [
     required: false,
     description: 'Annual interest rate as whole number (6.5 = 6.5%)',
     metricsConsumedBy: ['CASH_FLOW', 'DSCR'],
+    dualSlot: {
+      projectedField: 'financials.loanInterestRate',
+      actualField: 'financials.actualLoanInterestRate',
+    },
   },
   {
     id: 'loan_term',
@@ -310,6 +318,10 @@ const GROUP_4_DEAL_CAPITAL: RegistryFieldDefinition[] = [
     required: false,
     description: 'Loan amortization period in years',
     metricsConsumedBy: ['CASH_FLOW', 'DSCR'],
+    dualSlot: {
+      projectedField: 'financials.loanTermYears',
+      actualField: 'financials.actualLoanTermYears',
+    },
   },
   {
     id: 'loanOriginationPoints',
@@ -321,6 +333,10 @@ const GROUP_4_DEAL_CAPITAL: RegistryFieldDefinition[] = [
     required: false,
     description: 'Upfront loan origination fee as % of loan value',
     metricsConsumedBy: [],
+    dualSlot: {
+      projectedField: 'financials.loanOriginationPoints',
+      actualField: 'financials.actualLoanOriginationPoints',
+    },
   },
   {
     id: 'closing_costs',
@@ -332,6 +348,10 @@ const GROUP_4_DEAL_CAPITAL: RegistryFieldDefinition[] = [
     required: false,
     description: 'Total closing costs (title, escrow, attorney, etc.)',
     metricsConsumedBy: ['COC_RETURN'],
+    dualSlot: {
+      projectedField: 'financials.closingCosts',
+      actualField: 'financials.transaction.closingCosts',
+    },
   },
   {
     id: 'cash_to_close',
@@ -343,6 +363,10 @@ const GROUP_4_DEAL_CAPITAL: RegistryFieldDefinition[] = [
     required: false,
     description: 'Down payment + closing costs — total cash out of pocket',
     metricsConsumedBy: ['COC_RETURN', 'EQUITY_MULTIPLE', 'PAYBACK_PERIOD'],
+    dualSlot: {
+      projectedField: 'financials.totalCashInvested',
+      actualField: 'financials.transaction.totalCashInvested',
+    },
   },
   {
     id: 'financingType',

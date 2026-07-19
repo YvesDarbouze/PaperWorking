@@ -21,6 +21,7 @@ export function PhaseICard({
   const financials = project.financials || {};
 
   // Local Form states
+  const [status, setStatus] = useState<'pending' | 'ordered' | 'completed' | 'waived'>(financials.phase_i_esa_status || 'pending');
   const [vendor, setVendor] = useState(financials.phaseIVendor || '');
   const [orderedDate, setOrderedDate] = useState(financials.phaseIOrderedDate || '');
   const [completedDate, setCompletedDate] = useState(financials.phaseICompletedDate || '');
@@ -33,6 +34,7 @@ export function PhaseICard({
 
   // Sync state with project updates
   useEffect(() => {
+    setStatus(financials.phase_i_esa_status || 'pending');
     setVendor(financials.phaseIVendor || '');
     setOrderedDate(financials.phaseIOrderedDate || '');
     setCompletedDate(financials.phaseICompletedDate || '');
@@ -59,7 +61,9 @@ export function PhaseICard({
       await onSaveFinancials({
         phaseIDocumentUrl: '/mock/documents/Phase_I_ESA_Report.pdf',
         phaseIDocumentName: 'Phase_I_ESA_Report.pdf',
+        phase_i_esa_status: 'completed',
       });
+      setStatus('completed');
       toast.success('Phase I ESA uploaded successfully!');
     } catch (err) {
       console.error('Failed to upload Phase I ESA:', err);
@@ -75,7 +79,9 @@ export function PhaseICard({
       await onSaveFinancials({
         phaseIDocumentUrl: null,
         phaseIDocumentName: null,
+        phase_i_esa_status: 'pending',
       });
+      setStatus('pending');
       toast.success('Phase I ESA removed');
     } catch (err) {
       console.error('Failed to remove Phase I ESA:', err);
@@ -104,13 +110,20 @@ export function PhaseICard({
           type="button"
           id="phaseI-waive-toggle"
           disabled={readOnly}
-          onClick={() => {
+          onClick={async () => {
             const updated = !waived;
             setWaived(updated);
-            handleSaveField('phaseIWaived', updated);
-            if (!updated) {
-              setWaiverReason('');
-              handleSaveField('phaseIWaiverReason', '');
+            const newStatus = updated ? 'waived' : 'pending';
+            setStatus(newStatus);
+            try {
+              await onSaveFinancials({
+                phaseIWaived: updated,
+                phase_i_esa_status: newStatus,
+                ...(updated ? {} : { phaseIWaiverReason: '' })
+              });
+              if (!updated) setWaiverReason('');
+            } catch (err) {
+              console.error('Failed to update waiver status:', err);
             }
           }}
           className={`px-3 py-1.5 text-[10px] font-bold uppercase tracking-wider rounded-lg border transition-all ${
@@ -143,6 +156,35 @@ export function PhaseICard({
       ) : (
         <div className="space-y-6">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {/* Status dropdown */}
+            <div>
+              <label className="block text-xs font-bold text-[#9E9DA0] uppercase tracking-wider mb-2">Status</label>
+              <select
+                id="phaseI-status-select"
+                value={status}
+                onChange={async (e) => {
+                  const val = e.target.value as 'pending' | 'ordered' | 'completed' | 'waived';
+                  setStatus(val);
+                  const updates: any = { phase_i_esa_status: val };
+                  if (val === 'waived') {
+                    updates.phaseIWaived = true;
+                    setWaived(true);
+                  } else {
+                    updates.phaseIWaived = false;
+                    setWaived(false);
+                  }
+                  await onSaveFinancials(updates);
+                }}
+                disabled={readOnly}
+                className="px-4 py-2 w-full bg-[#0d0a0b] border border-white/10 rounded-lg text-xs text-white focus:outline-none focus:ring-2 focus:ring-[#454955] disabled:opacity-50"
+              >
+                <option value="pending">Pending</option>
+                <option value="ordered">Ordered</option>
+                <option value="completed">Completed</option>
+                <option value="waived">Waived</option>
+              </select>
+            </div>
+
             {/* Environmental Consultant */}
             <div>
               <label className="block text-xs font-bold text-[#9E9DA0] uppercase tracking-wider mb-2">Environmental Consultant (Vendor)</label>

@@ -5,6 +5,7 @@ import { HelpCircle, RefreshCw, Archive, CheckCircle2, ChevronRight, AlertOctago
 import { deriveAllMetrics } from '@/lib/metrics/reiMetrics';
 import type { Project } from '@/types/schema';
 import posthog from 'posthog-js';
+import { RentEstimateCard } from '../acquisition/steps/RentEstimateCard';
 
 interface FirstPassScreenProps {
   project: Project;
@@ -62,7 +63,7 @@ export function FirstPassScreen({
   const fnGRM = liveMetrics.grossRentMultiplier ?? 0;
   const fnOnePercent = inlineOnePercent;
 
-  const handleUpdate = async (newRent: string, newVerdict: string) => {
+  const handleUpdate = async (newRent: string, newVerdict: string, source?: 'rentcast' | 'user') => {
     setIsSaving(true);
     try {
       const parsedRent = parseFloat(newRent) || 0;
@@ -70,8 +71,13 @@ export function FirstPassScreen({
 
       const updates: any = {
         firstPassRentCents: rentCents || null,
+        gross_annual_rent: rentCents ? rentCents * 12 : null,
         firstPassVerdict: newVerdict || null,
       };
+
+      if (source !== undefined) {
+        updates['financials.projectedMonthlyRentSource'] = source || null;
+      }
 
       // Sync rent to propertyFacts.estRentCents if possible
       if (rentCents) {
@@ -164,18 +170,17 @@ export function FirstPassScreen({
             </div>
 
             <div>
-              <label className="block text-[10px] font-bold uppercase tracking-widest text-[#9E9DA0] mb-1.5">
+              <label className="block text-[10px] font-bold uppercase tracking-widest text-[#9E9DA0] mb-2">
                 Estimated Monthly Rent ($)
               </label>
-              <input
-                type="number"
+              <RentEstimateCard
+                projectId={project.id}
                 value={rent}
-                onChange={(e) => {
-                  setRent(e.target.value);
-                  handleUpdate(e.target.value, verdict);
+                onChange={(val, source) => {
+                  setRent(val);
+                  handleUpdate(val, verdict, source);
                 }}
-                className="w-full rounded-lg px-3 py-2 text-xs bg-[#241e26] border border-white/10 text-white focus:outline-none focus:border-[#454955] font-mono"
-                placeholder="e.g. 2500"
+                initialSource={project.financials?.projectedMonthlyRentSource || "user"}
               />
             </div>
           </div>

@@ -1179,11 +1179,10 @@ export function deriveAllMetrics(
       const yrHOA = baseHOA * Math.pow(1 + expenseGrowthRate / 100, y - 1);
       
       let yrMgmt: number;
-      const yrEffectiveRent = yrGrossRent - yrVacancyLoss;
       if (financials.management_pct != null) {
-        yrMgmt = yrEffectiveRent * (financials.management_pct / 100);
+        yrMgmt = yrGrossRent * (financials.management_pct / 100);
       } else if (financials.propertyManagementFeePercent != null) {
-        yrMgmt = yrEffectiveRent * (financials.propertyManagementFeePercent / 100);
+        yrMgmt = yrGrossRent * (financials.propertyManagementFeePercent / 100);
       } else {
         const baseMgmt = (financials.management ?? financials.propertyManagementFee ?? 0) * 12;
         yrMgmt = baseMgmt * Math.pow(1 + expenseGrowthRate / 100, y - 1);
@@ -1219,7 +1218,7 @@ export function deriveAllMetrics(
           const kSecurity = baseSecurity * Math.pow(1 + expenseGrowthRate / 100, k - 1);
           const kCapex = baseCapex * Math.pow(1 + expenseGrowthRate / 100, k - 1);
           const kHOA = baseHOA * Math.pow(1 + expenseGrowthRate / 100, k - 1);
-          let kMgmt = financials.management_pct != null ? (kGrossRent - kVacancyLoss) * (financials.management_pct / 100) : (financials.propertyManagementFeePercent != null ? (kGrossRent - kVacancyLoss) * (financials.propertyManagementFeePercent / 100) : (financials.management ?? financials.propertyManagementFee ?? 0) * 12 * Math.pow(1 + expenseGrowthRate / 100, k - 1));
+          let kMgmt = financials.management_pct != null ? kGrossRent * (financials.management_pct / 100) : (financials.propertyManagementFeePercent != null ? kGrossRent * (financials.propertyManagementFeePercent / 100) : (financials.management ?? financials.propertyManagementFee ?? 0) * 12 * Math.pow(1 + expenseGrowthRate / 100, k - 1));
           let kMaint = financials.maintenance_pct != null ? kGrossRent * (financials.maintenance_pct / 100) : (financials.maintenanceCapExPercent != null ? kGrossRent * (financials.maintenanceCapExPercent / 100) : (financials.maintenance ?? financials.monthlyMaintenanceReserve ?? 0) * 12 * Math.pow(1 + expenseGrowthRate / 100, k - 1));
           const kTotalExpenses = kTaxes + kInsurance + kUtilities + kSecurity + kCapex + kHOA + kMgmt + kMaint;
           const kNOI = kGrossRent + kOtherIncome - kVacancyLoss - kTotalExpenses;
@@ -3002,5 +3001,158 @@ export function computeDebtServiceFormMetrics(
     monthlyCashFlow
   };
 }
+
+export interface DistributionStructure {
+  type: 'straight_split' | 'preferred_return' | 'waterfall';
+  lpSplitPct: number;
+  gpSplitPct: number;
+  preferredRate?: number;
+  preferredType?: 'cumulative' | 'non_cumulative';
+  tiers?: {
+    lpSplitPct: number;
+    gpSplitPct: number;
+    thresholdPct: number;
+  }[];
+}
+
+export interface DistributionResult {
+  lpTotal: number;
+  gpTotal: number;
+  lpPreferred?: number;
+  lpRemainder?: number;
+  gpRemainder?: number;
+  shortfallCreated?: number;
+  tierAllocations?: { lp: number; gp: number; poolUsed: number }[];
+}
+
+export function calculateDistributions(
+  structure: DistributionStructure,
+  lpCapital: number,
+  gpCapital: number,
+  distributableCash: number,
+  periodShortfall: number = 0
+): DistributionResult {
+  const result: DistributionResult = { lpTotal: 0, gpTotal: 0 };
+  
+  if (distributableCash <= 0) {
+    return {
+      ...result,
+      shortfallCreated: structure.type === 'preferred_return' && structure.preferredType === 'cumulative'
+        ? (lpCapital * ((structure.preferredRate ?? 0) / 100)) + periodShortfall
+        : 0
+    };
+  }
+
+  if (structure.type === 'straight_split') {
+    const lpShare = distributableCash * (structure.lpSplitPct / 100);
+    const gpShare = distributableCash * (structure.gpSplitPct / 100);
+    return {
+      lpTotal: Math.round(lpShare * 100) / 100,
+      gpTotal: Math.round(gpShare * 100) / 100,
+    };
+  }
+
+  if (structure.type === 'preferred_return') {
+    const preferredRate = (structure.preferredRate ?? 0) / 100;
+    const currentPreferredDue = lpCapital * preferredRate;
+    const totalPreferredDue = currentPreferredDue + (structure.preferredType === 'cumulative' ? periodShortfall : 0);
+    
+    const lpPreferred = Math.min(distributableCash, totalPreferredDue);
+    const remainderPool = distributableCash - lpPreferred;
+    
+    let lpRemainder = 0;
+    let gpRemainder = 0;
+    
+    if (remainderPool > 0) {
+      lpRemainder = remainderPool * (structure.lpSplitPct / 100);
+      gpRemainder = remainderPool * (structure.gpSplitPct / 100);
+    }
+    
+    const shortfallCreated = structure.preferredType === 'cumulative'
+      ? Math.max(0, totalPreferredDue - lpPreferred)
+      : 0;
+
+    return {
+      lpTotal: Math.round((lpPreferred + lpRemainder) * 100) / 100,
+      gpTotal: Math.round(gpRemainder * 100) / 100,
+      lpPreferred: Math.round(lpPreferred * 100) / 100,
+      lpRemainder: Math.round(lpRemainder * 100) / 100,
+      gpRemainder: Math.round(gpRemainder * 100) / 100,
+      shortfallCreated: Math.round(shortfallCreated * 100) / 100,
+    };
+  }
+
+  if (structure.type === 'waterfall') {
+    let poolRemaining = distributableCash;
+    const tierAllocations: { lp: number; gp: number; poolUsed: number }[] = [];
+    const sortedTiers = [...(structure.tiers || [])].sort((a, b) => a.thresholdPct - b.thresholdPct);
+    
+    let lpCumulativeReturned = 0;
+
+    for (let i = 0; i < sortedTiers.length; i++) {
+      if (poolRemaining <= 0) break;
+      const tier = sortedTiers[i];
+      const lpThresholdAmount = lpCapital * (tier.thresholdPct / 100);
+      const lpRemainingForTier = lpThresholdAmount - lpCumulativeReturned;
+
+      if (lpRemainingForTier <= 0) {
+        continue;
+      }
+
+      const lpSplit = tier.lpSplitPct / 100;
+      let poolNeeded = 0;
+      if (lpSplit > 0) {
+        poolNeeded = lpRemainingForTier / lpSplit;
+      } else {
+        poolNeeded = poolRemaining;
+      }
+
+      const poolUsed = Math.min(poolRemaining, poolNeeded);
+      const lpAlloc = poolUsed * lpSplit;
+      const gpAlloc = poolUsed * (tier.gpSplitPct / 100);
+
+      tierAllocations.push({
+        lp: Math.round(lpAlloc * 100) / 100,
+        gp: Math.round(gpAlloc * 100) / 100,
+        poolUsed: Math.round(poolUsed * 100) / 100,
+      });
+
+      lpCumulativeReturned += lpAlloc;
+      poolRemaining -= poolUsed;
+    }
+
+    if (poolRemaining > 0 && sortedTiers.length > 0) {
+      const lastTier = sortedTiers[sortedTiers.length - 1];
+      const lpAlloc = poolRemaining * (lastTier.lpSplitPct / 100);
+      const gpAlloc = poolRemaining * (lastTier.gpSplitPct / 100);
+      
+      if (tierAllocations.length > 0) {
+        const lastAlloc = tierAllocations[tierAllocations.length - 1];
+        lastAlloc.lp += lpAlloc;
+        lastAlloc.gp += gpAlloc;
+        lastAlloc.poolUsed += poolRemaining;
+      } else {
+        tierAllocations.push({
+          lp: lpAlloc,
+          gp: gpAlloc,
+          poolUsed: poolRemaining
+        });
+      }
+      poolRemaining = 0;
+    }
+
+    const lpTotal = tierAllocations.reduce((sum, t) => sum + t.lp, 0);
+    const gpTotal = tierAllocations.reduce((sum, t) => sum + t.gp, 0);
+
+    return {
+      lpTotal: Math.round(lpTotal * 100) / 100,
+      gpTotal: Math.round(gpTotal * 100) / 100,
+      tierAllocations
+    };
+  }
+
+  return result;
+}
+
 
 

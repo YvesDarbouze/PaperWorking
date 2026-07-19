@@ -4,6 +4,7 @@ import React, { useMemo } from 'react';
 import { Project } from '@/types/schema';
 import { Shield, AlertTriangle, TrendingDown, Calendar, Lock, Info, ArrowRight } from 'lucide-react';
 import LTVChart from '@/components/Charts/LTVChart';
+import { calculateAmortization } from '@/lib/utils/reiCalculators';
 
 interface Props {
   projects?: Project[];
@@ -73,21 +74,17 @@ function deriveLTVProjectedTrajectory(project: Project) {
     { label: 'Year 3 (Proj)', months: 36 }
   ];
 
-  const monthlyRate = (interestRate / 100) / 12;
   const totalPayments = termYears * 12;
-  const monthlyPayment = monthlyRate > 0 && totalPayments > 0
-    ? loanAmount * (monthlyRate * Math.pow(1 + monthlyRate, totalPayments)) / (Math.pow(1 + monthlyRate, totalPayments) - 1)
-    : 0;
+  const amort = calculateAmortization(loanAmount, interestRate, totalPayments);
 
   return points.map(pt => {
     const years = pt.months / 12;
     const propertyValue = purchasePrice * Math.pow(1 + appreciationRate / 100, years);
     
     let loanBalance = loanAmount;
-    if (monthlyRate > 0 && totalPayments > 0 && pt.months > 0) {
-      loanBalance = loanAmount * Math.pow(1 + monthlyRate, pt.months) -
-        monthlyPayment * ((Math.pow(1 + monthlyRate, pt.months) - 1) / monthlyRate);
-      loanBalance = Math.max(0, loanBalance);
+    if (interestRate > 0 && totalPayments > 0 && pt.months > 0) {
+      const scheduleItem = amort.schedule[pt.months - 1];
+      loanBalance = scheduleItem ? scheduleItem.remainingBalance : 0;
     }
 
     const ltv = propertyValue > 0 ? (loanBalance / propertyValue) * 100 : 0;

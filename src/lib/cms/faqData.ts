@@ -12,7 +12,7 @@ export interface FAQItem {
 export type FAQCategory =
   | 'getting-started'
   | 'acquisition'
-  | 'purchase'
+  | 'fund'
   | 'hold-rehab'
   | 'exit'
   | 'financials'
@@ -24,7 +24,7 @@ export type FAQCategory =
 export const FAQ_CATEGORIES: { id: FAQCategory; label: string }[] = [
   { id: 'getting-started', label: 'Getting Started' },
   { id: 'acquisition', label: 'Phase 1: Acquisition' },
-  { id: 'purchase', label: 'Phase 2: Fund' },
+  { id: 'fund', label: 'Phase 2: Fund' },
   { id: 'hold-rehab', label: 'Phase 3: Hold' },
   { id: 'exit', label: 'Phase 4: Exit' },
   { id: 'financials', label: 'Financial Reporting' },
@@ -91,22 +91,22 @@ export const FAQ_ITEMS: FAQItem[] = [
   {
     question: 'How does the Contingency Tracker work?',
     answer: 'The Contingency Tracker monitors your inspection, financing, and appraisal deadlines during due diligence. It sends automated alerts before each deadline so you never risk losing your EMD by missing a contingency window.',
-    category: 'purchase',
+    category: 'fund',
   },
   {
     question: 'Where do I upload the Closing Disclosure (CD) or HUD-1?',
     answer: 'Open the Engine Room → Financial Statements tab. Under Settlement Documents, upload the Closing Disclosure. The system pulls the key cost basis data automatically — purchase price, closing costs, and prorations.',
-    category: 'purchase',
+    category: 'fund',
   },
   {
     question: 'How do I manage title search documents?',
     answer: 'In the Fund Panel, use the Title & Chain of Title section to upload title commitments, note any exceptions, and track resolution status. All documents are stored in the Document Vault with version history.',
-    category: 'purchase',
+    category: 'fund',
   },
   {
     question: 'Can I track multiple loan options simultaneously?',
     answer: 'Yes. The Capital & Evaluation panel allows you to input and compare multiple loan term sheets side by side, including interest rates, points, origination fees, and LTV ratios to find the best financing option.',
-    category: 'purchase',
+    category: 'fund',
   },
   // ── Phase 3: Hold ──
   {
@@ -272,7 +272,7 @@ export const FAQ_ITEMS: FAQItem[] = [
   },
   {
     question: 'What are the biggest reasons flips fail?',
-    answer: "The recurring failure modes across the industry are consistent: capital that's too expensive (high-rate hard money eating the margin), rehab scope that expands past the original budget, properties that sit too long because they were priced wrong at listing, and missed contingency deadlines on the contract side that force a forced sale or earnest money loss. Each of these is preventable with disciplined tracking. The reason PaperWorking is built around four phases (acquisition, purchase, hold, exit) rather than as a generic project tool is that each phase has its own failure mode, and the answers live in different places — capital stack data, document deadlines, daily burn rate, and final reconciliation. Mixing them in spreadsheets is how flips quietly lose money.",
+    answer: "The recurring failure modes across the industry are consistent: capital that's too expensive (high-rate hard money eating the margin), rehab scope that expands past the original budget, properties that sit too long because they were priced wrong at listing, and missed contingency deadlines on the contract side that force a forced sale or earnest money loss. Each of these is preventable with disciplined tracking. The reason PaperWorking is built around four phases (acquisition, fund, hold, exit) rather than as a generic project tool is that each phase has its own failure mode, and the answers live in different places — capital stack data, document deadlines, daily burn rate, and final reconciliation. Mixing them in spreadsheets is how flips quietly lose money.",
     category: 'industry-data',
   },
 ];

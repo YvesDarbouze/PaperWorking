@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
-import { Building2, MapPin, Ruler, Calendar, DollarSign, CheckCircle2, Edit3, X, Loader2 } from 'lucide-react';
+import { Building2, MapPin, Ruler, Calendar, DollarSign, CheckCircle2, Edit3, X, Loader2, Bed, Bath } from 'lucide-react';
 import AddressAutocomplete, { type ParsedAddress } from '@/components/projects/AddressAutocomplete';
 
 /* ═══════════════════════════════════════════════════════════════
@@ -27,7 +27,10 @@ interface TargetIdentificationProps {
     longitude?: number | null;
     squareFootage?: number;
     yearBuilt?: number;
+    beds?: number;
+    baths?: number;
     listedPrice?: number;
+    list_price?: number;
     propertyType?: string;
     units?: number;
     condition?: string;
@@ -55,7 +58,9 @@ export function TargetIdentification({
     lng: initialData.longitude ?? null,
     squareFootage: initialData.squareFootage || '',
     yearBuilt: initialData.yearBuilt || '',
-    listedPrice: initialData.listedPrice ? (initialData.listedPrice / 100).toString() : '',
+    beds: initialData.beds || '',
+    baths: initialData.baths || '',
+    listedPrice: (initialData.list_price ?? initialData.listedPrice) ? (Number(initialData.list_price ?? initialData.listedPrice) / 100).toString() : '',
     propertyType: initialData.propertyType || '',
     units: initialData.units || '',
     condition: initialData.condition || '',
@@ -84,6 +89,14 @@ export function TargetIdentification({
       if (isNaN(year) || year < 1800 || year > new Date().getFullYear() + 5) {
         newErrors.yearBuilt = 'Enter a valid year';
       }
+    }
+    if (formData.beds) {
+      const bedsVal = parseInt(formData.beds as string, 10);
+      if (isNaN(bedsVal) || bedsVal < 0) newErrors.beds = 'Must be zero or a positive number';
+    }
+    if (formData.baths) {
+      const bathsVal = parseFloat(formData.baths as string);
+      if (isNaN(bathsVal) || bathsVal < 0) newErrors.baths = 'Must be zero or a positive number';
     }
     if (formData.listedPrice) {
       const price = parseFloat(formData.listedPrice as string);
@@ -122,10 +135,27 @@ export function TargetIdentification({
         updates.yearBuilt = null;
       }
 
+      if (formData.beds) {
+        updates.beds = parseInt(formData.beds as string, 10);
+      } else {
+        updates.beds = null;
+      }
+
+      if (formData.baths) {
+        updates.baths = parseFloat(formData.baths as string);
+      } else {
+        updates.baths = null;
+      }
+
       if (formData.listedPrice) {
         const price = parseFloat(formData.listedPrice as string);
-        updates['financials.listedPrice'] = Math.round(price * 100);
+        const cents = Math.round(price * 100);
+        updates.list_price = cents;
+        updates.askingPriceCents = cents;
+        updates['financials.listedPrice'] = cents;
       } else {
+        updates.list_price = null;
+        updates.askingPriceCents = null;
         updates['financials.listedPrice'] = null;
       }
 
@@ -193,7 +223,9 @@ export function TargetIdentification({
                 lng: initialData.longitude ?? null,
                 squareFootage: initialData.squareFootage || '',
                 yearBuilt: initialData.yearBuilt || '',
-                listedPrice: initialData.listedPrice ? (initialData.listedPrice / 100).toString() : '',
+                beds: initialData.beds || '',
+                baths: initialData.baths || '',
+                listedPrice: (initialData.list_price ?? initialData.listedPrice) ? (Number(initialData.list_price ?? initialData.listedPrice) / 100).toString() : '',
                 propertyType: initialData.propertyType || '',
                 units: initialData.units || '',
                 condition: initialData.condition || '',
@@ -222,7 +254,23 @@ export function TargetIdentification({
               </div>
             </div>
 
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 pt-6" style={{ borderTop: '1px solid var(--border-ui)' }}>
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-6 pt-6" style={{ borderTop: '1px solid var(--border-ui)' }}>
+              <div className="flex items-center gap-3">
+                <Bed className="w-8 h-8 p-1.5 rounded-md" style={{ color: phaseColor, background: 'var(--bg-canvas)' }} />
+                <div>
+                  <p className="text-[10px] font-bold uppercase tracking-widest mb-0.5" style={{ color: 'var(--text-secondary)' }}>Beds</p>
+                  <p className="text-sm font-bold tabular-nums" style={{ color: 'var(--text-primary)' }}>{initialData.beds || '—'}</p>
+                </div>
+              </div>
+
+              <div className="flex items-center gap-3">
+                <Bath className="w-8 h-8 p-1.5 rounded-md" style={{ color: phaseColor, background: 'var(--bg-canvas)' }} />
+                <div>
+                  <p className="text-[10px] font-bold uppercase tracking-widest mb-0.5" style={{ color: 'var(--text-secondary)' }}>Baths</p>
+                  <p className="text-sm font-bold tabular-nums" style={{ color: 'var(--text-primary)' }}>{initialData.baths || '—'}</p>
+                </div>
+              </div>
+
               <div className="flex items-center gap-3">
                 <Ruler className="w-8 h-8 p-1.5 rounded-md" style={{ color: phaseColor, background: 'var(--bg-canvas)' }} />
                 <div>
@@ -241,7 +289,9 @@ export function TargetIdentification({
                   <p className="text-sm font-bold tabular-nums" style={{ color: 'var(--text-primary)' }}>{initialData.yearBuilt || '—'}</p>
                 </div>
               </div>
+            </div>
 
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-6 pt-6" style={{ borderTop: '1px solid var(--border-ui)' }}>
               <div className="flex items-center gap-3">
                 <DollarSign className="w-8 h-8 p-1.5 rounded-md text-green-600 bg-green-50" />
                 <div>
@@ -251,9 +301,7 @@ export function TargetIdentification({
                   </p>
                 </div>
               </div>
-            </div>
 
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 pt-6" style={{ borderTop: '1px solid var(--border-ui)' }}>
               <div className="flex items-center gap-3">
                 <Building2 className="w-8 h-8 p-1.5 rounded-md" style={{ color: phaseColor, background: 'var(--bg-canvas)' }} />
                 <div>
@@ -291,7 +339,34 @@ export function TargetIdentification({
               />
             </div>
 
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-6">
+              <div>
+                <label className="block text-[10px] font-bold uppercase tracking-widest mb-2" style={{ color: 'var(--text-secondary)' }}>Beds</label>
+                <input
+                  type="number"
+                  value={formData.beds}
+                  onChange={(e) => setFormData({ ...formData, beds: e.target.value })}
+                  className={`w-full rounded-lg px-4 py-3 text-sm font-medium transition-all focus:outline-none focus-visible:ring-2 focus-visible:ring-black/20 ${errors.beds ? 'border-red-500 ring-1 ring-red-500' : ''}`}
+                  style={{ background: 'var(--bg-canvas)', border: errors.beds ? '1px solid #F06543' : '1px solid var(--border-ui)', color: 'var(--text-primary)' }}
+                  placeholder="e.g. 3"
+                />
+                {errors.beds && <p className="text-red-500 text-[10px] mt-1 font-bold">{errors.beds}</p>}
+              </div>
+
+              <div>
+                <label className="block text-[10px] font-bold uppercase tracking-widest mb-2" style={{ color: 'var(--text-secondary)' }}>Baths</label>
+                <input
+                  type="number"
+                  step="0.5"
+                  value={formData.baths}
+                  onChange={(e) => setFormData({ ...formData, baths: e.target.value })}
+                  className={`w-full rounded-lg px-4 py-3 text-sm font-medium transition-all focus:outline-none focus-visible:ring-2 focus-visible:ring-black/20 ${errors.baths ? 'border-red-500 ring-1 ring-red-500' : ''}`}
+                  style={{ background: 'var(--bg-canvas)', border: errors.baths ? '1px solid #F06543' : '1px solid var(--border-ui)', color: 'var(--text-primary)' }}
+                  placeholder="e.g. 2"
+                />
+                {errors.baths && <p className="text-red-500 text-[10px] mt-1 font-bold">{errors.baths}</p>}
+              </div>
+
               <div>
                 <label className="block text-[10px] font-bold uppercase tracking-widest mb-2" style={{ color: 'var(--text-secondary)' }}>Target Sq. Ft.</label>
                 <input
@@ -317,7 +392,9 @@ export function TargetIdentification({
                 />
                 {errors.yearBuilt && <p className="text-red-500 text-[10px] mt-1 font-bold">{errors.yearBuilt}</p>}
               </div>
+            </div>
 
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-6">
               <div>
                 <label className="block text-[10px] font-bold uppercase tracking-widest mb-2" style={{ color: 'var(--text-secondary)' }}>Listed Price ($)</label>
                 <input
@@ -331,9 +408,7 @@ export function TargetIdentification({
                 />
                 {errors.listedPrice && <p className="text-red-500 text-[10px] mt-1 font-bold">{errors.listedPrice}</p>}
               </div>
-            </div>
 
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
               <div>
                 <label className="block text-[10px] font-bold uppercase tracking-widest mb-2" style={{ color: 'var(--text-secondary)' }}>Property Type</label>
                 <select

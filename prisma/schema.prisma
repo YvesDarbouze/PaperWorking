@@ -374,7 +374,7 @@ model ReilProject {
   marketSyncedAt     DateTime?
   rentSyncedAt       DateTime?
   valueSyncedAt      DateTime?
-  currentPhase       Int                     @default(1)
+  status             String                  @default("acquisition")
   dispositionType    String?
   subStrategy        String?
   holdHorizon        Int?
@@ -422,6 +422,10 @@ model ReilProject {
   purchaseTerms      ReilPurchaseTerms?
   valuationSnapshots ReilValuationSnapshot[]
   statusEvents       StatusEvent[]
+  capitalSources     CapitalSource[]
+  equityParties      EquityParty[]
+  loans              LoanRecord[]
+  contributions      ContributionEntry[]
 
   @@index([createdById])
   @@index([acquisitionStatus])
@@ -599,3 +603,66 @@ enum FieldStatus {
   OPEN
   FILLED
 }
+
+model CapitalSource {
+  id          String      @id @default(uuid())
+  projectId   String
+  type        String      // solo_cash | co_buyer_equity | syndication_equity | conventional_loan | hard_money | bridge | sba_504_bank | sba_504_cdc | sba_504_injection
+  amount      BigInt      @default(0)
+  seniority   Int         @default(0)
+  status      String      // committed | pending | confirmed
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+  project     ReilProject @relation(fields: [projectId], references: [id], onDelete: Cascade)
+
+  @@index([projectId])
+}
+
+model EquityParty {
+  id             String              @id @default(uuid())
+  projectId      String
+  name           String
+  role           String              // co_buyer | GP | LP
+  entityType     String              // Individual | LLC | etc.
+  linkageUserId  String?             // Optional link to AppUser.id
+  createdAt      DateTime            @default(now())
+  updatedAt      DateTime            @updatedAt
+  project        ReilProject         @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  contributions  ContributionEntry[]
+
+  @@index([projectId])
+}
+
+model LoanRecord {
+  id          String      @id @default(uuid())
+  projectId   String
+  lender      String
+  amount      BigInt      @default(0)
+  rate        Float       @default(0)
+  termYears   Int         @default(0)
+  points      Float       @default(0)
+  status      String      // application | processing | appraisal_ordered | appraisal_received | conditions_issued | clear_to_close
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+  project     ReilProject @relation(fields: [projectId], references: [id], onDelete: Cascade)
+
+  @@index([projectId])
+}
+
+model ContributionEntry {
+  id             String      @id @default(uuid())
+  projectId      String
+  partyId        String
+  amount         BigInt      @default(0)
+  status         String      // soft-committed | docs_out | signed | funds_confirmed
+  evidenceRef    String?
+  date           DateTime?
+  createdAt      DateTime    @default(now())
+  updatedAt      DateTime    @updatedAt
+  project        ReilProject @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  party          EquityParty @relation(fields: [partyId], references: [id], onDelete: Cascade)
+
+  @@index([projectId])
+  @@index([partyId])
+}
+

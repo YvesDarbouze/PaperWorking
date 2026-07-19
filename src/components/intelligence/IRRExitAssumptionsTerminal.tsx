@@ -2,7 +2,7 @@
 
 import React, { useState, useMemo, useEffect, useCallback } from 'react';
 import { TrendingUp, Calendar, DollarSign, Percent, Building2, ArrowRight, Calculator, BarChart3, Sparkles } from 'lucide-react';
-// Removed helper imports as they are engine internals
+import { calculateAmortization } from '@/lib/utils/reiCalculators';
 
 /* ═══════════════════════════════════════════════════════════════
    IRR EXIT ASSUMPTIONS TERMINAL
@@ -177,13 +177,11 @@ function localBuildIRRCashFlows(
   const monthlyRate = (loanInterestRate / 100) / 12;
   const totalPayments = loanTermYears * 12;
 
-  if (monthlyRate > 0 && totalPayments > 0 && loanAmount > 0) {
-    const monthlyPayment = loanAmount * (monthlyRate * Math.pow(1 + monthlyRate, totalPayments)) /
-      (Math.pow(1 + monthlyRate, totalPayments) - 1);
-    const paymentsMade = holdYears * 12;
-    remainingBalance = loanAmount * Math.pow(1 + monthlyRate, paymentsMade) -
-      monthlyPayment * ((Math.pow(1 + monthlyRate, paymentsMade) - 1) / monthlyRate);
-    remainingBalance = Math.max(0, remainingBalance);
+  if (loanInterestRate > 0 && totalPayments > 0 && loanAmount > 0) {
+    const amort = calculateAmortization(loanAmount, loanInterestRate, totalPayments);
+    const paymentsMade = Math.min(holdYears * 12, totalPayments);
+    const scheduleItem = amort.schedule[paymentsMade - 1];
+    remainingBalance = scheduleItem ? scheduleItem.remainingBalance : 0;
   }
 
   const sellingCosts = futureValue * (sellingCostsPercent / 100);

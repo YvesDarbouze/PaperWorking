@@ -92,36 +92,30 @@ export function AcquisitionPhaseGate({
 
     const f = (project.financials || {}) as any;
 
-    // 1. Identity complete
+    // 1. Identity complete (Deal established)
     const isIdentityComplete = !!(
       project.address &&
-      project.propertyName &&
-      project.city &&
-      project.state &&
-      project.zip &&
-      (project.squareFootage ?? 0) > 0 &&
-      (project.yearBuilt ?? 0) > 0 &&
       project.propertyType &&
-      project.units &&
-      (project.retrospective || project.firstPassVerdict === 'PURSUE') &&
-      project.comps &&
-      project.comps.length >= 3
+      (project.propertyName || project.address)
     );
 
-    // 2. Scorecard Acknowledged
-    const currentHash = getScorecardInputsHash(project);
-    const isScorecardAcknowledged = !!f.scorecardAcknowledged && f.acknowledgedInputsHash === currentHash;
+    // 2. Scorecard complete (Underwriting complete)
+    const isUnderwritingComplete = !!(f.expected_purchase_price !== undefined || f.purchasePrice !== undefined);
 
-    // 3. Strategy set
-    const isStrategySet = !!(project.dispositionType && project.subStrategy);
+    // 3. Strategy declared
+    const isStrategyDeclared = !!project.dispositionType;
 
-    // 4. Executed PSA Attached
-    const isPsaAttached = !!f.psaDocumentUrl;
+    // 4. Offer accepted at known terms
+    const isOfferAcceptedAndExecuted = !!(
+      f.offer_status === 'accepted' &&
+      f.accepted_price !== undefined &&
+      f.contract_executed_date
+    );
 
-    // 5. Earnest deposited
+    // 5. Earnest money recorded
     const isEmdVerified = !!(f.emdVerified && f.emdReceiptUrl);
 
-    // 6. Due diligence complete for asset type
+    // 6. Required diligence documents for the property type on file
     const isSurveyRequired = () => {
       const type = (project.propertyType || '').toLowerCase();
       const assetClass = (project.assetClass || '').toLowerCase();
@@ -149,29 +143,35 @@ export function AcquisitionPhaseGate({
       (!isAttorneyRequired() || !!((f.attorneyDocumentUrl && f.attorneyCompletedDate) || (f.attorneyWaived && f.attorneyWaiverReason?.trim())))
     );
 
-    // 7. Contingencies satisfied/waived
+    // 7. All contingencies satisfied or waived within deadline, and a "proceed" go/no-go decision recorded (canon-verbatim)
     const isContingenciesSatisfied = !project.contingencies || project.contingencies.length === 0 || project.contingencies.every((c: any) => (c.isSatisfied && (!!c.satisfiedDocUrl || !!c.explicitConfirmation)) || c.isWaived);
+    const isContingencyAndGoNoGoPassed = isContingenciesSatisfied && f.dd_decision === 'proceed';
 
-    // 8. Capital plan resolved
+    // 8. Capital plan set: all-cash/solo confirmed, or (if crowdfunding/partnership) investor mailing list built, Deal shared, and investor LOIs/soft commitments logged sufficient to the equity target — Column 6 complete or explicitly bypassed (canon-verbatim)
+    const totalLoiAmountCents = (f.loi_log || []).reduce((sum: number, c: any) => sum + (c.amount || 0), 0);
     const isCapitalPlanResolved = !!(
+      f.capital_intent === 'solo' ||
       f.capitalPlan === 'all-cash solo' ||
       f.capitalPlan === 'solo-financed' ||
-      f.capitalPlan === 'partnership' ||
-      (f.capitalPlan === 'raise interest' && totalRaisedCents > 0) ||
-      f.fundingType === 'Solo' ||
-      (f.fundingType === 'Syndicated' && totalRaisedCents > 0) ||
-      (!f.capitalPlan && !f.fundingType && totalRaisedCents > 0)
+      ((f.capital_intent === 'group' || f.capitalPlan === 'partnership') &&
+        !!f.one_pager_reviewed &&
+        f.equity_target !== undefined && f.equity_target > 0 &&
+        totalLoiAmountCents >= f.equity_target) ||
+      ((f.capital_intent === 'raise' || f.capitalPlan === 'raise interest') &&
+        !!f.one_pager_reviewed &&
+        f.equity_target !== undefined && f.equity_target > 0 &&
+        totalLoiAmountCents >= f.equity_target)
     );
 
     const criteriaList = [
-      { key: 'identity', label: 'Target Identity Complete', status: isIdentityComplete, ref: '#target' },
-      { key: 'scorecard', label: 'Scorecard Calculations Acknowledged', status: isScorecardAcknowledged, ref: '#underwrite' },
-      { key: 'strategy', label: 'Strategy & Sub-strategy Declared', status: isStrategySet, ref: '#strategy' },
-      { key: 'psa', label: 'Executed PSA Document Attached', status: isPsaAttached, ref: '#offer' },
-      { key: 'emd', label: 'Earnest Money Deposit (EMD) Verified', status: isEmdVerified, ref: '#offer' },
-      { key: 'dd', label: 'Due Diligence Checks Complete', status: isDdComplete, ref: '#due_diligence' },
-      { key: 'contingencies', label: 'Contingencies Satisfied or Waived', status: isContingenciesSatisfied, ref: '#due_diligence' },
-      { key: 'capital', label: 'Capital Plan Fully Resolved', status: isCapitalPlanResolved, ref: '#raise_interest' },
+      { key: 'identity', label: '1. Deal established: address, property type, entry point recorded', status: isIdentityComplete, ref: '#target' },
+      { key: 'scorecard', label: '2. Underwriting complete: scorecard 2.7 rendered from live derive call', status: isUnderwritingComplete, ref: '#underwrite' },
+      { key: 'strategy', label: '3. Strategy declared: disposition_type set', status: isStrategyDeclared, ref: '#strategy' },
+      { key: 'psa', label: '4. Offer accepted at known terms: accepted_price + executed contract recorded', status: isOfferAcceptedAndExecuted, ref: '#offer' },
+      { key: 'emd', label: '5. Earnest money recorded', status: isEmdVerified, ref: '#offer' },
+      { key: 'dd', label: '6. Required diligence documents for the property type on file', status: isDdComplete, ref: '#due_diligence' },
+      { key: 'contingencies', label: '7. All contingencies satisfied or waived within deadline, and a "proceed" go/no-go decision recorded — Cards 5.11 + 5.12 complete', status: isContingencyAndGoNoGoPassed, ref: '#due_diligence' },
+      { key: 'capital', label: '8. Capital plan set: all-cash/solo confirmed, or (if crowdfunding/partnership) investor mailing list built, Deal shared, and investor LOIs/soft commitments logged sufficient to the equity target — Column 6 complete or explicitly bypassed', status: isCapitalPlanResolved, ref: '#raise_interest' },
     ];
 
     const isPassed = criteriaList.every(c => c.status);
@@ -234,19 +234,76 @@ export function AcquisitionPhaseGate({
               }}
             />
           ))}
-          <div className="absolute inset-0 flex items-center justify-center bg-black/60 backdrop-blur-sm animate-fade-in">
-            <div className="text-center p-8 bg-[var(--color-background)] rounded-2xl border border-pw-border shadow-2xl max-w-sm space-y-4">
+          <div className="absolute inset-0 flex items-center justify-center bg-black/80 backdrop-blur-md animate-fade-in pointer-events-auto">
+            <div className="text-center p-8 bg-[var(--color-background)] rounded-2xl border border-pw-border shadow-2xl max-w-md space-y-4 max-h-[95vh] overflow-y-auto">
               <div className="w-16 h-16 bg-[var(--pw-success-container)] text-[var(--pw-success)] rounded-full flex items-center justify-center mx-auto animate-bounce">
                 <Sparkles className="w-8 h-8" />
               </div>
-              <h3 className="text-2xl font-bold text-[var(--color-on-surface)]">Milestone Unlocked!</h3>
-              <p className="text-sm text-[var(--color-muted)]">
+              <h3 className="text-2xl font-bold text-white">Milestone Unlocked!</h3>
+              <p className="text-sm text-[#9E9DA0]">
                 Acquisition complete. Project has successfully transitioned to Phase 2: Fund!
               </p>
+
+              {/* Payload Summary */}
+              <div className="p-4 bg-white/5 rounded-xl border border-white/5 text-left space-y-3 text-xs">
+                <h4 className="font-bold text-pw-success uppercase tracking-wider text-[9px]">Carried Payload</h4>
+                <div className="grid grid-cols-2 gap-2 text-white">
+                  <div>
+                    <span className="text-[#9E9DA0] block text-[9px] uppercase">Accepted Price</span>
+                    <span className="font-mono">
+                      {f.accepted_price ? (f.accepted_price / 100).toLocaleString('en-US', { style: 'currency', currency: 'USD', maximumFractionDigits: 0 }) : '—'}
+                    </span>
+                  </div>
+                  <div>
+                    <span className="text-[#9E9DA0] block text-[9px] uppercase">Capital Intent</span>
+                    <span className="capitalize font-semibold">{f.capital_intent || 'solo'}</span>
+                  </div>
+                </div>
+
+                {f.capital_intent !== 'solo' && (
+                  <div>
+                    <span className="text-[#9E9DA0] block text-[9px] uppercase">Soft Commitments ({(f.loi_log || []).length})</span>
+                    <span className="font-mono text-white">
+                      {((f.loi_log || []).reduce((sum: number, c: any) => sum + (c.amount || 0), 0) / 100).toLocaleString('en-US', { style: 'currency', currency: 'USD', maximumFractionDigits: 0 })} logged
+                    </span>
+                  </div>
+                )}
+
+                <div>
+                  <span className="text-[#9E9DA0] block text-[9px] uppercase">Due Diligence Artifacts</span>
+                  <div className="space-y-1 mt-1 text-[10px] text-[#9E9DA0] font-mono">
+                    {f.inspectionReportUrl && <div>✓ Inspection Report</div>}
+                    {f.radonDocumentUrl && <div>✓ Radon Test Document</div>}
+                    {f.leadDocumentUrl && <div>✓ Lead Paint Document</div>}
+                    {f.termiteDocumentUrl && <div>✓ Termite Test Document</div>}
+                    {f.surveyDocumentUrl && <div>✓ Survey Plat Map</div>}
+                    {f.phaseIDocumentUrl && <div>✓ Phase I ESA Document</div>}
+                    {f.hoaDocumentUrl && <div>✓ HOA CC&amp;Rs Document</div>}
+                    {f.attorneyDocumentUrl && <div>✓ Attorney Representation Document</div>}
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
         </div>
       )}
+
+      {f.overrideReason && (
+        <div className="p-4 rounded-xl bg-red-500/5 border border-red-500/15 space-y-1" id="stored-override-display">
+          <p className="font-bold text-red-400 uppercase tracking-wider text-[9px]">Active Manual Override Justification</p>
+          <p className="text-xs text-red-400/90 italic leading-relaxed">
+            "{f.overrideReason}"
+          </p>
+        </div>
+      )}
+
+      {/* ── Explicitly Deferred to Fund ── */}
+      <div className="p-4 rounded-xl border border-white/5 bg-white/5 space-y-2">
+        <h4 className="text-xs font-bold text-white uppercase tracking-wider">Explicitly Deferred to Phase 2: Fund</h4>
+        <p className="text-xs text-[#9E9DA0] leading-relaxed">
+          <strong>Explicitly deferred to Fund (canon-verbatim):</strong> executing the loan/mortgage and lender closing conditions; collecting actual partner equity contributions; converting investor soft commitments into binding capital (and any KYC/accreditation/payment/escrow-funding mechanics that a real capital raise would require); final settlement, funds disbursement at closing, deed recording, and title transfer. Acquisition secures the right and intent to buy at known terms; Fund moves the money and closes.
+        </p>
+      </div>
 
       <div>
         <h3 className="text-lg font-bold text-[var(--color-on-surface)] flex items-center gap-2">

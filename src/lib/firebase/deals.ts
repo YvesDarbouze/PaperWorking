@@ -51,6 +51,34 @@ function derivePhaseFromREIStatus(reiStatus?: string): {
   }
 }
 
+export function mapFirestoreProjectToFrontend(docData: any): Project {
+  if (!docData) return docData;
+  const statusRaw = docData.status || 'acquisition';
+  let statusCanonical: 'acquisition' | 'fund' | 'hold' | 'exit' = 'acquisition';
+  if (typeof statusRaw === 'string') {
+    const s = statusRaw.toLowerCase();
+    if (s.includes('acquisition') || s === 'lead' || s === 'target' || s === 'prospect') {
+      statusCanonical = 'acquisition';
+    } else if (s.includes('fund') || s.includes('purchase') || s.includes('closing') || s === 'in contract' || s === 'acquired') {
+      statusCanonical = 'fund';
+    } else if (s.includes('hold') || s.includes('rehab') || s.includes('rent')) {
+      statusCanonical = 'hold';
+    } else if (s.includes('exit') || s.includes('sale') || s.includes('sold')) {
+      statusCanonical = 'exit';
+    }
+  }
+
+  const currentPhase = statusCanonical === 'acquisition' ? 1 : statusCanonical === 'fund' ? 2 : statusCanonical === 'hold' ? 3 : 4;
+  const phaseStatus = statusCanonical === 'acquisition' ? 'Phase 1: Acquisition' : statusCanonical === 'fund' ? 'Phase 2: Fund' : statusCanonical === 'hold' ? 'Phase 3: Hold' : 'Phase 4: Exit';
+
+  return {
+    ...docData,
+    status: statusCanonical,
+    currentPhase,
+    phaseStatus,
+  };
+}
+
 function sanitizeFirestorePayload(payload: any) {
   if (!payload) return;
   if (payload.financials) {
@@ -126,9 +154,7 @@ export const projectsService = {
         organizationId,
         // ── Smart Phase Initialization ──
         // Derived from the REI status the user selected in the wizard
-        phaseStatus: finalPhaseStatus,
-        currentPhase: finalPhase,
-        status: finalStatus,
+        status: finalStatus === 'Sold' ? 'exit' : finalStatus,
         createdAt: new Date(),
         updatedAt: new Date(),
         ownerUid: dealData.ownerUid || 'user_123',
@@ -191,10 +217,12 @@ export const projectsService = {
 
       // ── Automation Hook: Phase Progression ──
       if (updates.financials?.offerStatus === 'Accepted') {
-        updates.phaseStatus = 'Phase 2: Fund';
-        updates.currentPhase = 2;
         updates.status = 'fund';
       }
+
+      // Strip redundant phase properties from write footprint
+      delete (updates as any).currentPhase;
+      delete (updates as any).phaseStatus;
 
       const firestoreUpdates = JSON.parse(JSON.stringify(updates));
       sanitizeFirestorePayload(firestoreUpdates);
@@ -319,7 +347,7 @@ export const projectsService = {
       const dealRef = doc(db, 'projects', projectId);
       const snapshot = await getDoc(dealRef);
       if (snapshot.exists()) {
-        return { id: snapshot.id, ...snapshot.data() } as Project;
+        return mapFirestoreProjectToFrontend({ id: snapshot.id, ...snapshot.data() });
       }
       return null;
     } catch (error) {
@@ -338,10 +366,10 @@ export const projectsService = {
       const q = query(projectsRef, where('mls_id', '==', mlsId));
       const snapshot = await getDocs(q);
       
-      return snapshot.docs.map(doc => ({
+      return snapshot.docs.map(doc => mapFirestoreProjectToFrontend({
         id: doc.id,
         ...doc.data()
-      })) as Project[];
+      }));
     } catch (error) {
       console.error(`Search Failure: Could not find projects for mls_id ${mlsId}`, error);
       throw error;
@@ -422,7 +450,7 @@ export const projectsService = {
       const closedCount = snapshot.docs.length;
 
       snapshot.docs.forEach(docSnap => {
-        const data = docSnap.data() as Project;
+        const data = mapFirestoreProjectToFrontend(docSnap.data());
         const p = data.financials?.netRealizedProfit || 0;
         const c = data.financials?.totalAllInCost || 0;
         totalProfit += p;
@@ -481,15 +509,15 @@ export const projectsService = {
         capturedAt: serverTimestamp(),
       });
 
-      // 2. Atomically bump currentPhase on the parent project
-      const phaseNumber: Record<PhaseSnapshotKey, number> = {
-        'phase-1': 2,
-        'phase-2': 3,
-        'phase-3': 4,
+      // 2. Atomically bump phase status on the parent project
+      const phaseStatusMap: Record<PhaseSnapshotKey, string> = {
+        'phase-1': 'fund',
+        'phase-2': 'hold',
+        'phase-3': 'exit',
       };
       const dealRef = doc(db, 'projects', projectId);
       await updateDoc(dealRef, {
-        currentPhase: phaseNumber[phaseKey],
+        status: phaseStatusMap[phaseKey],
         lastPhaseTransitionAt: serverTimestamp(),
         updatedAt: serverTimestamp(),
       });

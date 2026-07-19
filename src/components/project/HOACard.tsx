@@ -28,6 +28,7 @@ export function HOACard({
   const [rentalRestrictionsDetails, setRentalRestrictionsDetails] = useState(financials.hoaRentalRestrictionsDetails || '');
   const [waived, setWaived] = useState(!!financials.hoaWaived);
   const [waiverReason, setWaiverReason] = useState(financials.hoaWaiverReason || '');
+  const [hoaDues, setHoaDues] = useState(financials.hoa_dues !== undefined ? financials.hoa_dues / 100 : '');
 
   // File Upload states
   const [uploadingDoc, setUploadingDoc] = useState(false);
@@ -41,6 +42,7 @@ export function HOACard({
     setRentalRestrictionsDetails(financials.hoaRentalRestrictionsDetails || '');
     setWaived(!!financials.hoaWaived);
     setWaiverReason(financials.hoaWaiverReason || '');
+    setHoaDues(financials.hoa_dues !== undefined ? financials.hoa_dues / 100 : '');
   }, [project]);
 
   const handleSaveField = async (fieldName: string, value: any) => {
@@ -165,7 +167,7 @@ export function HOACard({
             </div>
           )}
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             {/* HOA Vendor */}
             <div>
               <label className="block text-xs font-bold text-[#9E9DA0] uppercase tracking-wider mb-2">HOA / Association (Vendor)</label>
@@ -177,6 +179,27 @@ export function HOACard({
                 onBlur={() => handleSaveField('hoaVendor', vendor)}
                 disabled={readOnly}
                 placeholder="Enter HOA management name"
+                className="px-4 py-2 w-full bg-white/5 border border-white/10 rounded-lg text-xs text-white focus:outline-none focus:ring-2 focus:ring-[#454955] disabled:opacity-50"
+              />
+            </div>
+
+            {/* HOA Dues */}
+            <div>
+              <label className="block text-xs font-bold text-[#9E9DA0] uppercase tracking-wider mb-2">Verified Actual Dues ($/mo)</label>
+              <input
+                type="number"
+                id="hoa-dues"
+                value={hoaDues}
+                onChange={(e) => {
+                  const val = e.target.value === '' ? '' : Number(e.target.value);
+                  setHoaDues(val);
+                }}
+                onBlur={() => {
+                  const cents = hoaDues === '' ? null : Number(hoaDues) * 100;
+                  handleSaveField('hoa_dues', cents);
+                }}
+                disabled={readOnly}
+                placeholder="0"
                 className="px-4 py-2 w-full bg-white/5 border border-white/10 rounded-lg text-xs text-white focus:outline-none focus:ring-2 focus:ring-[#454955] disabled:opacity-50"
               />
             </div>

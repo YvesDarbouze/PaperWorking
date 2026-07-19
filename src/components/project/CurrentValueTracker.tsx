@@ -55,9 +55,9 @@ export function CurrentValueTracker({ projectId, currentValue = [], onAddValuati
         id: `val-${Date.now()}`,
         date: valDate,
         value: Math.round(parsed * 100),
-        source: valSource,
+        source: valSource === 'avm' ? 'user_assumption' : valSource,
         documentUrl: isDocSource ? `https://firebasestorage.googleapis.com/v0/b/paperworking.appspot.com/o/valuations%2F${projectId}%2F${Date.now()}.pdf` : null,
-        documentName: isDocSource ? (docName.trim() || `${valSource.toUpperCase()} Document`) : null
+        documentName: valSource === 'avm' ? 'AVM estimate' : isDocSource ? (docName.trim() || `${valSource.toUpperCase()} Document`) : null
       };
 
       await onAddValuation(entry);
@@ -70,13 +70,16 @@ export function CurrentValueTracker({ projectId, currentValue = [], onAddValuati
     }
   };
 
-  const getSourceLabel = (src: string) => {
-    switch (src) {
+  const getSourceLabel = (val: ValuationEntry) => {
+    if (val.source === 'user_assumption' && val.documentName === 'AVM estimate') {
+      return 'AVM estimate';
+    }
+    switch (val.source) {
       case 'user_assumption': return 'User Assumption';
       case 'appraisal': return 'Appraisal Report';
       case 'bpo': return 'Broker Price Opinion';
-      case 'avm': return 'Automated Valuation (AVM)';
-      default: return src;
+      case 'avm': return 'AVM estimate';
+      default: return val.source;
     }
   };
 
@@ -249,7 +252,7 @@ export function CurrentValueTracker({ projectId, currentValue = [], onAddValuati
                       <span className={`px-1.5 py-0.5 rounded text-[8px] font-bold uppercase tracking-wider ${
                         val.source === 'appraisal' ? 'bg-[#7A9EAA]/25 text-[#7A9EAA]' : 'bg-white/5 text-[#9E9DA0]'
                       }`}>
-                        {getSourceLabel(val.source)}
+                        {getSourceLabel(val)}
                       </span>
                     </div>
 

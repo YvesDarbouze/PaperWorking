@@ -192,31 +192,16 @@ export function FinancingAssumptionsCard({
       </div>
 
       <div className="p-6 space-y-6">
-        {/* Toggle between financed and all-cash */}
+        {/* Toggle between financed and all-cash (Read-Only) */}
         <div className="flex items-center justify-between bg-white/[0.01] border border-white/5 p-4 rounded-xl">
           <div>
             <span className="block text-xs text-white/90 font-bold uppercase tracking-wider text-[10px]">Funding Vehicle Type</span>
-            <span className="block text-[8px] text-[#9E9DA0] mt-0.5">Determine if this deal uses debt or is fully cash funded</span>
+            <span className="block text-[8px] text-[#9E9DA0] mt-0.5">Determined via the F1.1 modality selector</span>
           </div>
-          <div className="flex rounded bg-[#161217] p-1 border border-white/10">
-            <button
-              onClick={() => {
-                setFinancingType('Financed');
-                setDownPaymentPercent('20');
-                setInterestRate('6.5');
-                setTermYears('30');
-                setOriginationPoints('1');
-              }}
-              className={`px-3 py-1 rounded text-[10px] font-bold uppercase transition-all ${financingType === 'Financed' ? 'bg-[#ffac5a] text-black' : 'text-[#9E9DA0] hover:text-white'}`}
-            >
-              Financed
-            </button>
-            <button
-              onClick={() => setFinancingType('All Cash')}
-              className={`px-3 py-1 rounded text-[10px] font-bold uppercase transition-all ${financingType === 'All Cash' ? 'bg-[#ffac5a] text-black' : 'text-[#9E9DA0] hover:text-white'}`}
-            >
-              All Cash
-            </button>
+          <div className="flex items-center gap-2">
+            <span className="px-3 py-1 rounded text-[10px] font-bold uppercase bg-[#ffac5a]/20 text-[#ffac5a] border border-[#ffac5a]/30">
+              {financingType}
+            </span>
           </div>
         </div>
 

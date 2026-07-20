@@ -58,7 +58,7 @@ export default function CrowdfundingReconciliation({ deal }: CrowdfundingReconci
           </div>
           <div className="text-right">
             <p className="text-xs font-normal text-text-secondary max-w-[250px] leading-relaxed">
-              Final payouts are calculated by adding the investor's original contribution to their proportional profit share.
+              Final distribution entitlements are calculated by adding the investor's original contribution to their proportional profit share.
             </p>
           </div>
         </div>
@@ -72,13 +72,13 @@ export default function CrowdfundingReconciliation({ deal }: CrowdfundingReconci
                 <th className="pb-3 text-right">Equity %</th>
                 <th className="pb-3 text-right">Original Contrib</th>
                 <th className="pb-3 text-right">Profit Share</th>
-                <th className="pb-3 text-right">Final Wire Payout</th>
+                <th className="pb-3 text-right">Distribution Entitlement</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-pw-border">
               {investors.map((inv) => {
                 const profitShare = netProfit * (inv.equityPercentage / 100);
-                const totalPayout = inv.contributionAmount + profitShare;
+                const totalEntitlement = inv.contributionAmount + profitShare;
                 const isProfit = profitShare >= 0;
 
                 return (
@@ -106,7 +106,7 @@ export default function CrowdfundingReconciliation({ deal }: CrowdfundingReconci
                       <div className="flex items-center justify-end gap-2">
                         <ArrowRight className="w-3 h-3 text-text-secondary opacity-0 group-hover:opacity-100 transition-opacity" />
                         <span className="text-lg font-black font-mono text-text-primary">
-                          {fmtCurrency(totalPayout)}
+                          {fmtCurrency(totalEntitlement)}
                         </span>
                       </div>
                     </td>

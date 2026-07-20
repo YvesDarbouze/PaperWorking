@@ -104,6 +104,23 @@ export function TotalCashInvestedCard({ projectId, activeCardId, setActiveCardId
   const totalCashInvested = computeTotalCashInvested(financials);
   const cocReturn = metrics.cashOnCashReturn ?? 0;
 
+  const getDownPaymentTargetCard = () => {
+    const modalities = project?.fundingPlan?.modality || [];
+    if (modalities.includes('conventional_loan')) {
+      return { id: 'F3.5', label: 'Go to Locked Terms' };
+    }
+    if (modalities.includes('sba_504')) {
+      return { id: 'F3.6', label: 'Go to SBA 504' };
+    }
+    if (modalities.includes('hard_money') || modalities.includes('bridge')) {
+      return { id: 'F3.7', label: 'Go to Hard Money' };
+    }
+    // Default or equity/cash
+    return { id: 'F1.2', label: 'Go to Capital Stack' };
+  };
+
+  const dpTarget = getDownPaymentTargetCard();
+
   const fmt = (cents: number) => {
     return `$${(cents / 100).toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}`;
   };
@@ -175,10 +192,10 @@ export function TotalCashInvestedCard({ projectId, activeCardId, setActiveCardId
               <span className="text-base font-bold font-mono text-white tabular-nums">{fmt(downPayment)}</span>
               {setActiveCardId && (
                 <button
-                  onClick={() => setActiveCardId('F3.6')}
+                  onClick={() => setActiveCardId(dpTarget.id)}
                   className="px-3 py-1.5 rounded-lg bg-white/5 hover:bg-white/10 text-[10px] font-bold text-[#7A9EAA] border border-white/5 flex items-center gap-1.5 transition-all"
                 >
-                  Go to Locked Terms
+                  {dpTarget.label}
                   <ArrowRight className="w-3 h-3" />
                 </button>
               )}

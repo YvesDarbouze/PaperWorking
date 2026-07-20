@@ -309,19 +309,19 @@ export function PhaseProgressTracker({
           },
           {
             index: 1, number: 2,
-            label: 'Closing',     sublabel: 'Closing & Docs',
+            label: 'Fund',        sublabel: 'Fund & Close',
             path: 'phase-2',
             phaseKey: 'Phase 2: Fund',
           },
           {
             index: 2, number: 3,
-            label: 'Rehab',        sublabel: 'Rehab Scope',
+            label: 'Hold',        sublabel: 'Hold Operations',
             path: 'phase-3',
             phaseKey: 'Phase 3: Hold',
           },
           {
             index: 3, number: 4,
-            label: 'Hold / Exit',  sublabel: 'Manage & Sell',
+            label: 'Exit',        sublabel: 'Exit & Sell',
             path: 'phase-4',
             phaseKey: 'Phase 4: Exit',
           },
@@ -336,13 +336,13 @@ export function PhaseProgressTracker({
           },
           {
             index: 1, number: 2,
-            label: 'Closing',     sublabel: 'Closing & Docs',
+            label: 'Fund',        sublabel: 'Fund & Close',
             path: 'phase-2',
             phaseKey: 'Phase 2: Fund',
           },
           {
             index: 2, number: 3,
-            label: 'Hold / Exit',  sublabel: 'Manage & Sell',
+            label: 'Exit',        sublabel: 'Exit & Sell',
             path: 'phase-4',
             phaseKey: 'Phase 4: Exit',
           },
@@ -352,25 +352,25 @@ export function PhaseProgressTracker({
       return [
         {
           index: 0, number: 1,
-          label: 'Find & Fund', sublabel: 'Find & Fund',
+          label: 'Acquisition', sublabel: 'Find & Fund',
           path: 'phase-1',
           phaseKey: 'Phase 1: Acquisition',
         },
         {
           index: 1, number: 2,
-          label: 'Acquisition',  sublabel: 'Closing & Docs',
+          label: 'Fund',        sublabel: 'Fund & Close',
           path: 'phase-2',
           phaseKey: 'Phase 2: Fund',
         },
         {
           index: 2, number: 3,
-          label: 'Holding & Rehab', sublabel: 'Rehab & Manage',
+          label: 'Hold',        sublabel: 'Hold Operations',
           path: 'phase-3',
           phaseKey: 'Phase 3: Hold',
         },
         {
           index: 3, number: 4,
-          label: 'Closing & Exit',  sublabel: 'Sell or Refi',
+          label: 'Exit',        sublabel: 'Exit & Sell',
           path: 'phase-4',
           phaseKey: 'Phase 4: Exit',
         },

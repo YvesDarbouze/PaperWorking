@@ -62,7 +62,7 @@ async function verifyCapitalStack() {
       const projects = await prisma.reilProject.findMany({
         where: {
           id: {
-            in: ['deal_123_main_st_seed', 'project_fx1_seed', 'project_fx7_seed']
+            in: ['deal_123_main_st_seed', 'project_fx1_seed', 'project_fx7_std_seed', 'project_fx7_spec_seed', 'project_fx7_dual_seed', 'project_fx8_seed']
           }
         },
         include: {

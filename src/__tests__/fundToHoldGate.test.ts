@@ -1,7 +1,7 @@
-import { projectSchema } from '@/lib/schemas/projectSchema';
+import { evaluateF6GateLines } from '@/lib/gates/fundGateLines';
 import type { Project } from '@/types/schema';
 
-describe('Column F6 — Fund &rarr; Hold Phase Gate Checklist Validation', () => {
+describe('Column F6 — Fund → Hold Phase Gate Checklist Validation', () => {
   const now = new Date();
 
   // Fully valid and completed Fund phase mock project
@@ -42,6 +42,13 @@ describe('Column F6 — Fund &rarr; Hold Phase Gate Checklist Validation', () =>
           amount: 220000,
           interestRate: 5.75,
           status: 'Approved',
+        },
+        {
+          id: 'equity-1',
+          category: 'Private Money',
+          amount: 98900,
+          interestRate: 0,
+          status: 'Approved',
         }
       ],
     },
@@ -80,54 +87,12 @@ describe('Column F6 — Fund &rarr; Hold Phase Gate Checklist Validation', () =>
   };
 
   it('evaluates and satisfies all transition criteria on a fully complete deal', () => {
-    // Verify Zod validation passes
-    const result = projectSchema.safeParse(fullyValidFundProject);
-    expect(result.success).toBe(true);
-
-    // Live evaluation simulation
-    const deal = fullyValidFundProject;
-    const isFinanced = true;
-
-    // 1. Actual purchase price recorded
-    const isPurchasePriceRecorded = !!deal.financials?.purchasePrice && deal.financials.purchasePrice > 0;
-    expect(isPurchasePriceRecorded).toBe(true);
-
-    // 2. Total cash invested fully actualized
-    const isTotalCashActualized = (!!deal.financials?.totalCashInvested && deal.financials.totalCashInvested > 0) || (!!deal.financials?.finalCashToClose && deal.financials.finalCashToClose > 0);
-    expect(isTotalCashActualized).toBe(true);
-
-    // 3. Loan terms actual (financed routes)
-    const isLoanTermsActual = !isFinanced || (
-      !!deal.financials?.loanAmount && deal.financials.loanAmount > 0 &&
-      !!deal.financials?.loanInterestRate && deal.financials.loanInterestRate > 0
-    );
-    expect(isLoanTermsActual).toBe(true);
-
-    // 4. Closing date recorded
-    const isClosingDateRecorded = !!deal.closingRoom?.actualClosingDate;
-    expect(isClosingDateRecorded).toBe(true);
-
-    // 5. Deed recording confirmed
-    const isDeedRecordingConfirmed = !!deal.closingRoom?.deedRecordingCounty && !!deal.closingRoom?.deedRecordingDate && !!deal.closingRoom?.deedRecordingInstrumentNumber;
-    expect(isDeedRecordingConfirmed).toBe(true);
-
-    // 6. Required closing documents archived
-    const docs = deal.closingRoom?.executedDocs;
-    const isDocsChecklistComplete = 
-      !!(docs?.deedUrl && docs?.deedSigned) &&
-      (!isFinanced || !!(docs?.noteUrl && docs?.noteSigned)) &&
-      !!(docs?.settlementStatementUrl && docs?.settlementStatementSigned) &&
-      !!(docs?.titlePolicyUrl && docs?.titlePolicySigned) &&
-      !!(docs?.entityDocsUrl && docs?.entityDocsSigned);
-    expect(isDocsChecklistComplete).toBe(true);
-
-    // 7. Cash-to-close reconciled (mock variance is 0 in reconciliation engine)
-    const isCashToCloseReconciled = true;
-    expect(isCashToCloseReconciled).toBe(true);
-
-    // 8. Attorney requirement satisfied
-    const isAttorneySatisfied = !!deal.closingRoom?.lawyerVerified;
-    expect(isAttorneySatisfied).toBe(true);
+    const lines = evaluateF6GateLines(fullyValidFundProject, ['NY', 'GA', 'MA']);
+    
+    // Check all lines are satisfied (not blocked)
+    lines.forEach(line => {
+      expect(line.blocked).toBe(false);
+    });
   });
 
   it('fails the gate checks when mandatory fields are missing', () => {
@@ -146,18 +111,16 @@ describe('Column F6 — Fund &rarr; Hold Phase Gate Checklist Validation', () =>
       }
     };
 
-    const deal = incompleteProject;
+    const lines = evaluateF6GateLines(incompleteProject, ['NY', 'GA', 'MA']);
     
-    const isPurchasePriceRecorded = !!deal.financials?.purchasePrice && deal.financials.purchasePrice > 0;
-    expect(isPurchasePriceRecorded).toBe(false);
+    const purchasePriceLine = lines.find(l => l.key === 'purchasePrice');
+    const totalCashLine = lines.find(l => l.key === 'totalCash');
+    const closingDateLine = lines.find(l => l.key === 'closingDate');
+    const deedRecordingLine = lines.find(l => l.key === 'deedRecording');
 
-    const isTotalCashActualized = (!!deal.financials?.totalCashInvested && deal.financials.totalCashInvested > 0) || (!!deal.financials?.finalCashToClose && deal.financials.finalCashToClose > 0);
-    expect(isTotalCashActualized).toBe(false);
-
-    const isClosingDateRecorded = !!deal.closingRoom?.actualClosingDate;
-    expect(isClosingDateRecorded).toBe(false);
-
-    const isDeedRecordingConfirmed = !!deal.closingRoom?.deedRecordingCounty && !!deal.closingRoom?.deedRecordingDate && !!deal.closingRoom?.deedRecordingInstrumentNumber;
-    expect(isDeedRecordingConfirmed).toBe(false);
+    expect(purchasePriceLine?.blocked).toBe(true);
+    expect(totalCashLine?.blocked).toBe(true);
+    expect(closingDateLine?.blocked).toBe(true);
+    expect(deedRecordingLine?.blocked).toBe(true);
   });
 });

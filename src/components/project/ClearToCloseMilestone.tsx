@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { DueDiligenceItem, ProjectTeamMember, LoanStatus, CostBasisLedger } from '@/types/schema';
 import { CheckCircle2, Lock, Unlock } from 'lucide-react';
+import { useAttorneyStates } from '@/hooks/useAttorneyStates';
+import { evaluateF6GateLines } from '@/lib/gates/fundGateLines';
 
 interface ClearToCloseMilestoneProps {
   dueDiligenceChecklist: DueDiligenceItem[];
@@ -10,6 +12,8 @@ interface ClearToCloseMilestoneProps {
   isClearToClose: boolean;
   onToggle: (status: boolean) => void;
   onExecutePurchase?: () => void;
+  projectState?: string;
+  financials?: any;
 }
 
 export function ClearToCloseMilestone({
@@ -20,37 +24,53 @@ export function ClearToCloseMilestone({
   isClearToClose,
   onToggle,
   onExecutePurchase,
+  projectState,
+  financials,
 }: ClearToCloseMilestoneProps) {
   const [unlocked, setUnlocked] = useState(false);
+  const { states: attorneyStates } = useAttorneyStates();
+
+  const f6Lines = evaluateF6GateLines(
+    { state: projectState, financials },
+    attorneyStates
+  );
+  const attorneyLine = f6Lines.find((l) => l.key === 'attorney');
+  const isAttorneyBlocked = !!attorneyLine?.blocked;
+
+  // Validation 1: Due Diligence is 100% complete
+  const isChecklistComplete =
+    dueDiligenceChecklist.length > 0 &&
+    dueDiligenceChecklist.every((item) => item.completed);
+
+  // Validation 2: Investment Team has valid emails
+  const isTeamValid =
+    teamMembers.length > 0 &&
+    teamMembers.every((m) => m.email && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(m.email));
+
+  // Validation 3: Loan Status is Clear-To-Close
+  const isLoanCleared = loanStatus === 'Clear-To-Close';
+
+  // Validation 4: Settlement Statement fully logged
+  const attorneyFees = costBasisLedger?.directAcquisition?.find(i => i.label === 'Attorney Fees')?.amount || 0;
+  const titleInsurance = costBasisLedger?.directAcquisition?.find(i => i.label === 'Title Insurance')?.amount || 0;
+  const loanOrigination = costBasisLedger?.financing?.find(i => i.label === 'Loan Origination Fees')?.amount || 0;
+  const isSettlementLogged = attorneyFees > 0 && titleInsurance > 0 && loanOrigination > 0;
+
+  const conditionsMet =
+    isChecklistComplete &&
+    isTeamValid &&
+    isLoanCleared &&
+    isSettlementLogged &&
+    !isAttorneyBlocked;
 
   useEffect(() => {
-    // Validation 1: Due Diligence is 100% complete
-    const isChecklistComplete =
-      dueDiligenceChecklist.length > 0 &&
-      dueDiligenceChecklist.every((item) => item.completed);
-
-    // Validation 2: Investment Team has valid emails
-    const isTeamValid =
-      teamMembers.length > 0 &&
-      teamMembers.every((m) => m.email && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(m.email));
-
-    // Validation 3: Loan Status is Clear-To-Close
-    const isLoanCleared = loanStatus === 'Clear-To-Close';
-
-    // Validation 4: Settlement Statement fully logged
-    const attorneyFees = costBasisLedger?.directAcquisition?.find(i => i.label === 'Attorney Fees')?.amount || 0;
-    const titleInsurance = costBasisLedger?.directAcquisition?.find(i => i.label === 'Title Insurance')?.amount || 0;
-    const loanOrigination = costBasisLedger?.financing?.find(i => i.label === 'Loan Origination Fees')?.amount || 0;
-    const isSettlementLogged = attorneyFees > 0 && titleInsurance > 0 && loanOrigination > 0;
-
-    const conditionsMet = isChecklistComplete && isTeamValid && isLoanCleared && isSettlementLogged;
     setUnlocked(conditionsMet);
     
     // Auto-revoke if conditions are no longer met
     if (!conditionsMet && isClearToClose) {
        onToggle(false);
     }
-  }, [dueDiligenceChecklist, teamMembers, loanStatus, costBasisLedger, isClearToClose, onToggle]);
+  }, [conditionsMet, isClearToClose, onToggle]);
 
   return (
     <div 
@@ -109,9 +129,16 @@ export function ClearToCloseMilestone({
           )}
           
           {!unlocked && (
-            <p className="text-xs text-red-500 font-medium max-w-[250px] text-left md:text-right">
-              Prerequisites not met. Complete DD, verify team emails, log closing costs, and get Loan Cleared to Close.
-            </p>
+            <div className="text-xs text-red-500 font-medium max-w-[320px] text-left md:text-right space-y-1 bg-red-50/50 p-2.5 rounded-lg border border-red-100">
+              <span className="font-bold">F6 Gate Prerequisites Blocked:</span>
+              <ul className="list-disc pl-4 space-y-0.5 mt-1 text-[11px] text-red-600">
+                {!isChecklistComplete && <li>Complete Due Diligence checklist (100%)</li>}
+                {!isTeamValid && <li>Assign valid email addresses to all team members</li>}
+                {!isLoanCleared && <li>Loan status must be 'Clear-To-Close'</li>}
+                {!isSettlementLogged && <li>Log closing costs (Attorney, Title, Origination)</li>}
+                {isAttorneyBlocked && <li>{attorneyLine?.reason}</li>}
+              </ul>
+            </div>
           )}
         </div>
       </div>

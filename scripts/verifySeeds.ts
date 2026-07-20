@@ -42,6 +42,7 @@ async function verify() {
           'project_fx6_seed',
           'project_fx7_std_seed',
           'project_fx7_spec_seed',
+          'project_fx7_dual_seed',
           'project_fx8_seed',
         ]
       }

@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useEffect, useState, useMemo } from 'react';
-import { useParams } from 'next/navigation';
+import { useParams, useRouter } from 'next/navigation';
 import { projectsService } from '@/lib/firebase/deals';
 import { useWorkspaceProject } from '@/app/dashboard/projects/[id]/layout';
 import { Project, LoanStatus, ClosingChecklistItem, ProjectTeamMember, CostBasisLedger, RoleLinkedDocument, DueDiligenceItem, InspectionItem } from '@/types/schema';
@@ -38,6 +38,7 @@ import { DocumentVault } from '@/components/project/DocumentVault';
 import { ClosingCostsLedger } from '@/components/project/ClosingCostsLedger';
 import { ClearToCloseMilestone } from '@/components/project/ClearToCloseMilestone';
 import { ClosingHandoffModal } from '@/components/phase2/ClosingHandoffModal';
+import { FundToHoldGate } from '@/components/project/FundToHoldGate';
 import { PhaseExplainerVideo } from '@/components/project/PhaseExplainerVideo';
 import { deriveAllMetrics } from '@/lib/metrics/reiMetrics';
 import { MetricReadout } from '@/components/metrics/MetricReadout';
@@ -144,6 +145,7 @@ const COLUMNS: ColumnDefinition[] = [
 
 export default function Phase2AcquisitionPage() {
   const params    = useParams();
+  const router    = useRouter();
   const projectId = params.id as string;
   const { project, loading: isLoading, refresh } = useWorkspaceProject();
   const { user: authUser } = useAuth();
@@ -236,6 +238,51 @@ export default function Phase2AcquisitionPage() {
 
   const isF1Complete = useMemo(() => COLUMNS[0].cards.every(c => completedCards.includes(c.id)), [completedCards]);
 
+  const isCardRevealed = (cardId: string) => {
+    // F1 column is always active, all cards in F1 are always revealed
+    if (cardId.startsWith('F1.')) return true;
+    
+    // F2 (Equity) cards:
+    if (cardId.startsWith('F2.')) {
+      if (!hasEquity) return false;
+      if (cardId === 'F2.2' || cardId === 'F2.3') {
+        return modality.includes('syndication_equity');
+      }
+      if (cardId === 'F2.5') {
+        return modality.includes('co_buyer_equity');
+      }
+      return true; // F2.1, F2.4
+    }
+    
+    // F3 (Debt) cards:
+    if (cardId.startsWith('F3.')) {
+      if (!hasDebt) return false;
+      if (cardId === 'F3.1' || cardId === 'F3.2') return true;
+      if (cardId === 'F3.3' || cardId === 'F3.4' || cardId === 'F3.5') {
+        return modality.includes('conventional_loan') && loans.some(l => l.instrument === 'Conventional' && l.status !== 'Archived');
+      }
+      if (cardId === 'F3.6') {
+        return modality.includes('sba_504') && loans.some(l => l.instrument === 'SBA 504' && l.status !== 'Archived');
+      }
+      if (cardId === 'F3.7') {
+        return (modality.includes('hard_money') || modality.includes('bridge')) && 
+               loans.some(l => (l.instrument === 'Hard Money' || l.instrument === 'Bridge') && l.status !== 'Archived');
+      }
+      return true;
+    }
+    
+    // F4 (Title/Closing Team) cards are always revealed
+    if (cardId.startsWith('F4.')) return true;
+    
+    // F5 (Closing) cards are only revealed if F1 is complete
+    if (cardId.startsWith('F5.')) return isF1Complete;
+    
+    // F6 (Wrap) cards are only revealed if F1 is complete
+    if (cardId.startsWith('F6.')) return isF1Complete;
+    
+    return true;
+  };
+
   const isColumnRevealed = (columnId: string) => {
     switch (columnId) {
       case 'F1': return true;
@@ -248,7 +295,17 @@ export default function Phase2AcquisitionPage() {
     }
   };
 
-  const revealedColumns = useMemo(() => COLUMNS.filter(col => isColumnRevealed(col.id)), [modality, isF1Complete]);
+  const dynamicColumns = useMemo(() => {
+    return COLUMNS.map(col => ({
+      ...col,
+      cards: col.cards.filter(card => isCardRevealed(card.id))
+    }));
+  }, [modality, isF1Complete, hasEquity, hasDebt, loans]);
+
+  const revealedColumns = useMemo(() => {
+    return dynamicColumns.filter(col => isColumnRevealed(col.id));
+  }, [dynamicColumns, hasEquity, hasDebt, isF1Complete]);
+
   const totalRevealedCards = useMemo(() => revealedColumns.reduce((acc, col) => acc + col.cards.length, 0), [revealedColumns]);
   const completedRevealedCardsCount = useMemo(() => {
     const revealedCardIds = new Set(revealedColumns.flatMap(col => col.cards.map(c => c.id)));
@@ -462,10 +519,10 @@ export default function Phase2AcquisitionPage() {
         {/* ── Stepper Navigation ── */}
         <section className="glass-card rounded-2xl p-4 border border-white/5 overflow-x-auto scrollbar-none">
           <div className="flex items-center gap-3">
-            {COLUMNS.map((col) => {
+            {dynamicColumns.map((col) => {
               const revealed = isColumnRevealed(col.id);
               const doneCount = col.cards.filter(c => completedCards.includes(c.id)).length;
-              const allDone = doneCount === col.cards.length;
+              const allDone = col.cards.length > 0 && doneCount === col.cards.length;
               return (
                 <div
                   key={col.id}
@@ -487,9 +544,8 @@ export default function Phase2AcquisitionPage() {
           </div>
         </section>
 
-        {/* ── Kanban Column Grid ── */}
         <section className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-6 gap-4 items-start overflow-x-auto pb-4">
-          {COLUMNS.map((col) => {
+          {dynamicColumns.map((col) => {
             const revealed = isColumnRevealed(col.id);
             const doneCount = col.cards.filter(c => completedCards.includes(c.id)).length;
             const progressPct = col.cards.length > 0 ? (doneCount / col.cards.length) * 100 : 0;
@@ -526,17 +582,8 @@ export default function Phase2AcquisitionPage() {
                 </div>
 
                 <div className="space-y-2.5 flex-1 mt-4">
-                  {col.cards
-                    .filter((card) => {
-                      if (!card.id.startsWith('F3.')) return true;
-                      if (card.id === 'F3.1') return true;
-                      if (loans.length === 0) return false;
-                      if (card.id === 'F3.6') return hasSba504;
-                      if (card.id === 'F3.7') return hasHardMoneyOrBridge;
-                      return true;
-                    })
-                    .map((card) => {
-                      const isDone = completedCards.includes(card.id);
+                  {col.cards.map((card) => {
+                    const isDone = completedCards.includes(card.id);
                     return (
                       <button
                         key={card.id}
@@ -567,7 +614,7 @@ export default function Phase2AcquisitionPage() {
 
       {/* ── Card Detail Modal (Stub Wrapper) ── */}
       {activeCardId && (() => {
-        const card = COLUMNS.flatMap(col => col.cards).find(c => c.id === activeCardId);
+        const card = dynamicColumns.flatMap(col => col.cards).find(c => c.id === activeCardId);
         if (!card) return null;
         const isDone = completedCards.includes(card.id);
 
@@ -911,21 +958,11 @@ export default function Phase2AcquisitionPage() {
                   />
                 ) : card.id === 'F6.1' ? (
                   <div className="space-y-4">
-                    <ClearToCloseMilestone
-                      dueDiligenceChecklist={project.dueDiligenceChecklist || []}
-                      teamMembers={project.projectTeam || []}
-                      loanStatus={project.loanStatus}
-                      costBasisLedger={project.costBasisLedger}
-                      isClearToClose={project.isClearToClose || false}
-                      onToggle={async (status) => {
-                        await projectsService.updateProject(projectId, { isClearToClose: status });
-                        refresh();
+                    <FundToHoldGate
+                      projectId={projectId}
+                      onSuccess={() => {
+                        router.push(`/dashboard/projects/${projectId}/phase-3`);
                       }}
-                    />
-                    <ClosingHandoffModal
-                      isOpen={isModalOpen}
-                      onClose={() => setIsModalOpen(false)}
-                      project={project}
                     />
                   </div>
                 ) : (

@@ -106,7 +106,7 @@ export default function ProjectFieldManager({ projectId, onClose }: ProjectField
       <div className="bg-bg-primary rounded-2xl shadow-xl w-full max-w-5xl max-h-[90vh] overflow-y-auto flex flex-col">
         
         {/* Global Tracker */}
-        <DealProgressTracker currentPhase="Rehab" />
+        <DealProgressTracker currentPhase="Hold" />
 
         {/* Header */}
         <div className="bg-bg-surface border-b border-border-accent p-5 flex justify-between items-center sticky top-[72px] z-10">

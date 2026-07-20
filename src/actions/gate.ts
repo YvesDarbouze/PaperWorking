@@ -553,3 +553,159 @@ export async function advanceProjectPhaseGate(
     throw err instanceof Error ? err : new Error('Failed to advance phase gate.');
   }
 }
+
+/**
+ * Live evaluation of all Fund -> Hold checklist criteria.
+ */
+export async function evaluateFundToHoldGate(idToken: string, projectId: string) {
+  await verifyActionAuth(idToken);
+
+  const projectRef = adminDb.collection('projects').doc(projectId);
+  const projectSnap = await projectRef.get();
+  if (!projectSnap.exists) throw new Error('Project not found.');
+  const project = projectSnap.data()!;
+
+  // Fetch attorney states system config
+  const attorneyStatesSnap = await adminDb.doc('systemConfig/attorneyStates').get();
+  const attorneyStates = attorneyStatesSnap.exists 
+    ? (attorneyStatesSnap.data()?.states || []) as string[]
+    : ['AL', 'CT', 'DE', 'GA', 'IL', 'KY', 'MA', 'ME', 'MS', 'NH', 'NJ', 'NY', 'NC', 'ND', 'RI', 'SC', 'VT', 'WV'];
+
+  const { evaluateF6GateLines } = require('@/lib/gates/fundGateLines');
+  const gateLines = evaluateF6GateLines(project, attorneyStates);
+  const isGatePassed = gateLines.every((l: any) => !l.blocked);
+
+  return {
+    isGatePassed,
+    gateLines,
+  };
+}
+
+/**
+ * Server action to advance a project's phase gate from Fund (Phase 2) to Hold (Phase 3).
+ * Evaluates criteria, records override reason, creates phase snapshots, and updates databases.
+ */
+export async function advanceFundToHoldGate(
+  idToken: string,
+  projectId: string,
+  overrideReason?: string
+) {
+  try {
+    const user = await verifyActionAuth(idToken);
+
+    // Read project
+    const projectRef = adminDb.collection('projects').doc(projectId);
+    const projectSnap = await projectRef.get();
+    if (!projectSnap.exists) throw new Error('Project not found.');
+    const project = projectSnap.data()!;
+    const financials = project.financials || {};
+    const cr = project.closingRoom || {};
+
+    // ── Evaluate live gate criteria ──
+    const evaluation = await evaluateFundToHoldGate(idToken, projectId);
+
+    if (!evaluation.isGatePassed && (!overrideReason || !overrideReason.trim())) {
+      const failingCriteriaNames = evaluation.gateLines.filter((c: any) => c.blocked).map((c: any) => c.label).join(', ');
+      throw new Error(`Blocking criteria not met: ${failingCriteriaNames}`);
+    }
+
+    // Hand off the Hold baseline by reference/persistence:
+    // cost basis (initialCapitalizedBasis), closing date, debt service reference, insurance premium, equity structure.
+    const purchasePrice = financials.purchasePrice || 0;
+    const finalClosingCosts = financials.finalClosingCosts || financials.closingCosts || 0;
+    const finalPrepaidsReserves = financials.finalPrepaidsReserves || 0;
+    const initialCapitalizedBasis = purchasePrice + finalClosingCosts;
+
+    // Build the Phase 3 Cost Basis Ledger
+    const currentLedger = project.costBasisLedger || { directAcquisition: [], financing: [], preClosing: [] };
+    
+    // Check if directAcquisition already has purchase price/title fees to avoid duplicating
+    const hasPurchasePrice = (currentLedger.directAcquisition || []).some((item: any) => item.label === 'Purchase Price');
+    const newDirectAcquisition = [...(currentLedger.directAcquisition || [])];
+    if (!hasPurchasePrice) {
+      newDirectAcquisition.push({
+        id: `auto_pp_${Math.random().toString(36).substring(2, 9)}`,
+        label: 'Purchase Price',
+        amount: purchasePrice,
+        paid: true,
+        paidAt: new Date(cr.actualClosingDate || new Date()),
+        notes: 'Handed off from Fund Phase Gate'
+      });
+    }
+
+    const newLedger = {
+      ...currentLedger,
+      directAcquisition: newDirectAcquisition,
+    };
+
+    // Sync insurance and opex
+    const monthlyInsurance = financials.insuranceCost ? Math.round((financials.insuranceCost / 12) * 100) / 100 : (financials.insurance || 0);
+
+    // ── Capture phase-2 snapshot ──
+    const snapshotRef = projectRef.collection('phaseSnapshots').doc('phase-2');
+    await snapshotRef.set({
+      phaseKey: 'phase-2',
+      capturedAt: FieldValue.serverTimestamp(),
+      purchasePrice,
+      finalClosingCosts,
+      finalPrepaidsReserves,
+      finalCashToClose: financials.finalCashToClose ?? 0,
+      totalCashInvested: financials.totalCashInvested ?? financials.finalCashToClose ?? initialCapitalizedBasis,
+      loanAmount: financials.loanAmount ?? 0,
+      loanInterestRate: financials.loanInterestRate ?? 0,
+      actualClosingDate: cr.actualClosingDate || null,
+      deedRecordingCounty: cr.deedRecordingCounty || null,
+      deedRecordingDate: cr.deedRecordingDate || null,
+      deedRecordingInstrumentNumber: cr.deedRecordingInstrumentNumber || null,
+      isReconciliationOverridden: cr.isReconciliationOverridden || false,
+      reconciliationOverrideReason: cr.reconciliationOverrideReason || null,
+    });
+
+    const updatePayload: Record<string, any> = {
+      currentPhase: 3,
+      phaseStatus: 'Phase 3: Hold',
+      status: 'hold',
+      lastPhaseTransitionAt: FieldValue.serverTimestamp(),
+      updatedAt: FieldValue.serverTimestamp(),
+      costBasisLedger: newLedger,
+      'financials.initialCapitalizedBasis': initialCapitalizedBasis,
+      'financials.totalCashInvested': financials.totalCashInvested ?? financials.finalCashToClose ?? initialCapitalizedBasis,
+      'financials.insurance': monthlyInsurance,
+      'financials.holdingCostInsurance': monthlyInsurance,
+    };
+
+    if (overrideReason?.trim()) {
+      updatePayload['closingRoom.reconciliationOverrideReason'] = overrideReason.trim();
+      updatePayload['closingRoom.isReconciliationOverridden'] = true;
+    }
+
+    await projectRef.update(updatePayload);
+
+    // ── Sync to Postgres (Prisma) ──
+    try {
+      const { prisma: localPrisma } = require('@/lib/prisma');
+
+      // Update project phase and status
+      await localPrisma.reilProject.update({
+        where: { id: projectId },
+        data: {
+          currentPhase: 3,
+          acquisitionStatus: 'CLOSED',
+          overrideReason: overrideReason?.trim() || null,
+        }
+      });
+    } catch (err) {
+      console.error('[PhaseGate] Error syncing to Postgres:', err);
+    }
+
+    return {
+      success: true,
+      initialCapitalizedBasis,
+      actualClosingDate: cr.actualClosingDate || null,
+    };
+  } catch (err) {
+    console.error('advanceFundToHoldGate error:', err);
+    throw err instanceof Error ? err : new Error('Failed to advance phase gate.');
+  }
+}
+

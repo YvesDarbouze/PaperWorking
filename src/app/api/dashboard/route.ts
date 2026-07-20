@@ -119,9 +119,9 @@ export async function GET(request: NextRequest) {
     let currentMonthCF = 0;
     const phaseCounts = {
       'Acquisition': 0,
-      'Closing': 0,
-      'Rehab': 0,
-      'Hold / Exit': 0,
+      'Fund': 0,
+      'Hold': 0,
+      'Exit': 0,
     };
 
     const projectCalculations = await Promise.all(activeProjects.map(async p => {
@@ -161,9 +161,9 @@ export async function GET(request: NextRequest) {
       // Track phases
       const phaseNum = project.currentPhase ?? 1;
       if (phaseNum === 1) phaseCounts['Acquisition']++;
-      else if (phaseNum === 2) phaseCounts['Closing']++;
-      else if (phaseNum === 3) phaseCounts['Rehab']++;
-      else if (phaseNum === 4) phaseCounts['Hold / Exit']++;
+      else if (phaseNum === 2) phaseCounts['Fund']++;
+      else if (phaseNum === 3) phaseCounts['Hold']++;
+      else if (phaseNum === 4) phaseCounts['Exit']++;
     });
 
     // Fetch snapshots for historical trend

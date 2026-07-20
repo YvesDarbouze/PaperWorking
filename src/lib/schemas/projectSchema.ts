@@ -922,7 +922,7 @@ export const projectRehabSchema = z.object({
 
 export const holdCostPeriodSchema = z.object({
   period: z.string(), // YYYY-MM
-  phaseAtPeriod: z.enum(['acquisition', 'transaction', 'rehab', 'hold_exit']),
+  phaseAtPeriod: z.enum(['acquisition', 'fund', 'hold', 'exit']),
   insurance: usdDollars,
   propertyTax: usdDollars,
   maintenance: usdDollars,
@@ -1161,7 +1161,7 @@ export const baseProjectSchema = z.object({
    */
   currentPhase: z.union([
     z.number().int().min(1).max(4),
-    z.enum(['acquisition', 'transaction', 'rehab', 'hold_exit'])
+    z.enum(['acquisition', 'fund', 'hold', 'exit'])
   ]).optional(),
 
   /** Whether this is a retrospective/historical deal entry */

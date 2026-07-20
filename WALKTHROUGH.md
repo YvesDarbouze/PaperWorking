@@ -477,10 +477,17 @@ We have successfully audited and hardened all API routes, server actions, Firest
 
 ## Verification Results
 
-### Automated Security Tests
-- Created the automated Jest security suite [fundSecurityAudit.test.ts](file:///Users/yvesdarbouze/Documents/PaperWorking/src/__tests__/fundSecurityAudit.test.ts) covering all role and permission restrictions.
-- Ran tests successfully:
-  ```bash
-  PASS src/__tests__/fundSecurityAudit.test.ts
-  ```
   With 100% of all 184 Jest test suites passing (2,021 tests total).
+
+---
+
+## FD-38: Fund Data Room Structure
+
+1. **Taxonomy Folder Mappings**:
+   - Implemented the document taxonomy mapper in the GET /api/projects/[id]/documents route.
+   - Automatically provisions and maps files to virtual folders in Firebase Storage: `Capital Plan`, `Equity`, `Debt`, `Title & Insurance`, and `Closing`.
+2. **Permission Scoping**:
+   - Scopes document visibility at the server/rules layer: LPs see only public files and their own subscription agreements, while vendors are restricted to their assigned slot category (e.g. Closing Attorney to `Closing`).
+3. **Navigation Neutrality**:
+   - Ensured zero changes to the persistent left-side navigation layout.
+

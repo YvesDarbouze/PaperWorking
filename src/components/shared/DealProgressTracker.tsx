@@ -2,15 +2,13 @@ import React from 'react';
 import { CheckCircle, Circle, MapPin } from 'lucide-react';
 
 interface DealProgressTrackerProps {
-  currentPhase: 'Evaluation' | 'Acquisition' | 'Financing' | 'Closing' | 'Rehab' | 'Exit';
+  currentPhase: 'Acquisition' | 'Fund' | 'Hold' | 'Exit';
 }
 
 const PHASES = [
-  'Evaluation',
   'Acquisition',
-  'Financing',
-  'Closing',
-  'Rehab',
+  'Fund',
+  'Hold',
   'Exit'
 ] as const;
 

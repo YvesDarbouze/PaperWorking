@@ -46,9 +46,9 @@ const METRIC_COLS: { key: SortKey; label: string; fmt: (v: number) => string; go
 
 const PHASE_COLORS: Record<string, string> = {
   Acquisition: 'text-blue-400 bg-blue-500/10 border-blue-500/20',
+  Fund:        'text-purple-400 bg-purple-500/10 border-purple-500/20',
   Hold:        'text-[#6E7480] bg-[#454955]/10 border-[#454955]/20',
   Exit:        'text-amber-400 bg-amber-500/10 border-amber-500/20',
-  Rehab:       'text-[#9E9DA0] bg-slate-500/10 border-slate-500/20',
 };
 
 function metricScore(col: typeof METRIC_COLS[number], values: number[], v: number): 'best' | 'worst' | 'mid' {
@@ -71,9 +71,10 @@ export default function PortfolioComparisonPage() {
       const arv       = f.estimatedARV ?? f.purchasePrice ?? 0;
       const annualRent = derived.noiComponents.grossRentalIncome;
 
-      const phase = p.phase === 'acquisition' ? 'Acquisition'
-                  : p.phase === 'exit'        ? 'Exit'
-                  : p.phase === 'rehab'       ? 'Rehab'
+      const phase = p.status === 'acquisition' ? 'Acquisition'
+                  : p.status === 'fund'        ? 'Fund'
+                  : p.status === 'hold'        ? 'Hold'
+                  : p.status === 'exit'        ? 'Exit'
                   : 'Hold';
 
       return {

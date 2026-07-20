@@ -26,24 +26,24 @@ export function computeLTVMetric(project: any): MetricResult {
     return notApplicable();
   }
 
-  const m = deriveAllProjectMetrics(project);
-  const ltvVal = m.ltv;
-  if (ltvVal === undefined || ltvVal === null || isNaN(ltvVal)) {
-    return incomplete(['financials.purchasePrice']);
-  }
-
   const activeLoan = project.loans?.find((l: any) => (l.status as string) === 'Locked') || 
                      project.loans?.find((l: any) => (l.status as string) === 'Approved') ||
                      project.loans?.[0];
   const appraisedValue = activeLoan?.appraisedValueCents != null ? Number(activeLoan.appraisedValueCents) / 100 : undefined;
   const purchasePrice = num(project.financials?.purchasePrice) ?? num(project.financials?.targetPrice) ?? num(project.financials?.targetPurchasePrice) ?? 0;
-  const propertyValue = appraisedValue ?? num(project.financials?.estimatedCurrentValue) ?? num(project.financials?.estimatedARV) ?? purchasePrice;
+  const propertyValue = appraisedValue ?? num(project.financials?.estimatedCurrentValue) ?? purchasePrice;
 
   const activeLoanAmount = activeLoan?.amountCents != null ? Number(activeLoan.amountCents) / 100 : undefined;
   const loanAmount = activeLoanAmount ?? num(project.financials?.loanAmount) ?? 0;
 
+  if (propertyValue <= 0) {
+    return incomplete(['financials.purchasePrice']);
+  }
+
+  const calculatedLTV = (loanAmount / propertyValue) * 100;
+
   return {
-    value: Math.round(ltvVal * 100) / 100,
+    value: Math.round(calculatedLTV * 100) / 100,
     state: resolveState(project.currentPhase),
     inputsUsed: {
       'financials.loanAmount': loanAmount,

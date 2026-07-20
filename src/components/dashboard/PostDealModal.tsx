@@ -39,7 +39,7 @@ export default function PostDealModal({ isOpen, onClose }: PostDealModalProps) {
   if (!isOpen) return null;
 
   const activeProjects = projects.filter((p) =>
-    p.phase === 'acquisition' || p.phase === 'hold' || p.phase === 'rehab'
+    p.status === 'acquisition' || p.status === 'fund' || p.status === 'hold'
   );
   const selectedProject = projects.find((p) => p.id === selectedProjectId);
 

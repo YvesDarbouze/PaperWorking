@@ -87,6 +87,7 @@ async function main() {
   const userId = 'demo-user-uid-001';
   
   const fxProjects = [
+    { id: 'deal_123_main_st_seed', displayName: '742 Evergreen Terrace', addressLine: '742 Evergreen Terrace', currentPhase: 2, dispositionType: 'RENT', subStrategy: 'LONG_TERM', acquisitionStatus: 'OWNED' },
     { id: 'project_fx1_seed', displayName: 'Evergreen Terrace (FX-1)', addressLine: '742 Evergreen Terrace', currentPhase: 2, dispositionType: 'RENT', subStrategy: 'LONG_TERM', acquisitionStatus: 'OWNED' },
     { id: 'project_fx2_seed', displayName: 'Co-Buy TIC Property (FX-2)', addressLine: '456 Co-Buy Lane', currentPhase: 2, dispositionType: 'RENT', subStrategy: 'LONG_TERM', acquisitionStatus: 'OWNED' },
     { id: 'project_fx3_seed', displayName: 'Syndication Straight Split (FX-3)', addressLine: '789 Syndicate St', currentPhase: 2, dispositionType: 'RENT', subStrategy: 'LONG_TERM', acquisitionStatus: 'OWNED' },
@@ -95,6 +96,7 @@ async function main() {
     { id: 'project_fx6_seed', displayName: 'Syndication Waterfall (FX-6)', addressLine: '303 Cascade Way', currentPhase: 2, dispositionType: 'RENT', subStrategy: 'LONG_TERM', acquisitionStatus: 'OWNED' },
     { id: 'project_fx7_std_seed', displayName: 'SBA 504 Standard (FX-7)', addressLine: '404 SBA Blvd', currentPhase: 2, dispositionType: 'RENT', subStrategy: 'LONG_TERM', acquisitionStatus: 'OWNED' },
     { id: 'project_fx7_spec_seed', displayName: 'SBA 504 Special Purpose (FX-7)', addressLine: '505 SBA Rd', currentPhase: 2, dispositionType: 'RENT', subStrategy: 'LONG_TERM', acquisitionStatus: 'OWNED' },
+    { id: 'project_fx7_dual_seed', displayName: 'SBA 504 Dual Condition (FX-7)', addressLine: '606 SBA Ave', currentPhase: 2, dispositionType: 'RENT', subStrategy: 'LONG_TERM', acquisitionStatus: 'OWNED' },
     { id: 'project_fx8_seed', displayName: 'Cash-to-Close Property (FX-8)', addressLine: '742 Evergreen Terrace (FX-8)', currentPhase: 2, dispositionType: 'RENT', subStrategy: 'LONG_TERM', acquisitionStatus: 'OWNED' },
   ];
 
@@ -117,7 +119,7 @@ async function main() {
       }
     });
 
-    if (p.id === 'project_fx1_seed') {
+    if (p.id === 'project_fx1_seed' || p.id === 'deal_123_main_st_seed') {
       await prisma.reilFundingPlan.upsert({
         where: { projectId: p.id },
         update: {},
@@ -127,11 +129,12 @@ async function main() {
         }
       });
 
+      const loanId = p.id === 'project_fx1_seed' ? 'loan_fx1_seed_pg' : 'loan_deal_123_seed_pg';
       await prisma.reilLoanRecord.upsert({
-        where: { id: 'loan_fx1_seed_pg' },
+        where: { id: loanId },
         update: {},
         create: {
-          id: 'loan_fx1_seed_pg',
+          id: loanId,
           projectId: p.id,
           lenderName: 'Apex Capital Lending',
           amountCents: 22320000n,

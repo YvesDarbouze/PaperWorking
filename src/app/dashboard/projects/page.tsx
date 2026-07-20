@@ -86,7 +86,7 @@ function getPhaseProgressInfo(project: Project) {
 
   const phaseNames = {
     1: 'Acquisition',
-    2: 'Closing',
+    2: 'Fund',
     3: 'Hold',
     4: 'Exit',
   };

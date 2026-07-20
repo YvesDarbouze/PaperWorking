@@ -660,7 +660,7 @@ export interface OtherHoldCost {
 
 export interface HoldCostPeriod {
   period: string; // YYYY-MM
-  phaseAtPeriod: 'acquisition' | 'transaction' | 'rehab' | 'hold_exit';
+  phaseAtPeriod: 'acquisition' | 'fund' | 'hold' | 'exit';
   insurance: number;
   propertyTax: number;
   maintenance: number;

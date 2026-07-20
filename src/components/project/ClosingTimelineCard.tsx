@@ -170,7 +170,7 @@ export function ClosingTimelineCard({ projectId, project }: Props) {
 
       return {
         ...m,
-        actualDate,
+        actualDate: actualDate ?? null,
         completed
       };
     });

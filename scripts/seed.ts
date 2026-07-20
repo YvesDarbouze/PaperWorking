@@ -26,6 +26,7 @@ import {
   FX_6_PROJECT,
   FX_7_PROJECT_STANDARD,
   FX_7_PROJECT_SPECIAL,
+  FX_7_PROJECT_DUAL,
   FX_8_PROJECT,
 } from '../src/lib/metrics/fixtures';
 
@@ -276,9 +277,16 @@ async function seed() {
     ownerUid: LEAD_INVESTOR_UID,
     propertyName: '742 Evergreen Terrace',
     address: '742 Evergreen Terrace, Springfield, IL 62704',
-    status: 'Rented',
-    currentPhase: 3,
-    activePhase: 3,
+    status: 'fund',
+    currentPhase: 2,
+    activePhase: 2,
+    phaseStatus: 'Phase 2: Fund',
+    fundingPlan: {
+      id: `plan_${DEAL_ID}`,
+      projectId: DEAL_ID,
+      modality: ['conventional_loan', 'solo_cash'],
+      sources: []
+    },
     holdingCostClockStart: now,
     createdAt: now,
     updatedAt: now,
@@ -299,6 +307,22 @@ async function seed() {
       },
     },
     assignedUsers: [LEAD_INVESTOR_UID, CONTRACTOR_UID],
+    loans: [
+      {
+        id: 'loan_fx1_seed',
+        projectId: DEAL_ID,
+        instrument: 'Conventional',
+        lenderName: 'Apex Capital Lending',
+        amountCents: 223200 * 100,
+        interestRatePercent: 6.5,
+        interestRate: 6.5,
+        termMonths: 360,
+        points: 0,
+        status: 'Locked',
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
+      }
+    ],
     actionItems: [
       {
         id: 'todo_seed_01',
@@ -327,7 +351,7 @@ async function seed() {
     ],
     financials: {
       purchasePrice: 279000,
-      estimatedARV: 279000,
+      estimatedARV: 320000,
       loanAmount: 223200,
       loanInterestRate: 6.5,
       loanTermYears: 30,
@@ -458,6 +482,7 @@ async function seed() {
     FX_6_PROJECT,
     FX_7_PROJECT_STANDARD,
     FX_7_PROJECT_SPECIAL,
+    FX_7_PROJECT_DUAL,
     FX_8_PROJECT,
   ];
 

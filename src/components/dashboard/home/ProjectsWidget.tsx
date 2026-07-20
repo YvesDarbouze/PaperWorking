@@ -18,9 +18,9 @@ interface ProjectsWidgetProps {
 /* ── Phase color mapping (matches Stitch/page.tsx design) ── */
 const PHASE_COLORS: Record<number, { border: string; bg: string; text: string; label: string }> = {
   1: { border: 'border-l-primary',            bg: 'bg-primary/20',            text: 'text-primary',            label: 'Acquisition' },
-  2: { border: 'border-l-secondary',          bg: 'bg-secondary/20',          text: 'text-secondary',          label: 'Closing' },
-  3: { border: 'border-l-tertiary-container',  bg: 'bg-tertiary-container/20', text: 'text-tertiary-container', label: 'Rehab' },
-  4: { border: 'border-l-primary-container',   bg: 'bg-primary-container/20',  text: 'text-primary-container',  label: 'Exit/Rent' },
+  2: { border: 'border-l-secondary',          bg: 'bg-secondary/20',          text: 'text-secondary',          label: 'Fund' },
+  3: { border: 'border-l-tertiary-container',  bg: 'bg-tertiary-container/20', text: 'text-tertiary-container', label: 'Hold' },
+  4: { border: 'border-l-primary-container',   bg: 'bg-primary-container/20',  text: 'text-primary-container',  label: 'Exit' },
 };
 
 function getPhaseConfig(phase?: number) {

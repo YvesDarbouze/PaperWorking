@@ -67,7 +67,7 @@ const mockProjects = [
     address: '123 Ocean Drive, Miami, FL 33139',
     dispositionType: 'RENT',
     subStrategy: 'LONG_TERM',
-    currentPhase: 'Closing',
+    currentPhase: 2,
     financials: {
       purchasePrice: 200000,
       loanAmount: 150000,

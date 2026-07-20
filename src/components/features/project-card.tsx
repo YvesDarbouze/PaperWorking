@@ -24,7 +24,7 @@ import { deriveAllMetrics } from '@/lib/metrics/reiMetrics';
 /* ── Phase Color Map ── */
 const PHASE_COLORS: Record<number, { stripe: string; glow: string; label: string }> = {
   1: { stripe: '#3B82F6', glow: 'rgba(59,130,246,0.15)', label: 'Acquisition' },
-  2: { stripe: '#3f7d20', glow: 'rgba(63, 125, 32,0.15)', label: 'Closing' },
+  2: { stripe: '#3f7d20', glow: 'rgba(63, 125, 32,0.15)', label: 'Fund' },
   3: { stripe: '#F59E0B', glow: 'rgba(245,158,11,0.15)', label: 'Hold' },
   4: { stripe: '#454955', glow: 'rgba(69, 73, 85,0.15)', label: 'Exit' },
 };

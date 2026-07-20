@@ -120,7 +120,7 @@ export const timelineSyncWorker = {
 
         return {
           ...m,
-          actualDate,
+          actualDate: actualDate ?? null,
           completed,
           slippage
         };

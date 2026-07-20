@@ -1095,7 +1095,7 @@ export default function ClosingRoomModal({ projectId, onClose }: ClosingRoomProp
             <div className="bg-pw-glass-bg border border-pw-border backdrop-blur-[20px] rounded-2xl shadow-2xl w-full max-w-4xl max-h-[90vh] overflow-y-auto flex flex-col">
                 
                 {/* Global Tracker */}
-                <DealProgressTracker currentPhase="Closing" />
+                <DealProgressTracker currentPhase="Fund" />
                 
                 {/* Header */}
                 <div className="border-b border-pw-border p-6 flex justify-between items-center bg-pw-glass-bg/90 backdrop-blur-md sticky top-[72px] z-10 text-pw-black">
@@ -1662,7 +1662,7 @@ export default function ClosingRoomModal({ projectId, onClose }: ClosingRoomProp
                                     <AlertTriangle className="w-5 h-5 flex-shrink-0 mt-0.5" />
                                     <div className="text-sm">
                                         <p className="font-medium mb-1">Reconciliation Blocked</p>
-                                        <p className="opacity-90 leading-relaxed">The transaction has an active variance of ${reconciliation.variance.toLocaleString()}. You must balance sources and uses to $0, or record a typed override reason, before closing signatures can be cleared.</p>
+                                        <p className="opacity-90 leading-relaxed">The transaction has an active variance of {reconciliation.variance < 0 ? `-$${Math.abs(reconciliation.variance).toLocaleString()}` : `$${reconciliation.variance.toLocaleString()}`}. You must balance sources and uses to $0, or record a typed override reason, before closing signatures can be cleared.</p>
                                     </div>
                                 </div>
                             )}
@@ -1808,13 +1808,13 @@ export default function ClosingRoomModal({ projectId, onClose }: ClosingRoomProp
                                 )}
                             </span>
                             <span className="font-mono">
-                                Variance: {reconciliation.variance >= 0 ? '+' : ''}${reconciliation.variance.toLocaleString()}
+                                Variance: {reconciliation.variance < 0 ? '-' : reconciliation.variance > 0 ? '+' : ''}${reconciliation.variance === 0 ? '0' : Math.abs(reconciliation.variance).toLocaleString()}
                             </span>
                         </div>
                         <p className="text-[10.5px] mt-1.5 opacity-90 leading-relaxed">
                             {reconciliation.isReconciled 
                                 ? 'Sources and uses match exactly. The capital stack is fully reconciled and ready for transfer execution.'
-                                : `The transaction has a variance of $${reconciliation.variance.toLocaleString()}. Sources must equal uses before closing signatures can be cleared. Adjust your EMD, Capital Stack, or Closing Disclosure numbers, or record a typed override below.`}
+                                : `The transaction has a variance of ${reconciliation.variance < 0 ? `-$${Math.abs(reconciliation.variance).toLocaleString()}` : `$${reconciliation.variance.toLocaleString()}`}. Sources must equal uses before closing signatures can be cleared. Adjust your EMD, Capital Stack, or Closing Disclosure numbers, or record a typed override below.`}
                         </p>
                     </div>
 
@@ -1951,7 +1951,9 @@ export default function ClosingRoomModal({ projectId, onClose }: ClosingRoomProp
                         const pctDiff = projVal > 0 ? ` (${sign}${((diff / projVal) * 100).toFixed(1)}%)` : '';
                         const formattedDiff = isPercentVal 
                             ? `${sign}${diff.toFixed(3)}%`
-                            : `${sign}$${Math.round(diff).toLocaleString()}`;
+                            : diff < 0 
+                                ? `-$${Math.abs(Math.round(diff)).toLocaleString()}`
+                                : `${sign}$${Math.round(diff).toLocaleString()}`;
 
                         const isPositive = isCostVal ? diff < 0 : diff > 0;
 

@@ -92,24 +92,72 @@ export function AcquisitionPhaseGate({
 
     const f = (project.financials || {}) as any;
 
-    // 1. Accepted offer at known terms
-    const hasAcceptedOffer = f.offerStatus === 'Accepted' && (f.purchasePrice > 0 || f.finalAgreedPrice > 0 || f.renegotiatedPrice > 0);
+    // 1. Deal established: address, property type, entry point recorded
+    const isAddressRecorded = !!(project.address?.street || project.address || project.propertyName);
+    const isPropertyTypeRecorded = !!(project.assetClass || project.propertyType || project.propertyClass);
+    const isEntryPointRecorded = !!(project.entryPath || f.entryPath || project.project_entry_point || project.startingPhase || project.entryPoint);
+    const hasDealEstablished = isAddressRecorded && isPropertyTypeRecorded && isEntryPointRecorded;
 
-    // 2. DD contingencies satisfied/waived with go decision recorded
+    // 2. Underwriting complete: scorecard 2.7 rendered from live derive call
+    const isTurnkey = project.condition?.toLowerCase() === 'turnkey';
+    const needsRehab = !isTurnkey;
+    const needsARV = !isTurnkey && project.dispositionType === 'SALE';
+    const rehabOk = !needsRehab || (f.projectedRehabCost ?? 0) > 0;
+    const arvOk = !needsARV || (f.estimatedARV ?? 0) > 0 || (f.arv ?? 0) > 0;
+    const incomeEntered = !!(
+      (f.grossRent && f.grossRent > 0) ||
+      (f.gross_rent_per_unit && f.gross_rent_per_unit > 0) ||
+      (f.monthlyGrossRent && f.monthlyGrossRent > 0)
+    );
+    const expensesEntered = !!(
+      f.tax !== undefined ||
+      f.taxes !== undefined ||
+      f.insurance !== undefined ||
+      f.utilities !== undefined ||
+      f.management !== undefined ||
+      f.management_pct !== undefined ||
+      f.maintenance !== undefined ||
+      f.maintenance_pct !== undefined ||
+      f.holdingCostTaxes !== undefined ||
+      f.operatingExpenseTaxes !== undefined
+    );
+    const hash = getScorecardInputsHash(project);
+    const scorecardAcknowledged = !!f.scorecardAcknowledged && f.acknowledgedInputsHash === hash;
+    const hasUnderwritingComplete = incomeEntered && expensesEntered && rehabOk && arvOk && scorecardAcknowledged;
+
+    // 3. Strategy declared: disposition_type set
+    const hasStrategyDeclared = !!project.dispositionType;
+
+    // 4. Offer accepted at known terms: accepted_price + executed contract recorded
+    const hasAcceptedOffer = f.offerStatus === 'Accepted' && (f.purchasePrice > 0 || f.finalAgreedPrice > 0 || f.renegotiatedPrice > 0) && !!(f.psaDocumentUrl || f.psaDocumentName);
+
+    // 5. Earnest money recorded
+    const hasEarnestMoneyRecorded = !!(f.emdAmount && f.emdAmount > 0) && !!(f.emdReceiptUrl || f.emdClearedDate || f.emdVerified);
+
+    // 6. Required diligence documents for the property type on file
+    const hasRequiredDocs = !!(f.psaDocumentUrl || f.psaDocumentName) &&
+      (!!(f.titleDocumentUrl || f.titleDocumentName) || !!(f.inspectionReportUrl || f.inspectionReportName || f.inspections?.length));
+
+    // 7. All contingencies satisfied/waived, and a "proceed" decision recorded
     const hasNoPendingContingencies = !project.contingencies || project.contingencies.length === 0 || 
       project.contingencies.every((c: any) => c.isSatisfied || c.isWaived);
-    const hasGoDecision = f.decision !== 'terminate';
-    const hasDdComplete = hasNoPendingContingencies && hasGoDecision;
+    const hasGoDecision = f.decision !== 'terminate' && f.decision !== undefined;
+    const hasContingenciesAndGo = hasNoPendingContingencies && hasGoDecision;
 
-    // 3. Capital plan set
+    // 8. Capital plan set
     const isSolo = ['all-cash solo', 'solo-financed'].includes(f.capitalPlan) || f.fundingType === 'Solo';
     const targetCents = f.equityTerms?.funding_target || f.equityTarget || 0;
     const isCapitalPlanSet = isSolo || totalRaisedCents >= targetCents;
 
     const criteriaList = [
-      { key: 'offer', label: 'Accepted Offer at Known Terms', status: hasAcceptedOffer, ref: '#offer' },
-      { key: 'dd_decision', label: 'DD Contingencies Satisfied/Waived with Go Decision Recorded', status: hasDdComplete, ref: '#due_diligence' },
-      { key: 'capital', label: 'Capital Plan Set (Solo Confirmed or LOI/Soft-commits Logged)', status: isCapitalPlanSet, ref: '#raise_interest' },
+      { key: 'deal_established', label: 'Deal established: address, property type, entry point recorded', status: hasDealEstablished, ref: '#target' },
+      { key: 'underwriting_complete', label: 'Underwriting complete: scorecard 2.7 rendered from live derive call', status: hasUnderwritingComplete, ref: '#underwrite' },
+      { key: 'strategy_declared', label: 'Strategy declared: dispositionType set', status: hasStrategyDeclared, ref: '#underwrite' },
+      { key: 'offer_accepted', label: 'Offer accepted at known terms: purchase price and executed contract recorded', status: hasAcceptedOffer, ref: '#offer' },
+      { key: 'earnest_money', label: 'Earnest money recorded: deposit amount and receipt proof on file', status: hasEarnestMoneyRecorded, ref: '#offer' },
+      { key: 'diligence_docs', label: 'Required diligence documents on file', status: hasRequiredDocs, ref: '#due_diligence' },
+      { key: 'contingencies_satisfied', label: 'All contingencies satisfied/waived with proceed go-decision', status: hasContingenciesAndGo, ref: '#due_diligence' },
+      { key: 'capital_plan_set', label: 'Capital plan set: solo confirmed or LOIs logged to equity target', status: isCapitalPlanSet, ref: '#raise_interest' }
     ];
 
     const isPassed = criteriaList.every(c => c.status);

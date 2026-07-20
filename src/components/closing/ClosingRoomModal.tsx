@@ -68,9 +68,9 @@ export default function ClosingRoomModal({ projectId, onClose }: ClosingRoomProp
         'deed' | 'note' | 'settlementStatement' | 'titlePolicy' | 'entityDocs' | 'disbursementStatement' | null
     >(null);
     const [viewMode, setViewMode] = useState<'main' | 'cd_capture'>('main');
-    const [cdFinalClosingCosts, setCdFinalClosingCosts] = useState<number>(0);
-    const [cdCashToClose, setCdCashToClose] = useState<number>(0);
-    const [cdPrepaidsReserves, setCdPrepaidsReserves] = useState<number>(0);
+    const [cdFinalClosingCosts, setCdFinalClosingCosts] = useState<number | null>(null);
+    const [cdCashToClose, setCdCashToClose] = useState<number | null>(null);
+    const [cdPrepaidsReserves, setCdPrepaidsReserves] = useState<number | null>(null);
     const [isOcrScanning, setIsOcrScanning] = useState(false);
     const [isSavingCDData, setIsSavingCDData] = useState(false);
     const [overrideReasonState, setOverrideReasonState] = useState<string>(closingRoom.reconciliationOverrideReason || '');
@@ -115,15 +115,9 @@ export default function ClosingRoomModal({ projectId, onClose }: ClosingRoomProp
     const [isSavingSweep, setIsSavingSweep] = useState(false);
 
     useEffect(() => {
-        if (closingRoom.cdFinalClosingCosts !== undefined && closingRoom.cdFinalClosingCosts !== null) {
-            setCdFinalClosingCosts(closingRoom.cdFinalClosingCosts);
-        }
-        if (closingRoom.cdCashToClose !== undefined && closingRoom.cdCashToClose !== null) {
-            setCdCashToClose(closingRoom.cdCashToClose);
-        }
-        if (closingRoom.cdPrepaidsReserves !== undefined && closingRoom.cdPrepaidsReserves !== null) {
-            setCdPrepaidsReserves(closingRoom.cdPrepaidsReserves);
-        }
+        setCdFinalClosingCosts(closingRoom.cdFinalClosingCosts !== undefined && closingRoom.cdFinalClosingCosts !== null ? closingRoom.cdFinalClosingCosts : null);
+        setCdCashToClose(closingRoom.cdCashToClose !== undefined && closingRoom.cdCashToClose !== null ? closingRoom.cdCashToClose : null);
+        setCdPrepaidsReserves(closingRoom.cdPrepaidsReserves !== undefined && closingRoom.cdPrepaidsReserves !== null ? closingRoom.cdPrepaidsReserves : null);
         setOverrideReasonState(closingRoom.reconciliationOverrideReason || '');
 
         setActualClosingDateState(closingRoom.actualClosingDate || new Date().toISOString().split('T')[0]);
@@ -358,19 +352,28 @@ export default function ClosingRoomModal({ projectId, onClose }: ClosingRoomProp
 
             const { data } = await res.json();
             
-            setCdFinalClosingCosts(data.closingCosts || 0);
-            
-            const derivedPrepaids = Math.max(0, (data.closingCosts || 0) - ((data.titleFees || 0) + (data.recordingFees || 0) + (data.transferTaxes || 0)));
-            setCdPrepaidsReserves(derivedPrepaids || 0);
+            if (data && typeof data.closingCosts === 'number' && data.closingCosts > 0) {
+                setCdFinalClosingCosts(data.closingCosts);
+                
+                const derivedPrepaids = Math.max(0, data.closingCosts - ((data.titleFees || 0) + (data.recordingFees || 0) + (data.transferTaxes || 0)));
+                setCdPrepaidsReserves(derivedPrepaids || null);
 
-            const purchasePrice = deal.financials?.purchasePrice || 0;
-            const loanAmount = deal.financials?.loanAmount || 0;
-            const derivedCashToClose = Math.max(0, purchasePrice + (data.closingCosts || 0) - loanAmount);
-            setCdCashToClose(derivedCashToClose || 0);
+                const purchasePrice = deal.financials?.purchasePrice || 0;
+                const loanAmount = deal.financials?.loanAmount || 0;
+                const derivedCashToClose = Math.max(0, purchasePrice + data.closingCosts - loanAmount);
+                setCdCashToClose(derivedCashToClose || null);
+            } else {
+                setCdFinalClosingCosts(null);
+                setCdPrepaidsReserves(null);
+                setCdCashToClose(null);
+            }
 
             toast.success(`Scan complete! (Confidence: ${data.confidence})`, { id: toastId });
         } catch (err: any) {
             console.error('[CD OCR] Failed:', err);
+            setCdFinalClosingCosts(null);
+            setCdPrepaidsReserves(null);
+            setCdCashToClose(null);
             toast.error('Gemini OCR scan failed to extract values. Please enter actual values manually.', { id: toastId });
         } finally {
             setIsOcrScanning(false);
@@ -1021,8 +1024,8 @@ export default function ClosingRoomModal({ projectId, onClose }: ClosingRoomProp
                                         <DollarSign className="w-4 h-4 text-pw-muted shrink-0" />
                                         <input
                                             type="number"
-                                            value={cdFinalClosingCosts || ''}
-                                            onChange={(e) => setCdFinalClosingCosts(parseFloat(e.target.value) || 0)}
+                                            value={cdFinalClosingCosts !== null ? cdFinalClosingCosts : ''}
+                                            onChange={(e) => setCdFinalClosingCosts(e.target.value !== '' ? parseFloat(e.target.value) : null)}
                                             placeholder="0"
                                             className="w-full text-sm bg-transparent outline-none text-pw-black font-mono text-right pr-2"
                                         />
@@ -1046,8 +1049,8 @@ export default function ClosingRoomModal({ projectId, onClose }: ClosingRoomProp
                                         <DollarSign className="w-4 h-4 text-pw-muted shrink-0" />
                                         <input
                                             type="number"
-                                            value={cdCashToClose || ''}
-                                            onChange={(e) => setCdCashToClose(parseFloat(e.target.value) || 0)}
+                                            value={cdCashToClose !== null ? cdCashToClose : ''}
+                                            onChange={(e) => setCdCashToClose(e.target.value !== '' ? parseFloat(e.target.value) : null)}
                                             placeholder="0"
                                             className="w-full text-sm bg-transparent outline-none text-pw-black font-mono text-right pr-2"
                                         />
@@ -1071,8 +1074,8 @@ export default function ClosingRoomModal({ projectId, onClose }: ClosingRoomProp
                                         <DollarSign className="w-4 h-4 text-pw-muted shrink-0" />
                                         <input
                                             type="number"
-                                            value={cdPrepaidsReserves || ''}
-                                            onChange={(e) => setCdPrepaidsReserves(parseFloat(e.target.value) || 0)}
+                                            value={cdPrepaidsReserves !== null ? cdPrepaidsReserves : ''}
+                                            onChange={(e) => setCdPrepaidsReserves(e.target.value !== '' ? parseFloat(e.target.value) : null)}
                                             placeholder="0"
                                             className="w-full text-sm bg-transparent outline-none text-pw-black font-mono text-right pr-2"
                                         />

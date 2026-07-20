@@ -349,7 +349,10 @@ export function computeNOIComponents(
     (financials.utilities ??
       (financials.holding_cost_utilities ? financials.holding_cost_utilities / 100 : financials.holdingCostUtilities) ??
       0) * 12;
-  const security = (financials.security ?? 0) * 12;
+  const security =
+    (financials.security ??
+      (financials.holding_cost_security ? financials.holding_cost_security / 100 : financials.holdingCostSecurity) ??
+      0) * 12;
   const capex = (financials.capex ?? 0) * 12;
 
   // Property management: prefer fee percent on GROSS scheduled rent (P6 canon), then fixed monthly amount
@@ -1010,7 +1013,7 @@ export function deriveAllMetrics(
     noiComponents.grossRentalIncome
   );
   const dscr = computeDSCR(noi, annualDebtService);
-  const ltvDenominator = (currentPropertyValue && currentPropertyValue !== financials.estimatedARV) ? currentPropertyValue : purchasePrice;
+  const ltvDenominator = (financials as any).appraisedValue ?? financials.estimatedCurrentValue ?? purchasePrice;
   const ltv = computeLTV(loanAmount, ltvDenominator);
 
   // OER: (Operating Expenses ÷ Gross Operating Income) × 100
@@ -2842,10 +2845,10 @@ export function deriveAllProjectMetrics(
   const propertyValue = appraisedValue ?? financials.estimatedCurrentValue ?? financials.estimatedARV ?? purchasePrice;
 
   const derivedAnnualDebtService = computeAnnualDebtService(loanAmount, loanInterestRate, loanTermYears * 12);
-
   const dm = deriveAllMetrics(
     {
       ...financials,
+      appraisedValue,
       loanAmount,
       loanInterestRate,
       loanTermYears,
@@ -3544,10 +3547,17 @@ export function calculateCapitalStack(project: any): CapitalStackResult {
   let sbaValidation: any = undefined;
   if (isSba504 && financials.sbaLoanStructure) {
     const sbaStruct = financials.sbaLoanStructure;
-    const isSpecial = sbaStruct.type === 'special_purpose';
     const targetBankPct = 50;
-    const targetCdcPct = isSpecial ? 35 : 40;
-    const targetBorrowerPct = isSpecial ? 15 : 10;
+    let targetCdcPct = 40;
+    let targetBorrowerPct = 10;
+
+    if (sbaStruct.type === 'special_purpose') {
+      targetCdcPct = 35;
+      targetBorrowerPct = 15;
+    } else if (sbaStruct.type === 'dual_condition') {
+      targetCdcPct = 30;
+      targetBorrowerPct = 20;
+    }
 
     // Find actual bank first lien, cdc debenture and borrower injection in the stack
     const bankLienAmount = sortedSources.find(s => s.category === 'SBA 504 Bank First Lien')?.amount || 0;

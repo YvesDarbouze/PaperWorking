@@ -95,6 +95,34 @@ describe('Capital Stack Composer Math Engine', () => {
     expect(res.sbaValidation?.actualBorrowerPct).toBe(15);
   });
 
+  it('validates dual-condition SBA 504 structure (50/30/20)', () => {
+    const sbaProject = {
+      fundingPlan: {
+        modality: ['sba_504']
+      },
+      financials: {
+        purchasePrice: 100000,
+        closingCosts: 0,
+        projectedRehabCost: 0,
+        sbaLoanStructure: {
+          type: 'dual_condition'
+        },
+        capitalStack: [
+          { id: '1', category: 'SBA 504 Bank First Lien', amount: 50000, status: 'Approved' },
+          { id: '2', category: 'SBA 504 CDC Debenture', amount: 30000, status: 'Approved' },
+          { id: '3', category: 'Borrower Injection', amount: 20000, status: 'Approved' }
+        ]
+      }
+    };
+
+    const res = calculateCapitalStack(sbaProject);
+    expect(res.sbaValidation).toBeDefined();
+    expect(res.sbaValidation?.isValid).toBe(true);
+    expect(res.sbaValidation?.actualBankPct).toBe(50);
+    expect(res.sbaValidation?.actualCdcPct).toBe(30);
+    expect(res.sbaValidation?.actualBorrowerPct).toBe(20);
+  });
+
   it('fails validation when SBA 504 structure is incorrect', () => {
     const sbaProject = {
       fundingPlan: {

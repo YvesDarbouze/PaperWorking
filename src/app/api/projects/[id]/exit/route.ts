@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { requireAuth, isAuthError } from '@/lib/firebase-admin/auth-guard';
 import { adminDb } from '@/lib/firebase/admin';
 import { z } from 'zod';
+import { verifyProjectAccessAndRole, authorizeProjectMutation } from '@/lib/firebase-admin/project-guard';
 
 /* ═══════════════════════════════════════════════════════════════
    PATCH /api/projects/[id]/exit
@@ -13,13 +14,12 @@ import { z } from 'zod';
 
    2. **Realized State Transition** — When `realized: true` is sent,
       the project is hardened into an immutable realized state:
-      - reiStatus → 'realized'
-      - currentPhase → 4
-      - closedAt → ISO timestamp
-      - All financial fields marked as finalized
+      - reiStatus → 'realized' (we will change this to exit status only!)
+      - exitRealized → true
+      - status → 'exit' (strict validation, realized is not a status)
 
    Auth: Firebase ID Token (Bearer header)
-   Body: { financials?: Partial<Financials>, realized?: boolean }
+   Body: { financials?: Partial<ProjectFinancials>, realized?: boolean }
    ═══════════════════════════════════════════════════════════════ */
 
 /** Zod schema for exit financial fields */
@@ -100,51 +100,25 @@ export async function PATCH(
     const { financials, realized, ...topLevelUpdates } = validationResult.data;
 
     // 3. Verify user has write access to this project
-    const dealRef = adminDb.collection('projects').doc(projectId);
-    const dealSnap = await dealRef.get();
-
-    if (!dealSnap.exists) {
-      return NextResponse.json({ error: 'Project not found' }, { status: 404 });
+    const access = await verifyProjectAccessAndRole(projectId, uid, auth.token?.email);
+    if (!access) {
+      return NextResponse.json({ error: 'Project not found or access denied' }, { status: 403 });
     }
 
-    const projectData = dealSnap.data();
-    const targetOrgId = projectData?.organizationId;
+    const authCheck = authorizeProjectMutation(access, 'phase-4');
+    if (!authCheck.authorized) {
+      return NextResponse.json({ error: authCheck.error }, { status: authCheck.status || 403 });
+    }
 
-    // Check if project is locked (immutable)
+    const projectData = access.project;
+    const existingFinancials = projectData?.financials || {};
+
     if (projectData?.locked) {
       return NextResponse.json(
         { error: 'Project is archived and locked. No modifications allowed.' },
         { status: 409 }
       );
-    }
-
-    // Check org membership
-    const userSnap = await adminDb.collection('users').doc(uid).get();
-    const profile = userSnap.exists ? userSnap.data() : null;
-
-    let hasAccess = false;
-    if (targetOrgId && profile) {
-      if (profile.personalOrganizationId === targetOrgId) hasAccess = true;
-      else if (profile.organizationId === targetOrgId) hasAccess = true;
-      else if (profile.memberships?.[targetOrgId]) hasAccess = true;
-    }
-
-    // Also check project-level membership
-    if (projectData?.members?.[uid]) {
-      hasAccess = true;
-    }
-
-    if (!hasAccess) {
-      return NextResponse.json(
-        { error: 'Access denied. You do not have write access to this project.' },
-        { status: 403 }
-      );
-    }
-
-    // 4. Build the update payload
-    const existingFinancials = projectData?.financials || {};
-
-    if (topLevelUpdates.status) {
+    }    if (topLevelUpdates.status) {
       const val = topLevelUpdates.status as string;
       if (!['acquisition', 'fund', 'hold', 'exit'].includes(val)) {
         return NextResponse.json(
@@ -173,6 +147,7 @@ export async function PATCH(
       // Harden the project into realized state
       updatePayload.reiStatus = 'realized';
       updatePayload.currentPhase = 4;
+      updatePayload.status = 'exit';
       updatePayload.closedAt = now;
       updatePayload.phaseStatus = 'Phase 4: Realized';
 
@@ -205,6 +180,7 @@ export async function PATCH(
     await updateProjectWithTracking(projectId, uid, updatePayload, 'manual');
 
     // 7. Return updated project snapshot
+    const dealRef = adminDb.collection('projects').doc(projectId);
     const updatedSnap = await dealRef.get();
     const updatedProject = { id: updatedSnap.id, ...updatedSnap.data() };
 

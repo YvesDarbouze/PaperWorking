@@ -336,18 +336,18 @@ export default function ProjectCreationWizard({
     try {
       // Map starting phase to correct initial REI statuses
       let reiStatus = 'Target';
-      let status = 'Lead';
+      let status = 'Acquisition';
       const phase = Number(formData.startingPhase);
 
       if (phase === 2) {
         reiStatus = 'In Contract';
-        status = 'Under Contract';
+        status = 'Fund';
       } else if (phase === 3) {
         reiStatus = 'Rehabbing';
-        status = 'Renovating';
+        status = 'Hold';
       } else if (phase === 4) {
         reiStatus = 'For Sale';
-        status = 'Listed';
+        status = 'Exit';
       }
 
       // Construct payload

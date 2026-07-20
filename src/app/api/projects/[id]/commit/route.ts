@@ -92,10 +92,10 @@ export async function POST(
 
     // If status is still 'Draft', transition to the correct active status
     if (project.status === 'Draft') {
-      updates.status = project.phaseStatus?.includes('Phase 1') ? 'Lead' :
-                       project.phaseStatus?.includes('Phase 2') ? 'Under Contract' :
-                       project.phaseStatus?.includes('Phase 3') ? 'Renovating' :
-                       project.phaseStatus?.includes('Phase 4') ? 'Listed' : 'Active';
+      updates.status = project.phaseStatus?.includes('Phase 1') ? 'Acquisition' :
+                       project.phaseStatus?.includes('Phase 2') ? 'Fund' :
+                       project.phaseStatus?.includes('Phase 3') ? 'Hold' :
+                       project.phaseStatus?.includes('Phase 4') ? 'Exit' : 'Acquisition';
     }
 
     await projectRef.update(updates);

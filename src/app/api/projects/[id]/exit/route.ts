@@ -53,7 +53,7 @@ const exitFinancialsSchema = z.object({
   // Hold period / strategy
   projectedHoldTimeMonths: z.number().min(0).optional(),
   annualAppreciationPercent: z.number().optional(),
-  exitStrategyType: z.enum(['Sell', 'Rent']).optional(),
+  exitStrategyType: z.enum(['Sell', 'Rent', 'Lease']).optional(),
 
   // Tax
   marginalTaxBracket: z.number().min(0).max(100).optional(),
@@ -143,6 +143,20 @@ export async function PATCH(
 
     // 4. Build the update payload
     const existingFinancials = projectData?.financials || {};
+
+    if (topLevelUpdates.status) {
+      const val = topLevelUpdates.status as string;
+      if (['listed', 'sold', 'rented', 'Listed', 'Sold', 'Rented', 'exit', 'Exit'].includes(val)) {
+        topLevelUpdates.status = 'Exit';
+      } else if (['rehab', 'Rehab', 'renovating', 'Renovating', 'hold', 'Hold'].includes(val)) {
+        topLevelUpdates.status = 'Hold';
+      } else if (['under contract', 'Under Contract', 'fund', 'Fund'].includes(val)) {
+        topLevelUpdates.status = 'Fund';
+      } else if (['sourcing', 'Sourcing', 'lead', 'Lead', 'acquisition', 'Acquisition'].includes(val)) {
+        topLevelUpdates.status = 'Acquisition';
+      }
+    }
+
     const updatePayload: Record<string, unknown> = {
       ...topLevelUpdates,
       updatedAt: new Date(),

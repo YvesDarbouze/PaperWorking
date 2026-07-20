@@ -203,7 +203,7 @@ describe('Index Server Actions (Core deal and financial actions)', () => {
         expect.objectContaining({
           propertyName: 'Dream House',
           address: '789 Oak Ave',
-          status: 'Lead',
+          status: 'acquisition',
           activePhase: 1,
           ownerUid: uid,
           organizationId: orgId,

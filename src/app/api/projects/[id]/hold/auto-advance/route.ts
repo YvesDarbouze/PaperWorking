@@ -79,7 +79,7 @@ export async function POST(
     await dealRef.update({
       phaseStatus: 'Phase 4: Exit',
       currentPhase: 4,
-      status: 'Exit',
+      status: 'exit',
       financials: financialsUpdates,
       updatedAt: new Date()
     });

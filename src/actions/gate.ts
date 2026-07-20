@@ -461,7 +461,7 @@ export async function advanceProjectPhaseGate(
     const updatePayload: Record<string, any> = {
       currentPhase: 2,
       phaseStatus: 'Phase 2: Fund',
-      status: 'Fund',
+      status: 'fund',
       riskScore,
       lastPhaseTransitionAt: FieldValue.serverTimestamp(),
       updatedAt: FieldValue.serverTimestamp(),

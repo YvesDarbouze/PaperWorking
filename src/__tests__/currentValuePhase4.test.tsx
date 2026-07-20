@@ -96,4 +96,74 @@ describe('CurrentValueTracker in Phase 4', () => {
     // In sorted valuations, the first rendered one is val-2 (July 15, newest first)
     expect(mockDeleteValuation).toHaveBeenCalledWith('val-2');
   });
+
+  it('maps avm to user_assumption with documentName AVM estimate', async () => {
+    render(
+      <CurrentValueTracker
+        projectId="proj-val-123"
+        currentValue={mockValuations}
+        onAddValuation={mockAddValuation}
+        onDeleteValuation={mockDeleteValuation}
+      />
+    );
+
+    const toggleBtn = screen.getByText('+ Add Valuation');
+    fireEvent.click(toggleBtn);
+
+    const amountInput = screen.getByPlaceholderText('e.g. 265,000.00');
+    const sourceSelect = screen.getByRole('combobox');
+
+    await act(async () => {
+      fireEvent.change(amountInput, { target: { value: '280000' } });
+      fireEvent.change(sourceSelect, { target: { value: 'avm' } });
+    });
+
+    const submitBtn = screen.getByRole('button', { name: 'Add Valuation' });
+    await act(async () => {
+      fireEvent.click(submitBtn);
+    });
+
+    expect(mockAddValuation).toHaveBeenCalledWith(
+      expect.objectContaining({
+        value: 28000000,
+        source: 'user_assumption',
+        documentName: 'AVM estimate',
+      })
+    );
+  });
+
+  it('maps appraisals and bpos to document source tag', async () => {
+    render(
+      <CurrentValueTracker
+        projectId="proj-val-123"
+        currentValue={mockValuations}
+        onAddValuation={mockAddValuation}
+        onDeleteValuation={mockDeleteValuation}
+      />
+    );
+
+    const toggleBtn = screen.getByText('+ Add Valuation');
+    fireEvent.click(toggleBtn);
+
+    const amountInput = screen.getByPlaceholderText('e.g. 265,000.00');
+    const sourceSelect = screen.getByRole('combobox');
+
+    await act(async () => {
+      fireEvent.change(amountInput, { target: { value: '310000' } });
+      fireEvent.change(sourceSelect, { target: { value: 'appraisal' } });
+    });
+
+    const submitBtn = screen.getByRole('button', { name: 'Add Valuation' });
+    await act(async () => {
+      fireEvent.click(submitBtn);
+    });
+
+    expect(mockAddValuation).toHaveBeenCalledWith(
+      expect.objectContaining({
+        value: 31000000,
+        source: 'document',
+        documentName: 'Appraisal Report',
+      })
+    );
+  });
 });

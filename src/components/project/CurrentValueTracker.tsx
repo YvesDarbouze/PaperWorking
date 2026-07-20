@@ -55,9 +55,9 @@ export function CurrentValueTracker({ projectId, currentValue = [], onAddValuati
         id: `val-${Date.now()}`,
         date: valDate,
         value: Math.round(parsed * 100),
-        source: valSource === 'avm' ? 'user_assumption' : valSource,
+        source: valSource === 'avm' ? 'user_assumption' : isDocSource ? 'document' : valSource,
         documentUrl: isDocSource ? `https://firebasestorage.googleapis.com/v0/b/paperworking.appspot.com/o/valuations%2F${projectId}%2F${Date.now()}.pdf` : null,
-        documentName: valSource === 'avm' ? 'AVM estimate' : isDocSource ? (docName.trim() || `${valSource.toUpperCase()} Document`) : null
+        documentName: valSource === 'avm' ? 'AVM estimate' : isDocSource ? (docName.trim() || (valSource === 'appraisal' ? 'Appraisal Report' : 'Broker Price Opinion')) : null
       };
 
       await onAddValuation(entry);
@@ -73,6 +73,15 @@ export function CurrentValueTracker({ projectId, currentValue = [], onAddValuati
   const getSourceLabel = (val: ValuationEntry) => {
     if (val.source === 'user_assumption' && val.documentName === 'AVM estimate') {
       return 'AVM estimate';
+    }
+    if (val.source === 'document') {
+      if (val.documentName?.toLowerCase().includes('appraisal')) {
+        return 'Appraisal Report';
+      }
+      if (val.documentName?.toLowerCase().includes('bpo') || val.documentName?.toLowerCase().includes('broker')) {
+        return 'Broker Price Opinion';
+      }
+      return val.documentName || 'Document';
     }
     switch (val.source) {
       case 'user_assumption': return 'User Assumption';
@@ -250,7 +259,7 @@ export function CurrentValueTracker({ projectId, currentValue = [], onAddValuati
                         ${(val.value / 100).toLocaleString(undefined, { minimumFractionDigits: 2 })}
                       </span>
                       <span className={`px-1.5 py-0.5 rounded text-[8px] font-bold uppercase tracking-wider ${
-                        val.source === 'appraisal' ? 'bg-[#7A9EAA]/25 text-[#7A9EAA]' : 'bg-white/5 text-[#9E9DA0]'
+                        (val.source === 'appraisal' || val.source === 'document') ? 'bg-[#7A9EAA]/25 text-[#7A9EAA]' : 'bg-white/5 text-[#9E9DA0]'
                       }`}>
                         {getSourceLabel(val)}
                       </span>

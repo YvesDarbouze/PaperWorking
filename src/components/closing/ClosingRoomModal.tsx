@@ -399,9 +399,9 @@ export default function ClosingRoomModal({ projectId, onClose }: ClosingRoomProp
             };
 
             const financialUpdates = {
-                finalClosingCosts: cdFinalClosingCosts,
-                finalCashToClose: cdCashToClose,
-                finalPrepaidsReserves: cdPrepaidsReserves,
+                finalClosingCosts: cdFinalClosingCosts ?? undefined,
+                finalCashToClose: cdCashToClose ?? undefined,
+                finalPrepaidsReserves: cdPrepaidsReserves ?? undefined,
             };
 
             await projectsService.updateProject(deal.id, {
@@ -871,40 +871,6 @@ export default function ClosingRoomModal({ projectId, onClose }: ClosingRoomProp
         }
     };
 
-    const [isAdvancingToHold, setIsAdvancingToHold] = useState(false);
-
-    const handleAdvanceToHold = async () => {
-        if (!isMember) return;
-        setIsAdvancingToHold(true);
-        const toastId = toast.loading('Advancing project to Phase 3 (Hold)...');
-        try {
-            const nextPhaseUpdates = {
-                phaseStatus: 'Phase 3: Hold' as const,
-                currentPhase: 3,
-                status: 'hold' as const,
-            };
-
-            await projectsService.updateProject(deal.id, nextPhaseUpdates);
-
-            // Progress the project state in the local store
-            const store = useProjectStore.getState();
-            const updatedProject = {
-                ...deal,
-                ...nextPhaseUpdates
-            };
-            const updatedProjects = store.projects.map(p => p.id === deal.id ? updatedProject : p);
-            store.setDeals(updatedProjects);
-            store.setDeal(updatedProject);
-
-            toast.success('Project advanced to Phase 3 (Hold) successfully!', { id: toastId });
-            onClose();
-        } catch (err: any) {
-            console.error('[Advance to Hold] Failed:', err);
-            toast.error(`Failed to advance: ${err.message || 'Unknown error'}`, { id: toastId });
-        } finally {
-            setIsAdvancingToHold(false);
-        }
-    };
 
     const DocsComplete = closingRoom.titleInsuranceUrl && closingRoom.closingDisclosureUrl && closingRoom.wiringInstructionsUrl;
 
@@ -1497,30 +1463,15 @@ export default function ClosingRoomModal({ projectId, onClose }: ClosingRoomProp
                                                 <div className="text-[9px] text-pw-muted leading-none">Approved equity capitalization</div>
                                             </div>
                                         </div>
-
                                         {closingRoom.isReconciliationOverridden && closingRoom.reconciliationOverrideReason && (
                                             <div className="p-3 bg-blue-500/10 border border-blue-500/20 rounded-xl text-xs text-blue-700 leading-normal">
                                                 <span className="font-bold">Active Reconciliation Override:</span> &ldquo;{closingRoom.reconciliationOverrideReason}&rdquo;
                                             </div>
                                         )}
-                                        <div className="pt-4 border-t border-green-500/20 flex justify-end">
-                                            <button
-                                                onClick={handleAdvanceToHold}
-                                                disabled={isAdvancingToHold}
-                                                className="pw-btn pw-btn--primary pw-btn--pill px-6 py-2.5 text-xs font-semibold flex items-center gap-1.5 shadow-sm"
-                                            >
-                                                {isAdvancingToHold ? (
-                                                    <>
-                                                        <Loader2 className="w-3.5 h-3.5 animate-spin" />
-                                                        <span>Advancing...</span>
-                                                    </>
-                                                ) : (
-                                                    <>
-                                                        <CheckCircle className="w-3.5 h-3.5" />
-                                                        <span>Advance to Phase 3 (Hold)</span>
-                                                    </>
-                                                )}
-                                            </button>
+                                        <div className="pt-4 border-t border-green-500/20 text-right">
+                                            <span className="text-xs text-pw-muted font-semibold">
+                                                Closing details reconciled. Please proceed to the Phase Gate in the dashboard to advance to Hold.
+                                            </span>
                                         </div>
                                     </div>
                                 );

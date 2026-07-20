@@ -145,6 +145,7 @@ Project structure constraints (must always sum to exactly 100%):
   * Bank (1st Lien): 50.00%
   * CDC Debenture (2nd Lien): 35.00% ($350,000)
   * Borrower Injection: 15.00% ($150,000)
+* **Dual-condition variant (new business AND special purpose): injection 20% ($200,000), CDC 30% ($300,000), bank unchanged at 50% ($500,000); sums to 100%.**
 
 ---
 

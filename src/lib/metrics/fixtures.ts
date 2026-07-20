@@ -234,6 +234,29 @@ export const FX_7_PROJECT_SPECIAL: any = {
   },
 };
 
+export const FX_7_PROJECT_DUAL: any = {
+  id: 'project_fx7_dual_seed',
+  organizationId: 'org_paperworking_seed',
+  propertyName: 'SBA 504 Dual Condition (FX-7)',
+  address: '606 SBA Ave, Springfield, IL',
+  status: 'fund',
+  currentPhase: 2,
+  dispositionType: 'RENT',
+  subStrategy: 'LONG_TERM',
+  assetClass: 'Commercial',
+  members: {},
+  financials: {
+    purchasePrice: 1_000_000,
+    financingType: 'Financed',
+    sbaLoanStructure: {
+      type: 'dual_condition',
+      bankLienPct: 50,
+      cdcDebenturePct: 30,
+      borrowerInjectionPct: 20,
+    },
+  },
+};
+
 // ── FX-8: Cash-to-Close Reconciliation ───────────────────────────────────────
 export const FX_8_PROJECT: any = {
   id: 'project_fx8_seed',

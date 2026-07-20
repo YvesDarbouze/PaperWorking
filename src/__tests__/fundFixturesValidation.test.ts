@@ -13,6 +13,7 @@ import {
   FX_6_PROJECT,
   FX_7_PROJECT_STANDARD,
   FX_7_PROJECT_SPECIAL,
+  FX_7_PROJECT_DUAL,
   FX_8_PROJECT,
 } from '../lib/metrics/fixtures';
 import { reconcileProjectCapital } from '../lib/math/reconciliation';
@@ -153,6 +154,14 @@ describe('FD-6 Fund Fixture Families Validation Tests', () => {
       expect(struct.bankLienPct).toBe(50);
       expect(struct.cdcDebenturePct).toBe(35);
       expect(struct.borrowerInjectionPct).toBe(15);
+      expect(struct.bankLienPct + struct.cdcDebenturePct + struct.borrowerInjectionPct).toBe(100);
+    });
+
+    it('verifies dual-condition variant constraints', () => {
+      const struct = FX_7_PROJECT_DUAL.financials.sbaLoanStructure!;
+      expect(struct.bankLienPct).toBe(50);
+      expect(struct.cdcDebenturePct).toBe(30);
+      expect(struct.borrowerInjectionPct).toBe(20);
       expect(struct.bankLienPct + struct.cdcDebenturePct + struct.borrowerInjectionPct).toBe(100);
     });
   });

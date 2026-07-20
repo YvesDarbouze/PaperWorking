@@ -61,6 +61,7 @@ const STEPS: StepConfig[] = [
     key: 'security',
     label: 'Security',
     dbField: 'holding_cost_security',
+    legacyField: 'holdingCostSecurity',
     desc: 'Cost of temporary site monitoring, sensors, cameras, and alert systems.',
     guidance: 'Vital to prevent vandalism, copper theft, and unauthorized entries during renovation.'
   },
@@ -100,6 +101,7 @@ const STEPS: StepConfig[] = [
     key: 'capex',
     label: 'CapEx Reserve',
     dbField: 'holding_cost_capex',
+    legacyField: 'holdingCostCapex',
     desc: 'Proactive reserve set aside for future major replacements (roof, HVAC).',
     guidance: 'Setting a monthly reserve protects your target margin from unexpected equipment failures.'
   }

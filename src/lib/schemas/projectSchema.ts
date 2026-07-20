@@ -579,13 +579,13 @@ export const projectFinancialsSchema = z.object({
   sellersAgentCommission: percentWhole.optional(),
 
   /** Final closing costs — fixed dollar amount */
-  finalClosingCosts: usdDollars.optional(),
+  finalClosingCosts: usdDollars.nullable().optional(),
 
   /** Final cash to close — fixed dollar amount */
-  finalCashToClose: usdDollars.optional(),
+  finalCashToClose: usdDollars.nullable().optional(),
 
   /** Final prepaids and reserves — fixed dollar amount */
-  finalPrepaidsReserves: usdDollars.optional(),
+  finalPrepaidsReserves: usdDollars.nullable().optional(),
 
   /** Accumulated holding costs in USD dollars */
   totalHoldingCosts: usdDollars.optional(),
@@ -848,6 +848,8 @@ export const projectFinancialsSchema = z.object({
   holding_cost_capex: usdDollars.optional(),
   holdingCostMaintenance: usdDollars.optional(),
   holdingCostManagement: usdDollars.optional(),
+  holdingCostSecurity: usdDollars.optional(),
+  holdingCostCapex: usdDollars.optional(),
   totalMonthlyHoldingCost: usdDollars.optional(),
   holdStartDate: z.any().optional(),
   exit_cost_basis: usdDollars.optional(),

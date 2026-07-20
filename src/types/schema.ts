@@ -1522,6 +1522,8 @@ export interface ProjectFinancials {
   holdingCostTaxes?: number; // per month
   holdingCostInsurance?: number; // per month
   holdingCostUtilities?: number; // per month
+  holdingCostSecurity?: number; // per month
+  holdingCostCapex?: number; // per month
 
   // Phase 4 Exit Dashboard — Settlement & Tax
   settlementLedger?: SettlementLineItem[];
@@ -1625,6 +1627,8 @@ export interface ProjectFinancials {
   holding_cost_capex?: number;             // Monthly CapEx reserve (cents)
   holdingCostMaintenance?: number;        // Monthly maintenance/CapEx during hold (non-rental)
   holdingCostManagement?: number;         // Monthly management fee during hold (non-rental PM)
+  holdingCostSecurity?: number;           // Monthly security during hold
+  holdingCostCapex?: number;              // Monthly capex during hold
   totalMonthlyHoldingCost?: number;       // Derived: sum of all itemized monthly holding costs
   holdStartDate?: any;                    // Explicit hold clock start (defaults to acquisitionDate)
   exit_cost_basis?: number;

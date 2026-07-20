@@ -129,10 +129,12 @@ export function computeRehabBudgetVariance(
 export interface MonthlyHoldCostBreakdown {
   taxes: number;
   insurance: number;
+  security: number;
   utilities: number;
   hoa: number;
   maintenance: number;
   management: number;
+  capex: number;
   loanCarry: number;
   total: number;
 }
@@ -144,12 +146,14 @@ export interface MonthlyHoldCostBreakdown {
 export function computeTotalMonthlyHoldingCost(
   financials: Partial<ProjectFinancials>
 ): MonthlyHoldCostBreakdown {
-  const taxes = financials.holdingCostTaxes || 0;
-  const insurance = financials.holdingCostInsurance || 0;
-  const utilities = financials.holdingCostUtilities || 0;
-  const hoa = financials.monthlyHOA || 0;
-  const maintenance = financials.holdingCostMaintenance || 0;
-  const management = financials.holdingCostManagement || 0;
+  const taxes = financials.holdingCostTaxes || financials.holding_cost_tax || 0;
+  const insurance = financials.holdingCostInsurance || financials.holding_cost_insurance || 0;
+  const security = financials.holdingCostSecurity || financials.holding_cost_security || 0;
+  const utilities = financials.holdingCostUtilities || financials.holding_cost_utilities || 0;
+  const hoa = financials.monthlyHOA || financials.holding_cost_hoa || 0;
+  const maintenance = financials.holdingCostMaintenance || financials.holding_cost_maintenance || 0;
+  const management = financials.holdingCostManagement || financials.holding_cost_management || 0;
+  const capex = financials.holdingCostCapex || financials.holding_cost_capex || 0;
 
   // Loan carry: interest-only monthly payment on hard money
   const loanAmount = financials.loanAmount || 0;
@@ -158,9 +162,9 @@ export function computeTotalMonthlyHoldingCost(
     ? Math.round((loanAmount * (rate / 100)) / 12)
     : 0;
 
-  const total = taxes + insurance + utilities + hoa + maintenance + management + loanCarry;
+  const total = taxes + insurance + security + utilities + hoa + maintenance + management + capex + loanCarry;
 
-  return { taxes, insurance, utilities, hoa, maintenance, management, loanCarry, total };
+  return { taxes, insurance, security, utilities, hoa, maintenance, management, capex, loanCarry, total };
 }
 
 // ── Pre-1978 Environmental Check ──────────────────────────

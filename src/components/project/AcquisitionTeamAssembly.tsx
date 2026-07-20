@@ -66,7 +66,7 @@ export function AcquisitionTeamAssembly({ projectId, teamMembers, onRefresh }: A
   return (
     <div className="rounded-lg border shadow-sm" style={{ borderColor: 'var(--border-ui)', backgroundColor: 'var(--bg-surface)' }}>
       <div className="px-6 py-4 border-b" style={{ borderColor: 'var(--border-ui)', backgroundColor: 'var(--bg-surface)' }}>
-        <h2 className="text-lg font-semibold" style={{ color: 'var(--text-primary)' }}>Acquisition Team Assembly</h2>
+        <h2 className="text-lg font-semibold" style={{ color: 'var(--text-primary)' }}>Investment Team Assembly</h2>
         <p className="text-sm mt-1" style={{ color: 'var(--text-secondary)' }}>
           Assign required team members to proceed with the transaction.
         </p>

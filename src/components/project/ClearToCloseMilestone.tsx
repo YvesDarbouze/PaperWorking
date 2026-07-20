@@ -29,7 +29,7 @@ export function ClearToCloseMilestone({
       dueDiligenceChecklist.length > 0 &&
       dueDiligenceChecklist.every((item) => item.completed);
 
-    // Validation 2: Acquisition Team has valid emails
+    // Validation 2: Investment Team has valid emails
     const isTeamValid =
       teamMembers.length > 0 &&
       teamMembers.every((m) => m.email && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(m.email));

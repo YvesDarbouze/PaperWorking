@@ -146,14 +146,11 @@ export async function PATCH(
 
     if (topLevelUpdates.status) {
       const val = topLevelUpdates.status as string;
-      if (['listed', 'sold', 'rented', 'Listed', 'Sold', 'Rented', 'exit', 'Exit'].includes(val)) {
-        topLevelUpdates.status = 'Exit';
-      } else if (['rehab', 'Rehab', 'renovating', 'Renovating', 'hold', 'Hold'].includes(val)) {
-        topLevelUpdates.status = 'Hold';
-      } else if (['under contract', 'Under Contract', 'fund', 'Fund'].includes(val)) {
-        topLevelUpdates.status = 'Fund';
-      } else if (['sourcing', 'Sourcing', 'lead', 'Lead', 'acquisition', 'Acquisition'].includes(val)) {
-        topLevelUpdates.status = 'Acquisition';
+      if (!['acquisition', 'fund', 'hold', 'exit'].includes(val)) {
+        return NextResponse.json(
+          { error: `Invalid status: '${val}'. Status must be a canonical lowercase key: 'acquisition', 'fund', 'hold', or 'exit'.` },
+          { status: 400 }
+        );
       }
     }
 

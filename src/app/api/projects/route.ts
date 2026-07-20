@@ -34,10 +34,13 @@ const wizardFinancialsSchema = z.object({
   soldDate: z.any().optional(),
   actualSalePrice: z.number().nonnegative().optional(),
   loanAmount: z.number().nonnegative().optional(),
-  loanInterestRate: z.number().optional(),
+  loanInterestRate: z.number().nonnegative().optional(),
   loanTermYears: z.number().positive().optional(),
   rehabActual: z.number().nonnegative().optional(),
   capitalRaiseTarget: z.number().nonnegative().optional(),
+  annualDebtService: z.any().refine(val => val === undefined, {
+    message: "annualDebtService is read-only and cannot be updated"
+  }).optional(),
   equitySplit: z.number().optional(),
   requiredContingencies: z.array(z.string()).optional(),
   purchaseContractDoc: z.string().optional(),
@@ -108,6 +111,8 @@ function derivePhaseFromREIStatus(reiStatus?: string) {
     case 'Renting':
       return { phaseStatus: 'Phase 3: Hold', currentPhase: 3, status: 'hold' };
     case 'For Sale':
+    case 'realized':
+    case 'Sold':
       return { phaseStatus: 'Phase 4: Exit', currentPhase: 4, status: 'exit' };
     default:
       return { phaseStatus: 'Phase 1: Acquisition', currentPhase: 1, status: 'acquisition' };

@@ -98,7 +98,8 @@ describe('POST /api/projects/[id]/hold/auto-advance', () => {
         ownerUid: USER_UID,
         financials: {
           purchasePrice: 15000000,
-          costs: []
+          costs: [],
+          sale_under_contract: true
         }
       })
     });

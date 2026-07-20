@@ -3,25 +3,9 @@ import { requireAuth, isAuthError } from '@/lib/firebase-admin/auth-guard';
 import { adminDb } from '@/lib/firebase/admin';
 import { writeActivityLog } from '@/lib/firebase/activityLogWriter';
 import { NotificationService } from '@/lib/services/notificationService';
+import { verifyProjectAccessAndRole } from '@/lib/firebase-admin/project-guard';
 
 export const dynamic = 'force-dynamic';
-
-async function verifyProjectMembership(projectId: string, uid: string) {
-  const snap = await adminDb.collection('projects').doc(projectId).get();
-  if (!snap.exists) return null;
-  const data = snap.data()!;
-  const isOwner = data.ownerUid === uid;
-  const isMember = !!data.members?.[uid] || data.teamMemberIds?.includes(uid);
-  const isOrgMember = data.organizationId
-    ? await adminDb.collection('organizations').doc(data.organizationId).get().then((o) => {
-        if (!o.exists) return false;
-        const od = o.data()!;
-        return od.ownerUid === uid || od.teamMembers?.some((m: any) => m.id === uid && m.status === 'active');
-      })
-    : false;
-  if (!isOwner && !isMember && !isOrgMember) return null;
-  return data;
-}
 
 export async function PATCH(
   request: NextRequest,
@@ -34,9 +18,21 @@ export async function PATCH(
 
     const { id: projectId, loanId } = await params;
 
-    const project = await verifyProjectMembership(projectId, uid);
-    if (!project) {
+    const access = await verifyProjectAccessAndRole(projectId, uid, auth.token.email);
+    if (!access) {
       return NextResponse.json({ error: 'Project not found or access denied' }, { status: 403 });
+    }
+    const project = access.project;
+
+    // Enforce LP/Vendor access controls
+    if (access.role === 'LP') {
+      return NextResponse.json({ error: 'Access denied: LPs cannot update loan records.' }, { status: 403 });
+    }
+    if (access.role === 'Vendor') {
+      const isLenderOrAppraiser = ['f4HardMoneyLenderVendor', 'f4CdcVendor', 'f4AppraiserVendor'].includes(access.partyId || '');
+      if (!isLenderOrAppraiser) {
+        return NextResponse.json({ error: 'Access denied: Vendor is not authorized to update loan records.' }, { status: 403 });
+      }
     }
 
     const body = await request.json();
@@ -45,7 +41,11 @@ export async function PATCH(
       appraisedValueCents,
       appraisalFileId,
       appraisalFileName,
-      appraisalFileUrl
+      appraisalFileUrl,
+      note,
+      fileId,
+      fileName,
+      fileUrl
     } = body;
 
     const loanRef = adminDb
@@ -101,9 +101,28 @@ export async function PATCH(
 
     await loanRef.update(updateData);
 
-    // If status changed, post to timeline (activityLog) and fire notifications
+    // If status changed, post to timeline (activityLog), write to transitions log, and fire notifications
     if (status && status !== oldStatus) {
-      // 1. Post to timeline
+      const actorName = auth.token.name || auth.token.email || 'A teammate';
+
+      // 1. Write to transitions log subcollection
+      const transitionRef = loanRef.collection('transitions').doc();
+      await transitionRef.set({
+        id: transitionRef.id,
+        fromStatus: oldStatus || null,
+        toStatus: status,
+        timestamp: new Date().toISOString(),
+        actor: {
+          uid,
+          name: actorName
+        },
+        note: note || null,
+        fileId: fileId || appraisalFileId || null,
+        fileName: fileName || appraisalFileName || null,
+        fileUrl: fileUrl || appraisalFileUrl || null
+      });
+
+      // 2. Post to timeline
       await writeActivityLog(
         projectId,
         uid,
@@ -115,28 +134,48 @@ export async function PATCH(
         'manual'
       );
 
-      // 2. Update project level loanStatus
+      // 3. Update project level loanStatus
       await adminDb.collection('projects').doc(projectId).update({
         loanStatus: status
       });
 
-      // 3. Fire notification to project members/owner
+      // Enqueue timeline sync
+      try {
+        const { jobQueue } = await import('@/lib/queue/jobQueue');
+        await jobQueue.enqueue('timeline_sync', { projectId });
+      } catch (err: any) {
+        console.error('Failed to enqueue timeline sync on loanStatus update:', err.message);
+      }
+
+      // 4. Fire notification to project members/owner
       const dealAddress = project.propertyName || project.address?.street || 'the project';
       try {
-        const actorName = auth.token.name || auth.token.email || 'A teammate';
         const recipient = project.ownerUid || uid;
 
-        await NotificationService.createNotification({
-          recipientId: recipient,
-          type: 'LOAN_STATUS_UPDATE',
-          actor: { uid, name: actorName },
-          objectReference: {
-            projectId,
-            dealAddress,
-            task: `Loan status changed from ${oldStatus.replace(/-/g, ' ')} to ${status.replace(/-/g, ' ')}`
-          },
-          deepLinkUrl: `/dashboard/projects/${projectId}/phase-2`
-        });
+        if (typeof NotificationService.broadcastProjectNotification === 'function') {
+          await NotificationService.broadcastProjectNotification(projectId, {
+            type: 'LOAN_STATUS_UPDATE',
+            actor: { uid, name: actorName },
+            objectReference: {
+              projectId,
+              dealAddress,
+              task: `Loan status changed from ${oldStatus.replace(/-/g, ' ')} to ${status.replace(/-/g, ' ')}`
+            },
+            deepLinkUrl: `/dashboard/projects/${projectId}/phase-2`
+          });
+        } else {
+          await NotificationService.createNotification({
+            recipientId: recipient,
+            type: 'LOAN_STATUS_UPDATE',
+            actor: { uid, name: actorName },
+            objectReference: {
+              projectId,
+              dealAddress,
+              task: `Loan status changed from ${oldStatus.replace(/-/g, ' ')} to ${status.replace(/-/g, ' ')}`
+            },
+            deepLinkUrl: `/dashboard/projects/${projectId}/phase-2`
+          });
+        }
       } catch (err: any) {
         console.error('Failed to trigger milestone notification:', err.message);
       }

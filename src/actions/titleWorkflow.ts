@@ -40,6 +40,10 @@ async function verifyProjectAccess(projectId: string, uid: string, organizationI
   if (data.members?.[uid]) return;
   if (Array.isArray(data.assignedUsers) && data.assignedUsers.includes(uid)) return;
 
+  // Title/Escrow vendor slot check (counterpart visibility)
+  const titleVendorId = data.financials?.f4TitleEscrowVendor?.marketplaceVendorId;
+  if (titleVendorId && titleVendorId === uid) return;
+
   throw new Error('You do not have access to this project.');
 }
 
@@ -50,7 +54,14 @@ export async function openTitleOrderAction(idToken: string, projectId: string): 
   await verifyProjectAccess(projectId, user.uid, user.organizationId);
 
   const provider = getTitleProvider();
-  return provider.openOrder(projectId, user.uid, user.displayName);
+  const res = await provider.openOrder(projectId, user.uid, user.displayName);
+  try {
+    const { jobQueue } = await import('@/lib/queue/jobQueue');
+    await jobQueue.enqueue('timeline_sync', { projectId });
+  } catch (err: any) {
+    console.error('Failed to enqueue timeline sync on openTitleOrderAction:', err.message);
+  }
+  return res;
 }
 
 export async function receiveTitleCommitmentAction(
@@ -62,7 +73,14 @@ export async function receiveTitleCommitmentAction(
   await verifyProjectAccess(projectId, user.uid, user.organizationId);
 
   const provider = getTitleProvider();
-  return provider.receiveCommitment(projectId, data, user.uid, user.displayName);
+  const res = await provider.receiveCommitment(projectId, data, user.uid, user.displayName);
+  try {
+    const { jobQueue } = await import('@/lib/queue/jobQueue');
+    await jobQueue.enqueue('timeline_sync', { projectId });
+  } catch (err: any) {
+    console.error('Failed to enqueue timeline sync on receiveTitleCommitmentAction:', err.message);
+  }
+  return res;
 }
 
 export async function addTitleDefectAction(
@@ -74,7 +92,14 @@ export async function addTitleDefectAction(
   await verifyProjectAccess(projectId, user.uid, user.organizationId);
 
   const provider = getTitleProvider();
-  return provider.addDefect(projectId, description, user.uid, user.displayName);
+  const res = await provider.addDefect(projectId, description, user.uid, user.displayName);
+  try {
+    const { jobQueue } = await import('@/lib/queue/jobQueue');
+    await jobQueue.enqueue('timeline_sync', { projectId });
+  } catch (err: any) {
+    console.error('Failed to enqueue timeline sync on addTitleDefectAction:', err.message);
+  }
+  return res;
 }
 
 export async function resolveTitleDefectAction(
@@ -89,13 +114,27 @@ export async function resolveTitleDefectAction(
   await verifyProjectAccess(projectId, user.uid, user.organizationId);
 
   const provider = getTitleProvider();
-  return provider.resolveDefect(projectId, defectId, notes, documentUrl, documentName, user.uid, user.displayName);
+  const res = await provider.resolveDefect(projectId, defectId, notes, documentUrl, documentName, user.uid, user.displayName);
+  try {
+    const { jobQueue } = await import('@/lib/queue/jobQueue');
+    await jobQueue.enqueue('timeline_sync', { projectId });
+  } catch (err: any) {
+    console.error('Failed to enqueue timeline sync on resolveTitleDefectAction:', err.message);
+  }
+  return res;
 }export async function clearTitleAction(idToken: string, projectId: string): Promise<TitleWorkflowState> {
   const user = await verifyAuth(idToken);
   await verifyProjectAccess(projectId, user.uid, user.organizationId);
 
   const provider = getTitleProvider();
-  return provider.clearTitle(projectId, user.uid, user.displayName);
+  const res = await provider.clearTitle(projectId, user.uid, user.displayName);
+  try {
+    const { jobQueue } = await import('@/lib/queue/jobQueue');
+    await jobQueue.enqueue('timeline_sync', { projectId });
+  } catch (err: any) {
+    console.error('Failed to enqueue timeline sync on clearTitleAction:', err.message);
+  }
+  return res;
 }
 
 export async function getTitleWorkflowStateAction(idToken: string, projectId: string): Promise<TitleWorkflowState> {

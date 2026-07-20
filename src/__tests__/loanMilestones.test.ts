@@ -52,6 +52,11 @@ jest.mock('@/lib/firebase/admin', () => ({
               set: (...args: any[]) => mockSubDocSet(...args),
               update: (...args: any[]) => mockSubDocUpdate(...args),
               delete: (...args: any[]) => mockSubDocDelete(...args),
+              collection: (_nestedColName: string) => ({
+                doc: (nestedDocId?: string) => ({
+                  set: (...args: any[]) => mockSubDocSet(...args)
+                })
+              })
             }),
           }),
         }),
@@ -121,6 +126,18 @@ describe('Card F3.4 Loan Underwriting Milestones API Tests', () => {
       expect.objectContaining({ status: 'Processing' })
     );
 
+    // Verify transitions log was written
+    expect(mockSubDocSet).toHaveBeenCalledWith(
+      expect.objectContaining({
+        fromStatus: 'Application-Submitted',
+        toStatus: 'Processing',
+        actor: expect.objectContaining({
+          uid: OWNER_UID,
+          name: 'Marcus Teammate'
+        })
+      })
+    );
+
     // Verify timeline activity log was written
     expect(mockWriteActivityLog).toHaveBeenCalledWith(
       PROJECT_ID,
@@ -185,6 +202,17 @@ describe('Card F3.4 Loan Underwriting Milestones API Tests', () => {
         appraisalFileName: 'appraisal_report.pdf',
         appraisalFileUrl: 'https://storage/appraisal_report.pdf',
         ltvPercent: 80.00
+      })
+    );
+
+    // Verify transitions log was written
+    expect(mockSubDocSet).toHaveBeenCalledWith(
+      expect.objectContaining({
+        fromStatus: 'Application-Submitted',
+        toStatus: 'Appraisal-Received',
+        fileId: 'doc_appr_111',
+        fileName: 'appraisal_report.pdf',
+        fileUrl: 'https://storage/appraisal_report.pdf'
       })
     );
   });

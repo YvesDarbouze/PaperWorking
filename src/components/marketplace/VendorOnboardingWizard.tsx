@@ -26,15 +26,15 @@ const VENDOR_TYPE_OPTIONS = [
 
 /** Contextual specialties per vendor type */
 const SPECIALTIES_BY_TYPE: Record<string, string[]> = {
-  Lawyer: ['Wholesale', 'Probate', 'Commercial', 'Foreclosure', 'Short Sale', '1031 Exchange'],
-  Appraiser: ['Residential', 'Commercial', 'Multi-Family', 'Desktop', 'FHA/VA'],
-  Inspector: ['Pre-Purchase', 'Mold & Moisture', 'Structural', 'Radon', 'Termite/WDI', 'Sewer Scope'],
-  Title: ['Residential', 'Commercial', 'Refinance', 'Wholesale', 'REO'],
-  Insurance: ['Homeowner', 'Landlord', 'Flood', 'Builder\'s Risk', 'Liability'],
+  Lawyer: ['Wholesale', 'Probate', 'Commercial', 'Foreclosure', 'Short Sale', '1031 Exchange', 'Closing Attorney'],
+  Appraiser: ['Residential', 'Commercial', 'Multi-Family', 'Desktop', 'FHA/VA', 'Appraiser'],
+  Inspector: ['Pre-Purchase', 'Mold & Moisture', 'Structural', 'Radon', 'Termite/WDI', 'Sewer Scope', 'Phase I ESA', 'Surveyor'],
+  Title: ['Residential', 'Commercial', 'Refinance', 'Wholesale', 'REO', 'Title/Escrow Services'],
+  Insurance: ['Homeowner', 'Landlord', 'Flood', 'Builder\'s Risk', 'Liability', 'Insurance Broker'],
   Contractor: ['Full Rehab', 'Kitchen/Bath', 'Roofing', 'Foundation', 'Electrical', 'Plumbing'],
   'Property Manager': ['Single Family', 'Multi-Family', 'Section 8', 'Short-Term Rental', 'HOA'],
   'Listing Agent': ['Fix & Flip', 'Buy & Hold', 'Commercial', 'Luxury', 'REO/Bank-Owned'],
-  Lender: ['Hard Money', 'DSCR', 'Conventional', 'Bridge', 'Construction'],
+  Lender: ['Hard Money', 'DSCR', 'Conventional', 'Bridge', 'Construction', 'CDC (SBA 504)', 'Private Lender'],
 };
 
 const PLAN_OPTIONS = [

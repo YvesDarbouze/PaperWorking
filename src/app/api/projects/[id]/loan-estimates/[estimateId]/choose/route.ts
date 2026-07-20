@@ -2,25 +2,9 @@ import { NextRequest, NextResponse } from 'next/server';
 import { requireAuth, isAuthError } from '@/lib/firebase-admin/auth-guard';
 import { adminDb } from '@/lib/firebase/admin';
 import { telemetry } from '@/lib/telemetry';
+import { verifyProjectAccessAndRole } from '@/lib/firebase-admin/project-guard';
 
 export const dynamic = 'force-dynamic';
-
-async function verifyProjectMembership(projectId: string, uid: string) {
-  const snap = await adminDb.collection('projects').doc(projectId).get();
-  if (!snap.exists) return null;
-  const data = snap.data()!;
-  const isOwner = data.ownerUid === uid;
-  const isMember = !!data.members?.[uid] || data.teamMemberIds?.includes(uid);
-  const isOrgMember = data.organizationId
-    ? await adminDb.collection('organizations').doc(data.organizationId).get().then((o) => {
-        if (!o.exists) return false;
-        const od = o.data()!;
-        return od.ownerUid === uid || od.teamMembers?.some((m: any) => m.id === uid && m.status === 'active');
-      })
-    : false;
-  if (!isOwner && !isMember && !isOrgMember) return null;
-  return data;
-}
 
 export async function POST(
   request: NextRequest,
@@ -33,10 +17,17 @@ export async function POST(
 
     const { id: projectId, estimateId } = await params;
 
-    const project = await verifyProjectMembership(projectId, uid);
-    if (!project) {
+    const access = await verifyProjectAccessAndRole(projectId, uid, auth.token.email);
+    if (!access) {
       return NextResponse.json({ error: 'Project not found or access denied' }, { status: 403 });
     }
+
+    // Only Lead Investors can choose/promote loan estimates
+    if (access.role !== 'Lead Investor') {
+      return NextResponse.json({ error: 'Forbidden: only Lead Investors can choose loan estimates' }, { status: 403 });
+    }
+
+    const project = access.project;
 
     const projectRef = adminDb.collection('projects').doc(projectId);
     const estimateRef = projectRef.collection('loanEstimates').doc(estimateId);
@@ -85,6 +76,7 @@ export async function POST(
       fileId: estimate.fileId,
       fileName: estimate.fileName,
       fileUrl: estimate.fileUrl,
+      sourceTags: estimate.sourceTags || null,
       updatedAt: new Date().toISOString(),
     });
 

@@ -1,132 +1,83 @@
-import type { Project } from '@/types/schema';
-import { computeNOI, deriveAllMetrics } from '@/lib/metrics/reiMetrics';
+import { deriveAllProjectMetrics } from '../lib/metrics/reiMetrics';
+import { FX_1_PROJECT } from '../lib/metrics/fixtures';
 
-/**
- * Card F4.4 — Insurance Binder — Unit tests
- *
- * Verifies annual premium updates, opex premium sync (annual premium / 12),
- * and the conditional rider logic.
- */
+describe('FD-27: Insurance Binder and Riders Validation', () => {
+  it('correctly derives opex insurance and NOI from the annual premium input', () => {
+    // 1. Setup a project financials object with an annual insurance premium of $2,400
+    const annualPremium = 2400;
+    const monthlyPremium = annualPremium / 12; // $200/mo
 
-// Helper to make a baseline project with financials
-function makeMockProject(overrides: Partial<Project> = {}): Project {
-  return {
-    id: 'project_test_123',
-    organizationId: 'org_test_123',
-    propertyName: 'Test Property',
-    currentPhase: 2,
-    dispositionType: 'RENT',
-    createdAt: new Date().toISOString(),
-    ownerUid: 'user_investor_123',
-    financials: {
-      purchasePrice: 100000,
-      estimatedARV: 150000,
-      monthlyGrossRent: 2000, // Gross Rental Income = $24,000/yr
-      vacancyRatePercent: 7, // Vacancy = $1,680/yr (EGI = $22,320)
-      costs: [],
-      // Expenses
-      tax: 150,       // $1,800/yr
-      insurance: 100, // $1,200/yr (monthly baseline)
-      utilities: 50,  // $600/yr
-      management: 0,
-      maintenance: 0,
-      HOA: 0,
-      security: 0,
-      capex: 0,
-      ...overrides.financials,
-    },
-    ...overrides,
-  } as unknown as Project;
-}
+    const projectWithAnnualPremium = {
+      ...FX_1_PROJECT,
+      financials: {
+        ...FX_1_PROJECT.financials,
+        insuranceCost: annualPremium,
+        insurance: monthlyPremium, // writes to the insurance expense category
+        holdingCostInsurance: monthlyPremium,
+      },
+    };
 
-describe('Card F4.4 — Insurance Binder', () => {
-  /* ═══ NOI derivation ════════════════════════════════════════════════════ */
-  describe('NOI math with premium updates (BUG-8 vigilance)', () => {
-    it('computes correct baseline NOI components', () => {
-      const project = makeMockProject();
-      const metrics = deriveAllMetrics(project.financials!, undefined, project.dispositionType, project.currentPhase);
+    // calculate metrics
+    const metrics = deriveAllProjectMetrics(projectWithAnnualPremium);
 
-      // EGI = 2000 * 12 - 7% = 24000 - 1680 = 22320
-      // Expenses = (150 tax + 100 ins + 50 util) * 12 = 300 * 12 = 3600
-      // NOI = EGI - Expenses = 22320 - 3600 = 18720
-      expect(metrics.noi).toBe(18720);
-    });
-
-    it('recalculates monthly operating expense and NOI when annual premium changes', () => {
-      const project = makeMockProject();
-      const financials = project.financials!;
-
-      // User enters an annual premium of $2,400
-      const annualPremium = 2400;
-      const monthlyPremium = Math.round((annualPremium / 12) * 100) / 100; // $200
-
-      // Update project financials
-      financials.insuranceCost = annualPremium;
-      financials.insurance = monthlyPremium;
-      financials.holdingCostInsurance = monthlyPremium;
-
-      // Recalculate metrics
-      const metrics = deriveAllMetrics(financials, undefined, project.dispositionType, project.currentPhase);
-
-      // Expenses should now be: (150 tax + 200 ins + 50 util) * 12 = 400 * 12 = 4800
-      // NOI = 22320 - 4800 = 17520
-      expect(metrics.noi).toBe(17520);
-    });
-
-    it('handles rounding correctly for odd premiums (e.g. 1999)', () => {
-      const project = makeMockProject();
-      const financials = project.financials!;
-
-      const annualPremium = 1999;
-      const monthlyPremium = Math.round((annualPremium / 12) * 100) / 100; // 166.58
-
-      financials.insuranceCost = annualPremium;
-      financials.insurance = monthlyPremium;
-      financials.holdingCostInsurance = monthlyPremium;
-
-      const metrics = deriveAllMetrics(financials, undefined, project.dispositionType, project.currentPhase);
-
-      // Annualized opex insurance = 166.58 * 12 = 1998.96
-      // Total expenses = (150 + 166.58 + 50) * 12 = 366.58 * 12 = 4398.96
-      // NOI = 22320 - 4398.96 = 17921.04
-      expect(metrics.noi).toBeCloseTo(17921.04, 2);
-    });
+    // Verify NOI in the metrics engine is $10,782 (EGI $21,762 - Total Opex $10,980)
+    expect(metrics.noi).toBe(10782);
   });
 
-  /* ═══ Conditional riders & zones ════════════════════════════════════════ */
-  describe('Riders & Zone determinations', () => {
-    it('correctly maps flood and earthquake riders', () => {
-      const project = makeMockProject({
-        financials: {
-          purchasePrice: 100000,
-          estimatedARV: 150000,
-          costs: [],
-          hasFloodRider: true,
-          hasEarthquakeRider: true,
-          floodZone: 'Zone AE',
-          earthquakeZone: 'High Risk 4',
-        } as any,
-      });
+  it('verifies that the five goldens on the demo property remain intact with seeded premium (no double-counting)', () => {
+    // FX_1_PROJECT has a monthly insurance of $58 seeded.
+    // Annualized = 58 * 12 = $696.
+    const metrics = deriveAllProjectMetrics(FX_1_PROJECT);
 
-      const financials = project.financials!;
-      expect(financials.hasFloodRider).toBe(true);
-      expect(financials.hasEarthquakeRider).toBe(true);
-      expect(financials.floodZone).toBe('Zone AE');
-      expect(financials.earthquakeZone).toBe('High Risk 4');
-    });
+    // Verify that the five goldens reproduce exactly
+    // Golden 1: NOI = $12,486
+    expect(metrics.noi).toBe(12486);
 
-    it('sanitizes zones when riders are deselected', () => {
-      // Simulate component save where riders are toggled off
-      const hasFlood = false;
-      const hasEarthquake = false;
-      const floodInput = 'Zone AE';
-      const earthquakeInput = 'High Risk';
+    // Golden 2: Annual Cash Flow = -$4,443.31
+    expect(metrics.annualCashFlow).toBeCloseTo(-4443.31, 1);
 
-      const finalFloodZone = hasFlood ? floodInput : null;
-      const finalEarthquakeZone = hasEarthquake ? earthquakeInput : null;
+    // Golden 3: DSCR = 0.74
+    expect(metrics.dscr).toBeCloseTo(0.74, 2);
 
-      expect(finalFloodZone).toBeNull();
-      expect(finalEarthquakeZone).toBeNull();
-    });
+    // Golden 4: Cash-on-Cash Return = -7.41%
+    expect(metrics.cashOnCashReturn).toBeCloseTo(-7.41, 1);
+
+    // Golden 5: GRM = 11.92
+    expect(metrics.grossRentMultiplier).toBeCloseTo(11.92, 2);
+  });
+
+  it('ensures that opex coalescing prevents double counting between insurance and holdingCostInsurance', () => {
+    const projectDoubleFields = {
+      ...FX_1_PROJECT,
+      financials: {
+        ...FX_1_PROJECT.financials,
+        insurance: 100, // Monthly premium
+        holdingCostInsurance: 50, // Should be ignored because financials.insurance is preferred
+      },
+    };
+
+    const metrics = deriveAllProjectMetrics(projectDoubleFields);
+    
+    // NOI should reflect monthly insurance of $100 * 12 = $1,200 (Total Opex $9,780).
+    // NOI = EGI $21,762 - Total Opex $9,780 = $11,982.
+    expect(metrics.noi).toBe(11982);
+  });
+
+  it('correctly tracks conditional hazard riders and zone status parameters', () => {
+    const projectWithRiders = {
+      ...FX_1_PROJECT,
+      financials: {
+        ...FX_1_PROJECT.financials,
+        hasFloodRider: true,
+        floodZone: 'Zone AE',
+        hasEarthquakeRider: true,
+        earthquakeZone: 'High Risk 4',
+      },
+    };
+
+    expect(projectWithRiders.financials.hasFloodRider).toBe(true);
+    expect(projectWithRiders.financials.floodZone).toBe('Zone AE');
+    expect(projectWithRiders.financials.hasEarthquakeRider).toBe(true);
+    expect(projectWithRiders.financials.earthquakeZone).toBe('High Risk 4');
   });
 });

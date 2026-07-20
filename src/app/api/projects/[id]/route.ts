@@ -136,6 +136,24 @@ export async function PATCH(
         projectId,
         projectName,
       });
+
+      if (phaseChanged) {
+        try {
+          const { NotificationService } = await import('@/lib/services/notificationService');
+          await NotificationService.broadcastProjectNotification(projectId, {
+            type: 'PHASE_TRANSITION',
+            actor: { uid, name: actorName },
+            objectReference: {
+              projectId,
+              dealAddress: projectName,
+              phase: nextPhase,
+            },
+            deepLinkUrl: `/dashboard/projects/${projectId}`,
+          });
+        } catch (notifErr: any) {
+          console.error('[Projects PATCH] Phase transition notification failed:', notifErr.message);
+        }
+      }
     }
 
     // 4. Return updated snapshot after successful transaction

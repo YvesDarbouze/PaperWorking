@@ -62,7 +62,7 @@ export function FinancingRouteCard({ projectId }: Props) {
   const [loans, setLoans] = useState<LoanRecord[]>([]);
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
-  const [selectedInstrument, setSelectedInstrument] = useState<InstrumentType | null>(null);
+  const [selectedInstruments, setSelectedInstruments] = useState<InstrumentType[]>([]);
 
   // 1. Listen to Project details
   useEffect(() => {
@@ -116,9 +116,27 @@ export function FinancingRouteCard({ projectId }: Props) {
     return unsub;
   }, [projectId]);
 
+  // Initialize selected instruments from database loans
+  useEffect(() => {
+    if (loans.length > 0) {
+      const activeInsts = Array.from(new Set(loans.map((l) => l.instrument))) as InstrumentType[];
+      setSelectedInstruments(activeInsts);
+    } else {
+      setSelectedInstruments([]);
+    }
+  }, [loans]);
+
+  const handleToggleOption = (inst: InstrumentType) => {
+    if (selectedInstruments.includes(inst)) {
+      setSelectedInstruments(selectedInstruments.filter((x) => x !== inst));
+    } else {
+      setSelectedInstruments([...selectedInstruments, inst]);
+    }
+  };
+
   const handleSetRoute = async () => {
-    if (!selectedInstrument) {
-      toast.error('Please select a financing instrument.');
+    if (selectedInstruments.length === 0) {
+      toast.error('Please select at least one financing instrument.');
       return;
     }
 
@@ -135,7 +153,7 @@ export function FinancingRouteCard({ projectId }: Props) {
           'Authorization': `Bearer ${idToken}`,
         },
         body: JSON.stringify({
-          instrument: selectedInstrument,
+          instruments: selectedInstruments,
         }),
       });
 
@@ -144,7 +162,7 @@ export function FinancingRouteCard({ projectId }: Props) {
         throw new Error(errData.error || 'Failed to configure financing route.');
       }
 
-      toast.success(`${selectedInstrument} Financing Route activated.`);
+      toast.success(`Financing Route updated: ${selectedInstruments.join(', ')}.`);
     } catch (err: any) {
       toast.error(err.message || 'Error occurred during route selection.');
     } finally {
@@ -178,7 +196,7 @@ export function FinancingRouteCard({ projectId }: Props) {
       }
 
       toast.success('Financing route reset successfully.');
-      setSelectedInstrument(null);
+      setSelectedInstruments([]);
     } catch (err: any) {
       toast.error(err.message || 'Error resetting financing route.');
     } finally {
@@ -187,6 +205,7 @@ export function FinancingRouteCard({ projectId }: Props) {
   };
 
   const isActive = project?.financials?.financingType === 'Financed' && loans.length > 0;
+  const activeInstrumentsList = Array.from(new Set(loans.map((l) => l.instrument))).join(' + ');
 
   if (loading) {
     return (
@@ -207,7 +226,7 @@ export function FinancingRouteCard({ projectId }: Props) {
             Financing Route Selection
           </h3>
           <p className="text-xs text-pw-muted font-light mt-1">
-            Determine the debt structure and route gating for this acquisition.
+            Determine the debt structure and route gating for this acquisition. Supports hybrid multi-loan stacks.
           </p>
         </div>
         {isActive && (
@@ -225,7 +244,7 @@ export function FinancingRouteCard({ projectId }: Props) {
               <div>
                 <span className="text-xs font-bold text-pw-muted uppercase tracking-wider">Active Instrument</span>
                 <h4 className="text-[16px] leading-[22px] font-semibold text-pw-black mt-0.5">
-                  {loans[0]?.instrument} Route
+                  {activeInstrumentsList || 'Custom'} Route
                 </h4>
               </div>
               <button 
@@ -271,11 +290,11 @@ export function FinancingRouteCard({ projectId }: Props) {
         <div className="space-y-6">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {ROUTE_OPTIONS.map((opt) => {
-              const isSelected = selectedInstrument === opt.id;
+              const isSelected = selectedInstruments.includes(opt.id);
               return (
                 <div 
                   key={opt.id}
-                  onClick={() => setSelectedInstrument(opt.id)}
+                  onClick={() => handleToggleOption(opt.id)}
                   className={`p-4 border rounded-lg cursor-pointer transition-all hover:bg-pw-bg/5 flex flex-col justify-between ${
                     isSelected 
                       ? 'border-[#7A9EAA] bg-[#7A9EAA]/5 shadow-sm' 
@@ -285,11 +304,13 @@ export function FinancingRouteCard({ projectId }: Props) {
                   <div>
                     <div className="flex justify-between items-center mb-1">
                       <h4 className="text-xs uppercase font-black tracking-widest text-pw-black">{opt.label}</h4>
-                      {isSelected && (
-                        <span className="w-4 h-4 rounded-full bg-[#7A9EAA] flex items-center justify-center">
-                          <Check className="w-2.5 h-2.5 text-pw-white" />
-                        </span>
-                      )}
+                      <span className={`w-4 h-4 rounded border flex items-center justify-center transition-colors ${
+                        isSelected 
+                          ? 'bg-[#7A9EAA] border-[#7A9EAA]' 
+                          : 'border-pw-border bg-pw-white'
+                      }`}>
+                        {isSelected && <Check className="w-2.5 h-2.5 text-pw-white" />}
+                      </span>
                     </div>
                     <p className="text-[11px] text-pw-muted mb-3">{opt.description}</p>
                   </div>
@@ -306,9 +327,9 @@ export function FinancingRouteCard({ projectId }: Props) {
           <div className="flex justify-end pt-2 border-t border-pw-border">
             <button 
               onClick={handleSetRoute}
-              disabled={!selectedInstrument || submitting}
+              disabled={selectedInstruments.length === 0 || submitting}
               className={`pw-interactive px-4 py-2 text-xs font-semibold uppercase tracking-wider text-pw-white flex items-center gap-1.5 transition-all ${
-                selectedInstrument && !submitting 
+                selectedInstruments.length > 0 && !submitting 
                   ? 'bg-[#7A9EAA] hover:bg-[#688a95] shadow-sm' 
                   : 'bg-gray-300 cursor-not-allowed'
               }`}

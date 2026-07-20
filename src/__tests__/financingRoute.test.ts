@@ -261,6 +261,59 @@ describe('Card F3.1 Financing Route API Tests', () => {
       });
     });
 
+    it('creates multiple loans for hybrid stack and updates project modality', async () => {
+      // Mock project doc with fundingPlan modality present so it updates correctly
+      mockProjectDocGet.mockResolvedValue({
+        exists: true,
+        data: () => ({
+          ownerUid: OWNER_UID,
+          members: { [OWNER_UID]: true },
+          fundingPlan: {
+            modality: ['co_buyer_equity']
+          },
+          financials: {
+            financingType: 'All Cash'
+          }
+        }),
+      });
+
+      const req = new NextRequest(
+        `http://localhost/api/projects/${PROJECT_ID}/loans`,
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': 'Bearer mock_token'
+          },
+          body: JSON.stringify({ instruments: ['Conventional', 'Bridge'] })
+        }
+      );
+
+      const res = await POST(req, {
+        params: Promise.resolve({ id: PROJECT_ID })
+      });
+
+      expect(res.status).toBe(201);
+      
+      // Verify sub-document creation for each instrument (Conventional + Bridge)
+      expect(mockSubDocSet).toHaveBeenCalledTimes(2);
+      expect(mockSubDocSet).toHaveBeenNthCalledWith(
+        1,
+        expect.objectContaining({ instrument: 'Conventional' })
+      );
+      expect(mockSubDocSet).toHaveBeenNthCalledWith(
+        2,
+        expect.objectContaining({ instrument: 'Bridge' })
+      );
+
+      // Verify project document is updated to include conventional_loan and bridge
+      expect(mockProjectDocUpdate).toHaveBeenCalledWith({
+        'financials.financingType': 'Financed',
+        'fundingPlan.modality': ['co_buyer_equity', 'conventional_loan', 'bridge'],
+        loanStatus: 'Application-Submitted',
+      });
+    });
+
     it('resets financing route to All Cash and clears subcollection when reset requested', async () => {
       // Mock existing loan records present
       mockSubCollGet.mockResolvedValueOnce({

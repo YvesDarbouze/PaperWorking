@@ -4,7 +4,7 @@ import React, { useState, useEffect } from 'react';
 import { getAuth } from 'firebase/auth';
 import { doc, onSnapshot } from 'firebase/firestore';
 import { db } from '@/lib/firebase/config';
-import { deriveAllMetrics } from '@/lib/metrics/reiMetrics';
+import { deriveAllProjectMetrics } from '@/lib/metrics/reiMetrics';
 import { 
   Lock, 
   Unlock,
@@ -18,6 +18,22 @@ import {
   Coins
 } from 'lucide-react';
 import toast from 'react-hot-toast';
+
+function SourceTagBadge({ source }: { source?: string | null }) {
+  if (!source) return null;
+  const isDoc = source === 'document';
+  return (
+    <span 
+      className={`px-1.5 py-0.5 rounded text-[8px] font-black uppercase tracking-wider border ml-2 ${
+        isDoc 
+          ? 'bg-emerald-50 text-emerald-700 border-emerald-200' 
+          : 'bg-amber-50 text-amber-700 border-amber-200'
+      }`}
+    >
+      {isDoc ? 'Doc' : 'Manual'}
+    </span>
+  );
+}
 
 interface Props {
   projectId: string;
@@ -112,7 +128,7 @@ export function LockedTermsCard({ projectId }: Props) {
   const isLocked = !!project.termsLocked;
 
   // Deriving live metrics in real-time
-  const metrics = deriveAllMetrics(financials, undefined, project.dispositionType, 2);
+  const metrics = deriveAllProjectMetrics(project);
   const dscrVal = metrics.dscr || 0;
   const cashFlowVal = metrics.annualCashFlow || 0;
   const cocVal = metrics.cashOnCashReturn || 0;
@@ -172,25 +188,37 @@ export function LockedTermsCard({ projectId }: Props) {
           </h4>
           <div className="bg-gray-50 border border-pw-border rounded-xl p-4 space-y-3.5">
             <div className="flex justify-between items-center text-xs">
-              <span className="text-pw-muted font-light">Loan Amount (Actual)</span>
+              <span className="text-pw-muted font-light flex items-center">
+                Loan Amount (Actual)
+                <SourceTagBadge source={financials.sourceTags?.loan_amount} />
+              </span>
               <strong className="text-pw-black font-bold">
                 {financials.loanAmount ? `$${financials.loanAmount.toLocaleString()}` : '—'}
               </strong>
             </div>
             <div className="flex justify-between items-center text-xs">
-              <span className="text-pw-muted font-light">Interest Rate (Actual)</span>
+              <span className="text-pw-muted font-light flex items-center">
+                Interest Rate (Actual)
+                <SourceTagBadge source={financials.sourceTags?.loan_interest_rate} />
+              </span>
               <strong className="text-pw-black font-bold">
                 {financials.loanInterestRate ? `${financials.loanInterestRate}%` : '—'}
               </strong>
             </div>
             <div className="flex justify-between items-center text-xs">
-              <span className="text-pw-muted font-light">Loan Term (Actual)</span>
+              <span className="text-pw-muted font-light flex items-center">
+                Loan Term (Actual)
+                <SourceTagBadge source={financials.sourceTags?.loan_term} />
+              </span>
               <strong className="text-pw-black font-bold">
                 {financials.loanTermYears ? `${financials.loanTermYears} Years` : '—'}
               </strong>
             </div>
             <div className="flex justify-between items-center text-xs">
-              <span className="text-pw-muted font-light">Origination Points (Actual)</span>
+              <span className="text-pw-muted font-light flex items-center">
+                Origination Points (Actual)
+                <SourceTagBadge source={financials.sourceTags?.loanOriginationPoints} />
+              </span>
               <strong className="text-pw-black font-bold">
                 {financials.loanOriginationPoints ? `${financials.loanOriginationPoints}%` : '—'}
               </strong>

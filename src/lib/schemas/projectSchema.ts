@@ -380,6 +380,24 @@ export const projectFinancialsSchema = z.object({
   sale_price: usdDollars.optional(),
   selling_costs: usdDollars.optional(),
   sale_closed_date: z.string().optional(),
+  titleHolding: z.enum(['TIC', 'JTWROS']).optional(),
+  titleHoldingDerived: z.boolean().optional(),
+  titleCoOwnershipAgreementUrl: z.string().nullable().optional(),
+  titleCoOwnershipAgreementName: z.string().nullable().optional(),
+  titleCoOwnershipAgreementStatus: z.enum(['unsigned', 'docs-out', 'signed', 'verified']).optional(),
+  distributionStructure: z.object({
+    type: z.enum(['straight', 'pref_return', 'waterfall']),
+    splitRatioLP: z.number().min(0).max(100),
+    splitRatioGP: z.number().min(0).max(100),
+    preferredRate: z.number().min(0).max(100).optional(),
+    preferredType: z.enum(['cumulative', 'non_cumulative']).optional(),
+    waterfallTiers: z.array(z.object({
+      tierNumber: z.number().int().positive(),
+      thresholdPct: z.number().min(0).max(100),
+      splitRatioLP: z.number().min(0).max(100),
+      splitRatioGP: z.number().min(0).max(100),
+    })).optional(),
+  }).optional(),
 
   // ── Phase-specific fields ──
 
@@ -1109,6 +1127,12 @@ export const baseProjectSchema = z.object({
 
   /** Acquisition: Document vault */
   roleLinkedDocuments: z.array(z.any()).optional(),
+
+  /** Phase 2: Proof of Funds checklist */
+  proofOfFunds: z.array(z.any()).optional(),
+
+  /** Phase 2: Equity Parties roster */
+  equityParties: z.array(z.any()).optional(),
 
   /** Financing status tracker */
   loanStatus: loanStatusEnum.optional(),

@@ -43,6 +43,10 @@ export const folderPhaseEnum = z.enum([
   'Rehab',
   'Listed',
   'Sold',
+  'Capital Plan',
+  'Equity',
+  'Debt',
+  'Title & Insurance',
 ]);
 
 /** OCR processing status — for future Document AI integration */

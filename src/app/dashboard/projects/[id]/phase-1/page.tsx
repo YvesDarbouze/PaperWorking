@@ -4,6 +4,8 @@ import React, { useState, useMemo, useCallback, useEffect } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import { useAuth } from '@/context/AuthContext';
 import { useWorkspaceProject } from '@/app/dashboard/projects/[id]/layout';
+import { usePhaseAccess } from '@/hooks/usePhaseAccess';
+import { PhaseAccessGuard } from '@/components/project/PhaseAccessGuard';
 import { usePipelineData } from '@/context/ProjectPipelineContext';
 import ProjectCalculator from '@/components/project/ProjectCalculator';
 import { MarketContextPanel } from '@/components/project/MarketContextPanel';
@@ -204,6 +206,7 @@ export default function Phase1WorkspacePage() {
 
   /* ── Data from shared WorkspaceContext (fetched once by layout) ── */
   const { project, loading, refresh } = useWorkspaceProject();
+  const { canView, canEdit, loading: accessLoading } = usePhaseAccess('phase-1');
 
   /* ── Stage Stepper active state ── */
   const [activeStage, setActiveStage] = useState<string>('target');
@@ -219,6 +222,26 @@ export default function Phase1WorkspacePage() {
       setOverrideReason(project.overrideReason || '');
     }
   }, [project?.id, projectId, project?.overrideReason, project?.contingencies]);
+
+  // Deep-link scroll routing for components in underwrite stage
+  useEffect(() => {
+    if (typeof window !== 'undefined' && project) {
+      const params = new URLSearchParams(window.location.search);
+      const focus = params.get('focus');
+      if (focus) {
+        setActiveStage('underwrite');
+        setTimeout(() => {
+          const id = focus === 'rehab' ? 'rehab-budget-card' : focus === 'financing' ? 'financing-assumptions-card' : null;
+          if (id) {
+            const el = document.getElementById(id);
+            if (el) {
+              el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            }
+          }
+        }, 500);
+      }
+    }
+  }, [project?.id]);
 
   const handleStageSelect = async (stageKey: string) => {
     setActiveStage(stageKey);
@@ -915,7 +938,7 @@ export default function Phase1WorkspacePage() {
   }
 
   /* ── Loading state ── */
-  if (loading) {
+  if (loading || accessLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-[#0d0a0b]">
         <div className="flex flex-col items-center gap-4">
@@ -982,7 +1005,8 @@ export default function Phase1WorkspacePage() {
   const projectData = project as any;
 
   return (
-    <div className="min-h-screen bg-[#0d0a0b] relative">
+    <PhaseAccessGuard phaseId="phase-1" phaseName="Phase 1: Acquisition">
+      <div className="min-h-screen bg-[#0d0a0b] relative">
 
       {/* ── Syndicate Investor Invite Modal ── */}
       {showInviteModal && (
@@ -1310,11 +1334,13 @@ export default function Phase1WorkspacePage() {
                 />
 
                 {/* Rehab & CapEx Budget */}
-                <RehabBudgetCard
-                  project={project}
-                  phaseColor={PHASE_COLOR}
-                  onSave={handleTargetSave}
-                />
+                <div id="rehab-budget-card">
+                  <RehabBudgetCard
+                    project={project}
+                    phaseColor={PHASE_COLOR}
+                    onSave={handleTargetSave}
+                  />
+                </div>
 
                 {/* Income Assumptions */}
                 <IncomeAssumptionsCard
@@ -1331,11 +1357,13 @@ export default function Phase1WorkspacePage() {
                 />
 
                 {/* Financing Assumptions */}
-                <FinancingAssumptionsCard
-                  project={project}
-                  phaseColor={PHASE_COLOR}
-                  onSave={handleTargetSave}
-                />
+                <div id="financing-assumptions-card">
+                  <FinancingAssumptionsCard
+                    project={project}
+                    phaseColor={PHASE_COLOR}
+                    onSave={handleTargetSave}
+                  />
+                </div>
               </div>
             )}
 
@@ -2371,7 +2399,8 @@ export default function Phase1WorkspacePage() {
           </div>
         </div>
       )}
-    </div>
+      </div>
+    </PhaseAccessGuard>
   );
 }
 

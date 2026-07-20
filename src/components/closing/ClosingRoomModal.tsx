@@ -16,6 +16,8 @@ import { db } from '@/lib/firebase/config';
 import { foldersService } from '@/lib/firebase/folders';
 import { computeClosingCostLines } from '@/lib/math/closingCosts';
 import { ENABLE_OCR, IS_DEMO_MODE } from '@/lib/config/demo';
+import { useAttorneyStates } from '@/hooks/useAttorneyStates';
+import { isAttorneyCloseState } from '@/lib/config/attorneyStates';
 
 
 interface ClosingRoomProps {
@@ -54,6 +56,7 @@ export default function ClosingRoomModal({ projectId, onClose }: ClosingRoomProp
     } as NonNullable<import('@/types/schema').Project['closingRoom']>);
     const { role } = usePermissions();
     const { user, profile } = useAuth();
+    const { states: attorneyStates } = useAttorneyStates();
 
     const [isPinging, setIsPinging] = useState(false);
     const [matchingLawyers, setMatchingLawyers] = useState<ApplicationUser[]>([]);
@@ -149,7 +152,9 @@ export default function ClosingRoomModal({ projectId, onClose }: ClosingRoomProp
             setSweepCashToClose(fin.finalCashToClose || closingRoom.cdCashToClose || '');
             setSweepEmd(fin.emdAmount ? fin.emdAmount / 100 : '');
             setSweepInsurance(fin.insuranceCost || '');
-            const loanSource = (fin.capitalStack || []).find((s: any) => s.category === 'Conventional Financing' || s.category === 'Hard Money Loans');
+            const loanSource = (fin.capitalStack || []).find((s: any) => 
+                ['Conventional Financing', 'Hard Money Loans', 'SBA 504 Bank First Lien', 'SBA 504 CDC Debenture', 'Bridge Loans'].includes(s.category)
+            );
             setSweepLoanAmount(loanSource?.amount || fin.loanAmount || '');
             setSweepInterestRate(loanSource?.interestRate || fin.loanInterestRate || '');
         }
@@ -469,6 +474,55 @@ export default function ClosingRoomModal({ projectId, onClose }: ClosingRoomProp
                 return s;
             });
 
+            const isFinancedLocal = (fin.capitalStack || []).some(
+                (source: any) => 
+                    (source.category === 'Conventional Financing' || source.category === 'Hard Money Loans') &&
+                    (source.status === 'Approved' || source.status === 'Funded')
+            );
+            const loanSourceActLocal = (fin.capitalStack || []).find(
+                (s: any) => s.category === 'Conventional Financing' || s.category === 'Hard Money Loans'
+            );
+            const loanSatisfiedLocal = isFinancedLocal && !!loanSourceActLocal && (loanSourceActLocal.status === 'Approved' || loanSourceActLocal.status === 'Funded');
+            const rateSatisfiedLocal = isFinancedLocal && !!loanSourceActLocal && !!loanSourceActLocal.interestRate;
+
+            const newSourceTags: Record<string, any> = {
+                ...(fin.sourceTags || {}),
+            };
+            if (sweepPurchasePrice !== '') newSourceTags.purchasePrice = 'user_actual';
+            if (sweepClosingCosts !== '') newSourceTags.finalClosingCosts = 'user_actual';
+            if (sweepPrepaids !== '') newSourceTags.finalPrepaidsReserves = 'user_actual';
+            if (sweepCashToClose !== '') newSourceTags.finalCashToClose = 'user_actual';
+            if (sweepEmd !== '') newSourceTags.emdAmount = 'user_actual';
+            if (sweepInsurance !== '') newSourceTags.insuranceCost = 'user_actual';
+            if (sweepLoanAmount !== '') newSourceTags.loan_amount = 'user_actual';
+            if (sweepInterestRate !== '') newSourceTags.loan_interest_rate = 'user_actual';
+
+            // Document captured fields:
+            if (!!fin.purchasePrice) {
+                if (!newSourceTags.purchasePrice) newSourceTags.purchasePrice = 'document';
+            }
+            if (!!fin.finalClosingCosts || !!closingRoom.cdFinalClosingCosts) {
+                if (!newSourceTags.finalClosingCosts) newSourceTags.finalClosingCosts = 'document';
+            }
+            if (!!fin.finalPrepaidsReserves || !!closingRoom.cdPrepaidsReserves) {
+                if (!newSourceTags.finalPrepaidsReserves) newSourceTags.finalPrepaidsReserves = 'document';
+            }
+            if (!!fin.finalCashToClose || !!closingRoom.cdCashToClose) {
+                if (!newSourceTags.finalCashToClose) newSourceTags.finalCashToClose = 'document';
+            }
+            if (!!fin.emdAmount) {
+                if (!newSourceTags.emdAmount) newSourceTags.emdAmount = 'document';
+            }
+            if (!!fin.insuranceCost) {
+                if (!newSourceTags.insuranceCost) newSourceTags.insuranceCost = 'document';
+            }
+            if (loanSatisfiedLocal) {
+                if (!newSourceTags.loan_amount) newSourceTags.loan_amount = 'document';
+            }
+            if (rateSatisfiedLocal) {
+                if (!newSourceTags.loan_interest_rate) newSourceTags.loan_interest_rate = 'document';
+            }
+
             const updatedFinancials = {
                 ...fin,
                 purchasePrice: sweepPurchasePrice !== '' ? Number(sweepPurchasePrice) : fin.purchasePrice,
@@ -482,6 +536,7 @@ export default function ClosingRoomModal({ projectId, onClose }: ClosingRoomProp
                 loanAmount: sweepLoanAmount !== '' ? Number(sweepLoanAmount) : fin.loanAmount,
                 loanInterestRate: sweepInterestRate !== '' ? Number(sweepInterestRate) : fin.loanInterestRate,
                 capitalStack: updatedCapitalStack,
+                sourceTags: newSourceTags,
             };
 
             const closingRoomUpdates = {
@@ -522,7 +577,7 @@ export default function ClosingRoomModal({ projectId, onClose }: ClosingRoomProp
 
     const isFinanced = (deal.financials?.capitalStack || []).some(
         source => 
-            (source.category === 'Conventional Financing' || source.category === 'Hard Money Loans') &&
+            ['Conventional Financing', 'Hard Money Loans', 'SBA 504 Bank First Lien', 'SBA 504 CDC Debenture', 'Bridge Loans'].includes(source.category) &&
             (source.status === 'Approved' || source.status === 'Funded')
     );
 
@@ -675,7 +730,8 @@ export default function ClosingRoomModal({ projectId, onClose }: ClosingRoomProp
     const isDeedRecordingConfirmed = !!deedRecordingCountyState && !!deedRecordingDateState && !!deedRecordingInstrumentNumberState;
     const isClosingDocsArchived = isDocsChecklistComplete;
     const isCashToCloseReconciled = reconciliation.isReconciled || (closingRoom.isReconciliationOverridden && !!closingRoom.reconciliationOverrideReason?.trim());
-    const isAttorneySatisfied = !!closingRoom.lawyerVerified;
+    const isAttorneyState = isAttorneyCloseState(deal?.state, attorneyStates);
+    const isAttorneySatisfied = !isAttorneyState || !!closingRoom.lawyerVerified;
 
     const isGatePassed = 
         isPurchasePriceRecorded &&
@@ -775,7 +831,13 @@ export default function ClosingRoomModal({ projectId, onClose }: ClosingRoomProp
                 deedRecordingInstrumentNumber: deedRecordingInstrumentNumberState,
             };
 
+            const nextCompletedCards = Array.from(new Set([
+                ...(deal.completedFundCards || []),
+                'F5.1', 'F5.2', 'F5.3', 'F5.4', 'F5.5', 'F5.6'
+            ]));
+
             await projectsService.updateProject(deal.id, {
+                completedFundCards: nextCompletedCards,
                 closingRoom: {
                     ...closingRoom,
                     ...closingRoomUpdates
@@ -786,6 +848,7 @@ export default function ClosingRoomModal({ projectId, onClose }: ClosingRoomProp
             const store = useProjectStore.getState();
             const updatedProject = {
                 ...deal,
+                completedFundCards: nextCompletedCards,
                 closingRoom: {
                     ...closingRoom,
                     ...closingRoomUpdates
@@ -1375,7 +1438,7 @@ export default function ClosingRoomModal({ projectId, onClose }: ClosingRoomProp
                                 let privateMoneyEquity = 0;
                                 let fractionalEquity = 0;
                                 (deal.financials?.capitalStack || []).forEach(s => {
-                                    if (s.category === 'Private Money') {
+                                    if (['Private Money', 'Borrower Injection', 'Co-buying Equity', 'Syndication Equity', 'GP Co-investment'].includes(s.category)) {
                                         privateMoneyEquity += s.amount || 0;
                                     }
                                 });
@@ -1630,7 +1693,7 @@ export default function ClosingRoomModal({ projectId, onClose }: ClosingRoomProp
                                isUploading={uploadingField === 'wiringInstructionsUrl'}
                             />
 
-                            {(!DocsComplete || !closingRoom.lawyerVerified) && (
+                            {(!DocsComplete || !isAttorneySatisfied) && (
                                 <div className="p-4 bg-orange-500/10 border border-orange-500/30 rounded-2xl flex items-start gap-3 mt-4 text-orange-400">
                                     <AlertTriangle className="w-5 h-5 flex-shrink-0 mt-0.5" />
                                     <div className="text-sm">
@@ -1640,7 +1703,7 @@ export default function ClosingRoomModal({ projectId, onClose }: ClosingRoomProp
                                 </div>
                             )}
 
-                            {(DocsComplete && closingRoom.lawyerVerified && !isReconciliationApproved) && (
+                            {(DocsComplete && isAttorneySatisfied && !isReconciliationApproved) && (
                                 <div className="p-4 bg-red-500/10 border border-red-500/30 rounded-2xl flex items-start gap-3 mt-4 text-red-500">
                                     <AlertTriangle className="w-5 h-5 flex-shrink-0 mt-0.5" />
                                     <div className="text-sm">
@@ -1650,7 +1713,7 @@ export default function ClosingRoomModal({ projectId, onClose }: ClosingRoomProp
                                 </div>
                             )}
                             
-                            {(DocsComplete && closingRoom.lawyerVerified && isReconciliationApproved) && (
+                            {(DocsComplete && isAttorneySatisfied && isReconciliationApproved) && (
                                  <div className="p-4 bg-green-500/10 border border-green-500/30 rounded-2xl flex flex-col gap-3 mt-4 text-green-400">
                                      <div className="flex items-start gap-3">
                                        <ShieldCheck className="w-5 h-5 flex-shrink-0 mt-0.5" />
@@ -1889,7 +1952,7 @@ export default function ClosingRoomModal({ projectId, onClose }: ClosingRoomProp
                     const projDebt = deal.financials?.loanAmount || 0;
                     let projEquity = 0;
                     (deal.financials?.capitalStack || []).forEach((source) => {
-                        if (source.category === 'Private Money') {
+                        if (['Private Money', 'Borrower Injection', 'Co-buying Equity', 'Syndication Equity', 'GP Co-investment'].includes(source.category)) {
                             projEquity += source.amount || 0;
                         }
                     });
@@ -1903,14 +1966,11 @@ export default function ClosingRoomModal({ projectId, onClose }: ClosingRoomProp
                     const projLoanAmount = deal.financials?.loanAmount || 0;
                     const projInterestRate = deal.financials?.loanInterestRate || 0;
 
-                    const actPrice = sweepPurchasePrice !== '' ? Number(sweepPurchasePrice) : 0;
-                    const actClosing = sweepClosingCosts !== '' ? Number(sweepClosingCosts) : 0;
-                    const actPrepaids = sweepPrepaids !== '' ? Number(sweepPrepaids) : 0;
-                    const actCashToClose = sweepCashToClose !== '' ? Number(sweepCashToClose) : 0;
-                    const actEmd = sweepEmd !== '' ? Number(sweepEmd) : 0;
-                    const actInsurance = sweepInsurance !== '' ? Number(sweepInsurance) : 0;
-                    const actLoanAmount = sweepLoanAmount !== '' ? Number(sweepLoanAmount) : 0;
-                    const actInterestRate = sweepInterestRate !== '' ? Number(sweepInterestRate) : 0;
+                    const loanSourceAct = (deal.financials?.capitalStack || []).find(s => 
+                        ['Conventional Financing', 'Hard Money Loans', 'SBA 504 Bank First Lien', 'SBA 504 CDC Debenture', 'Bridge Loans'].includes(s.category)
+                    );
+                    const loanSatisfied = isFinanced && !!loanSourceAct && (loanSourceAct.status === 'Approved' || loanSourceAct.status === 'Funded');
+                    const rateSatisfied = isFinanced && !!loanSourceAct && !!loanSourceAct.interestRate;
 
                     const priceSatisfied = !!deal.financials?.purchasePrice && deal.financials.purchasePrice > 0;
                     const closingSatisfied = !!deal.financials?.finalClosingCosts || !!closingRoom.cdFinalClosingCosts;
@@ -1918,10 +1978,15 @@ export default function ClosingRoomModal({ projectId, onClose }: ClosingRoomProp
                     const cashSatisfied = !!deal.financials?.finalCashToClose || !!closingRoom.cdCashToClose;
                     const emdSatisfied = !!deal.financials?.emdAmount && deal.financials.emdAmount > 0;
                     const insuranceSatisfied = !!deal.financials?.insuranceCost && deal.financials.insuranceCost > 0;
-                    
-                    const loanSourceAct = (deal.financials?.capitalStack || []).find(s => s.category === 'Conventional Financing' || s.category === 'Hard Money Loans');
-                    const loanSatisfied = isFinanced && !!loanSourceAct && (loanSourceAct.status === 'Approved' || loanSourceAct.status === 'Funded');
-                    const rateSatisfied = isFinanced && !!loanSourceAct && !!loanSourceAct.interestRate;
+
+                    const actPrice = priceSatisfied ? (deal.financials?.purchasePrice || 0) : (sweepPurchasePrice !== '' ? Number(sweepPurchasePrice) : 0);
+                    const actClosing = closingSatisfied ? (deal.financials?.finalClosingCosts || closingRoom.cdFinalClosingCosts || 0) : (sweepClosingCosts !== '' ? Number(sweepClosingCosts) : 0);
+                    const actPrepaids = prepaidsSatisfied ? (deal.financials?.finalPrepaidsReserves || closingRoom.cdPrepaidsReserves || 0) : (sweepPrepaids !== '' ? Number(sweepPrepaids) : 0);
+                    const actCashToClose = cashSatisfied ? (deal.financials?.finalCashToClose || closingRoom.cdCashToClose || 0) : (sweepCashToClose !== '' ? Number(sweepCashToClose) : 0);
+                    const actEmd = emdSatisfied ? ((deal.financials?.emdAmount || 0) / 100) : (sweepEmd !== '' ? Number(sweepEmd) : 0);
+                    const actInsurance = insuranceSatisfied ? (deal.financials?.insuranceCost || 0) : (sweepInsurance !== '' ? Number(sweepInsurance) : 0);
+                    const actLoanAmount = loanSatisfied ? (loanSourceAct?.amount || 0) : (sweepLoanAmount !== '' ? Number(sweepLoanAmount) : 0);
+                    const actInterestRate = rateSatisfied ? (loanSourceAct?.interestRate || 0) : (sweepInterestRate !== '' ? Number(sweepInterestRate) : 0);
 
                     const renderVariance = (projVal: number, actVal: number, isCostVal: boolean, isPercentVal = false) => {
                         if (!actVal) return <span className="text-pw-muted">-</span>;

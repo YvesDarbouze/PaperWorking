@@ -42,3 +42,19 @@ We have successfully migrated the legacy project status models (6-status and 7-i
 - `exit` (formerly Sold / Closed / Exited / Rented)
 
 All TypeScript compiler/typecheck checks (`npx tsc --noEmit`) and the entire Jest unit test suite (134 test suites, 1676 unit tests) pass 100% green. No legacy status fields remain active in component files, data layers, or schemas.
+
+## Handoff for FD-36 — Party Portal Views (COMPLETE)
+- Restricts platform-linked equity parties (LPs and co-buyers) to their own commitment status, documents, signature requests, public-facing deal identity, and Lead Investor permitted resources.
+- Restricts Firestore reads to owners, members, or recipient/uploader LPs using Common Expression Language custom rules functions.
+- Filters lists at the API/server layer for commitments (`/api/projects/[id]/commitments/route.ts`), commitment detail actions (`[cId]/route.ts`), and documents (`/api/projects/[id]/documents/route.ts`).
+- Integrated `/api/projects/[id]/documents` to `ProjectDataRoomPage` frontend.
+- Created `src/__tests__/partyPortalSecurity.test.ts` to verify security access controls. All tests are passing cleanly.
+- Verified compilation is clean (`npx tsc --noEmit`).
+
+## Handoff for FD-37 — Fund Notifications & Reminders (COMPLETE)
+- Configured premium HTML email layouts for the 6 specific Fund events (`LOAN_STATUS_UPDATE`, `VENDOR_BID`, `LENDER_CHECKLIST_REMINDER`, `SLIPPAGE_DETECTED`, `DOCUMENT_SIGNED`, `PHASE_TRANSITION`).
+- Implemented `broadcastProjectNotification` to route updates dynamically to Lead Investors/Sponsors and permitted LPs/co-buyers based on active phase permissions.
+- Hardened all email dispatch pipelines to catch errors locally so that a failure in notifications never aborts the underlying database transaction.
+- Honored global and category-level preference suppressions (`preferences.categories`).
+- Added automated test suite `src/__tests__/fundNotifications.test.ts` verifying templates, failure isolation, suppression toggles, and recipient logic.
+- All 182 test suites passed successfully and `npx tsc --noEmit` compiled with 0 errors.

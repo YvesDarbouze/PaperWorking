@@ -288,6 +288,10 @@ const GROUP_4_DEAL_CAPITAL: RegistryFieldDefinition[] = [
     required: false,
     description: 'Total loan principal',
     metricsConsumedBy: ['CASH_FLOW', 'DSCR', 'LTV', 'DEBT_YIELD'],
+    dualSlot: {
+      projectedField: 'financials.targetLoanAmount',
+      actualField: 'financials.loanAmount',
+    },
   },
   {
     id: 'loan_interest_rate',
@@ -299,6 +303,10 @@ const GROUP_4_DEAL_CAPITAL: RegistryFieldDefinition[] = [
     required: false,
     description: 'Annual interest rate as whole number (6.5 = 6.5%)',
     metricsConsumedBy: ['CASH_FLOW', 'DSCR'],
+    dualSlot: {
+      projectedField: 'financials.targetLoanInterestRate',
+      actualField: 'financials.loanInterestRate',
+    },
   },
   {
     id: 'loan_term',
@@ -310,6 +318,10 @@ const GROUP_4_DEAL_CAPITAL: RegistryFieldDefinition[] = [
     required: false,
     description: 'Loan amortization period in years',
     metricsConsumedBy: ['CASH_FLOW', 'DSCR'],
+    dualSlot: {
+      projectedField: 'financials.targetLoanTermYears',
+      actualField: 'financials.loanTermYears',
+    },
   },
   {
     id: 'loanOriginationPoints',
@@ -321,6 +333,10 @@ const GROUP_4_DEAL_CAPITAL: RegistryFieldDefinition[] = [
     required: false,
     description: 'Upfront loan origination fee as % of loan value',
     metricsConsumedBy: [],
+    dualSlot: {
+      projectedField: 'financials.targetLoanOriginationPoints',
+      actualField: 'financials.loanOriginationPoints',
+    },
   },
   {
     id: 'closing_costs',
@@ -332,6 +348,10 @@ const GROUP_4_DEAL_CAPITAL: RegistryFieldDefinition[] = [
     required: false,
     description: 'Total closing costs (title, escrow, attorney, etc.)',
     metricsConsumedBy: ['COC_RETURN'],
+    dualSlot: {
+      projectedField: 'financials.targetClosingCosts',
+      actualField: 'financials.closingCosts',
+    },
   },
   {
     id: 'cash_to_close',
@@ -343,6 +363,10 @@ const GROUP_4_DEAL_CAPITAL: RegistryFieldDefinition[] = [
     required: false,
     description: 'Down payment + closing costs — total cash out of pocket',
     metricsConsumedBy: ['COC_RETURN', 'EQUITY_MULTIPLE', 'PAYBACK_PERIOD'],
+    dualSlot: {
+      projectedField: 'financials.targetTotalCashInvested',
+      actualField: 'financials.totalCashInvested',
+    },
   },
   {
     id: 'financingType',
@@ -364,6 +388,43 @@ const GROUP_4_DEAL_CAPITAL: RegistryFieldDefinition[] = [
     defaultSourceTag: 'user_assumption',
     required: false,
     description: 'Earnest money deposit',
+    metricsConsumedBy: [],
+  },
+  {
+    id: 'down_payment_pct',
+    label: 'Down Payment Percent',
+    fieldPath: 'financials.downPaymentPercent',
+    type: 'percent',
+    group: 'deal_capital',
+    defaultSourceTag: 'user_assumption',
+    required: false,
+    description: 'Equity down payment percentage',
+    metricsConsumedBy: [],
+    dualSlot: {
+      projectedField: 'financials.targetDownPaymentPercent',
+      actualField: 'financials.downPaymentPercent',
+    },
+  },
+  {
+    id: 'acquisition_date',
+    label: 'Acquisition Close Date',
+    fieldPath: 'financials.acquisitionDate',
+    type: 'timestamp',
+    group: 'deal_capital',
+    defaultSourceTag: 'user_actual',
+    required: false,
+    description: 'Date the property was acquired/closed',
+    metricsConsumedBy: [],
+  },
+  {
+    id: 'commissions',
+    label: 'Commissions',
+    fieldPath: 'financials.actualCommissions',
+    type: 'usd',
+    group: 'deal_capital',
+    defaultSourceTag: 'user_actual',
+    required: false,
+    description: 'Commissions paid to agents/brokers at close',
     metricsConsumedBy: [],
   },
 ];
@@ -432,6 +493,7 @@ export const DEMO_SEED: readonly SeededVariable[] = [
 
   // ── Group 2: Income ──
   { fieldId: 'gross_rent_per_unit',   value: 1_950,  sourceTag: 'user_assumption', slot: 'projected' },
+  { fieldId: 'gross_rent_per_unit',   value: 1_950,  sourceTag: 'user_actual',     slot: 'actual' },
   { fieldId: 'vacancy_pct',           value: 7,      sourceTag: 'user_assumption', slot: 'projected' },
 
   // ── Group 3: Operating Expenses ──
@@ -443,16 +505,27 @@ export const DEMO_SEED: readonly SeededVariable[] = [
   { fieldId: 'HOA',              value: 0,    sourceTag: 'user_assumption', slot: 'projected' },
 
   // ── Group 4: Deal & Capital ──
+  { fieldId: 'purchase_price',        value: 279_000,  sourceTag: 'user_assumption', slot: 'projected' },
   { fieldId: 'purchase_price',        value: 279_000,  sourceTag: 'user_actual',     slot: 'actual' },
+  { fieldId: 'loan_amount',           value: 223_200,  sourceTag: 'user_assumption', slot: 'projected' },
   { fieldId: 'loan_amount',           value: 223_200,  sourceTag: 'user_actual',     slot: 'actual' },
+  { fieldId: 'loan_interest_rate',    value: 6.5,      sourceTag: 'user_assumption', slot: 'projected' },
   { fieldId: 'loan_interest_rate',    value: 6.5,      sourceTag: 'user_actual',     slot: 'actual' },
+  { fieldId: 'loan_term',             value: 30,        sourceTag: 'user_assumption', slot: 'projected' },
   { fieldId: 'loan_term',             value: 30,        sourceTag: 'user_actual',     slot: 'actual' },
+  { fieldId: 'loanOriginationPoints', value: 0,         sourceTag: 'user_assumption', slot: 'projected' },
+  { fieldId: 'loanOriginationPoints', value: 0,         sourceTag: 'user_actual',     slot: 'actual' },
   { fieldId: 'closing_costs',         value: 4_200,    sourceTag: 'user_assumption', slot: 'projected' },
+  { fieldId: 'closing_costs',         value: 4_200,    sourceTag: 'user_actual',     slot: 'actual' },
+  { fieldId: 'cash_to_close',         value: 60_000,   sourceTag: 'user_assumption', slot: 'projected' },
   { fieldId: 'cash_to_close',         value: 60_000,   sourceTag: 'user_actual',     slot: 'actual' },
   { fieldId: 'financingType',         value: 'Financed', sourceTag: 'user_actual',   slot: 'actual' },
+  { fieldId: 'down_payment_pct',      value: 20,       sourceTag: 'user_assumption', slot: 'projected' },
+  { fieldId: 'down_payment_pct',      value: 20,       sourceTag: 'user_actual',     slot: 'actual' },
 
   // ── Group 5: Capital Improvements (Rehab) ──
   { fieldId: 'rehab_budget',          value: 35_000,   sourceTag: 'user_assumption', slot: 'projected' },
+  { fieldId: 'rehab_budget',          value: 35_000,   sourceTag: 'user_actual',     slot: 'actual' },
 ] as const;
 
 /**
@@ -470,8 +543,14 @@ export function seedToProjectFinancials(seed: readonly SeededVariable[]): Partia
       throw new Error(`Unknown registry field: "${row.fieldId}". Add it to ACQUISITION_VARIABLE_REGISTRY first.`);
     }
 
+    // Determine the field path based on slot and dual-slot config
+    let path = def.fieldPath;
+    if (def.dualSlot) {
+      path = row.slot === 'projected' ? def.dualSlot.projectedField : def.dualSlot.actualField;
+    }
+
     // Extract the leaf field name from the path
-    const parts = def.fieldPath.split('.');
+    const parts = path.split('.');
     if (parts[0] === 'financials' && parts.length === 2) {
       financials[parts[1]] = row.value;
     }

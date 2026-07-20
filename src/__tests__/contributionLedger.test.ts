@@ -281,4 +281,56 @@ describe('Card F2.6 Contribution Ledger API & Export Tests', () => {
       expect(res.headers.get('Content-Disposition')).toContain('capital-stack-statement-');
     });
   });
+
+  describe('Contribution-Driven Calculations (FD-16)', () => {
+    it('calculateCapitalStack overrides Co-buying Equity tranche using confirmed contributions', () => {
+      const project = {
+        financials: {
+          purchasePrice: 100000,
+          closingCosts: 5000,
+          projectedRehabCost: 15000,
+          capitalStack: [
+            { id: '1', category: 'Co-buying Equity', amount: 50000, status: 'Exploring' }
+          ]
+        },
+        contributions: [
+          { id: 'c1', partyName: 'Alice', amountCents: 4000000, status: 'funds-confirmed', partyType: 'Investor' },
+          { id: 'c2', partyName: 'Bob', amountCents: 2000000, status: 'pledged', partyType: 'Investor' }
+        ]
+      };
+  
+      const { calculateCapitalStack } = require('@/lib/metrics/reiMetrics');
+      const res = calculateCapitalStack(project);
+      const coBuySource = res.sources.find((s: any) => s.category === 'Co-buying Equity');
+      expect(coBuySource?.amount).toBe(40000); // 4,000,000 cents / 100 = 40,000
+    });
+  
+    it('deriveAllProjectMetrics derives TIC splits using only confirmed contributions', () => {
+      const project = {
+        financials: {
+          titleHolding: 'TIC',
+          titleHoldingDerived: true,
+          purchasePrice: 100000,
+          closingCosts: 5000,
+          projectedRehabCost: 15000,
+        },
+        fractionalInvestors: [
+          { id: 'c1', name: 'Alice', contributionAmount: 30000, status: 'confirmed', partyType: 'Investor', equityPercentage: 0 },
+          { id: 'c2', name: 'Bob', contributionAmount: 20000, status: 'confirmed', partyType: 'Investor', equityPercentage: 0 },
+          { id: 'c3', name: 'Charlie', contributionAmount: 10000, status: 'invited', partyType: 'Investor', equityPercentage: 0 }
+        ]
+      };
+  
+      const { deriveAllProjectMetrics } = require('@/lib/metrics/reiMetrics');
+      const res = deriveAllProjectMetrics(project as any);
+      const shares = res.coBuyShares || [];
+      const aliceShare = shares.find((s: any) => s.id === 'c1');
+      const bobShare = shares.find((s: any) => s.id === 'c2');
+      const charlieShare = shares.find((s: any) => s.id === 'c3');
+  
+      expect(aliceShare?.ownershipPct).toBe(60);
+      expect(bobShare?.ownershipPct).toBe(40);
+      expect(charlieShare?.ownershipPct).toBe(0);
+    });
+  });
 });

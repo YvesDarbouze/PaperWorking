@@ -439,3 +439,48 @@ Implemented closing milestones, timeline controls, Closing Disclosure parsing, r
 
 1. **Design System Documentation (`DesignSystem.md`)**:
    - Appended the **Appendices** (A, B, C, D) detailing phase ownership of headline-10 variables, canonical enumerations (phases, renovation tiers, disposition type, opex categories), gate transitions summary, and extension protocols.
+
+---
+
+# Walkthrough — FD-39: Security & Rules Audit for the Fund Plane
+
+We have successfully audited and hardened all API routes, server actions, Firestore collections/rules, and Firebase Storage rules added or changed from FD-3 through FD-38, holding them to the **v1.1 security standards**.
+
+## Changes Made
+
+### 1. Firebase Storage Rules (`storage.rules`)
+- Renamed and expanded the `isProjectMember` helper function to `isProjectAuthorized`.
+- Added logic to inspect Firestore project data in real-time, verifying if the caller's ID/email matches:
+  1. A project member in `projectData.members`.
+  2. A linked LP in `projectData.equityParties`.
+  3. An assigned Vendor in any active financials vendor slot (`f4TitleEscrowVendor` through `f4HardMoneyLenderVendor`).
+- Configured storage paths `/projects/{projectId}/{allPaths=**}` to require `isProjectAuthorized(projectId)` for read/write. LPs and Vendors can now directly upload required documentation (e.g. proof of funds, appraisals, closing disclosures) from the client bundle safely.
+
+### 2. Vendor Document Upload Scoping (`/api/projects/[id]/documents/route.ts`)
+- Modified the POST document upload route to restrict `Vendor` uploads strictly to their assigned slot folder (e.g. an appraiser is only authorized to upload to the `'Debt'` folder). Non-matching folder targets are rejected with `403`.
+
+### 3. LP Commitment Self-Verification Prevention (`/api/projects/[id]/commitments/route.ts` & `/api/projects/[id]/commitments/[cId]/route.ts`)
+- Modified POST commitments to override and force the status to `'pledged'` for non-Lead Investors.
+- Modified PATCH commitments to reject attempts by non-Lead Investors to transition commitments to privileged statuses (`'transferred'`, `'cleared'`, `'docs-out'`, `'funds-confirmed'`). LPs can still sign subscription agreements (transitioning to `'signed'`), but cannot self-clear or self-verify.
+
+### 4. Unified API-Level Role Access Guards
+- Unified access verification to use `verifyProjectAccessAndRole` across:
+  - Loan records: `loans/[loanId]/route.ts` (restricts updates to Lead or Lender vendors only).
+  - Financing routes selection: `loans/route.ts` (Lead only).
+  - Hard money / Bridge terms configuration: `loans/hard-money-terms/route.ts` (Lead only).
+  - SBA 504 structure configuration: `loans/sba504/route.ts` (Lead only).
+  - Locking loan terms: `loans/lock/route.ts` (Lead only).
+  - Loan estimates adding/choosing: `loan-estimates/route.ts` & `choose/route.ts` (Lead or Lender vendors).
+  - Lender checklist packages: `lender-package/route.ts` (Lead or Lender/Closing Attorney vendors).
+
+---
+
+## Verification Results
+
+### Automated Security Tests
+- Created the automated Jest security suite [fundSecurityAudit.test.ts](file:///Users/yvesdarbouze/Documents/PaperWorking/src/__tests__/fundSecurityAudit.test.ts) covering all role and permission restrictions.
+- Ran tests successfully:
+  ```bash
+  PASS src/__tests__/fundSecurityAudit.test.ts
+  ```
+  With 100% of all 184 Jest test suites passing (2,021 tests total).

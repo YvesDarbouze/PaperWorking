@@ -5,6 +5,8 @@ import { useParams, useRouter } from 'next/navigation';
 import { useAuth } from '@/context/AuthContext';
 import { projectsService } from '@/lib/firebase/projects';
 import { useWorkspaceProject } from '@/app/dashboard/projects/[id]/layout';
+import { usePhaseAccess } from '@/hooks/usePhaseAccess';
+import { PhaseAccessGuard } from '@/components/project/PhaseAccessGuard';
 import { closeProjectAndArchiveServerAction } from '@/actions';
 import toast from 'react-hot-toast';
 import type { ProjectFinancials, ValuationEntry } from '@/types/schema';
@@ -62,6 +64,7 @@ export default function Phase4WorkspacePage() {
   const projectId = params.id as string;
 
   const { project, loading, refresh } = useWorkspaceProject();
+  const { canView, canEdit, loading: accessLoading } = usePhaseAccess('phase-4');
   const [localProject, setLocalProject] = useState<typeof project>(null);
 
   useEffect(() => {
@@ -452,7 +455,7 @@ export default function Phase4WorkspacePage() {
   const shareMultiplier = metricsScope === 'myShare' ? ownershipPct / 100 : 1;
 
   /* ── Loading state ── */
-  if (loading) {
+  if (loading || accessLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-[#0d0a0b]">
         <div className="flex flex-col items-center gap-4">
@@ -485,7 +488,8 @@ export default function Phase4WorkspacePage() {
   }
 
   return (
-    <div className="min-h-screen bg-[#0d0a0b] relative">
+    <PhaseAccessGuard phaseId="phase-4" phaseName="Phase 4: Exit">
+      <div className="min-h-screen bg-[#0d0a0b] relative">
 
       {/* ── Ambient Background Layer ── */}
       <div className="fixed inset-0 pointer-events-none -z-10 overflow-hidden">
@@ -1031,6 +1035,7 @@ export default function Phase4WorkspacePage() {
           </div>
         </div>
       </div>
-    </div>
+      </div>
+    </PhaseAccessGuard>
   );
 }

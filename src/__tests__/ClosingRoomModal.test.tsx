@@ -12,19 +12,57 @@ import toast from 'react-hot-toast';
 var mockUser: any = { uid: 'user-123', getIdToken: jest.fn(() => Promise.resolve('mock-token')) };
 var mockProfile: any = { displayName: 'Bob', email: 'bob@example.com', role: 'Lead Investor' };
 
+jest.mock('@/lib/firebase/config', () => ({
+  db: {},
+}));
+
+jest.mock('@/lib/firebase/folders', () => ({
+  foldersService: {
+    addFile: jest.fn(() => Promise.resolve()),
+  },
+}));
+
+jest.mock('firebase/firestore', () => ({
+  collection: jest.fn(),
+  query: jest.fn(),
+  where: jest.fn(),
+  getDocs: jest.fn(() => {
+    const docs = [
+      { id: 'folder-1', data: () => ({ name: 'Closing' }) }
+    ];
+    return Promise.resolve({
+      empty: false,
+      docs,
+      forEach: (callback: any) => docs.forEach(callback)
+    });
+  }),
+}));
+
 jest.mock('@/context/AuthContext', () => ({
   useAuth: () => ({ profile: mockProfile, user: mockUser }),
 }));
 
 var mockUpdateClosingRoom = jest.fn();
 var mockProjects: any[] = [];
+var mockSetDeals = jest.fn();
+var mockSetDeal = jest.fn();
 
-jest.mock('@/store/projectStore', () => ({
-  useProjectStore: (selector: any) => selector({
+jest.mock('@/store/projectStore', () => {
+  const storeInstance: any = (selector: any) => selector({
     projects: mockProjects,
     updateClosingRoom: mockUpdateClosingRoom,
-  }),
-}));
+    setDeals: mockSetDeals,
+    setDeal: mockSetDeal,
+  });
+  storeInstance.getState = () => ({
+    projects: mockProjects,
+    setDeals: mockSetDeals,
+    setDeal: mockSetDeal,
+  });
+  return {
+    useProjectStore: storeInstance,
+  };
+});
 
 jest.mock('@/lib/firebase/deals', () => ({
   projectsService: {
@@ -245,5 +283,83 @@ describe('ClosingRoomModal Component', () => {
     }));
 
     expect(toast.success).toHaveBeenCalledWith('Document review successfully attested!', expect.any(Object));
+  });
+
+  it('completes closing successfully and archives documents, then marks F5 cards complete', async () => {
+    const mockUpdateProject = projectsService.updateProject as jest.Mock;
+
+    mockProjects[0] = {
+      id: 'project-1',
+      propertyName: 'Miami Oasis',
+      address: '123 Ocean Drive, Miami, FL 33139',
+      organizationId: 'org-123',
+      completedFundCards: ['F1.1'],
+      members: {
+        'user-123': { role: 'Lead Investor', addedAt: new Date() }
+      },
+      financials: {
+        purchasePrice: 250000,
+        finalClosingCosts: 5000,
+        finalPrepaidsReserves: 1500,
+        totalCashInvested: 25000,
+        emdAmount: 500000,
+        capitalStack: [
+          { id: '1', category: 'Private Money', amount: 251500, status: 'Approved' }
+        ]
+      },
+      closingRoom: {
+        titleInsuranceUrl: 'https://example.com/title.pdf',
+        closingDisclosureUrl: 'https://example.com/disclosure.pdf',
+        wiringInstructionsUrl: 'https://example.com/wiring.pdf',
+        assignedLawyerUid: 'lawyer-1',
+        lawyerVerified: true,
+        blockchainTxHash: null,
+        chainOfTitleStatus: 'verified',
+        closingStatus: 'signed',
+        actualClosingDate: '2026-07-19',
+        executedDocs: {
+          deedUrl: 'https://example.com/executed-deed.pdf',
+          deedSigned: true,
+          noteUrl: null,
+          noteSigned: false,
+          settlementStatementUrl: 'https://example.com/executed-settlement.pdf',
+          settlementStatementSigned: true,
+          titlePolicyUrl: 'https://example.com/executed-title-policy.pdf',
+          titlePolicySigned: true,
+          entityDocsUrl: 'https://example.com/executed-entity.pdf',
+          entityDocsSigned: true,
+        },
+        disbursementRecorded: true,
+        disbursementStatementUrl: 'https://example.com/disbursement.pdf',
+        deedRecordingCounty: 'Orange County',
+        deedRecordingDate: '2026-07-19',
+        deedRecordingInstrumentNumber: 'Book 123 Page 45'
+      }
+    };
+
+    await act(async () => {
+      render(<ClosingRoomModal projectId="project-1" onClose={jest.fn()} />);
+    });
+
+    // Wait for the complete closing button to render
+    await waitFor(() => {
+      expect(screen.getByText('Archive Package & Complete Closing')).toBeTruthy();
+    });
+
+    const completeButton = screen.getByText('Archive Package & Complete Closing');
+    await act(async () => {
+      fireEvent.click(completeButton);
+    });
+
+    // Verify projectsService.updateProject is called with completedFundCards including F5.1 through F5.6
+    await waitFor(() => {
+      expect(mockUpdateProject).toHaveBeenCalledWith('project-1', expect.objectContaining({
+        completedFundCards: expect.arrayContaining([
+          'F1.1', 'F5.1', 'F5.2', 'F5.3', 'F5.4', 'F5.5', 'F5.6'
+        ])
+      }));
+    });
+
+    expect(toast.success).toHaveBeenCalledWith('Closing execution completed and archived to Data Room!', expect.any(Object));
   });
 });

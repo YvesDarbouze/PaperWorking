@@ -334,6 +334,25 @@ export async function setupMocks(page: Page, state: MockState, options?: { allow
     }
   });
 
+  // Mock project equity-parties endpoint
+  await page.route((url) => url.pathname.includes('/projects/') && url.pathname.endsWith('/equity-parties'), async (route) => {
+    const urlObj = new URL(route.request().url());
+    const parts = urlObj.pathname.split('/');
+    const projectId = parts[parts.length - 2];
+    const method = route.request().method();
+
+    if (method === 'GET') {
+      const project = state.projects.find((p) => p.id === projectId);
+      const equityParties = project?.equityParties || [];
+      await route.fulfill({
+        status: 200,
+        json: { success: true, equityParties },
+      });
+    } else {
+      await route.continue();
+    }
+  });
+
   // 5.5 Mock Project Commitments endpoints for CrowdfundingTracker E2E
   await page.route(/\/api\/projects\/([^\/]+)\/commitments$/, async (route) => {
     const method = route.request().method();

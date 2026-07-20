@@ -24,6 +24,21 @@ import {
 } from 'lucide-react';
 import toast from 'react-hot-toast';
 
+function SourceTagBadge({ source }: { source?: 'document' | 'manual' }) {
+  if (source === 'document') {
+    return (
+      <span className="inline-flex items-center text-[9px] font-bold text-sky-600 bg-sky-50 border border-sky-100 px-1 rounded ml-1 uppercase font-sans select-none shrink-0" title="Source: Uploaded Document">
+        DOC
+      </span>
+    );
+  }
+  return (
+    <span className="inline-flex items-center text-[9px] font-bold text-amber-600 bg-amber-50 border border-amber-100 px-1 rounded ml-1 uppercase font-sans select-none shrink-0" title="Source: Manually Sourced">
+      MANUAL
+    </span>
+  );
+}
+
 interface Props {
   projectId: string;
 }
@@ -524,111 +539,170 @@ export function LoanEstimatesWorkflow({ projectId }: Props) {
             No estimate candidates uploaded yet. Select "Upload Loan Estimate" to start.
           </div>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {estimates.map((est) => {
-              // Calculate implied debt service from amortization utility
-              const loanAmt = est.amountCents / 100;
-              const amortResult = calculateAmortization(loanAmt, est.interestRate, est.termMonths);
+          <div className="overflow-x-auto border border-pw-border rounded-xl bg-pw-white shadow-sm">
+            <table className="w-full text-left border-collapse">
+              <thead>
+                <tr className="bg-gray-50 border-b border-pw-border">
+                  <th className="p-4 text-xs font-bold uppercase tracking-wider text-pw-muted w-[200px]">Parameter</th>
+                  {estimates.map((est) => (
+                    <th key={est.id} className={`p-4 text-xs font-bold uppercase tracking-wider text-pw-black min-w-[220px] border-l border-pw-border ${est.isChosen ? 'bg-[#7A9EAA]/5' : ''}`}>
+                      <div className="flex justify-between items-start gap-2">
+                        <div>
+                          <div className="text-sm font-black text-pw-black flex items-center gap-1">
+                            {est.lenderName}
+                            <SourceTagBadge source={est.sourceTags?.lenderName || (est.fileId ? 'document' : 'manual')} />
+                          </div>
+                          {est.isChosen && (
+                            <span className="inline-block mt-1 px-1.5 py-0.5 rounded text-[8px] bg-emerald-50 text-emerald-700 border border-emerald-200 font-bold uppercase tracking-wider">
+                              Active Choice
+                            </span>
+                          )}
+                        </div>
+                        <button 
+                          onClick={() => handleDeleteEstimate(est.id)}
+                          disabled={submitting}
+                          className="text-pw-muted hover:text-red-600 transition-colors p-1"
+                          title="Delete estimate"
+                        >
+                          <Trash2 className="w-3.5 h-3.5" />
+                        </button>
+                      </div>
+                    </th>
+                  ))}
+                </tr>
+              </thead>
+              <tbody>
+                <tr className="border-b border-pw-border hover:bg-gray-50/50">
+                  <td className="p-4 text-xs font-medium text-pw-muted">Loan Amount</td>
+                  {estimates.map((est) => {
+                    const val = est.amountCents / 100;
+                    return (
+                      <td key={est.id} className={`p-4 text-xs font-semibold text-pw-black border-l border-pw-border ${est.isChosen ? 'bg-[#7A9EAA]/5' : ''}`}>
+                        ${val.toLocaleString()}
+                        <SourceTagBadge source={est.sourceTags?.amountCents || (est.fileId ? 'document' : 'manual')} />
+                      </td>
+                    );
+                  })}
+                </tr>
 
-              return (
-                <div 
-                  key={est.id}
-                  className={`p-4 border rounded-xl transition-all relative flex flex-col justify-between ${
-                    est.isChosen 
-                      ? 'border-[#7A9EAA] bg-[#7A9EAA]/5 shadow-sm' 
-                      : 'border-pw-border bg-pw-white hover:bg-pw-bg/5'
-                  }`}
-                >
-                  {/* Top Status */}
-                  <div className="flex justify-between items-start mb-4">
-                    <div>
-                      <h4 className="text-xs uppercase font-black tracking-widest text-pw-black">{est.lenderName}</h4>
-                      {est.fileName && (
+                <tr className="border-b border-pw-border hover:bg-gray-50/50">
+                  <td className="p-4 text-xs font-medium text-pw-muted">Interest Rate</td>
+                  {estimates.map((est) => (
+                    <td key={est.id} className={`p-4 text-xs font-semibold text-pw-black border-l border-pw-border ${est.isChosen ? 'bg-[#7A9EAA]/5' : ''}`}>
+                      {est.interestRate.toFixed(3)}%
+                      <SourceTagBadge source={est.sourceTags?.interestRate || (est.fileId ? 'document' : 'manual')} />
+                    </td>
+                  ))}
+                </tr>
+
+                <tr className="border-b border-pw-border hover:bg-gray-50/50">
+                  <td className="p-4 text-xs font-medium text-pw-muted">Term (Months)</td>
+                  {estimates.map((est) => (
+                    <td key={est.id} className={`p-4 text-xs text-pw-black border-l border-pw-border ${est.isChosen ? 'bg-[#7A9EAA]/5' : ''}`}>
+                      {est.termMonths} Mo ({Math.round(est.termMonths / 12)} Yr)
+                      <SourceTagBadge source={est.sourceTags?.termMonths || (est.fileId ? 'document' : 'manual')} />
+                    </td>
+                  ))}
+                </tr>
+
+                <tr className="border-b border-pw-border hover:bg-gray-50/50">
+                  <td className="p-4 text-xs font-medium text-pw-muted">Origination Points</td>
+                  {estimates.map((est) => {
+                    const ptsVal = ((est.amountCents / 100) * est.points) / 100;
+                    return (
+                      <td key={est.id} className={`p-4 text-xs text-pw-black border-l border-pw-border ${est.isChosen ? 'bg-[#7A9EAA]/5' : ''}`}>
+                        {est.points.toFixed(1)}% (${ptsVal.toLocaleString()})
+                        <SourceTagBadge source={est.sourceTags?.points || (est.fileId ? 'document' : 'manual')} />
+                      </td>
+                    );
+                  })}
+                </tr>
+
+                <tr className="border-b border-pw-border hover:bg-gray-50/50">
+                  <td className="p-4 text-xs font-medium text-pw-muted">Estimated Closing Costs</td>
+                  {estimates.map((est) => {
+                    const val = est.estimatedCostsCents / 100;
+                    return (
+                      <td key={est.id} className={`p-4 text-xs text-pw-black border-l border-pw-border ${est.isChosen ? 'bg-[#7A9EAA]/5' : ''}`}>
+                        ${val.toLocaleString()}
+                        <SourceTagBadge source={est.sourceTags?.estimatedCostsCents || (est.fileId ? 'document' : 'manual')} />
+                      </td>
+                    );
+                  })}
+                </tr>
+
+                <tr className="border-b border-pw-border bg-gray-50/30 hover:bg-gray-50/50">
+                  <td className="p-4 text-xs font-bold text-pw-black">Implied Monthly Payment (P&I)</td>
+                  {estimates.map((est) => {
+                    const loanAmt = est.amountCents / 100;
+                    const amortResult = calculateAmortization(loanAmt, est.interestRate, est.termMonths);
+                    return (
+                      <td key={est.id} className={`p-4 text-xs font-black text-pw-black border-l border-pw-border ${est.isChosen ? 'bg-[#7A9EAA]/5' : ''}`}>
+                        ${Math.round(amortResult.monthlyPayment).toLocaleString()}
+                        <span className="text-[9px] text-pw-muted font-normal block mt-0.5">calculated</span>
+                      </td>
+                    );
+                  })}
+                </tr>
+
+                <tr className="border-b border-pw-border bg-gray-50/30 hover:bg-gray-50/50">
+                  <td className="p-4 text-xs font-bold text-pw-black">Implied Annual Debt Service</td>
+                  {estimates.map((est) => {
+                    const loanAmt = est.amountCents / 100;
+                    const amortResult = calculateAmortization(loanAmt, est.interestRate, est.termMonths);
+                    return (
+                      <td key={est.id} className={`p-4 text-xs font-black text-[#7A9EAA] border-l border-pw-border ${est.isChosen ? 'bg-[#7A9EAA]/5' : ''}`}>
+                        ${Math.round(amortResult.annualDebtService).toLocaleString()}
+                        <span className="text-[9px] text-pw-muted font-normal block mt-0.5">calculated</span>
+                      </td>
+                    );
+                  })}
+                </tr>
+
+                <tr className="border-b border-pw-border hover:bg-gray-50/50">
+                  <td className="p-4 text-xs font-medium text-pw-muted">Source Document</td>
+                  {estimates.map((est) => (
+                    <td key={est.id} className={`p-4 text-xs text-pw-black border-l border-pw-border ${est.isChosen ? 'bg-[#7A9EAA]/5' : ''}`}>
+                      {est.fileName ? (
                         <a 
                           href={est.fileUrl || '#'} 
                           target="_blank" 
                           rel="noopener noreferrer" 
-                          className="text-[10px] text-pw-muted hover:underline flex items-center gap-1 mt-0.5 min-w-0"
+                          className="text-[#7A9EAA] hover:underline flex items-center gap-1 mt-0.5 min-w-0"
                         >
-                          <FileText className="w-3 h-3 text-[#7A9EAA] shrink-0" />
+                          <FileText className="w-3.5 h-3.5 text-[#7A9EAA] shrink-0" />
                           <span className="truncate max-w-[150px]">{est.fileName}</span>
                         </a>
+                      ) : (
+                        <span className="text-pw-muted italic">Manual Sourced</span>
                       )}
-                    </div>
+                    </td>
+                  ))}
+                </tr>
 
-                    <div className="flex items-center gap-2">
-                      {est.isChosen && (
-                        <span className="px-1.5 py-0.5 rounded text-[8px] bg-emerald-50 text-emerald-700 border border-emerald-200 font-bold uppercase tracking-wider">
-                          Active Choice
-                        </span>
+                <tr>
+                  <td className="p-4 text-xs font-medium text-pw-muted">Action</td>
+                  {estimates.map((est) => (
+                    <td key={est.id} className={`p-4 text-xs border-l border-pw-border ${est.isChosen ? 'bg-[#7A9EAA]/5' : ''}`}>
+                      {est.isChosen ? (
+                        <div className="inline-flex px-3 py-1.5 bg-[#ECFDF5] text-[#047857] border border-[#A7F3D0] rounded text-[10px] font-bold uppercase tracking-wider items-center gap-1">
+                          <Check className="w-3.5 h-3.5" />
+                          Promoted
+                        </div>
+                      ) : (
+                        <button 
+                          onClick={() => handleChooseLoan(est.id, est.lenderName)}
+                          disabled={submitting}
+                          className="pw-interactive px-3 py-1.5 bg-[#7A9EAA] hover:bg-[#688a95] text-pw-white text-[10px] font-bold uppercase tracking-wider rounded transition-all shadow-sm"
+                        >
+                          Choose This Loan
+                        </button>
                       )}
-                      <button 
-                        onClick={() => handleDeleteEstimate(est.id)}
-                        disabled={submitting}
-                        className="text-pw-muted hover:text-red-600 transition-colors p-1"
-                        title="Delete estimate"
-                      >
-                        <Trash2 className="w-3.5 h-3.5" />
-                      </button>
-                    </div>
-                  </div>
-
-                  {/* Core Metrics comparison */}
-                  <div className="space-y-2 border-t border-b border-pw-border py-3 my-3 text-[11px]">
-                    <div className="flex justify-between">
-                      <span className="text-pw-muted">Loan Amount</span>
-                      <strong className="text-pw-black font-semibold">${loanAmt.toLocaleString()}</strong>
-                    </div>
-                    <div className="flex justify-between">
-                      <span className="text-pw-muted">Interest Rate</span>
-                      <strong className="text-pw-black font-semibold">{est.interestRate.toFixed(3)}%</strong>
-                    </div>
-                    <div className="flex justify-between">
-                      <span className="text-pw-muted">Term</span>
-                      <strong className="text-pw-black font-semibold">{est.termMonths} Mo ({Math.round(est.termMonths / 12)} Yr)</strong>
-                    </div>
-                    <div className="flex justify-between">
-                      <span className="text-pw-muted">Origination Points</span>
-                      <strong className="text-pw-black font-semibold">{est.points.toFixed(1)}% (${((loanAmt * est.points) / 100).toLocaleString()})</strong>
-                    </div>
-                    <div className="flex justify-between">
-                      <span className="text-pw-muted">Estimated Costs</span>
-                      <strong className="text-pw-black font-semibold">${(est.estimatedCostsCents / 100).toLocaleString()}</strong>
-                    </div>
-                  </div>
-
-                  {/* Implied math outputs */}
-                  <div className="p-3 bg-gray-50 border border-gray-100 rounded-lg text-xs space-y-1.5">
-                    <div className="flex justify-between text-pw-black">
-                      <span className="font-light">Monthly Payment (P&I)</span>
-                      <strong className="font-bold">${Math.round(amortResult.monthlyPayment).toLocaleString()}</strong>
-                    </div>
-                    <div className="flex justify-between text-pw-black">
-                      <span className="font-light">Annual Debt Service</span>
-                      <strong className="font-bold text-[#7A9EAA]">${Math.round(amortResult.annualDebtService).toLocaleString()}</strong>
-                    </div>
-                  </div>
-
-                  {/* Choose action */}
-                  <div className="mt-4 pt-3 border-t border-pw-border flex justify-end">
-                    {est.isChosen ? (
-                      <div className="px-3 py-1.5 bg-[#ECFDF5] text-[#047857] border border-[#A7F3D0] rounded text-[10px] font-bold uppercase tracking-wider flex items-center gap-1">
-                        <Check className="w-3.5 h-3.5" />
-                        Selected Loan
-                      </div>
-                    ) : (
-                      <button 
-                        onClick={() => handleChooseLoan(est.id, est.lenderName)}
-                        disabled={submitting}
-                        className="pw-interactive px-3 py-1.5 bg-[#7A9EAA] hover:bg-[#688a95] text-pw-white text-[10px] font-bold uppercase tracking-wider rounded transition-all shadow-sm"
-                      >
-                        Choose This Loan
-                      </button>
-                    )}
-                  </div>
-                </div>
-              );
-            })}
+                    </td>
+                  ))}
+                </tr>
+              </tbody>
+            </table>
           </div>
         )}
       </div>

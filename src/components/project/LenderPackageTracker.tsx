@@ -341,7 +341,7 @@ export function LenderPackageTracker({ projectId }: Props) {
     <div className="glass-card p-6 space-y-6">
       {/* Header */}
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center border-b border-pw-border pb-4 gap-4">
-        <div>
+        <div className="flex-1">
           <h3 className="text-lg font-light uppercase tracking-widest text-pw-black flex items-center gap-2.5">
             <FileText className="w-5 h-5 text-[#7A9EAA]" />
             Lender Package (Customary Checklist)
@@ -349,6 +349,13 @@ export function LenderPackageTracker({ projectId }: Props) {
           <p className="text-xs text-pw-muted font-light mt-1">
             Manage and upload the customary underwriting package required by the lender.
           </p>
+          <div className="flex items-start gap-2.5 mt-3 p-3 bg-blue-50/40 border border-blue-100 rounded-lg text-[11px] text-blue-900 font-light leading-relaxed max-w-2xl">
+            <AlertCircle className="w-4 h-4 text-blue-700 shrink-0 mt-0.5" />
+            <p>
+              These documents represent a <strong>customary lender package</strong> and are not absolute mandates. 
+              You can adjust this checklist by adding or removing items to match your lender's specific requests.
+            </p>
+          </div>
         </div>
         <div className="flex items-center gap-3">
           <div className="text-right">

@@ -28,23 +28,7 @@ const VALID_STATUSES: CommitmentStatus[] = [
   'signed',
   'funds-confirmed'
 ];
-
-async function verifyProjectMembership(projectId: string, uid: string) {
-  const snap = await adminDb.collection('projects').doc(projectId).get();
-  if (!snap.exists) return null;
-  const data = snap.data()!;
-  const isOwner = data.ownerUid === uid;
-  const isMember = !!data.members?.[uid] || data.teamMemberIds?.includes(uid);
-  const isOrgMember = data.organizationId
-    ? await adminDb.collection('organizations').doc(data.organizationId).get().then((o) => {
-        if (!o.exists) return false;
-        const od = o.data()!;
-        return od.ownerUid === uid || od.teamMembers?.some((m: any) => m.id === uid && m.status === 'active');
-      })
-    : false;
-  if (!isOwner && !isMember && !isOrgMember) return null;
-  return data;
-}
+import { verifyProjectAccessAndRole } from '@/lib/firebase-admin/project-guard';
 
 export async function PATCH(
   request: NextRequest,
@@ -54,11 +38,12 @@ export async function PATCH(
     const auth = await requireAuth(request);
     if (isAuthError(auth)) return auth;
     const { uid } = auth;
+    const email = auth.token.email;
 
     const { id: projectId, cId } = await params;
 
-    const project = await verifyProjectMembership(projectId, uid);
-    if (!project) {
+    const access = await verifyProjectAccessAndRole(projectId, uid, email);
+    if (!access) {
       return NextResponse.json({ error: 'Project not found or access denied' }, { status: 403 });
     }
 
@@ -73,8 +58,35 @@ export async function PATCH(
       return NextResponse.json({ error: 'Commitment not found' }, { status: 404 });
     }
 
-    const body = await request.json();
     const updated = existing.data()!;
+
+    // Enforce LP/co-buyer permissions and ownership checks
+    if (access.role !== 'Lead Investor') {
+      const lowerEmail = email?.toLowerCase();
+      const isOwner = (existing.data()?.email && lowerEmail && existing.data()?.email.toLowerCase() === lowerEmail) ||
+                      existing.data()?.createdByUid === uid;
+      if (!isOwner) {
+        return NextResponse.json({ error: 'Access denied: cannot modify another investor\'s commitment' }, { status: 403 });
+      }
+
+      const canEdit = access.phasePermissions?.['phase-2']?.canEdit ?? true;
+      if (!canEdit) {
+        return NextResponse.json({ error: 'Edit permission denied for this phase' }, { status: 403 });
+      }
+    }
+
+    const body = await request.json();
+
+    // Prevent LPs/co-buyers from updating/transferring the email or changing partyType
+    if (access.role !== 'Lead Investor') {
+      if (body.email !== undefined && body.email !== updated.email) {
+        return NextResponse.json({ error: 'Cannot change email on an existing commitment' }, { status: 403 });
+      }
+      if (body.partyType !== undefined && body.partyType !== updated.partyType) {
+        return NextResponse.json({ error: 'Cannot change partyType on an existing commitment' }, { status: 403 });
+      }
+    }
+
     const updates: Record<string, any> = { updatedAt: FieldValue.serverTimestamp() };
 
     if (body.status !== undefined) {
@@ -83,6 +95,12 @@ export async function PATCH(
           { error: `status must be one of: ${VALID_STATUSES.join(', ')}` },
           { status: 422 }
         );
+      }
+      if (access.role !== 'Lead Investor') {
+        const PRIVILEGED_STATUSES = ['transferred', 'cleared', 'docs-out', 'funds-confirmed'];
+        if (PRIVILEGED_STATUSES.includes(body.status)) {
+          return NextResponse.json({ error: 'Cannot self-clear or self-verify commitments' }, { status: 403 });
+        }
       }
       updates.status = body.status;
 
@@ -109,9 +127,11 @@ export async function PATCH(
       updates.amountCents = Math.round(body.amountCents);
     }
     if (body.name !== undefined) updates.name = String(body.name).trim();
-    if (body.email !== undefined) updates.email = body.email ? String(body.email).trim() : null;
+    if (body.email !== undefined && access.role === 'Lead Investor') {
+      updates.email = body.email ? String(body.email).trim() : null;
+    }
     if (body.notes !== undefined) updates.notes = body.notes ? String(body.notes).trim() : null;
-    if (body.partyType !== undefined) {
+    if (body.partyType !== undefined && access.role === 'Lead Investor') {
       const VALID_PARTY_TYPES = ['Sponsor', 'Investor', 'Co-GP', 'Preferred Equity'];
       if (!VALID_PARTY_TYPES.includes(body.partyType)) {
         return NextResponse.json({ error: `partyType must be one of: ${VALID_PARTY_TYPES.join(', ')}` }, { status: 422 });
@@ -138,6 +158,8 @@ export async function PATCH(
           uploadedByName: auth.token.name || 'Sponsor',
           uploadedAt: new Date(),
           eSignStatus: 'Not Required',
+          recipientEmail: updates.email ?? updated.email ?? null,
+          recipientUid: updates.createdByUid ?? updated.createdByUid ?? null,
         });
       }
     }
@@ -151,7 +173,7 @@ export async function PATCH(
       await ledgerItemRef.set({
         id: ledgerItemRef.id,
         projectId,
-        organizationId: project.organizationId || '',
+        organizationId: access.project.organizationId || '',
         type: 'receipt',
         category: 'Other',
         description: `Capital Contribution: ${updates.name ?? updated.name}`,
@@ -191,12 +213,18 @@ export async function DELETE(
     const auth = await requireAuth(request);
     if (isAuthError(auth)) return auth;
     const { uid } = auth;
+    const email = auth.token.email;
 
     const { id: projectId, cId } = await params;
 
-    const project = await verifyProjectMembership(projectId, uid);
-    if (!project) {
+    const access = await verifyProjectAccessAndRole(projectId, uid, email);
+    if (!access) {
       return NextResponse.json({ error: 'Project not found or access denied' }, { status: 403 });
+    }
+
+    // Only Lead Investors can delete commitments
+    if (access.role !== 'Lead Investor') {
+      return NextResponse.json({ error: 'Forbidden: only Lead Investors can delete commitments' }, { status: 403 });
     }
 
     const docRef = adminDb

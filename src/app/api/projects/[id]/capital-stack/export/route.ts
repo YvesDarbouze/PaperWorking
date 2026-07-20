@@ -80,8 +80,30 @@ function buildPdf(
   const capitalStack = financials.capitalStack ?? [];
   const raiseTarget = financials.capitalRaiseTarget ?? 0;
 
+  // Sum confirmed contributions
+  const confirmedInvestorEquity = commitments
+    .filter((c: any) => (c.status === 'funds-confirmed' || c.status === 'cleared') && c.partyType === 'Investor')
+    .reduce((sum: number, c: any) => sum + ((c.amountCents || 0) / 100), 0);
+
+  const confirmedSponsorEquity = commitments
+    .filter((c: any) => (c.status === 'funds-confirmed' || c.status === 'cleared') && (c.partyType === 'Sponsor' || c.partyType === 'Co-GP'))
+    .reduce((sum: number, c: any) => sum + ((c.amountCents || 0) / 100), 0);
+
+  const updatedCapitalStack = capitalStack.map((s: any) => {
+    if (s.category === 'Co-buying Equity') {
+      return { ...s, amount: confirmedInvestorEquity, status: 'Funded' };
+    }
+    if (s.category === 'Syndication Equity') {
+      return { ...s, amount: confirmedInvestorEquity, status: 'Funded' };
+    }
+    if (s.category === 'GP Co-investment') {
+      return { ...s, amount: confirmedSponsorEquity, status: 'Funded' };
+    }
+    return s;
+  });
+
   // Rollups
-  const totalDebt = capitalStack.reduce((sum: number, src: any) => sum + (src.amount ?? 0), 0);
+  const totalDebt = updatedCapitalStack.reduce((sum: number, src: any) => sum + (src.amount ?? 0), 0);
   const totalCommitted = commitments.reduce((sum: number, c: any) => sum + ((c.amountCents ?? 0) / 100), 0);
   const totalConfirmed = commitments.reduce((sum: number, c: any) => {
     const isFunded = c.status === 'funds-confirmed' || c.status === 'cleared';
@@ -132,7 +154,7 @@ function buildPdf(
   doc.setFontSize(8.5);
   doc.setTextColor(50, 50, 50);
 
-  if (capitalStack.length === 0) {
+  if (updatedCapitalStack.length === 0) {
     doc.setFont('helvetica', 'italic');
     doc.setTextColor(...MID_GRAY);
     doc.text('No active debt sources configured.', margin, y);
@@ -140,7 +162,7 @@ function buildPdf(
     doc.setTextColor(50, 50, 50);
     y += 6;
   } else {
-    for (const src of capitalStack) {
+    for (const src of updatedCapitalStack) {
       doc.text(src.lenderName || 'Unnamed Lender', colX[0], y);
       doc.text(src.category || 'Debt', colX[1], y);
       doc.text(src.interestRate ? `${src.interestRate}%` : '--', colX[2], y, { align: 'right' });

@@ -3,6 +3,7 @@ import { requireAuth, isAuthError } from '@/lib/firebase-admin/auth-guard';
 import { adminDb } from '@/lib/firebase/admin';
 import { writeActivityLog } from '@/lib/firebase/activityLogWriter';
 import { NotificationService } from '@/lib/services/notificationService';
+import { verifyProjectAccessAndRole } from '@/lib/firebase-admin/project-guard';
 
 export const dynamic = 'force-dynamic';
 
@@ -19,23 +20,6 @@ export const dynamic = 'force-dynamic';
  *     overwriting other equity sources.
  */
 
-async function verifyProjectMembership(projectId: string, uid: string) {
-  const snap = await adminDb.collection('projects').doc(projectId).get();
-  if (!snap.exists) return null;
-  const data = snap.data()!;
-  const isOwner = data.ownerUid === uid;
-  const isMember = !!data.members?.[uid] || data.teamMemberIds?.includes(uid);
-  const isOrgMember = data.organizationId
-    ? await adminDb.collection('organizations').doc(data.organizationId).get().then((o) => {
-        if (!o.exists) return false;
-        const od = o.data()!;
-        return od.ownerUid === uid || od.teamMembers?.some((m: any) => m.id === uid && m.status === 'active');
-      })
-    : false;
-  if (!isOwner && !isMember && !isOrgMember) return null;
-  return data;
-}
-
 const VALID_OCCUPANCY_TYPES = ['existing', 'new_construction'] as const;
 const VALID_INJECTION_TIERS = [10, 15, 20] as const;
 
@@ -50,10 +34,17 @@ export async function POST(
 
     const { id: projectId } = await params;
 
-    const project = await verifyProjectMembership(projectId, uid);
-    if (!project) {
+    const access = await verifyProjectAccessAndRole(projectId, uid, auth.token.email);
+    if (!access) {
       return NextResponse.json({ error: 'Project not found or access denied' }, { status: 403 });
     }
+
+    // Only Lead Investors can configure SBA 504 structure
+    if (access.role !== 'Lead Investor') {
+      return NextResponse.json({ error: 'Forbidden: only Lead Investors can configure SBA 504 structure' }, { status: 403 });
+    }
+
+    const project = access.project;
 
     const body = await request.json();
     const {
@@ -220,17 +211,30 @@ export async function POST(
       const actorName = auth.token.name || auth.token.email || 'A teammate';
       const recipient = project.ownerUid || uid;
 
-      await NotificationService.createNotification({
-        recipientId: recipient,
-        type: 'LOAN_STATUS_UPDATE',
-        actor: { uid, name: actorName },
-        objectReference: {
-          projectId,
-          dealAddress,
-          task: `SBA 504 structure configured: ${bankPct}/${cdcPct}/${injectionPct} on $${purchasePrice.toLocaleString()}`,
-        },
-        deepLinkUrl: `/dashboard/projects/${projectId}/phase-2`,
-      });
+      if (typeof NotificationService.broadcastProjectNotification === 'function') {
+        await NotificationService.broadcastProjectNotification(projectId, {
+          type: 'LOAN_STATUS_UPDATE',
+          actor: { uid, name: actorName },
+          objectReference: {
+            projectId,
+            dealAddress,
+            task: `SBA 504 structure configured: ${bankPct}/${cdcPct}/${injectionPct} on $${purchasePrice.toLocaleString()}`,
+          },
+          deepLinkUrl: `/dashboard/projects/${projectId}/phase-2`,
+        });
+      } else {
+        await NotificationService.createNotification({
+          recipientId: recipient,
+          type: 'LOAN_STATUS_UPDATE',
+          actor: { uid, name: actorName },
+          objectReference: {
+            projectId,
+            dealAddress,
+            task: `SBA 504 structure configured: ${bankPct}/${cdcPct}/${injectionPct} on $${purchasePrice.toLocaleString()}`,
+          },
+          deepLinkUrl: `/dashboard/projects/${projectId}/phase-2`,
+        });
+      }
     } catch (err: any) {
       console.error('Failed to trigger SBA 504 notification:', err.message);
     }

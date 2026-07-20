@@ -33,7 +33,13 @@ jest.mock('@/lib/firebase/admin', () => ({
   adminDb: {
     batch: () => mockBatch(),
     collection: (_colName: string) => {
-      // Check projectFolders or projectFiles
+      if (_colName === 'users') {
+        return {
+          doc: () => ({
+            get: (...args: any[]) => mockUserDocGet(...args),
+          }),
+        };
+      }
       if (_colName === 'projectFolders') {
         return {
           where: () => ({
@@ -49,9 +55,14 @@ jest.mock('@/lib/firebase/admin', () => ({
         };
       }
       return {
+        where: () => ({
+          get: (...args: any[]) => mockSubCollGet(...args),
+        }),
+        add: (...args: any[]) => mockSubDocSet(...args),
         doc: (docId?: string) => ({
           get: (...args: any[]) => mockProjectDocGet(...args),
           update: (...args: any[]) => mockProjectDocUpdate(...args),
+          set: (...args: any[]) => mockSubDocSet(...args),
           collection: (_subCol: string) => ({
             orderBy: () => ({
               get: (...args: any[]) => mockSubCollGet(...args),
@@ -82,6 +93,8 @@ jest.mock('firebase-admin/firestore', () => ({
 import { GET as getList, POST as createItem } from '@/app/api/projects/[id]/lender-package/route';
 import { PATCH as updateItem, DELETE as deleteItem } from '@/app/api/projects/[id]/lender-package/[itemId]/route';
 import { POST as provisionFolder } from '@/app/api/projects/[id]/lender-package/debt-folder/route';
+import { GET as getAdminChecklists, PUT as updateAdminChecklists } from '@/app/api/admin/lender-checklists/route';
+import { GET as runRemindersCron } from '@/app/api/cron/lender-package-reminders/route';
 
 describe('Card F3.2 Lender Package Checklist API Tests', () => {
   const PROJECT_ID = 'proj_test_456';
@@ -257,6 +270,124 @@ describe('Card F3.2 Lender Package Checklist API Tests', () => {
         expect.objectContaining({
           name: 'Debt',
           phase: 'Find & Fund'
+        })
+      );
+    });
+  });
+
+  describe('FD-18 Admin & Seeding Tests', () => {
+    it('GET /api/admin/lender-checklists returns checklists definitions', async () => {
+      const req = new NextRequest('http://localhost/api/admin/lender-checklists', {
+        headers: { 'Authorization': 'Bearer mock' }
+      });
+      const res = await getAdminChecklists(req);
+      expect(res.status).toBe(200);
+      const body = await res.json();
+      expect(body.checklists).toHaveProperty('Conventional');
+      expect(body.checklists.Conventional).toContain('3yr Personal Tax Returns');
+    });
+
+    it('PUT /api/admin/lender-checklists updates templates for admin users', async () => {
+      mockUserDocGet.mockResolvedValueOnce({
+        exists: true,
+        data: () => ({ orgRole: 'Lead Investor', email: 'sponsor@apex.com' })
+      });
+
+      const req = new NextRequest('http://localhost/api/admin/lender-checklists', {
+        method: 'PUT',
+        headers: { 'Authorization': 'Bearer mock' },
+        body: JSON.stringify({
+          Conventional: ['Custom Tax Returns Ask'],
+        })
+      });
+
+      const res = await updateAdminChecklists(req);
+      expect(res.status).toBe(200);
+      expect(mockSubDocSet).toHaveBeenCalled();
+    });
+
+    it('GET seeds union of checklists for hybrid financing stacks', async () => {
+      // Mock empty subcollection
+      mockSubCollGet.mockResolvedValueOnce({ empty: true });
+
+      // Mock two loans in the subcollection (Conventional + Bridge)
+      mockSubCollGet.mockResolvedValueOnce({
+        empty: false,
+        docs: [
+          { data: () => ({ instrument: 'Conventional' }) },
+          { data: () => ({ instrument: 'Bridge' }) }
+        ]
+      });
+
+      const req = new NextRequest(`http://localhost/api/projects/${PROJECT_ID}/lender-package`, {
+        method: 'GET',
+        headers: { 'Authorization': 'Bearer mock' }
+      });
+
+      const res = await getList(req, { params: Promise.resolve({ id: PROJECT_ID }) });
+      expect(res.status).toBe(200);
+      
+      const body = await res.json();
+      // Should seed union: Conventional (7 items) + Bridge (4 items, one duplicate 'Organizational Documents (LLC/Articles)' removed) = 10 items
+      expect(body.items).toHaveLength(10);
+    });
+  });
+
+  describe('FD-18 Cron Reminders Tests', () => {
+    it('cron processes projects, sends daily/weekly alerts, and updates lastRemindedAt', async () => {
+      // Mock project collection get returning 1 active project
+      mockSubCollGet.mockResolvedValueOnce({
+        size: 1,
+        docs: [
+          {
+            id: PROJECT_ID,
+            data: () => ({
+              ownerUid: OWNER_UID,
+              address: '789 Apex Ave',
+              status: 'Active'
+            })
+          }
+        ]
+      });
+
+      // Mock checklist items subcollection get containing 1 pending item with daily cadence
+      mockSubCollGet.mockResolvedValueOnce({
+        empty: false,
+        docs: [
+          {
+            id: 'item_pending_daily',
+            ref: {
+              update: mockSubDocUpdate
+            },
+            data: () => ({
+              name: 'Debt Schedule',
+              status: 'Pending',
+              reminderCadence: 'daily',
+              lastRemindedAt: null
+            })
+          }
+        ]
+      });
+
+      // Mock user doc get for recipient preferences
+      mockUserDocGet.mockResolvedValueOnce({
+        exists: true,
+        data: () => ({ email: 'sponsor@apex.com' })
+      });
+
+      const req = new NextRequest('http://localhost/api/cron/lender-package-reminders', {
+        headers: { 'Authorization': 'Bearer mock_secret' }
+      });
+
+      const res = await runRemindersCron(req);
+      expect(res.status).toBe(200);
+      const body = await res.json();
+      expect(body.remindersSent).toBe(1);
+      
+      // Verify Firestore update of lastRemindedAt is triggered
+      expect(mockSubDocUpdate).toHaveBeenCalledWith(
+        expect.objectContaining({
+          lastRemindedAt: expect.any(String)
         })
       );
     });

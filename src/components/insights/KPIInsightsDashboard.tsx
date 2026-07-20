@@ -22,6 +22,7 @@ import { useProjectStore } from "@/store/projectStore";
 import { useTheme } from "@/lib/utils/ThemeProvider";
 import {
   deriveAllMetrics,
+  deriveAllProjectMetrics,
 } from "@/lib/metrics/reiMetrics";
 import {
   computeLTVMetric,
@@ -564,7 +565,7 @@ function SvgGauge({ value, label, sublabel, color, isDark, size = 140 }: SvgGaug
 
 // ─── DSCR Indicator ────────────────────────────────────────────────────────────
 
-function DSCRIndicator({ dscr, isDark }: { dscr: number | null; isDark: boolean }) {
+function DSCRIndicator({ dscr, isDark, hasUnresolvedFinancing }: { dscr: number | null; isDark: boolean; hasUnresolvedFinancing?: boolean }) {
   const status =
     dscr === null    ? "neutral" :
     dscr >= 1.25     ? "good"    :
@@ -640,7 +641,9 @@ function DSCRIndicator({ dscr, isDark }: { dscr: number | null; isDark: boolean 
 
       {dscr === null && (
         <p className="text-[12px]" style={{ color: mutedClr }}>
-          Add loan details and rental income to compute DSCR.
+          {hasUnresolvedFinancing 
+            ? "Lender loan terms (FD-21) must be locked to compute DSCR."
+            : "Add loan details and rental income to compute DSCR."}
         </p>
       )}
     </div>
@@ -729,9 +732,10 @@ interface PctGaugeProps {
   warnMin: number;         // threshold where "warn" starts
   unit?: string;
   isDark: boolean;
+  hasUnresolvedFinancing?: boolean;
 }
 
-function PercentageGauge({ value, min, max, goodMin, warnMin, unit = "%", isDark }: PctGaugeProps) {
+function PercentageGauge({ value, min, max, goodMin, warnMin, unit = "%", isDark, hasUnresolvedFinancing }: PctGaugeProps) {
   const status =
     value === null  ? "neutral" :
     value >= goodMin ? "good"  :
@@ -782,6 +786,12 @@ function PercentageGauge({ value, min, max, goodMin, warnMin, unit = "%", isDark
         <span style={{ color: C.green }}>{goodMin}{unit}+</span>
         <span>{max}{unit}</span>
       </div>
+
+      {value === null && hasUnresolvedFinancing && (
+        <span className="text-[10px] text-amber-500/80 leading-normal">
+          Lender loan terms (FD-21) must be locked to compute return.
+        </span>
+      )}
     </div>
   );
 }
@@ -1089,28 +1099,35 @@ function usePortfolioInsights(projects: Project[]): PortfolioInsights {
     let appCount            = 0;
     let roiByProject: Array<{ name: string; roi: number }> = [];
 
+    // Check if any financed project does not have terms locked (FD-21)
+    const firstFinancedUnresolvedProject = projects.find(p => {
+      const modality = p.fundingPlan?.modality || [];
+      const isFin = modality.some(m => 
+        ['conventional_loan', 'sba_504', 'hard_money', 'bridge'].includes(m)
+      ) || (p.loans && p.loans.length > 0) || (p.financials?.capitalStack || []).some(
+        s => ['Conventional Financing', 'Hard Money Loans', 'SBA 504 Bank First Lien', 'SBA 504 CDC Debenture', 'Bridge Loans'].includes(s.category)
+      );
+      return isFin && !p.termsLocked;
+    });
+    const hasUnresolvedFinancing = !!firstFinancedUnresolvedProject;
+
     for (const p of projects) {
       const f = p.financials;
       if (!f) continue;
 
-      const m = deriveAllMetrics(
-        f,
-        f.estimatedCurrentValue || f.estimatedARV,
-        p.dispositionType,
-        p.currentPhase,
-        p.createdAt,
-      );
+      const m = deriveAllProjectMetrics(p);
 
       const propValue   = f.estimatedCurrentValue || f.estimatedARV || f.purchasePrice || f.targetPrice || 0;
       const propPrice   = f.purchasePrice || f.targetPrice || 0;
       const annualRent  = (f.monthlyGrossRent || f.projectedMonthlyRent || 0) * 12;
-      const debtService = m.annualDebtService;
-      const noiComp = m.noiComponents;
+      const debtService = m.annualDebtService ?? 0;
+      const noiComp     = m.noiComponents || { totalOperatingExpenses: 0, grossRentalIncome: 0 };
+      const vacancyRate = m.vacancyRate ?? 0;
 
-      sumNOI            += m.noi;
+      sumNOI            += m.noi ?? 0;
       sumPropertyValue  += propValue;
-      sumAnnualCashFlow += m.annualCashFlow;
-      sumCashInvested   += m.totalCashInvested;
+      sumAnnualCashFlow += m.annualCashFlow ?? 0;
+      sumCashInvested   += m.totalCashInvested ?? 0;
       sumDebtService    += debtService;
       sumOpEx           += noiComp.totalOperatingExpenses;
       sumGrossIncome    += noiComp.grossRentalIncome;
@@ -1121,10 +1138,10 @@ function usePortfolioInsights(projects: Project[]): PortfolioInsights {
       }
 
       if (noiComp.grossRentalIncome > 0) {
-        vacancyWeighted += m.vacancyRate * noiComp.grossRentalIncome;
+        vacancyWeighted += vacancyRate * noiComp.grossRentalIncome;
         vacancyWeight   += noiComp.grossRentalIncome;
-      } else if (m.vacancyRate > 0) {
-        vacancyWeighted += m.vacancyRate;
+      } else if (vacancyRate > 0) {
+        vacancyWeighted += vacancyRate;
         vacancyWeight   += 1;
       }
 
@@ -1148,11 +1165,11 @@ function usePortfolioInsights(projects: Project[]): PortfolioInsights {
       }
 
       const name = (p.propertyName || p.address || `Project ${p.id.slice(0,4)}`).slice(0, 16);
-      const flipROI = p.dispositionType === "SALE" && m.totalCashInvested > 0
-        ? ((propValue - (f.purchasePrice ?? 0) - (f.projectedRehabCost ?? 0)) / m.totalCashInvested) * 100
+      const flipROI = p.dispositionType === "SALE" && (m.totalCashInvested ?? 0) > 0
+        ? ((propValue - (f.purchasePrice ?? 0) - (f.projectedRehabCost ?? 0)) / (m.totalCashInvested ?? 1)) * 100
         : null;
-      const rentROI = m.totalCashInvested > 0
-        ? (m.annualCashFlow / m.totalCashInvested) * 100
+      const rentROI = (m.totalCashInvested ?? 0) > 0
+        ? ((m.annualCashFlow ?? 0) / (m.totalCashInvested ?? 1)) * 100
         : null;
       const roi = flipROI ?? rentROI;
       if (roi !== null && Number.isFinite(roi)) {
@@ -1175,14 +1192,14 @@ function usePortfolioInsights(projects: Project[]): PortfolioInsights {
     return {
       totalNOI:        sumNOI > 0 || sumGrossIncome > 0 ? sumNOI : null,
       weightedCapRate: sumPropertyValue > 0 ? (sumNOI / sumPropertyValue) * 100 : null,
-      weightedCoC:     sumCashInvested > 0 ? (sumAnnualCashFlow / sumCashInvested) * 100 : null,
-      portfolioDSCR:   sumDebtService > 0 ? sumNOI / sumDebtService : null,
+      weightedCoC:     hasUnresolvedFinancing ? null : (sumCashInvested > 0 ? (sumAnnualCashFlow / sumCashInvested) * 100 : null),
+      portfolioDSCR:   hasUnresolvedFinancing ? null : (sumDebtService > 0 ? sumNOI / sumDebtService : null),
       weightedOER:     sumGrossIncome > 0 ? (sumOpEx / sumGrossIncome) * 100 : null,
       weightedGRM:     sumGrossRent > 0 ? sumPropPrice / sumGrossRent : null,
       priceToRent:     sumGrossRent > 0 ? sumPropPrice / sumGrossRent : null,
       avgVacancyRate:  vacancyWeight > 0 ? vacancyWeighted / vacancyWeight : null,
       avgDOM:          domCount > 0 ? domTotal / domCount : null,
-      totalCashFlow:    sumAnnualCashFlow,
+      totalCashFlow:    hasUnresolvedFinancing ? null : sumAnnualCashFlow,
       averageIRR:       irrCount > 0 ? irrTotal / irrCount : null,
       appreciationRate: appCount > 0 ? appTotal / appCount : null,
       projectCount:    projects.length,
@@ -1207,7 +1224,7 @@ function SectionLabel({ label, isDark }: { label: string; isDark: boolean }) {
   );
 }
 
-function CashFlowIndicator({ cashFlow, isDark }: { cashFlow: number | null; isDark: boolean }) {
+function CashFlowIndicator({ cashFlow, isDark, hasUnresolvedFinancing }: { cashFlow: number | null; isDark: boolean; hasUnresolvedFinancing?: boolean }) {
   const status = cashFlow === null ? "neutral" : cashFlow >= 0 ? "good" : "bad";
   const color = statusColor(status);
   const mutedClr = isDark ? "rgba(253,255,252,0.38)" : "rgba(69,73,85,0.5)";
@@ -1224,7 +1241,11 @@ function CashFlowIndicator({ cashFlow, isDark }: { cashFlow: number | null; isDa
         </span>
       </div>
       <div className="text-xs font-light text-[#9E9DA0]">
-        Annual projected: <span className="font-semibold text-white font-mono">{cashFlow !== null ? `$${Math.round(cashFlow).toLocaleString()}/yr` : "—"}</span>
+        {hasUnresolvedFinancing ? (
+          <span className="text-amber-500/80">Lender loan terms (FD-21) must be locked to compute Cash Flow.</span>
+        ) : (
+          <>Annual projected: <span className="font-semibold text-white font-mono">{cashFlow !== null ? `$${Math.round(cashFlow).toLocaleString()}/yr` : "—"}</span></>
+        )}
       </div>
     </div>
   );
@@ -1527,6 +1548,18 @@ export function KPIInsightsDashboard() {
   const ins = usePortfolioInsights(focusedProjects);
   const { snapshots } = usePortfolioMetricSnapshots("monthly", focusedProjects);
 
+  const hasUnresolvedFinancing = useMemo(() => {
+    return focusedProjects.some(p => {
+      const modality = p.fundingPlan?.modality || [];
+      const isFin = modality.some(m => 
+        ['conventional_loan', 'sba_504', 'hard_money', 'bridge'].includes(m)
+      ) || (p.loans && p.loans.length > 0) || (p.financials?.capitalStack || []).some(
+        s => ['Conventional Financing', 'Hard Money Loans', 'SBA 504 Bank First Lien', 'SBA 504 CDC Debenture', 'Bridge Loans'].includes(s.category)
+      );
+      return isFin && !p.termsLocked;
+    });
+  }, [focusedProjects]);
+
   const headingColor = isDark ? "rgba(253,255,252,0.95)" : "#0d0a0b";
   const subColor     = isDark ? "rgba(253,255,252,0.42)" : "rgba(69,73,85,0.58)";
   const divider      = isDark ? "rgba(230, 234, 240, 0.12)" : "rgba(33, 34, 38, 0.12)";
@@ -1791,9 +1824,26 @@ export function KPIInsightsDashboard() {
     const hasOccupied  = projects.some(p => p.financials?.daysOccupied != null && p.financials?.totalHoldDays != null);
     const hasPurchase  = projects.some(p => (p.financials?.purchasePrice ?? p.financials?.targetPurchasePrice ?? 0) > 0);
 
+    const firstFinancedUnresolvedProject = focusedProjects.find(p => {
+      const modality = p.fundingPlan?.modality || [];
+      const isFin = modality.some(m => 
+        ['conventional_loan', 'sba_504', 'hard_money', 'bridge'].includes(m)
+      ) || (p.loans && p.loans.length > 0) || (p.financials?.capitalStack || []).some(
+        s => ['Conventional Financing', 'Hard Money Loans', 'SBA 504 Bank First Lien', 'SBA 504 CDC Debenture', 'Bridge Loans'].includes(s.category)
+      );
+      return isFin && !p.termsLocked;
+    });
+
+    const hasUnresolvedFinancing = !!firstFinancedUnresolvedProject;
+
     const firstProjectId = projects[0]?.id || "";
-    const collectingRoute = firstProjectId ? `/dashboard/projects/${firstProjectId}` : "/dashboard/projects";
-    const collectingLabel = firstProjectId ? "Project Workspace" : "Projects List";
+    let collectingRoute = firstProjectId ? `/dashboard/projects/${firstProjectId}` : "/dashboard/projects";
+    let collectingLabel = firstProjectId ? "Project Workspace" : "Projects List";
+
+    if (hasUnresolvedFinancing && ["Cash Flow", "Cash-on-Cash Return", "Debt Service Coverage"].includes(title)) {
+      collectingRoute = `/dashboard/projects/${firstFinancedUnresolvedProject.id}/phase-2?card=F3.5`;
+      collectingLabel = "Locked Terms card (F3.5)";
+    }
 
     let formula = "";
     let benchmark = "";
@@ -1816,11 +1866,16 @@ export function KPIInsightsDashboard() {
       case "Cash Flow":
         formula = "NOI − Annual Debt Service";
         benchmark = "Positive (> $0/mo)";
-        statusNote = ins.totalCashFlow !== null && ins.totalCashFlow >= 0
-          ? "Positive cash flow — operations are fully covered."
-          : "Add Monthly Gross Rent, operating expenses, and loan terms to compute net cash flow.";
-        if (ins.totalCashFlow === null) {
-          missingFields = ["Monthly Gross Rent", "Operating Expenses", "Loan Amount", "Interest Rate"];
+        if (hasUnresolvedFinancing) {
+          statusNote = "The active project focus requires locked lender terms (FD-21) before this metric can be computed.";
+          missingFields = ["Locked Loan Terms"];
+        } else {
+          statusNote = ins.totalCashFlow !== null && ins.totalCashFlow >= 0
+            ? "Positive cash flow — operations are fully covered."
+            : "Add Monthly Gross Rent, operating expenses, and loan terms to compute net cash flow.";
+          if (ins.totalCashFlow === null) {
+            missingFields = ["Monthly Gross Rent", "Operating Expenses", "Loan Amount", "Interest Rate"];
+          }
         }
         break;
       case "Capitalization Rate":
@@ -1836,11 +1891,16 @@ export function KPIInsightsDashboard() {
       case "Cash-on-Cash Return":
         formula = "Annual Cash Flow ÷ Total Cash Invested";
         benchmark = "≥ 8.0%";
-        statusNote = ins.weightedCoC !== null
-          ? "Loan details found — computing leveraged cash-on-cash return."
-          : "Enter loan details in the project to unlock CoC Return.";
-        if (ins.weightedCoC === null) {
-          missingFields = ["Loan Amount", "Interest Rate", "Down Payment / Cash Invested"];
+        if (hasUnresolvedFinancing) {
+          statusNote = "The active project focus requires locked lender terms (FD-21) before this metric can be computed.";
+          missingFields = ["Locked Loan Terms"];
+        } else {
+          statusNote = ins.weightedCoC !== null
+            ? "Loan details found — computing leveraged cash-on-cash return."
+            : "Enter loan details in the project to unlock CoC Return.";
+          if (ins.weightedCoC === null) {
+            missingFields = ["Loan Amount", "Interest Rate", "Down Payment / Cash Invested"];
+          }
         }
         break;
       case "Gross Rent Multiplier":
@@ -1856,11 +1916,16 @@ export function KPIInsightsDashboard() {
       case "Debt Service Coverage":
         formula = "NOI ÷ Annual Debt Service";
         benchmark = "≥ 1.25";
-        statusNote = ins.portfolioDSCR !== null
-          ? "DSCR is live — lender underwriting benchmark active."
-          : "Enter Loan Amount and Interest Rate in the project to unlock DSCR.";
-        if (ins.portfolioDSCR === null) {
-          missingFields = ["Loan Amount", "Interest Rate", "NOI"];
+        if (hasUnresolvedFinancing) {
+          statusNote = "The active project focus requires locked lender terms (FD-21) before this metric can be computed.";
+          missingFields = ["Locked Loan Terms"];
+        } else {
+          statusNote = ins.portfolioDSCR !== null
+            ? "DSCR is live — lender underwriting benchmark active."
+            : "Enter Loan Amount and Interest Rate in the project to unlock DSCR.";
+          if (ins.portfolioDSCR === null) {
+            missingFields = ["Loan Amount", "Interest Rate", "NOI"];
+          }
         }
         break;
       case "Internal Rate of Return":
@@ -2162,7 +2227,7 @@ export function KPIInsightsDashboard() {
               }
               {...getMetricData("Cash Flow")}
             >
-              <CashFlowIndicator cashFlow={ins.totalCashFlow} isDark={isDark} />
+              <CashFlowIndicator cashFlow={ins.totalCashFlow} isDark={isDark} hasUnresolvedFinancing={hasUnresolvedFinancing} />
             </KPICard>
 
             {/* Cap Rate */}
@@ -2202,6 +2267,7 @@ export function KPIInsightsDashboard() {
                 min={0} max={20}
                 goodMin={8} warnMin={5}
                 isDark={isDark}
+                hasUnresolvedFinancing={hasUnresolvedFinancing}
               />
             </KPICard>
           </div>
@@ -2235,7 +2301,7 @@ export function KPIInsightsDashboard() {
               }
               {...getMetricData("Debt Service Coverage")}
             >
-              <DSCRIndicator dscr={ins.portfolioDSCR} isDark={isDark} />
+              <DSCRIndicator dscr={ins.portfolioDSCR} isDark={isDark} hasUnresolvedFinancing={hasUnresolvedFinancing} />
             </KPICard>
 
             {/* IRR */}

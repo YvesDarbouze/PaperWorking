@@ -4,25 +4,9 @@ import { adminDb } from '@/lib/firebase/admin';
 import { writeActivityLog } from '@/lib/firebase/activityLogWriter';
 import { NotificationService } from '@/lib/services/notificationService';
 import { calculateAmortization } from '@/lib/utils/reiCalculators';
+import { verifyProjectAccessAndRole } from '@/lib/firebase-admin/project-guard';
 
 export const dynamic = 'force-dynamic';
-
-async function verifyProjectMembership(projectId: string, uid: string) {
-  const snap = await adminDb.collection('projects').doc(projectId).get();
-  if (!snap.exists) return null;
-  const data = snap.data()!;
-  const isOwner = data.ownerUid === uid;
-  const isMember = !!data.members?.[uid] || data.teamMemberIds?.includes(uid);
-  const isOrgMember = data.organizationId
-    ? await adminDb.collection('organizations').doc(data.organizationId).get().then((o) => {
-        if (!o.exists) return false;
-        const od = o.data()!;
-        return od.ownerUid === uid || od.teamMembers?.some((m: any) => m.id === uid && m.status === 'active');
-      })
-    : false;
-  if (!isOwner && !isMember && !isOrgMember) return null;
-  return data;
-}
 
 export async function POST(
   request: NextRequest,
@@ -35,10 +19,17 @@ export async function POST(
 
     const { id: projectId } = await params;
 
-    const project = await verifyProjectMembership(projectId, uid);
-    if (!project) {
+    const access = await verifyProjectAccessAndRole(projectId, uid, auth.token.email);
+    if (!access) {
       return NextResponse.json({ error: 'Project not found or access denied' }, { status: 403 });
     }
+
+    // Only Lead Investors can lock terms
+    if (access.role !== 'Lead Investor') {
+      return NextResponse.json({ error: 'Forbidden: only Lead Investors can lock terms' }, { status: 403 });
+    }
+
+    const project = access.project;
 
     const loansSnap = await adminDb
       .collection('projects')
@@ -92,13 +83,23 @@ export async function POST(
     const currentFinancials = project.financials || {};
     const oldAmount = currentFinancials.loanAmount || 0;
 
+    const activeLoan = loans[0];
+    const sourceTags = {
+      ...(currentFinancials.sourceTags || {}),
+      loan_amount: activeLoan?.sourceTags?.amountCents || (activeLoan?.fileId ? 'document' : 'manual'),
+      loan_interest_rate: activeLoan?.sourceTags?.interestRate || (activeLoan?.fileId ? 'document' : 'manual'),
+      loan_term: activeLoan?.sourceTags?.termMonths || (activeLoan?.fileId ? 'document' : 'manual'),
+      loanOriginationPoints: activeLoan?.sourceTags?.points || (activeLoan?.fileId ? 'document' : 'manual'),
+    };
+
     const updatedFinancials = {
       ...currentFinancials,
       loanAmount: finalAmount,
       loanInterestRate: finalRate,
       loanTermYears: finalTermYears,
       loanOriginationPoints: finalPoints,
-      annualDebtService: finalAnnualDebtService
+      annualDebtService: finalAnnualDebtService,
+      sourceTags
     };
 
     await adminDb.collection('projects').doc(projectId).update({
@@ -126,17 +127,30 @@ export async function POST(
       const actorName = auth.token.name || auth.token.email || 'A teammate';
       const recipient = project.ownerUid || uid;
 
-      await NotificationService.createNotification({
-        recipientId: recipient,
-        type: 'LOAN_STATUS_UPDATE',
-        actor: { uid, name: actorName },
-        objectReference: {
-          projectId,
-          dealAddress,
-          task: `Locked loan terms: $${finalAmount.toLocaleString()} at ${finalRate}%`
-        },
-        deepLinkUrl: `/dashboard/projects/${projectId}/phase-2`
-      });
+      if (typeof NotificationService.broadcastProjectNotification === 'function') {
+        await NotificationService.broadcastProjectNotification(projectId, {
+          type: 'LOAN_STATUS_UPDATE',
+          actor: { uid, name: actorName },
+          objectReference: {
+            projectId,
+            dealAddress,
+            task: `Locked loan terms: $${finalAmount.toLocaleString()} at ${finalRate}%`
+          },
+          deepLinkUrl: `/dashboard/projects/${projectId}/phase-2`
+        });
+      } else {
+        await NotificationService.createNotification({
+          recipientId: recipient,
+          type: 'LOAN_STATUS_UPDATE',
+          actor: { uid, name: actorName },
+          objectReference: {
+            projectId,
+            dealAddress,
+            task: `Locked loan terms: $${finalAmount.toLocaleString()} at ${finalRate}%`
+          },
+          deepLinkUrl: `/dashboard/projects/${projectId}/phase-2`
+        });
+      }
     } catch (err: any) {
       console.error('Failed to trigger lock terms notification:', err.message);
     }

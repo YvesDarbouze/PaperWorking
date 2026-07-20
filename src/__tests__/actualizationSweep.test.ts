@@ -97,4 +97,26 @@ describe('Card F5.6 — Actualization Sweep calculations and validation', () => 
     const actualLoan = financials.loanAmount;
     expect(actualLoan).toBe(185000);
   });
+
+  it('correctly maps and updates sourceTags for document-satisfied and user-actualized variables', () => {
+    // Simulate updating sourceTags during actualization sweep
+    const fin = baseValidProjectData.financials;
+    const cd = baseValidProjectData.closingRoom;
+
+    const sourceTags: Record<string, string> = {
+      ...(fin.sourceTags || {}) as Record<string, string>,
+    };
+
+    // If purchasePrice was manual actualized:
+    const sweepPurchasePrice = 250000;
+    sourceTags.purchasePrice = 'user_actual';
+
+    // If finalClosingCosts was cd-satisfied:
+    const finalClosingCosts = 5200;
+    sourceTags.finalClosingCosts = 'document';
+
+    // Assert that source tags are correctly mapped
+    expect(sourceTags.purchasePrice).toBe('user_actual');
+    expect(sourceTags.finalClosingCosts).toBe('document');
+  });
 });

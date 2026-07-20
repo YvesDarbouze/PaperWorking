@@ -92,86 +92,24 @@ export function AcquisitionPhaseGate({
 
     const f = (project.financials || {}) as any;
 
-    // 1. Identity complete
-    const isIdentityComplete = !!(
-      project.address &&
-      project.propertyName &&
-      project.city &&
-      project.state &&
-      project.zip &&
-      (project.squareFootage ?? 0) > 0 &&
-      (project.yearBuilt ?? 0) > 0 &&
-      project.propertyType &&
-      project.units &&
-      (project.retrospective || project.firstPassVerdict === 'PURSUE') &&
-      project.comps &&
-      project.comps.length >= 3
-    );
+    // 1. Accepted offer at known terms
+    const hasAcceptedOffer = f.offerStatus === 'Accepted' && (f.purchasePrice > 0 || f.finalAgreedPrice > 0 || f.renegotiatedPrice > 0);
 
-    // 2. Scorecard Acknowledged
-    const currentHash = getScorecardInputsHash(project);
-    const isScorecardAcknowledged = !!f.scorecardAcknowledged && f.acknowledgedInputsHash === currentHash;
+    // 2. DD contingencies satisfied/waived with go decision recorded
+    const hasNoPendingContingencies = !project.contingencies || project.contingencies.length === 0 || 
+      project.contingencies.every((c: any) => c.isSatisfied || c.isWaived);
+    const hasGoDecision = f.decision !== 'terminate';
+    const hasDdComplete = hasNoPendingContingencies && hasGoDecision;
 
-    // 3. Strategy set
-    const isStrategySet = !!(project.dispositionType && project.subStrategy);
-
-    // 4. Executed PSA Attached
-    const isPsaAttached = !!f.psaDocumentUrl;
-
-    // 5. Earnest deposited
-    const isEmdVerified = !!(f.emdVerified && f.emdReceiptUrl);
-
-    // 6. Due diligence complete for asset type
-    const isSurveyRequired = () => {
-      const type = (project.propertyType || '').toLowerCase();
-      const assetClass = (project.assetClass || '').toLowerCase();
-      return type.includes('commercial') || assetClass.includes('commercial') || type.includes('multi') || assetClass.includes('multi-family') || type.includes('land') || assetClass.includes('land') || !!f.surveyElected;
-    };
-    const isPhaseIRequired = () => {
-      const type = (project.propertyType || '').toLowerCase();
-      const assetClass = (project.assetClass || '').toLowerCase();
-      const isPre1980 = project.yearBuilt !== undefined && project.yearBuilt > 0 && project.yearBuilt < 1980;
-      return type.includes('commercial') || assetClass.includes('commercial') || type.includes('industrial') || assetClass.includes('industrial') || isPre1980 || !!f.phaseIElected;
-    };
-    const isHOARequired = () => !!f.hasHOA || !!f.hoaElected;
-    const isAttorneyRequired = () => {
-      const ATTORNEY_STATES = ['NY', 'NJ', 'MA', 'CT', 'GA', 'SC', 'NC', 'IL'];
-      const isAttorneyState = !!project.state && ATTORNEY_STATES.includes(project.state.toUpperCase());
-      return isAttorneyState || !!f.attorneyElected;
-    };
-
-    const isDdComplete = !!(
-      f.titleStatus !== 'defective' &&
-      f.zoningIntendedUsePermitted !== false &&
-      (!isSurveyRequired() || !!((f.surveyDocumentUrl && f.surveyCompletedDate) || (f.surveyWaived && f.surveyWaiverReason?.trim()))) &&
-      (!isPhaseIRequired() || !!((f.phaseIDocumentUrl && f.phaseICompletedDate) || (f.phaseIWaived && f.phaseIWaiverReason?.trim()))) &&
-      (!isHOARequired() || !!((f.hoaDocumentUrl && f.hoaCompletedDate) || (f.hoaWaived && f.hoaWaiverReason?.trim()))) &&
-      (!isAttorneyRequired() || !!((f.attorneyDocumentUrl && f.attorneyCompletedDate) || (f.attorneyWaived && f.attorneyWaiverReason?.trim())))
-    );
-
-    // 7. Contingencies satisfied/waived
-    const isContingenciesSatisfied = !project.contingencies || project.contingencies.length === 0 || project.contingencies.every((c: any) => (c.isSatisfied && (!!c.satisfiedDocUrl || !!c.explicitConfirmation)) || c.isWaived);
-
-    // 8. Capital plan resolved
-    const isCapitalPlanResolved = !!(
-      f.capitalPlan === 'all-cash solo' ||
-      f.capitalPlan === 'solo-financed' ||
-      f.capitalPlan === 'partnership' ||
-      (f.capitalPlan === 'raise interest' && totalRaisedCents > 0) ||
-      f.fundingType === 'Solo' ||
-      (f.fundingType === 'Syndicated' && totalRaisedCents > 0) ||
-      (!f.capitalPlan && !f.fundingType && totalRaisedCents > 0)
-    );
+    // 3. Capital plan set
+    const isSolo = ['all-cash solo', 'solo-financed'].includes(f.capitalPlan) || f.fundingType === 'Solo';
+    const targetCents = f.equityTerms?.funding_target || f.equityTarget || 0;
+    const isCapitalPlanSet = isSolo || totalRaisedCents >= targetCents;
 
     const criteriaList = [
-      { key: 'identity', label: 'Target Identity Complete', status: isIdentityComplete, ref: '#target' },
-      { key: 'scorecard', label: 'Scorecard Calculations Acknowledged', status: isScorecardAcknowledged, ref: '#underwrite' },
-      { key: 'strategy', label: 'Strategy & Sub-strategy Declared', status: isStrategySet, ref: '#strategy' },
-      { key: 'psa', label: 'Executed PSA Document Attached', status: isPsaAttached, ref: '#offer' },
-      { key: 'emd', label: 'Earnest Money Deposit (EMD) Verified', status: isEmdVerified, ref: '#offer' },
-      { key: 'dd', label: 'Due Diligence Checks Complete', status: isDdComplete, ref: '#due_diligence' },
-      { key: 'contingencies', label: 'Contingencies Satisfied or Waived', status: isContingenciesSatisfied, ref: '#due_diligence' },
-      { key: 'capital', label: 'Capital Plan Fully Resolved', status: isCapitalPlanResolved, ref: '#raise_interest' },
+      { key: 'offer', label: 'Accepted Offer at Known Terms', status: hasAcceptedOffer, ref: '#offer' },
+      { key: 'dd_decision', label: 'DD Contingencies Satisfied/Waived with Go Decision Recorded', status: hasDdComplete, ref: '#due_diligence' },
+      { key: 'capital', label: 'Capital Plan Set (Solo Confirmed or LOI/Soft-commits Logged)', status: isCapitalPlanSet, ref: '#raise_interest' },
     ];
 
     const isPassed = criteriaList.every(c => c.status);

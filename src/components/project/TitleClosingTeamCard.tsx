@@ -28,6 +28,7 @@ import {
   Info,
 } from 'lucide-react';
 import toast from 'react-hot-toast';
+import { useMarketplaceVendors } from '@/hooks/useMarketplaceVendors';
 
 interface Props {
   projectId: string;
@@ -153,6 +154,8 @@ export function TitleClosingTeamCard({ projectId }: Props) {
   const [formEmail, setFormEmail] = useState('');
   const [formSource, setFormSource] = useState<'marketplace' | 'off_platform'>('off_platform');
 
+  const { vendors: marketplaceHits, loading: marketplaceLoading } = useMarketplaceVendors(editingSlot);
+
   // Listen to project
   useEffect(() => {
     if (!projectId) return;
@@ -180,7 +183,7 @@ export function TitleClosingTeamCard({ projectId }: Props) {
     const financials = project?.financials || {};
     const stateCode = project?.state || '';
     return {
-      isSba504: loans.some((l) => l.instrument === 'SBA 504'),
+      isSba504: loans.some((l) => l.instrument === 'SBA 504') || !!project?.fundingPlan?.modality?.includes('sba_504'),
       isHardMoneyOrBridge: loans.some((l) => l.instrument === 'Hard Money' || l.instrument === 'Bridge'),
       isAttorneyState: isAttorneyCloseState(stateCode, attorneyStates),
       isCommercial: project?.assetClass === 'Commercial',
@@ -492,78 +495,160 @@ export function TitleClosingTeamCard({ projectId }: Props) {
                     </button>
                   </div>
 
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                    <div>
-                      <label className="block text-[10px] font-bold text-pw-muted uppercase tracking-wider mb-1">
-                        Contact Name *
-                      </label>
-                      <input
-                        type="text"
-                        value={formName}
-                        onChange={(e) => setFormName(e.target.value)}
-                        placeholder="Full name"
-                        className="w-full px-3 py-1.5 border border-pw-border rounded text-sm bg-pw-white text-pw-black focus:outline-none focus:ring-1 focus:ring-[#7A9EAA]"
-                        autoFocus
-                      />
+                  {formSource === 'marketplace' ? (
+                    <div className="space-y-3 pt-2">
+                      {marketplaceLoading ? (
+                        <div className="flex justify-center py-4">
+                          <Loader2 className="w-5 h-5 animate-spin text-[#7A9EAA]" />
+                        </div>
+                      ) : marketplaceHits.length === 0 ? (
+                        <p className="text-[11px] text-pw-muted font-light italic">
+                          No matching verified marketplace pros available in this category. You can register an off-platform vendor manually using the option above.
+                        </p>
+                      ) : (
+                        <div className="space-y-2 max-h-[220px] overflow-y-auto pr-1">
+                          {marketplaceHits.map((hit) => (
+                            <div 
+                              key={hit.uid}
+                              className="p-3 bg-white border border-pw-border rounded-lg flex items-center justify-between gap-3 text-xs"
+                            >
+                              <div className="space-y-0.5">
+                                <strong className="text-pw-black font-semibold">{hit.companyName}</strong>
+                                <div className="flex items-center gap-3 text-[10px] text-pw-muted">
+                                  <span>Turnaround: {hit.avgTurnaroundDays} days</span>
+                                  <span>Rating: {hit.overallRating}★ ({hit.totalReviews})</span>
+                                </div>
+                              </div>
+                              <button
+                                onClick={async () => {
+                                  setSaving(slot.key);
+                                  try {
+                                    const auth = getAuth();
+                                    const idToken = await auth.currentUser?.getIdToken();
+                                    if (!idToken) throw new Error('Authentication required.');
+                                    const assignment = {
+                                      name: hit.companyName,
+                                      firm: hit.companyName,
+                                      phone: null,
+                                      email: null,
+                                      source: 'marketplace',
+                                      marketplaceVendorId: hit.uid,
+                                    };
+                                    const res = await fetch(`/api/projects/${projectId}/team-slots`, {
+                                      method: 'PATCH',
+                                      headers: {
+                                        'Content-Type': 'application/json',
+                                        Authorization: `Bearer ${idToken}`,
+                                      },
+                                      body: JSON.stringify({ slotKey: slot.key, assignment }),
+                                    });
+                                    if (!res.ok) {
+                                      const errData = await res.json();
+                                      throw new Error(errData.error || 'Failed to save.');
+                                    }
+                                    toast.success('Marketplace vendor assigned.');
+                                    setEditingSlot(null);
+                                  } catch (err: any) {
+                                    toast.error(err.message || 'Failed to save vendor.');
+                                  } finally {
+                                    setSaving(null);
+                                  }
+                                }}
+                                disabled={saving === slot.key}
+                                className="px-2.5 py-1 bg-purple-600 hover:bg-purple-700 text-white rounded text-[10px] uppercase font-bold tracking-wider transition-all"
+                              >
+                                Select &amp; Assign
+                              </button>
+                            </div>
+                          ))}
+                        </div>
+                      )}
+                      
+                      <div className="flex justify-end pt-1">
+                        <button
+                          onClick={() => setEditingSlot(null)}
+                          className="px-3 py-1.5 text-[10px] font-bold uppercase tracking-wider border border-pw-border text-pw-muted rounded hover:bg-gray-50 transition-all"
+                        >
+                          Cancel
+                        </button>
+                      </div>
                     </div>
-                    <div>
-                      <label className="block text-[10px] font-bold text-pw-muted uppercase tracking-wider mb-1">
-                        Firm / Company
-                      </label>
-                      <input
-                        type="text"
-                        value={formFirm}
-                        onChange={(e) => setFormFirm(e.target.value)}
-                        placeholder="Company name"
-                        className="w-full px-3 py-1.5 border border-pw-border rounded text-sm bg-pw-white text-pw-black focus:outline-none focus:ring-1 focus:ring-[#7A9EAA]"
-                      />
-                    </div>
-                    <div>
-                      <label className="block text-[10px] font-bold text-pw-muted uppercase tracking-wider mb-1">
-                        Phone
-                      </label>
-                      <input
-                        type="tel"
-                        value={formPhone}
-                        onChange={(e) => setFormPhone(e.target.value)}
-                        placeholder="(555) 555-1234"
-                        className="w-full px-3 py-1.5 border border-pw-border rounded text-sm bg-pw-white text-pw-black focus:outline-none focus:ring-1 focus:ring-[#7A9EAA]"
-                      />
-                    </div>
-                    <div>
-                      <label className="block text-[10px] font-bold text-pw-muted uppercase tracking-wider mb-1">
-                        Email
-                      </label>
-                      <input
-                        type="email"
-                        value={formEmail}
-                        onChange={(e) => setFormEmail(e.target.value)}
-                        placeholder="vendor@example.com"
-                        className="w-full px-3 py-1.5 border border-pw-border rounded text-sm bg-pw-white text-pw-black focus:outline-none focus:ring-1 focus:ring-[#7A9EAA]"
-                      />
-                    </div>
-                  </div>
+                  ) : (
+                    <>
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                        <div>
+                          <label className="block text-[10px] font-bold text-pw-muted uppercase tracking-wider mb-1">
+                            Contact Name *
+                          </label>
+                          <input
+                            type="text"
+                            value={formName}
+                            onChange={(e) => setFormName(e.target.value)}
+                            placeholder="Full name"
+                            className="w-full px-3 py-1.5 border border-pw-border rounded text-sm bg-pw-white text-pw-black focus:outline-none focus:ring-1 focus:ring-[#7A9EAA]"
+                            autoFocus
+                          />
+                        </div>
+                        <div>
+                          <label className="block text-[10px] font-bold text-pw-muted uppercase tracking-wider mb-1">
+                            Firm / Company
+                          </label>
+                          <input
+                            type="text"
+                            value={formFirm}
+                            onChange={(e) => setFormFirm(e.target.value)}
+                            placeholder="Company name"
+                            className="w-full px-3 py-1.5 border border-pw-border rounded text-sm bg-pw-white text-pw-black focus:outline-none focus:ring-1 focus:ring-[#7A9EAA]"
+                          />
+                        </div>
+                        <div>
+                          <label className="block text-[10px] font-bold text-pw-muted uppercase tracking-wider mb-1">
+                            Phone
+                          </label>
+                          <input
+                            type="text"
+                            value={formPhone}
+                            onChange={(e) => setFormPhone(e.target.value)}
+                            placeholder="(555) 555-1234"
+                            className="w-full px-3 py-1.5 border border-pw-border rounded text-sm bg-pw-white text-pw-black focus:outline-none focus:ring-1 focus:ring-[#7A9EAA]"
+                          />
+                        </div>
+                        <div>
+                          <label className="block text-[10px] font-bold text-pw-muted uppercase tracking-wider mb-1">
+                            Email
+                          </label>
+                          <input
+                            type="email"
+                            value={formEmail}
+                            onChange={(e) => setFormEmail(e.target.value)}
+                            placeholder="vendor@example.com"
+                            className="w-full px-3 py-1.5 border border-pw-border rounded text-sm bg-pw-white text-pw-black focus:outline-none focus:ring-1 focus:ring-[#7A9EAA]"
+                          />
+                        </div>
+                      </div>
 
-                  <div className="flex items-center justify-end gap-2 pt-1">
-                    <button
-                      onClick={() => setEditingSlot(null)}
-                      className="px-3 py-1.5 text-[10px] font-bold uppercase tracking-wider border border-pw-border text-pw-muted rounded hover:bg-gray-50 transition-all"
-                    >
-                      Cancel
-                    </button>
-                    <button
-                      onClick={handleSave}
-                      disabled={saving === editingSlot || !formName.trim()}
-                      className={`px-4 py-1.5 text-[10px] font-bold uppercase tracking-wider rounded flex items-center gap-1 transition-all ${
-                        saving === editingSlot || !formName.trim()
-                          ? 'bg-gray-300 text-white cursor-not-allowed'
-                          : 'bg-[#7A9EAA] text-white hover:bg-[#688a95] shadow-sm'
-                      }`}
-                    >
-                      {saving === editingSlot ? <Loader2 className="w-3 h-3 animate-spin" /> : <Save className="w-3 h-3" />}
-                      Assign
-                    </button>
-                  </div>
+                      <div className="flex items-center justify-end gap-2 pt-1">
+                        <button
+                          onClick={() => setEditingSlot(null)}
+                          className="px-3 py-1.5 text-[10px] font-bold uppercase tracking-wider border border-[#E5E7EB] text-pw-muted rounded hover:bg-gray-50 transition-all"
+                        >
+                          Cancel
+                        </button>
+                        <button
+                          onClick={handleSave}
+                          disabled={saving === editingSlot || !formName.trim()}
+                          className={`px-4 py-1.5 text-[10px] font-bold uppercase tracking-wider rounded flex items-center gap-1 transition-all ${
+                            saving === editingSlot || !formName.trim()
+                              ? 'bg-gray-300 text-white cursor-not-allowed'
+                              : 'bg-[#7A9EAA] text-white hover:bg-[#688a95] shadow-sm'
+                          }`}
+                        >
+                          {saving === editingSlot ? <Loader2 className="w-3 h-3 animate-spin" /> : <Save className="w-3 h-3" />}
+                          Assign
+                        </button>
+                      </div>
+                    </>
+                  )}
                 </div>
               )}
             </div>

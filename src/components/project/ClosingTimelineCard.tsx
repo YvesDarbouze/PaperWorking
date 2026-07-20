@@ -25,35 +25,8 @@ interface Props {
   project: Project;
 }
 
-/**
- * Calculates the number of business days strictly between date1 and date2.
- * Excludes Saturdays and Sundays.
- * If date1 >= date2, returns 0.
- */
-export function getBusinessDaysDiff(date1Str: string, date2Str: string): number {
-  if (!date1Str || !date2Str) return 0;
-  
-  const d1 = new Date(date1Str + 'T12:00:00');
-  const d2 = new Date(date2Str + 'T12:00:00');
-  
-  if (isNaN(d1.getTime()) || isNaN(d2.getTime()) || d1 >= d2) {
-    return 0;
-  }
-  
-  let count = 0;
-  const current = new Date(d1.getTime());
-  current.setDate(current.getDate() + 1);
-  
-  while (current < d2) {
-    const dayOfWeek = current.getDay();
-    if (dayOfWeek !== 0 && dayOfWeek !== 6) {
-      count++;
-    }
-    current.setDate(current.getDate() + 1);
-  }
-  
-  return count;
-}
+import { getBusinessDaysDiff } from '@/lib/utils/businessDays';
+export { getBusinessDaysDiff };
 
 export function ClosingTimelineCard({ projectId, project }: Props) {
   const [loans, setLoans] = useState<LoanRecord[]>([]);
@@ -359,7 +332,7 @@ export function ClosingTimelineCard({ projectId, project }: Props) {
         bizDays,
         cdDate,
         closingDate,
-        message: `Under the federal TRID "Know Before You Owe" consumer protection regulation, the Closing Disclosure (CD) must be delivered to the borrower at least 3 business days prior to closing settlement. Currently, there are only ${bizDays} business day(s) of separation between Closing Disclosure delivery (${cdDate}) and Closing Settlement (${closingDate}), which violates this requirement.`
+        message: `Lenders must provide the Closing Disclosure at least three business days before closing. Currently, there are only ${bizDays} business day(s) of separation between Closing Disclosure delivery (${cdDate}) and Closing Settlement (${closingDate}).`
       };
     }
 
@@ -373,7 +346,7 @@ export function ClosingTimelineCard({ projectId, project }: Props) {
         type: 'approaching' as const,
         calendarDiff,
         closingDate,
-        message: `Closing Settlement is scheduled in ${calendarDiff} day(s) (on ${closingDate}), but the Closing Disclosure (CD) has not been delivered. Under the federal TRID "Know Before You Owe" consumer protection regulation, the CD must be delivered to the borrower at least 3 business days prior to closing settlement. Failure to record the CD delivery immediately will delay the closing.`
+        message: `Closing Settlement is scheduled in ${calendarDiff} day(s) (on ${closingDate}), but the Closing Disclosure (CD) has not been recorded. Lenders must provide the Closing Disclosure at least three business days before closing.`
       };
     }
 

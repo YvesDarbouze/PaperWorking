@@ -59,10 +59,113 @@ export async function advanceProjectPhaseGate(
     const projectSnap = await projectRef.get();
     if (!projectSnap.exists) throw new Error('Project not found.');
     const project = projectSnap.data()!;
+    const financials = project.financials || {};
+
+    const nowStr = new Date().toISOString();
+
+    // ── Evaluate live gate criteria ──
+    const commitmentsSnap = await projectRef.collection('commitments').get();
+    const commitmentsCents = (commitmentsSnap?.docs || [])
+      .filter(d => ['cleared', 'transferred', 'pledged'].includes(d.data().status))
+      .reduce((sum, d) => sum + (d.data().amountCents || 0), 0);
+
+    const negotiationsSnap = await adminDb.collection('negotiations')
+      .where('projectId', '==', projectId)
+      .get();
+    const negSoftCents = (negotiationsSnap?.docs || [])
+      .filter(d => {
+        const n = d.data();
+        return n.status === 'accepted' || n.status === 'terms_confirmed' || n.status === 'transaction_pending' || 
+               (n.status === 'active' && !n.currentTerms?.isCounter);
+      })
+      .reduce((sum, d) => sum + (d.data().currentTerms?.contribution || 0), 0);
+
+    const totalRaisedCents = commitmentsCents + negSoftCents;
+
+    // 1. Accepted offer at known terms
+    const hasAcceptedOffer = financials.offerStatus === 'Accepted' && (financials.purchasePrice > 0 || financials.finalAgreedPrice > 0 || financials.renegotiatedPrice > 0);
+
+    // 2. DD contingencies satisfied/waived with go decision recorded
+    const hasNoPendingContingencies = !project.contingencies || project.contingencies.length === 0 || 
+      project.contingencies.every((c: any) => c.isSatisfied || c.isWaived);
+    const hasGoDecision = financials.decision !== 'terminate';
+    const hasDdComplete = hasNoPendingContingencies && hasGoDecision;
+
+    // 3. Capital plan set
+    const isSolo = ['all-cash solo', 'solo-financed'].includes(financials.capitalPlan) || financials.fundingType === 'Solo';
+    const targetCents = financials.equityTerms?.funding_target || financials.equityTarget || 0;
+    const isCapitalPlanSet = isSolo || totalRaisedCents >= targetCents;
+
+    const gateCriteria = [
+      { key: 'offer', label: 'Accepted offer at known terms', status: hasAcceptedOffer },
+      { key: 'dd_decision', label: 'DD contingencies satisfied/waived with go decision recorded', status: hasDdComplete },
+      { key: 'capital_plan', label: 'Capital plan set (solo confirmed or LOI/soft-commits logged to equity target)', status: isCapitalPlanSet }
+    ];
+
+    const isGatePassed = gateCriteria.every(c => c.status);
+
+    if (!isGatePassed && (!overrideReason || !overrideReason.trim())) {
+      const failingCriteriaNames = gateCriteria.filter(c => !c.status).map(c => c.label).join(', ');
+      throw new Error(`Blocking criteria not met: ${failingCriteriaNames}`);
+    }
+
+    // ── Carry-over payload calculations ──
+
+    // A. accepted price → Fund's price actual-candidate
+    let acceptedPrice = financials.purchasePrice || 0;
+    if (financials.renegotiatedPrice && financials.renegotiatedPrice > 0) {
+      acceptedPrice = financials.renegotiatedPrice / 100;
+    } else if (financials.finalAgreedPrice && financials.finalAgreedPrice > 0) {
+      acceptedPrice = financials.finalAgreedPrice / 100;
+    }
+
+    // B. declared capital intent → FundingPlan modality pre-fill
+    const modality: string[] = [];
+    if (financials.capitalPlan === 'all-cash solo' || financials.fundingType === 'Solo') {
+      modality.push('solo_cash');
+    } else if (financials.capitalPlan === 'solo-financed') {
+      modality.push('conventional_loan');
+    } else if (financials.capitalPlan === 'partnership') {
+      modality.push('co_buyer_equity');
+    } else if (financials.capitalPlan === 'raise interest' || financials.fundingType === 'Syndicated') {
+      modality.push('syndication_equity');
+    } else {
+      modality.push('solo_cash');
+    }
+
+    const fundingPlan = {
+      id: `plan_${projectId}`,
+      projectId,
+      modality,
+      sources: [],
+      createdAt: nowStr,
+      updatedAt: nowStr
+    };
+
+    // C. LOI/soft-commit log → F2 subscription pipeline
+    const commitmentsCol = projectRef.collection('commitments');
+    const existingEmails = new Set((commitmentsSnap?.docs || []).map(d => d.data().email?.toLowerCase()).filter(Boolean));
+    const writePromises: Promise<any>[] = [];
+
+    for (const d of (negotiationsSnap?.docs || [])) {
+      const n = d.data();
+      const isActiveSoft = n.status === 'accepted' || n.status === 'terms_confirmed' || n.status === 'transaction_pending' || 
+             (n.status === 'active' && !n.currentTerms?.isCounter);
+      if (isActiveSoft && n.investorEmail && !existingEmails.has(n.investorEmail.toLowerCase())) {
+        const docId = `auto_commit_${Math.random().toString(36).substring(2, 11)}`;
+        writePromises.push(commitmentsCol.doc(docId).set({
+          id: docId,
+          name: n.investorName || 'Investor',
+          email: n.investorEmail,
+          amountCents: n.currentTerms?.contribution || 0,
+          status: 'soft-committed',
+          createdAt: nowStr,
+        }));
+      }
+    }
+    await Promise.all(writePromises);
 
     // 1. Calculate Risk Score v1
-    const financials = project.financials || {};
-    
     // Financial: DSCR / LTV (use defaults if not set)
     const dscr = financials.dscr ?? 1.25;
     const financialScore = scoreFromBands(dscr, RISK_SCALE_CONFIG.subCategories[0].bands);
@@ -85,8 +188,7 @@ export async function advanceProjectPhaseGate(
     const riskScore = Number(((financialScore + marketScore + operationalScore + complianceScore) / 4).toFixed(2));
 
     // 2. Dossier Auto-Bundling to Data Room (projects/{projectId}/documents)
-    const documentsCol = projectRef.collection('documents');
-    const nowStr = new Date().toISOString();
+    const documentsColRef = projectRef.collection('documents');
 
     const dossierDocs: Array<{ category: string; fileName: string; fileUrl?: string; notes?: string }> = [];
 
@@ -205,7 +307,7 @@ export async function advanceProjectPhaseGate(
     const batch = adminDb.batch();
     for (const doc of dossierDocs) {
       const docId = `auto_${Math.random().toString(36).substring(2, 11)}`;
-      const docRef = documentsCol.doc(docId);
+      const docRef = documentsColRef.doc(docId);
       batch.set(docRef, {
         id: docId,
         projectId,
@@ -235,7 +337,7 @@ export async function advanceProjectPhaseGate(
     await snapshotRef.set({
       phaseKey: 'phase-1',
       capturedAt: FieldValue.serverTimestamp(),
-      purchasePrice: financials.purchasePrice ?? 0,
+      purchasePrice: acceptedPrice,
       estimatedARV: financials.estimatedARV ?? financials.arv ?? 0,
       loanAmount: financials.loanAmount ?? 0,
       loanInterestRate: financials.loanInterestRate ?? financials.interestRate ?? 0,
@@ -254,6 +356,8 @@ export async function advanceProjectPhaseGate(
       riskScore,
       lastPhaseTransitionAt: FieldValue.serverTimestamp(),
       updatedAt: FieldValue.serverTimestamp(),
+      fundingPlan,
+      'financials.purchasePrice': acceptedPrice,
     };
 
     if (overrideReason?.trim()) {
@@ -261,6 +365,74 @@ export async function advanceProjectPhaseGate(
     }
 
     await projectRef.update(updatePayload);
+
+    // ── Sync to Postgres (Prisma) ──
+    try {
+      const { prisma: localPrisma } = require('@/lib/prisma');
+
+      // Update project phase and status
+      await localPrisma.reilProject.update({
+        where: { id: projectId },
+        data: {
+          currentPhase: 2,
+          acquisitionStatus: 'UNDER_CONTRACT',
+          overrideReason: overrideReason?.trim() || null,
+        }
+      });
+
+      // Upsert PurchaseTerms (accepted price)
+      await localPrisma.reilPurchaseTerms.upsert({
+        where: { projectId },
+        update: {
+          acceptedPriceCents: BigInt(Math.round(acceptedPrice * 100)),
+        },
+        create: {
+          projectId,
+          acceptedPriceCents: BigInt(Math.round(acceptedPrice * 100)),
+        }
+      });
+
+      // Upsert FundingPlan (modality)
+      await localPrisma.reilFundingPlan.upsert({
+        where: { projectId },
+        update: {
+          modality,
+        },
+        create: {
+          projectId,
+          modality,
+        }
+      });
+
+      // Sync ContributionEntries
+      for (const d of (negotiationsSnap?.docs || [])) {
+        const n = d.data();
+        const isActiveSoft = n.status === 'accepted' || n.status === 'terms_confirmed' || n.status === 'transaction_pending' || 
+               (n.status === 'active' && !n.currentTerms?.isCounter);
+        if (isActiveSoft && n.currentTerms?.contribution > 0) {
+          const existing = await localPrisma.reilContributionEntry.findFirst({
+            where: {
+              projectId,
+              email: n.investorEmail || '',
+            }
+          });
+          if (!existing) {
+            await localPrisma.reilContributionEntry.create({
+              data: {
+                projectId,
+                partyName: n.investorName || 'Investor',
+                email: n.investorEmail || null,
+                amountCents: BigInt(n.currentTerms.contribution),
+                status: 'soft-committed',
+                partyType: 'Investor',
+              }
+            });
+          }
+        }
+      }
+    } catch (err) {
+      console.error('[PhaseGate] Error syncing to Postgres:', err);
+    }
 
     return {
       success: true,

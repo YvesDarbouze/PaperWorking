@@ -19,6 +19,7 @@ import {
 import { collection, onSnapshot, orderBy, query, doc } from 'firebase/firestore';
 import { getAuth } from 'firebase/auth';
 import { db } from '@/lib/firebase/config';
+import { projectsService } from '@/lib/firebase/deals';
 import toast from 'react-hot-toast';
 import ESignAction from '../shared/ESignAction';
 
@@ -50,6 +51,7 @@ export function SubscriptionsTracker({ projectId }: SubscriptionsTrackerProps) {
   const [commitments, setCommitments] = useState<Commitment[]>([]);
   const [loading, setLoading] = useState(true);
   const [submittingId, setSubmittingId] = useState<string | null>(null);
+  const [uploadingTemplate, setUploadingTemplate] = useState(false);
 
   // Modal / Inputs for confirming manual signature or funds
   const [activeManualSignId, setActiveManualSignId] = useState<string | null>(null);
@@ -252,6 +254,64 @@ export function SubscriptionsTracker({ projectId }: SubscriptionsTrackerProps) {
         )}
       </div>
 
+      {/* Subscription Agreement Template Card (Decision F-5) */}
+      <div className="mb-6 p-4 rounded-xl border bg-white/[0.02] flex flex-col sm:flex-row sm:items-center justify-between gap-4" style={{ borderColor: 'var(--border-ui)' }}>
+        <div className="space-y-1">
+          <span className="font-bold text-white uppercase tracking-wider text-[10px] block">Subscription Agreement Template (Decision F-5)</span>
+          {project?.financials?.subscriptionAgreementTemplate ? (
+            <div className="flex items-center gap-2 text-xs text-green-400 font-medium">
+              <FileText className="w-4 h-4 text-green-400" />
+              <span>Uploaded: <strong>{project.financials.subscriptionAgreementTemplate.name}</strong></span>
+              <span className="text-[#9E9DA0]/50">({new Date(project.financials.subscriptionAgreementTemplate.uploadedAt).toLocaleDateString()})</span>
+            </div>
+          ) : (
+            <p className="text-xs text-[#9E9DA0]/80 leading-relaxed">No counsel-prepared template uploaded yet. A template is required before sending agreement packages.</p>
+          )}
+        </div>
+        <div>
+          {uploadingTemplate ? (
+            <div className="flex items-center gap-2 text-xs text-[#9E9DA0] font-semibold">
+              <Loader2 className="w-4 h-4 animate-spin text-[#8832ec]" />
+              <span>Uploading Template...</span>
+            </div>
+          ) : (
+            <label className="cursor-pointer inline-flex items-center gap-2 px-4 py-2 bg-white/5 border border-white/10 text-white hover:bg-white/10 text-xs font-bold uppercase tracking-wider rounded-xl transition">
+              <Upload className="w-4 h-4 text-[#7A9EAA]" />
+              <span>{project?.financials?.subscriptionAgreementTemplate ? 'Replace Template' : 'Upload Template'}</span>
+              <input
+                type="file"
+                accept=".pdf"
+                className="hidden"
+                onChange={async (e) => {
+                  const file = e.target.files?.[0];
+                  if (!file) return;
+                  setUploadingTemplate(true);
+                  // Simulate upload delay
+                  await new Promise((resolve) => setTimeout(resolve, 800));
+                  try {
+                    await projectsService.updateProject(projectId, {
+                      financials: {
+                        ...project.financials,
+                        subscriptionAgreementTemplate: {
+                          name: file.name,
+                          url: 'https://example.com/mock-subscription-agreement-template.pdf',
+                          uploadedAt: new Date().toISOString()
+                        }
+                      }
+                    });
+                    toast.success('Subscription Agreement template uploaded successfully.');
+                  } catch (err) {
+                    toast.error('Failed to upload template.');
+                  } finally {
+                    setUploadingTemplate(false);
+                  }
+                }}
+              />
+            </label>
+          )}
+        </div>
+      </div>
+
       {/* Progress Bar */}
       {totalTargetCents > 0 && (
         <div className="mb-6 p-4 rounded-lg bg-gray-50 border border-gray-100">
@@ -344,14 +404,21 @@ export function SubscriptionsTracker({ projectId }: SubscriptionsTrackerProps) {
                   <div className="flex flex-wrap gap-2">
                     {/* Stage 1 -> Stage 2 */}
                     {(c.status === 'pledged' || c.status === 'soft-committed') && (
-                      <button
-                        onClick={() => transitionCommitmentStatus(c.id, 'docs-out', 'Agreement sent for signature')}
-                        disabled={isSubmitting}
-                        className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold text-white bg-[#8832ec] hover:bg-[#7220d3] disabled:opacity-50 transition"
-                      >
-                        {isSubmitting && <Loader2 className="w-3.5 h-3.5 animate-spin" />}
-                        Send Subscription Agreement
-                      </button>
+                      <div className="relative group">
+                        <button
+                          onClick={() => transitionCommitmentStatus(c.id, 'docs-out', 'Agreement sent for signature')}
+                          disabled={isSubmitting || !project?.financials?.subscriptionAgreementTemplate}
+                          className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold text-white bg-[#8832ec] hover:bg-[#7220d3] disabled:opacity-50 transition"
+                        >
+                          {isSubmitting && <Loader2 className="w-3.5 h-3.5 animate-spin" />}
+                          Send Subscription Agreement
+                        </button>
+                        {!project?.financials?.subscriptionAgreementTemplate && (
+                          <div className="absolute bottom-full mb-2 hidden group-hover:block bg-black text-white text-[10px] p-2 rounded shadow-lg z-50 w-48 leading-normal">
+                            Upload a counsel-prepared subscription agreement template at the top of the tracker to enable sending packages.
+                          </div>
+                        )}
+                      </div>
                     )}
 
                     {/* Stage 2 -> Stage 3 (E-Sign and Manual upload) */}
@@ -364,6 +431,7 @@ export function SubscriptionsTracker({ projectId }: SubscriptionsTrackerProps) {
                           documentId={`sub_agreement_${c.id}`}
                           signerEmail={c.email || undefined}
                           signerName={c.name}
+                          documentUrl={project?.financials?.subscriptionAgreementTemplate?.url || 'https://example.com/mock-subscription-agreement.pdf'}
                           isSigned={false}
                           onSigned={() => {
                             transitionCommitmentStatus(c.id, 'signed', 'E-Signed via DocuSign');

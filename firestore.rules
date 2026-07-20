@@ -76,6 +76,78 @@ service cloud.firestore {
       return get(/databases/$(database)/documents/projects/$(projectId)).data.ownerUid == request.auth.uid;
     }
 
+    // Check if user is a linked equity party (LP or co-buyer) on the project
+    function isLinkedEquityParty(projectData) {
+      return request.auth != null &&
+             'equityParties' in projectData &&
+             projectData.equityParties != null &&
+             projectData.equityParties.any(party,
+               ('memberId' in party && party.memberId == request.auth.uid) ||
+               ('email' in party && party.email != null && request.auth.token.email != null && party.email.lower() == request.auth.token.email.lower())
+             );
+    }
+
+    // Check if user is a project member or a linked equity party
+    function isProjectMemberOrLinked(projectId) {
+      let projectData = get(/databases/$(database)/documents/projects/$(projectId)).data;
+      return (projectData.members != null && request.auth.uid in projectData.members) ||
+             isLinkedEquityParty(projectData);
+    }
+
+    // Returns the slotKey in project.financials matching the authenticated user
+    function getVendorSlotKey(projectData) {
+      return ('financials' in projectData && projectData.financials != null) ? (
+        (('f4TitleEscrowVendor' in projectData.financials && projectData.financials.f4TitleEscrowVendor != null) && 
+         (projectData.financials.f4TitleEscrowVendor.marketplaceVendorId == request.auth.uid || 
+          (projectData.financials.f4TitleEscrowVendor.email != null && request.auth.token.email != null && projectData.financials.f4TitleEscrowVendor.email.lower() == request.auth.token.email.lower()))) ? 'f4TitleEscrowVendor' :
+        (('f4ClosingAttorneyVendor' in projectData.financials && projectData.financials.f4ClosingAttorneyVendor != null) && 
+         (projectData.financials.f4ClosingAttorneyVendor.marketplaceVendorId == request.auth.uid || 
+          (projectData.financials.f4ClosingAttorneyVendor.email != null && request.auth.token.email != null && projectData.financials.f4ClosingAttorneyVendor.email.lower() == request.auth.token.email.lower()))) ? 'f4ClosingAttorneyVendor' :
+        (('f4AppraiserVendor' in projectData.financials && projectData.financials.f4AppraiserVendor != null) && 
+         (projectData.financials.f4AppraiserVendor.marketplaceVendorId == request.auth.uid || 
+          (projectData.financials.f4AppraiserVendor.email != null && request.auth.token.email != null && projectData.financials.f4AppraiserVendor.email.lower() == request.auth.token.email.lower()))) ? 'f4AppraiserVendor' :
+        (('f4EnvironmentalVendor' in projectData.financials && projectData.financials.f4EnvironmentalVendor != null) && 
+         (projectData.financials.f4EnvironmentalVendor.marketplaceVendorId == request.auth.uid || 
+          (projectData.financials.f4EnvironmentalVendor.email != null && request.auth.token.email != null && projectData.financials.f4EnvironmentalVendor.email.lower() == request.auth.token.email.lower()))) ? 'f4EnvironmentalVendor' :
+        (('f4SurveyorVendor' in projectData.financials && projectData.financials.f4SurveyorVendor != null) && 
+         (projectData.financials.f4SurveyorVendor.marketplaceVendorId == request.auth.uid || 
+          (projectData.financials.f4SurveyorVendor.email != null && request.auth.token.email != null && projectData.financials.f4SurveyorVendor.email.lower() == request.auth.token.email.lower()))) ? 'f4SurveyorVendor' :
+        (('f4InsuranceBrokerVendor' in projectData.financials && projectData.financials.f4InsuranceBrokerVendor != null) && 
+         (projectData.financials.f4InsuranceBrokerVendor.marketplaceVendorId == request.auth.uid || 
+          (projectData.financials.f4InsuranceBrokerVendor.email != null && request.auth.token.email != null && projectData.financials.f4InsuranceBrokerVendor.email.lower() == request.auth.token.email.lower()))) ? 'f4InsuranceBrokerVendor' :
+        (('f4CdcVendor' in projectData.financials && projectData.financials.f4CdcVendor != null) && 
+         (projectData.financials.f4CdcVendor.marketplaceVendorId == request.auth.uid || 
+          (projectData.financials.f4CdcVendor.email != null && request.auth.token.email != null && projectData.financials.f4CdcVendor.email.lower() == request.auth.token.email.lower()))) ? 'f4CdcVendor' :
+        (('f4HardMoneyLenderVendor' in projectData.financials && projectData.financials.f4HardMoneyLenderVendor != null) && 
+         (projectData.financials.f4HardMoneyLenderVendor.marketplaceVendorId == request.auth.uid || 
+          (projectData.financials.f4HardMoneyLenderVendor.email != null && request.auth.token.email != null && projectData.financials.f4HardMoneyLenderVendor.email.lower() == request.auth.token.email.lower()))) ? 'f4HardMoneyLenderVendor' : ''
+      ) : '';
+    }
+
+    // Maps slotKey to one of the five canonical Data Room folders
+    function getFolderForSlotKey(slotKey) {
+      return slotKey == 'f4HardMoneyLenderVendor' ? 'Debt' :
+             slotKey == 'f4CdcVendor' ? 'Debt' :
+             slotKey == 'f4AppraiserVendor' ? 'Debt' :
+             slotKey == 'f4TitleEscrowVendor' ? 'Title & Insurance' :
+             slotKey == 'f4EnvironmentalVendor' ? 'Title & Insurance' :
+             slotKey == 'f4SurveyorVendor' ? 'Title & Insurance' :
+             slotKey == 'f4InsuranceBrokerVendor' ? 'Title & Insurance' :
+             slotKey == 'f4ClosingAttorneyVendor' ? 'Closing' : '';
+    }
+
+    // Resolves/guesses the folder for a documents subcollection file
+    function getFolderForSubDoc(docData) {
+      return ('folderName' in docData && docData.folderName != null) ? docData.folderName :
+             ('folderId' in docData && docData.folderId != null) ? docData.folderId :
+             (('ocrDocumentType' in docData && docData.ocrDocumentType == 'appraisal') || ('category' in docData && docData.category == 'Debt')) ? 'Debt' :
+             (('ocrDocumentType' in docData && docData.ocrDocumentType == 'closing_disclosure') || ('category' in docData && docData.category == 'Closing')) ? 'Closing' :
+             (('ocrDocumentType' in docData && docData.ocrDocumentType == 'title_report') || ('category' in docData && docData.category == 'Title & Insurance')) ? 'Title & Insurance' :
+             ('category' in docData && (docData.category == 'Equity' || docData.category == 'Subscription')) ? 'Equity' :
+             ('category' in docData && (docData.category == 'Capital Plan' || docData.category == 'Proof of Funds')) ? 'Capital Plan' : 'Closing';
+    }
+
+
     // ─── Organizations ─────────────────────────────────────────────────
     // Only the organization owner can write; members can read their own org.
     match /organizations/{orgId} {
@@ -134,7 +206,11 @@ service cloud.firestore {
     // Only Lead Investor can delete.
     match /projects/{projectId} {
       allow read: if request.auth != null
-                  && canAccessProject(projectId, resource.data);
+                  && (
+                    canAccessProject(projectId, resource.data) ||
+                    (resource.data.members != null && request.auth.uid in resource.data.members) ||
+                    isLinkedEquityParty(resource.data)
+                  );
 
       allow create: if request.auth != null
                     && request.resource.data.ownerUid == request.auth.uid;
@@ -296,6 +372,35 @@ service cloud.firestore {
                     && canAccessProject(projectId, get(/databases/$(database)/documents/projects/$(projectId)).data);
 
         allow write: if false; // Server-side only
+      }
+
+      // ─── Documents (Sub-Collection) ──────────────────────────────
+      match /documents/{docId} {
+        allow read: if request.auth != null
+                    && (
+                      canAccessProject(projectId, get(/databases/$(database)/documents/projects/$(projectId)).data)
+                      || (
+                        isProjectMemberOrLinked(projectId) && (
+                          resource.data.uploadedByUid == request.auth.uid
+                          || ('recipientUid' in resource.data && resource.data.recipientUid == request.auth.uid)
+                          || ('recipientEmail' in resource.data && resource.data.recipientEmail != null && request.auth.token.email != null && resource.data.recipientEmail.lower() == request.auth.token.email.lower())
+                          || resource.data.category == 'Deal identity'
+                          || ('isPublic' in resource.data && resource.data.isPublic == true)
+                        )
+                      )
+                      || (
+                        getFolderForSlotKey(getVendorSlotKey(get(/databases/$(database)/documents/projects/$(projectId)).data)) == getFolderForSubDoc(resource.data)
+                      )
+                    );
+
+        allow write: if request.auth != null
+                     && (
+                       hasRole(projectId, ['Lead Investor'])
+                       || (
+                         isProjectMemberOrLinked(projectId) &&
+                         request.resource.data.uploadedByUid == request.auth.uid
+                       )
+                     );
       }
     }
 
@@ -462,6 +567,62 @@ service cloud.firestore {
       allow read: if request.auth != null
                   && hasTenantAccess(resource.data.organizationId);
       allow write: if false; // Admin SDK only
+    }
+
+    // ─── Project Files (top-level) ────────────────────────────────────
+    match /projectFiles/{fileId} {
+      allow read: if request.auth != null
+                  && (
+                    // Lead Investor / Org member has full access
+                    canAccessProject(resource.data.projectId, get(/databases/$(database)/documents/projects/$(resource.data.projectId)).data)
+                    // LP / Co-buyer has access to:
+                    || (
+                      isProjectMemberOrLinked(resource.data.projectId) && (
+                        resource.data.uploadedByUid == request.auth.uid
+                        || ('recipientUid' in resource.data && resource.data.recipientUid == request.auth.uid)
+                        || ('recipientEmail' in resource.data && resource.data.recipientEmail != null && request.auth.token.email != null && resource.data.recipientEmail.lower() == request.auth.token.email.lower())
+                        || resource.data.category == 'Deal identity'
+                        || ('isPublic' in resource.data && resource.data.isPublic == true)
+                      )
+                    )
+                    // Vendor access based on assigned folder
+                    || (
+                      ('folderId' in resource.data && resource.data.folderId != null && exists(/databases/$(database)/documents/projectFolders/$(resource.data.folderId))) &&
+                      (getFolderForSlotKey(getVendorSlotKey(get(/databases/$(database)/documents/projects/$(resource.data.projectId)).data)) == get(/databases/$(database)/documents/projectFolders/$(resource.data.folderId)).data.name)
+                    )
+                  );
+
+      allow write: if request.auth != null
+                   && (
+                     // Lead Investor can write all files
+                     hasRole(request.resource.data.projectId, ['Lead Investor'])
+                     // LP / Co-buyer can upload their own document
+                     || (
+                       isProjectMemberOrLinked(request.resource.data.projectId) &&
+                       request.resource.data.uploadedByUid == request.auth.uid
+                     )
+                   );
+    }
+
+    // ─── Project Folders (top-level) ──────────────────────────────────
+    match /projectFolders/{folderId} {
+      allow read: if request.auth != null
+                  && (
+                    // Lead Investor / Org member has full access
+                    canAccessProject(resource.data.projectId, get(/databases/$(database)/documents/projects/$(resource.data.projectId)).data)
+                    // LP / Co-buyer has access to read project folders if they are member/linked
+                    || isProjectMemberOrLinked(resource.data.projectId)
+                    // Vendor access based on assigned folder
+                    || (
+                      getFolderForSlotKey(getVendorSlotKey(get(/databases/$(database)/documents/projects/$(resource.data.projectId)).data)) == resource.data.name
+                    )
+                  );
+
+      allow write: if request.auth != null
+                   && (
+                     // Lead Investor / GC can write folders
+                     hasRole(request.resource.data.projectId, ['Lead Investor', 'General Contractor'])
+                   );
     }
 
     // ─── Demo Mode (Public document for guest read-only view) ─────────────────

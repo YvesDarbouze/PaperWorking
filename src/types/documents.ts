@@ -26,7 +26,11 @@ export type FolderPhase =
   | 'Closing'
   | 'Rehab'
   | 'Listed'
-  | 'Sold';
+  | 'Sold'
+  | 'Capital Plan'
+  | 'Equity'
+  | 'Debt'
+  | 'Title & Insurance';
 
 /**
  * ProjectFolder

@@ -536,10 +536,12 @@ export type DocumentCategory =
   | 'Final Settlement Statement'
   | 'Deed'
   | 'Buyer Agreements'
+  | 'Co-ownership Agreement'
   | 'Title Policy'
   | 'Closing Sets'
   | 'Warranties'
   | 'Tax Documents'
+  | 'Proof of Funds'
   | 'Other';
 
 export interface RoleLinkedDocument {
@@ -556,6 +558,30 @@ export interface RoleLinkedDocument {
   verifiedAt?: Date;
   fileSize?: number;         // Size in bytes for usage tracking
   notes: string;
+}
+
+export interface ProofOfFundsStatusLog {
+  status: 'requested' | 'received' | 'verified';
+  updatedAt: string;
+  updatedByUid: string;
+  updatedByName: string;
+}
+
+export interface ProofOfFundsStatus {
+  id: string;
+  sourceName: string;
+  amount: number;
+  status: 'requested' | 'received' | 'verified';
+  documentId?: string | null;
+  documentName?: string | null;
+  documentUrl?: string | null;
+  verifiedByUid?: string | null;
+  verifiedByName?: string | null;
+  verifiedAt?: string | null;
+  plaidAccountName?: string | null;
+  plaidBalance?: number | null;
+  plaidLastSync?: string | null;
+  history: ProofOfFundsStatusLog[];
 }
 
 export type PhaseStatus =
@@ -830,6 +856,19 @@ export interface Project {
   rehab?: ProjectRehab;
   holdCost?: ProjectHoldCost;
   exit?: ProjectExit;
+
+  // FD-3 Fund Data Plane
+  fundingPlan?: FundingPlan;
+  equityParties?: EquityParty[];
+  loans?: LoanRecord[];
+  contributions?: ContributionEntry[];
+  closingRecord?: ClosingRecord;
+  titleHolding?: TitleHolding;
+  completedFundCards?: string[];
+  termsLocked?: boolean;
+  termsLockedAt?: string;
+  termsLockedBy?: string;
+  proofOfFunds?: ProofOfFundsStatus[];
   
   propertyFacts?: {
     beds?: number;
@@ -1088,7 +1127,7 @@ export interface DistressedIndicators {
   highTurnoverSalesHistory: boolean;
 }
 
-export type FundingCategory = 'Hard Money Loans' | 'Private Money' | 'Conventional Financing';
+export type FundingCategory = 'Hard Money Loans' | 'Private Money' | 'Conventional Financing' | 'SBA 504 Bank First Lien' | 'SBA 504 CDC Debenture' | 'Bridge Loans' | 'Borrower Injection' | 'Co-buying Equity' | 'Syndication Equity' | 'GP Co-investment';
 export type FundingSourceStatus = 'Exploring' | 'Pre-Approved' | 'Applied' | 'Approved' | 'Funded' | 'Declined';
 
 export interface CapitalSource {
@@ -1101,6 +1140,11 @@ export interface CapitalSource {
   termMonths?: number;
   status?: FundingSourceStatus;
   notes?: string;
+
+  // FD-3 fields (integrated type-safely)
+  type?: CapitalSourceType;
+  amountCents?: number;
+  seniority?: number; // 1 = senior, 2 = junior, 3 = equity
 }
 
 // ── R3 Hold Agent — Rehab Tier Classification ─────────────
@@ -1194,6 +1238,7 @@ export interface ProjectFinancials {
   psaDocumentUrl?: string;
   psaDocumentName?: string;
   annualDebtService?: number | null;
+  sourceTags?: Record<string, 'document' | 'manual' | 'user_actual' | 'user_assumption' | 'derived' | 'plaid' | null> | null;
 
   // Phase-specific fields (Project lifecycle spine)
   targetPurchasePrice?: number;
@@ -1211,6 +1256,18 @@ export interface ProjectFinancials {
   acquisitionDate?: Date;          // Explicit close/acquisition date for timeline tracking
   estimatedCloseDate?: Date;       // Expected or target close date
   fixedAcquisitionCosts?: number; // Buy-side closing costs deducted in MAO formula
+  
+  // FD-3 target/projected dual-slots
+  targetDownPaymentPercent?: number;
+  targetLoanAmount?: number;
+  targetLoanInterestRate?: number;
+  targetLoanTermYears?: number;
+  targetLoanOriginationPoints?: number;
+  targetClosingCosts?: number;
+  targetTotalCashInvested?: number;
+  upfrontRehab?: number;
+  actualCommissions?: number;
+
   comparableSales?: ComparableSale[];
   leadSource?: LeadSource;
   sellerMotivation?: string;
@@ -1510,6 +1567,13 @@ export interface ProjectFinancials {
   loanProcessorName?: string;               // Vendor assignment: loan processor / loan officer
   closingAttorneyName?: string;             // Vendor assignment: real estate closing attorney
 
+  // Card F2.2 — Title holding (co-buy)
+  titleHolding?: 'TIC' | 'JTWROS';
+  titleHoldingDerived?: boolean;
+  titleCoOwnershipAgreementUrl?: string | null;
+  titleCoOwnershipAgreementName?: string | null;
+  titleCoOwnershipAgreementStatus?: 'unsigned' | 'docs-out' | 'signed' | 'verified';
+
   // R2 Purchase Diligence — Optional cost tracking
   inspectionCost?: number;                  // Licensed home inspection fee
   titleSearchCost?: number;                 // Title search & commitment fee
@@ -1617,6 +1681,7 @@ export interface ProjectFinancials {
   dealStatus?: 'Active' | 'Terminated' | 'Proceeding';
   capitalPlan?: 'all-cash solo' | 'solo-financed' | 'partnership' | 'raise interest';
   equityTerms?: EquityTerms;
+  distributionStructure?: DistributionStructure;
 
   // ── SBA 504 Route Eligibility (Card F3.6) ──────────────────────────────
   // The platform organizes eligibility — it never determines it.
@@ -1657,6 +1722,20 @@ export interface EquityTerms {
   min_ticket: number;             // in cents
   price_basis: number;            // total capitalization in cents when terms were set
   version: number;
+}
+
+export interface DistributionStructure {
+  type: 'straight' | 'pref_return' | 'waterfall';
+  splitRatioLP: number; // e.g. 70 for 70%
+  splitRatioGP: number; // e.g. 30 for 30%
+  preferredRate?: number; // e.g. 7.0 for 7% preferred return
+  preferredType?: 'cumulative' | 'non_cumulative';
+  waterfallTiers?: {
+    tierNumber: number;
+    thresholdPct: number; // cash-on-capital threshold e.g. 7 for 7% LP cumulative return
+    splitRatioLP: number;
+    splitRatioGP: number;
+  }[];
 }
 
 export interface InvestorContact {
@@ -1876,6 +1955,7 @@ export interface ClosingMilestone {
   actualDate?: string | null;// YYYY-MM-DD
   completed: boolean;
   notes?: string;
+  slippage?: boolean;
 }
 
 // Exit Cost Ledger — final settlement costs
@@ -2592,6 +2672,7 @@ export interface LoanRecord {
   lenderName?: string | null;
   amountCents?: number | null;
   interestRate?: number | null;
+  interestRatePercent?: number | null; // FD-3 alias/field
   termMonths?: number | null;
   points?: number | null;
   status: LoanStatus;
@@ -2621,6 +2702,7 @@ export interface LoanRecord {
   ltarvPercent?: number | null;
   /** Whether this loan is interest-only (no principal amortization) */
   interestOnly?: boolean | null;
+  isInterestOnly?: boolean | null; // FD-3 alias/field
   /** Exit plan — seeded from project.dispositionType, never re-asked */
   exitPlan?: 'SALE' | 'LEASE' | 'RENT' | 'REFINANCE' | null;
 }
@@ -2653,6 +2735,79 @@ export interface LoanEstimateCandidate {
   fileName?: string | null;
   fileUrl?: string | null;
   isChosen: boolean;
+  sourceTags?: {
+    lenderName?: 'document' | 'manual' | null;
+    amountCents?: 'document' | 'manual' | null;
+    interestRate?: 'document' | 'manual' | null;
+    termMonths?: 'document' | 'manual' | null;
+    points?: 'document' | 'manual' | null;
+    estimatedCostsCents?: 'document' | 'manual' | null;
+  } | null;
   createdAt: string;
   updatedAt: string;
+}
+
+export type CapitalSourceType =
+  | 'solo_cash'
+  | 'co_buyer_equity'
+  | 'syndication_equity'
+  | 'conventional_loan'
+  | 'hard_money'
+  | 'bridge'
+  | 'sba_504_bank'
+  | 'sba_504_cdc'
+  | 'sba_504_injection';
+
+export interface FundingPlan {
+  id: string;
+  projectId: string;
+  modality: string[]; // Modality set (e.g. ['solo_cash', 'conventional_mortgage'])
+  sources: CapitalSource[];
+  titleHolding?: TitleHolding;
+  closingRecord?: ClosingRecord;
+}
+
+export interface PhasePermission {
+  canView: boolean;
+  canEdit: boolean;
+}
+
+export interface EquityParty {
+  id: string;
+  projectId: string;
+  role: 'co_buyer' | 'GP' | 'LP';
+  name: string;
+  email?: string | null;
+  entityType: 'Individual' | 'LLC' | 'Other';
+  memberId?: string | null;
+  ownershipPct: number;
+  phasePermissions?: Record<string, PhasePermission>; // key: phase-1, phase-2, etc.
+}
+
+export interface ContributionEntry {
+  id: string;
+  projectId: string;
+  partyName: string;
+  email?: string | null;
+  amountCents: number;
+  status: 'pledged' | 'transferred' | 'cleared' | 'soft-committed' | 'docs-out' | 'signed' | 'funds-confirmed';
+  evidenceDocId?: string | null;
+  evidenceDocUrl?: string | null;
+  partyType: 'Sponsor' | 'Investor' | 'Co-GP' | 'Preferred Equity';
+  createdAt?: string | Date;
+}
+
+export interface TitleHolding {
+  structure: 'TIC' | 'JTWROS';
+  documentUrl?: string | null;
+  signatureStatus: 'unsigned' | 'signed';
+  ownershipPercentages?: Record<string, number>; // TIC details
+}
+
+export interface ClosingRecord {
+  closingDate?: string | null;
+  deedRecordedDate?: string | null;
+  instrumentNumber?: string | null;
+  countyName?: string | null;
+  checklistState?: Record<string, boolean>; // checklist of executed docs
 }

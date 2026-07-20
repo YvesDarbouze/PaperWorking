@@ -389,6 +389,17 @@ export async function acceptSlotBid(
       respondedAt: FieldValue.serverTimestamp(),
     });
 
+    // 3b. Mark winning vendor inbox as ACCEPTED
+    const inboxRef = adminDb
+      .collection('users')
+      .doc(bid.vendorUid)
+      .collection('vendorInbox')
+      .doc(bid.assignmentId);
+    batch.update(inboxRef, {
+      status: 'ACCEPTED',
+      updatedAt: FieldValue.serverTimestamp(),
+    });
+
     // 4. Cancel all other bids in the same rfpId
     const otherBidsSnap = await adminDb
       .collection('projects')
@@ -480,6 +491,14 @@ export async function acceptSlotBid(
         projectId,
         projectName: projectData.propertyName || dealAddress,
       });
+    }
+
+    // Enqueue timeline sync
+    try {
+      const { jobQueue } = await import('@/lib/queue/jobQueue');
+      await jobQueue.enqueue('timeline_sync', { projectId });
+    } catch (err: any) {
+      console.error('Failed to enqueue timeline sync on acceptSlotBid:', err.message);
     }
 
     return { success: true };

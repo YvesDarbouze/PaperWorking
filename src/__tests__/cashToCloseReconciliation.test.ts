@@ -134,6 +134,92 @@ describe('Card F5.4 — Cash-to-Close Reconciliation Engine & Schema', () => {
       expect(result.isReconciled).toBe(false);
       expect(result.isOver).toBe(true);
     });
+
+    it('FX-8: verifies cash-to-close reconciliation matching the FX-1 property scenario', () => {
+      const fx8Project: Project = {
+        ...validBaseProject,
+        financials: {
+          ...validBaseProject.financials,
+          purchasePrice: 279000,
+          finalClosingCosts: 4200, // from DEMO_FINANCIALS
+          finalPrepaidsReserves: 800,
+          emdAmount: 500000, // $5,000 earnest money deposited in Acquisition
+          capitalStack: [
+            {
+              id: 'loan-1',
+              category: 'Hard Money Loans',
+              amount: 223200, // 80% loan
+              interestRate: 6.5,
+              status: 'Approved',
+            },
+            {
+              id: 'equity-1',
+              category: 'Private Money',
+              amount: 55800, // 20% down payment
+              interestRate: 0,
+              status: 'Approved',
+            }
+          ]
+        },
+        fractionalInvestors: [],
+      };
+
+      const result = reconcileProjectCapital(fx8Project);
+
+      expect(result.purchasePrice).toBe(279000);
+      expect(result.closingCosts).toBe(4200);
+      expect(result.prepaidsReserves).toBe(800);
+      expect(result.totalUses).toBe(284000);
+
+      expect(result.earnestMoneyCredit).toBe(5000);
+      expect(result.lockedDebt).toBe(223200);
+      expect(result.confirmedEquity).toBe(55800);
+      expect(result.totalSources).toBe(284000);
+
+      expect(result.variance).toBe(0);
+      expect(result.isReconciled).toBe(true);
+    });
+
+    it('falls back to projected closing costs and prepaids/reserves when final values are not set', () => {
+      const projectWithoutFinals: Project = {
+        ...validBaseProject,
+        financials: {
+          ...validBaseProject.financials,
+          purchasePrice: 250000,
+          closingCosts: 4500,
+          finalClosingCosts: undefined,
+          finalPrepaidsReserves: undefined,
+        }
+      };
+
+      const result = reconcileProjectCapital(projectWithoutFinals);
+      
+      expect(result.closingCosts).toBe(4500); // fell back to projected closingCosts
+      expect(result.prepaidsReserves).toBe(885); // fell back to formula-derived projected prepaids
+    });
+
+    it('handles all debt and equity categories in the capital stack correctly', () => {
+      const complexStackProject: Project = {
+        ...validBaseProject,
+        financials: {
+          ...validBaseProject.financials,
+          capitalStack: [
+            { id: '1', category: 'SBA 504 Bank First Lien', amount: 125000, interestRate: 6, status: 'Approved' },
+            { id: '2', category: 'SBA 504 CDC Debenture', amount: 100000, interestRate: 5.5, status: 'Approved' },
+            { id: '3', category: 'GP Co-investment', amount: 10000, interestRate: 0, status: 'Approved' },
+            { id: '4', category: 'Borrower Injection', amount: 15000, interestRate: 0, status: 'Approved' },
+            { id: '5', category: 'Bridge Loans', amount: 20000, interestRate: 8, status: 'Approved' },
+            { id: '6', category: 'Syndication Equity', amount: 30000, interestRate: 0, status: 'Approved' },
+          ]
+        },
+        fractionalInvestors: []
+      };
+
+      const result = reconcileProjectCapital(complexStackProject);
+
+      expect(result.lockedDebt).toBe(245000);
+      expect(result.confirmedEquity).toBe(55000);
+    });
   });
 
   describe('Zod Schema Verification', () => {

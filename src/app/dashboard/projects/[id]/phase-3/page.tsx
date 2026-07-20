@@ -5,6 +5,8 @@ import { useParams, useRouter } from 'next/navigation';
 import { projectsService } from '@/lib/firebase/deals';
 import { RehabExpense, HoldingCostEntry, SiteVisitLog, ScopeOfWorkItem, ContractorBid, DrawScheduleItem, RehabTask, ProjectFinancials, RehabTier, RehabSpendEntry, ValuationEntry, ListingAdLogEntry, ScreeningChecklistState, TargetLeaseTerms } from '@/types/schema';
 import { useWorkspaceProject } from '@/app/dashboard/projects/[id]/layout';
+import { usePhaseAccess } from '@/hooks/usePhaseAccess';
+import { PhaseAccessGuard } from '@/components/project/PhaseAccessGuard';
 import { RenovationSpendTracker } from '@/components/project/RenovationSpendTracker';
 import { RenovationCompletionCard } from '@/components/project/RenovationCompletionCard';
 import { CurrentValueTracker } from '@/components/project/CurrentValueTracker';
@@ -100,6 +102,7 @@ export default function Phase3RehabPage() {
   const projectId = params.id as string;
 
   const { project, loading: isLoading, refresh } = useWorkspaceProject();
+  const { canView, canEdit, loading: accessLoading } = usePhaseAccess('phase-3');
   const exitStrategy = project?.dispositionType === 'RENT' ? 'Rent' : project?.dispositionType === 'LEASE' ? 'Lease' : 'Sell';
 
   const [isSaving, setIsSaving] = useState(false);
@@ -895,7 +898,7 @@ export default function Phase3RehabPage() {
   };
 
   /* ── Loading state ── */
-  if (isLoading) {
+  if (isLoading || accessLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-[#0d0a0b]">
         <div className="flex flex-col items-center gap-4">
@@ -936,7 +939,8 @@ export default function Phase3RehabPage() {
 
   if (project?.entryStage === 'renovating_marketing') {
     return (
-      <div className="min-h-screen bg-[#0d0a0b] relative p-8">
+      <PhaseAccessGuard phaseId="phase-3" phaseName="Phase 3: Hold">
+        <div className="min-h-screen bg-[#0d0a0b] relative p-8">
         <div className="max-w-2xl mx-auto bg-[#161318] border border-white/10 rounded-2xl p-8 space-y-6 text-left">
           <div className="flex items-center gap-3 text-[#ffac5a]">
             <span className="material-symbols-outlined text-3xl">construction</span>
@@ -976,11 +980,13 @@ export default function Phase3RehabPage() {
           </div>
         </div>
       </div>
+      </PhaseAccessGuard>
     );
   }
 
   return (
-    <div className="min-h-screen bg-[#0d0a0b] relative">
+    <PhaseAccessGuard phaseId="phase-3" phaseName="Phase 3: Hold">
+      <div className="min-h-screen bg-[#0d0a0b] relative">
 
       {/* ── Ambient Background Layer ── */}
       <div className="fixed inset-0 pointer-events-none -z-10 overflow-hidden">
@@ -1769,6 +1775,7 @@ export default function Phase3RehabPage() {
           </div>
         </div>
       </div>
-    </div>
+      </div>
+    </PhaseAccessGuard>
   );
 }

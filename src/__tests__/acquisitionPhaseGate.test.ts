@@ -117,4 +117,65 @@ describe('Acquisition Phase Gate Server Actions', () => {
       })
     );
   });
+
+  it('fails the gate and throws blocking criteria error if requirements are not met and no override is provided', async () => {
+    (adminAuth.verifyIdToken as jest.Mock).mockResolvedValue({ uid: 'investor_123' });
+    
+    mockDocVal.get.mockResolvedValueOnce({
+      exists: true,
+      data: () => ({
+        role: 'Lead Investor',
+        accountType: 'investor',
+      }),
+    });
+
+    // Mock project with failing criteria (offer status not Accepted, etc.)
+    mockDocVal.get.mockResolvedValueOnce({
+      exists: true,
+      data: () => ({
+        id: 'project_123',
+        contingencies: [{ isSatisfied: false, isWaived: false }], // Failing DD contingencies
+        financials: {
+          offerStatus: 'Draft', // Failing offer status
+          purchasePrice: 0,
+          capitalPlan: 'raise interest',
+          equityTarget: 10000000,
+        },
+      }),
+    });
+
+    await expect(
+      advanceProjectPhaseGate('token_123', 'project_123')
+    ).rejects.toThrow('Blocking criteria not met: Accepted offer at known terms, DD contingencies satisfied/waived with go decision recorded, Capital plan set');
+  });
+
+  it('passes the gate without override reason when all criteria are met from live data', async () => {
+    (adminAuth.verifyIdToken as jest.Mock).mockResolvedValue({ uid: 'investor_123' });
+
+    mockDocVal.get.mockResolvedValueOnce({
+      exists: true,
+      data: () => ({
+        role: 'Lead Investor',
+        accountType: 'investor',
+      }),
+    });
+
+    // Mock project where all criteria are successfully met
+    mockDocVal.get.mockResolvedValueOnce({
+      exists: true,
+      data: () => ({
+        id: 'project_123',
+        contingencies: [{ isSatisfied: true, isWaived: false }], // DD satisfied
+        financials: {
+          offerStatus: 'Accepted',
+          purchasePrice: 200000, // Offer accepted at known terms
+          capitalPlan: 'all-cash solo', // Solo modality confirmed (no commitments target check needed)
+          decision: 'proceed',
+        },
+      }),
+    });
+
+    const result = await advanceProjectPhaseGate('token_123', 'project_123');
+    expect(result.success).toBe(true);
+  });
 });

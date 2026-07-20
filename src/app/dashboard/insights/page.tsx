@@ -7,7 +7,7 @@ import { StressTestProvider, RiskStressTester, useStressTest } from '@/component
 import InsightsDashboard, { SecondaryDiagnosticsPanel } from '@/components/insights/InsightsDashboard';
 import { useQuery } from '@tanstack/react-query';
 import { MarketContextPanel } from '@/components/project/MarketContextPanel';
-import { deriveAllMetrics } from '@/lib/metrics/reiMetrics';
+import { deriveAllMetrics, deriveAllProjectMetrics } from '@/lib/metrics/reiMetrics';
 import { InsightsEngineInputs, InsightsEngine } from '@/lib/services/insightsEngine';
 import { projectToInsightsInputs, REQUIRED_INSIGHTS_FIELDS } from '@/lib/projections/projectionEngine';
 import type { Project } from '@/types/schema';
@@ -1173,8 +1173,8 @@ function getInputsFromProjects(projectsList: Project[]): InsightsEngineInputs | 
     const otherMonthlyIncome = f.otherMonthlyIncome ?? ((f.grossIncomeParking ?? 0) + (f.grossIncomeLaundry ?? 0));
     totalGrossScheduledIncome += (monthlyGrossRent + otherMonthlyIncome) * 12;
     
-    const metrics = deriveAllMetrics(f, undefined, p.dispositionType, p.currentPhase);
-    totalOperatingExpenses += metrics.noiComponents.totalOperatingExpenses;
+    const metrics = deriveAllProjectMetrics(p);
+    totalOperatingExpenses += (metrics.noiComponents?.totalOperatingExpenses ?? 0);
     
     totalVacancyRate += f.vacancyRatePercent ?? f.vacancyRate ?? 7.0;
     

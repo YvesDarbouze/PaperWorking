@@ -2,8 +2,9 @@
 
 import React, { useState, useEffect, useCallback } from 'react';
 import { getAuth } from 'firebase/auth';
-import { collection, onSnapshot, orderBy, query, doc } from 'firebase/firestore';
+import { collection, onSnapshot, orderBy, query, doc, addDoc } from 'firebase/firestore';
 import { db } from '@/lib/firebase/config';
+import { uploadFile } from '@/lib/storage/uploadService';
 import type { Commitment, CommitmentStatus, CapitalPartyType } from '@/types/schema';
 import { 
   Users, 
@@ -249,9 +250,12 @@ export function ContributionLedger({ projectId }: Props) {
   const handleExportPDF = async () => {
     try {
       const auth = getAuth();
-      const idToken = await auth.currentUser?.getIdToken();
+      const user = auth.currentUser;
+      const idToken = await user?.getIdToken();
       if (!idToken) throw new Error('Authentication token required.');
       
+      toast.loading('Generating Capital Stack Statement PDF...', { id: 'pdf-export' });
+
       const response = await fetch(`/api/projects/${projectId}/capital-stack/export`, {
         headers: {
           'Authorization': `Bearer ${idToken}`
@@ -260,9 +264,6 @@ export function ContributionLedger({ projectId }: Props) {
       if (!response.ok) throw new Error('Failed to generate PDF statement.');
       
       const blob = await response.blob();
-      const url = window.URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url;
       
       const address = (project?.address || projectId)
         .replace(/[^a-zA-Z0-9]+/g, '-')
@@ -270,14 +271,47 @@ export function ContributionLedger({ projectId }: Props) {
         .toLowerCase()
         .slice(0, 60);
       const dateStr = new Date().toISOString().split('T')[0];
+      const filename = `capital-stack-statement-${address}-${dateStr}.pdf`;
 
-      a.download = `capital-stack-statement-${address}-${dateStr}.pdf`;
+      // Trigger local browser download
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = filename;
       document.body.appendChild(a);
       a.click();
       a.remove();
-      toast.success('Capital Stack Statement PDF exported.');
+
+      // Upload generated PDF to project Data Room
+      try {
+        const file = new File([blob], filename, { type: 'application/pdf' });
+        const uploadRes = await uploadFile({
+          file,
+          path: 'documents',
+          projectId,
+        });
+
+        await addDoc(collection(db, 'projects', projectId, 'documents'), {
+          category: 'Other',
+          fileName: filename,
+          fileUrl: uploadRes.downloadUrl,
+          storagePath: uploadRes.storagePath,
+          fileSize: file.size,
+          mimeType: file.type,
+          uploadedByUid: user?.uid || 'system',
+          uploadedByName: user?.displayName || 'Sponsor',
+          uploadedAt: new Date().toISOString(),
+          notes: 'Capital Stack Statement (System Generated)',
+        });
+
+        toast.success('Capital Stack Statement PDF exported and saved to Data Room.', { id: 'pdf-export' });
+      } catch (uploadErr) {
+        console.error('[ContributionLedger] Failed to save statement to Data Room Storage:', uploadErr);
+        toast.success('Capital Stack Statement PDF exported successfully (offline/data room skip).', { id: 'pdf-export' });
+      }
     } catch (err: any) {
-      toast.error(err.message || 'Failed to export statement.');
+      console.error(err);
+      toast.error(err.message || 'Failed to export statement.', { id: 'pdf-export' });
     }
   };
 

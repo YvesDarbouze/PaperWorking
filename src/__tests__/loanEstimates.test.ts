@@ -148,7 +148,15 @@ describe('Card F3.3 Loan Estimates Workflow API Tests', () => {
           interestRate: 6.5,
           termMonths: 360,
           fileId: 'file_le_doc',
-          isChosen: false
+          isChosen: false,
+          sourceTags: expect.objectContaining({
+            lenderName: 'document',
+            amountCents: 'document',
+            interestRate: 'document',
+            termMonths: 'document',
+            points: 'document',
+            estimatedCostsCents: 'document',
+          })
         })
       );
     });

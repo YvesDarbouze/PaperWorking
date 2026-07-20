@@ -31,8 +31,12 @@ export function reconcileProjectCapital(project: Project): ReconciliationResult 
   
   // 1. Calculate Uses
   const purchasePrice = fin.purchasePrice || 0;
-  const closingCosts = fin.finalClosingCosts || 0;
-  const prepaidsReserves = fin.finalPrepaidsReserves || 0;
+  const closingCosts = fin.finalClosingCosts !== undefined && fin.finalClosingCosts !== null
+    ? fin.finalClosingCosts
+    : (fin.closingCosts || 0);
+  const prepaidsReserves = fin.finalPrepaidsReserves !== undefined && fin.finalPrepaidsReserves !== null
+    ? fin.finalPrepaidsReserves
+    : Math.round((purchasePrice * 0.005 / 12) + ((purchasePrice * 0.0125 / 12) * 3));
   const totalUses = purchasePrice + closingCosts + prepaidsReserves;
 
   // 2. Calculate Earnest Money Credit
@@ -49,9 +53,25 @@ export function reconcileProjectCapital(project: Project): ReconciliationResult 
   stack.forEach((source) => {
     const isApprovedOrFunded = source.status === 'Approved' || source.status === 'Funded';
     if (isApprovedOrFunded) {
-      if (source.category === 'Conventional Financing' || source.category === 'Hard Money Loans') {
+      const isDebt = [
+        'Conventional Financing',
+        'Hard Money Loans',
+        'SBA 504 Bank First Lien',
+        'SBA 504 CDC Debenture',
+        'Bridge Loans'
+      ].includes(source.category);
+
+      const isEquity = [
+        'Private Money',
+        'Borrower Injection',
+        'Co-buying Equity',
+        'Syndication Equity',
+        'GP Co-investment'
+      ].includes(source.category);
+
+      if (isDebt) {
         lockedDebt += source.amount || 0;
-      } else if (source.category === 'Private Money') {
+      } else if (isEquity) {
         confirmedEquity += source.amount || 0;
       }
     }

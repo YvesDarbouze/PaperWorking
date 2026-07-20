@@ -39,13 +39,15 @@ export function LoanProcessingPipeline({ projectId }: Props) {
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
 
-  // Appraisal capture modal state
-  const [showAppraisalModal, setShowAppraisalModal] = useState(false);
+  // Unified Milestone Transition Modal States
+  const [pendingTransitionStatus, setPendingTransitionStatus] = useState<LoanStatus | null>(null);
+  const [transitionNote, setTransitionNote] = useState('');
   const [appraisedValue, setAppraisedValue] = useState('');
-  const [appraisalFile, setAppraisalFile] = useState<{ id: string; name: string; url: string } | null>(null);
-  const [uploadingAppraisal, setUploadingAppraisal] = useState(false);
-  
-  const appraisalInputRef = useRef<HTMLInputElement>(null);
+  const [uploadedFile, setUploadedFile] = useState<{ id: string; name: string; url: string } | null>(null);
+  const [uploadingFile, setUploadingFile] = useState(false);
+  const [transitionLog, setTransitionLog] = useState<any[]>([]);
+
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   // 1. Listen to loans
   useEffect(() => {
@@ -93,28 +95,67 @@ export function LoanProcessingPipeline({ projectId }: Props) {
     return unsub;
   }, [projectId, activeLoanId]);
 
+  // 2. Listen to transitions log
+  useEffect(() => {
+    if (!projectId || !activeLoanId) return;
+
+    // Check for E2E testing mock
+    if (typeof window !== 'undefined' && document.cookie.includes('__e2e_test')) {
+      const key = `pw_e2e_loan_transitions_${activeLoanId}`;
+      const load = () => {
+        try {
+          const val = localStorage.getItem(key);
+          setTransitionLog(val ? JSON.parse(val) : []);
+        } catch (e) {}
+      };
+      load();
+      window.addEventListener('storage', (e) => {
+        if (e.key === key) load();
+      });
+      return;
+    }
+
+    const unsub = onSnapshot(
+      collection(db, 'projects', projectId, 'loans', activeLoanId, 'transitions'),
+      (snap) => {
+        const docs = snap.docs.map((d) => ({
+          id: d.id,
+          ...d.data(),
+        })).sort((a: any, b: any) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime());
+        setTransitionLog(docs);
+      },
+      (err) => {
+        console.error('onSnapshot transitions error:', err);
+      }
+    );
+    return unsub;
+  }, [projectId, activeLoanId]);
+
   const activeLoan = loans.find((l) => l.id === activeLoanId);
 
-  const handleStatusChange = async (targetStatus: LoanStatus) => {
+  const handleStatusChange = (targetStatus: LoanStatus) => {
     if (!activeLoanId || !activeLoan) return;
-
+    setPendingTransitionStatus(targetStatus);
+    setTransitionNote('');
+    setUploadedFile(null);
     if (targetStatus === 'Appraisal-Received') {
-      // Pre-fill existing appraisal data if present
       setAppraisedValue(activeLoan.appraisedValueCents ? (activeLoan.appraisedValueCents / 100).toString() : '');
+      if (activeLoan.appraisalFileId && activeLoan.appraisalFileName && activeLoan.appraisalFileUrl) {
+        setUploadedFile({
+          id: activeLoan.appraisalFileId,
+          name: activeLoan.appraisalFileName,
+          url: activeLoan.appraisalFileUrl
+        });
+      }
+    } else {
       if (activeLoan.fileId && activeLoan.fileName && activeLoan.fileUrl) {
-        setAppraisalFile({
+        setUploadedFile({
           id: activeLoan.fileId,
           name: activeLoan.fileName,
           url: activeLoan.fileUrl
         });
-      } else {
-        setAppraisalFile(null);
       }
-      setShowAppraisalModal(true);
-      return;
     }
-
-    await submitStatusChange(targetStatus);
   };
 
   const submitStatusChange = async (targetStatus: LoanStatus, extraData: any = {}) => {
@@ -142,7 +183,7 @@ export function LoanProcessingPipeline({ projectId }: Props) {
       }
 
       toast.success(`Milestone updated: ${targetStatus.replace(/-/g, ' ')}`);
-      setShowAppraisalModal(false);
+      setPendingTransitionStatus(null);
     } catch (err: any) {
       toast.error(err.message || 'Error updating milestone.');
     } finally {
@@ -150,7 +191,7 @@ export function LoanProcessingPipeline({ projectId }: Props) {
     }
   };
 
-  const handleAppraisalUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
 
@@ -159,7 +200,7 @@ export function LoanProcessingPipeline({ projectId }: Props) {
       return;
     }
 
-    setUploadingAppraisal(true);
+    setUploadingFile(true);
     try {
       const auth = getAuth();
       const idToken = await auth.currentUser?.getIdToken();
@@ -180,8 +221,8 @@ export function LoanProcessingPipeline({ projectId }: Props) {
       const formData = new FormData();
       formData.append('file', file);
       formData.append('folderId', folderId);
-      formData.append('category', 'Appraisal');
-      formData.append('documentType', 'appraisal');
+      formData.append('category', 'Debt');
+      formData.append('documentType', 'closing_disclosure');
 
       const uploadRes = await fetch(`/api/projects/${projectId}/documents`, {
         method: 'POST',
@@ -197,38 +238,48 @@ export function LoanProcessingPipeline({ projectId }: Props) {
       }
 
       const { docId, downloadUrl } = await uploadRes.json();
-      setAppraisalFile({
+      setUploadedFile({
         id: docId,
         name: file.name,
         url: downloadUrl
       });
-      toast.success('Appraisal document uploaded successfully.');
+      toast.success('Document uploaded successfully.');
     } catch (err: any) {
-      toast.error(err.message || 'Error uploading appraisal.');
+      toast.error(err.message || 'Error uploading document.');
     } finally {
-      setUploadingAppraisal(false);
+      setUploadingFile(false);
     }
   };
 
-  const handleSaveAppraisalMilestone = async (e: React.FormEvent) => {
+  const handleSaveMilestone = async (e: React.FormEvent) => {
     e.preventDefault();
-    const val = parseFloat(appraisedValue.replace(/[^0-9.]/g, ''));
-    if (isNaN(val) || val <= 0) {
-      toast.error('Please enter a valid appraised asset value.');
-      return;
-    }
+    if (!pendingTransitionStatus) return;
 
     const payload: any = {
-      appraisedValueCents: Math.round(val * 100)
+      note: transitionNote.trim() || null
     };
 
-    if (appraisalFile) {
-      payload.appraisalFileId = appraisalFile.id;
-      payload.appraisalFileName = appraisalFile.name;
-      payload.appraisalFileUrl = appraisalFile.url;
+    if (pendingTransitionStatus === 'Appraisal-Received') {
+      const val = parseFloat(appraisedValue.replace(/[^0-9.]/g, ''));
+      if (isNaN(val) || val <= 0) {
+        toast.error('Please enter a valid appraised asset value.');
+        return;
+      }
+      payload.appraisedValueCents = Math.round(val * 100);
+      if (uploadedFile) {
+        payload.appraisalFileId = uploadedFile.id;
+        payload.appraisalFileName = uploadedFile.name;
+        payload.appraisalFileUrl = uploadedFile.url;
+      }
+    } else {
+      if (uploadedFile) {
+        payload.fileId = uploadedFile.id;
+        payload.fileName = uploadedFile.name;
+        payload.fileUrl = uploadedFile.url;
+      }
     }
 
-    await submitStatusChange('Appraisal-Received', payload);
+    await submitStatusChange(pendingTransitionStatus, payload);
   };
 
   if (loading) {
@@ -370,86 +421,216 @@ export function LoanProcessingPipeline({ projectId }: Props) {
         })}
       </div>
 
-      {/* Appraisal detail overlay modal */}
-      {showAppraisalModal && (
+      {/* ── LTV ASSESSMENT ── */}
+      {activeLoan && activeLoan.appraisedValueCents && activeLoan.amountCents && (
+        <div className="p-4 bg-gray-50 border border-pw-border rounded-xl flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+          <div>
+            <span className="text-[10px] uppercase font-bold text-pw-muted block tracking-wider">LTV Assessment</span>
+            <div className="flex items-baseline gap-2 mt-1">
+              <span className="text-xl font-light text-pw-black">
+                {((activeLoan.amountCents / activeLoan.appraisedValueCents) * 100).toFixed(2)}%
+              </span>
+              <span className="text-xs text-pw-muted font-light">LTV (Live Calculation)</span>
+            </div>
+          </div>
+          <div className="text-left sm:text-right border-l sm:border-l-0 sm:border-r border-pw-border pl-4 sm:pl-0 sm:pr-4">
+            <span className="text-[10px] uppercase font-bold text-pw-muted block tracking-wider">Stored Value</span>
+            <span className="text-base font-semibold text-[#7A9EAA]">
+              {activeLoan.ltvPercent ? `${activeLoan.ltvPercent.toFixed(2)}%` : 'N/A'}
+            </span>
+          </div>
+        </div>
+      )}
+
+      {/* ── TRANSITION LOG ── */}
+      {transitionLog.length > 0 && (
+        <div className="mt-8 pt-6 border-t border-pw-border space-y-4">
+          <h4 className="text-xs uppercase font-black tracking-widest text-pw-black">Transition Activity Log</h4>
+          <div className="space-y-3">
+            {transitionLog.map((log) => (
+              <div key={log.id} className="p-3 bg-gray-50 border border-pw-border rounded-lg text-xs space-y-1.5 transition-all hover:bg-gray-100/50">
+                <div className="flex flex-col sm:flex-row justify-between text-pw-muted gap-1">
+                  <span>
+                    <strong className="text-pw-black font-semibold">
+                      {log.fromStatus ? log.fromStatus.replace(/-/g, ' ') : 'Start'}
+                    </strong>
+                    {' → '}
+                    <strong className="text-[#7A9EAA] font-bold">
+                      {log.toStatus.replace(/-/g, ' ')}
+                    </strong>
+                  </span>
+                  <span className="text-[10px]">
+                    {new Date(log.timestamp).toLocaleDateString()} at {new Date(log.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                  </span>
+                </div>
+                {log.note && (
+                  <p className="text-pw-black font-light leading-relaxed italic border-l-2 border-gray-300 pl-2 py-0.5 mt-1">
+                    "{log.note}"
+                  </p>
+                )}
+                {log.fileName && (
+                  <div className="flex items-center gap-1.5 text-[10px] text-pw-muted font-light pt-1 border-t border-gray-200/60">
+                    <FileText className="w-3.5 h-3.5 text-[#7A9EAA]" />
+                    <a
+                      href={log.fileUrl || '#'}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="hover:underline flex items-center gap-0.5 font-medium"
+                    >
+                      {log.fileName}
+                      <ExternalLink className="w-2.5 h-2.5" />
+                    </a>
+                  </div>
+                )}
+                <div className="text-[9px] text-pw-muted text-right">
+                  Logged by: {log.actor.name}
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* ── UNIFIED TRANSITION MODAL ── */}
+      {pendingTransitionStatus && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-in fade-in duration-200">
           <div className="bg-pw-white border border-pw-border shadow-xl max-w-md w-full rounded-xl overflow-hidden animate-in zoom-in duration-200">
             <div className="flex justify-between items-center bg-[#7A9EAA] px-4 py-3 text-pw-white">
-              <h4 className="text-xs uppercase font-black tracking-widest">Capture Appraisal Metrics</h4>
+              <h4 className="text-xs uppercase font-black tracking-widest">
+                Log Milestone: {pendingTransitionStatus.replace(/-/g, ' ')}
+              </h4>
               <button 
-                onClick={() => setShowAppraisalModal(false)}
+                onClick={() => setPendingTransitionStatus(null)}
                 className="hover:bg-white/10 p-1 rounded transition-colors"
               >
                 <X className="w-4 h-4" />
               </button>
             </div>
 
-            <form onSubmit={handleSaveAppraisalMilestone} className="p-5 space-y-4">
-              <div className="p-3 bg-amber-50 border border-amber-100 rounded text-[11px] text-amber-900 leading-relaxed">
-                <span className="font-semibold block mb-0.5">Asset Re-valuation Trigger</span>
-                Saving the appraisal details recalculates the Loan-to-Value (LTV) ratio automatically.
-              </div>
-
-              <div>
-                <label className="text-[10px] uppercase font-bold text-pw-muted block mb-1">Appraised Value ($)</label>
-                <div className="relative">
-                  <DollarSign className="absolute left-2.5 top-2.5 w-3.5 h-3.5 text-pw-muted" />
-                  <input 
-                    type="text"
-                    required
-                    placeholder="250,000"
-                    value={appraisedValue}
-                    onChange={(e) => setAppraisedValue(e.target.value)}
-                    className="w-full bg-pw-bg border border-pw-border focus:border-[#7A9EAA] focus:ring-0 rounded pl-8 pr-2.5 py-2 text-xs outline-none"
-                  />
-                </div>
-              </div>
-
-              <div>
-                <label className="text-[10px] uppercase font-bold text-pw-muted block mb-1">Appraisal Document (PDF)</label>
-                {appraisalFile ? (
-                  <div className="flex items-center justify-between p-2.5 border border-emerald-100 bg-emerald-50/20 rounded">
-                    <span className="text-[11px] font-medium text-emerald-800 truncate max-w-[200px]">{appraisalFile.name}</span>
-                    <button 
-                      type="button"
-                      onClick={() => setAppraisalFile(null)}
-                      className="text-emerald-700 hover:text-red-600 font-bold"
-                    >
-                      Remove
-                    </button>
+            <form onSubmit={handleSaveMilestone} className="p-5 space-y-4">
+              {pendingTransitionStatus === 'Appraisal-Received' ? (
+                <>
+                  <div className="p-3 bg-amber-50 border border-amber-100 rounded text-[11px] text-amber-900 leading-relaxed">
+                    <span className="font-semibold block mb-0.5">Asset Re-valuation Trigger</span>
+                    Saving the appraisal details recalculates the Loan-to-Value (LTV) ratio automatically.
                   </div>
-                ) : (
+
                   <div>
-                    <input 
-                      type="file"
-                      accept="application/pdf"
-                      ref={appraisalInputRef}
-                      onChange={handleAppraisalUpload}
-                      className="hidden"
-                    />
-                    <button 
-                      type="button"
-                      disabled={uploadingAppraisal}
-                      onClick={() => appraisalInputRef.current?.click()}
-                      className="w-full border-2 border-dashed border-pw-border hover:bg-gray-50 flex flex-col items-center justify-center py-4 text-center cursor-pointer rounded"
-                    >
-                      {uploadingAppraisal ? (
-                        <Loader2 className="w-5 h-5 animate-spin text-[#7A9EAA] mb-1" />
-                      ) : (
-                        <Upload className="w-5 h-5 text-pw-muted mb-1" />
-                      )}
-                      <span className="text-[10px] font-bold uppercase tracking-wider text-pw-black">
-                        {uploadingAppraisal ? 'Uploading...' : 'Upload Appraisal PDF'}
-                      </span>
-                    </button>
+                    <label className="text-[10px] uppercase font-bold text-pw-muted block mb-1">Appraised Value ($)</label>
+                    <div className="relative">
+                      <DollarSign className="absolute left-2.5 top-2.5 w-3.5 h-3.5 text-pw-muted" />
+                      <input 
+                        type="text"
+                        required
+                        placeholder="250,000"
+                        value={appraisedValue}
+                        onChange={(e) => setAppraisedValue(e.target.value)}
+                        className="w-full bg-pw-bg border border-pw-border focus:border-[#7A9EAA] focus:ring-0 rounded pl-8 pr-2.5 py-2 text-xs outline-none"
+                      />
+                    </div>
                   </div>
-                )}
-              </div>
+
+                  <div>
+                    <label className="text-[10px] uppercase font-bold text-pw-muted block mb-1">Appraisal Document (PDF)</label>
+                    {uploadedFile ? (
+                      <div className="flex items-center justify-between p-2.5 border border-emerald-100 bg-emerald-50/20 rounded">
+                        <span className="text-[11px] font-medium text-emerald-800 truncate max-w-[200px]">{uploadedFile.name}</span>
+                        <button 
+                          type="button"
+                          onClick={() => setUploadedFile(null)}
+                          className="text-emerald-700 hover:text-red-600 font-bold"
+                        >
+                          Remove
+                        </button>
+                      </div>
+                    ) : (
+                      <div>
+                        <input 
+                          type="file"
+                          accept="application/pdf"
+                          ref={fileInputRef}
+                          onChange={handleFileUpload}
+                          className="hidden"
+                        />
+                        <button 
+                          type="button"
+                          disabled={uploadingFile}
+                          onClick={() => fileInputRef.current?.click()}
+                          className="w-full border-2 border-dashed border-pw-border hover:bg-gray-50 flex flex-col items-center justify-center py-4 text-center cursor-pointer rounded"
+                        >
+                          {uploadingFile ? (
+                            <Loader2 className="w-5 h-5 animate-spin text-[#7A9EAA] mb-1" />
+                          ) : (
+                            <Upload className="w-5 h-5 text-pw-muted mb-1" />
+                          )}
+                          <span className="text-[10px] font-bold uppercase tracking-wider text-pw-black">
+                            {uploadingFile ? 'Uploading...' : 'Upload Appraisal PDF'}
+                          </span>
+                        </button>
+                      </div>
+                    )}
+                  </div>
+                </>
+              ) : (
+                <>
+                  <div>
+                    <label className="text-[10px] uppercase font-bold text-pw-muted block mb-1">Transition Note / Remark</label>
+                    <textarea 
+                      placeholder="e.g. Loan application submitted to underwriting team."
+                      value={transitionNote}
+                      onChange={(e) => setTransitionNote(e.target.value)}
+                      rows={3}
+                      className="w-full bg-pw-bg border border-pw-border focus:border-[#7A9EAA] focus:ring-0 rounded p-2 text-xs outline-none resize-none"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="text-[10px] uppercase font-bold text-pw-muted block mb-1">Evidence Document (PDF - Optional)</label>
+                    {uploadedFile ? (
+                      <div className="flex items-center justify-between p-2.5 border border-emerald-100 bg-emerald-50/20 rounded">
+                        <span className="text-[11px] font-medium text-emerald-800 truncate max-w-[200px]">{uploadedFile.name}</span>
+                        <button 
+                          type="button"
+                          onClick={() => setUploadedFile(null)}
+                          className="text-emerald-700 hover:text-red-600 font-bold"
+                        >
+                          Remove
+                        </button>
+                      </div>
+                    ) : (
+                      <div>
+                        <input 
+                          type="file"
+                          accept="application/pdf"
+                          ref={fileInputRef}
+                          onChange={handleFileUpload}
+                          className="hidden"
+                        />
+                        <button 
+                          type="button"
+                          disabled={uploadingFile}
+                          onClick={() => fileInputRef.current?.click()}
+                          className="w-full border-2 border-dashed border-pw-border hover:bg-gray-50 flex flex-col items-center justify-center py-4 text-center cursor-pointer rounded"
+                        >
+                          {uploadingFile ? (
+                            <Loader2 className="w-5 h-5 animate-spin text-[#7A9EAA] mb-1" />
+                          ) : (
+                            <Upload className="w-5 h-5 text-pw-muted mb-1" />
+                          )}
+                          <span className="text-[10px] font-bold uppercase tracking-wider text-pw-black">
+                            {uploadingFile ? 'Uploading...' : 'Upload Document'}
+                          </span>
+                        </button>
+                      </div>
+                    )}
+                  </div>
+                </>
+              )}
 
               <div className="flex justify-end gap-3 pt-3 border-t border-pw-border mt-4">
                 <button 
                   type="button"
-                  onClick={() => setShowAppraisalModal(false)}
+                  onClick={() => setPendingTransitionStatus(null)}
                   className="px-3.5 py-1.5 border border-pw-border text-[10px] font-bold uppercase tracking-wider text-pw-black hover:bg-gray-50 rounded"
                 >
                   Cancel
@@ -460,7 +641,7 @@ export function LoanProcessingPipeline({ projectId }: Props) {
                   className="px-3.5 py-1.5 bg-[#7A9EAA] hover:bg-[#688a95] text-[10px] font-bold uppercase tracking-wider text-pw-white flex items-center gap-1.5 rounded transition-all shadow-sm"
                 >
                   {submitting && <Loader2 className="w-3 h-3 animate-spin" />}
-                  Save appraisal metrics
+                  Confirm Transition
                 </button>
               </div>
             </form>

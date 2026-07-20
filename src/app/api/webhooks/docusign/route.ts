@@ -162,6 +162,55 @@ export async function POST(req: NextRequest) {
       }
     }
 
+    // Send signature completion notification (failure-isolated)
+    try {
+      const { NotificationService } = await import('@/lib/services/notificationService');
+      const { adminAuth } = await import('@/lib/firebase/admin');
+      
+      const projectSnap = await adminDb.collection('projects').doc(envData.projectId as string).get();
+      if (projectSnap.exists) {
+        const projectData = projectSnap.data()!;
+        const dealAddress = projectData.propertyName || projectData.address?.street || 'the project';
+        const ownerUid = projectData.ownerUid || projectData.createdBy;
+        
+        const signerUser = await adminAuth.getUserByEmail(envData.signerEmail as string).catch(() => null);
+        
+        // Notify Lead Investor
+        if (ownerUid) {
+          await NotificationService.createNotification({
+            recipientId: ownerUid,
+            type: 'DOCUMENT_SIGNED',
+            actor: { uid: signerUser?.uid || 'external', name: envData.signerName as string },
+            objectReference: {
+              projectId: envData.projectId as string,
+              dealAddress,
+              documentName: envData.documentName as string,
+              task: `${envData.signerName} has signed the document '${envData.documentName}'`
+            },
+            deepLinkUrl: `/dashboard/projects/${envData.projectId}/data-room`
+          });
+        }
+        
+        // Notify Signer if they are a registered user
+        if (signerUser?.uid && signerUser.uid !== ownerUid) {
+          await NotificationService.createNotification({
+            recipientId: signerUser.uid,
+            type: 'DOCUMENT_SIGNED',
+            actor: { uid: ownerUid || 'system', name: 'PaperWorking' },
+            objectReference: {
+              projectId: envData.projectId as string,
+              dealAddress,
+              documentName: envData.documentName as string,
+              task: `You have successfully signed the document '${envData.documentName}'`
+            },
+            deepLinkUrl: `/dashboard/projects/${envData.projectId}/data-room`
+          });
+        }
+      }
+    } catch (notifErr: any) {
+      logger.error('[webhooks/docusign] Failed to send signature completion notifications:', notifErr.message);
+    }
+
     logger.info('[webhooks/docusign] Envelope reconciled', { envelopeId, status });
     return NextResponse.json({ received: true });
   } catch (error) {

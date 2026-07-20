@@ -1,25 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { requireAuth, isAuthError } from '@/lib/firebase-admin/auth-guard';
 import { adminDb } from '@/lib/firebase/admin';
+import { verifyProjectAccessAndRole } from '@/lib/firebase-admin/project-guard';
 
 export const dynamic = 'force-dynamic';
-
-async function verifyProjectMembership(projectId: string, uid: string) {
-  const snap = await adminDb.collection('projects').doc(projectId).get();
-  if (!snap.exists) return null;
-  const data = snap.data()!;
-  const isOwner = data.ownerUid === uid;
-  const isMember = !!data.members?.[uid] || data.teamMemberIds?.includes(uid);
-  const isOrgMember = data.organizationId
-    ? await adminDb.collection('organizations').doc(data.organizationId).get().then((o) => {
-        if (!o.exists) return false;
-        const od = o.data()!;
-        return od.ownerUid === uid || od.teamMembers?.some((m: any) => m.id === uid && m.status === 'active');
-      })
-    : false;
-  if (!isOwner && !isMember && !isOrgMember) return null;
-  return data;
-}
 
 export async function GET(
   request: NextRequest,
@@ -32,8 +16,8 @@ export async function GET(
 
     const { id: projectId } = await params;
 
-    const project = await verifyProjectMembership(projectId, uid);
-    if (!project) {
+    const access = await verifyProjectAccessAndRole(projectId, uid, auth.token.email);
+    if (!access) {
       return NextResponse.json({ error: 'Project not found or access denied' }, { status: 403 });
     }
 
@@ -67,10 +51,23 @@ export async function POST(
 
     const { id: projectId } = await params;
 
-    const project = await verifyProjectMembership(projectId, uid);
-    if (!project) {
+    const access = await verifyProjectAccessAndRole(projectId, uid, auth.token.email);
+    if (!access) {
       return NextResponse.json({ error: 'Project not found or access denied' }, { status: 403 });
     }
+
+    // Enforce LP/Vendor access controls
+    if (access.role === 'LP') {
+      return NextResponse.json({ error: 'Access denied: LPs cannot add loan estimates.' }, { status: 403 });
+    }
+    if (access.role === 'Vendor') {
+      const isLenderOrAppraiser = ['f4HardMoneyLenderVendor', 'f4CdcVendor', 'f4AppraiserVendor'].includes(access.partyId || '');
+      if (!isLenderOrAppraiser) {
+        return NextResponse.json({ error: 'Access denied: Vendor is not authorized to add loan estimates.' }, { status: 403 });
+      }
+    }
+
+    const project = access.project;
 
     const body = await request.json();
     const {
@@ -100,6 +97,16 @@ export async function POST(
       return NextResponse.json({ error: 'Term months must be greater than zero' }, { status: 400 });
     }
 
+    const hasDoc = !!fileId;
+    const sourceTags = body.sourceTags || {
+      lenderName: hasDoc ? 'document' : 'manual',
+      amountCents: hasDoc ? 'document' : 'manual',
+      interestRate: hasDoc ? 'document' : 'manual',
+      termMonths: hasDoc ? 'document' : 'manual',
+      points: hasDoc ? 'document' : 'manual',
+      estimatedCostsCents: hasDoc ? 'document' : 'manual',
+    };
+
     const estimatesColl = adminDb.collection('projects').doc(projectId).collection('loanEstimates');
     const docRef = estimatesColl.doc();
     const newEstimate = {
@@ -116,6 +123,7 @@ export async function POST(
       fileName: fileName || null,
       fileUrl: fileUrl || null,
       isChosen: false,
+      sourceTags,
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString(),
     };

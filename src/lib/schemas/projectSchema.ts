@@ -107,7 +107,7 @@ export const offerStatusEnum = z.enum([
 export const financingTypeEnum = z.enum(['Financed', 'All Cash']);
 
 /** Exit strategy fork */
-export const exitStrategyTypeEnum = z.enum(['Sell', 'Rent']);
+export const exitStrategyTypeEnum = z.enum(['Sell', 'Rent', 'Lease']);
 
 /** Exit type classification */
 export const exitTypeEnum = z.enum(['Sale', 'Stabilization', 'Refinance']);

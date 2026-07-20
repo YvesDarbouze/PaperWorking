@@ -24,7 +24,13 @@ export default function Phase4Outcome({ projectId }: Phase4OutcomeProps) {
   const deal = projects.find(d => d.id === projectId);
   const financials = deal?.financials;
 
-  const [strategy, setStrategy] = useState<'Sell'|'Rent'>(financials?.exitStrategyType || 'Sell');
+  const [strategy, setStrategy] = useState<'Sell' | 'Rent' | 'Lease'>(
+    deal?.dispositionType === 'LEASE'
+      ? 'Lease'
+      : deal?.dispositionType === 'RENT'
+      ? 'Rent'
+      : (financials?.exitStrategyType || 'Sell')
+  );
   const [viewMode, setViewMode] = useState<'Financials' | 'Listing'>('Financials');
   const [isClosing, setIsClosing] = useState(false);
 
@@ -238,7 +244,17 @@ export default function Phase4Outcome({ projectId }: Phase4OutcomeProps) {
   const totalRehab = financials.costs?.reduce((acc, c) => acc + c.amount, 0) || 0; 
   const totalCapitalDeployed = totalPurchase + totalRehab;
 
-  const handleToggle = (opt: 'Sell' | 'Rent') => setStrategy(opt);
+  const handleToggle = async (opt: 'Sell' | 'Rent' | 'Lease') => {
+    setStrategy(opt);
+    const disp = opt === 'Lease' ? 'LEASE' : opt === 'Rent' ? 'RENT' : 'SALE';
+    try {
+      await projectsService.updateProject(projectId, {
+        dispositionType: disp,
+      });
+    } catch (err) {
+      console.error('Failed to update dispositionType:', err);
+    }
+  };
 
   // Profit calculations
   const calculateNetProfit = () => {
@@ -311,6 +327,12 @@ export default function Phase4Outcome({ projectId }: Phase4OutcomeProps) {
                className={`px-6 py-2 text-xs font-bold uppercase tracking-wider transition-all ${strategy === 'Rent' ? 'bg-pw-accent text-pw-white' : 'text-text-secondary hover:text-text-primary'}`}
             >
                Exit Strategy: Rent & Hold
+            </button>
+            <button 
+               onClick={() => handleToggle('Lease')}
+               className={`px-6 py-2 text-xs font-bold uppercase tracking-wider transition-all ${strategy === 'Lease' ? 'bg-pw-accent text-pw-white' : 'text-text-secondary hover:text-text-primary'}`}
+            >
+               Exit Strategy: Lease
             </button>
          </div>
       </div>

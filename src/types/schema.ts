@@ -1451,7 +1451,7 @@ export interface ProjectFinancials {
   sellerConcessionsFixed?: number; // Fixed dollar amount for Phase 4 UX
 
   // Phase 10 / UX Phase 4 Fork
-  exitStrategyType?: 'Sell' | 'Rent';
+  exitStrategyType?: 'Sell' | 'Rent' | 'Lease';
   projectedMonthlyRent?: number;
   vacancyRate?: number; // percentage e.g., 5 for 5%
   maintenanceReserves?: number; // per month
@@ -1627,8 +1627,6 @@ export interface ProjectFinancials {
   holding_cost_capex?: number;             // Monthly CapEx reserve (cents)
   holdingCostMaintenance?: number;        // Monthly maintenance/CapEx during hold (non-rental)
   holdingCostManagement?: number;         // Monthly management fee during hold (non-rental PM)
-  holdingCostSecurity?: number;           // Monthly security during hold
-  holdingCostCapex?: number;              // Monthly capex during hold
   totalMonthlyHoldingCost?: number;       // Derived: sum of all itemized monthly holding costs
   holdStartDate?: any;                    // Explicit hold clock start (defaults to acquisitionDate)
   exit_cost_basis?: number;

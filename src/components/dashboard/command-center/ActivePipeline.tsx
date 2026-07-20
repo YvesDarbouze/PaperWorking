@@ -46,7 +46,7 @@ function statusLabel(p: Project): string {
   }
   if (phase === 2) return "Closing";
   if (phase === 3) return "Renovation";
-  return p.financials?.exitStrategyType === "Sell" ? "For Sale" : "Rented";
+  return p.dispositionType === "SALE" ? "For Sale" : p.dispositionType === "LEASE" ? "Leased" : "Rented";
 }
 
 function progressPct(p: Project): number {

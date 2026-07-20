@@ -383,7 +383,7 @@ export const projectsService = {
   /**
    * Finalize and archive a project, updating portfolio aggregates on the Organization.
    */
-  async closeProjectAndArchive(projectId: string, organizationId: string, exitStrategy: 'Sell' | 'Rent') {
+  async closeProjectAndArchive(projectId: string, organizationId: string, exitStrategy: 'Sell' | 'Rent' | 'Lease') {
     try {
       // 1. Fetch the project and calculate final outcome using canonical math
       const deal = await this.getProject(projectId);

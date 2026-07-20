@@ -123,7 +123,7 @@ describe('POST /api/projects/[id]/hold/auto-advance', () => {
     expect(mockProjectDocUpdate).toHaveBeenCalledTimes(1);
     const updates = mockProjectDocUpdate.mock.calls[0][0];
     expect(updates.currentPhase).toBe(4);
-    expect(updates.status).toBe('exit');
+    expect(updates.status).toBe('Exit');
     expect(updates.phaseStatus).toBe('Phase 4: Exit');
     expect(updates.financials.exit_cost_basis).toBe(15200000);
     expect(updates.financials.exit_capitalized_improvements).toBe(3500000);

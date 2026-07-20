@@ -92,7 +92,7 @@ describe('ExitStrategyBoard Component', () => {
 
     await waitFor(() => {
       expect(mockUpdateProject).toHaveBeenCalledWith('project-1', expect.objectContaining({
-        status: 'Listed',
+        status: 'Exit',
         exitAssets: expect.objectContaining({
           mlsListingLink: 'https://mls.com/sunset',
           mlsListingStatus: 'pending_integration',

@@ -39,7 +39,7 @@ export default function DealListInline({ projects, onSelectDeal }: DealListInlin
           <div className="divide-y divide-gray-100">
             {projects.map((deal) => {
               const purchase = deal.financials?.purchasePrice || 0;
-              const isRent = deal.financials?.exitStrategyType === 'Rent';
+              const isRent = deal.dispositionType === 'RENT' || deal.dispositionType === 'LEASE';
 
               return (
                 <button

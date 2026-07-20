@@ -164,7 +164,7 @@ export async function createNewDeal(idToken: string, rawDealData: any) {
  * CLOSE PROJECT AND ARCHIVE
  * Finalizes the project, updates its status, and aggregates outcomes back to the Organization
  */
-export async function closeProjectAndArchiveServerAction(idToken: string, projectId: string, organizationId: string, exitStrategy: 'Sell' | 'Rent') {
+export async function closeProjectAndArchiveServerAction(idToken: string, projectId: string, organizationId: string, exitStrategy: 'Sell' | 'Rent' | 'Lease') {
   const user = await verifyActionAuth(idToken);
   
   // Security validation

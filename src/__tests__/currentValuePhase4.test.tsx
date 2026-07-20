@@ -161,7 +161,7 @@ describe('CurrentValueTracker in Phase 4', () => {
     expect(mockAddValuation).toHaveBeenCalledWith(
       expect.objectContaining({
         value: 31000000,
-        source: 'document',
+        source: 'appraisal',
         documentName: 'Appraisal Report',
       })
     );

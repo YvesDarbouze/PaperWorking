@@ -48,6 +48,24 @@ describe('Supplemental Metrics Gating and Calculation Logic', () => {
       const res = computeLTVMetric({ ...baseProject, currentPhase: 1 });
       expect(res.state).toBe('n/a');
     });
+
+    it('uses appraisedValueCents from active loan if available', () => {
+      const projWithAppraisal = {
+        ...baseProject,
+        currentPhase: 3,
+        loans: [
+          {
+            id: 'loan-1',
+            status: 'Locked',
+            amountCents: 37500000,
+            appraisedValueCents: 60000000, // $600k appraised value instead of $500k purchase price/estimatedCurrentValue
+          }
+        ]
+      };
+      const res = computeLTVMetric(projWithAppraisal);
+      // 375k loan / 600k appraised = 62.5% LTV
+      expect(res.value).toBe(62.5);
+    });
   });
 
   describe('Debt Yield', () => {

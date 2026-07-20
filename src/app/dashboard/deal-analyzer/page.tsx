@@ -688,7 +688,7 @@ export default function DealAnalyzerPage() {
       condition: inputs.condition,
       propertyType: inputs.propertyType,
       dispositionType: inputs.dispositionType,
-      status: 'Lead',
+      status: 'acquisition',
       currentPhase: 1,
       financials: {
         purchasePrice: (parseFloat(inputs.purchasePrice) || 0) * 100, // cents

@@ -4,6 +4,8 @@ import React, { useState, useEffect } from 'react';
 import { Calendar, FileText, CheckCircle, Clock, Plus, Trash2, ShieldAlert, AlertCircle, Info, Landmark } from 'lucide-react';
 import type { Project, TitleLienException } from '@/types/schema';
 import toast from 'react-hot-toast';
+import { uploadFile } from '@/lib/storage/uploadService';
+import { IS_DEMO_MODE } from '@/lib/config/demo';
 
 interface TitleCardProps {
   project: Project;
@@ -83,18 +85,50 @@ export function TitleCard({
     handleSaveField('titleLiensLog', updated);
   };
 
-  const triggerCommitmentUpload = () => {
+  const triggerCommitmentUpload = async () => {
     if (readOnly) return;
-    setUploadingCommitment(true);
-    setTimeout(async () => {
-      setUploadingCommitment(false);
+    
+    if (IS_DEMO_MODE) {
+      setUploadingCommitment(true);
+      await new Promise((resolve) => setTimeout(resolve, 800));
       await onSaveFinancials({
         titleCommitmentUrl: '/mock/documents/Title_Commitment_Report.pdf',
         titleCommitmentName: 'Title_Commitment_Report.pdf',
         titleCommitmentReceived: true,
       });
-      toast.success('Title commitment document uploaded successfully');
-    }, 800);
+      setUploadingCommitment(false);
+      toast.success('Title commitment document uploaded successfully! (Demo)');
+      return;
+    }
+
+    const input = document.createElement('input');
+    input.type = 'file';
+    input.accept = '.pdf,image/*';
+    input.onchange = async (e: any) => {
+      const file = e.target.files?.[0];
+      if (!file) return;
+      setUploadingCommitment(true);
+      const toastId = toast.loading(`Uploading ${file.name}...`);
+      try {
+        const res = await uploadFile({
+          file,
+          path: 'title_commitments',
+          projectId: project.id,
+        });
+        await onSaveFinancials({
+          titleCommitmentUrl: res.downloadUrl,
+          titleCommitmentName: file.name,
+          titleCommitmentReceived: true,
+        });
+        toast.success('Title commitment document uploaded successfully!', { id: toastId });
+      } catch (err: any) {
+        console.error('Upload failed:', err);
+        toast.error(`Upload failed: ${err.message || 'Unknown error'}`, { id: toastId });
+      } finally {
+        setUploadingCommitment(false);
+      }
+    };
+    input.click();
   };
 
   return (
@@ -323,7 +357,10 @@ export function TitleCard({
           <div className="flex items-center justify-between p-3 bg-white/5 rounded-xl border border-white/5">
             <div className="flex items-center gap-2">
               <FileText className="w-4 h-4 text-[#454955]" />
-              <span className="text-xs text-white font-bold">{financials.titleCommitmentName || 'Title_Commitment_Report.pdf'}</span>
+              <span className="text-xs text-white font-bold flex items-center gap-1.5">
+                {financials.titleCommitmentName || 'Title_Commitment_Report.pdf'}
+                {IS_DEMO_MODE && <span className="text-[8px] font-bold text-amber-500 bg-amber-500/10 px-1.5 py-0.5 rounded border border-amber-500/20 font-sans">Demo</span>}
+              </span>
             </div>
             {!readOnly && (
               <button
@@ -341,13 +378,13 @@ export function TitleCard({
           <button
             onClick={triggerCommitmentUpload}
             disabled={readOnly || uploadingCommitment}
-            className="w-full p-4 border border-dashed border-white/10 hover:border-white/20 rounded-xl flex items-center justify-center gap-2 text-xs text-[#9E9DA0] hover:text-white transition-all bg-white/5"
+            className="w-full p-4 border border-dashed border-white/10 hover:border-white/20 rounded-xl flex items-center justify-center gap-2 text-xs text-[#9E9DA0] hover:text-white transition-all bg-white/5 disabled:opacity-50"
           >
             {uploadingCommitment ? (
               <span>Uploading...</span>
             ) : (
               <>
-                <Plus className="w-4 h-4" /> Upload Title Commitment PDF
+                <Plus className="w-4 h-4" /> Upload Title Commitment PDF {IS_DEMO_MODE && <span className="text-amber-500 ml-1">(Demo)</span>}
               </>
             )}
           </button>

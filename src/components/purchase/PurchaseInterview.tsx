@@ -608,16 +608,6 @@ export default function PurchaseInterview({ deal }: PurchaseInterviewProps) {
       required: true,
       alert: "This date starts the holding cost clock and IRR timeline.",
     },
-    {
-      id: 'totalCashInvested',
-      sectionId: 'vendors',
-      question: "Total cash you put in (down payment + closing costs)?",
-      description: "Your total out-of-pocket investment at the closing table. This is the denominator for Cash-on-Cash Return and the t₀ outflow for IRR.",
-      field: 'financials.totalCashInvested',
-      type: 'currency',
-      placeholder: '0.00',
-      required: true,
-    },
   ], []);
 
   // ── Active steps filtered by conditions ─────────────────────
@@ -817,13 +807,14 @@ export default function PurchaseInterview({ deal }: PurchaseInterviewProps) {
       const titleSearchCost = toNum(f.titleSearchCost) ?? 0;
       const insuranceCost = toNum(f.insuranceCost) ?? 0;
       const hoaMonthly = toNum(f.hoaMonthly) ?? 0;
-      const totalCashInvested = toNum(f.totalCashInvested) ?? 0;
-
       const isFinanced = f.financingType === 'Financed';
       const loanAmount = isFinanced ? (toNum(f.loanAmount) ?? 0) : 0;
       const loanInterestRate = isFinanced ? (toNum(f.loanInterestRate) ?? 0) : 0;
       const loanTermYears = isFinanced ? (toNum(f.loanTermYears) ?? 0) : 0;
       const loanOriginationPoints = isFinanced ? (toNum(f.loanOriginationPoints) ?? 0) : 0;
+
+      const downPayment = f.financingType === 'All Cash' ? purchasePrice : Math.max(0, purchasePrice - loanAmount);
+      const totalCashInvested = downPayment + closingCosts + (deal.financials?.upfrontRehab ?? 0);
 
       const isClearToClose = f.clearToClose === 'yes' || isBackdated;
 
@@ -1004,7 +995,7 @@ export default function PurchaseInterview({ deal }: PurchaseInterviewProps) {
     const f = formData.financials;
     const criteria = [
       { label: 'Actual Purchase Price', met: (Number(f.purchasePrice) || 0) > 0 },
-      { label: 'Total Cash Invested', met: (Number(f.totalCashInvested) || 0) > 0 },
+      { label: 'Total Cash Invested', met: (Number(f.purchasePrice) || 0) > 0 },
       { label: 'Closing / Acquisition Date', met: !!f.acquisitionDate },
       { label: 'Clear to Close', met: f.clearToClose === 'yes' || isBackdated },
     ];

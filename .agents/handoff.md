@@ -42,3 +42,27 @@ We have successfully migrated the legacy project status models (6-status and 7-i
 - `exit` (formerly Sold / Closed / Exited / Rented)
 
 All TypeScript compiler/typecheck checks (`npx tsc --noEmit`) and the entire Jest unit test suite (134 test suites, 1676 unit tests) pass 100% green. No legacy status fields remain active in component files, data layers, or schemas.
+
+## Handoff for FD-36 — Party Portal Views (COMPLETE)
+- Restricts platform-linked equity parties (LPs and co-buyers) to their own commitment status, documents, signature requests, public-facing deal identity, and Lead Investor permitted resources.
+- Restricts Firestore reads to owners, members, or recipient/uploader LPs using Common Expression Language custom rules functions.
+- Filters lists at the API/server layer for commitments (`/api/projects/[id]/commitments/route.ts`), commitment detail actions (`[cId]/route.ts`), and documents (`/api/projects/[id]/documents/route.ts`).
+- Integrated `/api/projects/[id]/documents` to `ProjectDataRoomPage` frontend.
+- Created `src/__tests__/partyPortalSecurity.test.ts` to verify security access controls. All tests are passing cleanly.
+- Verified compilation is clean (`npx tsc --noEmit`).
+
+## Handoff for FD-37 — Fund Notifications & Reminders (COMPLETE)
+- Configured premium HTML email layouts for the 6 specific Fund events (`LOAN_STATUS_UPDATE`, `VENDOR_BID`, `LENDER_CHECKLIST_REMINDER`, `SLIPPAGE_DETECTED`, `DOCUMENT_SIGNED`, `PHASE_TRANSITION`).
+- Implemented `broadcastProjectNotification` to route updates dynamically to Lead Investors/Sponsors and permitted LPs/co-buyers based on active phase permissions.
+- Hardened all email dispatch pipelines to catch errors locally so that a failure in notifications never aborts the underlying database transaction.
+- Honored global and category-level preference suppressions (`preferences.categories`).
+- Added automated test suite `src/__tests__/fundNotifications.test.ts` verifying templates, failure isolation, suppression toggles, and recipient logic.
+- All 182 test suites passed successfully and `npx tsc --noEmit` compiled with 0 errors.
+
+## Handoff for QA-2 — Gate & Phase-Integrity Fixes (COMPLETE)
+- **Normalized status writes:** Integrated server-side evaluations/intercepts and updated UI wizards/components to write only the canonical four-key statuses (`Acquisition`, `Fund`, `Hold`, `Exit`). Direct writes of legacy status values are completely removed.
+- **Unified 8 Gate Criteria:** Implemented `evaluateAcquisitionGate` in `gate.ts` checking all 8 criteria on the server, synced to the client component `AcquisitionPhaseGate.tsx`.
+- **Decoupled Closing:** Removed the "Advance to Hold" button from the `ClosingRoomModal` in favor of dashboard gate controls.
+- **Terminology & Sweep:** Cleaned up "Acquisition Team" to "Investment Team" in comments and label cards, and dynamicized NeedsAttentionFeed phase metadata.
+- **Lease & Disposition:** Expanded exitStrategyType schema/validation, added a switcher option for Commercial Lease (`LEASE`) to trigger the stabilized opex/rental experience in Phase4Outcome, and updated tests.
+- All 185 test suites (2028 tests) are 100% green and passing, and `npx tsc --noEmit` runs with 0 errors.

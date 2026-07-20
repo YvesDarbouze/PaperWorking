@@ -29,7 +29,7 @@ export function ClearToCloseMilestone({
       dueDiligenceChecklist.length > 0 &&
       dueDiligenceChecklist.every((item) => item.completed);
 
-    // Validation 2: Acquisition Team has valid emails
+    // Validation 2: Investment Team has valid emails
     const isTeamValid =
       teamMembers.length > 0 &&
       teamMembers.every((m) => m.email && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(m.email));
@@ -78,7 +78,7 @@ export function ClearToCloseMilestone({
             </h2>
           </div>
           <p className="text-sm max-w-xl" style={{ color: unlocked ? 'var(--text-secondary)' : '#6b7280' }}>
-            Final confirmation before moving to the closing phase. This gate requires 100% completion of the Due Diligence checklist and valid email assignments for all Acquisition Team members.
+            Final confirmation before moving to the Fund phase. This gate requires 100% completion of the Due Diligence checklist and valid email assignments for all Investment Team members.
           </p>
         </div>
 

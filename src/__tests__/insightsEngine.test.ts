@@ -73,7 +73,7 @@ describe('Deterministic Insight Engine Rules', () => {
     propertyName: 'Sunset Heights Duplex',
     address: '101 Sunset Rd, Phoenix AZ',
     currentPhase: 1, // Sourcing/Acquisition phase
-    status: 'Lead',
+    status: 'acquisition',
     dispositionType: 'RENT',
     subStrategy: 'LONG_TERM',
     createdAt: new Date(),

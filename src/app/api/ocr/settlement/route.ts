@@ -112,6 +112,10 @@ Do not include markdown, code fences, explanation, or any text outside the JSON 
 // ── Route Handler ────────────────────────────────────────
 
 export async function POST(req: NextRequest) {
+  if (process.env.NEXT_PUBLIC_ENABLE_OCR !== 'true') {
+    return NextResponse.json({ error: 'OCR is disabled' }, { status: 403 });
+  }
+
   const auth = await requireAuth(req);
   if (isAuthError(auth)) return auth;
 

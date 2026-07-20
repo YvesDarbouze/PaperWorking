@@ -3,10 +3,19 @@
 import React, { useEffect, useState, useMemo } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import { projectsService } from '@/lib/firebase/deals';
-import { RehabExpense, HoldingCostEntry, SiteVisitLog, ScopeOfWorkItem, ContractorBid, DrawScheduleItem, RehabTask, ProjectFinancials, RehabTier } from '@/types/schema';
+import { RehabExpense, HoldingCostEntry, SiteVisitLog, ScopeOfWorkItem, ContractorBid, DrawScheduleItem, RehabTask, ProjectFinancials, RehabTier, RehabSpendEntry, ValuationEntry, ListingAdLogEntry, ScreeningChecklistState, TargetLeaseTerms } from '@/types/schema';
 import { useWorkspaceProject } from '@/app/dashboard/projects/[id]/layout';
+import { usePhaseAccess } from '@/hooks/usePhaseAccess';
+import { PhaseAccessGuard } from '@/components/project/PhaseAccessGuard';
+import { RenovationSpendTracker } from '@/components/project/RenovationSpendTracker';
+import { RenovationCompletionCard } from '@/components/project/RenovationCompletionCard';
+import { CurrentValueTracker } from '@/components/project/CurrentValueTracker';
+import { RentGoToMarket } from '@/components/project/RentGoToMarket';
+import { LeaseGoToMarket } from '@/components/project/LeaseGoToMarket';
+import { SaleGoToMarket } from '@/components/project/SaleGoToMarket';
 import { RehabExpenseTracker } from '@/components/project/RehabExpenseTracker';
 import { HoldingCostsTracker } from '@/components/project/HoldingCostsTracker';
+import { HoldingCostsWizard } from '@/components/project/HoldingCostsWizard';
 import { SiteVisitLogTracker } from '@/components/project/SiteVisitLogTracker';
 import { ScopeOfWorkForm } from '@/components/project/ScopeOfWorkForm';
 import { ContractorBids } from '@/components/project/ContractorBids';
@@ -14,9 +23,9 @@ import GCBidUploader from '@/components/GCBidUploader';
 import { CapExComparativeTable } from '@/components/project/CapExComparativeTable';
 import { RehabSequenceTracker } from '@/components/project/RehabSequenceTracker';
 import { ContractorDrawSchedule } from '@/components/project/ContractorDrawSchedule';
-import { RenovationsCompleteGate } from '@/components/project/RenovationsCompleteGate';
+import { EventTriggeredHoldGate } from '@/components/project/EventTriggeredHoldGate';
 import { PhaseExplainerVideo } from '@/components/project/PhaseExplainerVideo';
-import { ExitStrategyToggle } from '@/components/project/ExitStrategyToggle';
+
 import { RentalSetupForm } from '@/components/project/RentalSetupForm';
 import { DaysHeldClock } from '@/components/project/DaysHeldClock';
 import { deriveAllMetrics } from '@/lib/metrics/reiMetrics';
@@ -26,11 +35,14 @@ import type { MetricResult } from '@/lib/metrics/types';
 import toast from 'react-hot-toast';
 import { ProjectAtAGlanceSidebar } from '@/components/project/ProjectAtAGlanceSidebar';
 import { ValuationHistory } from '@/components/project/ValuationHistory';
+import { Info } from 'lucide-react';
+import { getAuth } from 'firebase/auth';
+import type { F4VendorAssignment } from '@/types/schema';
 
 
 
 /* ═══════════════════════════════════════════════════════════════
-   /dashboard/projects/[id]/phase-3 — Hold & Rehab Workspace
+   /dashboard/projects/[id]/phase-3 — Hold Workspace
 
    Stitch Schemas: b795e973 (Hold Phase) + df9efa99 (Operations)
    "Luminous Glass" dark design — single-column mobile-first stack.
@@ -43,13 +55,46 @@ const PHASE_COLOR = '#454955';
 const PHASE_GLOW  = 'rgba(69, 73, 85, 0.4)';
 
 /* ── Rehab Tier Definitions ── */
-const REHAB_TIERS: { key: RehabTier; level: number; label: string; range: string }[] = [
-  { key: 'Stage',                  level: 1, label: 'Stage',      range: '$1k–$5k' },
-  { key: 'Refurbish',              level: 2, label: 'Refurbish',  range: '$5k–$20k' },
-  { key: 'Renovate',               level: 3, label: 'Renovate',   range: '$20k–$100k' },
-  { key: 'Gut',                    level: 4, label: 'Gut',        range: '$100k–$250k' },
-  { key: 'Develop',                level: 5, label: 'Develop',    range: '$250k+' },
+const REHAB_TIERS: { key: RehabTier; level: number; label: string; range: string; costSignal: string; description: string }[] = [
+  { key: 'Stage',      level: 1, label: 'Stage',      range: '$1k–$5k',    costSignal: '($)',     description: 'Aesthetic touch-ups & furniture staging' },
+  { key: 'Refurbish',  level: 2, label: 'Refurbish',  range: '$5k–$20k',   costSignal: '($$)',    description: 'Minor cosmetic repairs & painting' },
+  { key: 'Renovate',   level: 3, label: 'Renovate',   range: '$20k–$100k',  costSignal: '($$$)',   description: 'Full kitchen/bath updates & fixtures' },
+  { key: 'Gut',        level: 4, label: 'Gut',        range: '$100k–$250k', costSignal: '($$$$)',  description: 'Structural changes & total interior strip' },
+  { key: 'Develop',    level: 5, label: 'Develop',    range: '$250k+',     costSignal: '($$$$$)', description: 'Addition of square footage or ground-up build' },
 ];
+
+interface RehabContractorSlot {
+  key: string;
+  label: string;
+  description: string;
+}
+
+const CONTRACTOR_SLOTS_BY_TIER: Record<RehabTier, RehabContractorSlot[]> = {
+  'Stage': [
+    { key: 'staging_coordinator', label: 'Staging Coordinator', description: 'Handles interior decoration, staging design, and furniture logistics.' }
+  ],
+  'Refurbish': [
+    { key: 'general_contractor', label: 'General Contractor', description: 'Oversees the refurbishment scope.' },
+    { key: 'painter', label: 'Cosmetic / Painter', description: 'Handles painting, flooring touch-ups, and cosmetic repairs.' }
+  ],
+  'Renovate': [
+    { key: 'general_contractor', label: 'General Contractor', description: 'Primary coordinator for the kitchen, bath, and finish updates.' },
+    { key: 'kitchen_bath_contractor', label: 'Kitchen & Bath Specialist', description: 'Subcontractor specialized in cabinetry, countertops, and tiling.' },
+    { key: 'mechanical_sub', label: 'Mechanical Subcontractor', description: 'Licensed technician for HVAC, plumbing, or electrical modifications.' }
+  ],
+  'Gut': [
+    { key: 'general_contractor', label: 'General Contractor', description: 'Oversees structural interior demolition and rebuild.' },
+    { key: 'architect', label: 'Architect / Structural Engineer', description: 'Prepares drawings, load calculations, and structural layouts.' },
+    { key: 'demo_contractor', label: 'Demolition Specialist', description: 'Handles safe interior demolition and debris removal.' },
+    { key: 'mechanical_sub', label: 'Mechanical Subcontractor', description: 'Complete system replacements (HVAC ducting, wiring, copper plumbing).' }
+  ],
+  'Develop': [
+    { key: 'general_contractor', label: 'General Contractor / Builder', description: 'Commercial/residential builder managing ground-up execution.' },
+    { key: 'architect', label: 'Architect / Designer', description: 'Responsible for master site planning and zoning drawings.' },
+    { key: 'civil_engineer', label: 'Civil Engineer', description: 'Handles grading, utility tie-ins, and storm water design.' },
+    { key: 'permitting_consultant', label: 'Permitting Consultant / Expediter', description: 'Manages municipal approvals, variances, and certificate of occupancy.' }
+  ]
+};
 
 export default function Phase3RehabPage() {
   const params    = useParams();
@@ -57,6 +102,8 @@ export default function Phase3RehabPage() {
   const projectId = params.id as string;
 
   const { project, loading: isLoading, refresh } = useWorkspaceProject();
+  const { canView, canEdit, loading: accessLoading } = usePhaseAccess('phase-3');
+  const exitStrategy = project?.dispositionType === 'RENT' ? 'Rent' : project?.dispositionType === 'LEASE' ? 'Lease' : 'Sell';
 
   const [isSaving, setIsSaving] = useState(false);
   const [rehabExpenses, setRehabExpenses] = useState<RehabExpense[]>([]);
@@ -67,6 +114,15 @@ export default function Phase3RehabPage() {
   const [drawSchedule, setDrawSchedule] = useState<DrawScheduleItem[]>([]);
   const [rehabTasks, setRehabTasks] = useState<RehabTask[]>([]);
   const [daysHeld, setDaysHeld] = useState(0);
+  const [editedBudget, setEditedBudget] = useState<string>('');
+  const [editedCompletionTarget, setEditedCompletionTarget] = useState<string>('');
+  const [editingContractorSlot, setEditingContractorSlot] = useState<string | null>(null);
+  const [contractorForm, setContractorForm] = useState({
+    name: '',
+    firm: '',
+    phone: '',
+    email: ''
+  });
 
   useEffect(() => {
     if (!project) return;
@@ -77,6 +133,22 @@ export default function Phase3RehabPage() {
     setContractorBids(project.rehab?.contractorBids || []);
     setDrawSchedule(project.rehab?.drawSchedule || []);
     setRehabTasks(project.financials?.rehabTasks || []);
+
+    const finalBudget = project.financials?.rehab_budget || project.financials?.projectedRehabCost || (project as any).rehabBudget || 0;
+    setEditedBudget(finalBudget ? (finalBudget / 100).toString() : '');
+    
+    let compTarget = '';
+    const rawTarget = project.financials?.rehab_completion_target || project.financials?.rehabDoneDate;
+    if (rawTarget) {
+      if (typeof rawTarget === 'string') {
+        compTarget = rawTarget.slice(0, 10);
+      } else if (rawTarget.toDate) {
+        compTarget = rawTarget.toDate().toISOString().slice(0, 10);
+      } else if (rawTarget instanceof Date) {
+        compTarget = rawTarget.toISOString().slice(0, 10);
+      }
+    }
+    setEditedCompletionTarget(compTarget);
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [project?.id]);
 
@@ -92,14 +164,15 @@ export default function Phase3RehabPage() {
 
   /* ── Computed: Budget vs Actual ── */
   const budgetMetrics = useMemo(() => {
-    const totalSpent = rehabExpenses.reduce((sum, e) => sum + (e.amount || 0), 0);
+    const rehabSpend = project?.financials?.rehab_spend || [];
+    const totalSpent = rehabSpend.reduce((sum, e) => sum + (e.amount || 0), 0);
     const budgetLow = project?.financials?.rehabTierBudgetLow || 0;
     const budgetHigh = project?.financials?.rehabTierBudgetHigh || 0;
-    const budget = budgetHigh || (project?.financials?.purchasePrice ? project.financials.purchasePrice * 0.1 : 0);
+    const budget = project?.financials?.rehab_budget || budgetHigh || (project?.financials?.purchasePrice ? project.financials.purchasePrice * 0.1 : 0);
     const pct = budget > 0 ? Math.round((totalSpent / budget) * 100) : 0;
     const remaining = Math.max(0, budget - totalSpent);
     return { totalSpent, budget, budgetLow, budgetHigh, pct: Math.min(pct, 100), remaining };
-  }, [rehabExpenses, project?.financials]);
+  }, [project?.financials]);
 
   /* ── Computed: Holding Costs ── */
   const holdMetrics = useMemo(() => {
@@ -236,6 +309,7 @@ export default function Phase3RehabPage() {
           estimatedARV: project.financials?.estimatedARV || 0,
           costs: project.financials?.costs || [],
           rehabTier: tier,
+          renovation_tier: tier,
           rehabTierBudgetLow: low,
           rehabTierBudgetHigh: high,
         }
@@ -248,7 +322,57 @@ export default function Phase3RehabPage() {
     }
   };
 
-  const handleStrategyChange = async (strategy: 'Sell' | 'Rent') => {
+
+
+  const handleBudgetTimelineUpdate = async (updates: {
+    rehab_budget?: number;
+    rehab_completion_target?: string;
+    rehab_contractors?: Record<string, F4VendorAssignment | null>;
+  }) => {
+    if (!project) return;
+    try {
+      const mergedContractors = {
+        ...(project.financials?.rehab_contractors || {}),
+        ...(updates.rehab_contractors || {})
+      };
+      
+      Object.keys(mergedContractors).forEach(key => {
+        if (mergedContractors[key] === null) {
+          delete mergedContractors[key];
+        }
+      });
+
+      const updatedFinancials = {
+        ...project.financials,
+        purchasePrice: project.financials?.purchasePrice || 0,
+        estimatedARV: project.financials?.estimatedARV || 0,
+        costs: project.financials?.costs || []
+      };
+
+      if (updates.rehab_budget !== undefined) {
+        updatedFinancials.rehab_budget = updates.rehab_budget;
+        updatedFinancials.rehabBudget = updates.rehab_budget / 100;
+      }
+      if (updates.rehab_completion_target !== undefined) {
+        updatedFinancials.rehab_completion_target = updates.rehab_completion_target;
+        updatedFinancials.rehabDoneDate = updates.rehab_completion_target;
+      }
+      if (updates.rehab_contractors !== undefined) {
+        updatedFinancials.rehab_contractors = mergedContractors;
+      }
+
+      await projectsService.updateProject(projectId, {
+        financials: updatedFinancials
+      });
+      refresh();
+      toast.success('Renovation details updated successfully');
+    } catch (err) {
+      console.error('Failed to update renovation details:', err);
+      toast.error('Failed to update renovation details');
+    }
+  };
+
+  const handleSpendUpdate = async (updatedSpend: RehabSpendEntry[]) => {
     if (!project) return;
     try {
       await projectsService.updateProject(projectId, {
@@ -257,14 +381,413 @@ export default function Phase3RehabPage() {
           purchasePrice: project.financials?.purchasePrice || 0,
           estimatedARV: project.financials?.estimatedARV || 0,
           costs: project.financials?.costs || [],
-          exitStrategyType: strategy
+          rehab_spend: updatedSpend
         }
       });
       refresh();
-      toast.success(`Exit strategy set to ${strategy}`);
     } catch (err) {
-      console.error('Failed to update exit strategy:', err);
-      toast.error('Failed to update strategy');
+      console.error('Failed to update spend ledger:', err);
+      toast.error('Failed to update spend ledger');
+    }
+  };
+
+  const handleSaveCompletion = async (completedDate: string, spendTotal: number) => {
+    if (!project) return;
+    try {
+      await projectsService.updateProject(projectId, {
+        financials: {
+          ...project.financials,
+          purchasePrice: project.financials?.purchasePrice || 0,
+          estimatedARV: project.financials?.estimatedARV || 0,
+          costs: project.financials?.costs || [],
+          rehab_completed_date: completedDate,
+          rehabDoneDate: completedDate,
+          rehab_spend_total: spendTotal,
+          rehab_budget: spendTotal,
+          rehabBudget: spendTotal / 100
+        }
+      });
+      refresh();
+      toast.success('Renovation completed successfully!');
+    } catch (err) {
+      console.error('Failed to complete renovation:', err);
+      toast.error('Failed to save completion details');
+    }
+  };
+  const handleSaveHoldingCostCategory = async (category: string, amount: number) => {
+    if (!project) return;
+    try {
+      const dbFieldMap: Record<string, string> = {
+        tax: 'holding_cost_tax',
+        insurance: 'holding_cost_insurance',
+        security: 'holding_cost_security',
+        maintenance: 'holding_cost_maintenance',
+        utilities: 'holding_cost_utilities',
+        management: 'holding_cost_management',
+        hoa: 'holding_cost_hoa',
+        capex: 'holding_cost_capex'
+      };
+      
+      const legacyFieldMap: Record<string, string> = {
+        tax: 'holdingCostTaxes',
+        insurance: 'holdingCostInsurance',
+        maintenance: 'holdingCostMaintenance',
+        utilities: 'holdingCostUtilities',
+        management: 'holdingCostManagement',
+        hoa: 'hoaMonthly'
+      };
+      
+      const fieldName = dbFieldMap[category];
+      const legacyFieldName = legacyFieldMap[category];
+      
+      const updates: Record<string, any> = {
+        [fieldName]: amount
+      };
+      if (legacyFieldName) {
+        updates[legacyFieldName] = amount / 100;
+      }
+      
+      await projectsService.updateProject(projectId, {
+        financials: {
+          ...project.financials,
+          purchasePrice: project.financials?.purchasePrice || 0,
+          estimatedARV: project.financials?.estimatedARV || 0,
+          costs: project.financials?.costs || [],
+          ...updates
+        }
+      });
+      refresh();
+    } catch (err) {
+      console.error('Failed to save holding cost:', err);
+      toast.error('Failed to save holding cost');
+    }
+  };
+
+  const handleAddValuation = async (newEntry: ValuationEntry) => {
+    if (!project) return;
+    try {
+      const currentList = project.financials?.current_value || [];
+      const updatedList = [...currentList, newEntry];
+      
+      const sorted = [...updatedList].sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+      const latestValue = sorted[0]?.value || 0;
+
+      await projectsService.updateProject(projectId, {
+        financials: {
+          ...project.financials,
+          purchasePrice: project.financials?.purchasePrice || 0,
+          estimatedARV: project.financials?.estimatedARV || 0,
+          costs: project.financials?.costs || [],
+          current_value: updatedList,
+          estimatedCurrentValue: latestValue
+        }
+      });
+      refresh();
+    } catch (err) {
+      console.error('Failed to add valuation:', err);
+      toast.error('Failed to add valuation');
+    }
+  };
+
+  const handleDeleteValuation = async (id: string) => {
+    if (!project) return;
+    try {
+      const currentList = project.financials?.current_value || [];
+      const updatedList = currentList.filter(v => v.id !== id);
+      
+      const sorted = [...updatedList].sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+      const latestValue = sorted[0]?.value || 0;
+
+      await projectsService.updateProject(projectId, {
+        financials: {
+          ...project.financials,
+          purchasePrice: project.financials?.purchasePrice || 0,
+          estimatedARV: project.financials?.estimatedARV || 0,
+          costs: project.financials?.costs || [],
+          current_value: updatedList,
+          estimatedCurrentValue: latestValue
+        }
+      });
+      refresh();
+      toast.success('Valuation deleted successfully');
+    } catch (err) {
+      console.error('Failed to delete valuation:', err);
+      toast.error('Failed to delete valuation');
+    }
+  };
+
+  const handleSaveListPrice = async (price: number) => {
+    if (!project) return;
+    try {
+      await projectsService.updateProject(projectId, {
+        financials: {
+          ...project.financials,
+          purchasePrice: project.financials?.purchasePrice || 0,
+          estimatedARV: project.financials?.estimatedARV || 0,
+          costs: project.financials?.costs || [],
+          list_price_sale: price
+        }
+      });
+      refresh();
+    } catch (err) {
+      console.error('Failed to save target list price:', err);
+      toast.error('Failed to save list price');
+    }
+  };
+
+  const handleSaveListingAgent = async (agent: F4VendorAssignment | null) => {
+    if (!project) return;
+    try {
+      await projectsService.updateProject(projectId, {
+        financials: {
+          ...project.financials,
+          purchasePrice: project.financials?.purchasePrice || 0,
+          estimatedARV: project.financials?.estimatedARV || 0,
+          costs: project.financials?.costs || [],
+          listing_agent_vendor: agent
+        }
+      });
+      refresh();
+    } catch (err) {
+      console.error('Failed to save listing agent:', err);
+      toast.error('Failed to save listing agent');
+    }
+  };
+
+  const handleRecordRentPayment = async (amount: number) => {
+    if (!project) return;
+    try {
+      const newEntry = {
+        id: `inc-${Date.now()}`,
+        date: new Date().toISOString().slice(0, 10),
+        amount,
+        type: 'rent' as const,
+        unitId: 'Unit 1',
+        tenantName: 'Jane Doe'
+      };
+      const existingLedger = project.financials?.incomeLedger || [];
+      await projectsService.updateProject(projectId, {
+        financials: {
+          ...project.financials,
+          purchasePrice: project.financials?.purchasePrice || 0,
+          estimatedARV: project.financials?.estimatedARV || 0,
+          costs: project.financials?.costs || [],
+          incomeLedger: [...existingLedger, newEntry]
+        }
+      });
+      refresh();
+      toast.success('Confirmed rent payment recorded!');
+    } catch (err) {
+      console.error('Failed to record rent payment:', err);
+      toast.error('Failed to record rent payment');
+    }
+  };
+
+  const handleActivateLease = async (tenantName: string, rentAmount: number, leaseStart: string, leaseEnd: string) => {
+    if (!project) return;
+    try {
+      const newEntry = {
+        id: `ten-${Date.now()}`,
+        unitId: 'Unit 1',
+        rentAmount,
+        leaseStart,
+        leaseEnd,
+        status: 'active' as const,
+        moveInDate: leaseStart
+      };
+      const existingRegistry = project.financials?.tenantRegistry || [];
+      await projectsService.updateProject(projectId, {
+        financials: {
+          ...project.financials,
+          purchasePrice: project.financials?.purchasePrice || 0,
+          estimatedARV: project.financials?.estimatedARV || 0,
+          costs: project.financials?.costs || [],
+          tenantRegistry: [...existingRegistry, newEntry]
+        }
+      });
+      refresh();
+      toast.success('Lease activated in registry!');
+    } catch (err) {
+      console.error('Failed to activate lease:', err);
+      toast.error('Failed to activate lease');
+    }
+  };
+
+  const handleMarkSaleUnderContract = async () => {
+    if (!project) return;
+    try {
+      await projectsService.updateProject(projectId, {
+        financials: {
+          ...project.financials,
+          purchasePrice: project.financials?.purchasePrice || 0,
+          estimatedARV: project.financials?.estimatedARV || 0,
+          costs: project.financials?.costs || [],
+          sale_under_contract: true
+        }
+      });
+      refresh();
+      toast.success('Property is now under contract for sale!');
+    } catch (err) {
+      console.error('Failed to mark sale under contract:', err);
+      toast.error('Failed to update contract status');
+    }
+  };
+
+  const handleAdvanceToExit = async (baseline: {
+    costBasis: number;
+    capitalizedImprovements: number;
+    holdingCosts: number;
+    outcome: string;
+  }) => {
+    if (!project) return;
+    try {
+      const auth = getAuth();
+      const idToken = auth.currentUser ? await auth.currentUser.getIdToken() : '';
+      
+      const res = await fetch(`/api/projects/${projectId}/hold/auto-advance`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${idToken}`
+        },
+        body: JSON.stringify(baseline)
+      });
+
+      if (!res.ok) {
+        const err = await res.json().catch(() => ({ error: 'Advance failed' }));
+        throw new Error(err.error || 'Failed to auto-advance');
+      }
+
+      toast.success('Hold phase completed successfully!');
+      router.push(`/dashboard/projects/${projectId}/phase-4`);
+    } catch (err) {
+      console.error('Failed to auto-advance:', err);
+      toast.error('Failed to transition to Exit');
+    }
+  };
+
+  const handleSaveLeaseTerms = async (terms: TargetLeaseTerms) => {
+    if (!project) return;
+    try {
+      await projectsService.updateProject(projectId, {
+        financials: {
+          ...project.financials,
+          purchasePrice: project.financials?.purchasePrice || 0,
+          estimatedARV: project.financials?.estimatedARV || 0,
+          costs: project.financials?.costs || [],
+          target_lease_terms: terms
+        }
+      });
+      refresh();
+    } catch (err) {
+      console.error('Failed to save lease terms:', err);
+      toast.error('Failed to save lease terms');
+    }
+  };
+
+  const handleSaveTargetRent = async (rent: number) => {
+    if (!project) return;
+    try {
+      await projectsService.updateProject(projectId, {
+        financials: {
+          ...project.financials,
+          purchasePrice: project.financials?.purchasePrice || 0,
+          estimatedARV: project.financials?.estimatedARV || 0,
+          costs: project.financials?.costs || [],
+          target_rent: rent
+        }
+      });
+      refresh();
+    } catch (err) {
+      console.error('Failed to save target rent:', err);
+      toast.error('Failed to save target rent');
+    }
+  };
+
+  const handleAddListingAd = async (newAd: ListingAdLogEntry) => {
+    if (!project) return;
+    try {
+      const currentAds = project.financials?.listing_ads || [];
+      const updatedAds = [...currentAds, newAd];
+
+      await projectsService.updateProject(projectId, {
+        financials: {
+          ...project.financials,
+          purchasePrice: project.financials?.purchasePrice || 0,
+          estimatedARV: project.financials?.estimatedARV || 0,
+          costs: project.financials?.costs || [],
+          listing_ads: updatedAds
+        }
+      });
+      refresh();
+    } catch (err) {
+      console.error('Failed to add listing ad:', err);
+      toast.error('Failed to add listing ad');
+    }
+  };
+
+  const handleUpdateAdStatus = async (id: string, status: 'active' | 'paused' | 'removed') => {
+    if (!project) return;
+    try {
+      const currentAds = project.financials?.listing_ads || [];
+      const updatedAds = currentAds.map(ad => ad.id === id ? { ...ad, status } : ad);
+
+      await projectsService.updateProject(projectId, {
+        financials: {
+          ...project.financials,
+          purchasePrice: project.financials?.purchasePrice || 0,
+          estimatedARV: project.financials?.estimatedARV || 0,
+          costs: project.financials?.costs || [],
+          listing_ads: updatedAds
+        }
+      });
+      refresh();
+      toast.success('Listing ad status updated');
+    } catch (err) {
+      console.error('Failed to update ad status:', err);
+      toast.error('Failed to update ad status');
+    }
+  };
+
+  const handleDeleteListingAd = async (id: string) => {
+    if (!project) return;
+    try {
+      const currentAds = project.financials?.listing_ads || [];
+      const updatedAds = currentAds.filter(ad => ad.id !== id);
+
+      await projectsService.updateProject(projectId, {
+        financials: {
+          ...project.financials,
+          purchasePrice: project.financials?.purchasePrice || 0,
+          estimatedARV: project.financials?.estimatedARV || 0,
+          costs: project.financials?.costs || [],
+          listing_ads: updatedAds
+        }
+      });
+      refresh();
+      toast.success('Listing ad deleted');
+    } catch (err) {
+      console.error('Failed to delete listing ad:', err);
+      toast.error('Failed to delete listing ad');
+    }
+  };
+
+  const handleSaveScreeningChecklist = async (state: ScreeningChecklistState) => {
+    if (!project) return;
+    try {
+      await projectsService.updateProject(projectId, {
+        financials: {
+          ...project.financials,
+          purchasePrice: project.financials?.purchasePrice || 0,
+          estimatedARV: project.financials?.estimatedARV || 0,
+          costs: project.financials?.costs || [],
+          screening_checklist: state
+        }
+      });
+      refresh();
+    } catch (err) {
+      console.error('Failed to save screening checklist:', err);
+      toast.error('Failed to save screening checklist');
     }
   };
 
@@ -375,7 +898,7 @@ export default function Phase3RehabPage() {
   };
 
   /* ── Loading state ── */
-  if (isLoading) {
+  if (isLoading || accessLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-[#0d0a0b]">
         <div className="flex flex-col items-center gap-4">
@@ -402,7 +925,7 @@ export default function Phase3RehabPage() {
   }
 
   const ownershipPct = project.financials?.ownershipPercentage ?? 100;
-  const currentTier = project.financials?.rehabTier;
+  const currentTier = project.financials?.renovation_tier || project.financials?.rehabTier;
   const arvValue = project.financials?.estimatedARV || project.financials?.estimatedCurrentValue || 0;
   const monthlyHoldingCosts = holdMetrics.monthlyTotal;
   const totalBudget = budgetMetrics.budget;
@@ -416,7 +939,8 @@ export default function Phase3RehabPage() {
 
   if (project?.entryStage === 'renovating_marketing') {
     return (
-      <div className="min-h-screen bg-[#0d0a0b] relative p-8">
+      <PhaseAccessGuard phaseId="phase-3" phaseName="Phase 3: Hold">
+        <div className="min-h-screen bg-[#0d0a0b] relative p-8">
         <div className="max-w-2xl mx-auto bg-[#161318] border border-white/10 rounded-2xl p-8 space-y-6 text-left">
           <div className="flex items-center gap-3 text-[#ffac5a]">
             <span className="material-symbols-outlined text-3xl">construction</span>
@@ -456,11 +980,13 @@ export default function Phase3RehabPage() {
           </div>
         </div>
       </div>
+      </PhaseAccessGuard>
     );
   }
 
   return (
-    <div className="min-h-screen bg-[#0d0a0b] relative">
+    <PhaseAccessGuard phaseId="phase-3" phaseName="Phase 3: Hold">
+      <div className="min-h-screen bg-[#0d0a0b] relative">
 
       {/* ── Ambient Background Layer ── */}
       <div className="fixed inset-0 pointer-events-none -z-10 overflow-hidden">
@@ -523,33 +1049,252 @@ export default function Phase3RehabPage() {
               </div>
             </section>
 
+            {/* ── Budget & Timeline (Card H1.2) ── */}
+            <section className="glass-card rounded-xl p-6 space-y-6">
+              <div className="flex items-center gap-2 border-b border-white/5 pb-3">
+                <span className="material-symbols-outlined text-[#7A9EAA]">schedule</span>
+                <h3 className="text-[16px] leading-[20px] font-semibold text-white">Budget, Timeline &amp; Contractors</h3>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                {/* Budget input */}
+                <div className="space-y-2">
+                  <label className="text-[12px] font-medium tracking-[0.05em] text-[#9E9DA0] uppercase flex items-center justify-between">
+                    <span>What's the renovation budget?</span>
+                    {!project?.financials?.rehab_budget && (
+                      <span className="text-[9px] px-1.5 py-0.5 rounded bg-amber-500/10 text-amber-400 font-bold border border-amber-500/20">
+                        Sourcing Underwriting Confirmation
+                      </span>
+                    )}
+                  </label>
+                  <div className="relative rounded-lg bg-black/30 border border-white/10 hover:border-white/20 transition-all flex items-center px-3 py-2">
+                    <span className="text-[#9E9DA0] text-sm mr-1.5 font-mono">$</span>
+                    <input
+                      type="text"
+                      value={editedBudget}
+                      onChange={(e) => setEditedBudget(e.target.value)}
+                      onBlur={() => {
+                        const parsed = parseFloat(editedBudget.replace(/,/g, ''));
+                        if (!isNaN(parsed)) {
+                          handleBudgetTimelineUpdate({ rehab_budget: Math.round(parsed * 100) });
+                        }
+                      }}
+                      className="bg-transparent text-white font-mono text-sm w-full outline-none"
+                      placeholder="e.g. 15,000"
+                    />
+                  </div>
+                </div>
+
+                {/* Target Date input */}
+                <div className="space-y-2">
+                  <label className="text-[12px] font-medium tracking-[0.05em] text-[#9E9DA0] uppercase">
+                    Target completion date?
+                  </label>
+                  <div className="relative rounded-lg bg-black/30 border border-white/10 hover:border-white/20 transition-all flex items-center px-3 py-2">
+                    <input
+                      type="date"
+                      value={editedCompletionTarget}
+                      onChange={(e) => {
+                        setEditedCompletionTarget(e.target.value);
+                        handleBudgetTimelineUpdate({ rehab_completion_target: e.target.value });
+                      }}
+                      className="bg-transparent text-white text-sm w-full outline-none filter invert"
+                    />
+                  </div>
+                </div>
+              </div>
+
+              {/* Contractor slots for current tier */}
+              <div className="space-y-4 pt-4 border-t border-white/5">
+                <h4 className="text-xs font-bold text-[#9E9DA0] tracking-wider uppercase">
+                  Contractor Assignments ({currentTier || 'Stage'} Tier)
+                </h4>
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  {(CONTRACTOR_SLOTS_BY_TIER[currentTier || 'Stage'] || []).map((slot) => {
+                    const assignment = project?.financials?.rehab_contractors?.[slot.key];
+                    const isEditing = editingContractorSlot === slot.key;
+
+                    return (
+                      <div key={slot.key} className="bg-white/5 border border-white/5 rounded-xl p-4 space-y-3 relative">
+                        <div className="flex justify-between items-start">
+                          <div>
+                            <span className="text-[10px] font-bold text-[#7A9EAA] uppercase tracking-wider block">
+                              {slot.label}
+                            </span>
+                            <span className="text-[9px] text-[#9E9DA0] leading-snug block mt-0.5">
+                              {slot.description}
+                            </span>
+                          </div>
+                          {!isEditing && (
+                            <div className="flex gap-2">
+                              {assignment ? (
+                                <>
+                                  <button
+                                    onClick={() => {
+                                      setEditingContractorSlot(slot.key);
+                                      setContractorForm({
+                                        name: assignment.name || '',
+                                        firm: assignment.firm || '',
+                                        phone: assignment.phone || '',
+                                        email: assignment.email || ''
+                                      });
+                                    }}
+                                    className="p-1 rounded bg-white/5 hover:bg-white/10 text-[#9E9DA0] transition"
+                                  >
+                                    <span className="material-symbols-outlined text-[14px]">edit</span>
+                                  </button>
+                                  <button
+                                    onClick={() => {
+                                      const updatedContractors = { ...project?.financials?.rehab_contractors };
+                                      updatedContractors[slot.key] = null; // Mark deleted
+                                      handleBudgetTimelineUpdate({ rehab_contractors: updatedContractors });
+                                    }}
+                                    className="p-1 rounded bg-red-500/10 hover:bg-red-500/20 text-red-400 transition"
+                                  >
+                                    <span className="material-symbols-outlined text-[14px]">delete</span>
+                                  </button>
+                                </>
+                              ) : (
+                                <button
+                                  onClick={() => {
+                                    setEditingContractorSlot(slot.key);
+                                    setContractorForm({ name: '', firm: '', phone: '', email: '' });
+                                  }}
+                                  className="text-[10px] font-bold bg-[#7A9EAA]/10 hover:bg-[#7A9EAA]/25 text-[#7A9EAA] px-2 py-1 rounded transition"
+                                >
+                                  + Assign
+                                </button>
+                              )}
+                            </div>
+                          )}
+                        </div>
+
+                        {assignment && !isEditing && (
+                          <div className="pt-2 border-t border-white/5 text-xs space-y-1">
+                            <p className="font-semibold text-white">{assignment.name} <span className="text-[#9E9DA0] font-normal">{assignment.firm ? `(${assignment.firm})` : ''}</span></p>
+                            {assignment.phone && <p className="text-[11px] text-[#9E9DA0]">Phone: {assignment.phone}</p>}
+                            {assignment.email && <p className="text-[11px] text-[#9E9DA0]">Email: {assignment.email}</p>}
+                          </div>
+                        )}
+
+                        {isEditing && (
+                          <div className="pt-2 border-t border-white/5 space-y-3">
+                            <div className="grid grid-cols-2 gap-2">
+                              <input
+                                type="text"
+                                placeholder="Contact Name"
+                                value={contractorForm.name}
+                                onChange={(e) => setContractorForm(prev => ({ ...prev, name: e.target.value }))}
+                                className="bg-black/30 border border-white/10 rounded px-2 py-1 text-xs text-white outline-none w-full"
+                              />
+                              <input
+                                type="text"
+                                placeholder="Firm Name"
+                                value={contractorForm.firm}
+                                onChange={(e) => setContractorForm(prev => ({ ...prev, firm: e.target.value }))}
+                                className="bg-black/30 border border-white/10 rounded px-2 py-1 text-xs text-white outline-none w-full"
+                              />
+                            </div>
+                            <div className="grid grid-cols-2 gap-2">
+                              <input
+                                type="text"
+                                placeholder="Phone"
+                                value={contractorForm.phone}
+                                onChange={(e) => setContractorForm(prev => ({ ...prev, phone: e.target.value }))}
+                                className="bg-black/30 border border-white/10 rounded px-2 py-1 text-xs text-white outline-none w-full"
+                              />
+                              <input
+                                type="text"
+                                placeholder="Email"
+                                value={contractorForm.email}
+                                onChange={(e) => setContractorForm(prev => ({ ...prev, email: e.target.value }))}
+                                className="bg-black/30 border border-white/10 rounded px-2 py-1 text-xs text-white outline-none w-full"
+                              />
+                            </div>
+                            <div className="flex justify-end gap-2 text-[10px]">
+                              <button
+                                onClick={() => setEditingContractorSlot(null)}
+                                className="px-2 py-1 rounded bg-white/5 hover:bg-white/10 text-[#9E9DA0] transition"
+                              >
+                                Cancel
+                              </button>
+                              <button
+                                onClick={() => {
+                                  if (!contractorForm.name) {
+                                    toast.error('Contractor Name is required');
+                                    return;
+                                  }
+                                  const updatedContractors = { ...project?.financials?.rehab_contractors };
+                                  updatedContractors[slot.key] = {
+                                    name: contractorForm.name,
+                                    firm: contractorForm.firm || null,
+                                    phone: contractorForm.phone || null,
+                                    email: contractorForm.email || null,
+                                    source: 'off_platform',
+                                    assignedAt: new Date().toISOString(),
+                                    assignedBy: getAuth().currentUser?.email || 'System'
+                                  };
+                                  handleBudgetTimelineUpdate({ rehab_contractors: updatedContractors });
+                                  setEditingContractorSlot(null);
+                                }}
+                                className="px-2 py-1 rounded bg-[#7A9EAA] hover:bg-[#7A9EAA]/80 text-white font-bold transition"
+                              >
+                                Save
+                              </button>
+                            </div>
+                          </div>
+                        )}
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+            </section>
+
             {/* ── Rehab Tier Selector (Stitch schema: 5-column grid) ── */}
             <section className="space-y-4">
-              <h2 className="text-[24px] leading-[32px] font-semibold text-[#9E9DA0] flex items-center gap-2">
-                <span className="material-symbols-outlined text-[#7A9EAA]" style={{ fontVariationSettings: "'FILL' 0, 'wght' 400" }}>architecture</span>
-                Rehab Strategy & Level
-              </h2>
-              <div className="grid grid-cols-3 md:grid-cols-5 gap-2">
+              <div className="flex flex-col gap-1">
+                <h2 className="text-[20px] leading-[28px] font-semibold text-white flex items-center gap-2">
+                  <span className="material-symbols-outlined text-[#7A9EAA]" style={{ fontVariationSettings: "'FILL' 0, 'wght' 400" }}>architecture</span>
+                  What level of work does this property need?
+                </h2>
+                <p className="text-[11px] text-[#9E9DA0] flex items-center gap-1">
+                  <Info className="w-3.5 h-3.5 text-[#7A9EAA] shrink-0" />
+                  <span>The tier sets the budget conversation and the timeline expectation.</span>
+                </p>
+              </div>
+              <div className="grid grid-cols-1 sm:grid-cols-5 gap-3">
                 {REHAB_TIERS.map((tier) => {
                   const isActive = currentTier === tier.key;
                   return (
                     <button
                       key={tier.key}
                       onClick={() => handleTierChange(tier.key)}
-                      className={`px-3 py-4 rounded-lg text-center transition-all ${
+                      className={`p-4 rounded-xl text-left transition-all flex flex-col justify-between gap-2 border cursor-pointer ${
                         isActive
-                          ? 'bg-[#454955]/10 border border-[#454955]/50'
-                          : 'glass-card border border-white/5 hover:bg-white/10'
+                          ? 'bg-[#454955]/15 border-[#454955] text-white'
+                          : 'glass-card border-white/5 text-[#9E9DA0] hover:bg-white/5 hover:border-white/10'
                       }`}
                       style={isActive ? { boxShadow: `0 0 20px -5px ${PHASE_GLOW}` } : {}}
                     >
-                      <p className={`text-[10px] tracking-[0.05em] font-medium uppercase ${isActive ? 'text-[#454955]' : 'text-[#9E9DA0]'}`}>
-                        LEVEL {tier.level}
-                      </p>
-                      <p className={`text-[14px] leading-[16px] tracking-[0.02em] font-semibold ${isActive ? 'text-[#454955] font-bold' : 'text-[#9E9DA0]'}`}>
-                        {tier.label}
-                      </p>
-                      <p className="text-[10px] text-[#9E9DA0]/60 mt-1">{tier.range}</p>
+                      <div>
+                        <div className="flex justify-between items-center w-full">
+                          <span className={`text-[9px] tracking-widest font-bold uppercase ${isActive ? 'text-[#7A9EAA]' : 'text-[#9E9DA0]/50'}`}>
+                            LEVEL {tier.level}
+                          </span>
+                          <span className="text-xs font-mono font-bold text-[#7A9EAA]">{tier.costSignal}</span>
+                        </div>
+                        <p className={`text-md font-bold mt-1 ${isActive ? 'text-white' : 'text-white/80'}`}>
+                          {tier.label}
+                        </p>
+                      </div>
+                      <div>
+                        <p className="text-[9px] text-[#9E9DA0] leading-snug line-clamp-2">{tier.description}</p>
+                        <p className={`text-[10px] font-bold mt-2 font-mono ${isActive ? 'text-[#7A9EAA]' : 'text-[#9E9DA0]/60'}`}>
+                          {tier.range}
+                        </p>
+                      </div>
                     </button>
                   );
                 })}
@@ -618,36 +1363,98 @@ export default function Phase3RehabPage() {
                 <h2 className="text-[24px] leading-[32px] font-semibold text-[#9E9DA0]">
                   Holding Costs
                 </h2>
-                <HoldingCostsTracker
-                  holdingCosts={holdingCosts}
-                  onChange={(newCosts) => {
-                    setHoldingCosts(newCosts);
-                    handleImmediateSave({ holdingCosts: newCosts });
+                <HoldingCostsWizard
+                  projectId={projectId}
+                  financials={project?.financials}
+                  onSaveCategory={handleSaveHoldingCostCategory}
+                  onAllCompleted={() => {
+                    toast.success('All monthly holding cost categories confirmed!');
                   }}
-                  daysHeld={daysHeld}
                 />
+
+                <div className="pt-4">
+                  <p className="text-[10px] text-[#9E9DA0] uppercase font-bold tracking-wider mb-2">Itemized Ledger Log</p>
+                  <HoldingCostsTracker
+                    holdingCosts={holdingCosts}
+                    onChange={(newCosts) => {
+                      setHoldingCosts(newCosts);
+                      handleImmediateSave({ holdingCosts: newCosts });
+                    }}
+                    daysHeld={daysHeld}
+                  />
+                </div>
               </div>
 
               {/* Operational Income (Rent strategy) */}
               <div className="space-y-4">
                 <div className="flex items-center justify-between">
                   <h2 className="text-[24px] leading-[32px] font-semibold text-[#9E9DA0]">
-                    {project.financials?.exitStrategyType === 'Rent' ? 'Rental Income' : 'Exit Strategy'}
+                    {exitStrategy === 'Rent' ? 'Rental Income' : exitStrategy === 'Lease' ? 'Lease Income' : 'Exit Strategy'}
                   </h2>
-                  {project.financials?.exitStrategyType === 'Rent' && (
+                  {(exitStrategy === 'Rent' || exitStrategy === 'Lease') && (
                     <span className="text-[10px] font-bold tracking-[0.12em] uppercase px-2 py-0.5 rounded bg-[#454955]/20 text-[#454955] border border-[#454955]/30">
                       ACTIVE
                     </span>
                   )}
                 </div>
-                <ExitStrategyToggle
-                  currentStrategy={project.financials?.exitStrategyType}
-                  onChange={handleStrategyChange}
-                />
-                {project.financials?.exitStrategyType === 'Rent' && (
-                  <RentalSetupForm
-                    financials={project.financials}
-                    onChange={handleRentalSetupChange}
+                 <div className="glass-card p-5 border border-white/5 rounded-xl space-y-3">
+                  <div className="flex items-center gap-2 text-white font-semibold text-sm">
+                    <span className="material-symbols-outlined text-[#7A9EAA]">lock</span>
+                    <span>
+                      Locked Strategy:{' '}
+                      {project?.dispositionType === 'RENT'
+                        ? 'Buy & Hold (Rental)'
+                        : project?.dispositionType === 'LEASE'
+                        ? 'Commercial Lease'
+                        : 'Fix & Flip (Sale)'}
+                    </span>
+                  </div>
+                  <p className="text-[10px] text-[#9E9DA0] leading-relaxed">
+                    The exit strategy was declared and locked as <span className="font-bold">{project?.dispositionType}</span> during the Acquisition phase. 
+                    Downstream operations, capital modeling, and tax projections are aligned to this selection.
+                  </p>
+                </div>
+                {project?.dispositionType === 'RENT' && (
+                  <>
+                    <RentalSetupForm
+                      financials={project.financials}
+                      onChange={handleRentalSetupChange}
+                    />
+                    <RentGoToMarket
+                      projectId={projectId}
+                      targetRent={project.financials?.target_rent}
+                      listingAds={project.financials?.listing_ads || []}
+                      screeningChecklist={project.financials?.screening_checklist}
+                      onSaveTargetRent={handleSaveTargetRent}
+                      onAddListingAd={handleAddListingAd}
+                      onUpdateAdStatus={handleUpdateAdStatus}
+                      onDeleteListingAd={handleDeleteListingAd}
+                      onSaveScreeningChecklist={handleSaveScreeningChecklist}
+                    />
+                  </>
+                )}
+                {project?.dispositionType === 'LEASE' && (
+                  <LeaseGoToMarket
+                    projectId={projectId}
+                    leaseTerms={project.financials?.target_lease_terms}
+                    listingAds={project.financials?.listing_ads || []}
+                    onSaveLeaseTerms={handleSaveLeaseTerms}
+                    onAddListingAd={handleAddListingAd}
+                    onUpdateAdStatus={handleUpdateAdStatus}
+                    onDeleteListingAd={handleDeleteListingAd}
+                  />
+                )}
+                {project?.dispositionType === 'SALE' && (
+                  <SaleGoToMarket
+                    projectId={projectId}
+                    listPriceSale={project.financials?.list_price_sale}
+                    listingAgentVendor={project.financials?.listing_agent_vendor}
+                    listingAds={project.financials?.listing_ads || []}
+                    onSaveListPrice={handleSaveListPrice}
+                    onSaveListingAgent={handleSaveListingAgent}
+                    onAddListingAd={handleAddListingAd}
+                    onUpdateAdStatus={handleUpdateAdStatus}
+                    onDeleteListingAd={handleDeleteListingAd}
                   />
                 )}
               </div>
@@ -667,6 +1474,13 @@ export default function Phase3RehabPage() {
             </section>
 
             {/* Live Valuation History (AVM) timeline */}
+            <CurrentValueTracker
+              projectId={projectId}
+              currentValue={project?.financials?.current_value || []}
+              onAddValuation={handleAddValuation}
+              onDeleteValuation={handleDeleteValuation}
+            />
+
             <ValuationHistory projectId={projectId} />
 
 
@@ -762,79 +1576,148 @@ export default function Phase3RehabPage() {
               </div>
             </section>
 
-            {/* ── Rehab Pipeline Tracker ── */}
-            <section className="space-y-4">
-              <h2 className="text-[24px] leading-[32px] font-semibold text-[#9E9DA0]">
-                Rehab Pipeline
-              </h2>
-              <RehabSequenceTracker
-                currentStage={(project.rehab?.currentStage as any) || 'Demolition'}
-                onStageChange={handleStageChange}
-              />
-            </section>
+            {/* ── Rehab Execution (H2) ── */}
+            {currentTier === 'Stage' ? (
+              // Compressed H2 for Stage-tier Projects
+              <div className="space-y-6">
+                <div className="bg-[#454955]/10 border border-[#454955]/30 p-5 rounded-2xl">
+                  <h3 className="text-md font-semibold text-[#7A9EAA] flex items-center gap-2 mb-2">
+                    <span className="material-symbols-outlined">compress</span>
+                    Compressed Staging Execution (Level 1)
+                  </h3>
+                  <p className="text-xs text-[#9E9DA0] leading-relaxed">
+                    This project is classified under the <strong>Stage</strong> tier. Staging scopes do not require intensive contractor bidding, milestone draw schedules, or heavy CapEx allocations. Bids, CapEx, and Draw trackers are hidden to keep your workspace simple and clean.
+                  </p>
+                </div>
 
-            {/* ── Scope of Work ── */}
-            <section className="space-y-4">
-              <h2 className="text-[24px] leading-[32px] font-semibold text-[#9E9DA0]">
-                Scope of Work
-              </h2>
-              <ScopeOfWorkForm items={scopeOfWork} onChange={setScopeOfWork} />
-            </section>
+                {/* Scope of Work */}
+                <section className="space-y-4">
+                  <h2 className="text-[20px] leading-[28px] font-semibold text-[#9E9DA0] flex items-center gap-2">
+                    <span className="material-symbols-outlined text-[#7A9EAA]">task</span>
+                    Staging Scope of Work
+                  </h2>
+                  <ScopeOfWorkForm items={scopeOfWork} onChange={setScopeOfWork} />
+                </section>
 
-            {/* ── Bids & Hiring ── */}
-            <section className="space-y-4">
-              <h2 className="text-[24px] leading-[32px] font-semibold text-[#9E9DA0]">
-                Bids & Hiring
-              </h2>
-              <GCBidUploader
+                {/* Staging Expenses */}
+                <section className="space-y-4">
+                  <h2 className="text-[20px] leading-[28px] font-semibold text-[#9E9DA0] flex items-center gap-2">
+                    <span className="material-symbols-outlined text-[#7A9EAA]">payments</span>
+                    Staging Expenses
+                  </h2>
+                  <RenovationSpendTracker
+                    projectId={projectId}
+                    rehabSpend={project?.financials?.rehab_spend || []}
+                    onSpendChange={handleSpendUpdate}
+                    totalBudget={totalBudget}
+                  />
+                </section>
+
+                {/* Site Visit Logs */}
+                <section className="space-y-4">
+                  <h2 className="text-[20px] leading-[28px] font-semibold text-[#9E9DA0] flex items-center gap-2">
+                    <span className="material-symbols-outlined text-[#7A9EAA]">photo_camera</span>
+                    Site Visit Log
+                  </h2>
+                  <SiteVisitLogTracker logs={siteVisitLogs} onChange={setSiteVisitLogs} />
+                </section>
+              </div>
+            ) : (
+              // Full H2 for larger rehab tiers
+              <div className="space-y-8">
+                {/* Rehab Pipeline */}
+                <section className="space-y-4">
+                  <h2 className="text-[24px] leading-[32px] font-semibold text-[#9E9DA0]">
+                    Rehab Pipeline
+                  </h2>
+                  <RehabSequenceTracker
+                    currentStage={(project.rehab?.currentStage as any) || 'Demolition'}
+                    onStageChange={handleStageChange}
+                  />
+                </section>
+
+                {/* Scope of Work */}
+                <section className="space-y-4">
+                  <h2 className="text-[24px] leading-[32px] font-semibold text-[#9E9DA0]">
+                    Scope of Work
+                  </h2>
+                  <ScopeOfWorkForm items={scopeOfWork} onChange={setScopeOfWork} />
+                </section>
+
+                {/* Bids & Hiring */}
+                <section className="space-y-4">
+                  <h2 className="text-[24px] leading-[32px] font-semibold text-[#9E9DA0]">
+                    Bids &amp; Hiring
+                  </h2>
+                  <GCBidUploader
+                    projectId={projectId}
+                    onBidSaved={bid => setContractorBids(prev => [...prev, bid])}
+                  />
+                  <ContractorBids
+                    bids={contractorBids}
+                    baseBudget={totalBudget}
+                    onChange={setContractorBids}
+                  />
+                </section>
+
+                {/* CapEx Tracker */}
+                <section className="space-y-4">
+                  <h2 className="text-[24px] leading-[32px] font-semibold text-[#9E9DA0]">
+                    CapEx Tracker
+                  </h2>
+                  <CapExComparativeTable tasks={rehabTasks} onChange={setRehabTasks} />
+                </section>
+
+                {/* Draw Schedule */}
+                <section className="space-y-4">
+                  <h2 className="text-[24px] leading-[32px] font-semibold text-[#9E9DA0]">
+                    Draw Schedule
+                  </h2>
+                  <ContractorDrawSchedule draws={drawSchedule} onChange={handleDrawScheduleChange} totalBudget={totalBudget} />
+                </section>
+
+                {/* Rehab Expenses */}
+                <section className="space-y-4">
+                  <h2 className="text-[24px] leading-[32px] font-semibold text-[#9E9DA0]">
+                    Rehab Expenses
+                  </h2>
+                  <RenovationSpendTracker
+                    projectId={projectId}
+                    rehabSpend={project?.financials?.rehab_spend || []}
+                    onSpendChange={handleSpendUpdate}
+                    totalBudget={totalBudget}
+                  />
+                </section>
+
+                {/* Site Visit Log */}
+                <section className="space-y-4">
+                  <h2 className="text-[24px] leading-[32px] font-semibold text-[#9E9DA0]">
+                    Site Visit Log
+                  </h2>
+                  <SiteVisitLogTracker logs={siteVisitLogs} onChange={setSiteVisitLogs} />
+                </section>
+              </div>
+            )}
+
+            {/* Renovation Completion Section (Card H2.2) */}
+            <section className="space-y-4 pt-8 border-t border-white/5">
+              <RenovationCompletionCard
                 projectId={projectId}
-                onBidSaved={bid => setContractorBids(prev => [...prev, bid])}
+                rehabSpend={project?.financials?.rehab_spend || []}
+                savedCompletedDate={project?.financials?.rehab_completed_date}
+                savedSpendTotal={project?.financials?.rehab_spend_total}
+                onSaveCompletion={handleSaveCompletion}
               />
-              <ContractorBids
-                bids={contractorBids}
-                baseBudget={totalBudget}
-                onChange={setContractorBids}
-              />
-            </section>
-
-            {/* ── CapEx Comparative Table ── */}
-            <section className="space-y-4">
-              <h2 className="text-[24px] leading-[32px] font-semibold text-[#9E9DA0]">
-                CapEx Tracker
-              </h2>
-              <CapExComparativeTable tasks={rehabTasks} onChange={setRehabTasks} />
-            </section>
-
-            {/* ── Contractor Draw Schedule ── */}
-            <section className="space-y-4">
-              <h2 className="text-[24px] leading-[32px] font-semibold text-[#9E9DA0]">
-                Draw Schedule
-              </h2>
-              <ContractorDrawSchedule draws={drawSchedule} onChange={handleDrawScheduleChange} totalBudget={totalBudget} />
-            </section>
-
-            {/* ── Rehab Expense Tracker ── */}
-            <section className="space-y-4">
-              <h2 className="text-[24px] leading-[32px] font-semibold text-[#9E9DA0]">
-                Rehab Expenses
-              </h2>
-              <RehabExpenseTracker expenses={rehabExpenses} onChange={setRehabExpenses} totalBudget={totalBudget} />
-            </section>
-
-            {/* ── Site Visit Logs ── */}
-            <section className="space-y-4">
-              <h2 className="text-[24px] leading-[32px] font-semibold text-[#9E9DA0]">
-                Site Visit Log
-              </h2>
-              <SiteVisitLogTracker logs={siteVisitLogs} onChange={setSiteVisitLogs} />
             </section>
 
             {/* ── Final Sign-off Gate ── */}
             <section className="pt-8">
-              <RenovationsCompleteGate
-                unpaidInvoicesCount={unpaidInvoicesCount}
-                uncompletedMilestonesCount={uncompletedMilestonesCount}
-                onComplete={handleCompletePhase}
+              <EventTriggeredHoldGate
+                project={project}
+                onRecordRentPayment={handleRecordRentPayment}
+                onActivateLease={handleActivateLease}
+                onMarkSaleUnderContract={handleMarkSaleUnderContract}
+                onAdvanceToExit={handleAdvanceToExit}
               />
             </section>
           </div>
@@ -892,6 +1775,7 @@ export default function Phase3RehabPage() {
           </div>
         </div>
       </div>
-    </div>
+      </div>
+    </PhaseAccessGuard>
   );
 }

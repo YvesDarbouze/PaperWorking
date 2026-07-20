@@ -2,6 +2,9 @@ import { NextRequest, NextResponse } from 'next/server';
 import { adminDb } from '@/lib/firebase/admin';
 import { logger } from '@/lib/logger';
 import { createHmac, timingSafeEqual } from 'crypto';
+import { FieldValue } from 'firebase-admin/firestore';
+import { syncFractionalInvestorFromCommitment } from '@/lib/firebase/syncFractionalInvestors';
+import { CommitmentStatus } from '@/types/schema';
 
 /**
  * POST /api/webhooks/docusign
@@ -115,6 +118,97 @@ export async function POST(req: NextRequest) {
         .collection('documents')
         .doc(envData.documentId as string)
         .update(docUpdates);
+
+      // Card F2.5 Subscriptions — if the document is a subscription agreement, reconcile the commitment status
+      const docIdStr = String(envData.documentId);
+      if (docIdStr.startsWith('sub_agreement_')) {
+        const commitmentId = docIdStr.replace('sub_agreement_', '');
+        const commitmentRef = adminDb
+          .collection('projects')
+          .doc(envData.projectId as string)
+          .collection('commitments')
+          .doc(commitmentId);
+
+        const commitmentSnap = await commitmentRef.get();
+        if (commitmentSnap.exists) {
+          const commitmentData = commitmentSnap.data()!;
+          const currentStatus = commitmentData.status;
+          const nextStatus = status === 'completed' ? 'signed' : (status === 'declined' ? 'soft-committed' : currentStatus);
+
+          if (nextStatus !== currentStatus) {
+            const transition = {
+              fromStatus: currentStatus || null,
+              toStatus: nextStatus,
+              timestamp: new Date().toISOString(),
+              actor: 'DocuSign Connect Webhook',
+              evidence: `Envelope ${envelopeId} reconciled with status ${status}`,
+            };
+
+            await commitmentRef.update({
+              status: nextStatus,
+              updatedAt: new Date(),
+              transitions: FieldValue.arrayUnion(transition),
+            });
+
+            await syncFractionalInvestorFromCommitment(envData.projectId as string, {
+              id: commitmentId,
+              name: commitmentData.name,
+              email: commitmentData.email ?? null,
+              amountCents: commitmentData.amountCents,
+              status: nextStatus as CommitmentStatus,
+            });
+          }
+        }
+      }
+    }
+
+    // Send signature completion notification (failure-isolated)
+    try {
+      const { NotificationService } = await import('@/lib/services/notificationService');
+      const { adminAuth } = await import('@/lib/firebase/admin');
+      
+      const projectSnap = await adminDb.collection('projects').doc(envData.projectId as string).get();
+      if (projectSnap.exists) {
+        const projectData = projectSnap.data()!;
+        const dealAddress = projectData.propertyName || projectData.address?.street || 'the project';
+        const ownerUid = projectData.ownerUid || projectData.createdBy;
+        
+        const signerUser = await adminAuth.getUserByEmail(envData.signerEmail as string).catch(() => null);
+        
+        // Notify Lead Investor
+        if (ownerUid) {
+          await NotificationService.createNotification({
+            recipientId: ownerUid,
+            type: 'DOCUMENT_SIGNED',
+            actor: { uid: signerUser?.uid || 'external', name: envData.signerName as string },
+            objectReference: {
+              projectId: envData.projectId as string,
+              dealAddress,
+              documentName: envData.documentName as string,
+              task: `${envData.signerName} has signed the document '${envData.documentName}'`
+            },
+            deepLinkUrl: `/dashboard/projects/${envData.projectId}/data-room`
+          });
+        }
+        
+        // Notify Signer if they are a registered user
+        if (signerUser?.uid && signerUser.uid !== ownerUid) {
+          await NotificationService.createNotification({
+            recipientId: signerUser.uid,
+            type: 'DOCUMENT_SIGNED',
+            actor: { uid: ownerUid || 'system', name: 'PaperWorking' },
+            objectReference: {
+              projectId: envData.projectId as string,
+              dealAddress,
+              documentName: envData.documentName as string,
+              task: `You have successfully signed the document '${envData.documentName}'`
+            },
+            deepLinkUrl: `/dashboard/projects/${envData.projectId}/data-room`
+          });
+        }
+      }
+    } catch (notifErr: any) {
+      logger.error('[webhooks/docusign] Failed to send signature completion notifications:', notifErr.message);
     }
 
     logger.info('[webhooks/docusign] Envelope reconciled', { envelopeId, status });

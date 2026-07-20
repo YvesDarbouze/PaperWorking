@@ -4,6 +4,8 @@ import React, { useState, useEffect } from 'react';
 import { Calendar, DollarSign, FileText, CheckCircle, Clock, Plus, Trash2, ShieldAlert, AlertTriangle, AlertCircle, Info, Image } from 'lucide-react';
 import type { Project, InspectionFinding } from '@/types/schema';
 import toast from 'react-hot-toast';
+import { uploadFile } from '@/lib/storage/uploadService';
+import { IS_DEMO_MODE } from '@/lib/config/demo';
 
 interface InspectionCardProps {
   project: Project;
@@ -106,30 +108,92 @@ export function InspectionCard({
     handleSaveField('inspectionReferrals', updated);
   };
 
-  const triggerReportUpload = () => {
+  const triggerReportUpload = async () => {
     if (readOnly) return;
-    setUploadingReport(true);
-    setTimeout(async () => {
-      setUploadingReport(false);
+    
+    if (IS_DEMO_MODE) {
+      setUploadingReport(true);
+      await new Promise((resolve) => setTimeout(resolve, 800));
       await onSaveFinancials({
         inspectionReportUrl: '/mock/documents/Inspection_Report.pdf',
         inspectionReportName: 'Inspection_Report.pdf',
       });
-      toast.success('Inspection report uploaded successfully');
-    }, 800);
+      setUploadingReport(false);
+      toast.success('Inspection report uploaded successfully! (Demo)');
+      return;
+    }
+
+    const input = document.createElement('input');
+    input.type = 'file';
+    input.accept = '.pdf,image/*';
+    input.onchange = async (e: any) => {
+      const file = e.target.files?.[0];
+      if (!file) return;
+      setUploadingReport(true);
+      const toastId = toast.loading(`Uploading ${file.name}...`);
+      try {
+        const res = await uploadFile({
+          file,
+          path: 'inspection_reports',
+          projectId: project.id,
+        });
+        await onSaveFinancials({
+          inspectionReportUrl: res.downloadUrl,
+          inspectionReportName: file.name,
+        });
+        toast.success('Inspection report uploaded successfully!', { id: toastId });
+      } catch (err: any) {
+        console.error('Upload failed:', err);
+        toast.error(`Upload failed: ${err.message || 'Unknown error'}`, { id: toastId });
+      } finally {
+        setUploadingReport(false);
+      }
+    };
+    input.click();
   };
 
-  const triggerPhotosUpload = () => {
+  const triggerPhotosUpload = async () => {
     if (readOnly) return;
-    setUploadingPhotos(true);
-    setTimeout(async () => {
-      setUploadingPhotos(false);
+    
+    if (IS_DEMO_MODE) {
+      setUploadingPhotos(true);
+      await new Promise((resolve) => setTimeout(resolve, 800));
       await onSaveFinancials({
         inspectionPhotosUrl: '/mock/documents/Inspection_Photos.zip',
         inspectionPhotosName: 'Inspection_Photos.zip',
       });
-      toast.success('Inspection photos uploaded successfully');
-    }, 800);
+      setUploadingPhotos(false);
+      toast.success('Inspection photos uploaded successfully! (Demo)');
+      return;
+    }
+
+    const input = document.createElement('input');
+    input.type = 'file';
+    input.accept = '.zip,.rar,.tar,image/*';
+    input.onchange = async (e: any) => {
+      const file = e.target.files?.[0];
+      if (!file) return;
+      setUploadingPhotos(true);
+      const toastId = toast.loading(`Uploading ${file.name}...`);
+      try {
+        const res = await uploadFile({
+          file,
+          path: 'inspection_photos',
+          projectId: project.id,
+        });
+        await onSaveFinancials({
+          inspectionPhotosUrl: res.downloadUrl,
+          inspectionPhotosName: file.name,
+        });
+        toast.success('Inspection photos uploaded successfully!', { id: toastId });
+      } catch (err: any) {
+        console.error('Upload failed:', err);
+        toast.error(`Upload failed: ${err.message || 'Unknown error'}`, { id: toastId });
+      } finally {
+        setUploadingPhotos(false);
+      }
+    };
+    input.click();
   };
 
   return (
@@ -354,7 +418,10 @@ export function InspectionCard({
             <div className="flex items-center justify-between p-3 bg-white/5 rounded-xl border border-white/5">
               <div className="flex items-center gap-2">
                 <FileText className="w-4 h-4 text-[#454955]" />
-                <span className="text-xs text-white font-bold">{financials.inspectionReportName || 'Inspection_Report.pdf'}</span>
+                <span className="text-xs text-white font-bold flex items-center gap-1.5">
+                  {financials.inspectionReportName || 'Inspection_Report.pdf'}
+                  {IS_DEMO_MODE && <span className="text-[8px] font-bold text-amber-500 bg-amber-500/10 px-1.5 py-0.5 rounded border border-amber-500/20 font-sans">Demo</span>}
+                </span>
               </div>
               {!readOnly && (
                 <button
@@ -372,13 +439,13 @@ export function InspectionCard({
             <button
               onClick={triggerReportUpload}
               disabled={readOnly || uploadingReport}
-              className="w-full p-4 border border-dashed border-white/10 hover:border-white/20 rounded-xl flex items-center justify-center gap-2 text-xs text-[#9E9DA0] hover:text-white transition-all bg-white/5"
+              className="w-full p-4 border border-dashed border-white/10 hover:border-white/20 rounded-xl flex items-center justify-center gap-2 text-xs text-[#9E9DA0] hover:text-white transition-all bg-white/5 disabled:opacity-50"
             >
               {uploadingReport ? (
                 <span>Uploading...</span>
               ) : (
                 <>
-                  <Plus className="w-4 h-4" /> Upload Inspection Report PDF
+                  <Plus className="w-4 h-4" /> Upload Inspection Report PDF {IS_DEMO_MODE && <span className="text-amber-500 ml-1">(Demo)</span>}
                 </>
               )}
             </button>
@@ -392,7 +459,10 @@ export function InspectionCard({
             <div className="flex items-center justify-between p-3 bg-white/5 rounded-xl border border-white/5">
               <div className="flex items-center gap-2">
                 <Image className="w-4 h-4 text-[#454955]" />
-                <span className="text-xs text-white font-bold">{financials.inspectionPhotosName || 'Inspection_Photos.zip'}</span>
+                <span className="text-xs text-white font-bold flex items-center gap-1.5">
+                  {financials.inspectionPhotosName || 'Inspection_Photos.zip'}
+                  {IS_DEMO_MODE && <span className="text-[8px] font-bold text-amber-500 bg-amber-500/10 px-1.5 py-0.5 rounded border border-amber-500/20 font-sans">Demo</span>}
+                </span>
               </div>
               {!readOnly && (
                 <button
@@ -410,13 +480,13 @@ export function InspectionCard({
             <button
               onClick={triggerPhotosUpload}
               disabled={readOnly || uploadingPhotos}
-              className="w-full p-4 border border-dashed border-white/10 hover:border-white/20 rounded-xl flex items-center justify-center gap-2 text-xs text-[#9E9DA0] hover:text-white transition-all bg-white/5"
+              className="w-full p-4 border border-dashed border-white/10 hover:border-white/20 rounded-xl flex items-center justify-center gap-2 text-xs text-[#9E9DA0] hover:text-white transition-all bg-white/5 disabled:opacity-50"
             >
               {uploadingPhotos ? (
                 <span>Uploading...</span>
               ) : (
                 <>
-                  <Plus className="w-4 h-4" /> Upload Photos Package ZIP
+                  <Plus className="w-4 h-4" /> Upload Photos Package ZIP {IS_DEMO_MODE && <span className="text-amber-500 ml-1">(Demo)</span>}
                 </>
               )}
             </button>

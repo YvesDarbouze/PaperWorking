@@ -34,6 +34,7 @@ export default function InvestorEquityTable({ projectId }: Props) {
   const currentProject = useProjectStore((s) => s.projects.find((d) => d.id === projectId));
   const updateInvestors = useProjectStore((s) => s.updateInvestors);
   const investors = currentProject?.fractionalInvestors || [];
+  const isJTWROS = currentProject?.financials?.titleHolding === 'JTWROS';
 
   const [showAddRow, setShowAddRow] = useState(false);
   const [newName, setNewName] = useState('');
@@ -51,34 +52,54 @@ export default function InvestorEquityTable({ projectId }: Props) {
   );
 
   const handleAdd = () => {
-    const percent = parseFloat(newPercent);
+    const isJTWROS = currentProject?.financials?.titleHolding === 'JTWROS';
+    const percent = isJTWROS ? 0 : parseFloat(newPercent);
     const amount = parseFloat(newAmount);
 
     if (!newName.trim() || !newEmail.trim()) {
       toast.error('Name and email are required.');
       return;
     }
-    if (isNaN(percent) || percent <= 0 || percent > 100) {
-      toast.error('Equity must be between 0 and 100%.');
-      return;
-    }
-    if (totalEquity + percent > 100) {
-      toast.error(`Cannot exceed 100% equity. ${(100 - totalEquity).toFixed(1)}% available.`);
-      return;
+    if (!isJTWROS) {
+      if (isNaN(percent) || percent <= 0 || percent > 100) {
+        toast.error('Equity must be between 0 and 100%.');
+        return;
+      }
+      if (totalEquity + percent > 100) {
+        toast.error(`Cannot exceed 100% equity. ${(100 - totalEquity).toFixed(1)}% available.`);
+        return;
+      }
     }
 
     const newInvestor: FractionalInvestor = {
       id: `inv_${Date.now()}`,
       name: newName.trim(),
       email: newEmail.trim(),
-      equityPercentage: percent,
+      equityPercentage: isJTWROS ? 0 : percent,
       contributionAmount: isNaN(amount) ? 0 : amount,
       status: 'confirmed',
       confirmedAt: new Date(),
     };
 
-    updateInvestors(projectId, [...investors, newInvestor]);
-    toast.success(`${newInvestor.name} added with ${percent}% equity.`);
+    let updatedInvestors = [...investors, newInvestor];
+    if (isJTWROS) {
+      const count = updatedInvestors.length;
+      if (count > 0) {
+        const basePct = Math.floor((100 / count) * 100) / 100;
+        const remainder = Math.round((100 - basePct * count) * 100) / 100;
+        updatedInvestors = updatedInvestors.map((inv, idx) => ({
+          ...inv,
+          equityPercentage: Math.round((idx === 0 ? basePct + remainder : basePct) * 100) / 100,
+        }));
+      }
+    }
+
+    updateInvestors(projectId, updatedInvestors);
+    if (isJTWROS) {
+      toast.success(`${newInvestor.name} added. Equity splits adjusted equally for JTWROS.`);
+    } else {
+      toast.success(`${newInvestor.name} added with ${percent}% equity.`);
+    }
     setNewName('');
     setNewEmail('');
     setNewPercent('');
@@ -87,10 +108,20 @@ export default function InvestorEquityTable({ projectId }: Props) {
   };
 
   const handleRemove = (investorId: string) => {
-    updateInvestors(
-      projectId,
-      investors.filter((inv) => inv.id !== investorId)
-    );
+    let updatedInvestors = investors.filter((inv) => inv.id !== investorId);
+    const isJTWROS = currentProject?.financials?.titleHolding === 'JTWROS';
+    if (isJTWROS) {
+      const count = updatedInvestors.length;
+      if (count > 0) {
+        const basePct = Math.floor((100 / count) * 100) / 100;
+        const remainder = Math.round((100 - basePct * count) * 100) / 100;
+        updatedInvestors = updatedInvestors.map((inv, idx) => ({
+          ...inv,
+          equityPercentage: Math.round((idx === 0 ? basePct + remainder : basePct) * 100) / 100,
+        }));
+      }
+    }
+    updateInvestors(projectId, updatedInvestors);
     toast.success('Investor removed.');
   };
 
@@ -245,13 +276,14 @@ export default function InvestorEquityTable({ projectId }: Props) {
                 </td>
                 <td className="px-6 py-3 text-right">
                   <input
-                    type="number"
-                    value={newPercent}
-                    onChange={(e) => setNewPercent(e.target.value)}
+                    type={isJTWROS ? 'text' : 'number'}
+                    value={isJTWROS ? `${(100 / (investors.length + 1)).toFixed(2)}%` : newPercent}
+                    onChange={(e) => !isJTWROS && setNewPercent(e.target.value)}
+                    disabled={isJTWROS}
                     placeholder="%"
                     min="0"
                     max="100"
-                    className="w-16 px-3 py-1.5 rounded-sm border border-pw-border focus:ring-1 focus:ring-pw-accent/50 focus:outline-none text-sm text-right bg-white/5 text-pw-black"
+                    className="w-20 px-3 py-1.5 rounded-sm border border-pw-border focus:ring-1 focus:ring-pw-accent/50 focus:outline-none text-sm text-right bg-white/5 text-pw-black disabled:opacity-70 disabled:cursor-not-allowed"
                   />
                 </td>
                 <td className="px-6 py-3 text-right">

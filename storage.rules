@@ -4,26 +4,68 @@ service firebase.storage {
   match /b/{bucket}/o {
 
     // Helper: Check if user is a member of the project in Firestore and respects scope
-    function isProjectMember(projectId) {
+    // Helper: Check if user is a member, linked LP, or assigned vendor of the project in Firestore
+    function isProjectAuthorized(projectId) {
       let userUri = /databases/(default)/documents/users/$(request.auth.uid);
       let projectUri = /databases/(default)/documents/projects/$(projectId);
       return request.auth != null
         && firestore.exists(projectUri)
-        && request.auth.uid in firestore.get(projectUri).data.members
         && (
-          !firestore.exists(userUri)
-          || !('membershipScopes' in firestore.get(userUri).data)
-          || !(firestore.get(projectUri).data.organizationId in firestore.get(userUri).data.membershipScopes)
-          || !firestore.get(userUri).data.membershipScopes[firestore.get(projectUri).data.organizationId].isScoped
-          || (projectId in firestore.get(userUri).data.membershipScopes[firestore.get(projectUri).data.organizationId].scopedProjectIds)
+          // 1. Direct project member
+          (request.auth.uid in firestore.get(projectUri).data.members && (
+            !firestore.exists(userUri)
+            || !('membershipScopes' in firestore.get(userUri).data)
+            || !(firestore.get(projectUri).data.organizationId in firestore.get(userUri).data.membershipScopes)
+            || !firestore.get(userUri).data.membershipScopes[firestore.get(projectUri).data.organizationId].isScoped
+            || (projectId in firestore.get(userUri).data.membershipScopes[firestore.get(projectUri).data.organizationId].scopedProjectIds)
+          ))
+          // 2. Linked LP (in equityParties)
+          || (
+            'equityParties' in firestore.get(projectUri).data &&
+            firestore.get(projectUri).data.equityParties != null &&
+            firestore.get(projectUri).data.equityParties.any(party,
+              ('memberId' in party && party.memberId == request.auth.uid) ||
+              ('email' in party && party.email != null && request.auth.token.email != null && party.email.lower() == request.auth.token.email.lower())
+            )
+          )
+          // 3. Assigned Vendor (in financials)
+          || (
+            'financials' in firestore.get(projectUri).data &&
+            firestore.get(projectUri).data.financials != null && (
+              (('f4TitleEscrowVendor' in firestore.get(projectUri).data.financials && firestore.get(projectUri).data.financials.f4TitleEscrowVendor != null) && 
+               (firestore.get(projectUri).data.financials.f4TitleEscrowVendor.marketplaceVendorId == request.auth.uid || 
+                (firestore.get(projectUri).data.financials.f4TitleEscrowVendor.email != null && request.auth.token.email != null && firestore.get(projectUri).data.financials.f4TitleEscrowVendor.email.lower() == request.auth.token.email.lower()))) ||
+              (('f4ClosingAttorneyVendor' in firestore.get(projectUri).data.financials && firestore.get(projectUri).data.financials.f4ClosingAttorneyVendor != null) && 
+               (firestore.get(projectUri).data.financials.f4ClosingAttorneyVendor.marketplaceVendorId == request.auth.uid || 
+                (firestore.get(projectUri).data.financials.f4ClosingAttorneyVendor.email != null && request.auth.token.email != null && firestore.get(projectUri).data.financials.f4ClosingAttorneyVendor.email.lower() == request.auth.token.email.lower()))) ||
+              (('f4AppraiserVendor' in firestore.get(projectUri).data.financials && firestore.get(projectUri).data.financials.f4AppraiserVendor != null) && 
+               (firestore.get(projectUri).data.financials.f4AppraiserVendor.marketplaceVendorId == request.auth.uid || 
+                (firestore.get(projectUri).data.financials.f4AppraiserVendor.email != null && request.auth.token.email != null && firestore.get(projectUri).data.financials.f4AppraiserVendor.email.lower() == request.auth.token.email.lower()))) ||
+              (('f4EnvironmentalVendor' in firestore.get(projectUri).data.financials && firestore.get(projectUri).data.financials.f4EnvironmentalVendor != null) && 
+               (firestore.get(projectUri).data.financials.f4EnvironmentalVendor.marketplaceVendorId == request.auth.uid || 
+                (firestore.get(projectUri).data.financials.f4EnvironmentalVendor.email != null && request.auth.token.email != null && firestore.get(projectUri).data.financials.f4EnvironmentalVendor.email.lower() == request.auth.token.email.lower()))) ||
+              (('f4SurveyorVendor' in firestore.get(projectUri).data.financials && firestore.get(projectUri).data.financials.f4SurveyorVendor != null) && 
+               (firestore.get(projectUri).data.financials.f4SurveyorVendor.marketplaceVendorId == request.auth.uid || 
+                (firestore.get(projectUri).data.financials.f4SurveyorVendor.email != null && request.auth.token.email != null && firestore.get(projectUri).data.financials.f4SurveyorVendor.email.lower() == request.auth.token.email.lower()))) ||
+              (('f4InsuranceBrokerVendor' in firestore.get(projectUri).data.financials && firestore.get(projectUri).data.financials.f4InsuranceBrokerVendor != null) && 
+               (firestore.get(projectUri).data.financials.f4InsuranceBrokerVendor.marketplaceVendorId == request.auth.uid || 
+                (firestore.get(projectUri).data.financials.f4InsuranceBrokerVendor.email != null && request.auth.token.email != null && firestore.get(projectUri).data.financials.f4InsuranceBrokerVendor.email.lower() == request.auth.token.email.lower()))) ||
+              (('f4CdcVendor' in firestore.get(projectUri).data.financials && firestore.get(projectUri).data.financials.f4CdcVendor != null) && 
+               (firestore.get(projectUri).data.financials.f4CdcVendor.marketplaceVendorId == request.auth.uid || 
+                (firestore.get(projectUri).data.financials.f4CdcVendor.email != null && request.auth.token.email != null && firestore.get(projectUri).data.financials.f4CdcVendor.email.lower() == request.auth.token.email.lower()))) ||
+              (('f4HardMoneyLenderVendor' in firestore.get(projectUri).data.financials && firestore.get(projectUri).data.financials.f4HardMoneyLenderVendor != null) && 
+               (firestore.get(projectUri).data.financials.f4HardMoneyLenderVendor.marketplaceVendorId == request.auth.uid || 
+                (firestore.get(projectUri).data.financials.f4HardMoneyLenderVendor.email != null && request.auth.token.email != null && firestore.get(projectUri).data.financials.f4HardMoneyLenderVendor.email.lower() == request.auth.token.email.lower())))
+            )
+          )
         );
     }
 
     // Projects folder: project-scoped document and photography uploads
     match /projects/{projectId}/{allPaths=**} {
-      allow read: if request.auth != null && isProjectMember(projectId);
+      allow read: if request.auth != null && isProjectAuthorized(projectId);
       allow write: if request.auth != null
-                   && isProjectMember(projectId)
+                   && isProjectAuthorized(projectId)
                    && request.resource.size < 25 * 1024 * 1024; // 25 MB limit
     }
 

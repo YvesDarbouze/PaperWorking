@@ -105,6 +105,13 @@ function getCategoryInfo(type: NotificationType) {
         theme: 'team',
         iconClass: 'bg-white/5 border border-white/10 text-[#9E9DA0]',
       };
+    case 'LENDER_CHECKLIST_REMINDER':
+      return {
+        label: 'Lender Vault',
+        icon: 'folder_shared',
+        theme: 'system',
+        iconClass: 'bg-white/5 border border-white/10 text-[#7A9EAA]',
+      };
     case 'TASK_COMPLETE':
       return {
         label: 'Task Complete',

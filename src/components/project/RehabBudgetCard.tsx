@@ -50,13 +50,15 @@ export function RehabBudgetCard({
 
   const [items, setItems] = useState<ScopeOfWorkItem[]>(initialItems);
   const [contingency, setContingency] = useState<string>(initialContingency);
+  const [upfrontRehab, setUpfrontRehab] = useState<string>(project.financials?.upfrontRehab ? (project.financials.upfrontRehab / 100).toString() : '0');
   const [isSaving, setIsSaving] = useState(false);
 
   // Sync state with project updates only when project ID changes
   useEffect(() => {
     setItems(initialItems);
     setContingency(initialContingency);
-  }, [project.id]);
+    setUpfrontRehab(project.financials?.upfrontRehab ? (project.financials.upfrontRehab / 100).toString() : '0');
+  }, [project.id, project.financials?.upfrontRehab]);
 
   // Subject Property Sqft
   const subjectSqft = useMemo(() => {
@@ -118,7 +120,9 @@ export function RehabBudgetCard({
         'rehab.baseBudget': baseBudget,
         'rehab.contingencyBufferPercentage': contingencyPct / 100,
         'financials.rehabBudget': Math.round(totalBudget * 100),
+        'financials.rehab_budget': Math.round(totalBudget * 100),
         'financials.projectedRehabCost': Math.round(totalBudget * 100),
+        'financials.upfrontRehab': Math.round((parseFloat(upfrontRehab) || 0) * 100),
       };
 
       await onSave(updates);
@@ -270,7 +274,7 @@ export function RehabBudgetCard({
         </div>
 
         {/* Calculations & Contingency */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 pt-4 border-t border-white/5 bg-white/[0.005] p-4 rounded-lg">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 pt-4 border-t border-white/5 bg-white/[0.005] p-4 rounded-lg">
           {/* Contingency input */}
           <div className="space-y-2">
             <label className="block text-[8px] uppercase tracking-widest text-[#9E9DA0] font-bold">Contingency Buffer (%)</label>
@@ -283,13 +287,29 @@ export function RehabBudgetCard({
                 max="100"
                 className="w-full pr-6 rounded px-2.5 py-1.5 text-xs bg-[#161217] border border-white/10 text-white focus:outline-none focus:border-[#ffac5a] font-mono text-right"
               />
-              <Percent className="absolute right-2 top-2 h-3 w-3 text-[#9E9DA0]" />
+              <Percent className="absolute right-2 top-2.5 h-3 w-3 text-[#9E9DA0]" />
             </div>
             <span className="block text-[8px] text-[#9E9DA0]">Applied to the base budget total</span>
           </div>
 
+          {/* Upfront Rehab Cash (Out of Pocket) */}
+          <div className="space-y-2">
+            <label className="block text-[8px] uppercase tracking-widest text-[#9E9DA0] font-bold">Upfront Rehab Cash</label>
+            <div className="relative w-[130px]">
+              <DollarSign className="absolute left-2.5 top-2.5 h-3 w-3 text-[#9E9DA0]" />
+              <input
+                type="number"
+                value={upfrontRehab}
+                onChange={(e) => setUpfrontRehab(e.target.value)}
+                min="0"
+                className="w-full pl-6 rounded px-2.5 py-1.5 text-xs bg-[#161217] border border-white/10 text-white focus:outline-none focus:border-[#ffac5a] font-mono text-right"
+              />
+            </div>
+            <span className="block text-[8px] text-[#9E9DA0]">Out-of-pocket rehab cash basis portion</span>
+          </div>
+
           {/* Rollups */}
-          <div className="flex justify-end gap-8 text-right">
+          <div className="flex justify-end gap-6 text-right">
             <div>
               <span className="block text-[8px] uppercase tracking-widest text-[#9E9DA0] font-bold">Base Budget</span>
               <span className="text-xs font-bold text-white font-mono">{formatCurrency(baseBudget)}</span>

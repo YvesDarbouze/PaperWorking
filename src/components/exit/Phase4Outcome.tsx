@@ -24,7 +24,11 @@ export default function Phase4Outcome({ projectId }: Phase4OutcomeProps) {
   const deal = projects.find(d => d.id === projectId);
   const financials = deal?.financials;
 
-  const [strategy, setStrategy] = useState<'Sell'|'Rent'>(financials?.exitStrategyType || 'Sell');
+  const strategy = deal?.dispositionType === 'LEASE'
+    ? 'Lease'
+    : deal?.dispositionType === 'RENT'
+    ? 'Rent'
+    : 'Sell';
   const [viewMode, setViewMode] = useState<'Financials' | 'Listing'>('Financials');
   const [isClosing, setIsClosing] = useState(false);
 
@@ -238,7 +242,7 @@ export default function Phase4Outcome({ projectId }: Phase4OutcomeProps) {
   const totalRehab = financials.costs?.reduce((acc, c) => acc + c.amount, 0) || 0; 
   const totalCapitalDeployed = totalPurchase + totalRehab;
 
-  const handleToggle = (opt: 'Sell' | 'Rent') => setStrategy(opt);
+
 
   // Profit calculations
   const calculateNetProfit = () => {
@@ -299,19 +303,10 @@ export default function Phase4Outcome({ projectId }: Phase4OutcomeProps) {
                </button>
             </div>
          </div>
-         <div className="flex bg-pw-glass-bg border border-pw-border p-1">
-            <button 
-               onClick={() => handleToggle('Sell')}
-               className={`px-6 py-2 text-xs font-bold uppercase tracking-wider transition-all ${strategy === 'Sell' ? 'bg-pw-accent text-pw-white' : 'text-text-secondary hover:text-text-primary'}`}
-            >
-               Exit Strategy: Sell
-            </button>
-            <button 
-               onClick={() => handleToggle('Rent')}
-               className={`px-6 py-2 text-xs font-bold uppercase tracking-wider transition-all ${strategy === 'Rent' ? 'bg-pw-accent text-pw-white' : 'text-text-secondary hover:text-text-primary'}`}
-            >
-               Exit Strategy: Rent & Hold
-            </button>
+         <div className="flex bg-pw-glass-bg border border-pw-border/20 p-1 rounded-lg">
+            <div className="px-6 py-2 text-xs font-bold uppercase tracking-wider bg-pw-accent/25 text-pw-white border border-pw-accent/30 rounded">
+               Exit Strategy: {strategy === 'Lease' ? 'Lease' : strategy === 'Rent' ? 'Rent & Hold' : 'Sell'} (Read-Only)
+            </div>
          </div>
       </div>
 

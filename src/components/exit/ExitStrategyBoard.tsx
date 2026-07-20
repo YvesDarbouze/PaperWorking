@@ -50,7 +50,7 @@ export default function ExitStrategyBoard({ projectId, onClose }: ExitStrategyBo
   const handleUpdateListing = async () => {
     try {
       const updates = {
-        status: 'Listed' as any,
+        status: 'exit' as any,
         exitAssets: {
           ...currentProject.exitAssets,
           mlsListingLink: mlsLink,
@@ -105,7 +105,7 @@ export default function ExitStrategyBoard({ projectId, onClose }: ExitStrategyBo
         },
         body: JSON.stringify({
           realized: true,
-          status: 'Sold',
+          status: 'exit',
           financials: financialUpdates
         })
       });

@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { requireAuth, isAuthError } from '@/lib/firebase-admin/auth-guard';
 import { adminDb } from '@/lib/firebase/admin';
 import { projectFinancialsSchema } from '@/lib/schemas/projectSchema';
+import { verifyProjectAccessAndRole, authorizeProjectMutation } from '@/lib/firebase-admin/project-guard';
 
 /* ═══════════════════════════════════════════════════════════════
    PATCH /api/projects/[id]/acquisition
@@ -52,38 +53,17 @@ export async function PATCH(
     }
 
     // 3. Verify user has write access to this project
-    const dealRef = adminDb.collection('projects').doc(projectId);
-    const dealSnap = await dealRef.get();
-
-    if (!dealSnap.exists) {
-      return NextResponse.json({ error: 'Project not found' }, { status: 404 });
+    const access = await verifyProjectAccessAndRole(projectId, uid, auth.token?.email);
+    if (!access) {
+      return NextResponse.json({ error: 'Project not found or access denied' }, { status: 403 });
     }
 
-    const projectData = dealSnap.data();
-    const targetOrgId = projectData?.organizationId;
-
-    // Check org membership
-    const userSnap = await adminDb.collection('users').doc(uid).get();
-    const profile = userSnap.exists ? userSnap.data() : null;
-
-    let hasAccess = false;
-    if (targetOrgId && profile) {
-      if (profile.personalOrganizationId === targetOrgId) hasAccess = true;
-      else if (profile.organizationId === targetOrgId) hasAccess = true;
-      else if (profile.memberships?.[targetOrgId]) hasAccess = true;
+    const authCheck = authorizeProjectMutation(access, 'phase-1');
+    if (!authCheck.authorized) {
+      return NextResponse.json({ error: authCheck.error }, { status: authCheck.status || 403 });
     }
 
-    // Also check project-level membership
-    if (projectData?.members?.[uid]) {
-      hasAccess = true;
-    }
-
-    if (!hasAccess) {
-      return NextResponse.json(
-        { error: 'Access denied. You do not have write access to this project.' },
-        { status: 403 }
-      );
-    }
+    const projectData = access.project;
 
     // 4. Build the update payload — merge financials with existing
     const existingFinancials = projectData?.financials || {};
@@ -100,6 +80,7 @@ export async function PATCH(
     }
 
     // 5. Update Firestore with merge
+    const dealRef = adminDb.collection('projects').doc(projectId);
     await dealRef.update(updatePayload);
 
     // 6. Return updated project snapshot

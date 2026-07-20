@@ -7,7 +7,7 @@ import { StressTestProvider, RiskStressTester, useStressTest } from '@/component
 import InsightsDashboard, { SecondaryDiagnosticsPanel } from '@/components/insights/InsightsDashboard';
 import { useQuery } from '@tanstack/react-query';
 import { MarketContextPanel } from '@/components/project/MarketContextPanel';
-import { deriveAllMetrics } from '@/lib/metrics/reiMetrics';
+import { deriveAllMetrics, deriveAllProjectMetrics } from '@/lib/metrics/reiMetrics';
 import { InsightsEngineInputs, InsightsEngine } from '@/lib/services/insightsEngine';
 import { projectToInsightsInputs, REQUIRED_INSIGHTS_FIELDS } from '@/lib/projections/projectionEngine';
 import type { Project } from '@/types/schema';
@@ -219,7 +219,7 @@ export default function InsightsPage() {
       tenantTurnoverRateSum += f.tenantTurnoverRate || 0;
       leaseRenewalRateSum += f.leaseRenewalRate || 0;
       daysOnMarketSum += f.daysOnMarket || 0;
-      rehabBudget += f.rehabBudget || 0;
+      rehabBudget += (f.rehab_budget ? f.rehab_budget / 100 : f.rehabBudget) || 0;
       rehabActual += f.rehabActual || 0;
     }
 
@@ -1157,7 +1157,7 @@ function getInputsFromProjects(projectsList: Project[]): InsightsEngineInputs | 
     if (!f) continue;
 
     const purchasePrice = f.purchasePrice || f.targetPurchasePrice || f.targetPrice || 0;
-    const rehabBudget = f.rehabBudget || f.projectedRehabCost || f.rehabActual || 0;
+    const rehabBudget = (f.rehab_budget ? f.rehab_budget / 100 : f.rehabBudget) || f.projectedRehabCost || f.rehabActual || 0;
     const loanAmount = f.loanAmount ?? Math.max(0, purchasePrice - (f.financingCashInvested ?? 0));
     const downPayment = Math.max(0, purchasePrice - loanAmount);
     
@@ -1173,8 +1173,8 @@ function getInputsFromProjects(projectsList: Project[]): InsightsEngineInputs | 
     const otherMonthlyIncome = f.otherMonthlyIncome ?? ((f.grossIncomeParking ?? 0) + (f.grossIncomeLaundry ?? 0));
     totalGrossScheduledIncome += (monthlyGrossRent + otherMonthlyIncome) * 12;
     
-    const metrics = deriveAllMetrics(f, undefined, p.dispositionType, p.currentPhase);
-    totalOperatingExpenses += metrics.noiComponents.totalOperatingExpenses;
+    const metrics = deriveAllProjectMetrics(p);
+    totalOperatingExpenses += (metrics.noiComponents?.totalOperatingExpenses ?? 0);
     
     totalVacancyRate += f.vacancyRatePercent ?? f.vacancyRate ?? 7.0;
     

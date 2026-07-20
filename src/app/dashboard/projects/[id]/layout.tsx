@@ -245,9 +245,9 @@ function WorkspaceHeader({ project, onOpenMetric }: { project: Project; onOpenMe
   const router = useRouter();
   const { snapshots } = usePropertyMetricSnapshots(project.id, 'monthly');
 
-  const phaseColor  = PHASE_BADGE_COLORS[project.phaseStatus ?? ''] ?? PHASE_BADGE_COLORS['Phase 1: Find & Fund'];
+  const phaseColor  = PHASE_BADGE_COLORS[project.phaseStatus ?? ''] ?? PHASE_BADGE_COLORS['Phase 1: Acquisition'];
   const statusColor = STATUS_COLORS[project.status] ?? { bg: '#F3F4F6', text: '#595959' };
-  const folderColor = PHASE_FOLDER_COLORS[project.phaseStatus ?? ''] ?? PHASE_FOLDER_COLORS['Phase 1: Find & Fund'];
+  const folderColor = PHASE_FOLDER_COLORS[project.phaseStatus ?? ''] ?? PHASE_FOLDER_COLORS['Phase 1: Acquisition'];
 
   // Only show the active counter if we have an acquisition date and the project hasn't been sold/closed
   const isHolding = project.financials?.acquisitionDate && project.status !== 'exit';
@@ -651,7 +651,7 @@ export default function ProjectWorkspaceLayout({
         <div className="flex-1 min-h-0 flex">
           <div className="flex-1 min-w-0">
             <ProjectPipelineProvider>
-              {project?.retrospective ? (
+              {project?.retrospective && !project?.financials?.retrospectiveCompleted ? (
                 <RetrospectiveWorkspace
                   project={project}
                   refresh={async () => {

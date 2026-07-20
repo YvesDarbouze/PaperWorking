@@ -45,6 +45,8 @@ function derivePhaseFromREIStatus(reiStatus?: string): {
     case 'Renting':
       return { phaseStatus: 'Phase 3: Hold', currentPhase: 3, status: 'hold' };
     case 'For Sale':
+    case 'realized':
+    case 'Sold':
       return { phaseStatus: 'Phase 4: Exit', currentPhase: 4, status: 'exit' };
     default:
       return { phaseStatus: 'Phase 1: Acquisition', currentPhase: 1, status: 'acquisition' };
@@ -383,7 +385,7 @@ export const projectsService = {
   /**
    * Finalize and archive a project, updating portfolio aggregates on the Organization.
    */
-  async closeProjectAndArchive(projectId: string, organizationId: string, exitStrategy: 'Sell' | 'Rent') {
+  async closeProjectAndArchive(projectId: string, organizationId: string, exitStrategy: 'Sell' | 'Rent' | 'Lease') {
     try {
       // 1. Fetch the project and calculate final outcome using canonical math
       const deal = await this.getProject(projectId);

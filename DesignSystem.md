@@ -462,3 +462,9 @@ To avoid visual redundancy, there must be **no more than 2** project creation co
 
 Both controls must be labeled identically as **"Create Project"**. All other secondary/inline project creation buttons (such as in Recent Projects list headers) must be removed.
 
+---
+
+## 20. Appendices
+
+For the complete four-phase questions, tasks, enumerations, gates, and phase rules, see [reil-complete-four-phase-questions-tasks.md](file:///Users/yvesdarbouze/Documents/PaperWorking/docs/spec/reil-complete-four-phase-questions-tasks.md).
+

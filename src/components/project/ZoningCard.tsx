@@ -4,6 +4,8 @@ import React, { useState, useEffect } from 'react';
 import { Calendar, FileText, CheckCircle, Clock, Trash2, Info, Landmark, ShieldAlert, AlertTriangle } from 'lucide-react';
 import type { Project } from '@/types/schema';
 import toast from 'react-hot-toast';
+import { uploadFile } from '@/lib/storage/uploadService';
+import { IS_DEMO_MODE } from '@/lib/config/demo';
 
 interface ZoningCardProps {
   project: Project;
@@ -53,20 +55,52 @@ export function ZoningCard({
 
   const handleUploadLetter = async () => {
     if (readOnly) return;
-    setUploadingLetter(true);
-    await new Promise((resolve) => setTimeout(resolve, 1000));
-    try {
-      await onSaveFinancials({
-        zoningVerificationLetterUrl: '/mock/documents/Zoning_Verification_Letter.pdf',
-        zoningVerificationLetterName: 'Zoning_Verification_Letter.pdf',
-      });
-      toast.success('Zoning Verification Letter uploaded!');
-    } catch (err) {
-      console.error(err);
-      toast.error('Failed to upload letter');
-    } finally {
-      setUploadingLetter(false);
+    
+    if (IS_DEMO_MODE) {
+      setUploadingLetter(true);
+      await new Promise((resolve) => setTimeout(resolve, 1000));
+      try {
+        await onSaveFinancials({
+          zoningVerificationLetterUrl: '/mock/documents/Zoning_Verification_Letter.pdf',
+          zoningVerificationLetterName: 'Zoning_Verification_Letter.pdf',
+        });
+        toast.success('Zoning Verification Letter uploaded! (Demo)');
+      } catch (err) {
+        console.error(err);
+        toast.error('Failed to upload letter');
+      } finally {
+        setUploadingLetter(false);
+      }
+      return;
     }
+
+    const input = document.createElement('input');
+    input.type = 'file';
+    input.accept = '.pdf,image/*';
+    input.onchange = async (e: any) => {
+      const file = e.target.files?.[0];
+      if (!file) return;
+      setUploadingLetter(true);
+      const toastId = toast.loading(`Uploading ${file.name}...`);
+      try {
+        const res = await uploadFile({
+          file,
+          path: 'zoning_letters',
+          projectId: project.id,
+        });
+        await onSaveFinancials({
+          zoningVerificationLetterUrl: res.downloadUrl,
+          zoningVerificationLetterName: file.name,
+        });
+        toast.success('Zoning Verification Letter uploaded successfully!', { id: toastId });
+      } catch (err: any) {
+        console.error('Upload failed:', err);
+        toast.error(`Upload failed: ${err.message || 'Unknown error'}`, { id: toastId });
+      } finally {
+        setUploadingLetter(false);
+      }
+    };
+    input.click();
   };
 
   const handleRemoveLetter = async () => {
@@ -85,20 +119,52 @@ export function ZoningCard({
 
   const handleUploadCo = async () => {
     if (readOnly) return;
-    setUploadingCo(true);
-    await new Promise((resolve) => setTimeout(resolve, 1000));
-    try {
-      await onSaveFinancials({
-        zoningCoDocumentUrl: '/mock/documents/Certificate_of_Occupancy.pdf',
-        zoningCoDocumentName: 'Certificate_of_Occupancy.pdf',
-      });
-      toast.success('Certificate of Occupancy uploaded!');
-    } catch (err) {
-      console.error(err);
-      toast.error('Failed to upload CO');
-    } finally {
-      setUploadingCo(false);
+    
+    if (IS_DEMO_MODE) {
+      setUploadingCo(true);
+      await new Promise((resolve) => setTimeout(resolve, 1000));
+      try {
+        await onSaveFinancials({
+          zoningCoDocumentUrl: '/mock/documents/Certificate_of_Occupancy.pdf',
+          zoningCoDocumentName: 'Certificate_of_Occupancy.pdf',
+        });
+        toast.success('Certificate of Occupancy uploaded! (Demo)');
+      } catch (err) {
+        console.error(err);
+        toast.error('Failed to upload CO');
+      } finally {
+        setUploadingCo(false);
+      }
+      return;
     }
+
+    const input = document.createElement('input');
+    input.type = 'file';
+    input.accept = '.pdf,image/*';
+    input.onchange = async (e: any) => {
+      const file = e.target.files?.[0];
+      if (!file) return;
+      setUploadingCo(true);
+      const toastId = toast.loading(`Uploading ${file.name}...`);
+      try {
+        const res = await uploadFile({
+          file,
+          path: 'zoning_co_docs',
+          projectId: project.id,
+        });
+        await onSaveFinancials({
+          zoningCoDocumentUrl: res.downloadUrl,
+          zoningCoDocumentName: file.name,
+        });
+        toast.success('Certificate of Occupancy uploaded successfully!', { id: toastId });
+      } catch (err: any) {
+        console.error('Upload failed:', err);
+        toast.error(`Upload failed: ${err.message || 'Unknown error'}`, { id: toastId });
+      } finally {
+        setUploadingCo(false);
+      }
+    };
+    input.click();
   };
 
   const handleRemoveCo = async () => {
@@ -204,7 +270,10 @@ export function ZoningCard({
             <div className="flex items-center justify-between p-3 bg-white/5 rounded-xl border border-white/5">
               <div className="flex items-center gap-2">
                 <FileText className="w-4 h-4 text-[#454955]" />
-                <span className="text-xs text-white font-bold">{financials.zoningVerificationLetterName || 'Zoning_Letter.pdf'}</span>
+                <span className="text-xs text-white font-bold flex items-center gap-1.5">
+                  {financials.zoningVerificationLetterName || 'Zoning_Letter.pdf'}
+                  {IS_DEMO_MODE && <span className="text-[8px] font-bold text-amber-500 bg-amber-500/10 px-1.5 py-0.5 rounded border border-amber-500/20 font-sans">Demo</span>}
+                </span>
               </div>
               {!readOnly && (
                 <button
@@ -228,7 +297,9 @@ export function ZoningCard({
               ) : (
                 <>
                   <FileText className="w-4 h-4" />
-                  <span className="text-[10px] font-bold uppercase tracking-wider">Upload Verification Letter</span>
+                  <span className="text-[10px] font-bold uppercase tracking-wider">
+                    Upload Verification Letter {IS_DEMO_MODE && <span className="text-amber-500 ml-1">(Demo)</span>}
+                  </span>
                 </>
               )}
             </button>
@@ -262,7 +333,10 @@ export function ZoningCard({
               <div className="flex items-center justify-between p-3 bg-white/5 rounded-xl border border-white/5">
                 <div className="flex items-center gap-2">
                   <FileText className="w-4 h-4 text-[#454955]" />
-                  <span className="text-xs text-white font-bold">{financials.zoningCoDocumentName || 'Certificate_of_Occupancy.pdf'}</span>
+                  <span className="text-xs text-white font-bold flex items-center gap-1.5">
+                    {financials.zoningCoDocumentName || 'Certificate_of_Occupancy.pdf'}
+                    {IS_DEMO_MODE && <span className="text-[8px] font-bold text-amber-500 bg-amber-500/10 px-1.5 py-0.5 rounded border border-amber-500/20 font-sans">Demo</span>}
+                  </span>
                 </div>
                 {!readOnly && (
                   <button
@@ -286,7 +360,9 @@ export function ZoningCard({
                 ) : (
                   <>
                     <FileText className="w-4 h-4" />
-                    <span className="text-[10px] font-bold uppercase tracking-wider">Upload CO Document</span>
+                    <span className="text-[10px] font-bold uppercase tracking-wider">
+                      Upload CO Document {IS_DEMO_MODE && <span className="text-amber-500 ml-1">(Demo)</span>}
+                    </span>
                   </>
                 )}
               </button>

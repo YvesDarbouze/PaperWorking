@@ -130,7 +130,7 @@ export async function createNewDeal(idToken: string, rawDealData: any) {
     address: rawDealData.address || '',
     
     // Phase Framework Strict Standards
-    status: 'Lead', // 4-Phase Core: ['Lead', 'Under Contract', 'Renovating', 'Listed/Sold']
+    status: 'acquisition', // 4-Phase Core: ['acquisition', 'fund', 'hold', 'exit']
     activePhase: 1, 
     
     // Clocks
@@ -164,7 +164,7 @@ export async function createNewDeal(idToken: string, rawDealData: any) {
  * CLOSE PROJECT AND ARCHIVE
  * Finalizes the project, updates its status, and aggregates outcomes back to the Organization
  */
-export async function closeProjectAndArchiveServerAction(idToken: string, projectId: string, organizationId: string, exitStrategy: 'Sell' | 'Rent') {
+export async function closeProjectAndArchiveServerAction(idToken: string, projectId: string, organizationId: string, exitStrategy: 'Sell' | 'Rent' | 'Lease') {
   const user = await verifyActionAuth(idToken);
   
   // Security validation

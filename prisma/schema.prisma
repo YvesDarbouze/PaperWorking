@@ -422,6 +422,11 @@ model ReilProject {
   purchaseTerms      ReilPurchaseTerms?
   valuationSnapshots ReilValuationSnapshot[]
   statusEvents       StatusEvent[]
+  fundingPlan        ReilFundingPlan?
+  equityParties      ReilEquityParty[]
+  loans              ReilLoanRecord[]
+  contributions      ReilContributionEntry[]
+  closingMilestones  ReilClosingMilestone[]
 
   @@index([createdById])
   @@index([acquisitionStatus])
@@ -598,4 +603,107 @@ enum SellerResponse {
 enum FieldStatus {
   OPEN
   FILLED
+}
+
+model ReilFundingPlan {
+  id                   String              @id @default(uuid())
+  projectId            String              @unique
+  modality             String[]            // e.g. ["solo_cash", "conventional_mortgage"]
+  createdAt            DateTime            @default(now())
+  updatedAt            DateTime            @updatedAt
+  project              ReilProject         @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  sources              ReilCapitalSource[]
+  titleHolding         ReilTitleHolding?
+  closingRecord        ReilClosingRecord?
+}
+
+model ReilCapitalSource {
+  id            String          @id @default(uuid())
+  fundingPlanId String
+  type          String          // solo_cash | co_buyer_equity | syndication_equity | conventional_loan | hard_money | bridge | sba_504_bank | sba_504_cdc | sba_504_injection
+  amountCents   BigInt
+  status        String          // e.g. "projected", "confirmed", "verified"
+  seniority     Int             // e.g. 1 (senior debt), 2 (junior debt), 3 (equity)
+  fundingPlan   ReilFundingPlan @relation(fields: [fundingPlanId], references: [id], onDelete: Cascade)
+
+  @@index([fundingPlanId])
+}
+
+model ReilEquityParty {
+  id             String      @id @default(uuid())
+  projectId      String
+  role           String      // co_buyer | GP | LP
+  name           String
+  email          String?
+  entityType     String      // Individual or Entity
+  memberId       String?     // Link to AppUser.id or ProjectCollaborator
+  ownershipPct   Float       @default(0.0)
+  project        ReilProject @relation(fields: [projectId], references: [id], onDelete: Cascade)
+
+  @@index([projectId])
+}
+
+model ReilLoanRecord {
+  id                   String      @id @default(uuid())
+  projectId            String
+  lenderName           String
+  amountCents          BigInt
+  interestRatePercent  Float
+  termMonths           Int
+  points               Float       @default(0.0)
+  status               String      // e.g. "Estimate", "Locked"
+  isInterestOnly       Boolean     @default(false)
+  project              ReilProject @relation(fields: [projectId], references: [id], onDelete: Cascade)
+
+  @@index([projectId])
+}
+
+model ReilContributionEntry {
+  id               String      @id @default(uuid())
+  projectId        String
+  partyName        String
+  email            String?
+  amountCents      BigInt
+  status           String      // pledged | transferred | cleared | soft-committed | docs-out | signed | funds-confirmed
+  evidenceDocId    String?     // Link to Firestore document
+  evidenceDocUrl   String?
+  partyType        String      @default("Investor") // Sponsor, Investor, Co-GP, Preferred Equity
+  project          ReilProject @relation(fields: [projectId], references: [id], onDelete: Cascade)
+
+  @@index([projectId])
+}
+
+model ReilTitleHolding {
+  id              String          @id @default(uuid())
+  fundingPlanId   String          @unique
+  structure       String          // TIC | JTWROS
+  documentUrl     String?
+  signatureStatus String          @default("unsigned")
+  fundingPlan     ReilFundingPlan @relation(fields: [fundingPlanId], references: [id], onDelete: Cascade)
+}
+
+model ReilClosingMilestone {
+  id               String      @id @default(uuid())
+  projectId        String
+  key              String      // e.g. 'financing', 'title', 'appraisal'
+  label            String
+  targetOffsetDays Int
+  targetDate       DateTime
+  actualDate       DateTime?
+  completed        Boolean     @default(false)
+  notes            String?
+  project          ReilProject @relation(fields: [projectId], references: [id], onDelete: Cascade)
+
+  @@index([projectId])
+}
+
+model ReilClosingRecord {
+  id               String          @id @default(uuid())
+  fundingPlanId    String          @unique
+  closingDate      DateTime?
+  deedRecordedDate DateTime?
+  instrumentNumber String?
+  countyName       String?
+  checklistState   String?         // JSON string of executed docs checklist state
+  fundingPlan      ReilFundingPlan @relation(fields: [fundingPlanId], references: [id], onDelete: Cascade)
 }

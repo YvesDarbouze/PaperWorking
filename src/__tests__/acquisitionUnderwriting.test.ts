@@ -78,6 +78,7 @@ describe('Phase 1 Acquisition Underwriting & Projections', () => {
         targetPrice: 150000,
         loanAmount: 120000,
         projectedRehabCost: 15000,
+        upfrontRehab: 15000,
         costs: [],
       };
 

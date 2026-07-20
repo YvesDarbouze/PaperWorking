@@ -5,6 +5,7 @@ import { generateNotificationEmailHtml } from '@/lib/emails/NotificationTemplate
 import { FieldValue } from 'firebase-admin/firestore';
 import { CommunicationEngine } from '@/lib/engine/CommunicationEngine';
 import { isUserInDND } from '@/lib/services/notificationService';
+import { generateSystemNotificationEmail } from '@/lib/emails/templates/SystemNotificationEmail';
 
 export const dynamic = 'force-dynamic';
 
@@ -379,14 +380,23 @@ async function processQueuedEmails() {
         let providerMessageId = null;
         if (sendEmail && userData?.email) {
           const appUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://paperworking.co';
-          const { generateSystemNotificationEmail } = await import(
-            '../../../../lib/emails/templates/SystemNotificationEmail'
-          );
           const { html, subject } = generateSystemNotificationEmail({
             title,
             body: body.replace(/\n/g, '<br/>'),
             deepLinkUrl: firstItem.deepLinkUrl || '/dashboard',
             appUrl,
+            type: firstItem.type,
+            objectReference: {
+              dealAddress: firstItem.dealAddress,
+              amount: firstItem.amount,
+              task: firstItem.task,
+              documentName: firstItem.documentName,
+              organizationName: firstItem.organizationName,
+              phase: firstItem.phase,
+              dailyBurnRate: firstItem.dailyBurnRate,
+              projectId: firstItem.projectId,
+            },
+            actorName: firstItem.actorName,
           });
 
           const res = await CommunicationEngine.sendRawEmail([userData.email], subject, html);

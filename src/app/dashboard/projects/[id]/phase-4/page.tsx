@@ -5,9 +5,11 @@ import { useParams, useRouter } from 'next/navigation';
 import { useAuth } from '@/context/AuthContext';
 import { projectsService } from '@/lib/firebase/projects';
 import { useWorkspaceProject } from '@/app/dashboard/projects/[id]/layout';
+import { usePhaseAccess } from '@/hooks/usePhaseAccess';
+import { PhaseAccessGuard } from '@/components/project/PhaseAccessGuard';
 import { closeProjectAndArchiveServerAction } from '@/actions';
 import toast from 'react-hot-toast';
-import type { ProjectFinancials } from '@/types/schema';
+import type { ProjectFinancials, ValuationEntry } from '@/types/schema';
 import { useProjectStore } from '@/store/projectStore';
 import ExitStrategyFork from '@/components/exit/ExitStrategyFork';
 import { DispositionLedger } from '@/components/project/DispositionLedger';
@@ -21,6 +23,10 @@ import { NetRealizedProfitCard } from '@/components/project/NetRealizedProfitCar
 import { DocumentVault } from '@/components/project/DocumentVault';
 import NetProceedsCard from '@/components/exit/NetProceedsCard';
 import { PhaseExplainerVideo } from '@/components/project/PhaseExplainerVideo';
+import RentRollCard from '@/components/project/RentRollCard';
+import LeaseOperationsCard from '@/components/project/LeaseOperationsCard';
+import SaleOperationsCard from '@/components/project/SaleOperationsCard';
+import OperatingActualsCard from '@/components/project/OperatingActualsCard';
 import { computeAutopsyMetrics, computeCapitalGainsTax } from '@/lib/math/calculatorUtils';
 import { deriveAllMetrics, computeIRR, buildIRRCashFlows } from '@/lib/metrics/reiMetrics';
 import { computeScheduleE } from '@/lib/tax/scheduleE';
@@ -30,6 +36,9 @@ import { generateScheduleEPdf } from '@/lib/tax/pdfGenerator';
 import { MetricReadout } from '@/components/metrics/MetricReadout';
 import type { MetricResult } from '@/lib/metrics/types';
 import { ValuationHistory } from '@/components/project/ValuationHistory';
+import { CurrentValueTracker } from '@/components/project/CurrentValueTracker';
+import { ActualScorecard } from '@/components/project/ActualScorecard';
+import CrowdfundingReconciliation from '@/components/exit/CrowdfundingReconciliation';
 
 
 /* ═══════════════════════════════════════════════════════════════
@@ -55,6 +64,7 @@ export default function Phase4WorkspacePage() {
   const projectId = params.id as string;
 
   const { project, loading, refresh } = useWorkspaceProject();
+  const { canView, canEdit, loading: accessLoading } = usePhaseAccess('phase-4');
   const [localProject, setLocalProject] = useState<typeof project>(null);
 
   useEffect(() => {
@@ -246,14 +256,75 @@ export default function Phase4WorkspacePage() {
     }
   }, [project, user, projectId, localProject, isRealized, refresh]);
 
-  const strategy = localProject?.financials?.exitStrategyType || 'Sell';
+  const strategy = project?.dispositionType === 'LEASE'
+    ? 'Lease'
+    : project?.dispositionType === 'RENT'
+    ? 'Rent'
+    : (localProject?.financials?.exitStrategyType || 'Sell');
   const ownershipPct = localProject?.financials?.ownershipPercentage ?? 100;
 
-  const handleStrategyChange = (next: 'Sell' | 'Rent') => {
+  const handleStrategyChange = (next: 'Sell' | 'Rent' | 'Lease') => {
     if (!project) return;
+    const disp = next === 'Lease' ? 'LEASE' : next === 'Rent' ? 'RENT' : 'SALE';
     projectsService.updateProject(projectId, {
-      financials: { ...project.financials, exitStrategyType: next }
+      dispositionType: disp,
+      financials: { 
+        ...project.financials, 
+        exitStrategyType: next === 'Lease' ? 'Rent' : next 
+      }
     }).then(() => refresh()).catch(console.error);
+  };
+
+  const handleAddValuation = async (newEntry: ValuationEntry) => {
+    if (!project) return;
+    try {
+      const currentList = project.financials?.current_value || [];
+      const updatedList = [...currentList, newEntry];
+      
+      const sorted = [...updatedList].sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+      const latestValue = sorted[0]?.value || 0;
+
+      await projectsService.updateProject(projectId, {
+        financials: {
+          ...project.financials,
+          purchasePrice: project.financials?.purchasePrice || 0,
+          estimatedARV: project.financials?.estimatedARV || 0,
+          costs: project.financials?.costs || [],
+          current_value: updatedList,
+          estimatedCurrentValue: latestValue
+        }
+      });
+      refresh();
+    } catch (err) {
+      console.error('Failed to add valuation:', err);
+      toast.error('Failed to add valuation');
+    }
+  };
+
+  const handleDeleteValuation = async (id: string) => {
+    if (!project) return;
+    try {
+      const currentList = project.financials?.current_value || [];
+      const updatedList = currentList.filter(v => v.id !== id);
+      
+      const sorted = [...updatedList].sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+      const latestValue = sorted[0]?.value || 0;
+
+      await projectsService.updateProject(projectId, {
+        financials: {
+          ...project.financials,
+          purchasePrice: project.financials?.purchasePrice || 0,
+          estimatedARV: project.financials?.estimatedARV || 0,
+          costs: project.financials?.costs || [],
+          current_value: updatedList,
+          estimatedCurrentValue: latestValue
+        }
+      });
+      refresh();
+    } catch (err) {
+      console.error('Failed to delete valuation:', err);
+      toast.error('Failed to delete valuation');
+    }
   };
 
   const handleFinancialsChange = (updated: Partial<ProjectFinancials>) => {
@@ -384,7 +455,7 @@ export default function Phase4WorkspacePage() {
   const shareMultiplier = metricsScope === 'myShare' ? ownershipPct / 100 : 1;
 
   /* ── Loading state ── */
-  if (loading) {
+  if (loading || accessLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-[#0d0a0b]">
         <div className="flex flex-col items-center gap-4">
@@ -417,7 +488,8 @@ export default function Phase4WorkspacePage() {
   }
 
   return (
-    <div className="min-h-screen bg-[#0d0a0b] relative">
+    <PhaseAccessGuard phaseId="phase-4" phaseName="Phase 4: Exit">
+      <div className="min-h-screen bg-[#0d0a0b] relative">
 
       {/* ── Ambient Background Layer ── */}
       <div className="fixed inset-0 pointer-events-none -z-10 overflow-hidden">
@@ -435,12 +507,12 @@ export default function Phase4WorkspacePage() {
           <span className="material-symbols-outlined text-[#454955] text-sm" style={{ fontVariationSettings: "'FILL' 1" }}>check_circle</span>
           <span className="text-[10px] font-bold uppercase tracking-[0.2em] text-[#454955]">
             {project.locked
-              ? 'Immutable Record: Project Archived & Locked'
-              : `Realized · Closed ${closedAtDate || ''}`}
+              ? 'Immutable Record: Project Complete & Archived'
+              : `Project Complete · Sale Closed ${closedAtDate || ''}`}
           </span>
           {isRealized && !project.locked && (
             <span className="px-2 py-0.5 rounded-full text-[8px] font-bold uppercase tracking-widest bg-blue-400/15 text-blue-300">
-              REALIZED
+              COMPLETE
             </span>
           )}
         </div>
@@ -623,6 +695,12 @@ export default function Phase4WorkspacePage() {
               <div className="space-y-6 animate-in fade-in slide-in-from-bottom-8 duration-700">
                 <NetRealizedProfitCard project={project} />
 
+                <SaleOperationsCard
+                  project={localProject || project}
+                  refresh={refresh}
+                  isLocked={project.locked}
+                />
+
                 <MarketingListingLedger
                   financials={localProject?.financials || project.financials || {}}
                   onChange={handleFinancialsChange}
@@ -672,21 +750,59 @@ export default function Phase4WorkspacePage() {
                   isSaving={isSaving}
                   isLocked={project.locked}
                 />
+                <RentRollCard
+                  project={localProject || project}
+                  refresh={refresh}
+                  isLocked={project.locked}
+                />
+                <OperatingActualsCard
+                  project={localProject || project}
+                  refresh={refresh}
+                  isLocked={project.locked}
+                />
+                <CurrentValueTracker
+                  projectId={projectId}
+                  currentValue={localProject?.financials?.current_value || project?.financials?.current_value || []}
+                  onAddValuation={handleAddValuation}
+                  onDeleteValuation={handleDeleteValuation}
+                />
+              </div>
+            )}
+
+            {strategy === 'Lease' && (
+              <div className="space-y-6 animate-in fade-in slide-in-from-bottom-8 duration-700">
+                <NetProceedsCard deal={localProject || project} />
+                <LeaseOperationsCard
+                  project={localProject || project}
+                  refresh={refresh}
+                  isLocked={project.locked}
+                />
+                <OperatingActualsCard
+                  project={localProject || project}
+                  refresh={refresh}
+                  isLocked={project.locked}
+                />
+                <CurrentValueTracker
+                  projectId={projectId}
+                  currentValue={localProject?.financials?.current_value || project?.financials?.current_value || []}
+                  onAddValuation={handleAddValuation}
+                  onDeleteValuation={handleDeleteValuation}
+                />
               </div>
             )}
 
             {/* ── All-In Cost Summary ── */}
             <TotalAllInCostCard project={project} />
 
-            {/* ── Document Vault ── */}
+            {/* ── Permanent Record Archive (Card E3.3) ── */}
             <div className="pt-4 border-t border-white/5">
               <DocumentVault
                 projectId={projectId}
                 documents={localProject?.roleLinkedDocuments || project.roleLinkedDocuments || []}
                 onChange={handleDocumentsChange}
-                categories={['Final Settlement Statement', 'Deed', 'Buyer Agreements']}
-                title="Exit Vault"
-                description="Upload finalized settlement documentation to anchor the compliance record."
+                categories={['Deed', 'Title Policy', 'Closing Sets', 'Warranties', 'Tax Documents']}
+                title="Permanent Record Archive"
+                description="Store deed, title policy, closing sets, warranties, and tax documents for the project's permanent history."
               />
             </div>
           </div>
@@ -694,108 +810,18 @@ export default function Phase4WorkspacePage() {
           {/* ── Right Column: Realized Performance ── */}
           <div className="lg:col-span-5 space-y-4">
 
-            {/* Structured MetricReadout Cards */}
-            <div className="glass-card rounded-2xl p-5 space-y-4 border border-white/5">
-              <h4 className="text-[10px] font-bold uppercase tracking-[0.2em] text-[#9E9DA0]">Live Metric Readouts</h4>
-              <div className="grid grid-cols-2 gap-4">
-                <MetricReadout label="IRR" result={irrResult} format="percent" accentColor="#ffd1aa" />
-                <MetricReadout label="Cash-on-Cash" result={cocResult} format="percent" />
-                <MetricReadout label="Appreciation" result={appreciationResult} format="percent" />
-                <MetricReadout label="Total Return" result={totalReturn} format="currency" />
-              </div>
-            </div>
+            <ActualScorecard
+              project={localProject || project}
+              strategy={strategy as 'Sell' | 'Rent' | 'Lease'}
+              liveMetrics={liveMetrics}
+              autopsy={autopsy}
+              metricsScope={metricsScope}
+              setMetricsScope={setMetricsScope}
+              isRealized={isRealized}
+            />
 
-            {/* Realized Metrics Panel (Stitch: glass-card with Property/MyShare toggle) */}
-            <div className="glass-card rounded-2xl p-6 space-y-6 border-[#454955]/20">
-              <div className="flex items-center justify-between">
-                <h3 className="text-[24px] leading-[32px] font-semibold text-[#9E9DA0]">Realized Metrics</h3>
-                <div className="bg-[#262328]/50 p-1 rounded-lg flex gap-1">
-                  {(['property', 'myShare'] as const).map((scope) => (
-                    <button
-                      key={scope}
-                      onClick={() => setMetricsScope(scope)}
-                      className={`px-3 py-1 rounded text-[12px] leading-[14px] tracking-[0.05em] font-medium transition-all ${
-                        metricsScope === scope
-                          ? 'bg-[#454955] text-[#0d0a0b]'
-                          : 'text-[#9E9DA0] hover:text-[#9E9DA0]'
-                      }`}
-                    >
-                      {scope === 'property' ? 'Property' : 'My Share'}
-                    </button>
-                  ))}
-                </div>
-              </div>
-
-              {/* IRR Hero Card (Stitch: gold-health-band) */}
-              <div className="glass-card rounded-2xl p-4 relative overflow-hidden"
-                style={{ borderLeft: '4px solid #ffd1aa', background: 'linear-gradient(90deg, rgba(255, 209, 170, 0.1) 0%, transparent 100%)' }}
-              >
-                <p className="text-[12px] leading-[14px] tracking-[0.05em] font-medium text-[#9E9DA0] mb-1">Final IRR</p>
-                <div className="flex items-end gap-2">
-                  <p className="text-[48px] leading-[56px] font-bold tracking-[-0.02em] text-[#454955] tabular-nums">
-                    {irr > 0 ? irr.toFixed(1) : autopsy ? (autopsy.holdDays && autopsy.holdDays > 0 ? (autopsy.roi * (365 / autopsy.holdDays)).toFixed(1) : '—') : '—'}
-                    <span className="text-[24px]">%</span>
-                  </p>
-                  <span className="material-symbols-outlined text-[#ffac5a] mb-2" style={{ fontVariationSettings: "'FILL' 1" }}>trending_up</span>
-                </div>
-                <p className="text-[12px] leading-[14px] tracking-[0.05em] font-medium text-[#ffd1aa] mt-2 flex items-center gap-1">
-                  <span className="material-symbols-outlined text-xs" style={{ fontVariationSettings: "'FILL' 1" }}>stars</span>
-                  {autopsy && autopsy.roi > 20 ? 'Upper Quartile Performance' : 'Annualized Return'}
-                </p>
-              </div>
-
-              {/* Metrics 2×3 Grid (Stitch: glass sub-cards) */}
-              <div className="grid grid-cols-2 gap-3">
-                {/* Total Appreciation */}
-                <div className="glass-card rounded-2xl border border-white/5 p-3">
-                  <p className="text-[12px] leading-[14px] tracking-[0.05em] font-medium text-[#9E9DA0] mb-1">Total Appreciation</p>
-                  <p className="text-[24px] leading-[32px] font-semibold text-[#9E9DA0] tabular-nums">
-                    {autopsy ? fmtDollar(Math.round((autopsy.grossSalePrice - autopsy.purchasePrice) * shareMultiplier)) : '—'}
-                  </p>
-                </div>
-
-                {/* Net ROI */}
-                <div className="glass-card rounded-2xl border border-white/5 p-3">
-                  <p className="text-[12px] leading-[14px] tracking-[0.05em] font-medium text-[#9E9DA0] mb-1">Net ROI</p>
-                  <p className="text-[24px] leading-[32px] font-semibold text-[#9E9DA0] tabular-nums">
-                    {autopsy ? fmtPct(autopsy.roi) : '—'}
-                  </p>
-                </div>
-
-                {/* Total Profit */}
-                <div className="glass-card rounded-2xl border border-white/5 p-3">
-                  <p className="text-[12px] leading-[14px] tracking-[0.05em] font-medium text-[#9E9DA0] mb-1">Total Profit</p>
-                  <p className={`text-[24px] leading-[32px] font-semibold tabular-nums ${autopsy && autopsy.netProfit >= 0 ? 'text-[#454955]' : 'text-[#ffb4ab]'}`}>
-                    {autopsy ? fmtCurrency(Math.round(autopsy.netProfit * shareMultiplier)) : '—'}
-                  </p>
-                </div>
-
-                {/* Cash-on-Cash */}
-                <div className="glass-card rounded-2xl border border-white/5 p-3">
-                  <p className="text-[12px] leading-[14px] tracking-[0.05em] font-medium text-[#9E9DA0] mb-1">Cash-on-Cash</p>
-                  <p className="text-[24px] leading-[32px] font-semibold text-[#9E9DA0] tabular-nums">
-                    {autopsy ? fmtPct(autopsy.coc) : '—'}
-                  </p>
-                </div>
-
-                {/* GRM */}
-                <div className="glass-card rounded-2xl border border-white/5 p-3">
-                  <p className="text-[12px] leading-[14px] tracking-[0.05em] font-medium text-[#9E9DA0] mb-1">GRM</p>
-                  <p className="text-[24px] leading-[32px] font-semibold text-[#9E9DA0] tabular-nums">
-                    {liveMetrics ? liveMetrics.grossRentMultiplier.toFixed(1) : '—'}
-                  </p>
-                </div>
-
-                {/* Profit Margin */}
-                <div className="glass-card rounded-2xl border border-white/5 p-3">
-                  <p className="text-[12px] leading-[14px] tracking-[0.05em] font-medium text-[#9E9DA0] mb-1">Profit Margin</p>
-                  <p className="text-[24px] leading-[32px] font-semibold text-[#9E9DA0] tabular-nums">
-                    {autopsy ? fmtPct(autopsy.profitMargin) : '—'}
-                  </p>
-                </div>
-              </div>
-
-              {/* Generate Tax Report CTA (Stitch: full-width button) */}
+            {/* Generate Tax Report CTA (Stitch: full-width button) */}
+            <div className="glass-card rounded-2xl p-4 border border-[#454955]/20 bg-[#262328]/10">
               <button
                 onClick={handleGenerateTaxReport}
                 className="w-full py-3.5 rounded-xl border border-white/20 text-[#9E9DA0] font-semibold text-[16px] leading-[24px] hover:bg-white/5 active:scale-[0.98] transition-all flex items-center justify-center gap-2 disabled:opacity-40"
@@ -804,6 +830,23 @@ export default function Phase4WorkspacePage() {
                 Generate Tax Report
               </button>
             </div>
+
+            {isRealized && (
+              <div className="space-y-4 animate-in fade-in slide-in-from-bottom-4 duration-500">
+                <CrowdfundingReconciliation deal={localProject || project} />
+                
+                {/* ── Reinvestment Notice ── */}
+                <div className="glass-card rounded-2xl p-5 border border-[#454955]/20 bg-[#262328]/10 space-y-3">
+                  <div className="flex items-center gap-2 text-text-primary">
+                    <span className="material-symbols-outlined text-[#ffd1aa]">info</span>
+                    <h4 className="text-[12px] font-bold uppercase tracking-wider">Reinvestment Notice</h4>
+                  </div>
+                  <p className="text-[12px] leading-[18px] text-[#9E9DA0]">
+                    Reinvestment of proceeds is classified as a portfolio-level event. Since a new acquisition represents a new project rather than a subsequent phase of this deal, any redeployed equity will be tracked outside of this workspace.
+                  </p>
+                </div>
+              </div>
+            )}
 
             {/* Live Valuation History (AVM) timeline */}
             <ValuationHistory projectId={projectId} />
@@ -890,14 +933,14 @@ export default function Phase4WorkspacePage() {
             <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-[#454955]/5 border border-[#454955]/10">
               <div className={`w-2 h-2 rounded-full ${project.locked ? 'bg-[#454955]' : 'bg-[#454955] animate-pulse'}`} />
               <span className="text-[10px] font-bold uppercase tracking-[0.2em] text-[#454955]">
-                {project.locked ? 'Project Archived' : 'Ready for Archival'}
+                {project.locked ? 'Project Complete' : 'Ready for Completion'}
               </span>
             </div>
             <h2 className="text-[32px] leading-[40px] font-bold tracking-[-0.01em] text-[#9E9DA0]">
               Terminal Project Reconciliation
             </h2>
             <p className="text-[14px] leading-[20px] text-[#9E9DA0] max-w-lg mx-auto">
-              Archiving this project will freeze all financial data, set the project to an immutable read-only state, and push the final performance metrics to your organization&apos;s global SaaS dashboard.
+              Closing this project will freeze all financial data, mark the project as complete, compute final equity distributions, and transition it to an immutable read-only archive. Reinvestment of proceeds is managed as a portfolio event.
             </p>
           </div>
 
@@ -992,6 +1035,7 @@ export default function Phase4WorkspacePage() {
           </div>
         </div>
       </div>
-    </div>
+      </div>
+    </PhaseAccessGuard>
   );
 }

@@ -58,3 +58,11 @@ All TypeScript compiler/typecheck checks (`npx tsc --noEmit`) and the entire Jes
 - Honored global and category-level preference suppressions (`preferences.categories`).
 - Added automated test suite `src/__tests__/fundNotifications.test.ts` verifying templates, failure isolation, suppression toggles, and recipient logic.
 - All 182 test suites passed successfully and `npx tsc --noEmit` compiled with 0 errors.
+
+## Handoff for QA-2 — Gate & Phase-Integrity Fixes (COMPLETE)
+- **Normalized status writes:** Integrated server-side evaluations/intercepts and updated UI wizards/components to write only the canonical four-key statuses (`Acquisition`, `Fund`, `Hold`, `Exit`). Direct writes of legacy status values are completely removed.
+- **Unified 8 Gate Criteria:** Implemented `evaluateAcquisitionGate` in `gate.ts` checking all 8 criteria on the server, synced to the client component `AcquisitionPhaseGate.tsx`.
+- **Decoupled Closing:** Removed the "Advance to Hold" button from the `ClosingRoomModal` in favor of dashboard gate controls.
+- **Terminology & Sweep:** Cleaned up "Acquisition Team" to "Investment Team" in comments and label cards, and dynamicized NeedsAttentionFeed phase metadata.
+- **Lease & Disposition:** Expanded exitStrategyType schema/validation, added a switcher option for Commercial Lease (`LEASE`) to trigger the stabilized opex/rental experience in Phase4Outcome, and updated tests.
+- All 185 test suites (2028 tests) are 100% green and passing, and `npx tsc --noEmit` runs with 0 errors.

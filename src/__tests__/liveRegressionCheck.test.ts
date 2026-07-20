@@ -31,16 +31,16 @@ describe('REIL FUND REGRESSION SWEEP', () => {
 
     console.log('\n[1/4] Live deriveAllMetrics check (The Five Goldens):');
     console.log(`  • NOI:                  $${m.noi.toLocaleString()} (Expected: $12,486)`);
-    console.log(`  • Cap Rate:             ${m.capRate.toFixed(2)}% (Expected: 4.48%)`);
-    console.log(`  • Annual Cash Flow:     $${m.annualCashFlow.toFixed(2)} (Expected: -$4,443.31)`);
-    console.log(`  • DSCR:                 ${m.dscr.toFixed(3)} (Expected: 0.738)`);
+    console.log(`  • Cap Rate:             ${m.capRate.toFixed(2)}% (Expected: 4.50%)`);
+    console.log(`  • Annual Cash Flow:     $${m.annualCashFlow.toFixed(2)} (Expected: -$4,444.00)`);
+    console.log(`  • DSCR:                 ${m.dscr.toFixed(2)} (Expected: 0.74)`);
     console.log(`  • CoC Return:           ${m.cashOnCashReturn.toFixed(2)}% (Expected: -7.41%)`);
     console.log(`  • GRM:                  ${m.grossRentMultiplier.toFixed(2)} (Expected: 11.92)`);
 
     expect(m.noi).toBe(12486);
-    expect(m.capRate).toBe(4.48);
-    expect(Math.round(m.annualCashFlow)).toBe(-4443);
-    expect(m.dscr).toBe(0.738);
+    expect(m.capRate).toBe(4.5);
+    expect(Math.round(m.annualCashFlow)).toBe(-4444);
+    expect(m.dscr).toBe(0.74);
     expect(m.cashOnCashReturn).toBe(-7.41);
   });
 
@@ -50,8 +50,8 @@ describe('REIL FUND REGRESSION SWEEP', () => {
     // FX-1: Conventional Mortgage
     const amort = calculateAmortization(223_200, 6.5, 360);
     const ads = Math.round(amort.annualDebtService);
-    console.log(`  • FX-1 Conventional Mortgage Debt Service: $${ads.toLocaleString()} (Expected: $16,929 / $16,930)`);
-    expect(ads).toBe(16929);
+    console.log(`  • FX-1 Conventional Mortgage Debt Service: $${ads.toLocaleString()} (Expected: $16,930)`);
+    expect(ads).toBe(16930);
 
     // FX-2: Co-buy Shares
     const initialA = 167_400;

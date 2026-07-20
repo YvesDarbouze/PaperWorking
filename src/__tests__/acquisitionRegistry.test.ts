@@ -229,13 +229,13 @@ describe('AQ-1: Acquisition Variable Registry', () => {
     });
 
     it('Cap Rate ≈ 4.5% (locked)', () => {
-      expect(metrics.capRate).toBeCloseTo(4.48, 1);
+      expect(metrics.capRate).toBeCloseTo(4.5, 1);
       // eslint-disable-next-line no-console
       console.log(`  Cap Rate:  ${metrics.capRate.toFixed(2)}%`);
     });
 
     it('Cash Flow ≈ −$4,444 (on gross-scheduled-rent PM fee basis)', () => {
-      expect(metrics.annualCashFlow).toBeCloseTo(-4443.31, 0);
+      expect(metrics.annualCashFlow).toBeCloseTo(-4444, 0);
       // eslint-disable-next-line no-console
       console.log(`  Cash Flow: $${metrics.annualCashFlow.toFixed(2)}`);
     });

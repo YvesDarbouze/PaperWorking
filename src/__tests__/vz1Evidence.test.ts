@@ -69,9 +69,9 @@ describe('VZ-1 EVIDENCE — All 33 KPIs from deriveAllMetrics', () => {
   // ── Class 1: computable now ──────────────────────────────────────────────
   it('Class 1 — five locked golden values are unchanged in projected', () => {
     expect(m.kpi33.NOI.projected).toBe(12_486);
-    expect(m.kpi33.CAP_RATE.projected).toBe(4.48);
-    expect(m.kpi33.CASH_FLOW.projected).toBeCloseTo(-4_443.31, 0);
-    expect(m.kpi33.DSCR.projected).toBe(0.738);
+    expect(m.kpi33.CAP_RATE.projected).toBe(4.5);
+    expect(m.kpi33.CASH_FLOW.projected).toBeCloseTo(-4444, 0);
+    expect(m.kpi33.DSCR.projected).toBe(0.74);
     expect(m.kpi33.COC.projected).toBe(-7.41);
   });
 

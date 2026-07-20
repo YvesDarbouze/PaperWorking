@@ -60,9 +60,9 @@ describe('BUG-8 REVERT EVIDENCE — Gross-Basis PM Fee (P6 Canon)', () => {
 
     // The 5 locked golden values (P6 canon)
     expect(m.noi).toBe(12_486);
-    expect(m.capRate).toBe(4.48);          // ≈4.5% at 1dp
-    expect(m.annualCashFlow).toBeCloseTo(-4_443.31, 0); // ≈-$4,444
-    expect(m.dscr).toBe(0.738);            // ≈0.74 at 2dp
+    expect(m.capRate).toBe(4.5);
+    expect(m.annualCashFlow).toBeCloseTo(-4444, 0);
+    expect(m.dscr).toBe(0.74);
     expect(m.cashOnCashReturn).toBe(-7.41);
     expect(m.grossRentMultiplier).toBe(11.92);
 

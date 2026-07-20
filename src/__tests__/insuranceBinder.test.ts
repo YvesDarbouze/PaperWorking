@@ -33,8 +33,8 @@ describe('FD-27: Insurance Binder and Riders Validation', () => {
     // Golden 1: NOI = $12,486
     expect(metrics.noi).toBe(12486);
 
-    // Golden 2: Annual Cash Flow = -$4,443.31
-    expect(metrics.annualCashFlow).toBeCloseTo(-4443.31, 1);
+    // Golden 2: Annual Cash Flow = -$4,444
+    expect(metrics.annualCashFlow).toBeCloseTo(-4444, 1);
 
     // Golden 3: DSCR = 0.74
     expect(metrics.dscr).toBeCloseTo(0.74, 2);

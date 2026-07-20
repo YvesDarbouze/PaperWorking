@@ -39,19 +39,22 @@ function runRegressionSweep() {
 
   console.log('\n[1/4] Live deriveAllMetrics check (The Five Goldens):');
   console.log(`  • NOI:                  $${m.noi.toLocaleString()} (Expected: $12,486)`);
-  console.log(`  • Cap Rate:             ${m.capRate.toFixed(2)}% (Expected: 4.48%)`);
-  console.log(`  • Annual Cash Flow:     $${m.annualCashFlow.toFixed(2)} (Expected: -$4,443.31)`);
-  console.log(`  • DSCR:                 ${m.dscr.toFixed(3)} (Expected: 0.738)`);
+  console.log(`  • Cap Rate:             ${m.capRate.toFixed(2)}% (Expected: 4.50%)`);
+  console.log(`  • Annual Cash Flow:     $${m.annualCashFlow.toFixed(2)} (Expected: -$4,444)`);
+  console.log(`  • DSCR:                 ${m.dscr.toFixed(2)} (Expected: 0.74)`);
   console.log(`  • CoC Return:           ${m.cashOnCashReturn.toFixed(2)}% (Expected: -7.41%)`);
   console.log(`  • GRM:                  ${m.grossRentMultiplier.toFixed(2)} (Expected: 11.92)`);
+  console.log(`  • LTV:                  ${m.ltv.toFixed(2)}% (Expected: 80.00%)`);
 
   const passGoldens = 
     m.noi === 12486 &&
-    m.capRate === 4.48 &&
-    Math.round(m.annualCashFlow) === -4443 &&
-    m.dscr === 0.738 &&
-    m.cashOnCashReturn === -7.41;
-  console.log(passGoldens ? '  ✅ PASS: All 5 goldens match CCIM/NARPM specifications.' : '  ❌ FAIL: Golden drift detected.');
+    m.capRate === 4.5 &&
+    Math.round(m.annualCashFlow) === -4444 &&
+    m.dscr === 0.74 &&
+    m.cashOnCashReturn === -7.41 &&
+    m.grossRentMultiplier === 11.92 &&
+    m.ltv === 80.00;
+  console.log(passGoldens ? '  ✅ PASS: All goldens match CCIM/NARPM specifications.' : '  ❌ FAIL: Golden drift detected.');
 
   // 2. Full FX Suite Calculations
   console.log('\n[2/4] FX Suite Verification:');

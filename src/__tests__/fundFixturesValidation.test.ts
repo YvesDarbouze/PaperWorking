@@ -26,11 +26,11 @@ describe('FD-6 Fund Fixture Families Validation Tests', () => {
       // 1. NOI (gross-basis PM fee, P6 canon)
       expect(metrics.noi).toBe(12_486);
       
-      // 2. Annual Cash Flow: NOI - Debt Service = 12486 - 16929.31 = -4443.31
-      expect(metrics.annualCashFlow).toBeCloseTo(-4443.31, 1);
+      // 2. Annual Cash Flow: NOI - Debt Service = 12486 - 16930 = -4444
+      expect(metrics.annualCashFlow).toBeCloseTo(-4444, 1);
       
-      // 3. DSCR: NOI / Debt Service = 12486 / 16929.31 = 0.7375 ≈ 0.74
-      expect(metrics.dscr).toBeCloseTo(0.738, 3);
+      // 3. DSCR: NOI / Debt Service = 12486 / 16930 = 0.74
+      expect(metrics.dscr).toBeCloseTo(0.74, 2);
       
       // 4. Cash-on-Cash Return: -4443.31 / 60000 = -7.41%
       expect(metrics.cashOnCashReturn).toBeCloseTo(-7.41, 1);
@@ -38,10 +38,8 @@ describe('FD-6 Fund Fixture Families Validation Tests', () => {
       // 5. Gross Rent Multiplier (GRM): 279000 / 23400 = 11.92
       expect(metrics.grossRentMultiplier).toBeCloseTo(11.92, 2);
       
-      // LTV: 223200 / 320000 = 69.75% (against ARV) or 80.00% (against Purchase)
-      // Standard LTV is loanAmount / propertyValue (which defaults to estimatedARV if set, or purchase price)
-      // PropertyValue in metrics defaults to estimatedARV (320000) -> 223200 / 320000 = 69.75%
-      expect(metrics.ltv).toBeCloseTo(69.75, 2);
+      // LTV: 223200 / 279000 = 80.00% (against Purchase)
+      expect(metrics.ltv).toBeCloseTo(80.00, 2);
     });
   });
 

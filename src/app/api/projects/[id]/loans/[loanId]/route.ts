@@ -3,7 +3,7 @@ import { requireAuth, isAuthError } from '@/lib/firebase-admin/auth-guard';
 import { adminDb } from '@/lib/firebase/admin';
 import { writeActivityLog } from '@/lib/firebase/activityLogWriter';
 import { NotificationService } from '@/lib/services/notificationService';
-import { verifyProjectAccessAndRole } from '@/lib/firebase-admin/project-guard';
+import { verifyProjectAccessAndRole, authorizeProjectMutation } from '@/lib/firebase-admin/project-guard';
 
 export const dynamic = 'force-dynamic';
 
@@ -18,21 +18,24 @@ export async function PATCH(
 
     const { id: projectId, loanId } = await params;
 
-    const access = await verifyProjectAccessAndRole(projectId, uid, auth.token.email);
+    const access = await verifyProjectAccessAndRole(projectId, uid, auth.token?.email);
     if (!access) {
       return NextResponse.json({ error: 'Project not found or access denied' }, { status: 403 });
     }
     const project = access.project;
 
-    // Enforce LP/Vendor access controls
+    const currentPhase = project.currentPhase || 1;
+    const phaseKey = `phase-${currentPhase}` as 'phase-1' | 'phase-2' | 'phase-3' | 'phase-4';
+    const authCheck = authorizeProjectMutation(access, phaseKey, {
+      allowVendorSlot: ['f4HardMoneyLenderVendor', 'f4CdcVendor', 'f4AppraiserVendor']
+    });
+    if (!authCheck.authorized) {
+      return NextResponse.json({ error: authCheck.error }, { status: authCheck.status || 403 });
+    }
+
+    // Enforce LP access control explicitly as well
     if (access.role === 'LP') {
       return NextResponse.json({ error: 'Access denied: LPs cannot update loan records.' }, { status: 403 });
-    }
-    if (access.role === 'Vendor') {
-      const isLenderOrAppraiser = ['f4HardMoneyLenderVendor', 'f4CdcVendor', 'f4AppraiserVendor'].includes(access.partyId || '');
-      if (!isLenderOrAppraiser) {
-        return NextResponse.json({ error: 'Access denied: Vendor is not authorized to update loan records.' }, { status: 403 });
-      }
     }
 
     const body = await request.json();

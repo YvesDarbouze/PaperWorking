@@ -53,7 +53,7 @@ export async function POST(
 
     const { id: projectId } = await params;
 
-    const access = await verifyProjectAccessAndRole(projectId, uid, auth.token.email);
+    const access = await verifyProjectAccessAndRole(projectId, uid, auth.token?.email);
     if (!access) {
       return NextResponse.json({ error: 'Project not found or access denied' }, { status: 403 });
     }

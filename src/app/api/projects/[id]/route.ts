@@ -3,6 +3,27 @@ import { requireAuth, isAuthError } from '@/lib/firebase-admin/auth-guard';
 import { adminDb } from '@/lib/firebase/admin';
 import { clearDashboardCache } from '@/lib/cache/dashboardCache';
 import { logOrgActivity } from '@/lib/firebase/orgActivityWriter';
+import { determineAccessAndRole, authorizeProjectMutation } from '@/lib/firebase-admin/project-guard';
+import { z } from 'zod';
+
+const updateFinancialsSchema = z.object({
+  loanAmount: z.number().nonnegative({ message: "loanAmount must be non-negative" }).nullish(),
+  loanInterestRate: z.number().nonnegative({ message: "loanInterestRate must be non-negative" }).nullish(),
+  loanTermYears: z.number().positive({ message: "loanTermYears must be positive" }).nullish(),
+  loanOriginationPoints: z.number().nonnegative({ message: "loanOriginationPoints must be non-negative" }).nullish(),
+  downPaymentPercent: z.number().nonnegative().max(100).nullish(),
+  purchasePrice: z.number().nonnegative().optional(),
+  estimatedARV: z.number().nonnegative().optional(),
+  arv: z.number().nonnegative().optional(),
+  annualDebtService: z.any().refine(val => val === undefined, {
+    message: "annualDebtService is read-only and cannot be updated"
+  }).optional(),
+}).passthrough();
+
+const updateBodySchema = z.object({
+  financials: updateFinancialsSchema.optional(),
+  status: z.enum(['acquisition', 'fund', 'hold', 'exit']).optional(),
+}).passthrough();
 
 /* ═══════════════════════════════════════════════════════════════
    PATCH /api/projects/[id] — Update project fields
@@ -34,13 +55,21 @@ export async function PATCH(
       );
     }
 
-    // 2. Parse the update body first
+    // 2. Parse and validate the update body
     const body = await request.json();
-    const { financials, ...topLevelUpdates } = body;
+    const validation = updateBodySchema.safeParse(body);
+    if (!validation.success) {
+      return NextResponse.json(
+        { error: 'Validation failed', details: validation.error.flatten().fieldErrors },
+        { status: 400 }
+      );
+    }
+
+    const { financials, ...topLevelUpdates } = validation.data;
 
     const projectRef = adminDb.collection('projects').doc(projectId);
 
-    // 3. Verify access and update project within a transaction
+    // 3. Update project within a transaction
     const transactionResult = await adminDb.runTransaction(async (transaction) => {
       const projectSnap = await transaction.get(projectRef);
 
@@ -63,13 +92,21 @@ export async function PATCH(
       }
 
       const orgData = orgSnap.data();
-      const isOwner = orgData?.ownerUid === uid;
-      const teamMember = orgData?.teamMembers?.find((m: any) => m.id === uid && m.status === 'active');
-      const isProjectMember = !!projectData?.members?.[uid];
 
-      if (!isOwner && !teamMember && !isProjectMember) {
+      // Resolve role and verify access inside transaction
+      const access = determineAccessAndRole(projectData, uid, auth.token?.email, orgData);
+      if (!access) {
         return { status: 403, error: 'Access denied. You do not have write access to this project.' };
       }
+
+      const currentPhase = projectData.currentPhase || 1;
+      const phaseKey = `phase-${currentPhase}` as 'phase-1' | 'phase-2' | 'phase-3' | 'phase-4';
+      const authCheck = authorizeProjectMutation(access, phaseKey);
+      if (!authCheck.authorized) {
+        return { status: authCheck.status || 403, error: authCheck.error || 'Access denied' };
+      }
+
+      const teamMember = orgData?.teamMembers?.find((m: any) => m.id === uid && m.status === 'active');
 
       // Enforce scoped team member project restrictions
       if (teamMember && teamMember.isScoped) {
@@ -122,7 +159,7 @@ export async function PATCH(
     const statusChanged = nextStatus && nextStatus !== prevStatus;
     const phaseChanged = nextPhase && nextPhase !== prevPhase;
     if (orgId && (statusChanged || phaseChanged)) {
-      const actorName = auth.token.name || auth.token.email || 'Unknown';
+      const actorName = auth.token?.name || auth.token?.email || 'Unknown';
       const changeLabel = phaseChanged
         ? `moved to ${nextPhase}`
         : `status changed to "${nextStatus}"`;

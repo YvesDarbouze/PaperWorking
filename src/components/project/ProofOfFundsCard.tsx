@@ -22,6 +22,7 @@ import {
 } from 'lucide-react';
 import toast from 'react-hot-toast';
 import type { Project, ProofOfFundsStatus } from '@/types/schema';
+import { IS_DEMO_MODE } from '@/lib/config/demo';
 
 interface ProofOfFundsCardProps {
   projectId: string;
@@ -392,64 +393,66 @@ export default function ProofOfFundsCard({ projectId, refresh }: ProofOfFundsCar
       </div>
 
       {/* ── Plaid Context Balance Display (Visually Separate) ── */}
-      <div className="bg-[#121014] border border-white/5 rounded-2xl p-6 space-y-4 relative overflow-hidden shadow-inner">
-        <div className="absolute top-0 right-0 p-8 opacity-[0.03] pointer-events-none">
-          <Building className="w-24 h-24 text-white" />
-        </div>
-
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-          <div className="space-y-1">
-            <span className="text-[9px] font-black text-white/40 tracking-wider bg-white/5 px-2 py-0.5 rounded-md uppercase">
-              Plaid Bank Feed (Context Reference Only)
-            </span>
-            <h4 className="text-sm font-bold text-white flex items-center gap-1.5">
-              <span>Business Account Liquidity Context</span>
-            </h4>
-            <p className="text-[10px] text-[#9E9DA0]/60 max-w-md leading-normal">
-              Continuous live balance check to display liquidity context. This dashboard element does NOT constitute official escrow verification.
-            </p>
+      {IS_DEMO_MODE && (
+        <div className="bg-[#121014] border border-white/5 rounded-2xl p-6 space-y-4 relative overflow-hidden shadow-inner">
+          <div className="absolute top-0 right-0 p-8 opacity-[0.03] pointer-events-none">
+            <Building className="w-24 h-24 text-white" />
           </div>
 
-          <button
-            onClick={() => handleSyncPlaid(activeList[0]?.id || 'default_solo_equity')}
-            disabled={syncingPlaid}
-            className="self-start sm:self-center bg-white/5 hover:bg-white/10 text-white/80 hover:text-white px-3 py-1.5 rounded-lg text-[10px] font-bold uppercase tracking-wider flex items-center gap-1.5 transition-all border border-white/5 disabled:opacity-50"
-          >
-            <RefreshCw className={`w-3 h-3 ${syncingPlaid ? 'animate-spin' : ''}`} />
-            <span>Sync Live Balance</span>
-          </button>
-        </div>
-
-        {/* Balance metrics layout */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 bg-white/[0.01] border border-white/5 rounded-xl p-4">
-          <div className="space-y-0.5">
-            <span className="text-[9px] text-[#9E9DA0]/50 font-bold uppercase tracking-wider">Account Label</span>
-            <p className="text-xs font-bold text-white">
-              {activeList[0]?.plaidAccountName || 'Business Premier Savings (*8892)'}
-            </p>
-          </div>
-          <div className="space-y-0.5">
-            <span className="text-[9px] text-[#9E9DA0]/50 font-bold uppercase tracking-wider">Current Account Balance</span>
-            <p className="text-lg font-black text-[#7A9EAA] tracking-tight tabular-nums">
-              {fmtCurrency(activeList[0]?.plaidBalance !== undefined && activeList[0]?.plaidBalance !== null ? activeList[0]?.plaidBalance : 75000_00)}
-            </p>
-            {activeList[0]?.plaidLastSync && (
-              <p className="text-[9px] text-[#9E9DA0]/40 flex items-center gap-1">
-                <Clock className="w-2.5 h-2.5" />
-                <span>Last checked: {new Date(activeList[0].plaidLastSync).toLocaleString()}</span>
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+            <div className="space-y-1">
+              <span className="text-[9px] font-black text-white/40 tracking-wider bg-white/5 px-2 py-0.5 rounded-md uppercase">
+                Plaid Bank Feed (Demo) (Context Reference Only)
+              </span>
+              <h4 className="text-sm font-bold text-white flex items-center gap-1.5">
+                <span>Business Account Liquidity Context (Demo)</span>
+              </h4>
+              <p className="text-[10px] text-[#9E9DA0]/60 max-w-md leading-normal">
+                Continuous live balance check to display liquidity context. This dashboard element does NOT constitute official escrow verification.
               </p>
-            )}
+            </div>
+
+            <button
+              onClick={() => handleSyncPlaid(activeList[0]?.id || 'default_solo_equity')}
+              disabled={syncingPlaid}
+              className="self-start sm:self-center bg-white/5 hover:bg-white/10 text-white/80 hover:text-white px-3 py-1.5 rounded-lg text-[10px] font-bold uppercase tracking-wider flex items-center gap-1.5 transition-all border border-white/5 disabled:opacity-50"
+            >
+              <RefreshCw className={`w-3 h-3 ${syncingPlaid ? 'animate-spin' : ''}`} />
+              <span>Sync Live Balance (Demo)</span>
+            </button>
+          </div>
+
+          {/* Balance metrics layout */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 bg-white/[0.01] border border-white/5 rounded-xl p-4">
+            <div className="space-y-0.5">
+              <span className="text-[9px] text-[#9E9DA0]/50 font-bold uppercase tracking-wider">Account Label</span>
+              <p className="text-xs font-bold text-white">
+                {activeList[0]?.plaidAccountName || 'Business Premier Savings (*8892)'}
+              </p>
+            </div>
+            <div className="space-y-0.5">
+              <span className="text-[9px] text-[#9E9DA0]/50 font-bold uppercase tracking-wider">Current Account Balance</span>
+              <p className="text-lg font-black text-[#7A9EAA] tracking-tight tabular-nums">
+                {fmtCurrency(activeList[0]?.plaidBalance !== undefined && activeList[0]?.plaidBalance !== null ? activeList[0]?.plaidBalance : 75000_00)}
+              </p>
+              {activeList[0]?.plaidLastSync && (
+                <p className="text-[9px] text-[#9E9DA0]/40 flex items-center gap-1">
+                  <Clock className="w-2.5 h-2.5" />
+                  <span>Last checked: {new Date(activeList[0].plaidLastSync).toLocaleString()}</span>
+                </p>
+              )}
+            </div>
+          </div>
+
+          {/* Strict Caution notice to user regarding Plaid balance */}
+          <div className="bg-[#1C181E] border border-white/5 p-3 rounded-xl flex items-start gap-2.5">
+            <AlertCircle className="w-4 h-4 text-amber-500 shrink-0 mt-0.5" />
+            <p className="text-[10px] text-[#9E9DA0]/80 leading-normal">
+              <strong className="text-white">Plaid Disclaimer (Demo):</strong> Balance checks only reflect liquid account balance history. In accordance with broker closing protocols, escrow clearance requires formal Proof of Funds uploads verified by the Lead Investor.
+            </p>
           </div>
         </div>
-
-        {/* Strict Caution notice to user regarding Plaid balance */}
-        <div className="bg-[#1C181E] border border-white/5 p-3 rounded-xl flex items-start gap-2.5">
-          <AlertCircle className="w-4 h-4 text-amber-500 shrink-0 mt-0.5" />
-          <p className="text-[10px] text-[#9E9DA0]/80 leading-normal">
-            <strong className="text-white">Plaid Disclaimer:</strong> Balance checks only reflect liquid account balance history. In accordance with broker closing protocols, escrow clearance requires formal Proof of Funds uploads verified by the Lead Investor.
-          </p>
-        </div>
-      </div>
+      )}
     </div>
   );
 }

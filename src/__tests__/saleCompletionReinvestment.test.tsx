@@ -1,12 +1,30 @@
 /** @jest-environment jsdom */
 import React from 'react';
-import { render, screen } from '@testing-library/react';
+import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import CrowdfundingReconciliation from '../components/exit/CrowdfundingReconciliation';
 import type { Project } from '@/types/schema';
+import { useProjectStore } from '@/store/projectStore';
+import { projectsService } from '@/lib/firebase/projects';
 
 // Mock Auth Context
 jest.mock('@/context/AuthContext', () => ({
   useAuth: () => ({ user: { uid: 'user-123' } }),
+}));
+
+// Mock Project Store
+const mockSetDeals = jest.fn();
+jest.mock('@/store/projectStore', () => ({
+  useProjectStore: (selector: any) => selector({
+    projects: [mockCompletedProject],
+    setDeals: mockSetDeals
+  }),
+}));
+
+// Mock projectsService
+jest.mock('@/lib/firebase/projects', () => ({
+  projectsService: {
+    updateProject: jest.fn().mockResolvedValue({}),
+  },
 }));
 
 const mockCompletedProject: Project = {
@@ -54,6 +72,10 @@ const mockCompletedProject: Project = {
 } as any;
 
 describe('Sale Completion & Equity Distributions (E1.S / Decision F-1)', () => {
+  beforeEach(() => {
+    jest.clearAllMocks();
+  });
+
   it('computes and renders investor distributions when structure exists', () => {
     render(<CrowdfundingReconciliation deal={mockCompletedProject} />);
 
@@ -67,5 +89,39 @@ describe('Sale Completion & Equity Distributions (E1.S / Decision F-1)', () => {
 
     // Verification of Decision F-1 notice
     expect(screen.getByText(/Distribution movements are recorded off-platform per Decision F-1/)).toBeDefined();
+  });
+
+  it('allows Lead Investor to record distribution payment and evidence off-platform', async () => {
+    render(<CrowdfundingReconciliation deal={mockCompletedProject} />);
+
+    // Find and click "Record Payment" for Alice
+    const recordButtons = screen.getAllByRole('button', { name: /Record Payment/i });
+    expect(recordButtons).toHaveLength(2);
+    fireEvent.click(recordButtons[0]);
+
+    // Check that inline input is revealed
+    const input = screen.getByPlaceholderText(/e.g. Wire reference #W89381/i);
+    expect(input).toBeDefined();
+
+    // Type evidence reference
+    fireEvent.change(input, { target: { value: 'Wire ref #998877' } });
+
+    // Click "Confirm Paid"
+    const confirmButton = screen.getByRole('button', { name: /Confirm Paid/i });
+    fireEvent.click(confirmButton);
+
+    await waitFor(() => {
+      expect(projectsService.updateProject).toHaveBeenCalledWith('proj-comp-123', {
+        fractionalInvestors: expect.arrayContaining([
+          expect.objectContaining({
+            id: 'inv-1',
+            distributionStatus: 'confirmed',
+            distributionEvidence: 'Wire ref #998877'
+          })
+        ])
+      });
+    });
+
+    expect(mockSetDeals).toHaveBeenCalled();
   });
 });

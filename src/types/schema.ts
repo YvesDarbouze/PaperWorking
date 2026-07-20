@@ -261,6 +261,8 @@ export interface FractionalInvestor {
    *  without colliding with manually-entered cap-table rows. */
   commitmentId?: string;
   partyType?: CapitalPartyType;
+  distributionStatus?: 'pending' | 'confirmed';
+  distributionEvidence?: string;
 }
 
 // 2.5 Project-Specific Team Member (non-investor professionals)

@@ -360,7 +360,7 @@ export function KPIChartCard({ kpi, project, projects, activeMetrics, isDark, sn
               <span className={`text-[9px] font-bold px-1.5 py-0.5 rounded-full uppercase ${
                  stateLabel === 'actual' ? 'bg-[var(--pw-success)]/10 text-[var(--pw-success)]' : 'bg-[#7A9EAA]/10 text-[#7A9EAA]'
               }`}>
-                {stateLabel}
+                {stateLabel === 'actual' ? 'LIVE' : 'PROJECTED'}
               </span>
             )}
             <button

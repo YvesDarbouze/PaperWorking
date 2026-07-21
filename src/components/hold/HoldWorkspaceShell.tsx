@@ -61,14 +61,14 @@ export function HoldWorkspaceShell({
     <div
       className="w-full min-h-screen p-8 font-sans"
       style={{
-        background: 'var(--color-surface, #121014)',
-        color: 'var(--color-on-surface, #FDFFFC)',
+        background: 'var(--color-surface)',
+        color: 'var(--color-on-surface)',
       }}
     >
       {/* ── Project Header & Shell ── */}
       <div
         className="flex flex-col space-y-4 mb-8 pb-6 border-b"
-        style={{ borderColor: 'var(--color-outline-variant, rgba(253, 255, 252, 0.07))' }}
+        style={{ borderColor: 'var(--color-outline-variant)' }}
       >
         <div className="flex items-center justify-between">
           <div className="flex items-center space-x-3">
@@ -78,9 +78,9 @@ export function HoldWorkspaceShell({
             <span
               className="px-3 py-1 text-xs font-semibold rounded-full border"
               style={{
-                background: 'var(--color-primary-container, rgba(234, 88, 12, 0.15))',
-                color: 'var(--color-primary, #EA580C)',
-                borderColor: 'var(--color-primary-container, rgba(234, 88, 12, 0.30))',
+                background: 'var(--color-primary-container)',
+                color: 'var(--color-primary)',
+                borderColor: 'var(--color-primary-container)',
               }}
             >
               Hold
@@ -90,9 +90,9 @@ export function HoldWorkspaceShell({
             <span
               className="px-3 py-1 text-xs font-semibold rounded-full border"
               style={{
-                background: 'var(--color-surface-container, rgba(253, 255, 252, 0.08))',
-                color: 'var(--color-on-surface-variant, rgba(253, 255, 252, 0.80))',
-                borderColor: 'var(--color-outline-variant, rgba(253, 255, 252, 0.12))',
+                background: 'var(--color-surface-container)',
+                color: 'var(--color-on-surface-variant)',
+                borderColor: 'var(--color-outline-variant)',
               }}
               title="Strategy is read-only in Hold (Decision H-1)"
             >
@@ -102,10 +102,10 @@ export function HoldWorkspaceShell({
 
           <div
             className="text-xs flex items-center space-x-2"
-            style={{ color: 'var(--color-on-surface-variant, rgba(253, 255, 252, 0.50))' }}
+            style={{ color: 'var(--color-on-surface-variant)' }}
           >
             <span>Scope Tier:</span>
-            <span className="font-semibold" style={{ color: 'var(--color-on-surface, #FDFFFC)' }}>
+            <span className="font-semibold" style={{ color: 'var(--color-on-surface)' }}>
               {scopeTier}
             </span>
           </div>
@@ -114,11 +114,11 @@ export function HoldWorkspaceShell({
         {/* Phase Progress Strip */}
         <div
           className="w-full h-2 rounded-full overflow-hidden flex"
-          style={{ background: 'var(--color-surface-container, rgba(253, 255, 252, 0.05))' }}
+          style={{ background: 'var(--color-surface-container)' }}
         >
           <div
             className="h-full w-3/5 transition-all duration-300"
-            style={{ background: 'var(--color-primary, #EA580C)' }}
+            style={{ background: 'var(--color-primary)' }}
           />
         </div>
       </div>
@@ -144,13 +144,13 @@ export function HoldWorkspaceShell({
               key={col.id}
               className="flex flex-col border rounded-xl p-4 min-h-[500px]"
               style={{
-                background: 'var(--color-surface-container-low, rgba(253, 255, 252, 0.02))',
-                borderColor: 'var(--color-outline-variant, rgba(253, 255, 252, 0.06))',
+                background: 'var(--color-surface-container-low)',
+                borderColor: 'var(--color-outline-variant)',
               }}
             >
               <h2
                 className="text-xs font-semibold tracking-wider uppercase mb-4"
-                style={{ color: 'var(--color-on-surface-variant, rgba(253, 255, 252, 0.50))' }}
+                style={{ color: 'var(--color-on-surface-variant)' }}
               >
                 {col.title}
               </h2>
@@ -165,20 +165,20 @@ export function HoldWorkspaceShell({
                       onClick={() => handleOpenCard(card)}
                       className="border rounded-lg p-4 cursor-pointer transition-all duration-200 shadow-sm group"
                       style={{
-                        background: 'var(--color-surface-dim, rgba(18, 16, 20, 0.98))',
-                        borderColor: 'var(--color-outline-variant, rgba(253, 255, 252, 0.08))',
+                        background: 'var(--color-surface-dim)',
+                        borderColor: 'var(--color-outline-variant)',
                       }}
                     >
                       <div className="flex items-center justify-between mb-2">
-                        <span className="text-xs font-semibold" style={{ color: 'var(--color-primary, #EA580C)' }}>
+                        <span className="text-xs font-semibold" style={{ color: 'var(--color-primary)' }}>
                           {card.cardName}
                         </span>
                         {hasSavedValue ? (
                           <span
                             className="text-[10px] px-2 py-0.5 rounded font-medium"
                             style={{
-                              background: 'var(--color-primary-container, rgba(16, 185, 129, 0.15))',
-                              color: 'var(--color-status-info, #10B981)',
+                              background: 'var(--color-status-success-container)',
+                              color: 'var(--color-status-success)',
                             }}
                           >
                             Saved
@@ -187,8 +187,8 @@ export function HoldWorkspaceShell({
                           <span
                             className="text-[10px] px-2 py-0.5 rounded font-medium"
                             style={{
-                              background: 'var(--color-surface-container, rgba(253, 255, 252, 0.06))',
-                              color: 'var(--color-on-surface-variant, rgba(253, 255, 252, 0.40))',
+                              background: 'var(--color-surface-container)',
+                              color: 'var(--color-on-surface-variant)',
                             }}
                           >
                             Empty
@@ -196,13 +196,13 @@ export function HoldWorkspaceShell({
                         )}
                       </div>
 
-                      <p className="text-sm font-medium mb-2 transition-colors" style={{ color: 'var(--color-on-surface, #FDFFFC)' }}>
+                      <p className="text-sm font-medium mb-2 transition-colors" style={{ color: 'var(--color-on-surface)' }}>
                         {card.questionText}
                       </p>
 
                       <p
                         className="text-xs line-clamp-2 italic"
-                        style={{ color: 'var(--color-on-surface-variant, rgba(253, 255, 252, 0.60))' }}
+                        style={{ color: 'var(--color-on-surface-variant)' }}
                       >
                         "{card.whyWeAsk}"
                       </p>
@@ -221,20 +221,20 @@ export function HoldWorkspaceShell({
           <div
             className="border rounded-xl max-w-lg w-full p-6 shadow-2xl space-y-6"
             style={{
-              background: 'var(--color-surface, #121014)',
-              borderColor: 'var(--color-outline-variant, rgba(253, 255, 252, 0.12))',
+              background: 'var(--color-surface)',
+              borderColor: 'var(--color-outline-variant)',
             }}
           >
             <div>
-              <span className="text-xs font-semibold uppercase tracking-wider" style={{ color: 'var(--color-primary, #EA580C)' }}>
+              <span className="text-xs font-semibold uppercase tracking-wider" style={{ color: 'var(--color-primary)' }}>
                 {selectedCard.cardName}
               </span>
-              <h3 className="text-lg font-bold mt-1" style={{ color: 'var(--color-on-surface, #FDFFFC)' }}>
+              <h3 className="text-lg font-bold mt-1" style={{ color: 'var(--color-on-surface)' }}>
                 {selectedCard.questionText}
               </h3>
               <p
                 className="text-xs mt-1 italic"
-                style={{ color: 'var(--color-on-surface-variant, rgba(253, 255, 252, 0.60))' }}
+                style={{ color: 'var(--color-on-surface-variant)' }}
               >
                 "{selectedCard.whyWeAsk}"
               </p>
@@ -243,7 +243,7 @@ export function HoldWorkspaceShell({
             <div className="space-y-2">
               <label
                 className="text-xs font-medium"
-                style={{ color: 'var(--color-on-surface-variant, rgba(253, 255, 252, 0.70))' }}
+                style={{ color: 'var(--color-on-surface-variant)' }}
               >
                 Entry / Draft Value
               </label>
@@ -253,21 +253,21 @@ export function HoldWorkspaceShell({
                 placeholder="Type entry or notes..."
                 className="w-full rounded-lg p-3 text-sm outline-none transition-colors h-28 resize-none border"
                 style={{
-                  background: 'var(--color-surface-container, rgba(253, 255, 252, 0.04))',
-                  borderColor: 'var(--color-outline-variant, rgba(253, 255, 252, 0.10))',
-                  color: 'var(--color-on-surface, #FDFFFC)',
+                  background: 'var(--color-surface-container)',
+                  borderColor: 'var(--color-outline-variant)',
+                  color: 'var(--color-on-surface)',
                 }}
               />
             </div>
 
             <div
               className="flex items-center justify-end space-x-3 pt-2 border-t"
-              style={{ borderColor: 'var(--color-outline-variant, rgba(253, 255, 252, 0.08))' }}
+              style={{ borderColor: 'var(--color-outline-variant)' }}
             >
               <button
                 onClick={() => setSelectedCard(null)}
                 className="px-4 py-2 text-xs font-medium transition-colors"
-                style={{ color: 'var(--color-on-surface-variant, rgba(253, 255, 252, 0.70))' }}
+                style={{ color: 'var(--color-on-surface-variant)' }}
               >
                 Cancel
               </button>
@@ -275,8 +275,8 @@ export function HoldWorkspaceShell({
                 onClick={handleSaveCard}
                 className="px-5 py-2 text-xs font-semibold rounded-lg transition-colors shadow-md"
                 style={{
-                  background: 'var(--color-primary, #EA580C)',
-                  color: 'var(--color-on-surface, #FDFFFC)',
+                  background: 'var(--color-primary)',
+                  color: 'var(--color-on-surface)',
                 }}
               >
                 Save & Resume Later

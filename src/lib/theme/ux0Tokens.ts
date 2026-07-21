@@ -20,6 +20,8 @@ export const UX0_TOKENS = {
     borderAccent: 'var(--color-primary-container, rgba(234, 88, 12, 0.30))',
     brandAccent: 'var(--color-primary, #EA580C)',
     successAccent: 'var(--color-status-info, #10B981)',
+    statusSuccessContainer: 'var(--color-status-success-container)',
+    statusSuccess: 'var(--color-status-success)',
   },
   typography: {
     readabilityFloor: 'text-xs', // 12px minimum typography floor

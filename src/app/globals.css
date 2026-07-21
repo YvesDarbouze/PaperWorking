@@ -69,6 +69,8 @@ html[data-theme="light"] {
   --color-glass-bg: rgba(255, 255, 255, 0.75);
   --color-glass-border: rgba(33, 34, 38, 0.12);
   --color-status-info: #00CE8E;
+  --color-status-success: #10B981;
+  --color-status-success-container: rgba(16, 185, 129, 0.15);
   --input-focus-glow-color: rgba(0, 206, 142, 0.3);
 
   /* ─── Button System Variables ─── */
@@ -274,6 +276,8 @@ html[data-theme="light"] {
     --color-glass-bg: rgba(18, 19, 29, 0.65);
     --color-glass-border: rgba(230, 234, 240, 0.12);
     --color-status-info: #00DD94;
+    --color-status-success: #10B981;
+    --color-status-success-container: rgba(16, 185, 129, 0.15);
     --input-focus-glow-color: rgba(0, 221, 148, 0.4);
 
     /* ─── Button System Variables ─── */
@@ -388,6 +392,8 @@ html[data-theme="dark"],
   --color-glass-bg: rgba(18, 19, 29, 0.65);
   --color-glass-border: rgba(230, 234, 240, 0.12);
   --color-status-info: #00DD94;
+  --color-status-success: #10B981;
+  --color-status-success-container: rgba(16, 185, 129, 0.15);
   --input-focus-glow-color: rgba(0, 221, 148, 0.4);
 
   /* ─── Button System Variables ─── */

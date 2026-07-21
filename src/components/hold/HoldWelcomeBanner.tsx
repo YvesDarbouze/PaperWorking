@@ -36,18 +36,18 @@ export function HoldWelcomeBanner({ userId = 'user_1', onSelectCard }: HoldWelco
     <div
       className="w-full h-[80px] rounded-xl px-6 flex items-center justify-between shadow-lg backdrop-blur-md mb-6 transition-all duration-200 border"
       style={{
-        background: 'var(--color-surface-dim, rgba(18, 16, 20, 0.98))',
-        borderColor: 'var(--color-outline-variant, rgba(253, 255, 252, 0.07))',
-        color: 'var(--color-on-surface, #FDFFFC)',
+        background: 'var(--color-surface-dim)',
+        borderColor: 'var(--color-outline-variant)',
+        color: 'var(--color-on-surface)',
       }}
     >
       <div className="flex items-center space-x-6">
         <div
           className="w-10 h-10 rounded-lg flex items-center justify-center border"
           style={{
-            background: 'var(--color-primary-container, rgba(234, 88, 12, 0.12))',
-            borderColor: 'var(--color-primary-container, rgba(234, 88, 12, 0.30))',
-            color: 'var(--color-primary, #EA580C)',
+            background: 'var(--color-primary-container)',
+            borderColor: 'var(--color-primary-container)',
+            color: 'var(--color-primary)',
           }}
         >
           <span className="material-symbols-outlined text-[20px]">roofing</span>
@@ -59,13 +59,13 @@ export function HoldWelcomeBanner({ userId = 'user_1', onSelectCard }: HoldWelco
           </h3>
           <p
             className="text-[13px] leading-tight mt-1 flex items-center space-x-2"
-            style={{ color: 'var(--color-on-surface-variant, rgba(253, 255, 252, 0.60))' }}
+            style={{ color: 'var(--color-on-surface-variant)' }}
           >
             <span>Fill in these first to light up your:</span>
             <button
               onClick={() => onSelectCard?.('H5.R')}
               className="hover:underline font-medium focus:outline-none"
-              style={{ color: 'var(--color-primary, #EA580C)' }}
+              style={{ color: 'var(--color-primary)' }}
             >
               NOI (Empty → Add Target Rent)
             </button>
@@ -73,7 +73,7 @@ export function HoldWelcomeBanner({ userId = 'user_1', onSelectCard }: HoldWelco
             <button
               onClick={() => onSelectCard?.('H3.1')}
               className="hover:underline font-medium focus:outline-none"
-              style={{ color: 'var(--color-primary, #EA580C)' }}
+              style={{ color: 'var(--color-primary)' }}
             >
               Cash Flow & Expense Ratio (Empty → Add Holding Costs)
             </button>
@@ -86,9 +86,9 @@ export function HoldWelcomeBanner({ userId = 'user_1', onSelectCard }: HoldWelco
           onClick={() => onSelectCard?.('H1.1')}
           className="text-[13px] font-medium px-3.5 py-1.5 rounded-lg border transition-colors flex items-center space-x-1"
           style={{
-            background: 'var(--color-surface-container, rgba(253, 255, 252, 0.08))',
-            borderColor: 'var(--color-outline-variant, rgba(253, 255, 252, 0.12))',
-            color: 'var(--color-on-surface, #FDFFFC)',
+            background: 'var(--color-surface-container)',
+            borderColor: 'var(--color-outline-variant)',
+            color: 'var(--color-on-surface)',
           }}
         >
           <span>Show me around</span>
@@ -98,7 +98,7 @@ export function HoldWelcomeBanner({ userId = 'user_1', onSelectCard }: HoldWelco
         <button
           onClick={handleDismiss}
           className="p-1.5 rounded-md transition-colors"
-          style={{ color: 'var(--color-on-surface-variant, rgba(253, 255, 252, 0.40))' }}
+          style={{ color: 'var(--color-on-surface-variant)' }}
           title="Dismiss welcome banner"
           aria-label="Dismiss welcome banner"
         >

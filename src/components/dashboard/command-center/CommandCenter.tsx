@@ -1645,7 +1645,7 @@ function EmptyPortfolio({ isDark }: { isDark: boolean }) {
         <span className="material-symbols-outlined text-[16px]" style={{ fontVariationSettings: "'FILL' 0" }}>
           add
         </span>
-        Create Project
+        New Project
       </Link>
     </Panel>
   );
@@ -1887,7 +1887,7 @@ export function CommandCenter() {
               <span className="material-symbols-outlined text-[15px]" style={{ fontVariationSettings: "'FILL' 0" }}>
                 add
               </span>
-              Create Project
+              New Project
             </Link>
           </div>
         </header>

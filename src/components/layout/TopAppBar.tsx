@@ -9,6 +9,7 @@ import LogoutButton from "@/components/dashboard/LogoutButton";
 import toast from "react-hot-toast";
 import { useProjectStore } from "@/store/projectStore";
 import Logo from "@/components/brand/Logo";
+import { SEEDED_VENDORS } from "@/lib/vendors/seededVendors";
 
 /* ═══════════════════════════════════════════════════════════════
    TopAppBar — Premium dashboard header
@@ -183,27 +184,43 @@ export function TopAppBar() {
             throw new Error(data.error || 'Failed to fetch projects');
           }
         } else {
-          const response = await fetch(`/api/vendors`, { headers });
-          if (!response.ok) throw new Error('Failed to fetch vendors');
-          const data = await response.json();
-          if (data.success) {
-            const q = searchQuery.toLowerCase();
-            const vendors = (data.vendors || []).map((v: any) => ({
-              ...v,
-              name: v.displayName || v.companyName || v.name || ''
-            }));
-            const filtered = vendors.filter((v: any) =>
-              (v.name && v.name.toLowerCase().includes(q)) ||
-              (v.type && v.type.toLowerCase().includes(q)) ||
-              (v.category && v.category.toLowerCase().includes(q)) ||
-              (v.licensingStates && v.licensingStates.some((s: string) => s.toLowerCase().includes(q))) ||
-              (v.serviceAreas && v.serviceAreas.some((a: string) => a.toLowerCase().includes(q))) ||
-              (v.location && v.location.toLowerCase().includes(q))
-            );
-            setSearchResults(prev => ({ ...prev, vendors: filtered }));
-          } else {
-            throw new Error(data.error || 'Failed to fetch vendors');
+          let fetchedVendors: any[] = [];
+          try {
+            const response = await fetch(`/api/vendors`, { headers });
+            if (response.ok) {
+              const data = await response.json();
+              if (data.success) {
+                fetchedVendors = data.vendors || [];
+              }
+            }
+          } catch (e) {
+            // Ignore API fetch error and fall back to SEEDED_VENDORS
           }
+
+          const q = searchQuery.toLowerCase();
+          const combinedRaw = [...fetchedVendors, ...SEEDED_VENDORS];
+          const mapById = new Map<string, any>();
+          combinedRaw.forEach(v => {
+            const vid = v.id || v.name;
+            if (!mapById.has(vid)) {
+              mapById.set(vid, {
+                ...v,
+                name: v.displayName || v.companyName || v.name || ''
+              });
+            }
+          });
+
+          const vendors = Array.from(mapById.values());
+          const filtered = vendors.filter((v: any) =>
+            (v.name && v.name.toLowerCase().includes(q)) ||
+            (v.type && v.type.toLowerCase().includes(q)) ||
+            (v.category && v.category.toLowerCase().includes(q)) ||
+            (v.bio && v.bio.toLowerCase().includes(q)) ||
+            (v.licensingStates && v.licensingStates.some((s: string) => s.toLowerCase().includes(q))) ||
+            (v.serviceAreas && v.serviceAreas.some((a: string) => a.toLowerCase().includes(q))) ||
+            (v.location && v.location.toLowerCase().includes(q))
+          );
+          setSearchResults(prev => ({ ...prev, vendors: filtered }));
         }
       } catch (err) {
         console.error('Search fetch error:', err);

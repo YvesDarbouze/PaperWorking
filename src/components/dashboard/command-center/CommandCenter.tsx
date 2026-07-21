@@ -806,7 +806,7 @@ function ProfileCard({ isDark, followers }: { isDark: boolean; followers: Follow
     : (profile?.role || "Lead Investor");
 
   return (
-    <Panel isDark={isDark} className="flex flex-col relative min-h-[520px]">
+    <Panel isDark={isDark} className="flex flex-col relative lg:min-h-[580px] h-full justify-between">
       {/* ── Portrait card content ── */}
       <div className="w-full flex-1 flex flex-col p-6">
         {/* Header row: "Profile" + edit */}

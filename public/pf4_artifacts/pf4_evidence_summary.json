@@ -1,0 +1,23 @@
+{
+  "tabsVerified": [
+    {
+      "tab": "Financial Performance",
+      "clicked": false
+    },
+    {
+      "tab": "Operational Efficiency",
+      "clicked": false
+    },
+    {
+      "tab": "Marketing & Sales",
+      "clicked": false
+    }
+  ],
+  "defaultTab": "Financial Performance",
+  "scopeDropdown": "Portfolio-Wide vs Project Scoped",
+  "matrixCategories": [
+    "Financial Performance",
+    "Operational Efficiency",
+    "Marketing & Sales"
+  ]
+}

@@ -1165,7 +1165,7 @@ function KPIMetricsModule({ isDark }: { isDark: boolean }) {
               {([
                 { key: 'Financial Performance', label: 'Financial Performance' },
                 { key: 'Operational Efficiency', label: 'Operational Efficiency' },
-                { key: 'Asset & Portfolio Management', label: 'Asset & Portfolio Mgmt' }
+                { key: 'Marketing & Sales', label: 'Marketing & Sales' }
               ] as const).map((tab) => {
                 const isActive = activeCategory === tab.key;
                 return (

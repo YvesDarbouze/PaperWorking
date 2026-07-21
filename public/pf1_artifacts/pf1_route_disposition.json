@@ -1,0 +1,136 @@
+{
+  "groups": [
+    {
+      "name": "PORTFOLIO",
+      "items": [
+        {
+          "label": "Portfolio",
+          "route": "/dashboard/command-center",
+          "icon": "space_dashboard",
+          "disposition": "KEPT"
+        },
+        {
+          "label": "Projects",
+          "route": "/dashboard/projects",
+          "icon": "folder",
+          "disposition": "KEPT"
+        },
+        {
+          "label": "Data Room",
+          "route": "/dashboard/data-room",
+          "icon": "folder_shared",
+          "disposition": "KEPT (Decision D1)"
+        },
+        {
+          "label": "Insights",
+          "route": "/dashboard/insights",
+          "icon": "monitoring",
+          "disposition": "KEPT"
+        },
+        {
+          "label": "Reports",
+          "route": "/dashboard/reports",
+          "icon": "bar_chart_4_bars",
+          "disposition": "KEPT"
+        },
+        {
+          "label": "Inbox",
+          "route": "/dashboard/inbox",
+          "icon": "inbox",
+          "disposition": "KEPT"
+        },
+        {
+          "label": "Team",
+          "route": "/dashboard/team",
+          "icon": "group",
+          "disposition": "KEPT"
+        }
+      ]
+    },
+    {
+      "name": "ACCOUNT",
+      "items": [
+        {
+          "label": "Profile",
+          "route": "/dashboard/settings/profile",
+          "icon": "account_circle",
+          "disposition": "KEPT"
+        },
+        {
+          "label": "Billing",
+          "route": "/dashboard/settings/billing",
+          "icon": "payments",
+          "disposition": "KEPT"
+        },
+        {
+          "label": "Settings",
+          "route": "/dashboard/settings",
+          "icon": "settings",
+          "disposition": "KEPT"
+        }
+      ]
+    }
+  ],
+  "sweepResults": [
+    {
+      "name": "Portfolio",
+      "href": "/dashboard/command-center",
+      "verifiedReachable": false,
+      "url": "http://localhost:3000/dashboard/command-center"
+    },
+    {
+      "name": "Projects",
+      "href": "/dashboard/projects",
+      "verifiedReachable": false,
+      "url": "http://localhost:3000/dashboard/projects"
+    },
+    {
+      "name": "Data Room",
+      "href": "/dashboard/data-room",
+      "verifiedReachable": false,
+      "url": "http://localhost:3000/dashboard/data-room"
+    },
+    {
+      "name": "Insights",
+      "href": "/dashboard/insights",
+      "verifiedReachable": false,
+      "url": "http://localhost:3000/dashboard/insights"
+    },
+    {
+      "name": "Reports",
+      "href": "/dashboard/reports",
+      "verifiedReachable": false,
+      "url": "http://localhost:3000/dashboard/reports"
+    },
+    {
+      "name": "Inbox",
+      "href": "/dashboard/inbox",
+      "verifiedReachable": false,
+      "url": "http://localhost:3000/dashboard/inbox"
+    },
+    {
+      "name": "Team",
+      "href": "/dashboard/team",
+      "verifiedReachable": false,
+      "url": "http://localhost:3000/dashboard/team"
+    },
+    {
+      "name": "Profile",
+      "href": "/dashboard/settings/profile",
+      "verifiedReachable": false,
+      "url": "http://localhost:3000/dashboard/settings/profile"
+    },
+    {
+      "name": "Billing",
+      "href": "/dashboard/settings/billing",
+      "verifiedReachable": false,
+      "url": "http://localhost:3000/dashboard/settings/billing"
+    },
+    {
+      "name": "Settings",
+      "href": "/dashboard/settings",
+      "verifiedReachable": false,
+      "url": "http://localhost:3000/dashboard/settings"
+    }
+  ]
+}

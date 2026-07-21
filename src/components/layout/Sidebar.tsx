@@ -270,6 +270,7 @@ export function Sidebar() {
 
       {/* ── Primary navigation ──────────────────────────────────────────── */}
       <nav className="flex-1 overflow-y-auto custom-scrollbar px-2 space-y-0.5">
+        <SectionLabel label="PORTFOLIO" isDark={isDark} />
         {PRIMARY_NAV.filter((item) => {
           if (item.name === "Projects") {
             const isVendor =

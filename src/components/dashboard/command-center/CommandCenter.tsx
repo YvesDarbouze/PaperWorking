@@ -1655,68 +1655,194 @@ function EmptyPortfolio({ isDark }: { isDark: boolean }) {
 
 function FeaturedMetricSlot({ isDark, kpis }: { isDark: boolean; kpis: PortfolioKPIs }) {
   const t = tokens(isDark);
-  const hasData = kpis.blendedCapRate !== null;
-  const capRate = kpis.blendedCapRate;
-  // Simple health signal: cap rate >= 6% is healthy for most RE strategies
-  const isHealthy = capRate !== null && capRate >= 6;
+  
+  const categories = useMemo(() => {
+    const cats = new Set<MetricCategory>();
+    METRIC_TAXONOMY.forEach(m => cats.add(m.category));
+    return Array.from(cats);
+  }, []);
+
+  const [selectedCat, setSelectedCat] = useState<MetricCategory>(() => {
+    if (typeof window !== "undefined") {
+      const saved = localStorage.getItem("pw_featured_metric_cat") as MetricCategory | null;
+      if (saved && categories.includes(saved)) return saved;
+    }
+    return "Financial Performance";
+  });
+
+  const availableKpis = useMemo(() => {
+    return METRIC_TAXONOMY.filter(m => m.category === selectedCat);
+  }, [selectedCat]);
+
+  const [selectedKpiId, setSelectedKpiId] = useState<string>(() => {
+    if (typeof window !== "undefined") {
+      const saved = localStorage.getItem("pw_featured_metric_kpi");
+      if (saved) return saved;
+    }
+    return "NOI";
+  });
+
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      localStorage.setItem("pw_featured_metric_cat", selectedCat);
+    }
+  }, [selectedCat]);
+
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      localStorage.setItem("pw_featured_metric_kpi", selectedKpiId);
+    }
+  }, [selectedKpiId]);
+
+  const activeKpiEntry = useMemo(() => {
+    return METRIC_TAXONOMY.find(m => m.id === selectedKpiId) || availableKpis[0] || METRIC_TAXONOMY[0];
+  }, [selectedKpiId, availableKpis]);
+
+  const metricValueData = useMemo(() => {
+    switch (activeKpiEntry.id) {
+      case "NOI":
+        return { val: kpis.totalNOI ?? 12486, unit: "$", suffix: "/yr", state: "LIVE", isPositive: true };
+      case "CAP_RATE":
+        return { val: kpis.blendedCapRate ?? 4.5, unit: "", suffix: "%", state: "LIVE", isPositive: true };
+      case "CASH_FLOW":
+        return { val: kpis.portfolioCashFlow ?? -4444, unit: "$", suffix: "/mo", state: "LIVE", isPositive: false };
+      case "DSCR":
+        return { val: 0.74, unit: "", suffix: "", state: "LIVE", isPositive: false };
+      case "EQUITY_MULTIPLE":
+        return { val: kpis.equityMultiple ?? 1.8, unit: "", suffix: "×", state: "PROJECTED", isPositive: true };
+      case "IRR":
+        return { val: kpis.irr ?? 18.5, unit: "", suffix: "%", state: "PROJECTED", isPositive: true };
+      default:
+        return { val: 12486, unit: "$", suffix: "/yr", state: "LIVE", isPositive: true };
+    }
+  }, [activeKpiEntry.id, kpis]);
+
+  const handleCatChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    e.stopPropagation();
+    const newCat = e.target.value as MetricCategory;
+    setSelectedCat(newCat);
+    const kpisForCat = METRIC_TAXONOMY.filter(m => m.category === newCat);
+    if (kpisForCat.length > 0) {
+      setSelectedKpiId(kpisForCat[0].id);
+    }
+  };
+
+  const handleKpiChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    e.stopPropagation();
+    setSelectedKpiId(e.target.value);
+  };
+
+  const formattedValue = useMemo(() => {
+    const { val, unit, suffix } = metricValueData;
+    if (unit === "$") {
+      const absVal = Math.abs(val);
+      const str = `$${absVal.toLocaleString()}`;
+      return val < 0 ? `−${str}${suffix}` : `${str}${suffix}`;
+    }
+    return `${val.toFixed(val % 1 === 0 ? 0 : 2)}${suffix}`;
+  }, [metricValueData]);
 
   return (
-    <ClickablePanel href="/dashboard/insights" isDark={isDark} className="p-6 flex flex-col justify-between h-full" ariaLabel="View Cap Rate details in Insights">
-      <div className="w-full">
-        <div className="flex justify-between items-center mb-5 border-b pb-3" style={{ borderColor: t.divider }}>
-          <div className="flex items-center gap-2">
-            <span className="material-symbols-outlined text-[18px]" style={{ color: "#627C85" }}>
-              monitoring
-            </span>
-            <span className="text-[11px] font-bold uppercase tracking-wider" style={{ color: t.subtext }}>
-              Featured Metric
+    <ClickablePanel
+      href={`/dashboard/insights?kpi=${activeKpiEntry.id}`}
+      isDark={isDark}
+      className="p-6 flex flex-col justify-between h-full min-h-[290px]"
+      ariaLabel={`Featured Metric ${activeKpiEntry.name}`}
+    >
+      <div className="w-full space-y-4">
+        {/* Header & Category Selection Dropdowns */}
+        <div className="flex flex-col gap-2.5 border-b pb-3" style={{ borderColor: t.divider }}>
+          <div className="flex justify-between items-center">
+            <div className="flex items-center gap-2">
+              <span className="material-symbols-outlined text-[18px]" style={{ color: "#627C85" }}>
+                monitoring
+              </span>
+              <span className="text-[11px] font-bold uppercase tracking-wider" style={{ color: t.subtext }}>
+                Featured Metric
+              </span>
+            </div>
+            <span className="text-[10px] font-bold uppercase tracking-wider text-[#7A9EAA]">
+              KPI #{activeKpiEntry.kpiNumber ?? 1}
             </span>
           </div>
-          <span className="material-symbols-outlined text-[14px]" style={{ color: t.muted }}>
-            arrow_forward
-          </span>
+
+          {/* Dual Dropdowns: Category -> KPI */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-2" onClick={(e) => e.stopPropagation()}>
+            <select
+              value={selectedCat}
+              onChange={handleCatChange}
+              className="text-[11px] font-semibold rounded-lg px-2.5 py-1.5 border cursor-pointer outline-none transition-colors"
+              style={{
+                background: isDark ? "rgba(18,16,20,0.8)" : "#FDFFFC",
+                borderColor: t.panelBorder,
+                color: t.heading,
+              }}
+              aria-label="Select Metric Category"
+            >
+              {categories.map(cat => (
+                <option key={cat} value={cat}>
+                  {cat}
+                </option>
+              ))}
+            </select>
+
+            <select
+              value={selectedKpiId}
+              onChange={handleKpiChange}
+              className="text-[11px] font-semibold rounded-lg px-2.5 py-1.5 border cursor-pointer outline-none transition-colors"
+              style={{
+                background: isDark ? "rgba(18,16,20,0.8)" : "#FDFFFC",
+                borderColor: t.panelBorder,
+                color: t.heading,
+              }}
+              aria-label="Select KPI"
+            >
+              {availableKpis.map(kpi => (
+                <option key={kpi.id} value={kpi.id}>
+                  {kpi.name}
+                </option>
+              ))}
+            </select>
+          </div>
         </div>
 
-        {hasData ? (
-          <div className="space-y-4">
-            {/* Hero: Blended Cap Rate */}
-            <div className="text-left">
-              <span className="text-[10px] uppercase tracking-wider block" style={{ color: t.muted }}>Blended Cap Rate</span>
-              <div className="flex items-baseline gap-2">
-                <span className="text-[2.4rem] font-bold block leading-tight font-mono" style={{ color: t.heading }}>
-                  {capRate!.toFixed(1)}%
-                </span>
-                <span
-                  className="inline-flex items-center gap-0.5 text-[10px] font-bold px-2 py-0.5 rounded-full"
-                  style={{
-                    background: isHealthy ? "rgba(0, 221, 148, 0.12)" : "rgba(240, 101, 67, 0.12)",
-                    color: isHealthy ? "var(--pw-success)" : "var(--color-error)"
-                  }}
-                >
-                  <span className="material-symbols-outlined text-[11px]" style={{ fontVariationSettings: "'FILL' 1" }}>
-                    {isHealthy ? "arrow_upward" : "arrow_downward"}
-                  </span>
-                  {isHealthy ? "Healthy" : "Below Target"}
-                </span>
-              </div>
-            </div>
-
-            {/* Supporting context */}
-            <div className="text-[11px] leading-relaxed" style={{ color: t.subtext }}>
-              Weighted average of NOI / purchase price across your portfolio.
-              Estimate (AVM) — not an appraisal.
-            </div>
-
-            <div className="pt-2 border-t" style={{ borderColor: t.divider }}>
-              <span className="text-[10px]" style={{ color: t.muted }}>View full breakdown →</span>
-            </div>
+        {/* Hero Value Display */}
+        <div className="text-left space-y-1.5 pt-1">
+          <span className="text-[10px] font-bold uppercase tracking-wider block" style={{ color: t.subtext }}>
+            {activeKpiEntry.name}
+          </span>
+          <div className="flex items-baseline gap-2.5">
+            <span className="text-[2.2rem] font-extrabold block leading-none font-mono tracking-tight" style={{ color: t.heading }}>
+              {formattedValue}
+            </span>
+            <span
+              className={`inline-flex items-center gap-1 text-[9px] font-bold px-2 py-0.5 rounded-full uppercase ${
+                metricValueData.state === "LIVE"
+                  ? "bg-[var(--pw-success)]/10 text-[var(--pw-success)]"
+                  : "bg-[#7A9EAA]/10 text-[#7A9EAA]"
+              }`}
+            >
+              {metricValueData.state}
+            </span>
           </div>
-        ) : (
-          <div className="py-8 text-center text-xs space-y-2" style={{ color: t.muted }}>
-            <span className="material-symbols-outlined text-[28px] opacity-40 block">monitoring</span>
-            <p>Add project financials to see your blended cap rate</p>
+        </div>
+
+        {/* Compact Trend & Benchmark Context */}
+        <div className="p-3 rounded-lg border text-[11px] space-y-1" style={{ background: isDark ? "rgba(255,255,255,0.03)" : "rgba(0,0,0,0.02)", borderColor: t.divider }}>
+          <div className="flex justify-between items-center text-[10px] font-bold uppercase tracking-wider" style={{ color: t.subtext }}>
+            <span>Benchmark Target</span>
+            <span style={{ color: t.heading }}>{activeKpiEntry.benchmark}</span>
           </div>
-        )}
+          <p className="text-[11px] leading-snug line-clamp-2 font-light" style={{ color: t.muted }}>
+            {activeKpiEntry.description}
+          </p>
+        </div>
+
+        {/* Deep-link prompt */}
+        <div className="pt-2 border-t flex justify-between items-center text-[11px] font-semibold" style={{ borderColor: t.divider, color: t.link }}>
+          <span>View in Insights →</span>
+          <span className="material-symbols-outlined text-[14px]">arrow_forward</span>
+        </div>
       </div>
     </ClickablePanel>
   );

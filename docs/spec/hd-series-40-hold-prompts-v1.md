@@ -161,6 +161,70 @@ Deliver the evidence bundle for founder review and STOP. Do not begin the next d
 
 === PROMPT FOR ANTIGRAVITY · HD-2 ===
 
+HD-2 · Hold-phase audit — the complete findings report (report only)
+DISPATCH WHEN: after the HD-1 bundle is countersigned.
+
+PRECHECK (dead-on-arrival rule — a bundle without this is void, unread): open
+your evidence bundle with the raw output of
+git branch --show-current && git status --short.
+Expected branch: feature/hold-hd-series. Anything unexpected — wrong branch, dirty tree,
+untracked spec files — STOP and report before doing anything else.
+
+Invoke the skill paperworking-reil and follow it in full.
+
+READING PROOF — quote verbatim, before planning: the HD-2 dispatch section of docs/spec/hd-series-40-hold-prompts-v1.md and the 'Working discipline' section of SKILL.md.
+If any named file or section is missing from the committed repo, STOP and
+report. Never build from memory of a chat; never author or reconstruct spec
+content — spec content comes from the founder only.
+
+AUDIT FIRST (Logic Lens): this dispatch IS the audit; it builds nothing and changes nothing.
+Report audit findings before building. If the audit contradicts the spec,
+STOP and report — never improvise reconciliation.
+
+CORE LAWS (digest — the skill governs in full):
+
+
+Casing: PaperWorking — exactly.  2. Phases: Acquisition · Fund · Hold · Exit — only.
+Honesty: every displayed value is computed from stored inputs or labeled
+Projected; missing inputs show what is missing and deep-link to the
+collecting card — never a fake value, never a stub presented as working.
+Goldens: NOI $12,486 · Cap Rate 4.5% · Cash Flow −$4,444/yr · DSCR 0.74 ·
+CoC −7.41% must reproduce from a live deriveAllProjectMetrics call.
+Money-movement: record, coordinate, verify — never move money; no payments,
+escrow, KYC, pooling, or wiring instructions anywhere.
+Security v1.1: identity from the verified Firebase ID token only — never the
+request body; all scoping enforced server-side; Vendors see only assignments.
+
+
+MISSION: map the true current state of everything Hold-adjacent before a single line is written, so no later dispatch rebuilds what exists or trusts what does not. Output is a findings report with file paths and DB query output behind every claim.
+
+BUILD CHECKLIST:
+
+
+Existing Hold surfaces: every route, component, and screen from earlier builds touching renovation tracking, holding costs, current value, listings, or a Hold workspace — including any legacy 'Hold & Rehab'-era screens. For each: keep-as-is / relocate / defect, with reasons. The default disposition for existing functionality is keep or relocate; rebuilding requires written justification.
+Legacy label survivors inside Hold scope: any phase label other than the canonical four; any strategyType survivor; each listed with location.
+The Fund→Hold boundary as actually shipped by the FD Series: the gate implementation, its criteria source, and the exact carry-over payload it produces (field list from code + one real gate-pass record from the DB).
+Variable registry state for Hold-owned variables per the 33-metric matrix and the questions doc Hold section: renovation_tier, rehab_budget, rehab_spend[], rehab_completed_date, holding_cost_<category> for the eight canonical tags, current_value series, target_rent, target_lease_terms, list_price_sale, listing/ad log, showings log, vacancy/occupancy-during-hold, utilities responsibility, reserve policies. For each: row exists / carries a projected value from Acquisition / absent.
+Team & access inventory (the property-manager foundation): invite lifecycle (pending/accepted/expired/revoked, mismatched-email), role and permission model, seat/tier enforcement points, Project-scoped access, assign-as-invite, vendor assignment scoping, offboarding/task-resurfacing, and the append-only audit log. Cite files and demonstrate one invite lifecycle in the running app or DB.
+Messaging inventory: every Resend template in the repo with its trigger site; PaperWorking Inbox event types and storage; any notification-preference storage; the job-queue/scheduler available for digests and reminders.
+Integrations state: Plaid transaction-attribution loop (what exists, where proposals surface); RentCast/Zillow provider interfaces and their mock/live selection; PostHog event registration pattern.
+Documents plane: Firebase Storage rules, signed-URL pattern, existing per-Project document/Data Room surfaces and their access scoping.
+
+
+DON'TS: change nothing — not a rename, not a lint fix, not a seed row. Partial findings already known do not substitute for this complete report.
+
+ACCEPTANCE CRITERIA — runtime evidence only (screenshots, walkthrough
+recordings, DB query output; tsc/tests/builds/assertions satisfy nothing):
+
+
+Committed report at docs/audit/hd-2-hold-findings-v1.md with a file path or query output behind every claim.
+A keep/relocate/defect disposition table for every existing Hold-adjacent surface.
+The Fund→Hold carry-over payload shown from a real DB record.
+A gap table: every HD-3…HD-38 dependency marked exists / partial / absent, so the founder can re-scope dispatches before they run.
+
+
+Deliver the evidence bundle for founder review and STOP. Do not begin the next dispatch.
+
 === END PROMPT ===
 
 ---

@@ -28,3 +28,21 @@ export function calculateROI(grossProfit: number, totalCashNeeded: number): numb
   if (totalCashNeeded <= 0) return 0;
   return (grossProfit / totalCashNeeded) * 100;
 }
+
+export function calculateAmortization(
+  principal: number,
+  annualInterestRatePercent: number,
+  termMonths: number
+): { monthlyPayment: number; annualDebtService: number } {
+  if (principal <= 0 || annualInterestRatePercent <= 0 || termMonths <= 0) {
+    return { monthlyPayment: 0, annualDebtService: 0 };
+  }
+  const monthlyRate = annualInterestRatePercent / 100 / 12;
+  const factor = Math.pow(1 + monthlyRate, termMonths);
+  const monthlyPayment = (principal * (monthlyRate * factor)) / (factor - 1);
+  return {
+    monthlyPayment,
+    annualDebtService: monthlyPayment * 12,
+  };
+}
+

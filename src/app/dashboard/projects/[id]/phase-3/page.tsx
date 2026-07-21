@@ -36,7 +36,7 @@ export default function Phase3HoldWorkspacePage() {
   return (
     <HoldWorkspaceShell
       projectId={projectId}
-      address={project?.dealAddress || project?.address || 'Demo Property — 1044 S Olive St'}
+      address={(project as any)?.dealAddress || project?.address || 'Demo Property — 1044 S Olive St'}
       dispositionType={dispositionType}
       scopeTier={scopeTier}
       userId={userId}

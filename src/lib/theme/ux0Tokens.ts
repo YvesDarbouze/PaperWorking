@@ -24,7 +24,7 @@ export const UX0_TOKENS = {
     statusSuccess: 'var(--color-status-success)',
   },
   typography: {
-    readabilityFloor: 'text-xs', // 12px minimum typography floor
+    readabilityFloor: 'text-sm', // 14px effective typography floor (UX-2)
   },
   layout: {
     bannerHeight: 'h-[80px]', // 80px committed layout height

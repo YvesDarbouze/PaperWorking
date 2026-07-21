@@ -205,14 +205,14 @@ html[data-theme="light"] {
   --text-body-sm-line-height: 20px;
 
   /* Label / Nav — Inter 600 SemiBold, tracked */
-  --text-label-md-size: 13px;
+  --text-label-md-size: 14px;
   --text-label-md-weight: 600;
-  --text-label-md-line-height: 16px;
+  --text-label-md-line-height: 20px;
   --text-label-md-letter-spacing: 0.02em;
 
-  /* Caption / Badge — Inter 500 Medium, wide tracked */
-  --text-label-caps-size: 11px;
-  --text-label-caps-weight: 500;
+  /* Caption / Badge — Inter 600 SemiBold, wide tracked */
+  --text-label-caps-size: 13px;
+  --text-label-caps-weight: 600;
   --text-label-caps-line-height: 16px;
   --text-label-caps-letter-spacing: 0.06em;
 }

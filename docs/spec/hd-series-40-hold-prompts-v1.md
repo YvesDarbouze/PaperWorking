@@ -22,6 +22,18 @@ expected outputs (the FX law applied to Hold). The agent reads this file for
 fixture definitions and NEVER edits it. If any prompt or code conflicts with it,
 this file governs and the agent STOPs and reports.
 
+Repo state note (recorded 2026-07-20, post-authoring): a founder-verified
+candidate build (candidate/fund-hold-exit-build-2026-07-19, merged to
+Yves/feature-development at 3971ddab by the founder's hand) landed
+substantial Fund/Hold/Exit surface before this series dispatched. Existing
+Hold/Exit code is therefore EXPECTED and is not, by itself, a STOP condition:
+the HD Series audits and conforms that surface to the committed spec. HD-2's
+findings document is the authoritative built-vs-spec map, and every
+dispatch's AUDIT FIRST runs against what exists. Divergence from spec remains
+a finding; existence does not. docs/spec/paperworking-engineering-spec-v1.md
+(agent-authored, commit qa6-10) is NOT in the Decision H-7 authority chain
+and governs nothing unless the founder ratifies it in writing.
+
 Sequencing law
 
 

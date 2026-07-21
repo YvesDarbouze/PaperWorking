@@ -9,13 +9,18 @@ Copy everything between the fences, paste into Antigravity, send. No separate
 run-book exists for the HD Series; there is exactly one authority for these
 forty dispatches.
 
-Companion document (commit in the same commit):
-docs/spec/hold-intake-conversational-architecture-v1.md — the founder's
+Companion documents (commit all three in the same commit):
+1. docs/spec/hold-intake-conversational-architecture-v1.md — the founder's
 conversational-intake design narrative for Hold ("the Clerky/TurboTax
 architecture"). It is design intent, SUBORDINATE to
 docs/spec/reil-complete-four-phase-questions-tasks.md and to SKILL.md
 (Decision H-1 / H-7 below). Where they conflict, the questions doc and the
 skill govern and the agent STOPs and reports.
+2. docs/spec/hd-hold-fixtures-v1.md — the single home for Hold fixture
+definitions (HX-1…HX-5). Defines locked §1 inputs and founder-commit-only §2
+expected outputs (the FX law applied to Hold). The agent reads this file for
+fixture definitions and NEVER edits it. If any prompt or code conflicts with it,
+this file governs and the agent STOPs and reports.
 
 Sequencing law
 
@@ -99,7 +104,7 @@ already ruled.
 === PROMPT FOR ANTIGRAVITY · HD-1 ===
 
 HD-1 · Custody, spec presence, and branch creation (zero build)
-DISPATCH WHEN: immediately, as the first HD dispatch, after the founder commits this pack and the companion intake-architecture doc.
+DISPATCH WHEN: immediately, as the first HD dispatch, after the founder commits this pack, the companion intake-architecture doc, and the companion fixture doc (docs/spec/hd-hold-fixtures-v1.md).
 
 PRECHECK (dead-on-arrival rule — a bundle without this is void, unread): open
 your evidence bundle with the raw output of
@@ -139,7 +144,7 @@ BUILD CHECKLIST:
 
 
 Report the repo path of SKILL.md and the output of git hash-object on it, plus git log -1 --oneline for the file, for founder countersign.
-Verify presence in the committed repo of: docs/spec/reil-complete-four-phase-questions-tasks.md (and that it contains a Hold/Phase 3 section with columns H1–H5 and the Hold→Exit gate), docs/spec/reil-33-metrics-collection-matrix.md, docs/spec/reil-kpi-formulas.md, docs/spec/fd-series-40-fund-prompts.md, docs/spec/fd-fund-fixtures-v1.md, docs/spec/hd-series-40-hold-prompts-v1.md, and docs/spec/hold-intake-conversational-architecture-v1.md. List any absent file — an absent file blocks the series.
+Verify presence in the committed repo of: docs/spec/reil-complete-four-phase-questions-tasks.md (and that it contains a Hold/Phase 3 section with columns H1–H5 and the Hold→Exit gate), docs/spec/reil-33-metrics-collection-matrix.md, docs/spec/reil-kpi-formulas.md, docs/spec/fd-series-40-fund-prompts.md, docs/spec/fd-fund-fixtures-v1.md, docs/spec/hd-series-40-hold-prompts-v1.md, docs/spec/hold-intake-conversational-architecture-v1.md, and docs/spec/hd-hold-fixtures-v1.md. List any absent file — an absent file blocks the series.
 Create branch feature/hold-hd-series off Yves/feature-development and push it. All HD work lives here until HD-40.
 List every local branch and any branch containing work not attributable to an approved dispatch; propose quarantine moves for founder decision — move nothing yourself.
 
@@ -309,7 +314,7 @@ untracked spec files — STOP and report before doing anything else.
 
 Invoke the skill paperworking-reil and follow it in full.
 
-READING PROOF — quote verbatim, before planning: rules 5, 6, and 9 of SKILL.md; the P6 chain section of docs/spec/reil-kpi-formulas.md; Appendix A (HX fixtures) of this pack.
+READING PROOF — quote verbatim, before planning: rules 5, 6, and 9 of SKILL.md; the P6 chain section of docs/spec/reil-kpi-formulas.md; docs/spec/hd-hold-fixtures-v1.md (§1 inputs).
 If any named file or section is missing from the committed repo, STOP and
 report. Never build from memory of a chat; never author or reconstruct spec
 content — spec content comes from the founder only.
@@ -340,8 +345,8 @@ BUILD CHECKLIST:
 
 Extend deriveAllProjectMetrics only where the 33-metric matrix assigns Hold-actualized values; formulas come from reil-kpi-formulas.md. If a needed formula is absent from committed docs, STOP and report — never invent one.
 Create exactly one named Hold-operations engine (name it clearly, e.g. deriveHoldOperations) for non-matrix operational derivations: monthly carry (sum of the eight category monthlies + loan carry, where loan carry comes from the shared amortization utility / Fund-actualized annual debt service — never re-derived here), spend-to-date and budget variance, projected reserve monthlies from the H-3 policy structs (labeled Projected wherever actuals are absent), and — for SALE-path flip contexts — runway: the date at which cumulative carry + spend erodes the projected margin, derived strictly from stored inputs.
-Seed the HX-1…HX-5 fixture Projects exactly as specified in Appendix A, namespaced so fixture identities can never collide with the demo property or real users (apply the namespace rule from the FD-era seed findings).
-Run the engine against HX-1…HX-5; capture every output value in the bundle. These captured values become the locked HX goldens upon founder countersign and are thereafter agent-immutable, exactly like the FX fixtures.
+Seed the HX-1…HX-5 fixture Projects exactly as specified in docs/spec/hd-hold-fixtures-v1.md, namespaced so fixture identities can never collide with the demo property or real users (apply the namespace rule from the FD-era seed findings).
+Run the engine against HX-1…HX-5; capture every output value in the bundle. Present these candidate values for founder terminal verification and countersign. The founder will record them into §2 of docs/spec/hd-hold-fixtures-v1.md via a founder commit. The agent never edits docs/spec/hd-hold-fixtures-v1.md.
 
 
 DON'TS: no UI. No inline math left standing at any audited site. No expected values invented, hardcoded, or written as arithmetic expressions. No edits to FX fixtures or DEMO_FINANCIALS.
@@ -1507,7 +1512,7 @@ untracked spec files — STOP and report before doing anything else.
 
 Invoke the skill paperworking-reil and follow it in full.
 
-READING PROOF — quote verbatim, before planning: the fixture HX-5 definition in Appendix A of this pack; Global Rule 4 (pending never conflates with actual); the audit-log findings of HD-2.
+READING PROOF — quote verbatim, before planning: the fixture HX-5 definition in docs/spec/hd-hold-fixtures-v1.md; Global Rule 4 (pending never conflates with actual); the audit-log findings of HD-2.
 If any named file or section is missing from the committed repo, STOP and
 report. Never build from memory of a chat; never author or reconstruct spec
 content — spec content comes from the founder only.
@@ -2810,44 +2815,8 @@ Deliver the evidence bundle for founder review and STOP. Do not begin the next d
 
 === END PROMPT ===
 
----
+Appendix A — HX fixture definitions (cited data contract — see docs/spec/hd-hold-fixtures-v1.md)
 
-Appendix A — HX fixture definitions (inputs locked here; outputs locked at HD-4 countersign)
-
-Fixture Projects seed under the fixture namespace (never colliding with the demo
-property or real users). INPUTS below are locked by this pack. EXPECTED OUTPUTS
-are captured from the HD-4 engine run, countersigned by the founder in the
-founder's terminal, and thereafter agent-immutable — the FX law applied to Hold.
-
-HX-1 — Baseline carry (rental). The DEMO_FINANCIALS property replicated
-under the fixture namespace exactly as seeded, disposition_type = RENT, all
-eight holding-cost categories populated from the seed's expense figures, loan
-carry from the seeded financing via the shared amortization utility.
-Outputs to lock: monthly carry; per-category monthlies as consumed by the
-engine; the three actualized-metric values once HD-34 flows them.
-
-HX-2 — Flip runway (sale). Same property basis, disposition_type = SALE,
-renovation_tier = Renovate, rehab_budget = $40,000,
-rehab_completion_target = seed date + 120 days, list_price_sale = $365,000,
-holding-cost categories as HX-1, spend entries: $9,500 (day 10) · $8,200
-(day 32) · $5,800 (day 55) = $23,500 to date.
-Outputs to lock: spend-to-date; budget variance; monthly carry; the runway
-(margin-erosion) date.
-
-HX-3 — Budget alert threshold. HX-2 plus one additional spend entry of
-$8,600 (day 70), bringing spend to $32,100 — crossing 80% of budget.
-Outputs to lock: the 80%-crossing fact and the variance figures the HD-27
-alert email must display.
-
-HX-4 — Buffered rent projection. HX-1 with the vacancy buffer set to 8%
-(conservative), maintenance reserve policy = 10% of gross scheduled rent,
-CapEx reserve policy = 10% of rent, no maintenance/capex actuals recorded.
-Outputs to lock: the Projected-labeled policy monthlies; the buffered
-projected income adjustment; marketing spend of $450 logged in the listing/ad
-log proven ABSENT from the NOI expense sum.
-
-HX-5 — Approval threshold. HX-1 with a hold_manager attached and the
-approval threshold set to $2,000. The manager posts two maintenance entries:
-$1,850 (flows to actuals) and $2,400 (pending_approval).
-Outputs to lock: actuals with the pending amount excluded; actuals after
-approval.
+Hold fixture definitions (HX-1…HX-5) live strictly in docs/spec/hd-hold-fixtures-v1.md.
+Per the single home law, this pack cites that file and does not duplicate its content.
+If the two ever appear to disagree, docs/spec/hd-hold-fixtures-v1.md governs and the agent STOPs and reports.

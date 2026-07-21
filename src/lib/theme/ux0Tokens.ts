@@ -26,8 +26,8 @@ export const UX0_TOKENS = {
   typography: {
     readabilityFloor: 'text-sm', // 14px effective typography floor (UX-2)
   },
-  layout: {
-    bannerHeight: 'h-[80px]', // 80px committed layout height
+  greenSemanticsPolicy: {
+    rule: 'Green is reserved for passing states, positive status chips (LIVE), and single primary CTA per view. Never on headings, tab labels, section titles, or decorative borders.',
   },
 } as const;
 

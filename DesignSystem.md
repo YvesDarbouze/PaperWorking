@@ -87,8 +87,9 @@ All values are CSS custom properties. **Never hard-code a hex color that isn't a
 | `--color-glass-panel-bg` | `rgba(255,255,255,0.03)` | Dialog background |
 | `--color-glass-panel-border` | `rgba(255,255,255,0.10)` | Frosted dialog outline |
 | `--color-bento-bg` | `rgba(255,255,255,0.02)` | Grid cell backdrop |
-| `--color-bento-border` | `rgba(255,255,255,0.08)` | Bento grid divider |
-| `--pw-glass-bg` (alias) | `rgba(18,19,29,0.65)` | Glass fill alias |
+### 2.7 Green Semantics Policy (UX-4 Rule)
+
+> **Verbatim Policy:** Green is reserved for exactly three uses: (1) a passing/success state, (2) a positive-signal status chip (e.g., LIVE), (3) the single primary call-to-action on a surface, at most one per view. Green never appears on headings, tab labels, section titles, borders-as-decoration, or body text. The Hold phase color is a distinct token and is exempt — but it is only used for phase identification, never for emphasis.
 
 ---
 

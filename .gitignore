@@ -65,7 +65,8 @@ node_modules\ 2/
 .mcpjam/
 
 # Claude Code agent dirs
-.claude/
+.claude/*
+!.claude/skills/
 
 .next*
 .gstack/
@@ -132,4 +133,8 @@ stitch_downloads/
 # Brand preflight original source assets
 /PaperWorking Logo/
 
+# Local cache files
+*financials_cache_store.json
 src/lib/db/financials_cache_store.json
+.claude/skills/*
+!.claude/skills/paperworking-reil/

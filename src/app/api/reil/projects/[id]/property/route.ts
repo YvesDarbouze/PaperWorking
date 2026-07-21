@@ -359,8 +359,25 @@ export async function POST(req: NextRequest, { params }: Params) {
     logger.warn("[Property Route] Failed to update sync timestamps (non-fatal)", { projectId: id, err });
   }
 
+  const serializedFacts = savedFacts ? {
+    ...savedFacts,
+    listPriceCents: savedFacts.listPriceCents ? Number(savedFacts.listPriceCents) : null,
+    estRentCents: savedFacts.estRentCents ? Number(savedFacts.estRentCents) : null,
+    lastSoldPriceCents: savedFacts.lastSoldPriceCents ? Number(savedFacts.lastSoldPriceCents) : null,
+    annualPropertyTaxCents: savedFacts.annualPropertyTaxCents ? Number(savedFacts.annualPropertyTaxCents) : null,
+    hoaMonthlyCents: savedFacts.hoaMonthlyCents ? Number(savedFacts.hoaMonthlyCents) : null,
+    taxAssessedValueCents: savedFacts.taxAssessedValueCents ? Number(savedFacts.taxAssessedValueCents) : null,
+    taxAssessedLandValCents: savedFacts.taxAssessedLandValCents ? Number(savedFacts.taxAssessedLandValCents) : null,
+    taxAssessedImprovementsValCents: savedFacts.taxAssessedImprovementsValCents ? Number(savedFacts.taxAssessedImprovementsValCents) : null,
+    avmPriceCents: savedFacts.avmPriceCents ? Number(savedFacts.avmPriceCents) : null,
+    avmPriceLowCents: savedFacts.avmPriceLowCents ? Number(savedFacts.avmPriceLowCents) : null,
+    avmPriceHighCents: savedFacts.avmPriceHighCents ? Number(savedFacts.avmPriceHighCents) : null,
+    estRentLowCents: savedFacts.estRentLowCents ? Number(savedFacts.estRentLowCents) : null,
+    estRentHighCents: savedFacts.estRentHighCents ? Number(savedFacts.estRentHighCents) : null,
+  } : null;
+
   return NextResponse.json({
-    facts: savedFacts,
+    facts: serializedFacts,
     compsCount: comps.length,
     rentalCompsCount: rentalComps.length,
     sourceProvider: facts.sourceProvider,

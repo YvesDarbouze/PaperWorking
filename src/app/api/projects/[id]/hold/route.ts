@@ -42,7 +42,7 @@ const holdFinancialsSchema = z.object({
   })).optional(),
 
   // Exit strategy
-  exitStrategyType: z.enum(['Sell', 'Rent']).optional(),
+  exitStrategyType: z.enum(['Sell', 'Rent', 'Lease']).optional(),
 
   // Rehab tier
   rehabTier: z.string().optional(),

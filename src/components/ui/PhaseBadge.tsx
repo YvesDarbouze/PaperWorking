@@ -2,7 +2,7 @@
 
 import React from 'react';
 
-type ProjectPhase = 'Lead' | 'Sourcing' | 'Under Contract' | 'Rehab' | 'Renovating' | 'Listed' | 'Sold' | 'Rented' | 'Closed';
+type ProjectPhase = 'acquisition' | 'fund' | 'hold' | 'exit';
 
 interface PhaseBadgeProps {
   status: string | ProjectPhase;
@@ -13,34 +13,27 @@ interface PhaseBadgeProps {
  * PhaseBadge — Standardized status identifier for Deals
  * 
  * Maps property phases to the specific Antigravity color scale.
- * Implements dynamic text contrast logic (Black text on Phase 0-1, White on 2-5).
  */
 export default function PhaseBadge({ status, className = '' }: PhaseBadgeProps) {
   // Normalize status for consistent mapping
-  const normalizedStatus = status as ProjectPhase;
+  const normalizedStatus = String(status).toLowerCase() as ProjectPhase;
 
   // Determine if the phase is "dark" (requires white text)
   const isDarkPhase = [
-    'Listed', 'Sold', 'Rented', 'Closed'
+    'hold', 'exit'
   ].includes(normalizedStatus);
 
   // Map normalized status to phase background variables
-  const getBadgeStyle = (s: string) => {
+  const getBadgeStyle = (s: ProjectPhase) => {
     switch (s) {
-      case 'Lead':
-      case 'Sourcing':
-        return 'bg-phase-sourcing';
-      case 'Under Contract':
-        return 'bg-phase-contract';
-      case 'Rehab':
-      case 'Renovating':
-        return 'bg-phase-rehab';
-      case 'Listed':
-        return 'bg-phase-listed';
-      case 'Sold':
-      case 'Rented':
-      case 'Closed':
-        return 'bg-phase-closed';
+      case 'acquisition':
+        return 'bg-phase-sourcing'; // Amber
+      case 'fund':
+        return 'bg-phase-contract'; // Blue
+      case 'hold':
+        return 'bg-phase-rehab'; // Orange
+      case 'exit':
+        return 'bg-phase-closed'; // Green
       default:
         return 'bg-bg-primary'; // Fallback
     }
@@ -48,6 +41,13 @@ export default function PhaseBadge({ status, className = '' }: PhaseBadgeProps) 
 
   const bgColorClass = getBadgeStyle(normalizedStatus);
   const textColorClass = isDarkPhase ? 'text-white' : 'text-pw-black';
+
+  const labelMap: Record<string, string> = {
+    'acquisition': 'Acquisition',
+    'fund': 'Fund',
+    'hold': 'Hold',
+    'exit': 'Exit',
+  };
 
   return (
     <span className={`
@@ -57,7 +57,7 @@ export default function PhaseBadge({ status, className = '' }: PhaseBadgeProps) 
       ${bgColorClass} ${textColorClass}
       ${className}
     `}>
-      {status}
+      {labelMap[normalizedStatus] || status}
     </span>
   );
 }

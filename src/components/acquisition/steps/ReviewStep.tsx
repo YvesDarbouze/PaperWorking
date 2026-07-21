@@ -246,7 +246,7 @@ export function ReviewStep({ onSubmit, submitting, onGoToStep }: ReviewStepProps
             {facts.beds      != null && <Chip label={`${facts.beds} bd`}  />}
             {facts.baths     != null && <Chip label={`${facts.baths} ba`} color="#7A9EAA" />}
             {facts.sqft      != null && <Chip label={`${facts.sqft.toLocaleString()} sqft`} color="#ffd1aa" />}
-            {facts.yearBuilt != null && <Chip label={`Built ${facts.yearBuilt}`} color="#5aaa3f" />}
+            {facts.yearBuilt != null && <Chip label={`Built ${facts.yearBuilt}`} />}
             {facts.propertyType && <Chip label={facts.propertyType} color="rgba(253,255,252,0.5)" />}
           </div>
           <Row label="List Price"   value={fmtCents(facts.listPriceCents)} />

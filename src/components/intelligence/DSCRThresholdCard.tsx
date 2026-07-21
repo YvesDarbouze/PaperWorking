@@ -2,7 +2,7 @@
 
 import React, { useMemo } from 'react';
 import { Shield, TrendingUp, TrendingDown, AlertTriangle, CheckCircle2, XCircle, BarChart3, Target } from 'lucide-react';
-import { computeDSCR } from '@/lib/metrics/reiMetrics';
+import { deriveAllMetrics } from '@/lib/metrics/reiMetrics';
 
 /* ═══════════════════════════════════════════════════════════════
    DSCR THRESHOLD INTELLIGENCE CARD
@@ -123,7 +123,15 @@ export function DSCRThresholdCard({
   className = '',
 }: DSCRThresholdCardProps) {
   const dscr = useMemo(() => {
-    const raw = computeDSCR(noi, annualDebtService);
+    const tempFinancials = {
+      purchasePrice: 100000,
+      monthlyGrossRent: noi / 12,
+      loanAmount: annualDebtService,
+      loanInterestRate: 0,
+      loanTermYears: 1,
+    };
+    const metrics = deriveAllMetrics(tempFinancials as any, undefined, 'RENT', 3);
+    const raw = metrics.dscr ?? 0;
     return raw === Infinity ? 999 : raw;
   }, [noi, annualDebtService]);
 

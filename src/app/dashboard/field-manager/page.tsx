@@ -19,7 +19,7 @@ export default function FieldManagerPage() {
   // Auto-select a renovating deal if possible
   useEffect(() => {
     if (projects.length > 0 && !currentProject) {
-      const activeRehab = projects.find(d => d.status === 'Renovating') || projects[0];
+      const activeRehab = projects.find(d => d.status === 'hold') || projects[0];
       setDeal(activeRehab);
     }
   }, [projects, currentProject, setDeal]);

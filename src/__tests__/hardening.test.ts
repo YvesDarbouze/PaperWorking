@@ -58,24 +58,19 @@ describe('Hardening and Safety Checks', () => {
 
   describe('directionality', () => {
     it('allows moving forward to subsequent phases', () => {
-      expect(isValidTransition('Sourcing', 'Under Contract')).toBe(true);
-      expect(isValidTransition('Under Contract', 'Rehab')).toBe(true);
-      expect(isValidTransition('Rehab', 'Listed')).toBe(true);
-      expect(isValidTransition('Listed', 'Sold')).toBe(true);
-      expect(isValidTransition('Sold', 'Rented')).toBe(true);
+      expect(isValidTransition('acquisition', 'fund')).toBe(true);
+      expect(isValidTransition('fund', 'hold')).toBe(true);
+      expect(isValidTransition('hold', 'exit')).toBe(true);
     });
 
     it('allows moving backward by exactly 1 step', () => {
-      expect(isValidTransition('Rehab', 'Under Contract')).toBe(true);
-      expect(isValidTransition('Listed', 'Rehab')).toBe(true);
-      expect(isValidTransition('Sold', 'Listed')).toBe(true);
+      expect(isValidTransition('hold', 'fund')).toBe(true);
+      expect(isValidTransition('exit', 'hold')).toBe(true);
     });
 
     it('rejects jumping backward by more than 1 step', () => {
-      expect(isValidTransition('Rehab', 'Sourcing')).toBe(false);
-      expect(isValidTransition('Listed', 'Under Contract')).toBe(false);
-      expect(isValidTransition('Sold', 'Rehab')).toBe(false);
-      expect(isValidTransition('Rented', 'Listed')).toBe(false);
+      expect(isValidTransition('hold', 'acquisition')).toBe(false);
+      expect(isValidTransition('exit', 'fund')).toBe(false);
     });
   });
 });

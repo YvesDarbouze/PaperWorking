@@ -33,7 +33,7 @@ interface ProfitBarData {
 
 function computeProfitByProject(projects: Project[], year?: number): ProfitBarData[] {
   const soldDeals = projects.filter((d: Project) => {
-    if (d.status !== 'Sold' || !d.financials?.soldDate) return false;
+    if (d.status !== 'exit' || d.dispositionType !== 'SALE' || !d.financials?.soldDate) return false;
     if (year) {
       const soldYear = new Date(d.financials.soldDate).getFullYear();
       return soldYear === year;

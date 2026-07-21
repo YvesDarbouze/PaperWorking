@@ -24,47 +24,40 @@ export interface TierBudgetRange {
 }
 
 const TIER_BUDGET_MAP: Record<RehabTier, TierBudgetRange> = {
-  'Staging': {
+  'Stage': {
     low: 1_000,
     high: 5_000,
-    label: 'Staging Only',
+    label: 'Stage',
     emoji: '🛋️',
     description: 'Deep clean, paint touch-ups, staging furniture. Turnkey cosmetic.',
   },
-  'Minor Cosmetic': {
+  'Refurbish': {
     low: 5_000,
     high: 20_000,
-    label: 'Minor Cosmetic',
+    label: 'Refurbish',
     emoji: '🎨',
     description: 'Fresh paint, new fixtures, minor flooring. No permits needed.',
   },
-  'Minor Rehab': {
-    low: 15_000,
-    high: 50_000,
-    label: 'Minor Rehab',
-    emoji: '🔧',
-    description: 'Kitchen/bath refresh, new appliances, some drywall. Light permits.',
-  },
-  'Full Rehab': {
-    low: 40_000,
+  'Renovate': {
+    low: 20_000,
     high: 100_000,
-    label: 'Full Rehab',
-    emoji: '🏗️',
-    description: 'Gut kitchen/baths, new HVAC, electrical panel, full permits.',
+    label: 'Renovate',
+    emoji: '🔧',
+    description: 'Kitchen/bath refresh, new appliances, electrical panel. Permits needed.',
   },
-  'Gut Renovation': {
-    low: 75_000,
-    high: 200_000,
-    label: 'Gut Renovation',
+  'Gut': {
+    low: 100_000,
+    high: 250_000,
+    label: 'Gut',
     emoji: '💣',
     description: 'Down to studs. Full MEP, structural, layout changes. Major permits.',
   },
-  'Ground-Up Construction': {
-    low: 150_000,
+  'Develop': {
+    low: 250_000,
     high: Infinity,
-    label: 'Ground-Up Construction',
+    label: 'Develop',
     emoji: '🏛️',
-    description: 'Tear-down and rebuild. Full architectural plans, all permits.',
+    description: 'Tear-down and rebuild. Full architectural plans, ground-up development.',
   },
 };
 
@@ -80,12 +73,11 @@ export function getRehabTierBudgetRange(tier: RehabTier): TierBudgetRange {
  */
 export function getAllRehabTiers(): (TierBudgetRange & { tier: RehabTier })[] {
   const order: RehabTier[] = [
-    'Staging',
-    'Minor Cosmetic',
-    'Minor Rehab',
-    'Full Rehab',
-    'Gut Renovation',
-    'Ground-Up Construction',
+    'Stage',
+    'Refurbish',
+    'Renovate',
+    'Gut',
+    'Develop',
   ];
   return order.map(tier => ({ ...TIER_BUDGET_MAP[tier], tier }));
 }
@@ -137,10 +129,12 @@ export function computeRehabBudgetVariance(
 export interface MonthlyHoldCostBreakdown {
   taxes: number;
   insurance: number;
+  security: number;
   utilities: number;
   hoa: number;
   maintenance: number;
   management: number;
+  capex: number;
   loanCarry: number;
   total: number;
 }
@@ -152,12 +146,14 @@ export interface MonthlyHoldCostBreakdown {
 export function computeTotalMonthlyHoldingCost(
   financials: Partial<ProjectFinancials>
 ): MonthlyHoldCostBreakdown {
-  const taxes = financials.holdingCostTaxes || 0;
-  const insurance = financials.holdingCostInsurance || 0;
-  const utilities = financials.holdingCostUtilities || 0;
-  const hoa = financials.monthlyHOA || 0;
-  const maintenance = financials.holdingCostMaintenance || 0;
-  const management = financials.holdingCostManagement || 0;
+  const taxes = financials.holdingCostTaxes || financials.holding_cost_tax || 0;
+  const insurance = financials.holdingCostInsurance || financials.holding_cost_insurance || 0;
+  const security = financials.holdingCostSecurity || financials.holding_cost_security || 0;
+  const utilities = financials.holdingCostUtilities || financials.holding_cost_utilities || 0;
+  const hoa = financials.monthlyHOA || financials.holding_cost_hoa || 0;
+  const maintenance = financials.holdingCostMaintenance || financials.holding_cost_maintenance || 0;
+  const management = financials.holdingCostManagement || financials.holding_cost_management || 0;
+  const capex = financials.holdingCostCapex || financials.holding_cost_capex || 0;
 
   // Loan carry: interest-only monthly payment on hard money
   const loanAmount = financials.loanAmount || 0;
@@ -166,9 +162,9 @@ export function computeTotalMonthlyHoldingCost(
     ? Math.round((loanAmount * (rate / 100)) / 12)
     : 0;
 
-  const total = taxes + insurance + utilities + hoa + maintenance + management + loanCarry;
+  const total = taxes + insurance + security + utilities + hoa + maintenance + management + capex + loanCarry;
 
-  return { taxes, insurance, utilities, hoa, maintenance, management, loanCarry, total };
+  return { taxes, insurance, security, utilities, hoa, maintenance, management, capex, loanCarry, total };
 }
 
 // ── Pre-1978 Environmental Check ──────────────────────────

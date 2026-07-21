@@ -48,14 +48,18 @@ export interface MetricResult {
  *   3. NOT_APPLICABLE: metric doesn't apply to this deal type
  */
 export type MetricNullReason =
-  // Deferred instruments — data source not yet integrated
-  | 'REQUIRES_INCOME_LEDGER'        // Revenue Growth, AAR — need historical ledger entries
-  | 'REQUIRES_EXPENSE_LEDGER'       // CapEx — need PP&E ledger tracking
-  | 'MARKET_DATA_DEFERRED'          // YoY Sold Price, Sold/Inventory, Demand Growth — awaits RentCast / market feed
-  | 'REQUIRES_CRM'                  // Listing-to-Meeting, Avg Commission — awaits CRM integration
-  | 'REQUIRES_COMPLIANCE_CHECKLIST' // Compliance Rate — awaits DD checklist instrument
-  | 'REQUIRES_PORTFOLIO_CONTEXT'    // Avg Rent/Property, Portfolio Value Growth — needs multi-project aggregation
-  // Standard null classes (existing)
+  // Class 2 — instrument not yet built (VZ-1 spec §honesty)
+  | 'REQUIRES_INCOME_LEDGER'        // #15 AAR, #17 Revenue Growth
+  | 'REQUIRES_EXPENSE_LEDGER'       // #13 CapEx tracking
+  | 'REQUIRES_TENANT_REGISTRY'      // #19 Tenant Turnover, #21 Lease Renewal
+  | 'REQUIRES_SALE_RECORD'          // #12 ROI (actual), #31 Avg Commission
+  | 'REQUIRES_RE_VALUATION'         // (reserved — future revaluation instrument)
+  | 'REQUIRES_LISTING_LOG'          // #23 DOM, #30 Listing-to-Meeting
+  | 'REQUIRES_PORTFOLIO_HISTORY'    // #20 Avg Rent/Property, #25 Portfolio Value Growth
+  | 'REQUIRES_COMPLIANCE_CHECKLIST' // #33 Compliance Rate
+  // Class 3 — deferred by product decision
+  | 'MARKET_DATA_DEFERRED'          // #27, #28, #29 — awaits RentCast / market feed
+  // Standard null classes
   | 'INCOMPLETE'                    // Fields exist but not populated
   | 'NOT_APPLICABLE';               // Metric doesn't apply (e.g. DSCR on all-cash)
 

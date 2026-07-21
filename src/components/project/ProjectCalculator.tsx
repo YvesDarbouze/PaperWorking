@@ -23,6 +23,7 @@ import { Loader2, Save } from 'lucide-react';
 import LOIGenerator from './LOIGenerator';
 import { useRouter } from 'next/navigation';
 import { Switch } from '../ui';
+import { computeTotalCashInvested } from '@/lib/metrics/reiMetrics';
 
 /* ═══════════════════════════════════════════════════════════════
    ProjectCalculator — Financial Analysis Container
@@ -156,8 +157,6 @@ export default function ProjectCalculator({ phaseColor, projectId, propertyAddre
   const [taxes, setTaxes] = useState<number>(initialFinancials?.operatingExpenseTaxes || 0);
   const [insurance, setInsurance] = useState<number>(initialFinancials?.operatingExpenseInsurance || 0);
 
-  // Financing Data State
-  const [cashInvested, setCashInvested] = useState<number>(initialFinancials?.financingCashInvested || 0);
   const [debtService, setDebtService] = useState<number>(initialFinancials?.financingDebtService || 0);
 
   // Equity Valuation Tracker State
@@ -166,6 +165,14 @@ export default function ProjectCalculator({ phaseColor, projectId, propertyAddre
 
   // Capital Stack State
   const [capitalStack, setCapitalStack] = useState<CapitalSource[]>(initialFinancials?.capitalStack || []);
+
+  // Financing Data State (Computed dynamically from components assembly)
+  const cashInvested = computeTotalCashInvested({
+    ...initialFinancials,
+    purchasePrice,
+    projectedRehabCost: rehabCents,
+    capitalStack,
+  } as any);
 
   // Holding Costs State
   const [projectedHoldTimeMonths, setProjectedHoldTimeMonths] = useState<number>(initialFinancials?.projectedHoldTimeMonths || 0);
@@ -599,9 +606,9 @@ export default function ProjectCalculator({ phaseColor, projectId, propertyAddre
                 label="Total Cash Invested"
                 tooltipText="The total amount of your own cash used in the deal (down payment, closing costs, out-of-pocket rehab)."
                 initialValue={cashInvested}
-                onChange={setCashInvested}
+                onChange={() => {}}
                 phaseColor={phaseColor}
-                readOnly={readOnly}
+                readOnly={true}
               />
               <CurrencyInputModule 
                 label="Monthly Debt Service"
@@ -640,8 +647,23 @@ export default function ProjectCalculator({ phaseColor, projectId, propertyAddre
                 readOnly={readOnly}
               />
               <LOIGenerator 
-                propertyAddress={propertyAddress || ''} 
-                maoCents={maoCents > 0 ? maoCents : 0} 
+                project={{
+                  id: projectId,
+                  address: propertyAddress || '',
+                  financials: initialFinancials,
+                }}
+                onSave={async (updates) => {
+                  setIsSaving(true);
+                  try {
+                    const merged = { ...(initialFinancials ?? {}), ...updates };
+                    await projectsService.updateProject(projectId, { financials: merged as any });
+                    if (onSaveSuccess) onSaveSuccess(merged as any);
+                  } catch (err) {
+                    console.error('Failed to save LOI from ProjectCalculator:', err);
+                  } finally {
+                    setIsSaving(false);
+                  }
+                }}
                 phaseColor={phaseColor} 
               />
               <div className="mt-2 pt-4 flex flex-col gap-2" style={{ borderTop: '1px dashed var(--border-ui)' }}>

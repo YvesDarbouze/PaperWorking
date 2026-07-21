@@ -56,6 +56,8 @@ function projectLabel(p: Project): string {
 
 // ─── Derivation ───────────────────────────────────────────────────────────────
 
+const PHASE_LABELS = ["", "Acquisition", "Fund", "Hold", "Exit"];
+
 function deriveAttentionItems(projects: Project[]): AttentionItem[] {
   const items: AttentionItem[] = [];
 
@@ -161,7 +163,7 @@ function deriveAttentionItems(projects: Project[]): AttentionItem[] {
           icon: "lock_clock",
           iconColor: "#ffd1aa",
           description: "Transaction needs financing details to reach clear-to-close",
-          metadata: `${name} · Transaction phase`,
+          metadata: `${name} · ${PHASE_LABELS[phase] || "Acquisition"} phase`,
           ctaLabel: "Open deal",
           ctaHref: `/dashboard/projects/${pid}`,
         });
@@ -224,7 +226,7 @@ export function NeedsAttentionFeed() {
           <span
             className="material-symbols-outlined text-[18px]"
             style={{
-              color: hasCritical ? "#F06543" : items.length > 0 ? "#ffac5a" : "#5aaa3f",
+              color: hasCritical ? "#F06543" : items.length > 0 ? "#ffac5a" : "var(--pw-success)",
               fontVariationSettings: "'FILL' 1",
             }}
           >
@@ -262,7 +264,7 @@ export function NeedsAttentionFeed() {
         <div className="flex flex-col items-center justify-center py-10 px-6 text-center">
           <span
             className="material-symbols-outlined text-4xl mb-3"
-            style={{ color: "#5aaa3f", fontVariationSettings: "'FILL' 1" }}
+            style={{ color: "var(--pw-success)", fontVariationSettings: "'FILL' 1" }}
           >
             check_circle
           </span>

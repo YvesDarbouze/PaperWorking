@@ -167,10 +167,10 @@ export default function Logo({
     logoContent = renderSingleGraphic('full', theme, size ?? 'h-10');
   } else if (surface === 'app-sidebar') {
     if (collapsed) {
-      logoContent = renderSingleGraphic('icon', theme, size ?? 'h-6');
+      logoContent = renderSingleGraphic('icon', theme, size ?? 19.2);
     } else {
-      const desktopSize = size ?? 'lg'; // 30px
-      const mobileSize = size ?? 'h-8'; // 32px
+      const desktopSize = size ?? 24; // 30px - 20% = 24px
+      const mobileSize = size ?? 25.6; // 32px - 20% = 25.6px
       logoContent = (
         <>
           {renderSingleGraphic('full', theme, desktopSize, 'hidden md:block')}
@@ -179,7 +179,7 @@ export default function Logo({
       );
     }
   } else if (surface === 'app-topbar') {
-    logoContent = renderSingleGraphic('icon', theme, size ?? 'h-8');
+    logoContent = renderSingleGraphic('icon', theme, size ?? 25.6); // 32px - 20% = 25.6px
   } else if (surface === 'auth') {
     logoContent = renderSingleGraphic('full', 'dark', size ?? 'h-12');
   } else if (surface === 'empty-state') {

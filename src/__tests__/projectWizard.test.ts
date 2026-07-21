@@ -48,7 +48,7 @@ describe('Project Creation Wizard Schema & Branching', () => {
 
       expect(activeIds).toContain('location');
       expect(activeIds).toContain('propertyName');
-      expect(activeIds).toContain('strategyType');
+      expect(activeIds).toContain('dispositionType');
       expect(activeIds).toContain('financingIntent');
     });
 
@@ -377,39 +377,39 @@ describe('Project Creation Wizard Schema & Branching', () => {
 
     it('includes projectedRent only for prospective Rent/BRRRR strategies', () => {
       const rental = getActiveQuestions({
-        isBackdated: 'no', strategyType: 'Rent', startingPhase: 1,
+        isBackdated: 'no', dispositionType: 'RENT', subStrategy: 'LONG_TERM', startingPhase: 1,
       }).map(q => q.id);
       expect(rental).toContain('projectedRent');
 
       const brrrr = getActiveQuestions({
-        isBackdated: 'no', strategyType: 'BRRRR', startingPhase: 1,
+        isBackdated: 'no', dispositionType: 'RENT', subStrategy: 'BRRRR', startingPhase: 1,
       }).map(q => q.id);
       expect(brrrr).toContain('projectedRent');
 
       const flip = getActiveQuestions({
-        isBackdated: 'no', strategyType: 'Fix & Flip', startingPhase: 1,
+        isBackdated: 'no', dispositionType: 'SALE', subStrategy: 'FLIP', startingPhase: 1,
       }).map(q => q.id);
       expect(flip).not.toContain('projectedRent');
 
       const backdatedRental = getActiveQuestions({
-        isBackdated: 'yes', strategyType: 'Rent', startingPhase: 1,
+        isBackdated: 'yes', dispositionType: 'RENT', subStrategy: 'LONG_TERM', startingPhase: 1,
       }).map(q => q.id);
       expect(backdatedRental).not.toContain('projectedRent');
     });
 
     it('includes projectedSalePrice only for prospective Flip strategies', () => {
       const flip = getActiveQuestions({
-        isBackdated: 'no', strategyType: 'Fix & Flip', startingPhase: 1,
+        isBackdated: 'no', dispositionType: 'SALE', subStrategy: 'FLIP', startingPhase: 1,
       }).map(q => q.id);
       expect(flip).toContain('projectedSalePrice');
 
       const rental = getActiveQuestions({
-        isBackdated: 'no', strategyType: 'Rent', startingPhase: 1,
+        isBackdated: 'no', dispositionType: 'RENT', subStrategy: 'LONG_TERM', startingPhase: 1,
       }).map(q => q.id);
       expect(rental).not.toContain('projectedSalePrice');
 
       const backdatedFlip = getActiveQuestions({
-        isBackdated: 'yes', strategyType: 'Fix & Flip', startingPhase: 1,
+        isBackdated: 'yes', dispositionType: 'SALE', subStrategy: 'FLIP', startingPhase: 1,
       }).map(q => q.id);
       expect(backdatedFlip).not.toContain('projectedSalePrice');
     });
@@ -490,17 +490,17 @@ describe('Project Creation Wizard Schema & Branching', () => {
 
     it('restricts estimatedARV to backdated Flip strategies only', () => {
       const backdatedFlip = getActiveQuestions({
-        isBackdated: 'yes', strategyType: 'Fix & Flip', startingPhase: 2,
+        isBackdated: 'yes', dispositionType: 'SALE', subStrategy: 'FLIP', startingPhase: 2,
       }).map(q => q.id);
       expect(backdatedFlip).toContain('estimatedARV');
 
       const backdatedRental = getActiveQuestions({
-        isBackdated: 'yes', strategyType: 'Rent', startingPhase: 2,
+        isBackdated: 'yes', dispositionType: 'RENT', subStrategy: 'LONG_TERM', startingPhase: 2,
       }).map(q => q.id);
       expect(backdatedRental).not.toContain('estimatedARV');
 
       const prospectiveFlip = getActiveQuestions({
-        isBackdated: 'no', strategyType: 'Fix & Flip', startingPhase: 1,
+        isBackdated: 'no', dispositionType: 'SALE', subStrategy: 'FLIP', startingPhase: 1,
       }).map(q => q.id);
       expect(prospectiveFlip).not.toContain('estimatedARV');
     });

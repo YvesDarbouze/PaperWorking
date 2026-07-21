@@ -14,6 +14,7 @@ import { replicationWorker } from '../services/replicationWorker';
 import { memberReplicationWorker } from '../services/memberReplicationWorker';
 import { officeReplicationWorker } from '../services/officeReplicationWorker';
 import { processWebhookPayload } from '../services/webhookProcessor';
+import { timelineSyncWorker } from '../services/timelineSyncWorker';
 
 export interface DrainResult {
   processed: number;
@@ -45,6 +46,13 @@ const handlers: Record<JobType, JobHandler> = {
   webhook_process: async (job) => {
     const result = await processWebhookPayload(job.payload);
     if (!result.success) throw new Error(result.reason ?? 'webhook_process failed');
+  },
+
+  timeline_sync: async (job) => {
+    const { projectId } = job.payload as { projectId: string };
+    if (!projectId) throw new Error('Missing projectId in payload');
+    const result = await timelineSyncWorker.sync(projectId);
+    if (!result.success) throw new Error(result.error ?? 'timeline_sync failed');
   },
 };
 
@@ -82,7 +90,7 @@ async function drainQueue(type: JobType, batchSize: number): Promise<DrainResult
  * @param batchSize Max jobs to consume per queue type per invocation.
  */
 export async function drainAll(batchSize = 5): Promise<Record<JobType, DrainResult>> {
-  const types: JobType[] = ['bridge_sync', 'member_sync', 'office_sync', 'webhook_process'];
+  const types: JobType[] = ['bridge_sync', 'member_sync', 'office_sync', 'webhook_process', 'timeline_sync'];
   const results = {} as Record<JobType, DrainResult>;
 
   for (const type of types) {

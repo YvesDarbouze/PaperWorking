@@ -351,7 +351,7 @@ export default function SettlementDocPortal() {
 
             {uploadFile ? (
               <div className="relative z-10 flex flex-col items-center gap-2">
-                <div className="w-14 h-14 mb-1 rounded-full bg-surface-container-highest flex items-center justify-center text-emerald-500 shadow-lg shadow-emerald-500/10">
+                <div className="w-14 h-14 mb-1 rounded-full bg-surface-container-highest flex items-center justify-center text-pw-success shadow-lg shadow-pw-success/10">
                   <FileCheck2 className="w-6 h-6" />
                 </div>
                 <div className="flex items-center justify-center gap-2">
@@ -425,7 +425,7 @@ export default function SettlementDocPortal() {
                   </div>
                   <div className="flex items-center gap-2">
                     {doc.verified ? (
-                      <span className="flex items-center gap-1 px-2 py-0.5 bg-emerald-50 text-emerald-700 border border-emerald-200 rounded text-xs font-bold uppercase">
+                      <span className="flex items-center gap-1 px-2 py-0.5 bg-pw-success-container text-pw-success border border-pw-success-border rounded text-xs font-bold uppercase">
                         <CheckCircle2 className="w-3 h-3" /> Verified
                       </span>
                     ) : (
@@ -483,7 +483,7 @@ export default function SettlementDocPortal() {
                       {!doc.verified && (
                         <button
                           onClick={() => verifyDocument(doc.id)}
-                          className="flex items-center gap-1.5 bg-emerald-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-emerald-700 transition active:scale-95"
+                          className="flex items-center gap-1.5 bg-pw-success text-[#0d0a0b] px-4 py-2 rounded-lg text-sm font-medium hover:bg-pw-success/90 transition active:scale-95"
                         >
                           <CheckCircle2 className="w-4 h-4" /> Verify & Lock Values
                         </button>

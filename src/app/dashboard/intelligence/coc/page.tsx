@@ -139,7 +139,7 @@ function EmptyState() {
         <div>
           <p className="text-sm font-semibold text-[#C0BEC2] mb-1">Awaiting Portfolio Data</p>
           <p className="text-xs text-[#6B6870] max-w-xs leading-relaxed">
-            Import deal data or complete Purchase phase tasks to generate Cash-on-Cash Return analytics.
+            Import deal data or complete Fund phase tasks to generate Cash-on-Cash Return analytics.
           </p>
         </div>
         <Link
@@ -195,7 +195,7 @@ export default function CoCIntelligencePage() {
     const withPrice = projects.filter((p) => (p.financials?.purchasePrice ?? 0) > 0);
     if (withPrice.length > 0) {
       return withPrice.slice(0, 5).map((p) => {
-        const derived = deriveAllMetrics(p.financials, undefined, p.strategyType, p.currentPhase);
+        const derived = deriveAllMetrics(p.financials, undefined, p.dispositionType, p.currentPhase);
         const equity = computeTotalCashInvested(p.financials || {});
         // Rule 2: NOI minus annual debt service = annual cash flow, same as selector arithmetic
         const annualCF = derived.noi - derived.annualDebtService;

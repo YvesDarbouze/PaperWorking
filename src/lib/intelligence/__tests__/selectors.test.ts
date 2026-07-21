@@ -170,7 +170,7 @@ describe('Intelligence Selectors', () => {
         {
           id: 'p1',
           propertyName: 'Prop 1',
-          strategyType: 'Rent',
+          dispositionType: 'RENT',
           financials: {
             purchasePrice: 100000,
             monthlyGrossRent: 1000,
@@ -194,7 +194,7 @@ describe('Intelligence Selectors', () => {
         {
           id: 'p1',
           propertyName: 'Prop 1',
-          strategyType: 'Rent',
+          dispositionType: 'RENT',
           financials: {
             purchasePrice: 100000,
             monthlyGrossRent: 1000,
@@ -220,7 +220,7 @@ describe('Intelligence Selectors', () => {
         {
           id: 'p1',
           propertyName: 'Prop 1',
-          strategyType: 'Rent',
+          dispositionType: 'RENT',
           financials: {
             purchasePrice: 100000,
             monthlyGrossRent: 1000,

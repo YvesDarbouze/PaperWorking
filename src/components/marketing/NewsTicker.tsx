@@ -27,7 +27,7 @@ export default function NewsTicker() {
             {item.change && (
               <span className={`ml-2 text-xs font-bold ${
                 item.trend === 'up' ? 'text-red-500' : 
-                item.trend === 'down' ? 'text-emerald-500' : 'text-text-secondary'
+                item.trend === 'down' ? 'text-pw-success' : 'text-text-secondary'
               }`}>
                 {item.trend === 'up' ? '↑' : item.trend === 'down' ? '↓' : ''} {item.change}
               </span>

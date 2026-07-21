@@ -3,7 +3,7 @@
 import React, { useMemo, useState } from 'react';
 import { Project } from '@/types/schema';
 import { Gauge, ChevronDown, ChevronUp, AlertTriangle, CheckCircle2, AlertCircle, Info } from 'lucide-react';
-import { calculateMAO } from '@/lib/analyticsUtils';
+import { deriveAllMetrics } from '@/lib/metrics/reiMetrics';
 
 /* ═══════════════════════════════════════════════════════════════
    MAOGaugeTracker — Acquisition Strategy Sentinel
@@ -23,44 +23,6 @@ interface DealMAO {
   delta: number;
   pct: number;
   status: 'within' | 'approaching' | 'exceeded';
-}
-
-function computeMAOMetrics(projects: Project[]): DealMAO[] {
-  return projects
-    .filter(d => d.status !== 'Sold' && d.financials?.estimatedARV && d.financials.estimatedARV > 0)
-    .map(deal => {
-      const arv = deal.financials?.estimatedARV || 0;
-      const purchasePrice = deal.financials?.purchasePrice || 0;
-      
-      let repairCosts = 0;
-      deal.financials?.costs?.forEach(c => {
-        if (c.approved) repairCosts += c.amount;
-      });
-      // Fallback to estimated rehab if no actual costs
-      if (repairCosts === 0) repairCosts = deal.financials?.projectedRehabCost || 0;
-
-      const mao = calculateMAO(arv, repairCosts);
-      const actualCost = purchasePrice;
-      const delta = mao - actualCost;
-      const pct = mao > 0 ? (actualCost / mao) * 100 : 999;
-
-      let status: DealMAO['status'] = 'within';
-      if (pct >= 100) status = 'exceeded';
-      else if (pct >= 85) status = 'approaching';
-
-      return {
-        id: deal.id,
-        address: deal.address || deal.propertyName,
-        arv,
-        repairCosts,
-        actualCost,
-        mao: Math.max(0, mao),
-        delta,
-        pct: Math.min(pct, 200),
-        status,
-      };
-    })
-    .sort((a, b) => b.pct - a.pct);
 }
 
 function shortAddress(addr: string): string {
@@ -94,18 +56,23 @@ export default function MAOGaugeTracker({ projects }: MAOGaugeTrackerProps) {
   
   const deals = useMemo(() => {
     return projects
-      .filter(d => d.status !== 'Sold' && d.financials?.estimatedARV && d.financials.estimatedARV > 0)
+      .filter(d => d.status !== 'exit' && d.financials?.estimatedARV && d.financials.estimatedARV > 0)
       .map(deal => {
+        const metrics = deriveAllMetrics(
+          deal.financials!,
+          undefined,
+          deal.dispositionType,
+          deal.currentPhase,
+          deal.createdAt,
+          undefined,
+          { ...deal, rulePercent }
+        );
+
         const arv = deal.financials?.estimatedARV || 0;
         const purchasePrice = deal.financials?.purchasePrice || 0;
+        const repairCosts = metrics.rehab?.totalRehab || deal.financials?.projectedRehabCost || 0;
         
-        let repairCosts = 0;
-        deal.financials?.costs?.forEach(c => {
-          if (c.approved) repairCosts += c.amount;
-        });
-        if (repairCosts === 0) repairCosts = deal.financials?.projectedRehabCost || 0;
-
-        const mao = (arv * (rulePercent / 100)) - repairCosts;
+        const mao = metrics.mao ?? 0;
         const actualCost = purchasePrice;
         const delta = mao - actualCost;
         const pct = mao > 0 ? (actualCost / mao) * 100 : 999;

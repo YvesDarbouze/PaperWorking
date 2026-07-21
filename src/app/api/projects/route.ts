@@ -34,10 +34,13 @@ const wizardFinancialsSchema = z.object({
   soldDate: z.any().optional(),
   actualSalePrice: z.number().nonnegative().optional(),
   loanAmount: z.number().nonnegative().optional(),
-  loanInterestRate: z.number().optional(),
+  loanInterestRate: z.number().nonnegative().optional(),
   loanTermYears: z.number().positive().optional(),
   rehabActual: z.number().nonnegative().optional(),
   capitalRaiseTarget: z.number().nonnegative().optional(),
+  annualDebtService: z.any().refine(val => val === undefined, {
+    message: "annualDebtService is read-only and cannot be updated"
+  }).optional(),
   equitySplit: z.number().optional(),
   requiredContingencies: z.array(z.string()).optional(),
   purchaseContractDoc: z.string().optional(),
@@ -75,7 +78,8 @@ const wizardSubmitSchema = z.object({
   lng: z.number().nullable().optional(),
   reiStatus: z.string().optional(),
   status: z.string().optional().default('Lead'),
-  strategyType: z.string().optional(),
+  dispositionType: z.string().optional(),
+  subStrategy: z.string().optional(),
   assetClass: z.string().optional(),
   leadEmail: z.string().optional(),
   partnerEmails: z.string().optional(),
@@ -98,20 +102,20 @@ const wizardSubmitSchema = z.object({
 function derivePhaseFromREIStatus(reiStatus?: string) {
   switch (reiStatus) {
     case 'Target':
-      return { phaseStatus: 'Phase 1: Find & Fund', currentPhase: 1, status: 'Lead' };
+      return { phaseStatus: 'Phase 1: Acquisition', currentPhase: 1, status: 'acquisition' };
     case 'In Contract':
-      return { phaseStatus: 'Phase 2: Acquisition', currentPhase: 2, status: 'Under Contract' };
     case 'Acquired':
-      return { phaseStatus: 'Phase 2: Acquisition', currentPhase: 2, status: 'Under Contract' };
+      return { phaseStatus: 'Phase 2: Fund', currentPhase: 2, status: 'fund' };
     case 'Rehabbing':
     case 'Under Construction':
-      return { phaseStatus: 'Phase 3: Holding & Rehab', currentPhase: 3, status: 'Renovating' };
     case 'Renting':
-      return { phaseStatus: 'Phase 3: Holding & Rehab', currentPhase: 3, status: 'Rented' };
+      return { phaseStatus: 'Phase 3: Hold', currentPhase: 3, status: 'hold' };
     case 'For Sale':
-      return { phaseStatus: 'Phase 4: Closing & Exit', currentPhase: 4, status: 'Listed' };
+    case 'realized':
+    case 'Sold':
+      return { phaseStatus: 'Phase 4: Exit', currentPhase: 4, status: 'exit' };
     default:
-      return { phaseStatus: 'Phase 1: Find & Fund', currentPhase: 1, status: 'Active' };
+      return { phaseStatus: 'Phase 1: Acquisition', currentPhase: 1, status: 'acquisition' };
   }
 }
 
@@ -139,23 +143,43 @@ export async function POST(request: NextRequest) {
     const data = validation.data;
     const organizationId = data.organizationId;
 
-    // 3. Verify org membership securely against organization document
+    // 3. Verify org membership — auto-create personal org if missing
     const orgSnap = await adminDb.collection('organizations').doc(organizationId).get();
     if (!orgSnap.exists) {
-      return NextResponse.json(
-        { error: 'Organization not found' },
-        { status: 404 }
-      );
-    }
-    const orgData = orgSnap.data();
-    const isOwner = orgData?.ownerUid === uid;
-    const isTeamMember = orgData?.teamMembers?.some((m: any) => m.id === uid && m.status === 'active');
+      // Check if this is the user's personal org that was never bootstrapped
+      const userSnap = await adminDb.collection('users').doc(uid).get();
+      const userData = userSnap.data();
+      const isPersonalOrg = userData?.personalOrganizationId === organizationId;
 
-    if (!isOwner && !isTeamMember) {
-      return NextResponse.json(
-        { error: 'Access denied. You are not an active member of this organization.' },
-        { status: 403 }
-      );
+      if (isPersonalOrg) {
+        // Auto-create the missing personal org document
+        await adminDb.collection('organizations').doc(organizationId).set({
+          ownerUid: uid,
+          name: `${userData?.displayName || 'User'}'s Workspace`,
+          type: 'personal',
+          subscriptionPlan: userData?.subscriptionPlan || 'None',
+          subscriptionStatus: userData?.subscriptionStatus || 'inactive',
+          createdAt: new Date(),
+          updatedAt: new Date(),
+        });
+      } else {
+        return NextResponse.json(
+          { error: 'Organization not found' },
+          { status: 404 }
+        );
+      }
+    } else {
+      // Org exists — verify membership
+      const orgData = orgSnap.data();
+      const isOwner = orgData?.ownerUid === uid;
+      const isTeamMember = orgData?.teamMembers?.some((m: any) => m.id === uid && m.status === 'active');
+
+      if (!isOwner && !isTeamMember) {
+        return NextResponse.json(
+          { error: 'Access denied. You are not an active member of this organization.' },
+          { status: 403 }
+        );
+      }
     }
 
     // 4. Entitlement check: project count limit
@@ -237,6 +261,55 @@ export async function POST(request: NextRequest) {
     console.error('[Projects POST] Error:', errMsg);
     return NextResponse.json(
       { error: 'Failed to create project', details: errMsg },
+      { status: 500 }
+    );
+  }
+}
+
+export async function GET(request: NextRequest) {
+  const auth = await requireAuth(request);
+  if (isAuthError(auth)) return auth;
+  const { uid } = auth;
+
+  try {
+    const userSnap = await adminDb.collection('users').doc(uid).get();
+    if (!userSnap.exists) {
+      return NextResponse.json({ error: 'User profile not found' }, { status: 404 });
+    }
+    const userData = userSnap.data();
+    const organizationId = userData?.organizationId;
+
+    if (!organizationId) {
+      return NextResponse.json({ success: true, projects: [] });
+    }
+
+    const { searchParams } = new URL(request.url);
+    const queryParam = searchParams.get('q') || '';
+
+    let projectsQuery = adminDb
+      .collection('projects')
+      .where('organizationId', '==', organizationId);
+
+    const snapshot = await projectsQuery.get();
+    let projects = snapshot.docs.map(doc => ({
+      id: doc.id,
+      ...doc.data()
+    }));
+
+    if (queryParam) {
+      const q = queryParam.toLowerCase();
+      projects = projects.filter((p: any) => 
+        (p.propertyName && p.propertyName.toLowerCase().includes(q)) ||
+        (p.address && p.address.toLowerCase().includes(q))
+      );
+    }
+
+    return NextResponse.json({ success: true, projects });
+  } catch (error: unknown) {
+    const errMsg = error instanceof Error ? error.message : 'Unknown error';
+    console.error('[Projects GET] Error:', errMsg);
+    return NextResponse.json(
+      { error: 'Failed to fetch projects', details: errMsg },
       { status: 500 }
     );
   }

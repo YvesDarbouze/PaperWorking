@@ -45,6 +45,12 @@ const WORKSPACE_ITEMS: NavItem[] = [
     exact: true,
   },
   {
+    id: 'insights',
+    label: 'Insights',
+    href: '/dashboard/insights',
+    icon: <Database className="w-5 h-5" strokeWidth={1.5} />,
+  },
+  {
     id: 'projects',
     label: 'Deals',
     href: '/dashboard/projects',
@@ -61,12 +67,6 @@ const WORKSPACE_ITEMS: NavItem[] = [
     label: 'Intelligence',
     href: '/dashboard/intelligence',
     icon: <BarChart3 className="w-5 h-5" strokeWidth={1.5} />,
-  },
-  {
-    id: 'insights',
-    label: 'Insights',
-    href: '/dashboard/insights',
-    icon: <Database className="w-5 h-5" strokeWidth={1.5} />,
   },
 ];
 

@@ -34,7 +34,7 @@ function ttfBand(days: number | null): TTFBand {
 }
 
 const TTF_STYLE: Record<TTFBand, { bg: string; text: string; border: string; label: string }> = {
-  green:   { bg: 'bg-[#F2F2F2]', text: 'text-emerald-700', border: 'border-[#CCCCCC]', label: '< 6 mo' },
+  green:   { bg: 'bg-pw-success-container', text: 'text-pw-success', border: 'border-pw-success-border', label: '< 6 mo' },
   yellow:  { bg: 'bg-[#F2F2F2]',   text: 'text-amber-700',   border: 'border-[#CCCCCC]',   label: '6-12 mo' },
   red:     { bg: 'bg-[#F2F2F2]',     text: 'text-red-700',     border: 'border-[#CCCCCC]',     label: '> 12 mo' },
   neutral: { bg: 'bg-bg-primary',    text: 'text-text-secondary',    border: 'border-border-accent',    label: 'N/A' },
@@ -86,7 +86,7 @@ function computeKPIs(projects: Project[]): VelocityKPIs {
     totalPortfolioValue += dealValue;
 
     // ── 1. Time to Flip ────────────────────────────────
-    if (deal.status === 'Sold' && fin?.soldDate && deal.createdAt) {
+    if (deal.status === 'exit' && deal.dispositionType === 'SALE' && fin?.soldDate && deal.createdAt) {
       const created = new Date(deal.createdAt);
       const sold = new Date(fin.soldDate);
       const diffMs = sold.getTime() - created.getTime();
@@ -129,7 +129,7 @@ function computeKPIs(projects: Project[]): VelocityKPIs {
     }
 
     // ── 4. Cash-on-Cash Return ─────────────────────────
-    if (deal.status === 'Sold' && fin?.actualSalePrice) {
+    if (deal.status === 'exit' && deal.dispositionType === 'SALE' && fin?.actualSalePrice) {
       const salePrice = fin.actualSalePrice;
       const buyerComm = (fin.buyersAgentCommission || 0) / 100;
       const sellerComm = (fin.sellersAgentCommission || 0) / 100;
@@ -153,9 +153,9 @@ function computeKPIs(projects: Project[]): VelocityKPIs {
     }
 
     // ── 5. Pipeline Visibility ─────────────────────────
-    if (deal.status === 'Listed') {
+    if (deal.status === 'hold' && deal.dispositionType === 'SALE') {
       pendingSaleValue += dealValue;
-    } else if (deal.status !== 'Sold') {
+    } else if (deal.status !== 'exit') {
       activeValue += dealValue;
     }
   });

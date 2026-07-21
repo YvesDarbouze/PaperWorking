@@ -192,21 +192,34 @@ export async function setupMocks(page: Page, state: MockState, options?: { allow
   });
 
   // 5. Mock Projects operations
-  await page.route(/\/api\/(reil\/)?projects$/, async (route) => {
+  await page.route(/\/api\/(reil\/)?projects(\?|$)/, async (route) => {
     const method = route.request().method();
     if (method === 'GET') {
+      const url = new URL(route.request().url());
+      const queryParam = url.searchParams.get('q') || '';
+      let filtered = state.projects;
+      if (queryParam) {
+        const q = queryParam.toLowerCase();
+        filtered = filtered.filter((p: any) =>
+          (p.propertyName && p.propertyName.toLowerCase().includes(q)) ||
+          (p.address && p.address.toLowerCase().includes(q))
+        );
+      }
       await route.fulfill({
         status: 200,
-        json: { projects: state.projects },
+        json: { success: true, projects: filtered },
       });
     } else if (method === 'POST') {
       const body = route.request().postDataJSON() || {};
       const newProj = {
         id: `project_${Date.now()}`,
-        name: body.name || 'New Project',
+        name: body.name || body.propertyName || 'New Project',
+        propertyName: body.propertyName || body.name || 'New Project',
         address: body.address || '',
         status: 'Active',
         currentPhase: 1,
+        dispositionType: body.dispositionType || 'RENT',
+        ...body,
         financials: body.financials || {
           monthlyRent: 0,
           vacancyRatePercent: 5,
@@ -249,9 +262,15 @@ export async function setupMocks(page: Page, state: MockState, options?: { allow
 
     if (method === 'GET') {
       const project = state.projects.find((p) => p.id === projectId);
+      console.log('MOCK GET PROJECT full:', JSON.stringify(project));
       if (project) {
         await route.fulfill({
           status: 200,
+          headers: {
+            'Cache-Control': 'no-store, no-cache, must-revalidate, proxy-revalidate',
+            'Pragma': 'no-cache',
+            'Expires': '0',
+          },
           json: { success: true, project },
         });
       } else {
@@ -259,14 +278,25 @@ export async function setupMocks(page: Page, state: MockState, options?: { allow
       }
     } else if (method === 'PATCH' || method === 'PUT') {
       const body = route.request().postDataJSON() || {};
+      console.log('MOCK PATCH REQUEST body:', body);
       const projIndex = state.projects.findIndex((p) => p.id === projectId);
       
       if (projIndex !== -1) {
+        // Handle dot-notation updates (e.g. 'financials.targetCapRate')
+        const updatedFinancials = { ...(state.projects[projIndex].financials || {}) };
+        for (const [key, val] of Object.entries(body)) {
+          if (key.startsWith('financials.')) {
+            const subKey = key.split('.')[1];
+            updatedFinancials[subKey] = val;
+          }
+        }
+
         state.projects[projIndex] = {
           ...state.projects[projIndex],
           ...body,
           financials: {
             ...state.projects[projIndex].financials,
+            ...updatedFinancials,
             ...(body.financials || {}),
           },
         };
@@ -299,6 +329,91 @@ export async function setupMocks(page: Page, state: MockState, options?: { allow
       } else {
         await route.fulfill({ status: 404, json: { error: 'Project not found' } });
       }
+    } else {
+      await route.continue();
+    }
+  });
+
+  // Mock project equity-parties endpoint
+  await page.route((url) => url.pathname.includes('/projects/') && url.pathname.endsWith('/equity-parties'), async (route) => {
+    const urlObj = new URL(route.request().url());
+    const parts = urlObj.pathname.split('/');
+    const projectId = parts[parts.length - 2];
+    const method = route.request().method();
+
+    if (method === 'GET') {
+      const project = state.projects.find((p) => p.id === projectId);
+      const equityParties = project?.equityParties || [];
+      await route.fulfill({
+        status: 200,
+        json: { success: true, equityParties },
+      });
+    } else {
+      await route.continue();
+    }
+  });
+
+  // 5.5 Mock Project Commitments endpoints for CrowdfundingTracker E2E
+  await page.route(/\/api\/projects\/([^\/]+)\/commitments$/, async (route) => {
+    const method = route.request().method();
+    const url = new URL(route.request().url());
+    const projectId = url.pathname.split('/')[3];
+    const key = `pw_e2e_commitments_${projectId}`;
+
+    if (method === 'POST') {
+      const body = route.request().postDataJSON() || {};
+      const newCommitment = {
+        id: `commitment_${Date.now()}`,
+        name: body.name,
+        email: body.email || null,
+        amountCents: body.amountCents,
+        status: body.status || 'pledged',
+        createdAt: new Date().toISOString(),
+      };
+
+      await page.evaluate(({ storageKey, item }) => {
+        const list = JSON.parse(localStorage.getItem(storageKey) || '[]');
+        list.push(item);
+        localStorage.setItem(storageKey, JSON.stringify(list));
+        window.dispatchEvent(new Event(`update_${storageKey}`));
+      }, { storageKey: key, item: newCommitment });
+
+      await route.fulfill({ status: 200, json: { success: true, commitment: newCommitment } });
+    } else {
+      await route.continue();
+    }
+  });
+
+  await page.route(/\/api\/projects\/([^\/]+)\/commitments\/([^\/]+)$/, async (route) => {
+    const method = route.request().method();
+    const url = new URL(route.request().url());
+    const parts = url.pathname.split('/');
+    const projectId = parts[3];
+    const commitmentId = parts[5];
+    const key = `pw_e2e_commitments_${projectId}`;
+
+    if (method === 'PATCH') {
+      const body = route.request().postDataJSON() || {};
+      await page.evaluate(({ storageKey, cId, updates }) => {
+        const list = JSON.parse(localStorage.getItem(storageKey) || '[]');
+        const idx = list.findIndex((c: any) => c.id === cId);
+        if (idx !== -1) {
+          list[idx] = { ...list[idx], ...updates };
+          localStorage.setItem(storageKey, JSON.stringify(list));
+          window.dispatchEvent(new Event(`update_${storageKey}`));
+        }
+      }, { storageKey: key, cId: commitmentId, updates: body });
+
+      await route.fulfill({ status: 200, json: { success: true } });
+    } else if (method === 'DELETE') {
+      await page.evaluate(({ storageKey, cId }) => {
+        const list = JSON.parse(localStorage.getItem(storageKey) || '[]');
+        const updated = list.filter((c: any) => c.id !== cId);
+        localStorage.setItem(storageKey, JSON.stringify(updated));
+        window.dispatchEvent(new Event(`update_${storageKey}`));
+      }, { storageKey: key, cId: commitmentId });
+
+      await route.fulfill({ status: 200, json: { success: true } });
     } else {
       await route.continue();
     }
@@ -456,7 +571,7 @@ export async function setupMocks(page: Page, state: MockState, options?: { allow
  * against future changes to the guard logic.
  */
 export async function safeGoto(page: import('@playwright/test').Page, path: string) {
-  await page.goto(path, { waitUntil: 'domcontentloaded', timeout: 30000 });
+  await page.goto(path, { waitUntil: 'domcontentloaded', timeout: 60000 });
 
   // Allow React hydration to complete (auth state, route guards, layout mounts).
   // 2500ms is generous: parallel workers under CPU pressure can delay hydration

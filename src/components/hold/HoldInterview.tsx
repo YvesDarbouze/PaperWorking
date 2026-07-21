@@ -6,6 +6,7 @@ import { projectsService } from '@/lib/firebase/projects';
 import { useAuth } from '@/context/AuthContext';
 import { toast } from 'react-hot-toast';
 import { ChevronLeft, ChevronRight, Info, AlertTriangle, Check, DollarSign } from 'lucide-react';
+import { ButtonGroup } from '@/components/ui/ButtonGroup';
 import {
   getAllRehabTiers,
   getRehabTierBudgetRange,
@@ -97,7 +98,9 @@ const ALL_SECTIONS: SectionDef[] = [
 
 export default function HoldInterview({ deal }: HoldInterviewProps) {
   const { user } = useAuth();
-  const strategy = deal.strategyType || 'Fix & Flip';
+  const strategy = deal.dispositionType === 'RENT'
+    ? (deal.subStrategy === 'BRRRR' ? 'Rent' : 'Buy & Hold')
+    : (deal.subStrategy === 'WHOLESALE' ? 'Sell' : 'Fix & Flip');
 
   // ── Form State ──────────────────────────────────────
   const [formData, setFormData] = useState(() => buildFormData(deal));
@@ -164,10 +167,12 @@ export default function HoldInterview({ deal }: HoldInterviewProps) {
 
       const holdingCostTaxes = f.holdingCostTaxes !== '' ? Number(f.holdingCostTaxes) : 0;
       const holdingCostInsurance = f.holdingCostInsurance !== '' ? Number(f.holdingCostInsurance) : 0;
+      const holdingCostSecurity = f.holdingCostSecurity !== '' ? Number(f.holdingCostSecurity) : 0;
       const holdingCostUtilities = f.holdingCostUtilities !== '' ? Number(f.holdingCostUtilities) : 0;
       const monthlyHOA = f.monthlyHOA !== '' ? Number(f.monthlyHOA) : 0;
       const holdingCostMaintenance = f.holdingCostMaintenance !== '' ? Number(f.holdingCostMaintenance) : 0;
       const holdingCostManagement = f.holdingCostManagement !== '' ? Number(f.holdingCostManagement) : 0;
+      const holdingCostCapex = f.holdingCostCapex !== '' ? Number(f.holdingCostCapex) : 0;
       const estimatedCurrentValue = f.estimatedCurrentValue !== '' ? Number(f.estimatedCurrentValue) : 0;
       const rehabBudget = f.rehabBudget !== '' ? Number(f.rehabBudget) : 0;
       const rehabActual = f.rehabActual !== '' ? Number(f.rehabActual) : 0;
@@ -197,10 +202,12 @@ export default function HoldInterview({ deal }: HoldInterviewProps) {
         operatingExpenseTaxes: holdingCostTaxes,
         holdingCostInsurance,
         operatingExpenseInsurance: holdingCostInsurance,
+        holdingCostSecurity,
         holdingCostUtilities,
         monthlyHOA,
         holdingCostMaintenance,
         holdingCostManagement,
+        holdingCostCapex,
         estimatedCurrentValue,
         // Rental
         propertyManagementFee,
@@ -242,10 +249,12 @@ export default function HoldInterview({ deal }: HoldInterviewProps) {
     const mockFinancials = {
       holdingCostTaxes: Number(formData.holdingCostTaxes) || 0,
       holdingCostInsurance: Number(formData.holdingCostInsurance) || 0,
+      holdingCostSecurity: Number(formData.holdingCostSecurity) || 0,
       holdingCostUtilities: Number(formData.holdingCostUtilities) || 0,
       monthlyHOA: Number(formData.monthlyHOA) || 0,
       holdingCostMaintenance: Number(formData.holdingCostMaintenance) || 0,
       holdingCostManagement: Number(formData.holdingCostManagement) || 0,
+      holdingCostCapex: Number(formData.holdingCostCapex) || 0,
       loanAmount: deal.financials?.loanAmount || 0,
       loanInterestRate: deal.financials?.loanInterestRate || 0,
     };
@@ -308,7 +317,7 @@ export default function HoldInterview({ deal }: HoldInterviewProps) {
           <ChevronLeft className="w-3.5 h-3.5" />
           Back
         </button>
-        <div className="flex items-center gap-3">
+        <ButtonGroup variant="related">
           {isSaving && (
             <span className="text-[10px] text-text-secondary animate-pulse">Saving…</span>
           )}
@@ -331,7 +340,7 @@ export default function HoldInterview({ deal }: HoldInterviewProps) {
               <ChevronRight className="w-3.5 h-3.5" />
             </button>
           )}
-        </div>
+        </ButtonGroup>
       </div>
     </div>
   );
@@ -473,10 +482,12 @@ export default function HoldInterview({ deal }: HoldInterviewProps) {
     const lines = [
       { key: 'holdingCostTaxes', label: 'Property Taxes', desc: 'Monthly property tax bill' },
       { key: 'holdingCostInsurance', label: 'Insurance', desc: 'Monthly hazard, liability, or builder\'s risk premium' },
+      { key: 'holdingCostSecurity', label: 'Security', desc: 'Monthly site monitoring, cameras, sensor alert systems' },
+      { key: 'holdingCostMaintenance', label: 'Maintenance', desc: 'Monthly lawn, snow, preservation, and minor repairs' },
       { key: 'holdingCostUtilities', label: 'Utilities', desc: 'Water, sewer, trash, power, gas' },
-      { key: 'monthlyHOA', label: 'HOA Fee', desc: 'Enter $0 if not in an HOA' },
-      { key: 'holdingCostMaintenance', label: 'Maintenance / CapEx', desc: 'Monthly maintenance and capital expenditure reserve' },
       { key: 'holdingCostManagement', label: 'Management Fee', desc: 'Monthly management fee during hold (if not self-managing)' },
+      { key: 'monthlyHOA', label: 'HOA Fee', desc: 'Enter $0 if not in an HOA' },
+      { key: 'holdingCostCapex', label: 'CapEx Reserve', desc: 'Monthly capital expenditure reserve' },
     ];
 
     return (
@@ -695,10 +706,12 @@ export default function HoldInterview({ deal }: HoldInterviewProps) {
       ...(formData.rehabDoneDate ? [{ label: 'Rehab Done', value: formData.rehabDoneDate }] : []),
       { label: 'Monthly Taxes', value: `$${(Number(formData.holdingCostTaxes) || 0).toLocaleString()}` },
       { label: 'Monthly Insurance', value: `$${(Number(formData.holdingCostInsurance) || 0).toLocaleString()}` },
-      { label: 'Monthly Utilities', value: `$${(Number(formData.holdingCostUtilities) || 0).toLocaleString()}` },
-      { label: 'Monthly HOA', value: `$${(Number(formData.monthlyHOA) || 0).toLocaleString()}` },
+      { label: 'Monthly Security', value: `$${(Number(formData.holdingCostSecurity) || 0).toLocaleString()}` },
       { label: 'Monthly Maintenance', value: `$${(Number(formData.holdingCostMaintenance) || 0).toLocaleString()}` },
+      { label: 'Monthly Utilities', value: `$${(Number(formData.holdingCostUtilities) || 0).toLocaleString()}` },
       { label: 'Monthly Management', value: `$${(Number(formData.holdingCostManagement) || 0).toLocaleString()}` },
+      { label: 'Monthly HOA', value: `$${(Number(formData.monthlyHOA) || 0).toLocaleString()}` },
+      { label: 'Monthly CapEx Reserve', value: `$${(Number(formData.holdingCostCapex) || 0).toLocaleString()}` },
       ...(holdBreakdown.loanCarry > 0 ? [{ label: 'Loan Carry', value: `$${holdBreakdown.loanCarry.toLocaleString()}/mo` }] : []),
       ...(Number(formData.estimatedCurrentValue) > 0 ? [{ label: 'Current Value', value: `$${Number(formData.estimatedCurrentValue).toLocaleString()}` }] : []),
     ];
@@ -798,10 +811,12 @@ function buildFormData(deal: Project) {
     // Holding Costs
     holdingCostTaxes: f.holdingCostTaxes || f.operatingExpenseTaxes || '',
     holdingCostInsurance: f.holdingCostInsurance || f.operatingExpenseInsurance || '',
-    holdingCostUtilities: f.holdingCostUtilities || '',
-    monthlyHOA: f.monthlyHOA || '',
+    holdingCostSecurity: f.holdingCostSecurity || '',
     holdingCostMaintenance: f.holdingCostMaintenance || '',
+    holdingCostUtilities: f.holdingCostUtilities || '',
     holdingCostManagement: f.holdingCostManagement || '',
+    monthlyHOA: f.monthlyHOA || '',
+    holdingCostCapex: f.holdingCostCapex || '',
     // Rental Ops
     propertyManagementFee: f.propertyManagementFee || '',
     monthlyMaintenanceReserve: f.monthlyMaintenanceReserve || f.maintenanceReserves || '',

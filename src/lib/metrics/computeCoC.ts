@@ -36,7 +36,7 @@ export interface CoCProjectInput {
     [key: string]: any;
   };
   currentPhase?: number;
-  strategyType?: string;
+  dispositionType?: string;
   [key: string]: any;
 }
 
@@ -58,7 +58,7 @@ export function computeCoCMetric(project: CoCProjectInput): MetricResult {
 
   if (missing.length > 0) return incomplete(missing);
 
-  const noi = computeNOI(fin as any, project.strategyType, project.currentPhase);
+  const noi = computeNOI(fin as any, project.dispositionType, project.currentPhase);
 
   const loanAmount = num(fin?.loanAmount) ?? 0;
   const loanRate = num(fin?.loanInterestRate) ?? 0;

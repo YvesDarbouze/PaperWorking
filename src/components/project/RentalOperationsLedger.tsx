@@ -11,6 +11,7 @@ import {
   type RentalSetupInput,
   type FinancialContext,
 } from '@/lib/validation/rentalSetupSchema';
+import { computeTotalCashInvested } from '@/lib/metrics/reiMetrics';
 
 interface RentalOperationsLedgerProps {
   financials: ProjectFinancials;
@@ -43,6 +44,7 @@ export function RentalOperationsLedger({
     watch,
     handleSubmit,
     reset,
+    setValue,
     formState: { errors },
   } = useForm<RentalSetupInput>({
     resolver: zodResolver(rentalSetupSchema) as Resolver<RentalSetupInput>,
@@ -56,6 +58,12 @@ export function RentalOperationsLedger({
     },
     mode: 'onChange',
   });
+
+  const computedCashInvested = Math.round(computeTotalCashInvested(financials) / 100);
+
+  useEffect(() => {
+    setValue('financingCashInvested', computedCashInvested);
+  }, [computedCashInvested, setValue]);
 
   // Sync when the parent pushes new Firestore data (e.g. on first load)
   useEffect(() => {
@@ -358,7 +366,7 @@ export function RentalOperationsLedger({
                     type="number"
                     step="1"
                     min="0"
-                    disabled={isLocked}
+                    disabled={true}
                     placeholder={String(totalAllInCost)}
                     {...register('financingCashInvested', { valueAsNumber: true })}
                     className={`${inputCls} pl-7 pr-4`}

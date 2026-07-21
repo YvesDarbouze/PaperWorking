@@ -30,7 +30,7 @@ async function migrate() {
     const propertyName = project.propertyName || 'Unnamed Property';
     const oldPhase = project.currentPhase;
     const oldPhaseStatus = project.phaseStatus;
-    const strategy = project.strategyType || 'Buy & Hold';
+    const strategy = project.dispositionType || project.strategyType || 'Buy & Hold';
 
     console.log(`\nProcessing Project [${projectId}]: "${propertyName}"`);
     dryRunReport.push(`\n## Project ID: ${projectId} ("${propertyName}")`);
@@ -189,7 +189,7 @@ async function migrate() {
     // E. Restructure project.exit and seed currentModality based on strategyType
     let currentModality: 'sale' | 'long_term_rental' | 'lease' | 'short_term_rental' | 'none' = 'none';
     if (newPhase === 4) {
-      if (strategy === 'Fix & Flip' || strategy === 'Sell') {
+      if (strategy === 'Fix & Flip' || strategy === 'Sell' || strategy === 'SALE') {
         currentModality = 'sale';
       } else {
         currentModality = 'long_term_rental';

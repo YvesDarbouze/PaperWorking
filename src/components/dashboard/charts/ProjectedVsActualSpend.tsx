@@ -38,7 +38,7 @@ interface ProjectSpendSeries {
 
 function buildSpendSeries(projects: Project[]): ProjectSpendSeries[] {
   const activeDeals = projects.filter(
-    (d: Project) => d.status === 'Renovating' || d.status === 'Under Contract'
+    (d: Project) => d.status === 'hold' || d.status === 'fund'
   );
 
   return activeDeals.map((deal: Project) => ({

@@ -20,6 +20,7 @@ export interface NOIProjectInput {
     holdingCostInsurance?: number;
     operatingExpenseInsurance?: number;
     holdingCostUtilities?: number;
+    holdingCostSecurity?: number;
     propertyManagementFeePercent?: number;
     propertyManagementFee?: number;
     monthlyMaintenanceReserve?: number;
@@ -33,7 +34,7 @@ export interface NOIProjectInput {
     [key: string]: any;
   };
   currentPhase?: number;
-  strategyType?: string;
+  dispositionType?: string;
   [key: string]: any;
 }
 
@@ -50,7 +51,7 @@ export function computeNOIMetric(project: NOIProjectInput): MetricResult {
   }
 
   // Call the existing engine
-  const components = computeNOIComponents(fin as any, project.strategyType, project.currentPhase);
+  const components = computeNOIComponents(fin as any, project.dispositionType, project.currentPhase);
 
   const inputsUsed: Record<string, number> = {
     'financials.monthlyGrossRent': rent,
@@ -66,6 +67,9 @@ export function computeNOIMetric(project: NOIProjectInput): MetricResult {
 
   const maintenance = num(fin?.monthlyMaintenanceReserve) ?? num(fin?.maintenanceReserves);
   if (maintenance !== undefined) inputsUsed['financials.monthlyMaintenanceReserve'] = maintenance;
+
+  const security = num(fin?.holdingCostSecurity);
+  if (security !== undefined) inputsUsed['financials.holdingCostSecurity'] = security;
 
   const mgmtPct = num(fin?.propertyManagementFeePercent);
   if (mgmtPct !== undefined) inputsUsed['financials.propertyManagementFeePercent'] = mgmtPct;

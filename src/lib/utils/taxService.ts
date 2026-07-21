@@ -83,7 +83,7 @@ export function auditTaxFields(project: Project): string[] {
     missing.push('Acquisition Date');
   }
 
-  const isRental = project.strategyType === 'Rent' || project.strategyType === 'Buy & Hold';
+  const isRental = project.dispositionType === 'RENT';
   if (isRental) {
     if (!f.monthlyGrossRent && !f.projectedMonthlyRent) {
       missing.push('Monthly Gross/Projected Rent');
@@ -95,7 +95,7 @@ export function auditTaxFields(project: Project): string[] {
     if (!f.loanTermYears) missing.push('Loan Term (Years)');
   }
 
-  if (project.status === 'Sold') {
+  if (project.status === 'exit' && project.dispositionType === 'SALE') {
     if (!f.soldDate) missing.push('Sold Date');
     if (!f.actualSalePrice || f.actualSalePrice <= 0) missing.push('Actual Sale Price');
   }
@@ -313,7 +313,7 @@ export function calculateProjectTaxReport(
   const propertyName = project.propertyName || project.address || 'Unnamed Project';
   
   const acqDate = parseDateSafe(f.acquisitionDate);
-  const soldDate = project.status === 'Sold' ? parseDateSafe(f.soldDate) : null;
+  const soldDate = (project.status === 'exit') ? parseDateSafe(f.soldDate) : null;
 
   const isSoldInPeriod = !!(soldDate && soldDate >= periodStart && soldDate <= periodEnd);
 
@@ -352,7 +352,7 @@ export function calculateProjectTaxReport(
   const activeMonths = getActiveMonthsInPeriod(acqDate, soldDate, periodStart, periodEnd);
 
   // 1. Income Allocation
-  const monthlyGrossRent = (project.strategyType === 'Rent' || project.strategyType === 'Buy & Hold') && (project.currentPhase === 3 || project.currentPhase === 4)
+  const monthlyGrossRent = project.dispositionType === 'RENT' && (project.currentPhase === 3 || project.currentPhase === 4)
     ? (f.actualRentalIncome ?? f.monthlyGrossRent ?? f.projectedMonthlyRent ?? 0)
     : (f.monthlyGrossRent ?? f.projectedMonthlyRent ?? 0);
 
@@ -434,7 +434,7 @@ export function calculateProjectTaxReport(
 
   const placedInServiceDate = parseDateSafe(f.placedInServiceDate) || acqDate || parseDateSafe(project.createdAt) || new Date();
   const depMonths = getDepreciationMonthsInPeriod(placedInServiceDate, soldDate, periodStart, periodEnd);
-  const depreciationEstimate = project.strategyType === 'Rent' || project.strategyType === 'Buy & Hold'
+  const depreciationEstimate = project.dispositionType === 'RENT'
     ? monthlyDepreciation * depMonths
     : 0;
 

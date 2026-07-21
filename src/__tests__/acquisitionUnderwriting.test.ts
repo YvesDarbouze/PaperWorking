@@ -78,6 +78,7 @@ describe('Phase 1 Acquisition Underwriting & Projections', () => {
         targetPrice: 150000,
         loanAmount: 120000,
         projectedRehabCost: 15000,
+        upfrontRehab: 15000,
         costs: [],
       };
 
@@ -109,11 +110,11 @@ describe('Phase 1 Acquisition Underwriting & Projections', () => {
     const checkGating = (deal: Partial<Project>) => {
       const missing: string[] = [];
       if (!deal.address) missing.push("Property Address");
-      if (!deal.strategyType) missing.push("Strategy Type");
+      if (!deal.dispositionType) missing.push("Strategy Type");
       const targetPrice = deal.financials?.targetPrice ?? deal.financials?.targetPurchasePrice ?? deal.financials?.purchasePrice;
       if (!targetPrice || targetPrice <= 0) missing.push("Projected Target Purchase Price");
       const offerStatus = deal.financials?.offerStatus;
-      if (offerStatus !== 'Accepted' && deal.status !== 'Under Contract') {
+      if (offerStatus !== 'Accepted' && deal.status !== 'fund') {
          missing.push("Accepted Offer (Offer Status must be 'Accepted')");
       }
       return missing;
@@ -122,8 +123,8 @@ describe('Phase 1 Acquisition Underwriting & Projections', () => {
     it('blocks transition when mandatory fields are missing', () => {
       const incompleteProject: Partial<Project> = {
         address: '',
-        strategyType: undefined,
-        status: 'Lead',
+        dispositionType: undefined,
+        status: 'acquisition',
         currentPhase: 1,
         financials: {
           targetPrice: 0,
@@ -142,8 +143,9 @@ describe('Phase 1 Acquisition Underwriting & Projections', () => {
     it('allows transition when all 4 criteria are met', () => {
       const completeProject: Partial<Project> = {
         address: '123 Main St, New York, NY 10001',
-        strategyType: 'Fix & Flip',
-        status: 'Lead',
+        dispositionType: 'SALE',
+        subStrategy: 'FLIP',
+        status: 'acquisition',
         currentPhase: 1,
         financials: {
           targetPrice: 250000,

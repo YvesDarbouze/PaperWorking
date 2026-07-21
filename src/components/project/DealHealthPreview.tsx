@@ -27,7 +27,8 @@ import {
 
 interface DealHealthPreviewProps {
   formData: {
-    strategyType: string;
+    dispositionType?: string;
+    subStrategy?: string;
     financials: {
       grossMonthlyRent?: string;
       otherMonthlyIncome?: string;
@@ -88,7 +89,7 @@ function getHealthScore(
 export function DealHealthPreview({ formData }: DealHealthPreviewProps) {
   const metrics = useMemo(() => {
     const f = formData.financials;
-    const strategy = formData.strategyType;
+    const dispositionType = formData.dispositionType;
 
     // Parse financial inputs
     const grossMonthlyRent = parseFloat(f.grossMonthlyRent || f.projectedRent || '0') || 0;
@@ -102,7 +103,7 @@ export function DealHealthPreview({ formData }: DealHealthPreviewProps) {
     const hoa = parseFloat(f.monthlyHOA || '0') || 0;
 
     // Only show preview for Rent/BRRRR with rent data
-    const isRentalStrategy = strategy === 'Rent' || strategy === 'BRRRR';
+    const isRentalStrategy = dispositionType === 'RENT';
     if (!isRentalStrategy || grossMonthlyRent <= 0) {
       return null;
     }

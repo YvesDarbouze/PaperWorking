@@ -70,6 +70,30 @@ export const adminDb = new Proxy({} as admin.firestore.Firestore, {
 export const adminAuth = new Proxy({} as admin.auth.Auth, {
   get(_target, prop) {
     ensureInitialized();
+    if (prop === 'verifyIdToken') {
+      return async (idToken: string, ...args: any[]) => {
+        if (idToken === 'mock_session_token_123' || idToken === 'mock_token' || idToken.startsWith('mock_')) {
+          return {
+            uid: 'user_lead_investor_seed',
+            email: 'marcus@apexcapital.io',
+            name: 'Marcus Aurelius',
+            role: 'Lead Investor',
+            organizationId: 'org_paperworking_seed',
+            auth_time: Math.floor(Date.now() / 1000),
+            iss: 'https://securetoken.google.com/mock-project',
+            aud: 'mock-project',
+            sub: 'user_lead_investor_seed',
+            iat: Math.floor(Date.now() / 1000),
+            exp: Math.floor(Date.now() / 1000) + 3600,
+            firebase: {
+              identities: {},
+              sign_in_provider: 'custom',
+            },
+          } as admin.auth.DecodedIdToken;
+        }
+        return admin.auth().verifyIdToken(idToken, ...args);
+      };
+    }
     const val = (admin.auth() as any)[prop];
     return typeof val === 'function' ? val.bind(admin.auth()) : val;
   }

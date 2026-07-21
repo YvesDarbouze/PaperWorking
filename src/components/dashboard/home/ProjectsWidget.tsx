@@ -32,7 +32,9 @@ function getHeadlineMetric(
   project: Project,
   metrics: ReturnType<typeof deriveAllMetrics>
 ): { label: string; value: string } {
-  const strategy = project.strategyType;
+  const strategy = project.dispositionType === 'RENT'
+    ? (project.subStrategy === 'BRRRR' ? 'Rent' : 'Buy & Hold')
+    : (project.subStrategy === 'WHOLESALE' ? 'Sell' : 'Fix & Flip');
   const fin = project.financials;
 
   if (strategy === 'Sell' || strategy === 'Fix & Flip') {
@@ -59,16 +61,13 @@ function getPhaseProgress(project: Project): number {
   const phase = project.currentPhase ?? 1;
   const status = project.status;
 
-  // Status-based progress within phase
-  if (status === 'Sold' || status === 'closed_won') return 100;
-  if (status === 'Listed') return 85;
-  if (status === 'Renovating') return 40;
-  if (status === 'Under Contract') return 65;
-  if (status === 'Lead') return 15;
-
-  // Phase-based baseline progress
-  const baseProgress: Record<number, number> = { 1: 25, 2: 50, 3: 70, 4: 90 };
-  return baseProgress[phase] ?? 30;
+  const progressMap: Record<string, number> = {
+    acquisition: 25,
+    fund: 50,
+    hold: 75,
+    exit: 100,
+  };
+  return progressMap[status] ?? (phase * 25);
 }
 
 /* ── Strategy display label ── */
@@ -109,7 +108,7 @@ function FolderCard({
       deriveAllMetrics(
         project.financials,
         project.financials?.estimatedCurrentValue,
-        project.strategyType,
+        project.dispositionType,
         project.currentPhase,
         project.createdAt
       ),
@@ -120,7 +119,11 @@ function FolderCard({
   const ownership = project.financials?.ownershipPercentage ?? 100;
   const progress = computePhaseProgress(project, project.currentPhase || 1) || getPhaseProgress(project);
   const stateAbbr = getStateFromAddress(project.address);
-  const strategyLabel = getStrategyLabel(project.strategyType);
+  const strategyLabel = getStrategyLabel(
+    project.dispositionType === 'RENT'
+      ? (project.subStrategy === 'BRRRR' ? 'Rent' : 'Buy & Hold')
+      : (project.subStrategy === 'WHOLESALE' ? 'Sell' : 'Fix & Flip')
+  );
 
   return (
     <div

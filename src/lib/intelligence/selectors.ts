@@ -241,7 +241,7 @@ export function useMetricCurrent(
       const factor = scope === 'myShare' ? (financials.ownershipPercentage ?? 100) / 100 : 1;
 
       // Extract single project derived metrics
-      const derived = deriveAllMetrics(financials, undefined, p.strategyType, p.currentPhase);
+      const derived = deriveAllMetrics(financials, undefined, p.dispositionType, p.currentPhase);
       const purchasePrice = financials.purchasePrice ?? financials.targetPrice ?? financials.targetPurchasePrice ?? 0;
       const propValue = financials.estimatedCurrentValue ?? financials.estimatedARV ?? purchasePrice;
       const cashInvested = computeTotalCashInvested(financials);

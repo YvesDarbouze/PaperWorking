@@ -9,7 +9,6 @@ import Link from "next/link";
 import { useAllDealsSync } from "@/hooks/useAllProjectsSync";
 import { useProjectStore } from "@/store/projectStore";
 import { deriveDualScopeMetrics } from "@/lib/metrics/reiMetrics";
-import { computeIRRMetric } from "@/lib/metrics/computeIRR";
 import jsPDF from "jspdf";
 import autoTable from "jspdf-autotable";
 import toast from "react-hot-toast";
@@ -276,7 +275,7 @@ export default function DataRoomPage() {
       const { asset: assetMetrics } = deriveDualScopeMetrics(
         f,
         f.estimatedARV,
-        p.strategyType,
+        p.dispositionType,
         p.currentPhase
       );
 
@@ -284,8 +283,7 @@ export default function DataRoomPage() {
       const loanAmount = f.loanAmount ?? 0;
       const committedCapital = f.committedCapital ?? f.capitalRaiseTarget ?? (purchasePrice - loanAmount);
       const ownershipPct = f.ownershipPercentage ?? 100;
-      const irrResult = computeIRRMetric({ financials: f, currentPhase: p.currentPhase, strategyType: p.strategyType });
-      const irr = irrResult.value ?? 0;
+      const irr = (assetMetrics.irr !== null && assetMetrics.irr !== undefined) ? assetMetrics.irr * 100 : 0;
       const appreciation = assetMetrics.annualizedAppreciation || 0;
 
       // Compute supplemental metrics

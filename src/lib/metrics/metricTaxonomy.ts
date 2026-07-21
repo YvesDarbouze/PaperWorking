@@ -346,6 +346,7 @@ export const METRIC_TAXONOMY: MetricTaxonomyEntry[] = [
     phaseLabel: 'Hold',
     benchmark: '\u2264 15%',
     description: 'Rate at which tenants vacate and are replaced within a year.',
+    deferredReason: 'REQUIRES_TENANT_REGISTRY',
   },
   {
     id: 'AVG_RENT_PER_PROPERTY',
@@ -357,7 +358,7 @@ export const METRIC_TAXONOMY: MetricTaxonomyEntry[] = [
     phaseLabel: 'Hold',
     benchmark: 'Varies',
     description: 'Mean rental income across a portfolio. Requires multi-project aggregation.',
-    deferredReason: 'REQUIRES_PORTFOLIO_CONTEXT',
+    deferredReason: 'REQUIRES_PORTFOLIO_HISTORY',
   },
   {
     id: 'LEASE_RENEWAL',
@@ -369,6 +370,7 @@ export const METRIC_TAXONOMY: MetricTaxonomyEntry[] = [
     phaseLabel: 'Hold',
     benchmark: '\u2265 75%',
     description: 'Percentage of expiring leases successfully renewed without unit turnover.',
+    deferredReason: 'REQUIRES_TENANT_REGISTRY',
   },
   {
     id: 'MAINTENANCE_COST_PER_UNIT',
@@ -391,6 +393,7 @@ export const METRIC_TAXONOMY: MetricTaxonomyEntry[] = [
     phaseLabel: 'Acquisition / Exit',
     benchmark: '\u2264 45 days',
     description: 'Time elapsed between listing and contract. Lower = hotter market or better pricing.',
+    deferredReason: 'REQUIRES_LISTING_LOG',
   },
   {
     id: 'CONSTRUCTION_COST_SQFT',
@@ -418,7 +421,7 @@ export const METRIC_TAXONOMY: MetricTaxonomyEntry[] = [
     phaseLabel: 'Hold',
     benchmark: '\u2265 3%/yr',
     description: 'Tracks the aggregate change in portfolio value over time. Requires multi-project aggregation.',
-    deferredReason: 'REQUIRES_PORTFOLIO_CONTEXT',
+    deferredReason: 'REQUIRES_PORTFOLIO_HISTORY',
   },
   {
     id: 'PAYBACK_PERIOD',
@@ -482,7 +485,7 @@ export const METRIC_TAXONOMY: MetricTaxonomyEntry[] = [
     phaseLabel: 'Acquisition',
     benchmark: 'Varies',
     description: 'Conversion rate of property listings to actual meetings with potential buyers. Awaits CRM integration.',
-    deferredReason: 'REQUIRES_CRM',
+    deferredReason: 'REQUIRES_LISTING_LOG',
   },
   {
     id: 'AVG_COMMISSION',
@@ -494,7 +497,7 @@ export const METRIC_TAXONOMY: MetricTaxonomyEntry[] = [
     phaseLabel: 'Exit',
     benchmark: '2.5\u20133%',
     description: 'Average agent earnings per transaction. Awaits CRM integration.',
-    deferredReason: 'REQUIRES_CRM',
+    deferredReason: 'REQUIRES_SALE_RECORD',
   },
 
   // ══════════════════════════════════════════════════════════════════════════

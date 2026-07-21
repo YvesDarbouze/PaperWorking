@@ -126,6 +126,29 @@ export async function POST(req: NextRequest) {
       projectId, documentId, envelopeId: result.envelopeId, provider: provider.providerName,
     });
 
+    // Send signature request notification to the signer (failure-isolated)
+    try {
+      const { NotificationService } = await import('@/lib/services/notificationService');
+      const { adminAuth } = await import('@/lib/firebase/admin');
+      const userRecord = await adminAuth.getUserByEmail(signerEmail).catch(() => null);
+      if (userRecord?.uid) {
+        await NotificationService.createNotification({
+          recipientId: userRecord.uid,
+          type: 'DOCUMENT_SIGNED',
+          actor: { uid: callerUid, name: auth.token.name || auth.token.email || 'Sponsor' },
+          objectReference: {
+            projectId,
+            dealAddress: project.propertyName || project.address?.street || 'the project',
+            documentName,
+            task: `Signature required: Please sign '${documentName}'`,
+          },
+          deepLinkUrl: `/dashboard/projects/${projectId}/data-room`,
+        });
+      }
+    } catch (notifErr: any) {
+      logger.error('[esign/create] Failed to send signature request notification:', notifErr.message);
+    }
+
     return NextResponse.json({
       success:    true,
       envelopeId: result.envelopeId,

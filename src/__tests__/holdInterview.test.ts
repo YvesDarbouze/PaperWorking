@@ -29,10 +29,12 @@ interface HoldStep {
 
 /**
  * Build the Hold steps array exactly as HoldInterview.tsx does.
- * Accepts formData.strategyType and formData.financials for dynamic gating.
+ * Accepts formData.dispositionType/subStrategy and formData.financials for dynamic gating.
  */
 function buildHoldSteps(formData: any): HoldStep[] {
-  const strategy = formData.strategyType;
+  const strategy = formData.dispositionType === 'RENT'
+    ? (formData.subStrategy === 'BRRRR' ? 'Rent' : 'Buy & Hold')
+    : (formData.subStrategy === 'WHOLESALE' ? 'Sell' : 'Fix & Flip');
   const isFlip = strategy === 'Fix & Flip' || strategy === 'Sell';
   const isRental = strategy === 'Buy & Hold' || strategy === 'Rent';
   const isBRRRR = strategy === 'Rent';
@@ -176,7 +178,9 @@ interface GatingResult {
 }
 
 function evaluateP3AdvanceGating(deal: any): GatingResult {
-  const strategy = deal.strategyType;
+  const strategy = deal.dispositionType === 'RENT'
+    ? (deal.subStrategy === 'BRRRR' ? 'Rent' : 'Buy & Hold')
+    : (deal.subStrategy === 'WHOLESALE' ? 'Sell' : 'Fix & Flip');
   const isFlip = strategy === 'Fix & Flip' || strategy === 'Sell';
   const isRental = strategy === 'Buy & Hold' || strategy === 'Rent';
   const isBRRRR = strategy === 'Rent';
@@ -219,7 +223,8 @@ describe('P3 Hold Phase — Strategy-based Question Gating', () => {
   // ── Fix & Flip ──
   describe('Fix & Flip strategy', () => {
     const formData = {
-      strategyType: 'Fix & Flip',
+      dispositionType: 'SALE',
+      subStrategy: 'FLIP',
       financials: { isOccupied: 'no' },
     };
 
@@ -262,7 +267,8 @@ describe('P3 Hold Phase — Strategy-based Question Gating', () => {
   // ── Buy & Hold (Stabilized Rental) ──
   describe('Buy & Hold (stabilized Rental) strategy', () => {
     const formData = {
-      strategyType: 'Buy & Hold',
+      dispositionType: 'RENT',
+      subStrategy: 'LONG_TERM',
       financials: { isOccupied: 'yes' },
     };
 
@@ -307,7 +313,8 @@ describe('P3 Hold Phase — Strategy-based Question Gating', () => {
   // ── BRRRR (Rent strategy = Flip path + Rental path) ──
   describe('BRRRR (Rent) strategy', () => {
     const formData = {
-      strategyType: 'Rent',
+      dispositionType: 'RENT',
+      subStrategy: 'BRRRR',
       financials: { isOccupied: 'yes' },
     };
 
@@ -332,15 +339,26 @@ describe('P3 Hold Phase — Strategy-based Question Gating', () => {
   // ── Shared ──
   describe('Shared questions (all strategies)', () => {
     it('estimatedCurrentValue is present for Flip, Rental, and BRRRR', () => {
-      for (const strategy of ['Fix & Flip', 'Buy & Hold', 'Rent', 'Sell']) {
-        const ids = getActiveIds({ strategyType: strategy, financials: { isOccupied: 'no' } });
+      const testCases = [
+        { dispositionType: 'SALE', subStrategy: 'FLIP' },
+        { dispositionType: 'RENT', subStrategy: 'LONG_TERM' },
+        { dispositionType: 'RENT', subStrategy: 'BRRRR' },
+        { dispositionType: 'SALE', subStrategy: 'WHOLESALE' },
+      ];
+      for (const tc of testCases) {
+        const ids = getActiveIds({ ...tc, financials: { isOccupied: 'no' } });
         expect(ids).toContain('estimatedCurrentValue');
       }
     });
 
     it('operating costs (taxes, insurance, utilities, HOA) present for all strategies', () => {
-      for (const strategy of ['Fix & Flip', 'Buy & Hold', 'Rent']) {
-        const ids = getActiveIds({ strategyType: strategy, financials: { isOccupied: 'no' } });
+      const testCases = [
+        { dispositionType: 'SALE', subStrategy: 'FLIP' },
+        { dispositionType: 'RENT', subStrategy: 'LONG_TERM' },
+        { dispositionType: 'RENT', subStrategy: 'BRRRR' },
+      ];
+      for (const tc of testCases) {
+        const ids = getActiveIds({ ...tc, financials: { isOccupied: 'no' } });
         expect(ids).toContain('holdingCostTaxes');
         expect(ids).toContain('holdingCostInsurance');
         expect(ids).toContain('holdingCostUtilities');
@@ -357,7 +375,8 @@ describe('P3 Hold Phase — Advance Gating (Phase 3 → Exit)', () => {
   describe('Flip advance criteria', () => {
     it('blocks when rehab not complete', () => {
       const deal = {
-        strategyType: 'Fix & Flip',
+        dispositionType: 'SALE',
+        subStrategy: 'FLIP',
         financials: { estimatedCurrentValue: 200000 },
       };
       const result = evaluateP3AdvanceGating(deal);
@@ -367,7 +386,8 @@ describe('P3 Hold Phase — Advance Gating (Phase 3 → Exit)', () => {
 
     it('blocks when current value not set', () => {
       const deal = {
-        strategyType: 'Fix & Flip',
+        dispositionType: 'SALE',
+        subStrategy: 'FLIP',
         financials: { rehabDoneDate: new Date(), estimatedCurrentValue: 0 },
       };
       const result = evaluateP3AdvanceGating(deal);
@@ -377,7 +397,8 @@ describe('P3 Hold Phase — Advance Gating (Phase 3 → Exit)', () => {
 
     it('allows advance when rehab done + value set', () => {
       const deal = {
-        strategyType: 'Fix & Flip',
+        dispositionType: 'SALE',
+        subStrategy: 'FLIP',
         financials: { rehabDoneDate: new Date(), estimatedCurrentValue: 250000 },
       };
       const result = evaluateP3AdvanceGating(deal);
@@ -387,7 +408,8 @@ describe('P3 Hold Phase — Advance Gating (Phase 3 → Exit)', () => {
 
     it('does NOT require tenant placement for Flip', () => {
       const deal = {
-        strategyType: 'Fix & Flip',
+        dispositionType: 'SALE',
+        subStrategy: 'FLIP',
         financials: { rehabDoneDate: new Date(), estimatedCurrentValue: 250000, daysOccupied: 0 },
       };
       const result = evaluateP3AdvanceGating(deal);
@@ -399,7 +421,8 @@ describe('P3 Hold Phase — Advance Gating (Phase 3 → Exit)', () => {
   describe('Rental advance criteria', () => {
     it('blocks when no tenant placed', () => {
       const deal = {
-        strategyType: 'Buy & Hold',
+        dispositionType: 'RENT',
+        subStrategy: 'LONG_TERM',
         financials: { holdingCostTaxes: 500, daysOccupied: 0, occupiedUnits: 0 },
       };
       const result = evaluateP3AdvanceGating(deal);
@@ -409,7 +432,8 @@ describe('P3 Hold Phase — Advance Gating (Phase 3 → Exit)', () => {
 
     it('blocks when no opex captured', () => {
       const deal = {
-        strategyType: 'Buy & Hold',
+        dispositionType: 'RENT',
+        subStrategy: 'LONG_TERM',
         financials: { daysOccupied: 30 },
       };
       const result = evaluateP3AdvanceGating(deal);
@@ -419,7 +443,8 @@ describe('P3 Hold Phase — Advance Gating (Phase 3 → Exit)', () => {
 
     it('allows advance when tenant placed + opex captured', () => {
       const deal = {
-        strategyType: 'Buy & Hold',
+        dispositionType: 'RENT',
+        subStrategy: 'LONG_TERM',
         financials: { daysOccupied: 30, holdingCostTaxes: 400 },
       };
       const result = evaluateP3AdvanceGating(deal);
@@ -428,7 +453,8 @@ describe('P3 Hold Phase — Advance Gating (Phase 3 → Exit)', () => {
 
     it('does NOT require rehab completion for stabilized Rental', () => {
       const deal = {
-        strategyType: 'Buy & Hold',
+        dispositionType: 'RENT',
+        subStrategy: 'LONG_TERM',
         financials: { daysOccupied: 30, holdingCostInsurance: 200 },
       };
       const result = evaluateP3AdvanceGating(deal);
@@ -440,7 +466,8 @@ describe('P3 Hold Phase — Advance Gating (Phase 3 → Exit)', () => {
   describe('BRRRR advance criteria', () => {
     it('requires ALL conditions: rehab + value + tenant + opex', () => {
       const incomplete = {
-        strategyType: 'Rent',
+        dispositionType: 'RENT',
+        subStrategy: 'BRRRR',
         financials: {},
       };
       const result = evaluateP3AdvanceGating(incomplete);
@@ -450,7 +477,8 @@ describe('P3 Hold Phase — Advance Gating (Phase 3 → Exit)', () => {
 
     it('allows advance when all 4 conditions met', () => {
       const deal = {
-        strategyType: 'Rent',
+        dispositionType: 'RENT',
+        subStrategy: 'BRRRR',
         financials: {
           rehabDoneDate: new Date(),
           estimatedCurrentValue: 300000,

@@ -5,9 +5,7 @@ import Link from 'next/link';
 import { ArrowUpRight, Download } from 'lucide-react';
 import { useAllDealsSync } from '@/hooks/useAllProjectsSync';
 import { useProjectStore } from '@/store/projectStore';
-import { computeNOIMetric } from '@/lib/metrics/computeNOI';
-import { computeCashFlowMetric } from '@/lib/metrics/computeCashFlow';
-import { computeAnnualDebtService } from '@/lib/metrics/reiMetrics';
+import { deriveAllMetrics } from '@/lib/metrics/reiMetrics';
 
 /* ═══════════════════════════════════════════════════════════════
    Portfolio Comparison Matrix — Stitch screen b8ceb1c395c2458a979cb8feab4357e1
@@ -69,14 +67,9 @@ export default function PortfolioComparisonPage() {
     if (projects.length === 0) return [];
     return projects.map((p) => {
       const f = p.financials ?? {};
-      const arv       = f.arv ?? f.purchasePrice ?? 0;
-      const loan      = f.loanAmount ?? arv * 0.65;
-      const projectShape = { financials: f, currentPhase: p.currentPhase };
-      const noi      = Math.max(0, computeNOIMetric(projectShape).value ?? 0);
-      const netCF    = computeCashFlowMetric(projectShape).value ?? 0;
-      const equity     = Math.max(0, arv - loan);
-      const annualRent = (f.monthlyGrossRent ?? f.projectedMonthlyRent ?? f.projectedRent ?? 0) * 12;
-      const annualDebt = computeAnnualDebtService(loan, f.loanInterestRate ?? 0, (f.loanTermYears ?? 30) * 12);
+      const derived   = deriveAllMetrics(f, undefined, p.dispositionType, p.currentPhase);
+      const arv       = f.estimatedARV ?? f.purchasePrice ?? 0;
+      const annualRent = derived.noiComponents.grossRentalIncome;
 
       const phase = p.phase === 'acquisition' ? 'Acquisition'
                   : p.phase === 'exit'        ? 'Exit'
@@ -90,14 +83,14 @@ export default function PortfolioComparisonPage() {
         phase,
         arv,
         purchasePrice: f.purchasePrice ?? 0,
-        rehabCost:     f.rehabBudget ?? 0,
-        noi,
-        capRate:       arv > 0 ? (noi / arv) * 100 : 0,
-        coc:           equity > 0 ? (netCF / equity) * 100 : 0,
-        ltv:           arv > 0 ? (loan / arv) * 100 : 0,
-        dscr:          annualDebt > 0 ? noi / annualDebt : 0,
-        irr:           f.cashOnCashReturn ?? 0,
-        occupancy:     f.occupancyRate ?? (p.phase === 'hold' ? 95 : 0),
+        rehabCost:     f.projectedRehabCost ?? 0,
+        noi:           derived.noi,
+        capRate:       derived.capRate,
+        coc:           derived.cashOnCashReturn,
+        ltv:           derived.ltv,
+        dscr:          derived.dscr,
+        irr:           derived.irr ?? 0,
+        occupancy:     derived.occupancyRate,
         grossRent:     annualRent,
       };
     });

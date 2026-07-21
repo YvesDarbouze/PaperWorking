@@ -17,6 +17,17 @@
 import * as admin from 'firebase-admin';
 import * as dotenv from 'dotenv';
 import * as path from 'path';
+import {
+  FX_1_PROJECT,
+  FX_2_PROJECT,
+  FX_3_PROJECT,
+  FX_4_PROJECT,
+  FX_5_PROJECT,
+  FX_6_PROJECT,
+  FX_7_PROJECT_STANDARD,
+  FX_7_PROJECT_SPECIAL,
+  FX_8_PROJECT,
+} from '../src/lib/metrics/fixtures';
 
 // ── Bootstrap Firebase Admin ────────────────────────────────────────
 // Explicitly load .env from the project root
@@ -263,14 +274,18 @@ async function seed() {
     id: DEAL_ID,
     organizationId: ORG_ID,
     ownerUid: LEAD_INVESTOR_UID,
-    propertyName: '123 Main Street Flip',
-    address: '123 Main Street, Miami, FL 33101',
-    status: 'Renovating',
+    propertyName: '742 Evergreen Terrace',
+    address: '742 Evergreen Terrace, Springfield, IL 62704',
+    status: 'Rented',
     currentPhase: 3,
     activePhase: 3,
     holdingCostClockStart: now,
     createdAt: now,
     updatedAt: now,
+    dispositionType: 'RENT',
+    subStrategy: 'LONG_TERM',
+    assetClass: 'Residential',
+    squareFootage: 1200,
     members: {
       [LEAD_INVESTOR_UID]: {
         uid: LEAD_INVESTOR_UID,
@@ -284,13 +299,52 @@ async function seed() {
       },
     },
     assignedUsers: [LEAD_INVESTOR_UID, CONTRACTOR_UID],
+    actionItems: [
+      {
+        id: 'todo_seed_01',
+        label: 'Upload Purchase & Sale Agreement',
+        description: 'Need fully executed PSA loaded to document vault.',
+        assignee: 'marcus@apexcapital.io',
+        completed: false,
+        phase: 1,
+      },
+      {
+        id: 'todo_seed_02',
+        label: 'Approve Contractor Bid',
+        description: 'Morales rehab scope needs formal review and approval.',
+        assignee: 'marcus@apexcapital.io',
+        completed: false,
+        phase: 3,
+      },
+      {
+        id: 'todo_seed_03',
+        label: 'Order Title Search',
+        description: 'Verify clear title with Coastal Title & Law.',
+        assignee: 'marcus@apexcapital.io',
+        completed: false,
+        phase: 2,
+      }
+    ],
     financials: {
-      purchasePrice: 200000,
-      estimatedARV: 340000,
-      loanInterestRate: 12,
-      loanOriginationPoints: 2,
-      estimatedTimelineDays: 180,
-      costs: [], // Legacy field — we now use the ledgerItems sub-collection
+      purchasePrice: 279000,
+      estimatedARV: 279000,
+      loanAmount: 223200,
+      loanInterestRate: 6.5,
+      loanTermYears: 30,
+      closingCosts: 4200,
+      totalCashInvested: 60000,
+      financingType: 'Financed',
+      projectedRehabCost: 35000,
+      upfrontRehab: 0,
+      gross_rent_per_unit: 1950,
+      vacancy_pct: 7,
+      tax: 200,
+      insurance: 58,
+      utilities: 125,
+      management_pct: 10,
+      maintenance: 195,
+      HOA: 0,
+      costs: [],
     },
   });
 
@@ -360,10 +414,12 @@ async function seed() {
   // ── 5. PrivateFinancials (Sub-Collection) ───────────────────────
   console.log('  → Writing PrivateFinancials summary...');
   
+  const purchasePrice = 279000;
+  const estimatedARV = 340000;
   const totalApprovedCosts = 8500 + 6200; // Only the 2 approved items
-  const totalInvestment = 200000 + totalApprovedCosts;
-  const netProfit = 340000 - totalInvestment;
-  const costOfCapital = 200000 * (12 / 100) * (180 / 365); // Simple interest over hold period
+  const totalInvestment = purchasePrice + totalApprovedCosts;
+  const netProfit = estimatedARV - totalInvestment;
+  const costOfCapital = 223200 * (6.5 / 100) * (180 / 365); // Simple interest on loanAmount
   const projectedROI = totalInvestment > 0 ? (netProfit / totalInvestment) * 100 : 0;
 
   await dealRef.collection('privateFinancials').doc('summary').set({
@@ -374,6 +430,54 @@ async function seed() {
     totalInvestment,
     lastCalculatedAt: now,
   });
+
+  // Seed FX-1 LoanRecord under DEAL_ID
+  console.log('  → Seeding FX-1 LoanRecord under DEAL_ID...');
+  await dealRef.collection('loans').doc('loan_fx1_seed').set({
+    id: 'loan_fx1_seed',
+    projectId: DEAL_ID,
+    instrument: 'Conventional',
+    lenderName: 'Apex Capital Lending',
+    amountCents: 223200 * 100,
+    interestRate: 6.5,
+    interestRatePercent: 6.5,
+    termMonths: 360,
+    points: 0,
+    status: 'Locked',
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
+  });
+
+  // ── 6. Seeding FX-2 to FX-8 Fixture Families in Firestore ──
+  console.log('  → Seeding FX-2 to FX-8 Project Fixtures in Firestore...');
+  const fixtures = [
+    FX_2_PROJECT,
+    FX_3_PROJECT,
+    FX_4_PROJECT,
+    FX_5_PROJECT,
+    FX_6_PROJECT,
+    FX_7_PROJECT_STANDARD,
+    FX_7_PROJECT_SPECIAL,
+    FX_8_PROJECT,
+  ];
+
+  for (const f of fixtures) {
+    const pRef = db.collection('projects').doc(f.id);
+    await pRef.set({
+      ...f,
+      organizationId: ORG_ID,
+      ownerUid: LEAD_INVESTOR_UID,
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+    });
+
+    // Seed subcollections if any
+    if (f.loans && f.loans.length > 0) {
+      for (const loan of f.loans) {
+        await pRef.collection('loans').doc(loan.id).set(loan);
+      }
+    }
+  }
 
   // ── Done ────────────────────────────────────────────────────────
   console.log('\n✅ Seed complete! Created:');

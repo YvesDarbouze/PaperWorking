@@ -19,15 +19,27 @@ export interface OccupancyProjectInput {
     [key: string]: any;
   };
   currentPhase?: number;
-  strategyType?: string;
+  dispositionType?: string;
   [key: string]: any;
 }
 
 export function computeOccupancyMetric(project: OccupancyProjectInput): MetricResult {
   const fin = project.financials;
 
+  const rawDisp = project.dispositionType;
+  const mappedDisp: Record<string, string> = {
+    'Buy & Hold': 'RENT',
+    'Rent': 'RENT',
+    'Fix & Flip': 'SALE',
+    'Sell': 'SALE',
+    'Wholesale': 'SALE',
+    'buy-and-hold': 'RENT',
+    'LTR': 'RENT',
+  };
+  const dispositionType = rawDisp ? (mappedDisp[rawDisp] ?? rawDisp) : undefined;
+
   // Flip/sell strategies → occupancy is 0 by definition
-  if (project.strategyType === 'Fix & Flip' || project.strategyType === 'Sell') {
+  if (dispositionType === 'SALE') {
     return {
       value: 0,
       state: resolveState(project.currentPhase),

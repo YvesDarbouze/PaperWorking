@@ -2,7 +2,7 @@
 
 import React, { useMemo, useState, useEffect } from 'react';
 import { Project } from '@/types/schema';
-import { deriveDualScopeMetrics, computeIRR, buildIRRCashFlows } from '@/lib/metrics/reiMetrics';
+import { deriveDualScopeMetrics } from '@/lib/metrics/reiMetrics';
 import IRRChart from '@/components/Charts/IRRChart';
 import { TrendingUp, Calendar, DollarSign, Target, BarChart3, AlertTriangle, SlidersHorizontal } from 'lucide-react';
 
@@ -26,6 +26,132 @@ function classifyIRR(irr: number | null): {
   return { grade: 'negative', label: 'Negative Return', description: 'This investment is projected to lose money', color: '#DC2626', bgColor: 'rgba(220,38,38,0.08)', borderColor: 'rgba(220,38,38,0.2)' };
 }
 
+function localBuildIRRCashFlows(
+  totalCashInvested: number,
+  annualCashFlow: number,
+  holdYears: number,
+  purchasePrice: number,
+  annualAppreciationPercent: number,
+  loanAmount: number,
+  loanInterestRate: number,
+  loanTermYears: number,
+  sellingCostsPercent = 8
+): number[] {
+  if (holdYears <= 0 || totalCashInvested <= 0) return [];
+  const flows: number[] = [-totalCashInvested];
+  const futureValue = purchasePrice * Math.pow(1 + annualAppreciationPercent / 100, holdYears);
+  let remainingBalance = loanAmount;
+  const monthlyRate = (loanInterestRate / 100) / 12;
+  const totalPayments = loanTermYears * 12;
+
+  if (monthlyRate > 0 && totalPayments > 0 && loanAmount > 0) {
+    const monthlyPayment = loanAmount * (monthlyRate * Math.pow(1 + monthlyRate, totalPayments)) /
+      (Math.pow(1 + monthlyRate, totalPayments) - 1);
+    const paymentsMade = holdYears * 12;
+    remainingBalance = loanAmount * Math.pow(1 + monthlyRate, paymentsMade) -
+      monthlyPayment * ((Math.pow(1 + monthlyRate, paymentsMade) - 1) / monthlyRate);
+    remainingBalance = Math.max(0, remainingBalance);
+  }
+
+  const sellingCosts = futureValue * (sellingCostsPercent / 100);
+  const netSaleProceeds = futureValue - remainingBalance - sellingCosts;
+
+  for (let y = 1; y <= holdYears; y++) {
+    if (y === holdYears) {
+      flows.push(annualCashFlow + netSaleProceeds);
+    } else {
+      flows.push(annualCashFlow);
+    }
+  }
+  return flows;
+}
+
+function localComputeIRR(cashFlows: number[], maxIterations = 100, tolerance = 1e-7): number | null {
+  if (cashFlows.length < 2) return null;
+  let rate = 0.10;
+
+  for (let i = 0; i < maxIterations; i++) {
+    let npv = 0;
+    let dNpv = 0;
+    for (let t = 0; t < cashFlows.length; t++) {
+      const pv = cashFlows[t] / Math.pow(1 + rate, t);
+      npv += pv;
+      if (t > 0) {
+        dNpv -= (t * cashFlows[t]) / Math.pow(1 + rate, t + 1);
+      }
+    }
+    if (Math.abs(dNpv) < 1e-12) break;
+    const newRate = rate - npv / dNpv;
+    if (Math.abs(newRate - rate) < tolerance) {
+      return Math.round(newRate * 10000) / 10000;
+    }
+    rate = newRate;
+    if (rate < -0.99 || rate > 10) break;
+  }
+
+  let low = -0.99;
+  let high = 10.0;
+  const getNpv = (r: number) => {
+    let sum = 0;
+    for (let t = 0; t < cashFlows.length; t++) {
+      sum += cashFlows[t] / Math.pow(1 + r, t);
+    }
+    return sum;
+  };
+
+  let bracketFound = false;
+  let prevVal = getNpv(low);
+  const steps = 100;
+  const stepSize = (high - low) / steps;
+
+  for (let step = 1; step <= steps; step++) {
+    const r = low + step * stepSize;
+    const val = getNpv(r);
+    if (prevVal * val <= 0) {
+      low = r - stepSize;
+      high = r;
+      bracketFound = true;
+      break;
+    }
+    prevVal = val;
+  }
+
+  if (!bracketFound) {
+    low = -0.99;
+    high = 100.0;
+    const widerSteps = 200;
+    const widerStepSize = (high - low) / widerSteps;
+    prevVal = getNpv(low);
+    for (let step = 1; step <= widerSteps; step++) {
+      const r = low + step * widerStepSize;
+      const val = getNpv(r);
+      if (prevVal * val <= 0) {
+        low = r - widerStepSize;
+        high = r;
+        bracketFound = true;
+        break;
+      }
+      prevVal = val;
+    }
+  }
+
+  if (bracketFound) {
+    for (let j = 0; j < 100; j++) {
+      const mid = (low + high) / 2;
+      const npvMid = getNpv(mid);
+      if (Math.abs(npvMid) < tolerance || (high - low) < tolerance) {
+        return Math.round(mid * 10000) / 10000;
+      }
+      if (getNpv(low) * npvMid < 0) {
+        high = mid;
+      } else {
+        low = mid;
+      }
+    }
+  }
+  return null;
+}
+
 export default function IRRDeepDive({ projects: propProjects }: Props) {
   const firstProject = propProjects?.[0];
   const projectAppreciation = firstProject?.financials?.annualAppreciationPercent ?? 3;
@@ -45,7 +171,7 @@ export default function IRRDeepDive({ projects: propProjects }: Props) {
 
     const p = projects[0];
     const f = p.financials!;
-    const { asset: metrics } = deriveDualScopeMetrics(f, undefined, p.strategyType, p.currentPhase);
+    const { asset: metrics } = deriveDualScopeMetrics(f, undefined, p.dispositionType, p.currentPhase);
 
     const purchasePrice = f.purchasePrice ?? 0;
     const loanAmount = f.loanAmount ?? 0;
@@ -57,43 +183,43 @@ export default function IRRDeepDive({ projects: propProjects }: Props) {
     if (metrics.totalCashInvested <= 0 || purchasePrice <= 0) return null;
 
     // Compute IRR for base hold period
-    const baseCashFlows = buildIRRCashFlows(
+    const baseCashFlows = localBuildIRRCashFlows(
       metrics.totalCashInvested, metrics.annualCashFlow, baseHoldYears,
       purchasePrice, appreciationRate, loanAmount, loanRate, loanTerm, sellingCosts
     );
-    const baseIRR = computeIRR(baseCashFlows);
-
+    const baseIRR = localComputeIRR(baseCashFlows);
+ 
     // Multi-year comparison (1–15 years)
     const holdComparison = Array.from({ length: 15 }, (_, i) => {
       const years = i + 1;
-      const flows = buildIRRCashFlows(
+      const flows = localBuildIRRCashFlows(
         metrics.totalCashInvested, metrics.annualCashFlow, years,
         purchasePrice, appreciationRate, loanAmount, loanRate, loanTerm, sellingCosts
       );
-      const irr = computeIRR(flows);
+      const irr = localComputeIRR(flows);
       const exitValue = purchasePrice * Math.pow(1 + appreciationRate / 100, years);
       const totalCashFlows = flows.reduce((s, f) => s + f, 0);
       return { year: years, irr, exitValue, totalCashFlows, irrPct: irr !== null ? irr * 100 : null };
     });
-
+ 
     // Appreciation sensitivity
     const appreciationRates = [0, 2, 3, 4, 5, 7];
     const sensitivityRows = appreciationRates.map(rate => {
-      const flows = buildIRRCashFlows(
+      const flows = localBuildIRRCashFlows(
         metrics.totalCashInvested, metrics.annualCashFlow, baseHoldYears,
         purchasePrice, rate, loanAmount, loanRate, loanTerm, sellingCosts
       );
-      const irr = computeIRR(flows);
+      const irr = localComputeIRR(flows);
       return { rate, irr, isCurrent: rate === appreciationRate };
     });
-
+ 
     // Cash flow timeline for base period
     const cashFlowTimeline = baseCashFlows.map((cf, i) => ({
       year: i === 0 ? 'Initial' : `Yr ${i}`,
       cashFlow: cf,
       cumulative: baseCashFlows.slice(0, i + 1).reduce((s, f) => s + f, 0),
     }));
-
+ 
     // Calculate actual elapsed years from acquisition date
     let actualHoldYears = 0;
     if (f.acquisitionDate) {
@@ -105,28 +231,28 @@ export default function IRRDeepDive({ projects: propProjects }: Props) {
         actualHoldYears = Math.max(0, Math.round(years)); // round to nearest integer for chart alignment
       }
     }
-
+ 
     // 5-Year and 10-Year hold scenarios side-by-side
-    const fiveYearFlows = buildIRRCashFlows(
+    const fiveYearFlows = localBuildIRRCashFlows(
       metrics.totalCashInvested, metrics.annualCashFlow, 5,
       purchasePrice, appreciationRate, loanAmount, loanRate, loanTerm, sellingCosts
     );
-    const fiveYearIRR = computeIRR(fiveYearFlows);
-
-    const tenYearFlows = buildIRRCashFlows(
+    const fiveYearIRR = localComputeIRR(fiveYearFlows);
+ 
+    const tenYearFlows = localBuildIRRCashFlows(
       metrics.totalCashInvested, metrics.annualCashFlow, 10,
       purchasePrice, appreciationRate, loanAmount, loanRate, loanTerm, sellingCosts
     );
-    const tenYearIRR = computeIRR(tenYearFlows);
-
+    const tenYearIRR = localComputeIRR(tenYearFlows);
+ 
     // Compute IRR-to-Date (Actual IRR) if actualHoldYears > 0
     let actualIRR: number | null = null;
     if (actualHoldYears > 0) {
-      const actualFlows = buildIRRCashFlows(
+      const actualFlows = localBuildIRRCashFlows(
         metrics.totalCashInvested, metrics.annualCashFlow, actualHoldYears,
         purchasePrice, appreciationRate, loanAmount, loanRate, loanTerm, sellingCosts
       );
-      actualIRR = computeIRR(actualFlows);
+      actualIRR = localComputeIRR(actualFlows);
     }
 
     return {
@@ -384,7 +510,7 @@ export default function IRRDeepDive({ projects: propProjects }: Props) {
               </tr>
             </thead>
             <tbody>
-              {analysis.sensitivityRows.map((row) => {
+              {analysis.sensitivityRows.map((row: any) => {
                 const cls = classifyIRR(row.irr);
                 const irrPct = row.irr !== null ? row.irr * 100 : null;
                 return (
@@ -425,7 +551,7 @@ export default function IRRDeepDive({ projects: propProjects }: Props) {
               </tr>
             </thead>
             <tbody>
-              {analysis.cashFlowTimeline.map((row, i) => (
+              {analysis.cashFlowTimeline.map((row: any, i: number) => (
                 <tr key={i}>
                   <td className="px-3 py-2 font-bold" style={{ color: 'var(--text-primary)', borderBottom: '1px solid var(--border-ui)' }}>{row.year}</td>
                   <td className="px-3 py-2 tabular-nums font-bold" style={{ color: row.cashFlow >= 0 ? '#595959' : '#F06543', borderBottom: '1px solid var(--border-ui)' }}>{fmtUSD(Math.round(row.cashFlow))}</td>

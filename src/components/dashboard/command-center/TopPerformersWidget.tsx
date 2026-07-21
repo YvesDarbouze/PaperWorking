@@ -25,7 +25,7 @@ const PHASE_COLORS: Record<number, string> = {
   1: "#454955",
   2: "#7A9EAA",
   3: "#ffac5a",
-  4: "#5aaa3f",
+  4: "var(--pw-success)",
 };
 
 const PHASE_LABELS: Record<number, string> = {
@@ -48,7 +48,7 @@ function derivePerformers(projects: Project[]): PerformerRow[] {
         const m = deriveAllMetrics(
           f,
           f.estimatedCurrentValue || f.estimatedARV,
-          p.strategyType,
+          p.dispositionType,
           p.currentPhase,
           p.createdAt,
         );

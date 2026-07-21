@@ -126,7 +126,7 @@ It contains 100+ fields organized by lifecycle phase.
 | `comparableSales` | Array | `{ address, soldPrice, distanceMiles, daysOnMarket }` |
 | `leadSource` | Enum | Wholesaler · MLS · REO · Direct Mail · Auction · Probate · Referral · Manual |
 
-### 3.3  Phase 2 — Transaction / Capital Financing
+### 3.3  Phase 2 — Fund / Capital Financing
 
 | Field | Type | Notes |
 |-------|------|-------|
@@ -140,7 +140,7 @@ It contains 100+ fields organized by lifecycle phase.
 | `initialCapitalizedBasis` | USD | |
 | `capitalStack` | Array | `{ category, amount, interestRate }` |
 
-### 3.4  Phase 3 — Rehab
+### 3.4  Phase 3 — Hold
 
 | Field | Type | Notes |
 |-------|------|-------|
@@ -219,7 +219,7 @@ These are the promoted, structured sub-documents replacing flat financials field
 // Each period:
 {
   period: string;                     // YYYY-MM
-  phaseAtPeriod: 'acquisition' | 'transaction' | 'rehab' | 'hold_exit';
+  phaseAtPeriod: 'acquisition' | 'fund' | 'hold' | 'exit';
   insurance: USD;
   propertyTax: USD;
   maintenance: USD;

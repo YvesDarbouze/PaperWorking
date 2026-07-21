@@ -233,7 +233,9 @@ function AllocationChart({
     if (projects.length === 0) return { data: [] as { value: number; name: string; itemStyle: { color: string } }[], totalDeals: 0 };
     const counts: Record<string, number> = {};
     for (const p of projects) {
-      const type = (p as { dealType?: string }).dealType ?? p.strategyType ?? 'Other';
+      const type = p.dispositionType === 'RENT'
+        ? (p.subStrategy === 'BRRRR' ? 'BRRRR' : 'Rent')
+        : p.dispositionType === 'LEASE' ? 'Lease' : 'Fix & Flip';
       counts[type] = (counts[type] ?? 0) + 1;
     }
     const palette = [T.teal, T.brandPrimary, T.amber, '#fb923c', '#454955'];

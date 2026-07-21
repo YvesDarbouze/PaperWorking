@@ -145,7 +145,7 @@ export const ClosingHandoffModal: React.FC<Props> = ({ isOpen, project, onClose 
             <button
               type="submit"
               disabled={isSubmitting}
-              className="pw-btn bg-emerald-600 hover:bg-emerald-500 text-white rounded-full flex-1 flex justify-center items-center py-3 px-4 font-semibold transition-all disabled:opacity-50"
+              className="pw-btn bg-pw-success hover:bg-pw-success/90 text-[#0d0a0b] rounded-full flex-1 flex justify-center items-center py-3 px-4 font-semibold transition-all disabled:opacity-50"
             >
               {isSubmitting ? <Loader2 className="w-5 h-5 animate-spin" /> : 'Sign HUD & Close'}
             </button>

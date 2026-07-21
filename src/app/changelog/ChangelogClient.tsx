@@ -23,7 +23,7 @@ export default function ChangelogClient({ entries }: ChangelogClientProps) {
       {/* Header */}
       <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-16 pb-6 border-b border-[var(--pw-border)]">
         <div>
-          <span className="uppercase tracking-widest text-xs font-black text-emerald-400 mb-3 block">
+          <span className="uppercase tracking-widest text-xs font-black text-pw-success mb-3 block">
             Platform Updates
           </span>
           <h1 className="text-4xl md:text-5xl font-light tracking-tighter text-[var(--pw-black)]">
@@ -39,9 +39,9 @@ export default function ChangelogClient({ entries }: ChangelogClientProps) {
             href="/changelog/rss"
             target="_blank"
             rel="noopener noreferrer"
-            className="inline-flex items-center gap-2 px-4 py-2 border border-[var(--pw-border)] hover:border-emerald-400 rounded-xl bg-white/5 hover:bg-white/10 text-xs font-bold uppercase tracking-widest text-[var(--pw-black)] transition-all"
+            className="inline-flex items-center gap-2 px-4 py-2 border border-[var(--pw-border)] hover:border-pw-success rounded-xl bg-white/5 hover:bg-white/10 text-xs font-bold uppercase tracking-widest text-[var(--pw-black)] transition-all"
           >
-            <Rss className="w-4 h-4 text-emerald-400" />
+            <Rss className="w-4 h-4 text-pw-success" />
             RSS Feed
           </a>
         </div>
@@ -62,11 +62,11 @@ export default function ChangelogClient({ entries }: ChangelogClientProps) {
               {/* Date & Version Tag */}
               <div className="flex flex-wrap items-center gap-4 mb-6">
                 <div className="flex items-center gap-1.5 text-xs text-[var(--pw-muted)]">
-                  <Calendar className="w-4 h-4 text-emerald-400" />
+                  <Calendar className="w-4 h-4 text-pw-success" />
                   {entry.date}
                 </div>
                 <div className="flex items-center gap-1.5 text-xs text-[var(--pw-muted)]">
-                  <Tag className="w-4 h-4 text-emerald-400" />
+                  <Tag className="w-4 h-4 text-pw-success" />
                   Version {entry.version}
                 </div>
               </div>
@@ -76,7 +76,7 @@ export default function ChangelogClient({ entries }: ChangelogClientProps) {
                 className="prose prose-neutral max-w-none text-[var(--pw-black)]
                            prose-headings:font-light prose-headings:tracking-tight prose-headings:text-[var(--pw-black)]
                            prose-h1:text-2xl prose-h1:mb-4 prose-h1:mt-0
-                           prose-h2:text-sm prose-h2:uppercase prose-h2:tracking-widest prose-h2:font-black prose-h2:text-emerald-400 prose-h2:mt-6 prose-h2:mb-2
+                           prose-h2:text-sm prose-h2:uppercase prose-h2:tracking-widest prose-h2:font-black prose-h2:text-pw-success prose-h2:mt-6 prose-h2:mb-2
                            prose-p:my-4 prose-p:leading-relaxed prose-p:text-sm prose-p:text-[var(--pw-muted)]
                            prose-strong:font-bold prose-strong:text-[var(--pw-black)]
                            prose-ul:list-disc prose-ul:pl-5 prose-ul:my-2 prose-ul:space-y-1

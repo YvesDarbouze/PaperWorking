@@ -54,8 +54,8 @@ type ProjectState = 'draft' | 'live' | 'realized';
 
 function classifyState(project: Project): ProjectState {
   const s = project.status;
-  if (s === 'Sold' || s === 'closed_won' || s === 'closed_lost') return 'realized';
-  if (s === 'Lead' || (!project.financials?.purchasePrice && !project.financials?.estimatedARV)) return 'draft';
+  if (s === 'exit') return 'realized';
+  if (s === 'acquisition' || (!project.financials?.purchasePrice && !project.financials?.estimatedARV)) return 'draft';
   return 'live';
 }
 
@@ -73,7 +73,7 @@ function getWizardCompletion(project: Project): number {
   if (project.address) filled++;
   if (project.financials?.purchasePrice) filled++;
   if (project.financials?.estimatedARV || project.financials?.arv) filled++;
-  if (project.strategyType) filled++;
+  if (project.dispositionType) filled++;
   if (project.assetClass) filled++;
   return Math.round((filled / total) * 100);
 }
@@ -107,7 +107,10 @@ export function ProjectCard({
   const state = classifyState(project);
   const pill = STATE_PILLS[state];
   const assetLabel = getAssetLabel(project.assetClass);
-  const strategyLabel = getStrategyLabel(project.strategyType);
+  const strategy = project.dispositionType === 'RENT'
+    ? (project.subStrategy === 'BRRRR' ? 'Rent' : 'Buy & Hold')
+    : (project.subStrategy === 'WHOLESALE' ? 'Sell' : 'Fix & Flip');
+  const strategyLabel = getStrategyLabel(strategy);
   const hasPartners = (project.fractionalInvestors?.length ?? 0) > 0;
   const ownership = project.financials?.ownershipPercentage ?? 100;
 
@@ -117,7 +120,7 @@ export function ProjectCard({
     return deriveAllMetrics(
       project.financials,
       project.financials?.estimatedCurrentValue,
-      project.strategyType,
+      project.dispositionType,
       project.currentPhase,
       project.createdAt
     );

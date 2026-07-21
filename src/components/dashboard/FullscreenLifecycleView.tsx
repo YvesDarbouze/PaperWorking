@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Project } from '@/types/schema';
 import { useProjectStore } from '@/store/projectStore';
@@ -12,7 +12,9 @@ import toast from 'react-hot-toast';
 import { usePermissions } from '@/hooks/usePermissions';
 import { projectsService } from '@/lib/firebase/projects';
 import { transitionProjectPhase } from '@/lib/services/projectStateMachine';
-import { computeNOIComponents, computeCapRate, computeContingencyBudget, computeDailyBurnRate, computeRenovationROI, computeOverImprovementRisk, computeRehabStageProgress, computeYesterdayCost, computeCriticalPath } from '@/lib/metrics/reiMetrics';
+import {
+  deriveAllMetrics,
+} from '@/lib/metrics/reiMetrics';
 import ProjectTodoList from '../project/ProjectTodoList';
 import AcquisitionInterview from '@/components/acquisition/AcquisitionInterview';
 import PurchaseInterview from '@/components/purchase/PurchaseInterview';
@@ -113,27 +115,23 @@ export default function FullscreenLifecycleView({ projectId, onExit }: Fullscree
              <button 
                onClick={async () => {
                   const nextMap: Record<string, string> = {
-                     'Sourcing': 'Under Contract',
-                     'Lead': 'Under Contract',
-                     'Active': 'Under Contract',
-                     'Under Contract': 'Rehab',
-                     'Rehab': 'Listed',
-                     'Renovating': 'Listed',
-                     'Listed': 'Sold',
-                     'Sold': 'Rented'
+                     'acquisition': 'fund',
+                     'fund': 'hold',
+                     'hold': 'exit',
+                     'exit': 'exit'
                   };
-                  const nextPhase = nextMap[deal.status];
-                  if (nextPhase) {
+                  const nextPhase = nextMap[deal.status as string];
+                  if (nextPhase && nextPhase !== deal.status) {
                      // Phase 1 Sourcing Gating
-                     if (deal.currentPhase === 1 || deal.status === 'Lead' || deal.status === 'Active') {
+                     if (deal.currentPhase === 1 || deal.status === 'acquisition') {
                         const missing: string[] = [];
                         if (!deal.address) missing.push("Property Address");
-                        if (!deal.strategyType) missing.push("Strategy Type");
+                        if (!deal.dispositionType) missing.push("Strategy Type");
                         if ((deal.financials?.ownershipPercentage ?? 0) <= 0) missing.push("Ownership Percentage");
                         const targetPrice = deal.financials?.targetPrice ?? deal.financials?.targetPurchasePrice ?? deal.financials?.purchasePrice;
                         if (!targetPrice || targetPrice <= 0) missing.push("Projected Target Purchase Price");
                         const offerStatus = deal.financials?.offerStatus;
-                        if (offerStatus !== 'Accepted' && deal.status !== 'Under Contract') {
+                        if (offerStatus !== 'Accepted' && deal.status !== 'fund') {
                            missing.push("Accepted Offer (Offer Status must be 'Accepted')");
                         }
 
@@ -144,7 +142,7 @@ export default function FullscreenLifecycleView({ projectId, onExit }: Fullscree
                      }
 
                      // Phase 2 Closing Gating
-                     if (deal.currentPhase === 2 || deal.status === 'Under Contract') {
+                     if (deal.currentPhase === 2 || deal.status === 'fund') {
                         const missingP2: string[] = [];
                         if (!deal.financials?.purchasePrice || deal.financials.purchasePrice <= 0)
                            missingP2.push("Actual Purchase Price");
@@ -170,12 +168,14 @@ export default function FullscreenLifecycleView({ projectId, onExit }: Fullscree
                      }
 
                      // Phase 3 Hold Gating
-                     if (deal.currentPhase === 3 || (deal.status as string) === 'Rehab' || deal.status === 'Renovating') {
-                        const strategy = deal.strategyType;
-                        const isSell = strategy === 'Sell';
-                        const isFlip = strategy === 'Fix & Flip';
-                        const isRental = strategy === 'Buy & Hold' || strategy === 'Rent';
-                        const isBRRRR = strategy === 'Rent';
+                     if (deal.currentPhase === 3 || deal.status === 'hold') {
+                         const strategy = deal.dispositionType === 'RENT'
+                           ? (deal.subStrategy === 'BRRRR' ? 'Rent' : 'Buy & Hold')
+                           : (deal.subStrategy === 'WHOLESALE' ? 'Sell' : 'Fix & Flip');
+                         const isSell = strategy === 'Sell';
+                         const isFlip = strategy === 'Fix & Flip';
+                         const isRental = strategy === 'Buy & Hold' || strategy === 'Rent';
+                         const isBRRRR = strategy === 'Rent';
 
                         const missingHold: string[] = [];
 
@@ -296,10 +296,9 @@ function ExplainerVideoPlaceholder({ phaseName }: { phaseName: string }) {
 }
 
 function StaticPhase1({ deal }: { deal: Project }) {
-  const noiComponents = deal.financials ? computeNOIComponents(deal.financials, deal.strategyType, deal.currentPhase) : null;
-  const capRate = noiComponents && deal.financials?.purchasePrice
-    ? computeCapRate(noiComponents.noi, deal.financials.purchasePrice)
-    : 0;
+  const derived = deal.financials ? deriveAllMetrics(deal.financials, undefined, deal.dispositionType, deal.currentPhase) : null;
+  const noiComponents = derived ? derived.noiComponents : null;
+  const capRate = derived ? derived.capRate : 0;
   const hasNOIData = noiComponents && noiComponents.grossRentalIncome > 0;
 
   return (
@@ -518,12 +517,13 @@ function StaticPhase1({ deal }: { deal: Project }) {
 }
 
 function StaticPhase2({ deal }: { deal: Project }) {
-  const noiComponents = deal.financials ? computeNOIComponents(deal.financials, deal.strategyType, deal.currentPhase) : null;
+  const derived = deal.financials ? deriveAllMetrics(deal.financials, undefined, deal.dispositionType, deal.currentPhase) : null;
+  const noiComponents = derived ? derived.noiComponents : null;
   const hasNOIData = noiComponents && noiComponents.grossRentalIncome > 0;
 
   // ── Phase 2 Budget Planning Metrics ──
-  const contingency = deal.financials ? computeContingencyBudget(deal.financials) : null;
-  const burnRate = deal.financials ? computeDailyBurnRate(deal.financials) : null;
+  const contingency = derived?.contingency ?? null;
+  const burnRate = derived?.burnRate ?? null;
   const hasBudgetData = contingency && contingency.repairCost > 0;
 
   // LTV
@@ -894,27 +894,56 @@ function StaticPhase3({ deal, ledgerItems, canAdd }: StaticPhase3Props) {
     }
   };
 
-  const costs = ledgerItems.length > 0 ? ledgerItems : (deal.financials.costs || []);
-  const totalRehab = costs.filter(c => c.status === 'Approved' || c.approved).reduce((acc, c) => acc + c.amount, 0) || 0;
+  const liveMetrics = useMemo(() => {
+    return deriveAllMetrics(
+      deal.financials,
+      undefined,
+      deal.dispositionType,
+      deal.currentPhase,
+      deal.createdAt,
+      undefined,
+      { ...deal, ledgerItems }
+    );
+  }, [deal, ledgerItems]);
 
-  // ── Renovation ROI Engine ──
-  const renoROI = computeRenovationROI(costs, deal.financials.projectedRehabCost);
-  const arv = deal.financials.estimatedARV || 0;
-  const overImprovementRisk = computeOverImprovementRisk(renoROI.totalRehabCost, arv, renoROI.zones);
-  const budgetRemaining = (deal.financials.projectedRehabCost || 0) - totalRehab;
-  const burnRate = computeDailyBurnRate(deal.financials);
+  const rehab = liveMetrics.rehab || {
+    totalRehab: 0,
+    budgetRemaining: 0,
+    burnRate: { dailyBurnRate: 0, totalMonthlyBurn: 0 },
+    renoROI: { totalRehabCost: 0, highestROIZone: '', moneyRoomsPercent: 0, moneyRoomsHealthy: false, zones: [] },
+    overImprovementRisk: { riskLevel: 'low', rehabToARVPercent: 0, explanation: '' },
+    stageProgress: { overallPercent: 0, isOnSchedule: true, stages: [], timelineBufferDays: 0 },
+    criticalPath: { totalProjectDuration: 0, criticalPathIds: [] },
+    yesterdayCost: {
+      yesterdayTotalCost: 0,
+      yesterdayHoldingCost: 0,
+      yesterdayApprovedSpend: 0,
+      budgetUtilization: 0,
+      isOverBudget: false,
+      daysElapsed: 0,
+      daysRemaining: 0,
+      cumulativeTotalCost: 0,
+      cumulativeHoldingCost: 0,
+      cumulativeRehabSpend: 0,
+      projectedTotalCost: 0,
+    },
+  };
 
-  // ── Renovation Timeline & Critical Path ──
+  const {
+    totalRehab,
+    budgetRemaining,
+    renoROI,
+    overImprovementRisk,
+    stageProgress,
+    criticalPath,
+    yesterdayCost,
+  } = rehab;
+
+  const arv = deal.financials?.estimatedARV || 0;
+  const burnRate = rehab.burnRate;
+  const costs = ledgerItems.length > 0 ? ledgerItems : (deal.financials?.costs || []);
+
   const rehabTasks = deal.rehabScheduleTasks || [];
-  const stageProgress = computeRehabStageProgress(rehabTasks, deal.financials.acquisitionDate, deal.financials.estimatedTimelineDays);
-  const criticalPath = computeCriticalPath(rehabTasks);
-  const yesterdayCost = computeYesterdayCost(
-    burnRate,
-    costs,
-    deal.financials.acquisitionDate,
-    deal.financials.estimatedTimelineDays,
-    deal.financials.projectedRehabCost ? deal.financials.projectedRehabCost + burnRate.totalMonthlyBurn * (deal.financials.projectedHoldTimeMonths || 3) : undefined
-  );
 
   // Zone color map
   const ZONE_COLORS: Record<string, string> = {
@@ -1053,13 +1082,13 @@ function StaticPhase3({ deal, ledgerItems, canAdd }: StaticPhase3Props) {
            />
 
            <div className="grid grid-cols-3 gap-4 relative z-10">
-             {stageProgress.stages.map((s, i) => {
+             {stageProgress.stages.map((s: any, i: number) => {
                const icons = ['📋', '⚙️', '🛋️'];
                return (
                  <div key={s.stage} className="flex flex-col items-center text-center">
                    {/* Node */}
                    <div className={`w-16 h-16 rounded-2xl flex items-center justify-center text-2xl transition-all duration-500 ${
-                     s.isComplete ? 'bg-black/20 border-2 border-[#CCCCCC] shadow-lg shadow-emerald-500/20' :
+                     s.isComplete ? 'bg-black/20 border-2 border-[#CCCCCC] shadow-lg shadow-pw-success/20' :
                      s.isActive ? 'bg-[#F2F2F2]0/20 border-2 border-[#CCCCCC] animate-pulse shadow-lg shadow-blue-500/20' :
                      'bg-[#F2F2F2] border border-border-accent'
                    }`}>
@@ -1124,7 +1153,7 @@ function StaticPhase3({ deal, ledgerItems, canAdd }: StaticPhase3Props) {
                 {renoROI.highestROIZone}
               </p>
               <p className="text-[9px] text-text-secondary opacity-50 mt-0.5">
-                {renoROI.zones.find(z => z.zone === renoROI.highestROIZone)?.roi || 0}% ROI
+                {renoROI.zones.find((z: any) => z.zone === renoROI.highestROIZone)?.roi || 0}% ROI
               </p>
             </div>
             {/* KPI 3: Money Rooms % */}
@@ -1175,7 +1204,7 @@ function StaticPhase3({ deal, ledgerItems, canAdd }: StaticPhase3Props) {
                <span>Renovation Zone Distribution</span>
              </div>
              <div className="w-full h-4 bg-[#F2F2F2] rounded-full flex overflow-hidden">
-                {renoROI.zones.filter(z => z.budgetPercent > 0).map(z => (
+                {renoROI.zones.filter((z: any) => z.budgetPercent > 0).map((z: any) => (
                   <div
                     key={z.zone}
                     style={{ width: `${z.budgetPercent}%`, background: ZONE_COLORS[z.zone] || '#666' }}
@@ -1185,9 +1214,9 @@ function StaticPhase3({ deal, ledgerItems, canAdd }: StaticPhase3Props) {
                 ))}
              </div>
              <div className="flex flex-wrap gap-x-5 gap-y-1 mt-3">
-                {renoROI.zones.map(z => (
+                {renoROI.zones.map((z: any) => (
                   <div key={z.zone} className="flex items-center text-xs text-[#CCCCCC]">
-                    <div className="w-2 h-2 rounded-full mr-1.5" style={{ background: ZONE_COLORS[z.zone] || '#666' }} />
+                    <div className="w-2.5 h-2.5 rounded-full mr-1.5" style={{ background: ZONE_COLORS[z.zone] || '#666' }} />
                     {z.zone} ({z.budgetPercent}%)
                   </div>
                 ))}
@@ -1246,13 +1275,13 @@ function StaticPhase3({ deal, ledgerItems, canAdd }: StaticPhase3Props) {
           )}
 
           {/* ── Zone ROI Detail Grid ── */}
-          {renoROI.zones.some(z => z.totalCost > 0) && (
+          {renoROI.zones.some((z: any) => z.totalCost > 0) && (
             <div className="w-full mb-6">
               <p className="text-xs font-bold uppercase tracking-[0.12em] text-text-secondary opacity-60 mb-3">
                 Per-Zone Cost vs. Estimated Value-Add
               </p>
               <div className="grid grid-cols-1 md:grid-cols-5 gap-3">
-                {renoROI.zones.map(z => (
+                {renoROI.zones.map((z: any) => (
                   <div key={z.zone} className="bg-[#595959]/60 rounded-lg p-3 border border-[#595959]">
                     <div className="flex items-center gap-2 mb-2">
                       <div className="w-2.5 h-2.5 rounded-full" style={{ background: ZONE_COLORS[z.zone] || '#666' }} />
@@ -1315,7 +1344,7 @@ function StaticPhase3({ deal, ledgerItems, canAdd }: StaticPhase3Props) {
                          </tr>
                        </thead>
                        <tbody className="divide-y divide-gray-800">
-                         {costs.slice(0, 15).map((c, i) => {
+                         {costs.slice(0, 15).map((c: any, i: number) => {
                            const zone = c.renovationZone || (c.description ? (() => {
                              const d = c.description.toLowerCase();
                              if (d.includes('kitchen') || d.includes('cabinet') || d.includes('countertop') || d.includes('appliance')) return 'Kitchen';

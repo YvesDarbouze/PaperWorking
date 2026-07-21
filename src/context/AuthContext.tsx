@@ -110,13 +110,15 @@ async function provisionSocialUser(user: User): Promise<boolean> {
       const dispName = user.displayName || 'User';
       const referralCode = `${dispName.toLowerCase().replace(/[^a-z0-9]/g, '-')}-${Math.random().toString(36).substring(2, 7)}`;
 
+      const personalOrgId = `org_${user.uid.slice(0, 8)}`;
+
       await setDoc(userDocRef, {
         uid: user.uid,
         email: user.email,
         displayName: dispName,
         role: acctType === 'vendor' ? 'Vendor' : 'Lead Investor',
         accountType: acctType,
-        personalOrganizationId: `org_${user.uid.slice(0, 8)}`,
+        personalOrganizationId: personalOrgId,
         memberships: {},
         subscriptionPlan: 'None',
         subscriptionStatus: 'inactive',
@@ -127,6 +129,17 @@ async function provisionSocialUser(user: User): Promise<boolean> {
         referredBy: referredBy || null,
         firstUtm,
         lastUtm,
+        createdAt: serverTimestamp(),
+        updatedAt: serverTimestamp(),
+      });
+
+      // Bootstrap the personal organization document so API routes can verify membership
+      await setDoc(doc(db, 'organizations', personalOrgId), {
+        ownerUid: user.uid,
+        name: `${dispName}'s Workspace`,
+        type: 'personal',
+        subscriptionPlan: 'None',
+        subscriptionStatus: 'inactive',
         createdAt: serverTimestamp(),
         updatedAt: serverTimestamp(),
       });
@@ -250,6 +263,13 @@ async function syncSessionCookie(user: User | null) {
 /** Token refresh interval — 50 minutes (Firebase ID tokens expire in 60 minutes) */
 const TOKEN_REFRESH_MS = 50 * 60 * 1000;
 
+function getCookie(name: string): string | null {
+  if (typeof document === 'undefined') return null;
+  const match = document.cookie.match(new RegExp('(^| )' + name + '=([^;]+)'));
+  if (match) return decodeURIComponent(match[2]);
+  return null;
+}
+
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
   const [profile, setProfile] = useState<UserProfile | null>(null);
@@ -274,29 +294,39 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     const isMock = typeof document !== 'undefined' && document.cookie.includes('mock_session_token_123');
     const isDemo = typeof window !== 'undefined' && window.location.pathname.startsWith('/demo');
     if (isMock) {
+      const mockUid = getCookie('mock_user_uid') || 'user_lead_investor_seed';
+      const mockEmail = getCookie('mock_user_email') || 'marcus@apexcapital.io';
+      const mockName = getCookie('mock_user_name') || 'Marcus Aurelius';
+      const mockRole = getCookie('mock_user_role') || 'Lead Investor';
+      const mockOrgId = getCookie('mock_user_org_id') || 'org_paperworking_seed';
+      const mockAccountType = getCookie('mock_user_account_type') || (mockRole === 'Vendor' ? 'vendor' : 'investor');
+      const mockSubPlan = getCookie('mock_user_subscription_plan') || 'Team';
+
       setUser({
-        uid: 'mock_uid_123',
-        email: 'dev@paperworking.co',
+        uid: mockUid,
+        email: mockEmail,
         emailVerified: true,
-        displayName: 'Local Dev User',
+        displayName: mockName,
+        getIdToken: async () => 'mock_token',
       } as any);
       setProfile({
-        uid: 'mock_uid_123',
-        email: 'dev@paperworking.co',
-        name: 'Local Dev User',
-        role: 'Platform Admin',
-        subscriptionPlan: 'Team',
-        subscriptionStatus: 'active',
-        organizationId: 'mock_org_123',
+        uid: mockUid,
+        email: mockEmail,
+        name: mockName,
+        role: mockRole,
+        accountType: mockAccountType,
+        subscriptionPlan: mockSubPlan,
+        subscriptionStatus: mockSubPlan === 'None' ? 'inactive' : 'active',
+        organizationId: mockOrgId,
         onboardingCompleted: true,
         onboardingIntent: 'investor',
       } as any);
       setSessionReady(true);
       setLoading(false);
       useUserStore.setState({
-        accountTier: 'Team',
-        maxSeats: 10,
-        hasActiveSubscription: true,
+        accountTier: mockSubPlan as any,
+        maxSeats: mockSubPlan === 'Team' ? 10 : 1,
+        hasActiveSubscription: mockSubPlan !== 'None',
       });
     } else if (isDemo) {
       useUserStore.setState({
@@ -314,20 +344,30 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     const unsubscribe = onAuthStateChanged(auth, async (firebaseUser) => {
       const isMock = typeof document !== 'undefined' && document.cookie.includes('mock_session_token_123');
       if (isMock) {
+        const mockUid = getCookie('mock_user_uid') || 'user_lead_investor_seed';
+        const mockEmail = getCookie('mock_user_email') || 'marcus@apexcapital.io';
+        const mockName = getCookie('mock_user_name') || 'Marcus Aurelius';
+        const mockRole = getCookie('mock_user_role') || 'Lead Investor';
+        const mockOrgId = getCookie('mock_user_org_id') || 'org_paperworking_seed';
+        const mockAccountType = getCookie('mock_user_account_type') || (mockRole === 'Vendor' ? 'vendor' : 'investor');
+        const mockSubPlan = getCookie('mock_user_subscription_plan') || 'Team';
+
         setUser({
-          uid: 'mock_uid_123',
-          email: 'dev@paperworking.co',
+          uid: mockUid,
+          email: mockEmail,
           emailVerified: true,
-          displayName: 'Local Dev User',
+          displayName: mockName,
+          getIdToken: async () => 'mock_token',
         } as any);
         setProfile({
-          uid: 'mock_uid_123',
-          email: 'dev@paperworking.co',
-          name: 'Local Dev User',
-          role: 'Platform Admin',
-          subscriptionPlan: 'Team',
-          subscriptionStatus: 'active',
-          organizationId: 'mock_org_123',
+          uid: mockUid,
+          email: mockEmail,
+          name: mockName,
+          role: mockRole,
+          accountType: mockAccountType,
+          subscriptionPlan: mockSubPlan,
+          subscriptionStatus: mockSubPlan === 'None' ? 'inactive' : 'active',
+          organizationId: mockOrgId,
           onboardingCompleted: true,
           onboardingIntent: 'investor',
         } as any);
@@ -588,13 +628,15 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       const referralCode = `${displayName.toLowerCase().replace(/[^a-z0-9]/g, '-')}-${Math.random().toString(36).substring(2, 7)}`;
 
       const { user: newUser } = await createUserWithEmailAndPassword(auth, email, password);
+      const personalOrgId = `org_${newUser.uid.slice(0, 8)}`;
+
       await setDoc(doc(db, 'users', newUser.uid), {
         uid: newUser.uid,
         email: newUser.email,
         displayName,
         role: accountType === 'vendor' ? 'Vendor' : 'Lead Investor',
         accountType,
-        personalOrganizationId: `org_${newUser.uid.slice(0, 8)}`,
+        personalOrganizationId: personalOrgId,
         memberships: {},
         subscriptionPlan: 'None',
         subscriptionStatus: 'inactive',
@@ -605,6 +647,17 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         referredBy: referredBy || null,
         firstUtm,
         lastUtm,
+        createdAt: serverTimestamp(),
+        updatedAt: serverTimestamp(),
+      });
+
+      // Bootstrap the personal organization document so API routes can verify membership
+      await setDoc(doc(db, 'organizations', personalOrgId), {
+        ownerUid: newUser.uid,
+        name: `${displayName}'s Workspace`,
+        type: 'personal',
+        subscriptionPlan: 'None',
+        subscriptionStatus: 'inactive',
         createdAt: serverTimestamp(),
         updatedAt: serverTimestamp(),
       });
@@ -860,21 +913,41 @@ export function useAuth() {
     const orgCookie = typeof document !== 'undefined'
       ? document.cookie.split('; ').find(row => row.startsWith('__org='))?.split('=')[1]
       : null;
-    const personalOrgId = orgCookie || 'org_placeholder';
+    const mockUserOrgIdCookie = typeof document !== 'undefined'
+      ? document.cookie.split('; ').find(row => row.startsWith('mock_user_org_id='))?.split('=')[1]
+      : null;
+    const personalOrgId = mockUserOrgIdCookie || orgCookie || 'org_placeholder';
+
+    const uidCookie = typeof document !== 'undefined'
+      ? document.cookie.split('; ').find(row => row.startsWith('mock_user_uid='))?.split('=')[1]
+      : null;
+    const emailCookie = typeof document !== 'undefined'
+      ? document.cookie.split('; ').find(row => row.startsWith('mock_user_email='))?.split('=')[1]
+      : null;
+    const nameCookie = typeof document !== 'undefined'
+      ? document.cookie.split('; ').find(row => row.startsWith('mock_user_name='))?.split('=')[1]
+      : null;
+    const roleCookie = typeof document !== 'undefined'
+      ? document.cookie.split('; ').find(row => row.startsWith('mock_user_role='))?.split('=')[1]
+      : null;
+
+    const decodedEmail = emailCookie ? decodeURIComponent(emailCookie) : 'test@paperworking.co';
+    const decodedName = nameCookie ? decodeURIComponent(nameCookie) : 'Test User';
+    const decodedRole = roleCookie ? decodeURIComponent(roleCookie) : 'Lead Investor';
 
     const mockUser = {
-      uid: 'user_123',
-      email: 'test@paperworking.co',
-      displayName: 'Test User',
+      uid: uidCookie || 'user_123',
+      email: decodedEmail,
+      displayName: decodedName,
       getIdToken: async () => 'mock_token',
       getIdTokenResult: async () => ({ token: 'mock_token', claims: {} }),
     } as any;
     
     const mockProfile = {
-      uid: 'user_123',
-      email: 'test@paperworking.co',
-      displayName: 'Test User',
-      role: 'Lead Investor',
+      uid: uidCookie || 'user_123',
+      email: decodedEmail,
+      displayName: decodedName,
+      role: decodedRole,
       personalOrganizationId: personalOrgId,
       subscriptionPlan: 'Team',
       subscriptionStatus: 'active',

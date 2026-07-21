@@ -167,7 +167,7 @@ export const LoanProcessingPipeline: React.FC = () => {
                   <span className="text-xs text-text-secondary hidden sm:block">
                     {doc.uploadedAt ? new Date(doc.uploadedAt).toLocaleDateString() : 'Just now'}
                   </span>
-                  <span className={`px-2.5 py-1 rounded-md text-[10px] font-bold tracking-wider uppercase ${doc.verified ? 'bg-emerald-100 text-emerald-800' : 'bg-yellow-100 text-yellow-800'}`}>
+                  <span className={`px-2.5 py-1 rounded-md text-[10px] font-bold tracking-wider uppercase border ${doc.verified ? 'bg-pw-success-container text-pw-success border-pw-success-border/50' : 'bg-yellow-500/15 text-yellow-400 border-pw-success-border/50'}`}>
                     {doc.verified ? 'Verified' : 'Pending'}
                   </span>
                 </div>

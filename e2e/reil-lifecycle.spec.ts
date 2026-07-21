@@ -59,6 +59,7 @@ test.describe('1. Navigation Contract (Global Navigation Fixed Contract)', () =>
     const state = createDefaultState();
     await setupMocks(page, state);
     await gotoAndWait(page, '/dashboard/command-center');
+    await page.waitForTimeout(2000);
   });
 
   test('sidebar contains Portfolio nav item', async ({ page }) => {
@@ -97,7 +98,7 @@ test.describe('1. Navigation Contract (Global Navigation Fixed Contract)', () =>
   });
 
   test('clicking Projects nav item navigates to /dashboard/projects', async ({ page }) => {
-    const projectsLink = page.locator('a[href*="/dashboard/projects"]').first();
+    const projectsLink = page.locator('a[href="/dashboard/projects"]').first();
     await expect(projectsLink).toBeVisible();
     await projectsLink.click();
     await expect(page).toHaveURL(/\/dashboard\/projects/);

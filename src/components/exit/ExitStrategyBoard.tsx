@@ -50,7 +50,7 @@ export default function ExitStrategyBoard({ projectId, onClose }: ExitStrategyBo
   const handleUpdateListing = async () => {
     try {
       const updates = {
-        status: 'Listed' as any,
+        status: 'exit' as any,
         exitAssets: {
           ...currentProject.exitAssets,
           mlsListingLink: mlsLink,
@@ -105,7 +105,7 @@ export default function ExitStrategyBoard({ projectId, onClose }: ExitStrategyBo
         },
         body: JSON.stringify({
           realized: true,
-          status: 'Sold',
+          status: 'exit',
           financials: financialUpdates
         })
       });
@@ -240,18 +240,18 @@ export default function ExitStrategyBoard({ projectId, onClose }: ExitStrategyBo
                <NetEngine deal={currentProject} isBrrrr={isBrrrr} />
                
                {/* MLS / Listing Live Preview Pane */}
-               {currentProject.status === 'Listed' || currentProject.status === 'Sold' ? (
+               {((currentProject.status === 'hold' && currentProject.dispositionType === 'SALE') || currentProject.status === 'exit') ? (
                   <div className="mt-6 border border-pw-border bg-[url('https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?ixlib=rb-4.0.3&auto=format&fit=crop&w=1400&q=80')] bg-cover bg-center h-48 relative overflow-hidden group">
                      <div className="absolute inset-0 bg-bg-primary/70 group-hover:bg-bg-primary/50 transition duration-500 flex flex-col items-center justify-center p-4 text-center">
                         <div className="bg-bg-surface/80 backdrop-blur-md px-6 py-3 border border-pw-border flex items-center space-x-3 mb-2">
                            <CheckCircle className={`w-4 h-4 text-pw-accent`} />
                            <span className="font-black text-text-primary tracking-widest uppercase text-xs">
-                             {currentProject.exitAssets?.mlsListingStatus === 'pending_integration' ? 'Listing Saved (Awaiting MLS Connection)' : `Property is ${currentProject.status}`}
+                             {currentProject.exitAssets?.mlsListingStatus === 'pending_integration' ? 'Listing Saved (Awaiting MLS Connection)' : `Property is ${currentProject.status === 'exit' ? 'EXIT' : 'HOLD'}`}
                            </span>
                         </div>
                         {currentProject.exitAssets?.mlsListingStatus === 'pending_integration' ? (
                            <p className="text-[10px] text-text-secondary uppercase tracking-wider max-w-sm mt-1">
-                             Your changes have been saved. Listing updates will syndicate automatically once the partner MLS integration is active.
+                             Your changes have been saved. Listing updates will publish automatically once the partner MLS integration is active.
                            </p>
                          ) : currentProject.exitAssets?.mlsListingLink ? (
                           <a href={currentProject.exitAssets.mlsListingLink} target="_blank" rel="noopener noreferrer" className="text-xs text-pw-accent hover:underline flex items-center transition">
@@ -264,7 +264,7 @@ export default function ExitStrategyBoard({ projectId, onClose }: ExitStrategyBo
                   <div className="mt-6 border border-pw-border border-dashed h-48 flex items-center justify-center flex-col text-text-secondary bg-pw-bg/10">
                      <BadgePercent className="w-8 h-8 mb-2 opacity-50 text-pw-accent" />
                      <p className="text-xs font-black uppercase tracking-widest text-text-primary">Awaiting Listing Deployment</p>
-                     <p className="text-[10px] text-text-secondary mt-1 uppercase tracking-wider">Upload Staging Images & MLS Link to syndicate.</p>
+                     <p className="text-[10px] text-text-secondary mt-1 uppercase tracking-wider">Upload Staging Images & MLS Link to publish.</p>
                   </div>
                )}
             </div>

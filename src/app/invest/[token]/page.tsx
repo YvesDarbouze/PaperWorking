@@ -2,7 +2,7 @@
 
 import React, { useRef, useState, useEffect, useCallback } from 'react';
 import { useParams, useRouter } from 'next/navigation';
-import { CheckCircle2, XCircle, Shield, FileText, Home, Pen, Mail, Send, Clock, Lock, TrendingUp, Coins, HelpCircle, MessageSquare } from 'lucide-react';
+import { CheckCircle2, XCircle, Shield, FileText, Home, Pen, Mail, Send, Clock, Lock, TrendingUp, Coins, HelpCircle, MessageSquare, Loader2, AlertCircle } from 'lucide-react';
 import { useAuth } from '@/context/AuthContext';
 import { MetricChart } from '@/components/metrics/MetricChart';
 import toast from 'react-hot-toast';
@@ -51,6 +51,10 @@ interface DealTokenData {
   strategy?: string;
   assetClass?: string;
   opportunitySummary?: string;
+  commitmentStatus?: string;
+  commitmentId?: string | null;
+  subscriptionAgreementTemplate?: { name: string; url: string; uploadedAt: string } | null;
+  projectId?: string;
 }
 
 interface DealUpdate {
@@ -83,6 +87,11 @@ export default function GuestPortalPage() {
   // Deal updates (sponsor-authored progress feed, read-only for guests)
   const [dealUpdates, setDealUpdates] = useState<DealUpdate[]>([]);
 
+  // Subscribe Gate States
+  const [isSubscribedInSession, setIsSubscribedInSession] = useState(false);
+  const [subscribeForm, setSubscribeForm] = useState({ name: '', email: '' });
+  const [submittingSubscribe, setSubmittingSubscribe] = useState(false);
+
   // Modals state
   const [showInsights, setShowInsights] = useState(false);
   const [showAskSponsor, setShowAskSponsor] = useState(false);
@@ -90,10 +99,41 @@ export default function GuestPortalPage() {
   const [sendingSponsorMsg, setSendingSponsorMsg] = useState(false);
   const [askError, setAskError] = useState<string | null>(null);
 
+  // Subscription execution details
+  const [activeSubManualSign, setActiveSubManualSign] = useState(false);
+  const [subManualEvidence, setSubManualEvidence] = useState('');
+
   // The investment amount is set by the sponsor at invite time
   // (invitation.proposedAmount) — the investor cannot edit it; the
   // backend (`/api/invitations/respond`) ignores any client-supplied amount.
   const investmentAmount = dealData?.investmentAmount ?? 0;
+
+  const handleSubscribeSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setSubmittingSubscribe(true);
+    try {
+      const res = await fetch(`/api/invitations/${token}/subscribe`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          name: subscribeForm.name,
+          email: subscribeForm.email,
+        }),
+      });
+      const data = await res.json();
+      if (res.ok && data.success) {
+        setIsSubscribedInSession(true);
+        toast.success('Subscription confirmed! Deal details unlocked.');
+      } else {
+        toast.error(data.error || 'Failed to confirm subscription.');
+      }
+    } catch (err) {
+      console.error(err);
+      toast.error('An error occurred during subscription.');
+    } finally {
+      setSubmittingSubscribe(false);
+    }
+  };
 
   // Load deal details from the real invitations pipeline. A 404/410 there
   // falls back to the legacy `investmentTokens` route only to distinguish
@@ -106,6 +146,10 @@ export default function GuestPortalPage() {
         if (res.ok) {
           const data = await res.json();
           setDealData(data as DealTokenData);
+          setSubscribeForm({
+            name: data.investorName || '',
+            email: data.investorEmail || '',
+          });
           return;
         }
         const legacyRes = await fetch(`/api/invest/${token}`);
@@ -241,8 +285,51 @@ export default function GuestPortalPage() {
     }
   };
 
+  const handleSignSubscription = async (actionType: 'esign' | 'manual') => {
+    try {
+      setSubmitting(true);
+      setSubmitError(null);
+      const body = {
+        action: actionType,
+        evidence: actionType === 'manual' ? subManualEvidence : 'E-Signed via digital canvas signature in Guest Portal'
+      };
+
+      const res = await fetch(`/api/invitations/${token}/subscription`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(body),
+      });
+
+      const data = await res.json();
+      if (res.ok && data.success) {
+        toast.success('Subscription Agreement executed successfully!');
+        setActiveSubManualSign(false);
+        setSubManualEvidence('');
+        clearSignature();
+        fetchDealData();
+      } else {
+        setSubmitError(data.error || 'Failed to execute subscription.');
+      }
+    } catch (err: any) {
+      console.error(err);
+      setSubmitError(err.message || 'An error occurred.');
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
   // Commit CTA in sidebar (scrolls to signature if not yet signed)
   const handleCommitCTA = () => {
+    if (dealData?.commitmentStatus === 'docs-out') {
+      if (!hasSigned) {
+        signatureSectionRef.current?.scrollIntoView({ behavior: 'smooth' });
+        toast('Draw your signature below to execute the subscription agreement.', { icon: '✍️' });
+        return;
+      }
+      handleSignSubscription('esign');
+      return;
+    }
+
     if (!user) {
       router.push(`/login?redirectTo=${encodeURIComponent('/invest/' + token)}`);
       return;
@@ -435,10 +522,10 @@ export default function GuestPortalPage() {
       </header>
 
       {/* Main Container */}
-      <main className="pt-24 pb-32 px-6 md:px-12 max-w-6xl mx-auto">
+      <main className="pt-24 pb-32 px-6 md:px-12 max-w-6xl mx-auto relative">
         
         {/* Anonymous Viewer Banner — sign in or register to respond */}
-        {!user && (
+        {!user && isSubscribedInSession && (
           <div className="mb-8 p-4 border-2 border-dashed border-[#454955]/30 bg-[#454955]/5 rounded-xl flex flex-col md:flex-row items-center justify-between gap-4">
             <div className="flex items-center gap-3">
               <span className="material-symbols-outlined text-[#454955] select-none">verified_user</span>
@@ -464,11 +551,91 @@ export default function GuestPortalPage() {
           </div>
         )}
 
+        {/* ── Subscribe Gate Overlay ── */}
+        {!user && !isSubscribedInSession && (
+          <div className="absolute inset-0 bg-[#0d0a0b]/40 backdrop-blur-md z-[100] flex items-center justify-center p-4 min-h-[500px]">
+            <div className="w-full max-w-md bg-pw-night-bg/98 border border-white/10 rounded-3xl p-8 shadow-2xl space-y-6" id="subscribe-gate">
+              <div className="text-center space-y-2">
+                <div className="w-12 h-12 rounded-full bg-[#454955]/10 border border-[#454955]/20 flex items-center justify-center mx-auto text-[#454955]">
+                  <Lock className="w-6 h-6" />
+                </div>
+                <h3 className="text-lg font-bold text-white uppercase tracking-wider">Subscribe to View Deal</h3>
+                <p className="text-xs text-[#9E9DA0] leading-relaxed">
+                  This is a private investment opportunity. Enter your information to subscribe and unlock the full deal details, metrics, and projections.
+                </p>
+              </div>
+
+              <form onSubmit={handleSubscribeSubmit} className="space-y-4">
+                <div className="space-y-1 text-left">
+                  <label className="text-[10px] font-bold uppercase tracking-widest text-[#9E9DA0]">Full Name</label>
+                  <input
+                    required
+                    type="text"
+                    placeholder="Your Name"
+                    value={subscribeForm.name}
+                    onChange={(e) => setSubscribeForm((p) => ({ ...p, name: e.target.value }))}
+                    className="w-full px-4 py-3 rounded-lg bg-white/5 border border-white/10 text-white focus:outline-none focus:ring-1 focus:ring-[#454955]/60 text-sm"
+                    id="subscribe-name"
+                  />
+                </div>
+
+                <div className="space-y-1 text-left">
+                  <label className="text-[10px] font-bold uppercase tracking-widest text-[#9E9DA0]">Email Address</label>
+                  <input
+                    required
+                    type="email"
+                    disabled
+                    placeholder="your.email@example.com"
+                    value={subscribeForm.email}
+                    className="w-full px-4 py-3 rounded-lg bg-white/5 border border-white/10 text-[#9E9DA0] focus:outline-none text-sm cursor-not-allowed opacity-80"
+                    id="subscribe-email"
+                  />
+                </div>
+
+                <div className="flex items-start gap-2.5 pt-2 text-left">
+                  <input
+                    required
+                    type="checkbox"
+                    defaultChecked
+                    disabled
+                    className="mt-1 cursor-not-allowed accent-[#454955]"
+                    id="subscribe-consent"
+                  />
+                  <label className="text-[11px] text-[#9E9DA0]/80 leading-relaxed cursor-not-allowed">
+                    I consent to receive emails, project notifications, and co-investment updates for this project.
+                  </label>
+                </div>
+
+                <button
+                  type="submit"
+                  disabled={submittingSubscribe}
+                  id="btn-subscribe-unlock"
+                  className="w-full py-3 bg-[#454955] text-[#0d0a0b] font-bold text-xs uppercase tracking-wider rounded-xl hover:brightness-110 active:scale-97 transition-all flex items-center justify-center gap-2"
+                >
+                  {submittingSubscribe && <Loader2 className="w-4.5 h-4.5 animate-spin" />}
+                  Subscribe & Unlock Deal
+                </button>
+              </form>
+            </div>
+          </div>
+        )}
+
         {/* 12-Column Grid Layout */}
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
+        <div className={`grid grid-cols-1 lg:grid-cols-12 gap-8 ${!user && !isSubscribedInSession ? "filter blur-[8px] select-none pointer-events-none transition-all duration-300" : "transition-all duration-300"}`}>
           
           {/* Left Column: Details & Underwriting */}
           <div className="lg:col-span-8 space-y-8">
+
+            {/* Locked Non-Binding Disclosure Notice (FD-15) */}
+            {(!dealData.commitmentStatus || ['pending', 'pledged', 'soft-committed', 'docs-out'].includes(dealData.commitmentStatus)) && (
+              <div className="p-4 bg-amber-500/10 border border-amber-500/25 rounded-2xl flex items-start gap-3 text-amber-400 text-xs animate-in fade-in duration-300">
+                <AlertCircle className="w-5 h-5 text-amber-500 flex-shrink-0 mt-0.5" />
+                <div>
+                  <span className="font-bold text-white uppercase tracking-wider text-[10px] block mb-1">Non-Binding Disclosure Notice</span>
+                  All initial commitments, LOIs, and pledges made on this portal are strictly non-binding expressions of interest. Capital contributions are subject to the execution of definitive subscription agreements and off-platform confirmation of funds.
+                </div>
+              </div>
+            )}
             
             {/* Property Header Card */}
             <section className="relative h-[340px] w-full rounded-2xl overflow-hidden border border-white/10 glass-card group">
@@ -637,110 +804,205 @@ export default function GuestPortalPage() {
               )}
             </section>
 
-            {/* LOI Preview & Signature Box */}
-            <section ref={signatureSectionRef} className="glass-card p-6 md:p-8 rounded-2xl space-y-6">
-              <div className="flex items-center gap-2 border-b border-white/5 pb-3">
-                <FileText className="w-4 h-4 text-[#454955]" />
-                <h3 className="font-mono text-[10px] font-bold text-white uppercase tracking-[0.2em]">Letter of Intent — Execution</h3>
-              </div>
+            {/* LOI/Subscription Execution Box */}
+            {['signed', 'funds-confirmed', 'cleared'].includes(dealData.commitmentStatus || '') ? (
+              <section className="glass-card p-6 md:p-8 rounded-2xl space-y-4 flex flex-col items-center justify-center text-center">
+                <CheckCircle2 className="w-12 h-12 text-[#454955] animate-pulse" />
+                <h3 className="font-mono text-sm font-bold text-white uppercase tracking-wider">Subscription Executed</h3>
+                <p className="text-xs text-[#8a9b9b] max-w-sm leading-relaxed">
+                  Your definitive subscription agreement has been signed. 
+                  {dealData.commitmentStatus === 'signed' 
+                    ? " We are currently awaiting sponsor verification of your off-platform capital deposit."
+                    : " Your funding is confirmed and active in the capital stack!"}
+                </p>
+                {dealData.commitmentStatus === 'signed' && (
+                  <div className="text-[10px] text-amber-400 font-medium px-2.5 py-1 rounded bg-amber-500/10 border border-amber-500/20 uppercase tracking-wider font-mono">
+                    Awaiting Capital Deposit Confirmation
+                  </div>
+                )}
+              </section>
+            ) : (dealData.commitmentStatus === 'soft-committed' || dealData.commitmentStatus === 'pledged') && dealData.status === 'accepted' ? (
+              <section className="glass-card p-6 md:p-8 rounded-2xl space-y-4 flex flex-col items-center justify-center text-center">
+                <Clock className="w-12 h-12 text-[#8a9b9b] animate-bounce" />
+                <h3 className="font-mono text-xs font-bold text-white uppercase tracking-wider">LOI Signed & Registered</h3>
+                <p className="text-xs text-[#8a9b9b] max-w-md leading-relaxed">
+                  Thank you! Your preliminary soft-commitment is recorded. The sponsor is preparing your definitive Subscription Agreement. You will receive an email once it is ready for execution.
+                </p>
+              </section>
+            ) : (
+              <section ref={signatureSectionRef} className="glass-card p-6 md:p-8 rounded-2xl space-y-6">
+                <div className="flex items-center gap-2 border-b border-white/5 pb-3">
+                  <FileText className="w-4 h-4 text-[#454955]" />
+                  <h3 className="font-mono text-[10px] font-bold text-white uppercase tracking-[0.2em]">
+                    {dealData.commitmentStatus === 'docs-out' ? 'Subscription Agreement — Execution' : 'Letter of Intent — Execution'}
+                  </h3>
+                </div>
 
-              <div className="space-y-3 font-mono text-xs max-w-lg">
-                <div className="flex justify-between py-1.5 border-b border-white/5">
-                  <span className="text-[#8a9b9b]">Legal Entity</span>
-                  <span className="text-white font-semibold">{dealData.legalEntity || 'PaperWorking Holdings LLC'}</span>
+                <div className="space-y-3 font-mono text-xs max-w-lg">
+                  <div className="flex justify-between py-1.5 border-b border-white/5">
+                    <span className="text-[#8a9b9b]">Legal Entity</span>
+                    <span className="text-white font-semibold">{dealData.legalEntity || 'PaperWorking Holdings LLC'}</span>
+                  </div>
+                  <div className="flex justify-between py-1.5 border-b border-white/5">
+                    <span className="text-[#8a9b9b]">Commitment Amount</span>
+                    <span className="text-[#454955] font-bold">${investmentAmount.toLocaleString()}</span>
+                  </div>
+                  <div className="flex justify-between py-1.5 border-b border-white/5">
+                    <span className="text-[#8a9b9b]">Equity Split</span>
+                    <span className="text-white font-semibold">{dealData.equitySplit}%</span>
+                  </div>
+                  <div className="flex justify-between py-1.5 border-b border-white/5">
+                    <span className="text-[#8a9b9b]">Interest Rate</span>
+                    <span className="text-white font-semibold">{dealData.interestRate}% per annum</span>
+                  </div>
+                  <div className="flex justify-between py-1.5">
+                    <span className="text-[#8a9b9b]">Term Length</span>
+                    <span className="text-white font-semibold">{dealData.termMonths} months</span>
+                  </div>
                 </div>
-                <div className="flex justify-between py-1.5 border-b border-white/5">
-                  <span className="text-[#8a9b9b]">Commitment Amount</span>
-                  <span className="text-[#454955] font-bold">${investmentAmount.toLocaleString()}</span>
-                </div>
-                <div className="flex justify-between py-1.5 border-b border-white/5">
-                  <span className="text-[#8a9b9b]">Equity Split</span>
-                  <span className="text-white font-semibold">{dealData.equitySplit}%</span>
-                </div>
-                <div className="flex justify-between py-1.5 border-b border-white/5">
-                  <span className="text-[#8a9b9b]">Interest Rate</span>
-                  <span className="text-white font-semibold">{dealData.interestRate}% per annum</span>
-                </div>
-                <div className="flex justify-between py-1.5">
-                  <span className="text-[#8a9b9b]">Term Length</span>
-                  <span className="text-white font-semibold">{dealData.termMonths} months</span>
-                </div>
-              </div>
 
-              <p className="text-[11px] text-[#8a9b9b] leading-relaxed">
-                This Letter of Intent represents your commitment to proceed under the terms outlined above, and is subject to the final execution of a definitive subscription agreement.
-              </p>
-
-              {/* Canvas Signature Pad */}
-              <div className="space-y-3">
-                <div className="flex justify-between items-center">
-                  <label className="block text-[9px] font-bold text-[#8a9b9b] uppercase tracking-wider">Draw Digital Signature</label>
-                  {hasSigned && user && (
-                    <button
-                      onClick={clearSignature}
-                      className="text-[9px] text-[#8a9b9b] hover:text-white transition uppercase font-mono border-b border-dashed border-[#8a9b9b]"
+                {dealData.commitmentStatus === 'docs-out' && dealData.subscriptionAgreementTemplate ? (
+                  <div className="p-3 bg-white/5 border border-white/10 rounded-xl flex items-center justify-between text-xs text-[#8a9b9b]">
+                    <div className="flex items-center gap-2">
+                      <FileText className="w-4 h-4 text-[#7A9EAA]" />
+                      <span>Definitive Document: <strong>{dealData.subscriptionAgreementTemplate.name}</strong></span>
+                    </div>
+                    <a
+                      href={dealData.subscriptionAgreementTemplate.url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="underline text-white font-bold text-[10px] uppercase tracking-wider hover:text-white/80 transition"
                     >
-                      Clear Signature
-                    </button>
-                  )}
+                      Download PDF
+                    </a>
+                  </div>
+                ) : (
+                  <p className="text-[11px] text-[#8a9b9b] leading-relaxed">
+                    This Letter of Intent represents your commitment to proceed under the terms outlined above, and is subject to the final execution of a definitive subscription agreement.
+                  </p>
+                )}
+
+                {/* Canvas Signature Pad */}
+                <div className="space-y-3">
+                  <div className="flex justify-between items-center">
+                    <label className="block text-[9px] font-bold text-[#8a9b9b] uppercase tracking-wider">Draw Digital Signature</label>
+                    {hasSigned && (
+                      <button
+                        onClick={clearSignature}
+                        className="text-[9px] text-[#8a9b9b] hover:text-white transition uppercase font-mono border-b border-dashed border-[#8a9b9b]"
+                      >
+                        Clear Signature
+                      </button>
+                    )}
+                  </div>
+
+                  <div className="relative border border-dashed border-white/20 rounded-xl overflow-hidden bg-white">
+                    <canvas
+                      id="loi-signature-canvas"
+                      ref={canvasRef}
+                      width={600}
+                      height={120}
+                      className="w-full cursor-crosshair h-[120px]"
+                      onMouseDown={startDraw}
+                      onMouseMove={draw}
+                      onMouseUp={stopDraw}
+                      onMouseLeave={stopDraw}
+                      onTouchStart={startDraw}
+                      onTouchMove={draw}
+                      onTouchEnd={stopDraw}
+                    />
+                    {!hasSigned && (
+                      <div className="absolute inset-0 flex items-center justify-center pointer-events-none select-none">
+                        <p className="text-xs text-[#9E9DA0] font-mono">DRAW SIGNATURE HERE</p>
+                      </div>
+                    )}
+                  </div>
                 </div>
 
-                <div className={`relative border border-dashed border-white/20 rounded-xl overflow-hidden bg-white ${!user ? 'opacity-40' : ''}`}>
-                  <canvas
-                    id="loi-signature-canvas"
-                    ref={canvasRef}
-                    width={600}
-                    height={120}
-                    className={`w-full cursor-crosshair h-[120px] ${!user ? 'pointer-events-none' : ''}`}
-                    onMouseDown={startDraw}
-                    onMouseMove={draw}
-                    onMouseUp={stopDraw}
-                    onMouseLeave={stopDraw}
-                    onTouchStart={startDraw}
-                    onTouchMove={draw}
-                    onTouchEnd={stopDraw}
-                  />
-                  {!hasSigned && (
-                    <div className="absolute inset-0 flex items-center justify-center pointer-events-none select-none">
-                      <p className="text-xs text-[#9E9DA0] font-mono">DRAW SIGNATURE HERE</p>
+                {/* Submit Error */}
+                {submitError && (
+                  <div className="p-4 border border-red-500/20 bg-red-950/20 text-red-400 rounded-xl text-xs flex items-center gap-2">
+                    <span className="material-symbols-outlined text-sm select-none">error</span>
+                    <span>{submitError}</span>
+                  </div>
+                )}
+
+                {/* Action Buttons */}
+                <div className="flex flex-col gap-3 pt-2">
+                  <div className="flex gap-3">
+                    <button
+                      id="btn-commit-capital"
+                      onClick={handleCommitCTA}
+                      disabled={!hasSigned || submitting}
+                      className="flex-1 py-4 rounded-xl bg-[#454955] hover:bg-[#454955]/90 text-[#0d0a0b] font-bold text-xs uppercase tracking-wider transition-all disabled:opacity-50 flex items-center justify-center gap-2 shadow-[0_0_15px_rgba(69,73,85,0.3)] active:scale-98"
+                    >
+                      {submitting ? (
+                        <Loader2 className="w-4 h-4 animate-spin text-[#0d0a0b]" />
+                      ) : (
+                        <span className="material-symbols-outlined text-sm select-none">payments</span>
+                      )}
+                      {submitting 
+                        ? 'Executing...' 
+                        : dealData.commitmentStatus === 'docs-out' 
+                        ? 'Execute Subscription' 
+                        : 'Digitally Sign & Commit'}
+                    </button>
+                    {dealData.commitmentStatus !== 'docs-out' && (
+                      <button
+                        id="btn-decline-offer"
+                        onClick={handleDecline}
+                        disabled={submitting}
+                        className="py-4 px-6 rounded-xl border border-white/10 hover:bg-white/5 text-red-400 hover:text-red-300 font-bold text-xs uppercase tracking-wider transition-all active:scale-98 disabled:opacity-50"
+                      >
+                        Decline Offer
+                      </button>
+                    )}
+                  </div>
+
+                  {dealData.commitmentStatus === 'docs-out' && (
+                    <div className="border-t border-white/5 pt-4">
+                      {activeSubManualSign ? (
+                        <div className="space-y-3 p-4 bg-white/5 rounded-xl border border-white/10">
+                          <span className="font-bold text-white uppercase tracking-wider text-[10px] block">Upload Manual Signed Copy</span>
+                          <input
+                            type="text"
+                            placeholder="e.g. Countersigned subscription doc uploaded to Data Room"
+                            value={subManualEvidence}
+                            onChange={(e) => setSubManualEvidence(e.target.value)}
+                            className="w-full text-xs p-3 rounded bg-black border border-white/10 text-white font-mono"
+                          />
+                          <div className="flex gap-2 justify-end">
+                            <button
+                              onClick={() => {
+                                setActiveSubManualSign(false);
+                                setSubManualEvidence('');
+                              }}
+                              className="px-3 py-1.5 rounded border border-white/10 text-xs font-semibold text-[#8a9b9b] hover:text-white transition"
+                            >
+                              Cancel
+                            </button>
+                            <button
+                              onClick={() => handleSignSubscription('manual')}
+                              disabled={!subManualEvidence.trim() || submitting}
+                              className="px-3 py-1.5 rounded bg-[#454955] text-black text-xs font-bold transition disabled:opacity-50"
+                            >
+                              Confirm Signed
+                            </button>
+                          </div>
+                        </div>
+                      ) : (
+                        <button
+                          onClick={() => setActiveSubManualSign(true)}
+                          className="w-full py-3.5 rounded-xl border border-white/10 hover:bg-white/5 text-[#8a9b9b] hover:text-white font-bold text-[10px] uppercase tracking-wider transition font-mono"
+                        >
+                          Or Upload Manually Signed Copy
+                        </button>
+                      )}
                     </div>
                   )}
                 </div>
-              </div>
-
-              {/* Submit Error */}
-              {submitError && (
-                <div className="p-4 border border-red-500/20 bg-red-950/20 text-red-400 rounded-xl text-xs flex items-center gap-2">
-                  <span className="material-symbols-outlined text-sm select-none">error</span>
-                  <span>{submitError}</span>
-                </div>
-              )}
-
-              {/* Action Buttons */}
-              <div className="flex flex-col sm:flex-row gap-3 pt-2">
-                <button
-                  id="btn-commit-capital"
-                  onClick={handleSign}
-                  disabled={!user || !hasSigned || submitting}
-                  className="flex-1 py-4 rounded-xl bg-[#454955] hover:bg-[#454955]/90 text-[#0d0a0b] font-bold text-xs uppercase tracking-wider transition-all disabled:opacity-50 flex items-center justify-center gap-2 shadow-[0_0_15px_rgba(69,73,85,0.3)] active:scale-98"
-                >
-                  {submitting ? (
-                    <span className="material-symbols-outlined text-sm animate-spin select-none">progress_activity</span>
-                  ) : (
-                    <span className="material-symbols-outlined text-sm select-none">payments</span>
-                  )}
-                  {submitting ? 'Recording Signature...' : 'Digitally Sign & Commit'}
-                </button>
-                <button
-                  id="btn-decline-offer"
-                  onClick={handleDecline}
-                  disabled={!user || submitting}
-                  className="py-4 px-6 rounded-xl border border-white/10 hover:bg-white/5 text-red-400 hover:text-red-300 font-bold text-xs uppercase tracking-wider transition-all active:scale-98 disabled:opacity-50"
-                >
-                  Decline Offer
-                </button>
-              </div>
-            </section>
+              </section>
+            )}
 
           </div>
 
@@ -754,7 +1016,7 @@ export default function GuestPortalPage() {
                 <div className="space-y-4">
                   <div className="flex justify-between items-end">
                     <div>
-                      <span className="block text-[9px] font-bold text-[#8a9b9b] uppercase tracking-wider">Syndication Status</span>
+                      <span className="block text-[9px] font-bold text-[#8a9b9b] uppercase tracking-wider">Co-Investment Status</span>
                       <h4 className="text-2xl font-bold text-white tracking-tight mt-1">
                         ${(dealData.raiseRaised ?? 0).toLocaleString()}
                       </h4>
@@ -792,11 +1054,19 @@ export default function GuestPortalPage() {
                 {/* Submit Commit CTA */}
                 <button
                   onClick={handleCommitCTA}
-                  disabled={submitting}
+                  disabled={submitting || ['signed', 'funds-confirmed', 'cleared'].includes(dealData.commitmentStatus || '')}
                   className="w-full py-4 rounded-xl bg-[#454955] hover:bg-[#454955]/90 text-[#0d0a0b] font-bold text-xs uppercase tracking-wider transition-all flex items-center justify-center gap-2 shadow-[0_0_15px_rgba(69,73,85,0.2)] active:scale-98 disabled:opacity-50"
                 >
                   <span className="material-symbols-outlined text-sm select-none">payments</span>
-                  {user ? 'RECORD COMMITMENT' : 'SIGN IN TO RESPOND'}
+                  {dealData.commitmentStatus === 'docs-out'
+                    ? 'EXECUTE SUBSCRIPTION'
+                    : ['signed', 'funds-confirmed', 'cleared'].includes(dealData.commitmentStatus || '')
+                    ? 'SUBSCRIPTION EXECUTED'
+                    : dealData.commitmentStatus === 'soft-committed'
+                    ? 'COMMITMENT REGISTERED'
+                    : user
+                    ? 'RECORD COMMITMENT'
+                    : 'SIGN IN TO RESPOND'}
                 </button>
 
                 {/* Timer Countdown */}

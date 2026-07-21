@@ -38,40 +38,21 @@ const percentWhole = z.number().finite();
 
 /** Project lifecycle status — controls Kanban board columns */
 export const projectStatusEnum = z.enum([
-  'Active',
-  'Lead',
-  'Under Contract',
-  'Renovating',
-  'Listed',
-  'Sold',
-  'Rented',
-  'closed_won',
-  'closed_lost',
+  'acquisition',
+  'fund',
+  'hold',
+  'exit',
 ]);
 
 /** High-level horizontal phase tracker */
 export const phaseStatusEnum = z.enum([
-  // v1 legacy values (existing Firestore documents)
-  'Phase 1: Find & Fund',
-  'Phase 3: Holding & Rehab',
-  'Phase 4: Closing & Exit',
-  'Phase 3: Rehab & Hold',
-  'Phase 4: Realized',
-  // v2 REIL values (new documents + shared with v1)
   'Phase 1: Acquisition',
-  'Phase 2: Acquisition',
-  'Phase 2: Transaction',
-  'Phase 3: Rehab',
-  'Phase 4: Hold / Exit',
+  'Phase 2: Fund',
+  'Phase 3: Hold',
+  'Phase 4: Exit',
 ]);
 
-/** Investment strategy — determines which metrics are relevant */
-export const strategyTypeEnum = z.enum([
-  'Sell',
-  'Rent',
-  'Fix & Flip',
-  'Buy & Hold',
-]);
+
 
 /** Asset classification */
 export const assetClassEnum = z.enum([
@@ -126,7 +107,7 @@ export const offerStatusEnum = z.enum([
 export const financingTypeEnum = z.enum(['Financed', 'All Cash']);
 
 /** Exit strategy fork */
-export const exitStrategyTypeEnum = z.enum(['Sell', 'Rent']);
+export const exitStrategyTypeEnum = z.enum(['Sell', 'Rent', 'Lease']);
 
 /** Exit type classification */
 export const exitTypeEnum = z.enum(['Sale', 'Stabilization', 'Refinance']);
@@ -140,12 +121,11 @@ export const entryPathEnum = z.enum([
 
 /** Rehab scope classification — drives budget templates */
 export const rehabTierEnum = z.enum([
-  'Staging',
-  'Minor Cosmetic',
-  'Minor Rehab',
-  'Full Rehab',
-  'Gut Renovation',
-  'Ground-Up Construction',
+  'Stage',
+  'Refurbish',
+  'Renovate',
+  'Gut',
+  'Develop',
 ]);
 
 // ── Nested Schemas ─────────────────────────────────────────
@@ -268,6 +248,93 @@ const proratedEscrowItemSchema = z.object({
  * - `vacancyRate` → whole number (5 = 5%)
  * - `vacancyRatePercent` → whole number (0-100, default 7%)
  */
+export const rehabSpendEntrySchema = z.object({
+  id: z.string(),
+  amount: usdDollars,
+  date: z.string(),
+  category: z.enum(['CapEx', 'Repairs & Maintenance']),
+  note: z.string(),
+  history: z.array(z.any()).optional(),
+  source: z.enum(['manual', 'plaid']).optional(),
+  plaidTransactionId: z.string().nullable().optional(),
+});
+
+export const valuationSourceEnum = z.enum(['user_assumption', 'appraisal', 'bpo', 'avm']);
+
+export const valuationEntrySchema = z.object({
+  id: z.string(),
+  date: z.string(),
+  value: usdDollars,
+  source: valuationSourceEnum,
+  documentUrl: z.string().nullable().optional(),
+  documentName: z.string().nullable().optional(),
+});
+
+export const rentReceivedEntrySchema = z.object({
+  id: z.string(),
+  amount: usdDollars,
+  date: z.any(),
+  unit: z.string(),
+  tenantName: z.string().optional(),
+  confirmed: z.boolean(),
+  source: z.enum(['plaid', 'manual']).optional(),
+});
+
+export const leaseIncomeEntrySchema = z.object({
+  id: z.string(),
+  amount: usdDollars,
+  date: z.any(),
+  confirmed: z.boolean(),
+  source: z.enum(['plaid', 'manual']).optional(),
+});
+
+export const opexEntrySchema = z.object({
+  id: z.string(),
+  amount: usdDollars,
+  date: z.any(),
+  confirmed: z.boolean(),
+  source: z.enum(['plaid', 'manual']).optional(),
+  notes: z.string().optional(),
+});
+
+export const actualLeaseTermsSchema = z.object({
+  rateCents: usdDollars,
+  termMonths: z.number(),
+  escalations: z.string().optional(),
+  type: z.enum(['NNN', 'Modified_Gross', 'Gross']),
+});
+
+export const listingAdLogEntrySchema = z.object({
+  id: z.string(),
+  platform: z.string(),
+  listingUrl: z.string().nullable().optional(),
+  status: z.enum(['active', 'paused', 'removed']),
+  listedDate: z.string(),
+  monthlyRent: usdDollars,
+});
+
+export const screeningChecklistItemSchema = z.object({
+  id: z.string(),
+  label: z.string(),
+  checked: z.boolean(),
+});
+
+export const screeningChecklistStateSchema = z.object({
+  creditScoreCheck: z.boolean(),
+  backgroundCheck: z.boolean(),
+  incomeVerification: z.boolean(),
+  priorEvictionsCheck: z.boolean(),
+  landlordReferences: z.boolean(),
+  customItems: z.array(screeningChecklistItemSchema).optional(),
+});
+
+export const targetLeaseTermsSchema = z.object({
+  rateCents: usdDollars,
+  termMonths: z.number(),
+  type: z.enum(['NNN', 'Modified_Gross', 'Gross']),
+  sqft: z.number().nullable().optional(),
+});
+
 export const projectFinancialsSchema = z.object({
   /**
    * Purchase price in USD dollars (float).
@@ -297,6 +364,40 @@ export const projectFinancialsSchema = z.object({
    * Each entry is a CostEntry with amount, approval status, and receipt.
    */
   costs: z.array(costEntrySchema),
+  rent_received: z.array(rentReceivedEntrySchema).optional(),
+  lease_income: z.array(leaseIncomeEntrySchema).optional(),
+  lease_terms: actualLeaseTermsSchema.optional(),
+  opex_tax: z.array(opexEntrySchema).optional(),
+  opex_insurance: z.array(opexEntrySchema).optional(),
+  opex_security: z.array(opexEntrySchema).optional(),
+  opex_maintenance: z.array(opexEntrySchema).optional(),
+  opex_utilities: z.array(opexEntrySchema).optional(),
+  opex_management: z.array(opexEntrySchema).optional(),
+  opex_hoa: z.array(opexEntrySchema).optional(),
+  opex_capex: z.array(opexEntrySchema).optional(),
+  sale_contract_price: usdDollars.optional(),
+  sale_buyer_contingencies: z.array(z.any()).optional(),
+  sale_price: usdDollars.optional(),
+  selling_costs: usdDollars.optional(),
+  sale_closed_date: z.string().optional(),
+  titleHolding: z.enum(['TIC', 'JTWROS']).optional(),
+  titleHoldingDerived: z.boolean().optional(),
+  titleCoOwnershipAgreementUrl: z.string().nullable().optional(),
+  titleCoOwnershipAgreementName: z.string().nullable().optional(),
+  titleCoOwnershipAgreementStatus: z.enum(['unsigned', 'docs-out', 'signed', 'verified']).optional(),
+  distributionStructure: z.object({
+    type: z.enum(['straight', 'pref_return', 'waterfall']),
+    splitRatioLP: z.number().min(0).max(100),
+    splitRatioGP: z.number().min(0).max(100),
+    preferredRate: z.number().min(0).max(100).optional(),
+    preferredType: z.enum(['cumulative', 'non_cumulative']).optional(),
+    waterfallTiers: z.array(z.object({
+      tierNumber: z.number().int().positive(),
+      thresholdPct: z.number().min(0).max(100),
+      splitRatioLP: z.number().min(0).max(100),
+      splitRatioGP: z.number().min(0).max(100),
+    })).optional(),
+  }).optional(),
 
   // ── Phase-specific fields ──
 
@@ -352,6 +453,12 @@ export const projectFinancialsSchema = z.object({
   /** Counter-offer price in CENTS (exception to the dollars convention) */
   counterPriceCents: z.number().int().optional(),
   counterTerms: z.string().optional(),
+  scorecardAcknowledged: z.boolean().optional(),
+  acknowledgedInputsHash: z.string().optional(),
+  finalAgreedPrice: usdDollars.optional(),
+  fundingType: z.enum(['Solo', 'Syndicated']).optional(),
+  psaDocumentUrl: z.string().optional(),
+  psaDocumentName: z.string().optional(),
 
   // ── Equity Valuation Tracker ──
 
@@ -390,6 +497,7 @@ export const projectFinancialsSchema = z.object({
    * Whole number (e.g. 2 for 2 points).
    */
   loanOriginationPoints: percentWhole.optional(),
+  downPaymentPercent: percentWhole.optional(),
 
   /** Estimated holding period in days — used for holding cost projections */
   estimatedTimelineDays: z.number().int().nonnegative().optional(),
@@ -404,6 +512,12 @@ export const projectFinancialsSchema = z.object({
     fileUrl: z.string().optional(),
     storagePath: z.string().optional(),
     uploadedAt: z.string().optional(),
+    entryStage: z.string().optional(),
+    lastActiveStage: z.string().optional(),
+    overrideReason: z.string().optional(),
+    propertyType: z.string().optional(),
+    units: z.number().optional(),
+    condition: z.string().optional(),
   })).optional(),
 
   /** Virtual Inspection Estimate vs Actual */
@@ -465,7 +579,13 @@ export const projectFinancialsSchema = z.object({
   sellersAgentCommission: percentWhole.optional(),
 
   /** Final closing costs — fixed dollar amount */
-  finalClosingCosts: usdDollars.optional(),
+  finalClosingCosts: usdDollars.nullable().optional(),
+
+  /** Final cash to close — fixed dollar amount */
+  finalCashToClose: usdDollars.nullable().optional(),
+
+  /** Final prepaids and reserves — fixed dollar amount */
+  finalPrepaidsReserves: usdDollars.nullable().optional(),
 
   /** Accumulated holding costs in USD dollars */
   totalHoldingCosts: usdDollars.optional(),
@@ -565,6 +685,25 @@ export const projectFinancialsSchema = z.object({
    * Estimated annual property appreciation as whole number percentage.
    */
   annualAppreciationPercent: percentWhole.optional(),
+
+  // Canonical Group 2/3 Variables (reil-registry.md)
+  gross_rent_per_unit: usdDollars.optional(),
+  vacancy_pct: percentWhole.optional(),
+  other_income: usdDollars.optional(),
+  tax: usdDollars.optional(),
+  insurance: usdDollars.optional(),
+  security: usdDollars.optional(),
+  maintenance: usdDollars.optional(),
+  maintenance_pct: percentWhole.optional(),
+  utilities: usdDollars.optional(),
+  management: usdDollars.optional(),
+  management_pct: percentWhole.optional(),
+  HOA: usdDollars.optional(),
+  capex: usdDollars.optional(),
+  unitRents: z.array(z.number()).optional(),
+  taxBillUrl: z.string().optional(),
+  t12Url: z.string().optional(),
+  retrospectiveCompleted: z.boolean().optional(),
 
   // ── Holding Costs Calculator ──
 
@@ -683,12 +822,41 @@ export const projectFinancialsSchema = z.object({
   // ── R3 — Hold Agent: Rehab Tier & Extended Holding Costs ──
 
   rehabTier: rehabTierEnum.optional(),
+  renovation_tier: rehabTierEnum.optional(),
   rehabTierBudgetLow: usdDollars.optional(),
   rehabTierBudgetHigh: usdDollars.optional(),
+  rehab_budget: usdDollars.optional(),
+  rehab_completion_target: z.any().optional(),
+  rehab_contractors: z.record(z.string(), z.any()).optional(),
+  rehab_spend: z.array(rehabSpendEntrySchema).optional(),
+  rehab_completed_date: z.any().optional(),
+  rehab_spend_total: usdDollars.optional(),
+  current_value: z.array(valuationEntrySchema).optional(),
+  target_rent: usdDollars.optional(),
+  listing_ads: z.array(listingAdLogEntrySchema).optional(),
+  screening_checklist: screeningChecklistStateSchema.optional(),
+  target_lease_terms: targetLeaseTermsSchema.optional(),
+  list_price_sale: usdDollars.optional(),
+  listing_agent_vendor: z.any().optional(),
+  holding_cost_tax: usdDollars.optional(),
+  holding_cost_insurance: usdDollars.optional(),
+  holding_cost_security: usdDollars.optional(),
+  holding_cost_maintenance: usdDollars.optional(),
+  holding_cost_utilities: usdDollars.optional(),
+  holding_cost_management: usdDollars.optional(),
+  holding_cost_hoa: usdDollars.optional(),
+  holding_cost_capex: usdDollars.optional(),
   holdingCostMaintenance: usdDollars.optional(),
   holdingCostManagement: usdDollars.optional(),
+  holdingCostSecurity: usdDollars.optional(),
+  holdingCostCapex: usdDollars.optional(),
   totalMonthlyHoldingCost: usdDollars.optional(),
   holdStartDate: z.any().optional(),
+  exit_cost_basis: usdDollars.optional(),
+  exit_capitalized_improvements: usdDollars.optional(),
+  exit_holding_cost_total: usdDollars.optional(),
+  exit_marketing_outcome: z.string().optional(),
+  sale_under_contract: z.boolean().optional(),
 
   // ── R4 — Exit/Rent Agent ──
 
@@ -820,7 +988,7 @@ export const projectExitSchema = z.object({
  * This is the core domain entity. Every deal flows through this
  * 4-phase lifecycle: Acquisition → Fund → Hold → Exit.
  */
-export const projectSchema = z.object({
+export const baseProjectSchema = z.object({
   /** Firestore document ID */
   id: z.string().min(1),
 
@@ -853,9 +1021,6 @@ export const projectSchema = z.object({
 
   /** High-level horizontal phase tracker string */
   phaseStatus: phaseStatusEnum.optional(),
-
-  /** Investment strategy */
-  strategyType: strategyTypeEnum.optional(),
 
   /** Asset classification */
   assetClass: assetClassEnum.optional(),
@@ -894,6 +1059,42 @@ export const projectSchema = z.object({
     lawyerVerified: z.boolean(),
     blockchainTxHash: z.string().nullable(),
     chainOfTitleStatus: z.enum(['pending', 'verified', 'failed']),
+    verifiedByUid: z.string().nullable().optional(),
+    verifiedByName: z.string().nullable().optional(),
+    verifiedAt: z.string().nullable().optional(),
+    verifiedRole: z.string().nullable().optional(),
+    titleChecks: z.array(z.any()).optional(),
+    titleWorkflow: z.any().optional(),
+    cdFinalClosingCosts: z.number().nullable().optional(),
+    cdCashToClose: z.number().nullable().optional(),
+    cdPrepaidsReserves: z.number().nullable().optional(),
+    cdSourceDocumentUrl: z.string().nullable().optional(),
+    cdSourceDocumentName: z.string().nullable().optional(),
+    cdCapturedAt: z.string().nullable().optional(),
+    cdCapturedByUid: z.string().nullable().optional(),
+    cdCapturedByName: z.string().nullable().optional(),
+    reconciliationOverrideReason: z.string().nullable().optional(),
+    isReconciliationOverridden: z.boolean().optional(),
+    actualClosingDate: z.string().nullable().optional(),
+    closingStatus: z.enum(['pending', 'signed', 'completed']).nullable().optional(),
+    isClosingExecuted: z.boolean().optional(),
+    executedDocs: z.object({
+      deedUrl: z.string().nullable().optional(),
+      deedSigned: z.boolean().optional(),
+      noteUrl: z.string().nullable().optional(),
+      noteSigned: z.boolean().optional(),
+      settlementStatementUrl: z.string().nullable().optional(),
+      settlementStatementSigned: z.boolean().optional(),
+      titlePolicyUrl: z.string().nullable().optional(),
+      titlePolicySigned: z.boolean().optional(),
+      entityDocsUrl: z.string().nullable().optional(),
+      entityDocsSigned: z.boolean().optional(),
+    }).nullable().optional(),
+    disbursementRecorded: z.boolean().optional(),
+    disbursementStatementUrl: z.string().nullable().optional(),
+    deedRecordingCounty: z.string().nullable().optional(),
+    deedRecordingDate: z.string().nullable().optional(),
+    deedRecordingInstrumentNumber: z.string().nullable().optional(),
   }).optional(),
 
   /** Fractional investors for crowdfunded deals */
@@ -929,6 +1130,12 @@ export const projectSchema = z.object({
   /** Acquisition: Document vault */
   roleLinkedDocuments: z.array(z.any()).optional(),
 
+  /** Phase 2: Proof of Funds checklist */
+  proofOfFunds: z.array(z.any()).optional(),
+
+  /** Phase 2: Equity Parties roster */
+  equityParties: z.array(z.any()).optional(),
+
   /** Financing status tracker */
   loanStatus: loanStatusEnum.optional(),
 
@@ -956,6 +1163,32 @@ export const projectSchema = z.object({
     z.number().int().min(1).max(4),
     z.enum(['acquisition', 'transaction', 'rehab', 'hold_exit'])
   ]).optional(),
+
+  /** Whether this is a retrospective/historical deal entry */
+  retrospective: z.boolean().optional(),
+
+  /** Canonical disposition type (SALE | LEASE | RENT) */
+  dispositionType: z.enum(['SALE', 'LEASE', 'RENT']).optional(),
+
+  /** Canonical sub-strategy under dispositionType */
+  subStrategy: z.enum([
+    'FLIP', 'WHOLESALE', 'BUILD_SELL',
+    'LONG_TERM', 'SHORT_TERM', 'MID_TERM', 'BRRRR',
+    'NNN', 'GROUND', 'LEASE_OPTION'
+  ]).optional().nullable(),
+
+  /** Record of where the project entered the lifecycle */
+  entryStage: z.string().optional(),
+
+  /** The last active/incomplete stage within Phase 1 (Acquisition) */
+  lastActiveStage: z.string().optional(),
+
+  /** Phase-gate override reason */
+  overrideReason: z.string().optional(),
+
+  propertyType: z.string().optional(),
+  units: z.number().optional(),
+  condition: z.string().optional(),
 
   /** Persistent storage for ProjectTodoList tasks */
   actionItems: z.array(z.any()).optional(),
@@ -1047,13 +1280,99 @@ export const projectSchema = z.object({
 
   /** Top-level convenience alias for rehab tier */
   rehabTier: rehabTierEnum.optional(),
+  renovation_tier: rehabTierEnum.optional(),
+  rehab_budget: usdDollars.optional(),
+  rehab_completion_target: z.any().optional(),
+  rehab_contractors: z.record(z.string(), z.any()).optional(),
+  rehab_spend: z.array(rehabSpendEntrySchema).optional(),
+  rehab_completed_date: z.any().optional(),
+  rehab_spend_total: usdDollars.optional(),
+  current_value: z.array(valuationEntrySchema).optional(),
+  target_rent: usdDollars.optional(),
+  listing_ads: z.array(listingAdLogEntrySchema).optional(),
+  screening_checklist: screeningChecklistStateSchema.optional(),
+  target_lease_terms: targetLeaseTermsSchema.optional(),
+  list_price_sale: usdDollars.optional(),
+  listing_agent_vendor: z.any().optional(),
+  holding_cost_tax: usdDollars.optional(),
+  holding_cost_insurance: usdDollars.optional(),
+  holding_cost_security: usdDollars.optional(),
+  holding_cost_maintenance: usdDollars.optional(),
+  holding_cost_utilities: usdDollars.optional(),
+  holding_cost_management: usdDollars.optional(),
+  holding_cost_hoa: usdDollars.optional(),
+  holding_cost_capex: usdDollars.optional(),
+  exit_cost_basis: usdDollars.optional(),
+  exit_capitalized_improvements: usdDollars.optional(),
+  exit_holding_cost_total: usdDollars.optional(),
+  exit_marketing_outcome: z.string().optional(),
+  sale_under_contract: z.boolean().optional(),
+});
+
+export const projectSchema = baseProjectSchema.superRefine((data, ctx) => {
+  if (data.subStrategy) {
+    if (data.dispositionType === 'SALE') {
+      if (!['FLIP', 'WHOLESALE', 'BUILD_SELL'].includes(data.subStrategy)) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          message: `Invalid subStrategy "${data.subStrategy}" for disposition SALE`,
+          path: ['subStrategy'],
+        });
+      }
+    } else if (data.dispositionType === 'RENT') {
+      if (!['LONG_TERM', 'SHORT_TERM', 'MID_TERM', 'BRRRR'].includes(data.subStrategy)) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          message: `Invalid subStrategy "${data.subStrategy}" for disposition RENT`,
+          path: ['subStrategy'],
+        });
+      }
+    } else if (data.dispositionType === 'LEASE') {
+      if (!['NNN', 'GROUND', 'LEASE_OPTION'].includes(data.subStrategy)) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          message: `Invalid subStrategy "${data.subStrategy}" for disposition LEASE`,
+          path: ['subStrategy'],
+        });
+      }
+    }
+  }
 });
 
 /** Inferred TypeScript type from the Zod schema */
 export type Project = z.infer<typeof projectSchema>;
 
 /** Partial schema for Firestore updates */
-export const projectUpdateSchema = projectSchema.partial();
+export const projectUpdateSchema = baseProjectSchema.partial().superRefine((data, ctx) => {
+  if (data.subStrategy && data.dispositionType) {
+    if (data.dispositionType === 'SALE') {
+      if (!['FLIP', 'WHOLESALE', 'BUILD_SELL'].includes(data.subStrategy)) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          message: `Invalid subStrategy "${data.subStrategy}" for disposition SALE`,
+          path: ['subStrategy'],
+        });
+      }
+    } else if (data.dispositionType === 'RENT') {
+      if (!['LONG_TERM', 'SHORT_TERM', 'MID_TERM', 'BRRRR'].includes(data.subStrategy)) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          message: `Invalid subStrategy "${data.subStrategy}" for disposition RENT`,
+          path: ['subStrategy'],
+        });
+      }
+    } else if (data.dispositionType === 'LEASE') {
+      if (!['NNN', 'GROUND', 'LEASE_OPTION'].includes(data.subStrategy)) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          message: `Invalid subStrategy "${data.subStrategy}" for disposition LEASE`,
+          path: ['subStrategy'],
+        });
+      }
+    }
+  }
+});
+
 export type ProjectUpdate = z.infer<typeof projectUpdateSchema>;
 
 /** Type for the embedded financials object */

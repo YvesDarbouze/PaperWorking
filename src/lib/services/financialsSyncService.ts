@@ -32,7 +32,6 @@ export const financialsSyncService = {
         BigInt(0)
       ),
       holdingCosts: BigInt(0),
-      strategyType: deal.strategyType ?? null,
       targetPurchasePrice: deal.financials?.targetPurchasePrice != null ? BigInt(Math.round(deal.financials.targetPurchasePrice)) : null,
       capitalRaiseTarget: deal.financials?.capitalRaiseTarget != null ? BigInt(Math.round(deal.financials.capitalRaiseTarget)) : null,
       committedCapital: deal.financials?.committedCapital != null ? BigInt(Math.round(deal.financials.committedCapital)) : null,

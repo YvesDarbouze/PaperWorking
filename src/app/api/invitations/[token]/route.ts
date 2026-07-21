@@ -71,11 +71,25 @@ export async function GET(
     //    Raise progress is computed from the real commitments subcollection (status-aware),
     //    never from the legacy fractionalInvestors array.
     const raiseTarget = fin.capitalRaiseTarget || fin.projectedRehabCost || 0;
-    const [metricHistory, raiseProgress] = await Promise.all([
+    const [metricHistory, raiseProgress, commitmentsSnap] = await Promise.all([
       fetchPropertyMetricHistory(inv.projectId),
       computeRaiseProgress(inv.projectId, raiseTarget),
+      adminDb
+        .collection('projects')
+        .doc(inv.projectId)
+        .collection('commitments')
+        .where('email', '==', inv.email)
+        .limit(1)
+        .get()
     ]);
     const { daysLeft, hoursLeft } = computeRaiseCountdown(project.createdAt);
+
+    let commitmentStatus = 'pending';
+    let commitmentId = null;
+    if (!commitmentsSnap.empty) {
+      commitmentStatus = commitmentsSnap.docs[0].data().status;
+      commitmentId = commitmentsSnap.docs[0].id;
+    }
 
     // 5. Return only the allowlisted fields needed by the Guest Portal
     //    — no internal IDs, no organizationId, no Firestore doc references
@@ -94,7 +108,7 @@ export async function GET(
       ]
         .filter(Boolean)
         .join(', ') || project.propertyAddress || '',
-      strategy: project.strategyType || 'Value-Add',
+      strategy: project.subStrategy || project.dispositionType || 'Value-Add',
       assetClass: project.assetClass || 'Multi-Family',
       opportunitySummary: project.vision || inv.opportunitySummary || project.description || '',
 
@@ -126,6 +140,10 @@ export async function GET(
       // Meta
       expiresAt: expiresAt.toISOString(),
       status: inv.status as 'pending' | 'accepted' | 'declined' | 'expired',
+      commitmentStatus,
+      commitmentId,
+      subscriptionAgreementTemplate: fin.subscriptionAgreementTemplate || null,
+      projectId: inv.projectId, // Safe exposure of projectId since it is already safe in portal
     });
   } catch (error) {
     console.error('[GuestPortal] Token lookup failed:', error);

@@ -5,8 +5,8 @@
  * 240px fixed panel. Mobile navigation is handled by BottomNav + TopAppBar.
  * Exports: Sidebar (named + default)
  *
- * Nav contract (AGENTS.md v3 — 2026-06-06):
- *   Primary: Portfolio · Projects · Insights · Reports · Inbox · Team
+ * Nav contract (AGENTS.md v4 — 2026-07-16):
+ *   Primary: Portfolio · Projects · Data Room · Insights · Reports · Inbox · Team
  *   Account: Profile · Billing · Settings
  */
 
@@ -27,12 +27,13 @@ import toast from "react-hot-toast";
 // ─── Navigation contract ──────────────────────────────────────────────────────
 
 const PRIMARY_NAV = [
-  { name: "Portfolio", href: "/dashboard/command-center", icon: "space_dashboard" },
-  { name: "Projects",  href: "/dashboard/projects",       icon: "folder"          },
-  { name: "Insights",  href: "/dashboard/insights",       icon: "monitoring"      },
-  { name: "Reports",   href: "/dashboard/reports",        icon: "bar_chart_4_bars"},
-  { name: "Inbox",     href: "/dashboard/inbox",          icon: "inbox"           },
-  { name: "Team",      href: "/dashboard/team",           icon: "group"           },
+  { name: "Portfolio",     href: "/dashboard/command-center",  icon: "space_dashboard" },
+  { name: "Projects",      href: "/dashboard/projects",       icon: "folder"          },
+  { name: "Data Room",     href: "/dashboard/data-room",      icon: "folder_shared"   },
+  { name: "Insights",      href: "/dashboard/insights",       icon: "monitoring"      },
+  { name: "Reports",       href: "/dashboard/reports",        icon: "bar_chart_4_bars"},
+  { name: "Inbox",         href: "/dashboard/inbox",          icon: "inbox"           },
+  { name: "Team",          href: "/dashboard/team",           icon: "group"           },
 ] as const;
 
 const ACCOUNT_NAV = [
@@ -95,37 +96,6 @@ function UserAvatar({ photoURL, displayName, email, size = 32, isDark }: AvatarP
   );
 }
 
-// ─── Theme toggle ─────────────────────────────────────────────────────────────
-
-function ThemeToggle({ isDark }: { isDark: boolean }) {
-  const { toggleTheme } = useTheme();
-
-  return (
-    <button
-      onClick={toggleTheme}
-      aria-label={`Switch to ${isDark ? "light" : "dark"} mode`}
-      className="relative flex items-center gap-2.5 w-full px-3 py-2 rounded-lg transition-all duration-150 group"
-      style={{
-        color: isDark ? "rgba(253,255,252,0.65)" : "rgba(55,59,69,0.82)",
-        background: isDark ? "#0d0a0b" : "#FDFFFC",
-      }}
-    >
-      <span
-        className="material-symbols-outlined text-[18px] flex-shrink-0 transition-transform duration-300"
-        style={{ fontVariationSettings: "'FILL' 1" }}
-      >
-        {isDark ? "light_mode" : "dark_mode"}
-      </span>
-      <span className="text-[12px]" style={{ fontWeight: 500, letterSpacing: "-0.01em" }}>
-        {isDark ? "Light mode" : "Dark mode"}
-      </span>
-      <span
-        className="absolute inset-0 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity duration-150 pointer-events-none"
-        style={{ background: isDark ? "rgba(255,255,255,0.05)" : "rgba(0,0,0,0.04)" }}
-      />
-    </button>
-  );
-}
 
 // ─── Nav item ─────────────────────────────────────────────────────────────────
 
@@ -167,8 +137,8 @@ function NavItem({ name, href, icon, isActive, badge, isDark, onClick }: NavItem
 
       {/* Label */}
       <span
-        className="text-[13px] flex-1 min-w-0 truncate"
-        style={{ fontWeight: isActive ? 600 : 500, letterSpacing: "-0.01em" }}
+        className="text-label-md flex-1 min-w-0 truncate"
+        style={{ fontWeight: isActive ? 700 : 500, letterSpacing: "-0.01em" }}
       >
         {name}
       </span>
@@ -176,7 +146,7 @@ function NavItem({ name, href, icon, isActive, badge, isDark, onClick }: NavItem
       {/* Inbox unread badge */}
       {badge !== undefined && badge > 0 && (
         <span
-          className="relative flex items-center justify-center rounded-full text-[10px] font-bold flex-shrink-0"
+          className="relative flex items-center justify-center rounded-full text-label-sm font-bold flex-shrink-0"
           style={{
             minWidth: 18,
             height: 18,
@@ -212,7 +182,7 @@ function SectionLabel({ label, isDark }: { label: string; isDark: boolean }) {
   return (
     <div className="px-3 pt-5 pb-1.5">
       <p
-        className="text-[10px] font-bold uppercase"
+        className="text-label-sm font-bold uppercase"
         style={{
           letterSpacing: "0.10em",
           color: isDark ? "rgba(253,255,252,0.50)" : "rgba(55,59,69,0.75)",
@@ -294,38 +264,27 @@ export function Sidebar() {
       }}
     >
       {/* ── Brand area ─────────────────────────────────────────────────── */}
-      <div className="px-5 pt-6 pb-4">
+      <div className="px-5 flex items-center" style={{ height: '70px' }}>
         <Logo surface="app-sidebar" href="/dashboard/command-center" />
-      </div>
-
-      {/* ── Create Project — Featured CTA ───────────────────────────────── */}
-      <div className="px-3 pb-4">
-        <button
-          onClick={openWizard}
-          className="flex items-center justify-center gap-2 w-full py-2.5 rounded-xl text-[13px] font-semibold transition-all duration-200 hover:opacity-90 active:scale-[0.98]"
-          style={{
-            background: isDark ? "var(--color-primary)" : "#0b8649",
-            color: isDark ? "#0d0a0b" : "#FDFFFC",
-            letterSpacing: "-0.01em",
-            boxShadow: "0 4px 16px rgba(var(--color-primary-rgb, 90,170,63),0.30)",
-          }}
-        >
-          <span
-            className="material-symbols-outlined text-[18px] flex-shrink-0"
-            style={{ fontVariationSettings: "'FILL' 1" }}
-          >
-            add_circle
-          </span>
-          Create Project
-        </button>
       </div>
 
       {/* ── Primary navigation ──────────────────────────────────────────── */}
       <nav className="flex-1 overflow-y-auto custom-scrollbar px-2 space-y-0.5">
-        {PRIMARY_NAV.map((item) => {
+        {PRIMARY_NAV.filter((item) => {
+          if (item.name === "Projects") {
+            const isVendor =
+              profile?.role === "Vendor" ||
+              profile?.accountType === "vendor" ||
+              profile?.subscriptionPlan === "Vendor Network";
+            return !isVendor;
+          }
+          return true;
+        }).map((item) => {
+          // Portfolio (command-center): exact match only so sub-routes don't false-highlight
           const isActive =
-            pathname.startsWith(item.href) ||
-            (item.href === "/dashboard/command-center" && pathname === "/dashboard");
+            item.href === "/dashboard/command-center"
+              ? pathname === "/dashboard/command-center" || pathname === "/dashboard"
+              : pathname.startsWith(item.href);
 
           return (
             <NavItem
@@ -372,8 +331,6 @@ export function Sidebar() {
         className="px-2 pb-5 pt-3 space-y-1.5"
         style={{ borderTop: `1px solid ${dividerColor}` }}
       >
-        {/* Theme toggle */}
-        {mounted ? <ThemeToggle isDark={isDark} /> : <div className="h-[36px]" />}
 
         {/* Auth skeleton */}
         {!mounted || authLoading || !user || !profile ? (
@@ -386,11 +343,11 @@ export function Sidebar() {
             {/* Workspace switcher */}
             <div className="relative px-1 pt-0.5">
               <p
-                className="text-[10px] font-semibold uppercase mb-1 px-2"
+                className="text-label-sm font-semibold uppercase mb-1 px-2"
                 style={{ letterSpacing: "0.08em", color: mutedText }}
               >
                 acting as:{" "}
-                <span style={{ color: isDark ? "var(--color-primary)" : "#047857", fontWeight: 800 }}>
+                <span style={{ color: "var(--color-primary)", fontWeight: 800 }}>
                   {isPersonal ? "Me" : activeWorkspace?.name}
                 </span>
               </p>
@@ -408,7 +365,7 @@ export function Sidebar() {
                     switchTenant(e.target.value);
                   }}
                   aria-label="Select Workspace"
-                  className="w-full appearance-none text-[12px] font-semibold py-2 pl-8 pr-7 rounded-lg focus:outline-none transition-all cursor-pointer truncate"
+                  className="w-full appearance-none text-body-sm font-semibold py-2 pl-8 pr-7 rounded-lg focus:outline-none transition-all cursor-pointer truncate"
                   style={{
                     background: selectBg,
                     border: `1px solid ${selectBorder}`,
@@ -459,7 +416,7 @@ export function Sidebar() {
                 />
                 <div className="flex flex-col overflow-hidden">
                   <span
-                    className="text-[12px] font-semibold truncate leading-tight"
+                    className="text-body-sm font-semibold truncate leading-tight"
                     style={{
                       color: isDark ? "rgba(253,255,252,0.90)" : "#0d0a0b",
                       letterSpacing: "-0.01em",
@@ -468,7 +425,7 @@ export function Sidebar() {
                     {profile?.displayName || user?.displayName || "User"}
                   </span>
                   <span
-                    className="text-[10px] truncate capitalize leading-tight"
+                    className="text-label-sm truncate capitalize leading-tight"
                     style={{ color: mutedText }}
                   >
                     {profile?.role || "Member"}

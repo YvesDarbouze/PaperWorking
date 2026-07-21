@@ -330,7 +330,7 @@ describe('Admin Server Actions', () => {
         {
           id: 'p1',
           data: () => ({
-            status: 'Active',
+            status: 'hold',
             purchasePrice: 200000,
             rehabBudget: 50000,
             createdAt: now,
@@ -339,7 +339,7 @@ describe('Admin Server Actions', () => {
         {
           id: 'p2',
           data: () => ({
-            status: 'Lead',
+            status: 'acquisition',
             purchasePrice: 150000,
             rehabBudget: 0,
             createdAt: new Date(now.getTime() - 40 * 24 * 60 * 60 * 1000),

@@ -5,6 +5,8 @@
 //   'mock'   → MockAddressProvider with 20 seeded test addresses (dev/test only)
 //   unset    → mock (safe fallback — never silently uses real API without configuration)
 
+import { auth } from '@/lib/firebase/config';
+
 export interface AddressComponents {
   streetNumber?: string;
   route?: string;
@@ -51,9 +53,20 @@ export class GooglePlacesAddressProvider implements AddressProvider {
   async autocomplete(query: string): Promise<AddressSuggestion[]> {
     if (query.trim().length < 2) return [];
     try {
+      const currentUser = auth.currentUser;
+      let token = 'mock_token';
+      if (currentUser) {
+        token = await currentUser.getIdToken();
+      } else if (typeof window !== 'undefined' && document.cookie.includes('mock_session_token_123')) {
+        token = 'mock_token';
+      }
+
       const res = await fetch('/api/places/autocomplete', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
         body: JSON.stringify({ input: query.trim() }),
       });
       if (!res.ok) return fallbackMock(query);
@@ -73,9 +86,20 @@ export class GooglePlacesAddressProvider implements AddressProvider {
   }
 
   async getDetails(placeId: string): Promise<Pick<AddressSuggestion, 'lat' | 'lng' | 'components'>> {
+    const currentUser = auth.currentUser;
+    let token = 'mock_token';
+    if (currentUser) {
+      token = await currentUser.getIdToken();
+    } else if (typeof window !== 'undefined' && document.cookie.includes('mock_session_token_123')) {
+      token = 'mock_token';
+    }
+
     const res = await fetch('/api/places/details', {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: { 
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`
+      },
       body: JSON.stringify({ placeId }),
     });
     if (!res.ok) throw new Error(`Places details error: ${res.status}`);

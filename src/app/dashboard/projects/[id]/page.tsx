@@ -13,24 +13,14 @@ export default function ProjectPage() {
   useEffect(() => {
     if (loading || !project) return;
 
-    // Resolve the path based on project.phaseStatus
-    const phaseStatus = project.phaseStatus;
     let path = 'phase-1';
     
-    if (phaseStatus === 'Phase 2: Acquisition' || phaseStatus === 'Phase 2: Transaction') {
-      path = 'phase-2';
-    } else if (
-      phaseStatus === 'Phase 3: Holding & Rehab' ||
-      phaseStatus === 'Phase 3: Rehab & Hold' ||
-      phaseStatus === 'Phase 3: Rehab'
-    ) {
-      path = 'phase-3';
-    } else if (
-      phaseStatus === 'Phase 4: Closing & Exit' ||
-      phaseStatus === 'Phase 4: Realized' ||
-      phaseStatus === 'Phase 4: Hold / Exit'
-    ) {
+    if (project.status === 'exit' || project.currentPhase === 4 || project.retrospective) {
       path = 'phase-4';
+    } else if (project.status === 'hold' || project.currentPhase === 3) {
+      path = 'phase-3';
+    } else if (project.status === 'fund' || project.currentPhase === 2) {
+      path = 'phase-2';
     }
 
     router.replace(`/dashboard/projects/${projectId}/${path}`);

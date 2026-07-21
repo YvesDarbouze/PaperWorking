@@ -240,7 +240,7 @@ interface CustomTooltipProps {
 function CustomTooltip({ active, payload, label, valueFormatter }: CustomTooltipProps) {
   if (active && payload && payload.length) {
     return (
-      <div className="p-3 bg-[#121014] border border-white/10 rounded-xl shadow-xl backdrop-blur-md">
+      <div className="p-3 bg-pw-night-bg border border-white/10 rounded-xl shadow-xl backdrop-blur-md">
         <p className="text-[11px] font-semibold text-[#9E9DA0] mb-1.5 font-mono">Year {label}</p>
         <div className="space-y-1">
           {payload.map((p, idx) => {
@@ -295,7 +295,8 @@ export default function InsightsDashboard({ data, missingFields, project }: Insi
     // Construct simulation dummy project for Stress Simulator
     return {
       currentPhase: 3, // Hold
-      strategyType: 'Rent',
+      dispositionType: 'RENT',
+      subStrategy: 'BRRRR',
       financials: {
         purchasePrice: (shortTerm as any).purchasePrice ?? 300000,
         loanAmount: (shortTerm as any).loanAmount ?? 240000,
@@ -318,31 +319,31 @@ export default function InsightsDashboard({ data, missingFields, project }: Insi
   
   // Cap Rate: target 5% to 8% standard
   const capRateColor = shortTerm.capRate >= 5 && shortTerm.capRate <= 8
-    ? '#10b981' // emerald
-    : '#f59e0b'; // amber
+    ? '#00DD94' // brand success
+    : '#C4A35A'; // brand warning
 
   // Cash-on-Cash: target 8%+ (visual warning/crimson if negative)
   const cocColor = shortTerm.cashOnCash < 0
-    ? '#f43f5e' // crimson
+    ? '#F06543' // brand error
     : shortTerm.cashOnCash >= 8
-      ? '#10b981' // emerald
-      : '#f59e0b'; // amber
+      ? '#00DD94' // brand success
+      : '#C4A35A'; // brand warning
 
   // OER: below 35% green, 35%-50% amber, 50%+ red
   const oerColor = shortTerm.oer < 35
-    ? '#10b981' // emerald
+    ? '#00DD94' // brand success
     : shortTerm.oer <= 50
-      ? '#f59e0b' // amber
-      : '#f43f5e'; // crimson
+      ? '#C4A35A' // brand warning
+      : '#F06543'; // brand error
 
   // Vacancy Rate: below 5% green, 5%-10% amber, 10%+ red
   const vacancyRate = shortTerm.vacancyRate ?? 0;
   const displayVacancy = vacancyRate;
   const vacancyColor = displayVacancy < 5
-    ? '#10b981' // emerald
+    ? '#00DD94' // brand success
     : displayVacancy <= 10
-      ? '#f59e0b' // amber
-      : '#f43f5e'; // crimson
+      ? '#C4A35A' // brand warning
+      : '#F06543'; // brand error
 
   // ── Chart data transformation ──
   const projectionData = longTerm.years.map((y, idx) => ({
@@ -529,7 +530,7 @@ export default function InsightsDashboard({ data, missingFields, project }: Insi
               </span>
               <div className="relative group/tooltip">
                 <Info className="w-4 h-4 text-[#6B6870] hover:text-white cursor-help transition-colors" />
-                <div className="absolute bottom-full right-0 mb-2 w-56 p-2 bg-[#121014] border border-white/10 text-[10px] text-[#C0BEC2] rounded-lg opacity-0 pointer-events-none group-hover/tooltip:opacity-100 transition-opacity duration-200 leading-normal z-50">
+                <div className="absolute bottom-full right-0 mb-2 w-56 p-2 bg-pw-night-bg border border-white/10 text-[10px] text-[#C0BEC2] rounded-lg opacity-0 pointer-events-none group-hover/tooltip:opacity-100 transition-opacity duration-200 leading-normal z-50">
                   Gross Rent Multiplier (GRM) = Property Price / Gross Annual Rent. Used for high-level asset cost screening. Lower multiplier indicates better yield.
                 </div>
               </div>
@@ -585,7 +586,7 @@ export default function InsightsDashboard({ data, missingFields, project }: Insi
               <div className="flex items-center gap-1.5">
                 <div className="relative group/tooltip">
                   <Info className="w-4 h-4 text-[#6B6870] hover:text-white cursor-help transition-colors" />
-                  <div className="absolute bottom-full right-0 mb-2 w-56 p-2 bg-[#121014] border border-white/10 text-[10px] text-[#C0BEC2] rounded-lg opacity-0 pointer-events-none group-hover/tooltip:opacity-100 transition-opacity duration-200 leading-normal z-50">
+                  <div className="absolute bottom-full right-0 mb-2 w-56 p-2 bg-pw-night-bg border border-white/10 text-[10px] text-[#C0BEC2] rounded-lg opacity-0 pointer-events-none group-hover/tooltip:opacity-100 transition-opacity duration-200 leading-normal z-50">
                     Price-to-Rent Ratio = Median Home Price ÷ Average Annual Rent. Why it matters: A high ratio indicates a better environment for renting out properties, as people are priced out of buying.
                   </div>
                 </div>
@@ -698,7 +699,7 @@ export function SecondaryDiagnosticsPanel({ project }: { project: any }) {
                 <span className="text-[10px] text-[#9E9DA0] font-semibold tracking-widest uppercase">
                   {metric.name}
                 </span>
-                <span className="text-[10px] font-mono text-[#5aaa3f] bg-[#5aaa3f]/10 px-2 py-0.5 rounded-full">
+                <span className="text-[10px] font-mono text-[var(--pw-success)] bg-[var(--pw-success)]/10 px-2 py-0.5 rounded-full">
                   Target: {metric.benchmark}
                 </span>
               </div>

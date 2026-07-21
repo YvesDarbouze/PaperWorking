@@ -58,30 +58,30 @@ describe('MLS Integration (Normalization & State Changes)', () => {
       expect(normalized.beds).toBe(4);
       expect(normalized.baths).toBe(2.5);
       expect(normalized.price).toBe(500000);
-      expect(normalized.status).toBe('Listed');
+      expect(normalized.status).toBe('hold');
     });
 
     it('handles "Pending" to "Under Contract" transition mapping', () => {
       const mockRawData = { StandardStatus: 'Pending' };
       const normalized = normalizeMLSData(mockRawData as any);
-      expect(normalized.status).toBe('Under Contract');
+      expect(normalized.status).toBe('fund');
     });
 
     it('handles "Closed" to "Sold" transition mapping', () => {
       const mockRawData = { StandardStatus: 'Closed' };
       const normalized = normalizeMLSData(mockRawData as any);
-      expect(normalized.status).toBe('Sold');
+      expect(normalized.status).toBe('exit');
     });
   });
 
   describe('processStatusChange (Webhook Simulation)', () => {
-    it('triggers transitionProjectPhase when statuses differ', async () => {
-      // 1. Mock system state
+    it('transitions project phase when new status map triggers change', async () => {
+      // 1. Mock system is running
       (bridgeWorkerService.isPaused as jest.Mock).mockResolvedValue(false);
       
-      // 2. Mock finding an existing deal in 'Listed' state
+      // 2. Mock finding an existing deal in 'hold' state
       (projectsService.getProjectsByMlsId as jest.Mock).mockResolvedValue([
-        { id: 'deal_abc', status: 'Listed', mls_id: 'MLS_999' }
+        { id: 'deal_abc', status: 'hold', mls_id: 'MLS_999' }
       ]);
 
       // 3. Mock incoming webhook payload for 'Closed' (Sold)
@@ -99,8 +99,8 @@ describe('MLS Integration (Normalization & State Changes)', () => {
       expect(result.count).toBe(1);
       expect(transitionProjectPhase).toHaveBeenCalledWith(
         'deal_abc',
-        'Listed',
-        'Sold',
+        'hold',
+        'exit',
         'bridge_api_system',
         expect.stringContaining('Bridge webhook')
       );
@@ -109,7 +109,7 @@ describe('MLS Integration (Normalization & State Changes)', () => {
     it('skips transition if statuses are already in sync', async () => {
       (bridgeWorkerService.isPaused as jest.Mock).mockResolvedValue(false);
       (projectsService.getProjectsByMlsId as jest.Mock).mockResolvedValue([
-        { id: 'deal_xyz', status: 'Sold', mls_id: 'MLS_999' }
+        { id: 'deal_xyz', status: 'exit', mls_id: 'MLS_999' }
       ]);
 
       const payload = {

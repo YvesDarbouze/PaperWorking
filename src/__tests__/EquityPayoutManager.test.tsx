@@ -9,7 +9,8 @@ const mockProjects = [
   {
     id: 'deal-1',
     propertyName: 'Miami Condo',
-    status: 'Sold',
+    status: 'exit',
+    dispositionType: 'SALE',
     financials: {
       actualSalePrice: 350000,
       purchasePrice: 200000,
@@ -26,7 +27,7 @@ const mockProjects = [
   {
     id: 'deal-2',
     propertyName: 'Orlando Villa',
-    status: 'Active',
+    status: 'acquisition',
     financials: {
       purchasePrice: 150000,
       costs: [],

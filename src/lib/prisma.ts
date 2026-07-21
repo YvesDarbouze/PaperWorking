@@ -37,6 +37,28 @@ export function sanitizeDbRecord<T>(record: T): any {
 function createPrismaClient(): PrismaClient {
   const url = process.env.DATABASE_URL;
   if (!url) throw new Error('DATABASE_URL is not set');
+
+  if (process.env.PRISMA_USE_WS === 'true') {
+    const { PrismaNeon } = require('@prisma/adapter-neon');
+    const { Pool, neonConfig } = require('@neondatabase/serverless');
+    const ws = require('ws');
+    neonConfig.webSocketConstructor = ws;
+
+    // Parse connection string to populate standard PG env vars for pg-client
+    const match = url.match(/postgresql:\/\/([^:]+):([^@]+)@([^:/]+)(?::(\d+))?\/([^?]+)/);
+    if (match) {
+      process.env.PGUSER = match[1];
+      process.env.PGPASSWORD = match[2];
+      process.env.PGHOST = match[3];
+      process.env.PGPORT = match[4] || '5432';
+      process.env.PGDATABASE = match[5];
+    }
+
+    const pool = new Pool({ connectionString: url });
+    const adapter = new PrismaNeon(pool);
+    return new PrismaClient({ adapter });
+  }
+
   const adapter = new PrismaNeonHttp(url, {});
   return new PrismaClient({ adapter });
 }

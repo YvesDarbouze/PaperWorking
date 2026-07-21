@@ -91,9 +91,9 @@ export default function ROIRenovationTasks() {
             <p className="text-xs uppercase tracking-widest text-text-secondary">Spent</p>
             <p className="text-lg font-normal text-text-primary">${completedCost.toLocaleString()}</p>
           </div>
-          <div className="p-3 bg-emerald-50 rounded-lg border border-emerald-100">
-            <p className="text-xs uppercase tracking-widest text-emerald-600">Projected ARV Lift</p>
-            <p className="text-lg font-normal text-emerald-700">+${projectedLift.toLocaleString()}</p>
+          <div className="p-3 bg-pw-success-container border border-pw-success-border rounded-lg">
+            <p className="text-xs uppercase tracking-widest text-pw-success">Projected ARV Lift</p>
+            <p className="text-lg font-normal text-pw-success">+${projectedLift.toLocaleString()}</p>
           </div>
         </div>
 
@@ -136,7 +136,7 @@ export default function ROIRenovationTasks() {
                 className="mt-0.5 flex-shrink-0"
               >
                 {task.completed ? (
-                  <CheckCircle className="w-5 h-5 text-emerald-500" />
+                  <CheckCircle className="w-5 h-5 text-pw-success" />
                 ) : (
                   <Circle className="w-5 h-5 text-gray-300 group-hover:text-text-secondary transition" />
                 )}
@@ -157,7 +157,7 @@ export default function ROIRenovationTasks() {
             </div>
             <div className="text-right flex-shrink-0 ml-3">
               <p className="text-sm font-mono text-text-primary">${task.estimatedCost.toLocaleString()}</p>
-              <p className="text-xs text-emerald-600 flex items-center justify-end mt-0.5">
+              <p className="text-xs text-pw-success flex items-center justify-end mt-0.5">
                 <ArrowUpRight className="w-3 h-3 mr-0.5" />+{task.estimatedROILift}% ARV
               </p>
             </div>

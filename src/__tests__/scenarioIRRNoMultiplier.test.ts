@@ -116,19 +116,20 @@ function makeProject(overrides: Record<string, unknown> = {}): Project {
     id: 'test-proj',
     propertyName: 'Test Property',
     currentPhase: 3,
-    strategyType: 'LTR',
+    dispositionType: 'RENT',
+    subStrategy: 'LONG_TERM',
     financials: {
       purchasePrice: 250_000,
-      monthlyGrossRent: 2_000,
+      gross_rent_per_unit: 2_600,
       loanAmount: 200_000,
-      loanInterestRate: 6.5,
+      loanInterestRate: 4.0,
       loanTermYears: 30,
       downPayment: 50_000,
-      vacancyRatePercent: 5,
-      propertyTaxes: 3_600,
-      insurance: 1_200,
-      repairsMaintenance: 1_500,
-      propertyManagement: 2_880, // 12% of gross rent
+      vacancy_pct: 5,
+      tax: 300,        // $3,600 / 12
+      insurance: 100,  // $1,200 / 12
+      maintenance: 125, // $1,500 / 12
+      management: 240, // $2,880 / 12
       ...overrides,
     } as any,
   } as unknown as Project;
@@ -158,7 +159,7 @@ describe('projectScenarioCashFlows — missing-input gate', () => {
   });
 
   it('gate_no_rent: returns [] when monthlyGrossRent is 0', () => {
-    const p = makeProject({ monthlyGrossRent: 0 });
+    const p = makeProject({ gross_rent_per_unit: 0, monthlyGrossRent: 0 });
     expect(projectScenarioCashFlows(p, BASE_ASSUMPTIONS)).toEqual([]);
   });
 

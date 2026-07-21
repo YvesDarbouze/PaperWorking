@@ -215,6 +215,14 @@ export async function assignVendorToProject(
 
     await batch.commit();
 
+    // Enqueue timeline sync
+    try {
+      const { jobQueue } = await import('@/lib/queue/jobQueue');
+      await jobQueue.enqueue('timeline_sync', { projectId });
+    } catch (err: any) {
+      console.error('Failed to enqueue timeline sync on assignVendorToProject:', err.message);
+    }
+
     // Log activity (non-blocking — never blocks the primary response)
     if (projectData?.organizationId) {
       logOrgActivity({
@@ -470,6 +478,14 @@ export async function updateAssignmentStatus(
     }
 
     await batch.commit();
+
+    // Enqueue timeline sync
+    try {
+      const { jobQueue } = await import('@/lib/queue/jobQueue');
+      await jobQueue.enqueue('timeline_sync', { projectId });
+    } catch (err: any) {
+      console.error('Failed to enqueue timeline sync on updateAssignmentStatus:', err.message);
+    }
 
     // Send notification to the other party
     const recipientId = isVendor ? assignment.requestedBy : assignment.vendorId;

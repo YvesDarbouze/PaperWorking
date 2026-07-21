@@ -31,7 +31,7 @@ export default function AppreciationDeepDive({ projects: propProjects }: Props) 
 
     const p = projects[0];
     const f = p.financials!;
-    const { asset: metrics } = deriveDualScopeMetrics(f, undefined, p.strategyType, p.currentPhase, p.createdAt);
+    const { asset: metrics } = deriveDualScopeMetrics(f, undefined, p.dispositionType, p.currentPhase, p.createdAt);
 
     const purchasePrice = f.purchasePrice ?? 0;
     if (purchasePrice <= 0) return null;

@@ -23,9 +23,14 @@ interface TargetIdentificationProps {
     city?: string;
     state?: string;
     zip?: string;
+    latitude?: number | null;
+    longitude?: number | null;
     squareFootage?: number;
     yearBuilt?: number;
     listedPrice?: number;
+    propertyType?: string;
+    units?: number;
+    condition?: string;
   };
   onSave: (updates: any) => Promise<void>;
 }
@@ -36,7 +41,7 @@ export function TargetIdentification({
   initialData,
   onSave,
 }: TargetIdentificationProps) {
-  const [isEditing, setIsEditing] = useState(false);
+  const [isEditing, setIsEditing] = useState(!initialData.condition || !initialData.propertyType || !initialData.units);
   const [isSaving, setIsSaving] = useState(false);
   const [showSuccess, setShowSuccess] = useState(false);
   const [errors, setErrors] = useState<Record<string, string>>({});
@@ -46,9 +51,14 @@ export function TargetIdentification({
     city: initialData.city || '',
     state: initialData.state || '',
     zip: initialData.zip || '',
+    lat: initialData.latitude ?? null,
+    lng: initialData.longitude ?? null,
     squareFootage: initialData.squareFootage || '',
     yearBuilt: initialData.yearBuilt || '',
     listedPrice: initialData.listedPrice ? (initialData.listedPrice / 100).toString() : '',
+    propertyType: initialData.propertyType || '',
+    units: initialData.units || '',
+    condition: initialData.condition || '',
   });
 
   const handleAddressSelect = (parsed: ParsedAddress) => {
@@ -58,6 +68,8 @@ export function TargetIdentification({
       city: parsed.city,
       state: parsed.state,
       zip: parsed.zip,
+      lat: parsed.lat,
+      lng: parsed.lng,
     }));
   };
 
@@ -94,6 +106,8 @@ export function TargetIdentification({
         updates.city = formData.city;
         updates.state = formData.state;
         updates.zip = formData.zip;
+        updates.latitude = formData.lat;
+        updates.longitude = formData.lng;
       }
       
       if (formData.squareFootage) {
@@ -114,6 +128,10 @@ export function TargetIdentification({
       } else {
         updates['financials.listedPrice'] = null;
       }
+
+      updates.propertyType = formData.propertyType || null;
+      updates.units = formData.units ? parseInt(formData.units.toString(), 10) : null;
+      updates.condition = formData.condition || null;
 
       await onSave(updates);
       setIsEditing(false);
@@ -171,9 +189,14 @@ export function TargetIdentification({
                 city: initialData.city || '',
                 state: initialData.state || '',
                 zip: initialData.zip || '',
+                lat: initialData.latitude ?? null,
+                lng: initialData.longitude ?? null,
                 squareFootage: initialData.squareFootage || '',
                 yearBuilt: initialData.yearBuilt || '',
                 listedPrice: initialData.listedPrice ? (initialData.listedPrice / 100).toString() : '',
+                propertyType: initialData.propertyType || '',
+                units: initialData.units || '',
+                condition: initialData.condition || '',
               });
             }}
             className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-white/10 hover:bg-white/20 transition-colors text-white text-[10px] font-bold uppercase tracking-widest"
@@ -229,6 +252,32 @@ export function TargetIdentification({
                 </div>
               </div>
             </div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 pt-6" style={{ borderTop: '1px solid var(--border-ui)' }}>
+              <div className="flex items-center gap-3">
+                <Building2 className="w-8 h-8 p-1.5 rounded-md" style={{ color: phaseColor, background: 'var(--bg-canvas)' }} />
+                <div>
+                  <p className="text-[10px] font-bold uppercase tracking-widest mb-0.5" style={{ color: 'var(--text-secondary)' }}>Property Type</p>
+                  <p className="text-sm font-bold uppercase" style={{ color: 'var(--text-primary)' }}>{initialData.propertyType || '—'}</p>
+                </div>
+              </div>
+
+              <div className="flex items-center gap-3">
+                <Ruler className="w-8 h-8 p-1.5 rounded-md" style={{ color: phaseColor, background: 'var(--bg-canvas)' }} />
+                <div>
+                  <p className="text-[10px] font-bold uppercase tracking-widest mb-0.5" style={{ color: 'var(--text-secondary)' }}>Units</p>
+                  <p className="text-sm font-bold tabular-nums" style={{ color: 'var(--text-primary)' }}>{initialData.units || '—'}</p>
+                </div>
+              </div>
+
+              <div className="flex items-center gap-3">
+                <CheckCircle2 className="w-8 h-8 p-1.5 rounded-md" style={{ color: phaseColor, background: 'var(--bg-canvas)' }} />
+                <div>
+                  <p className="text-[10px] font-bold uppercase tracking-widest mb-0.5" style={{ color: 'var(--text-secondary)' }}>Condition</p>
+                  <p className="text-sm font-bold uppercase" style={{ color: 'var(--text-primary)' }}>{initialData.condition || '—'}</p>
+                </div>
+              </div>
+            </div>
           </div>
         ) : (
           <div className="space-y-6">
@@ -273,6 +322,7 @@ export function TargetIdentification({
                 <label className="block text-[10px] font-bold uppercase tracking-widest mb-2" style={{ color: 'var(--text-secondary)' }}>Listed Price ($)</label>
                 <input
                   type="number"
+                  name="askingPrice"
                   value={formData.listedPrice}
                   onChange={(e) => setFormData({ ...formData, listedPrice: e.target.value })}
                   className={`w-full rounded-lg px-4 py-3 text-sm font-medium transition-all focus:outline-none focus-visible:ring-2 focus-visible:ring-black/20 ${errors.listedPrice ? 'border-red-500 ring-1 ring-red-500' : ''}`}
@@ -280,6 +330,56 @@ export function TargetIdentification({
                   placeholder="e.g. 250000"
                 />
                 {errors.listedPrice && <p className="text-red-500 text-[10px] mt-1 font-bold">{errors.listedPrice}</p>}
+              </div>
+            </div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
+              <div>
+                <label className="block text-[10px] font-bold uppercase tracking-widest mb-2" style={{ color: 'var(--text-secondary)' }}>Property Type</label>
+                <select
+                  value={formData.propertyType}
+                  name="propertyType"
+                  onChange={(e) => setFormData({ ...formData, propertyType: e.target.value })}
+                  className="w-full rounded-lg px-4 py-3 text-sm font-medium focus:outline-none"
+                  style={{ background: 'var(--bg-canvas)', border: '1px solid var(--border-ui)', color: 'var(--text-primary)' }}
+                >
+                  <option value="">Select type...</option>
+                  <option value="Single Family">Single Family</option>
+                  <option value="Multi-Family">Multi-Family</option>
+                  <option value="Condo">Condo</option>
+                  <option value="Commercial">Commercial</option>
+                  <option value="Land">Land</option>
+                </select>
+              </div>
+
+              <div>
+                <label className="block text-[10px] font-bold uppercase tracking-widest mb-2" style={{ color: 'var(--text-secondary)' }}>Units</label>
+                <input
+                  type="number"
+                  name="units"
+                  value={formData.units}
+                  onChange={(e) => setFormData({ ...formData, units: e.target.value })}
+                  className="w-full rounded-lg px-4 py-3 text-sm font-medium focus:outline-none"
+                  style={{ background: 'var(--bg-canvas)', border: '1px solid var(--border-ui)', color: 'var(--text-primary)' }}
+                  placeholder="e.g. 2"
+                />
+              </div>
+
+              <div>
+                <label className="block text-[10px] font-bold uppercase tracking-widest mb-2" style={{ color: 'var(--text-secondary)' }}>Condition</label>
+                <select
+                  value={formData.condition}
+                  name="condition"
+                  onChange={(e) => setFormData({ ...formData, condition: e.target.value })}
+                  className="w-full rounded-lg px-4 py-3 text-sm font-medium focus:outline-none"
+                  style={{ background: 'var(--bg-canvas)', border: '1px solid var(--border-ui)', color: 'var(--text-primary)' }}
+                >
+                  <option value="">Select condition...</option>
+                  <option value="turnkey">Turnkey</option>
+                  <option value="cosmetic">Cosmetic Rehab</option>
+                  <option value="gut">Gut Rehab</option>
+                  <option value="rehab">Full Rehab</option>
+                </select>
               </div>
             </div>
 

@@ -2,7 +2,7 @@
 
 import React, { useMemo } from 'react';
 import { Project } from '@/types/schema';
-import { deriveDualScopeMetrics, computeGRM } from '@/lib/metrics/reiMetrics';
+import { deriveDualScopeMetrics } from '@/lib/metrics/reiMetrics';
 import {
   RadarChart, Radar, PolarGrid, PolarAngleAxis, PolarRadiusAxis, ResponsiveContainer
 } from 'recharts';
@@ -100,11 +100,11 @@ function deriveGRMBreakdowns(projects: Project[]): PropertyGRMData[] {
     .filter(p => p.financials)
     .map((p) => {
       const f = p.financials!;
-      const { asset: metrics } = deriveDualScopeMetrics(f, undefined, p.strategyType, p.currentPhase);
+      const { asset: metrics } = deriveDualScopeMetrics(f, undefined, p.dispositionType, p.currentPhase);
       const purchasePrice = f.purchasePrice ?? 0;
       let monthlyRent = f.monthlyGrossRent ?? 0;
       if (
-        (p.strategyType === 'Rent' || p.strategyType === 'Buy & Hold') &&
+        p.dispositionType === 'RENT' &&
         (p.currentPhase === 3 || p.currentPhase === 4)
       ) {
         monthlyRent = f.actualRentalIncome ?? monthlyRent;
@@ -113,15 +113,15 @@ function deriveGRMBreakdowns(projects: Project[]): PropertyGRMData[] {
 
       return {
         name: (p.propertyName || p.address || 'Unknown').substring(0, 16),
-        grm: metrics.grossRentMultiplier,
+        grm: metrics.grossRentMultiplier ?? 0,
         purchasePrice,
         grossAnnualRent,
         monthlyRent,
-        capRate: metrics.capRate,
-        cocReturn: metrics.cashOnCashReturn,
+        capRate: metrics.capRate ?? 0,
+        cocReturn: metrics.cashOnCashReturn ?? 0,
         noi: metrics.noi,
         cashFlow: metrics.annualCashFlow,
-        classification: classifyGRM(metrics.grossRentMultiplier),
+        classification: classifyGRM(metrics.grossRentMultiplier ?? 0),
       };
     })
     .slice(0, 8);

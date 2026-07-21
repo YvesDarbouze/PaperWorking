@@ -70,7 +70,7 @@ const LIFECYCLE_STAGES = [
     label:       "Exit",
     description: "Sale, settlement, and realized ROI.",
     icon:        "exit_to_app",
-    color:       "#5aaa3f",
+    color:       "var(--pw-success)",
     locked:      true,
   },
 ] as const;

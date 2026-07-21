@@ -25,7 +25,7 @@ interface DataPoint {
 }
 
 function computeROIData(projects: Project[]): DataPoint[] {
-  const soldDeals = projects.filter(d => d.status === 'Sold');
+  const soldDeals = projects.filter(d => d.status === 'exit' && d.dispositionType === 'SALE');
   const monthBuckets: Record<string, { totalProfit: number; totalInvested: number; count: number }> = {};
 
   soldDeals.forEach(deal => {

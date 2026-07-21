@@ -44,7 +44,7 @@ export function generateAutopsyPDF(deal: Project, m: AutopsyMetrics): void {
   const PAGE_W = 210;
   const MARGIN = 16;
   const CONTENT_W = PAGE_W - MARGIN * 2;
-  const isSold = deal.status === 'Sold';
+  const isSold = deal.status === 'exit' && deal.dispositionType === 'SALE';
   let y = MARGIN;
 
   // ── Header Banner ─────────────────────────────────────────

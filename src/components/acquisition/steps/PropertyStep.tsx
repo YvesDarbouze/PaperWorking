@@ -5,6 +5,8 @@ import { useAuth } from "@/context/AuthContext";
 import { useAcquisitionWizard } from "@/store/acquisitionWizardStore";
 import { useState, useMemo } from "react";
 import { MarketContextPanel } from "@/components/project/MarketContextPanel";
+import { deriveAllMetrics } from "@/lib/metrics/reiMetrics";
+import { ProjectFinancials } from "@/types/schema";
 
 // ─── API helpers ──────────────────────────────────────────────────────────────
 
@@ -136,18 +138,29 @@ export function PropertyStep({ onNext }: { onNext: () => void }) {
 
     const price = Number(purchasePriceCents) / 100;
     const rentMonthly = Number(rentCents) / 100;
-    const rentAnnual = rentMonthly * 12;
-    const vacancyLoss = rentAnnual * 0.07;
-    const effectiveRent = rentAnnual - vacancyLoss;
 
-    // Operating expenses: use tax if available, otherwise assume 1.2% tax rate + HOA + reserves
-    const taxAnnual = facts?.annualPropertyTaxCents ? Number(facts.annualPropertyTaxCents) / 100 : price * 0.012;
-    const hoaAnnual = facts?.hoaMonthlyCents ? (Number(facts.hoaMonthlyCents) / 100) * 12 : 0;
-    const opex = taxAnnual + hoaAnnual + (effectiveRent * 0.13) + 1200; // tax + hoa + maintenance(5%)+mgmt(8%) + insurance(1200)
+    // Convert annual tax/HOA cents to monthly dollar values
+    const taxMonthly = facts?.annualPropertyTaxCents ? (Number(facts.annualPropertyTaxCents) / 100) / 12 : price * 0.012 / 12;
+    const hoaMonthly = facts?.hoaMonthlyCents ? Number(facts.hoaMonthlyCents) / 100 : 0;
 
-    const noi = Math.round(effectiveRent - opex);
-    const capRate = price > 0 ? (noi / price) * 100 : 0;
-    const grm = rentAnnual > 0 ? price / rentAnnual : 0;
+    const tempFinancials: ProjectFinancials = {
+      purchasePrice: price,
+      estimatedARV: price,
+      gross_rent_per_unit: rentMonthly,
+      vacancy_pct: 7,
+      tax: taxMonthly,
+      insurance: 1200 / 12, // $100/mo
+      utilities: 0,
+      management_pct: 8,
+      maintenance_pct: 5,
+      HOA: hoaMonthly,
+      costs: [],
+    };
+
+    const derived = deriveAllMetrics(tempFinancials);
+    const noi = derived.noi;
+    const capRate = derived.capRate;
+    const grm = derived.grossRentMultiplier;
 
     return {
       noiPreview: `$${noi.toLocaleString()}/yr`,

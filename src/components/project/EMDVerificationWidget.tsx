@@ -102,7 +102,7 @@ export function EMDVerificationWidget({
         </div>
 
         <div className="space-y-4">
-          <label className="flex items-start gap-3 p-4 rounded-md border cursor-pointer hover:bg-gray-50 transition-colors" style={{ borderColor: 'var(--border-ui)' }}>
+          <div className="flex items-start gap-3 p-4 rounded-md border transition-colors" style={{ borderColor: 'var(--border-ui)' }}>
             <div className="pt-0.5">
               <Checkbox
                 checked={emdVerified}
@@ -110,13 +110,20 @@ export function EMDVerificationWidget({
                 disabled={readOnly}
               />
             </div>
-            <div>
+            <div 
+              onClick={() => {
+                if (!readOnly) {
+                  handleCheckboxChange({ target: { checked: !emdVerified } } as any);
+                }
+              }}
+              className="cursor-pointer select-none flex-1"
+            >
               <p className="text-sm font-bold" style={{ color: 'var(--text-primary)' }}>Confirm EMD Wired</p>
               <p className="text-xs font-medium mt-1" style={{ color: 'var(--text-secondary)' }}>
                 I verify that the earnest money deposit has been wired and cleared by the attorney/escrow account.
               </p>
             </div>
-          </label>
+          </div>
 
           {emdVerified && (
             <div className="p-4 rounded-md border flex flex-col sm:flex-row sm:items-center justify-between gap-4" style={{ borderColor: 'var(--border-ui)', backgroundColor: 'var(--bg-default)' }}>

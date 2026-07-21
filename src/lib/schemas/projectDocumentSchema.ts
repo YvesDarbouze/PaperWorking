@@ -39,10 +39,14 @@ export const documentCategoryEnum = z.enum([
 /** Folder phases — one auto-provisioned per phase on project creation */
 export const folderPhaseEnum = z.enum([
   'Find & Fund',
-  'Under Contract',
+  'Closing',
   'Rehab',
   'Listed',
   'Sold',
+  'Capital Plan',
+  'Equity',
+  'Debt',
+  'Title & Insurance',
 ]);
 
 /** OCR processing status — for future Document AI integration */

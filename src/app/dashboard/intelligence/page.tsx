@@ -36,7 +36,7 @@ export default function IntelligenceHub() {
                   {isActive && (
                     <motion.div
                       layoutId="activeTabIndicator"
-                      className="absolute left-0 right-0 bottom-0 h-0.5 bg-pw-primary-500"
+                      className="absolute left-0 right-0 bottom-0 h-0.5 bg-white"
                       initial={false}
                       transition={{ type: 'spring', stiffness: 500, damping: 30 }}
                     />

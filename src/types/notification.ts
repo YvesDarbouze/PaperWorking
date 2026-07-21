@@ -18,7 +18,11 @@ export type NotificationType =
   | 'TEAM_INVITE_REMINDER'
   | 'OVER_IMPROVEMENT_ALERT'
   | 'BURN_RATE_WARNING'
-  | 'VENDOR_LEAD';
+  | 'VENDOR_LEAD'
+  | 'LOAN_STATUS_UPDATE'
+  | 'NEGOTIATION_UPDATE'
+  | 'LENDER_CHECKLIST_REMINDER'
+  | 'SLIPPAGE_DETECTED';
 
 export type NotificationUrgency = 'informational' | 'actionable' | 'critical';
 
@@ -159,7 +163,7 @@ export const NOTIFICATION_METADATA: Record<
   },
   DOCUMENT_SIGNED: {
     urgency: 'informational',
-    channels: ['in-app'],
+    channels: ['in-app', 'email'],
     templateTitle: (params) => {
       const signee = params.actorName;
       if (!signee) throw new Error('DOCUMENT_SIGNED requires a signee identity in the title.');
@@ -215,12 +219,45 @@ export const NOTIFICATION_METADATA: Record<
       if (!params.dailyBurnRate) throw new Error('BURN_RATE_WARNING involves money and requires daily burn rate in the title.');
       return `${params.dealAddress} holding cost warning: burn rate is ${params.dailyBurnRate}/day`;
     }
+  },
+  NEGOTIATION_UPDATE: {
+    urgency: 'actionable',
+    channels: ['in-app', 'email'],
+    templateTitle: (params) => {
+      const subject = params.metadata?.subject || 'Terms update';
+      return `${params.dealAddress || 'Deal'}: ${subject}`;
+    }
+  },
+  LOAN_STATUS_UPDATE: {
+    urgency: 'actionable',
+    channels: ['in-app', 'email'],
+    templateTitle: (params) => {
+      return `Loan status updated for ${params.dealAddress || 'the project'}`;
+    }
+  },
+  LENDER_CHECKLIST_REMINDER: {
+    urgency: 'actionable',
+    channels: ['in-app', 'email'],
+    templateTitle: (params) => {
+      if (!params.documentName) throw new Error('LENDER_CHECKLIST_REMINDER requires a documentName in the title.');
+      return `Reminder: Customary lender document "${params.documentName}" is pending`;
+    }
+  },
+  SLIPPAGE_DETECTED: {
+    urgency: 'critical',
+    channels: ['in-app', 'email', 'push'],
+    templateTitle: (params) => {
+      if (!params.dealAddress) throw new Error('SLIPPAGE_DETECTED requires a dealAddress in the title.');
+      const task = params.task || 'milestone';
+      return `Slippage Alert: Milestone "${task}" is overdue on ${params.dealAddress}`;
+    }
   }
 };
 
 export function getNotificationCategory(type: NotificationType): NotificationCategory {
   switch (type) {
     case 'INVEST_INVITE':
+    case 'NEGOTIATION_UPDATE':
       return 'syndication';
     case 'VENDOR_LEAD':
     case 'VENDOR_BID':
@@ -230,6 +267,7 @@ export function getNotificationCategory(type: NotificationType): NotificationCat
     case 'RECEIPT_APPROVAL':
     case 'TEAM_INVITE':
     case 'TEAM_INVITE_REMINDER':
+    case 'LENDER_CHECKLIST_REMINDER':
       return 'tasks';
     case 'DEADLINE_ALERT':
       return 'deadlines';
@@ -238,6 +276,8 @@ export function getNotificationCategory(type: NotificationType): NotificationCat
     case 'OVER_IMPROVEMENT_ALERT':
     case 'BURN_RATE_WARNING':
     case 'PHASE_TRANSITION':
+    case 'LOAN_STATUS_UPDATE':
+    case 'SLIPPAGE_DETECTED':
       return 'alerts';
     default:
       return 'tasks';

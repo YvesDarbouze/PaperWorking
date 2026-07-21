@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { requireAuth, isAuthError } from "@/lib/firebase-admin/auth-guard";
-import { createProject, listProjectsForUser, upsertAppUser } from "@/lib/db/projects";
+import { createProject, listProjectsForUser, upsertAppUser, mapPostgresProjectToFrontend } from "@/lib/db/projects";
 
 export const dynamic = "force-dynamic";
 
@@ -30,9 +30,19 @@ export async function POST(req: NextRequest) {
     displayName:        body.displayName ?? null,
     acquisitionStatus:  body.acquisitionStatus,
     ownershipStructure: body.ownershipStructure ?? null,
+    currentPhase:       body.currentPhase,
+    dispositionType:    body.dispositionType,
+    subStrategy:        body.subStrategy,
+    entryStage:         body.entryStage,
+    lastActiveStage:    body.lastActiveStage,
+    overrideReason:     body.overrideReason,
+    propertyType:       body.propertyType,
+    units:              body.units,
+    condition:          body.condition,
+    retrospective:      body.retrospective,
   });
 
-  return NextResponse.json(project, { status: 201 });
+  return NextResponse.json(mapPostgresProjectToFrontend(project), { status: 201 });
 }
 
 // GET /api/reil/projects — list projects for the authenticated user
@@ -41,5 +51,6 @@ export async function GET(req: NextRequest) {
   if (isAuthError(auth)) return auth;
 
   const projects = await listProjectsForUser(auth.uid);
-  return NextResponse.json(projects);
+  const mapped = projects.map(mapPostgresProjectToFrontend);
+  return NextResponse.json(mapped);
 }

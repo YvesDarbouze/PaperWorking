@@ -7,6 +7,7 @@ import {
   computeNOIComponents,
   computeAnnualDebtService,
   computeTotalCashInvested,
+  deriveAllProjectMetrics,
 } from './reiMetrics';
 import { resolveState, incomplete, notApplicable, num } from './helpers';
 
@@ -25,24 +26,24 @@ export function computeLTVMetric(project: any): MetricResult {
     return notApplicable();
   }
 
-  const fin = project.financials;
-  const loanAmount = num(fin?.loanAmount) ?? 0;
-  const purchasePrice =
-    num(fin?.purchasePrice) ??
-    num(fin?.targetPrice) ??
-    num(fin?.targetPurchasePrice) ??
-    0;
-  const propertyValue =
-    num(fin?.estimatedCurrentValue) ??
-    num(fin?.estimatedARV) ??
-    purchasePrice;
-
-  if (propertyValue <= 0) {
+  const m = deriveAllProjectMetrics(project);
+  const ltvVal = m.ltv;
+  if (ltvVal === undefined || ltvVal === null || isNaN(ltvVal)) {
     return incomplete(['financials.purchasePrice']);
   }
 
+  const activeLoan = project.loans?.find((l: any) => (l.status as string) === 'Locked') || 
+                     project.loans?.find((l: any) => (l.status as string) === 'Approved') ||
+                     project.loans?.[0];
+  const appraisedValue = activeLoan?.appraisedValueCents != null ? Number(activeLoan.appraisedValueCents) / 100 : undefined;
+  const purchasePrice = num(project.financials?.purchasePrice) ?? num(project.financials?.targetPrice) ?? num(project.financials?.targetPurchasePrice) ?? 0;
+  const propertyValue = appraisedValue ?? num(project.financials?.estimatedCurrentValue) ?? num(project.financials?.estimatedARV) ?? purchasePrice;
+
+  const activeLoanAmount = activeLoan?.amountCents != null ? Number(activeLoan.amountCents) / 100 : undefined;
+  const loanAmount = activeLoanAmount ?? num(project.financials?.loanAmount) ?? 0;
+
   return {
-    value: Math.round((loanAmount / propertyValue) * 100 * 100) / 100,
+    value: Math.round(ltvVal * 100) / 100,
     state: resolveState(project.currentPhase),
     inputsUsed: {
       'financials.loanAmount': loanAmount,
@@ -75,7 +76,7 @@ export function computeDebtYieldMetric(project: any): MetricResult {
 
   const components = computeNOIComponents(
     fin || {},
-    project.strategyType,
+    project.dispositionType,
     project.currentPhase
   );
 
@@ -115,7 +116,7 @@ export function computeEquityMultipleMetric(project: any): MetricResult {
 
   const components = computeNOIComponents(
     fin || {},
-    project.strategyType,
+    project.dispositionType,
     project.currentPhase
   );
   const annualDebtService = computeAnnualDebtService(
@@ -150,7 +151,7 @@ export function computeBreakEvenOccupancyMetric(project: any): MetricResult {
   const fin = project.financials;
   const components = computeNOIComponents(
     fin || {},
-    project.strategyType,
+    project.dispositionType,
     project.currentPhase
   );
   const annualDebtService = computeAnnualDebtService(
@@ -224,7 +225,7 @@ export function computePaybackPeriodMetric(project: any): MetricResult {
     num(fin?.financingCashInvested) ?? computeTotalCashInvested(fin || {});
   const components = computeNOIComponents(
     fin || {},
-    project.strategyType,
+    project.dispositionType,
     project.currentPhase
   );
   const annualDebtService = computeAnnualDebtService(
@@ -399,7 +400,7 @@ export function computeBudgetVarianceMetric(project: any): MetricResult {
   }
 
   const fin = project.financials;
-  const budget = num(fin?.rehabBudget) ?? num(fin?.projectedRehabCost);
+  const budget = (fin?.rehab_budget ? fin.rehab_budget / 100 : num(fin?.rehabBudget)) ?? num(fin?.projectedRehabCost);
   const actual = num(fin?.rehabActual) ?? num(fin?.actualRehabCost) ?? 0;
 
   if (!budget) {

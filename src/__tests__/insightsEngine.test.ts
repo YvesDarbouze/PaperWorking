@@ -15,8 +15,9 @@ describe('Deterministic Insight Engine Rules', () => {
     propertyName: 'Palm Garden Villas',
     address: '456 Palms Ave, Miami FL',
     currentPhase: 3, // Hold
-    status: 'Active',
-    strategyType: 'Rent',
+    status: 'hold',
+    dispositionType: 'RENT',
+    subStrategy: 'LONG_TERM',
     createdAt: new Date('2025-01-01'),
     financials: {
       purchasePrice: 500000,
@@ -43,8 +44,9 @@ describe('Deterministic Insight Engine Rules', () => {
     propertyName: 'Oakwood Apartments',
     address: '789 Oak St, Atlanta GA',
     currentPhase: 3, // Hold
-    status: 'Active',
-    strategyType: 'Rent',
+    status: 'hold',
+    dispositionType: 'RENT',
+    subStrategy: 'LONG_TERM',
     createdAt: new Date('2025-01-01'),
     financials: {
       purchasePrice: 400000,
@@ -71,8 +73,9 @@ describe('Deterministic Insight Engine Rules', () => {
     propertyName: 'Sunset Heights Duplex',
     address: '101 Sunset Rd, Phoenix AZ',
     currentPhase: 1, // Sourcing/Acquisition phase
-    status: 'Lead',
-    strategyType: 'Buy & Hold',
+    status: 'acquisition',
+    dispositionType: 'RENT',
+    subStrategy: 'LONG_TERM',
     createdAt: new Date(),
     financials: {
       purchasePrice: 300000,

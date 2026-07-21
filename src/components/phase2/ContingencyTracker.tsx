@@ -55,7 +55,7 @@ export const ContingencyTracker: React.FC = () => {
 
     if (hoursLeft < 0) return { color: 'bg-red-100 text-red-800', bar: 'bg-red-500', label: 'Overdue' };
     if (hoursLeft <= 48) return { color: 'bg-yellow-100 text-yellow-800', bar: 'bg-yellow-500', label: '< 48 Hours' };
-    return { color: 'bg-emerald-100 text-emerald-800', bar: 'bg-emerald-500', label: 'Safe' };
+    return { color: 'bg-pw-success-container text-pw-success border border-pw-success-border/50', bar: 'bg-pw-success', label: 'Safe' };
   };
 
   return (
@@ -135,22 +135,36 @@ export const ContingencyTracker: React.FC = () => {
                     {c.notes && <p className="text-xs text-text-secondary mt-1">Notes: {c.notes}</p>}
                   </div>
                   <div className="flex flex-col gap-2">
-                    <label className="flex items-center gap-2 text-sm text-text-primary cursor-pointer">
+                    <div className="flex items-center gap-2 text-sm text-text-primary">
                       <Checkbox
                         checked={c.isSatisfied}
                         onChange={() => handleToggleState(c.id, 'isSatisfied')}
                         disabled={c.isWaived}
                       />
-                      Satisfied
-                    </label>
-                    <label className="flex items-center gap-2 text-sm text-text-primary cursor-pointer">
+                      <span
+                        onClick={() => {
+                          if (!c.isWaived) handleToggleState(c.id, 'isSatisfied');
+                        }}
+                        className="cursor-pointer select-none"
+                      >
+                        Satisfied
+                      </span>
+                    </div>
+                    <div className="flex items-center gap-2 text-sm text-text-primary">
                       <Checkbox
                         checked={c.isWaived}
                         onChange={() => handleToggleState(c.id, 'isWaived')}
                         disabled={c.isSatisfied}
                       />
-                      Waived
-                    </label>
+                      <span
+                        onClick={() => {
+                          if (!c.isSatisfied) handleToggleState(c.id, 'isWaived');
+                        }}
+                        className="cursor-pointer select-none"
+                      >
+                        Waived
+                      </span>
+                    </div>
                   </div>
                 </div>
                 {!isResolved && (

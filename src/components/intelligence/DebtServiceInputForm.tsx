@@ -3,8 +3,7 @@
 import React, { useState, useMemo, useCallback } from "react";
 import { Calculator, DollarSign, Percent, Clock } from "lucide-react";
 import {
-  computeAnnualDebtService,
-  computeCashFlow,
+  computeDebtServiceFormMetrics,
 } from "@/lib/metrics/reiMetrics";
 
 // ── Types ────────────────────────────────────────────────────────────────────
@@ -57,24 +56,13 @@ export function DebtServiceInputForm({
   const [termYears, setTermYears] = useState(defaultTerm);
 
   const derived = useMemo(() => {
-    const termMonths = termYears > 0 ? termYears * 12 : 0;
-    const annualDebtService = computeAnnualDebtService(
-      loanAmount,
-      interestRate,
-      termMonths
-    );
-    const monthlyPayment =
-      annualDebtService > 0 ? annualDebtService / 12 : 0;
-
-    let annualCashFlow = 0;
-    let monthlyCashFlow = 0;
-    if (noi != null && noi > 0) {
-      const cf = computeCashFlow(noi, annualDebtService);
-      annualCashFlow = cf.annual;
-      monthlyCashFlow = cf.monthly;
-    }
-
-    return { annualDebtService, monthlyPayment, annualCashFlow, monthlyCashFlow };
+    const res = computeDebtServiceFormMetrics(loanAmount, interestRate, termYears, noi);
+    return {
+      annualDebtService: res.annualDebtService,
+      monthlyPayment: res.monthlyPayment,
+      annualCashFlow: res.annualCashFlow,
+      monthlyCashFlow: res.monthlyCashFlow
+    };
   }, [loanAmount, interestRate, termYears, noi]);
 
   const handleChange = useCallback(
@@ -89,15 +77,13 @@ export function DebtServiceInputForm({
       if (field === "term") { nextTerm = Math.max(0, val); setTermYears(nextTerm); }
 
       if (onValuesChange) {
-        const termMonths = nextTerm > 0 ? nextTerm * 12 : 0;
-        const ads = computeAnnualDebtService(nextLoan, nextRate, termMonths);
-        const mcf = noi != null && noi > 0 ? computeCashFlow(noi, ads).monthly : 0;
+        const res = computeDebtServiceFormMetrics(nextLoan, nextRate, nextTerm, noi);
         onValuesChange({
           loanAmount: nextLoan,
           interestRate: nextRate,
           termYears: nextTerm,
-          annualDebtService: ads,
-          monthlyCashFlow: mcf,
+          annualDebtService: res.annualDebtService,
+          monthlyCashFlow: res.monthlyCashFlow,
         });
       }
     },

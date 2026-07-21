@@ -4,8 +4,6 @@ import React, { useMemo } from 'react';
 import { Project } from '@/types/schema';
 import {
   deriveDualScopeMetrics,
-  computeCapRate,
-  computeNOIComponents,
 } from '@/lib/metrics/reiMetrics';
 import CapRateCompareChart from '@/components/Charts/CapRateCompareChart';
 import {
@@ -95,7 +93,7 @@ function deriveCapRateBreakdowns(projects: Project[]): PropertyCapRateData[] {
     .filter(p => p.financials)
     .map((p) => {
       const f = p.financials!;
-      const { asset: metrics } = deriveDualScopeMetrics(f, undefined, p.strategyType, p.currentPhase);
+      const { asset: metrics } = deriveDualScopeMetrics(f, undefined, p.dispositionType, p.currentPhase);
       const purchasePrice = f.purchasePrice ?? 0;
       const estimatedARV = f.estimatedARV ?? purchasePrice;
       const arvCapRate = metrics.arvCapRate;

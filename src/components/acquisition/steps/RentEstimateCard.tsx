@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { useAuth } from "@/context/AuthContext";
+import { ButtonGroup } from "@/components/ui/ButtonGroup";
 
 interface RentEstimateCardProps {
   projectId: string;
@@ -152,7 +153,8 @@ export function RentEstimateCard({ projectId, value, onChange, initialSource }: 
       )}
 
       {/* Toggle Selector */}
-      <div className="flex gap-2 p-1 rounded-xl bg-white/5 border border-white/5 mb-4">
+      {/* Toggle Selector */}
+      <ButtonGroup variant="related" className="p-1 rounded-xl bg-white/5 border border-white/5 mb-4 w-full">
         <button
           type="button"
           onClick={() => handleToggle(true)}
@@ -179,7 +181,7 @@ export function RentEstimateCard({ projectId, value, onChange, initialSource }: 
           <span className="material-symbols-outlined text-[14px]">edit</span>
           Custom Override
         </button>
-      </div>
+      </ButtonGroup>
 
       {/* Input or Metadata Display */}
       {useEstimate ? (

@@ -1,5 +1,10 @@
 import { disconnectRedis } from './lib/redis';
+import { TextDecoder, TextEncoder } from 'util';
+
+global.TextDecoder = TextDecoder as any;
+global.TextEncoder = TextEncoder as any;
 
 afterAll(async () => {
   await disconnectRedis();
 });
+

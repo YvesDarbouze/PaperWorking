@@ -108,7 +108,7 @@ function EmptyState() {
         <div>
           <p className="text-sm font-semibold text-[#C0BEC2] mb-1">Awaiting Portfolio Data</p>
           <p className="text-xs text-[#6B6870] max-w-xs leading-relaxed">
-            Import deal data or complete Purchase phase tasks to generate performance analytics.
+            Import deal data or complete Fund phase tasks to generate performance analytics.
           </p>
         </div>
         <Link
@@ -144,7 +144,7 @@ export default function PortfolioPerformancePage() {
 
     const { snapshots, projects } = portfolioInputsResult.data;
     if (!snapshots || snapshots.length === 0) {
-      const totalCost = projects.reduce((s, p) => s + ((p.financials?.purchasePrice ?? 0) + (p.financials?.rehabBudget ?? 0)), 0);
+      const totalCost = projects.reduce((s, p) => s + ((p.financials?.purchasePrice ?? 0) + ((p.financials?.rehab_budget ? p.financials.rehab_budget / 100 : p.financials?.rehabBudget) ?? 0)), 0);
       if (totalCost === 0) {
         // No projects with any financial data — treat as demo
         return { labels: fallbackMonths, values: fallbackValues, totalValue: 1240000, roiPct: 14.2, hasData: false, isUsingDemoData: true };

@@ -41,6 +41,7 @@ export function mapNotificationTypeToTab(type: NotificationType): InboxTabType {
       return 'opportunities';
     case 'TASK_COMPLETE':
     case 'TASK_ASSIGNED':
+    case 'LENDER_CHECKLIST_REMINDER':
       return 'tasks';
     case 'VENDOR_BID':
     case 'VENDOR_LEAD':

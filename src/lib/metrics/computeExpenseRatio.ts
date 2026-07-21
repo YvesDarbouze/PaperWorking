@@ -16,7 +16,7 @@ export interface ExpenseRatioProjectInput {
     [key: string]: any;
   };
   currentPhase?: number;
-  strategyType?: string;
+  dispositionType?: string;
   [key: string]: any;
 }
 
@@ -28,13 +28,14 @@ export function computeExpenseRatioMetric(project: ExpenseRatioProjectInput): Me
     return incomplete(['financials.monthlyGrossRent']);
   }
 
-  const components = computeNOIComponents(fin as any, project.strategyType, project.currentPhase);
-  const oer = computeOER(components.totalOperatingExpenses, components.grossRentalIncome);
+  const components = computeNOIComponents(fin as any, project.dispositionType, project.currentPhase);
+  const grossOperatingIncome = components.grossRentalIncome + components.otherIncome;
+  const oer = computeOER(components.totalOperatingExpenses, grossOperatingIncome);
 
   const inputsUsed: Record<string, number> = {
     'financials.monthlyGrossRent': rent,
     'financials.totalOperatingExpenses': components.totalOperatingExpenses,
-    'financials.grossRentalIncome': components.grossRentalIncome,
+    'financials.grossOperatingIncome': grossOperatingIncome,
   };
 
   return {

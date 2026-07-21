@@ -209,6 +209,15 @@ export const NotificationService = {
       case 'BURN_RATE_WARNING':
         body = `Daily holding costs have accumulated to ${dailyBurnRate} per day for ${address}. Track daily spend to stay within contingency.`;
         break;
+      case 'NEGOTIATION_UPDATE':
+        body = (objectReference.metadata?.body as string) || `${actorName} sent a negotiation update for the deal at ${address}.`;
+        break;
+      case 'LENDER_CHECKLIST_REMINDER':
+        body = `The customary underwriting document '${documentName}' is still pending upload. Please check the Lender Vault and upload it to the Data Room.`;
+        break;
+      case 'SLIPPAGE_DETECTED':
+        body = `Slippage Alert: Milestone '${task}' is past its target date without completion. Customary delays are frequently caused by underwriting backlogs, title defects, or repair negotiations.`;
+        break;
       default:
         body = `A system event has occurred on ${address}.`;
     }
@@ -399,6 +408,9 @@ export const NotificationService = {
             body: safeBody,
             deepLinkUrl,
             appUrl,
+            type,
+            objectReference,
+            actorName: actor.name,
           });
           subject = rendered.subject;
           html = rendered.html;
@@ -509,6 +521,9 @@ export const NotificationService = {
             body: safeBody,
             deepLinkUrl,
             appUrl,
+            type,
+            objectReference,
+            actorName: actor.name,
           });
 
           console.log(`[NotificationService] Dispatching notification email immediately to ${email}`);
@@ -520,6 +535,105 @@ export const NotificationService = {
     }
 
     return notificationId;
+  },
+
+  /**
+   * Broadcasts a notification to all project members who have permissions to view it.
+   */
+  async broadcastProjectNotification(
+    projectId: string,
+    params: {
+      type: NotificationType;
+      actor: { uid: string; name: string; role?: string };
+      objectReference: any;
+      deepLinkUrl: string;
+      expiresAt?: Date;
+    }
+  ): Promise<void> {
+    try {
+      const projectSnap = await adminDb.collection('projects').doc(projectId).get();
+      if (!projectSnap.exists) {
+        console.error(`[NotificationService] Project ${projectId} not found for broadcast`);
+        return;
+      }
+      const projectData = projectSnap.data()!;
+      const recipients = new Set<string>();
+
+      // 1. Add ownerUid / createdBy (Lead Investor)
+      const ownerUid = projectData.ownerUid || projectData.createdBy;
+      if (ownerUid) {
+        recipients.add(ownerUid);
+      }
+
+      // 2. Add members map users
+      if (projectData.members) {
+        for (const [uid, member] of Object.entries(projectData.members)) {
+          const m = member as any;
+          if (m.role === 'Lead Investor' || m.role === 'General Contractor') {
+            recipients.add(uid);
+          }
+        }
+      }
+
+      // 3. Add organization team members/owner
+      if (projectData.organizationId) {
+        const orgSnap = await adminDb.collection('organizations').doc(projectData.organizationId).get();
+        if (orgSnap.exists) {
+          const orgData = orgSnap.data()!;
+          if (orgData.ownerUid) {
+            recipients.add(orgData.ownerUid);
+          }
+          if (Array.isArray(orgData.teamMembers)) {
+            for (const m of orgData.teamMembers) {
+              if (m.id && m.status === 'active') {
+                recipients.add(m.id);
+              }
+            }
+          }
+        }
+      }
+
+      // 4. Add linked equity parties (LPs / co_buyers) if they have view permissions for the current phase
+      if (Array.isArray(projectData.equityParties)) {
+        const currentPhase = projectData.currentPhase || 2;
+        const phaseKey = `phase-${currentPhase}`;
+
+        for (const party of projectData.equityParties) {
+          const canView = party.phasePermissions?.[phaseKey]?.canView === true;
+          if (canView) {
+            if (party.memberId) {
+              recipients.add(party.memberId);
+            } else if (party.email) {
+              try {
+                const { adminAuth } = require('@/lib/firebase/admin');
+                const userRecord = await adminAuth.getUserByEmail(party.email).catch(() => null);
+                if (userRecord?.uid) {
+                  recipients.add(userRecord.uid);
+                }
+              } catch (lookupErr) {
+                // Ignore lookup errors
+              }
+            }
+          }
+        }
+      }
+
+      // Send notifications to all resolved recipients (failure-isolated)
+      const sendPromises = Array.from(recipients).map(async (recipientId) => {
+        try {
+          await this.createNotification({
+            recipientId,
+            ...params,
+          });
+        } catch (err: any) {
+          console.error(`[NotificationService] Failed to send broadcast notification to ${recipientId}:`, err.message);
+        }
+      });
+
+      await Promise.all(sendPromises);
+    } catch (error: any) {
+      console.error(`[NotificationService] Failed to broadcast notification:`, error.message);
+    }
   },
 
   /**

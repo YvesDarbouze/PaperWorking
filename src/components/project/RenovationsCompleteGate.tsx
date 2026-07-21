@@ -44,13 +44,16 @@ export function RenovationsCompleteGate({ onComplete, unpaidInvoicesCount, uncom
             <div className="mt-6 space-y-4 p-4 border" style={{ borderColor: 'var(--border-ui)', backgroundColor: 'var(--bg-canvas)' }}>
               <h4 className="text-sm font-semibold" style={{ color: 'var(--text-primary)' }}>Final Clearances</h4>
               
-              <label className="flex items-start gap-3 cursor-pointer">
+              <div className="flex items-start gap-3">
                 <Checkbox 
                   checked={finalInspectionPassed} 
                   onChange={(e) => setFinalInspectionPassed(e.target.checked)}
                   className="mt-1"
                 />
-                <div>
+                <div 
+                  onClick={() => setFinalInspectionPassed(!finalInspectionPassed)}
+                  className="cursor-pointer select-none"
+                >
                   <div className="text-sm font-medium flex items-center gap-2" style={{ color: 'var(--text-primary)' }}>
                     <ClipboardCheck className="w-4 h-4 text-green-600" /> Final Inspection Passed
                   </div>
@@ -58,15 +61,18 @@ export function RenovationsCompleteGate({ onComplete, unpaidInvoicesCount, uncom
                     Municipal and internal quality inspections are fully approved.
                   </div>
                 </div>
-              </label>
+              </div>
 
-              <label className="flex items-start gap-3 cursor-pointer">
+              <div className="flex items-start gap-3">
                 <Checkbox 
                   checked={lienWaiversSigned} 
                   onChange={(e) => setLienWaiversSigned(e.target.checked)}
                   className="mt-1"
                 />
-                <div>
+                <div 
+                  onClick={() => setLienWaiversSigned(!lienWaiversSigned)}
+                  className="cursor-pointer select-none"
+                >
                   <div className="text-sm font-medium flex items-center gap-2" style={{ color: 'var(--text-primary)' }}>
                     <HardHat className="w-4 h-4 text-green-600" /> Contractor Lien Waivers Signed
                   </div>
@@ -74,15 +80,18 @@ export function RenovationsCompleteGate({ onComplete, unpaidInvoicesCount, uncom
                     All final payments have been dispersed and unconditional lien waivers are secured.
                   </div>
                 </div>
-              </label>
+              </div>
 
-              <label className="flex items-start gap-3 cursor-pointer">
+              <div className="flex items-start gap-3">
                 <Checkbox 
                   checked={allCostsLogged} 
                   onChange={(e) => setAllCostsLogged(e.target.checked)}
                   className="mt-1"
                 />
-                <div>
+                <div 
+                  onClick={() => setAllCostsLogged(!allCostsLogged)}
+                  className="cursor-pointer select-none"
+                >
                   <div className="text-sm font-medium flex items-center gap-2" style={{ color: 'var(--text-primary)' }}>
                     <CheckSquare className="w-4 h-4 text-green-600" /> All Rehab Costs Logged
                   </div>
@@ -90,7 +99,7 @@ export function RenovationsCompleteGate({ onComplete, unpaidInvoicesCount, uncom
                     All rehab costs have been logged and construction is complete.
                   </div>
                 </div>
-              </label>
+              </div>
             </div>
           )}
 

@@ -73,9 +73,9 @@ For any provider resolving asynchronously (signing, OCR, payment, etc.):
 
 ### 7. ☐ Phase Model Compliance
 
-- [ ] REIL v2 phase names used: Acquisition · Transaction · Rehab · Hold/Exit.
+- [ ] REIL v2 phase names used: Acquisition · Fund · Hold · Exit.
 - [ ] Phase colors match the locked hex values: `#F59E0B` · `#3B82F6` · `#F97316` · `#10B981`.
-- [ ] No legacy phase names (Purchase, Fund, Hold, Exit alone) introduced.
+- [ ] No wrong phase names (Transaction, Rehab, Hold / Exit) introduced.
 - [ ] `currentPhase` handled as number (1–4) or string enum, never string-only.
 
 ---

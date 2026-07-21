@@ -7,9 +7,10 @@ describe('deriveAllProjectMetrics', () => {
     propertyName: '123 Main St',
     address: '123 Main St, Anytown USA',
     organizationId: 'org-1',
-    status: 'Lead',
+    status: 'acquisition',
     phaseStatus: 'Phase 1: Acquisition',
-    strategyType: 'Buy & Hold',
+    dispositionType: 'RENT',
+    subStrategy: 'LONG_TERM',
     assetClass: 'Residential',
     createdAt: new Date(), // Set to now so elapsed is 0, falling back to estimatedTimelineDays (90)
     updatedAt: new Date(),

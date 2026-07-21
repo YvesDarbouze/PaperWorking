@@ -1,5 +1,5 @@
 import { adminDb } from '@/lib/firebase/admin';
-import type { FractionalInvestor } from '@/types/schema';
+import type { FractionalInvestor, CommitmentStatus, CapitalPartyType, ContributionEntry } from '@/types/schema';
 
 /* ═══════════════════════════════════════════════════════════════
    syncFractionalInvestors — Commitment → fractionalInvestors[] bridge
@@ -15,15 +15,20 @@ export type CommitmentSyncInput = {
   name: string;
   email: string | null;
   amountCents: number;
-  status: 'pledged' | 'transferred' | 'cleared';
+  status: CommitmentStatus;
+  partyType?: CapitalPartyType;
 };
 
 type LegacyInvestorStatus = FractionalInvestor['status'];
 
-const STATUS_MAP: Record<CommitmentSyncInput['status'], LegacyInvestorStatus> = {
+const STATUS_MAP: Record<CommitmentStatus, LegacyInvestorStatus> = {
   pledged: 'invited',
+  'soft-committed': 'invited',
   transferred: 'pending_subscription',
+  'docs-out': 'pending_subscription',
+  signed: 'pending_subscription',
   cleared: 'confirmed',
+  'funds-confirmed': 'confirmed',
 };
 
 function computeEquityPercentage(
@@ -49,6 +54,7 @@ function buildInvestorEntry(
     equityPercentage: computeEquityPercentage(contributionAmount, fin),
     contributionAmount,
     status: STATUS_MAP[commitment.status],
+    partyType: commitment.partyType || 'Investor',
   };
 }
 
@@ -73,7 +79,32 @@ export async function syncFractionalInvestorFromCommitment(
     list.push(investor);
   }
 
-  await projectRef.update({ fractionalInvestors: list });
+  // Sync project.contributions as ContributionEntry rows
+  const contributions: ContributionEntry[] = [...(data.contributions ?? [])];
+  const cIdx = contributions.findIndex((entry) => entry.id === commitment.id);
+  const newContribution: ContributionEntry = {
+    id: commitment.id,
+    projectId,
+    partyName: commitment.name,
+    email: commitment.email,
+    amountCents: commitment.amountCents,
+    status: commitment.status,
+    evidenceDocId: null,
+    evidenceDocUrl: null,
+    partyType: commitment.partyType || 'Investor',
+    createdAt: data.createdAt ? new Date(data.createdAt.toDate ? data.createdAt.toDate() : data.createdAt).toISOString() : new Date().toISOString(),
+  };
+
+  if (cIdx >= 0) {
+    contributions[cIdx] = { ...contributions[cIdx], ...newContribution };
+  } else {
+    contributions.push(newContribution);
+  }
+
+  await projectRef.update({
+    fractionalInvestors: list,
+    contributions: contributions,
+  });
 }
 
 export async function removeFractionalInvestorForCommitment(
@@ -88,6 +119,12 @@ export async function removeFractionalInvestorForCommitment(
   const list: FractionalInvestor[] = (data.fractionalInvestors ?? []).filter(
     (entry: FractionalInvestor) => entry.id !== commitmentId,
   );
+  const contributions = (data.contributions ?? []).filter(
+    (entry: any) => entry.id !== commitmentId,
+  );
 
-  await projectRef.update({ fractionalInvestors: list });
+  await projectRef.update({
+    fractionalInvestors: list,
+    contributions: contributions,
+  });
 }

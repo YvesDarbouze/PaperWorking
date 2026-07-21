@@ -1,4 +1,4 @@
-import { Project, VendorRequest, CostBasisLineItem } from '@/types/schema';
+import { Project, VendorRequest, CostBasisLineItem, ProjectPhaseKey } from '@/types/schema';
 import { projectsService } from '@/lib/firebase/projects';
 import { db } from '@/lib/firebase/config';
 import { collection, addDoc, serverTimestamp } from 'firebase/firestore';
@@ -11,21 +11,13 @@ import { prisma } from "../prisma";
  * Manages strict lifecycle transitions for real estate assets.
  */
 
-export type ProjectPhase = 
-  | 'Sourcing' 
-  | 'Under Contract' 
-  | 'Rehab' 
-  | 'Listed' 
-  | 'Sold' 
-  | 'Rented';
+export type ProjectPhase = ProjectPhaseKey;
 
 const PHASE_ORDER: ProjectPhase[] = [
-  'Sourcing',
-  'Under Contract',
-  'Rehab',
-  'Listed',
-  'Sold',
-  'Rented'
+  'acquisition',
+  'fund',
+  'hold',
+  'exit'
 ];
 
 /**
@@ -38,9 +30,25 @@ export async function transitionProjectPhase(
   userUid: string,
   notes: string = ''
 ) {
+  const labelMap: Record<string, string> = {
+    'acquisition': 'Phase 1: Acquisition',
+    'fund': 'Phase 2: Fund',
+    'hold': 'Phase 3: Hold',
+    'exit': 'Phase 4: Exit',
+  };
+
+  const numMap: Record<string, number> = {
+    'acquisition': 1,
+    'fund': 2,
+    'hold': 3,
+    'exit': 4,
+  };
+
   // 1. Update the main Deal document in Firestore
   await projectsService.updateProject(projectId, { 
-    status: toPhase as any, 
+    status: toPhase, 
+    currentPhase: numMap[toPhase],
+    phaseStatus: labelMap[toPhase] as any,
     updatedAt: new Date(),
     lastPhaseTransitionAt: new Date(), // Phase 6: Reset aging clock on transition
   });
@@ -63,8 +71,7 @@ export async function transitionProjectPhase(
   }
 
   // 3. Automated emails on key transitions
-  const isRenovationComplete =
-    (fromPhase === 'Rehab' || (fromPhase as string) === 'Renovating') && toPhase === 'Listed';
+  const isRenovationComplete = fromPhase === 'hold' && toPhase === 'exit';
 
   if (isRenovationComplete) {
     try {
@@ -134,7 +141,6 @@ export async function transitionProjectPhase(
               method: 'POST',
               headers: { 'Content-Type': 'application/json' },
               body: JSON.stringify({
-                // System-level call: skip idToken gate — handled by RESEND_API_KEY presence
                 _system: true,
                 projectId,
                 to: allRecipients,

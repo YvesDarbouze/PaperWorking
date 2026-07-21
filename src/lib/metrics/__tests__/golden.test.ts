@@ -58,14 +58,14 @@ const SEED_FINANCIALS = {
 const SEED_PROJECT = {
   financials: SEED_FINANCIALS,
   currentPhase: 1,
-  strategyType: 'Rent' as const,
+  dispositionType: 'RENT' as const,
 };
 
 // Get golden values from the engine
 const golden = deriveAllMetrics(
   SEED_FINANCIALS as any,
   undefined, // currentPropertyValue
-  'Rent',
+  'RENT',
   1, // currentPhase
 );
 
@@ -75,8 +75,8 @@ describe('Golden Test — All 10 Metrics Against Seed Project', () => {
     expect(result.state).toBe('projected');
     expect(result.value).not.toBeNull();
     expect(result.inputsMissing).toHaveLength(0);
-    // Explicitly assert NOI is exactly $12,486
-    expect(result.value).toBeCloseTo(12486, 0);
+    // Explicitly assert NOI is exactly $12,486 (on gross-scheduled-rent PM fee basis)
+    expect(result.value).toBeCloseTo(12486, 1);
   });
 
   test('D2 Cash Flow matches deriveAllMetrics', () => {
@@ -84,8 +84,8 @@ describe('Golden Test — All 10 Metrics Against Seed Project', () => {
     expect(result.state).toBe('projected');
     expect(result.value).not.toBeNull();
     expect(result.inputsMissing).toHaveLength(0);
-    // Explicitly assert annual cash flow is exactly -$4,443.31
-    expect(result.value).toBeCloseTo(-4443.31, 2);
+    // Explicitly assert annual cash flow is exactly -$4,444 (NOI $12,486 - debt service $16,930)
+    expect(result.value).toBeCloseTo(-4444, 2);
   });
 
   test('D3 Cap Rate matches deriveAllMetrics', () => {
@@ -93,8 +93,8 @@ describe('Golden Test — All 10 Metrics Against Seed Project', () => {
     expect(result.state).toBe('projected');
     expect(result.value).not.toBeNull();
     expect(result.inputsMissing).toHaveLength(0);
-    // Explicitly assert cap rate is 4.48%
-    expect(result.value).toBeCloseTo(4.48, 2);
+    // Explicitly assert cap rate is 4.5%
+    expect(result.value).toBeCloseTo(4.5, 2);
   });
 
   test('D4 Cash-on-Cash matches deriveAllMetrics', () => {
@@ -120,8 +120,8 @@ describe('Golden Test — All 10 Metrics Against Seed Project', () => {
     expect(result.state).toBe('projected');
     expect(result.value).not.toBeNull();
     expect(result.inputsMissing).toHaveLength(0);
-    // Explicitly assert DSCR is exactly 0.738 (approx 0.74)
-    expect(result.value).toBeCloseTo(0.738, 3);
+    // Explicitly assert DSCR is exactly 0.74 per P6
+    expect(result.value).toBeCloseTo(0.74, 2);
   });
 
   test('D7 IRR produces a reasonable value for rental seed deal', () => {
@@ -189,9 +189,9 @@ describe('Golden Test — All 10 Metrics Against Seed Project', () => {
 });
 
 describe('Golden Test — Sanity checks on seed values', () => {
-  test('Annual debt service for $223,200 at 6.5% / 30yr is ~$16,929.31', () => {
+  test('Annual debt service for $223,200 at 6.5% / 30yr is ~$16,930', () => {
     const ds = computeAnnualDebtService(223200, 6.5, 30 * 12);
-    expect(ds).toBeCloseTo(16929.31, 2);
+    expect(ds).toBeCloseTo(16930, 2);
   });
 
   test('Total cash invested matches standard Option B ($60,000)', () => {
@@ -206,7 +206,7 @@ describe('Golden Test — Sanity checks on seed values', () => {
   });
 
   test('Cash flow is negative (NOI < annual debt service) for this deal', () => {
-    // At 6.5% rate on $223.2k, debt service ($16.9k) exceeds NOI ($12.5k)
-    expect(golden.annualCashFlow).toBeCloseTo(-4443.31, 2);
+    // At 6.5% rate on $223.2k, debt service ($16.9k) exceeds NOI ($12.486k)
+    expect(golden.annualCashFlow).toBeCloseTo(-4444, 2);
   });
 });

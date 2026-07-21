@@ -43,7 +43,9 @@ export interface ScheduleEPreview {
  */
 export function getPropertyTypeCode(project: Project): number {
   const asset = (project.assetClass || '').toLowerCase();
-  const strategy = (project.strategyType || '').toLowerCase();
+  const strategy = (project.dispositionType === 'RENT'
+    ? (project.subStrategy === 'BRRRR' ? 'rent' : 'buy & hold')
+    : (project.subStrategy === 'WHOLESALE' ? 'sell' : 'fix & flip')) as string;
   
   if (asset === 'multi-family') return 2;
   if (asset === 'commercial') return 4;
@@ -66,7 +68,7 @@ export function computeScheduleE(
   
   const f = project.financials || {};
   const acqDate = parseDateSafe(f.acquisitionDate);
-  const soldDate = project.status === 'Sold' ? parseDateSafe(f.soldDate) : null;
+  const soldDate = (project.status === 'exit' && project.dispositionType === 'SALE') ? parseDateSafe(f.soldDate) : null;
   
   // Basic info
   const propertyName = project.propertyName || project.address || 'Unnamed Property';
@@ -183,7 +185,7 @@ export function computeScheduleE(
   const annualDepreciation = depreciableBasis / 27.5;
   const monthlyDepreciation = annualDepreciation / 12;
   
-  if (project.strategyType === 'Rent' || project.strategyType === 'Buy & Hold') {
+  if (project.dispositionType === 'RENT') {
     result.depreciation = monthlyDepreciation * activeMonths;
   }
   

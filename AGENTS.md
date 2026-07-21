@@ -35,6 +35,7 @@ Source of truth: `src/components/layout/Sidebar.tsx`
 |-------|-------|------|-------------|
 | **Portfolio** | `/dashboard/command-center` | `space_dashboard` | Default landing page — KPIs, action center, heatmap, activity |
 | **Projects** | `/dashboard/projects` | `folder` | All real estate investment projects in the portfolio |
+| **Data Room** | `/dashboard/data-room` | `folder_shared` | Centralized document vault for project files, contracts, and due diligence |
 | **Insights** | `/dashboard/insights` | `monitoring` | Portfolio-wide metrics, investment views, deep analytics |
 | **Reports** | `/dashboard/reports` | `bar_chart_4_bars` | Generate monthly / quarterly / annual expense reports |
 | **Inbox** | `/dashboard/inbox` | `inbox` | Internal messages, to-dos, requests, deal crowdfund invites (unread badge + pulse) |
@@ -62,7 +63,7 @@ Uppercase label: **ACCOUNT**
 - Controlled via `data-theme` on `<html>` + `useTheme()` from `@/lib/utils/ThemeProvider`
 
 **No agent may add, remove, reorder, rename, or move navigation items without explicit human override.**
-Last updated: 2026-06-06 v3
+Last updated: 2026-07-16 v4 (PF-1: added Portfolio NavItem + Data Room)
 <!-- END:global-navigation-contract -->
 
 <!-- BEGIN:mock-conversion-rules -->

@@ -47,10 +47,10 @@ const TIER_STYLES: Record<ConfidenceTier, {
   label: string;
 }> = {
   green: {
-    bg: 'bg-emerald-500/5',
-    border: 'border-emerald-500/20',
-    pill: 'bg-emerald-500/10 border-emerald-500/20',
-    pillText: 'text-emerald-600',
+    bg: 'bg-pw-success-container/30',
+    border: 'border-pw-success-border/50',
+    pill: 'bg-pw-success-container border-pw-success-border',
+    pillText: 'text-pw-success',
     icon: <Sparkles className="w-3 h-3" />,
     label: 'High confidence',
   },
@@ -153,7 +153,7 @@ export function OCRConfirmField({
               onConfirm(fieldName, val);
               setIsEditing(false);
             }}
-            className="p-1.5 rounded-md bg-emerald-500/10 text-emerald-600 hover:bg-emerald-500/20 transition"
+            className="p-1.5 rounded-md bg-pw-success-container text-pw-success hover:bg-pw-success/20 transition"
             title="Confirm edited value"
           >
             <Check className="w-4 h-4" />
@@ -254,7 +254,7 @@ export function OCRConfirmField({
         <div className="flex items-center gap-1 flex-shrink-0">
           <button
             onClick={() => onConfirm(fieldName, extractedValue)}
-            className="inline-flex items-center gap-1 px-2.5 py-1 text-[10px] font-semibold rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-600 hover:bg-emerald-500/20 transition active:scale-95"
+            className="inline-flex items-center gap-1 px-2.5 py-1 text-[10px] font-semibold rounded-full bg-pw-success-container border border-pw-success-border text-pw-success hover:bg-pw-success/20 transition active:scale-95"
             title="Confirm this value"
           >
             <Check className="w-3 h-3" />

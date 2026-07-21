@@ -674,3 +674,95 @@ model FieldAssignment {
   @@index([projectId])
   @@index([assignedToId])
 }
+
+// ── Phase 3: Hold Registry (HD-3 — canonical enums & models) ─────────────────
+// Enums and models for the canonical Hold-phase variable registry.
+// Primary persistence: Firestore `holdRegistry` sub-document.
+// Prisma models here serve as the SQL reporting replica for financial analytics.
+
+enum RenovationTier {
+  STAGE       // $ — cosmetic staging
+  REFURBISH   // $$ — light touch-up
+  RENOVATE    // $$$ — mid-range renovation
+  GUT         // $$$$ — full gut rehab
+  DEVELOP     // $$$$$ — ground-up or total rebuild
+}
+
+enum HoldExpenseCategory {
+  tax
+  insurance
+  security
+  maintenance
+  utilities
+  management
+  HOA
+  capex
+}
+
+enum OccupancyDuringHold {
+  VACANT_FULL_REHAB
+  OCCUPIED
+  PARTIAL
+}
+
+enum UtilitiesResponsibility {
+  LANDLORD
+  TENANT
+  SPLIT
+}
+
+/// Canonical Hold cost records — one row per category per project per period.
+/// The eight canonical categories (SKILL.md Rule 8) are enforced by the enum.
+model HoldCostRecord {
+  id              String              @id @default(uuid())
+  linkedProjectId String              // References Firestore Project ID
+  organizationId  String
+  category        HoldExpenseCategory
+  monthlyAmount   BigInt              // cents
+  periodMonth     String              // YYYY-MM format
+  sourceTag       String              @default("user_actual") // user_assumption | user_actual | document | derived | plaid
+  carriedFromFund Boolean             @default(false)
+  
+  createdAt       DateTime            @default(now())
+  updatedAt       DateTime            @updatedAt
+
+  @@unique([linkedProjectId, category, periodMonth])
+  @@index([linkedProjectId])
+  @@index([organizationId])
+  @@index([category])
+}
+
+/// Canonical renovation spend entries — each itemized capex/maintenance spend.
+model HoldRehabSpend {
+  id              String    @id @default(uuid())
+  linkedProjectId String
+  organizationId  String
+  amount          BigInt    // cents
+  spendDate       DateTime
+  category        String    // 'capex' | 'maintenance' (guidance only, not a ninth expense tag)
+  note            String
+  vendorRef       String?
+  receiptRef      String?   // Firebase Storage reference
+  sourceTag       String    @default("user_actual")
+  
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+
+  @@index([linkedProjectId])
+  @@index([organizationId])
+}
+
+/// Current value dated series — tracks appreciation over the hold period.
+model HoldValueEntry {
+  id              String    @id @default(uuid())
+  linkedProjectId String
+  value           BigInt    // cents
+  valueDate       DateTime
+  sourceTag       String    @default("user_assumption") // user_assumption | document
+  documentRef     String?   // appraisal/BPO reference
+  
+  createdAt       DateTime  @default(now())
+
+  @@index([linkedProjectId])
+  @@index([valueDate])
+}

@@ -4,6 +4,7 @@
 > **Every UI decision must match what is defined here and in globals.css.** This document is derived directly from the design tokens and variables in `globals.css`. Where code and this doc conflict, **the code wins**.
 
 ### Changelog
+* **2026-07-21**: Added UX-3 Button Spacing System (8-pt grid gaps, 40x40px minimum touch target floor, ButtonGroup primitive requirement).
 * **2026-07-15**: Stitch palette retired, superseded by the Antigravity-reference design language.
 * **2026-06-27**: Document initialized with custom property tokens.
 

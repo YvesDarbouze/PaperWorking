@@ -474,6 +474,9 @@ html[data-theme="dark"],
   --spacing-button-gap-related: 8px;
   --spacing-button-gap-unrelated: 16px;
   --spacing-button-gap-content: 24px;
+  --spacing-btn-gap-related: 8px;
+  --spacing-btn-gap-unrelated: 16px;
+  --spacing-btn-gap-content: 24px;
 
   /* Border Radius */
   --radius-sm: 0.25rem;
@@ -1983,6 +1986,21 @@ nextjs-portal {
   pointer-events: none !important;
   visibility: hidden !important;
   opacity: 0 !important;
+}
+
+/* Button Spacing System Utility Classes (UX-3) */
+.gap-btn-gap-related {
+  gap: 8px !important;
+}
+.gap-btn-gap-unrelated {
+  gap: 16px !important;
+}
+.gap-btn-gap-content {
+  gap: 24px !important;
+}
+.min-hit-target {
+  min-width: 40px !important;
+  min-height: 40px !important;
 }
 
 

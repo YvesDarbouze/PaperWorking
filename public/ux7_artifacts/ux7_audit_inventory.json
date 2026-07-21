@@ -1,0 +1,16 @@
+{
+  "viewport": {
+    "width": 1440,
+    "height": 900
+  },
+  "aboveTheFoldElements": [
+    "Portfolio Header & Quick Actions",
+    "Profile Card (9:16 Portrait)",
+    "Assigned Tasks (Inline Module)",
+    "Recent Messages (Inline Module)",
+    "Featured Metric Slot (Reserved UX-8)",
+    "KPI Metrics Module (3 Tabs)",
+    "Deal Map Card"
+  ],
+  "displayOnlyModalIndirection": "ELIMINATED — All 4 modules rendered directly inline above 900px fold."
+}

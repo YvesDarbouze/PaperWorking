@@ -75,7 +75,7 @@ export function computeDebtYieldMetric(project: any): MetricResult {
 
   const components = computeNOIComponents(
     fin || {},
-    project.strategyType,
+    project.dispositionType,
     project.currentPhase
   );
 
@@ -115,7 +115,7 @@ export function computeEquityMultipleMetric(project: any): MetricResult {
 
   const components = computeNOIComponents(
     fin || {},
-    project.strategyType,
+    project.dispositionType,
     project.currentPhase
   );
   const annualDebtService = computeAnnualDebtService(
@@ -150,7 +150,7 @@ export function computeBreakEvenOccupancyMetric(project: any): MetricResult {
   const fin = project.financials;
   const components = computeNOIComponents(
     fin || {},
-    project.strategyType,
+    project.dispositionType,
     project.currentPhase
   );
   const annualDebtService = computeAnnualDebtService(
@@ -224,7 +224,7 @@ export function computePaybackPeriodMetric(project: any): MetricResult {
     num(fin?.financingCashInvested) ?? computeTotalCashInvested(fin || {});
   const components = computeNOIComponents(
     fin || {},
-    project.strategyType,
+    project.dispositionType,
     project.currentPhase
   );
   const annualDebtService = computeAnnualDebtService(

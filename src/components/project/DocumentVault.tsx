@@ -388,7 +388,7 @@ export function DocumentVault({
                           )}
                           {ocrState?.status === 'complete' && (
                             <span className="p-1 rounded-full" title="OCR complete — click to review">
-                              <CheckCircle className="w-3.5 h-3.5 text-emerald-500" />
+                              <CheckCircle className="w-3.5 h-3.5 text-pw-success" />
                             </span>
                           )}
                           {ocrState?.status === 'failed' && (

@@ -237,7 +237,7 @@ export function OCRReviewPanel({
         <div className="flex items-center gap-2">
           <span className={`inline-flex items-center gap-1 px-2 py-0.5 text-[10px] font-semibold rounded-full border ${
             confidencePercent >= 85
-              ? 'bg-emerald-500/10 border-emerald-500/20 text-emerald-600'
+              ? 'bg-pw-success-container border-pw-success-border text-pw-success'
               : confidencePercent >= 70
               ? 'bg-amber-500/10 border-amber-500/20 text-amber-600'
               : 'bg-red-500/10 border-red-500/20 text-red-600'
@@ -273,7 +273,7 @@ export function OCRReviewPanel({
                   {greenFields.length > 0 && (
                     <button
                       onClick={handleBulkConfirm}
-                      className="inline-flex items-center gap-1 px-2.5 py-1 text-[10px] font-semibold rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-600 hover:bg-emerald-500/20 transition active:scale-95"
+                      className="inline-flex items-center gap-1 px-2.5 py-1 text-[10px] font-semibold rounded-full bg-pw-success-container border border-pw-success-border text-pw-success hover:bg-pw-success/20 transition active:scale-95"
                     >
                       <Check className="w-3 h-3" />
                       Confirm all high-confidence ({greenFields.length})

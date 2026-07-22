@@ -251,7 +251,7 @@ export default function ExitStrategyBoard({ projectId, onClose }: ExitStrategyBo
                         </div>
                         {currentProject.exitAssets?.mlsListingStatus === 'pending_integration' ? (
                            <p className="text-[10px] text-text-secondary uppercase tracking-wider max-w-sm mt-1">
-                             Your changes have been saved. Listing updates will syndicate automatically once the partner MLS integration is active.
+                             Your changes have been saved. Listing updates will publish automatically once the partner MLS integration is active.
                            </p>
                          ) : currentProject.exitAssets?.mlsListingLink ? (
                           <a href={currentProject.exitAssets.mlsListingLink} target="_blank" rel="noopener noreferrer" className="text-xs text-pw-accent hover:underline flex items-center transition">
@@ -264,7 +264,7 @@ export default function ExitStrategyBoard({ projectId, onClose }: ExitStrategyBo
                   <div className="mt-6 border border-pw-border border-dashed h-48 flex items-center justify-center flex-col text-text-secondary bg-pw-bg/10">
                      <BadgePercent className="w-8 h-8 mb-2 opacity-50 text-pw-accent" />
                      <p className="text-xs font-black uppercase tracking-widest text-text-primary">Awaiting Listing Deployment</p>
-                     <p className="text-[10px] text-text-secondary mt-1 uppercase tracking-wider">Upload Staging Images & MLS Link to syndicate.</p>
+                     <p className="text-[10px] text-text-secondary mt-1 uppercase tracking-wider">Upload Staging Images & MLS Link to publish.</p>
                   </div>
                )}
             </div>

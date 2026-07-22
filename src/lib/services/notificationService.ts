@@ -209,6 +209,9 @@ export const NotificationService = {
       case 'BURN_RATE_WARNING':
         body = `Daily holding costs have accumulated to ${dailyBurnRate} per day for ${address}. Track daily spend to stay within contingency.`;
         break;
+      case 'NEGOTIATION_UPDATE':
+        body = (objectReference.metadata?.body as string) || `${actorName} sent a negotiation update for the deal at ${address}.`;
+        break;
       default:
         body = `A system event has occurred on ${address}.`;
     }

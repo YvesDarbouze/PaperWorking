@@ -3,7 +3,6 @@
 import React, { useState, useRef, useEffect, useMemo } from "react";
 import { usePathname, useRouter } from "next/navigation";
 import { useAuth } from "@/context/AuthContext";
-import { useNotification } from "@/context/NotificationContext";
 import { useTheme } from "@/lib/utils/ThemeProvider";
 import Link from "next/link";
 import LogoutButton from "@/components/dashboard/LogoutButton";
@@ -16,6 +15,22 @@ import Logo from "@/components/brand/Logo";
    Features: breadcrumb, search with Cmd+K, notifications dropdown,
    theme toggle, user avatar dropdown
    ═══════════════════════════════════════════════════════════════ */
+
+const PHASE_BADGE_COLORS: Record<string, { bg: string; text: string }> = {
+  'Phase 1: Find & Fund':       { bg: 'rgba(89,89,89,0.12)',  text: '#808080' },
+  'Phase 2: Acquisition':       { bg: 'rgba(37,99,235,0.10)', text: '#2563EB' },
+  'Phase 3: Holding & Rehab':   { bg: 'rgba(234,88,12,0.10)', text: '#EA580C' },
+  'Phase 4: Closing & Exit':    { bg: 'rgba(63, 125, 32,0.10)', text: '#3f7d20' },
+  // v2 equivalents
+  'Phase 1: Acquisition':       { bg: 'rgba(89,89,89,0.12)',  text: '#808080' },
+  'Phase 2: Transaction':       { bg: 'rgba(37,99,235,0.10)', text: '#2563EB' },
+  'Phase 3: Rehab':             { bg: 'rgba(234,88,12,0.10)', text: '#EA580C' },
+  'Phase 4: Hold / Exit':       { bg: 'rgba(63, 125, 32,0.10)', text: '#3f7d20' },
+  // v3 equivalents
+  'Phase 2: Fund':              { bg: 'rgba(37,99,235,0.10)', text: '#2563EB' },
+  'Phase 3: Hold':              { bg: 'rgba(234,88,12,0.10)', text: '#EA580C' },
+  'Phase 4: Exit':              { bg: 'rgba(63, 125, 32,0.10)', text: '#3f7d20' },
+};
 
 const ROUTE_LABELS: Record<string, string> = {
   "/dashboard": "Portfolio",
@@ -46,138 +61,33 @@ function getPageLabel(pathname: string): string {
   return "Dashboard";
 }
 
-function getHelpSlug(pathname: string): string {
-  if (pathname.includes('/settings/profile')) return 'profile';
-  if (pathname.includes('/settings/billing')) return 'billing';
-  if (pathname.includes('/settings')) return 'settings';
-  if (pathname.includes('/command-center') || pathname === '/dashboard') return 'portfolio';
-  if (pathname.includes('/projects')) return 'projects';
-  if (pathname.includes('/data-room')) return 'data-room';
-  if (pathname.includes('/inbox')) return 'inbox';
-  if (pathname.includes('/team')) return 'team';
-  if (pathname.includes('/reports')) return 'reports';
-  if (pathname.includes('/deal-analyzer')) return 'deal-analyzer';
-  return 'portfolio';
-}
-
-const SEARCHABLE_VENDORS = [
-  { id: 'v1', name: 'Prime Structural Engineering', category: 'Inspector', location: 'Miami, FL' },
-  { id: 'v2', name: 'Capital Bridge Lending', category: 'Lender', location: 'New York, NY' },
-  { id: 'v3', name: 'Coastal Title & Escrow', category: 'Attorney', location: 'Fort Lauderdale, FL' },
-  { id: 'v4', name: 'ProBuild Contractors', category: 'Contractor', location: 'Brooklyn, NY' },
-  { id: 'v5', name: 'Premier Property Group', category: 'Property Manager', location: 'Miami, FL' },
-  { id: 'v6', name: 'NextGen Realty Partners', category: 'Agent', location: 'Newark, NJ' }
-];
-
 export function TopAppBar() {
   const pathname = usePathname();
   const router = useRouter();
   const { user, profile } = useAuth();
-  const { unreadTotal } = useNotification();
   const { theme } = useTheme();
   const isDark = theme === "dark";
   const [showUserMenu, setShowUserMenu] = useState(false);
   const [searchFocused, setSearchFocused] = useState(false);
   const userMenuRef = useRef<HTMLDivElement>(null);
   const searchRef = useRef<HTMLInputElement>(null);
+  const [isLoading, setIsLoading] = useState(false);
+  const [isError, setIsError] = useState(false);
+  const [searchResults, setSearchResults] = useState<{
+    projects: any[];
+    vendors: any[];
+  }>({ projects: [], vendors: [] });
 
   const [searchQuery, setSearchQuery] = useState("");
+  const [searchScope, setSearchScope] = useState<'deals' | 'vendors'>('deals');
+  const [activeIndex, setActiveIndex] = useState(-1);
   const searchContainerRef = useRef<HTMLDivElement>(null);
   const projects = useProjectStore((s) => s.projects);
-
-  const [showNotifications, setShowNotifications] = useState(false);
-  const notificationsRef = useRef<HTMLDivElement>(null);
-  const [notifications, setNotifications] = useState([
-    {
-      id: "not-mention-1",
-      type: "mention",
-      title: "Sarah K. mentioned you",
-      body: '"Can you check the rehab budget?" on 123 Main St',
-      time: "2m ago",
-      read: false,
-      href: "/dashboard/projects",
-    },
-    {
-      id: "not-doc-1",
-      type: "document",
-      title: "Document Uploaded",
-      body: "'Executed Purchase Agreement' for 456 Oak Ave",
-      time: "15m ago",
-      read: false,
-      href: "/dashboard/data-room",
-    },
-    {
-      id: "not-team-1",
-      type: "team_request",
-      title: "Join Team Request",
-      body: "John Doe requested to join your Team Workspace (InvestCo)",
-      time: "1h ago",
-      read: false,
-      actionNeeded: true,
-      senderName: "John Doe",
-    }
-  ]);
-
-  const [showWhatsNew, setShowWhatsNew] = useState(false);
-  const [changelogs, setChangelogs] = useState<Array<{ version: string; date: string; title: string }>>([]);
-  const [unreadChangelogCount, setUnreadChangelogCount] = useState(0);
-  const whatsNewRef = useRef<HTMLDivElement>(null);
 
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
     setMounted(true);
-  }, []);
-
-  // Fetch changelog metadata and compute unread count
-  useEffect(() => {
-    async function fetchChangelogMeta() {
-      try {
-        const res = await fetch('/api/changelog/metadata');
-        if (res.ok) {
-          const data = await res.json();
-          if (data.entries) {
-            setChangelogs(data.entries);
-            
-            // Calculate unread count
-            const lastVisitStr = localStorage.getItem('paperworking_changelog_last_visit');
-            if (!lastVisitStr) {
-              setUnreadChangelogCount(data.entries.length);
-            } else {
-              const lastVisitTime = parseInt(lastVisitStr, 10);
-              const unread = data.entries.filter((entry: any) => {
-                const entryTime = new Date(entry.date).getTime();
-                return entryTime > lastVisitTime;
-              });
-              setUnreadChangelogCount(unread.length);
-            }
-          }
-        }
-      } catch (e) {
-        console.error('Failed to load changelog metadata', e);
-      }
-    }
-
-    fetchChangelogMeta();
-
-    const handleRead = () => {
-      setUnreadChangelogCount(0);
-    };
-    window.addEventListener('changelog_read', handleRead);
-    return () => {
-      window.removeEventListener('changelog_read', handleRead);
-    };
-  }, []);
-
-  // Close whatsNew dropdown on outside click
-  useEffect(() => {
-    function handleClick(e: MouseEvent) {
-      if (whatsNewRef.current && !whatsNewRef.current.contains(e.target as Node)) {
-        setShowWhatsNew(false);
-      }
-    }
-    document.addEventListener("mousedown", handleClick);
-    return () => document.removeEventListener("mousedown", handleClick);
   }, []);
 
   // Close search dropdown on outside click
@@ -191,16 +101,12 @@ export function TopAppBar() {
     return () => document.removeEventListener("mousedown", handleClick);
   }, []);
 
-  // Close notifications dropdown on outside click
+  // Reset activeIndex when query or scope changes
   useEffect(() => {
-    function handleClick(e: MouseEvent) {
-      if (notificationsRef.current && !notificationsRef.current.contains(e.target as Node)) {
-        setShowNotifications(false);
-      }
-    }
-    document.addEventListener("mousedown", handleClick);
-    return () => document.removeEventListener("mousedown", handleClick);
-  }, []);
+    setActiveIndex(-1);
+  }, [searchQuery, searchScope]);
+
+
 
   const pageLabel = getPageLabel(pathname);
 
@@ -234,30 +140,84 @@ export function TopAppBar() {
       if ((e.metaKey || e.ctrlKey) && e.key === "k") {
         e.preventDefault();
         searchRef.current?.focus();
+      } else if (e.key === "Escape") {
+        setSearchFocused(false);
+        searchRef.current?.blur();
       }
     }
     document.addEventListener("keydown", handleKeyDown);
     return () => document.removeEventListener("keydown", handleKeyDown);
   }, []);
 
-  const filteredProjects = useMemo(() => {
-    if (!searchQuery.trim()) return [];
-    const q = searchQuery.toLowerCase();
-    return projects.filter(p => 
-      (p.propertyName && p.propertyName.toLowerCase().includes(q)) ||
-      (p.address && p.address.toLowerCase().includes(q))
-    );
-  }, [projects, searchQuery]);
+  // Debounced search results fetched dynamically from the database
+  useEffect(() => {
+    if (!searchQuery.trim()) {
+      setSearchResults({ projects: [], vendors: [] });
+      setIsLoading(false);
+      setIsError(false);
+      return;
+    }
 
-  const filteredVendors = useMemo(() => {
-    if (!searchQuery.trim()) return [];
-    const q = searchQuery.toLowerCase();
-    return SEARCHABLE_VENDORS.filter(v => 
-      v.name.toLowerCase().includes(q) ||
-      v.category.toLowerCase().includes(q) ||
-      v.location.toLowerCase().includes(q)
-    );
-  }, [searchQuery]);
+    setIsLoading(true);
+    setIsError(false);
+
+    const delayDebounceFn = setTimeout(async () => {
+      try {
+        const token = await user?.getIdToken();
+        if (!token) {
+          setIsLoading(false);
+          return;
+        }
+
+        const headers: Record<string, string> = {
+          'Authorization': `Bearer ${token}`
+        };
+
+        if (searchScope === 'deals') {
+          const response = await fetch(`/api/projects?q=${encodeURIComponent(searchQuery)}`, { headers });
+          if (!response.ok) throw new Error('Failed to fetch projects');
+          const data = await response.json();
+          if (data.success) {
+            setSearchResults(prev => ({ ...prev, projects: data.projects || [] }));
+          } else {
+            throw new Error(data.error || 'Failed to fetch projects');
+          }
+        } else {
+          const response = await fetch(`/api/vendors`, { headers });
+          if (!response.ok) throw new Error('Failed to fetch vendors');
+          const data = await response.json();
+          if (data.success) {
+            const q = searchQuery.toLowerCase();
+            const vendors = (data.vendors || []).map((v: any) => ({
+              ...v,
+              name: v.displayName || v.companyName || v.name || ''
+            }));
+            const filtered = vendors.filter((v: any) =>
+              (v.name && v.name.toLowerCase().includes(q)) ||
+              (v.type && v.type.toLowerCase().includes(q)) ||
+              (v.category && v.category.toLowerCase().includes(q)) ||
+              (v.licensingStates && v.licensingStates.some((s: string) => s.toLowerCase().includes(q))) ||
+              (v.serviceAreas && v.serviceAreas.some((a: string) => a.toLowerCase().includes(q))) ||
+              (v.location && v.location.toLowerCase().includes(q))
+            );
+            setSearchResults(prev => ({ ...prev, vendors: filtered }));
+          } else {
+            throw new Error(data.error || 'Failed to fetch vendors');
+          }
+        }
+      } catch (err) {
+        console.error('Search fetch error:', err);
+        setIsError(true);
+      } finally {
+        setIsLoading(false);
+      }
+    }, 300);
+
+    return () => clearTimeout(delayDebounceFn);
+  }, [searchQuery, searchScope, user]);
+
+  const filteredProjects = searchResults.projects;
+  const filteredVendors = searchResults.vendors;
 
   return (
     <header
@@ -307,7 +267,7 @@ export function TopAppBar() {
       </div>
 
       {/* Center: Search (desktop) */}
-      <div className="flex-1 max-w-md mx-8 hidden md:block" ref={searchContainerRef}>
+      <div className="flex-1 max-w-2xl mx-8 hidden md:block" ref={searchContainerRef}>
         <div className="relative">
           <span
             className="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-[18px] transition-colors duration-200"
@@ -318,7 +278,7 @@ export function TopAppBar() {
           <input
             ref={searchRef}
             className="w-full py-2 pl-10 pr-16 text-sm rounded-lg transition-all duration-200 focus:outline-none"
-            placeholder="Search portfolio, projects, vendors…"
+            placeholder={searchScope === 'deals' ? "Search deals by name or address..." : "Search vendors by name, category, or location..."}
             type="text"
             onFocus={(e) => {
               if (typeof window !== 'undefined' && window.location.pathname.startsWith('/demo')) {
@@ -329,6 +289,38 @@ export function TopAppBar() {
             }}
             onChange={(e) => setSearchQuery(e.target.value)}
             value={searchQuery}
+            onKeyDown={(e) => {
+              if (e.key === "Escape") {
+                setSearchFocused(false);
+                searchRef.current?.blur();
+                return;
+              }
+              const isDeals = searchScope === 'deals';
+              const items = isDeals ? filteredProjects : filteredVendors;
+              const total = items.length;
+              if (total > 0) {
+                if (e.key === 'ArrowDown') {
+                  e.preventDefault();
+                  setActiveIndex(prev => (prev < total - 1 ? prev + 1 : 0));
+                } else if (e.key === 'ArrowUp') {
+                  e.preventDefault();
+                  setActiveIndex(prev => (prev > 0 ? prev - 1 : total - 1));
+                } else if (e.key === 'Enter') {
+                  e.preventDefault();
+                  if (activeIndex >= 0 && activeIndex < total) {
+                    const selectedItem = items[activeIndex];
+                    if (isDeals) {
+                      router.push(`/dashboard/projects/${selectedItem.id}`);
+                    } else {
+                      router.push(`/dashboard/marketplace/${selectedItem.id}`);
+                    }
+                    setSearchFocused(false);
+                    setSearchQuery("");
+                    setActiveIndex(-1);
+                  }
+                }
+              }
+            }}
             style={{
               background: isDark
                 ? (searchFocused ? 'rgba(255,255,255,0.08)' : 'rgba(255,255,255,0.04)')
@@ -340,99 +332,243 @@ export function TopAppBar() {
               boxShadow: searchFocused ? '0 0 0 3px rgba(69,73,85,0.08)' : 'none',
             }}
           />
-          {/* Cmd+K hint */}
+          {/* Cmd+K hint or Spinner */}
           <div className="absolute right-3 top-1/2 -translate-y-1/2 flex items-center gap-0.5 pointer-events-none">
-            <kbd
-              className="text-[10px] font-bold px-1.5 py-0.5 rounded"
-              style={{
-                background: isDark ? 'rgba(255,255,255,0.06)' : 'rgba(69,73,85,0.07)',
-                color: isDark ? 'rgba(253,255,252,0.3)' : 'rgba(69,73,85,0.4)',
-                border: isDark ? '1px solid rgba(255,255,255,0.08)' : '1px solid rgba(69,73,85,0.12)',
-              }}
-            >
-              ⌘K
-            </kbd>
+            {isLoading ? (
+              <div 
+                className="w-4 h-4 rounded-full border-2 border-solid animate-spin" 
+                style={{ 
+                  borderTopColor: 'transparent',
+                  borderColor: isDark ? 'rgba(255,255,255,0.4) rgba(255,255,255,0.15) rgba(255,255,255,0.15)' : 'rgba(98, 124, 133, 0.6) rgba(98, 124, 133, 0.15) rgba(98, 124, 133, 0.15)' 
+                }}
+              />
+            ) : (
+              <kbd
+                className="text-[10px] font-bold px-1.5 py-0.5 rounded"
+                style={{
+                  background: isDark ? 'rgba(255,255,255,0.06)' : 'rgba(69,73,85,0.07)',
+                  color: isDark ? 'rgba(253,255,252,0.3)' : 'rgba(69,73,85,0.4)',
+                  border: isDark ? '1px solid rgba(255,255,255,0.08)' : '1px solid rgba(69,73,85,0.12)',
+                }}
+              >
+                ⌘K
+              </kbd>
+            )}
           </div>
 
           {/* Autocomplete dropdown */}
-          {searchFocused && searchQuery.trim() !== "" && (
+          {searchFocused && (
             <div
+              id="search-results-dropdown"
               className="absolute left-0 right-0 top-full mt-2 rounded-xl z-50 overflow-hidden"
               style={{
                 background: isDark ? 'rgba(13,10,11,0.96)' : '#FFFFFF',
                 border: isDark ? '1px solid rgba(255,255,255,0.08)' : '1px solid rgba(69,73,85,0.12)',
                 backdropFilter: 'blur(24px)',
                 boxShadow: isDark ? '0 16px 48px rgba(0,0,0,0.4)' : '0 10px 30px rgba(0,0,0,0.1)',
-                maxHeight: '320px',
+                maxHeight: '340px',
                 overflowY: 'auto'
               }}
             >
-              {/* Projects section */}
-              {filteredProjects.length > 0 && (
-                <div className="p-3 border-b border-solid" style={{ borderColor: isDark ? 'rgba(255,255,255,0.06)' : 'rgba(69,73,85,0.08)' }}>
-                  <div className="text-[10px] font-bold uppercase tracking-wider mb-2" style={{ color: isDark ? 'rgba(253,255,252,0.4)' : 'rgba(69,73,85,0.5)' }}>
-                    Projects
-                  </div>
-                  <div className="space-y-1">
-                    {filteredProjects.map(p => (
-                      <Link
-                        key={p.id}
-                        href={`/dashboard/projects/${p.id}`}
-                        onClick={() => {
-                          setSearchFocused(false);
-                          setSearchQuery("");
-                        }}
-                        className="flex items-center gap-2.5 px-2.5 py-2 rounded-lg text-xs font-semibold hover:bg-primary/10 transition-colors duration-150"
-                        style={{ color: isDark ? '#FFF' : '#121317' }}
-                      >
-                        <span className="material-symbols-outlined text-[16px]" style={{ color: '#3279F9' }}>folder</span>
-                        <div className="flex-1 min-w-0">
-                          <p className="truncate text-left">{p.propertyName || p.address}</p>
-                          <p className="text-[10px] truncate text-left" style={{ color: isDark ? 'rgba(253,255,252,0.4)' : 'rgba(69,73,85,0.5)' }}>
-                            {p.address}
-                          </p>
-                        </div>
-                      </Link>
-                    ))}
-                  </div>
+              {/* Scope Segmented Control */}
+              <div className="p-2.5 border-b border-solid" style={{ borderColor: isDark ? 'rgba(255,255,255,0.06)' : 'rgba(69,73,85,0.08)' }}>
+                <div className="flex p-0.5 rounded-lg bg-black/5 dark:bg-white/5 relative">
+                  <button
+                    onClick={() => setSearchScope('deals')}
+                    className="flex-1 py-1.5 rounded-md text-xs font-bold transition-all duration-150 relative z-10 cursor-pointer text-center"
+                    style={{
+                      background: searchScope === 'deals' ? '#627C85' : 'transparent',
+                      color: searchScope === 'deals' ? '#FFFFFF' : (isDark ? 'rgba(253,255,252,0.5)' : 'rgba(69,73,85,0.6)'),
+                      boxShadow: searchScope === 'deals' ? '0 1px 3px rgba(0,0,0,0.15)' : 'none',
+                    }}
+                  >
+                    Deals
+                  </button>
+                  <button
+                    onClick={() => setSearchScope('vendors')}
+                    className="flex-1 py-1.5 rounded-md text-xs font-bold transition-all duration-150 relative z-10 cursor-pointer text-center"
+                    style={{
+                      background: searchScope === 'vendors' ? '#627C85' : 'transparent',
+                      color: searchScope === 'vendors' ? '#FFFFFF' : (isDark ? 'rgba(253,255,252,0.5)' : 'rgba(69,73,85,0.6)'),
+                      boxShadow: searchScope === 'vendors' ? '0 1px 3px rgba(0,0,0,0.15)' : 'none',
+                    }}
+                  >
+                    Vendors
+                  </button>
                 </div>
-              )}
+              </div>
 
-              {/* Vendors section */}
-              {filteredVendors.length > 0 && (
-                <div className="p-3">
-                  <div className="text-[10px] font-bold uppercase tracking-wider mb-2" style={{ color: isDark ? 'rgba(253,255,252,0.4)' : 'rgba(69,73,85,0.5)' }}>
-                    Vendors & Professionals
-                  </div>
-                  <div className="space-y-1">
-                    {filteredVendors.map(v => (
-                      <Link
-                        key={v.id}
-                        href={`/dashboard/marketplace`}
-                        onClick={() => {
-                          setSearchFocused(false);
-                          setSearchQuery("");
+              {/* Scoped Content */}
+              {isLoading ? (
+                <div className="p-8 text-center text-xs flex flex-col items-center gap-2">
+                  <div 
+                    className="w-5 h-5 rounded-full border-2 border-solid animate-spin" 
+                    style={{ 
+                      borderTopColor: 'transparent',
+                      borderColor: '#627C85 rgba(98, 124, 133, 0.2) rgba(98, 124, 133, 0.2)' 
+                    }}
+                  />
+                  <span style={{ color: isDark ? 'rgba(253,255,252,0.4)' : 'rgba(69,73,85,0.5)' }}>
+                    Searching...
+                  </span>
+                </div>
+              ) : isError ? (
+                <div className="p-8 text-center text-xs flex flex-col items-center gap-2 text-red-500">
+                  <span className="material-symbols-outlined text-[24px]">error</span>
+                  <span>Failed to retrieve search results.</span>
+                </div>
+              ) : searchScope === 'deals' ? (
+                <>
+                  {searchQuery.trim() === "" ? (
+                    <div className="p-5 text-center text-xs" style={{ color: isDark ? 'rgba(253,255,252,0.4)' : 'rgba(69,73,85,0.5)' }}>
+                      <span className="material-symbols-outlined text-[20px] mb-1.5 block opacity-50">search</span>
+                      Type to search deal name or address
+                    </div>
+                  ) : filteredProjects.length > 0 ? (
+                    <div className="p-3">
+                      <div className="text-[10px] font-bold uppercase tracking-wider mb-2" style={{ color: isDark ? 'rgba(253,255,252,0.4)' : 'rgba(69,73,85,0.5)' }}>
+                        Deals & Projects ({filteredProjects.length})
+                      </div>
+                      <div className="space-y-1">
+                        {filteredProjects.map((p, index) => {
+                          const phaseColor = PHASE_BADGE_COLORS[p.phaseStatus ?? ''] ?? PHASE_BADGE_COLORS['Phase 1: Find & Fund'];
+                          const isActive = index === activeIndex;
+                          return (
+                            <Link
+                              key={p.id}
+                              href={`/dashboard/projects/${p.id}`}
+                              onClick={() => {
+                                setSearchFocused(false);
+                                setSearchQuery("");
+                                setActiveIndex(-1);
+                              }}
+                              onMouseEnter={() => setActiveIndex(index)}
+                              onMouseLeave={() => setActiveIndex(-1)}
+                              className="flex items-center gap-2.5 px-2.5 py-2 rounded-lg text-xs font-semibold transition-colors duration-150"
+                              style={{
+                                color: isDark ? '#FFF' : '#121317',
+                                background: isActive
+                                  ? (isDark ? 'rgba(255,255,255,0.08)' : 'rgba(69,73,85,0.06)')
+                                  : 'transparent'
+                              }}
+                            >
+                              <span className="material-symbols-outlined text-[16px]" style={{ color: '#627C85' }}>folder</span>
+                              <div className="flex-1 min-w-0 text-left flex items-center justify-between gap-2">
+                                <div className="flex-1 min-w-0">
+                                  <p className="truncate font-semibold">{p.address || p.propertyName}</p>
+                                  {p.propertyName && p.propertyName !== p.address && (
+                                    <p className="text-[10px] truncate" style={{ color: isDark ? 'rgba(253,255,252,0.4)' : 'rgba(69,73,85,0.5)' }}>
+                                      {p.propertyName}
+                                    </p>
+                                  )}
+                                </div>
+                                <span
+                                  className="px-1.5 py-0.5 rounded text-[9px] font-bold uppercase tracking-wider whitespace-nowrap"
+                                  style={{
+                                    background: phaseColor.bg,
+                                    color: phaseColor.text
+                                  }}
+                                >
+                                  {p.phaseStatus || `Phase ${p.currentPhase || 1}`}
+                                </span>
+                              </div>
+                            </Link>
+                          );
+                        })}
+                      </div>
+                    </div>
+                  ) : (
+                    <div className="p-6 text-center text-xs flex flex-col items-center gap-2">
+                      <span className="material-symbols-outlined text-[22px] opacity-40" style={{ color: isDark ? 'rgba(253,255,252,0.3)' : 'rgba(69,73,85,0.4)' }}>search_off</span>
+                      <span style={{ color: isDark ? 'rgba(253,255,252,0.4)' : 'rgba(69,73,85,0.5)' }}>
+                        No deals match "{searchQuery}"
+                      </span>
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setSearchScope('vendors');
                         }}
-                        className="flex items-center gap-2.5 px-2.5 py-2 rounded-lg text-xs font-semibold hover:bg-primary/10 transition-colors duration-150"
-                        style={{ color: isDark ? '#FFF' : '#121317' }}
+                        className="mt-1 px-3 py-1.5 rounded-lg text-[10px] font-bold tracking-wider uppercase transition-all duration-150 active:scale-95 cursor-pointer"
+                        style={{
+                          background: 'rgba(98, 124, 133, 0.1)',
+                          color: '#627C85',
+                          border: '1px solid rgba(98, 124, 133, 0.2)'
+                        }}
                       >
-                        <span className="material-symbols-outlined text-[16px]" style={{ color: '#7A9EAA' }}>handyman</span>
-                        <div className="flex-1 min-w-0">
-                          <p className="truncate text-left">{v.name}</p>
-                          <p className="text-[10px] truncate text-left" style={{ color: isDark ? 'rgba(253,255,252,0.4)' : 'rgba(69,73,85,0.5)' }}>
-                            {v.category} · {v.location}
-                          </p>
-                        </div>
-                      </Link>
-                    ))}
-                  </div>
-                </div>
-              )}
-
-              {filteredProjects.length === 0 && filteredVendors.length === 0 && (
-                <div className="p-4 text-center text-xs" style={{ color: isDark ? 'rgba(253,255,252,0.4)' : 'rgba(69,73,85,0.5)' }}>
-                  No projects or vendors match "{searchQuery}"
-                </div>
+                        Search in Vendors instead
+                      </button>
+                    </div>
+                  )}
+                </>
+              ) : (
+                <>
+                  {searchQuery.trim() === "" ? (
+                    <div className="p-5 text-center text-xs" style={{ color: isDark ? 'rgba(253,255,252,0.4)' : 'rgba(69,73,85,0.5)' }}>
+                      <span className="material-symbols-outlined text-[20px] mb-1.5 block opacity-50">search</span>
+                      Type to search vendors by name, category, or location
+                    </div>
+                  ) : filteredVendors.length > 0 ? (
+                    <div className="p-3">
+                      <div className="text-[10px] font-bold uppercase tracking-wider mb-2" style={{ color: isDark ? 'rgba(253,255,252,0.4)' : 'rgba(69,73,85,0.5)' }}>
+                        Vendors & Professionals ({filteredVendors.length})
+                      </div>
+                      <div className="space-y-1">
+                        {filteredVendors.map((v, index) => {
+                          const isActive = index === activeIndex;
+                          return (
+                            <Link
+                              key={v.id}
+                              href={`/dashboard/marketplace/${v.id}`}
+                              onClick={() => {
+                                setSearchFocused(false);
+                                setSearchQuery("");
+                                setActiveIndex(-1);
+                              }}
+                              onMouseEnter={() => setActiveIndex(index)}
+                              onMouseLeave={() => setActiveIndex(-1)}
+                              className="flex items-center gap-2.5 px-2.5 py-2 rounded-lg text-xs font-semibold transition-colors duration-150"
+                              style={{
+                                color: isDark ? '#FFF' : '#121317',
+                                background: isActive
+                                  ? (isDark ? 'rgba(255,255,255,0.08)' : 'rgba(69,73,85,0.06)')
+                                  : 'transparent'
+                              }}
+                            >
+                              <span className="material-symbols-outlined text-[16px]" style={{ color: '#7A9EAA' }}>handyman</span>
+                              <div className="flex-1 min-w-0 text-left">
+                                <p className="truncate font-semibold">{v.name}</p>
+                                <p className="text-[10px] truncate" style={{ color: isDark ? 'rgba(253,255,252,0.4)' : 'rgba(69,73,85,0.5)' }}>
+                                  {v.category} · {v.location}
+                                </p>
+                              </div>
+                            </Link>
+                          );
+                        })}
+                      </div>
+                    </div>
+                  ) : (
+                    <div className="p-6 text-center text-xs flex flex-col items-center gap-2">
+                      <span className="material-symbols-outlined text-[22px] opacity-40" style={{ color: isDark ? 'rgba(253,255,252,0.3)' : 'rgba(69,73,85,0.4)' }}>search_off</span>
+                      <span style={{ color: isDark ? 'rgba(253,255,252,0.4)' : 'rgba(69,73,85,0.5)' }}>
+                        No vendors match "{searchQuery}"
+                      </span>
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setSearchScope('deals');
+                        }}
+                        className="mt-1 px-3 py-1.5 rounded-lg text-[10px] font-bold tracking-wider uppercase transition-all duration-150 active:scale-95 cursor-pointer"
+                        style={{
+                          background: 'rgba(98, 124, 133, 0.1)',
+                          color: '#627C85',
+                          border: '1px solid rgba(98, 124, 133, 0.2)'
+                        }}
+                      >
+                        Search in Deals instead
+                      </button>
+                    </div>
+                  )}
+                </>
               )}
             </div>
           )}
@@ -441,34 +577,6 @@ export function TopAppBar() {
 
       {/* Right: Actions */}
       <div className="flex items-center gap-2">
-        {/* Create Project — primary persistent CTA */}
-        <button
-          onClick={(e) => {
-            if (typeof window !== 'undefined' && window.location.pathname.startsWith('/demo')) {
-              handleDemoGuard(e, 'project creation');
-            } else {
-              router.push('/dashboard/projects/new');
-            }
-          }}
-          className="hidden md:flex items-center gap-1.5 px-4 py-1.5 rounded-full text-sm font-semibold transition-all duration-200 active:scale-95"
-          style={{
-            background: 'rgba(45,54,61,0.5)',
-            border: '1px solid rgba(255,255,255,0.12)',
-            color: 'rgba(253,255,252,0.9)',
-          }}
-          onMouseEnter={e => {
-            (e.currentTarget as HTMLButtonElement).style.borderColor = 'rgba(69,73,85,0.4)';
-            (e.currentTarget as HTMLButtonElement).style.background = 'rgba(69,73,85,0.06)';
-          }}
-          onMouseLeave={e => {
-            (e.currentTarget as HTMLButtonElement).style.borderColor = 'rgba(255,255,255,0.12)';
-            (e.currentTarget as HTMLButtonElement).style.background = 'rgba(45,54,61,0.5)';
-          }}
-        >
-          <span className="material-symbols-outlined text-[16px]" style={{ color: '#454955' }}>add</span>
-          New Project
-        </button>
-
         {/* Mobile search */}
         <button
           className="md:hidden p-2 rounded-lg transition-colors duration-200"
@@ -476,226 +584,6 @@ export function TopAppBar() {
         >
           <span className="material-symbols-outlined text-[20px]">search</span>
         </button>
-
-        {/* Notifications */}
-        <div className="relative" ref={notificationsRef}>
-          <button
-            className="p-2 rounded-lg transition-all duration-200 relative group"
-            style={{ color: 'rgba(255, 255, 255, 0.85)' }}
-            onClick={(e) => {
-              if (typeof window !== 'undefined' && window.location.pathname.startsWith('/demo')) {
-                handleDemoGuard(e, 'notifications');
-              } else {
-                setShowNotifications(!showNotifications);
-              }
-            }}
-          >
-            <span className="material-symbols-outlined text-[20px] group-hover:scale-110 transition-transform duration-200">notifications</span>
-            {mounted && notifications.filter(n => !n.read).length > 0 && (
-              <span
-                className="absolute top-1 right-1 min-w-4 h-4 text-[9px] font-bold rounded-full flex items-center justify-center px-1"
-                style={{
-                  background: 'var(--color-primary)',
-                  color: '#0d0a0b',
-                  boxShadow: '0 0 8px rgba(69, 73, 85,0.5)',
-                }}
-              >
-                {notifications.filter(n => !n.read).length}
-              </span>
-            )}
-          </button>
-
-          {/* Notifications Dropdown */}
-          {showNotifications && (
-            <div
-              className="absolute right-0 top-full mt-2 w-80 py-2 rounded-xl z-50 text-left"
-              style={{
-                background: isDark ? 'rgba(13,10,11,0.96)' : '#FFFFFF',
-                border: isDark ? '1px solid rgba(255,255,255,0.08)' : '1px solid rgba(69,73,85,0.12)',
-                backdropFilter: 'blur(24px)',
-                boxShadow: isDark ? '0 16px 48px rgba(0,0,0,0.4)' : '0 10px 30px rgba(0,0,0,0.1)',
-              }}
-            >
-              <div className="px-4 py-2 flex items-center justify-between border-b" style={{ borderColor: isDark ? 'rgba(255,255,255,0.06)' : 'rgba(69,73,85,0.08)' }}>
-                <span className="text-xs font-bold uppercase tracking-wider" style={{ color: isDark ? 'rgba(253,255,252,0.6)' : 'rgba(69,73,85,0.7)' }}>
-                  Notifications
-                </span>
-                <button
-                  onClick={() => {
-                    setNotifications(prev => prev.map(n => ({ ...n, read: true })));
-                    toast.success("All notifications marked as read");
-                  }}
-                  className="text-[10px] font-semibold transition-opacity duration-150 hover:opacity-75"
-                  style={{ color: '#3279F9' }}
-                >
-                  Mark all read
-                </button>
-              </div>
-
-              <div className="max-h-80 overflow-y-auto animate-fade-in">
-                {notifications.length === 0 ? (
-                  <div className="p-6 text-center text-xs" style={{ color: isDark ? 'rgba(253,255,252,0.4)' : 'rgba(69,73,85,0.5)' }}>
-                    No notifications
-                  </div>
-                ) : (
-                  notifications.map((n) => (
-                    <div
-                      key={n.id}
-                      className={`flex flex-col gap-1.5 p-3.5 border-b transition-colors duration-150 ${n.read ? 'opacity-60' : ''}`}
-                      style={{
-                        borderColor: isDark ? 'rgba(255,255,255,0.04)' : 'rgba(69,73,85,0.06)',
-                        background: n.read ? 'transparent' : (isDark ? 'rgba(50, 121, 249, 0.03)' : 'rgba(50, 121, 249, 0.02)')
-                      }}
-                    >
-                      <div className="flex items-start justify-between gap-2">
-                        <div className="flex items-start gap-2">
-                          <span
-                            className="material-symbols-outlined text-[16px] mt-0.5"
-                            style={{
-                              color: n.type === 'mention' ? '#3279F9' : n.type === 'document' ? '#7A9EAA' : '#ffac5a'
-                            }}
-                          >
-                            {n.type === 'mention' ? 'chat' : n.type === 'document' ? 'description' : 'group_add'}
-                          </span>
-                          <div className="flex-1">
-                            <p className="text-xs font-bold leading-tight" style={{ color: isDark ? '#FFF' : '#121317' }}>
-                              {n.title}
-                            </p>
-                            <p className="text-[11px] mt-0.5 leading-snug" style={{ color: isDark ? 'rgba(253,255,252,0.7)' : 'rgba(69,73,85,0.8)' }}>
-                              {n.body}
-                            </p>
-                          </div>
-                        </div>
-                        <span className="text-[9px] shrink-0" style={{ color: isDark ? 'rgba(253,255,252,0.3)' : 'rgba(69,73,85,0.4)' }}>
-                          {n.time}
-                        </span>
-                      </div>
-
-                      {n.actionNeeded && (
-                        <div className="flex items-center gap-2 pl-6 mt-1">
-                          <button
-                            onClick={() => {
-                              toast.success(`Request accepted. ${n.senderName} has joined the workspace.`);
-                              setNotifications(prev => prev.filter(item => item.id !== n.id));
-                            }}
-                            className="text-[10px] font-bold px-2.5 py-1 rounded bg-primary text-white hover:bg-primary/90 transition-colors cursor-pointer"
-                            style={{ background: '#3279F9' }}
-                          >
-                            Accept
-                          </button>
-                          <button
-                            onClick={() => {
-                              toast.success("Request declined.");
-                              setNotifications(prev => prev.filter(item => item.id !== n.id));
-                            }}
-                            className="text-[10px] font-bold px-2.5 py-1 rounded border hover:bg-white/5 transition-colors cursor-pointer"
-                            style={{
-                              borderColor: isDark ? 'rgba(255,255,255,0.12)' : 'rgba(69,73,85,0.2)',
-                              color: isDark ? 'rgba(253,255,252,0.7)' : 'rgba(69,73,85,0.8)'
-                            }}
-                          >
-                            Decline
-                          </button>
-                        </div>
-                      )}
-
-                      {!n.actionNeeded && n.href && (
-                        <Link
-                          href={n.href}
-                          onClick={() => {
-                            setNotifications(prev => prev.map(item => item.id === n.id ? { ...item, read: true } : item));
-                            setShowNotifications(false);
-                          }}
-                          className="text-[10px] font-semibold pl-6 self-start hover:underline text-left"
-                          style={{ color: '#3279F9' }}
-                        >
-                          View details →
-                        </Link>
-                      )}
-                    </div>
-                  ))
-                )}
-              </div>
-            </div>
-          )}
-        </div>
-
-        {/* "What's New" Bell-adjacent Icon */}
-        <div className="relative" ref={whatsNewRef}>
-          <button
-            className="p-2 rounded-lg transition-all duration-200 relative group"
-            style={{ color: 'rgba(255, 255, 255, 0.85)' }}
-            onClick={() => setShowWhatsNew(!showWhatsNew)}
-            title="What's New"
-          >
-            <span className="material-symbols-outlined text-[20px] group-hover:scale-110 transition-transform duration-200">campaign</span>
-            {unreadChangelogCount > 0 && (
-              <span
-                className="absolute top-1 right-1 min-w-2.5 h-2.5 rounded-full flex items-center justify-center bg-emerald-400"
-                style={{
-                  boxShadow: '0 0 8px rgba(63, 125, 32,0.5)',
-                }}
-              />
-            )}
-          </button>
-
-          {/* What's new dropdown */}
-          {showWhatsNew && (
-            <div
-              className="absolute right-0 top-full mt-2 w-72 py-3 rounded-xl z-50 p-4"
-              style={{
-                background: 'rgba(13,10,11,0.95)',
-                border: '1px solid rgba(255,255,255,0.08)',
-                backdropFilter: 'blur(24px)',
-                boxShadow: '0 16px 48px rgba(0,0,0,0.4)',
-              }}
-            >
-              <h4 className="text-xs uppercase tracking-widest font-black text-white mb-3">What's New</h4>
-              <div className="space-y-3 max-h-60 overflow-y-auto custom-scrollbar mb-3">
-                {changelogs.length === 0 ? (
-                  <p className="text-xs text-[var(--pw-muted)]">No updates posted yet.</p>
-                ) : (
-                  changelogs.map((c) => (
-                    <Link
-                      key={c.version}
-                      href="/changelog"
-                      onClick={() => setShowWhatsNew(false)}
-                      className="block group"
-                    >
-                      <div className="flex items-center gap-1.5 mb-0.5">
-                        <span className="text-[10px] text-emerald-400 font-bold bg-emerald-400/10 px-1 py-0.5 rounded">v{c.version}</span>
-                        <span className="text-[9px] text-[var(--pw-muted)]">{c.date}</span>
-                      </div>
-                      <p className="text-xs text-white/80 group-hover:text-emerald-400 transition-colors font-medium line-clamp-1">{c.title}</p>
-                    </Link>
-                  ))
-                )}
-              </div>
-              <div className="border-t border-white/10 pt-2 text-center">
-                <Link
-                  href="/changelog"
-                  onClick={() => setShowWhatsNew(false)}
-                  className="text-xs font-bold text-emerald-400 hover:underline"
-                >
-                  View Full Changelog
-                </Link>
-              </div>
-            </div>
-          )}
-        </div>
-
-        {/* Contextual Help */}
-        <Link
-          href={`/help/${getHelpSlug(pathname)}`}
-          className="p-2 rounded-lg transition-colors duration-200"
-          style={{ color: 'rgba(255, 255, 255, 0.85)' }}
-          title="Contextual Help"
-        >
-          <span className="material-symbols-outlined text-[20px]">help_outline</span>
-        </Link>
-
-        {/* Divider */}
-        <div className="h-6 w-px mx-1 hidden md:block" style={{ background: 'rgba(255,255,255,0.08)' }} />
 
         {/* User Avatar + Dropdown */}
         <div className="relative" ref={userMenuRef}>

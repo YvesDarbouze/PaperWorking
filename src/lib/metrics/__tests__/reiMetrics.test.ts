@@ -275,7 +275,7 @@ describe('computeNOIComponents', () => {
     } as any;
 
     const result = computeNOIComponents(fin);
-    // 10% of 24000 = 2400
+    // PM: 10% of $24,000 gross rent = 2400.
     expect(result.propertyManagement).toBeCloseTo(2400, 0);
   });
 

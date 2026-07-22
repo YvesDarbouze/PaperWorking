@@ -3,10 +3,6 @@
 import React, { useMemo } from 'react';
 import { Project } from '@/types/schema';
 import {
-  computeNOIComponents,
-  computeAnnualDebtService,
-  computeCashFlow,
-  computeDSCR,
   deriveDualScopeMetrics,
   type NOIComponents,
 } from '@/lib/metrics/reiMetrics';
@@ -67,7 +63,7 @@ export function deriveCashFlowBreakdowns(projects: Project[]): PropertyCashFlowD
     .filter(p => p.financials)
     .map((p) => {
       const f = p.financials!;
-      const { asset: metrics } = deriveDualScopeMetrics(f, undefined, p.strategyType, p.currentPhase);
+      const { asset: metrics } = deriveDualScopeMetrics(f, undefined, p.dispositionType, p.currentPhase);
       const noiComponents = metrics.noiComponents;
 
       return {

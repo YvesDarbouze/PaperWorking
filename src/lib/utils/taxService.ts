@@ -83,7 +83,7 @@ export function auditTaxFields(project: Project): string[] {
     missing.push('Acquisition Date');
   }
 
-  const isRental = project.strategyType === 'Rent' || project.strategyType === 'Buy & Hold';
+  const isRental = project.dispositionType === 'RENT';
   if (isRental) {
     if (!f.monthlyGrossRent && !f.projectedMonthlyRent) {
       missing.push('Monthly Gross/Projected Rent');
@@ -352,7 +352,7 @@ export function calculateProjectTaxReport(
   const activeMonths = getActiveMonthsInPeriod(acqDate, soldDate, periodStart, periodEnd);
 
   // 1. Income Allocation
-  const monthlyGrossRent = (project.strategyType === 'Rent' || project.strategyType === 'Buy & Hold') && (project.currentPhase === 3 || project.currentPhase === 4)
+  const monthlyGrossRent = project.dispositionType === 'RENT' && (project.currentPhase === 3 || project.currentPhase === 4)
     ? (f.actualRentalIncome ?? f.monthlyGrossRent ?? f.projectedMonthlyRent ?? 0)
     : (f.monthlyGrossRent ?? f.projectedMonthlyRent ?? 0);
 
@@ -434,7 +434,7 @@ export function calculateProjectTaxReport(
 
   const placedInServiceDate = parseDateSafe(f.placedInServiceDate) || acqDate || parseDateSafe(project.createdAt) || new Date();
   const depMonths = getDepreciationMonthsInPeriod(placedInServiceDate, soldDate, periodStart, periodEnd);
-  const depreciationEstimate = project.strategyType === 'Rent' || project.strategyType === 'Buy & Hold'
+  const depreciationEstimate = project.dispositionType === 'RENT'
     ? monthlyDepreciation * depMonths
     : 0;
 

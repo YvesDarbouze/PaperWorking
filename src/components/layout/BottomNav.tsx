@@ -26,8 +26,8 @@ export function BottomNav() {
 
   const navItems = [
     { name: "Portfolio", href: "/dashboard/command-center", icon: "space_dashboard" },
-    { name: "Projects",  href: "/dashboard/projects",       icon: "folder"          },
     { name: "Insights",  href: "/dashboard/insights",       icon: "monitoring"      },
+    { name: "Projects",  href: "/dashboard/projects",       icon: "folder"          },
     { name: "Reports",   href: "/dashboard/reports",        icon: "bar_chart_4_bars"},
     { name: "Inbox",     href: "/dashboard/inbox",          icon: "inbox"           },
   ];

@@ -2,7 +2,7 @@
 
 import React, { useMemo } from 'react';
 import { TrendingUp, TrendingDown, Target, Layers, ArrowRight, Sparkles, Award, AlertTriangle } from 'lucide-react';
-import { computeIRR, buildIRRCashFlows } from '@/lib/metrics/reiMetrics';
+// Removed helper imports as they are engine internals
 
 /* ═══════════════════════════════════════════════════════════════
    IRR SCENARIO COMPARISON CARD
@@ -54,13 +54,139 @@ interface ScenarioResult {
   equityMultiple: number;
 }
 
+function localBuildIRRCashFlows(
+  totalCashInvested: number,
+  annualCashFlow: number,
+  holdYears: number,
+  purchasePrice: number,
+  annualAppreciationPercent: number,
+  loanAmount: number,
+  loanInterestRate: number,
+  loanTermYears: number,
+  sellingCostsPercent = 8
+): number[] {
+  if (holdYears <= 0 || totalCashInvested <= 0) return [];
+  const flows: number[] = [-totalCashInvested];
+  const futureValue = purchasePrice * Math.pow(1 + annualAppreciationPercent / 100, holdYears);
+  let remainingBalance = loanAmount;
+  const monthlyRate = (loanInterestRate / 100) / 12;
+  const totalPayments = loanTermYears * 12;
+
+  if (monthlyRate > 0 && totalPayments > 0 && loanAmount > 0) {
+    const monthlyPayment = loanAmount * (monthlyRate * Math.pow(1 + monthlyRate, totalPayments)) /
+      (Math.pow(1 + monthlyRate, totalPayments) - 1);
+    const paymentsMade = holdYears * 12;
+    remainingBalance = loanAmount * Math.pow(1 + monthlyRate, paymentsMade) -
+      monthlyPayment * ((Math.pow(1 + monthlyRate, paymentsMade) - 1) / monthlyRate);
+    remainingBalance = Math.max(0, remainingBalance);
+  }
+
+  const sellingCosts = futureValue * (sellingCostsPercent / 100);
+  const netSaleProceeds = futureValue - remainingBalance - sellingCosts;
+
+  for (let y = 1; y <= holdYears; y++) {
+    if (y === holdYears) {
+      flows.push(annualCashFlow + netSaleProceeds);
+    } else {
+      flows.push(annualCashFlow);
+    }
+  }
+  return flows;
+}
+
+function localComputeIRR(cashFlows: number[], maxIterations = 100, tolerance = 1e-7): number | null {
+  if (cashFlows.length < 2) return null;
+  let rate = 0.10;
+
+  for (let i = 0; i < maxIterations; i++) {
+    let npv = 0;
+    let dNpv = 0;
+    for (let t = 0; t < cashFlows.length; t++) {
+      const pv = cashFlows[t] / Math.pow(1 + rate, t);
+      npv += pv;
+      if (t > 0) {
+        dNpv -= (t * cashFlows[t]) / Math.pow(1 + rate, t + 1);
+      }
+    }
+    if (Math.abs(dNpv) < 1e-12) break;
+    const newRate = rate - npv / dNpv;
+    if (Math.abs(newRate - rate) < tolerance) {
+      return Math.round(newRate * 10000) / 10000;
+    }
+    rate = newRate;
+    if (rate < -0.99 || rate > 10) break;
+  }
+
+  let low = -0.99;
+  let high = 10.0;
+  const getNpv = (r: number) => {
+    let sum = 0;
+    for (let t = 0; t < cashFlows.length; t++) {
+      sum += cashFlows[t] / Math.pow(1 + r, t);
+    }
+    return sum;
+  };
+
+  let bracketFound = false;
+  let prevVal = getNpv(low);
+  const steps = 100;
+  const stepSize = (high - low) / steps;
+
+  for (let step = 1; step <= steps; step++) {
+    const r = low + step * stepSize;
+    const val = getNpv(r);
+    if (prevVal * val <= 0) {
+      low = r - stepSize;
+      high = r;
+      bracketFound = true;
+      break;
+    }
+    prevVal = val;
+  }
+
+  if (!bracketFound) {
+    low = -0.99;
+    high = 100.0;
+    const widerSteps = 200;
+    const widerStepSize = (high - low) / widerSteps;
+    prevVal = getNpv(low);
+    for (let step = 1; step <= widerSteps; step++) {
+      const r = low + step * widerStepSize;
+      const val = getNpv(r);
+      if (prevVal * val <= 0) {
+        low = r - widerStepSize;
+        high = r;
+        bracketFound = true;
+        break;
+      }
+      prevVal = val;
+    }
+  }
+
+  if (bracketFound) {
+    for (let j = 0; j < 100; j++) {
+      const mid = (low + high) / 2;
+      const npvMid = getNpv(mid);
+      if (Math.abs(npvMid) < tolerance || (high - low) < tolerance) {
+        return Math.round(mid * 10000) / 10000;
+      }
+      if (getNpv(low) * npvMid < 0) {
+        high = mid;
+      } else {
+        low = mid;
+      }
+    }
+  }
+  return null;
+}
+
 function computeScenarios(inputs: ScenarioInputs, holds: number[]): ScenarioResult[] {
   const results: ScenarioResult[] = [];
 
   for (const holdYears of holds) {
     for (const variant of VARIANTS) {
       const adjustedCF = inputs.annualCashFlow * variant.cashFlowMultiplier;
-      const cashFlows = buildIRRCashFlows(
+      const cashFlows = localBuildIRRCashFlows(
         inputs.totalCashInvested,
         adjustedCF,
         holdYears,
@@ -71,7 +197,7 @@ function computeScenarios(inputs: ScenarioInputs, holds: number[]): ScenarioResu
         inputs.loanTermYears,
         inputs.sellingCostsPercent ?? 8
       );
-      const irr = computeIRR(cashFlows);
+      const irr = localComputeIRR(cashFlows);
       const totalInflows = cashFlows.slice(1).reduce((s, v) => s + v, 0);
       const equityMultiple = inputs.totalCashInvested > 0 ? totalInflows / inputs.totalCashInvested : 0;
 

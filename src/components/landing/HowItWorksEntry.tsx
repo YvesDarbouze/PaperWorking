@@ -196,7 +196,7 @@ function CapitalStackPanel() {
   const tiers = [
     { label: 'Senior Debt', sublabel: 'Hard Money Loan', pct: 65, color: '#595959', textColor: '#f2f2f2' },
     { label: 'Mezzanine / Bridge', sublabel: 'Private Notes', pct: 15, color: '#7f7f7f', textColor: '#f2f2f2' },
-    { label: 'Preferred Equity', sublabel: 'LP Commitments via LOI', pct: 12, color: '#a5a5a5', textColor: '#f2f2f2' },
+    { label: 'Preferred Equity', sublabel: 'Co-Investor Commitments via LOI', pct: 12, color: '#a5a5a5', textColor: '#f2f2f2' },
     { label: 'Common Equity', sublabel: 'Lead Investor (You)', pct: 8, color: '#cccccc', textColor: '#595959' },
   ];
 
@@ -283,8 +283,8 @@ function LOIWizardPanel() {
     {
       num: '03',
       icon: Users2,
-      title: 'Routed to Investor Syndicate',
-      desc: 'Commitment requests sent to LP roster with deal summary and Capital Stack breakdown',
+      title: 'Routed to Investment Team',
+      desc: 'Commitment requests sent to Co-Investor roster with deal summary and Capital Stack breakdown',
     },
     {
       num: '04',
@@ -565,7 +565,7 @@ export default function HowItWorksEntry() {
                 items={[
                   'Layer 1 — Senior Debt: hard money or bank financing (up to 65% LTV)',
                   'Layer 2 — Mezzanine: bridge notes and private lenders (up to 15%)',
-                  'Layer 3 — Preferred Equity: LP commitments via LOI (8–12%)',
+                  'Layer 3 — Preferred Equity: Co-investor commitments via LOI (8–12%)',
                   'Layer 4 — Common Equity: your skin in the game (≥8% required)',
                   'Gap analysis flags any funding shortfall before you make an offer',
                   'Each layer\'s return priority and payout order locked into the waterfall',
@@ -609,7 +609,7 @@ export default function HowItWorksEntry() {
               <p className="text-sm font-semibold mb-6" style={{ color: '#595959', opacity: 0.8 }}>
                 Once your MAO clears and your Capital Stack is structured, the{' '}
                 <strong>LOI Wizard</strong> assembles a Letter of Intent and
-                routes it to your investor syndicate for crowdfunding
+                routes it to your investment team for crowdfunding
                 commitments — documented, timestamped, and legally structured.
               </p>
 
@@ -619,7 +619,7 @@ export default function HowItWorksEntry() {
                 items={[
                   'LOI auto-populated with MAO, contingency terms, and closing timeline',
                   'Routed to investor roster with deal summary and Capital Stack PDF',
-                  'Each LP sees their proposed tier, return rate, and commitment amount',
+                  'Each partner sees their proposed tier, return rate, and commitment amount',
                   'Electronic signature + timestamp captures legally binding intent',
                   'Real-time crowdfunding progress bar tracked against raise target',
                   'Closes automatically when 100% of the raise is committed',

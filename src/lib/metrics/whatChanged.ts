@@ -13,7 +13,7 @@ import type { MetricId } from './types';
  * Maps each metric to the project field paths it depends on.
  * Paths are dot-separated (e.g. 'financials.monthlyGrossRent').
  */
-const METRIC_DEPENDENCIES: Record<MetricId, string[]> = {
+const METRIC_DEPENDENCIES: Partial<Record<MetricId, string[]>> = {
   NOI: [
     'financials.monthlyGrossRent',
     'financials.projectedMonthlyRent',
@@ -36,7 +36,7 @@ const METRIC_DEPENDENCIES: Record<MetricId, string[]> = {
     'financials.grossIncomeLaundry',
     'financials.projectedOpex',
     'financials.actualRentalIncome',
-    'strategyType',
+    'dispositionType',
     'currentPhase',
   ],
   CASH_FLOW: [
@@ -59,7 +59,7 @@ const METRIC_DEPENDENCIES: Record<MetricId, string[]> = {
     'financials.monthlyMaintenanceReserve',
     'financials.maintenanceReserves',
     'financials.monthlyHOA',
-    'strategyType',
+    'dispositionType',
     'currentPhase',
   ],
   CAP_RATE: [
@@ -78,7 +78,7 @@ const METRIC_DEPENDENCIES: Record<MetricId, string[]> = {
     'financials.propertyManagementFeePercent',
     'financials.monthlyMaintenanceReserve',
     'financials.monthlyHOA',
-    'strategyType',
+    'dispositionType',
     'currentPhase',
   ],
   COC: [
@@ -103,7 +103,7 @@ const METRIC_DEPENDENCIES: Record<MetricId, string[]> = {
     'financials.propertyManagementFeePercent',
     'financials.monthlyMaintenanceReserve',
     'financials.monthlyHOA',
-    'strategyType',
+    'dispositionType',
     'currentPhase',
   ],
   GRM: [
@@ -130,7 +130,7 @@ const METRIC_DEPENDENCIES: Record<MetricId, string[]> = {
     'financials.propertyManagementFeePercent',
     'financials.monthlyMaintenanceReserve',
     'financials.monthlyHOA',
-    'strategyType',
+    'dispositionType',
     'currentPhase',
   ],
   IRR: [
@@ -152,7 +152,7 @@ const METRIC_DEPENDENCIES: Record<MetricId, string[]> = {
     'financials.holdingCostUtilities',
     'financials.projectedHoldTimeMonths',
     'financials.annualAppreciationPercent',
-    'strategyType',
+    'dispositionType',
     'currentPhase',
   ],
   OCCUPANCY: [
@@ -162,7 +162,7 @@ const METRIC_DEPENDENCIES: Record<MetricId, string[]> = {
     'financials.vacancyRate',
     'financials.daysOccupied',
     'financials.totalHoldDays',
-    'strategyType',
+    'dispositionType',
   ],
   OER: [
     'financials.monthlyGrossRent',
@@ -180,7 +180,7 @@ const METRIC_DEPENDENCIES: Record<MetricId, string[]> = {
     'financials.monthlyMaintenanceReserve',
     'financials.maintenanceReserves',
     'financials.monthlyHOA',
-    'strategyType',
+    'dispositionType',
     'currentPhase',
   ],
   APPRECIATION: [
@@ -215,7 +215,7 @@ const METRIC_DEPENDENCIES: Record<MetricId, string[]> = {
     'financials.propertyManagementFeePercent',
     'financials.monthlyMaintenanceReserve',
     'financials.monthlyHOA',
-    'strategyType',
+    'dispositionType',
   ],
   EQUITY_MULTIPLE: [
     'financials.purchasePrice',
@@ -230,7 +230,7 @@ const METRIC_DEPENDENCIES: Record<MetricId, string[]> = {
     'financials.propertyManagementFeePercent',
     'financials.monthlyMaintenanceReserve',
     'financials.monthlyHOA',
-    'strategyType',
+    'dispositionType',
   ],
   BREAK_EVEN_OCCUPANCY: [
     'financials.purchasePrice',
@@ -244,7 +244,7 @@ const METRIC_DEPENDENCIES: Record<MetricId, string[]> = {
     'financials.propertyManagementFeePercent',
     'financials.monthlyMaintenanceReserve',
     'financials.monthlyHOA',
-    'strategyType',
+    'dispositionType',
   ],
   CAPITAL_RESERVES: [
     'financials.capitalReserves',
@@ -264,7 +264,7 @@ const METRIC_DEPENDENCIES: Record<MetricId, string[]> = {
     'financials.propertyManagementFeePercent',
     'financials.monthlyMaintenanceReserve',
     'financials.monthlyHOA',
-    'strategyType',
+    'dispositionType',
   ],
   TENANT_TURNOVER: [
     'financials.tenantTurnoverRate',

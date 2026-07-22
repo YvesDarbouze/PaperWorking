@@ -132,7 +132,7 @@ export default function MarketplacesClient() {
 
               {/* Deal Graphic (Right side) */}
               <div className="lg:col-span-6 flex justify-center">
-                <div className="w-full max-w-[450px] rounded-2xl border border-white/10 bg-[#121014] shadow-2xl p-6 relative overflow-hidden font-hanken">
+                <div className="w-full max-w-[450px] rounded-2xl border border-white/10 bg-pw-night-bg shadow-2xl p-6 relative overflow-hidden font-hanken">
                   <div className="absolute top-0 right-0 w-40 h-40 bg-primary/10 rounded-full blur-[40px] pointer-events-none" />
                   
                   {/* Mock card preview */}
@@ -143,7 +143,7 @@ export default function MarketplacesClient() {
                         <MapPin className="w-3.5 h-3.5 flex-shrink-0" /> Miami, FL
                       </p>
                     </div>
-                    <span className="px-2 py-0.5 rounded border border-emerald-400/20 bg-emerald-400/10 text-[9px] font-bold text-emerald-400 uppercase tracking-widest">
+                    <span className="px-2 py-0.5 rounded border border-pw-success-border bg-pw-success-container text-[9px] font-bold text-pw-success uppercase tracking-widest">
                       Active Target
                     </span>
                   </div>
@@ -257,7 +257,7 @@ export default function MarketplacesClient() {
 
               {/* Vendor Graphic (Right side) */}
               <div className="lg:col-span-6 flex justify-center">
-                <div className="w-full max-w-[450px] rounded-2xl border border-white/10 bg-[#121014] shadow-2xl p-6 relative overflow-hidden font-hanken">
+                <div className="w-full max-w-[450px] rounded-2xl border border-white/10 bg-pw-night-bg shadow-2xl p-6 relative overflow-hidden font-hanken">
                   <div className="absolute top-0 right-0 w-40 h-40 bg-primary/10 rounded-full blur-[40px] pointer-events-none" />
                   
                   {/* Mock profile cards grid */}

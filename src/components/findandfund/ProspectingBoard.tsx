@@ -26,7 +26,7 @@ const STATUS_COLORS: Record<ProspectStatus, string> = {
   Researching: 'bg-blue-50 text-blue-600',
   'Offer Sent': 'bg-amber-50 text-amber-600',
   Counter: 'bg-orange-50 text-orange-600',
-  Accepted: 'bg-emerald-50 text-emerald-600',
+  Accepted: 'bg-pw-success-container text-pw-success border border-pw-success-border',
   Dead: 'bg-red-50 text-red-500',
 };
 
@@ -182,7 +182,7 @@ export default function ProspectingBoard() {
                             ? 'bg-[#454955]/15 text-[#454955]'
                             : 'bg-bg-primary text-text-secondary hover:text-text-secondary'
                         }`}
-                        title={prospect.syndicationEnabled ? 'Syndication ON' : 'Syndication OFF'}
+                        title={prospect.syndicationEnabled ? 'Co-Investing ON' : 'Co-Investing OFF'}
                       >
                         {prospect.syndicationEnabled ? (
                           <ToggleRight className="w-3.5 h-3.5" />
@@ -254,7 +254,7 @@ export default function ProspectingBoard() {
                       {prospect.syndicationEnabled && currentProject && (
                         <div className="bg-[#454955]/10 border border-[#454955]/20 rounded-lg p-3 flex items-center justify-between">
                           <div>
-                            <p className="text-xs font-semibold text-[#454955]">Syndication Active</p>
+                            <p className="text-xs font-semibold text-[#454955]">Co-Investing Active</p>
                             <p className="text-xs text-text-secondary">Invite investors to co-fund this prospect.</p>
                           </div>
                           <button

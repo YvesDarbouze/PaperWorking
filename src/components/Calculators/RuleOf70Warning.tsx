@@ -4,6 +4,8 @@ import React from 'react';
 import { useProjectStore } from '@/store/projectStore';
 import { AlertTriangle, CheckCircle2 } from 'lucide-react';
 
+import { deriveAllMetrics } from '@/lib/metrics';
+
 export default function RuleOf70Warning() {
   const currentProject = useProjectStore(state => state.currentProject);
   
@@ -12,7 +14,12 @@ export default function RuleOf70Warning() {
   const { purchasePrice, estimatedARV, costs } = currentProject.financials;
   
   const estimatedRepairs = costs.reduce((sum, cost) => sum + cost.amount, 0); // we sum up costs, ideally this would be isolated estimated repair cost
-  const maxAllowableOffer = (estimatedARV * 0.70) - estimatedRepairs;
+  const tempFinancials = {
+    ...currentProject.financials,
+    projectedRehabCost: estimatedRepairs,
+  };
+  const metrics = deriveAllMetrics(tempFinancials as any);
+  const maxAllowableOffer = metrics.mao ?? 0;
 
   const isOverLeveraged = purchasePrice > maxAllowableOffer;
 

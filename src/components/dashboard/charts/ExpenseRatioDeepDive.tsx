@@ -2,7 +2,7 @@
 
 import React, { useMemo } from 'react';
 import { Project } from '@/types/schema';
-import { deriveDualScopeMetrics, computeNOIComponents } from '@/lib/metrics/reiMetrics';
+import { deriveDualScopeMetrics } from '@/lib/metrics/reiMetrics';
 import ExpenseRatioPieChart from '@/components/Charts/ExpenseRatioPieChart';
 import ExpenseRatioBarChart from '@/components/Charts/ExpenseRatioBarChart';
 import { PieChart as PieIcon, AlertTriangle, TrendingDown, DollarSign, Target, Layers } from 'lucide-react';
@@ -42,8 +42,8 @@ export default function ExpenseRatioDeepDive({ projects: propProjects }: Props) 
     if (projects.length === 0) return null;
 
     const breakdowns = projects.map(p => {
-      const { asset: m } = deriveDualScopeMetrics(p.financials!, undefined, p.strategyType, p.currentPhase);
-      const noi = computeNOIComponents(p.financials!, p.strategyType, p.currentPhase);
+      const { asset: m } = deriveDualScopeMetrics(p.financials!, undefined, p.dispositionType, p.currentPhase);
+      const noi = m.noiComponents;
       return {
         name: (p.propertyName || p.address || 'Unknown').substring(0, 16),
         oer: m.oer,
@@ -57,7 +57,7 @@ export default function ExpenseRatioDeepDive({ projects: propProjects }: Props) 
     const primary = breakdowns[0];
     if (primary.grossRent <= 0) return null;
 
-    const classification = classifyER(primary.oer);
+    const classification = classifyER(primary.oer ?? 0);
 
     // Build expense breakdown for pie chart
     const expenseItems = [
@@ -139,9 +139,9 @@ export default function ExpenseRatioDeepDive({ projects: propProjects }: Props) 
       {/* KPI Strip */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
         {[
-          { icon: PieIcon, label: 'Expense Ratio', value: fmtPct(primary.oer), sublabel: `${fmtUSD(Math.round(primary.totalExpenses))} of ${fmtUSD(Math.round(primary.grossRent))} income`, color: classification.color },
+          { icon: PieIcon, label: 'Expense Ratio', value: fmtPct(primary.oer ?? 0), sublabel: `${fmtUSD(Math.round(primary.totalExpenses))} of ${fmtUSD(Math.round(primary.grossRent))} income`, color: classification.color },
           { icon: DollarSign, label: 'Total Operating Costs', value: fmtUSD(Math.round(primary.totalExpenses)), sublabel: `${fmtUSD(Math.round(primary.totalExpenses / 12))}/mo`, color: '#F06543' },
-          { icon: Target, label: 'Income Retained', value: fmtPct(100 - primary.oer), sublabel: `${fmtUSD(Math.round(primary.grossRent - primary.totalExpenses))}/yr kept`, color: '#595959' },
+          { icon: Target, label: 'Income Retained', value: fmtPct(100 - (primary.oer ?? 0)), sublabel: `${fmtUSD(Math.round(primary.grossRent - primary.totalExpenses))}/yr kept`, color: '#595959' },
           { icon: TrendingDown, label: 'Top Cost Driver', value: topDriver ? topDriver.name : 'N/A', sublabel: topDriver ? `${fmtUSD(topDriver.value)}/yr (${fmtPct(topDriver.pct)})` : '—', color: '#595959' },
         ].map((kpi, i) => (
           <div key={i} className="rounded-lg p-4 flex flex-col gap-2" style={{ background: 'var(--bg-surface)', border: '1px solid var(--border-ui)' }}>
@@ -165,7 +165,7 @@ export default function ExpenseRatioDeepDive({ projects: propProjects }: Props) 
           </div>
           {/* Big number center */}
           <div className="mt-2 text-center">
-            <p className="text-3xl font-black tabular-nums" style={{ color: classification.color }}>{fmtPct(primary.oer)}</p>
+            <p className="text-3xl font-black tabular-nums" style={{ color: classification.color }}>{fmtPct(primary.oer ?? 0)}</p>
             <p className="text-[10px] font-bold" style={{ color: classification.color }}>{classification.description}</p>
           </div>
         </div>
@@ -296,7 +296,7 @@ export default function ExpenseRatioDeepDive({ projects: propProjects }: Props) 
         <div className="bg-bg-surface border border-border-accent rounded-xl p-5 flex flex-col" style={{ minHeight: '280px' }}>
           <h4 className="text-xs font-bold uppercase tracking-[0.15em] text-text-secondary mb-4">Expense Ratio by Property</h4>
           <div className="flex-1 min-h-0">
-            <ExpenseRatioBarChart data={analysis.breakdowns.map(b => ({ name: b.name, ratio: b.oer, color: classifyER(b.oer).color }))} height="100%" />
+            <ExpenseRatioBarChart data={analysis.breakdowns.map(b => ({ name: b.name, ratio: b.oer ?? 0, color: classifyER(b.oer ?? 0).color }))} height="100%" />
           </div>
         </div>
       )}

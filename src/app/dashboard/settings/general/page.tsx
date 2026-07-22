@@ -839,7 +839,7 @@ export default function GeneralSettingsPage() {
               {/* Confirmation Modal */}
               {deleteConfirmOpen && (
                 <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/75 backdrop-blur-md animate-fade-in">
-                  <div className="glass-card max-w-lg w-full mx-4 rounded-2xl p-8 border border-error/20 bg-[#121014]/98 relative overflow-hidden shadow-2xl space-y-6">
+                  <div className="glass-card max-w-lg w-full mx-4 rounded-2xl p-8 border border-error/20 bg-pw-night-bg/98 relative overflow-hidden shadow-2xl space-y-6">
                     <div className="flex items-center gap-2 border-b border-white/10 pb-4">
                       <span className="material-symbols-outlined text-error text-2xl select-none">warning</span>
                       <h3 className="text-xl font-bold text-error/95">Permanently Delete Account?</h3>

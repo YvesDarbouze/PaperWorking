@@ -20,7 +20,7 @@ export interface CapRateProjectInput {
     [key: string]: any;
   };
   currentPhase?: number;
-  strategyType?: string;
+  dispositionType?: string;
   [key: string]: any;
 }
 
@@ -42,7 +42,7 @@ export function computeCapRateMetric(project: CapRateProjectInput): MetricResult
 
   if (missing.length > 0) return incomplete(missing);
 
-  const noi = computeNOI(fin as any, project.strategyType, project.currentPhase);
+  const noi = computeNOI(fin as any, project.dispositionType, project.currentPhase);
   const capRate = computeCapRate(noi, purchasePrice!);
 
   const inputsUsed: Record<string, number> = {

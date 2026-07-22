@@ -57,13 +57,7 @@ export const phaseStatusEnum = z.enum([
   'Phase 4: Closing & Exit',
 ]);
 
-/** Investment strategy — determines which metrics are relevant */
-export const strategyTypeEnum = z.enum([
-  'Sell',
-  'Rent',
-  'Fix & Flip',
-  'Buy & Hold',
-]);
+
 
 /** Asset classification */
 export const assetClassEnum = z.enum([
@@ -132,12 +126,11 @@ export const entryPathEnum = z.enum([
 
 /** Rehab scope classification — drives budget templates */
 export const rehabTierEnum = z.enum([
-  'Staging',
-  'Minor Cosmetic',
-  'Minor Rehab',
-  'Full Rehab',
-  'Gut Renovation',
-  'Ground-Up Construction',
+  'Stage',
+  'Refurbish',
+  'Renovate',
+  'Gut',
+  'Develop',
 ]);
 
 // ── Nested Schemas ─────────────────────────────────────────
@@ -729,9 +722,6 @@ export const projectSchema = z.object({
 
   /** High-level horizontal phase tracker string */
   phaseStatus: phaseStatusEnum.optional(),
-
-  /** Investment strategy */
-  strategyType: strategyTypeEnum.optional(),
 
   /** Asset classification */
   assetClass: assetClassEnum.optional(),

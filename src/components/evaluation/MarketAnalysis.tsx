@@ -128,7 +128,7 @@ export default function MarketAnalysis({ zipCode }: MarketAnalysisProps = {}) {
           </span>
         )}
         {!stats && !loading && !noCoverage && (
-          <span className="bg-emerald-50 text-emerald-700 text-xs font-bold px-2 py-0.5 rounded-full uppercase tracking-wider">
+          <span className="bg-pw-success-container text-pw-success text-xs font-bold px-2 py-0.5 rounded-full border border-pw-success-border uppercase tracking-wider">
             ZIP Market Data
           </span>
         )}
@@ -195,7 +195,7 @@ export default function MarketAnalysis({ zipCode }: MarketAnalysisProps = {}) {
               </div>
               <div className="text-right">
                 {yoy != null && (
-                  <div className={`flex items-center text-sm font-medium ${yoy >= 0 ? 'text-emerald-400' : 'text-red-400'}`}>
+                  <div className={`flex items-center text-sm font-medium ${yoy >= 0 ? 'text-pw-success' : 'text-red-400'}`}>
                     <ArrowUpRight className="w-3.5 h-3.5 mr-0.5" />
                     {yoy > 0 ? '+' : ''}{yoy}% YoY
                   </div>

@@ -156,14 +156,12 @@ export function PropertyMapTile({
         <>
           <p className="text-xs font-semibold text-white/70">{address}</p>
           <p className="text-[10px] text-white/40 leading-snug max-w-[200px]">
-            Map coordinates not yet captured.
-            Complete the address step to enable the map.
+            location not geocoded. Map coordinates not yet captured. Complete details to pin property.
           </p>
         </>
       ) : (
         <p className="text-[10px] text-white/40 leading-snug max-w-[200px]">
-          No address on record.
-          Complete the address step to show the property map.
+          location not geocoded. No address on record. Enter an address in Phase 1 to activate mapping.
         </p>
       )}
     </div>

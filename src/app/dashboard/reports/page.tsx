@@ -86,14 +86,14 @@ function NOITrendChart({ values, labels }: { values: number[]; labels: string[] 
           value: v,
           itemStyle: {
             color: i === values.length - 1
-              ? { type: 'linear', x: 0, y: 0, x2: 0, y2: 1, colorStops: [{ offset: 0, color: '#3279F9' }, { offset: 1, color: '#1c5fd1' }] }
+              ? { type: 'linear', x: 0, y: 0, x2: 0, y2: 1, colorStops: [{ offset: 0, color: '#627C85' }, { offset: 1, color: '#4c6168' }] }
               : { type: 'linear', x: 0, y: 0, x2: 0, y2: 1, colorStops: isDark ? [{ offset: 0, color: '#282a32' }, { offset: 1, color: '#15161a' }] : [{ offset: 0, color: '#EFF2F7' }, { offset: 1, color: '#CDD4DC' }] },
           },
         })),
         barMaxWidth: 40,
         barCategoryGap: '25%',
         emphasis: {
-          itemStyle: { color: { type: 'linear', x: 0, y: 0, x2: 0, y2: 1, colorStops: [{ offset: 0, color: '#3279F9' }, { offset: 1, color: '#1c5fd1' }] } },
+          itemStyle: { color: { type: 'linear', x: 0, y: 0, x2: 0, y2: 1, colorStops: [{ offset: 0, color: '#627C85' }, { offset: 1, color: '#4c6168' }] } },
         },
       },
     ],
@@ -757,8 +757,8 @@ export default function ReportsPage() {
   const { theme } = useTheme();
   const isDark = theme === "dark";
   const expenseColors = isDark
-    ? ['#3279F9', '#9E9DA0', '#C4A35A', '#282a32']
-    : ['#3279F9', '#45474D', '#7A5500', '#EFF2F7'];
+    ? ['#627C85', '#9E9DA0', '#C4A35A', '#282a32']
+    : ['#627C85', '#45474D', '#7A5500', '#EFF2F7'];
 
   const projects = useProjectStore((s) => s.projects);
   const ledgerItemsMap = useProjectStore((s) => s.ledgerItems);

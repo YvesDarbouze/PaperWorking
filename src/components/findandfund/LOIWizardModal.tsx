@@ -280,15 +280,15 @@ export default function LOIWizardModal({
 
               <div className="bg-pw-glass-bg/50 border border-pw-border rounded-2xl p-4 text-left space-y-2 mb-6 max-w-sm mx-auto text-pw-black">
                 <div className="flex items-center gap-2 text-sm">
-                  <CheckCircle2 className="w-4 h-4 text-emerald-500" />
+                  <CheckCircle2 className="w-4 h-4 text-pw-success" />
                   <span>LOI document generated</span>
                 </div>
                 <div className="flex items-center gap-2 text-sm">
-                  <CheckCircle2 className="w-4 h-4 text-emerald-500" />
+                  <CheckCircle2 className="w-4 h-4 text-pw-success" />
                   <span>Guest portal link will be created</span>
                 </div>
                 <div className="flex items-center gap-2 text-sm">
-                  <CheckCircle2 className="w-4 h-4 text-emerald-500" />
+                  <CheckCircle2 className="w-4 h-4 text-pw-success" />
                   <span>Email notification will be sent</span>
                 </div>
               </div>
@@ -306,8 +306,8 @@ export default function LOIWizardModal({
           {/* Step 3: Dispatched Confirmation */}
           {step === 3 && dispatched && (
             <div className="text-center py-8">
-              <div className="w-16 h-16 bg-emerald-500/10 border border-emerald-500/30 rounded-2xl flex items-center justify-center mx-auto mb-4">
-                <CheckCircle2 className="w-8 h-8 text-emerald-500" />
+              <div className="w-16 h-16 bg-pw-success-container border border-pw-success-border rounded-2xl flex items-center justify-center mx-auto mb-4">
+                <CheckCircle2 className="w-8 h-8 text-pw-success" />
               </div>
               <h3 className="text-lg font-semibold text-pw-black mb-2">LOI Dispatched!</h3>
               <p className="text-sm text-pw-muted mb-6 max-w-sm mx-auto">

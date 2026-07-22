@@ -52,18 +52,64 @@ export const PROJECT_WIZARD_QUESTIONS: WizardQuestion[] = [
   },
 
   {
-    id: 'strategyType',
-    prompt: 'What is your investment strategy?',
+    id: 'dispositionType',
+    prompt: 'What is your disposition type?',
     type: 'single-select',
-    field: 'strategyType',
+    field: 'dispositionType',
     options: [
-      { value: 'Fix & Flip', label: 'Flip', description: 'Acquire, renovate, and sell for short-term profit.' },
-      { value: 'Rent', label: 'Buy-and-hold Rental', description: 'Acquire, lease, and hold for long-term cash flow.' },
-      { value: 'BRRRR', label: 'BRRRR', description: 'Buy, Rehab, Rent, Refinance, Repeat strategy.' },
+      { value: 'SALE', label: 'Sale', description: 'Acquire, renovate, and sell (Flip/Wholesale/Build-Sell).' },
+      { value: 'RENT', label: 'Rent', description: 'Acquire, lease, and hold (Long Term/Short Term/BRRRR).' },
+      { value: 'LEASE', label: 'Lease', description: 'Lease out the property (NNN/Ground/Lease Option).' },
     ],
-    defaultValue: 'Fix & Flip',
+    defaultValue: 'SALE',
     required: true,
     weight: 40,
+  },
+  {
+    id: 'subStrategySale',
+    prompt: 'Select Sale Strategy',
+    type: 'single-select',
+    field: 'subStrategy',
+    options: [
+      { value: 'FLIP', label: 'Fix & Flip', description: 'Acquire, renovate, and sell for profit.' },
+      { value: 'WHOLESALE', label: 'Wholesale', description: 'Contract a property and assign to another buyer.' },
+      { value: 'BUILD_SELL', label: 'Build & Sell', description: 'Construct a new building and sell upon completion.' },
+    ],
+    defaultValue: 'FLIP',
+    required: true,
+    condition: (answers) => answers.dispositionType === 'SALE',
+    weight: 45,
+  },
+  {
+    id: 'subStrategyRent',
+    prompt: 'Select Rental Strategy',
+    type: 'single-select',
+    field: 'subStrategy',
+    options: [
+      { value: 'LONG_TERM', label: 'Long Term', description: 'Lease to stable tenants on 12+ month terms.' },
+      { value: 'SHORT_TERM', label: 'Short Term / Airbnb', description: 'Lease as vacation or short term rentals.' },
+      { value: 'MID_TERM', label: 'Mid Term', description: 'Corporate housing or 30+ day rentals.' },
+      { value: 'BRRRR', label: 'BRRRR', description: 'Buy, Rehab, Rent, Refinance, Repeat.' },
+    ],
+    defaultValue: 'LONG_TERM',
+    required: true,
+    condition: (answers) => answers.dispositionType === 'RENT',
+    weight: 46,
+  },
+  {
+    id: 'subStrategyLease',
+    prompt: 'Select Lease Strategy',
+    type: 'single-select',
+    field: 'subStrategy',
+    options: [
+      { value: 'NNN', label: 'Triple Net (NNN)', description: 'Tenant pays taxes, insurance, and maintenance.' },
+      { value: 'GROUND', label: 'Ground Lease', description: 'Lease the land only; tenant builds improvements.' },
+      { value: 'LEASE_OPTION', label: 'Lease Option', description: 'Lease with option to purchase at a later date.' },
+    ],
+    defaultValue: 'NNN',
+    required: true,
+    condition: (answers) => answers.dispositionType === 'LEASE',
+    weight: 47,
   },
   {
     id: 'financingIntent',
@@ -182,7 +228,7 @@ export const PROJECT_WIZARD_QUESTIONS: WizardQuestion[] = [
     required: true,
     condition: (answers) =>
       answers.isBackdated === 'no' &&
-      (answers.strategyType === 'Rent' || answers.strategyType === 'BRRRR'),
+      answers.dispositionType === 'RENT',
     weight: 105,
   },
   {
@@ -194,7 +240,7 @@ export const PROJECT_WIZARD_QUESTIONS: WizardQuestion[] = [
     placeholder: '0.00',
     required: true,
     condition: (answers) =>
-      answers.isBackdated === 'no' && answers.strategyType === 'Fix & Flip',
+      answers.isBackdated === 'no' && answers.dispositionType === 'SALE',
     weight: 105,
   },
   {
@@ -219,7 +265,7 @@ export const PROJECT_WIZARD_QUESTIONS: WizardQuestion[] = [
     placeholder: '1950',
     condition: (answers) =>
       answers.isBackdated === 'no' &&
-      (answers.strategyType === 'Rent' || answers.strategyType === 'BRRRR'),
+      answers.dispositionType === 'RENT',
     weight: 109,
   },
   {
@@ -231,7 +277,7 @@ export const PROJECT_WIZARD_QUESTIONS: WizardQuestion[] = [
     placeholder: '0',
     condition: (answers) =>
       answers.isBackdated === 'no' &&
-      (answers.strategyType === 'Rent' || answers.strategyType === 'BRRRR'),
+      answers.dispositionType === 'RENT',
     weight: 110,
   },
   {
@@ -243,7 +289,7 @@ export const PROJECT_WIZARD_QUESTIONS: WizardQuestion[] = [
     placeholder: '7',
     condition: (answers) =>
       answers.isBackdated === 'no' &&
-      (answers.strategyType === 'Rent' || answers.strategyType === 'BRRRR'),
+      answers.dispositionType === 'RENT',
     weight: 111,
   },
   {
@@ -254,7 +300,7 @@ export const PROJECT_WIZARD_QUESTIONS: WizardQuestion[] = [
     placeholder: '250',
     condition: (answers) =>
       answers.isBackdated === 'no' &&
-      (answers.strategyType === 'Rent' || answers.strategyType === 'BRRRR'),
+      answers.dispositionType === 'RENT',
     weight: 112,
   },
   {
@@ -265,7 +311,7 @@ export const PROJECT_WIZARD_QUESTIONS: WizardQuestion[] = [
     placeholder: '125',
     condition: (answers) =>
       answers.isBackdated === 'no' &&
-      (answers.strategyType === 'Rent' || answers.strategyType === 'BRRRR'),
+      answers.dispositionType === 'RENT',
     weight: 113,
   },
   {
@@ -277,7 +323,7 @@ export const PROJECT_WIZARD_QUESTIONS: WizardQuestion[] = [
     placeholder: '0',
     condition: (answers) =>
       answers.isBackdated === 'no' &&
-      (answers.strategyType === 'Rent' || answers.strategyType === 'BRRRR'),
+      answers.dispositionType === 'RENT',
     weight: 114,
   },
   {
@@ -289,7 +335,7 @@ export const PROJECT_WIZARD_QUESTIONS: WizardQuestion[] = [
     placeholder: '8',
     condition: (answers) =>
       answers.isBackdated === 'no' &&
-      (answers.strategyType === 'Rent' || answers.strategyType === 'BRRRR'),
+      answers.dispositionType === 'RENT',
     weight: 115,
   },
   {
@@ -301,7 +347,7 @@ export const PROJECT_WIZARD_QUESTIONS: WizardQuestion[] = [
     placeholder: '150',
     condition: (answers) =>
       answers.isBackdated === 'no' &&
-      (answers.strategyType === 'Rent' || answers.strategyType === 'BRRRR'),
+      answers.dispositionType === 'RENT',
     weight: 116,
   },
   {
@@ -313,7 +359,7 @@ export const PROJECT_WIZARD_QUESTIONS: WizardQuestion[] = [
     placeholder: '0',
     condition: (answers) =>
       answers.isBackdated === 'no' &&
-      (answers.strategyType === 'Rent' || answers.strategyType === 'BRRRR'),
+      answers.dispositionType === 'RENT',
     weight: 117,
   },
   {
@@ -324,7 +370,7 @@ export const PROJECT_WIZARD_QUESTIONS: WizardQuestion[] = [
     placeholder: '0.00',
     required: true,
     condition: (answers) =>
-      answers.isBackdated === 'yes' && answers.strategyType === 'Fix & Flip' && !answers.isCompleted,
+      answers.isBackdated === 'yes' && answers.dispositionType === 'SALE' && !answers.isCompleted,
     weight: 120,
   },
   {

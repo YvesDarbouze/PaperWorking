@@ -13,7 +13,7 @@ export const draftingAgent = {
    */
   async draftDealUpdate(deal: Project, audience: 'investors' | 'contractors') {
     const prompt = `
-      You are an AI assistant for PaperWorking, a premium real estate intelligence and syndication platform.
+      You are an AI assistant for PaperWorking, a premium real estate intelligence and co-investment platform.
       Your task is to draft a clear, precise status update for the project: ${deal.propertyName}.
       
       PROJECT METRICS:

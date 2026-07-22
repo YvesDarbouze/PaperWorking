@@ -39,12 +39,7 @@ import AppreciationChart from '@/components/Charts/AppreciationChart';
 import { ProjectFinancials } from '@/types/schema';
 
 // ── Metric calculation engine ────────────────────────────────
-import {
-  computeNOIComponents,
-  computeAnnualDebtService,
-  computeCashFlow,
-  computeTotalCashInvested,
-} from '@/lib/metrics';
+import { deriveAllMetrics } from '@/lib/metrics';
 
 // ── Canonical seeded demo dataset ────────────────────────────
 // Fictional 4-unit residential rental: "Maple Creek — 4-Plex"
@@ -69,6 +64,7 @@ const DEMO_FINANCIALS: ProjectFinancials = {
   // Operating expenses (monthly amounts)
   holdingCostTaxes: 600,            // $7,200/yr
   holdingCostInsurance: 310,        // $3,720/yr
+  holdingCostUtilities: 420,        // $5,040/yr (4-plex common area + owner-paid)
   propertyManagementFeePercent: 8,
   monthlyMaintenanceReserve: 385,
   monthlyHOA: 0,
@@ -143,22 +139,15 @@ export default function MetricsCarouselShell() {
   const loanInterestRate = financials.loanInterestRate ?? 0;
   const loanTermYears = financials.loanTermYears ?? 30;
 
-  const noiComponents = computeNOIComponents(financials);
-  const noi = noiComponents.noi;
+  const liveMetrics = useMemo(() => {
+    return deriveAllMetrics(financials as any, undefined, 'RENT', 3);
+  }, [financials]);
 
-  const loanTermMonths = loanTermYears * 12;
-  const annualDebtService = computeAnnualDebtService(
-    loanAmount,
-    loanInterestRate,
-    loanTermMonths
-  );
-
-  const { annual: annualCashFlow } = computeCashFlow(
-    noi,
-    annualDebtService
-  );
-
-  const totalCashInvested = computeTotalCashInvested(financials);
+  const noiComponents = liveMetrics.noiComponents;
+  const noi = liveMetrics.noi;
+  const annualDebtService = liveMetrics.annualDebtService;
+  const annualCashFlow = liveMetrics.annualCashFlow;
+  const totalCashInvested = liveMetrics.totalCashInvested;
 
   const downPayment = purchasePrice > 0 ? purchasePrice - loanAmount : 0;
   const closingCosts = fixedAcquisitionCosts;

@@ -27,9 +27,6 @@ import { computeScheduleE } from '@/lib/tax/scheduleE';
 import { aggregateScheduleE } from '@/lib/tax/portfolioSummary';
 import { generateScheduleEPdf } from '@/lib/tax/pdfGenerator';
 /* ── Structured MetricResult wrappers ── */
-import { computeIRRMetric } from '@/lib/metrics/computeIRR';
-import { computeAppreciationMetric } from '@/lib/metrics/computeAppreciation';
-import { computeCoCMetric } from '@/lib/metrics/computeCoC';
 import { MetricReadout } from '@/components/metrics/MetricReadout';
 import type { MetricResult } from '@/lib/metrics/types';
 import { ValuationHistory } from '@/components/project/ValuationHistory';
@@ -94,7 +91,7 @@ export default function Phase4WorkspacePage() {
     return deriveAllMetrics(
       srcProject.financials,
       srcProject.financials.estimatedCurrentValue,
-      srcProject.strategyType,
+      srcProject.dispositionType,
       srcProject.currentPhase,
       srcProject.createdAt
     );
@@ -134,21 +131,63 @@ export default function Phase4WorkspacePage() {
   /* ── Structured MetricResult computations ── */
   const irrResult: MetricResult = useMemo(() => {
     const srcProject = localProject || project;
-    if (!srcProject) return { value: null, state: 'incomplete' as const, inputsUsed: {}, inputsMissing: ['project'] };
-    return computeIRRMetric(srcProject);
-  }, [localProject, project]);
+    const fin = srcProject?.financials as any;
+    if (!fin) return { value: null, state: 'incomplete', inputsUsed: {}, inputsMissing: ['project'] } as MetricResult;
+    const missing = [];
+    const purchasePrice = fin.purchasePrice || 0;
+    const rent = fin.monthlyGrossRent || fin.monthlyRent || 0;
+    if (!(purchasePrice > 0)) missing.push('financials.purchasePrice');
+    if (!(rent > 0)) missing.push('financials.monthlyGrossRent');
+    if (missing.length > 0) return { value: null, state: 'incomplete', inputsUsed: {}, inputsMissing: missing } as MetricResult;
+    return {
+      value: liveMetrics?.irr !== null && liveMetrics?.irr !== undefined ? liveMetrics.irr * 100 : null,
+      state: 'actual',
+      inputsUsed: {
+        'financials.purchasePrice': purchasePrice,
+        'financials.monthlyGrossRent': rent,
+      },
+      inputsMissing: [],
+    } as MetricResult;
+  }, [localProject, project, liveMetrics]);
 
   const appreciationResult: MetricResult = useMemo(() => {
     const srcProject = localProject || project;
-    if (!srcProject) return { value: null, state: 'incomplete' as const, inputsUsed: {}, inputsMissing: ['project'] };
-    return computeAppreciationMetric(srcProject);
-  }, [localProject, project]);
+    const fin = srcProject?.financials as any;
+    if (!fin) return { value: null, state: 'incomplete', inputsUsed: {}, inputsMissing: ['project'] } as MetricResult;
+    const missing = [];
+    const purchasePrice = fin.purchasePrice || 0;
+    if (!(purchasePrice > 0)) missing.push('financials.purchasePrice');
+    if (missing.length > 0) return { value: null, state: 'incomplete', inputsUsed: {}, inputsMissing: missing } as MetricResult;
+    return {
+      value: liveMetrics?.annualizedAppreciation ?? null,
+      state: 'actual',
+      inputsUsed: {
+        'financials.purchasePrice': purchasePrice,
+      },
+      inputsMissing: [],
+    } as MetricResult;
+  }, [localProject, project, liveMetrics]);
 
   const cocResult: MetricResult = useMemo(() => {
     const srcProject = localProject || project;
-    if (!srcProject) return { value: null, state: 'incomplete' as const, inputsUsed: {}, inputsMissing: ['project'] };
-    return computeCoCMetric(srcProject);
-  }, [localProject, project]);
+    const fin = srcProject?.financials as any;
+    if (!fin) return { value: null, state: 'incomplete', inputsUsed: {}, inputsMissing: ['project'] } as MetricResult;
+    const missing = [];
+    const purchasePrice = fin.purchasePrice || 0;
+    const rent = fin.monthlyGrossRent || fin.monthlyRent || 0;
+    if (!(purchasePrice > 0)) missing.push('financials.purchasePrice');
+    if (!(rent > 0)) missing.push('financials.monthlyGrossRent');
+    if (missing.length > 0) return { value: null, state: 'incomplete', inputsUsed: {}, inputsMissing: missing } as MetricResult;
+    return {
+      value: liveMetrics?.cashOnCashReturn ?? null,
+      state: 'actual',
+      inputsUsed: {
+        'financials.purchasePrice': purchasePrice,
+        'financials.monthlyGrossRent': rent,
+      },
+      inputsMissing: [],
+    } as MetricResult;
+  }, [localProject, project, liveMetrics]);
 
   /* ── Realized state detection ── */
   const isRealized = !!((project as any)?.reiStatus === 'realized' || (project?.financials as any)?.exitRealized);

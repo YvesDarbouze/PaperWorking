@@ -17,14 +17,14 @@ export default function EquityPayoutManager() {
     <div className="bg-bg-surface border border-border-accent rounded-xl p-6 shadow-sm">
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6">
         <div>
-           <h3 className="text-lg font-bold text-text-primary flex items-center gap-2"><Users className="w-5 h-5 text-emerald-600"/> Equity Payout Automation</h3>
+           <h3 className="text-lg font-bold text-text-primary flex items-center gap-2"><Users className="w-5 h-5 text-pw-success"/> Equity Payout Automation</h3>
            <p className="text-sm text-text-secondary mt-1">Cross-references the crowdfunding database to distribute net escrow proceeds.</p>
         </div>
         
         <select 
            value={selectedDealId}
            onChange={(e) => setSelectedDealId(e.target.value)}
-           className="border border-border-accent rounded-lg text-sm p-2 bg-bg-primary focus:ring-2 focus:ring-emerald-500 focus:outline-none min-w-[200px]"
+           className="border border-border-accent rounded-lg text-sm p-2 bg-bg-primary focus:ring-2 focus:ring-pw-success focus:outline-none min-w-[200px]"
          >
            <option value="" disabled>Select Property...</option>
            {projects.map(d => (
@@ -40,14 +40,14 @@ export default function EquityPayoutManager() {
       ) : (
          <div className="space-y-4">
             {/* Banner Status */}
-            <div className={`p-4 rounded-lg flex items-center justify-between border ${isSold ? 'bg-emerald-50 border-emerald-200' : 'bg-blue-50 border-blue-200'}`}>
+            <div className={`p-4 rounded-lg flex items-center justify-between border ${isSold ? 'bg-pw-success-container border border-pw-success-border/50' : 'bg-blue-50 border-blue-200'}`}>
                <div className="flex items-center gap-3">
-                  {isSold ? <DollarSign className={`w-6 h-6 ${targetProfit >= 0 ? 'text-emerald-600' : 'text-red-500'}`} /> : <AlertCircle className="w-6 h-6 text-blue-500" />}
+                  {isSold ? <DollarSign className={`w-6 h-6 ${targetProfit >= 0 ? 'text-pw-success' : 'text-red-500'}`} /> : <AlertCircle className="w-6 h-6 text-blue-500" />}
                   <div>
-                    <p className={`text-xs font-bold tracking-widest uppercase ${isSold ? (targetProfit >= 0 ? 'text-emerald-600' : 'text-red-600') : 'text-blue-600'}`}>
+                    <p className={`text-xs font-bold tracking-widest uppercase ${isSold ? (targetProfit >= 0 ? 'text-pw-success' : 'text-red-600') : 'text-blue-600'}`}>
                        {calculationStatus}
                     </p>
-                    <p className={`text-2xl font-normal ${isSold ? (targetProfit >= 0 ? 'text-emerald-900' : 'text-red-900') : 'text-blue-900'}`}>
+                    <p className={`text-2xl font-normal ${isSold ? (targetProfit >= 0 ? 'text-pw-success' : 'text-red-900') : 'text-blue-900'}`}>
                         ${targetProfit.toLocaleString()}
                     </p>
                   </div>
@@ -95,7 +95,7 @@ export default function EquityPayoutManager() {
                              <td className="px-4 py-4 whitespace-nowrap text-center">
                                 <button
                                   disabled={!isSold || targetProfit <= 0 || payoutAmount <= 0}
-                                  className="inline-flex items-center gap-1 bg-emerald-100 text-emerald-800 hover:bg-emerald-200 disabled:opacity-40 disabled:cursor-not-allowed px-3 py-1.5 rounded-full text-xs font-bold transition"
+                                  className="inline-flex items-center gap-1 bg-pw-success-container text-pw-success hover:bg-pw-success/15 border border-pw-success-border/30 disabled:opacity-40 disabled:cursor-not-allowed px-3 py-1.5 rounded-full text-xs font-bold transition"
                                 >
                                    <Wallet className="w-3 h-3" /> Send Payment
                                 </button>

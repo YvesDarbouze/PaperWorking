@@ -58,14 +58,14 @@ const SEED_FINANCIALS = {
 const SEED_PROJECT = {
   financials: SEED_FINANCIALS,
   currentPhase: 1,
-  strategyType: 'Rent' as const,
+  dispositionType: 'RENT' as const,
 };
 
 // Get golden values from the engine
 const golden = deriveAllMetrics(
   SEED_FINANCIALS as any,
   undefined, // currentPropertyValue
-  'Rent',
+  'RENT',
   1, // currentPhase
 );
 
@@ -75,8 +75,8 @@ describe('Golden Test — All 10 Metrics Against Seed Project', () => {
     expect(result.state).toBe('projected');
     expect(result.value).not.toBeNull();
     expect(result.inputsMissing).toHaveLength(0);
-    // Explicitly assert NOI is exactly $12,486
-    expect(result.value).toBeCloseTo(12486, 0);
+    // Explicitly assert NOI is exactly $12,486 (on gross-scheduled-rent PM fee basis)
+    expect(result.value).toBeCloseTo(12486, 1);
   });
 
   test('D2 Cash Flow matches deriveAllMetrics', () => {
@@ -84,7 +84,7 @@ describe('Golden Test — All 10 Metrics Against Seed Project', () => {
     expect(result.state).toBe('projected');
     expect(result.value).not.toBeNull();
     expect(result.inputsMissing).toHaveLength(0);
-    // Explicitly assert annual cash flow is exactly -$4,443.31
+    // Explicitly assert annual cash flow is exactly -$4,443.31 (NOI $12,486 - debt service $16,929.31)
     expect(result.value).toBeCloseTo(-4443.31, 2);
   });
 
@@ -120,7 +120,7 @@ describe('Golden Test — All 10 Metrics Against Seed Project', () => {
     expect(result.state).toBe('projected');
     expect(result.value).not.toBeNull();
     expect(result.inputsMissing).toHaveLength(0);
-    // Explicitly assert DSCR is exactly 0.738 (approx 0.74)
+    // Explicitly assert DSCR is exactly 0.738 (rounds to 0.74)
     expect(result.value).toBeCloseTo(0.738, 3);
   });
 
@@ -206,7 +206,7 @@ describe('Golden Test — Sanity checks on seed values', () => {
   });
 
   test('Cash flow is negative (NOI < annual debt service) for this deal', () => {
-    // At 6.5% rate on $223.2k, debt service ($16.9k) exceeds NOI ($12.5k)
+    // At 6.5% rate on $223.2k, debt service ($16.9k) exceeds NOI ($12.486k)
     expect(golden.annualCashFlow).toBeCloseTo(-4443.31, 2);
   });
 });

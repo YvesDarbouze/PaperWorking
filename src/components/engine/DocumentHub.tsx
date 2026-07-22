@@ -29,7 +29,7 @@ const CATEGORIES: { key: DealDocumentCategory; label: string; icon: React.ReactN
 const ESIGN_CONFIG: Record<ESignStatus, { label: string; color: string; icon: React.ReactNode }> = {
   'Not Required':       { label: 'No eSign Required', color: 'text-text-secondary bg-bg-primary border-border-accent',       icon: <FileText className="w-3 h-3" /> },
   'Awaiting Signature': { label: 'Awaiting Signature', color: 'text-amber-700 bg-amber-50 border-amber-200',   icon: <Clock className="w-3 h-3" /> },
-  'Signed':             { label: 'Signed',             color: 'text-emerald-700 bg-emerald-50 border-emerald-200', icon: <CheckCircle2 className="w-3 h-3" /> },
+  'Signed':             { label: 'Signed',             color: 'text-pw-success bg-pw-success-container border-pw-success-border', icon: <CheckCircle2 className="w-3 h-3" /> },
   'Declined':           { label: 'Declined',           color: 'text-red-700 bg-red-50 border-red-200',          icon: <AlertCircle className="w-3 h-3" /> },
 };
 
@@ -455,7 +455,7 @@ export default function DocumentHub() {
                       <button
                         onClick={() => handleMarkSigned(doc.id)}
                         title="Mark as Signed"
-                        className="p-1.5 text-text-secondary hover:text-emerald-600 rounded-md hover:bg-emerald-50 transition"
+                        className="p-1.5 text-text-secondary hover:text-pw-success rounded-md hover:bg-pw-success-container transition"
                       >
                         <CheckCircle2 className="w-4 h-4" />
                       </button>

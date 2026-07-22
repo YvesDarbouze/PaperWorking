@@ -41,8 +41,8 @@ const STATUS_COLORS: Record<FundingSourceStatus, string> = {
   Exploring:    'bg-gray-100 text-gray-600',
   'Pre-Approved': 'bg-blue-50 text-blue-700',
   Applied:      'bg-yellow-50 text-yellow-700',
-  Approved:     'bg-emerald-50 text-emerald-700',
-  Funded:       'bg-green-100 text-green-800',
+  Approved:     'bg-pw-success-container text-pw-success border border-pw-success-border',
+  Funded:       'bg-pw-success-container text-pw-success border border-pw-success-border',
   Declined:     'bg-red-50 text-red-600',
 };
 
@@ -399,7 +399,7 @@ export default function FundingSourceTracker({ projectId: projectIdProp }: Fundi
                 <p className="text-[10px] text-text-secondary uppercase tracking-wider mb-1">
                   Approved / Funded
                 </p>
-                <p className="text-lg font-bold text-emerald-600 tabular-nums">
+                <p className="text-lg font-bold text-pw-success tabular-nums">
                   {fmt(totalCommitted)}
                 </p>
               </div>

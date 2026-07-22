@@ -120,8 +120,7 @@ function daysSince(date: Date): number {
 function evaluateLeaseRenewal(
   projectData: FirebaseFirestore.DocumentData
 ): LifecycleAlertEvaluation {
-  const strategy = projectData.strategyType;
-  const isRental = strategy === 'Rent' || strategy === 'Buy & Hold';
+  const isRental = projectData.dispositionType === 'RENT';
 
   if (!isRental) {
     return { alertType: 'LEASE_RENEWAL_DUE', triggered: false, daysUntil: null };

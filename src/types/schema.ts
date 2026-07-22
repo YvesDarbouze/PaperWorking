@@ -467,16 +467,7 @@ export interface Negotiation {
   notes?: string;
 }
 
-export type ContingencyType = 'Inspection' | 'Financing' | 'Appraisal';
 
-export interface Contingency {
-  id: string;
-  type: ContingencyType;
-  deadlineDate: Date;
-  isWaived: boolean;
-  isSatisfied: boolean;
-  notes?: string;
-}
 
 export interface DueDiligenceItem {
   id: string;
@@ -546,8 +537,11 @@ export type PhaseStatus =
   | 'Phase 1: Acquisition'
   | 'Phase 2: Transaction'
   | 'Phase 2: Closing'
+  | 'Phase 2: Fund'
   | 'Phase 3: Rehab'
-  | 'Phase 4: Hold / Exit';
+  | 'Phase 3: Hold'
+  | 'Phase 4: Hold / Exit'
+  | 'Phase 4: Exit';
 
 
 // ── REIL v2 Types ──────────────────────────────────────────
@@ -701,6 +695,22 @@ export interface PurchaseReadinessItem {
   notes: string;
 }
 
+export type ContingencyType = string;
+
+export interface Contingency {
+  id: string;
+  type: ContingencyType;
+  deadlineDate: Date;
+  isWaived: boolean;
+  isSatisfied: boolean;
+  notes?: string;
+  party?: string;
+  reminderSettings?: string[];
+  satisfiedDocUrl?: string;
+  satisfiedDocName?: string;
+  explicitConfirmation?: boolean;
+}
+
 // 3. Project Container Schema
 export interface Project {
   id: string; // Document ID
@@ -713,10 +723,57 @@ export interface Project {
   numberOfUnits?: number;
   occupiedUnits?: number;
   squareFootage?: number; // Core metric for sqft-based reporting
-  status: 'Active' | 'Lead' | 'Under Contract' | 'Renovating' | 'Listed' | 'Sold' | 'Rented' | 'closed_won' | 'closed_lost';
+  status: 'Active' | 'Lead' | 'Under Contract' | 'Renovating' | 'Listed' | 'Sold' | 'Rented' | 'closed_won' | 'closed_lost' | 'Archived';
+  retrospective?: boolean;
+  dispositionType?: 'SALE' | 'LEASE' | 'RENT';
+  strategyType?: string;
+  dispositionMode?: string;
+  city?: string;
+  state?: string;
+  entryStage?: string;
+  lastActiveStage?: string;
+  overrideReason?: string;
+  propertyType?: string;
+  units?: number;
+  condition?: string;
   phaseStatus?: PhaseStatus; // High-level horizontal phase tracker
-  strategyType?: 'Sell' | 'Rent' | 'Fix & Flip' | 'Buy & Hold';
+  subStrategy?: 'FLIP' | 'WHOLESALE' | 'BUILD_SELL' | 'LONG_TERM' | 'SHORT_TERM' | 'MID_TERM' | 'BRRRR' | 'NNN' | 'GROUND' | 'LEASE_OPTION';
+  holdHorizon?: number;
+  exitAssumption?: string;
   assetClass?: 'Residential' | 'Multi-Family' | 'Commercial' | 'Land';
+  latitude?: number;
+  longitude?: number;
+
+  // AQ-5 Source Card
+  leadSource?: string;
+  listingUrl?: string;
+  askingPriceCents?: number;
+  subjectDom?: number;
+  leadAgent?: string;
+  dateIdentified?: string | Date;
+
+  // AQ-5 Seller Card
+  sellerName?: string;
+  sellerType?: string;
+  sellerMotivation?: string;
+  sellerContact?: string;
+
+  // AQ-5 Market Card
+  submarket?: string;
+  medianSalesPriceCents?: number;
+  medianRentCents?: number;
+  marketVacancyRate?: number;
+  hazardFlag?: boolean;
+  hazardNote?: string;
+
+  // AQ-6 First-Pass Screen
+  firstPassRentCents?: number;
+  firstPassVerdict?: string;
+
+  // AQ-7 Comps & ARV
+  arv?: number;
+  arvCents?: number;
+  comps?: any[];
   leadEmail?: string;
   partnerEmails?: string;
   vision?: string;
@@ -747,6 +804,7 @@ export interface Project {
   isClearToClose?: boolean; // Milestone gate
   
   currentPhase?: number;
+  scenarioId?: string;             // Multi-scenario analysis: conservative / base / aggressive underwriting
   transaction?: ProjectTransaction;
   rehab?: ProjectRehab;
   holdCost?: ProjectHoldCost;
@@ -785,6 +843,9 @@ export interface Project {
   lastPhaseTransitionAt?: Date; // Phase 6: Tracks time spent in a specific lifecycle state
   ownerUid: string; // The person who created the project
   documentHubFolderId?: string; // Google Drive folder link for compliance hub
+
+  // AQ-27 Marketplace Posting
+  activeListingId?: string; // Back-reference to the active DealListing document ID
 }
 
 export interface ProjectMember {
@@ -869,6 +930,20 @@ export interface InspectionItem {
   loggedBy?: string; // UID
 }
 
+export interface InspectionFinding {
+  id: string;
+  system: string; // e.g. Roof, HVAC, Electrical, Plumbing, Structural, Other
+  severity: 'Critical' | 'Major' | 'Minor';
+  repairCost: number; // in dollars
+  notes?: string;
+}
+
+export interface TitleLienException {
+  id: string;
+  description: string;
+  status: 'Resolved' | 'Outstanding' | 'Escrow Hold';
+}
+
 // ── Title Search Checklist ─────────────────────────────────────
 // Promoted from TitleSearchClearance.tsx to allow Firestore persistence + type-sharing.
 export type ClearanceStatus = 'Pending' | 'In Review' | 'Cleared' | 'Issue Found';
@@ -946,12 +1021,11 @@ export interface CapitalSource {
 
 // ── R3 Hold Agent — Rehab Tier Classification ─────────────
 export type RehabTier =
-  | 'Staging'                // $1k–$5k
-  | 'Minor Cosmetic'         // $5k–$20k
-  | 'Minor Rehab'            // $15k–$50k
-  | 'Full Rehab'             // $40k–$100k
-  | 'Gut Renovation'         // $75k–$200k
-  | 'Ground-Up Construction'; // $150k+
+  | 'Stage'                  // $1k–$5k
+  | 'Refurbish'              // $5k–$20k
+  | 'Renovate'               // $20k–$100k
+  | 'Gut'                    // $100k–$250k
+  | 'Develop';               // $250k+ // $150k+
 
 // R3 Hold Agent — Field-level edit history for versioned data
 export interface HoldEditHistoryEntry {
@@ -962,12 +1036,35 @@ export interface HoldEditHistoryEntry {
   editedByUid: string;
 }
 
+export interface InsuranceQuote {
+  id: string;
+  carrier: string;
+  policyType: string;
+  premium: number;
+  monthlyPremium: number;
+  coverageLimit: number;
+  liabilityLimit: number;
+  lossOfRentLimit: number;
+  hasFloodWindRider: boolean;
+  documentUrl?: string;
+  documentName?: string;
+  isAccepted?: boolean;
+}
+
 export interface ProjectFinancials {
   purchasePrice: number;
   estimatedARV: number; // After-Repair Value (canonical field)
+  leaseStartDate?: Date;
   arv?: number;         // Shorthand alias — calculation components may write here; consumers should prefer estimatedARV
   listedPrice?: number; // Current Listed Price (if applicable)
   costs: CostEntry[]; // Ledger of costs
+  offer_price?: number; // solved offer price in cents
+  scorecardAcknowledged?: boolean;
+  acknowledgedInputsHash?: string;
+  finalAgreedPrice?: number;
+  fundingType?: 'Solo' | 'Syndicated';
+  psaDocumentUrl?: string;
+  psaDocumentName?: string;
 
   // Phase-specific fields (Project lifecycle spine)
   targetPurchasePrice?: number;
@@ -996,6 +1093,121 @@ export interface ProjectFinancials {
   offerStatus?: 'Draft' | 'Sent' | 'Countered' | 'Accepted' | 'Expired' | 'Withdrawn' | 'No' | 'Drafting' | 'Offer Sent' | 'Rejected' | 'Pending';
   counterPriceCents?: number;
   counterTerms?: string;
+  offerRationale?: string;
+  loiBuyerEntity?: string;
+  loiEarnestAmount?: number;
+  loiRefundable?: boolean;
+  loiDueDiligenceDays?: number;
+  loiClosingDays?: number;
+  loiContingencies?: string[];
+  loiExclusivity?: boolean;
+  loiExclusivityDays?: number;
+  loiExpiration?: string;
+  loiAssignability?: boolean;
+  loiNonBinding?: boolean;
+  loiUrl?: string;
+  counterOffers?: any[];
+  
+  // Stage 5 PSA & Earnest Money tracking
+  psaEffectiveDate?: string;
+  psaContractPrice?: number;
+  psaContingencies?: string[];
+  psaDdEndDate?: string;
+  psaClosingDate?: string;
+  psaAssignability?: string;
+  psaSellerDeliverablesChecklist?: { text: string; checked: boolean }[];
+  emdEscrowHolder?: string;
+  emdDueDate?: string;
+  emdRefundableUntilDate?: string;
+  emdIsHardDeposit?: boolean;
+  emdReceiptUrl?: string;
+  emdReceiptName?: string;
+  
+  // Stage 5 Due Diligence: Inspection
+  inspectionInspector?: string;
+  inspectionDate?: string;
+  inspectionFindings?: InspectionFinding[];
+  inspectionReferrals?: string[];
+  inspectionReportUrl?: string;
+  inspectionReportName?: string;
+  inspectionPhotosUrl?: string;
+  inspectionPhotosName?: string;
+  inspectionDecision?: 'proceed' | 'renegotiate' | 'walk' | '';
+  inspectionNote?: string;
+
+  // Stage 5 Due Diligence: Title
+  titleCompany?: string;
+  titleCommitmentDate?: string;
+  titleVestingConfirmed?: boolean;
+  titleLiensLog?: TitleLienException[];
+  titleStatus?: 'clear' | 'curative' | 'defective';
+  titleOwnersPolicyOrdered?: boolean;
+  titleCommitmentUrl?: string;
+  titleCommitmentName?: string;
+
+  // Stage 5 Due Diligence: Conditional DD Framework (AQ-21)
+  hasHOA?: boolean;
+
+  // Survey
+  surveyElected?: boolean;
+  surveyVendor?: string;
+  surveyOrderedDate?: string;
+  surveyCompletedDate?: string;
+  surveyFindings?: string;
+  surveyDocumentUrl?: string;
+  surveyDocumentName?: string;
+  surveyWaived?: boolean;
+  surveyWaiverReason?: string;
+
+  // Phase I Environmental (ESA)
+  phaseIElected?: boolean;
+  phaseIVendor?: string;
+  phaseIOrderedDate?: string;
+  phaseICompletedDate?: string;
+  phaseIFindings?: string;
+  phaseIDocumentUrl?: string;
+  phaseIDocumentName?: string;
+  phaseIWaived?: boolean;
+  phaseIWaiverReason?: string;
+
+  // HOA Review
+  hoaElected?: boolean;
+  hoaVendor?: string;
+  hoaOrderedDate?: string;
+  hoaCompletedDate?: string;
+  hoaRentalRestrictionsExist?: boolean;
+  hoaRentalRestrictionsDetails?: string;
+  hoaDocumentUrl?: string;
+  hoaDocumentName?: string;
+  hoaWaived?: boolean;
+  hoaWaiverReason?: string;
+
+  // Attorney Review
+  attorneyElected?: boolean;
+  attorneyVendor?: string;
+  attorneyOrderedDate?: string;
+  attorneyCompletedDate?: string;
+  attorneyFindings?: string;
+  attorneyDocumentUrl?: string;
+  attorneyDocumentName?: string;
+  attorneyWaived?: boolean;
+  attorneyWaiverReason?: string;
+  
+  // Zoning & CO (AQ-22)
+  zoningClassification?: string;
+  zoningIntendedUsePermitted?: boolean;
+  zoningVerificationLetterUrl?: string;
+  zoningVerificationLetterName?: string;
+  zoningCoStatus?: string;
+  zoningCoDocumentUrl?: string;
+  zoningCoDocumentName?: string;
+  zoningPermitHistory?: string;
+  zoningViolations?: string;
+
+  // Insurance Quotes (AQ-22)
+  insuranceCarrier?: string;
+  insurancePolicyType?: string;
+  insuranceQuotes?: InsuranceQuote[];
   
   // Equity Valuation Tracker
   estimatedCurrentValue?: number;
@@ -1007,6 +1219,7 @@ export interface ProjectFinancials {
   loanInterestRate?: number; // e.g., 12 for 12%
   loanTermYears?: number; // Loan term in years, e.g. 30 for a 30-year conventional
   loanOriginationPoints?: number; // Upfront percentage cost of loan value
+  downPaymentPercent?: number;
   estimatedTimelineDays?: number; // Estimation for holding costs
   preApprovalDocuments?: string[]; // Array of strings/URLs
   inspections?: InspectionItem[]; // Virtual Inspection Estimate vs Actual
@@ -1076,6 +1289,7 @@ export interface ProjectFinancials {
   otherMonthlyIncome?: number;           // Parking, laundry, storage, etc.
   vacancyRatePercent?: number;           // 0–100, default 7%
   monthlyMaintenanceReserve?: number;    // Fixed monthly maintenance/CapEx reserve
+  maintenanceCapExPercent?: number;      // Maintenance as % of gross rent (0–100); when present, overrides monthlyMaintenanceReserve
   monthlyHOA?: number;                   // HOA fees if applicable
   numberOfUnits?: number;                // Total leasable units
   occupiedUnits?: number;                // Currently occupied units
@@ -1083,6 +1297,25 @@ export interface ProjectFinancials {
   marketRentComparable?: number;         // Market rent for comparable units ($/mo)
   amortizationYears?: number;            // Loan amortization term in years
   annualAppreciationPercent?: number;    // Estimated annual property appreciation
+
+  // Canonical Group 2/3 Variables (reil-registry.md)
+  gross_rent_per_unit?: number;
+  vacancy_pct?: number;
+  other_income?: number;
+  tax?: number;
+  insurance?: number;
+  security?: number;
+  maintenance?: number;
+  maintenance_pct?: number;
+  utilities?: number;
+  management?: number;
+  management_pct?: number;
+  HOA?: number;
+  capex?: number;
+  unitRents?: number[];
+  taxBillUrl?: string;
+  t12Url?: string;
+
 
   // Holding Costs Calculator
   projectedHoldTimeMonths?: number;
@@ -1183,6 +1416,110 @@ export interface ProjectFinancials {
   taxAssessedImprovementValue?: number;
   placedInServiceDate?: string;
   annualAdvertisingExpense?: number;     // Recurring advertising / vacancy-listing costs (Schedule E Line 5)
+
+  // ── Ingestion Instruments (VZ-2) ─────────────────────────────────────────
+  incomeLedger?: IncomeLedgerEntry[];
+  expenseLedger?: ExpenseLedgerEntry[];
+  tenantRegistry?: TenantRegistryEntry[];
+  listingsLog?: ListingShowingsEntry[];
+  saleRecord?: SaleRecord;
+  reValuations?: ReValuationEntry[];
+  complianceChecklist?: ComplianceChecklistItem[];
+  decision?: 'proceed' | 'renegotiate' | 'terminate';
+  renegotiatedPrice?: number;
+  dealStatus?: 'Active' | 'Terminated' | 'Proceeding';
+  capitalPlan?: 'all-cash solo' | 'solo-financed' | 'partnership' | 'raise interest';
+  equityTerms?: EquityTerms;
+}
+
+export interface EquityTerms {
+  funding_target: number;         // in cents
+  equity_offered_pct: number;     // percentage e.g., 25.0
+  min_ticket: number;             // in cents
+  price_basis: number;            // total capitalization in cents when terms were set
+  version: number;
+}
+
+export interface InvestorContact {
+  id: string;
+  name: string;
+  email: string;
+  phone: string;
+  type: string;                   // e.g. "Individual", "Institutional"
+  relationship: string;           // e.g. "Warm", "Cold", "Existing"
+  potentialTicket: number;        // in cents
+  emailConsent: boolean;
+  inAppConsent: boolean;
+  createdAt: string;
+}
+
+export interface ProjectFollower {
+  id: string;
+  name: string;
+  email: string;
+  phone?: string;
+  emailConsent: boolean;
+  inAppConsent: boolean;
+  followedAt: string;
+}
+
+export interface IncomeLedgerEntry {
+  id: string;
+  date: string;
+  amount: number;
+  type: 'rent' | 'other';
+  unitId?: string;
+  tenantName?: string;
+}
+
+export interface ExpenseLedgerEntry {
+  id: string;
+  date: string;
+  amount: number;
+  category: 'tax' | 'insurance' | 'security' | 'maintenance' | 'utilities' | 'management' | 'HOA' | 'capex';
+  description?: string;
+}
+
+export interface TenantRegistryEntry {
+  id: string;
+  unitId: string;
+  rentAmount: number;
+  leaseStart: string;
+  leaseEnd: string;
+  status: 'active' | 'vacated' | 'renewed';
+  moveInDate: string;
+  moveOutDate?: string;
+  renewalDate?: string;
+}
+
+export interface ListingShowingsEntry {
+  id: string;
+  type: 'listing' | 'showing';
+  date: string;
+  channel?: string;
+  askingPrice?: number;
+  notes?: string;
+}
+
+export interface SaleRecord {
+  salePrice?: number;
+  commissionPercent?: number;
+  closingCosts?: number;
+  saleDate?: string;
+}
+
+export interface ReValuationEntry {
+  id: string;
+  date: string;
+  value: number;
+  source: string;
+}
+
+export interface ComplianceChecklistItem {
+  id: string;
+  title: string;
+  status: 'compliant' | 'pending' | 'failed';
+  updatedAt: string;
 }
 
 export interface ExitAssets {
@@ -1795,8 +2132,8 @@ export interface InvestorMetrics {
   investorNOI: number;             // NOI × ownership%
   investorAnnualCashFlow: number;  // CashFlow × ownership%
   investorMonthlyCashFlow: number;
-  investorCapRate: number;         // Same as asset (property-level metric)
-  investorCoCReturn: number;       // investorAnnualCashFlow / ownerCashInvested
+  investorCapRate: number | null;         // Same as asset (property-level metric)
+  investorCoCReturn: number | null;       // investorAnnualCashFlow / ownerCashInvested
   investorNetProfit: number;       // netProfit × ownership%
   investorROI: number;             // investorNetProfit / ownerCashInvested
   investorEquityValue: number;     // propertyValue × ownership%
@@ -1805,4 +2142,92 @@ export interface InvestorMetrics {
 export interface DualScopeMetrics {
   asset: import('@/lib/metrics/reiMetrics').DerivedMetrics;
   investor: InvestorMetrics;
+}
+
+// ── AQ-1 — Variable Registry Types ──────────────────────────────────────────
+
+/**
+ * How a variable's value was sourced.
+ * - user_assumption: User-entered estimate during underwriting (projected)
+ * - user_actual:     User-entered verified number (signed contract, closing docs)
+ * - document:        Extracted from an uploaded document (tax assessment, appraisal)
+ * - derived:         Computed from other registry fields (NOT stored — metrics only)
+ */
+export type VariableSourceTag =
+  | 'user_assumption'
+  | 'user_actual'
+  | 'document'
+  | 'derived'
+  | 'plaid';
+
+/**
+ * Logical grouping of atomic variables. Groups 1–4 + 7 are Acquisition-phase;
+ * Groups 5–6 are Rehab and Exit (out of AQ-1 scope).
+ */
+export type VariableGroup =
+  | 'property_identity'     // Group 1
+  | 'income'                // Group 2
+  | 'operating_expenses'    // Group 3
+  | 'deal_capital'          // Group 4
+  | 'rehab'                 // Group 5
+  | 'disposition_leasing'   // Group 6
+  | 'market_compliance';    // Group 7
+
+/** Data type of the underlying field value. */
+export type RegistryFieldType =
+  | 'usd'       // Dollar float (not cents)
+  | 'percent'   // Whole number (12.5 = 12.5%)
+  | 'count'     // Integer count (units, sqft, years)
+  | 'string'    // Text (address, name)
+  | 'enum'      // Constrained string set
+  | 'boolean'   // Flag
+  | 'timestamp'; // Date/time
+
+/**
+ * Schema-level definition of a single atomic variable in the registry.
+ * Pure type — no runtime code, no I/O.
+ */
+export interface RegistryFieldDefinition {
+  /** Unique key for this variable (e.g., 'purchasePrice') */
+  id: string;
+  /** Human-readable label */
+  label: string;
+  /** Path to the field in ProjectFinancials or Project */
+  fieldPath: string;
+  /** Data type */
+  type: RegistryFieldType;
+  /** Which group this belongs to */
+  group: VariableGroup;
+  /** Default source tag when first entered */
+  defaultSourceTag: VariableSourceTag;
+  /** Is this field required for basic deal underwriting? */
+  required: boolean;
+  /** Description for documentation */
+  description: string;
+  /** Which hero/supplemental metric IDs consume this variable */
+  metricsConsumedBy: string[];
+  /**
+   * A→U dual-slot mapping. When present, this variable transitions from
+   * assumption (projected) to actual (verified) during the deal lifecycle.
+   * Both field paths point into ProjectFinancials.
+   */
+  dualSlot?: {
+    projectedField: string;
+    actualField: string;
+  };
+}
+
+/**
+ * A single variable value seeded into the registry with its metadata.
+ * Used for DEMO_FINANCIALS and test fixtures.
+ */
+export interface SeededVariable {
+  /** Registry field ID (matches RegistryFieldDefinition.id) */
+  fieldId: string;
+  /** The actual value */
+  value: number | string | boolean;
+  /** How this value was sourced */
+  sourceTag: VariableSourceTag;
+  /** Whether this is the projected (A) or actual (U) slot */
+  slot: 'projected' | 'actual';
 }

@@ -61,7 +61,8 @@ export interface ProFormaYear {
 export interface ProjectInsights {
   id: string;
   propertyName: string;
-  strategyType?: string;
+  dispositionType?: string;
+  subStrategy?: string;
   currentPhase?: number;
   purchasePrice: number;
   propertyValue: number;
@@ -208,7 +209,7 @@ export function calculate10YearProForma(
   const initialPropertyValue = financials.estimatedCurrentValue ?? financials.estimatedARV ?? purchasePrice;
 
   // 1. Core initial values from reiMetrics components
-  const baseComponents = computeNOIComponents(financials, project.strategyType, project.currentPhase ?? 1);
+  const baseComponents = computeNOIComponents(financials, project.dispositionType, project.currentPhase ?? 1);
   const baseRentalIncome = baseComponents.grossRentalIncome;
   const baseOtherIncome = baseComponents.otherIncome;
   const baseTaxes = baseComponents.propertyTaxes;
@@ -429,11 +430,11 @@ export function usePortfolioInsights(
       const propertyValue = financials.estimatedCurrentValue ?? financials.estimatedARV ?? purchasePrice;
 
       // Check working capital classification:
-      // - strategyType === 'Fix & Flip'
+      // - dispositionType === 'SALE'
       // - status === 'Renovating'
       // - currentPhase <= 3 (acquisition, rehab, finding deals)
       const isWorkingCapital =
-        p.strategyType === "Fix & Flip" ||
+        p.dispositionType === "SALE" ||
         p.status === "Renovating" ||
         (p.currentPhase !== undefined && p.currentPhase <= 3);
 
@@ -444,7 +445,8 @@ export function usePortfolioInsights(
       return {
         id: p.id,
         propertyName: p.propertyName || "Unnamed Property",
-        strategyType: p.strategyType,
+        dispositionType: p.dispositionType,
+        subStrategy: p.subStrategy,
         currentPhase: p.currentPhase,
         purchasePrice,
         propertyValue,

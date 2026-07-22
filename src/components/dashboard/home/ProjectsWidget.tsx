@@ -32,7 +32,9 @@ function getHeadlineMetric(
   project: Project,
   metrics: ReturnType<typeof deriveAllMetrics>
 ): { label: string; value: string } {
-  const strategy = project.strategyType;
+  const strategy = project.dispositionType === 'RENT'
+    ? (project.subStrategy === 'BRRRR' ? 'Rent' : 'Buy & Hold')
+    : (project.subStrategy === 'WHOLESALE' ? 'Sell' : 'Fix & Flip');
   const fin = project.financials;
 
   if (strategy === 'Sell' || strategy === 'Fix & Flip') {
@@ -109,7 +111,7 @@ function FolderCard({
       deriveAllMetrics(
         project.financials,
         project.financials?.estimatedCurrentValue,
-        project.strategyType,
+        project.dispositionType,
         project.currentPhase,
         project.createdAt
       ),
@@ -120,7 +122,11 @@ function FolderCard({
   const ownership = project.financials?.ownershipPercentage ?? 100;
   const progress = computePhaseProgress(project, project.currentPhase || 1) || getPhaseProgress(project);
   const stateAbbr = getStateFromAddress(project.address);
-  const strategyLabel = getStrategyLabel(project.strategyType);
+  const strategyLabel = getStrategyLabel(
+    project.dispositionType === 'RENT'
+      ? (project.subStrategy === 'BRRRR' ? 'Rent' : 'Buy & Hold')
+      : (project.subStrategy === 'WHOLESALE' ? 'Sell' : 'Fix & Flip')
+  );
 
   return (
     <div

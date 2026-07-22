@@ -22,10 +22,11 @@ export default function ChatbotWidget() {
             : 'opacity-0 translate-y-5 scale-95 pointer-events-none'
         }`}
         aria-hidden={!isOpen}
+        style={{ display: isOpen ? 'flex' : 'none' }}
       >
         <div className="flex items-center justify-between px-4 py-3 border-b border-[var(--pw-border)] bg-[var(--pw-surface)]">
           <div className="flex items-center gap-2">
-            <div className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+            <div className="w-2 h-2 rounded-full bg-pw-success animate-pulse" />
             <h3 className="text-sm font-medium text-[var(--pw-black)]">PaperWorking Assistant</h3>
           </div>
           <button

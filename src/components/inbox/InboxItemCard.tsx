@@ -412,7 +412,7 @@ export default function InboxItemCard({
               )}
               {item.type === 'INVEST_INVITE' && (
                 <div className="flex flex-col gap-1.5">
-                  <span className="text-[10px] uppercase font-bold tracking-wider text-primary">Syndication Opportunity</span>
+                   <span className="text-[10px] uppercase font-bold tracking-wider text-primary">Co-Investment Opportunity</span>
                   <p>Deal: <strong className="text-white">{item.objectReference.dealAddress || 'N/A'}</strong></p>
                   <p>Sponsor: <strong className="text-white">{item.actor.name}</strong></p>
                 </div>

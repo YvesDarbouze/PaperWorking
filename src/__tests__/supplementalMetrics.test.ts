@@ -16,7 +16,8 @@ describe('Supplemental Metrics Gating and Calculation Logic', () => {
   const baseProject = {
     id: 'test-project',
     currentPhase: 3, // Hold
-    strategyType: 'Rent',
+    dispositionType: 'RENT',
+    subStrategy: 'LONG_TERM',
     numberOfUnits: 2,
     financials: {
       purchasePrice: 500000,

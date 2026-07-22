@@ -142,11 +142,11 @@ export function DealAnalyzerTerminal({ data, isLoading = false }: DealAnalyzerTe
     };
   }, [storeProject]);
 
-  // Set strategy from project strategyType if it exists
+  // Set strategy from project dispositionType if it exists
   useEffect(() => {
-    if (storeProject?.strategyType) {
-      const type = storeProject.strategyType;
-      if (type === 'Sell' || type === 'Fix & Flip') {
+    if (storeProject?.dispositionType) {
+      const type = storeProject.dispositionType;
+      if (type === 'SALE') {
         setStrategy('flip');
       } else {
         setStrategy('rental');
@@ -1179,7 +1179,7 @@ export function DealAnalyzerTerminal({ data, isLoading = false }: DealAnalyzerTe
                 </button>
                 
                 {showSavedFeedback && (
-                  <div className="flex items-center gap-2 text-emerald-400 bg-emerald-500/10 border border-emerald-500/20 px-4 py-3 rounded-lg justify-center transition-all animate-pulse">
+                  <div className="flex items-center gap-2 text-pw-success bg-pw-success-container border border-pw-success-border px-4 py-3 rounded-lg justify-center transition-all animate-pulse">
                     <CheckCircle className="w-4 h-4" />
                     <span className="text-xs font-semibold">Deal assumptions synced successfully</span>
                   </div>

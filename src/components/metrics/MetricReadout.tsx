@@ -18,7 +18,7 @@ import type { MetricResult, MetricState } from '@/lib/metrics/types';
 const STATE_PILL_STYLES: Record<MetricState, { bg: string; text: string; label: string }> = {
   projected:  { bg: 'bg-amber-500/15',  text: 'text-amber-400',   label: 'PROJECTED' },
   actual:     { bg: 'bg-blue-500/15',   text: 'text-blue-400',    label: 'ACTUAL' },
-  live:       { bg: 'bg-emerald-500/15', text: 'text-emerald-400', label: 'LIVE' },
+  live:       { bg: 'bg-pw-success-container', text: 'text-pw-success', label: 'LIVE' },
   realized:   { bg: 'bg-blue-400/15',   text: 'text-blue-300',    label: 'REALIZED' },
   incomplete: { bg: 'bg-gray-500/15',   text: 'text-gray-400',    label: 'INCOMPLETE' },
   'n/a':      { bg: 'bg-gray-500/10',   text: 'text-gray-500',    label: 'N/A' },

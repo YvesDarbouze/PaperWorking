@@ -2,7 +2,7 @@
 
 import React, { useState, useMemo, useEffect } from 'react';
 import { Shield, DollarSign, Percent, AlertTriangle, CheckCircle2, XCircle, TrendingUp, Building2 } from 'lucide-react';
-import { computeDSCR } from '@/lib/metrics/reiMetrics';
+import { deriveAllMetrics } from '@/lib/metrics/reiMetrics';
 
 /* ═══════════════════════════════════════════════════════════════
    DSCR RISK STRIP TERMINAL — Financing Terminal
@@ -174,9 +174,17 @@ export function DSCRRiskStripTerminal({
 
   const computed = useMemo(() => {
     const annualDebtService = monthlyDS * 12;
-    const dscr = computeDSCR(annualNOI, annualDebtService);
-    const riskLevel = getRiskLevel(dscr === Infinity ? 999 : dscr);
-    return { annualDebtService, dscr: dscr === Infinity ? 999 : dscr, riskLevel };
+    const tempFinancials = {
+      purchasePrice: 100000,
+      monthlyGrossRent: annualNOI / 12,
+      loanAmount: annualDebtService,
+      loanInterestRate: 0,
+      loanTermYears: 1,
+    };
+    const metrics = deriveAllMetrics(tempFinancials as any, undefined, 'RENT', 3);
+    const dscr = metrics.dscr === Infinity ? 999 : (metrics.dscr ?? 0);
+    const riskLevel = getRiskLevel(dscr);
+    return { annualDebtService, dscr, riskLevel };
   }, [annualNOI, monthlyDS]);
 
   const config = RISK_CONFIG[computed.riskLevel];

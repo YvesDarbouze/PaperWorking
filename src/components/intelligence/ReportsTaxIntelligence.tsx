@@ -116,7 +116,7 @@ export function ReportsTaxIntelligence() {
               <path d="M0,50 L0,30 C10,25 20,35 30,20 C40,5 50,15 60,10 C70,5 80,25 90,15 C95,10 100,5 100,5 L100,50 Z" fill="url(#capRateGradient)"></path>
               <path d="M0,30 C10,25 20,35 30,20 C40,5 50,15 60,10 C70,5 80,25 90,15 C95,10 100,5 100,5" fill="none" stroke="#454955" strokeLinecap="round" strokeWidth="1.5"></path>
               {/* Data Point */}
-              <circle cx="100" cy="5" fill="#0d0a0b" r="2" stroke="#5aaa3f" strokeWidth="1.5"></circle>
+              <circle cx="100" cy="5" fill="#0d0a0b" r="2" stroke="#00DD94" strokeWidth="1.5"></circle>
             </svg>
           </div>
           <div className="flex justify-between mt-2 text-[10px] text-[#6B6870] font-bold uppercase tracking-wider">

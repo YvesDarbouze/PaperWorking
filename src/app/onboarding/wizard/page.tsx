@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/context/AuthContext';
-import { projectsService } from '@/lib/firebase/projects';
+import { createProjectViaApi } from '@/lib/api/projectWizardApi';
 import { ArrowRight, Check, Loader2, MapPin, DollarSign, ClipboardCheck } from 'lucide-react';
 
 interface WizardData {
@@ -46,25 +46,27 @@ export default function OnboardingWizardPage() {
     const fullAddress = [data.address, data.city, data.state].filter(Boolean).join(', ');
 
     try {
-      const projectId = await projectsService.createProject(
-        {
-          name:       fullAddress || 'New Property',
-          address:    fullAddress,
-          ownerUid:   user.uid,
-          phase:      'acquisition',
-          status:     'Active',
-          financials: {
-            purchasePrice: data.purchasePrice ? parseFloat(data.purchasePrice.replace(/[^0-9.]/g, '')) : undefined,
-            rehabBudget:   data.rehabBudget   ? parseFloat(data.rehabBudget.replace(/[^0-9.]/g, ''))   : undefined,
-          } as any,
+      const result = await createProjectViaApi({
+        propertyName: fullAddress || 'New Property',
+        address:      fullAddress,
+        street:       data.address,
+        city:         data.city,
+        state:        data.state,
+        financials: {
+          purchasePrice: data.purchasePrice ? parseFloat(data.purchasePrice.replace(/[^0-9.]/g, '')) : 0,
+          rehabBudget:   data.rehabBudget   ? parseFloat(data.rehabBudget.replace(/[^0-9.]/g, ''))   : undefined,
         },
-        orgId,
-      );
+        organizationId: orgId,
+      });
 
-      router.push(`/dashboard/projects/${projectId}/phase-1`);
+      if (!result.success || !result.projectId) {
+        throw new Error(result.error || 'Failed to create project');
+      }
+
+      router.push(`/dashboard/projects/${result.projectId}/phase-1`);
     } catch (err: any) {
       console.error('[OnboardingWizard] createProject failed:', err);
-      setError('Could not create your project. Please try again.');
+      setError(err.message || 'Could not create your project. Please try again.');
       setIsFinishing(false);
     }
   };

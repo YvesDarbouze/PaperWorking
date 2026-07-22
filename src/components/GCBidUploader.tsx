@@ -42,12 +42,12 @@ const CATEGORY_COLORS: Record<string, string> = {
   Landscaping: 'bg-green-50 text-green-700 border-green-200',
   'Permit Fees': 'bg-rose-50 text-rose-700 border-rose-200',
   Labor: 'bg-[#454955]/10 text-[#454955] border-[#454955]/20',
-  Materials: 'bg-emerald-50 text-emerald-700 border-emerald-200',
+  Materials: 'bg-pw-success-container text-pw-success border-pw-success-border',
   Other: 'bg-bg-primary text-text-secondary border-border-accent',
 };
 
 const CONFIDENCE_META = {
-  high: { label: 'High Confidence', cls: 'text-emerald-600 bg-emerald-50 border-emerald-200' },
+  high: { label: 'High Confidence', cls: 'text-pw-success bg-pw-success-container border-pw-success-border' },
   medium: { label: 'Medium Confidence', cls: 'text-amber-600 bg-amber-50 border-amber-200' },
   low: { label: 'Low Confidence — Review carefully', cls: 'text-red-600 bg-red-50 border-red-200' },
 };
@@ -326,7 +326,7 @@ export default function GCBidUploader({ projectId, onBidSaved }: Props) {
 
               {selectedFile ? (
                 <div className="relative z-10 flex flex-col items-center gap-2">
-                  <div className="w-14 h-14 mb-1 rounded-full bg-surface-container-highest flex items-center justify-center text-emerald-500 shadow-lg shadow-emerald-500/10">
+                  <div className="w-14 h-14 mb-1 rounded-full bg-surface-container-highest flex items-center justify-center text-pw-success shadow-lg shadow-pw-success/10">
                     <FileCheck2 className="w-6 h-6" />
                   </div>
                   <p className="text-sm font-medium text-text-primary">{selectedFile.name}</p>
@@ -728,7 +728,7 @@ function SummaryCard({
 function StatusBadge({ status }: { status: 'Pending' | 'Approved' | 'Rejected' }) {
   const styles = {
     Pending: 'bg-amber-50 text-amber-700 border-amber-200',
-    Approved: 'bg-emerald-50 text-emerald-700 border-emerald-200',
+    Approved: 'bg-pw-success-container text-pw-success border-pw-success-border',
     Rejected: 'bg-red-50 text-red-700 border-red-200',
   };
   return (

@@ -40,7 +40,7 @@ export function projectToInsightsInputs(project: Project): InsightsEngineInputs 
   const grossScheduledIncome = (monthlyGrossRent + otherMonthlyIncome) * 12;
   const vacancyRate = f.vacancyRatePercent ?? (f.vacancyRate ?? 5);
 
-  const noiComponents = computeNOIComponents(f, project.strategyType, project.currentPhase);
+  const noiComponents = computeNOIComponents(f, project.dispositionType, project.currentPhase);
   const operatingExpenses = noiComponents.totalOperatingExpenses;
 
   const medianHomePrice =

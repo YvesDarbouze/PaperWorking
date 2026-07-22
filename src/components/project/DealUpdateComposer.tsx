@@ -157,7 +157,7 @@ export function DealUpdateComposer({
         value={body}
         onChange={(e) => setBody(e.target.value)}
         rows={4}
-        placeholder="Share progress with syndicate investors…"
+        placeholder="Share progress with team members and co-investors…"
         className="w-full resize-y rounded-md border border-[#262328] bg-[#0d0a0b] px-3 py-2 text-[13px] text-[#E8E6EA] placeholder:text-[#6b6a6d] outline-none focus:border-[#454955]"
       />
 

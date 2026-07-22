@@ -75,7 +75,8 @@ const wizardSubmitSchema = z.object({
   lng: z.number().nullable().optional(),
   reiStatus: z.string().optional(),
   status: z.string().optional().default('Lead'),
-  strategyType: z.string().optional(),
+  dispositionType: z.string().optional(),
+  subStrategy: z.string().optional(),
   assetClass: z.string().optional(),
   leadEmail: z.string().optional(),
   partnerEmails: z.string().optional(),
@@ -139,23 +140,43 @@ export async function POST(request: NextRequest) {
     const data = validation.data;
     const organizationId = data.organizationId;
 
-    // 3. Verify org membership securely against organization document
+    // 3. Verify org membership — auto-create personal org if missing
     const orgSnap = await adminDb.collection('organizations').doc(organizationId).get();
     if (!orgSnap.exists) {
-      return NextResponse.json(
-        { error: 'Organization not found' },
-        { status: 404 }
-      );
-    }
-    const orgData = orgSnap.data();
-    const isOwner = orgData?.ownerUid === uid;
-    const isTeamMember = orgData?.teamMembers?.some((m: any) => m.id === uid && m.status === 'active');
+      // Check if this is the user's personal org that was never bootstrapped
+      const userSnap = await adminDb.collection('users').doc(uid).get();
+      const userData = userSnap.data();
+      const isPersonalOrg = userData?.personalOrganizationId === organizationId;
 
-    if (!isOwner && !isTeamMember) {
-      return NextResponse.json(
-        { error: 'Access denied. You are not an active member of this organization.' },
-        { status: 403 }
-      );
+      if (isPersonalOrg) {
+        // Auto-create the missing personal org document
+        await adminDb.collection('organizations').doc(organizationId).set({
+          ownerUid: uid,
+          name: `${userData?.displayName || 'User'}'s Workspace`,
+          type: 'personal',
+          subscriptionPlan: userData?.subscriptionPlan || 'None',
+          subscriptionStatus: userData?.subscriptionStatus || 'inactive',
+          createdAt: new Date(),
+          updatedAt: new Date(),
+        });
+      } else {
+        return NextResponse.json(
+          { error: 'Organization not found' },
+          { status: 404 }
+        );
+      }
+    } else {
+      // Org exists — verify membership
+      const orgData = orgSnap.data();
+      const isOwner = orgData?.ownerUid === uid;
+      const isTeamMember = orgData?.teamMembers?.some((m: any) => m.id === uid && m.status === 'active');
+
+      if (!isOwner && !isTeamMember) {
+        return NextResponse.json(
+          { error: 'Access denied. You are not an active member of this organization.' },
+          { status: 403 }
+        );
+      }
     }
 
     // 4. Entitlement check: project count limit
@@ -237,6 +258,55 @@ export async function POST(request: NextRequest) {
     console.error('[Projects POST] Error:', errMsg);
     return NextResponse.json(
       { error: 'Failed to create project', details: errMsg },
+      { status: 500 }
+    );
+  }
+}
+
+export async function GET(request: NextRequest) {
+  const auth = await requireAuth(request);
+  if (isAuthError(auth)) return auth;
+  const { uid } = auth;
+
+  try {
+    const userSnap = await adminDb.collection('users').doc(uid).get();
+    if (!userSnap.exists) {
+      return NextResponse.json({ error: 'User profile not found' }, { status: 404 });
+    }
+    const userData = userSnap.data();
+    const organizationId = userData?.organizationId;
+
+    if (!organizationId) {
+      return NextResponse.json({ success: true, projects: [] });
+    }
+
+    const { searchParams } = new URL(request.url);
+    const queryParam = searchParams.get('q') || '';
+
+    let projectsQuery = adminDb
+      .collection('projects')
+      .where('organizationId', '==', organizationId);
+
+    const snapshot = await projectsQuery.get();
+    let projects = snapshot.docs.map(doc => ({
+      id: doc.id,
+      ...doc.data()
+    }));
+
+    if (queryParam) {
+      const q = queryParam.toLowerCase();
+      projects = projects.filter((p: any) => 
+        (p.propertyName && p.propertyName.toLowerCase().includes(q)) ||
+        (p.address && p.address.toLowerCase().includes(q))
+      );
+    }
+
+    return NextResponse.json({ success: true, projects });
+  } catch (error: unknown) {
+    const errMsg = error instanceof Error ? error.message : 'Unknown error';
+    console.error('[Projects GET] Error:', errMsg);
+    return NextResponse.json(
+      { error: 'Failed to fetch projects', details: errMsg },
       { status: 500 }
     );
   }

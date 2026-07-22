@@ -46,7 +46,7 @@ describe('computeCashFlowMetric', () => {
     expect(result.state).toBe('projected');
     expect(result.value).not.toBeNull();
     // Cash flow should equal NOI when there's no debt
-    // NOI = $24,000 - $1,200 - $6,600 = $16,200
+    // NOI = $22,800 effective rent - $5,400 (taxes, ins, maint) - $2,400 (10% PM of gross rent) = $16,200
     expect(result.value).toBeCloseTo(16200, 0);
   });
 

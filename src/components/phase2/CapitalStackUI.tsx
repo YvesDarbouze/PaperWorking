@@ -46,11 +46,11 @@ export function CapitalStackUI() {
               <div className="border-t border-pw-border pt-4 mt-2">
                 <h4 className="text-xs uppercase tracking-widest font-black text-pw-muted mb-2">Ownership Breakdown</h4>
                 <div className="flex justify-between items-center mb-1">
-                  <span className="text-sm font-light">GP (Sponsor)</span>
+                  <span className="text-sm font-light">Lead Investor</span>
                   <span className="text-sm text-pw-black">20% ($72,000)</span>
                 </div>
                 <div className="flex justify-between items-center">
-                  <span className="text-sm font-light">LP (Investors)</span>
+                  <span className="text-sm font-light">Investment Team</span>
                   <span className="text-sm text-pw-black">80% ($288,000)</span>
                 </div>
               </div>

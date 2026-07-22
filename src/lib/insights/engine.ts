@@ -73,7 +73,7 @@ export function deriveProFormaMetrics(project: Project) {
   const financials = project.financials || {};
   const purchasePrice = financials.purchasePrice ?? financials.targetPrice ?? financials.targetPurchasePrice ?? 0;
   const arv = financials.estimatedARV ?? financials.estimatedCurrentValue ?? purchasePrice;
-  return deriveAllMetrics(financials, arv, project.strategyType, 1, project.createdAt);
+  return deriveAllMetrics(financials, arv, project.dispositionType, 1, project.createdAt);
 }
 
 /**
@@ -83,7 +83,7 @@ export function deriveActualMetrics(project: Project) {
   const financials = project.financials || {};
   const purchasePrice = financials.purchasePrice ?? financials.targetPrice ?? financials.targetPurchasePrice ?? 0;
   const value = financials.estimatedCurrentValue ?? financials.estimatedARV ?? purchasePrice;
-  return deriveAllMetrics(financials, value, project.strategyType, project.currentPhase ?? 1, project.createdAt);
+  return deriveAllMetrics(financials, value, project.dispositionType, project.currentPhase ?? 1, project.createdAt);
 }
 
 /**

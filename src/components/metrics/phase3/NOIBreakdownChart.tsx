@@ -14,7 +14,7 @@ import {
 } from 'recharts';
 import { motion } from 'framer-motion';
 import { ProjectFinancials } from '@/types/schema';
-import { computeNOIComponents } from '@/lib/metrics/reiMetrics';
+import { deriveAllMetrics } from '@/lib/metrics/reiMetrics';
 
 interface NOIBreakdownChartProps {
   financials: ProjectFinancials;
@@ -34,8 +34,9 @@ function fmt(n: number): string {
   return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', maximumFractionDigits: 0 }).format(n);
 }
 
-function computeNOI(financials: ProjectFinancials) {
-  const c = computeNOIComponents(financials);
+function getNOIComponentsFromDerived(financials: ProjectFinancials) {
+  const derived = deriveAllMetrics(financials);
+  const c = derived.noiComponents;
   return {
     grossAnnualRent: c.grossRentalIncome,
     otherIncome: c.otherIncome,
@@ -53,7 +54,7 @@ function computeNOI(financials: ProjectFinancials) {
 }
 
 function buildWaterfallData(financials: ProjectFinancials): WaterfallEntry[] {
-  const c = computeNOI(financials);
+  const c = getNOIComponentsFromDerived(financials);
   const ACCENT = 'var(--pw-accent)';
   const EXPENSE_1 = '#A5A5A5';
   const EXPENSE_2 = '#7F7F7F';
@@ -104,7 +105,7 @@ function NOITooltip({ active, payload, label }: NOITooltipProps) {
 
 export default function NOIBreakdownChart({ financials, className = '', isLoading = false }: NOIBreakdownChartProps) {
   const data = useMemo(() => buildWaterfallData(financials), [financials]);
-  const computed = useMemo(() => computeNOI(financials), [financials]);
+  const computed = useMemo(() => getNOIComponentsFromDerived(financials), [financials]);
 
   if (isLoading) {
     return (

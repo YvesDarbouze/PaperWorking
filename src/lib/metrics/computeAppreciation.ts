@@ -9,8 +9,8 @@
  */
 
 import type { MetricResult } from './types';
-import { computeAnnualizedAppreciationRate } from './reiMetrics';
-import { resolveState, incomplete, num } from './helpers';
+import { computeAnnualizedAppreciationRate, computeYearsHeld } from './reiMetrics';
+import { resolveState, incomplete, num, parseDate } from './helpers';
 
 export interface AppreciationProjectInput {
   financials?: {
@@ -52,9 +52,21 @@ export function computeAppreciationMetric(project: AppreciationProjectInput): Me
     return incomplete(['financials.estimatedARV or financials.actualSalePrice']);
   }
 
-  // Determine hold period
-  const holdMonths = num(fin?.projectedHoldTimeMonths) ?? 60;
-  const yearsHeld = Math.max(1, holdMonths / 12);
+  // Determine hold period using exact same logic as deriveAllMetrics
+  let yearsHeld = computeYearsHeld(
+    fin?.acquisitionDate,
+    isRealized ? fin?.soldDate : null,
+    project.createdAt
+  );
+
+  const parsedAcqDate = parseDate(fin?.acquisitionDate);
+  const elapsedDays = parsedAcqDate && !isRealized
+    ? (new Date().getTime() - parsedAcqDate.getTime()) / (1000 * 60 * 60 * 24)
+    : 0;
+
+  if (!isRealized && elapsedDays < 30) {
+    yearsHeld = Math.max(1, (num(fin?.projectedHoldTimeMonths) ?? 60) / 12);
+  }
 
   const rate = computeAnnualizedAppreciationRate(
     purchasePrice,

@@ -1,4 +1,4 @@
-import React, { useState, useMemo, useEffect } from 'react';
+import React, { useState, useMemo, useEffect, useRef } from 'react';
 import CurrencyInputModule from './CurrencyInputModule';
 import { CostBasisLedger, CostBasisLineItem } from '@/types/schema';
 
@@ -25,13 +25,26 @@ export function ClosingCostsLedger({ initialLedger, onChange, readOnly = false }
     return attorneyFees + loanOriginationFees + titleInsurance;
   }, [attorneyFees, loanOriginationFees, titleInsurance]);
 
-  const totalClosingCostsDollars = totalClosingCostsCents / 100;
+  const totalClosingCostsDollars = useMemo(() => {
+    return totalClosingCostsCents / 100;
+  }, [totalClosingCostsCents]);
+
+  const onChangeRef = useRef(onChange);
+  const initialLedgerRef = useRef(initialLedger);
 
   useEffect(() => {
-    if (onChange) {
+    onChangeRef.current = onChange;
+  }, [onChange]);
+
+  useEffect(() => {
+    initialLedgerRef.current = initialLedger;
+  }, [initialLedger]);
+
+  useEffect(() => {
+    if (onChangeRef.current) {
       // Build a basic ledger to pass up, preserving existing items where possible
-      const existingAcquisition = initialLedger?.directAcquisition || [];
-      const existingFinancing = initialLedger?.financing || [];
+      const existingAcquisition = initialLedgerRef.current?.directAcquisition || [];
+      const existingFinancing = initialLedgerRef.current?.financing || [];
 
       const updateOrAddItem = (list: CostBasisLineItem[], id: string, label: string, amount: number): CostBasisLineItem => {
         const existing = list.find(i => i.label === label);
@@ -48,11 +61,11 @@ export function ClosingCostsLedger({ initialLedger, onChange, readOnly = false }
           ...existingFinancing.filter(i => i.label !== 'Loan Origination Fees'),
           updateOrAddItem(existingFinancing, 'loan-origination', 'Loan Origination Fees', loanOriginationFees / 100)
         ],
-        preClosing: initialLedger?.preClosing || []
+        preClosing: initialLedgerRef.current?.preClosing || []
       };
-      onChange(ledger, totalClosingCostsDollars);
+      onChangeRef.current(ledger, totalClosingCostsDollars);
     }
-  }, [attorneyFees, loanOriginationFees, titleInsurance, onChange, totalClosingCostsDollars]);
+  }, [attorneyFees, loanOriginationFees, titleInsurance, totalClosingCostsDollars]);
 
   return (
     <div className="p-6 rounded-lg shadow-sm border" style={{ backgroundColor: 'var(--bg-surface)', borderColor: 'var(--border-ui)' }}>

@@ -16,7 +16,8 @@ describe('Deterministic Insight Engine Rules', () => {
     address: '456 Palms Ave, Miami FL',
     currentPhase: 3, // Hold
     status: 'Active',
-    strategyType: 'Rent',
+    dispositionType: 'RENT',
+    subStrategy: 'LONG_TERM',
     createdAt: new Date('2025-01-01'),
     financials: {
       purchasePrice: 500000,
@@ -44,7 +45,8 @@ describe('Deterministic Insight Engine Rules', () => {
     address: '789 Oak St, Atlanta GA',
     currentPhase: 3, // Hold
     status: 'Active',
-    strategyType: 'Rent',
+    dispositionType: 'RENT',
+    subStrategy: 'LONG_TERM',
     createdAt: new Date('2025-01-01'),
     financials: {
       purchasePrice: 400000,
@@ -72,7 +74,8 @@ describe('Deterministic Insight Engine Rules', () => {
     address: '101 Sunset Rd, Phoenix AZ',
     currentPhase: 1, // Sourcing/Acquisition phase
     status: 'Lead',
-    strategyType: 'Buy & Hold',
+    dispositionType: 'RENT',
+    subStrategy: 'LONG_TERM',
     createdAt: new Date(),
     financials: {
       purchasePrice: 300000,

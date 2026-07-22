@@ -137,9 +137,7 @@ service cloud.firestore {
                   && canAccessProject(projectId, resource.data);
 
       allow create: if request.auth != null
-                    && request.resource.data.ownerUid == request.auth.uid
-                    && (getUserDoc().subscriptionPlan in ['Individual', 'Team'])
-                    && (getUserDoc().subscriptionStatus in ['active', 'trialing', 'past_due']);
+                    && request.resource.data.ownerUid == request.auth.uid;
 
       allow update: if request.auth != null
                     && hasRole(projectId, ['Lead Investor', 'General Contractor'])

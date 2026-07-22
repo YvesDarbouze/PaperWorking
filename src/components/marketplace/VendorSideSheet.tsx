@@ -188,7 +188,7 @@ export default function VendorSideSheet({
               <div
                 className={`inline-flex items-center gap-1 ${
                   vendor.availability === 'Available'
-                    ? 'text-emerald-400'
+                    ? 'text-pw-success'
                     : vendor.availability === 'Busy'
                       ? 'text-amber-400'
                       : 'text-blue-400'

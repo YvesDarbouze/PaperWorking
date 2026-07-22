@@ -95,7 +95,7 @@ function deriveCoCBreakdowns(projects: Project[]): PropertyCoCData[] {
     .filter(p => p.financials)
     .map((p) => {
       const f = p.financials!;
-      const { asset: metrics } = deriveDualScopeMetrics(f, undefined, p.strategyType, p.currentPhase);
+      const { asset: metrics } = deriveDualScopeMetrics(f, undefined, p.dispositionType, p.currentPhase);
       const purchasePrice = f.purchasePrice ?? 0;
       const loanAmount = f.loanAmount ?? 0;
       const downPayment = Math.max(0, purchasePrice - loanAmount);

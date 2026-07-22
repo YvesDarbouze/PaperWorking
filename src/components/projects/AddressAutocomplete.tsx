@@ -2,6 +2,7 @@
 
 import React, { useState, useRef, useEffect, useCallback } from 'react';
 import { MapPin, Loader2, X, PenLine, Search } from 'lucide-react';
+import { auth } from '@/lib/firebase/config';
 
 /* ═══════════════════════════════════════════════════════════════
    AddressAutocomplete — Google Places + Manual Entry Fallback
@@ -148,9 +149,20 @@ export default function AddressAutocomplete({
 
     setIsLoading(true);
     try {
+      const currentUser = auth.currentUser;
+      let token = 'mock_token';
+      if (currentUser) {
+        token = await currentUser.getIdToken();
+      } else if (typeof window !== 'undefined' && document.cookie.includes('mock_session_token_123')) {
+        token = 'mock_token';
+      }
+
       const res = await fetch('/api/places/autocomplete', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
         body: JSON.stringify({ input, sessionToken }),
       });
       const data = await res.json();
@@ -163,7 +175,7 @@ export default function AddressAutocomplete({
     } finally {
       setIsLoading(false);
     }
-  }, []);
+  }, [sessionToken]);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const val = e.target.value;
@@ -181,9 +193,20 @@ export default function AddressAutocomplete({
     setIsFetching(true);
 
     try {
+      const currentUser = auth.currentUser;
+      let token = 'mock_token';
+      if (currentUser) {
+        token = await currentUser.getIdToken();
+      } else if (typeof window !== 'undefined' && document.cookie.includes('mock_session_token_123')) {
+        token = 'mock_token';
+      }
+
       const res = await fetch('/api/places/details', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
         body: JSON.stringify({ placeId: prediction.placeId, sessionToken }),
       });
       const parsed: ParsedAddress = await res.json();

@@ -391,7 +391,7 @@ export default function VendorPortalDashboard() {
                         <div className="flex items-center gap-2 flex-wrap">
                           <span className={`px-2 py-0.5 rounded text-[10px] font-bold uppercase border ${
                             req.status === 'ACCEPTED' ? 'bg-[#454955]/20 border-[#454955]/40 text-[#454955]' :
-                            req.status === 'COMPLETED' ? 'bg-emerald-500/20 border-emerald-500/40 text-emerald-400' :
+                            req.status === 'COMPLETED' ? 'bg-pw-success-container border-pw-success-border text-pw-success' :
                             req.status === 'QUOTED' ? 'bg-blue-500/10 border-blue-500/30 text-blue-400' :
                             req.status === 'DECLINED' || req.status === 'CANCELLED' ? 'bg-red-500/10 border-red-500/30 text-red-400' :
                             'bg-amber-500/10 border-amber-500/30 text-amber-400'
@@ -461,7 +461,7 @@ export default function VendorPortalDashboard() {
                           </span>
                         )}
                         {req.status === 'COMPLETED' && (
-                          <span className="inline-flex items-center gap-1.5 text-xs text-emerald-400 font-bold uppercase tracking-wider py-1.5 px-3 border border-emerald-500/30 bg-emerald-500/5 rounded-lg">
+                          <span className="inline-flex items-center gap-1.5 text-xs text-pw-success font-bold uppercase tracking-wider py-1.5 px-3 border border-pw-success-border bg-pw-success-container rounded-lg">
                             <span className="material-symbols-outlined text-sm select-none">verified</span>
                             Completed
                           </span>

@@ -33,7 +33,7 @@ const LANES = [
     phase: "Hold / Exit",
     phaseKey: 4,
     icon: "exit_to_app",
-    accentColor: "#5aaa3f",
+    accentColor: "var(--pw-success)",
     emptyLabel: "No held properties",
   },
 ];

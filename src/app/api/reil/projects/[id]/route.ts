@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { requireAuth, isAuthError } from "@/lib/firebase-admin/auth-guard";
-import { getProject, updateProject } from "@/lib/db/projects";
+import { getProject, updateProject, mapPostgresProjectToFrontend } from "@/lib/db/projects";
 
 export const dynamic = "force-dynamic";
 
@@ -25,7 +25,7 @@ export async function GET(req: NextRequest, { params }: Params) {
     return NextResponse.json({ error: "Forbidden" }, { status: 403 });
   }
 
-  return NextResponse.json(project);
+  return NextResponse.json(mapPostgresProjectToFrontend(project));
 }
 
 // PATCH /api/reil/projects/:id — partial update (wizard auto-save)
@@ -46,5 +46,5 @@ export async function PATCH(req: NextRequest, { params }: Params) {
   const body = await req.json().catch(() => ({}));
   const updated = await updateProject(id, body);
 
-  return NextResponse.json(updated);
+  return NextResponse.json(mapPostgresProjectToFrontend(updated));
 }

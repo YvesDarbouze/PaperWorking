@@ -33,7 +33,7 @@ export interface NOIProjectInput {
     [key: string]: any;
   };
   currentPhase?: number;
-  strategyType?: string;
+  dispositionType?: string;
   [key: string]: any;
 }
 
@@ -50,7 +50,7 @@ export function computeNOIMetric(project: NOIProjectInput): MetricResult {
   }
 
   // Call the existing engine
-  const components = computeNOIComponents(fin as any, project.strategyType, project.currentPhase);
+  const components = computeNOIComponents(fin as any, project.dispositionType, project.currentPhase);
 
   const inputsUsed: Record<string, number> = {
     'financials.monthlyGrossRent': rent,

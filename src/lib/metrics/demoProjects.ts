@@ -9,7 +9,8 @@ export const DEMO_PROJECTS: Project[] = [
     address: '456 Skyline Drive, Denver, CO 80202',
     status: 'Active',
     currentPhase: 3, // Hold
-    strategyType: 'Buy & Hold',
+    dispositionType: 'RENT',
+    subStrategy: 'LONG_TERM',
     assetClass: 'Multi-Family',
     numberOfUnits: 12,
     occupiedUnits: 10,
@@ -56,7 +57,8 @@ export const DEMO_PROJECTS: Project[] = [
     address: '789 Cedar Court, Austin, TX 78701',
     status: 'Active',
     currentPhase: 3, // Hold
-    strategyType: 'Buy & Hold',
+    dispositionType: 'RENT',
+    subStrategy: 'LONG_TERM',
     assetClass: 'Residential',
     numberOfUnits: 2,
     occupiedUnits: 2,
@@ -103,7 +105,8 @@ export const DEMO_PROJECTS: Project[] = [
     address: '123 Main Street, Miami, FL 33101',
     status: 'Renovating',
     currentPhase: 3, // Hold
-    strategyType: 'Fix & Flip',
+    dispositionType: 'SALE',
+    subStrategy: 'FLIP',
     assetClass: 'Residential',
     numberOfUnits: 1,
     occupiedUnits: 0,

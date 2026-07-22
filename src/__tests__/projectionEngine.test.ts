@@ -26,7 +26,8 @@ function makeProject(overrides: Partial<Project['financials']> = {}): Project {
     propertyName: 'Test Property',
     address: '123 Main St',
     currentPhase: 3,
-    strategyType: 'LTR',
+    dispositionType: 'RENT',
+    subStrategy: 'LONG_TERM',
     financials: {
       purchasePrice: 300000,
       estimatedARV: 340000,

@@ -171,10 +171,10 @@ export default function CashFlowStatement() {
 
       {/* Summary Tiles */}
       <div className="grid grid-cols-3 gap-3">
-        <div className="p-3 bg-emerald-50 rounded-lg text-center border border-emerald-100">
-          <ArrowDownCircle className="w-4 h-4 text-emerald-600 mx-auto mb-1" />
-          <p className="text-xs uppercase tracking-widest text-emerald-600">Total Inflows</p>
-          <p className="text-lg font-normal text-emerald-800">{formatCurrency(totalInflows)}</p>
+        <div className="p-3 bg-pw-success-container rounded-lg text-center border border-pw-success-border">
+          <ArrowDownCircle className="w-4 h-4 text-pw-success mx-auto mb-1" />
+          <p className="text-xs uppercase tracking-widest text-pw-success">Total Inflows</p>
+          <p className="text-lg font-normal text-pw-success">{formatCurrency(totalInflows)}</p>
         </div>
         <div className="p-3 bg-red-50 rounded-lg text-center border border-red-100">
           <ArrowUpCircle className="w-4 h-4 text-red-500 mx-auto mb-1" />
@@ -201,7 +201,7 @@ export default function CashFlowStatement() {
             <thead>
               <tr className="bg-bg-primary">
                 <th className="text-left px-4 py-2.5 text-xs font-bold uppercase tracking-widest text-text-secondary">Month</th>
-                <th className="text-right px-4 py-2.5 text-xs font-bold uppercase tracking-widest text-emerald-600">Inflows</th>
+                <th className="text-right px-4 py-2.5 text-xs font-bold uppercase tracking-widest text-pw-success">Inflows</th>
                 <th className="text-right px-4 py-2.5 text-xs font-bold uppercase tracking-widest text-red-500">Outflows</th>
                 <th className="text-right px-4 py-2.5 text-xs font-bold uppercase tracking-widest text-text-secondary">Net Cash</th>
                 <th className="text-right px-4 py-2.5 text-xs font-bold uppercase tracking-widest text-text-secondary">Balance</th>
@@ -217,7 +217,7 @@ export default function CashFlowStatement() {
                     }`}
                   >
                     <td className="px-4 py-2.5 font-medium text-text-primary">{month.label}</td>
-                    <td className="px-4 py-2.5 text-right font-mono text-emerald-700">
+                    <td className="px-4 py-2.5 text-right font-mono text-pw-success">
                       {month.inflows > 0 ? formatCurrency(month.inflows) : '—'}
                     </td>
                     <td className="px-4 py-2.5 text-right font-mono text-red-600">
@@ -239,14 +239,14 @@ export default function CashFlowStatement() {
                       <td colSpan={5} className="px-4 py-3 bg-bg-primary">
                         <div className="grid grid-cols-2 gap-4 text-xs">
                           <div>
-                            <p className="font-semibold text-emerald-700 mb-1">Inflow Details</p>
+                            <p className="font-semibold text-pw-success mb-1">Inflow Details</p>
                             {month.inflowDetails.length === 0 ? (
                               <p className="text-text-secondary italic">No inflows this month</p>
                             ) : (
                               month.inflowDetails.map((d, i) => (
                                 <div key={i} className="flex justify-between py-0.5">
                                   <span className="text-text-secondary">{d.label}</span>
-                                  <span className="font-mono text-emerald-700">{formatCurrency(d.amount)}</span>
+                                  <span className="font-mono text-pw-success">{formatCurrency(d.amount)}</span>
                                 </div>
                               ))
                             )}

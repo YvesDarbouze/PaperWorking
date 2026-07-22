@@ -19,6 +19,7 @@ import AddressAutocomplete, { type ParsedAddress } from '@/components/projects/A
 import PropertySearchInput from '@/components/shared/PropertySearchInput';
 import { DealHealthPreview } from '@/components/project/DealHealthPreview';
 import type { BridgeSearchResult } from '@/types/bridge';
+import { ButtonGroup } from '@/components/ui/ButtonGroup';
 
 /* ═══════════════════════════════════════════════════════════════
    ProjectCreationWizard — Stitch Schema Reskin
@@ -46,7 +47,8 @@ const INITIAL_FORM = {
   lat: null,
   lng: null,
   assetClass: 'Residential',
-  strategyType: 'Fix & Flip',
+  dispositionType: 'SALE',
+  subStrategy: 'FLIP',
   financingIntent: 'financing',
   raisingOutsideCapital: 'no',
   isBackdated: 'no',
@@ -95,20 +97,70 @@ const INITIAL_FORM = {
 };
 
 const strategyConfig: Record<string, { icon: string; label: string; description: string }> = {
-  'Rent': {
-    icon: 'home_work',
-    label: 'Rental',
-    description: 'Long-term hold for cash flow and appreciation.'
+  'SALE': {
+    icon: 'payments',
+    label: 'Sale',
+    description: 'Acquire, renovate, and sell (Flip/Wholesale/Build-Sell).'
   },
-  'Fix & Flip': {
-    icon: 'architecture',
-    label: 'Flip',
-    description: 'Quick rehab and resale for maximum margin.'
+  'RENT': {
+    icon: 'home_work',
+    label: 'Rent',
+    description: 'Acquire, lease, and hold (Long Term/Short Term/BRRRR).'
+  },
+  'LEASE': {
+    icon: 'business',
+    label: 'Lease',
+    description: 'Lease out the property (NNN/Ground/Lease Option).'
+  },
+  'FLIP': {
+    icon: 'build',
+    label: 'Fix & Flip',
+    description: 'Acquire, renovate, and sell for profit.'
+  },
+  'WHOLESALE': {
+    icon: 'assignment',
+    label: 'Wholesale',
+    description: 'Contract a property and assign to another buyer.'
+  },
+  'BUILD_SELL': {
+    icon: 'foundation',
+    label: 'Build & Sell',
+    description: 'Construct a new building and sell upon completion.'
+  },
+  'LONG_TERM': {
+    icon: 'calendar_today',
+    label: 'Long Term',
+    description: 'Lease to stable tenants on 12+ month terms.'
+  },
+  'SHORT_TERM': {
+    icon: 'travel_explore',
+    label: 'Short Term / Airbnb',
+    description: 'Lease as vacation or short term rentals.'
+  },
+  'MID_TERM': {
+    icon: 'domain',
+    label: 'Mid Term',
+    description: 'Corporate housing or 30+ day rentals.'
   },
   'BRRRR': {
     icon: 'autorenew',
     label: 'BRRRR',
     description: 'Buy, Rehab, Rent, Refinance, Repeat.'
+  },
+  'NNN': {
+    icon: 'account_balance',
+    label: 'Triple Net (NNN)',
+    description: 'Tenant pays taxes, insurance, and maintenance.'
+  },
+  'GROUND': {
+    icon: 'landscape',
+    label: 'Ground Lease',
+    description: 'Lease the land only; tenant builds improvements.'
+  },
+  'LEASE_OPTION': {
+    icon: 'handshake',
+    label: 'Lease Option',
+    description: 'Lease with option to purchase at a later date.'
   }
 };
 
@@ -310,7 +362,8 @@ export default function ProjectCreationWizard({
         lng: formData.lng,
         reiStatus,
         status,
-        strategyType: formData.strategyType,
+        dispositionType: formData.dispositionType,
+        subStrategy: formData.subStrategy,
         ownerUid: user.uid,
         assetClass: formData.assetClass,
         leadEmail: formData.leadEmail,
@@ -566,7 +619,9 @@ export default function ProjectCreationWizard({
               <div className="glass-card rounded-xl p-6 divide-y divide-white/10 text-[14px]">
                 <ReviewRow label="Project Name" value={formData.propertyName} />
                 <ReviewRow label="Address" value={formData.address || 'Manual Entry'} />
-                <ReviewRow label="Strategy" value={formData.strategyType} />
+                <ReviewRow label="Strategy" value={formData.dispositionType === 'RENT'
+                  ? (formData.subStrategy === 'BRRRR' ? 'Rent (BRRRR)' : 'Buy-and-hold Rental')
+                  : (formData.subStrategy === 'WHOLESALE' ? 'Sale (Wholesale)' : 'Fix & Flip')} />
                 <ReviewRow label="Phase" value={formData.isCompleted ? `Phase ${formData.startingPhase} (Completed)` : `Phase ${formData.startingPhase}`} />
                 <ReviewRow label="Financing" value={formData.financingIntent} />
                 <ReviewRow label="Purchase Price" value={`$${Number(formData.financials.purchasePrice || formData.financials.targetPrice).toLocaleString()}`} />
@@ -739,7 +794,7 @@ export default function ProjectCreationWizard({
                           id: 4, type: 'exit', title: 'Exit',
                           desc: 'Close it out or keep it producing income. This is where the whole lifecycle pays off.',
                           icon: 'trending_up',
-                          color: '#5aaa3f',
+                          color: 'var(--pw-success)',
                         },
                       ].map((phase) => {
                         const isSelected = formData.startingPhase === phase.id;
@@ -825,7 +880,7 @@ export default function ProjectCreationWizard({
 
                   {/* SINGLE SELECT — Glass strategy cards (Stitch schema) */}
                   {activeQuestion.type === 'single-select' && (
-                    activeQuestion.id === 'strategyType' ? (
+                    ['dispositionType', 'subStrategySale', 'subStrategyRent', 'subStrategyLease'].includes(activeQuestion.id) ? (
                       <div className="space-y-4 w-full animate-in fade-in duration-300" id="strategy-container">
                         {activeQuestion.options?.map((opt) => {
                           const valueStr = String(opt.value);
@@ -1169,7 +1224,7 @@ export default function ProjectCreationWizard({
             {activeIndex === 0 ? 'Exit' : 'Back'}
           </button>
 
-          <div className="flex items-center gap-4">
+          <ButtonGroup variant="unrelated">
             {/* Skip (only for non-required) */}
             {!isReviewStep && activeQuestion && !activeQuestion.required && (
               <button
@@ -1200,7 +1255,7 @@ export default function ProjectCreationWizard({
                 <ChevronRight className="w-5 h-5" />
               </button>
             )}
-          </div>
+          </ButtonGroup>
         </div>
       </nav>
       {/* ── Dismiss Confirmation Modal ── */}
@@ -1222,7 +1277,7 @@ export default function ProjectCreationWizard({
                 You have unsaved data in the wizard. Closing now will discard all entries.
               </p>
             </div>
-            <div className="flex gap-3">
+            <ButtonGroup variant="related" className="w-full">
               <button
                 onClick={() => setShowDismissConfirm(false)}
                 className="flex-1 rounded-xl px-5 py-3 text-[14px] font-semibold text-[#9E9DA0] border border-white/10 hover:border-white/20 transition-all active:scale-95 duration-150"
@@ -1239,7 +1294,7 @@ export default function ProjectCreationWizard({
               >
                 Discard & Exit
               </button>
-            </div>
+            </ButtonGroup>
           </div>
         </div>
       )}
@@ -1263,7 +1318,8 @@ function getCategoryLabel(question: WizardQuestion): string {
     address: 'Property Address',
     propertyName: 'Project Name',
     assetClass: 'Asset Classification',
-    strategyType: 'Investment Strategy',
+    dispositionType: 'Disposition Type',
+    subStrategy: 'Sub-Strategy',
     financingIntent: 'Financing Plan',
     raisingOutsideCapital: 'Capital Structure',
     ownershipPercentage: 'Ownership',

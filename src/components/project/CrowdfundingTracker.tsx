@@ -2,9 +2,10 @@
 
 import { useEffect, useState, useCallback } from 'react';
 import { Users, TrendingUp, Plus, X, Loader2, AlertCircle } from 'lucide-react';
-import { collection, onSnapshot, orderBy, query } from 'firebase/firestore';
+import { collection, onSnapshot, orderBy, query, where } from 'firebase/firestore';
 import { getAuth } from 'firebase/auth';
 import { db } from '@/lib/firebase/config';
+import Link from 'next/link';
 
 /* ═══════════════════════════════════════════════════════════════
    CrowdfundingTracker
@@ -39,9 +40,9 @@ interface CrowdfundingTrackerProps {
 }
 
 const STATUS_LABELS: Record<Commitment['status'], string> = {
-  pledged:     'Pledged',
-  transferred: 'Transferred',
-  cleared:     'Cleared',
+  pledged:     'Soft-Committed',
+  transferred: 'LOI In Review',
+  cleared:     'Confirmed Interest',
 };
 const STATUS_ORDER: Commitment['status'][] = ['pledged', 'transferred', 'cleared'];
 
@@ -81,6 +82,37 @@ export function CrowdfundingTracker({
   /* ── Real-time Firestore subscription ── */
   useEffect(() => {
     if (!projectId) return;
+
+    if (typeof window !== 'undefined' && document.cookie.includes('__e2e_test')) {
+      const key = `pw_e2e_commitments_${projectId}`;
+      const load = () => {
+        try {
+          const val = localStorage.getItem(key);
+          if (val) {
+            setCommitments(JSON.parse(val));
+          } else {
+            setCommitments([]);
+          }
+          setSynced(true);
+        } catch (e) {
+          console.error(e);
+        }
+      };
+      load();
+
+      const handleStorage = (e: StorageEvent) => {
+        if (e.key === key) load();
+      };
+      window.addEventListener('storage', handleStorage);
+      const handleCustom = () => load();
+      window.addEventListener(`update_${key}`, handleCustom);
+
+      return () => {
+        window.removeEventListener('storage', handleStorage);
+        window.removeEventListener(`update_${key}`, handleCustom);
+      };
+    }
+
     const q = query(
       collection(db, 'projects', projectId, 'commitments'),
       orderBy('createdAt', 'asc')
@@ -108,11 +140,46 @@ export function CrowdfundingTracker({
     return unsub;
   }, [projectId]);
 
+  const [negotiations, setNegotiations] = useState<any[]>([]);
+
+  useEffect(() => {
+    if (!projectId) return;
+
+    const q = query(
+      collection(db, 'negotiations'),
+      where('projectId', '==', projectId)
+    );
+
+    const unsub = onSnapshot(
+      q,
+      (snap) => {
+        const docs = snap.docs.map((d) => d.data());
+        setNegotiations(docs);
+      },
+      (err) => {
+        console.error('Load negotiations in tracker error:', err);
+      }
+    );
+
+    return unsub;
+  }, [projectId]);
+
+  // Compute negotiation rollups
+  const negSoftCents = negotiations
+    .filter((n) => n.status !== 'transaction_confirmed' && n.status !== 'declined' && 
+      (n.status === 'accepted' || n.status === 'terms_confirmed' || n.status === 'transaction_pending' || 
+       (n.status === 'active' && !n.currentTerms?.isCounter)))
+    .reduce((sum, n) => sum + (n.currentTerms?.contribution || 0), 0);
+
+  const negCounterCents = negotiations
+    .filter((n) => n.status === 'active' && n.currentTerms?.isCounter)
+    .reduce((sum, n) => sum + (n.currentTerms?.contribution || 0), 0);
+
   /* ── Notify parent of total changes ── */
   const clearedCents     = commitments.filter(c => c.status === 'cleared').reduce((s, c) => s + c.amountCents, 0);
   const transferredCents = commitments.filter(c => c.status === 'transferred').reduce((s, c) => s + c.amountCents, 0);
   const pledgedCents     = commitments.filter(c => c.status === 'pledged').reduce((s, c) => s + c.amountCents, 0);
-  const raisedCents      = clearedCents + transferredCents + pledgedCents;
+  const raisedCents      = clearedCents + transferredCents + pledgedCents + negSoftCents;
   const progressPct      = targetCents > 0 ? Math.min((raisedCents / targetCents) * 100, 100) : 0;
 
   useEffect(() => {
@@ -225,7 +292,7 @@ export function CrowdfundingTracker({
           className="text-[10px] font-bold uppercase tracking-[0.18em] flex-1"
           style={{ color: '#FFFFFF' }}
         >
-          Capital Raise Tracker
+          Capital Interest Tracker
         </h2>
         <span
           className="text-[9px] font-bold uppercase tracking-[0.1em] px-2 py-0.5 rounded-full"
@@ -262,7 +329,7 @@ export function CrowdfundingTracker({
               className="text-[10px] font-bold uppercase tracking-[0.14em]"
               style={{ color: 'var(--text-secondary)' }}
             >
-              Capital Committed
+              Soft-Committed vs. Target
             </span>
             <span
               className="text-lg font-bold tabular-nums"
@@ -304,7 +371,7 @@ export function CrowdfundingTracker({
           </div>
 
           {/* Numerical Breakdown */}
-          <div className="grid grid-cols-3 gap-2 pt-3" style={{ borderTop: '1px solid var(--border-ui)' }}>
+          <div className="grid grid-cols-4 gap-2 pt-3 text-left" style={{ borderTop: '1px solid var(--border-ui)' }}>
             <div className="flex flex-col gap-1">
               <span className="text-[9px] font-bold uppercase tracking-[0.1em]" style={{ color: 'var(--text-secondary)' }}>
                 Target
@@ -313,33 +380,39 @@ export function CrowdfundingTracker({
                 {targetCents > 0 ? fmt(targetCents) : '—'}
               </span>
             </div>
-            <div className="flex flex-col gap-1 border-l pl-4" style={{ borderColor: 'var(--border-ui)' }}>
+            <div className="flex flex-col gap-1 border-l pl-3" style={{ borderColor: 'var(--border-ui)' }}>
               <span className="text-[9px] font-bold uppercase tracking-[0.1em]" style={{ color: 'var(--text-secondary)' }}>
-                Committed
+                Soft-Committed
               </span>
               <span className="text-sm font-semibold tabular-nums" style={{ color: 'var(--text-primary)' }}>
                 {fmt(raisedCents)}
               </span>
             </div>
-            <div className="flex flex-col gap-1 border-l pl-4" style={{ borderColor: 'var(--border-ui)' }}>
+            <div className="flex flex-col gap-1 border-l pl-3" style={{ borderColor: 'var(--border-ui)' }}>
               <span className="text-[9px] font-bold uppercase tracking-[0.1em]" style={{ color: 'var(--text-secondary)' }}>
-                Funding Gap
+                Marketplace Soft
               </span>
-              <span
-                className="text-sm font-semibold tabular-nums"
-                style={{ color: targetCents > 0 && raisedCents < targetCents ? '#C2410C' : '#15803D' }}
-              >
-                {targetCents > 0 ? fmt(Math.max(0, targetCents - raisedCents)) : '—'}
+              <span className="text-sm font-semibold tabular-nums text-[var(--color-primary)]">
+                {fmt(negSoftCents)}
+              </span>
+            </div>
+            <div className="flex flex-col gap-1 border-l pl-3" style={{ borderColor: 'var(--border-ui)' }}>
+              <span className="text-[9px] font-bold uppercase tracking-[0.1em] text-amber-500" style={{ color: '#F59E0B' }}>
+                Counters
+              </span>
+              <span className="text-sm font-semibold tabular-nums text-amber-500" style={{ color: '#F59E0B' }}>
+                {fmt(negCounterCents)}
               </span>
             </div>
           </div>
 
+
           {/* Legend */}
           <div className="flex items-center gap-4 pt-1">
             {[
-              { color: '#16A34A', label: 'Cleared' },
-              { color: '#3B82F6', label: 'Transferred' },
-              { color: '#F59E0B', label: 'Pledged' },
+              { color: '#16A34A', label: 'Confirmed' },
+              { color: '#3B82F6', label: 'LOI Pending' },
+              { color: '#F59E0B', label: 'Soft-Committed' },
             ].map((l) => (
               <div key={l.label} className="flex items-center gap-1.5">
                 <div className="w-2 h-2 rounded-full" style={{ background: l.color }} />
@@ -426,6 +499,83 @@ export function CrowdfundingTracker({
                 })}
               </tbody>
             </table>
+          </div>
+        )}
+
+        {/* ── Marketplace Interest Log (Negotiation Threads) ── */}
+        {negotiations.length > 0 && (
+          <div className="space-y-3 pt-3" style={{ borderTop: '1px solid var(--border-ui)' }}>
+            <h3 className="text-[10px] font-bold uppercase tracking-[0.16em] text-[var(--color-primary)]">
+              Marketplace Interest Log (Active Negotiations)
+            </h3>
+            <div className="overflow-x-auto rounded-md border border-white/5 bg-[#161318]/20">
+              <table className="w-full text-left border-collapse">
+                <thead>
+                  <tr style={{ background: 'var(--bg-canvas)', borderBottom: '1px solid var(--border-ui)' }}>
+                    <th className="px-4 py-3 text-[10px] font-bold uppercase tracking-[0.1em]" style={{ color: 'var(--text-secondary)' }}>Marketplace Investor</th>
+                    <th className="px-4 py-3 text-[10px] font-bold uppercase tracking-[0.1em]" style={{ color: 'var(--text-secondary)' }}>Proposed Offer</th>
+                    <th className="px-4 py-3 text-[10px] font-bold uppercase tracking-[0.1em]" style={{ color: 'var(--text-secondary)' }}>Status</th>
+                    <th className="px-4 py-3 text-[10px] font-bold uppercase tracking-[0.1em] text-right" style={{ color: 'var(--text-secondary)' }}>Action</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {negotiations.map((n, idx) => {
+                    const isCounter = n.currentTerms?.isCounter;
+                    const statusLabel = 
+                      n.status === 'terms_confirmed' ? 'Terms Confirmed' :
+                      n.status === 'transaction_pending' ? 'Txn Pending' :
+                      n.status === 'transaction_confirmed' ? 'Txn Confirmed' :
+                      n.status === 'accepted' ? 'Accepted' :
+                      n.status === 'declined' ? 'Declined' :
+                      isCounter ? 'Counter Offer' : 'Agreed Terms';
+                    
+                    const statusClass = 
+                      n.status === 'terms_confirmed' || n.status === 'accepted' || n.status === 'transaction_confirmed'
+                        ? 'bg-[var(--color-positive)]/10 text-[var(--color-positive)] border-[var(--color-positive)]/20'
+                        : n.status === 'declined'
+                        ? 'bg-[#F06543]/10 text-[#F06543] border-[#F06543]/20'
+                        : isCounter
+                        ? 'bg-amber-500/10 text-amber-500 border-amber-500/20'
+                        : 'bg-teal-500/10 text-teal-500 border-teal-500/20';
+
+                    return (
+                      <tr key={n.id} style={{ borderBottom: idx === negotiations.length - 1 ? 'none' : '1px solid var(--border-ui)' }}>
+                        <td className="px-4 py-3">
+                          <div className="flex items-center gap-3">
+                            <div className="w-6 h-6 rounded-full flex items-center justify-center shrink-0 text-[10px] font-bold bg-[#00DD94]/15 text-[#00DD94]">
+                              {n.investorName.charAt(0).toUpperCase()}
+                            </div>
+                            <div className="min-w-0">
+                              <p className="text-xs font-semibold text-white truncate">{n.investorName}</p>
+                              <p className="text-[10px] text-[#9E9DA0]/60 truncate">{n.investorEmail}</p>
+                            </div>
+                          </div>
+                        </td>
+                        <td className="px-4 py-3 text-xs font-medium font-mono tabular-nums text-white">
+                          <div>
+                            <p>{fmt(n.currentTerms?.contribution || 0)}</p>
+                            <p className="text-[9px] text-[#9E9DA0]/60">{n.currentTerms?.equityPercentage}% Equity</p>
+                          </div>
+                        </td>
+                        <td className="px-4 py-3">
+                          <span className={`px-2.5 py-1 rounded-full text-[9px] font-bold uppercase tracking-[0.1em] border ${statusClass}`}>
+                            {statusLabel}
+                          </span>
+                        </td>
+                        <td className="px-4 py-3 text-right">
+                          <Link
+                            href={`/dashboard/inbox?negotiationId=${n.id}`}
+                            className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-[#454955]/15 border border-[#454955]/30 text-white rounded-lg text-[10px] font-bold uppercase tracking-wider hover:bg-[#454955]/30 transition-all font-sans"
+                          >
+                            Discuss
+                          </Link>
+                        </td>
+                      </tr>
+                    );
+                  })}
+                </tbody>
+              </table>
+            </div>
           </div>
         )}
 

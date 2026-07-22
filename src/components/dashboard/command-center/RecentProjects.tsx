@@ -49,7 +49,7 @@ export function RecentProjects() {
             description="Create your first project to start tracking deal phases, costs, and performance metrics."
             icon={FolderX}
             action={{
-              label: '+ Create Your First Project',
+              label: 'Create Project',
               onClick: handleCreateProject,
               icon: Plus,
             }}
@@ -79,20 +79,7 @@ export function RecentProjects() {
         </div>
 
         <div className="flex items-center gap-3">
-          {/* + New Project */}
-          <button
-            onClick={handleCreateProject}
-            className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-[11px] font-semibold uppercase tracking-wider transition-all cursor-pointer
-              hover:brightness-110 active:scale-95"
-            style={{
-              backgroundColor: 'rgba(69, 73, 85,0.1)',
-              color: '#454955',
-              border: '1px solid rgba(69, 73, 85,0.2)',
-            }}
-          >
-            <Plus className="w-3.5 h-3.5" />
-            New Project
-          </button>
+
 
           {/* View All link */}
           {projects.length > MAX_RECENT && (

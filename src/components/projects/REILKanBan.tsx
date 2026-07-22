@@ -49,8 +49,8 @@ export const REIL_PHASES = [
     key:         "exit",
     label:       "Exit",
     icon:        "exit_to_app",
-    color:       "#5aaa3f",
-    colorAlpha:  "rgba(90,170,63,",
+    color:       "var(--pw-success)",
+    colorAlpha:  "rgba(0,221,148,",
     description: "Marketing, final sale, realized ROI charts, and end-of-year tax documents.",
     activities:  ["Listing costs", "Sale tracking", "ROI analysis", "Tax docs"],
   },
@@ -237,6 +237,7 @@ export function REILKanBan({ projects, onAdd, renderCard }: REILKanBanProps) {
   const buckets = useMemo(() => {
     const map: Record<number, Project[]> = { 1: [], 2: [], 3: [], 4: [] };
     for (const p of projects) {
+      if (p.retrospective) continue;
       const ph = p.currentPhase ?? 1;
       const key = Math.min(Math.max(ph, 1), 4) as 1 | 2 | 3 | 4;
       map[key].push(p);

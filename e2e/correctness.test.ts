@@ -22,7 +22,8 @@ test.describe('PaperWorking E2E — End-to-End Correctness Gate (Prompt 7)', () 
       address: proj.address,
       status: proj.status,
       currentPhase: proj.currentPhase,
-      strategyType: proj.strategyType,
+      dispositionType: proj.dispositionType,
+      subStrategy: proj.subStrategy,
       financials: proj.financials,
       createdAt: new Date().toISOString(),
       members: {
@@ -96,7 +97,7 @@ test.describe('PaperWorking E2E — End-to-End Correctness Gate (Prompt 7)', () 
   test('Logical Verification — Per-Project and Portfolio Aggregates', () => {
     // 1. Per-Project Correctness
     for (const proj of golden.projects) {
-      const derived = deriveAllMetrics(proj.financials, undefined, proj.strategyType, proj.currentPhase);
+      const derived = deriveAllMetrics(proj.financials, undefined, proj.dispositionType, proj.currentPhase);
       const expected = proj.expected;
 
       expect(derived.noi).toBeCloseTo(expected.noi, 0);
@@ -125,7 +126,7 @@ test.describe('PaperWorking E2E — End-to-End Correctness Gate (Prompt 7)', () 
 
     // 2. Portfolio Correctness (Aggregate calculations verification)
     const projectMetrics = golden.projects.map((proj: any) => {
-      const derived = deriveAllMetrics(proj.financials, undefined, proj.strategyType, proj.currentPhase);
+      const derived = deriveAllMetrics(proj.financials, undefined, proj.dispositionType, proj.currentPhase);
       return {
         id: proj.id,
         purchasePrice: proj.financials.purchasePrice,
@@ -178,7 +179,7 @@ test.describe('PaperWorking E2E — End-to-End Correctness Gate (Prompt 7)', () 
   // Single-Project portfolio math check
   test('Logical Verification — Single-Project portfolio aggregates', () => {
     const singleProj = golden.projects[0];
-    const derived = deriveAllMetrics(singleProj.financials, undefined, singleProj.strategyType, singleProj.currentPhase);
+    const derived = deriveAllMetrics(singleProj.financials, undefined, singleProj.dispositionType, singleProj.currentPhase);
     
     // Total NOI
     const totalNOI = derived.noi;

@@ -28,3 +28,76 @@ export function calculateROI(grossProfit: number, totalCashNeeded: number): numb
   if (totalCashNeeded <= 0) return 0;
   return (grossProfit / totalCashNeeded) * 100;
 }
+
+export interface AmortizationResult {
+  monthlyPayment: number;
+  annualDebtService: number;
+  firstYearInterest: number;
+  firstYearPrincipal: number;
+  schedule: Array<{
+    month: number;
+    payment: number;
+    principal: number;
+    interest: number;
+    remainingBalance: number;
+  }>;
+}
+
+export function calculateAmortization(
+  loanAmount: number,
+  annualInterestRatePercent: number,
+  loanTermMonths: number
+): AmortizationResult {
+  const schedule: AmortizationResult['schedule'] = [];
+  if (loanAmount <= 0 || loanTermMonths <= 0) {
+    return {
+      monthlyPayment: 0,
+      annualDebtService: 0,
+      firstYearInterest: 0,
+      firstYearPrincipal: 0,
+      schedule,
+    };
+  }
+
+  const monthlyRate = (annualInterestRatePercent / 100) / 12;
+  const totalPayments = loanTermMonths;
+  let monthlyPayment = 0;
+
+  if (monthlyRate > 0) {
+    const pow = Math.pow(1 + monthlyRate, totalPayments);
+    monthlyPayment = (loanAmount * monthlyRate * pow) / (pow - 1);
+  } else {
+    monthlyPayment = loanAmount / totalPayments;
+  }
+
+  let remainingBalance = loanAmount;
+  let firstYearInterest = 0;
+  let firstYearPrincipal = 0;
+
+  for (let m = 1; m <= totalPayments; m++) {
+    const interest = remainingBalance * monthlyRate;
+    const principal = monthlyPayment - interest;
+    remainingBalance = Math.max(0, remainingBalance - principal);
+
+    if (m <= 12) {
+      firstYearInterest += interest;
+      firstYearPrincipal += principal;
+    }
+
+    schedule.push({
+      month: m,
+      payment: monthlyPayment,
+      principal,
+      interest,
+      remainingBalance,
+    });
+  }
+
+  return {
+    monthlyPayment,
+    annualDebtService: monthlyPayment * 12,
+    firstYearInterest,
+    firstYearPrincipal,
+    schedule,
+  };
+}

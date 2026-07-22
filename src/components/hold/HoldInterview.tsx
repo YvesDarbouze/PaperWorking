@@ -6,6 +6,7 @@ import { projectsService } from '@/lib/firebase/projects';
 import { useAuth } from '@/context/AuthContext';
 import { toast } from 'react-hot-toast';
 import { ChevronLeft, ChevronRight, Info, AlertTriangle, Check, DollarSign } from 'lucide-react';
+import { ButtonGroup } from '@/components/ui/ButtonGroup';
 import {
   getAllRehabTiers,
   getRehabTierBudgetRange,
@@ -97,7 +98,9 @@ const ALL_SECTIONS: SectionDef[] = [
 
 export default function HoldInterview({ deal }: HoldInterviewProps) {
   const { user } = useAuth();
-  const strategy = deal.strategyType || 'Fix & Flip';
+  const strategy = deal.dispositionType === 'RENT'
+    ? (deal.subStrategy === 'BRRRR' ? 'Rent' : 'Buy & Hold')
+    : (deal.subStrategy === 'WHOLESALE' ? 'Sell' : 'Fix & Flip');
 
   // ── Form State ──────────────────────────────────────
   const [formData, setFormData] = useState(() => buildFormData(deal));
@@ -308,7 +311,7 @@ export default function HoldInterview({ deal }: HoldInterviewProps) {
           <ChevronLeft className="w-3.5 h-3.5" />
           Back
         </button>
-        <div className="flex items-center gap-3">
+        <ButtonGroup variant="related">
           {isSaving && (
             <span className="text-[10px] text-text-secondary animate-pulse">Saving…</span>
           )}
@@ -331,7 +334,7 @@ export default function HoldInterview({ deal }: HoldInterviewProps) {
               <ChevronRight className="w-3.5 h-3.5" />
             </button>
           )}
-        </div>
+        </ButtonGroup>
       </div>
     </div>
   );

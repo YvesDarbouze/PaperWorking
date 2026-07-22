@@ -26,7 +26,7 @@ export interface DSCRProjectInput {
     [key: string]: any;
   };
   currentPhase?: number;
-  strategyType?: string;
+  dispositionType?: string;
   [key: string]: any;
 }
 
@@ -46,7 +46,7 @@ export function computeDSCRMetric(project: DSCRProjectInput): MetricResult {
     return incomplete(['financials.monthlyGrossRent']);
   }
 
-  const noi = computeNOI(fin as any, project.strategyType, project.currentPhase);
+  const noi = computeNOI(fin as any, project.dispositionType, project.currentPhase);
   const loanRate = num(fin?.loanInterestRate) ?? 0;
   const loanTermYears = num(fin?.loanTermYears) ?? 30;
   const annualDS = computeAnnualDebtService(loanAmount, loanRate, loanTermYears * 12);

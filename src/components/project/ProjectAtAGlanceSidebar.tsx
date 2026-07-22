@@ -21,14 +21,7 @@ import {
 } from 'lucide-react';
 import type { Project, PropertyMetricSnapshot } from '@/types/schema';
 import { usePropertyMetricSnapshots } from '@/hooks/usePropertyMetricSnapshots';
-import {
-  computeNOIMetric,
-  computeCashFlowMetric,
-  computeCapRateMetric,
-  computeOccupancyMetric,
-  computeExpenseRatioMetric,
-  computeDSCRMetric
-} from '@/lib/metrics';
+import { deriveAllMetrics } from '@/lib/metrics/reiMetrics';
 
 interface ProjectAtAGlanceSidebarProps {
   project: Project;
@@ -280,16 +273,17 @@ export function ProjectAtAGlanceSidebar({ project }: ProjectAtAGlanceSidebarProp
     }
 
     // Fallback: use current live metric values from project object
-    const metricInput = {
-      financials: project.financials ?? {},
-      currentPhase: project.currentPhase,
-      strategyType: project.strategyType,
-    };
+    const derived = deriveAllMetrics(
+      project.financials ?? {},
+      undefined,
+      project.dispositionType,
+      project.currentPhase
+    );
 
-    const noiVal = computeNOIMetric(metricInput).value;
-    const cfVal = computeCashFlowMetric(metricInput).value;
-    const capVal = computeCapRateMetric(metricInput).value;
-    const occVal = computeOccupancyMetric(metricInput).value;
+    const noiVal = derived.noi;
+    const cfVal = derived.annualCashFlow;
+    const capVal = derived.capRate;
+    const occVal = derived.occupancyRate;
 
     const fallbackCandidates = [
       { label: 'NOI', cur: noiVal, pri: null, delta: 0, absDelta: 0, format: 'currency' },
@@ -361,10 +355,10 @@ export function ProjectAtAGlanceSidebar({ project }: ProjectAtAGlanceSidebarProp
                 if (!isZero) {
                   if (cand.label === 'OER') {
                     // OER lower is better
-                    changeColor = isUp ? 'text-red-400' : 'text-emerald-400';
+                    changeColor = isUp ? 'text-red-400' : 'text-pw-success';
                     Icon = isUp ? TrendingUp : TrendingDown;
                   } else {
-                    changeColor = isUp ? 'text-emerald-400' : 'text-red-400';
+                    changeColor = isUp ? 'text-pw-success' : 'text-red-400';
                     Icon = isUp ? TrendingUp : TrendingDown;
                   }
                 }
@@ -502,7 +496,7 @@ export function ProjectAtAGlanceSidebar({ project }: ProjectAtAGlanceSidebarProp
                     <span 
                       className={`text-[8px] font-bold uppercase tracking-wider px-1.5 py-0.5 rounded shrink-0 ${
                         team.status === 'active' 
-                          ? 'bg-emerald-500/15 text-emerald-400 border border-emerald-500/20' 
+                          ? 'bg-pw-success-container text-pw-success border border-pw-success-border' 
                           : 'bg-yellow-500/15 text-yellow-400 border border-yellow-500/20'
                       }`}
                     >
@@ -539,7 +533,7 @@ export function ProjectAtAGlanceSidebar({ project }: ProjectAtAGlanceSidebarProp
                       <span 
                         className={`text-[8px] font-bold uppercase tracking-wider px-1.5 py-0.5 rounded shrink-0 ${
                           isAccepted 
-                            ? 'bg-emerald-500/15 text-emerald-400 border border-emerald-500/20' 
+                            ? 'bg-pw-success-container text-pw-success border border-pw-success-border' 
                             : isPending
                               ? 'bg-yellow-500/15 text-yellow-400 border border-yellow-500/20'
                               : 'bg-red-500/15 text-red-400 border border-red-500/20'
@@ -608,7 +602,7 @@ export function ProjectAtAGlanceSidebar({ project }: ProjectAtAGlanceSidebarProp
 
                       <div className="flex items-center gap-1.5 shrink-0">
                         {doc.verified && (
-                          <ShieldCheck className="w-3.5 h-3.5 text-emerald-400 shrink-0" />
+                          <ShieldCheck className="w-3.5 h-3.5 text-pw-success shrink-0" />
                         )}
                         {doc.fileUrl ? (
                           <a 

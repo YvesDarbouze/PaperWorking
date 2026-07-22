@@ -28,7 +28,7 @@ const STATUS_CONFIG: Record<PermitStatus, { color: string; bg: string; icon: Rea
   'Not Filed': { color: 'text-text-secondary', bg: 'bg-bg-primary', icon: <Clock className="w-3.5 h-3.5" /> },
   Filed: { color: 'text-blue-600', bg: 'bg-blue-50', icon: <FileText className="w-3.5 h-3.5" /> },
   'Under Review': { color: 'text-yellow-600', bg: 'bg-yellow-50', icon: <Clock className="w-3.5 h-3.5" /> },
-  Approved: { color: 'text-emerald-600', bg: 'bg-emerald-50', icon: <CheckCircle className="w-3.5 h-3.5" /> },
+  Approved: { color: 'text-pw-success', bg: 'bg-pw-success-container border border-pw-success-border', icon: <CheckCircle className="w-3.5 h-3.5" /> },
   Denied: { color: 'text-red-600', bg: 'bg-red-50', icon: <AlertTriangle className="w-3.5 h-3.5" /> },
   'Inspection Scheduled': { color: 'text-[#1e7874]', bg: 'bg-[#454955]/10', icon: <FileText className="w-3.5 h-3.5" /> },
 };
@@ -93,7 +93,7 @@ export default function PermitTrackingChecklist() {
           </div>
           <div className="flex items-center gap-2">
             {isFullyCompliant ? (
-              <span className="bg-emerald-50 text-emerald-700 text-xs font-bold px-2.5 py-1 rounded-full border border-emerald-200 flex items-center gap-1">
+              <span className="bg-pw-success-container text-pw-success text-xs font-bold px-2.5 py-1 rounded-full border border-pw-success-border flex items-center gap-1">
                 <CheckCircle className="w-3 h-3" /> COMPLIANT
               </span>
             ) : deniedCount > 0 ? (
@@ -117,7 +117,7 @@ export default function PermitTrackingChecklist() {
             <span>{approvedCount}/{permits.length} approved</span>
           </div>
           <div className="w-full bg-bg-primary rounded-full h-2 flex overflow-hidden">
-            <div className="bg-emerald-500 h-2 transition-all" style={{ width: `${(approvedCount / permits.length) * 100}%` }} />
+            <div className="bg-pw-success h-2 transition-all" style={{ width: `${(approvedCount / permits.length) * 100}%` }} />
             {deniedCount > 0 && (
               <div className="bg-red-400 h-2 transition-all" style={{ width: `${(deniedCount / permits.length) * 100}%` }} />
             )}

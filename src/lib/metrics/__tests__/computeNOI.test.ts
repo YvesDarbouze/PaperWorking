@@ -25,8 +25,8 @@ describe('computeNOIMetric', () => {
     expect(result.inputsMissing).toHaveLength(0);
     // Gross: $2,000 × 12 = $24,000
     // Vacancy: $24,000 × 5% = $1,200
-    // Expenses: taxes $2,400 + insurance $1,200 + maintenance $600 + mgmt $2,400 = $6,600
-    // NOI = $24,000 - $1,200 - $6,600 = $16,200
+    // Expenses: taxes $2,400 + insurance $1,200 + maintenance $600 + mgmt $2,400 (10% of $24,000 gross rent) = $6,600
+    // NOI = $22,800 - $6,600 = $16,200
     expect(result.value).toBeCloseTo(16200, 0);
   });
 

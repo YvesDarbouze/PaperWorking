@@ -97,7 +97,8 @@ describe('Insights Metric Taxonomy & Classification Integrity', () => {
     const p = {
       id: 'test-project',
       currentPhase: 3,
-      strategyType: 'Rent',
+      dispositionType: 'RENT',
+      subStrategy: 'LONG_TERM',
       numberOfUnits: 2,
       createdAt: new Date().toISOString(),
       financials: {

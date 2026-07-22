@@ -11,6 +11,8 @@ import {
   Home, DollarSign, Calendar, Users
 } from 'lucide-react';
 
+import { ButtonGroup } from '@/components/ui/ButtonGroup';
+
 // ══════════════════════════════════════════════════════════════════
 // R2 — Purchase Agent: Due-Diligence Guided Interview
 // ══════════════════════════════════════════════════════════════════
@@ -70,7 +72,7 @@ export default function PurchaseInterview({ deal }: PurchaseInterviewProps) {
   const buildInitialData = useCallback(() => ({
     financials: {
       // S1: Price & P&S
-      purchasePrice: deal.financials?.purchasePrice || '',
+      purchasePrice: deal.financials?.purchasePrice || (deal.askingPriceCents ? deal.askingPriceCents / 100 : '') || (deal.propertyFacts?.listPriceCents ? Number(deal.propertyFacts.listPriceCents) / 100 : ''),
       emdAmount: deal.financials?.emdAmount || '',
       emdGoHardDate: formatDate(deal.financials?.emdGoHardDate),
       inspectionDeadline: '',
@@ -1230,7 +1232,7 @@ export default function PurchaseInterview({ deal }: PurchaseInterviewProps) {
               <ChevronLeft className="w-3.5 h-3.5" />
               Back
             </button>
-            <div className="flex items-center gap-3">
+            <ButtonGroup variant="related">
               {!activeStep.required && (
                 <button
                   onClick={() => {
@@ -1253,7 +1255,7 @@ export default function PurchaseInterview({ deal }: PurchaseInterviewProps) {
                 {isSaving ? 'Saving...' : isVeryLast ? 'Complete Purchase Setup' : isLastStepInSection ? `Complete ${activeSection?.title.split(' ')[0]}` : 'Next'}
                 {!isVeryLast && <ChevronRight className="w-3.5 h-3.5" />}
               </button>
-            </div>
+            </ButtonGroup>
           </div>
         </div>
       )}

@@ -83,9 +83,9 @@ const STATUS_CONFIG: Record<
   },
   Cleared: {
     icon: <CheckCircle className="w-3.5 h-3.5" />,
-    bg: 'bg-emerald-50',
-    text: 'text-emerald-600',
-    border: 'border-emerald-200',
+    bg: 'bg-pw-success-container',
+    text: 'text-pw-success',
+    border: 'border-pw-success-border',
   },
   'Issue Found': {
     icon: <AlertTriangle className="w-3.5 h-3.5" />,
@@ -359,7 +359,7 @@ export default function TitleSearchClearance({
             </span>
           )}
           {isFullyCleared ? (
-            <span className="bg-emerald-50 text-emerald-700 text-xs font-bold px-2.5 py-1 rounded-full border border-emerald-200 flex items-center gap-1">
+            <span className="bg-pw-success-container text-pw-success text-xs font-bold px-2.5 py-1 rounded-full border border-pw-success-border flex items-center gap-1">
               <CheckCircle className="w-3 h-3" /> ALL CLEAR
             </span>
           ) : issueCount > 0 ? (
@@ -390,7 +390,7 @@ export default function TitleSearchClearance({
             </div>
             <div className="w-full bg-bg-primary rounded-full h-2 flex overflow-hidden">
               <div
-                className="bg-emerald-500 h-2 transition-all"
+                className="bg-pw-success h-2 transition-all"
                 style={{
                   width: `${(clearedCount / checks.length) * 100}%`,
                 }}

@@ -14,7 +14,8 @@ describe('Tax Reporting & CPA Export Service', () => {
       const mockProject = {
         id: '1',
         propertyName: 'No Financials Property',
-        strategyType: 'Rent',
+        dispositionType: 'RENT',
+        subStrategy: 'LONG_TERM',
         currentPhase: 3,
         status: 'Active',
       } as unknown as Project;
@@ -27,7 +28,8 @@ describe('Tax Reporting & CPA Export Service', () => {
       const mockProject = {
         id: '2',
         propertyName: 'Test Property',
-        strategyType: 'Rent',
+        dispositionType: 'RENT',
+        subStrategy: 'LONG_TERM',
         currentPhase: 3,
         status: 'Active',
         financials: {
@@ -46,7 +48,8 @@ describe('Tax Reporting & CPA Export Service', () => {
       const mockProject = {
         id: '3',
         propertyName: 'Leveraged Property',
-        strategyType: 'Rent',
+        dispositionType: 'RENT',
+        subStrategy: 'LONG_TERM',
         currentPhase: 3,
         status: 'Active',
         financials: {
@@ -68,7 +71,8 @@ describe('Tax Reporting & CPA Export Service', () => {
       const mockProject = {
         id: '4',
         propertyName: 'Sold Property',
-        strategyType: 'Fix & Flip',
+        dispositionType: 'SALE',
+        subStrategy: 'FLIP',
         currentPhase: 4,
         status: 'Sold',
         financials: {
@@ -178,7 +182,8 @@ describe('Tax Reporting & CPA Export Service', () => {
     const mockProject = {
       id: 'proj-1',
       propertyName: 'Tax Test Property',
-      strategyType: 'Rent',
+      dispositionType: 'RENT',
+      subStrategy: 'LONG_TERM',
       currentPhase: 3,
       status: 'Active',
       financials: {
@@ -244,7 +249,8 @@ describe('Tax Reporting & CPA Export Service', () => {
       const assessedProject = {
         id: 'proj-assessed',
         propertyName: 'Assessed Property',
-        strategyType: 'Rent',
+        dispositionType: 'RENT',
+        subStrategy: 'LONG_TERM',
         currentPhase: 3,
         status: 'Active',
         financials: {
@@ -271,7 +277,8 @@ describe('Tax Reporting & CPA Export Service', () => {
       const prorationProject = {
         id: 'proj-prorate',
         propertyName: 'Prorate Property',
-        strategyType: 'Rent',
+        dispositionType: 'RENT',
+        subStrategy: 'LONG_TERM',
         currentPhase: 4,
         status: 'Sold',
         financials: {
@@ -299,7 +306,8 @@ describe('Tax Reporting & CPA Export Service', () => {
       const sameYearProject = {
         id: 'proj-same-year',
         propertyName: 'Same Year Property',
-        strategyType: 'Rent',
+        dispositionType: 'RENT',
+        subStrategy: 'LONG_TERM',
         currentPhase: 4,
         status: 'Sold',
         financials: {
@@ -318,7 +326,8 @@ describe('Tax Reporting & CPA Export Service', () => {
       const soldProject = {
         id: 'proj-sold',
         propertyName: 'Sold Property',
-        strategyType: 'Rent',
+        dispositionType: 'RENT',
+        subStrategy: 'LONG_TERM',
         currentPhase: 4,
         status: 'Sold',
         financials: {

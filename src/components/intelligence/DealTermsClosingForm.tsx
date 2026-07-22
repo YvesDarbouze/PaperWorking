@@ -2,7 +2,7 @@
 
 import React, { useState, useMemo, useCallback } from "react";
 import { FileText, DollarSign } from "lucide-react";
-import { computeCapRate, computeLTV } from "@/lib/metrics/reiMetrics";
+import { deriveAllMetrics } from "@/lib/metrics/reiMetrics";
 
 // ── Types ────────────────────────────────────────────────────────────────────
 
@@ -42,17 +42,20 @@ export function DealTermsClosingForm({
   const [downPayment, setDownPayment] = useState(0);
 
   const derived = useMemo(() => {
-    // Cap Rate = NOI / Purchase Price × 100
-    const capRate =
-      noi != null && noi > 0 ? computeCapRate(noi, purchasePrice) : 0;
-
-    // Loan Amount = Purchase Price − Down Payment
+    const tempFinancials = {
+      purchasePrice: purchasePrice || 1,
+      monthlyGrossRent: (noi ?? 0) / 12,
+      fixedOperatingExpenses: 0,
+      otherIncome: 0,
+      vacancyRatePercent: 0,
+      loanAmount: purchasePrice - downPayment,
+      loanInterestRate: 0,
+      loanTermYears: 1,
+    };
+    const metrics = deriveAllMetrics(tempFinancials as any, undefined, 'RENT', 3);
+    const capRate = metrics.capRate ?? 0;
+    const ltv = metrics.ltv ?? 0;
     const loanAmount = Math.max(0, purchasePrice - downPayment);
-
-    // LTV = Loan Amount / Purchase Price × 100
-    const ltv = computeLTV(loanAmount, purchasePrice);
-
-    // Total Cash Invested = Down Payment + Closing Costs
     const totalCashInvested = downPayment + closingCosts;
 
     return { capRate, ltv, totalCashInvested, loanAmount };
@@ -79,13 +82,22 @@ export function DealTermsClosingForm({
       }
 
       if (onValuesChange) {
-        const cr =
-          noi != null && noi > 0 ? computeCapRate(noi, nextPrice) : 0;
+        const tempFinancials = {
+          purchasePrice: nextPrice || 1,
+          monthlyGrossRent: (noi ?? 0) / 12,
+          fixedOperatingExpenses: 0,
+          otherIncome: 0,
+          vacancyRatePercent: 0,
+          loanAmount: nextPrice - nextDown,
+          loanInterestRate: 0,
+          loanTermYears: 1,
+        };
+        const metrics = deriveAllMetrics(tempFinancials as any, undefined, 'RENT', 3);
         onValuesChange({
           purchasePrice: nextPrice,
           closingCosts: nextClosing,
           downPayment: nextDown,
-          capRate: cr,
+          capRate: metrics.capRate ?? 0,
         });
       }
     },
@@ -96,24 +108,26 @@ export function DealTermsClosingForm({
     "w-full bg-surface-container-high border border-white/10 rounded-lg py-3 pl-8 pr-4 text-on-surface font-mono focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-all";
 
   // Cap rate health indicator
+  const capRateVal = derived.capRate ?? 0;
   const capRateHealth =
-    derived.capRate >= 8
+    capRateVal >= 8
       ? { label: "Excellent", color: "#454955" }
-      : derived.capRate >= 5
+      : capRateVal >= 5
         ? { label: "Good", color: "#454955" }
-        : derived.capRate >= 3
+        : capRateVal >= 3
           ? { label: "Fair", color: "#f59e0b" }
-          : derived.capRate > 0
+          : capRateVal > 0
             ? { label: "Low", color: "#F06543" }
             : { label: "—", color: "#64748b" };
 
   // LTV risk indicator
+  const ltvVal = derived.ltv ?? 0;
   const ltvHealth =
-    derived.ltv <= 0
+    ltvVal <= 0
       ? { label: "—", color: "#64748b" }
-      : derived.ltv <= 75
+      : ltvVal <= 75
         ? { label: "Conservative", color: "#454955" }
-        : derived.ltv <= 85
+        : ltvVal <= 85
           ? { label: "Standard", color: "#f59e0b" }
           : { label: "High Leverage", color: "#F06543" };
 

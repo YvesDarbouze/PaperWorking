@@ -37,7 +37,7 @@ export default function HelpCenterClient({ initialArticles }: HelpCenterClientPr
     <div className="w-full max-w-4xl mx-auto py-12 px-6">
       {/* Hero Header */}
       <div className="text-center mb-16">
-        <span className="uppercase tracking-widest text-xs font-black text-emerald-400 mb-3 block">
+        <span className="uppercase tracking-widest text-xs font-black text-pw-success mb-3 block">
           Support & Knowledge Base
         </span>
         <h1 className="text-4xl md:text-5xl font-light tracking-tighter text-[var(--pw-black)] mb-6">
@@ -49,14 +49,14 @@ export default function HelpCenterClient({ initialArticles }: HelpCenterClientPr
 
         {/* Big Search Input */}
         <div className="max-w-2xl mx-auto relative group">
-          <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-[var(--pw-muted)] group-focus-within:text-emerald-400 transition-colors" />
+          <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-[var(--pw-muted)] group-focus-within:text-pw-success transition-colors" />
           <input
             id="help-center-search"
             type="search"
             placeholder="Search NOI, Cash Flow, first project..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full pl-12 pr-6 py-4 bg-white/5 backdrop-blur-xl border border-[var(--pw-border)] rounded-2xl text-sm focus:outline-none focus:border-emerald-400 focus:ring-1 focus:ring-emerald-400 transition-all text-[var(--pw-black)] placeholder:text-[var(--pw-muted)]"
+            className="w-full pl-12 pr-6 py-4 bg-white/5 backdrop-blur-xl border border-[var(--pw-border)] rounded-2xl text-sm focus:outline-none focus:border-pw-success focus:ring-pw-success transition-all text-[var(--pw-black)] placeholder:text-[var(--pw-muted)]"
           />
         </div>
       </div>
@@ -74,7 +74,7 @@ export default function HelpCenterClient({ initialArticles }: HelpCenterClientPr
           {screensArticles.length > 0 && (
             <div>
               <div className="flex items-center gap-2 mb-6 border-b border-[var(--pw-border)] pb-3">
-                <Compass className="w-5 h-5 text-emerald-400" />
+                <Compass className="w-5 h-5 text-pw-success" />
                 <h2 className="text-xs uppercase tracking-widest font-black text-[var(--pw-black)]">
                   Platform Screen Guides ({screensArticles.length})
                 </h2>
@@ -87,14 +87,14 @@ export default function HelpCenterClient({ initialArticles }: HelpCenterClientPr
                     className="p-5 rounded-xl border border-[var(--pw-border)] bg-white/5 hover:bg-white/10 transition-all flex flex-col justify-between group"
                   >
                     <div>
-                      <h3 className="text-base font-bold text-[var(--pw-black)] mb-2 group-hover:text-emerald-400 transition-colors">
+                      <h3 className="text-base font-bold text-[var(--pw-black)] mb-2 group-hover:text-pw-success transition-colors">
                         {article.title}
                       </h3>
                       <p className="text-xs text-[var(--pw-muted)] leading-relaxed line-clamp-2">
                         {article.excerpt}
                       </p>
                     </div>
-                    <div className="mt-4 flex items-center gap-1 text-[10px] uppercase tracking-widest font-black text-emerald-400">
+                    <div className="mt-4 flex items-center gap-1 text-[10px] uppercase tracking-widest font-black text-pw-success">
                       Read Guide <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform" />
                     </div>
                   </Link>
@@ -107,7 +107,7 @@ export default function HelpCenterClient({ initialArticles }: HelpCenterClientPr
           {metricsArticles.length > 0 && (
             <div>
               <div className="flex items-center gap-2 mb-6 border-b border-[var(--pw-border)] pb-3">
-                <BookOpen className="w-5 h-5 text-emerald-400" />
+                <BookOpen className="w-5 h-5 text-pw-success" />
                 <h2 className="text-xs uppercase tracking-widest font-black text-[var(--pw-black)]">
                   Metric Explainers ({metricsArticles.length})
                 </h2>
@@ -120,14 +120,14 @@ export default function HelpCenterClient({ initialArticles }: HelpCenterClientPr
                     className="p-5 rounded-xl border border-[var(--pw-border)] bg-white/5 hover:bg-white/10 transition-all flex flex-col justify-between group"
                   >
                     <div>
-                      <h3 className="text-base font-bold text-[var(--pw-black)] mb-2 group-hover:text-emerald-400 transition-colors">
+                      <h3 className="text-base font-bold text-[var(--pw-black)] mb-2 group-hover:text-pw-success transition-colors">
                         {article.title}
                       </h3>
                       <p className="text-xs text-[var(--pw-muted)] leading-relaxed line-clamp-2">
                         {article.excerpt}
                       </p>
                     </div>
-                    <div className="mt-4 flex items-center gap-1 text-[10px] uppercase tracking-widest font-black text-emerald-400">
+                    <div className="mt-4 flex items-center gap-1 text-[10px] uppercase tracking-widest font-black text-pw-success">
                       View Formula <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform" />
                     </div>
                   </Link>

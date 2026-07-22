@@ -55,7 +55,7 @@ export default async function HelpArticlePage({ params }: HelpArticlePageProps) 
         <div className="lg:col-span-3">
           <article>
             <header className="mb-10 pb-8 border-b border-[var(--pw-border)]">
-              <span className="uppercase tracking-widest text-[10px] font-black text-emerald-400 mb-3 block">
+              <span className="uppercase tracking-widest text-[10px] font-black text-pw-success mb-3 block">
                 {article.category === 'screens' ? 'Screen Guide' : 'Metric Explainer'}
               </span>
               <h1 className="text-3xl md:text-5xl font-light tracking-tighter text-[var(--pw-black)] mb-4">
@@ -84,11 +84,11 @@ export default async function HelpArticlePage({ params }: HelpArticlePageProps) 
             <h3 className="text-xs uppercase tracking-widest font-black text-[var(--pw-black)] mb-4 pb-2 border-b border-[var(--pw-border)] flex items-center gap-1.5">
               {article.category === 'screens' ? (
                 <>
-                  <Compass className="w-4 h-4 text-emerald-400" /> Related Screens
+                  <Compass className="w-4 h-4 text-pw-success" /> Related Screens
                 </>
               ) : (
                 <>
-                  <BookOpen className="w-4 h-4 text-emerald-400" /> Related Metrics
+                  <BookOpen className="w-4 h-4 text-pw-success" /> Related Metrics
                 </>
               )}
             </h3>
@@ -100,9 +100,9 @@ export default async function HelpArticlePage({ params }: HelpArticlePageProps) 
                   <li key={a.slug}>
                     <Link
                       href={`/help/${a.slug}`}
-                      className="text-xs text-[var(--pw-muted)] hover:text-emerald-400 font-medium transition-colors flex items-center gap-1 group"
+                      className="text-xs text-[var(--pw-muted)] hover:text-pw-success font-medium transition-colors flex items-center gap-1 group"
                     >
-                      <ChevronRight className="w-3 h-3 text-emerald-400 group-hover:translate-x-0.5 transition-transform" />
+                      <ChevronRight className="w-3 h-3 text-pw-success" />
                       {a.title}
                     </Link>
                   </li>
@@ -118,7 +118,7 @@ export default async function HelpArticlePage({ params }: HelpArticlePageProps) 
             </p>
             <Link
               href="/help"
-              className="inline-block w-full py-2 bg-emerald-500 hover:bg-emerald-600 active:scale-95 text-white font-medium text-xs rounded-lg transition-all"
+              className="inline-block w-full py-2 bg-pw-success hover:bg-pw-success/90 active:scale-95 text-[#0d0a0b] font-bold text-xs rounded-lg transition-all"
             >
               Open Support Widget
             </Link>

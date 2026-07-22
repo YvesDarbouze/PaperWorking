@@ -235,11 +235,11 @@ export default function DSCRIntelligencePage() {
     const projects = portfolioInputsResult.data.projects;
     const withPrice = projects.filter(p => (p.financials?.purchasePrice ?? 0) > 0);
     const totalNOI = withPrice.reduce((sum, p) => {
-      const d = deriveAllMetrics(p.financials, undefined, p.strategyType, p.currentPhase);
+      const d = deriveAllMetrics(p.financials, undefined, p.dispositionType, p.currentPhase);
       return sum + d.noi;
     }, 0);
     const totalDS = withPrice.reduce((sum, p) => {
-      const d = deriveAllMetrics(p.financials, undefined, p.strategyType, p.currentPhase);
+      const d = deriveAllMetrics(p.financials, undefined, p.dispositionType, p.currentPhase);
       // monthly debt service = annualDebtService / 12
       return sum + d.annualDebtService / 12;
     }, 0);
@@ -295,7 +295,7 @@ export default function DSCRIntelligencePage() {
     const withEquity = projects.filter((p) => (p.financials?.purchasePrice ?? (0)) > 0);
     if (withEquity.length > 0) {
       return withEquity.map((p) => {
-        const derived = deriveAllMetrics(p.financials, undefined, p.strategyType, p.currentPhase);
+        const derived = deriveAllMetrics(p.financials, undefined, p.dispositionType, p.currentPhase);
         const propNoi = derived.noi;
         const debtService = derived.annualDebtService;
         const dscr = derived.dscr ?? (1.0);

@@ -25,7 +25,7 @@ const STATUS_CONFIG: Record<LOIStatus, { icon: React.ReactNode; color: string; b
   Drafted:  { icon: <Clock className="w-3.5 h-3.5" />,          color: 'text-text-secondary',   bg: 'bg-bg-primary' },
   Sent:     { icon: <Send className="w-3.5 h-3.5" />,           color: 'text-blue-600',   bg: 'bg-blue-50' },
   Viewed:   { icon: <Eye className="w-3.5 h-3.5" />,            color: 'text-amber-600',  bg: 'bg-amber-50' },
-  Signed:   { icon: <CheckCircle2 className="w-3.5 h-3.5" />,   color: 'text-emerald-600', bg: 'bg-emerald-50' },
+  Signed:   { icon: <CheckCircle2 className="w-3.5 h-3.5" />,   color: 'text-pw-success', bg: 'bg-pw-success-container border border-pw-success-border' },
   Declined: { icon: <XCircle className="w-3.5 h-3.5" />,        color: 'text-red-500',    bg: 'bg-red-50' },
 };
 
@@ -50,7 +50,7 @@ export default function SyndicationEngine({ investors, onInviteClick, onSendLOI,
             <Users className="w-4.5 h-4.5 text-[#3a3e4a]" />
           </div>
           <div>
-            <h3 className="text-sm font-semibold text-text-primary">Investor Syndication</h3>
+            <h3 className="text-sm font-semibold text-text-primary">Investment Team Roster</h3>
             <p className="text-xs text-text-secondary">
               {investors.length} investor{investors.length !== 1 ? 's' : ''} · {formatCurrency(totalPledged)} pledged · {signedCount} signed
             </p>
@@ -162,7 +162,7 @@ export default function SyndicationEngine({ investors, onInviteClick, onSendLOI,
             <Users className="w-6 h-6 text-[#6E7480]" />
           </div>
           <p className="text-sm font-medium text-text-secondary mb-1">No investors yet</p>
-          <p className="text-xs text-text-secondary mb-4">Start building your investor syndicate</p>
+          <p className="text-xs text-text-secondary mb-4">Start inviting members to your investment team</p>
           <button
             onClick={onInviteClick}
             className="inline-flex items-center gap-2 px-5 py-2.5 bg-gray-900 text-white text-xs font-medium rounded-xl hover:bg-gray-800 transition"

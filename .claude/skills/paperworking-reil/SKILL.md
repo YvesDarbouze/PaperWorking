@@ -50,6 +50,10 @@ An acceptance criterion is satisfied ONLY by evidence from the running app: scre
 | `docs/spec/reil-33-metrics-collection-matrix.md` | Variable registry taxonomy + the 33-metric collection matrix — every metric's formula, atomic inputs, collection points, projected→actual lifecycle. |
 | `docs/spec/fd-series-40-fund-prompts.md` | The 40-dispatch FD Series build pack for the Fund phase, including the Global Rules Block and Decisions F-1…F-7. |
 | `docs/spec/fd-fund-fixtures-v1.md` | Locked FX-1…FX-8 fixtures — golden expected values for all Fund computations. Values may never be altered by an agent. |
+| `docs/spec/hd-series-40-hold-prompts-v1.md` | The 40-dispatch HD Series build pack for the Hold phase, including the Global Rules Block and Decisions H-1…H-7. |
+| `docs/spec/hd-hold-fixtures-v1.md` | Locked HX-1…HX-5 fixtures — golden expected values for all Hold computations. Values may never be altered by an agent. |
+| `docs/spec/ex-series-40-exit-prompts-v1.md` | The 40-dispatch EX Series build pack for the Exit phase, including the Global Rules Block and the E-series Decisions register. |
+| `docs/spec/ex-exit-fixtures-v1.md` | Locked EXX-1…EXX-5 fixtures — golden expected values for all Exit computations. Values may never be altered by an agent. |
 | `docs/spec/paperworking-reil-master-spec-v1.md` | The governing product spec (phases, intake router, Retrospective Mode, accounts, marketplaces). *(Pending commit — founder-attached; do not proceed against it until committed.)* |
 | `docs/spec/aq-series-30-acquisition-prompts.md` | The Acquisition build sequence (AQ-1…AQ-30). *(Pending commit — founder-attached.)* |
 | DA Series v2 pack (canonical filename set at commit) | The Deal Analyzer build sequence. *(Pending commit — founder-attached.)* |

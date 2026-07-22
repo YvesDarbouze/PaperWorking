@@ -1184,11 +1184,10 @@ export function deriveAllMetrics(
       const yrHOA = baseHOA * Math.pow(1 + expenseGrowthRate / 100, y - 1);
       
       let yrMgmt: number;
-      const yrEffectiveRent = yrGrossRent - yrVacancyLoss;
       if (financials.management_pct != null) {
-        yrMgmt = yrEffectiveRent * (financials.management_pct / 100);
+        yrMgmt = yrGrossRent * (financials.management_pct / 100);
       } else if (financials.propertyManagementFeePercent != null) {
-        yrMgmt = yrEffectiveRent * (financials.propertyManagementFeePercent / 100);
+        yrMgmt = yrGrossRent * (financials.propertyManagementFeePercent / 100);
       } else {
         const baseMgmt = (financials.management ?? financials.propertyManagementFee ?? 0) * 12;
         yrMgmt = baseMgmt * Math.pow(1 + expenseGrowthRate / 100, y - 1);
@@ -1224,7 +1223,7 @@ export function deriveAllMetrics(
           const kSecurity = baseSecurity * Math.pow(1 + expenseGrowthRate / 100, k - 1);
           const kCapex = baseCapex * Math.pow(1 + expenseGrowthRate / 100, k - 1);
           const kHOA = baseHOA * Math.pow(1 + expenseGrowthRate / 100, k - 1);
-          let kMgmt = financials.management_pct != null ? (kGrossRent - kVacancyLoss) * (financials.management_pct / 100) : (financials.propertyManagementFeePercent != null ? (kGrossRent - kVacancyLoss) * (financials.propertyManagementFeePercent / 100) : (financials.management ?? financials.propertyManagementFee ?? 0) * 12 * Math.pow(1 + expenseGrowthRate / 100, k - 1));
+          let kMgmt = financials.management_pct != null ? kGrossRent * (financials.management_pct / 100) : (financials.propertyManagementFeePercent != null ? kGrossRent * (financials.propertyManagementFeePercent / 100) : (financials.management ?? financials.propertyManagementFee ?? 0) * 12 * Math.pow(1 + expenseGrowthRate / 100, k - 1));
           let kMaint = financials.maintenance_pct != null ? kGrossRent * (financials.maintenance_pct / 100) : (financials.maintenanceCapExPercent != null ? kGrossRent * (financials.maintenanceCapExPercent / 100) : (financials.maintenance ?? financials.monthlyMaintenanceReserve ?? 0) * 12 * Math.pow(1 + expenseGrowthRate / 100, k - 1));
           const kTotalExpenses = kTaxes + kInsurance + kUtilities + kSecurity + kCapex + kHOA + kMgmt + kMaint;
           const kNOI = kGrossRent + kOtherIncome - kVacancyLoss - kTotalExpenses;

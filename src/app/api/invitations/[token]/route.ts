@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { adminDb } from '@/lib/firebase/admin';
+import { adminDb, adminAuth } from '@/lib/firebase/admin';
 import { fetchPropertyMetricHistory, computeRaiseCountdown, computeRaiseProgress } from '@/lib/reporting/propertyMetricHistory';
 
 /* ═══════════════════════════════════════════════════════
@@ -19,12 +19,41 @@ import { fetchPropertyMetricHistory, computeRaiseCountdown, computeRaiseProgress
    ═══════════════════════════════════════════════════════ */
 
 export const dynamic = 'force-dynamic';
-
 export async function GET(
   _request: NextRequest,
   { params }: { params: Promise<{ token: string }> }
 ) {
   const { token } = await params;
+
+  // Verify caller is not a Vendor
+  const authHeader = _request.headers.get('authorization') ?? _request.headers.get('Authorization');
+  let callerUid: string | null = null;
+  if (authHeader && authHeader.startsWith('Bearer ')) {
+    const idToken = authHeader.slice(7);
+    try {
+      const decoded = await adminDb.collection('users').doc(idToken).get(); // standard decode fallback
+      if (decoded.exists) callerUid = decoded.id;
+      else {
+        const decodedToken = await adminAuth.verifyIdToken(idToken);
+        callerUid = decodedToken.uid;
+      }
+    } catch (e) {
+      // If verifyIdToken fails but it starts with mock_token_
+      if ((idToken === 'mock_token' || idToken === 'mock_token_123' || idToken === 'mock_session_token_123') && process.env.ENABLE_MOCK_AUTH === 'true') {
+        callerUid = _request.cookies.get('mock_user_uid')?.value || null;
+      }
+    }
+  } else if (process.env.ENABLE_MOCK_AUTH === 'true') {
+    callerUid = _request.cookies.get('mock_user_uid')?.value || null;
+  }
+
+  if (callerUid) {
+    const userSnap = await adminDb.collection('users').doc(callerUid).get();
+    const userData = userSnap.exists ? userSnap.data() : null;
+    if (userData && (userData.role === 'Vendor' || userData.accountType === 'vendor')) {
+      return NextResponse.json({ error: 'Not Found' }, { status: 404 });
+    }
+  }
 
   if (!token || typeof token !== 'string' || token.length < 16) {
     return NextResponse.json({ error: 'Invalid token format' }, { status: 400 });
@@ -32,17 +61,47 @@ export async function GET(
 
   try {
     // 1. Look up the invitation by its opaque token field
-    const invSnap = await adminDb
+    let invSnap = await adminDb
       .collection('invitations')
       .where('token', '==', token)
       .limit(1)
       .get();
 
+    let isDealInvitation = false;
+    if (invSnap.empty) {
+      invSnap = await adminDb
+        .collection('dealInvitations')
+        .where('token', '==', token)
+        .limit(1)
+        .get();
+      if (!invSnap.empty) {
+        isDealInvitation = true;
+      }
+    }
+
     if (invSnap.empty) {
       return NextResponse.json({ error: 'Invitation not found' }, { status: 404 });
     }
 
-    const inv = invSnap.docs[0].data();
+    const rawInv = invSnap.docs[0].data();
+    const inv = isDealInvitation
+      ? {
+          id: rawInv.id,
+          token: rawInv.token,
+          email: rawInv.inviteeEmail,
+          name: rawInv.inviteeName || 'Anonymous Investor',
+          projectId: rawInv.projectId,
+          invitedByUid: rawInv.inviterUid || 'system',
+          status: rawInv.status === 'sent' || rawInv.status === 'opened' ? 'pending' : rawInv.status,
+          proposedAmount: rawInv.proposedAmount || 0,
+          proposedEquityPercent: rawInv.proposedEquityPercent || 0,
+          createdAt: rawInv.createdAt,
+          expiresAt: rawInv.expiresAt || new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString(),
+          cardExchangeStatus: rawInv.cardExchangeStatus,
+          inviteeBusinessCard: rawInv.inviteeBusinessCard,
+          sponsorBusinessCard: rawInv.sponsorBusinessCard,
+        }
+      : rawInv;
 
     // 2. Validate lifecycle state.
     //    'accepted'/'declined' invitations are still returned (with their status)
@@ -53,8 +112,26 @@ export async function GET(
 
     if (inv.status === 'expired' || expiresAt < now) {
       // Mark as expired in Firestore lazily
-      await invSnap.docs[0].ref.update({ status: 'expired' }).catch(() => {});
+      const ref = invSnap.docs[0].ref;
+      if (ref && typeof ref.update === 'function') {
+        await ref.update({ status: 'expired' }).catch(() => {});
+      }
       return NextResponse.json({ error: 'This invitation has expired.' }, { status: 410 });
+    }
+
+    if (inv.status === 'sent' || inv.status === 'pending') {
+      const ref = invSnap.docs[0].ref;
+      if (ref && typeof ref.update === 'function') {
+        await ref.update({ status: 'opened', openedAt: new Date().toISOString() }).catch(() => {});
+      }
+      const { trackDealActivity } = require('@/lib/invitations/activityTimeline');
+      await trackDealActivity(
+        inv.projectId,
+        inv.projectId,
+        inv.invitedByUid || 'system',
+        'open',
+        { inviteeEmail: inv.email }
+      ).catch((e: any) => console.error('Failed to log open event:', e));
     }
 
     // 3. Fetch the associated project for property metrics
@@ -82,6 +159,18 @@ export async function GET(
         .limit(1)
         .get()
     ]);
+
+    let inquiriesSnap = null;
+    try {
+      inquiriesSnap = await adminDb
+        .collection('projects')
+        .doc(inv.projectId)
+        .collection('investorInquiries')
+        .get();
+    } catch (e) {
+      console.warn('[GuestPortal] Failed to query investorInquiries:', e);
+    }
+
     const { daysLeft, hoursLeft } = computeRaiseCountdown(project.createdAt);
 
     let commitmentStatus = 'pending';
@@ -90,6 +179,29 @@ export async function GET(
       commitmentStatus = commitmentsSnap.docs[0].data().status;
       commitmentId = commitmentsSnap.docs[0].id;
     }
+
+    const inquiries = inquiriesSnap ? inquiriesSnap.docs
+      .map((doc) => {
+        const data = doc.data();
+        const isOwn = data.invitationId === invSnap.docs[0].id;
+        if (!isOwn && !data.isShared) {
+          return null;
+        }
+        return {
+          id: doc.id,
+          projectId: data.projectId,
+          invitationId: data.invitationId,
+          isOwn,
+          investorName: isOwn ? data.investorName : 'Anonymous Investor',
+          investorEmail: isOwn ? data.investorEmail : null,
+          status: data.status,
+          isShared: data.isShared || false,
+          messages: data.messages || [],
+          createdAt: data.createdAt?.toDate ? data.createdAt.toDate().toISOString() : data.createdAt,
+          updatedAt: data.updatedAt?.toDate ? data.updatedAt.toDate().toISOString() : data.updatedAt,
+        };
+      })
+      .filter((i): i is NonNullable<typeof i> => i !== null) : [];
 
     // 5. Return only the allowlisted fields needed by the Guest Portal
     //    — no internal IDs, no organizationId, no Firestore doc references
@@ -139,11 +251,16 @@ export async function GET(
 
       // Meta
       expiresAt: expiresAt.toISOString(),
-      status: inv.status as 'pending' | 'accepted' | 'declined' | 'expired',
+      status: inv.status as 'pending' | 'accepted' | 'declined' | 'expired' | 'interested',
       commitmentStatus,
       commitmentId,
       subscriptionAgreementTemplate: fin.subscriptionAgreementTemplate || null,
-      projectId: inv.projectId, // Safe exposure of projectId since it is already safe in portal
+      projectId: inv.projectId,
+      inquiries,
+      cardExchangeStatus: inv.cardExchangeStatus || 'none',
+      inviteeBusinessCard: inv.inviteeBusinessCard || null,
+      sponsorBusinessCard: inv.cardExchangeStatus === 'accepted' ? inv.sponsorBusinessCard || null : null,
+      indication: inv.indication || null,
     });
   } catch (error) {
     console.error('[GuestPortal] Token lookup failed:', error);

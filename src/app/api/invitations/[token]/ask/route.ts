@@ -46,25 +46,52 @@ export async function POST(
     }
 
     // ── Resolve invitation ──────────────────────────────────
-    const snap = await adminDb
+    let snap = await adminDb
       .collection('invitations')
       .where('token', '==', token)
       .limit(1)
       .get();
+
+    let isDealInvitation = false;
+    if (snap.empty) {
+      snap = await adminDb
+        .collection('dealInvitations')
+        .where('token', '==', token)
+        .limit(1)
+        .get();
+      if (!snap.empty) {
+        isDealInvitation = true;
+      }
+    }
 
     if (snap.empty) {
       return NextResponse.json({ error: 'Invitation not found.' }, { status: 404 });
     }
 
     const invRef = snap.docs[0].ref;
-    const inv = snap.docs[0].data();
+    const rawInv = snap.docs[0].data();
+    const inv = isDealInvitation
+      ? {
+          id: rawInv.id,
+          token: rawInv.token,
+          email: rawInv.inviteeEmail,
+          name: rawInv.inviteeName || 'Anonymous Investor',
+          projectId: rawInv.projectId,
+          invitedByUid: rawInv.inviterUid || 'system',
+          status: rawInv.status,
+          createdAt: rawInv.createdAt,
+          expiresAt: rawInv.expiresAt || new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString(),
+          version: rawInv.version || 1,
+          visibilityMode: rawInv.visibilityMode || 'PRIVATE',
+          listingId: rawInv.listingId || '',
+        }
+      : rawInv;
 
     const expiresAt: Date = inv.expiresAt?.toDate ? inv.expiresAt.toDate() : new Date(inv.expiresAt);
     if (expiresAt < new Date()) {
       return NextResponse.json({ error: 'This invitation link has expired.' }, { status: 410 });
     }
 
-    // ── Abuse guard: cap inquiries per invitation ───────────
     const existingSnap = await adminDb
       .collection('projects')
       .doc(inv.projectId)
@@ -72,28 +99,84 @@ export async function POST(
       .where('invitationId', '==', invRef.id)
       .get();
 
-    if (existingSnap.size >= MAX_INQUIRIES_PER_INVITATION) {
-      return NextResponse.json(
-        { error: 'Too many questions submitted for this invitation. Please wait for a response.' },
-        { status: 429 }
-      );
+    // ── Thread creation or message append ───────────────────
+    const now = FieldValue.serverTimestamp();
+    const newMessage = {
+      id: `msg_${Date.now()}_${Math.random().toString(36).slice(2, 6)}`,
+      sender: 'investor',
+      text: message,
+      createdAt: new Date().toISOString(),
+    };
+
+    if (!existingSnap.empty) {
+      const threadDoc = existingSnap.docs[0];
+      const data = threadDoc.data();
+      const messagesList = data.messages || [];
+
+      // Check if thread has too many messages
+      if (messagesList.length >= 20) {
+        return NextResponse.json(
+          { error: 'Message thread limit reached. Please wait for a response or contact support.' },
+          { status: 429 }
+        );
+      }
+
+      await threadDoc.ref.update({
+        messages: FieldValue.arrayUnion(newMessage),
+        status: 'open',
+        updatedAt: now,
+      });
+    } else {
+      await adminDb
+        .collection('projects')
+        .doc(inv.projectId)
+        .collection('investorInquiries')
+        .add({
+          projectId: inv.projectId,
+          invitationId: invRef.id,
+          investorName: inv.name || 'Anonymous Investor',
+          investorEmail: inv.email || null,
+          message, // keep for backward compatibility
+          status: 'open',
+          isShared: false,
+          messages: [newMessage],
+          createdAt: now,
+          updatedAt: now,
+        });
     }
 
-    // ── Persist the inquiry ─────────────────────────────────
-    const now = FieldValue.serverTimestamp();
-    await adminDb
-      .collection('projects')
-      .doc(inv.projectId)
-      .collection('investorInquiries')
-      .add({
-        projectId: inv.projectId,
+    // ── Write to dealLedger ──────────────────────────────────
+    const ledgerRef = adminDb.collection('projects').doc(inv.projectId)
+      .collection('dealLedger').doc();
+    await ledgerRef.set({
+      id: ledgerRef.id,
+      projectId: inv.projectId,
+      listingId: inv.listingId || '',
+      eventType: 'INVITATION_RESPONSE',
+      performedBy: inv.invitedByUid || 'system',
+      inviteeEmail: inv.email || 'unknown',
+      version: inv.version || 1,
+      visibilityMode: inv.visibilityMode || 'PRIVATE',
+      timestamp: new Date().toISOString(),
+      metadata: {
         invitationId: invRef.id,
-        investorName: inv.name || 'Anonymous Investor',
-        investorEmail: inv.email || null,
-        message,
-        status: 'open',
-        createdAt: now,
-      });
+        status: 'question',
+        question: message,
+      },
+    });
+
+    // ── Track timeline activity ─────────────────────────────
+    const { trackDealActivity } = require('@/lib/invitations/activityTimeline');
+    await trackDealActivity(
+      inv.projectId,
+      inv.projectId,
+      inv.invitedByUid || 'system',
+      'question',
+      {
+        inviteeEmail: inv.email,
+        questionText: message,
+      }
+    ).catch((e: any) => console.error('Failed to log question event:', e));
 
     // ── Notify the deal owner ───────────────────────────────
     const [projectSnap, ownerSnap] = await Promise.all([

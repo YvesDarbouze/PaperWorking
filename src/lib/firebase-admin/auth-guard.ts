@@ -68,7 +68,8 @@ export async function requireAuth(req: NextRequest): Promise<AuthContext | NextR
     );
   }
 
-  if (process.env.NODE_ENV !== 'production' && (idToken === 'mock_token' || idToken === 'demo_token' || idToken === 'mock-token' || idToken.startsWith('mock_token_'))) {
+  const isSimulatedProd = req.headers.get('x-simulate-production') === 'true';
+  if (process.env.NODE_ENV !== 'production' && !isSimulatedProd && (process.env.ENABLE_MOCK_AUTH === 'true' || process.env.NODE_ENV === 'test') && (idToken === 'mock_token' || idToken === 'mock_token_123' || idToken === 'mock_session_token_123' || idToken === 'demo_token' || idToken === 'mock-token')) {
     const uid = req.cookies.get('mock_user_uid')?.value || (idToken === 'demo_token' ? 'demo_user' : 'user_lead_investor_seed');
     const email = req.cookies.get('mock_user_email')?.value || (idToken === 'demo_token' ? 'demo@paperworking.co' : 'marcus@apexcapital.io');
     const name = req.cookies.get('mock_user_name')?.value || (idToken === 'demo_token' ? 'Demo User' : 'Marcus Aurelius');

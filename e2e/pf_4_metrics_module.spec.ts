@@ -9,8 +9,12 @@ test.describe('PF-4 KPIs / Metrics Tabbed Module Tests', () => {
   test.beforeEach(async ({ page }) => {
     // Bypass Cookie Consent popup
     await page.addInitScript(() => {
-      window.localStorage.setItem('pw_cookie_consent', JSON.stringify({ essential: true, analytics: true, marketing: true }));
-    });
+    try {
+    
+          window.localStorage.setItem('pw_cookie_consent', JSON.stringify({ essential: true, analytics: true, marketing: true }));
+        
+    } catch (e) {}
+  });
   });
 
   test('verify tab switching and project dropdown scoping', async ({ page }, testInfo) => {

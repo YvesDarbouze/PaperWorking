@@ -42,8 +42,12 @@ test.describe('RM-7 — E2E Acceptance Walkthroughs', () => {
   test.beforeEach(async ({ page }) => {
     // Pre-seed cookie consent
     await page.addInitScript(() => {
-      window.localStorage.setItem('pw_cookie_consent', JSON.stringify({ essential: true, analytics: true, marketing: true }));
-    });
+    try {
+    
+          window.localStorage.setItem('pw_cookie_consent', JSON.stringify({ essential: true, analytics: true, marketing: true }));
+        
+    } catch (e) {}
+  });
     // Log browser messages and errors to terminal
     page.on('console', msg => {
       console.log(`[BROWSER CONSOLE ${msg.type().toUpperCase()}]: ${msg.text()}`);

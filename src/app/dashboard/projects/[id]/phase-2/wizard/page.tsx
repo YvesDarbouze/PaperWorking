@@ -87,8 +87,7 @@ export default function FundWizardPage() {
 
   const handleSaveStep = async (updates: any) => {
     try {
-      const projectRef = doc(db, 'projects', project.id);
-      await updateDoc(projectRef, updates);
+      await projectsService.updateProject(project.id, updates);
       
       toast.success('Step progress saved!');
 

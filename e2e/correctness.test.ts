@@ -35,46 +35,48 @@ test.describe('PaperWorking E2E — End-to-End Correctness Gate (Prompt 7)', () 
 
     // Seed localStorage so the Zustand store and TenantContext start hydrated in the browser
     await page.addInitScript((stateData) => {
-      window.localStorage.setItem('pw_active_tenant_id', 'org_placeholder');
-      window.localStorage.setItem('pw-project-store', JSON.stringify({
-        state: {
-          projects: stateData.projects,
-          currentProject: null,
-          ledgerItems: {},
-          metrics: {
-            activeProjects: stateData.projects.length,
-            totalApprovedCosts: 0,
-            totalPendingCosts: 0,
-            projectedProfit: 0,
-            projectedROI: 0,
-            totalCapitalCosts: 0,
-            totalHoldingCosts: 0,
-            rehabBudgetBase: 0,
-            rehabBudgetBuffered: 0,
-            triagePendingCount: 0,
-            totalRealizedProfit: 0,
-            totalInvestedCapitalRealized: 0,
-            averageRealizedROI: 0,
-            soldProjects: 0
-          },
-          activeProjectMetrics: {
-            purchasePrice: 0,
-            renovationCosts: 0,
-            closingCostsBuy: 0,
-            closingCostsSell: 0,
-            holdingCosts: 0,
-            salePrice: 0,
-            netProfit: 0,
-            roi: 0,
-            annualizedIrr: 0,
-            holdDays: 0,
-            totalInvestment: 0
-          },
-          whatIfOffsetMonths: 0
-        },
-        version: 0
-      }));
-    }, { projects: state.projects });
+    try {
+    window.localStorage.setItem('pw_active_tenant_id', 'org_placeholder');
+          window.localStorage.setItem('pw-project-store', JSON.stringify({
+            state: {
+              projects: stateData.projects,
+              currentProject: null,
+              ledgerItems: {},
+              metrics: {
+                activeProjects: stateData.projects.length,
+                totalApprovedCosts: 0,
+                totalPendingCosts: 0,
+                projectedProfit: 0,
+                projectedROI: 0,
+                totalCapitalCosts: 0,
+                totalHoldingCosts: 0,
+                rehabBudgetBase: 0,
+                rehabBudgetBuffered: 0,
+                triagePendingCount: 0,
+                totalRealizedProfit: 0,
+                totalInvestedCapitalRealized: 0,
+                averageRealizedROI: 0,
+                soldProjects: 0
+              },
+              activeProjectMetrics: {
+                purchasePrice: 0,
+                renovationCosts: 0,
+                closingCostsBuy: 0,
+                closingCostsSell: 0,
+                holdingCosts: 0,
+                salePrice: 0,
+                netProfit: 0,
+                roi: 0,
+                annualizedIrr: 0,
+                holdDays: 0,
+                totalInvestment: 0
+              },
+              whatIfOffsetMonths: 0
+            },
+            version: 0
+          }));
+    } catch (e) {}
+  }, { projects: state.projects });
 
     // Set mock cookies to bypass Next.js auth middleware for dashboard routes
     await context.addCookies([

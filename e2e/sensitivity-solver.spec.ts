@@ -26,8 +26,12 @@ test.describe('PaperWorking E2E — Sensitivity Sliders & Offer Solver (AQ-17)',
 
     // Bypass Cookie Consent popup by pre-seeding localStorage
     await page.addInitScript(() => {
-      window.localStorage.setItem('pw_cookie_consent', JSON.stringify({ essential: true, analytics: true, marketing: true }));
-    });
+    try {
+    
+          window.localStorage.setItem('pw_cookie_consent', JSON.stringify({ essential: true, analytics: true, marketing: true }));
+        
+    } catch (e) {}
+  });
   });
 
   test('Exploration sliders drag-and-reset, solver multi-hurdle constraints, infeasible per-offender controls, and wholesale dual outputs', async ({ page }) => {

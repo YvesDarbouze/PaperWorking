@@ -419,8 +419,8 @@ function WorkspaceHeader({ project, onOpenMetric }: { project: Project; onOpenMe
               </span>
 
               {/* Timestamp */}
-              <span className="text-[10px] text-text-secondary ml-1" style={{ color: 'var(--text-secondary)' }}>
-                Last updated {formatTimeAgo(project.updatedAt)}
+              <span className="text-[10px] text-text-secondary ml-1 save-status" style={{ color: 'var(--text-secondary)' }}>
+                Saved (Last updated {formatTimeAgo(project.updatedAt)})
               </span>
             </div>
           </div>

@@ -86,7 +86,7 @@ export default function GeneralSettingsPage() {
   const { profile, user, logout } = useAuth();
 
   // ─── Deletion Cockpit State ────────────────────────────
-  const [activeJob, setActiveJob] = useState<any>(null);
+  const [activeJob, setActiveJob] = useState<{ status: string; step?: string; error?: string } | null>(null);
   const [loadingJob, setLoadingJob] = useState(true);
   const [resuming, setResuming] = useState(false);
   const [reauthPassword, setReauthPassword] = useState('');
@@ -117,6 +117,7 @@ export default function GeneralSettingsPage() {
   }, []);
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     checkJobStatus();
   }, [checkJobStatus]);
 
@@ -133,6 +134,7 @@ export default function GeneralSettingsPage() {
     if (user) {
       const isDemo = user.uid === 'demo_user' || user.email === 'demo@paperworking.co' || (typeof document !== 'undefined' && document.cookie.includes('mock_session_token_123'));
       if (isDemo) {
+        // eslint-disable-next-line react-hooks/set-state-in-effect
         setReauthVerified(true);
       }
     }
@@ -177,9 +179,9 @@ export default function GeneralSettingsPage() {
       }
       setReauthVerified(true);
       toast.success('Re-authentication successful.');
-    } catch (err: any) {
+    } catch (err) {
       console.error('[GDPR Delete] Re-auth failed:', err);
-      toast.error(err.message || 'Re-authentication failed. Please try again.');
+      toast.error(err instanceof Error ? err.message : 'Re-authentication failed. Please try again.');
     } finally {
       setReauthLoading(false);
     }
@@ -207,8 +209,8 @@ export default function GeneralSettingsPage() {
         const errData = await res.json();
         toast.error(errData.error || 'Failed to start account deletion.');
       }
-    } catch (err: any) {
-      toast.error(err.message || 'An error occurred.');
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : 'An error occurred.');
     } finally {
       setResuming(false);
     }
@@ -234,8 +236,8 @@ export default function GeneralSettingsPage() {
         const errData = await res.json();
         toast.error(errData.error || 'Failed to resume deletion.');
       }
-    } catch (err: any) {
-      toast.error(err.message || 'An error occurred.');
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : 'An error occurred.');
     } finally {
       setResuming(false);
     }
@@ -247,7 +249,6 @@ export default function GeneralSettingsPage() {
   const [timezone, setTimezone]           = useState('America/New_York');
   const [savedTimezone, setSavedTimezone] = useState('America/New_York');
   const [prefsLoading, setPrefsLoading]   = useState(true);
-  const [language] = useState('en');
 
   const [showLangRequest, setShowLangRequest] = useState(false);
   const [requestedLanguage, setRequestedLanguage] = useState<string | null>(null);
@@ -256,6 +257,7 @@ export default function GeneralSettingsPage() {
     if (typeof window !== 'undefined') {
       const saved = localStorage.getItem('pw_requested_lang');
       if (saved) {
+        // eslint-disable-next-line react-hooks/set-state-in-effect
         setRequestedLanguage(saved);
       }
     }
@@ -283,7 +285,11 @@ export default function GeneralSettingsPage() {
   // Load preferences from users/{uid} on mount — survives refresh & device change
   useEffect(() => {
     const currentUser = getAuth().currentUser;
-    if (!currentUser) { setPrefsLoading(false); return; }
+    if (!currentUser) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
+      setPrefsLoading(false);
+      return;
+    }
     getDoc(doc(db, 'users', currentUser.uid))
       .then((snap) => {
         if (snap.exists()) {
@@ -294,7 +300,6 @@ export default function GeneralSettingsPage() {
       })
       .catch((err) => console.warn('[settings/prefs] load error:', err))
       .finally(() => setPrefsLoading(false));
-  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []); // run once on mount; getAuth().currentUser is stable
 
   // ─── Connected Services ────────────────────────────────
@@ -335,6 +340,7 @@ export default function GeneralSettingsPage() {
     }
   }, []);
 
+  // eslint-disable-next-line react-hooks/set-state-in-effect
   useEffect(() => { loadStatus(); }, [loadStatus]);
 
   // ─── Danger Zone ───────────────────────────────────────
@@ -371,10 +377,11 @@ export default function GeneralSettingsPage() {
         style: { background: '#0d0d0d', color: '#fff' },
       });
       setTimeout(() => setSaved(false), 3000);
-    } catch (err: any) {
+    } catch (err) {
       // Roll back to last confirmed value so the UI reflects reality
       setTimezone(rollbackTo);
-      toast.error(`Preferences not saved: ${err?.message ?? 'write failed'}`, {
+      const errorMessage = err instanceof Error ? err.message : 'write failed';
+      toast.error(`Preferences not saved: ${errorMessage}`, {
         style: { background: '#0d0d0d', color: '#fff' },
       });
     } finally {
@@ -445,8 +452,9 @@ export default function GeneralSettingsPage() {
       toast.success('Service connected successfully.', {
         style: { background: '#0d0d0d', color: '#fff' },
       });
-    } catch (err: any) {
-      toast.error(err?.message ?? 'Connection failed.', {
+    } catch (err) {
+      const errorMessage = err instanceof Error ? err.message : 'Connection failed.';
+      toast.error(errorMessage, {
         style: { background: '#0d0d0d', color: '#fff' },
       });
     } finally {
@@ -456,35 +464,33 @@ export default function GeneralSettingsPage() {
 
 
   return (
-    <div className="w-full space-y-0">
-      <div className="grid grid-cols-12 gap-6">
-
-
+    <div className="w-full space-y-8">
+      <div className="grid grid-cols-12 gap-8">
 
         {/* ════════════════════════════════════════════════
             2 · REGIONAL PREFERENCES (col-span-7)
             ════════════════════════════════════════════════ */}
-        <section className="col-span-12 lg:col-span-7 glass-card rounded-2xl p-8 flex flex-col relative overflow-hidden">
+        <section className="col-span-12 lg:col-span-7 glass-card rounded-2xl p-6 flex flex-col relative overflow-hidden transition-all duration-200 hover:shadow-md">
           <div className="flex items-center gap-2 border-b border-white/10 pb-4 mb-6">
             <span className="material-symbols-outlined text-pw-primary text-xl select-none">language</span>
-            <h4 className="text-2xl font-bold text-pw-black">Regional Preferences</h4>
+            <h4 className="text-base font-semibold text-pw-black">Regional Preferences</h4>
           </div>
 
           <div className="space-y-6 flex-1">
             {/* Timezone */}
             <div>
-              <label className="block text-xs font-semibold text-pw-muted uppercase tracking-wider mb-2">
+              <label className="block text-xs font-medium text-pw-muted uppercase tracking-[0.5px] mb-2">
                 Timezone
               </label>
               <div className="relative">
-                <span className="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-pw-muted text-lg pointer-events-none select-none">
+                <span className="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-pw-muted text-[16px] pointer-events-none select-none">
                   schedule
                 </span>
                 <select
                   value={timezone}
                   onChange={(e) => setTimezone(e.target.value)}
                   disabled={prefsLoading}
-                  className="glass-input w-full text-sm pl-10 pr-4 py-3 text-pw-black appearance-none cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="glass-input w-full text-sm pl-10 pr-4 h-10 rounded-lg text-pw-black appearance-none cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed focus:ring-2 focus:ring-pw-primary focus:outline-none transition-all duration-150"
                 >
                   {TIMEZONES.map((tz) => (
                     <option key={tz.value} value={tz.value} className="bg-[#161318] text-pw-black">
@@ -500,7 +506,7 @@ export default function GeneralSettingsPage() {
 
             {/* Language */}
             <div>
-              <label className="block text-xs font-semibold text-pw-muted uppercase tracking-wider mb-2">
+              <label className="block text-xs font-medium text-pw-muted uppercase tracking-[0.5px] mb-2">
                 Language
               </label>
               <div className="flex items-center justify-between p-4 rounded-xl bg-pw-glass-bg/50 border border-white/5">
@@ -523,7 +529,7 @@ export default function GeneralSettingsPage() {
                   ) : (
                     <button
                       onClick={() => setShowLangRequest(!showLangRequest)}
-                      className="text-xs font-bold text-pw-primary hover:underline cursor-pointer"
+                      className="text-xs font-medium text-pw-primary hover:underline hover:text-pw-primary/80 transition-colors cursor-pointer"
                     >
                       Request a language...
                     </button>
@@ -546,7 +552,7 @@ export default function GeneralSettingsPage() {
                       <button
                         key={lang.code}
                         onClick={() => handleRequestLanguage(lang.code, lang.label)}
-                        className="text-left px-3 py-2 text-xs rounded-lg hover:bg-white/5 text-pw-black hover:text-pw-primary transition-colors border border-transparent hover:border-white/5 cursor-pointer"
+                        className="text-left h-10 px-4 text-sm font-medium rounded-lg hover:bg-white/5 text-pw-black hover:text-pw-primary transition-all border border-transparent hover:border-white/5 cursor-pointer"
                       >
                         {lang.label}
                       </button>
@@ -561,12 +567,12 @@ export default function GeneralSettingsPage() {
               <button
                 onClick={handleSavePreferences}
                 disabled={saving || prefsLoading}
-                className="luminous-button inline-flex items-center justify-center gap-2 font-semibold text-sm uppercase tracking-wider px-8 py-3 rounded-xl disabled:opacity-50 cursor-pointer transition-all"
+                className="luminous-button h-10 px-5 rounded-lg text-sm font-medium active:scale-98 disabled:opacity-50 disabled:pointer-events-none transition-all flex items-center justify-center gap-2 cursor-pointer"
               >
                 {saving ? (
-                  <span className="material-symbols-outlined animate-spin text-sm select-none">progress_activity</span>
+                  <span className="material-symbols-outlined animate-spin text-[16px] select-none">progress_activity</span>
                 ) : (
-                  <span className="material-symbols-outlined text-sm select-none">save</span>
+                  <span className="material-symbols-outlined text-[16px] select-none">save</span>
                 )}
                 {prefsLoading ? 'Loading…' : saving ? 'Saving…' : 'Save Preferences'}
               </button>
@@ -583,38 +589,38 @@ export default function GeneralSettingsPage() {
         {/* ════════════════════════════════════════════════
             3 · QUICK STATS CARD (col-span-5)
             ════════════════════════════════════════════════ */}
-        <section className="col-span-12 lg:col-span-5 glass-card rounded-2xl p-8 relative overflow-hidden">
+        <section className="col-span-12 lg:col-span-5 glass-card rounded-2xl p-6 flex flex-col relative overflow-hidden transition-all duration-200 hover:shadow-md">
           <div className="absolute -bottom-16 -left-16 w-48 h-48 bg-pw-primary/8 rounded-full blur-[100px] pointer-events-none" />
 
           <div className="flex items-center gap-2 border-b border-white/10 pb-4 mb-6">
             <span className="material-symbols-outlined text-pw-primary text-xl select-none">info</span>
-            <h4 className="text-2xl font-bold text-pw-black">Account Overview</h4>
+            <h4 className="text-base font-semibold text-pw-black">Account Overview</h4>
           </div>
 
           <div className="space-y-5 relative z-10">
             <div className="flex items-center justify-between p-4 rounded-xl bg-pw-glass-bg/50 border border-white/5">
               <div>
-                <p className="text-xs font-semibold text-pw-muted uppercase tracking-wider mb-0.5">Account Type</p>
+                <p className="text-xs font-medium text-pw-muted uppercase tracking-[0.5px] mb-0.5">Account Type</p>
                 <p className="text-sm font-bold text-pw-black capitalize">
                   {profile?.accountType || 'Investor'}
                 </p>
               </div>
-              <span className="material-symbols-outlined text-pw-primary text-2xl select-none">badge</span>
+              <span className="material-symbols-outlined text-pw-primary text-xl select-none">badge</span>
             </div>
 
             <div className="flex items-center justify-between p-4 rounded-xl bg-pw-glass-bg/50 border border-white/5">
               <div>
-                <p className="text-xs font-semibold text-pw-muted uppercase tracking-wider mb-0.5">Plan</p>
+                <p className="text-xs font-medium text-pw-muted uppercase tracking-[0.5px] mb-0.5">Plan</p>
                 <p className="text-sm font-bold text-pw-black">
                   {profile?.subscriptionPlan || 'None'}
                 </p>
               </div>
-              <span className="material-symbols-outlined text-pw-primary text-2xl select-none">workspace_premium</span>
+              <span className="material-symbols-outlined text-pw-primary text-xl select-none">workspace_premium</span>
             </div>
 
             <div className="flex items-center justify-between p-4 rounded-xl bg-pw-glass-bg/50 border border-white/5">
               <div>
-                <p className="text-xs font-semibold text-pw-muted uppercase tracking-wider mb-0.5">Member Since</p>
+                <p className="text-xs font-medium text-pw-muted uppercase tracking-[0.5px] mb-0.5">Member Since</p>
                 <p className="text-sm font-bold text-pw-black">
                   {profile?.createdAt
                     ? new Date((profile.createdAt as { seconds: number }).seconds * 1000).toLocaleDateString('en-US', {
@@ -624,7 +630,7 @@ export default function GeneralSettingsPage() {
                     : 'Recently joined'}
                 </p>
               </div>
-              <span className="material-symbols-outlined text-pw-primary text-2xl select-none">calendar_month</span>
+              <span className="material-symbols-outlined text-pw-primary text-xl select-none">calendar_month</span>
             </div>
           </div>
         </section>
@@ -632,17 +638,17 @@ export default function GeneralSettingsPage() {
         {/* ════════════════════════════════════════════════
             4 · CONNECTED SERVICES (col-span-12)
             ════════════════════════════════════════════════ */}
-        <section className="col-span-12 glass-card rounded-2xl p-8 relative overflow-hidden">
+        <section className="col-span-12 glass-card rounded-2xl p-6 relative overflow-hidden transition-all duration-200 hover:shadow-md">
           <div className="flex items-center gap-2 border-b border-white/10 pb-4 mb-6">
             <span className="material-symbols-outlined text-pw-primary text-xl select-none">hub</span>
-            <h4 className="text-2xl font-bold text-pw-black">Connected Services</h4>
+            <h4 className="text-base font-semibold text-pw-black">Connected Services</h4>
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             {services.map((service) => (
               <div
                 key={service.id}
-                className="flex items-center justify-between p-5 rounded-xl bg-pw-glass-bg/30 border border-white/5 hover:bg-pw-glass-bg/50 transition-colors group"
+                className="flex items-center justify-between p-6 rounded-xl bg-pw-glass-bg/30 border border-white/5 hover:bg-pw-glass-bg/50 transition-colors group"
               >
                 <div className="flex items-center gap-4">
                   <div className={`
@@ -675,16 +681,16 @@ export default function GeneralSettingsPage() {
                     <button
                       onClick={() => handleConnect(service.id)}
                       disabled={connectingId === service.id}
-                      className="inline-flex items-center gap-1.5 px-4 py-1.5 rounded-lg bg-amber-500/10 text-amber-400 text-xs font-bold border border-amber-500/20 hover:bg-amber-500/20 transition-colors cursor-pointer disabled:opacity-50 uppercase tracking-wider"
+                      className="h-10 px-5 rounded-lg bg-pw-primary/10 text-pw-primary border border-pw-primary/20 hover:bg-pw-primary/20 active:scale-98 transition-all disabled:opacity-50 disabled:pointer-events-none text-sm font-medium flex items-center justify-center gap-2 cursor-pointer uppercase tracking-wider"
                     >
                       {connectingId === service.id ? (
                         <>
-                          <span className="material-symbols-outlined animate-spin text-xs select-none">progress_activity</span>
+                          <span className="material-symbols-outlined animate-spin text-[16px] select-none">progress_activity</span>
                           Connecting…
                         </>
                       ) : (
                         <>
-                          <span className="material-symbols-outlined text-xs select-none">add_link</span>
+                          <span className="material-symbols-outlined text-[16px] select-none">add_link</span>
                           Connect
                         </>
                       )}
@@ -704,7 +710,7 @@ export default function GeneralSettingsPage() {
 
           const getStepStatus = (stepKey: string) => {
             if (!activeJob) return 'PENDING';
-            const currentStepIdx = stepsOrder.indexOf(activeJob.step);
+            const currentStepIdx = stepsOrder.indexOf(activeJob.step || '');
             const targetStepIdx = stepsOrder.indexOf(stepKey);
             
             if (activeJob.status === 'completed') return 'COMPLETED';
@@ -737,7 +743,7 @@ export default function GeneralSettingsPage() {
 
           if (loadingJob) {
             return (
-              <section className="col-span-12 rounded-2xl p-8 border border-white/10 bg-white/[0.02] backdrop-blur-xl">
+              <section className="col-span-12 rounded-2xl p-6 border border-white/10 bg-white/[0.02] backdrop-blur-xl">
                 <div className="flex items-center gap-2 justify-center py-6">
                   <span className="material-symbols-outlined text-pw-primary animate-spin text-2xl">progress_activity</span>
                   <span className="text-sm text-pw-muted font-mono">Verifying Deletion Status...</span>
@@ -748,10 +754,10 @@ export default function GeneralSettingsPage() {
 
           if (activeJob) {
             return (
-              <section className="col-span-12 rounded-2xl p-8 relative overflow-hidden border border-error/20 bg-error/[0.02] backdrop-blur-xl">
+              <section className="col-span-12 rounded-2xl p-6 relative overflow-hidden border border-error/20 bg-error/[0.02] backdrop-blur-xl">
                 <div className="flex items-center gap-2 mb-6">
                   <span className="material-symbols-outlined text-error text-xl animate-spin">progress_activity</span>
-                  <h4 className="text-2xl font-bold text-error/95">Account Deletion In Progress</h4>
+                  <h4 className="text-base font-semibold text-error/95">Account Deletion In Progress</h4>
                 </div>
 
                 <div className="p-6 rounded-xl bg-pw-glass-bg/50 border border-white/5 space-y-4">
@@ -804,7 +810,7 @@ export default function GeneralSettingsPage() {
                     <button
                       onClick={handleResumeDeletion}
                       disabled={resuming}
-                      className="px-6 py-2.5 bg-error text-white rounded-xl text-xs font-bold hover:bg-error/80 transition-colors cursor-pointer disabled:opacity-50"
+                      className="h-10 px-5 bg-error text-white rounded-lg text-sm font-medium hover:bg-error/80 active:scale-98 transition-all cursor-pointer disabled:opacity-50 disabled:pointer-events-none"
                     >
                       {resuming ? 'Resuming...' : 'Retry / Resume Deletion'}
                     </button>
@@ -815,10 +821,10 @@ export default function GeneralSettingsPage() {
           }
 
           return (
-            <section className="col-span-12 rounded-2xl p-8 relative overflow-hidden border border-error/20 bg-error/[0.02] backdrop-blur-xl">
+            <section className="col-span-12 rounded-2xl p-6 relative overflow-hidden border border-error/20 bg-error/[0.02] backdrop-blur-xl transition-all duration-200 hover:shadow-md">
               <div className="flex items-center gap-2 mb-6">
                 <span className="material-symbols-outlined text-error text-xl select-none">warning</span>
-                <h4 className="text-2xl font-bold text-error/90">Danger Zone</h4>
+                <h4 className="text-base font-semibold text-error/90">Danger Zone</h4>
               </div>
 
               <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
@@ -830,7 +836,7 @@ export default function GeneralSettingsPage() {
                 </div>
                 <button
                   onClick={() => setDeleteConfirmOpen(true)}
-                  className="px-6 py-2.5 rounded-xl bg-error/10 border border-error/30 text-error text-sm font-bold hover:bg-error/20 transition-all cursor-pointer whitespace-nowrap"
+                  className="h-10 px-5 rounded-lg bg-error/10 border border-error/30 text-error text-sm font-medium hover:bg-error/20 active:scale-98 transition-all cursor-pointer whitespace-nowrap"
                 >
                   Delete Account
                 </button>
@@ -839,7 +845,7 @@ export default function GeneralSettingsPage() {
               {/* Confirmation Modal */}
               {deleteConfirmOpen && (
                 <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/75 backdrop-blur-md animate-fade-in">
-                  <div className="glass-card max-w-lg w-full mx-4 rounded-2xl p-8 border border-error/20 bg-pw-night-bg/98 relative overflow-hidden shadow-2xl space-y-6">
+                  <div className="glass-card max-w-lg w-full mx-4 rounded-2xl p-6 border border-error/20 bg-pw-night-bg/98 relative overflow-hidden shadow-2xl space-y-6">
                     <div className="flex items-center gap-2 border-b border-white/10 pb-4">
                       <span className="material-symbols-outlined text-error text-2xl select-none">warning</span>
                       <h3 className="text-xl font-bold text-error/95">Permanently Delete Account?</h3>
@@ -859,8 +865,8 @@ export default function GeneralSettingsPage() {
                       </ul>
                       <p className="font-semibold text-error">Shared Project Policy:</p>
                       <p>
-                        Projects that are co-owned/shared with other members will NOT be deleted. 
-                        However, your membership will be removed, and any status updates or task assignments you authored on them will be anonymized and attributed to "Deleted User".
+                         Projects that are co-owned/shared with other members will NOT be deleted. 
+                         However, your membership will be removed, and any status updates or task assignments you authored on them will be anonymized and attributed to &quot;Deleted User&quot;.
                       </p>
                     </div>
 
@@ -875,12 +881,12 @@ export default function GeneralSettingsPage() {
                               placeholder="Confirm Password"
                               value={reauthPassword}
                               onChange={(e) => setReauthPassword(e.target.value)}
-                              className="glass-input w-full text-sm px-4 py-3 text-pw-black"
+                              className="glass-input w-full text-sm px-4 h-10 rounded-lg text-pw-black focus:ring-2 focus:ring-pw-primary focus:outline-none transition-all duration-150"
                             />
                             <button
                               onClick={handleReauthenticate}
                               disabled={reauthLoading}
-                              className="w-full py-2.5 rounded-xl bg-error/10 border border-error/30 text-error hover:bg-error/20 font-bold text-xs transition-colors cursor-pointer"
+                              className="w-full h-10 px-5 rounded-lg bg-error/10 border border-error/30 text-error hover:bg-error/20 active:scale-98 text-sm font-medium transition-all cursor-pointer"
                             >
                               {reauthLoading ? 'Verifying...' : 'Verify Password'}
                             </button>
@@ -889,9 +895,9 @@ export default function GeneralSettingsPage() {
                           <button
                             onClick={handleReauthenticate}
                             disabled={reauthLoading}
-                            className="w-full py-3 rounded-xl bg-pw-primary text-pw-black font-bold text-xs transition-colors hover:opacity-90 flex items-center justify-center gap-2 cursor-pointer"
+                            className="w-full h-10 px-5 rounded-lg bg-pw-primary text-pw-black font-medium text-sm hover:opacity-90 active:scale-98 transition-all flex items-center justify-center gap-2 cursor-pointer"
                           >
-                            <span className="material-symbols-outlined text-xs">login</span>
+                            <span className="material-symbols-outlined text-[16px]">login</span>
                             {reauthLoading ? 'Verifying...' : `Re-authenticate with ${getAuthProviderId() === 'google.com' ? 'Google' : 'Facebook'}`}
                           </button>
                         )}
@@ -901,7 +907,7 @@ export default function GeneralSettingsPage() {
                               setDeleteConfirmOpen(false);
                               setReauthPassword('');
                             }}
-                            className="px-5 py-2.5 rounded-xl bg-pw-glass-bg border border-white/10 text-pw-muted text-xs font-semibold hover:bg-white/5 transition-colors cursor-pointer"
+                            className="h-10 px-5 rounded-lg bg-pw-glass-bg border border-white/10 text-pw-muted text-sm font-medium hover:bg-white/5 active:scale-98 transition-all cursor-pointer"
                           >
                             Cancel
                           </button>
@@ -918,14 +924,14 @@ export default function GeneralSettingsPage() {
                           placeholder='Type "DELETE" to confirm'
                           value={deleteInput}
                           onChange={(e) => setDeleteInput(e.target.value)}
-                          className="glass-input w-full text-sm px-4 py-3 text-pw-black"
+                          className="glass-input w-full text-sm px-4 h-10 rounded-lg text-pw-black focus:ring-2 focus:ring-pw-primary focus:outline-none transition-all duration-150"
                         />
 
                         <div className="flex gap-3">
                           <button
                             onClick={startDeletionProcess}
                             disabled={deleteInput !== 'DELETE' || resuming}
-                            className="flex-1 py-3 rounded-xl bg-error text-white text-xs font-bold disabled:opacity-30 transition-all cursor-pointer"
+                            className="flex-1 h-10 px-5 rounded-lg bg-error text-white text-sm font-medium hover:bg-error/90 active:scale-98 disabled:opacity-50 disabled:pointer-events-none transition-all cursor-pointer"
                           >
                             {resuming ? 'Starting...' : 'Confirm Permanent Deletion'}
                           </button>
@@ -935,7 +941,7 @@ export default function GeneralSettingsPage() {
                               setDeleteInput('');
                               setReauthPassword('');
                             }}
-                            className="px-5 py-3 rounded-xl bg-pw-glass-bg border border-white/10 text-pw-muted text-xs font-semibold hover:bg-white/5 transition-colors cursor-pointer"
+                            className="h-10 px-5 rounded-lg bg-pw-glass-bg border border-white/10 text-pw-muted text-sm font-medium hover:bg-white/5 active:scale-98 transition-all cursor-pointer"
                           >
                             Cancel
                           </button>

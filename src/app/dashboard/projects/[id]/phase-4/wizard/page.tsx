@@ -4,8 +4,7 @@ import React, { useState, useEffect } from 'react';
 import { useRouter, useParams, useSearchParams } from 'next/navigation';
 import { useWorkspaceProject } from '@/app/dashboard/projects/[id]/layout';
 import { useAuth } from '@/context/AuthContext';
-import { doc, updateDoc } from 'firebase/firestore';
-import { db } from '@/lib/firebase/config';
+import { projectsService } from '@/lib/firebase/deals';
 import toast from 'react-hot-toast';
 import { ArrowLeft, Loader2 } from 'lucide-react';
 
@@ -78,8 +77,7 @@ export default function ExitWizardPage() {
 
   const handleSaveStep = async (updates: any) => {
     try {
-      const projectRef = doc(db, 'projects', project.id);
-      await updateDoc(projectRef, updates);
+      await projectsService.updateProject(project.id, updates);
       
       toast.success('Step progress saved!');
 

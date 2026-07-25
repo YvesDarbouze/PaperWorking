@@ -59,8 +59,12 @@ test.describe('PaperWorking E2E — Capture Invitation & Terms Versioning (AQ-26
 
     // Seed cookie consent
     await page.addInitScript(() => {
-      window.localStorage.setItem('pw_cookie_consent', JSON.stringify({ essential: true, analytics: true, marketing: true }));
-    });
+    try {
+    
+          window.localStorage.setItem('pw_cookie_consent', JSON.stringify({ essential: true, analytics: true, marketing: true }));
+        
+    } catch (e) {}
+  });
 
     // Go to project page
     await page.goto(`/dashboard/projects/${projectId}/phase-1`);

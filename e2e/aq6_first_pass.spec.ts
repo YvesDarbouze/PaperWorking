@@ -5,9 +5,13 @@ test.describe('REIL Stage 1 — AQ-6 First-Pass Screen E2E', () => {
   test.beforeEach(async ({ page }) => {
     // Clear localStorage and pre-seed cookie consent
     await page.addInitScript(() => {
-      window.localStorage.clear();
-      window.localStorage.setItem('pw_cookie_consent', JSON.stringify({ essential: true, analytics: true, marketing: true }));
-    });
+    try {
+    
+          window.localStorage.clear();
+          window.localStorage.setItem('pw_cookie_consent', JSON.stringify({ essential: true, analytics: true, marketing: true }));
+        
+    } catch (e) {}
+  });
   });
 
   test('Calculates live metrics, handles pass/archive, restore, and pursue exit gates', async ({ page }) => {

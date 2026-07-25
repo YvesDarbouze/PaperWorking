@@ -20,9 +20,13 @@ test.describe('REIL KanBan Board', () => {
 
   test.beforeEach(async ({ page }) => {
     await page.addInitScript(() => {
-      window.localStorage.clear();
-      window.localStorage.setItem('pw_cookie_consent', JSON.stringify({ essential: true, analytics: true, marketing: true }));
-    });
+    try {
+    
+          window.localStorage.clear();
+          window.localStorage.setItem('pw_cookie_consent', JSON.stringify({ essential: true, analytics: true, marketing: true }));
+        
+    } catch (e) {}
+  });
     state = createDefaultState();
     await setupMocks(page, state);
   });

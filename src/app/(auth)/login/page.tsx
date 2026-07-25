@@ -114,10 +114,28 @@ function LoginPageInner() {
     }
   }, [sessionReason, user, loading, handledExpired, logout, router]);
 
+  const [isSignUp, setIsSignUp]               = useState(() => {
+    if (typeof window !== 'undefined') {
+      return window.location.search.includes('mode=signup') || urlMode === 'signup';
+    }
+    return urlMode === 'signup';
+  });
+  const signupStartedFiredRef = useRef(false);
+  useEffect(() => {
+    if (isSignUp && !signupStartedFiredRef.current) {
+      signupStartedFiredRef.current = true;
+      try {
+        const ph = (window as any).posthog;
+        if (ph?.capture) ph.capture('signup_started', { source: urlMode === 'signup' ? 'direct' : 'toggle' });
+      } catch { /* non-fatal */ }
+    }
+  }, [isSignUp, urlMode]);
+
   // Redirect logged-in users (including dev mock session bypass)
   useEffect(() => {
     if (loading) return;
-    if (user && sessionReason !== 'session_expired') {
+    const isSignUpUrl = typeof window !== 'undefined' && window.location.search.includes('mode=signup');
+    if (user && sessionReason !== 'session_expired' && !isSignUp && !isSignUpUrl) {
       const dest = resolvePostAuthDestination({
         isNewUser: false,
         urlRedirectTo,
@@ -125,7 +143,7 @@ function LoginPageInner() {
       });
       router.replace(dest);
     }
-  }, [user, loading, urlRedirectTo, router, sessionReason]);
+  }, [user, loading, urlRedirectTo, router, sessionReason, isSignUp]);
 
   // Backward-compat: old live-site links used /login?plan=Individual%20Investor&redirectTo=/pricing.
   // If that param arrives and there's no newer sessionStorage intent, mint one now so the
@@ -153,17 +171,6 @@ function LoginPageInner() {
   const [isSubmitting, setIsSubmitting]       = useState(false);
   const [loadingProvider, setLoadingProvider] = useState<'google' | 'facebook' | null>(null);
   const [loginMode, setLoginMode]             = useState<'password' | 'magic-link'>('password');
-  const [isSignUp, setIsSignUp]               = useState(urlMode === 'signup');
-  const signupStartedFiredRef = useRef(false);
-  useEffect(() => {
-    if (isSignUp && !signupStartedFiredRef.current) {
-      signupStartedFiredRef.current = true;
-      try {
-        const ph = (window as any).posthog;
-        if (ph?.capture) ph.capture('signup_started', { source: urlMode === 'signup' ? 'direct' : 'toggle' });
-      } catch { /* non-fatal */ }
-    }
-  }, [isSignUp, urlMode]);
   const [magicLinkSent, setMagicLinkSent]     = useState(false);
   const [magicEmail, setMagicEmail]           = useState('');
 

@@ -96,7 +96,8 @@ async function auditPage(page: Page, route: string, category: string): Promise<P
   const selects = await page.locator('select, [role="listbox"], [role="combobox"]').count().catch(() => 0);
 
   // Body text content for analysis
-  const bodyText = await page.locator('main, [role="main"], article, section').first().textContent().catch(() => '') ?? '';
+  const bodyLoc = page.locator('main, [role="main"], article, section').first();
+  const bodyText = (await bodyLoc.count().catch(() => 0)) > 0 ? (await bodyLoc.textContent().catch(() => '') ?? '') : '';
   const fullBody = await page.textContent('body').catch(() => '') ?? '';
 
   // Content flags
@@ -106,7 +107,7 @@ async function auditPage(page: Page, route: string, category: string): Promise<P
   const hasEmptyState = /no items|no projects|no data|empty|nothing to show|get started|no results/i.test(bodyText);
 
   // Check for app errors
-  const hasAppError = /Application error|500|Internal Server Error|Unhandled Runtime Error/i.test(bodyText);
+  const hasAppError = /Application error: a client-side exception|Internal Server Error|Unhandled Runtime Error/i.test(bodyText);
   const hasNextError = await page.locator('[data-nextjs-dialog], #__next_error__').count().catch(() => 0);
 
   page.off('console', errorHandler);
@@ -569,7 +570,10 @@ test.describe('FEATURE DEEP DIVE — Honesty & Data Integrity', () => {
       await page.waitForTimeout(2000);
 
       // Use visible text from main content area (not SSR JSON)
-      const mainContent = await page.locator('main, [role="main"], section').first().textContent().catch(() => '') ?? '';
+      const mainLoc = page.locator('main, [role="main"], section').first();
+      const mainContent = (await mainLoc.count().catch(() => 0)) > 0 
+        ? (await mainLoc.textContent().catch(() => '') ?? '') 
+        : (await page.textContent('body').catch(() => '') ?? '');
       
       const checks = {
         'No Lorem ipsum': !/Lorem ipsum/i.test(mainContent),

@@ -15,8 +15,12 @@ test.describe('PaperWorking E2E — Rehab Budget Flow (AQ-8)', () => {
 
     // Bypass Cookie Consent popup by pre-seeding localStorage
     await page.addInitScript(() => {
-      window.localStorage.setItem('pw_cookie_consent', JSON.stringify({ essential: true, analytics: true, marketing: true }));
-    });
+    try {
+    
+          window.localStorage.setItem('pw_cookie_consent', JSON.stringify({ essential: true, analytics: true, marketing: true }));
+        
+    } catch (e) {}
+  });
   });
 
   test('AQ-8 Rehab budget visibility, chips, inputs, calculations and save', async ({ page }) => {

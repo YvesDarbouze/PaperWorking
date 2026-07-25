@@ -7,6 +7,7 @@ import { db } from '@/lib/firebase/config';
 import toast from 'react-hot-toast';
 import { HOLD_CARD_REGISTRY, HoldCardDefinition, DispositionType, ScopeTier } from '@/lib/project/holdCardRegistry';
 import { HoldWelcomeBanner } from './HoldWelcomeBanner';
+import { RehabExpenseTracker } from '@/components/project/RehabExpenseTracker';
 
 export interface HoldWorkspaceShellProps {
   projectId: string;
@@ -27,6 +28,7 @@ export function HoldWorkspaceShell({
   const [selectedCard, setSelectedCard] = useState<HoldCardDefinition | null>(null);
   const [cardDraftInput, setCardDraftInput] = useState<string>('');
   const [savedData, setSavedData] = useState<Record<string, string>>({});
+  const [rehabExpenses, setRehabExpenses] = useState<any[]>([]);
 
   const handleSkipToExit = async () => {
     try {
@@ -255,6 +257,11 @@ export function HoldWorkspaceShell({
             </div>
           );
         })}
+      </div>
+
+      {/* ── Rehab Expense Tracker ── */}
+      <div className="mt-12 max-w-5xl">
+        <RehabExpenseTracker expenses={rehabExpenses} onChange={setRehabExpenses} />
       </div>
 
       {/* ── Card Save/Resume Modal ── */}

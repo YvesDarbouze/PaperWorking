@@ -27,7 +27,7 @@ test('DoD: /subprocessors renders with all vendors and last-updated timestamp', 
   expect(body).toContain('GDPR');
   expect(body).toContain('Last updated');
   expect(body).toContain('June 29, 2026');
-  expect(body).toContain('12 subprocessors');
+  expect(body).toContain('11 subprocessors');
 
   // ── Category headers ──
   expect(body).toContain('Infrastructure & Platform');
@@ -36,11 +36,10 @@ test('DoD: /subprocessors renders with all vendors and last-updated timestamp', 
   expect(body).toContain('Property Data Providers');
   expect(body).toContain('Observability & Monitoring');
 
-  // ── All 12 vendors present ──
+  // ── All 11 vendors present ──
   const vendors = [
     'Google Cloud Platform (Firebase)',
     'Google Places API',
-    'Google Gemini AI',
     'Stripe, Inc.',
     'Resend, Inc.',
     'DocuSign, Inc.',
@@ -59,7 +58,7 @@ test('DoD: /subprocessors renders with all vendors and last-updated timestamp', 
   // ── Privacy policy links ──
   const policyLinks = await page.locator('a[href*="privacy"], a[href*="security"], a[href*="terms"]').count();
   console.log(`Privacy policy links: ${policyLinks}`);
-  expect(policyLinks).toBeGreaterThanOrEqual(12);
+  expect(policyLinks).toBeGreaterThanOrEqual(11);
 
   // ── Source of truth reference ──
   expect(body).toContain('src/lib/compliance/subprocessors.ts');

@@ -16,18 +16,18 @@ export default function AuditLogsSettingsPage() {
   }, []);
 
   return (
-    <div className="w-full space-y-6">
+    <div className="w-full space-y-8">
       <div>
-        <h2 className="text-2xl font-bold text-pw-black mb-1">Audit Logs</h2>
+        <h2 className="text-2xl font-semibold text-pw-black mb-1">Audit Logs</h2>
         <p className="text-sm text-pw-muted">
           A chronological record of all permission changes, member actions, and security events in your workspace.
         </p>
       </div>
 
-      <section className="glass-card rounded-2xl p-8">
+      <section className="glass-card rounded-2xl p-6 transition-all duration-200 hover:shadow-md">
         {loading ? (
           <div className="flex items-center gap-2 text-sm text-pw-muted">
-            <span className="material-symbols-outlined animate-spin text-base select-none">progress_activity</span>
+            <span className="material-symbols-outlined animate-spin text-[16px] select-none">progress_activity</span>
             Loading audit logs…
           </div>
         ) : auditLogs.length === 0 ? (

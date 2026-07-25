@@ -192,17 +192,25 @@ export default function InsightsPage() {
           <div className="w-16 h-16 rounded-full bg-emerald-500/10 flex items-center justify-center mb-6">
             <Folder className="w-8 h-8 text-emerald-600" />
           </div>
-          <h2 className="text-xl font-bold text-slate-900 dark:text-white mb-2">Create your first project to see insights</h2>
+          <h1 className="text-xl font-bold text-slate-900 dark:text-white mb-2">Assemble Your Portfolio</h1>
           <p className="text-sm text-slate-500 dark:text-slate-400 mb-8 max-w-md leading-relaxed">
-            Create or sync real estate investment projects in your dashboard workspace to unlock calculations and metrics reporting.
+            Create or sync real estate investment projects in your dashboard workspace to unlock calculations, pro forma analytics, and thesis operational metrics reporting.
           </p>
-          <button
-            onClick={() => router.push('/dashboard/projects')}
-            className="flex items-center gap-2 px-6 py-3 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white font-semibold text-sm transition-all duration-200 shadow-md hover:shadow-emerald-900/15 active:scale-98"
-          >
-            <PlusCircle className="w-4 h-4" />
-            Create Project
-          </button>
+          <div className="flex items-center gap-4">
+            <a
+              href="/dashboard/projects/new"
+              className="flex items-center gap-2 px-6 py-3 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white font-semibold text-sm transition-all duration-200 shadow-md hover:shadow-emerald-900/15 active:scale-98"
+            >
+              <PlusCircle className="w-4 h-4" />
+              Add a Project
+            </a>
+            <a
+              href="/dashboard/projects"
+              className="flex items-center gap-2 px-6 py-3 rounded-lg bg-white/5 border border-slate-200 dark:border-white/10 hover:bg-slate-100 dark:hover:bg-white/10 text-slate-800 dark:text-white font-semibold text-sm transition-all duration-200 active:scale-98"
+            >
+              View Projects
+            </a>
+          </div>
         </div>
       ) : (
         /* ── Active Dashboard Layout ── */

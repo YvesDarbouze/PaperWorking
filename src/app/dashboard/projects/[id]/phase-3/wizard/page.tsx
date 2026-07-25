@@ -83,8 +83,7 @@ export default function HoldWizardPage() {
 
   const handleSaveStep = async (updates: any) => {
     try {
-      const projectRef = doc(db, 'projects', project.id);
-      await updateDoc(projectRef, updates);
+      await projectsService.updateProject(project.id, updates);
       
       toast.success('Step progress saved!');
 
@@ -108,24 +107,20 @@ export default function HoldWizardPage() {
 
   const handleCompleteHold = async () => {
     try {
-      const projectRef = doc(db, 'projects', project.id);
-      
       if (isFlip) {
         // Flips transition straight to Phase 4: Exit
-        await updateDoc(projectRef, {
+        await projectsService.updateProject(project.id, {
           currentPhase: 4,
           phaseStatus: 'Phase 4: Exit',
           status: 'exit',
-          updatedAt: new Date().toISOString(),
         });
         toast.success('Rehab complete! Project advanced to Exit phase.');
         router.push(`/dashboard/projects/${project.id}/phase-4`);
       } else {
         // Rentals transition to Stabilized state
-        await updateDoc(projectRef, {
-          status: 'stabilized',
-          phaseStatus: 'Phase 3: Stabilized',
-          updatedAt: new Date().toISOString(),
+        await projectsService.updateProject(project.id, {
+          status: 'stabilized' as any,
+          phaseStatus: 'Phase 3: Stabilized' as any,
         });
         toast.success('Property successfully Stabilized!');
         router.push(`/dashboard/projects/${project.id}/phase-3`);

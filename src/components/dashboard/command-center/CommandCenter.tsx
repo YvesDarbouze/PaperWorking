@@ -1671,18 +1671,6 @@ function FeaturedMetricSlot({ isDark, kpis }: { isDark: boolean; kpis: Portfolio
   const projects = useProjectStore((s) => s.projects);
   const projectsSynced = useProjectStore((s) => s.projectsSynced);
   const t = tokens(isDark);
-  
-  if (projectsSynced && projects.length === 0) {
-    return (
-      <Panel isDark={isDark} className="p-6 flex flex-col justify-center h-full min-h-[290px]">
-        <EmptyState
-          title="No featured metric"
-          description="Add a project to view specific portfolio KPI highlights."
-          variant="compact"
-        />
-      </Panel>
-    );
-  }
 
   const categories = useMemo(() => {
     const cats = new Set<MetricCategory>();
@@ -1769,6 +1757,18 @@ function FeaturedMetricSlot({ isDark, kpis }: { isDark: boolean; kpis: Portfolio
     }
     return `${val.toFixed(val % 1 === 0 ? 0 : 2)}${suffix}`;
   }, [metricValueData]);
+
+  if (projectsSynced && projects.length === 0) {
+    return (
+      <Panel isDark={isDark} className="p-6 flex flex-col justify-center h-full min-h-[290px]">
+        <EmptyState
+          title="No featured metric"
+          description="Add a project to view specific portfolio KPI highlights."
+          variant="compact"
+        />
+      </Panel>
+    );
+  }
 
   return (
     <ClickablePanel

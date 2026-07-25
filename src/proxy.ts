@@ -73,31 +73,34 @@ export function proxy(request: NextRequest) {
   const hasSession = !!request.cookies.get(SESSION_COOKIE)?.value;
   const acct       = request.cookies.get(ACCT_COOKIE)?.value; // 'investor' | 'vendor'
 
-  const isDev = (process.env.NODE_ENV === 'development' || 
-                 request.nextUrl.hostname === 'localhost' || 
-                 request.nextUrl.hostname === '127.0.0.1') &&
-                process.env.NODE_ENV !== 'test';
-
   // ── Local Development Bypass ──────────────────────────
-  if (isDev && !hasSession && (pathname.startsWith('/dashboard') || pathname.startsWith('/vendor-portal') || pathname.startsWith('/onboarding') || pathname === '/login')) {
-    const url = request.nextUrl.clone();
-    if (pathname === '/login') {
-      url.pathname = '/dashboard/command-center';
-    }
-    const response = NextResponse.redirect(url);
-    response.cookies.set(SESSION_COOKIE, 'mock_session_token_123', {
-      path: '/',
-      maxAge: 60 * 60 * 24 * 14, // 14 days
-      httpOnly: false, // Must be accessible client-side by useAuth() check!
-    });
-    if (!acct) {
-      response.cookies.set(ACCT_COOKIE, 'investor', {
+  if (!hasSession && (pathname.startsWith('/dashboard') || pathname.startsWith('/vendor-portal') || pathname.startsWith('/onboarding') || pathname === '/login')) {
+    const isE2E = request.cookies.get('__e2e_test')?.value === '1';
+    if (!isE2E &&
+        process.env.NODE_ENV === 'development' && 
+        process.env.ENABLE_MOCK_AUTH === 'true' &&
+        (request.headers.get('host')?.startsWith('localhost') || 
+         request.headers.get('host')?.startsWith('127.0.0.1'))) {
+      console.warn('[SECURITY] Setting mock session cookie — localhost dev only');
+      const url = request.nextUrl.clone();
+      if (pathname === '/login') {
+        url.pathname = '/dashboard/command-center';
+      }
+      const response = NextResponse.redirect(url);
+      response.cookies.set(SESSION_COOKIE, 'mock_session_token_123', {
         path: '/',
-        maxAge: 60 * 60 * 24 * 14,
-        httpOnly: false,
+        maxAge: 60 * 60 * 24 * 14, // 14 days
+        httpOnly: false, // Must be accessible client-side by useAuth() check!
       });
+      if (!acct) {
+        response.cookies.set(ACCT_COOKIE, 'investor', {
+          path: '/',
+          maxAge: 60 * 60 * 24 * 14,
+          httpOnly: false,
+        });
+      }
+      return withNoCache(response);
     }
-    return withNoCache(response);
   }
 
   // ── Guest Portal — always public ──────────────────────

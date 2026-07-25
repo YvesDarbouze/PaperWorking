@@ -182,11 +182,11 @@ describe("CARD 0: Intake Router Tests", () => {
   });
 
   describe("Zustand Acquisition Wizard Store", () => {
-    it("should initialize with empty intake and 'intake' step", () => {
+    it("should initialize with empty intake and 'address' step", () => {
       const state = useAcquisitionWizard.getState();
-      expect(state.currentStep).toBe("intake");
-      expect(state.intake).toEqual({});
-      expect(state.completion.intake).toBe("empty");
+      expect(state.currentStep).toBe("address");
+      expect(state.intake).toEqual({ journey: "targeting", dispositionType: "" });
+      expect(state.completion.intake).toBe("partial");
     });
 
     it("should transition to partial or done based on intake fields", () => {
@@ -211,9 +211,9 @@ describe("CARD 0: Intake Router Tests", () => {
       store.reset();
 
       const updatedState = useAcquisitionWizard.getState();
-      expect(updatedState.currentStep).toBe("intake");
-      expect(updatedState.intake).toEqual({});
-      expect(updatedState.completion.intake).toBe("empty");
+      expect(updatedState.currentStep).toBe("address");
+      expect(updatedState.intake).toEqual({ journey: "targeting", dispositionType: "" });
+      expect(updatedState.completion.intake).toBe("partial");
     });
   });
 });

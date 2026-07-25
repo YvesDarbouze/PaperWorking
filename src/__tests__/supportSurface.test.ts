@@ -30,7 +30,7 @@ code block
 
   test('getHelpArticles loads all articles', () => {
     const articles = getHelpArticles();
-    expect(articles.length).toBeGreaterThanOrEqual(20); // 10 screens + 10 metrics
+    expect(articles.length).toBeGreaterThanOrEqual(19); // 9 screens + 10 metrics
 
     const noi = articles.find(a => a.slug === 'noi');
     expect(noi).toBeDefined();

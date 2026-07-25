@@ -1,6 +1,10 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
+import { doc, updateDoc } from 'firebase/firestore';
+import { db } from '@/lib/firebase/config';
+import toast from 'react-hot-toast';
 import { HOLD_CARD_REGISTRY, HoldCardDefinition, DispositionType, ScopeTier } from '@/lib/project/holdCardRegistry';
 import { HoldWelcomeBanner } from './HoldWelcomeBanner';
 
@@ -19,9 +23,27 @@ export function HoldWorkspaceShell({
   scopeTier = 'RENOVATE',
   userId = 'user_1',
 }: HoldWorkspaceShellProps) {
+  const router = useRouter();
   const [selectedCard, setSelectedCard] = useState<HoldCardDefinition | null>(null);
   const [cardDraftInput, setCardDraftInput] = useState<string>('');
   const [savedData, setSavedData] = useState<Record<string, string>>({});
+
+  const handleSkipToExit = async () => {
+    try {
+      const projectRef = doc(db, 'projects', projectId);
+      await updateDoc(projectRef, {
+        currentPhase: 4,
+        phaseStatus: 'Phase 4: Exit',
+        status: 'exit',
+        updatedAt: new Date().toISOString(),
+      });
+      toast.success('Skipped to Exit Phase!');
+      router.push(`/dashboard/projects/${projectId}/phase-4`);
+    } catch (err: any) {
+      console.error(err);
+      toast.error('Failed to skip to Exit.');
+    }
+  };
 
   // Restore saved draft state from localStorage for save/resume testing
   useEffect(() => {
@@ -100,14 +122,34 @@ export function HoldWorkspaceShell({
             </span>
           </div>
 
-          <div
-            className="text-xs flex items-center space-x-2"
-            style={{ color: 'var(--color-on-surface-variant)' }}
-          >
-            <span>Scope Tier:</span>
-            <span className="font-semibold" style={{ color: 'var(--color-on-surface)' }}>
-              {scopeTier}
-            </span>
+          <div className="flex items-center space-x-4">
+            <div
+              className="text-xs flex items-center space-x-2 border-r pr-4 border-white/10"
+              style={{ color: 'var(--color-on-surface-variant)' }}
+            >
+              <span>Scope Tier:</span>
+              <span className="font-semibold" style={{ color: 'var(--color-on-surface)' }}>
+                {scopeTier}
+              </span>
+            </div>
+
+            {/* Launch Hold Wizard */}
+            <button
+              onClick={() => router.push(`/dashboard/projects/${projectId}/phase-3/wizard?strategy=${dispositionType}`)}
+              className="px-4 py-2 bg-[#7A9EAA] hover:opacity-90 text-[#0d0a0b] font-bold uppercase tracking-wider text-[10px] rounded-lg transition-all shadow-[0_0_12px_rgba(122,158,170,0.15)]"
+            >
+              Launch Hold Wizard
+            </button>
+
+            {/* Skip to Exit for flips */}
+            {dispositionType === 'SALE' && (
+              <button
+                onClick={handleSkipToExit}
+                className="px-4 py-2 border border-[#7A9EAA]/30 hover:bg-[#7A9EAA]/5 text-white font-bold uppercase tracking-wider text-[10px] rounded-lg transition-all"
+              >
+                Skip to Exit
+              </button>
+            )}
           </div>
         </div>
 

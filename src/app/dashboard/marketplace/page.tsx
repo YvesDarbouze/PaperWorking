@@ -21,6 +21,7 @@ import { VendorProfile } from '@/types/schema';
 import type { DealListingTeaser } from '@/types/listing';
 import { getPublishedListings } from '@/actions/listings';
 import DealMap from '@/components/marketplace/DealMap';
+import { RatingDisplay } from '@/components/marketplace/RatingDisplay';
 
 /* ═══════════════════════════════════════════════════════════════
    Vendor Marketplace — Stitch design: 3e7255323f7b493089506b6ecbf6cbf8
@@ -54,6 +55,7 @@ interface DisplayVendor {
   category: string;
   location: string;
   rating: number;
+  totalReviews: number;
   bio: string;
   specialties: string[];
 }
@@ -77,7 +79,6 @@ function VendorCard({
   onViewProfile: (vendorId: string) => void;
 }) {
   const badgeClass = CATEGORY_BADGE_STYLES[vendor.category] ?? 'bg-white/5 border-white/10 text-[#9E9DA0]';
-  const stars = Math.round(vendor.rating * 2) / 2;
 
   return (
     <div
@@ -88,10 +89,7 @@ function VendorCard({
         <span className={`px-2 py-0.5 rounded border text-[10px] font-bold uppercase tracking-wider ${badgeClass}`}>
           {vendor.category}
         </span>
-        <span className="flex items-center gap-1 px-2 py-0.5 rounded border border-amber-400/20 bg-amber-400/10 text-[10px] font-bold text-amber-400">
-          <Star className="w-3 h-3 fill-amber-400 stroke-none" />
-          {vendor.rating.toFixed(1)}
-        </span>
+        <RatingDisplay rating={vendor.rating} totalReviews={vendor.totalReviews} variant="compact" />
       </div>
 
       {/* Name */}
@@ -256,7 +254,8 @@ function MarketplaceContent() {
       companyName: v.companyName ?? 'Unknown',
       category: (v.type as string) ?? 'Other',
       location: (v.licensingStates ?? []).slice(0, 1).join(', ') || 'N/A',
-      rating: v.overallRating ?? 4.5,
+      rating: v.overallRating ?? 0,
+      totalReviews: v.totalReviews ?? 0,
       bio: v.bio ?? '',
       specialties: v.specialties ?? [],
     }));
@@ -275,6 +274,21 @@ function MarketplaceContent() {
         );
       });
     }
+
+    /* Sort vendors: show rated vendors first (by rating desc), then unrated/new vendors at the bottom. */
+    source.sort((a, b) => {
+      const aHasReviews = (a.rating || 0) > 0 && (a.totalReviews || 0) > 0;
+      const bHasReviews = (b.rating || 0) > 0 && (b.totalReviews || 0) > 0;
+
+      if (aHasReviews && !bHasReviews) return -1;
+      if (!aHasReviews && bHasReviews) return 1;
+
+      if (aHasReviews && bHasReviews) {
+        return (b.rating || 0) - (a.rating || 0);
+      }
+
+      return a.companyName.localeCompare(b.companyName);
+    });
 
     return source;
   }, [vendors, activeFilter]);
@@ -296,7 +310,7 @@ function MarketplaceContent() {
         licensingStates: apiVendor.licensingStates ?? [],
         serviceAreas: apiVendor.serviceAreas,
         avgTurnaroundDays: apiVendor.avgTurnaroundDays ?? 3,
-        overallRating: apiVendor.overallRating ?? 4.5,
+        overallRating: apiVendor.overallRating ?? 0,
         totalReviews: apiVendor.totalReviews ?? 0,
         availability: apiVendor.availability ?? 'Available',
         feeRangeLabel: apiVendor.feeRangeLabel ?? 'Contact for pricing',

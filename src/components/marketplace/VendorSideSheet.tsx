@@ -13,6 +13,7 @@ import {
   MessageSquare,
   CheckCircle,
 } from 'lucide-react';
+import { RatingDisplay } from './RatingDisplay';
 
 /* ═══════════════════════════════════════════════════════════════
    PaperWorking — VendorSideSheet
@@ -146,24 +147,7 @@ export default function VendorSideSheet({
 
           {/* Rating Row */}
           <div className="flex items-center gap-3 p-3 rounded-lg bg-white/[0.02] border border-white/[0.04]">
-            <div className="flex items-center gap-0.5">
-              {Array.from({ length: 5 }).map((_, i) => (
-                <Star
-                  key={i}
-                  className={`w-4 h-4 ${
-                    i < Math.round(vendor.overallRating)
-                      ? 'fill-amber-400 text-amber-400'
-                      : 'text-slate-600'
-                  }`}
-                />
-              ))}
-            </div>
-            <span className="text-sm font-bold font-mono">
-              {vendor.overallRating}
-            </span>
-            <span className="text-xs text-[#9E9DA0]">
-              ({vendor.totalReviews} reviews)
-            </span>
+            <RatingDisplay rating={vendor.overallRating} totalReviews={vendor.totalReviews} />
           </div>
 
           {/* Quick Metrics */}

@@ -1,9 +1,10 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
-import { Calendar, DollarSign, FileText, CheckCircle, Clock, Plus, Trash2, ShieldAlert } from 'lucide-react';
+import React, { useState, useEffect, useRef } from 'react';
+import { Calendar, DollarSign, FileText, CheckCircle, Clock, Plus, Trash2, ShieldAlert, Loader2 } from 'lucide-react';
 import type { Project, Contingency } from '@/types/schema';
 import toast from 'react-hot-toast';
+import { auth as firebaseAuth } from '@/lib/firebase/config';
 
 interface PSACardProps {
   project: Project;
@@ -41,6 +42,57 @@ export function PSACard({
     financials.psaSellerDeliverablesChecklist || 
     DEFAULT_DELIVERABLES.map(d => ({ text: d, checked: false }))
   );
+
+  const [uploading, setUploading] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
+  const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    setUploading(true);
+    try {
+      const token = await firebaseAuth.currentUser?.getIdToken();
+      if (!token) {
+        toast.error('Authentication token not found. Please log in.');
+        return;
+      }
+
+      const formData = new FormData();
+      formData.append('file', file);
+      formData.append('phase', 'phase-1');
+      formData.append('category', 'Purchase Agreement');
+      formData.append('documentType', 'purchase_agreement');
+
+      const res = await fetch(`/api/projects/${project.id}/documents`, {
+        method: 'POST',
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+        body: formData,
+      });
+
+      const data = await res.json();
+      if (!res.ok) {
+        throw new Error(data.error || 'Failed to upload document');
+      }
+
+      await onSaveFinancials({
+        psaDocumentUrl: data.downloadUrl,
+        psaDocumentName: file.name,
+      });
+
+      toast.success('PSA contract document uploaded successfully!');
+    } catch (err: any) {
+      console.error('[PSA Upload] error:', err);
+      toast.error(err.message || 'Failed to upload PSA document');
+    } finally {
+      setUploading(false);
+      if (fileInputRef.current) {
+        fileInputRef.current.value = '';
+      }
+    }
+  };
 
   const contractPrice = (financials.finalAgreedPrice ?? financials.offer_price ?? financials.purchasePrice ?? 0) / 100;
 
@@ -448,19 +500,23 @@ export function PSACard({
             <div className="flex flex-col items-center justify-center p-8 bg-white/5 border border-dashed border-white/10 rounded-xl">
               <FileText className="w-8 h-8 text-[#9E9DA0]/40 mb-2" />
               <p className="text-xs text-[#9E9DA0] mb-4">No contract uploaded yet</p>
+              <input
+                type="file"
+                ref={fileInputRef}
+                onChange={handleFileUpload}
+                accept="application/pdf"
+                className="hidden"
+              />
               <button
                 onClick={() => {
-                  if (readOnly) return;
-                  onSaveFinancials({
-                    psaDocumentUrl: '/mock/documents/Executed_PSA_Signed.pdf',
-                    psaDocumentName: 'Executed_PSA_Signed.pdf'
-                  });
-                  toast.success('PSA contract uploaded successfully');
+                  if (readOnly || uploading) return;
+                  fileInputRef.current?.click();
                 }}
                 id="upload-psa-contract-btn"
-                disabled={readOnly}
-                className="px-4 py-2 bg-white/5 border border-white/10 text-white rounded-lg text-xs font-bold uppercase tracking-wider hover:bg-white/10 transition-all"
+                disabled={readOnly || uploading}
+                className="px-4 py-2 bg-white/5 border border-white/10 text-white rounded-lg text-xs font-bold uppercase tracking-wider hover:bg-white/10 transition-all flex items-center gap-1.5"
               >
+                {uploading && <Loader2 className="w-3.5 h-3.5 animate-spin" />}
                 Select &amp; Upload PSA PDF
               </button>
             </div>

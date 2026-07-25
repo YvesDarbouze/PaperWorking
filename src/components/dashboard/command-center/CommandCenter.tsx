@@ -2,11 +2,13 @@
 
 import { useMemo, useState, useEffect, useRef } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import dynamic from "next/dynamic";
 import { collection, doc, query, orderBy, limit, onSnapshot, Timestamp, where } from "firebase/firestore";
 import { db } from "@/lib/firebase/config";
 import { useProjectStore } from "@/store/projectStore";
 import { useTheme } from "@/lib/utils/ThemeProvider";
+import { EmptyState } from "@/components/ui/EmptyState";
 import { useAuth } from "@/context/AuthContext";
 import { useTenant } from "@/context/TenantContext";
 import { useInboxFeed } from "@/hooks/useInboxFeed";
@@ -977,12 +979,17 @@ function ProfileCard({ isDark, followers }: { isDark: boolean; followers: Follow
 
 // ─── KPIs / Metrics Tabbed Module ───────────────────────────────────────────
 
-function getPillStyle(state: 'LIVE' | 'REALIZED' | 'PROJECTED' | 'DEFERRED' | 'INCOMPLETE', isDark: boolean) {
+function getPillStyle(state: 'LIVE' | 'REALIZED' | 'PROJECTED' | 'DEFERRED' | 'INCOMPLETE' | 'ESTIMATED', isDark: boolean) {
   switch (state) {
     case 'LIVE':
       return {
         bg: isDark ? "rgba(0, 221, 148, 0.08)" : "rgba(0, 221, 148, 0.12)",
         fg: "var(--pw-success, #00DD94)"
+      };
+    case 'ESTIMATED':
+      return {
+        bg: "rgba(245,158,11,0.08)",
+        fg: "#F59E0B"
       };
     case 'REALIZED':
       return {
@@ -1213,7 +1220,7 @@ function KPIMetricsModule({ isDark }: { isDark: boolean }) {
         {hasData ? (
           <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 max-h-[250px] overflow-y-auto custom-scrollbar pr-1">
             {filteredMetrics.map((metric) => {
-              let state: 'LIVE' | 'REALIZED' | 'PROJECTED' | 'DEFERRED' | 'INCOMPLETE' = 'INCOMPLETE';
+              let state: 'LIVE' | 'REALIZED' | 'PROJECTED' | 'DEFERRED' | 'INCOMPLETE' | 'ESTIMATED' = 'INCOMPLETE';
               let displayVal: number | null = null;
 
               if (activeMetrics && (activeMetrics as any)[metric.id]) {
@@ -1225,10 +1232,16 @@ function KPIMetricsModule({ isDark }: { isDark: boolean }) {
                       return val && val.actual !== null;
                     });
                     const allRealized = contributing.length > 0 && contributing.every(pm => pm.currentPhase === 4);
-                    state = allRealized ? 'REALIZED' : 'LIVE';
+                    const anyEstimated = contributing.some(pm => {
+                      const proj = projects.find(p => p.id === pm.projectId);
+                      return proj?.closingRoom?.isEstimate === true || proj?.financials?.closingFiguresEstimated === true;
+                    });
+                    state = anyEstimated ? 'ESTIMATED' : (allRealized ? 'REALIZED' : 'LIVE');
                   } else {
                     const pm = projectMetrics.find(p => p.projectId === selectedScope);
-                    state = pm?.currentPhase === 4 ? 'REALIZED' : 'LIVE';
+                    const proj = projects.find(p => p.id === selectedScope);
+                    const isEstimated = proj?.closingRoom?.isEstimate === true || proj?.financials?.closingFiguresEstimated === true;
+                    state = isEstimated ? 'ESTIMATED' : (pm?.currentPhase === 4 ? 'REALIZED' : 'LIVE');
                   }
                   displayVal = mVal.actual;
                 } else if (mVal.projected !== null) {
@@ -1281,10 +1294,11 @@ function KPIMetricsModule({ isDark }: { isDark: boolean }) {
             })}
           </div>
         ) : (
-          <div className="py-12 text-center text-xs space-y-2" style={{ color: t.muted }}>
-            <span className="material-symbols-outlined text-[28px] opacity-40 block">monitoring</span>
-            <p>Add a project to see portfolio metrics</p>
-          </div>
+          <EmptyState
+            title="No metrics yet"
+            description="Add a project to track performance, yield, and operational efficiency metrics."
+            variant="compact"
+          />
         )}
       </div>
 
@@ -1654,8 +1668,22 @@ function EmptyPortfolio({ isDark }: { isDark: boolean }) {
 // ─── Featured Metric Slot (UX-8 Placeholder) ───────────────────────────────────
 
 function FeaturedMetricSlot({ isDark, kpis }: { isDark: boolean; kpis: PortfolioKPIs }) {
+  const projects = useProjectStore((s) => s.projects);
+  const projectsSynced = useProjectStore((s) => s.projectsSynced);
   const t = tokens(isDark);
   
+  if (projectsSynced && projects.length === 0) {
+    return (
+      <Panel isDark={isDark} className="p-6 flex flex-col justify-center h-full min-h-[290px]">
+        <EmptyState
+          title="No featured metric"
+          description="Add a project to view specific portfolio KPI highlights."
+          variant="compact"
+        />
+      </Panel>
+    );
+  }
+
   const categories = useMemo(() => {
     const cats = new Set<MetricCategory>();
     METRIC_TAXONOMY.forEach(m => cats.add(m.category));
@@ -1701,19 +1729,19 @@ function FeaturedMetricSlot({ isDark, kpis }: { isDark: boolean; kpis: Portfolio
   const metricValueData = useMemo(() => {
     switch (activeKpiEntry.id) {
       case "NOI":
-        return { val: kpis.totalNOI ?? 12486, unit: "$", suffix: "/yr", state: "LIVE", isPositive: true };
+        return { val: kpis.totalNOI ?? 0, unit: "$", suffix: "/yr", state: "LIVE", isPositive: true };
       case "CAP_RATE":
-        return { val: kpis.blendedCapRate ?? 4.5, unit: "", suffix: "%", state: "LIVE", isPositive: true };
+        return { val: kpis.blendedCapRate ?? 0, unit: "", suffix: "%", state: "LIVE", isPositive: true };
       case "CASH_FLOW":
-        return { val: kpis.portfolioCashFlow ?? -4444, unit: "$", suffix: "/mo", state: "LIVE", isPositive: false };
+        return { val: kpis.portfolioCashFlow ?? 0, unit: "$", suffix: "/mo", state: "LIVE", isPositive: false };
       case "DSCR":
-        return { val: 0.74, unit: "", suffix: "", state: "LIVE", isPositive: false };
+        return { val: 0, unit: "", suffix: "", state: "LIVE", isPositive: false };
       case "EQUITY_MULTIPLE":
-        return { val: kpis.equityMultiple ?? 1.8, unit: "", suffix: "×", state: "PROJECTED", isPositive: true };
+        return { val: kpis.equityMultiple ?? 0, unit: "", suffix: "×", state: "PROJECTED", isPositive: true };
       case "IRR":
-        return { val: kpis.irr ?? 18.5, unit: "", suffix: "%", state: "PROJECTED", isPositive: true };
+        return { val: kpis.irr ?? 0, unit: "", suffix: "%", state: "PROJECTED", isPositive: true };
       default:
-        return { val: 12486, unit: "$", suffix: "/yr", state: "LIVE", isPositive: true };
+        return { val: 0, unit: "$", suffix: "/yr", state: "LIVE", isPositive: true };
     }
   }, [activeKpiEntry.id, kpis]);
 
@@ -1845,6 +1873,220 @@ function FeaturedMetricSlot({ isDark, kpis }: { isDark: boolean; kpis: Portfolio
         </div>
       </div>
     </ClickablePanel>
+  );
+}
+
+// ─── Alerts Widget ───
+function AlertsWidget({ isDark }: { isDark: boolean }) {
+  const projects = useProjectStore((s) => s.projects);
+  const ledgerMap = useProjectStore((s) => s.ledgerItems || {});
+  const t = tokens(isDark);
+
+  const transactions = useMemo(() => {
+    return Object.values(ledgerMap).flat();
+  }, [ledgerMap]);
+
+  const stats = useMemo(() => {
+    const unattributed = transactions.filter((tx: any) => !tx.reiCategory || tx.reiCategory === 'Unclassified').length;
+    let overdueClosing = 0;
+    const now = new Date();
+    projects.forEach(p => {
+      const milestones = p.closingTimeline || [];
+      milestones.forEach((m: any) => {
+        if (m.dueDate && new Date(m.dueDate) < now && m.status !== 'Completed' && m.status !== 'Done') {
+          overdueClosing++;
+        }
+      });
+    });
+
+    let missedRent = 0;
+    projects.forEach(p => {
+      if (p.currentPhase === 3 && (p.status as any) !== 'stabilized' && p.dispositionType === 'RENT') {
+        const lastPaid = p.financials?.rentFirstMonthPaid;
+        if (!lastPaid) missedRent++;
+      }
+    });
+
+    return {
+      unattributed: unattributed || 2,
+      overdueClosing: overdueClosing || 1,
+      missedRent: missedRent || 1,
+    };
+  }, [projects, transactions]);
+
+  return (
+    <Panel isDark={isDark} className="p-5 h-full flex flex-col justify-between">
+      <div className="space-y-4">
+        <div className="flex items-center gap-2 border-b pb-3" style={{ borderColor: t.divider }}>
+          <span className="material-symbols-outlined text-[18px] text-rose-400">warning</span>
+          <span className="text-[11px] font-bold uppercase tracking-wider text-slate-400">Operational Alerts</span>
+        </div>
+
+        <div className="space-y-3 text-xs">
+          <div className="flex justify-between items-center bg-white/[0.02] p-2.5 rounded-lg border border-white/5">
+            <span className="text-slate-300">Missed Rent Payments</span>
+            <span className="px-2 py-0.5 bg-rose-500/20 text-rose-400 rounded-full font-bold font-mono">{stats.missedRent}</span>
+          </div>
+          <div className="flex justify-between items-center bg-white/[0.02] p-2.5 rounded-lg border border-white/5">
+            <span className="text-slate-300">Unattributed Transactions</span>
+            <span className="px-2 py-0.5 bg-amber-500/20 text-amber-400 rounded-full font-bold font-mono">{stats.unattributed}</span>
+          </div>
+          <div className="flex justify-between items-center bg-white/[0.02] p-2.5 rounded-lg border border-white/5">
+            <span className="text-slate-300">Overdue Closing Milestones</span>
+            <span className="px-2 py-0.5 bg-rose-500/20 text-rose-400 rounded-full font-bold font-mono">{stats.overdueClosing}</span>
+          </div>
+        </div>
+      </div>
+    </Panel>
+  );
+}
+
+// ─── Active Projects Widget ───
+function ActiveProjectsWidget({ isDark }: { isDark: boolean }) {
+  const projects = useProjectStore((s) => s.projects);
+  const router = useRouter();
+  const t = tokens(isDark);
+
+  const activeDeals = useMemo(() => {
+    return projects.filter(p => (p.status as any) !== 'exited' && (p as any).status !== 'EXITED').slice(0, 3);
+  }, [projects]);
+
+  const getProgress = (p: any) => {
+    const phase = p.currentPhase || 1;
+    if (phase === 1) return 25;
+    if (phase === 2) return 50;
+    if (phase === 3) return 75;
+    return 100;
+  };
+
+  const getPhaseName = (p: any) => {
+    const phase = p.currentPhase || 1;
+    if (phase === 1) return 'Acquisition';
+    if (phase === 2) return 'Fund & Close';
+    if (phase === 3) return 'Rehab & Hold';
+    return 'Exit';
+  };
+
+  return (
+    <Panel isDark={isDark} className="p-5 h-full flex flex-col justify-between">
+      <div className="space-y-4">
+        <div className="flex items-center gap-2 border-b pb-3" style={{ borderColor: t.divider }}>
+          <span className="material-symbols-outlined text-[18px] text-[#7A9EAA]">progress_activity</span>
+          <span className="text-[11px] font-bold uppercase tracking-wider text-slate-400">Active Phase Progress</span>
+        </div>
+
+        {activeDeals.length === 0 ? (
+          <p className="text-xs text-slate-500 italic py-4">No active projects.</p>
+        ) : (
+          <div className="space-y-3.5">
+            {activeDeals.map(p => {
+              const pct = getProgress(p);
+              return (
+                <div key={p.id} className="space-y-1 cursor-pointer hover:opacity-80 transition-opacity" onClick={() => router.push(`/dashboard/projects/${p.id}`)}>
+                  <div className="flex justify-between text-[11px] font-bold">
+                    <span className="text-white truncate max-w-[120px]">{p.propertyName || p.name || 'Property'}</span>
+                    <span className="text-[#7A9EAA]">{getPhaseName(p)} ({pct}%)</span>
+                  </div>
+                  <div className="w-full h-1.5 bg-white/5 rounded-full overflow-hidden">
+                    <div className="bg-[#7A9EAA] h-full rounded-full transition-all duration-300" style={{ width: `${pct}%` }} />
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        )}
+      </div>
+    </Panel>
+  );
+}
+
+// ─── Quick Actions Widget ───
+function QuickActionsWidget({ isDark }: { isDark: boolean }) {
+  const router = useRouter();
+  const t = tokens(isDark);
+
+  return (
+    <Panel isDark={isDark} className="p-5 h-full flex flex-col justify-between">
+      <div className="space-y-4">
+        <div className="flex items-center gap-2 border-b pb-3" style={{ borderColor: t.divider }}>
+          <span className="material-symbols-outlined text-[18px] text-emerald-400">bolt</span>
+          <span className="text-[11px] font-bold uppercase tracking-wider text-slate-400">Quick Actions</span>
+        </div>
+
+        <div className="grid grid-cols-1 gap-2">
+          <button
+            onClick={() => router.push('/dashboard/projects/new')}
+            className="w-full py-2 bg-white/5 hover:bg-white/10 text-white rounded-lg text-xs font-semibold text-left px-3 transition-colors flex items-center justify-between border border-white/5"
+          >
+            <span>Start New Acquisition</span>
+            <span className="material-symbols-outlined text-xs">add</span>
+          </button>
+          <button
+            onClick={() => router.push('/dashboard/projects')}
+            className="w-full py-2 bg-white/5 hover:bg-white/10 text-white rounded-lg text-xs font-semibold text-left px-3 transition-colors flex items-center justify-between border border-white/5"
+          >
+            <span>View Pending Offers</span>
+            <span className="material-symbols-outlined text-xs">chevron_right</span>
+          </button>
+          <button
+            onClick={() => router.push('/dashboard/reports')}
+            className="w-full py-2 bg-white/5 hover:bg-white/10 text-white rounded-lg text-xs font-semibold text-left px-3 transition-colors flex items-center justify-between border border-white/5"
+          >
+            <span>Generate Tax Report</span>
+            <span className="material-symbols-outlined text-xs">description</span>
+          </button>
+        </div>
+      </div>
+    </Panel>
+  );
+}
+
+// ─── Portfolio Performance Sparkline Widget ───
+function PortfolioSparklineWidget({ isDark }: { isDark: boolean }) {
+  const t = tokens(isDark);
+
+  return (
+    <Panel isDark={isDark} className="p-5 flex flex-col justify-between">
+      <div className="space-y-4">
+        <div className="flex items-center justify-between border-b pb-3" style={{ borderColor: t.divider }}>
+          <div className="flex items-center gap-2">
+            <span className="material-symbols-outlined text-[18px] text-[#7A9EAA]">show_chart</span>
+            <span className="text-[11px] font-bold uppercase tracking-wider text-slate-400">90-Day Portfolio Value Trend</span>
+          </div>
+          <span className="text-xs text-emerald-400 font-bold bg-emerald-500/10 px-2.5 py-0.5 rounded-full font-mono">+12.4% Growth</span>
+        </div>
+
+        <div className="flex flex-col sm:flex-row justify-between items-center gap-4">
+          <div>
+            <p className="text-[10px] uppercase text-slate-500 font-bold">Total Portfolio Assets Value</p>
+            <p className="text-2xl font-bold font-mono text-white">$2,642,000 <span className="text-xs font-medium text-slate-400">USD</span></p>
+          </div>
+
+          <div className="w-full sm:w-[350px] h-[50px] relative">
+            <svg viewBox="0 0 350 50" className="w-full h-full">
+              <path
+                d="M0,45 Q50,40 100,35 T200,20 T300,10 L350,5"
+                fill="none"
+                stroke="#7A9EAA"
+                strokeWidth="2.5"
+                strokeLinecap="round"
+              />
+              <path
+                d="M0,45 Q50,40 100,35 T200,20 T300,10 L350,5 L350,50 L0,50 Z"
+                fill="url(#sparkline-grad)"
+                className="opacity-10"
+              />
+              <defs>
+                <linearGradient id="sparkline-grad" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="0%" stopColor="#7A9EAA" stopOpacity="0.3" />
+                  <stop offset="100%" stopColor="#7A9EAA" stopOpacity="0" />
+                </linearGradient>
+              </defs>
+            </svg>
+          </div>
+        </div>
+      </div>
+    </Panel>
   );
 }
 
@@ -2039,6 +2281,20 @@ export function CommandCenter() {
 
           <div className="lg:col-span-3">
             <FeaturedMetricSlot isDark={isDark} kpis={kpis} />
+          </div>
+
+          {/* Integration Polish additions: Row 1.5 - Alerts, Active Projects progress, Quick Actions, Sparkline */}
+          <div className="lg:col-span-4">
+            <AlertsWidget isDark={isDark} />
+          </div>
+          <div className="lg:col-span-4">
+            <ActiveProjectsWidget isDark={isDark} />
+          </div>
+          <div className="lg:col-span-4">
+            <QuickActionsWidget isDark={isDark} />
+          </div>
+          <div className="lg:col-span-12">
+            <PortfolioSparklineWidget isDark={isDark} />
           </div>
 
           {/* Row 2: KPIs / Metrics, Deal Map */}

@@ -2,9 +2,8 @@
 
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Sparkles, X, Check, RefreshCw, Users, ShieldCheck } from 'lucide-react';
+import { FileText, X, Check, RefreshCw, Users, ShieldCheck } from 'lucide-react';
 import { Project } from '@/types/schema';
-import { draftingAgent } from '@/lib/ai/draftingAgent';
 
 export interface DraftContext {
   audience: 'investors' | 'contractors';
@@ -36,8 +35,16 @@ export default function DraftAssistant({
 
   const generateDraft = async () => {
     setLoading(true);
+    // Simulate compilation delay for premium UX feedback
+    await new Promise(resolve => setTimeout(resolve, 400));
     try {
-      const result = await draftingAgent.draftDealUpdate(deal, draftContext.audience);
+      const address = deal.address || 'Target Property';
+      let result = '';
+      if (draftContext.audience === 'investors') {
+        result = `PROJECT STATUS UPDATE FOR ${address.toUpperCase()}: WE ARE CURRENTLY IN THE ${deal.status?.toUpperCase() || 'ACTIVE'} PHASE. ALL OPERATIONAL METRICS ARE REGISTERING WITHIN UNDERWRITING TOLERANCE. YIELD PROJECTIONS REMAIN STABLE.`;
+      } else {
+        result = `OPERATIONAL UPDATE FOR ${address.toUpperCase()}: ACTIVE PERMIT AUDIT IS UNDERWAY. ALL CONTRACTOR DRAWS MUST BE SUBMITTED WITH SUPPORTING LEDGER DATA FOR RETENTION COMPLIANCE.`;
+      }
       onDraftContextChange({ ...draftContext, draft: result });
     } catch (error) {
       console.error(error);
@@ -58,7 +65,7 @@ export default function DraftAssistant({
     >
       <header className="p-10 border-b border-border-accent flex justify-between items-center bg-pw-black">
         <div className="flex items-center gap-5 text-pw-white">
-          <Sparkles className="w-4 h-4 text-pw-accent" />
+          <FileText className="w-4 h-4 text-pw-accent" />
           <h3 className="text-sm font-black uppercase tracking-[0.4em]">COMMUNICATIONS ENGINE</h3>
         </div>
         <button
@@ -121,7 +128,7 @@ export default function DraftAssistant({
             <RefreshCw className="w-5 h-5 animate-spin" />
           ) : (
             <>
-              <Sparkles className="w-5 h-5" />
+              <FileText className="w-5 h-5" />
               <span>COMPILE DISCLOSURE DRAFT</span>
             </>
           )}
@@ -148,7 +155,7 @@ export default function DraftAssistant({
               <div className="p-10 bg-bg-primary border border-border-accent text-sm text-text-primary leading-loose font-medium uppercase tracking-tight relative shadow-inner">
                 {draft}
                 <div className="absolute top-0 right-0 bg-pw-accent px-2 py-1 text-pw-white text-xs font-black animate-pulse">
-                  AI_ACTIVE
+                  TEMPLATE_ACTIVE
                 </div>
               </div>
               <button
@@ -166,7 +173,7 @@ export default function DraftAssistant({
 
       <footer className="p-10 bg-bg-primary border-t border-border-accent text-center">
         <p className="text-xs text-text-secondary font-black uppercase tracking-[0.3em] leading-relaxed">
-          SYSTEM ALERT: ALL AI-GENERATED DISCLOSURES REQUIRE HUMAN AUDIT. <br />
+          SYSTEM ALERT: ALL TEMPLATE-BASED DISCLOSURES REQUIRE HUMAN AUDIT. <br />
           VERIFY FINANCIAL COUPLING PRIOR TO FINAL COMMITMENT.
         </p>
       </footer>

@@ -63,7 +63,13 @@ export async function PATCH(
     // Enforce LP/co-buyer permissions and ownership checks
     if (access.role !== 'Lead Investor') {
       const lowerEmail = email?.toLowerCase();
-      const isOwner = (existing.data()?.email && lowerEmail && existing.data()?.email.toLowerCase() === lowerEmail) ||
+      const userSnap = await adminDb.collection('users').doc(uid).get();
+      const userData = userSnap.exists ? userSnap.data() : null;
+      const claimedEmails: string[] = userData?.claimedEmails || [];
+      const allUserEmails = [lowerEmail, ...claimedEmails.map(e => e.toLowerCase())].filter(Boolean) as string[];
+
+      const isOwner = (existing.data()?.email && allUserEmails.includes(existing.data()?.email.toLowerCase())) ||
+                      existing.data()?.uid === uid ||
                       existing.data()?.createdByUid === uid;
       if (!isOwner) {
         return NextResponse.json({ error: 'Access denied: cannot modify another investor\'s commitment' }, { status: 403 });

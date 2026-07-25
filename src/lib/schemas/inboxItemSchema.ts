@@ -27,6 +27,8 @@ export const inboxItemTypeEnum = z.enum([
   'task_notification',
   'billing_alert',
   'document_shared',
+  'unattributed_transaction',
+  'missed_rent',
 ]);
 
 /** Priority levels — drive sort order and visual treatment */

@@ -12,7 +12,7 @@ const FEATURES = [
     details: ["Multi-tier waterfalls", "Equity modeling", "Instant P&L audits"]
   },
   {
-    title: "DATA ROOMS",
+    title: "PROJECT DOCUMENTS",
     description: "Centralized command for deal-critical data. Every document, deadline, and draw request structured for professional audit trails.",
     icon: Layout,
     details: ["Dynamic Kanban tracks", "Digital Draw control", "Integration suite"]

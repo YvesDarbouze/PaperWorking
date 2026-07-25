@@ -22,7 +22,10 @@ export type NotificationType =
   | 'LOAN_STATUS_UPDATE'
   | 'NEGOTIATION_UPDATE'
   | 'LENDER_CHECKLIST_REMINDER'
-  | 'SLIPPAGE_DETECTED';
+  | 'SLIPPAGE_DETECTED'
+  | 'DEAL_MATERIAL_CHANGE'
+  | 'unattributed_transaction'
+  | 'missed_rent';
 
 export type NotificationUrgency = 'informational' | 'actionable' | 'critical';
 
@@ -83,6 +86,16 @@ export const NOTIFICATION_METADATA: Record<
     templateTitle: (params: NotificationObjectReference & { actorName: string }) => string;
   }
 > = {
+  unattributed_transaction: {
+    urgency: 'actionable',
+    channels: ['in-app'],
+    templateTitle: () => `Unattributed Transaction: Action Needed`
+  },
+  missed_rent: {
+    urgency: 'critical',
+    channels: ['in-app', 'email'],
+    templateTitle: (params) => `Rent Overdue: ${params.dealAddress || 'Property'}`
+  },
   VENDOR_LEAD: {
     urgency: 'actionable',
     channels: ['in-app', 'email'],
@@ -251,6 +264,14 @@ export const NOTIFICATION_METADATA: Record<
       const task = params.task || 'milestone';
       return `Slippage Alert: Milestone "${task}" is overdue on ${params.dealAddress}`;
     }
+  },
+  DEAL_MATERIAL_CHANGE: {
+    urgency: 'critical',
+    channels: ['in-app', 'email'],
+    templateTitle: (params) => {
+      if (!params.dealAddress) throw new Error('DEAL_MATERIAL_CHANGE requires an address in the title.');
+      return `Material changes made to deal at ${params.dealAddress}`;
+    }
   }
 };
 
@@ -278,6 +299,7 @@ export function getNotificationCategory(type: NotificationType): NotificationCat
     case 'PHASE_TRANSITION':
     case 'LOAN_STATUS_UPDATE':
     case 'SLIPPAGE_DETECTED':
+    case 'DEAL_MATERIAL_CHANGE':
       return 'alerts';
     default:
       return 'tasks';

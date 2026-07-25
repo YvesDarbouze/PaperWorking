@@ -5,6 +5,9 @@ import { z } from 'zod';
 import { canCreateProject } from '@/lib/entitlements/server';
 import { clearDashboardCache } from '@/lib/cache/dashboardCache';
 import { logOrgActivity } from '@/lib/firebase/orgActivityWriter';
+import { resolveOrCreateProperty } from '@/lib/services/propertyService';
+import { canonicalizeAddress, generateDealSlug } from '@/lib/identity/propertyIdentity';
+import type { AddressComponents } from '@/types/propertyTypes';
 
 /* ═══════════════════════════════════════════════════════════════
    POST /api/projects — Create a new project (Draft or Active)
@@ -93,6 +96,7 @@ const wizardSubmitSchema = z.object({
   mlsSqft: z.number().nullable().optional(),
   mlsThumbnailUrl: z.string().nullable().optional(),
   mlsStandardStatus: z.string().nullable().optional(),
+  placeId: z.string().nullable().optional(),
   financials: wizardFinancialsSchema,
   organizationId: z.string().min(1, 'Organization ID is required'),
 }).passthrough();
@@ -205,7 +209,51 @@ export async function POST(request: NextRequest) {
     const finalPhase = hasSoldDate ? 4 : currentPhase;
     const finalStatus = hasSoldDate ? 'Sold' : (data.status || status);
 
-    // 5. Build Firestore document
+    // 5a. DM-2: Resolve or create Property record if placeId available
+    let propertyId: string | undefined;
+    let placeId: string | undefined;
+    let dealSlug: string | undefined;
+
+    if (data.placeId) {
+      try {
+        const addressComponents: AddressComponents = {
+          streetNumber: (data.street || '').split(' ')[0] || '',
+          route: (data.street || '').split(' ').slice(1).join(' ') || '',
+          city: data.city || '',
+          state: (data.state || '').toUpperCase().slice(0, 2),
+          zip: data.zip || '',
+        };
+
+        const { property } = await resolveOrCreateProperty({
+          placeId: data.placeId,
+          addressComponents,
+          coordinates: {
+            lat: data.lat ?? 0,
+            lng: data.lng ?? 0,
+          },
+        });
+
+        propertyId = property.id;
+        placeId = property.placeId;
+
+        // Generate dealSlug — fetch existing slugs for collision check
+        const existingSlugsSnap = await adminDb
+          .collection('projects')
+          .where('organizationId', '==', organizationId)
+          .select('dealSlug')
+          .get();
+        const existingSlugs = existingSlugsSnap.docs
+          .map(d => d.data().dealSlug)
+          .filter(Boolean) as string[];
+
+        dealSlug = generateDealSlug(property.canonicalAddress, existingSlugs);
+      } catch (propErr) {
+        // Property resolution failure is non-blocking — project still creates
+        console.error('[Projects] Property resolution failed (non-blocking):', propErr);
+      }
+    }
+
+    // 6. Build Firestore document
     const projectRef = adminDb.collection('projects').doc();
     const now = new Date();
 
@@ -217,6 +265,9 @@ export async function POST(request: NextRequest) {
       currentPhase: finalPhase,
       status: finalStatus,
       ownerUid: uid,
+      ...(propertyId && { propertyId }),
+      ...(placeId && { placeId }),
+      ...(dealSlug && { dealSlug }),
       members: {
         [uid]: {
           role: 'Lead Investor',

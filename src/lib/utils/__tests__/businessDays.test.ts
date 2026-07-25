@@ -1,4 +1,4 @@
-import { getBusinessDaysDiff } from '../businessDays';
+import { getBusinessDaysDiff, addBusinessDays } from '../businessDays';
 
 describe('businessDays utility: getBusinessDaysDiff', () => {
   it('returns 0 if either date is missing or invalid', () => {
@@ -30,5 +30,19 @@ describe('businessDays utility: getBusinessDaysDiff', () => {
   it('calculates strict business days diff excluding weekends correctly (Friday to Thursday)', () => {
     // Fri Jul 17 to Thu Jul 23 (Mon, Tue, Wed = 3 days)
     expect(getBusinessDaysDiff('2026-07-17', '2026-07-23')).toBe(3);
+  });
+});
+
+describe('businessDays utility: addBusinessDays', () => {
+  it('adds business days correctly skipping weekends', () => {
+    // Mon Jul 20, 2026 + 3 business days = Thu Jul 23, 2026
+    const start1 = new Date('2026-07-20T12:00:00Z');
+    const result1 = addBusinessDays(start1, 3);
+    expect(result1.toISOString().split('T')[0]).toBe('2026-07-23');
+
+    // Fri Jul 17, 2026 + 3 business days = Wed Jul 22, 2026
+    const start2 = new Date('2026-07-17T12:00:00Z');
+    const result2 = addBusinessDays(start2, 3);
+    expect(result2.toISOString().split('T')[0]).toBe('2026-07-22');
   });
 });

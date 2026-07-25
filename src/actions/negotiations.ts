@@ -36,10 +36,9 @@ async function verifyActionAuth(idToken: string): Promise<VerifiedUser> {
   }
 }
 
-// Helper to block vendors
 function rejectVendor(user: VerifiedUser) {
-  if (user.accountType === 'vendor') {
-    throw new Error('Deal listings are not available for vendor accounts.');
+  if (user.accountType === 'vendor' || user.role === 'Vendor') {
+    throw new Error('Not Found');
   }
 }
 

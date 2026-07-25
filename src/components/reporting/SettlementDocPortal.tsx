@@ -25,7 +25,7 @@ import toast from 'react-hot-toast';
    Settlement Document Portal
    ─────────────────────────────────────────────────────
    HUD-1 / Closing Disclosure Upload & Verification
-   OCR-ready structure with manual override form
+    Document vault structure with manual override form
    ═══════════════════════════════════════════════════════ */
 
 const ACCEPTED_TYPES = ['application/pdf', 'image/jpeg', 'image/png'];
@@ -86,37 +86,6 @@ export default function SettlementDocPortal() {
     if (file) handleFileSelect(file);
   }, [handleFileSelect]);
 
-  const processOCR = async (fileUrl: string, mimeType: string, fileName: string): Promise<Partial<SettlementDocument>> => {
-    const token = await auth.currentUser?.getIdToken();
-    if (!token) throw new Error('Not authenticated');
-
-    const res = await fetch('/api/ocr/settlement', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${token}`
-      },
-      body: JSON.stringify({ fileUrl, mimeType })
-    });
-
-    if (!res.ok) {
-      const errorData = await res.json().catch(() => ({}));
-      throw new Error(errorData.error || `OCR processing failed with status ${res.status}`);
-    }
-
-    const { data } = await res.json();
-
-    return {
-      extractedAcquisitionCost: data.acquisitionCost,
-      extractedDispositionCost: data.dispositionCost,
-      extractedLoanPayoff: data.payoffs,
-      extractedTitleFees: data.titleFees,
-      extractedRecordingFees: data.recordingFees,
-      extractedTransferTaxes: data.transferTaxes,
-      notes: `Extracted from ${fileName} via PaperWorking AI Scan (Confidence: ${data.confidence}).`,
-    };
-  };
-
   const handleUpload = async () => {
     if (!selectedDealId || !uploadFile) {
       toast.error('Select a deal and file first.');
@@ -149,10 +118,7 @@ export default function SettlementDocPortal() {
 
       setIsUploading(false);
       setIsProcessing(true);
-      toast.loading('Extracting financial data...', { id: 'ocr-toast' });
-
-      // 2. OCR Processing via API
-      const extractedData = await processOCR(downloadUrl, uploadFile.type, uploadFile.name);
+      toast.loading('Processing document...', { id: 'process-toast' });
 
       const newDoc: SettlementDocument = {
         id: crypto.randomUUID(),
@@ -162,16 +128,21 @@ export default function SettlementDocPortal() {
         fileUrl: downloadUrl,
         uploadedAt: new Date(),
         verified: false,
-        ...extractedData,
-        notes: extractedData.notes || '',
+        extractedAcquisitionCost: 0,
+        extractedDispositionCost: 0,
+        extractedLoanPayoff: 0,
+        extractedTitleFees: 0,
+        extractedRecordingFees: 0,
+        extractedTransferTaxes: 0,
+        notes: `Uploaded manually on ${new Date().toLocaleDateString()}. Please enter details.`,
       };
 
       const updatedDocs = [...documents, newDoc];
       updateSettlementDocuments(selectedDealId, updatedDocs);
       
       setIsProcessing(false);
-      toast.dismiss('ocr-toast');
-      toast.success(`${uploadType} processed successfully!`, { icon: '✨' });
+      toast.dismiss('process-toast');
+      toast.success(`${uploadType} uploaded successfully!`, { icon: '✨' });
       
       setUploadFile(null);
       setShowUpload(false);
@@ -384,10 +355,10 @@ export default function SettlementDocPortal() {
             ) : isProcessing ? (
               <>
                 <Loader2 className="w-4 h-4 animate-spin" />
-                AI Extracting Data...
+                Processing Document...
               </>
             ) : (
-              <>Upload & Scan {uploadType}</>
+              <>Upload {uploadType}</>
             )}
           </button>
         </div>

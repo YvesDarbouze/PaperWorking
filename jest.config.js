@@ -31,7 +31,7 @@ const config = {
     '<rootDir>/.next.old_1777068220/',
     '<rootDir>/out/'
   ],
-  testMatch: ['**/__tests__/**/*.test.ts', '**/__tests__/**/*.test.tsx'],
+  testMatch: ['**/__tests__/**/*.test.ts', '**/__tests__/**/*.test.tsx', '**/*.test.ts'],
 };
 
 module.exports = config;

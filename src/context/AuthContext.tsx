@@ -159,9 +159,28 @@ async function provisionSocialUser(user: User): Promise<boolean> {
         ...firstUtm,
       });
 
-      // Reconcile any pending guest-checkout subscription
       if (user.email) {
         await reconcilePendingSubscription(user.uid, user.email);
+      }
+
+      if (typeof window !== 'undefined') {
+        const pendingInviteToken = window.sessionStorage.getItem('pw_pending_invite_token');
+        if (pendingInviteToken) {
+          try {
+            const idToken = await user.getIdToken();
+            await fetch('/api/identity/claim/bind-token', {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${idToken}`,
+              },
+              body: JSON.stringify({ token: pendingInviteToken }),
+            });
+            window.sessionStorage.removeItem('pw_pending_invite_token');
+          } catch (e) {
+            console.error('Failed to bind invite history:', e);
+          }
+        }
       }
 
       return true;
@@ -679,6 +698,26 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
       if (newUser.email) {
         await reconcilePendingSubscription(newUser.uid, newUser.email);
+      }
+
+      if (typeof window !== 'undefined') {
+        const pendingInviteToken = window.sessionStorage.getItem('pw_pending_invite_token');
+        if (pendingInviteToken) {
+          try {
+            const idToken = await newUser.getIdToken();
+            await fetch('/api/identity/claim/bind-token', {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${idToken}`,
+              },
+              body: JSON.stringify({ token: pendingInviteToken }),
+            });
+            window.sessionStorage.removeItem('pw_pending_invite_token');
+          } catch (e) {
+            console.error('Failed to bind invite history:', e);
+          }
+        }
       }
 
       await syncSessionCookie(newUser);

@@ -310,7 +310,6 @@ test.describe('DASHBOARD — Operational Tools', () => {
   const operationalRoutes: [string, string][] = [
     ['/dashboard/calendar', 'Calendar'],
     ['/dashboard/closing-room', 'Closing Room'],
-    ['/dashboard/data-room', 'Data Room'],
     ['/dashboard/data', 'Data'],
     ['/dashboard/deal-analyzer', 'Deal Analyzer'],
     ['/dashboard/engine-room', 'Engine Room'],

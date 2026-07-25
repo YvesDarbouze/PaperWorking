@@ -27,6 +27,14 @@ const STATUS_CONFIG: Record<ListingStatus, { label: string; className: string }>
     label: 'CLOSED',
     className: 'bg-[var(--color-error)]/15 text-[var(--color-error)] border-[var(--color-error)]/25',
   },
+  withdrawn: {
+    label: 'WITHDRAWN',
+    className: 'bg-[var(--color-error)]/10 text-[var(--color-error)]/60 border-[var(--color-error)]/20 line-through',
+  },
+  takedown_review: {
+    label: 'UNDER REVIEW',
+    className: 'bg-red-500/15 text-red-500 border-red-500/25 animate-pulse',
+  },
 };
 
 interface ListingStatusBadgeProps {

@@ -27,7 +27,7 @@ export default function ValuationTerminal() {
                 <div className="hidden md:flex gap-[16px]">
                     <span className="font-['Plus_Jakarta_Sans'] text-[14px] leading-[16px] font-semibold uppercase tracking-[0.02em] text-[#9E9DA0] hover:text-[#454955] transition-colors cursor-pointer">Command Center</span>
                     <span className="font-['Plus_Jakarta_Sans'] text-[14px] leading-[16px] font-semibold uppercase tracking-[0.02em] text-[#454955] border-b-2 border-[#454955]">Deal Analyzer</span>
-                    <span className="font-['Plus_Jakarta_Sans'] text-[14px] leading-[16px] font-semibold uppercase tracking-[0.02em] text-[#9E9DA0] hover:text-[#454955] transition-colors cursor-pointer">Data Room</span>
+                    <span className="font-['Plus_Jakarta_Sans'] text-[14px] leading-[16px] font-semibold uppercase tracking-[0.02em] text-[#9E9DA0] hover:text-[#454955] transition-colors cursor-pointer">Project Files</span>
                 </div>
                 <div className="h-8 w-8 relative rounded-full bg-[#222b32] border border-white/10 flex items-center justify-center overflow-hidden">
                     <Image alt="User" fill className="object-cover" unoptimized src="https://lh3.googleusercontent.com/aida-public/AB6AXuDm8HbqRiQzswTKNQFWPtSfjF4IOzdIDTmRhqHFkbvUT8SO3uWuWFq1Rf4P0D6zw2QSKYNe9-LNathQsVJ8Fawhl5iBnMgNtp1_BRImTJ7jEKbu4VTE13BXcOzthENoVCgxmuPkn4cAKeYNrXi9RZQH_CtbSw8dNpdzbpyZozU8nxhV37f4uuZnKXckKVqrvDtKkub1S1chv5SPIt2cv2KbRygJ8mp_JRDrUfXg9BeiyI4eLFdmhhKO9jZGgAp_GadzYPGiMHiNdg7E"/>
@@ -50,7 +50,7 @@ export default function ValuationTerminal() {
                     </div>
                     <div className="flex items-center gap-[8px] px-[40px] py-[8px] text-[#9E9DA0] hover:text-[#454955] hover:bg-white/5 transition-all cursor-pointer">
                         <span className="material-symbols-outlined">folder_shared</span>
-                        <span className="font-['Plus_Jakarta_Sans'] text-[14px] leading-[16px] font-semibold uppercase tracking-[0.02em]">Data Room</span>
+                        <span className="font-['Plus_Jakarta_Sans'] text-[14px] leading-[16px] font-semibold uppercase tracking-[0.02em]">Project Files</span>
                     </div>
                     <div className="flex items-center gap-[8px] px-[40px] py-[8px] text-[#9E9DA0] hover:text-[#454955] hover:bg-white/5 transition-all cursor-pointer">
                         <span className="material-symbols-outlined">payments</span>

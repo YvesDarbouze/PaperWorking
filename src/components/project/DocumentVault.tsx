@@ -5,9 +5,6 @@ import { ref, uploadBytesResumable, getDownloadURL, deleteObject } from 'firebas
 import { storage, auth as firebaseAuth } from '@/lib/firebase/config';
 import { useAuth } from '@/context/AuthContext';
 import toast from 'react-hot-toast';
-import { OCRReviewPanel } from '@/components/documents/OCRReviewPanel';
-import type { ExtractedFields } from '@/lib/ocr/types';
-
 interface DocumentVaultProps {
   projectId: string;
   documents?: RoleLinkedDocument[];
@@ -15,13 +12,6 @@ interface DocumentVaultProps {
   categories?: DocumentCategory[];
   title?: string;
   description?: string;
-}
-
-/** OCR status for a specific document */
-interface DocOcrState {
-  status: 'pending' | 'processing' | 'complete' | 'failed';
-  extractedFields: ExtractedFields;
-  overallConfidence: number;
 }
 
 interface UploadProgress {
@@ -50,99 +40,27 @@ export function DocumentVault({
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [selectedCategory, setSelectedCategory] = useState<DocumentCategory | null>(null);
   const { user } = useAuth();
-  const [ocrStates, setOcrStates] = useState<Record<string, DocOcrState>>({});
-  const [expandedOcr, setExpandedOcr] = useState<string | null>(null);
-
-  // ── OCR trigger after upload ─────────────────────────
-  const triggerOcr = useCallback(async (docId: string, projectIdParam: string) => {
-    setOcrStates(prev => ({
-      ...prev,
-      [docId]: { status: 'processing', extractedFields: {}, overallConfidence: 0 },
-    }));
-
-    try {
-      const token = await firebaseAuth.currentUser?.getIdToken();
-      if (!token) throw new Error('Not authenticated');
-
-      const res = await fetch(`/api/projects/${projectIdParam}/documents/${docId}/ocr`, {
-        method: 'POST',
-        headers: { Authorization: `Bearer ${token}` },
+  const handleToggleVerification = useCallback((docId: string) => {
+    if (onChange) {
+      const updatedDocs = documents.map(doc => {
+        if (doc.id === docId) {
+          const nextVerified = !doc.verified;
+          const nextStatus: 'Verified' | 'Under Review' = nextVerified ? 'Verified' : 'Under Review';
+          return {
+            ...doc,
+            verified: nextVerified,
+            status: nextStatus,
+          };
+        }
+        return doc;
       });
-
-      const data = await res.json();
-
-      if (data.ocrStatus === 'complete') {
-        setOcrStates(prev => ({
-          ...prev,
-          [docId]: {
-            status: 'complete',
-            extractedFields: data.extractedFields || {},
-            overallConfidence: data.overallConfidence || 0,
-          },
-        }));
-        setExpandedOcr(docId);
-      } else {
-        setOcrStates(prev => ({
-          ...prev,
-          [docId]: { status: 'failed', extractedFields: {}, overallConfidence: 0 },
-        }));
+      onChange(updatedDocs);
+      const targetDoc = documents.find(d => d.id === docId);
+      if (targetDoc) {
+        toast.success(!targetDoc.verified ? 'Document verified successfully' : 'Document marked as Under Review');
       }
-    } catch (err: any) {
-      console.error('[DocumentVault] OCR trigger failed:', err?.message);
-      setOcrStates(prev => ({
-        ...prev,
-        [docId]: { status: 'failed', extractedFields: {}, overallConfidence: 0 },
-      }));
     }
-  }, []);
-
-  const handleOcrFieldConfirm = useCallback(async (docId: string, fieldName: string, value: any) => {
-    try {
-      const token = await firebaseAuth.currentUser?.getIdToken();
-      if (!token) return;
-
-      await fetch(`/api/projects/${projectId}/documents/${docId}/confirm`, {
-        method: 'POST',
-        headers: {
-          Authorization: `Bearer ${token}`,
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          confirmedFields: { [fieldName]: value },
-          targetPath: 'financials',
-        }),
-      });
-    } catch (err: any) {
-      toast.error(`Failed to confirm field: ${err.message}`);
-    }
-  }, [projectId]);
-
-  const handleOcrBulkConfirm = useCallback(async (docId: string, fields: Record<string, any>) => {
-    try {
-      const token = await firebaseAuth.currentUser?.getIdToken();
-      if (!token) return;
-
-      await fetch(`/api/projects/${projectId}/documents/${docId}/confirm`, {
-        method: 'POST',
-        headers: {
-          Authorization: `Bearer ${token}`,
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          confirmedFields: fields,
-          targetPath: 'financials',
-        }),
-      });
-    } catch (err: any) {
-      toast.error(`Failed to bulk confirm: ${err.message}`);
-    }
-  }, [projectId]);
-
-  const handleOcrReprocess = useCallback((docId: string) => {
-    // The reprocess call is handled inside OCRReviewPanel.
-    // After it completes, we re-trigger OCR to get updated fields.
-    triggerOcr(docId, projectId);
-  }, [projectId, triggerOcr]);
+  }, [documents, onChange]);
 
   const handleDragOver = (e: DragEvent<HTMLDivElement>, category: DocumentCategory) => {
     e.preventDefault();
@@ -212,7 +130,7 @@ export function DocumentVault({
             async () => {
               try {
                 const downloadURL = await getDownloadURL(uploadTask.snapshot.ref);
-                const doc: RoleLinkedDocument = {
+                 const doc: RoleLinkedDocument = {
                   id: uploadId,
                   category,
                   fileName: file.name,
@@ -222,7 +140,8 @@ export function DocumentVault({
                   uploadedByName: user.displayName || user.email || 'Unknown User',
                   uploadedAt: new Date(),
                   verified: false,
-                  notes: ''
+                  notes: '',
+                  status: 'Uploaded'
                 };
                 newDocs.push(doc);
                 setUploadingFiles(prev => prev.filter(u => u.id !== uploadId));
@@ -241,11 +160,6 @@ export function DocumentVault({
     if (newDocs.length > 0 && onChange) {
       onChange([...documents, ...newDocs]);
       toast.success('Documents uploaded successfully');
-
-      // Auto-trigger OCR for each uploaded document
-      for (const doc of newDocs) {
-        triggerOcr(doc.id, projectId);
-      }
 
       try {
         import('@/store/uiStore').then(({ useUIStore }) => {
@@ -358,12 +272,21 @@ export function DocumentVault({
                 ))}
                 
                 {categoryDocs.map((doc) => {
-                  const ocrState = ocrStates[doc.id];
+                  const status = doc.verified 
+                    ? 'Verified' 
+                    : (doc.status || 'Under Review');
+
+                  const badgeStyles = {
+                    'Verified': 'text-pw-success bg-pw-success-container border-pw-success-border',
+                    'Under Review': 'text-amber-700 bg-amber-50 border-amber-200',
+                    'Uploaded': 'text-blue-700 bg-blue-50 border-blue-200',
+                    'Archived': 'text-gray-600 bg-gray-50 border-gray-200',
+                  }[status] || 'text-gray-600 bg-gray-50 border-gray-200';
+
                   return (
                     <div key={doc.id}>
                       <div 
-                        className="flex items-center justify-between p-3 rounded-md border bg-bg-default border-border-ui shadow-sm group cursor-pointer"
-                        onClick={() => ocrState?.status === 'complete' && setExpandedOcr(expandedOcr === doc.id ? null : doc.id)}
+                        className="flex items-center justify-between p-3 rounded-md border bg-bg-default border-border-ui shadow-sm group cursor-default"
                       >
                         <div className="flex items-center gap-3 min-w-0">
                           <div className="p-1.5 rounded-md bg-white border border-border-ui flex-shrink-0">
@@ -373,45 +296,27 @@ export function DocumentVault({
                             <p className="text-xs font-medium text-text-primary truncate" title={doc.fileName}>
                               {doc.fileName}
                             </p>
-                            <p className="text-[10px] text-text-secondary">
-                              {doc.uploadedAt ? (doc.uploadedAt instanceof Date ? doc.uploadedAt : (doc.uploadedAt as any).toDate()).toLocaleDateString() : 'Unknown date'}
+                            <p className="text-[10px] text-text-secondary flex items-center gap-1.5 mt-0.5">
+                              <span>
+                                {doc.uploadedAt ? (doc.uploadedAt instanceof Date ? doc.uploadedAt : (doc.uploadedAt as any).toDate()).toLocaleDateString() : 'Unknown date'}
+                              </span>
+                              <span className={`text-[9px] font-bold uppercase px-1.5 py-0.2 rounded border ${badgeStyles}`}>
+                                {status}
+                              </span>
                             </p>
                           </div>
                         </div>
                         
                         <div className="flex items-center gap-1 flex-shrink-0">
-                          {/* OCR Status Badge */}
-                          {ocrState?.status === 'processing' && (
-                            <span className="p-1 rounded-full" title="OCR processing">
-                              <Loader2 className="w-3.5 h-3.5 text-amber-500 animate-spin" />
-                            </span>
-                          )}
-                          {ocrState?.status === 'complete' && (
-                            <span className="p-1 rounded-full" title="OCR complete — click to review">
-                              <CheckCircle className="w-3.5 h-3.5 text-pw-success" />
-                            </span>
-                          )}
-                          {ocrState?.status === 'failed' && (
-                            <button
-                              onClick={(e) => { e.stopPropagation(); triggerOcr(doc.id, projectId); }}
-                              className="p-1 rounded-full hover:bg-red-50 transition" 
-                              title="OCR failed — click to retry"
-                            >
-                              <XCircle className="w-3.5 h-3.5 text-red-400" />
-                            </button>
-                          )}
-                          {!ocrState && (
-                            <button
-                              onClick={(e) => { e.stopPropagation(); triggerOcr(doc.id, projectId); }}
-                              className="p-1 rounded-full hover:bg-blue-50 transition opacity-0 group-hover:opacity-100"
-                              title="Run OCR"
-                            >
-                              <RefreshCw className="w-3.5 h-3.5 text-text-secondary" />
-                            </button>
-                          )}
-                          
                           {/* File actions */}
                           <div className="flex items-center gap-0.5 opacity-0 group-hover:opacity-100 transition-opacity">
+                            <button
+                              onClick={(e) => { e.stopPropagation(); handleToggleVerification(doc.id); }}
+                              className={`p-1.5 rounded transition-colors ${doc.verified ? 'hover:bg-amber-50 text-amber-600 hover:text-amber-700' : 'hover:bg-green-50 text-gray-400 hover:text-green-600'}`}
+                              title={doc.verified ? "Mark as Under Review" : "Verify Document"}
+                            >
+                              <CheckCircle className="w-4 h-4" />
+                            </button>
                             {doc.fileUrl && (
                               <a
                                 href={doc.fileUrl}
@@ -434,21 +339,6 @@ export function DocumentVault({
                           </div>
                         </div>
                       </div>
-
-                      {/* OCR Review Panel (expandable) */}
-                      {ocrState?.status === 'complete' && expandedOcr === doc.id && (
-                        <OCRReviewPanel
-                          docId={doc.id}
-                          projectId={projectId}
-                          documentName={doc.fileName}
-                          extractedFields={ocrState.extractedFields}
-                          overallConfidence={ocrState.overallConfidence}
-                          ocrStatus={ocrState.status}
-                          onFieldConfirm={handleOcrFieldConfirm}
-                          onReprocess={handleOcrReprocess}
-                          onBulkConfirm={handleOcrBulkConfirm}
-                        />
-                      )}
                     </div>
                   );
                 })}

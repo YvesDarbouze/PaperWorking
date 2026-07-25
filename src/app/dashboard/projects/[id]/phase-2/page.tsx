@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useEffect, useState, useMemo } from 'react';
-import { useParams } from 'next/navigation';
+import { useParams, useRouter } from 'next/navigation';
 import { projectsService } from '@/lib/firebase/deals';
 import { useWorkspaceProject } from '@/app/dashboard/projects/[id]/layout';
 import { Project, LoanStatus, ClosingChecklistItem, ProjectTeamMember, CostBasisLedger, RoleLinkedDocument, DueDiligenceItem, InspectionItem } from '@/types/schema';
@@ -52,6 +52,7 @@ import { useAuth } from '@/context/AuthContext';
 import toast from 'react-hot-toast';
 import { checkModalityReconciliation, confirmModalityReconciliation, type ReconciliationCheckResult } from '@/actions/modality';
 import FundingSourceTracker from '@/components/evaluation/FundingSourceTracker';
+import { ActivityTimeline } from '@/components/project/ActivityTimeline';
 
 const PHASE_COLOR = '#7A9EAA';    // Fund = blue/secondary
 const PHASE_GLOW  = 'rgba(173, 198, 255, 0.3)';
@@ -92,6 +93,7 @@ const COLUMNS: ColumnDefinition[] = [
       { id: 'F2.3', title: 'Subscription Agreement', description: 'Distribute and track signed partnership agreements.', whyWeAsk: 'Establishes legal equity commit.' },
       { id: 'F2.4', title: 'Contribution Ledger', description: 'Track actual capital deposits and status changes.', whyWeAsk: 'Identifies when equity is fully funded.' },
       { id: 'F2.5', title: 'Title Holding', description: 'Specify TIC or JTWROS and ownership percentages.', whyWeAsk: 'Required for deed recording and vesting.' },
+      { id: 'F2.6', title: 'Deal Activity Timeline', description: 'View deal timeline history, invites, questions, answers, and commitments.', whyWeAsk: 'Provides the Lead Investor and invitees with secure chronological logs of deal interactions.' },
     ],
   },
   {
@@ -143,6 +145,7 @@ const COLUMNS: ColumnDefinition[] = [
 ];
 
 export default function Phase2AcquisitionPage() {
+  const router = useRouter();
   const params    = useParams();
   const projectId = params.id as string;
   const { project, loading: isLoading, refresh } = useWorkspaceProject();
@@ -487,6 +490,24 @@ export default function Phase2AcquisitionPage() {
           </div>
         </section>
 
+        {/* ── Guided Wizard Callout ── */}
+        <section className="glass-card rounded-2xl p-5 border border-[#7A9EAA]/25 bg-[#7A9EAA]/5 flex flex-col sm:flex-row items-center justify-between gap-4">
+          <div className="space-y-1">
+            <h3 className="text-sm font-bold text-white uppercase tracking-wider flex items-center gap-1.5">
+              <span className="material-symbols-outlined text-[16px] text-[#7A9EAA]">task_alt</span> Guided Closing & Funding Wizard
+            </h3>
+            <p className="text-xs text-slate-400">
+              Walk through a step-by-step assistant to structure the capital stack, compile lender terms, verify title escrow/legal counsel, and close the deal.
+            </p>
+          </div>
+          <button
+            onClick={() => router.push(`/dashboard/projects/${projectId}/phase-2/wizard`)}
+            className="px-5 py-2.5 bg-[#7A9EAA] hover:bg-[#7A9EAA]/95 text-black font-extrabold uppercase tracking-wider text-[10px] rounded-xl transition-all shadow-[0_0_12px_rgba(122,158,170,0.2)] shrink-0"
+          >
+            Launch Funding Wizard
+          </button>
+        </section>
+
         {/* ── Kanban Column Grid ── */}
         <section className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-6 gap-4 items-start overflow-x-auto pb-4">
           {COLUMNS.map((col) => {
@@ -693,6 +714,8 @@ export default function Phase2AcquisitionPage() {
                     refresh={refresh}
                     readOnly={!canEdit}
                   />
+                ) : card.id === 'F2.6' ? (
+                  <ActivityTimeline projectId={projectId} />
                 ) : card.id === 'F3.1' ? (
                   <FinancingRouteCard projectId={projectId} />
                 ) : card.id === 'F3.2' ? (
@@ -835,8 +858,8 @@ export default function Phase2AcquisitionPage() {
                 ) : card.id === 'F5.1' ? (
                   <ClosingTimelineCard projectId={projectId} project={project} />
                 ) : card.id === 'F5.2' ? (
-                  <div className="space-y-4 bg-white/[0.01] p-4 rounded-xl border border-white/5">
-                    <h3 className="text-xs font-bold uppercase tracking-wider text-amber-500">OCR Closing Disclosure Fallback</h3>
+                  <div className="space-y-4 bg-white/[0.01] p-4 rounded-xl border border-white/5 font-sans">
+                    <h3 className="text-xs font-bold uppercase tracking-wider text-amber-500">Closing Disclosure Figures</h3>
                     <div className="space-y-3">
                       {[
                         { label: 'Purchase Price', field: 'purchasePrice', value: project.financials?.purchasePrice },

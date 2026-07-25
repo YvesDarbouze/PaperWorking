@@ -127,7 +127,7 @@ export default function RequestQuoteModal({ vendor, isOpen, onClose }: RequestQu
               </div>
               <h3 className="text-3xl font-bold tracking-tight text-pw-black mb-4 uppercase">Transmission Confirmed</h3>
               <p className="text-xs text-pw-muted font-bold max-w-[300px] mx-auto leading-relaxed uppercase tracking-widest mb-12">
-                {vendor.companyName} has been authorized to access the requested data rooms for audit and proposal drafting.
+                {vendor.companyName} has been authorized to access the requested project documents for audit and proposal drafting.
               </p>
               <button 
                 onClick={onClose}

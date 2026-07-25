@@ -13,7 +13,7 @@ const comparisons = [
   {
     category: 'Document Processing',
     manual: { label: '4.5 hrs / deal', detail: 'Manual data entry, scanning, filing' },
-    pw: { label: '12 min / deal', detail: 'AI extraction, auto-routing, digital filing' },
+    pw: { label: '12 min / deal', detail: 'Structured upload, auto-routing, digital filing' },
   },
   {
     category: 'Financial Reconciliation',

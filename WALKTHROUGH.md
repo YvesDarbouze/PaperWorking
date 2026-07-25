@@ -6,6 +6,22 @@ Implemented closing milestones, timeline controls, Closing Disclosure parsing, r
 
 ---
 
+## Core System Architecture & Realities
+
+### CLOSING ROOM
+When a CD is uploaded, it appears in the project's document vault. The user manually enters closing figures (purchase price, title fees, origination fees, prepaids) into the reconciliation form based on the uploaded CD. Cash-To-Close Reconciliation calculates sources versus uses. The Live Variance Bar reflects exact variance based on user-entered figures. Non-zero variance locks escrow until resolved or justified. Users can mark figures as estimates (saved as paid: false, estimated: true).
+
+### DOCUMENT MANAGEMENT
+Documents are uploaded by users and progress through manual review: Uploaded → Under Review → Verified → Archived. Team members review uploaded documents for accuracy and completeness. Lead Investors mark documents as verified after review. All document activity is logged in the audit trail. Documents are scoped to project phases (phase-1 through phase-4).
+
+### SECURITY
+Authentication uses Firebase Admin SDK verifyIdToken() for all production requests. Mock authentication is available ONLY in development when ENABLE_MOCK_AUTH=true. All API routes enforce role-based access control (Lead Investor, Member, Vendor, LP). Tenant isolation is enforced via organizationId filtering on all queries. Vendor principals receive HTTP 404 (not 403) for unauthorized access to prevent structural disclosure. Auth failures are logged to Firestore securityEvents collection and PostHog telemetry.
+
+### FINANCIAL INTEGRITY
+All financial figures require explicit user input or are clearly marked as estimates. The system does not generate phantom data for empty portfolios. Empty portfolios show honest empty states with CTAs to add the first deal. Closing figures must be provided explicitly; estimates are flagged as estimated: true and paid: false. AVM ranges show low/high confidence bounds, not single point values.
+
+---
+
 ## Part 1 — Closing Timeline & Slippage Controls (Cards F5.1 & F5.2)
 
 1. **Modality Presets**: Automatically instantiates milestone lists from three templates:
@@ -37,12 +53,11 @@ Implemented closing milestones, timeline controls, Closing Disclosure parsing, r
 
 1. **Document Review Button**: Once a CD document is uploaded, a "Review & Capture" action button appears next to the "PDF Attached" badge.
 2. **Split-View Canvas Layout**:
-   - **Left Column**: Displays the uploaded file details and a visual document preview. Features a **Run Gemini AI OCR Scan** button.
-   - **Right Column**: Displays the data capture form (Final Closing Costs, Cash to Close, Prepaids & Reserves).
-3. **Interactive AI Extraction (Gemini OCR)**:
-   - Calls the backend OCR route `/api/ocr/settlement` with the uploaded document URL to automatically parse final closing costs.
-   - Computes prepaids/reserves and cash-to-close estimates automatically from the extracted settlement data.
-   - Gracefully falls back to deal-specific underwriting estimates if the scan fails or the Gemini API is not configured, ensuring zero runtime disruptions.
+   - **Left Column**: Displays the uploaded file details and a visual document preview.
+   - **Right Column**: Displays the data capture form (Final Closing Costs, Cash to Close, Prepaids & Reserves) with instructions for manual entry from the Closing Disclosure.
+3. **Data Capture & Fallbacks**:
+   - Computes prepaids/reserves and cash-to-close estimates automatically from the manually entered settlement data.
+   - Gracefully falls back to deal-specific underwriting estimates if no values have been entered manually, ensuring zero runtime disruptions.
 4. **Source Attribution & Audit Trails**:
    - Each input is explicitly tagged with `Source: CD Document`.
    - Attributes capture timestamp, operator user ID, and operator displayName directly to the `closingRoom` record inside Firestore, creating a permanent audit trail.
@@ -82,8 +97,8 @@ Implemented closing milestones, timeline controls, Closing Disclosure parsing, r
 2. **Disbursement & Recording Confirmation**:
    - Logs disbursement state with the settlement statement as evidence.
    - Records county, filing date, and instrument number for deed recording confirmation.
-3. **Data Room Archiving & Phase Transition**:
-   - Automatically archives the executed package inside the project's `'Under Contract'` Data Room folder.
+3. **Document Archiving & Phase Transition**:
+   - Automatically archives the executed package inside the project's phase-scoped document vault.
    - Advances project state to **Phase 3 (Hold)** with the status set to `'hold'` and phase status to `'Phase 3: Hold'`.
 
 ---

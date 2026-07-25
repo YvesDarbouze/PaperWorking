@@ -213,10 +213,13 @@ export const NotificationService = {
         body = (objectReference.metadata?.body as string) || `${actorName} sent a negotiation update for the deal at ${address}.`;
         break;
       case 'LENDER_CHECKLIST_REMINDER':
-        body = `The customary underwriting document '${documentName}' is still pending upload. Please check the Lender Vault and upload it to the Data Room.`;
+        body = `The customary underwriting document '${documentName}' is still pending upload. Please check the Lender Vault and upload it to the Project Files.`;
         break;
       case 'SLIPPAGE_DETECTED':
         body = `Slippage Alert: Milestone '${task}' is past its target date without completion. Customary delays are frequently caused by underwriting backlogs, title defects, or repair negotiations.`;
+        break;
+      case 'DEAL_MATERIAL_CHANGE':
+        body = `The deal at ${address} has been edited. The following changes are material: ${task || 'details updated'}. Please review the updated terms.`;
         break;
       default:
         body = `A system event has occurred on ${address}.`;
@@ -266,6 +269,23 @@ export const NotificationService = {
       console.error('[NotificationService] Failed to fetch recipient user doc:', err);
     }
     const userData = userDoc?.exists ? userDoc.data() : null;
+
+    if (userData && (userData.role === 'Vendor' || userData.accountType === 'vendor')) {
+      const isDealRelated = type === 'INVEST_INVITE' || 
+                            type === 'RECEIPT_APPROVAL' ||
+                            type === 'BURN_RATE_WARNING' ||
+                            type === 'OVER_IMPROVEMENT_ALERT' ||
+                            type === 'VENDOR_BID' ||
+                            type === 'DEAL_MATERIAL_CHANGE' ||
+                            type === 'LENDER_CHECKLIST_REMINDER' ||
+                            type === 'SLIPPAGE_DETECTED' ||
+                            !!objectReference.projectId ||
+                            !!objectReference.dealAddress;
+      if (isDealRelated) {
+        console.log(`[NotificationService] Suppressing deal-related notification ${type} for Vendor ${recipientId}`);
+        return `skipped_vendor_block_${Date.now()}`;
+      }
+    }
 
     // Resolve user activity offline state (lastActiveAt > 5m ago)
     let isOffline = true;

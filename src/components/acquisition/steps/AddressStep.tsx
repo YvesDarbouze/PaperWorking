@@ -20,7 +20,7 @@ function useDebounce<T>(value: T, ms: number): T {
 }
 
 export function AddressStep({ onNext }: { onNext: () => void }) {
-  const { address, setAddress } = useAcquisitionWizard();
+  const { address, setAddress, setProjectName } = useAcquisitionWizard();
 
   const [query,       setQuery]       = useState(address.formattedAddress ?? "");
   const [suggestions, setSuggestions] = useState<AddressSuggestion[]>([]);
@@ -30,16 +30,6 @@ export function AddressStep({ onNext }: { onNext: () => void }) {
     address.placeId ? (address as AddressSuggestion) : null,
   );
   
-  // Target details states
-  const [displayName, setDisplayName] = useState(address.displayName ?? "");
-  const [apn,         setApn]         = useState(address.apn ?? "");
-  const [propertyType, setPropertyType] = useState(address.propertyType || "Single Family");
-  const [units,       setUnits]       = useState(address.units ? address.units.toString() : "1");
-  const [sqft,        setSqft]        = useState(address.sqft ? address.sqft.toString() : "");
-  const [lotSqft,     setLotSqft]     = useState(address.lotSqft ? address.lotSqft.toString() : "");
-  const [yearBuilt,   setYearBuilt]   = useState(address.yearBuilt ? address.yearBuilt.toString() : "");
-  const [condition,   setCondition]   = useState(address.condition || "turnkey");
-
   // Manual entry toggle states
   const [useManual,   setUseManual]   = useState(false);
   const [manualAddressLine, setManualAddressLine] = useState("");
@@ -92,7 +82,6 @@ export function AddressStep({ onNext }: { onNext: () => void }) {
   const handleSelect = useCallback(async (s: AddressSuggestion) => {
     setSelected(s);
     setQuery(s.formattedAddress);
-    setDisplayName(s.components.addressLine);
     setOpen(false);
     setSuggestions([]);
     
@@ -106,10 +95,8 @@ export function AddressStep({ onNext }: { onNext: () => void }) {
       zip:              s.components.zip,
       lat:              s.lat,
       lng:              s.lng,
-      propertyType:     address.propertyType || "Single Family",
-      units:            address.units || 1,
-      condition:        address.condition || "turnkey",
     });
+    setProjectName(s.components.addressLine);
 
     // Hydrate lat/lng and precise components from the details endpoint
     if (defaultAddressProvider.getDetails) {
@@ -127,27 +114,15 @@ export function AddressStep({ onNext }: { onNext: () => void }) {
         // Non-fatal — optimistic values from autocomplete text remain
       }
     }
-  }, [setAddress]);
+  }, [setAddress, setProjectName]);
 
   const handleClear = useCallback(() => {
     setSelected(null);
     setQuery("");
-    setDisplayName("");
-    setApn("");
-    setPropertyType("");
-    setUnits("");
-    setSqft("");
-    setLotSqft("");
-    setYearBuilt("");
-    setCondition("");
     setSuggestions([]);
     setAddress({});
-  }, [setAddress]);
-
-  const handleDisplayNameChange = useCallback((val: string) => {
-    setDisplayName(val);
-    setAddress({ displayName: val });
-  }, [setAddress]);
+    setProjectName("");
+  }, [setAddress, setProjectName]);
 
   const handleConfirmManualAddress = useCallback(() => {
     if (!manualAddressLine.trim() || !manualCity.trim() || !manualState || !manualZip.trim()) return;
@@ -166,7 +141,6 @@ export function AddressStep({ onNext }: { onNext: () => void }) {
       }
     };
     setSelected(s);
-    setDisplayName(manualAddressLine.trim());
     setAddress({
       placeId: s.placeId,
       formattedAddress: s.formattedAddress,
@@ -177,17 +151,15 @@ export function AddressStep({ onNext }: { onNext: () => void }) {
       zip: s.components.zip,
       lat: s.lat,
       lng: s.lng,
-      propertyType: address.propertyType || "Single Family",
-      units: address.units || 1,
-      condition: address.condition || "turnkey",
     });
-  }, [manualAddressLine, manualCity, manualState, manualZip, setAddress]);
+    setProjectName(manualAddressLine.trim());
+  }, [manualAddressLine, manualCity, manualState, manualZip, setAddress, setProjectName]);
 
-  // canAdvance logic: Address resolved & required details filled
-  const canAdvance = !!selected && !!displayName.trim() && !!propertyType && !!units.trim() && !!condition;
+  // canAdvance logic: Address resolved
+  const canAdvance = !!selected;
 
   return (
-    <div className="flex flex-col gap-8 max-w-[560px] w-full mx-auto">
+    <div className="flex flex-col gap-8 max-w-[560px] w-full mx-auto animate-fade-in">
       {/* Heading */}
       <div>
         <h2
@@ -402,147 +374,11 @@ export function AddressStep({ onNext }: { onNext: () => void }) {
               </span>
             </button>
           </div>
-
-          {/* Target Details Secondary Form (AQ-4) */}
-          <div className="space-y-4 p-5 rounded-xl border border-white/5 bg-white/[0.01]">
-            <div className="flex items-center gap-2 mb-2 pb-2 border-b border-white/5">
-              <span className="material-symbols-outlined text-[18px] text-[#454955]">info</span>
-              <h3 className="text-xs font-bold uppercase tracking-wider text-white">Target Details</h3>
-            </div>
-
-            <div className="space-y-2">
-              <label className="block text-[10px] font-bold uppercase tracking-widest text-[#9E9DA0]">Project Name *</label>
-              <input
-                id="deal-name-input"
-                className="w-full rounded-lg px-3 py-2 text-xs bg-[#241e26] border border-white/10 text-white focus:outline-none focus:border-[#454955]"
-                value={displayName}
-                onChange={(e) => handleDisplayNameChange(e.target.value)}
-                placeholder="e.g. Brooklyn Heights Victorian"
-              />
-            </div>
-
-            <div className="grid grid-cols-2 gap-4">
-              <div>
-                <label className="block text-[10px] font-bold uppercase tracking-widest text-[#9E9DA0] mb-1">APN (Assessor's Parcel Number)</label>
-                <input
-                  type="text"
-                  value={apn}
-                  onChange={(e) => {
-                    setApn(e.target.value);
-                    setAddress({ apn: e.target.value });
-                  }}
-                  className="w-full rounded-lg px-3 py-2 text-xs bg-[#241e26] border border-white/10 text-white focus:outline-none focus:border-[#454955] font-mono"
-                  placeholder="e.g. 123-45-678"
-                />
-              </div>
-              <div>
-                <label className="block text-[10px] font-bold uppercase tracking-widest text-[#9E9DA0] mb-1">Property Type *</label>
-                <select
-                  value={propertyType}
-                  onChange={(e) => {
-                    setPropertyType(e.target.value);
-                    setAddress({ propertyType: e.target.value });
-                  }}
-                  className="w-full rounded-lg px-3 py-2 text-xs bg-[#241e26] border border-white/10 text-white focus:outline-none focus:border-[#454955]"
-                >
-                  <option value="">Select type...</option>
-                  <option value="Single Family">Single Family</option>
-                  <option value="Multi Family">Multi Family</option>
-                  <option value="Condo">Condo</option>
-                  <option value="Townhouse">Townhouse</option>
-                  <option value="Multi-Family 2-4 Units">Multi-Family 2-4 Units</option>
-                  <option value="Multi-Family 5+ Units">Multi-Family 5+ Units</option>
-                  <option value="Commercial">Commercial</option>
-                  <option value="Land">Land</option>
-                </select>
-              </div>
-            </div>
-
-            <div className="grid grid-cols-3 gap-3">
-              <div>
-                <label className="block text-[10px] font-bold uppercase tracking-widest text-[#9E9DA0] mb-1">Units *</label>
-                <input
-                  type="number"
-                  value={units}
-                  onChange={(e) => {
-                    const val = e.target.value ? parseInt(e.target.value, 10) : undefined;
-                    setUnits(e.target.value);
-                    setAddress({ units: val });
-                  }}
-                  className="w-full rounded-lg px-3 py-2 text-xs bg-[#241e26] border border-white/10 text-white focus:outline-none focus:border-[#454955] font-mono"
-                  placeholder="e.g. 1"
-                />
-              </div>
-              <div>
-                <label className="block text-[10px] font-bold uppercase tracking-widest text-[#9E9DA0] mb-1">Sqft</label>
-                <input
-                  type="number"
-                  value={sqft}
-                  onChange={(e) => {
-                    const val = e.target.value ? parseInt(e.target.value, 10) : undefined;
-                    setSqft(e.target.value);
-                    setAddress({ sqft: val });
-                  }}
-                  className="w-full rounded-lg px-3 py-2 text-xs bg-[#241e26] border border-white/10 text-white focus:outline-none focus:border-[#454955] font-mono"
-                  placeholder="e.g. 1500"
-                />
-              </div>
-              <div>
-                <label className="block text-[10px] font-bold uppercase tracking-widest text-[#9E9DA0] mb-1">Lot Size (Sqft)</label>
-                <input
-                  type="number"
-                  value={lotSqft}
-                  onChange={(e) => {
-                    const val = e.target.value ? parseInt(e.target.value, 10) : undefined;
-                    setLotSqft(e.target.value);
-                    setAddress({ lotSqft: val });
-                  }}
-                  className="w-full rounded-lg px-3 py-2 text-xs bg-[#241e26] border border-white/10 text-white focus:outline-none focus:border-[#454955] font-mono"
-                  placeholder="e.g. 5000"
-                />
-              </div>
-            </div>
-
-            <div className="grid grid-cols-2 gap-4">
-              <div>
-                <label className="block text-[10px] font-bold uppercase tracking-widest text-[#9E9DA0] mb-1">Year Built</label>
-                <input
-                  type="number"
-                  value={yearBuilt}
-                  onChange={(e) => {
-                    const val = e.target.value ? parseInt(e.target.value, 10) : undefined;
-                    setYearBuilt(e.target.value);
-                    setAddress({ yearBuilt: val });
-                  }}
-                  className="w-full rounded-lg px-3 py-2 text-xs bg-[#241e26] border border-white/10 text-white focus:outline-none focus:border-[#454955] font-mono"
-                  placeholder="e.g. 1950"
-                />
-              </div>
-              <div>
-                <label className="block text-[10px] font-bold uppercase tracking-widest text-[#9E9DA0] mb-1">Condition *</label>
-                <select
-                  value={condition}
-                  onChange={(e) => {
-                    setCondition(e.target.value);
-                    setAddress({ condition: e.target.value });
-                  }}
-                  className="w-full rounded-lg px-3 py-2 text-xs bg-[#241e26] border border-white/10 text-white focus:outline-none focus:border-[#454955]"
-                >
-                  <option value="">Select condition...</option>
-                  <option value="turnkey">Turnkey</option>
-                  <option value="rehab">Rehab</option>
-                  <option value="gut">Gut</option>
-                  <option value="rehab-light">Rehab Light</option>
-                  <option value="rehab-heavy">Rehab Heavy</option>
-                </select>
-              </div>
-            </div>
-          </div>
         </div>
       )}
 
-      {/* Next */}
-      <div className="flex justify-end pt-2">
+      {/* Continue */}
+      <div className="flex justify-end pt-2 border-t border-white/5">
         <button
           disabled={!canAdvance}
           onClick={onNext}
@@ -556,6 +392,16 @@ export function AddressStep({ onNext }: { onNext: () => void }) {
           Continue
           <span className="material-symbols-outlined text-[18px]">arrow_forward</span>
         </button>
+      </div>
+
+      {/* Why We Ask Rationale */}
+      <div className="mt-8 p-4 rounded-xl bg-surface-container-low border border-pw-border/50">
+        <p className="text-xs font-semibold text-amber-500 mb-1 flex items-center gap-1.5">
+          <span className="material-symbols-outlined text-sm">help</span> Why we ask
+        </p>
+        <p className="text-xs text-[var(--color-muted)] leading-relaxed">
+          We need the exact address to resolve property details, check local zoning, and cache geographic coordinates for map alignment.
+        </p>
       </div>
     </div>
   );

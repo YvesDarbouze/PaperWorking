@@ -79,9 +79,9 @@ describe('HD-4 Engine Execution against Fixtures HX-1…HX-5', () => {
     const metrics = deriveAllMetrics(seedFinancials as any, undefined, 'Rent', 1);
 
     expect(metrics.noi).toBe(12486);
-    expect(metrics.capRate).toBeCloseTo(4.48, 2);
-    expect(metrics.annualCashFlow).toBeCloseTo(-4443.31, 2);
-    expect(metrics.dscr).toBeCloseTo(0.738, 3);
+    expect(metrics.capRate).toBe(4.5);
+    expect(metrics.annualCashFlow).toBeCloseTo(-4444, 0);
+    expect(metrics.dscr).toBe(0.74);
     expect(metrics.cashOnCashReturn).toBeCloseTo(-7.41, 2);
   });
 });

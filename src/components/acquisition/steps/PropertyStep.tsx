@@ -7,6 +7,7 @@ import { useState, useMemo } from "react";
 import { MarketContextPanel } from "@/components/project/MarketContextPanel";
 import { deriveAllMetrics } from "@/lib/metrics/reiMetrics";
 import { ProjectFinancials } from "@/types/schema";
+import { AVMRangeDisplay } from "@/components/project/AVMRangeDisplay";
 
 // ─── API helpers ──────────────────────────────────────────────────────────────
 
@@ -361,9 +362,10 @@ export function PropertyStep({ onNext }: { onNext: () => void }) {
           ))}
         </div>
 
-        {/* Provenance and Disclaimer Badges */}
-        {!loading && (facts?.taxSource || facts?.avmPriceCents) && (
-          <div className="flex flex-col gap-2 mt-3">
+        {!loading && (
+          <div className="mt-4 space-y-4">
+            <AVMRangeDisplay facts={facts} />
+
             {facts?.taxSource && facts?.annualPropertyTaxCents && (
               <div
                 className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg w-fit"
@@ -374,17 +376,6 @@ export function PropertyStep({ onNext }: { onNext: () => void }) {
                   Tax data sourced from <span className="font-semibold capitalize">{facts.taxSource}</span>
                   {facts.taxYear ? ` (${facts.taxYear})` : ""}
                   {" · "}Used as underwriting default
-                </span>
-              </div>
-            )}
-            {facts?.avmPriceCents && (
-              <div
-                className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg w-fit"
-                style={{ background: "rgba(69,73,85,0.08)", border: "1px solid rgba(69,73,85,0.12)" }}
-              >
-                <span className="material-symbols-outlined text-[12px]" style={{ color: "rgba(253,255,252,0.3)" }}>info</span>
-                <span className="text-[10px]" style={{ color: "rgba(253,255,252,0.35)" }}>
-                  AVM Value is an automated estimate, not a professional appraisal. Sourced from RentCast AVM.
                 </span>
               </div>
             )}

@@ -122,69 +122,91 @@ export default function DealTeaserView({ teaser }: DealTeaserViewProps) {
         </div>
       )}
 
-      {/* ── Blurred/Locked Sections ── */}
-      <div className="space-y-4">
-        {/* Blurred terms */}
-        <div className="glass-card rounded-2xl border border-pw-border p-6 relative overflow-hidden">
-          <div className="absolute inset-0 backdrop-blur-md bg-[var(--color-surface)]/60 z-10 flex items-center justify-center">
-            <div className="text-center space-y-2">
-              <span className="material-symbols-outlined text-3xl text-[var(--color-muted)]">
-                lock
-              </span>
-              <p className="text-sm font-medium text-[var(--color-muted)]">
-                Full terms available to subscribers
-              </p>
-            </div>
-          </div>
-          {/* Placeholder content behind blur */}
-          <div className="opacity-30">
-            <h2 className="text-sm font-bold uppercase tracking-[0.06em] text-[var(--color-muted)] mb-4">
-              Equity Terms
-            </h2>
-            <div className="grid grid-cols-4 gap-6">
-              {['Funding Target', 'Equity Offered', 'Min. Ticket', 'Price Basis'].map((l) => (
-                <div key={l}>
-                  <p className="text-[10px] uppercase tracking-[0.06em] text-[var(--color-muted)] mb-1">
-                    {l}
-                  </p>
-                  <div className="h-6 bg-[var(--color-muted)]/20 rounded w-20" />
-                </div>
-              ))}
-            </div>
-          </div>
-        </div>
+      {/* ── Google Paywall/Subscription Structured Data (G-5 / DM-41 compliance) ── */}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify({
+            '@context': 'https://schema.org',
+            '@type': 'WebPage',
+            'name': teaser.propertyName || 'Deal Listing',
+            'description': `${teaser.propertyName || 'Deal'} in ${teaser.neighborhood || 'neighborhood'} is listed on PaperWorking.`,
+            'isAccessibleForFree': false,
+            'hasPart': {
+              '@type': 'WebPageElement',
+              'isAccessibleForFree': false,
+              'cssSelector': '.paywall-gate',
+            },
+          }),
+        }}
+      />
 
-        {/* Blurred investor profile */}
-        <div className="glass-card rounded-2xl border border-pw-border p-6 relative overflow-hidden">
-          <div className="absolute inset-0 backdrop-blur-md bg-[var(--color-surface)]/60 z-10 flex items-center justify-center">
-            <div className="text-center space-y-2">
-              <span className="material-symbols-outlined text-3xl text-[var(--color-muted)]">
-                person_off
-              </span>
-              <p className="text-sm font-medium text-[var(--color-muted)]">
-                Investor profile available to subscribers
-              </p>
+      {/* ── Gated Container for Paywall Structured Data ── */}
+      <div className="paywall-gate">
+        {/* ── Blurred/Locked Sections ── */}
+        <div className="space-y-4">
+          {/* Blurred terms */}
+          <div className="glass-card rounded-2xl border border-pw-border p-6 relative overflow-hidden">
+            <div className="absolute inset-0 backdrop-blur-md bg-[var(--color-surface)]/60 z-10 flex items-center justify-center">
+              <div className="text-center space-y-2">
+                <span className="material-symbols-outlined text-3xl text-[var(--color-muted)]">
+                  lock
+                </span>
+                <p className="text-sm font-medium text-[var(--color-muted)]">
+                  Full terms available to subscribers
+                </p>
+              </div>
+            </div>
+            {/* Placeholder content behind blur */}
+            <div className="opacity-30">
+              <h2 className="text-sm font-bold uppercase tracking-[0.06em] text-[var(--color-muted)] mb-4">
+                Equity Terms
+              </h2>
+              <div className="grid grid-cols-4 gap-6">
+                {['Funding Target', 'Equity Offered', 'Min. Ticket', 'Price Basis'].map((l) => (
+                  <div key={l}>
+                    <p className="text-[10px] uppercase tracking-[0.06em] text-[var(--color-muted)] mb-1">
+                      {l}
+                    </p>
+                    <div className="h-6 bg-[var(--color-muted)]/20 rounded w-20" />
+                  </div>
+                ))}
+              </div>
             </div>
           </div>
-          <div className="opacity-30">
-            <h2 className="text-sm font-bold uppercase tracking-[0.06em] text-[var(--color-muted)] mb-4">
-              Lead Investor
-            </h2>
-            <div className="flex items-center gap-4">
-              <div className="w-14 h-14 rounded-full bg-[var(--color-muted)]/10" />
-              <div className="space-y-2 flex-1">
-                <p className="text-base font-bold text-[var(--color-on-surface)]">
-                  {teaser.leadInvestorName}
+
+          {/* Blurred investor profile */}
+          <div className="glass-card rounded-2xl border border-pw-border p-6 relative overflow-hidden">
+            <div className="absolute inset-0 backdrop-blur-md bg-[var(--color-surface)]/60 z-10 flex items-center justify-center">
+              <div className="text-center space-y-2">
+                <span className="material-symbols-outlined text-3xl text-[var(--color-muted)]">
+                  person_off
+                </span>
+                <p className="text-sm font-medium text-[var(--color-muted)]">
+                  Investor profile available to subscribers
                 </p>
-                <div className="h-4 bg-[var(--color-muted)]/20 rounded w-3/4" />
+              </div>
+            </div>
+            <div className="opacity-30">
+              <h2 className="text-sm font-bold uppercase tracking-[0.06em] text-[var(--color-muted)] mb-4">
+                Lead Investor
+              </h2>
+              <div className="flex items-center gap-4">
+                <div className="w-14 h-14 rounded-full bg-[var(--color-muted)]/10" />
+                <div className="space-y-2 flex-1">
+                  <p className="text-base font-bold text-[var(--color-on-surface)]">
+                    {teaser.leadInvestorName}
+                  </p>
+                  <div className="h-4 bg-[var(--color-muted)]/20 rounded w-3/4" />
+                </div>
               </div>
             </div>
           </div>
         </div>
-      </div>
 
-      {/* ── Subscribe CTA ── */}
-      <SubscribeCTA />
+        {/* ── Subscribe CTA ── */}
+        <SubscribeCTA />
+      </div>
 
       {/* ── Footer Counters ── */}
       <div className="flex items-center justify-center gap-6 text-xs text-[var(--color-muted)]">
@@ -196,6 +218,19 @@ export default function DealTeaserView({ teaser }: DealTeaserViewProps) {
           <span className="material-symbols-outlined text-sm">visibility</span>
           {teaser.viewCount} views
         </span>
+      </div>
+
+      {/* ── Takedown / Report Link ── */}
+      <div className="text-center mt-6">
+        <a
+          href={`/takedown?listingId=${teaser.id}&address=${encodeURIComponent(
+            (teaser.propertyName || 'Property') + ', ' + (teaser.neighborhood || '')
+          )}`}
+          className="text-xs text-[var(--color-muted)] hover:text-red-500 hover:underline transition-colors inline-flex items-center gap-1"
+        >
+          <span className="material-symbols-outlined text-sm" style={{ fontSize: '14px' }}>gavel</span>
+          Property owner? File a takedown report
+        </a>
       </div>
     </div>
   );

@@ -427,6 +427,86 @@ export async function setupMocks(page: Page, state: MockState, options?: { allow
     });
   });
 
+  // 6.5 Mock Invitations endpoints for Guest Portal and walkthroughs
+  await page.route(/\/api\/invitations\/([^\/]+)$/, async (route) => {
+    const parsedUrl = new URL(route.request().url());
+    const token = parsedUrl.pathname.split('/').pop() || '';
+    const method = route.request().method();
+
+    if (method === 'GET') {
+      await route.fulfill({
+        status: 200,
+        json: {
+          investorName: 'Test Invitee',
+          investorEmail: 'sub@paperworking.com',
+          dealName: 'Syndication Estate',
+          propertyAddress: '100 Ocean Drive, Miami, FL',
+          strategy: 'Value-Add',
+          assetClass: 'Residential',
+          opportunitySummary: 'A solid real estate investment opportunity.',
+          purchasePrice: 500000,
+          estimatedARV: 600000,
+          expectedROI: 12.5,
+          investmentAmount: 50000,
+          equitySplit: 10,
+          interestRate: 6.5,
+          termMonths: 120,
+          legalEntity: 'Miami Syndication LLC',
+          raiseTarget: 100000,
+          raiseRaised: 25000,
+          raisePercentage: 25,
+          daysLeft: 14,
+          hoursLeft: 12,
+          noiHistory: [],
+          capRateHistory: [],
+          cashFlowHistory: [],
+          burnRateHistory: [],
+          expiresAt: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString(),
+          status: token === 'invite_token_decline' ? 'declined' : 'pending',
+          commitmentStatus: 'pending',
+          commitmentId: null,
+          subscriptionAgreementTemplate: null,
+          projectId: 'project_j2_deal',
+          inquiries: [],
+          cardExchangeStatus: 'none',
+          inviteeBusinessCard: null,
+          sponsorBusinessCard: null,
+          indication: null,
+        },
+      });
+    } else {
+      await route.continue();
+    }
+  });
+
+  await page.route(/\/api\/invitations\/([^\/]+)\/updates$/, async (route) => {
+    await route.fulfill({
+      status: 200,
+      json: { success: true, updates: [] },
+    });
+  });
+
+  await page.route(/\/api\/invitations\/([^\/]+)\/ask$/, async (route) => {
+    await route.fulfill({
+      status: 200,
+      json: { success: true, inquiry: { id: 'inq_123', status: 'pending', messages: [] } },
+    });
+  });
+
+  await page.route(/\/api\/invitations\/([^\/]+)\/subscription$/, async (route) => {
+    await route.fulfill({
+      status: 200,
+      json: { success: true },
+    });
+  });
+
+  await page.route(/\/api\/invitations\/respond$/, async (route) => {
+    await route.fulfill({
+      status: 200,
+      json: { success: true },
+    });
+  });
+
   // 7. Mock Vendor workflows
   await page.route('/api/vendors/quote', async (route) => {
     const body = route.request().postDataJSON() || {};

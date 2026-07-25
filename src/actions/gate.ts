@@ -4,9 +4,13 @@ import { adminAuth, adminDb } from '@/lib/firebase/admin';
 import { FieldValue } from 'firebase-admin/firestore';
 import { RISK_SCALE_CONFIG, scoreFromBands } from '@/lib/metrics/riskScaleConfig';
 import { closeListing } from './listings';
+import { getScorecardInputsHash as computeScorecardInputsHash } from '@/lib/utils/scorecardHash';
+
+export async function getScorecardInputsHash(project: any): Promise<string> {
+  return computeScorecardInputsHash(project);
+}
 
 interface VerifiedUser {
-  uid: string;
   role: string;
   organizationId: string;
   accountType?: string;
@@ -23,45 +27,14 @@ async function verifyActionAuth(idToken: string): Promise<VerifiedUser> {
     const userSnap = await userDocRef.get();
     if (!userSnap.exists) throw new Error('User profile not found in database.');
     const userData = userSnap.data() as Record<string, unknown>;
-    return { uid: decodedToken.uid, ...userData } as VerifiedUser;
+    return { uid: decodedToken.uid, ...userData } as unknown as VerifiedUser;
   } catch (err) {
     console.error('Server Action Auth Error:', err);
     throw new Error('Unauthorized');
   }
 }
 
-export function getScorecardInputsHash(project: any): string {
-  if (!project) return '';
-  const f = (project.financials || {}) as any;
-  const values = [
-    f.purchasePrice ?? 0,
-    f.listedPrice ?? 0,
-    f.projectedRehabCost ?? 0,
-    f.estimatedARV ?? 0,
-    f.arv ?? 0,
-    f.targetCapRate ?? 0,
-    f.targetCoc ?? f.targetCoCReturn ?? 0,
-    f.minDscr ?? f.targetMinDSCR ?? 0,
-    f.maxPurchasePrice ?? f.targetMaxPurchasePrice ?? 0,
-    f.gross_rent_per_unit ?? f.monthlyGrossRent ?? f.grossRent ?? 0,
-    f.vacancy_pct ?? f.vacancyRatePercent ?? f.vacancyRate ?? 0,
-    f.other_income ?? f.otherIncome ?? 0,
-    f.tax ?? f.taxes ?? 0,
-    f.insurance ?? 0,
-    f.utilities ?? 0,
-    f.management ?? 0,
-    f.management_pct ?? 0,
-    f.maintenance ?? 0,
-    f.maintenance_pct ?? f.monthlyMaintenanceReserve ?? 0,
-    f.otherExpenses ?? 0,
-    f.downPaymentPercent ?? 0,
-    f.loanInterestRate ?? f.interestRate ?? 0,
-    f.loanTermYears ?? 0,
-    project.dispositionType || '',
-    project.subStrategy || '',
-  ];
-  return values.join('|');
-}
+
 
 /**
  * Live evaluation of all 8 checklist criteria for Acquisition -> Fund transition.
@@ -74,6 +47,15 @@ export async function evaluateAcquisitionGate(idToken: string, projectId: string
   if (!projectSnap.exists) throw new Error('Project not found.');
   const project = projectSnap.data()!;
   const financials = project.financials || {};
+
+  const filesSnap = await adminDb.collection('projectFiles')
+    .where('projectId', '==', projectId)
+    .where('phase', '==', 'phase-1')
+    .get();
+  const phase1Files = filesSnap.docs.map(doc => doc.data());
+  const hasPSAAttachment = phase1Files.some(
+    d => d.category === 'Purchase Agreement'
+  );
 
   const commitmentsSnap = await projectRef.collection('commitments').get();
   const commitmentsCents = (commitmentsSnap?.docs || [])
@@ -122,7 +104,7 @@ export async function evaluateAcquisitionGate(idToken: string, projectId: string
     financials.holdingCostTaxes !== undefined ||
     financials.operatingExpenseTaxes !== undefined
   );
-  const hash = getScorecardInputsHash(project);
+  const hash = computeScorecardInputsHash(project);
   const scorecardAcknowledged = !!financials.scorecardAcknowledged && financials.acknowledgedInputsHash === hash;
   const hasUnderwritingComplete = incomeEntered && expensesEntered && rehabOk && arvOk && scorecardAcknowledged;
 
@@ -130,13 +112,13 @@ export async function evaluateAcquisitionGate(idToken: string, projectId: string
   const hasStrategyDeclared = !!project.dispositionType;
 
   // 4. Offer accepted at known terms: accepted_price + executed contract recorded
-  const hasAcceptedOffer = financials.offerStatus === 'Accepted' && (financials.purchasePrice > 0 || financials.finalAgreedPrice > 0 || financials.renegotiatedPrice > 0) && !!(financials.psaDocumentUrl || financials.psaDocumentName);
+  const hasAcceptedOffer = financials.offerStatus === 'Accepted' && (financials.purchasePrice > 0 || financials.finalAgreedPrice > 0 || financials.renegotiatedPrice > 0) && (hasPSAAttachment || !!(financials.psaDocumentUrl || financials.psaDocumentName));
 
   // 5. Earnest money recorded
   const hasEarnestMoneyRecorded = !!(financials.emdAmount && financials.emdAmount > 0) && !!(financials.emdReceiptUrl || financials.emdClearedDate || financials.emdVerified);
 
   // 6. Required diligence documents for the property type on file
-  const hasRequiredDocs = !!(financials.psaDocumentUrl || financials.psaDocumentName) &&
+  const hasRequiredDocs = (hasPSAAttachment || !!(financials.psaDocumentUrl || financials.psaDocumentName)) &&
     (!!(financials.titleDocumentUrl || financials.titleDocumentName) || !!(financials.inspectionReportUrl || financials.inspectionReportName || financials.inspections?.length));
 
   // 7. All contingencies satisfied/waived, and a "proceed" decision recorded
@@ -172,7 +154,7 @@ export async function evaluateAcquisitionGate(idToken: string, projectId: string
 
 /**
  * Server action to advance a project's phase gate from Acquisition (Phase 1) to Fund (Phase 2).
- * Evaluates risk score, bundles the dossier in the Data Room, and closes the active listing.
+ * Evaluates risk score, bundles the dossier in the Project Files, and closes the active listing.
  */
 export async function advanceProjectPhaseGate(
   idToken: string,
@@ -296,7 +278,7 @@ export async function advanceProjectPhaseGate(
     // Composite
     const riskScore = Number(((financialScore + marketScore + operationalScore + complianceScore) / 4).toFixed(2));
 
-    // 2. Dossier Auto-Bundling to Data Room (projects/{projectId}/documents)
+    // 2. Dossier Auto-Bundling to Project Files (projects/{projectId}/documents)
     const documentsColRef = projectRef.collection('documents');
 
     const dossierDocs: Array<{ category: string; fileName: string; fileUrl?: string; notes?: string }> = [];

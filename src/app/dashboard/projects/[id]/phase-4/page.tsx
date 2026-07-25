@@ -200,7 +200,7 @@ export default function Phase4WorkspacePage() {
   }, [localProject, project, liveMetrics]);
 
   /* ── Realized state detection ── */
-  const isRealized = !!((project as any)?.reiStatus === 'realized' || (project?.financials as any)?.exitRealized);
+  const isRealized = !!((project as any)?.reiStatus === 'realized' || (project?.financials as any)?.exitRealized || project?.status?.toLowerCase() === 'exited');
   const closedAtDate = (project as any)?.closedAt
     ? new Date((project as any).closedAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })
     : null;
@@ -531,6 +531,24 @@ export default function Phase4WorkspacePage() {
           Workspace Body — Luminous Glass Layout
           ═══════════════════════════════════════════════════════ */}
       <main className="max-w-[1280px] mx-auto px-5 md:px-10 py-10 space-y-8">
+
+        {/* ── Guided Exit Wizard CTA Callout ── */}
+        <section className="glass-card rounded-2xl p-5 border border-[#7A9EAA]/25 bg-[#7A9EAA]/5 flex flex-col sm:flex-row items-center justify-between gap-4">
+          <div className="space-y-1 text-left">
+            <h3 className="text-sm font-bold text-white uppercase tracking-wider flex items-center gap-1.5">
+              <span className="material-symbols-outlined text-[16px] text-[#7A9EAA]">task_alt</span> Guided Exit & Disposition Wizard
+            </h3>
+            <p className="text-xs text-slate-400">
+              Evaluate exit strategies (Sell, Refinance, Hold Long-Term), follow preparation checklists, manage showing feedback or refi terms, and run final payouts.
+            </p>
+          </div>
+          <button
+            onClick={() => router.push(`/dashboard/projects/${projectId}/phase-4/wizard`)}
+            className="px-5 py-2.5 bg-[#7A9EAA] hover:bg-[#7A9EAA]/95 text-black font-extrabold uppercase tracking-wider text-[10px] rounded-xl transition-all shadow-[0_0_12px_rgba(122,158,170,0.2)] shrink-0"
+          >
+            Launch Exit Wizard
+          </button>
+        </section>
 
         {/* ── Strategy Selector (Stitch: pill toggle bar) ── */}
         <section className="space-y-2">

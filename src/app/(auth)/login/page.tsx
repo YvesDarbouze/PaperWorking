@@ -52,6 +52,33 @@ function LoginPageInner() {
   const urlAccountType = (searchParams.get('accountType') || 'investor') as 'investor' | 'vendor';
   const urlMode       = searchParams.get('mode'); // 'signup' when arriving from /register
 
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const invite = searchParams.get('invite');
+      if (invite) {
+        window.sessionStorage.setItem('pw_pending_invite_token', invite);
+      } else if (urlRedirectTo) {
+        if (urlRedirectTo.includes('/invest/')) {
+          const parts = urlRedirectTo.split('/invest/');
+          const token = parts[parts.length - 1]?.split('?')[0];
+          if (token && token.length >= 16) {
+            window.sessionStorage.setItem('pw_pending_invite_token', token);
+          }
+        } else if (urlRedirectTo.includes('/invite/team')) {
+          try {
+            const urlObj = new URL(urlRedirectTo, window.location.origin);
+            const token = urlObj.searchParams.get('token');
+            if (token) {
+              window.sessionStorage.setItem('pw_pending_invite_token', token);
+            }
+          } catch (e) {
+            // best effort
+          }
+        }
+      }
+    }
+  }, [searchParams, urlRedirectTo]);
+
   const {
     login,
     register: authRegister,
@@ -146,10 +173,13 @@ function LoginPageInner() {
     defaultValues: { email: '', password: '' },
   });
 
+  const defaultName = searchParams.get('name') || '';
+  const defaultEmail = searchParams.get('email') || '';
+
   const { register: registerSignup, handleSubmit: handleSignupSubmit, watch: watchSignup, formState: { errors: signupErrors } } = useForm<RegisterFormValues>({
     resolver: zodResolver(registerSchema),
     mode: 'onChange',
-    defaultValues: { fullName: '', email: '', password: '', confirmPassword: '', acceptTerms: false },
+    defaultValues: { fullName: defaultName, email: defaultEmail, password: '', confirmPassword: '', acceptTerms: false },
   });
 
   const onSubmitPassword = async (data: LoginFormValues) => {

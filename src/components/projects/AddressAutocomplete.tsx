@@ -201,6 +201,15 @@ export default function AddressAutocomplete({
         token = 'mock_token';
       }
 
+      // Track selection success telemetry
+      if (typeof window !== 'undefined' && (window as any).posthog) {
+        (window as any).posthog.capture('address_autocomplete_selected', {
+          placeId: prediction.placeId,
+          sessionToken,
+          queryLength: query.length,
+        });
+      }
+
       const res = await fetch('/api/places/details', {
         method: 'POST',
         headers: { 
@@ -213,7 +222,7 @@ export default function AddressAutocomplete({
       setQuery(parsed.formattedAddress || prediction.description);
       onSelect(parsed);
       
-      // Regenerate session token after a successful completion to start a new session
+      // Regenerate session token after terminating Place Details call
       const generateToken = () => typeof crypto !== 'undefined' && crypto.randomUUID ? crypto.randomUUID() : Math.random().toString(36).substring(2);
       setSessionToken(generateToken());
     } catch (err) {
@@ -227,12 +236,26 @@ export default function AddressAutocomplete({
         lat: null,
         lng: null,
       });
+      const generateToken = () => typeof crypto !== 'undefined' && crypto.randomUUID ? crypto.randomUUID() : Math.random().toString(36).substring(2);
+      setSessionToken(generateToken());
     } finally {
       setIsFetching(false);
     }
   };
 
   const handleClear = () => {
+    // Track abandonment if user typed a query but cleared it without selecting
+    if (query.trim().length >= 3) {
+      if (typeof window !== 'undefined' && (window as any).posthog) {
+        (window as any).posthog.capture('address_autocomplete_abandoned', {
+          sessionToken,
+          queryLength: query.length,
+          cause: 'cleared',
+        });
+      }
+      const generateToken = () => typeof crypto !== 'undefined' && crypto.randomUUID ? crypto.randomUUID() : Math.random().toString(36).substring(2);
+      setSessionToken(generateToken());
+    }
     setQuery('');
     setPredictions([]);
     setIsOpen(false);
@@ -304,6 +327,17 @@ export default function AddressAutocomplete({
 
   // ─── Mode Switch ────────────────────────────────────
   const switchToManual = () => {
+    if (query.trim().length >= 3) {
+      if (typeof window !== 'undefined' && (window as any).posthog) {
+        (window as any).posthog.capture('address_autocomplete_abandoned', {
+          sessionToken,
+          queryLength: query.length,
+          cause: 'manual_switch',
+        });
+      }
+      const generateToken = () => typeof crypto !== 'undefined' && crypto.randomUUID ? crypto.randomUUID() : Math.random().toString(36).substring(2);
+      setSessionToken(generateToken());
+    }
     setIsManual(true);
     setPredictions([]);
     setIsOpen(false);

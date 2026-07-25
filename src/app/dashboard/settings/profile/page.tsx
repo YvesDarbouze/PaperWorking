@@ -9,6 +9,8 @@ import { db } from '@/lib/firebase/config';
 import toast from 'react-hot-toast';
 import MFAEnrollmentModal from '@/components/auth/MFAEnrollmentModal';
 import MFAUnenrollModal from '@/components/auth/MFAUnenrollModal';
+import ClaimHistorySection from '@/components/profile/ClaimHistorySection';
+import { ActivityTimeline } from '@/components/project/ActivityTimeline';
 
 /* ═══════════════════════════════════════════════════════
    Profile & Security Settings (Luminous Glass Terminal)
@@ -193,6 +195,64 @@ export default function ProfileSettingsPage() {
     <div className="w-full space-y-0">
       {/* ─── 12-Column Bento Grid ─── */}
       <div className="grid grid-cols-12 gap-6">
+
+        {/* ════════════════════════════════════════════════
+            SUSPENSION BANNER (col-span-12)
+            ════════════════════════════════════════════════ */}
+        {profile?.invitationSuspended && (
+          <section className="col-span-12 border border-red-500/30 bg-red-500/5 rounded-2xl p-6 relative overflow-hidden backdrop-blur-md">
+            <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+              <div className="flex items-start gap-4">
+                <div className="w-12 h-12 rounded-xl bg-red-500/10 border border-red-500/20 flex items-center justify-center text-red-400 shrink-0">
+                  <span className="material-symbols-outlined text-2xl select-none">warning</span>
+                </div>
+                <div>
+                  <h4 className="text-lg font-bold text-white">Invitation Privileges Suspended</h4>
+                  <p className="text-xs text-pw-muted mt-1 leading-relaxed max-w-2xl">
+                    Your invitation privileges were suspended automatically due to a complaint or bounce rate threshold breach. 
+                    Reason: <span className="font-semibold text-white">{profile.suspensionReason || 'USER_COMPLAINT'}</span>.
+                    You are currently restricted from sending invitations to co-investors.
+                  </p>
+                </div>
+              </div>
+
+              <div className="shrink-0">
+                {profile.appealSubmitted ? (
+                  <span className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-emerald-500/10 border border-emerald-500/20 text-xs font-semibold text-emerald-400 select-none">
+                    <span className="material-symbols-outlined text-xs select-none">check_circle</span>
+                    Appeal Under Review
+                  </span>
+                ) : (
+                  <button
+                    onClick={async () => {
+                      const tid = toast.loading('Submitting appeal…');
+                      try {
+                        const token = await user?.getIdToken();
+                        const res = await fetch('/api/identity/appeal', {
+                          method: 'POST',
+                          headers: {
+                            'Content-Type': 'application/json',
+                            'Authorization': `Bearer ${token}`
+                          },
+                          body: JSON.stringify({ reason: 'Requesting review of suspension.' })
+                        });
+                        const data = await res.json();
+                        if (!res.ok) throw new Error(data.error || 'Failed to submit appeal');
+                        toast.success('Appeal submitted successfully.', { id: tid });
+                        window.location.reload();
+                      } catch (err: any) {
+                        toast.error(err.message, { id: tid });
+                      }
+                    }}
+                    className="bg-red-500 text-black hover:bg-red-400 transition-colors font-bold text-xs uppercase tracking-wider py-3 px-5 rounded-xl cursor-pointer"
+                  >
+                    Appeal Suspension
+                  </button>
+                )}
+              </div>
+            </div>
+          </section>
+        )}
 
         {/* ════════════════════════════════════════════════
             1 · HERO PROFILE CARD (col-span-12)
@@ -548,6 +608,18 @@ export default function ProfileSettingsPage() {
             </p>
           )}
         </section>
+
+        {/* ════════════════════════════════════════════════
+            Claim History Section (col-span-12)
+            ════════════════════════════════════════════════ */}
+        <ClaimHistorySection />
+
+        {/* ════════════════════════════════════════════════
+            Deal Activity Timeline (col-span-12)
+            ════════════════════════════════════════════════ */}
+        <div className="col-span-12">
+          <ActivityTimeline isCrossDeal={true} />
+        </div>
 
         {/* ════════════════════════════════════════════════
             5 · GDPR DATA ERASURE (col-span-12)

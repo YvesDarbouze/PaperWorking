@@ -282,7 +282,7 @@ export function ContributionLedger({ projectId }: Props) {
       a.click();
       a.remove();
 
-      // Upload generated PDF to project Data Room
+      // Upload generated PDF to project Files
       try {
         const file = new File([blob], filename, { type: 'application/pdf' });
         const uploadRes = await uploadFile({
@@ -304,10 +304,10 @@ export function ContributionLedger({ projectId }: Props) {
           notes: 'Capital Stack Statement (System Generated)',
         });
 
-        toast.success('Capital Stack Statement PDF exported and saved to Data Room.', { id: 'pdf-export' });
+        toast.success('Capital Stack Statement PDF exported and saved to Project Files.', { id: 'pdf-export' });
       } catch (uploadErr) {
-        console.error('[ContributionLedger] Failed to save statement to Data Room Storage:', uploadErr);
-        toast.success('Capital Stack Statement PDF exported successfully (offline/data room skip).', { id: 'pdf-export' });
+        console.error('[ContributionLedger] Failed to save statement to Project Files Storage:', uploadErr);
+        toast.success('Capital Stack Statement PDF exported successfully (offline/project files skip).', { id: 'pdf-export' });
       }
     } catch (err: any) {
       console.error(err);

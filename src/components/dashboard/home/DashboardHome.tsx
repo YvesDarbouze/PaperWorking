@@ -30,7 +30,7 @@ const LifecycleMetricsDashboard = lazy(() => import('@/components/dashboard/char
 const AgentDirectory = lazy(() => import('@/components/listing/AgentDirectory'));
 const OpenHouseCalendar = lazy(() => import('@/components/listing/OpenHouseCalendar'));
 
-import GenerativeInsights from './GenerativeInsights';
+import PrioritiesBanner from './PrioritiesBanner';
 import ActivityFeed from './ActivityFeed';
 import ProfileWidget from './ProfileWidget';
 import ProjectsWidget from './ProjectsWidget';
@@ -384,10 +384,10 @@ export default function DashboardHome() {
       {/* ── Dashboard Content ── */}
       <div className="flex flex-col gap-8">
         
-        {/* Generative Insights (Center-Top) */}
+        {/* Priorities Banner (Center-Top) */}
         {!isGuest && (
-          <ErrorBoundary name="Generative Insights">
-            <GenerativeInsights />
+          <ErrorBoundary name="Priorities Banner">
+            <PrioritiesBanner />
           </ErrorBoundary>
         )}
 

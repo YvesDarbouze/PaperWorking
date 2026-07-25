@@ -37,7 +37,6 @@ const ROUTE_LABELS: Record<string, string> = {
   "/dashboard": "Portfolio",
   "/dashboard/command-center": "Portfolio",
   "/dashboard/projects": "Projects",
-  "/dashboard/data-room": "Data Room",
   "/dashboard/inbox": "Inbox",
   "/dashboard/team": "Team",
   "/dashboard/reports": "Reports",
@@ -153,7 +152,10 @@ export function TopAppBar() {
   // Debounced search results fetched dynamically from the database
   useEffect(() => {
     if (!searchQuery.trim()) {
-      setSearchResults({ projects: [], vendors: [] });
+      setSearchResults(prev => {
+        if (prev.projects.length === 0 && prev.vendors.length === 0) return prev;
+        return { projects: [], vendors: [] };
+      });
       setIsLoading(false);
       setIsError(false);
       return;
@@ -231,7 +233,7 @@ export function TopAppBar() {
     }, 300);
 
     return () => clearTimeout(delayDebounceFn);
-  }, [searchQuery, searchScope, user]);
+  }, [searchQuery, searchScope, user?.uid]);
 
   const filteredProjects = searchResults.projects;
   const filteredVendors = searchResults.vendors;

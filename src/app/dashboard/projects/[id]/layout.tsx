@@ -2,6 +2,7 @@
 
 import React, { useEffect, useState, createContext, useContext, useCallback } from 'react';
 import { useParams, useRouter } from 'next/navigation';
+import { useAllDealsSync } from '@/hooks/useAllProjectsSync';
 import { projectsService } from '@/lib/firebase/projects';
 import type { Project, PhaseStatus } from '@/types/schema';
 import {
@@ -293,21 +294,43 @@ function WorkspaceHeader({ project, onOpenMetric }: { project: Project; onOpenMe
     }
   })();
 
-  const wrapResult = (val: number): MetricResult => ({
-    value: val,
-    state,
-    inputsUsed: {},
-    inputsMissing: [],
-  });
+  const wrapResult = (val: number, metricId: string): MetricResult => {
+    const inputsUsed: Record<string, any> = {};
+    const addIfExist = (keys: string[]) => {
+      const financials = (project?.financials || {}) as any;
+      keys.forEach(k => {
+        if (financials[k] !== undefined && financials[k] !== null) {
+          inputsUsed[`financials.${k}`] = financials[k];
+        }
+      });
+    };
+
+    if (metricId === 'NOI' || metricId === 'CAP_RATE' || metricId === 'CASH_FLOW' || metricId === 'COC' || metricId === 'EXPENSE_RATIO') {
+      addIfExist(['purchasePrice', 'monthlyGrossRent', 'grossRent', 'gross_rent_per_unit']);
+    }
+    if (metricId === 'NOI' || metricId === 'CASH_FLOW') {
+      addIfExist(['tax', 'taxes', 'insurance', 'utilities', 'management', 'management_pct', 'maintenance', 'maintenance_pct']);
+    }
+    if (metricId === 'DSCR' || metricId === 'CASH_FLOW') {
+      addIfExist(['loanAmount', 'loanInterestRate', 'loanTermYears']);
+    }
+
+    return {
+      value: val,
+      state,
+      inputsUsed,
+      inputsMissing: [],
+    };
+  };
 
   const metricResults = {
-    NOI: wrapResult(derived.noi),
-    CASH_FLOW: wrapResult(derived.annualCashFlow),
-    CAP_RATE: wrapResult(derived.capRate),
-    COC: wrapResult(derived.cashOnCashReturn),
-    DSCR: wrapResult(derived.dscr),
-    OCCUPANCY: wrapResult(derived.occupancyRate),
-    EXPENSE_RATIO: wrapResult(derived.oer),
+    NOI: wrapResult(derived.noi, 'NOI'),
+    CASH_FLOW: wrapResult(derived.annualCashFlow, 'CASH_FLOW'),
+    CAP_RATE: wrapResult(derived.capRate, 'CAP_RATE'),
+    COC: wrapResult(derived.cashOnCashReturn, 'COC'),
+    DSCR: wrapResult(derived.dscr, 'DSCR'),
+    OCCUPANCY: wrapResult(derived.occupancyRate, 'OCCUPANCY'),
+    EXPENSE_RATIO: wrapResult(derived.oer, 'EXPENSE_RATIO'),
   };
 
   const isAllCash = project.financials?.financingType === 'All Cash';
@@ -440,15 +463,7 @@ function WorkspaceHeader({ project, onOpenMetric }: { project: Project; onOpenMe
             <span className="hidden md:inline">Share CPA</span>
           </button>
 
-          <a
-            href={`/dashboard/projects/${project.id}/data-room`}
-            className="flex items-center gap-1.5 px-3 py-2 text-xs font-bold uppercase tracking-wider transition-all duration-150 hover:bg-black/5 dark:hover:bg-white/5 border rounded-lg text-text-secondary hover:text-text-primary"
-            style={{ color: 'var(--text-secondary)', borderColor: 'var(--border-ui)' }}
-            aria-label="Manage Project Data Room"
-          >
-            <FolderOpen className="w-3.5 h-3.5" />
-            <span className="hidden md:inline">Data Room</span>
-          </a>
+
 
           <a
             href={`/dashboard/projects/${project.id}/instruments`}
@@ -592,6 +607,8 @@ export default function ProjectWorkspaceLayout({
   const params    = useParams();
   const projectId = params?.id as string;
   console.log('[WorkspaceLayout] Rendering with projectId:', projectId);
+
+  useAllDealsSync();
 
   const [project, setProject] = useState<Project | null>(null);
   const [loading, setLoading] = useState(true);
@@ -739,6 +756,7 @@ export default function ProjectWorkspaceLayout({
             metricLabel={selectedMetric.label}
             result={selectedMetric.result}
             format={selectedMetric.format}
+            project={project}
             sparklineData={snapshots.slice(-6).map((s) => {
               let val = 0;
               switch (selectedMetric.id) {

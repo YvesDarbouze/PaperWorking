@@ -59,6 +59,17 @@ describe('resolvePostAuthDestination', () => {
       resolvePostAuthDestination({ hasActiveSubscription: true, urlRedirectTo: '/dashboard/projects' }),
     ).toBe('/dashboard/projects');
   });
+
+  it('redirects to project creation if a pending project address exists and user has active subscription', () => {
+    sessionStorage.setItem('pw_pending_project_address', JSON.stringify({ placeId: 'place_123', formattedAddress: '123 Main St' }));
+    expect(resolvePostAuthDestination({ hasActiveSubscription: true })).toBe('/dashboard/projects/new');
+    expect(sessionStorage.getItem('pw_auth_redirect')).toBeNull();
+  });
+
+  it('does NOT redirect to project creation if user is not subscribed yet', () => {
+    sessionStorage.setItem('pw_pending_project_address', JSON.stringify({ placeId: 'place_123', formattedAddress: '123 Main St' }));
+    expect(resolvePostAuthDestination({ hasActiveSubscription: false, isNewUser: true })).toBe(PRICING_ROUTE);
+  });
 });
 
 describe('buildSignupForPricingLoginUrl', () => {

@@ -78,4 +78,7 @@ export interface ProjectFile {
   verifiedByUid?: string;
   verifiedAt?: Date;
   uploadedAt: Date;
+  isControlEvidence?: boolean;
+  purpose?: 'marketing' | 'control_evidence';
+  phase?: 'phase-1' | 'phase-2' | 'phase-3' | 'phase-4' | 'founder_review';
 }

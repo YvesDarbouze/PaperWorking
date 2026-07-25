@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Mail, Search, Send, Sparkles, Filter, X } from 'lucide-react';
+import { Mail, Search, Send, FileText, Filter, X } from 'lucide-react';
 import { useProjectStore } from '@/store/projectStore';
 import PhaseBadge from '../ui/PhaseBadge';
 import { communicationService } from '@/lib/services/communicationService';
@@ -359,9 +359,9 @@ export default function GlobalInbox() {
                   id="global-inbox-draft-btn"
                   onClick={() => setIsDrafting(true)}
                   className="p-4 bg-pw-black text-pw-white border border-pw-border hover:bg-pw-accent hover:border-pw-accent transition-all"
-                  aria-label="Open AI draft assistant"
+                  aria-label="Open draft templates assistant"
                 >
-                  <Sparkles className="w-5 h-5" />
+                  <FileText className="w-5 h-5" />
                 </button>
               </div>
             </header>
@@ -442,8 +442,8 @@ export default function GlobalInbox() {
                     onClick={() => setIsDrafting(true)}
                     className="flex items-center gap-4 px-8 py-4 bg-bg-surface border border-pw-border text-text-primary text-xs font-black uppercase tracking-[0.3em] hover:bg-pw-black hover:text-pw-white transition-all shadow-2xl"
                   >
-                    <Sparkles className="w-4 h-4 text-pw-accent" />
-                    <span>COMPILE AI DRAFT</span>
+                    <FileText className="w-4 h-4 text-pw-accent" />
+                    <span>COMPILE DRAFT</span>
                   </button>
                   <button
                     id="global-inbox-commit-btn"

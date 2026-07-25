@@ -11,7 +11,6 @@
    ═══════════════════════════════════════════════════════ */
 
 :root,
-<<<<<<< HEAD
 html[data-theme="light"] {
   /* ─── PaperWorking Antigravity Grayscale & Green Accent Palette ─── */
   --color-surface: #FFFFFF;
@@ -333,8 +332,6 @@ html[data-theme="light"] {
   }
 }
 
-=======
->>>>>>> candidate/fund-hold-exit-build-2026-07-19
 html[data-theme="dark"],
 .dark {
   /* ─── PaperWorking Antigravity Dark — Grayscale + Green Accents ─── */

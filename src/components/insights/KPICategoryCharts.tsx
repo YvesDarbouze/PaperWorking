@@ -10,6 +10,7 @@ import type { Project } from "@/types/schema";
 import type { DerivedMetrics, KPI33Value } from "@/lib/metrics/reiMetrics";
 import { getKPI33, METRIC_TAXONOMY, MetricCategory, MetricTaxonomyEntry, getMetricEntry } from "@/lib/metrics/metricTaxonomy";
 import { deriveAllMetrics } from "@/lib/metrics/reiMetrics";
+import { calculateAmortization } from "@/lib/utils/reiCalculators";
 import { RISK_SCALE_CONFIG, scoreFromBands } from "@/lib/metrics/riskScaleConfig";
 import Link from "next/link";
 
@@ -434,9 +435,47 @@ function renderKPIChart(
 
   switch (id) {
     case "NOI": {
+      let proFormaIncome = 0;
+      let proFormaExpense = 0;
+      let proFormaNet = 0;
+      let actualIncome = 0;
+      let actualExpense = 0;
+      let actualNet = value ?? 0;
+
+      if (project) {
+        const f = project.financials;
+        if (f) {
+          const metrics = deriveAllMetrics(f, f.estimatedCurrentValue || f.estimatedARV, project.dispositionType, project.currentPhase, project.createdAt);
+          proFormaIncome = (metrics.noiComponents.grossRentalIncome + metrics.noiComponents.otherIncome);
+          proFormaExpense = metrics.noiComponents.totalOperatingExpenses;
+          proFormaNet = metrics.noi;
+          
+          actualIncome = metrics.kpi33.GOI.actual ?? 0;
+          const actNOI = metrics.kpi33.NOI.actual ?? 0;
+          actualExpense = actualIncome - actNOI;
+          actualNet = actNOI;
+        }
+      } else {
+        projects.forEach(p => {
+          const f = p.financials;
+          if (f) {
+            const metrics = deriveAllMetrics(f, f.estimatedCurrentValue || f.estimatedARV, p.dispositionType, p.currentPhase, p.createdAt);
+            proFormaIncome += (metrics.noiComponents.grossRentalIncome + metrics.noiComponents.otherIncome);
+            proFormaExpense += metrics.noiComponents.totalOperatingExpenses;
+            proFormaNet += metrics.noi;
+
+            const actGOI = metrics.kpi33.GOI.actual ?? 0;
+            const actNOI = metrics.kpi33.NOI.actual ?? 0;
+            actualIncome += actGOI;
+            actualExpense += (actGOI - actNOI);
+            actualNet += actNOI;
+          }
+        });
+      }
+
       const data = [
-        { name: "Pro-Forma", income: 23400, expense: 10914, net: 12486 },
-        { name: "Actual", income: isActual ? 4265 : 0, expense: isActual ? 495 : 0, net: value ?? 0 }
+        { name: "Pro-Forma", income: proFormaIncome, expense: proFormaExpense, net: proFormaNet },
+        { name: "Actual", income: actualIncome, expense: actualExpense, net: actualNet }
       ];
       return (
         <BarChart data={data} margin={{ top: 5, right: 5, bottom: 5, left: -25 }}>
@@ -616,9 +655,38 @@ function renderKPIChart(
       );
     }
     case "INTEREST_COVERAGE": {
+      let firstYearInterestVal = 0;
+      let noiVal = 0;
+
+      if (project) {
+        const f = project.financials;
+        if (f) {
+          const loanAmount = f.loanAmount ?? 0;
+          const loanInterestRate = f.loanInterestRate ?? 0;
+          const loanTermMonths = (f.loanTermYears ?? 30) * 12;
+          const amortResult = calculateAmortization(loanAmount, loanInterestRate, loanTermMonths);
+          firstYearInterestVal = amortResult.firstYearInterest;
+          const metrics = deriveAllMetrics(f, f.estimatedCurrentValue || f.estimatedARV, project.dispositionType, project.currentPhase, project.createdAt);
+          noiVal = metrics.noi;
+        }
+      } else {
+        projects.forEach(p => {
+          const f = p.financials;
+          if (f) {
+            const loanAmount = f.loanAmount ?? 0;
+            const loanInterestRate = f.loanInterestRate ?? 0;
+            const loanTermMonths = (f.loanTermYears ?? 30) * 12;
+            const amortResult = calculateAmortization(loanAmount, loanInterestRate, loanTermMonths);
+            firstYearInterestVal += amortResult.firstYearInterest;
+            const metrics = deriveAllMetrics(f, f.estimatedCurrentValue || f.estimatedARV, p.dispositionType, p.currentPhase, p.createdAt);
+            noiVal += metrics.noi;
+          }
+        });
+      }
+
       const data = [
-        { name: "Year-1 Interest", amount: 14508 },
-        { name: "NOI", amount: value ? (14508 * value) : 12486 }
+        { name: "Year-1 Interest", amount: firstYearInterestVal },
+        { name: "NOI", amount: noiVal }
       ];
       return (
         <BarChart data={data} margin={{ top: 5, right: 5, bottom: 5, left: -20 }}>

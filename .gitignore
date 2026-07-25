@@ -138,3 +138,11 @@ stitch_downloads/
 src/lib/db/financials_cache_store.json
 .claude/skills/*
 !.claude/skills/paperworking-reil/
+
+# generated architect documents
+/docs/architect/
+/docs/walkthrough.md
+/test-results-*.png
+/test-results-wt2-02-latest.png
+/test-results-wt2-02.png
+

@@ -430,6 +430,8 @@ model ReilProject {
 
   @@index([createdById])
   @@index([acquisitionStatus])
+  @@index([createdById, currentPhase])
+  @@index([createdById, acquisitionStatus])
 }
 
 model ReilPropertyFacts {
@@ -798,4 +800,70 @@ model HoldValueEntry {
 
   @@index([linkedProjectId])
   @@index([valueDate])
+}
+
+model BankConnection {
+  id           String        @id @default(uuid())
+  userId       String
+  accessToken  String
+  lastSyncCursor String?
+  lastSyncAt   DateTime?
+  status       String        @default("active") // 'active' | 'error' | 'disconnected'
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
+  accounts     BankAccount[]
+  transactions Transaction[]
+
+  @@index([userId])
+}
+
+model BankAccount {
+  id             String         @id @default(uuid())
+  plaidAccountId String         @unique
+  connectionId   String
+  name           String
+  mask           String?
+  officialName   String?
+  type           String
+  subtype        String?
+  balance        BigInt         @default(0)
+  limit          BigInt?
+  currency       String         @default("USD")
+  createdAt      DateTime       @default(now())
+  updatedAt      DateTime       @updatedAt
+  connection     BankConnection @relation(fields: [connectionId], references: [id], onDelete: Cascade)
+  transactions   Transaction[]
+
+  @@index([connectionId])
+}
+
+model Transaction {
+  id             String         @id @default(uuid())
+  plaidId        String         @unique
+  connectionId   String
+  accountId      String
+  userId         String
+  amount         BigInt         // cents
+  date           DateTime
+  category       String[]
+  merchantName   String?
+  pending        Boolean        @default(false)
+  reiCategory    String?        // 'rental_income', 'debt_service', etc.
+  confidence     Float?         // 0.0 - 1.0
+  projectId      String?        // for auto-attribution
+  reviewedByUser Boolean        @default(false)
+  attributedAt   DateTime?
+  createdAt      DateTime       @default(now())
+  updatedAt      DateTime       @updatedAt
+  connection     BankConnection @relation(fields: [connectionId], references: [id], onDelete: Cascade)
+  account        BankAccount    @relation(fields: [accountId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([projectId])
+  @@index([date])
+  @@index([reiCategory])
+  @@index([plaidId])
+  @@index([connectionId])
+  @@index([userId, date])
+  @@index([projectId, reiCategory])
 }

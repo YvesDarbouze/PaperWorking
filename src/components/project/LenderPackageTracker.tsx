@@ -221,7 +221,7 @@ export function LenderPackageTracker({ projectId }: Props) {
     }
 
     setUploadingItemId(itemId);
-    const toastId = toast.loading('Uploading document to Data Room Debt folder...');
+    const toastId = toast.loading('Uploading document to Project Files Debt folder...');
 
     try {
       const auth = getAuth();
@@ -237,7 +237,7 @@ export function LenderPackageTracker({ projectId }: Props) {
       });
 
       if (!folderRes.ok) {
-        throw new Error('Failed to provision Debt folder in the Data Room.');
+        throw new Error('Failed to provision Debt folder in the Project Files.');
       }
       const { folderId } = await folderRes.json();
 
@@ -282,7 +282,7 @@ export function LenderPackageTracker({ projectId }: Props) {
         throw new Error('Failed to link document to checklist item.');
       }
 
-      toast.success('Document uploaded and saved to Data Room Debt folder.', { id: toastId });
+      toast.success('Document uploaded and saved to Project Files Debt folder.', { id: toastId });
     } catch (err: any) {
       toast.error(err.message || 'Error uploading document.', { id: toastId });
     } finally {

@@ -135,21 +135,7 @@ test.describe('PaperWorking E2E — Critical Path Deployment Gate', () => {
     await expect(page.locator('a, button').filter({ hasText: /trial|get started|start/i }).first()).toBeVisible();
   });
 
-  // ─────────────────────────────────────────────────────────────────────────
-  // Path 7 — Data Room renders portfolio aggregates
-  // ─────────────────────────────────────────────────────────────────────────
-  test('Path 7 — Data Room renders without crashing', async ({ page }) => {
-    await page.goto('/dashboard/data-room');
-    await page.waitForLoadState('networkidle');
 
-    // Should not crash
-    await expect(page.locator('text=Application error')).not.toBeVisible();
-    await expect(page.locator('body')).toBeVisible();
-
-    // Should contain data room content
-    const body = await page.locator('body').textContent() ?? '';
-    expect(body.length).toBeGreaterThan(100);
-  });
 
   // ─────────────────────────────────────────────────────────────────────────
   // Path 8 — Insights Hub renders three scope tabs

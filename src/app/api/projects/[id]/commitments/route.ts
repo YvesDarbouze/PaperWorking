@@ -66,8 +66,14 @@ export async function GET(
     let filteredCommitments = commitments;
     if (access.role !== 'Lead Investor') {
       const lowerEmail = email?.toLowerCase();
+      const userSnap = await adminDb.collection('users').doc(uid).get();
+      const userData = userSnap.exists ? userSnap.data() : null;
+      const claimedEmails: string[] = userData?.claimedEmails || [];
+      const allUserEmails = [lowerEmail, ...claimedEmails.map(e => e.toLowerCase())].filter(Boolean) as string[];
+
       filteredCommitments = commitments.filter((c: any) => 
-        (c.email && lowerEmail && c.email.toLowerCase() === lowerEmail) || 
+        (c.email && allUserEmails.includes(c.email.toLowerCase())) || 
+        c.uid === uid ||
         c.createdByUid === uid
       );
     }
@@ -167,6 +173,20 @@ export async function POST(
       status: doc.status,
       partyType: doc.partyType as any,
     });
+
+    const { trackDealActivity } = require('@/lib/invitations/activityTimeline');
+    await trackDealActivity(
+      projectId,
+      projectId,
+      uid,
+      'indication',
+      {
+        inviteeEmail: targetEmail || '',
+        inviteeName: name,
+        amountCents: Math.round(amountCents),
+        status: targetStatus,
+      }
+    ).catch((e: any) => console.error('Failed to log indication event:', e));
 
     return NextResponse.json({ id: docRef.id, ...doc }, { status: 201 });
   } catch (err: any) {

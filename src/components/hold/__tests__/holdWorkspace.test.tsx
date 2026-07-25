@@ -1,5 +1,23 @@
+/**
+ * @jest-environment jsdom
+ */
+
 import { HOLD_CARD_REGISTRY } from '@/lib/project/holdCardRegistry';
 import { usersService } from '@/lib/firebase/users';
+
+jest.mock('@/lib/firebase/users', () => {
+  const store: Record<string, boolean> = {};
+  return {
+    usersService: {
+      setPhaseBannerDismissed: jest.fn(async (userId: string, phase: string) => {
+        store[`${userId}_${phase}`] = true;
+      }),
+      getPhaseBannerDismissed: jest.fn(async (userId: string, phase: string) => {
+        return !!store[`${userId}_${phase}`];
+      }),
+    },
+  };
+});
 
 describe('HD-5 Hold Workspace Shell & Banner Verification', () => {
   test('H5 Strategy-Conditional Reveal: RENT, LEASE, and SALE paths filter correctly', () => {

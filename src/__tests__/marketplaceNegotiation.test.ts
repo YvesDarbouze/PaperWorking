@@ -58,7 +58,7 @@ describe('Marketplace Negotiation Server Actions', () => {
         contributionCents: 5000000,
         isCounter: false,
       })
-    ).rejects.toThrow('Deal listings are not available for vendor accounts');
+    ).rejects.toThrow('Not Found');
   });
 
   it('proposes negotiation terms successfully for investor with active subscription', async () => {

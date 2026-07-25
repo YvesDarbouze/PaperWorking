@@ -47,6 +47,7 @@ export interface UserProfile {
   onboardingIntent?: 'first_investment' | 'own_properties' | 'past_deals' | 're_professional';
   firstMetricLit?: Timestamp;
   onboardingOverlayDismissed?: boolean;
+  claimedEmails?: string[];
 
   /* ── Guest / Invite fields ── */
   inviteToken?: string;

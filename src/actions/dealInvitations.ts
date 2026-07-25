@@ -24,7 +24,7 @@ interface VerifiedUser {
 async function verifyActionAuth(idToken: string): Promise<VerifiedUser> {
   if (!idToken) throw new Error('Missing authentication token.');
   try {
-    if (process.env.NODE_ENV !== 'production' && process.env.ENABLE_MOCK_AUTH === 'true' && (idToken === 'mock_token' || idToken === 'mock_token_123' || idToken === 'mock_session_token_123')) {
+    if (process.env.NODE_ENV !== 'production' && (process.env.ENABLE_MOCK_AUTH === 'true' || process.env.NODE_ENV === 'test') && (idToken === 'mock_token' || idToken === 'mock_token_123' || idToken === 'mock_session_token_123')) {
       const { cookies } = require('next/headers');
       const cookieStore = await cookies();
       const uid = cookieStore.get('mock_user_uid')?.value || 'user_lead_investor_seed';
@@ -400,7 +400,7 @@ export async function getDealInvitations(
   projectId: string
 ): Promise<DealInvitation[]> {
   try {
-    if (process.env.NODE_ENV !== 'production' && process.env.ENABLE_MOCK_AUTH === 'true' && (idToken === 'mock_token' || idToken === 'mock_token_123' || idToken === 'mock_session_token_123')) {
+    if (process.env.NODE_ENV !== 'production' && (process.env.ENABLE_MOCK_AUTH === 'true' || process.env.NODE_ENV === 'test') && (idToken === 'mock_token' || idToken === 'mock_token_123' || idToken === 'mock_session_token_123')) {
       if (projectId === 'project_cf') {
         return [
           {
@@ -585,7 +585,7 @@ export async function getInviteTargets(
   projectId: string
 ): Promise<Array<{ email: string; name?: string; source: string }>> {
   try {
-    if (process.env.NODE_ENV !== 'production' && process.env.ENABLE_MOCK_AUTH === 'true' && (idToken === 'mock_token' || idToken === 'mock_token_123' || idToken === 'mock_session_token_123')) {
+    if (process.env.NODE_ENV !== 'production' && (process.env.ENABLE_MOCK_AUTH === 'true' || process.env.NODE_ENV === 'test') && (idToken === 'mock_token' || idToken === 'mock_token_123' || idToken === 'mock_session_token_123')) {
       return [
         { email: 'sub@paperworking.com', name: 'Platform Subscriber', source: 'Platform Subscriber' },
         { email: 'external@gmail.com', name: 'External Email', source: 'Project Contact' }

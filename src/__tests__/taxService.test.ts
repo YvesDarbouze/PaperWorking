@@ -17,7 +17,7 @@ describe('Tax Reporting & CPA Export Service', () => {
         dispositionType: 'RENT',
         subStrategy: 'LONG_TERM',
         currentPhase: 3,
-        status: 'Active',
+        status: 'hold',
       } as unknown as Project;
 
       const missing = auditTaxFields(mockProject);
@@ -31,7 +31,7 @@ describe('Tax Reporting & CPA Export Service', () => {
         dispositionType: 'RENT',
         subStrategy: 'LONG_TERM',
         currentPhase: 3,
-        status: 'Active',
+        status: 'hold',
         financials: {
           purchasePrice: 0,
           acquisitionDate: '',
@@ -51,7 +51,7 @@ describe('Tax Reporting & CPA Export Service', () => {
         dispositionType: 'RENT',
         subStrategy: 'LONG_TERM',
         currentPhase: 3,
-        status: 'Active',
+        status: 'hold',
         financials: {
           purchasePrice: 300000,
           acquisitionDate: '2025-01-01',
@@ -74,7 +74,7 @@ describe('Tax Reporting & CPA Export Service', () => {
         dispositionType: 'SALE',
         subStrategy: 'FLIP',
         currentPhase: 4,
-        status: 'Sold',
+        status: 'exit',
         financials: {
           purchasePrice: 200000,
           acquisitionDate: '2025-01-01',
@@ -185,7 +185,7 @@ describe('Tax Reporting & CPA Export Service', () => {
       dispositionType: 'RENT',
       subStrategy: 'LONG_TERM',
       currentPhase: 3,
-      status: 'Active',
+      status: 'hold',
       financials: {
         purchasePrice: 400000,
         fixedAcquisitionCosts: 5000,
@@ -252,7 +252,7 @@ describe('Tax Reporting & CPA Export Service', () => {
         dispositionType: 'RENT',
         subStrategy: 'LONG_TERM',
         currentPhase: 3,
-        status: 'Active',
+        status: 'hold',
         financials: {
           purchasePrice: 500000,
           fixedAcquisitionCosts: 10000, // Basis = 510,000
@@ -280,7 +280,7 @@ describe('Tax Reporting & CPA Export Service', () => {
         dispositionType: 'RENT',
         subStrategy: 'LONG_TERM',
         currentPhase: 4,
-        status: 'Sold',
+        status: 'exit',
         financials: {
           purchasePrice: 200000, // Basis = 200,000, fallback split 80% building = 160,000
           acquisitionDate: '2025-03-10',
@@ -309,7 +309,7 @@ describe('Tax Reporting & CPA Export Service', () => {
         dispositionType: 'RENT',
         subStrategy: 'LONG_TERM',
         currentPhase: 4,
-        status: 'Sold',
+        status: 'exit',
         financials: {
           purchasePrice: 200000,
           acquisitionDate: '2025-02-10',
@@ -329,7 +329,7 @@ describe('Tax Reporting & CPA Export Service', () => {
         dispositionType: 'RENT',
         subStrategy: 'LONG_TERM',
         currentPhase: 4,
-        status: 'Sold',
+        status: 'exit',
         financials: {
           purchasePrice: 400000,
           fixedAcquisitionCosts: 5000,

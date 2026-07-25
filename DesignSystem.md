@@ -4,6 +4,7 @@
 > **Every UI decision must match what is defined here and in globals.css.** This document is derived directly from the design tokens and variables in `globals.css`. Where code and this doc conflict, **the code wins**.
 
 ### Changelog
+* **2026-07-21**: Added UX-3 Button Spacing System (8-pt grid gaps, 40x40px minimum touch target floor, ButtonGroup primitive requirement).
 * **2026-07-15**: Stitch palette retired, superseded by the Antigravity-reference design language.
 * **2026-06-27**: Document initialized with custom property tokens.
 
@@ -86,8 +87,9 @@ All values are CSS custom properties. **Never hard-code a hex color that isn't a
 | `--color-glass-panel-bg` | `rgba(255,255,255,0.03)` | Dialog background |
 | `--color-glass-panel-border` | `rgba(255,255,255,0.10)` | Frosted dialog outline |
 | `--color-bento-bg` | `rgba(255,255,255,0.02)` | Grid cell backdrop |
-| `--color-bento-border` | `rgba(255,255,255,0.08)` | Bento grid divider |
-| `--pw-glass-bg` (alias) | `rgba(18,19,29,0.65)` | Glass fill alias |
+### 2.7 Green Semantics Policy (UX-4 Rule)
+
+> **Verbatim Policy:** Green is reserved for exactly three uses: (1) a passing/success state, (2) a positive-signal status chip (e.g., LIVE), (3) the single primary call-to-action on a surface, at most one per view. Green never appears on headings, tab labels, section titles, borders-as-decoration, or body text. The Hold phase color is a distinct token and is exempt — but it is only used for phase identification, never for emphasis.
 
 ---
 
@@ -461,4 +463,10 @@ To avoid visual redundancy, there must be **no more than 2** project creation co
 2. **Contextual**: One control in the empty-state block (if zero projects exist).
 
 Both controls must be labeled identically as **"Create Project"**. All other secondary/inline project creation buttons (such as in Recent Projects list headers) must be removed.
+
+---
+
+## 20. Appendices
+
+For the complete four-phase questions, tasks, enumerations, gates, and phase rules, see [reil-complete-four-phase-questions-tasks.md](file:///Users/yvesdarbouze/Documents/PaperWorking/docs/spec/reil-complete-four-phase-questions-tasks.md).
 

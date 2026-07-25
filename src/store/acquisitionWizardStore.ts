@@ -4,24 +4,24 @@ import { persist, createJSONStorage } from "zustand/middleware";
 // ─── Step definitions ─────────────────────────────────────────────────────────
 
 export const WIZARD_STEPS = [
-  { key: "intake",    label: "Intake",     icon: "explore"       },
-  { key: "address",   label: "Address",    icon: "location_on"   },
-  { key: "status",    label: "Status",     icon: "flag"          },
-  { key: "property",  label: "Property",   icon: "home"          },
-  { key: "ownership", label: "Ownership",  icon: "account_tree"  },
-  { key: "terms",     label: "Terms",      icon: "handshake"     },
-  { key: "review",    label: "Review",     icon: "fact_check"    },
+  { key: "address",       label: "Address",       icon: "location_on" },
+  { key: "projectName",   label: "Project Name",  icon: "badge" },
+  { key: "strategy",      label: "Strategy",      icon: "explore" },
+  { key: "status",        label: "Status",        icon: "flag" },
+  { key: "propertyType",  label: "Property Type", icon: "home" },
+  { key: "units",         label: "Units",         icon: "view_cozy" },
+  { key: "condition",     label: "Condition",     icon: "build" },
+  { key: "ownership",     label: "Ownership",     icon: "account_tree" },
+  { key: "entityName",    label: "Entity Details",icon: "corporate_fare" },
+  { key: "purchasePrice", label: "Purchase Price",icon: "payments" },
+  { key: "rehabBudget",   label: "Rehab Budget",  icon: "construction" },
+  { key: "review",        label: "Review",        icon: "fact_check" },
 ] as const;
 
-export type WizardStepKey = (typeof WIZARD_STEPS)[number]["key"];
+export type WizardStepKey = (typeof WIZARD_STEPS)[number]["key"] | "property" | "terms" | "intake";
 export type StepCompletion = "empty" | "partial" | "done";
 
 // ─── Form data shapes ─────────────────────────────────────────────────────────
-
-export interface IntakeData {
-  journey: "targeting" | "under_contract" | "owned_closing" | "renovating_marketing" | "rented_leased_sold" | "";
-  dispositionType: "SALE" | "LEASE" | "RENT" | "";
-}
 
 export interface AddressData {
   placeId:          string;
@@ -34,12 +34,14 @@ export interface AddressData {
   lat:              number;
   lng:              number;
   apn?:             string;
-  propertyType?:    string;
-  units?:           number;
   sqft?:            number;
   lotSqft?:         number;
   yearBuilt?:       number;
-  condition?:       string;
+}
+
+export interface IntakeData {
+  journey: "targeting" | "under_contract" | "owned_closing" | "renovating_marketing" | "rented_leased_sold" | "";
+  dispositionType: "SALE" | "LEASE" | "RENT" | "";
 }
 
 export interface StatusData {
@@ -48,9 +50,9 @@ export interface StatusData {
 
 export interface OwnershipData {
   ownershipStructure: string;
-  entityType?:        string;   // populated when ENTITY is selected
+  entityType?:        string;
   entityName?:        string;
-  coOwners?:          string[]; // free-text names; linked to Members in a later phase
+  coOwners?:          string[];
 }
 
 export interface TermsData {
@@ -71,24 +73,40 @@ interface WizardState {
   projectId:   string | null;
   currentStep: WizardStepKey;
   completion:  Record<WizardStepKey, StepCompletion>;
-  savedAt:     string | null; // ISO string for serialisability
+  savedAt:     string | null;
   isSaving:    boolean;
 
   // Form data
-  intake:    Partial<IntakeData>;
   address:   Partial<AddressData>;
+  projectName: string;
+  strategy: "SALE" | "LEASE" | "RENT" | "";
+  journey: "targeting" | "under_contract" | "owned_closing" | "renovating_marketing" | "rented_leased_sold" | "";
   status:    Partial<StatusData>;
+  propertyType: string;
+  units:      number;
+  condition:  string;
   ownership: Partial<OwnershipData>;
+  purchasePrice: number; // in cents
+  rehabBudget:   number; // in cents
   terms:     Partial<TermsData>;
+  intake:    IntakeData;
 
   // Actions
-  setProjectId:    (id: string) => void;
+  setProjectId:    (id: string | null) => void;
   goToStep:        (step: WizardStepKey) => void;
-  setIntake:       (data: Partial<IntakeData>) => void;
   setAddress:      (data: Partial<AddressData>) => void;
+  setProjectName:  (name: string) => void;
+  setStrategy:     (strat: "SALE" | "LEASE" | "RENT" | "") => void;
+  setJourney:      (journey: "targeting" | "under_contract" | "owned_closing" | "renovating_marketing" | "rented_leased_sold" | "") => void;
   setStatus:       (data: Partial<StatusData>) => void;
+  setPropertyType: (type: string) => void;
+  setUnits:        (count: number) => void;
+  setCondition:    (cond: string) => void;
   setOwnership:    (data: Partial<OwnershipData>) => void;
+  setPurchasePrice:(price: number) => void;
+  setRehabBudget:  (budget: number) => void;
   setTerms:        (data: Partial<TermsData>) => void;
+  setIntake:       (data: Partial<IntakeData>) => void;
   setStepDone:     (step: WizardStepKey) => void;
   setStepPartial:  (step: WizardStepKey) => void;
   setSaving:       (v: boolean) => void;
@@ -96,51 +114,50 @@ interface WizardState {
   reset:           () => void;
 }
 
-// ─── Initial / default state ──────────────────────────────────────────────────
-
 const INITIAL_COMPLETION: Record<WizardStepKey, StepCompletion> = {
-  intake:    "empty",
-  address:   "empty",
-  status:    "empty",
-  property:  "empty",
-  ownership: "empty",
-  terms:     "empty",
-  review:    "empty",
+  address:       "empty",
+  projectName:   "empty",
+  strategy:      "empty",
+  status:        "empty",
+  propertyType:  "empty",
+  units:         "empty",
+  condition:     "empty",
+  ownership:     "empty",
+  entityName:    "empty",
+  purchasePrice: "empty",
+  rehabBudget:   "empty",
+  review:        "empty",
+  property:      "empty",
+  terms:         "empty",
+  intake:        "partial",
 };
-
-// ─── Store ────────────────────────────────────────────────────────────────────
 
 export const useAcquisitionWizard = create<WizardState>()(
   persist(
     (set) => ({
       projectId:   null,
-      currentStep: "intake",
+      currentStep: "address",
       completion:  { ...INITIAL_COMPLETION },
       savedAt:     null,
       isSaving:    false,
 
-      intake:    {},
       address:   {},
-      status:    {},
-      ownership: {},
+      projectName: "",
+      strategy: "",
+      journey: "targeting",
+      status:    { acquisitionStatus: "PROSPECT" },
+      propertyType: "Single Family",
+      units:      1,
+      condition:  "turnkey",
+      ownership:   { ownershipStructure: "INDIVIDUAL" },
+      purchasePrice: 0,
+      rehabBudget:   0,
       terms:     {},
+      intake:    { journey: "targeting", dispositionType: "" },
 
       setProjectId: (id) => set({ projectId: id }),
 
       goToStep: (step) => set({ currentStep: step }),
-
-      setIntake: (data) =>
-        set((s) => {
-          const merged = { ...s.intake, ...data };
-          const isDone = !!merged.journey && !!merged.dispositionType;
-          return {
-            intake:     merged,
-            completion: {
-              ...s.completion,
-              intake: isDone ? "done" : "partial",
-            },
-          };
-        }),
 
       setAddress: (data) =>
         set((s) => ({
@@ -149,6 +166,30 @@ export const useAcquisitionWizard = create<WizardState>()(
             ...s.completion,
             address: data.placeId ? "done" : "partial",
           },
+        })),
+
+      setProjectName: (name) =>
+        set((s) => ({
+          projectName: name,
+          completion: {
+            ...s.completion,
+            projectName: name.trim() ? "done" : "empty",
+          },
+        })),
+
+      setStrategy: (strat) =>
+        set((s) => ({
+          strategy: strat,
+          completion: {
+            ...s.completion,
+            strategy: strat ? "done" : "empty",
+          },
+        })),
+
+      setJourney: (journey) =>
+        set((s) => ({
+          journey,
+          intake: { ...s.intake, journey },
         })),
 
       setStatus: (data) =>
@@ -160,29 +201,87 @@ export const useAcquisitionWizard = create<WizardState>()(
           },
         })),
 
+      setPropertyType: (type) =>
+        set((s) => ({
+          propertyType: type,
+          completion: {
+            ...s.completion,
+            propertyType: type ? "done" : "empty",
+          },
+        })),
+
+      setUnits: (count) =>
+        set((s) => ({
+          units: count,
+          completion: {
+            ...s.completion,
+            units: count >= 0 ? "done" : "empty",
+          },
+        })),
+
+      setCondition: (cond) =>
+        set((s) => ({
+          condition: cond,
+          completion: {
+            ...s.completion,
+            condition: cond ? "done" : "empty",
+          },
+        })),
+
       setOwnership: (data) =>
         set((s) => {
           const merged = { ...s.ownership, ...data };
-          // ENTITY is "done" when entityName is also set
-          const isDone = merged.ownershipStructure &&
-            (merged.ownershipStructure !== "ENTITY" || !!merged.entityName);
+          const isDone = !!merged.ownershipStructure;
           return {
             ownership:  merged,
             completion: {
               ...s.completion,
               ownership: isDone ? "done" : "partial",
+              entityName: merged.ownershipStructure === "ENTITY" 
+                ? (merged.entityName ? "done" : "partial")
+                : "done",
             },
           };
         }),
 
+      setPurchasePrice: (price) =>
+        set((s) => ({
+          purchasePrice: price,
+          completion: {
+            ...s.completion,
+            purchasePrice: price > 0 ? "done" : "empty",
+          },
+        })),
+
+      setRehabBudget: (budget) =>
+        set((s) => ({
+          rehabBudget: budget,
+          completion: {
+            ...s.completion,
+            rehabBudget: budget >= 0 ? "done" : "empty",
+          },
+        })),
+
       setTerms: (data) =>
         set((s) => ({
           terms:      { ...s.terms, ...data },
-          completion: {
-            ...s.completion,
-            terms: Object.keys(data).length > 0 ? "partial" : s.completion.terms,
-          },
         })),
+
+      setIntake: (data) =>
+        set((s) => {
+          const merged = { ...s.intake, ...data };
+          const isDone = !!merged.journey && !!merged.dispositionType;
+          const isPartial = !!merged.journey || !!merged.dispositionType;
+          return {
+            intake: merged,
+            strategy: merged.dispositionType || s.strategy,
+            journey: merged.journey || s.journey,
+            completion: {
+              ...s.completion,
+              intake: isDone ? "done" : (isPartial ? "partial" : "empty"),
+            }
+          };
+        }),
 
       setStepDone:    (step) => set((s) => ({ completion: { ...s.completion, [step]: "done"    } })),
       setStepPartial: (step) => set((s) => ({ completion: { ...s.completion, [step]: "partial" } })),
@@ -193,19 +292,27 @@ export const useAcquisitionWizard = create<WizardState>()(
       reset: () =>
         set({
           projectId:   null,
-          currentStep: "intake",
+          currentStep: "address",
           completion:  { ...INITIAL_COMPLETION },
           savedAt:     null,
           isSaving:    false,
-          intake:      {},
           address:     {},
-          status:      {},
-          ownership:   {},
+          projectName: "",
+          strategy:    "",
+          journey:     "targeting",
+          status:      { acquisitionStatus: "PROSPECT" },
+          propertyType: "Single Family",
+          units:       1,
+          condition:   "turnkey",
+          ownership:   { ownershipStructure: "INDIVIDUAL" },
+          purchasePrice: 0,
+          rehabBudget:   0,
           terms:       {},
+          intake:      { journey: "targeting", dispositionType: "" },
         }),
     }),
     {
-      name:    "reil-acquisition-wizard-v2", // changed version to avoid caching issues with old format
+      name:    "reil-acquisition-wizard-v3", // upgraded version for new 12 step architecture
       storage: createJSONStorage(() => localStorage),
     },
   ),

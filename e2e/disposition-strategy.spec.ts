@@ -15,8 +15,12 @@ test.describe('PaperWorking E2E — Rent, Lease, or Sell (AQ-14)', () => {
 
     // Bypass Cookie Consent popup by pre-seeding localStorage
     await page.addInitScript(() => {
-      window.localStorage.setItem('pw_cookie_consent', JSON.stringify({ essential: true, analytics: true, marketing: true }));
-    });
+    try {
+    
+          window.localStorage.setItem('pw_cookie_consent', JSON.stringify({ essential: true, analytics: true, marketing: true }));
+        
+    } catch (e) {}
+  });
     page.on('console', msg => console.log('BROWSER LOG:', msg.text()));
     page.on('pageerror', err => console.log('PAGE ERROR:', err.message));
     page.on('request', req => console.log('REQ:', req.method(), req.url()));

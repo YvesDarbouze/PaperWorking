@@ -14,7 +14,7 @@ const SECTIONS = [
   },
   {
     heading: '2. How We Use Your Data',
-    body: 'Your data is used solely to provide PaperWorking\'s features: metrics dashboard calculations, OCR automation pipelines, vendor communications, and team collaterals. We never sell your data or share it for marketing.',
+    body: 'Your data is used solely to provide PaperWorking\'s features: metrics dashboard calculations, document vault pipelines, vendor communications, and team collaterals. We never sell your data or share it for marketing.',
   },
   {
     heading: '3. Data Storage & Transfers',

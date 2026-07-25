@@ -1,3 +1,8 @@
+import { AttomPropertyProvider } from './attomProvider';
+import { MashvisorPropertyProvider } from './mashvisorProvider';
+
+export { AttomPropertyProvider, MashvisorPropertyProvider };
+
 // ─── Authoritative store names ────────────────────────────────────────────────
 // Firestore: "projects" collection, doc per project (fields under financials.*)
 // Prisma: ReilPropertyFacts table, ReilValuationSnapshot table
@@ -513,89 +518,6 @@ export class RentCastPropertyProvider implements PropertyDataProvider {
   }
 }
 
-export class AttomPropertyProvider implements PropertyDataProvider {
-  private readonly apiKey: string;
-
-  constructor(apiKey: string) {
-    this.apiKey = apiKey;
-  }
-
-  async getFacts(addressOrPlaceId: string): Promise<PropertyFacts> {
-    console.log(`📡 [ATTOM] Fetching facts for: ${addressOrPlaceId}`);
-    const mock = new MockPropertyDataProvider();
-    const facts = await mock.getFacts(addressOrPlaceId);
-    facts.sourceProvider = "ATTOM Property API (Skeleton)";
-    return facts;
-  }
-
-  async getComps(addressOrPlaceId: string): Promise<Comp[]> {
-    console.log(`📡 [ATTOM] Fetching comps for: ${addressOrPlaceId}`);
-    const mock = new MockPropertyDataProvider();
-    const comps = await mock.getComps(addressOrPlaceId);
-    return comps.map(c => ({
-      ...c,
-      addressLine: `${c.addressLine} (ATTOM Comp)`,
-    }));
-  }
-
-  async getRentalComps(addressOrPlaceId: string): Promise<RentalComp[]> {
-    const mock = new MockPropertyDataProvider();
-    return mock.getRentalComps(addressOrPlaceId);
-  }
-
-  async getValueEstimate(addressOrPlaceId: string): Promise<ValueEstimate> {
-    const mock = new MockPropertyDataProvider();
-    return mock.getValueEstimate(addressOrPlaceId);
-  }
-}
-
-export class MashvisorPropertyProvider implements PropertyDataProvider {
-  private readonly apiKey: string;
-
-  constructor(apiKey: string) {
-    this.apiKey = apiKey;
-  }
-
-  async getFacts(addressOrPlaceId: string): Promise<PropertyFacts> {
-    console.log(`📡 [Mashvisor] Fetching facts for: ${addressOrPlaceId}`);
-
-    // SKELETON INTEGRATION DETAIL:
-    // Endpoint: GET https://api.mashvisor.com/v1.1/property/detail
-    // Headers: { 'x-api-key': this.apiKey }
-    // Params: { address: addressOrPlaceId }
-
-    const mock = new MockPropertyDataProvider();
-    const facts = await mock.getFacts(addressOrPlaceId);
-    facts.sourceProvider = "Mashvisor API (Skeleton)";
-    return facts;
-  }
-
-  async getComps(addressOrPlaceId: string): Promise<Comp[]> {
-    console.log(`📡 [Mashvisor] Fetching comps for: ${addressOrPlaceId}`);
-
-    // SKELETON INTEGRATION DETAIL:
-    // Endpoint: GET https://api.mashvisor.com/v1.1/property/comps
-    // Headers: { 'x-api-key': this.apiKey }
-    // Params: { address: addressOrPlaceId }
-
-    const mock = new MockPropertyDataProvider();
-    const comps = await mock.getComps(addressOrPlaceId);
-    return comps.map(c => ({
-      ...c,
-      addressLine: `${c.addressLine} (Mashvisor Comp)`,
-    }));
-  }
-
-  async getRentalComps(addressOrPlaceId: string): Promise<RentalComp[]> {
-    const mock = new MockPropertyDataProvider();
-    return mock.getRentalComps(addressOrPlaceId);
-  }
-
-  async getValueEstimate(addressOrPlaceId: string): Promise<ValueEstimate> {
-    const mock = new MockPropertyDataProvider();
-    return mock.getValueEstimate(addressOrPlaceId);
-  }
-}
 
 // ─── Unavailable provider — returned when a real provider is configured but the
 // API key is absent. Throws rather than silently falling back to mock data,

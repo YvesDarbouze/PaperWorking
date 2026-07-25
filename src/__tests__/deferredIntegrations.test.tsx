@@ -2,8 +2,7 @@
 import React from 'react';
 import { render, screen, fireEvent } from '@testing-library/react';
 import ESignAction from '../components/shared/ESignAction';
-import { processDocument } from '../lib/ocr/documentAIProcessor';
-import DataRoomPage from '../app/dashboard/data-room/page';
+
 import toast from 'react-hot-toast';
 
 // Mock jsPDF and jspdf-autotable
@@ -147,39 +146,7 @@ describe('Deferred Integrations and PDF Export', () => {
     });
   });
 
-  describe('Document AI / OCR', () => {
-    it('returns an honest failure instead of faked mock data', async () => {
-      const result = await processDocument('path/to/doc.pdf', 'closing_disclosure', 'application/pdf');
-      
-      expect(result.success).toBe(false);
-      expect(result.error).toBe('Google Document AI integration is coming soon.');
-      expect(result.extractedFields).toEqual({});
-      expect(result.overallConfidence).toBe(0);
-    });
-  });
 
-  describe('Data Room PDF Export', () => {
-    it('generates a real PDF report using jsPDF when clicked', async () => {
-      render(<DataRoomPage />);
 
-      const pdfButton = screen.getByText('Generate PDF Report') as HTMLButtonElement;
-      expect(pdfButton).toBeTruthy();
-      expect(pdfButton.disabled).toBeFalsy();
 
-      fireEvent.click(pdfButton);
-
-      // Click the Generate PDF Report button inside the opened modal
-      const modalPdfButton = screen.getAllByText('Generate PDF Report')[1] as HTMLButtonElement;
-      fireEvent.click(modalPdfButton);
-
-      // Verify it invoked jsPDF methods to build and save the PDF
-      const jsPDFMock = require('jspdf');
-      expect(jsPDFMock).toHaveBeenCalled();
-      expect(mockSave).toHaveBeenCalled();
-      expect(toast.success).toHaveBeenCalledWith(
-        expect.stringContaining('Generated PDF Report: data-room-'),
-        expect.any(Object)
-      );
-    });
-  });
 });

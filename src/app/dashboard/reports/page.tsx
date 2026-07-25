@@ -968,7 +968,8 @@ export default function ReportsPage() {
       if (!f) return;
       const scale = scopeScale(p);
       grossRevenue += ((f.monthlyGrossRent ?? 0) * 12) * scale;
-      opExpenses   += (((f.holdingCostInsurance ?? 0) + (f.holdingCostTaxes ?? 0) + (f.holdingCostUtilities ?? 0)) * 12) * scale;
+      const security = (f.holding_cost_security ? f.holding_cost_security / 100 : f.holdingCostSecurity) ?? 0;
+      opExpenses   += (((f.holdingCostInsurance ?? 0) + (f.holdingCostTaxes ?? 0) + (f.holdingCostUtilities ?? 0) + security) * 12) * scale;
       debtService  += ((f.longTermMortgagePayment ?? 0) * 12) * scale;
     });
     return { grossRevenue, opExpenses, debtService };
@@ -984,8 +985,9 @@ export default function ReportsPage() {
       totalInsurance += ((f.holdingCostInsurance ?? 0) * 12) * scale;
       totalTaxes     += ((f.holdingCostTaxes ?? 0) * 12) * scale;
       totalUtilities += ((f.holdingCostUtilities ?? 0) * 12) * scale;
-      // Other includes management fees, maintenance, HOA
-      const otherMonthly = (f.propertyManagementFee ?? 0) + (f.monthlyMaintenanceReserve ?? f.maintenanceReserves ?? 0) + (f.monthlyHOA ?? 0);
+      const security = (f.holding_cost_security ? f.holding_cost_security / 100 : f.holdingCostSecurity) ?? 0;
+      // Other includes management fees, maintenance, HOA, security
+      const otherMonthly = (f.propertyManagementFee ?? 0) + (f.monthlyMaintenanceReserve ?? f.maintenanceReserves ?? 0) + (f.monthlyHOA ?? 0) + security;
       totalOther += (otherMonthly * 12) * scale;
     });
 
@@ -1053,7 +1055,7 @@ export default function ReportsPage() {
     }
 
     if (hasProjects) {
-      const soldCount = projects.filter(p => p.status === 'Sold').length;
+      const soldCount = projects.filter(p => p.status === 'exit' && p.dispositionType === 'SALE').length;
       if (soldCount > 0) {
         alerts.push({
           title: '1031 Exchange Window',
@@ -1094,9 +1096,14 @@ export default function ReportsPage() {
       const arv       = (f.arv ?? f.purchasePrice ?? 0) * scale;
       const loan      = (f.loanAmount ?? ((f.arv ?? f.purchasePrice ?? 0) * 0.65)) * scale;
       const annualRent= ((f.monthlyGrossRent ?? 0) * 12) * scale;
-      const annualOpEx= (((f.holdingCostInsurance ?? 0) + (f.holdingCostTaxes ?? 0) + (f.holdingCostUtilities ?? 0)) * 12) * scale;
+      const insurance = (f.holding_cost_insurance ? f.holding_cost_insurance / 100 : f.holdingCostInsurance) ?? 0;
+      const tax = (f.holding_cost_tax ? f.holding_cost_tax / 100 : f.holdingCostTaxes) ?? 0;
+      const utilities = (f.holding_cost_utilities ? f.holding_cost_utilities / 100 : f.holdingCostUtilities) ?? 0;
+      const security = (f.holding_cost_security ? f.holding_cost_security / 100 : f.holdingCostSecurity) ?? 0;
+      const rehab = (f.rehab_budget ? f.rehab_budget / 100 : f.rehabBudget) ?? 0;
+      const annualOpEx= ((insurance + tax + utilities + security) * 12) * scale;
+      const cost      = ((f.purchasePrice ?? 0) + rehab) * scale;
       const annualDebt= ((f.longTermMortgagePayment ?? 0) * 12) * scale;
-      const cost      = ((f.purchasePrice ?? 0) + (f.rehabBudget ?? 0)) * scale;
       totalValue    += arv;
       totalLoan     += loan;
       totalGrossRent += annualRent;

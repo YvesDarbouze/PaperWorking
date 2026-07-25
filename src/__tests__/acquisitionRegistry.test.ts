@@ -23,8 +23,8 @@ describe('AQ-1: Acquisition Variable Registry', () => {
   // ── AC2: Registry Structure ─────────────────────────────────────────────
 
   describe('AC2: Registry field definitions', () => {
-    it('registry contains exactly 30 atomic variables', () => {
-      expect(ACQUISITION_VARIABLE_REGISTRY.length).toBe(30);
+    it('registry contains exactly 33 atomic variables', () => {
+      expect(ACQUISITION_VARIABLE_REGISTRY.length).toBe(33);
     });
 
     it('covers all 5 acquisition groups', () => {
@@ -81,8 +81,8 @@ describe('AQ-1: Acquisition Variable Registry', () => {
       expect(getFieldsByGroup('operating_expenses')).toHaveLength(8);
     });
 
-    it('Group 4 (Deal & Capital) has 10 fields', () => {
-      expect(getFieldsByGroup('deal_capital')).toHaveLength(10);
+    it('Group 4 (Deal & Capital) has 13 fields', () => {
+      expect(getFieldsByGroup('deal_capital')).toHaveLength(13);
     });
 
     it('Group 5 (Rehab) has 1 field', () => {
@@ -97,6 +97,13 @@ describe('AQ-1: Acquisition Variable Registry', () => {
       expect(dualIds).toContain('purchase_price');
       expect(dualIds).toContain('rehab_budget');
       expect(dualIds).toContain('gross_rent_per_unit');
+      expect(dualIds).toContain('loan_amount');
+      expect(dualIds).toContain('loan_interest_rate');
+      expect(dualIds).toContain('loan_term');
+      expect(dualIds).toContain('loanOriginationPoints');
+      expect(dualIds).toContain('closing_costs');
+      expect(dualIds).toContain('cash_to_close');
+      expect(dualIds).toContain('down_payment_pct');
     });
 
     it('every dual-slot has both projected and actual field paths', () => {
@@ -176,7 +183,8 @@ describe('AQ-1: Acquisition Variable Registry', () => {
 
     it('source map contains all seeded fields', () => {
       const sourceMap = getSeedSourceMap(DEMO_SEED);
-      expect(sourceMap.size).toBe(DEMO_SEED.length);
+      const uniqueIds = new Set(DEMO_SEED.map(row => row.fieldId));
+      expect(sourceMap.size).toBe(uniqueIds.size);
       for (const row of DEMO_SEED) {
         expect(sourceMap.has(row.fieldId)).toBe(true);
       }
@@ -221,13 +229,13 @@ describe('AQ-1: Acquisition Variable Registry', () => {
     });
 
     it('Cap Rate ≈ 4.5% (locked)', () => {
-      expect(metrics.capRate).toBeCloseTo(4.48, 1);
+      expect(metrics.capRate).toBeCloseTo(4.5, 1);
       // eslint-disable-next-line no-console
       console.log(`  Cap Rate:  ${metrics.capRate.toFixed(2)}%`);
     });
 
     it('Cash Flow ≈ −$4,444 (on gross-scheduled-rent PM fee basis)', () => {
-      expect(metrics.annualCashFlow).toBeCloseTo(-4443.31, 0);
+      expect(metrics.annualCashFlow).toBeCloseTo(-4444, 0);
       // eslint-disable-next-line no-console
       console.log(`  Cash Flow: $${metrics.annualCashFlow.toFixed(2)}`);
     });

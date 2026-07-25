@@ -8,7 +8,7 @@ import { FileText, Upload, Zap, CheckCircle, ArrowRight } from 'lucide-react';
  *
  * A 3-step interactive animation illustrating the core product value:
  *   Step 1 → Messy Document (scattered fields, handwriting chaos)
- *   Step 2 → Upload & AI Processing (scanning animation)
+ *   Step 2 → Upload & Processing (loading animation)
  *   Step 3 → Clean Digital Dashboard (structured data)
  *
  * Uses strict PaperWorking palette. Users can click through steps
@@ -25,7 +25,7 @@ const steps = [
   {
     id: 2,
     label: 'Upload & Process',
-    sublabel: 'AI reads your documents',
+    sublabel: 'Secure document upload',
     icon: Upload,
   },
   {

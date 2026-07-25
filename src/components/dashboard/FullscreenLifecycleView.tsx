@@ -115,19 +115,15 @@ export default function FullscreenLifecycleView({ projectId, onExit }: Fullscree
              <button 
                onClick={async () => {
                   const nextMap: Record<string, string> = {
-                     'Sourcing': 'Under Contract',
-                     'Lead': 'Under Contract',
-                     'Active': 'Under Contract',
-                     'Under Contract': 'Rehab',
-                     'Rehab': 'Listed',
-                     'Renovating': 'Listed',
-                     'Listed': 'Sold',
-                     'Sold': 'Rented'
+                     'acquisition': 'fund',
+                     'fund': 'hold',
+                     'hold': 'exit',
+                     'exit': 'exit'
                   };
-                  const nextPhase = nextMap[deal.status];
-                  if (nextPhase) {
+                  const nextPhase = nextMap[deal.status as string];
+                  if (nextPhase && nextPhase !== deal.status) {
                      // Phase 1 Sourcing Gating
-                     if (deal.currentPhase === 1 || deal.status === 'Lead' || deal.status === 'Active') {
+                     if (deal.currentPhase === 1 || deal.status === 'acquisition') {
                         const missing: string[] = [];
                         if (!deal.address) missing.push("Property Address");
                         if (!deal.dispositionType) missing.push("Strategy Type");
@@ -135,7 +131,7 @@ export default function FullscreenLifecycleView({ projectId, onExit }: Fullscree
                         const targetPrice = deal.financials?.targetPrice ?? deal.financials?.targetPurchasePrice ?? deal.financials?.purchasePrice;
                         if (!targetPrice || targetPrice <= 0) missing.push("Projected Target Purchase Price");
                         const offerStatus = deal.financials?.offerStatus;
-                        if (offerStatus !== 'Accepted' && deal.status !== 'Under Contract') {
+                        if (offerStatus !== 'Accepted' && deal.status !== 'fund') {
                            missing.push("Accepted Offer (Offer Status must be 'Accepted')");
                         }
 
@@ -146,7 +142,7 @@ export default function FullscreenLifecycleView({ projectId, onExit }: Fullscree
                      }
 
                      // Phase 2 Closing Gating
-                     if (deal.currentPhase === 2 || deal.status === 'Under Contract') {
+                     if (deal.currentPhase === 2 || deal.status === 'fund') {
                         const missingP2: string[] = [];
                         if (!deal.financials?.purchasePrice || deal.financials.purchasePrice <= 0)
                            missingP2.push("Actual Purchase Price");
@@ -172,7 +168,7 @@ export default function FullscreenLifecycleView({ projectId, onExit }: Fullscree
                      }
 
                      // Phase 3 Hold Gating
-                     if (deal.currentPhase === 3 || (deal.status as string) === 'Rehab' || deal.status === 'Renovating') {
+                     if (deal.currentPhase === 3 || deal.status === 'hold') {
                          const strategy = deal.dispositionType === 'RENT'
                            ? (deal.subStrategy === 'BRRRR' ? 'Rent' : 'Buy & Hold')
                            : (deal.subStrategy === 'WHOLESALE' ? 'Sell' : 'Fix & Flip');

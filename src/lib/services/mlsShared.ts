@@ -48,15 +48,15 @@ export function normalizeMLSData(rawData: BridgeProperty): NormalizedProperty {
 export function mapStatusToPhase(status: string): ProjectPhase {
   switch (status) {
     case 'Active':
-      return 'Listed';
+      return 'hold';
     case 'Active Under Contract':
     case 'Pending':
-      return 'Under Contract';
+      return 'fund';
     case 'Closed':
-      return 'Sold';
+      return 'exit';
     case 'Coming Soon':
-      return 'Sourcing';
+      return 'acquisition';
     default:
-      return 'Sourcing';
+      return 'acquisition';
   }
 }

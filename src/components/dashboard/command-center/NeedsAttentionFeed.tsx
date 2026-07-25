@@ -56,6 +56,8 @@ function projectLabel(p: Project): string {
 
 // ─── Derivation ───────────────────────────────────────────────────────────────
 
+const PHASE_LABELS = ["", "Acquisition", "Fund", "Hold", "Exit"];
+
 function deriveAttentionItems(projects: Project[]): AttentionItem[] {
   const items: AttentionItem[] = [];
 
@@ -161,7 +163,7 @@ function deriveAttentionItems(projects: Project[]): AttentionItem[] {
           icon: "lock_clock",
           iconColor: "#ffd1aa",
           description: "Transaction needs financing details to reach clear-to-close",
-          metadata: `${name} · Transaction phase`,
+          metadata: `${name} · ${PHASE_LABELS[phase] || "Acquisition"} phase`,
           ctaLabel: "Open deal",
           ctaHref: `/dashboard/projects/${pid}`,
         });

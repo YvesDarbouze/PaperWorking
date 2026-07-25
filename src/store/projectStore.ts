@@ -667,7 +667,9 @@ export const useProjectStore = create<ProjectState>()(
           d.id === projectId 
             ? { 
                 ...d, 
-                phaseStatus: 'Phase 3: Holding & Rehab' as const,
+                phaseStatus: 'Phase 3: Hold' as const,
+                currentPhase: 3,
+                status: 'hold' as const,
                 costBasisLedger: newLedger,
                 financials: {
                   ...d.financials,
@@ -871,7 +873,7 @@ export const useProjectStore = create<ProjectState>()(
 
           const totalBurden = purchasePrice + dealApprovedCost + capitalCost + holdingCost;
 
-          if (deal.status === 'Sold') {
+          if (deal.status === 'exit' && deal.dispositionType === 'SALE') {
             soldProjects++;
             const actualSalePrice = deal.financials?.actualSalePrice || 0;
             const buyersComm = (deal.financials?.buyersAgentCommission || 0) / 100;

@@ -1,0 +1,41 @@
+{
+  "clickResults": [
+    {
+      "module": "Assigned Tasks",
+      "expectedTarget": "/dashboard/inbox",
+      "navigated": true,
+      "finalUrl": "http://localhost:3000/dashboard/inbox"
+    },
+    {
+      "module": "Recent Messages",
+      "expectedTarget": "/dashboard/inbox",
+      "navigated": true,
+      "finalUrl": "http://localhost:3000/dashboard/inbox"
+    },
+    {
+      "module": "Featured Metric",
+      "expectedTarget": "/dashboard/insights",
+      "navigated": true,
+      "finalUrl": "http://localhost:3000/dashboard/insights"
+    },
+    {
+      "module": "Deal Map",
+      "expectedTarget": "/dashboard/marketplace",
+      "navigated": true,
+      "finalUrl": "http://localhost:3000/dashboard/marketplace"
+    },
+    {
+      "module": "Metric Cards",
+      "expectedTarget": "/dashboard/insights",
+      "navigated": true,
+      "finalUrl": "http://localhost:3000/dashboard/insights"
+    }
+  ],
+  "goldenFiveCheck": {
+    "metric": "Total NOI",
+    "canonicalSeedNOI": "$12,486/yr",
+    "derivedViaEngine": "deriveAllProjectMetrics / deriveAllMetrics",
+    "engineCallVerified": true,
+    "status": "VERIFIED_MATCH"
+  }
+}

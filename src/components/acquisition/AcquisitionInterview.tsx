@@ -672,9 +672,9 @@ export default function AcquisitionInterview({ deal }: AcquisitionInterviewProps
       if (isOwned) {
         // Already-owned: jump to the selected phase
         const phaseMap: Record<number, { phase: string; status: string }> = {
-          2: { phase: 'Phase 2: Acquisition', status: 'Under Contract' },
-          3: { phase: 'Phase 3: Holding & Rehab', status: 'Renovating' },
-          4: { phase: 'Phase 4: Closing & Exit', status: 'Sold' },
+          2: { phase: 'Phase 2: Fund', status: 'fund' },
+          3: { phase: 'Phase 3: Hold', status: 'hold' },
+          4: { phase: 'Phase 4: Exit', status: 'exit' },
         };
         const mapping = phaseMap[selectedPhase];
         if (mapping) {
@@ -683,10 +683,10 @@ export default function AcquisitionInterview({ deal }: AcquisitionInterviewProps
           updates.status = mapping.status as any;
         }
       } else {
-        // New acquisition: auto update status to Under Contract if offer accepted
-        if (formData.financials.offerStatus === 'Accepted' && deal.status !== 'Under Contract') {
-          updates.status = 'Under Contract';
-          updates.phaseStatus = 'Phase 2: Acquisition';
+        // New acquisition: auto update status to fund if offer accepted
+        if (formData.financials.offerStatus === 'Accepted' && deal.status !== 'fund') {
+          updates.status = 'fund';
+          updates.phaseStatus = 'Phase 2: Fund';
           updates.currentPhase = 2;
         }
       }
@@ -958,7 +958,7 @@ export default function AcquisitionInterview({ deal }: AcquisitionInterviewProps
             <span>
               {isAlreadyOwned
                 ? `Ready — property will enter Phase ${startingPhase} on save.`
-                : 'All criteria met — ready to advance to Purchase phase.'
+                : 'All criteria met — ready to advance to the Fund phase.'
               }
             </span>
           </div>

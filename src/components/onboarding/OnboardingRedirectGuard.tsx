@@ -22,9 +22,9 @@ export function OnboardingRedirectGuard() {
   const hasRedirected = useRef(false);
 
   useEffect(() => {
-    // E2E test mode: __e2e_test=1 cookie disables the redirect so Playwright
-    // tests can navigate directly to dashboard routes without Firebase auth.
-    if (typeof document !== 'undefined' && document.cookie.includes('__e2e_test=1')) return;
+    // E2E test mode: __e2e_bypass_onboarding=1 cookie disables the redirect so Playwright
+    // tests can navigate directly to dashboard routes without completing onboarding.
+    if (typeof document !== 'undefined' && document.cookie.includes('__e2e_bypass_onboarding=1')) return;
 
     // Don't redirect while auth/profile is loading
     if (loading) return;

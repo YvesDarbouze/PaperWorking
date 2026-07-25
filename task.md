@@ -1,16 +1,28 @@
-- [x] P0-3: permits pure stub Socrata integration
-  - [x] Implement normalized jurisdiction mapping in `permitTrackerApi.ts`
-  - [x] Integrate `lookupPermit` into `syncPermitsFromMunicipality` in `permitTrackerApi.ts`
-  - [x] Run verification tests and verify TypeScript safety
-- [x] Phase 1 - P0 Ship Blockers Verification
-  - [x] ESignAction (P0-2) real DocuSign/mock integration and authentication checks
-  - [x] AnalyticsWidget (P0-3) real projects aggregation check
-  - [x] Admin Panel (P0-1) real Firestore/Stripe check
-  - [x] Admin Marketplace (P0-4) CSV export & Initiate Audit action check
-  - [x] Add ESign Provider unit test suite
-  - [x] Verify typesafety and check Jest test suite (283/283 green)
-- [x] Phase 2 - P1 Quick Wins
-  - [x] LenderPackagePdf (P1-9) route figures through @metrics, drop fake async
-  - [x] address.ts (P1-10) set google places as default address provider
-  - [x] Add Address Provider and LenderPackagePdf unit test suites
-  - [x] Verify typesafety and check Jest test suite (288/288 green)
+# Task Checklist — FD-5, FD-6, FD-7, & FD-8
+
+- [x] 1. Implement live gate criteria check server-side in `advanceProjectPhaseGate` (offer status, contingencies satisfied/waived, capital plan target raised)
+- [x] 2. Add manual override validation: failing criteria blocks advancement unless `overrideReason` is typed
+- [x] 3. Implement carry-over payload mapping: accepted price ➔ purchasePrice, capital intent ➔ FundingPlan modality pre-fill, LOIs ➔ commitments subscription pipeline
+- [x] 4. Update Postgres database structures (ReilPurchaseTerms, ReilFundingPlan, ReilContributionEntry) using Prisma sync
+- [x] 5. Display stored `overrideReason` on Phase 2 Kanban board header alert
+- [x] 6. Verify client-side celebration moment and checkstatus criteria rendering
+- [x] 7. Write new integration and unit tests for gate blocking/override behaviors and pass status
+- [x] 8. Seed the FX-1 Conventional Mortgage LoanRecord in Firestore under the canonical project
+- [x] 9. Seed the FX-2 to FX-8 Project Fixture Families in Firestore and Neon Postgres
+- [x] 10. Write golden-file validation test suite (`fundFixturesValidation.test.ts`) checking all fixture mathematical outcomes using live calculations
+- [x] 11. Run database seeding scripts and verify seeded records in database using query scripts
+- [x] 12. Run compiler diagnostics and all Jest tests successfully (1919/1919 passing)
+- [x] 13. Build F1.1 Modality Card inside `page.tsx` with all 8 funding modalities and explainer content
+- [x] 14. Add Carry-over provenance confirmation alert badge in Modality Card UI (Interview Law 3)
+- [x] 15. Create modality action endpoints `checkModalityReconciliation` and `confirmModalityReconciliation` in `src/actions/modality.ts`
+- [x] 16. Support guarded change checks: identify orphaned loan records, equity partners, and contribution ledger entries
+- [x] 17. Build reconciliation confirmation dialog to show orphaned items and execute archive updates to status `'Archived'` (not-deleted)
+- [x] 18. Write Unit tests in `src/__tests__/modalityReconciliation.test.ts` for modality and reconciliation behaviors
+- [x] 19. Run verification scripts demonstrating Postgres records are successfully marked as `Archived` after change
+- [x] 20. Implement single named engine function `calculateCapitalStack` in `src/lib/metrics/reiMetrics.ts`
+- [x] 21. Implement Capital Stack Composer view `FundingSourceTracker.tsx` displaying derived project costs
+- [x] 22. Sort sources by seniority (Senior Debt ➔ Junior Debt ➔ Equity) and show running reconciliation bar with funded vs gap
+- [x] 23. Add SBA 504 structure validation checking 50/40/10 standard and 50/35/15 special-purpose variants
+- [x] 24. Write Unit tests in `src/__tests__/capitalStackComposer.test.ts` verifying all engine outputs and validation rules
+- [x] 25. Mount `FundingSourceTracker` inside Phase 2 Card `F1.2` modal wrapper
+- [x] 26. Run verification script querying capital stack rows in Firestore and Neon Postgres

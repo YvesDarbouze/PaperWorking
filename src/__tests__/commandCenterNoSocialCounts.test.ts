@@ -102,14 +102,14 @@ describe('CommandCenter ProfileCard — real data wiring', () => {
     expect(CC).toMatch(/>\s*Deals\s*</);
   });
 
-  it('active_count_from_status: activeCount derived from project status !== Sold', () => {
-    expect(CC).toMatch(/filter\s*\(\s*p\s*=>\s*p\.status\s*!==\s*['"]Sold['"]\s*\)/);
+  it('active_count_from_status: activeCount derived from project status !== exit', () => {
+    expect(CC).toMatch(/filter\s*\(\s*p\s*=>\s*p\.status\s*!==\s*['"]exit['"]\s*\)/);
     expect(CC).toContain('activeCount');
     expect(CC).toMatch(/>\s*Active Projects\s*</);
   });
 
-  it('past_count_from_status: pastCount derived from project status === Sold', () => {
-    expect(CC).toMatch(/filter\s*\(\s*p\s*=>\s*p\.status\s*===\s*['"]Sold['"]\s*\)/);
+  it('past_count_from_status: pastCount derived from project status === exit', () => {
+    expect(CC).toMatch(/filter\s*\(\s*p\s*=>\s*p\.status\s*===\s*['"]exit['"]\s*\)/);
     expect(CC).toContain('pastCount');
     expect(CC).toMatch(/>\s*Past Projects\s*</);
   });
@@ -133,11 +133,11 @@ describe('CommandCenter ProfileCard — real data wiring', () => {
 interface MockProject { status?: string; }
 
 function activeCount(projects: MockProject[]): number {
-  return projects.filter((p) => p.status !== 'Sold').length;
+  return projects.filter((p) => p.status !== 'exit').length;
 }
 
 function pastCount(projects: MockProject[]): number {
-  return projects.filter((p) => p.status === 'Sold').length;
+  return projects.filter((p) => p.status === 'exit').length;
 }
 
 interface MockMember { status?: string; }
@@ -149,43 +149,43 @@ function computeTeamCount(members: MockMember[]): number {
 
 describe('activeCount / pastCount derivation logic', () => {
 
-  it('active_excludes_sold: a sold project is not counted as active', () => {
+  it('active_excludes_sold: an exited project is not counted as active', () => {
     const projects: MockProject[] = [
-      { status: 'Active' },
-      { status: 'Sold' },
-      { status: 'Under Contract' },
+      { status: 'acquisition' },
+      { status: 'exit' },
+      { status: 'fund' },
     ];
     expect(activeCount(projects)).toBe(2);
     expect(pastCount(projects)).toBe(1);
   });
 
-  it('all_active_when_no_sold: all projects active when none are sold', () => {
+  it('all_active_when_no_sold: all projects active when none are exited', () => {
     const projects: MockProject[] = [
-      { status: 'Active' },
-      { status: 'Under Contract' },
-      { status: 'Pending' },
+      { status: 'acquisition' },
+      { status: 'fund' },
+      { status: 'hold' },
     ];
     expect(activeCount(projects)).toBe(3);
     expect(pastCount(projects)).toBe(0);
   });
 
-  it('all_sold_when_portfolio_exited: all projects past when all sold', () => {
+  it('all_sold_when_portfolio_exited: all projects past when all exited', () => {
     const projects: MockProject[] = [
-      { status: 'Sold' },
-      { status: 'Sold' },
+      { status: 'exit' },
+      { status: 'exit' },
     ];
     expect(activeCount(projects)).toBe(0);
     expect(pastCount(projects)).toBe(2);
   });
 
   it('undefined_status_counts_as_active: project with no status is treated as active', () => {
-    const projects: MockProject[] = [{ status: undefined }, { status: 'Sold' }];
+    const projects: MockProject[] = [{ status: undefined }, { status: 'exit' }];
     expect(activeCount(projects)).toBe(1);
   });
 
   it('active_plus_past_equals_total: activeCount + pastCount = total projects', () => {
     const projects: MockProject[] = [
-      { status: 'Active' }, { status: 'Sold' }, { status: 'Active' }, { status: 'Sold' }, { status: 'Pending' },
+      { status: 'acquisition' }, { status: 'exit' }, { status: 'hold' }, { status: 'exit' }, { status: 'fund' },
     ];
     expect(activeCount(projects) + pastCount(projects)).toBe(projects.length);
   });

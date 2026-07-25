@@ -1,6 +1,7 @@
 import { db } from './config';
 import { 
   doc, 
+  getDoc,
   setDoc, 
   updateDoc, 
   serverTimestamp,
@@ -11,7 +12,7 @@ import {
    Users Service — Account & Organization Management
    
    Handles onboarding persistence, profile updates, 
-   and organization memberships for PaperWorking.
+   banner dismissal preferences, and organization memberships.
    ════════════════════════════════─────────────────────── */
 
 export const usersService = {
@@ -61,5 +62,62 @@ export const usersService = {
       internalRole: role,
       updatedAt: serverTimestamp()
     });
-  }
+  },
+
+  /**
+   * User-scoped phase banner dismissal status (Workspace Plane).
+   * Persists to Firestore user document preferences under `dismissedBanners.<phase>`.
+   */
+  async getPhaseBannerDismissed(userId: string, phase: string): Promise<boolean> {
+    if (!userId || userId === 'guest') {
+      if (typeof window !== 'undefined') {
+        return localStorage.getItem(`pw_banner_dismissed_${phase}_guest`) === 'true';
+      }
+      return false;
+    }
+
+    try {
+      const userRef = doc(db, 'users', userId);
+      const snap = await getDoc(userRef);
+      if (snap.exists()) {
+        const data = snap.data();
+        return !!data?.dismissedBanners?.[phase];
+      }
+    } catch (err) {
+      console.warn('Firestore read fallback to localStorage:', err);
+    }
+
+    if (typeof window !== 'undefined') {
+      return localStorage.getItem(`pw_banner_dismissed_${phase}_${userId}`) === 'true';
+    }
+    return false;
+  },
+
+  /**
+   * Set user-scoped phase banner dismissal (Workspace Plane).
+   * Writes to Firestore user document and syncs local storage.
+   */
+  async setPhaseBannerDismissed(userId: string, phase: string): Promise<void> {
+    if (typeof window !== 'undefined') {
+      localStorage.setItem(`pw_banner_dismissed_${phase}_${userId}`, 'true');
+    }
+
+    if (!userId || userId === 'guest') return;
+
+    try {
+      const userRef = doc(db, 'users', userId);
+      await setDoc(
+        userRef,
+        {
+          dismissedBanners: {
+            [phase]: true,
+          },
+          updatedAt: serverTimestamp(),
+        },
+        { merge: true }
+      );
+    } catch (err) {
+      console.warn('Firestore write fallback:', err);
+    }
+  },
 };

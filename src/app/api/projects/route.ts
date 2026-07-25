@@ -5,6 +5,9 @@ import { z } from 'zod';
 import { canCreateProject } from '@/lib/entitlements/server';
 import { clearDashboardCache } from '@/lib/cache/dashboardCache';
 import { logOrgActivity } from '@/lib/firebase/orgActivityWriter';
+import { resolveOrCreateProperty } from '@/lib/services/propertyService';
+import { canonicalizeAddress, generateDealSlug } from '@/lib/identity/propertyIdentity';
+import type { AddressComponents } from '@/types/propertyTypes';
 
 /* ═══════════════════════════════════════════════════════════════
    POST /api/projects — Create a new project (Draft or Active)
@@ -34,10 +37,13 @@ const wizardFinancialsSchema = z.object({
   soldDate: z.any().optional(),
   actualSalePrice: z.number().nonnegative().optional(),
   loanAmount: z.number().nonnegative().optional(),
-  loanInterestRate: z.number().optional(),
+  loanInterestRate: z.number().nonnegative().optional(),
   loanTermYears: z.number().positive().optional(),
   rehabActual: z.number().nonnegative().optional(),
   capitalRaiseTarget: z.number().nonnegative().optional(),
+  annualDebtService: z.any().refine(val => val === undefined, {
+    message: "annualDebtService is read-only and cannot be updated"
+  }).optional(),
   equitySplit: z.number().optional(),
   requiredContingencies: z.array(z.string()).optional(),
   purchaseContractDoc: z.string().optional(),
@@ -90,6 +96,7 @@ const wizardSubmitSchema = z.object({
   mlsSqft: z.number().nullable().optional(),
   mlsThumbnailUrl: z.string().nullable().optional(),
   mlsStandardStatus: z.string().nullable().optional(),
+  placeId: z.string().nullable().optional(),
   financials: wizardFinancialsSchema,
   organizationId: z.string().min(1, 'Organization ID is required'),
 }).passthrough();
@@ -99,20 +106,20 @@ const wizardSubmitSchema = z.object({
 function derivePhaseFromREIStatus(reiStatus?: string) {
   switch (reiStatus) {
     case 'Target':
-      return { phaseStatus: 'Phase 1: Find & Fund', currentPhase: 1, status: 'Lead' };
+      return { phaseStatus: 'Phase 1: Acquisition', currentPhase: 1, status: 'acquisition' };
     case 'In Contract':
-      return { phaseStatus: 'Phase 2: Acquisition', currentPhase: 2, status: 'Under Contract' };
     case 'Acquired':
-      return { phaseStatus: 'Phase 2: Acquisition', currentPhase: 2, status: 'Under Contract' };
+      return { phaseStatus: 'Phase 2: Fund', currentPhase: 2, status: 'fund' };
     case 'Rehabbing':
     case 'Under Construction':
-      return { phaseStatus: 'Phase 3: Holding & Rehab', currentPhase: 3, status: 'Renovating' };
     case 'Renting':
-      return { phaseStatus: 'Phase 3: Holding & Rehab', currentPhase: 3, status: 'Rented' };
+      return { phaseStatus: 'Phase 3: Hold', currentPhase: 3, status: 'hold' };
     case 'For Sale':
-      return { phaseStatus: 'Phase 4: Closing & Exit', currentPhase: 4, status: 'Listed' };
+    case 'realized':
+    case 'Sold':
+      return { phaseStatus: 'Phase 4: Exit', currentPhase: 4, status: 'exit' };
     default:
-      return { phaseStatus: 'Phase 1: Find & Fund', currentPhase: 1, status: 'Active' };
+      return { phaseStatus: 'Phase 1: Acquisition', currentPhase: 1, status: 'acquisition' };
   }
 }
 
@@ -202,7 +209,51 @@ export async function POST(request: NextRequest) {
     const finalPhase = hasSoldDate ? 4 : currentPhase;
     const finalStatus = hasSoldDate ? 'Sold' : (data.status || status);
 
-    // 5. Build Firestore document
+    // 5a. DM-2: Resolve or create Property record if placeId available
+    let propertyId: string | undefined;
+    let placeId: string | undefined;
+    let dealSlug: string | undefined;
+
+    if (data.placeId) {
+      try {
+        const addressComponents: AddressComponents = {
+          streetNumber: (data.street || '').split(' ')[0] || '',
+          route: (data.street || '').split(' ').slice(1).join(' ') || '',
+          city: data.city || '',
+          state: (data.state || '').toUpperCase().slice(0, 2),
+          zip: data.zip || '',
+        };
+
+        const { property } = await resolveOrCreateProperty({
+          placeId: data.placeId,
+          addressComponents,
+          coordinates: {
+            lat: data.lat ?? 0,
+            lng: data.lng ?? 0,
+          },
+        });
+
+        propertyId = property.id;
+        placeId = property.placeId;
+
+        // Generate dealSlug — fetch existing slugs for collision check
+        const existingSlugsSnap = await adminDb
+          .collection('projects')
+          .where('organizationId', '==', organizationId)
+          .select('dealSlug')
+          .get();
+        const existingSlugs = existingSlugsSnap.docs
+          .map(d => d.data().dealSlug)
+          .filter(Boolean) as string[];
+
+        dealSlug = generateDealSlug(property.canonicalAddress, existingSlugs);
+      } catch (propErr) {
+        // Property resolution failure is non-blocking — project still creates
+        console.error('[Projects] Property resolution failed (non-blocking):', propErr);
+      }
+    }
+
+    // 6. Build Firestore document
     const projectRef = adminDb.collection('projects').doc();
     const now = new Date();
 
@@ -214,6 +265,9 @@ export async function POST(request: NextRequest) {
       currentPhase: finalPhase,
       status: finalStatus,
       ownerUid: uid,
+      ...(propertyId && { propertyId }),
+      ...(placeId && { placeId }),
+      ...(dealSlug && { dealSlug }),
       members: {
         [uid]: {
           role: 'Lead Investor',

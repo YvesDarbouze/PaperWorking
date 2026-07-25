@@ -431,9 +431,8 @@ export async function getAdminActivityStats(): Promise<AdminActivityStats> {
 
     projectsSnap.docs.forEach((doc) => {
       const d = doc.data();
-      const status = (d.status || '').toLowerCase();
-
-      if (status === 'active' || status === 'in_progress' || status === 'rehab' || status === 'under_contract') {
+      const status = d.status;
+      if (status === 'fund' || status === 'hold') {
         activeProjects++;
       }
 

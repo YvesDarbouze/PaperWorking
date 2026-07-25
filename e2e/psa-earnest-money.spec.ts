@@ -14,8 +14,12 @@ test.describe('PaperWorking E2E — PSA & Earnest Money (AQ-19)', () => {
 
     // Bypass Cookie Consent popup
     await page.addInitScript(() => {
-      window.localStorage.setItem('pw_cookie_consent', JSON.stringify({ essential: true, analytics: true, marketing: true }));
-    });
+    try {
+    
+          window.localStorage.setItem('pw_cookie_consent', JSON.stringify({ essential: true, analytics: true, marketing: true }));
+        
+    } catch (e) {}
+  });
   });
 
   async function hydrateClick(locator: Locator, maxAttempts = 5) {

@@ -12,12 +12,19 @@ import {
 import { StepRail } from "./StepRail";
 import { InviteModal } from "./InviteModal";
 import { AddressStep }   from "./steps/AddressStep";
-import { StatusStep }    from "./steps/StatusStep";
-import { PropertyStep }  from "./steps/PropertyStep";
-import { OwnershipStep } from "./steps/OwnershipStep";
-import { TermsStep }     from "./steps/TermsStep";
+import {
+  ProjectNameStep,
+  StrategyStep,
+  StatusStep,
+  PropertyTypeStep,
+  UnitsStep,
+  ConditionStep,
+  OwnershipStep,
+  EntityNameStep,
+  PurchasePriceStep,
+  RehabBudgetStep,
+} from "./steps/ProgressiveSteps";
 import { ReviewStep }    from "./steps/ReviewStep";
-import { IntakeStep }    from "./steps/IntakeStep";
 import { ButtonGroup }   from "@/components/ui/ButtonGroup";
 
 // ─── API helpers ──────────────────────────────────────────────────────────────
@@ -42,19 +49,7 @@ async function apiPatch(path: string, body: object, token: string) {
   return res.json();
 }
 
-// ─── Component ────────────────────────────────────────────────────────────────
-
-interface AcquisitionWizardProps {
-  initialProjectId?: string;
-  /** When provided the wizard behaves as a modal overlay: save & exit calls onClose
-   *  instead of router.push, and the consumer is responsible for mounting/unmounting. */
-  onClose?: () => void;
-}
-
 // ─── REIL phase progress strip ────────────────────────────────────────────────
-// Shown in the wizard top bar so the user always knows where Acquisition sits
-// relative to the full investment lifecycle.
-
 const REIL_PHASES = [
   { key: "acquisition", label: "Acquisition" },
   { key: "fund",        label: "Fund"        },
@@ -95,7 +90,7 @@ function REILPhaseStrip() {
   );
 }
 
-export function AcquisitionWizard({ initialProjectId, onClose }: AcquisitionWizardProps) {
+export function AcquisitionWizard({ initialProjectId, onClose }: { initialProjectId?: string; onClose?: () => void }) {
   const router = useRouter();
   const { user } = useAuth();
 
@@ -106,8 +101,8 @@ export function AcquisitionWizard({ initialProjectId, onClose }: AcquisitionWiza
   const store = useAcquisitionWizard();
   const {
     projectId, currentStep, completion, savedAt, isSaving,
-    intake, address, status, ownership, terms,
-    setProjectId, goToStep, setSaving, markSaved, reset,
+    address, projectName, strategy, status, propertyType, units, condition, ownership, purchasePrice, rehabBudget,
+    setProjectId, goToStep, setSaving, markSaved, reset, setAddress, setProjectName,
   } = store;
 
   // ── Rehydrate from initialProjectId (draft resume) ──
@@ -115,99 +110,149 @@ export function AcquisitionWizard({ initialProjectId, onClose }: AcquisitionWiza
     if (initialProjectId && initialProjectId !== projectId) {
       setProjectId(initialProjectId);
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [initialProjectId]);
+  }, [initialProjectId, projectId, setProjectId]);
+
+  // ── Pre-resolved address loader from sessionStorage ──
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      const pending = sessionStorage.getItem("pw_pending_project_address");
+      if (pending) {
+        try {
+          const resolvedAddr = JSON.parse(pending);
+          if (resolvedAddr && resolvedAddr.placeId) {
+            setAddress(resolvedAddr);
+            setProjectName(resolvedAddr.displayName || resolvedAddr.addressLine);
+            sessionStorage.removeItem("pw_pending_project_address");
+            if (currentStep === "address") {
+              goToStep("projectName");
+            }
+          }
+        } catch (e) {
+          console.error("Failed to parse pending address:", e);
+        }
+      }
+    }
+  }, [setAddress, setProjectName, goToStep, currentStep]);
+
+  // ── Auto-skipping of AddressStep if pre-populated ──
+  useEffect(() => {
+    if (address.placeId && currentStep === "address") {
+      goToStep("projectName");
+    }
+  }, [address.placeId, currentStep, goToStep]);
 
   // ── Debounced auto-save ──────────────────────────────────────────────────────
-
   const saveTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const save = useCallback(async () => {
-    if (!user) return;
+    if (!user || !address.placeId) return;
     setSaving(true);
 
     try {
       const token = await user.getIdToken();
 
       let computedPhase = 1;
-      let computedStatus = "PROSPECT";
+      const computedStatus = status.acquisitionStatus || "PROSPECT";
       let computedRetrospective = false;
 
-      if (intake.journey === "targeting") {
+      if (computedStatus === "PROSPECT") {
         computedPhase = 1;
-        computedStatus = "PROSPECT";
-      } else if (intake.journey === "under_contract") {
+      } else if (computedStatus === "UNDER_CONTRACT") {
         computedPhase = 1;
-        computedStatus = "CLEAR_TO_CLOSE";
-      } else if (intake.journey === "owned_closing") {
+      } else if (computedStatus === "OWNED") {
         computedPhase = 2;
-        computedStatus = "OWNED";
-      } else if (intake.journey === "renovating_marketing") {
-        computedPhase = 3;
-        computedStatus = "OWNED";
-      } else if (intake.journey === "rented_leased_sold") {
+      } else if (computedStatus === "CLOSED") {
         computedPhase = 4;
-        computedStatus = "CLOSED";
         computedRetrospective = true;
       }
 
-      let computedSubStrategy: string | null = null;
-      if (intake.dispositionType === "RENT") {
-        computedSubStrategy = "LONG_TERM";
-      } else if (intake.dispositionType === "SALE") {
-        computedSubStrategy = "FLIP";
-      } else if (intake.dispositionType === "LEASE") {
-        computedSubStrategy = "NNN";
-      }
+      const computedSubStrategy = 
+        strategy === "RENT" ? "LONG_TERM" :
+        strategy === "SALE" ? "FLIP" :
+        strategy === "LEASE" ? "NNN" : null;
+
+      const computedOwnership = 
+        ownership.ownershipStructure === "INDIVIDUAL" ? "SOLE_OWNER" :
+        ownership.ownershipStructure === "CO_OWNERSHIP" ? "JOINT_VENTURE" :
+        ownership.ownershipStructure === "ENTITY" ? "LLC" : null;
 
       const payload = {
-        addressLine:        address.addressLine,
-        city:               address.city,
-        state:              address.state,
-        zip:                address.zip,
+        addressLine:        address.addressLine || address.formattedAddress || "",
+        city:               address.city || "",
+        state:              address.state || "",
+        zip:                address.zip || "",
         lat:                address.lat ?? null,
         lng:                address.lng ?? null,
         placeId:            address.placeId ?? null,
-        displayName:        address.displayName ?? null,
+        displayName:        projectName || address.displayName || null,
         acquisitionStatus:  computedStatus,
-        ownershipStructure: ownership.ownershipStructure ?? null,
+        ownershipStructure: computedOwnership,
         entityType:         ownership.entityType ?? null,
         entityName:         ownership.entityName ?? null,
         coOwners:           ownership.coOwners   ?? [],
         currentPhase:       computedPhase,
-        dispositionType:    intake.dispositionType ?? null,
+        dispositionType:    strategy || null,
         subStrategy:        computedSubStrategy,
-        entryStage:         intake.journey ?? null,
         retrospective:      computedRetrospective,
-        apn:                address.apn ?? null,
-        propertyType:       address.propertyType ?? null,
-        units:              address.units ?? null,
-        sqft:               address.sqft ?? null,
-        lotSqft:            address.lotSqft ?? null,
-        yearBuilt:          address.yearBuilt ?? null,
-        condition:          address.condition ?? null,
+        propertyType:       propertyType || null,
+        units:              units || null,
+        condition:          condition || null,
+        financials: {
+          purchasePrice: purchasePrice ? purchasePrice / 100 : 0,
+          rehabBudget: rehabBudget ? rehabBudget / 100 : 0,
+        }
       };
 
-      if (!projectId) {
+      let activeProjectId = projectId;
+
+      if (!activeProjectId) {
         const created = await apiPost("/api/reil/projects", payload, token);
+        activeProjectId = created.id;
         setProjectId(created.id);
       } else {
-        await apiPatch(`/api/reil/projects/${projectId}`, payload, token);
+        await apiPatch(`/api/reil/projects/${activeProjectId}`, payload, token);
       }
+
+      // Also upsert purchase terms in relational table if purchasePrice is set
+      if (activeProjectId && purchasePrice > 0) {
+        await apiPost(`/api/reil/projects/${activeProjectId}/terms`, {
+          offerMadeCents: purchasePrice,
+          offerDate: new Date().toISOString(),
+          sellerResponse: "ACCEPTED",
+          acceptedPriceCents: purchasePrice,
+        }, token);
+      }
+
       markSaved();
     } catch (err) {
       console.error("[AcquisitionWizard] save error:", err);
       setSaving(false);
     }
-  }, [user, projectId, intake, address, status, ownership, setProjectId, setSaving, markSaved]);
+  }, [
+    user, projectId, address, projectName, strategy, status, propertyType, units, condition, ownership, purchasePrice, rehabBudget,
+    setProjectId, setSaving, markSaved
+  ]);
 
   const scheduleSave = useCallback(() => {
     if (saveTimerRef.current) clearTimeout(saveTimerRef.current);
     saveTimerRef.current = setTimeout(save, 1_500);
   }, [save]);
 
-  // Trigger auto-save whenever intake/address/status/ownership change
-  useEffect(() => { scheduleSave(); }, [intake, address, status, ownership, scheduleSave]);
+  // Trigger auto-save whenever fields change (excluding raw step location)
+  useEffect(() => {
+    if (projectId || (address.placeId && currentStep !== "address")) {
+      scheduleSave();
+    }
+  }, [
+    projectId, address.placeId, currentStep,
+    address, projectName, strategy, status, propertyType, units, condition, ownership, purchasePrice, rehabBudget,
+    scheduleSave
+  ]);
+
+  // Cleanup auto-save timer on unmount
+  useEffect(() => {
+    return () => { if (saveTimerRef.current) clearTimeout(saveTimerRef.current); };
+  }, []);
 
   // ── Focus management — move focus to step heading on step change ────────────
   useEffect(() => {
@@ -215,44 +260,28 @@ export function AcquisitionWizard({ initialProjectId, onClose }: AcquisitionWiza
   }, [currentStep]);
 
   // ── Step navigation ──────────────────────────────────────────────────────────
-
   const stepKeys = WIZARD_STEPS.map(s => s.key);
-  const currentIdx = stepKeys.indexOf(currentStep);
+  const currentIdx = stepKeys.indexOf(currentStep as any);
 
   const goNext = useCallback(() => {
-    if (currentStep === "intake") {
-      goToStep("address");
+    if (currentStep === "ownership" && ownership.ownershipStructure !== "ENTITY") {
+      goToStep("purchasePrice");
       return;
     }
-
-    if (currentStep === "address") {
-      if (intake.journey === "under_contract") {
-        goToStep("terms");
-      } else if (
-        intake.journey === "owned_closing" ||
-        intake.journey === "renovating_marketing" ||
-        intake.journey === "rented_leased_sold"
-      ) {
-        goToStep("review");
-      } else {
-        goToStep("status");
-      }
-      return;
-    }
-
-    if (currentStep === "terms") {
-      goToStep("review");
-      return;
-    }
-
     const next = stepKeys[currentIdx + 1];
     if (next) goToStep(next as WizardStepKey);
-  }, [currentStep, currentIdx, stepKeys, goToStep, intake.journey]);
+  }, [currentStep, currentIdx, stepKeys, goToStep, ownership.ownershipStructure]);
+
+  const goBack = useCallback(() => {
+    if (currentStep === "purchasePrice" && ownership.ownershipStructure !== "ENTITY") {
+      goToStep("ownership");
+      return;
+    }
+    const prev = stepKeys[currentIdx - 1];
+    if (prev) goToStep(prev as WizardStepKey);
+  }, [currentStep, currentIdx, stepKeys, goToStep, ownership.ownershipStructure]);
 
   // ── Save & exit ──────────────────────────────────────────────────────────────
-  // When used as a modal overlay (onClose provided), closing returns to the
-  // dashboard without navigating. When used as a standalone page, we route back.
-
   const handleSaveExit = useCallback(async () => {
     await save();
     if (onClose) {
@@ -263,29 +292,30 @@ export function AcquisitionWizard({ initialProjectId, onClose }: AcquisitionWiza
   }, [save, onClose, router]);
 
   // ── Final submit (Review step) ───────────────────────────────────────────────
-
   const handleSubmit = useCallback(async () => {
     await save();
     if (projectId) {
       reset();
-      // Always navigate to the project workspace on submit
       router.push(`/dashboard/projects/${projectId}`);
-      // Close the modal overlay after navigation completes (if in modal mode)
       onClose?.();
     }
   }, [save, projectId, reset, router, onClose]);
 
   // ── Step renderer ────────────────────────────────────────────────────────────
-
   function renderStep() {
     switch (currentStep) {
-      case "intake":    return <IntakeStep    onNext={goNext} />;
-      case "address":   return <AddressStep   onNext={goNext} />;
-      case "status":    return <StatusStep    onNext={goNext} />;
-      case "property":  return <PropertyStep  onNext={goNext} />;
-      case "ownership": return <OwnershipStep onNext={goNext} />;
-      case "terms":     return <TermsStep     onNext={goNext} />;
-      case "review":    return <ReviewStep    onSubmit={handleSubmit} submitting={isSaving} onGoToStep={goToStep} />;
+      case "address":       return <AddressStep onNext={goNext} />;
+      case "projectName":   return <ProjectNameStep onNext={goNext} onBack={goBack} />;
+      case "strategy":      return <StrategyStep onNext={goNext} onBack={goBack} />;
+      case "status":        return <StatusStep onNext={goNext} onBack={goBack} />;
+      case "propertyType":  return <PropertyTypeStep onNext={goNext} onBack={goBack} />;
+      case "units":         return <UnitsStep onNext={goNext} onBack={goBack} />;
+      case "condition":     return <ConditionStep onNext={goNext} onBack={goBack} />;
+      case "ownership":     return <OwnershipStep onNext={goNext} onBack={goBack} />;
+      case "entityName":    return <EntityNameStep onNext={goNext} onBack={goBack} />;
+      case "purchasePrice": return <PurchasePriceStep onNext={goNext} onBack={goBack} />;
+      case "rehabBudget":   return <RehabBudgetStep onNext={goNext} onBack={goBack} />;
+      case "review":        return <ReviewStep onSubmit={handleSubmit} submitting={isSaving} onGoToStep={goToStep as any} onBack={goBack} />;
     }
   }
 
@@ -305,7 +335,7 @@ export function AcquisitionWizard({ initialProjectId, onClose }: AcquisitionWiza
           savedAt={savedAt}
           isSaving={isSaving}
           projectId={projectId}
-          projectName={address.displayName ?? undefined}
+          projectName={projectName || undefined}
         />
       </div>
 
@@ -324,7 +354,7 @@ export function AcquisitionWizard({ initialProjectId, onClose }: AcquisitionWiza
               savedAt={savedAt}
               isSaving={isSaving}
               projectId={projectId}
-              projectName={address.displayName ?? undefined}
+              projectName={projectName || undefined}
             />
           </div>
         </div>
@@ -358,11 +388,11 @@ export function AcquisitionWizard({ initialProjectId, onClose }: AcquisitionWiza
             <REILPhaseStrip />
 
             {/* Desktop: deal name suffix when address is set */}
-            {address.displayName && (
+            {projectName && (
               <span className="hidden md:flex items-center gap-1.5 min-w-0">
                 <span className="text-[13px]" style={{ color: "rgba(253,255,252,0.25)" }}>·</span>
                 <span className="text-[13px] font-medium truncate" style={{ color: "rgba(253,255,252,0.55)" }}>
-                  {address.displayName}
+                  {projectName}
                 </span>
               </span>
             )}
@@ -400,7 +430,7 @@ export function AcquisitionWizard({ initialProjectId, onClose }: AcquisitionWiza
               <span className="hidden sm:inline">Save &amp; exit</span>
             </button>
 
-            {/* Close button — only shown when mounted as a modal overlay */}
+            {/* Close button — only when mounted as a modal overlay */}
             {onClose && (
               <button
                 onClick={onClose}
@@ -455,7 +485,7 @@ export function AcquisitionWizard({ initialProjectId, onClose }: AcquisitionWiza
       {projectId && (
         <InviteModal
           projectId={projectId}
-          projectName={address.displayName ?? undefined}
+          projectName={projectName || undefined}
           isOpen={inviteOpen}
           onClose={() => setInviteOpen(false)}
         />

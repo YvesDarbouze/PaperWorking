@@ -27,7 +27,7 @@ test('DoD: /how-it-works renders correctly', async ({ page }) => {
   // --- Acceptance: full content visible ---
   // REIL framework phases
   expect(body).toContain('Acquisition');
-  expect(body).toContain('Closing');
+  expect(body).toContain('Fund');
   expect(body).toContain('Hold');
   expect(body).toContain('Exit');
   // Page identity

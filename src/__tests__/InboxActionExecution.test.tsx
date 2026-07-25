@@ -276,6 +276,12 @@ describe('Inbox Action Execution Flow', () => {
         ],
       });
 
+      // Mock commitments subcollection query (empty commitments, not locked)
+      mockGet.mockResolvedValueOnce({
+        empty: true,
+        docs: [],
+      });
+
       // Mock project owner query and Resend send email
       mockGet.mockResolvedValueOnce({
         exists: true,

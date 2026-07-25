@@ -204,7 +204,7 @@ describe('deepDiff', () => {
 
   it('diffs a realistic project financials update', () => {
     const before = {
-      status: 'Active',
+      status: 'acquisition',
       financials: {
         purchasePrice: 200000,
         loanAmount: 150000,
@@ -214,7 +214,7 @@ describe('deepDiff', () => {
       members: { uid1: { role: 'Lead Investor' } },
     };
     const after = {
-      status: 'Active',
+      status: 'acquisition',
       financials: {
         purchasePrice: 210000, // changed
         loanAmount: 150000,

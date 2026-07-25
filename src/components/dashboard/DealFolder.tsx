@@ -31,15 +31,10 @@ import { PHASE_BACKGROUNDS } from '@/lib/constants/phaseMessages';
 
 /* ─── Phase accent map ─── */
 const STATUS_COLOR: Record<string, string> = {
-  Lead:             PHASE_BACKGROUNDS.findandfund || '#CCCCCC',
-  Sourcing:         PHASE_BACKGROUNDS.findandfund || '#CCCCCC',
-  'Under Contract': PHASE_BACKGROUNDS.evaluation || '#A6A6A6',
-  Renovating:       PHASE_BACKGROUNDS.rehab || '#808080',
-  Rehab:            PHASE_BACKGROUNDS.rehab || '#808080',
-  Listed:           PHASE_BACKGROUNDS.exit || '#595959',
-  Sold:             PHASE_BACKGROUNDS.exit || '#595959',
-  Rented:           PHASE_BACKGROUNDS.exit || '#595959',
-  Closed:           PHASE_BACKGROUNDS.exit || '#595959',
+  acquisition:      PHASE_BACKGROUNDS.findandfund || '#CCCCCC',
+  fund:             PHASE_BACKGROUNDS.evaluation || '#A6A6A6',
+  hold:             PHASE_BACKGROUNDS.rehab || '#808080',
+  exit:             PHASE_BACKGROUNDS.exit || '#595959',
 };
 
 /* ─── 4-Stage Lifecycle mapping ─── */

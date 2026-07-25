@@ -16,7 +16,7 @@ import type {
      zip: string;
      address: string;
      projectId?: string;
-     phaseIReportText?: string;   // paste or OCR text from Phase I ESA
+     phaseIReportText?: string;   // paste or copied text from Phase I ESA
    }
    ═══════════════════════════════════════════════════════════════ */
 

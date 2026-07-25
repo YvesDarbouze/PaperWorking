@@ -15,18 +15,12 @@ export default function ProjectPage() {
 
     let path = 'phase-1';
     
-    if (project.retrospective || project.status === 'Sold' || project.status === 'closed_won' || project.status === 'closed_lost') {
+    if (project.status === 'exit' || project.currentPhase === 4 || project.retrospective) {
       path = 'phase-4';
-    } else if (project.status === 'Renovating' || project.status === 'Rented' || project.entryStage === 'renovating_marketing') {
+    } else if (project.status === 'hold' || project.currentPhase === 3) {
       path = 'phase-3';
-    } else if (project.status === 'Under Contract' && project.entryStage === 'owned_closing') {
+    } else if (project.status === 'fund' || project.currentPhase === 2) {
       path = 'phase-2';
-    } else if (project.phaseStatus?.includes('Phase 2') || project.currentPhase === 2) {
-      path = 'phase-2';
-    } else if (project.phaseStatus?.includes('Phase 3') || project.currentPhase === 3) {
-      path = 'phase-3';
-    } else if (project.phaseStatus?.includes('Phase 4') || project.currentPhase === 4) {
-      path = 'phase-4';
     }
 
     router.replace(`/dashboard/projects/${projectId}/${path}`);

@@ -9,8 +9,25 @@
 import type { EquityTerms } from './schema';
 
 // ── Lifecycle ────────────────────────────────────────────
-export type ListingStatus = 'draft' | 'published' | 'paused' | 'closed';
+export type ListingStatus = 'draft' | 'published' | 'paused' | 'closed' | 'withdrawn' | 'takedown_review';
 export type ClosedReason = 'manual' | 'auto_phase_advance' | 'project_archived';
+
+// ── Visibility (DM-6 / DM-D1) ───────────────────────────
+// PRIVATE:           Only the owner and explicitly invited investors can see this deal.
+// MARKETPLACE:       Visible to all platform subscribers (obfuscated teaser to non-subscribers).
+// PUBLIC_SOLICITED:  Visible to anyone — IRREVERSIBLE once set. Gated by DM-D1.
+export type VisibilityMode = 'PRIVATE' | 'MARKETPLACE' | 'PUBLIC_SOLICITED';
+
+export interface DealTransitionEntry {
+  from: ListingStatus;
+  to: ListingStatus;
+  performedBy: string;        // UID of actor
+  performedAt: string;        // ISO-8601 timestamp
+  reason?: string;            // Human-readable reason
+  visibilityBefore?: VisibilityMode;
+  visibilityAfter?: VisibilityMode;
+  publicSolicitationAcknowledgment?: string; // Logged typed acknowledgment for general solicitation
+}
 
 // ── Lead Investor (public-safe subset) ───────────────────
 export interface ListingLeadInvestor {
@@ -24,12 +41,29 @@ export interface ListingLeadInvestor {
 export interface DealListing {
   id: string;
   projectId: string;
+  propertyId?: string;
+  placeId?: string;
   organizationId: string;
   ownerUid: string;
 
   // Lifecycle
   status: ListingStatus;
   closedReason?: ClosedReason;
+  visibilityMode: VisibilityMode;
+  publicSolicitationAcknowledgment?: string;
+  publicSolicitationAcknowledgedAt?: string;
+
+  // Withdrawal tracking (DM-6)
+  withdrawnAt?: string;
+  withdrawnBy?: string;         // UID of who withdrew
+
+  // Audit trail (DM-6)
+  transitionLog: DealTransitionEntry[];
+  exposedDocumentIds?: string[];
+
+  // Versioning (DM-23)
+  version?: number;
+  versions?: any[];
 
   // Property snapshot (captured at publish, refreshable)
   propertyName: string;
@@ -66,12 +100,18 @@ export interface DealListing {
   followCount: number;
   viewCount: number;
 
+  // Disclosure and gate tracking
+  disclosureAcknowledgedForMode?: VisibilityMode | null;
+  controlStatus?: 'owned' | 'under-contract' | 'option' | 'exclusive_right' | 'none' | null;
+  publishGateResult?: PublishGateResult | null;
+
   // Timestamps
   createdAt: string;
   publishedAt?: string;
   pausedAt?: string;
   closedAt?: string;
   updatedAt: string;
+  isCrowdfunding?: boolean;
 }
 
 // ── Obfuscated Teaser ────────────────────────────────────
@@ -80,6 +120,8 @@ export interface DealListing {
 export interface DealListingTeaser {
   id: string;
   projectId: string;
+  propertyId?: string;
+  placeId?: string;
   status: ListingStatus;
 
   // Location (neighborhood only)
@@ -111,6 +153,7 @@ export interface DealListingTeaser {
 
   // Timestamps
   publishedAt?: string;
+  isCrowdfunding?: boolean;
 }
 
 // ── Obfuscation Config ───────────────────────────────────
@@ -149,4 +192,68 @@ export interface CommitmentExpression {
   status: 'pending' | 'accepted' | 'declined';
   createdAt: string;
   updatedAt: string;
+}
+
+// ── Deal Search Result (DM-7) ────────────────────────────
+// Discriminated union for address search results.
+// Visibility governs what an anonymous principal receives.
+export interface ResolvedAddress {
+  placeId: string;
+  formattedAddress: string;
+  addressLine: string;
+  city: string;
+  state: string;
+  zip: string;
+  lat: number;
+  lng: number;
+}
+
+export type DealSearchResult =
+  | { mode: 'public_solicited'; teaser: DealListingTeaser }
+  | { mode: 'marketplace'; listingId: string; exists: true }
+  | { mode: 'not_found' }
+  | { mode: 'cold_start'; address: string; resolvedAddress?: ResolvedAddress };
+
+import type { Project } from './schema';
+import type { ActiveProjectMetrics } from '@/lib/metrics';
+
+export interface SubscriberDealMatch {
+  listing: DealListing;
+  metrics: ActiveProjectMetrics;
+  project: Project;
+}
+
+export interface SubscriberPropertyResult {
+  propertyId?: string;
+  placeId?: string;
+  canonicalAddress: string;
+  city: string;
+  state: string;
+  zipCode: string;
+  coordinates?: { lat: number; lng: number };
+  deals: SubscriberDealMatch[];
+}
+
+export interface SubscriberSearchResult {
+  mode: 'results' | 'cold_start';
+  results?: SubscriberPropertyResult[];
+  address?: string;
+  resolvedAddress?: ResolvedAddress;
+}
+
+export type DealSortOption = 'relevance' | 'freshness' | 'yield' | 'activity' | 'price_asc' | 'price_desc';
+
+export interface PublishGateCriterion {
+  key: string;
+  label: string;
+  status: boolean;
+  isRed: boolean;
+  detail?: string;
+}
+
+export interface PublishGateResult {
+  passed: boolean;
+  evaluatedAt: string;
+  overrideReason?: string;
+  criteria: PublishGateCriterion[];
 }

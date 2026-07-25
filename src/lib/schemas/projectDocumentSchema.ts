@@ -11,7 +11,7 @@
  * NOTE: Document uploads are currently simulated (DocumentVault,
  * PhotographyUploadManager, ProjectCreationWizard all stub the
  * actual upload). The schema is ready for when the real upload
- * pipeline is connected via Firebase Storage + Document AI.
+ * pipeline is connected via Firebase Storage.
  *
  * @architect  Schema owner
  * @docs       Upload pipeline implementation pending
@@ -39,20 +39,17 @@ export const documentCategoryEnum = z.enum([
 /** Folder phases — one auto-provisioned per phase on project creation */
 export const folderPhaseEnum = z.enum([
   'Find & Fund',
-  'Under Contract',
+  'Closing',
   'Rehab',
   'Listed',
   'Sold',
+  'Capital Plan',
+  'Equity',
+  'Debt',
+  'Title & Insurance',
 ]);
 
-/** OCR processing status — for future Document AI integration */
-export const ocrStatusEnum = z.enum([
-  'pending',
-  'processing',
-  'complete',
-  'failed',
-  'not_applicable',
-]);
+
 
 // ── Folder Schema ──────────────────────────────────────────
 
@@ -148,20 +145,12 @@ export const projectFileSchema = z.object({
   /** When the document was uploaded */
   uploadedAt: z.any(),
 
-  // ── Future: Document AI OCR Fields ──
+  /** Document verification status flow: Uploaded → Under Review → Verified → Archived */
+  status: z.enum(['Uploaded', 'Under Review', 'Verified', 'Archived']).optional(),
 
-  /** OCR processing status — defaults to 'not_applicable' for non-OCR docs */
-  ocrStatus: ocrStatusEnum.optional(),
-
-  /**
-   * Fields extracted by Document AI OCR.
-   * Shape depends on document type — stored as a flexible record.
-   * @docs Pending — Google Document AI pipeline not yet implemented.
-   */
-  extractedFields: z.record(z.string(), z.any()).optional(),
-
-  /** Confidence score from Document AI (0-1) */
-  ocrConfidence: z.number().min(0).max(1).optional(),
+  /** Trust and media classification (DM-20) */
+  isControlEvidence: z.boolean().optional(),
+  purpose: z.enum(['marketing', 'control_evidence']).optional(),
 });
 
 /** Inferred TypeScript type */

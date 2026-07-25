@@ -22,7 +22,7 @@ export interface ActivityLogEntry {
   fieldPath: string;
   oldValue: any;
   newValue: any;
-  source: 'manual' | 'ocr' | 'vendor' | 'system';
+  source: 'manual' | 'vendor' | 'system';
   timestamp: FirebaseFirestore.FieldValue;
 }
 
@@ -43,7 +43,7 @@ export async function writeActivityLog(
     oldValue: any;
     newValue: any;
   }>,
-  source: 'manual' | 'ocr' | 'vendor' | 'system' = 'manual'
+  source: 'manual' | 'vendor' | 'system' = 'manual'
 ): Promise<void> {
   if (!changes.length) return;
 

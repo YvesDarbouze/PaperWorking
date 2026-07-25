@@ -6,7 +6,7 @@
  * Exports: Sidebar (named + default)
  *
  * Nav contract (AGENTS.md v4 — 2026-07-16):
- *   Primary: Portfolio · Projects · Data Room · Insights · Reports · Inbox · Team
+ *   Primary: Portfolio · Projects · Insights · Reports · Inbox · Team
  *   Account: Profile · Billing · Settings
  */
 
@@ -29,7 +29,6 @@ import toast from "react-hot-toast";
 const PRIMARY_NAV = [
   { name: "Portfolio",     href: "/dashboard/command-center",  icon: "space_dashboard" },
   { name: "Projects",      href: "/dashboard/projects",       icon: "folder"          },
-  { name: "Data Room",     href: "/dashboard/data-room",      icon: "folder_shared"   },
   { name: "Insights",      href: "/dashboard/insights",       icon: "monitoring"      },
   { name: "Reports",       href: "/dashboard/reports",        icon: "bar_chart_4_bars"},
   { name: "Inbox",         href: "/dashboard/inbox",          icon: "inbox"           },
@@ -270,6 +269,7 @@ export function Sidebar() {
 
       {/* ── Primary navigation ──────────────────────────────────────────── */}
       <nav className="flex-1 overflow-y-auto custom-scrollbar px-2 space-y-0.5">
+        <SectionLabel label="PORTFOLIO" isDark={isDark} />
         {PRIMARY_NAV.filter((item) => {
           if (item.name === "Projects") {
             const isVendor =

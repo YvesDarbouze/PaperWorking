@@ -352,20 +352,28 @@ export function calculate10YearProForma(
 function computeTotalCashInvestedFallback(project: Project): number {
   const financials = project.financials || {};
   const purchasePrice = financials.purchasePrice ?? financials.targetPrice ?? financials.targetPurchasePrice ?? 0;
+  const isAllCash = financials.financingType === 'All Cash';
   const loanAmount = financials.loanAmount ?? 0;
-  const downPayment = Math.max(0, purchasePrice - loanAmount);
-  
-  const fixedAcquisitionCosts = financials.fixedAcquisitionCosts ?? 0;
-  const emdAmount = financials.emdAmount ?? 0;
-  const projectedRehabCost = financials.projectedRehabCost ?? 0;
-  
-  const monthlyHolding =
-    (financials.holdingCostTaxes ?? 0) +
-    (financials.holdingCostInsurance ?? 0) +
-    (financials.holdingCostUtilities ?? 0);
-  const holdMonths = financials.projectedHoldTimeMonths ?? 0;
+  const downPayment = isAllCash ? purchasePrice : Math.max(0, purchasePrice - loanAmount);
 
-  return downPayment + fixedAcquisitionCosts + emdAmount + projectedRehabCost + monthlyHolding * holdMonths;
+  // upfront rehab (Acquisition)
+  const upfrontRehab = financials.upfrontRehab ?? 0;
+
+  // closing costs (Acquisition-projected, awaiting actual)
+  let closingCosts = financials.closingCosts ?? financials.targetClosingCosts ?? financials.fixedAcquisitionCosts ?? 0;
+  if (closingCosts === 0 && financials.totalCashInvested != null && financials.totalCashInvested > 0) {
+    closingCosts = Math.max(0, financials.totalCashInvested - downPayment - upfrontRehab);
+  }
+
+  const emdVerified = financials.emdVerified ?? false;
+  const emdAmount = financials.emdAmount ?? financials.loiEarnestAmount ?? 0;
+
+  const baseCash = downPayment + closingCosts + upfrontRehab;
+
+  if (emdVerified) {
+    return baseCash + emdAmount;
+  }
+  return baseCash;
 }
 
 // ─── Main Hook ───────────────────────────────────────────────────────────────
@@ -435,7 +443,7 @@ export function usePortfolioInsights(
       // - currentPhase <= 3 (acquisition, rehab, finding deals)
       const isWorkingCapital =
         p.dispositionType === "SALE" ||
-        p.status === "Renovating" ||
+        p.status === "hold" ||
         (p.currentPhase !== undefined && p.currentPhase <= 3);
 
       // Generate 10-year pro forma trajectory

@@ -23,10 +23,14 @@ export type DocumentCategory =
 /** One folder is auto-provisioned for each phase when a project is created. */
 export type FolderPhase =
   | 'Find & Fund'
-  | 'Under Contract'
+  | 'Closing'
   | 'Rehab'
   | 'Listed'
-  | 'Sold';
+  | 'Sold'
+  | 'Capital Plan'
+  | 'Equity'
+  | 'Debt'
+  | 'Title & Insurance';
 
 /**
  * ProjectFolder
@@ -74,4 +78,7 @@ export interface ProjectFile {
   verifiedByUid?: string;
   verifiedAt?: Date;
   uploadedAt: Date;
+  isControlEvidence?: boolean;
+  purpose?: 'marketing' | 'control_evidence';
+  phase?: 'phase-1' | 'phase-2' | 'phase-3' | 'phase-4' | 'founder_review';
 }

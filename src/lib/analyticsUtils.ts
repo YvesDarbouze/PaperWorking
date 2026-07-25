@@ -191,8 +191,8 @@ export function calculateMedian(values: number[]): number {
  * Aggregate portfolio metrics.
  */
 export function calculatePortfolioSummary(projects: Project[]) {
-  const soldDeals = projects.filter(d => d.status === 'Sold');
-  const activeDeals = projects.filter(d => d.status !== 'Sold');
+  const soldDeals = projects.filter(d => d.status === 'exit' && d.dispositionType === 'SALE');
+  const activeDeals = projects.filter(d => !(d.status === 'exit' && d.dispositionType === 'SALE'));
 
   const soldMetrics = soldDeals.map(d => calculateProjectMetrics(d));
   const activeMetrics = activeDeals.map(d => calculateProjectMetrics(d));
@@ -228,7 +228,7 @@ export function calculatePortfolioSummary(projects: Project[]) {
  */
 export function calculatePortfolioVelocity(projects: Project[]) {
   const now = new Date();
-  const activeDeals = projects.filter(d => d.status !== 'Sold' && d.status !== 'Lead');
+  const activeDeals = projects.filter(d => d.status === 'fund' || d.status === 'hold');
   
   let totalDailyBurn = 0;
   const projections: { date: Date; address: string; amount: number; type: 'Projected' | 'Actual' }[] = [];

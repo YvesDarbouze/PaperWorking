@@ -15,8 +15,12 @@ test.describe('PaperWorking E2E — Deal Analyzer & Mobile Pass (PF-5)', () => {
 
     // Bypass Cookie Consent popup by pre-seeding localStorage
     await page.addInitScript(() => {
-      window.localStorage.setItem('pw_cookie_consent', JSON.stringify({ essential: true, analytics: true, marketing: true }));
-    });
+    try {
+    
+          window.localStorage.setItem('pw_cookie_consent', JSON.stringify({ essential: true, analytics: true, marketing: true }));
+        
+    } catch (e) {}
+  });
   });
 
   test('PF-5 Deal Analyzer Header control, Mobile Underwriting layout, and Touch Targets >= 44px', async ({ page }) => {

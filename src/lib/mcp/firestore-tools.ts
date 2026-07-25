@@ -4,7 +4,7 @@ import { z } from 'zod';
 /**
  * PaperWorking Firestore MCP Tools
  * 
- * Provides tools for the AI to interact with the deal pipeline,
+ * Provides tools for callers to interact with the deal pipeline,
  * ledger items, and organization metrics.
  */
 

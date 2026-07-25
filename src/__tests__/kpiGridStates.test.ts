@@ -113,7 +113,8 @@ describe('KPIGrid — DATA state (real values from calculatePortfolioSummary)', 
   it('kpi_summary_sold_project: calculatePortfolioSummary computes correct realized profit for a sold project', () => {
     const soldProject = {
       id: 'test-sold',
-      status: 'Sold',
+      status: 'exit',
+      dispositionType: 'SALE',
       financials: {
         purchasePrice: 200_000,
         estimatedARV: 280_000,

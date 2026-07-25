@@ -18,8 +18,12 @@ test.describe('PaperWorking E2E — Marketplace Postings (AQ-27)', () => {
 
     // Seed local storage with cookie consent to bypass banner globally
     await page.addInitScript(() => {
-      window.localStorage.setItem('pw_cookie_consent', JSON.stringify({ essential: true }));
-    });
+    try {
+    
+          window.localStorage.setItem('pw_cookie_consent', JSON.stringify({ essential: true }));
+        
+    } catch (e) {}
+  });
   });
 
   test('AC1 & AC5: Public Teaser vs Subscriber View Rendering & No Payment UI', async ({ page }) => {

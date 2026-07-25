@@ -30,7 +30,7 @@ export default function NetEngine({ deal, isBrrrr = false }: { deal: Project, is
             </div>
             <div>
               <h2 className="text-xl font-light tracking-wide text-text-primary">Profitability Hub</h2>
-              <p className="text-[10px] text-text-secondary font-mono tracking-widest uppercase">The Net Engine • {deal.status === 'Sold' ? 'FINAL REALIZED' : 'FORECASTED'}</p>
+              <p className="text-[10px] text-text-secondary font-mono tracking-widest uppercase">The Net Engine • {(deal.status === 'exit' && deal.dispositionType === 'SALE') ? 'FINAL REALIZED' : 'FORECASTED'}</p>
             </div>
          </div>
       </div>

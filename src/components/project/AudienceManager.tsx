@@ -17,6 +17,18 @@ export function AudienceManager({ projectId, readOnly = false }: AudienceManager
   const [followers, setFollowers] = useState<ProjectFollower[]>([]);
   const [isImporting, setIsImporting] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  
+  // DM-37 States
+  const [importSource, setImportSource] = useState<string>('');
+  const [globalUnsubs, setGlobalUnsubs] = useState<string[]>([]);
+  const [isAddFormOpen, setIsAddFormOpen] = useState(false);
+  const [newName, setNewName] = useState('');
+  const [newEmail, setNewEmail] = useState('');
+  const [newPhone, setNewPhone] = useState('');
+  const [newContactType, setNewContactType] = useState('Individual');
+  const [newRelationship, setNewRelationship] = useState('Warm');
+  const [newTicket, setNewTicket] = useState('');
+  const [newSource, setNewSource] = useState('manual');
 
   const isE2E = typeof window !== 'undefined' && document.cookie.includes('__e2e_test');
   const contactsKey = `pw_e2e_contacts_${projectId}`;
@@ -106,6 +118,33 @@ export function AudienceManager({ projectId, readOnly = false }: AudienceManager
     return unsub;
   }, [projectId, isE2E]);
 
+  // Listen to global unsubscribes (DM-37)
+  useEffect(() => {
+    if (isE2E) {
+      const load = () => {
+        try {
+          const val = localStorage.getItem('pw_e2e_global_unsubscribes');
+          setGlobalUnsubs(val ? JSON.parse(val) : []);
+        } catch (e) {
+          console.error(e);
+        }
+      };
+      load();
+      window.addEventListener('storage', load);
+      const handleCustom = () => load();
+      window.addEventListener('update_pw_e2e_global_unsubscribes', handleCustom);
+      return () => {
+        window.removeEventListener('storage', load);
+        window.removeEventListener('update_pw_e2e_global_unsubscribes', handleCustom);
+      };
+    }
+
+    const unsub = onSnapshot(collection(db, 'unsubscribedEmails'), (snap) => {
+      setGlobalUnsubs(snap.docs.map(d => d.id.toLowerCase()));
+    });
+    return unsub;
+  }, [isE2E]);
+
   // Seed default mock followers if none exist, so counts match expectation
   useEffect(() => {
     const seedMockFollowers = async () => {
@@ -169,7 +208,6 @@ export function AudienceManager({ projectId, readOnly = false }: AudienceManager
     seedMockFollowers();
   }, [projectId, isE2E]);
 
-  // Deduplicate audience list by Email
   const getDeduplicatedAudience = () => {
     const map = new Map<string, {
       email: string;
@@ -183,6 +221,8 @@ export function AudienceManager({ projectId, readOnly = false }: AudienceManager
       relationship: string;
       contactId?: string;
       followerId?: string;
+      source?: string;
+      isPurchased?: boolean;
     }>();
 
     contacts.forEach((c) => {
@@ -197,6 +237,8 @@ export function AudienceManager({ projectId, readOnly = false }: AudienceManager
         type: c.type || 'Individual',
         relationship: c.relationship || 'Warm',
         contactId: c.id,
+        source: c.source || 'manual',
+        isPurchased: c.isPurchased || false,
       });
     });
 
@@ -235,9 +277,82 @@ export function AudienceManager({ projectId, readOnly = false }: AudienceManager
   const emailConsentedCount = deduplicatedAudience.filter((a) => a.emailConsent).length;
   const inAppConsentedCount = deduplicatedAudience.filter((a) => a.inAppConsent).length;
 
+  const handleImportClick = () => {
+    if (!importSource) {
+      toast.error('Please specify the Import Source of the list before uploading.');
+      return;
+    }
+    fileInputRef.current?.click();
+  };
+
+  const handleAddContact = async (e: React.FormEvent) => {
+    e.preventDefault();
+    const emailLower = newEmail.trim().toLowerCase();
+    if (!newName.trim() || !emailLower) {
+      toast.error('Name and Email are required.');
+      return;
+    }
+    if (!emailLower.includes('@')) {
+      toast.error('Invalid email address.');
+      return;
+    }
+    if (!newSource) {
+      toast.error('Please specify the source of the contact.');
+      return;
+    }
+    if (globalUnsubs.includes(emailLower)) {
+      toast.error('This email address has opted out of platform communications.');
+      return;
+    }
+
+    const potentialTicket = newTicket ? Math.round(parseFloat(newTicket) * 100) : 0;
+    const contactId = `contact_${Date.now()}`;
+    const newContact: InvestorContact = {
+      id: contactId,
+      name: newName,
+      email: emailLower,
+      phone: newPhone,
+      type: newContactType,
+      relationship: newRelationship,
+      potentialTicket: isNaN(potentialTicket) ? 0 : potentialTicket,
+      emailConsent: true,
+      inAppConsent: true,
+      source: newSource,
+      isPurchased: newSource === 'import_purchased',
+      createdAt: new Date().toISOString(),
+    };
+
+    try {
+      if (isE2E) {
+        const existing = JSON.parse(localStorage.getItem(contactsKey) || '[]');
+        localStorage.setItem(contactsKey, JSON.stringify([newContact, ...existing]));
+        triggerE2ERefresh();
+      } else {
+        await setDoc(doc(db, 'projects', projectId, 'investor_contacts', contactId), newContact);
+      }
+      toast.success('Successfully added contact!');
+      setNewName('');
+      setNewEmail('');
+      setNewPhone('');
+      setNewTicket('');
+      setNewContactType('Individual');
+      setNewRelationship('Warm');
+      setNewSource('manual');
+      setIsAddFormOpen(false);
+    } catch (err) {
+      console.error(err);
+      toast.error('Failed to add contact.');
+    }
+  };
+
   const handleCSVUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
+
+    if (!importSource) {
+      toast.error('Please specify the Import Source of the list.');
+      return;
+    }
 
     const reader = new FileReader();
     reader.onload = async (evt) => {
@@ -254,6 +369,7 @@ export function AudienceManager({ projectId, readOnly = false }: AudienceManager
 
         const newContactsList: InvestorContact[] = [];
         let importCount = 0;
+        const isPurchasedList = importSource === 'import_purchased';
 
         for (let i = 1; i < lines.length; i++) {
           const cols = lines[i].split(',').map((c) => c.replace(/(^["']|["']$)/g, '').trim());
@@ -276,6 +392,8 @@ export function AudienceManager({ projectId, readOnly = false }: AudienceManager
             potentialTicket: isNaN(potentialTicket) ? 0 : potentialTicket,
             emailConsent,
             inAppConsent: true,
+            source: importSource,
+            isPurchased: isPurchasedList,
             createdAt: new Date().toISOString(),
           };
 
@@ -425,6 +543,17 @@ export function AudienceManager({ projectId, readOnly = false }: AudienceManager
         </div>
 
         <div className="flex items-center gap-2">
+          <select
+            value={importSource}
+            onChange={(e) => setImportSource(e.target.value)}
+            disabled={readOnly || isImporting}
+            id="select-import-source"
+            className="bg-zinc-900 border border-white/10 rounded px-2 py-1 text-xs text-white focus:outline-none focus:border-emerald-500"
+          >
+            <option value="">Select list source...</option>
+            <option value="import_relational">Relational Network</option>
+            <option value="import_purchased">Purchased List</option>
+          </select>
           <input
             type="file"
             ref={fileInputRef}
@@ -434,7 +563,7 @@ export function AudienceManager({ projectId, readOnly = false }: AudienceManager
             id="csv-file-input"
           />
           <button
-            onClick={() => fileInputRef.current?.click()}
+            onClick={handleImportClick}
             disabled={readOnly || isImporting}
             id="btn-import-csv"
             className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold uppercase tracking-wider bg-white/5 border border-white/10 hover:bg-white/10 text-white transition-all"
@@ -442,8 +571,116 @@ export function AudienceManager({ projectId, readOnly = false }: AudienceManager
             <Upload size={13} />
             {isImporting ? 'Importing...' : 'Import CSV'}
           </button>
+          <button
+            onClick={() => setIsAddFormOpen(!isAddFormOpen)}
+            disabled={readOnly}
+            id="btn-toggle-add-form"
+            className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold uppercase tracking-wider bg-zinc-900 border border-white/10 hover:bg-white/5 text-white transition-all"
+          >
+            {isAddFormOpen ? 'Cancel' : 'Add Contact'}
+          </button>
         </div>
       </div>
+
+      {isAddFormOpen && (
+        <form onSubmit={handleAddContact} className="p-4 bg-zinc-900/60 rounded-xl border border-white/5 space-y-4" id="add-contact-form">
+          <h5 className="text-xs font-bold text-white uppercase tracking-wider">Add Single Contact</h5>
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
+            <div>
+              <label className="text-[10px] font-bold text-zinc-400 uppercase tracking-wider block mb-1">Name</label>
+              <input
+                type="text"
+                value={newName}
+                onChange={(e) => setNewName(e.target.value)}
+                placeholder="e.g. John Doe"
+                className="w-full bg-black/40 border border-white/15 rounded-lg px-3 py-1.5 text-xs text-white focus:outline-none focus:border-emerald-500"
+                required
+                id="input-contact-name"
+              />
+            </div>
+            <div>
+              <label className="text-[10px] font-bold text-zinc-400 uppercase tracking-wider block mb-1">Email</label>
+              <input
+                type="email"
+                value={newEmail}
+                onChange={(e) => setNewEmail(e.target.value)}
+                placeholder="e.g. john@doe.com"
+                className="w-full bg-black/40 border border-white/15 rounded-lg px-3 py-1.5 text-xs text-white focus:outline-none focus:border-emerald-500"
+                required
+                id="input-contact-email"
+              />
+            </div>
+            <div>
+              <label className="text-[10px] font-bold text-zinc-400 uppercase tracking-wider block mb-1">Phone</label>
+              <input
+                type="text"
+                value={newPhone}
+                onChange={(e) => setNewPhone(e.target.value)}
+                placeholder="e.g. 555-0100"
+                className="w-full bg-black/40 border border-white/15 rounded-lg px-3 py-1.5 text-xs text-white focus:outline-none focus:border-emerald-500"
+                id="input-contact-phone"
+              />
+            </div>
+            <div>
+              <label className="text-[10px] font-bold text-zinc-400 uppercase tracking-wider block mb-1">Type</label>
+              <select
+                value={newContactType}
+                onChange={(e) => setNewContactType(e.target.value)}
+                className="w-full bg-black/40 border border-white/15 rounded-lg px-3 py-1.5 text-xs text-white focus:outline-none focus:border-emerald-500"
+                id="select-contact-type"
+              >
+                <option value="Individual">Individual</option>
+                <option value="Institutional">Institutional</option>
+              </select>
+            </div>
+            <div>
+              <label className="text-[10px] font-bold text-zinc-400 uppercase tracking-wider block mb-1">Relationship</label>
+              <select
+                value={newRelationship}
+                onChange={(e) => setNewRelationship(e.target.value)}
+                className="w-full bg-black/40 border border-white/15 rounded-lg px-3 py-1.5 text-xs text-white focus:outline-none focus:border-emerald-500"
+                id="select-contact-relationship"
+              >
+                <option value="Warm">Warm</option>
+                <option value="Cold">Cold</option>
+                <option value="Existing">Existing</option>
+              </select>
+            </div>
+            <div>
+              <label className="text-[10px] font-bold text-zinc-400 uppercase tracking-wider block mb-1">Potential Ticket (USD)</label>
+              <input
+                type="number"
+                value={newTicket}
+                onChange={(e) => setNewTicket(e.target.value)}
+                placeholder="e.g. 25000"
+                className="w-full bg-black/40 border border-white/15 rounded-lg px-3 py-1.5 text-xs text-white focus:outline-none focus:border-emerald-500"
+                id="input-contact-ticket"
+              />
+            </div>
+            <div>
+              <label className="text-[10px] font-bold text-zinc-400 uppercase tracking-wider block mb-1">Recorded Source</label>
+              <select
+                value={newSource}
+                onChange={(e) => setNewSource(e.target.value)}
+                className="w-full bg-black/40 border border-white/15 rounded-lg px-3 py-1.5 text-xs text-white focus:outline-none focus:border-emerald-500"
+                required
+                id="select-contact-source"
+              >
+                <option value="manual">Manual Entry</option>
+                <option value="referral">Referral</option>
+                <option value="organic_sign_up">Organic Sign-up</option>
+              </select>
+            </div>
+          </div>
+          <button
+            type="submit"
+            className="px-4 py-2 bg-emerald-600 hover:bg-emerald-500 text-white rounded-lg text-xs font-bold uppercase tracking-wider transition-all font-mono"
+            id="btn-submit-contact"
+          >
+            Save Contact
+          </button>
+        </form>
+      )}
 
       {/* Counts Card */}
       <div className="grid grid-cols-3 gap-4" id="audience-preview-counts">
@@ -505,6 +742,21 @@ export function AudienceManager({ projectId, readOnly = false }: AudienceManager
                         </span>
                       ))}
                     </div>
+                    {member.source && (
+                      <div className="mt-1 flex flex-wrap gap-1">
+                        <span className="px-1.5 py-0.5 rounded text-[8px] font-bold uppercase tracking-wider bg-zinc-800 text-zinc-300 border border-zinc-700">
+                          Source: {member.source}
+                        </span>
+                        {member.isPurchased && (
+                          <span
+                            className="px-1.5 py-0.5 rounded text-[8px] font-bold uppercase tracking-wider bg-red-950 text-red-400 border border-red-900/60"
+                            data-testid="purchased-flag"
+                          >
+                            Purchased
+                          </span>
+                        )}
+                      </div>
+                    )}
                   </td>
                   <td className="p-3 space-y-1">
                     <div className="font-mono text-white">
@@ -515,35 +767,47 @@ export function AudienceManager({ projectId, readOnly = false }: AudienceManager
                     </div>
                   </td>
                   <td className="p-3">
-                    <div className="flex flex-col gap-1.5 items-center">
-                      <button
-                        onClick={() => handleToggleConsent(member.email, 'email', member.emailConsent, member.contactId, member.followerId)}
-                        disabled={readOnly}
-                        className="flex items-center gap-1 text-[10px] hover:text-white transition-all font-semibold"
-                        id={`btn-toggle-email-${member.email.replace(/[@.]/g, '-')}`}
-                      >
-                        {member.emailConsent ? (
-                          <ToggleRight size={18} className="text-pw-success" />
-                        ) : (
-                          <ToggleLeft size={18} className="text-[#9E9DA0]" />
-                        )}
-                        <span className={member.emailConsent ? 'text-pw-success' : 'text-[#9E9DA0]'}>Email</span>
-                      </button>
+                    {globalUnsubs.includes(member.email.toLowerCase()) ? (
+                      <div className="flex flex-col gap-1 items-center">
+                        <span
+                          className="px-1.5 py-0.5 rounded text-[8px] font-bold uppercase tracking-wider bg-red-900/20 text-red-400 border border-red-500/20"
+                          data-testid="global-unsubscribed-badge"
+                        >
+                          Global Opt-Out
+                        </span>
+                        <span className="text-[10px] text-red-500 font-bold">Blocked</span>
+                      </div>
+                    ) : (
+                      <div className="flex flex-col gap-1.5 items-center">
+                        <button
+                          onClick={() => handleToggleConsent(member.email, 'email', member.emailConsent, member.contactId, member.followerId)}
+                          disabled={readOnly}
+                          className="flex items-center gap-1 text-[10px] hover:text-white transition-all font-semibold"
+                          id={`btn-toggle-email-${member.email.replace(/[@.]/g, '-')}`}
+                        >
+                          {member.emailConsent ? (
+                            <ToggleRight size={18} className="text-pw-success" />
+                          ) : (
+                            <ToggleLeft size={18} className="text-[#9E9DA0]" />
+                          )}
+                          <span className={member.emailConsent ? 'text-pw-success' : 'text-[#9E9DA0]'}>Email</span>
+                        </button>
 
-                      <button
-                        onClick={() => handleToggleConsent(member.email, 'inApp', member.inAppConsent, member.contactId, member.followerId)}
-                        disabled={readOnly}
-                        className="flex items-center gap-1 text-[10px] hover:text-white transition-all font-semibold"
-                        id={`btn-toggle-inapp-${member.email.replace(/[@.]/g, '-')}`}
-                      >
-                        {member.inAppConsent ? (
-                          <ToggleRight size={18} className="text-sky-400" />
-                        ) : (
-                          <ToggleLeft size={18} className="text-[#9E9DA0]" />
-                        )}
-                        <span className={member.inAppConsent ? 'text-sky-400' : 'text-[#9E9DA0]'}>In-App</span>
-                      </button>
-                    </div>
+                        <button
+                          onClick={() => handleToggleConsent(member.email, 'inApp', member.inAppConsent, member.contactId, member.followerId)}
+                          disabled={readOnly}
+                          className="flex items-center gap-1 text-[10px] hover:text-white transition-all font-semibold"
+                          id={`btn-toggle-inapp-${member.email.replace(/[@.]/g, '-')}`}
+                        >
+                          {member.inAppConsent ? (
+                            <ToggleRight size={18} className="text-sky-400" />
+                          ) : (
+                            <ToggleLeft size={18} className="text-[#9E9DA0]" />
+                          )}
+                          <span className={member.inAppConsent ? 'text-sky-400' : 'text-[#9E9DA0]'}>In-App</span>
+                        </button>
+                      </div>
+                    )}
                   </td>
                   <td className="p-3 text-right space-y-1">
                     <div className="flex items-center justify-end gap-2">

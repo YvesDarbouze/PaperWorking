@@ -13,7 +13,7 @@ import { computeOER } from '@/lib/metrics/reiMetrics';
    computes Expense Ratio = (Operating Expenses ÷ Gross Income) × 100
    Seed: $9,276 ÷ $23,400 = 39.64%
 
-   Dual-scope: Project (individual) + Data Room (cumulative)
+   Dual-scope: Project (individual) + Portfolio-wide (cumulative)
    ═══════════════════════════════════════════════════════════════ */
 
 export interface ExpenseItem {

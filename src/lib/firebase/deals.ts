@@ -36,20 +36,20 @@ function derivePhaseFromREIStatus(reiStatus?: string): {
 } {
   switch (reiStatus) {
     case 'Target':
-      return { phaseStatus: 'Phase 1: Find & Fund', currentPhase: 1, status: 'Lead' };
+      return { phaseStatus: 'Phase 1: Acquisition', currentPhase: 1, status: 'acquisition' };
     case 'In Contract':
-      return { phaseStatus: 'Phase 2: Acquisition', currentPhase: 2, status: 'Under Contract' };
     case 'Acquired':
-      return { phaseStatus: 'Phase 2: Acquisition', currentPhase: 2, status: 'Under Contract' };
+      return { phaseStatus: 'Phase 2: Fund', currentPhase: 2, status: 'fund' };
     case 'Rehabbing':
     case 'Under Construction':
-      return { phaseStatus: 'Phase 3: Rehab & Hold', currentPhase: 3, status: 'Renovating' };
     case 'Renting':
-      return { phaseStatus: 'Phase 3: Rehab & Hold', currentPhase: 3, status: 'Rented' };
+      return { phaseStatus: 'Phase 3: Hold', currentPhase: 3, status: 'hold' };
     case 'For Sale':
-      return { phaseStatus: 'Phase 4: Closing & Exit', currentPhase: 4, status: 'Listed' };
+    case 'realized':
+    case 'Sold':
+      return { phaseStatus: 'Phase 4: Exit', currentPhase: 4, status: 'exit' };
     default:
-      return { phaseStatus: 'Phase 1: Find & Fund', currentPhase: 1, status: 'Active' };
+      return { phaseStatus: 'Phase 1: Acquisition', currentPhase: 1, status: 'acquisition' };
   }
 }
 
@@ -179,21 +179,39 @@ export const projectsService = {
   async updateProject(projectId: string, updates: Partial<Project>) {
     try {
       if (typeof window !== 'undefined' && document.cookie.includes('__e2e_test')) {
-        await fetch(`/api/reil/projects/${projectId}`, {
-          method: 'PATCH',
-          headers: { 
-            'Content-Type': 'application/json',
-            'Authorization': 'Bearer mock_token'
-          },
-          body: JSON.stringify(updates),
-        });
-        return;
+        let attempts = 0;
+        const maxAttempts = 3;
+        let lastErr;
+        while (attempts < maxAttempts) {
+          try {
+            attempts++;
+            const res = await fetch(`/api/reil/projects/${projectId}`, {
+              method: 'PATCH',
+              headers: { 
+                'Content-Type': 'application/json',
+                'Authorization': 'Bearer mock_token'
+              },
+              body: JSON.stringify(updates),
+            });
+            if (!res.ok) {
+              throw new Error(`HTTP error! status: ${res.status}`);
+            }
+            return;
+          } catch (err) {
+            lastErr = err;
+            if (attempts >= maxAttempts) throw err;
+            await new Promise((resolve) => setTimeout(resolve, 50));
+          }
+        }
+        throw lastErr;
       }
       const dealRef = doc(db, 'projects', projectId);
 
       // ── Automation Hook: Phase Progression ──
       if (updates.financials?.offerStatus === 'Accepted') {
-        updates.phaseStatus = 'Phase 2: Acquisition';
+        updates.phaseStatus = 'Phase 2: Fund';
+        updates.currentPhase = 2;
+        updates.status = 'fund';
       }
 
       const firestoreUpdates = JSON.parse(JSON.stringify(updates));
@@ -383,7 +401,7 @@ export const projectsService = {
   /**
    * Finalize and archive a project, updating portfolio aggregates on the Organization.
    */
-  async closeProjectAndArchive(projectId: string, organizationId: string, exitStrategy: 'Sell' | 'Rent') {
+  async closeProjectAndArchive(projectId: string, organizationId: string, exitStrategy: 'Sell' | 'Rent' | 'Lease') {
     try {
       // 1. Fetch the project and calculate final outcome using canonical math
       const deal = await this.getProject(projectId);

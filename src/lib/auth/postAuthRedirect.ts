@@ -67,6 +67,13 @@ export function resolvePostAuthDestination({
     sessionStorage.removeItem('pw_pending_plan');
   }
 
+  // Check for pending project address deep-link
+  const pendingProjectAddress = sessionStorage.getItem('pw_pending_project_address');
+  if (pendingProjectAddress && hasActiveSubscription) {
+    sessionStorage.removeItem('pw_auth_redirect');
+    return '/dashboard/projects/new';
+  }
+
   // 1. Pending checkout intent → resume Stripe checkout on /pricing.
   //    Only for brand-new sign-ups — returning sign-ins must land on the portfolio.
   if (isNewUser && !hasActiveSubscription && sessionStorage.getItem('pw_pending_plan')) {

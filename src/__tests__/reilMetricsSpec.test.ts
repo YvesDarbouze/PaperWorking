@@ -76,9 +76,9 @@ const GOLDEN = {
   loanAmount:                    223_200,    // 80% LTV
   loanInterestRate:                  6.5,    // 6.5% annual
   loanTermYears:                      30,
-  annualDebtService:            16_929.31,   // Computed: 6.5% on $223,200 / 30yr
+  annualDebtService:            16_930,      // Computed: 6.5% on $223,200 / 30yr (rounded per P6)
   totalCashInvested:              60_000,    // $55,800 down + $4,200 closing
-  annualCashFlow:               -4_443.31,   // NOI($12,486) − debt($16,929.31)
+  annualCashFlow:               -4_444,      // NOI($12,486) − debt($16,930)
   grossAnnualRent:                23_400,
   estimatedARV:                  320_000,
   rehabCost:                      35_000,
@@ -134,8 +134,8 @@ describe('PaperWorking REI Metrics — Full Spec Validation', () => {
   describe('2. Capitalization Rate (Cap Rate = NOI / Property Value × 100)', () => {
     it('should match spec formula with golden data (≈4.5%)', () => {
       const capRate = computeCapRate(GOLDEN.noi, GOLDEN.purchasePrice);
-      // 12486 / 279000 * 100 = 4.4752... → rounds to 4.48 at 2dp (≈4.5% at 1dp) — P6 canon
-      expect(capRate).toBeCloseTo(4.48, 1);
+      // 12486 / 279000 * 100 = 4.4752... → rounds to 4.50 per P6
+      expect(capRate).toBeCloseTo(4.5, 1);
     });
 
     it('should return 0 when property value is 0 (avoid divide-by-zero)', () => {
@@ -536,8 +536,8 @@ describe('PaperWorking REI Metrics — Full Spec Validation', () => {
       // BUG-8 REVERT: All values on gross-scheduled-rent basis per P6 canon.
       // PM fee = 10% of $23,400 (gross) = $2,340; NOT 10% of $21,762 (effective).
       expect(metrics.noi).toBe(12_486);
-      expect(metrics.capRate).toBe(4.48);
-      expect(metrics.dscr).toBe(0.738);
+      expect(metrics.capRate).toBe(4.5);
+      expect(metrics.dscr).toBe(0.74);
       expect(metrics.grossRentMultiplier).toBe(11.92);
       expect(metrics.cashOnCashReturn).toBe(-7.41);
     });

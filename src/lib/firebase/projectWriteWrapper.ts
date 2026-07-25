@@ -48,7 +48,7 @@ export async function updateProjectWithTracking(
   projectId: string,
   userId: string,
   updates: Record<string, any>,
-  source: 'manual' | 'ocr' | 'vendor' | 'system' = 'manual'
+  source: 'manual' | 'vendor' | 'system' = 'manual'
 ): Promise<ProjectWriteResult> {
   const projectRef = adminDb.collection('projects').doc(projectId);
 
@@ -79,6 +79,22 @@ export async function updateProjectWithTracking(
     }
   );
 
+  // 5b. Write timeline edit activity
+  let timelinePromise = Promise.resolve();
+  if (changes.length > 0) {
+    const { trackDealActivity } = require('@/lib/invitations/activityTimeline');
+    const fieldsChanged = changes.map((c: any) => c.fieldPath).join(', ');
+    timelinePromise = trackDealActivity(
+      projectId,
+      projectId,
+      userId,
+      'edit',
+      { editSummary: `Updated fields: ${fieldsChanged}` }
+    ).catch((err: any) => {
+      console.error(`[ProjectWriteWrapper] Timeline edit write failed for ${projectId}:`, err?.message);
+    });
+  }
+
   // 6. Write metric snapshots (non-blocking)
   let snapshotWritten = false;
   const snapshotPromise = writeMetricSnapshots(projectId, afterData)
@@ -89,8 +105,8 @@ export async function updateProjectWithTracking(
       console.error(`[ProjectWriteWrapper] Snapshot write failed for ${projectId}:`, err?.message);
     });
 
-  // Wait for both side effects to complete
-  await Promise.all([logPromise, snapshotPromise]);
+  // Wait for side effects to complete
+  await Promise.all([logPromise, snapshotPromise, timelinePromise]);
 
   return {
     success: true,

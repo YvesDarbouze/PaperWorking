@@ -2,6 +2,7 @@
 
 import React, { useEffect, useState, createContext, useContext, useCallback } from 'react';
 import { useParams, useRouter } from 'next/navigation';
+import { useAllDealsSync } from '@/hooks/useAllProjectsSync';
 import { projectsService } from '@/lib/firebase/projects';
 import type { Project, PhaseStatus } from '@/types/schema';
 import {
@@ -64,47 +65,26 @@ export function useWorkspaceProject() {
 
 /* ─── Phase pill color ───────────────────────────────────────── */
 const PHASE_BADGE_COLORS: Record<string, { bg: string; text: string }> = {
-  'Phase 1: Find & Fund':       { bg: 'rgba(89,89,89,0.12)',  text: '#808080' },
-  'Phase 2: Acquisition':       { bg: 'rgba(37,99,235,0.10)', text: '#2563EB' },
-  'Phase 3: Holding & Rehab':   { bg: 'rgba(234,88,12,0.10)', text: '#EA580C' },
-  'Phase 4: Closing & Exit':    { bg: 'rgba(63, 125, 32,0.10)', text: '#3f7d20' },
-  // v2 equivalents
-  'Phase 1: Acquisition':       { bg: 'rgba(89,89,89,0.12)',  text: '#808080' },
-  'Phase 2: Transaction':       { bg: 'rgba(37,99,235,0.10)', text: '#2563EB' },
-  'Phase 3: Rehab':             { bg: 'rgba(234,88,12,0.10)', text: '#EA580C' },
-  'Phase 4: Hold / Exit':       { bg: 'rgba(63, 125, 32,0.10)', text: '#3f7d20' },
-  // v3 equivalents
-  'Phase 2: Fund':              { bg: 'rgba(37,99,235,0.10)', text: '#2563EB' },
-  'Phase 3: Hold':              { bg: 'rgba(234,88,12,0.10)', text: '#EA580C' },
-  'Phase 4: Exit':              { bg: 'rgba(63, 125, 32,0.10)', text: '#3f7d20' },
+  'Phase 1: Acquisition':       { bg: 'rgba(245,158,11,0.12)', text: '#F59E0B' },
+  'Phase 2: Fund':              { bg: 'rgba(59,130,246,0.10)',  text: '#3B82F6' },
+  'Phase 3: Hold':              { bg: 'rgba(249,115,22,0.10)',  text: '#F97316' },
+  'Phase 4: Exit':              { bg: 'rgba(16,185,129,0.10)',  text: '#10B981' },
 };
 
 /* ─── Phase-aware folder icon color ──────────────────────────── */
 const PHASE_FOLDER_COLORS: Record<string, { bg: string; icon: string }> = {
-  'Phase 1: Find & Fund':       { bg: '#595959', icon: '#FFFFFF' },
-  'Phase 2: Acquisition':       { bg: '#595959', icon: '#FFFFFF' },
-  'Phase 3: Holding & Rehab':   { bg: '#CCCCCC', icon: '#595959' },
-  'Phase 4: Closing & Exit':    { bg: '#595959', icon: '#FFFFFF' },
-  // v2 equivalents
-  'Phase 1: Acquisition':       { bg: '#595959', icon: '#FFFFFF' },
-  'Phase 2: Transaction':       { bg: '#2563EB', icon: '#FFFFFF' },
-  'Phase 3: Rehab':             { bg: '#EA580C', icon: '#FFFFFF' },
-  'Phase 4: Hold / Exit':       { bg: '#3f7d20', icon: '#FFFFFF' },
-  // v3 equivalents
-  'Phase 2: Fund':              { bg: '#2563EB', icon: '#FFFFFF' },
-  'Phase 3: Hold':              { bg: '#EA580C', icon: '#FFFFFF' },
-  'Phase 4: Exit':              { bg: '#3f7d20', icon: '#FFFFFF' },
+  'Phase 1: Acquisition':       { bg: '#F59E0B', icon: '#FFFFFF' },
+  'Phase 2: Fund':              { bg: '#3B82F6', icon: '#FFFFFF' },
+  'Phase 3: Hold':              { bg: '#F97316', icon: '#FFFFFF' },
+  'Phase 4: Exit':              { bg: '#10B981', icon: '#FFFFFF' },
 };
 
 /* ─── Status badge ───────────────────────────────────────────── */
 const STATUS_COLORS: Record<string, { bg: string; text: string }> = {
-  'Active':           { bg: '#DCFCE7', text: '#15803D' },
-  'Lead':             { bg: '#FEF9C3', text: '#854D0E' },
-  'Under Contract':   { bg: '#DBEAFE', text: '#1D4ED8' },
-  'Renovating':       { bg: '#FED7AA', text: '#C2410C' },
-  'Listed':           { bg: '#EDE9FE', text: '#6D28D9' },
-  'Sold':             { bg: '#F3F4F6', text: '#374151' },
-  'Rented':           { bg: '#CFFAFE', text: '#0E7490' },
+  'acquisition':   { bg: 'rgba(245,158,11,0.12)', text: '#F59E0B' },
+  'fund':          { bg: 'rgba(59,130,246,0.10)',  text: '#3B82F6' },
+  'hold':          { bg: 'rgba(249,115,22,0.10)',  text: '#F97316' },
+  'exit':          { bg: 'rgba(16,185,129,0.10)',  text: '#10B981' },
 };
 
 /* ─── formatTimeAgo Helper ──────────────────────────────────── */
@@ -266,16 +246,15 @@ function WorkspaceHeader({ project, onOpenMetric }: { project: Project; onOpenMe
   const router = useRouter();
   const { snapshots } = usePropertyMetricSnapshots(project.id, 'monthly');
 
-  const phaseColor  = PHASE_BADGE_COLORS[project.phaseStatus ?? ''] ?? PHASE_BADGE_COLORS['Phase 1: Find & Fund'];
+  const phaseColor  = PHASE_BADGE_COLORS[project.phaseStatus ?? ''] ?? PHASE_BADGE_COLORS['Phase 1: Acquisition'];
   const statusColor = STATUS_COLORS[project.status] ?? { bg: '#F3F4F6', text: '#595959' };
-  const folderColor = PHASE_FOLDER_COLORS[project.phaseStatus ?? ''] ?? PHASE_FOLDER_COLORS['Phase 1: Find & Fund'];
+  const folderColor = PHASE_FOLDER_COLORS[project.phaseStatus ?? ''] ?? PHASE_FOLDER_COLORS['Phase 1: Acquisition'];
 
   // Only show the active counter if we have an acquisition date and the project hasn't been sold/closed
-  const isHolding = project.financials?.acquisitionDate && 
-                    !['Sold', 'Rented', 'closed_won', 'closed_lost'].includes(project.status);
+  const isHolding = project.financials?.acquisitionDate && project.status !== 'exit';
 
   // Strategy chip value
-  const strategy = project.strategyType ?? 'Rent';
+  const strategy = project.dispositionType === 'SALE' ? 'Sell' : (project.dispositionType === 'LEASE' ? 'Lease' : 'Rent');
 
   // Ownership structure calculation
   let ownershipLabel = 'Solo';
@@ -288,7 +267,7 @@ function WorkspaceHeader({ project, onOpenMetric }: { project: Project; onOpenMe
   const handleArchive = async () => {
     if (!confirm('Are you sure you want to archive this project?')) return;
     try {
-      await projectsService.updateProject(project.id, { status: 'closed_lost' });
+      await projectsService.updateProject(project.id, { status: 'exit' });
       toast.success('Project archived successfully');
       router.push('/dashboard/projects');
     } catch (err) {
@@ -315,21 +294,43 @@ function WorkspaceHeader({ project, onOpenMetric }: { project: Project; onOpenMe
     }
   })();
 
-  const wrapResult = (val: number): MetricResult => ({
-    value: val,
-    state,
-    inputsUsed: {},
-    inputsMissing: [],
-  });
+  const wrapResult = (val: number, metricId: string): MetricResult => {
+    const inputsUsed: Record<string, any> = {};
+    const addIfExist = (keys: string[]) => {
+      const financials = (project?.financials || {}) as any;
+      keys.forEach(k => {
+        if (financials[k] !== undefined && financials[k] !== null) {
+          inputsUsed[`financials.${k}`] = financials[k];
+        }
+      });
+    };
+
+    if (metricId === 'NOI' || metricId === 'CAP_RATE' || metricId === 'CASH_FLOW' || metricId === 'COC' || metricId === 'EXPENSE_RATIO') {
+      addIfExist(['purchasePrice', 'monthlyGrossRent', 'grossRent', 'gross_rent_per_unit']);
+    }
+    if (metricId === 'NOI' || metricId === 'CASH_FLOW') {
+      addIfExist(['tax', 'taxes', 'insurance', 'utilities', 'management', 'management_pct', 'maintenance', 'maintenance_pct']);
+    }
+    if (metricId === 'DSCR' || metricId === 'CASH_FLOW') {
+      addIfExist(['loanAmount', 'loanInterestRate', 'loanTermYears']);
+    }
+
+    return {
+      value: val,
+      state,
+      inputsUsed,
+      inputsMissing: [],
+    };
+  };
 
   const metricResults = {
-    NOI: wrapResult(derived.noi),
-    CASH_FLOW: wrapResult(derived.annualCashFlow),
-    CAP_RATE: wrapResult(derived.capRate),
-    COC: wrapResult(derived.cashOnCashReturn),
-    DSCR: wrapResult(derived.dscr),
-    OCCUPANCY: wrapResult(derived.occupancyRate),
-    EXPENSE_RATIO: wrapResult(derived.oer),
+    NOI: wrapResult(derived.noi, 'NOI'),
+    CASH_FLOW: wrapResult(derived.annualCashFlow, 'CASH_FLOW'),
+    CAP_RATE: wrapResult(derived.capRate, 'CAP_RATE'),
+    COC: wrapResult(derived.cashOnCashReturn, 'COC'),
+    DSCR: wrapResult(derived.dscr, 'DSCR'),
+    OCCUPANCY: wrapResult(derived.occupancyRate, 'OCCUPANCY'),
+    EXPENSE_RATIO: wrapResult(derived.oer, 'EXPENSE_RATIO'),
   };
 
   const isAllCash = project.financials?.financingType === 'All Cash';
@@ -418,8 +419,8 @@ function WorkspaceHeader({ project, onOpenMetric }: { project: Project; onOpenMe
               </span>
 
               {/* Timestamp */}
-              <span className="text-[10px] text-text-secondary ml-1" style={{ color: 'var(--text-secondary)' }}>
-                Last updated {formatTimeAgo(project.updatedAt)}
+              <span className="text-[10px] text-text-secondary ml-1 save-status" style={{ color: 'var(--text-secondary)' }}>
+                Saved (Last updated {formatTimeAgo(project.updatedAt)})
               </span>
             </div>
           </div>
@@ -462,15 +463,7 @@ function WorkspaceHeader({ project, onOpenMetric }: { project: Project; onOpenMe
             <span className="hidden md:inline">Share CPA</span>
           </button>
 
-          <a
-            href={`/dashboard/projects/${project.id}/data-room`}
-            className="flex items-center gap-1.5 px-3 py-2 text-xs font-bold uppercase tracking-wider transition-all duration-150 hover:bg-black/5 dark:hover:bg-white/5 border rounded-lg text-text-secondary hover:text-text-primary"
-            style={{ color: 'var(--text-secondary)', borderColor: 'var(--border-ui)' }}
-            aria-label="Manage Project Data Room"
-          >
-            <FolderOpen className="w-3.5 h-3.5" />
-            <span className="hidden md:inline">Data Room</span>
-          </a>
+
 
           <a
             href={`/dashboard/projects/${project.id}/instruments`}
@@ -615,6 +608,8 @@ export default function ProjectWorkspaceLayout({
   const projectId = params?.id as string;
   console.log('[WorkspaceLayout] Rendering with projectId:', projectId);
 
+  useAllDealsSync();
+
   const [project, setProject] = useState<Project | null>(null);
   const [loading, setLoading] = useState(true);
   const [todoOpen, setTodoOpen] = useState(false);
@@ -673,7 +668,7 @@ export default function ProjectWorkspaceLayout({
         <div className="flex-1 min-h-0 flex">
           <div className="flex-1 min-w-0">
             <ProjectPipelineProvider>
-              {project?.retrospective ? (
+              {project?.retrospective && !project?.financials?.retrospectiveCompleted ? (
                 <RetrospectiveWorkspace
                   project={project}
                   refresh={async () => {
@@ -761,6 +756,7 @@ export default function ProjectWorkspaceLayout({
             metricLabel={selectedMetric.label}
             result={selectedMetric.result}
             format={selectedMetric.format}
+            project={project}
             sparklineData={snapshots.slice(-6).map((s) => {
               let val = 0;
               switch (selectedMetric.id) {

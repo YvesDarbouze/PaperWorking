@@ -168,7 +168,7 @@ export function useProjectWizardMachine({ organizationId, onSuccess, onClose }: 
       const dealPayload = {
         propertyName: formData.propertyName,
         address: formData.address,
-        status: 'Lead' as const,
+        status: 'acquisition' as const,
         ownerUid: user.uid,
         financials: {
           purchasePrice: parseFloat(formData.purchasePrice) * 100,

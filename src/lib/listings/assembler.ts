@@ -56,8 +56,12 @@ export function assembleListingFromProject(
 
   return {
     projectId: project.id,
+    propertyId: project.propertyId,
+    placeId: project.placeId,
     organizationId: project.organizationId,
     ownerUid: project.ownerUid,
+    visibilityMode: 'PRIVATE' as const,
+    transitionLog: [],
 
     // Property
     propertyName: project.propertyName,

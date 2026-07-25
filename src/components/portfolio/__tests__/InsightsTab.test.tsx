@@ -24,7 +24,7 @@ const mockProjects: Project[] = [
     dispositionType: "RENT",
     subStrategy: "LONG_TERM",
     currentPhase: 4,
-    status: "Rented",
+    status: "exit",
     address: "123 Ocean Drive",
     createdAt: new Date(),
     updatedAt: new Date(),

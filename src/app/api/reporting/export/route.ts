@@ -154,7 +154,7 @@ export async function POST(req: NextRequest) {
         const fin = deal.financials;
         if (!fin) return;
 
-        if (deal.status === 'Sold') {
+        if (deal.status === 'exit' && deal.dispositionType === 'SALE') {
           const m = computeAutopsyMetrics(deal);
           cashFromSales += m.grossSalePrice - m.sellClosingCosts;
         } else {
@@ -211,7 +211,7 @@ export async function POST(req: NextRequest) {
           }
         });
 
-        if (deal.status === 'Sold' && fin.actualSalePrice && fin.soldDate) {
+        if (deal.status === 'exit' && deal.dispositionType === 'SALE' && fin.actualSalePrice && fin.soldDate) {
           const k = getMonthKey(fin.soldDate);
           ensure(k);
           buckets[k].inflows += fin.actualSalePrice;

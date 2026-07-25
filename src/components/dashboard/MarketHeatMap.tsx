@@ -20,8 +20,8 @@ export default function MarketHeatMap() {
     const total = projects.length;
     if (total === 0) return { velocity: 0, demand: 0, liquidity: 0 };
 
-    const active = projects.filter(d => d.status === 'Listed' || d.status === 'Under Contract').length;
-    const sold = projects.filter(d => d.status === 'Sold').length;
+    const active = projects.filter(d => d.status === 'hold' || d.status === 'fund').length;
+    const sold = projects.filter(d => d.status === 'exit').length;
     
     // Abstracted calculation for "Market Temperature"
     const velocity = (sold / total) * 100;

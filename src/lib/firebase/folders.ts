@@ -28,11 +28,11 @@ import { ProjectFolder, ProjectFile, FolderPhase } from '@/types/documents';
 
 /** One folder is provisioned per phase when a project is created. */
 const PHASE_FOLDERS: FolderPhase[] = [
-  'Find & Fund',
-  'Under Contract',
-  'Rehab',
-  'Listed',
-  'Sold',
+  'Capital Plan',
+  'Equity',
+  'Debt',
+  'Title & Insurance',
+  'Closing',
 ];
 
 export const foldersService = {

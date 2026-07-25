@@ -67,7 +67,7 @@ export default function OfferLetterQuickAction({ projects }: OfferLetterQuickAct
 
   // Filter to only projects in the "Lead" (Find & Fund) phase with prospects
   const eligibleDeals = useMemo(
-    () => projects.filter(d => d.status === 'Lead' && d.prospects && d.prospects.length > 0),
+    () => projects.filter(d => d.status === 'acquisition' && d.prospects && d.prospects.length > 0),
     [projects]
   );
 

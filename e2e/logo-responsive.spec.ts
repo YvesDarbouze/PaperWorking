@@ -32,7 +32,11 @@ test.describe.configure({ mode: 'serial' });
 /** Set the PaperWorking theme before navigation. */
 async function setTheme(page: Page, theme: 'light' | 'dark') {
   await page.addInitScript((t) => {
-    localStorage.setItem('pw-theme', t);
+    try {
+    
+        localStorage.setItem('pw-theme', t);
+      
+    } catch (e) {}
   }, theme);
 }
 

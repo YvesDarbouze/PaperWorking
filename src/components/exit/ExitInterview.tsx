@@ -192,7 +192,8 @@ export default function ExitInterview({ deal }: ExitInterviewProps) {
           const costBasis = (deal.financials?.purchasePrice || 0) + (deal.financials?.actualRehabCost || 0);
           newFinancials.taxEstimateSnapshot = computeQuickTaxEstimate(costBasis, newFinancials.realizedNetProceeds, holdDays);
           
-          newStatus = 'Sold';
+          newStatus = 'exit';
+          newPhase = 4;
         }
 
       } else if (f.exitType === 'Stabilization') {
@@ -200,8 +201,8 @@ export default function ExitInterview({ deal }: ExitInterviewProps) {
         newFinancials.rentalMarketingCost = rentalMarketingCost;
         if (f.stabilizationDate) newFinancials.stabilizationDate = new Date(f.stabilizationDate);
         if (isFinalizing) {
-          newStatus = 'Rented';
-          newPhase = 3; // Go back to Hold
+          newStatus = 'exit';
+          newPhase = 4;
         }
       } else if (f.exitType === 'Refinance') {
         newFinancials.isRefinanced = true;
@@ -216,6 +217,7 @@ export default function ExitInterview({ deal }: ExitInterviewProps) {
           newFinancials.loanAmount = refiLoanAmount;
           newFinancials.loanInterestRate = refiInterestRate;
           newFinancials.loanTermYears = refiLoanTermYears;
+          newStatus = 'hold';
           newPhase = 3; // Go back to Hold
         }
       }

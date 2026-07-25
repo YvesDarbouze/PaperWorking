@@ -33,7 +33,7 @@ function computeHoldingCosts(projects: Project[], maxDOM: number): DealHoldingCo
   const now = new Date();
 
   return projects
-    .filter(d => d.status !== 'Sold' && d.status !== 'Lead')
+    .filter(d => d.status === 'fund' || d.status === 'hold')
     .map(deal => {
       const baseDate = deal.financials?.listingDate
         ? new Date(deal.financials.listingDate)

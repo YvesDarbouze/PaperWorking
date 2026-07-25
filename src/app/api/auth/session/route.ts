@@ -63,8 +63,8 @@ export async function POST(request: Request) {
 
   // ── Fail closed if Admin SDK is unavailable in production ─────────────────
   if (!hasAdminCredentials()) {
-    if (process.env.NODE_ENV === 'production') {
-      console.error('[Session] Admin SDK credentials missing in production — rejecting');
+    if (process.env.NODE_ENV === 'production' || (process.env.ENABLE_MOCK_AUTH !== 'true' && process.env.NODE_ENV !== 'test')) {
+      console.error('[Session] Admin SDK credentials missing or mock auth disabled — rejecting');
       return NextResponse.json({ error: 'Auth service unavailable' }, { status: 503 });
     }
     // Dev-only fallback: no Admin SDK configured locally

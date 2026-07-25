@@ -72,7 +72,34 @@ export const adminAuth = new Proxy({} as admin.auth.Auth, {
     ensureInitialized();
     if (prop === 'verifyIdToken') {
       return async (idToken: string, ...args: any[]) => {
-        if (idToken === 'mock_session_token_123' || idToken === 'mock_token' || idToken.startsWith('mock_')) {
+        let isSimulatedProd = false;
+        let isLocalhost = false;
+        try {
+          const modName = 'next/' + 'headers';
+          const { headers } = require(modName);
+          const headersList = await headers();
+          isSimulatedProd = headersList.get('x-simulate-production') === 'true';
+          const host = headersList.get('host') || '';
+          isLocalhost = host.startsWith('localhost') || host.startsWith('127.0.0.1');
+        } catch {}
+
+        let isE2eTest = false;
+        try {
+          const modName = 'next/' + 'headers';
+          const { cookies } = require(modName);
+          const cookieStore = await cookies();
+          isE2eTest = cookieStore.get('__e2e_test')?.value === '1';
+        } catch {}
+
+        const isMockToken = idToken === 'mock_token' ||
+                            idToken === 'mock_token_123' ||
+                            idToken === 'mock_session_token_123' ||
+                            idToken === 'demo_token' ||
+                            idToken === 'mock-token';
+
+        // STRICT ENVIRONMENT GATE — matches pattern in dealInvitations.ts
+        if ((process.env.NODE_ENV !== 'production' || isE2eTest || isLocalhost) && !isSimulatedProd && process.env.ENABLE_MOCK_AUTH === 'true' && isMockToken) {
+          console.warn('[SECURITY] Mock auth active — development or E2E only');
           return {
             uid: 'user_lead_investor_seed',
             email: 'marcus@apexcapital.io',
@@ -91,7 +118,27 @@ export const adminAuth = new Proxy({} as admin.auth.Auth, {
             },
           } as admin.auth.DecodedIdToken;
         }
-        return admin.auth().verifyIdToken(idToken, ...args);
+
+        // ALL other tokens MUST pass through Firebase Admin SDK verification
+        try {
+          return await admin.auth().verifyIdToken(idToken, ...args);
+        } catch (error: any) {
+          if (process.env.NODE_ENV === 'production') {
+            try {
+              const { logSecurityEvent, getRequestMetadata } = require('@/lib/auth/telemetry');
+              const { ip, requestUrl } = await getRequestMetadata();
+              await logSecurityEvent({
+                type: 'AUTH_FAILURE',
+                route: requestUrl,
+                ip,
+                reason: error.message || 'Token verification failed',
+              });
+            } catch (telemetryErr) {
+              console.error('Failed to log telemetry security event:', telemetryErr);
+            }
+          }
+          throw error;
+        }
       };
     }
     const val = (admin.auth() as any)[prop];

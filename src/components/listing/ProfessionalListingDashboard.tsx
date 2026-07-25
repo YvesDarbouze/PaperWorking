@@ -1,15 +1,28 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { Sparkles, Map, Database, Home, Info, Edit3, Share2, Globe } from 'lucide-react';
+import { Map, Database, Home, Info, Edit3, Share2, Globe, FileText } from 'lucide-react';
 import PropertyMediaGallery from './PropertyMediaGallery';
 import ComparableSalesWidget, { CompSale } from './ComparableSalesWidget';
 import { fetchMLSDataAction as fetchMLSData } from '@/lib/services/mlsActions';
 import { NormalizedProperty } from '@/lib/services/mlsShared';
 import { fetchNeighborhoodHighlights, NeighborhoodData } from '@/lib/services/neighborhoodService';
-import { generatePropertyDescription } from '@/lib/ai/listingAgent';
 import { Project } from '@/types/schema';
 import toast from 'react-hot-toast';
+
+function generatePropertyDescription(params: {
+  address: string;
+  beds: number;
+  baths: number;
+  sqft: number;
+  renovations: string[];
+  arv: number;
+  neighborhood: string;
+}): string {
+  const addressLine = params.address ? `located at ${params.address}` : 'Target Property';
+  const renoText = params.renovations.join(', ');
+  return `STUNNING AND FULLY REMODELED HOME ${addressLine.toUpperCase()}. FEATURING ${params.beds} SPACIOUS BEDROOMS, ${params.baths} LUXURIOUS BATHROOMS, AND ${params.sqft.toLocaleString()} SQFT OF PREMIUM LIVING SPACE IN THE DESIRABLE ${params.neighborhood.toUpperCase()} NEIGHBORHOOD. RECENT UPGRADES INCLUDE: ${renoText.toUpperCase()}. VALUE ESTIMATED AT $${params.arv.toLocaleString()}.`;
+}
 
 interface ProfessionalListingDashboardProps {
   deal: Project;
@@ -20,7 +33,7 @@ const ProfessionalListingDashboard: React.FC<ProfessionalListingDashboardProps> 
   const [generating, setGenerating] = useState(false);
   const [listingData, setListingData] = useState<NormalizedProperty | null>(null);
   const [neighborhood, setNeighborhood] = useState<NeighborhoodData | null>(null);
-  const [aiDescription, setAiDescription] = useState<string>('');
+  const [compiledDescription, setCompiledDescription] = useState<string>('');
 
   const [comps, setComps] = useState<CompSale[]>([]);
 
@@ -42,14 +55,14 @@ const ProfessionalListingDashboard: React.FC<ProfessionalListingDashboardProps> 
     }
   };
 
-  const handleGenerateAI = async () => {
+  const compileDescription = async () => {
     if (!listingData) {
-      toast.error('Synchronize MLS data first to provide AI context.');
+      toast.error('Synchronize MLS data first to compile template context.');
       return;
     }
     setGenerating(true);
     try {
-      const desc = await generatePropertyDescription({
+      const desc = generatePropertyDescription({
         address: deal.address,
         beds: listingData.beds,
         baths: listingData.baths,
@@ -58,10 +71,10 @@ const ProfessionalListingDashboard: React.FC<ProfessionalListingDashboardProps> 
         arv: deal.financials.estimatedARV || 0,
         neighborhood: 'Brooklyn Heights'
       });
-      setAiDescription(desc);
-      toast.success('Professional AI Description Generated');
+      setCompiledDescription(desc);
+      toast.success('Professional Listing Description Compiled');
     } catch (error) {
-      toast.error('AI Generation Failed');
+      toast.error('Description Compilation Failed');
     } finally {
       setGenerating(false);
     }
@@ -75,9 +88,9 @@ const ProfessionalListingDashboard: React.FC<ProfessionalListingDashboardProps> 
         <div className="space-y-6">
           <div className="flex items-center gap-4">
             <div className="w-10 h-10 bg-pw-black flex items-center justify-center border border-pw-border">
-              <Sparkles className="w-4 h-4 text-pw-accent" />
+              <FileText className="w-4 h-4 text-pw-accent" />
             </div>
-            <span className="text-sm font-black text-text-primary uppercase tracking-[0.4em]">AI Listing Review</span>
+            <span className="text-sm font-black text-text-primary uppercase tracking-[0.4em]">Listing Review</span>
           </div>
           <h1 className="text-6xl sm:text-7xl font-black text-text-primary tracking-tighter uppercase leading-none">{deal.propertyName}</h1>
           <p className="text-text-secondary font-black uppercase tracking-[0.2em] flex items-center mt-4 group cursor-pointer text-sm">
@@ -119,7 +132,7 @@ const ProfessionalListingDashboard: React.FC<ProfessionalListingDashboardProps> 
             </div>
           </div>
 
-          {/* AI Briefing Segment */}
+          {/* Listing Summary Segment */}
           <div className="bg-bg-surface p-14 space-y-12 h-full min-h-[500px]">
             <div className="flex justify-between items-center bg-bg-primary border border-border-accent p-6 shadow-sm">
               <div className="flex items-center gap-5">
@@ -129,19 +142,19 @@ const ProfessionalListingDashboard: React.FC<ProfessionalListingDashboardProps> 
                 <h3 className="text-sm font-black text-text-primary uppercase tracking-[0.3em]">EXECUTIVE SUMMARY AUDIT</h3>
               </div>
               <button 
-                onClick={handleGenerateAI}
+                onClick={compileDescription}
                 className="text-xs font-black bg-bg-surface hover:bg-pw-black hover:text-pw-white px-6 py-3 border border-pw-border uppercase tracking-[0.2em] flex items-center gap-3 transition-all active:scale-95"
               >
-                {generating ? <RefreshCw className="w-3 h-3 animate-spin" /> : <Sparkles className="w-3 h-3 text-pw-accent" />}
-                <span>{generating ? 'COMPILING...' : 'RE-INDEX AI'}</span>
+                {generating ? <RefreshCw className="w-3 h-3 animate-spin" /> : <FileText className="w-3 h-3 text-pw-accent" />}
+                <span>{generating ? 'COMPILING...' : 'COMPILE SUMMARY'}</span>
               </button>
             </div>
             
             <div className="relative">
-              {aiDescription ? (
+              {compiledDescription ? (
                 <div className="prose prose-invert max-w-none">
                   <p className="text-text-primary leading-loose font-medium text-base whitespace-pre-wrap uppercase tracking-tight selection:bg-pw-accent selection:text-white">
-                    {aiDescription}
+                    {compiledDescription}
                   </p>
                 </div>
               ) : (
@@ -149,7 +162,7 @@ const ProfessionalListingDashboard: React.FC<ProfessionalListingDashboardProps> 
                   <Database className="w-12 h-12 mx-auto mb-8 text-text-secondary opacity-20" />
                   <p className="text-sm text-text-secondary font-black uppercase tracking-widest leading-relaxed">
                     AWAITING CONTEXTUAL INGESTION. <br/>
-                    OPERATE [RE-INDEX AI] TO GENERATE LISTING BRIEF.
+                    OPERATE [COMPILE SUMMARY] TO GENERATE LISTING BRIEF.
                   </p>
                 </div>
               )}

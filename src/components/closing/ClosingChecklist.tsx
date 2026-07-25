@@ -237,7 +237,7 @@ export default function ClosingChecklist() {
                             >
                               Remove
                             </button>
-                            {item.documentUrl.startsWith('http') && (
+                            {item.documentUrl && (
                               <a
                                 href={item.documentUrl}
                                 target="_blank"
@@ -254,7 +254,8 @@ export default function ClosingChecklist() {
                               projectId={currentProject?.id || 'unknown'}
                               path="closing_docs"
                               onUploadComplete={(res) => {
-                                handleUploadComplete(item.id, res.downloadUrl);
+                                const secureUrl = `/api/projects/${currentProject?.id || 'unknown'}/documents/download?path=${encodeURIComponent(res.storagePath)}&name=${encodeURIComponent(item.type)}`;
+                                handleUploadComplete(item.id, secureUrl);
                                 setActiveUploadId(null);
                               }}
                             />

@@ -2,10 +2,10 @@
 
 import React from 'react';
 import { useProjectStore } from '@/store/projectStore';
-import { ArrowRightLeft, Home, TrendingUp } from 'lucide-react';
+import { ArrowRightLeft, Home, TrendingUp, Key } from 'lucide-react';
 
 /* ═══════════════════════════════════════════════════════
-   Exit Strategy Fork — Sell vs. Refinance & Hold
+   Exit Strategy Fork — Sell vs. Refinance & Hold vs. Lease
    
    Top-of-panel toggle controlling the dashboard's math 
    route. Dispatches to Zustand on change.
@@ -13,16 +13,16 @@ import { ArrowRightLeft, Home, TrendingUp } from 'lucide-react';
 
 interface ExitStrategyForkProps {
   projectId: string;
-  strategy: 'Sell' | 'Rent';
-  onStrategyChange: (s: 'Sell' | 'Rent') => void;
+  strategy: 'Sell' | 'Rent' | 'Lease';
+  onStrategyChange: (s: 'Sell' | 'Rent' | 'Lease') => void;
 }
 
 export default function ExitStrategyFork({ projectId, strategy, onStrategyChange }: ExitStrategyForkProps) {
   const updateProjectFinancials = useProjectStore(state => state.updateProjectFinancials);
 
-  const handleToggle = (next: 'Sell' | 'Rent') => {
+  const handleToggle = (next: 'Sell' | 'Rent' | 'Lease') => {
     onStrategyChange(next);
-    updateProjectFinancials(projectId, { exitStrategyType: next });
+    updateProjectFinancials(projectId, { exitStrategyType: next === 'Lease' ? 'Rent' : next });
   };
 
   return (
@@ -34,49 +34,65 @@ export default function ExitStrategyFork({ projectId, strategy, onStrategyChange
           Exit_Strategy_Fork
         </h3>
         <span className="ml-auto text-[10px] font-bold text-text-secondary uppercase tracking-widest">
-          {strategy === 'Sell' ? 'Liquidation' : 'Cash_Flow'}
+          {strategy === 'Sell' ? 'Liquidation' : strategy === 'Lease' ? 'Commercial_Lease' : 'Cash_Flow'} (Read-Only)
         </span>
       </div>
 
-      {/* Toggle Cards */}
-      <div className="grid grid-cols-2 gap-4">
+      {/* Toggle Cards (Read-Only) */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         {/* Sell Card */}
-        <button
-          onClick={() => handleToggle('Sell')}
-          className={`group relative p-6 border transition-all duration-300 text-left ${
+        <div
+          className={`relative p-6 border transition-all duration-300 ${
             strategy === 'Sell'
               ? 'border-pw-accent bg-pw-accent text-pw-white'
-              : 'border-pw-border bg-pw-glass-bg text-text-primary hover:border-pw-accent'
+              : 'border-pw-border bg-pw-glass-bg text-text-primary opacity-60'
           }`}
         >
-          <TrendingUp className={`w-5 h-5 mb-3 ${strategy === 'Sell' ? 'text-pw-white' : 'text-text-secondary group-hover:text-pw-accent'}`} />
+          <TrendingUp className={`w-5 h-5 mb-3 ${strategy === 'Sell' ? 'text-pw-white' : 'text-text-secondary'}`} />
           <p className="text-sm font-black uppercase tracking-widest mb-1">Sell Property</p>
-          <p className="text-[10px] font-bold uppercase tracking-wider leading-relaxed text-text-secondary group-hover:text-pw-white/80">
+          <p className="text-[10px] font-bold uppercase tracking-wider leading-relaxed text-text-secondary">
             Liquidate asset → Settlement ledger → Net proceeds → Capital gains
           </p>
           {strategy === 'Sell' && (
             <div className="absolute top-3 right-3 w-1.5 h-1.5 bg-pw-white rounded-full animate-pulse" />
           )}
-        </button>
+        </div>
 
         {/* Hold Card */}
-        <button
-          onClick={() => handleToggle('Rent')}
-          className={`group relative p-6 border transition-all duration-300 text-left ${
+        <div
+          className={`relative p-6 border transition-all duration-300 ${
             strategy === 'Rent'
               ? 'border-pw-accent bg-pw-accent text-pw-white'
-              : 'border-pw-border bg-pw-glass-bg text-text-primary hover:border-pw-accent'
+              : 'border-pw-border bg-pw-glass-bg text-text-primary opacity-60'
           }`}
         >
-          <Home className={`w-5 h-5 mb-3 ${strategy === 'Rent' ? 'text-pw-white' : 'text-text-secondary group-hover:text-pw-accent'}`} />
+          <Home className={`w-5 h-5 mb-3 ${strategy === 'Rent' ? 'text-pw-white' : 'text-text-secondary'}`} />
           <p className="text-sm font-black uppercase tracking-widest mb-1">Refinance & Hold</p>
-          <p className="text-[10px] font-bold uppercase tracking-wider leading-relaxed text-text-secondary group-hover:text-pw-white/80">
+          <p className="text-[10px] font-bold uppercase tracking-wider leading-relaxed text-text-secondary">
             Rental cash flow → Monthly NOI → Cash-on-cash return
           </p>
           {strategy === 'Rent' && (
             <div className="absolute top-3 right-3 w-1.5 h-1.5 bg-pw-white rounded-full animate-pulse" />
           )}
-        </button>
+        </div>
+
+        {/* Lease Card */}
+        <div
+          className={`relative p-6 border transition-all duration-300 ${
+            strategy === 'Lease'
+              ? 'border-pw-accent bg-pw-accent text-pw-white'
+              : 'border-pw-border bg-pw-glass-bg text-text-primary opacity-60'
+          }`}
+        >
+          <Key className={`w-5 h-5 mb-3 ${strategy === 'Lease' ? 'text-pw-white' : 'text-text-secondary'}`} />
+          <p className="text-sm font-black uppercase tracking-widest mb-1">Commercial Lease</p>
+          <p className="text-[10px] font-bold uppercase tracking-wider leading-relaxed text-text-secondary">
+            Commercial leasing → NNN lease terms → Corporate tenant receipts
+          </p>
+          {strategy === 'Lease' && (
+            <div className="absolute top-3 right-3 w-1.5 h-1.5 bg-pw-white rounded-full animate-pulse" />
+          )}
+        </div>
       </div>
     </div>
   );

@@ -124,8 +124,10 @@ export default function Logo({
     } else if (s && s in heightMap) {
       resolvedHeight = heightMap[s as SizeKey];
     } else {
-      // Defaults based on variant
-      resolvedHeight = v === 'icon' ? 24 : 32;
+      // Defaults based on variant & surface (UX-10: dashboard chrome downsized 10% from 32px -> 28.8px)
+      const isDashboardChrome = surface === 'app-sidebar' || surface === 'app-topbar';
+      const baseHeight = v === 'icon' ? 24 : 32;
+      resolvedHeight = isDashboardChrome ? baseHeight * 0.9 : baseHeight;
     }
 
     const resolvedWidth = Math.round(resolvedHeight * ASPECT_RATIOS[v]);

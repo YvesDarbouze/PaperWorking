@@ -111,7 +111,7 @@ function EmptyState() {
         <div>
           <p className="text-sm font-semibold text-[#C0BEC2] mb-1">Awaiting Portfolio Data</p>
           <p className="text-xs text-[#6B6870] max-w-xs leading-relaxed">
-            Import deal data or complete Purchase phase tasks to generate IRR analytics.
+            Import deal data or complete Fund phase tasks to generate IRR analytics.
           </p>
         </div>
         <Link
@@ -271,7 +271,7 @@ export default function IRRIntelligencePage() {
     const irr = irrCurrentResult.data;
     const projects = portfolioInputsResult.data.projects;
     const totalValue = projects.reduce((s, p) => s + (p.financials?.estimatedCurrentValue ?? p.financials?.estimatedARV ?? p.financials?.purchasePrice ?? 0), 0);
-    const totalCost  = projects.reduce((s, p) => s + ((p.financials?.purchasePrice ?? 0) + (p.financials?.rehabBudget ?? 0)), 0);
+    const totalCost  = projects.reduce((s, p) => s + ((p.financials?.purchasePrice ?? 0) + ((p.financials?.rehab_budget ? p.financials.rehab_budget / 100 : p.financials?.rehabBudget) ?? 0)), 0);
 
     return {
       isUsingDemoData: false,

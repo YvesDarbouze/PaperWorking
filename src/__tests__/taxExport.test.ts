@@ -44,7 +44,7 @@ describe('Tax Export Pipeline & Previews', () => {
     assetClass: 'Residential',
     dispositionType: 'RENT',
     subStrategy: 'LONG_TERM',
-    status: 'Active',
+    status: 'acquisition',
     organizationId: 'org_abc',
     members: {},
     createdAt: new Date(2024, 0, 1),

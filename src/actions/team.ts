@@ -295,7 +295,11 @@ export async function acceptTeamInvitation(token: string): Promise<void> {
   const inviteDoc = invitesSnap.docs[0];
   const inviteData = inviteDoc.data() as TeamInvitation;
 
-  if (userData.email.toLowerCase() !== inviteData.email.toLowerCase()) {
+  const userEmails = [
+    userData.email.toLowerCase(),
+    ...(Array.isArray(userData.claimedEmails) ? userData.claimedEmails.map((e: string) => e.toLowerCase()) : [])
+  ];
+  if (!userEmails.includes(inviteData.email.toLowerCase())) {
     throw new Error('This invitation was sent to a different email address. Please sign in with the correct account.');
   }
 

@@ -30,10 +30,10 @@ function computeCashDeployed(fin: ProjectFinancials): number {
 
 export function PortfolioSummaryBar({ projects, isLoading, className }: PortfolioSummaryBarProps) {
   const metrics = useMemo(() => {
-    const acquisition = projects.filter(p => p.status === 'Lead');
-    const purchase = projects.filter(p => p.status === 'Under Contract');
-    const hold = projects.filter(p => p.status === 'Renovating' || p.status === 'Active');
-    const exit = projects.filter(p => p.status === 'Listed' || p.status === 'Sold');
+    const acquisition = projects.filter(p => p.status === 'acquisition');
+    const purchase = projects.filter(p => p.status === 'fund');
+    const hold = projects.filter(p => p.status === 'hold');
+    const exit = projects.filter(p => p.status === 'exit');
 
     const acquisitionVal = acquisition.reduce((s, p) => s + computeCashDeployed(p.financials), 0);
     const purchaseVal = purchase.reduce((s, p) => s + computeCashDeployed(p.financials), 0);

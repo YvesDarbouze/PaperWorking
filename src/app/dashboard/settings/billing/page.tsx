@@ -74,6 +74,7 @@ export default function BillingSettingsPage() {
   useEffect(() => {
     if (!user) return;
     
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setTokenError(null);
     setInvoicesLoading(true);
     setSubscriptionLoading(true);
@@ -121,10 +122,10 @@ export default function BillingSettingsPage() {
               setRentcastUsage({ count: data.count, limit: data.limit });
             }
           })
-          .catch((err: any) => console.error(err))
+          .catch((err: unknown) => console.error(err))
           .finally(() => setUsageLoading(false));
       })
-      .catch((err: any) => {
+      .catch((err: unknown) => {
         console.error('Failed to retrieve authentication token:', err);
         setInvoicesLoading(false);
         setSubscriptionLoading(false);
@@ -184,9 +185,9 @@ export default function BillingSettingsPage() {
       });
       const data = await res.json();
       if (!res.ok || !data.url) throw new Error(data.error || 'Failed to open billing portal.');
-      window.location.href = data.url;
-    } catch (err: any) {
-      setPortalError(err.message);
+      window.location.assign(data.url);
+    } catch (err: unknown) {
+      setPortalError(err instanceof Error ? err.message : 'Failed to open billing portal.');
       setPortalLoading(false);
     }
   };
@@ -210,9 +211,9 @@ export default function BillingSettingsPage() {
       });
       const data = await res.json();
       if (!res.ok || !data.url) throw new Error(data.error || 'Could not start plan change.');
-      window.location.href = data.url;
-    } catch (err: any) {
-      setPlanChangeError(err.message);
+      window.location.assign(data.url);
+    } catch (err: unknown) {
+      setPlanChangeError(err instanceof Error ? err.message : 'Could not start plan change.');
       setPlanChangeLoading(null);
     }
   };
@@ -227,16 +228,16 @@ export default function BillingSettingsPage() {
   return (
     <div className="w-full space-y-8">
       {tokenError && (
-        <div className="text-xs text-error bg-error/10 border border-error/30 rounded-lg px-4 py-3 flex items-center gap-2">
-          <span className="material-symbols-outlined text-sm select-none">error</span>
-          <span>{tokenError}</span>
+        <div className="text-xs text-pw-muted bg-error/10 border border-error/30 rounded-lg px-4 py-3 flex items-center gap-2">
+          <span className="material-symbols-outlined text-[16px] text-error select-none">error</span>
+          <span className="text-error">{tokenError}</span>
         </div>
       )}
       {/* ─── 12-Column Bento Grid ─── */}
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
 
         {/* ━━━ 1. Hero Plan Card (col-span-8) ━━━ */}
-        <section className="lg:col-span-8 glass-card rounded-2xl p-8 relative overflow-hidden min-h-[280px] flex flex-col justify-between">
+        <section className="lg:col-span-8 glass-card rounded-2xl p-6 relative overflow-hidden min-h-[280px] flex flex-col justify-between transition-all duration-200 hover:shadow-md">
           {/* Glow blob */}
           <div className="absolute -top-24 -right-24 w-64 h-64 bg-pw-primary/10 rounded-full blur-3xl pointer-events-none" />
 
@@ -252,7 +253,7 @@ export default function BillingSettingsPage() {
                 </h3>
               </div>
               <div className="text-left md:text-right">
-                <p className="text-xs font-semibold text-pw-muted uppercase tracking-wider mb-1">Next Billing Date</p>
+                <p className="text-xs font-medium text-pw-muted uppercase tracking-[0.5px] mb-1">Next Billing Date</p>
                 <p className="font-headline-md text-headline-md text-pw-black">{nextBillingStr}</p>
                 <p className="font-body-md text-body-md text-pw-muted mt-1">{planInfo.price}{planInfo.period} USD / month</p>
               </div>
@@ -283,7 +284,7 @@ export default function BillingSettingsPage() {
                   <button
                     onClick={openPortal}
                     disabled={portalLoading}
-                    className="mt-2 text-pw-primary font-label-md text-label-md hover:text-pw-primary/80 transition-colors cursor-pointer"
+                    className="mt-2 h-9 px-4 rounded-lg bg-pw-primary/10 text-pw-primary text-xs font-medium hover:bg-pw-primary/20 active:scale-98 disabled:opacity-50 disabled:pointer-events-none transition-all flex items-center justify-center gap-2 cursor-pointer"
                   >
                     Reactivate Subscription →
                   </button>
@@ -296,7 +297,7 @@ export default function BillingSettingsPage() {
               <div className="bg-pw-glass-bg/50 rounded-lg p-6 border border-white/5">
                 <div className="flex justify-between items-end mb-4">
                   <div>
-                    <h4 className="font-label-md text-label-md text-pw-black mb-1">Seat Limit</h4>
+                    <h4 className="text-sm font-semibold text-pw-black mb-1">Seat Limit</h4>
                     <p className="font-body-sm text-body-sm text-pw-muted">
                       Up to{' '}
                       <span className="text-pw-primary font-bold">{maxSeats}</span>{' '}
@@ -306,17 +307,17 @@ export default function BillingSettingsPage() {
                 </div>
                 <div className="mt-2 flex justify-between items-center">
                   <Link href="/dashboard/settings/team" className="font-label-md text-label-md text-pw-muted hover:text-pw-black flex items-center gap-2 transition-colors cursor-pointer">
-                    <span className="material-symbols-outlined text-[18px]">group_add</span> Manage Team
+                    <span className="material-symbols-outlined text-[16px]">group_add</span> Manage Team
                   </Link>
                   <button
                     onClick={openPortal}
                     disabled={portalLoading}
-                    className="luminous-button px-6 py-2.5 rounded-lg font-label-md text-label-md font-bold disabled:opacity-50 cursor-pointer flex items-center gap-2"
+                    className="luminous-button h-10 px-5 rounded-lg text-sm font-medium active:scale-98 disabled:opacity-50 disabled:pointer-events-none transition-all flex items-center justify-center gap-2 cursor-pointer"
                   >
                     {portalLoading ? (
-                      <span className="material-symbols-outlined animate-spin text-sm select-none">progress_activity</span>
+                      <span className="material-symbols-outlined animate-spin text-[16px] select-none">progress_activity</span>
                     ) : (
-                      <span className="material-symbols-outlined text-[18px] select-none">add</span>
+                      <span className="material-symbols-outlined text-[16px] select-none">add</span>
                     )}
                     {portalLoading ? 'Synchronizing…' : 'Add Seats'}
                   </button>
@@ -328,7 +329,7 @@ export default function BillingSettingsPage() {
           {/* Manage Subscription button for 'None' plan or secondary action */}
           {plan === 'None' && (
             <div className="flex flex-col sm:flex-row gap-4 mt-6 relative z-10">
-              <Link href="/pricing" className="luminous-button inline-flex items-center justify-center gap-2 text-xs font-bold uppercase tracking-wider px-6 py-3 rounded-xl">
+              <Link href="/pricing" className="luminous-button h-10 px-5 rounded-lg text-sm font-medium active:scale-98 transition-all flex items-center justify-center gap-2">
                 Choose a Plan
               </Link>
             </div>
@@ -336,8 +337,8 @@ export default function BillingSettingsPage() {
         </section>
 
         {/* ━━━ 2. Payment Method (col-span-4) ━━━ */}
-        <section className="lg:col-span-4 glass-card rounded-2xl p-6 flex flex-col justify-between min-h-[280px]">
-          <h4 className="font-headline-md text-headline-md text-pw-black mb-6">Payment Method</h4>
+        <section className="lg:col-span-4 glass-card rounded-2xl p-6 flex flex-col justify-between min-h-[280px] transition-all duration-200 hover:shadow-md">
+          <h4 className="text-base font-semibold text-pw-black mb-6">Payment Method</h4>
 
           {pmLoading ? (
             /* Skeleton while loading */
@@ -349,7 +350,7 @@ export default function BillingSettingsPage() {
                   <div className="h-3 bg-pw-glass-bg rounded w-20" />
                 </div>
               </div>
-              <div className="h-12 bg-pw-glass-bg rounded-lg animate-pulse" />
+              <div className="h-10 bg-pw-glass-bg rounded-lg animate-pulse" />
             </div>
           ) : hasCard && lastFour ? (
             <div className="flex-1 flex flex-col justify-between">
@@ -377,9 +378,9 @@ export default function BillingSettingsPage() {
               <button
                 onClick={openPortal}
                 disabled={portalLoading}
-                className="w-full py-3 rounded-lg border border-white/10 text-pw-black font-label-md text-label-md hover:bg-white/5 hover:border-white/20 transition-all flex items-center justify-center gap-2 cursor-pointer"
+                className="w-full h-10 px-5 rounded-lg border border-white/10 text-pw-black text-sm font-medium hover:bg-white/5 hover:border-white/20 active:scale-98 disabled:opacity-50 disabled:pointer-events-none transition-all flex items-center justify-center gap-2 cursor-pointer"
               >
-                <span className="material-symbols-outlined text-[18px]">credit_card</span>
+                <span className="material-symbols-outlined text-[16px]">credit_card</span>
                 Update Payment Method
               </button>
             </div>
@@ -387,7 +388,7 @@ export default function BillingSettingsPage() {
             <div className="text-center py-8 border border-dashed border-pw-border rounded-2xl bg-pw-glass-bg/50 flex-1 flex flex-col justify-center items-center">
               <span className="material-symbols-outlined text-3xl text-pw-muted mb-2 select-none">credit_card</span>
               <p className="text-sm text-pw-muted mb-4">No payment method on file.</p>
-              <Link href="/pricing" className="luminous-button inline-flex items-center justify-center gap-2 text-xs font-bold uppercase tracking-wider px-6 py-3 rounded-lg">
+              <Link href="/pricing" className="luminous-button h-10 px-5 rounded-lg text-sm font-medium active:scale-98 transition-all flex items-center justify-center gap-2">
                 Configure Payment
               </Link>
             </div>
@@ -402,28 +403,29 @@ export default function BillingSettingsPage() {
         </section>
 
         {/* ━━━ 3. Billing Info (col-span-4) ━━━ */}
-        <section className="lg:col-span-4 glass-card rounded-2xl p-6">
+        <section className="lg:col-span-4 glass-card rounded-2xl p-6 transition-all duration-200 hover:shadow-md">
           <div className="flex justify-between items-center mb-6">
-            <h4 className="font-headline-md text-headline-md text-pw-black">Billing Info</h4>
+            <h4 className="text-base font-semibold text-pw-black">Billing Info</h4>
             <button
               onClick={openPortal}
               disabled={portalLoading}
               className="text-pw-muted hover:text-pw-primary transition-colors p-1 cursor-pointer"
+              aria-label="Edit billing info"
             >
               <span className="material-symbols-outlined text-[20px]">edit</span>
             </button>
           </div>
           <div className="space-y-4">
             <div>
-              <p className="text-xs font-semibold text-pw-muted uppercase tracking-wider mb-1">Company Name</p>
+              <p className="text-xs font-medium text-pw-muted uppercase tracking-[0.5px] mb-1">Company Name</p>
               <p className="font-body-md text-body-md text-pw-black">{profile?.displayName ?? 'Not configured'}</p>
             </div>
             <div>
-              <p className="text-xs font-semibold text-pw-muted uppercase tracking-wider mb-1">Billing Email</p>
+              <p className="text-xs font-medium text-pw-muted uppercase tracking-[0.5px] mb-1">Billing Email</p>
               <p className="font-body-md text-body-md text-pw-black">{profile?.email ?? user?.email ?? '—'}</p>
             </div>
             <div>
-              <p className="text-xs font-semibold text-pw-muted uppercase tracking-wider mb-1">Status</p>
+              <p className="text-xs font-medium text-pw-muted uppercase tracking-[0.5px] mb-1">Status</p>
               <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10px] font-bold border ${statusBadge.cls}`}>
                 <span className="material-symbols-outlined text-[14px]" style={{ fontVariationSettings: "'FILL' 1" }}>{statusBadge.iconName}</span>
                 {statusBadge.label}
@@ -438,10 +440,10 @@ export default function BillingSettingsPage() {
         </div>
 
         {/* ━━━ RentCast API Call Volume (col-span-4) ━━━ */}
-        <section className="lg:col-span-4 glass-card rounded-2xl p-6 min-h-[220px] flex flex-col justify-between">
+        <section className="lg:col-span-4 glass-card rounded-2xl p-6 min-h-[220px] flex flex-col justify-between transition-all duration-200 hover:shadow-md">
           <div>
             <div className="flex justify-between items-center mb-6">
-              <h4 className="font-headline-md text-headline-md text-pw-black">API Usage</h4>
+              <h4 className="text-base font-semibold text-pw-black">API Usage</h4>
               <span className="material-symbols-outlined text-pw-muted text-xl select-none">api</span>
             </div>
 
@@ -452,7 +454,7 @@ export default function BillingSettingsPage() {
             ) : rentcastUsage ? (
               <div className="space-y-4">
                 <div>
-                  <p className="text-xs font-semibold text-pw-muted uppercase tracking-wider mb-1">RentCast API Volume</p>
+                  <p className="text-xs font-medium text-pw-muted uppercase tracking-[0.5px] mb-1">RentCast API Volume</p>
                   <p className="text-2xl font-bold text-pw-black">
                     <span className="text-pw-primary font-extrabold">{rentcastUsage.count}</span>
                     <span className="text-sm text-pw-muted font-normal"> / {rentcastUsage.limit} calls</span>
@@ -467,7 +469,7 @@ export default function BillingSettingsPage() {
                   <div
                     className={`h-full rounded-full transition-all duration-500 ${
                       rentcastUsage.count >= rentcastUsage.limit * 0.8
-                        ? 'bg-red-500 shadow-[0_0_8px_rgba(239,68,68,0.5)]'
+                        ? 'bg-pw-primary shadow-[0_0_8px_rgba(50,121,249,0.5)]'
                         : rentcastUsage.count >= rentcastUsage.limit * 0.5
                         ? 'bg-amber-500 shadow-[0_0_8px_rgba(245,158,11,0.5)]'
                         : 'bg-pw-primary shadow-[0_0_8px_rgba(50,121,249,0.5)]'
@@ -483,8 +485,8 @@ export default function BillingSettingsPage() {
         </section>
 
         {/* ━━━ 4. Change Plan (col-span-12) ━━━ */}
-        <section className="lg:col-span-12 glass-card rounded-2xl p-8">
-          <h3 className="text-xl font-bold text-pw-black mb-2">Change Your Plan</h3>
+        <section className="lg:col-span-12 glass-card rounded-2xl p-6 transition-all duration-200 hover:shadow-md">
+          <h3 className="text-base font-semibold text-pw-black mb-2">Change Your Plan</h3>
           <p className="font-body-sm text-body-sm text-pw-muted mb-6">
             Switch plans at any time. You&apos;ll be taken to checkout — Stripe handles proration automatically.
           </p>
@@ -517,12 +519,12 @@ export default function BillingSettingsPage() {
                       : 'bg-pw-glass-bg/30 border-white/10 hover:border-white/20'
                   }`}
                 >
-                  <div className="flex items-start justify-between mb-3">
+                  <div className="flex items-start justify-between mb-4">
                     <div>
-                      <p className="font-label-md text-label-md text-pw-black">{option.displayName}</p>
+                      <p className="font-label-md text-label-md text-pw-black font-semibold">{option.displayName}</p>
                       <p className="font-body-sm text-body-sm text-pw-muted mt-0.5">{option.description}</p>
                     </div>
-                    <p className="font-headline-md text-headline-md text-pw-black tabular-nums shrink-0 ml-4">
+                    <p className="font-headline-md text-headline-md text-pw-black tabular-nums shrink-0 ml-4 font-bold">
                       ${option.monthlyPrice}<span className="text-xs text-pw-muted font-normal">/mo</span>
                     </p>
                   </div>
@@ -530,16 +532,16 @@ export default function BillingSettingsPage() {
                   <button
                     onClick={() => !isCurrent && handleChangePlan(option.displayName)}
                     disabled={isCurrent || isLoading || !!planChangeLoading}
-                    className={`w-full py-2.5 rounded-lg font-label-md text-label-md transition-all flex items-center justify-center gap-2 ${
+                    className={`w-full h-10 px-5 rounded-lg text-sm font-medium transition-all flex items-center justify-center gap-2 ${
                       isCurrent
                         ? 'bg-pw-primary/10 text-pw-primary border border-pw-primary/20 cursor-default'
                         : isUpgrade
-                          ? 'luminous-button disabled:opacity-50'
-                          : 'border border-white/10 text-pw-black hover:bg-white/5 disabled:opacity-50'
+                          ? 'luminous-button active:scale-98 disabled:opacity-50 disabled:pointer-events-none'
+                          : 'border border-white/10 text-pw-black hover:bg-white/5 active:scale-98 disabled:opacity-50 disabled:pointer-events-none'
                     }`}
                   >
                     {isLoading && (
-                      <span className="material-symbols-outlined animate-spin text-sm select-none">progress_activity</span>
+                      <span className="material-symbols-outlined animate-spin text-[16px] select-none">progress_activity</span>
                     )}
                     {buttonLabel}
                   </button>
@@ -550,15 +552,15 @@ export default function BillingSettingsPage() {
         </section>
 
         {/* ━━━ 5. Billing History (col-span-8) ━━━ */}
-        <section className="lg:col-span-8 glass-card rounded-2xl p-8">
+        <section className="lg:col-span-8 glass-card rounded-2xl p-6 transition-all duration-200 hover:shadow-md">
           <div className="flex justify-between items-center mb-6">
-            <h3 className="text-xl font-bold text-pw-black">Billing History</h3>
+            <h3 className="text-base font-semibold text-pw-black">Billing History</h3>
             {plan !== 'None' && invoices.length > 0 && (
               <button
                 onClick={handleDownloadAll}
-                className="font-label-md text-label-md text-pw-primary flex items-center gap-2 hover:text-pw-primary/80 transition-colors cursor-pointer"
+                className="h-9 px-4 rounded-lg bg-pw-primary/10 text-pw-primary hover:bg-pw-primary/20 active:scale-98 disabled:opacity-50 disabled:pointer-events-none transition-all flex items-center justify-center gap-2 text-xs font-medium cursor-pointer"
               >
-                <span className="material-symbols-outlined text-[18px]">download</span>
+                <span className="material-symbols-outlined text-[16px]">download</span>
                 Download All
               </button>
             )}
@@ -577,7 +579,7 @@ export default function BillingSettingsPage() {
             <div className="overflow-x-auto">
               <table className="w-full text-left border-collapse">
                 <thead>
-                  <tr className="border-b border-white/10">
+                  <tr className="border-b border-white/10 h-12">
                     <th className="pb-4 pl-4 text-xs font-semibold text-pw-muted uppercase tracking-wider">Date</th>
                     <th className="pb-4 text-xs font-semibold text-pw-muted uppercase tracking-wider">Invoice ID</th>
                     <th className="pb-4 text-right text-xs font-semibold text-pw-muted uppercase tracking-wider">Amount</th>
@@ -587,14 +589,14 @@ export default function BillingSettingsPage() {
                 </thead>
                 <tbody className="font-mono text-sm">
                   {invoices.map((inv) => (
-                    <tr key={inv.id} className="border-b border-white/5 hover:bg-white/[0.02] transition-colors">
+                    <tr key={inv.id} className="border-b border-white/5 hover:bg-white/[0.02] transition-colors h-12">
                       <td className="py-4 pl-4 text-pw-black">{inv.date}</td>
                       <td className="py-4 text-pw-muted">{inv.number ?? inv.id.substring(0, 12)}</td>
                       <td className="py-4 text-right text-pw-black">{inv.amount}</td>
                       <td className="py-4">
                         <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold border ${
                           inv.status === 'paid'
-                            ? 'bg-green-500/10 text-green-400 border-green-500/20'
+                            ? 'bg-[#E8F5E9] text-[#2E7D32] border-[#4CAF50]'
                             : inv.status === 'open'
                             ? 'bg-amber-500/10 text-amber-600 border-amber-500/20'
                             : 'bg-pw-glass-bg text-pw-muted border-pw-border'

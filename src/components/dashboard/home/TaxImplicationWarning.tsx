@@ -30,7 +30,7 @@ function shortAddress(addr: string): string {
 function computeTaxWarnings(projects: Project[]): TaxWarning[] {
   const now = new Date();
   return projects
-    .filter(d => d.status !== 'Sold' && d.status !== 'Lead')
+    .filter(d => d.status === 'fund' || d.status === 'hold')
     .map(deal => {
       const baseDate = new Date(deal.createdAt);
       const diffMs = now.getTime() - baseDate.getTime();

@@ -3,7 +3,7 @@
 import { useCallback, useState } from 'react';
 import { getAuth } from 'firebase/auth';
 import { collection, getDocs } from 'firebase/firestore';
-import { Loader2, Send, Sparkles } from 'lucide-react';
+import { Loader2, Send } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { useWorkspaceProject } from '@/app/dashboard/projects/[id]/layout';
 import { db } from '@/lib/firebase/config';
@@ -12,7 +12,7 @@ import { db } from '@/lib/firebase/config';
    DealUpdateComposer — Capital raise investor update panel
 
    Used in Phase 1 "Capital Raising" alongside CrowdfundingTracker.
-   Generates an AI draft and sends it to commitment-holder emails.
+   Sends updates to commitment-holder emails.
    ═══════════════════════════════════════════════════════════════ */
 
 interface DealUpdateComposerProps {
@@ -31,7 +31,6 @@ export function DealUpdateComposer({
   const { project } = useWorkspaceProject();
   const [subject, setSubject] = useState('');
   const [body, setBody] = useState('');
-  const [generating, setGenerating] = useState(false);
   const [sending, setSending] = useState(false);
 
   const defaultSubject = `Capital raise update: ${project?.propertyName || 'Deal'}`;
@@ -43,37 +42,6 @@ export function DealUpdateComposer({
       .filter((email): email is string => !!email && email.includes('@'));
     return [...new Set(emails)];
   }, [projectId]);
-
-  const handleGenerate = async () => {
-    const idToken = await getIdToken();
-    if (!idToken) {
-      toast.error('Please sign in again.');
-      return;
-    }
-
-    setGenerating(true);
-    try {
-      const res = await fetch('/api/ai/draft', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          idToken,
-          projectId,
-          audience: 'investors',
-        }),
-      });
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.error || 'Failed to generate draft');
-
-      setBody(data.draft);
-      if (!subject.trim()) setSubject(defaultSubject);
-      toast.success('Draft ready');
-    } catch (error) {
-      toast.error(error instanceof Error ? error.message : 'Failed to generate draft');
-    } finally {
-      setGenerating(false);
-    }
-  };
 
   const handleSend = async () => {
     if (!body.trim()) {
@@ -129,20 +97,6 @@ export function DealUpdateComposer({
         <p className="text-[12px] font-semibold tracking-[0.05em] text-[#9E9DA0] uppercase">
           Investor Update
         </p>
-        <button
-          type="button"
-          onClick={handleGenerate}
-          disabled={generating}
-          className="inline-flex items-center gap-1.5 text-[11px] font-semibold uppercase tracking-wide disabled:opacity-50"
-          style={{ color: phaseColor }}
-        >
-          {generating ? (
-            <Loader2 className="h-3.5 w-3.5 animate-spin" />
-          ) : (
-            <Sparkles className="h-3.5 w-3.5" />
-          )}
-          AI Draft
-        </button>
       </div>
 
       <input

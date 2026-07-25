@@ -143,7 +143,7 @@ describe('Scoped Security Rules & Dashboard Route Integration', () => {
                 data: () => ({
                   organizationId: orgId,
                   propertyName: 'Allowed Project',
-                  status: 'Active',
+                  status: 'acquisition',
                   currentPhase: 1,
                   financials: { purchasePrice: 100000, projectedRent: 1500 },
                 }),
@@ -153,7 +153,7 @@ describe('Scoped Security Rules & Dashboard Route Integration', () => {
                 data: () => ({
                   organizationId: orgId,
                   propertyName: 'Forbidden Project',
-                  status: 'Active',
+                  status: 'acquisition',
                   currentPhase: 1,
                   financials: { purchasePrice: 200000, projectedRent: 3000 },
                 }),
@@ -253,7 +253,7 @@ describe('Scoped Security Rules & Dashboard Route Integration', () => {
                 data: () => ({
                   organizationId: orgId,
                   propertyName: 'Allowed Project',
-                  status: 'Active',
+                  status: 'acquisition',
                   currentPhase: 1,
                   financials: { purchasePrice: 100000, projectedRent: 1500 },
                 }),
@@ -263,7 +263,7 @@ describe('Scoped Security Rules & Dashboard Route Integration', () => {
                 data: () => ({
                   organizationId: orgId,
                   propertyName: 'Forbidden Project',
-                  status: 'Active',
+                  status: 'acquisition',
                   currentPhase: 1,
                   financials: { purchasePrice: 200000, projectedRent: 3000 },
                 }),

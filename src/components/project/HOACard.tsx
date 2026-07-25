@@ -4,6 +4,8 @@ import React, { useState, useEffect } from 'react';
 import { Calendar, FileText, CheckCircle, Clock, Trash2, Info, Landmark, AlertTriangle } from 'lucide-react';
 import type { Project } from '@/types/schema';
 import toast from 'react-hot-toast';
+import { uploadFile } from '@/lib/storage/uploadService';
+import { IS_DEMO_MODE } from '@/lib/config/demo';
 
 interface HOACardProps {
   project: Project;
@@ -54,21 +56,52 @@ export function HOACard({
 
   const handleUploadDoc = async () => {
     if (readOnly) return;
-    setUploadingDoc(true);
-    // Simulate upload delay
-    await new Promise((resolve) => setTimeout(resolve, 1000));
-    try {
-      await onSaveFinancials({
-        hoaDocumentUrl: '/mock/documents/HOA_CCandRs_Bylaws.pdf',
-        hoaDocumentName: 'HOA_CCandRs_Bylaws.pdf',
-      });
-      toast.success('HOA CC&Rs uploaded successfully!');
-    } catch (err) {
-      console.error('Failed to upload HOA CC&Rs:', err);
-      toast.error('Failed to upload HOA CC&Rs');
-    } finally {
-      setUploadingDoc(false);
+    
+    if (IS_DEMO_MODE) {
+      setUploadingDoc(true);
+      await new Promise((resolve) => setTimeout(resolve, 1000));
+      try {
+        await onSaveFinancials({
+          hoaDocumentUrl: '/mock/documents/HOA_CCandRs_Bylaws.pdf',
+          hoaDocumentName: 'HOA_CCandRs_Bylaws.pdf',
+        });
+        toast.success('HOA CC&Rs uploaded successfully! (Demo)');
+      } catch (err) {
+        console.error('Failed to upload HOA CC&Rs:', err);
+        toast.error('Failed to upload HOA CC&Rs');
+      } finally {
+        setUploadingDoc(false);
+      }
+      return;
     }
+
+    const input = document.createElement('input');
+    input.type = 'file';
+    input.accept = '.pdf,image/*';
+    input.onchange = async (e: any) => {
+      const file = e.target.files?.[0];
+      if (!file) return;
+      setUploadingDoc(true);
+      const toastId = toast.loading(`Uploading ${file.name}...`);
+      try {
+        const res = await uploadFile({
+          file,
+          path: 'hoa_docs',
+          projectId: project.id,
+        });
+        await onSaveFinancials({
+          hoaDocumentUrl: res.downloadUrl,
+          hoaDocumentName: file.name,
+        });
+        toast.success('HOA CC&Rs uploaded successfully!', { id: toastId });
+      } catch (err: any) {
+        console.error('Upload failed:', err);
+        toast.error(`Upload failed: ${err.message || 'Unknown error'}`, { id: toastId });
+      } finally {
+        setUploadingDoc(false);
+      }
+    };
+    input.click();
   };
 
   const handleRemoveDoc = async () => {
@@ -261,7 +294,10 @@ export function HOACard({
               <div className="flex items-center justify-between p-3 bg-white/5 rounded-xl border border-white/5">
                 <div className="flex items-center gap-2">
                   <FileText className="w-4 h-4 text-[#454955]" />
-                  <span className="text-xs text-white font-bold">{financials.hoaDocumentName || 'HOA_CCandRs_Bylaws.pdf'}</span>
+                  <span className="text-xs text-white font-bold flex items-center gap-1.5">
+                    {financials.hoaDocumentName || 'HOA_CCandRs_Bylaws.pdf'}
+                    {IS_DEMO_MODE && <span className="text-[8px] font-bold text-amber-500 bg-amber-500/10 px-1.5 py-0.5 rounded border border-amber-500/20 font-sans">Demo</span>}
+                  </span>
                 </div>
                 {!readOnly && (
                   <button
@@ -288,7 +324,9 @@ export function HOACard({
                 ) : (
                   <>
                     <FileText className="w-5 h-5" />
-                    <span className="text-[10px] font-bold uppercase tracking-wider">Upload HOA CC&amp;Rs / Bylaws PDF</span>
+                    <span className="text-[10px] font-bold uppercase tracking-wider">
+                      Upload HOA CC&amp;Rs / Bylaws PDF {IS_DEMO_MODE && <span className="text-amber-500 ml-1">(Demo)</span>}
+                    </span>
                   </>
                 )}
               </button>

@@ -11,7 +11,7 @@ interface ProjectsProgressWidgetProps {
 
 export default function ProjectsProgressWidget({ projects }: ProjectsProgressWidgetProps) {
   // Take top 5 active projects for display
-  const activeProjects = projects.filter(p => p.status !== 'Sold').slice(0, 5);
+  const activeProjects = projects.filter(p => p.status !== 'exit').slice(0, 5);
   
   const displayProjects = activeProjects.map((p) => {
     const completion = computePhaseProgress(p, p.currentPhase || 1);

@@ -1,0 +1,31 @@
+{
+  "topNavReflow": "Clean reflow: Left Breadcrumb -> Center max-w-2xl Predictive Search -> Right User Profile Menu",
+  "orphanAuditTable": [
+    {
+      "control": "Theme Toggle Icon",
+      "originalLocation": "Top Nav Header",
+      "reachableElsewhere": "Sidebar bottom & Settings page",
+      "status": "REMOVED (No orphan)"
+    },
+    {
+      "control": "Notifications Bell Icon",
+      "originalLocation": "Top Nav Header",
+      "reachableElsewhere": "Inbox page (/dashboard/inbox)",
+      "status": "REMOVED (No orphan)"
+    },
+    {
+      "control": "Quick Help Icon",
+      "originalLocation": "Top Nav Header",
+      "reachableElsewhere": "Settings & Documentation",
+      "status": "REMOVED (No orphan)"
+    },
+    {
+      "control": "Top Nav New Project Button",
+      "originalLocation": "Top Nav Header",
+      "reachableElsewhere": "Projects page primary CTA & Empty state",
+      "status": "REMOVED (Decision D2)"
+    }
+  ],
+  "projectCreationD2Path": "Projects page (/dashboard/projects) primary CTA -> /dashboard/projects/new",
+  "wizardNavigated": true
+}

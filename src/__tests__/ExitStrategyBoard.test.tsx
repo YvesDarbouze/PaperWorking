@@ -53,7 +53,7 @@ describe('ExitStrategyBoard Component', () => {
         id: 'project-1',
         propertyName: 'Sunset Heights',
         address: '456 Hill St, Los Angeles, CA 90012',
-        status: 'Renovating',
+        status: 'hold',
         exitAssets: {
           stagingImages: [],
           mlsListingLink: '',
@@ -92,7 +92,7 @@ describe('ExitStrategyBoard Component', () => {
 
     await waitFor(() => {
       expect(mockUpdateProject).toHaveBeenCalledWith('project-1', expect.objectContaining({
-        status: 'Listed',
+        status: 'exit',
         exitAssets: expect.objectContaining({
           mlsListingLink: 'https://mls.com/sunset',
           mlsListingStatus: 'pending_integration',
@@ -108,7 +108,8 @@ describe('ExitStrategyBoard Component', () => {
   });
 
   it('displays Awaiting MLS Connection status banner in preview pane when status is pending_integration', async () => {
-    mockProjects[0].status = 'Listed';
+    mockProjects[0].status = 'hold';
+    mockProjects[0].dispositionType = 'SALE';
     mockProjects[0].exitAssets = {
       stagingImages: [],
       mlsListingLink: 'https://mls.com/sunset',

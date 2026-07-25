@@ -65,7 +65,7 @@ const PLANS: Plan[] = [
       { label: 'Project Management of the REIL' },
       { label: 'Full metric visualization of REI data' },
       { label: 'Tax Reporting & ledger exports' },
-      { label: 'Deal Analysis & OCR document upload' },
+      { label: 'Deal Analysis & document upload' },
       { label: 'Deal Marketplace access' },
       { label: '1 user account (solo operator)' },
     ],

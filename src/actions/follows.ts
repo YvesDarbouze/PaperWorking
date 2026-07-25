@@ -20,17 +20,24 @@ interface VerifiedUser {
 async function verifyActionAuth(idToken: string): Promise<VerifiedUser> {
   if (!idToken) throw new Error('Missing authentication token.');
   try {
-    if (process.env.NODE_ENV !== 'production' && (idToken === 'mock_token' || idToken === 'mock_token_123' || idToken.startsWith('mock_token_'))) {
+    let isE2eTest = false;
+    let cookieStore: any = null;
+    try {
       const { cookies } = require('next/headers');
-      const cookieStore = await cookies();
-      const uid = cookieStore.get('mock_user_uid')?.value || 'user_lead_investor_seed';
-      const email = cookieStore.get('mock_user_email')?.value || 'marcus@apexcapital.io';
-      const name = cookieStore.get('mock_user_name')?.value || 'Marcus Aurelius';
-      const role = cookieStore.get('mock_user_role')?.value || 'Lead Investor';
-      const accountType = cookieStore.get('mock_user_account_type')?.value || (role === 'Vendor' ? 'vendor' : 'investor');
-      const subscriptionPlan = cookieStore.get('mock_user_subscription_plan')?.value || 'Team';
+      cookieStore = await cookies();
+      isE2eTest = cookieStore?.get('__e2e_test')?.value === '1';
+    } catch {
+      // Ignored
+    }
+    if ((process.env.NODE_ENV !== 'production' || isE2eTest) && (process.env.ENABLE_MOCK_AUTH === 'true' || process.env.NODE_ENV === 'test') && (idToken === 'mock_token' || idToken === 'mock_token_123' || idToken === 'mock_session_token_123')) {
+      const uid = cookieStore?.get('mock_user_uid')?.value || 'user_lead_investor_seed';
+      const email = cookieStore?.get('mock_user_email')?.value || 'marcus@apexcapital.io';
+      const name = cookieStore?.get('mock_user_name')?.value || 'Marcus Aurelius';
+      const role = cookieStore?.get('mock_user_role')?.value || 'Lead Investor';
+      const accountType = cookieStore?.get('mock_user_account_type')?.value || (role === 'Vendor' ? 'vendor' : 'investor');
+      const subscriptionPlan = cookieStore?.get('mock_user_subscription_plan')?.value || 'Team';
       const subscriptionStatus = subscriptionPlan === 'None' ? 'inactive' : 'active';
-      const organizationId = cookieStore.get('mock_user_org_id')?.value || 'org_paperworking_seed';
+      const organizationId = cookieStore?.get('mock_user_org_id')?.value || 'org_paperworking_seed';
       return {
         uid,
         email,

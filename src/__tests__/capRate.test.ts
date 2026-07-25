@@ -104,7 +104,7 @@ describe('Cap Rate (D3) Metric Implementation', () => {
       const mockProject = {
         id: 'proj-caprate-test',
         organizationId: 'org-test',
-        status: 'Active',
+        status: 'acquisition',
         createdAt: new Date(),
         updatedAt: new Date(),
         financials: {
@@ -128,7 +128,7 @@ describe('Cap Rate (D3) Metric Implementation', () => {
       const mockProject = {
         id: 'proj-null-test',
         organizationId: 'org-test',
-        status: 'Active',
+        status: 'acquisition',
         createdAt: new Date(),
         updatedAt: new Date(),
         financials: {

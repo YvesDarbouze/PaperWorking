@@ -128,7 +128,7 @@ interface DealAutopsyProps {
 
 export default function DealAutopsy({ deal }: DealAutopsyProps) {
   const m: AutopsyMetrics = useMemo(() => computeAutopsyMetrics(deal), [deal]);
-  const isSold = deal.status === 'Sold' || deal.status === 'closed_won' || deal.status === 'closed_lost';
+  const isSold = deal.status === 'exit';
   const [pdfLoading, setPdfLoading] = useState(false);
 
   const handleDownloadPDF = useCallback(async () => {

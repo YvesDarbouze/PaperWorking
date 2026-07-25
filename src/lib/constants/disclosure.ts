@@ -1,0 +1,1 @@
+export const NON_BINDING_DISCLOSURE = "This is a non-binding expression of interest. It does not constitute a commitment, subscription, reservation, allocation, or pledge to invest. No banking details, tax identifiers, or accreditation status are requested or collected at this stage.";

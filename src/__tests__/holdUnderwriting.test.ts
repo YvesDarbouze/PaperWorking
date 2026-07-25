@@ -173,4 +173,310 @@ describe('Phase 3 Hold Underwriting, Metrics & Gating', () => {
       expect(missingAfter.length).toBe(0);
     });
   });
+
+  describe('Card H1.2 — Budget & Timeline Schema Validation', () => {
+    it('successfully validates financials schema with rehab_budget, target, and contractors', () => {
+      const { projectFinancialsSchema } = require('../lib/schemas/projectSchema');
+      const validFinancials = {
+        purchasePrice: 200000,
+        estimatedARV: 250000,
+        costs: [],
+        rehab_budget: 1500000, // $15,000.00
+        rehab_completion_target: '2026-09-01',
+        rehab_contractors: {
+          general_contractor: {
+            name: 'John Doe',
+            firm: 'Doe Construction',
+            phone: '555-0199',
+            email: 'john@doeconst.com',
+            source: 'off_platform',
+            assignedAt: '2026-07-19T12:00:00Z',
+            assignedBy: 'user@paperworking.com'
+          }
+        }
+      };
+
+      const parsed = projectFinancialsSchema.safeParse(validFinancials);
+      expect(parsed.success).toBe(true);
+      if (parsed.success) {
+        expect(parsed.data.rehab_budget).toBe(1500000);
+        expect(parsed.data.rehab_completion_target).toBe('2026-09-01');
+        expect(parsed.data.rehab_contractors.general_contractor.name).toBe('John Doe');
+      }
+    });
+  });
+
+  describe('Card H2.1 — Renovation Spend Tracker Schema Validation', () => {
+    it('successfully validates financials schema with rehab_spend entries containing history and plaid attributes', () => {
+      const { projectFinancialsSchema } = require('../lib/schemas/projectSchema');
+      const validFinancials = {
+        purchasePrice: 200000,
+        estimatedARV: 250000,
+        costs: [],
+        rehab_spend: [
+          {
+            id: 'spend-1',
+            amount: 45000,
+            date: '2026-07-15',
+            category: 'CapEx',
+            note: 'Framing materials',
+            source: 'plaid',
+            plaidTransactionId: 'plaid-tx-999',
+            history: [
+              {
+                updatedAt: '2026-07-16T12:00:00Z',
+                updatedBy: 'editor@paperworking.com',
+                previousValue: {
+                  amount: 40000,
+                  date: '2026-07-15',
+                  category: 'CapEx',
+                  note: 'Materials'
+                }
+              }
+            ]
+          }
+        ]
+      };
+
+      const parsed = projectFinancialsSchema.safeParse(validFinancials);
+      expect(parsed.success).toBe(true);
+      if (parsed.success) {
+        expect(parsed.data.rehab_spend[0].amount).toBe(45000);
+        expect(parsed.data.rehab_spend[0].category).toBe('CapEx');
+        expect(parsed.data.rehab_spend[0].history[0].previousValue.amount).toBe(40000);
+      }
+    });
+  });
+
+  describe('Card H2.2 — Renovation Completion Schema Validation', () => {
+    it('successfully validates financials schema with rehab_completed_date and rehab_spend_total', () => {
+      const { projectFinancialsSchema } = require('../lib/schemas/projectSchema');
+      const validFinancials = {
+        purchasePrice: 200000,
+        estimatedARV: 250000,
+        costs: [],
+        rehab_completed_date: '2026-07-19',
+        rehab_spend_total: 45000
+      };
+
+      const parsed = projectFinancialsSchema.safeParse(validFinancials);
+      expect(parsed.success).toBe(true);
+      if (parsed.success) {
+        expect(parsed.data.rehab_completed_date).toBe('2026-07-19');
+        expect(parsed.data.rehab_spend_total).toBe(45000);
+      }
+    });
+  });
+
+  describe('Card H3.1 — Itemized monthly holding costs Schema Validation', () => {
+    it('successfully validates financials schema with all holding_cost_<category> fields', () => {
+      const { projectFinancialsSchema } = require('../lib/schemas/projectSchema');
+      const validFinancials = {
+        purchasePrice: 200000,
+        estimatedARV: 250000,
+        costs: [],
+        holding_cost_tax: 35000,
+        holding_cost_insurance: 12500,
+        holding_cost_security: 3500,
+        holding_cost_maintenance: 7500,
+        holding_cost_utilities: 18500,
+        holding_cost_management: 15000,
+        holding_cost_hoa: 4500,
+        holding_cost_capex: 10000
+      };
+
+      const parsed = projectFinancialsSchema.safeParse(validFinancials);
+      expect(parsed.success).toBe(true);
+      if (parsed.success) {
+        expect(parsed.data.holding_cost_tax).toBe(35000);
+        expect(parsed.data.holding_cost_insurance).toBe(12500);
+        expect(parsed.data.holding_cost_security).toBe(3500);
+        expect(parsed.data.holding_cost_maintenance).toBe(7500);
+        expect(parsed.data.holding_cost_utilities).toBe(18500);
+        expect(parsed.data.holding_cost_management).toBe(15000);
+        expect(parsed.data.holding_cost_hoa).toBe(4500);
+        expect(parsed.data.holding_cost_capex).toBe(10000);
+      }
+    });
+  });
+
+  describe('Card H4.1 — Current Valuation Schema Validation', () => {
+    it('successfully validates financials schema with current_value dated series of valuations', () => {
+      const { projectFinancialsSchema } = require('../lib/schemas/projectSchema');
+      const validFinancials = {
+        purchasePrice: 200000,
+        estimatedARV: 250000,
+        costs: [],
+        current_value: [
+          {
+            id: 'val-1',
+            date: '2026-07-19',
+            value: 26500000, // $265,000.00
+            source: 'appraisal',
+            documentUrl: 'https://firebasestorage.googleapis.com/.../report.pdf',
+            documentName: 'Q3 Appraisal Report.pdf'
+          }
+        ]
+      };
+
+      const parsed = projectFinancialsSchema.safeParse(validFinancials);
+      expect(parsed.success).toBe(true);
+      if (parsed.success) {
+        expect(parsed.data.current_value[0].value).toBe(26500000);
+        expect(parsed.data.current_value[0].source).toBe('appraisal');
+        expect(parsed.data.current_value[0].documentName).toBe('Q3 Appraisal Report.pdf');
+      }
+    });
+  });
+
+  describe('Card H5.R — Rent Path Schema Validation', () => {
+    it('successfully validates financials schema with target_rent, listing_ads, and screening_checklist', () => {
+      const { projectFinancialsSchema } = require('../lib/schemas/projectSchema');
+      const validFinancials = {
+        purchasePrice: 200000,
+        estimatedARV: 250000,
+        costs: [],
+        target_rent: 180000, // $1,800.00
+        listing_ads: [
+          {
+            id: 'ad-1',
+            platform: 'Zillow',
+            listingUrl: 'https://zillow.com/homedetails/123-Main',
+            status: 'active',
+            listedDate: '2026-07-19',
+            monthlyRent: 185000 // $1,850.00
+          }
+        ],
+        screening_checklist: {
+          creditScoreCheck: true,
+          backgroundCheck: true,
+          incomeVerification: true,
+          priorEvictionsCheck: false,
+          landlordReferences: false,
+          customItems: [
+            {
+              id: 'item-1',
+              label: 'Sign pet policy',
+              checked: true
+            }
+          ]
+        }
+      };
+
+      const parsed = projectFinancialsSchema.safeParse(validFinancials);
+      expect(parsed.success).toBe(true);
+      if (parsed.success) {
+        expect(parsed.data.target_rent).toBe(180000);
+        expect(parsed.data.listing_ads[0].platform).toBe('Zillow');
+        expect(parsed.data.listing_ads[0].monthlyRent).toBe(185000);
+        expect(parsed.data.screening_checklist.creditScoreCheck).toBe(true);
+        expect(parsed.data.screening_checklist.customItems[0].label).toBe('Sign pet policy');
+        expect(parsed.data.screening_checklist.customItems[0].checked).toBe(true);
+      }
+    });
+  });
+
+  describe('Card H5.L — Lease Path Schema Validation', () => {
+    it('successfully validates financials schema with target_lease_terms and listing_ads', () => {
+      const { projectFinancialsSchema } = require('../lib/schemas/projectSchema');
+      const validFinancials = {
+        purchasePrice: 200000,
+        estimatedARV: 250000,
+        costs: [],
+        target_lease_terms: {
+          rateCents: 450000, // $4,500.00
+          termMonths: 36,
+          type: 'NNN',
+          sqft: 2500
+        },
+        listing_ads: [
+          {
+            id: 'ad-1',
+            platform: 'LoopNet',
+            listingUrl: 'https://loopnet.com/Listing/123-Main',
+            status: 'active',
+            listedDate: '2026-07-19',
+            monthlyRent: 450000 // $4,500.00
+          }
+        ]
+      };
+
+      const parsed = projectFinancialsSchema.safeParse(validFinancials);
+      expect(parsed.success).toBe(true);
+      if (parsed.success) {
+        expect(parsed.data.target_lease_terms.rateCents).toBe(450000);
+        expect(parsed.data.target_lease_terms.termMonths).toBe(36);
+        expect(parsed.data.target_lease_terms.type).toBe('NNN');
+        expect(parsed.data.target_lease_terms.sqft).toBe(2500);
+        expect(parsed.data.listing_ads[0].platform).toBe('LoopNet');
+        expect(parsed.data.listing_ads[0].monthlyRent).toBe(450000);
+      }
+    });
+  });
+
+  describe('Card H5.S — Sale Path Schema Validation', () => {
+    it('successfully validates financials schema with list_price_sale and listing_agent_vendor', () => {
+      const { projectFinancialsSchema } = require('../lib/schemas/projectSchema');
+      const validFinancials = {
+        purchasePrice: 200000,
+        estimatedARV: 250000,
+        costs: [],
+        list_price_sale: 35000000, // $350,000.00
+        listing_agent_vendor: {
+          name: 'John Doe',
+          firm: 'Apex Brokerage',
+          email: 'john.doe@brokerage.com',
+          phone: '555-0192',
+          source: 'off_platform',
+          assignedAt: '2026-07-19T12:00:00Z',
+          assignedBy: 'user'
+        },
+        listing_ads: [
+          {
+            id: 'ad-1',
+            platform: 'Redfin',
+            listingUrl: 'https://redfin.com/homes/123-Main',
+            status: 'active',
+            listedDate: '2026-07-19',
+            monthlyRent: 35000000 // listed price cents
+          }
+        ]
+      };
+
+      const parsed = projectFinancialsSchema.safeParse(validFinancials);
+      expect(parsed.success).toBe(true);
+      if (parsed.success) {
+        expect(parsed.data.list_price_sale).toBe(35000000);
+        expect(parsed.data.listing_agent_vendor.name).toBe('John Doe');
+        expect(parsed.data.listing_agent_vendor.firm).toBe('Apex Brokerage');
+        expect(parsed.data.listing_ads[0].platform).toBe('Redfin');
+      }
+    });
+  });
+
+  describe('Lifecycle Auto-Advance Gating Triggers (Event-Triggered)', () => {
+    it('successfully validates financials with exit baseline and sale contract values', () => {
+      const { projectFinancialsSchema } = require('../lib/schemas/projectSchema');
+      const validFinancials = {
+        purchasePrice: 200000,
+        estimatedARV: 250000,
+        costs: [],
+        sale_under_contract: true,
+        exit_cost_basis: 15200000,
+        exit_capitalized_improvements: 3500000,
+        exit_holding_cost_total: 500000,
+        exit_marketing_outcome: 'Confirmed Rent payment of $2,500.00'
+      };
+
+      const parsed = projectFinancialsSchema.safeParse(validFinancials);
+      expect(parsed.success).toBe(true);
+      if (parsed.success) {
+        expect(parsed.data.sale_under_contract).toBe(true);
+        expect(parsed.data.exit_cost_basis).toBe(15200000);
+        expect(parsed.data.exit_capitalized_improvements).toBe(3500000);
+        expect(parsed.data.exit_holding_cost_total).toBe(500000);
+        expect(parsed.data.exit_marketing_outcome).toBe('Confirmed Rent payment of $2,500.00');
+      }
+    });
+  });
 });

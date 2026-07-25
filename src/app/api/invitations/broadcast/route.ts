@@ -3,6 +3,11 @@ import { adminDb } from '@/lib/firebase/admin';
 import { requireAuth, isAuthError } from '@/lib/firebase-admin/auth-guard';
 import { logger } from '@/lib/logger';
 import { CommunicationEngine } from '@/lib/engine/CommunicationEngine';
+import {
+  checkUserInvitationSuspended,
+  checkInvitationRateLimits,
+  detectPurchasedListPattern
+} from '@/lib/invitations/abuseCheckers';
 
 const INVITE_ROLES = new Set(['Lead Investor', 'Admin', 'Platform Admin']);
 
@@ -153,6 +158,28 @@ export async function POST(request: NextRequest) {
         { success: false, error: 'No consented recipients found in the audience.' },
         { status: 400 }
       );
+    }
+
+    // Enforce rate limits and suspension check
+    try {
+      await checkUserInvitationSuspended(callerUid);
+      await checkInvitationRateLimits(callerUid, projectId, activeRecipients.length);
+    } catch (err: any) {
+      return NextResponse.json({ success: false, error: err.message }, { status: 400 });
+    }
+
+    // Purchased list check
+    try {
+      const emails = activeRecipients.map(r => r.email);
+      const purchasedCheck = await detectPurchasedListPattern(callerUid, projectId, emails);
+      if (purchasedCheck.isSuspicious && purchasedCheck.strangersCount > 15 && deal.visibilityMode === 'PRIVATE') {
+        return NextResponse.json({
+          success: false,
+          error: 'Your invitation batch was flagged as non-relational. To protect platform integrity, mass invites to unverified contacts are restricted.'
+        }, { status: 400 });
+      }
+    } catch (err: any) {
+      // non-blocking
     }
 
     // Resolve inviter branding

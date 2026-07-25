@@ -3,7 +3,7 @@ import { NextRequest, NextResponse } from 'next/server';
 /**
  * Catch-all MCP Route Handler
  *
- * Gated by MCP_API_KEY bearer token — every caller (AI agent, Claude Code, etc.)
+ * Gated by MCP_API_KEY bearer token — every caller (agent, script, etc.)
  * must supply `Authorization: Bearer <MCP_API_KEY>` to reach any tool.
  *
  * Tools exposed: list_active_projects, get_deal_metrics, query_ledger,

@@ -10,3 +10,6 @@ Disallow: /api/
 Allow: /
 Allow: /pricing
 Allow: /invest
+
+Sitemap: https://paperworking.com/sitemap.xml
+

@@ -32,13 +32,21 @@ export default function ListingCard({ teaser, className = '' }: ListingCardProps
       `}
     >
       {/* Top row: badges */}
-      <div className="flex items-center gap-2 flex-wrap">
-        <span className="text-[10px] font-bold uppercase tracking-[0.06em] text-[var(--color-muted)] px-2 py-0.5 rounded-full border border-pw-border">
+      <div className="flex items-center gap-2 flex-wrap animate-fade-in">
+        <span className="text-xs font-bold uppercase tracking-[0.06em] text-[var(--color-muted)] px-2 py-0.5 rounded-full border border-pw-border">
           {teaser.assetClass}
         </span>
         {teaser.subStrategy && (
-          <span className="text-[10px] font-bold uppercase tracking-[0.06em] text-[var(--color-primary)] px-2 py-0.5 rounded-full border border-[var(--color-primary)]/20 bg-[var(--color-primary)]/5">
+          <span className="text-xs font-bold uppercase tracking-[0.06em] text-[var(--color-primary)] px-2 py-0.5 rounded-full border border-[var(--color-primary)]/20 bg-[var(--color-primary)]/5">
             {teaser.subStrategy}
+          </span>
+        )}
+        {teaser.isCrowdfunding && (
+          <span
+            className="text-xs font-bold uppercase tracking-[0.06em] text-emerald-400 px-2 py-0.5 rounded-full border border-emerald-500/20 bg-emerald-500/5 animate-pulse"
+            data-testid="crowdfunding-badge"
+          >
+            Crowdfunding
           </span>
         )}
       </div>
@@ -58,7 +66,7 @@ export default function ListingCard({ teaser, className = '' }: ListingCardProps
       <div className="grid grid-cols-2 gap-3">
         {teaser.capRateRange && (
           <div>
-            <p className="text-[9px] font-bold uppercase tracking-[0.06em] text-[var(--color-muted)]">
+            <p className="text-xs font-bold uppercase tracking-[0.06em] text-[var(--color-muted)]">
               Cap Rate
             </p>
             <p className="text-sm font-bold font-mono tabular-nums text-[var(--color-on-surface)]">
@@ -68,7 +76,7 @@ export default function ListingCard({ teaser, className = '' }: ListingCardProps
         )}
         {teaser.askingPriceApprox && (
           <div>
-            <p className="text-[9px] font-bold uppercase tracking-[0.06em] text-[var(--color-muted)]">
+            <p className="text-xs font-bold uppercase tracking-[0.06em] text-[var(--color-muted)]">
               Price
             </p>
             <p className="text-sm font-bold font-mono tabular-nums text-[var(--color-on-surface)]">
@@ -78,7 +86,7 @@ export default function ListingCard({ teaser, className = '' }: ListingCardProps
         )}
         {teaser.cashOnCashRange && (
           <div>
-            <p className="text-[9px] font-bold uppercase tracking-[0.06em] text-[var(--color-muted)]">
+            <p className="text-xs font-bold uppercase tracking-[0.06em] text-[var(--color-muted)]">
               Cash-on-Cash
             </p>
             <p className="text-sm font-bold font-mono tabular-nums text-[var(--color-on-surface)]">
@@ -88,7 +96,7 @@ export default function ListingCard({ teaser, className = '' }: ListingCardProps
         )}
         {teaser.fundingTargetApprox && (
           <div>
-            <p className="text-[9px] font-bold uppercase tracking-[0.06em] text-[var(--color-muted)]">
+            <p className="text-xs font-bold uppercase tracking-[0.06em] text-[var(--color-muted)]">
               Seeking
             </p>
             <p className="text-sm font-bold font-mono tabular-nums text-[var(--color-on-surface)]">
@@ -100,7 +108,7 @@ export default function ListingCard({ teaser, className = '' }: ListingCardProps
 
       {/* Footer */}
       <div className="flex items-center justify-between pt-2 border-t border-pw-border">
-        <div className="flex items-center gap-3 text-[10px] text-[var(--color-muted)]">
+        <div className="flex items-center gap-3 text-xs text-[var(--color-muted)]">
           <span className="flex items-center gap-0.5">
             <span className="material-symbols-outlined text-xs">bookmark</span>
             {teaser.followCount}

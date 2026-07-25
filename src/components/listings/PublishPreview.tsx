@@ -3,6 +3,7 @@
 import React from 'react';
 import type { DealListing } from '@/types/listing';
 import { buildTeaserFromListing } from '@/lib/listings/obfuscation';
+import type { Project } from '@/types/schema';
 import DealFullView from './DealFullView';
 import DealTeaserView from './DealTeaserView';
 
@@ -19,9 +20,10 @@ import DealTeaserView from './DealTeaserView';
 
 interface PublishPreviewProps {
   listing: DealListing;
+  project?: Project;
 }
 
-export default function PublishPreview({ listing }: PublishPreviewProps) {
+export default function PublishPreview({ listing, project }: PublishPreviewProps) {
   const teaser = buildTeaserFromListing(listing);
   const mockFollowStatus = { followingDeal: false, followingInvestor: false };
 
@@ -54,6 +56,7 @@ export default function PublishPreview({ listing }: PublishPreviewProps) {
           <div className="border-2 border-[var(--color-positive)]/20 rounded-2xl p-4 space-y-4">
             <DealFullView
               listing={listing}
+              project={project}
               followStatus={mockFollowStatus}
             />
           </div>

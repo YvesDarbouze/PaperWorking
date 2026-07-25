@@ -17,6 +17,17 @@
 import * as admin from 'firebase-admin';
 import * as dotenv from 'dotenv';
 import * as path from 'path';
+import {
+  FX_1_PROJECT,
+  FX_2_PROJECT,
+  FX_3_PROJECT,
+  FX_4_PROJECT,
+  FX_5_PROJECT,
+  FX_6_PROJECT,
+  FX_7_PROJECT_STANDARD,
+  FX_7_PROJECT_SPECIAL,
+  FX_8_PROJECT,
+} from '../src/lib/metrics/fixtures';
 
 // ── Bootstrap Firebase Admin ────────────────────────────────────────
 // Explicitly load .env from the project root
@@ -324,6 +335,7 @@ async function seed() {
       totalCashInvested: 60000,
       financingType: 'Financed',
       projectedRehabCost: 35000,
+      upfrontRehab: 0,
       gross_rent_per_unit: 1950,
       vacancy_pct: 7,
       tax: 200,
@@ -418,6 +430,54 @@ async function seed() {
     totalInvestment,
     lastCalculatedAt: now,
   });
+
+  // Seed FX-1 LoanRecord under DEAL_ID
+  console.log('  → Seeding FX-1 LoanRecord under DEAL_ID...');
+  await dealRef.collection('loans').doc('loan_fx1_seed').set({
+    id: 'loan_fx1_seed',
+    projectId: DEAL_ID,
+    instrument: 'Conventional',
+    lenderName: 'Apex Capital Lending',
+    amountCents: 223200 * 100,
+    interestRate: 6.5,
+    interestRatePercent: 6.5,
+    termMonths: 360,
+    points: 0,
+    status: 'Locked',
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
+  });
+
+  // ── 6. Seeding FX-2 to FX-8 Fixture Families in Firestore ──
+  console.log('  → Seeding FX-2 to FX-8 Project Fixtures in Firestore...');
+  const fixtures = [
+    FX_2_PROJECT,
+    FX_3_PROJECT,
+    FX_4_PROJECT,
+    FX_5_PROJECT,
+    FX_6_PROJECT,
+    FX_7_PROJECT_STANDARD,
+    FX_7_PROJECT_SPECIAL,
+    FX_8_PROJECT,
+  ];
+
+  for (const f of fixtures) {
+    const pRef = db.collection('projects').doc(f.id);
+    await pRef.set({
+      ...f,
+      organizationId: ORG_ID,
+      ownerUid: LEAD_INVESTOR_UID,
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+    });
+
+    // Seed subcollections if any
+    if (f.loans && f.loans.length > 0) {
+      for (const loan of f.loans) {
+        await pRef.collection('loans').doc(loan.id).set(loan);
+      }
+    }
+  }
 
   // ── Done ────────────────────────────────────────────────────────
   console.log('\n✅ Seed complete! Created:');

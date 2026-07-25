@@ -75,16 +75,14 @@ function getPhaseProgressInfo(project: Project) {
   const phase = project.currentPhase ?? 1;
   const status = project.status;
 
-  let progress = 30;
-  if (status === 'Sold' || status === 'closed_won') progress = 100;
-  else if (status === 'Listed') progress = 85;
-  else if (status === 'Renovating') progress = 40;
-  else if (status === 'Under Contract') progress = 65;
-  else if (status === 'Lead') progress = 15;
-  else {
-    const baseProgress: Record<number, number> = { 1: 25, 2: 50, 3: 70, 4: 90 };
-    progress = baseProgress[phase] ?? 30;
-  }
+  let progress = 25;
+  const progressMap: Record<string, number> = {
+    acquisition: 25,
+    fund: 50,
+    hold: 75,
+    exit: 100,
+  };
+  progress = progressMap[status] ?? (phase * 25);
 
   const phaseNames = {
     1: 'Acquisition',
@@ -477,11 +475,11 @@ export default function ProjectsPage() {
     }
 
     if (statusFilter === 'active') {
-      data = data.filter((p) => !['Sold', 'closed_won', 'closed_lost'].includes(p.status));
+      data = data.filter((p) => p.status !== 'exit');
     } else if (statusFilter === 'closed') {
-      data = data.filter((p) => ['Sold', 'closed_won', 'closed_lost'].includes(p.status));
+      data = data.filter((p) => p.status === 'exit');
     } else if (statusFilter === 'pending') {
-      data = data.filter((p) => ['Lead', 'Under Contract'].includes(p.status));
+      data = data.filter((p) => ['acquisition', 'fund'].includes(p.status));
     }
 
     if (sortBy === 'recent') {

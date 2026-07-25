@@ -59,7 +59,7 @@ function buildMonthlyBurn(projects: Project[], year: number): MonthlyBurnData[] 
     }
 
     // Add profit to the month of sale
-    if (deal.status === 'Sold' && deal.financials?.soldDate) {
+    if (deal.status === 'exit' && deal.dispositionType === 'SALE' && deal.financials?.soldDate) {
       const soldDate = new Date(deal.financials.soldDate);
       if (soldDate.getFullYear() === year) {
         monthlyData[soldDate.getMonth()].netProfit += Math.round(metrics.netProfit);

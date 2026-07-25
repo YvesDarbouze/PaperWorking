@@ -1,0 +1,8 @@
+{
+  "singleReportsControlInSidebar": true,
+  "dealAnalyzerHeaderButton": "Placed in top header area linking to /dashboard/deal-analyzer",
+  "mobileViewport": "390x844 (iPhone-class)",
+  "touchTargets": ">=44px min-height on inputs, buttons, and sensitivity sliders",
+  "horizontalScrolling": "Zero horizontal scrolling (w-full max-w-full overflow-x-hidden)",
+  "verdictColors": "UX-4 compliant green pass / red fail (canonical seed = Red Fail)"
+}

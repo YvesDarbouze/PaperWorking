@@ -3,22 +3,22 @@ import type { ProjectPhaseDefinition, ProjectPhaseKey } from '@/types/schema';
 // Canonical phase map — single source of truth for the deal lifecycle.
 // projectStateMachine.ts and UI phase stepper both derive from this.
 export const DEAL_PHASES: Record<ProjectPhaseKey, ProjectPhaseDefinition> = {
-  Sourcing: {
-    key: 'Sourcing',
-    label: 'Sourcing',
+  acquisition: {
+    key: 'acquisition',
+    label: 'Acquisition',
     order: 0,
-    allowedTransitions: ['Under Contract'],
+    allowedTransitions: ['fund'],
     requiredDocuments: [],
     completionGate: [
       'MAO calculated and accepted',
       'Offer letter sent',
     ],
   },
-  'Under Contract': {
-    key: 'Under Contract',
-    label: 'Under Contract',
+  fund: {
+    key: 'fund',
+    label: 'Fund',
     order: 1,
-    allowedTransitions: ['Rehab'],
+    allowedTransitions: ['hold'],
     requiredDocuments: ['Inspection Report', 'Title Commitment', 'Loan Estimate'],
     completionGate: [
       'Signed purchase contract uploaded',
@@ -27,11 +27,11 @@ export const DEAL_PHASES: Record<ProjectPhaseKey, ProjectPhaseDefinition> = {
       'All due-diligence inspections completed',
     ],
   },
-  Rehab: {
-    key: 'Rehab',
-    label: 'Rehab',
+  hold: {
+    key: 'hold',
+    label: 'Hold',
     order: 2,
-    allowedTransitions: ['Listed', 'Rented'],
+    allowedTransitions: ['exit'],
     requiredDocuments: ['Inspection Report'],
     completionGate: [
       'All rehab tasks marked Complete',
@@ -40,21 +40,10 @@ export const DEAL_PHASES: Record<ProjectPhaseKey, ProjectPhaseDefinition> = {
       'Final walkthrough site visit logged',
     ],
   },
-  Listed: {
-    key: 'Listed',
-    label: 'Listed',
+  exit: {
+    key: 'exit',
+    label: 'Exit',
     order: 3,
-    allowedTransitions: ['Sold'],
-    requiredDocuments: ['Appraisal Report'],
-    completionGate: [
-      'MLS listing active',
-      'Appraisal report uploaded',
-    ],
-  },
-  Sold: {
-    key: 'Sold',
-    label: 'Sold',
-    order: 4,
     allowedTransitions: [],
     requiredDocuments: ['Closing Disclosure', 'Title Commitment'],
     completionGate: [
@@ -64,23 +53,11 @@ export const DEAL_PHASES: Record<ProjectPhaseKey, ProjectPhaseDefinition> = {
       'Payout waterfall fully settled',
     ],
   },
-  Rented: {
-    key: 'Rented',
-    label: 'Rented',
-    order: 4,
-    allowedTransitions: ['Sold'],
-    requiredDocuments: [],
-    completionGate: [
-      'Lease executed',
-      'First month rent collected',
-    ],
-  },
 };
 
 export const DEAL_PHASE_ORDER: ProjectPhaseKey[] = [
-  'Sourcing',
-  'Under Contract',
-  'Rehab',
-  'Listed',
-  'Sold',
+  'acquisition',
+  'fund',
+  'hold',
+  'exit',
 ];

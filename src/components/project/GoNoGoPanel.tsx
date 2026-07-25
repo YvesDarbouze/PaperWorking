@@ -30,7 +30,7 @@ export function GoNoGoPanel({
       let dealStatusUpdate = 'Active';
 
       if (decision === 'terminate') {
-        statusUpdate = 'Archived';
+        statusUpdate = 'exit';
         dealStatusUpdate = 'Terminated';
       } else if (decision === 'proceed') {
         dealStatusUpdate = 'Proceeding';

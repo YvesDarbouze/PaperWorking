@@ -9,6 +9,8 @@ import { Notification, NotificationType } from '@/types/notification';
 import toast from 'react-hot-toast';
 import { useAuth } from '@/context/AuthContext';
 import { executeInboxAction } from '@/lib/services/inboxActionExecutor';
+import UnattributedTransactionCard from './UnattributedTransactionCard';
+import MissedRentAlertCard from './MissedRentAlertCard';
 
 /* ═══════════════════════════════════════════════════════
    InboxItemCard — Individual notification card renderer
@@ -105,6 +107,13 @@ function getCategoryInfo(type: NotificationType) {
         theme: 'team',
         iconClass: 'bg-white/5 border border-white/10 text-[#9E9DA0]',
       };
+    case 'LENDER_CHECKLIST_REMINDER':
+      return {
+        label: 'Lender Vault',
+        icon: 'folder_shared',
+        theme: 'system',
+        iconClass: 'bg-white/5 border border-white/10 text-[#7A9EAA]',
+      };
     case 'TASK_COMPLETE':
       return {
         label: 'Task Complete',
@@ -125,6 +134,20 @@ function getCategoryInfo(type: NotificationType) {
         icon: 'description',
         theme: 'team',
         iconClass: 'bg-white/5 border border-white/10 text-[#9E9DA0]',
+      };
+    case 'unattributed_transaction':
+      return {
+        label: 'Attribution Needed',
+        icon: 'account_balance_wallet',
+        theme: 'finance',
+        iconClass: 'bg-[#7A9EAA]/10 border-[#7A9EAA]/20 text-[#7A9EAA]',
+      };
+    case 'missed_rent':
+      return {
+        label: 'Rent Overdue',
+        icon: 'warning',
+        theme: 'finance',
+        iconClass: 'bg-amber-500/10 border-amber-500/20 text-amber-500',
       };
     default:
       return {
@@ -175,7 +198,9 @@ export default function InboxItemCard({
     'RECEIPT_APPROVAL',
     'INVEST_INVITE',
     'TEAM_INVITE',
-    'TEAM_INVITE_REMINDER'
+    'TEAM_INVITE_REMINDER',
+    'unattributed_transaction',
+    'missed_rent'
   ].includes(item.type);
 
   const handleClick = (e: React.MouseEvent) => {
@@ -393,95 +418,113 @@ export default function InboxItemCard({
             className="overflow-hidden border-t border-white/5 pt-4 flex flex-col gap-3.5"
             onClick={(e) => e.stopPropagation()} // Prevent collapse when clicking details
           >
-            <div className="text-xs text-[#9E9DA0] bg-white/5 rounded-xl p-3.5 space-y-2 border border-white/5">
-              {item.type === 'VENDOR_BID' && (
-                <div className="flex flex-col gap-1.5">
-                  <span className="text-[10px] uppercase font-bold tracking-wider text-primary">Bid Details</span>
-                  <p>Vendor: <strong className="text-white">{item.objectReference.vendor || item.actor.name}</strong></p>
-                  <p>Amount: <strong className="text-white">{item.objectReference.amount || 'N/A'}</strong></p>
-                  <p>Project: <strong className="text-white">{item.objectReference.dealAddress || 'N/A'}</strong></p>
-                </div>
-              )}
-              {item.type === 'RECEIPT_APPROVAL' && (
-                <div className="flex flex-col gap-1.5">
-                  <span className="text-[10px] uppercase font-bold tracking-wider text-primary">Receipt Verification</span>
-                  <p>Uploader: <strong className="text-white">{item.actor.name}</strong></p>
-                  <p>Amount: <strong className="text-white">{item.objectReference.amount || 'N/A'}</strong></p>
-                  <p>Project: <strong className="text-white">{item.objectReference.dealAddress || 'N/A'}</strong></p>
-                </div>
-              )}
-              {item.type === 'INVEST_INVITE' && (
-                <div className="flex flex-col gap-1.5">
-                   <span className="text-[10px] uppercase font-bold tracking-wider text-primary">Co-Investment Opportunity</span>
-                  <p>Deal: <strong className="text-white">{item.objectReference.dealAddress || 'N/A'}</strong></p>
-                  <p>Sponsor: <strong className="text-white">{item.actor.name}</strong></p>
-                </div>
-              )}
-              {['TEAM_INVITE', 'TEAM_INVITE_REMINDER'].includes(item.type) && (
-                <div className="flex flex-col gap-1.5">
-                  <span className="text-[10px] uppercase font-bold tracking-wider text-primary">Team Membership</span>
-                  <p>Organization: <strong className="text-white">{item.objectReference.organizationName || 'N/A'}</strong></p>
-                  <p>Inviter: <strong className="text-white">{item.actor.name}</strong></p>
-                </div>
-              )}
-              {item.type === 'VENDOR_LEAD' && (
-                <div className="flex flex-col gap-1.5">
-                  <span className="text-[10px] uppercase font-bold tracking-wider text-primary">Lead Inquiry</span>
-                  <p>Investor: <strong className="text-white">{item.actor.name}</strong></p>
-                  <p>Project: <strong className="text-white">{item.objectReference.dealAddress || 'N/A'}</strong></p>
-                </div>
-              )}
-            </div>
-
-            <div className="flex gap-2 justify-end">
-              <button
-                disabled={isExecuting}
-                onClick={async (e) => {
-                  e.stopPropagation();
-                  if (!user) {
-                    toast.error('Not authenticated');
-                    return;
-                  }
-                  setIsExecuting(true);
-                  const actionPromise = (async () => {
-                    const idToken = await user.getIdToken();
-                    const res = await executeInboxAction(item, idToken, user.email || '');
-                    if (res.success) {
-                      if (!item.read) await onMarkRead(item.id);
-                    }
-                    return res.message;
-                  })();
-
-                  toast.promise(actionPromise, {
-                    loading: 'Executing action...',
-                    success: (msg) => msg,
-                    error: (err) => err.message || 'Failed to execute action.',
-                  });
-
-                  try {
-                    await actionPromise;
-                    setIsExpanded(false);
-                  } catch (err) {
-                    console.error('[InboxItemCard] Action error:', err);
-                  } finally {
-                    setIsExecuting(false);
-                  }
+            {item.type === 'unattributed_transaction' ? (
+              <UnattributedTransactionCard
+                item={item}
+                onAssignComplete={async () => {
+                  await onArchive(item.id);
                 }}
-                className="px-3.5 py-2 text-[10px] font-bold uppercase tracking-wider rounded-lg bg-primary text-on-primary hover:brightness-110 active:scale-97 transition-all luminous-glow disabled:opacity-50"
-              >
-                {item.type === 'VENDOR_BID' ? 'Approve Bid' : item.type === 'RECEIPT_APPROVAL' ? 'Approve Receipt' : 'Accept'}
-              </button>
-              
-              <button
-                onClick={(e) => {
-                  e.stopPropagation();
-                  router.push(item.deepLinkUrl);
+              />
+            ) : item.type === 'missed_rent' ? (
+              <MissedRentAlertCard
+                item={item}
+                onActionComplete={async () => {
+                  await onArchive(item.id);
                 }}
-                className="px-3.5 py-2 text-[10px] font-bold uppercase tracking-wider rounded-lg border border-white/10 hover:border-white/20 bg-white/5 hover:bg-white/10 text-[#9E9DA0] transition-all active:scale-97"
-              >
-                View Details
-              </button>
-            </div>
+              />
+            ) : (
+              <>
+                <div className="text-xs text-[#9E9DA0] bg-white/5 rounded-xl p-3.5 space-y-2 border border-white/5">
+                  {item.type === 'VENDOR_BID' && (
+                    <div className="flex flex-col gap-1.5">
+                      <span className="text-[10px] uppercase font-bold tracking-wider text-primary">Bid Details</span>
+                      <p>Vendor: <strong className="text-white">{item.objectReference.vendor || item.actor.name}</strong></p>
+                      <p>Amount: <strong className="text-white">{item.objectReference.amount || 'N/A'}</strong></p>
+                      <p>Project: <strong className="text-white">{item.objectReference.dealAddress || 'N/A'}</strong></p>
+                    </div>
+                  )}
+                  {item.type === 'RECEIPT_APPROVAL' && (
+                    <div className="flex flex-col gap-1.5">
+                      <span className="text-[10px] uppercase font-bold tracking-wider text-primary">Receipt Verification</span>
+                      <p>Uploader: <strong className="text-white">{item.actor.name}</strong></p>
+                      <p>Amount: <strong className="text-white">{item.objectReference.amount || 'N/A'}</strong></p>
+                      <p>Project: <strong className="text-white">{item.objectReference.dealAddress || 'N/A'}</strong></p>
+                    </div>
+                  )}
+                  {item.type === 'INVEST_INVITE' && (
+                    <div className="flex flex-col gap-1.5">
+                       <span className="text-[10px] uppercase font-bold tracking-wider text-primary">Co-Investment Opportunity</span>
+                      <p>Deal: <strong className="text-white">{item.objectReference.dealAddress || 'N/A'}</strong></p>
+                      <p>Sponsor: <strong className="text-white">{item.actor.name}</strong></p>
+                    </div>
+                  )}
+                  {['TEAM_INVITE', 'TEAM_INVITE_REMINDER'].includes(item.type) && (
+                    <div className="flex flex-col gap-1.5">
+                      <span className="text-[10px] uppercase font-bold tracking-wider text-primary">Team Membership</span>
+                      <p>Organization: <strong className="text-white">{item.objectReference.organizationName || 'N/A'}</strong></p>
+                      <p>Inviter: <strong className="text-white">{item.actor.name}</strong></p>
+                    </div>
+                  )}
+                  {item.type === 'VENDOR_LEAD' && (
+                    <div className="flex flex-col gap-1.5">
+                      <span className="text-[10px] uppercase font-bold tracking-wider text-primary">Lead Inquiry</span>
+                      <p>Investor: <strong className="text-white">{item.actor.name}</strong></p>
+                      <p>Project: <strong className="text-white">{item.objectReference.dealAddress || 'N/A'}</strong></p>
+                    </div>
+                  )}
+                </div>
+
+                <div className="flex gap-2 justify-end">
+                  <button
+                    disabled={isExecuting}
+                    onClick={async (e) => {
+                      e.stopPropagation();
+                      if (!user) {
+                        toast.error('Not authenticated');
+                        return;
+                      }
+                      setIsExecuting(true);
+                      const actionPromise = (async () => {
+                        const idToken = await user.getIdToken();
+                        const res = await executeInboxAction(item, idToken, user.email || '');
+                        if (res.success) {
+                          if (!item.read) await onMarkRead(item.id);
+                        }
+                        return res.message;
+                      })();
+
+                      toast.promise(actionPromise, {
+                        loading: 'Executing action...',
+                        success: (msg) => msg,
+                        error: (err) => err.message || 'Failed to execute action.',
+                      });
+
+                      try {
+                        await actionPromise;
+                        setIsExpanded(false);
+                      } catch (err) {
+                        console.error('[InboxItemCard] Action error:', err);
+                      } finally {
+                        setIsExecuting(false);
+                      }
+                    }}
+                    className="px-3.5 py-2 text-[10px] font-bold uppercase tracking-wider rounded-lg bg-primary text-on-primary hover:brightness-110 active:scale-97 transition-all luminous-glow disabled:opacity-50"
+                  >
+                    {item.type === 'VENDOR_BID' ? 'Approve Bid' : item.type === 'RECEIPT_APPROVAL' ? 'Approve Receipt' : 'Accept'}
+                  </button>
+                  
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      router.push(item.deepLinkUrl);
+                    }}
+                    className="px-3.5 py-2 text-[10px] font-bold uppercase tracking-wider rounded-lg border border-white/10 hover:border-white/20 bg-white/5 hover:bg-white/10 text-[#9E9DA0] transition-all active:scale-97"
+                  >
+                    View Details
+                  </button>
+                </div>
+              </>
+            )}
           </motion.div>
         )}
       </AnimatePresence>

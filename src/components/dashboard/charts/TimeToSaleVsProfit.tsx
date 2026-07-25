@@ -36,7 +36,7 @@ interface ScatterPoint {
 
 function buildScatterData(projects: Project[]): ScatterPoint[] {
   return projects
-    .filter((d: Project) => d.status === 'Sold' && d.financials?.soldDate)
+    .filter((d: Project) => d.status === 'exit' && d.dispositionType === 'SALE' && d.financials?.soldDate)
     .map((deal: Project) => {
       const metrics = calculateProjectMetrics(deal);
       

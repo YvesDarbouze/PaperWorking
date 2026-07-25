@@ -22,6 +22,7 @@ import {
 import type { Project, PropertyMetricSnapshot } from '@/types/schema';
 import { usePropertyMetricSnapshots } from '@/hooks/usePropertyMetricSnapshots';
 import { deriveAllMetrics } from '@/lib/metrics/reiMetrics';
+import { getBusinessDaysDiff } from '@/lib/utils/businessDays';
 
 interface ProjectAtAGlanceSidebarProps {
   project: Project;
@@ -155,8 +156,58 @@ const formatValueForLog = (val: any, fieldPath: string): string => {
 
 /* ─── Main Component ────────────────────────────────────────── */
 export function ProjectAtAGlanceSidebar({ project }: ProjectAtAGlanceSidebarProps) {
-  const [activeTab, setActiveTab] = useState<'metrics' | 'activity' | 'vendors' | 'documents'>('metrics');
+  const [activeTab, setActiveTab] = useState<'metrics' | 'timeline' | 'activity' | 'vendors' | 'documents'>('metrics');
   
+  const todayStr = useMemo(() => new Date().toISOString().split('T')[0], []);
+
+  const overdueMilestones = useMemo(() => {
+    return (project.closingTimeline || []).filter((m: any) => !m.completed && m.targetDate < todayStr);
+  }, [project.closingTimeline, todayStr]);
+
+  const tridWarning = useMemo(() => {
+    const template = project.closingTimelineTemplate;
+    if (template !== 'financed_conventional' && template !== 'sba') {
+      return null;
+    }
+
+    const milestones = project.closingTimeline || [];
+    const cdMilestone = milestones.find((m: any) => m.key === 'cd_delivered');
+    const closingMilestone = milestones.find((m: any) => m.key === 'closing');
+
+    if (!cdMilestone || !closingMilestone) {
+      return null;
+    }
+
+    const cdDate = cdMilestone.actualDate || cdMilestone.targetDate;
+    const closingDate = closingMilestone.actualDate || closingMilestone.targetDate;
+
+    if (!cdDate || !closingDate) {
+      return null;
+    }
+
+    const bizDays = getBusinessDaysDiff(cdDate, closingDate);
+
+    if (bizDays < 3) {
+      return {
+        type: 'violation' as const,
+        message: `Lenders must provide the Closing Disclosure at least three business days before closing. Currently, there are only ${bizDays} business day(s) of separation between Closing Disclosure delivery (${cdDate}) and Closing Settlement (${closingDate}).`
+      };
+    }
+
+    const today = new Date(todayStr + 'T12:00:00');
+    const closing = new Date(closingDate + 'T12:00:00');
+    const calendarDiff = Math.ceil((closing.getTime() - today.getTime()) / (1000 * 60 * 60 * 24));
+
+    if (calendarDiff < 7 && !cdMilestone.completed) {
+      return {
+        type: 'approaching' as const,
+        message: `Closing Settlement is scheduled in ${calendarDiff} day(s) (on ${closingDate}), but the Closing Disclosure (CD) has not been recorded. Lenders must provide the Closing Disclosure at least three business days before closing.`
+      };
+    }
+
+    return null;
+  }, [project.closingTimeline, project.closingTimelineTemplate, todayStr]);
+
   // Real-time collections state
   const [activities, setActivities] = useState<ActivityLogDoc[]>([]);
   const [activitiesLoading, setActivitiesLoading] = useState(true);
@@ -314,19 +365,26 @@ export function ProjectAtAGlanceSidebar({ project }: ProjectAtAGlanceSidebarProp
         className="flex border-b text-xs font-bold uppercase tracking-wider select-none"
         style={{ borderColor: 'var(--border-ui)' }}
       >
-        {(['metrics', 'activity', 'vendors', 'documents'] as const).map((tab) => (
-          <button
-            key={tab}
-            onClick={() => setActiveTab(tab)}
-            className={`flex-1 py-3 text-center transition-colors border-b-2 outline-none ${
-              activeTab === tab
-                ? 'border-[#454955] text-[#454955]'
-                : 'border-transparent text-text-secondary hover:text-text-primary'
-            }`}
-          >
-            {tab}
-          </button>
-        ))}
+        {(() => {
+          const hasTimeline = Array.isArray(project.closingTimeline) && project.closingTimeline.length > 0;
+          const tabsList = hasTimeline
+            ? (['metrics', 'timeline', 'activity', 'vendors', 'documents'] as const)
+            : (['metrics', 'activity', 'vendors', 'documents'] as const);
+          
+          return tabsList.map((tab) => (
+            <button
+              key={tab}
+              onClick={() => setActiveTab(tab)}
+              className={`flex-1 py-3 text-center transition-colors border-b-2 outline-none ${
+                activeTab === tab
+                  ? 'border-[#454955] text-[#454955]'
+                  : 'border-transparent text-text-secondary hover:text-text-primary'
+              }`}
+            >
+              {tab}
+            </button>
+          ));
+        })()}
       </div>
 
       {/* Content Area */}
@@ -405,6 +463,80 @@ export function ProjectAtAGlanceSidebar({ project }: ProjectAtAGlanceSidebarProp
                 Delta percentage calculation will activate once you have at least 2 historical snapshots.
               </p>
             )}
+          </div>
+        )}
+
+        {/* ──────── T_timeline: Timeline Tab ──────── */}
+        {activeTab === 'timeline' && (
+          <div className="space-y-4">
+            <span className="text-[11px] font-bold text-text-secondary uppercase tracking-wider block mb-1">
+              Closing Timeline Milestones
+            </span>
+
+            {/* Overdue alert */}
+            {overdueMilestones.length > 0 && (
+              <div className="p-3 rounded-xl border border-red-500/20 bg-red-500/10 text-xs text-red-200 space-y-1">
+                <p className="font-bold uppercase tracking-wider text-[10px] text-red-400">Slippage Detected</p>
+                <p className="mt-0.5">The following milestones are past their target dates: {overdueMilestones.map((m: any) => m.label).join(', ')}.</p>
+                <p className="mt-1 text-[10px] text-red-300/80 italic">Guidance: Customary delays are frequently caused by underwriting backlogs, title defects, or repair negotiations.</p>
+              </div>
+            )}
+
+            {/* TRID warning alert */}
+            {tridWarning && (
+              <div className={`p-3 rounded-xl border text-xs space-y-1 ${
+                tridWarning.type === 'violation' 
+                  ? 'border-red-500/20 bg-red-500/10 text-red-200' 
+                  : 'border-amber-500/20 bg-amber-500/10 text-amber-200'
+              }`}>
+                <p className={`font-bold uppercase tracking-wider text-[10px] ${
+                  tridWarning.type === 'violation' ? 'text-red-400' : 'text-amber-400'
+                }`}>
+                  {tridWarning.type === 'violation' ? 'TRID Compliance Warning' : 'TRID Warning — Action Required'}
+                </p>
+                <p className="mt-0.5 leading-normal">{tridWarning.message}</p>
+              </div>
+            )}
+
+            <div className="relative border-l border-white/10 ml-2.5 pl-4 space-y-4">
+              {(project.closingTimeline || []).map((m) => {
+                const isCompleted = m.completed;
+                return (
+                  <div key={m.id} className="relative group text-xs">
+                    {/* Timeline Node */}
+                    <div 
+                      className={`absolute -left-[21px] top-1 w-2.5 h-2.5 rounded-full border bg-zinc-950 transition-all ${
+                        isCompleted ? 'bg-green-500 border-green-500' : 'bg-zinc-950 border-white/20'
+                      }`}
+                    />
+                    
+                    <div className="flex justify-between items-baseline gap-2">
+                      <span className={`font-semibold ${isCompleted ? 'text-text-primary' : 'text-text-secondary'}`}>
+                        {m.label}
+                      </span>
+                      <span className="text-[9px] text-text-secondary font-mono">
+                        Target: {m.targetDate}
+                      </span>
+                    </div>
+
+                    {isCompleted ? (
+                      <p className="text-green-400 text-[10px] mt-0.5 font-mono">
+                        Completed on {m.actualDate || 'N/A'}
+                      </p>
+                    ) : (
+                      <p className="text-text-secondary text-[10px] mt-0.5">
+                        Pending (+{m.targetOffsetDays}d offset)
+                      </p>
+                    )}
+                    {m.notes && (
+                      <p className="text-[10px] text-text-secondary italic mt-1 bg-white/[0.02] p-1.5 rounded border border-white/5">
+                        {m.notes}
+                      </p>
+                    )}
+                  </div>
+                );
+              })}
+            </div>
           </div>
         )}
 

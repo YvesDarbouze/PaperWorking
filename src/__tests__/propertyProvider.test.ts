@@ -142,25 +142,99 @@ describe("Property Data Provider Abstraction & Skeletons", () => {
     });
 
     it("ATTOM provider resolves facts and comps with custom source name", async () => {
+      const originalFetch = global.fetch;
+      global.fetch = jest.fn().mockImplementation((url: string) => {
+        if (url.includes("/property/detail")) {
+          return Promise.resolve({
+            ok: true,
+            json: () => Promise.resolve({
+              property: [{
+                building: { rooms: { beds: 4, bathstotal: 3.5 }, size: { universalsize: 2500 }, summary: { yearbuilt: 2005 } },
+                lot: { lotsize2: 10000 },
+                summary: { propclass: "Single Family" },
+                sale: { amount: { saleamt: 450000 }, recdate: "2021-06-15" },
+                tax: { taxamt: 4500, assdvalamt: 400000, taxyr: 2023 }
+              }]
+            })
+          });
+        }
+        if (url.includes("/salescomparison")) {
+          return Promise.resolve({
+            ok: true,
+            json: () => Promise.resolve({
+              property: [{
+                comparables: [{
+                  addressLine: "456 Main St, Miami, FL 33101",
+                  building: { rooms: { beds: 3, bathstotal: 2 } },
+                  sale: { amount: { saleamt: 420000 }, recdate: "2023-01-10" }
+                }]
+              }]
+            })
+          });
+        }
+        return Promise.resolve({ ok: false });
+      }) as any;
+
       const provider = new AttomPropertyProvider("test-key");
       const facts = await provider.getFacts(address);
       const comps = await provider.getComps(address);
 
-      expect(facts.sourceProvider).toBe("ATTOM Property API (Skeleton)");
-      expect(facts.beds).toBeDefined();
-      expect(comps.length).toBeGreaterThan(0);
+      expect(facts.sourceProvider).toBe("ATTOM Property API");
+      expect(facts.beds).toBe(4);
+      expect(comps.length).toBe(1);
       expect(comps[0].addressLine).toContain("(ATTOM Comp)");
+
+      global.fetch = originalFetch;
     });
 
     it("Mashvisor provider resolves facts and comps with custom source name", async () => {
+      const originalFetch = global.fetch;
+      global.fetch = jest.fn().mockImplementation((url: string) => {
+        if (url.includes("/property/detail")) {
+          return Promise.resolve({
+            ok: true,
+            json: () => Promise.resolve({
+              content: {
+                bedrooms: 3,
+                bathrooms: 2,
+                sqft: 1500,
+                year_built: 1990,
+                type: "Residential",
+                avm: { price: 300000, price_low: 280000, price_high: 320000 }
+              }
+            })
+          });
+        }
+        if (url.includes("/property/comps")) {
+          return Promise.resolve({
+            ok: true,
+            json: () => Promise.resolve({
+              content: {
+                comps: [{
+                  address: "789 Pine St, Miami, FL 33101",
+                  bedrooms: 3,
+                  bathrooms: 2,
+                  sqft: 1400,
+                  sold_price: 295000,
+                  sold_date: "2023-05-20"
+                }]
+              }
+            })
+          });
+        }
+        return Promise.resolve({ ok: false });
+      }) as any;
+
       const provider = new MashvisorPropertyProvider("test-key");
       const facts = await provider.getFacts(address);
       const comps = await provider.getComps(address);
 
-      expect(facts.sourceProvider).toBe("Mashvisor API (Skeleton)");
-      expect(facts.beds).toBeDefined();
-      expect(comps.length).toBeGreaterThan(0);
+      expect(facts.sourceProvider).toBe("Mashvisor API");
+      expect(facts.beds).toBe(3);
+      expect(comps.length).toBe(1);
       expect(comps[0].addressLine).toContain("(Mashvisor Comp)");
+
+      global.fetch = originalFetch;
     });
   });
 });

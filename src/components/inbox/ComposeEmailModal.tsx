@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useCallback } from 'react';
-import { X, Send, Sparkles, Loader2, Plus, ChevronDown } from 'lucide-react';
+import { X, Send, Loader2, Plus, ChevronDown } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useAuth } from '@/context/AuthContext';
 import { useProjectStore } from '@/store/projectStore';
@@ -13,7 +13,6 @@ import toast from 'react-hot-toast';
    Features:
    • Multi-recipient entry (team members + free-text)
    • Project selector for [ref:deal_*] tracking
-   • AI Draft button via draftingAgent
    • Sends via /api/emails/send
    ═══════════════════════════════════════════════════════ */
 
@@ -38,10 +37,8 @@ export default function ComposeEmailModal({
   const [subject, setSubject] = useState('');
   const [body, setBody] = useState('');
   const [sending, setSending] = useState(false);
-  const [aiLoading, setAiLoading] = useState(false);
-
   // Active projects for the project dropdown
-  const activeProjects = deals.filter((d) => d.status !== 'closed_won' && d.status !== 'closed_lost');
+  const activeProjects = deals.filter((d) => d.status !== 'exit');
 
   const resetForm = useCallback(() => {
     setTo('');
@@ -49,48 +46,6 @@ export default function ComposeEmailModal({
     setSubject('');
     setBody('');
   }, [defaultProjectId]);
-
-  /* ── AI Draft ── */
-  const handleAIDraft = async () => {
-    if (!projectId) {
-      toast.error('Select a project first for AI context.', {
-        style: { background: '#0d0d0d', color: '#fff', border: '1px solid #333' },
-      });
-      return;
-    }
-
-    setAiLoading(true);
-    try {
-      const res = await fetch('/api/ai/draft', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          projectId,
-          audience: 'investors',
-          idToken: await user?.getIdToken(),
-        }),
-      });
-
-      if (res.ok) {
-        const data = await res.json();
-        setBody(data.draft || '');
-        toast.success('AI draft generated.', {
-          icon: '✨',
-          style: { background: '#0d0d0d', color: '#fff' },
-        });
-      } else {
-        toast.error('AI draft unavailable. Write manually.', {
-          style: { background: '#0d0d0d', color: '#fff' },
-        });
-      }
-    } catch {
-      toast.error('AI service error.', {
-        style: { background: '#0d0d0d', color: '#fff' },
-      });
-    } finally {
-      setAiLoading(false);
-    }
-  };
 
   /* ── Send ── */
   const handleSend = async () => {
@@ -263,25 +218,13 @@ export default function ComposeEmailModal({
 
               {/* Body */}
               <div>
-                <div className="flex items-center justify-between mb-1.5">
+                <div className="mb-1.5">
                   <label
                     htmlFor="compose-body"
                     className="block text-[10px] font-black text-pw-muted uppercase tracking-[0.3em]"
                   >
                     Message
                   </label>
-                  <button
-                    onClick={handleAIDraft}
-                    disabled={aiLoading}
-                    className="pw-btn pw-btn--secondary pw-btn--pill flex items-center gap-1.5 px-3 py-1.5 text-xs transition-colors disabled:opacity-50"
-                  >
-                    {aiLoading ? (
-                      <Loader2 className="w-3 h-3 animate-spin" />
-                    ) : (
-                      <Sparkles className="w-3 h-3" />
-                    )}
-                    AI Draft
-                  </button>
                 </div>
                 <textarea
                   id="compose-body"

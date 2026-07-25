@@ -12,13 +12,33 @@ import {
   Hash, CalendarDays, FileCheck2, Building2, ClipboardList,
 } from 'lucide-react';
 import toast from 'react-hot-toast';
-import type { GCBidExtraction, GCBidLineItem } from '@/app/api/ocr/gc-bid/route';
+export interface GCBidLineItem {
+  description: string;
+  category: string;
+  amount: number;
+}
+
+export interface GCBidExtraction {
+  contractorName?: string;
+  contractorPhone?: string;
+  contractorEmail?: string;
+  contractorLicense?: string;
+  bidDate?: string;
+  validUntil?: string;
+  totalAmount: number;
+  laborCost?: number;
+  materialsCost?: number;
+  lineItems: GCBidLineItem[];
+  notes?: string;
+  paymentTerms?: string;
+  confidence?: 'high' | 'medium' | 'low';
+}
+
 import type { ContractorBid } from '@/types/schema';
 
 /* ═══════════════════════════════════════════════════════
    GC Bid Uploader
-   Accepts PDF/image GC bids, extracts structured data via
-   Gemini Vision OCR, and saves ContractorBid records to
+   Accepts PDF/image GC bids and saves ContractorBid records to
    Firestore for PM review and approval.
    ═══════════════════════════════════════════════════════ */
 
@@ -46,11 +66,7 @@ const CATEGORY_COLORS: Record<string, string> = {
   Other: 'bg-bg-primary text-text-secondary border-border-accent',
 };
 
-const CONFIDENCE_META = {
-  high: { label: 'High Confidence', cls: 'text-pw-success bg-pw-success-container border-pw-success-border' },
-  medium: { label: 'Medium Confidence', cls: 'text-amber-600 bg-amber-50 border-amber-200' },
-  low: { label: 'Low Confidence — Review carefully', cls: 'text-red-600 bg-red-50 border-red-200' },
-};
+
 
 interface SavedBid {
   id: string;
@@ -127,7 +143,7 @@ export default function GCBidUploader({ projectId, onBidSaved }: Props) {
     if (file) handleFileSelect(file);
   }, [handleFileSelect]);
 
-  // ── Upload + OCR ─────────────────────────────────────────
+  // ── Upload ─────────────────────────────────────────
 
   const handleUploadAndParse = async () => {
     if (!selectedFile) return;
@@ -161,38 +177,21 @@ export default function GCBidUploader({ projectId, onBidSaved }: Props) {
 
     setIsUploading(false);
     setUploadedFileUrl(downloadUrl);
-    setIsProcessing(true);
-    toast.loading('Parsing GC bid with AI...', { id: 'gc-ocr' });
-
-    try {
-      const token = await auth.currentUser?.getIdToken();
-      if (!token) throw new Error('Not authenticated');
-
-      const res = await fetch('/api/ocr/gc-bid', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`,
-        },
-        body: JSON.stringify({ fileUrl: downloadUrl, mimeType: selectedFile.type }),
-      });
-
-      if (!res.ok) {
-        const errData = await res.json().catch(() => ({}));
-        throw new Error(errData.error || `OCR failed (${res.status})`);
-      }
-
-      const { data }: { data: GCBidExtraction } = await res.json();
-      setExtraction(data);
-      setEditedExtraction(structuredClone(data));
-      toast.success('Bid parsed successfully. Review and confirm below.', { id: 'gc-ocr', icon: '✨' });
-    } catch (err: any) {
-      toast.error(`Parsing failed: ${err.message}`, { id: 'gc-ocr' });
-      setIsProcessing(false);
-      return;
-    }
-
-    setIsProcessing(false);
+    
+    // Initialize empty extraction for manual entry
+    const emptyExtraction: GCBidExtraction = {
+      contractorName: '',
+      totalAmount: 0,
+      lineItems: [],
+      notes: '',
+      paymentTerms: '',
+      contractorLicense: '',
+      confidence: 'high'
+    };
+    
+    setExtraction(emptyExtraction);
+    setEditedExtraction(emptyExtraction);
+    toast.success('Document uploaded. Enter contractor and bid details manually below.', { icon: '📝' });
     setSelectedFile(null);
   };
 
@@ -346,7 +345,7 @@ export default function GCBidUploader({ projectId, onBidSaved }: Props) {
                     <Upload className="w-6 h-6" />
                   </div>
                   <p className="text-sm font-medium text-text-primary">Drop GC bid here or click to browse</p>
-                  <p className="text-xs text-text-secondary">PDF, JPEG, PNG, WebP — AI extracts line items automatically</p>
+                  <p className="text-xs text-text-secondary">PDF, JPEG, PNG, WebP — Enter bid details manually</p>
                 </div>
               )}
             </div>
@@ -377,12 +376,12 @@ export default function GCBidUploader({ projectId, onBidSaved }: Props) {
                 ) : isProcessing ? (
                   <>
                     <Loader2 className="w-4 h-4 animate-spin" />
-                    AI Extracting Bid Data...
+                    Processing Bid Data...
                   </>
                 ) : (
                   <>
                     <FileText className="w-4 h-4" />
-                    Upload & Parse Bid
+                    Upload Bid
                   </>
                 )}
               </button>
@@ -402,12 +401,10 @@ export default function GCBidUploader({ projectId, onBidSaved }: Props) {
         {/* Extraction Review */}
         {editedExtraction && (
           <div className="space-y-4">
-            {/* Confidence badge */}
-            <div className={`flex items-center gap-2 px-3 py-2 rounded-lg border text-xs font-medium ${CONFIDENCE_META[editedExtraction.confidence].cls}`}>
-              {editedExtraction.confidence === 'high'
-                ? <CheckCircle className="w-3.5 h-3.5" />
-                : <AlertTriangle className="w-3.5 h-3.5" />}
-              {CONFIDENCE_META[editedExtraction.confidence].label} — Review and correct any fields before saving.
+            {/* Manual entry reminder */}
+            <div className="flex items-center gap-2 px-3 py-2 rounded-lg border border-border-accent bg-bg-primary text-xs font-medium text-text-secondary">
+              <ClipboardList className="w-3.5 h-3.5 text-text-secondary" />
+              Please enter the contractor details and individual line items manually.
             </div>
 
             {/* Contractor Details */}
@@ -427,7 +424,7 @@ export default function GCBidUploader({ projectId, onBidSaved }: Props) {
                   <Field
                     icon={<User className="w-3.5 h-3.5" />}
                     label="Contractor Name"
-                    value={editedExtraction.contractorName}
+                    value={editedExtraction.contractorName ?? ''}
                     onChange={v => updateField('contractorName', v)}
                   />
                   <Field
@@ -477,13 +474,13 @@ export default function GCBidUploader({ projectId, onBidSaved }: Props) {
               />
               <SummaryCard
                 label="Labor"
-                value={editedExtraction.laborCost}
+                value={editedExtraction.laborCost ?? 0}
                 editable
                 onChange={v => updateField('laborCost', Number(v))}
               />
               <SummaryCard
                 label="Materials"
-                value={editedExtraction.materialsCost}
+                value={editedExtraction.materialsCost ?? 0}
                 editable
                 onChange={v => updateField('materialsCost', Number(v))}
               />

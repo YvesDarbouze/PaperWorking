@@ -53,7 +53,7 @@ export default function SourcingDashboard() {
 
   // Filter projects in the Lead Sourcing phase (status === 'Lead' or phase status is Phase 1)
   const leads = projects.filter(
-    (p) => p.status === 'Lead' || p.phaseStatus === 'Phase 1: Find & Fund' || p.currentPhase === 1
+    (p) => p.status === 'acquisition' || p.phaseStatus === 'Phase 1: Acquisition' || p.currentPhase === 1
   );
 
   // Calculate dynamic metrics

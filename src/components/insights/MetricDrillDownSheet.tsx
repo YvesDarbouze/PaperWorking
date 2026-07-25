@@ -4,6 +4,101 @@ import React, { useEffect, useRef } from 'react';
 import type { MetricResult } from '@/lib/metrics/types';
 import { MetricReadout, MetricFormat } from '@/components/metrics/MetricReadout';
 import { X, ExternalLink, ArrowRight } from 'lucide-react';
+import { getVariableProvenance } from '@/lib/identity/provenance';
+import { ACQUISITION_VARIABLE_REGISTRY } from '@/lib/metrics/acquisitionVariableRegistry';
+
+function getFieldRegistryId(path: string): string {
+  const clean = path.split('.').pop() ?? path;
+  
+  const aliasMap: Record<string, string> = {
+    monthlyGrossRent: 'gross_rent_per_unit',
+    grossRent: 'gross_rent_per_unit',
+    vacancyRatePercent: 'vacancy_pct',
+    holdingCostTaxes: 'tax',
+    taxes: 'tax',
+    holdingCostInsurance: 'insurance',
+    monthlyMaintenanceReserve: 'maintenance',
+    maintenance_pct: 'maintenance_pct',
+    propertyManagementFeePercent: 'management_pct',
+    netOperatingIncome: 'operating_income',
+    loanTermYears: 'loan_term',
+    loanTerm: 'loan_term',
+    loanInterestRate: 'loan_interest_rate',
+    loanAmount: 'loan_amount',
+    purchasePrice: 'purchase_price',
+    projectedRehabCost: 'rehab_budget',
+    rehabBudget: 'rehab_budget',
+  };
+
+  if (aliasMap[clean]) {
+    return aliasMap[clean];
+  }
+  
+  const direct = ACQUISITION_VARIABLE_REGISTRY.find(
+    (f) => f.id === clean || f.fieldPath === path || f.id === path
+  );
+  if (direct) {
+    return direct.id;
+  }
+
+  return clean.replace(/([A-Z])/g, '_$1').toLowerCase();
+}
+
+function getFocusParamForField(registryId: string): string {
+  const map: Record<string, string> = {
+    purchase_price: 'purchasePrice',
+    rehab_budget: 'rehab',
+    projectedRehabCost: 'rehab',
+    loan_amount: 'financing',
+    loan_interest_rate: 'financing',
+    loan_term: 'financing',
+    loanOriginationPoints: 'financing',
+    gross_rent_per_unit: 'income',
+    vacancy_pct: 'income',
+    tax: 'tax',
+    insurance: 'tax',
+    utilities: 'tax',
+    management_pct: 'tax',
+    management: 'tax',
+    maintenance: 'tax',
+    maintenance_pct: 'tax',
+    HOA: 'tax',
+    psa: 'psa',
+    emdAmount: 'earnest_money',
+    inspection: 'inspection',
+    title: 'title',
+  };
+  return map[registryId] || registryId;
+}
+
+function getDocumentLabelForField(registryId: string): string {
+  const map: Record<string, string> = {
+    purchase_price: 'Purchase Agreement',
+    rehab_budget: 'Rehab Bid / Estimate',
+    projectedRehabCost: 'Rehab Bid / Estimate',
+    loan_amount: 'Lender Term Sheet',
+    loan_interest_rate: 'Lender Term Sheet',
+    loan_term: 'Lender Term Sheet',
+    loanOriginationPoints: 'Lender Term Sheet',
+    gross_rent_per_unit: 'Lease Agreement',
+    vacancy_pct: 'Market Report / Underwriting',
+    tax: 'Property Tax Assessment',
+    insurance: 'Insurance Quote',
+    utilities: 'Utility Bill',
+    management_pct: 'Management Agreement',
+    management: 'Management Agreement',
+    maintenance: 'Maintenance Ledger',
+    maintenance_pct: 'Maintenance Ledger',
+    HOA: 'HOA Statement',
+    psa: 'Purchase Agreement',
+    emdAmount: 'Earnest Money Escrow Receipt',
+    inspection: 'Inspection Report',
+    title: 'Title Commitment',
+  };
+  return map[registryId] || 'Document Attachment';
+}
+
+
 
 /* ═══════════════════════════════════════════════════════════════
    MetricDrillDownSheet — Slide-in right panel for metric details
@@ -98,12 +193,26 @@ function humanizeFieldPath(path: string): string {
 }
 
 /** Format values for the inputs table */
-function formatInputValue(value: number | string): string {
+function formatInputValue(value: number | string, registryId?: string): string {
   if (typeof value === 'string') return value;
-  if (Math.abs(value) >= 1_000_000) return `$${(value / 1_000_000).toFixed(2)}M`;
-  if (Math.abs(value) >= 1_000) return `$${(value / 1_000).toFixed(1)}k`;
-  if (Math.abs(value) < 1 && value !== 0) return `${(value * 100).toFixed(2)}%`;
-  return value.toLocaleString('en-US', { maximumFractionDigits: 2 });
+
+  let val = value;
+  const centFields = ['purchase_price', 'loan_amount', 'rehab_budget', 'projectedRehabCost', 'asking_price', 'final_agreed_price'];
+  if (registryId && centFields.includes(registryId)) {
+    val = value / 100;
+  }
+
+  const isUsd = registryId ? (ACQUISITION_VARIABLE_REGISTRY.some(f => f.id === registryId && f.type === 'usd') || registryId === 'tax' || registryId === 'insurance' || registryId === 'utilities') : false;
+  if (isUsd) {
+    if (Math.abs(val) >= 1_000_000) return `$${(val / 1_000_000).toFixed(2)}M`;
+    if (Math.abs(val) >= 1_000) return `$${(val / 1_000).toFixed(1)}k`;
+    return `$${val.toLocaleString('en-US', { maximumFractionDigits: 0 })}`;
+  }
+
+  if (Math.abs(val) >= 1_000_000) return `${(val / 1_000_000).toFixed(2)}M`;
+  if (Math.abs(val) >= 1_000) return `${(val / 1_000).toFixed(1)}k`;
+  if (Math.abs(val) < 1 && val !== 0) return `${(val * 100).toFixed(2)}%`;
+  return val.toLocaleString('en-US', { maximumFractionDigits: 2 });
 }
 
 export interface MetricDrillDownSheetProps {
@@ -113,6 +222,7 @@ export interface MetricDrillDownSheetProps {
   metricLabel: string;
   result: MetricResult;
   format: MetricFormat;
+  project?: any;
   /** Optional sparkline data for the mini chart */
   sparklineData?: { date: string; value: number }[];
 }
@@ -124,6 +234,7 @@ export function MetricDrillDownSheet({
   metricLabel,
   result,
   format,
+  project,
   sparklineData,
 }: MetricDrillDownSheetProps) {
   const panelRef = useRef<HTMLDivElement>(null);
@@ -226,17 +337,39 @@ export function MetricDrillDownSheet({
                 Inputs Used
               </p>
               <div className="space-y-2">
-                {inputEntries.map(([path, value]) => (
-                  <div
-                    key={path}
-                    className="flex items-center justify-between py-1.5 border-b border-white/[0.04] last:border-0"
-                  >
-                    <span className="text-xs text-[#9E9DA0]">{humanizeFieldPath(path)}</span>
-                    <span className="text-xs font-mono font-semibold text-white tabular-nums">
-                      {formatInputValue(value)}
-                    </span>
-                  </div>
-                ))}
+                {inputEntries.map(([path, value]) => {
+                  const registryId = getFieldRegistryId(path);
+                  const provenance = project ? getVariableProvenance(registryId, project) : 'user_assumption';
+                  const isDocument = provenance === 'document';
+                  const focusParam = getFocusParamForField(registryId);
+                  const docLabel = getDocumentLabelForField(registryId);
+
+                  return (
+                    <div
+                      key={path}
+                      className="py-2 border-b border-white/[0.04] last:border-0 space-y-1"
+                    >
+                      <div className="flex items-center justify-between">
+                        <span className="text-xs text-[#9E9DA0]">{humanizeFieldPath(path)}</span>
+                        <span className="text-xs font-mono font-semibold text-white tabular-nums">
+                          {formatInputValue(value, registryId)}
+                        </span>
+                      </div>
+                      {isDocument && project && (
+                        <div className="flex items-center gap-1">
+                          <span className="text-[10px] text-emerald-400 font-medium">Source:</span>
+                          <a
+                            href={`/dashboard/projects/${project.id}/phase-1?focus=${focusParam}`}
+                            className="text-[10px] text-emerald-400/90 hover:text-emerald-300 font-medium underline flex items-center gap-0.5"
+                          >
+                            {docLabel}
+                            <ExternalLink className="w-2.5 h-2.5 inline" />
+                          </a>
+                        </div>
+                      )}
+                    </div>
+                  );
+                })}
               </div>
             </div>
           )}

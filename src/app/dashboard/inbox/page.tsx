@@ -2,52 +2,38 @@
 
 import React, { Suspense, useState, useCallback, useEffect, useRef } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
-import { Search, Plus, Loader2, CheckCheck, ArrowLeft, Settings } from 'lucide-react';
+import { Search, Plus, Loader2, CheckCheck, ArrowLeft } from 'lucide-react';
 import { useInboxFeed } from '@/hooks/useInboxFeed';
 import { useInboxThreads } from '@/hooks/useInboxThreads';
 import { useAuth } from '@/context/AuthContext';
 import { useProjectStore } from '@/store/projectStore';
+import { useTheme } from '@/lib/utils/ThemeProvider';
 import InboxTabs from '@/components/inbox/InboxTabs';
 import InboxFeed from '@/components/inbox/InboxFeed';
 import ThreadDetail from '@/components/inbox/ThreadDetail';
 import NegotiationThreadDetail from '@/components/inbox/NegotiationThreadDetail';
 import ComposeEmailModal from '@/components/inbox/ComposeEmailModal';
+import { inboxTokens } from '@/components/inbox/inboxTheme';
 import toast from 'react-hot-toast';
 import { executeInboxAction } from '@/lib/services/inboxActionExecutor';
 
 /* ═══════════════════════════════════════════════════════
    Inbox — Unified Notification Center
-   
-   Combines notifications, team invitations, system alerts,
-   and email threads into a single tabbed feed.
-   
-   Layout:
-   ┌──────────────────────────────────────────────┐
-   │  Header:  "Inbox" + badge + actions          │
-   ├──────────────────────────────────────────────┤
-   │  Tabs:  All │ Messages │ Invitations │ ...   │
-   ├──────────────────────────────────────────────┤
-   │  Feed:  Scrollable InboxItemCard list        │
-   │  — OR —                                      │
-   │  ThreadDetail:  Email thread view (slide-in) │
-   └──────────────────────────────────────────────┘
+   Daily triage for ops decisions. UI only redesign.
    ═══════════════════════════════════════════════════════ */
 
-/* ── Notification detail MoreMenu ───────────────────────
-   Renders a ⋮ button in the reading pane header with three
-   real, persisted actions. No action is rendered without
-   an onClick handler.
-   ─────────────────────────────────────────────────────── */
 interface NotifMoreMenuProps {
   item: import('@/types/notification').Notification;
   onMarkUnread: () => void;
   onArchive: () => void;
   onDelete: () => void;
+  isDark: boolean;
 }
 
-function NotifMoreMenu({ item, onMarkUnread, onArchive, onDelete }: NotifMoreMenuProps) {
+function NotifMoreMenu({ item, onMarkUnread, onArchive, onDelete, isDark }: NotifMoreMenuProps) {
   const [open, setOpen] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
+  const t = inboxTokens(isDark);
 
   useEffect(() => {
     if (!open) return;
@@ -63,7 +49,10 @@ function NotifMoreMenu({ item, onMarkUnread, onArchive, onDelete }: NotifMoreMen
       <button
         id="notif-more-menu-trigger"
         onClick={() => setOpen((v) => !v)}
-        className="p-2 rounded-lg hover:bg-white/5 text-[#9E9DA0] transition-colors"
+        className="p-2 rounded transition-colors"
+        style={{ color: t.muted }}
+        onMouseEnter={(e) => { e.currentTarget.style.background = t.hover; }}
+        onMouseLeave={(e) => { e.currentTarget.style.background = 'transparent'; }}
         aria-label="Notification actions"
         aria-expanded={open}
         aria-haspopup="true"
@@ -75,25 +64,37 @@ function NotifMoreMenu({ item, onMarkUnread, onArchive, onDelete }: NotifMoreMen
         <div
           id="notif-more-menu"
           role="menu"
-          className="absolute right-0 top-full mt-1 w-52 rounded-xl border border-white/10 bg-[#161318] shadow-[0_8px_32px_-4px_rgba(0,0,0,0.6)] z-50 py-1 overflow-hidden"
+          className="absolute right-0 top-full mt-1 w-52 z-50 py-1 overflow-hidden"
+          style={{
+            background: t.menuBg,
+            border: `1px solid ${t.border}`,
+            borderRadius: 2,
+            boxShadow: t.elevShadow,
+          }}
         >
           <button
             id="notif-menu-mark-unread"
             role="menuitem"
             onClick={() => { onMarkUnread(); setOpen(false); }}
-            className="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-[#9E9DA0] hover:bg-white/5 hover:text-white transition-colors text-left"
+            className="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-left transition-colors"
+            style={{ color: t.body }}
+            onMouseEnter={(e) => { e.currentTarget.style.background = t.hover; }}
+            onMouseLeave={(e) => { e.currentTarget.style.background = 'transparent'; }}
           >
             <span className="material-symbols-outlined text-base" style={{ fontVariationSettings: "'FILL' 0" }}>
               {item.read ? 'mark_email_unread' : 'drafts'}
             </span>
             {item.read ? 'Mark as Unread' : 'Mark as Read'}
           </button>
-          <div className="my-1 border-t border-white/5" />
+          <div className="my-1" style={{ borderTop: `1px solid ${t.divider}` }} />
           <button
             id="notif-menu-archive"
             role="menuitem"
             onClick={() => { onArchive(); setOpen(false); }}
-            className="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-[#9E9DA0] hover:bg-white/5 hover:text-white transition-colors text-left"
+            className="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-left transition-colors"
+            style={{ color: t.body }}
+            onMouseEnter={(e) => { e.currentTarget.style.background = t.hover; }}
+            onMouseLeave={(e) => { e.currentTarget.style.background = 'transparent'; }}
           >
             <span className="material-symbols-outlined text-base" style={{ fontVariationSettings: "'FILL' 0" }}>archive</span>
             Archive
@@ -102,7 +103,10 @@ function NotifMoreMenu({ item, onMarkUnread, onArchive, onDelete }: NotifMoreMen
             id="notif-menu-delete"
             role="menuitem"
             onClick={() => { onDelete(); setOpen(false); }}
-            className="w-full flex items-center gap-3 px-4 py-2.5 text-sm hover:bg-white/5 text-red-400/80 hover:text-red-400 transition-colors text-left"
+            className="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-left transition-colors"
+            style={{ color: t.danger }}
+            onMouseEnter={(e) => { e.currentTarget.style.background = t.hover; }}
+            onMouseLeave={(e) => { e.currentTarget.style.background = 'transparent'; }}
           >
             <span className="material-symbols-outlined text-base" style={{ fontVariationSettings: "'FILL' 0" }}>delete</span>
             Delete
@@ -113,13 +117,26 @@ function NotifMoreMenu({ item, onMarkUnread, onArchive, onDelete }: NotifMoreMen
   );
 }
 
+function actionLabel(type: string): string {
+  switch (type) {
+    case 'VENDOR_BID': return 'Review bid';
+    case 'RECEIPT_APPROVAL': return 'Approve receipt';
+    case 'INVEST_INVITE': return 'View invitation';
+    case 'TEAM_INVITE':
+    case 'TEAM_INVITE_REMINDER': return 'Respond to invite';
+    default: return 'Take action';
+  }
+}
+
 function InboxNotificationCenter() {
   const searchParams = useSearchParams();
   const router = useRouter();
   const { user } = useAuth();
+  const { theme } = useTheme();
+  const isDark = theme === 'dark';
+  const t = inboxTokens(isDark);
   const deals = useProjectStore((state) => state.projects);
 
-  // ── Unified inbox feed (notifications, invitations, system) ──
   const {
     items,
     loading,
@@ -140,7 +157,6 @@ function InboxNotificationCenter() {
     hasMore,
   } = useInboxFeed();
 
-  // ── Legacy email threads (for the ThreadDetail slide-in) ──
   const {
     threads,
     markAsRead: markThreadAsRead,
@@ -149,24 +165,35 @@ function InboxNotificationCenter() {
 
   const threadId = searchParams.get('threadId') || searchParams.get('thread') || null;
   const [searchQuery, setSearchQuery] = useState('');
+  const [searchOpen, setSearchOpen] = useState(false);
+  const searchInputRef = useRef<HTMLInputElement>(null);
   const [composeOpen, setComposeOpen] = useState(false);
 
+  useEffect(() => {
+    if (searchOpen) {
+      searchInputRef.current?.focus();
+    }
+  }, [searchOpen]);
+
+  const closeSearch = () => {
+    setSearchOpen(false);
+    setSearchQuery('');
+  };
+
   const activeThread = threadId
-    ? threads.find((t) => t.projectId === threadId) || null
+    ? threads.find((th) => th.projectId === threadId) || null
     : null;
 
   const activeProjectName = activeThread
     ? deals.find((d) => d.id === activeThread.projectId)?.propertyName || 'Project'
     : '';
 
-  // Mark thread as read when entering detail view
   React.useEffect(() => {
     if (threadId && activeThread && activeThread.unreadCount > 0) {
       markThreadAsRead(threadId);
     }
   }, [threadId, activeThread?.unreadCount, markThreadAsRead]);
 
-  /* ── Send reply in thread view ── */
   const handleSendReply = useCallback(
     async (body: string) => {
       if (!user || !threadId) return;
@@ -191,40 +218,27 @@ function InboxNotificationCenter() {
         });
 
         if (res.ok) {
-          toast.success('Reply sent.', {
-            icon: '✉️',
-            style: { background: '#0d0d0d', color: '#fff' },
-          });
+          toast.success('Reply sent.');
         } else {
           const err = await res.json();
-          toast.error(err.error || 'Failed to send.', {
-            style: { background: '#0d0d0d', color: '#fff' },
-          });
+          toast.error(err.error || 'Failed to send.');
         }
       } catch (err) {
         console.error('[Inbox] Reply error:', err);
-        toast.error('Network error.', {
-          style: { background: '#0d0d0d', color: '#fff' },
-        });
+        toast.error('Network error.');
       }
     },
     [user, threadId, activeThread],
   );
 
-  /* ── Handle "Mark All Read" ── */
   const handleMarkAllRead = async () => {
     await markAllRead();
-    toast.success('All marked as read.', {
-      icon: '✓',
-      style: { background: '#0d0d0d', color: '#fff' },
-    });
+    toast.success('All marked as read.');
   };
 
   const [selectedNotificationId, setSelectedNotificationId] = useState<string | null>(null);
   const [isExecutingAction, setIsExecutingAction] = useState(false);
 
-  /* ── Auto-mark-as-read when a notification is selected ── */
-  // Mirrors the thread-view pattern above (markThreadAsRead on unreadCount change).
   useEffect(() => {
     if (selectedNotificationId) {
       const item = items.find((n) => n.id === selectedNotificationId);
@@ -235,11 +249,10 @@ function InboxNotificationCenter() {
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectedNotificationId]);
 
-  // If we have an active thread from URL, use that, otherwise use selected notification
   const selectedItem = items.find(item => item.id === selectedNotificationId) || null;
 
   const negotiationParamId = searchParams.get('negotiationId') || searchParams.get('negotiation') || null;
-  const activeNegotiationId = negotiationParamId || 
+  const activeNegotiationId = negotiationParamId ||
     (selectedItem?.type === 'NEGOTIATION_UPDATE' ? (selectedItem.objectReference.metadata?.negotiationId as string) : null);
 
   const handleExecuteAction = async () => {
@@ -271,60 +284,140 @@ function InboxNotificationCenter() {
     }
   };
 
+  const showDetail = !!(activeThread || activeNegotiationId || selectedItem);
+  const iconBtn = (extra?: React.CSSProperties): React.CSSProperties => ({
+    color: t.muted,
+    borderRadius: 2,
+    ...extra,
+  });
+
   return (
     <>
-      <div className="flex w-full h-[calc(100vh-64px)] bg-[#0d0a0b] text-[#9E9DA0] overflow-hidden">
-        
-        {/* ═══ List Pane (Left) ═══ */}
-        <section className={`w-full md:w-[420px] border-r border-white/10 flex flex-col bg-[#161318]/50 shrink-0 ${ (activeThread || activeNegotiationId || selectedItem) ? 'hidden md:flex' : 'flex' }`}>
-          <div className="p-6 space-y-4">
-            <div className="flex items-center justify-between">
-              <h3 className="text-2xl font-bold text-[#9E9DA0]">Inbox</h3>
-              <div className="flex items-center gap-2">
-                {unreadTotal > 0 && (
-                  <span className="px-2 py-0.5 bg-[#454955]/10 text-[#454955] border border-[#454955]/20 rounded font-mono text-[10px] font-bold">
-                    {unreadTotal} UNREAD
-                  </span>
-                )}
-                {unreadTotal > 0 && (
-                  <button
-                    onClick={handleMarkAllRead}
-                    className="p-1.5 rounded-lg hover:bg-white/5 text-[#9E9DA0] hover:text-[#454955] transition-colors"
-                    title="Mark all as read"
-                  >
-                    <CheckCheck className="w-4 h-4" />
-                  </button>
-                )}
-                <button
-                  onClick={() => setComposeOpen(true)}
-                  className="p-1.5 rounded-lg hover:bg-white/5 text-[#9E9DA0] hover:text-[#454955] transition-colors"
-                  title="Compose email"
+      <div
+        className="flex w-full h-[calc(100vh-64px)] overflow-hidden"
+        style={{ background: t.pageBg, color: t.body }}
+      >
+        {/* List pane */}
+        <section
+          className={`w-full md:w-[520px] lg:w-[560px] flex flex-col shrink-0 ${showDetail ? 'hidden md:flex' : 'flex'}`}
+          style={{ background: t.listBg, borderRight: `1px solid ${t.border}` }}
+        >
+          <header className="px-5 pt-5 pb-4 shrink-0">
+            {searchOpen ? (
+              <div className="flex items-center gap-3 min-h-[44px]">
+                <div
+                  className="relative flex-1 flex items-center"
+                  style={{
+                    border: `1.5px solid ${isDark ? 'rgba(255,255,255,0.85)' : 'rgba(20,22,28,0.55)'}`,
+                    borderRadius: 999,
+                    background: 'transparent',
+                  }}
                 >
-                  <Plus className="w-4 h-4" />
+                  <Search
+                    className="absolute left-3.5 w-4 h-4 pointer-events-none"
+                    style={{ color: isDark ? '#FFFFFF' : t.heading }}
+                  />
+                  <input
+                    ref={searchInputRef}
+                    type="text"
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    onKeyDown={(e) => {
+                      if (e.key === 'Escape') closeSearch();
+                    }}
+                    placeholder="Search all messages"
+                    className="w-full py-2.5 pl-10 pr-4 text-sm outline-none bg-transparent"
+                    style={{
+                      color: t.heading,
+                      borderRadius: 999,
+                    }}
+                    aria-label="Search all messages"
+                  />
+                </div>
+                <button
+                  type="button"
+                  onClick={closeSearch}
+                  className="shrink-0 text-sm font-semibold transition-opacity hover:opacity-70"
+                  style={{ color: isDark ? '#FFFFFF' : t.heading }}
+                >
+                  Cancel
                 </button>
               </div>
-            </div>
-            
-            <div className="relative">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-[#9E9DA0] w-4 h-4" />
-              <input 
-                type="text"
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                placeholder="Search logs..." 
-                className="w-full bg-[#0d0a0b] border border-[#3c4a46] rounded-lg py-2 pl-10 pr-4 text-sm focus:border-[#454955] focus:ring-1 focus:ring-[#454955] outline-none transition-all placeholder:text-[#9E9DA0]/40 text-[#9E9DA0]"
-              />
-            </div>
-          </div>
+            ) : (
+              <div className="flex items-start justify-between gap-3">
+                <div className="min-w-0">
+                  <p
+                    className="text-[11px] font-medium tracking-[0.14em] uppercase mb-1"
+                    style={{ color: t.accent }}
+                  >
+                    Operations
+                  </p>
+                  <h1
+                    className="text-[1.5rem] font-semibold leading-tight tracking-tight"
+                    style={{ color: t.heading }}
+                  >
+                    Inbox
+                  </h1>
+                </div>
+                <div className="flex items-center gap-1 shrink-0 pt-1">
+                  {unreadTotal > 0 && (
+                    <span
+                      className="px-2 py-0.5 text-[10px] font-semibold tabular-nums mr-1"
+                      style={{
+                        color: t.accent,
+                        background: t.accentMuted,
+                        borderRadius: 2,
+                      }}
+                    >
+                      {unreadTotal} unread
+                    </span>
+                  )}
+                  <button
+                    type="button"
+                    onClick={() => setSearchOpen(true)}
+                    className="p-2 transition-colors"
+                    style={iconBtn()}
+                    onMouseEnter={(e) => { e.currentTarget.style.background = t.hover; e.currentTarget.style.color = t.heading; }}
+                    onMouseLeave={(e) => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.color = t.muted; }}
+                    title="Search"
+                    aria-label="Search messages"
+                  >
+                    <Search className="w-4 h-4" />
+                  </button>
+                  {unreadTotal > 0 && (
+                    <button
+                      onClick={handleMarkAllRead}
+                      className="p-2 transition-colors"
+                      style={iconBtn()}
+                      onMouseEnter={(e) => { e.currentTarget.style.background = t.hover; e.currentTarget.style.color = t.heading; }}
+                      onMouseLeave={(e) => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.color = t.muted; }}
+                      title="Mark all as read"
+                    >
+                      <CheckCheck className="w-4 h-4" />
+                    </button>
+                  )}
+                  <button
+                    onClick={() => setComposeOpen(true)}
+                    className="p-2 transition-colors"
+                    style={iconBtn()}
+                    onMouseEnter={(e) => { e.currentTarget.style.background = t.hover; e.currentTarget.style.color = t.heading; }}
+                    onMouseLeave={(e) => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.color = t.muted; }}
+                    title="Compose email"
+                  >
+                    <Plus className="w-4 h-4" />
+                  </button>
+                </div>
+              </div>
+            )}
+          </header>
 
-          {/* Tab filter bar */}
           <InboxTabs
             activeTab={activeTab}
             onTabChange={setActiveTab}
             unreadCounts={unreadCounts}
           />
 
-          <div className="flex-1 overflow-y-auto no-scrollbar relative">
+          <div className="flex-1 overflow-y-auto no-scrollbar relative min-h-0">
             <InboxFeed
               items={items.filter(item => item.title.toLowerCase().includes(searchQuery.toLowerCase()) || item.body.toLowerCase().includes(searchQuery.toLowerCase()))}
               loading={loading}
@@ -344,12 +437,11 @@ function InboxNotificationCenter() {
           </div>
         </section>
 
-        {/* ═══ Reading/Action Pane (Right) ═══ */}
-        <section className={`flex-1 flex flex-col bg-[#0d0a0b] relative overflow-hidden ${ (activeThread || activeNegotiationId || selectedItem) ? 'flex' : 'hidden md:flex' }`}>
-          {/* Background Decorative Elements */}
-          <div className="absolute -top-40 -right-40 w-96 h-96 bg-[#454955]/5 rounded-full blur-[100px] pointer-events-none"></div>
-          <div className="absolute bottom-20 left-20 w-64 h-64 bg-[#7A9EAA]/5 rounded-full blur-[80px] pointer-events-none"></div>
-
+        {/* Reading pane */}
+        <section
+          className={`flex-1 flex flex-col relative overflow-hidden min-w-0 ${showDetail ? 'flex' : 'hidden md:flex'}`}
+          style={{ background: t.paneBg }}
+        >
           {activeThread ? (
             <ThreadDetail
               thread={activeThread}
@@ -367,156 +459,220 @@ function InboxNotificationCenter() {
               }}
             />
           ) : selectedItem ? (
-            <div className="flex-1 overflow-y-auto z-10 flex flex-col">
-               {/* Header Actions */}
-                <div className="px-8 py-6 flex items-center justify-between border-b border-white/10 shrink-0 bg-[#0d0a0b]/50 backdrop-blur-sm">
-                  <div className="flex items-center gap-4">
-                    <button onClick={() => setSelectedNotificationId(null)} className="md:hidden p-2 -ml-2 rounded-lg hover:bg-white/5 text-[#9E9DA0] transition-colors">
-                      <ArrowLeft className="w-5 h-5" />
-                    </button>
-                    <div className="h-12 w-12 rounded-xl bg-[#0d0a0b]/60 backdrop-blur-xl border border-white/10 shadow-[inset_1px_1px_0px_rgba(255,255,255,0.05)] flex items-center justify-center text-[#454955]">
-                      <CheckCheck className="w-6 h-6" />
-                    </div>
-                    <div>
-                      <h3 className="text-2xl font-bold text-[#9E9DA0]">{selectedItem.title}</h3>
-                      <p className="text-[10px] font-mono text-[#454955] uppercase">
-                        ID: {selectedItem.id.slice(0, 8)} • STATUS: {selectedItem.read ? 'READ' : 'UNREAD'}
-                      </p>
+            <div className="flex-1 overflow-hidden z-10 flex flex-col min-h-0">
+              <div
+                className="px-5 sm:px-8 py-4 flex items-center justify-between shrink-0 gap-3"
+                style={{ borderBottom: `1px solid ${t.border}`, background: t.listBg }}
+              >
+                <div className="flex items-center gap-3 min-w-0">
+                  <button
+                    onClick={() => setSelectedNotificationId(null)}
+                    className="md:hidden p-2 -ml-2 transition-colors"
+                    style={iconBtn()}
+                    aria-label="Back to list"
+                  >
+                    <ArrowLeft className="w-5 h-5" />
+                  </button>
+                  <div className="min-w-0">
+                    <h2
+                      className="text-lg sm:text-xl font-semibold leading-snug truncate"
+                      style={{ color: t.heading }}
+                    >
+                      {selectedItem.title}
+                    </h2>
+                    <div className="flex items-center gap-2 mt-1">
+                      <span
+                        className="text-[10px] font-semibold uppercase tracking-wider px-1.5 py-0.5"
+                        style={{
+                          borderRadius: 2,
+                          color: selectedItem.read ? t.muted : t.accent,
+                          background: selectedItem.read ? t.hover : t.accentMuted,
+                        }}
+                      >
+                        {selectedItem.read ? 'Read' : 'Unread'}
+                      </span>
+                      <span className="text-[11px] tabular-nums" style={{ color: t.muted }}>
+                        {new Date(selectedItem.createdAt).toLocaleString()}
+                      </span>
                     </div>
                   </div>
-                   <div className="flex gap-2">
-                     <button onClick={() => archiveItem(selectedItem.id)} className="p-2 rounded-lg hover:bg-white/5 text-[#9E9DA0] transition-colors" title="Archive">
-                       <span className="material-symbols-outlined" style={{ fontVariationSettings: "'FILL' 0" }}>archive</span>
-                     </button>
-                     <button onClick={() => deleteItem(selectedItem.id)} className="p-2 rounded-lg hover:bg-white/5 text-[#9E9DA0] transition-colors" title="Delete">
-                       <span className="material-symbols-outlined" style={{ fontVariationSettings: "'FILL' 0" }}>delete</span>
-                     </button>
-                     <NotifMoreMenu
-                       item={selectedItem}
-                       onMarkUnread={() => {
-                         selectedItem.read ? markAsUnread(selectedItem.id) : markAsRead(selectedItem.id);
-                       }}
-                       onArchive={() => {
-                         archiveItem(selectedItem.id);
-                         setSelectedNotificationId(null);
-                       }}
-                       onDelete={() => {
-                         deleteItem(selectedItem.id);
-                         setSelectedNotificationId(null);
-                       }}
-                     />
-                   </div>
                 </div>
+                <div className="flex gap-0.5 shrink-0">
+                  <button
+                    onClick={() => archiveItem(selectedItem.id)}
+                    className="p-2 transition-colors"
+                    style={iconBtn()}
+                    onMouseEnter={(e) => { e.currentTarget.style.background = t.hover; e.currentTarget.style.color = t.heading; }}
+                    onMouseLeave={(e) => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.color = t.muted; }}
+                    title="Archive"
+                  >
+                    <span className="material-symbols-outlined" style={{ fontVariationSettings: "'FILL' 0" }}>archive</span>
+                  </button>
+                  <button
+                    onClick={() => deleteItem(selectedItem.id)}
+                    className="p-2 transition-colors"
+                    style={iconBtn()}
+                    onMouseEnter={(e) => { e.currentTarget.style.background = t.hover; e.currentTarget.style.color = t.danger; }}
+                    onMouseLeave={(e) => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.color = t.muted; }}
+                    title="Delete"
+                  >
+                    <span className="material-symbols-outlined" style={{ fontVariationSettings: "'FILL' 0" }}>delete</span>
+                  </button>
+                  <NotifMoreMenu
+                    isDark={isDark}
+                    item={selectedItem}
+                    onMarkUnread={() => {
+                      selectedItem.read ? markAsUnread(selectedItem.id) : markAsRead(selectedItem.id);
+                    }}
+                    onArchive={() => {
+                      archiveItem(selectedItem.id);
+                      setSelectedNotificationId(null);
+                    }}
+                    onDelete={() => {
+                      deleteItem(selectedItem.id);
+                      setSelectedNotificationId(null);
+                    }}
+                  />
+                </div>
+              </div>
 
-                {/* Message Content */}
-                <div className="flex-1 overflow-y-auto p-8">
-                  <div className="max-w-3xl mx-auto space-y-8">
-                    <div className="flex items-start gap-4">
-                      {selectedItem.actor.avatarUrl ? (
-                         <img className="h-12 w-12 rounded-full border-2 border-[#454955]/20 object-cover" src={selectedItem.actor.avatarUrl} alt={selectedItem.actor.name} />
-                      ) : (
-                         <div className="h-12 w-12 rounded-full border-2 border-[#454955]/20 bg-[#161318] flex items-center justify-center text-[#454955] font-bold">
-                           {selectedItem.actor.name[0]}
-                         </div>
+              <div className="flex-1 overflow-y-auto p-5 sm:p-8">
+                <div className="max-w-2xl mx-auto space-y-6">
+                  <div className="flex items-start gap-3">
+                    {selectedItem.actor.avatarUrl ? (
+                      <img
+                        className="h-10 w-10 rounded-full object-cover shrink-0"
+                        style={{ border: `1px solid ${t.border}` }}
+                        src={selectedItem.actor.avatarUrl}
+                        alt={selectedItem.actor.name}
+                      />
+                    ) : (
+                      <div
+                        className="h-10 w-10 rounded-full flex items-center justify-center text-sm font-semibold shrink-0"
+                        style={{ background: t.accentMuted, color: t.accent, border: `1px solid ${t.border}` }}
+                      >
+                        {selectedItem.actor.name[0]}
+                      </div>
+                    )}
+
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-baseline justify-between gap-3 mb-0.5">
+                        <span className="font-semibold text-sm" style={{ color: t.heading }}>
+                          {selectedItem.actor.name}
+                        </span>
+                      </div>
+                      {selectedItem.actor.role && (
+                        <p className="text-xs mb-3" style={{ color: t.muted }}>{selectedItem.actor.role}</p>
                       )}
-                      
-                      <div className="flex-1">
-                        <div className="flex items-center justify-between mb-1">
-                          <span className="font-bold text-[#9E9DA0]">{selectedItem.actor.name}</span>
-                          <span className="text-[10px] font-mono text-[#9E9DA0] uppercase">
-                            {new Date(selectedItem.createdAt).toLocaleString()} UTC
-                          </span>
-                        </div>
-                        {selectedItem.actor.role && (
-                           <p className="text-sm text-[#454955] mb-4">{selectedItem.actor.role}</p>
-                        )}
-                        
-                        <div className="bg-[#0d0a0b]/60 backdrop-blur-xl border border-white/10 shadow-[inset_1px_1px_0px_rgba(255,255,255,0.05)] p-6 rounded-2xl space-y-4 mt-4">
-                          <p className="text-base leading-relaxed text-[#9E9DA0] whitespace-pre-wrap">
-                            {selectedItem.body}
-                          </p>
-                                                   {/* Render Document details if it's a specific type of notification */}
-                          {['DOCUMENT_SIGNED', 'RECEIPT_APPROVAL'].includes(selectedItem.type) && (
-                            <div className="p-4 bg-[#0d0a0b] rounded-xl border border-[#3c4a46] flex items-center justify-between mt-6">
-                              <div className="flex items-center gap-3">
-                                <span className="material-symbols-outlined text-[#454955]">description</span>
-                                <div>
-                                  <p className="text-xs font-bold text-[#9E9DA0]">Attached_Document.pdf</p>
-                                  <p className="text-[10px] font-mono text-[#9E9DA0]">SECURE // PDF-DOCUMENT</p>
-                                </div>
-                              </div>
-                              <button className="material-symbols-outlined text-[#9E9DA0] hover:text-[#454955] transition-colors">download</button>
-                            </div>
-                          )}
 
-                          {selectedItem.type === 'VENDOR_BID' && (
-                            <div className="p-4 bg-[#0d0a0b] rounded-xl border border-[#3c4a46] flex flex-col gap-2 mt-6">
-                              <div className="flex items-center gap-3">
-                                <span className="material-symbols-outlined text-[#454955]">engineering</span>
-                                <div>
-                                  <p className="text-xs font-bold text-[#9E9DA0]">ABC Inspections Bid Summary</p>
-                                  <p className="text-[10px] font-mono text-[#9E9DA0]">PROPOSAL // ELECTRICAL & GENERAL</p>
-                                </div>
-                              </div>
-                              <div className="grid grid-cols-2 gap-4 mt-2 pt-2 border-t border-white/5 text-xs text-[#9E9DA0]">
-                                <div>
-                                  <p className="text-[10px] uppercase text-[#9E9DA0]/60 font-semibold">Proposed Service Date</p>
-                                  <p className="font-medium text-[#9E9DA0]">Oct 30, 2023</p>
-                                </div>
-                                <div>
-                                  <p className="text-[10px] uppercase text-[#9E9DA0]/60 font-semibold">Payment Terms</p>
-                                  <p className="font-medium text-[#9E9DA0]">Net 15 upon completion</p>
-                                </div>
+                      <div
+                        className="mt-3 p-5 space-y-4"
+                        style={{
+                          background: t.surface,
+                          border: `1px solid ${t.border}`,
+                          borderRadius: 2,
+                          boxShadow: t.shadow,
+                        }}
+                      >
+                        <p className="text-[15px] leading-relaxed whitespace-pre-wrap" style={{ color: t.body }}>
+                          {selectedItem.body}
+                        </p>
+
+                        {['DOCUMENT_SIGNED', 'RECEIPT_APPROVAL'].includes(selectedItem.type) && (
+                          <div
+                            className="p-3 flex items-center justify-between"
+                            style={{ background: t.inputBg, border: `1px solid ${t.border}`, borderRadius: 2 }}
+                          >
+                            <div className="flex items-center gap-3">
+                              <span className="material-symbols-outlined" style={{ color: t.accent }}>description</span>
+                              <div>
+                                <p className="text-xs font-semibold" style={{ color: t.heading }}>Attached document</p>
+                                <p className="text-[11px]" style={{ color: t.muted }}>PDF</p>
                               </div>
                             </div>
-                          )}
-                        </div>
+                            <button className="material-symbols-outlined transition-colors" style={{ color: t.muted }} aria-label="Download">download</button>
+                          </div>
+                        )}
+
+                        {selectedItem.type === 'VENDOR_BID' && (
+                          <div
+                            className="p-3 flex flex-col gap-2"
+                            style={{ background: t.inputBg, border: `1px solid ${t.border}`, borderRadius: 2 }}
+                          >
+                            <div className="flex items-center gap-3">
+                              <span className="material-symbols-outlined" style={{ color: t.vendor }}>engineering</span>
+                              <div>
+                                <p className="text-xs font-semibold" style={{ color: t.heading }}>Bid summary</p>
+                                <p className="text-[11px]" style={{ color: t.muted }}>Vendor proposal</p>
+                              </div>
+                            </div>
+                            <div
+                              className="grid grid-cols-2 gap-4 mt-1 pt-2 text-xs"
+                              style={{ borderTop: `1px solid ${t.divider}`, color: t.body }}
+                            >
+                              <div>
+                                <p className="text-[10px] uppercase font-semibold mb-0.5" style={{ color: t.muted }}>Service date</p>
+                                <p className="font-medium" style={{ color: t.heading }}>Oct 30, 2023</p>
+                              </div>
+                              <div>
+                                <p className="text-[10px] uppercase font-semibold mb-0.5" style={{ color: t.muted }}>Payment terms</p>
+                                <p className="font-medium" style={{ color: t.heading }}>Net 15 upon completion</p>
+                              </div>
+                            </div>
+                          </div>
+                        )}
                       </div>
                     </div>
+                  </div>
 
-                    {/* Action Bar */}
-                    <div className="flex items-center justify-center gap-4 py-8">
-                      {['VENDOR_BID', 'RECEIPT_APPROVAL', 'INVEST_INVITE', 'TEAM_INVITE', 'TEAM_INVITE_REMINDER'].includes(selectedItem.type) ? (
-                        <button 
-                          disabled={isExecutingAction}
-                          onClick={handleExecuteAction}
-                          className="px-8 py-3 bg-[#454955] text-[#0d0a0b] font-bold rounded-full luminous-glow flex items-center gap-2 hover:brightness-110 transition-all disabled:opacity-50"
-                        >
-                          <span className="material-symbols-outlined">edit_square</span>
-                          EXECUTE ACTION
-                        </button>
-                      ) : null}
-                      <button 
-                         onClick={() => setComposeOpen(true)}
-                         className="px-8 py-3 bg-[#0d0a0b]/60 backdrop-blur-xl border border-white/10 shadow-[inset_1px_1px_0px_rgba(255,255,255,0.05)] text-[#9E9DA0] font-bold rounded-full hover:bg-white/5 transition-all flex items-center gap-2"
+                  <div className="flex flex-wrap items-center gap-2 pt-2">
+                    {['VENDOR_BID', 'RECEIPT_APPROVAL', 'INVEST_INVITE', 'TEAM_INVITE', 'TEAM_INVITE_REMINDER'].includes(selectedItem.type) ? (
+                      <button
+                        disabled={isExecutingAction}
+                        onClick={handleExecuteAction}
+                        className="px-4 py-2.5 text-sm font-semibold flex items-center gap-2 transition-opacity hover:opacity-90 disabled:opacity-50"
+                        style={{ background: t.ctaBg, color: t.ctaFg, borderRadius: 2 }}
                       >
-                        <span className="material-symbols-outlined">reply</span>
-                        REPLY
+                        <span className="material-symbols-outlined text-[18px]">edit_square</span>
+                        {actionLabel(selectedItem.type)}
                       </button>
-                    </div>
+                    ) : null}
+                    <button
+                      onClick={() => setComposeOpen(true)}
+                      className="px-4 py-2.5 text-sm font-semibold flex items-center gap-2 transition-colors"
+                      style={{
+                        background: 'transparent',
+                        color: t.heading,
+                        border: `1px solid ${t.border}`,
+                        borderRadius: 2,
+                      }}
+                    >
+                      <span className="material-symbols-outlined text-[18px]">reply</span>
+                      Reply
+                    </button>
                   </div>
                 </div>
-
-                {/* Terminal Overlay (Footer Style) */}
-                <div className="bg-[#0d0a0b]/80 backdrop-blur px-8 py-2 border-t border-white/10 flex items-center justify-between shrink-0">
-                  <div className="flex gap-4">
-                    <p className="text-[10px] font-mono text-[#9E9DA0]"><span className="text-[#454955]">RUNNING:</span> inbox_handler.sh</p>
-                    <p className="text-[10px] font-mono text-[#9E9DA0]"><span className="text-[#454955]">ENCRYPTION:</span> AES-256-GCM</p>
-                  </div>
-                  <p className="text-[10px] font-mono text-[#9E9DA0]">LAST_SYNC: 0.2s AGO</p>
-                </div>
+              </div>
             </div>
           ) : (
-            <div className="flex-1 flex flex-col items-center justify-center text-[#9E9DA0] z-10">
-              <span className="material-symbols-outlined text-6xl mb-4 opacity-20" style={{ fontVariationSettings: "'FILL' 0, 'wght' 200" }}>inbox</span>
-              <p className="text-lg font-medium">Select an item to read</p>
-              <p className="text-sm opacity-60">Your messages and notifications will appear here.</p>
+            <div className="flex-1 flex flex-col items-center justify-center px-6 text-center">
+              <span
+                className="material-symbols-outlined text-5xl mb-3"
+                style={{ color: t.muted, opacity: 0.35, fontVariationSettings: "'FILL' 0, 'wght' 200" }}
+              >
+                inbox
+              </span>
+              <p className="text-base font-medium mb-1" style={{ color: t.heading }}>
+                Select an item to review
+              </p>
+              <p className="text-sm max-w-xs" style={{ color: t.muted }}>
+                Notifications that need a decision appear in the list. Open one to act.
+              </p>
             </div>
           )}
         </section>
       </div>
 
-      {/* Compose Modal */}
       <ComposeEmailModal
         isOpen={composeOpen}
         onClose={() => setComposeOpen(false)}
@@ -527,14 +683,21 @@ function InboxNotificationCenter() {
 }
 
 export default function InboxPage() {
+  const { theme } = useTheme();
+  const isDark = theme === 'dark';
+  const t = inboxTokens(isDark);
+
   return (
     <Suspense
       fallback={
-        <div className="flex w-full h-[calc(100vh-64px)] items-center justify-center bg-[#0d0a0b]">
+        <div
+          className="flex w-full h-[calc(100vh-64px)] items-center justify-center"
+          style={{ background: t.pageBg }}
+        >
           <div className="flex flex-col items-center gap-3">
-            <Loader2 className="w-6 h-6 animate-spin text-[#454955]" />
-            <p className="text-sm font-medium text-[#9E9DA0]">
-              Loading Notifications...
+            <Loader2 className="w-5 h-5 animate-spin" style={{ color: t.accent }} />
+            <p className="text-sm font-medium" style={{ color: t.muted }}>
+              Loading inbox…
             </p>
           </div>
         </div>

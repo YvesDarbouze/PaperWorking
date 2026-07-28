@@ -2,8 +2,10 @@
 
 import React, { useState, useRef, useEffect } from 'react';
 import { useAuth } from '@/context/AuthContext';
-import { Download, FileDown, FileSpreadsheet, Loader2, AlertCircle } from 'lucide-react';
+import { Download, FileDown, FileSpreadsheet, Loader2 } from 'lucide-react';
 import toast from 'react-hot-toast';
+import { useTheme } from '@/lib/utils/ThemeProvider';
+import { reportsTokens, panelStyle } from '@/components/reports/reportsTheme';
 
 interface ReportGeneratorProps {
   projectId: string | null;
@@ -11,11 +13,13 @@ interface ReportGeneratorProps {
 
 export function ReportGenerator({ projectId }: ReportGeneratorProps) {
   const { user } = useAuth();
+  const { theme } = useTheme();
+  const isDark = theme === 'dark';
+  const t = reportsTokens(isDark);
   const [isOpen, setIsOpen] = useState(false);
   const [isGenerating, setIsGenerating] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
 
-  // Close dropdown on click outside
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
       if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
@@ -57,7 +61,6 @@ export function ReportGenerator({ projectId }: ReportGeneratorProps) {
         throw new Error('Failed to generate report');
       }
 
-      // Get filename from header or build fallback
       const contentDisposition = response.headers.get('Content-Disposition');
       let filename = `paperworking_report_${new Date().toISOString().split('T')[0]}.${format}`;
       if (contentDisposition) {
@@ -86,65 +89,116 @@ export function ReportGenerator({ projectId }: ReportGeneratorProps) {
     }
   };
 
+  const menuItemStyle = {
+    display: 'flex' as const,
+    alignItems: 'center' as const,
+    gap: 10,
+    width: '100%',
+    textAlign: 'left' as const,
+    padding: '8px 12px',
+    fontSize: 12,
+    fontWeight: 600,
+    color: t.heading,
+    background: 'transparent',
+    border: 'none',
+    borderRadius: 2,
+    cursor: 'pointer',
+  };
+
   return (
     <div className="relative inline-block text-left" ref={dropdownRef}>
       <button
+        type="button"
         onClick={() => setIsOpen(!isOpen)}
         disabled={isGenerating}
-        className="flex items-center gap-2 px-4 py-2 rounded-xl bg-slate-900 dark:bg-white text-white dark:text-slate-950 font-semibold text-xs tracking-wide shadow-sm hover:shadow-md hover:bg-slate-800 dark:hover:bg-slate-100 transition-all duration-200 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
+        className="pw-interactive-custom flex items-center gap-2 text-xs font-semibold tracking-wide transition-opacity disabled:opacity-50 disabled:cursor-not-allowed"
+        style={{
+          background: t.ctaBg,
+          color: t.ctaFg,
+          border: 'none',
+          borderRadius: 2,
+          padding: '8px 14px',
+          boxShadow: t.shadow,
+        }}
       >
         {isGenerating ? (
           <Loader2 className="w-3.5 h-3.5 animate-spin" />
         ) : (
           <Download className="w-3.5 h-3.5" />
         )}
-        Export Report
+        Export report
       </button>
 
       {isOpen && (
-        <div className="absolute right-0 mt-2 w-64 origin-top-right rounded-2xl bg-white dark:bg-[#121014] border border-slate-200 dark:border-white/10 shadow-lg ring-1 ring-black/5 focus:outline-none z-50 overflow-hidden divide-y divide-slate-100 dark:divide-white/5 animate-in fade-in slide-in-from-top-2 duration-150">
-          
-          {/* PDF Section */}
-          <div className="py-1.5">
-            <span className="block px-4 py-1 text-[10px] font-bold uppercase tracking-wider text-slate-400 dark:text-slate-500">
-              PDF Performance Reports
+        <div
+          className="absolute right-0 mt-2 w-64 origin-top-right z-50 overflow-hidden divide-y"
+          style={{
+            ...panelStyle(t),
+            boxShadow: isDark ? '0 8px 24px rgba(0,0,0,0.45)' : '0 8px 24px rgba(20,22,28,0.12)',
+            borderColor: t.border,
+          }}
+        >
+          <div className="py-1.5" style={{ borderColor: t.divider }}>
+            <span
+              className="block px-3 py-1 text-[10px] font-semibold uppercase tracking-[0.12em]"
+              style={{ color: t.muted }}
+            >
+              PDF performance
             </span>
             <button
+              type="button"
+              className="pw-interactive-custom"
               onClick={() => handleDownload('pdf', 'portfolio')}
-              className="flex items-center gap-2.5 w-full text-left px-4 py-2 text-xs font-semibold text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-white/5 transition-colors duration-150"
+              style={menuItemStyle}
+              onMouseEnter={(e) => { e.currentTarget.style.background = t.hover; }}
+              onMouseLeave={(e) => { e.currentTarget.style.background = 'transparent'; }}
             >
-              <FileDown className="w-4 h-4 text-emerald-500" />
-              Download PDF (Portfolio)
+              <FileDown className="w-4 h-4 flex-shrink-0" style={{ color: t.accent }} />
+              Portfolio PDF
             </button>
             {projectId && (
               <button
+                type="button"
+                className="pw-interactive-custom"
                 onClick={() => handleDownload('pdf', 'project')}
-                className="flex items-center gap-2.5 w-full text-left px-4 py-2 text-xs font-semibold text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-white/5 transition-colors duration-150"
+                style={menuItemStyle}
+                onMouseEnter={(e) => { e.currentTarget.style.background = t.hover; }}
+                onMouseLeave={(e) => { e.currentTarget.style.background = 'transparent'; }}
               >
-                <FileDown className="w-4 h-4 text-emerald-500" />
-                Download PDF (This Project)
+                <FileDown className="w-4 h-4 flex-shrink-0" style={{ color: t.accent }} />
+                This project PDF
               </button>
             )}
           </div>
 
-          {/* CSV Section */}
-          <div className="py-1.5">
-            <span className="block px-4 py-1 text-[10px] font-bold uppercase tracking-wider text-slate-400 dark:text-slate-500">
-              CSV Spreadsheet Export
+          <div className="py-1.5" style={{ borderColor: t.divider }}>
+            <span
+              className="block px-3 py-1 text-[10px] font-semibold uppercase tracking-[0.12em]"
+              style={{ color: t.muted }}
+            >
+              CSV spreadsheet
             </span>
             <button
+              type="button"
+              className="pw-interactive-custom"
               onClick={() => handleDownload('csv', 'portfolio', 'portfolio')}
-              className="flex items-center gap-2.5 w-full text-left px-4 py-2 text-xs font-semibold text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-white/5 transition-colors duration-150"
+              style={menuItemStyle}
+              onMouseEnter={(e) => { e.currentTarget.style.background = t.hover; }}
+              onMouseLeave={(e) => { e.currentTarget.style.background = 'transparent'; }}
             >
-              <FileSpreadsheet className="w-4 h-4 text-indigo-500" />
-              Download CSV (Portfolio KPIs)
+              <FileSpreadsheet className="w-4 h-4 flex-shrink-0" style={{ color: t.success }} />
+              Portfolio KPIs
             </button>
             <button
+              type="button"
+              className="pw-interactive-custom"
               onClick={() => handleDownload('csv', 'portfolio', 'transactions')}
-              className="flex items-center gap-2.5 w-full text-left px-4 py-2 text-xs font-semibold text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-white/5 transition-colors duration-150"
+              style={menuItemStyle}
+              onMouseEnter={(e) => { e.currentTarget.style.background = t.hover; }}
+              onMouseLeave={(e) => { e.currentTarget.style.background = 'transparent'; }}
             >
-              <FileSpreadsheet className="w-4 h-4 text-indigo-500" />
-              Download CSV (Transactions Ledger)
+              <FileSpreadsheet className="w-4 h-4 flex-shrink-0" style={{ color: t.success }} />
+              Transactions ledger
             </button>
           </div>
         </div>

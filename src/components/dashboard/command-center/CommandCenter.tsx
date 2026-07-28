@@ -14,10 +14,9 @@ import { useTenant } from "@/context/TenantContext";
 import { useInboxFeed } from "@/hooks/useInboxFeed";
 import { useAllDealsSync } from "@/hooks/useAllProjectsSync";
 import { ActivePipeline } from "./ActivePipeline";
-import { TerminalAuditFeed } from "./TerminalAuditFeed";
-import { MarketHeatmap } from "./MarketHeatmap";
 import { NeedsAttentionFeed } from "./NeedsAttentionFeed";
 import { TopPerformersWidget } from "./TopPerformersWidget";
+import { ccTokens } from "./ccTheme";
 import {
   deriveAllMetrics,
   computeIRR,
@@ -29,7 +28,6 @@ import type { Project } from "@/types/schema";
 import type { DealListingTeaser } from "@/types/listing";
 import { METRIC_TAXONOMY, type MetricCategory } from "@/lib/metrics/metricTaxonomy";
 
-const InsightsTab = dynamic(() => import("@/components/portfolio/InsightsTab"), { ssr: false });
 const DealMap = dynamic(() => import("@/components/marketplace/DealMap"), { ssr: false });
 
 // ─── Portfolio KPI hook ───────────────────────────────────────────────────────
@@ -180,18 +178,7 @@ function fmtPct(n: number | null): string {
 // ─── Design tokens ────────────────────────────────────────────────────────────
 
 function tokens(isDark: boolean) {
-  return {
-    heading:    isDark ? "rgba(253,255,252,0.95)" : "#0d0a0b",
-    subtext:    isDark ? "rgba(253,255,252,0.70)" : "rgba(55,59,69,0.80)",
-    muted:      isDark ? "rgba(253,255,252,0.58)" : "rgba(55,59,69,0.72)",
-    divider:    isDark ? "rgba(230, 234, 240, 0.12)" : "rgba(33, 34, 38, 0.12)",
-    link:       "#627C85",
-    panelBg:    isDark
-      ? "var(--color-surface, #121317)"
-      : "#FFFFFF",
-    panelBorder:isDark ? "rgba(230, 234, 240, 0.12)"  : "rgba(33, 34, 38, 0.12)",
-    panelShadow:isDark ? "0 4px 20px rgba(0,0,0,0.28)" : "0 2px 10px rgba(0,0,0,0.06)",
-  };
+  return ccTokens(isDark);
 }
 
 // ─── KPI Card ─────────────────────────────────────────────────────────────────
@@ -212,95 +199,81 @@ interface KPICardProps {
 function KPICard({ label, icon, value, suffix, accentColor, trend, chip, meta, isDark, href }: KPICardProps) {
   const t        = tokens(isDark);
   const trendIcon = trend === "up" ? "arrow_upward" : trend === "down" ? "arrow_downward" : null;
-  const trendClr  = trend === "up" ? "var(--pw-success)" : trend === "down" ? "#F06543" : undefined;
+  const trendClr  = trend === "up" ? t.signal : trend === "down" ? t.alert : undefined;
   const [hovered, setHovered] = useState(false);
 
   const cardContent = (
     <article
       aria-label={`${label}: ${value}${suffix ?? ""}`}
-      className={`relative flex flex-col gap-2.5 rounded-xl p-4 overflow-hidden group ${href ? "cursor-pointer" : "cursor-default"}`}
+      className={`relative flex flex-col gap-2 p-4 overflow-hidden group ${href ? "cursor-pointer" : "cursor-default"}`}
       style={{
         background: t.panelBg,
-        backdropFilter: isDark ? "blur(24px)" : undefined,
-        WebkitBackdropFilter: isDark ? "blur(24px)" : undefined,
-        border: `1px solid ${hovered ? "#627C85" : t.panelBorder}`,
-        boxShadow: hovered
-          ? (isDark ? "0 8px 30px rgba(0,0,0,0.5), 0 0 0 1px #627C85" : "0 8px 30px rgba(98, 124, 133, 0.06), 0 0 0 1px #627C85")
-          : t.panelShadow,
-        transform: hovered ? "translateY(-2px)" : "translateY(0)",
-        transition: "all 0.2s cubic-bezier(0.4, 0, 0.2, 1)",
+        border: `1px solid ${hovered ? t.hoverBorder : t.panelBorder}`,
+        borderRadius: 2,
+        boxShadow: t.panelShadow,
+        transition: "border-color 0.15s ease",
       }}
       onMouseEnter={() => setHovered(true)}
       onMouseLeave={() => setHovered(false)}
     >
-      {/* Left accent bar */}
-      <div
-        className="absolute left-0 top-4 bottom-4 w-[3px] rounded-r-full"
-        style={{ background: accentColor, opacity: 0.7 }}
-      />
-
-      {/* Label + icon */}
-      <div className="flex items-center justify-between pl-3">
+      <div className="flex items-center justify-between">
         <span
-          className="text-[10px] font-bold uppercase tracking-widest"
-          style={{ color: t.subtext, letterSpacing: "0.08em" }}
+          className="text-[11px] font-medium"
+          style={{ color: t.muted }}
         >
           {label}
         </span>
         <span
-          className="material-symbols-outlined text-[18px] transition-transform duration-200 group-hover:scale-105"
-          style={{ color: accentColor, fontVariationSettings: "'FILL' 0", opacity: 0.75 }}
+          className="material-symbols-outlined text-[16px] opacity-50 group-hover:opacity-80 transition-opacity"
+          style={{ color: t.muted, fontVariationSettings: "'FILL' 0" }}
         >
           {icon}
         </span>
       </div>
 
-      {/* Value */}
-      <div className="pl-3">
-        <div className="flex items-baseline gap-1 leading-none mb-1.5">
-          <span
-            className="text-[2.1rem] font-bold tracking-tight tabular-nums"
-            style={{ color: t.heading, fontVariantNumeric: "tabular-nums" }}
-          >
-            {value}
+      <div className="flex items-baseline gap-1 leading-none pt-1">
+        <span
+          className="cc-mono text-[1.75rem] font-medium tracking-tight"
+          style={{ color: t.heading }}
+        >
+          {value}
+        </span>
+        {suffix && (
+          <span className="cc-mono text-[0.9rem] font-medium" style={{ color: t.signal }}>
+            {suffix}
           </span>
-          {suffix && (
-            <span className="text-[1rem] font-semibold" style={{ color: accentColor }}>
-              {suffix}
-            </span>
-          )}
-        </div>
+        )}
+      </div>
 
-        <div className="flex items-center gap-1.5 flex-wrap">
-          {chip && (
-            <span
-              className="inline-flex items-center gap-0.5 text-[10px] font-bold px-1.5 py-0.5 rounded-full"
-              style={{ background: `${accentColor}15`, color: accentColor }}
-            >
-              {trendIcon && (
-                <span
-                  className="material-symbols-outlined text-[11px]"
-                  style={{ fontVariationSettings: "'FILL' 1", color: trendClr ?? accentColor }}
-                >
-                  {trendIcon}
-                </span>
-              )}
-              {chip}
-            </span>
-          )}
-          {meta && (
-            <span className="text-[11px]" style={{ color: t.muted }}>
-              {meta}
-            </span>
-          )}
-        </div>
+      <div className="flex items-center gap-2 flex-wrap pt-0.5">
+        {chip && (
+          <span
+            className="inline-flex items-center gap-0.5 text-[10px] font-medium"
+            style={{ color: trendClr ?? t.muted }}
+          >
+            {trendIcon && (
+              <span
+                className="material-symbols-outlined text-[12px]"
+                style={{ fontVariationSettings: "'FILL' 1" }}
+              >
+                {trendIcon}
+              </span>
+            )}
+            {chip}
+          </span>
+        )}
+        {meta && (
+          <span className="text-[11px]" style={{ color: t.muted }}>
+            {meta}
+          </span>
+        )}
       </div>
     </article>
   );
 
   if (href) {
     return (
-      <Link href={href} className="no-underline block h-full">
+      <Link href={href} className="no-underline block h-full cc-focus-ring">
         {cardContent}
       </Link>
     );
@@ -327,32 +300,33 @@ function SectionHeading({
 }) {
   const t = tokens(isDark);
   return (
-    <div className="flex items-center gap-3 mb-4">
+    <div className="flex items-baseline gap-3 mb-3">
       <h2
-        className="text-[14px] font-semibold tracking-tight shrink-0"
+        className="text-[15px] font-medium tracking-tight shrink-0"
         style={{ color: t.heading, letterSpacing: "-0.01em" }}
       >
         {title}
       </h2>
       {badge !== undefined && (
         <span
-          className="text-[10px] font-bold px-1.5 py-0.5 rounded-full"
+          className="cc-mono text-[10px] font-medium px-1.5 py-0.5"
           style={{
-            background: `${badgeColor ?? "#F06543"}18`,
-            color: badgeColor ?? "#F06543",
+            background: `${badgeColor ?? "#D97757"}18`,
+            color: badgeColor ?? "#D97757",
+            borderRadius: 2,
           }}
         >
           {badge}
         </span>
       )}
-      <div className="flex-1 h-px" style={{ background: t.divider }} />
+      <div className="flex-1 h-px self-center" style={{ background: t.divider }} />
       {href && linkLabel && (
         <Link
           href={href}
-          className="text-[12px] font-semibold shrink-0 transition-opacity duration-150 hover:opacity-70"
+          className="text-[12px] font-medium shrink-0 transition-opacity duration-150 hover:opacity-70 cc-focus-ring"
           style={{ color: t.link }}
         >
-          {linkLabel} →
+          {linkLabel}
         </Link>
       )}
     </div>
@@ -373,12 +347,11 @@ function Panel({
   const t = tokens(isDark);
   return (
     <div
-      className={`rounded-xl overflow-hidden ${className}`}
+      className={`overflow-hidden ${className}`}
       style={{
         background: t.panelBg,
-        backdropFilter: isDark ? "blur(20px)" : undefined,
-        WebkitBackdropFilter: isDark ? "blur(20px)" : undefined,
         border: `1px solid ${t.panelBorder}`,
+        borderRadius: 2,
         boxShadow: t.panelShadow,
       }}
     >
@@ -407,22 +380,18 @@ function ClickablePanel({
   return (
     <Link
       href={href}
-      className="no-underline block h-full"
+      className="no-underline block h-full cc-focus-ring"
       aria-label={ariaLabel}
       onMouseEnter={() => setHovered(true)}
       onMouseLeave={() => setHovered(false)}
     >
       <div
-        className={`rounded-xl overflow-hidden cursor-pointer transition-all duration-200 h-full ${className}`}
+        className={`overflow-hidden cursor-pointer transition-[border-color] duration-150 h-full ${className}`}
         style={{
           background: t.panelBg,
-          backdropFilter: isDark ? "blur(20px)" : undefined,
-          WebkitBackdropFilter: isDark ? "blur(20px)" : undefined,
-          border: `1px solid ${hovered ? "#627C85" : t.panelBorder}`,
-          boxShadow: hovered
-            ? (isDark ? "0 8px 30px rgba(0,0,0,0.5), 0 0 0 1px #627C85" : "0 8px 30px rgba(98, 124, 133, 0.06), 0 0 0 1px #627C85")
-            : t.panelShadow,
-          transform: hovered ? "translateY(-2px)" : "translateY(0)",
+          border: `1px solid ${hovered ? t.hoverBorder : t.panelBorder}`,
+          borderRadius: 2,
+          boxShadow: t.panelShadow,
         }}
       >
         {children}
@@ -545,7 +514,7 @@ function RecentActivityFeed({ isDark }: { isDark: boolean }) {
         <div className="flex items-center gap-2">
           <span
             className="material-symbols-outlined text-[16px]"
-            style={{ color: "#627C85", fontVariationSettings: "'FILL' 0" }}
+            style={{ color: t.accent, fontVariationSettings: "'FILL' 0" }}
           >
             history
           </span>
@@ -559,7 +528,7 @@ function RecentActivityFeed({ isDark }: { isDark: boolean }) {
         <Link
           href="/dashboard/inbox"
           className="text-[11px] font-semibold hover:opacity-70 transition-opacity"
-          style={{ color: "#627C85" }}
+          style={{ color: t.link }}
         >
           All →
         </Link>
@@ -617,43 +586,29 @@ function RecentActivityFeed({ isDark }: { isDark: boolean }) {
           {events.map((event) => (
             <div
               key={event.id}
-              className="flex items-start gap-3 px-3 py-2.5 rounded-lg border transition-all duration-200 cursor-default relative overflow-hidden group"
-              style={{ borderColor: t.divider, background: "transparent" }}
+              className="flex items-start gap-3 px-3 py-2.5 transition-colors cursor-default"
+              style={{ border: `1px solid ${t.divider}`, borderRadius: 2, background: "transparent" }}
               onMouseEnter={(e) => {
-                e.currentTarget.style.borderColor = "#627C85";
-                e.currentTarget.style.boxShadow = isDark
-                  ? "0 4px 20px rgba(0,0,0,0.35)"
-                  : "0 2px 10px rgba(0,0,0,0.04)";
+                e.currentTarget.style.background = t.hover;
+                e.currentTarget.style.borderColor = t.hoverBorder;
               }}
               onMouseLeave={(e) => {
+                e.currentTarget.style.background = "transparent";
                 e.currentTarget.style.borderColor = t.divider;
-                e.currentTarget.style.boxShadow = "none";
               }}
             >
-              {/* Hover glass overlay */}
-              <div
-                className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none"
-                style={{
-                  background: isDark
-                    ? "linear-gradient(135deg, rgba(255,255,255,0.02) 0%, rgba(255,255,255,0.01) 100%)"
-                    : "linear-gradient(135deg, rgba(98,124,133,0.02) 0%, rgba(98,124,133,0.01) 100%)",
-                  backdropFilter: "blur(4px)",
-                  WebkitBackdropFilter: "blur(4px)",
-                }}
-              />
-
               {/* Icon badge */}
               <div
-                className="w-7 h-7 rounded-md flex items-center justify-center flex-shrink-0 mt-0.5 border z-10"
+                className="w-7 h-7 flex items-center justify-center flex-shrink-0 mt-0.5"
                 style={{
-                  background: isDark ? "rgba(255,255,255,0.02)" : "rgba(0,0,0,0.02)",
-                  borderColor: isDark ? "rgba(255,255,255,0.08)" : "rgba(0,0,0,0.08)",
+                  background: t.accentMuted,
+                  borderRadius: 2,
                 }}
               >
                 <span
                   className="material-symbols-outlined text-[13px]"
                   style={{
-                    color: isDark ? "rgba(253,255,252,0.8)" : "rgba(69,73,85,0.8)",
+                    color: t.accent,
                     fontVariationSettings: "'FILL' 0, 'wght' 300",
                   }}
                 >
@@ -837,7 +792,7 @@ function ProfileCard({ isDark, followers }: { isDark: boolean; followers: Follow
                 size={54}
                 isDark={isDark}
               />
-              <span className={`absolute bottom-0 right-0 block h-3 w-3 rounded-full ring-2 bg-[var(--pw-success)] ${isDark ? 'ring-[#121317]' : 'ring-white'}`} />
+              <span className={`absolute bottom-0 right-0 block h-3 w-3 rounded-full ring-2 ${isDark ? 'bg-[#C4A574] ring-[#171920]' : 'bg-[#4F6F78] ring-white'}`} />
             </div>
 
             {/* Name, Company, Role, Followers/Team */}
@@ -1354,7 +1309,7 @@ function DealMapCard({ isDark, projects }: { isDark: boolean; projects: Project[
       <div className="w-full flex-1 flex flex-col justify-between">
         <div className="flex justify-between items-center mb-4 border-b pb-3" style={{ borderColor: t.divider }}>
           <div className="flex items-center gap-2">
-            <span className="material-symbols-outlined text-[18px]" style={{ color: "#627C85" }}>
+            <span className="material-symbols-outlined text-[18px]" style={{ color: t.steel }}>
               map
             </span>
             <span className="text-[11px] font-bold uppercase tracking-wider" style={{ color: t.subtext }}>
@@ -1362,11 +1317,12 @@ function DealMapCard({ isDark, projects }: { isDark: boolean; projects: Project[
             </span>
           </div>
           <div className="flex items-center gap-2">
-            <span className="text-[9px] font-bold px-2 py-0.5 rounded-full" style={{
-              background: "rgba(98, 124, 133, 0.12)",
-              color: "#627C85"
+            <span className="text-[9px] font-bold px-2 py-0.5" style={{
+              background: isDark ? "rgba(196, 165, 116, 0.12)" : "rgba(79, 111, 120, 0.12)",
+              color: t.steel,
+              borderRadius: 2,
             }}>
-              {validDeals.length} DEALS SHOWN
+              {validDeals.length > 0 ? `${validDeals.length} DEALS` : 'PREVIEW'}
             </span>
             <span className="material-symbols-outlined text-[14px]" style={{ color: t.muted }}>
               arrow_forward
@@ -1654,7 +1610,7 @@ function EmptyPortfolio({ isDark }: { isDark: boolean }) {
       <Link
         href="/dashboard/projects/new"
         className="inline-flex items-center gap-2 px-5 py-2.5 rounded-lg text-[13px] font-semibold transition-all duration-150 active:scale-95"
-        style={{ background: "#454955", color: "#FDFFFC" }}
+        style={{ background: t.ctaBg, color: t.ctaFg, borderRadius: 2 }}
       >
         <span className="material-symbols-outlined text-[16px]" style={{ fontVariationSettings: "'FILL' 0" }}>
           add
@@ -1919,20 +1875,29 @@ function AlertsWidget({ isDark }: { isDark: boolean }) {
       <div className="space-y-4">
         <div className="flex items-center gap-2 border-b pb-3" style={{ borderColor: t.divider }}>
           <span className="material-symbols-outlined text-[18px] text-rose-400">warning</span>
-          <span className="text-[11px] font-bold uppercase tracking-wider text-slate-400">Operational Alerts</span>
+          <span className="text-[11px] font-bold uppercase tracking-wider" style={{ color: t.muted }}>Operational Alerts</span>
         </div>
 
         <div className="space-y-3 text-xs">
-          <div className="flex justify-between items-center bg-white/[0.02] p-2.5 rounded-lg border border-white/5">
-            <span className="text-slate-300">Missed Rent Payments</span>
+          <div
+            className="flex justify-between items-center p-2.5 rounded-lg border"
+            style={{ background: isDark ? "rgba(255,255,255,0.02)" : "rgba(20,22,28,0.03)", borderColor: t.divider }}
+          >
+            <span style={{ color: t.subtext }}>Missed Rent Payments</span>
             <span className="px-2 py-0.5 bg-rose-500/20 text-rose-400 rounded-full font-bold font-mono">{stats.missedRent}</span>
           </div>
-          <div className="flex justify-between items-center bg-white/[0.02] p-2.5 rounded-lg border border-white/5">
-            <span className="text-slate-300">Unattributed Transactions</span>
+          <div
+            className="flex justify-between items-center p-2.5 rounded-lg border"
+            style={{ background: isDark ? "rgba(255,255,255,0.02)" : "rgba(20,22,28,0.03)", borderColor: t.divider }}
+          >
+            <span style={{ color: t.subtext }}>Unattributed Transactions</span>
             <span className="px-2 py-0.5 bg-amber-500/20 text-amber-400 rounded-full font-bold font-mono">{stats.unattributed}</span>
           </div>
-          <div className="flex justify-between items-center bg-white/[0.02] p-2.5 rounded-lg border border-white/5">
-            <span className="text-slate-300">Overdue Closing Milestones</span>
+          <div
+            className="flex justify-between items-center p-2.5 rounded-lg border"
+            style={{ background: isDark ? "rgba(255,255,255,0.02)" : "rgba(20,22,28,0.03)", borderColor: t.divider }}
+          >
+            <span style={{ color: t.subtext }}>Overdue Closing Milestones</span>
             <span className="px-2 py-0.5 bg-rose-500/20 text-rose-400 rounded-full font-bold font-mono">{stats.overdueClosing}</span>
           </div>
         </div>
@@ -1972,11 +1937,11 @@ function ActiveProjectsWidget({ isDark }: { isDark: boolean }) {
       <div className="space-y-4">
         <div className="flex items-center gap-2 border-b pb-3" style={{ borderColor: t.divider }}>
           <span className="material-symbols-outlined text-[18px] text-[#7A9EAA]">progress_activity</span>
-          <span className="text-[11px] font-bold uppercase tracking-wider text-slate-400">Active Phase Progress</span>
+          <span className="text-[11px] font-bold uppercase tracking-wider" style={{ color: t.muted }}>Active Phase Progress</span>
         </div>
 
         {activeDeals.length === 0 ? (
-          <p className="text-xs text-slate-500 italic py-4">No active projects.</p>
+          <p className="text-xs italic py-4" style={{ color: t.muted }}>No active projects.</p>
         ) : (
           <div className="space-y-3.5">
             {activeDeals.map(p => {
@@ -1984,10 +1949,13 @@ function ActiveProjectsWidget({ isDark }: { isDark: boolean }) {
               return (
                 <div key={p.id} className="space-y-1 cursor-pointer hover:opacity-80 transition-opacity" onClick={() => router.push(`/dashboard/projects/${p.id}`)}>
                   <div className="flex justify-between text-[11px] font-bold">
-                    <span className="text-white truncate max-w-[120px]">{p.propertyName || p.name || 'Property'}</span>
-                    <span className="text-[#7A9EAA]">{getPhaseName(p)} ({pct}%)</span>
+                    <span className="truncate max-w-[120px]" style={{ color: t.heading }}>{p.propertyName || p.name || 'Property'}</span>
+                    <span style={{ color: t.steel }}>{getPhaseName(p)} ({pct}%)</span>
                   </div>
-                  <div className="w-full h-1.5 bg-white/5 rounded-full overflow-hidden">
+                  <div
+                    className="w-full h-1.5 rounded-full overflow-hidden"
+                    style={{ background: isDark ? "rgba(255,255,255,0.05)" : "rgba(20,22,28,0.08)" }}
+                  >
                     <div className="bg-[#7A9EAA] h-full rounded-full transition-all duration-300" style={{ width: `${pct}%` }} />
                   </div>
                 </div>
@@ -2009,32 +1977,30 @@ function QuickActionsWidget({ isDark }: { isDark: boolean }) {
     <Panel isDark={isDark} className="p-5 h-full flex flex-col justify-between">
       <div className="space-y-4">
         <div className="flex items-center gap-2 border-b pb-3" style={{ borderColor: t.divider }}>
-          <span className="material-symbols-outlined text-[18px] text-emerald-400">bolt</span>
-          <span className="text-[11px] font-bold uppercase tracking-wider text-slate-400">Quick Actions</span>
+          <span className="material-symbols-outlined text-[18px]" style={{ color: isDark ? "#C4A574" : "#4F6F78" }}>bolt</span>
+          <span className="text-[11px] font-bold uppercase tracking-wider" style={{ color: t.muted }}>Quick Actions</span>
         </div>
 
         <div className="grid grid-cols-1 gap-2">
-          <button
-            onClick={() => router.push('/dashboard/projects/new')}
-            className="w-full py-2 bg-white/5 hover:bg-white/10 text-white rounded-lg text-xs font-semibold text-left px-3 transition-colors flex items-center justify-between border border-white/5"
-          >
-            <span>Start New Acquisition</span>
-            <span className="material-symbols-outlined text-xs">add</span>
-          </button>
-          <button
-            onClick={() => router.push('/dashboard/projects')}
-            className="w-full py-2 bg-white/5 hover:bg-white/10 text-white rounded-lg text-xs font-semibold text-left px-3 transition-colors flex items-center justify-between border border-white/5"
-          >
-            <span>View Pending Offers</span>
-            <span className="material-symbols-outlined text-xs">chevron_right</span>
-          </button>
-          <button
-            onClick={() => router.push('/dashboard/reports')}
-            className="w-full py-2 bg-white/5 hover:bg-white/10 text-white rounded-lg text-xs font-semibold text-left px-3 transition-colors flex items-center justify-between border border-white/5"
-          >
-            <span>Generate Tax Report</span>
-            <span className="material-symbols-outlined text-xs">description</span>
-          </button>
+          {[
+            { href: '/dashboard/projects/new', label: 'Start New Acquisition', icon: 'add' },
+            { href: '/dashboard/projects', label: 'View Pending Offers', icon: 'chevron_right' },
+            { href: '/dashboard/reports', label: 'Generate Tax Report', icon: 'description' },
+          ].map((action) => (
+            <button
+              key={action.href}
+              onClick={() => router.push(action.href)}
+              className="w-full py-2 rounded-lg text-xs font-semibold text-left px-3 transition-colors flex items-center justify-between border"
+              style={{
+                background: isDark ? "rgba(255,255,255,0.05)" : "rgba(20,22,28,0.04)",
+                borderColor: t.divider,
+                color: t.heading,
+              }}
+            >
+              <span>{action.label}</span>
+              <span className="material-symbols-outlined text-xs">{action.icon}</span>
+            </button>
+          ))}
         </div>
       </div>
     </Panel>
@@ -2051,15 +2017,26 @@ function PortfolioSparklineWidget({ isDark }: { isDark: boolean }) {
         <div className="flex items-center justify-between border-b pb-3" style={{ borderColor: t.divider }}>
           <div className="flex items-center gap-2">
             <span className="material-symbols-outlined text-[18px] text-[#7A9EAA]">show_chart</span>
-            <span className="text-[11px] font-bold uppercase tracking-wider text-slate-400">90-Day Portfolio Value Trend</span>
+            <span className="text-[11px] font-bold uppercase tracking-wider" style={{ color: t.muted }}>90-Day Portfolio Value Trend</span>
           </div>
-          <span className="text-xs text-emerald-400 font-bold bg-emerald-500/10 px-2.5 py-0.5 rounded-full font-mono">+12.4% Growth</span>
+          <span
+            className="text-xs font-medium px-2.5 py-0.5 font-mono"
+            style={{
+              borderRadius: 2,
+              color: isDark ? "#C4A574" : "#4F6F78",
+              background: isDark ? "rgba(196,165,116,0.10)" : "rgba(79,111,120,0.10)",
+            }}
+          >
+            +12.4% Growth
+          </span>
         </div>
 
         <div className="flex flex-col sm:flex-row justify-between items-center gap-4">
           <div>
-            <p className="text-[10px] uppercase text-slate-500 font-bold">Total Portfolio Assets Value</p>
-            <p className="text-2xl font-bold font-mono text-white">$2,642,000 <span className="text-xs font-medium text-slate-400">USD</span></p>
+            <p className="text-[10px] uppercase font-bold" style={{ color: t.muted }}>Total Portfolio Assets Value</p>
+            <p className="text-2xl font-bold font-mono" style={{ color: t.heading }}>
+              $2,642,000 <span className="text-xs font-medium" style={{ color: t.muted }}>USD</span>
+            </p>
           </div>
 
           <div className="w-full sm:w-[350px] h-[50px] relative">
@@ -2154,179 +2131,197 @@ export function CommandCenter() {
   }, [projects]);
 
   if (!mounted) {
-    return <div className="p-8 animate-pulse h-screen" style={{ background: isDark ? "#0d0a0b" : "#FDFFFC" }} />;
+    return <div className="p-8 animate-pulse h-screen" style={{ background: isDark ? "#0A0B0E" : "#F3F4F6" }} />;
   }
 
   const irrVal = fmtPct(kpis.irr);
   const emVal  = kpis.equityMultiple !== null ? kpis.equityMultiple.toFixed(2) : "—";
-  const capVal = fmtCompact(kpis.capitalDeployed);
   const noiVal = kpis.totalNOI !== null ? fmtCompact(kpis.totalNOI) : "—";
   const cfVal  = kpis.portfolioCashFlow !== null ? fmtCompact(kpis.portfolioCashFlow) : "—";
   const cfNeg  = kpis.portfolioCashFlow !== null && kpis.portfolioCashFlow < 0;
 
   return (
     <div className="w-full min-h-full">
-      <div className="px-5 py-6 lg:px-8 lg:py-7 space-y-7 max-w-[1400px] mx-auto">
+      <div className="px-4 py-6 sm:px-6 lg:px-8 lg:py-8 space-y-10 max-w-[1440px] mx-auto">
 
-        {/* ══════════════════════════════════════════════════════════════════
-            ZONE 1 — Page Header
-            TopAppBar handles: global search (⌘K) + notification bell.
-            This zone: page title, deal count, live status, quick CTA.
-        ══════════════════════════════════════════════════════════════════ */}
-        <header className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4">
-          <div>
-            <div className="flex items-center gap-2.5 mb-1">
-              <h1
-                className="text-[28px] font-bold leading-none"
-                style={{ color: t.heading, letterSpacing: "-0.03em" }}
-              >
-                Portfolio
+        {/* Signature: investment memo masthead */}
+        <header className="cc-masthead reveal-up">
+          <div className="flex flex-col lg:flex-row lg:items-end lg:justify-between gap-6">
+            <div className="space-y-3 max-w-2xl">
+              <p className="text-[11px] font-medium tracking-[0.16em] uppercase" style={{ color: t.steel }}>
+                Command Center
+              </p>
+              <h1 className="cc-display text-[2rem] sm:text-[2.5rem] leading-[1.1]" style={{ color: t.heading }}>
+                Portfolio brief
               </h1>
-              {/* Live pulse */}
-              <span className="flex items-center gap-1 mt-0.5">
-                <span className="relative flex h-2 w-2">
-                  <span
-                    className="animate-ping absolute inline-flex h-full w-full rounded-full opacity-60"
-                    style={{ backgroundColor: "var(--pw-success)" }}
-                  />
-                  <span
-                    className="relative inline-flex rounded-full h-2 w-2"
-                    style={{ backgroundColor: "var(--pw-success)" }}
-                  />
-                </span>
-                <span
-                  className="text-[10px] font-bold uppercase"
-                  style={{ color: t.muted, letterSpacing: "0.08em" }}
-                >
-                  Live
-                </span>
-              </span>
-
-              {/* Project Health pulse badge */}
+              <p className="text-[15px] leading-relaxed" style={{ color: t.subtext }}>
+                {kpis.activeCount > 0
+                  ? `${kpis.activeCount} active deal${kpis.activeCount !== 1 ? "s" : ""}. Review what needs a decision, then work the pipeline.`
+                  : "No active deals yet. Open a project to start the brief."}
+              </p>
               {cautionProjects.length > 0 && (
                 <Link
                   href="/dashboard/insights"
-                  className="flex items-center gap-1.5 px-2 py-0.5 rounded-full text-[10px] font-bold tracking-wide uppercase transition-all duration-150 active:scale-95 ml-2 cursor-pointer"
-                  style={{
-                    background: "rgba(240,101,67,0.15)",
-                    border: "1px solid rgba(240,101,67,0.3)",
-                    color: "#F06543",
-                  }}
+                  className="inline-flex items-center gap-2 text-[13px] font-medium cc-focus-ring"
+                  style={{ color: t.alert }}
                 >
-                  <span className="relative flex h-1.5 w-1.5">
-                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#F06543] opacity-75" />
-                    <span className="relative inline-flex rounded-full h-1.5 w-1.5 bg-[#F06543]" />
-                  </span>
-                  {cautionProjects.length} Caution
+                  <span className="w-1.5 h-1.5 rounded-full" style={{ background: t.alert }} aria-hidden />
+                  {cautionProjects.length} project{cautionProjects.length !== 1 ? "s" : ""} need review
                 </Link>
               )}
             </div>
-            <p className="text-[13px]" style={{ color: t.subtext }}>
-              {kpis.activeCount > 0
-                ? `${kpis.activeCount} active deal${kpis.activeCount !== 1 ? "s" : ""} across your portfolio`
-                : "No deals yet — create your first project to get started."}
-            </p>
-          </div>
 
-          <div className="flex items-center gap-2 shrink-0">
-            <Link
-              href="/dashboard/deal-analyzer"
-              className="flex items-center gap-1.5 px-3.5 py-2 rounded-lg text-[12px] font-semibold transition-all duration-150 cursor-pointer"
-              style={{
-                background: isDark ? "rgba(255,255,255,0.05)" : "rgba(69,73,85,0.07)",
-                border: `1px solid ${t.panelBorder}`,
-                color: t.subtext,
-              }}
-            >
-              <span className="material-symbols-outlined text-[15px]" style={{ fontVariationSettings: "'FILL' 0" }}>
-                query_stats
-              </span>
-              Deal Analyzer
-            </Link>
-            <Link
-              href="/dashboard/projects/new"
-              className="flex items-center gap-1.5 px-3.5 py-2 rounded-lg text-[12px] font-semibold transition-all duration-150 active:scale-95 cursor-pointer"
-              style={{
-                background: isDark ? "rgba(69,73,85,0.35)" : "#454955",
-                border: isDark ? `1px solid rgba(255,255,255,0.12)` : "none",
-                color: "#FDFFFC",
-              }}
-            >
-              <span className="material-symbols-outlined text-[15px]" style={{ fontVariationSettings: "'FILL' 0" }}>
-                add
-              </span>
-              New Project
-            </Link>
+            <div className="flex flex-wrap items-center gap-2 shrink-0">
+              <Link
+                href="/dashboard/deal-analyzer"
+                className="cc-focus-ring inline-flex items-center gap-1.5 px-3.5 py-2.5 text-[13px] font-medium transition-colors"
+                style={{
+                  border: `1px solid ${t.panelBorder}`,
+                  color: t.subtext,
+                  borderRadius: 2,
+                  background: isDark ? "transparent" : "rgba(255,255,255,0.8)",
+                }}
+              >
+                <span className="material-symbols-outlined text-[16px]" style={{ fontVariationSettings: "'FILL' 0" }}>
+                  query_stats
+                </span>
+                Deal Analyzer
+              </Link>
+              <Link
+                href="/dashboard/projects/new"
+                className="cc-focus-ring inline-flex items-center gap-1.5 px-4 py-2.5 text-[13px] font-semibold transition-opacity hover:opacity-90"
+                style={{
+                  background: t.ctaBg,
+                  color: t.ctaFg,
+                  borderRadius: 2,
+                }}
+              >
+                <span className="material-symbols-outlined text-[16px]" style={{ fontVariationSettings: "'FILL' 0" }}>
+                  add
+                </span>
+                New Project
+              </Link>
+            </div>
           </div>
         </header>
 
-        {/* ══════════════════════════════════════════════════════════════════
-            Unified Grid Layout Grid Canvas (12 columns)
-        ══════════════════════════════════════════════════════════════════ */}
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-5">
-          
-          {/* Row 1 & 2 Left Column: Profile Card (lg:col-span-3 lg:row-span-2) */}
-          <div className="lg:col-span-3 lg:row-span-2">
-            <ProfileCard isDark={isDark} followers={followers} />
-          </div>
-
-          {/* Row 1: Tasks, Messages, Featured Metric */}
-          <div className="lg:col-span-3">
-            <AssignedTasksChecklist isDark={isDark} />
-          </div>
-
-          <div className="lg:col-span-3">
-            <RecentMessagesWidget isDark={isDark} />
-          </div>
-
-          <div className="lg:col-span-3">
-            <FeaturedMetricSlot isDark={isDark} kpis={kpis} />
-          </div>
-
-          {/* Integration Polish additions: Row 1.5 - Alerts, Active Projects progress, Quick Actions, Sparkline */}
-          <div className="lg:col-span-4">
-            <AlertsWidget isDark={isDark} />
-          </div>
-          <div className="lg:col-span-4">
-            <ActiveProjectsWidget isDark={isDark} />
-          </div>
-          <div className="lg:col-span-4">
-            <QuickActionsWidget isDark={isDark} />
-          </div>
-          <div className="lg:col-span-12">
-            <PortfolioSparklineWidget isDark={isDark} />
-          </div>
-
-          {/* Row 2: KPIs / Metrics, Deal Map */}
-          <div className="lg:col-span-6">
-            <KPIMetricsModule isDark={isDark} />
-          </div>
-
-          <div className="lg:col-span-3">
-            <DealMapCard isDark={isDark} projects={projects} />
-          </div>
-
-          {/* ZONE 3 — Action Center */}
-          <div className="lg:col-span-12">
-            <SectionHeading
-              title="Action Center"
-              href="/dashboard/projects"
-              linkLabel="All projects"
+        {/* Health first — same KPI data, corrected hierarchy */}
+        <section className="cc-band reveal-up delay-1" aria-label="Portfolio health">
+          <p className="cc-band-label">Portfolio health</p>
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
+            <KPICard
               isDark={isDark}
+              label="Portfolio IRR"
+              icon="trending_up"
+              value={irrVal}
+              suffix={kpis.irr !== null ? "%" : ""}
+              accentColor={isDark ? "#C4A574" : "#4F6F78"}
+              trend={kpis.irr !== null && kpis.irr > 0 ? "up" : undefined}
+              chip={kpis.irr !== null && kpis.irr > 0 ? "On track" : undefined}
+              meta={kpis.irr !== null ? "Annualized" : "Add a project"}
+              href="/dashboard/insights"
             />
-            {kpis.activeCount === 0 ? (
-              <EmptyPortfolio isDark={isDark} />
-            ) : (
-              <NeedsAttentionFeed />
-            )}
+            <KPICard
+              isDark={isDark}
+              label="Equity multiple"
+              icon="layers"
+              value={emVal}
+              suffix={kpis.equityMultiple !== null ? "×" : ""}
+              accentColor={isDark ? "#C4A574" : "#4F6F78"}
+              trend={kpis.equityMultiple !== null && kpis.equityMultiple >= 1 ? "up" : undefined}
+              chip={kpis.equityMultiple !== null && kpis.equityMultiple >= 1 ? "On track" : undefined}
+              meta={kpis.equityMultiple !== null ? "vs 2.5× target" : "Add a project"}
+              href="/dashboard/insights"
+            />
+            <KPICard
+              isDark={isDark}
+              label="Total NOI"
+              icon="home_work"
+              value={noiVal}
+              suffix={kpis.totalNOI !== null ? "/yr" : ""}
+              accentColor={isDark ? "#C4A574" : "#4F6F78"}
+              trend={kpis.totalNOI !== null && kpis.totalNOI > 0 ? "up" : undefined}
+              chip={kpis.totalNOI !== null ? "Rental" : undefined}
+              meta={kpis.totalNOI !== null ? "Hold phase" : "Rentals only"}
+              href="/dashboard/insights"
+            />
+            <KPICard
+              isDark={isDark}
+              label="Monthly cash flow"
+              icon="waterfall_chart"
+              value={cfVal}
+              suffix={kpis.portfolioCashFlow !== null ? "/mo" : ""}
+              accentColor={cfNeg ? (isDark ? "#D97757" : "#C45C3E") : (isDark ? "#C4A574" : "#4F6F78")}
+              trend={kpis.portfolioCashFlow !== null ? (cfNeg ? "down" : "up") : undefined}
+              chip={kpis.portfolioCashFlow !== null ? (cfNeg ? "Negative" : "Positive") : undefined}
+              meta={kpis.portfolioCashFlow !== null ? "Rental income" : "Rentals only"}
+              href="/dashboard/insights"
+            />
           </div>
+        </section>
 
-          {/* ZONE 4 — Active Pipeline + Top Performers */}
-          {kpis.activeCount > 0 && (
-            <>
+        <section className="cc-band" aria-label="Your desk">
+          <p className="cc-band-label">Your desk</p>
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-4">
+            <div className="lg:col-span-3 lg:row-span-2">
+              <ProfileCard isDark={isDark} followers={followers} />
+            </div>
+            <div className="lg:col-span-3">
+              <AssignedTasksChecklist isDark={isDark} />
+            </div>
+            <div className="lg:col-span-3">
+              <RecentMessagesWidget isDark={isDark} />
+            </div>
+            <div className="lg:col-span-3">
+              <FeaturedMetricSlot isDark={isDark} kpis={kpis} />
+            </div>
+            <div className="lg:col-span-4">
+              <AlertsWidget isDark={isDark} />
+            </div>
+            <div className="lg:col-span-4">
+              <ActiveProjectsWidget isDark={isDark} />
+            </div>
+            <div className="lg:col-span-4">
+              <QuickActionsWidget isDark={isDark} />
+            </div>
+            <div className="lg:col-span-12">
+              <PortfolioSparklineWidget isDark={isDark} />
+            </div>
+          </div>
+        </section>
+
+        <section className="cc-band" aria-label="Market view">
+          <p className="cc-band-label">Market view</p>
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-4">
+            <div className="lg:col-span-7">
+              <KPIMetricsModule isDark={isDark} />
+            </div>
+            <div className="lg:col-span-5">
+              <DealMapCard isDark={isDark} projects={projects} />
+            </div>
+          </div>
+        </section>
+
+        <section className="cc-band" aria-label="Action center">
+          <SectionHeading
+            title="Needs a decision"
+            href="/dashboard/projects"
+            linkLabel="All projects"
+            isDark={isDark}
+          />
+          {kpis.activeCount === 0 ? (
+            <EmptyPortfolio isDark={isDark} />
+          ) : (
+            <NeedsAttentionFeed />
+          )}
+        </section>
+
+        {kpis.activeCount > 0 && (
+          <section className="cc-band" aria-label="Active pipeline">
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-4">
               <div className="lg:col-span-8">
                 <SectionHeading
-                  title="Active Pipeline"
+                  title="Active pipeline"
                   href="/dashboard/projects"
                   linkLabel="Manage"
                   isDark={isDark}
@@ -2345,86 +2340,23 @@ export function CommandCenter() {
                 </div>
                 <ActivePipeline />
               </div>
-
               <div className="lg:col-span-4">
-                <SectionHeading title="Top Performers" isDark={isDark} />
+                <SectionHeading title="Top performers" isDark={isDark} />
                 <TopPerformersWidget />
               </div>
-            </>
-          )}
-
-          {/* ZONE 5 — Recent Activity Feed (Marketplace heatmap replaced by DealMapCard above) */}
-          <div className="lg:col-span-12 flex flex-col">
-            <SectionHeading
-              title="Recent Activity"
-              href="/dashboard/inbox"
-              linkLabel="Inbox"
-              isDark={isDark}
-            />
-            <div>
-              <RecentActivityFeed isDark={isDark} />
             </div>
-          </div>
+          </section>
+        )}
 
-        </div>
-
-        {/* Bottom Row Metrics Slots (Reorganized from the top Hero strip) */}
-        <div className="mt-8 pt-6 border-t" style={{ borderColor: t.divider }}>
-          <span className="text-[11px] font-bold uppercase tracking-wider mb-4 block" style={{ color: t.subtext }}>
-            Portfolio Performance Summary
-          </span>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
-            <KPICard
-              isDark={isDark}
-              label="Portfolio IRR"
-              icon="trending_up"
-              value={irrVal}
-              suffix={kpis.irr !== null ? "%" : ""}
-              accentColor="#454955"
-              trend={kpis.irr !== null && kpis.irr > 0 ? "up" : undefined}
-              chip={kpis.irr !== null && kpis.irr > 0 ? "On track" : undefined}
-              meta={kpis.irr !== null ? "annualized" : "Add a project"}
-              href="/dashboard/insights"
-            />
-            <KPICard
-              isDark={isDark}
-              label="Equity Multiple"
-              icon="layers"
-              value={emVal}
-              suffix={kpis.equityMultiple !== null ? "×" : ""}
-              accentColor="#7A9EAA"
-              trend={kpis.equityMultiple !== null && kpis.equityMultiple >= 1 ? "up" : undefined}
-              chip={kpis.equityMultiple !== null && kpis.equityMultiple >= 1 ? "On track" : undefined}
-              meta={kpis.equityMultiple !== null ? "vs. 2.5× target" : "Add a project"}
-              href="/dashboard/insights"
-            />
-            <KPICard
-              isDark={isDark}
-              label="Total NOI"
-              icon="home_work"
-              value={noiVal}
-              suffix={kpis.totalNOI !== null ? "/yr" : ""}
-              accentColor="var(--pw-success)"
-              trend={kpis.totalNOI !== null && kpis.totalNOI > 0 ? "up" : undefined}
-              chip={kpis.totalNOI !== null ? "Rental" : undefined}
-              meta={kpis.totalNOI !== null ? "hold-phase" : "Rentals only"}
-              href="/dashboard/insights"
-            />
-            <KPICard
-              isDark={isDark}
-              label="Monthly Cash Flow"
-              icon="waterfall_chart"
-              value={cfVal}
-              suffix={kpis.portfolioCashFlow !== null ? "/mo" : ""}
-              accentColor={cfNeg ? "#F06543" : "#454955"}
-              trend={kpis.portfolioCashFlow !== null ? (cfNeg ? "down" : "up") : undefined}
-              chip={kpis.portfolioCashFlow !== null ? (cfNeg ? "Negative" : "Positive") : undefined}
-              meta={kpis.portfolioCashFlow !== null ? "rental income" : "Rentals only"}
-              href="/dashboard/insights"
-            />
-          </div>
-        </div>
-
+        <section className="cc-band" aria-label="Recent activity">
+          <SectionHeading
+            title="Recent activity"
+            href="/dashboard/inbox"
+            linkLabel="Inbox"
+            isDark={isDark}
+          />
+          <RecentActivityFeed isDark={isDark} />
+        </section>
 
       </div>
     </div>

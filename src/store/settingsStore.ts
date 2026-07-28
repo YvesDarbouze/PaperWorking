@@ -62,13 +62,21 @@ export const useSettingsStore = create<SettingsState>()(
         })),
 
       setTheme: (theme) => {
-        // Enforce dark theme only
+        const resolved =
+          theme === 'system'
+            ? (typeof window !== 'undefined' && window.matchMedia('(prefers-color-scheme: dark)').matches
+                ? 'dark'
+                : 'light')
+            : theme;
+
         if (typeof document !== 'undefined') {
           const root = document.documentElement;
-          root.setAttribute('data-theme', 'dark');
-          root.classList.add('dark');
+          root.setAttribute('data-theme', resolved);
+          root.classList.remove('light', 'dark');
+          root.classList.add(resolved);
+          try { localStorage.setItem('pw-theme', resolved); } catch { /* ignore */ }
         }
-        set({ theme: 'dark' });
+        set({ theme });
       },
     }),
     {

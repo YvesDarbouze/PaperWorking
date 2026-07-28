@@ -7,18 +7,16 @@ import { useProjectStore } from '@/store/projectStore';
 import { useAuth } from '@/context/AuthContext';
 import { useTheme } from '@/lib/utils/ThemeProvider';
 import { 
-  Shield, Users, UserCircle, Search, RefreshCw, XCircle, Settings, Plus, X, 
-  ChevronDown, Check, Mail, Info, AlertCircle, Sparkles, ExternalLink, Lock, UserCheck, Trash2
+  Users, UserCircle, Search, RefreshCw, Plus, X, 
+  ChevronDown, Mail, Info, Lock, Trash2
 } from 'lucide-react';
 import type { ProjectTeamMember, InternalRole } from '@/types/schema';
 import { usePermissions } from '@/hooks/usePermissions';
 import toast from 'react-hot-toast';
 import { useBilling } from '@/hooks/useBilling';
+import { teamTokens, panelStyle, inputStyle } from '@/components/team/teamTheme';
 
-/* ═══════════════════════════════════════════════════════
-   Team Directory & Access Management Terminal
-   (Premium Minimalist Paper UI Design System)
-   ═══════════════════════════════════════════════════════ */
+/* Team directory — access & seat ops desk */
 
 type UnifiedMemberType = 'Internal' | 'External';
 
@@ -331,185 +329,198 @@ export default function TeamDirectoryPage() {
   };
 
   const activeSeatsCount = internalMembers.filter(m => m.status !== 'removed').length;
+  const t = teamTokens(isDark);
+  const panel = panelStyle(t);
+  const field = inputStyle(t);
+
+  const roleBadge = (role: string, isInternal: boolean) => {
+    if (!isInternal) {
+      return { background: t.surfaceMuted, color: t.muted, border: `1px solid ${t.border}` };
+    }
+    if (role === 'CEO' || role === 'President' || role === 'Admin') {
+      return { background: t.accentMuted, color: t.accent, border: `1px solid ${t.border}` };
+    }
+    return { background: t.surfaceHigh, color: t.heading, border: `1px solid ${t.border}` };
+  };
 
   return (
-    <div className="min-h-screen pb-20 px-4 sm:px-6 max-w-7xl mx-auto space-y-6 pt-4">
-      
-      {/* Page Header */}
-      <header className="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-4 mb-8">
+    <div className="min-h-full pb-20 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto space-y-6 py-6" style={{ background: t.pageBg, color: t.body }}>
+
+      <header className="flex flex-col lg:flex-row justify-between items-start lg:items-end gap-4 pb-5" style={{ borderBottom: `1px solid ${t.divider}` }}>
         <div>
-          <h2 
-            className="text-[26px] font-bold text-neutral-900 dark:text-neutral-50 tracking-tight"
-            style={{ fontFamily: "'Montserrat', sans-serif" }}
-          >
-            Team Directory & Scopes
-          </h2>
-          <p 
-            className="text-xs text-neutral-500 dark:text-neutral-400 mt-1"
-            style={{ fontFamily: "'Roboto', sans-serif" }}
-          >
-            Manage operator permissions, provision collaboration credentials, and restrict marketplace credentials.
+          <p className="text-[11px] font-medium tracking-[0.14em] uppercase mb-1" style={{ color: t.accent }}>
+            Access control
+          </p>
+          <h1 className="text-[1.75rem] font-semibold tracking-tight" style={{ color: t.heading }}>
+            Team
+          </h1>
+          <p className="text-sm mt-1.5 leading-relaxed max-w-xl" style={{ color: t.muted }}>
+            Seat capacity, roles, and pending invites for operators on your deals.
           </p>
         </div>
 
-        <div className="flex items-center gap-3">
-          {accountTier === 'Team' && (
-            <button
-              onClick={() => setInviteModalOpen(true)}
-              className="bg-neutral-900 text-neutral-50 hover:bg-neutral-800 dark:bg-neutral-50 dark:text-neutral-900 dark:hover:bg-neutral-100 font-medium text-[13px] px-4 py-2 rounded-md flex items-center gap-1.5 transition-all shadow-sm focus-visible:ring-2 focus-visible:ring-neutral-900 dark:focus-visible:ring-neutral-50 cursor-pointer"
-            >
-              <Plus className="w-4 h-4" />
-              Invite Team User
-            </button>
-          )}
-        </div>
+        {accountTier === 'Team' && (
+          <button
+            type="button"
+            onClick={() => setInviteModalOpen(true)}
+            className="pw-interactive-custom flex items-center gap-1.5 text-[13px] font-semibold transition-opacity hover:opacity-90"
+            style={{ background: t.ctaBg, color: t.ctaFg, border: 'none', borderRadius: 2, padding: '8px 14px' }}
+          >
+            <Plus className="w-4 h-4" />
+            Invite team user
+          </button>
+        )}
       </header>
 
-      {/* Tier & Scoping Control Panel Card */}
-      <section 
-        className="bg-white dark:bg-stone-900 rounded-lg border border-neutral-100 dark:border-neutral-800 shadow-sm shadow-neutral-100/50 dark:shadow-none p-6"
-        style={{ boxShadow: "0 2px 10px rgba(69, 73, 85, 0.02)" }}
-      >
+      {/* Tier & seat capacity */}
+      <section className="p-5 sm:p-6" style={panel}>
         <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
           <div className="space-y-2 max-w-xl">
             <div className="flex items-center gap-2">
-              <span className="text-[11px] font-bold uppercase tracking-wider text-neutral-400 dark:text-neutral-500">
-                Subscription Tier
+              <span className="text-[11px] font-semibold uppercase tracking-[0.12em]" style={{ color: t.muted }}>
+                Subscription tier
               </span>
-              <span className={`inline-flex items-center px-2 py-0.5 rounded text-[10px] font-bold border uppercase ${
-                accountTier === 'Team' 
-                  ? 'bg-purple-50 dark:bg-purple-950/20 border-purple-100 dark:border-purple-900/50 text-purple-600 dark:text-purple-400' 
-                  : 'bg-neutral-50 dark:bg-neutral-800 border-neutral-100 dark:border-neutral-700 text-neutral-500 dark:text-neutral-400'
-              }`}>
-                {accountTier} Active
+              <span
+                className="inline-flex items-center px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wider"
+                style={{
+                  borderRadius: 2,
+                  background: accountTier === 'Team' ? t.accentMuted : t.surfaceMuted,
+                  color: accountTier === 'Team' ? t.accent : t.muted,
+                  border: `1px solid ${t.border}`,
+                }}
+              >
+                {accountTier} active
               </span>
             </div>
-            
-            <h3 
-              className="text-lg font-bold text-neutral-900 dark:text-neutral-50"
-              style={{ fontFamily: "'Montserrat', sans-serif" }}
-            >
-              {accountTier === 'Team' ? 'Investment Team Workspace' : 'Investor Individual Plan'}
-            </h3>
-            
-            <p className="text-[12px] leading-relaxed text-neutral-500 dark:text-neutral-400">
-              {accountTier === 'Team' 
-                ? 'Your account supports up to 10 team seats. Invited members are sandboxed to your projects and cannot create standalone deals. You can configure granular roles inline.' 
-                : 'Your current account is set up for a single operator. To collaborate with other deal underwriters, appraisers, or general contractors, upgrade to the Investment Team plan.'}
+
+            <h2 className="text-lg font-semibold tracking-tight" style={{ color: t.heading }}>
+              {accountTier === 'Team' ? 'Investment team workspace' : 'Investor individual plan'}
+            </h2>
+
+            <p className="text-[12px] leading-relaxed" style={{ color: t.muted }}>
+              {accountTier === 'Team'
+                ? 'Up to 10 seats. Invited members stay sandboxed to your projects and cannot create standalone deals. Configure roles inline in the roster.'
+                : 'Single-operator account. Upgrade to Investment Team to collaborate with underwriters, appraisers, or contractors.'}
             </p>
           </div>
 
-          <div className="w-full md:w-auto flex flex-col items-stretch md:items-end gap-3 self-stretch md:self-auto justify-between border-t md:border-t-0 border-neutral-100 dark:border-neutral-800 pt-4 md:pt-0">
+          <div className="w-full md:w-auto flex flex-col items-stretch md:items-end gap-3 self-stretch md:self-auto justify-between pt-4 md:pt-0 md:border-0 border-t" style={{ borderColor: t.divider }}>
             {accountTier === 'Team' ? (
               <div className="space-y-1.5 w-full md:w-56">
-                <div className="flex justify-between text-[11px] font-medium text-neutral-600 dark:text-neutral-400">
-                  <span>Workspace Seat Capacity</span>
-                  <span className="font-mono">{activeSeatsCount} / 10 Seats Used</span>
+                <div className="flex justify-between text-[11px] font-medium" style={{ color: t.muted }}>
+                  <span>Seat capacity</span>
+                  <span className="tabular-nums" style={{ color: t.heading }}>{activeSeatsCount} / 10</span>
                 </div>
-                <div className="h-2 bg-neutral-100 dark:bg-neutral-800 rounded-full overflow-hidden">
-                  <div 
-                    className="h-full bg-neutral-900 dark:bg-neutral-50 rounded-full transition-all duration-300"
-                    style={{ width: `${(activeSeatsCount / 10) * 100}%` }}
+                <div className="h-1.5 overflow-hidden" style={{ background: t.surfaceHigh, borderRadius: 1 }}>
+                  <div
+                    className="h-full transition-all duration-300"
+                    style={{
+                      width: `${Math.min((activeSeatsCount / 10) * 100, 100)}%`,
+                      background: activeSeatsCount >= 10 ? t.alert : t.ctaBg,
+                      borderRadius: 1,
+                    }}
                   />
                 </div>
                 <button
+                  type="button"
                   onClick={() => handleTierChange('Individual')}
                   disabled={billingLoading || pendingTier !== null}
-                  className="text-[11px] font-semibold text-red-500 dark:text-red-400 hover:underline text-left mt-2 block disabled:opacity-55 disabled:no-underline disabled:cursor-not-allowed cursor-pointer"
+                  className="pw-interactive-custom text-[11px] font-semibold text-left mt-2 block disabled:opacity-55 disabled:cursor-not-allowed"
+                  style={{ background: 'transparent', border: 'none', padding: 0, color: t.alert }}
                 >
-                  {pendingTier === 'Individual' && billingLoading ? 'Downgrading...' : 'Downgrade to Individual Tier'}
+                  {pendingTier === 'Individual' && billingLoading ? 'Downgrading…' : 'Downgrade to individual'}
                 </button>
               </div>
             ) : (
               <button
+                type="button"
                 onClick={() => handleTierChange('Team')}
                 disabled={billingLoading || pendingTier !== null}
-                className="bg-neutral-950 text-white dark:bg-white dark:text-neutral-900 hover:opacity-90 disabled:opacity-55 disabled:cursor-not-allowed font-semibold text-[13px] py-2 px-5 rounded-md flex items-center justify-center gap-1.5 transition-all focus-visible:ring-2 focus-visible:ring-neutral-900 cursor-pointer"
+                className="pw-interactive-custom flex items-center justify-center gap-1.5 text-[13px] font-semibold transition-opacity hover:opacity-90 disabled:opacity-55 disabled:cursor-not-allowed"
+                style={{ background: t.ctaBg, color: t.ctaFg, border: 'none', borderRadius: 2, padding: '8px 18px' }}
               >
                 {pendingTier === 'Team' && billingLoading ? (
                   <RefreshCw className="w-4 h-4 animate-spin" />
                 ) : (
-                  <Sparkles className="w-4 h-4 text-amber-500 fill-amber-500" />
+                  <Users className="w-4 h-4" />
                 )}
-                {pendingTier === 'Team' && billingLoading ? 'Upgrading...' : 'Upgrade to Investment Team'}
+                {pendingTier === 'Team' && billingLoading ? 'Upgrading…' : 'Upgrade to Investment Team'}
               </button>
             )}
           </div>
         </div>
 
-        {/* Warning Alerts / Info Badges */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-6 pt-6 border-t border-neutral-100 dark:border-neutral-800">
-          <div className="flex items-start gap-2.5 bg-neutral-50 dark:bg-neutral-800/40 p-3.5 rounded-md border border-neutral-100 dark:border-neutral-800">
-            <Info className="w-4 h-4 text-neutral-400 dark:text-neutral-500 shrink-0 mt-0.5" />
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-3 mt-6 pt-5" style={{ borderTop: `1px solid ${t.divider}` }}>
+          <div className="flex items-start gap-2.5 p-3.5" style={{ background: t.surfaceMuted, border: `1px solid ${t.border}`, borderRadius: 2 }}>
+            <Info className="w-4 h-4 shrink-0 mt-0.5" style={{ color: t.muted }} />
             <div className="space-y-0.5">
-              <span className="text-[11px] font-bold uppercase tracking-wider text-neutral-500 dark:text-neutral-400 block">
-                Vendor Marketplace Policy
+              <span className="text-[11px] font-semibold uppercase tracking-[0.12em] block" style={{ color: t.muted }}>
+                Vendor marketplace
               </span>
-              <p className="text-[11px] leading-relaxed text-neutral-500 dark:text-neutral-400">
-                To list services on the Vendor Marketplace, operators must purchase and subscribe to their own independent account. Corporate accounts do not extend listing privileges to invited team seats.
+              <p className="text-[11px] leading-relaxed" style={{ color: t.muted }}>
+                Marketplace listing requires an independent vendor subscription. Corporate seats do not inherit listing privileges.
               </p>
             </div>
           </div>
 
-          <div className="flex items-start gap-2.5 bg-neutral-50 dark:bg-neutral-800/40 p-3.5 rounded-md border border-neutral-100 dark:border-neutral-800">
-            <Lock className="w-4 h-4 text-neutral-400 dark:text-neutral-500 shrink-0 mt-0.5" />
+          <div className="flex items-start gap-2.5 p-3.5" style={{ background: t.surfaceMuted, border: `1px solid ${t.border}`, borderRadius: 2 }}>
+            <Lock className="w-4 h-4 shrink-0 mt-0.5" style={{ color: t.muted }} />
             <div className="space-y-0.5">
-              <span className="text-[11px] font-bold uppercase tracking-wider text-neutral-500 dark:text-neutral-400 block">
-                Scoped Access Lock
+              <span className="text-[11px] font-semibold uppercase tracking-[0.12em] block" style={{ color: t.muted }}>
+                Scoped access
               </span>
-              <p className="text-[11px] leading-relaxed text-neutral-500 dark:text-neutral-400">
-                Invited team members cannot create separate projects or organizations. They can only contribute to assets and folders under the inviter's organization workspace.
+              <p className="text-[11px] leading-relaxed" style={{ color: t.muted }}>
+                Invited members cannot create separate projects or organizations. They only contribute under this workspace.
               </p>
             </div>
           </div>
         </div>
       </section>
 
-      {/* Main Roster Table */}
-      <section className="grid grid-cols-1 lg:grid-cols-12 gap-6">
-        
-        {/* Left Column: Personnel Table (lg:col-span-8) */}
-        <div className="lg:col-span-8 bg-white dark:bg-stone-900 border border-neutral-100 dark:border-neutral-800 rounded-lg shadow-sm shadow-neutral-100/50 dark:shadow-none p-6">
-          <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
+      {/* Roster + pending */}
+      <section className="grid grid-cols-1 lg:grid-cols-12 gap-5">
+        <div className="lg:col-span-8 p-5 sm:p-6" style={panel}>
+          <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-5">
             <div className="flex items-center gap-2">
-              <Users className="w-5 h-5 text-neutral-500" />
-              <h3 
-                className="text-base font-bold text-neutral-900 dark:text-neutral-50"
-                style={{ fontFamily: "'Montserrat', sans-serif" }}
-              >
+              <Users className="w-4 h-4" style={{ color: t.muted }} />
+              <h2 className="text-base font-semibold tracking-tight" style={{ color: t.heading }}>
                 Roster
-              </h3>
+              </h2>
+              <span className="text-[11px] tabular-nums" style={{ color: t.muted }}>
+                {activePersonnel.length}
+              </span>
             </div>
-            
+
             <div className="relative w-full sm:w-64">
-              <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-neutral-400" />
-              <input 
+              <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2" style={{ color: t.muted }} />
+              <input
                 type="text"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                placeholder="Search by name, email, or role..." 
-                className="w-full bg-neutral-50 border border-neutral-200 dark:bg-neutral-800 dark:border-neutral-700 text-xs rounded-md pl-9 pr-3 py-1.5 focus:outline-none focus:ring-1 focus:ring-neutral-900 dark:focus:ring-neutral-100 placeholder:text-neutral-400"
+                placeholder="Search name, email, or role…"
+                className="w-full text-xs pl-9 pr-3 py-2 outline-none focus:ring-1"
+                style={{ ...field, ['--tw-ring-color' as string]: t.accent }}
               />
             </div>
           </div>
 
-          <div className="overflow-x-auto relative min-h-[300px]">
+          <div className="overflow-x-auto relative min-h-[280px]">
             <table className="w-full text-left border-collapse min-w-[650px]">
               <thead>
-                <tr className="border-b border-neutral-100 dark:border-neutral-800 text-[10px] font-bold text-neutral-400 dark:text-neutral-500 uppercase tracking-wider">
-                  <th className="px-4 py-3">Member</th>
-                  <th className="px-4 py-3">Role</th>
-                  <th className="px-4 py-3">Status</th>
-                  <th className="px-4 py-3">Last Active</th>
-                  <th className="px-4 py-3 text-right">Actions</th>
+                <tr className="text-[10px] font-semibold uppercase tracking-[0.12em]" style={{ borderBottom: `1px solid ${t.divider}`, color: t.muted }}>
+                  <th className="px-3 py-2.5 font-semibold">Member</th>
+                  <th className="px-3 py-2.5 font-semibold">Role</th>
+                  <th className="px-3 py-2.5 font-semibold">Status</th>
+                  <th className="px-3 py-2.5 font-semibold">Last active</th>
+                  <th className="px-3 py-2.5 font-semibold text-right">Actions</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-neutral-100 dark:divide-neutral-800 text-[13px] text-neutral-700 dark:text-neutral-300">
+              <tbody className="text-[13px]" style={{ color: t.body }}>
                 {activePersonnel.length === 0 ? (
                   <tr>
-                    <td colSpan={5} className="py-12 text-center text-neutral-400 dark:text-neutral-500">
-                      <UserCircle className="w-10 h-10 mx-auto mb-2 opacity-30" />
-                      <p className="text-[12px]">No active operators matched your search.</p>
+                    <td colSpan={5} className="py-14 text-center" style={{ color: t.muted }}>
+                      <UserCircle className="w-9 h-9 mx-auto mb-2 opacity-40" />
+                      <p className="text-[12px]">No operators match this search.</p>
                     </td>
                   </tr>
                 ) : (
@@ -524,49 +535,53 @@ export default function TeamDirectoryPage() {
                     const isInternal = member.type === 'Internal';
                     const isSuspended = member.status === 'suspended';
                     const isCurrentUser = member.email === profile?.email;
-
-                    // Role badge styling
-                    let badgeClass = "bg-neutral-100 dark:bg-neutral-800 border-neutral-200 dark:border-neutral-700 text-neutral-600 dark:text-neutral-400";
-                    if (isInternal) {
-                      if (member.role === 'CEO' || member.role === 'President' || member.role === 'Admin') {
-                        badgeClass = "bg-purple-50 dark:bg-purple-950/20 border-purple-100 dark:border-purple-900/50 text-purple-600 dark:text-purple-400";
-                      } else {
-                        badgeClass = "bg-blue-50 dark:bg-blue-950/20 border-blue-100 dark:border-blue-900/50 text-blue-600 dark:text-blue-400";
-                      }
-                    }
+                    const badge = roleBadge(member.role, isInternal);
 
                     return (
-                      <tr 
+                      <tr
                         key={member.email}
-                        className="hover:bg-neutral-50/50 dark:hover:bg-neutral-800/30 transition-colors"
+                        className="transition-colors"
+                        style={{ borderBottom: `1px solid ${t.divider}` }}
+                        onMouseEnter={(e) => { e.currentTarget.style.background = t.hover; }}
+                        onMouseLeave={(e) => { e.currentTarget.style.background = 'transparent'; }}
                       >
-                        {/* Member Identity */}
-                        <td className="px-4 py-3.5">
+                        <td className="px-3 py-3">
                           <div className="flex items-center gap-3">
-                            <div className="w-8 h-8 rounded-full bg-neutral-100 dark:bg-neutral-800 flex items-center justify-center font-semibold text-[11px] text-neutral-600 dark:text-neutral-300 border border-neutral-200 dark:border-neutral-700">
+                            <div
+                              className="w-8 h-8 flex items-center justify-center font-semibold text-[11px] shrink-0"
+                              style={{
+                                borderRadius: 2,
+                                background: t.surfaceMuted,
+                                color: t.heading,
+                                border: `1px solid ${t.border}`,
+                              }}
+                            >
                               {initials}
                             </div>
                             <div className="min-w-0">
-                              <p className="font-semibold text-neutral-900 dark:text-neutral-50 truncate leading-none mb-1">
-                                {member.displayName} {isCurrentUser && <span className="font-normal text-[10px] text-neutral-400 dark:text-neutral-500">(you)</span>}
+                              <p className="font-semibold truncate leading-none mb-1" style={{ color: t.heading }}>
+                                {member.displayName}{' '}
+                                {isCurrentUser && (
+                                  <span className="font-normal text-[10px]" style={{ color: t.muted }}>(you)</span>
+                                )}
                               </p>
-                              <p className="text-[10px] text-neutral-400 dark:text-neutral-500 font-mono truncate leading-none">
+                              <p className="text-[10px] font-mono truncate leading-none" style={{ color: t.muted }}>
                                 {member.email}
                               </p>
                             </div>
                           </div>
                         </td>
 
-                        {/* Inline Role Editing */}
-                        <td className="px-4 py-3.5">
+                        <td className="px-3 py-3">
                           {isInternal && !isCurrentUser && isAdmin ? (
-                            <div className="relative inline-block select-wrapper">
+                            <div className="relative inline-block">
                               <select
                                 value={member.role}
                                 onChange={(e) => handleRoleChange(member.id, e.target.value as InternalRole)}
                                 onMouseEnter={() => setHoveredRoleTooltip(member.id)}
                                 onMouseLeave={() => setHoveredRoleTooltip(null)}
-                                className="appearance-none font-semibold text-[11px] uppercase tracking-wider pl-2 pr-6 py-0.5 rounded border focus:outline-none cursor-pointer focus:ring-1 focus:ring-neutral-900 dark:focus:ring-neutral-100 transition-colors bg-white dark:bg-stone-900 border-neutral-200 dark:border-neutral-700 text-neutral-800 dark:text-neutral-200"
+                                className="appearance-none font-semibold text-[11px] uppercase tracking-wider pl-2 pr-6 py-0.5 outline-none cursor-pointer"
+                                style={{ ...field, borderRadius: 2 }}
                               >
                                 <option value="CEO">CEO</option>
                                 <option value="President">President</option>
@@ -575,26 +590,33 @@ export default function TeamDirectoryPage() {
                                 <option value="Admin">Admin</option>
                                 <option value="Deal Lead">Deal Lead</option>
                               </select>
-                              <ChevronDown className="w-3 h-3 absolute right-1.5 top-1/2 -translate-y-1/2 text-neutral-400 pointer-events-none" />
+                              <ChevronDown className="w-3 h-3 absolute right-1.5 top-1/2 -translate-y-1/2 pointer-events-none" style={{ color: t.muted }} />
 
-                              {/* Tooltip on hovered role select */}
                               {hoveredRoleTooltip === member.id && (
-                                <div className="absolute left-0 bottom-full mb-1.5 w-64 bg-white dark:bg-stone-800 border border-neutral-100 dark:border-neutral-700 p-2.5 rounded shadow-lg z-50 text-[11px] text-neutral-500 dark:text-neutral-300">
-                                  <strong className="text-neutral-800 dark:text-neutral-100 block mb-0.5">{member.role} Role Permissions:</strong>
+                                <div
+                                  className="absolute left-0 bottom-full mb-1.5 w-64 p-2.5 z-50 text-[11px]"
+                                  style={{ ...panel, color: t.muted, boxShadow: isDark ? '0 8px 24px rgba(0,0,0,0.45)' : '0 8px 24px rgba(20,22,28,0.12)' }}
+                                >
+                                  <strong className="block mb-0.5" style={{ color: t.heading }}>{member.role} permissions</strong>
                                   {ROLE_PERMISSIONS[member.role as InternalRole]}
                                 </div>
                               )}
                             </div>
                           ) : (
                             <div className="flex items-center gap-1">
-                              <span className={`inline-flex items-center px-2 py-0.5 rounded text-[10px] font-bold border uppercase tracking-wider ${badgeClass}`}>
+                              <span
+                                className="inline-flex items-center px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wider"
+                                style={{ ...badge, borderRadius: 2 }}
+                              >
                                 {member.role}
                               </span>
-                              
                               {isInternal && (
                                 <div className="group relative">
-                                  <Info className="w-3 h-3 text-neutral-400 hover:text-neutral-600 cursor-pointer" />
-                                  <div className="absolute left-0 bottom-full mb-1.5 w-56 bg-white dark:bg-stone-800 border border-neutral-100 dark:border-neutral-700 p-2 rounded shadow-md hidden group-hover:block z-50 text-[10px] text-neutral-500 dark:text-neutral-300 leading-normal">
+                                  <Info className="w-3 h-3 cursor-pointer" style={{ color: t.muted }} />
+                                  <div
+                                    className="absolute left-0 bottom-full mb-1.5 w-56 p-2 z-50 text-[10px] leading-normal hidden group-hover:block"
+                                    style={{ ...panel, color: t.muted }}
+                                  >
                                     {ROLE_PERMISSIONS[member.role as InternalRole] || 'Scoped collaborator permissions.'}
                                   </div>
                                 </div>
@@ -603,37 +625,39 @@ export default function TeamDirectoryPage() {
                           )}
                         </td>
 
-                        {/* Status Column */}
-                        <td className="px-4 py-3.5">
+                        <td className="px-3 py-3">
                           <div className="flex items-center gap-1.5">
-                            <span className={`w-1.5 h-1.5 rounded-full ${
-                              isSuspended ? 'bg-red-500' : 'bg-green-500'
-                            }`} />
-                            <span className="text-[12px] font-medium">
+                            <span
+                              className="w-1.5 h-1.5 rounded-full"
+                              style={{ background: isSuspended ? t.alert : t.success }}
+                            />
+                            <span className="text-[12px] font-medium" style={{ color: isSuspended ? t.alert : t.heading }}>
                               {isSuspended ? 'Suspended' : 'Active'}
                             </span>
                           </div>
                         </td>
 
-                        {/* Last Active */}
-                        <td className="px-4 py-3.5 font-mono text-[11px] text-neutral-400 dark:text-neutral-500">
+                        <td className="px-3 py-3 font-mono text-[11px]" style={{ color: t.muted }}>
                           {member.lastActive}
                         </td>
 
-                        {/* Actions */}
-                        <td className="px-4 py-3.5 text-right">
+                        <td className="px-3 py-3 text-right">
                           <div className="flex items-center justify-end gap-3">
                             {!isCurrentUser && isAdmin && isInternal && (
                               <>
                                 <button
+                                  type="button"
                                   onClick={() => handleToggleSuspend(member.id, member.email, member.status)}
-                                  className="text-[11px] font-semibold text-neutral-500 hover:text-neutral-800 dark:hover:text-neutral-200 cursor-pointer"
+                                  className="pw-interactive-custom text-[11px] font-semibold"
+                                  style={{ background: 'transparent', border: 'none', padding: 0, color: t.muted }}
                                 >
                                   {isSuspended ? 'Reactivate' : 'Suspend'}
                                 </button>
                                 <button
+                                  type="button"
                                   onClick={() => handleRevokeAccess(member.id, member.email)}
-                                  className="text-[11px] font-semibold text-red-500 hover:text-red-700 cursor-pointer"
+                                  className="pw-interactive-custom text-[11px] font-semibold"
+                                  style={{ background: 'transparent', border: 'none', padding: 0, color: t.alert }}
                                   title="Remove from organization"
                                 >
                                   Remove
@@ -643,8 +667,10 @@ export default function TeamDirectoryPage() {
 
                             {!isInternal && isAdmin && (
                               <button
+                                type="button"
                                 onClick={() => handleRevokeAccess(member.id, member.email)}
-                                className="text-[11px] font-semibold text-red-500 hover:text-red-700 cursor-pointer"
+                                className="pw-interactive-custom text-[11px] font-semibold"
+                                style={{ background: 'transparent', border: 'none', padding: 0, color: t.alert }}
                                 title="Revoke collaborator access"
                               >
                                 Revoke
@@ -661,58 +687,64 @@ export default function TeamDirectoryPage() {
           </div>
         </div>
 
-        {/* Right Column: Pending Invites (lg:col-span-4) */}
-        <aside className="lg:col-span-4 flex flex-col gap-6">
-          
-          {/* Pending Invitations Card */}
-          <div className="bg-white dark:bg-stone-900 border border-neutral-100 dark:border-neutral-800 rounded-lg shadow-sm shadow-neutral-100/50 dark:shadow-none p-5">
-            <h3 
-              className="text-sm font-bold text-neutral-900 dark:text-neutral-50 mb-4 flex items-center gap-2"
-              style={{ fontFamily: "'Montserrat', sans-serif" }}
-            >
-              <Mail className="w-4 h-4 text-neutral-500" />
-              Pending Invitations
-            </h3>
+        <aside className="lg:col-span-4 flex flex-col gap-5">
+          <div className="p-5" style={panel}>
+            <h2 className="text-sm font-semibold mb-4 flex items-center gap-2" style={{ color: t.heading }}>
+              <Mail className="w-4 h-4" style={{ color: t.muted }} />
+              Pending invitations
+              {pendingInvitations.length > 0 && (
+                <span
+                  className="ml-auto text-[10px] font-semibold tabular-nums px-1.5 py-0.5"
+                  style={{ background: t.warnMuted, color: t.warn, borderRadius: 2 }}
+                >
+                  {pendingInvitations.length}
+                </span>
+              )}
+            </h2>
 
-            <div className="space-y-3">
+            <div className="space-y-2.5">
               {pendingInvitations.length === 0 ? (
-                <div className="text-center py-8 text-[12px] text-neutral-400 dark:text-neutral-500">
-                  No pending invites found.
+                <div className="text-center py-8 text-[12px]" style={{ color: t.muted }}>
+                  No pending invites.
                 </div>
               ) : (
                 pendingInvitations.map(invite => (
-                  <div 
-                    key={invite.email} 
-                    className="p-3 bg-neutral-50 dark:bg-neutral-800/40 rounded border border-neutral-100 dark:border-neutral-800 flex items-center justify-between gap-3 group"
+                  <div
+                    key={invite.email}
+                    className="p-3 flex items-center justify-between gap-3"
+                    style={{ background: t.surfaceMuted, border: `1px solid ${t.border}`, borderRadius: 2 }}
                   >
                     <div className="min-w-0 space-y-0.5">
-                      <p className="text-xs font-semibold text-neutral-800 dark:text-neutral-100 truncate">
+                      <p className="text-xs font-semibold truncate" style={{ color: t.heading }}>
                         {invite.email}
                       </p>
                       <div className="flex items-center gap-1.5 flex-wrap">
-                        <span className="text-[9px] font-mono bg-neutral-100 dark:bg-neutral-800 text-neutral-500 px-1 rounded">
+                        <span
+                          className="text-[9px] font-mono px-1"
+                          style={{ background: t.surfaceHigh, color: t.muted, borderRadius: 2 }}
+                        >
                           {invite.role}
                         </span>
                         {invite.invitedAt && (
-                          <span className="text-[9px] text-neutral-400 dark:text-neutral-500 font-medium">
-                            Sent {new Date(invite.invitedAt).toLocaleDateString()} {new Date(invite.invitedAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                          <span className="text-[9px] font-medium" style={{ color: t.muted }}>
+                            Sent {new Date(invite.invitedAt).toLocaleDateString()}{' '}
+                            {new Date(invite.invitedAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                           </span>
                         )}
-                        <span className="text-[9px] font-medium text-amber-600 dark:text-amber-500">
+                        <span className="text-[9px] font-medium" style={{ color: t.warn }}>
                           Expires in 48h
                         </span>
                       </div>
                     </div>
 
-                    <div className="flex items-center gap-1 shrink-0">
-                      <button 
+                    <div className="flex items-center gap-0.5 shrink-0">
+                      <button
+                        type="button"
                         onClick={() => {
                           toast.promise(
                             (async () => {
                               const { resendTeamInvite } = await import('@/actions/team');
                               await resendTeamInvite(invite.email);
-
-                              // Update Zustand store locally to reflect resend time
                               useUserStore.setState((state) => ({
                                 teamMembers: state.teamMembers.map((m) =>
                                   m.email.toLowerCase() === invite.email.toLowerCase()
@@ -720,7 +752,6 @@ export default function TeamDirectoryPage() {
                                     : m
                                 ),
                               }));
-
                             })(),
                             {
                               loading: `Resending invitation to ${invite.email}...`,
@@ -728,16 +759,19 @@ export default function TeamDirectoryPage() {
                               error: (err: any) => err.message || `Failed to resend invitation to ${invite.email}`,
                             }
                           );
-                        }} 
-                        className="p-1 rounded hover:bg-neutral-100 dark:hover:bg-neutral-700 text-neutral-500 hover:text-neutral-800 dark:hover:text-neutral-200 transition-colors border border-transparent cursor-pointer"
-                        title="Resend Invite"
+                        }}
+                        className="pw-interactive-custom p-1.5 transition-colors"
+                        style={{ background: 'transparent', border: 'none', borderRadius: 2, color: t.muted }}
+                        title="Resend invite"
                       >
                         <RefreshCw className="w-3.5 h-3.5" />
                       </button>
-                      <button 
-                        onClick={() => handleRevokeAccess(invite.id, invite.email)} 
-                        className="p-1 rounded hover:bg-red-50 dark:hover:bg-red-950/20 text-neutral-500 hover:text-red-600 transition-colors border border-transparent cursor-pointer"
-                        title="Cancel Invitation"
+                      <button
+                        type="button"
+                        onClick={() => handleRevokeAccess(invite.id, invite.email)}
+                        className="pw-interactive-custom p-1.5 transition-colors"
+                        style={{ background: 'transparent', border: 'none', borderRadius: 2, color: t.muted }}
+                        title="Cancel invitation"
                       >
                         <Trash2 className="w-3.5 h-3.5" />
                       </button>
@@ -747,63 +781,52 @@ export default function TeamDirectoryPage() {
               )}
             </div>
           </div>
-
-
-
         </aside>
       </section>
 
-      {/* Invite Modal Dialog Overlay */}
       {inviteModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40 backdrop-blur-xs">
-          <div 
-            className="w-full max-w-lg bg-white dark:bg-stone-900 border border-neutral-100 dark:border-neutral-800 rounded-lg shadow-2xl p-6 relative animate-in fade-in zoom-in-95 duration-150"
-            style={{ fontFamily: "'Roboto', sans-serif" }}
-          >
-            {/* Modal Close Button */}
-            <button 
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50">
+          <div className="w-full max-w-lg p-6 relative" style={{ ...panel, boxShadow: isDark ? '0 16px 48px rgba(0,0,0,0.5)' : '0 16px 48px rgba(20,22,28,0.16)' }}>
+            <button
+              type="button"
               onClick={() => setInviteModalOpen(false)}
-              className="absolute top-4 right-4 text-neutral-400 hover:text-neutral-700 dark:hover:text-neutral-100 focus-visible:ring-2 focus-visible:ring-neutral-900 rounded cursor-pointer"
+              className="pw-interactive-custom absolute top-4 right-4"
+              style={{ background: 'transparent', border: 'none', padding: 4, borderRadius: 2, color: t.muted }}
             >
               <X className="w-5 h-5" />
             </button>
 
-            {/* Modal Title */}
-            <h3 
-              className="text-[18px] font-bold text-neutral-900 dark:text-neutral-50 mb-1"
-              style={{ fontFamily: "'Montserrat', sans-serif" }}
-            >
-              Invite Operators & Collaborators
+            <h3 className="text-lg font-semibold tracking-tight mb-1" style={{ color: t.heading }}>
+              Invite operators
             </h3>
-            
-            <p className="text-[11px] text-neutral-400 dark:text-neutral-500 mb-4 leading-normal">
-              Enter email addresses to provision workspace credentials. Seats invited count towards your 10-operator cap.
+            <p className="text-[12px] mb-4 leading-relaxed" style={{ color: t.muted }}>
+              Enter emails to provision workspace access. Each invite counts toward your 10-seat cap.
             </p>
 
             <form onSubmit={handleSendInvites} className="space-y-4">
-              {/* Emails Input */}
-              <div className="space-y-1">
-                <label className="text-[11px] font-bold uppercase tracking-wider text-neutral-500 dark:text-neutral-400">
-                  Email Addresses
+              <div className="space-y-1.5">
+                <label className="text-[11px] font-semibold uppercase tracking-[0.12em]" style={{ color: t.muted }}>
+                  Email addresses
                 </label>
                 <textarea
                   value={bulkEmailInput}
                   onChange={(e) => setBulkEmailInput(e.target.value)}
-                  placeholder="name@company.com, partner@fund.com (separated by commas or newlines)"
+                  placeholder="name@company.com, partner@fund.com"
                   rows={3}
-                  className="w-full bg-neutral-50 border border-neutral-200 dark:bg-neutral-800 dark:border-neutral-700 text-xs rounded-md p-2 focus:outline-none focus:ring-1 focus:ring-neutral-900 dark:focus:ring-neutral-100 placeholder:text-neutral-400 resize-none"
+                  className="w-full text-xs p-2.5 outline-none resize-none"
+                  style={field}
                 />
               </div>
 
-              {/* Initial Role Select */}
-              <div className="space-y-1">
-                <label className="text-[11px] font-bold uppercase tracking-wider text-neutral-500 dark:text-neutral-400">
-                  Initial Role assignment
+              <div className="space-y-1.5">
+                <label className="text-[11px] font-semibold uppercase tracking-[0.12em]" style={{ color: t.muted }}>
+                  Initial role
                 </label>
                 <select
                   value={selectedRole}
                   onChange={(e) => setSelectedRole(e.target.value as InternalRole)}
-                  className="w-full bg-neutral-50 border border-neutral-200 dark:bg-neutral-800 dark:border-neutral-700 text-xs rounded-md p-2 focus:outline-none focus:ring-1 focus:ring-neutral-900"
+                  className="w-full text-xs p-2.5 outline-none"
+                  style={field}
                 >
                   <option value="Deal Lead">Deal Lead (Analyst/Underwriter)</option>
                   <option value="COO">COO (Operations & Task Manager)</option>
@@ -814,33 +837,37 @@ export default function TeamDirectoryPage() {
                 </select>
               </div>
 
-              {/* Scoped Invite Option (Lead Investor feature) */}
-              <div className="border-t border-neutral-100 dark:border-neutral-800 pt-3 space-y-3">
+              <div className="pt-3 space-y-3" style={{ borderTop: `1px solid ${t.divider}` }}>
                 <div className="flex items-center gap-2">
                   <input
                     type="checkbox"
                     id="scoped-checkbox"
                     checked={enableScopedInvite}
                     onChange={(e) => setEnableScopedInvite(e.target.checked)}
-                    className="rounded border-neutral-300 text-neutral-900 focus:ring-neutral-900 h-4 w-4 cursor-pointer"
+                    className="h-4 w-4 cursor-pointer"
+                    style={{ accentColor: t.accent }}
                   />
-                  <label htmlFor="scoped-checkbox" className="text-[12px] font-semibold text-neutral-700 dark:text-neutral-300 cursor-pointer">
-                    Apply direct task or project underwriting scope restriction
+                  <label htmlFor="scoped-checkbox" className="text-[12px] font-semibold cursor-pointer" style={{ color: t.heading }}>
+                    Restrict invite to a project or task
                   </label>
                 </div>
 
                 {enableScopedInvite && (
-                  <div className="grid grid-cols-2 gap-3 p-3 bg-neutral-50 dark:bg-neutral-800/40 rounded border border-neutral-100 dark:border-neutral-800">
+                  <div
+                    className="grid grid-cols-2 gap-3 p-3"
+                    style={{ background: t.surfaceMuted, border: `1px solid ${t.border}`, borderRadius: 2 }}
+                  >
                     <div className="space-y-1">
-                      <label className="text-[9px] font-bold uppercase tracking-wider text-neutral-500 dark:text-neutral-400">
-                        Restrict to Project
+                      <label className="text-[9px] font-semibold uppercase tracking-[0.12em]" style={{ color: t.muted }}>
+                        Project
                       </label>
                       <select
                         value={assignProject}
                         onChange={(e) => setAssignProject(e.target.value)}
-                        className="w-full bg-white border border-neutral-200 dark:bg-neutral-800 dark:border-neutral-700 text-[10px] rounded p-1.5 focus:outline-none focus:ring-1 focus:ring-neutral-900"
+                        className="w-full text-[10px] p-1.5 outline-none"
+                        style={field}
                       >
-                        <option value="">Select Target Project</option>
+                        <option value="">Select project</option>
                         {projects.map(p => (
                           <option key={p.id} value={p.id}>{p.propertyName}</option>
                         ))}
@@ -848,42 +875,43 @@ export default function TeamDirectoryPage() {
                     </div>
 
                     <div className="space-y-1">
-                      <label className="text-[9px] font-bold uppercase tracking-wider text-neutral-500 dark:text-neutral-400">
-                        Assign to Tab or Task
+                      <label className="text-[9px] font-semibold uppercase tracking-[0.12em]" style={{ color: t.muted }}>
+                        Tab or task
                       </label>
                       <input
                         type="text"
                         value={assignTabOrTask}
                         onChange={(e) => setAssignTabOrTask(e.target.value)}
-                        placeholder="e.g. Underwriting tab, Task ID"
-                        className="w-full bg-white border border-neutral-200 dark:bg-neutral-800 dark:border-neutral-700 text-[10px] rounded p-1.5 focus:outline-none focus:ring-1 focus:ring-neutral-900"
+                        placeholder="e.g. Underwriting tab"
+                        className="w-full text-[10px] p-1.5 outline-none"
+                        style={field}
                       />
                     </div>
                   </div>
                 )}
               </div>
 
-              {/* Submit CTA */}
-              <div className="flex justify-end gap-3 pt-3 border-t border-neutral-100 dark:border-neutral-800">
+              <div className="flex justify-end gap-2.5 pt-3" style={{ borderTop: `1px solid ${t.divider}` }}>
                 <button
                   type="button"
                   onClick={() => setInviteModalOpen(false)}
-                  className="px-4 py-2 border border-neutral-200 dark:border-neutral-700 rounded-md text-xs font-semibold text-neutral-600 dark:text-neutral-300 hover:bg-neutral-50 dark:hover:bg-neutral-800 transition-all cursor-pointer"
+                  className="pw-interactive-custom text-xs font-semibold"
+                  style={{ background: 'transparent', border: `1px solid ${t.border}`, borderRadius: 2, padding: '8px 14px', color: t.muted }}
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
-                  className="px-5 py-2 bg-neutral-900 text-neutral-50 dark:bg-neutral-50 dark:text-neutral-900 hover:opacity-90 rounded-md text-xs font-semibold transition-all cursor-pointer"
+                  className="pw-interactive-custom text-xs font-semibold transition-opacity hover:opacity-90"
+                  style={{ background: t.ctaBg, color: t.ctaFg, border: 'none', borderRadius: 2, padding: '8px 16px' }}
                 >
-                  Send Invitations
+                  Send invitations
                 </button>
               </div>
             </form>
           </div>
         </div>
       )}
-
     </div>
   );
 }

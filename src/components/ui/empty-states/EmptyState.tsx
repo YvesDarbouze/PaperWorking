@@ -42,19 +42,33 @@ export function EmptyState({
 
   if (variant === 'card') {
     return (
-      <div className={`glass-card p-6 flex flex-col items-center text-center max-w-md w-full border border-pw-border ${className}`}>
-        <div className="relative w-16 h-16 mb-4 flex items-center justify-center">
-          <div className="absolute inset-0 bg-pw-primary/10 blur-xl rounded-full" />
-          {Icon && <Icon className="w-8 h-8 text-pw-primary relative z-10" />}
+      <div className={`p-6 flex flex-col items-center text-center max-w-md w-full border border-pw-border bg-pw-surface ${className}`}>
+        <div
+          className="w-14 h-14 mb-4 flex items-center justify-center"
+          style={{
+            background: 'var(--pw-btn-primary-bg, #14161C)',
+            color: 'var(--pw-btn-primary-text, #FFFFFF)',
+            borderRadius: 2,
+          }}
+        >
+          {Icon && <Icon className="w-7 h-7" strokeWidth={1.75} />}
         </div>
-        <h3 className="text-base font-medium text-pw-black mb-1">{title}</h3>
-        {description && <p className="text-sm text-pw-muted max-w-sm mb-4">{description}</p>}
+        <h3 className="text-base font-semibold text-pw-black mb-1">{title}</h3>
+        {description && <p className="text-sm text-pw-muted max-w-sm mb-5">{description}</p>}
         {action && (
           <button
+            type="button"
             onClick={action.onClick}
-            className="pw-btn pw-btn--secondary py-2 px-4 text-xs uppercase font-bold tracking-wider flex items-center gap-1.5"
+            className="pw-interactive-custom inline-flex items-center gap-1.5 py-2.5 px-4 text-xs font-semibold uppercase tracking-wider"
+            style={{
+              background: 'var(--pw-btn-primary-bg, #14161C)',
+              color: 'var(--pw-btn-primary-text, #FFFFFF)',
+              border: 'none',
+              borderRadius: 2,
+              padding: '10px 16px',
+            }}
           >
-            {action.icon && <action.icon className="w-4 h-4" />}
+            {action.icon && <action.icon className="w-4 h-4" strokeWidth={2.5} />}
             {action.label}
           </button>
         )}

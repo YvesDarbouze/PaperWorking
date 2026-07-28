@@ -82,9 +82,13 @@ export default function RootLayout({
         <Script id="pw-theme-init" strategy="beforeInteractive">
           {`
             try {
-              document.documentElement.setAttribute('data-theme', 'dark');
-              document.documentElement.classList.remove('light');
-              document.documentElement.classList.add('dark');
+              var saved = localStorage.getItem('pw-theme');
+              var mode = (saved === 'light' || saved === 'dark')
+                ? saved
+                : (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+              document.documentElement.setAttribute('data-theme', mode);
+              document.documentElement.classList.remove('light', 'dark');
+              document.documentElement.classList.add(mode);
             } catch (e) {}
           `}
         </Script>

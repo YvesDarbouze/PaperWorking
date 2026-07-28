@@ -2,6 +2,8 @@
 
 import { useState, useEffect, useCallback } from 'react';
 import { useAuth } from '@/context/AuthContext';
+import { useTheme } from '@/lib/utils/ThemeProvider';
+import { useSettingsStore, type ThemePreference } from '@/store/settingsStore';
 import {
   getAuth,
   EmailAuthProvider,
@@ -13,16 +15,62 @@ import {
 import { doc, getDoc, setDoc, serverTimestamp } from 'firebase/firestore';
 import { db } from '@/lib/firebase/config';
 import toast from 'react-hot-toast';
+import { settingsTokens, panelStyle, inputStyle } from '@/components/settings/settingsTheme';
 
-/* ═══════════════════════════════════════════════════════
-   General Settings — Luminous Glass Terminal
-   
-   Sections:
-   1. Appearance (Theme toggle)
-   2. Regional Preferences (Timezone, Language)
-   3. Connected Services (Firebase, Stripe, MLS, Drive)
-   4. Danger Zone (Account deletion)
-   ═══════════════════════════════════════════════════════ */
+/* General settings — workspace preferences desk */
+
+function AppearanceThemePicker() {
+  const { theme, setTheme } = useTheme();
+  const isDark = theme === 'dark';
+  const t = settingsTokens(isDark);
+  const storeTheme = useSettingsStore((s) => s.theme);
+  const setStoreTheme = useSettingsStore((s) => s.setTheme);
+
+  const options: { id: ThemePreference; label: string; icon: string }[] = [
+    { id: 'light', label: 'Light', icon: 'light_mode' },
+    { id: 'dark', label: 'Dark', icon: 'dark_mode' },
+    { id: 'system', label: 'System', icon: 'contrast' },
+  ];
+
+  const active = storeTheme === 'system' ? 'system' : theme;
+
+  return (
+    <div className="flex flex-wrap gap-2">
+      {options.map((opt) => {
+        const selected = active === opt.id;
+        return (
+          <button
+            key={opt.id}
+            type="button"
+            onClick={() => {
+              setStoreTheme(opt.id);
+              if (opt.id === 'light' || opt.id === 'dark') {
+                setTheme(opt.id);
+              } else if (typeof window !== 'undefined') {
+                const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+                setTheme(prefersDark ? 'dark' : 'light');
+              }
+            }}
+            className="pw-interactive-custom inline-flex items-center gap-2 text-sm font-semibold transition-opacity"
+            style={{
+              background: selected ? t.accentMuted : t.surfaceMuted,
+              border: `1px solid ${selected ? t.accent : t.border}`,
+              color: selected ? t.heading : t.muted,
+              borderRadius: 2,
+              padding: '8px 14px',
+            }}
+            aria-pressed={selected}
+          >
+            <span className="material-symbols-outlined text-[18px]" style={{ fontVariationSettings: "'FILL' 1" }}>
+              {opt.icon}
+            </span>
+            {opt.label}
+          </button>
+        );
+      })}
+    </div>
+  );
+}
 
 const TIMEZONES = [
   { value: 'America/New_York',    label: 'Eastern Time (ET)' },
@@ -84,6 +132,11 @@ const BASE_SERVICES: ConnectedService[] = [
 
 export default function GeneralSettingsPage() {
   const { profile, user, logout } = useAuth();
+  const { theme } = useTheme();
+  const isDark = theme === 'dark';
+  const t = settingsTokens(isDark);
+  const panel = panelStyle(t);
+  const field = inputStyle(t);
 
   // ─── Deletion Cockpit State ────────────────────────────
   const [activeJob, setActiveJob] = useState<{ status: string; step?: string; error?: string } | null>(null);
@@ -464,82 +517,106 @@ export default function GeneralSettingsPage() {
 
 
   return (
-    <div className="w-full space-y-8">
-      <div className="grid grid-cols-12 gap-8">
+    <div className="w-full space-y-6" style={{ color: t.body }}>
+      <header className="pb-5" style={{ borderBottom: `1px solid ${t.divider}` }}>
+        <p className="text-[11px] font-medium tracking-[0.14em] uppercase mb-1" style={{ color: t.accent }}>
+          Workspace
+        </p>
+        <h2 className="text-[1.35rem] font-semibold tracking-tight" style={{ color: t.heading }}>
+          General
+        </h2>
+        <p className="text-sm mt-1.5 leading-relaxed max-w-xl" style={{ color: t.muted }}>
+          Theme, regional defaults, integrations, and account controls.
+        </p>
+      </header>
 
-        {/* ════════════════════════════════════════════════
-            2 · REGIONAL PREFERENCES (col-span-7)
-            ════════════════════════════════════════════════ */}
-        <section className="col-span-12 lg:col-span-7 glass-card rounded-2xl p-6 flex flex-col relative overflow-hidden transition-all duration-200 hover:shadow-md">
-          <div className="flex items-center gap-2 border-b border-white/10 pb-4 mb-6">
-            <span className="material-symbols-outlined text-pw-primary text-xl select-none">language</span>
-            <h4 className="text-base font-semibold text-pw-black">Regional Preferences</h4>
+      <div className="grid grid-cols-12 gap-5">
+
+        <section className="col-span-12 p-5 sm:p-6 flex flex-col" style={panel}>
+          <div className="flex items-center gap-2 pb-4 mb-5" style={{ borderBottom: `1px solid ${t.divider}` }}>
+            <span className="material-symbols-outlined text-xl select-none" style={{ color: t.accent }}>palette</span>
+            <h4 className="text-base font-semibold" style={{ color: t.heading }}>Appearance</h4>
+          </div>
+          <AppearanceThemePicker />
+        </section>
+
+        <section className="col-span-12 lg:col-span-7 p-5 sm:p-6 flex flex-col" style={panel}>
+          <div className="flex items-center gap-2 pb-4 mb-5" style={{ borderBottom: `1px solid ${t.divider}` }}>
+            <span className="material-symbols-outlined text-xl select-none" style={{ color: t.accent }}>language</span>
+            <h4 className="text-base font-semibold" style={{ color: t.heading }}>Regional preferences</h4>
           </div>
 
-          <div className="space-y-6 flex-1">
-            {/* Timezone */}
+          <div className="space-y-5 flex-1">
             <div>
-              <label className="block text-xs font-medium text-pw-muted uppercase tracking-[0.5px] mb-2">
+              <label className="block text-[11px] font-semibold uppercase tracking-[0.12em] mb-2" style={{ color: t.muted }}>
                 Timezone
               </label>
               <div className="relative">
-                <span className="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-pw-muted text-[16px] pointer-events-none select-none">
+                <span className="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-[16px] pointer-events-none select-none" style={{ color: t.muted }}>
                   schedule
                 </span>
                 <select
                   value={timezone}
                   onChange={(e) => setTimezone(e.target.value)}
                   disabled={prefsLoading}
-                  className="glass-input w-full text-sm pl-10 pr-4 h-10 rounded-lg text-pw-black appearance-none cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed focus:ring-2 focus:ring-pw-primary focus:outline-none transition-all duration-150"
+                  className="w-full text-sm pl-10 pr-9 h-10 appearance-none outline-none disabled:opacity-50 disabled:cursor-not-allowed"
+                  style={field}
                 >
                   {TIMEZONES.map((tz) => (
-                    <option key={tz.value} value={tz.value} className="bg-[#161318] text-pw-black">
+                    <option key={tz.value} value={tz.value}>
                       {tz.label}
                     </option>
                   ))}
                 </select>
-                <span className="material-symbols-outlined absolute right-3 top-1/2 -translate-y-1/2 text-pw-muted text-lg pointer-events-none select-none">
+                <span className="material-symbols-outlined absolute right-3 top-1/2 -translate-y-1/2 text-lg pointer-events-none select-none" style={{ color: t.muted }}>
                   expand_more
                 </span>
               </div>
             </div>
 
-            {/* Language */}
             <div>
-              <label className="block text-xs font-medium text-pw-muted uppercase tracking-[0.5px] mb-2">
+              <label className="block text-[11px] font-semibold uppercase tracking-[0.12em] mb-2" style={{ color: t.muted }}>
                 Language
               </label>
-              <div className="flex items-center justify-between p-4 rounded-xl bg-pw-glass-bg/50 border border-white/5">
-                <div className="flex items-center gap-3">
-                  <span className="material-symbols-outlined text-pw-muted text-lg select-none">
+              <div
+                className="flex items-center justify-between p-4 gap-3"
+                style={{ background: t.surfaceMuted, border: `1px solid ${t.border}`, borderRadius: 2 }}
+              >
+                <div className="flex items-center gap-3 min-w-0">
+                  <span className="material-symbols-outlined text-lg select-none" style={{ color: t.muted }}>
                     translate
                   </span>
                   <div>
-                    <p className="text-sm font-semibold text-pw-black">English (US)</p>
-                    <p className="text-[10px] text-pw-muted mt-0.5">More languages planned.</p>
+                    <p className="text-sm font-semibold" style={{ color: t.heading }}>English (US)</p>
+                    <p className="text-[10px] mt-0.5" style={{ color: t.muted }}>More languages planned.</p>
                   </div>
                 </div>
 
-                <div className="relative">
+                <div className="relative shrink-0">
                   {requestedLanguage ? (
-                    <span className="text-xs text-pw-primary flex items-center gap-1.5 font-semibold">
+                    <span className="text-xs flex items-center gap-1.5 font-semibold" style={{ color: t.success }}>
                       <span className="material-symbols-outlined text-sm select-none">check_circle</span>
                       Requested ({requestedLanguage})
                     </span>
                   ) : (
                     <button
+                      type="button"
                       onClick={() => setShowLangRequest(!showLangRequest)}
-                      className="text-xs font-medium text-pw-primary hover:underline hover:text-pw-primary/80 transition-colors cursor-pointer"
+                      className="pw-interactive-custom text-xs font-semibold"
+                      style={{ background: 'transparent', border: 'none', padding: 0, color: t.accent }}
                     >
-                      Request a language...
+                      Request a language…
                     </button>
                   )}
                 </div>
               </div>
 
               {showLangRequest && !requestedLanguage && (
-                <div className="mt-3 p-4 rounded-xl bg-white/[0.02] border border-white/5 space-y-3">
-                  <p className="text-xs text-pw-muted">Select a language to vote for prioritization:</p>
+                <div
+                  className="mt-3 p-4 space-y-3"
+                  style={{ background: t.surfaceMuted, border: `1px solid ${t.border}`, borderRadius: 2 }}
+                >
+                  <p className="text-xs" style={{ color: t.muted }}>Select a language to vote for prioritization:</p>
                   <div className="grid grid-cols-2 gap-2">
                     {[
                       { code: 'es', label: 'Spanish (Español)' },
@@ -551,8 +628,16 @@ export default function GeneralSettingsPage() {
                     ].map((lang) => (
                       <button
                         key={lang.code}
+                        type="button"
                         onClick={() => handleRequestLanguage(lang.code, lang.label)}
-                        className="text-left h-10 px-4 text-sm font-medium rounded-lg hover:bg-white/5 text-pw-black hover:text-pw-primary transition-all border border-transparent hover:border-white/5 cursor-pointer"
+                        className="pw-interactive-custom text-left text-sm font-medium transition-colors"
+                        style={{
+                          background: t.surface,
+                          border: `1px solid ${t.border}`,
+                          borderRadius: 2,
+                          padding: '8px 12px',
+                          color: t.heading,
+                        }}
                       >
                         {lang.label}
                       </button>
@@ -562,22 +647,23 @@ export default function GeneralSettingsPage() {
               )}
             </div>
 
-            {/* Save Preferences */}
-            <div className="flex items-center gap-4 pt-2">
+            <div className="flex items-center gap-4 pt-1">
               <button
+                type="button"
                 onClick={handleSavePreferences}
                 disabled={saving || prefsLoading}
-                className="luminous-button h-10 px-5 rounded-lg text-sm font-medium active:scale-98 disabled:opacity-50 disabled:pointer-events-none transition-all flex items-center justify-center gap-2 cursor-pointer"
+                className="pw-interactive-custom flex items-center justify-center gap-2 text-sm font-semibold disabled:opacity-50"
+                style={{ background: t.ctaBg, color: t.ctaFg, border: 'none', borderRadius: 2, padding: '8px 16px' }}
               >
                 {saving ? (
                   <span className="material-symbols-outlined animate-spin text-[16px] select-none">progress_activity</span>
                 ) : (
                   <span className="material-symbols-outlined text-[16px] select-none">save</span>
                 )}
-                {prefsLoading ? 'Loading…' : saving ? 'Saving…' : 'Save Preferences'}
+                {prefsLoading ? 'Loading…' : saving ? 'Saving…' : 'Save preferences'}
               </button>
               {saved && (
-                <span className="text-sm text-pw-primary flex items-center gap-1.5 animate-pulse">
+                <span className="text-sm flex items-center gap-1.5" style={{ color: t.success }}>
                   <span className="material-symbols-outlined text-sm select-none">check_circle</span>
                   Preferences saved.
                 </span>
@@ -586,125 +672,132 @@ export default function GeneralSettingsPage() {
           </div>
         </section>
 
-        {/* ════════════════════════════════════════════════
-            3 · QUICK STATS CARD (col-span-5)
-            ════════════════════════════════════════════════ */}
-        <section className="col-span-12 lg:col-span-5 glass-card rounded-2xl p-6 flex flex-col relative overflow-hidden transition-all duration-200 hover:shadow-md">
-          <div className="absolute -bottom-16 -left-16 w-48 h-48 bg-pw-primary/8 rounded-full blur-[100px] pointer-events-none" />
-
-          <div className="flex items-center gap-2 border-b border-white/10 pb-4 mb-6">
-            <span className="material-symbols-outlined text-pw-primary text-xl select-none">info</span>
-            <h4 className="text-base font-semibold text-pw-black">Account Overview</h4>
+        <section className="col-span-12 lg:col-span-5 p-5 sm:p-6 flex flex-col" style={panel}>
+          <div className="flex items-center gap-2 pb-4 mb-5" style={{ borderBottom: `1px solid ${t.divider}` }}>
+            <span className="material-symbols-outlined text-xl select-none" style={{ color: t.accent }}>info</span>
+            <h4 className="text-base font-semibold" style={{ color: t.heading }}>Account overview</h4>
           </div>
 
-          <div className="space-y-5 relative z-10">
-            <div className="flex items-center justify-between p-4 rounded-xl bg-pw-glass-bg/50 border border-white/5">
-              <div>
-                <p className="text-xs font-medium text-pw-muted uppercase tracking-[0.5px] mb-0.5">Account Type</p>
-                <p className="text-sm font-bold text-pw-black capitalize">
-                  {profile?.accountType || 'Investor'}
-                </p>
-              </div>
-              <span className="material-symbols-outlined text-pw-primary text-xl select-none">badge</span>
-            </div>
-
-            <div className="flex items-center justify-between p-4 rounded-xl bg-pw-glass-bg/50 border border-white/5">
-              <div>
-                <p className="text-xs font-medium text-pw-muted uppercase tracking-[0.5px] mb-0.5">Plan</p>
-                <p className="text-sm font-bold text-pw-black">
-                  {profile?.subscriptionPlan || 'None'}
-                </p>
-              </div>
-              <span className="material-symbols-outlined text-pw-primary text-xl select-none">workspace_premium</span>
-            </div>
-
-            <div className="flex items-center justify-between p-4 rounded-xl bg-pw-glass-bg/50 border border-white/5">
-              <div>
-                <p className="text-xs font-medium text-pw-muted uppercase tracking-[0.5px] mb-0.5">Member Since</p>
-                <p className="text-sm font-bold text-pw-black">
-                  {profile?.createdAt
-                    ? new Date((profile.createdAt as { seconds: number }).seconds * 1000).toLocaleDateString('en-US', {
-                        month: 'long',
-                        year: 'numeric',
-                      })
-                    : 'Recently joined'}
-                </p>
-              </div>
-              <span className="material-symbols-outlined text-pw-primary text-xl select-none">calendar_month</span>
-            </div>
-          </div>
-        </section>
-
-        {/* ════════════════════════════════════════════════
-            4 · CONNECTED SERVICES (col-span-12)
-            ════════════════════════════════════════════════ */}
-        <section className="col-span-12 glass-card rounded-2xl p-6 relative overflow-hidden transition-all duration-200 hover:shadow-md">
-          <div className="flex items-center gap-2 border-b border-white/10 pb-4 mb-6">
-            <span className="material-symbols-outlined text-pw-primary text-xl select-none">hub</span>
-            <h4 className="text-base font-semibold text-pw-black">Connected Services</h4>
-          </div>
-
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            {services.map((service) => (
+          <div className="space-y-3">
+            {[
+              {
+                label: 'Account type',
+                value: profile?.accountType || 'Investor',
+                icon: 'badge',
+                capitalize: true,
+              },
+              {
+                label: 'Plan',
+                value: profile?.subscriptionPlan || 'None',
+                icon: 'workspace_premium',
+                capitalize: false,
+              },
+              {
+                label: 'Member since',
+                value: profile?.createdAt
+                  ? new Date((profile.createdAt as { seconds: number }).seconds * 1000).toLocaleDateString('en-US', {
+                      month: 'long',
+                      year: 'numeric',
+                    })
+                  : 'Recently joined',
+                icon: 'calendar_month',
+                capitalize: false,
+              },
+            ].map((row) => (
               <div
-                key={service.id}
-                className="flex items-center justify-between p-6 rounded-xl bg-pw-glass-bg/30 border border-white/5 hover:bg-pw-glass-bg/50 transition-colors group"
+                key={row.label}
+                className="flex items-center justify-between p-3.5"
+                style={{ background: t.surfaceMuted, border: `1px solid ${t.border}`, borderRadius: 2 }}
               >
-                <div className="flex items-center gap-4">
-                  <div className={`
-                    w-11 h-11 rounded-xl flex items-center justify-center border transition-colors
-                    ${service.connected
-                      ? 'bg-pw-primary/10 border-pw-primary/20 text-pw-primary'
-                      : 'bg-white/5 border-white/10 text-pw-muted'
-                    }
-                  `}>
-                    <span className="material-symbols-outlined text-xl">{service.iconName}</span>
-                  </div>
-                  <div>
-                    <p className="text-sm font-semibold text-pw-black">{service.name}</p>
-                    <p className="text-xs text-pw-muted mt-0.5 max-w-[200px]">{service.description}</p>
-                    {service.detail && (
-                      <p className="text-[10px] text-pw-primary/70 mt-1 font-mono truncate max-w-[200px]">
-                        {service.detail}
-                      </p>
-                    )}
-                  </div>
+                <div>
+                  <p className="text-[11px] font-semibold uppercase tracking-[0.12em] mb-0.5" style={{ color: t.muted }}>
+                    {row.label}
+                  </p>
+                  <p className={`text-sm font-semibold ${row.capitalize ? 'capitalize' : ''}`} style={{ color: t.heading }}>
+                    {row.value}
+                  </p>
                 </div>
-
-                <div className="flex items-center gap-3">
-                  {service.connected || service.platform ? (
-                    <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-pw-primary/10 text-pw-primary text-[10px] font-bold border border-pw-primary/20 uppercase tracking-wider">
-                      <span className="w-1.5 h-1.5 rounded-full bg-pw-primary" />
-                      Connected
-                    </span>
-                  ) : (
-                    <button
-                      onClick={() => handleConnect(service.id)}
-                      disabled={connectingId === service.id}
-                      className="h-10 px-5 rounded-lg bg-pw-primary/10 text-pw-primary border border-pw-primary/20 hover:bg-pw-primary/20 active:scale-98 transition-all disabled:opacity-50 disabled:pointer-events-none text-sm font-medium flex items-center justify-center gap-2 cursor-pointer uppercase tracking-wider"
-                    >
-                      {connectingId === service.id ? (
-                        <>
-                          <span className="material-symbols-outlined animate-spin text-[16px] select-none">progress_activity</span>
-                          Connecting…
-                        </>
-                      ) : (
-                        <>
-                          <span className="material-symbols-outlined text-[16px] select-none">add_link</span>
-                          Connect
-                        </>
-                      )}
-                    </button>
-                  )}
-                </div>
+                <span className="material-symbols-outlined text-xl select-none" style={{ color: t.accent }}>{row.icon}</span>
               </div>
             ))}
           </div>
         </section>
 
-        {/* ════════════════════════════════════════════════
-            5 · DANGER ZONE (col-span-12)
-            ════════════════════════════════════════════════ */}
+        <section className="col-span-12 p-5 sm:p-6" style={panel}>
+          <div className="flex items-center gap-2 pb-4 mb-5" style={{ borderBottom: `1px solid ${t.divider}` }}>
+            <span className="material-symbols-outlined text-xl select-none" style={{ color: t.accent }}>hub</span>
+            <h4 className="text-base font-semibold" style={{ color: t.heading }}>Connected services</h4>
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            {services.map((service) => {
+              const on = service.connected || !!service.platform;
+              return (
+                <div
+                  key={service.id}
+                  className="flex items-center justify-between p-4 gap-3"
+                  style={{ background: t.surfaceMuted, border: `1px solid ${t.border}`, borderRadius: 2 }}
+                >
+                  <div className="flex items-center gap-3 min-w-0">
+                    <div
+                      className="w-10 h-10 flex items-center justify-center shrink-0"
+                      style={{
+                        borderRadius: 2,
+                        border: `1px solid ${t.border}`,
+                        background: on ? t.successMuted : t.surface,
+                        color: on ? t.success : t.muted,
+                      }}
+                    >
+                      <span className="material-symbols-outlined text-xl">{service.iconName}</span>
+                    </div>
+                    <div className="min-w-0">
+                      <p className="text-sm font-semibold" style={{ color: t.heading }}>{service.name}</p>
+                      <p className="text-xs mt-0.5 leading-relaxed" style={{ color: t.muted }}>{service.description}</p>
+                      {service.detail && (
+                        <p className="text-[10px] mt-1 font-mono truncate" style={{ color: t.accent }}>
+                          {service.detail}
+                        </p>
+                      )}
+                    </div>
+                  </div>
+
+                  <div className="flex items-center gap-2 shrink-0">
+                    {on ? (
+                      <span
+                        className="inline-flex items-center gap-1.5 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wider"
+                        style={{ background: t.successMuted, color: t.success, border: `1px solid ${t.border}`, borderRadius: 2 }}
+                      >
+                        <span className="w-1.5 h-1.5 rounded-full" style={{ background: t.success }} />
+                        Connected
+                      </span>
+                    ) : (
+                      <button
+                        type="button"
+                        onClick={() => handleConnect(service.id)}
+                        disabled={connectingId === service.id}
+                        className="pw-interactive-custom flex items-center justify-center gap-1.5 text-xs font-semibold disabled:opacity-50"
+                        style={{ background: t.accentMuted, color: t.accent, border: `1px solid ${t.border}`, borderRadius: 2, padding: '8px 12px' }}
+                      >
+                        {connectingId === service.id ? (
+                          <>
+                            <span className="material-symbols-outlined animate-spin text-[16px] select-none">progress_activity</span>
+                            Connecting…
+                          </>
+                        ) : (
+                          <>
+                            <span className="material-symbols-outlined text-[16px] select-none">add_link</span>
+                            Connect
+                          </>
+                        )}
+                      </button>
+                    )}
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        </section>
+
         {(() => {
           const stepsOrder = ['start', 'stripe_cancelled', 'firestore_deleted', 'prisma_deleted', 'storage_deleted', 'completed'];
 
@@ -712,9 +805,9 @@ export default function GeneralSettingsPage() {
             if (!activeJob) return 'PENDING';
             const currentStepIdx = stepsOrder.indexOf(activeJob.step || '');
             const targetStepIdx = stepsOrder.indexOf(stepKey);
-            
+
             if (activeJob.status === 'completed') return 'COMPLETED';
-            
+
             if (targetStepIdx < currentStepIdx) {
               return 'COMPLETED';
             } else if (targetStepIdx === currentStepIdx) {
@@ -727,26 +820,26 @@ export default function GeneralSettingsPage() {
 
           const getStepStatusText = (stepKey: string) => {
             const status = getStepStatus(stepKey);
-            if (status === 'COMPLETED') return '✓ DONE';
-            if (status === 'FAILED') return '✗ FAILED';
-            if (status === 'IN_PROGRESS') return '● PROCESSING...';
-            return '○ PENDING';
+            if (status === 'COMPLETED') return 'Done';
+            if (status === 'FAILED') return 'Failed';
+            if (status === 'IN_PROGRESS') return 'Processing…';
+            return 'Pending';
           };
 
           const getStepStatusColor = (stepKey: string) => {
             const status = getStepStatus(stepKey);
-            if (status === 'COMPLETED') return 'text-pw-primary font-bold';
-            if (status === 'FAILED') return 'text-error font-bold';
-            if (status === 'IN_PROGRESS') return 'text-amber-400 font-bold animate-pulse';
-            return 'text-pw-muted';
+            if (status === 'COMPLETED') return t.success;
+            if (status === 'FAILED') return t.alert;
+            if (status === 'IN_PROGRESS') return t.warn;
+            return t.muted;
           };
 
           if (loadingJob) {
             return (
-              <section className="col-span-12 rounded-2xl p-6 border border-white/10 bg-white/[0.02] backdrop-blur-xl">
+              <section className="col-span-12 p-5 sm:p-6" style={panel}>
                 <div className="flex items-center gap-2 justify-center py-6">
-                  <span className="material-symbols-outlined text-pw-primary animate-spin text-2xl">progress_activity</span>
-                  <span className="text-sm text-pw-muted font-mono">Verifying Deletion Status...</span>
+                  <span className="material-symbols-outlined animate-spin text-2xl" style={{ color: t.accent }}>progress_activity</span>
+                  <span className="text-sm font-mono" style={{ color: t.muted }}>Verifying deletion status…</span>
                 </div>
               </section>
             );
@@ -754,65 +847,59 @@ export default function GeneralSettingsPage() {
 
           if (activeJob) {
             return (
-              <section className="col-span-12 rounded-2xl p-6 relative overflow-hidden border border-error/20 bg-error/[0.02] backdrop-blur-xl">
-                <div className="flex items-center gap-2 mb-6">
-                  <span className="material-symbols-outlined text-error text-xl animate-spin">progress_activity</span>
-                  <h4 className="text-base font-semibold text-error/95">Account Deletion In Progress</h4>
+              <section
+                className="col-span-12 p-5 sm:p-6"
+                style={{ ...panel, borderColor: t.alert, background: t.alertMuted }}
+              >
+                <div className="flex items-center gap-2 mb-5">
+                  <span className="material-symbols-outlined text-xl animate-spin" style={{ color: t.alert }}>progress_activity</span>
+                  <h4 className="text-base font-semibold" style={{ color: t.alert }}>Account deletion in progress</h4>
                 </div>
 
-                <div className="p-6 rounded-xl bg-pw-glass-bg/50 border border-white/5 space-y-4">
-                  <p className="text-sm text-pw-muted">
-                    Your account is currently being deleted. The process is executed in a secure, server-side cascade.
+                <div className="p-4 space-y-4" style={{ background: t.surface, border: `1px solid ${t.border}`, borderRadius: 2 }}>
+                  <p className="text-sm" style={{ color: t.muted }}>
+                    Your account is being deleted in a secure, server-side cascade.
                   </p>
-                  
-                  {/* Steps List */}
-                  <div className="space-y-3 font-mono text-xs max-w-md">
-                    <div className="flex items-center justify-between border-b border-white/5 pb-2">
-                      <span>1. STRIPE BILLING CANCELLATION</span>
-                      <span className={getStepStatusColor('stripe_cancelled')}>
-                        {getStepStatusText('stripe_cancelled')}
-                      </span>
-                    </div>
-                    <div className="flex items-center justify-between border-b border-white/5 pb-2">
-                      <span>2. FIRESTORE WORKSPACE PURGE</span>
-                      <span className={getStepStatusColor('firestore_deleted')}>
-                        {getStepStatusText('firestore_deleted')}
-                      </span>
-                    </div>
-                    <div className="flex items-center justify-between border-b border-white/5 pb-2">
-                      <span>3. PRISMA DATABASE REASSIGNMENT</span>
-                      <span className={getStepStatusColor('prisma_deleted')}>
-                        {getStepStatusText('prisma_deleted')}
-                      </span>
-                    </div>
-                    <div className="flex items-center justify-between border-b border-white/5 pb-2">
-                      <span>4. CLOUD STORAGE SCRUBBING</span>
-                      <span className={getStepStatusColor('storage_deleted')}>
-                        {getStepStatusText('storage_deleted')}
-                      </span>
-                    </div>
-                    <div className="flex items-center justify-between pb-1">
-                      <span>5. CREDENTIAL REVOCATION</span>
-                      <span className={getStepStatusColor('completed')}>
-                        {getStepStatusText('completed')}
-                      </span>
-                    </div>
+
+                  <div className="space-y-2.5 font-mono text-xs max-w-md">
+                    {[
+                      ['stripe_cancelled', '1. Stripe billing cancellation'],
+                      ['firestore_deleted', '2. Firestore workspace purge'],
+                      ['prisma_deleted', '3. Prisma database reassignment'],
+                      ['storage_deleted', '4. Cloud storage scrubbing'],
+                      ['completed', '5. Credential revocation'],
+                    ].map(([key, label]) => (
+                      <div
+                        key={key}
+                        className="flex items-center justify-between pb-2"
+                        style={{ borderBottom: key === 'completed' ? 'none' : `1px solid ${t.divider}` }}
+                      >
+                        <span style={{ color: t.heading }}>{label}</span>
+                        <span className="font-semibold" style={{ color: getStepStatusColor(key) }}>
+                          {getStepStatusText(key)}
+                        </span>
+                      </div>
+                    ))}
                   </div>
                 </div>
 
                 {activeJob.status === 'failed' && (
-                  <div className="mt-6 p-4 rounded-xl bg-error/10 border border-error/20 text-error space-y-2">
+                  <div className="mt-5 p-4 space-y-2" style={{ background: t.surface, border: `1px solid ${t.border}`, borderRadius: 2, color: t.alert }}>
                     <p className="text-sm font-semibold flex items-center gap-2">
                       <span className="material-symbols-outlined text-sm">warning</span>
-                      Deletion Paused (Failure)
+                      Deletion paused (failure)
                     </p>
-                    <p className="text-xs font-mono bg-black/30 p-3 rounded border border-error/10 max-w-xl truncate">{activeJob.error || 'An unexpected error occurred.'}</p>
+                    <p className="text-xs font-mono p-3 max-w-xl truncate" style={{ background: t.surfaceMuted, border: `1px solid ${t.border}`, borderRadius: 2 }}>
+                      {activeJob.error || 'An unexpected error occurred.'}
+                    </p>
                     <button
+                      type="button"
                       onClick={handleResumeDeletion}
                       disabled={resuming}
-                      className="h-10 px-5 bg-error text-white rounded-lg text-sm font-medium hover:bg-error/80 active:scale-98 transition-all cursor-pointer disabled:opacity-50 disabled:pointer-events-none"
+                      className="pw-interactive-custom text-sm font-semibold disabled:opacity-50"
+                      style={{ background: t.alert, color: '#fff', border: 'none', borderRadius: 2, padding: '8px 16px' }}
                     >
-                      {resuming ? 'Resuming...' : 'Retry / Resume Deletion'}
+                      {resuming ? 'Resuming…' : 'Retry / resume deletion'}
                     </button>
                   </div>
                 )}
@@ -821,127 +908,149 @@ export default function GeneralSettingsPage() {
           }
 
           return (
-            <section className="col-span-12 rounded-2xl p-6 relative overflow-hidden border border-error/20 bg-error/[0.02] backdrop-blur-xl transition-all duration-200 hover:shadow-md">
-              <div className="flex items-center gap-2 mb-6">
-                <span className="material-symbols-outlined text-error text-xl select-none">warning</span>
-                <h4 className="text-base font-semibold text-error/90">Danger Zone</h4>
+            <section
+              className="col-span-12 p-5 sm:p-6"
+              style={{ ...panel, borderColor: t.alert }}
+            >
+              <div className="flex items-center gap-2 mb-5">
+                <span className="material-symbols-outlined text-xl select-none" style={{ color: t.alert }}>warning</span>
+                <h4 className="text-base font-semibold" style={{ color: t.alert }}>Danger zone</h4>
               </div>
 
               <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
                 <div>
-                  <p className="text-sm text-pw-black mb-1">Delete your account and all associated data.</p>
-                  <p className="text-xs text-pw-muted">
-                    This action is permanent and cannot be undone. All projects, team associations, and billing history will be erased.
+                  <p className="text-sm mb-1" style={{ color: t.heading }}>Delete your account and all associated data.</p>
+                  <p className="text-xs leading-relaxed" style={{ color: t.muted }}>
+                    Permanent. Projects, team associations, and billing history will be erased.
                   </p>
                 </div>
                 <button
+                  type="button"
                   onClick={() => setDeleteConfirmOpen(true)}
-                  className="h-10 px-5 rounded-lg bg-error/10 border border-error/30 text-error text-sm font-medium hover:bg-error/20 active:scale-98 transition-all cursor-pointer whitespace-nowrap"
+                  className="pw-interactive-custom text-sm font-semibold whitespace-nowrap"
+                  style={{ background: t.alertMuted, border: `1px solid ${t.border}`, borderRadius: 2, padding: '8px 16px', color: t.alert }}
                 >
-                  Delete Account
+                  Delete account
                 </button>
               </div>
 
-              {/* Confirmation Modal */}
               {deleteConfirmOpen && (
-                <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/75 backdrop-blur-md animate-fade-in">
-                  <div className="glass-card max-w-lg w-full mx-4 rounded-2xl p-6 border border-error/20 bg-pw-night-bg/98 relative overflow-hidden shadow-2xl space-y-6">
-                    <div className="flex items-center gap-2 border-b border-white/10 pb-4">
-                      <span className="material-symbols-outlined text-error text-2xl select-none">warning</span>
-                      <h3 className="text-xl font-bold text-error/95">Permanently Delete Account?</h3>
+                <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4">
+                  <div
+                    className="max-w-lg w-full p-6 space-y-5"
+                    style={{
+                      ...panel,
+                      borderColor: t.alert,
+                      boxShadow: isDark ? '0 16px 48px rgba(0,0,0,0.5)' : '0 16px 48px rgba(20,22,28,0.16)',
+                    }}
+                  >
+                    <div className="flex items-center gap-2 pb-4" style={{ borderBottom: `1px solid ${t.divider}` }}>
+                      <span className="material-symbols-outlined text-2xl select-none" style={{ color: t.alert }}>warning</span>
+                      <h3 className="text-lg font-semibold" style={{ color: t.alert }}>Permanently delete account?</h3>
                     </div>
-                    
-                    <div className="p-4 rounded-xl bg-error/10 border border-error/30 text-xs text-pw-muted space-y-3">
-                      <p className="font-semibold text-error text-sm flex items-center gap-1">
+
+                    <div className="p-4 text-xs space-y-3" style={{ background: t.alertMuted, border: `1px solid ${t.border}`, borderRadius: 2, color: t.muted }}>
+                      <p className="font-semibold text-sm flex items-center gap-1" style={{ color: t.alert }}>
                         <span className="material-symbols-outlined text-xs">error</span>
-                        THIS ACTION IS PERMANENT AND IRREVERSIBLE
+                        This action is permanent and irreversible
                       </p>
-                      <p>By confirming deletion, the following data will be permanently deleted from our servers:</p>
+                      <p>By confirming, the following will be permanently deleted:</p>
                       <ul className="list-disc pl-5 space-y-1">
                         <li>Your personal profile and preferences.</li>
-                        <li>All real estate projects you solely own, including their financial logs, activities, and uploaded files.</li>
-                        <li>Your uploaded documents and images in Cloud Storage.</li>
-                        <li>Any active billing plans or subscriptions (these will be canceled immediately).</li>
+                        <li>All real estate projects you solely own, including financial logs, activities, and files.</li>
+                        <li>Uploaded documents and images in Cloud Storage.</li>
+                        <li>Active billing plans or subscriptions (canceled immediately).</li>
                       </ul>
-                      <p className="font-semibold text-error">Shared Project Policy:</p>
+                      <p className="font-semibold" style={{ color: t.alert }}>Shared project policy:</p>
                       <p>
-                         Projects that are co-owned/shared with other members will NOT be deleted. 
-                         However, your membership will be removed, and any status updates or task assignments you authored on them will be anonymized and attributed to &quot;Deleted User&quot;.
+                        Co-owned projects will not be deleted. Your membership will be removed, and your contributions will be attributed to &quot;Deleted User&quot;.
                       </p>
                     </div>
 
                     {!reauthVerified ? (
-                      <div className="space-y-4 border-t border-white/10 pt-4">
-                        <p className="text-xs text-pw-muted">For your security, please verify your credentials before proceeding.</p>
-                        
+                      <div className="space-y-4 pt-4" style={{ borderTop: `1px solid ${t.divider}` }}>
+                        <p className="text-xs" style={{ color: t.muted }}>Verify your credentials before proceeding.</p>
+
                         {getAuthProviderId() === 'password' ? (
                           <div className="space-y-3">
                             <input
                               type="password"
-                              placeholder="Confirm Password"
+                              placeholder="Confirm password"
                               value={reauthPassword}
                               onChange={(e) => setReauthPassword(e.target.value)}
-                              className="glass-input w-full text-sm px-4 h-10 rounded-lg text-pw-black focus:ring-2 focus:ring-pw-primary focus:outline-none transition-all duration-150"
+                              className="w-full text-sm px-3 h-10 outline-none"
+                              style={field}
                             />
                             <button
+                              type="button"
                               onClick={handleReauthenticate}
                               disabled={reauthLoading}
-                              className="w-full h-10 px-5 rounded-lg bg-error/10 border border-error/30 text-error hover:bg-error/20 active:scale-98 text-sm font-medium transition-all cursor-pointer"
+                              className="pw-interactive-custom w-full text-sm font-semibold"
+                              style={{ background: t.alertMuted, border: `1px solid ${t.border}`, borderRadius: 2, padding: '8px 16px', color: t.alert }}
                             >
-                              {reauthLoading ? 'Verifying...' : 'Verify Password'}
+                              {reauthLoading ? 'Verifying…' : 'Verify password'}
                             </button>
                           </div>
                         ) : (
                           <button
+                            type="button"
                             onClick={handleReauthenticate}
                             disabled={reauthLoading}
-                            className="w-full h-10 px-5 rounded-lg bg-pw-primary text-pw-black font-medium text-sm hover:opacity-90 active:scale-98 transition-all flex items-center justify-center gap-2 cursor-pointer"
+                            className="pw-interactive-custom w-full flex items-center justify-center gap-2 text-sm font-semibold"
+                            style={{ background: t.ctaBg, color: t.ctaFg, border: 'none', borderRadius: 2, padding: '8px 16px' }}
                           >
                             <span className="material-symbols-outlined text-[16px]">login</span>
-                            {reauthLoading ? 'Verifying...' : `Re-authenticate with ${getAuthProviderId() === 'google.com' ? 'Google' : 'Facebook'}`}
+                            {reauthLoading ? 'Verifying…' : `Re-authenticate with ${getAuthProviderId() === 'google.com' ? 'Google' : 'Facebook'}`}
                           </button>
                         )}
-                        <div className="flex justify-end pt-2">
+                        <div className="flex justify-end pt-1">
                           <button
+                            type="button"
                             onClick={() => {
                               setDeleteConfirmOpen(false);
                               setReauthPassword('');
                             }}
-                            className="h-10 px-5 rounded-lg bg-pw-glass-bg border border-white/10 text-pw-muted text-sm font-medium hover:bg-white/5 active:scale-98 transition-all cursor-pointer"
+                            className="pw-interactive-custom text-sm font-semibold"
+                            style={{ background: 'transparent', border: `1px solid ${t.border}`, borderRadius: 2, padding: '8px 14px', color: t.muted }}
                           >
                             Cancel
                           </button>
                         </div>
                       </div>
                     ) : (
-                      <div className="space-y-4 border-t border-white/10 pt-4">
-                        <p className="text-xs text-pw-muted">
-                          Type <span className="font-mono font-bold text-error">DELETE</span> below to confirm your deletion request.
+                      <div className="space-y-4 pt-4" style={{ borderTop: `1px solid ${t.divider}` }}>
+                        <p className="text-xs" style={{ color: t.muted }}>
+                          Type <span className="font-mono font-bold" style={{ color: t.alert }}>DELETE</span> below to confirm.
                         </p>
-                        
+
                         <input
                           type="text"
                           placeholder='Type "DELETE" to confirm'
                           value={deleteInput}
                           onChange={(e) => setDeleteInput(e.target.value)}
-                          className="glass-input w-full text-sm px-4 h-10 rounded-lg text-pw-black focus:ring-2 focus:ring-pw-primary focus:outline-none transition-all duration-150"
+                          className="w-full text-sm px-3 h-10 outline-none"
+                          style={field}
                         />
 
-                        <div className="flex gap-3">
+                        <div className="flex gap-2.5">
                           <button
+                            type="button"
                             onClick={startDeletionProcess}
                             disabled={deleteInput !== 'DELETE' || resuming}
-                            className="flex-1 h-10 px-5 rounded-lg bg-error text-white text-sm font-medium hover:bg-error/90 active:scale-98 disabled:opacity-50 disabled:pointer-events-none transition-all cursor-pointer"
+                            className="pw-interactive-custom flex-1 text-sm font-semibold disabled:opacity-50"
+                            style={{ background: t.alert, color: '#fff', border: 'none', borderRadius: 2, padding: '8px 16px' }}
                           >
-                            {resuming ? 'Starting...' : 'Confirm Permanent Deletion'}
+                            {resuming ? 'Starting…' : 'Confirm permanent deletion'}
                           </button>
                           <button
+                            type="button"
                             onClick={() => {
                               setDeleteConfirmOpen(false);
                               setDeleteInput('');
                               setReauthPassword('');
                             }}
-                            className="h-10 px-5 rounded-lg bg-pw-glass-bg border border-white/10 text-pw-muted text-sm font-medium hover:bg-white/5 active:scale-98 transition-all cursor-pointer"
+                            className="pw-interactive-custom text-sm font-semibold"
+                            style={{ background: 'transparent', border: `1px solid ${t.border}`, borderRadius: 2, padding: '8px 14px', color: t.muted }}
                           >
                             Cancel
                           </button>

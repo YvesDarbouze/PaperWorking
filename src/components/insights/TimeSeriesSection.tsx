@@ -3,36 +3,39 @@
 import React, { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { useAuth } from '@/context/AuthContext';
+import { useTheme } from '@/lib/utils/ThemeProvider';
 import { TimeSeriesChart } from '@/components/Charts/TimeSeriesChart';
 import { ChevronDown } from 'lucide-react';
+import { insightsTokens, panelStyle } from './insightsTheme';
 
 interface TimeSeriesSectionProps {
   projectId: string | null;
 }
 
 const METRIC_OPTIONS = [
-  { id: 'noi', name: 'Net Operating Income', color: '#10b981', unit: 'currency' },
-  { id: 'cash_flow', name: 'Net Cash Flow', color: '#6366f1', unit: 'currency' },
-  { id: 'occupancy', name: 'Occupancy Rate', color: '#f59e0b', unit: 'percent' },
-  { id: 'revenue', name: 'Gross Revenue', color: '#8b5cf6', unit: 'currency' },
-  { id: 'expenses', name: 'Operating Expenses', color: '#f43f5e', unit: 'currency' },
+  { id: 'noi', name: 'Net Operating Income', color: '#4F6F78', unit: 'currency' },
+  { id: 'cash_flow', name: 'Net Cash Flow', color: '#8A734F', unit: 'currency' },
+  { id: 'occupancy', name: 'Occupancy Rate', color: '#C4843A', unit: 'percent' },
+  { id: 'revenue', name: 'Gross Revenue', color: '#7A9EAA', unit: 'currency' },
+  { id: 'expenses', name: 'Operating Expenses', color: '#C45C3E', unit: 'currency' },
 ] as const;
 
 type MetricId = typeof METRIC_OPTIONS[number]['id'];
 
-function TrendCard({ 
-  initialMetric, 
-  projectId 
-}: { 
-  initialMetric: MetricId; 
+function TrendCard({
+  initialMetric,
+  projectId
+}: {
+  initialMetric: MetricId;
   projectId: string | null;
 }) {
   const { user } = useAuth();
+  const { theme } = useTheme();
+  const t = insightsTokens(theme === 'dark');
   const [metricId, setMetricId] = useState<MetricId>(initialMetric);
 
   const selectedOption = METRIC_OPTIONS.find(o => o.id === metricId)!;
 
-  // Query trend data
   const { data, isLoading, error } = useQuery({
     queryKey: ['insightsTrends', metricId, projectId],
     queryFn: async () => {
@@ -59,44 +62,54 @@ function TrendCard({
   const chartData = data ?? [];
 
   return (
-    <div className="bg-white dark:bg-[#121014]/50 border border-slate-200 dark:border-white/10 rounded-2xl p-5 shadow-sm space-y-4 hover:shadow-md transition-shadow duration-300">
-      <div className="flex items-center justify-between">
-        <h3 className="text-sm font-semibold tracking-wide text-slate-500 dark:text-slate-400 uppercase font-outfit">
+    <div className="p-4 space-y-4" style={panelStyle(t)}>
+      <div className="flex items-center justify-between gap-2">
+        <h3 className="text-[11px] font-semibold tracking-wider uppercase" style={{ color: t.muted }}>
           {selectedOption.name}
         </h3>
-        
-        {/* Metric Dropdown Selector */}
+
         <div className="relative">
           <select
             value={metricId}
             onChange={(e) => setMetricId(e.target.value as MetricId)}
-            className="appearance-none bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-lg py-1 px-3 pr-8 text-xs font-semibold text-slate-800 dark:text-slate-200 focus:outline-none focus:ring-1 focus:ring-emerald-500 cursor-pointer"
+            className="appearance-none py-1 px-2.5 pr-7 text-xs font-semibold outline-none cursor-pointer"
+            style={{
+              background: t.inputBg,
+              border: `1px solid ${t.border}`,
+              color: t.heading,
+              borderRadius: 2,
+            }}
           >
             {METRIC_OPTIONS.map((opt) => (
-              <option key={opt.id} value={opt.id} className="dark:bg-slate-950">
+              <option key={opt.id} value={opt.id}>
                 {opt.name}
               </option>
             ))}
           </select>
-          <ChevronDown className="w-3.5 h-3.5 absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none" />
+          <ChevronDown className="w-3.5 h-3.5 absolute right-2 top-1/2 -translate-y-1/2 pointer-events-none" style={{ color: t.muted }} />
         </div>
       </div>
 
       {isLoading ? (
-        <div className="h-[280px] w-full flex flex-col justify-end space-y-2 animate-pulse bg-slate-50/50 dark:bg-white/[0.01] border border-dashed border-slate-200 dark:border-white/5 rounded-2xl p-4">
+        <div
+          className="h-[280px] w-full flex flex-col justify-end space-y-2 animate-pulse p-4"
+          style={{ border: `1px dashed ${t.border}`, borderRadius: 2, background: t.hover }}
+        >
           <div className="flex justify-between items-end h-full w-full gap-2 px-2">
             {[...Array(12)].map((_, i) => (
-              <div 
-                key={i} 
-                className="bg-slate-200 dark:bg-white/10 rounded-t w-full" 
-                style={{ height: `${20 + Math.sin(i) * 50}%` }}
+              <div
+                key={i}
+                className="rounded-t w-full"
+                style={{ height: `${20 + Math.sin(i) * 50}%`, background: t.divider }}
               />
             ))}
           </div>
-          <div className="h-4 bg-slate-200 dark:bg-white/10 rounded w-1/3 mx-auto" />
         </div>
       ) : error ? (
-        <div className="h-[280px] w-full flex items-center justify-center border border-dashed border-rose-200 dark:border-rose-500/20 bg-rose-500/5 rounded-2xl text-rose-500 text-xs font-medium px-4 text-center">
+        <div
+          className="h-[280px] w-full flex items-center justify-center text-xs font-medium px-4 text-center"
+          style={{ border: `1px dashed ${t.alert}`, background: t.alertMuted, color: t.alert, borderRadius: 2 }}
+        >
           Failed to load trend statistics. Please check your network.
         </div>
       ) : (
@@ -113,22 +126,30 @@ function TrendCard({
 }
 
 export function TimeSeriesSection({ projectId }: TimeSeriesSectionProps) {
+  const { theme } = useTheme();
+  const t = insightsTokens(theme === 'dark');
+
   return (
-    <div className="space-y-4">
+    <section className="space-y-3">
       <div className="flex items-center justify-between">
-        <h2 className="text-lg font-bold text-slate-900 dark:text-white font-outfit tracking-tight">
-          Trends
-        </h2>
-        <span className="text-[10px] uppercase font-bold tracking-wider text-slate-400 dark:text-slate-500">
-          Last 24 Months
+        <div>
+          <p className="text-[11px] font-medium tracking-[0.12em] uppercase mb-0.5" style={{ color: t.accent }}>
+            Performance
+          </p>
+          <h2 className="text-[1.1rem] font-semibold tracking-tight" style={{ color: t.heading }}>
+            Trends
+          </h2>
+        </div>
+        <span className="text-[10px] uppercase font-semibold tracking-wider" style={{ color: t.muted }}>
+          Last 24 months
         </span>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
         <TrendCard initialMetric="noi" projectId={projectId} />
         <TrendCard initialMetric="cash_flow" projectId={projectId} />
         <TrendCard initialMetric="occupancy" projectId={projectId} />
       </div>
-    </div>
+    </section>
   );
 }

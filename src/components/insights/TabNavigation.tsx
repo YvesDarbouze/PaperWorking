@@ -2,6 +2,8 @@
 
 import React from 'react';
 import { LucideIcon } from 'lucide-react';
+import { useTheme } from '@/lib/utils/ThemeProvider';
+import { insightsTokens } from './insightsTheme';
 
 export interface TabCategory {
   id: string;
@@ -20,28 +22,43 @@ export function TabNavigation({
   activeTab,
   onTabChange
 }: TabNavigationProps) {
+  const { theme } = useTheme();
+  const t = insightsTokens(theme === 'dark');
+
   return (
-    <div className="flex overflow-x-auto pb-2 -mx-2 px-2 scrollbar-none border-b border-slate-200 dark:border-white/5">
-      <div className="flex space-x-1.5">
-        {categories.map((cat) => {
-          const IconComp = cat.icon;
-          const isActive = activeTab === cat.id;
-          return (
-            <button
-              key={cat.id}
-              onClick={() => onTabChange(cat.id)}
-              className={`flex items-center gap-2.5 px-4 py-2.5 rounded-lg text-xs font-semibold tracking-wide transition-all duration-200 whitespace-nowrap active:scale-98 ${
-                isActive
-                  ? 'bg-slate-900 dark:bg-white text-white dark:text-slate-950 shadow-md shadow-slate-900/10'
-                  : 'bg-white dark:bg-white/[0.02] border border-slate-200 dark:border-white/10 text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-white/[0.05] hover:text-slate-900 dark:hover:text-white'
-              }`}
-            >
-              <IconComp className={`w-4 h-4 ${isActive ? 'stroke-[2.5px]' : 'opacity-80'}`} />
-              {cat.name}
-            </button>
-          );
-        })}
-      </div>
+    <div
+      className="flex overflow-x-auto no-scrollbar"
+      style={{ borderBottom: `1px solid ${t.border}` }}
+      role="tablist"
+      aria-label="Insight categories"
+    >
+      {categories.map((cat) => {
+        const IconComp = cat.icon;
+        const isActive = activeTab === cat.id;
+        return (
+          <button
+            key={cat.id}
+            type="button"
+            role="tab"
+            aria-selected={isActive}
+            onClick={() => onTabChange(cat.id)}
+            className="pw-interactive-custom flex items-center gap-2 px-3.5 py-2.5 text-[12px] font-medium whitespace-nowrap transition-colors"
+            style={{
+              color: isActive ? t.heading : t.muted,
+              background: 'transparent',
+              border: 'none',
+              borderBottom: isActive ? `2px solid ${t.accent}` : '2px solid transparent',
+              borderRadius: 0,
+              marginBottom: -1,
+              boxShadow: 'none',
+              padding: '10px 14px',
+            }}
+          >
+            <IconComp className="w-3.5 h-3.5 shrink-0" style={{ color: isActive ? t.accent : t.muted }} />
+            {cat.name}
+          </button>
+        );
+      })}
     </div>
   );
 }

@@ -3,12 +3,12 @@
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { useAuth } from '@/context/AuthContext';
+import { useTheme } from '@/lib/utils/ThemeProvider';
 import { CloudStorageMeter } from '@/components/settings/CloudStorageMeter';
 import AccountTierSettings from '@/components/settings/AccountTierSettings';
+import { billingTokens, panelStyle, statusStyle } from '@/components/settings/billingTheme';
 
-/* ═══════════════════════════════════════════════════════
-   Billing & Subscription Settings (Luminous Glass Terminal)
-   ═══════════════════════════════════════════════════════ */
+/* Billing — subscription & payment ops desk */
 
 const PLAN_PRICING: Record<string, { label: string; price: string; period: string }> = {
   'Individual':      { label: 'Investor',         price: '$59', period: '/mo' },
@@ -28,12 +28,12 @@ const CANONICAL_PRICES: Record<string, number> = {
   'Individual': 59, 'Team': 99, 'Vendor Network': 39, 'None': 0,
 };
 
-const STATUS_BADGE: Record<string, { label: string; cls: string; iconName: string }> = {
-  active:   { label: 'Active',   cls: 'bg-pw-primary/10 text-pw-primary border-pw-primary/30 shadow-sm shadow-pw-primary/10', iconName: 'check_circle' },
-  trialing: { label: 'Trial',    cls: 'bg-pw-primary/10 text-pw-primary border-pw-primary/30', iconName: 'check_circle' },
-  past_due: { label: 'Past Due', cls: 'bg-amber-500/10 text-amber-600 border-amber-500/30', iconName: 'warning' },
-  canceled: { label: 'Canceled', cls: 'bg-error/10 text-error border-error/30', iconName: 'warning' },
-  inactive: { label: 'Inactive', cls: 'bg-pw-glass-bg text-pw-muted border-pw-border', iconName: 'warning' },
+const STATUS_LABEL: Record<string, string> = {
+  active: 'Active',
+  trialing: 'Trial',
+  past_due: 'Past due',
+  canceled: 'Canceled',
+  inactive: 'Inactive',
 };
 
 interface BillingInvoice {
@@ -56,6 +56,8 @@ interface PaymentMethodData {
 
 export default function BillingSettingsPage() {
   const { user, profile } = useAuth();
+  const { theme } = useTheme();
+  const isDark = theme === 'dark';
   const [portalLoading, setPortalLoading]     = useState(false);
   const [portalError, setPortalError]         = useState<string | null>(null);
   const [planChangeLoading, setPlanChangeLoading] = useState<string | null>(null);
@@ -146,7 +148,7 @@ export default function BillingSettingsPage() {
   const hasCard   = pmFetched ? !!paymentMethod : !!(profile?.stripeCustomerId || plan !== 'None');
 
   const planInfo    = PLAN_PRICING[plan]   ?? PLAN_PRICING['None'];
-  const statusBadge = STATUS_BADGE[status] ?? STATUS_BADGE['inactive'];
+  const statusLabel = STATUS_LABEL[status] ?? STATUS_LABEL['inactive'];
 
   // Format next billing date from actual stripe subscription data
   const nextBillingStr = currentPeriodEnd
@@ -225,148 +227,191 @@ export default function BillingSettingsPage() {
   // that data is managed on the Team settings page.
   const maxSeats = plan === 'Team' ? 10 : 1;
 
+  const t = billingTokens(isDark);
+  const panel = panelStyle(t);
+  const subStatus = statusStyle(t, status);
+
   return (
-    <div className="w-full space-y-8">
+    <div className="w-full space-y-6" style={{ color: t.body }}>
+      <header className="pb-5" style={{ borderBottom: `1px solid ${t.divider}` }}>
+        <p className="text-[11px] font-medium tracking-[0.14em] uppercase mb-1" style={{ color: t.accent }}>
+          Subscription
+        </p>
+        <h2 className="text-[1.35rem] font-semibold tracking-tight" style={{ color: t.heading }}>
+          Billing
+        </h2>
+        <p className="text-sm mt-1.5 leading-relaxed max-w-xl" style={{ color: t.muted }}>
+          Plan status, payment method, invoices, and usage for this workspace.
+        </p>
+      </header>
+
       {tokenError && (
-        <div className="text-xs text-pw-muted bg-error/10 border border-error/30 rounded-lg px-4 py-3 flex items-center gap-2">
-          <span className="material-symbols-outlined text-[16px] text-error select-none">error</span>
-          <span className="text-error">{tokenError}</span>
+        <div
+          className="text-xs px-4 py-3 flex items-center gap-2"
+          style={{ background: t.alertMuted, border: `1px solid ${t.border}`, borderRadius: 2, color: t.alert }}
+        >
+          <span className="material-symbols-outlined text-[16px] select-none">error</span>
+          <span>{tokenError}</span>
         </div>
       )}
-      {/* ─── 12-Column Bento Grid ─── */}
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
 
-        {/* ━━━ 1. Hero Plan Card (col-span-8) ━━━ */}
-        <section className="lg:col-span-8 glass-card rounded-2xl p-6 relative overflow-hidden min-h-[280px] flex flex-col justify-between transition-all duration-200 hover:shadow-md">
-          {/* Glow blob */}
-          <div className="absolute -top-24 -right-24 w-64 h-64 bg-pw-primary/10 rounded-full blur-3xl pointer-events-none" />
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-5 items-start">
 
-          <div className="relative z-10">
-            <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6 mb-8">
+        {/* Current plan */}
+        <section className="lg:col-span-8 p-5 sm:p-6 flex flex-col justify-between min-h-[260px]" style={panel}>
+          <div>
+            <div className="flex flex-col md:flex-row justify-between items-start md:items-end gap-5 mb-6">
               <div>
-                <span className="inline-block px-3 py-1 bg-pw-primary/10 text-pw-primary text-[10px] font-extrabold uppercase tracking-widest rounded-full border border-pw-primary/20 mb-3">
-                  Current Plan
+                <span
+                  className="inline-block px-2 py-0.5 text-[10px] font-semibold uppercase tracking-[0.12em] mb-2"
+                  style={{ background: t.accentMuted, color: t.accent, border: `1px solid ${t.border}`, borderRadius: 2 }}
+                >
+                  Current plan
                 </span>
-                <h3 className="text-3xl font-bold text-pw-black flex items-center gap-3">
+                <h3 className="text-2xl font-semibold tracking-tight" style={{ color: t.heading }}>
                   {planInfo.label}
-                  <span className="material-symbols-outlined text-pw-primary text-2xl" style={{ fontVariationSettings: "'FILL' 1" }}>verified</span>
                 </h3>
               </div>
               <div className="text-left md:text-right">
-                <p className="text-xs font-medium text-pw-muted uppercase tracking-[0.5px] mb-1">Next Billing Date</p>
-                <p className="font-headline-md text-headline-md text-pw-black">{nextBillingStr}</p>
-                <p className="font-body-md text-body-md text-pw-muted mt-1">{planInfo.price}{planInfo.period} USD / month</p>
+                <p className="text-[11px] font-semibold uppercase tracking-[0.12em] mb-1" style={{ color: t.muted }}>
+                  Next billing date
+                </p>
+                <p className="text-lg font-semibold tabular-nums" style={{ color: t.heading }}>{nextBillingStr}</p>
+                <p className="text-sm mt-1" style={{ color: t.muted }}>
+                  {planInfo.price}{planInfo.period} USD
+                </p>
               </div>
             </div>
 
-            {/* Trial Status Banner */}
             {isTrialing && (
-              <div className="bg-pw-primary/5 border border-pw-primary/20 rounded-lg px-5 py-4 mb-6 flex items-start gap-3">
-                <span className="material-symbols-outlined text-pw-primary text-xl mt-0.5" style={{ fontVariationSettings: "'FILL' 1" }}>hourglass_top</span>
+              <div
+                className="px-4 py-3.5 mb-5 flex items-start gap-3"
+                style={{ background: t.accentMuted, border: `1px solid ${t.border}`, borderRadius: 2 }}
+              >
+                <span className="material-symbols-outlined text-xl mt-0.5 select-none" style={{ color: t.accent }}>hourglass_top</span>
                 <div>
-                  <p className="font-label-md text-label-md text-pw-black">Free Trial Active</p>
-                  <p className="font-body-sm text-body-sm text-pw-muted mt-0.5">
-                    Your trial {trialEndStr ? `ends on ${trialEndStr}` : 'is active'}. You won&apos;t be charged until your trial period ends.
+                  <p className="text-sm font-semibold" style={{ color: t.heading }}>Free trial active</p>
+                  <p className="text-xs mt-0.5 leading-relaxed" style={{ color: t.muted }}>
+                    Your trial {trialEndStr ? `ends on ${trialEndStr}` : 'is active'}. You won't be charged until it ends.
                   </p>
                 </div>
               </div>
             )}
 
-            {/* Cancellation Warning */}
             {isCanceling && !isTrialing && (
-              <div className="bg-amber-500/5 border border-amber-500/20 rounded-lg px-5 py-4 mb-6 flex items-start gap-3">
-                <span className="material-symbols-outlined text-amber-600 text-xl mt-0.5" style={{ fontVariationSettings: "'FILL' 1" }}>warning</span>
+              <div
+                className="px-4 py-3.5 mb-5 flex items-start gap-3"
+                style={{ background: t.warnMuted, border: `1px solid ${t.border}`, borderRadius: 2 }}
+              >
+                <span className="material-symbols-outlined text-xl mt-0.5 select-none" style={{ color: t.warn }}>warning</span>
                 <div>
-                  <p className="font-label-md text-label-md text-pw-black">Subscription Canceling</p>
-                  <p className="font-body-sm text-body-sm text-pw-muted mt-0.5">
-                    Your plan will remain active until {nextBillingStr}. After that, you&apos;ll lose access to paid features.
+                  <p className="text-sm font-semibold" style={{ color: t.heading }}>Subscription canceling</p>
+                  <p className="text-xs mt-0.5 leading-relaxed" style={{ color: t.muted }}>
+                    Active until {nextBillingStr}. After that, paid features will end.
                   </p>
                   <button
+                    type="button"
                     onClick={openPortal}
                     disabled={portalLoading}
-                    className="mt-2 h-9 px-4 rounded-lg bg-pw-primary/10 text-pw-primary text-xs font-medium hover:bg-pw-primary/20 active:scale-98 disabled:opacity-50 disabled:pointer-events-none transition-all flex items-center justify-center gap-2 cursor-pointer"
+                    className="pw-interactive-custom mt-2 text-xs font-semibold disabled:opacity-50"
+                    style={{ background: 'transparent', border: 'none', padding: 0, color: t.accent }}
                   >
-                    Reactivate Subscription →
+                    Reactivate subscription →
                   </button>
                 </div>
               </div>
             )}
 
-            {/* Seat Limit */}
             {plan !== 'None' && (
-              <div className="bg-pw-glass-bg/50 rounded-lg p-6 border border-white/5">
-                <div className="flex justify-between items-end mb-4">
+              <div className="p-4" style={{ background: t.surfaceMuted, border: `1px solid ${t.border}`, borderRadius: 2 }}>
+                <div className="flex justify-between items-end mb-3">
                   <div>
-                    <h4 className="text-sm font-semibold text-pw-black mb-1">Seat Limit</h4>
-                    <p className="font-body-sm text-body-sm text-pw-muted">
+                    <h4 className="text-sm font-semibold mb-1" style={{ color: t.heading }}>Seat limit</h4>
+                    <p className="text-xs leading-relaxed" style={{ color: t.muted }}>
                       Up to{' '}
-                      <span className="text-pw-primary font-bold">{maxSeats}</span>{' '}
+                      <span className="font-semibold tabular-nums" style={{ color: t.accent }}>{maxSeats}</span>{' '}
                       {maxSeats === 1 ? 'seat' : 'seats'} on this plan
                     </p>
                   </div>
                 </div>
-                <div className="mt-2 flex justify-between items-center">
-                  <Link href="/dashboard/settings/team" className="font-label-md text-label-md text-pw-muted hover:text-pw-black flex items-center gap-2 transition-colors cursor-pointer">
-                    <span className="material-symbols-outlined text-[16px]">group_add</span> Manage Team
+                <div className="flex justify-between items-center gap-3 flex-wrap">
+                  <Link
+                    href="/dashboard/settings/team"
+                    className="text-xs font-semibold flex items-center gap-1.5 transition-opacity hover:opacity-80"
+                    style={{ color: t.muted }}
+                  >
+                    <span className="material-symbols-outlined text-[16px]">group_add</span>
+                    Manage team
                   </Link>
                   <button
+                    type="button"
                     onClick={openPortal}
                     disabled={portalLoading}
-                    className="luminous-button h-10 px-5 rounded-lg text-sm font-medium active:scale-98 disabled:opacity-50 disabled:pointer-events-none transition-all flex items-center justify-center gap-2 cursor-pointer"
+                    className="pw-interactive-custom flex items-center justify-center gap-2 text-sm font-semibold disabled:opacity-50"
+                    style={{ background: t.ctaBg, color: t.ctaFg, border: 'none', borderRadius: 2, padding: '8px 16px' }}
                   >
                     {portalLoading ? (
                       <span className="material-symbols-outlined animate-spin text-[16px] select-none">progress_activity</span>
                     ) : (
                       <span className="material-symbols-outlined text-[16px] select-none">add</span>
                     )}
-                    {portalLoading ? 'Synchronizing…' : 'Add Seats'}
+                    {portalLoading ? 'Synchronizing…' : 'Add seats'}
                   </button>
                 </div>
               </div>
             )}
           </div>
 
-          {/* Manage Subscription button for 'None' plan or secondary action */}
           {plan === 'None' && (
-            <div className="flex flex-col sm:flex-row gap-4 mt-6 relative z-10">
-              <Link href="/pricing" className="luminous-button h-10 px-5 rounded-lg text-sm font-medium active:scale-98 transition-all flex items-center justify-center gap-2">
-                Choose a Plan
+            <div className="flex flex-col sm:flex-row gap-3 mt-5">
+              <Link
+                href="/pricing"
+                className="pw-interactive-custom inline-flex items-center justify-center text-sm font-semibold"
+                style={{ background: t.ctaBg, color: t.ctaFg, borderRadius: 2, padding: '8px 16px' }}
+              >
+                Choose a plan
               </Link>
             </div>
           )}
         </section>
 
-        {/* ━━━ 2. Payment Method (col-span-4) ━━━ */}
-        <section className="lg:col-span-4 glass-card rounded-2xl p-6 flex flex-col justify-between min-h-[280px] transition-all duration-200 hover:shadow-md">
-          <h4 className="text-base font-semibold text-pw-black mb-6">Payment Method</h4>
+        {/* Payment method */}
+        <section className="lg:col-span-4 p-5 sm:p-6 flex flex-col justify-between min-h-[260px]" style={panel}>
+          <h4 className="text-base font-semibold mb-5" style={{ color: t.heading }}>Payment method</h4>
 
           {pmLoading ? (
-            /* Skeleton while loading */
             <div className="flex-1 flex flex-col justify-between">
-              <div className="bg-pw-glass-bg/50 rounded-lg p-5 border border-white/5 flex items-start gap-4 mb-4 animate-pulse">
-                <div className="w-12 h-8 bg-pw-glass-bg rounded shrink-0 mt-1" />
+              <div className="p-4 flex items-start gap-4 mb-4 animate-pulse" style={{ background: t.surfaceMuted, border: `1px solid ${t.border}`, borderRadius: 2 }}>
+                <div className="w-12 h-8 shrink-0 mt-1" style={{ background: t.surfaceHigh, borderRadius: 2 }} />
                 <div className="flex-1 space-y-2">
-                  <div className="h-4 bg-pw-glass-bg rounded w-32" />
-                  <div className="h-3 bg-pw-glass-bg rounded w-20" />
+                  <div className="h-4 w-32" style={{ background: t.surfaceHigh, borderRadius: 2 }} />
+                  <div className="h-3 w-20" style={{ background: t.surfaceHigh, borderRadius: 2 }} />
                 </div>
               </div>
-              <div className="h-10 bg-pw-glass-bg rounded-lg animate-pulse" />
+              <div className="h-10 animate-pulse" style={{ background: t.surfaceMuted, borderRadius: 2 }} />
             </div>
           ) : hasCard && lastFour ? (
             <div className="flex-1 flex flex-col justify-between">
-              {/* Card display */}
-              <div className="bg-pw-glass-bg/50 rounded-lg p-5 border border-white/5 flex items-start gap-4 mb-4 relative overflow-hidden group">
-                {/* Abstract blob effect */}
-                <div className="absolute -right-8 -top-8 w-24 h-24 bg-pw-primary/20 rounded-full blur-xl group-hover:bg-pw-primary/30 transition-colors" />
-                <div className="w-12 h-8 bg-pw-glass-bg rounded flex items-center justify-center border border-white/10 shrink-0 mt-1">
-                  <span className="font-mono text-xs font-bold italic text-pw-black/80">{(cardBrand ?? 'Card').toUpperCase()}</span>
+              <div className="p-4 flex items-start gap-4 mb-4" style={{ background: t.surfaceMuted, border: `1px solid ${t.border}`, borderRadius: 2 }}>
+                <div
+                  className="w-12 h-8 flex items-center justify-center shrink-0 mt-1"
+                  style={{ background: t.surface, border: `1px solid ${t.border}`, borderRadius: 2 }}
+                >
+                  <span className="font-mono text-[10px] font-bold" style={{ color: t.heading }}>
+                    {(cardBrand ?? 'Card').toUpperCase()}
+                  </span>
                 </div>
-                <div className="flex-1 relative z-10">
-                  <p className="font-label-md text-label-md text-pw-black flex items-center gap-2">
+                <div className="flex-1 min-w-0">
+                  <p className="text-sm font-semibold flex items-center gap-2 flex-wrap" style={{ color: t.heading }}>
                     <span className="font-mono tracking-widest">•••• {lastFour}</span>
-                    <span className="px-2 py-0.5 bg-pw-primary/10 text-pw-primary text-[10px] font-bold rounded-full border border-pw-primary/20">DEFAULT</span>
+                    <span
+                      className="px-1.5 py-0.5 text-[9px] font-semibold uppercase tracking-wider"
+                      style={{ background: t.accentMuted, color: t.accent, borderRadius: 2 }}
+                    >
+                      Default
+                    </span>
                   </p>
-                  <p className="font-body-sm text-body-sm text-pw-muted mt-1">
+                  <p className="text-xs mt-1" style={{ color: t.muted }}>
                     {expMonth && expYear
                       ? `Expires ${String(expMonth).padStart(2, '0')}/${String(expYear).slice(-2)}`
                       : 'Expiry unavailable'}
@@ -374,42 +419,55 @@ export default function BillingSettingsPage() {
                 </div>
               </div>
 
-              {/* Update button */}
               <button
+                type="button"
                 onClick={openPortal}
                 disabled={portalLoading}
-                className="w-full h-10 px-5 rounded-lg border border-white/10 text-pw-black text-sm font-medium hover:bg-white/5 hover:border-white/20 active:scale-98 disabled:opacity-50 disabled:pointer-events-none transition-all flex items-center justify-center gap-2 cursor-pointer"
+                className="pw-interactive-custom w-full flex items-center justify-center gap-2 text-sm font-semibold disabled:opacity-50"
+                style={{ background: 'transparent', border: `1px solid ${t.border}`, borderRadius: 2, padding: '8px 16px', color: t.heading }}
               >
                 <span className="material-symbols-outlined text-[16px]">credit_card</span>
-                Update Payment Method
+                Update payment method
               </button>
             </div>
           ) : (
-            <div className="text-center py-8 border border-dashed border-pw-border rounded-2xl bg-pw-glass-bg/50 flex-1 flex flex-col justify-center items-center">
-              <span className="material-symbols-outlined text-3xl text-pw-muted mb-2 select-none">credit_card</span>
-              <p className="text-sm text-pw-muted mb-4">No payment method on file.</p>
-              <Link href="/pricing" className="luminous-button h-10 px-5 rounded-lg text-sm font-medium active:scale-98 transition-all flex items-center justify-center gap-2">
-                Configure Payment
+            <div
+              className="text-center py-8 flex-1 flex flex-col justify-center items-center"
+              style={{ border: `1px dashed ${t.border}`, borderRadius: 2, background: t.surfaceMuted }}
+            >
+              <span className="material-symbols-outlined text-3xl mb-2 select-none" style={{ color: t.muted }}>credit_card</span>
+              <p className="text-sm mb-4" style={{ color: t.muted }}>No payment method on file.</p>
+              <Link
+                href="/pricing"
+                className="pw-interactive-custom inline-flex items-center justify-center text-sm font-semibold"
+                style={{ background: t.ctaBg, color: t.ctaFg, borderRadius: 2, padding: '8px 16px' }}
+              >
+                Configure payment
               </Link>
             </div>
           )}
 
           {portalError && (
-            <p className="text-xs text-error bg-error/10 border border-error/30 rounded-lg px-4 py-3 mt-4 flex items-center gap-2">
+            <p
+              className="text-xs px-3 py-2.5 mt-4 flex items-center gap-2"
+              style={{ background: t.alertMuted, border: `1px solid ${t.border}`, borderRadius: 2, color: t.alert }}
+            >
               <span className="material-symbols-outlined text-sm select-none">error</span>
               {portalError}
             </p>
           )}
         </section>
 
-        {/* ━━━ 3. Billing Info (col-span-4) ━━━ */}
-        <section className="lg:col-span-4 glass-card rounded-2xl p-6 transition-all duration-200 hover:shadow-md">
-          <div className="flex justify-between items-center mb-6">
-            <h4 className="text-base font-semibold text-pw-black">Billing Info</h4>
+        {/* Billing info */}
+        <section className="lg:col-span-4 p-5 sm:p-6" style={panel}>
+          <div className="flex justify-between items-center mb-5">
+            <h4 className="text-base font-semibold" style={{ color: t.heading }}>Billing info</h4>
             <button
+              type="button"
               onClick={openPortal}
               disabled={portalLoading}
-              className="text-pw-muted hover:text-pw-primary transition-colors p-1 cursor-pointer"
+              className="pw-interactive-custom p-1"
+              style={{ background: 'transparent', border: 'none', color: t.muted }}
               aria-label="Edit billing info"
             >
               <span className="material-symbols-outlined text-[20px]">edit</span>
@@ -417,95 +475,107 @@ export default function BillingSettingsPage() {
           </div>
           <div className="space-y-4">
             <div>
-              <p className="text-xs font-medium text-pw-muted uppercase tracking-[0.5px] mb-1">Company Name</p>
-              <p className="font-body-md text-body-md text-pw-black">{profile?.displayName ?? 'Not configured'}</p>
+              <p className="text-[11px] font-semibold uppercase tracking-[0.12em] mb-1" style={{ color: t.muted }}>Company name</p>
+              <p className="text-sm" style={{ color: t.heading }}>{profile?.displayName ?? 'Not configured'}</p>
             </div>
             <div>
-              <p className="text-xs font-medium text-pw-muted uppercase tracking-[0.5px] mb-1">Billing Email</p>
-              <p className="font-body-md text-body-md text-pw-black">{profile?.email ?? user?.email ?? '—'}</p>
+              <p className="text-[11px] font-semibold uppercase tracking-[0.12em] mb-1" style={{ color: t.muted }}>Billing email</p>
+              <p className="text-sm" style={{ color: t.heading }}>{profile?.email ?? user?.email ?? '—'}</p>
             </div>
             <div>
-              <p className="text-xs font-medium text-pw-muted uppercase tracking-[0.5px] mb-1">Status</p>
-              <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10px] font-bold border ${statusBadge.cls}`}>
-                <span className="material-symbols-outlined text-[14px]" style={{ fontVariationSettings: "'FILL' 1" }}>{statusBadge.iconName}</span>
-                {statusBadge.label}
+              <p className="text-[11px] font-semibold uppercase tracking-[0.12em] mb-1" style={{ color: t.muted }}>Status</p>
+              <span
+                className="inline-flex items-center gap-1.5 px-2 py-0.5 text-[10px] font-semibold"
+                style={{ background: subStatus.bg, color: subStatus.fg, border: `1px solid ${t.border}`, borderRadius: 2 }}
+              >
+                <span
+                  className="w-1.5 h-1.5 rounded-full"
+                  style={{ background: subStatus.fg }}
+                />
+                {statusLabel}
               </span>
             </div>
           </div>
         </section>
 
-        {/* ━━━ Account Tier (col-span-4) ━━━ */}
         <div className="lg:col-span-4">
           <AccountTierSettings />
         </div>
 
-        {/* ━━━ RentCast API Call Volume (col-span-4) ━━━ */}
-        <section className="lg:col-span-4 glass-card rounded-2xl p-6 min-h-[220px] flex flex-col justify-between transition-all duration-200 hover:shadow-md">
+        {/* API usage */}
+        <section className="lg:col-span-4 p-5 sm:p-6 min-h-[200px] flex flex-col justify-between" style={panel}>
           <div>
-            <div className="flex justify-between items-center mb-6">
-              <h4 className="text-base font-semibold text-pw-black">API Usage</h4>
-              <span className="material-symbols-outlined text-pw-muted text-xl select-none">api</span>
+            <div className="flex justify-between items-center mb-5">
+              <h4 className="text-base font-semibold" style={{ color: t.heading }}>API usage</h4>
+              <span className="material-symbols-outlined text-xl select-none" style={{ color: t.muted }}>api</span>
             </div>
 
             {usageLoading ? (
               <div className="flex items-center justify-center py-6">
-                <span className="material-symbols-outlined animate-spin text-xl text-pw-muted select-none">progress_activity</span>
+                <span className="material-symbols-outlined animate-spin text-xl select-none" style={{ color: t.muted }}>progress_activity</span>
               </div>
             ) : rentcastUsage ? (
               <div className="space-y-4">
                 <div>
-                  <p className="text-xs font-medium text-pw-muted uppercase tracking-[0.5px] mb-1">RentCast API Volume</p>
-                  <p className="text-2xl font-bold text-pw-black">
-                    <span className="text-pw-primary font-extrabold">{rentcastUsage.count}</span>
-                    <span className="text-sm text-pw-muted font-normal"> / {rentcastUsage.limit} calls</span>
+                  <p className="text-[11px] font-semibold uppercase tracking-[0.12em] mb-1" style={{ color: t.muted }}>
+                    RentCast API volume
                   </p>
-                  <p className="font-body-sm text-body-sm text-pw-muted mt-1 leading-relaxed">
-                    Safety threshold to limit automated/sourcing API spend.
+                  <p className="text-2xl font-semibold tabular-nums" style={{ color: t.heading }}>
+                    <span style={{ color: t.accent }}>{rentcastUsage.count}</span>
+                    <span className="text-sm font-normal" style={{ color: t.muted }}> / {rentcastUsage.limit} calls</span>
+                  </p>
+                  <p className="text-xs mt-1 leading-relaxed" style={{ color: t.muted }}>
+                    Safety threshold for automated sourcing API spend.
                   </p>
                 </div>
 
-                {/* Progress Bar */}
-                <div className="h-2 w-full rounded-full bg-pw-glass-bg overflow-hidden shadow-inner">
+                <div className="h-1.5 w-full overflow-hidden" style={{ background: t.surfaceHigh, borderRadius: 1 }}>
                   <div
-                    className={`h-full rounded-full transition-all duration-500 ${
-                      rentcastUsage.count >= rentcastUsage.limit * 0.8
-                        ? 'bg-pw-primary shadow-[0_0_8px_rgba(50,121,249,0.5)]'
-                        : rentcastUsage.count >= rentcastUsage.limit * 0.5
-                        ? 'bg-amber-500 shadow-[0_0_8px_rgba(245,158,11,0.5)]'
-                        : 'bg-pw-primary shadow-[0_0_8px_rgba(50,121,249,0.5)]'
-                    }`}
-                    style={{ width: `${Math.min((rentcastUsage.count / rentcastUsage.limit) * 100, 100)}%` }}
+                    className="h-full transition-all duration-500"
+                    style={{
+                      width: `${Math.min((rentcastUsage.count / rentcastUsage.limit) * 100, 100)}%`,
+                      background:
+                        rentcastUsage.count >= rentcastUsage.limit * 0.9
+                          ? t.alert
+                          : rentcastUsage.count >= rentcastUsage.limit * 0.7
+                          ? t.warn
+                          : t.accent,
+                      borderRadius: 1,
+                    }}
                   />
                 </div>
               </div>
             ) : (
-              <p className="text-xs text-pw-muted">Usage data currently unavailable.</p>
+              <p className="text-xs" style={{ color: t.muted }}>Usage data currently unavailable.</p>
             )}
           </div>
         </section>
 
-        {/* ━━━ 4. Change Plan (col-span-12) ━━━ */}
-        <section className="lg:col-span-12 glass-card rounded-2xl p-6 transition-all duration-200 hover:shadow-md">
-          <h3 className="text-base font-semibold text-pw-black mb-2">Change Your Plan</h3>
-          <p className="font-body-sm text-body-sm text-pw-muted mb-6">
-            Switch plans at any time. You&apos;ll be taken to checkout — Stripe handles proration automatically.
+        {/* Change plan */}
+        <section className="lg:col-span-12 p-5 sm:p-6" style={panel}>
+          <h3 className="text-base font-semibold mb-1" style={{ color: t.heading }}>Change your plan</h3>
+          <p className="text-xs mb-5 leading-relaxed" style={{ color: t.muted }}>
+            Switch anytime. Checkout handles proration through Stripe.
           </p>
 
           {planChangeError && (
-            <p className="text-xs text-error bg-error/10 border border-error/30 rounded-lg px-4 py-3 mb-6 flex items-center gap-2">
+            <p
+              className="text-xs px-3 py-2.5 mb-5 flex items-center gap-2"
+              style={{ background: t.alertMuted, border: `1px solid ${t.border}`, borderRadius: 2, color: t.alert }}
+            >
               <span className="material-symbols-outlined text-sm select-none">error</span>
               {planChangeError}
             </p>
           )}
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
             {PLAN_SWITCH_OPTIONS.map((option) => {
               const isCurrent  = plan === option.canonicalKey;
               const isUpgrade  = option.monthlyPrice > currentPrice && !isCurrent;
               const isLoading  = planChangeLoading === option.displayName;
 
               const buttonLabel = isCurrent
-                ? 'Current Plan'
+                ? 'Current plan'
                 : isUpgrade
                   ? `Upgrade to ${option.displayName}`
                   : `Downgrade to ${option.displayName}`;
@@ -513,32 +583,36 @@ export default function BillingSettingsPage() {
               return (
                 <div
                   key={option.id}
-                  className={`rounded-xl p-6 border transition-all ${
-                    isCurrent
-                      ? 'bg-pw-primary/5 border-pw-primary/30'
-                      : 'bg-pw-glass-bg/30 border-white/10 hover:border-white/20'
-                  }`}
+                  className="p-5"
+                  style={{
+                    background: isCurrent ? t.accentMuted : t.surfaceMuted,
+                    border: `1px solid ${isCurrent ? t.accent : t.border}`,
+                    borderRadius: 2,
+                  }}
                 >
-                  <div className="flex items-start justify-between mb-4">
+                  <div className="flex items-start justify-between mb-4 gap-3">
                     <div>
-                      <p className="font-label-md text-label-md text-pw-black font-semibold">{option.displayName}</p>
-                      <p className="font-body-sm text-body-sm text-pw-muted mt-0.5">{option.description}</p>
+                      <p className="text-sm font-semibold" style={{ color: t.heading }}>{option.displayName}</p>
+                      <p className="text-xs mt-0.5 leading-relaxed" style={{ color: t.muted }}>{option.description}</p>
                     </div>
-                    <p className="font-headline-md text-headline-md text-pw-black tabular-nums shrink-0 ml-4 font-bold">
-                      ${option.monthlyPrice}<span className="text-xs text-pw-muted font-normal">/mo</span>
+                    <p className="text-lg font-semibold tabular-nums shrink-0" style={{ color: t.heading }}>
+                      ${option.monthlyPrice}
+                      <span className="text-xs font-normal" style={{ color: t.muted }}>/mo</span>
                     </p>
                   </div>
 
                   <button
+                    type="button"
                     onClick={() => !isCurrent && handleChangePlan(option.displayName)}
                     disabled={isCurrent || isLoading || !!planChangeLoading}
-                    className={`w-full h-10 px-5 rounded-lg text-sm font-medium transition-all flex items-center justify-center gap-2 ${
+                    className="pw-interactive-custom w-full flex items-center justify-center gap-2 text-sm font-semibold disabled:opacity-55"
+                    style={
                       isCurrent
-                        ? 'bg-pw-primary/10 text-pw-primary border border-pw-primary/20 cursor-default'
+                        ? { background: t.surface, color: t.accent, border: `1px solid ${t.border}`, borderRadius: 2, padding: '8px 14px' }
                         : isUpgrade
-                          ? 'luminous-button active:scale-98 disabled:opacity-50 disabled:pointer-events-none'
-                          : 'border border-white/10 text-pw-black hover:bg-white/5 active:scale-98 disabled:opacity-50 disabled:pointer-events-none'
-                    }`}
+                          ? { background: t.ctaBg, color: t.ctaFg, border: 'none', borderRadius: 2, padding: '8px 14px' }
+                          : { background: 'transparent', color: t.heading, border: `1px solid ${t.border}`, borderRadius: 2, padding: '8px 14px' }
+                    }
                   >
                     {isLoading && (
                       <span className="material-symbols-outlined animate-spin text-[16px] select-none">progress_activity</span>
@@ -551,89 +625,99 @@ export default function BillingSettingsPage() {
           </div>
         </section>
 
-        {/* ━━━ 5. Billing History (col-span-8) ━━━ */}
-        <section className="lg:col-span-8 glass-card rounded-2xl p-6 transition-all duration-200 hover:shadow-md">
-          <div className="flex justify-between items-center mb-6">
-            <h3 className="text-base font-semibold text-pw-black">Billing History</h3>
+        {/* Billing history */}
+        <section className="lg:col-span-8 p-5 sm:p-6" style={panel}>
+          <div className="flex justify-between items-center mb-5 gap-3 flex-wrap">
+            <h3 className="text-base font-semibold" style={{ color: t.heading }}>Billing history</h3>
             {plan !== 'None' && invoices.length > 0 && (
               <button
+                type="button"
                 onClick={handleDownloadAll}
-                className="h-9 px-4 rounded-lg bg-pw-primary/10 text-pw-primary hover:bg-pw-primary/20 active:scale-98 disabled:opacity-50 disabled:pointer-events-none transition-all flex items-center justify-center gap-2 text-xs font-medium cursor-pointer"
+                className="pw-interactive-custom flex items-center justify-center gap-2 text-xs font-semibold"
+                style={{ background: t.accentMuted, color: t.accent, border: `1px solid ${t.border}`, borderRadius: 2, padding: '6px 12px' }}
               >
                 <span className="material-symbols-outlined text-[16px]">download</span>
-                Download All
+                Download all
               </button>
             )}
           </div>
 
           {invoicesLoading ? (
             <div className="flex items-center justify-center py-10">
-              <span className="material-symbols-outlined animate-spin text-2xl text-pw-muted select-none">progress_activity</span>
+              <span className="material-symbols-outlined animate-spin text-2xl select-none" style={{ color: t.muted }}>progress_activity</span>
             </div>
           ) : plan === 'None' || invoices.length === 0 ? (
             <div className="text-center py-8">
-              <span className="material-symbols-outlined text-3xl text-pw-muted/20 mb-2 select-none">description</span>
-              <p className="text-sm text-pw-muted">No transactional history recorded.</p>
+              <span className="material-symbols-outlined text-3xl mb-2 select-none opacity-30" style={{ color: t.muted }}>description</span>
+              <p className="text-sm" style={{ color: t.muted }}>No invoices yet.</p>
             </div>
           ) : (
             <div className="overflow-x-auto">
               <table className="w-full text-left border-collapse">
                 <thead>
-                  <tr className="border-b border-white/10 h-12">
-                    <th className="pb-4 pl-4 text-xs font-semibold text-pw-muted uppercase tracking-wider">Date</th>
-                    <th className="pb-4 text-xs font-semibold text-pw-muted uppercase tracking-wider">Invoice ID</th>
-                    <th className="pb-4 text-right text-xs font-semibold text-pw-muted uppercase tracking-wider">Amount</th>
-                    <th className="pb-4 text-xs font-semibold text-pw-muted uppercase tracking-wider">Status</th>
-                    <th className="pb-4 text-center text-xs font-semibold text-pw-muted uppercase tracking-wider w-16">Invoice</th>
+                  <tr style={{ borderBottom: `1px solid ${t.divider}` }}>
+                    {['Date', 'Invoice ID', 'Amount', 'Status', 'Invoice'].map((h, i) => (
+                      <th
+                        key={h}
+                        className={`pb-3 text-[10px] font-semibold uppercase tracking-[0.12em] ${i === 0 ? 'pl-3' : ''} ${i === 2 ? 'text-right' : ''} ${i === 4 ? 'text-center w-16' : ''}`}
+                        style={{ color: t.muted }}
+                      >
+                        {h}
+                      </th>
+                    ))}
                   </tr>
                 </thead>
                 <tbody className="font-mono text-sm">
-                  {invoices.map((inv) => (
-                    <tr key={inv.id} className="border-b border-white/5 hover:bg-white/[0.02] transition-colors h-12">
-                      <td className="py-4 pl-4 text-pw-black">{inv.date}</td>
-                      <td className="py-4 text-pw-muted">{inv.number ?? inv.id.substring(0, 12)}</td>
-                      <td className="py-4 text-right text-pw-black">{inv.amount}</td>
-                      <td className="py-4">
-                        <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold border ${
-                          inv.status === 'paid'
-                            ? 'bg-[#E8F5E9] text-[#2E7D32] border-[#4CAF50]'
-                            : inv.status === 'open'
-                            ? 'bg-amber-500/10 text-amber-600 border-amber-500/20'
-                            : 'bg-pw-glass-bg text-pw-muted border-pw-border'
-                        }`}>
-                          {inv.status.toUpperCase()}
-                        </span>
-                      </td>
-                      <td className="py-4 text-center">
-                        {inv.pdfUrl ? (
-                          <a
-                            href={inv.pdfUrl}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="text-pw-muted hover:text-pw-primary transition-colors p-1 rounded-md hover:bg-white/5 inline-block"
-                            title="Download PDF statement"
+                  {invoices.map((inv) => {
+                    const invSt = statusStyle(t, inv.status);
+                    return (
+                      <tr
+                        key={inv.id}
+                        style={{ borderBottom: `1px solid ${t.divider}` }}
+                        onMouseEnter={(e) => { e.currentTarget.style.background = t.hover; }}
+                        onMouseLeave={(e) => { e.currentTarget.style.background = 'transparent'; }}
+                      >
+                        <td className="py-3 pl-3" style={{ color: t.heading }}>{inv.date}</td>
+                        <td className="py-3" style={{ color: t.muted }}>{inv.number ?? inv.id.substring(0, 12)}</td>
+                        <td className="py-3 text-right tabular-nums" style={{ color: t.heading }}>{inv.amount}</td>
+                        <td className="py-3">
+                          <span
+                            className="inline-flex items-center px-1.5 py-0.5 text-[10px] font-semibold uppercase tracking-wider"
+                            style={{ background: invSt.bg, color: invSt.fg, border: `1px solid ${t.border}`, borderRadius: 2 }}
                           >
-                            <span className="material-symbols-outlined text-[20px]">receipt_long</span>
-                          </a>
-                        ) : (
-                          <span className="p-1 text-pw-muted/20 inline-block">
-                            <span className="material-symbols-outlined text-[20px]">receipt_long</span>
+                            {inv.status}
                           </span>
-                        )}
-                      </td>
-                    </tr>
-                  ))}
+                        </td>
+                        <td className="py-3 text-center">
+                          {inv.pdfUrl ? (
+                            <a
+                              href={inv.pdfUrl}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="inline-block p-1"
+                              style={{ color: t.muted }}
+                              title="Download PDF statement"
+                            >
+                              <span className="material-symbols-outlined text-[20px]">receipt_long</span>
+                            </a>
+                          ) : (
+                            <span className="p-1 inline-block opacity-25" style={{ color: t.muted }}>
+                              <span className="material-symbols-outlined text-[20px]">receipt_long</span>
+                            </span>
+                          )}
+                        </td>
+                      </tr>
+                    );
+                  })}
                 </tbody>
               </table>
             </div>
           )}
         </section>
 
-        {/* ━━━ 5. Cloud Storage Meter (col-span-12) ━━━ */}
         <div className="lg:col-span-12">
           <CloudStorageMeter />
         </div>
-
       </div>
     </div>
   );

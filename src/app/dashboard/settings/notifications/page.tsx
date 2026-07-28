@@ -2,14 +2,13 @@
 
 import { useNotificationPreferencesStore, DEFAULT_CATEGORY_PREFERENCES } from '@/store/notificationPreferencesStore';
 import { useAuth } from '@/context/AuthContext';
+import { useTheme } from '@/lib/utils/ThemeProvider';
 import { useEffect } from 'react';
 import toast from 'react-hot-toast';
 import type { NotificationCategory, CategoryPreference } from '@/types/user';
+import { settingsTokens, panelStyle, inputStyle, type SettingsTokens } from '@/components/settings/settingsTheme';
 
-/* ═══════════════════════════════════════════════════════
-   Granular Notification & Appearance Settings UI
-   (Luminous Glass Terminal)
-   ═══════════════════════════════════════════════════════ */
+/* Notifications — alert routing & retention desk */
 
 const CATEGORY_ROWS: {
   key: NotificationCategory;
@@ -65,14 +64,25 @@ const TIMEZONES = [
   { value: 'UTC', label: 'Coordinated Universal Time (UTC)' },
 ];
 
-function ToggleSwitch({ enabled, disabled, onToggle }: { enabled: boolean; disabled?: boolean; onToggle: () => void }) {
+function ToggleSwitch({
+  enabled,
+  disabled,
+  onToggle,
+  t,
+}: {
+  enabled: boolean;
+  disabled?: boolean;
+  onToggle: () => void;
+  t: SettingsTokens;
+}) {
   if (disabled) {
     return (
-      <div 
-        className="flex items-center justify-center w-9 h-5 rounded-full bg-surface-container border border-outline-variant/30 cursor-not-allowed flex-shrink-0"
+      <div
+        className="flex items-center justify-center w-9 h-5 flex-shrink-0 cursor-not-allowed"
+        style={{ background: t.surfaceHigh, border: `1px solid ${t.border}`, borderRadius: 999 }}
         title="Mandatory channel for this category."
       >
-        <span className="material-symbols-outlined text-[10px] text-on-surface-variant/40 select-none">lock</span>
+        <span className="material-symbols-outlined text-[10px] select-none" style={{ color: t.muted }}>lock</span>
       </div>
     );
   }
@@ -81,18 +91,23 @@ function ToggleSwitch({ enabled, disabled, onToggle }: { enabled: boolean; disab
     <button
       type="button"
       onClick={onToggle}
-      className={`
-        relative inline-flex w-9 h-5 rounded-full transition-all duration-200 cursor-pointer flex-shrink-0 focus:outline-none items-center p-[2px]
-        ${enabled ? 'bg-on-background' : 'bg-[var(--color-outline)]'}
-      `}
+      className="pw-interactive-custom relative inline-flex w-9 h-5 items-center flex-shrink-0 transition-colors"
+      style={{
+        borderRadius: 999,
+        border: `1px solid ${t.border}`,
+        background: enabled ? t.successMuted : t.surfaceHigh,
+        padding: 2,
+      }}
       role="switch"
       aria-checked={enabled}
     >
       <span
-        className={`
-          inline-block w-4 h-4 transform rounded-full transition-transform duration-200 shadow-sm ease-in-out
-          ${enabled ? 'translate-x-4 bg-background' : 'translate-x-0 bg-white'}
-        `}
+        className="inline-block w-4 h-4 transform transition-transform duration-200"
+        style={{
+          borderRadius: 999,
+          background: enabled ? t.success : t.muted,
+          transform: enabled ? 'translateX(16px)' : 'translateX(0)',
+        }}
       />
     </button>
   );
@@ -100,6 +115,12 @@ function ToggleSwitch({ enabled, disabled, onToggle }: { enabled: boolean; disab
 
 export default function NotificationsSettingsPage() {
   const { user } = useAuth();
+  const { theme } = useTheme();
+  const isDark = theme === 'dark';
+  const t = settingsTokens(isDark);
+  const panel = panelStyle(t);
+  const field = inputStyle(t);
+
   const {
     loading,
     categories,
@@ -150,11 +171,11 @@ export default function NotificationsSettingsPage() {
     }
   };
 
-  const handleUpdateQuietTime = async (field: 'start' | 'end', value: string) => {
+  const handleUpdateQuietTime = async (fieldName: 'start' | 'end', value: string) => {
     if (!user) return;
     try {
-      await updateQuietHours(user.uid, { [field]: value });
-      toast.success(`Quiet hours ${field} time updated`);
+      await updateQuietHours(user.uid, { [fieldName]: value });
+      toast.success(`Quiet hours ${fieldName} time updated`);
     } catch {
       toast.error('Failed to update time setting');
     }
@@ -193,7 +214,7 @@ export default function NotificationsSettingsPage() {
       });
       if (!res.ok) throw new Error('Failed to export data');
       const data = await res.json();
-      
+
       const dataStr = 'data:text/json;charset=utf-8,' + encodeURIComponent(JSON.stringify(data.export, null, 2));
       const downloadAnchor = document.createElement('a');
       downloadAnchor.setAttribute('href', dataStr);
@@ -201,7 +222,7 @@ export default function NotificationsSettingsPage() {
       document.body.appendChild(downloadAnchor);
       downloadAnchor.click();
       downloadAnchor.remove();
-      
+
       toast.success('Notification data exported successfully', { id: exportToast });
     } catch (err) {
       console.error(err);
@@ -226,7 +247,7 @@ export default function NotificationsSettingsPage() {
         },
       });
       if (!res.ok) throw new Error('Failed to erase data');
-      
+
       await loadPreferences(user.uid);
       toast.success('All notification data permanently erased', { id: deleteToast });
     } catch (err) {
@@ -235,47 +256,53 @@ export default function NotificationsSettingsPage() {
     }
   };
 
-  // Compile active timezone lists
   const detectedTz = typeof window !== 'undefined' ? Intl.DateTimeFormat().resolvedOptions().timeZone : '';
   const allTimezones = [...TIMEZONES];
-  if (detectedTz && !TIMEZONES.some(t => t.value === detectedTz)) {
+  if (detectedTz && !TIMEZONES.some((tz) => tz.value === detectedTz)) {
     allTimezones.unshift({ value: detectedTz, label: `Local (${detectedTz})` });
   }
 
   if (loading) {
     return (
-      <div className="flex flex-col items-center justify-center min-h-[400px] space-y-4">
-        <span className="material-symbols-outlined animate-spin text-2xl text-pw-muted select-none">progress_activity</span>
-        <p className="text-xs text-pw-muted">Loading preferences...</p>
+      <div className="flex flex-col items-center justify-center min-h-[400px] space-y-3" style={{ color: t.muted }}>
+        <span className="material-symbols-outlined animate-spin text-2xl select-none" style={{ color: t.accent }}>
+          progress_activity
+        </span>
+        <p className="text-xs">Loading preferences…</p>
       </div>
     );
   }
 
   return (
-    <div className="w-full space-y-8">
-      {/* ─── Bento Grid Layout ─── */}
-      <div className="grid grid-cols-12 gap-8">
+    <div className="w-full space-y-6" style={{ color: t.body }}>
+      <header className="pb-5" style={{ borderBottom: `1px solid ${t.divider}` }}>
+        <p className="text-[11px] font-medium tracking-[0.14em] uppercase mb-1" style={{ color: t.accent }}>
+          Alerts
+        </p>
+        <h2 className="text-[1.35rem] font-semibold tracking-tight" style={{ color: t.heading }}>
+          Notifications
+        </h2>
+        <p className="text-sm mt-1.5 leading-relaxed max-w-xl" style={{ color: t.muted }}>
+          Route delivery by category, set quiet hours, and manage retention.
+        </p>
+      </header>
 
-        {/* ════ Row 1: Inbox Retention (col-12) ════ */}
+      <div className="grid grid-cols-12 gap-5">
 
-        {/* Inbox Retention */}
-        <section className="col-span-12 glass-card rounded-2xl p-6 flex flex-col relative overflow-hidden transition-all duration-200 hover:shadow-md">
-          <div className="absolute top-0 right-0 w-64 h-64 bg-pw-primary/5 rounded-full blur-[80px] -z-10 pointer-events-none translate-x-1/2 -translate-y-1/2" />
-          <div className="flex items-center gap-3 border-b border-white/5 pb-4 mb-6">
-            <span className="material-symbols-outlined text-pw-primary select-none">auto_delete</span>
-            <h2 className="text-base font-semibold text-pw-black">Inbox Cleanup & Retention</h2>
+        <section className="col-span-12 p-5 sm:p-6 flex flex-col" style={panel}>
+          <div className="flex items-center gap-2 pb-4 mb-5" style={{ borderBottom: `1px solid ${t.divider}` }}>
+            <span className="material-symbols-outlined select-none" style={{ color: t.accent }}>auto_delete</span>
+            <h2 className="text-base font-semibold" style={{ color: t.heading }}>Inbox cleanup & retention</h2>
           </div>
 
-          <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
-            <div className="max-w-2xl">
-              <p className="text-sm text-pw-muted leading-relaxed">
-                Automatically archive notifications after they are read to keep your workspace clear. All historical records remain fully searchable and exportable via Compliance Data Rights.
-              </p>
-            </div>
+          <div className="flex flex-col md:flex-row md:items-center justify-between gap-5">
+            <p className="text-sm leading-relaxed max-w-2xl" style={{ color: t.muted }}>
+              Auto-archive read notifications after the retention window. History stays searchable and exportable.
+            </p>
 
             <div className="flex-shrink-0 min-w-[220px]">
-              <label className="block text-xs font-semibold text-pw-muted uppercase tracking-wider mb-2">
-                Auto-Archive Retention Window
+              <label className="block text-[11px] font-semibold uppercase tracking-[0.12em] mb-1.5" style={{ color: t.muted }}>
+                Auto-archive window
               </label>
               <select
                 value={autoArchiveDays}
@@ -286,44 +313,52 @@ export default function NotificationsSettingsPage() {
                       .catch(() => toast.error('Failed to update retention window'));
                   }
                 }}
-                className="glass-input w-full px-4 h-10 rounded-lg text-sm text-pw-black focus:ring-2 focus:ring-pw-primary focus:outline-none transition-all duration-150"
+                className="w-full px-3 h-10 text-sm outline-none"
+                style={field}
               >
-                <option value="30" className="bg-[#161318] text-pw-black">30 Days (Default)</option>
-                <option value="60" className="bg-[#161318] text-pw-black">60 Days</option>
-                <option value="90" className="bg-[#161318] text-pw-black">90 Days</option>
+                <option value="30">30 days (default)</option>
+                <option value="60">60 days</option>
+                <option value="90">90 days</option>
               </select>
             </div>
           </div>
         </section>
 
-        {/* ════ Row 2: Notifications Matrix (col-12) ════ */}
-
-        <section className="col-span-12 glass-card rounded-2xl p-6 overflow-hidden transition-all duration-200 hover:shadow-md">
-          <div className="flex items-center gap-3 border-b border-white/5 pb-4 mb-4">
-            <span className="material-symbols-outlined text-pw-primary select-none">notifications_active</span>
-            <h2 className="text-base font-semibold text-pw-black">Routing & Delivery</h2>
+        <section className="col-span-12 p-5 sm:p-6 overflow-hidden" style={panel}>
+          <div className="flex items-center gap-2 pb-4 mb-4" style={{ borderBottom: `1px solid ${t.divider}` }}>
+            <span className="material-symbols-outlined select-none" style={{ color: t.accent }}>notifications_active</span>
+            <h2 className="text-base font-semibold" style={{ color: t.heading }}>Routing & delivery</h2>
           </div>
 
-          {/* Guarantee Banner */}
-          <div className="flex items-start gap-3 p-4 rounded-xl bg-pw-primary/5 border border-pw-primary/10 mb-6">
-            <span className="material-symbols-outlined text-pw-primary text-base mt-0.5 select-none">info</span>
-            <div className="text-xs text-pw-muted space-y-1">
-              <p className="font-semibold text-pw-black">Notification Guarantee</p>
+          <div
+            className="flex items-start gap-3 p-3.5 mb-5"
+            style={{ background: t.accentMuted, border: `1px solid ${t.border}`, borderRadius: 2 }}
+          >
+            <span className="material-symbols-outlined text-base mt-0.5 select-none" style={{ color: t.accent }}>info</span>
+            <div className="text-xs space-y-1" style={{ color: t.muted }}>
+              <p className="font-semibold" style={{ color: t.heading }}>Notification guarantee</p>
               <p className="leading-relaxed">
-                You can customize, mute, or redirect any alert category below. Critical Billing and Expiring Contract Deadlines are locked to ensure you do not miss payment status updates or trigger default clauses on active real estate contracts.
+                Mute or redirect any category below. Billing and contingency deadlines stay locked so you do not miss payment notices or contract defaults.
               </p>
             </div>
           </div>
 
-          {/* Full-width Table */}
           <div className="w-full overflow-x-auto">
             <table className="w-full text-left border-collapse min-w-[600px]">
               <thead>
-                <tr className="border-b border-white/5 h-12">
-                  <th className="py-3 text-xs font-medium uppercase tracking-wider text-pw-muted w-1/2">Event Category</th>
-                  <th className="py-3 text-xs font-medium uppercase tracking-wider text-pw-muted text-center">In-App</th>
-                  <th className="py-3 text-xs font-medium uppercase tracking-wider text-pw-muted text-center">Email</th>
-                  <th className="py-3 text-xs font-medium uppercase tracking-wider text-pw-muted text-center">Push</th>
+                <tr style={{ borderBottom: `1px solid ${t.divider}` }}>
+                  <th className="py-2.5 text-[10px] font-semibold uppercase tracking-[0.12em] w-1/2" style={{ color: t.muted }}>
+                    Event category
+                  </th>
+                  <th className="py-2.5 text-[10px] font-semibold uppercase tracking-[0.12em] text-center" style={{ color: t.muted }}>
+                    In-app
+                  </th>
+                  <th className="py-2.5 text-[10px] font-semibold uppercase tracking-[0.12em] text-center" style={{ color: t.muted }}>
+                    Email
+                  </th>
+                  <th className="py-2.5 text-[10px] font-semibold uppercase tracking-[0.12em] text-center" style={{ color: t.muted }}>
+                    Push
+                  </th>
                 </tr>
               </thead>
               <tbody>
@@ -332,30 +367,46 @@ export default function NotificationsSettingsPage() {
                   const isMandatory = key === 'billing' || key === 'deadlines';
 
                   return (
-                    <tr key={key} className="border-b border-white/5 hover:bg-white/[0.02] transition-colors h-12">
-                      <td className="py-4">
+                    <tr
+                      key={key}
+                      style={{ borderBottom: `1px solid ${t.divider}` }}
+                      onMouseEnter={(e) => { e.currentTarget.style.background = t.hover; }}
+                      onMouseLeave={(e) => { e.currentTarget.style.background = 'transparent'; }}
+                    >
+                      <td className="py-3.5">
                         <div className="flex items-start gap-3">
-                          <div className="w-8 h-8 rounded-lg bg-white/[0.03] border border-white/5 flex items-center justify-center flex-shrink-0 mt-0.5 text-pw-muted">
+                          <div
+                            className="w-8 h-8 flex items-center justify-center flex-shrink-0 mt-0.5"
+                            style={{
+                              background: t.surfaceMuted,
+                              border: `1px solid ${t.border}`,
+                              borderRadius: 2,
+                              color: isMandatory ? t.warn : t.muted,
+                            }}
+                          >
                             <span className="material-symbols-outlined text-base select-none">{iconName}</span>
                           </div>
                           <div>
-                            <p className="text-sm font-semibold text-pw-black flex items-center gap-2 flex-wrap">
+                            <p className="text-sm font-semibold flex items-center gap-2 flex-wrap" style={{ color: t.heading }}>
                               {label}
                               {isMandatory && (
-                                <span className="inline-flex items-center px-2 py-0.5 rounded-full text-[9px] font-semibold bg-pw-primary/10 border border-pw-primary/20 text-pw-primary uppercase tracking-wider">
+                                <span
+                                  className="inline-flex items-center px-1.5 py-0.5 text-[9px] font-semibold uppercase tracking-wider"
+                                  style={{ background: t.warnMuted, border: `1px solid ${t.border}`, borderRadius: 2, color: t.warn }}
+                                >
                                   Required
                                 </span>
                               )}
                             </p>
-                            <p className="text-xs text-pw-muted mt-0.5 leading-relaxed">{description}</p>
+                            <p className="text-xs mt-0.5 leading-relaxed" style={{ color: t.muted }}>{description}</p>
                           </div>
                         </div>
                       </td>
 
-                      {/* In-App Channel */}
-                      <td className="py-4 text-center">
+                      <td className="py-3.5 text-center">
                         <div className="flex justify-center">
                           <ToggleSwitch
+                            t={t}
                             enabled={rowPrefs.inbox}
                             disabled={isMandatory}
                             onToggle={() => handleToggleCategoryChannel(key, 'inbox')}
@@ -363,10 +414,10 @@ export default function NotificationsSettingsPage() {
                         </div>
                       </td>
 
-                      {/* Email Channel */}
-                      <td className="py-4 text-center">
+                      <td className="py-3.5 text-center">
                         <div className="flex justify-center">
                           <ToggleSwitch
+                            t={t}
                             enabled={rowPrefs.email}
                             disabled={isMandatory}
                             onToggle={() => handleToggleCategoryChannel(key, 'email')}
@@ -374,10 +425,10 @@ export default function NotificationsSettingsPage() {
                         </div>
                       </td>
 
-                      {/* Push Channel */}
-                      <td className="py-4 text-center">
+                      <td className="py-3.5 text-center">
                         <div className="flex justify-center">
                           <ToggleSwitch
+                            t={t}
                             enabled={rowPrefs.push}
                             disabled={false}
                             onToggle={() => handleToggleCategoryChannel(key, 'push')}
@@ -392,100 +443,119 @@ export default function NotificationsSettingsPage() {
           </div>
         </section>
 
-        {/* ════ Row 3: Global Dispatch (col-7) + Data Rights (col-5) ════ */}
-
-        {/* Global Dispatch Preferences */}
-        <section className="col-span-12 xl:col-span-7 glass-card rounded-2xl p-6 flex flex-col gap-6 transition-all duration-200 hover:shadow-md">
-          <div className="flex items-center gap-3 border-b border-white/5 pb-4">
-            <span className="material-symbols-outlined text-pw-primary select-none">tune</span>
-            <h2 className="text-base font-semibold text-pw-black">Global Dispatch Preferences</h2>
+        <section className="col-span-12 xl:col-span-7 p-5 sm:p-6 flex flex-col gap-5" style={panel}>
+          <div className="flex items-center gap-2 pb-4" style={{ borderBottom: `1px solid ${t.divider}` }}>
+            <span className="material-symbols-outlined select-none" style={{ color: t.accent }}>tune</span>
+            <h2 className="text-base font-semibold" style={{ color: t.heading }}>Global dispatch</h2>
           </div>
 
-          {/* Global Channel Toggles */}
           <div className="space-y-3">
-            <h3 className="text-xs font-semibold text-pw-muted uppercase tracking-wider">Global Channels</h3>
+            <h3 className="text-[11px] font-semibold uppercase tracking-[0.12em]" style={{ color: t.muted }}>
+              Global channels
+            </h3>
 
-            <div className="flex items-center justify-between p-4 rounded-xl border border-white/5 bg-white/[0.02]">
+            <div
+              className="flex items-center justify-between p-3.5 gap-3"
+              style={{ border: `1px solid ${t.border}`, background: t.surfaceMuted, borderRadius: 2 }}
+            >
               <div className="flex items-center gap-3">
-                <div className="w-9 h-9 rounded-lg bg-pw-primary/10 flex items-center justify-center">
-                  <span className="material-symbols-outlined text-pw-primary text-lg select-none">mail</span>
+                <div
+                  className="w-9 h-9 flex items-center justify-center"
+                  style={{ background: t.surface, border: `1px solid ${t.border}`, borderRadius: 2, color: t.accent }}
+                >
+                  <span className="material-symbols-outlined text-lg select-none">mail</span>
                 </div>
                 <div>
-                  <p className="text-sm font-semibold text-pw-black">Email Notifications</p>
-                  <p className="text-[11px] text-pw-muted mt-0.5">Receive system & transactional mail alerts</p>
+                  <p className="text-sm font-semibold" style={{ color: t.heading }}>Email notifications</p>
+                  <p className="text-[11px] mt-0.5" style={{ color: t.muted }}>System and transactional mail</p>
                 </div>
               </div>
-              <ToggleSwitch enabled={emailEnabled} onToggle={handleToggleGlobalEmail} />
+              <ToggleSwitch t={t} enabled={emailEnabled} onToggle={handleToggleGlobalEmail} />
             </div>
 
-            <div className="flex items-center justify-between p-4 rounded-xl border border-white/5 bg-white/[0.02]">
+            <div
+              className="flex items-center justify-between p-3.5 gap-3"
+              style={{ border: `1px solid ${t.border}`, background: t.surfaceMuted, borderRadius: 2 }}
+            >
               <div className="flex items-center gap-3">
-                <div className="w-9 h-9 rounded-lg bg-pw-primary/10 flex items-center justify-center">
-                  <span className="material-symbols-outlined text-pw-primary text-lg select-none">phone_iphone</span>
+                <div
+                  className="w-9 h-9 flex items-center justify-center"
+                  style={{ background: t.surface, border: `1px solid ${t.border}`, borderRadius: 2, color: t.accent }}
+                >
+                  <span className="material-symbols-outlined text-lg select-none">phone_iphone</span>
                 </div>
                 <div>
-                  <p className="text-sm font-semibold text-pw-black">Web Push Notifications</p>
-                  <p className="text-[11px] text-pw-muted mt-0.5">Show notifications directly in browser</p>
+                  <p className="text-sm font-semibold" style={{ color: t.heading }}>Web push</p>
+                  <p className="text-[11px] mt-0.5" style={{ color: t.muted }}>Browser notifications</p>
                 </div>
               </div>
-              <ToggleSwitch enabled={pushEnabled} onToggle={handleToggleGlobalPush} />
+              <ToggleSwitch t={t} enabled={pushEnabled} onToggle={handleToggleGlobalPush} />
             </div>
 
             {(!emailEnabled || !pushEnabled) && (
-              <p className="text-[11px] text-pw-muted/60 italic leading-relaxed px-1">
-                Note: Disabling channels globally overrides per-category active checkboxes.
+              <p className="text-[11px] leading-relaxed px-1" style={{ color: t.muted }}>
+                Disabling a channel globally overrides per-category settings.
               </p>
             )}
           </div>
 
-          {/* Quiet Hours / DND */}
-          <div className="space-y-3 border-t border-white/5 pt-5">
-            <div className="flex items-center justify-between">
+          <div className="space-y-3 pt-4" style={{ borderTop: `1px solid ${t.divider}` }}>
+            <div className="flex items-center justify-between gap-3">
               <div>
-                <h3 className="text-xs font-semibold text-pw-muted uppercase tracking-wider">Quiet Hours DND</h3>
-                <p className="text-[11px] text-pw-muted mt-0.5">Silence & queue email alerts during specified hours</p>
+                <h3 className="text-[11px] font-semibold uppercase tracking-[0.12em]" style={{ color: t.muted }}>
+                  Quiet hours
+                </h3>
+                <p className="text-[11px] mt-0.5" style={{ color: t.muted }}>
+                  Silence and queue email alerts during set hours
+                </p>
               </div>
-              <ToggleSwitch enabled={quietHours.enabled} onToggle={handleToggleQuietHours} />
+              <ToggleSwitch t={t} enabled={quietHours.enabled} onToggle={handleToggleQuietHours} />
             </div>
 
             {quietHours.enabled && (
-              <div className="space-y-3 p-4 bg-white/[0.02] border border-white/5 rounded-xl">
+              <div
+                className="space-y-3 p-3.5"
+                style={{ background: t.surfaceMuted, border: `1px solid ${t.border}`, borderRadius: 2 }}
+              >
                 <div className="grid grid-cols-2 gap-3">
                   <div>
-                    <label className="block text-xs font-semibold text-pw-muted uppercase tracking-wider mb-1">
-                      Start Time
+                    <label className="block text-[11px] font-semibold uppercase tracking-[0.12em] mb-1" style={{ color: t.muted }}>
+                      Start time
                     </label>
                     <input
                       type="time"
                       value={quietHours.start}
                       onChange={(e) => handleUpdateQuietTime('start', e.target.value)}
-                      className="glass-input w-full px-4 h-10 rounded-lg text-sm text-pw-black focus:ring-2 focus:ring-pw-primary focus:outline-none transition-all duration-150"
+                      className="w-full px-3 h-10 text-sm outline-none"
+                      style={field}
                     />
                   </div>
                   <div>
-                    <label className="block text-xs font-semibold text-pw-muted uppercase tracking-wider mb-1">
-                      End Time
+                    <label className="block text-[11px] font-semibold uppercase tracking-[0.12em] mb-1" style={{ color: t.muted }}>
+                      End time
                     </label>
                     <input
                       type="time"
                       value={quietHours.end}
                       onChange={(e) => handleUpdateQuietTime('end', e.target.value)}
-                      className="glass-input w-full px-4 h-10 rounded-lg text-sm text-pw-black focus:ring-2 focus:ring-pw-primary focus:outline-none transition-all duration-150"
+                      className="w-full px-3 h-10 text-sm outline-none"
+                      style={field}
                     />
                   </div>
                 </div>
 
                 <div>
-                  <label className="block text-xs font-semibold text-pw-muted uppercase tracking-wider mb-1">
-                    Notification Timezone
+                  <label className="block text-[11px] font-semibold uppercase tracking-[0.12em] mb-1" style={{ color: t.muted }}>
+                    Notification timezone
                   </label>
                   <select
                     value={quietHours.timezone}
                     onChange={(e) => handleUpdateTimezone(e.target.value)}
-                    className="glass-input w-full px-4 h-10 rounded-lg text-sm text-pw-black focus:ring-2 focus:ring-pw-primary focus:outline-none transition-all duration-150"
+                    className="w-full px-3 h-10 text-sm outline-none"
+                    style={field}
                   >
                     {allTimezones.map((tz) => (
-                      <option key={tz.value} value={tz.value} className="bg-[#161318] text-pw-black">
+                      <option key={tz.value} value={tz.value}>
                         {tz.label}
                       </option>
                     ))}
@@ -496,33 +566,37 @@ export default function NotificationsSettingsPage() {
           </div>
         </section>
 
-        {/* Data Rights & Privacy (Danger Zone) */}
-        <section className="col-span-12 xl:col-span-5 glass-card rounded-2xl p-6 border border-red-500/20 relative overflow-hidden flex flex-col gap-6 transition-all duration-200 hover:shadow-md">
-          <div className="absolute top-0 right-0 w-32 h-32 bg-red-500/10 rounded-full blur-[60px] -z-10 pointer-events-none translate-x-1/2 -translate-y-1/2" />
-
-          <div className="flex items-center gap-3 border-b border-white/5 pb-4">
-            <span className="material-symbols-outlined text-red-400 select-none">policy</span>
-            <h2 className="text-base font-semibold text-pw-black">Data Rights & Privacy</h2>
+        <section
+          className="col-span-12 xl:col-span-5 p-5 sm:p-6 flex flex-col gap-5"
+          style={{ ...panel, borderColor: t.alert }}
+        >
+          <div className="flex items-center gap-2 pb-4" style={{ borderBottom: `1px solid ${t.divider}` }}>
+            <span className="material-symbols-outlined select-none" style={{ color: t.alert }}>policy</span>
+            <h2 className="text-base font-semibold" style={{ color: t.heading }}>Data rights & privacy</h2>
           </div>
 
-          <p className="text-sm text-pw-muted leading-relaxed">
-            Manage your personal data, download your records, or request complete account notification erasure. Actions here comply with GDPR and CCPA regulations and are immutable.
+          <p className="text-sm leading-relaxed" style={{ color: t.muted }}>
+            Export notification records or erase history. Actions comply with GDPR/CCPA.
           </p>
 
-          <div className="mt-auto space-y-3">
+          <div className="mt-auto space-y-2.5">
             <button
+              type="button"
               onClick={handleExportData}
-              className="w-full h-10 px-5 rounded-lg border border-white/10 text-pw-black text-sm font-medium hover:bg-white/[0.04] active:scale-98 transition-all flex items-center justify-center gap-2 cursor-pointer"
+              className="pw-interactive-custom w-full flex items-center justify-center gap-2 text-sm font-semibold"
+              style={{ background: 'transparent', border: `1px solid ${t.border}`, borderRadius: 2, padding: '8px 16px', color: t.heading }}
             >
               <span className="material-symbols-outlined text-[16px] select-none">download</span>
-              Export Account Payload
+              Export account payload
             </button>
             <button
+              type="button"
               onClick={handleDeleteData}
-              className="w-full h-10 px-5 rounded-lg bg-error/10 border border-error/30 text-error text-sm font-medium hover:bg-error/20 active:scale-98 transition-all flex items-center justify-center gap-2 cursor-pointer"
+              className="pw-interactive-custom w-full flex items-center justify-center gap-2 text-sm font-semibold"
+              style={{ background: t.alertMuted, border: `1px solid ${t.border}`, borderRadius: 2, padding: '8px 16px', color: t.alert }}
             >
               <span className="material-symbols-outlined text-[16px] select-none">delete_forever</span>
-              Initiate Deletion Sequence
+              Erase notification data
             </button>
           </div>
         </section>

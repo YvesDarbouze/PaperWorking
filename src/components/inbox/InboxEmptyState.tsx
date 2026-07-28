@@ -3,6 +3,8 @@
 import React from 'react';
 import { Inbox, TrendingUp, CheckSquare, Briefcase, Users, AlertTriangle } from 'lucide-react';
 import { InboxTabType } from '@/hooks/useInboxFeed';
+import { useTheme } from '@/lib/utils/ThemeProvider';
+import { inboxTokens } from './inboxTheme';
 
 /* ═══════════════════════════════════════════════════════
    InboxEmptyState — Contextual empty states per tab
@@ -22,57 +24,55 @@ const EMPTY_STATES: Record<
 > = {
   all: {
     Icon: Inbox,
-    title: 'Your inbox is clear',
+    title: 'Inbox is clear',
     description: 'New opportunities, tasks, vendor bids, and team updates will appear here.',
   },
   opportunities: {
     Icon: TrendingUp,
-    title: 'No active opportunities',
-    description: 'Phase transitions, contingency deadlines, and investment invitations will show up here.',
+    title: 'No opportunities',
+    description: 'Phase transitions, deadlines, and investment invitations show up here.',
   },
   tasks: {
     Icon: CheckSquare,
     title: 'No pending tasks',
-    description: 'Assigned tasks, checklist milestones, and completions will show up here.',
+    description: 'Assigned tasks, checklist milestones, and completions show up here.',
   },
   vendors: {
     Icon: Briefcase,
-    title: 'No vendor bids',
-    description: 'Vendor quotes, bidding alerts, and lead status notifications will appear here.',
+    title: 'No vendor items',
+    description: 'Vendor quotes, bidding alerts, and lead updates appear here.',
   },
   team: {
     Icon: Users,
     title: 'No team updates',
-    description: 'Team invitations and document signatures will appear here.',
+    description: 'Team invitations and document signatures appear here.',
   },
   system: {
     Icon: AlertTriangle,
     title: 'No system alerts',
-    description: 'Billing statements and general system notifications will appear here.',
+    description: 'Billing and system notifications appear here.',
   },
 };
 
 export default function InboxEmptyState({ activeTab }: InboxEmptyStateProps) {
+  const { theme } = useTheme();
+  const t = inboxTokens(theme === 'dark');
   const state = EMPTY_STATES[activeTab] || EMPTY_STATES.all;
 
   return (
-    <div className="flex-1 flex flex-col items-center justify-center py-20 px-8 bg-[#0d0a0b]">
+    <div className="flex-1 flex flex-col items-center justify-center py-16 px-8">
       <div
-        className="w-16 h-16 rounded-full flex items-center justify-center mb-5 bg-white/5 border border-white/10"
+        className="w-12 h-12 flex items-center justify-center mb-4"
+        style={{ background: t.hover, border: `1px solid ${t.border}`, borderRadius: 2 }}
       >
-        <state.Icon
-          className="w-6 h-6 text-[#9E9DA0] opacity-50"
-        />
+        <state.Icon className="w-5 h-5" style={{ color: t.muted }} />
       </div>
-      <p
-        className="text-sm font-semibold mb-1 text-white"
-      >
+      <p className="text-sm font-semibold mb-1" style={{ color: t.heading }}>
         {state.title}
       </p>
-      <p className="text-xs text-center max-w-xs text-[#9E9DA0]">
+      <p className="text-xs text-center max-w-[260px] leading-relaxed" style={{ color: t.muted }}>
         {state.description}
       </p>
     </div>
   );
 }
-

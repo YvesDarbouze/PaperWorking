@@ -2,16 +2,13 @@
 
 /**
  * REILKanBan — 4-phase Real Estate Investment Lifecycle board.
- *
- * Columns: Acquisition → Fund → Hold → Exit
- * Each column shows FolderCards for projects in that phase.
- * Acquisition column has a featured "+" add button.
+ * UI chrome only — bucketing logic unchanged.
  */
 
 import { useMemo } from "react";
 import type { Project } from "@/types/schema";
-
-// ─── Phase definitions ────────────────────────────────────────────────────────
+import { useTheme } from "@/lib/utils/ThemeProvider";
+import { projectsTokens } from "./projectsTheme";
 
 export const REIL_PHASES = [
   {
@@ -19,9 +16,8 @@ export const REIL_PHASES = [
     key:         "acquisition",
     label:       "Acquisition",
     icon:        "domain_add",
-    color:       "#454955",
-    colorAlpha:  "rgba(69,73,85,",
-    description: "Find targets, crowd-fund deals, generate offer letters, and track seller responses.",
+    colorKey:    "phase1" as const,
+    description: "Find targets, underwrite, and get to contract.",
     activities:  ["Property search", "Offer letters", "Crowdfunding", "Due diligence"],
   },
   {
@@ -29,9 +25,8 @@ export const REIL_PHASES = [
     key:         "fund",
     label:       "Fund",
     icon:        "account_balance",
-    color:       "#7A9EAA",
-    colorAlpha:  "rgba(122,158,170,",
-    description: "Loan processing, real estate attorney, all documents needed to close the deal.",
+    colorKey:    "phase2" as const,
+    description: "Finance, legal, and close the deal.",
     activities:  ["Loan processing", "Attorney", "Title search", "Closing docs"],
   },
   {
@@ -39,76 +34,78 @@ export const REIL_PHASES = [
     key:         "hold",
     label:       "Hold",
     icon:        "construction",
-    color:       "#ffac5a",
-    colorAlpha:  "rgba(255,172,90,",
-    description: "Track rehab budgets, holding costs, and performance during ownership.",
-    activities:  ["Rehab budget", "Holding costs", "Tenant management", "Cash flow"],
+    colorKey:    "phase3" as const,
+    description: "Rehab, operate, and track performance.",
+    activities:  ["Rehab budget", "Holding costs", "Tenants", "Cash flow"],
   },
   {
     phase:       4,
     key:         "exit",
     label:       "Exit",
     icon:        "exit_to_app",
-    color:       "var(--pw-success)",
-    colorAlpha:  "rgba(0,221,148,",
-    description: "Marketing, final sale, realized ROI charts, and end-of-year tax documents.",
-    activities:  ["Listing costs", "Sale tracking", "ROI analysis", "Tax docs"],
+    colorKey:    "phase4" as const,
+    description: "Sell or refinance and realize returns.",
+    activities:  ["Listing", "Sale tracking", "ROI", "Tax docs"],
   },
 ] as const;
 
 export type ReilPhaseKey = typeof REIL_PHASES[number]["key"];
 
-// ─── Column header ─────────────────────────────────────────────────────────────
-
 function PhaseColumnHeader({
   phase,
   count,
   onAdd,
+  color,
+  t,
 }: {
   phase: typeof REIL_PHASES[number];
   count: number;
   onAdd?: () => void;
+  color: string;
+  t: ReturnType<typeof projectsTokens>;
 }) {
   return (
-    <div className="flex flex-col gap-3 pb-4 flex-shrink-0">
-      {/* Top accent bar */}
-      <div className="h-0.5 rounded-full" style={{ background: phase.color }} />
+    <div className="flex flex-col gap-2.5 pb-3 flex-shrink-0">
+      <div className="h-0.5" style={{ background: color, borderRadius: 1 }} />
 
-      {/* Phase title row */}
-      <div className="flex items-center justify-between">
-        <div className="flex items-center gap-2">
+      <div className="flex items-center justify-between gap-2">
+        <div className="flex items-center gap-2 min-w-0">
           <div
-            className="w-7 h-7 rounded-lg flex items-center justify-center flex-shrink-0"
-            style={{ background: `${phase.colorAlpha}0.15)` }}
+            className="w-7 h-7 flex items-center justify-center flex-shrink-0"
+            style={{ background: `${color}18`, borderRadius: 2 }}
           >
             <span
               className="material-symbols-outlined text-[16px]"
-              style={{ color: phase.color, fontVariationSettings: "'FILL' 0" }}
+              style={{ color, fontVariationSettings: "'FILL' 0" }}
             >
               {phase.icon}
             </span>
           </div>
-          <span className="text-[14px] font-bold" style={{ color: "rgba(253,255,252,0.92)", letterSpacing: "-0.01em" }}>
+          <span
+            className="text-[13px] font-semibold truncate"
+            style={{ color: t.heading, letterSpacing: "-0.01em" }}
+          >
             {phase.label}
           </span>
         </div>
 
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-1.5 shrink-0">
           <span
-            className="text-[11px] font-bold px-2 py-0.5 rounded-full tabular-nums"
+            className="text-[11px] font-semibold px-1.5 py-0.5 tabular-nums"
             style={{
-              background: `${phase.colorAlpha}0.12)`,
-              color: phase.color,
-              border: `1px solid ${phase.colorAlpha}0.20)`,
+              background: `${color}18`,
+              color,
+              borderRadius: 2,
             }}
           >
             {count}
           </span>
           {onAdd && (
             <button
+              type="button"
+              className="pw-interactive-custom w-6 h-6 flex items-center justify-center transition-opacity hover:opacity-70"
               onClick={onAdd}
-              className="w-6 h-6 rounded-md flex items-center justify-center transition-opacity hover:opacity-70"
-              style={{ background: `${phase.colorAlpha}0.15)`, color: phase.color }}
+              style={{ background: `${color}18`, color, borderRadius: 2, padding: 0, border: "none" }}
               aria-label="Add project to Acquisition"
             >
               <span className="material-symbols-outlined text-[15px]">add</span>
@@ -117,65 +114,53 @@ function PhaseColumnHeader({
         </div>
       </div>
 
-      {/* Description */}
-      <p className="text-[12px] leading-relaxed" style={{ color: "rgba(253,255,252,0.38)" }}>
+      <p className="text-[12px] leading-snug" style={{ color: t.muted }}>
         {phase.description}
       </p>
-
-      {/* Activity chips */}
-      <div className="flex flex-wrap gap-1.5">
-        {phase.activities.map((a) => (
-          <span
-            key={a}
-            className="text-[10px] px-2 py-0.5 rounded-full"
-            style={{
-              background: `${phase.colorAlpha}0.08)`,
-              color: `${phase.colorAlpha}0.70)`,
-              border: `1px solid ${phase.colorAlpha}0.12)`,
-            }}
-          >
-            {a}
-          </span>
-        ))}
-      </div>
     </div>
   );
 }
 
-// ─── Empty lane ────────────────────────────────────────────────────────────────
-
 function EmptyLane({
   phase,
   onAdd,
+  color,
+  t,
 }: {
   phase: typeof REIL_PHASES[number];
   onAdd?: () => void;
+  color: string;
+  t: ReturnType<typeof projectsTokens>;
 }) {
   return (
     <div
-      className="flex flex-col items-center justify-center gap-3 rounded-2xl py-10 text-center"
+      className="flex flex-col items-center justify-center gap-2.5 py-8 text-center"
       style={{
-        background: `${phase.colorAlpha}0.03)`,
-        border: `1px dashed ${phase.colorAlpha}0.15)`,
+        background: t.hover,
+        border: `1px dashed ${t.border}`,
+        borderRadius: 2,
       }}
     >
       <span
-        className="material-symbols-outlined text-[28px]"
-        style={{ color: `${phase.colorAlpha}0.25)`, fontVariationSettings: "'FILL' 0" }}
+        className="material-symbols-outlined text-[24px]"
+        style={{ color: t.muted, opacity: 0.5, fontVariationSettings: "'FILL' 0" }}
       >
         {phase.icon}
       </span>
-      <p className="text-[12px]" style={{ color: "rgba(253,255,252,0.25)" }}>
+      <p className="text-[12px]" style={{ color: t.muted }}>
         No deals in {phase.label}
       </p>
       {onAdd && (
         <button
+          type="button"
+          className="pw-interactive-custom flex items-center gap-1 text-[11px] font-semibold px-2.5 py-1.5 transition-opacity hover:opacity-80"
           onClick={onAdd}
-          className="flex items-center gap-1 text-[11px] font-semibold px-3 py-1.5 rounded-lg transition-opacity hover:opacity-70"
           style={{
-            background: `${phase.colorAlpha}0.10)`,
-            color: phase.color,
-            border: `1px solid ${phase.colorAlpha}0.20)`,
+            background: `${color}18`,
+            color,
+            border: "none",
+            borderRadius: 2,
+            padding: "6px 10px",
           }}
         >
           <span className="material-symbols-outlined text-[14px]">add</span>
@@ -186,36 +171,38 @@ function EmptyLane({
   );
 }
 
-// ─── Kanban lane ──────────────────────────────────────────────────────────────
-
 function KanbanLane({
   phase,
   projects,
   onAdd,
   renderCard,
+  color,
+  t,
+  isLast,
 }: {
   phase: typeof REIL_PHASES[number];
   projects: Project[];
   onAdd?: () => void;
   renderCard: (project: Project) => React.ReactNode;
+  color: string;
+  t: ReturnType<typeof projectsTokens>;
+  isLast: boolean;
 }) {
   return (
     <div
       className="flex flex-col gap-3 min-w-[280px] w-[280px] lg:w-auto lg:flex-1 flex-shrink-0"
       style={{
-        borderRight: "1px solid rgba(255,255,255,0.04)",
-        paddingRight: "16px",
+        borderRight: isLast ? "none" : `1px solid ${t.divider}`,
+        paddingRight: isLast ? 0 : 16,
       }}
     >
-      <PhaseColumnHeader phase={phase} count={projects.length} onAdd={onAdd} />
+      <PhaseColumnHeader phase={phase} count={projects.length} onAdd={onAdd} color={color} t={t} />
 
-      {/* Separator */}
-      <div className="h-px" style={{ background: "rgba(255,255,255,0.05)" }} />
+      <div className="h-px" style={{ background: t.divider }} />
 
-      {/* Cards */}
-      <div className="flex flex-col gap-3 flex-1">
+      <div className="flex flex-col gap-2.5 flex-1">
         {projects.length === 0 ? (
-          <EmptyLane phase={phase} onAdd={onAdd} />
+          <EmptyLane phase={phase} onAdd={onAdd} color={color} t={t} />
         ) : (
           projects.map((p) => renderCard(p))
         )}
@@ -224,8 +211,6 @@ function KanbanLane({
   );
 }
 
-// ─── Main export ───────────────────────────────────────────────────────────────
-
 interface REILKanBanProps {
   projects:   Project[];
   onAdd:      () => void;
@@ -233,7 +218,9 @@ interface REILKanBanProps {
 }
 
 export function REILKanBan({ projects, onAdd, renderCard }: REILKanBanProps) {
-  // Bucket projects into phases
+  const { theme } = useTheme();
+  const t = projectsTokens(theme === "dark");
+
   const buckets = useMemo(() => {
     const map: Record<number, Project[]> = { 1: [], 2: [], 3: [], 4: [] };
     for (const p of projects) {
@@ -247,16 +234,19 @@ export function REILKanBan({ projects, onAdd, renderCard }: REILKanBanProps) {
 
   return (
     <div
-      className="flex gap-4 lg:gap-6 overflow-x-auto pb-4"
+      className="flex gap-4 lg:gap-5 overflow-x-auto pb-4"
       style={{ scrollbarWidth: "none" }}
     >
-      {REIL_PHASES.map((phase) => (
+      {REIL_PHASES.map((phase, i) => (
         <KanbanLane
           key={phase.key}
           phase={phase}
           projects={buckets[phase.phase] ?? []}
           onAdd={phase.phase === 1 ? onAdd : undefined}
           renderCard={renderCard}
+          color={t[phase.colorKey]}
+          t={t}
+          isLast={i === REIL_PHASES.length - 1}
         />
       ))}
     </div>

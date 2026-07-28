@@ -11,13 +11,18 @@ import MFAEnrollmentModal from '@/components/auth/MFAEnrollmentModal';
 import MFAUnenrollModal from '@/components/auth/MFAUnenrollModal';
 import ClaimHistorySection from '@/components/profile/ClaimHistorySection';
 import { ActivityTimeline } from '@/components/project/ActivityTimeline';
+import { useTheme } from '@/lib/utils/ThemeProvider';
+import { settingsTokens, panelStyle, inputStyle } from '@/components/settings/settingsTheme';
 
-/* ═══════════════════════════════════════════════════════
-   Profile & Security Settings (Luminous Glass Terminal)
-   ═══════════════════════════════════════════════════════ */
+/* Profile settings — identity & security desk */
 
 export default function ProfileSettingsPage() {
   const { user, profile } = useAuth();
+  const { theme } = useTheme();
+  const isDark = theme === 'dark';
+  const t = settingsTokens(isDark);
+  const panel = panelStyle(t);
+  const field = inputStyle(t);
 
   // ─── User Details State ───────────────────────────────
   const displayName = profile?.displayName || '';
@@ -200,38 +205,61 @@ export default function ProfileSettingsPage() {
   const completeness = Math.round((filledFields / fields.length) * 100);
 
   return (
-    <div className="w-full space-y-8">
-      {/* ─── 12-Column Bento Grid ─── */}
-      <div className="grid grid-cols-12 gap-8">
+    <div className="w-full space-y-6" style={{ color: t.body }}>
+      <header className="pb-5" style={{ borderBottom: `1px solid ${t.divider}` }}>
+        <p className="text-[11px] font-medium tracking-[0.14em] uppercase mb-1" style={{ color: t.accent }}>
+          Identity
+        </p>
+        <h2 className="text-[1.35rem] font-semibold tracking-tight" style={{ color: t.heading }}>
+          Profile
+        </h2>
+        <p className="text-sm mt-1.5 leading-relaxed max-w-xl" style={{ color: t.muted }}>
+          Personal details, security, sessions, and data erasure for your account.
+        </p>
+      </header>
 
-        {/* ════════════════════════════════════════════════
-            SUSPENSION BANNER (col-span-12)
-            ════════════════════════════════════════════════ */}
+      <div className="grid grid-cols-12 gap-5">
+
         {profile?.invitationSuspended && (
-          <section className="col-span-12 border border-red-500/30 bg-red-500/5 rounded-2xl p-6 relative overflow-hidden backdrop-blur-md">
+          <section
+            className="col-span-12 p-5"
+            style={{ background: t.alertMuted, border: `1px solid ${t.border}`, borderRadius: 2 }}
+          >
             <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-              <div className="flex items-start gap-4">
-                <div className="w-12 h-12 rounded-xl bg-red-500/10 border border-red-500/20 flex items-center justify-center text-red-400 shrink-0">
+              <div className="flex items-start gap-3">
+                <div
+                  className="w-10 h-10 flex items-center justify-center shrink-0"
+                  style={{ background: t.surface, border: `1px solid ${t.border}`, borderRadius: 2, color: t.alert }}
+                >
                   <span className="material-symbols-outlined text-2xl select-none">warning</span>
                 </div>
                 <div>
-                  <h4 className="text-base font-semibold text-white">Invitation Privileges Suspended</h4>
-                  <p className="text-xs text-pw-muted mt-1 leading-relaxed max-w-2xl">
-                    Your invitation privileges were suspended automatically due to a complaint or bounce rate threshold breach. 
-                    Reason: <span className="font-semibold text-white">{profile.suspensionReason || 'USER_COMPLAINT'}</span>.
-                    You are currently restricted from sending invitations to co-investors.
+                  <h4 className="text-base font-semibold" style={{ color: t.heading }}>
+                    Invitation privileges suspended
+                  </h4>
+                  <p className="text-xs mt-1 leading-relaxed max-w-2xl" style={{ color: t.muted }}>
+                    Suspended due to a complaint or bounce-rate threshold.
+                    Reason:{' '}
+                    <span className="font-semibold" style={{ color: t.heading }}>
+                      {profile.suspensionReason || 'USER_COMPLAINT'}
+                    </span>
+                    . You cannot send co-investor invitations until this is resolved.
                   </p>
                 </div>
               </div>
 
               <div className="shrink-0">
                 {profile.appealSubmitted ? (
-                  <span className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-emerald-500/10 border border-emerald-500/20 text-xs font-semibold text-emerald-400 select-none">
+                  <span
+                    className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold"
+                    style={{ background: t.successMuted, border: `1px solid ${t.border}`, borderRadius: 2, color: t.success }}
+                  >
                     <span className="material-symbols-outlined text-xs select-none">check_circle</span>
-                    Appeal Under Review
+                    Appeal under review
                   </span>
                 ) : (
                   <button
+                    type="button"
                     onClick={async () => {
                       const tid = toast.loading('Submitting appeal…');
                       try {
@@ -252,9 +280,10 @@ export default function ProfileSettingsPage() {
                         toast.error(err instanceof Error ? err.message : 'Failed to submit appeal', { id: tid });
                       }
                     }}
-                    className="h-10 px-5 bg-error text-white hover:bg-error/90 active:scale-98 transition-all text-sm font-medium rounded-lg cursor-pointer flex items-center justify-center"
+                    className="pw-interactive-custom text-sm font-semibold"
+                    style={{ background: t.alert, color: '#fff', border: 'none', borderRadius: 2, padding: '8px 16px' }}
                   >
-                    Appeal Suspension
+                    Appeal suspension
                   </button>
                 )}
               </div>
@@ -262,200 +291,209 @@ export default function ProfileSettingsPage() {
           </section>
         )}
 
-        {/* ════════════════════════════════════════════════
-            1 · HERO PROFILE CARD (col-span-12)
-            ════════════════════════════════════════════════ */}
-        <section className="col-span-12 glass-card rounded-2xl p-6 flex items-center justify-between relative overflow-hidden transition-all duration-200 hover:shadow-md">
-          {/* Ambient glow */}
-          <div className="absolute -top-20 -right-20 w-72 h-72 bg-pw-primary/10 rounded-full blur-[120px] pointer-events-none" />
-
-          <div className="flex items-center gap-8 relative z-10">
-            {/* Avatar */}
-            <div className="relative group cursor-pointer">
-              <div className="w-24 h-24 rounded-full bg-gradient-to-br from-pw-primary/30 to-pw-primary/10 border-2 border-pw-primary/30 flex items-center justify-center text-3xl font-bold text-pw-primary select-none transition-all">
+        <section className="col-span-12 p-5 sm:p-6 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-5" style={panel}>
+          <div className="flex items-center gap-5 min-w-0">
+            <div className="relative group shrink-0">
+              <div
+                className="w-20 h-20 flex items-center justify-center text-2xl font-semibold select-none"
+                style={{
+                  borderRadius: 2,
+                  background: t.accentMuted,
+                  border: `1px solid ${t.border}`,
+                  color: t.accent,
+                }}
+              >
                 {initials}
               </div>
               <button
                 type="button"
-                className="absolute inset-0 rounded-full bg-pw-black/60 text-pw-primary flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer border border-pw-primary/30"
+                className="pw-interactive-custom absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity"
+                style={{ background: 'rgba(10,11,14,0.72)', border: `1px solid ${t.border}`, borderRadius: 2, color: t.ctaFg }}
                 title="Upload photo"
               >
                 <span className="material-symbols-outlined text-xl">photo_camera</span>
               </button>
-              <div className="absolute bottom-0 right-0 bg-pw-glass-bg border border-white/20 rounded-full p-1.5 shadow-lg z-20">
-                <span className="material-symbols-outlined text-[14px] text-pw-black">edit</span>
-              </div>
             </div>
 
-            {/* Name & email */}
-            <div>
-              <h3 className="text-2xl font-bold text-pw-black mb-1">
+            <div className="min-w-0">
+              <h3 className="text-xl font-semibold tracking-tight truncate" style={{ color: t.heading }}>
                 {firstName} {lastName}
               </h3>
-              <div className="flex items-center gap-2 text-pw-muted text-sm">
+              <div className="flex items-center gap-1.5 text-sm mt-1" style={{ color: t.muted }}>
                 <span className="material-symbols-outlined text-[16px]">mail</span>
-                <span className="text-pw-primary/80 font-mono">{user?.email}</span>
+                <span className="font-mono truncate" style={{ color: t.accent }}>{user?.email}</span>
               </div>
             </div>
           </div>
 
-          {/* Status badge */}
-          <div className="hidden md:block relative z-10">
-            <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-pw-primary/10 border border-pw-primary/20 text-pw-primary font-semibold text-xs tracking-wide">
-              <span className="w-1.5 h-1.5 rounded-full bg-pw-primary animate-pulse" />
-              {profile?.role || 'Active Member'}
-            </span>
-          </div>
+          <span
+            className="hidden md:inline-flex items-center gap-1.5 px-2.5 py-1 text-xs font-semibold shrink-0"
+            style={{ background: t.successMuted, border: `1px solid ${t.border}`, borderRadius: 2, color: t.success }}
+          >
+            <span className="w-1.5 h-1.5 rounded-full" style={{ background: t.success }} />
+            {profile?.role || 'Active member'}
+          </span>
         </section>
 
-        {/* ════════════════════════════════════════════════
-            2 · PERSONAL INFORMATION FORM (col-span-7)
-            ════════════════════════════════════════════════ */}
-        <section className="col-span-12 lg:col-span-7 glass-card rounded-2xl p-6 flex flex-col relative overflow-hidden transition-all duration-200 hover:shadow-md">
-          {/* Header */}
-          <div className="flex items-center justify-between border-b border-white/10 pb-4 mb-6">
-            <div className="flex items-center gap-2">
-              <span className="material-symbols-outlined text-pw-primary text-xl select-none">person</span>
-              <h4 className="text-base font-semibold text-pw-black">Personal Information</h4>
-            </div>
+        <section className="col-span-12 lg:col-span-7 p-5 sm:p-6 flex flex-col" style={panel}>
+          <div className="flex items-center gap-2 pb-4 mb-5" style={{ borderBottom: `1px solid ${t.divider}` }}>
+            <span className="material-symbols-outlined text-xl select-none" style={{ color: t.accent }}>person</span>
+            <h4 className="text-base font-semibold" style={{ color: t.heading }}>Personal information</h4>
           </div>
 
-          {/* Profile completeness mini-bar */}
-          <div className="space-y-2 mb-6">
+          <div className="space-y-2 mb-5">
             <div className="flex items-center justify-between text-xs">
-              <span className="text-pw-muted font-medium">Profile Completeness</span>
-              <span className="text-pw-primary font-bold">{completeness}%</span>
+              <span className="font-medium" style={{ color: t.muted }}>Profile completeness</span>
+              <span className="font-semibold tabular-nums" style={{ color: completeness === 100 ? t.success : t.accent }}>
+                {completeness}%
+              </span>
             </div>
-            <div className="h-1.5 w-full rounded-full bg-pw-glass-bg border border-pw-border overflow-hidden">
+            <div className="h-1.5 w-full overflow-hidden" style={{ background: t.surfaceHigh, borderRadius: 1 }}>
               <div
-                className="h-full bg-pw-primary transition-all duration-500 rounded-full"
-                style={{ width: `${completeness}%` }}
+                className="h-full transition-all duration-500"
+                style={{
+                  width: `${completeness}%`,
+                  background: completeness === 100 ? t.success : t.accent,
+                  borderRadius: 1,
+                }}
               />
             </div>
           </div>
 
-          <form onSubmit={handleSaveProfile} className="space-y-6 flex-1">
-            {/* Name fields */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
+          <form onSubmit={handleSaveProfile} className="space-y-5 flex-1">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div>
-                <label className="block text-xs font-semibold text-pw-muted uppercase tracking-wider mb-2">First Name</label>
+                <label className="block text-[11px] font-semibold uppercase tracking-[0.12em] mb-1.5" style={{ color: t.muted }}>
+                  First name
+                </label>
                 <input
                   type="text"
                   value={firstName}
                   onChange={(e) => setFirstName(e.target.value)}
-                  className="glass-input w-full text-sm px-4 h-10 rounded-lg text-pw-black focus:ring-2 focus:ring-pw-primary focus:outline-none transition-all duration-150"
+                  className="w-full text-sm px-3 h-10 outline-none"
+                  style={field}
                 />
               </div>
               <div>
-                <label className="block text-xs font-semibold text-pw-muted uppercase tracking-wider mb-2">Last Name</label>
+                <label className="block text-[11px] font-semibold uppercase tracking-[0.12em] mb-1.5" style={{ color: t.muted }}>
+                  Last name
+                </label>
                 <input
                   type="text"
                   value={lastName}
                   onChange={(e) => setLastName(e.target.value)}
-                  className="glass-input w-full text-sm px-4 h-10 rounded-lg text-pw-black focus:ring-2 focus:ring-pw-primary focus:outline-none transition-all duration-150"
+                  className="w-full text-sm px-3 h-10 outline-none"
+                  style={field}
                 />
               </div>
             </div>
 
-            {/* Contact fields */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div>
-                <label className="block text-xs font-semibold text-pw-muted uppercase tracking-wider mb-2">Phone Number</label>
+                <label className="block text-[11px] font-semibold uppercase tracking-[0.12em] mb-1.5" style={{ color: t.muted }}>
+                  Phone number
+                </label>
                 <input
                   type="text"
                   value={phone}
                   onChange={(e) => setPhone(e.target.value)}
                   placeholder="(555) 123-4567"
-                  className="glass-input w-full text-sm px-4 h-10 rounded-lg text-pw-black placeholder:text-pw-muted/40 focus:ring-2 focus:ring-pw-primary focus:outline-none transition-all duration-150"
+                  className="w-full text-sm px-3 h-10 outline-none"
+                  style={field}
                 />
               </div>
               <div>
-                <label className="block text-xs font-semibold text-pw-muted uppercase tracking-wider mb-2">Company Name</label>
+                <label className="block text-[11px] font-semibold uppercase tracking-[0.12em] mb-1.5" style={{ color: t.muted }}>
+                  Company name
+                </label>
                 <input
                   type="text"
                   value={company}
                   onChange={(e) => setCompany(e.target.value)}
                   placeholder="Realty Corp LLC"
-                  className="glass-input w-full text-sm px-4 h-10 rounded-lg text-pw-black placeholder:text-pw-muted/40 focus:ring-2 focus:ring-pw-primary focus:outline-none transition-all duration-150"
+                  className="w-full text-sm px-3 h-10 outline-none"
+                  style={field}
                 />
               </div>
             </div>
 
-            {/* Email (read-only) */}
             <div>
-              <label className="block text-xs font-semibold text-pw-muted uppercase tracking-wider mb-2">Email Address</label>
-              <div className="glass-input w-full text-sm px-4 h-10 rounded-lg text-pw-muted/70 flex items-center gap-2 cursor-not-allowed">
-                <span className="material-symbols-outlined text-[16px] text-pw-muted/50">lock</span>
+              <label className="block text-[11px] font-semibold uppercase tracking-[0.12em] mb-1.5" style={{ color: t.muted }}>
+                Email address
+              </label>
+              <div
+                className="w-full text-sm px-3 h-10 flex items-center gap-2 cursor-not-allowed"
+                style={{ ...field, color: t.muted, background: t.surfaceMuted }}
+              >
+                <span className="material-symbols-outlined text-[16px]">lock</span>
                 {user?.email}
               </div>
             </div>
 
-            {/* Submit */}
-            <div className="flex items-center gap-4 pt-2">
+            <div className="flex items-center gap-4 pt-1">
               <button
                 type="submit"
                 disabled={saving}
-                className="luminous-button h-10 px-5 rounded-lg text-sm font-medium active:scale-98 disabled:opacity-50 disabled:pointer-events-none transition-all flex items-center justify-center gap-2 cursor-pointer"
+                className="pw-interactive-custom flex items-center justify-center gap-2 text-sm font-semibold disabled:opacity-50"
+                style={{ background: t.ctaBg, color: t.ctaFg, border: 'none', borderRadius: 2, padding: '8px 16px' }}
               >
                 {saving ? (
                   <span className="material-symbols-outlined animate-spin text-[16px] select-none">progress_activity</span>
                 ) : (
                   <span className="material-symbols-outlined text-[16px] select-none">save</span>
                 )}
-                {saving ? 'Saving…' : 'Save Changes'}
+                {saving ? 'Saving…' : 'Save changes'}
               </button>
               {saved && (
-                <span className="text-sm text-pw-primary flex items-center gap-1.5 animate-pulse">
+                <span className="text-sm flex items-center gap-1.5" style={{ color: t.success }}>
                   <span className="material-symbols-outlined text-sm select-none">check_circle</span>
-                  Profile updated successfully.
+                  Profile updated.
                 </span>
               )}
             </div>
           </form>
         </section>
 
-        {/* ════════════════════════════════════════════════
-            3 · SECURITY CARD (col-span-5)
-            ════════════════════════════════════════════════ */}
-        <section className="col-span-12 lg:col-span-5 glass-card rounded-2xl p-6 flex flex-col relative overflow-hidden transition-all duration-200 hover:shadow-md">
-          {/* Ambient glow */}
-          <div className="absolute -bottom-16 -left-16 w-48 h-48 bg-pw-primary/8 rounded-full blur-[100px] pointer-events-none" />
-
-          {/* Header */}
-          <div className="flex items-center justify-between border-b border-white/10 pb-4 mb-6">
-            <div className="flex items-center gap-2">
-              <span className="material-symbols-outlined text-pw-primary text-xl select-none">shield_lock</span>
-              <h4 className="text-base font-semibold text-pw-black">Security</h4>
-            </div>
+        <section className="col-span-12 lg:col-span-5 p-5 sm:p-6 flex flex-col" style={panel}>
+          <div className="flex items-center gap-2 pb-4 mb-5" style={{ borderBottom: `1px solid ${t.divider}` }}>
+            <span className="material-symbols-outlined text-xl select-none" style={{ color: t.accent }}>shield_lock</span>
+            <h4 className="text-base font-semibold" style={{ color: t.heading }}>Security</h4>
           </div>
 
-          {/* 2FA Toggle */}
-          <div className="flex items-center justify-between p-4 rounded-xl bg-pw-glass-bg/50 border border-white/5 mb-6">
+          <div
+            className="flex items-center justify-between p-3.5 mb-5 gap-3"
+            style={{ background: t.surfaceMuted, border: `1px solid ${t.border}`, borderRadius: 2 }}
+          >
             <div>
-              <p className="text-sm font-semibold text-pw-black mb-0.5">Two-Factor Auth</p>
-              <p className="text-xs text-pw-muted">
+              <p className="text-sm font-semibold mb-0.5" style={{ color: t.heading }}>Two-factor auth</p>
+              <p className="text-xs" style={{ color: t.muted }}>
                 {isMFAEnabled ? 'TOTP authenticator active' : 'Add an extra layer of protection'}
               </p>
             </div>
             <button
+              type="button"
               onClick={() => isMFAEnabled ? setShowUnenrollModal(true) : setShowEnrollModal(true)}
-              className={`
-                relative inline-flex h-6 w-11 items-center rounded-full transition-colors cursor-pointer border
-                ${isMFAEnabled ? 'bg-pw-primary/20 border-pw-primary/40' : 'bg-pw-glass-bg border-pw-border'}
-              `}
+              className="pw-interactive-custom relative inline-flex h-6 w-11 items-center transition-colors"
+              style={{
+                borderRadius: 999,
+                border: `1px solid ${t.border}`,
+                background: isMFAEnabled ? t.successMuted : t.surfaceHigh,
+                padding: 0,
+              }}
               role="switch"
               aria-checked={isMFAEnabled}
             >
               <span
-                className={`
-                  inline-block h-4 w-4 transform rounded-full transition-all duration-300 shadow-sm
-                  ${isMFAEnabled ? 'translate-x-6 bg-pw-primary' : 'translate-x-1 bg-pw-muted'}
-                `}
+                className="inline-block h-4 w-4 transform transition-all duration-300"
+                style={{
+                  borderRadius: 999,
+                  background: isMFAEnabled ? t.success : t.muted,
+                  transform: isMFAEnabled ? 'translateX(22px)' : 'translateX(4px)',
+                }}
               />
             </button>
           </div>
 
-          {/* MFA modals */}
           {showEnrollModal && (
             <MFAEnrollmentModal
               onClose={() => setShowEnrollModal(false)}
@@ -470,29 +508,32 @@ export default function ProfileSettingsPage() {
             />
           )}
 
-          {/* ── Change Password ── */}
-          <div className="border-b border-white/10 pb-3 mb-5">
-            <h5 className="text-xs font-semibold text-pw-muted uppercase tracking-wider flex items-center gap-1.5">
+          <div className="pb-3 mb-4" style={{ borderBottom: `1px solid ${t.divider}` }}>
+            <h5 className="text-[11px] font-semibold uppercase tracking-[0.12em] flex items-center gap-1.5" style={{ color: t.muted }}>
               <span className="material-symbols-outlined text-sm select-none">lock_reset</span>
-              Change Password
+              Change password
             </h5>
           </div>
 
           <form onSubmit={handlePasswordChange} className="space-y-4 flex-1">
             <div>
-              <label className="block text-xs font-semibold text-pw-muted uppercase tracking-wider mb-2">Current Password</label>
+              <label className="block text-[11px] font-semibold uppercase tracking-[0.12em] mb-1.5" style={{ color: t.muted }}>
+                Current password
+              </label>
               <div className="relative">
                 <input
                   type={showPwd ? 'text' : 'password'}
                   value={currentPwd}
                   onChange={(e) => setCurrentPwd(e.target.value)}
                   required
-                  className="glass-input w-full text-sm px-4 h-10 rounded-lg pr-10 text-pw-black focus:ring-2 focus:ring-pw-primary focus:outline-none transition-all duration-150"
+                  className="w-full text-sm px-3 h-10 pr-10 outline-none"
+                  style={field}
                 />
                 <button
                   type="button"
                   onClick={() => setShowPwd(!showPwd)}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-pw-muted hover:text-pw-black transition-colors"
+                  className="pw-interactive-custom absolute right-2 top-1/2 -translate-y-1/2"
+                  style={{ background: 'transparent', border: 'none', padding: 4, color: t.muted }}
                 >
                   <span className="material-symbols-outlined text-lg select-none">
                     {showPwd ? 'visibility_off' : 'visibility'}
@@ -501,101 +542,125 @@ export default function ProfileSettingsPage() {
               </div>
             </div>
             <div>
-              <label className="block text-xs font-semibold text-pw-muted uppercase tracking-wider mb-2">New Password</label>
+              <label className="block text-[11px] font-semibold uppercase tracking-[0.12em] mb-1.5" style={{ color: t.muted }}>
+                New password
+              </label>
               <input
                 type="password"
                 value={newPwd}
                 onChange={(e) => setNewPwd(e.target.value)}
                 required
                 minLength={8}
-                className="glass-input w-full text-sm px-4 h-10 rounded-lg text-pw-black focus:ring-2 focus:ring-pw-primary focus:outline-none transition-all duration-150"
+                className="w-full text-sm px-3 h-10 outline-none"
+                style={field}
               />
             </div>
             <div>
-              <label className="block text-xs font-semibold text-pw-muted uppercase tracking-wider mb-2">Confirm New Password</label>
+              <label className="block text-[11px] font-semibold uppercase tracking-[0.12em] mb-1.5" style={{ color: t.muted }}>
+                Confirm new password
+              </label>
               <input
                 type="password"
                 value={confirmPwd}
                 onChange={(e) => setConfirmPwd(e.target.value)}
                 required
                 minLength={8}
-                className="glass-input w-full text-sm px-4 h-10 rounded-lg text-pw-black focus:ring-2 focus:ring-pw-primary focus:outline-none transition-all duration-150"
+                className="w-full text-sm px-3 h-10 outline-none"
+                style={field}
               />
             </div>
 
             {pwdError && (
-              <p className="text-xs text-error bg-error/10 border border-error/30 rounded-lg px-4 py-3 flex items-center gap-2">
+              <p
+                className="text-xs px-3 py-2.5 flex items-center gap-2"
+                style={{ background: t.alertMuted, border: `1px solid ${t.border}`, borderRadius: 2, color: t.alert }}
+              >
                 <span className="material-symbols-outlined text-sm select-none">error</span>
                 {pwdError}
               </p>
             )}
             {pwdSuccess && (
-              <p className="text-xs text-pw-primary bg-pw-primary/10 border border-pw-primary/25 rounded-lg px-4 py-3 flex items-center gap-2">
+              <p
+                className="text-xs px-3 py-2.5 flex items-center gap-2"
+                style={{ background: t.successMuted, border: `1px solid ${t.border}`, borderRadius: 2, color: t.success }}
+              >
                 <span className="material-symbols-outlined text-sm select-none">check_circle</span>
-                Password updated successfully.
+                Password updated.
               </p>
             )}
 
             <button
               type="submit"
               disabled={pwdLoading}
-              className="w-full h-10 px-5 rounded-lg bg-pw-glass-bg hover:bg-pw-border/30 border border-white/10 text-pw-black text-sm font-medium active:scale-98 disabled:opacity-50 disabled:pointer-events-none transition-all flex justify-center items-center gap-2 cursor-pointer"
+              className="pw-interactive-custom w-full flex justify-center items-center gap-2 text-sm font-semibold disabled:opacity-50"
+              style={{ background: 'transparent', border: `1px solid ${t.border}`, borderRadius: 2, padding: '8px 16px', color: t.heading }}
             >
               {pwdLoading && (
                 <span className="material-symbols-outlined animate-spin text-[16px] select-none">progress_activity</span>
               )}
               <span className="material-symbols-outlined text-[16px]">key</span>
-              {pwdLoading ? 'Updating…' : 'Update Password'}
+              {pwdLoading ? 'Updating…' : 'Update password'}
             </button>
           </form>
         </section>
 
-        {/* ════════════════════════════════════════════════
-            4 · ACTIVE SESSIONS (col-span-12)
-            ════════════════════════════════════════════════ */}
-        <section className="col-span-12 glass-card rounded-2xl p-6 relative overflow-hidden transition-all duration-200 hover:shadow-md">
-          {/* Header */}
-          <div className="mb-6">
+        <section className="col-span-12 p-5 sm:p-6" style={panel}>
+          <div className="mb-5">
             <div className="flex items-center gap-2 mb-1">
-              <span className="material-symbols-outlined text-pw-primary text-xl select-none">devices</span>
-              <h4 className="text-base font-semibold text-pw-black">Active Sessions</h4>
+              <span className="material-symbols-outlined text-xl select-none" style={{ color: t.accent }}>devices</span>
+              <h4 className="text-base font-semibold" style={{ color: t.heading }}>Active sessions</h4>
             </div>
-            <p className="text-sm text-pw-muted">Manage external authentication and active device sessions.</p>
+            <p className="text-sm" style={{ color: t.muted }}>Manage authentication and device sessions.</p>
           </div>
 
-          <div className="flex flex-col md:flex-row gap-4">
-            {/* Current session card */}
-            <div className="flex-1 bg-pw-glass-bg/30 border border-white/5 rounded-xl p-5 flex items-center justify-between hover:bg-pw-glass-bg/50 transition-colors">
-              <div className="flex items-center gap-4">
-                <div className="w-10 h-10 rounded-full bg-pw-primary/10 border border-pw-primary/20 flex items-center justify-center">
-                  <span className="material-symbols-outlined text-pw-primary text-[20px]">computer</span>
+          <div className="flex flex-col md:flex-row gap-3">
+            <div
+              className="flex-1 p-4 flex items-center justify-between gap-3"
+              style={{ background: t.surfaceMuted, border: `1px solid ${t.border}`, borderRadius: 2 }}
+            >
+              <div className="flex items-center gap-3">
+                <div
+                  className="w-9 h-9 flex items-center justify-center"
+                  style={{ background: t.successMuted, border: `1px solid ${t.border}`, borderRadius: 2, color: t.success }}
+                >
+                  <span className="material-symbols-outlined text-[20px]">computer</span>
                 </div>
                 <div>
-                  <p className="text-sm font-semibold text-pw-black">This Device</p>
-                  <p className="text-xs text-pw-primary/70 font-mono mt-0.5">Current session</p>
+                  <p className="text-sm font-semibold" style={{ color: t.heading }}>This device</p>
+                  <p className="text-xs font-mono mt-0.5" style={{ color: t.muted }}>Current session</p>
                 </div>
               </div>
-              <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-pw-primary/10 text-pw-primary text-xs font-semibold">
-                <span className="w-1.5 h-1.5 rounded-full bg-pw-primary animate-pulse" />
+              <span
+                className="inline-flex items-center gap-1 px-2 py-0.5 text-xs font-semibold"
+                style={{ background: t.successMuted, color: t.success, borderRadius: 2 }}
+              >
+                <span className="w-1.5 h-1.5 rounded-full" style={{ background: t.success }} />
                 Active
               </span>
             </div>
 
-            {/* Other sessions card */}
-            <div className="flex-1 bg-pw-glass-bg/30 border border-white/5 rounded-xl p-5 flex items-center justify-between hover:bg-pw-glass-bg/50 transition-colors">
-              <div className="flex items-center gap-4">
-                <div className="w-10 h-10 rounded-full bg-white/5 border border-white/10 flex items-center justify-center">
-                  <span className="material-symbols-outlined text-pw-muted text-[20px]">devices_other</span>
+            <div
+              className="flex-1 p-4 flex items-center justify-between gap-3"
+              style={{ background: t.surfaceMuted, border: `1px solid ${t.border}`, borderRadius: 2 }}
+            >
+              <div className="flex items-center gap-3">
+                <div
+                  className="w-9 h-9 flex items-center justify-center"
+                  style={{ background: t.surface, border: `1px solid ${t.border}`, borderRadius: 2, color: t.muted }}
+                >
+                  <span className="material-symbols-outlined text-[20px]">devices_other</span>
                 </div>
                 <div>
-                  <p className="text-sm font-semibold text-pw-black">Other Sessions</p>
-                  <p className="text-xs text-pw-muted mt-0.5">Sign out everywhere else</p>
+                  <p className="text-sm font-semibold" style={{ color: t.heading }}>Other sessions</p>
+                  <p className="text-xs mt-0.5" style={{ color: t.muted }}>Sign out everywhere else</p>
                 </div>
               </div>
               <button
+                type="button"
                 onClick={handleRevokeSessions}
                 disabled={revoking}
-                className="h-10 px-5 text-pw-muted hover:text-error hover:bg-error/10 hover:border-error/30 border border-white/10 rounded-lg bg-white/5 active:scale-98 disabled:opacity-50 disabled:pointer-events-none transition-all text-sm font-medium cursor-pointer"
+                className="pw-interactive-custom text-sm font-semibold disabled:opacity-50"
+                style={{ background: 'transparent', border: `1px solid ${t.border}`, borderRadius: 2, padding: '8px 12px', color: t.muted }}
               >
                 {revoking ? (
                   <span className="flex items-center gap-1.5">
@@ -603,99 +668,101 @@ export default function ProfileSettingsPage() {
                     Revoking…
                   </span>
                 ) : (
-                  'Revoke All'
+                  'Revoke all'
                 )}
               </button>
             </div>
           </div>
 
           {revokeSuccess && (
-            <p className="text-xs text-pw-primary flex items-center gap-1.5 animate-pulse mt-4">
+            <p className="text-xs flex items-center gap-1.5 mt-4" style={{ color: t.success }}>
               <span className="material-symbols-outlined text-[16px] select-none">check_circle</span>
-              All other active sessions have been revoked.
+              All other sessions have been revoked.
             </p>
           )}
         </section>
 
-        {/* ════════════════════════════════════════════════
-            Claim History Section (col-span-12)
-            ════════════════════════════════════════════════ */}
         <ClaimHistorySection />
 
-        {/* ════════════════════════════════════════════════
-            Deal Activity Timeline (col-span-12)
-            ════════════════════════════════════════════════ */}
         <div className="col-span-12">
           <ActivityTimeline isCrossDeal={true} />
         </div>
 
-        {/* ════════════════════════════════════════════════
-            5 · GDPR DATA ERASURE (col-span-12)
-            ════════════════════════════════════════════════ */}
-        <section className="col-span-12 glass-card rounded-2xl p-6 border border-red-500/20 relative overflow-hidden transition-all duration-200 hover:shadow-md">
-          <div className="absolute top-0 right-0 w-40 h-40 bg-red-500/5 rounded-full blur-[60px] -z-10 pointer-events-none translate-x-1/2 -translate-y-1/2" />
-
-          <div className="flex items-center gap-3 mb-2">
-            <span className="material-symbols-outlined text-red-400 text-xl select-none">delete_forever</span>
-            <h4 className="text-base font-semibold text-pw-black">Data Erasure</h4>
+        <section
+          className="col-span-12 p-5 sm:p-6"
+          style={{ ...panel, borderColor: t.alert }}
+        >
+          <div className="flex items-center gap-2 mb-2">
+            <span className="material-symbols-outlined text-xl select-none" style={{ color: t.alert }}>delete_forever</span>
+            <h4 className="text-base font-semibold" style={{ color: t.heading }}>Data erasure</h4>
           </div>
-          <p className="text-sm text-pw-muted mb-6 leading-relaxed max-w-2xl">
-            Permanently delete your PaperWorking account, projects, documents, and profile data. A 24-hour grace window is applied before the purge runs. Legal audit logs are retained for 7 years for compliance.
+          <p className="text-sm mb-5 leading-relaxed max-w-2xl" style={{ color: t.muted }}>
+            Permanently delete your account, projects, documents, and profile. A 24-hour grace window applies before purge. Legal audit logs are retained for 7 years.
           </p>
 
-          {/* Grace-period active banner */}
           {isDeletionPending && (
-            <div className="mb-6 p-4 rounded-xl bg-amber-950/40 border border-amber-800/30 flex items-start gap-3">
-              <span className="material-symbols-outlined text-amber-400 text-xl shrink-0 mt-0.5 select-none">warning</span>
+            <div
+              className="mb-5 p-4 flex items-start gap-3"
+              style={{ background: t.warnMuted, border: `1px solid ${t.border}`, borderRadius: 2 }}
+            >
+              <span className="material-symbols-outlined text-xl shrink-0 mt-0.5 select-none" style={{ color: t.warn }}>warning</span>
               <div className="space-y-2 flex-1">
-                <p className="text-sm font-semibold text-amber-300">
+                <p className="text-sm font-semibold" style={{ color: t.warn }}>
                   Deletion scheduled for {deletionDate?.toLocaleString() ?? '24 hours from now'}.
                 </p>
-                <p className="text-xs text-amber-300/80">All features remain active during this window. You can cancel below.</p>
+                <p className="text-xs" style={{ color: t.muted }}>Features stay active during this window. You can cancel below.</p>
                 <button
+                  type="button"
                   onClick={handleCancelDeletion}
                   disabled={deleting}
-                  className="mt-1 h-10 px-5 rounded-lg bg-amber-500 text-black hover:bg-amber-400 active:scale-98 transition-colors flex items-center justify-center gap-2 disabled:opacity-50 disabled:pointer-events-none cursor-pointer text-sm font-medium"
+                  className="pw-interactive-custom mt-1 flex items-center justify-center gap-2 text-sm font-semibold disabled:opacity-50"
+                  style={{ background: t.warn, color: '#0A0B0E', border: 'none', borderRadius: 2, padding: '8px 14px' }}
                 >
                   {deleting && <span className="material-symbols-outlined animate-spin text-[16px] select-none">progress_activity</span>}
-                  Cancel Deletion Request
+                  Cancel deletion request
                 </button>
               </div>
             </div>
           )}
 
-          {/* Two-step confirmation flow */}
           {!isDeletionPending && !showDeleteConfirm && (
             <button
+              type="button"
               onClick={() => setShowDeleteConfirm(true)}
-              className="h-10 px-5 rounded-lg bg-error/10 border border-error/30 text-error text-sm font-medium hover:bg-error/20 active:scale-98 disabled:opacity-50 disabled:pointer-events-none transition-all flex items-center justify-center gap-2 cursor-pointer"
+              className="pw-interactive-custom flex items-center justify-center gap-2 text-sm font-semibold"
+              style={{ background: t.alertMuted, border: `1px solid ${t.border}`, borderRadius: 2, padding: '8px 16px', color: t.alert }}
             >
               <span className="material-symbols-outlined text-[16px] select-none">delete_forever</span>
-              Request Data Erasure (GDPR)
+              Request data erasure (GDPR)
             </button>
           )}
 
           {!isDeletionPending && showDeleteConfirm && (
             <div
               data-testid="delete-confirm-panel"
-              className="p-5 rounded-xl bg-red-950/40 border border-red-500/30 space-y-4"
+              className="p-4 space-y-4"
+              style={{ background: t.alertMuted, border: `1px solid ${t.border}`, borderRadius: 2 }}
             >
-              <p className="text-sm font-semibold text-red-300">
-                Are you sure? This schedules permanent deletion of your account after a 24-hour grace period.
+              <p className="text-sm font-semibold" style={{ color: t.alert }}>
+                Are you sure? This schedules permanent deletion after a 24-hour grace period.
               </p>
-              <div className="flex items-center gap-3">
+              <div className="flex items-center gap-2.5">
                 <button
+                  type="button"
                   onClick={handleRequestErasure}
                   disabled={deleting}
-                  className="h-10 px-5 rounded-lg bg-error text-white text-sm font-medium hover:bg-error/90 active:scale-98 transition-all flex items-center justify-center gap-2 disabled:opacity-50 disabled:pointer-events-none cursor-pointer"
+                  className="pw-interactive-custom flex items-center justify-center gap-2 text-sm font-semibold disabled:opacity-50"
+                  style={{ background: t.alert, color: '#fff', border: 'none', borderRadius: 2, padding: '8px 16px' }}
                 >
                   {deleting && <span className="material-symbols-outlined animate-spin text-[16px] select-none">progress_activity</span>}
-                  Confirm Request
+                  Confirm request
                 </button>
                 <button
+                  type="button"
                   onClick={() => setShowDeleteConfirm(false)}
                   disabled={deleting}
-                  className="h-10 px-5 rounded-lg border border-white/10 text-pw-muted hover:text-pw-black text-sm font-medium active:scale-98 transition-all cursor-pointer disabled:opacity-50 disabled:pointer-events-none"
+                  className="pw-interactive-custom text-sm font-semibold disabled:opacity-50"
+                  style={{ background: 'transparent', border: `1px solid ${t.border}`, borderRadius: 2, padding: '8px 14px', color: t.muted }}
                 >
                   Cancel
                 </button>
@@ -704,7 +771,6 @@ export default function ProfileSettingsPage() {
           )}
         </section>
 
-        {/* ─── Modals ─── */}
         {showEnrollModal && (
           <MFAEnrollmentModal
             onClose={() => setShowEnrollModal(false)}

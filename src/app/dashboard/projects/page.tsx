@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useMemo, useEffect } from 'react';
+import { useState, useMemo, useEffect, type CSSProperties } from 'react';
 import { useProjectStore } from '@/store/projectStore';
 import { useAllDealsSync } from '@/hooks/useAllProjectsSync';
 import { useRouter } from 'next/navigation';
@@ -12,41 +12,18 @@ import { EmptyState } from '@/components/ui/empty-states/EmptyState';
 import { REILKanBan } from '@/components/projects/REILKanBan';
 import { useCreateProjectModal } from '@/store/createProjectModalStore';
 import { useAuth } from '@/context/AuthContext';
+import { projectsTokens, phaseColor } from '@/components/projects/projectsTheme';
 
 /* ── Strategy Theme Mapping ── */
-function getStrategyThemeConfig(disposition?: string) {
+function getStrategyThemeConfig(disposition: string | undefined, t: ReturnType<typeof projectsTokens>) {
   const str = disposition ?? '';
   if (str === 'SALE') {
-    return {
-      text: 'text-primary',
-      bgBase: 'bg-primary',
-      bg10: 'bg-primary/10',
-      bg20: 'bg-primary/20',
-      bg50: 'bg-primary/50',
-      border20: 'border-primary/20',
-      label: 'Fix & Flip'
-    };
+    return { color: t.sale, label: 'Fix & Flip' };
   }
   if (str === 'RENT') {
-    return {
-      text: 'text-tertiary',
-      bgBase: 'bg-tertiary',
-      bg10: 'bg-tertiary/10',
-      bg20: 'bg-tertiary/20',
-      bg50: 'bg-tertiary/50',
-      border20: 'border-tertiary/20',
-      label: 'Rental'
-    };
+    return { color: t.rent, label: 'Rental' };
   }
-  return {
-    text: 'text-secondary',
-    bgBase: 'bg-secondary',
-    bg10: 'bg-secondary/10',
-    bg20: 'bg-secondary/20',
-    bg50: 'bg-secondary/50',
-    border20: 'border-secondary/20',
-    label: 'Mixed'
-  };
+  return { color: t.mixed, label: 'Mixed' };
 }
 
 /* ── Headline metric per strategy type ── */
@@ -106,6 +83,10 @@ function formatCurrency(value: number): string {
    FolderCard — Single project card
    ══════════════════════════════════════════ */
 function FolderCard({ project, onClick }: { project: Project; onClick: () => void }) {
+  const { theme } = useTheme();
+  const isDark = theme === 'dark';
+  const t = projectsTokens(isDark);
+
   const metrics = useMemo(
     () =>
       deriveAllMetrics(
@@ -120,13 +101,12 @@ function FolderCard({ project, onClick }: { project: Project; onClick: () => voi
   const headlineMetric = getHeadlineMetric(project, metrics);
   const ownership = project.financials?.ownershipPercentage ?? 100;
   const { progress, label: progressLabel } = getPhaseProgressInfo(project);
-  const strategyTheme = getStrategyThemeConfig(project.dispositionType);
+  const strategyTheme = getStrategyThemeConfig(project.dispositionType, t);
 
   const [isEditingRent, setIsEditingRent] = useState(false);
   const [rentInput, setRentInput] = useState((project.financials?.monthlyGrossRent || 0).toString());
   const updateProjectFinancials = useProjectStore((state) => state.updateProjectFinancials);
 
-  // Sync internal state when project financials change externally
   useEffect(() => {
     setRentInput((project.financials?.monthlyGrossRent || 0).toString());
   }, [project.financials?.monthlyGrossRent]);
@@ -147,123 +127,120 @@ function FolderCard({ project, onClick }: { project: Project; onClick: () => voi
     }
   };
 
-  // Phase-specific colors and icons based on mockup (8db0ebdc9f0544829656d9eb188551b3.html)
   const phase = project.currentPhase ?? 1;
-  let phaseIcon = "folder_special";
-  let phaseIconColor = "text-primary-container";
-  let phaseIconBg = "bg-primary-container/10";
-  let phaseIconBorder = "border-primary-container/20";
-  let progressBg = "bg-primary-container";
-  let progressGlow = "shadow-[0_0_10px_rgba(69, 73, 85,0.8)]";
-
-  if (phase === 2) {
-    phaseIcon = "snippet_folder";
-    phaseIconColor = "text-tertiary-container";
-    phaseIconBg = "bg-tertiary-container/10";
-    phaseIconBorder = "border-tertiary-container/20";
-    progressBg = "bg-tertiary-container";
-    progressGlow = "shadow-[0_0_10px_rgba(255,172,90,0.8)]";
-  } else if (phase === 3) {
-    phaseIcon = "folder";
-    phaseIconColor = "text-secondary-container";
-    phaseIconBg = "bg-secondary-container/10";
-    phaseIconBorder = "border-secondary-container/20";
-    progressBg = "bg-secondary-container";
-    progressGlow = "shadow-[0_0_10px_rgba(5,102,217,0.8)]";
-  } else if (phase >= 4) {
-    phaseIcon = "folder_shared";
-    phaseIconColor = "text-error";
-    phaseIconBg = "bg-error/10";
-    phaseIconBorder = "border-error/20";
-    progressBg = "bg-error";
-    progressGlow = "shadow-[0_0_10px_rgba(255,180,171,0.8)]";
-  }
-
-  // Phase accent colors for top stripe (Stitch folder tab)
-  const phaseStripeColor = phase === 1 ? '#454955' : phase === 2 ? '#7A9EAA' : phase === 3 ? '#ffac5a' : 'var(--pw-success)';
+  const accent = phaseColor(phase, t);
+  const phaseIcon =
+    phase === 2 ? 'snippet_folder' :
+    phase === 3 ? 'folder' :
+    phase >= 4 ? 'folder_shared' : 'folder_special';
 
   return (
     <div
-      className="backdrop-blur-xl border border-white/[0.08] flex flex-col gap-4 cursor-pointer group relative overflow-hidden transition-all duration-200"
+      className="flex flex-col gap-3 cursor-pointer group relative overflow-hidden transition-colors"
       style={{
-        background: 'linear-gradient(135deg, rgba(22,19,24,0.65) 0%, rgba(13,10,11,0.88) 100%)',
-        // Asymmetric folder tab: sharp top-left, rounded top-right (Stitch blueprint)
-        borderRadius: '8px 28px 16px 16px',
-        borderTop: `2px solid ${phaseStripeColor}55`,
-        boxShadow: '0 8px 32px rgba(0,0,0,0.25)',
-        padding: '20px',
+        background: t.surface,
+        border: `1px solid ${t.border}`,
+        borderLeft: `3px solid ${accent}`,
+        borderRadius: 2,
+        boxShadow: t.shadow,
+        padding: '14px 14px 14px 12px',
       }}
       onClick={onClick}
       role="link"
       tabIndex={0}
       aria-label={`View project: ${project.propertyName}`}
-      onMouseEnter={e => {
-        (e.currentTarget as HTMLDivElement).style.borderTopColor = `${phaseStripeColor}99`;
-        (e.currentTarget as HTMLDivElement).style.boxShadow = `0 12px 40px rgba(0,0,0,0.3), 0 0 0 1px ${phaseStripeColor}22`;
+      onMouseEnter={(e) => {
+        e.currentTarget.style.background = isDark ? '#1C1E26' : '#FAFBFC';
       }}
-      onMouseLeave={e => {
-        (e.currentTarget as HTMLDivElement).style.borderTopColor = `${phaseStripeColor}55`;
-        (e.currentTarget as HTMLDivElement).style.boxShadow = '0 8px 32px rgba(0,0,0,0.25)';
+      onMouseLeave={(e) => {
+        e.currentTarget.style.background = t.surface;
+      }}
+      onKeyDown={(e) => {
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault();
+          onClick();
+        }
       }}
     >
-      {/* Hover glow from phase color */}
-      <div
-        className="absolute inset-0 rounded-[inherit] opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none"
-        style={{ background: `radial-gradient(circle at 20% 0%, ${phaseStripeColor}08 0%, transparent 60%)` }}
-      />
-      
-      <div className="flex justify-between items-center z-10 relative">
-        <div className={`p-3 ${phaseIconBg} rounded-lg ${phaseIconColor} border ${phaseIconBorder} transition-colors`}>
-          <span className="material-symbols-outlined text-3xl" style={{ fontVariationSettings: "'FILL' 1" }}>
+      <div className="flex justify-between items-start gap-2">
+        <div
+          className="w-9 h-9 flex items-center justify-center shrink-0"
+          style={{ background: `${accent}18`, color: accent, borderRadius: 2 }}
+        >
+          <span className="material-symbols-outlined text-[20px]" style={{ fontVariationSettings: "'FILL' 0" }}>
             {phaseIcon}
           </span>
         </div>
-        
-        {/* Strategy HSL Label */}
-        <span className={`font-label-sm text-[10px] uppercase tracking-wider px-2 py-0.5 rounded border ${strategyTheme.text} ${strategyTheme.bg10} ${strategyTheme.border20}`}>
+
+        <span
+          className="text-[10px] font-semibold uppercase tracking-wider px-1.5 py-0.5 shrink-0"
+          style={{
+            color: strategyTheme.color,
+            background: `${strategyTheme.color}18`,
+            borderRadius: 2,
+          }}
+        >
           {strategyTheme.label}
         </span>
       </div>
 
-      <div className="z-10 relative">
-        <h3 className="font-headline-md text-[20px] leading-[28px] text-on-surface font-semibold mb-1 truncate">{project.propertyName}</h3>
-        <p className="font-body-sm text-body-sm text-on-surface-variant flex items-center gap-1">
-          <span className="material-symbols-outlined text-[14px]">location_on</span>
+      <div>
+        <h3
+          className="text-[15px] font-semibold leading-snug mb-0.5 truncate"
+          style={{ color: t.heading }}
+        >
+          {project.propertyName}
+        </h3>
+        <p className="text-[12px] flex items-center gap-1" style={{ color: t.muted }}>
+          <span className="material-symbols-outlined text-[13px]">location_on</span>
           <span className="truncate">{project.address}</span>
         </p>
       </div>
 
-      <div className="mt-auto pt-4 border-t border-white/5 z-10 relative flex flex-col gap-3">
+      <div className="pt-3 flex flex-col gap-2.5" style={{ borderTop: `1px solid ${t.divider}` }}>
         <div className="flex justify-between items-center">
-          <span className="font-label-sm text-label-sm text-on-surface-variant">Ownership</span>
-          <span className="font-label-md text-label-md text-primary bg-primary/10 px-2 py-0.5 rounded-md">{ownership}%</span>
+          <span className="text-[11px]" style={{ color: t.muted }}>Ownership</span>
+          <span
+            className="text-[11px] font-semibold tabular-nums px-1.5 py-0.5"
+            style={{ color: t.accent, background: t.accentMuted, borderRadius: 2 }}
+          >
+            {ownership}%
+          </span>
         </div>
-        
-        <div className="space-y-1.5">
+
+        <div className="space-y-1">
           <div className="flex justify-between items-end">
-            <span className="font-label-sm text-label-sm text-on-surface uppercase tracking-wider">{progressLabel}</span>
-            <span className="font-label-sm text-label-sm text-on-surface-variant">{progress}%</span>
+            <span className="text-[10px] font-semibold uppercase tracking-wider" style={{ color: t.muted }}>
+              {progressLabel}
+            </span>
+            <span className="text-[11px] tabular-nums" style={{ color: t.muted }}>{progress}%</span>
           </div>
-          <div className="h-1.5 w-full bg-surface-variant rounded-full overflow-hidden">
+          <div className="h-1 w-full overflow-hidden" style={{ background: t.hover, borderRadius: 1 }}>
             <div
-              className={`h-full ${progressBg} ${progressGlow} rounded-full transition-all duration-500`}
-              style={{ width: `${progress}%` }}
+              className="h-full transition-all duration-500"
+              style={{ width: `${progress}%`, background: accent, borderRadius: 1 }}
             />
           </div>
         </div>
 
-        <div className="grid grid-cols-2 gap-4 pt-2 border-t border-white/5">
+        <div className="grid grid-cols-2 gap-3 pt-2" style={{ borderTop: `1px solid ${t.divider}` }}>
           <div>
-            <p className="text-[10px] text-outline uppercase tracking-wider font-semibold">Acquisition</p>
-            <p className="font-label-md text-xs">{formatCurrency(project.financials?.purchasePrice ?? 0)}</p>
+            <p className="text-[10px] uppercase tracking-wider font-semibold mb-0.5" style={{ color: t.muted }}>
+              Acquisition
+            </p>
+            <p className="text-[12px] font-semibold tabular-nums" style={{ color: t.heading }}>
+              {formatCurrency(project.financials?.purchasePrice ?? 0)}
+            </p>
             {project.financials?.offer_price !== undefined && project.financials?.offer_price > 0 && (
-              <p className="text-[9px] text-primary mt-0.5 font-semibold" id={`card-offer-price-${project.id}`}>
+              <p className="text-[10px] mt-0.5 font-medium" style={{ color: t.accent }} id={`card-offer-price-${project.id}`}>
                 Offer: {formatCurrency(project.financials.offer_price)}
               </p>
             )}
           </div>
           <div>
-            <p className="text-[10px] text-outline uppercase tracking-wider">{headlineMetric.label}</p>
+            <p className="text-[10px] uppercase tracking-wider font-semibold mb-0.5" style={{ color: t.muted }}>
+              {headlineMetric.label}
+            </p>
             {project.dispositionType === 'RENT' ? (
               isEditingRent ? (
                 <form
@@ -271,14 +248,20 @@ function FolderCard({ project, onClick }: { project: Project; onClick: () => voi
                   onClick={(e) => e.stopPropagation()}
                   className="flex items-center gap-1 mt-0.5"
                 >
-                  <span className="text-xs text-primary font-semibold">$</span>
+                  <span className="text-xs font-semibold" style={{ color: t.accent }}>$</span>
                   <input
                     type="text"
                     value={rentInput}
                     onChange={(e) => setRentInput(e.target.value)}
                     onBlur={handleRentSave}
                     onClick={(e) => e.stopPropagation()}
-                    className="w-20 bg-white/5 border border-white/10 rounded px-1.5 py-0.5 text-xs font-mono text-white outline-none focus:border-primary/50"
+                    className="w-20 px-1.5 py-0.5 text-xs font-mono outline-none"
+                    style={{
+                      background: t.inputBg,
+                      border: `1px solid ${t.border}`,
+                      borderRadius: 2,
+                      color: t.heading,
+                    }}
                     autoFocus
                   />
                 </form>
@@ -291,16 +274,21 @@ function FolderCard({ project, onClick }: { project: Project; onClick: () => voi
                   }}
                   title="Click to edit rent"
                 >
-                  <p className="font-label-md text-xs text-primary transition-colors group-hover/rent:text-primary-container">
+                  <p className="text-[12px] font-semibold tabular-nums" style={{ color: t.accent }}>
                     {headlineMetric.value}
                   </p>
-                  <span className="material-symbols-outlined text-[12px] text-primary/40 opacity-0 group-hover/rent:opacity-100 transition-opacity">
+                  <span
+                    className="material-symbols-outlined text-[12px] opacity-0 group-hover/rent:opacity-100 transition-opacity"
+                    style={{ color: t.muted }}
+                  >
                     edit
                   </span>
                 </div>
               )
             ) : (
-              <p className="font-label-md text-xs text-primary">{headlineMetric.value}</p>
+              <p className="text-[12px] font-semibold tabular-nums" style={{ color: t.accent }}>
+                {headlineMetric.value}
+              </p>
             )}
           </div>
         </div>
@@ -570,14 +558,23 @@ export default function ProjectsPage() {
   const handleCreateProject = () => openCreateWizard();
   const handleOpenProject = (id: string) => router.push(`/dashboard/projects/${id}`);
 
+  const t = projectsTokens(isDark);
+
+  const controlStyle: CSSProperties = {
+    background: t.inputBg,
+    border: `1px solid ${t.border}`,
+    color: t.body,
+    borderRadius: 2,
+  };
+
   if (isVendor) {
     return (
-      <div className="flex items-center justify-center min-h-[400px]" style={{ color: 'var(--color-on-surface)' }}>
+      <div className="flex items-center justify-center min-h-[400px]" style={{ color: t.heading }}>
         <div className="flex flex-col items-center gap-3">
-          <span className="material-symbols-outlined text-[48px] opacity-40">lock</span>
-          <p className="text-sm font-semibold tracking-wide">Permission Denied</p>
-          <p className="text-xs text-center max-w-xs" style={{ color: 'var(--color-on-surface-variant)' }}>
-            Vendors do not have direct access to the Projects portfolio view.
+          <span className="material-symbols-outlined text-[40px]" style={{ color: t.muted, opacity: 0.5 }}>lock</span>
+          <p className="text-sm font-semibold tracking-wide">Permission denied</p>
+          <p className="text-xs text-center max-w-xs" style={{ color: t.muted }}>
+            Vendors do not have access to the projects portfolio.
           </p>
         </div>
       </div>
@@ -586,68 +583,85 @@ export default function ProjectsPage() {
 
   if (storeProjects.length === 0) {
     return (
-      <div className="min-h-full pb-28 md:pb-28">
-        {/* ── Page Header ── */}
-        <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-5 mb-8">
-          <div>
-            <h2
-              className="text-2xl font-bold tracking-tight"
-              style={{ color: 'rgba(253,255,252,0.95)', letterSpacing: '-0.01em' }}
-            >
-              Projects
-            </h2>
-            <p className="text-sm mt-1" style={{ color: 'rgba(253,255,252,0.45)' }}>
-              0 projects
-            </p>
-          </div>
-        </div>
+      <div className="min-h-full pb-16 px-1" style={{ color: t.body }}>
+        <header className="mb-8">
+          <p className="text-[11px] font-medium tracking-[0.14em] uppercase mb-1" style={{ color: t.accent }}>
+            Pipeline
+          </p>
+          <h1 className="text-[1.75rem] font-semibold tracking-tight" style={{ color: t.heading }}>
+            Projects
+          </h1>
+          <p className="text-sm mt-1" style={{ color: t.muted }}>0 projects</p>
+        </header>
 
         <div
-          className="glass-card rounded-2xl p-12 text-center flex flex-col items-center justify-center min-h-[350px]"
+          className="p-10 md:p-14 flex flex-col items-center justify-center text-center min-h-[360px]"
           style={{
-            background: 'var(--color-surface-container-low)',
-            border: '1px solid var(--color-glass-card-border)',
-            boxShadow: 'var(--color-glass-card-shadow)',
+            background: t.surface,
+            border: `1px solid ${t.border}`,
+            borderRadius: 2,
+            boxShadow: t.shadow,
           }}
         >
-          <EmptyState
-            title="Start your real estate portfolio"
-            description="Create your first project to analyze financials, track the acquisition wizard, and manage the deal lifecycle."
-            icon={FolderX}
-            action={{
-              label: "Create First Project",
-              onClick: handleCreateProject,
-              icon: Plus,
+          <div
+            className="w-16 h-16 flex items-center justify-center mb-5"
+            style={{
+              background: isDark ? t.accentMuted : '#14161C',
+              color: isDark ? t.accent : '#F5F6F8',
+              borderRadius: 2,
             }}
-            variant="card"
-          />
+          >
+            <FolderX className="w-8 h-8" strokeWidth={1.75} />
+          </div>
+
+          <h2 className="text-xl font-semibold mb-2" style={{ color: t.heading }}>
+            Start your portfolio
+          </h2>
+          <p className="text-sm max-w-md mb-7 leading-relaxed" style={{ color: t.muted }}>
+            Create a project to underwrite deals, track the lifecycle, and manage each phase.
+          </p>
+
+          <button
+            type="button"
+            className="pw-interactive-custom inline-flex items-center gap-2 px-5 py-3 text-sm font-semibold transition-opacity hover:opacity-90"
+            onClick={handleCreateProject}
+            style={{
+              background: t.ctaBg,
+              color: t.ctaFg,
+              border: 'none',
+              borderRadius: 2,
+              padding: '12px 20px',
+              boxShadow: isDark ? 'none' : '0 2px 8px rgba(20,22,28,0.18)',
+            }}
+          >
+            <Plus className="w-4 h-4" strokeWidth={2.5} />
+            Create first project
+          </button>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-full pb-28 md:pb-28">
-      {/* ── Page Header ── */}
-      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-5 mb-8">
+    <div className="min-h-full pb-16 px-1" style={{ color: t.body }}>
+      <header className="flex flex-col md:flex-row justify-between items-start md:items-end gap-5 mb-6">
         <div>
-          <h2
-            className="text-2xl font-bold tracking-tight"
-            style={{ color: 'rgba(253,255,252,0.95)', letterSpacing: '-0.01em' }}
-          >
+          <p className="text-[11px] font-medium tracking-[0.14em] uppercase mb-1" style={{ color: t.accent }}>
+            Pipeline
+          </p>
+          <h1 className="text-[1.75rem] font-semibold tracking-tight" style={{ color: t.heading }}>
             Projects
-          </h2>
-          <p className="text-sm mt-1" style={{ color: 'rgba(253,255,252,0.45)' }}>
+          </h1>
+          <p className="text-sm mt-1" style={{ color: t.muted }}>
             {filteredProjects.length} project{filteredProjects.length !== 1 ? 's' : ''}
-            {viewMode === 'kanban' ? ' · REIL lifecycle board' : ' · list view'}
+            {viewMode === 'kanban' ? ' · lifecycle board' : ' · list view'}
           </p>
         </div>
 
         <div className="flex items-center gap-2">
-          {/* View mode toggle */}
           <div
-            className="flex items-center p-1 rounded-xl"
-            style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.07)' }}
+            className="flex items-center p-0.5"
+            style={{ background: t.surfaceMuted, border: `1px solid ${t.border}`, borderRadius: 2 }}
           >
             {([
               { mode: 'kanban' as const, icon: 'view_kanban',  label: 'Board' },
@@ -657,44 +671,89 @@ export default function ProjectsPage() {
               return (
                 <button
                   key={mode}
+                  type="button"
+                  className="pw-interactive-custom flex items-center gap-1.5 px-3 py-1.5 text-[12px] font-semibold transition-colors"
                   onClick={() => setViewMode(mode)}
-                  className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-[12px] font-semibold transition-all duration-150"
                   style={{
-                    background: active ? 'rgba(69,73,85,0.25)' : 'transparent',
-                    color:      active ? 'rgba(253,255,252,0.90)' : 'rgba(253,255,252,0.40)',
-                    border:     active ? '1px solid rgba(255,255,255,0.10)' : '1px solid transparent',
+                    background: active ? t.surface : 'transparent',
+                    color: active ? t.heading : t.muted,
+                    border: 'none',
+                    borderRadius: 2,
+                    padding: '6px 12px',
+                    boxShadow: active ? t.shadow : 'none',
                   }}
                 >
-                  <span className="material-symbols-outlined text-[15px]" style={{ fontVariationSettings: active ? "'FILL' 1" : "'FILL' 0" }}>{icon}</span>
+                  <span
+                    className="material-symbols-outlined text-[15px]"
+                    style={{ fontVariationSettings: active ? "'FILL' 1" : "'FILL' 0" }}
+                  >
+                    {icon}
+                  </span>
                   {label}
                 </button>
               );
             })}
           </div>
 
-          {/* Create project */}
           <button
+            type="button"
+            className="pw-interactive-custom flex items-center gap-1.5 px-4 py-2 text-sm font-semibold transition-opacity hover:opacity-90"
             onClick={handleCreateProject}
-            className="flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-semibold transition-all duration-200 active:scale-95"
             style={{
-              background: isDark ? 'var(--color-primary)' : '#0b8649',
-              color: isDark ? '#0d0a0b' : '#FDFFFC',
-              boxShadow: isDark ? '0 4px 16px rgba(0,221,148,0.25)' : '0 4px 16px rgba(11,134,73,0.25)',
+              background: t.ctaBg,
+              color: t.ctaFg,
+              border: 'none',
+              borderRadius: 2,
+              padding: '8px 16px',
             }}
           >
-            <span className="material-symbols-outlined text-[18px]" style={{ fontVariationSettings: "'FILL' 1" }}>add_circle</span>
-            Create Project
+            <span className="material-symbols-outlined text-[18px]">add</span>
+            New project
           </button>
         </div>
-      </div>
+      </header>
 
-      {/* ── Search + Filters ── */}
-      <div className="flex flex-col lg:flex-row gap-3 mb-6">
-        {/* Search */}
-        <div className="relative flex-1 group">
+      {/* Portfolio snapshot — same stats, usable hierarchy */}
+      {filteredProjects.length > 0 && (
+        <div
+          className="grid grid-cols-3 gap-3 mb-6"
+          style={{
+            background: t.surface,
+            border: `1px solid ${t.border}`,
+            borderRadius: 2,
+            boxShadow: t.shadow,
+          }}
+        >
+          {[
+            { label: 'Portfolio value', value: formatCurrency(stats.totalValue) },
+            { label: 'Avg. equity', value: `${stats.avgEquity.toFixed(1)}%` },
+            {
+              label: 'Avg. yield',
+              value: `${stats.avgYield > 0 ? '+' : ''}${stats.avgYield.toFixed(1)}%`,
+            },
+          ].map((item, i) => (
+            <div
+              key={item.label}
+              className="px-4 py-3"
+              style={{ borderLeft: i === 0 ? 'none' : `1px solid ${t.divider}` }}
+            >
+              <p className="text-[10px] font-semibold uppercase tracking-wider mb-1" style={{ color: t.muted }}>
+                {item.label}
+              </p>
+              <p className="text-[1.15rem] font-semibold tabular-nums" style={{ color: t.heading }}>
+                {item.value}
+              </p>
+            </div>
+          ))}
+        </div>
+      )}
+
+      {/* Search + Filters */}
+      <div className="flex flex-col lg:flex-row gap-2 mb-6">
+        <div className="relative flex-1">
           <span
-            className="material-symbols-outlined absolute left-3.5 top-1/2 -translate-y-1/2 text-[18px] transition-colors duration-200 pointer-events-none"
-            style={{ color: 'rgba(253,255,252,0.35)' }}
+            className="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-[18px] pointer-events-none"
+            style={{ color: t.muted }}
           >
             search
           </span>
@@ -704,94 +763,69 @@ export default function ProjectsPage() {
             onChange={(e) => setSearch(e.target.value)}
             placeholder="Search by address or name…"
             aria-label="Search projects"
-            className="w-full py-2.5 pl-10 pr-4 text-sm rounded-xl transition-all duration-200 focus:outline-none"
-            style={{
-              background: 'rgba(255,255,255,0.04)',
-              border: '1px solid rgba(255,255,255,0.08)',
-              color: 'rgba(253,255,252,0.9)',
-            }}
+            className="w-full py-2.5 pl-10 pr-3 text-sm outline-none"
+            style={controlStyle}
           />
         </div>
 
-        {/* Phase Filter */}
         <select
           value={phaseFilter}
           onChange={(e) => setPhaseFilter(e.target.value)}
           aria-label="Filter by phase"
-          className="px-4 py-2.5 rounded-xl text-sm focus:outline-none"
-          style={{
-            background: 'rgba(255,255,255,0.04)',
-            border: '1px solid rgba(255,255,255,0.08)',
-            color: 'rgba(253,255,252,0.7)',
-          }}
+          className="px-3 py-2.5 text-sm outline-none"
+          style={controlStyle}
         >
-          <option value="">All Phases</option>
+          <option value="">All phases</option>
           <option value="1">Phase 1: Acquisition</option>
           <option value="2">Phase 2: Fund</option>
           <option value="3">Phase 3: Hold</option>
           <option value="4">Phase 4: Exit</option>
         </select>
 
-        {/* Strategy Filter */}
         <select
           value={strategyFilter}
           onChange={(e) => setStrategyFilter(e.target.value)}
           aria-label="Filter by strategy"
-          className="px-4 py-2.5 rounded-xl text-sm focus:outline-none"
-          style={{
-            background: 'rgba(255,255,255,0.04)',
-            border: '1px solid rgba(255,255,255,0.08)',
-            color: 'rgba(253,255,252,0.7)',
-          }}
+          className="px-3 py-2.5 text-sm outline-none"
+          style={controlStyle}
         >
-          <option value="">All Strategies</option>
+          <option value="">All strategies</option>
           <option value="flip">Fix &amp; Flip</option>
-          <option value="rental">Long Term Rental</option>
+          <option value="rental">Long term rental</option>
           <option value="brrrr">BRRRR</option>
         </select>
 
-        {/* Status Filter */}
         <select
           value={statusFilter}
           onChange={(e) => setStatusFilter(e.target.value)}
           aria-label="Filter by status"
-          className="px-4 py-2.5 rounded-xl text-sm focus:outline-none"
-          style={{
-            background: 'rgba(255,255,255,0.04)',
-            border: '1px solid rgba(255,255,255,0.08)',
-            color: 'rgba(253,255,252,0.7)',
-          }}
+          className="px-3 py-2.5 text-sm outline-none"
+          style={controlStyle}
         >
-          <option value="active">Active Deals</option>
-          <option value="pending">Leads &amp; Under Contract</option>
-          <option value="closed">Closed / Realized</option>
-          <option value="all">All Statuses</option>
+          <option value="active">Active deals</option>
+          <option value="pending">Leads &amp; under contract</option>
+          <option value="closed">Closed / realized</option>
+          <option value="all">All statuses</option>
         </select>
 
-        {/* Sort By */}
         <select
           value={sortBy}
           onChange={(e) => setSortBy(e.target.value)}
           aria-label="Sort projects"
-          className="px-4 py-2.5 rounded-xl text-sm focus:outline-none"
-          style={{
-            background: 'rgba(255,255,255,0.04)',
-            border: '1px solid rgba(255,255,255,0.08)',
-            color: 'rgba(253,255,252,0.7)',
-          }}
+          className="px-3 py-2.5 text-sm outline-none"
+          style={controlStyle}
         >
-          <option value="recent">Recently Updated</option>
-          <option value="created">Date Created</option>
-          <option value="name">Property Name</option>
-          <option value="phase">REIL Phase</option>
-          <option value="price">Purchase Price</option>
-          <option value="noi">Net Operating Income</option>
+          <option value="recent">Recently updated</option>
+          <option value="created">Date created</option>
+          <option value="name">Property name</option>
+          <option value="phase">REIL phase</option>
+          <option value="price">Purchase price</option>
+          <option value="noi">Net operating income</option>
         </select>
       </div>
 
-      {/* ── Kanban Board ── */}
       {viewMode === 'kanban' && (
-        <div className="mb-8">
+        <div className="mb-6">
           {filteredProjects.length === 0 ? (
             <div className="flex justify-center py-12">
               <EmptyState
@@ -822,14 +856,14 @@ export default function ProjectsPage() {
         </div>
       )}
 
-      {/* ── List View Table ── */}
       {viewMode === 'list' && (
         <div
-          className="glass-card rounded-2xl overflow-hidden mb-8"
+          className="overflow-hidden mb-6"
           style={{
-            background: 'var(--color-surface-container-low)',
-            border: '1px solid var(--color-glass-card-border)',
-            boxShadow: 'var(--color-glass-card-shadow)',
+            background: t.surface,
+            border: `1px solid ${t.border}`,
+            borderRadius: 2,
+            boxShadow: t.shadow,
           }}
         >
           {sortedListProjects.length === 0 ? (
@@ -850,22 +884,25 @@ export default function ProjectsPage() {
             <div className="overflow-x-auto">
               <table className="w-full border-collapse text-left">
                 <thead>
-                  <tr className="border-b border-white/5 text-xs font-bold uppercase tracking-wider" style={{ color: 'var(--color-on-surface-variant)' }}>
-                    <th className="p-4">Deal Address / Name</th>
+                  <tr
+                    className="text-[11px] font-semibold uppercase tracking-wider"
+                    style={{ color: t.muted, borderBottom: `1px solid ${t.divider}` }}
+                  >
+                    <th className="px-4 py-3 font-semibold">Deal</th>
                     <th
-                      className="p-4 cursor-pointer hover:text-primary transition-colors"
+                      className="px-4 py-3 font-semibold cursor-pointer"
                       onClick={() => setListSortBy(listSortBy === 'phase' ? 'year' : 'phase')}
                     >
                       <div className="flex items-center gap-1">
-                        Phase &amp; Stage
+                        Phase &amp; stage
                         <span className="material-symbols-outlined text-xs">
                           {listSortBy === 'phase' ? 'arrow_downward' : 'swap_vert'}
                         </span>
                       </div>
                     </th>
-                    <th className="p-4">Disposition</th>
+                    <th className="px-4 py-3 font-semibold">Disposition</th>
                     <th
-                      className="p-4 cursor-pointer hover:text-primary transition-colors"
+                      className="px-4 py-3 font-semibold cursor-pointer"
                       onClick={() => setListSortBy(listSortBy === 'year' ? 'phase' : 'year')}
                     >
                       <div className="flex items-center gap-1">
@@ -877,43 +914,51 @@ export default function ProjectsPage() {
                     </th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-white/5 text-sm" style={{ color: 'var(--color-on-surface)' }}>
+                <tbody>
                   {sortedListProjects.map((project) => {
                     const phase = project.currentPhase ?? 1;
                     const stage = project.lastActiveStage || project.entryStage || '';
-                    const date = project.financials?.acquisitionDate 
-                      ? new Date(project.financials.acquisitionDate) 
+                    const date = project.financials?.acquisitionDate
+                      ? new Date(project.financials.acquisitionDate)
                       : new Date(project.createdAt);
                     const year = date.getFullYear();
+                    const accent = phaseColor(phase, t);
+                    const strategy = getStrategyThemeConfig(project.dispositionType, t);
 
                     return (
                       <tr
                         key={project.id}
                         onClick={() => handleOpenProject(project.id)}
-                        className="hover:bg-white/5 cursor-pointer transition-colors"
+                        className="cursor-pointer transition-colors"
+                        style={{ borderBottom: `1px solid ${t.divider}` }}
+                        onMouseEnter={(e) => { e.currentTarget.style.background = t.hover; }}
+                        onMouseLeave={(e) => { e.currentTarget.style.background = 'transparent'; }}
                       >
-                        <td className="p-4">
-                          <div className="font-bold">{project.propertyName}</div>
-                          <div className="text-xs" style={{ color: 'var(--color-on-surface-variant)' }}>{project.address}</div>
+                        <td className="px-4 py-3">
+                          <div className="font-semibold text-sm" style={{ color: t.heading }}>{project.propertyName}</div>
+                          <div className="text-xs mt-0.5" style={{ color: t.muted }}>{project.address}</div>
                         </td>
-                        <td className="p-4">
+                        <td className="px-4 py-3">
                           <div className="flex flex-col">
-                            <span className="font-semibold text-xs text-primary">{getPhaseLabel(phase)}</span>
-                            <span className="text-[11px]" style={{ color: 'var(--color-on-surface-variant)' }}>{getStageLabel(stage)}</span>
+                            <span className="font-semibold text-xs" style={{ color: accent }}>{getPhaseLabel(phase)}</span>
+                            <span className="text-[11px]" style={{ color: t.muted }}>{getStageLabel(stage)}</span>
                           </div>
                         </td>
-                        <td className="p-4">
+                        <td className="px-4 py-3">
                           <span
-                            className="px-2.5 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider"
+                            className="px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wider"
                             style={{
-                              background: project.dispositionType === 'SALE' ? 'var(--pw-success-container)' : project.dispositionType === 'RENT' ? 'rgba(59,130,246,0.15)' : 'rgba(245,158,11,0.15)',
-                              color: project.dispositionType === 'SALE' ? 'var(--pw-success)' : project.dispositionType === 'RENT' ? '#3B82F6' : '#F59E0B',
+                              background: `${strategy.color}18`,
+                              color: strategy.color,
+                              borderRadius: 2,
                             }}
                           >
                             {project.dispositionType ?? 'Undecided'}
                           </span>
                         </td>
-                        <td className="p-4 font-mono font-bold text-xs">{year}</td>
+                        <td className="px-4 py-3 font-mono text-xs font-semibold tabular-nums" style={{ color: t.heading }}>
+                          {year}
+                        </td>
                       </tr>
                     );
                   })}
@@ -921,36 +966,6 @@ export default function ProjectsPage() {
               </table>
             </div>
           )}
-        </div>
-      )}
-
-      {/* ── Terminal Stats Overlay ── */}
-      {filteredProjects.length > 0 && (
-        <div className="fixed bottom-8 left-1/2 -translate-x-1/2 w-full max-w-4xl px-4 z-40 hidden md:block">
-          <div className="glass-card rounded-2xl p-4 flex items-center justify-between border border-primary/20 bg-surface/80">
-            <div className="flex gap-8">
-              <div>
-                <p className="text-[10px] text-outline uppercase font-bold">Total Port. Value</p>
-                <p className="font-headline-md text-primary">{formatCurrency(stats.totalValue)}</p>
-              </div>
-              <div className="h-10 w-px bg-outline-variant"></div>
-              <div>
-                <p className="text-[10px] text-outline uppercase font-bold">Avg. Equity</p>
-                <p className="font-headline-md text-on-surface">{stats.avgEquity.toFixed(1)}%</p>
-              </div>
-              <div className="h-10 w-px bg-outline-variant"></div>
-              <div>
-                <p className="text-[10px] text-outline uppercase font-bold">Monthly ROI / Yield</p>
-                <p className="font-headline-md text-tertiary">
-                  {stats.avgYield > 0 ? '+' : ''}{stats.avgYield.toFixed(1)}%
-                </p>
-              </div>
-            </div>
-            <div className="flex items-center gap-3">
-              <span className="flex h-2 w-2 rounded-full bg-primary animate-pulse"></span>
-              <span className="text-[10px] text-outline font-mono">LIVE_FEED_SYNCED</span>
-            </div>
-          </div>
         </div>
       )}
     </div>

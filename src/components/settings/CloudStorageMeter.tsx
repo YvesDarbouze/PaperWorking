@@ -3,6 +3,8 @@
 import React from 'react';
 import { useAuth } from '@/context/AuthContext';
 import { useMetricSnapshots } from '@/hooks/useMetricSnapshots';
+import { useTheme } from '@/lib/utils/ThemeProvider';
+import { billingTokens, panelStyle } from '@/components/settings/billingTheme';
 
 const PLAN_LIMITS_GB: Record<string, number> = {
   'Individual': 5.0,
@@ -14,10 +16,14 @@ const PLAN_LIMITS_GB: Record<string, number> = {
 export function CloudStorageMeter() {
   const { profile } = useAuth();
   const { snapshots } = useMetricSnapshots(1);
+  const { theme } = useTheme();
+  const isDark = theme === 'dark';
+  const t = billingTokens(isDark);
+  const panel = panelStyle(t);
 
   const plan = profile?.subscriptionPlan ?? 'None';
   const limitGB = PLAN_LIMITS_GB[plan] || 1.0;
-  
+
   const latestSnapshot = snapshots.length > 0 ? snapshots[snapshots.length - 1] : null;
   const totalSizeBytes = latestSnapshot ? latestSnapshot.storageUsageBytes : 0;
 
@@ -25,80 +31,86 @@ export function CloudStorageMeter() {
   const usagePercent = Math.min((usageGB / limitGB) * 100, 100);
   const isNearLimit = usagePercent > 90;
 
-  // Glass theme colors
-  const fillColor = isNearLimit ? "#BA1A1A" : "#3279F9";
+  const fillColor = isNearLimit ? t.alert : t.accent;
 
   return (
-    <section className="glass-card p-6 flex flex-col rounded-2xl relative overflow-hidden transition-all duration-200 hover:shadow-md">
-      <div className="flex items-center justify-between mb-6">
-        <h2 className="text-base font-semibold text-pw-black flex items-center gap-2">
-          <span className="material-symbols-outlined text-[16px] text-pw-primary select-none">storage</span>
-          Cloud Storage Meter
+    <section className="p-5 sm:p-6 flex flex-col" style={panel}>
+      <div className="flex items-center justify-between mb-5">
+        <h2 className="text-base font-semibold flex items-center gap-2" style={{ color: t.heading }}>
+          <span className="material-symbols-outlined text-[16px] select-none" style={{ color: t.accent }}>storage</span>
+          Cloud storage
         </h2>
       </div>
 
-      <div className="mb-4 flex items-end justify-between">
+      <div className="mb-4 flex items-end justify-between gap-3 flex-wrap">
         <div>
-          <span className="text-3xl font-light text-pw-black">
+          <span className="text-3xl font-semibold tabular-nums" style={{ color: t.heading }}>
             {usageGB.toFixed(2)} GB
           </span>
-          <span className="text-sm text-pw-muted ml-2 font-medium">
-            of {limitGB.toFixed(0)} GB total
+          <span className="text-sm ml-2 font-medium" style={{ color: t.muted }}>
+            of {limitGB.toFixed(0)} GB
           </span>
         </div>
-        <span className={`text-xs font-bold tracking-wider ${isNearLimit ? 'text-error' : 'text-pw-muted'}`}>
-          {usagePercent.toFixed(1)}% CAPACITY
+        <span
+          className="text-xs font-semibold tracking-wider tabular-nums"
+          style={{ color: isNearLimit ? t.alert : t.muted }}
+        >
+          {usagePercent.toFixed(1)}% capacity
         </span>
       </div>
 
-      {/* Progress Bar with glow effect */}
-      <div 
-        className="w-full h-2 overflow-hidden mb-6 border border-pw-border bg-pw-glass-bg rounded-full"
+      <div
+        className="w-full h-1.5 overflow-hidden mb-5"
+        style={{ border: `1px solid ${t.border}`, background: t.surfaceHigh, borderRadius: 1 }}
       >
-        <div 
-          className="h-full transition-all duration-700 ease-in-out rounded-full"
-          style={{ 
-            width: `${usagePercent}%`, 
+        <div
+          className="h-full transition-all duration-700 ease-in-out"
+          style={{
+            width: `${usagePercent}%`,
             backgroundColor: fillColor,
-            boxShadow: isNearLimit ? '0 0 10px rgba(186, 26, 26, 0.4)' : '0 0 10px rgba(50, 121, 249, 0.3)'
+            borderRadius: 1,
           }}
         />
       </div>
 
       {isNearLimit ? (
-        <div className="flex items-start gap-3 bg-error/10 border border-error/20 p-4 mb-6 rounded-xl">
-          <span className="material-symbols-outlined text-xl text-error flex-shrink-0 select-none">warning</span>
+        <div
+          className="flex items-start gap-3 p-4 mb-5"
+          style={{ background: t.alertMuted, border: `1px solid ${t.border}`, borderRadius: 2 }}
+        >
+          <span className="material-symbols-outlined text-xl flex-shrink-0 select-none" style={{ color: t.alert }}>warning</span>
           <div className="flex-1">
-            <p className="text-xs font-bold text-error">Storage Threshold Warning</p>
-            <p className="text-[11px] text-pw-muted mt-1 leading-relaxed">
-              Your organization has consumed over 90% of its storage allocation. 
-              To prevent document upload interruptions, please upgrade to a higher tier.
+            <p className="text-xs font-semibold" style={{ color: t.alert }}>Storage threshold warning</p>
+            <p className="text-[11px] mt-1 leading-relaxed" style={{ color: t.muted }}>
+              Over 90% of allocation used. Upgrade to avoid upload interruptions.
             </p>
           </div>
         </div>
       ) : (
-        <p className="text-xs text-pw-muted mb-6 leading-relaxed max-w-2xl font-medium">
-          The Cloud Storage Meter aggregates all transactional documents, legal contracts, 
-          and financial disclosures stored across your project vaults.
+        <p className="text-xs mb-5 leading-relaxed max-w-2xl" style={{ color: t.muted }}>
+          Aggregates documents, contracts, and disclosures stored across project vaults.
         </p>
       )}
 
-      <div className="flex flex-col sm:flex-row gap-3">
+      <div className="flex flex-col sm:flex-row gap-2.5">
         {isNearLimit && (
-          <button 
-            className="luminous-button h-10 px-5 rounded-lg text-sm font-medium hover:brightness-110 active:scale-98 transition-all flex items-center justify-center gap-2 cursor-pointer"
+          <button
+            type="button"
+            className="pw-interactive-custom flex items-center justify-center gap-2 text-sm font-semibold"
+            style={{ background: t.ctaBg, color: t.ctaFg, border: 'none', borderRadius: 2, padding: '8px 16px' }}
           >
-            Upgrade Capacity 
+            Upgrade capacity
             <span className="material-symbols-outlined text-[16px] select-none">arrow_forward</span>
           </button>
         )}
-        <button 
-          className="h-10 px-5 rounded-lg border border-white/10 text-pw-black text-sm font-medium hover:bg-white/5 active:scale-98 transition-all flex items-center justify-center cursor-pointer"
+        <button
+          type="button"
+          className="pw-interactive-custom flex items-center justify-center text-sm font-semibold"
+          style={{ background: 'transparent', border: `1px solid ${t.border}`, borderRadius: 2, padding: '8px 16px', color: t.heading }}
         >
-          View Document Audit
+          View document audit
         </button>
       </div>
     </section>
   );
 }
-

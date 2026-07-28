@@ -32,6 +32,7 @@ import {
 import { projectsService } from '@/lib/firebase/projects';
 import toast from 'react-hot-toast';
 import { useTheme } from '@/lib/utils/ThemeProvider';
+import { reportsTokens, reportsDeskVars } from '@/components/reports/reportsTheme';
 import {
   computeAllScenarioIRRs,
   type ScenarioAssumptions,
@@ -41,14 +42,7 @@ import {
 type PeriodTab = 'Monthly' | 'Quarterly' | 'Yearly' | 'Overall';
 type ScopeTab = 'Property' | 'My Share';
 
-/* ═══════════════════════════════════════════════════════════════
-   Reports & Tax Intelligence — Stitch Design Implementation
-
-   Grid: 3-column layout matching Stitch project 11643693106955298243
-     Row 1: NOI Trend (2/3) + Cash Flow Intelligence (1/3)
-     Row 2: IRR Scenarios + Expense Distribution + Tax Alerts
-     Footer: Generate Tax-Ready CSV
-   ════════════════/* ── NOI Trend ECharts bar chart ── */
+/* ── NOI Trend ECharts bar chart ── */
 function NOITrendChart({ values, labels }: { values: number[]; labels: string[] }) {
   const { theme } = useTheme();
   const isDark = theme === "dark";
@@ -57,9 +51,9 @@ function NOITrendChart({ values, labels }: { values: number[]; labels: string[] 
     backgroundColor: 'transparent',
     tooltip: {
       trigger: 'axis',
-      backgroundColor: isDark ? '#18191D' : '#FFFFFF',
-      borderColor: isDark ? 'rgba(230, 234, 240, 0.12)' : 'rgba(33, 34, 38, 0.12)',
-      textStyle: { color: isDark ? '#FFFFFF' : '#121317', fontSize: 12 },
+      backgroundColor: isDark ? '#171920' : '#FFFFFF',
+      borderColor: isDark ? 'rgba(243,241,236,0.09)' : 'rgba(20,22,28,0.09)',
+      textStyle: { color: isDark ? '#F3F1EC' : '#14161C', fontSize: 12 },
       formatter: (params: any[]) => {
         const p = params[0];
         return `${p.name}<br/><b>$${p.value.toLocaleString()}</b>`;
@@ -71,7 +65,7 @@ function NOITrendChart({ values, labels }: { values: number[]; labels: string[] 
       data: labels,
       axisLine: { show: false },
       axisTick: { show: false },
-      axisLabel: { color: isDark ? '#9E9DA0' : '#45474D', fontSize: 10, fontFamily: 'var(--font-inter), Inter, sans-serif' },
+      axisLabel: { color: isDark ? '#9C9890' : '#6B7079', fontSize: 10, fontFamily: 'var(--font-inter), Inter, sans-serif' },
       splitLine: { show: false },
     },
     yAxis: {
@@ -86,14 +80,14 @@ function NOITrendChart({ values, labels }: { values: number[]; labels: string[] 
           value: v,
           itemStyle: {
             color: i === values.length - 1
-              ? { type: 'linear', x: 0, y: 0, x2: 0, y2: 1, colorStops: [{ offset: 0, color: '#627C85' }, { offset: 1, color: '#4c6168' }] }
-              : { type: 'linear', x: 0, y: 0, x2: 0, y2: 1, colorStops: isDark ? [{ offset: 0, color: '#282a32' }, { offset: 1, color: '#15161a' }] : [{ offset: 0, color: '#EFF2F7' }, { offset: 1, color: '#CDD4DC' }] },
+              ? { type: 'linear', x: 0, y: 0, x2: 0, y2: 1, colorStops: isDark ? [{ offset: 0, color: '#C4A574' }, { offset: 1, color: '#A8895A' }] : [{ offset: 0, color: '#4F6F78' }, { offset: 1, color: '#3A555C' }] }
+              : { type: 'linear', x: 0, y: 0, x2: 0, y2: 1, colorStops: isDark ? [{ offset: 0, color: '#22252E' }, { offset: 1, color: '#171920' }] : [{ offset: 0, color: '#E8EAED' }, { offset: 1, color: '#D0D4D9' }] },
           },
         })),
         barMaxWidth: 40,
         barCategoryGap: '25%',
         emphasis: {
-          itemStyle: { color: { type: 'linear', x: 0, y: 0, x2: 0, y2: 1, colorStops: [{ offset: 0, color: '#627C85' }, { offset: 1, color: '#4c6168' }] } },
+          itemStyle: { color: { type: 'linear', x: 0, y: 0, x2: 0, y2: 1, colorStops: isDark ? [{ offset: 0, color: '#C4A574' }, { offset: 1, color: '#A8895A' }] : [{ offset: 0, color: '#4F6F78' }, { offset: 1, color: '#3A555C' }] } },
         },
       },
     ],
@@ -118,9 +112,9 @@ function ExpenseDonut({ totalOpex, items, colors }: { totalOpex: number; items: 
     tooltip: {
       trigger: 'item',
       formatter: '{b}: {d}%',
-      backgroundColor: isDark ? '#18191D' : '#FFFFFF',
-      borderColor: isDark ? 'rgba(230, 234, 240, 0.12)' : 'rgba(33, 34, 38, 0.12)',
-      textStyle: { color: isDark ? '#FFFFFF' : '#121317', fontSize: 12 },
+      backgroundColor: isDark ? '#171920' : '#FFFFFF',
+      borderColor: isDark ? 'rgba(243,241,236,0.09)' : 'rgba(20,22,28,0.09)',
+      textStyle: { color: isDark ? '#F3F1EC' : '#14161C', fontSize: 12 },
     },
     series: [
       {
@@ -140,7 +134,7 @@ function ExpenseDonut({ totalOpex, items, colors }: { totalOpex: number; items: 
         style: {
           text: totalOpex > 0 ? `$${(totalOpex / 1000).toFixed(0)}k\nTOTAL OPEX` : '$0\nTOTAL OPEX',
           textAlign: 'center',
-          fill: isDark ? '#FFFFFF' : '#121317',
+          fill: isDark ? '#F3F1EC' : '#14161C',
           fontSize: 15,
           fontWeight: 'bold',
           lineHeight: 22,
@@ -155,8 +149,6 @@ function ExpenseDonut({ totalOpex, items, colors }: { totalOpex: number; items: 
 
 /* ── Cash Flow Progress Bar ── */
 function CashFlowBar({ label, value, max, color }: { label: string; value: number; max: number; color: string }) {
-  const { theme } = useTheme();
-  const isDark = theme === "dark";
   const pct = max > 0 ? Math.min((value / max) * 100, 100) : 0;
   const fmt = (v: number) => v >= 1_000_000 ? `$${(v / 1_000_000).toFixed(1)}M` : `$${(v / 1000).toFixed(0)}k`;
 
@@ -166,9 +158,9 @@ function CashFlowBar({ label, value, max, color }: { label: string; value: numbe
         <span className="text-xs text-[var(--color-on-surface-variant)] uppercase tracking-wider">{label}</span>
         <span className="text-sm font-semibold text-[var(--color-on-surface)] tabular-nums">{fmt(value)}</span>
       </div>
-      <div className="h-1.5 w-full rounded-full bg-[var(--color-surface-container-high)] overflow-hidden">
+      <div className="h-1.5 w-full rounded-sm bg-[var(--color-surface-container-high)] overflow-hidden">
         <div
-          className="h-full rounded-full transition-all duration-700"
+          className="h-full rounded-sm transition-all duration-700"
           style={{ width: `${pct}%`, backgroundColor: color }}
         />
       </div>
@@ -194,7 +186,7 @@ function IRRScenario({
 }) {
   return (
     <div
-      className={`px-4 py-3 rounded-lg border transition-all ${
+      className={`px-4 py-3 rounded-[2px] border transition-all ${
         active
           ? 'border-[var(--color-primary)] bg-[var(--color-primary-container)]'
           : 'border-[var(--color-outline-variant)] bg-[var(--color-surface-container-low)] hover:border-[var(--color-on-surface-variant)]'
@@ -240,7 +232,7 @@ interface BentoMetricProps {
 function BentoMetric({ label, value, sub, trend, colSpan, href }: BentoMetricProps & { href?: string }) {
   const inner = (
     <div
-      className={`rounded-xl border border-[var(--color-outline-variant)] p-4 flex flex-col gap-1.5 ${colSpan ? 'col-span-2' : ''} ${href ? 'hover:border-primary hover:bg-[var(--color-surface-container-low)] cursor-pointer transition-all' : ''}`}
+      className={`rounded-[2px] border border-[var(--color-outline-variant)] p-4 flex flex-col gap-1.5 ${colSpan ? 'col-span-2' : ''} ${href ? 'hover:border-primary hover:bg-[var(--color-surface-container-low)] cursor-pointer transition-all' : ''}`}
       style={{ background: 'var(--color-surface-container-low)' }}
     >
       <span className="text-xs font-semibold uppercase tracking-widest text-[var(--color-on-surface-variant)]">{label}</span>
@@ -249,7 +241,7 @@ function BentoMetric({ label, value, sub, trend, colSpan, href }: BentoMetricPro
         {trend && trend !== 'neutral' && (
           <ArrowUpRight
             className={`w-3.5 h-3.5 mb-0.5 flex-shrink-0 ${
-              trend === 'up' ? 'text-[var(--color-primary)]' : 'text-[var(--color-error)] rotate-90'
+              trend === 'up' ? 'text-[var(--color-positive)]' : 'text-[var(--color-error)] rotate-90'
             }`}
           />
         )}
@@ -264,7 +256,7 @@ function BentoMetric({ label, value, sub, trend, colSpan, href }: BentoMetricPro
 /* ── Skeleton Loader ── */
 function SkeletonMetric() {
   return (
-    <div className="rounded-xl border border-[var(--color-outline-variant)] p-4 flex flex-col gap-2 animate-pulse">
+    <div className="rounded-[2px] border border-[var(--color-outline-variant)] p-4 flex flex-col gap-2 animate-pulse">
       <div className="h-3 w-16 rounded bg-[var(--color-outline-variant)]" />
       <div className="h-7 w-24 rounded bg-[var(--color-outline-variant)]" />
       <div className="h-2.5 w-32 rounded bg-[var(--color-outline-variant)] opacity-50" />
@@ -275,7 +267,7 @@ function SkeletonMetric() {
 /* ── Empty State Banner ── */
 function EmptyState({ message }: { message: string }) {
   return (
-    <div className="flex items-center gap-3 p-4 rounded-xl border border-[var(--color-outline-variant)] bg-[var(--color-surface-container-low)]">
+    <div className="flex items-center gap-3 p-4 rounded-[2px] border border-[var(--color-outline-variant)] bg-[var(--color-surface-container-low)]">
       <AlertCircle className="w-5 h-5 text-[var(--color-on-surface-variant)] flex-shrink-0" />
       <p className="text-sm text-[var(--color-on-surface-variant)]">{message}</p>
     </div>
@@ -453,7 +445,7 @@ function ComparativeDepreciationCard({ projects }: { projects: any[] }) {
     <div className="space-y-4">
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         {/* Property A Column */}
-        <div className="p-4 rounded-xl border border-[var(--color-outline-variant)] bg-[var(--color-surface-container-low)] flex flex-col gap-3">
+        <div className="p-4 rounded-[2px] border border-[var(--color-outline-variant)] bg-[var(--color-surface-container-low)] flex flex-col gap-3">
           <div className="truncate text-xs font-bold text-[var(--color-on-surface)]" title={a.name}>
             {a.name}
           </div>
@@ -464,7 +456,7 @@ function ComparativeDepreciationCard({ projects }: { projects: any[] }) {
           <div className="space-y-2 border-t border-[var(--color-outline-variant)] pt-2 text-xs">
             <div className="flex justify-between items-center">
               <span className="text-[var(--color-on-surface-variant)]">Land Split ({a.landPct.toFixed(0)}%)</span>
-              <span className="font-semibold tabular-nums text-amber-500">{fmt(a.landValue)}</span>
+              <span className="font-semibold tabular-nums text-[var(--color-tertiary)]">{fmt(a.landValue)}</span>
             </div>
             <div className="flex justify-between items-center">
               <span className="text-[var(--color-on-surface-variant)]">Building Basis ({a.buildingPct.toFixed(0)}%)</span>
@@ -478,7 +470,7 @@ function ComparativeDepreciationCard({ projects }: { projects: any[] }) {
         </div>
 
         {/* Property B Column */}
-        <div className="p-4 rounded-xl border border-[var(--color-outline-variant)] bg-[var(--color-surface-container-low)] flex flex-col gap-3">
+        <div className="p-4 rounded-[2px] border border-[var(--color-outline-variant)] bg-[var(--color-surface-container-low)] flex flex-col gap-3">
           <div className="truncate text-xs font-bold text-[var(--color-on-surface)]" title={b.name}>
             {b.name}
           </div>
@@ -489,7 +481,7 @@ function ComparativeDepreciationCard({ projects }: { projects: any[] }) {
           <div className="space-y-2 border-t border-[var(--color-outline-variant)] pt-2 text-xs">
             <div className="flex justify-between items-center">
               <span className="text-[var(--color-on-surface-variant)]">Land Split ({b.landPct.toFixed(0)}%)</span>
-              <span className="font-semibold tabular-nums text-amber-500">{fmt(b.landValue)}</span>
+              <span className="font-semibold tabular-nums text-[var(--color-tertiary)]">{fmt(b.landValue)}</span>
             </div>
             <div className="flex justify-between items-center">
               <span className="text-[var(--color-on-surface-variant)]">Building Basis ({b.buildingPct.toFixed(0)}%)</span>
@@ -504,7 +496,7 @@ function ComparativeDepreciationCard({ projects }: { projects: any[] }) {
       </div>
 
       {/* Visual basis ratio comparison bars */}
-      <div className="p-4 rounded-xl border border-[var(--color-outline-variant)] bg-[var(--color-surface-container-low)] space-y-3">
+      <div className="p-4 rounded-[2px] border border-[var(--color-outline-variant)] bg-[var(--color-surface-container-low)] space-y-3">
         <span className="text-[10px] font-bold uppercase tracking-widest text-[var(--color-on-surface-variant)] block">Basis Allocation Visualizer</span>
         <div className="space-y-2.5">
           {/* Bar A */}
@@ -515,7 +507,7 @@ function ComparativeDepreciationCard({ projects }: { projects: any[] }) {
             </div>
             <div className="h-2.5 w-full rounded-full bg-[var(--color-surface-container-high)] flex overflow-hidden">
               <div style={{ width: `${a.buildingPct}%` }} className="h-full bg-[var(--color-primary)] animate-all duration-500" />
-              <div style={{ width: `${a.landPct}%` }} className="h-full bg-amber-500 animate-all duration-500" />
+              <div style={{ width: `${a.landPct}%` }} className="h-full bg-[var(--color-tertiary)] animate-all duration-500" />
             </div>
           </div>
           {/* Bar B */}
@@ -526,7 +518,7 @@ function ComparativeDepreciationCard({ projects }: { projects: any[] }) {
             </div>
             <div className="h-2.5 w-full rounded-full bg-[var(--color-surface-container-high)] flex overflow-hidden">
               <div style={{ width: `${b.buildingPct}%` }} className="h-full bg-[var(--color-primary)] animate-all duration-500" />
-              <div style={{ width: `${b.landPct}%` }} className="h-full bg-amber-500 animate-all duration-500" />
+              <div style={{ width: `${b.landPct}%` }} className="h-full bg-[var(--color-tertiary)] animate-all duration-500" />
             </div>
           </div>
         </div>
@@ -554,7 +546,7 @@ function TaxReportRow({
   return (
     <div className="flex items-center justify-between gap-4 py-4 border-b border-[var(--color-outline-variant)] last:border-0">
       <div className="flex items-center gap-3 min-w-0">
-        <div className="w-9 h-9 rounded-lg bg-[var(--color-surface-container-high)] border border-[var(--color-outline-variant)] flex items-center justify-center flex-shrink-0">
+        <div className="w-9 h-9 rounded-[2px] bg-[var(--color-surface-container-high)] border border-[var(--color-outline-variant)] flex items-center justify-center flex-shrink-0">
           <FileText className="w-4 h-4 text-[var(--color-primary)]" />
         </div>
         <div className="min-w-0">
@@ -570,13 +562,13 @@ function TaxReportRow({
         )}
         <button
           onClick={onPDF}
-          className="px-3 py-1.5 rounded-lg text-xs font-semibold text-[var(--color-on-surface-variant)] border border-[var(--color-outline-variant)] hover:border-primary hover:text-[var(--color-on-surface)] transition-all"
+          className="pw-interactive-custom px-3 py-1.5 rounded-[2px] text-xs font-semibold text-[var(--color-on-surface-variant)] border border-[var(--color-outline-variant)] hover:border-primary hover:text-[var(--color-on-surface)] transition-all"
         >
           PDF
         </button>
         <button
           onClick={onCSV}
-          className="px-3 py-1.5 rounded-lg text-xs font-semibold text-[var(--color-primary)] border border-[var(--color-outline-variant)] hover:bg-[var(--color-primary-container)] transition-all"
+          className="pw-interactive-custom px-3 py-1.5 rounded-[2px] text-xs font-semibold text-[var(--color-primary)] border border-[var(--color-outline-variant)] hover:bg-[var(--color-primary-container)] transition-all"
         >
           CSV
         </button>
@@ -589,11 +581,11 @@ function TaxReportRow({
 function TaxAlert({ title, body, severity }: { title: string; body: string; severity: 'warning' | 'info' }) {
   return (
     <div
-      className={`px-4 py-3 rounded-lg border-l-2 bg-[var(--color-surface-container-low)] ${
-        severity === 'warning' ? 'border-l-amber-500' : 'border-l-[var(--color-primary)]'
+      className={`px-4 py-3 rounded-[2px] border-l-2 bg-[var(--color-surface-container-low)] ${
+        severity === 'warning' ? 'border-l-[var(--color-tertiary)]' : 'border-l-[var(--color-primary)]'
       }`}
     >
-      <p className={`text-xs font-bold uppercase tracking-widest mb-1 ${severity === 'warning' ? 'text-amber-500' : 'text-[var(--color-primary)]'}`}>
+      <p className={`text-xs font-bold uppercase tracking-widest mb-1 ${severity === 'warning' ? 'text-[var(--color-tertiary)]' : 'text-[var(--color-primary)]'}`}>
         {title}
       </p>
       <p className="text-xs text-[var(--color-on-surface-variant)] leading-relaxed">{body}</p>
@@ -607,16 +599,16 @@ function PreviewModal({ csvData, onClose }: { csvData: string; onClose: () => vo
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm" onClick={onClose}>
       <div
-        className="w-full max-w-3xl max-h-[80vh] rounded-2xl border border-[var(--color-outline-variant)] bg-[var(--color-surface)] p-6 overflow-auto shadow-2xl"
+        className="w-full max-w-3xl max-h-[80vh] rounded-[2px] border border-[var(--color-outline-variant)] bg-[var(--color-surface)] p-6 overflow-auto shadow-2xl"
         onClick={(e) => e.stopPropagation()}
       >
         <div className="flex items-center justify-between mb-4">
           <span className="text-sm font-bold text-[var(--color-on-surface)]">CSV Data Preview</span>
-          <button onClick={onClose} className="p-1 rounded-lg hover:bg-[var(--color-surface-container-high)] transition-all">
+          <button onClick={onClose} className="pw-interactive-custom p-1 rounded-[2px] hover:bg-[var(--color-surface-container-high)] transition-all">
             <X className="w-4 h-4 text-[var(--color-on-surface-variant)]" />
           </button>
         </div>
-        <div className="overflow-x-auto rounded-lg bg-[var(--color-surface-container-low)] border border-[var(--color-outline-variant)] p-4">
+        <div className="overflow-x-auto rounded-[2px] bg-[var(--color-surface-container-low)] border border-[var(--color-outline-variant)] p-4">
           <pre className="text-xs text-[var(--color-on-surface)] font-mono whitespace-pre leading-relaxed">
             {lines.join('\n')}
             {csvData.split('\n').length > 25 && '\n\n... (truncated — full data will be in export)'}
@@ -756,9 +748,10 @@ export default function ReportsPage() {
   const { user, profile } = useAuth();
   const { theme } = useTheme();
   const isDark = theme === "dark";
+  const t = reportsTokens(isDark);
   const expenseColors = isDark
-    ? ['#627C85', '#9E9DA0', '#C4A35A', '#282a32']
-    : ['#627C85', '#45474D', '#7A5500', '#EFF2F7'];
+    ? ['#C4A574', '#9C9890', '#E0A56A', '#22252E']
+    : ['#4F6F78', '#6B7079', '#C4843A', '#E8EAED'];
 
   const projects = useProjectStore((s) => s.projects);
   const ledgerItemsMap = useProjectStore((s) => s.ledgerItems);
@@ -1272,8 +1265,8 @@ export default function ReportsPage() {
 
   return (
     <div
-      className="min-h-full px-6 lg:px-8 py-8 space-y-6"
-      style={{ background: 'var(--bg-canvas)', color: 'var(--text-primary)' }}
+      className="reports-desk min-h-full py-6 px-4 sm:px-6 lg:px-8 space-y-6"
+      style={reportsDeskVars(isDark)}
     >
       {/* Preview Modal */}
       {previewOpen && (
@@ -1281,49 +1274,65 @@ export default function ReportsPage() {
       )}
 
       {/* ── Page Header ── */}
-      <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-4">
+      <header className="flex flex-col md:flex-row md:items-end md:justify-between gap-4 pb-5" style={{ borderBottom: `1px solid ${t.divider}` }}>
         <div>
-          <h1 className="text-2xl font-bold text-[var(--color-on-surface)] tracking-tight">Reports &amp; Tax Intelligence</h1>
-          <p className="text-sm text-[var(--color-on-surface-variant)] mt-1">Intelligent fiscal oversight for your real estate portfolio.</p>
+          <p className="text-[11px] font-medium tracking-[0.14em] uppercase mb-1" style={{ color: t.accent }}>
+            Fiscal ops
+          </p>
+          <h1 className="text-[1.75rem] font-semibold tracking-tight" style={{ color: t.heading }}>
+            Reports
+          </h1>
+          <p className="text-sm mt-1.5 leading-relaxed max-w-xl" style={{ color: t.muted }}>
+            Portfolio tax readiness, NOI trends, and filing exports for daily oversight.
+          </p>
         </div>
 
         {/* Controls */}
         <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3">
           {/* Period tabs */}
-          <div className="flex items-center gap-1 p-1 rounded-lg bg-[var(--color-surface-container-lowest)] border border-[var(--color-outline-variant)]">
-            {(['Monthly', 'Quarterly', 'Yearly', 'Overall'] as PeriodTab[]).map((t) => (
+          <div className="flex items-center gap-1 p-1 rounded-[2px] bg-[var(--color-surface-container-lowest)] border border-[var(--color-outline-variant)]">
+            {(['Monthly', 'Quarterly', 'Yearly', 'Overall'] as PeriodTab[]).map((tab) => (
               <button
-                key={t}
-                onClick={() => setPeriod(t)}
-                className={`px-3 py-1.5 rounded-md text-xs font-semibold uppercase tracking-wider transition-all ${
-                  period === t
+                key={tab}
+                type="button"
+                onClick={() => setPeriod(tab)}
+                className={`pw-interactive-custom px-3 py-1.5 rounded-[2px] text-xs font-semibold tracking-wide transition-all ${
+                  period === tab
                     ? 'border border-[var(--color-outline-variant)] text-[var(--color-primary)] bg-[var(--color-primary-container)]'
-                    : 'text-[var(--color-on-surface-variant)] hover:text-[var(--color-on-surface)]'
+                    : 'text-[var(--color-on-surface-variant)] hover:text-[var(--color-on-surface)] border border-transparent'
                 }`}
+                style={{ padding: '6px 12px' }}
               >
-                {t}
+                {tab}
               </button>
             ))}
           </div>
 
           {/* Scope tabs */}
-          <div className="flex items-center gap-1 p-1 rounded-lg bg-[var(--color-surface-container-lowest)] border border-[var(--color-outline-variant)]">
-            {(['Property', 'My Share'] as ScopeTab[]).map((t) => (
+          <div className="flex items-center gap-1 p-1 rounded-[2px] bg-[var(--color-surface-container-lowest)] border border-[var(--color-outline-variant)]">
+            {(['Property', 'My Share'] as ScopeTab[]).map((tab) => (
               <button
-                key={t}
-                onClick={() => setScope(t)}
-                className={`px-3 py-1.5 rounded-md text-xs font-semibold uppercase tracking-wider transition-all ${
-                  scope === t
-                    ? 'bg-[var(--color-primary)] text-[var(--color-on-primary)]'
+                key={tab}
+                type="button"
+                onClick={() => setScope(tab)}
+                className={`pw-interactive-custom px-3 py-1.5 rounded-[2px] text-xs font-semibold tracking-wide transition-all ${
+                  scope === tab
+                    ? ''
                     : 'text-[var(--color-on-surface-variant)] hover:text-[var(--color-on-surface)]'
                 }`}
+                style={{
+                  padding: '6px 12px',
+                  ...(scope === tab
+                    ? { background: t.ctaBg, color: t.ctaFg, border: 'none' }
+                    : { background: 'transparent', border: 'none' }),
+                }}
               >
-                {t}
+                {tab}
               </button>
             ))}
           </div>
         </div>
-      </div>
+      </header>
 
       {/* ── No Data Empty State ── */}
       {!hasFinancials && !loading && (
@@ -1332,7 +1341,7 @@ export default function ReportsPage() {
 
       {/* ── Core REI Metrics Bento Grid ── */}
       <div
-        className="rounded-2xl border border-[var(--color-outline-variant)] p-5"
+        className="rounded-[2px] border border-[var(--color-outline-variant)] p-5"
         style={{ background: 'var(--bg-surface)' }}
       >
         <div className="flex items-center justify-between mb-4">
@@ -1381,7 +1390,7 @@ export default function ReportsPage() {
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-5">
 
         {/* NOI Trend Chart — 2/3 */}
-        <div className="lg:col-span-2 rounded-2xl border border-[var(--color-outline-variant)] p-6" style={{ background: 'var(--bg-surface)' }}>
+        <div className="lg:col-span-2 rounded-[2px] border border-[var(--color-outline-variant)] p-6" style={{ background: 'var(--bg-surface)' }}>
           <div className="flex items-start justify-between mb-1">
             <span className="text-xs font-bold uppercase tracking-widest text-[var(--color-on-surface-variant)]">
               Net Operating Income (NOI) Trend
@@ -1401,7 +1410,7 @@ export default function ReportsPage() {
                 </span>
               </div>
               {loading ? (
-                <div className="h-[220px] animate-pulse rounded-lg bg-[var(--color-surface-container-high)]" />
+                <div className="h-[220px] animate-pulse rounded-[2px] bg-[var(--color-surface-container-high)]" />
               ) : (
                 <NOITrendChart values={noiValues} labels={noiLabels} />
               )}
@@ -1416,7 +1425,7 @@ export default function ReportsPage() {
         </div>
 
         {/* Cash Flow Intelligence — 1/3 */}
-        <div className="rounded-2xl border border-[var(--color-outline-variant)] p-6 flex flex-col gap-5" style={{ background: 'var(--bg-surface)' }}>
+        <div className="rounded-[2px] border border-[var(--color-outline-variant)] p-6 flex flex-col gap-5" style={{ background: 'var(--bg-surface)' }}>
           <div className="flex items-center justify-between">
             <span className="text-xs font-bold uppercase tracking-widest text-[var(--color-on-surface-variant)]">Cash Flow Intelligence</span>
             <TrendingUp className="w-4 h-4 text-[var(--color-primary)]" />
@@ -1464,7 +1473,7 @@ export default function ReportsPage() {
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-5">
 
         {/* IRR Scenarios */}
-        <div className="rounded-2xl border border-[var(--color-outline-variant)] p-6" style={{ background: 'var(--bg-surface)' }}>
+        <div className="rounded-[2px] border border-[var(--color-outline-variant)] p-6" style={{ background: 'var(--bg-surface)' }}>
           <span className="text-xs font-bold uppercase tracking-widest text-[var(--color-on-surface-variant)] block mb-4">IRR Scenarios</span>
           {irrScenarios ? (
             <div className="space-y-3">
@@ -1490,7 +1499,7 @@ export default function ReportsPage() {
         </div>
 
         {/* Expense Distribution */}
-        <div className="rounded-2xl border border-[var(--color-outline-variant)] p-6" style={{ background: 'var(--bg-surface)' }}>
+        <div className="rounded-[2px] border border-[var(--color-outline-variant)] p-6" style={{ background: 'var(--bg-surface)' }}>
           <span className="text-xs font-bold uppercase tracking-widest text-[var(--color-on-surface-variant)] block mb-2">Expense Distribution</span>
           {hasFinancials ? (
             <>
@@ -1514,7 +1523,7 @@ export default function ReportsPage() {
         </div>
 
         {/* Tax Optimization Alerts */}
-        <div className="rounded-2xl border border-[var(--color-outline-variant)] p-6 flex flex-col gap-4" style={{ background: 'var(--bg-surface)' }}>
+        <div className="rounded-[2px] border border-[var(--color-outline-variant)] p-6 flex flex-col gap-4" style={{ background: 'var(--bg-surface)' }}>
           <div className="flex items-center gap-2">
             <Sparkles className="w-4 h-4 text-[var(--color-primary)]" />
             <span className="text-sm font-semibold text-[var(--color-on-surface)]">Tax Optimization Alerts</span>
@@ -1534,7 +1543,7 @@ export default function ReportsPage() {
 
           <button
             onClick={handleViewTaxStrategy}
-            className="w-full py-2.5 rounded-lg border border-[var(--color-outline-variant)] text-[var(--color-on-surface-variant)] text-xs font-bold uppercase tracking-widest hover:text-[var(--color-primary)] hover:bg-[var(--color-primary-container)] transition-all flex items-center justify-center gap-2"
+            className="pw-interactive-custom w-full py-2.5 rounded-[2px] border border-[var(--color-outline-variant)] text-[var(--color-on-surface-variant)] text-xs font-bold uppercase tracking-widest hover:text-[var(--color-primary)] hover:bg-[var(--color-primary-container)] transition-all flex items-center justify-center gap-2"
           >
             View Detailed Tax Strategy
             <ChevronRight className="w-3.5 h-3.5" />
@@ -1544,7 +1553,7 @@ export default function ReportsPage() {
 
       {/* ── Period Ledger: transaction-level detail ── */}
       <div
-        className="rounded-2xl border border-[var(--color-outline-variant)] p-6"
+        className="rounded-[2px] border border-[var(--color-outline-variant)] p-6"
         style={{ background: 'var(--bg-surface)' }}
       >
         <div className="flex items-center justify-between mb-4">
@@ -1567,14 +1576,14 @@ export default function ReportsPage() {
         {ledgerLoading && (
           <div className="space-y-2">
             {[0, 1, 2, 3].map((i) => (
-              <div key={i} className="h-8 rounded-lg bg-[var(--color-surface-container-high)] animate-pulse" />
+              <div key={i} className="h-8 rounded-[2px] bg-[var(--color-surface-container-high)] animate-pulse" />
             ))}
           </div>
         )}
 
         {/* Error */}
         {!ledgerLoading && ledgerError && (
-          <div className="flex items-center gap-3 p-4 rounded-xl border border-[var(--color-outline-variant)] bg-[var(--color-surface-container-low)]">
+          <div className="flex items-center gap-3 p-4 rounded-[2px] border border-[var(--color-outline-variant)] bg-[var(--color-surface-container-low)]">
             <AlertCircle className="w-4 h-4 text-[var(--color-error)] flex-shrink-0" />
             <p className="text-sm text-[var(--color-on-surface-variant)]">{ledgerError}</p>
           </div>
@@ -1667,7 +1676,7 @@ export default function ReportsPage() {
 
         {/* P&L Report Library — 2/3 */}
         <div
-          className="lg:col-span-2 rounded-2xl border border-[var(--color-outline-variant)] p-6"
+          className="lg:col-span-2 rounded-[2px] border border-[var(--color-outline-variant)] p-6"
           style={{ background: 'var(--bg-surface)' }}
         >
           <div className="flex items-center justify-between mb-1">
@@ -1704,7 +1713,7 @@ export default function ReportsPage() {
 
         {/* Automation Card — 1/3 */}
         <div
-          className="rounded-2xl border border-[var(--color-outline-variant)] p-6 flex flex-col gap-5"
+          className="rounded-[2px] border border-[var(--color-outline-variant)] p-6 flex flex-col gap-5"
           style={{ background: 'var(--bg-surface)' }}
         >
           <div className="flex items-center gap-2">
@@ -1722,7 +1731,7 @@ export default function ReportsPage() {
               </div>
               <button
                 onClick={() => setAutoSync((v) => !v)}
-                className="flex-shrink-0 mt-0.5"
+                className="pw-interactive-custom flex-shrink-0 mt-0.5"
                 aria-label="Toggle auto-sync"
               >
                 {autoSync
@@ -1731,7 +1740,7 @@ export default function ReportsPage() {
               </button>
             </div>
 
-            <div className="rounded-xl bg-[var(--color-surface-container-low)] border border-[var(--color-outline-variant)] p-4 space-y-2">
+            <div className="rounded-[2px] bg-[var(--color-surface-container-low)] border border-[var(--color-outline-variant)] p-4 space-y-2">
               <div className="flex items-center justify-between text-xs">
                 <span className="text-[var(--color-on-surface-variant)]">Last sync</span>
                 <span className="text-[var(--color-on-surface)] font-semibold tabular-nums">
@@ -1757,7 +1766,7 @@ export default function ReportsPage() {
           <button
             onClick={handleSyncNow}
             disabled={syncing}
-            className="w-full py-2.5 rounded-lg bg-[var(--color-surface-container-high)] border border-[var(--color-outline-variant)] text-xs font-bold uppercase tracking-widest text-[var(--color-on-surface-variant)] hover:border-[var(--color-primary)] hover:text-[var(--color-primary)] hover:bg-[var(--color-primary-container)] transition-all flex items-center justify-center gap-2 disabled:opacity-50"
+            className="pw-interactive-custom w-full py-2.5 rounded-[2px] bg-[var(--color-surface-container-high)] border border-[var(--color-outline-variant)] text-xs font-bold uppercase tracking-widest text-[var(--color-on-surface-variant)] hover:border-[var(--color-primary)] hover:text-[var(--color-primary)] hover:bg-[var(--color-primary-container)] transition-all flex items-center justify-center gap-2 disabled:opacity-50"
           >
             {syncing ? (
               <Loader2 className="w-3.5 h-3.5 animate-spin" />
@@ -1773,19 +1782,19 @@ export default function ReportsPage() {
 
       {/* ── Tax Year Selector ── */}
       <div
-        className="rounded-2xl border border-[var(--color-outline-variant)] px-6 py-4 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4"
+        className="rounded-[2px] border border-[var(--color-outline-variant)] px-6 py-4 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4"
         style={{ background: 'var(--bg-surface)' }}
       >
         <div>
           <span className="text-xs font-bold uppercase tracking-widest text-[var(--color-on-surface-variant)]">Tax Reporting Hub</span>
           <p className="text-xs text-[var(--color-on-surface-variant)] mt-0.5">Schedule E, depreciation schedules, and capital gains — tax-ready.</p>
         </div>
-        <div className="flex items-center gap-1 p-1 rounded-lg bg-[var(--color-surface-container-lowest)] border border-[var(--color-outline-variant)]">
+        <div className="flex items-center gap-1 p-1 rounded-[2px] bg-[var(--color-surface-container-lowest)] border border-[var(--color-outline-variant)]">
           {[2024, 2025, 2026].map((yr) => (
             <button
               key={yr}
               onClick={() => setTaxYear(yr)}
-              className={`px-4 py-1.5 rounded-md text-xs font-semibold tabular-nums transition-all ${
+              className={`pw-interactive-custom px-4 py-1.5 rounded-md text-xs font-semibold tabular-nums transition-all ${
                 taxYear === yr
                   ? 'border border-[var(--color-outline-variant)] text-[var(--color-primary)] bg-[var(--color-primary-container)]'
                   : 'text-[var(--color-on-surface-variant)] hover:text-[var(--color-on-surface)]'
@@ -1799,7 +1808,7 @@ export default function ReportsPage() {
 
       {/* ── Schedule E Preview ── */}
       <div
-        className="rounded-2xl border border-[var(--color-outline-variant)] p-6 overflow-hidden"
+        className="rounded-[2px] border border-[var(--color-outline-variant)] p-6 overflow-hidden"
         style={{ background: 'var(--bg-surface)' }}
       >
         <div className="flex items-center justify-between mb-4">
@@ -1853,7 +1862,7 @@ export default function ReportsPage() {
                     <td className="px-3 py-2.5 font-semibold text-[var(--color-on-surface)] whitespace-nowrap truncate max-w-[200px] flex items-center gap-1.5">
                       <button
                         onClick={() => handleOpenTaxSettings(p)}
-                        className="p-1 rounded hover:bg-[var(--color-surface-container-high)] text-[var(--color-on-surface-variant)] hover:text-[var(--color-primary)] transition-all flex-shrink-0"
+                        className="pw-interactive-custom p-1 rounded hover:bg-[var(--color-surface-container-high)] text-[var(--color-on-surface-variant)] hover:text-[var(--color-primary)] transition-all flex-shrink-0"
                         title="Edit Tax Allocation Settings"
                       >
                         <Settings className="w-3.5 h-3.5" />
@@ -1929,10 +1938,10 @@ export default function ReportsPage() {
         </div>
 
         {/* Schedule E Tax Disclaimer */}
-        <div className="mt-4 flex items-start gap-3 px-4 py-3 rounded-lg border border-amber-500/30 bg-amber-500/5">
-          <AlertCircle className="w-4 h-4 flex-shrink-0 text-amber-500 mt-0.5" />
+        <div className="mt-4 flex items-start gap-3 px-4 py-3 rounded-[2px] border border-amber-500/30 bg-[var(--color-tertiary)]/5">
+          <AlertCircle className="w-4 h-4 flex-shrink-0 text-[var(--color-tertiary)] mt-0.5" />
           <div className="space-y-0.5">
-            <p className="text-xs font-bold text-amber-500 uppercase tracking-widest">Estimates Only — Not Tax Advice</p>
+            <p className="text-xs font-bold text-[var(--color-tertiary)] uppercase tracking-widest">Estimates Only — Not Tax Advice</p>
             <p className="text-[11px] text-[var(--color-on-surface-variant)] leading-relaxed">
               These figures are automated estimates for planning purposes only. Depreciation uses county-assessed land/improvement allocations
               where entered, falling back to an 80/20 building ratio when assessor data is absent. Actual Schedule E figures depend on your
@@ -1947,7 +1956,7 @@ export default function ReportsPage() {
 
         {/* Depreciation Comparison Bento Card */}
         <div
-          className="rounded-2xl border border-[var(--color-outline-variant)] p-6"
+          className="rounded-[2px] border border-[var(--color-outline-variant)] p-6"
           style={{ background: 'var(--bg-surface)' }}
         >
           <span className="text-xs font-bold uppercase tracking-widest text-[var(--color-on-surface-variant)] block mb-1">Depreciation Comparison</span>
@@ -1957,7 +1966,7 @@ export default function ReportsPage() {
 
         {/* Capital Gains Calculator */}
         <div
-          className="rounded-2xl border border-[var(--color-outline-variant)] p-6"
+          className="rounded-[2px] border border-[var(--color-outline-variant)] p-6"
           style={{ background: 'var(--bg-surface)' }}
         >
           <span className="text-xs font-bold uppercase tracking-widest text-[var(--color-on-surface-variant)] block mb-1">Capital Gains Calculator</span>
@@ -1975,7 +1984,7 @@ export default function ReportsPage() {
                   {field.label}
                 </label>
                 <div
-                  className="flex items-center rounded-lg overflow-hidden bg-[var(--color-surface-container-low)] border border-[var(--color-outline-variant)]"
+                  className="flex items-center rounded-[2px] overflow-hidden bg-[var(--color-surface-container-low)] border border-[var(--color-outline-variant)]"
                 >
                   <span className="pl-2.5 text-xs font-medium text-[var(--color-on-surface-variant)]">{field.prefix}</span>
                   <input
@@ -2013,7 +2022,7 @@ export default function ReportsPage() {
                 {[
                   { label: 'Adjusted Basis', value: fmt(adjustedBasis), color: 'text-[var(--color-on-surface)]' },
                   { label: 'Total Gain', value: fmt(totalGain), color: totalGain >= 0 ? 'text-[var(--color-primary)]' : 'text-[var(--color-error)]' },
-                  { label: 'Depreciation Recapture Tax (25%)', value: fmt(depRecaptureTax), color: 'text-amber-500' },
+                  { label: 'Depreciation Recapture Tax (25%)', value: fmt(depRecaptureTax), color: 'text-[var(--color-tertiary)]' },
                   { label: 'Capital Gains Tax (15%)', value: fmt(capitalGainsTax), color: 'text-[var(--color-on-surface)]' },
                 ].map((row) => (
                   <div key={row.label} className="flex items-center justify-between py-1.5 border-b border-[var(--color-outline-variant)] last:border-0">
@@ -2022,10 +2031,10 @@ export default function ReportsPage() {
                   </div>
                 ))}
                 <div
-                  className="flex items-center justify-between py-3 mt-2 rounded-lg px-3 bg-[var(--color-surface-container-high)] border border-[var(--color-outline-variant)]"
+                  className="flex items-center justify-between py-3 mt-2 rounded-[2px] px-3 bg-[var(--color-surface-container-high)] border border-[var(--color-outline-variant)]"
                 >
                   <span className="text-xs font-bold uppercase tracking-widest text-[var(--color-on-surface)]">Estimated Tax</span>
-                  <span className={`text-lg font-bold tabular-nums ${hasInput ? (totalTaxEstimate > 0 ? 'text-amber-500' : 'text-[var(--color-primary)]') : 'text-[var(--color-on-surface-variant)]'}`}>
+                  <span className={`text-lg font-bold tabular-nums ${hasInput ? (totalTaxEstimate > 0 ? 'text-[var(--color-tertiary)]' : 'text-[var(--color-primary)]') : 'text-[var(--color-on-surface-variant)]'}`}>
                     {hasInput ? fmt(totalTaxEstimate) : '—'}
                   </span>
                 </div>
@@ -2038,10 +2047,10 @@ export default function ReportsPage() {
 
       {/* ── Export Buttons ── */}
       <div
-        className="rounded-2xl border border-[var(--color-outline-variant)] px-6 py-4 flex flex-col sm:flex-row items-center justify-between gap-4"
+        className="rounded-[2px] border border-[var(--color-outline-variant)] px-6 py-4 flex flex-col sm:flex-row items-center justify-between gap-4"
         style={{ background: 'var(--bg-surface)' }}
       >
-        <span className="text-xs font-bold uppercase tracking-widest text-[var(--color-on-surface-variant)]">Export Tax Reports</span>
+        <span className="text-xs font-bold uppercase tracking-widest text-[var(--color-on-surface-variant)]">Export tax reports</span>
         <div className="flex items-center gap-3">
           <button
             onClick={() => {
@@ -2049,7 +2058,7 @@ export default function ReportsPage() {
               const csv = generatePortfolioCSV(projects, new Date(taxYear, 0, 1), new Date(taxYear, 11, 31));
               downloadPDFViaPrint(`Schedule E — ${taxYear}`, csv);
             }}
-            className="flex items-center gap-2 px-5 py-2.5 rounded-lg border border-[var(--color-outline-variant)] text-xs font-bold uppercase tracking-wider text-[var(--color-on-surface-variant)] hover:border-[var(--color-primary)] hover:text-[var(--color-primary)] hover:bg-[var(--color-primary-container)] transition-all"
+            className="pw-interactive-custom flex items-center gap-2 px-5 py-2.5 rounded-[2px] border border-[var(--color-outline-variant)] text-xs font-bold uppercase tracking-wider text-[var(--color-on-surface-variant)] hover:border-[var(--color-primary)] hover:text-[var(--color-primary)] hover:bg-[var(--color-primary-container)] transition-all"
           >
             <Download className="w-3.5 h-3.5" />
             Download PDF
@@ -2060,7 +2069,8 @@ export default function ReportsPage() {
               downloadCSV(csv, `Schedule_E_${taxYear}.csv`);
               toast.success('CSV downloaded');
             }}
-            className="flex items-center gap-2 px-5 py-2.5 rounded-lg bg-[var(--color-primary)] hover:bg-[var(--color-inverse-primary)] text-[var(--color-on-primary)] text-xs font-bold uppercase tracking-wider transition-all"
+            className="pw-interactive-custom flex items-center gap-2 text-xs font-semibold tracking-wide transition-opacity hover:opacity-90"
+            style={{ background: t.ctaBg, color: t.ctaFg, border: 'none', borderRadius: 2, padding: '10px 18px' }}
           >
             <Download className="w-3.5 h-3.5" />
             Download CSV
@@ -2070,15 +2080,15 @@ export default function ReportsPage() {
 
       {/* ── Footer: Generate Tax-Ready CSV ── */}
       <div
-        className="rounded-2xl border border-[var(--color-outline-variant)] px-6 py-5 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4"
+        className="rounded-[2px] border border-[var(--color-outline-variant)] px-6 py-5 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4"
         style={{ background: 'var(--bg-surface)' }}
       >
         <div className="flex items-center gap-4">
-          <div className="w-10 h-10 rounded-xl bg-[var(--color-primary-container)] border border-[var(--color-outline-variant)] flex items-center justify-center flex-shrink-0">
+          <div className="w-10 h-10 rounded-[2px] bg-[var(--color-primary-container)] border border-[var(--color-outline-variant)] flex items-center justify-center flex-shrink-0">
             <Download className="w-4 h-4 text-[var(--color-primary)]" />
           </div>
           <div>
-            <p className="text-sm font-semibold text-[var(--color-on-surface)]">Generate Tax-Ready CSV</p>
+            <p className="text-sm font-semibold text-[var(--color-on-surface)]">Generate tax-ready CSV</p>
             <p className="text-xs text-[var(--color-on-surface-variant)] mt-0.5">
               Formatted for direct import into TurboTax, H&amp;R Block, or professional CPA portals.
             </p>
@@ -2087,15 +2097,16 @@ export default function ReportsPage() {
         <div className="flex items-center gap-3 flex-shrink-0">
           <button
             onClick={handlePreviewData}
-            className="px-5 py-2.5 rounded-lg border border-[var(--color-outline-variant)] text-sm font-semibold text-[var(--color-on-surface-variant)] hover:border-[var(--color-primary)] hover:text-[var(--color-primary)] hover:bg-[var(--color-primary-container)] transition-all"
+            className="pw-interactive-custom px-5 py-2.5 rounded-[2px] border border-[var(--color-outline-variant)] text-sm font-semibold text-[var(--color-on-surface-variant)] hover:border-[var(--color-primary)] hover:text-[var(--color-primary)] hover:bg-[var(--color-primary-container)] transition-all"
           >
             Preview Data
           </button>
           <button
             onClick={handleExportForFiling}
-            className="px-5 py-2.5 rounded-lg bg-[var(--color-primary)] hover:bg-[var(--color-inverse-primary)] text-[var(--color-on-primary)] text-sm font-bold uppercase tracking-wider transition-all flex items-center gap-2"
+            className="pw-interactive-custom flex items-center gap-2 text-sm font-semibold tracking-wide transition-opacity hover:opacity-90"
+            style={{ background: t.ctaBg, color: t.ctaFg, border: 'none', borderRadius: 2, padding: '10px 18px' }}
           >
-            Export for Filing
+            Export for filing
             <Download className="w-3.5 h-3.5" />
           </button>
         </div>
@@ -2113,12 +2124,12 @@ export default function ReportsPage() {
       {selectedTaxProject && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm" onClick={() => setSelectedTaxProject(null)}>
           <div
-            className="w-full max-w-md rounded-2xl border border-[var(--color-outline-variant)] bg-[var(--bg-surface)] p-6 overflow-hidden shadow-2xl relative"
+            className="w-full max-w-md rounded-[2px] border border-[var(--color-outline-variant)] bg-[var(--bg-surface)] p-6 overflow-hidden shadow-2xl relative"
             onClick={(e) => e.stopPropagation()}
           >
             <button
               onClick={() => setSelectedTaxProject(null)}
-              className="absolute top-4 right-4 p-1 rounded-lg hover:bg-[var(--color-surface-container-high)] text-[var(--color-on-surface-variant)] transition-all"
+              className="pw-interactive-custom absolute top-4 right-4 p-1 rounded-[2px] hover:bg-[var(--color-surface-container-high)] text-[var(--color-on-surface-variant)] transition-all"
             >
               <X className="w-4 h-4" />
             </button>
@@ -2134,7 +2145,7 @@ export default function ReportsPage() {
                 <label className="block text-[10px] font-bold uppercase tracking-widest text-[var(--color-on-surface-variant)]">
                   Assessed Land Value (USD)
                 </label>
-                <div className="flex items-center rounded-lg bg-[var(--color-surface-container-low)] border border-[var(--color-outline-variant)] focus-within:border-[var(--color-primary)] transition-all">
+                <div className="flex items-center rounded-[2px] bg-[var(--color-surface-container-low)] border border-[var(--color-outline-variant)] focus-within:border-[var(--color-primary)] transition-all">
                   <span className="pl-3 pr-1 text-xs text-[var(--color-on-surface-variant)] font-medium">$</span>
                   <input
                     type="number"
@@ -2151,7 +2162,7 @@ export default function ReportsPage() {
                 <label className="block text-[10px] font-bold uppercase tracking-widest text-[var(--color-on-surface-variant)]">
                   Assessed Improvement/Building Value (USD)
                 </label>
-                <div className="flex items-center rounded-lg bg-[var(--color-surface-container-low)] border border-[var(--color-outline-variant)] focus-within:border-[var(--color-primary)] transition-all">
+                <div className="flex items-center rounded-[2px] bg-[var(--color-surface-container-low)] border border-[var(--color-outline-variant)] focus-within:border-[var(--color-primary)] transition-all">
                   <span className="pl-3 pr-1 text-xs text-[var(--color-on-surface-variant)] font-medium">$</span>
                   <input
                     type="number"
@@ -2168,7 +2179,7 @@ export default function ReportsPage() {
                 <label className="block text-[10px] font-bold uppercase tracking-widest text-[var(--color-on-surface-variant)]">
                   Annual Advertising Expense (USD) — Schedule E Line 5
                 </label>
-                <div className="flex items-center rounded-lg bg-[var(--color-surface-container-low)] border border-[var(--color-outline-variant)] focus-within:border-[var(--color-primary)] transition-all">
+                <div className="flex items-center rounded-[2px] bg-[var(--color-surface-container-low)] border border-[var(--color-outline-variant)] focus-within:border-[var(--color-primary)] transition-all">
                   <span className="pl-3 pr-1 text-xs text-[var(--color-on-surface-variant)] font-medium">$</span>
                   <input
                     type="number"
@@ -2190,13 +2201,13 @@ export default function ReportsPage() {
                   type="date"
                   value={placedInServiceInput}
                   onChange={(e) => setPlacedInServiceInput(e.target.value)}
-                  className="w-full bg-[var(--color-surface-container-low)] border border-[var(--color-outline-variant)] rounded-lg px-3 py-2 text-xs text-[var(--color-on-surface)] font-medium outline-none focus:border-[var(--color-primary)] transition-all"
+                  className="w-full bg-[var(--color-surface-container-low)] border border-[var(--color-outline-variant)] rounded-[2px] px-3 py-2 text-xs text-[var(--color-on-surface)] font-medium outline-none focus:border-[var(--color-primary)] transition-all"
                 />
               </div>
 
               {/* Info Alert on ratio */}
               {parseFloat(landValueInput) > 0 && parseFloat(improvementValueInput) > 0 && (
-                <div className="p-3 rounded-lg bg-[var(--color-surface-container-high)] border border-[var(--color-outline-variant)] text-[11px] text-[var(--color-on-surface-variant)]">
+                <div className="p-3 rounded-[2px] bg-[var(--color-surface-container-high)] border border-[var(--color-outline-variant)] text-[11px] text-[var(--color-on-surface-variant)]">
                   <span className="font-semibold text-[var(--color-on-surface)]">Building Basis Ratio: </span>
                   {Math.round((parseFloat(improvementValueInput) / (parseFloat(landValueInput) + parseFloat(improvementValueInput))) * 100)}% 
                   <span className="ml-2 font-semibold text-[var(--color-on-surface)]">Land Ratio: </span>
@@ -2209,7 +2220,7 @@ export default function ReportsPage() {
               <button
                 type="button"
                 onClick={() => setSelectedTaxProject(null)}
-                className="px-4 py-2 rounded-lg border border-[var(--color-outline-variant)] text-[var(--color-on-surface-variant)] hover:text-[var(--color-on-surface)] text-xs font-semibold transition-all"
+                className="pw-interactive-custom px-4 py-2 rounded-[2px] border border-[var(--color-outline-variant)] text-[var(--color-on-surface-variant)] hover:text-[var(--color-on-surface)] text-xs font-semibold transition-all"
               >
                 Cancel
               </button>
@@ -2217,10 +2228,11 @@ export default function ReportsPage() {
                 type="button"
                 disabled={isSavingTaxSettings}
                 onClick={handleSaveTaxSettings}
-                className="px-4 py-2 rounded-lg bg-[var(--color-primary)] text-white hover:bg-[var(--color-primary-container)] hover:text-[var(--color-primary)] text-xs font-semibold transition-all flex items-center gap-1.5 disabled:opacity-50"
+                className="pw-interactive-custom flex items-center gap-1.5 text-xs font-semibold transition-opacity hover:opacity-90 disabled:opacity-50"
+                style={{ background: t.ctaBg, color: t.ctaFg, border: 'none', borderRadius: 2, padding: '8px 14px' }}
               >
                 {isSavingTaxSettings && <Loader2 className="w-3.5 h-3.5 animate-spin" />}
-                {isSavingTaxSettings ? 'Saving...' : 'Save Allocation'}
+                {isSavingTaxSettings ? 'Saving…' : 'Save allocation'}
               </button>
             </div>
           </div>

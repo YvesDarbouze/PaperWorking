@@ -3,39 +3,22 @@
 import { useMemo } from "react";
 import { useRouter } from "next/navigation";
 import { useProjectStore } from "@/store/projectStore";
+import { useTheme } from "@/lib/utils/ThemeProvider";
 import type { Project } from "@/types/schema";
+import { ccTokens, type CcTokens } from "./ccTheme";
 
-// ─── Phase config ─────────────────────────────────────────────────────────────
+function laneAccent(phaseKey: number, t: CcTokens): string {
+  if (phaseKey === 2) return t.phase2;
+  if (phaseKey === 3) return t.phase3;
+  if (phaseKey === 4) return t.phase4;
+  return t.phase1;
+}
 
 const LANES = [
-  {
-    phase: "Acquisition",
-    phaseKey: 1,
-    icon: "domain_add",
-    accentColor: "#454955",
-    emptyLabel: "No deals in sourcing",
-  },
-  {
-    phase: "Closing",
-    phaseKey: 2,
-    icon: "receipt_long",
-    accentColor: "#7A9EAA",
-    emptyLabel: "No deals in closing",
-  },
-  {
-    phase: "Rehab",
-    phaseKey: 3,
-    icon: "construction",
-    accentColor: "#ffac5a",
-    emptyLabel: "No active rehabs",
-  },
-  {
-    phase: "Hold / Exit",
-    phaseKey: 4,
-    icon: "exit_to_app",
-    accentColor: "var(--pw-success)",
-    emptyLabel: "No held properties",
-  },
+  { phase: "Acquisition", phaseKey: 1, icon: "domain_add", emptyLabel: "No deals in sourcing" },
+  { phase: "Closing", phaseKey: 2, icon: "receipt_long", emptyLabel: "No deals in closing" },
+  { phase: "Rehab", phaseKey: 3, icon: "construction", emptyLabel: "No active rehabs" },
+  { phase: "Hold / Exit", phaseKey: 4, icon: "exit_to_app", emptyLabel: "No held properties" },
 ];
 
 function statusLabel(p: Project): string {
@@ -77,16 +60,15 @@ function progressLabel(p: Project): string {
 function projectSubtext(p: Project): string {
   const parts: string[] = [];
   if (p.assetClass) parts.push(p.assetClass);
-  // address is a plain string on the Project type
   if (p.address) parts.push(p.address);
   return parts.join(" · ") || "—";
 }
 
-// ─── Component ────────────────────────────────────────────────────────────────
-
 export function ActivePipeline() {
   const router = useRouter();
   const projects = useProjectStore(state => state.projects);
+  const { theme } = useTheme();
+  const t = ccTokens(theme === "dark");
 
   const lanes = useMemo(() =>
     LANES.map(lane => ({
@@ -97,94 +79,76 @@ export function ActivePipeline() {
   );
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3">
       {lanes.map(lane => {
         const primary = lane.items[0] ?? null;
-        const extra   = lane.items.length - 1;
+        const extra = lane.items.length - 1;
+        const accent = laneAccent(lane.phaseKey, t);
 
         return (
           <div
             key={lane.phase}
-            className="relative rounded-2xl p-5 flex flex-col cursor-pointer group transition-all duration-200"
+            className="relative p-4 flex flex-col cursor-pointer transition-colors"
             style={{
-              background: "linear-gradient(135deg, rgba(22,19,24,0.6) 0%, rgba(13,10,11,0.85) 100%)",
-              backdropFilter: "blur(24px)",
-              WebkitBackdropFilter: "blur(24px)",
-              border: "1px solid rgba(255,255,255,0.08)",
-              borderTop: `2px solid ${lane.accentColor}55`,
-              boxShadow: "0 8px 32px rgba(0,0,0,0.25)",
+              background: t.panelBg,
+              border: `1px solid ${t.border}`,
+              borderLeft: `3px solid ${accent}`,
+              borderRadius: 2,
+              boxShadow: t.panelShadow,
+              minHeight: 168,
             }}
             onClick={() => primary && router.push(`/dashboard/projects/${primary.id ?? ""}`)}
+            onMouseEnter={(e) => { e.currentTarget.style.background = theme === "dark" ? "#1C1E26" : "#FAFBFC"; }}
+            onMouseLeave={(e) => { e.currentTarget.style.background = t.panelBg; }}
           >
-            {/* Hover glow */}
-            <div
-              className="absolute inset-0 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none"
-              style={{ background: `radial-gradient(circle at 50% 0%, ${lane.accentColor}08 0%, transparent 70%)` }}
-            />
-
-            {/* Phase icon + status */}
-            <div className="relative flex justify-between items-start mb-6">
+            <div className="flex justify-between items-start mb-4 gap-2">
               <div
-                className="p-2 rounded-xl"
-                style={{ background: `${lane.accentColor}14`, color: lane.accentColor }}
+                className="w-8 h-8 flex items-center justify-center shrink-0"
+                style={{ background: `${accent}18`, color: accent, borderRadius: 2 }}
               >
-                <span className="material-symbols-outlined text-[20px]" style={{ fontVariationSettings: "'FILL' 0" }}>
+                <span className="material-symbols-outlined text-[18px]" style={{ fontVariationSettings: "'FILL' 0" }}>
                   {lane.icon}
                 </span>
               </div>
               <span
-                className="text-[11px] font-bold uppercase tracking-wider px-2.5 py-1 rounded-lg"
+                className="text-[10px] font-semibold uppercase tracking-wider px-1.5 py-0.5"
                 style={{
-                  background: "rgba(45,54,61,0.8)",
-                  color: primary ? lane.accentColor : "rgba(253,255,252,0.3)",
-                  letterSpacing: "0.06em",
+                  background: primary ? `${accent}18` : t.hover,
+                  color: primary ? accent : t.muted,
+                  borderRadius: 2,
                 }}
               >
                 {primary ? statusLabel(primary) : lane.phase}
               </span>
             </div>
 
-            {/* Content */}
             {primary ? (
-              <div className="relative flex-1 flex flex-col justify-between">
+              <div className="flex-1 flex flex-col justify-between">
                 <div>
-                  <h3
-                    className="text-[15px] font-semibold mb-1 leading-snug"
-                    style={{ color: "rgba(253,255,252,0.95)", letterSpacing: "0.01em" }}
-                  >
+                  <h3 className="text-[14px] font-semibold mb-0.5 leading-snug truncate" style={{ color: t.heading }}>
                     {primary.propertyName || primary.address || "Unnamed Project"}
                   </h3>
-                  <p className="text-[13px] mb-4" style={{ color: "rgba(253,255,252,0.45)" }}>
+                  <p className="text-[12px] mb-3 line-clamp-2" style={{ color: t.muted }}>
                     {projectSubtext(primary)}
                   </p>
                 </div>
 
-                {/* Progress bar */}
                 <div>
-                  <div
-                    className="w-full h-1.5 rounded-full overflow-hidden"
-                    style={{ background: "rgba(45,54,61,0.9)" }}
-                  >
+                  <div className="w-full h-1 overflow-hidden" style={{ background: t.hover, borderRadius: 1 }}>
                     <div
-                      className="h-full rounded-full transition-all duration-700"
-                      style={{ width: `${progressPct(primary)}%`, background: lane.accentColor }}
+                      className="h-full transition-all duration-500"
+                      style={{ width: `${progressPct(primary)}%`, background: accent, borderRadius: 1 }}
                     />
                   </div>
-                  <div className="flex justify-between mt-2">
-                    <span className="text-[11px]" style={{ color: "rgba(253,255,252,0.4)" }}>
-                      {progressLabel(primary)}
-                    </span>
-                    <span className="text-[11px] font-bold" style={{ color: lane.accentColor }}>
+                  <div className="flex justify-between mt-1.5">
+                    <span className="text-[11px]" style={{ color: t.muted }}>{progressLabel(primary)}</span>
+                    <span className="text-[11px] font-semibold tabular-nums" style={{ color: accent }}>
                       {progressPct(primary)}%
                     </span>
                   </div>
-
                   {extra > 0 && (
-                    <div
-                      className="mt-3 pt-3"
-                      style={{ borderTop: "1px solid rgba(255,255,255,0.06)" }}
-                    >
-                      <span className="text-[11px]" style={{ color: "rgba(253,255,252,0.35)" }}>
+                    <div className="mt-2.5 pt-2" style={{ borderTop: `1px solid ${t.divider}` }}>
+                      <span className="text-[11px]" style={{ color: t.muted }}>
                         +{extra} more deal{extra > 1 ? "s" : ""}
                       </span>
                     </div>
@@ -193,15 +157,13 @@ export function ActivePipeline() {
               </div>
             ) : (
               <div
-                className="relative flex-1 flex flex-col items-center justify-center rounded-xl py-6"
-                style={{ border: "1.5px dashed rgba(255,255,255,0.07)" }}
+                className="flex-1 flex flex-col items-center justify-center py-5"
+                style={{ border: `1px dashed ${t.border}`, borderRadius: 2 }}
               >
-                <span className="material-symbols-outlined text-[28px] mb-2" style={{ color: "rgba(253,255,252,0.15)" }}>
+                <span className="material-symbols-outlined text-[24px] mb-1.5" style={{ color: t.muted, opacity: 0.45 }}>
                   add_circle_outline
                 </span>
-                <span className="text-[12px] text-center leading-snug" style={{ color: "rgba(253,255,252,0.25)" }}>
-                  {lane.emptyLabel}
-                </span>
+                <span className="text-[12px] text-center" style={{ color: t.muted }}>{lane.emptyLabel}</span>
               </div>
             )}
           </div>

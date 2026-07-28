@@ -6,6 +6,7 @@ import { useProjectStore } from "@/store/projectStore";
 import { useTheme } from "@/lib/utils/ThemeProvider";
 import { AnimatePresence, motion } from "framer-motion";
 import type { Project } from "@/types/schema";
+import { ccTokens } from "./ccTheme";
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -192,181 +193,182 @@ export function NeedsAttentionFeed() {
   const hidden  = Math.max(0, Math.min(items.length, 10) - INITIAL_COUNT);
   const isEmpty = items.length === 0;
   const hasCritical = items.some((i: AttentionItem) => i.priority === "critical");
+  const t = ccTokens(isDark);
 
-  // Theme-adaptive tokens
-  const panelBg     = isDark
-    ? "linear-gradient(135deg, rgba(30,27,32,0.65) 0%, rgba(18,16,20,0.88) 100%)"
-    : "#FFFFFF";
-  const panelBorder = isDark ? "rgba(255,255,255,0.08)" : "rgba(69,73,85,0.10)";
-  const panelShadow = isDark ? "0 8px 32px rgba(0,0,0,0.25)" : "0 2px 10px rgba(0,0,0,0.06)";
-  const headerBorderB = isDark ? "rgba(255,255,255,0.06)" : "rgba(69,73,85,0.08)";
-  const labelColor  = isDark ? "rgba(253,255,252,0.55)" : "rgba(69,73,85,0.65)";
-  const metaColor   = isDark ? "rgba(253,255,252,0.28)" : "rgba(69,73,85,0.45)";
-  const itemHoverBg = isDark ? "rgba(255,255,255,0.025)" : "rgba(69,73,85,0.03)";
-  const itemDivider = isDark ? "rgba(255,255,255,0.04)"  : "rgba(69,73,85,0.07)";
+  const statusTone = (priority: AttentionPriority) => {
+    if (priority === "critical") return { fg: t.alert, bg: t.alertMuted };
+    if (priority === "warning") return { fg: t.warn, bg: t.warnMuted };
+    return { fg: t.accent, bg: t.accentMuted };
+  };
+
+  const headerIcon = hasCritical ? "warning" : items.length > 0 ? "pending_actions" : "check_circle";
+  const headerColor = hasCritical ? t.alert : items.length > 0 ? t.warn : t.success;
 
   return (
     <section
       aria-label="Needs attention"
-      className="rounded-2xl overflow-hidden"
+      className="overflow-hidden"
       style={{
-        background: panelBg,
-        backdropFilter: isDark ? "blur(24px)" : undefined,
-        WebkitBackdropFilter: isDark ? "blur(24px)" : undefined,
-        border: `1px solid ${panelBorder}`,
-        boxShadow: panelShadow,
+        background: t.panelBg,
+        border: `1px solid ${t.border}`,
+        borderRadius: 2,
+        boxShadow: t.panelShadow,
       }}
     >
-      {/* ── Header ── */}
       <div
-        className="px-5 py-3.5 flex justify-between items-center"
-        style={{ borderBottom: `1px solid ${headerBorderB}` }}
+        className="px-4 py-3 flex justify-between items-center gap-3"
+        style={{ borderBottom: `1px solid ${t.divider}` }}
       >
-        <div className="flex items-center gap-2.5">
+        <div className="flex items-center gap-2.5 min-w-0">
           <span
             className="material-symbols-outlined text-[18px]"
-            style={{
-              color: hasCritical ? "#F06543" : items.length > 0 ? "#ffac5a" : "var(--pw-success)",
-              fontVariationSettings: "'FILL' 1",
-            }}
+            style={{ color: headerColor, fontVariationSettings: "'FILL' 1" }}
           >
-            {hasCritical ? "warning" : items.length > 0 ? "pending_actions" : "check_circle"}
+            {headerIcon}
           </span>
-          <span
-            className="text-[11px] font-bold uppercase"
-            style={{ letterSpacing: "0.08em", color: labelColor }}
-          >
-            Action Center
+          <span className="text-[11px] font-semibold uppercase tracking-wider" style={{ color: t.muted }}>
+            Needs a decision
           </span>
           {items.length > 0 && (
             <span
-              className="text-[10px] font-bold px-2 py-0.5 rounded-full"
+              className="text-[10px] font-semibold px-1.5 py-0.5 tabular-nums"
               style={{
-                background: hasCritical ? "rgba(240,101,67,0.12)" : "rgba(255,172,90,0.12)",
-                color: hasCritical ? "#F06543" : "#ffac5a",
+                background: hasCritical ? t.alertMuted : t.warnMuted,
+                color: hasCritical ? t.alert : t.warn,
+                borderRadius: 2,
               }}
             >
-              {items.length} pending
+              {items.length}
             </span>
           )}
         </div>
         {items.length > 0 && (
-          <span className="text-[11px]" style={{ color: metaColor }}>
+          <span className="text-[11px] shrink-0" style={{ color: t.muted }}>
             {items.filter((i: AttentionItem) => i.priority === "critical").length > 0
               ? `${items.filter((i: AttentionItem) => i.priority === "critical").length} critical`
-              : `${items.length} task${items.length === 1 ? "" : "s"}`}
+              : `${items.length} item${items.length === 1 ? "" : "s"}`}
           </span>
         )}
       </div>
 
-      {/* ── Empty State ── */}
       {isEmpty && (
         <div className="flex flex-col items-center justify-center py-10 px-6 text-center">
           <span
             className="material-symbols-outlined text-4xl mb-3"
-            style={{ color: "var(--pw-success)", fontVariationSettings: "'FILL' 1" }}
+            style={{ color: t.success, fontVariationSettings: "'FILL' 1" }}
           >
             check_circle
           </span>
-          <p
-            className="text-[14px] font-semibold mb-1"
-            style={{ color: isDark ? "rgba(253,255,252,0.85)" : "#0d0a0b" }}
-          >
-            All clear.
+          <p className="text-[14px] font-semibold mb-1" style={{ color: t.heading }}>
+            All clear
           </p>
-          <p className="text-[12px] max-w-xs leading-relaxed" style={{ color: metaColor }}>
+          <p className="text-[12px] max-w-xs leading-relaxed" style={{ color: t.muted }}>
             No pending tasks, deadlines, or blockers right now.
           </p>
         </div>
       )}
 
-      {/* ── Item List ── */}
       {!isEmpty && (
         <div aria-live="polite">
           <AnimatePresence initial={false}>
-            {visible.map((item, idx) => (
-              <motion.div
-                key={item.id}
-                initial={{ opacity: 0, height: 0 }}
-                animate={{ opacity: 1, height: "auto" }}
-                exit={{ opacity: 0, height: 0 }}
-                transition={{ duration: 0.18, ease: "easeOut" }}
-              >
-                <div
-                  className="flex items-start gap-4 px-5 py-3.5 group cursor-pointer transition-colors duration-100"
-                  style={{
-                    borderLeft: `3px solid ${item.borderColor}`,
-                    borderBottom: idx < visible.length - 1 ? `1px solid ${itemDivider}` : "none",
-                  }}
-                  onClick={() => router.push(item.ctaHref)}
-                  onMouseEnter={(e) => (e.currentTarget.style.background = itemHoverBg)}
-                  onMouseLeave={(e) => (e.currentTarget.style.background = "transparent")}
+            {visible.map((item, idx) => {
+              const tone = statusTone(item.priority);
+              return (
+                <motion.div
+                  key={item.id}
+                  initial={{ opacity: 0, height: 0 }}
+                  animate={{ opacity: 1, height: "auto" }}
+                  exit={{ opacity: 0, height: 0 }}
+                  transition={{ duration: 0.18, ease: "easeOut" }}
                 >
-                  {/* Icon chip */}
                   <div
-                    className="w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0 mt-0.5"
-                    style={{ background: `${item.iconColor}18` }}
-                  >
-                    <span
-                      className="material-symbols-outlined"
-                      style={{
-                        fontSize: "16px",
-                        color: item.iconColor,
-                        fontVariationSettings: "'FILL' 0",
-                      }}
-                    >
-                      {item.icon}
-                    </span>
-                  </div>
-
-                  {/* Body */}
-                  <div className="flex-1 min-w-0">
-                    <p
-                      className="text-[13px] font-medium leading-snug mb-1"
-                      style={{ color: isDark ? "rgba(253,255,252,0.9)" : "#0d0a0b" }}
-                    >
-                      {item.description}
-                    </p>
-                    <p className="text-[11px] truncate" style={{ color: metaColor }}>
-                      {item.projectName} · {item.metadata}
-                    </p>
-                  </div>
-
-                  {/* CTA */}
-                  <button
-                    aria-label={`${item.ctaLabel} for ${item.projectName}`}
-                    className="flex-shrink-0 text-[11px] font-semibold px-2.5 py-1 rounded-lg opacity-70 group-hover:opacity-100 transition-opacity duration-150 cursor-pointer"
+                    className="flex items-start gap-3 px-4 py-3 group cursor-pointer transition-colors"
                     style={{
-                      background: `${item.borderColor}15`,
-                      color: item.borderColor,
-                      border: `1px solid ${item.borderColor}28`,
+                      borderLeft: `3px solid ${tone.fg}`,
+                      borderBottom: idx < visible.length - 1 ? `1px solid ${t.divider}` : "none",
                     }}
-                    onClick={(e) => { e.stopPropagation(); router.push(item.ctaHref); }}
+                    onClick={() => router.push(item.ctaHref)}
+                    onMouseEnter={(e) => { e.currentTarget.style.background = t.hover; }}
+                    onMouseLeave={(e) => { e.currentTarget.style.background = "transparent"; }}
                   >
-                    {item.ctaLabel}
-                  </button>
-                </div>
-              </motion.div>
-            ))}
+                    <div
+                      className="w-8 h-8 flex items-center justify-center flex-shrink-0 mt-0.5"
+                      style={{ background: tone.bg, borderRadius: 2 }}
+                    >
+                      <span
+                        className="material-symbols-outlined"
+                        style={{ fontSize: "16px", color: tone.fg, fontVariationSettings: "'FILL' 0" }}
+                      >
+                        {item.icon}
+                      </span>
+                    </div>
+
+                    <div className="flex-1 min-w-0">
+                      <p className="text-[13px] font-medium leading-snug mb-1" style={{ color: t.heading }}>
+                        {item.description}
+                      </p>
+                      <p className="text-[11px] truncate" style={{ color: t.muted }}>
+                        {item.projectName} · {item.metadata}
+                      </p>
+                    </div>
+
+                    <button
+                      type="button"
+                      aria-label={`${item.ctaLabel} for ${item.projectName}`}
+                      className="pw-interactive-custom flex-shrink-0 text-[11px] font-semibold px-2.5 py-1 transition-opacity opacity-80 group-hover:opacity-100"
+                      style={{
+                        background: tone.bg,
+                        color: tone.fg,
+                        border: "none",
+                        borderRadius: 2,
+                        padding: "4px 10px",
+                      }}
+                      onClick={(e) => { e.stopPropagation(); router.push(item.ctaHref); }}
+                    >
+                      {item.ctaLabel}
+                    </button>
+                  </div>
+                </motion.div>
+              );
+            })}
           </AnimatePresence>
 
-          {/* Expand / collapse */}
           {!expanded && hidden > 0 && (
             <button
+              type="button"
+              className="pw-interactive-custom w-full py-3 text-[12px] font-medium transition-opacity hover:opacity-70"
               onClick={() => setExpanded(true)}
-              className="w-full py-3 text-[12px] font-medium transition-opacity duration-150 hover:opacity-70 cursor-pointer"
-              style={{ color: metaColor, borderTop: `1px solid ${itemDivider}` }}
+              style={{
+                color: t.muted,
+                borderTop: `1px solid ${t.divider}`,
+                background: "transparent",
+                borderLeft: "none",
+                borderRight: "none",
+                borderBottom: "none",
+                borderRadius: 0,
+                boxShadow: "none",
+              }}
             >
-              Show {hidden} more →
+              Show {hidden} more
             </button>
           )}
           {expanded && items.length > INITIAL_COUNT && (
             <button
+              type="button"
+              className="pw-interactive-custom w-full py-3 text-[12px] font-medium hover:opacity-70"
               onClick={() => setExpanded(false)}
-              className="w-full py-3 text-[12px] font-medium hover:opacity-70 cursor-pointer"
-              style={{ color: metaColor, borderTop: `1px solid ${itemDivider}` }}
+              style={{
+                color: t.muted,
+                borderTop: `1px solid ${t.divider}`,
+                background: "transparent",
+                borderLeft: "none",
+                borderRight: "none",
+                borderBottom: "none",
+                borderRadius: 0,
+                boxShadow: "none",
+              }}
             >
-              Collapse ↑
+              Show less
             </button>
           )}
         </div>

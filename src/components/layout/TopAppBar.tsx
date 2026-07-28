@@ -65,7 +65,7 @@ export function TopAppBar() {
   const pathname = usePathname();
   const router = useRouter();
   const { user, profile } = useAuth();
-  const { theme } = useTheme();
+  const { theme, toggleTheme } = useTheme();
   const isDark = theme === "dark";
   const [showUserMenu, setShowUserMenu] = useState(false);
   const [searchFocused, setSearchFocused] = useState(false);
@@ -596,10 +596,32 @@ export function TopAppBar() {
 
       {/* Right: Actions */}
       <div className="flex items-center gap-2">
+        {/* Theme toggle */}
+        <button
+          type="button"
+          onClick={toggleTheme}
+          aria-label={`Switch to ${isDark ? "light" : "dark"} mode`}
+          className="p-2 rounded-lg transition-colors duration-200 cursor-pointer"
+          style={{
+            color: isDark ? "rgba(253,255,252,0.75)" : "rgba(55,59,69,0.75)",
+            background: "transparent",
+          }}
+          onMouseEnter={(e) => {
+            e.currentTarget.style.background = isDark ? "rgba(255,255,255,0.06)" : "rgba(69,73,85,0.08)";
+          }}
+          onMouseLeave={(e) => {
+            e.currentTarget.style.background = "transparent";
+          }}
+        >
+          <span className="material-symbols-outlined text-[20px]" style={{ fontVariationSettings: "'FILL' 1" }}>
+            {isDark ? "light_mode" : "dark_mode"}
+          </span>
+        </button>
+
         {/* Mobile search */}
         <button
           className="md:hidden p-2 rounded-lg transition-colors duration-200"
-          style={{ color: 'rgba(255, 255, 255, 0.85)' }}
+          style={{ color: isDark ? "rgba(255, 255, 255, 0.85)" : "rgba(55,59,69,0.85)" }}
         >
           <span className="material-symbols-outlined text-[20px]">search</span>
         </button>

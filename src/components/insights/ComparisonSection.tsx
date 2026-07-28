@@ -3,8 +3,10 @@
 import React, { useState, useMemo } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { useAuth } from '@/context/AuthContext';
+import { useTheme } from '@/lib/utils/ThemeProvider';
 import { PortfolioComparisonChart } from '@/components/Charts/PortfolioComparisonChart';
-import { ChevronDown, ArrowUpDown, TrendingUp, TrendingDown } from 'lucide-react';
+import { ChevronDown, ArrowUpDown } from 'lucide-react';
+import { insightsTokens, panelStyle } from './insightsTheme';
 
 const COMPARE_METRICS = [
   { id: 'cap_rate', name: 'Cap Rate' },
@@ -19,10 +21,11 @@ type MetricId = typeof COMPARE_METRICS[number]['id'];
 
 export function ComparisonSection() {
   const { user } = useAuth();
+  const { theme } = useTheme();
+  const t = insightsTokens(theme === 'dark');
   const [selectedMetric, setSelectedMetric] = useState<MetricId>('cap_rate');
   const [sortOrder, setSortOrder] = useState<'none' | 'asc' | 'desc'>('none');
 
-  // Query financial metrics with project breakdown
   const { data, isLoading, error } = useQuery({
     queryKey: ['insightsComparison', 'financial'],
     queryFn: async () => {
@@ -54,18 +57,15 @@ export function ComparisonSection() {
     enabled: !!user,
   });
 
-  // Calculate portfolio average value for the selected metric
   const averageValue = useMemo(() => {
     if (!data?.metrics) return null;
     const m = data.metrics.find(item => item.id === selectedMetric);
     return m?.value ?? null;
   }, [data, selectedMetric]);
 
-  // Extract and sort comparison data points
   const chartPoints = useMemo(() => {
     if (!data?.projectBreakdowns) return [];
-    
-    // Map breakdown to points
+
     const points = data.projectBreakdowns
       .map(p => {
         const val = p.metrics[selectedMetric];
@@ -75,10 +75,8 @@ export function ComparisonSection() {
           value: val !== undefined && val !== null ? val : null
         };
       })
-      // Filter out projects with missing values
       .filter((p): p is { projectId: string; projectName: string; value: number } => p.value !== null);
 
-    // Apply sort if requested
     if (sortOrder === 'asc') {
       return [...points].sort((a, b) => a.value - b.value);
     } else if (sortOrder === 'desc') {
@@ -98,72 +96,91 @@ export function ComparisonSection() {
   };
 
   return (
-    <div className="bg-white dark:bg-[#121014]/50 border border-slate-200 dark:border-white/10 rounded-2xl p-6 shadow-sm hover:shadow-md transition-shadow duration-300 space-y-6">
-      
-      {/* Header controls */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-100 dark:border-white/5 pb-4">
+    <section className="p-5 space-y-5" style={panelStyle(t)}>
+      <div
+        className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4"
+        style={{ borderBottom: `1px solid ${t.divider}` }}
+      >
         <div>
-          <h2 className="text-lg font-bold text-slate-900 dark:text-white font-outfit tracking-tight">
-            Project Comparison
+          <p className="text-[11px] font-medium tracking-[0.12em] uppercase mb-0.5" style={{ color: t.accent }}>
+            Portfolio
+          </p>
+          <h2 className="text-[1.1rem] font-semibold tracking-tight" style={{ color: t.heading }}>
+            Project comparison
           </h2>
-          <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">
-            Compare active real estate projects. Highlighting top 3 in green, bottom 3 in red.
+          <p className="text-xs mt-1" style={{ color: t.muted }}>
+            Compare deals side by side. Top performers and laggards use status color.
           </p>
         </div>
 
         <div className="flex items-center gap-2">
-          {/* Sort Button */}
           <button
+            type="button"
+            className="pw-interactive-custom flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold"
             onClick={toggleSort}
-            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg border text-xs font-semibold tracking-wide transition-all duration-200 active:scale-98 cursor-pointer ${
-              sortOrder !== 'none'
-                ? 'bg-slate-100 dark:bg-white/10 border-slate-300 dark:border-white/20 text-slate-900 dark:text-white'
-                : 'bg-white dark:bg-white/5 border-slate-200 dark:border-white/10 text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-white/10'
-            }`}
             title="Sort projects by value"
+            style={{
+              background: sortOrder !== 'none' ? t.accentMuted : 'transparent',
+              color: sortOrder !== 'none' ? t.accent : t.muted,
+              border: `1px solid ${t.border}`,
+              borderRadius: 2,
+              padding: '6px 12px',
+            }}
           >
             <ArrowUpDown className="w-3.5 h-3.5" />
             Sort: {sortOrder === 'none' ? 'Default' : sortOrder === 'asc' ? 'Low to High' : 'High to Low'}
           </button>
 
-          {/* Metric Selector Dropdown */}
           <div className="relative">
             <select
               value={selectedMetric}
               onChange={(e) => setSelectedMetric(e.target.value as MetricId)}
-              className="appearance-none bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-lg py-1.5 pl-3 pr-8 text-xs font-semibold text-slate-800 dark:text-slate-200 focus:outline-none focus:ring-1 focus:ring-emerald-500 cursor-pointer"
+              className="appearance-none py-1.5 pl-3 pr-8 text-xs font-semibold outline-none cursor-pointer"
+              style={{
+                background: t.inputBg,
+                border: `1px solid ${t.border}`,
+                color: t.heading,
+                borderRadius: 2,
+              }}
             >
               {COMPARE_METRICS.map((opt) => (
-                <option key={opt.id} value={opt.id} className="dark:bg-slate-950">
+                <option key={opt.id} value={opt.id}>
                   {opt.name}
                 </option>
               ))}
             </select>
-            <ChevronDown className="w-3.5 h-3.5 absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none" />
+            <ChevronDown className="w-3.5 h-3.5 absolute right-2.5 top-1/2 -translate-y-1/2 pointer-events-none" style={{ color: t.muted }} />
           </div>
         </div>
       </div>
 
-      {/* Comparison Chart Container */}
       {isLoading ? (
-        <div className="h-[320px] w-full flex flex-col justify-end space-y-2 animate-pulse bg-slate-50/50 dark:bg-white/[0.01] border border-dashed border-slate-200 dark:border-white/5 rounded-2xl p-4">
+        <div
+          className="h-[320px] w-full flex flex-col justify-end space-y-2 animate-pulse p-4"
+          style={{ border: `1px dashed ${t.border}`, borderRadius: 2, background: t.hover }}
+        >
           <div className="flex justify-between items-end h-full w-full gap-4 px-4">
             {[...Array(6)].map((_, i) => (
-              <div 
-                key={i} 
-                className="bg-slate-200 dark:bg-white/10 rounded-t w-full" 
-                style={{ height: `${30 + Math.cos(i * 1.5) * 40}%` }}
+              <div
+                key={i}
+                className="rounded-t w-full"
+                style={{ height: `${30 + Math.cos(i * 1.5) * 40}%`, background: t.divider }}
               />
             ))}
           </div>
-          <div className="h-4 bg-slate-200 dark:bg-white/10 rounded w-1/4 mx-auto" />
         </div>
       ) : error ? (
-        <div className="h-[320px] w-full flex items-center justify-center border border-dashed border-rose-200 dark:border-rose-500/20 bg-rose-500/5 rounded-2xl text-rose-500 text-xs font-medium px-4 text-center">
+        <div
+          className="h-[320px] w-full flex items-center justify-center text-xs font-medium px-4 text-center"
+          style={{ border: `1px dashed ${t.alert}`, background: t.alertMuted, color: t.alert, borderRadius: 2 }}
+        >
           Failed to load portfolio comparison data. Please check your network.
         </div>
       ) : chartPoints.length === 0 ? (
-        <div className="h-[320px] w-full flex flex-col items-center justify-center border border-dashed border-slate-200 dark:border-white/10 rounded-2xl text-slate-400 dark:text-slate-500 text-xs font-medium p-4 text-center">
+        <div
+          className="h-[320px] w-full flex flex-col items-center justify-center text-xs font-medium p-4 text-center"
+          style={{ border: `1px dashed ${t.border}`, color: t.muted, borderRadius: 2 }}
+        >
           No comparison points available. Ensure projects have valid financial records.
         </div>
       ) : (
@@ -174,6 +191,6 @@ export function ComparisonSection() {
           height={320}
         />
       )}
-    </div>
+    </section>
   );
 }

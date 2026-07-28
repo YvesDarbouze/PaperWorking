@@ -266,42 +266,136 @@ export default function DealMap({
     };
   }, [mapLoaded, mapPins, center, zoom, router]);
 
+  // Preview pins: real deal pins when available, otherwise seeded US markets
+  const previewPins = React.useMemo(() => {
+    const real = mapPins.filter((p) => !p.isCustom);
+    if (real.length > 0) return real;
+    return MOCK_PREVIEW_PINS;
+  }, [mapPins]);
+
   if (loadError) {
     return (
-      <div className="w-full h-[500px] glass-card border border-red-500/20 rounded-2xl flex flex-col items-center justify-center gap-3 text-center px-4">
-        <span className="material-symbols-outlined text-3xl text-red-400">error</span>
-        <p className="text-sm font-bold text-[var(--color-on-surface)]">Map Loading Failed</p>
-        <p className="text-xs text-[var(--color-muted)] max-w-sm">
-          Unable to load the Google Maps API. Please check your network connection and verify key restrictions.
-        </p>
-      </div>
+      <MockMapPreview
+        pins={previewPins}
+        usingSeedData={mapPins.filter((p) => !p.isCustom).length === 0}
+      />
     );
   }
 
   if (!mapLoaded) {
     return (
-      <div className="w-full h-[500px] glass-card border border-pw-border rounded-2xl flex flex-col items-center justify-center gap-3">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[var(--color-primary)]"></div>
-        <p className="text-xs text-[var(--color-muted)]">Loading Marketplace Map...</p>
+      <div className="w-full h-full min-h-[200px] rounded-[2px] flex flex-col items-center justify-center gap-3 bg-[#121014] border border-white/5">
+        <div className="animate-spin rounded-full h-7 w-7 border-b-2 border-[#C4A574]" />
+        <p className="text-xs text-[var(--color-muted)]">Loading map…</p>
       </div>
     );
   }
 
   return (
-    <div className="relative w-full h-[500px] rounded-2xl overflow-hidden border border-pw-border bg-[#121014]">
-      {/* Google Map Canvas */}
-      <div ref={mapRef} className="w-full h-full" />
+    <div className="relative w-full h-full min-h-[200px] rounded-[2px] overflow-hidden border border-white/5 bg-[#121014]">
+      <div ref={mapRef} className="w-full h-full min-h-[200px]" />
 
-      {/* Floating Honest Count Badge */}
       {mapPins.filter(p => !p.isCustom).length > 0 && (
-        <div className="absolute top-4 right-4 z-10 glass-card px-3 py-1.5 rounded-lg border border-pw-border text-[11px] font-bold tracking-wider text-[var(--color-primary)] bg-[#121014]/80 backdrop-blur-md shadow-md">
+        <div className="absolute top-3 right-3 z-10 px-2.5 py-1 rounded-[2px] border border-white/10 text-[10px] font-semibold tracking-wider text-[#C4A574] bg-[#121014]/85 backdrop-blur-md">
           {mapPins.filter(p => !p.isCustom).length} {mapPins.filter(p => !p.isCustom).length === 1 ? 'DEAL' : 'DEALS'} SHOWN
         </div>
       )}
 
-      {/* Google attribution — ToS Section 3.2.3 */}
-      <div className="absolute bottom-3 left-4 z-10">
+      <div className="absolute bottom-3 left-3 z-10">
         <GoogleAttribution variant="light" />
+      </div>
+    </div>
+  );
+}
+
+/** Rough continental US projection for static preview (lng −125…−66, lat 24…50). */
+function toPreviewXY(lat: number, lng: number) {
+  const x = ((lng + 125) / (125 - 66)) * 100;
+  const y = ((50 - lat) / (50 - 24)) * 100;
+  return {
+    x: Math.min(92, Math.max(8, x)),
+    y: Math.min(88, Math.max(12, y)),
+  };
+}
+
+const MOCK_PREVIEW_PINS: MapPinData[] = [
+  { id: 'mock-mem', lat: 35.15, lng: -90.05, title: 'Memphis Core', subtitle: 'Memphis, TN', count: 2 },
+  { id: 'mock-chi', lat: 41.85, lng: -87.65, title: 'Chicago South', subtitle: 'Chicago, IL', count: 1 },
+  { id: 'mock-atl', lat: 33.75, lng: -84.39, title: 'Atlanta Metro', subtitle: 'Atlanta, GA', count: 1 },
+  { id: 'mock-ind', lat: 39.77, lng: -86.16, title: 'Indy Suburbs', subtitle: 'Indianapolis, IN', count: 1 },
+  { id: 'mock-dal', lat: 32.78, lng: -96.80, title: 'Dallas North', subtitle: 'Dallas, TX', count: 1 },
+];
+
+function MockMapPreview({
+  pins,
+  usingSeedData,
+}: {
+  pins: MapPinData[];
+  usingSeedData: boolean;
+}) {
+  return (
+    <div
+      className="relative w-full h-full min-h-[200px] overflow-hidden rounded-[2px] border border-white/8"
+      style={{
+        background:
+          'radial-gradient(ellipse 80% 60% at 50% 40%, #1a1c24 0%, #101117 70%, #0a0b0e 100%)',
+      }}
+      aria-label="Deal map preview"
+    >
+      {/* Subtle land silhouette */}
+      <svg
+        className="absolute inset-0 w-full h-full opacity-40"
+        viewBox="0 0 100 100"
+        preserveAspectRatio="none"
+        aria-hidden
+      >
+        <defs>
+          <pattern id="cc-map-grid" width="8" height="8" patternUnits="userSpaceOnUse">
+            <path d="M 8 0 L 0 0 0 8" fill="none" stroke="rgba(196,165,116,0.08)" strokeWidth="0.3" />
+          </pattern>
+        </defs>
+        <rect width="100" height="100" fill="url(#cc-map-grid)" />
+        <path
+          d="M12,62 C18,48 28,38 38,42 C48,28 58,30 68,36 C78,32 86,40 90,52 C88,68 78,78 62,80 C48,86 32,78 22,72 C16,68 12,66 12,62 Z"
+          fill="rgba(196,165,116,0.06)"
+          stroke="rgba(196,165,116,0.18)"
+          strokeWidth="0.4"
+        />
+      </svg>
+
+      {pins.map((p) => {
+        const { x, y } = toPreviewXY(p.lat, p.lng);
+        return (
+          <div
+            key={p.id}
+            className="absolute z-[1] -translate-x-1/2 -translate-y-1/2 group"
+            style={{ left: `${x}%`, top: `${y}%` }}
+            title={`${p.title} · ${p.subtitle}`}
+          >
+            <span
+              className="block w-2.5 h-2.5 rounded-full border border-[#F3F1EC]/80 shadow-[0_0_0_4px_rgba(196,165,116,0.2)]"
+              style={{ background: '#C4A574' }}
+            />
+            <span className="pointer-events-none absolute left-1/2 top-full mt-1.5 -translate-x-1/2 whitespace-nowrap rounded-[2px] bg-[#0A0B0E]/90 px-1.5 py-0.5 text-[9px] text-[#F3F1EC]/85 opacity-0 transition-opacity group-hover:opacity-100 border border-white/10">
+              {p.title}
+            </span>
+          </div>
+        );
+      })}
+
+      <div className="absolute top-3 left-3 z-[2] flex flex-col gap-1">
+        <span className="inline-flex w-fit items-center gap-1.5 rounded-[2px] border border-[#C4A574]/25 bg-[#0A0B0E]/75 px-2 py-1 text-[10px] font-medium tracking-wide text-[#C4A574]">
+          Preview map
+        </span>
+        <span className="text-[10px] text-[#9C9890] max-w-[180px] leading-snug">
+          {usingSeedData
+            ? 'Sample markets — real pins appear when deals have coordinates.'
+            : 'Showing your deals. Add a Maps API key for the live Google map.'}
+        </span>
+      </div>
+
+      <div className="absolute top-3 right-3 z-[2] rounded-[2px] border border-white/10 bg-[#0A0B0E]/75 px-2.5 py-1 text-[10px] font-semibold tracking-wider text-[#C4A574]">
+        {pins.length} {pins.length === 1 ? 'MARKET' : 'MARKETS'}
       </div>
     </div>
   );

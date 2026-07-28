@@ -1,19 +1,17 @@
 'use client';
 
-import React, { useCallback, useEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { Send, ArrowLeft } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useAuth } from '@/context/AuthContext';
 import type { InboxThread, InboxMessage } from '@/hooks/useInboxThreads';
+import { useTheme } from '@/lib/utils/ThemeProvider';
+import { inboxTokens } from './inboxTheme';
 
 /* ═══════════════════════════════════════════════════════
    ThreadDetail — Right-pane message view with inline reply
    ═══════════════════════════════════════════════════════ */
 
-/* ── Thread-level MoreMenu ─────────────────────────────
-   Renders a ⋮ button that opens a small dropdown with
-   real actions. Actions must have an onClick handler.
-   ────────────────────────────────────────────────────── */
 interface MoreMenuProps {
   onMarkUnread?: () => void;
 }
@@ -21,8 +19,9 @@ interface MoreMenuProps {
 function ThreadMoreMenu({ onMarkUnread }: MoreMenuProps) {
   const [open, setOpen] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
+  const { theme } = useTheme();
+  const t = inboxTokens(theme === 'dark');
 
-  // Close on outside click
   useEffect(() => {
     if (!open) return;
     const handler = (e: MouseEvent) => {
@@ -39,7 +38,8 @@ function ThreadMoreMenu({ onMarkUnread }: MoreMenuProps) {
       <button
         id="thread-more-menu-trigger"
         onClick={() => setOpen((v) => !v)}
-        className="p-2 rounded-lg hover:bg-white/5 text-[#9E9DA0] transition-colors"
+        className="p-2 transition-colors"
+        style={{ color: t.muted, borderRadius: 2 }}
         aria-label="Thread actions"
         aria-expanded={open}
         aria-haspopup="true"
@@ -51,20 +51,27 @@ function ThreadMoreMenu({ onMarkUnread }: MoreMenuProps) {
         <div
           id="thread-more-menu"
           role="menu"
-          className="absolute right-0 top-full mt-1 w-48 rounded-xl border border-white/10 bg-[#161318] shadow-[0_8px_32px_-4px_rgba(0,0,0,0.6)] z-50 py-1 overflow-hidden"
+          className="absolute right-0 top-full mt-1 w-48 z-50 py-1 overflow-hidden"
+          style={{
+            background: t.menuBg,
+            border: `1px solid ${t.border}`,
+            borderRadius: 2,
+            boxShadow: t.elevShadow,
+          }}
         >
           {onMarkUnread ? (
             <button
               id="thread-menu-mark-unread"
               role="menuitem"
               onClick={() => { onMarkUnread(); setOpen(false); }}
-              className="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-[#9E9DA0] hover:bg-white/5 hover:text-white transition-colors text-left"
+              className="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-left transition-colors"
+              style={{ color: t.body }}
             >
               <span className="material-symbols-outlined text-base" style={{ fontVariationSettings: "'FILL' 0" }}>mark_email_unread</span>
               Mark as Unread
             </button>
           ) : (
-            <p className="px-4 py-2.5 text-xs text-[#9E9DA0]/40 select-none">No actions available</p>
+            <p className="px-4 py-2.5 text-xs select-none" style={{ color: t.muted }}>No actions available</p>
           )}
         </div>
       )}
@@ -77,39 +84,43 @@ interface ThreadDetailProps {
   projectName?: string;
   onSendReply: (body: string) => Promise<void>;
   onBack?: () => void;
-  /** Called when the user selects "Mark as Unread" from the ⋮ menu. */
   onMarkThreadUnread?: () => void;
 }
 
 function MessageBubble({ message, isMe }: { message: InboxMessage; isMe: boolean }) {
+  const { theme } = useTheme();
+  const t = inboxTokens(theme === 'dark');
   const typeBadge = message.type === 'EMAIL_INBOUND'
-    ? { label: 'Email', color: '#9E9DA0' }
+    ? 'Email'
     : message.type === 'EMAIL_OUTBOUND'
-    ? { label: 'Sent', color: '#454955' }
+    ? 'Sent'
     : null;
 
   return (
     <motion.div
-      initial={{ opacity: 0, y: 10 }}
+      initial={{ opacity: 0, y: 6 }}
       animate={{ opacity: 1, y: 0 }}
       className={`flex ${isMe ? 'justify-end' : 'justify-start'}`}
     >
-      <div className={`max-w-[70%] flex flex-col ${isMe ? 'items-end' : 'items-start'}`}>
-        {/* Sender + Time */}
-        <div className="flex items-center gap-2 mb-1 px-1">
-          <span className="text-xs font-bold text-[#9E9DA0]">
+      <div className={`max-w-[72%] flex flex-col ${isMe ? 'items-end' : 'items-start'}`}>
+        <div className="flex items-center gap-2 mb-1 px-0.5">
+          <span className="text-xs font-semibold" style={{ color: t.heading }}>
             {isMe ? 'You' : message.senderName}
           </span>
           {typeBadge && (
             <span
-              className={`text-[10px] font-mono uppercase tracking-wider px-1.5 py-0.5 rounded-md border ${
-                isMe ? 'text-[#454955] border-[#454955]/30 bg-[#454955]/10' : 'text-[#9E9DA0] border-white/10 bg-white/5'
-              }`}
+              className="text-[10px] font-medium uppercase tracking-wider px-1.5 py-0.5"
+              style={{
+                borderRadius: 2,
+                color: t.muted,
+                background: t.hover,
+                border: `1px solid ${t.border}`,
+              }}
             >
-              {typeBadge.label}
+              {typeBadge}
             </span>
           )}
-          <span className="text-xs font-medium text-[#9E9DA0]">
+          <span className="text-[11px] tabular-nums" style={{ color: t.muted }}>
             {message.createdAt.toLocaleTimeString('en-US', {
               hour: 'numeric',
               minute: '2-digit',
@@ -117,13 +128,14 @@ function MessageBubble({ message, isMe }: { message: InboxMessage; isMe: boolean
           </span>
         </div>
 
-        {/* Bubble */}
         <div
-          className={`px-5 py-3.5 text-sm leading-relaxed whitespace-pre-wrap backdrop-blur-md border ${
-            isMe
-              ? 'rounded-2xl rounded-tr-sm bg-[#454955]/10 border-[#454955]/20 text-[#9E9DA0] shadow-[inset_1px_1px_0px_rgba(69,73,85,0.1)]'
-              : 'rounded-2xl rounded-tl-sm bg-[#161318]/80 border-white/10 text-[#9E9DA0] shadow-[inset_1px_1px_0px_rgba(255,255,255,0.05)]'
-          }`}
+          className="px-4 py-3 text-sm leading-relaxed whitespace-pre-wrap"
+          style={{
+            borderRadius: 2,
+            background: isMe ? t.accentMuted : t.surface,
+            border: `1px solid ${isMe ? t.accentMuted : t.border}`,
+            color: t.body,
+          }}
         >
           {message.body}
         </div>
@@ -134,11 +146,12 @@ function MessageBubble({ message, isMe }: { message: InboxMessage; isMe: boolean
 
 export default function ThreadDetail({ thread, projectName, onSendReply, onBack, onMarkThreadUnread }: ThreadDetailProps) {
   const { user } = useAuth();
+  const { theme } = useTheme();
+  const t = inboxTokens(theme === 'dark');
   const [replyText, setReplyText] = useState('');
   const [sending, setSending] = useState(false);
   const scrollRef = useRef<HTMLDivElement>(null);
 
-  // Auto-scroll to bottom on new messages
   useEffect(() => {
     if (scrollRef.current) {
       scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
@@ -167,49 +180,58 @@ export default function ThreadDetail({ thread, projectName, onSendReply, onBack,
     }
   };
 
-  // Sort messages oldest first for display
   const sortedMessages = [...thread.messages].sort(
     (a, b) => a.createdAt.getTime() - b.createdAt.getTime(),
   );
 
-  // Clean subject line (remove tracking token)
   const displaySubject = thread.lastMessage.subject
     ?.replace(/\s*\[ref:deal_[^\]]+\]/g, '')
     || projectName
     || 'Conversation';
 
   return (
-    <div className="flex-1 overflow-hidden z-10 flex flex-col bg-transparent">
-      {/* Header Actions */}
-      <div className="px-8 py-6 flex items-center justify-between border-b border-white/10 shrink-0 bg-[#0d0a0b]/50 backdrop-blur-sm">
-        <div className="flex items-center gap-4">
+    <div className="flex-1 overflow-hidden z-10 flex flex-col min-h-0">
+      <div
+        className="px-5 sm:px-8 py-4 flex items-center justify-between shrink-0 gap-3"
+        style={{ borderBottom: `1px solid ${t.border}`, background: t.listBg }}
+      >
+        <div className="flex items-center gap-3 min-w-0">
           {onBack && (
-            <button onClick={onBack} className="md:hidden p-2 -ml-2 rounded-lg hover:bg-white/5 text-[#9E9DA0] transition-colors">
+            <button
+              onClick={onBack}
+              className="md:hidden p-2 -ml-2 transition-colors"
+              style={{ color: t.muted, borderRadius: 2 }}
+            >
               <ArrowLeft className="w-5 h-5" />
             </button>
           )}
-          <div className="h-12 w-12 rounded-xl bg-[#0d0a0b]/60 backdrop-blur-xl border border-[#454955]/30 shadow-[inset_1px_1px_0px_rgba(69,73,85,0.1),0_0_15px_rgba(69,73,85,0.15)] flex items-center justify-center text-[#454955] font-bold text-lg">
+          <div
+            className="h-10 w-10 flex items-center justify-center text-sm font-semibold shrink-0"
+            style={{
+              background: t.accentMuted,
+              color: t.accent,
+              border: `1px solid ${t.border}`,
+              borderRadius: 2,
+            }}
+          >
             {(thread.lastMessage.senderName?.[0] || 'P').toUpperCase()}
           </div>
-          <div>
-            <h3 className="text-xl font-bold text-[#9E9DA0]">{displaySubject}</h3>
-            <p className="text-[10px] font-mono text-[#9E9DA0] uppercase flex items-center gap-2 mt-0.5">
-              <span>{thread.participantNames.slice(0, 3).join(', ')}</span>
+          <div className="min-w-0">
+            <h3 className="text-lg font-semibold truncate" style={{ color: t.heading }}>{displaySubject}</h3>
+            <p className="text-[11px] flex items-center gap-1.5 mt-0.5 truncate" style={{ color: t.muted }}>
+              <span className="truncate">{thread.participantNames.slice(0, 3).join(', ')}</span>
               {thread.participantNames.length > 3 && <span>(+{thread.participantNames.length - 3})</span>}
-              <span className="text-[#454955]">•</span>
-              <span>{thread.messages.length} message{thread.messages.length !== 1 && 's'}</span>
+              <span aria-hidden>·</span>
+              <span className="shrink-0">{thread.messages.length} message{thread.messages.length !== 1 && 's'}</span>
             </p>
           </div>
         </div>
-        <div className="flex gap-2">
-          <ThreadMoreMenu onMarkUnread={onMarkThreadUnread} />
-        </div>
+        <ThreadMoreMenu onMarkUnread={onMarkThreadUnread} />
       </div>
 
-      {/* Messages */}
       <div
         ref={scrollRef}
-        className="flex-1 overflow-y-auto p-8 space-y-6"
+        className="flex-1 overflow-y-auto p-5 sm:p-8 space-y-5"
       >
         <AnimatePresence>
           {sortedMessages.map((msg) => (
@@ -222,26 +244,35 @@ export default function ThreadDetail({ thread, projectName, onSendReply, onBack,
         </AnimatePresence>
       </div>
 
-      {/* Reply Area */}
-      <footer className="p-6 border-t border-white/10 bg-[#0d0a0b]/50 backdrop-blur-sm shrink-0">
-        <div className="relative max-w-4xl mx-auto">
+      <footer
+        className="p-4 sm:p-5 shrink-0"
+        style={{ borderTop: `1px solid ${t.border}`, background: t.listBg }}
+      >
+        <div className="relative max-w-3xl mx-auto">
           <textarea
             id="inbox-reply-input"
-            placeholder="Type your reply... (⌘+Enter to send)"
+            placeholder="Write a reply… (⌘+Enter to send)"
             value={replyText}
             onChange={(e) => setReplyText(e.target.value)}
             onKeyDown={handleKeyDown}
             disabled={sending}
-            className="w-full h-28 p-4 pr-16 rounded-xl border border-white/10 bg-[#0d0a0b]/80 text-sm resize-none focus:outline-none focus:border-[#454955]/50 transition-colors shadow-[inset_0_2px_10px_rgba(0,0,0,0.5)] text-[#9E9DA0] disabled:opacity-50 placeholder:text-[#9E9DA0]/40"
+            className="w-full h-24 p-3 pr-14 text-sm resize-none outline-none transition-colors disabled:opacity-50"
+            style={{
+              background: t.inputBg,
+              border: `1px solid ${t.border}`,
+              borderRadius: 2,
+              color: t.heading,
+            }}
           />
           <button
             id="inbox-send-reply"
             onClick={handleSend}
             disabled={!replyText.trim() || sending}
-            className="absolute bottom-4 right-4 p-3 rounded-xl bg-[#454955] text-[#0d0a0b] transition-all disabled:opacity-30 disabled:hover:scale-100 hover:scale-105 active:scale-95 luminous-glow flex items-center justify-center"
+            className="absolute bottom-3 right-3 p-2.5 transition-opacity hover:opacity-90 disabled:opacity-30"
+            style={{ background: t.ctaBg, color: t.ctaFg, borderRadius: 2 }}
             aria-label="Send reply"
           >
-            <Send className="w-5 h-5" />
+            <Send className="w-4 h-4" />
           </button>
         </div>
       </footer>

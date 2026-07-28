@@ -5,7 +5,6 @@ import { TopAppBar } from "@/components/layout/TopAppBar";
 import { NotificationProvider } from "@/context/NotificationContext";
 import { OnboardingRedirectGuard } from "@/components/onboarding/OnboardingRedirectGuard";
 import { PaywallRedirectGuard } from "@/components/dashboard/PaywallRedirectGuard";
-import SupportWidget from "@/components/support/SupportWidget";
 import { cookies, headers } from "next/headers";
 import { redirect } from "next/navigation";
 import { adminAuth } from "@/lib/firebase/admin";
@@ -84,9 +83,6 @@ export default async function DashboardLayout({
 
         {/* Bottom Nav (Mobile) */}
         <BottomNav />
-        
-        {/* Support Chat Widget */}
-        <SupportWidget />
       </div>
     </NotificationProvider>
   );

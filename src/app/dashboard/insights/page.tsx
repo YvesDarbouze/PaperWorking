@@ -1,30 +1,29 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, type CSSProperties } from 'react';
 import { useRouter, useSearchParams, usePathname } from 'next/navigation';
 import { useQuery } from '@tanstack/react-query';
 import { useProjectStore } from '@/store/projectStore';
 import { useAuth } from '@/context/AuthContext';
+import { useTheme } from '@/lib/utils/ThemeProvider';
 import { MetricsTable } from '@/components/insights/MetricsTable';
 import { TabNavigation } from '@/components/insights/TabNavigation';
 import { TimeSeriesSection } from '@/components/insights/TimeSeriesSection';
 import { ComparisonSection } from '@/components/insights/ComparisonSection';
 import { MarketOverlaySection } from '@/components/insights/MarketOverlaySection';
 import { ReportGenerator } from '@/components/reports/ReportGenerator';
-import { 
-  TrendingUp, 
-  BarChart3, 
-  Settings, 
-  ShieldCheck, 
-  Users, 
-  Layers, 
-  Folder, 
-  PlusCircle, 
+import {
+  BarChart3,
+  ShieldCheck,
+  Users,
+  Layers,
+  Folder,
+  PlusCircle,
   Activity,
   AlertCircle,
-  HelpCircle
 } from 'lucide-react';
 import toast from 'react-hot-toast';
+import { insightsTokens, panelStyle } from '@/components/insights/insightsTheme';
 
 // Imports referenced in compatibility block to ensure clean compilation
 import { StressTestProvider } from '@/components/insights/RiskStressTester';
@@ -43,36 +42,32 @@ export default function InsightsPage() {
   const pathname = usePathname();
   const searchParams = useSearchParams();
   const { user } = useAuth();
-  
-  // Zustand projects store
+  const { theme } = useTheme();
+  const isDark = theme === 'dark';
+  const t = insightsTokens(isDark);
+
   const projects = useProjectStore((s) => s.projects);
   const currentProject = useProjectStore((s) => s.currentProject);
   const setDeal = useProjectStore((s) => s.setDeal);
 
-  // Scope: 'portfolio' | 'project'
   const [scope, setScope] = useState<'portfolio' | 'project'>('portfolio');
   const [selectedProjectId, setSelectedProjectId] = useState<string>('');
 
-  // Active Tab determined by URL parameter '?tab='
   const activeTab = searchParams.get('tab') || 'financial';
 
-  // Sync state with router when tab is clicked
   const handleTabChange = (tabId: string) => {
     const params = new URLSearchParams(searchParams.toString());
     params.set('tab', tabId);
     router.replace(`${pathname}?${params.toString()}`);
   };
 
-  // Sync project select dropdown with selectedProjectId
   useEffect(() => {
     if (scope === 'project' && projects.length > 0 && !selectedProjectId) {
-      // Default to currentProject if present, else first project in list
       const initialId = currentProject?.id || projects[0].id;
       setSelectedProjectId(initialId);
     }
   }, [scope, projects, currentProject, selectedProjectId]);
 
-  // Query calculated metrics from our API endpoint
   const { data, isLoading, error } = useQuery({
     queryKey: ['insightsMetrics', activeTab, selectedProjectId, scope],
     queryFn: async () => {
@@ -80,7 +75,7 @@ export default function InsightsPage() {
       const token = await user.getIdToken();
       const url = new URL('/api/insights/metrics', window.location.origin);
       url.searchParams.set('category', activeTab);
-      
+
       if (scope === 'project' && selectedProjectId) {
         url.searchParams.set('projectId', selectedProjectId);
       } else {
@@ -109,113 +104,146 @@ export default function InsightsPage() {
     toast.success('Navigate to settings to link your Plaid bank account');
   };
 
-  // Handle empty state: no projects in portfolio
   const hasProjects = projects.length > 0;
 
+  const controlStyle: CSSProperties = {
+    background: t.inputBg,
+    border: `1px solid ${t.border}`,
+    color: t.heading,
+    borderRadius: 2,
+  };
+
   return (
-    <div className="min-h-screen py-8 px-6 space-y-8 bg-slate-50 dark:bg-[#121014]/30">
-      
-      {/* ── Header Area ── */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-6 border-b border-slate-200 dark:border-white/5">
+    <div className="min-h-full py-6 px-4 sm:px-6 space-y-8" style={{ background: t.pageBg, color: t.body }}>
+      <header className="flex flex-col md:flex-row md:items-end justify-between gap-4 pb-5" style={{ borderBottom: `1px solid ${t.divider}` }}>
         <div>
-          <h1 className="text-3xl font-bold tracking-tight text-slate-900 dark:text-white font-outfit">
+          <p className="text-[11px] font-medium tracking-[0.14em] uppercase mb-1" style={{ color: t.accent }}>
+            Analytics
+          </p>
+          <h1 className="text-[1.75rem] font-semibold tracking-tight" style={{ color: t.heading }}>
             Insights
           </h1>
-          <p className="text-sm text-slate-500 dark:text-slate-400 mt-1.5 leading-relaxed">
-            Real-time calculations, portfolio aggregation, and regulatory compliance benchmarks.
+          <p className="text-sm mt-1.5 leading-relaxed max-w-xl" style={{ color: t.muted }}>
+            Portfolio metrics, trends, and benchmarks to support underwriting decisions.
           </p>
         </div>
 
-        {/* ── Scope Toggle & Dropdown & Report Generator ── */}
         {hasProjects && (
-          <div className="flex flex-wrap items-center gap-3">
-            <div className="flex flex-wrap items-center gap-3 bg-white dark:bg-white/[0.02] border border-slate-200 dark:border-white/10 p-1.5 rounded-xl backdrop-blur-md">
-              <div className="flex rounded-lg overflow-hidden bg-slate-100 dark:bg-white/5 p-0.5">
-                <button
-                  onClick={() => setScope('portfolio')}
-                  className={`px-3 py-1.5 rounded-md text-xs font-semibold tracking-wide transition-all duration-200 ${
-                    scope === 'portfolio'
-                      ? 'bg-white dark:bg-white/10 text-slate-900 dark:text-white shadow-sm'
-                      : 'text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200'
-                  }`}
-                >
-                  Portfolio
-                </button>
-                <button
-                  onClick={() => setScope('project')}
-                  className={`px-3 py-1.5 rounded-md text-xs font-semibold tracking-wide transition-all duration-200 ${
-                    scope === 'project'
-                      ? 'bg-white dark:bg-white/10 text-slate-900 dark:text-white shadow-sm'
-                      : 'text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200'
-                  }`}
-                >
-                  Project
-                </button>
+          <div className="flex flex-wrap items-center gap-2">
+            <div
+              className="flex flex-wrap items-center gap-2 p-1"
+              style={{ ...panelStyle(t), padding: 4 }}
+            >
+              <div
+                className="flex overflow-hidden p-0.5"
+                style={{ background: t.surfaceMuted, borderRadius: 2 }}
+              >
+                {([
+                  { id: 'portfolio' as const, label: 'Portfolio' },
+                  { id: 'project' as const, label: 'Project' },
+                ]).map((opt) => {
+                  const active = scope === opt.id;
+                  return (
+                    <button
+                      key={opt.id}
+                      type="button"
+                      className="pw-interactive-custom px-3 py-1.5 text-xs font-semibold transition-colors"
+                      onClick={() => setScope(opt.id)}
+                      style={{
+                        background: active ? t.surface : 'transparent',
+                        color: active ? t.heading : t.muted,
+                        border: 'none',
+                        borderRadius: 2,
+                        padding: '6px 12px',
+                        boxShadow: active ? t.shadow : 'none',
+                      }}
+                    >
+                      {opt.label}
+                    </button>
+                  );
+                })}
               </div>
 
               {scope === 'project' && (
-                <div className="relative">
-                  <select
-                    value={selectedProjectId}
-                    onChange={(e) => {
-                      setSelectedProjectId(e.target.value);
-                      const selectedProj = projects.find(p => p.id === e.target.value);
-                      if (selectedProj) {
-                        setDeal(selectedProj);
-                      }
-                    }}
-                    className="appearance-none bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-lg py-1.5 pl-3 pr-10 text-xs font-medium text-slate-800 dark:text-slate-200 focus:outline-none focus:ring-1 focus:ring-emerald-500"
-                  >
-                    {projects.map((proj) => (
-                      <option key={proj.id} value={proj.id} className="dark:bg-slate-950">
-                        {proj.propertyName || proj.name || 'Unnamed Project'}
-                      </option>
-                    ))}
-                  </select>
-                  <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-slate-500">
-                    <svg className="fill-current h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
-                      <path d="M9.293 12.95l.707.707L15.657 8l-1.414-1.414L10 10.828 5.757 6.586 4.343 8z"/>
-                    </svg>
-                  </div>
-                </div>
+                <select
+                  value={selectedProjectId}
+                  onChange={(e) => {
+                    setSelectedProjectId(e.target.value);
+                    const selectedProj = projects.find(p => p.id === e.target.value);
+                    if (selectedProj) {
+                      setDeal(selectedProj);
+                    }
+                  }}
+                  className="appearance-none py-1.5 pl-3 pr-8 text-xs font-medium outline-none"
+                  style={controlStyle}
+                >
+                  {projects.map((proj) => (
+                    <option key={proj.id} value={proj.id}>
+                      {proj.propertyName || proj.name || 'Unnamed Project'}
+                    </option>
+                  ))}
+                </select>
               )}
             </div>
-            
+
             <ReportGenerator projectId={scope === 'project' ? selectedProjectId : null} />
           </div>
         )}
-      </div>
+      </header>
 
       {!hasProjects ? (
-        /* ── Zero-Projects Empty State ── */
-        <div className="flex flex-col items-center justify-center p-16 border border-dashed border-slate-200 dark:border-white/10 rounded-2xl bg-white dark:bg-white/[0.01] backdrop-blur-md text-center max-w-xl mx-auto my-12 shadow-sm">
-          <div className="w-16 h-16 rounded-full bg-emerald-500/10 flex items-center justify-center mb-6">
-            <Folder className="w-8 h-8 text-emerald-600" />
+        <div
+          className="flex flex-col items-center justify-center p-12 text-center max-w-xl mx-auto my-10"
+          style={{
+            ...panelStyle(t),
+            borderStyle: 'dashed',
+          }}
+        >
+          <div
+            className="w-14 h-14 flex items-center justify-center mb-5"
+            style={{
+              background: isDark ? t.accentMuted : '#14161C',
+              color: isDark ? t.accent : '#F5F6F8',
+              borderRadius: 2,
+            }}
+          >
+            <Folder className="w-7 h-7" strokeWidth={1.75} />
           </div>
-          <h1 className="text-xl font-bold text-slate-900 dark:text-white mb-2">Assemble Your Portfolio</h1>
-          <p className="text-sm text-slate-500 dark:text-slate-400 mb-8 max-w-md leading-relaxed">
-            Create or sync real estate investment projects in your dashboard workspace to unlock calculations, pro forma analytics, and thesis operational metrics reporting.
+          <h2 className="text-xl font-semibold mb-2" style={{ color: t.heading }}>
+            Assemble your portfolio
+          </h2>
+          <p className="text-sm mb-7 max-w-md leading-relaxed" style={{ color: t.muted }}>
+            Add projects to unlock calculations, trends, and operational metrics.
           </p>
-          <div className="flex items-center gap-4">
+          <div className="flex flex-wrap items-center justify-center gap-2">
             <a
               href="/dashboard/projects/new"
-              className="flex items-center gap-2 px-6 py-3 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white font-semibold text-sm transition-all duration-200 shadow-md hover:shadow-emerald-900/15 active:scale-98"
+              className="inline-flex items-center gap-2 px-5 py-2.5 text-sm font-semibold transition-opacity hover:opacity-90"
+              style={{
+                background: t.ctaBg,
+                color: t.ctaFg,
+                borderRadius: 2,
+              }}
             >
               <PlusCircle className="w-4 h-4" />
-              Add a Project
+              Add a project
             </a>
             <a
               href="/dashboard/projects"
-              className="flex items-center gap-2 px-6 py-3 rounded-lg bg-white/5 border border-slate-200 dark:border-white/10 hover:bg-slate-100 dark:hover:bg-white/10 text-slate-800 dark:text-white font-semibold text-sm transition-all duration-200 active:scale-98"
+              className="inline-flex items-center gap-2 px-5 py-2.5 text-sm font-semibold transition-colors"
+              style={{
+                background: 'transparent',
+                color: t.heading,
+                border: `1px solid ${t.border}`,
+                borderRadius: 2,
+              }}
             >
-              View Projects
+              View projects
             </a>
           </div>
         </div>
       ) : (
-        /* ── Active Dashboard Layout ── */
-        <div className="space-y-10">
-          {/* ── Visual Charts Layer ── */}
+        <div className="space-y-8">
           <TimeSeriesSection projectId={scope === 'project' ? selectedProjectId : null} />
 
           <div className="grid grid-cols-1 gap-6">
@@ -226,32 +254,40 @@ export default function InsightsPage() {
             )}
           </div>
 
-          <div className="space-y-6">
-            {/* ── Horizontal Navigation Pills ── */}
-            <TabNavigation 
-              categories={CATEGORIES} 
-              activeTab={activeTab} 
-              onTabChange={handleTabChange} 
+          <div className="space-y-4">
+            <TabNavigation
+              categories={CATEGORIES}
+              activeTab={activeTab}
+              onTabChange={handleTabChange}
             />
 
-          {/* ── Metrics Table View ── */}
-          <div className="space-y-4">
-            {error ? (
-              <div className="p-6 border border-rose-200/50 dark:border-rose-500/20 bg-rose-500/5 dark:bg-rose-500/5 rounded-xl flex items-center gap-3 text-rose-600 dark:text-rose-400">
-                <AlertCircle className="w-5 h-5 flex-shrink-0" />
-                <span className="text-sm font-medium">Failed to calculate metrics: {(error as any).message}</span>
-              </div>
-            ) : (
-              <MetricsTable 
-                metrics={metricsList}
-                isLoading={isLoading}
-                hasLinkedBank={hasLinkedBank}
-                onConnectBank={handleConnectBank}
-              />
-            )}
+            <div className="space-y-4">
+              {error ? (
+                <div
+                  className="p-4 flex items-center gap-3"
+                  style={{
+                    ...panelStyle(t),
+                    borderColor: t.alert,
+                    background: t.alertMuted,
+                    color: t.alert,
+                  }}
+                >
+                  <AlertCircle className="w-5 h-5 flex-shrink-0" />
+                  <span className="text-sm font-medium">
+                    Failed to calculate metrics: {(error as any).message}
+                  </span>
+                </div>
+              ) : (
+                <MetricsTable
+                  metrics={metricsList}
+                  isLoading={isLoading}
+                  hasLinkedBank={hasLinkedBank}
+                  onConnectBank={handleConnectBank}
+                />
+              )}
+            </div>
           </div>
         </div>
-      </div>
       )}
     </div>
   );

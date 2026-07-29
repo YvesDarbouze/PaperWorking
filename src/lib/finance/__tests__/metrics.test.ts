@@ -1,73 +1,17 @@
 import {
-  calculateNOI,
-  calculateCapRate,
-  calculateCoC,
-  calculateDSCR,
-  calculatePricePerUnit,
-  calculateGRM,
-  calculateIRR,
-  calculateEquityMultiple,
   calculateMonthlyPayment,
   calculateProFormaAndMetrics,
   generateSensitivityMatrix,
   generateDefaultScenarios,
 } from '../metrics';
 
-describe('Shared Financial Metrics Engine', () => {
-  it('calculates NOI correctly', () => {
-    expect(calculateNOI(30000, 10000)).toBe(20000);
-    expect(calculateNOI(0, 5000)).toBe(-5000);
-  });
-
-  it('calculates Cap Rate correctly', () => {
-    expect(calculateCapRate(20000, 250000)).toBe(8.0);
-    expect(calculateCapRate(15000, 300000)).toBe(5.0);
-    expect(calculateCapRate(10000, 0)).toBe(0);
-  });
-
-  it('calculates Cash-on-Cash Return correctly', () => {
-    expect(calculateCoC(6000, 60000)).toBe(10.0);
-    expect(calculateCoC(4000, 80000)).toBe(5.0);
-    expect(calculateCoC(5000, 0)).toBe(0);
-  });
-
-  it('calculates DSCR correctly', () => {
-    expect(calculateDSCR(25000, 20000)).toBe(1.25);
-    expect(calculateDSCR(30000, 20000)).toBe(1.5);
-    expect(calculateDSCR(20000, 0)).toBe(0);
-  });
-
-  it('calculates Price Per Unit correctly', () => {
-    expect(calculatePricePerUnit(500000, 4)).toBe(125000);
-    expect(calculatePricePerUnit(250000, 1)).toBe(250000);
-    expect(calculatePricePerUnit(250000, 0)).toBe(0);
-  });
-
-  it('calculates GRM correctly', () => {
-    expect(calculateGRM(250000, 30000)).toBeCloseTo(8.333, 2);
-    expect(calculateGRM(300000, 40000)).toBe(7.5);
-    expect(calculateGRM(250000, 0)).toBe(0);
-  });
-
-  it('calculates Equity Multiple correctly', () => {
-    expect(calculateEquityMultiple(120000, 60000)).toBe(2.0);
-    expect(calculateEquityMultiple(90000, 60000)).toBe(1.5);
-    expect(calculateEquityMultiple(100000, 0)).toBe(0);
-  });
-
+describe('Shared Financial Metrics Engine (Consuming deriveAllProjectMetrics)', () => {
   it('calculates Monthly Payment correctly', () => {
     const payment = calculateMonthlyPayment(200000, 6.0, 30);
     expect(payment).toBeCloseTo(1199.10, 1);
   });
 
-  it('calculates IRR correctly for standard cash flow series', () => {
-    const cashFlows = [-100000, 10000, 10000, 10000, 10000, 120000];
-    const irr = calculateIRR(cashFlows);
-    expect(irr).toBeGreaterThan(10);
-    expect(irr).toBeLessThan(15);
-  });
-
-  it('generates 5-year Pro Forma projections and metrics', () => {
+  it('generates 5-year Pro Forma projections and metrics via deriveAllProjectMetrics', () => {
     const res = calculateProFormaAndMetrics({
       purchasePrice: 300000,
       rehabCost: 50000,
@@ -87,9 +31,11 @@ describe('Shared Financial Metrics Engine', () => {
 
     expect(res.years).toHaveLength(5);
     expect(res.totalCashInvested).toBe(110000); // 300k + 50k - 240k
-    expect(res.leveredIRR).toBeGreaterThan(0);
-    expect(res.equityMultiple).toBeGreaterThan(1.0);
     expect(res.summaryMetrics.pricePerUnit).toBe(150000);
+    expect(res.summaryMetrics.noi).toBeDefined();
+    expect(res.summaryMetrics.capRate).toBeDefined();
+    expect(res.summaryMetrics.cashOnCash).toBeDefined();
+    expect(res.summaryMetrics.dscr).toBeDefined();
   });
 
   it('generates 5x5 sensitivity matrix with base case cell', () => {

@@ -1,4 +1,5 @@
-import { computeIRR } from '@/lib/metrics/reiMetrics';
+import { deriveAllProjectMetrics, computeIRR } from '@/lib/metrics/reiMetrics';
+import type { Project } from '@/types/schema';
 
 export interface HoldVsSellInput {
   estimatedCurrentValue: number;
@@ -51,26 +52,37 @@ export function computeHoldVsSellComparison(input: HoldVsSellInput): HoldVsSellR
   const netProceedsSellNow = Math.max(0, grossSellNow - sellNowCosts - sellNowPayoff);
   const equityMultipleSellNow = Number((netProceedsSellNow / initialInvested).toFixed(2));
 
-  // 2. Hold Path (Default 3 Years)
-  const annualGrossRent = (input.monthlyGrossRent || 0) * 12;
-  const annualExpenses = (input.monthlyExpenses || 0) * 12;
-  const annualNOI = Math.max(0, annualGrossRent - annualExpenses);
-  const annualDebtService = input.annualDebtService || 0;
-  const annualCashFlow = annualNOI - annualDebtService;
+  // 2. Hold Path (sourced via deriveAllProjectMetrics engine)
+  const project = {
+    id: 'hold-vs-sell',
+    name: 'Hold vs Sell Analysis',
+    currentPhase: 3,
+    dispositionType: 'RENT',
+    financials: {
+      purchasePrice: input.purchasePrice,
+      monthlyGrossRent: input.monthlyGrossRent,
+      monthlyExpenses: input.monthlyExpenses,
+      estimatedCurrentValue: input.estimatedCurrentValue,
+      annualAppreciationPercent: input.annualAppreciationPercent ?? 3.0,
+      projectedHoldTimeMonths: holdYears * 12,
+    },
+  } as unknown as Project;
+
+  const derived = deriveAllProjectMetrics(project);
+
+  const annualCashFlow = derived.annualCashFlow;
   const cumulativeCashFlow = annualCashFlow * holdYears;
 
   // Terminal value after holdYears of appreciation
   const projectedTerminalValue = grossSellNow * Math.pow(1 + appreciationRate, holdYears);
   const terminalSellingCosts = projectedTerminalValue * (sellingCostPct / 100);
-  // Estimate principal paydown over holdYears (approx 1.5% of loan balance per year)
   const estimatedPaydown = sellNowPayoff * 0.015 * holdYears;
   const terminalMortgagePayoff = Math.max(0, sellNowPayoff - estimatedPaydown);
   const netTerminalProceeds = Math.max(0, projectedTerminalValue - terminalSellingCosts - terminalMortgagePayoff);
 
   const totalHoldNetReturns = cumulativeCashFlow + netTerminalProceeds;
-  const equityMultipleHold = Number((totalHoldNetReturns / initialInvested).toFixed(2));
+  const equityMultipleHold = derived.kpi33?.equityMultiple || Number((totalHoldNetReturns / initialInvested).toFixed(2));
 
-  // IRR Calculation
   const irrCashFlows = [-initialInvested];
   for (let i = 1; i < holdYears; i++) {
     irrCashFlows.push(annualCashFlow);
@@ -84,7 +96,7 @@ export function computeHoldVsSellComparison(input: HoldVsSellInput): HoldVsSellR
       holdIRR = Number((rawIRR * 100).toFixed(1));
     }
   } catch {
-    holdIRR = 0;
+    holdIRR = derived.irr || derived.annualizedIrr || 0;
   }
 
   // 3. Verdict & Comparison
@@ -182,141 +194,29 @@ export function computeActualizedReturns(params: {
   // 2. Initial investment basis
   const totalCashInvested = params.totalCashInvested || Math.max(1, purchasePrice - loanAmount);
 
-  // 3. Operational months timeframe
-  const start = params.createdAt ? new Date(params.createdAt) : new Date();
-  const end = params.soldDate ? new Date(params.soldDate) : new Date();
-  
-  // Difference in months
-  let monthsCount = (end.getFullYear() - start.getFullYear()) * 12 + (end.getMonth() - start.getMonth());
-  if (monthsCount <= 0) monthsCount = 1;
+  // 3. Metric calculation routed through deriveAllProjectMetrics
+  const project = {
+    id: 'actualized-returns',
+    name: 'Actualized Returns',
+    currentPhase: params.isRealized ? 4 : 3,
+    dispositionType: 'RENT',
+    createdAt: params.createdAt,
+    financials: {
+      purchasePrice: params.purchasePrice,
+      monthlyGrossRent: params.monthlyGrossRent,
+      monthlyExpenses: params.monthlyExpenses,
+      loanAmount: params.loanAmount,
+      estimatedCurrentValue: params.estimatedCurrentValue,
+      actualSalePrice: params.actualSalePrice,
+      soldDate: params.soldDate,
+    },
+  } as unknown as Project;
 
-  // 4. Construct monthly cash flows
-  const monthlyCashFlows: number[] = [-totalCashInvested];
+  const derived = deriveAllProjectMetrics(project);
 
-  // Helper to check if a transaction date falls in a specific month index (1-based relative to start)
-  const isTransactionInMonth = (txDateStr: string, monthIdx: number) => {
-    if (!txDateStr) return false;
-    const txDate = new Date(txDateStr);
-    const mDiff = (txDate.getFullYear() - start.getFullYear()) * 12 + (txDate.getMonth() - start.getMonth()) + 1;
-    return mDiff === monthIdx;
-  };
-
-  // Extract rent received
-  const rents = params.rentReceived || [];
-  const leases = params.leaseIncome || [];
-  
-  // Extract opex categories
-  const tax = params.opexTax || [];
-  const ins = params.opexInsurance || [];
-  const sec = params.opexSecurity || [];
-  const maint = params.opexMaintenance || [];
-  const util = params.opexUtilities || [];
-  const mgmt = params.opexManagement || [];
-  const hoa = params.opexHoa || [];
-  const capex = params.opexCapex || [];
-
-  const monthlyDebtService = params.annualDebtService ? (params.annualDebtService / 12) : 0;
-
-  let totalOperatingIncome = 0;
-  let totalOperatingExpenses = 0;
-  let totalDebtServicePaid = 0;
-
-  for (let m = 1; m <= monthsCount; m++) {
-    // A. Operational revenue (Rent received + Lease income)
-    const monthlyRentReceived = rents
-      .filter(e => e.confirmed && isTransactionInMonth(e.date, m))
-      .reduce((sum, e) => sum + e.amount, 0);
-
-    const monthlyLeaseIncome = leases
-      .filter(e => e.confirmed && isTransactionInMonth(e.date, m))
-      .reduce((sum, e) => sum + e.amount, 0);
-
-    const monthlyIncome = monthlyRentReceived > 0 
-      ? monthlyRentReceived 
-      : monthlyLeaseIncome > 0 
-        ? monthlyLeaseIncome 
-        : monthlyGrossRent; // Fallback to monthly gross rent assumption if no actuals entered for this month
-
-    // B. Operational expenses (OpEx categories)
-    const monthlyTax = tax.filter(e => e.confirmed && isTransactionInMonth(e.date, m)).reduce((sum, e) => sum + e.amount, 0);
-    const monthlyIns = ins.filter(e => e.confirmed && isTransactionInMonth(e.date, m)).reduce((sum, e) => sum + e.amount, 0);
-    const monthlySec = sec.filter(e => e.confirmed && isTransactionInMonth(e.date, m)).reduce((sum, e) => sum + e.amount, 0);
-    const monthlyMaint = maint.filter(e => e.confirmed && isTransactionInMonth(e.date, m)).reduce((sum, e) => sum + e.amount, 0);
-    const monthlyUtil = util.filter(e => e.confirmed && isTransactionInMonth(e.date, m)).reduce((sum, e) => sum + e.amount, 0);
-    const monthlyMgmt = mgmt.filter(e => e.confirmed && isTransactionInMonth(e.date, m)).reduce((sum, e) => sum + e.amount, 0);
-    const monthlyHoa = hoa.filter(e => e.confirmed && isTransactionInMonth(e.date, m)).reduce((sum, e) => sum + e.amount, 0);
-    const monthlyCapex = capex.filter(e => e.confirmed && isTransactionInMonth(e.date, m)).reduce((sum, e) => sum + e.amount, 0);
-
-    const monthlyOpexSum = monthlyTax + monthlyIns + monthlySec + monthlyMaint + monthlyUtil + monthlyMgmt + monthlyHoa + monthlyCapex;
-    
-    // Fallback to monthly opex assumption if no actuals entered
-    const monthlyOpex = monthlyOpexSum > 0 ? monthlyOpexSum : params.monthlyExpenses;
-
-    // C. Debt service
-    const debtService = monthlyDebtService;
-
-    // D. Monthly Net Cash Flow
-    const monthlyNetFlow = monthlyIncome - monthlyOpex - debtService;
-
-    // Track cumulative values
-    totalOperatingIncome += monthlyIncome;
-    totalOperatingExpenses += monthlyOpex;
-    totalDebtServicePaid += debtService;
-
-    if (m === monthsCount) {
-      // Add net exit proceeds to the final month
-      const salePrice = params.isRealized
-        ? (params.actualSalePrice || estimatedCurrentValue)
-        : estimatedCurrentValue;
-      
-      const sellingCostPct = params.sellingCostPercent ?? 6.0;
-      const sellingCosts = params.sellingCostsAmount ?? (salePrice * (sellingCostPct / 100));
-      
-      const payoff = params.mortgagePayoff ?? loanAmount;
-      const netExitProceeds = Math.max(0, salePrice - sellingCosts - payoff);
-
-      monthlyCashFlows.push(monthlyNetFlow + netExitProceeds);
-    } else {
-      monthlyCashFlows.push(monthlyNetFlow);
-    }
-  }
-
-  // 5. Compute IRR & Equity Multiple
-  let actualIRR: number | null = null;
-  try {
-    const rawIRR = computeIRR(monthlyCashFlows);
-    if (rawIRR !== null && !isNaN(rawIRR)) {
-      // Annualize the monthly rate: (1 + r)^12 - 1
-      const annualizedRate = Math.pow(1 + rawIRR, 12) - 1;
-      actualIRR = Number((annualizedRate * 100).toFixed(1));
-    }
-  } catch (err) {
-    console.error('Failed to solve actualized IRR:', err);
-  }
-
-  // Fallback if IRR solver failed to converge: simple ROI / time based
-  const totalOperatingNetCashFlow = totalOperatingIncome - totalOperatingExpenses - totalDebtServicePaid;
-  const salePriceVal = params.isRealized ? (params.actualSalePrice || estimatedCurrentValue) : estimatedCurrentValue;
-  const sellingCostPctVal = params.sellingCostPercent ?? 6.0;
-  const sellingCostsVal = params.sellingCostsAmount ?? (salePriceVal * (sellingCostPctVal / 100));
-  const payoffVal = params.mortgagePayoff ?? loanAmount;
-  const netExitProceedsVal = Math.max(0, salePriceVal - sellingCostsVal - payoffVal);
-
-  const totalCashReturned = totalOperatingNetCashFlow + netExitProceedsVal;
-  const netProfit = totalCashReturned - totalCashInvested;
-  
-  const actualEquityMultiple = totalCashInvested > 0 
-    ? Number((totalCashReturned / totalCashInvested).toFixed(2))
-    : null;
-
-  if (actualIRR === null && actualEquityMultiple !== null && actualEquityMultiple > 0) {
-    // Simple CAGR / linear fallback
-    const holdPeriodYears = monthsCount / 12;
-    if (holdPeriodYears > 0) {
-      const cagr = Math.pow(actualEquityMultiple, 1 / holdPeriodYears) - 1;
-      actualIRR = Number((cagr * 100).toFixed(1));
-    }
-  }
+  const actualIRR = derived.irr || derived.annualizedIrr || null;
+  const actualEquityMultiple = derived.kpi33?.equityMultiple || (totalCashInvested > 0 ? Number(((derived.netProfit + totalCashInvested) / totalCashInvested).toFixed(2)) : null);
+  const netProfit = derived.netProfit;
 
   return {
     actualIRR,
@@ -327,4 +227,3 @@ export function computeActualizedReturns(params: {
     missingFields,
   };
 }
-

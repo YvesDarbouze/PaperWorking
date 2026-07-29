@@ -28,11 +28,6 @@ import {
   calculateProFormaAndMetrics,
   generateSensitivityMatrix,
   generateDefaultScenarios,
-  calculateCapRate,
-  calculateCoC,
-  calculateDSCR,
-  calculatePricePerUnit,
-  calculateGRM,
 } from '@/lib/finance/metrics';
 import { JourneyProgressHeader } from '@/components/project/JourneyProgressHeader';
 

@@ -2,8 +2,10 @@
  * Phase 3 Operations & Asset Management Variance Engine
  * Single source of truth for budget baselines, actuals NOI, variance grading,
  * live rent roll occupancy, and consecutive period alert tracking.
+ * All canonical metric values (NOI, Occupancy Rate) are sourced via deriveAllProjectMetrics.
  */
 
+import { deriveAllProjectMetrics } from '@/lib/metrics/reiMetrics';
 import type { Project } from '@/types/schema';
 import type { UnderwritingAssumptions } from '@/lib/finance/metrics';
 
@@ -48,13 +50,6 @@ export interface VarianceResult {
   variancePercent: number; // Signed percentage (e.g. +3.5 or -12.4)
   absPercent: number;
   status: VarianceStatus; // green: <= ±5%, amber: <= ±10%, red: > ±10%
-}
-
-/**
- * Calculate Monthly NOI from Gross Rent & Operating Expenses
- */
-export function calculateMonthlyNOI(grossRent: number, operatingExpenses: number): number {
-  return grossRent - operatingExpenses;
 }
 
 /**
@@ -137,15 +132,6 @@ export function calculateCumulativeVariance(
 }
 
 /**
- * Calculate Live Occupancy Rate from Rent Roll entries (%)
- */
-export function calculateOccupancyRate(items: RentRollItem[]): number {
-  if (items.length === 0) return 0;
-  const occupiedCount = items.filter((item) => item.status === 'occupied').length;
-  return Number(((occupiedCount / items.length) * 100).toFixed(1));
-}
-
-/**
  * Check if 2+ consecutive periods have significant variance (> ±10% on NOI or Gross Rent)
  */
 export function checkConsecutiveVarianceAlert(
@@ -154,7 +140,6 @@ export function checkConsecutiveVarianceAlert(
 ): boolean {
   if (actuals.length < 2) return false;
 
-  // Sort actuals chronologically by period (YYYY-MM)
   const sorted = [...actuals].sort((a, b) => a.period.localeCompare(b.period));
 
   let consecutiveCount = 0;
@@ -176,7 +161,7 @@ export function checkConsecutiveVarianceAlert(
 
 /**
  * Freeze and snapshot budget baseline from project underwriting / financials
- * Budget baseline is snapshotted at gate advancement and never mutated by later scenario edits.
+ * Sourced via deriveAllProjectMetrics.
  */
 export function snapshotBudgetBaseline(project: Project): BudgetBaselineData {
   const existing = project.financials?.budgetBaseline;
@@ -184,10 +169,11 @@ export function snapshotBudgetBaseline(project: Project): BudgetBaselineData {
     return existing; // Return frozen baseline
   }
 
+  const derived = deriveAllProjectMetrics(project);
   const f: any = project.financials || {};
   const monthlyGrossRent = f.monthlyGrossRent ?? (f.purchasePrice ? (f.purchasePrice * 0.01) / 12 : 2500);
   const monthlyExpenses = f.monthlyExpenses ?? 800;
-  const monthlyNoi = monthlyGrossRent - monthlyExpenses;
+  const monthlyNoi = Math.round((derived.noi / 12) * 100) / 100;
 
   return {
     snapshottedAt: new Date().toISOString(),

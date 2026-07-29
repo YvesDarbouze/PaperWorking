@@ -1,7 +1,11 @@
 /**
  * Shared Real Estate Finance & Underwriting Metrics Engine
  * Single source of truth for pure financial metric calculations across PaperWorking.
+ * All metric calculations are routed through deriveAllProjectMetrics per Single-Function Rule.
  */
+
+import { deriveAllProjectMetrics } from '@/lib/metrics/reiMetrics';
+import type { Project } from '@/types/schema';
 
 // ─── Interfaces ──────────────────────────────────────────────
 
@@ -66,59 +70,7 @@ export interface DealMetrics {
   equityMultiple?: number;
 }
 
-// ─── Pure Calculation Functions ──────────────────────────────
-
-/**
- * Calculate Net Operating Income (NOI)
- * NOI = Gross Income - Operating Expenses
- */
-export function calculateNOI(grossIncome: number, operatingExpenses: number): number {
-  return grossIncome - operatingExpenses;
-}
-
-/**
- * Calculate Cap Rate (%)
- * Cap Rate = (NOI / Property Value or Purchase Price) * 100
- */
-export function calculateCapRate(noi: number, propertyValue: number): number {
-  if (propertyValue <= 0) return 0;
-  return (noi / propertyValue) * 100;
-}
-
-/**
- * Calculate Cash-on-Cash Return (CoC %)
- * CoC = (Annual Cash Flow / Total Cash Invested) * 100
- */
-export function calculateCoC(annualCashFlow: number, totalCashInvested: number): number {
-  if (totalCashInvested <= 0) return 0;
-  return (annualCashFlow / totalCashInvested) * 100;
-}
-
-/**
- * Calculate Debt Service Coverage Ratio (DSCR)
- * DSCR = NOI / Annual Debt Service
- */
-export function calculateDSCR(noi: number, annualDebtService: number): number {
-  if (annualDebtService <= 0) return 0;
-  return noi / annualDebtService;
-}
-
-/**
- * Calculate Price Per Unit ($)
- */
-export function calculatePricePerUnit(price: number, units: number): number {
-  if (units <= 0) return 0;
-  return price / units;
-}
-
-/**
- * Calculate Gross Rent Multiplier (GRM)
- * GRM = Price / Annual Gross Rent
- */
-export function calculateGRM(price: number, grossAnnualRent: number): number {
-  if (grossAnnualRent <= 0) return 0;
-  return price / grossAnnualRent;
-}
+// ─── Shared Amortization Helpers ──────────────────────────────
 
 /**
  * Calculate Monthly Mortgage Payment (P&I)
@@ -133,46 +85,6 @@ export function calculateMonthlyPayment(
   const totalPayments = amortizationYears * 12;
   if (monthlyRate === 0) return principal / totalPayments;
   return (principal * monthlyRate * Math.pow(1 + monthlyRate, totalPayments)) / (Math.pow(1 + monthlyRate, totalPayments) - 1);
-}
-
-/**
- * Calculate Internal Rate of Return (IRR %) using Newton-Raphson method
- * Returns rate as percentage (e.g. 14.5 for 14.5%)
- */
-export function calculateIRR(cashFlows: number[], guess: number = 0.1): number {
-  if (cashFlows.length < 2) return 0;
-  let rate = guess;
-  const maxIterations = 100;
-  const precision = 0.00001;
-
-  for (let i = 0; i < maxIterations; i++) {
-    let npv = 0;
-    let dNpv = 0;
-    for (let t = 0; t < cashFlows.length; t++) {
-      const denom = Math.pow(1 + rate, t);
-      if (isNaN(denom) || denom === 0) break;
-      npv += cashFlows[t] / denom;
-      dNpv -= (t * cashFlows[t]) / Math.pow(1 + rate, t + 1);
-    }
-    if (Math.abs(dNpv) < 1e-10) break;
-    const nextRate = rate - npv / dNpv;
-    if (isNaN(nextRate) || !isFinite(nextRate)) break;
-    if (Math.abs(nextRate - rate) < precision) {
-      return nextRate * 100;
-    }
-    rate = nextRate;
-  }
-
-  return rate * 100;
-}
-
-/**
- * Calculate Equity Multiple (x)
- * Equity Multiple = Total Cash Returned / Total Cash Invested
- */
-export function calculateEquityMultiple(totalCashReturned: number, totalCashInvested: number): number {
-  if (totalCashInvested <= 0) return 0;
-  return totalCashReturned / totalCashInvested;
 }
 
 /**
@@ -195,7 +107,35 @@ export function calculateRemainingLoanBalance(
   return Math.max(0, principal * (num / den));
 }
 
-// ─── Pro Forma & Sensitivity Engine ──────────────────────────
+// ─── Pro Forma & Sensitivity Consumer Layer ──────────────────
+
+function assumptionsToProject(
+  assumptions: UnderwritingAssumptions,
+  overrides?: Partial<UnderwritingAssumptions>
+): Project {
+  const merged = { ...assumptions, ...overrides };
+  return {
+    id: 'underwriting-analysis',
+    name: 'Underwriting Analysis',
+    currentPhase: 1,
+    dispositionType: 'RENT',
+    financials: {
+      purchasePrice: merged.purchasePrice,
+      projectedRehabCost: merged.rehabCost,
+      monthlyGrossRent: merged.monthlyGrossRent,
+      monthlyExpenses: merged.monthlyExpenses,
+      rentGrowthRate: merged.rentGrowthRate,
+      expenseGrowthRate: merged.expenseGrowthRate,
+      vacancyRate: merged.vacancyRate,
+      capexReservePct: merged.capexReservePct,
+      loanAmount: merged.loanAmount,
+      loanInterestRate: merged.interestRate,
+      loanTermYears: merged.amortizationYears,
+      exitCapRate: merged.exitCapRate,
+      projectedHoldTimeMonths: (merged.holdingPeriodYears || 5) * 12,
+    },
+  } as unknown as Project;
+}
 
 export function calculateProFormaAndMetrics(assumptions: UnderwritingAssumptions) {
   const {
@@ -220,8 +160,6 @@ export function calculateProFormaAndMetrics(assumptions: UnderwritingAssumptions
   const annualDebtService = monthlyPayment * 12;
 
   const years: ProFormaYear[] = [];
-  const cashFlows: number[] = [-totalCashInvested];
-
   let currentGrossAnnualRent = monthlyGrossRent * 12;
   let currentAnnualExpenses = monthlyExpenses * 12;
 
@@ -231,12 +169,19 @@ export function calculateProFormaAndMetrics(assumptions: UnderwritingAssumptions
     const effectiveGrossIncome = grossPotentialRent - vacancyLoss;
     const operatingExpenses = currentAnnualExpenses;
     const capexReserve = effectiveGrossIncome * (capexReservePct / 100);
-    const noi = effectiveGrossIncome - operatingExpenses - capexReserve;
-    const netCashFlow = noi - annualDebtService;
 
-    const capRate = calculateCapRate(noi, purchasePrice);
-    const coc = calculateCoC(netCashFlow, totalCashInvested);
-    const dscr = calculateDSCR(noi, annualDebtService);
+    const yearProject = assumptionsToProject({
+      ...assumptions,
+      monthlyGrossRent: currentGrossAnnualRent / 12,
+      monthlyExpenses: currentAnnualExpenses / 12,
+    });
+    const derived = deriveAllProjectMetrics(yearProject);
+
+    const noi = derived.noi;
+    const netCashFlow = derived.annualCashFlow;
+    const capRate = derived.capRate;
+    const coc = derived.cashOnCashReturn;
+    const dscr = derived.dscr;
 
     years.push({
       year: y,
@@ -253,7 +198,6 @@ export function calculateProFormaAndMetrics(assumptions: UnderwritingAssumptions
       dscr,
     });
 
-    // Advance growth rates for next year
     currentGrossAnnualRent *= 1 + rentGrowthRate / 100;
     currentAnnualExpenses *= 1 + expenseGrowthRate / 100;
   }
@@ -261,19 +205,16 @@ export function calculateProFormaAndMetrics(assumptions: UnderwritingAssumptions
   // Terminal Year Exit
   const lastYearNoi = years[years.length - 1]?.noi ?? 0;
   const exitValue = exitCapRate > 0 ? (lastYearNoi / (exitCapRate / 100)) : 0;
-  const sellingCosts = exitValue * 0.05; // 5% selling expenses
+  const sellingCosts = exitValue * 0.05;
   const remainingLoanBalance = calculateRemainingLoanBalance(loanAmount, interestRate, amortizationYears, holdingPeriodYears);
   const netExitProceeds = Math.max(0, exitValue - sellingCosts - remainingLoanBalance);
 
-  // Build cash flow series for IRR
-  for (let i = 0; i < years.length; i++) {
-    const isTerminal = i === years.length - 1;
-    cashFlows.push(years[i].netCashFlow + (isTerminal ? netExitProceeds : 0));
-  }
+  const baseProject = assumptionsToProject(assumptions);
+  const baseDerived = deriveAllProjectMetrics(baseProject);
 
-  const leveredIRR = calculateIRR(cashFlows);
+  const leveredIRR = baseDerived.irr || baseDerived.annualizedIrr;
   const totalCashReturned = years.reduce((sum, yr) => sum + yr.netCashFlow, 0) + netExitProceeds;
-  const equityMultiple = calculateEquityMultiple(totalCashReturned, totalCashInvested);
+  const equityMultiple = baseDerived.kpi33?.equityMultiple || (totalCashInvested > 0 ? totalCashReturned / totalCashInvested : 0);
 
   const year1 = years[0] ?? {
     noi: 0,
@@ -292,8 +233,8 @@ export function calculateProFormaAndMetrics(assumptions: UnderwritingAssumptions
     capRate: year1.capRate,
     cashOnCash: year1.coc,
     dscr: year1.dscr,
-    pricePerUnit: calculatePricePerUnit(purchasePrice, units),
-    grm: calculateGRM(purchasePrice, year1.grossPotentialRent),
+    pricePerUnit: units > 0 ? purchasePrice / units : undefined,
+    grm: baseDerived.grossRentMultiplier,
     irr: leveredIRR,
     equityMultiple,
   };

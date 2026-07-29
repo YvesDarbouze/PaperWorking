@@ -18,10 +18,8 @@ import toast from 'react-hot-toast';
 import { ApiErrorCard } from '@/components/ui/ApiErrorCard';
 import { useProjectStore } from '@/store/projectStore';
 import {
-  calculateMonthlyNOI,
   calculateVariance,
   calculateCumulativeVariance,
-  calculateOccupancyRate,
   checkConsecutiveVarianceAlert,
   snapshotBudgetBaseline,
   PropertyActualEntry,
@@ -103,7 +101,7 @@ export default function OperationsPage({ params }: { params: Promise<{ id: strin
   const computedFormNOI = useMemo(() => {
     const r = parseFloat(grossRentInput) || 0;
     const e = parseFloat(expensesInput) || 0;
-    return calculateMonthlyNOI(r, e);
+    return r - e;
   }, [grossRentInput, expensesInput]);
 
   // Rent Roll Form state
@@ -113,7 +111,10 @@ export default function OperationsPage({ params }: { params: Promise<{ id: strin
   const newUnitStatus: 'occupied' | 'vacant' | 'notice' = 'occupied';
 
   // Live Occupancy Rate calculation
-  const liveOccupancyRate = useMemo(() => calculateOccupancyRate(rentRoll), [rentRoll]);
+  const liveOccupancyRate = useMemo(
+    () => (rentRoll.length > 0 ? Number(((rentRoll.filter((i) => i.status === 'occupied').length / rentRoll.length) * 100).toFixed(1)) : 0),
+    [rentRoll]
+  );
 
   // Cumulative Variance Analysis
   const cumulativeVariance = useMemo(
@@ -146,7 +147,7 @@ export default function OperationsPage({ params }: { params: Promise<{ id: strin
       period: periodInput.trim(),
       grossRent: r,
       operatingExpenses: e,
-      noi: calculateMonthlyNOI(r, e),
+      noi: r - e,
       capex: parseFloat(capexInput) || 0,
       notes: notesInput.trim(),
       createdAt: new Date().toISOString(),
@@ -491,7 +492,7 @@ export default function OperationsPage({ params }: { params: Promise<{ id: strin
               </thead>
               <tbody className="divide-y divide-slate-100 dark:divide-white/5 font-mono">
                 {actuals.map((act) => {
-                  const noiVal = act.noi ?? calculateMonthlyNOI(act.grossRent, act.operatingExpenses);
+                  const noiVal = act.noi ?? (act.grossRent - act.operatingExpenses);
                   const v = calculateVariance(noiVal, budgetBaseline.monthlyNoi);
 
                   return (

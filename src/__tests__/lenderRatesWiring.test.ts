@@ -129,21 +129,18 @@ describe('Prompt 27W — Lender Rates: wired to existing source', () => {
   // ─────────────────────────────────────────────────────────────────────────
   describe('provider: parseRatesDoc returns [] not DEFAULT_RATES for empty docs', () => {
     it('parseRatesDoc returns [] when rates array is absent', () => {
-      // eslint-disable-next-line @typescript-eslint/no-var-requires
       const { parseRatesDoc } = require('../lib/providers/lenderRates');
       const result = parseRatesDoc({});
       expect(result).toEqual([]);
     });
 
     it('parseRatesDoc returns [] when rates is an empty array', () => {
-      // eslint-disable-next-line @typescript-eslint/no-var-requires
       const { parseRatesDoc } = require('../lib/providers/lenderRates');
       const result = parseRatesDoc({ rates: [] });
       expect(result).toEqual([]);
     });
 
     it('parseRatesDoc still parses real rates correctly', () => {
-      // eslint-disable-next-line @typescript-eslint/no-var-requires
       const { parseRatesDoc } = require('../lib/providers/lenderRates');
       const result = parseRatesDoc({
         rates: [{
@@ -162,7 +159,6 @@ describe('Prompt 27W — Lender Rates: wired to existing source', () => {
   // ─────────────────────────────────────────────────────────────────────────
   describe('provider: FirestoreRateAdapter returns [] not DEFAULT_RATES', () => {
     it('getRates() returns [] when db is null/missing', async () => {
-      // eslint-disable-next-line @typescript-eslint/no-var-requires
       const { FirestoreRateAdapter } = require('../lib/providers/lenderRates');
       const adapter = new FirestoreRateAdapter(null);
       const result = await adapter.getRates();
@@ -211,7 +207,6 @@ describe('Prompt 27W — Lender Rates: wired to existing source', () => {
     });
 
     it('HardcodedFallbackAdapter still returns DEFAULT_RATES when explicitly selected', () => {
-      // eslint-disable-next-line @typescript-eslint/no-var-requires
       const { HardcodedFallbackAdapter, DEFAULT_RATES } = require('../lib/providers/lenderRates');
       const adapter = new HardcodedFallbackAdapter();
       return adapter.getRates().then((rates: unknown[]) => {

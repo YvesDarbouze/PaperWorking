@@ -10,7 +10,7 @@
     "dev:webpack": "next dev --webpack",
     "build": "rm -rf .next && NODE_OPTIONS='--max-old-space-size=4096' next build",
     "start": "next start",
-    "lint": "eslint",
+    "lint": "eslint .",
     "test": "jest",
     "db:seed": "npx ts-node --compiler-options '{\"module\":\"commonjs\"}' scripts/seed.ts",
     "postinstall": "npx prisma generate",

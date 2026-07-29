@@ -65,6 +65,13 @@ export interface ReportViewModalProps {
   projects: any[];
 }
 
+function renderValueOrUnrecorded(val: number | null | undefined) {
+  if (val === null || val === undefined) {
+    return <span className="text-amber-500/90 font-mono italic font-normal text-xs">Unrecorded Input</span>;
+  }
+  return formatCurrency(val);
+}
+
 export function ReportViewModal({ isOpen, onClose, reportId, projects }: ReportViewModalProps) {
   const [scope, setScope] = useState<'portfolio' | 'project'>('portfolio');
   const [selectedProjectId, setSelectedProjectId] = useState<string>(projects[0]?.id || '');
@@ -679,15 +686,15 @@ export function ReportViewModal({ isOpen, onClose, reportId, projects }: ReportV
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                 <div className="p-4 rounded-xl bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/10">
                   <span className="text-xs font-semibold text-slate-400 uppercase tracking-wider">Line 3 Total Rents Received</span>
-                  <p className="text-xl font-bold font-mono text-emerald-500 mt-1">{formatCurrency(schedEData.totalIncome)}</p>
+                  <p className="text-xl font-bold font-mono text-emerald-500 mt-1">{renderValueOrUnrecorded(schedEData.totalIncome)}</p>
                 </div>
                 <div className="p-4 rounded-xl bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/10">
                   <span className="text-xs font-semibold text-slate-400 uppercase tracking-wider">Total Schedule E Expenses</span>
-                  <p className="text-xl font-bold font-mono text-slate-900 dark:text-white mt-1">{formatCurrency(schedEData.totalExpenses)}</p>
+                  <p className="text-xl font-bold font-mono text-slate-900 dark:text-white mt-1">{renderValueOrUnrecorded(schedEData.totalExpenses)}</p>
                 </div>
                 <div className="p-4 rounded-xl bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/10">
                   <span className="text-xs font-semibold text-slate-400 uppercase tracking-wider">Net Schedule E Income</span>
-                  <p className="text-xl font-bold font-mono text-emerald-500 mt-1">{formatCurrency(schedEData.netIncome)}</p>
+                  <p className="text-xl font-bold font-mono text-emerald-500 mt-1">{renderValueOrUnrecorded(schedEData.netIncome)}</p>
                 </div>
               </div>
 
@@ -710,7 +717,7 @@ export function ReportViewModal({ isOpen, onClose, reportId, projects }: ReportV
                           <td className="p-3 font-bold text-slate-900 dark:text-white">{lineKey}</td>
                           <td className="p-3 text-slate-500">{SCHEDULE_E_LINE_NAMES[lineKey as ScheduleELineKey]}</td>
                           <td className={`p-3 font-bold ${lineKey === 'line3_rents' ? 'text-emerald-500' : 'text-slate-900 dark:text-white'}`}>
-                            {formatCurrency(amount)}
+                            {renderValueOrUnrecorded(amount)}
                           </td>
                         </tr>
                       ))}
@@ -727,15 +734,15 @@ export function ReportViewModal({ isOpen, onClose, reportId, projects }: ReportV
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                 <div className="p-4 rounded-xl bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/10">
                   <span className="text-xs font-semibold text-slate-400 uppercase tracking-wider">Total Building Cost Basis</span>
-                  <p className="text-xl font-bold font-mono text-slate-900 dark:text-white mt-1">{formatCurrency(depData.totalBuildingBasis)}</p>
+                  <p className="text-xl font-bold font-mono text-slate-900 dark:text-white mt-1">{renderValueOrUnrecorded(depData.totalBuildingBasis)}</p>
                 </div>
                 <div className="p-4 rounded-xl bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/10">
                   <span className="text-xs font-semibold text-slate-400 uppercase tracking-wider">Current Year Depreciation</span>
-                  <p className="text-xl font-bold font-mono text-emerald-500 mt-1">{formatCurrency(depData.totalCurrentYearDepreciation)}</p>
+                  <p className="text-xl font-bold font-mono text-emerald-500 mt-1">{renderValueOrUnrecorded(depData.totalCurrentYearDepreciation)}</p>
                 </div>
                 <div className="p-4 rounded-xl bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/10">
                   <span className="text-xs font-semibold text-slate-400 uppercase tracking-wider">Total Accumulated Deprec.</span>
-                  <p className="text-xl font-bold font-mono text-slate-900 dark:text-white mt-1">{formatCurrency(depData.totalAccumulatedDepreciation)}</p>
+                  <p className="text-xl font-bold font-mono text-slate-900 dark:text-white mt-1">{renderValueOrUnrecorded(depData.totalAccumulatedDepreciation)}</p>
                 </div>
               </div>
 
@@ -754,12 +761,19 @@ export function ReportViewModal({ isOpen, onClose, reportId, projects }: ReportV
                   <tbody className="divide-y divide-slate-100 dark:divide-white/5 font-mono">
                     {depData.assets.map((a) => (
                       <tr key={a.projectId} className="hover:bg-slate-50 dark:hover:bg-white/[0.02]">
-                        <td className="p-3 font-semibold font-sans text-slate-900 dark:text-white">{a.propertyName}</td>
-                        <td className="p-3">{formatCurrency(a.totalCostBasis)}</td>
-                        <td className="p-3 text-slate-400">{formatCurrency(a.landValue)}</td>
-                        <td className="p-3 font-bold">{formatCurrency(a.buildingCostBasis)}</td>
-                        <td className="p-3">{a.placedInServiceDate}</td>
-                        <td className="p-3 font-bold text-emerald-500">{formatCurrency(a.currentYearDepreciation)}</td>
+                        <td className="p-3 font-semibold font-sans text-slate-900 dark:text-white">
+                          {a.propertyName}
+                          {!a.isComplete && (
+                            <span className="ml-2 text-[10px] text-amber-500 font-bold uppercase tracking-wider">
+                              (Missing {a.missingFields.join(', ')})
+                            </span>
+                          )}
+                        </td>
+                        <td className="p-3">{renderValueOrUnrecorded(a.totalCostBasis)}</td>
+                        <td className="p-3 text-slate-400">{renderValueOrUnrecorded(a.landValue)}</td>
+                        <td className="p-3 font-bold">{renderValueOrUnrecorded(a.buildingCostBasis)}</td>
+                        <td className="p-3">{a.placedInServiceDate || <span className="text-amber-500 italic font-normal text-xs">Unrecorded</span>}</td>
+                        <td className="p-3 font-bold text-emerald-500">{renderValueOrUnrecorded(a.currentYearDepreciation)}</td>
                       </tr>
                     ))}
                   </tbody>
@@ -786,34 +800,46 @@ export function ReportViewModal({ isOpen, onClose, reportId, projects }: ReportV
                 </div>
               </div>
 
-              <div className="overflow-x-auto rounded-xl border border-slate-200 dark:border-white/10">
-                <table className="w-full text-left text-xs font-sans">
-                  <thead className="bg-slate-100 dark:bg-white/5 uppercase tracking-wider text-slate-500 dark:text-slate-400 font-mono">
-                    <tr>
-                      <th className="p-3">Vendor Name</th>
-                      <th className="p-3">Total Paid</th>
-                      <th className="p-3">EIN / SSN Provided</th>
-                      <th className="p-3">1099 Required (≥$600)</th>
-                      <th className="p-3">Form Type</th>
-                    </tr>
-                  </thead>
-                  <tbody className="divide-y divide-slate-100 dark:divide-white/5">
-                    {form1099Data.vendors.map((v) => (
-                      <tr key={v.vendorId} className="hover:bg-slate-50 dark:hover:bg-white/[0.02]">
-                        <td className="p-3 font-semibold text-slate-900 dark:text-white">{v.vendorName}</td>
-                        <td className="p-3 font-mono font-bold">{formatCurrency(v.totalPaid)}</td>
-                        <td className="p-3">{v.einOrSsnProvided ? 'Yes' : 'No'}</td>
-                        <td className="p-3 font-bold" data-testid="vendor-1099-status">
-                          <span className={`px-2 py-0.5 rounded text-[10px] uppercase tracking-wider ${v.requires1099 ? 'bg-amber-500/10 text-amber-500 border border-amber-500/20' : 'bg-slate-500/10 text-slate-400'}`}>
-                            {v.requires1099 ? 'Form 1099 Required' : 'Below Threshold'}
-                          </span>
-                        </td>
-                        <td className="p-3 font-mono">{v.requires1099 ? v.formType : '—'}</td>
+              {form1099Data.vendors.length === 0 ? (
+                <div className="p-6 rounded-xl bg-amber-500/10 border border-amber-500/20 text-amber-600 dark:text-amber-400 space-y-2">
+                  <div className="flex items-center gap-2 font-bold text-sm">
+                    <ShieldAlert className="w-4 h-4" />
+                    <span>No Contractor Payments Logged</span>
+                  </div>
+                  <p className="text-xs">
+                    No vendor payment records found for tax year {form1099Data.taxYear}. To calculate 1099-NEC/1099-MISC thresholds, log contractor disbursements in project rehab expense logs.
+                  </p>
+                </div>
+              ) : (
+                <div className="overflow-x-auto rounded-xl border border-slate-200 dark:border-white/10">
+                  <table className="w-full text-left text-xs font-sans">
+                    <thead className="bg-slate-100 dark:bg-white/5 uppercase tracking-wider text-slate-500 dark:text-slate-400 font-mono">
+                      <tr>
+                        <th className="p-3">Vendor Name</th>
+                        <th className="p-3">Total Paid</th>
+                        <th className="p-3">EIN / SSN Provided</th>
+                        <th className="p-3">1099 Required (≥$600)</th>
+                        <th className="p-3">Form Type</th>
                       </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
+                    </thead>
+                    <tbody className="divide-y divide-slate-100 dark:divide-white/5">
+                      {form1099Data.vendors.map((v) => (
+                        <tr key={v.vendorId} className="hover:bg-slate-50 dark:hover:bg-white/[0.02]">
+                          <td className="p-3 font-semibold text-slate-900 dark:text-white">{v.vendorName}</td>
+                          <td className="p-3 font-mono font-bold">{formatCurrency(v.totalPaid)}</td>
+                          <td className="p-3">{v.einOrSsnProvided ? 'Yes' : 'No'}</td>
+                          <td className="p-3 font-bold" data-testid="vendor-1099-status">
+                            <span className={`px-2 py-0.5 rounded text-[10px] uppercase tracking-wider ${v.requires1099 ? 'bg-amber-500/10 text-amber-500 border border-amber-500/20' : 'bg-slate-500/10 text-slate-400'}`}>
+                              {v.requires1099 ? 'Form 1099 Required' : 'Below Threshold'}
+                            </span>
+                          </td>
+                          <td className="p-3 font-mono">{v.requires1099 ? v.formType : '—'}</td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              )}
             </div>
           )}
 
@@ -832,9 +858,83 @@ export function ReportViewModal({ isOpen, onClose, reportId, projects }: ReportV
                 <div className="p-4 rounded-xl bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/10">
                   <span className="text-xs font-semibold text-slate-400 uppercase tracking-wider">REPS 750-Hr Qualification</span>
                   <p className={`text-xl font-bold font-mono mt-1 ${logData.isREPSMet ? 'text-emerald-500' : 'text-amber-500'}`}>
-                    {logData.isREPSMet ? 'QUALIFIED ✓' : 'Pending Hours'}
+                    {logData.isREPSMet ? 'QUALIFIED ✓' : 'Unrecorded / Pending'}
                   </p>
                 </div>
+              </div>
+
+              {/* Mileage Log Section */}
+              <div className="space-y-3">
+                <h4 className="text-sm font-bold uppercase tracking-wider text-slate-400 border-b border-slate-200 dark:border-white/10 pb-2">
+                  Vehicle Business Mileage Log
+                </h4>
+                {logData.mileageLogs.length === 0 ? (
+                  <div className="p-4 rounded-xl bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/10 text-slate-400 text-xs space-y-1">
+                    <strong className="font-bold text-amber-500">No Mileage Entries Recorded:</strong>
+                    <p>User must log trip dates, destinations, and business purpose to calculate IRS standard mileage deduction ($0.67/mi).</p>
+                  </div>
+                ) : (
+                  <div className="overflow-x-auto rounded-xl border border-slate-200 dark:border-white/10">
+                    <table className="w-full text-left text-xs font-sans">
+                      <thead className="bg-slate-100 dark:bg-white/5 uppercase tracking-wider text-slate-500 dark:text-slate-400 font-mono">
+                        <tr>
+                          <th className="p-3">Date</th>
+                          <th className="p-3">Property</th>
+                          <th className="p-3">Business Purpose</th>
+                          <th className="p-3">Miles</th>
+                          <th className="p-3">Deduction</th>
+                        </tr>
+                      </thead>
+                      <tbody className="divide-y divide-slate-100 dark:divide-white/5 font-mono">
+                        {logData.mileageLogs.map((m) => (
+                          <tr key={m.id}>
+                            <td className="p-3 font-semibold">{m.date}</td>
+                            <td className="p-3 font-sans text-slate-900 dark:text-white">{m.propertyName}</td>
+                            <td className="p-3 text-slate-500 font-sans">{m.purpose}</td>
+                            <td className="p-3">{m.miles} mi</td>
+                            <td className="p-3 font-bold text-emerald-500">{formatCurrency(m.deductionAmount)}</td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                )}
+              </div>
+
+              {/* REPS Time Log Section */}
+              <div className="space-y-3">
+                <h4 className="text-sm font-bold uppercase tracking-wider text-slate-400 border-b border-slate-200 dark:border-white/10 pb-2">
+                  REPS Material Participation Time Log (750-Hour Threshold)
+                </h4>
+                {logData.timeLogs.length === 0 ? (
+                  <div className="p-4 rounded-xl bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/10 text-slate-400 text-xs space-y-1">
+                    <strong className="font-bold text-amber-500">No Participation Hours Recorded:</strong>
+                    <p>User must log active time entries (lease drafting, rehab supervision, property management) to qualify for Real Estate Professional Status (REPS).</p>
+                  </div>
+                ) : (
+                  <div className="overflow-x-auto rounded-xl border border-slate-200 dark:border-white/10">
+                    <table className="w-full text-left text-xs font-sans">
+                      <thead className="bg-slate-100 dark:bg-white/5 uppercase tracking-wider text-slate-500 dark:text-slate-400 font-mono">
+                        <tr>
+                          <th className="p-3">Date</th>
+                          <th className="p-3">Property</th>
+                          <th className="p-3">Activity</th>
+                          <th className="p-3">Hours</th>
+                        </tr>
+                      </thead>
+                      <tbody className="divide-y divide-slate-100 dark:divide-white/5 font-mono">
+                        {logData.timeLogs.map((t) => (
+                          <tr key={t.id}>
+                            <td className="p-3 font-semibold">{t.date}</td>
+                            <td className="p-3 font-sans text-slate-900 dark:text-white">{t.propertyName}</td>
+                            <td className="p-3 text-slate-500 font-sans">{t.activity}</td>
+                            <td className="p-3 font-bold text-slate-900 dark:text-white">{t.hours} hrs</td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                )}
               </div>
             </div>
           )}
@@ -842,30 +942,37 @@ export function ReportViewModal({ isOpen, onClose, reportId, projects }: ReportV
           {/* Closing Documents Index View */}
           {reportId === 'CLOSING_DOCS_INDEX' && docsData && (
             <div className="space-y-6" data-testid="closing-docs-view">
-              <div className="overflow-x-auto rounded-xl border border-slate-200 dark:border-white/10">
-                <table className="w-full text-left text-xs font-sans">
-                  <thead className="bg-slate-100 dark:bg-white/5 uppercase tracking-wider text-slate-500 dark:text-slate-400 font-mono">
-                    <tr>
-                      <th className="p-3">Property</th>
-                      <th className="p-3">Document Type</th>
-                      <th className="p-3">Document File Name</th>
-                      <th className="p-3">Transaction Date</th>
-                      <th className="p-3">Document Reference</th>
-                    </tr>
-                  </thead>
-                  <tbody className="divide-y divide-slate-100 dark:divide-white/5">
-                    {docsData.documents.map((d, i) => (
-                      <tr key={i} className="hover:bg-slate-50 dark:hover:bg-white/[0.02]">
-                        <td className="p-3 font-semibold text-slate-900 dark:text-white">{d.propertyName}</td>
-                        <td className="p-3 text-slate-500">{d.documentType}</td>
-                        <td className="p-3 font-mono font-bold text-emerald-500">{d.documentName}</td>
-                        <td className="p-3 font-mono">{d.transactionDate}</td>
-                        <td className="p-3 text-xs text-slate-400">{d.fileUrl}</td>
+              {docsData.documents.length === 0 ? (
+                <div className="p-6 rounded-xl bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/10 text-slate-400 text-xs space-y-1">
+                  <strong className="font-bold text-amber-500">No Closing Documents Recorded:</strong>
+                  <p>Upload closing disclosures, HUD-1 statements, or promissory notes in project document stores for annual tax index inclusion.</p>
+                </div>
+              ) : (
+                <div className="overflow-x-auto rounded-xl border border-slate-200 dark:border-white/10">
+                  <table className="w-full text-left text-xs font-sans">
+                    <thead className="bg-slate-100 dark:bg-white/5 uppercase tracking-wider text-slate-500 dark:text-slate-400 font-mono">
+                      <tr>
+                        <th className="p-3">Property</th>
+                        <th className="p-3">Document Type</th>
+                        <th className="p-3">Document File Name</th>
+                        <th className="p-3">Transaction Date</th>
+                        <th className="p-3">Document Reference</th>
                       </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
+                    </thead>
+                    <tbody className="divide-y divide-slate-100 dark:divide-white/5">
+                      {docsData.documents.map((d, i) => (
+                        <tr key={i} className="hover:bg-slate-50 dark:hover:bg-white/[0.02]">
+                          <td className="p-3 font-semibold text-slate-900 dark:text-white">{d.propertyName}</td>
+                          <td className="p-3 text-slate-500">{d.documentType}</td>
+                          <td className="p-3 font-mono font-bold text-emerald-500">{d.documentName}</td>
+                          <td className="p-3 font-mono">{d.transactionDate}</td>
+                          <td className="p-3 text-xs text-slate-400">{d.fileUrl}</td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              )}
             </div>
           )}
 

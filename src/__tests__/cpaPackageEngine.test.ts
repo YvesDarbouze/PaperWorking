@@ -97,8 +97,24 @@ describe('RP-3 Annual CPA Package Engine — Unit & Boundary Tests', () => {
   describe('4. One-Click CPA Package Generation & Bundle Export', () => {
     it('assembles all 5 artifacts + cover sheet in CPAPackageBundleData and exports PDF', () => {
       const sampleProjects = [
-        { id: 'p1', name: 'Evergreen Terrace', propertyName: 'Evergreen Terrace', financials: { purchasePrice: 300000 } },
-        { id: 'p2', name: 'Beachfront Villa', propertyName: 'Beachfront Villa', financials: { purchasePrice: 500000 } },
+        {
+          id: 'p1',
+          name: 'Evergreen Terrace',
+          propertyName: 'Evergreen Terrace',
+          acquisitionDate: '2024-01-01',
+          financials: { purchasePrice: 300000, monthlyGrossRent: 2500 },
+          documents: [{ id: 'd1', type: 'HUD-1 Settlement Statement', name: 'HUD1_Evergreen.pdf', date: '2024-01-01', url: '/files/d1' }],
+          vendors: [{ id: 'v1', name: 'Apex Plumbing', totalPaid: 1200, ein: '12-3456789' }],
+          mileageLogs: [{ id: 'm1', date: '2025-02-10', purpose: 'Inspection', miles: 45 }],
+          timeLogs: [{ id: 't1', date: '2025-01-15', activity: 'Lease Drafting', hours: 14 }],
+        },
+        {
+          id: 'p2',
+          name: 'Beachfront Villa',
+          propertyName: 'Beachfront Villa',
+          acquisitionDate: '2024-06-15',
+          financials: { purchasePrice: 500000, monthlyGrossRent: 4000 },
+        },
       ];
 
       const bundle = generateOneClickCPAPackage(sampleProjects, 'PaperWorking Test Account', 2025);
@@ -117,14 +133,17 @@ describe('RP-3 Annual CPA Package Engine — Unit & Boundary Tests', () => {
 
       // Artifact 3: Closing Docs Index
       expect(bundle.closingDocs).toBeDefined();
-      expect(bundle.closingDocs.documents.length).toBeGreaterThan(0);
+      expect(bundle.closingDocs.documents.length).toBe(1);
 
       // Artifact 4: Form 1099 Summary
       expect(bundle.form1099).toBeDefined();
+      expect(bundle.form1099.vendors.length).toBe(1);
       expect(bundle.form1099.thresholdAmount).toBe(600);
 
       // Artifact 5: Log Books
       expect(bundle.logBooks).toBeDefined();
+      expect(bundle.logBooks.mileageLogs.length).toBe(1);
+      expect(bundle.logBooks.timeLogs.length).toBe(1);
       expect(bundle.logBooks.repsThresholdHours).toBe(750);
 
       // Export PDF bundle

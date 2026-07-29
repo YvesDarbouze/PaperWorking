@@ -70,56 +70,60 @@ export function mapCategoryToScheduleELine(category: string): ScheduleELineKey {
   return 'line19_other';
 }
 
+export type ScheduleELineValue = number | null;
+
 export interface ScheduleEReportData {
   title: string;
   taxYear: number;
   dataThroughDate: string;
-  lineTotals: Record<ScheduleELineKey, number>;
-  totalIncome: number;
-  totalExpenses: number;
-  netIncome: number;
+  lineTotals: Record<ScheduleELineKey, ScheduleELineValue>;
+  totalIncome: number | null;
+  totalExpenses: number | null;
+  netIncome: number | null;
   properties: Array<{
     projectId: string;
     propertyName: string;
-    lineItems: Record<ScheduleELineKey, number>;
+    lineItems: Record<ScheduleELineKey, ScheduleELineValue>;
   }>;
 }
 
 export interface DepreciationAssetEntry {
   projectId: string;
   propertyName: string;
-  acquisitionDate: string;
-  totalCostBasis: number;
-  landValue: number;
-  buildingCostBasis: number;
-  placedInServiceDate: string;
+  acquisitionDate: string | null;
+  totalCostBasis: number | null;
+  landValue: number | null;
+  buildingCostBasis: number | null;
+  placedInServiceDate: string | null;
   recoveryPeriodYears: number;
   depreciationMethod: string;
-  priorAccumulatedDepreciation: number;
-  currentYearDepreciation: number;
-  endingAccumulatedDepreciation: number;
-  remainingBasis: number;
+  priorAccumulatedDepreciation: number | null;
+  currentYearDepreciation: number | null;
+  endingAccumulatedDepreciation: number | null;
+  remainingBasis: number | null;
+  isComplete: boolean;
+  missingFields: string[];
 }
 
 export interface DepreciationScheduleData {
   title: string;
   taxYear: number;
   dataThroughDate: string;
-  totalBuildingBasis: number;
-  totalCurrentYearDepreciation: number;
-  totalAccumulatedDepreciation: number;
+  totalBuildingBasis: number | null;
+  totalCurrentYearDepreciation: number | null;
+  totalAccumulatedDepreciation: number | null;
   assets: DepreciationAssetEntry[];
 }
 
 export interface ClosingDocumentIndexEntry {
   projectId: string;
   propertyName: string;
-  documentType: 'HUD-1 Settlement Statement' | 'Closing Disclosure' | 'Promissory Note' | 'Deed of Trust';
+  documentType: 'HUD-1 Settlement Statement' | 'Closing Disclosure' | 'Promissory Note' | 'Deed of Trust' | string;
   documentName: string;
   fileId: string;
   fileUrl: string;
   transactionDate: string;
-  transactionType: 'Acquisition' | 'Refinance' | 'Disposition';
+  transactionType: 'Acquisition' | 'Refinance' | 'Disposition' | string;
 }
 
 export interface ClosingDocumentIndexData {
@@ -147,6 +151,7 @@ export interface Form1099SummaryData {
   vendorsRequiring1099Count: number;
   totalReportablePayments: number;
   vendors: Form1099VendorEntry[];
+  isRecorded: boolean;
 }
 
 export interface MileageLogEntry {
@@ -170,12 +175,14 @@ export interface LogBooksData {
   title: string;
   taxYear: number;
   dataThroughDate: string;
-  standardMileageRate: number; // e.g. 0.67
-  totalMiles: number;
-  totalMileageDeduction: number;
+  standardMileageRate: number; // 0.67
+  totalMiles: number | null;
+  totalMileageDeduction: number | null;
   repsThresholdHours: number; // 750 hours
-  totalREPSHours: number;
+  totalREPSHours: number | null;
   isREPSMet: boolean;
+  isMileageRecorded: boolean;
+  isREPSTimeRecorded: boolean;
   mileageLogs: MileageLogEntry[];
   timeLogs: TimeLogEntry[];
 }
@@ -190,6 +197,19 @@ export interface CPAPackageBundleData {
   closingDocs: ClosingDocumentIndexData;
   form1099: Form1099SummaryData;
   logBooks: LogBooksData;
+}
+
+// ── Helper Utilities ──────────────────────────────────────────────────────
+
+export function extractNumberOrNull(val: any): number | null {
+  if (typeof val === 'number' && !isNaN(val)) {
+    return val;
+  }
+  if (typeof val === 'string' && val.trim() !== '') {
+    const parsed = Number(val);
+    return isNaN(parsed) ? null : parsed;
+  }
+  return null;
 }
 
 // ── Depreciation Engine ───────────────────────────────────────────────────
@@ -263,57 +283,84 @@ export function evaluateVendor1099Requirement(totalPaid: number): boolean {
 
 export function generateScheduleEReport(projects: any[], taxYear: number = 2025): ScheduleEReportData {
   const dataThroughDate = new Date().toISOString().split('T')[0];
-  const lineTotals: Record<ScheduleELineKey, number> = {
-    line3_rents: 0,
-    line5_advertising: 0,
-    line6_autotravel: 0,
-    line7_cleaning: 0,
-    line8_commissions: 0,
-    line9_insurance: 0,
-    line10_legal: 0,
-    line11_management: 0,
-    line12_mortgage_interest: 0,
-    line14_repairs: 0,
-    line15_taxes: 0,
-    line16_utilities: 0,
-    line18_depreciation: 0,
-    line19_other: 0,
+  const lineTotals: Record<ScheduleELineKey, ScheduleELineValue> = {
+    line3_rents: null,
+    line5_advertising: null,
+    line6_autotravel: null,
+    line7_cleaning: null,
+    line8_commissions: null,
+    line9_insurance: null,
+    line10_legal: null,
+    line11_management: null,
+    line12_mortgage_interest: null,
+    line14_repairs: null,
+    line15_taxes: null,
+    line16_utilities: null,
+    line18_depreciation: null,
+    line19_other: null,
   };
 
   const propertyEntries: ScheduleEReportData['properties'] = [];
 
   for (const p of projects) {
     const fin = p.financials || {};
-    const rent = (fin.monthlyGrossRent || 2500) * 12;
-    const utilities = (fin.holdingCostUtilities || 100) * 12;
-    const repairs = (fin.monthlyMaintenanceReserve || 150) * 12;
-    const mgmt = Math.round(rent * ((fin.propertyManagementFeePercent || 8) / 100));
-    const taxes = (fin.holdingCostTaxes || 250) * 12;
-    const insurance = (fin.holdingCostInsurance || 80) * 12;
-    const mortgageInterest = Math.round((fin.loanAmount || 200000) * ((fin.loanInterestRate || 6.5) / 100));
 
-    const price = fin.purchasePrice || 250000;
-    const dep = calculateAssetDepreciation(price, Math.round(price * 0.2), p.acquisitionDate || '2024-01-01', taxYear).currentYearDepreciation;
+    const rawRent = extractNumberOrNull(fin.monthlyGrossRent);
+    const rent = rawRent !== null ? rawRent * 12 : null;
 
-    const lineItems: Record<ScheduleELineKey, number> = {
+    const rawUtil = extractNumberOrNull(fin.holdingCostUtilities);
+    const utilities = rawUtil !== null ? rawUtil * 12 : null;
+
+    const rawRepairs = extractNumberOrNull(fin.monthlyMaintenanceReserve);
+    const repairs = rawRepairs !== null ? rawRepairs * 12 : null;
+
+    const rawMgmtPct = extractNumberOrNull(fin.propertyManagementFeePercent);
+    const mgmt = (rent !== null && rawMgmtPct !== null) ? Math.round(rent * (rawMgmtPct / 100)) : null;
+
+    const rawTaxes = extractNumberOrNull(fin.holdingCostTaxes);
+    const taxes = rawTaxes !== null ? rawTaxes * 12 : null;
+
+    const rawIns = extractNumberOrNull(fin.holdingCostInsurance);
+    const insurance = rawIns !== null ? rawIns * 12 : null;
+
+    const rawLoan = extractNumberOrNull(fin.loanAmount);
+    const rawRate = extractNumberOrNull(fin.loanInterestRate);
+    const mortgageInterest = (rawLoan !== null && rawRate !== null)
+      ? Math.round(rawLoan * (rawRate / 100))
+      : null;
+
+    const rawPrice = extractNumberOrNull(fin.purchasePrice);
+    const rawLand = extractNumberOrNull(fin.landValue);
+    const landVal = rawLand !== null ? rawLand : (rawPrice !== null ? Math.round(rawPrice * 0.2) : null);
+    const acqDate = p.acquisitionDate || null;
+    const rawPriorDep = extractNumberOrNull(fin.priorAccumulatedDepreciation) ?? 0;
+
+    const dep = (rawPrice !== null && landVal !== null && acqDate !== null)
+      ? calculateAssetDepreciation(rawPrice, landVal, acqDate, taxYear, rawPriorDep).currentYearDepreciation
+      : null;
+
+    const lineItems: Record<ScheduleELineKey, ScheduleELineValue> = {
       line3_rents: rent,
-      line5_advertising: 250,
-      line6_autotravel: 450,
-      line7_cleaning: 600,
-      line8_commissions: 0,
+      line5_advertising: extractNumberOrNull(fin.advertising),
+      line6_autotravel: extractNumberOrNull(fin.autoTravel),
+      line7_cleaning: extractNumberOrNull(fin.cleaning),
+      line8_commissions: extractNumberOrNull(fin.commissions),
       line9_insurance: insurance,
-      line10_legal: 750,
+      line10_legal: extractNumberOrNull(fin.legal),
       line11_management: mgmt,
       line12_mortgage_interest: mortgageInterest,
       line14_repairs: repairs,
       line15_taxes: taxes,
       line16_utilities: utilities,
       line18_depreciation: dep,
-      line19_other: 300,
+      line19_other: extractNumberOrNull(fin.otherExpenses),
     };
 
     for (const [key, val] of Object.entries(lineItems)) {
-      lineTotals[key as ScheduleELineKey] += val;
+      const lineKey = key as ScheduleELineKey;
+      if (val !== null) {
+        lineTotals[lineKey] = (lineTotals[lineKey] ?? 0) + val;
+      }
     }
 
     propertyEntries.push({
@@ -324,9 +371,17 @@ export function generateScheduleEReport(projects: any[], taxYear: number = 2025)
   }
 
   const totalIncome = lineTotals.line3_rents;
-  const totalExpenses = Object.entries(lineTotals)
-    .filter(([k]) => k !== 'line3_rents')
-    .reduce((sum, [, val]) => sum + val, 0);
+
+  let totalExpenses: number | null = null;
+  for (const [k, val] of Object.entries(lineTotals)) {
+    if (k !== 'line3_rents' && val !== null) {
+      totalExpenses = (totalExpenses ?? 0) + val;
+    }
+  }
+
+  const netIncome = (totalIncome !== null || totalExpenses !== null)
+    ? (totalIncome ?? 0) - (totalExpenses ?? 0)
+    : null;
 
   return {
     title: 'Schedule E-Mapped Income Statement',
@@ -335,7 +390,7 @@ export function generateScheduleEReport(projects: any[], taxYear: number = 2025)
     lineTotals,
     totalIncome,
     totalExpenses,
-    netIncome: totalIncome - totalExpenses,
+    netIncome,
     properties: propertyEntries,
   };
 }
@@ -344,21 +399,44 @@ export function generateDepreciationSchedule(projects: any[], taxYear: number = 
   const dataThroughDate = new Date().toISOString().split('T')[0];
   const assets: DepreciationAssetEntry[] = [];
 
-  let totalBuildingBasis = 0;
-  let totalCurrentYearDepreciation = 0;
-  let totalAccumulatedDepreciation = 0;
+  let totalBuildingBasis: number | null = null;
+  let totalCurrentYearDepreciation: number | null = null;
+  let totalAccumulatedDepreciation: number | null = null;
 
   for (const p of projects) {
     const fin = p.financials || {};
-    const totalCostBasis = fin.purchasePrice || 250000;
-    const landValue = fin.landValue || Math.round(totalCostBasis * 0.2); // 20% land default
-    const acqDate = p.acquisitionDate || '2024-01-01';
+    const missingFields: string[] = [];
 
-    const dep = calculateAssetDepreciation(totalCostBasis, landValue, acqDate, taxYear, 4500, 27.5);
+    const totalCostBasis = extractNumberOrNull(fin.purchasePrice);
+    if (totalCostBasis === null) missingFields.push('purchasePrice');
 
-    totalBuildingBasis += dep.buildingCostBasis;
-    totalCurrentYearDepreciation += dep.currentYearDepreciation;
-    totalAccumulatedDepreciation += dep.endingAccumulatedDepreciation;
+    const acqDate = p.acquisitionDate || p.createdAt?.split('T')[0] || null;
+    if (acqDate === null) missingFields.push('acquisitionDate');
+
+    const rawLand = extractNumberOrNull(fin.landValue);
+    const landValue = rawLand !== null
+      ? rawLand
+      : (totalCostBasis !== null ? Math.round(totalCostBasis * 0.2) : null);
+
+    const priorDep = extractNumberOrNull(fin.priorAccumulatedDepreciation) ?? 0;
+
+    let buildingCostBasis: number | null = null;
+    let currentYearDepreciation: number | null = null;
+    let endingAccumulatedDepreciation: number | null = null;
+    let remainingBasis: number | null = null;
+    const isComplete = missingFields.length === 0;
+
+    if (isComplete && totalCostBasis !== null && landValue !== null && acqDate !== null) {
+      const dep = calculateAssetDepreciation(totalCostBasis, landValue, acqDate, taxYear, priorDep, 27.5);
+      buildingCostBasis = dep.buildingCostBasis;
+      currentYearDepreciation = dep.currentYearDepreciation;
+      endingAccumulatedDepreciation = dep.endingAccumulatedDepreciation;
+      remainingBasis = dep.remainingBasis;
+
+      totalBuildingBasis = (totalBuildingBasis ?? 0) + buildingCostBasis;
+      totalCurrentYearDepreciation = (totalCurrentYearDepreciation ?? 0) + currentYearDepreciation;
+      totalAccumulatedDepreciation = (totalAccumulatedDepreciation ?? 0) + endingAccumulatedDepreciation;
+    }
 
     assets.push({
       projectId: p.id,
@@ -366,14 +444,16 @@ export function generateDepreciationSchedule(projects: any[], taxYear: number = 
       acquisitionDate: acqDate,
       totalCostBasis,
       landValue,
-      buildingCostBasis: dep.buildingCostBasis,
+      buildingCostBasis,
       placedInServiceDate: acqDate,
       recoveryPeriodYears: 27.5,
       depreciationMethod: 'Straight Line (MACRS 27.5)',
-      priorAccumulatedDepreciation: 4500,
-      currentYearDepreciation: dep.currentYearDepreciation,
-      endingAccumulatedDepreciation: dep.endingAccumulatedDepreciation,
-      remainingBasis: dep.remainingBasis,
+      priorAccumulatedDepreciation: priorDep,
+      currentYearDepreciation,
+      endingAccumulatedDepreciation,
+      remainingBasis,
+      isComplete,
+      missingFields,
     });
   }
 
@@ -393,26 +473,22 @@ export function generateClosingDocumentIndex(projects: any[], taxYear: number = 
   const documents: ClosingDocumentIndexEntry[] = [];
 
   for (const p of projects) {
-    documents.push({
-      projectId: p.id,
-      propertyName: p.propertyName || p.name || 'Unnamed Property',
-      documentType: 'HUD-1 Settlement Statement',
-      documentName: `HUD1_${p.propertyName || 'Property'}_${taxYear}.pdf`,
-      fileId: `file-hud-${p.id}`,
-      fileUrl: `/dashboard/projects/${p.id}/files`,
-      transactionDate: `${taxYear}-03-15`,
-      transactionType: 'Acquisition',
-    });
-    documents.push({
-      projectId: p.id,
-      propertyName: p.propertyName || p.name || 'Unnamed Property',
-      documentType: 'Promissory Note',
-      documentName: `Note_${p.propertyName || 'Property'}_${taxYear}.pdf`,
-      fileId: `file-note-${p.id}`,
-      fileUrl: `/dashboard/projects/${p.id}/files`,
-      transactionDate: `${taxYear}-03-15`,
-      transactionType: 'Acquisition',
-    });
+    if (Array.isArray(p.documents)) {
+      for (const doc of p.documents) {
+        if (doc.type?.includes('HUD') || doc.type?.includes('Closing') || doc.type?.includes('Note') || doc.type?.includes('Deed')) {
+          documents.push({
+            projectId: p.id,
+            propertyName: p.propertyName || p.name || 'Unnamed Property',
+            documentType: doc.type,
+            documentName: doc.name || `${doc.type}_${p.propertyName || 'Property'}.pdf`,
+            fileId: doc.id || `file-${p.id}`,
+            fileUrl: doc.url || `/dashboard/projects/${p.id}/files`,
+            transactionDate: doc.date || p.acquisitionDate || `${taxYear}-01-01`,
+            transactionType: doc.transactionType || 'Acquisition',
+          });
+        }
+      }
+    }
   }
 
   return {
@@ -425,45 +501,37 @@ export function generateClosingDocumentIndex(projects: any[], taxYear: number = 
 
 export function generateForm1099Summary(projects: any[], taxYear: number = 2025): Form1099SummaryData {
   const dataThroughDate = new Date().toISOString().split('T')[0];
+  const vendorMap = new Map<string, Form1099VendorEntry>();
+  let hasVendorRecords = false;
 
-  // Vendor sample payments for testing threshold logic
-  const sampleVendors: Form1099VendorEntry[] = [
-    {
-      vendorId: 'v1',
-      vendorName: 'Apex Plumbing Co',
-      einOrSsnProvided: true,
-      totalPaid: 2450,
-      requires1099: evaluateVendor1099Requirement(2450), // true
-      formType: '1099-NEC',
-    },
-    {
-      vendorId: 'v2',
-      vendorName: 'Border Handyman Services',
-      einOrSsnProvided: true,
-      totalPaid: 600, // EXACT BOUNDARY CASE: $600 -> required
-      requires1099: evaluateVendor1099Requirement(600), // true
-      formType: '1099-NEC',
-    },
-    {
-      vendorId: 'v3',
-      vendorName: 'Clearwater Lawn Care',
-      einOrSsnProvided: false,
-      totalPaid: 599, // EXACT BOUNDARY CASE: $599 -> NOT required
-      requires1099: evaluateVendor1099Requirement(599), // false
-      formType: '1099-NEC',
-    },
-    {
-      vendorId: 'v4',
-      vendorName: 'Delta Electric LLC',
-      einOrSsnProvided: true,
-      totalPaid: 1800,
-      requires1099: evaluateVendor1099Requirement(1800), // true
-      formType: '1099-NEC',
-    },
-  ];
+  for (const p of projects) {
+    if (Array.isArray(p.vendors) && p.vendors.length > 0) {
+      hasVendorRecords = true;
+      for (const v of p.vendors) {
+        const key = v.vendorId || v.id || v.name || 'unnamed';
+        const existing = vendorMap.get(key);
+        const paid = Number(v.totalPaid || v.amount || 0);
+        if (existing) {
+          existing.totalPaid += paid;
+          existing.requires1099 = evaluateVendor1099Requirement(existing.totalPaid);
+        } else {
+          const entryPaid = paid;
+          vendorMap.set(key, {
+            vendorId: v.vendorId || v.id || `v-${Math.random().toString(36).substr(2, 5)}`,
+            vendorName: v.vendorName || v.name || 'Unnamed Vendor',
+            einOrSsnProvided: Boolean(v.ein || v.ssn || v.taxIdProvided),
+            totalPaid: entryPaid,
+            requires1099: evaluateVendor1099Requirement(entryPaid),
+            formType: v.formType || '1099-NEC',
+          });
+        }
+      }
+    }
+  }
 
-  const vendorsRequiring1099Count = sampleVendors.filter(v => v.requires1099).length;
-  const totalReportablePayments = sampleVendors
+  const vendors = Array.from(vendorMap.values());
+  const vendorsRequiring1099Count = vendors.filter(v => v.requires1099).length;
+  const totalReportablePayments = vendors
     .filter(v => v.requires1099)
     .reduce((sum, v) => sum + v.totalPaid, 0);
 
@@ -472,54 +540,57 @@ export function generateForm1099Summary(projects: any[], taxYear: number = 2025)
     taxYear,
     dataThroughDate,
     thresholdAmount: IRS_1099_THRESHOLD,
-    totalVendors: sampleVendors.length,
+    totalVendors: vendors.length,
     vendorsRequiring1099Count,
     totalReportablePayments,
-    vendors: sampleVendors,
+    vendors,
+    isRecorded: hasVendorRecords,
   };
 }
 
 export function generateLogBooks(projects: any[], taxYear: number = 2025): LogBooksData {
   const dataThroughDate = new Date().toISOString().split('T')[0];
-  const rate = 0.67; // IRS 2024/2025 standard mileage rate ($0.67/mi)
+  const rate = 0.67; // IRS standard mileage rate ($0.67/mi)
 
-  const mileageLogs: MileageLogEntry[] = [
-    {
-      id: 'm1',
-      date: `${taxYear}-02-10`,
-      propertyName: projects[0]?.propertyName || 'Evergreen Terrace',
-      purpose: 'Property Inspection & Contractor Walkthrough',
-      miles: 45,
-      deductionAmount: Math.round(45 * rate * 100) / 100,
-    },
-    {
-      id: 'm2',
-      date: `${taxYear}-04-18`,
-      propertyName: projects[0]?.propertyName || 'Evergreen Terrace',
-      purpose: 'Tenant Turnover & Hardware Purchase',
-      miles: 32,
-      deductionAmount: Math.round(32 * rate * 100) / 100,
-    },
-    {
-      id: 'm3',
-      date: `${taxYear}-07-22`,
-      propertyName: projects[1]?.propertyName || 'Springfield Apartments',
-      purpose: 'REIT Advisory & Site Review',
-      miles: 78,
-      deductionAmount: Math.round(78 * rate * 100) / 100,
-    },
-  ];
+  const mileageLogs: MileageLogEntry[] = [];
+  const timeLogs: TimeLogEntry[] = [];
+  let isMileageRecorded = false;
+  let isREPSTimeRecorded = false;
 
-  const timeLogs: TimeLogEntry[] = [
-    { id: 't1', date: `${taxYear}-01-15`, propertyName: projects[0]?.propertyName || 'Evergreen Terrace', activity: 'Lease Drafting & Tenant Screening', hours: 14 },
-    { id: 't2', date: `${taxYear}-03-05`, propertyName: projects[0]?.propertyName || 'Evergreen Terrace', activity: 'Rehab Supervision & Invoice Approval', hours: 48 },
-    { id: 't3', date: `${taxYear}-06-12`, propertyName: projects[1]?.propertyName || 'Springfield Apartments', activity: 'Operating Budget & Refinance Underwriting', hours: 62 },
-  ];
+  for (const p of projects) {
+    if (Array.isArray(p.mileageLogs) && p.mileageLogs.length > 0) {
+      isMileageRecorded = true;
+      for (const m of p.mileageLogs) {
+        const miles = Number(m.miles || 0);
+        mileageLogs.push({
+          id: m.id || `m-${Math.random().toString(36).substr(2, 5)}`,
+          date: m.date || `${taxYear}-01-01`,
+          propertyName: p.propertyName || p.name || 'Unnamed Property',
+          purpose: m.purpose || 'Business Travel',
+          miles,
+          deductionAmount: Math.round(miles * rate * 100) / 100,
+        });
+      }
+    }
 
-  const totalMiles = mileageLogs.reduce((sum, m) => sum + m.miles, 0);
-  const totalMileageDeduction = mileageLogs.reduce((sum, m) => sum + m.deductionAmount, 0);
-  const totalREPSHours = timeLogs.reduce((sum, t) => sum + t.hours, 0) + 680; // Total YTD REPS hours
-  const isREPSMet = totalREPSHours >= 750;
+    if (Array.isArray(p.timeLogs) && p.timeLogs.length > 0) {
+      isREPSTimeRecorded = true;
+      for (const t of p.timeLogs) {
+        timeLogs.push({
+          id: t.id || `t-${Math.random().toString(36).substr(2, 5)}`,
+          date: t.date || `${taxYear}-01-01`,
+          propertyName: p.propertyName || p.name || 'Unnamed Property',
+          activity: t.activity || 'Property Management',
+          hours: Number(t.hours || 0),
+        });
+      }
+    }
+  }
+
+  const totalMiles = isMileageRecorded ? mileageLogs.reduce((sum, m) => sum + m.miles, 0) : null;
+  const totalMileageDeduction = isMileageRecorded ? mileageLogs.reduce((sum, m) => sum + m.deductionAmount, 0) : null;
+  const totalREPSHours = isREPSTimeRecorded ? timeLogs.reduce((sum, t) => sum + t.hours, 0) : null;
+  const isREPSMet = totalREPSHours !== null && totalREPSHours >= 750;
 
   return {
     title: 'Log Books (Mileage & REPS Time Tracking)',
@@ -531,6 +602,8 @@ export function generateLogBooks(projects: any[], taxYear: number = 2025): LogBo
     repsThresholdHours: 750,
     totalREPSHours,
     isREPSMet,
+    isMileageRecorded,
+    isREPSTimeRecorded,
     mileageLogs,
     timeLogs,
   };

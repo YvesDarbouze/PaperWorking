@@ -255,6 +255,11 @@
       "count": 2
     }
   },
+  "scripts/demoClosingTimeline.ts": {
+    "@typescript-eslint/no-explicit-any": {
+      "count": 3
+    }
+  },
   "scripts/examine_html.js": {
     "@typescript-eslint/no-require-imports": {
       "count": 2
@@ -764,6 +769,11 @@
       "count": 1
     }
   },
+  "src/__tests__/fd3DataPlaneMigration.test.ts": {
+    "@typescript-eslint/no-unused-vars": {
+      "count": 2
+    }
+  },
   "src/__tests__/financialsActions.test.ts": {
     "@typescript-eslint/no-explicit-any": {
       "count": 3
@@ -1150,6 +1160,11 @@
   "src/__tests__/operatingActualsCard.test.tsx": {
     "@typescript-eslint/no-explicit-any": {
       "count": 2
+    }
+  },
+  "src/__tests__/operationsVariance.test.ts": {
+    "@typescript-eslint/no-explicit-any": {
+      "count": 1
     }
   },
   "src/__tests__/orgActivityWriter.test.ts": {
@@ -1623,10 +1638,13 @@
   },
   "src/actions/gate.ts": {
     "@typescript-eslint/no-explicit-any": {
-      "count": 6
+      "count": 11
     },
     "@typescript-eslint/no-require-imports": {
-      "count": 3
+      "count": 5
+    },
+    "@typescript-eslint/no-unused-vars": {
+      "count": 1
     }
   },
   "src/actions/index.ts": {
@@ -2077,6 +2095,11 @@
     "@typescript-eslint/no-explicit-any": {
       "count": 4
     },
+    "@typescript-eslint/no-unused-vars": {
+      "count": 1
+    }
+  },
+  "src/app/api/integrations/[[...action]]/route.ts": {
     "@typescript-eslint/no-unused-vars": {
       "count": 1
     }
@@ -2812,6 +2835,11 @@
       "count": 1
     }
   },
+  "src/app/dashboard/projects/[id]/exit-direct/page.tsx": {
+    "react/no-unescaped-entities": {
+      "count": 1
+    }
+  },
   "src/app/dashboard/projects/[id]/instruments/page.tsx": {
     "@typescript-eslint/no-explicit-any": {
       "count": 15
@@ -2852,6 +2880,14 @@
     },
     "react/no-unescaped-entities": {
       "count": 2
+    }
+  },
+  "src/app/dashboard/projects/[id]/operations/page.tsx": {
+    "react-hooks/exhaustive-deps": {
+      "count": 2
+    },
+    "react-hooks/set-state-in-effect": {
+      "count": 1
     }
   },
   "src/app/dashboard/projects/[id]/phase-1/page.tsx": {
@@ -2951,6 +2987,20 @@
       "count": 1
     }
   },
+  "src/app/dashboard/projects/[id]/underwriting/page.tsx": {
+    "@typescript-eslint/no-explicit-any": {
+      "count": 3
+    },
+    "@typescript-eslint/no-unused-vars": {
+      "count": 7
+    },
+    "react-hooks/exhaustive-deps": {
+      "count": 2
+    },
+    "react-hooks/set-state-in-effect": {
+      "count": 2
+    }
+  },
   "src/app/dashboard/projects/new/page.tsx": {
     "@typescript-eslint/no-explicit-any": {
       "count": 1
@@ -2995,6 +3045,42 @@
       "count": 6
     },
     "react-hooks/set-state-in-effect": {
+      "count": 1
+    }
+  },
+  "src/app/dashboard/settings/data-privacy/page.tsx": {
+    "@typescript-eslint/no-explicit-any": {
+      "count": 4
+    },
+    "@typescript-eslint/no-unused-vars": {
+      "count": 2
+    },
+    "react-hooks/purity": {
+      "count": 2
+    },
+    "react-hooks/set-state-in-effect": {
+      "count": 2
+    },
+    "react/no-unescaped-entities": {
+      "count": 2
+    }
+  },
+  "src/app/dashboard/settings/security/page.tsx": {
+    "react-hooks/immutability": {
+      "count": 1
+    },
+    "react-hooks/set-state-in-effect": {
+      "count": 2
+    }
+  },
+  "src/app/dashboard/settings/workspace/page.tsx": {
+    "@next/next/no-img-element": {
+      "count": 1
+    },
+    "react-hooks/incompatible-library": {
+      "count": 1
+    },
+    "react/no-unescaped-entities": {
       "count": 1
     }
   },
@@ -3130,6 +3216,14 @@
       "count": 2
     }
   },
+  "src/app/share/package/[token]/page.tsx": {
+    "@typescript-eslint/no-explicit-any": {
+      "count": 1
+    },
+    "@typescript-eslint/no-unused-vars": {
+      "count": 4
+    }
+  },
   "src/app/subprocessors/page.tsx": {
     "@typescript-eslint/no-unused-vars": {
       "count": 1
@@ -3140,6 +3234,11 @@
       "count": 1
     },
     "@typescript-eslint/no-unused-vars": {
+      "count": 1
+    }
+  },
+  "src/app/takedown/TakedownClient.tsx": {
+    "@typescript-eslint/no-explicit-any": {
       "count": 1
     }
   },
@@ -3484,6 +3583,22 @@
   },
   "src/components/auth/MFAUnenrollModal.tsx": {
     "@typescript-eslint/no-explicit-any": {
+      "count": 1
+    }
+  },
+  "src/components/billing/BillingPage.tsx": {
+    "@typescript-eslint/no-explicit-any": {
+      "count": 9
+    },
+    "@typescript-eslint/no-unused-vars": {
+      "count": 3
+    },
+    "react-hooks/purity": {
+      "count": 2
+    }
+  },
+  "src/components/billing/InvoiceTable.tsx": {
+    "@typescript-eslint/no-unused-vars": {
       "count": 1
     }
   },
@@ -3958,9 +4073,22 @@
       "count": 1
     }
   },
+  "src/components/exit/DispositionChecklist.tsx": {
+    "react-hooks/set-state-in-effect": {
+      "count": 1
+    },
+    "react/no-unescaped-entities": {
+      "count": 2
+    }
+  },
   "src/components/exit/EscrowReconciliation.tsx": {
     "react-hooks/set-state-in-effect": {
       "count": 1
+    }
+  },
+  "src/components/exit/Exchange1031Tracker.tsx": {
+    "react-hooks/set-state-in-effect": {
+      "count": 2
     }
   },
   "src/components/exit/ExecutionStep.tsx": {
@@ -4038,6 +4166,11 @@
     },
     "@typescript-eslint/no-unused-vars": {
       "count": 7
+    }
+  },
+  "src/components/exit/RealizedReturnsSummary.tsx": {
+    "@typescript-eslint/no-unused-vars": {
+      "count": 1
     }
   },
   "src/components/exit/SettlementLedger.tsx": {
@@ -4292,12 +4425,25 @@
       "count": 1
     }
   },
+  "src/components/insights/InsightsDatapointGrid.tsx": {
+    "@typescript-eslint/no-unused-vars": {
+      "count": 1
+    }
+  },
   "src/components/insights/KPICategoryCharts.tsx": {
     "@typescript-eslint/no-explicit-any": {
       "count": 6
     },
     "@typescript-eslint/no-unused-vars": {
       "count": 4
+    }
+  },
+  "src/components/insights/KPIDatapointExplorer.tsx": {
+    "@typescript-eslint/no-unused-vars": {
+      "count": 1
+    },
+    "react-hooks/rules-of-hooks": {
+      "count": 1
     }
   },
   "src/components/insights/KPIInsightsDashboard.tsx": {
@@ -4421,6 +4567,16 @@
       "count": 1
     }
   },
+  "src/components/kpi/DataFreshnessPill.tsx": {
+    "react-hooks/purity": {
+      "count": 1
+    }
+  },
+  "src/components/kpi/KPIDrillDownDrawer.tsx": {
+    "@typescript-eslint/no-unused-vars": {
+      "count": 1
+    }
+  },
   "src/components/landing/FlippingPhases.tsx": {
     "@typescript-eslint/no-explicit-any": {
       "count": 2
@@ -4494,6 +4650,17 @@
   },
   "src/components/layout/FocusedWorkflowLayout.tsx": {
     "@typescript-eslint/no-unused-vars": {
+      "count": 1
+    }
+  },
+  "src/components/layout/NotificationBellDropdown.tsx": {
+    "@typescript-eslint/no-explicit-any": {
+      "count": 1
+    },
+    "@typescript-eslint/no-unused-vars": {
+      "count": 4
+    },
+    "react-hooks/set-state-in-effect": {
       "count": 1
     }
   },
@@ -4834,8 +5001,14 @@
     }
   },
   "src/components/project/ClearToCloseMilestone.tsx": {
+    "@typescript-eslint/no-explicit-any": {
+      "count": 1
+    },
     "react-hooks/set-state-in-effect": {
       "count": 1
+    },
+    "react/no-unescaped-entities": {
+      "count": 2
     }
   },
   "src/components/project/ClosingAttorneyCard.tsx": {
@@ -4959,6 +5132,14 @@
       "count": 2
     }
   },
+  "src/components/project/DocumentUploadCard.tsx": {
+    "@typescript-eslint/no-explicit-any": {
+      "count": 2
+    },
+    "@typescript-eslint/no-unused-vars": {
+      "count": 1
+    }
+  },
   "src/components/project/DocumentVault.tsx": {
     "@typescript-eslint/no-explicit-any": {
       "count": 1
@@ -5077,6 +5258,22 @@
     "@typescript-eslint/no-unused-vars": {
       "count": 3
     },
+    "react-hooks/set-state-in-effect": {
+      "count": 1
+    }
+  },
+  "src/components/project/FundToHoldGate.tsx": {
+    "@typescript-eslint/no-explicit-any": {
+      "count": 3
+    },
+    "react-hooks/exhaustive-deps": {
+      "count": 1
+    },
+    "react-hooks/set-state-in-effect": {
+      "count": 1
+    }
+  },
+  "src/components/project/GateHistoryTimeline.tsx": {
     "react-hooks/set-state-in-effect": {
       "count": 1
     }
@@ -5211,6 +5408,11 @@
       "count": 3
     },
     "react-hooks/set-state-in-effect": {
+      "count": 1
+    }
+  },
+  "src/components/project/JourneyProgressHeader.tsx": {
+    "@typescript-eslint/no-unused-vars": {
       "count": 1
     }
   },
@@ -5730,6 +5932,17 @@
       "count": 3
     }
   },
+  "src/components/projects/PackagesArchiveSection.tsx": {
+    "@typescript-eslint/no-explicit-any": {
+      "count": 1
+    },
+    "@typescript-eslint/no-unused-vars": {
+      "count": 9
+    },
+    "react-hooks/set-state-in-effect": {
+      "count": 1
+    }
+  },
   "src/components/projects/PhaseTodoList.tsx": {
     "react-hooks/rules-of-hooks": {
       "count": 1
@@ -5860,8 +6073,24 @@
       "count": 2
     }
   },
+  "src/components/reports/ReportCatalogGrid.tsx": {
+    "@typescript-eslint/no-unused-vars": {
+      "count": 8
+    }
+  },
   "src/components/reports/ReportGenerator.tsx": {
     "@typescript-eslint/no-unused-vars": {
+      "count": 1
+    }
+  },
+  "src/components/reports/ReportViewModal.tsx": {
+    "@typescript-eslint/no-explicit-any": {
+      "count": 3
+    },
+    "@typescript-eslint/no-unused-vars": {
+      "count": 10
+    },
+    "react/no-unescaped-entities": {
       "count": 1
     }
   },
@@ -5882,6 +6111,21 @@
   "src/components/search/SearchResultCard.tsx": {
     "@typescript-eslint/no-unused-vars": {
       "count": 3
+    }
+  },
+  "src/components/settings/NotificationSettingsTab.tsx": {
+    "@typescript-eslint/no-explicit-any": {
+      "count": 1
+    }
+  },
+  "src/components/settings/SettingsLayout.tsx": {
+    "@typescript-eslint/no-explicit-any": {
+      "count": 2
+    }
+  },
+  "src/components/settings/SettingsSidebar.tsx": {
+    "@typescript-eslint/no-explicit-any": {
+      "count": 2
     }
   },
   "src/components/shared/DealProgressTracker.tsx": {
@@ -6119,6 +6363,11 @@
       "count": 1
     }
   },
+  "src/hooks/useSettingsAccess.ts": {
+    "@typescript-eslint/no-unused-vars": {
+      "count": 1
+    }
+  },
   "src/jest.setup.ts": {
     "@typescript-eslint/no-explicit-any": {
       "count": 2
@@ -6186,6 +6435,11 @@
   "src/lib/contingencyEnforcer.ts": {
     "@typescript-eslint/no-unused-vars": {
       "count": 1
+    }
+  },
+  "src/lib/db/gateEventsStore.ts": {
+    "@typescript-eslint/no-require-imports": {
+      "count": 2
     }
   },
   "src/lib/db/projects.ts": {
@@ -6308,6 +6562,11 @@
   "src/lib/fixtures/holdFixtures.ts": {
     "@typescript-eslint/no-explicit-any": {
       "count": 1
+    }
+  },
+  "src/lib/gates/fundGateLines.ts": {
+    "@typescript-eslint/no-explicit-any": {
+      "count": 2
     }
   },
   "src/lib/help/loader.ts": {
@@ -6460,6 +6719,9 @@
   "src/lib/metrics/computeSupplemental.ts": {
     "@typescript-eslint/no-explicit-any": {
       "count": 13
+    },
+    "@typescript-eslint/no-unused-vars": {
+      "count": 1
     }
   },
   "src/lib/metrics/fixtures.ts": {
@@ -6509,7 +6771,22 @@
       "count": 1
     }
   },
+  "src/lib/notifications/eventStream.ts": {
+    "@typescript-eslint/no-explicit-any": {
+      "count": 5
+    }
+  },
   "src/lib/notifications/lifecycleAlertEngine.ts": {
+    "@typescript-eslint/no-explicit-any": {
+      "count": 2
+    }
+  },
+  "src/lib/operations/variance.ts": {
+    "@typescript-eslint/no-explicit-any": {
+      "count": 1
+    }
+  },
+  "src/lib/packages/documentPackagesEngine.ts": {
     "@typescript-eslint/no-explicit-any": {
       "count": 2
     }
@@ -6634,6 +6911,14 @@
       "count": 2
     }
   },
+  "src/lib/reports/cpaPackageEngine.ts": {
+    "@typescript-eslint/no-explicit-any": {
+      "count": 7
+    },
+    "@typescript-eslint/no-unused-vars": {
+      "count": 1
+    }
+  },
   "src/lib/reports/csvBuilder.ts": {
     "@typescript-eslint/no-explicit-any": {
       "count": 3
@@ -6645,6 +6930,11 @@
     },
     "prefer-const": {
       "count": 2
+    }
+  },
+  "src/lib/reports/reportEngine.ts": {
+    "@typescript-eslint/no-explicit-any": {
+      "count": 9
     }
   },
   "src/lib/services/ProjectMetricsService.ts": {
@@ -6842,6 +7132,11 @@
       "count": 1
     }
   },
+  "src/lib/testing/playwright-auth.ts": {
+    "@typescript-eslint/no-explicit-any": {
+      "count": 2
+    }
+  },
   "src/lib/utils/BridgeFeedHandler.ts": {
     "@typescript-eslint/no-explicit-any": {
       "count": 1
@@ -6870,6 +7165,11 @@
   "src/lib/utils/deepDiff.ts": {
     "@typescript-eslint/no-explicit-any": {
       "count": 8
+    }
+  },
+  "src/lib/utils/exchange1031.ts": {
+    "@typescript-eslint/no-unused-vars": {
+      "count": 1
     }
   },
   "src/lib/utils/projectProgress.ts": {

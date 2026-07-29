@@ -224,37 +224,31 @@ describe('AQ-1: Acquisition Variable Registry', () => {
 
     it('NOI = $12,486 (on gross-scheduled-rent PM fee basis)', () => {
       expect(metrics.noi).toBe(12_486);
-      // eslint-disable-next-line no-console
       console.log(`  NOI:       $${metrics.noi.toLocaleString()}`);
     });
 
     it('Cap Rate ≈ 4.5% (locked)', () => {
       expect(metrics.capRate).toBeCloseTo(4.5, 1);
-      // eslint-disable-next-line no-console
       console.log(`  Cap Rate:  ${metrics.capRate.toFixed(2)}%`);
     });
 
     it('Cash Flow ≈ −$4,444 (on gross-scheduled-rent PM fee basis)', () => {
       expect(metrics.annualCashFlow).toBeCloseTo(-4444, 0);
-      // eslint-disable-next-line no-console
       console.log(`  Cash Flow: $${metrics.annualCashFlow.toFixed(2)}`);
     });
 
     it('DSCR ≈ 0.74 (on gross-scheduled-rent PM fee basis)', () => {
       expect(metrics.dscr).toBeCloseTo(0.74, 1);
-      // eslint-disable-next-line no-console
       console.log(`  DSCR:      ${metrics.dscr.toFixed(2)}`);
     });
 
     it('CoC Return ≈ −7.41% (on gross-scheduled-rent PM fee basis)', () => {
       expect(metrics.cashOnCashReturn).toBeCloseTo(-7.41, 1);
-      // eslint-disable-next-line no-console
       console.log(`  CoC:       ${metrics.cashOnCashReturn.toFixed(2)}%`);
     });
 
     it('GRM ≈ 11.92 (locked)', () => {
       expect(metrics.grossRentMultiplier).toBeCloseTo(11.92, 1);
-      // eslint-disable-next-line no-console
       console.log(`  GRM:       ${metrics.grossRentMultiplier.toFixed(2)}`);
     });
   });

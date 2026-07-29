@@ -142,7 +142,6 @@ describe('Prompt 63 — Milestone Emails: wire stubs to real dispatch', () => {
   // 6. generateFirstMetricEmail template output
   // ─────────────────────────────────────────────────────────────────────────
   describe('generateFirstMetricEmail template', () => {
-    // eslint-disable-next-line @typescript-eslint/no-var-requires
     const { generateFirstMetricEmail } = require('../lib/emails/templates/FirstMetricEmail');
 
     it('returns subject and html', () => {
@@ -210,7 +209,6 @@ describe('Prompt 63 — Milestone Emails: wire stubs to real dispatch', () => {
   // 7. generateSecondProjectEmail template output
   // ─────────────────────────────────────────────────────────────────────────
   describe('generateSecondProjectEmail template', () => {
-    // eslint-disable-next-line @typescript-eslint/no-var-requires
     const { generateSecondProjectEmail } = require('../lib/emails/templates/SecondProjectEmail');
 
     it('returns subject and html', () => {

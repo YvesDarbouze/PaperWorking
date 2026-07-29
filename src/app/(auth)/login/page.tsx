@@ -105,7 +105,6 @@ function LoginPageInner() {
           router.replace(newUrl.pathname + newUrl.search);
         });
       } else {
-        // eslint-disable-next-line react-hooks/set-state-in-effect
         setHandledExpired(true);
         const newUrl = new URL(window.location.href);
         newUrl.searchParams.delete('reason');
@@ -387,7 +386,6 @@ function LoginPageInner() {
           {/* Password form */}
           {loginMode === 'password' && !isSignUp && (
             <form
-              // eslint-disable-next-line react-hooks/refs
               onSubmit={handleLoginSubmit(onSubmitPassword)}
               className="w-full space-y-4 animate-in fade-in duration-200"
             >
@@ -466,7 +464,6 @@ function LoginPageInner() {
           {/* Signup Password form */}
           {loginMode === 'password' && isSignUp && (
             <form
-              // eslint-disable-next-line react-hooks/refs
               onSubmit={handleSignupSubmit(onSubmitSignup)}
               className="w-full space-y-4 animate-in fade-in duration-200"
             >

@@ -1,0 +1,37 @@
+- [x] Settings Tab Refactor & Routing
+  - [x] Create role-tier mapping logic
+  - [x] Setup nested settings layout and dynamic headers
+  - [x] Configure automatic URL guards and redirects
+- [x] State Management (Zustand settingsStore)
+  - [x] Implement robust unified `settingsStore` with slices for profile, billing, team, workspace, security, integrations, and notifications
+- [x] API Integrations (`/api/settings/[section]`)
+  - [x] Create `/api/settings/[section]` dynamic route handler
+  - [x] Support Profile retrieval and updating
+  - [x] Support Billing, plan changing, and cancellations
+  - [x] Support Team members, roles, and invites
+  - [x] Support Workspace defaults and guidelines
+  - [x] Support Security configurations (2FA, whitelists, timeouts)
+  - [x] Support Integrations state and notifications preferences
+- [x] Skeletons & Error Boundaries
+  - [x] Create reusable skeleton loaders matching content structures
+  - [x] Implement settings Error Boundary component
+- [x] Refactor Settings Subpages
+  - [x] Wire up subpages to settingsStore with skeleton loaders and react-hook-form validations
+- [x] Redesign Billing Page
+  - [x] Rebuilt billing page module from scratch using premium card layouts and sage green themes
+  - [x] Created `BillingPage.tsx` main settings pane
+  - [x] Created `PlanCard.tsx` reusable subscription tier displays
+  - [x] Created `PaymentMethodCard.tsx` default selector and card display component
+  - [x] Created `InvoiceTable.tsx` invoice list with custom status badges and pagination
+  - [x] Created `ChangePlanModal.tsx` selection overlay modal
+  - [x] Created `CancelSubscriptionModal.tsx` subscription cancellation consequences modal
+  - [x] Created `AddCardModal.tsx` custom card details inputs form modal
+  - [x] Defined TypeScript structures in `Billing.ts`, `Invoice.ts`, and `Plan.ts`
+- [x] Admin Settings Consoles
+  - [x] Team & Access (/settings/team) user list table and invite flows
+  - [x] Workspace Identity (/settings/workspace) drag-and-drop logo and timezone search
+  - [x] Security Guardrails (/settings/security) SAML configs, timeout, and CIDR allowlist
+  - [x] Data Control (/settings/data-privacy) archive exports and grace-period deletion
+- [x] Verification & Building
+  - [x] Verify that TypeScript type checks run clean (`npx tsc --noEmit`)
+  - [x] Ensure all 2356 Jest unit tests pass completely green

@@ -1,11 +1,14 @@
 'use client';
 
 import React, { useRef, useState, useEffect, useCallback } from 'react';
-import { useParams, useRouter } from 'next/navigation';
+import { useParams, useRouter, useSearchParams } from 'next/navigation';
 import { CheckCircle2, XCircle, Shield, FileText, Home, Pen, Mail, Send, Clock, Lock, TrendingUp, Coins, HelpCircle, MessageSquare, Loader2, AlertCircle } from 'lucide-react';
 import { useAuth } from '@/context/AuthContext';
 import { MetricChart } from '@/components/metrics/MetricChart';
 import toast from 'react-hot-toast';
+import FollowInvestorButton from '@/components/listings/FollowInvestorButton';
+import { SoftCommitWidget } from '@/components/project/SoftCommitWidget';
+import { recordConversionTelemetry } from '@/actions/telemetry';
 
 /* ═══════════════════════════════════════════════════════
    Guest Portal — External Investor View (Luminous Glass)
@@ -37,7 +40,7 @@ interface DealTokenData {
   interestRate: number;
   legalEntity: string;
   expiresAt: string;
-  status: 'pending' | 'accepted' | 'declined' | 'expired';
+  status: 'pending' | 'accepted' | 'declined' | 'expired' | 'interested';
   noiHistory: { date: string; value: number }[];
   capRateHistory: { date: string; value: number }[];
   cashFlowHistory: { date: string; value: number }[];
@@ -53,8 +56,12 @@ interface DealTokenData {
   opportunitySummary?: string;
   commitmentStatus?: string;
   commitmentId?: string | null;
-  subscriptionAgreementTemplate?: { name: string; url: string; uploadedAt: string } | null;
   projectId?: string;
+  subscriptionAgreementTemplate?: { name: string; url: string; uploadedAt: string } | null;
+  cardExchangeStatus?: 'pending' | 'accepted' | 'declined' | 'none';
+  inviteeBusinessCard?: { name: string; email: string; phone: string; company: string } | null;
+  sponsorBusinessCard?: { name: string; email: string; phone: string; company: string; uid?: string } | null;
+  inquiries?: any[];
 }
 
 interface DealUpdate {
@@ -69,6 +76,8 @@ export default function GuestPortalPage() {
   const params = useParams();
   const token = params?.token as string;
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const [processedUrlAction, setProcessedUrlAction] = useState(false);
 
   const { user, loading: authLoading } = useAuth();
 
@@ -98,10 +107,21 @@ export default function GuestPortalPage() {
   const [sponsorMessage, setSponsorMessage] = useState('');
   const [sendingSponsorMsg, setSendingSponsorMsg] = useState(false);
   const [askError, setAskError] = useState<string | null>(null);
+  const [followUpMsg, setFollowUpMsg] = useState('');
+  const [sendingFollowUp, setSendingFollowUp] = useState(false);
 
   // Subscription execution details
   const [activeSubManualSign, setActiveSubManualSign] = useState(false);
   const [subManualEvidence, setSubManualEvidence] = useState('');
+  const [showDeclineReason, setShowDeclineReason] = useState(false);
+  const [declineReason, setDeclineReason] = useState('');
+
+  // Business Card Exchange States
+  const [showCardModal, setShowCardModal] = useState(false);
+  const [cardName, setCardName] = useState('');
+  const [cardEmail, setCardEmail] = useState('');
+  const [cardPhone, setCardPhone] = useState('');
+  const [cardCompany, setCardCompany] = useState('');
 
   // The investment amount is set by the sponsor at invite time
   // (invitation.proposedAmount) — the investor cannot edit it; the
@@ -112,21 +132,14 @@ export default function GuestPortalPage() {
     e.preventDefault();
     setSubmittingSubscribe(true);
     try {
-      const res = await fetch(`/api/invitations/${token}/subscribe`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          name: subscribeForm.name,
-          email: subscribeForm.email,
-        }),
-      });
-      const data = await res.json();
-      if (res.ok && data.success) {
-        setIsSubscribedInSession(true);
-        toast.success('Subscription confirmed! Deal details unlocked.');
-      } else {
-        toast.error(data.error || 'Failed to confirm subscription.');
-      }
+      // Stash name/email and target action
+      sessionStorage.setItem(`pw_pending_deal_action_${token}`, JSON.stringify({
+        action: 'view_deal',
+        name: subscribeForm.name,
+        email: subscribeForm.email,
+      }));
+      toast('Redirecting to registration to create your account...');
+      router.push(`/register?invite=${token}&name=${encodeURIComponent(subscribeForm.name)}&email=${encodeURIComponent(subscribeForm.email)}`);
     } catch (err) {
       console.error(err);
       toast.error('An error occurred during subscription.');
@@ -146,10 +159,20 @@ export default function GuestPortalPage() {
         if (res.ok) {
           const data = await res.json();
           setDealData(data as DealTokenData);
+          setCardName(data.investorName || '');
+          setCardEmail(data.investorEmail || '');
           setSubscribeForm({
             name: data.investorName || '',
             email: data.investorEmail || '',
           });
+          
+          recordConversionTelemetry({
+            eventType: 'deal_invite',
+            listingId: data.listingId || undefined,
+            details: { projectId: data.projectId },
+            sessionToken: token,
+          }).catch(() => {});
+
           return;
         }
         const legacyRes = await fetch(`/api/invest/${token}`);
@@ -168,6 +191,74 @@ export default function GuestPortalPage() {
     fetchDealData();
   }, [fetchDealData]);
 
+  // Handle URL one-tap actions
+  useEffect(() => {
+    if (!dealData || processedUrlAction) return;
+
+    const action = searchParams.get('action');
+    if (!action) return;
+
+    setProcessedUrlAction(true);
+
+    if (action === 'decline') {
+      const declineOneTap = async () => {
+        try {
+          const res = await fetch('/api/invitations/respond', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ token, action: 'decline', declineReason: '' }),
+          });
+          const data = await res.json();
+          if (res.ok && data.success) {
+            toast.success('Invitation declined successfully.');
+            setShowDeclineReason(true); // Open optional reason dialog
+            fetchDealData();
+          } else {
+            toast.error(data.error || 'Failed to decline invitation.');
+          }
+        } catch (err) {
+          console.error('Decline error:', err);
+          toast.error('Failed to decline invitation.');
+        }
+      };
+      declineOneTap();
+    } else if (action === 'interested') {
+      setShowCardModal(true);
+    } else if (action === 'ask') {
+      setShowAskSponsor(true);
+    }
+  }, [dealData, searchParams, processedUrlAction, token, fetchDealData]);
+
+  // Restore stashed signup context
+  useEffect(() => {
+    if (!user || !dealData) return;
+
+    const pendingActionKey = `pw_pending_deal_action_${token}`;
+    const stored = sessionStorage.getItem(pendingActionKey);
+    if (stored) {
+      sessionStorage.removeItem(pendingActionKey);
+      try {
+        const parsed = JSON.parse(stored);
+        if (parsed.action === 'insights') {
+          setShowInsights(true);
+          toast.success('Insights unlocked successfully!');
+        } else if (parsed.action === 'commit') {
+          if (parsed.subManualEvidence) {
+            setSubManualEvidence(parsed.subManualEvidence);
+          }
+          setTimeout(() => {
+            signatureSectionRef.current?.scrollIntoView({ behavior: 'smooth' });
+            toast('Draw your signature to execute commitment.', { icon: '✍️' });
+          }, 300);
+        } else if (parsed.action === 'view_deal') {
+          toast.success('Deal details unlocked successfully!');
+        }
+      } catch (e) {
+        console.warn('Failed to parse pending deal action:', e);
+      }
+    }
+  }, [user, dealData, token]);
+
   // Read-only guest updates feed — plain fetch, not a client Firestore
   // subscription, so no public security rules are needed on the subcollection.
   useEffect(() => {
@@ -178,7 +269,7 @@ export default function GuestPortalPage() {
       .catch(() => setDealUpdates([]));
   }, [token, dealData]);
 
-  const alreadyResponded = dealData?.status === 'accepted' || dealData?.status === 'declined';
+  const alreadyResponded = false;
 
   // Canvas drawing handlers
   const startDraw = useCallback((e: React.MouseEvent<HTMLCanvasElement> | React.TouchEvent<HTMLCanvasElement>) => {
@@ -320,6 +411,17 @@ export default function GuestPortalPage() {
 
   // Commit CTA in sidebar (scrolls to signature if not yet signed)
   const handleCommitCTA = () => {
+    if (!user) {
+      sessionStorage.setItem(`pw_pending_deal_action_${token}`, JSON.stringify({
+        action: 'commit',
+        commitmentStatus: dealData?.commitmentStatus,
+        subManualEvidence,
+      }));
+      toast('Redirecting to registration to execute commitment...');
+      router.push(`/register?invite=${token}&name=${encodeURIComponent(subscribeForm.name)}&email=${encodeURIComponent(subscribeForm.email)}`);
+      return;
+    }
+
     if (dealData?.commitmentStatus === 'docs-out') {
       if (!hasSigned) {
         signatureSectionRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -330,10 +432,6 @@ export default function GuestPortalPage() {
       return;
     }
 
-    if (!user) {
-      router.push(`/login?redirectTo=${encodeURIComponent('/invest/' + token)}`);
-      return;
-    }
     if (!hasSigned) {
       signatureSectionRef.current?.scrollIntoView({ behavior: 'smooth' });
       toast('Draw your signature below to record your commitment.', { icon: '✍️' });
@@ -344,23 +442,91 @@ export default function GuestPortalPage() {
 
   // Decline — real, persisted response. The sponsor is notified server-side
   // (real email via /api/invitations/respond), not by a client-side toast.
-  const handleDecline = async () => {
+  const handleDecline = async (reason?: string) => {
     try {
       setSubmitting(true);
       setSubmitError(null);
       const res = await fetch('/api/invitations/respond', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ token, action: 'decline' }),
+        body: JSON.stringify({ token, action: 'decline', declineReason: reason }),
       });
       const data = await res.json();
       if (res.ok && data.success) {
         setDealData((prev) => (prev ? { ...prev, status: 'declined' } : prev));
+        setShowDeclineReason(false);
+        setDeclineReason('');
+        toast.success('You have declined this opportunity.');
       } else {
         toast.error(data.error || 'Failed to record your response.');
       }
     } catch (err) {
       console.error('Decline submission failed:', err);
+      toast.error('An unexpected error occurred. Please try again.');
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
+  const handleInterested = async (disclosedCard?: any) => {
+    try {
+      setSubmitting(true);
+      setSubmitError(null);
+      const card = disclosedCard || {
+        name: cardName,
+        email: cardEmail,
+        phone: cardPhone,
+        company: cardCompany,
+        uid: user?.uid || null,
+      };
+      const res = await fetch('/api/invitations/respond', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          token,
+          action: 'interested',
+          disclosedCard: card,
+        }),
+      });
+      const data = await res.json();
+      if (res.ok && data.success) {
+        setDealData((prev) => (prev ? {
+          ...prev,
+          status: 'interested',
+          cardExchangeStatus: 'pending',
+          inviteeBusinessCard: card,
+        } : prev));
+        toast.success("Thank you! You signaled interest and shared your business card. The sponsor has been notified.");
+        setShowCardModal(false);
+      } else {
+        toast.error(data.error || 'Failed to record your response.');
+      }
+    } catch (err) {
+      console.error('Interested submission failed:', err);
+      toast.error('An unexpected error occurred. Please try again.');
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
+  const handleReopen = async () => {
+    try {
+      setSubmitting(true);
+      setSubmitError(null);
+      const res = await fetch('/api/invitations/respond', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ token, action: 'reopen' }),
+      });
+      const data = await res.json();
+      if (res.ok && data.success) {
+        setDealData((prev) => (prev ? { ...prev, status: 'pending' } : prev));
+        toast.success('Response reset. You can choose a new response.');
+      } else {
+        toast.error(data.error || 'Failed to reset response.');
+      }
+    } catch (err) {
+      console.error('Reopen failed:', err);
       toast.error('An unexpected error occurred. Please try again.');
     } finally {
       setSubmitting(false);
@@ -384,6 +550,7 @@ export default function GuestPortalPage() {
         setSponsorMessage('');
         setShowAskSponsor(false);
         toast.success('Your question was sent to the sponsor.');
+        fetchDealData();
       } else {
         setAskError(data.error || 'Failed to send your question.');
       }
@@ -392,6 +559,33 @@ export default function GuestPortalPage() {
       setAskError('An unexpected error occurred. Please try again.');
     } finally {
       setSendingSponsorMsg(false);
+    }
+  };
+
+  // Ask Sponsor follow-up
+  const handleSendFollowUpMessage = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!followUpMsg.trim() || sendingFollowUp) return;
+    setSendingFollowUp(true);
+    try {
+      const res = await fetch(`/api/invitations/${token}/ask`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ message: followUpMsg.trim() }),
+      });
+      const data = await res.json();
+      if (res.ok && data.success) {
+        setFollowUpMsg('');
+        toast.success('Your question has been sent to the sponsor.');
+        fetchDealData();
+      } else {
+        toast.error(data.error || 'Failed to send your message.');
+      }
+    } catch (err) {
+      console.error('Follow-up message failed:', err);
+      toast.error('An unexpected error occurred. Please try again.');
+    } finally {
+      setSendingFollowUp(false);
     }
   };
 
@@ -659,7 +853,17 @@ export default function GuestPortalPage() {
                 
                 <div className="flex gap-3">
                   <button 
-                    onClick={() => setShowInsights(true)}
+                    onClick={() => {
+                      if (!user) {
+                        sessionStorage.setItem(`pw_pending_deal_action_${token}`, JSON.stringify({
+                          action: 'insights',
+                        }));
+                        toast('Redirecting to registration to unlock insights...');
+                        router.push(`/register?invite=${token}&name=${encodeURIComponent(subscribeForm.name)}&email=${encodeURIComponent(subscribeForm.email)}`);
+                        return;
+                      }
+                      setShowInsights(true);
+                    }}
                     className="bg-surface/60 backdrop-blur-md border border-white/10 hover:bg-surface/80 text-white px-4 py-2 rounded-xl flex items-center gap-2 transition-all group font-mono text-[10px] uppercase"
                   >
                     <span className="material-symbols-outlined text-sm select-none group-hover:text-[#454955]">folder_open</span>
@@ -804,205 +1008,533 @@ export default function GuestPortalPage() {
               )}
             </section>
 
-            {/* LOI/Subscription Execution Box */}
-            {['signed', 'funds-confirmed', 'cleared'].includes(dealData.commitmentStatus || '') ? (
-              <section className="glass-card p-6 md:p-8 rounded-2xl space-y-4 flex flex-col items-center justify-center text-center">
-                <CheckCircle2 className="w-12 h-12 text-[#454955] animate-pulse" />
-                <h3 className="font-mono text-sm font-bold text-white uppercase tracking-wider">Subscription Executed</h3>
-                <p className="text-xs text-[#8a9b9b] max-w-sm leading-relaxed">
-                  Your definitive subscription agreement has been signed. 
-                  {dealData.commitmentStatus === 'signed' 
-                    ? " We are currently awaiting sponsor verification of your off-platform capital deposit."
-                    : " Your funding is confirmed and active in the capital stack!"}
-                </p>
-                {dealData.commitmentStatus === 'signed' && (
-                  <div className="text-[10px] text-amber-400 font-medium px-2.5 py-1 rounded bg-amber-500/10 border border-amber-500/20 uppercase tracking-wider font-mono">
-                    Awaiting Capital Deposit Confirmation
-                  </div>
-                )}
-              </section>
-            ) : (dealData.commitmentStatus === 'soft-committed' || dealData.commitmentStatus === 'pledged') && dealData.status === 'accepted' ? (
-              <section className="glass-card p-6 md:p-8 rounded-2xl space-y-4 flex flex-col items-center justify-center text-center">
-                <Clock className="w-12 h-12 text-[#8a9b9b] animate-bounce" />
-                <h3 className="font-mono text-xs font-bold text-white uppercase tracking-wider">LOI Signed & Registered</h3>
-                <p className="text-xs text-[#8a9b9b] max-w-md leading-relaxed">
-                  Thank you! Your preliminary soft-commitment is recorded. The sponsor is preparing your definitive Subscription Agreement. You will receive an email once it is ready for execution.
-                </p>
-              </section>
-            ) : (
-              <section ref={signatureSectionRef} className="glass-card p-6 md:p-8 rounded-2xl space-y-6">
-                <div className="flex items-center gap-2 border-b border-white/5 pb-3">
-                  <FileText className="w-4 h-4 text-[#454955]" />
-                  <h3 className="font-mono text-[10px] font-bold text-white uppercase tracking-[0.2em]">
-                    {dealData.commitmentStatus === 'docs-out' ? 'Subscription Agreement — Execution' : 'Letter of Intent — Execution'}
-                  </h3>
+            {/* Discussion & Q&A Board */}
+            <section className="glass-card rounded-2xl overflow-hidden border border-white/10 space-y-4">
+              <div className="px-6 py-4 border-b border-white/5 bg-white/5 flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <MessageSquare className="w-3.5 h-3.5 text-[#454955]" />
+                  <h3 className="font-mono text-[10px] font-bold text-[#454955] uppercase tracking-[0.2em]">Discussion & Q&A</h3>
+                </div>
+              </div>
+
+              <div className="p-6 space-y-6">
+                {/* 1. Own Private Question Thread */}
+                <div>
+                  <h4 className="text-[10px] font-bold uppercase tracking-wider text-[#8a9b9b] mb-3">Your Conversation with Sponsor</h4>
+                  {(() => {
+                    const ownInquiry = (dealData?.inquiries || []).find((i: any) => i.isOwn);
+                    if (!ownInquiry) {
+                      return (
+                        <div className="p-4 bg-white/5 rounded-xl border border-white/5 flex flex-col items-center justify-center text-center">
+                          <p className="text-xs text-[#8a9b9b] mb-3">Have questions about the underwriting model, exit details, or capital structure?</p>
+                          <button
+                            id="btn-ask-sponsor-qa"
+                            onClick={() => setShowAskSponsor(true)}
+                            className="px-4 py-2 bg-[#454955] hover:bg-[#454955]/90 text-[#0d0a0b] font-bold text-xs uppercase tracking-wider rounded-lg transition-all"
+                          >
+                            Ask Sponsor a Question
+                          </button>
+                        </div>
+                      );
+                    }
+
+                    return (
+                      <div className="space-y-4">
+                        <div className="bg-[#0d0a0b]/40 border border-white/5 rounded-xl p-4 max-h-[250px] overflow-y-auto space-y-3">
+                          {ownInquiry.messages && ownInquiry.messages.length > 0 ? (
+                            ownInquiry.messages.map((msg: any) => {
+                              const isSponsor = msg.sender === 'sponsor';
+                              return (
+                                <div
+                                  key={msg.id}
+                                  className={`flex flex-col gap-1 p-3 rounded-xl max-w-[85%] text-left ${
+                                    isSponsor
+                                      ? 'ml-auto bg-black/60 border border-[#454955]/30'
+                                      : 'bg-white/5 border border-white/10'
+                                  }`}
+                                >
+                                  <span className={`text-[9px] font-mono font-bold uppercase ${isSponsor ? 'text-[#8a9b9b]' : 'text-primary'}`}>
+                                    {isSponsor ? 'Sponsor' : 'You'}
+                                  </span>
+                                  <p className="text-xs text-white/90 whitespace-pre-wrap">{msg.text}</p>
+                                  <span className="text-[8px] text-[#8a9b9b] self-end mt-1 font-mono">
+                                    {new Date(msg.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                                  </span>
+                                </div>
+                              );
+                            })
+                          ) : (
+                            <div className="flex flex-col gap-1 p-3 bg-white/5 border border-white/10 rounded-xl max-w-[85%] text-left">
+                              <span className="text-[9px] font-bold text-primary font-mono uppercase">You</span>
+                              <p className="text-xs text-white/90 whitespace-pre-wrap">{ownInquiry.message}</p>
+                            </div>
+                          )}
+                        </div>
+
+                        {/* Follow-up input form */}
+                        <form onSubmit={handleSendFollowUpMessage} className="flex gap-2">
+                          <input
+                            type="text"
+                            value={followUpMsg}
+                            onChange={(e) => setFollowUpMsg(e.target.value)}
+                            placeholder="Type a follow-up question..."
+                            maxLength={2000}
+                            required
+                            className="flex-1 px-4 py-2.5 bg-[#0d0a0b]/80 border border-white/10 rounded-xl text-xs text-white focus:outline-none focus:border-[#454955] transition-all"
+                          />
+                          <button
+                            type="submit"
+                            disabled={sendingFollowUp || !followUpMsg.trim()}
+                            className="px-4 py-2.5 bg-[#454955] hover:bg-[#454955]/90 text-[#0d0a0b] disabled:opacity-50 font-bold text-xs uppercase tracking-wider rounded-xl transition-all flex items-center justify-center gap-1.5"
+                          >
+                            {sendingFollowUp ? (
+                              <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                            ) : (
+                              <Send className="w-3.5 h-3.5" />
+                            )}
+                            Send
+                          </button>
+                        </form>
+                      </div>
+                    );
+                  })()}
                 </div>
 
-                <div className="space-y-3 font-mono text-xs max-w-lg">
-                  <div className="flex justify-between py-1.5 border-b border-white/5">
-                    <span className="text-[#8a9b9b]">Legal Entity</span>
-                    <span className="text-white font-semibold">{dealData.legalEntity || 'PaperWorking Holdings LLC'}</span>
-                  </div>
-                  <div className="flex justify-between py-1.5 border-b border-white/5">
-                    <span className="text-[#8a9b9b]">Commitment Amount</span>
-                    <span className="text-[#454955] font-bold">${investmentAmount.toLocaleString()}</span>
-                  </div>
-                  <div className="flex justify-between py-1.5 border-b border-white/5">
-                    <span className="text-[#8a9b9b]">Equity Split</span>
-                    <span className="text-white font-semibold">{dealData.equitySplit}%</span>
-                  </div>
-                  <div className="flex justify-between py-1.5 border-b border-white/5">
-                    <span className="text-[#8a9b9b]">Interest Rate</span>
-                    <span className="text-white font-semibold">{dealData.interestRate}% per annum</span>
-                  </div>
-                  <div className="flex justify-between py-1.5">
-                    <span className="text-[#8a9b9b]">Term Length</span>
-                    <span className="text-white font-semibold">{dealData.termMonths} months</span>
-                  </div>
-                </div>
+                {/* 2. Shared Community Questions */}
+                <div className="border-t border-white/5 pt-4">
+                  <h4 className="text-[10px] font-bold uppercase tracking-wider text-[#8a9b9b] mb-3">Public Q&A (Anonymized)</h4>
+                  {(() => {
+                    const sharedInquiries = (dealData?.inquiries || []).filter((i: any) => i.isShared && !i.isOwn);
+                    if (sharedInquiries.length === 0) {
+                      return (
+                        <p className="text-xs text-[#8a9b9b] font-mono italic">No shared public Q&As available for this deal yet.</p>
+                      );
+                    }
 
-                {dealData.commitmentStatus === 'docs-out' && dealData.subscriptionAgreementTemplate ? (
-                  <div className="p-3 bg-white/5 border border-white/10 rounded-xl flex items-center justify-between text-xs text-[#8a9b9b]">
-                    <div className="flex items-center gap-2">
-                      <FileText className="w-4 h-4 text-[#7A9EAA]" />
-                      <span>Definitive Document: <strong>{dealData.subscriptionAgreementTemplate.name}</strong></span>
-                    </div>
-                    <a
-                      href={dealData.subscriptionAgreementTemplate.url}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="underline text-white font-bold text-[10px] uppercase tracking-wider hover:text-white/80 transition"
-                    >
-                      Download PDF
-                    </a>
+                    return (
+                      <div className="space-y-3">
+                        {sharedInquiries.map((inq: any) => {
+                          const question = inq.message || (inq.messages?.[0]?.text) || '';
+                          const replies = inq.messages || [];
+
+                          return (
+                            <div key={inq.id} className="p-3 bg-white/5 border border-white/5 rounded-xl space-y-2 text-left">
+                              <div className="flex flex-col gap-0.5">
+                                <span className="text-[8px] font-mono font-bold text-primary uppercase">Investor Question (Anonymous)</span>
+                                <p className="text-xs text-white/90 font-mono italic font-sans">"{question}"</p>
+                              </div>
+                              {replies.filter((m: any) => m.sender === 'sponsor').map((msg: any) => (
+                                <div key={msg.id} className="pl-3 border-l-2 border-[#454955]/50 mt-2">
+                                  <span className="text-[8px] font-mono font-bold text-[#8a9b9b] uppercase">Sponsor Response</span>
+                                  <p className="text-xs text-white/80 whitespace-pre-wrap mt-0.5">{msg.text}</p>
+                                </div>
+                              ))}
+                            </div>
+                          );
+                        })}
+                      </div>
+                    );
+                  })()}
+                </div>
+              </div>
+            </section>
+
+            {/* LOI/Subscription Response & Execution Box */}
+            <section className="glass-card p-6 md:p-8 rounded-2xl space-y-6">
+              {/* Current Response State Banners */}
+              {dealData.status === 'declined' && (
+                <div className="p-4 rounded-xl border border-red-500/20 bg-red-950/20 text-red-400 space-y-3">
+                  <div className="flex items-center gap-2">
+                    <XCircle className="w-5 h-5 shrink-0" />
+                    <span className="font-semibold text-sm">Opportunity Declined</span>
                   </div>
-                ) : (
-                  <p className="text-[11px] text-[#8a9b9b] leading-relaxed">
-                    This Letter of Intent represents your commitment to proceed under the terms outlined above, and is subject to the final execution of a definitive subscription agreement.
+                  <p className="text-xs text-[#8a9b9b]">
+                    You have declined this invitation. You can change your response at any time using the button below.
                   </p>
-                )}
+                  <button
+                    onClick={handleReopen}
+                    disabled={submitting}
+                    className="px-4 py-2 bg-white/5 hover:bg-white/10 text-white rounded-lg text-xs font-semibold font-mono border border-white/10 transition"
+                  >
+                    Change Response
+                  </button>
+                </div>
+              )}
 
-                {/* Canvas Signature Pad */}
-                <div className="space-y-3">
-                  <div className="flex justify-between items-center">
-                    <label className="block text-[9px] font-bold text-[#8a9b9b] uppercase tracking-wider">Draw Digital Signature</label>
-                    {hasSigned && (
-                      <button
-                        onClick={clearSignature}
-                        className="text-[9px] text-[#8a9b9b] hover:text-white transition uppercase font-mono border-b border-dashed border-[#8a9b9b]"
-                      >
-                        Clear Signature
-                      </button>
-                    )}
+              {dealData.status === 'interested' && (
+                <div className="space-y-4">
+                  <div className="p-5 rounded-2xl border border-emerald-500/20 bg-emerald-950/20 text-emerald-400 space-y-3 shadow-[0_0_20px_rgba(16,185,129,0.05)]">
+                    <div className="flex items-center gap-2">
+                      <CheckCircle2 className="w-5 h-5 shrink-0" />
+                      <span className="font-semibold text-sm">Interest Logged // Double Opt-In Active</span>
+                    </div>
+                    <p className="text-xs text-[#8a9b9b] leading-relaxed">
+                      You indicated you are interested.
+                      {dealData.cardExchangeStatus === 'accepted'
+                        ? ' The Lead Investor has accepted the business card exchange. Contact details are now unlocked below.'
+                        : ' The business card exchange is pending sponsor acceptance. Your contact details are hidden until they opt-in and release their card.'}
+                    </p>
+                    <button
+                      onClick={handleReopen}
+                      disabled={submitting}
+                      className="px-4 py-2 bg-white/5 hover:bg-white/10 text-white rounded-lg text-xs font-semibold font-mono border border-white/10 transition"
+                    >
+                      Change Response
+                    </button>
                   </div>
 
-                  <div className="relative border border-dashed border-white/20 rounded-xl overflow-hidden bg-white">
-                    <canvas
-                      id="loi-signature-canvas"
-                      ref={canvasRef}
-                      width={600}
-                      height={120}
-                      className="w-full cursor-crosshair h-[120px]"
-                      onMouseDown={startDraw}
-                      onMouseMove={draw}
-                      onMouseUp={stopDraw}
-                      onMouseLeave={stopDraw}
-                      onTouchStart={startDraw}
-                      onTouchMove={draw}
-                      onTouchEnd={stopDraw}
-                    />
-                    {!hasSigned && (
-                      <div className="absolute inset-0 flex items-center justify-center pointer-events-none select-none">
-                        <p className="text-xs text-[#9E9DA0] font-mono">DRAW SIGNATURE HERE</p>
+                  {/* Render Business Cards */}
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    {/* Invitee Card (Always visible to invitee) */}
+                    <div className="relative overflow-hidden rounded-2xl border border-white/10 bg-white/[0.02] p-6 shadow-2xl backdrop-blur-md flex flex-col justify-between h-48 group hover:border-white/20 transition-all duration-300">
+                      <div className="absolute top-0 right-0 bg-[#454955]/10 border-l border-b border-white/15 px-3 py-1 rounded-bl-xl text-[9px] font-bold text-[#8a9b9b] uppercase tracking-wider font-mono">
+                        Your Shared Card
+                      </div>
+                      <div className="space-y-1">
+                        <h4 className="text-sm font-bold text-white uppercase tracking-wider font-mono mt-2">
+                          {dealData.inviteeBusinessCard?.name || dealData.investorName}
+                        </h4>
+                        <p className="text-[10px] text-[#8a9b9b]">
+                          {dealData.inviteeBusinessCard?.company || 'Co-Investor'}
+                        </p>
+                      </div>
+                      <div className="space-y-1 text-xs text-[#8a9b9b] mt-4 font-mono">
+                        <div className="flex items-center gap-2">
+                          <span className="material-symbols-outlined text-sm text-[#454955]">mail</span>
+                          <span>{dealData.inviteeBusinessCard?.email || dealData.investorEmail}</span>
+                        </div>
+                        {dealData.inviteeBusinessCard?.phone && (
+                          <div className="flex items-center gap-2">
+                            <span className="material-symbols-outlined text-sm text-[#454955]">call</span>
+                            <span>{dealData.inviteeBusinessCard.phone}</span>
+                          </div>
+                        )}
+                      </div>
+                    </div>
+
+                    {/* Sponsor Card (Conditional on Accept) */}
+                    {dealData.cardExchangeStatus === 'accepted' && dealData.sponsorBusinessCard ? (
+                      <div className="relative overflow-hidden rounded-2xl border border-white/10 bg-gradient-to-br from-white/5 to-white/[0.01] p-6 shadow-2xl backdrop-blur-md flex flex-col justify-between h-48 group hover:border-white/20 transition-all duration-300">
+                        <div className="absolute top-0 right-0 bg-emerald-500/10 border-l border-b border-emerald-500/20 px-3 py-1 rounded-bl-xl text-[9px] font-bold text-emerald-400 uppercase tracking-wider font-mono">
+                          Sponsor Card Unlocked
+                        </div>
+                        <div className="space-y-1">
+                          <h4 className="text-sm font-bold text-white uppercase tracking-wider font-mono mt-2">
+                            {dealData.sponsorBusinessCard.name}
+                          </h4>
+                          <p className="text-[10px] text-[#8a9b9b]">
+                            {dealData.sponsorBusinessCard.company || 'Lead Investor'}
+                          </p>
+                        </div>
+                        <div className="space-y-1 text-xs text-[#8a9b9b] mt-2 font-mono">
+                          <div className="flex items-center gap-2">
+                            <span className="material-symbols-outlined text-sm text-emerald-400">mail</span>
+                            <span>{dealData.sponsorBusinessCard.email}</span>
+                          </div>
+                          {dealData.sponsorBusinessCard.phone && (
+                            <div className="flex items-center gap-2">
+                              <span className="material-symbols-outlined text-sm text-emerald-400">call</span>
+                              <span>{dealData.sponsorBusinessCard.phone}</span>
+                            </div>
+                          )}
+                        </div>
+                        {dealData.sponsorBusinessCard.uid && (
+                          <div className="mt-3">
+                            <FollowInvestorButton
+                              investorUid={dealData.sponsorBusinessCard.uid}
+                              investorName={dealData.sponsorBusinessCard.name}
+                              isFollowing={false}
+                              className="w-full justify-center !py-1.5 !px-3 text-[10px] font-mono uppercase tracking-wider"
+                            />
+                          </div>
+                        )}
+                      </div>
+                    ) : (
+                      <div className="rounded-2xl border border-dashed border-white/10 bg-white/[0.01] p-6 flex flex-col items-center justify-center text-center h-48">
+                        <span className="material-symbols-outlined text-3xl text-white/20 animate-pulse mb-3">lock</span>
+                        <h4 className="text-xs font-semibold text-white uppercase tracking-wider font-mono">Exchange Pending</h4>
+                        <p className="text-[10px] text-[#8a9b9b] mt-1 max-w-[200px] leading-relaxed">
+                          Sponsor details are locked. They will release upon mutual acceptance.
+                        </p>
                       </div>
                     )}
                   </div>
                 </div>
+              )}
 
-                {/* Submit Error */}
-                {submitError && (
-                  <div className="p-4 border border-red-500/20 bg-red-950/20 text-red-400 rounded-xl text-xs flex items-center gap-2">
-                    <span className="material-symbols-outlined text-sm select-none">error</span>
-                    <span>{submitError}</span>
+              {dealData.status === 'accepted' && (
+                <div className="p-4 rounded-xl border border-white/10 bg-white/5 text-white space-y-3">
+                  <div className="flex items-center gap-2">
+                    <CheckCircle2 className="w-5 h-5 text-emerald-400 shrink-0" />
+                    <span className="font-semibold text-sm">Commitment Pledged</span>
                   </div>
-                )}
-
-                {/* Action Buttons */}
-                <div className="flex flex-col gap-3 pt-2">
-                  <div className="flex gap-3">
+                  <p className="text-xs text-[#8a9b9b]">
+                    Your LOI/Subscription commitment is recorded. The sponsor will verify details and reach out.
+                  </p>
+                  {!['signed', 'funds-confirmed', 'cleared'].includes(dealData.commitmentStatus || '') && (
                     <button
-                      id="btn-commit-capital"
-                      onClick={handleCommitCTA}
-                      disabled={!hasSigned || submitting}
-                      className="flex-1 py-4 rounded-xl bg-[#454955] hover:bg-[#454955]/90 text-[#0d0a0b] font-bold text-xs uppercase tracking-wider transition-all disabled:opacity-50 flex items-center justify-center gap-2 shadow-[0_0_15px_rgba(69,73,85,0.3)] active:scale-98"
+                      onClick={handleReopen}
+                      disabled={submitting}
+                      className="px-4 py-2 bg-white/5 hover:bg-white/10 text-white rounded-lg text-xs font-semibold font-mono border border-white/10 transition"
                     >
-                      {submitting ? (
-                        <Loader2 className="w-4 h-4 animate-spin text-[#0d0a0b]" />
-                      ) : (
-                        <span className="material-symbols-outlined text-sm select-none">payments</span>
-                      )}
-                      {submitting 
-                        ? 'Executing...' 
-                        : dealData.commitmentStatus === 'docs-out' 
-                        ? 'Execute Subscription' 
-                        : 'Digitally Sign & Commit'}
+                      Change Response
                     </button>
-                    {dealData.commitmentStatus !== 'docs-out' && (
+                  )}
+                </div>
+              )}
+
+              {/* Three-Button Response Primitive (only if pending) */}
+              {(dealData.status === 'pending') && (
+                <div className="space-y-4">
+                  <h4 className="text-[10px] font-bold text-[#8a9b9b] uppercase tracking-wider font-mono">Select Response</h4>
+                  {showDeclineReason ? (
+                    <div className="space-y-3 p-4 bg-white/5 rounded-xl border border-white/10">
+                      <label className="block text-[10px] font-bold text-white uppercase tracking-wider">Decline Reason (Optional)</label>
+                      <textarea
+                        value={declineReason}
+                        onChange={(e) => setDeclineReason(e.target.value)}
+                        placeholder="Tell us why you are declining (optional)..."
+                        className="w-full text-xs p-3 rounded bg-black border border-white/10 text-white font-mono min-h-[80px]"
+                      />
+                      <div className="flex gap-2 justify-end">
+                        <button
+                          onClick={() => {
+                            setShowDeclineReason(false);
+                            setDeclineReason('');
+                          }}
+                          className="px-3 py-1.5 rounded border border-white/10 text-xs font-semibold text-[#8a9b9b] hover:text-white transition"
+                        >
+                          Cancel
+                        </button>
+                        <button
+                          onClick={() => handleDecline(declineReason)}
+                          disabled={submitting}
+                          className="px-3 py-1.5 rounded bg-red-500 hover:bg-red-600 text-white text-xs font-bold transition"
+                        >
+                          Confirm Decline
+                        </button>
+                      </div>
+                    </div>
+                  ) : (
+                    <div className="flex flex-col gap-2.5">
+                      <div className="flex flex-col sm:flex-row gap-2.5 w-full">
+                        <button
+                          id="btn-interested"
+                          onClick={() => setShowCardModal(true)}
+                          disabled={submitting}
+                          className="flex-1 py-3 px-4 rounded-xl bg-[#454955] hover:bg-[#454955]/90 text-[#0d0a0b] font-bold text-xs uppercase tracking-wider transition-all flex items-center justify-center gap-1.5 shadow-[0_0_15px_rgba(69,73,85,0.2)]"
+                        >
+                          <span className="material-symbols-outlined text-sm">favorite</span>
+                          I'm Interested
+                        </button>
+                        <button
+                          id="btn-ask-question"
+                          onClick={() => setShowAskSponsor(true)}
+                          className="flex-1 py-3 px-4 rounded-xl border border-white/10 hover:bg-white/5 text-white font-bold text-xs uppercase tracking-wider transition-all flex items-center justify-center gap-1.5"
+                        >
+                          <span className="material-symbols-outlined text-sm">help</span>
+                          Ask Question
+                        </button>
+                      </div>
                       <button
                         id="btn-decline-offer"
-                        onClick={handleDecline}
+                        onClick={() => setShowDeclineReason(true)}
                         disabled={submitting}
-                        className="py-4 px-6 rounded-xl border border-white/10 hover:bg-white/5 text-red-400 hover:text-red-300 font-bold text-xs uppercase tracking-wider transition-all active:scale-98 disabled:opacity-50"
+                        className="w-full py-3 px-4 rounded-xl border border-red-500/20 hover:bg-red-500/5 text-red-400 font-bold text-xs uppercase tracking-wider transition-all flex items-center justify-center gap-1.5"
                       >
-                        Decline Offer
+                        <span className="material-symbols-outlined text-sm">cancel</span>
+                        Decline Invitation
                       </button>
-                    )}
-                  </div>
-
-                  {dealData.commitmentStatus === 'docs-out' && (
-                    <div className="border-t border-white/5 pt-4">
-                      {activeSubManualSign ? (
-                        <div className="space-y-3 p-4 bg-white/5 rounded-xl border border-white/10">
-                          <span className="font-bold text-white uppercase tracking-wider text-[10px] block">Upload Manual Signed Copy</span>
-                          <input
-                            type="text"
-                            placeholder="e.g. Countersigned subscription doc uploaded to Data Room"
-                            value={subManualEvidence}
-                            onChange={(e) => setSubManualEvidence(e.target.value)}
-                            className="w-full text-xs p-3 rounded bg-black border border-white/10 text-white font-mono"
-                          />
-                          <div className="flex gap-2 justify-end">
-                            <button
-                              onClick={() => {
-                                setActiveSubManualSign(false);
-                                setSubManualEvidence('');
-                              }}
-                              className="px-3 py-1.5 rounded border border-white/10 text-xs font-semibold text-[#8a9b9b] hover:text-white transition"
-                            >
-                              Cancel
-                            </button>
-                            <button
-                              onClick={() => handleSignSubscription('manual')}
-                              disabled={!subManualEvidence.trim() || submitting}
-                              className="px-3 py-1.5 rounded bg-[#454955] text-black text-xs font-bold transition disabled:opacity-50"
-                            >
-                              Confirm Signed
-                            </button>
-                          </div>
-                        </div>
-                      ) : (
-                        <button
-                          onClick={() => setActiveSubManualSign(true)}
-                          className="w-full py-3.5 rounded-xl border border-white/10 hover:bg-white/5 text-[#8a9b9b] hover:text-white font-bold text-[10px] uppercase tracking-wider transition font-mono"
-                        >
-                          Or Upload Manually Signed Copy
-                        </button>
-                      )}
                     </div>
                   )}
                 </div>
-              </section>
-            )}
+              )}
+
+              {/* Signature section — only visible if pending or interested or accepted (to proceed with formal commitment) */}
+              {(dealData.status === 'pending' || dealData.status === 'interested' || dealData.status === 'accepted') && (
+                <div className="border-t border-white/5 pt-6 space-y-6">
+                  {['signed', 'funds-confirmed', 'cleared'].includes(dealData.commitmentStatus || '') ? (
+                    <div className="flex flex-col items-center justify-center text-center py-4 space-y-3">
+                      <CheckCircle2 className="w-12 h-12 text-[#454955] animate-pulse" />
+                      <h3 className="font-mono text-xs font-bold text-white uppercase tracking-wider">Subscription Executed</h3>
+                      <p className="text-xs text-[#8a9b9b] max-w-sm leading-relaxed">
+                        Your definitive subscription agreement has been signed. 
+                        {dealData.commitmentStatus === 'signed' 
+                          ? " We are awaiting sponsor verification of your capital deposit."
+                          : " Your funding is confirmed and active in the capital stack!"}
+                      </p>
+                    </div>
+                  ) : (dealData.commitmentStatus === 'soft-committed' || dealData.commitmentStatus === 'pledged') && dealData.status === 'accepted' ? (
+                    <div className="flex flex-col items-center justify-center text-center py-4 space-y-3">
+                      <Clock className="w-12 h-12 text-[#8a9b9b] animate-bounce" />
+                      <h3 className="font-mono text-xs font-bold text-white uppercase tracking-wider">LOI Signed & Registered</h3>
+                      <p className="text-xs text-[#8a9b9b] max-w-md leading-relaxed">
+                        Thank you! Your preliminary soft-commitment is recorded. The sponsor is preparing your definitive Subscription Agreement. You will receive an email once it is ready for execution.
+                      </p>
+                    </div>
+                  ) : (
+                    <>
+                      <div className="flex items-center gap-2 border-b border-white/5 pb-3">
+                        <FileText className="w-4 h-4 text-[#454955]" />
+                        <h3 className="font-mono text-[10px] font-bold text-white uppercase tracking-[0.2em]">
+                          {dealData.commitmentStatus === 'docs-out' ? 'Subscription Agreement — Execution' : 'Letter of Intent — Execution'}
+                        </h3>
+                      </div>
+
+                      <div className="space-y-3 font-mono text-xs max-w-lg">
+                        <div className="flex justify-between py-1.5 border-b border-white/5">
+                          <span className="text-[#8a9b9b]">Legal Entity</span>
+                          <span className="text-white font-semibold">{dealData.legalEntity || 'PaperWorking Holdings LLC'}</span>
+                        </div>
+                        <div className="flex justify-between py-1.5 border-b border-white/5">
+                          <span className="text-[#8a9b9b]">Commitment Amount</span>
+                          <span className="text-[#454955] font-bold">${investmentAmount.toLocaleString()}</span>
+                        </div>
+                        <div className="flex justify-between py-1.5 border-b border-white/5">
+                          <span className="text-[#8a9b9b]">Equity Split</span>
+                          <span className="text-white font-semibold">{dealData.equitySplit}%</span>
+                        </div>
+                        <div className="flex justify-between py-1.5 border-b border-white/5">
+                          <span className="text-[#8a9b9b]">Interest Rate</span>
+                          <span className="text-white font-semibold">{dealData.interestRate}% per annum</span>
+                        </div>
+                        <div className="flex justify-between py-1.5">
+                          <span className="text-[#8a9b9b]">Term Length</span>
+                          <span className="text-white font-semibold">{dealData.termMonths} months</span>
+                        </div>
+                      </div>
+
+                      {dealData.commitmentStatus === 'docs-out' && dealData.subscriptionAgreementTemplate ? (
+                        <div className="p-3 bg-white/5 border border-white/10 rounded-xl flex items-center justify-between text-xs text-[#8a9b9b]">
+                          <div className="flex items-center gap-2">
+                            <FileText className="w-4 h-4 text-[#7A9EAA]" />
+                            <span>Definitive Document: <strong>{dealData.subscriptionAgreementTemplate.name}</strong></span>
+                          </div>
+                          <a
+                            href={dealData.subscriptionAgreementTemplate.url}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="underline text-white font-bold text-[10px] uppercase tracking-wider hover:text-white/80 transition"
+                          >
+                            Download PDF
+                          </a>
+                        </div>
+                      ) : (
+                        <p className="text-[11px] text-[#8a9b9b] leading-relaxed">
+                          This Letter of Intent represents your commitment to proceed under the terms outlined above, and is subject to the final execution of a definitive subscription agreement.
+                        </p>
+                      )}
+
+                      {/* Canvas Signature Pad */}
+                      <div className="space-y-3">
+                        <div className="flex justify-between items-center">
+                          <label className="block text-[9px] font-bold text-[#8a9b9b] uppercase tracking-wider">Draw Digital Signature</label>
+                          {hasSigned && (
+                            <button
+                              onClick={clearSignature}
+                              className="text-[9px] text-[#8a9b9b] hover:text-white transition uppercase font-mono border-b border-dashed border-[#8a9b9b]"
+                            >
+                              Clear Signature
+                            </button>
+                          )}
+                        </div>
+
+                        <div className="relative border border-dashed border-white/20 rounded-xl overflow-hidden bg-white">
+                          <canvas
+                            id="loi-signature-canvas"
+                            ref={canvasRef}
+                            width={600}
+                            height={120}
+                            className="w-full cursor-crosshair h-[120px]"
+                            onMouseDown={startDraw}
+                            onMouseMove={draw}
+                            onMouseUp={stopDraw}
+                            onMouseLeave={stopDraw}
+                            onTouchStart={startDraw}
+                            onTouchMove={draw}
+                            onTouchEnd={stopDraw}
+                          />
+                          {!hasSigned && (
+                            <div className="absolute inset-0 flex items-center justify-center pointer-events-none select-none">
+                              <p className="text-xs text-[#9E9DA0] font-mono">DRAW SIGNATURE HERE</p>
+                            </div>
+                          )}
+                        </div>
+                      </div>
+
+                      {submitError && (
+                        <div className="p-4 border border-red-500/20 bg-red-950/20 text-red-400 rounded-xl text-xs flex items-center gap-2">
+                          <span className="material-symbols-outlined text-sm select-none">error</span>
+                          <span>{submitError}</span>
+                        </div>
+                      )}
+
+                      <div className="flex flex-col gap-3 pt-2">
+                        <button
+                          id="btn-commit-capital"
+                          onClick={handleCommitCTA}
+                          disabled={!hasSigned || submitting}
+                          className="w-full py-4 rounded-xl bg-[#454955] hover:bg-[#454955]/90 text-[#0d0a0b] font-bold text-xs uppercase tracking-wider transition-all disabled:opacity-50 flex items-center justify-center gap-2 shadow-[0_0_15px_rgba(69,73,85,0.3)] active:scale-98"
+                        >
+                          {submitting ? (
+                            <Loader2 className="w-4 h-4 animate-spin text-[#0d0a0b]" />
+                          ) : (
+                            <span className="material-symbols-outlined text-sm select-none">payments</span>
+                          )}
+                          {submitting 
+                            ? 'Executing...' 
+                            : dealData.commitmentStatus === 'docs-out' 
+                            ? 'Execute Subscription' 
+                            : 'Digitally Sign & Commit'}
+                        </button>
+
+                        {dealData.commitmentStatus === 'docs-out' && (
+                          <div className="border-t border-white/5 pt-4">
+                            {activeSubManualSign ? (
+                              <div className="space-y-3 p-4 bg-white/5 rounded-xl border border-white/10">
+                                <span className="font-bold text-white uppercase tracking-wider text-[10px] block">Upload Manual Signed Copy</span>
+                                <input
+                                  type="text"
+                                  placeholder="e.g. Countersigned subscription doc uploaded to Project Files"
+                                  value={subManualEvidence}
+                                  onChange={(e) => setSubManualEvidence(e.target.value)}
+                                  className="w-full text-xs p-3 rounded bg-black border border-white/10 text-white font-mono"
+                                />
+                                <div className="flex gap-2 justify-end">
+                                  <button
+                                    onClick={() => {
+                                      setActiveSubManualSign(false);
+                                      setSubManualEvidence('');
+                                    }}
+                                    className="px-3 py-1.5 rounded border border-white/10 text-xs font-semibold text-[#8a9b9b] hover:text-white transition"
+                                  >
+                                    Cancel
+                                  </button>
+                                  <button
+                                    onClick={() => handleSignSubscription('manual')}
+                                    disabled={!subManualEvidence.trim() || submitting}
+                                    className="px-3 py-1.5 rounded bg-[#454955] text-black text-xs font-bold transition disabled:opacity-50"
+                                  >
+                                    Confirm Signed
+                                  </button>
+                                </div>
+                              </div>
+                            ) : (
+                              <button
+                                onClick={() => setActiveSubManualSign(true)}
+                                className="w-full py-3.5 rounded-xl border border-white/10 hover:bg-white/5 text-[#8a9b9b] hover:text-white font-bold text-[10px] uppercase tracking-wider transition font-mono"
+                              >
+                                Or Upload Manually Signed Copy
+                              </button>
+                            )}
+                          </div>
+                        )}
+                      </div>
+                    </>
+                  )}
+                </div>
+              )}
+            </section>
 
           </div>
 
@@ -1077,6 +1609,15 @@ export default function GuestPortalPage() {
                   </span>
                 </div>
 
+                {/* Soft Commit / Indication of Interest Widget */}
+                <SoftCommitWidget
+                  token={token}
+                  initialIndication={(dealData as any).indication}
+                  onUpdate={(updatedIndication) => {
+                    setDealData(prev => prev ? { ...prev, indication: updatedIndication } as any : null);
+                  }}
+                />
+
               </div>
 
               {/* Encryption & Security Info */}
@@ -1105,20 +1646,13 @@ export default function GuestPortalPage() {
           Back
         </button>
         <button
-          onClick={handleDecline}
-          disabled={!user || submitting}
-          className="flex flex-col items-center justify-center text-on-surface-variant hover:text-red-400 transition-all font-mono text-[9px] uppercase font-bold disabled:opacity-50"
+          onClick={() => {
+            signatureSectionRef.current?.scrollIntoView({ behavior: 'smooth' });
+          }}
+          className="bg-[#454955] text-[#0d0a0b] rounded-xl px-5 py-2.5 shadow-[0_0_15px_rgba(69,73,85,0.2)] active:scale-95 transition-all font-mono text-[10px] uppercase font-bold flex items-center gap-1.5"
         >
-          <span className="material-symbols-outlined text-xl select-none">cancel</span>
-          Decline
-        </button>
-        <button
-          onClick={handleCommitCTA}
-          disabled={submitting}
-          className="bg-[#454955] text-[#0d0a0b] rounded-xl px-5 py-2.5 shadow-[0_0_15px_rgba(69,73,85,0.2)] active:scale-95 transition-all font-mono text-[10px] uppercase font-bold flex items-center gap-1.5 disabled:opacity-50"
-        >
-          <span className="material-symbols-outlined text-sm select-none">payments</span>
-          Commit
+          <span className="material-symbols-outlined text-sm select-none">handshake</span>
+          Respond
         </button>
       </nav>
 
@@ -1220,6 +1754,100 @@ export default function GuestPortalPage() {
                 </button>
               </div>
             </form>
+          </div>
+        </div>
+      )}
+
+      {/* Modal: Business Card Confirmation */}
+      {showCardModal && (
+        <div id="card-exchange-modal" className="fixed inset-0 z-[80] flex items-center justify-center p-4 bg-black/75 backdrop-blur-md">
+          <div className="glass-card w-full max-w-md rounded-2xl border border-white/10 shadow-2xl overflow-hidden animate-in fade-in zoom-in-95 duration-200">
+            <div className="p-5 border-b border-white/5 flex justify-between items-center bg-[#0d0a0b]">
+              <div>
+                <h3 className="text-sm font-bold text-white uppercase tracking-wider font-mono">Business Card Exchange</h3>
+                <p className="text-[10px] text-[#8a9b9b] mt-0.5">Opt-in // Double disclosure contract</p>
+              </div>
+              <button 
+                onClick={() => setShowCardModal(false)}
+                className="material-symbols-outlined text-[#8a9b9b] hover:text-white select-none"
+              >
+                close
+              </button>
+            </div>
+
+            <div className="p-6 space-y-4">
+              <p className="text-xs text-[#8a9b9b] leading-relaxed">
+                Provide the contact details you wish to disclose to the Lead Investor. Your details are only released if the Lead Investor accepts the exchange and releases theirs.
+              </p>
+
+              <div className="space-y-3">
+                <div>
+                  <label className="block text-[9px] font-bold text-[#8a9b9b] uppercase tracking-wider mb-1">Full Name</label>
+                  <input
+                    type="text"
+                    value={cardName}
+                    onChange={(e) => setCardName(e.target.value)}
+                    required
+                    className="w-full p-3 bg-[#0d0a0b]/80 border border-white/10 rounded-xl text-xs text-white focus:outline-none focus:border-[#454955] transition-all"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-[9px] font-bold text-[#8a9b9b] uppercase tracking-wider mb-1">Email Address</label>
+                  <input
+                    type="email"
+                    value={cardEmail}
+                    onChange={(e) => setCardEmail(e.target.value)}
+                    required
+                    className="w-full p-3 bg-[#0d0a0b]/80 border border-white/10 rounded-xl text-xs text-white focus:outline-none focus:border-[#454955] transition-all"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-[9px] font-bold text-[#8a9b9b] uppercase tracking-wider mb-1">Phone Number (Optional)</label>
+                  <input
+                    type="tel"
+                    value={cardPhone}
+                    onChange={(e) => setCardPhone(e.target.value)}
+                    placeholder="e.g. +1 (555) 019-2834"
+                    className="w-full p-3 bg-[#0d0a0b]/80 border border-white/10 rounded-xl text-xs text-white focus:outline-none focus:border-[#454955] transition-all"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-[9px] font-bold text-[#8a9b9b] uppercase tracking-wider mb-1">Company / Organization (Optional)</label>
+                  <input
+                    type="text"
+                    value={cardCompany}
+                    onChange={(e) => setCardCompany(e.target.value)}
+                    placeholder="e.g. Apex Holdings"
+                    className="w-full p-3 bg-[#0d0a0b]/80 border border-white/10 rounded-xl text-xs text-white focus:outline-none focus:border-[#454955] transition-all"
+                  />
+                </div>
+              </div>
+
+              <div className="flex gap-3 pt-2">
+                <button
+                  type="button"
+                  onClick={() => setShowCardModal(false)}
+                  className="flex-1 py-3 rounded-xl border border-white/10 hover:bg-white/5 text-white font-bold text-xs uppercase tracking-wider transition-all"
+                >
+                  Cancel
+                </button>
+                <button
+                  onClick={() => handleInterested()}
+                  disabled={submitting || !cardName || !cardEmail}
+                  className="flex-1 py-3 rounded-xl bg-[#454955] hover:bg-[#454955]/90 text-[#0d0a0b] font-bold text-xs uppercase tracking-wider transition-all disabled:opacity-50 flex items-center justify-center gap-2 shadow-[0_0_15px_rgba(69,73,85,0.2)]"
+                >
+                  {submitting ? (
+                    <span className="material-symbols-outlined text-sm animate-spin select-none">progress_activity</span>
+                  ) : (
+                    <Send className="w-3.5 h-3.5" />
+                  )}
+                  {submitting ? 'Sharing...' : 'Confirm Interest'}
+                </button>
+              </div>
+            </div>
           </div>
         </div>
       )}

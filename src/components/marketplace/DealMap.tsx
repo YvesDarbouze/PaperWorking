@@ -2,7 +2,8 @@
 
 import React, { useEffect, useRef, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import type { DealListingTeaser } from '@/types/listing';
+import type { DealListingTeaser, SubscriberPropertyResult } from '@/types/listing';
+import { GoogleAttribution } from '@/components/ui/GoogleAttribution';
 
 declare global {
   interface Window {
@@ -13,18 +14,86 @@ declare global {
 declare const google: any;
 
 interface DealMapProps {
-  deals: DealListingTeaser[];
+  deals?: DealListingTeaser[];
+  properties?: SubscriberPropertyResult[];
+  center?: { lat: number; lng: number };
+  zoom?: number;
+  customMarker?: { lat: number; lng: number; title: string };
 }
 
-export default function DealMap({ deals }: DealMapProps) {
+interface MapPinData {
+  id: string;
+  lat: number;
+  lng: number;
+  title: string;
+  subtitle: string;
+  count: number;
+  routeUrl?: string;
+  isCustom?: boolean;
+}
+
+export default function DealMap({
+  deals = [],
+  properties = [],
+  center,
+  zoom,
+  customMarker,
+}: DealMapProps) {
   const router = useRouter();
   const mapRef = useRef<HTMLDivElement>(null);
   const [mapLoaded, setMapLoaded] = useState(false);
   const [loadError, setLoadError] = useState(false);
-  
-  const validDeals = deals.filter(
-    (d) => typeof d.latitude === 'number' && typeof d.longitude === 'number'
-  );
+
+  // Unify deals and properties into a single internal mapPins list
+  const mapPins: MapPinData[] = React.useMemo(() => {
+    const pins: MapPinData[] = [];
+
+    // 1. Add normal deal teasers (e.g. from browse state)
+    deals.forEach((d) => {
+      if (typeof d.latitude === 'number' && typeof d.longitude === 'number') {
+        pins.push({
+          id: d.id,
+          lat: d.latitude,
+          lng: d.longitude,
+          title: d.propertyName,
+          subtitle: d.neighborhood,
+          count: 1,
+          routeUrl: `/deals/${d.id}`,
+        });
+      }
+    });
+
+    // 2. Add subscriber grouped search results
+    properties.forEach((p) => {
+      if (p.coordinates && typeof p.coordinates.lat === 'number' && typeof p.coordinates.lng === 'number') {
+        const bestDeal = p.deals[0];
+        pins.push({
+          id: p.placeId || p.canonicalAddress,
+          lat: p.coordinates.lat,
+          lng: p.coordinates.lng,
+          title: p.canonicalAddress,
+          subtitle: `${p.city}, ${p.state} ${p.zipCode}`,
+          count: p.deals.length,
+          routeUrl: bestDeal ? `/deals/${bestDeal.listing.id}` : undefined,
+        });
+      }
+    });
+
+    // 3. Add custom target marker if present
+    if (customMarker && typeof customMarker.lat === 'number' && typeof customMarker.lng === 'number') {
+      pins.push({
+        id: 'custom_marker',
+        lat: customMarker.lat,
+        lng: customMarker.lng,
+        title: customMarker.title,
+        subtitle: 'Resolved search location',
+        count: 0,
+        isCustom: true,
+      });
+    }
+
+    return pins;
+  }, [deals, properties, customMarker]);
 
   useEffect(() => {
     // 1. Script Loading logic
@@ -98,10 +167,13 @@ export default function DealMap({ deals }: DealMapProps) {
       { featureType: 'water', elementType: 'labels.text.fill', stylers: [{ color: '#4c6168' }] }
     ];
 
-    // Initial center is geographic center of continental US, zoom level 4 (national view)
+    // Initial center and zoom
+    const initialCenter = center || { lat: 39.8283, lng: -98.5795 };
+    const initialZoom = zoom !== undefined ? zoom : (center ? 12 : 4);
+
     const map = new google.maps.Map(mapRef.current, {
-      center: { lat: 39.8283, lng: -98.5795 },
-      zoom: 4,
+      center: initialCenter,
+      zoom: initialZoom,
       styles: monochromaticStyles,
       disableDefaultUI: true,
       zoomControl: true,
@@ -109,44 +181,52 @@ export default function DealMap({ deals }: DealMapProps) {
       minZoom: 3,
     });
 
-    // Create Density Circles (simulating heatmap/density visually without deprecated visualization lib)
-    const circles = validDeals.map((d) => {
-      return new google.maps.Circle({
-        strokeColor: '#627C85',
-        strokeOpacity: 0.15,
-        strokeWeight: 1,
-        fillColor: '#627C85',
-        fillOpacity: 0.35,
-        center: { lat: d.latitude!, lng: d.longitude! },
-        radius: 160000, // 160km radius overlays beautifully at zoom <= 4
+    // Create Density Circles (clustering at low zoom <= 4)
+    const circles = mapPins
+      .filter((p) => !p.isCustom)
+      .map((p) => {
+        return new google.maps.Circle({
+          strokeColor: '#627C85',
+          strokeOpacity: 0.15,
+          strokeWeight: 1,
+          fillColor: '#627C85',
+          fillOpacity: 0.35,
+          center: { lat: p.lat, lng: p.lng },
+          radius: 160000, // 160km radius overlays beautifully at zoom <= 4
+        });
       });
-    });
 
     // Create Marker objects
-    const markers = validDeals.map((d) => {
+    const markers = mapPins.map((p) => {
+      const isTargetOnly = p.isCustom;
+      const markerColor = isTargetOnly ? '#E11D48' : '#627C85'; // Red for target, Slate for active deals
+      const markerScale = isTargetOnly ? 11 : (p.count > 1 ? 12 : 9); // Larger for multi-deal / target
+
       const marker = new google.maps.Marker({
-        position: { lat: d.latitude!, lng: d.longitude! },
-        title: `${d.propertyName} (${d.neighborhood})`,
+        position: { lat: p.lat, lng: p.lng },
+        title: `${p.title} (${p.subtitle})`,
         icon: {
           path: google.maps.SymbolPath.CIRCLE,
-          fillColor: '#627C85', // Brand accent slate-grey
+          fillColor: markerColor,
           fillOpacity: 0.95,
           strokeColor: '#FFFFFF',
-          strokeWeight: 1.5,
-          scale: 9,
+          strokeWeight: isTargetOnly ? 2 : 1.5,
+          scale: markerScale,
         },
       });
 
-      marker.addListener('click', () => {
-        router.push(`/deals/${d.id}`);
-      });
+      if (p.routeUrl) {
+        marker.addListener('click', () => {
+          router.push(p.routeUrl!);
+        });
+      }
 
       return marker;
     });
 
     // Visibility sync based on zoom thresholds
     const syncViewMode = (currentZoom: number) => {
-      if (currentZoom <= 4) {
+      if (currentZoom <= 4 && mapPins.length > 1) {
         circles.forEach((c) => c.setMap(map));
         markers.forEach((m) => m.setMap(null));
       } else {
@@ -162,14 +242,29 @@ export default function DealMap({ deals }: DealMapProps) {
       }
     });
 
+    // Auto-fit bounds if multiple pins are shown and no custom center is provided
+    if (mapPins.length > 0 && !center) {
+      const bounds = new google.maps.LatLngBounds();
+      mapPins.forEach((p) => bounds.extend({ lat: p.lat, lng: p.lng }));
+      map.fitBounds(bounds);
+
+      // Prevent zooming in too close automatically on bounds fit
+      const listener = google.maps.event.addListener(map, 'bounds_changed', () => {
+        if (map.getZoom() > 14) {
+          map.setZoom(14);
+        }
+        google.maps.event.removeListener(listener);
+      });
+    }
+
     // Trigger initial state sync
-    syncViewMode(map.getZoom() || 4);
+    syncViewMode(map.getZoom() || initialZoom);
 
     return () => {
       circles.forEach((c) => c.setMap(null));
       markers.forEach((m) => m.setMap(null));
     };
-  }, [mapLoaded, validDeals, router]);
+  }, [mapLoaded, mapPins, center, zoom, router]);
 
   if (loadError) {
     return (
@@ -198,8 +293,15 @@ export default function DealMap({ deals }: DealMapProps) {
       <div ref={mapRef} className="w-full h-full" />
 
       {/* Floating Honest Count Badge */}
-      <div className="absolute top-4 right-4 z-10 glass-card px-3 py-1.5 rounded-lg border border-pw-border text-[11px] font-bold tracking-wider text-[var(--color-primary)] bg-[#121014]/80 backdrop-blur-md shadow-md">
-        {validDeals.length} {validDeals.length === 1 ? 'DEAL' : 'DEALS'} SHOWN
+      {mapPins.filter(p => !p.isCustom).length > 0 && (
+        <div className="absolute top-4 right-4 z-10 glass-card px-3 py-1.5 rounded-lg border border-pw-border text-[11px] font-bold tracking-wider text-[var(--color-primary)] bg-[#121014]/80 backdrop-blur-md shadow-md">
+          {mapPins.filter(p => !p.isCustom).length} {mapPins.filter(p => !p.isCustom).length === 1 ? 'DEAL' : 'DEALS'} SHOWN
+        </div>
+      )}
+
+      {/* Google attribution — ToS Section 3.2.3 */}
+      <div className="absolute bottom-3 left-4 z-10">
+        <GoogleAttribution variant="light" />
       </div>
     </div>
   );

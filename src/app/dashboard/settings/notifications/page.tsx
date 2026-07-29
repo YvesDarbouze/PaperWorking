@@ -1,6 +1,5 @@
 'use client';
 
-import { useSettingsStore } from '@/store/settingsStore';
 import { useNotificationPreferencesStore, DEFAULT_CATEGORY_PREFERENCES } from '@/store/notificationPreferencesStore';
 import { useAuth } from '@/context/AuthContext';
 import { useEffect } from 'react';
@@ -101,7 +100,6 @@ function ToggleSwitch({ enabled, disabled, onToggle }: { enabled: boolean; disab
 
 export default function NotificationsSettingsPage() {
   const { user } = useAuth();
-  const { theme, setTheme } = useSettingsStore();
   const {
     loading,
     categories,
@@ -254,18 +252,18 @@ export default function NotificationsSettingsPage() {
   }
 
   return (
-    <div className="w-full space-y-6">
+    <div className="w-full space-y-8">
       {/* ─── Bento Grid Layout ─── */}
-      <div className="grid grid-cols-12 gap-6">
+      <div className="grid grid-cols-12 gap-8">
 
         {/* ════ Row 1: Inbox Retention (col-12) ════ */}
 
         {/* Inbox Retention */}
-        <section className="col-span-12 glass-card rounded-2xl p-6 flex flex-col relative overflow-hidden">
+        <section className="col-span-12 glass-card rounded-2xl p-6 flex flex-col relative overflow-hidden transition-all duration-200 hover:shadow-md">
           <div className="absolute top-0 right-0 w-64 h-64 bg-pw-primary/5 rounded-full blur-[80px] -z-10 pointer-events-none translate-x-1/2 -translate-y-1/2" />
           <div className="flex items-center gap-3 border-b border-white/5 pb-4 mb-6">
             <span className="material-symbols-outlined text-pw-primary select-none">auto_delete</span>
-            <h2 className="text-xl font-bold text-pw-black">Inbox Cleanup & Retention</h2>
+            <h2 className="text-base font-semibold text-pw-black">Inbox Cleanup & Retention</h2>
           </div>
 
           <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
@@ -288,7 +286,7 @@ export default function NotificationsSettingsPage() {
                       .catch(() => toast.error('Failed to update retention window'));
                   }
                 }}
-                className="glass-input w-full px-4 py-2.5 text-sm text-pw-black rounded-lg"
+                className="glass-input w-full px-4 h-10 rounded-lg text-sm text-pw-black focus:ring-2 focus:ring-pw-primary focus:outline-none transition-all duration-150"
               >
                 <option value="30" className="bg-[#161318] text-pw-black">30 Days (Default)</option>
                 <option value="60" className="bg-[#161318] text-pw-black">60 Days</option>
@@ -300,10 +298,10 @@ export default function NotificationsSettingsPage() {
 
         {/* ════ Row 2: Notifications Matrix (col-12) ════ */}
 
-        <section className="col-span-12 glass-card rounded-2xl p-6 overflow-hidden">
+        <section className="col-span-12 glass-card rounded-2xl p-6 overflow-hidden transition-all duration-200 hover:shadow-md">
           <div className="flex items-center gap-3 border-b border-white/5 pb-4 mb-4">
             <span className="material-symbols-outlined text-pw-primary select-none">notifications_active</span>
-            <h2 className="text-xl font-bold text-pw-black">Routing & Delivery</h2>
+            <h2 className="text-base font-semibold text-pw-black">Routing & Delivery</h2>
           </div>
 
           {/* Guarantee Banner */}
@@ -321,7 +319,7 @@ export default function NotificationsSettingsPage() {
           <div className="w-full overflow-x-auto">
             <table className="w-full text-left border-collapse min-w-[600px]">
               <thead>
-                <tr className="border-b border-white/5">
+                <tr className="border-b border-white/5 h-12">
                   <th className="py-3 text-xs font-medium uppercase tracking-wider text-pw-muted w-1/2">Event Category</th>
                   <th className="py-3 text-xs font-medium uppercase tracking-wider text-pw-muted text-center">In-App</th>
                   <th className="py-3 text-xs font-medium uppercase tracking-wider text-pw-muted text-center">Email</th>
@@ -334,7 +332,7 @@ export default function NotificationsSettingsPage() {
                   const isMandatory = key === 'billing' || key === 'deadlines';
 
                   return (
-                    <tr key={key} className="border-b border-white/5 hover:bg-white/[0.02] transition-colors">
+                    <tr key={key} className="border-b border-white/5 hover:bg-white/[0.02] transition-colors h-12">
                       <td className="py-4">
                         <div className="flex items-start gap-3">
                           <div className="w-8 h-8 rounded-lg bg-white/[0.03] border border-white/5 flex items-center justify-center flex-shrink-0 mt-0.5 text-pw-muted">
@@ -397,10 +395,10 @@ export default function NotificationsSettingsPage() {
         {/* ════ Row 3: Global Dispatch (col-7) + Data Rights (col-5) ════ */}
 
         {/* Global Dispatch Preferences */}
-        <section className="col-span-12 xl:col-span-7 glass-card rounded-2xl p-6 flex flex-col gap-6">
+        <section className="col-span-12 xl:col-span-7 glass-card rounded-2xl p-6 flex flex-col gap-6 transition-all duration-200 hover:shadow-md">
           <div className="flex items-center gap-3 border-b border-white/5 pb-4">
             <span className="material-symbols-outlined text-pw-primary select-none">tune</span>
-            <h2 className="text-xl font-bold text-pw-black">Global Dispatch Preferences</h2>
+            <h2 className="text-base font-semibold text-pw-black">Global Dispatch Preferences</h2>
           </div>
 
           {/* Global Channel Toggles */}
@@ -461,7 +459,7 @@ export default function NotificationsSettingsPage() {
                       type="time"
                       value={quietHours.start}
                       onChange={(e) => handleUpdateQuietTime('start', e.target.value)}
-                      className="glass-input w-full px-3 py-2 text-sm text-pw-black rounded-lg"
+                      className="glass-input w-full px-4 h-10 rounded-lg text-sm text-pw-black focus:ring-2 focus:ring-pw-primary focus:outline-none transition-all duration-150"
                     />
                   </div>
                   <div>
@@ -472,7 +470,7 @@ export default function NotificationsSettingsPage() {
                       type="time"
                       value={quietHours.end}
                       onChange={(e) => handleUpdateQuietTime('end', e.target.value)}
-                      className="glass-input w-full px-3 py-2 text-sm text-pw-black rounded-lg"
+                      className="glass-input w-full px-4 h-10 rounded-lg text-sm text-pw-black focus:ring-2 focus:ring-pw-primary focus:outline-none transition-all duration-150"
                     />
                   </div>
                 </div>
@@ -484,10 +482,10 @@ export default function NotificationsSettingsPage() {
                   <select
                     value={quietHours.timezone}
                     onChange={(e) => handleUpdateTimezone(e.target.value)}
-                    className="glass-input w-full px-3 py-2 text-sm text-pw-black rounded-lg"
+                    className="glass-input w-full px-4 h-10 rounded-lg text-sm text-pw-black focus:ring-2 focus:ring-pw-primary focus:outline-none transition-all duration-150"
                   >
                     {allTimezones.map((tz) => (
-                      <option key={tz.value} value={tz.value} className="bg-pw-surface text-pw-black">
+                      <option key={tz.value} value={tz.value} className="bg-[#161318] text-pw-black">
                         {tz.label}
                       </option>
                     ))}
@@ -499,12 +497,12 @@ export default function NotificationsSettingsPage() {
         </section>
 
         {/* Data Rights & Privacy (Danger Zone) */}
-        <section className="col-span-12 xl:col-span-5 glass-card rounded-2xl p-6 border border-red-500/20 relative overflow-hidden flex flex-col gap-6">
+        <section className="col-span-12 xl:col-span-5 glass-card rounded-2xl p-6 border border-red-500/20 relative overflow-hidden flex flex-col gap-6 transition-all duration-200 hover:shadow-md">
           <div className="absolute top-0 right-0 w-32 h-32 bg-red-500/10 rounded-full blur-[60px] -z-10 pointer-events-none translate-x-1/2 -translate-y-1/2" />
 
           <div className="flex items-center gap-3 border-b border-white/5 pb-4">
             <span className="material-symbols-outlined text-red-400 select-none">policy</span>
-            <h2 className="text-xl font-bold text-pw-black">Data Rights & Privacy</h2>
+            <h2 className="text-base font-semibold text-pw-black">Data Rights & Privacy</h2>
           </div>
 
           <p className="text-sm text-pw-muted leading-relaxed">
@@ -514,16 +512,16 @@ export default function NotificationsSettingsPage() {
           <div className="mt-auto space-y-3">
             <button
               onClick={handleExportData}
-              className="w-full flex items-center justify-center gap-2 py-2.5 rounded-lg border border-white/10 text-pw-black font-semibold text-sm hover:bg-white/[0.04] transition-colors cursor-pointer"
+              className="w-full h-10 px-5 rounded-lg border border-white/10 text-pw-black text-sm font-medium hover:bg-white/[0.04] active:scale-98 transition-all flex items-center justify-center gap-2 cursor-pointer"
             >
-              <span className="material-symbols-outlined text-lg select-none">download</span>
+              <span className="material-symbols-outlined text-[16px] select-none">download</span>
               Export Account Payload
             </button>
             <button
               onClick={handleDeleteData}
-              className="w-full flex items-center justify-center gap-2 py-2.5 rounded-lg bg-red-500/10 border border-red-500/30 text-red-400 font-semibold text-sm hover:bg-red-500/20 transition-colors cursor-pointer"
+              className="w-full h-10 px-5 rounded-lg bg-error/10 border border-error/30 text-error text-sm font-medium hover:bg-error/20 active:scale-98 transition-all flex items-center justify-center gap-2 cursor-pointer"
             >
-              <span className="material-symbols-outlined text-lg select-none">delete_forever</span>
+              <span className="material-symbols-outlined text-[16px] select-none">delete_forever</span>
               Initiate Deletion Sequence
             </button>
           </div>

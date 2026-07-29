@@ -19,7 +19,9 @@ import toast from 'react-hot-toast';
 import type { Phase1Snapshot, LoanStatus, PurchaseReadinessItem } from '@/types/schema';
 import { CrowdfundingTracker } from '@/components/project/CrowdfundingTracker';
 import { DealUpdateComposer } from '@/components/project/DealUpdateComposer';
+import { InvestorQandATracker } from '@/components/project/InvestorQandATracker';
 import { DealComposer } from '@/components/project/DealComposer';
+import DealOnePagerView from '@/components/listings/DealOnePagerView';
 import LOIGenerator from '@/components/project/LOIGenerator';
 import { LoanProcessingPipeline } from '@/components/project/LoanProcessingPipeline';
 import { ProjectAnalyzer } from '@/components/project/ProjectAnalyzer';
@@ -43,6 +45,7 @@ import { InsuranceCard } from '@/components/project/InsuranceCard';
 import FundingSourceTracker from '@/components/evaluation/FundingSourceTracker';
 import { DeclareStrategyPanel } from '@/components/project/DeclareStrategyPanel';
 import { TenKpiScorecard } from '@/components/project/TenKpiScorecard';
+
 import { HurdleTestCard } from '@/components/project/HurdleTestCard';
 import { RehabBudgetCard } from '@/components/project/RehabBudgetCard';
 import { IncomeAssumptionsCard } from '@/components/project/IncomeAssumptionsCard';
@@ -58,7 +61,6 @@ import {
   type MetricResult,
 } from '@/lib/metrics';
 import { AcquisitionPhaseGate } from '@/components/project/AcquisitionPhaseGate';
-
 import { MetricReadout } from '@/components/metrics/MetricReadout';
 import { doc, getDoc, updateDoc, arrayUnion } from 'firebase/firestore';
 import { db } from '@/lib/firebase/config';
@@ -81,20 +83,6 @@ import {
   Plus,
   ShieldAlert,
 } from 'lucide-react';
-
-/* ═══════════════════════════════════════════════════════════════
-   /dashboard/projects/[id]/phase-1 — Acquisition Workspace
-
-   Stitch Schema: a0c9762016014874bc49fa4cf0572e02
-   "Project Workspace: Acquisition Phase (Refined)"
-
-   Luminous Glass dark design. Single-column mobile-first stack.
-   All logic handlers are 100% preserved from original.
-
-   Header chrome (breadcrumb, address, phase stepper) is provided
-   by the parent layout.tsx workspace shell — NOT duplicated here.
-   Project data is sourced from WorkspaceContext (no re-fetch).
-   ═══════════════════════════════════════════════════════════════ */
 
 const PHASE_COLOR = '#454955';
 
@@ -223,22 +211,59 @@ export default function Phase1WorkspacePage() {
     }
   }, [project?.id, projectId, project?.overrideReason, project?.contingencies]);
 
-  // Deep-link scroll routing for components in underwrite stage
+  // Deep-link scroll routing for components in various stages
   useEffect(() => {
     if (typeof window !== 'undefined' && project) {
       const params = new URLSearchParams(window.location.search);
       const focus = params.get('focus');
       if (focus) {
-        setActiveStage('underwrite');
-        setTimeout(() => {
-          const id = focus === 'rehab' ? 'rehab-budget-card' : focus === 'financing' ? 'financing-assumptions-card' : null;
-          if (id) {
+        let stage = 'underwrite';
+        let id = '';
+
+        if (focus === 'rehab') {
+          stage = 'underwrite';
+          id = 'rehab-budget-card';
+        } else if (focus === 'financing' || focus === 'loan_amount' || focus === 'loan_interest_rate' || focus === 'loan_term') {
+          stage = 'underwrite';
+          id = 'financing-assumptions-card';
+        } else if (focus === 'gross_rent_per_unit' || focus === 'income' || focus === 'vacancy_pct') {
+          stage = 'underwrite';
+          id = 'income-assumptions-card';
+        } else if (
+          focus === 'tax' ||
+          focus === 'insurance' ||
+          focus === 'utilities' ||
+          focus === 'management_pct' ||
+          focus === 'management' ||
+          focus === 'maintenance' ||
+          focus === 'operating_expenses' ||
+          focus === 'oer'
+        ) {
+          stage = 'underwrite';
+          id = 'expense-assumptions-card';
+        } else if (focus === 'psa') {
+          stage = 'due_diligence';
+          id = 'psa-card';
+        } else if (focus === 'earnest_money') {
+          stage = 'due_diligence';
+          id = 'earnest-money-card';
+        } else if (focus === 'inspection') {
+          stage = 'due_diligence';
+          id = 'inspection-card';
+        } else if (focus === 'title') {
+          stage = 'due_diligence';
+          id = 'title-card';
+        }
+
+        if (id) {
+          setActiveStage(stage);
+          setTimeout(() => {
             const el = document.getElementById(id);
             if (el) {
               el.scrollIntoView({ behavior: 'smooth', block: 'center' });
             }
-          }
-        }, 500);
+          }, 500);
+        }
       }
     }
   }, [project?.id]);
@@ -281,6 +306,7 @@ export default function Phase1WorkspacePage() {
   const [inviteSending, setInviteSending] = useState(false);
   const [inviteError, setInviteError] = useState<string | null>(null);
   const [inviteSuccess, setInviteSuccess] = useState(false);
+  const [showOnePagerPreview, setShowOnePagerPreview] = useState(false);
 
   const handleSendInvite = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -1183,6 +1209,20 @@ export default function Phase1WorkspacePage() {
             </div>
           </section>
 
+          {/* ── Guided Acquisition Wizard Callout Card ── */}
+          <div className="glass-card rounded-2xl p-6 border border-white/5 flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-gradient-to-r from-emerald-500/5 via-transparent to-transparent">
+            <div className="space-y-1">
+              <h3 className="text-sm font-bold uppercase tracking-wider text-white">Prefer a Guided Experience?</h3>
+              <p className="text-xs text-slate-400">Launch the step-by-step Acquisition Wizard to verify budget, research market trends, search properties, model underwriting, and draft LOIs.</p>
+            </div>
+            <button
+              onClick={() => router.push(`/dashboard/projects/${project.id}/phase-1/wizard`)}
+              className="px-5 py-2.5 bg-emerald-500 text-black hover:opacity-90 font-bold uppercase tracking-wider text-[11px] rounded-lg self-start sm:self-center shrink-0 transition-opacity"
+            >
+              Start Acquisition Wizard
+            </button>
+          </div>
+
           {/* ── Active Stage Panels ── */}
           <section className="space-y-6">
             {activeStage === 'target' && (
@@ -1343,20 +1383,24 @@ export default function Phase1WorkspacePage() {
                 </div>
 
                 {/* Income Assumptions */}
-                <IncomeAssumptionsCard
-                  project={project}
-                  phaseColor={PHASE_COLOR}
-                  onSave={handleTargetSave}
-                />
+                <div id="income-assumptions-card">
+                  <IncomeAssumptionsCard
+                    project={project}
+                    phaseColor={PHASE_COLOR}
+                    onSave={handleTargetSave}
+                  />
+                </div>
 
                 {/* Expense Assumptions */}
-                <ExpenseAssumptionsCard
-                  project={project}
-                  phaseColor={PHASE_COLOR}
-                  onSave={handleTargetSave}
-                />
+                <div id="expense-assumptions-card">
+                  <ExpenseAssumptionsCard
+                    project={project}
+                    phaseColor={PHASE_COLOR}
+                    onSave={handleTargetSave}
+                  />
+                </div>
 
-                {/* Financing Assumptions */}
+                                {/* Financing Assumptions */}
                 <div id="financing-assumptions-card">
                   <FinancingAssumptionsCard
                     project={project}
@@ -1705,45 +1749,47 @@ export default function Phase1WorkspacePage() {
                   <span className="text-xs text-[#9E9DA0]">{isStage5Complete ? '✓ Exit conditions met' : '○ Pending exit conditions'}</span>
                 </div>
 
-                <PSACard
-                  project={project}
-                  contingencies={contingencies}
-                  onSaveFinancials={async (updates) => {
-                    const merged = { ...(project.financials ?? {}), ...updates };
-                    
-                    // Smart sync contingencies
-                    let updatedContingencies = [...(project.contingencies || [])];
-                    if (updatedContingencies.length === 0 && merged.loiContingencies && merged.loiContingencies.length > 0) {
-                      const ddDays = merged.loiDueDiligenceDays || 14;
-                      const baseDate = merged.psaEffectiveDate ? new Date(merged.psaEffectiveDate) : new Date();
-                      merged.loiContingencies.forEach((type: string) => {
-                        const deadline = new Date(baseDate);
-                        deadline.setDate(deadline.getDate() + ddDays);
-                        updatedContingencies.push({
-                          id: crypto.randomUUID(),
-                          type: type as any,
-                          deadlineDate: deadline.toISOString().split('T')[0] as any,
-                          isWaived: false,
-                          isSatisfied: false,
-                          party: 'Buyer',
-                          reminderSettings: ['T-7', 'T-3', 'T-1'],
+                <div id="psa-card">
+                  <PSACard
+                    project={project}
+                    contingencies={contingencies}
+                    onSaveFinancials={async (updates) => {
+                      const merged = { ...(project.financials ?? {}), ...updates };
+                      
+                      // Smart sync contingencies
+                      let updatedContingencies = [...(project.contingencies || [])];
+                      if (updatedContingencies.length === 0 && merged.loiContingencies && merged.loiContingencies.length > 0) {
+                        const ddDays = merged.loiDueDiligenceDays || 14;
+                        const baseDate = merged.psaEffectiveDate ? new Date(merged.psaEffectiveDate) : new Date();
+                        merged.loiContingencies.forEach((type: string) => {
+                          const deadline = new Date(baseDate);
+                          deadline.setDate(deadline.getDate() + ddDays);
+                          updatedContingencies.push({
+                            id: crypto.randomUUID(),
+                            type: type as any,
+                            deadlineDate: deadline.toISOString().split('T')[0] as any,
+                            isWaived: false,
+                            isSatisfied: false,
+                            party: 'Buyer',
+                            reminderSettings: ['T-7', 'T-3', 'T-1'],
+                          });
                         });
-                      });
-                    }
+                      }
 
-                    await projectsService.updateProject(project.id, {
-                      financials: merged,
-                      contingencies: updatedContingencies,
-                    });
-                    refresh();
-                  }}
-                  onSaveContingencies={async (updatedContingencies) => {
-                    await projectsService.updateProject(project.id, { contingencies: updatedContingencies });
-                    refresh();
-                  }}
-                  phaseColor={PHASE_COLOR}
-                  readOnly={phase1Locked}
-                />
+                      await projectsService.updateProject(project.id, {
+                        financials: merged,
+                        contingencies: updatedContingencies,
+                      });
+                      refresh();
+                    }}
+                    onSaveContingencies={async (updatedContingencies) => {
+                      await projectsService.updateProject(project.id, { contingencies: updatedContingencies });
+                      refresh();
+                    }}
+                    phaseColor={PHASE_COLOR}
+                    readOnly={phase1Locked}
+                  />
+                </div>
 
                 <ContingencyTracker
                   projectId={project.id}
@@ -1756,39 +1802,45 @@ export default function Phase1WorkspacePage() {
                   readOnly={phase1Locked}
                 />
 
-                <EarnestMoneyCard
-                  project={project}
-                  onSaveFinancials={async (updates) => {
-                    const merged = { ...(project.financials ?? {}), ...updates };
-                    await projectsService.updateProject(project.id, { financials: merged });
-                    refresh();
-                  }}
-                  phaseColor={PHASE_COLOR}
-                  readOnly={phase1Locked}
-                />
+                <div id="earnest-money-card">
+                  <EarnestMoneyCard
+                    project={project}
+                    onSaveFinancials={async (updates) => {
+                      const merged = { ...(project.financials ?? {}), ...updates };
+                      await projectsService.updateProject(project.id, { financials: merged });
+                      refresh();
+                    }}
+                    phaseColor={PHASE_COLOR}
+                    readOnly={phase1Locked}
+                  />
+                </div>
 
-                <InspectionCard
-                  project={project}
-                  onSaveFinancials={async (updates) => {
-                    const merged = { ...(project.financials ?? {}), ...updates };
-                    await projectsService.updateProject(project.id, { financials: merged });
-                    refresh();
-                  }}
-                  phaseColor={PHASE_COLOR}
-                  readOnly={phase1Locked}
-                />
+                <div id="inspection-card">
+                  <InspectionCard
+                    project={project}
+                    onSaveFinancials={async (updates) => {
+                      const merged = { ...(project.financials ?? {}), ...updates };
+                      await projectsService.updateProject(project.id, { financials: merged });
+                      refresh();
+                    }}
+                    phaseColor={PHASE_COLOR}
+                    readOnly={phase1Locked}
+                  />
+                </div>
                 <VendorMatchList project={project} specialty="Inspector" />
 
-                <TitleCard
-                  project={project}
-                  onSaveFinancials={async (updates) => {
-                    const merged = { ...(project.financials ?? {}), ...updates };
-                    await projectsService.updateProject(project.id, { financials: merged });
-                    refresh();
-                  }}
-                  phaseColor={PHASE_COLOR}
-                  readOnly={phase1Locked}
-                />
+                <div id="title-card">
+                  <TitleCard
+                    project={project}
+                    onSaveFinancials={async (updates) => {
+                      const merged = { ...(project.financials ?? {}), ...updates };
+                      await projectsService.updateProject(project.id, { financials: merged });
+                      refresh();
+                    }}
+                    phaseColor={PHASE_COLOR}
+                    readOnly={phase1Locked}
+                  />
+                </div>
                 <VendorMatchList project={project} specialty="Title Company" />
 
                 {/* Manual DD Election Panel */}
@@ -2047,6 +2099,41 @@ export default function Phase1WorkspacePage() {
                     {/* Deal Update Composer */}
                     <div className="glass-card rounded-2xl p-6 border border-white/5">
                       <DealUpdateComposer projectId={projectId} phaseColor={PHASE_COLOR} />
+                    </div>
+
+                    {/* Investor Q&A Threads */}
+                    <div className="glass-card rounded-2xl p-6 border border-white/5">
+                      <InvestorQandATracker projectId={projectId} />
+                    </div>
+
+                    {/* Card 6.3: Deal One-Pager Preview */}
+                    <div className="glass-card rounded-2xl p-6 border border-white/5 space-y-4" id="card-6-3-one-pager-preview">
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-2">
+                          <span className="material-symbols-outlined text-[var(--color-primary)]">
+                            description
+                          </span>
+                          <div>
+                            <h4 className="text-sm font-bold text-white uppercase tracking-wider">
+                              Card 6.3: Deal One-Pager
+                            </h4>
+                            <p className="text-xs text-[#9E9DA0] mt-0.5">
+                              Review the underwriting scorecard, capital sources & uses, and exit details.
+                            </p>
+                          </div>
+                        </div>
+                        <button
+                          onClick={() => setShowOnePagerPreview(!showOnePagerPreview)}
+                          className="px-4 py-2 rounded-xl text-xs font-bold uppercase tracking-wider bg-white/5 border border-white/10 hover:bg-white/10 text-white transition-all min-h-[36px]"
+                        >
+                          {showOnePagerPreview ? 'Hide Preview' : 'Show Preview'}
+                        </button>
+                      </div>
+                      {showOnePagerPreview && (
+                        <div className="pt-4 border-t border-white/5 bg-neutral-950/20 rounded-xl p-4">
+                          <DealOnePagerView project={project} readOnly={true} />
+                        </div>
+                      )}
                     </div>
                   </>
                 )}

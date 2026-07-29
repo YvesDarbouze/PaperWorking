@@ -61,7 +61,6 @@ describe("GLOBAL NAVIGATION — FIXED CONTRACT FOR EVERY PAPERWORKING SCREEN", (
     const primaryExpected = [
       "Portfolio",
       "Projects",
-      "Data Room",
       "Insights",
       "Reports",
       "Inbox",

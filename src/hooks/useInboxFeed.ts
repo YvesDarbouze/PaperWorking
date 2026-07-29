@@ -40,7 +40,10 @@ function hydrateNotification(docId: string, data: Record<string, any>): Notifica
       role: data.actor?.role,
       avatarUrl: data.actor?.avatarUrl
     },
-    objectReference: data.objectReference || {},
+    objectReference: {
+      ...(data.objectReference || {}),
+      metadata: data.metadata || data.objectReference?.metadata || {},
+    },
     urgencyLevel: (data.urgencyLevel as NotificationUrgency) || 'informational',
     channels: (data.channels as NotificationChannel[]) || ['in-app'],
     read: !!data.read,

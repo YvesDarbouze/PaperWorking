@@ -21,6 +21,20 @@ const NAV_ITEMS = [
 export default function SettingsLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
 
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLAnchorElement>, index: number) => {
+    if (e.key === 'ArrowDown') {
+      e.preventDefault();
+      const nextIndex = (index + 1) % NAV_ITEMS.length;
+      const nextEl = document.getElementById(`settings-nav-${nextIndex}`);
+      nextEl?.focus();
+    } else if (e.key === 'ArrowUp') {
+      e.preventDefault();
+      const prevIndex = (index - 1 + NAV_ITEMS.length) % NAV_ITEMS.length;
+      const prevEl = document.getElementById(`settings-nav-${prevIndex}`);
+      prevEl?.focus();
+    }
+  };
+
   return (
     <div className="min-h-screen bg-pw-bg text-pw-black font-sans antialiased">
       <div className="max-w-container-max mx-auto px-margin-mobile lg:px-margin-desktop py-8 sm:py-12">
@@ -51,7 +65,7 @@ export default function SettingsLayout({ children }: { children: React.ReactNode
                 key={href}
                 href={href}
                 className={`
-                  flex items-center gap-2 px-4 py-2.5 rounded-lg text-xs font-semibold whitespace-nowrap transition-all border
+                  flex items-center gap-2 px-4 h-10 rounded-lg text-xs font-semibold whitespace-nowrap transition-all border
                   ${isActive
                     ? 'bg-pw-primary/20 border-pw-primary/30 text-pw-primary font-bold shadow-sm'
                     : 'bg-transparent border-transparent text-pw-muted hover:text-pw-black hover:bg-white/5'
@@ -72,17 +86,19 @@ export default function SettingsLayout({ children }: { children: React.ReactNode
           <aside className="hidden sm:block w-56 flex-shrink-0">
             <div className="flex flex-col h-full justify-between gap-stack-md sticky top-12">
               <nav className="space-y-1">
-                {NAV_ITEMS.map(({ label, href, iconName }) => {
+                {NAV_ITEMS.map(({ label, href, iconName }, index) => {
                   const isActive = pathname === href;
                   return (
                     <Link
                       key={href}
+                      id={`settings-nav-${index}`}
                       href={href}
+                      onKeyDown={(e) => handleKeyDown(e, index)}
                       className={`
-                        flex items-center gap-4 px-4 py-3 mx-2 rounded-lg font-label-md text-label-md transition-all
+                        flex items-center gap-4 px-4 h-10 mx-2 transition-all font-label-md text-label-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-pw-primary focus-visible:ring-offset-2 focus-visible:ring-offset-pw-bg
                         ${isActive
-                          ? 'bg-pw-primary/20 border border-pw-primary/30 text-pw-primary font-bold shadow-[0_0_15px_rgba(69,73,85,0.15)]'
-                          : 'bg-transparent border border-transparent text-pw-muted hover:text-pw-black hover:bg-white/5'
+                          ? 'bg-pw-primary/[0.08] border-y border-r border-l-2 border-y-transparent border-r-transparent border-l-pw-primary text-pw-primary font-bold rounded-r-lg rounded-l-none'
+                          : 'bg-transparent border border-transparent text-pw-muted hover:text-pw-black hover:bg-white/5 rounded-lg'
                         }
                       `}
                     >
@@ -99,7 +115,7 @@ export default function SettingsLayout({ children }: { children: React.ReactNode
                   <p className="text-[11px] text-pw-muted mb-3 leading-relaxed">Priority support is available for Team plans.</p>
                   <Link
                     href="/dashboard/support"
-                    className="w-full py-2 text-[12px] font-bold bg-pw-glass-bg border border-pw-border hover:bg-white/10 transition-colors rounded-lg flex justify-center text-pw-black shadow-sm"
+                    className="w-full h-10 px-5 text-sm font-medium bg-pw-glass-bg border border-pw-border hover:bg-white/10 transition-all rounded-lg flex items-center justify-center text-pw-black shadow-sm"
                   >
                     Contact Support
                   </Link>
@@ -109,7 +125,7 @@ export default function SettingsLayout({ children }: { children: React.ReactNode
           </aside>
 
           {/* Content pane */}
-          <main className="flex-1 min-w-0">
+          <main className="flex-1 min-w-0 max-w-[720px] mx-auto w-full">
             {children}
           </main>
         </div>

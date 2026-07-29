@@ -14,8 +14,12 @@ test.describe('PaperWorking E2E — Contingency Tracker, Go/No-Go & Vendor Trigg
 
     // Bypass Cookie Consent popup by pre-seeding localStorage
     await page.addInitScript(() => {
-      window.localStorage.setItem('pw_cookie_consent', JSON.stringify({ essential: true, analytics: true, marketing: true }));
-    });
+    try {
+    
+          window.localStorage.setItem('pw_cookie_consent', JSON.stringify({ essential: true, analytics: true, marketing: true }));
+        
+    } catch (e) {}
+  });
   });
 
   async function hydrateClick(locator: Locator, maxAttempts = 5) {

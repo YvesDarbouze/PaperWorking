@@ -1,13 +1,13 @@
 # PaperWorking — Real Estate Investment Operating System
 ## Technical Specification & Architectural Blueprint
-*Version 4.0 · Last Updated: July 1, 2026*
+*Version 5.0 · Last Updated: July 23, 2026*
 
 ---
 
 ## 1. Document Overview & Executive Summary
 
 ### 1.1 Purpose
-This document provides a comprehensive technical specification of the **PaperWorking** application. It is designed to serve as the master technical blueprint for engineering teams onboarding to the project or deploying integrations. It describes the technology stack, system architecture, database models, third-party vendor interfaces, compliance guardrails, and core application modules.
+This document provides a comprehensive technical specification of the **PaperWorking** application. It serves as the master technical blueprint for engineering teams onboarding to the project or deploying integrations. It describes the technology stack, system architecture, database models, third-party vendor interfaces, compliance guardrails, security isolation policies, event taxonomy, performance budgets, and core application modules.
 
 ### 1.2 Platform Vision
 PaperWorking is a specialized real estate investment operating system that automates the lifecycle of property acquisition, management, optimization, and exit. By wrapping property analytics, financial ledgers, vendor collaboration, and document management under a single interface, it enables investors to run multi-family and residential portfolios with institutional-grade discipline.
@@ -45,6 +45,7 @@ graph TD
     CR <--> |External APIs| Stripe[Stripe API]
     CR <--> |External APIs| Plaid[Plaid API]
     CR <--> |External APIs| RentCast[RentCast API]
+    CR <--> |External APIs| Resend[Resend API]
 ```
 
 ---
@@ -62,6 +63,28 @@ Multi-tenant isolation is enforced at the document level:
 *   Users are associated with an `organizationId` inside their user document.
 *   Every query on project collections must filter explicitly by `organizationId` to prevent cross-tenant data leaks.
 *   Scoped team members (e.g. property managers) are restricted via a `membershipScopes` object in Firestore, restricting their access to specific list of `assignedProjectIds`.
+
+### 3.3 Vendor Isolation (DM-39 / G-9)
+To prevent unauthorized access to investor operations, Vendor principals are strictly sandboxed at the database/query layer:
+*   **No Read Access**: A Vendor has no read path to any Deal, project, index, teaser, share link, user notification, or indication.
+*   **404 Masking**: Any attempt by a Vendor principal to access an investor-owned route or resource returns an HTTP `404 Not Found` response (rather than a `403 Forbidden` response), preventing structural disclosure of deal existence.
+*   **Residual Access Sweep**: When an Investor account is transitioned to a Vendor account, all active session tokens are revoked, membership association is removed, and all assigned Deal notifications are cleared.
+
+### 3.4 Server-Side Paywall & Obfuscation (DM-40 / G-5)
+All gated premium data is protected using strict server-side serialization filtering:
+*   **Before Serialization**: High-fidelity numbers, exact addresses, and protected valuation sheets are stripped at the API/Server Action boundary before being serialized into JSON payloads.
+*   **No Client-Side Gating**: Blurring, CSS-hiding, DOM truncation, or conditional client renders are strictly prohibited. Disabling JavaScript, modifying local DOM elements, or replaying API requests will never reveal protected values.
+
+### 3.5 Public Discoverability & Anti-Cloaking (DM-41 / G-6)
+To balance organic search presence with compliance, discoverability adheres to search engine standards:
+*   **Indexable Deals**: Only `PUBLIC_SOLICITED` deals are indexable. Gated content blocks must render structured JSON-LD carrying the `isAccessibleForFree: false` property with a `hasPart` / `cssSelector` mapping to avoid cloaking penalties.
+*   **Crawler Parity**: The server serves identical HTML to Googlebot, other web crawlers, and anonymous guests. Paywall activation is driven strictly by session authentication.
+*   **Excluded Deals**: `MARKETPLACE` and `PRIVATE_INVITE` deals are strictly excluded from indexing, sitemaps, and RSS/Preview feeds.
+
+### 3.6 Money-Movement Guardrails (DM-38)
+A standing test suite runs on every CI/CD deployment to verify compliance with non-money-movement directives (G-4):
+*   **Package Blacklist**: Restricts imports of payment processors (`stripe`, `braintree`), escrow managers (`dwolla`), or KYC platforms (`jumio`, `persona`).
+*   **Prohibited Surfaces**: Static analysis asserts that crowdfunding interfaces remain strictly non-binding, and no processing modules or checkout pathways are loaded.
 
 ---
 
@@ -116,11 +139,63 @@ All email notifications are dispatched via Resend:
 *   **Export Actions**: Compiles client-side data into highly structured, tax-ready CSV strings for immediate local download.
 *   **PDF Statements**: Formats the DOM layout into print-ready media templates using `window.print()` wrappers.
 
+### 5.5 Investor Mailing List (DM-37)
+Ensures compliant and structured capital marketing communication:
+*   **Recorded Source**: Every contact added to a Lead Investor's mailing list must record the intake source (e.g., `Organic Search`, `Personal Network`). Imports of contact sheets lacking source tracking are blocked.
+*   **Consent & purchased Lists**: Contacts uploaded from purchased datasets carry a mandatory `purchased` tag flag. Consent states (`opted_in`, `opted_out`) are tracked per contact record.
+*   **Global Unsubscribe**: Bounces, spam complaints, or explicit opt-outs apply globally. An unsubscribe request by a contact blocks them from receiving any future dispatches from *any* Lead Investor across *all* Deals.
+
+### 5.6 Homeowner & Third-Party Takedown (DM-42)
+Provides property owners a reachable mechanism to dispute or report listed projects:
+*   **Public Portal**: A public form accessible without user authentication allows owners or affected third-parties to request takedowns of unauthorized listings.
+*   **Interim Visibility State**: Upon submission, the target deal's status is programmatically moved to `review_pending`. This status immediately removes public and marketplace visibility without purging the underlying Project underwriting data.
+*   **Ledger Outcomes**: Resolution workflows are processed as immutable ledger events (`review_dismissed` or `listing_revoked`).
+
+### 5.7 Scraping & Enumeration Defense (DM-43)
+Implements multiple boundary layers to mitigate bulk data harvesting:
+*   **Non-Enumerable Identifiers**: Display values and URLs use random slugs (`dealSlug`), while underlying API queries enforce strict verification on non-guessable, cryptographically random `listingId` values.
+*   **Sliding Window Rate Limiting**: Limiters are applied to autocomplete endpoints (billed per call), search triggers, and Deal read routes:
+    *   IP-based sliding limits: 60 requests per minute.
+    *   Principal-based sliding limits: 120 requests per minute.
+*   **Scraping Anomaly Alerts**: High-frequency scanning triggers an anomaly event payload to the alert queue, registering IP address and target IDs.
+
 ---
 
-## 6. Firestore Database Schema & Schema Map
+## 6. Telemetry & Event Taxonomy (DM-44)
 
-### 6.1 User Document (`/users/{uid}`)
+The application logs user engagement via a standardized, typed telemetry pipeline. All properties must be free of PII (Personally Identifiable Information) and include device specifications:
+
+### 6.1 Funnel Events
+1.  `anonymous_search_triggered`: Triggered on guest address search. Properties: `queryLength`, `searchType` (zip/city/address).
+2.  `deal_detail_viewed`: Guest or user views deal teaser or full page. Properties: `dealId`, `visibilityMode`, `isTeaser`.
+3.  `invitation_sent`: Lead Investor invites contact. Properties: `dealId`, `inviteeCount`, `channel` (email/link).
+4.  `invitation_response`: Invitee responds. Properties: `dealId`, `action` (accept/decline), `responseDurationMs`.
+5.  `exchange_initiated`: Business card exchanged on mutual match. Properties: `dealId`, `partiesCount`.
+6.  `indication_logged`: Non-binding crowdfunding indication recorded. Properties: `dealId`, `currency` (USD/EUR), `amount`.
+7.  `subscription_converted`: Account converted to paid tier. Properties: `plan`, `sourcePath` (e.g. paywall gate URL).
+
+---
+
+## 7. Performance Budgets (DM-45)
+
+The platform enforces strict interactivity and Cumulative Layout Shift (CLS) budgets, verified automatically:
+
+### 7.1 Response & Render Budgets
+*   **Autocomplete suggesting**: Suggestions must render under realistic throttled Mobile 3G conditions (150ms RTT latency) in under **600ms** (including input debounce).
+*   **First search result**: Search operations must resolve the first matching card within **500ms** under throttled conditions.
+*   **Filter Interactivity**: Actioning marketplace filters on sets up to 150 items must process and render layout adjustments in under **50ms**.
+
+### 7.2 Cumulative Layout Shift (CLS) Protection
+*   All dynamic overlays, autocomplete suggestion lists, and search selection cards must be out-of-flow (`absolute` or `fixed` positioning, absolute height boundaries) to guarantee exactly `0.0` layout shift.
+
+### 7.3 List Capping & Virtualization
+*   Bulk deal listings pages are capped at **30** elements. Exceeding items trigger a pagination or refined filter instruction banner to limit DOM node overhead and maintain sub-50ms Interaction to Next Paint (INP) times.
+
+---
+
+## 8. Firestore Database Schema & Schema Map
+
+### 8.1 User Document (`/users/{uid}`)
 ```typescript
 interface UserProfile {
   uid: string;
@@ -137,16 +212,17 @@ interface UserProfile {
 }
 ```
 
-### 6.2 Project Document (`/projects/{projectId}`)
+### 8.2 Project Document (`/projects/{projectId}`)
 ```typescript
 interface Project {
   id: string;
   organizationId: string;
   name: string;
   address: string;
-  status: 'Lead' | 'Under Contract' | 'Hold' | 'Exit';
+  status: 'Lead' | 'Under Contract' | 'Hold' | 'Exit' | 'review_pending';
   phase: 'acquisition' | 'closing' | 'rehab' | 'exit';
   currentPhase: 1 | 2 | 3 | 4;
+  dispositionType: 'SALE' | 'LEASE' | 'RENT';
   financials: {
     purchasePrice?: number;
     estimatedARV?: number;
@@ -154,6 +230,9 @@ interface Project {
     loanAmount?: number;
     loanInterestRate?: number;
     loanTermYears?: number;
+    totalCashInvested?: number;
+    acquisitionDate?: string;
+    soldDate?: string;
   };
   actionItems: Array<{
     id: string;
@@ -161,26 +240,29 @@ interface Project {
     assignee?: string; // target email address
     status: 'pending' | 'completed';
   }>;
+  members: Record<string, { role: string }>;
   createdAt: Timestamp;
 }
 ```
 
-### 6.3 Sub-Collections
+### 8.3 Sub-Collections
 *   **Vendor Assignments**: `/projects/{projectId}/vendorAssignments/{assignmentId}`
     *   Tracks assignments, quote messages, timeline, and professional details.
 *   **Document Vault**: `/projects/{projectId}/documents/{documentId}`
     *   Tracks file sizes, paths, categories, and DocuSign metadata.
+*   **Deal Invitations**: `/projects/{projectId}/invitations/{invitationId}`
+    *   Tracks investor invitation tokens, consent tracking, and un-binding currency indications.
 
 ---
 
-## 7. Mandatory Design & Compliance Policies
+## 9. Mandatory Design & Compliance Policies
 
-### 7.1 The Honesty Rule (Data Integrity)
+### 9.1 The Honesty Rule (Data Integrity)
 Any system surface displaying computed metrics, integrations, or data states MUST adhere to the Honesty Rule:
 1.  **No Fabricated Fallbacks**: If Plaid data or a database metric is not available, the UI must render an honest empty/warning badge. It must never fabricate dummy data (e.g. displaying `$0` or `0.00%` when input data is missing).
 2.  **Confidence Disclosure**: AVM ranges from RentCast must show upper and lower boundary bounds.
 
-### 7.2 GDPR Account Deletion Cascade
+### 9.2 GDPR Account Deletion Cascade
 Account deletion (via `/api/account/data/delete`) triggers a complete transactional deletion cascade across Firestore:
 1.  User profile document.
 2.  All pending invitations in the `teamInvitations` collection.
@@ -188,7 +270,7 @@ Account deletion (via `/api/account/data/delete`) triggers a complete transactio
 4.  All files associated with the user in Firebase Storage.
 5.  Organization team members list updates to remove the target user.
 
-### 7.3 Global Navigation Contract
+### 9.3 Global Navigation Contract
 The persistent left-side sidebar (defined in `src/components/layout/Sidebar.tsx`) must retain its route sequences exactly:
 *   **Primary Pages**: Portfolio (`/dashboard/command-center`), Projects (`/dashboard/projects`), Insights (`/dashboard/insights`), Reports (`/dashboard/reports`), Inbox (`/dashboard/inbox`), Team (`/dashboard/team`).
 *   **Account Pages**: Profile (`/dashboard/settings/profile`), Billing (`/dashboard/settings/billing`), Settings (`/dashboard/settings`).

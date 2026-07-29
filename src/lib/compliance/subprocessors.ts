@@ -36,9 +36,8 @@ export const SUBPROCESSORS_LAST_UPDATED = '2026-06-29';
  * Each entry must correspond to a real integration in the codebase.
  *
  * Reconciliation mapping:
- *   - Firebase/GCP    → src/lib/firebase/*, src/lib/ocr/documentAIProcessor.ts
+ *   - Firebase/GCP    → src/lib/firebase/*
  *   - Google Places   → src/app/api/places/
- *   - Google Gemini   → GOOGLE_GENERATIVE_AI_API_KEY / GEMINI_API_KEY in .env
  *   - Stripe          → src/app/api/stripe/*, src/lib/entitlements/
  *   - Resend          → src/lib/services/automatedEmailService.ts
  *   - DocuSign        → src/lib/providers/esign/DocuSignESignAdapter.ts
@@ -54,7 +53,7 @@ export const SUBPROCESSORS: Subprocessor[] = [
   {
     name: 'Google Cloud Platform (Firebase)',
     purpose:
-      'Cloud hosting, authentication (Firebase Auth), document database (Firestore), file storage (Cloud Storage), Document AI OCR processing, and serverless functions.',
+      'Cloud hosting, authentication (Firebase Auth), document database (Firestore), file storage (Cloud Storage), and serverless functions.',
     location: 'United States (us-central1)',
     category: 'infrastructure',
     privacyUrl: 'https://cloud.google.com/security/privacy',
@@ -66,14 +65,6 @@ export const SUBPROCESSORS: Subprocessor[] = [
     location: 'United States',
     category: 'infrastructure',
     privacyUrl: 'https://cloud.google.com/maps-platform/terms',
-  },
-  {
-    name: 'Google Gemini AI',
-    purpose:
-      'Generative AI features including document summarization and natural-language project assistance.',
-    location: 'United States',
-    category: 'infrastructure',
-    privacyUrl: 'https://ai.google.dev/terms',
   },
 
   // ── Payments ──

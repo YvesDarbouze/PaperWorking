@@ -172,7 +172,7 @@ export function LoanEstimatesWorkflow({ projectId }: Props) {
       });
 
       if (!folderRes.ok) {
-        throw new Error('Failed to provision Debt folder in the Data Room.');
+        throw new Error('Failed to provision Debt folder in the Project Files.');
       }
       const { folderId } = await folderRes.json();
 

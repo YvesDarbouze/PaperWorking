@@ -20,6 +20,7 @@ import {
   Store,
   ShieldAlert,
 } from 'lucide-react';
+import { RatingDisplay } from '@/components/marketplace/RatingDisplay';
 import toast from 'react-hot-toast';
 import { useMarketplaceVendors } from '@/hooks/useMarketplaceVendors';
 
@@ -333,7 +334,7 @@ export function ClosingAttorneyCard({ projectId }: Props) {
                         <strong className="text-pw-black font-semibold">{hit.companyName}</strong>
                         <div className="flex items-center gap-3 text-[10px] text-pw-muted">
                           <span>Turnaround: {hit.avgTurnaroundDays} days</span>
-                          <span>Rating: {hit.overallRating}★ ({hit.totalReviews})</span>
+                          <RatingDisplay rating={hit.overallRating} totalReviews={hit.totalReviews} variant="compact" />
                         </div>
                       </div>
                       <button

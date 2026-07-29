@@ -8,7 +8,7 @@ interface CacheEntry {
   expiresAt: number;
 }
 
-const CACHE_TTL_MS = 60000; // 60 seconds
+const CACHE_TTL_MS = 300000; // 5 minutes
 const dashboardCacheMap = new Map<string, CacheEntry>();
 
 export function getDashboardCache(orgId: string): any | null {

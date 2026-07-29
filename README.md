@@ -7,6 +7,16 @@
 
 This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
 
+## What PaperWorking Is
+PaperWorking is a real estate investment operating system for tracking deals, managing documents, calculating financial performance, and coordinating with vendors and investors.
+
+## What PaperWorking Is Not
+- PaperWorking does not use artificial intelligence, machine learning, or automated document scanning.
+- PaperWorking does not perform KYC, identity verification, or AML checks.
+- All document processing is manual review by team members.
+- All financial data entry is manual or imported via connected services (Plaid, DocuSign).
+- Plaid transaction attribution uses rule-based string matching, not machine learning.
+
 ## Getting Started
 
 First, run the development server:

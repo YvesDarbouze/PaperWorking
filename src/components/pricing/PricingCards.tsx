@@ -81,7 +81,7 @@ const tiers: PlanTier[] = [
       { label: 'Full 4-Phase Lifecycle Kanban', included: true },
       { label: 'Engine Room Ledger & reports', included: true },
       { label: 'CPA-Ready CSV & P&L exports', included: true },
-      { label: 'Document OCR Upload (Confirm & Harden)', included: true },
+      { label: 'Document Upload (Confirm & Review)', included: true },
       { label: '1 partner seat (Read-only)', included: true },
       {
         label: 'Team Invites & RBAC',

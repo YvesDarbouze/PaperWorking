@@ -15,8 +15,12 @@ test.describe('PaperWorking E2E — Comps & ARV Flow (AQ-7)', () => {
 
     // Bypass Cookie Consent popup by pre-seeding localStorage
     await page.addInitScript(() => {
-      window.localStorage.setItem('pw_cookie_consent', JSON.stringify({ essential: true, analytics: true, marketing: true }));
-    });
+    try {
+    
+          window.localStorage.setItem('pw_cookie_consent', JSON.stringify({ essential: true, analytics: true, marketing: true }));
+        
+    } catch (e) {}
+  });
   });
 
   test('AQ-7 Comps repeater, rollups and ARV card visibility', async ({ page }) => {

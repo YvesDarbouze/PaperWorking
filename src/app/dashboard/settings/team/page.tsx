@@ -113,7 +113,7 @@ function MemberRow({
               `Clearance role updated to ${e.target.value}`
             )}
             disabled={loading}
-            className="glass-input text-xs px-2.5 py-1.5 text-pw-black disabled:opacity-50 bg-pw-surface"
+            className="glass-input h-10 px-4 rounded-lg text-sm text-pw-black disabled:opacity-50 bg-pw-surface focus:ring-2 focus:ring-pw-primary focus:outline-none transition-all duration-150"
           >
             {ROLE_OPTIONS.map((r) => (
               <option key={r} value={r} className="bg-pw-surface text-pw-black">{r}</option>
@@ -129,7 +129,7 @@ function MemberRow({
               `Scope updated to ${e.target.value === 'tenant' ? 'Tenant Wide' : 'Project Scoped'}`
             )}
             disabled={loading}
-            className="glass-input text-xs px-2.5 py-1.5 text-pw-black disabled:opacity-50 bg-pw-surface"
+            className="glass-input h-10 px-4 rounded-lg text-sm text-pw-black disabled:opacity-50 bg-pw-surface focus:ring-2 focus:ring-pw-primary focus:outline-none transition-all duration-150"
           >
             <option value="tenant" className="bg-pw-surface text-pw-black">Tenant Wide</option>
             <option value="project" className="bg-pw-surface text-pw-black">Project Scoped</option>
@@ -138,9 +138,9 @@ function MemberRow({
           {/* Permissions toggle */}
           <button
             onClick={() => setShowPermissions(!showPermissions)}
-            className={`text-xs px-2.5 py-1.5 rounded-lg border transition-colors disabled:opacity-50 ${
+            className={`h-10 px-5 rounded-lg border transition-all text-sm font-medium disabled:opacity-50 active:scale-98 ${
               showPermissions 
-                ? 'bg-pw-primary/20 text-pw-primary border-pw-primary/30 font-medium' 
+                ? 'bg-pw-primary/20 text-pw-primary border-pw-primary/30' 
                 : 'bg-pw-glass-bg border-pw-border text-pw-muted hover:bg-pw-primary/10 hover:text-pw-primary'
             }`}
             disabled={loading}
@@ -163,7 +163,7 @@ function MemberRow({
                 member.status === 'suspended' ? 'Member unsuspended' : 'Member suspended'
               )}
               disabled={loading}
-              className={`p-2 rounded-lg transition-colors disabled:opacity-50 ${
+              className={`h-10 w-10 rounded-lg transition-all flex items-center justify-center active:scale-98 disabled:opacity-50 ${
                 isSuspended 
                   ? 'text-pw-primary hover:bg-pw-primary/10' 
                   : 'text-pw-muted hover:text-amber-500 hover:bg-pw-glass-bg'
@@ -182,7 +182,7 @@ function MemberRow({
                 'Member removed from team'
               )}
               disabled={loading}
-              className="p-2 rounded-lg text-pw-muted hover:text-error hover:bg-pw-glass-bg transition-colors disabled:opacity-50"
+              className="h-10 w-10 rounded-lg text-pw-muted hover:text-error hover:bg-pw-glass-bg flex items-center justify-center active:scale-98 transition-all disabled:opacity-50"
               aria-label="Remove member"
               title="Remove Member"
             >
@@ -225,6 +225,10 @@ function MemberRow({
       )}
     </div>
   );
+}
+
+function getNextMemberId() {
+  return `member_${Date.now()}`;
 }
 
 export default function TeamManagementPage() {
@@ -294,17 +298,17 @@ export default function TeamManagementPage() {
   if (!isLead || !isTeamPlan) {
     return (
       <div className="flex items-center justify-center py-20 px-4">
-        <div className="glass-card border border-pw-border p-8 max-w-sm text-center space-y-4 rounded-2xl shadow-2xl">
+        <div className="glass-card border border-pw-border p-6 max-w-sm text-center space-y-4 rounded-2xl shadow-2xl">
           <div className="w-12 h-12 rounded-full bg-pw-primary/10 border border-pw-primary/20 flex items-center justify-center mx-auto text-pw-primary shadow-[0_0_15px_rgba(69,73,85,0.2)] animate-pulse">
             <Shield className="w-6 h-6" />
           </div>
-          <h2 className="text-lg font-bold text-pw-black">Team Plan Required</h2>
+          <h2 className="text-base font-semibold text-pw-black">Team Plan Required</h2>
           <p className="text-xs text-pw-muted leading-relaxed">
             Team management is available exclusively on the Investor Team plan for Lead Investors.
           </p>
           <Link
             href="/dashboard/settings/billing"
-            className="luminous-button inline-flex items-center justify-center gap-2 text-sm font-bold px-6 py-3 rounded-xl w-full transition-all duration-300"
+            className="luminous-button h-10 px-5 rounded-lg text-sm font-medium active:scale-98 transition-all flex items-center justify-center gap-2 w-full"
           >
             Upgrade to Team →
           </Link>
@@ -335,7 +339,7 @@ export default function TeamManagementPage() {
     setInviting(true);
     try {
       const newMember: OrgTeamMember = {
-        id:                 `member_${Date.now()}`,
+        id:                 getNextMemberId(),
         email:              email.trim().toLowerCase(),
         displayName:        displayName.trim() || email.trim(),
         internalRole:       role,
@@ -358,8 +362,8 @@ export default function TeamManagementPage() {
       setDisplayName('');
       setRole('Deal Lead');
       setTimeout(() => setInvited(false), 3000);
-    } catch (err: any) {
-      setInviteError(err.message || 'Failed to send invitation.');
+    } catch (err) {
+      setInviteError(err instanceof Error ? err.message : 'Failed to send invitation.');
     } finally {
       setInviting(false);
     }
@@ -368,16 +372,16 @@ export default function TeamManagementPage() {
   return (
     <div className="w-full space-y-8">
       {/* ─── Grid Layout ─── */}
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-stack-md items-start">
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
         
         {/* Left Column (col-span-7) */}
-        <div className="lg:col-span-7 space-y-stack-md">
+        <div className="lg:col-span-7 space-y-8">
           
           {/* Card 1: Seat Usage */}
-          <section className="glass-card glass-card-bright p-8 rounded-2xl flex flex-col relative overflow-hidden">
+          <section className="glass-card rounded-2xl p-6 flex flex-col relative overflow-hidden transition-all duration-200 hover:shadow-md">
             <div className="flex items-center justify-between mb-4">
-              <h3 className="font-label-md text-label-md font-bold uppercase tracking-wider text-pw-primary flex items-center gap-2">
-                <span className="material-symbols-outlined text-lg select-none">groups</span>
+              <h3 className="text-base font-semibold text-pw-black flex items-center gap-2">
+                <span className="material-symbols-outlined text-pw-primary text-xl select-none">groups</span>
                 Seat Usage
               </h3>
               <span className="font-label-sm text-label-sm font-bold uppercase tracking-wider text-pw-primary font-mono">
@@ -402,10 +406,10 @@ export default function TeamManagementPage() {
           </section>
 
           {/* Card 2: Personnel Registry */}
-          <section className="glass-card glass-card-bright p-8 rounded-2xl flex flex-col relative overflow-hidden">
+          <section className="glass-card rounded-2xl p-6 flex flex-col relative overflow-hidden transition-all duration-200 hover:shadow-md">
             <div className="mb-6">
-              <h3 className="font-label-md text-label-md font-bold uppercase tracking-wider text-pw-primary flex items-center gap-2">
-                <span className="material-symbols-outlined text-lg select-none">badge</span>
+              <h3 className="text-base font-semibold text-pw-black flex items-center gap-2">
+                <span className="material-symbols-outlined text-pw-primary text-xl select-none">badge</span>
                 Personnel Registry
               </h3>
               <p className="text-xs text-pw-muted mt-1">Manage active workspace users and invite clearances.</p>
@@ -434,10 +438,10 @@ export default function TeamManagementPage() {
           </section>
 
           {/* Card 3: Invite Team Personnel */}
-          <section className="glass-card glass-card-bright p-8 rounded-2xl flex flex-col relative overflow-hidden">
+          <section className="glass-card rounded-2xl p-6 flex flex-col relative overflow-hidden transition-all duration-200 hover:shadow-md">
             <div className="mb-6">
-              <h3 className="font-label-md text-label-md font-bold uppercase tracking-wider text-pw-primary flex items-center gap-2">
-                <span className="material-symbols-outlined text-lg select-none">person_add</span>
+              <h3 className="text-base font-semibold text-pw-black flex items-center gap-2">
+                <span className="material-symbols-outlined text-pw-primary text-xl select-none">person_add</span>
                 Invite Team Personnel
               </h3>
               <p className="text-xs text-pw-muted mt-1">Add new members to your corporate investment organization.</p>
@@ -453,7 +457,7 @@ export default function TeamManagementPage() {
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                     placeholder="jane@realtycorp.com"
-                    className="glass-input w-full text-sm px-4 py-3 text-pw-black placeholder:text-pw-muted/40"
+                    className="glass-input w-full text-sm px-4 h-10 rounded-lg text-pw-black placeholder:text-pw-muted/40 focus:ring-2 focus:ring-pw-primary focus:outline-none transition-all duration-150"
                   />
                 </div>
                 <div>
@@ -463,7 +467,7 @@ export default function TeamManagementPage() {
                     value={displayName}
                     onChange={(e) => setDisplayName(e.target.value)}
                     placeholder="Jane Realty"
-                    className="glass-input w-full text-sm px-4 py-3 text-pw-black placeholder:text-pw-muted/40"
+                    className="glass-input w-full text-sm px-4 h-10 rounded-lg text-pw-black placeholder:text-pw-muted/40 focus:ring-2 focus:ring-pw-primary focus:outline-none transition-all duration-150"
                   />
                 </div>
               </div>
@@ -473,7 +477,7 @@ export default function TeamManagementPage() {
                 <select
                   value={role}
                   onChange={(e) => setRole(e.target.value as InternalRole)}
-                  className="glass-input w-full text-sm px-4 py-3 text-pw-black bg-pw-surface"
+                  className="glass-input w-full text-sm px-4 h-10 rounded-lg text-pw-black bg-pw-surface focus:ring-2 focus:ring-pw-primary focus:outline-none transition-all duration-150"
                 >
                   {ROLE_OPTIONS.map((r) => (
                     <option key={r} value={r} className="bg-pw-surface text-pw-black">
@@ -500,12 +504,12 @@ export default function TeamManagementPage() {
                 <button
                   type="submit"
                   disabled={inviting || seatsLeft <= 0}
-                  className="luminous-button rounded-xl font-label-md text-label-md font-bold transition-all duration-300 disabled:opacity-50 inline-flex items-center gap-2 cursor-pointer"
+                  className="luminous-button h-10 px-5 rounded-lg text-sm font-medium active:scale-98 disabled:opacity-50 disabled:pointer-events-none transition-all flex items-center justify-center gap-2 cursor-pointer"
                 >
                   {inviting ? (
                     <><Loader2 className="w-4 h-4 animate-spin" /> <span>Sending invite…</span></>
                   ) : (
-                    <><UserPlus className="w-4 h-4" /> <span>Send Invite</span> <Mail className="w-3.5 h-3.5" /></>
+                    <><UserPlus className="w-4 h-4" /> <span>Send Invite</span> <Mail className="w-4 h-4" /></>
                   )}
                 </button>
 
@@ -521,12 +525,12 @@ export default function TeamManagementPage() {
         </div>
 
         {/* Right Column (col-span-5) */}
-        <div className="lg:col-span-5 space-y-stack-md">
+        <div className="lg:col-span-5 space-y-8">
           
           {/* Card 4: Role Designation Legend */}
-          <section className="glass-card glass-card-bright p-8 rounded-2xl flex flex-col relative overflow-hidden">
-            <h3 className="font-label-md text-label-md font-bold uppercase tracking-wider text-pw-primary mb-5 flex items-center gap-1.5">
-              <span className="material-symbols-outlined text-lg select-none">shield</span>
+          <section className="glass-card rounded-2xl p-6 flex flex-col relative overflow-hidden transition-all duration-200 hover:shadow-md">
+            <h3 className="text-base font-semibold text-pw-black mb-5 flex items-center gap-1.5">
+              <span className="material-symbols-outlined text-pw-primary text-xl select-none">shield</span>
               Clearance Roles Legend
             </h3>
             <div className="flex flex-col gap-4">
@@ -543,8 +547,8 @@ export default function TeamManagementPage() {
           </section>
 
           {/* Card 5: Audit Ledger */}
-          <section className="glass-card glass-card-bright p-8 rounded-2xl flex flex-col relative overflow-hidden">
-            <h3 className="font-label-md text-label-md font-bold uppercase tracking-wider text-pw-primary mb-5 flex items-center gap-2">
+          <section className="glass-card rounded-2xl p-6 flex flex-col relative overflow-hidden transition-all duration-200 hover:shadow-md">
+            <h3 className="text-base font-semibold text-pw-black mb-5 flex items-center gap-2">
               <Activity className="w-4 h-4 text-pw-primary" /> Audit Ledger
             </h3>
 

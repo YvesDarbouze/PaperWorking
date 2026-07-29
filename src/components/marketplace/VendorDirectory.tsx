@@ -5,6 +5,7 @@ import { Search, Filter, ShieldCheck, Star, MapPin, Clock, Tag, ChevronRight, Ca
 import { VendorProfile, VendorType } from '@/types/schema';
 import { motion } from 'framer-motion';
 import { VendorRequestModal } from './VendorRequestModal';
+import { RatingDisplay } from './RatingDisplay';
 
 import { useAuth } from '@/context/AuthContext';
 import { isSubscriptionActive } from '@/lib/stripe/subscription';
@@ -61,6 +62,20 @@ export default function VendorDirectory() {
     const matchesSearch = v.companyName?.toLowerCase().includes(searchTerm.toLowerCase()) || 
                          v.specialties?.some(s => s.toLowerCase().includes(searchTerm.toLowerCase()));
     return matchesSearch;
+  });
+
+  filteredVendors.sort((a, b) => {
+    const aHasReviews = (a.overallRating || 0) > 0 && (a.totalReviews || 0) > 0;
+    const bHasReviews = (b.overallRating || 0) > 0 && (b.totalReviews || 0) > 0;
+
+    if (aHasReviews && !bHasReviews) return -1;
+    if (!aHasReviews && bHasReviews) return 1;
+
+    if (aHasReviews && bHasReviews) {
+      return (b.overallRating || 0) - (a.overallRating || 0);
+    }
+
+    return (a.companyName || '').localeCompare(b.companyName || '');
   });
 
   return (
@@ -169,10 +184,7 @@ function VendorCard({ vendor, onRequestQuote, hasActiveSub }: { vendor: VendorPr
              </p>
            )}
         </div>
-        <div className="flex items-center gap-1">
-          <Star className="w-3 h-3 text-text-primary fill-pw-black" />
-          <span className="text-xs font-black text-text-primary">{vendor.overallRating}</span>
-        </div>
+        <RatingDisplay rating={vendor.overallRating} totalReviews={vendor.totalReviews} variant="compact" />
       </div>
 
       <h3 className="text-xl font-black text-text-primary mb-4 uppercase tracking-tighter group-hover:underline underline-offset-4 decoration-1">

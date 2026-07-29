@@ -430,6 +430,8 @@ model ReilProject {
 
   @@index([createdById])
   @@index([acquisitionStatus])
+  @@index([createdById, currentPhase])
+  @@index([createdById, acquisitionStatus])
 }
 
 model ReilPropertyFacts {
@@ -706,4 +708,162 @@ model ReilClosingRecord {
   countyName       String?
   checklistState   String?         // JSON string of executed docs checklist state
   fundingPlan      ReilFundingPlan @relation(fields: [fundingPlanId], references: [id], onDelete: Cascade)
+}
+
+// ── Phase 3: Hold Registry (HD-3 — canonical enums & models) ─────────────────
+// Enums and models for the canonical Hold-phase variable registry.
+// Primary persistence: Firestore `holdRegistry` sub-document.
+// Prisma models here serve as the SQL reporting replica for financial analytics.
+
+enum RenovationTier {
+  STAGE       // $ — cosmetic staging
+  REFURBISH   // $$ — light touch-up
+  RENOVATE    // $$$ — mid-range renovation
+  GUT         // $$$$ — full gut rehab
+  DEVELOP     // $$$$$ — ground-up or total rebuild
+}
+
+enum HoldExpenseCategory {
+  tax
+  insurance
+  security
+  maintenance
+  utilities
+  management
+  HOA
+  capex
+}
+
+enum OccupancyDuringHold {
+  VACANT_FULL_REHAB
+  OCCUPIED
+  PARTIAL
+}
+
+enum UtilitiesResponsibility {
+  LANDLORD
+  TENANT
+  SPLIT
+}
+
+/// Canonical Hold cost records — one row per category per project per period.
+/// The eight canonical categories (SKILL.md Rule 8) are enforced by the enum.
+model HoldCostRecord {
+  id              String              @id @default(uuid())
+  linkedProjectId String              // References Firestore Project ID
+  organizationId  String
+  category        HoldExpenseCategory
+  monthlyAmount   BigInt              // cents
+  periodMonth     String              // YYYY-MM format
+  sourceTag       String              @default("user_actual") // user_assumption | user_actual | document | derived | plaid
+  carriedFromFund Boolean             @default(false)
+  
+  createdAt       DateTime            @default(now())
+  updatedAt       DateTime            @updatedAt
+
+  @@unique([linkedProjectId, category, periodMonth])
+  @@index([linkedProjectId])
+  @@index([organizationId])
+  @@index([category])
+}
+
+/// Canonical renovation spend entries — each itemized capex/maintenance spend.
+model HoldRehabSpend {
+  id              String    @id @default(uuid())
+  linkedProjectId String
+  organizationId  String
+  amount          BigInt    // cents
+  spendDate       DateTime
+  category        String    // 'capex' | 'maintenance' (guidance only, not a ninth expense tag)
+  note            String
+  vendorRef       String?
+  receiptRef      String?   // Firebase Storage reference
+  sourceTag       String    @default("user_actual")
+  
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+
+  @@index([linkedProjectId])
+  @@index([organizationId])
+}
+
+/// Current value dated series — tracks appreciation over the hold period.
+model HoldValueEntry {
+  id              String    @id @default(uuid())
+  linkedProjectId String
+  value           BigInt    // cents
+  valueDate       DateTime
+  sourceTag       String    @default("user_assumption") // user_assumption | document
+  documentRef     String?   // appraisal/BPO reference
+  
+  createdAt       DateTime  @default(now())
+
+  @@index([linkedProjectId])
+  @@index([valueDate])
+}
+
+model BankConnection {
+  id           String        @id @default(uuid())
+  userId       String
+  accessToken  String
+  lastSyncCursor String?
+  lastSyncAt   DateTime?
+  status       String        @default("active") // 'active' | 'error' | 'disconnected'
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
+  accounts     BankAccount[]
+  transactions Transaction[]
+
+  @@index([userId])
+}
+
+model BankAccount {
+  id             String         @id @default(uuid())
+  plaidAccountId String         @unique
+  connectionId   String
+  name           String
+  mask           String?
+  officialName   String?
+  type           String
+  subtype        String?
+  balance        BigInt         @default(0)
+  limit          BigInt?
+  currency       String         @default("USD")
+  createdAt      DateTime       @default(now())
+  updatedAt      DateTime       @updatedAt
+  connection     BankConnection @relation(fields: [connectionId], references: [id], onDelete: Cascade)
+  transactions   Transaction[]
+
+  @@index([connectionId])
+}
+
+model Transaction {
+  id             String         @id @default(uuid())
+  plaidId        String         @unique
+  connectionId   String
+  accountId      String
+  userId         String
+  amount         BigInt         // cents
+  date           DateTime
+  category       String[]
+  merchantName   String?
+  pending        Boolean        @default(false)
+  reiCategory    String?        // 'rental_income', 'debt_service', etc.
+  confidence     Float?         // 0.0 - 1.0
+  projectId      String?        // for auto-attribution
+  reviewedByUser Boolean        @default(false)
+  attributedAt   DateTime?
+  createdAt      DateTime       @default(now())
+  updatedAt      DateTime       @updatedAt
+  connection     BankConnection @relation(fields: [connectionId], references: [id], onDelete: Cascade)
+  account        BankAccount    @relation(fields: [accountId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([projectId])
+  @@index([date])
+  @@index([reiCategory])
+  @@index([plaidId])
+  @@index([connectionId])
+  @@index([userId, date])
+  @@index([projectId, reiCategory])
 }

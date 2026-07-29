@@ -1,21 +1,32 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { placesCache } from '@/lib/cache/placesCache';
 import { requireAuth, isAuthError } from '@/lib/firebase-admin/auth-guard';
-
-const PLACES_API_KEY = process.env.GOOGLE_PLACES_API_KEY;
+import { checkRateLimit, rateLimitResponse } from '@/lib/places/placesRateLimit';
+import { checkPublicRateLimit } from '@/lib/places/publicRateLimit';
+import * as PlacesGateway from '@/lib/places/placesGateway';
 
 export async function POST(req: NextRequest) {
+  // 1. Authenticate the request
   const auth = await requireAuth(req);
   if (isAuthError(auth)) return auth;
+  const { uid } = auth;
 
-  if (!PLACES_API_KEY) {
+  // 2. Rate limit check (principal and IP based)
+  const ip = req.headers.get('x-forwarded-for')?.split(',')[0]?.trim() || 'unknown';
+  const rateCheckIp = await checkPublicRateLimit(ip);
+  if (!rateCheckIp.allowed) return rateLimitResponse(rateCheckIp);
+
+  const rateCheck = await checkRateLimit(uid, 'autocomplete');
+  if (!rateCheck.allowed) return rateLimitResponse(rateCheck);
+
+  // 3. Parse and validate request body
+  const { input, sessionToken } = await req.json().catch(() => ({ input: '', sessionToken: undefined }));
+
+  if (!sessionToken) {
     return NextResponse.json(
-      { error: 'Google Places API key not configured' },
-      { status: 500 }
+      { error: 'Session token is required' },
+      { status: 400 }
     );
   }
-
-  const { input, sessionToken } = await req.json().catch(() => ({ input: '', sessionToken: undefined }));
 
   if (!input || typeof input !== 'string' || input.trim().length < 2) {
     return NextResponse.json({ predictions: [] });
@@ -23,59 +34,13 @@ export async function POST(req: NextRequest) {
 
   const normalized = input.trim();
 
-  // If a session token is used, caching autocomplete predictions might be less strictly correct 
-  // per Google's TOS, but we'll leave it in place or let it be. Actually, Google recommends 
-  // not caching if you're using session tokens, but the current cache TTL is short.
-  const cached = await placesCache.getAutocomplete(normalized);
-  if (cached) {
-    return NextResponse.json({ predictions: cached, cached: true });
-  }
-
+  // 4. Fetch autocomplete predictions from the Gateway
   try {
-    const requestBody: any = {
-      input: normalized,
-      includedPrimaryTypes: ['street_address', 'subpremise', 'premise'],
-      includedRegionCodes: ['us'],
-      languageCode: 'en',
-    };
-
-    if (sessionToken) {
-      requestBody.sessionToken = sessionToken;
-    }
-
-    const response = await fetch(
-      'https://places.googleapis.com/v1/places:autocomplete',
-      {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'X-Goog-Api-Key': PLACES_API_KEY,
-        },
-        body: JSON.stringify(requestBody),
-      }
-    );
-
-    if (!response.ok) {
-      console.error('[Places Autocomplete] API error:', response.status, await response.text());
-      return NextResponse.json({ predictions: [] });
-    }
-
-    const data = await response.json();
-
-    const predictions = (data.suggestions || [])
-      .filter((s: any) => s.placePrediction)
-      .map((s: any) => ({
-        placeId: s.placePrediction.placeId,
-        description: s.placePrediction.text?.text || '',
-        mainText: s.placePrediction.structuredFormat?.mainText?.text || '',
-        secondaryText: s.placePrediction.structuredFormat?.secondaryText?.text || '',
-      }));
-
-    await placesCache.setAutocomplete(normalized, predictions);
-
+    const predictions = await PlacesGateway.autocomplete(normalized, sessionToken, uid);
     return NextResponse.json({ predictions });
   } catch (error) {
-    console.error('[Places Autocomplete] Proxy error:', error);
+    console.error('[Places Autocomplete] Gateway error:', error);
+    // If Autocomplete fails, return empty predictions
     return NextResponse.json({ predictions: [] });
   }
 }

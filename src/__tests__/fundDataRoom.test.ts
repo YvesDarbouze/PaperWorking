@@ -93,8 +93,8 @@ jest.mock('@/lib/firebase/orgActivityWriter', () => ({
 
 import { GET, POST } from '@/app/api/projects/[id]/documents/route';
 
-describe('FD-38 — Fund Data Room structure API Scoping & Mapping', () => {
-  const PROJECT_ID = 'project_data_room_test';
+describe('FD-38 — Fund Project Files structure API Scoping & Mapping', () => {
+  const PROJECT_ID = 'project_files_test';
   const OWNER_UID = 'owner_user_123';
   const VENDOR_UID = 'vendor_user_456';
   const LP_UID = 'lp_user_789';
@@ -161,7 +161,7 @@ describe('FD-38 — Fund Data Room structure API Scoping & Mapping', () => {
             data: () => ({
               projectId: PROJECT_ID,
               name: 'Appraisal_Report.pdf',
-              ocrDocumentType: 'appraisal',
+              status: 'Uploaded',
               category: 'Debt',
               uploadedByUid: OWNER_UID,
             }),
@@ -171,7 +171,7 @@ describe('FD-38 — Fund Data Room structure API Scoping & Mapping', () => {
             data: () => ({
               projectId: PROJECT_ID,
               name: 'Closing_Disclosure.pdf',
-              ocrDocumentType: 'closing_disclosure',
+              status: 'Uploaded',
               category: 'Closing',
               uploadedByUid: OWNER_UID,
             }),
@@ -313,7 +313,7 @@ describe('FD-38 — Fund Data Room structure API Scoping & Mapping', () => {
       expect(mockProjectFilesSet).toHaveBeenCalled();
       const fileRecord = mockProjectFilesSet.mock.calls[0][0];
       expect(fileRecord.folderId).toBe('new-folder-123');
-      expect(fileRecord.ocrDocumentType).toBe('appraisal');
+      expect(fileRecord.status).toBe('Uploaded');
     });
   });
 });

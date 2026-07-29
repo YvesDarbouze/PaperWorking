@@ -1,0 +1,13 @@
+{
+  "commandCenter": {
+    "groupGap": "normal",
+    "btnHeight": "0px",
+    "btnWidth": "1424px",
+    "btnMinHeight": "0px"
+  },
+  "holdWorkspace": {
+    "groupGap": "normal",
+    "btnHeight": "0px",
+    "btnWidth": "1424px"
+  }
+}

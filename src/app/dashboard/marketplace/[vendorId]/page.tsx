@@ -12,6 +12,7 @@ import {
   CheckCircle2,
 } from 'lucide-react';
 import { VendorRequestModal } from '@/components/marketplace/VendorRequestModal';
+import { RatingDisplay } from '@/components/marketplace/RatingDisplay';
 import type { VendorProfile } from '@/types/schema';
 
 /* ═══════════════════════════════════════════════════════════════
@@ -69,7 +70,7 @@ export default function VendorDetailPage() {
               companyName: match.companyName ?? 'Unknown',
               category: (match.type as string) ?? 'Other',
               location: (match.licensingStates ?? []).slice(0, 1).join(', ') || 'N/A',
-              rating: match.overallRating ?? 4.5,
+              rating: match.overallRating ?? 0,
               bio: match.bio ?? '',
               specialties: match.specialties ?? [],
               totalReviews: match.totalReviews ?? 0,
@@ -174,11 +175,7 @@ export default function VendorDetailPage() {
           {/* Rating + CTA */}
           <div className="flex items-center gap-4">
             <div className="text-right">
-              <div className="flex items-center gap-1.5">
-                <Star className="w-4 h-4 fill-amber-400 stroke-none" />
-                <span className="text-lg font-bold text-white">{vendor.rating.toFixed(1)}</span>
-              </div>
-              <p className="text-[10px] text-[#6B6870]">{vendor.totalReviews} review{vendor.totalReviews !== 1 ? 's' : ''}</p>
+              <RatingDisplay rating={vendor.rating} totalReviews={vendor.totalReviews} />
             </div>
             <button
               type="button"

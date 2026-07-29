@@ -15,8 +15,12 @@ test.describe('PaperWorking E2E — Deal Analyzer & Quick Analyze (AQ-15)', () =
 
     // Bypass Cookie Consent popup by pre-seeding localStorage
     await page.addInitScript(() => {
-      window.localStorage.setItem('pw_cookie_consent', JSON.stringify({ essential: true, analytics: true, marketing: true }));
-    });
+    try {
+    
+          window.localStorage.setItem('pw_cookie_consent', JSON.stringify({ essential: true, analytics: true, marketing: true }));
+        
+    } catch (e) {}
+  });
   });
 
   test('AQ-15 Deal Analyzer navigation, List View, Quick Analyze, DEMO_FINANCIALS seed comparison, and Kanban integration', async ({ page }) => {

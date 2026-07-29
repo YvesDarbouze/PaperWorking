@@ -15,7 +15,7 @@ import { collection, query, where, getDocs } from 'firebase/firestore';
 import { db } from '@/lib/firebase/config';
 import { foldersService } from '@/lib/firebase/folders';
 import { computeClosingCostLines } from '@/lib/math/closingCosts';
-import { ENABLE_OCR, IS_DEMO_MODE } from '@/lib/config/demo';
+import { IS_DEMO_MODE } from '@/lib/config/demo';
 import { useAttorneyStates } from '@/hooks/useAttorneyStates';
 import { isAttorneyCloseState } from '@/lib/config/attorneyStates';
 
@@ -71,8 +71,8 @@ export default function ClosingRoomModal({ projectId, onClose }: ClosingRoomProp
     const [cdFinalClosingCosts, setCdFinalClosingCosts] = useState<number | null>(null);
     const [cdCashToClose, setCdCashToClose] = useState<number | null>(null);
     const [cdPrepaidsReserves, setCdPrepaidsReserves] = useState<number | null>(null);
-    const [isOcrScanning, setIsOcrScanning] = useState(false);
     const [isSavingCDData, setIsSavingCDData] = useState(false);
+    const [isEstimate, setIsEstimate] = useState<boolean>(!!closingRoom.isEstimate);
     const [overrideReasonState, setOverrideReasonState] = useState<string>(closingRoom.reconciliationOverrideReason || '');
     const [isSavingOverride, setIsSavingOverride] = useState(false);
 
@@ -324,61 +324,7 @@ export default function ClosingRoomModal({ projectId, onClose }: ClosingRoomProp
         }
     };
 
-    const handleRunCDOcr = async () => {
-        if (!closingRoom.closingDisclosureUrl) {
-            toast.error('Please upload a Closing Disclosure first.');
-            return;
-        }
-        setIsOcrScanning(true);
-        const toastId = toast.loading('Analyzing document with Gemini AI...');
-        try {
-            const token = user && typeof user.getIdToken === 'function' ? await user.getIdToken() : '';
-            const res = await fetch('/api/ocr/settlement', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${token}`
-                },
-                body: JSON.stringify({
-                    fileUrl: closingRoom.closingDisclosureUrl,
-                    mimeType: 'application/pdf'
-                })
-            });
 
-            if (!res.ok) {
-                const errData = await res.json().catch(() => ({}));
-                throw new Error(errData.error || `HTTP ${res.status}`);
-            }
-
-            const { data } = await res.json();
-            
-            if (data && typeof data.closingCosts === 'number' && data.closingCosts > 0) {
-                setCdFinalClosingCosts(data.closingCosts);
-                
-                const derivedPrepaids = Math.max(0, data.closingCosts - ((data.titleFees || 0) + (data.recordingFees || 0) + (data.transferTaxes || 0)));
-                setCdPrepaidsReserves(derivedPrepaids || null);
-
-                const purchasePrice = deal.financials?.purchasePrice || 0;
-                const loanAmount = deal.financials?.loanAmount || 0;
-                const derivedCashToClose = Math.max(0, purchasePrice + data.closingCosts - loanAmount);
-                setCdCashToClose(derivedCashToClose || null);
-            } else {
-                setCdFinalClosingCosts(null);
-                setCdPrepaidsReserves(null);
-                setCdCashToClose(null);
-            }
-
-            toast.success(`Scan complete! (Confidence: ${data.confidence})`, { id: toastId });
-        } catch (err: any) {
-            console.error('[CD OCR] Failed:', err);
-            setCdFinalClosingCosts(null);
-            setCdPrepaidsReserves(null);
-            setCdCashToClose(null);
-            toast.error('Gemini OCR scan failed to extract values. Please enter actual values manually.', { id: toastId });
-        } finally {
-            setIsOcrScanning(false);
-        }
-    };
 
     const handleSaveCDData = async () => {
         setIsSavingCDData(true);
@@ -396,12 +342,14 @@ export default function ClosingRoomModal({ projectId, onClose }: ClosingRoomProp
                 cdCapturedAt: timestamp,
                 cdCapturedByUid: user?.uid || null,
                 cdCapturedByName: reviewerName,
+                isEstimate,
             };
 
             const financialUpdates = {
                 finalClosingCosts: cdFinalClosingCosts ?? undefined,
                 finalCashToClose: cdCashToClose ?? undefined,
                 finalPrepaidsReserves: cdPrepaidsReserves ?? undefined,
+                closingFiguresEstimated: isEstimate,
             };
 
             await projectsService.updateProject(deal.id, {
@@ -603,8 +551,17 @@ export default function ClosingRoomModal({ projectId, onClose }: ClosingRoomProp
 
             if (docKey === 'disbursementStatement') {
                 setDisbursementStatementUrlState(res.downloadUrl);
+                const currentMetadata = closingRoom.executedDocsMetadata || {};
+                const updatedMetadata = {
+                    ...currentMetadata,
+                    disbursementStatement: {
+                        sizeBytes: file.size,
+                        uploadedAt: new Date().toISOString(),
+                    }
+                };
                 const closingRoomUpdates = {
                     disbursementStatementUrl: res.downloadUrl,
+                    executedDocsMetadata: updatedMetadata,
                 };
                 await projectsService.updateProject(deal.id, {
                     closingRoom: {
@@ -650,8 +607,18 @@ export default function ClosingRoomModal({ projectId, onClose }: ClosingRoomProp
                     ...updatedUrlState
                 };
 
+                const currentMetadata = closingRoom.executedDocsMetadata || {};
+                const updatedMetadata = {
+                    ...currentMetadata,
+                    [docKey]: {
+                        sizeBytes: file.size,
+                        uploadedAt: new Date().toISOString(),
+                    }
+                };
+
                 const closingRoomUpdates = {
                     executedDocs: updatedExecutedDocs,
+                    executedDocsMetadata: updatedMetadata,
                     disbursementStatementUrl: docKey === 'settlementStatement' && !disbursementStatementUrlState ? res.downloadUrl : disbursementStatementUrlState
                 };
 
@@ -756,7 +723,7 @@ export default function ClosingRoomModal({ projectId, onClose }: ClosingRoomProp
         }
 
         setIsSavingExecution(true);
-        const toastId = toast.loading('Archiving closing package to Data Room & completing deal closing...');
+        const toastId = toast.loading('Archiving closing package to Project Files & completing deal closing...');
 
         try {
             // Find folder matching 'Closing' (or first project folder)
@@ -778,10 +745,12 @@ export default function ClosingRoomModal({ projectId, onClose }: ClosingRoomProp
             }
 
             if (!folderId) {
-                throw new Error('Project Data Room phase folders are not initialized.');
+                throw new Error('Project Files phase folders are not initialized.');
             }
 
-            const archiveDoc = async (name: string, category: any, url: string) => {
+            const archiveDoc = async (name: string, category: any, url: string, docKey: string) => {
+                const meta = closingRoom.executedDocsMetadata?.[docKey];
+                const sizeBytes = meta?.sizeBytes || (1024 * 100); // Fallback to 100KB if not found
                 await foldersService.addFile(
                     folderId,
                     deal.id,
@@ -791,7 +760,7 @@ export default function ClosingRoomModal({ projectId, onClose }: ClosingRoomProp
                         category,
                         storageUrl: url,
                         fileType: 'application/pdf',
-                        sizeBytes: 1024 * 100, // 100KB mock
+                        sizeBytes,
                         uploadedByUid: user?.uid || 'system',
                         uploadedByEmail: user?.email || '',
                         isVerified: true,
@@ -802,13 +771,13 @@ export default function ClosingRoomModal({ projectId, onClose }: ClosingRoomProp
             };
 
             // Archive all executed docs
-            if (executedDeedUrl) await archiveDoc('Executed Deed.pdf', 'Title Report', executedDeedUrl);
-            if (isFinanced && executedNoteUrl) await archiveDoc('Promissory Note.pdf', 'Other', executedNoteUrl);
-            if (executedSettlementStatementUrl) await archiveDoc('Settlement Statement.pdf', 'HUD-1 Settlement Statement', executedSettlementStatementUrl);
-            if (executedTitlePolicyUrl) await archiveDoc('Title Policy.pdf', 'Title Report', executedTitlePolicyUrl);
-            if (executedEntityDocsUrl) await archiveDoc('Entity Assignment Documents.pdf', 'Other', executedEntityDocsUrl);
+            if (executedDeedUrl) await archiveDoc('Executed Deed.pdf', 'Title Report', executedDeedUrl, 'deed');
+            if (isFinanced && executedNoteUrl) await archiveDoc('Promissory Note.pdf', 'Other', executedNoteUrl, 'note');
+            if (executedSettlementStatementUrl) await archiveDoc('Settlement Statement.pdf', 'HUD-1 Settlement Statement', executedSettlementStatementUrl, 'settlementStatement');
+            if (executedTitlePolicyUrl) await archiveDoc('Title Policy.pdf', 'Title Report', executedTitlePolicyUrl, 'titlePolicy');
+            if (executedEntityDocsUrl) await archiveDoc('Entity Assignment Documents.pdf', 'Other', executedEntityDocsUrl, 'entityDocs');
             if (disbursementStatementUrlState && disbursementStatementUrlState !== executedSettlementStatementUrl) {
-                await archiveDoc('Disbursement Proof.pdf', 'Other', disbursementStatementUrlState);
+                await archiveDoc('Disbursement Proof.pdf', 'Other', disbursementStatementUrlState, 'disbursementStatement');
             }
 
             const closingRoomUpdates = {
@@ -861,7 +830,7 @@ export default function ClosingRoomModal({ projectId, onClose }: ClosingRoomProp
             store.setDeals(updatedProjects);
             store.setDeal(updatedProject);
 
-            toast.success('Closing execution completed and archived to Data Room!', { id: toastId });
+            toast.success('Closing execution completed and archived to Project Files!', { id: toastId });
             // Note: We do not call onClose() here anymore because the user needs to click the Advance to Hold button in the gate view
         } catch (err: any) {
             console.error('[Complete Closing Execution] Failed:', err);
@@ -946,28 +915,12 @@ export default function ClosingRoomModal({ projectId, onClose }: ClosingRoomProp
                                 </div>
                             </div>
 
-                            {/* Run AI Scan button */}
-                            {ENABLE_OCR && (
-                                <div className="pt-4 border-t border-pw-border/50">
-                                    <button
-                                        onClick={handleRunCDOcr}
-                                        disabled={isOcrScanning}
-                                        className="w-full flex items-center justify-center gap-2 pw-btn pw-btn--primary pw-btn--pill py-2.5 text-sm font-semibold transition disabled:opacity-50"
-                                    >
-                                        {isOcrScanning ? (
-                                            <>
-                                                <Loader2 className="w-4 h-4 animate-spin" />
-                                                Scanning CD with Gemini AI...
-                                            </>
-                                        ) : (
-                                            <>
-                                                <Sparkles className="w-4 h-4" />
-                                                Run Gemini AI OCR Scan
-                                            </>
-                                        )}
-                                    </button>
-                                </div>
-                            )}
+                            {/* Manual Entry Instruction */}
+                            <div className="pt-4 border-t border-pw-border/50 text-center">
+                                <p className="text-xs text-pw-muted italic">
+                                    Enter closing figures manually from your Closing Disclosure.
+                                </p>
+                            </div>
                         </div>
 
                         {/* Right Column: Capture Fields Form */}
@@ -1057,10 +1010,34 @@ export default function ClosingRoomModal({ projectId, onClose }: ClosingRoomProp
                                         Last saved on {new Date(closingRoom.cdCapturedAt).toLocaleString()} by {closingRoom.cdCapturedByName || 'User'}. Values are locked into live calculations.
                                     </div>
                                 )}
-                            </div>
+                            </div>                             {/* Save & Actualize Button */}
+                            <div className="pt-4 border-t border-pw-border space-y-3">
+                                {/* Estimate Checkbox */}
+                                <div className="flex items-center gap-2 py-1">
+                                    <input
+                                        id="is-estimate-checkbox"
+                                        type="checkbox"
+                                        checked={isEstimate}
+                                        onChange={(e) => setIsEstimate(e.target.checked)}
+                                        className="w-4 h-4 rounded border-pw-border text-pw-primary focus:ring-pw-primary bg-pw-glass-bg/50"
+                                    />
+                                    <label htmlFor="is-estimate-checkbox" className="text-xs font-semibold text-pw-black select-none cursor-pointer">
+                                        Mark these closing figures as estimates
+                                    </label>
+                                </div>
 
-                            {/* Save & Actualize Button */}
-                            <div className="pt-4 border-t border-pw-border">
+                                {/* Warning Banner */}
+                                {isEstimate && (
+                                    <div className="p-3 bg-amber-500/10 border border-amber-500/20 text-xs text-amber-800 rounded-xl leading-normal flex flex-col gap-1">
+                                        <span className="font-bold flex items-center gap-1">
+                                            ⚠️ Estimated Figures Warning
+                                        </span>
+                                        <span>
+                                            Submitting estimated figures will mark ledger entries as unpaid estimates. You must confirm final figures within 3 business days.
+                                        </span>
+                                    </div>
+                                )}
+
                                 <button
                                     onClick={handleSaveCDData}
                                     disabled={isSavingCDData}
@@ -1069,12 +1046,12 @@ export default function ClosingRoomModal({ projectId, onClose }: ClosingRoomProp
                                     {isSavingCDData ? (
                                         <>
                                             <Loader2 className="w-4 h-4 animate-spin" />
-                                            Actualizing Financials...
+                                            {isEstimate ? 'Submitting Estimate...' : 'Confirming Final Figures...'}
                                         </>
                                     ) : (
                                         <>
                                             <CheckCircle className="w-4 h-4" />
-                                            Save &amp; Actualize Financials
+                                            {isEstimate ? 'Submit Estimate' : 'Confirm Final Figures'}
                                         </>
                                     )}
                                 </button>
@@ -1118,7 +1095,7 @@ export default function ClosingRoomModal({ projectId, onClose }: ClosingRoomProp
                                 Closing Documents Signed &amp; Cleared
                             </h3>
                             <p className="text-xs text-pw-muted leading-relaxed">
-                                E-signatures are recorded. Complete the execution steps below to confirm disbursement of funds, log deed recording metadata, and archive the final closing package to the Data Room.
+                                E-signatures are recorded. Complete the execution steps below to confirm disbursement of funds, log deed recording metadata, and archive the final closing package to the Project Files.
                             </p>
                         </div>
 
@@ -1482,7 +1459,7 @@ export default function ClosingRoomModal({ projectId, onClose }: ClosingRoomProp
                         {closingRoom.closingStatus !== 'completed' ? (
                             <div className="pt-6 border-t border-pw-border flex flex-col md:flex-row md:items-center justify-between gap-4">
                                 <div className="text-xs text-pw-muted max-w-lg">
-                                    Completing the package will lock all closing details, transfer executed deeds and title files to the Data Room permanent record, and progress the project to Phase 3 (Rehab).
+                                    Completing the package will lock all closing details, transfer executed deeds and title files to the Project Files permanent record, and progress the project to Phase 3 (Rehab).
                                 </div>
                                 <button
                                     onClick={handleCompleteClosing}
@@ -1507,7 +1484,7 @@ export default function ClosingRoomModal({ projectId, onClose }: ClosingRoomProp
                                 <CheckCircle className="w-5 h-5 flex-shrink-0" />
                                 <div className="text-xs">
                                     <p className="font-semibold">Closing Completed &amp; Archived</p>
-                                    <p className="opacity-95 mt-0.5">The closing execution files have been successfully archived to the Data Room. The project is currently in the Rehab phase.</p>
+                                    <p className="opacity-95 mt-0.5">The closing execution files have been successfully archived to the Project Files. The project is currently in the Rehab phase.</p>
                                 </div>
                             </div>
                         )}

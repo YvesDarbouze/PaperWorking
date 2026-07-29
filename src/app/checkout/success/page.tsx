@@ -67,11 +67,19 @@ function CheckoutSuccessInner() {
   const [tokenRefreshed, setTokenRefreshed] = useState(false);
   const hasResolved = useRef(false);
 
+  const [dest, setDest] = useState('/dashboard');
+
   // Check auth state without blocking
   useEffect(() => {
     const unsub = onAuthStateChanged(auth, (user) => {
       setIsLoggedIn(!!user);
     });
+    
+    // Catch pending project address redirects
+    if (typeof window !== 'undefined' && sessionStorage.getItem('pw_pending_project_address')) {
+      setDest('/dashboard/projects/new');
+    }
+
     return () => unsub();
   }, []);
 
@@ -236,9 +244,9 @@ function CheckoutSuccessInner() {
                 <Loader2 className="w-5 h-5 animate-spin text-[#555]" />
               </div>
             ) : isLoggedIn ? (
-              /* Authenticated user → go straight to dashboard */
+              /* Authenticated user → go straight to dashboard or creation */
               <button
-                onClick={() => { window.location.href = '/dashboard'; }}
+                onClick={() => { window.location.href = dest; }}
                 className="w-full inline-flex items-center justify-center gap-2 py-3.5 px-6 bg-white text-black text-sm font-semibold rounded-xl hover:bg-gray-100 transition-all active:scale-[0.97]"
               >
                 <Sparkles className="w-4 h-4" />
@@ -249,7 +257,7 @@ function CheckoutSuccessInner() {
               /* Guest → sign in / create account to claim subscription */
               <>
                 <Link
-                  href="/login?redirectTo=/dashboard"
+                  href={`/login?redirectTo=${encodeURIComponent(dest)}`}
                   className="w-full inline-flex items-center justify-center gap-2 py-3.5 px-6 bg-white text-black text-sm font-semibold rounded-xl hover:bg-gray-100 transition-all active:scale-[0.97]"
                 >
                   Sign In / Create Account

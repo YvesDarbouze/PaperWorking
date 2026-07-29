@@ -360,6 +360,6 @@ describe('ClosingRoomModal Component', () => {
       }));
     });
 
-    expect(toast.success).toHaveBeenCalledWith('Closing execution completed and archived to Data Room!', expect.any(Object));
+    expect(toast.success).toHaveBeenCalledWith('Closing execution completed and archived to Project Files!', expect.any(Object));
   });
 });

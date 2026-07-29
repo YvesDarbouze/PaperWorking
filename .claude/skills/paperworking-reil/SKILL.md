@@ -26,7 +26,7 @@ You are building PaperWorking: project management + analytics for Real Estate In
 10. **Money-movement prohibition (platform-wide):** PaperWorking records, coordinates, and verifies capital events; it never moves money. Never build, stub, or hint at payments, escrow, KYC/AML, accreditation verification, fund pooling, or wiring instructions — in CrowdFunding, Fund, or anywhere else. Capital events are statuses with evidence documents (Decision F-1). CrowdFunding remains: investor mailing list + Deal one-pager + non-binding LOI/soft-commit logging ONLY; non-binding disclosure language is locked on.
 11. **UX law — progressive disclosure:** one decision per screen; plain language with a "why we ask" line; conditional cards appear only when property type/answers trigger them; every flow save/resumes; completed cards reopen for editing and edits recompute downstream. Kanban columns reveal progressively. Gate passes are celebrated.
 12. **Styling:** the UX-0 extracted token set (night theme; antigravity.google/pricing reference model) is the styling authority. No ad-hoc colors, fonts, or spacing values. Typography respects the UX-series readability floor — no small-text regressions. *(Founder-confirmed 2026-07-18; supersedes the former Stitch clause.)*
-13. **Dashboard hierarchy:** Portfolio → Insights → Data Room. Fixed order, not interchangeable.
+13. **Dashboard hierarchy:** Portfolio → Insights. Fixed order, not interchangeable. *(Note: Data Room removed 2026-07-24 by founder direction.)*
 14. **Phase transitions:** Acquisition→Fund and Fund→Hold are checklist gates evaluated from live data (never user checkboxes; red criteria block unless a typed override reason is stored). Hold→Exit is EVENT-triggered: first confirmed rent, activated lease, or sale under contract advances the Project automatically.
 
 ## Definition of Done — runtime evidence only
@@ -50,6 +50,10 @@ An acceptance criterion is satisfied ONLY by evidence from the running app: scre
 | `docs/spec/reil-33-metrics-collection-matrix.md` | Variable registry taxonomy + the 33-metric collection matrix — every metric's formula, atomic inputs, collection points, projected→actual lifecycle. |
 | `docs/spec/fd-series-40-fund-prompts.md` | The 40-dispatch FD Series build pack for the Fund phase, including the Global Rules Block and Decisions F-1…F-7. |
 | `docs/spec/fd-fund-fixtures-v1.md` | Locked FX-1…FX-8 fixtures — golden expected values for all Fund computations. Values may never be altered by an agent. |
+| `docs/spec/hd-series-40-hold-prompts-v1.md` | The 40-dispatch HD Series build pack for the Hold phase, including the Global Rules Block and Decisions H-1…H-7. |
+| `docs/spec/hd-hold-fixtures-v1.md` | Locked HX-1…HX-5 fixtures — golden expected values for all Hold computations. Values may never be altered by an agent. |
+| `docs/spec/ex-series-40-exit-prompts-v1.md` | The 40-dispatch EX Series build pack for the Exit phase, including the Global Rules Block and the E-series Decisions register. |
+| `docs/spec/ex-exit-fixtures-v1.md` | Locked EXX-1…EXX-5 fixtures — golden expected values for all Exit computations. Values may never be altered by an agent. |
 | `docs/spec/paperworking-reil-master-spec-v1.md` | The governing product spec (phases, intake router, Retrospective Mode, accounts, marketplaces). *(Pending commit — founder-attached; do not proceed against it until committed.)* |
 | `docs/spec/aq-series-30-acquisition-prompts.md` | The Acquisition build sequence (AQ-1…AQ-30). *(Pending commit — founder-attached.)* |
 | DA Series v2 pack (canonical filename set at commit) | The Deal Analyzer build sequence. *(Pending commit — founder-attached.)* |

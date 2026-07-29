@@ -15,8 +15,12 @@ test.describe('PaperWorking E2E — Search Expansion & Predictive Address Typeah
 
     // Bypass Cookie Consent popup by pre-seeding localStorage
     await page.addInitScript(() => {
-      window.localStorage.setItem('pw_cookie_consent', JSON.stringify({ essential: true, analytics: true, marketing: true }));
-    });
+    try {
+    
+          window.localStorage.setItem('pw_cookie_consent', JSON.stringify({ essential: true, analytics: true, marketing: true }));
+        
+    } catch (e) {}
+  });
   });
 
   test('PF-6 Search Container expanded, Typeahead address search, Keyboard navigation, Empty states', async ({ page }) => {

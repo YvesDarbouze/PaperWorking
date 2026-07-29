@@ -3,7 +3,7 @@
 import { useAuth } from '@/context/AuthContext';
 import { useState } from 'react';
 import toast from 'react-hot-toast';
-import { Loader2, Download, Trash2, AlertTriangle, CheckCircle, XCircle } from 'lucide-react';
+import { Loader2, Download, Trash2, AlertTriangle } from 'lucide-react';
 
 export default function DataPrivacySettingsPage() {
   const { user, profile } = useAuth();
@@ -38,9 +38,9 @@ export default function DataPrivacySettingsPage() {
       window.URL.revokeObjectURL(url);
 
       toast.success('Your data pack is ready!', { id: downloadToast });
-    } catch (e: any) {
+    } catch (e) {
       console.error(e);
-      toast.error(`Export failed: ${e.message}`, { id: downloadToast });
+      toast.error(`Export failed: ${e instanceof Error ? e.message : 'Unknown error'}`, { id: downloadToast });
     } finally {
       setLoading(false);
     }
@@ -69,9 +69,9 @@ export default function DataPrivacySettingsPage() {
       }
 
       toast.success('Account deletion scheduled. 24-hour grace period active.', { id: deleteToast });
-    } catch (e: any) {
+    } catch (e) {
       console.error(e);
-      toast.error(`Failed: ${e.message}`, { id: deleteToast });
+      toast.error(`Failed: ${e instanceof Error ? e.message : 'Unknown error'}`, { id: deleteToast });
     } finally {
       setDeleting(false);
     }
@@ -95,33 +95,41 @@ export default function DataPrivacySettingsPage() {
       }
 
       toast.success('Account deletion request successfully cancelled.', { id: cancelToast });
-    } catch (e: any) {
+    } catch (e) {
       console.error(e);
-      toast.error(`Failed: ${e.message}`, { id: cancelToast });
+      toast.error(`Failed: ${e instanceof Error ? e.message : 'Unknown error'}`, { id: cancelToast });
     } finally {
       setDeleting(false);
     }
   };
 
   const deletionScheduledAt = profile?.deletionScheduledAt;
-  const deletionDate = deletionScheduledAt
-    ? (typeof (deletionScheduledAt as any).toDate === 'function'
-      ? (deletionScheduledAt as any).toDate()
-      : new Date(deletionScheduledAt as any))
-    : null;
+  let deletionDate: Date | null = null;
+  if (deletionScheduledAt) {
+    if (
+      typeof deletionScheduledAt === 'object' &&
+      deletionScheduledAt !== null &&
+      'toDate' in deletionScheduledAt &&
+      typeof (deletionScheduledAt as { toDate: () => unknown }).toDate === 'function'
+    ) {
+      deletionDate = (deletionScheduledAt as { toDate: () => Date }).toDate();
+    } else {
+      deletionDate = new Date(deletionScheduledAt as string | number);
+    }
+  }
 
   const isDeletionPending = !!deletionDate;
 
   return (
-    <div className="w-full space-y-6">
-      <div className="grid grid-cols-12 gap-6">
+    <div className="w-full space-y-8">
+      <div className="grid grid-cols-12 gap-8">
         
         {/* ─── Deletion Grace Status Banner ─── */}
         {isDeletionPending && (
-          <section className="col-span-12 p-5 rounded-2xl bg-amber-950/40 border border-amber-800/30 text-amber-200 flex items-start gap-4 animate-in fade-in slide-in-from-top-4 duration-300">
+          <section className="col-span-12 p-6 rounded-2xl bg-amber-950/40 border border-amber-800/30 text-amber-200 flex items-start gap-4 animate-in fade-in slide-in-from-top-4 duration-300">
             <AlertTriangle className="w-6 h-6 text-amber-400 shrink-0 mt-0.5" />
             <div className="space-y-2 flex-1">
-              <h3 className="font-label-md text-label-md text-amber-300 font-bold">Account Deletion Scheduled</h3>
+              <h3 className="text-base font-semibold text-amber-300">Account Deletion Scheduled</h3>
               <p className="text-sm text-amber-300/80 leading-relaxed">
                 Your account is scheduled for permanent purge on{' '}
                 <span className="font-semibold text-white">
@@ -132,7 +140,7 @@ export default function DataPrivacySettingsPage() {
               <button
                 onClick={handleCancelDelete}
                 disabled={deleting}
-                className="px-4 py-2 font-label-sm text-label-sm bg-amber-500 text-black hover:bg-amber-400 font-bold rounded-lg transition-colors flex items-center gap-2 cursor-pointer disabled:opacity-50"
+                className="h-10 px-5 rounded-lg bg-amber-500 text-black hover:bg-amber-400 active:scale-98 transition-all flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50 disabled:pointer-events-none text-sm font-medium"
               >
                 {deleting && <Loader2 className="w-4 h-4 animate-spin" />}
                 Cancel Deletion Request
@@ -142,13 +150,13 @@ export default function DataPrivacySettingsPage() {
         )}
 
         {/* ─── Portability Panel ─── */}
-        <section className="col-span-12 md:col-span-6 glass-card rounded-2xl p-6 relative overflow-hidden flex flex-col justify-between">
+        <section className="col-span-12 md:col-span-6 glass-card rounded-2xl p-6 relative overflow-hidden flex flex-col justify-between transition-all duration-200 hover:shadow-md">
           <div className="absolute top-0 right-0 w-32 h-32 bg-pw-primary/5 rounded-full blur-[50px] -z-10 pointer-events-none translate-x-1/2 -translate-y-1/2" />
           
           <div className="space-y-4">
             <div className="flex items-center gap-3 border-b border-white/5 pb-4">
-              <Download className="w-5 h-5 text-primary" />
-              <h2 className="text-xl font-bold text-pw-black">Download My Data</h2>
+              <Download className="w-5 h-5 text-pw-primary" />
+              <h2 className="text-base font-semibold text-pw-black">Download My Data</h2>
             </div>
             
             <p className="text-sm text-pw-muted leading-relaxed">
@@ -160,7 +168,7 @@ export default function DataPrivacySettingsPage() {
             <button
               onClick={handleDownload}
               disabled={loading || isDeletionPending}
-              className="w-full flex items-center justify-center gap-2 py-3 rounded-lg bg-pw-primary/20 border border-pw-primary/30 text-pw-primary font-bold text-sm hover:bg-pw-primary/30 transition-all cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
+              className="w-full h-10 px-5 rounded-lg bg-pw-primary/20 border border-pw-primary/30 text-pw-primary text-sm font-medium hover:bg-pw-primary/30 active:scale-98 disabled:opacity-50 disabled:pointer-events-none transition-all flex items-center justify-center gap-2 cursor-pointer"
             >
               {loading ? (
                 <Loader2 className="w-4 h-4 animate-spin" />
@@ -173,13 +181,13 @@ export default function DataPrivacySettingsPage() {
         </section>
 
         {/* ─── Deletion Panel ─── */}
-        <section className="col-span-12 md:col-span-6 glass-card rounded-2xl p-6 border border-red-500/20 relative overflow-hidden flex flex-col justify-between">
+        <section className="col-span-12 md:col-span-6 glass-card rounded-2xl p-6 border border-red-500/20 relative overflow-hidden flex flex-col justify-between transition-all duration-200 hover:shadow-md">
           <div className="absolute top-0 right-0 w-32 h-32 bg-red-500/5 rounded-full blur-[50px] -z-10 pointer-events-none translate-x-1/2 -translate-y-1/2" />
           
           <div className="space-y-4">
             <div className="flex items-center gap-3 border-b border-white/5 pb-4">
               <Trash2 className="w-5 h-5 text-red-400" />
-              <h2 className="text-xl font-bold text-pw-black">Delete My Account</h2>
+              <h2 className="text-base font-semibold text-pw-black">Delete My Account</h2>
             </div>
             
             <p className="text-sm text-pw-muted leading-relaxed">
@@ -191,7 +199,7 @@ export default function DataPrivacySettingsPage() {
             <button
               onClick={handleDeleteSchedule}
               disabled={deleting || isDeletionPending}
-              className="w-full flex items-center justify-center gap-2 py-3 rounded-lg bg-red-500/10 border border-red-500/30 text-red-400 font-bold text-sm hover:bg-red-500/20 transition-all cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
+              className="w-full h-10 px-5 rounded-lg bg-error/10 border border-error/30 text-error text-sm font-medium hover:bg-error/20 active:scale-98 disabled:opacity-50 disabled:pointer-events-none transition-all flex items-center justify-center gap-2 cursor-pointer"
             >
               {deleting ? (
                 <Loader2 className="w-4 h-4 animate-spin" />

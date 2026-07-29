@@ -2177,7 +2177,7 @@ export default function DealAnalyzerPage() {
                     ) : (
                       <span className="font-bold text-white">{formatCurrency(derived?.noi || 0)}</span>
                     )}
-                    {isDemoOrSeed && !isRentMissing && <p className="text-[10px] text-pw-success/80">Target: $12,486</p>}
+                    {isDemoOrSeed && !isRentMissing && <p className="text-[10px] text-[#9E9DA0]">Target: $12,486</p>}
                   </div>
                 </div>
 
@@ -2194,7 +2194,7 @@ export default function DealAnalyzerPage() {
                         {formatCurrency(derived?.monthlyCashFlow || 0)}/mo
                       </span>
                     )}
-                    {isDemoOrSeed && !isRentMissing && <p className="text-[10px] text-pw-success/80">Target: -$370/mo</p>}
+                    {isDemoOrSeed && !isRentMissing && <p className="text-[10px] text-[#9E9DA0]">Target: -$370/mo</p>}
                   </div>
                 </div>
 
@@ -2209,7 +2209,7 @@ export default function DealAnalyzerPage() {
                     ) : (
                       <span className="font-bold text-white">{(derived?.capRate || 0).toFixed(2)}%</span>
                     )}
-                    {isDemoOrSeed && !isPurchasePriceMissing && <p className="text-[10px] text-pw-success/80">Target: 4.48%</p>}
+                    {isDemoOrSeed && !isPurchasePriceMissing && <p className="text-[10px] text-[#9E9DA0]">Target: 4.48%</p>}
                   </div>
                 </div>
 
@@ -2226,7 +2226,7 @@ export default function DealAnalyzerPage() {
                         {(derived?.cashOnCashReturn || 0).toFixed(2)}%
                       </span>
                     )}
-                    {isDemoOrSeed && !isPurchasePriceMissing && <p className="text-[10px] text-pw-success/80">Target: -7.41%</p>}
+                    {isDemoOrSeed && !isPurchasePriceMissing && <p className="text-[10px] text-[#9E9DA0]">Target: -7.41%</p>}
                   </div>
                 </div>
 
@@ -2267,7 +2267,7 @@ export default function DealAnalyzerPage() {
                         <span className="font-bold text-white">{(derived?.dscr || 0).toFixed(2)}x</span>
                       )}
                       {isDemoOrSeed && !isAllCash && !isRentMissing && !isLoanInfoMissing && (
-                        <p className="text-[10px] text-pw-success/80">Target: 0.74</p>
+                        <p className="text-[10px] text-[#9E9DA0]">Target: 0.74</p>
                       )}
                     </div>
                   </div>

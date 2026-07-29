@@ -2,6 +2,8 @@ import { NextRequest, NextResponse } from 'next/server';
 import { requireAuth, isAuthError } from '@/lib/firebase-admin/auth-guard';
 import { adminDb } from '@/lib/firebase/admin';
 import type { ProofOfFundsStatus, ProofOfFundsStatusLog } from '@/types/schema';
+import { getBankingProvider } from '@/lib/banking';
+import { decryptToken } from '@/lib/encryption/tokenVault';
 
 interface Params { params: Promise<{ id: string }> }
 
@@ -120,12 +122,53 @@ export async function POST(req: NextRequest, { params }: Params) {
   const userName = profile.name || profile.email || uid;
 
   if (action === 'plaid_sync') {
-    // Sync Plaid balance for context only
-    // Update all or first equity source with Plaid context balance
+    const bankingProvider = getBankingProvider();
+    let accountName = plaidAccountName || 'Business Premier Savings (*8892)';
+    let balance = plaidBalance !== undefined && plaidBalance !== null ? plaidBalance : 75000_00;
+
+    if (process.env.BANKING_PROVIDER === 'plaid') {
+      const connectionsSnap = await adminDb
+        .collection('users')
+        .doc(uid)
+        .collection('bankConnections')
+        .orderBy('createdAt', 'desc')
+        .limit(1)
+        .get();
+
+      if (connectionsSnap.empty) {
+        return NextResponse.json({
+          success: false,
+          error: 'No linked bank accounts found. Please link your bank account first.',
+        }, { status: 400 });
+      }
+
+      const connectionDoc = connectionsSnap.docs[0].data();
+      const encryptedAccessToken = connectionDoc.accessToken;
+      if (!encryptedAccessToken) {
+        return NextResponse.json({
+          success: false,
+          error: 'Bank connection is invalid. Please relink your bank account.',
+        }, { status: 400 });
+      }
+
+      try {
+        const decryptedAccessToken = decryptToken(encryptedAccessToken);
+        const plaidBalanceInfo = await bankingProvider.getAccountBalance(decryptedAccessToken);
+        accountName = plaidBalanceInfo.accountName;
+        balance = plaidBalanceInfo.balance;
+      } catch (err: any) {
+        console.error('[Plaid Sync Action] Failed to fetch real Plaid balance:', err);
+        return NextResponse.json({
+          success: false,
+          error: `Failed to fetch Plaid balance: ${err.message}`,
+        }, { status: 500 });
+      }
+    }
+
     const targetPoF = proofOfFunds.find((p) => p.id === sourceId) || proofOfFunds[0];
     if (targetPoF) {
-      targetPoF.plaidAccountName = plaidAccountName || 'Mock Savings Account';
-      targetPoF.plaidBalance = plaidBalance !== undefined ? plaidBalance : 75000_00;
+      targetPoF.plaidAccountName = accountName;
+      targetPoF.plaidBalance = balance;
       targetPoF.plaidLastSync = now;
     }
   } else {

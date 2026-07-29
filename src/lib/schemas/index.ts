@@ -75,7 +75,6 @@ export {
 export {
   documentCategoryEnum,
   folderPhaseEnum,
-  ocrStatusEnum,
   projectFolderSchema,
   projectFileSchema,
   type ProjectFolder,

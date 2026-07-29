@@ -184,29 +184,7 @@ test.describe('2.1 — Seeded End-to-End Funnel Test', () => {
     await expect(page.locator('text=DSCR Threshold Analysis').first()).toBeVisible();
   });
 
-  // ── Step 4: Data Room (bottom of the funnel) ─────────────────────────────────
-  test('Step 4 — Data Room comparison matrix loads and lists closing disclosures', async ({ page }) => {
-    await page.goto('/dashboard/data-room');
-    await page.waitForSelector('h1:has-text("Data Room")', { timeout: 15000 });
 
-    // Check matrix is loaded with seeded properties
-    await expect(page.locator('text=Asset Comparison Matrix').first()).toBeVisible();
-    await expect(page.locator('text=Oakridge Apartments').first()).toBeVisible();
-    await expect(page.locator('text=Pinecrest Apartments').first()).toBeVisible();
-
-    // Verify headers for supplemental metrics are visible
-    await expect(page.locator('th:has-text("LTV")').first()).toBeVisible();
-    await expect(page.locator('th:has-text("Debt Yield")').first()).toBeVisible();
-    await expect(page.locator('th:has-text("BE Occ")').first()).toBeVisible();
-
-    // Verify the comparison values are visible (e.g. Cap Rate, Cash Flow, DSCR, OER)
-    await expect(page.locator('td:has-text("8.93%")')).toBeVisible();
-    await expect(page.locator('td:has-text("2.60%")')).toBeVisible();
-
-    // Verify Stacked Charts render
-    await expect(page.locator('text=NOI Trend by Property').first()).toBeVisible();
-    await expect(page.locator('text=Cash Flow Waterfall').first()).toBeVisible();
-  });
 
   // ── Step 5: Honesty-Rule Absence Guardrail (P1 negative-path checks) ────────
   test('Step 5 — Honesty-Rule negative-path assertions', async ({ page }) => {

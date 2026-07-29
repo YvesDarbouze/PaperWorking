@@ -9,6 +9,8 @@ import { db } from '@/lib/firebase/config';
 import toast from 'react-hot-toast';
 import MFAEnrollmentModal from '@/components/auth/MFAEnrollmentModal';
 import MFAUnenrollModal from '@/components/auth/MFAUnenrollModal';
+import ClaimHistorySection from '@/components/profile/ClaimHistorySection';
+import { ActivityTimeline } from '@/components/project/ActivityTimeline';
 
 /* ═══════════════════════════════════════════════════════
    Profile & Security Settings (Luminous Glass Terminal)
@@ -118,11 +120,19 @@ export default function ProfileSettingsPage() {
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
 
   const deletionScheduledAt = profile?.deletionScheduledAt;
-  const deletionDate = deletionScheduledAt
-    ? (typeof (deletionScheduledAt as any).toDate === 'function'
-        ? (deletionScheduledAt as any).toDate()
-        : new Date(deletionScheduledAt as any))
-    : null;
+  let deletionDate: Date | null = null;
+  if (deletionScheduledAt) {
+    if (
+      typeof deletionScheduledAt === 'object' &&
+      deletionScheduledAt !== null &&
+      'toDate' in deletionScheduledAt &&
+      typeof (deletionScheduledAt as { toDate: () => unknown }).toDate === 'function'
+    ) {
+      deletionDate = (deletionScheduledAt as { toDate: () => Date }).toDate();
+    } else {
+      deletionDate = new Date(deletionScheduledAt as string | number);
+    }
+  }
   const isDeletionPending = !!deletionDate;
 
   const handleRequestErasure = async () => {
@@ -138,8 +148,8 @@ export default function ProfileSettingsPage() {
       if (!res.ok) throw new Error('Failed to schedule deletion');
       toast.success('Account deletion scheduled. 24-hour grace period active.', { id: tid });
       setShowDeleteConfirm(false);
-    } catch (e: any) {
-      toast.error(`Failed: ${e.message}`, { id: tid });
+    } catch (e) {
+      toast.error(`Failed: ${e instanceof Error ? e.message : 'Unknown error'}`, { id: tid });
     } finally {
       setDeleting(false);
     }
@@ -157,8 +167,8 @@ export default function ProfileSettingsPage() {
       });
       if (!res.ok) throw new Error('Failed to cancel deletion');
       toast.success('Account deletion request cancelled.', { id: tid });
-    } catch (e: any) {
-      toast.error(`Failed: ${e.message}`, { id: tid });
+    } catch (e) {
+      toast.error(`Failed: ${e instanceof Error ? e.message : 'Unknown error'}`, { id: tid });
     } finally {
       setDeleting(false);
     }
@@ -190,14 +200,72 @@ export default function ProfileSettingsPage() {
   const completeness = Math.round((filledFields / fields.length) * 100);
 
   return (
-    <div className="w-full space-y-0">
+    <div className="w-full space-y-8">
       {/* ─── 12-Column Bento Grid ─── */}
-      <div className="grid grid-cols-12 gap-6">
+      <div className="grid grid-cols-12 gap-8">
+
+        {/* ════════════════════════════════════════════════
+            SUSPENSION BANNER (col-span-12)
+            ════════════════════════════════════════════════ */}
+        {profile?.invitationSuspended && (
+          <section className="col-span-12 border border-red-500/30 bg-red-500/5 rounded-2xl p-6 relative overflow-hidden backdrop-blur-md">
+            <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+              <div className="flex items-start gap-4">
+                <div className="w-12 h-12 rounded-xl bg-red-500/10 border border-red-500/20 flex items-center justify-center text-red-400 shrink-0">
+                  <span className="material-symbols-outlined text-2xl select-none">warning</span>
+                </div>
+                <div>
+                  <h4 className="text-base font-semibold text-white">Invitation Privileges Suspended</h4>
+                  <p className="text-xs text-pw-muted mt-1 leading-relaxed max-w-2xl">
+                    Your invitation privileges were suspended automatically due to a complaint or bounce rate threshold breach. 
+                    Reason: <span className="font-semibold text-white">{profile.suspensionReason || 'USER_COMPLAINT'}</span>.
+                    You are currently restricted from sending invitations to co-investors.
+                  </p>
+                </div>
+              </div>
+
+              <div className="shrink-0">
+                {profile.appealSubmitted ? (
+                  <span className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-emerald-500/10 border border-emerald-500/20 text-xs font-semibold text-emerald-400 select-none">
+                    <span className="material-symbols-outlined text-xs select-none">check_circle</span>
+                    Appeal Under Review
+                  </span>
+                ) : (
+                  <button
+                    onClick={async () => {
+                      const tid = toast.loading('Submitting appeal…');
+                      try {
+                        const token = await user?.getIdToken();
+                        const res = await fetch('/api/identity/appeal', {
+                          method: 'POST',
+                          headers: {
+                            'Content-Type': 'application/json',
+                            'Authorization': `Bearer ${token}`
+                          },
+                          body: JSON.stringify({ reason: 'Requesting review of suspension.' })
+                        });
+                        const data = await res.json();
+                        if (!res.ok) throw new Error(data.error || 'Failed to submit appeal');
+                        toast.success('Appeal submitted successfully.', { id: tid });
+                        window.location.reload();
+                      } catch (err) {
+                        toast.error(err instanceof Error ? err.message : 'Failed to submit appeal', { id: tid });
+                      }
+                    }}
+                    className="h-10 px-5 bg-error text-white hover:bg-error/90 active:scale-98 transition-all text-sm font-medium rounded-lg cursor-pointer flex items-center justify-center"
+                  >
+                    Appeal Suspension
+                  </button>
+                )}
+              </div>
+            </div>
+          </section>
+        )}
 
         {/* ════════════════════════════════════════════════
             1 · HERO PROFILE CARD (col-span-12)
             ════════════════════════════════════════════════ */}
-        <section className="col-span-12 glass-card rounded-2xl p-8 flex items-center justify-between relative overflow-hidden">
+        <section className="col-span-12 glass-card rounded-2xl p-6 flex items-center justify-between relative overflow-hidden transition-all duration-200 hover:shadow-md">
           {/* Ambient glow */}
           <div className="absolute -top-20 -right-20 w-72 h-72 bg-pw-primary/10 rounded-full blur-[120px] pointer-events-none" />
 
@@ -243,12 +311,12 @@ export default function ProfileSettingsPage() {
         {/* ════════════════════════════════════════════════
             2 · PERSONAL INFORMATION FORM (col-span-7)
             ════════════════════════════════════════════════ */}
-        <section className="col-span-12 lg:col-span-7 glass-card rounded-2xl p-8 flex flex-col relative overflow-hidden">
+        <section className="col-span-12 lg:col-span-7 glass-card rounded-2xl p-6 flex flex-col relative overflow-hidden transition-all duration-200 hover:shadow-md">
           {/* Header */}
           <div className="flex items-center justify-between border-b border-white/10 pb-4 mb-6">
             <div className="flex items-center gap-2">
               <span className="material-symbols-outlined text-pw-primary text-xl select-none">person</span>
-              <h4 className="text-2xl font-bold text-pw-black">Personal Information</h4>
+              <h4 className="text-base font-semibold text-pw-black">Personal Information</h4>
             </div>
           </div>
 
@@ -275,7 +343,7 @@ export default function ProfileSettingsPage() {
                   type="text"
                   value={firstName}
                   onChange={(e) => setFirstName(e.target.value)}
-                  className="glass-input w-full text-sm px-4 py-3 text-pw-black"
+                  className="glass-input w-full text-sm px-4 h-10 rounded-lg text-pw-black focus:ring-2 focus:ring-pw-primary focus:outline-none transition-all duration-150"
                 />
               </div>
               <div>
@@ -284,7 +352,7 @@ export default function ProfileSettingsPage() {
                   type="text"
                   value={lastName}
                   onChange={(e) => setLastName(e.target.value)}
-                  className="glass-input w-full text-sm px-4 py-3 text-pw-black"
+                  className="glass-input w-full text-sm px-4 h-10 rounded-lg text-pw-black focus:ring-2 focus:ring-pw-primary focus:outline-none transition-all duration-150"
                 />
               </div>
             </div>
@@ -298,7 +366,7 @@ export default function ProfileSettingsPage() {
                   value={phone}
                   onChange={(e) => setPhone(e.target.value)}
                   placeholder="(555) 123-4567"
-                  className="glass-input w-full text-sm px-4 py-3 text-pw-black placeholder:text-pw-muted/40"
+                  className="glass-input w-full text-sm px-4 h-10 rounded-lg text-pw-black placeholder:text-pw-muted/40 focus:ring-2 focus:ring-pw-primary focus:outline-none transition-all duration-150"
                 />
               </div>
               <div>
@@ -308,7 +376,7 @@ export default function ProfileSettingsPage() {
                   value={company}
                   onChange={(e) => setCompany(e.target.value)}
                   placeholder="Realty Corp LLC"
-                  className="glass-input w-full text-sm px-4 py-3 text-pw-black placeholder:text-pw-muted/40"
+                  className="glass-input w-full text-sm px-4 h-10 rounded-lg text-pw-black placeholder:text-pw-muted/40 focus:ring-2 focus:ring-pw-primary focus:outline-none transition-all duration-150"
                 />
               </div>
             </div>
@@ -316,7 +384,7 @@ export default function ProfileSettingsPage() {
             {/* Email (read-only) */}
             <div>
               <label className="block text-xs font-semibold text-pw-muted uppercase tracking-wider mb-2">Email Address</label>
-              <div className="glass-input w-full text-sm px-4 py-3 text-pw-muted/70 flex items-center gap-2 cursor-not-allowed">
+              <div className="glass-input w-full text-sm px-4 h-10 rounded-lg text-pw-muted/70 flex items-center gap-2 cursor-not-allowed">
                 <span className="material-symbols-outlined text-[16px] text-pw-muted/50">lock</span>
                 {user?.email}
               </div>
@@ -327,12 +395,12 @@ export default function ProfileSettingsPage() {
               <button
                 type="submit"
                 disabled={saving}
-                className="luminous-button inline-flex items-center justify-center gap-2 font-semibold text-sm uppercase tracking-wider px-8 py-3 rounded-xl disabled:opacity-50 cursor-pointer transition-all"
+                className="luminous-button h-10 px-5 rounded-lg text-sm font-medium active:scale-98 disabled:opacity-50 disabled:pointer-events-none transition-all flex items-center justify-center gap-2 cursor-pointer"
               >
                 {saving ? (
-                  <span className="material-symbols-outlined animate-spin text-sm select-none">progress_activity</span>
+                  <span className="material-symbols-outlined animate-spin text-[16px] select-none">progress_activity</span>
                 ) : (
-                  <span className="material-symbols-outlined text-sm select-none">save</span>
+                  <span className="material-symbols-outlined text-[16px] select-none">save</span>
                 )}
                 {saving ? 'Saving…' : 'Save Changes'}
               </button>
@@ -349,7 +417,7 @@ export default function ProfileSettingsPage() {
         {/* ════════════════════════════════════════════════
             3 · SECURITY CARD (col-span-5)
             ════════════════════════════════════════════════ */}
-        <section className="col-span-12 lg:col-span-5 glass-card rounded-2xl p-8 flex flex-col relative overflow-hidden">
+        <section className="col-span-12 lg:col-span-5 glass-card rounded-2xl p-6 flex flex-col relative overflow-hidden transition-all duration-200 hover:shadow-md">
           {/* Ambient glow */}
           <div className="absolute -bottom-16 -left-16 w-48 h-48 bg-pw-primary/8 rounded-full blur-[100px] pointer-events-none" />
 
@@ -357,7 +425,7 @@ export default function ProfileSettingsPage() {
           <div className="flex items-center justify-between border-b border-white/10 pb-4 mb-6">
             <div className="flex items-center gap-2">
               <span className="material-symbols-outlined text-pw-primary text-xl select-none">shield_lock</span>
-              <h4 className="text-2xl font-bold text-pw-black">Security</h4>
+              <h4 className="text-base font-semibold text-pw-black">Security</h4>
             </div>
           </div>
 
@@ -419,7 +487,7 @@ export default function ProfileSettingsPage() {
                   value={currentPwd}
                   onChange={(e) => setCurrentPwd(e.target.value)}
                   required
-                  className="glass-input w-full text-sm px-4 py-3 pr-10 text-pw-black"
+                  className="glass-input w-full text-sm px-4 h-10 rounded-lg pr-10 text-pw-black focus:ring-2 focus:ring-pw-primary focus:outline-none transition-all duration-150"
                 />
                 <button
                   type="button"
@@ -440,7 +508,7 @@ export default function ProfileSettingsPage() {
                 onChange={(e) => setNewPwd(e.target.value)}
                 required
                 minLength={8}
-                className="glass-input w-full text-sm px-4 py-3 text-pw-black"
+                className="glass-input w-full text-sm px-4 h-10 rounded-lg text-pw-black focus:ring-2 focus:ring-pw-primary focus:outline-none transition-all duration-150"
               />
             </div>
             <div>
@@ -451,7 +519,7 @@ export default function ProfileSettingsPage() {
                 onChange={(e) => setConfirmPwd(e.target.value)}
                 required
                 minLength={8}
-                className="glass-input w-full text-sm px-4 py-3 text-pw-black"
+                className="glass-input w-full text-sm px-4 h-10 rounded-lg text-pw-black focus:ring-2 focus:ring-pw-primary focus:outline-none transition-all duration-150"
               />
             </div>
 
@@ -471,12 +539,12 @@ export default function ProfileSettingsPage() {
             <button
               type="submit"
               disabled={pwdLoading}
-              className="w-full bg-pw-glass-bg hover:bg-pw-border/30 border border-white/10 text-pw-black font-semibold text-sm uppercase tracking-wider py-3 px-4 rounded-xl flex justify-center items-center gap-2 transition-all disabled:opacity-50 cursor-pointer"
+              className="w-full h-10 px-5 rounded-lg bg-pw-glass-bg hover:bg-pw-border/30 border border-white/10 text-pw-black text-sm font-medium active:scale-98 disabled:opacity-50 disabled:pointer-events-none transition-all flex justify-center items-center gap-2 cursor-pointer"
             >
               {pwdLoading && (
-                <span className="material-symbols-outlined animate-spin text-sm select-none">progress_activity</span>
+                <span className="material-symbols-outlined animate-spin text-[16px] select-none">progress_activity</span>
               )}
-              <span className="material-symbols-outlined text-[18px]">key</span>
+              <span className="material-symbols-outlined text-[16px]">key</span>
               {pwdLoading ? 'Updating…' : 'Update Password'}
             </button>
           </form>
@@ -485,12 +553,12 @@ export default function ProfileSettingsPage() {
         {/* ════════════════════════════════════════════════
             4 · ACTIVE SESSIONS (col-span-12)
             ════════════════════════════════════════════════ */}
-        <section className="col-span-12 glass-card rounded-2xl p-8 relative overflow-hidden">
+        <section className="col-span-12 glass-card rounded-2xl p-6 relative overflow-hidden transition-all duration-200 hover:shadow-md">
           {/* Header */}
           <div className="mb-6">
             <div className="flex items-center gap-2 mb-1">
               <span className="material-symbols-outlined text-pw-primary text-xl select-none">devices</span>
-              <h4 className="text-2xl font-bold text-pw-black">Active Sessions</h4>
+              <h4 className="text-base font-semibold text-pw-black">Active Sessions</h4>
             </div>
             <p className="text-sm text-pw-muted">Manage external authentication and active device sessions.</p>
           </div>
@@ -527,11 +595,11 @@ export default function ProfileSettingsPage() {
               <button
                 onClick={handleRevokeSessions}
                 disabled={revoking}
-                className="text-pw-muted hover:text-error transition-colors text-xs font-semibold px-3 py-1.5 border border-white/10 rounded-lg bg-white/5 hover:bg-error/10 hover:border-error/30 disabled:opacity-50 cursor-pointer"
+                className="h-10 px-5 text-pw-muted hover:text-error hover:bg-error/10 hover:border-error/30 border border-white/10 rounded-lg bg-white/5 active:scale-98 disabled:opacity-50 disabled:pointer-events-none transition-all text-sm font-medium cursor-pointer"
               >
                 {revoking ? (
                   <span className="flex items-center gap-1.5">
-                    <span className="material-symbols-outlined animate-spin text-xs select-none">progress_activity</span>
+                    <span className="material-symbols-outlined animate-spin text-[16px] select-none">progress_activity</span>
                     Revoking…
                   </span>
                 ) : (
@@ -543,21 +611,33 @@ export default function ProfileSettingsPage() {
 
           {revokeSuccess && (
             <p className="text-xs text-pw-primary flex items-center gap-1.5 animate-pulse mt-4">
-              <span className="material-symbols-outlined text-xs select-none">check_circle</span>
+              <span className="material-symbols-outlined text-[16px] select-none">check_circle</span>
               All other active sessions have been revoked.
             </p>
           )}
         </section>
 
         {/* ════════════════════════════════════════════════
+            Claim History Section (col-span-12)
+            ════════════════════════════════════════════════ */}
+        <ClaimHistorySection />
+
+        {/* ════════════════════════════════════════════════
+            Deal Activity Timeline (col-span-12)
+            ════════════════════════════════════════════════ */}
+        <div className="col-span-12">
+          <ActivityTimeline isCrossDeal={true} />
+        </div>
+
+        {/* ════════════════════════════════════════════════
             5 · GDPR DATA ERASURE (col-span-12)
             ════════════════════════════════════════════════ */}
-        <section className="col-span-12 glass-card rounded-2xl p-8 border border-red-500/20 relative overflow-hidden">
+        <section className="col-span-12 glass-card rounded-2xl p-6 border border-red-500/20 relative overflow-hidden transition-all duration-200 hover:shadow-md">
           <div className="absolute top-0 right-0 w-40 h-40 bg-red-500/5 rounded-full blur-[60px] -z-10 pointer-events-none translate-x-1/2 -translate-y-1/2" />
 
           <div className="flex items-center gap-3 mb-2">
             <span className="material-symbols-outlined text-red-400 text-xl select-none">delete_forever</span>
-            <h4 className="text-2xl font-bold text-pw-black">Data Erasure</h4>
+            <h4 className="text-base font-semibold text-pw-black">Data Erasure</h4>
           </div>
           <p className="text-sm text-pw-muted mb-6 leading-relaxed max-w-2xl">
             Permanently delete your PaperWorking account, projects, documents, and profile data. A 24-hour grace window is applied before the purge runs. Legal audit logs are retained for 7 years for compliance.
@@ -575,9 +655,9 @@ export default function ProfileSettingsPage() {
                 <button
                   onClick={handleCancelDeletion}
                   disabled={deleting}
-                  className="mt-1 px-4 py-2 text-xs font-bold rounded-lg bg-amber-500 text-black hover:bg-amber-400 transition-colors flex items-center gap-2 disabled:opacity-50 cursor-pointer"
+                  className="mt-1 h-10 px-5 rounded-lg bg-amber-500 text-black hover:bg-amber-400 active:scale-98 transition-colors flex items-center justify-center gap-2 disabled:opacity-50 disabled:pointer-events-none cursor-pointer text-sm font-medium"
                 >
-                  {deleting && <span className="material-symbols-outlined animate-spin text-xs select-none">progress_activity</span>}
+                  {deleting && <span className="material-symbols-outlined animate-spin text-[16px] select-none">progress_activity</span>}
                   Cancel Deletion Request
                 </button>
               </div>
@@ -588,9 +668,9 @@ export default function ProfileSettingsPage() {
           {!isDeletionPending && !showDeleteConfirm && (
             <button
               onClick={() => setShowDeleteConfirm(true)}
-              className="flex items-center gap-2 px-5 py-3 rounded-lg bg-red-500/10 border border-red-500/30 text-red-400 text-sm font-bold hover:bg-red-500/20 transition-all cursor-pointer"
+              className="h-10 px-5 rounded-lg bg-error/10 border border-error/30 text-error text-sm font-medium hover:bg-error/20 active:scale-98 disabled:opacity-50 disabled:pointer-events-none transition-all flex items-center justify-center gap-2 cursor-pointer"
             >
-              <span className="material-symbols-outlined text-[18px] select-none">delete_forever</span>
+              <span className="material-symbols-outlined text-[16px] select-none">delete_forever</span>
               Request Data Erasure (GDPR)
             </button>
           )}
@@ -607,15 +687,15 @@ export default function ProfileSettingsPage() {
                 <button
                   onClick={handleRequestErasure}
                   disabled={deleting}
-                  className="px-5 py-2.5 rounded-lg bg-red-600 hover:bg-red-500 text-white text-sm font-bold transition-colors flex items-center gap-2 disabled:opacity-50 cursor-pointer"
+                  className="h-10 px-5 rounded-lg bg-error text-white text-sm font-medium hover:bg-error/90 active:scale-98 transition-all flex items-center justify-center gap-2 disabled:opacity-50 disabled:pointer-events-none cursor-pointer"
                 >
-                  {deleting && <span className="material-symbols-outlined animate-spin text-xs select-none">progress_activity</span>}
+                  {deleting && <span className="material-symbols-outlined animate-spin text-[16px] select-none">progress_activity</span>}
                   Confirm Request
                 </button>
                 <button
                   onClick={() => setShowDeleteConfirm(false)}
                   disabled={deleting}
-                  className="px-5 py-2.5 rounded-lg border border-white/10 text-pw-muted hover:text-pw-black text-sm font-semibold transition-colors cursor-pointer disabled:opacity-50"
+                  className="h-10 px-5 rounded-lg border border-white/10 text-pw-muted hover:text-pw-black text-sm font-medium active:scale-98 transition-all cursor-pointer disabled:opacity-50 disabled:pointer-events-none"
                 >
                   Cancel
                 </button>

@@ -139,7 +139,7 @@ export async function POST(request: NextRequest) {
       invitedByUid: callerUid,
     });
 
-    const inviteUrl = `${process.env.NEXT_PUBLIC_APP_URL || 'https://paperworking.co'}/register?invite=${token}`;
+    const inviteUrl = `${process.env.NEXT_PUBLIC_APP_URL || 'https://paperworking.co'}/invest/${token}`;
 
     return NextResponse.json({
       success: true,

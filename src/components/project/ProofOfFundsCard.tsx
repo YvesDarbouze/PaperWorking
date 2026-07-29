@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
+import { usePlaidLink } from 'react-plaid-link';
 import { doc, onSnapshot } from 'firebase/firestore';
 import { db, storage } from '@/lib/firebase/config';
 import { useAuth } from '@/context/AuthContext';
@@ -37,6 +38,7 @@ export default function ProofOfFundsCard({ projectId, refresh }: ProofOfFundsCar
   const [uploadProgress, setUploadProgress] = useState(0);
   const [syncingPlaid, setSyncingPlaid] = useState(false);
   const [expandedHistoryId, setExpandedHistoryId] = useState<string | null>(null);
+  const [linkToken, setLinkToken] = useState<string | null>(null);
 
   // ── 1. Listen to Project Updates ──────────────────────────
   useEffect(() => {
@@ -208,8 +210,6 @@ export default function ProofOfFundsCard({ projectId, refresh }: ProofOfFundsCar
         body: JSON.stringify({
           sourceId,
           action: 'plaid_sync',
-          plaidAccountName: 'Business Premier Savings (*8892)',
-          plaidBalance: 75000_00, // $75k in cents
         }),
       });
 
@@ -220,11 +220,80 @@ export default function ProofOfFundsCard({ projectId, refresh }: ProofOfFundsCar
       if (refresh) refresh();
     } catch (err: any) {
       console.error(err);
-      toast.error('Failed to sync Plaid balance');
+      toast.error(err.message || 'Failed to sync Plaid balance');
     } finally {
       setSyncingPlaid(false);
     }
   };
+
+  const handleConnectPlaid = async () => {
+    setSyncingPlaid(true);
+    try {
+      const token = await user?.getIdToken();
+      if (!token) throw new Error('Not authenticated');
+
+      const res = await fetch('/api/plaid/create-link-token', {
+        method: 'POST',
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      const data = await res.json();
+      if (!data.success) throw new Error(data.error);
+
+      if (data.link_token.startsWith('mock_link_token_')) {
+        // Mock mode: perform direct mock sync
+        await handleSyncPlaid(activeList[0]?.id || 'default_solo_equity');
+      } else {
+        setLinkToken(data.link_token);
+      }
+    } catch (err: any) {
+      console.error(err);
+      toast.error(err.message || 'Failed to initiate Plaid link');
+      setSyncingPlaid(false);
+    }
+  };
+
+  const { open, ready } = usePlaidLink({
+    token: linkToken,
+    onSuccess: async (publicToken, metadata) => {
+      try {
+        const token = await user?.getIdToken();
+        const exchangeRes = await fetch('/api/plaid/exchange', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify({ public_token: publicToken }),
+        });
+
+        const exchangeData = await exchangeRes.json();
+        if (!exchangeData.success) throw new Error(exchangeData.error);
+
+        // Now trigger sync to pull real balance
+        await handleSyncPlaid(activeList[0]?.id || 'default_solo_equity');
+        toast.success('Bank account linked successfully!');
+      } catch (err: any) {
+        console.error(err);
+        toast.error('Failed to link bank account');
+      } finally {
+        setLinkToken(null);
+        setSyncingPlaid(false);
+      }
+    },
+    onExit: () => {
+      setLinkToken(null);
+      setSyncingPlaid(false);
+    },
+  });
+
+  useEffect(() => {
+    if (linkToken && ready) {
+      open();
+    }
+  }, [linkToken, ready, open]);
 
   const fmtCurrency = (val: number) => {
     return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', minimumFractionDigits: 0 }).format(val / 100);
@@ -239,7 +308,7 @@ export default function ProofOfFundsCard({ projectId, refresh }: ProofOfFundsCar
           <span>Solvency Verification Protocol</span>
         </div>
         <p className="text-[10px] text-[#9E9DA0] leading-normal">
-          In-scope equity sources must upload official Proof of Funds (PDF or statements) to the Data Room. 
+          In-scope equity sources must upload official Proof of Funds (PDF or statements) to the Project Files. 
           Only the designated Lead Investor can mark these files as verified to clear buyer solvency audits.
         </p>
       </div>
@@ -412,14 +481,36 @@ export default function ProofOfFundsCard({ projectId, refresh }: ProofOfFundsCar
               </p>
             </div>
 
-            <button
-              onClick={() => handleSyncPlaid(activeList[0]?.id || 'default_solo_equity')}
-              disabled={syncingPlaid}
-              className="self-start sm:self-center bg-white/5 hover:bg-white/10 text-white/80 hover:text-white px-3 py-1.5 rounded-lg text-[10px] font-bold uppercase tracking-wider flex items-center gap-1.5 transition-all border border-white/5 disabled:opacity-50"
-            >
-              <RefreshCw className={`w-3 h-3 ${syncingPlaid ? 'animate-spin' : ''}`} />
-              <span>Sync Live Balance (Demo)</span>
-            </button>
+            <div className="flex flex-wrap items-center gap-2 self-start sm:self-center">
+              {activeList[0]?.plaidAccountName ? (
+                <>
+                  <button
+                    onClick={() => handleSyncPlaid(activeList[0]?.id || 'default_solo_equity')}
+                    disabled={syncingPlaid}
+                    className="bg-white/5 hover:bg-white/10 text-white/80 hover:text-white px-3 py-1.5 rounded-lg text-[10px] font-bold uppercase tracking-wider flex items-center gap-1.5 transition-all border border-white/5 disabled:opacity-50"
+                  >
+                    <RefreshCw className={`w-3 h-3 ${syncingPlaid ? 'animate-spin' : ''}`} />
+                    <span>Sync Balance</span>
+                  </button>
+                  <button
+                    onClick={() => handleConnectPlaid()}
+                    disabled={syncingPlaid}
+                    className="bg-white/5 hover:bg-white/10 text-white/40 hover:text-white px-3 py-1.5 rounded-lg text-[10px] font-bold uppercase tracking-wider flex items-center gap-1.5 transition-all border border-white/5 disabled:opacity-50"
+                  >
+                    <span>Reconnect Bank</span>
+                  </button>
+                </>
+              ) : (
+                <button
+                  onClick={() => handleConnectPlaid()}
+                  disabled={syncingPlaid}
+                  className="bg-white/5 hover:bg-white/10 text-white/80 hover:text-white px-3 py-1.5 rounded-lg text-[10px] font-bold uppercase tracking-wider flex items-center gap-1.5 transition-all border border-white/5 disabled:opacity-50"
+                >
+                  <RefreshCw className={`w-3 h-3 ${syncingPlaid ? 'animate-spin' : ''}`} />
+                  <span>Connect Plaid Feed</span>
+                </button>
+              )}
+            </div>
           </div>
 
           {/* Balance metrics layout */}
@@ -427,13 +518,20 @@ export default function ProofOfFundsCard({ projectId, refresh }: ProofOfFundsCar
             <div className="space-y-0.5">
               <span className="text-[9px] text-[#9E9DA0]/50 font-bold uppercase tracking-wider">Account Label</span>
               <p className="text-xs font-bold text-white">
-                {activeList[0]?.plaidAccountName || 'Business Premier Savings (*8892)'}
+                {activeList[0]?.plaidAccountName ||
+                  (process.env.NEXT_PUBLIC_BANKING_PROVIDER === 'plaid'
+                    ? 'No bank connected'
+                    : 'Business Premier Savings (*8892)')}
               </p>
             </div>
             <div className="space-y-0.5">
               <span className="text-[9px] text-[#9E9DA0]/50 font-bold uppercase tracking-wider">Current Account Balance</span>
               <p className="text-lg font-black text-[#7A9EAA] tracking-tight tabular-nums">
-                {fmtCurrency(activeList[0]?.plaidBalance !== undefined && activeList[0]?.plaidBalance !== null ? activeList[0]?.plaidBalance : 75000_00)}
+                {fmtCurrency(
+                  activeList[0]?.plaidBalance !== undefined && activeList[0]?.plaidBalance !== null
+                    ? activeList[0].plaidBalance
+                    : (process.env.NEXT_PUBLIC_BANKING_PROVIDER === 'plaid' ? 0 : 75000_00)
+                )}
               </p>
               {activeList[0]?.plaidLastSync && (
                 <p className="text-[9px] text-[#9E9DA0]/40 flex items-center gap-1">

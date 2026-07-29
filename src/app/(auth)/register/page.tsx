@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, Suspense } from 'react';
+import { useState, useEffect, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import { Building2, Wrench, CheckCircle2, ArrowRight } from 'lucide-react';
@@ -52,14 +52,22 @@ function RegisterPageInner() {
   const [selectedType, setSelectedType] = useState<AccountType>('investor');
   const [isNavigating, setIsNavigating] = useState(false);
 
+  useEffect(() => {
+    if (invite && typeof window !== 'undefined') {
+      window.sessionStorage.setItem('pw_pending_invite_token', invite);
+    }
+  }, [invite]);
+
   const handleContinue = () => {
     setIsNavigating(true);
     // Persist for social auth path (provisionSocialUser reads this)
     if (typeof window !== 'undefined') {
       window.localStorage.setItem('pw_pending_account_type', selectedType);
     }
+    const name = searchParams.get('name') || '';
+    const email = searchParams.get('email') || '';
     const loginUrl = invite
-      ? `/login?accountType=${selectedType}&mode=signup&redirectTo=${encodeURIComponent('/invest/' + invite)}`
+      ? `/login?accountType=${selectedType}&mode=signup&redirectTo=${encodeURIComponent('/invest/' + invite)}&name=${encodeURIComponent(name)}&email=${encodeURIComponent(email)}`
       : buildSignupForPricingLoginUrl({ accountType: selectedType });
     router.push(loginUrl);
   };

@@ -1,0 +1,13 @@
+{
+  "surface": "app-sidebar",
+  "beforeDimensions": {
+    "heightPx": 32,
+    "widthPx": 249.12
+  },
+  "afterDimensions": {
+    "heightPx": 28.8,
+    "widthPx": 224.2
+  },
+  "percentReduction": "-10%",
+  "opticalCenteringVerified": true
+}

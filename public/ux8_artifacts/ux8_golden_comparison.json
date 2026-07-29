@@ -1,0 +1,16 @@
+{
+  "canonicalSeedProperty": "DEMO_FINANCIALS",
+  "deriveAllProjectMetricsOutput": {
+    "NOI": 12486,
+    "CapRate": 0.04475,
+    "CashFlow": -4444,
+    "DSCR": 0.74,
+    "CoC": -0.0741
+  },
+  "featuredMetricModuleDisplay": {
+    "NOI": "$12,486/yr",
+    "statePill": "LIVE",
+    "benchmarkTarget": "> $10,000 / yr"
+  },
+  "goldenFileMatch": true
+}

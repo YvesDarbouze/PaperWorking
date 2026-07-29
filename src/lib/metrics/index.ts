@@ -66,3 +66,7 @@ export type { MetricCategory, MetricTier, MetricTaxonomyEntry } from './metricTa
 // ── Demo projects data ────────────────────────────────────────────────────────
 export { DEMO_PROJECTS } from './demoProjects';
 
+// ── Metric Registry ───────────────────────────────────────────────────────────
+export * from './metricRegistry';
+
+

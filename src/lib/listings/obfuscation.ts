@@ -75,6 +75,8 @@ export function buildTeaserFromListing(listing: DealListing): DealListingTeaser 
   return {
     id: listing.id,
     projectId: listing.projectId,
+    propertyId: listing.propertyId,
+    placeId: listing.placeId,
     status: listing.status,
 
     // Location — neighborhood only (never full address)
@@ -102,7 +104,7 @@ export function buildTeaserFromListing(listing: DealListing): DealListingTeaser 
       : undefined,
 
     // Lead Investor — name only
-    leadInvestorName: listing.leadInvestor.displayName,
+    leadInvestorName: listing.leadInvestor?.displayName,
 
     // Counters
     followCount: listing.followCount,
@@ -110,5 +112,6 @@ export function buildTeaserFromListing(listing: DealListing): DealListingTeaser 
 
     // Timestamps
     publishedAt: listing.publishedAt,
+    isCrowdfunding: listing.isCrowdfunding ?? false,
   };
 }

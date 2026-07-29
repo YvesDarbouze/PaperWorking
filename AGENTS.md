@@ -29,41 +29,40 @@ Source of truth: `src/components/layout/Sidebar.tsx`
 - Font: Inter · "Paper" fw-700 · "Working" fw-300 · zero letter-spacing gap
 - Href: `/dashboard/command-center`
 
-## Primary Navigation (exact order — DO NOT change)
+## Global Navigation Contract (§9.3)
 
-| Label | Route | Icon | Description |
-|-------|-------|------|-------------|
-| **Portfolio** | `/dashboard/command-center` | `space_dashboard` | Default landing page — KPIs, action center, heatmap, activity |
-| **Projects** | `/dashboard/projects` | `folder` | All real estate investment projects in the portfolio |
-| **Data Room** | `/dashboard/data-room` | `folder_shared` | Centralized document vault for project files, contracts, and due diligence |
-| **Insights** | `/dashboard/insights` | `monitoring` | Portfolio-wide metrics, investment views, deep analytics |
-| **Reports** | `/dashboard/reports` | `bar_chart_4_bars` | Generate monthly / quarterly / annual expense reports |
-| **Inbox** | `/dashboard/inbox` | `inbox` | Internal messages, to-dos, requests, deal crowdfund invites (unread badge + pulse) |
-| **Team** | `/dashboard/team` | `group` | Team management, invites, presence status |
+### Primary Pages
+1. Portfolio (/dashboard/command-center) - default landing page — KPIs, action center, heatmap, activity
+2. Projects (/dashboard/projects) - all real estate investment projects in the portfolio
+3. Insights (/dashboard/insights) - portfolio-wide metrics, investment views, deep analytics
+4. Reports (/dashboard/reports) - generate monthly / quarterly / annual expense reports
+5. Inbox (/dashboard/inbox) - internal messages, to-dos, requests, deal crowdfund invites (unread badge + pulse)
+6. Team (/dashboard/team) - team management, invites, presence status
 
-## Section Divider
+### Section Divider
 Uppercase label: **ACCOUNT**
 
-## Account Navigation (exact order — DO NOT change)
+### Account Pages
+- Profile (/dashboard/settings/profile) - avatar, company logo, licenses from vendor list
+- Billing (/dashboard/settings/billing) - subscription plan, credit card on file
+- Settings (/dashboard/settings) - password, tier, app preferences
 
-| Label | Route | Icon | Description |
-|-------|-------|------|-------------|
-| **Profile** | `/dashboard/settings/profile` | `account_circle` | Avatar, company logo, licenses from vendor list |
-| **Billing** | `/dashboard/settings/billing` | `payments` | Subscription plan, credit card on file |
-| **Settings** | `/dashboard/settings` | `settings` | Password, tier, app preferences |
-
-## Bottom Area (top to bottom)
+### Bottom Area (top to bottom)
 1. **Theme toggle** — light/dark mode switch (sun/moon icon)
 2. **Workspace switcher** — "acting as: Me / [Team Account]" select
 3. **Profile row** — avatar + name + role + logout button
 
-## Theme
+### Theme
 - Dark: `rgba(18,16,20,0.98)` bg, `blur(24px)`, `rgba(253,255,252,0.07)` border
 - Light: `#FDFFFC` bg, `rgba(69,73,85,0.10)` border
 - Controlled via `data-theme` on `<html>` + `useTheme()` from `@/lib/utils/ThemeProvider`
 
+### Notes
+- Data Room has been removed. Documents are phase-scoped within Projects.
+- Navigation order is strict and must not be reordered without architecture review.
+
 **No agent may add, remove, reorder, rename, or move navigation items without explicit human override.**
-Last updated: 2026-07-16 v4 (PF-1: added Portfolio NavItem + Data Room)
+Last updated: 2026-07-25 v6 (PF-2/RM-5: removed Data Room, dashboard hierarchy is Portfolio -> Insights, phase-scoped documents)
 <!-- END:global-navigation-contract -->
 
 <!-- BEGIN:mock-conversion-rules -->
@@ -86,7 +85,7 @@ Every feature must satisfy all of these constraints:
 - **Server-Side Only Secrets**: All third-party API keys and SDK calls must live in Next.js API routes or Server Actions; never leak them to client bundles.
 - **Auth Guard**: Every server endpoint must verify the caller's Firebase ID token before acting.
 - **Persistence**: Real results and status changes are written to Firestore (named collections/paths), not just local React component state.
-- **Async & Webhooks**: For any provider resolving asynchronously (signing, OCR, etc.), implement the callback/webhook route and reconcile statuses. Do not fake completion with a client-side timer.
+- **Async & Webhooks**: For any provider resolving asynchronously (signing, etc.), implement the callback/webhook route and reconcile statuses. Do not fake completion with a client-side timer.
 - **UI States**: Replace every `setTimeout` or `alert` with real API calls, and handle loading, success, error, and empty states explicitly.
 - **Idempotency & Errors**: Handle retries, network failures, and partial failures. Surface actionable error messages to the user.
 - **Env Documentation**: Document every new environment variable inside `.env.example` with a clear comment.

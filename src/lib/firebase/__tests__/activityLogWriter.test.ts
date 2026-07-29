@@ -76,10 +76,10 @@ describe('writeActivityLog', () => {
   it('sets source correctly for different change types', async () => {
     const changes = [{ fieldPath: 'address', oldValue: null, newValue: '123 Main St' }];
 
-    await writeActivityLog('proj-1', 'user-1', changes, 'ocr');
+    await writeActivityLog('proj-1', 'user-1', changes, 'system');
 
     const entry = mockSet.mock.calls[0][1];
-    expect(entry.source).toBe('ocr');
+    expect(entry.source).toBe('system');
   });
 
   it('sanitizes undefined values to null', async () => {

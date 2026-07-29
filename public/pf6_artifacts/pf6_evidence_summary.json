@@ -1,0 +1,9 @@
+{
+  "searchContainerWidth": "max-w-2xl visually expanded container",
+  "predictiveTypeahead": "Queries real stored Deals by street address with phase badges",
+  "keyboardNavTested": "ArrowDown, ArrowUp, Enter, Escape",
+  "debouncedQueryTimeMs": 300,
+  "externalApiRequestsCount": 0,
+  "externalApiRequests": [],
+  "googlePlacesProposal": "Separate owner decision proposed in plan (zero unbidden API calls)"
+}

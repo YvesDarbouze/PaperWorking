@@ -71,6 +71,8 @@ export interface DerivedMetrics {
   arvSpread: number;              // ARV - All-In Cost
   arvSpreadPercent: number;       // (ARV - All-In) / ARV * 100
   annualDebtService: number;
+  loanAmount?: number;
+  loanInterestRate?: number;
   totalCashInvested: number;
   breakEvenOccupancyRate: number; // % occupancy needed to cover all expenses
 
@@ -983,16 +985,49 @@ export function deriveAllMetrics(
   const noi = noiComponents.noi;
 
   // Debt service — use stored term or default to 30-year conventional
-  const loanAmount = financials.loanAmount ?? 0;
-  const loanInterestRate = financials.loanInterestRate ?? 0;
-  const loanTermMonths = (financials.loanTermYears ?? 30) * 12;
-  const annualDebtService = typeof financials.annualDebtService === 'number'
-    ? financials.annualDebtService
+  let loanAmount = financials.loanAmount ?? 0;
+  let loanInterestRate = financials.loanInterestRate ?? 0;
+  let loanTermMonths = (financials.loanTermYears ?? 30) * 12;
+  let annualDebtServiceVal = financials.annualDebtService;
+
+  if (financials.capitalStack && Array.isArray(financials.capitalStack) && financials.capitalStack.length > 0) {
+    let totalDebt = 0;
+    let weightedRateSum = 0;
+    let calculatedMonthlyPmt = 0;
+
+    financials.capitalStack.forEach((s: any) => {
+      const isDebt = ['conventional_loan', 'hard_money', 'bridge', 'sba_504_bank', 'sba_504_cdc'].includes(s.type || '');
+      if (isDebt) {
+        const amt = s.amount || 0;
+        totalDebt += amt;
+        weightedRateSum += amt * (s.interestRate || 0);
+
+        const r = (s.interestRate || 0) / 100 / 12;
+        const n = s.termMonths || 360;
+        let pmt = 0;
+        if (s.notes?.toLowerCase().includes('interest only') || s.type === 'hard_money' || s.type === 'bridge') {
+          pmt = amt * ((s.interestRate || 0) / 100) / 12;
+        } else {
+          pmt = r > 0 ? (amt * r * Math.pow(1 + r, n)) / (Math.pow(1 + r, n) - 1) : amt / n;
+        }
+        calculatedMonthlyPmt += pmt;
+      }
+    });
+
+    if (totalDebt > 0) {
+      loanAmount = totalDebt * 100; // sync to cents for metrics
+      loanInterestRate = weightedRateSum / totalDebt;
+      annualDebtServiceVal = calculatedMonthlyPmt * 12;
+    }
+  }
+
+  const annualDebtService: number = (typeof annualDebtServiceVal === 'number'
+    ? annualDebtServiceVal
     : computeAnnualDebtService(
         loanAmount,
         loanInterestRate,
         loanTermMonths
-      );
+      )) ?? 0;
 
   // Cash flow
   const { annual: annualCashFlow, monthly: monthlyCashFlow } = computeCashFlow(
@@ -1184,11 +1219,10 @@ export function deriveAllMetrics(
       const yrHOA = baseHOA * Math.pow(1 + expenseGrowthRate / 100, y - 1);
       
       let yrMgmt: number;
-      const yrEffectiveRent = yrGrossRent - yrVacancyLoss;
       if (financials.management_pct != null) {
-        yrMgmt = yrEffectiveRent * (financials.management_pct / 100);
+        yrMgmt = yrGrossRent * (financials.management_pct / 100);
       } else if (financials.propertyManagementFeePercent != null) {
-        yrMgmt = yrEffectiveRent * (financials.propertyManagementFeePercent / 100);
+        yrMgmt = yrGrossRent * (financials.propertyManagementFeePercent / 100);
       } else {
         const baseMgmt = (financials.management ?? financials.propertyManagementFee ?? 0) * 12;
         yrMgmt = baseMgmt * Math.pow(1 + expenseGrowthRate / 100, y - 1);
@@ -1224,7 +1258,7 @@ export function deriveAllMetrics(
           const kSecurity = baseSecurity * Math.pow(1 + expenseGrowthRate / 100, k - 1);
           const kCapex = baseCapex * Math.pow(1 + expenseGrowthRate / 100, k - 1);
           const kHOA = baseHOA * Math.pow(1 + expenseGrowthRate / 100, k - 1);
-          let kMgmt = financials.management_pct != null ? (kGrossRent - kVacancyLoss) * (financials.management_pct / 100) : (financials.propertyManagementFeePercent != null ? (kGrossRent - kVacancyLoss) * (financials.propertyManagementFeePercent / 100) : (financials.management ?? financials.propertyManagementFee ?? 0) * 12 * Math.pow(1 + expenseGrowthRate / 100, k - 1));
+          let kMgmt = financials.management_pct != null ? kGrossRent * (financials.management_pct / 100) : (financials.propertyManagementFeePercent != null ? kGrossRent * (financials.propertyManagementFeePercent / 100) : (financials.management ?? financials.propertyManagementFee ?? 0) * 12 * Math.pow(1 + expenseGrowthRate / 100, k - 1));
           let kMaint = financials.maintenance_pct != null ? kGrossRent * (financials.maintenance_pct / 100) : (financials.maintenanceCapExPercent != null ? kGrossRent * (financials.maintenanceCapExPercent / 100) : (financials.maintenance ?? financials.monthlyMaintenanceReserve ?? 0) * 12 * Math.pow(1 + expenseGrowthRate / 100, k - 1));
           const kTotalExpenses = kTaxes + kInsurance + kUtilities + kSecurity + kCapex + kHOA + kMgmt + kMaint;
           const kNOI = kGrossRent + kOtherIncome - kVacancyLoss - kTotalExpenses;
@@ -1843,6 +1877,8 @@ export function deriveAllMetrics(
     arvSpread,
     arvSpreadPercent,
     annualDebtService,
+    loanAmount,
+    loanInterestRate,
     totalCashInvested,
     breakEvenOccupancyRate,
     occupancyRate,
@@ -2608,6 +2644,7 @@ export interface ActiveProjectMetrics {
   annualDebtService?: number | null;
   totalCashInvested?: number | null;
   noiComponents?: any;
+  kpi33?: KPI33Block;
 }
 
 export function deriveAllProjectMetrics(
@@ -2891,6 +2928,7 @@ export function deriveAllProjectMetrics(
     annualDebtService: dm.annualDebtService,
     totalCashInvested: dm.totalCashInvested,
     noiComponents: dm.noiComponents,
+    kpi33: dm.kpi33,
   };
 }
 

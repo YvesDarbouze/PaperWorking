@@ -27,3 +27,19 @@ export function getBusinessDaysDiff(date1Str: string, date2Str: string): number 
   
   return count;
 }
+
+/**
+ * Adds a specified number of business days to a date, skipping weekends.
+ */
+export function addBusinessDays(date: Date, days: number): Date {
+  const result = new Date(date.getTime());
+  let added = 0;
+  while (added < days) {
+    result.setDate(result.getDate() + 1);
+    const day = result.getDay();
+    if (day !== 0 && day !== 6) { // Skip Sunday (0) and Saturday (6)
+      added++;
+    }
+  }
+  return result;
+}

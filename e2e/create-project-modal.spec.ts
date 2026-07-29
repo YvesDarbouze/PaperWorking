@@ -23,9 +23,13 @@ test.describe('Create Project Modal — Sidebar Entry Point', () => {
 
   test.beforeEach(async ({ page }) => {
     await page.addInitScript(() => {
-      window.localStorage.clear();
-      window.localStorage.setItem('pw_cookie_consent', JSON.stringify({ essential: true, analytics: true, marketing: true }));
-    });
+    try {
+    
+          window.localStorage.clear();
+          window.localStorage.setItem('pw_cookie_consent', JSON.stringify({ essential: true, analytics: true, marketing: true }));
+        
+    } catch (e) {}
+  });
     state = createDefaultState();
     await setupMocks(page, state);
   });
@@ -56,9 +60,9 @@ test.describe('Create Project Modal — Sidebar Entry Point', () => {
     await createBtn.waitFor({ state: 'visible', timeout: 10000 });
     await createBtn.click();
 
-    // Step 1 (IntakeStep) visible heading is "Project Intake Router"
+    // AddressStep visible heading is "Let's start your Project"
     await expect(
-      page.locator('h3').filter({ hasText: /Project Intake Router/i }).first()
+      page.locator('h2').filter({ hasText: /Let's start your Project/i }).first()
     ).toBeVisible({ timeout: 8000 });
   });
 
@@ -103,13 +107,16 @@ test.describe('Create Project Modal — Sidebar Entry Point', () => {
 
     // Wait for wizard heading to confirm it's open before checking the phase strip
     await expect(
-      page.locator('h3').filter({ hasText: /Project Intake Router/i }).first()
+      page.locator('h2').filter({ hasText: /Let's start your Project/i }).first()
     ).toBeVisible({ timeout: 8000 });
 
-    // REILPhaseStrip renders as hidden md:flex — visible at 1280px default viewport
+    // Scope to the wizard's overlay container and use exact match regex to avoid dropdown options
+    const wizard = page.locator('div.fixed.inset-0');
+    await expect(wizard).toBeVisible({ timeout: 5000 });
+
     for (const label of ['Acquisition', 'Fund', 'Hold', 'Exit']) {
       await expect(
-        page.locator(`text=${label}`).first()
+        wizard.locator('span').filter({ hasText: new RegExp(`^${label}$`) }).first()
       ).toBeVisible({ timeout: 5000 });
     }
   });
@@ -123,12 +130,7 @@ test.describe('Create Project Modal — Sidebar Entry Point', () => {
 
     await page.locator('button').filter({ hasText: /create project/i }).first().click();
 
-    // Complete IntakeStep first
-    await page.locator('button:has-text("Targeting")').first().click();
-    await page.locator('button:has-text("Rent")').first().click();
-    await page.locator('button:has-text("Continue")').first().click();
-
-    // Address input on the second step (placeholder "123 Main St, City, State")
+    // Address input on the first step (placeholder "123 Main St, City, State")
     const addressInput = page
       .locator('input[type="text"], input[placeholder*="Main St"], input[placeholder*="ddress"]')
       .first();
@@ -149,7 +151,7 @@ test.describe('Create Project Modal — Sidebar Entry Point', () => {
 
     // Confirm wizard is open
     await expect(
-      page.locator('h3').filter({ hasText: /Project Intake Router/i }).first()
+      page.locator('h2').filter({ hasText: /Let's start your Project/i }).first()
     ).toBeVisible({ timeout: 8000 });
 
     // Use the specific aria-label set on the close button
@@ -168,7 +170,7 @@ test.describe('Create Project Modal — Sidebar Entry Point', () => {
     await expect(page).toHaveURL(/dashboard\/projects/);
     // Wizard heading is gone
     await expect(
-      page.locator('h3').filter({ hasText: /Project Intake Router/i }).first()
+      page.locator('h2').filter({ hasText: /Let's start your Project/i }).first()
     ).not.toBeVisible({ timeout: 3000 });
   });
 });

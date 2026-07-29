@@ -14,7 +14,7 @@ interface RawEntry {
   fieldPath: string;
   oldValue: unknown;
   newValue: unknown;
-  source: "manual" | "ocr" | "vendor" | "system";
+  source: "manual" | "vendor" | "system";
   userId: string;
   timestamp: { seconds: number; nanoseconds: number } | null;
 }
@@ -53,14 +53,11 @@ function toDisplay(fieldPath: string, newValue: unknown, source: string): Pick<F
     return { icon: "gavel",           iconColor: "#fbbf24", action: "Offer updated",    target: val };
   if (fp.includes("loanamount") || fp.includes("interest"))
     return { icon: "account_balance", iconColor: "#7A9EAA", action: "Financing updated", target: val };
-  if (source === "ocr")
-    return { icon: "document_scanner", iconColor: "#454955", action: "OCR extraction", target: fp.split(".").pop() ?? fp };
   return { icon: "edit_note", iconColor: "rgba(186,202,197,0.6)", action: "Updated", target: fp.split(".").pop() ?? fp };
 }
 
 function actorLabel(source: string): string {
   if (source === "system") return "System";
-  if (source === "ocr")    return "OCR Engine";
   if (source === "vendor") return "Vendor";
   return "You";
 }

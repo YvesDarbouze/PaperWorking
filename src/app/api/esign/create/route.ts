@@ -142,7 +142,7 @@ export async function POST(req: NextRequest) {
             documentName,
             task: `Signature required: Please sign '${documentName}'`,
           },
-          deepLinkUrl: `/dashboard/projects/${projectId}/data-room`,
+          deepLinkUrl: `/dashboard/projects/${projectId}`,
         });
       }
     } catch (notifErr: any) {

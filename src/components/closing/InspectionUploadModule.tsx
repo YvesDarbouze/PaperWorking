@@ -52,7 +52,6 @@ export default function InspectionUploadModule() {
   const [dragOver, setDragOver] = useState(false);
   const [isUploading, setIsUploading] = useState(false);
   const [uploadProgress, setUploadProgress] = useState(0);
-  const [isProcessing, setIsProcessing] = useState(false);
 
   const toggleResolved = (id: string) => {
     setIssues(issues.map(i => i.id === id ? { ...i, resolved: !i.resolved } : i));
@@ -81,35 +80,6 @@ export default function InspectionUploadModule() {
     if (file) handleFileSelect(file);
   }, [handleFileSelect]);
 
-  const processOCR = async (fileUrl: string, mimeType: string): Promise<InspectionIssue[]> => {
-    const token = await auth.currentUser?.getIdToken();
-    if (!token) throw new Error('Not authenticated');
-
-    const res = await fetch('/api/ocr/inspection', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${token}`
-      },
-      body: JSON.stringify({ fileUrl, mimeType })
-    });
-
-    if (!res.ok) {
-      const errorData = await res.json().catch(() => ({}));
-      throw new Error(errorData.error || `OCR processing failed with status ${res.status}`);
-    }
-
-    const { data } = await res.json();
-    return data.issues.map((issue: any, index: number) => ({
-      id: `issue-${Date.now()}-${index}`,
-      category: issue.category,
-      description: issue.description,
-      severity: issue.severity,
-      estimatedRepairCost: issue.estimatedRepairCost,
-      resolved: false
-    }));
-  };
-
   const handleUpload = async () => {
     if (!currentProject?.id || !uploadFile) {
       toast.error('Project or file not selected.');
@@ -124,7 +94,7 @@ export default function InspectionUploadModule() {
       const storageRef = ref(storage, storagePath);
       const uploadTask = uploadBytesResumable(storageRef, uploadFile);
 
-      const downloadUrl = await new Promise<string>((resolve, reject) => {
+      await new Promise<string>((resolve, reject) => {
         uploadTask.on(
           'state_changed',
           (snapshot) => {
@@ -140,23 +110,11 @@ export default function InspectionUploadModule() {
       });
 
       setIsUploading(false);
-      setIsProcessing(true);
-      toast.loading('Extracting inspection data...', { id: 'ocr-toast' });
-
-      const extractedIssues = await processOCR(downloadUrl, uploadFile.type);
-
-      setIssues(prev => [...prev, ...extractedIssues]);
-      
-      setIsProcessing(false);
-      toast.dismiss('ocr-toast');
-      toast.success(`Inspection report parsed. ${extractedIssues.length} issues extracted.`, { icon: '✨' });
-      
+      toast.success('Inspection report uploaded successfully. A team member will manually review the document.', { icon: '📝' });
       setUploadFile(null);
     } catch (error: any) {
       console.error('Upload Error:', error);
       setIsUploading(false);
-      setIsProcessing(false);
-      toast.dismiss('ocr-toast');
       toast.error(`Upload failed: ${error.message}`);
     }
   };
@@ -195,7 +153,7 @@ export default function InspectionUploadModule() {
             onDrop={handleDrop}
             className="relative rounded-xl p-8 text-center cursor-pointer transition-all bg-surface-container/30 backdrop-blur-xl border-t border-l border-white/10 shadow-lg min-h-[180px] flex flex-col items-center justify-center overflow-hidden group"
             onClick={() => {
-              if (isUploading || isProcessing) return;
+              if (isUploading) return;
               const input = document.createElement('input');
               input.type = 'file';
               input.accept = '.pdf,.jpg,.jpeg,.png';
@@ -221,7 +179,7 @@ export default function InspectionUploadModule() {
                 <div className="flex items-center justify-center gap-2">
                   <span className="text-sm font-medium text-text-primary">{uploadFile.name}</span>
                   <span className="text-xs text-text-secondary">({(uploadFile.size / 1024).toFixed(0)} KB)</span>
-                  {!isUploading && !isProcessing && (
+                  {!isUploading && (
                     <button 
                       onClick={(e) => { e.stopPropagation(); setUploadFile(null); }}
                       className="ml-2 text-text-secondary hover:text-red-500 transition cursor-pointer active:scale-95 p-1 rounded-full hover:bg-white/10"
@@ -237,7 +195,7 @@ export default function InspectionUploadModule() {
                   <Upload className="w-6 h-6" />
                 </div>
                 <p className="text-sm font-medium text-text-primary">Drop inspection report here or click to browse</p>
-                <p className="text-xs text-text-secondary">PDF, JPEG, PNG — Auto-extracts issues</p>
+                <p className="text-xs text-text-secondary">PDF, JPEG, PNG — Upload for manual review</p>
               </div>
             )}
           </div>
@@ -245,7 +203,7 @@ export default function InspectionUploadModule() {
           {uploadFile && (
             <button
               onClick={handleUpload}
-              disabled={isUploading || isProcessing}
+              disabled={isUploading}
               className="mt-3 w-full luminous-button py-3 rounded-lg text-sm font-semibold disabled:opacity-40 flex items-center justify-center gap-2"
             >
               {isUploading ? (
@@ -253,13 +211,8 @@ export default function InspectionUploadModule() {
                   <Loader2 className="w-4 h-4 animate-spin" />
                   Uploading ({uploadProgress.toFixed(0)}%)
                 </>
-              ) : isProcessing ? (
-                <>
-                  <Loader2 className="w-4 h-4 animate-spin" />
-                  AI Extracting Data...
-                </>
               ) : (
-                <>Upload & Scan Report</>
+                <>Upload Report</>
               )}
             </button>
           )}

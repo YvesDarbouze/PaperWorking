@@ -1,6 +1,37 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { adminDb } from '@/lib/firebase/admin';
+import { adminDb, adminAuth } from '@/lib/firebase/admin';
 import { logger } from '@/lib/logger';
+
+async function blockVendor(request: NextRequest) {
+  const authHeader = request.headers.get('authorization') ?? request.headers.get('Authorization');
+  let callerUid: string | null = null;
+  if (authHeader && authHeader.startsWith('Bearer ')) {
+    const idToken = authHeader.slice(7);
+    try {
+      const decoded = await adminDb.collection('users').doc(idToken).get();
+      if (decoded.exists) callerUid = decoded.id;
+      else {
+        const decodedToken = await adminAuth.verifyIdToken(idToken);
+        callerUid = decodedToken.uid;
+      }
+    } catch (e) {
+      if ((idToken === 'mock_token' || idToken === 'mock_token_123' || idToken === 'mock_session_token_123') && process.env.ENABLE_MOCK_AUTH === 'true') {
+        callerUid = request.cookies.get('mock_user_uid')?.value || null;
+      }
+    }
+  } else if (process.env.ENABLE_MOCK_AUTH === 'true') {
+    callerUid = request.cookies.get('mock_user_uid')?.value || null;
+  }
+
+  if (callerUid) {
+    const userSnap = await adminDb.collection('users').doc(callerUid).get();
+    const userData = userSnap.exists ? userSnap.data() : null;
+    if (userData && (userData.role === 'Vendor' || userData.accountType === 'vendor')) {
+      return true;
+    }
+  }
+  return false;
+}
 
 export async function POST(
   request: NextRequest,
@@ -8,6 +39,9 @@ export async function POST(
 ) {
   const { token } = await params;
   try {
+    if (await blockVendor(request)) {
+      return NextResponse.json({ error: 'Not Found' }, { status: 404 });
+    }
     const body = await request.json();
     const { name, email } = body;
 

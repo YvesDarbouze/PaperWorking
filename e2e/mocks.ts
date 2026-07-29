@@ -19,6 +19,7 @@ export function createDefaultState(): MockState {
         address: '100 Ocean Drive',
         status: 'Active',
         currentPhase: 1, // Sourcing / Find & Fund
+        phaseStatus: 'Phase 1: Acquisition',
         financials: {
           monthlyRent: 3500,
           vacancyRatePercent: 5,
@@ -39,6 +40,7 @@ export function createDefaultState(): MockState {
         address: '450 Pine Ave',
         status: 'Active',
         currentPhase: 2, // Purchase
+        phaseStatus: 'Phase 2: Fund',
         financials: {
           monthlyRent: 2400,
           vacancyRatePercent: 8,
@@ -59,6 +61,7 @@ export function createDefaultState(): MockState {
         address: '12 Maple Blvd',
         status: 'Active',
         currentPhase: 3, // Hold
+        phaseStatus: 'Phase 3: Hold',
         financials: {
           monthlyRent: 8500,
           vacancyRatePercent: 10,
@@ -81,13 +84,9 @@ export function createDefaultState(): MockState {
   };
 }
 
-/**
- * Intercepts network calls to provide a reliable, hermetic testing environment
- */
 export async function setupMocks(page: Page, state: MockState, options?: { allowAuthRefreshes?: boolean; allowFirestore?: boolean }) {
-  // Set session cookie to bypass middleware redirect.
-  // __e2e_test=1 disables OnboardingRedirectGuard client-side redirect so
-  // Playwright can navigate dashboard routes without Firebase auth state.
+  const mappedPlan = state.plan === 'individual' ? 'Individual' : state.plan === 'team' ? 'Team' : 'None';
+
   await page.context().addCookies([
     {
       name: '__session',
@@ -98,6 +97,18 @@ export async function setupMocks(page: Page, state: MockState, options?: { allow
     {
       name: '__e2e_test',
       value: '1',
+      domain: 'localhost',
+      path: '/',
+    },
+    {
+      name: '__e2e_bypass_onboarding',
+      value: '1',
+      domain: 'localhost',
+      path: '/',
+    },
+    {
+      name: 'mock_user_subscription_plan',
+      value: mappedPlan,
       domain: 'localhost',
       path: '/',
     },
@@ -115,6 +126,34 @@ export async function setupMocks(page: Page, state: MockState, options?: { allow
           displayName: 'Test User',
           idToken: 'mock_token_123',
           registered: true,
+        }),
+      });
+    });
+
+    await page.route('**/identitytoolkit/v3/relyingparty/signupNewUser**', async (route) => {
+      await route.fulfill({
+        status: 200,
+        contentType: 'application/json',
+        body: JSON.stringify({
+          localId: 'user_123',
+          email: 'newuser@paperworking.com',
+          displayName: 'Test User',
+          idToken: 'mock_token_123',
+          expiresIn: '3600',
+        }),
+      });
+    });
+
+    await page.route('**/identitytoolkit.googleapis.com/v1/accounts:signUp**', async (route) => {
+      await route.fulfill({
+        status: 200,
+        contentType: 'application/json',
+        body: JSON.stringify({
+          localId: 'user_123',
+          email: 'newuser@paperworking.com',
+          displayName: 'Test User',
+          idToken: 'mock_token_123',
+          expiresIn: '3600',
         }),
       });
     });
@@ -372,11 +411,13 @@ export async function setupMocks(page: Page, state: MockState, options?: { allow
       };
 
       await page.evaluate(({ storageKey, item }) => {
-        const list = JSON.parse(localStorage.getItem(storageKey) || '[]');
-        list.push(item);
-        localStorage.setItem(storageKey, JSON.stringify(list));
-        window.dispatchEvent(new Event(`update_${storageKey}`));
-      }, { storageKey: key, item: newCommitment });
+    try {
+    const list = JSON.parse(localStorage.getItem(storageKey) || '[]');
+            list.push(item);
+            localStorage.setItem(storageKey, JSON.stringify(list));
+            window.dispatchEvent(new Event(`update_${storageKey}`));
+    } catch (e) {}
+  }, { storageKey: key, item: newCommitment });
 
       await route.fulfill({ status: 200, json: { success: true, commitment: newCommitment } });
     } else {
@@ -395,23 +436,27 @@ export async function setupMocks(page: Page, state: MockState, options?: { allow
     if (method === 'PATCH') {
       const body = route.request().postDataJSON() || {};
       await page.evaluate(({ storageKey, cId, updates }) => {
-        const list = JSON.parse(localStorage.getItem(storageKey) || '[]');
-        const idx = list.findIndex((c: any) => c.id === cId);
-        if (idx !== -1) {
-          list[idx] = { ...list[idx], ...updates };
-          localStorage.setItem(storageKey, JSON.stringify(list));
-          window.dispatchEvent(new Event(`update_${storageKey}`));
-        }
-      }, { storageKey: key, cId: commitmentId, updates: body });
+    try {
+    const list = JSON.parse(localStorage.getItem(storageKey) || '[]');
+            const idx = list.findIndex((c: any) => c.id === cId);
+            if (idx !== -1) {
+              list[idx] = { ...list[idx], ...updates };
+              localStorage.setItem(storageKey, JSON.stringify(list));
+              window.dispatchEvent(new Event(`update_${storageKey}`));
+            }
+    } catch (e) {}
+  }, { storageKey: key, cId: commitmentId, updates: body });
 
       await route.fulfill({ status: 200, json: { success: true } });
     } else if (method === 'DELETE') {
       await page.evaluate(({ storageKey, cId }) => {
-        const list = JSON.parse(localStorage.getItem(storageKey) || '[]');
-        const updated = list.filter((c: any) => c.id !== cId);
-        localStorage.setItem(storageKey, JSON.stringify(updated));
-        window.dispatchEvent(new Event(`update_${storageKey}`));
-      }, { storageKey: key, cId: commitmentId });
+    try {
+    const list = JSON.parse(localStorage.getItem(storageKey) || '[]');
+            const updated = list.filter((c: any) => c.id !== cId);
+            localStorage.setItem(storageKey, JSON.stringify(updated));
+            window.dispatchEvent(new Event(`update_${storageKey}`));
+    } catch (e) {}
+  }, { storageKey: key, cId: commitmentId });
 
       await route.fulfill({ status: 200, json: { success: true } });
     } else {
@@ -424,6 +469,86 @@ export async function setupMocks(page: Page, state: MockState, options?: { allow
     await route.fulfill({
       status: 200,
       json: { success: true, messageId: 'resend_msg_999' },
+    });
+  });
+
+  // 6.5 Mock Invitations endpoints for Guest Portal and walkthroughs
+  await page.route(/\/api\/invitations\/([^\/]+)$/, async (route) => {
+    const parsedUrl = new URL(route.request().url());
+    const token = parsedUrl.pathname.split('/').pop() || '';
+    const method = route.request().method();
+
+    if (method === 'GET') {
+      await route.fulfill({
+        status: 200,
+        json: {
+          investorName: 'Test Invitee',
+          investorEmail: 'sub@paperworking.com',
+          dealName: 'Syndication Estate',
+          propertyAddress: '100 Ocean Drive, Miami, FL',
+          strategy: 'Value-Add',
+          assetClass: 'Residential',
+          opportunitySummary: 'A solid real estate investment opportunity.',
+          purchasePrice: 500000,
+          estimatedARV: 600000,
+          expectedROI: 12.5,
+          investmentAmount: 50000,
+          equitySplit: 10,
+          interestRate: 6.5,
+          termMonths: 120,
+          legalEntity: 'Miami Syndication LLC',
+          raiseTarget: 100000,
+          raiseRaised: 25000,
+          raisePercentage: 25,
+          daysLeft: 14,
+          hoursLeft: 12,
+          noiHistory: [],
+          capRateHistory: [],
+          cashFlowHistory: [],
+          burnRateHistory: [],
+          expiresAt: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString(),
+          status: token === 'invite_token_decline' ? 'declined' : 'pending',
+          commitmentStatus: 'pending',
+          commitmentId: null,
+          subscriptionAgreementTemplate: null,
+          projectId: 'project_j2_deal',
+          inquiries: [],
+          cardExchangeStatus: 'none',
+          inviteeBusinessCard: null,
+          sponsorBusinessCard: null,
+          indication: null,
+        },
+      });
+    } else {
+      await route.continue();
+    }
+  });
+
+  await page.route(/\/api\/invitations\/([^\/]+)\/updates$/, async (route) => {
+    await route.fulfill({
+      status: 200,
+      json: { success: true, updates: [] },
+    });
+  });
+
+  await page.route(/\/api\/invitations\/([^\/]+)\/ask$/, async (route) => {
+    await route.fulfill({
+      status: 200,
+      json: { success: true, inquiry: { id: 'inq_123', status: 'pending', messages: [] } },
+    });
+  });
+
+  await page.route(/\/api\/invitations\/([^\/]+)\/subscription$/, async (route) => {
+    await route.fulfill({
+      status: 200,
+      json: { success: true },
+    });
+  });
+
+  await page.route(/\/api\/invitations\/respond$/, async (route) => {
+    await route.fulfill({
+      status: 200,
+      json: { success: true },
     });
   });
 

@@ -1,7 +1,8 @@
 import { adminDb } from '@/lib/firebase/admin';
+import * as PlacesGateway from '@/lib/places/placesGateway';
 
 export interface GeocodeCache {
-  address: string;
+  placeId: string | null;
   lat: number;
   lng: number;
   fetchedAt: number;
@@ -12,7 +13,7 @@ export interface GeocodeCache {
  * Looks up the address in a Firestore geocode cache first.
  * If not cached, it geocodes via the Google Geocoding API and caches the result.
  */
-export async function geocodeAddress(address: string): Promise<{ lat: number; lng: number } | null> {
+export async function geocodeAddress(address: string, uid: string = 'system'): Promise<{ lat: number; lng: number } | null> {
   if (!address || !address.trim()) return null;
   const normalizedAddress = address.trim().toLowerCase();
   
@@ -26,40 +27,29 @@ export async function geocodeAddress(address: string): Promise<{ lat: number; ln
     
     if (cacheSnap.exists) {
       const cached = cacheSnap.data() as GeocodeCache;
-      console.log(`[Geocode Cache] Hit for address: "${address}" -> ${cached.lat}, ${cached.lng}`);
-      return { lat: cached.lat, lng: cached.lng };
+      const THIRTY_DAYS_MS = 30 * 24 * 60 * 60 * 1000; // Section A.3: 30-day max TTL on coordinates
+      if (cached.fetchedAt && Date.now() - cached.fetchedAt < THIRTY_DAYS_MS) {
+        console.log(`[Geocode Cache] Hit for address: "${address}" -> ${cached.lat}, ${cached.lng}`);
+        return { lat: cached.lat, lng: cached.lng };
+      }
+      console.log(`[Geocode Cache] Expired (>30 days). Purging cached coordinates for: "${address}"`);
+      await cacheRef.delete().catch(() => {});
     }
     
-    // 2. Cache miss: Call Google Geocoding API
-    const PLACES_API_KEY = process.env.GOOGLE_PLACES_API_KEY;
-    if (!PLACES_API_KEY) {
-      console.warn('[Geocode Provider] GOOGLE_PLACES_API_KEY is not defined in environment!');
+    // 2. Cache miss: Call PlacesGateway API
+    console.log(`[Geocode Provider] Cache miss. Calling PlacesGateway for: "${address}"`);
+    
+    const gatewayResult = await PlacesGateway.geocode(address.trim(), uid);
+    if (!gatewayResult) {
+      console.warn(`[Geocode Provider] PlacesGateway returned no result for address: "${address}"`);
       return null;
     }
     
-    console.log(`[Geocode Provider] Cache miss. Calling Google Geocoding API for: "${address}"`);
-    const url = new URL('https://maps.googleapis.com/maps/api/geocode/json');
-    url.searchParams.set('address', address.trim());
-    url.searchParams.set('key', PLACES_API_KEY);
-    
-    const res = await fetch(url.toString());
-    if (!res.ok) {
-      console.error(`[Geocode Provider] Google Geocoding API returned HTTP status ${res.status}`);
-      return null;
-    }
-    
-    const data = await res.json();
-    if (data.status !== 'OK' || !data.results || !data.results.length) {
-      console.warn(`[Geocode Provider] Google Geocoding API returned status ${data.status} for address: "${address}"`);
-      return null;
-    }
-    
-    const location = data.results[0].geometry.location;
-    const result = { lat: location.lat, lng: location.lng };
+    const result = { lat: gatewayResult.lat, lng: gatewayResult.lng };
     
     // 3. Cache the resolved result
     await cacheRef.set({
-      address: address.trim(),
+      placeId: gatewayResult.placeId,
       lat: result.lat,
       lng: result.lng,
       fetchedAt: Date.now(),

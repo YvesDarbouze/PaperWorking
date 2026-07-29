@@ -2,7 +2,7 @@
 
 import { useQuery } from "@tanstack/react-query";
 import { useAuth } from "@/context/AuthContext";
-import { useAcquisitionWizard, WIZARD_STEPS, type WizardStepKey } from "@/store/acquisitionWizardStore";
+import { useAcquisitionWizard, type WizardStepKey } from "@/store/acquisitionWizardStore";
 import {
   ACQUISITION_STATUS_LABELS,
   OWNERSHIP_STRUCTURE_LABELS,
@@ -19,11 +19,6 @@ function fmtCents(c: number | bigint | null | undefined): string {
   return `$${(n / 100).toLocaleString()}`;
 }
 
-function fmtDate(d: string | Date | null | undefined): string {
-  if (!d) return "—";
-  return new Date(d).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" });
-}
-
 // ─── Types ────────────────────────────────────────────────────────────────────
 
 interface FieldCheck {
@@ -35,42 +30,24 @@ interface FieldCheck {
 // ─── Completion checklist ─────────────────────────────────────────────────────
 
 function useCompletionChecks() {
-  const { address, status, ownership, terms, completion } = useAcquisitionWizard();
+  const store = useAcquisitionWizard();
 
   const checks: FieldCheck[] = [
-    { label: "Address",           stepKey: "address",   filled: completion.address   === "done"    },
-    { label: "Acquisition status",stepKey: "status",    filled: !!status.acquisitionStatus          },
-    { label: "Property facts",    stepKey: "property",  filled: completion.property  !== "empty"   },
-    { label: "Ownership structure",stepKey:"ownership", filled: !!ownership.ownershipStructure      },
-    { label: "Offer terms",       stepKey: "terms",     filled: !!terms.offerMadeCents              },
+    { label: "Address",           stepKey: "address",       filled: !!store.address.placeId },
+    { label: "Project Name",      stepKey: "projectName",   filled: !!store.projectName.trim() },
+    { label: "Strategy",          stepKey: "strategy",      filled: !!store.strategy },
+    { label: "Pipeline Status",   stepKey: "status",        filled: !!store.status.acquisitionStatus },
+    { label: "Property Type",     stepKey: "propertyType",  filled: !!store.propertyType },
+    { label: "Units count",       stepKey: "units",         filled: store.units > 0 },
+    { label: "Condition",         stepKey: "condition",     filled: !!store.condition },
+    { label: "Ownership structure",stepKey:"ownership",     filled: !!store.ownership.ownershipStructure },
+    { label: "Purchase Price",    stepKey: "purchasePrice", filled: store.purchasePrice > 0 },
+    { label: "Rehab Budget",      stepKey: "rehabBudget",   filled: store.rehabBudget >= 0 },
   ];
 
   const empty  = checks.filter(c => !c.filled);
   const filled = checks.filter(c =>  c.filled);
   return { checks, empty, filled };
-}
-
-// ─── API fetch ────────────────────────────────────────────────────────────────
-
-async function fetchProject(projectId: string, token: string) {
-  const res = await fetch(`/api/reil/projects/${projectId}`, {
-    headers: { Authorization: `Bearer ${token}` },
-  });
-  if (!res.ok) throw new Error("Failed to load project.");
-  return res.json();
-}
-
-// ─── Stat chip ────────────────────────────────────────────────────────────────
-
-function Chip({ label, color = "#454955" }: { label: string; color?: string }) {
-  return (
-    <span
-      className="text-[11px] font-bold px-2.5 py-1 rounded-full"
-      style={{ background: `${color}16`, color }}
-    >
-      {label}
-    </span>
-  );
 }
 
 // ─── Section card ─────────────────────────────────────────────────────────────
@@ -126,32 +103,18 @@ interface ReviewStepProps {
   onSubmit:   () => void;
   submitting: boolean;
   onGoToStep: (step: WizardStepKey) => void;
+  onBack:     () => void;
 }
 
-export function ReviewStep({ onSubmit, submitting, onGoToStep }: ReviewStepProps) {
-  const { user } = useAuth();
+export function ReviewStep({ onSubmit, submitting, onGoToStep, onBack }: ReviewStepProps) {
   const store     = useAcquisitionWizard();
-  const { projectId, address, status, ownership, terms } = store;
+  const { address, projectName, strategy, status, propertyType, units, condition, ownership, purchasePrice, rehabBudget } = store;
   const { checks, empty } = useCompletionChecks();
 
-  // Fetch persisted project data for photo / facts / assignments
-  const { data: project } = useQuery({
-    queryKey: ["project-review", projectId],
-    queryFn:  async () => {
-      const token = await user?.getIdToken();
-      if (!token || !projectId) return null;
-      return fetchProject(projectId, token);
-    },
-    enabled:   !!projectId && !!user,
-    staleTime: 30_000,
-  });
-
-  const facts       = project?.propertyFacts ?? null;
-  const assignments = (project?.fieldAssignments ?? []).filter((a: any) => a.status === "OPEN");
-  const canCreate   = !!address.placeId; // address is the only hard requirement
+  const canCreate   = !!address.placeId && !!projectName.trim() && !!strategy; // Address, name, strategy are minimum hard requirements
 
   return (
-    <div className="flex flex-col gap-6 max-w-[680px] w-full mx-auto">
+    <div className="flex flex-col gap-6 max-w-[680px] w-full mx-auto animate-fade-in">
 
       {/* Heading */}
       <div>
@@ -163,30 +126,43 @@ export function ReviewStep({ onSubmit, submitting, onGoToStep }: ReviewStepProps
         </p>
       </div>
 
-      {/* ── Hero: photo + deal name ── */}
-      {(facts?.photoUrl || address.formattedAddress) && (
-        <div
-          className="rounded-2xl overflow-hidden relative"
-          style={{ height: "160px", background: "rgba(22,19,24,0.6)", border: "1px solid rgba(255,255,255,0.07)" }}
-        >
-          {facts?.photoUrl && (
-            <img src={facts.photoUrl} alt="Property" className="w-full h-full object-cover" />
-          )}
-          <div
-            className="absolute inset-0 flex flex-col justify-end p-5"
-            style={{ background: "linear-gradient(to top, rgba(8,14,19,0.85) 0%, transparent 60%)" }}
-          >
-            <p className="text-[18px] font-bold" style={{ color: "rgba(253,255,252,0.95)" }}>
-              {address.displayName ?? address.formattedAddress}
-            </p>
-            {address.city && (
-              <p className="text-[13px]" style={{ color: "rgba(253,255,252,0.55)" }}>
-                {address.city}, {address.state} {address.zip}
-              </p>
-            )}
-          </div>
-        </div>
-      )}
+      {/* ── Sections ── */}
+
+      {/* Address & Project Name */}
+      <SectionCard title="Identity" icon="location_on" onEdit={() => onGoToStep("address")}>
+        <Row label="Full address" value={address.formattedAddress ?? "—"} />
+        <Row label="Project name"    value={projectName || "—"} />
+        {address.lat != null && <Row label="Coordinates" value={`${address.lat?.toFixed(4)}, ${address.lng?.toFixed(4)}`} />}
+      </SectionCard>
+
+      {/* Strategy & Pipeline Status */}
+      <SectionCard title="Strategy & Status" icon="explore" onEdit={() => onGoToStep("strategy")}>
+        <Row label="Disposition Strategy" value={strategy || "—"} />
+        <Row
+          label="Pipeline status"
+          value={status.acquisitionStatus ? (ACQUISITION_STATUS_LABELS[status.acquisitionStatus as AcquisitionStatus] ?? status.acquisitionStatus) : "—"}
+        />
+      </SectionCard>
+
+      {/* Property Details */}
+      <SectionCard title="Property classification" icon="home" onEdit={() => onGoToStep("propertyType")}>
+        <Row label="Property Type" value={propertyType || "—"} />
+        <Row label="Units Count"   value={units > 0 ? units.toString() : "—"} />
+        <Row label="Condition"     value={condition || "—"} />
+      </SectionCard>
+
+      {/* Ownership */}
+      <SectionCard title="Ownership" icon="account_tree" onEdit={() => onGoToStep("ownership")}>
+        <Row label="Structure" value={ownership.ownershipStructure ? (OWNERSHIP_STRUCTURE_LABELS[ownership.ownershipStructure] ?? ownership.ownershipStructure) : "—"} />
+        {ownership.entityType && <Row label="Entity type" value={ownership.entityType} />}
+        {ownership.entityName && <Row label="Entity name" value={ownership.entityName} />}
+      </SectionCard>
+
+      {/* Underwriting Terms */}
+      <SectionCard title="Underwriting Terms" icon="payments" onEdit={() => onGoToStep("purchasePrice")}>
+        <Row label="Target Purchase Price" value={purchasePrice > 0 ? fmtCents(purchasePrice) : "—"} />
+        <Row label="Estimated Rehab Budget" value={rehabBudget >= 0 ? fmtCents(rehabBudget) : "—"} />
+      </SectionCard>
 
       {/* ── Completion checklist ── */}
       {empty.length > 0 && (
@@ -197,7 +173,7 @@ export function ReviewStep({ onSubmit, submitting, onGoToStep }: ReviewStepProps
           <div className="flex items-center gap-2 mb-3">
             <span className="material-symbols-outlined text-[16px]" style={{ color: "#ffd1aa" }}>info</span>
             <p className="text-[12px] font-semibold" style={{ color: "#ffd1aa" }}>
-              {empty.length} section{empty.length !== 1 ? "s" : ""} still empty — not required to create
+              {empty.length} decision{empty.length !== 1 ? "s" : ""} still empty — not required to finalize
             </p>
           </div>
           <div className="flex flex-wrap gap-2">
@@ -205,7 +181,7 @@ export function ReviewStep({ onSubmit, submitting, onGoToStep }: ReviewStepProps
               <button
                 key={c.stepKey}
                 onClick={() => onGoToStep(c.stepKey)}
-                className="flex items-center gap-1.5 text-[11px] px-2.5 py-1.5 rounded-lg"
+                className="flex items-center gap-1.5 text-[11px] px-2.5 py-1.5 rounded-lg transition-colors hover:bg-white/10"
                 style={{ background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.08)", color: "rgba(253,255,252,0.55)" }}
               >
                 <span className="material-symbols-outlined text-[12px]">add_circle_outline</span>
@@ -214,79 +190,6 @@ export function ReviewStep({ onSubmit, submitting, onGoToStep }: ReviewStepProps
             ))}
           </div>
         </div>
-      )}
-
-      {/* Open field assignments */}
-      {assignments.length > 0 && (
-        <div
-          className="rounded-xl px-4 py-3 flex items-center gap-3"
-          style={{ background: "rgba(173,198,255,0.07)", border: "1px solid rgba(173,198,255,0.15)" }}
-        >
-          <span className="material-symbols-outlined text-[16px]" style={{ color: "#7A9EAA" }}>pending</span>
-          <p className="text-[12px]" style={{ color: "rgba(253,255,252,0.6)" }}>
-            <span className="font-semibold" style={{ color: "#7A9EAA" }}>{assignments.length} field{assignments.length !== 1 ? "s" : ""} assigned to teammates</span>
-            {" "}— won't block creation.
-          </p>
-        </div>
-      )}
-
-      {/* ── Sections ── */}
-
-      {/* Address */}
-      <SectionCard title="Address" icon="location_on" onEdit={() => onGoToStep("address")}>
-        <Row label="Full address" value={address.formattedAddress ?? "—"} />
-        <Row label="Deal name"    value={address.displayName ?? address.formattedAddress ?? "—"} />
-        {address.lat != null && <Row label="Coordinates" value={`${address.lat?.toFixed(4)}, ${address.lng?.toFixed(4)}`} />}
-      </SectionCard>
-
-      {/* Property facts */}
-      {facts && (
-        <SectionCard title="Property Facts" icon="home" onEdit={() => onGoToStep("property")}>
-          <div className="flex flex-wrap gap-3 mb-3">
-            {facts.beds      != null && <Chip label={`${facts.beds} bd`}  />}
-            {facts.baths     != null && <Chip label={`${facts.baths} ba`} color="#7A9EAA" />}
-            {facts.sqft      != null && <Chip label={`${facts.sqft.toLocaleString()} sqft`} color="#ffd1aa" />}
-            {facts.yearBuilt != null && <Chip label={`Built ${facts.yearBuilt}`} />}
-            {facts.propertyType && <Chip label={facts.propertyType} color="rgba(253,255,252,0.5)" />}
-          </div>
-          <Row label="List Price"   value={fmtCents(facts.listPriceCents)} />
-          <Row label="Est. Rent"    value={fmtCents(facts.estRentCents) + "/mo"} />
-          <Row label="Last Sold"    value={fmtCents(facts.lastSoldPriceCents)} />
-        </SectionCard>
-      )}
-
-      {/* Status */}
-      {status.acquisitionStatus && (
-        <SectionCard title="Acquisition Status" icon="flag" onEdit={() => onGoToStep("status")}>
-          <Row
-            label="Current status"
-            value={ACQUISITION_STATUS_LABELS[status.acquisitionStatus as AcquisitionStatus] ?? status.acquisitionStatus}
-          />
-        </SectionCard>
-      )}
-
-      {/* Ownership */}
-      {ownership.ownershipStructure && (
-        <SectionCard title="Ownership" icon="account_tree" onEdit={() => onGoToStep("ownership")}>
-          <Row label="Structure" value={OWNERSHIP_STRUCTURE_LABELS[ownership.ownershipStructure] ?? ownership.ownershipStructure} />
-          {ownership.entityType && <Row label="Entity type" value={ownership.entityType} />}
-          {ownership.entityName && <Row label="Entity name" value={ownership.entityName} />}
-          {ownership.coOwners && ownership.coOwners.length > 0 && (
-            <Row label="Co-owners" value={ownership.coOwners.join(", ")} />
-          )}
-        </SectionCard>
-      )}
-
-      {/* Terms */}
-      {(terms.offerMadeCents || terms.acceptedPriceCents) && (
-        <SectionCard title="Purchase Terms" icon="handshake" onEdit={() => onGoToStep("terms")}>
-          <Row label="Offer"           value={fmtCents(terms.offerMadeCents)} />
-          <Row label="Accepted price"  value={fmtCents(terms.acceptedPriceCents)} />
-          <Row label="Earnest money"   value={fmtCents(terms.earnestMoneyCents)} />
-          <Row label="Est. closing"    value={fmtCents(terms.estClosingCostsCents)} />
-          <Row label="Amount paid"     value={fmtCents(terms.amountPaidCents)} />
-          {terms.offerDate && <Row label="Offer date" value={fmtDate(terms.offerDate)} />}
-        </SectionCard>
       )}
 
       {/* ── Confirm ── */}
@@ -300,17 +203,24 @@ export function ReviewStep({ onSubmit, submitting, onGoToStep }: ReviewStepProps
           </span>
           <div>
             <p className="text-[14px] font-semibold mb-1" style={{ color: "rgba(253,255,252,0.9)" }}>
-              Ready to create this project
+              Ready to activate this Project
             </p>
             <p className="text-[12px]" style={{ color: "rgba(253,255,252,0.4)" }}>
               {canCreate
                 ? "You can always edit any section from the project detail page."
-                : "An address is required to create a project. Go back and add one."}
+                : "Address, Project Name, and Strategy are required to create a project."}
             </p>
           </div>
         </div>
 
-        <div className="flex items-center gap-3">
+        <div className="flex items-center justify-between gap-3 pt-2">
+          <button
+            onClick={onBack}
+            className="flex items-center justify-center h-11 px-5 rounded-xl border border-pw-border bg-transparent text-xs font-bold uppercase tracking-wider text-[var(--color-muted)] hover:text-white transition-colors"
+          >
+            Back
+          </button>
+          
           <button
             disabled={!canCreate || submitting}
             onClick={onSubmit}
@@ -326,14 +236,6 @@ export function ReviewStep({ onSubmit, submitting, onGoToStep }: ReviewStepProps
               {submitting ? "hourglass_empty" : "arrow_forward"}
             </span>
           </button>
-          <div className="flex gap-2 flex-wrap">
-            {checks.filter(c => c.filled).map(c => (
-              <span key={c.stepKey} className="text-[10px] flex items-center gap-1" style={{ color: "#454955" }}>
-                <span className="material-symbols-outlined text-[12px]" style={{ fontVariationSettings: "'FILL' 1" }}>check_circle</span>
-                {c.label}
-              </span>
-            ))}
-          </div>
         </div>
       </div>
 

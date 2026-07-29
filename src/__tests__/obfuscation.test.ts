@@ -27,6 +27,8 @@ const MOCK_LISTING: DealListing = {
   organizationId: 'org-001',
   ownerUid: 'user-001',
   status: 'published',
+  visibilityMode: 'MARKETPLACE',
+  transitionLog: [],
   propertyName: '123 Main Street Duplex',
   address: '123 Main Street, Brooklyn, NY 11201',
   neighborhood: 'Brooklyn, NY',

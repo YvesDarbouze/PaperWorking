@@ -128,7 +128,7 @@ const METRICS: MetricDefinition[] = [
     name: 'Capital Expenditures (CapEx)',
     formula: 'PP&E (Current Year) − PP&E (Previous Year) + Depreciation',
     measures: 'Funds deployed toward long-term asset improvements (e.g., roof overhauls, new HVAC units) rather than routine repairs.',
-    whyTracks: 'Proper tax treatment requires separating routine repairs from depreciable CapEx. PaperWorking uses OCR to read receipt line-items and isolate CapEx, optimizing your depreciation schedules and preserving operational cash history.',
+    whyTracks: 'Proper tax treatment requires separating routine repairs from depreciable CapEx. PaperWorking logs receipt line-items and isolates CapEx, optimizing your depreciation schedules and preserving operational cash history.',
     category: 'financial',
   },
   {

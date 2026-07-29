@@ -14,8 +14,12 @@ test.describe('PaperWorking E2E — Top Nav Cleanup (PF-7)', () => {
 
     // Bypass Cookie Consent popup
     await page.addInitScript(() => {
-      window.localStorage.setItem('pw_cookie_consent', JSON.stringify({ essential: true, analytics: true, marketing: true }));
-    });
+    try {
+    
+          window.localStorage.setItem('pw_cookie_consent', JSON.stringify({ essential: true, analytics: true, marketing: true }));
+        
+    } catch (e) {}
+  });
   });
 
   test('PF-7: Top Nav elements removed, space reclaimed, and Project page creation entrypoints work', async ({ page }) => {

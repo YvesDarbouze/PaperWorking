@@ -131,7 +131,7 @@ describe('Fund Notifications & Reminders', () => {
       const rendered = generateSystemNotificationEmail({
         title: 'Signed document',
         body: 'Investor signed Sub Agreement',
-        deepLinkUrl: '/dashboard/projects/1/data-room',
+        deepLinkUrl: '/dashboard/projects/1',
         type: 'DOCUMENT_SIGNED',
         objectReference: { dealAddress: '123 Main St', documentName: 'Sub Agreement' },
         actorName: 'Alice Investor'

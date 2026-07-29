@@ -179,15 +179,31 @@ export const projectsService = {
   async updateProject(projectId: string, updates: Partial<Project>) {
     try {
       if (typeof window !== 'undefined' && document.cookie.includes('__e2e_test')) {
-        await fetch(`/api/reil/projects/${projectId}`, {
-          method: 'PATCH',
-          headers: { 
-            'Content-Type': 'application/json',
-            'Authorization': 'Bearer mock_token'
-          },
-          body: JSON.stringify(updates),
-        });
-        return;
+        let attempts = 0;
+        const maxAttempts = 3;
+        let lastErr;
+        while (attempts < maxAttempts) {
+          try {
+            attempts++;
+            const res = await fetch(`/api/reil/projects/${projectId}`, {
+              method: 'PATCH',
+              headers: { 
+                'Content-Type': 'application/json',
+                'Authorization': 'Bearer mock_token'
+              },
+              body: JSON.stringify(updates),
+            });
+            if (!res.ok) {
+              throw new Error(`HTTP error! status: ${res.status}`);
+            }
+            return;
+          } catch (err) {
+            lastErr = err;
+            if (attempts >= maxAttempts) throw err;
+            await new Promise((resolve) => setTimeout(resolve, 50));
+          }
+        }
+        throw lastErr;
       }
       const dealRef = doc(db, 'projects', projectId);
 

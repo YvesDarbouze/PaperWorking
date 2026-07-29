@@ -491,7 +491,7 @@ export function SubscriptionsTracker({ projectId }: SubscriptionsTrackerProps) {
                         type="text"
                         value={manualSignEvidence}
                         onChange={(e) => setManualSignEvidence(e.target.value)}
-                        placeholder="e.g. Countersigned subscription doc uploaded to Data Room"
+                        placeholder="e.g. Countersigned subscription doc uploaded to Project Files"
                         className="w-full text-xs p-2 border rounded bg-white font-medium"
                       />
                     </div>

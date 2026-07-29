@@ -3,6 +3,7 @@
 import React, { useState, useEffect, useTransition } from 'react';
 import { useRouter } from 'next/navigation';
 import { projectsService } from '@/lib/firebase/projects';
+import { uploadFile } from '@/lib/storage/uploadService';
 import { deriveAllMetrics } from '@/lib/metrics/reiMetrics';
 import type { Project, RoleLinkedDocument, DocumentCategory, ProjectRole } from '@/types/schema';
 import { 
@@ -332,20 +333,26 @@ export function RetrospectiveWorkspace({ project, refresh }: RetrospectiveWorksp
     }
   };
 
-  const handleDocumentSimulate = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleDocumentSimulate = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
 
     setUploading(true);
-    setTimeout(() => {
+    const toastId = toast.loading(`Uploading and archiving ${file.name}...`);
+    try {
+      const res = await uploadFile({
+        file,
+        path: 'historical_exit_docs',
+        projectId: project.id,
+      });
+
       const newDoc: RoleLinkedDocument = {
         id: crypto.randomUUID(),
         category: selectedCategory,
         fileName: file.name,
-        fileUrl: `/mock/uploads/${file.name}`,
+        fileUrl: res.downloadUrl,
         linkedRole: selectedRole,
-        verified: true,
-        verifiedAt: new Date(),
+        verified: false,
         uploadedAt: new Date(),
         fileSize: file.size,
         notes: '',
@@ -353,14 +360,18 @@ export function RetrospectiveWorkspace({ project, refresh }: RetrospectiveWorksp
 
       const updatedDocs = [...documents, newDoc];
       setDocuments(updatedDocs);
+      toast.success(`${file.name} uploaded to Project Files (pending review)`, { id: toastId });
+    } catch (err: any) {
+      console.error('[Document Upload] Failed:', err);
+      toast.error(`Upload failed: ${err.message || 'Unknown error'}`, { id: toastId });
+    } finally {
       setUploading(false);
-      toast.success(`${file.name} archived to Data Room`);
-    }, 1200);
+    }
   };
 
   const handleRemoveDoc = (id: string) => {
     setDocuments(documents.filter(d => d.id !== id));
-    toast.success('Document removed from Data Room');
+    toast.success('Document removed from Project Files');
   };
 
   const currentPercent = (step / 5) * 100;
@@ -800,10 +811,17 @@ export function RetrospectiveWorkspace({ project, refresh }: RetrospectiveWorksp
                           </div>
                         </div>
                         <div className="flex items-center gap-3">
-                          <span className="flex items-center gap-1 text-[10px] uppercase font-bold text-emerald-400 bg-emerald-400/10 px-2 py-0.5 rounded">
-                            <ShieldCheck className="w-3.5 h-3.5" />
-                            Archived
-                          </span>
+                          {doc.verified ? (
+                            <span className="flex items-center gap-1 text-[10px] uppercase font-bold text-emerald-400 bg-emerald-400/10 px-2 py-0.5 rounded">
+                              <ShieldCheck className="w-3.5 h-3.5" />
+                              Archived
+                            </span>
+                          ) : (
+                            <span className="flex items-center gap-1 text-[10px] uppercase font-bold text-amber-400 bg-amber-400/10 px-2 py-0.5 rounded">
+                              <Loader2 className="w-3 h-3 animate-spin" />
+                              Pending Review
+                            </span>
+                          )}
                           <button
                             onClick={() => handleRemoveDoc(doc.id)}
                             className="text-xs font-bold text-red-400 hover:underline px-2 py-1"

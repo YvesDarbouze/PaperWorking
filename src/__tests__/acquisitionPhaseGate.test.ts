@@ -54,7 +54,7 @@ jest.mock('next/headers', () => ({
 import { adminAuth } from '@/lib/firebase/admin';
 import { advanceProjectPhaseGate } from '@/actions/gate';
 import { closeListing } from '@/actions/listings';
-import { getScorecardInputsHash } from '@/actions/gate';
+import { getScorecardInputsHash } from '@/lib/utils/scorecardHash';
 
 describe('Acquisition Phase Gate Server Actions', () => {
   let mockUserDoc: any;

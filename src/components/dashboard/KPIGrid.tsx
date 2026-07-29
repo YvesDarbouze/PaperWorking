@@ -8,6 +8,8 @@ import { useProjectStore } from '@/store/projectStore';
 import { calculatePortfolioSummary } from '@/lib/analyticsUtils';
 import { useAuth } from '@/context/AuthContext';
 
+import { EmptyState } from '@/components/ui/EmptyState';
+
 function KPICardSkeleton() {
   return (
     <div
@@ -54,29 +56,17 @@ export default function KPIGrid() {
 
   if (isEmpty) {
     return (
-      <section aria-label="Portfolio performance metrics" className="grid grid-cols-1 gap-4 sm:gap-5">
-        <div
-          className="flex flex-col items-center justify-center gap-4 rounded-lg p-8 text-center"
-          style={{ background: 'var(--bg-surface)', border: '1px solid var(--border-ui)' }}
-        >
-          <FolderOpen className="w-10 h-10" style={{ color: 'var(--text-secondary)' }} />
-          <div>
-            <p className="text-base font-semibold" style={{ color: 'var(--text-primary)' }}>
-              No portfolio data yet
-            </p>
-            <p className="text-sm mt-1" style={{ color: 'var(--text-secondary)' }}>
-              Add your first project to start tracking realized profit, ROI, and closed deals.
-            </p>
-          </div>
-          <Link
-            href="/dashboard/projects/new"
-            className="inline-flex items-center gap-2 px-4 py-2 rounded-md text-sm font-semibold transition-colors cursor-pointer"
-            style={{ background: '#00DD94', color: '#0a0a0a' }}
-          >
-            <PlusCircle className="w-4 h-4" />
-            Create First Project
-          </Link>
-        </div>
+      <section aria-label="Portfolio performance metrics" className="grid grid-cols-1 gap-4 sm:gap-5 font-sans">
+        <EmptyState
+          title="No portfolio data yet"
+          description="Add your first project to start tracking realized profit, ROI, and closed deals."
+          action={{
+            label: "Create First Project",
+            href: "/dashboard/projects/new",
+          }}
+          icon={<FolderOpen className="w-6 h-6" />}
+          variant="default"
+        />
       </section>
     );
   }

@@ -187,7 +187,7 @@ export async function POST(req: NextRequest) {
               documentName: envData.documentName as string,
               task: `${envData.signerName} has signed the document '${envData.documentName}'`
             },
-            deepLinkUrl: `/dashboard/projects/${envData.projectId}/data-room`
+            deepLinkUrl: `/dashboard/projects/${envData.projectId}`
           });
         }
         
@@ -203,7 +203,7 @@ export async function POST(req: NextRequest) {
               documentName: envData.documentName as string,
               task: `You have successfully signed the document '${envData.documentName}'`
             },
-            deepLinkUrl: `/dashboard/projects/${envData.projectId}/data-room`
+            deepLinkUrl: `/dashboard/projects/${envData.projectId}`
           });
         }
       }

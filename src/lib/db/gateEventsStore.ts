@@ -1,5 +1,10 @@
 import { adminDb } from '@/lib/firebase/admin';
-import type { GateCriterionSnapshot } from '@/db/schema';
+
+export interface GateCriterionSnapshot {
+  key: string;
+  label: string;
+  status: boolean;
+}
 
 export interface PhaseGateEventRecord {
   id: string;

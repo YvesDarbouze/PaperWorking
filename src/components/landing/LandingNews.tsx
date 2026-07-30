@@ -14,8 +14,8 @@ const UPDATES = [
     date: 'May 2026',
     category: 'Integrations',
     categoryColor: 'text-secondary bg-secondary/10',
-    headline: 'Referral program launched — earn one month free for every investor you bring in',
-    body: 'Share your unique referral link. When a friend starts a paid plan, you both get a month free, automatically applied at the next billing cycle.',
+    headline: 'Deal Marketplace now live — list and discover deals across the investor network',
+    body: 'List a deal with its underwriting — Cap Rate, CoC, projected IRR — and track investor interest in real time. All introductions happen inside PaperWorking; all closings happen outside it.',
   },
   {
     date: 'May 2026',
@@ -35,16 +35,16 @@ export default function LandingNews() {
       {/* Header row */}
       <div className="flex items-end justify-between mb-12">
         <div>
-          <p className="font-label-sm text-label-sm uppercase tracking-[0.2em] text-primary mb-3">
+          <p className="font-label-sm text-label-sm uppercase tracking-[0.2em] text-primary mb-3 type-eyebrow">
             What&apos;s New
           </p>
-          <h2 className="font-headline-lg text-headline-lg text-on-surface">
+          <h2 className="font-headline-lg text-headline-lg text-on-surface type-h2">
             Latest from PaperWorking
           </h2>
         </div>
         <Link
           href="/changelog"
-          className="hidden md:flex items-center gap-2 font-label-md text-label-md text-on-surface-variant hover:text-primary transition-colors"
+          className="hidden md:flex items-center gap-2 font-label-md text-label-md text-on-surface-variant hover:text-primary transition-colors type-cta"
         >
           Full changelog
           <span className="material-symbols-outlined text-base">arrow_forward</span>
@@ -59,17 +59,17 @@ export default function LandingNews() {
             className="glass-panel rounded-xl p-6 flex flex-col gap-4 hover:border-white/20 transition-all"
           >
             <div className="flex items-center justify-between">
-              <span className={`font-label-sm text-label-sm px-2.5 py-1 rounded-full ${item.categoryColor}`}>
+              <span className={`font-label-sm text-label-sm px-2.5 py-1 rounded-full type-eyebrow ${item.categoryColor}`}>
                 {item.category}
               </span>
-              <span className="font-body-sm text-body-sm text-on-surface-variant/60">
+              <span className="font-body-sm text-body-sm text-on-surface-variant/60 type-small">
                 {item.date}
               </span>
             </div>
-            <h3 className="font-headline-md text-[16px] leading-snug text-on-surface">
+            <h3 className="font-headline-md text-[16px] leading-snug text-on-surface type-h3">
               {item.headline}
             </h3>
-            <p className="font-body-sm text-body-sm text-on-surface-variant flex-grow">
+            <p className="font-body-sm text-body-sm text-on-surface-variant flex-grow type-body">
               {item.body}
             </p>
           </div>
@@ -80,7 +80,7 @@ export default function LandingNews() {
       <div className="md:hidden text-center">
         <Link
           href="/changelog"
-          className="font-label-md text-label-md text-primary inline-flex items-center gap-2"
+          className="font-label-md text-label-md text-primary inline-flex items-center gap-2 type-cta"
         >
           View full changelog
           <span className="material-symbols-outlined text-base">arrow_forward</span>

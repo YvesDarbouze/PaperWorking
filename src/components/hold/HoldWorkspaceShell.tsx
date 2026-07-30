@@ -8,6 +8,7 @@ import toast from 'react-hot-toast';
 import { HOLD_CARD_REGISTRY, HoldCardDefinition, DispositionType, ScopeTier } from '@/lib/project/holdCardRegistry';
 import { HoldWelcomeBanner } from './HoldWelcomeBanner';
 import { RehabExpenseTracker } from '@/components/project/RehabExpenseTracker';
+import TransactionLedger from '@/components/projects/TransactionLedger';
 
 export interface HoldWorkspaceShellProps {
   projectId: string;
@@ -262,6 +263,11 @@ export function HoldWorkspaceShell({
       {/* ── Rehab Expense Tracker ── */}
       <div className="mt-12 max-w-5xl">
         <RehabExpenseTracker expenses={rehabExpenses} onChange={setRehabExpenses} />
+      </div>
+
+      {/* ── Bank Transaction Ledger (Plaid) ── */}
+      <div className="mt-10 max-w-5xl">
+        <TransactionLedger projectId={projectId} />
       </div>
 
       {/* ── Card Save/Resume Modal ── */}

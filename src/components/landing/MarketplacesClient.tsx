@@ -54,22 +54,22 @@ export default function MarketplacesClient() {
             >
               {/* Deal Copy (Left side) */}
               <div className="lg:col-span-6 space-y-6">
-                <span className="text-[10px] font-extrabold uppercase tracking-widest text-primary px-2.5 py-1 rounded bg-primary/10 border border-primary/20 inline-block font-mono">
+                <span className="text-[10px] font-extrabold uppercase tracking-widest text-primary px-2.5 py-1 rounded bg-primary/10 border border-primary/20 inline-block font-mono type-eyebrow">
                   Intent-Only Network
                 </span>
                 
-                <h2 className="text-3xl font-extrabold tracking-tight text-white leading-tight">
+                <h2 className="text-3xl font-extrabold tracking-tight text-white leading-tight type-h2">
                   Put Your Deal in Front of Investors Who Are Actually Looking.
                 </h2>
                 
-                <p className="text-sm text-on-surface-variant leading-relaxed font-normal">
+                <p className="text-sm text-on-surface-variant leading-relaxed font-normal type-body">
                   PaperWorking is building a network of serious real estate investors who are always hunting for the next good Deal. Create a Project, run it through the Deal Analyzer, upload photos of the property — then share it with your colleagues or list it on the Deal Marketplace. Interested investors can signal exactly how much of your Deal they'd want in, and you see the interest build in real time. When a Deal comes together, the closing happens where it always has — between the parties, outside PaperWorking — and you log the outcome so your Project record stays complete. When opportunities match what you're looking for, we deliver them to your inbox.
                 </p>
 
                 {/* Bullets */}
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div className="space-y-2 p-4 rounded-xl bg-white/[0.01] border border-white/5">
-                    <h3 className="text-xs font-bold text-white flex items-center gap-1.5">
+                    <h3 className="text-xs font-bold text-white flex items-center gap-1.5 type-h3">
                       <Layers className="w-4 h-4 text-primary shrink-0" />
                       Analyzer-Backed Listings
                     </h3>
@@ -126,6 +126,10 @@ export default function MarketplacesClient() {
                   {/* Mandatory Disclosure Line (Verbatim) */}
                   <p className="text-[11px] text-on-surface-variant/50 leading-relaxed font-light font-mono select-none">
                     PaperWorking facilitates introductions and interest tracking only. No funds, securities, or ownership interests are offered, sold, or transferred through the platform. All transactions occur outside PaperWorking, directly between the parties.
+                  </p>
+                  {/* Compliance Line (c) — Verbatim required */}
+                  <p className="text-[11px] text-on-surface-variant/50 leading-relaxed font-light font-mono select-none mt-1">
+                    PaperWorking is project management software, not investment advice. Marketplace listings are not offers to sell securities.
                   </p>
                 </div>
               </div>

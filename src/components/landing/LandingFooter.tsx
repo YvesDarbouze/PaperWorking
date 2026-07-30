@@ -41,9 +41,9 @@ const FOOTER_COLUMNS: FooterColumn[] = [
   {
     heading: 'Account',
     links: [
-      { label: 'Start 14 Day Trial',      href: '/pricing'          },
+      { label: 'Start 14-Day Trial',      href: '/pricing'          },
       { label: 'Sign In',                 href: '/login'            },
-      { label: 'Create Account',          href: '/pricing'          },
+      { label: 'Create Account',          href: '/register'         },
       { label: 'Forgot Password',         href: '/forgot-password'  },
       { label: 'Accept Team Invite',      href: '/invite'           },
     ],
@@ -65,7 +65,7 @@ function FooterCol({ heading, links }: FooterColumn) {
   return (
     <div>
       <p
-        className="mb-4 text-[11px] font-semibold uppercase tracking-[0.07em]"
+        className="mb-4 text-[11px] font-semibold uppercase tracking-[0.07em] type-eyebrow"
         style={{ color: 'var(--color-on-surface-variant)' }}
       >
         {heading}
@@ -77,7 +77,7 @@ function FooterCol({ heading, links }: FooterColumn) {
               href={href}
               target={external ? '_blank' : undefined}
               rel={external ? 'noopener noreferrer' : undefined}
-              className="text-[13.5px] transition-opacity duration-150"
+              className="text-[13.5px] transition-opacity duration-150 type-small type-cta"
               style={{ color: 'var(--color-on-surface-variant)', opacity: 0.8, textDecoration: 'none' }}
               onMouseEnter={e => { (e.currentTarget as HTMLAnchorElement).style.opacity = '1'; (e.currentTarget as HTMLAnchorElement).style.color = 'var(--color-on-surface)'; }}
               onMouseLeave={e => { (e.currentTarget as HTMLAnchorElement).style.opacity = '0.8'; (e.currentTarget as HTMLAnchorElement).style.color = 'var(--color-on-surface-variant)'; }}
@@ -106,7 +106,7 @@ export default function LandingFooter() {
           <div className="col-span-2 md:col-span-1">
             <Logo href="/" surface="marketing-footer" className="mb-5" />
             <p
-              className="text-[13.5px] leading-relaxed mb-6"
+              className="text-[13.5px] leading-relaxed mb-6 type-caption"
               style={{ color: 'var(--color-on-surface-variant)', opacity: 0.75, maxWidth: '200px' }}
             >
               Precision deal management for serious real estate investors.
@@ -115,7 +115,7 @@ export default function LandingFooter() {
             {/* CTA */}
             <Link
               href="/pricing"
-              className="inline-flex items-center gap-1.5 text-[12.5px] font-semibold transition-opacity duration-150 active:scale-[0.98]"
+              className="inline-flex items-center gap-1.5 text-[12.5px] font-semibold transition-opacity duration-150 active:scale-[0.98] type-cta"
               style={{
                 background: 'var(--color-on-surface)',
                 color: 'var(--color-surface)',
@@ -149,8 +149,8 @@ export default function LandingFooter() {
         >
           {/* Copyright */}
           <p
-            className="text-[12.5px]"
-            style={{ color: 'var(--color-on-surface-variant)', opacity: 0.55 }}
+            className="text-[12.5px] type-caption"
+            style={{ color: 'var(--color-on-surface-variant)', opacity: 0.80 }}
           >
             © 2026 PaperWorking Corp. All rights reserved.
           </p>
@@ -166,10 +166,10 @@ export default function LandingFooter() {
               <Link
                 key={label}
                 href={href}
-                className="text-[12.5px] transition-opacity duration-150"
-                style={{ color: 'var(--color-on-surface-variant)', opacity: 0.55, textDecoration: 'none' }}
-                onMouseEnter={e => (e.currentTarget.style.opacity = '0.9')}
-                onMouseLeave={e => (e.currentTarget.style.opacity = '0.55')}
+                className="text-[12.5px] transition-opacity duration-150 type-caption type-cta"
+                style={{ color: 'var(--color-on-surface-variant)', opacity: 0.80, textDecoration: 'none' }}
+                onMouseEnter={e => (e.currentTarget.style.opacity = '1')}
+                onMouseLeave={e => (e.currentTarget.style.opacity = '0.80')}
               >
                 {label}
               </Link>

@@ -101,13 +101,13 @@ export default function ForProsPage() {
           <div className="flex items-center gap-4">
             <Link
               href="/login"
-              className="text-sm text-[#9E9DA0] hover:text-white transition-colors"
+              className="text-sm text-[#9E9DA0] hover:text-white transition-colors type-cta"
             >
               Log In
             </Link>
             <Link
               href="/register?type=vendor"
-              className="px-5 py-2 rounded-lg bg-[#454955] text-[#0d0a0b] text-sm font-bold hover:bg-[#454955]/90 transition-all"
+              className="px-5 py-2 rounded-lg bg-[#454955] text-[#0d0a0b] text-sm font-bold hover:bg-[#454955]/90 transition-all type-cta"
             >
               Sign Up Free
             </Link>
@@ -117,16 +117,16 @@ export default function ForProsPage() {
 
       {/* ── Hero ── */}
       <section className="max-w-6xl mx-auto px-6 pt-24 pb-20 text-center">
-        <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-[#454955]/10 border border-[#454955]/20 text-[#454955] text-xs font-bold uppercase tracking-widest mb-8">
+        <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-[#454955]/10 border border-[#454955]/20 text-[#454955] text-xs font-bold uppercase tracking-widest mb-8 type-eyebrow">
           <Zap className="w-3.5 h-3.5" />
           For Real Estate Professionals
         </div>
-        <h1 className="text-5xl md:text-7xl font-bold tracking-tight leading-[1.1] mb-6">
+        <h1 className="text-5xl md:text-7xl font-bold tracking-tight leading-[1.1] mb-6 type-display">
           Investors Need You at
           <br />
           <span className="text-[#454955]">Exactly the Right Moment. Be There.</span>
         </h1>
-        <p className="text-lg md:text-xl text-[#9E9DA0] max-w-2xl mx-auto mb-10 leading-relaxed">
+        <p className="text-lg md:text-xl text-[#9E9DA0] max-w-2xl mx-auto mb-10 leading-relaxed type-body-lg">
           PaperWorking&rsquo;s project management tools know when an investor hits the
           milestone that needs your trade — inspection, rehab, staging, closing.
           Subscribe as a Vendor and get connected to real estate investors near
@@ -138,13 +138,13 @@ export default function ForProsPage() {
         <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
           <Link
             href="/register?type=vendor"
-            className="px-8 py-4 rounded-xl bg-[#454955] text-[#0d0a0b] text-base font-bold hover:bg-[#454955]/90 transition-all flex items-center gap-2 shadow-[0_0_30px_rgba(69, 73, 85,0.2)]"
+            className="px-8 py-4 rounded-xl bg-[#454955] text-[#0d0a0b] text-base font-bold hover:bg-[#454955]/90 transition-all flex items-center gap-2 shadow-[0_0_30px_rgba(69, 73, 85,0.2)] type-cta"
           >
             Get Started <ArrowRight className="w-4 h-4" />
           </Link>
           <Link
             href="#pricing"
-            className="px-8 py-4 rounded-xl border border-white/10 text-[#C0BEC2] text-base font-bold hover:border-[#454955]/40 hover:text-white transition-all"
+            className="px-8 py-4 rounded-xl border border-white/10 text-[#C0BEC2] text-base font-bold hover:border-[#454955]/40 hover:text-white transition-all type-cta"
           >
             View Plans
           </Link>
@@ -154,14 +154,14 @@ export default function ForProsPage() {
       {/* ── Vendor Types Strip ── */}
       <section className="border-y border-white/5 bg-white/[0.01]">
         <div className="max-w-6xl mx-auto px-6 py-8">
-          <p className="text-xs text-[#6B6870] uppercase tracking-widest text-center mb-6">
+          <p className="text-xs text-[#6B6870] uppercase tracking-widest text-center mb-6 type-eyebrow">
             Built for every real estate professional
           </p>
           <div className="flex flex-wrap items-center justify-center gap-3">
             {VENDOR_TYPES.map((type) => (
               <span
                 key={type}
-                className="px-4 py-2 rounded-lg bg-white/[0.03] border border-white/[0.06] text-sm text-[#C0BEC2] font-medium"
+                className="px-4 py-2 rounded-lg bg-white/[0.03] border border-white/[0.06] text-sm text-[#C0BEC2] font-medium type-small"
               >
                 {type}
               </span>
@@ -173,10 +173,10 @@ export default function ForProsPage() {
       {/* ── Value Props ── */}
       <section className="max-w-6xl mx-auto px-6 py-24">
         <div className="text-center mb-16">
-          <h2 className="text-3xl md:text-4xl font-bold tracking-tight mb-4">
+          <h2 className="text-3xl md:text-4xl font-bold tracking-tight mb-4 type-h2">
             Why professionals choose PaperWorking
           </h2>
-          <p className="text-[#9E9DA0] max-w-xl mx-auto">
+          <p className="text-[#9E9DA0] max-w-xl mx-auto type-body">
             Your profile is surfaced inside investor workspaces at the exact
             phase they need your services.
           </p>

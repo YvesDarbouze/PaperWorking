@@ -1,5 +1,5 @@
 import { Configuration, PlaidApi, PlaidEnvironments, Products, CountryCode } from 'plaid';
-import { BankingProvider, AccountBalance, BankingTransactionsResponse, BankingTransaction } from './index';
+import { BankingProvider, AccountBalance, BankingTransactionsResponse, BankingTransaction, MortgageLiability } from './index';
 
 export class PlaidProvider implements BankingProvider {
   private plaidClient: PlaidApi;
@@ -34,12 +34,21 @@ export class PlaidProvider implements BankingProvider {
 
   async createLinkToken(userId: string): Promise<string> {
     try {
+      // Determine which products to request based on env flag
+      const liabilitiesEnabled = process.env.PLAID_LIABILITIES_ENABLED !== 'false';
+      const products: Products[] = [Products.Auth, Products.Transactions];
+      if (liabilitiesEnabled) {
+        products.push(Products.Liabilities);
+      }
+
       const response = await this.plaidClient.linkTokenCreate({
         user: { client_user_id: userId },
         client_name: 'PaperWorking',
-        products: [Products.Auth],
+        products,
         country_codes: [CountryCode.Us],
         language: 'en',
+        // Note: 'use_case' / DTM footer is configured in the Plaid Dashboard,
+        // not in the link token request for most Plaid plans.
       });
       return response.data.link_token;
     } catch (error: any) {
@@ -145,6 +154,59 @@ export class PlaidProvider implements BankingProvider {
     } catch (error: any) {
       console.error('[PlaidProvider] Failed to sync transactions:', error.response?.data ?? error.message);
       throw new Error(`Failed to sync Plaid transactions: ${error.response?.data?.error_message ?? error.message}`);
+    }
+  }
+
+  /**
+   * Fetches mortgage liability data for all loan accounts linked to this Item.
+   * Requires Products.Liabilities to be included in the link token.
+   * Silently returns [] if the item has no mortgage accounts.
+   */
+  async getLiabilities(accessToken: string): Promise<MortgageLiability[]> {
+    try {
+      const response = await this.plaidClient.liabilitiesGet({
+        access_token: accessToken,
+      });
+
+      const mortgages = response.data.liabilities.mortgage || [];
+
+      return mortgages.map((m: any) => ({
+        accountId: m.account_id,
+        // Plaid SDK field name varies by version: lender_name or originator_name
+        lender: (m.lender_name ?? m.originator_name) ?? null,
+        balance: Math.round(((m.outstanding_principal_balance ?? m.current_loan_amount) ?? 0) * 100),
+        originalBalance: (m.origination_principal_amount ?? m.original_principal_balance) != null
+          ? Math.round((m.origination_principal_amount ?? m.original_principal_balance) * 100)
+          : null,
+        interestRatePct: m.interest_rate?.percentage ?? null,
+        apr: m.apr_percentage ?? m.interest_rate?.percentage ?? null,
+        nextPaymentDueDate: m.next_payment_due_date ?? null,
+        nextPaymentAmount: m.next_monthly_payment != null
+          ? Math.round(m.next_monthly_payment * 100)
+          : null,
+        ytdInterestPaid: m.ytd_interest_paid != null
+          ? Math.round(m.ytd_interest_paid * 100)
+          : null,
+        escrowBalance: m.escrow_balance != null
+          ? Math.round(m.escrow_balance * 100)
+          : null,
+        lastPaymentAmount: m.last_payment_amount != null
+          ? Math.round(m.last_payment_amount * 100)
+          : null,
+        lastPaymentDate: m.last_payment_date ?? null,
+      }));
+    } catch (error: any) {
+      // PRODUCT_NOT_READY or PRODUCTS_NOT_SUPPORTED are non-fatal — item has no mortgages
+      const code = error.response?.data?.error_code ?? '';
+      if (
+        code === 'PRODUCT_NOT_READY' ||
+        code === 'PRODUCTS_NOT_SUPPORTED' ||
+        code === 'NO_LIABILITY_ACCOUNTS'
+      ) {
+        return [];
+      }
+      console.error('[PlaidProvider] Failed to fetch liabilities:', error.response?.data ?? error.message);
+      throw new Error(`Failed to fetch Plaid liabilities: ${error.response?.data?.error_message ?? error.message}`);
     }
   }
 }

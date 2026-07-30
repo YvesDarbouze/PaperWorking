@@ -350,22 +350,26 @@ model AppUser {
   collaborations  ProjectCollaborator[]
   projects        ReilProject[]
   statusEvents    StatusEvent[]
+  // New financial layer relations
+  plaidConnections      PlaidConnection[]
+  financialTransactions FinancialTransaction[]
+  transactionRules      TransactionRule[]
 }
 
 model ReilProject {
-  id                 String                  @id @default(uuid())
-  addressLine        String                  @default("")
-  city               String                  @default("")
-  state              String                  @default("")
-  zip                String                  @default("")
+  id                 String              @id @default(uuid())
+  addressLine        String              @default("")
+  city               String              @default("")
+  state              String              @default("")
+  zip                String              @default("")
   lat                Float?
   lng                Float?
   placeId            String?
   displayName        String?
-  acquisitionStatus  AcquisitionStatus       @default(PROSPECT)
+  acquisitionStatus  AcquisitionStatus   @default(PROSPECT)
   ownershipStructure OwnershipStructure?
-  createdAt          DateTime                @default(now())
-  updatedAt          DateTime                @updatedAt
+  createdAt          DateTime            @default(now())
+  updatedAt          DateTime            @updatedAt
   createdById        String
   coOwners           String[]
   entityName         String?
@@ -374,7 +378,7 @@ model ReilProject {
   marketSyncedAt     DateTime?
   rentSyncedAt       DateTime?
   valueSyncedAt      DateTime?
-  currentPhase       Int                     @default(1)
+  currentPhase       Int                 @default(1)
   dispositionType    String?
   subStrategy        String?
   holdHorizon        Int?
@@ -385,35 +389,35 @@ model ReilProject {
   propertyType       String?
   units              Int?
   condition          String?
-  retrospective      Boolean                 @default(false)
+  retrospective      Boolean             @default(false)
   // AQ-5 Source Card
-  leadSource          String?
-  listingUrl          String?
-  askingPriceCents    BigInt?
-  subjectDom          Int?
-  leadAgent           String?
-  dateIdentified      DateTime?
+  leadSource         String?
+  listingUrl         String?
+  askingPriceCents   BigInt?
+  subjectDom         Int?
+  leadAgent          String?
+  dateIdentified     DateTime?
 
   // AQ-5 Seller Card
-  sellerName          String?
-  sellerType          String?
-  sellerMotivation    String?
-  sellerContact       String?
+  sellerName       String?
+  sellerType       String?
+  sellerMotivation String?
+  sellerContact    String?
 
   // AQ-5 Market Card
-  submarket           String?
+  submarket             String?
   medianSalesPriceCents BigInt?
-  medianRentCents     BigInt?
-  marketVacancyRate   Float?
-  hazardFlag          Boolean                 @default(false)
-  hazardNote          String?
+  medianRentCents       BigInt?
+  marketVacancyRate     Float?
+  hazardFlag            Boolean @default(false)
+  hazardNote            String?
 
   // AQ-6 First-Pass Screen
-  firstPassRentCents  BigInt?
-  firstPassVerdict    String?
+  firstPassRentCents BigInt?
+  firstPassVerdict   String?
 
   // AQ-7 Comps & ARV
-  arvCents            BigInt?
+  arvCents           BigInt?
   fieldAssignments   FieldAssignment[]
   collaborators      ProjectCollaborator[]
   comps              ReilComp[]
@@ -427,6 +431,11 @@ model ReilProject {
   loans              ReilLoanRecord[]
   contributions      ReilContributionEntry[]
   closingMilestones  ReilClosingMilestone[]
+  // New financial layer relations
+  plaidConnections      PlaidConnection[]
+  plaidLiabilities      PlaidLiability[]
+  financialTransactions FinancialTransaction[]
+  transactionRules      TransactionRule[]
 
   @@index([createdById])
   @@index([acquisitionStatus])
@@ -608,69 +617,69 @@ enum FieldStatus {
 }
 
 model ReilFundingPlan {
-  id                   String              @id @default(uuid())
-  projectId            String              @unique
-  modality             String[]            // e.g. ["solo_cash", "conventional_mortgage"]
-  createdAt            DateTime            @default(now())
-  updatedAt            DateTime            @updatedAt
-  project              ReilProject         @relation(fields: [projectId], references: [id], onDelete: Cascade)
-  sources              ReilCapitalSource[]
-  titleHolding         ReilTitleHolding?
-  closingRecord        ReilClosingRecord?
+  id            String              @id @default(uuid())
+  projectId     String              @unique
+  modality      String[] // e.g. ["solo_cash", "conventional_mortgage"]
+  createdAt     DateTime            @default(now())
+  updatedAt     DateTime            @updatedAt
+  project       ReilProject         @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  sources       ReilCapitalSource[]
+  titleHolding  ReilTitleHolding?
+  closingRecord ReilClosingRecord?
 }
 
 model ReilCapitalSource {
   id            String          @id @default(uuid())
   fundingPlanId String
-  type          String          // solo_cash | co_buyer_equity | syndication_equity | conventional_loan | hard_money | bridge | sba_504_bank | sba_504_cdc | sba_504_injection
+  type          String // solo_cash | co_buyer_equity | syndication_equity | conventional_loan | hard_money | bridge | sba_504_bank | sba_504_cdc | sba_504_injection
   amountCents   BigInt
-  status        String          // e.g. "projected", "confirmed", "verified"
-  seniority     Int             // e.g. 1 (senior debt), 2 (junior debt), 3 (equity)
+  status        String // e.g. "projected", "confirmed", "verified"
+  seniority     Int // e.g. 1 (senior debt), 2 (junior debt), 3 (equity)
   fundingPlan   ReilFundingPlan @relation(fields: [fundingPlanId], references: [id], onDelete: Cascade)
 
   @@index([fundingPlanId])
 }
 
 model ReilEquityParty {
-  id             String      @id @default(uuid())
-  projectId      String
-  role           String      // co_buyer | GP | LP
-  name           String
-  email          String?
-  entityType     String      // Individual or Entity
-  memberId       String?     // Link to AppUser.id or ProjectCollaborator
-  ownershipPct   Float       @default(0.0)
-  project        ReilProject @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  id           String      @id @default(uuid())
+  projectId    String
+  role         String // co_buyer | GP | LP
+  name         String
+  email        String?
+  entityType   String // Individual or Entity
+  memberId     String? // Link to AppUser.id or ProjectCollaborator
+  ownershipPct Float       @default(0.0)
+  project      ReilProject @relation(fields: [projectId], references: [id], onDelete: Cascade)
 
   @@index([projectId])
 }
 
 model ReilLoanRecord {
-  id                   String      @id @default(uuid())
-  projectId            String
-  lenderName           String
-  amountCents          BigInt
-  interestRatePercent  Float
-  termMonths           Int
-  points               Float       @default(0.0)
-  status               String      // e.g. "Estimate", "Locked"
-  isInterestOnly       Boolean     @default(false)
-  project              ReilProject @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  id                  String      @id @default(uuid())
+  projectId           String
+  lenderName          String
+  amountCents         BigInt
+  interestRatePercent Float
+  termMonths          Int
+  points              Float       @default(0.0)
+  status              String // e.g. "Estimate", "Locked"
+  isInterestOnly      Boolean     @default(false)
+  project             ReilProject @relation(fields: [projectId], references: [id], onDelete: Cascade)
 
   @@index([projectId])
 }
 
 model ReilContributionEntry {
-  id               String      @id @default(uuid())
-  projectId        String
-  partyName        String
-  email            String?
-  amountCents      BigInt
-  status           String      // pledged | transferred | cleared | soft-committed | docs-out | signed | funds-confirmed
-  evidenceDocId    String?     // Link to Firestore document
-  evidenceDocUrl   String?
-  partyType        String      @default("Investor") // Sponsor, Investor, Co-GP, Preferred Equity
-  project          ReilProject @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  id             String      @id @default(uuid())
+  projectId      String
+  partyName      String
+  email          String?
+  amountCents    BigInt
+  status         String // pledged | transferred | cleared | soft-committed | docs-out | signed | funds-confirmed
+  evidenceDocId  String? // Link to Firestore document
+  evidenceDocUrl String?
+  partyType      String      @default("Investor") // Sponsor, Investor, Co-GP, Preferred Equity
+  project        ReilProject @relation(fields: [projectId], references: [id], onDelete: Cascade)
 
   @@index([projectId])
 }
@@ -678,7 +687,7 @@ model ReilContributionEntry {
 model ReilTitleHolding {
   id              String          @id @default(uuid())
   fundingPlanId   String          @unique
-  structure       String          // TIC | JTWROS
+  structure       String // TIC | JTWROS
   documentUrl     String?
   signatureStatus String          @default("unsigned")
   fundingPlan     ReilFundingPlan @relation(fields: [fundingPlanId], references: [id], onDelete: Cascade)
@@ -687,7 +696,7 @@ model ReilTitleHolding {
 model ReilClosingMilestone {
   id               String      @id @default(uuid())
   projectId        String
-  key              String      // e.g. 'financing', 'title', 'appraisal'
+  key              String // e.g. 'financing', 'title', 'appraisal'
   label            String
   targetOffsetDays Int
   targetDate       DateTime
@@ -706,7 +715,7 @@ model ReilClosingRecord {
   deedRecordedDate DateTime?
   instrumentNumber String?
   countyName       String?
-  checklistState   String?         // JSON string of executed docs checklist state
+  checklistState   String? // JSON string of executed docs checklist state
   fundingPlan      ReilFundingPlan @relation(fields: [fundingPlanId], references: [id], onDelete: Cascade)
 }
 
@@ -716,11 +725,11 @@ model ReilClosingRecord {
 // Prisma models here serve as the SQL reporting replica for financial analytics.
 
 enum RenovationTier {
-  STAGE       // $ — cosmetic staging
-  REFURBISH   // $$ — light touch-up
-  RENOVATE    // $$$ — mid-range renovation
-  GUT         // $$$$ — full gut rehab
-  DEVELOP     // $$$$$ — ground-up or total rebuild
+  STAGE // $ — cosmetic staging
+  REFURBISH // $$ — light touch-up
+  RENOVATE // $$$ — mid-range renovation
+  GUT // $$$$ — full gut rehab
+  DEVELOP // $$$$$ — ground-up or total rebuild
 }
 
 enum HoldExpenseCategory {
@@ -750,16 +759,16 @@ enum UtilitiesResponsibility {
 /// The eight canonical categories (SKILL.md Rule 8) are enforced by the enum.
 model HoldCostRecord {
   id              String              @id @default(uuid())
-  linkedProjectId String              // References Firestore Project ID
+  linkedProjectId String // References Firestore Project ID
   organizationId  String
   category        HoldExpenseCategory
-  monthlyAmount   BigInt              // cents
-  periodMonth     String              // YYYY-MM format
+  monthlyAmount   BigInt // cents
+  periodMonth     String // YYYY-MM format
   sourceTag       String              @default("user_actual") // user_assumption | user_actual | document | derived | plaid
   carriedFromFund Boolean             @default(false)
-  
-  createdAt       DateTime            @default(now())
-  updatedAt       DateTime            @updatedAt
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   @@unique([linkedProjectId, category, periodMonth])
   @@index([linkedProjectId])
@@ -769,19 +778,19 @@ model HoldCostRecord {
 
 /// Canonical renovation spend entries — each itemized capex/maintenance spend.
 model HoldRehabSpend {
-  id              String    @id @default(uuid())
+  id              String   @id @default(uuid())
   linkedProjectId String
   organizationId  String
-  amount          BigInt    // cents
+  amount          BigInt // cents
   spendDate       DateTime
-  category        String    // 'capex' | 'maintenance' (guidance only, not a ninth expense tag)
+  category        String // 'capex' | 'maintenance' (guidance only, not a ninth expense tag)
   note            String
   vendorRef       String?
-  receiptRef      String?   // Firebase Storage reference
-  sourceTag       String    @default("user_actual")
-  
-  createdAt       DateTime  @default(now())
-  updatedAt       DateTime  @updatedAt
+  receiptRef      String? // Firebase Storage reference
+  sourceTag       String   @default("user_actual")
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   @@index([linkedProjectId])
   @@index([organizationId])
@@ -789,32 +798,45 @@ model HoldRehabSpend {
 
 /// Current value dated series — tracks appreciation over the hold period.
 model HoldValueEntry {
-  id              String    @id @default(uuid())
+  id              String   @id @default(uuid())
   linkedProjectId String
-  value           BigInt    // cents
+  value           BigInt // cents
   valueDate       DateTime
-  sourceTag       String    @default("user_assumption") // user_assumption | document
-  documentRef     String?   // appraisal/BPO reference
-  
-  createdAt       DateTime  @default(now())
+  sourceTag       String   @default("user_assumption") // user_assumption | document
+  documentRef     String? // appraisal/BPO reference
+
+  createdAt DateTime @default(now())
 
   @@index([linkedProjectId])
   @@index([valueDate])
 }
 
 model BankConnection {
-  id           String        @id @default(uuid())
-  userId       String
-  accessToken  String
-  lastSyncCursor String?
-  lastSyncAt   DateTime?
-  status       String        @default("active") // 'active' | 'error' | 'disconnected'
-  createdAt    DateTime      @default(now())
-  updatedAt    DateTime      @updatedAt
-  accounts     BankAccount[]
-  transactions Transaction[]
+  id                  String              @id @default(uuid())
+  userId              String
+  projectId           String? // Optional: scopes this connection to a specific project
+  accessToken         String // AES-256-GCM encrypted via tokenVault
+  itemId              String?             @unique
+  lastSyncCursor      String?
+  lastSyncAt          DateTime?
+  status              String              @default("active") // 'active' | 'paused' | 'error'
+  connectionType      String              @default("rent_deposits") // 'rent_deposits' | 'operating_expenses'
+  institutionName     String? // e.g. "Chase"
+  institutionId       String? // Plaid institution_id
+  accountId           String? // Denormalized from BankAccount for quick lookup
+  accountName         String? // e.g. "Business Checking"
+  accountMask         String? // e.g. "3847"
+  webhookUrl          String? // URL registered with Plaid for this item
+  createdAt           DateTime            @default(now())
+  updatedAt           DateTime            @updatedAt
+  accounts            BankAccount[]
+  transactions        Transaction[]
+  mortgageLiabilities MortgageLiability[]
 
   @@index([userId])
+  @@index([projectId])
+  @@index([connectionType])
+  @@index([userId, status])
 }
 
 model BankAccount {
@@ -843,14 +865,14 @@ model Transaction {
   connectionId   String
   accountId      String
   userId         String
-  amount         BigInt         // cents
+  amount         BigInt // cents
   date           DateTime
   category       String[]
   merchantName   String?
   pending        Boolean        @default(false)
-  reiCategory    String?        // 'rental_income', 'debt_service', etc.
-  confidence     Float?         // 0.0 - 1.0
-  projectId      String?        // for auto-attribution
+  reiCategory    String? // 'rental_income', 'debt_service', etc.
+  confidence     Float? // 0.0 - 1.0
+  projectId      String? // for auto-attribution
   reviewedByUser Boolean        @default(false)
   attributedAt   DateTime?
   createdAt      DateTime       @default(now())
@@ -866,4 +888,536 @@ model Transaction {
   @@index([connectionId])
   @@index([userId, date])
   @@index([projectId, reiCategory])
+}
+
+model MortgageLiability {
+  id                 String    @id @default(uuid())
+  connectionId       String
+  accountId          String // Plaid account_id of the mortgage account
+  lender             String? // Institution / servicer name
+  balance            BigInt // Current outstanding balance in cents
+  originalBalance    BigInt? // Original loan balance in cents
+  interestRatePct    Float? // e.g. 6.75
+  apr                Float? // APR %
+  nextPaymentDueDate DateTime? // Next payment due date
+  nextPaymentAmount  BigInt? // Next payment amount in cents
+  ytdInterestPaid    BigInt? // YTD interest paid in cents
+  escrowBalance      BigInt? // Escrow balance in cents
+  lastPaymentAmount  BigInt? // Last payment amount in cents
+  lastPaymentDate    DateTime? // Last payment date
+  fetchedAt          DateTime  @default(now())
+  updatedAt          DateTime  @updatedAt
+
+  connection BankConnection @relation(fields: [connectionId], references: [id], onDelete: Cascade)
+
+  @@unique([connectionId, accountId])
+  @@index([connectionId])
+  @@index([accountId])
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// PLAID DTM COMPLIANCE + UNIFIED FINANCIAL LAYER
+// Added: 2026-07-29
+// Spec: Plaid Data Transparency Messaging compliance, consent audit trail,
+//       raw Plaid data storage, unified financial_transactions ledger,
+//       categorization rule engine.
+//
+// IMPORTANT: All models below are ADDITIVE. Existing BankConnection,
+// BankAccount, Transaction, and MortgageLiability models are preserved
+// unchanged and continue to power the v1 sync pipeline.
+//
+// Entity references:
+//   userId    → AppUser.id     (String @id, Firebase UID)
+//   projectId → ReilProject.id (String @id @default(uuid()))
+//   matchedLeaseId, matchedTenantId — nullable plain strings, no FK until
+//   Lease/Tenant models are built.
+// ─────────────────────────────────────────────────────────────────────────────
+
+// ── Plaid Connection Enums ────────────────────────────────────────────────────
+
+/// Purpose the user selected when linking this bank account via Plaid Link.
+enum PlaidConnectionPurpose {
+  RENT_COLLECTION
+  OPERATING_EXPENSES
+  MORTGAGE_LIABILITY
+  RESERVE_ACCOUNT
+  CAPX_ACCOUNT
+}
+
+/// Lifecycle status of a PlaidConnection item.
+enum PlaidConnectionStatus {
+  NOT_CONNECTED
+  ACTIVE
+  PENDING_AUTH
+  ERROR
+  DISCONNECTED
+  EXPIRED
+}
+
+/// Types of DTM consent lifecycle events recorded in plaid_consent_events.
+enum PlaidConsentEventType {
+  INITIAL_CONSENT
+  ADDITIONAL_CONSENT
+  CONSENT_REVOKED
+  CONSENT_UPDATED
+}
+
+// ── Liability Enums ───────────────────────────────────────────────────────────
+
+/// Plaid /liabilities/get supported liability categories.
+enum PlaidLiabilityType {
+  MORTGAGE
+  STUDENT_LOAN
+  CREDIT_CARD
+  AUTO_LOAN
+  PERSONAL_LOAN
+}
+
+/// Interest rate structure for a loan liability.
+enum LoanInterestRateType {
+  FIXED
+  VARIABLE
+}
+
+// ── Financial Transaction Enums ───────────────────────────────────────────────
+
+/// Origin of a FinancialTransaction record.
+enum FinancialTransactionSource {
+  MANUAL
+  PLAID_TRANSACTIONS
+  PLAID_LIABILITIES
+  IMPORT_CSV
+  RULE_GENERATED
+  RECONCILIATION_ADJUSTMENT
+}
+
+/// Money direction: CREDIT = money in, DEBIT = money out.
+enum FinancialTransactionDirection {
+  CREDIT
+  DEBIT
+}
+
+/// Canonical 51-value category taxonomy.
+/// Grouped into 6 P&L buckets — comments indicate the KPI impact of each bucket.
+enum FinancialTransactionCategory {
+  // ── REVENUE (Money IN) ─────────────────────────────────────────────────
+  // Affects: Gross Rent, EGI, NOI, Cash Flow, Cash-on-Cash
+  RENT_INCOME
+  LATE_FEE_INCOME
+  PET_RENT_INCOME
+  PARKING_INCOME
+  LAUNDRY_VENDING_INCOME
+  APPLICATION_FEE_INCOME
+  LEASE_TERMINATION_FEE
+  UTILITY_REIMBURSEMENT
+  INSURANCE_CLAIM_INCOME
+  INTEREST_INCOME
+  MISC_INCOME
+
+  // ── OPERATING EXPENSES (Money OUT) ────────────────────────────────────
+  // Affects: OpEx, NOI, Cash Flow, OER
+  PROPERTY_TAX
+  PROPERTY_INSURANCE
+  HOA_FEES
+  MANAGEMENT_FEES
+  LEASING_FEES
+  MAINTENANCE_REPAIR
+  UTILITIES
+  LANDSCAPING_SNOW
+  PEST_CONTROL
+  CLEANING_TURNOVER
+  MARKETING_ADVERTISING
+  LEGAL_PROFESSIONAL
+  ACCOUNTING_BOOKKEEPING
+  TRAVEL_MILEAGE
+  BANK_CREDIT_CARD_FEES
+  SOFTWARE_TECHNOLOGY
+  LICENSES_PERMITS
+  TURNOVER_COSTS
+  SUPPLIES
+  MISC_EXPENSE
+
+  // ── MORTGAGE / DEBT SERVICE ───────────────────────────────────────────
+  // Affects: Debt Service, DSCR, Cash Flow, Loan Balance
+  MORTGAGE_PRINCIPAL
+  MORTGAGE_INTEREST
+  MORTGAGE_ESCROW_PAYMENT
+
+  // ── CAPITAL EXPENDITURES ──────────────────────────────────────────────
+  // Affects: CapEx Reserve, Equity — NOT OpEx or NOI
+  CAPITAL_EXPENDITURE
+
+  // ── TRANSFERS / NON-P&L ───────────────────────────────────────────────
+  // Balance Sheet items — do not affect P&L
+  SECURITY_DEPOSIT_RECEIVED
+  SECURITY_DEPOSIT_RETURNED
+  OWNER_DISTRIBUTION
+  CAPITAL_CONTRIBUTION
+  RESERVE_TRANSFER
+  INTER_ACCOUNT_TRANSFER
+
+  // ── UNCERTAIN ─────────────────────────────────────────────────────────
+  UNCATEGORIZED
+  NEEDS_REVIEW
+}
+
+/// IRS / tax accounting treatment for a financial transaction.
+enum TaxTreatment {
+  DEDUCTIBLE
+  DEPRECIABLE
+  NON_DEDUCTIBLE
+  CAPITAL_IMPROVEMENT
+  LIABILITY
+}
+
+/// Review workflow status of a FinancialTransaction.
+enum FinancialTransactionStatus {
+  DRAFT
+  PENDING_REVIEW
+  AUTO_APPROVED
+  MANUALLY_APPROVED
+  REJECTED
+  ARCHIVED
+}
+
+// ── Transaction Rule Enums ────────────────────────────────────────────────────
+
+/// Governs what the rule does when its conditions match.
+enum TransactionRuleType {
+  PLAID_AUTO_CATEGORIZE
+  RECURRING_MANUAL_ENTRY
+  REMINDER
+}
+
+/// How often a RECURRING_MANUAL_ENTRY rule generates a transaction.
+enum TransactionRuleFrequency {
+  WEEKLY
+  BIWEEKLY
+  MONTHLY
+  QUARTERLY
+  ANNUAL
+  ONE_TIME
+}
+
+/// Fields a rule condition can test against.
+enum RuleConditionField {
+  AMOUNT
+  AMOUNT_RANGE
+  PAYEE_NAME
+  DESCRIPTION
+  MERCHANT_NAME
+  ACCOUNT_ID
+  DATE_RANGE
+  DAY_OF_MONTH
+  TRANSACTION_TYPE
+  PLAID_PERSONAL_FINANCE_CATEGORY
+  PLAID_COUNTERPARTY_NAME
+}
+
+/// Comparison operators available in rule conditions.
+enum RuleConditionOperator {
+  EQUALS
+  NOT_EQUALS
+  CONTAINS
+  STARTS_WITH
+  ENDS_WITH
+  REGEX_MATCH
+  GREATER_THAN
+  LESS_THAN
+  BETWEEN
+  IN_LIST
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// NEW MODELS
+// ─────────────────────────────────────────────────────────────────────────────
+
+/// DTM-aware Plaid connection — one per linked bank account.
+/// Stores full consent metadata captured at Link time.
+/// Intentionally separate from legacy BankConnection.
+model PlaidConnection {
+  id                          String                 @id @default(cuid())
+  userId                      String
+  projectId                   String?
+  /// AES-256-GCM encrypted at the application layer via tokenVault. Never plaintext in DB.
+  accessToken                 String
+  itemId                      String                 @unique
+  accountId                   String?
+  institutionName             String?
+  institutionId               String?
+  institutionLogoUrl          String?
+  accountName                 String?
+  accountMask                 String?
+  accountSubtype              String?
+  connectionPurpose           PlaidConnectionPurpose @default(OPERATING_EXPENSES)
+  status                      PlaidConnectionStatus  @default(NOT_CONNECTED)
+  lastSyncCursor              String?
+  lastSyncAt                  DateTime?
+  lastSuccessfulSyncAt        DateTime?
+  syncErrorCount              Int                    @default(0)
+  lastSyncErrorMessage        String?
+  webhookUrl                  String?
+  /// JSON array of products the user consented to in Link DTM screen.
+  consentedProducts           Json?
+  /// JSON array of data scopes from the DTM screen.
+  consentedDataScopes         Json?
+  /// JSON array of use cases shown in Link.
+  consentedUseCases           Json?
+  /// Timestamp when user clicked "Allow" in Plaid Link.
+  consentTimestamp            DateTime?
+  /// DTM spec version at time of consent (e.g. "1.0").
+  consentVersion              String?
+  /// JSON array from Plaid's additional_consented_products field.
+  additionalConsentedProducts Json?
+  createdAt                   DateTime               @default(now())
+  updatedAt                   DateTime               @updatedAt
+
+  user            AppUser               @relation(fields: [userId], references: [id])
+  project         ReilProject?          @relation(fields: [projectId], references: [id])
+  consentEvents   PlaidConsentEvent[]
+  rawTransactions PlaidRawTransaction[]
+  liabilities     PlaidLiability[]
+
+  @@index([userId])
+  @@index([projectId])
+  @@index([status])
+  @@index([userId, status])
+}
+
+/// Immutable audit trail for every DTM consent state change.
+/// NEVER update rows — insert only.
+model PlaidConsentEvent {
+  id                String              @id @default(cuid())
+  plaidConnectionId String
+  eventType         PlaidConsentEventType
+  productsBefore    Json?
+  productsAfter     Json?
+  dataScopesBefore  Json?
+  dataScopesAfter   Json?
+  useCasesBefore    Json?
+  useCasesAfter     Json?
+  timestamp         DateTime            @default(now())
+  /// AppUser.id of the human who triggered this, or literal "SYSTEM".
+  triggeredBy       String
+  /// From Plaid's /consent/events/get endpoint, if available.
+  plaidEventId      String?
+  createdAt         DateTime            @default(now())
+
+  connection PlaidConnection @relation(fields: [plaidConnectionId], references: [id], onDelete: Cascade)
+
+  @@index([plaidConnectionId])
+  @@index([plaidConnectionId, eventType])
+  @@index([timestamp])
+}
+
+/// Write-only sink for raw Plaid transaction objects.
+/// Reference-only — FinancialTransaction is the authoritative ledger.
+model PlaidRawTransaction {
+  id                      String                       @id @default(cuid())
+  plaidConnectionId       String
+  plaidTransactionId      String                       @unique
+  plaidAccountId          String
+  rawPlaidData            Json
+  amount                  Decimal                      @db.Decimal(12, 2)
+  isoCurrencyCode         String?                      @default("USD")
+  direction               FinancialTransactionDirection
+  name                    String
+  merchantName            String?
+  originalDescription     String?
+  paymentChannel          String?
+  pending                 Boolean                      @default(false)
+  pendingTransactionId    String?
+  authorizedDate          DateTime?
+  postedDate              DateTime?
+  category                String[]
+  personalFinanceCategory Json?
+  counterparties          Json?
+  location                Json?
+  paymentMeta             Json?
+  removed                 Boolean                      @default(false)
+  createdAt               DateTime                     @default(now())
+  updatedAt               DateTime                     @updatedAt
+
+  connection          PlaidConnection       @relation(fields: [plaidConnectionId], references: [id], onDelete: Cascade)
+  financialTransaction FinancialTransaction?
+
+  @@index([plaidConnectionId])
+  @@index([plaidAccountId])
+  @@index([postedDate])
+  @@index([pending])
+  @@index([removed])
+  @@index([plaidConnectionId, postedDate])
+}
+
+/// Mortgage and loan liability data from Plaid /liabilities/get.
+model PlaidLiability {
+  id                         String              @id @default(cuid())
+  plaidConnectionId          String
+  projectId                  String?
+  liabilityType              PlaidLiabilityType  @default(MORTGAGE)
+  accountId                  String
+  loanName                   String?
+  loanType                   String?
+  originationDate            DateTime?
+  originationPrincipalAmount Decimal?            @db.Decimal(14, 2)
+  interestRateType           LoanInterestRateType?
+  apr                        Decimal?            @db.Decimal(6, 4)
+  loanTermMonths             Int?
+  maturityDate               DateTime?
+  nextPaymentDueDate         DateTime?
+  nextPaymentAmount          Decimal?            @db.Decimal(12, 2)
+  lastPaymentDate            DateTime?
+  lastPaymentAmount          Decimal?            @db.Decimal(12, 2)
+  lastStatementBalance       Decimal?            @db.Decimal(14, 2)
+  lastStatementIssueDate     DateTime?
+  ytdInterestPaid            Decimal?            @db.Decimal(12, 2)
+  ytdPrincipalPaid           Decimal?            @db.Decimal(12, 2)
+  escrowBalance              Decimal?            @db.Decimal(12, 2)
+  propertyAddress            Json?
+  rawLiabilityData           Json
+  lastFetchedAt              DateTime            @default(now())
+  createdAt                  DateTime            @default(now())
+  updatedAt                  DateTime            @updatedAt
+
+  connection            PlaidConnection       @relation(fields: [plaidConnectionId], references: [id], onDelete: Cascade)
+  project               ReilProject?          @relation(fields: [projectId], references: [id])
+  financialTransactions FinancialTransaction[]
+
+  @@unique([plaidConnectionId, accountId])
+  @@index([plaidConnectionId])
+  @@index([projectId])
+  @@index([liabilityType])
+  @@index([nextPaymentDueDate])
+}
+
+/// Unified financial ledger — source of truth for all P&L calculations.
+/// Plaid is optional: plaidTransactionId and plaidLiabilityId are both nullable.
+model FinancialTransaction {
+  id                           String                       @id @default(cuid())
+  projectId                    String
+  userId                       String
+  source                       FinancialTransactionSource   @default(MANUAL)
+  /// FK to PlaidRawTransaction — nullable, Plaid is not required.
+  plaidTransactionId           String?                      @unique
+  /// FK to PlaidLiability — nullable.
+  plaidLiabilityId             String?
+  amount                       Decimal                      @db.Decimal(12, 2)
+  direction                    FinancialTransactionDirection
+  transactionDate              DateTime
+  postedDate                   DateTime?
+  payee                        String
+  description                  String?
+  category                     FinancialTransactionCategory @default(UNCATEGORIZED)
+  subCategory                  String?
+  /// Future FK: Lease.id — nullable string until Lease model is built.
+  matchedLeaseId               String?
+  /// Future FK: Tenant.id — nullable string until Tenant model is built.
+  matchedTenantId              String?
+  isRecurring                  Boolean                      @default(false)
+  recurringRuleId              String?
+  isSplit                      Boolean                      @default(false)
+  parentTransactionId          String?
+  taxTreatment                 TaxTreatment?
+  receiptUrl                   String?
+  notes                        String?
+  status                       FinancialTransactionStatus   @default(DRAFT)
+  confidenceScore              Float?
+  reviewedBy                   String?
+  reviewedAt                   DateTime?
+  plaidPersonalFinanceCategory String?
+  plaidPrimaryCategory         String?
+  plaidDetailedCategory        String?
+  /// JSON snapshot of KPI values at approval time — audit trail without re-running KPIs.
+  kpiImpactSnapshot            Json?
+  createdAt                    DateTime                     @default(now())
+  updatedAt                    DateTime                     @updatedAt
+
+  project          ReilProject           @relation(fields: [projectId], references: [id])
+  user             AppUser               @relation(fields: [userId], references: [id])
+  plaidTransaction PlaidRawTransaction?  @relation(fields: [plaidTransactionId], references: [id])
+  plaidLiability   PlaidLiability?       @relation(fields: [plaidLiabilityId], references: [id])
+  recurringRule    TransactionRule?       @relation(fields: [recurringRuleId], references: [id])
+  parent           FinancialTransaction?  @relation("SplitChildren", fields: [parentTransactionId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  children         FinancialTransaction[] @relation("SplitChildren")
+  splits           TransactionSplit[]
+
+  @@index([projectId])
+  @@index([userId])
+  @@index([source])
+  @@index([category])
+  @@index([status])
+  @@index([transactionDate])
+  @@index([projectId, transactionDate])
+  @@index([projectId, category])
+  @@index([projectId, status])
+  @@index([matchedLeaseId])
+  @@index([matchedTenantId])
+  @@index([recurringRuleId])
+  @@index([parentTransactionId])
+}
+
+/// Auto-categorization and recurring entry rules.
+model TransactionRule {
+  id            String                    @id @default(cuid())
+  projectId     String
+  userId        String
+  name          String
+  ruleType      TransactionRuleType
+  frequency     TransactionRuleFrequency?
+  startDate     DateTime?
+  endDate       DateTime?
+  /// JSON array: [{ "field": RuleConditionField, "operator": RuleConditionOperator, "value": any }]
+  conditions    Json
+  /// JSON: { category, subCategory, autoApprove, assignToLeaseId, taxTreatment,
+  ///         generateTransaction, generateAmount, generatePayee, generateDescription }
+  action        Json
+  isActive      Boolean                   @default(true)
+  /// Lower number = higher priority (evaluated first when multiple rules match).
+  priority      Int                       @default(100)
+  matchCount    Int                       @default(0)
+  lastMatchedAt DateTime?
+  createdAt     DateTime                  @default(now())
+  updatedAt     DateTime                  @updatedAt
+
+  project      ReilProject          @relation(fields: [projectId], references: [id])
+  user         AppUser              @relation(fields: [userId], references: [id])
+  transactions FinancialTransaction[]
+
+  @@index([projectId])
+  @@index([userId])
+  @@index([isActive])
+  @@index([projectId, isActive, priority])
+}
+
+/// Split-transaction line items. Parent FinancialTransaction.isSplit must be true.
+model TransactionSplit {
+  id                  String                       @id @default(cuid())
+  parentTransactionId String
+  amount              Decimal                      @db.Decimal(12, 2)
+  category            FinancialTransactionCategory @default(UNCATEGORIZED)
+  subCategory         String?
+  matchedLeaseId      String?
+  notes               String?
+  createdAt           DateTime                     @default(now())
+
+  parent FinancialTransaction @relation(fields: [parentTransactionId], references: [id], onDelete: Cascade)
+
+  @@index([parentTransactionId])
+}
+
+/// Event log for all incoming Plaid webhook calls. Enables idempotency and replay debugging.
+model PlaidWebhookEvent {
+  id               String    @id @default(cuid())
+  eventType        String
+  itemId           String
+  payload          Json
+  processedAt      DateTime?
+  processingResult String?
+  errorMessage     String?
+  createdAt        DateTime  @default(now())
+
+  @@index([itemId])
+  @@index([eventType])
+  @@index([createdAt])
+  @@index([itemId, eventType])
 }

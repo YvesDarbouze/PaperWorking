@@ -23,6 +23,22 @@ export interface BankingTransactionsResponse {
   hasMore: boolean;
 }
 
+/** Mortgage / liability data from Plaid /liabilities/get */
+export interface MortgageLiability {
+  accountId: string;           // Plaid account_id
+  lender: string | null;
+  balance: number;             // current outstanding balance in cents
+  originalBalance: number | null; // original principal in cents
+  interestRatePct: number | null;
+  apr: number | null;
+  nextPaymentDueDate: string | null; // ISO date string
+  nextPaymentAmount: number | null;  // in cents
+  ytdInterestPaid: number | null;    // in cents
+  escrowBalance: number | null;      // in cents
+  lastPaymentAmount: number | null;  // in cents
+  lastPaymentDate: string | null;    // ISO date string
+}
+
 export interface BankingProvider {
   createLinkToken(userId: string): Promise<string>;
   exchangePublicToken(userId: string, publicToken: string): Promise<{ accessToken: string; itemId: string }>;
@@ -33,6 +49,7 @@ export interface BankingProvider {
     endDate: string;
     cursor?: string;
   }): Promise<BankingTransactionsResponse>;
+  getLiabilities?(accessToken: string): Promise<MortgageLiability[]>;
 }
 
 class MockBankingProvider implements BankingProvider {
@@ -72,6 +89,10 @@ class MockBankingProvider implements BankingProvider {
       { plaidId: 't8', accountId: 'mock-account-id', amount: -300, date: new Date(), name: 'PROPERTY MANAGEMENT FEE', category: ['Expense'], merchantName: 'PROPERTY MANAGEMENT FEE', pending: false },
       { plaidId: 't9', accountId: 'mock-account-id', amount: -2000, date: new Date(), name: 'ESCROW PAYMENT - TITLE CO', category: ['Expense'], merchantName: 'TITLE CO', pending: false },
       { plaidId: 't10', accountId: 'mock-account-id', amount: -800, date: new Date(), name: 'STAGING FURNITURE RENTAL', category: ['Expense'], merchantName: 'STAGING FURNITURE RENTAL', pending: false },
+      // Transfer / non-P&L
+      { plaidId: 't11', accountId: 'mock-account-id', amount: -5000, date: new Date(), name: 'SECURITY DEPOSIT - TENANT LLC', category: ['Transfer'], merchantName: 'TENANT LLC', pending: false },
+      { plaidId: 't12', accountId: 'mock-account-id', amount: -500, date: new Date(), name: 'PET RENT - TENANT LLC', category: ['Income'], merchantName: 'TENANT LLC', pending: false },
+      { plaidId: 't13', accountId: 'mock-account-id', amount: -75, date: new Date(), name: 'APPLICATION FEE - TENANT LLC', category: ['Income'], merchantName: 'TENANT LLC', pending: false },
     ];
 
     return {
@@ -81,6 +102,26 @@ class MockBankingProvider implements BankingProvider {
       nextCursor: 'mock_cursor_123',
       hasMore: false,
     };
+  }
+
+  async getLiabilities(accessToken: string): Promise<MortgageLiability[]> {
+    // Realistic mock mortgage data for sandbox/development testing
+    return [
+      {
+        accountId: 'mock-mortgage-account-id',
+        lender: 'Wells Fargo Home Mortgage',
+        balance: 285_000_00,        // $285,000
+        originalBalance: 320_000_00, // $320,000
+        interestRatePct: 6.75,
+        apr: 6.92,
+        nextPaymentDueDate: new Date(new Date().getFullYear(), new Date().getMonth() + 1, 1).toISOString().split('T')[0],
+        nextPaymentAmount: 2_076_00, // $2,076
+        ytdInterestPaid: 14_890_00,  // $14,890 YTD
+        escrowBalance: 3_200_00,     // $3,200
+        lastPaymentAmount: 2_076_00,
+        lastPaymentDate: new Date(new Date().getFullYear(), new Date().getMonth(), 1).toISOString().split('T')[0],
+      },
+    ];
   }
 }
 

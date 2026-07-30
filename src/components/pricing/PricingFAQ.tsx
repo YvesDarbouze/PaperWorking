@@ -10,46 +10,41 @@ interface FAQItem {
 
 const faqItems: FAQItem[] = [
   {
-    question: 'Can I cancel anytime?',
+    question: 'I only close three or four deals a year. Is this worth it?',
     answer:
-      'Yes. There are no long-term contracts. Cancel directly from your account settings at any time. You keep full access until the end of your current billing period — no surprise charges, no penalty fees.',
+      "Low volume makes each deal matter more, not less. When one deal carries your year's returns, an expired contingency or a rehab that drifts over budget hurts. Run one live deal through the trial and decide.",
   },
   {
-    question: 'How does billing work?',
+    question: 'Is there a free trial? What happens to my data if I cancel?',
     answer:
-      'You are billed monthly or annually, depending on the plan you select. Monthly plans renew on the same date each month. Annual plans renew once per year. You will receive an email receipt for every charge. All payments are processed securely through Stripe.',
+      'Every plan includes a 14-day trial. A card is required to start; nothing is charged until day 15. If you cancel, you keep read access for 90 days and can export everything, including your full P&L, as CSV. Your data is yours.',
   },
   {
-    question: 'What if I want a refund?',
+    question: 'Can I add my CPA or business partner?',
     answer:
-      'If you are unhappy within the first 14 days of a new subscription, contact us and we will issue a full refund — no questions asked. After that, we do not offer partial-month refunds, but you can cancel at any time to stop future charges.',
+      'On Investment Team, invite them with role permissions — your CPA can read everything and edit nothing. Investor is a solo plan; your CPA still gets the one-click P&L export.',
   },
   {
-    question: 'How secure is my financial data?',
+    question: 'Is there a contract or minimum commitment?',
     answer:
-      'All data is encrypted at rest (AES-256) and in transit (TLS 1.3). PaperWorking enforces strict Role-Based Access Control at the database level, meaning every read and write is validated against your organization\'s permission model. We never share your data with third parties.',
+      'No contracts, no minimums. Cancel anytime from Settings — no call, no retention flow. Annual plans bill once a year and include a 30-day refund window.',
   },
   {
-    question: 'What happens if I downgrade or cancel? Will I lose my data?',
+    question: 'My spreadsheet system works. Why switch?',
     answer:
-      'No. Downgrading your plan does not delete any historical data. Your projects, ledger entries, financial reports, and uploaded documents are fully preserved and remain accessible at your new plan level. If you cancel entirely, your data is retained for 90 days. During that window, you can export everything (CSV or PDF) or reactivate your account to pick up exactly where you left off.',
+      "Spreadsheets don't know when your earnest money goes hard. They don't alert you three days before your inspection period ends, tie draws to a line-item budget, or hand your CPA one organized export at year end. Run one deal in parallel and compare. If it doesn't catch something or save you time, cancel — the trial costs you nothing.",
   },
   {
-    question: 'Is there a free trial?',
+    question: 'Does PaperWorking replace my accounting software?',
     answer:
-      'Yes. Every new account starts with a 14-day free trial of the Team plan with access to all features. A credit card is collected at signup, but you won\u2019t be charged until your trial ends. At the end of the trial, choose the plan that fits \u2014 or cancel before you\u2019re billed.',
+      'No. It tracks project-level costs, budgets, and performance, and exports clean reports your accountant can use — alongside your accounting stack, not instead of it.',
   },
   {
-    question: 'Can I switch between Investor, Investment Team, and Vendor plans?',
-    answer:
-      'Yes. Upgrades take effect immediately with a prorated charge for the rest of your billing cycle. Downgrades apply at the start of your next billing period. Your data stays intact in both directions.',
+    question: 'How is my data protected?',
+    answer: 'Encrypted storage, redundant backups, and SOC 2-ready infrastructure.',
   },
 ];
 
-/**
- * Generate JSON-LD FAQ schema markup for SEO.
- * Google uses this to display rich FAQ snippets in search results.
- */
 function FAQSchemaMarkup({ items }: { items: FAQItem[] }) {
   const schema = {
     '@context': 'https://schema.org',
@@ -75,58 +70,53 @@ function FAQSchemaMarkup({ items }: { items: FAQItem[] }) {
 export default function PricingFAQ() {
   const [openIndex, setOpenIndex] = useState<number | null>(null);
 
-  const toggle = (index: number) => {
-    setOpenIndex(openIndex === index ? null : index);
+  const toggleItem = (idx: number) => {
+    setOpenIndex((prev) => (prev === idx ? null : idx));
   };
 
   return (
-    <>
-      {/* SEO: FAQ structured data */}
+    <section className="w-full py-16">
       <FAQSchemaMarkup items={faqItems} />
 
-      <div className="w-full max-w-3xl mx-auto mt-24 mb-16 px-4">
-        <div className="text-center mb-12">
-          <h2 className="text-3xl font-medium tracking-tight text-text-primary">
-            Everything you need to know.
-          </h2>
-          <p className="text-sm text-phase-3 mt-2">
-            Still have questions? Email us at support@paperworking.co.
-          </p>
-        </div>
+      <div className="max-w-4xl mx-auto px-6">
+        <h2 className="text-2xl sm:text-3xl font-extrabold text-on-surface mb-8 type-h2">
+          Frequently Asked Questions
+        </h2>
 
-        <div className="border border-phase-1 bg-bg-surface shadow-sm overflow-hidden divide-y divide-dashboard">
-          {faqItems.map((item, index) => (
-            <div key={index} itemScope itemProp="mainEntity" itemType="https://schema.org/Question">
-              <button
-                onClick={() => toggle(index)}
-                className="w-full flex items-center justify-between py-5 px-6 text-left group hover:bg-dashboard/50 transition-colors"
-                aria-expanded={openIndex === index}
-              >
-                <span className="text-sm font-semibold text-phase-4 pr-4" itemProp="name">
-                  {item.question}
-                </span>
-                <ChevronDown
-                  className={`w-4 h-4 text-phase-2 flex-shrink-0 transition-transform duration-200 ${
-                    openIndex === index ? 'rotate-180' : ''
-                  }`}
-                />
-              </button>
+        <div className="space-y-4">
+          {faqItems.map((item, idx) => {
+            const isOpen = openIndex === idx;
+            return (
               <div
-                className={`overflow-hidden transition-all duration-200 ease-in-out ${
-                  openIndex === index ? 'max-h-64 opacity-100' : 'max-h-0 opacity-0'
-                }`}
-                itemScope
-                itemProp="acceptedAnswer"
-                itemType="https://schema.org/Answer"
+                key={idx}
+                className="glass-card rounded-xl border border-white/10 overflow-hidden bg-surface-container-low/20"
               >
-                <p className="px-6 pb-5 text-sm text-phase-3 leading-relaxed" itemProp="text">
-                  {item.answer}
-                </p>
+                <button
+                  type="button"
+                  onClick={() => toggleItem(idx)}
+                  className="w-full flex items-center justify-between p-6 text-left cursor-pointer transition-colors hover:bg-white/5"
+                >
+                  <h3 className="text-lg font-bold text-on-surface pr-4 type-h3">
+                    {item.question}
+                  </h3>
+                  <ChevronDown
+                    className={`w-5 h-5 text-primary flex-shrink-0 transition-transform duration-200 ${
+                      isOpen ? 'rotate-180' : ''
+                    }`}
+                  />
+                </button>
+                {isOpen && (
+                  <div className="px-6 pb-6 border-t border-white/5 pt-4">
+                    <p className="text-base text-on-surface-variant leading-relaxed type-body">
+                      {item.answer}
+                    </p>
+                  </div>
+                )}
               </div>
-            </div>
-          ))}
+            );
+          })}
         </div>
       </div>
-    </>
+    </section>
   );
 }

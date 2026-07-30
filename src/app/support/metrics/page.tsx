@@ -64,6 +64,7 @@ const METRICS: MetricDefinition[] = [
     name: 'Cash Flow',
     formula: 'Total Income − Total Expenses',
     measures: 'The literal liquidity moving through your property, accounting for debt service and CapEx that NOI excludes.',
+    // TODO(VERIFY): Confirm Plaid/account-connection live status before launch; revise if not live.
     whyTracks: 'PaperWorking connects directly to your financial accounts to track everyday liquidity, warning you of near-term cash crunches or signaling a safe surplus for your next acquisition down payment.',
     category: 'financial',
   },
@@ -344,10 +345,10 @@ export default function MetricsPlaybookPage() {
           <ArrowLeft className="w-3.5 h-3.5" />
           Back to Support
         </Link>
-        <h1 className="text-4xl sm:text-5xl font-extrabold tracking-tight text-on-background mb-4">
+        <h1 className="text-4xl sm:text-5xl font-extrabold tracking-tight text-on-background mb-4 type-display">
           The PaperWorking Playbook
         </h1>
-        <p className="text-base sm:text-lg text-on-surface-variant/80 max-w-[700px] leading-relaxed">
+        <p className="text-base sm:text-lg text-on-surface-variant/80 max-w-[700px] leading-relaxed type-body-lg">
           Real estate is document-heavy. PaperWorking transforms raw closing statements, property tax assessments, leases, and receipts into 33 real-time performance metrics automatically.
         </p>
       </div>

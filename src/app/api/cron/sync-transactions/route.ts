@@ -3,7 +3,7 @@ import prisma from '@/lib/prisma';
 import { getBankingProvider } from '@/lib/banking';
 import * as tokenVault from '@/lib/encryption/tokenVault';
 import { classifyTransaction } from '@/lib/banking/classifier';
-import { attributeTransaction } from '@/lib/banking/attributor';
+import { attributeTransaction, ConnectionHint } from '@/lib/banking/attributor';
 import { adminDb } from '@/lib/firebase/admin';
 import crypto from 'crypto';
 import { checkMissingRent } from '@/lib/alerts/rentMonitor';
@@ -43,7 +43,15 @@ export async function GET(req: NextRequest) {
           id: 'mock-connection-id',
           userId: 'mock-user-id',
           accessToken: 'mock-access-token',
+          itemId: 'mock-item-id',
           status: 'active',
+          connectionType: 'rent_deposits',
+          institutionName: 'Mock Bank',
+          institutionId: 'ins_mock',
+          accountId: 'mock-plaid-account-id',
+          accountName: 'Business Premier Savings',
+          accountMask: '8892',
+          webhookUrl: 'http://localhost:3000/api/webhooks/plaid',
         },
       });
 
@@ -131,6 +139,10 @@ export async function GET(req: NextRequest) {
           // Process Added Transactions
           for (const tx of syncResult.added) {
             const classified = classifyTransaction(tx.name);
+            const connectionHint: ConnectionHint = {
+              projectId: connection.projectId,
+              connectionType: connection.connectionType,
+            };
             const attribution = await attributeTransaction(
               {
                 plaidId: tx.plaidId,
@@ -141,7 +153,8 @@ export async function GET(req: NextRequest) {
                 merchantName: tx.merchantName,
               },
               connection.userId,
-              projects
+              projects,
+              connectionHint
             );
 
             const projectId = attribution.projectId;
@@ -228,6 +241,10 @@ export async function GET(req: NextRequest) {
           // Process Modified Transactions
           for (const tx of syncResult.modified) {
             const classified = classifyTransaction(tx.name);
+            const connectionHint: ConnectionHint = {
+              projectId: connection.projectId,
+              connectionType: connection.connectionType,
+            };
             const attribution = await attributeTransaction(
               {
                 plaidId: tx.plaidId,
@@ -238,7 +255,8 @@ export async function GET(req: NextRequest) {
                 merchantName: tx.merchantName,
               },
               connection.userId,
-              projects
+              projects,
+              connectionHint
             );
 
             const projectId = attribution.projectId;

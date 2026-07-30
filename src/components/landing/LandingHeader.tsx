@@ -152,7 +152,7 @@ export default function LandingHeader() {
               <>
                 <button
                   onClick={() => { logout(); router.push('/'); }}
-                  className="hidden md:inline-flex text-[13.5px] font-medium transition-opacity duration-150"
+                  className="hidden md:inline-flex text-[13.5px] font-medium transition-opacity duration-150 type-cta"
                   style={{ color: 'var(--color-on-surface)', opacity: 0.7, textDecoration: 'none', background: 'none', border: 'none', cursor: 'pointer' }}
                   onMouseEnter={e => (e.currentTarget.style.opacity = '1')}
                   onMouseLeave={e => (e.currentTarget.style.opacity = '0.7')}
@@ -162,7 +162,7 @@ export default function LandingHeader() {
                 {!(onPricingPage && !isPaid) && (
                 <Link
                   href={isPaid ? '/dashboard' : '/pricing'}
-                  className="hidden md:inline-flex items-center gap-1.5 text-[13px] font-semibold transition-all duration-150 active:scale-[0.98] whitespace-nowrap"
+                  className="hidden md:inline-flex items-center gap-1.5 text-[13px] font-semibold transition-all duration-150 active:scale-[0.98] whitespace-nowrap type-cta"
                   style={{
                     background: 'var(--color-on-surface)',
                     color: 'var(--color-surface)',
@@ -174,7 +174,7 @@ export default function LandingHeader() {
                   onMouseEnter={e => (e.currentTarget.style.opacity = '0.88')}
                   onMouseLeave={e => (e.currentTarget.style.opacity = '1')}
                 >
-                  {isPaid ? 'Dashboard' : 'Start 14 Day Trial'}
+                  {isPaid ? 'Dashboard' : 'Start 14-Day Trial'}
                   <span className="material-symbols-outlined text-[14px]" style={{ fontVariationSettings: "'FILL' 0, 'wght' 400" }}>
                     arrow_forward
                   </span>
@@ -185,7 +185,7 @@ export default function LandingHeader() {
               <>
                 <Link
                   href="/login"
-                  className="hidden md:inline-flex text-[13.5px] font-medium transition-opacity duration-150"
+                  className="hidden md:inline-flex text-[13.5px] font-medium transition-opacity duration-150 type-cta"
                   style={{ color: 'var(--color-on-surface)', opacity: 0.7, textDecoration: 'none' }}
                   onMouseEnter={e => (e.currentTarget.style.opacity = '1')}
                   onMouseLeave={e => (e.currentTarget.style.opacity = '0.7')}
@@ -195,7 +195,7 @@ export default function LandingHeader() {
                 <span className="hidden md:inline-block text-[13.5px] opacity-30 select-none">/</span>
                 <Link
                   href="/register"
-                  className="hidden md:inline-flex text-[13.5px] font-medium transition-opacity duration-150"
+                  className="hidden md:inline-flex text-[13.5px] font-medium transition-opacity duration-150 type-cta"
                   style={{ color: 'var(--color-on-surface)', opacity: 0.7, textDecoration: 'none' }}
                   onMouseEnter={e => (e.currentTarget.style.opacity = '1')}
                   onMouseLeave={e => (e.currentTarget.style.opacity = '0.7')}
@@ -204,7 +204,7 @@ export default function LandingHeader() {
                 </Link>
                 <Link
                   href="/pricing"
-                  className="hidden md:inline-flex items-center gap-1.5 text-[13px] font-semibold transition-all duration-150 active:scale-[0.98] whitespace-nowrap"
+                  className="hidden md:inline-flex items-center gap-1.5 text-[13px] font-semibold transition-all duration-150 active:scale-[0.98] whitespace-nowrap type-cta"
                   style={{
                     background: 'var(--color-on-surface)',
                     color: 'var(--color-surface)',
@@ -216,7 +216,7 @@ export default function LandingHeader() {
                   onMouseEnter={e => (e.currentTarget.style.opacity = '0.88')}
                   onMouseLeave={e => (e.currentTarget.style.opacity = '1')}
                 >
-                  Start 14 Day Trial
+                  Start 14-Day Trial
                   <span className="material-symbols-outlined text-[14px]" style={{ fontVariationSettings: "'FILL' 0, 'wght' 400" }}>
                     arrow_forward
                   </span>
@@ -371,7 +371,7 @@ export default function LandingHeader() {
                           borderRadius: '9999px',
                         }}
                       >
-                        {isPaid ? 'Dashboard' : 'Start 14 Day Trial'}
+                        {isPaid ? 'Dashboard' : 'Start 14-Day Trial'}
                       </Link>
                     )}
                     <button
@@ -427,7 +427,7 @@ export default function LandingHeader() {
                         borderRadius: '9999px',
                       }}
                     >
-                      Start 14 Day Trial
+                      Start 14-Day Trial
                     </Link>
                   </>
                 )}

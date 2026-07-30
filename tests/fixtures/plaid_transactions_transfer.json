@@ -1,0 +1,28 @@
+[
+  {
+    "transaction_id": "plaid_tx_sec_dep_01",
+    "account_id": "acc_depository_01",
+    "amount": -1500.00,
+    "date": "2026-08-01",
+    "name": "SECURITY DEPOSIT TENANT LLC",
+    "merchant_name": null,
+    "pending": false,
+    "personal_finance_category": {
+      "primary": "TRANSFER_IN",
+      "detailed": "TRANSFER_IN_ACCOUNT_TRANSFER"
+    }
+  },
+  {
+    "transaction_id": "plaid_tx_owner_draw_01",
+    "account_id": "acc_depository_01",
+    "amount": 2000.00,
+    "date": "2026-08-02",
+    "name": "OWNER DISTRIBUTION DRAW TO PERSONAL",
+    "merchant_name": null,
+    "pending": false,
+    "personal_finance_category": {
+      "primary": "TRANSFER_OUT",
+      "detailed": "TRANSFER_OUT_ACCOUNT_TRANSFER"
+    }
+  }
+]

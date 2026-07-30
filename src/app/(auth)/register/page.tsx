@@ -94,7 +94,7 @@ function RegisterPageInner() {
             maxWidth: '400px',
           }}
         >
-          Join our premium network of real estate professionals.
+          Create your account and start your first Project. 14-day trial, no charge until day 15.
         </p>
       </div>
 

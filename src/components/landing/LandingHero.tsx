@@ -7,31 +7,31 @@ import Link from 'next/link';
 /* ─── Above-fold product preview card (1247 Elm Street demo data) ─── */
 function HeroDealCard() {
   return (
-    <div className="glass-card rounded-2xl overflow-hidden w-full">
+    <div className="glass-card rounded-[28px] overflow-hidden w-full border border-white/10 shadow-[0_16px_48px_rgba(0,0,0,0.4)]">
 
       {/* Card header */}
-      <div className="flex items-center justify-between px-5 py-4 border-b border-white/8">
+      <div className="flex items-center justify-between px-6 py-4 border-b border-white/8">
         <div>
           <div className="font-jetbrains text-[9px] text-on-surface-variant/40 uppercase tracking-widest mb-0.5 type-eyebrow">
             Deal Analyzer
           </div>
           <div className="text-[13px] font-semibold text-on-surface">1247 Elm Street, Austin TX</div>
         </div>
-        <span className="inline-flex items-center gap-1.5 text-[10px] font-semibold text-primary bg-primary/10 px-2.5 py-1 rounded-full border border-primary/20 type-caption">
+        <span className="inline-flex items-center gap-1.5 text-[10px] font-semibold text-primary bg-primary/10 px-3 py-1 rounded-full border border-primary/20 type-caption">
           <span className="w-1.5 h-1.5 rounded-full bg-primary animate-pulse" />
           DEMO DATA
         </span>
       </div>
 
       {/* Metrics 2×2 */}
-      <div className="grid grid-cols-2 gap-2 p-4">
+      <div className="grid grid-cols-2 gap-2.5 p-5">
         {[
           { label: 'Purchase Price',    value: '$485,000' },
           { label: 'After Repair Value', value: '$620,000' },
           { label: 'Rehab Budget',      value: '$68,000'  },
           { label: 'Cap Rate',          value: '6.2%'     },
         ].map(({ label, value }) => (
-          <div key={label} className="bg-surface-container-low/60 rounded-xl px-4 py-3">
+          <div key={label} className="bg-surface-container-low/60 rounded-2xl px-4 py-3.5 border border-white/5">
             <div className="font-jetbrains text-[9px] text-on-surface-variant/40 uppercase tracking-widest mb-1.5 type-eyebrow">
               {label}
             </div>
@@ -41,8 +41,8 @@ function HeroDealCard() {
       </div>
 
       {/* IRR highlight */}
-      <div className="px-4">
-        <div className="bg-primary/8 border border-primary/15 rounded-xl px-4 py-4">
+      <div className="px-5">
+        <div className="bg-primary/8 border border-primary/15 rounded-2xl px-5 py-4">
           <div className="flex items-end justify-between mb-3">
             <div>
               <div className="font-jetbrains text-[9px] text-primary/50 uppercase tracking-widest mb-1 type-eyebrow">
@@ -67,8 +67,8 @@ function HeroDealCard() {
       </div>
 
       {/* Deadline alert */}
-      <div className="p-4">
-        <div className="bg-tertiary/6 border border-tertiary/15 rounded-xl px-4 py-2.5 flex items-center gap-3">
+      <div className="p-5">
+        <div className="bg-tertiary/6 border border-tertiary/15 rounded-2xl px-4 py-3 flex items-center gap-3">
           <span
             className="material-symbols-outlined text-[14px] text-tertiary/80 flex-shrink-0"
             style={{ fontVariationSettings: "'FILL' 1" }}
@@ -86,7 +86,6 @@ function HeroDealCard() {
 }
 
 /* ─── Hero Component (Section 1) ─── */
-
 export default function LandingHero() {
   return (
     <section className="relative w-full overflow-hidden" style={{ paddingTop: 72 }}>
@@ -97,7 +96,7 @@ export default function LandingHero() {
         aria-hidden
       />
 
-      <div className="relative z-10 max-w-[1280px] mx-auto px-5 md:px-8 py-16 md:py-24 lg:py-28 grid grid-cols-1 lg:grid-cols-[1fr_420px] xl:grid-cols-[1fr_460px] gap-10 lg:gap-16 items-center">
+      <div className="relative z-10 max-w-[1200px] mx-auto px-6 md:px-8 py-24 lg:py-32 xl:py-36 grid grid-cols-1 lg:grid-cols-[1fr_440px] xl:grid-cols-[1fr_480px] gap-12 lg:gap-16 items-center">
 
         {/* ── LEFT: Verbatim Section 1 Copy ────────────────── */}
         <div className="flex flex-col items-start text-left">
@@ -106,25 +105,25 @@ export default function LandingHero() {
           <span className="inline-flex items-center gap-2 glass-panel px-4 py-1.5 rounded-full mb-8 border border-white/10">
             <span className="w-1.5 h-1.5 rounded-full bg-primary animate-pulse" />
             <span className="font-jetbrains text-[10px] uppercase tracking-widest text-on-surface-variant type-eyebrow">
-              Real Estate Investment OS
+              Real Estate Investment Terminal
             </span>
           </span>
 
-          {/* Headline — verbatim */}
-          <h1 className="text-[40px] md:text-[52px] lg:text-[60px] leading-[46px] md:leading-[58px] lg:leading-[68px] font-bold tracking-[-0.04em] text-on-surface mb-6 type-display">
-            You manage the project. PaperWorking does the math.
+          {/* Headline — verbatim COPY-L1 (medium-weight 500-600, clamp scale, tight tracking) */}
+          <h1 className="text-[40px] sm:text-[52px] lg:text-[62px] leading-[1.05] font-semibold tracking-[-0.025em] text-on-surface mb-6 type-display">
+            Finally, Project Management software made for serious real estate investors and Investments teams.
           </h1>
 
-          {/* Body — verbatim */}
-          <p className="text-[17px] md:text-[18px] leading-[27px] md:leading-[29px] font-normal text-on-surface-variant mb-8 max-w-[560px] type-body-lg">
-            Every deal runs through the same four phases: Acquisition, Fund, Hold, Exit. PaperWorking manages all four in one place and turns the work you log into the 33 numbers that show whether your investments are working: NOI, cap rate, DSCR, cash-on-cash, IRR, calculated from your own project data, per deal and across your portfolio.
+          {/* Body — verbatim COPY-L1 */}
+          <p className="text-[16px] md:text-[18px] leading-[1.65] font-normal text-on-surface-variant mb-8 max-w-[560px] type-body-lg">
+            Every real estate deal runs through the same four phases: Acquisition, Fund, Hold, Exit. PaperWorking manages all four phases of an investment in one place and turns the work you&apos;re already doing into the 33 numbers that show whether your investments are actually working. NOI, cap rate, DSCR, cash-on-cash, IRR — calculated from your own project data, per deal and across your portfolio.
           </p>
 
-          {/* CTAs */}
+          {/* CTAs — Pill Buttons */}
           <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4 mb-4">
             <Link
               href="/pricing"
-              className="luminous-button relative overflow-hidden px-8 py-4 rounded-xl font-semibold text-[15px] tracking-[-0.01em] inline-flex items-center gap-2.5 group cursor-pointer type-cta"
+              className="luminous-button relative overflow-hidden px-8 py-4 rounded-full font-semibold text-[15px] tracking-[-0.01em] inline-flex items-center gap-2.5 group cursor-pointer type-cta"
             >
               <span
                 className="absolute inset-0 bg-gradient-to-r from-transparent via-white/12 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-700 pointer-events-none"
@@ -138,7 +137,7 @@ export default function LandingHero() {
 
             <Link
               href="/support/metrics"
-              className="px-6 py-4 rounded-xl border border-white/10 text-on-surface text-[15px] font-semibold hover:border-primary/40 hover:text-primary transition-all inline-flex items-center gap-2 type-cta"
+              className="px-7 py-4 rounded-full border border-white/15 text-on-surface text-[15px] font-semibold hover:border-primary/40 hover:text-primary transition-all inline-flex items-center gap-2 type-cta"
             >
               See the 33 metrics
               <span className="material-symbols-outlined text-[18px]">
@@ -147,9 +146,9 @@ export default function LandingHero() {
             </Link>
           </div>
 
-          {/* Microcopy */}
+          {/* Microcopy — verbatim COPY-L1 */}
           <p className="text-[12.5px] text-on-surface-variant/70 leading-relaxed type-caption">
-            14-day trial. No charge until day 15. Export your data anytime.
+            Free 14-day trial.
           </p>
         </div>
 

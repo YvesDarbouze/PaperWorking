@@ -186,7 +186,7 @@ export default function SupportPage() {
             </span>
           </motion.div>
 
-          <motion.h1 variants={fadeUp} className="font-thin text-[36px] md:text-[56px] leading-tight tracking-[-0.035em] text-on-surface mb-5">
+          <motion.h1 variants={fadeUp} className="font-semibold text-[36px] md:text-[54px] lg:text-[60px] leading-[1.05] tracking-[-0.025em] text-on-surface mb-5 type-display">
             What are you trying<br className="hidden md:block" /> to figure out?
           </motion.h1>
 

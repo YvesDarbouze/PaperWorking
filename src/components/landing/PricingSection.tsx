@@ -4,8 +4,10 @@ import Link from 'next/link';
 import { motion } from 'framer-motion';
 
 /* ═══════════════════════════════════════════════════════
-   PricingSection — Verbatim Approved Copy for /pricing
+   PricingSection — Verbatim Approved COPY-P for /pricing
    Annual-Only Pricing ($499/yr, $999/yr, $390/yr)
+   antigravity.google design system: medium-weight (500-600) display,
+   pill CTAs, 24px card radii, 6-9rem section padding.
    ═══════════════════════════════════════════════════════ */
 
 const fadeUp = {
@@ -18,6 +20,7 @@ interface Plan {
   id: string;
   stripeKey: string;
   name: string;
+  badge?: string;
   tagline: string;
   annualPrice: number;
   features: string[];
@@ -35,7 +38,7 @@ const PLANS: Plan[] = [
     annualPrice: 499,
     highlighted: false,
     features: [
-      'Four-phase lifecycle project management',
+      'Four-phase REIL project management',
       'All 33 KPI visualizations, per deal and portfolio-wide',
       'Deal Analyzer with live property data (cap rate, IRR, cash-on-cash)',
       'Ledger, expense logging, budgets, and Holding Cost Clock',
@@ -51,6 +54,7 @@ const PLANS: Plan[] = [
     id: 'team',
     stripeKey: 'Investment Team',
     name: 'Investment Team',
+    badge: 'Most popular',
     tagline: 'Role-based access and clean separation between what each person can see and do.',
     annualPrice: 999,
     highlighted: true,
@@ -85,27 +89,27 @@ const PLANS: Plan[] = [
 const FAQ = [
   {
     q: 'I only close three or four deals a year. Is this worth it?',
-    a: 'Low volume makes each deal matter more. When one deal carries your year\'s returns, an expired contingency or a drifting rehab hurts. Run one live deal through the trial and decide.',
+    a: "Low volume makes each deal matter more, not less. When one deal carries your year's returns, an expired contingency or a rehab that drifts over budget hurts. Run one live deal through the trial and decide.",
   },
   {
     q: 'Is there a free trial? What happens to my data if I cancel?',
-    a: 'Every paid plan includes a 14-day trial. A card starts it; nothing is charged until day 15. Cancel and you keep read access for 90 days, with everything exportable as CSV, including your full P&L. Your data is yours.',
+    a: 'Every paid plan includes a 14-day trial. A card is required to start, but nothing is charged until day 15. If you cancel, you keep read access for 90 days and can export everything, including your full P&L, as CSV. Your data is yours.',
   },
   {
     q: 'Can I add my CPA or business partner?',
-    a: 'On Investment Team, invite them with role permissions; your CPA reads everything and edits nothing. Investor is a solo plan; your CPA still gets the one-click P&L export.',
+    a: 'On Investment Team, invite them with role permissions; your CPA can read everything and edit nothing. Investor is a solo plan; your CPA still gets the one-click P&L export.',
   },
   {
     q: 'Is there a contract or minimum commitment?',
-    a: 'No contracts, no minimums. Cancel anytime from Settings. No call, no retention flow. Annual plans bill once a year and include a 30-day refund window; monthly plans, if offered, bill month to month.',
+    a: 'No contracts, no minimums. Cancel anytime from Settings — no call, no retention flow. Annual plans bill once a year and include a 30-day refund window; monthly plans, if offered, bill month to month.',
   },
   {
     q: 'My spreadsheet system works. Why switch?',
-    a: 'Spreadsheets don\'t alert you three days before your inspection period ends, tie draws to a line-item budget, or hand your CPA one organized export at year end. Run one deal in parallel and compare. If it doesn\'t catch something or save you time, cancel; the trial costs you nothing.',
+    a: "Spreadsheets don't know when your earnest money goes hard. They don't alert you three days before your inspection period ends, tie draws to a line-item budget, or hand your CPA one organized export at year end. Run one deal in parallel and compare. If it doesn't catch something or save you time, cancel; the trial costs you nothing.",
   },
   {
     q: 'Does PaperWorking replace my accounting software?',
-    a: 'No. It tracks project-level costs, budgets, and performance, and exports clean reports your accountant can use, alongside your accounting stack, not instead of it.',
+    a: 'No. It tracks project-level costs, budgets, and performance, and exports clean reports your accountant can use — alongside your accounting stack, not instead of it.',
   },
   {
     q: 'How is my data protected?',
@@ -127,46 +131,50 @@ export default function PricingSection({ onSelectPlan }: { onSelectPlan?: (plan:
       </div>
 
       <div className="relative z-10">
-        {/* ── Hero ── */}
+        {/* ── Hero (COPY-P1) ── */}
         <motion.div
           initial="hidden"
           whileInView="visible"
           viewport={{ once: true, margin: '-60px' }}
           variants={stagger}
-          className="max-w-4xl mx-auto px-6 lg:px-8 pt-16 pb-12 text-center"
+          className="max-w-4xl mx-auto px-6 lg:px-8 pt-24 pb-16 text-center"
         >
-          <motion.p variants={fadeUp} className="font-jetbrains text-[10px] uppercase tracking-[0.12em] text-primary mb-4 type-eyebrow font-bold">
-            Pricing
+          <motion.p variants={fadeUp} className="font-jetbrains text-[10px] uppercase tracking-[0.12em] text-primary mb-4 type-eyebrow font-medium">
+            Real Estate Bloomberg Terminal
           </motion.p>
 
-          {/* Headline — page's ONLY .type-display */}
-          <motion.h1 variants={fadeUp} className="text-3xl sm:text-4xl md:text-5xl lg:text-[3.25rem] font-extrabold tracking-tight text-on-surface leading-[1.1] mb-6 max-w-3xl mx-auto type-display">
-            Priced against the mistakes it&apos;s built to catch.
+          {/* Headline — COPY-P1 with Fix E4 (medium-weight 500-600, tight tracking) */}
+          <motion.h1 variants={fadeUp} className="text-3xl sm:text-4xl md:text-5xl lg:text-[3.25rem] font-semibold tracking-[-0.025em] text-on-surface leading-[1.05] mb-6 max-w-3xl mx-auto type-display">
+            The average stock trade is $5000, the average Real Estate deal is $429,000. Why do stock investors have better fintech apps?
           </motion.h1>
 
-          <motion.p variants={fadeUp} className="text-base sm:text-lg leading-relaxed text-on-surface-variant max-w-3xl mx-auto mb-4 type-body-lg">
-            Deals go wrong expensively. A date slips, a draw goes untracked, and the spreadsheet finds out weeks later. PaperWorking surfaces those problems early. Every plan includes the full four-phase lifecycle, the 33 investor KPIs, and a 14-day trial with no charge until day 15.
+          <motion.p variants={fadeUp} className="text-base sm:text-lg leading-[1.65] text-on-surface-variant max-w-3xl mx-auto mb-4 type-body-lg">
+            PaperWorking is the Bloomberg Terminal for serious Real Estate Investors. For people who understand the advantage sober data gives them.
           </motion.p>
 
-          <motion.p variants={fadeUp} className="text-base sm:text-lg leading-relaxed text-on-surface-variant max-w-3xl mx-auto type-body-lg">
+          <motion.p variants={fadeUp} className="text-base sm:text-lg leading-[1.65] text-on-surface-variant max-w-3xl mx-auto mb-4 type-body-lg">
+            Deals go wrong expensively. A date slips, a draw goes untracked, and the spreadsheet finds out weeks later. PaperWorking exists to surface those problems early. Every plan includes the full four-phase lifecycle, the 33 investor KPIs, and a 14-day trial with no charge until day 15.
+          </motion.p>
+
+          <motion.p variants={fadeUp} className="text-base sm:text-lg leading-[1.65] text-on-surface-variant max-w-3xl mx-auto type-body-lg">
             Billed annually. Cancel anytime from Settings, no call required; annual plans include a 30-day refund window.
           </motion.p>
         </motion.div>
 
-        {/* ── 3-Tier Plan Cards ── */}
+        {/* ── 3-Tier Plan Cards (COPY-P2, COPY-P3, COPY-P4) ── */}
         <motion.div
           initial="hidden"
           whileInView="visible"
           viewport={{ once: true, margin: '-40px' }}
           variants={stagger}
-          className="max-w-7xl mx-auto px-6 lg:px-8 pb-8"
+          className="max-w-[1200px] mx-auto px-6 lg:px-8 pb-16"
         >
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6 items-stretch">
             {PLANS.map((plan) => (
               <motion.div
                 key={plan.id}
                 variants={fadeUp}
-                className={`glass-panel rounded-2xl p-6 flex flex-col relative transition-all duration-300 h-full border ${
+                className={`glass-panel rounded-[24px] p-7 flex flex-col relative transition-all duration-300 h-full border ${
                   plan.highlighted
                     ? 'border-primary/40 shadow-[0_0_50px_-12px_rgba(69,73,85,0.3)] bg-surface-container-low/40'
                     : 'border-white/10 bg-surface-container-low/20'
@@ -174,10 +182,17 @@ export default function PricingSection({ onSelectPlan }: { onSelectPlan?: (plan:
               >
                 {/* Plan Header */}
                 <div className="pb-5 border-b border-white/8">
-                  <h3 className={`text-2xl font-bold tracking-tight mb-2 ${plan.highlighted ? 'text-primary' : 'text-on-surface'} type-h3`}>
-                    {plan.name}
-                  </h3>
-                  <p className="text-sm text-on-surface-variant leading-relaxed type-body">
+                  <div className="flex items-center justify-between mb-2">
+                    <h3 className={`text-2xl font-semibold tracking-tight ${plan.highlighted ? 'text-primary' : 'text-on-surface'} type-h3`}>
+                      {plan.name}
+                    </h3>
+                    {plan.badge && (
+                      <span className="text-[10px] uppercase font-mono tracking-widest px-3 py-1 rounded-full bg-primary/10 border border-primary/30 text-primary font-medium">
+                        {plan.badge}
+                      </span>
+                    )}
+                  </div>
+                  <p className="text-sm text-on-surface-variant leading-[1.65] type-body">
                     {plan.tagline}
                   </p>
                 </div>
@@ -202,7 +217,7 @@ export default function PricingSection({ onSelectPlan }: { onSelectPlan?: (plan:
                   <button
                     type="button"
                     onClick={() => handleSelect(plan.stripeKey)}
-                    className={`w-full py-3.5 rounded-xl text-sm font-semibold transition-all duration-200 cursor-pointer type-cta ${
+                    className={`w-full py-3.5 rounded-full text-sm font-semibold transition-all duration-200 cursor-pointer type-cta ${
                       plan.highlighted
                         ? 'luminous-button'
                         : 'border border-primary/40 text-primary hover:bg-primary/10'
@@ -239,51 +254,51 @@ export default function PricingSection({ onSelectPlan }: { onSelectPlan?: (plan:
 
           {/* ── Single Integrations Line (directly under plan cards) ── */}
           <div className="mt-8 text-center border-t border-white/5 pt-6">
-            <p className="font-jetbrains text-[13px] text-on-surface-variant/80 uppercase tracking-widest type-caption font-semibold">
+            <p className="font-jetbrains text-[13px] text-on-surface-variant/80 uppercase tracking-widest type-caption font-medium">
               Integrates with the tools you already use: Plaid, MLS, DocuSign, Stripe, RentCast.
             </p>
           </div>
         </motion.div>
 
-        {/* ── What does one missed deadline cost? ── */}
+        {/* ── What does one missed deadline cost? (COPY-P5) ── */}
         <motion.div
           initial="hidden"
           whileInView="visible"
           viewport={{ once: true, margin: '-40px' }}
           variants={stagger}
-          className="max-w-4xl mx-auto px-6 lg:px-8 py-16 border-t border-white/5"
+          className="max-w-4xl mx-auto px-6 lg:px-8 py-20 border-t border-white/5"
         >
-          <div className="glass-card rounded-2xl p-8 sm:p-12 border border-white/10 bg-surface-container-low/20">
-            <h2 className="text-2xl sm:text-3xl font-extrabold text-on-surface mb-4 leading-tight type-h2">
+          <div className="glass-card rounded-[24px] p-8 sm:p-12 border border-white/10 bg-surface-container-low/20">
+            <h2 className="text-2xl sm:text-3xl font-semibold text-on-surface mb-4 leading-tight type-h2">
               What does one missed deadline cost?
             </h2>
-            <p className="text-base sm:text-lg text-on-surface-variant leading-relaxed type-body">
-              A blown contingency window can put a five-figure earnest money deposit at risk — more than two years of an Investor plan. An untracked contractor draw can move tens of thousands off your margin before a spreadsheet shows it. PaperWorking won&apos;t catch every problem; it shows you the variance while you can still act.
+            <p className="text-base sm:text-lg text-on-surface-variant leading-[1.65] type-body">
+              A blown contingency window can put a five-figure earnest money deposit at risk — more than two years of an Investor plan. An untracked contractor draw can move tens of thousands off your margin before a spreadsheet shows it. PaperWorking won&apos;t catch every problem. It shows you the variance while you can still act.
             </p>
           </div>
         </motion.div>
 
-        {/* ── FAQ ── */}
+        {/* ── FAQ (COPY-P6) ── */}
         <motion.div
           initial="hidden"
           whileInView="visible"
           viewport={{ once: true, margin: '-40px' }}
           variants={stagger}
-          className="max-w-4xl mx-auto px-6 lg:px-8 py-16 border-t border-white/5"
+          className="max-w-4xl mx-auto px-6 lg:px-8 py-20 border-t border-white/5"
         >
           <div className="mb-12">
-            <h2 className="text-2xl sm:text-3xl font-extrabold text-on-surface mb-2 type-h2">
+            <h2 className="text-2xl sm:text-3xl font-semibold text-on-surface mb-2 type-h2">
               Frequently Asked Questions
             </h2>
           </div>
 
-          <div className="space-y-8">
+          <div className="space-y-6">
             {FAQ.map((item, i) => (
-              <div key={i} className="glass-card rounded-xl p-6 border border-white/8 bg-surface-container-low/20">
-                <h3 className="text-lg font-bold text-on-surface mb-3 leading-snug type-h3">
+              <div key={i} className="glass-card rounded-[20px] p-6 sm:p-7 border border-white/8 bg-surface-container-low/20">
+                <h3 className="text-lg font-semibold text-on-surface mb-3 leading-snug type-h3">
                   {item.q}
                 </h3>
-                <p className="text-base text-on-surface-variant leading-relaxed type-body">
+                <p className="text-base text-on-surface-variant leading-[1.65] type-body">
                   {item.a}
                 </p>
               </div>
@@ -291,27 +306,27 @@ export default function PricingSection({ onSelectPlan }: { onSelectPlan?: (plan:
           </div>
         </motion.div>
 
-        {/* ── Final CTA ── */}
+        {/* ── Final CTA (COPY-P7) ── */}
         <motion.div
           initial="hidden"
           whileInView="visible"
           viewport={{ once: true, margin: '-40px' }}
           variants={fadeUp}
-          className="max-w-4xl mx-auto px-6 lg:px-8 py-20 border-t border-white/5"
+          className="max-w-4xl mx-auto px-6 lg:px-8 py-24 border-t border-white/5"
         >
-          <div className="glass-card rounded-2xl p-8 sm:p-14 text-center relative overflow-hidden bg-surface-container-low/30 border border-white/10">
+          <div className="glass-card rounded-[28px] p-8 sm:p-14 text-center relative overflow-hidden bg-surface-container-low/30 border border-white/10">
             <div className="relative z-10">
-              <h2 className="text-3xl sm:text-4xl font-extrabold text-on-surface mb-4 leading-tight type-h2">
+              <h2 className="text-3xl sm:text-4xl font-semibold text-on-surface mb-4 leading-tight type-h2">
                 Start with one deal.
               </h2>
-              <p className="text-base sm:text-lg text-on-surface-variant max-w-2xl mx-auto mb-8 leading-relaxed type-body-lg">
-                Run it through the trial with real numbers: your budget, deadlines, documents. If PaperWorking doesn&apos;t earn its place, cancel from Settings and take every export with you.
+              <p className="text-base sm:text-lg text-on-surface-variant max-w-2xl mx-auto mb-8 leading-[1.65] type-body-lg">
+                Run it through the trial with your real numbers: your budget, your deadlines, your documents. If PaperWorking doesn&apos;t earn its place, cancel from Settings and take every export with you.
               </p>
 
               <div className="flex justify-center mb-4">
                 <Link
                   href="/register"
-                  className="luminous-button px-8 py-4 rounded-xl text-[15px] font-semibold tracking-wide inline-flex items-center gap-2.5 type-cta"
+                  className="luminous-button px-8 py-4 rounded-full text-[15px] font-semibold tracking-wide inline-flex items-center gap-2.5 type-cta"
                 >
                   Start Free 14-Day Trial
                   <span className="material-symbols-outlined text-[18px]">

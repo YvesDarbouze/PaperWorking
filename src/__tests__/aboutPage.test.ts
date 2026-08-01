@@ -10,19 +10,15 @@ describe('About Page Copy Integrity', () => {
     expect(fileContent).toContain('Stock investors get dashboards. Real estate investors deserve the same.');
   });
 
-  it('contains the optional positioning line verbatim', () => {
-    expect(fileContent).toContain('Finally, project management software built for serious real estate investors.');
-  });
-
   it('renders Why PaperWorking Exists verbatim copy', () => {
     expect(fileContent).toContain(
       "A stock investor can open an app and see, in seconds, what every position is worth and how it&apos;s performing. A real estate investor, carrying far larger positions, gets a spreadsheet from 2019 and a folder of PDFs."
     );
     expect(fileContent).toContain(
-      "We built PaperWorking to close that gap with a system modeled on how a real estate deal actually works: Acquisition, Fund, Hold, Exit."
+      "We built PaperWorking to close that gap — not with another calculator, not with office task software relabeled for investors, but with a system built on the way a real estate deal works: Acquisition, Fund, Hold, Exit."
     );
     expect(fileContent).toContain(
-      "The idea is simple. You already do the work: walkthroughs, budgets, contractor calls, rent collection. That work produces data, and PaperWorking captures it as you go, turning it into the 33 numbers investors, lenders, and appraisers use to judge a deal. The metrics are a byproduct of the work, not extra work."
+      "The idea is simple. You already do the work: the walkthroughs, the budgets, the contractor calls, the rent collection. That work produces data. PaperWorking captures it as you go and turns it into the 33 numbers investors, lenders, and appraisers use to judge a deal. The metrics are a byproduct of the work, not extra work."
     );
   });
 

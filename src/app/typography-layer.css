@@ -20,36 +20,41 @@
 /* Utility classes — apply only where needed; nothing global */
 .type-display {
   font-size: var(--type-display);
+  font-weight: 600;
   line-height: 1.05;
-  letter-spacing: -0.02em;
-  max-width: 11ch;
+  letter-spacing: -0.025em;
+  max-width: 13ch;
   overflow-wrap: break-word;
   text-wrap: balance;
 }
 .type-h2 {
   font-size: var(--type-h2);
+  font-weight: 600;
   line-height: 1.15;
-  letter-spacing: -0.015em;
+  letter-spacing: -0.02em;
   max-width: var(--measure-headline);
   overflow-wrap: break-word;
   text-wrap: balance;
 }
 .type-h3 {
   font-size: var(--type-h3);
+  font-weight: 600;
   line-height: 1.25;
-  letter-spacing: -0.005em;
+  letter-spacing: -0.01em;
   max-width: 18ch;
   overflow-wrap: break-word;
 }
 .type-body-lg {
   font-size: var(--type-body-lg);
-  line-height: 1.6;
+  font-weight: 400;
+  line-height: 1.65;
   max-width: 60ch;
   overflow-wrap: break-word;
   hyphens: auto;
 }
 .type-body {
   font-size: var(--type-body);
+  font-weight: 400;
   line-height: 1.65;
   max-width: var(--measure-body);
   overflow-wrap: break-word;
@@ -57,20 +62,23 @@
 }
 .type-small {
   font-size: var(--type-small);
+  font-weight: 400;
   line-height: 1.5;
   letter-spacing: 0.005em;
   overflow-wrap: break-word;
 }
 .type-caption {
   font-size: var(--type-caption);
+  font-weight: 500;
   line-height: 1.45;
   letter-spacing: 0.01em;
   overflow-wrap: break-word;
 }
 .type-eyebrow {
   font-size: var(--type-eyebrow);
+  font-weight: 500;
   line-height: 1.3;
-  letter-spacing: 0.15em;
+  letter-spacing: 0.12em;
   text-transform: uppercase;
 }
 .type-metric,
@@ -81,15 +89,17 @@
   font-feature-settings: "tnum" 1, "lnum" 1;
   white-space: nowrap;              /* a figure never wraps mid-number */
 }
-.type-metric      { font-size: var(--type-metric); }
-.type-metric-hero { font-size: var(--type-metric-hero); }
+.type-metric      { font-size: var(--type-metric); font-weight: 600; }
+.type-metric-hero { font-size: var(--type-metric-hero); font-weight: 600; }
 
-/* Text CTA minimum tap target (44px) — visual size unchanged */
+/* Text CTA minimum tap target (44px) — pill-shaped everywhere per spec */
 .type-cta {
   display: inline-flex;
   align-items: center;
+  justify-content: center;
   min-height: 44px;
   min-width: 44px;
+  border-radius: 9999px;
 }
 
 /* Tailwind v4 theme extensions (additive) */

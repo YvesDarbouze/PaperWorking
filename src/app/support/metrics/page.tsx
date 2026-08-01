@@ -345,7 +345,7 @@ export default function MetricsPlaybookPage() {
           <ArrowLeft className="w-3.5 h-3.5" />
           Back to Support
         </Link>
-        <h1 className="text-4xl sm:text-5xl font-extrabold tracking-tight text-on-background mb-4 type-display">
+        <h1 className="text-4xl sm:text-5xl font-semibold tracking-[-0.025em] text-on-background mb-4 type-display">
           The PaperWorking Playbook
         </h1>
         <p className="text-base sm:text-lg text-on-surface-variant/80 max-w-[700px] leading-relaxed type-body-lg">
@@ -363,7 +363,7 @@ export default function MetricsPlaybookPage() {
             placeholder="Search metrics, formulas, or keywords..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full h-11 pl-10 pr-4 rounded-xl bg-white/[0.03] border border-white/10 text-sm text-on-surface placeholder:text-on-surface-variant/30 focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-all"
+            className="w-full h-11 pl-10 pr-4 rounded-full bg-white/[0.03] border border-white/10 text-sm text-on-surface placeholder:text-on-surface-variant/30 focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-all"
           />
         </div>
 
@@ -371,7 +371,7 @@ export default function MetricsPlaybookPage() {
         <div className="flex gap-2 overflow-x-auto pb-2 scrollbar-none border-b border-white/5">
           <button
             onClick={() => setActiveCategory('all')}
-            className={`px-4 py-2 rounded-lg text-xs font-semibold whitespace-nowrap transition-all cursor-pointer ${
+            className={`px-4 py-2 rounded-full text-xs font-semibold whitespace-nowrap transition-all cursor-pointer ${
               activeCategory === 'all'
                 ? 'bg-primary/10 border border-primary/20 text-primary'
                 : 'bg-transparent border border-transparent text-on-surface-variant/60 hover:text-on-surface'
@@ -386,7 +386,7 @@ export default function MetricsPlaybookPage() {
               <button
                 key={cat.id}
                 onClick={() => setActiveCategory(cat.id)}
-                className={`px-4 py-2 rounded-lg text-xs font-semibold whitespace-nowrap transition-all cursor-pointer inline-flex items-center gap-1.5 ${
+                className={`px-4 py-2 rounded-full text-xs font-semibold whitespace-nowrap transition-all cursor-pointer inline-flex items-center gap-1.5 ${
                   activeCategory === cat.id
                     ? 'bg-primary/10 border border-primary/20 text-primary'
                     : 'bg-transparent border border-transparent text-on-surface-variant/60 hover:text-on-surface'

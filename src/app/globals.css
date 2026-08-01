@@ -858,6 +858,7 @@ html[data-theme="dark"],
   .luminous-button {
     background-color: var(--pw-btn-primary-bg);
     color: var(--pw-btn-primary-text);
+    border-radius: 9999px;
     box-shadow: 0 0 20px -5px rgba(69, 73, 85, 0.4);
     transition: all 0.3s ease;
   }
@@ -1883,7 +1884,7 @@ select {
   background: rgba(255, 255, 255, 0.05);
   border: 1px solid rgba(255, 255, 255, 0.1);
   transition: all 0.2s ease;
-  border-radius: 0.75rem; /* xl */
+  border-radius: 9999px; /* pill shape per spec */
 }
 .btn-social:hover:not(:disabled) {
   background: rgba(255, 255, 255, 0.1);

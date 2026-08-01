@@ -77,11 +77,10 @@ function RegisterPageInner() {
 
       <div className="text-center flex flex-col gap-2">
         <h1
-          className="text-2xl md:text-3xl font-thin tracking-tight text-on-surface"
+          className="text-2xl md:text-3xl font-semibold tracking-[-0.02em] text-on-surface"
           style={{
-            fontFamily: "'Plus Jakarta Sans', system-ui, sans-serif",
+            fontFamily: "var(--font-inter), system-ui, sans-serif",
             color: '#e2e2e2',
-            letterSpacing: '-0.01em',
           }}
         >
           Select Account Type

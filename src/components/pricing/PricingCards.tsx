@@ -29,7 +29,7 @@ const tiers: PlanTier[] = [
     ctaMicrocopy: '14-day trial · No charge until day 15 · Export your data anytime',
     isAnchored: false,
     features: [
-      'Four-phase lifecycle project management',
+      'Four-phase REIL project management',
       'All 33 KPI visualizations, per deal and portfolio-wide',
       'Deal Analyzer with live property data (cap rate, IRR, cash-on-cash)',
       'Ledger, expense logging, budgets, and Holding Cost Clock',
@@ -79,7 +79,7 @@ export default function PricingCards({ onSelectPlan, cardsRef }: PricingCardsPro
         {tiers.map((tier) => (
           <div
             key={tier.id}
-            className={`glass-panel rounded-2xl p-6 flex flex-col relative transition-all duration-300 border ${
+            className={`glass-panel rounded-[24px] p-6 flex flex-col relative transition-all duration-300 border ${
               tier.isAnchored
                 ? 'border-primary/40 shadow-[0_0_50px_-12px_rgba(69,73,85,0.3)] bg-surface-container-low/40'
                 : 'border-white/10 bg-surface-container-low/20'
@@ -118,7 +118,7 @@ export default function PricingCards({ onSelectPlan, cardsRef }: PricingCardsPro
               <button
                 type="button"
                 onClick={() => onSelectPlan(`${tier.name} Annual`)}
-                className={`w-full py-3.5 rounded-xl text-sm font-semibold transition-all duration-200 cursor-pointer type-cta ${
+                className={`w-full py-3.5 rounded-full text-sm font-semibold transition-all duration-200 cursor-pointer type-cta ${
                   tier.isAnchored
                     ? 'luminous-button'
                     : 'border border-primary/40 text-primary hover:bg-primary/10'

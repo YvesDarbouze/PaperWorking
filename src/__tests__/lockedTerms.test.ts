@@ -63,14 +63,14 @@ import { POST } from '@/app/api/projects/[id]/loans/lock/route';
 
 describe('Card F3.5 Lock Terms API Tests', () => {
   const PROJECT_ID = 'proj_test_locking';
-  const OWNER_UID = 'user_sponsor_seed';
+  const OWNER_UID = 'user_leadInvestor_seed';
 
   beforeEach(() => {
     jest.clearAllMocks();
 
     mockVerifyIdToken.mockResolvedValue({
       uid: OWNER_UID,
-      email: 'sponsor@apex.com',
+      email: 'leadInvestor@apex.com',
       name: 'Marcus Teammate'
     });
 

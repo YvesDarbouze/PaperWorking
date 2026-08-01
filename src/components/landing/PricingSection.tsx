@@ -4,8 +4,8 @@ import Link from 'next/link';
 import { motion } from 'framer-motion';
 
 /* ═══════════════════════════════════════════════════════
-   PricingSection — Verbatim Approved Copy & Readability Layer
-   Annual-Only Pricing ($499, $999, $390/yr)
+   PricingSection — Verbatim Approved Copy for /pricing
+   Annual-Only Pricing ($499/yr, $999/yr, $390/yr)
    ═══════════════════════════════════════════════════════ */
 
 const fadeUp = {
@@ -22,7 +22,7 @@ interface Plan {
   annualPrice: number;
   features: string[];
   cta: string;
-  badge?: string;
+  microcopy: string;
   highlighted: boolean;
 }
 
@@ -35,9 +35,9 @@ const PLANS: Plan[] = [
     annualPrice: 499,
     highlighted: false,
     features: [
-      'Four-phase REIL project management',
+      'Four-phase lifecycle project management',
       'All 33 KPI visualizations, per deal and portfolio-wide',
-      'Deal Analyzer with live property data: cap rate, IRR, cash-on-cash',
+      'Deal Analyzer with live property data (cap rate, IRR, cash-on-cash)',
       'Ledger, expense logging, budgets, and Holding Cost Clock',
       'Document vault and deal uploads',
       'Tax-ready reports and CPA-ready P&L export',
@@ -45,24 +45,25 @@ const PLANS: Plan[] = [
       'Solo plan: one user account',
     ],
     cta: 'Start Investor Trial',
+    microcopy: '14-day trial · No charge until day 15 · Export your data anytime',
   },
   {
     id: 'team',
     stripeKey: 'Investment Team',
     name: 'Investment Team',
-    tagline: 'Role-based access, with a clean line between what each person can see and what they can do.',
+    tagline: 'Role-based access and clean separation between what each person can see and do.',
     annualPrice: 999,
     highlighted: true,
-    badge: 'MOST POPULAR',
     features: [
       'Everything in Investor',
       'Up to 10 accounts on one team',
       'Lead Investor task assignment and phase control',
-      'Role permissions: Admins, Editors, Viewers — invite your CPA or private lenders as read-only',
+      'Role permissions: Admins, Editors, Viewers. Invite your CPA or private lenders as read-only',
       'Represent your team or company in the marketplace',
       'Google Drive provisioning',
     ],
     cta: 'Start Team Trial',
+    microcopy: '14-day trial · No charge until day 15 · Export your data anytime',
   },
   {
     id: 'vendor',
@@ -77,33 +78,34 @@ const PLANS: Plan[] = [
       'Standard financial reports',
     ],
     cta: 'Join the Marketplace',
+    microcopy: '14-day trial · No charge until day 15',
   },
 ];
 
 const FAQ = [
   {
     q: 'I only close three or four deals a year. Is this worth it?',
-    a: "Low volume makes each deal matter more, not less. When one deal carries your year's returns, an expired contingency or a rehab that drifts over budget hurts. Run one live deal through the trial and decide.",
+    a: 'Low volume makes each deal matter more. When one deal carries your year\'s returns, an expired contingency or a drifting rehab hurts. Run one live deal through the trial and decide.',
   },
   {
     q: 'Is there a free trial? What happens to my data if I cancel?',
-    a: 'Every plan includes a 14-day trial. A card is required to start; nothing is charged until day 15. If you cancel, you keep read access for 90 days and can export everything, including your full P&L, as CSV. Your data is yours.',
+    a: 'Every paid plan includes a 14-day trial. A card starts it; nothing is charged until day 15. Cancel and you keep read access for 90 days, with everything exportable as CSV, including your full P&L. Your data is yours.',
   },
   {
     q: 'Can I add my CPA or business partner?',
-    a: 'On Investment Team, invite them with role permissions — your CPA can read everything and edit nothing. Investor is a solo plan; your CPA still gets the one-click P&L export.',
+    a: 'On Investment Team, invite them with role permissions; your CPA reads everything and edits nothing. Investor is a solo plan; your CPA still gets the one-click P&L export.',
   },
   {
     q: 'Is there a contract or minimum commitment?',
-    a: 'No contracts, no minimums. Cancel anytime from Settings — no call, no retention flow. Annual plans bill once a year and include a 30-day refund window.',
+    a: 'No contracts, no minimums. Cancel anytime from Settings. No call, no retention flow. Annual plans bill once a year and include a 30-day refund window; monthly plans, if offered, bill month to month.',
   },
   {
     q: 'My spreadsheet system works. Why switch?',
-    a: "Spreadsheets don't know when your earnest money goes hard. They don't alert you three days before your inspection period ends, tie draws to a line-item budget, or hand your CPA one organized export at year end. Run one deal in parallel and compare. If it doesn't catch something or save you time, cancel — the trial costs you nothing.",
+    a: 'Spreadsheets don\'t alert you three days before your inspection period ends, tie draws to a line-item budget, or hand your CPA one organized export at year end. Run one deal in parallel and compare. If it doesn\'t catch something or save you time, cancel; the trial costs you nothing.',
   },
   {
     q: 'Does PaperWorking replace my accounting software?',
-    a: 'No. It tracks project-level costs, budgets, and performance, and exports clean reports your accountant can use — alongside your accounting stack, not instead of it.',
+    a: 'No. It tracks project-level costs, budgets, and performance, and exports clean reports your accountant can use, alongside your accounting stack, not instead of it.',
   },
   {
     q: 'How is my data protected?',
@@ -143,11 +145,11 @@ export default function PricingSection({ onSelectPlan }: { onSelectPlan?: (plan:
           </motion.h1>
 
           <motion.p variants={fadeUp} className="text-base sm:text-lg leading-relaxed text-on-surface-variant max-w-3xl mx-auto mb-4 type-body-lg">
-            Deals go wrong expensively. A date slips, a draw goes untracked, and the spreadsheet finds out weeks later. PaperWorking exists to surface those problems early. Every plan includes the full four-phase lifecycle, the 33 investor KPIs, and a 14-day trial with no charge until day 15.
+            Deals go wrong expensively. A date slips, a draw goes untracked, and the spreadsheet finds out weeks later. PaperWorking surfaces those problems early. Every plan includes the full four-phase lifecycle, the 33 investor KPIs, and a 14-day trial with no charge until day 15.
           </motion.p>
 
           <motion.p variants={fadeUp} className="text-base sm:text-lg leading-relaxed text-on-surface-variant max-w-3xl mx-auto type-body-lg">
-            Billed annually. Cancel anytime from Settings — no call required. Annual plans include a 30-day refund window.
+            Billed annually. Cancel anytime from Settings, no call required; annual plans include a 30-day refund window.
           </motion.p>
         </motion.div>
 
@@ -170,15 +172,8 @@ export default function PricingSection({ onSelectPlan }: { onSelectPlan?: (plan:
                     : 'border-white/10 bg-surface-container-low/20'
                 }`}
               >
-                {/* Badge */}
-                {plan.badge && (
-                  <div className="absolute -top-3.5 left-1/2 -translate-x-1/2 bg-primary text-on-primary px-4 py-1 rounded-full text-[10px] font-bold uppercase tracking-[0.08em] whitespace-nowrap shadow-lg type-caption">
-                    {plan.badge}
-                  </div>
-                )}
-
                 {/* Plan Header */}
-                <div className={`pb-5 border-b border-white/8 ${plan.badge ? 'mt-2' : ''}`}>
+                <div className="pb-5 border-b border-white/8">
                   <h3 className={`text-2xl font-bold tracking-tight mb-2 ${plan.highlighted ? 'text-primary' : 'text-on-surface'} type-h3`}>
                     {plan.name}
                   </h3>
@@ -194,7 +189,7 @@ export default function PricingSection({ onSelectPlan }: { onSelectPlan?: (plan:
                       ${plan.annualPrice}
                     </span>
                     <span className="text-base text-on-surface-variant font-medium type-body">
-                      /year
+                      /year,
                     </span>
                   </div>
                   <p className="text-xs text-on-surface-variant/70 mt-1 type-caption font-semibold">
@@ -202,7 +197,7 @@ export default function PricingSection({ onSelectPlan }: { onSelectPlan?: (plan:
                   </p>
                 </div>
 
-                {/* CTA */}
+                {/* CTA & Microcopy */}
                 <div className="py-5">
                   <button
                     type="button"
@@ -215,6 +210,9 @@ export default function PricingSection({ onSelectPlan }: { onSelectPlan?: (plan:
                   >
                     {plan.cta}
                   </button>
+                  <p className="text-[10px] text-on-surface-variant/60 text-center mt-2.5 type-caption font-jetbrains">
+                    {plan.microcopy}
+                  </p>
                 </div>
 
                 {/* Feature List */}
@@ -260,7 +258,7 @@ export default function PricingSection({ onSelectPlan }: { onSelectPlan?: (plan:
               What does one missed deadline cost?
             </h2>
             <p className="text-base sm:text-lg text-on-surface-variant leading-relaxed type-body">
-              A blown contingency window can put a five-figure earnest money deposit at risk — more than two years of an Investor plan. An untracked contractor draw can move tens of thousands off your margin before a spreadsheet shows it. PaperWorking won&apos;t catch every problem. It shows you the variance while you can still act.
+              A blown contingency window can put a five-figure earnest money deposit at risk — more than two years of an Investor plan. An untracked contractor draw can move tens of thousands off your margin before a spreadsheet shows it. PaperWorking won&apos;t catch every problem; it shows you the variance while you can still act.
             </p>
           </div>
         </motion.div>
@@ -307,7 +305,7 @@ export default function PricingSection({ onSelectPlan }: { onSelectPlan?: (plan:
                 Start with one deal.
               </h2>
               <p className="text-base sm:text-lg text-on-surface-variant max-w-2xl mx-auto mb-8 leading-relaxed type-body-lg">
-                Run it through the trial with your real numbers: your budget, your deadlines, your documents. If PaperWorking doesn&apos;t earn its place, cancel from Settings and take every export with you.
+                Run it through the trial with real numbers: your budget, deadlines, documents. If PaperWorking doesn&apos;t earn its place, cancel from Settings and take every export with you.
               </p>
 
               <div className="flex justify-center mb-4">
@@ -315,7 +313,7 @@ export default function PricingSection({ onSelectPlan }: { onSelectPlan?: (plan:
                   href="/register"
                   className="luminous-button px-8 py-4 rounded-xl text-[15px] font-semibold tracking-wide inline-flex items-center gap-2.5 type-cta"
                 >
-                  Start 14-Day Trial
+                  Start Free 14-Day Trial
                   <span className="material-symbols-outlined text-[18px]">
                     arrow_forward
                   </span>

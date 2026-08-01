@@ -65,6 +65,6 @@ describe('Exit Phase Wizard Steps', () => {
 
     // ROI / Payout math checks
     expect(screen.getByText('Lender Payoff ($200k)')).toBeDefined();
-    expect(screen.getByText('Sponsor Promote ($8k)')).toBeDefined();
+    expect(screen.getByText('LeadInvestor Promote ($8k)')).toBeDefined();
   });
 });

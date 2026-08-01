@@ -22,7 +22,7 @@ import { recordConversionTelemetry } from '@/actions/telemetry';
    financial charts, and lets an investor record their
    intention to invest (accept/decline). PaperWorking never
    moves money here — accepting creates a `pledged` commitment
-   that the deal sponsor later confirms manually via
+   that the deal leadInvestor later confirms manually via
    CrowdfundingTracker once funds actually arrive off-platform.
    ═══════════════════════════════════════════════════════ */
 
@@ -60,7 +60,7 @@ interface DealTokenData {
   subscriptionAgreementTemplate?: { name: string; url: string; uploadedAt: string } | null;
   cardExchangeStatus?: 'pending' | 'accepted' | 'declined' | 'none';
   inviteeBusinessCard?: { name: string; email: string; phone: string; company: string } | null;
-  sponsorBusinessCard?: { name: string; email: string; phone: string; company: string; uid?: string } | null;
+  leadInvestorBusinessCard?: { name: string; email: string; phone: string; company: string; uid?: string } | null;
   inquiries?: any[];
 }
 
@@ -93,7 +93,7 @@ export default function GuestPortalPage() {
   const [tokenInvalid, setTokenInvalid] = useState(false);
   const [legacyLink, setLegacyLink] = useState(false);
 
-  // Deal updates (sponsor-authored progress feed, read-only for guests)
+  // Deal updates (leadInvestor-authored progress feed, read-only for guests)
   const [dealUpdates, setDealUpdates] = useState<DealUpdate[]>([]);
 
   // Subscribe Gate States
@@ -103,9 +103,9 @@ export default function GuestPortalPage() {
 
   // Modals state
   const [showInsights, setShowInsights] = useState(false);
-  const [showAskSponsor, setShowAskSponsor] = useState(false);
-  const [sponsorMessage, setSponsorMessage] = useState('');
-  const [sendingSponsorMsg, setSendingSponsorMsg] = useState(false);
+  const [showAskLeadInvestor, setShowAskLeadInvestor] = useState(false);
+  const [leadInvestorMessage, setLeadInvestorMessage] = useState('');
+  const [sendingLeadInvestorMsg, setSendingLeadInvestorMsg] = useState(false);
   const [askError, setAskError] = useState<string | null>(null);
   const [followUpMsg, setFollowUpMsg] = useState('');
   const [sendingFollowUp, setSendingFollowUp] = useState(false);
@@ -123,7 +123,7 @@ export default function GuestPortalPage() {
   const [cardPhone, setCardPhone] = useState('');
   const [cardCompany, setCardCompany] = useState('');
 
-  // The investment amount is set by the sponsor at invite time
+  // The investment amount is set by the leadInvestor at invite time
   // (invitation.proposedAmount) — the investor cannot edit it; the
   // backend (`/api/invitations/respond`) ignores any client-supplied amount.
   const investmentAmount = dealData?.investmentAmount ?? 0;
@@ -225,7 +225,7 @@ export default function GuestPortalPage() {
     } else if (action === 'interested') {
       setShowCardModal(true);
     } else if (action === 'ask') {
-      setShowAskSponsor(true);
+      setShowAskLeadInvestor(true);
     }
   }, [dealData, searchParams, processedUrlAction, token, fetchDealData]);
 
@@ -345,7 +345,7 @@ export default function GuestPortalPage() {
   };
 
   // Accept — records intention to invest (a `pledged` commitment). No money
-  // moves here; the sponsor confirms later once funds actually arrive.
+  // moves here; the leadInvestor confirms later once funds actually arrive.
   const handleSign = async () => {
     if (!hasSigned || !canvasRef.current || !user) return;
 
@@ -440,7 +440,7 @@ export default function GuestPortalPage() {
     handleSign();
   };
 
-  // Decline — real, persisted response. The sponsor is notified server-side
+  // Decline — real, persisted response. The leadInvestor is notified server-side
   // (real email via /api/invitations/respond), not by a client-side toast.
   const handleDecline = async (reason?: string) => {
     try {
@@ -496,7 +496,7 @@ export default function GuestPortalPage() {
           cardExchangeStatus: 'pending',
           inviteeBusinessCard: card,
         } : prev));
-        toast.success("Thank you! You signaled interest and shared your business card. The sponsor has been notified.");
+        toast.success("Thank you! You signaled interest and shared your business card. The leadInvestor has been notified.");
         setShowCardModal(false);
       } else {
         toast.error(data.error || 'Failed to record your response.');
@@ -533,36 +533,36 @@ export default function GuestPortalPage() {
     }
   };
 
-  // Ask Sponsor — real, persisted question + real email to the sponsor.
-  const handleSendSponsorMessage = async (e: React.FormEvent) => {
+  // Ask LeadInvestor — real, persisted question + real email to the leadInvestor.
+  const handleSendLeadInvestorMessage = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!sponsorMessage.trim()) return;
-    setSendingSponsorMsg(true);
+    if (!leadInvestorMessage.trim()) return;
+    setSendingLeadInvestorMsg(true);
     setAskError(null);
     try {
       const res = await fetch(`/api/invitations/${token}/ask`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ message: sponsorMessage.trim() }),
+        body: JSON.stringify({ message: leadInvestorMessage.trim() }),
       });
       const data = await res.json();
       if (res.ok && data.success) {
-        setSponsorMessage('');
-        setShowAskSponsor(false);
-        toast.success('Your question was sent to the sponsor.');
+        setLeadInvestorMessage('');
+        setShowAskLeadInvestor(false);
+        toast.success('Your question was sent to the leadInvestor.');
         fetchDealData();
       } else {
         setAskError(data.error || 'Failed to send your question.');
       }
     } catch (err) {
-      console.error('Ask sponsor failed:', err);
+      console.error('Ask leadInvestor failed:', err);
       setAskError('An unexpected error occurred. Please try again.');
     } finally {
-      setSendingSponsorMsg(false);
+      setSendingLeadInvestorMsg(false);
     }
   };
 
-  // Ask Sponsor follow-up
+  // Ask LeadInvestor follow-up
   const handleSendFollowUpMessage = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!followUpMsg.trim() || sendingFollowUp) return;
@@ -576,7 +576,7 @@ export default function GuestPortalPage() {
       const data = await res.json();
       if (res.ok && data.success) {
         setFollowUpMsg('');
-        toast.success('Your question has been sent to the sponsor.');
+        toast.success('Your question has been sent to the leadInvestor.');
         fetchDealData();
       } else {
         toast.error(data.error || 'Failed to send your message.');
@@ -612,7 +612,7 @@ export default function GuestPortalPage() {
           </div>
           <h1 className="text-xl font-bold text-white uppercase tracking-tight mb-2">Link No Longer Supported</h1>
           <p className="text-xs text-[#8a9b9b] leading-relaxed">
-            This invitation link type is no longer supported. Please contact your sponsor for a new invitation.
+            This invitation link type is no longer supported. Please contact your leadInvestor for a new invitation.
           </p>
         </div>
       </div>
@@ -630,7 +630,7 @@ export default function GuestPortalPage() {
           </div>
           <h1 className="text-xl font-bold text-white uppercase tracking-tight mb-2">Invalid or Expired Link</h1>
           <p className="text-xs text-[#8a9b9b] leading-relaxed">
-            This secure investment link has expired, been revoked, or is no longer valid. Please contact the sponsor to request a new invitation.
+            This secure investment link has expired, been revoked, or is no longer valid. Please contact the leadInvestor to request a new invitation.
           </p>
         </div>
       </div>
@@ -653,8 +653,8 @@ export default function GuestPortalPage() {
             </h1>
             <p className="text-xs text-[#8a9b9b] leading-relaxed">
               {isAccepted
-                ? 'Your intention to invest has been recorded and the sponsor has been notified. They will confirm once funds are received and follow up with formal subscription papers.'
-                : 'You have declined this investment opportunity. The deal sponsor has been notified.'}
+                ? 'Your intention to invest has been recorded and the leadInvestor has been notified. They will confirm once funds are received and follow up with formal subscription papers.'
+                : 'You have declined this investment opportunity. The deal leadInvestor has been notified.'}
             </p>
           </div>
           {isAccepted && (
@@ -675,7 +675,7 @@ export default function GuestPortalPage() {
                 <span className="text-[#8a9b9b]">STATUS:</span>
                 <span className="font-bold text-amber-400 flex items-center gap-1.5">
                   <span className="w-1.5 h-1.5 rounded-full bg-amber-400 animate-pulse"></span>
-                  PLEDGED — AWAITING SPONSOR CONFIRMATION
+                  PLEDGED — AWAITING LEAD_INVESTOR CONFIRMATION
                 </span>
               </div>
             </div>
@@ -870,11 +870,11 @@ export default function GuestPortalPage() {
                     Insights
                   </button>
                   <button 
-                    onClick={() => setShowAskSponsor(true)}
+                    onClick={() => setShowAskLeadInvestor(true)}
                     className="bg-surface/60 backdrop-blur-md border border-white/10 hover:bg-surface/80 text-white px-4 py-2 rounded-xl flex items-center gap-2 transition-all group font-mono text-[10px] uppercase"
                   >
                     <span className="material-symbols-outlined text-sm select-none group-hover:text-[#454955]">mail</span>
-                    Ask Sponsor
+                    Ask LeadInvestor
                   </button>
                 </div>
               </div>
@@ -884,7 +884,7 @@ export default function GuestPortalPage() {
             <section className="glass-card p-6 md:p-8 rounded-2xl space-y-3">
               <h3 className="font-mono text-[10px] font-bold text-[#454955] uppercase tracking-[0.2em]">Investment Thesis</h3>
               <p className="text-sm text-on-surface-variant leading-relaxed">
-                {dealData.opportunitySummary || 'The sponsor has not yet published an investment thesis for this deal.'}
+                {dealData.opportunitySummary || 'The leadInvestor has not yet published an investment thesis for this deal.'}
               </p>
             </section>
 
@@ -978,7 +978,7 @@ export default function GuestPortalPage() {
               </div>
             </section>
 
-            {/* Deal Updates — sponsor-authored progress feed (read-only for guests) */}
+            {/* Deal Updates — leadInvestor-authored progress feed (read-only for guests) */}
             <section className="glass-card rounded-2xl overflow-hidden border border-white/10">
               <div className="px-6 py-4 border-b border-white/5 bg-white/5 flex items-center gap-2">
                 <MessageSquare className="w-3.5 h-3.5 text-[#454955]" />
@@ -1020,7 +1020,7 @@ export default function GuestPortalPage() {
               <div className="p-6 space-y-6">
                 {/* 1. Own Private Question Thread */}
                 <div>
-                  <h4 className="text-[10px] font-bold uppercase tracking-wider text-[#8a9b9b] mb-3">Your Conversation with Sponsor</h4>
+                  <h4 className="text-[10px] font-bold uppercase tracking-wider text-[#8a9b9b] mb-3">Your Conversation with LeadInvestor</h4>
                   {(() => {
                     const ownInquiry = (dealData?.inquiries || []).find((i: any) => i.isOwn);
                     if (!ownInquiry) {
@@ -1028,11 +1028,11 @@ export default function GuestPortalPage() {
                         <div className="p-4 bg-white/5 rounded-xl border border-white/5 flex flex-col items-center justify-center text-center">
                           <p className="text-xs text-[#8a9b9b] mb-3">Have questions about the underwriting model, exit details, or capital structure?</p>
                           <button
-                            id="btn-ask-sponsor-qa"
-                            onClick={() => setShowAskSponsor(true)}
+                            id="btn-ask-leadInvestor-qa"
+                            onClick={() => setShowAskLeadInvestor(true)}
                             className="px-4 py-2 bg-[#454955] hover:bg-[#454955]/90 text-[#0d0a0b] font-bold text-xs uppercase tracking-wider rounded-lg transition-all"
                           >
-                            Ask Sponsor a Question
+                            Ask LeadInvestor a Question
                           </button>
                         </div>
                       );
@@ -1043,18 +1043,18 @@ export default function GuestPortalPage() {
                         <div className="bg-[#0d0a0b]/40 border border-white/5 rounded-xl p-4 max-h-[250px] overflow-y-auto space-y-3">
                           {ownInquiry.messages && ownInquiry.messages.length > 0 ? (
                             ownInquiry.messages.map((msg: any) => {
-                              const isSponsor = msg.sender === 'sponsor';
+                              const isLeadInvestor = msg.sender === 'leadInvestor';
                               return (
                                 <div
                                   key={msg.id}
                                   className={`flex flex-col gap-1 p-3 rounded-xl max-w-[85%] text-left ${
-                                    isSponsor
+                                    isLeadInvestor
                                       ? 'ml-auto bg-black/60 border border-[#454955]/30'
                                       : 'bg-white/5 border border-white/10'
                                   }`}
                                 >
-                                  <span className={`text-[9px] font-mono font-bold uppercase ${isSponsor ? 'text-[#8a9b9b]' : 'text-primary'}`}>
-                                    {isSponsor ? 'Sponsor' : 'You'}
+                                  <span className={`text-[9px] font-mono font-bold uppercase ${isLeadInvestor ? 'text-[#8a9b9b]' : 'text-primary'}`}>
+                                    {isLeadInvestor ? 'LeadInvestor' : 'You'}
                                   </span>
                                   <p className="text-xs text-white/90 whitespace-pre-wrap">{msg.text}</p>
                                   <span className="text-[8px] text-[#8a9b9b] self-end mt-1 font-mono">
@@ -1123,9 +1123,9 @@ export default function GuestPortalPage() {
                                 <span className="text-[8px] font-mono font-bold text-primary uppercase">Investor Question (Anonymous)</span>
                                 <p className="text-xs text-white/90 font-mono italic font-sans">"{question}"</p>
                               </div>
-                              {replies.filter((m: any) => m.sender === 'sponsor').map((msg: any) => (
+                              {replies.filter((m: any) => m.sender === 'leadInvestor').map((msg: any) => (
                                 <div key={msg.id} className="pl-3 border-l-2 border-[#454955]/50 mt-2">
-                                  <span className="text-[8px] font-mono font-bold text-[#8a9b9b] uppercase">Sponsor Response</span>
+                                  <span className="text-[8px] font-mono font-bold text-[#8a9b9b] uppercase">LeadInvestor Response</span>
                                   <p className="text-xs text-white/80 whitespace-pre-wrap mt-0.5">{msg.text}</p>
                                 </div>
                               ))}
@@ -1172,7 +1172,7 @@ export default function GuestPortalPage() {
                       You indicated you are interested.
                       {dealData.cardExchangeStatus === 'accepted'
                         ? ' The Lead Investor has accepted the business card exchange. Contact details are now unlocked below.'
-                        : ' The business card exchange is pending sponsor acceptance. Your contact details are hidden until they opt-in and release their card.'}
+                        : ' The business card exchange is pending leadInvestor acceptance. Your contact details are hidden until they opt-in and release their card.'}
                     </p>
                     <button
                       onClick={handleReopen}
@@ -1212,37 +1212,37 @@ export default function GuestPortalPage() {
                       </div>
                     </div>
 
-                    {/* Sponsor Card (Conditional on Accept) */}
-                    {dealData.cardExchangeStatus === 'accepted' && dealData.sponsorBusinessCard ? (
+                    {/* LeadInvestor Card (Conditional on Accept) */}
+                    {dealData.cardExchangeStatus === 'accepted' && dealData.leadInvestorBusinessCard ? (
                       <div className="relative overflow-hidden rounded-2xl border border-white/10 bg-gradient-to-br from-white/5 to-white/[0.01] p-6 shadow-2xl backdrop-blur-md flex flex-col justify-between h-48 group hover:border-white/20 transition-all duration-300">
                         <div className="absolute top-0 right-0 bg-emerald-500/10 border-l border-b border-emerald-500/20 px-3 py-1 rounded-bl-xl text-[9px] font-bold text-emerald-400 uppercase tracking-wider font-mono">
-                          Sponsor Card Unlocked
+                          LeadInvestor Card Unlocked
                         </div>
                         <div className="space-y-1">
                           <h4 className="text-sm font-bold text-white uppercase tracking-wider font-mono mt-2">
-                            {dealData.sponsorBusinessCard.name}
+                            {dealData.leadInvestorBusinessCard.name}
                           </h4>
                           <p className="text-[10px] text-[#8a9b9b]">
-                            {dealData.sponsorBusinessCard.company || 'Lead Investor'}
+                            {dealData.leadInvestorBusinessCard.company || 'Lead Investor'}
                           </p>
                         </div>
                         <div className="space-y-1 text-xs text-[#8a9b9b] mt-2 font-mono">
                           <div className="flex items-center gap-2">
                             <span className="material-symbols-outlined text-sm text-emerald-400">mail</span>
-                            <span>{dealData.sponsorBusinessCard.email}</span>
+                            <span>{dealData.leadInvestorBusinessCard.email}</span>
                           </div>
-                          {dealData.sponsorBusinessCard.phone && (
+                          {dealData.leadInvestorBusinessCard.phone && (
                             <div className="flex items-center gap-2">
                               <span className="material-symbols-outlined text-sm text-emerald-400">call</span>
-                              <span>{dealData.sponsorBusinessCard.phone}</span>
+                              <span>{dealData.leadInvestorBusinessCard.phone}</span>
                             </div>
                           )}
                         </div>
-                        {dealData.sponsorBusinessCard.uid && (
+                        {dealData.leadInvestorBusinessCard.uid && (
                           <div className="mt-3">
                             <FollowInvestorButton
-                              investorUid={dealData.sponsorBusinessCard.uid}
-                              investorName={dealData.sponsorBusinessCard.name}
+                              investorUid={dealData.leadInvestorBusinessCard.uid}
+                              investorName={dealData.leadInvestorBusinessCard.name}
                               isFollowing={false}
                               className="w-full justify-center !py-1.5 !px-3 text-[10px] font-mono uppercase tracking-wider"
                             />
@@ -1254,7 +1254,7 @@ export default function GuestPortalPage() {
                         <span className="material-symbols-outlined text-3xl text-white/20 animate-pulse mb-3">lock</span>
                         <h4 className="text-xs font-semibold text-white uppercase tracking-wider font-mono">Exchange Pending</h4>
                         <p className="text-[10px] text-[#8a9b9b] mt-1 max-w-[200px] leading-relaxed">
-                          Sponsor details are locked. They will release upon mutual acceptance.
+                          LeadInvestor details are locked. They will release upon mutual acceptance.
                         </p>
                       </div>
                     )}
@@ -1269,7 +1269,7 @@ export default function GuestPortalPage() {
                     <span className="font-semibold text-sm">Commitment Pledged</span>
                   </div>
                   <p className="text-xs text-[#8a9b9b]">
-                    Your LOI/Subscription commitment is recorded. The sponsor will verify details and reach out.
+                    Your LOI/Subscription commitment is recorded. The leadInvestor will verify details and reach out.
                   </p>
                   {!['signed', 'funds-confirmed', 'cleared'].includes(dealData.commitmentStatus || '') && (
                     <button
@@ -1329,7 +1329,7 @@ export default function GuestPortalPage() {
                         </button>
                         <button
                           id="btn-ask-question"
-                          onClick={() => setShowAskSponsor(true)}
+                          onClick={() => setShowAskLeadInvestor(true)}
                           className="flex-1 py-3 px-4 rounded-xl border border-white/10 hover:bg-white/5 text-white font-bold text-xs uppercase tracking-wider transition-all flex items-center justify-center gap-1.5"
                         >
                           <span className="material-symbols-outlined text-sm">help</span>
@@ -1360,7 +1360,7 @@ export default function GuestPortalPage() {
                       <p className="text-xs text-[#8a9b9b] max-w-sm leading-relaxed">
                         Your definitive subscription agreement has been signed. 
                         {dealData.commitmentStatus === 'signed' 
-                          ? " We are awaiting sponsor verification of your capital deposit."
+                          ? " We are awaiting leadInvestor verification of your capital deposit."
                           : " Your funding is confirmed and active in the capital stack!"}
                       </p>
                     </div>
@@ -1369,7 +1369,7 @@ export default function GuestPortalPage() {
                       <Clock className="w-12 h-12 text-[#8a9b9b] animate-bounce" />
                       <h3 className="font-mono text-xs font-bold text-white uppercase tracking-wider">LOI Signed & Registered</h3>
                       <p className="text-xs text-[#8a9b9b] max-w-md leading-relaxed">
-                        Thank you! Your preliminary soft-commitment is recorded. The sponsor is preparing your definitive Subscription Agreement. You will receive an email once it is ready for execution.
+                        Thank you! Your preliminary soft-commitment is recorded. The leadInvestor is preparing your definitive Subscription Agreement. You will receive an email once it is ready for execution.
                       </p>
                     </div>
                   ) : (
@@ -1574,13 +1574,13 @@ export default function GuestPortalPage() {
                   </div>
                 </div>
 
-                {/* Investment Amount — set by the sponsor at invite time, not editable here */}
+                {/* Investment Amount — set by the leadInvestor at invite time, not editable here */}
                 <div className="space-y-2 border-t border-white/5 pt-5">
                   <label className="block text-[9px] font-bold text-[#8a9b9b] uppercase tracking-wider">Your Proposed Allocation</label>
                   <div className="w-full px-4 py-3.5 bg-[#0d0a0b]/80 border border-white/10 rounded-xl text-white font-mono text-sm">
                     ${investmentAmount.toLocaleString()}
                   </div>
-                  <p className="text-[10px] text-[#8a9b9b] font-mono">Set by the sponsor for this invitation.</p>
+                  <p className="text-[10px] text-[#8a9b9b] font-mono">Set by the leadInvestor for this invitation.</p>
                 </div>
 
                 {/* Submit Commit CTA */}
@@ -1677,7 +1677,7 @@ export default function GuestPortalPage() {
               <div className="flex flex-col items-center gap-2 py-8 text-center">
                 <FileText className="w-8 h-8 text-[#454955]/40" />
                 <p className="text-xs text-[#8a9b9b] font-mono">
-                  The sponsor hasn&apos;t shared any documents with investors yet.
+                  The leadInvestor hasn&apos;t shared any documents with investors yet.
                 </p>
               </div>
             </div>
@@ -1694,24 +1694,24 @@ export default function GuestPortalPage() {
         </div>
       )}
 
-      {/* Modal: Ask Sponsor */}
-      {showAskSponsor && (
-        <div id="ask-sponsor-modal" className="fixed inset-0 z-[80] flex items-center justify-center p-4 bg-black/75 backdrop-blur-md">
+      {/* Modal: Ask LeadInvestor */}
+      {showAskLeadInvestor && (
+        <div id="ask-leadInvestor-modal" className="fixed inset-0 z-[80] flex items-center justify-center p-4 bg-black/75 backdrop-blur-md">
           <div className="glass-card w-full max-w-md rounded-2xl border border-white/10 shadow-2xl overflow-hidden animate-in fade-in zoom-in-95 duration-200">
             <div className="p-5 border-b border-white/5 flex justify-between items-center bg-[#0d0a0b]">
               <div>
-                <h3 className="text-sm font-bold text-white uppercase tracking-wider font-mono">Inquire Sponsor</h3>
+                <h3 className="text-sm font-bold text-white uppercase tracking-wider font-mono">Inquire LeadInvestor</h3>
                 <p className="text-[10px] text-[#8a9b9b] mt-0.5">Direct Channel // {dealData.dealName}</p>
               </div>
               <button 
-                onClick={() => setShowAskSponsor(false)}
+                onClick={() => setShowAskLeadInvestor(false)}
                 className="material-symbols-outlined text-[#8a9b9b] hover:text-white select-none"
               >
                 close
               </button>
             </div>
 
-            <form onSubmit={handleSendSponsorMessage} className="p-6 space-y-4">
+            <form onSubmit={handleSendLeadInvestorMessage} className="p-6 space-y-4">
               {askError && (
                 <div className="p-3 border border-red-500/20 bg-red-950/20 text-red-400 rounded-xl text-xs">
                   {askError}
@@ -1720,9 +1720,9 @@ export default function GuestPortalPage() {
               <div>
                 <label className="block text-[9px] font-bold text-[#8a9b9b] uppercase tracking-wider mb-2">Your Inquiry</label>
                 <textarea
-                  id="ask-sponsor-textarea"
-                  value={sponsorMessage}
-                  onChange={(e) => setSponsorMessage(e.target.value)}
+                  id="ask-leadInvestor-textarea"
+                  value={leadInvestorMessage}
+                  onChange={(e) => setLeadInvestorMessage(e.target.value)}
                   placeholder="Ask a question about the capital stack, construction timelines, zoning approvals, or underwriting models..."
                   rows={4}
                   maxLength={2000}
@@ -1734,23 +1734,23 @@ export default function GuestPortalPage() {
               <div className="flex gap-3">
                 <button
                   type="button"
-                  onClick={() => setShowAskSponsor(false)}
+                  onClick={() => setShowAskLeadInvestor(false)}
                   className="flex-1 py-3 rounded-xl border border-white/10 hover:bg-white/5 text-white font-bold text-xs uppercase tracking-wider transition-all"
                 >
                   Cancel
                 </button>
                 <button
-                  id="ask-sponsor-submit-btn"
+                  id="ask-leadInvestor-submit-btn"
                   type="submit"
-                  disabled={sendingSponsorMsg}
+                  disabled={sendingLeadInvestorMsg}
                   className="flex-1 py-3 rounded-xl bg-[#454955] hover:bg-[#454955]/90 text-[#0d0a0b] font-bold text-xs uppercase tracking-wider transition-all disabled:opacity-50 flex items-center justify-center gap-2 shadow-[0_0_15px_rgba(69,73,85,0.2)]"
                 >
-                  {sendingSponsorMsg ? (
+                  {sendingLeadInvestorMsg ? (
                     <span className="material-symbols-outlined text-sm animate-spin select-none">progress_activity</span>
                   ) : (
                     <Send className="w-3.5 h-3.5" />
                   )}
-                  {sendingSponsorMsg ? 'Transmitting...' : 'Send Message'}
+                  {sendingLeadInvestorMsg ? 'Transmitting...' : 'Send Message'}
                 </button>
               </div>
             </form>

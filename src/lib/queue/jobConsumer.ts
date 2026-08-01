@@ -15,6 +15,7 @@ import { memberReplicationWorker } from '../services/memberReplicationWorker';
 import { officeReplicationWorker } from '../services/officeReplicationWorker';
 import { processWebhookPayload } from '../services/webhookProcessor';
 import { timelineSyncWorker } from '../services/timelineSyncWorker';
+import { TransactionNotificationService } from '../notifications/transactionNotifications';
 
 export interface DrainResult {
   processed: number;
@@ -53,6 +54,11 @@ const handlers: Record<JobType, JobHandler> = {
     if (!projectId) throw new Error('Missing projectId in payload');
     const result = await timelineSyncWorker.sync(projectId);
     if (!result.success) throw new Error(result.error ?? 'timeline_sync failed');
+  },
+
+  transaction_notification_batch: async (_job) => {
+    await TransactionNotificationService.flushHourlyBatches();
+    console.log('✅ [CONSUMER] transaction_notification_batch flush complete.');
   },
 };
 

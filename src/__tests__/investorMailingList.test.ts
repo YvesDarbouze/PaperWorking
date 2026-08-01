@@ -11,7 +11,7 @@ jest.mock('next/headers', () => ({
     get: (key: string) => {
       if (key === 'mock_user_role') return { value: 'Lead Investor' };
       if (key === 'mock_user_uid') return { value: 'lead_investor_123' };
-      if (key === 'mock_user_email') return { value: 'sponsor@test.com' };
+      if (key === 'mock_user_email') return { value: 'leadInvestor@test.com' };
       if (key === 'mock_user_org_id') return { value: 'org_123' };
       return undefined;
     },

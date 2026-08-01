@@ -68,7 +68,7 @@ import { FX_1_PROJECT } from '@/lib/metrics/fixtures';
 
 describe('FD-21: Locked Terms & Live Metrics Calculations', () => {
   const PROJECT_ID = 'proj_test_locked';
-  const OWNER_UID = 'user_sponsor_seed';
+  const OWNER_UID = 'user_leadInvestor_seed';
   const ESTIMATE_ID = 'est_cand_123';
 
   beforeEach(() => {
@@ -76,7 +76,7 @@ describe('FD-21: Locked Terms & Live Metrics Calculations', () => {
 
     mockVerifyIdToken.mockResolvedValue({
       uid: OWNER_UID,
-      email: 'sponsor@apex.com',
+      email: 'leadInvestor@apex.com',
     });
 
     mockProjectDocGet.mockResolvedValue({

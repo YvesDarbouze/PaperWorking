@@ -753,7 +753,7 @@ export default function DealOnePagerView({
               </tr>
               <tr className="hover:bg-white/[0.01]">
                 <td className="px-6 py-3 text-[var(--color-muted)] font-sans">
-                  Sponsor Capital / Deferred Fees
+                  LeadInvestor Capital / Deferred Fees
                 </td>
                 <td className="px-6 py-3 text-right text-[var(--color-on-surface)] font-semibold">
                   $0

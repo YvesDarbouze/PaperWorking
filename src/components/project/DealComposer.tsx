@@ -375,7 +375,7 @@ Please click the secure link below to review the detailed underwriting model, as
               </div>
               <div className="text-[10px] leading-tight">
                 <div className="font-bold text-white">Lead Investor Branding</div>
-                <div className="text-[#9E9DA0]/60">PaperWorking Platform Sponsor</div>
+                <div className="text-[#9E9DA0]/60">PaperWorking Platform LeadInvestor</div>
               </div>
             </div>
 

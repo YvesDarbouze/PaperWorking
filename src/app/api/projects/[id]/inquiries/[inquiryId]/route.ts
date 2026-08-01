@@ -69,7 +69,7 @@ export async function PATCH(
     // 4. If toggling isShared from false to true → Write QNA_SHARED Ledger event
     if (update.isShared === true && !oldShared) {
       const firstQuestion = inquiryData.message || (inquiryData.messages?.[0]?.text) || '';
-      const firstAnswer = (inquiryData.messages || []).find((m: any) => m.sender === 'sponsor')?.text || '';
+      const firstAnswer = (inquiryData.messages || []).find((m: any) => m.sender === 'leadInvestor')?.text || '';
 
       const ledgerRef = adminDb.collection('projects').doc(projectId)
         .collection('dealLedger').doc();
@@ -79,7 +79,7 @@ export async function PATCH(
         projectId,
         listingId: projectData.activeListingId || '',
         eventType: 'QNA_SHARED',
-        performedBy: uid, // Sponsor who shared it
+        performedBy: uid, // LeadInvestor who shared it
         timestamp: new Date().toISOString(),
         version: projectData.version || 1,
         visibilityMode: projectData.visibilityMode || 'PRIVATE',

@@ -102,7 +102,7 @@ const HERO_KPIS: MetricCard[] = [
     tagline: 'Your DSCR. Automated. Fundable. Certain.',
     body: "Stop letting complex bank underwriting slow down your portfolio growth. Command your leverage with a real-time index of your property's true borrowing strength.",
     bullets: [
-      "Immediate Bank Credibility — Hand lenders an audit-ready view of your property's ability to cover its debt.",
+      "Immediate Bank Credibility — Hand lenders a clear, reviewable view of your property's ability to cover its debt.",
       'Frictionless Analytics — PaperWorking divides your live NOI by your financing inputs automatically.',
       'Tax-Ready Workflow — Every milestone expense that moves your DSCR flows into year-end reporting — saving weeks of bookkeeping.',
     ],

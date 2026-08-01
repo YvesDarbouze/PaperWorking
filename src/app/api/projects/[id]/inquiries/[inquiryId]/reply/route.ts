@@ -87,7 +87,7 @@ export async function POST(
 
     const newMessage = {
       id: `msg_${Date.now()}_${Math.random().toString(36).slice(2, 6)}`,
-      sender: 'sponsor',
+      sender: 'leadInvestor',
       text,
       createdAt: new Date().toISOString(),
     };
@@ -118,14 +118,14 @@ export async function POST(
       const appUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://paperworking.co';
       const portalUrl = `${appUrl}/invest/${token}`;
       const dealName = projectData.propertyName || 'Untitled Deal';
-      const subject = `Sponsor replied to your question on ${dealName}`;
+      const subject = `LeadInvestor replied to your question on ${dealName}`;
 
       const bodyHtml = `
         <h1 style="font-size:20px;font-weight:700;color:#0d0d0d;margin:0 0 12px 0;">
           Answer Received
         </h1>
         <p style="font-size:14px;color:#4A4A4A;margin:0 0 20px 0;line-height:1.5;">
-          The deal sponsor for <strong>${dealName}</strong> has replied to your question:
+          The deal leadInvestor for <strong>${dealName}</strong> has replied to your question:
         </p>
 
         <div style="background-color:#F9F9F9;border-left:4px solid #454955;padding:12px 16px;margin-bottom:20px;font-size:14px;color:#0d0d0d;">
@@ -134,7 +134,7 @@ export async function POST(
         </div>
 
         <div style="background-color:#F5F6F6;border:1px solid #EAEAEA;border-radius:8px;padding:16px;margin-bottom:24px;">
-          <p style="font-weight:600;margin:0 0 6px 0;color:#454955;font-size:11px;text-transform:uppercase;letter-spacing:0.05em;">Sponsor Response</p>
+          <p style="font-weight:600;margin:0 0 6px 0;color:#454955;font-size:11px;text-transform:uppercase;letter-spacing:0.05em;">LeadInvestor Response</p>
           <p style="font-size:14px;color:#0d0d0d;margin:0;line-height:1.6;white-space:pre-wrap;">${text}</p>
         </div>
 
@@ -152,7 +152,7 @@ export async function POST(
       `;
 
       const textFallback = `
-Sponsor Response:
+LeadInvestor Response:
 "${text}"
 
 Open discussion: ${portalUrl}
@@ -167,7 +167,7 @@ Open discussion: ${portalUrl}
           to: [investorEmail],
           replyTo,
           subject,
-          html: renderEmailLayout({ title: 'Sponsor Response', preheader: subject, bodyHtml }),
+          html: renderEmailLayout({ title: 'LeadInvestor Response', preheader: subject, bodyHtml }),
           text: textFallback,
         });
       } else {

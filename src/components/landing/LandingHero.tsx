@@ -112,12 +112,12 @@ export default function LandingHero() {
 
           {/* Headline — verbatim */}
           <h1 className="text-[40px] md:text-[52px] lg:text-[60px] leading-[46px] md:leading-[58px] lg:leading-[68px] font-bold tracking-[-0.04em] text-on-surface mb-6 type-display">
-            Finally, project management software made for serious real estate investors.
+            You manage the project. PaperWorking does the math.
           </h1>
 
           {/* Body — verbatim */}
           <p className="text-[17px] md:text-[18px] leading-[27px] md:leading-[29px] font-normal text-on-surface-variant mb-8 max-w-[560px] type-body-lg">
-            Every deal runs the same four phases: Acquisition, Fund, Hold, Exit. PaperWorking manages all four in one place — and turns the work you&apos;re already doing into the 33 numbers that show whether your investments are working. NOI, cap rate, DSCR, cash-on-cash, IRR. Calculated from your own project data. Per deal. Across your portfolio.
+            Every deal runs through the same four phases: Acquisition, Fund, Hold, Exit. PaperWorking manages all four in one place and turns the work you log into the 33 numbers that show whether your investments are working: NOI, cap rate, DSCR, cash-on-cash, IRR, calculated from your own project data, per deal and across your portfolio.
           </p>
 
           {/* CTAs */}
@@ -130,7 +130,7 @@ export default function LandingHero() {
                 className="absolute inset-0 bg-gradient-to-r from-transparent via-white/12 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-700 pointer-events-none"
                 aria-hidden
               />
-              Start 14-Day Trial
+              Start Free 14-Day Trial
               <span className="material-symbols-outlined text-[18px] group-hover:translate-x-1 transition-transform">
                 arrow_forward
               </span>
@@ -149,7 +149,7 @@ export default function LandingHero() {
 
           {/* Microcopy */}
           <p className="text-[12.5px] text-on-surface-variant/70 leading-relaxed type-caption">
-            14-day trial. A card starts the clock; nothing is charged until day 15. Export your data anytime.
+            14-day trial. No charge until day 15. Export your data anytime.
           </p>
         </div>
 

@@ -23,7 +23,7 @@ Our on-call team maintains a weekly rotating schedule:
 
 1. **Primary Responder (On-Call Engineer)**: Actively monitors alerts, performs initial triage, and handles P0/P1 paging.
 2. **Secondary Escalation (Lead Architect)**: Paged if Primary does not acknowledge within 10 minutes.
-3. **Executive Sponsor (CTO / Security Officer)**: Paged in the event of an active security breach (P0) to coordinate customer communication and legal teams.
+3. **Executive LeadInvestor (CTO / Security Officer)**: Paged in the event of an active security breach (P0) to coordinate customer communication and legal teams.
 
 ### On-Call Escalation Path
 `PagerDuty Alert` ➔ `Primary Engineer` ➔ (10 mins no-ack) ➔ `Lead Architect` ➔ (10 mins no-ack) ➔ `CTO`

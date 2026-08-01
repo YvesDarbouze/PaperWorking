@@ -31,7 +31,7 @@ This document outlines the architecture, rules, and integration requirements for
 
 ### Business-Card Exchange (G-4)
 * When a business card exchange occurs:
-  * The invitee's card is saved to the sponsor's project's `projectFiles` in the `Equity` folder.
-  * If the invitee has an active project matching the deal, the sponsor's card is saved to the invitee's project's `projectFiles` in the `Equity` folder.
-  * If the invitee has no active project for the deal, the sponsor's card is saved to the invitee's account-level contacts (`organizations/[orgId]/contacts` or `users/[uid]/contacts`).
+  * The invitee's card is saved to the leadInvestor's project's `projectFiles` in the `Equity` folder.
+  * If the invitee has an active project matching the deal, the leadInvestor's card is saved to the invitee's project's `projectFiles` in the `Equity` folder.
+  * If the invitee has no active project for the deal, the leadInvestor's card is saved to the invitee's account-level contacts (`organizations/[orgId]/contacts` or `users/[uid]/contacts`).
 * Exchanged cards are stored securely and follow the same double-opt-in mechanics.

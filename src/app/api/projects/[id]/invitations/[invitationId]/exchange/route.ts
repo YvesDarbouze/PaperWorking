@@ -84,7 +84,7 @@ export async function POST(
 
     // accept
     if (!disclosedCard || !disclosedCard.name || !disclosedCard.email) {
-      return NextResponse.json({ error: 'Sponsor business card details are required.' }, { status: 400 });
+      return NextResponse.json({ error: 'LeadInvestor business card details are required.' }, { status: 400 });
     }
 
     const inviteeCard = invData.inviteeBusinessCard;
@@ -92,7 +92,7 @@ export async function POST(
       return NextResponse.json({ error: 'Invitee business card details are missing.' }, { status: 400 });
     }
 
-    const sponsorCard = {
+    const leadInvestorCard = {
       name: disclosedCard.name,
       email: disclosedCard.email,
       phone: disclosedCard.phone || '',
@@ -103,11 +103,11 @@ export async function POST(
     // Update invitation
     await invRef.update({
       cardExchangeStatus: 'accepted',
-      sponsorBusinessCard: sponsorCard,
+      leadInvestorBusinessCard: leadInvestorCard,
     });
 
-    // Write Invitee's card to Sponsor's project files in 'Equity' folder:
-    const sponsorFolderId = await ensureFolder(
+    // Write Invitee's card to LeadInvestor's project files in 'Equity' folder:
+    const leadInvestorFolderId = await ensureFolder(
       projectId,
       'Equity',
       projectData.organizationId || '',
@@ -118,7 +118,7 @@ export async function POST(
     const docInviteeRef = adminDb.collection('projectFiles').doc(inviteeDocId);
     await docInviteeRef.set({
       id: inviteeDocId,
-      folderId: sponsorFolderId,
+      folderId: leadInvestorFolderId,
       projectId,
       organizationId: projectData.organizationId || '',
       name: `Business_Card_${inviteeCard.name.replace(/\s+/g, '_')}.json`,
@@ -136,7 +136,7 @@ export async function POST(
       phase: 'phase-1',
     });
 
-    // Write Sponsor's card to Invitee's project files or contacts:
+    // Write LeadInvestor's card to Invitee's project files or contacts:
     const responderUid = inviteeCard.uid || invData.inviteeUid;
     let responderProjectId = '';
     let responderProjectData: any = null;
@@ -162,21 +162,21 @@ export async function POST(
         responderProjectData.ownerUid || responderUid
       );
 
-      const sponsorDocId = adminDb.collection('projectFiles').doc().id || `auto_${Math.random().toString(36).substring(2, 11)}`;
-      const docSponsorRef = adminDb.collection('projectFiles').doc(sponsorDocId);
-      await docSponsorRef.set({
-        id: sponsorDocId,
+      const leadInvestorDocId = adminDb.collection('projectFiles').doc().id || `auto_${Math.random().toString(36).substring(2, 11)}`;
+      const docLeadInvestorRef = adminDb.collection('projectFiles').doc(leadInvestorDocId);
+      await docLeadInvestorRef.set({
+        id: leadInvestorDocId,
         folderId: responderFolderId,
         projectId: responderProjectId,
         organizationId: responderProjectData.organizationId || '',
-        name: `Business_Card_Sponsor_${sponsorCard.name.replace(/\s+/g, '_')}.json`,
+        name: `Business_Card_LeadInvestor_${leadInvestorCard.name.replace(/\s+/g, '_')}.json`,
         category: 'Business Card',
-        storageUrl: `/api/projects/${responderProjectId}/documents/${sponsorDocId}/download`,
-        storagePath: `projects/${responderProjectId}/documents/${sponsorDocId}/Business_Card_Sponsor_${sponsorCard.name.replace(/\s+/g, '_')}.json`,
+        storageUrl: `/api/projects/${responderProjectId}/documents/${leadInvestorDocId}/download`,
+        storagePath: `projects/${responderProjectId}/documents/${leadInvestorDocId}/Business_Card_LeadInvestor_${leadInvestorCard.name.replace(/\s+/g, '_')}.json`,
         fileType: 'application/json',
-        sizeBytes: JSON.stringify(sponsorCard).length,
+        sizeBytes: JSON.stringify(leadInvestorCard).length,
         uploadedByUid: uid,
-        uploadedByEmail: sponsorCard.email || '',
+        uploadedByEmail: leadInvestorCard.email || '',
         isVerified: true,
         uploadedAt: FieldValue?.serverTimestamp ? FieldValue.serverTimestamp() : new Date(),
         isControlEvidence: true,
@@ -184,7 +184,7 @@ export async function POST(
         phase: 'phase-1',
       });
     } else {
-      // Fallback: Write Sponsor's card to Invitee's account-level contacts
+      // Fallback: Write LeadInvestor's card to Invitee's account-level contacts
       let responderOrgId = '';
       if (responderUid) {
         const respUserSnap = await adminDb.collection('users').doc(responderUid).get();
@@ -193,7 +193,7 @@ export async function POST(
         }
       }
 
-      const nameParts = (sponsorCard.name || '').split(/\s+/);
+      const nameParts = (leadInvestorCard.name || '').split(/\s+/);
       const firstName = nameParts[0] || '';
       const lastName = nameParts.slice(1).join(' ') || '';
 
@@ -206,9 +206,9 @@ export async function POST(
           role: 'Other',
           firstName,
           lastName,
-          email: sponsorCard.email,
-          phone: sponsorCard.phone || '',
-          companyName: sponsorCard.company || '',
+          email: leadInvestorCard.email,
+          phone: leadInvestorCard.phone || '',
+          companyName: leadInvestorCard.company || '',
           assignedProjectIds: [],
           notes: `Exchanged business card via Marketplace double opt-in on deal: ${projectData.propertyName || 'Project'}`,
           createdAt: new Date(),
@@ -225,9 +225,9 @@ export async function POST(
           role: 'Other',
           firstName,
           lastName,
-          email: sponsorCard.email,
-          phone: sponsorCard.phone || '',
-          companyName: sponsorCard.company || '',
+          email: leadInvestorCard.email,
+          phone: leadInvestorCard.phone || '',
+          companyName: leadInvestorCard.company || '',
           assignedProjectIds: [],
           notes: `Exchanged business card via Marketplace double opt-in on deal: ${projectData.propertyName || 'Project'}`,
           createdAt: new Date(),
@@ -248,7 +248,7 @@ export async function POST(
       metadata: {
         invitationId,
         inviteeName: inviteeCard.name,
-        sponsorName: sponsorCard.name,
+        leadInvestorName: leadInvestorCard.name,
       },
     });
 
@@ -261,7 +261,7 @@ export async function POST(
       {
         inviteeEmail: inviteeCard.email || '',
         inviteeName: inviteeCard.name || '',
-        sponsorName: sponsorCard.name || '',
+        leadInvestorName: leadInvestorCard.name || '',
       }
     ).catch((e: any) => console.error('Failed to log exchange event:', e));
 

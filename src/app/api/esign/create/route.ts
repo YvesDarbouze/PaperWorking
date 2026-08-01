@@ -135,7 +135,7 @@ export async function POST(req: NextRequest) {
         await NotificationService.createNotification({
           recipientId: userRecord.uid,
           type: 'DOCUMENT_SIGNED',
-          actor: { uid: callerUid, name: auth.token.name || auth.token.email || 'Sponsor' },
+          actor: { uid: callerUid, name: auth.token.name || auth.token.email || 'LeadInvestor' },
           objectReference: {
             projectId,
             dealAddress: project.propertyName || project.address?.street || 'the project',

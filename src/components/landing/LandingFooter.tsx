@@ -17,46 +17,43 @@ interface FooterColumn {
 
 const FOOTER_COLUMNS: FooterColumn[] = [
   {
-    heading: 'Main Navigation',
+    heading: 'Product',
     links: [
       { label: 'How It Works',  href: '/how-it-works' },
       { label: 'Marketplaces',  href: '/marketplaces' },
       { label: 'Pricing',       href: '/pricing'      },
-      { label: 'Support',       href: '/support'      },
+      { label: 'Changelog',     href: '/changelog'    },
     ],
   },
   {
-    heading: 'Support & Resources',
+    heading: 'Resources',
     links: [
-      { label: 'Support Center',     href: '/support'               },
-      { label: 'The Playbook (33 Metrics)', href: '/support/metrics' },
+      { label: 'Support Center',       href: '/support'          },
       { label: 'Real Estate Glossary', href: '/support/glossary' },
-      { label: 'Knowledge Base',     href: '/help'                  },
-      { label: 'Help Center',        href: '/help'                  },
-      { label: 'Company Blog',       href: '/blog'                  },
-      { label: 'Case Studies',       href: '/blog'                  },
-      { label: 'Changelog',          href: '/changelog'             },
+      { label: 'Knowledge Base',       href: '/help'             },
+      { label: 'Blog',                 href: '/blog'             },
     ],
   },
   {
     heading: 'Account',
     links: [
-      { label: 'Start 14-Day Trial',      href: '/pricing'          },
-      { label: 'Sign In',                 href: '/login'            },
-      { label: 'Create Account',          href: '/register'         },
-      { label: 'Forgot Password',         href: '/forgot-password'  },
-      { label: 'Accept Team Invite',      href: '/invite'           },
+      { label: 'Start Free 14-Day Trial', href: '/pricing'         },
+      { label: 'Sign In',                 href: '/login'           },
+      { label: 'Create Account',          href: '/register'        },
+      { label: 'Forgot Password',         href: '/forgot-password' },
+      { label: 'Accept Team Invite',      href: '/invite'          },
     ],
   },
   {
     heading: 'Company & Legal',
     links: [
-      { label: 'About',            href: '/about'          },
-      { label: 'Careers',          href: '/careers'        },
-      { label: 'Contact',          href: '/contact'        },
-      { label: 'Privacy Policy',   href: '/privacy'        },
-      { label: 'Terms of Service', href: '/terms'          },
-      { label: 'Cookie Policy',    href: '/cookies'        },
+      { label: 'About',        href: '/about'         },
+      { label: 'Careers',      href: '/careers'       },
+      { label: 'Contact',      href: '/contact'       },
+      { label: 'Privacy',      href: '/privacy'       },
+      { label: 'Terms',        href: '/terms'         },
+      { label: 'Cookies',      href: '/cookies'       },
+      { label: 'Subprocessors', href: '/subprocessors' },
     ],
   },
 ];
@@ -126,7 +123,7 @@ export default function LandingFooter() {
               onMouseEnter={e => (e.currentTarget.style.opacity = '0.85')}
               onMouseLeave={e => (e.currentTarget.style.opacity = '1')}
             >
-              Start Free Trial
+              Start Free 14-Day Trial
               <span
                 className="material-symbols-outlined text-[13px]"
                 style={{ fontVariationSettings: "'FILL' 0, 'wght' 400" }}

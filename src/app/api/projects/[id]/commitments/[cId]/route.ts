@@ -138,7 +138,7 @@ export async function PATCH(
     }
     if (body.notes !== undefined) updates.notes = body.notes ? String(body.notes).trim() : null;
     if (body.partyType !== undefined && access.role === 'Lead Investor') {
-      const VALID_PARTY_TYPES = ['Sponsor', 'Investor', 'Co-GP', 'Preferred Equity'];
+      const VALID_PARTY_TYPES = ['LeadInvestor', 'Investor', 'Co-GP', 'Preferred Equity'];
       if (!VALID_PARTY_TYPES.includes(body.partyType)) {
         return NextResponse.json({ error: `partyType must be one of: ${VALID_PARTY_TYPES.join(', ')}` }, { status: 422 });
       }
@@ -161,7 +161,7 @@ export async function PATCH(
           fileName: `Subscription_Agreement_${(updates.name ?? updated.name).replace(/\s+/g, '_')}.pdf`,
           fileUrl: 'https://example.com/mock-subscription-agreement.pdf',
           uploadedByUid: uid,
-          uploadedByName: auth.token.name || 'Sponsor',
+          uploadedByName: auth.token.name || 'LeadInvestor',
           uploadedAt: new Date(),
           eSignStatus: 'Not Required',
           recipientEmail: updates.email ?? updated.email ?? null,

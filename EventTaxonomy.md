@@ -50,7 +50,7 @@ Triggered when a user responds to deal terms (accepting, declining, or counter-p
   - `amountCents` (`number`): The financial response amount in cents.
 
 ### `contact_details_exchanged`
-Triggered when a guest investor and deal sponsor exchange contact card details.
+Triggered when a guest investor and deal leadInvestor exchange contact card details.
 - **Properties**:
   - `listingId` (`string | null`): The Firestore listing ID.
   - `projectId` (`string | null`): The parent project ID.

@@ -1,26 +1,28 @@
-# Agent Handoff — 2026-07-29
+# Agent Handoff — 2026-07-30
 
-## Last Agent: Antigravity (Conversation: f8ca972e-73b1-47ff-99a1-bfdeb7762497)
+## Completed this session
+**TransactionNotificationService** — full implementation, 27/27 tests passing
 
-## What was completed: Playwright E2E & Jest Unit Test Suite with Mock JSON Fixtures
+### Files created
+- `prisma/schema.prisma` — added `EmailDigestMode`, `EmailAlertThreshold` enums + `UserNotificationPreferences`, `SentEmailLog` models + AppUser relations; `npx prisma generate` run
+- `src/lib/emails/templates/TransactionNotificationEmails.ts` — 7 HTML/text email templates with KPI boxes, dark mode, responsive layout
+- `src/lib/notifications/transactionNotifications.ts` — core service (7 preference gates, idempotent Resend dispatch, Firestore HOURLY_BATCH/DAILY_DIGEST queuing)
+- `src/app/api/user/notification-preferences/route.ts` — GET/PUT preferences (auto-create on first GET, Zod validation)
+- `src/app/api/notifications/test/route.ts` — test email sender for all 7 templates
+- `src/__tests__/transactionNotifications.test.ts` — 27 tests, all passing
 
-### ✅ Playwright E2E Specs (`tests/e2e/`)
-| Spec File | Purpose |
-|---|---|
-| `dtm-pre-link-trust-screen.spec.ts` | Navigates to Financial Connections, clicks "Connect Rent Collection Account", verifies Pre-Link Trust Screen, access scopes, security rules, and Plaid Link launch. |
-| `full-plaid-to-kpi-pipeline.spec.ts` | E2E pipeline test from Plaid Sandbox sync → classification → Review Queue approval → rules engine → 33 KPI calculation → CapEx handling → Exit Insights dashboard rendering → SSE updates. |
-| `manual-entry-kpi-parity.spec.ts` | Tests manual rent ($1,200), expense ($500), and mortgage ($2,847) entries for KPI calculation parity with Plaid bank sync. |
-| `dtm-consent-audit.spec.ts` | Verifies `INITIAL_CONSENT` event logging in `plaid_consent_events`, audit trail history, and consent revocation events. |
-| `update-mode-reconnection.spec.ts` | Tests `ITEM_LOGIN_REQUIRED` re-authentication button, pre-screen modal launch, and sync resumption. |
+### Files modified
+- `src/lib/queue/jobQueue.ts` — added `transaction_notification_batch` to `JobType`
+- `src/lib/queue/jobConsumer.ts` — added batch flush handler calling `TransactionNotificationService.flushHourlyBatches()`
 
-### ✅ Mock JSON Fixtures (`tests/fixtures/`)
-1. `plaid_transactions_revenue.json` — Rent income, late fees, pet rent.
-2. `plaid_transactions_expense.json` — Property taxes, insurance, HVAC CapEx.
-3. `plaid_transactions_liability.json` — Mortgage payments.
-4. `plaid_transactions_transfer.json` — Security deposits, owner draws.
-5. `plaid_liabilities_mortgage.json` — Mortgage loan balances, APR, next payment due.
-6. `manual_transactions.json` — Manual entries for parity testing.
+## What needs to happen next
+1. **`npx prisma migrate dev --name add_notification_preferences`** — creates SQL migration for production
+2. **Wire `onTransactionApproved`** into existing transaction approval routes after `status` update
+3. **Weekly cron** — add schedule for `sendWeeklySummary` in `vercel.json`
 
-### ✅ Test Results
-- **Jest Unit Test Suite**: **26/26 passed (100%)** (`transactionIdentificationEngine`, `kpiAutoReporter`, `rulesEngine`).
-- **TSC Check**: **0 errors** across all test files and Exit Phase modules.
+## Pre-existing tsc errors (not introduced by this session)
+- `src/__tests__/financeMetrics.test.ts` — missing exports from `@/lib/finance/metrics`
+- `src/__tests__/notifications.test.ts` — `NotificationType` enum mismatch
+- `src/app/(auth)/login/page.tsx` + `register/page.tsx` — `searchParams` null checks
+- `src/app/blog/[slug]/page.tsx` — params typing issue
+- `scratch/login-page-*.tsx` — scratch file with null issues

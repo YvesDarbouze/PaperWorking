@@ -27,7 +27,7 @@ const plans = [
       'Deal Pipeline view',
       'Email support',
     ],
-    cta: 'Start Free Trial',
+    cta: 'Start Free 14-Day Trial',
     highlight: false,
   },
   {
@@ -42,7 +42,7 @@ const plans = [
       'Engine Room ledger',
       'Priority support',
     ],
-    cta: 'Start Free Trial',
+    cta: 'Start Free 14-Day Trial',
     highlight: true,
   },
   {
@@ -118,11 +118,6 @@ export default function PricingPreview() {
             >
               {/* Plan name */}
               <div className="mb-6">
-                {plan.highlight && (
-                  <span className="text-xs font-bold uppercase tracking-widest text-phase-2 mb-2 block">
-                    Most Popular
-                  </span>
-                )}
                 <h3 className={`text-lg font-bold ${plan.highlight ? 'text-white' : 'text-text-primary'}`}>
                   {plan.name}
                 </h3>

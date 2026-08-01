@@ -515,7 +515,7 @@ export async function setupMocks(page: Page, state: MockState, options?: { allow
           inquiries: [],
           cardExchangeStatus: 'none',
           inviteeBusinessCard: null,
-          sponsorBusinessCard: null,
+          leadInvestorBusinessCard: null,
           indication: null,
         },
       });

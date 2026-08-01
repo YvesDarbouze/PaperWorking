@@ -144,7 +144,7 @@ describe('stripQuotedHistoryAndSignatures', () => {
   });
 
   it('should truncate reply headers and standard signature indicators', () => {
-    const text = 'Here is my response.\nOn Oct 1, 2026, at 10:00 AM, Sponsor <sponsor@domain.com> wrote:';
+    const text = 'Here is my response.\nOn Oct 1, 2026, at 10:00 AM, LeadInvestor <leadInvestor@domain.com> wrote:';
     expect(stripQuotedHistoryAndSignatures(text)).toBe('Here is my response.');
 
     const text2 = 'Thank you!\nRegards,\nJane Doe';

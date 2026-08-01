@@ -15,7 +15,7 @@ export default function ProblemSection() {
             The spreadsheet isn&apos;t the problem. The scattered record is.
           </h3>
           <p className="text-base sm:text-lg text-on-surface-variant leading-relaxed mb-6 type-body">
-            The budget is in one spreadsheet. The inspection deadline is in an email. The contractor draw is in a text thread. The closing statement is a PDF in a folder named &quot;final FINAL.&quot; Scattered, they can&apos;t answer a simple question: which of your projects is off budget right now?
+            The budget is in one spreadsheet. The inspection deadline is in an email. The contractor draw is in a text thread. The closing statement is a PDF in a folder named &quot;final FINAL.&quot; Scattered, they can&apos;t answer a simple question: which project is off budget right now?
           </p>
           <p className="text-lg sm:text-xl font-semibold text-on-surface leading-relaxed type-body-lg">
             If your spreadsheet system works, keep it.

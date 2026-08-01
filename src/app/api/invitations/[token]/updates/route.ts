@@ -6,7 +6,7 @@ import { adminDb } from '@/lib/firebase/admin';
 
    Public endpoint (no auth required — same trust model as
    GET /api/invitations/[token]). Resolves an invitation token
-   to its project's sponsor-authored deal updates feed.
+   to its project's leadInvestor-authored deal updates feed.
 
    Allowlisted response only — authorUid is stripped, matching
    the discipline in GET /api/invitations/[token].

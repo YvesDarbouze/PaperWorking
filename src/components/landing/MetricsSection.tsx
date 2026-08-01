@@ -13,8 +13,11 @@ export default function MetricsSection() {
           <h2 className="text-3xl sm:text-4xl md:text-5xl font-extrabold tracking-tight text-on-surface mb-6 leading-tight type-h2">
             One project record. Thirty-three investor KPIs.
           </h2>
+          <p className="text-base sm:text-lg text-on-surface-variant leading-relaxed mb-4 type-body">
+            NOI. Cap rate. Cash-on-cash. DSCR. IRR. Equity multiple. Occupancy. The full list, with formulas, is public in the <Link href="/support/metrics" className="text-primary hover:underline font-semibold">Playbook</Link>.
+          </p>
           <p className="text-base sm:text-lg text-on-surface-variant leading-relaxed mb-8 type-body">
-            NOI. Cap rate. Cash-on-cash. DSCR. IRR. Equity multiple. Occupancy. Calculated automatically from the work you log — purchase price, rehab costs, rent received — not typed in as estimates. The full list, with formulas, is public in the Playbook. Stock investors get dashboards. Real estate investors deserve the same.
+            These aren&apos;t estimates you type in; they&apos;re calculated from the work you&apos;re already doing: purchase price, rehab costs, rent received.
           </p>
           <Link
             href="/support/metrics"

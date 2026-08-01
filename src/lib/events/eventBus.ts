@@ -11,6 +11,7 @@ type SSEEventMap = {
   [key: `liabilities:updated:${string}`]: { timestamp: string };
   [key: `kpi:updated:${string}`]: { timestamp: string };
   [key: `consent:changed:${string}`]: { itemId: string; newProducts: string[]; timestamp: string };
+  [key: `reconciliation:completed:${string}`]: { periodId: string; status: string; timestamp: string };
 };
 
 class SSEEventBus {

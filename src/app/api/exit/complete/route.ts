@@ -23,7 +23,7 @@ async function generateCPATaxPacketPDF(
   salePrice: number,
   loanPayoff: number,
   lpReturns: number,
-  sponsorPromote: number,
+  leadInvestorPromote: number,
   holdPeriodDays: number
 ): Promise<Buffer> {
   return new Promise((resolve, reject) => {
@@ -102,7 +102,7 @@ async function generateCPATaxPacketPDF(
       doc.moveDown(0.5);
       doc.fontSize(10).font('Helvetica').text(`   Lender Share: $${loanPayoff.toLocaleString()} USD`);
       doc.fontSize(10).font('Helvetica').text(`   Limited Partner Return (Initial + Preferred): $${Math.round(lpReturns).toLocaleString()} USD`);
-      doc.fontSize(10).font('Helvetica').text(`   General Partner Promote: $${Math.round(sponsorPromote).toLocaleString()} USD`);
+      doc.fontSize(10).font('Helvetica').text(`   General Partner Promote: $${Math.round(leadInvestorPromote).toLocaleString()} USD`);
 
       doc.end();
     } catch (err) {
@@ -148,7 +148,7 @@ export async function POST(req: NextRequest) {
     const grossProfit = salePrice - purchasePrice - rehabCosts - holdingCosts;
     const netProfit = grossProfit - (salePrice * 0.08); // commissions & closing
     const lpReturns = cashInvested * 1.08;
-    const sponsorPromote = Math.max(0, (netProfit - (lpReturns - cashInvested)) * 0.2);
+    const leadInvestorPromote = Math.max(0, (netProfit - (lpReturns - cashInvested)) * 0.2);
 
     const holdPeriodDays = 325; // default hold period for simulation
 
@@ -181,7 +181,7 @@ export async function POST(req: NextRequest) {
       salePrice,
       loanPayoff,
       lpReturns,
-      sponsorPromote,
+      leadInvestorPromote,
       holdPeriodDays
     );
 

@@ -4,22 +4,22 @@ const PHASES = [
   {
     label: 'PHASE 01',
     name: 'Acquisition',
-    copy: 'Acquisition — Decide if the deal works before you buy. The Deal Analyzer pulls live property data and an automated valuation, then projects cap rate, IRR, and cash-on-cash.',
+    copy: 'Acquisition: Decide if the deal works before you buy. The Deal Analyzer pulls live property data and an automated valuation, then projects cap rate, IRR, and cash-on-cash.',
   },
   {
     label: 'PHASE 02',
     name: 'Fund',
-    copy: 'Fund — Get the money and paperwork lined up. Track contingency deadlines and earnest money. Contracts live in one vault. Alerts fire before dates go hard.',
+    copy: 'Fund: Get the money and paperwork lined up. Track contingency deadlines and earnest money, keep contracts in one vault, get alerted before dates go hard.',
   },
   {
     label: 'PHASE 03',
     name: 'Hold',
-    copy: 'Hold — Own it and improve it. Link milestones to your line-item budget. Log expenses as they happen. Holding costs and budget-vs-actual stay visible in real time.',
+    copy: 'Hold: Own it and improve it. Link milestones to your budget, log expenses as they happen, and watch holding costs and budget vs. actual in real time.',
   },
   {
     label: 'PHASE 04',
     name: 'Exit',
-    copy: 'Exit — Sell it or keep it as a rental — and prove what it made. Generate the performance record your buyer, lender, or appraiser expects.',
+    copy: 'Exit: Sell it or keep it as a rental, and prove what it made. Generate the performance record your buyer, lender, or appraiser expects.',
   },
 ];
 
@@ -60,7 +60,7 @@ export default function LifecycleSection() {
 
         {/* Closing line */}
         <p className="text-base sm:text-lg font-semibold text-on-surface text-center max-w-2xl mx-auto type-body">
-          Deals move in order, Kanban-style. Phase gates keep the pipeline reviewable.
+          Deals move in order, Kanban-style; phase gates keep the pipeline reviewable.
         </p>
       </div>
     </section>

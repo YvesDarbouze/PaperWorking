@@ -150,7 +150,7 @@ describe('Fund Notifications & Reminders', () => {
         deepLinkUrl: '/dashboard/projects/1',
         type: 'PHASE_TRANSITION',
         objectReference: { dealAddress: '123 Main St', phase: 'Hold' },
-        actorName: 'Sponsor'
+        actorName: 'LeadInvestor'
       });
 
       expect(rendered.html).toContain('Project Phase Passage');
@@ -181,7 +181,7 @@ describe('Fund Notifications & Reminders', () => {
       const notificationId = await NotificationService.createNotification({
         recipientId: 'user_123',
         type: 'DEADLINE_ALERT',
-        actor: { uid: 'actor_123', name: 'Sponsor' },
+        actor: { uid: 'actor_123', name: 'LeadInvestor' },
         objectReference: { dealAddress: '123 Main St', time: '2 days' },
         deepLinkUrl: '/dashboard/projects/1'
       });
@@ -275,7 +275,7 @@ describe('Fund Notifications & Reminders', () => {
 
       await NotificationService.broadcastProjectNotification('project_123', {
         type: 'LOAN_STATUS_UPDATE',
-        actor: { uid: 'actor_123', name: 'Sponsor' },
+        actor: { uid: 'actor_123', name: 'LeadInvestor' },
         objectReference: { dealAddress: '123 Main St' },
         deepLinkUrl: '/dashboard/projects/1'
       });

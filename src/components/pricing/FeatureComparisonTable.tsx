@@ -8,8 +8,8 @@ interface FeatureComparisonTableProps {
 
 const PLAN_COLUMNS = [
   { key: 'vendor', label: 'Vendor', price: '$390/yr', cta: 'Join the Marketplace', planLabel: 'Vendor Marketplace Annual' },
-  { key: 'individual', label: 'Investor', price: '$499/yr', cta: 'Start Investor Trial', planLabel: 'Investor Annual' },
-  { key: 'team', label: 'Investment Team', price: '$999/yr', cta: 'Start Team Trial', planLabel: 'Investment Team Annual' },
+  { key: 'individual', label: 'Investor', price: '$499/yr', cta: 'Start Free 14-Day Trial', planLabel: 'Investor Annual' },
+  { key: 'team', label: 'Investment Team', price: '$999/yr', cta: 'Start Free 14-Day Trial', planLabel: 'Investment Team Annual' },
 ];
 
 export default function FeatureComparisonTable({ onSelectPlan }: FeatureComparisonTableProps) {

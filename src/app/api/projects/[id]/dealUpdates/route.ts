@@ -4,7 +4,7 @@ import { adminDb } from '@/lib/firebase/admin';
 import { FieldValue } from 'firebase-admin/firestore';
 
 /* ═══════════════════════════════════════════════════════════════
-   Deal Updates — sponsor-authored progress posts, subcollection
+   Deal Updates — leadInvestor-authored progress posts, subcollection
    under projects/{id}. The "social" layer: investors (including
    external guests via /api/invitations/[token]/updates) see a
    read-only feed of these.
@@ -102,7 +102,7 @@ export async function POST(
     }
 
     const authorSnap = await adminDb.collection('users').doc(uid).get();
-    const authorName = authorSnap.data()?.displayName || authorSnap.data()?.name || 'Sponsor';
+    const authorName = authorSnap.data()?.displayName || authorSnap.data()?.name || 'LeadInvestor';
 
     const docRef = adminDb
       .collection('projects')

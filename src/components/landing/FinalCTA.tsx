@@ -31,7 +31,7 @@ export default function FinalCTA() {
                 href="/pricing"
                 className="luminous-button px-8 py-4 rounded-xl text-[15px] font-semibold flex items-center gap-2 group type-cta"
               >
-                <span>Start 14-Day Trial</span>
+                <span>Start Free 14-Day Trial</span>
                 <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
               </Link>
 

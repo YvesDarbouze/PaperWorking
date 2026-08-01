@@ -153,14 +153,15 @@ test.describe('PaperWorking E2E — Critical Path Deployment Gate', () => {
 
     const body = await page.locator('body').textContent() ?? '';
 
-    // All three price points must appear
-    expect(body).toContain('$39');
-    expect(body).toContain('$59');
-    expect(body).toContain('$99');
+    // All three annual price points must appear
+    expect(body).toContain('$499');
+    expect(body).toContain('$999');
+    expect(body).toContain('$390');
 
-    // No phantom prices from the old catalog
-    expect(body).not.toContain('$249/mo');
-    expect(body).not.toContain('$499/mo');
+    // No monthly prices or phantom prices
+    expect(body).not.toContain('$39/mo');
+    expect(body).not.toContain('$59/mo');
+    expect(body).not.toContain('$99/mo');
 
     // Trial CTA must exist
     await expect(page.locator('a, button').filter({ hasText: /trial|get started|start/i }).first()).toBeVisible();

@@ -97,7 +97,7 @@ export default function TeamInviteClient({ invite, token }: { invite: TeamInvita
         <div>
           <h1 className="text-2xl font-bold text-text-primary tracking-tight">Team Invitation</h1>
           <p className="text-sm text-text-secondary mt-1">
-            {invite.invitedByName} invited you to join their organization.
+            {invite.invitedByName} invited you to join their organization. Create your account and start your first Project. 14-day trial, no charge until day 15.
           </p>
         </div>
 

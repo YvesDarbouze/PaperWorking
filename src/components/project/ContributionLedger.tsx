@@ -299,7 +299,7 @@ export function ContributionLedger({ projectId }: Props) {
           fileSize: file.size,
           mimeType: file.type,
           uploadedByUid: user?.uid || 'system',
-          uploadedByName: user?.displayName || 'Sponsor',
+          uploadedByName: user?.displayName || 'LeadInvestor',
           uploadedAt: new Date().toISOString(),
           notes: 'Capital Stack Statement (System Generated)',
         });
@@ -433,7 +433,7 @@ export function ContributionLedger({ projectId }: Props) {
         <div className="p-8 text-center text-pw-muted">
           <AlertCircle className="w-8 h-8 mx-auto mb-2 opacity-40 text-pw-muted" />
           <p className="text-sm font-medium">No contribution records configured.</p>
-          <p className="text-xs mt-1 font-light">Add Sponsor or Investor capital records using the action above.</p>
+          <p className="text-xs mt-1 font-light">Add LeadInvestor or Investor capital records using the action above.</p>
         </div>
       ) : (
         <div className="overflow-x-auto">
@@ -526,7 +526,7 @@ export function ContributionLedger({ projectId }: Props) {
                   value={formName} 
                   onChange={(e) => setFormName(e.target.value)} 
                   required
-                  placeholder="e.g. Apex Sponsor Equity"
+                  placeholder="e.g. Apex LeadInvestor Equity"
                   className="w-full p-2 border border-pw-border bg-pw-white focus:outline-none focus:border-[#7A9EAA] text-pw-black rounded"
                 />
               </div>
@@ -537,7 +537,7 @@ export function ContributionLedger({ projectId }: Props) {
                   type="email" 
                   value={formEmail} 
                   onChange={(e) => setFormEmail(e.target.value)} 
-                  placeholder="e.g. sponsor@apexcapital.io"
+                  placeholder="e.g. leadInvestor@apexcapital.io"
                   className="w-full p-2 border border-pw-border bg-pw-white focus:outline-none focus:border-[#7A9EAA] text-pw-black rounded"
                 />
               </div>
@@ -551,7 +551,7 @@ export function ContributionLedger({ projectId }: Props) {
                     className="w-full p-2 border border-pw-border bg-pw-white focus:outline-none focus:border-[#7A9EAA] text-pw-black rounded"
                   >
                     <option value="Investor">Investor</option>
-                    <option value="Sponsor">Sponsor</option>
+                    <option value="LeadInvestor">LeadInvestor</option>
                     <option value="Co-GP">Co-GP</option>
                     <option value="Preferred Equity">Preferred Equity</option>
                   </select>
@@ -663,7 +663,7 @@ export function ContributionLedger({ projectId }: Props) {
                     className="w-full p-2 border border-pw-border bg-pw-white focus:outline-none focus:border-[#7A9EAA] text-pw-black rounded"
                   >
                     <option value="Investor">Investor</option>
-                    <option value="Sponsor">Sponsor</option>
+                    <option value="LeadInvestor">LeadInvestor</option>
                     <option value="Co-GP">Co-GP</option>
                     <option value="Preferred Equity">Preferred Equity</option>
                   </select>

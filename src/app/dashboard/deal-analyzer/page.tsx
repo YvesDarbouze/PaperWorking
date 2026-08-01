@@ -9,6 +9,7 @@ import { deriveAllMetrics } from '@/lib/metrics/reiMetrics';
 import { useTenant } from '@/context/TenantContext';
 import { useAuth } from '@/context/AuthContext';
 import { useAllDealsSync } from '@/hooks/useAllProjectsSync';
+import { DealAnalyzerWizard } from '@/components/evaluation/DealAnalyzerWizard';
 import { 
   ArrowLeft, 
   Plus, 
@@ -119,7 +120,8 @@ export default function DealAnalyzerPage() {
   const projects = useProjectStore((state) => state.projects);
 
   // View state: 'list' or 'analyze'
-  const [view, setView] = useState<'list' | 'analyze'>('list');
+  const [view, setView] = useState<'list' | 'analyze'>('analyze');
+  const [mode, setMode] = useState<'wizard' | 'classic'>('wizard');
   const [selectedProjectId, setSelectedProjectId] = useState<string | null>(null);
   const [inputs, setInputs] = useState<DealInputs>(DEFAULT_INPUTS);
   const [customPeriods, setCustomPeriods] = useState<number[]>([30, 90, 180, 270]);
@@ -229,6 +231,7 @@ export default function DealAnalyzerPage() {
       setSelectedProjectId(null);
       setInputs(DEFAULT_INPUTS);
     }
+    setMode('wizard');
     setView('analyze');
   };
 
@@ -808,6 +811,28 @@ export default function DealAnalyzerPage() {
           </button>
         ) : (
           <div className="flex items-center gap-2">
+            <div className="flex items-center bg-white/5 border border-white/10 rounded-xl p-1 text-xs">
+              <button
+                onClick={() => setMode('wizard')}
+                className={`px-3 py-1.5 rounded-lg font-bold transition-all ${
+                  mode === 'wizard'
+                    ? 'bg-emerald-500 text-slate-950 shadow-sm'
+                    : 'text-slate-400 hover:text-white'
+                }`}
+              >
+                Wizard Shell
+              </button>
+              <button
+                onClick={() => setMode('classic')}
+                className={`px-3 py-1.5 rounded-lg font-bold transition-all ${
+                  mode === 'classic'
+                    ? 'bg-emerald-500 text-slate-950 shadow-sm'
+                    : 'text-slate-400 hover:text-white'
+                }`}
+              >
+                Classic Terminal
+              </button>
+            </div>
             <button
               onClick={handleLoadDemoFinancials}
               className="px-3 py-1.5 text-xs font-semibold rounded-lg bg-white/5 hover:bg-white/10 border border-white/10 text-pw-success hover:text-pw-success/80 transition-all active:scale-95 duration-200"
@@ -824,6 +849,11 @@ export default function DealAnalyzerPage() {
           </div>
         )}
       </div>
+
+      {/* ── WIZARD VIEW ── */}
+      {view === 'analyze' && mode === 'wizard' && (
+        <DealAnalyzerWizard />
+      )}
 
       {/* ── LIST VIEW ── */}
       {view === 'list' && (
@@ -919,8 +949,8 @@ export default function DealAnalyzerPage() {
         </div>
       )}
 
-      {/* ── QUICK UNDERWRITE FORM ── */}
-      {view === 'analyze' && (
+      {/* ── QUICK UNDERWRITE FORM (CLASSIC TERMINAL MODE) ── */}
+      {view === 'analyze' && mode === 'classic' && (
         <div className="grid grid-cols-1 xl:grid-cols-12 gap-8 items-start relative pb-20">
           
           <div className="xl:col-span-8 space-y-6">

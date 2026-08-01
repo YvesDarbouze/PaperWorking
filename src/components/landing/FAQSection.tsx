@@ -11,7 +11,7 @@ const FAQS = [
   },
   {
     question: "Will this help me connect with investors who want in on my Deals?",
-    answer: "Yes. PaperWorking's Deal Marketplace lets you list your Deal with its underwriting — Cap Rate, COC, projected IRR — so other investors can discover it and signal interest. You see interest accumulate in real time. PaperWorking facilitates introductions and interest tracking only; no funds are transacted on the platform."
+    answer: "Yes. PaperWorking's Deal Marketplace lets you list your Deal with its underwriting — Cap Rate, COC, projected IRR — so other investors can discover it and signal interest. You see interest accumulate in real time. PaperWorking facilitates introductions and interest tracking only. No funds, securities, or ownership interests are offered, sold, or transferred through the platform. All transactions occur outside PaperWorking, directly between the parties."
   },
   {
     question: "How does PaperWorking protect my profit margins?",

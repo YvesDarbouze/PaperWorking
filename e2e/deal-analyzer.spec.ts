@@ -1,127 +1,212 @@
 import { test, expect } from '@playwright/test';
 import { setupMocks, createDefaultState, safeGoto } from './mocks';
-import * as fs from 'fs';
-import * as path from 'path';
 
-test.use({ video: 'on' });
-
-test.describe('PaperWorking E2E — Deal Analyzer & Quick Analyze (AQ-15)', () => {
+test.describe('PaperWorking E2E — Deal Analyzer & Prompt 3 Strategy Wizards', () => {
   test.beforeEach(async ({ page }) => {
-    // Create screenshots directory if it doesn't exist
-    const screenshotDir = path.join(process.cwd(), 'screenshots');
-    if (!fs.existsSync(screenshotDir)) {
-      fs.mkdirSync(screenshotDir);
-    }
-
-    // Bypass Cookie Consent popup by pre-seeding localStorage
+    // Clear localStorage and bypass Cookie Consent popup
     await page.addInitScript(() => {
-    try {
-    
-          window.localStorage.setItem('pw_cookie_consent', JSON.stringify({ essential: true, analytics: true, marketing: true }));
-        
-    } catch (e) {}
-  });
-  });
+      try {
+        window.localStorage.clear();
+        window.localStorage.setItem(
+          'pw_cookie_consent',
+          JSON.stringify({ essential: true, analytics: true, marketing: true })
+        );
+      } catch (e) {}
+    });
 
-  test('AQ-15 Deal Analyzer navigation, List View, Quick Analyze, DEMO_FINANCIALS seed comparison, and Kanban integration', async ({ page }) => {
     const state = createDefaultState();
-    
-    // Add a couple of initial projects to state
-    state.projects = [
-      {
-        id: 'project_1',
-        propertyName: 'Evergreen Terrace',
-        address: '742 Evergreen Terrace',
-        dispositionType: 'RENT',
-        currentPhase: 1,
-        status: 'Lead',
-        financials: {
-          purchasePrice: 27900000, // cents
-          estimatedARV: 32000000, // cents
-          projectedRehabCost: 3500000, // cents
-          financingType: 'Financed',
-          downPaymentPercent: 20,
-          loanInterestRate: 6.5,
-          loanTermYears: 30,
-          loanAmount: 22320000, // cents
-          monthlyGrossRent: 1950,
-          vacancyRatePercent: 7,
-          tax: 200,
-          insurance: 58,
-          utilities: 125,
-          management_pct: 10,
-          maintenance_pct: 10,
-          totalCashInvested: 6000000, // cents
-        },
-        members: {
-          user_123: { role: 'owner' },
-        },
-        createdAt: new Date().toISOString(),
-      }
-    ];
-
-    // Setup network/auth intercepts
+    state.projects = []; // Fresh state for wizard test isolation
     await setupMocks(page, state);
 
-    // 1. Navigate to Deal Analyzer
     await safeGoto(page, '/dashboard/deal-analyzer');
 
-    // Confirm List View renders the projects list
-    const projectRow = page.locator('div:has-text("Evergreen Terrace")').first();
-    await expect(projectRow).toBeVisible({ timeout: 10000 });
+    await page.evaluate(() => {
+      try {
+        window.localStorage.removeItem('deal_analyzer_draft_rental');
+        window.localStorage.removeItem('deal_analyzer_draft_flip');
+        window.localStorage.removeItem('deal_analyzer_draft_brrrr');
+        window.localStorage.clear();
+      } catch (e) {}
+    });
 
-    // 2. Click Analyze a New Deal button
-    const analyzeNewBtn = page.locator('button', { hasText: 'Analyze a new Deal' }).first();
-    await analyzeNewBtn.click();
+    // If "Analyze a new Deal" button is on screen (list view), click it to switch to analyze view
+    const analyzeBtn = page.locator('button:has-text("Analyze a new Deal")');
+    if (await analyzeBtn.isVisible()) {
+      await analyzeBtn.click();
+    }
 
-    // Confirm we are on the analyze form view
-    const addressInput = page.locator('#input-address');
-    await expect(addressInput).toBeVisible();
+    // Dismiss draft modal if present
+    const startFreshBtn = page.locator('button:has-text("Start Fresh Deal")');
+    if (await startFreshBtn.isVisible()) {
+      await startFreshBtn.click();
+    }
+  });
 
-    // 3. Click Load DEMO_FINANCIALS button
-    const loadDemoBtn = page.locator('#btn-load-demo').first();
-    await loadDemoBtn.click();
+  test('AQ-15 navigation to Deal Analyzer renders Strategy Chooser or active wizard', async ({ page }) => {
+    await expect(page.locator('#wizard-step-title').or(page.getByText('Choose Investment Strategy'))).toBeVisible({ timeout: 15000 });
+  });
 
-    // Verify inputs have been populated
-    await expect(addressInput).toHaveValue('Evergreen Terrace');
+  const selectStrategy = async (page: any, strategyId: string) => {
+    // Ensure fresh localStorage state before clicking strategy
+    await page.evaluate((strat: string) => {
+      try {
+        window.localStorage.removeItem(`deal_analyzer_draft_${strat}`);
+      } catch (e) {}
+    }, strategyId);
 
-    // Verify the Scorecard recomputes and matches Option B Seed targets
-    const scorecard = page.locator('div:has-text("Live Metrics Scorecard")').first();
-    await expect(scorecard).toBeVisible();
-    await expect(scorecard).toContainText('$12,486'); // NOI
-    await expect(scorecard).toContainText('-$370/mo'); // Cash Flow (monthly)
-    await expect(scorecard).toContainText('4.48%'); // Cap Rate
-    await expect(scorecard).toContainText('-7.41%'); // CoC
-    await expect(scorecard).toContainText('0.74x'); // DSCR
+    const chooser = page.getByText('Choose Investment Strategy');
+    if (await chooser.isVisible()) {
+      await page.click(`#card-strategy-${strategyId}`);
+    }
 
-    // Take a screenshot of the scorecard calculation
-    await scorecard.screenshot({ path: 'screenshots/scorecard-rent.png' });
+    const freshBtn = page.locator('button:has-text("Start Fresh Deal")');
+    try {
+      if (await freshBtn.isVisible({ timeout: 1500 })) {
+        await freshBtn.click();
+      }
+    } catch (e) {}
+  };
 
-    // 4. Test Save Deal analysis
-    const saveDealBtn = page.locator('button', { hasText: 'Save Deal' }).first();
-    await saveDealBtn.click();
+  test('Prompt 3 — Rental Strategy End-to-End Wizard (R-fields only)', async ({ page }) => {
+    await selectStrategy(page, 'rental');
+    await expect(page.locator('#wizard-step-title')).toContainText('The Property');
 
-    // Confirm it successfully returns to list view
-    await expect(projectRow).toBeVisible({ timeout: 15000 });
+    // Step 1: The Property (R: purchasePrice = 300000, monthlyRent = 2500)
+    await page.locator('#field-input-purchasePrice').fill('300000');
+    await page.locator('#field-input-purchasePrice').blur();
+    await page.locator('#field-input-monthlyRent').fill('2500');
+    await page.locator('#field-input-monthlyRent').blur();
+    await page.waitForTimeout(150);
+    await page.locator('button:has-text("Next Step")').click();
 
-    // 5. Test Kanban view rent edit
-    await safeGoto(page, '/dashboard/projects');
+    // Step 2: Purchase & Loan (defaults: 25% down, 6.75% rate, 30yr, 3% closing)
+    await expect(page.locator('#wizard-step-title')).toContainText('Purchase & Loan');
+    await page.waitForTimeout(150);
+    await page.locator('button:has-text("Next Step")').click();
 
-    // Locate the Evergreen Terrace project card using its specific aria-label
-    const kanbanCard = page.locator('[aria-label="View project: Evergreen Terrace"]').first();
-    await expect(kanbanCard).toBeVisible({ timeout: 15000 });
+    // Step 3: Expenses (R: propertyTaxesAnnual = 3600, insuranceAnnual = 1200)
+    await expect(page.locator('#wizard-step-title')).toContainText('Property Expenses');
+    await page.locator('#field-input-propertyTaxesAnnual').fill('3600');
+    await page.locator('#field-input-propertyTaxesAnnual').blur();
+    await page.locator('#field-input-insuranceAnnual').fill('1200');
+    await page.locator('#field-input-insuranceAnnual').blur();
+    await page.waitForTimeout(150);
+    await page.locator('button:has-text("Next Step")').click();
 
-    // Check that rent edit trigger is visible on hover/card using title attribute
-    const rentValDisplay = kanbanCard.locator('[title="Click to edit rent"]').first();
-    await expect(rentValDisplay).toBeVisible({ timeout: 10000 });
-    await rentValDisplay.click({ force: true });
+    // Step 4: Long-Term Projections (defaults 3/3/3 over 10yr)
+    await expect(page.locator('#wizard-step-title')).toContainText('Long-Term Projections');
+    await page.waitForTimeout(150);
+    await page.locator('button:has-text("Next Step")').click();
 
-    // Fill new rent value
-    const rentInput = kanbanCard.locator('input[type="text"]').first();
-    await rentInput.fill('2200');
-    await rentInput.press('Enter');
+    // Step 5: Review & Execute
+    await expect(page.locator('#wizard-step-title')).toContainText('Review & Execute');
+    const runBtn = page.getByRole('button', { name: 'Run Instant Analysis' });
+    await expect(runBtn).toBeVisible({ timeout: 10000 });
+    await runBtn.click();
+    await page.waitForTimeout(300);
 
-    // Confirm new rent is persisted and displayed on card formatted as $2.2k
-    await expect(kanbanCard).toContainText('$2.2k');
+    // Verify Results screen renders with deal verdict
+    await expect(page.locator('#deal-verdict-title')).toBeVisible({ timeout: 10000 });
+  });
+
+  test('Prompt 3 — Fix & Flip Strategy End-to-End Wizard (R-fields only)', async ({ page }) => {
+    await selectStrategy(page, 'flip');
+    await expect(page.locator('#wizard-step-title')).toContainText('The Deal');
+
+    // Step 1: The Deal (R: purchasePrice = 160000, arv = 220000)
+    await page.locator('#field-input-purchasePrice').fill('160000');
+    await page.locator('#field-input-purchasePrice').blur();
+    await page.locator('#field-input-arv').fill('220000');
+    await page.locator('#field-input-arv').blur();
+    await page.waitForTimeout(150);
+    await page.locator('button:has-text("Next Step")').click();
+
+    // Step 2: Rehab & Timeline (R: rehabBudget = 30000)
+    await expect(page.locator('#wizard-step-title')).toContainText('Rehab & Timeline');
+    await page.locator('#field-input-rehabBudget').fill('30000');
+    await page.locator('#field-input-rehabBudget').blur();
+    await page.waitForTimeout(150);
+    await page.locator('button:has-text("Next Step")').click();
+
+    // Step 3: Hard Money Financing
+    await expect(page.locator('#wizard-step-title')).toContainText('Hard Money Financing');
+    await page.waitForTimeout(150);
+    await page.locator('button:has-text("Next Step")').click();
+
+    // Step 4: Holding Costs & Purchase Fees
+    await expect(page.locator('#wizard-step-title')).toContainText('Holding Costs & Purchase Fees');
+    await page.waitForTimeout(150);
+    await page.locator('button:has-text("Next Step")').click();
+
+    // Step 5: Resale & Exit Costs
+    await expect(page.locator('#wizard-step-title')).toContainText('Resale & Exit Costs');
+    await page.waitForTimeout(150);
+    await page.locator('button:has-text("Next Step")').click();
+
+    // Step 6: Review & Execute
+    await expect(page.locator('#wizard-step-title')).toContainText('Review & Execute');
+    const runBtn = page.getByRole('button', { name: 'Run Instant Analysis' });
+    await expect(runBtn).toBeVisible({ timeout: 10000 });
+    await runBtn.click();
+    await page.waitForTimeout(300);
+
+    // Verify Results screen renders with deal verdict
+    await expect(page.locator('#deal-verdict-title')).toBeVisible({ timeout: 10000 });
+  });
+
+  test('Prompt 3 — BRRRR Strategy End-to-End Wizard (R-fields only)', async ({ page }) => {
+    await selectStrategy(page, 'brrrr');
+    await expect(page.locator('#wizard-step-title')).toContainText('The Deal');
+
+    // Step 1: The Deal (R: purchasePrice = 130000, arv = 180000)
+    await page.locator('#field-input-purchasePrice').fill('130000');
+    await page.locator('#field-input-purchasePrice').blur();
+    await page.locator('#field-input-arv').fill('180000');
+    await page.locator('#field-input-arv').blur();
+    await page.waitForTimeout(150);
+    await page.locator('button:has-text("Next Step")').click();
+
+    // Step 2: Rehab & Timeline (R: rehabBudget = 30000)
+    await expect(page.locator('#wizard-step-title')).toContainText('Rehab & Timeline');
+    await page.locator('#field-input-rehabBudget').fill('30000');
+    await page.locator('#field-input-rehabBudget').blur();
+    await page.waitForTimeout(150);
+    await page.locator('button:has-text("Next Step")').click();
+
+    // Step 3: Bridge Loan & Holding
+    await expect(page.locator('#wizard-step-title')).toContainText('Bridge Loan & Holding');
+    await page.waitForTimeout(150);
+    await page.locator('button:has-text("Next Step")').click();
+
+    // Step 4: Post-Rehab Rent & Expenses (R: monthlyRentPostRehab = 2100, propertyTaxesAnnual = 2400, insuranceAnnual = 1200)
+    await expect(page.locator('#wizard-step-title')).toContainText('Post-Rehab Rent & Expenses');
+    await page.locator('#field-input-monthlyRentPostRehab').fill('2100');
+    await page.locator('#field-input-monthlyRentPostRehab').blur();
+    await page.locator('#field-input-propertyTaxesAnnual').fill('2400');
+    await page.locator('#field-input-propertyTaxesAnnual').blur();
+    await page.locator('#field-input-insuranceAnnual').fill('1200');
+    await page.locator('#field-input-insuranceAnnual').blur();
+    await page.waitForTimeout(150);
+    await page.locator('button:has-text("Next Step")').click();
+
+    // Step 5: Takeout Refinancing
+    await expect(page.locator('#wizard-step-title')).toContainText('Takeout Refinancing');
+    await page.waitForTimeout(150);
+    await page.locator('button:has-text("Next Step")').click();
+
+    // Step 6: Long-Term Projections
+    await expect(page.locator('#wizard-step-title')).toContainText('Long-Term Projections');
+    await page.waitForTimeout(150);
+    await page.locator('button:has-text("Next Step")').click();
+
+    // Step 7: Review & Execute
+    await expect(page.locator('#wizard-step-title')).toContainText('Review & Execute');
+    const runBtn = page.getByRole('button', { name: 'Run Instant Analysis' });
+    await expect(runBtn).toBeVisible({ timeout: 10000 });
+    await runBtn.click();
+    await page.waitForTimeout(300);
+
+    // Verify Results screen renders with deal verdict
+    await expect(page.locator('#deal-verdict-title')).toBeVisible({ timeout: 10000 });
   });
 });

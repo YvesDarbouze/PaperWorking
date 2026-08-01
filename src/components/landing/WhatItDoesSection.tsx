@@ -12,10 +12,7 @@ export default function WhatItDoesSection() {
             One home for the whole deal.
           </h2>
           <p className="text-base sm:text-lg text-on-surface-variant leading-relaxed mb-6 type-body">
-            Each investment gets a Project: one workspace for everything that happens to the deal. Tasks, deadlines, documents, budgets, expenses. You log the work. PaperWorking calculates your investor metrics from it.
-          </p>
-          <p className="text-base sm:text-lg font-semibold text-primary/95 leading-relaxed type-body">
-            The numbers are a byproduct of the work, not extra work.
+            Each investment gets a Project: one workspace for the deal and everything that happens to it. Tasks, deadlines, documents, budgets, and expenses live there. Log the work; PaperWorking calculates your investor metrics from it.
           </p>
         </div>
       </div>

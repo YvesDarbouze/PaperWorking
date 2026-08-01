@@ -64,7 +64,7 @@ describe('Card F5.5 — Closing Execution & Recording Schema Validation', () => 
       lawyerVerified: true,
       blockchainTxHash: '0x123abc456def',
       chainOfTitleStatus: 'verified',
-      reconciliationOverrideReason: 'Sponsor covers minor cash difference',
+      reconciliationOverrideReason: 'LeadInvestor covers minor cash difference',
       isReconciliationOverridden: true,
       closingStatus: 'signed',
       actualClosingDate: '2026-07-19',

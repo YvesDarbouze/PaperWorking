@@ -244,7 +244,7 @@ export interface ApplicationUser {
   updatedAt: Date;
 }
 
-export type CapitalPartyType = 'Sponsor' | 'Investor' | 'Co-GP' | 'Preferred Equity';
+export type CapitalPartyType = 'LeadInvestor' | 'Investor' | 'Co-GP' | 'Preferred Equity';
 
 export interface FractionalInvestor {
   id: string;
@@ -2832,7 +2832,7 @@ export interface ContributionEntry {
   status: 'pledged' | 'transferred' | 'cleared' | 'soft-committed' | 'docs-out' | 'signed' | 'funds-confirmed';
   evidenceDocId?: string | null;
   evidenceDocUrl?: string | null;
-  partyType: 'Sponsor' | 'Investor' | 'Co-GP' | 'Preferred Equity';
+  partyType: 'LeadInvestor' | 'Investor' | 'Co-GP' | 'Preferred Equity';
   createdAt?: string | Date;
 }
 

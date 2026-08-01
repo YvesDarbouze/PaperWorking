@@ -3488,24 +3488,24 @@ export function calculateCapitalStack(project: any): CapitalStackResult {
   const investors = project?.fractionalInvestors || [];
 
   let confirmedInvestorEquity = 0;
-  let confirmedSponsorEquity = 0;
+  let confirmedLeadInvestorEquity = 0;
 
   if (contributions.length > 0) {
     const confirmedInvestorCents = contributions
       .filter((c: any) => (c.status === 'funds-confirmed' || c.status === 'cleared') && c.partyType === 'Investor')
       .reduce((sum: number, c: any) => sum + (c.amountCents || 0), 0);
-    const confirmedSponsorCents = contributions
-      .filter((c: any) => (c.status === 'funds-confirmed' || c.status === 'cleared') && (c.partyType === 'Sponsor' || c.partyType === 'Co-GP'))
+    const confirmedLeadInvestorCents = contributions
+      .filter((c: any) => (c.status === 'funds-confirmed' || c.status === 'cleared') && (c.partyType === 'LeadInvestor' || c.partyType === 'Co-GP'))
       .reduce((sum: number, c: any) => sum + (c.amountCents || 0), 0);
     confirmedInvestorEquity = confirmedInvestorCents / 100;
-    confirmedSponsorEquity = confirmedSponsorCents / 100;
+    confirmedLeadInvestorEquity = confirmedLeadInvestorCents / 100;
   } else {
     // Fallback to fractionalInvestors
     confirmedInvestorEquity = investors
       .filter((inv: any) => inv.status === 'confirmed' && inv.partyType === 'Investor')
       .reduce((sum: number, inv: any) => sum + (inv.contributionAmount || 0), 0);
-    confirmedSponsorEquity = investors
-      .filter((inv: any) => inv.status === 'confirmed' && (inv.partyType === 'Sponsor' || inv.partyType === 'Co-GP'))
+    confirmedLeadInvestorEquity = investors
+      .filter((inv: any) => inv.status === 'confirmed' && (inv.partyType === 'LeadInvestor' || inv.partyType === 'Co-GP'))
       .reduce((sum: number, inv: any) => sum + (inv.contributionAmount || 0), 0);
   }
 
@@ -3524,7 +3524,7 @@ export function calculateCapitalStack(project: any): CapitalStackResult {
       return { ...s, amount: confirmedInvestorEquity, status: 'Funded' };
     }
     if (s.category === 'GP Co-investment') {
-      return { ...s, amount: confirmedSponsorEquity, status: 'Funded' };
+      return { ...s, amount: confirmedLeadInvestorEquity, status: 'Funded' };
     }
     return s;
   });

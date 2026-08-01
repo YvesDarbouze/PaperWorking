@@ -83,7 +83,7 @@ All financial figures require explicit user input or are clearly marked as estim
    - Adapts theme colors dynamically: green for balanced ($0 variance), red for unbalanced.
 5. **Typed-Override Safeguards**:
    - If the variance is non-zero, it locks final signatures / e-sign actions, displaying a `Reconciliation Blocked` alert.
-   - Enables users to type an override justification (e.g. sponsor covering remaining cash outside the stack) and save it to the project's closing room metadata.
+   - Enables users to type an override justification (e.g. leadInvestor covering remaining cash outside the stack) and save it to the project's closing room metadata.
    - Once saved, the block is cleared and e-signatures are unlocked, displaying the recorded reason.
 
 ---
@@ -142,7 +142,7 @@ All financial figures require explicit user input or are clearly marked as estim
      - **In-service Date Candidate** (Closing Date).
      - **Debt Service Reference** (Principal amount and interest rate).
      - **Hazard Insurance Premium** (Annualized premium).
-     - **Equity Structure** (Equity capitalization details, Sponsor/Private Money contributions + Fractional Investor holdings).
+     - **Equity Structure** (Equity capitalization details, LeadInvestor/Private Money contributions + Fractional Investor holdings).
 
 ---
 

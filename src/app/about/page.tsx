@@ -5,9 +5,7 @@ import LandingFooter from '@/components/landing/LandingFooter';
 
 /* ═══════════════════════════════════════════════════════
    /about — Company page
-   
-   Verbatim approved copy — 2026-07-29
-   Obsidian glass theme. Unified LandingHeader navigation.
+   Verbatim approved copy — Prompt 6
    ═══════════════════════════════════════════════════════ */
 
 export const metadata: Metadata = {
@@ -19,11 +17,11 @@ export const metadata: Metadata = {
 const PRINCIPLES = [
   {
     n: 1,
-    body: 'Built for investors, not adapted for them. The four-phase lifecycle is the product\'s spine, not a feature.',
+    body: "Built for investors, not adapted for them. The four-phase lifecycle is the product's spine, not a feature.",
   },
   {
     n: 2,
-    body: 'Numbers over adjectives. We publish the 33 KPIs and their formulas. If a metric matters, you can check the math.',
+    body: 'Numbers over adjectives. We publish the 33 KPIs and their formulas; if a metric matters, you can check the math.',
   },
   {
     n: 3,
@@ -31,12 +29,11 @@ const PRINCIPLES = [
   },
   {
     n: 4,
-    // COMPLIANCE: verbatim — "it never moves money" and "not investment advice" are required compliance language. Do not alter.
-    body: 'Honest about what we do. PaperWorking tracks interest; it never moves money. It produces reports for your CPA; it doesn\'t file your taxes. It\'s project management software, not investment advice.',
+    body: "Honest about what we do. PaperWorking tracks interest; it never moves money. It produces reports for your CPA; it doesn't file your taxes. It's project management software, not investment advice.",
   },
   {
     n: 5,
-    body: 'Community compounds. Tools bring investors here; the network of deals and professionals keeps them.',
+    body: 'Community compounds. Tools bring investors here; the network of deals and professionals keeps them. Come for the tools, stay for the community.',
   },
 ];
 
@@ -46,10 +43,8 @@ export default function AboutPage() {
       <LandingHeader />
 
       <main className="max-w-5xl mx-auto px-6 md:px-margin-desktop pt-32 pb-24">
-
         {/* ── Hero ── */}
-        <section className="mb-28">
-          {/* Eyebrow pill */}
+        <section className="mb-20">
           <span className="inline-flex items-center gap-2 glass-panel px-4 py-1.5 rounded-full mb-8 border border-white/10">
             <span className="w-1.5 h-1.5 rounded-full bg-primary" />
             <span className="font-jetbrains text-[10px] uppercase tracking-widest text-primary type-eyebrow">
@@ -57,14 +52,17 @@ export default function AboutPage() {
             </span>
           </span>
 
-          {/* Headline — only .type-display on this page */}
-          <h1 className="font-headline-lg text-headline-lg text-on-surface tracking-tight leading-tight mb-8 type-display">
+          <h1 className="font-headline-lg text-headline-lg text-on-surface tracking-tight leading-tight mb-4 type-display">
             Stock investors get dashboards. Real estate investors deserve the same.
           </h1>
+
+          <p className="text-base sm:text-lg text-on-surface-variant max-w-2xl leading-relaxed type-body-lg">
+            Finally, project management software built for serious real estate investors.
+          </p>
         </section>
 
         {/* ── Why PaperWorking exists ── */}
-        <section className="mb-28">
+        <section className="mb-20">
           <div
             className="rounded-2xl p-10 sm:p-14"
             style={{
@@ -75,35 +73,25 @@ export default function AboutPage() {
               borderLeft: '1px solid rgba(255,255,255,0.12)',
             }}
           >
-            <p className="font-label-sm text-label-sm text-primary uppercase tracking-widest mb-6 type-eyebrow">
-              Why PaperWorking exists
-            </p>
+            <h2 className="font-label-sm text-label-sm text-primary uppercase tracking-widest mb-6 type-eyebrow font-bold">
+              Why PaperWorking Exists
+            </h2>
             <div className="space-y-6">
               <p className="font-body-lg text-body-lg text-on-surface-variant leading-relaxed type-body">
-                A stock investor opens an app and sees, in seconds, what every position is worth and how it&apos;s performing. A real estate investor — carrying far larger positions — gets a spreadsheet from 2019 and a folder of PDFs.
+                A stock investor can open an app and see, in seconds, what every position is worth and how it&apos;s performing. A real estate investor, carrying far larger positions, gets a spreadsheet from 2019 and a folder of PDFs.
               </p>
               <p className="font-body-lg text-body-lg text-on-surface-variant leading-relaxed type-body">
-                We built PaperWorking to close that gap. Not with another calculator. Not with office task software relabeled for investors. A system built on the way a real estate deal actually works: Acquisition, Fund, Hold, Exit.
+                We built PaperWorking to close that gap with a system modeled on how a real estate deal actually works: Acquisition, Fund, Hold, Exit.
               </p>
               <p className="font-body-lg text-body-lg text-on-surface-variant leading-relaxed type-body">
-                The idea is simple. You already do the work: the walkthroughs, the budgets, the contractor calls, the rent collection. That work produces data. PaperWorking captures it as you go and turns it into the 33 numbers investors, lenders, and appraisers use to judge a deal. The metrics are a byproduct of the work, not extra work.
+                The idea is simple. You already do the work: walkthroughs, budgets, contractor calls, rent collection. That work produces data, and PaperWorking captures it as you go, turning it into the 33 numbers investors, lenders, and appraisers use to judge a deal. The metrics are a byproduct of the work, not extra work.
               </p>
             </div>
           </div>
         </section>
 
-        {/*
-          TODO(FOUNDER): Founder story section — DO NOT PUBLISH until verified.
-          Production note 11: do not publish invented history.
-          Publish this section only after the founder provides verified background.
-          
-          [FOUNDER STORY PLACEHOLDER — supply biographical details.
-          Production note 11: do not publish invented history.
-          Publish this section only after the founder provides verified background.]
-        */}
-
         {/* ── Mission ── */}
-        <section className="mb-28">
+        <section className="mb-20">
           <h2 className="font-headline-md text-headline-md text-on-surface tracking-tight mb-6 type-h2">
             Mission
           </h2>
@@ -113,7 +101,7 @@ export default function AboutPage() {
         </section>
 
         {/* ── Principles ── */}
-        <section className="mb-28">
+        <section className="mb-20">
           <h2 className="font-headline-md text-headline-md text-on-surface tracking-tight mb-10 type-h2">
             Principles
           </h2>
@@ -130,11 +118,9 @@ export default function AboutPage() {
                   borderLeft: '1px solid rgba(255,255,255,0.12)',
                 }}
               >
-                {/* Numeral */}
                 <span className="font-jetbrains text-[11px] font-bold text-primary/60 uppercase tracking-widest flex-shrink-0 mt-1 type-caption">
                   {String(p.n).padStart(2, '0')}
                 </span>
-                {/* Body */}
                 <p className="font-body-sm text-body-sm text-on-surface-variant leading-relaxed type-body">
                   {p.body}
                 </p>
@@ -144,25 +130,24 @@ export default function AboutPage() {
         </section>
 
         {/* ── CTAs ── */}
-        <section className="text-center">
+        <section className="text-center pt-4">
           <div className="flex flex-col sm:flex-row gap-4 items-center justify-center">
             <Link
               href="/pricing"
-              className="luminous-button inline-flex items-center gap-2 px-8 py-3 rounded-lg font-label-md text-label-md tracking-wide active:scale-95 transition-all duration-150 type-cta"
+              className="luminous-button inline-flex items-center gap-2 px-8 py-3.5 rounded-xl font-label-md text-label-md tracking-wide active:scale-95 transition-all duration-150 type-cta"
             >
-              Start 14-Day Trial
+              Start Free 14-Day Trial
               <span className="material-symbols-outlined text-[18px]">arrow_forward</span>
             </Link>
             <Link
               href="/how-it-works"
-              className="inline-flex items-center gap-2 px-8 py-3 rounded-lg border border-white/10 text-on-surface font-label-md text-label-md hover:border-primary/40 hover:text-primary transition-all duration-150 type-cta"
+              className="inline-flex items-center gap-2 px-8 py-3.5 rounded-xl border border-white/10 text-on-surface font-label-md text-label-md hover:border-primary/40 hover:text-primary transition-all duration-150 type-cta"
             >
               See how it works
               <span className="material-symbols-outlined text-[18px]">arrow_forward</span>
             </Link>
           </div>
         </section>
-
       </main>
 
       <LandingFooter />

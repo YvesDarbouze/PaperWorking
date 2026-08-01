@@ -65,8 +65,8 @@ export default function RulesManagementPage() {
       const headers: Record<string, string> = token ? { Authorization: `Bearer ${token}` } : {};
 
       const [rulesRes, suggRes] = await Promise.all([
-        fetch(`/api/rules/${projectId}`, { headers }),
-        fetch(`/api/rules/${projectId}/suggestions`, { headers }),
+        fetch(`/api/rules/project/${projectId}`, { headers }),
+        fetch(`/api/rules/project/${projectId}/suggestions`, { headers }),
       ]);
 
       if (rulesRes.ok) {

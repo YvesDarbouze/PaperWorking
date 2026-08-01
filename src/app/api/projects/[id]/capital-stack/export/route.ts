@@ -85,8 +85,8 @@ function buildPdf(
     .filter((c: any) => (c.status === 'funds-confirmed' || c.status === 'cleared') && c.partyType === 'Investor')
     .reduce((sum: number, c: any) => sum + ((c.amountCents || 0) / 100), 0);
 
-  const confirmedSponsorEquity = commitments
-    .filter((c: any) => (c.status === 'funds-confirmed' || c.status === 'cleared') && (c.partyType === 'Sponsor' || c.partyType === 'Co-GP'))
+  const confirmedLeadInvestorEquity = commitments
+    .filter((c: any) => (c.status === 'funds-confirmed' || c.status === 'cleared') && (c.partyType === 'LeadInvestor' || c.partyType === 'Co-GP'))
     .reduce((sum: number, c: any) => sum + ((c.amountCents || 0) / 100), 0);
 
   const updatedCapitalStack = capitalStack.map((s: any) => {
@@ -97,7 +97,7 @@ function buildPdf(
       return { ...s, amount: confirmedInvestorEquity, status: 'Funded' };
     }
     if (s.category === 'GP Co-investment') {
-      return { ...s, amount: confirmedSponsorEquity, status: 'Funded' };
+      return { ...s, amount: confirmedLeadInvestorEquity, status: 'Funded' };
     }
     return s;
   });

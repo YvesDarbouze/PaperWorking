@@ -247,7 +247,7 @@ export default function MathBreakdown() {
                 href="/pricing"
                 className="mt-5 w-full py-3 flex items-center justify-center gap-2 rounded-lg bg-[#454955] text-[#0d0a0b] font-bold text-sm uppercase tracking-widest hover:bg-[#454955] transition-colors"
               >
-                Start 14-Day Trial
+                Start Free 14-Day Trial
                 <ArrowUpRight className="w-4 h-4" />
               </a>
             </div>

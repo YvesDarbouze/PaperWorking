@@ -351,9 +351,12 @@ model AppUser {
   projects        ReilProject[]
   statusEvents    StatusEvent[]
   // New financial layer relations
-  plaidConnections      PlaidConnection[]
-  financialTransactions FinancialTransaction[]
-  transactionRules      TransactionRule[]
+  plaidConnections         PlaidConnection[]
+  financialTransactions    FinancialTransaction[]
+  transactionRules         TransactionRule[]
+  notificationPreferences  UserNotificationPreferences?
+  sentEmailLogs            SentEmailLog[]
+  reconciledPeriods        ReconciliationPeriod[]
 }
 
 model ReilProject {
@@ -436,6 +439,7 @@ model ReilProject {
   plaidLiabilities      PlaidLiability[]
   financialTransactions FinancialTransaction[]
   transactionRules      TransactionRule[]
+  reconciliationPeriods ReconciliationPeriod[]
 
   @@index([createdById])
   @@index([acquisitionStatus])
@@ -678,7 +682,7 @@ model ReilContributionEntry {
   status         String // pledged | transferred | cleared | soft-committed | docs-out | signed | funds-confirmed
   evidenceDocId  String? // Link to Firestore document
   evidenceDocUrl String?
-  partyType      String      @default("Investor") // Sponsor, Investor, Co-GP, Preferred Equity
+  partyType      String      @default("Investor") // LeadInvestor, Investor, Co-GP, Preferred Equity
   project        ReilProject @relation(fields: [projectId], references: [id], onDelete: Cascade)
 
   @@index([projectId])
@@ -1172,10 +1176,11 @@ model PlaidConnection {
   createdAt                   DateTime               @default(now())
   updatedAt                   DateTime               @updatedAt
 
-  user            AppUser               @relation(fields: [userId], references: [id])
-  project         ReilProject?          @relation(fields: [projectId], references: [id])
-  consentEvents   PlaidConsentEvent[]
-  rawTransactions PlaidRawTransaction[]
+  user                  AppUser               @relation(fields: [userId], references: [id])
+  project               ReilProject?          @relation(fields: [projectId], references: [id])
+  consentEvents         PlaidConsentEvent[]
+  rawTransactions       PlaidRawTransaction[]
+  reconciliationPeriods ReconciliationPeriod[]
   liabilities     PlaidLiability[]
 
   @@index([userId])
@@ -1238,8 +1243,9 @@ model PlaidRawTransaction {
   createdAt               DateTime                     @default(now())
   updatedAt               DateTime                     @updatedAt
 
-  connection          PlaidConnection       @relation(fields: [plaidConnectionId], references: [id], onDelete: Cascade)
+  connection           PlaidConnection       @relation(fields: [plaidConnectionId], references: [id], onDelete: Cascade)
   financialTransaction FinancialTransaction?
+  reconciliationItems  ReconciliationItem[]
 
   @@index([plaidConnectionId])
   @@index([plaidAccountId])
@@ -1332,10 +1338,11 @@ model FinancialTransaction {
   createdAt                    DateTime                     @default(now())
   updatedAt                    DateTime                     @updatedAt
 
-  project          ReilProject           @relation(fields: [projectId], references: [id])
-  user             AppUser               @relation(fields: [userId], references: [id])
-  plaidTransaction PlaidRawTransaction?  @relation(fields: [plaidTransactionId], references: [id])
-  plaidLiability   PlaidLiability?       @relation(fields: [plaidLiabilityId], references: [id])
+  project             ReilProject           @relation(fields: [projectId], references: [id])
+  user                AppUser               @relation(fields: [userId], references: [id])
+  plaidTransaction    PlaidRawTransaction?  @relation(fields: [plaidTransactionId], references: [id])
+  plaidLiability      PlaidLiability?       @relation(fields: [plaidLiabilityId], references: [id])
+  reconciliationItems ReconciliationItem[]
   recurringRule    TransactionRule?       @relation(fields: [recurringRuleId], references: [id])
   parent           FinancialTransaction?  @relation("SplitChildren", fields: [parentTransactionId], references: [id], onDelete: NoAction, onUpdate: NoAction)
   children         FinancialTransaction[] @relation("SplitChildren")
@@ -1421,3 +1428,155 @@ model PlaidWebhookEvent {
   @@index([createdAt])
   @@index([itemId, eventType])
 }
+
+// ─── Transaction Notification Enums ──────────────────────────────────────────
+
+/// Controls email delivery timing for transaction alerts.
+enum EmailDigestMode {
+  /// Send immediately when a transaction is approved.
+  IMMEDIATE
+  /// Batch and send once per hour.
+  HOURLY_BATCH
+  /// Include in the daily digest email only.
+  DAILY_DIGEST
+}
+
+/// Controls which approvals trigger email alerts.
+enum EmailAlertThreshold {
+  /// Alert on all approved transactions.
+  ALL
+  /// Alert only when confidenceScore >= 0.85.
+  HIGH_CONFIDENCE_ONLY
+  /// Alert only on manually approved transactions (skip AUTO_APPROVED).
+  MANUAL_APPROVAL_ONLY
+}
+
+// ─── User Notification Preferences ───────────────────────────────────────────
+
+/// Per-user email alert preferences for the financial transaction notification layer.
+/// One-to-one with AppUser. Created on first access with sensible defaults.
+model UserNotificationPreferences {
+  id                     String              @id @default(cuid())
+  userId                 String              @unique
+  /// Master switch — set false to disable all transaction email alerts.
+  emailTransactionAlerts Boolean             @default(true)
+  /// JSON array of FinancialTransactionCategory values the user wants alerts for.
+  /// Stored as String[] for Prisma compatibility. Default: all 12 spec categories.
+  emailAlertCategories   String[]
+  /// Minimum absolute transaction amount (USD) that triggers an alert. Default 0 = alert on all.
+  emailAlertMinAmount    Decimal             @default(0) @db.Decimal(12, 2)
+  /// Controls email delivery timing.
+  emailDigestMode        EmailDigestMode     @default(IMMEDIATE)
+  /// Controls which approval types trigger alerts.
+  emailAlertThreshold    EmailAlertThreshold @default(ALL)
+  createdAt              DateTime            @default(now())
+  updatedAt              DateTime            @updatedAt
+
+  user AppUser @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+}
+
+// ─── Sent Email Log ───────────────────────────────────────────────────────────
+
+/// Idempotency guard for transaction notification emails.
+/// Unique on (transactionId, templateType) to prevent duplicate sends.
+model SentEmailLog {
+  id            String   @id @default(cuid())
+  userId        String
+  /// Nullable: null for digest/summary emails not tied to a single transaction.
+  transactionId String?
+  /// Template identifier, e.g. "RENT_PAYMENT_RECEIVED"
+  templateType  String
+  sentAt        DateTime @default(now())
+  /// "sent" | "failed" | "mocked"
+  status        String   @default("sent")
+  /// Provider message ID from Resend.
+  messageId     String?
+
+  user AppUser @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([transactionId, templateType])
+  @@index([userId])
+  @@index([userId, sentAt])
+  @@index([templateType])
+}
+
+// ─── Bank Reconciliation Enums ──────────────────────────────────────────────────
+
+enum ReconciliationStatus {
+  OPEN
+  IN_PROGRESS
+  RECONCILED
+  DISCREPANCY_FOUND
+}
+
+enum ReconciliationItemType {
+  BANK_ONLY
+  PAPERWORKING_ONLY
+  MATCHED
+  DISCREPANCY
+}
+
+enum ReconciliationItemStatus {
+  PENDING
+  VERIFIED
+  ADJUSTED
+  IGNORED
+}
+
+// ─── Bank Reconciliation Models ────────────────────────────────────────────────
+
+model ReconciliationPeriod {
+  id                   String               @id @default(cuid())
+  projectId            String
+  plaidConnectionId    String?
+  month                Int
+  year                 Int
+  status               ReconciliationStatus @default(OPEN)
+  bankStatementBalance Decimal              @default(0) @db.Decimal(12, 2)
+  paperWorkingBalance  Decimal              @default(0) @db.Decimal(12, 2)
+  difference           Decimal              @default(0) @db.Decimal(12, 2)
+  reconciledAt         DateTime?
+  reconciledBy         String?
+  notes                String?
+  createdAt            DateTime             @default(now())
+  updatedAt            DateTime             @updatedAt
+
+  project         ReilProject          @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  plaidConnection PlaidConnection?     @relation(fields: [plaidConnectionId], references: [id])
+  reconciler      AppUser?             @relation(fields: [reconciledBy], references: [id])
+  items           ReconciliationItem[]
+
+  @@unique([projectId, month, year])
+  @@index([projectId])
+  @@index([plaidConnectionId])
+  @@index([status])
+}
+
+model ReconciliationItem {
+  id                     String                   @id @default(cuid())
+  reconciliationPeriodId String
+  financialTransactionId String?
+  plaidTransactionId     String?
+  itemType               ReconciliationItemType
+  bankAmount             Decimal?                 @db.Decimal(12, 2)
+  paperWorkingAmount     Decimal?                 @db.Decimal(12, 2)
+  description            String
+  date                   DateTime
+  status                 ReconciliationItemStatus @default(PENDING)
+  notes                  String?
+  createdAt              DateTime                 @default(now())
+  updatedAt              DateTime                 @updatedAt
+
+  reconciliationPeriod ReconciliationPeriod  @relation(fields: [reconciliationPeriodId], references: [id], onDelete: Cascade)
+  financialTransaction FinancialTransaction? @relation(fields: [financialTransactionId], references: [id])
+  plaidTransaction     PlaidRawTransaction?  @relation(fields: [plaidTransactionId], references: [id])
+
+  @@index([reconciliationPeriodId])
+  @@index([financialTransactionId])
+  @@index([plaidTransactionId])
+  @@index([itemType])
+  @@index([status])
+}
+

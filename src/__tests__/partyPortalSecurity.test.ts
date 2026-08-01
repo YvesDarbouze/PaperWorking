@@ -232,7 +232,7 @@ describe('Party Portal Security Access Enforcement (v1.1 Security Standards)', (
     });
 
     const res = await patchCommitment(
-      mockReq('PATCH', { email: 'hacker@test.com', partyType: 'Sponsor' }, 'token_lp1'),
+      mockReq('PATCH', { email: 'hacker@test.com', partyType: 'LeadInvestor' }, 'token_lp1'),
       PARAMS_DOC_LP1
     );
     expect(res.status).toBe(403);

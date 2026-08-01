@@ -269,7 +269,7 @@ export const SUPPORT_ARTICLES: SupportArticle[] = [
     categoryId: 'cpa',
     title: 'Can I give my CPA read-only access to my deals?',
     excerpt:
-      'Yes, on Pro and Portfolio plans. Invite your CPA as a read-only collaborator — they can view costs and download exports without being able to edit deal data.',
+      'Yes, on Investor and Investment Team plans. Invite your CPA as a read-only collaborator — they can view costs and download exports without being able to edit deal data.',
     readTime: '3 min read',
     tags: ['CPA', 'read-only', 'access', 'collaborator'],
   },

@@ -267,11 +267,6 @@ export default function ForProsPage() {
                     : 'border-white/[0.06] bg-white/[0.01]'
                 }`}
               >
-                {tier.highlighted && (
-                  <div className="absolute -top-3 left-1/2 -translate-x-1/2 px-4 py-1 rounded-full bg-[#454955] text-[#0d0a0b] text-[10px] font-bold uppercase tracking-widest">
-                    Most Popular
-                  </div>
-                )}
                 <h3 className="text-lg font-bold uppercase tracking-wider mb-1">
                   {tier.name}
                 </h3>

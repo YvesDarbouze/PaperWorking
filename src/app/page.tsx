@@ -10,11 +10,6 @@ import ProblemSection from '@/components/landing/ProblemSection';
 import WhatItDoesSection from '@/components/landing/WhatItDoesSection';
 import LifecycleSection from '@/components/landing/LifecycleSection';
 import MetricsSection from '@/components/landing/MetricsSection';
-import TeamSection from '@/components/landing/TeamSection';
-import ReportingSection from '@/components/landing/ReportingSection';
-import MarketplaceTeaserSection from '@/components/landing/MarketplaceTeaserSection';
-import PricingTeaserSection from '@/components/landing/PricingTeaserSection';
-import FinalCTA from '@/components/landing/FinalCTA';
 import LandingFooter from '@/components/landing/LandingFooter';
 import { useAuth } from '@/context/AuthContext';
 import toast from 'react-hot-toast';
@@ -159,21 +154,6 @@ export default function LandingPage() {
 
         {/* ── Section 6 — 33 KPIs ── */}
         <MetricsSection />
-
-        {/* ── Section 7 — Team and Vendor Workflow ── */}
-        <TeamSection />
-
-        {/* ── Section 8 — Reporting and CPA Exports ── */}
-        <ReportingSection />
-
-        {/* ── Section 9 — Marketplace Teaser ── */}
-        <MarketplaceTeaserSection />
-
-        {/* ── Section 10 — Pricing Teaser ── */}
-        <PricingTeaserSection />
-
-        {/* ── Section 11 — Final CTA ── */}
-        <FinalCTA />
 
         <LandingFooter />
       </div>

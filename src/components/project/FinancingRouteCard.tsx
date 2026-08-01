@@ -35,7 +35,7 @@ const ROUTE_OPTIONS: RouteOption[] = [
     id: 'Conventional',
     label: 'Conventional Financing',
     description: 'Standard long-term commercial or residential debt.',
-    guidance: 'Requires stable financials, strong sponsor credit, and a standard down payment (15-25%). Typically 15-30 year terms.',
+    guidance: 'Requires stable financials, strong leadInvestor credit, and a standard down payment (15-25%). Typically 15-30 year terms.',
   },
   {
     id: 'Hard Money',

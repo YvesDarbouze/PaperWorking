@@ -8,7 +8,7 @@ import { Gem, ArrowDown, ArrowUp, Clock, TrendingUp } from 'lucide-react';
 /* ═══════════════════════════════════════════════════════
    Net Proceeds Card — Final Profit & Tax Liability
    
-   The single source of truth for what the sponsor walks 
+   The single source of truth for what the leadInvestor walks 
    away with. Renders capital gains, holding period, 
    tax estimate, and net-after-tax in real time.
    ═══════════════════════════════════════════════════════ */

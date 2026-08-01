@@ -20,6 +20,18 @@ export interface AttributionResult {
 }
 
 /**
+ * Hint from a BankConnection row — allows the attributor to short-circuit
+ * when a connection is already scoped to a specific project.
+ */
+export interface ConnectionHint {
+  /** If set, all transactions from this connection are auto-attributed here (confidence 1.0). */
+  projectId?: string | null;
+  /** 'rent_deposits' | 'operating_expenses' — used for category override hints. */
+  connectionType?: string | null;
+}
+
+
+/**
  * Normalizes the phase value into a standard lowercase string.
  */
 function getNormalizedPhase(project: any): string {
@@ -72,8 +84,20 @@ function isWithinDaysOfDueDay(txDate: Date, dueDay: number, maxDays: number): bo
 export async function attributeTransaction(
   tx: TransactionInput,
   userId: string,
-  passedProjects?: any[]
+  passedProjects?: any[],
+  connectionHint?: ConnectionHint
 ): Promise<AttributionResult> {
+  // ── Short-circuit: connection is pinned to a specific project ─────────────
+  // Skips all Firestore reads and rule evaluation — O(1) path for project-scoped
+  // bank connections. Confidence is 1.0 (user made an explicit binding decision).
+  if (connectionHint?.projectId) {
+    return {
+      projectId: connectionHint.projectId,
+      matchType: 'connection_pinned',
+      confidence: 1.0,
+    };
+  }
+
   let projects = passedProjects;
 
   // If no projects passed, load from Firestore

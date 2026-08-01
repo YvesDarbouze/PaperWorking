@@ -99,7 +99,7 @@ export default function ForgotPasswordPage() {
             Reset your password
           </h1>
           <p className="text-xs md:text-sm text-pw-muted font-body-sm">
-            Enter your email and we&apos;ll send you a reset link.
+            Enter your account email and we&apos;ll send a reset link. Your deal data stays where you left it.
           </p>
         </div>
 

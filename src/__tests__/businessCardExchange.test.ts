@@ -143,7 +143,7 @@ jest.mock('@/lib/firebase-admin/auth-guard', () => ({
     if (!authHeader || authHeader === 'Bearer invalid') {
       return { status: 401, error: 'Unauthorized' };
     }
-    return { uid: 'user_lead_investor', token: { email: 'sponsor@example.com' } };
+    return { uid: 'user_lead_investor', token: { email: 'leadInvestor@example.com' } };
   },
   isAuthError: (auth: any) => !!auth.error,
 }));
@@ -169,7 +169,7 @@ describe('DM-28 Business Card Exchange Test Suite', () => {
     mockIncr.mockResolvedValue(1);
     mockInvitationData.status = 'sent';
     mockInvitationData.cardExchangeStatus = 'pending';
-    mockInvitationData.sponsorBusinessCard = undefined;
+    mockInvitationData.leadInvestorBusinessCard = undefined;
   });
 
   it('POST /api/invitations/respond sets cardExchangeStatus and saves invitee card on interested', async () => {
@@ -206,7 +206,7 @@ describe('DM-28 Business Card Exchange Test Suite', () => {
     );
   });
 
-  it('GET /api/invitations/[token] hides sponsor business card details if cardExchangeStatus is not accepted', async () => {
+  it('GET /api/invitations/[token] hides leadInvestor business card details if cardExchangeStatus is not accepted', async () => {
     mockGet.mockImplementation((colName) => {
       if (colName === 'dealInvitations') return [mockInvitationData];
       if (colName === 'projects') return mockProjectData;
@@ -218,15 +218,15 @@ describe('DM-28 Business Card Exchange Test Suite', () => {
     expect(res.status).toBe(200);
     const data = await res.json();
     expect(data.cardExchangeStatus).toBe('pending');
-    expect(data.sponsorBusinessCard).toBeNull();
+    expect(data.leadInvestorBusinessCard).toBeNull();
   });
 
-  it('GET /api/invitations/[token] releases sponsor business card details if cardExchangeStatus is accepted', async () => {
+  it('GET /api/invitations/[token] releases leadInvestor business card details if cardExchangeStatus is accepted', async () => {
     const acceptedInvite = {
       ...mockInvitationData,
       status: 'interested',
       cardExchangeStatus: 'accepted',
-      sponsorBusinessCard: {
+      leadInvestorBusinessCard: {
         name: 'Marcus Aurelius',
         email: 'marcus@apexcapital.io',
         phone: '555-9999',
@@ -246,7 +246,7 @@ describe('DM-28 Business Card Exchange Test Suite', () => {
     expect(res.status).toBe(200);
     const data = await res.json();
     expect(data.cardExchangeStatus).toBe('accepted');
-    expect(data.sponsorBusinessCard).toEqual(acceptedInvite.sponsorBusinessCard);
+    expect(data.leadInvestorBusinessCard).toEqual(acceptedInvite.leadInvestorBusinessCard);
   });
 
   it('POST /api/projects/[id]/invitations/[invitationId]/exchange accepts card exchange and publishes cards to projectFiles and contacts', async () => {
@@ -292,7 +292,7 @@ describe('DM-28 Business Card Exchange Test Suite', () => {
     expect(mockUpdate).toHaveBeenCalledWith(
       expect.objectContaining({
         cardExchangeStatus: 'accepted',
-        sponsorBusinessCard: expect.objectContaining({
+        leadInvestorBusinessCard: expect.objectContaining({
           name: 'Marcus Aurelius',
           email: 'marcus@apexcapital.io',
         }),
@@ -374,7 +374,7 @@ describe('DM-28 Business Card Exchange Test Suite', () => {
     const res = await exchangeRoute(req, { params: Promise.resolve({ id: 'proj_123', invitationId: 'inv_123' }) });
     expect(res.status).toBe(200);
 
-    // Verifies Sponsor's card is written to responder's projectFiles
+    // Verifies LeadInvestor's card is written to responder's projectFiles
     expect(mockSet).toHaveBeenCalledWith(
       'projectFiles',
       expect.any(String),

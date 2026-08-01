@@ -86,7 +86,7 @@ export async function GET(
     // Sort descending by date
     activities.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
 
-    // Filter securely for non-sponsors
+    // Filter securely for non-leadInvestors
     const filtered = await filterTimelineForUser(
       activities as any,
       uid,

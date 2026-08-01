@@ -27,9 +27,9 @@ async function getUserIdFromRequest(req: NextRequest): Promise<string | null> {
  */
 export async function PATCH(
   req: NextRequest,
-  { params }: { params: { plaidId: string } }
+  { params }: { params: { id: string } }
 ) {
-  const { plaidId } = params;
+  const { id } = params;
   const userId = await getUserIdFromRequest(req);
   if (!userId) {
     return NextResponse.json({ success: false, error: 'Unauthorized' }, { status: 401 });
@@ -41,7 +41,7 @@ export async function PATCH(
 
     // Verify transaction exists and belongs to the user
     const tx = await prisma.transaction.findUnique({
-      where: { plaidId },
+      where: { id },
     });
 
     if (!tx) {
@@ -57,7 +57,7 @@ export async function PATCH(
 
     // Update the transaction in Postgres
     const updatedTx = await prisma.transaction.update({
-      where: { plaidId },
+      where: { id },
       data: {
         projectId: ignore ? null : projectId,
         reviewedByUser: true,
@@ -69,7 +69,7 @@ export async function PATCH(
     const inboxItemsSnap = await adminDb
       .collection('inboxItems')
       .where('recipientUid', '==', userId)
-      .where('metadata.plaidId', '==', plaidId)
+      .where('metadata.plaidId', '==', id)
       .where('archived', '==', false)
       .get();
 
@@ -105,9 +105,9 @@ export async function PATCH(
  */
 export async function POST(
   req: NextRequest,
-  { params }: { params: { plaidId: string } }
+  { params }: { params: { id: string } }
 ) {
-  const { plaidId } = params;
+  const { id } = params;
   const userId = await getUserIdFromRequest(req);
   if (!userId) {
     return NextResponse.json({ success: false, error: 'Unauthorized' }, { status: 401 });
@@ -115,7 +115,7 @@ export async function POST(
 
   try {
     const tx = await prisma.transaction.findUnique({
-      where: { plaidId },
+      where: { id },
     });
 
     if (!tx) {

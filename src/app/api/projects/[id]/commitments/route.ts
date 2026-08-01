@@ -130,7 +130,7 @@ export async function POST(
     if (!VALID_STATUSES.includes(targetStatus)) {
       return NextResponse.json({ error: `status must be one of: ${VALID_STATUSES.join(', ')}` }, { status: 422 });
     }
-    const VALID_PARTY_TYPES = ['Sponsor', 'Investor', 'Co-GP', 'Preferred Equity'];
+    const VALID_PARTY_TYPES = ['LeadInvestor', 'Investor', 'Co-GP', 'Preferred Equity'];
     if (!VALID_PARTY_TYPES.includes(partyType)) {
       return NextResponse.json({ error: `partyType must be one of: ${VALID_PARTY_TYPES.join(', ')}` }, { status: 422 });
     }

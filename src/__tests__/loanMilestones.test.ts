@@ -73,14 +73,14 @@ import { PATCH } from '@/app/api/projects/[id]/loans/[loanId]/route';
 describe('Card F3.4 Loan Underwriting Milestones API Tests', () => {
   const PROJECT_ID = 'proj_test_milestones';
   const LOAN_ID = 'loan_first_lien';
-  const OWNER_UID = 'user_sponsor_seed';
+  const OWNER_UID = 'user_leadInvestor_seed';
 
   beforeEach(() => {
     jest.clearAllMocks();
 
     mockVerifyIdToken.mockResolvedValue({
       uid: OWNER_UID,
-      email: 'sponsor@apex.com',
+      email: 'leadInvestor@apex.com',
       name: 'Marcus Teammate'
     });
 

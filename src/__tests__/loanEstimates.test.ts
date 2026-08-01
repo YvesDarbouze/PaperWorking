@@ -66,14 +66,14 @@ import { DELETE as deleteEstimate } from '@/app/api/projects/[id]/loan-estimates
 
 describe('Card F3.3 Loan Estimates Workflow API Tests', () => {
   const PROJECT_ID = 'proj_test_999';
-  const OWNER_UID = 'user_sponsor_seed';
+  const OWNER_UID = 'user_leadInvestor_seed';
 
   beforeEach(() => {
     jest.clearAllMocks();
 
     mockVerifyIdToken.mockResolvedValue({
       uid: OWNER_UID,
-      email: 'sponsor@apex.com',
+      email: 'leadInvestor@apex.com',
     });
 
     mockProjectDocGet.mockResolvedValue({

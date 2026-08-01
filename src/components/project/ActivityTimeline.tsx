@@ -146,7 +146,7 @@ export function ActivityTimeline({ projectId, initialTimeline, isCrossDeal = fal
         return {
           icon: <CheckCircle2 className="w-4 h-4 text-emerald-400" />,
           bgColor: 'bg-emerald-500/10 border-emerald-500/30',
-          title: 'Sponsor Answered',
+          title: 'LeadInvestor Answered',
         };
       case 'decline':
         return {
@@ -314,7 +314,7 @@ export function ActivityTimeline({ projectId, initialTimeline, isCrossDeal = fal
                         <div>
                           Business card exchange completed with <span className="font-mono text-zinc-300">{act.metadata.inviteeEmail}</span>
                           <p className="text-[11px] text-zinc-500 mt-1">
-                            Sponsor: {act.metadata.sponsorName} | Invitee: {act.metadata.inviteeName}
+                            LeadInvestor: {act.metadata.leadInvestorName} | Invitee: {act.metadata.inviteeName}
                           </p>
                         </div>
                       )}

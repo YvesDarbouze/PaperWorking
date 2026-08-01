@@ -46,7 +46,7 @@ export default function SubscriptionGate({ children, projectId, dealName }: Prop
             <CreditCard className="w-4 h-4" />
             Subscribe to View
           </a>
-          <p className="text-xs text-text-secondary mt-3">Starting at ${STARTING_PRICE}/month</p>
+          <p className="text-xs text-text-secondary mt-3">Your card starts the clock; it isn&apos;t charged until day 15. Cancel anytime from Settings.</p>
         </div>
       </div>
     </div>

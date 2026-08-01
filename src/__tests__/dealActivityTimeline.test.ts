@@ -35,7 +35,7 @@ jest.mock('@/lib/firebase-admin/auth-guard', () => ({
 jest.mock('@/lib/firebase-admin/project-guard', () => ({
   verifyProjectAccessAndRole: jest.fn().mockImplementation(async (projectId, uid, email) => {
     // Return mock access based on custom project-guard mock behaviors in test
-    if (uid === 'sponsor-uid') {
+    if (uid === 'leadInvestor-uid') {
       return { project: { id: projectId }, role: 'Lead Investor' };
     }
     if (uid === 'lp-uid') {
@@ -212,7 +212,7 @@ describe('DM-32: Deal Activity Timeline tests', () => {
       {
         id: 'act-1',
         projectId: 'project-1',
-        actorUid: 'sponsor-uid',
+        actorUid: 'leadInvestor-uid',
         type: 'invite',
         metadata: { inviteeEmail: 'lp@example.com' },
         createdAt: '2026-07-20T10:00:00Z',
@@ -220,7 +220,7 @@ describe('DM-32: Deal Activity Timeline tests', () => {
       {
         id: 'act-2',
         projectId: 'project-1',
-        actorUid: 'sponsor-uid',
+        actorUid: 'leadInvestor-uid',
         type: 'invite',
         metadata: { inviteeEmail: 'other-lp@example.com' },
         createdAt: '2026-07-20T10:05:00Z',
@@ -236,7 +236,7 @@ describe('DM-32: Deal Activity Timeline tests', () => {
       {
         id: 'act-4',
         projectId: 'project-1',
-        actorUid: 'sponsor-uid',
+        actorUid: 'leadInvestor-uid',
         type: 'answer',
         metadata: { inviteeEmail: 'lp@example.com', answerText: '$500k' },
         createdAt: '2026-07-20T10:15:00Z',
@@ -252,16 +252,16 @@ describe('DM-32: Deal Activity Timeline tests', () => {
       {
         id: 'act-6',
         projectId: 'project-1',
-        actorUid: 'sponsor-uid',
+        actorUid: 'leadInvestor-uid',
         type: 'republish',
         metadata: { reason: 'Updated comps doc' },
         createdAt: '2026-07-20T10:25:00Z',
       },
     ];
 
-    it('returns all activities if viewer is Sponsor/Lead Investor', async () => {
-      mockUserDocs.push({ id: 'sponsor-uid', claimedEmails: [] });
-      const result = await filterTimelineForUser(mockActivities, 'sponsor-uid', 'sponsor@test.com', true);
+    it('returns all activities if viewer is LeadInvestor/Lead Investor', async () => {
+      mockUserDocs.push({ id: 'leadInvestor-uid', claimedEmails: [] });
+      const result = await filterTimelineForUser(mockActivities, 'leadInvestor-uid', 'leadInvestor@test.com', true);
 
       expect(result.length).toBe(6);
     });
@@ -295,7 +295,7 @@ describe('DM-32: Deal Activity Timeline tests', () => {
         {
           id: 'act-7',
           projectId: 'project-1',
-          actorUid: 'sponsor-uid',
+          actorUid: 'leadInvestor-uid',
           type: 'invite',
           metadata: { inviteeEmail: 'old-lp@example.com' },
           createdAt: '2026-07-20T10:30:00Z',
@@ -313,7 +313,7 @@ describe('DM-32: Deal Activity Timeline tests', () => {
         {
           id: 'act-1',
           projectId: 'proj-123',
-          actorUid: 'sponsor-uid',
+          actorUid: 'leadInvestor-uid',
           type: 'republish',
           metadata: {},
           createdAt: '2026-07-21T12:00:00Z',
@@ -321,7 +321,7 @@ describe('DM-32: Deal Activity Timeline tests', () => {
         {
           id: 'act-2',
           projectId: 'proj-123',
-          actorUid: 'sponsor-uid',
+          actorUid: 'leadInvestor-uid',
           type: 'invite',
           metadata: { inviteeEmail: 'lp@example.com' },
           createdAt: '2026-07-21T12:10:00Z',
@@ -341,8 +341,8 @@ describe('DM-32: Deal Activity Timeline tests', () => {
     });
 
     it('succeeds for Lead Investor and returns unfiltered timeline', async () => {
-      mockVerifyIdToken.mockResolvedValue({ uid: 'sponsor-uid', email: 'sponsor@test.com' });
-      mockUserDocs.push({ id: 'sponsor-uid', claimedEmails: [] });
+      mockVerifyIdToken.mockResolvedValue({ uid: 'leadInvestor-uid', email: 'leadInvestor@test.com' });
+      mockUserDocs.push({ id: 'leadInvestor-uid', claimedEmails: [] });
 
       const request = new NextRequest('http://localhost:3000/api/projects/proj-123/timeline', {
         headers: { authorization: 'Bearer valid-token' },
@@ -358,15 +358,15 @@ describe('DM-32: Deal Activity Timeline tests', () => {
   describe('GET /api/investor/timeline', () => {
     beforeEach(() => {
       mockProjectDocs = [
-        { id: 'proj-owned', ownerUid: 'sponsor-uid', propertyName: 'Owned Deal' },
-        { id: 'proj-other', ownerUid: 'other-sponsor-uid', propertyName: 'Other Deal' },
+        { id: 'proj-owned', ownerUid: 'leadInvestor-uid', propertyName: 'Owned Deal' },
+        { id: 'proj-other', ownerUid: 'other-leadInvestor-uid', propertyName: 'Other Deal' },
       ];
 
       mockTimelineDocs = [
         {
           id: 'act-owned',
           projectId: 'proj-owned',
-          actorUid: 'sponsor-uid',
+          actorUid: 'leadInvestor-uid',
           type: 'republish',
           metadata: {},
           createdAt: '2026-07-21T12:00:00Z',
@@ -374,15 +374,15 @@ describe('DM-32: Deal Activity Timeline tests', () => {
         {
           id: 'act-sent',
           projectId: 'proj-other',
-          actorUid: 'sponsor-uid', // sponsor acted here on another deal
+          actorUid: 'leadInvestor-uid', // leadInvestor acted here on another deal
           type: 'question',
-          metadata: { inviteeEmail: 'sponsor@test.com' },
+          metadata: { inviteeEmail: 'leadInvestor@test.com' },
           createdAt: '2026-07-21T12:10:00Z',
         },
         {
           id: 'act-foreign',
           projectId: 'proj-other',
-          actorUid: 'other-sponsor-uid',
+          actorUid: 'other-leadInvestor-uid',
           type: 'republish',
           metadata: {},
           createdAt: '2026-07-21T12:20:00Z',
@@ -391,8 +391,8 @@ describe('DM-32: Deal Activity Timeline tests', () => {
     });
 
     it('returns cross-deal history where the user is Lead Investor or participant', async () => {
-      mockVerifyIdToken.mockResolvedValue({ uid: 'sponsor-uid', email: 'sponsor@test.com' });
-      mockUserDocs.push({ id: 'sponsor-uid', claimedEmails: [] });
+      mockVerifyIdToken.mockResolvedValue({ uid: 'leadInvestor-uid', email: 'leadInvestor@test.com' });
+      mockUserDocs.push({ id: 'leadInvestor-uid', claimedEmails: [] });
 
       const request = new NextRequest('http://localhost:3000/api/investor/timeline', {
         headers: { authorization: 'Bearer valid-token' },

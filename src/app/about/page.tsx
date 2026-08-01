@@ -1,41 +1,39 @@
 import { Metadata } from 'next';
 import Link from 'next/link';
-import { ArrowRight, Shield, Target, Zap, Users } from 'lucide-react';
 import LandingHeader from '@/components/landing/LandingHeader';
 import LandingFooter from '@/components/landing/LandingFooter';
 
 /* ═══════════════════════════════════════════════════════
    /about — Company page
-   
-   Obsidian glass theme. Unified LandingHeader navigation.
+   Verbatim approved copy — Prompt 6
    ═══════════════════════════════════════════════════════ */
 
 export const metadata: Metadata = {
   title: 'About PaperWorking | Built for Serious Real Estate Investors',
   description:
-    'PaperWorking replaces spreadsheets, scattered docs, and guesswork with one deal-intelligence platform built for real estate investors who refuse to leave money on the table.',
+    'PaperWorking is the real estate investment operating system. One place for every deal, dollar, and deadline — Acquisition, Fund, Hold, Exit.',
 };
 
-const VALUES = [
+const PRINCIPLES = [
   {
-    icon: Target,
-    title: 'Deal Clarity',
-    body: 'Every dollar in, every dollar out — tracked from acquisition through exit. No more spreadsheet archaeology.',
+    n: 1,
+    body: "Built for investors, not adapted for them. The four-phase lifecycle is the product's spine, not a feature.",
   },
   {
-    icon: Shield,
-    title: 'Risk Visibility',
-    body: 'Holding costs, burn rates, and CapEx variance update in real time so you catch problems before they become losses.',
+    n: 2,
+    body: 'Numbers over adjectives. We publish the 33 KPIs and their formulas; if a metric matters, you can check the math.',
   },
   {
-    icon: Zap,
-    title: 'Speed to Close',
-    body: 'LOIs, contingency deadlines, and closing docs live in one workspace. Your team moves faster because the data is already there.',
+    n: 3,
+    body: 'Your data is yours. Export everything, anytime. Cancel from Settings. No hostage negotiations.',
   },
   {
-    icon: Users,
-    title: 'Team Alignment',
-    body: 'Investors, contractors, and attorneys see exactly what they need — nothing more, nothing less. Role-based access keeps deals clean.',
+    n: 4,
+    body: "Honest about what we do. PaperWorking tracks interest; it never moves money. It produces reports for your CPA; it doesn't file your taxes. It's project management software, not investment advice.",
+  },
+  {
+    n: 5,
+    body: 'Community compounds. Tools bring investors here; the network of deals and professionals keeps them. Come for the tools, stay for the community.',
   },
 ];
 
@@ -46,24 +44,25 @@ export default function AboutPage() {
 
       <main className="max-w-5xl mx-auto px-6 md:px-margin-desktop pt-32 pb-24">
         {/* ── Hero ── */}
-        <section className="mb-28">
-          <p className="font-label-sm text-label-sm text-primary uppercase tracking-widest mb-6">
-            About PaperWorking
-          </p>
-          <h1 className="font-headline-lg text-headline-lg text-on-surface tracking-tight leading-none mb-8">
-            The paperwork was <br className="hidden sm:block" />
-            always the problem.
+        <section className="mb-20">
+          <span className="inline-flex items-center gap-2 glass-panel px-4 py-1.5 rounded-full mb-8 border border-white/10">
+            <span className="w-1.5 h-1.5 rounded-full bg-primary" />
+            <span className="font-jetbrains text-[10px] uppercase tracking-widest text-primary type-eyebrow">
+              About PaperWorking
+            </span>
+          </span>
+
+          <h1 className="font-headline-lg text-headline-lg text-on-surface tracking-tight leading-tight mb-4 type-display">
+            Stock investors get dashboards. Real estate investors deserve the same.
           </h1>
-          <p className="font-body-lg text-body-lg text-on-surface-variant leading-relaxed max-w-2xl">
-            Real estate investors don&apos;t lose deals because they lack ambition.
-            They lose deals because critical information lives in fourteen different
-            places — spreadsheets, email threads, shared drives, and the back of a
-            napkin. PaperWorking was built to fix that.
+
+          <p className="text-base sm:text-lg text-on-surface-variant max-w-2xl leading-relaxed type-body-lg">
+            Finally, project management software built for serious real estate investors.
           </p>
         </section>
 
-        {/* ── Mission ── */}
-        <section className="mb-28">
+        {/* ── Why PaperWorking exists ── */}
+        <section className="mb-20">
           <div
             className="rounded-2xl p-10 sm:p-14"
             style={{
@@ -74,27 +73,43 @@ export default function AboutPage() {
               borderLeft: '1px solid rgba(255,255,255,0.12)',
             }}
           >
-            <p className="font-label-sm text-label-sm text-primary uppercase tracking-widest mb-4">
-              Our Mission
-            </p>
-            <p className="font-headline-sm text-headline-sm text-on-surface tracking-tight leading-snug">
-              Give every investor — from first flip to a 50-door portfolio —
-              the same deal-intelligence infrastructure that used to require a
-              back-office team and six-figure software budgets.
-            </p>
+            <h2 className="font-label-sm text-label-sm text-primary uppercase tracking-widest mb-6 type-eyebrow font-bold">
+              Why PaperWorking Exists
+            </h2>
+            <div className="space-y-6">
+              <p className="font-body-lg text-body-lg text-on-surface-variant leading-relaxed type-body">
+                A stock investor can open an app and see, in seconds, what every position is worth and how it&apos;s performing. A real estate investor, carrying far larger positions, gets a spreadsheet from 2019 and a folder of PDFs.
+              </p>
+              <p className="font-body-lg text-body-lg text-on-surface-variant leading-relaxed type-body">
+                We built PaperWorking to close that gap with a system modeled on how a real estate deal actually works: Acquisition, Fund, Hold, Exit.
+              </p>
+              <p className="font-body-lg text-body-lg text-on-surface-variant leading-relaxed type-body">
+                The idea is simple. You already do the work: walkthroughs, budgets, contractor calls, rent collection. That work produces data, and PaperWorking captures it as you go, turning it into the 33 numbers investors, lenders, and appraisers use to judge a deal. The metrics are a byproduct of the work, not extra work.
+              </p>
+            </div>
           </div>
         </section>
 
-        {/* ── Values ── */}
-        <section className="mb-28">
-          <p className="font-label-sm text-label-sm text-primary uppercase tracking-widest mb-10">
-            What We Stand For
+        {/* ── Mission ── */}
+        <section className="mb-20">
+          <h2 className="font-headline-md text-headline-md text-on-surface tracking-tight mb-6 type-h2">
+            Mission
+          </h2>
+          <p className="font-body-lg text-body-lg text-on-surface-variant leading-relaxed max-w-3xl type-body-lg">
+            Give serious real estate investors the visibility stock and commodity investors take for granted: one place where every deal, dollar, and deadline adds up to a clear picture of performance.
           </p>
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-            {VALUES.map((v) => (
-              <div
-                key={v.title}
-                className="rounded-2xl p-8 transition-all duration-300 hover:scale-[1.02]"
+        </section>
+
+        {/* ── Principles ── */}
+        <section className="mb-20">
+          <h2 className="font-headline-md text-headline-md text-on-surface tracking-tight mb-10 type-h2">
+            Principles
+          </h2>
+          <ol className="space-y-6">
+            {PRINCIPLES.map((p) => (
+              <li
+                key={p.n}
+                className="rounded-2xl p-8 flex gap-6 items-start"
                 style={{
                   background: 'linear-gradient(135deg, rgba(34,43,50,0.4), rgba(22,19,24,0.8))',
                   backdropFilter: 'blur(16px)',
@@ -103,36 +118,35 @@ export default function AboutPage() {
                   borderLeft: '1px solid rgba(255,255,255,0.12)',
                 }}
               >
-                <v.icon
-                  className="w-6 h-6 mb-5 text-primary"
-                  aria-hidden="true"
-                />
-                <h3 className="font-label-md text-label-md text-on-surface mb-2">
-                  {v.title}
-                </h3>
-                <p className="font-body-sm text-body-sm text-on-surface-variant leading-relaxed">
-                  {v.body}
+                <span className="font-jetbrains text-[11px] font-bold text-primary/60 uppercase tracking-widest flex-shrink-0 mt-1 type-caption">
+                  {String(p.n).padStart(2, '0')}
+                </span>
+                <p className="font-body-sm text-body-sm text-on-surface-variant leading-relaxed type-body">
+                  {p.body}
                 </p>
-              </div>
+              </li>
             ))}
-          </div>
+          </ol>
         </section>
 
-        {/* ── CTA ── */}
-        <section className="text-center">
-          <h2 className="font-headline-md text-headline-md text-on-surface tracking-tight mb-4">
-            Ready to stop losing money to bad data?
-          </h2>
-          <p className="font-body-sm text-body-sm text-on-surface-variant mb-8 max-w-md mx-auto">
-            Join real estate operators tracking deal metrics from acquisition to exit.
-          </p>
-          <Link
-            href="/register"
-            className="luminous-button inline-flex items-center gap-2 px-8 py-3 rounded-lg font-label-md text-label-md tracking-wide active:scale-95 transition-all duration-150"
-          >
-            Get Started Free
-            <ArrowRight className="w-4 h-4" />
-          </Link>
+        {/* ── CTAs ── */}
+        <section className="text-center pt-4">
+          <div className="flex flex-col sm:flex-row gap-4 items-center justify-center">
+            <Link
+              href="/pricing"
+              className="luminous-button inline-flex items-center gap-2 px-8 py-3.5 rounded-xl font-label-md text-label-md tracking-wide active:scale-95 transition-all duration-150 type-cta"
+            >
+              Start Free 14-Day Trial
+              <span className="material-symbols-outlined text-[18px]">arrow_forward</span>
+            </Link>
+            <Link
+              href="/how-it-works"
+              className="inline-flex items-center gap-2 px-8 py-3.5 rounded-xl border border-white/10 text-on-surface font-label-md text-label-md hover:border-primary/40 hover:text-primary transition-all duration-150 type-cta"
+            >
+              See how it works
+              <span className="material-symbols-outlined text-[18px]">arrow_forward</span>
+            </Link>
+          </div>
         </section>
       </main>
 

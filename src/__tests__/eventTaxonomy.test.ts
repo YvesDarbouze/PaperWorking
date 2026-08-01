@@ -158,7 +158,7 @@ describe('DM-44: Event Taxonomy & Conversion Funnel', () => {
     // 4. Response
     await trackEvent('deal_terms_responded', { listingId: 'l1', projectId: 'p1', isCounter: false, amountCents: 5000000 }, sessResponse);
     // 5. Exchange
-    await trackEvent('contact_details_exchanged', { listingId: 'l1', projectId: 'p1', recipientUid: 'u_sponsor' }, sessExchange);
+    await trackEvent('contact_details_exchanged', { listingId: 'l1', projectId: 'p1', recipientUid: 'u_leadInvestor' }, sessExchange);
     // 6. Indication
     await trackEvent('deal_interest_indicated', { listingId: 'l1', projectId: 'p1', type: 'amount', currency: 'USD', value: 50000 }, sessIndication);
     // 7. Subscribe

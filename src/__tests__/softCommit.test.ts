@@ -112,7 +112,7 @@ describe('DM-33: Soft-Commit / Indication of Interest Capture', () => {
     id: 'inv-123',
     token: 'token-abc-123456789',
     projectId: 'proj-123',
-    invitedByUid: 'sponsor-123',
+    invitedByUid: 'leadInvestor-123',
     inviteeName: 'LP Test',
     inviteeEmail: 'lp@test.com',
     email: 'lp@test.com',
@@ -123,18 +123,18 @@ describe('DM-33: Soft-Commit / Indication of Interest Capture', () => {
   const mockProject = {
     id: 'proj-123',
     propertyName: 'Sunnyvale Commons',
-    ownerUid: 'sponsor-123',
+    ownerUid: 'leadInvestor-123',
   };
 
-  const mockSponsor = {
-    id: 'sponsor-123',
-    email: 'sponsor@test.com',
+  const mockLeadInvestor = {
+    id: 'leadInvestor-123',
+    email: 'leadInvestor@test.com',
   };
 
   it('saves a percentage soft-commit and notifies Lead Investor', async () => {
     mockInvitationDocs.push(mockInvite);
     mockProjectDocs.push(mockProject);
-    mockUserDocs.push(mockSponsor);
+    mockUserDocs.push(mockLeadInvestor);
 
     const request = new NextRequest('http://localhost:3000/api/invitations/token-abc-123456789/indication', {
       method: 'POST',
@@ -155,7 +155,7 @@ describe('DM-33: Soft-Commit / Indication of Interest Capture', () => {
     // Email verification
     expect(mockSendEmail).toHaveBeenCalled();
     const emailArgs = mockSendEmail.mock.calls[0][0];
-    expect(emailArgs.to).toContain('sponsor@test.com');
+    expect(emailArgs.to).toContain('leadInvestor@test.com');
     expect(emailArgs.subject).toContain('[Soft Commit] Indication of Interest update');
     expect(emailArgs.html).toContain('5%');
 
@@ -173,7 +173,7 @@ describe('DM-33: Soft-Commit / Indication of Interest Capture', () => {
   it('saves an amount soft-commit with ISO-4217 currency and notifies Lead Investor', async () => {
     mockInvitationDocs.push(mockInvite);
     mockProjectDocs.push(mockProject);
-    mockUserDocs.push(mockSponsor);
+    mockUserDocs.push(mockLeadInvestor);
 
     const request = new NextRequest('http://localhost:3000/api/invitations/token-abc-123456789/indication', {
       method: 'POST',
@@ -234,7 +234,7 @@ describe('DM-33: Soft-Commit / Indication of Interest Capture', () => {
     };
     mockInvitationDocs.push(inviteWithIndication);
     mockProjectDocs.push(mockProject);
-    mockUserDocs.push(mockSponsor);
+    mockUserDocs.push(mockLeadInvestor);
 
     const request = new NextRequest('http://localhost:3000/api/invitations/token-abc-123456789/indication', {
       method: 'DELETE',

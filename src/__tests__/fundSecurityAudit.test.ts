@@ -140,17 +140,17 @@ import { GET as getLenderPackage, POST as postLenderPackage } from '@/app/api/pr
 
 describe('FD-39 — Security & Rules Audit Suite', () => {
   const PROJECT_ID = 'test_project_123';
-  const SPONSOR_UID = 'sponsor_uid_123';
+  const LEAD_INVESTOR_UID = 'leadInvestor_uid_123';
   const VENDOR_UID = 'vendor_uid_123';
   const LP_UID = 'lp_uid_123';
 
   const mockProjectDoc = {
     exists: true,
     data: () => ({
-      ownerUid: SPONSOR_UID,
+      ownerUid: LEAD_INVESTOR_UID,
       propertyName: 'Test Real Estate',
       members: {
-        [SPONSOR_UID]: 'owner',
+        [LEAD_INVESTOR_UID]: 'owner',
       },
       equityParties: [
         {
@@ -295,8 +295,8 @@ describe('FD-39 — Security & Rules Audit Suite', () => {
     it('allows Lead to change financing route but blocks LPs', async () => {
       // 1. Lead POST succeeds
       mockVerifyIdToken.mockResolvedValue({
-        uid: SPONSOR_UID,
-        email: 'sponsor@example.com',
+        uid: LEAD_INVESTOR_UID,
+        email: 'leadInvestor@example.com',
       });
       mockSubCollGet.mockResolvedValue({ empty: true, docs: [] });
 

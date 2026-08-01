@@ -1,0 +1,14 @@
+{
+  "account_id": "acc_mortgage_01",
+  "lender": "Wells Fargo Home Mortgage",
+  "balance": 285000.00,
+  "original_balance": 320000.00,
+  "interest_rate_pct": 6.75,
+  "apr": 6.92,
+  "next_payment_due_date": "2026-09-01",
+  "next_payment_amount": 2847.00,
+  "ytd_interest_paid": 14890.00,
+  "escrow_balance": 3200.00,
+  "last_payment_amount": 2847.00,
+  "last_payment_date": "2026-08-01"
+}

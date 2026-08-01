@@ -121,10 +121,10 @@ describe('Card F2.6 Contribution Ledger API & Export Tests', () => {
             'Authorization': 'Bearer mock_token',
           },
           body: JSON.stringify({
-            name: 'Apex Sponsor Equity',
-            email: 'sponsor@apexcapital.io',
+            name: 'Apex LeadInvestor Equity',
+            email: 'leadInvestor@apexcapital.io',
             amountCents: 3000000, // $30,000
-            partyType: 'Sponsor',
+            partyType: 'LeadInvestor',
             status: 'pledged'
           }),
         }
@@ -141,8 +141,8 @@ describe('Card F2.6 Contribution Ledger API & Export Tests', () => {
         expect.objectContaining({
           fractionalInvestors: expect.arrayContaining([
             expect.objectContaining({
-              name: 'Apex Sponsor Equity',
-              partyType: 'Sponsor',
+              name: 'Apex LeadInvestor Equity',
+              partyType: 'LeadInvestor',
               contributionAmount: 30000
             })
           ])
@@ -160,7 +160,7 @@ describe('Card F2.6 Contribution Ledger API & Export Tests', () => {
             'Authorization': 'Bearer mock_token',
           },
           body: JSON.stringify({
-            name: 'Apex Sponsor Equity',
+            name: 'Apex LeadInvestor Equity',
             amountCents: 3000000,
             partyType: 'InvalidRole'
           }),
@@ -181,10 +181,10 @@ describe('Card F2.6 Contribution Ledger API & Export Tests', () => {
         exists: true,
         data: () => ({
           status: 'pledged',
-          name: 'Apex Sponsor Equity',
-          email: 'sponsor@apexcapital.io',
+          name: 'Apex LeadInvestor Equity',
+          email: 'leadInvestor@apexcapital.io',
           amountCents: 3000000,
-          partyType: 'Sponsor'
+          partyType: 'LeadInvestor'
         }),
       });
 
@@ -220,7 +220,7 @@ describe('Card F2.6 Contribution Ledger API & Export Tests', () => {
         expect.objectContaining({
           fractionalInvestors: expect.arrayContaining([
             expect.objectContaining({
-              name: 'Apex Sponsor Equity',
+              name: 'Apex LeadInvestor Equity',
               partyType: 'Co-GP'
             })
           ])
@@ -252,10 +252,10 @@ describe('Card F2.6 Contribution Ledger API & Export Tests', () => {
           {
             id: COMMIT_ID,
             data: () => ({
-              name: 'Apex Sponsor Equity',
+              name: 'Apex LeadInvestor Equity',
               amountCents: 3000000,
               status: 'funds-confirmed',
-              partyType: 'Sponsor',
+              partyType: 'LeadInvestor',
               createdAt: { toDate: () => new Date() }
             })
           }

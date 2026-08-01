@@ -75,7 +75,7 @@ describe('Card F5.4 — Cash-to-Close Reconciliation Engine & Schema', () => {
       lawyerVerified: true,
       blockchainTxHash: '0x123',
       chainOfTitleStatus: 'verified',
-      reconciliationOverrideReason: 'Sponsor covers minor cash difference',
+      reconciliationOverrideReason: 'LeadInvestor covers minor cash difference',
       isReconciliationOverridden: true,
     },
     ownerUid: 'user_abc123',
@@ -227,7 +227,7 @@ describe('Card F5.4 — Cash-to-Close Reconciliation Engine & Schema', () => {
       const parseResult = projectSchema.safeParse(validBaseProject);
       expect(parseResult.success).toBe(true);
       if (parseResult.success) {
-        expect(parseResult.data.closingRoom?.reconciliationOverrideReason).toBe('Sponsor covers minor cash difference');
+        expect(parseResult.data.closingRoom?.reconciliationOverrideReason).toBe('LeadInvestor covers minor cash difference');
         expect(parseResult.data.closingRoom?.isReconciliationOverridden).toBe(true);
       }
     });

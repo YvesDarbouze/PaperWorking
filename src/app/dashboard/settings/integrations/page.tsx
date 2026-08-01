@@ -1,11 +1,19 @@
 'use client';
 
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import { useSettingsStore } from '@/store/settingsStore';
+import { usePlaidLink } from 'react-plaid-link';
+import { useAuth } from '@/context/AuthContext';
 import toast from 'react-hot-toast';
 import { SettingsErrorBoundary } from '@/components/settings/ErrorBoundary';
 import { ConnectedServicesSkeleton } from '@/components/settings/SettingsSkeletons';
-import { X, Check, ShieldAlert, FolderOpen, HardDrive, Mail } from 'lucide-react';
+import { PlaidTrustScreen } from '@/components/settings/PlaidTrustScreen';
+import {
+  X, Check, ShieldAlert, FolderOpen, HardDrive, Mail,
+  Landmark, Plus, Trash2, AlertTriangle, RefreshCw, CheckCircle2,
+  PauseCircle, PlayCircle, Building2, Tag,
+} from 'lucide-react';
+
 
 const SlackIcon = (props: React.SVGProps<SVGSVGElement>) => (
   <svg viewBox="0 0 24 24" fill="currentColor" className="w-5 h-5" {...props}>
@@ -52,7 +60,427 @@ const AVAILABLE_APPS: IntegrationApp[] = [
   },
 ];
 
+// ─── Types ────────────────────────────────────────────────────────────────────
+
+interface BankAccount {
+  id: string;
+  plaidAccountId: string;
+  name: string;
+  mask: string | null;
+  officialName: string | null;
+  type: string;
+  balance: number | null;
+}
+
+interface BankConnection {
+  id: string;
+  status: string;               // 'active' | 'paused' | 'error'
+  connectionType: string;       // 'rent_deposits' | 'operating_expenses'
+  institutionName: string | null;
+  institutionId: string | null;
+  accountId: string | null;
+  accountName: string | null;
+  accountMask: string | null;
+  projectId: string | null;
+  webhookUrl: string | null;
+  lastSyncAt: string | null;
+  accounts: BankAccount[];
+}
+
+
+// ─── Bank Connect Panel ───────────────────────────────────────────────────────
+
+function BankConnectPanel() {
+  const { user } = useAuth();
+  const [connections, setConnections] = useState<BankConnection[]>([]);
+  const [loadingConnections, setLoadingConnections] = useState(true);
+  const [linkToken, setLinkToken] = useState<string | null>(null);
+  const [generatingToken, setGeneratingToken] = useState(false);
+  const [disconnecting, setDisconnecting] = useState<string | null>(null);
+  const [pausing, setPausing] = useState<string | null>(null);
+  const [showTrustScreen, setShowTrustScreen] = useState(false);
+
+  // ── New-connection form state ──────────────────────────────────────────────
+  const [showConnectForm, setShowConnectForm] = useState(false);
+  const [selectedProjectId, setSelectedProjectId] = useState<string>('');
+  const [connectionType, setConnectionType] = useState<'rent_deposits' | 'operating_expenses'>('rent_deposits');
+  const [projects, setProjects] = useState<Array<{ id: string; address: string }>>([]);
+
+  const fetchConnections = useCallback(async () => {
+    if (!user) return;
+    try {
+      const idToken = await user.getIdToken();
+      const res = await fetch('/api/plaid/connections', {
+        headers: { Authorization: `Bearer ${idToken}` },
+      });
+      const data = await res.json();
+      if (data.success) setConnections(data.connections ?? []);
+    } catch (err) {
+      console.error('[BankConnectPanel] Failed to fetch connections:', err);
+    } finally {
+      setLoadingConnections(false);
+    }
+  }, [user]);
+
+  const fetchProjects = useCallback(async () => {
+    if (!user) return;
+    try {
+      const idToken = await user.getIdToken();
+      const res = await fetch('/api/projects', {
+        headers: { Authorization: `Bearer ${idToken}` },
+      });
+      const data = await res.json();
+      if (data.success) setProjects(data.projects ?? []);
+    } catch {
+      /* non-fatal — project selector just stays empty */
+    }
+  }, [user]);
+
+  useEffect(() => { fetchConnections(); }, [fetchConnections]);
+  useEffect(() => { if (showConnectForm) fetchProjects(); }, [showConnectForm, fetchProjects]);
+
+  const generateLinkToken = async () => {
+    if (!user || generatingToken) return;
+    setGeneratingToken(true);
+    try {
+      const idToken = await user.getIdToken();
+      const res = await fetch('/api/plaid/create-link-token', {
+        method: 'POST',
+        headers: { Authorization: `Bearer ${idToken}` },
+      });
+      const data = await res.json();
+      if (!data.success) throw new Error(data.error ?? 'Failed to create link token');
+      setLinkToken(data.link_token);
+    } catch (err) {
+      const msg = err instanceof Error ? err.message : 'Failed to initiate bank connection';
+      toast.error(msg);
+      setGeneratingToken(false);
+    }
+  };
+
+  const { open: openPlaidLink, ready } = usePlaidLink({
+    token: linkToken ?? '',
+    onSuccess: async (publicToken) => {
+      if (!user) return;
+      const tid = toast.loading('Connecting bank account…');
+      try {
+        const idToken = await user.getIdToken();
+        const res = await fetch('/api/plaid/exchange', {
+          method: 'POST',
+          headers: {
+            Authorization: `Bearer ${idToken}`,
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            public_token: publicToken,
+            project_id: selectedProjectId || null,
+            connection_type: connectionType,
+          }),
+        });
+        const data = await res.json();
+        if (!data.success) throw new Error(data.error ?? 'Exchange failed');
+        toast.success('Bank account connected!', { id: tid });
+        setLinkToken(null);
+        setGeneratingToken(false);
+        setShowConnectForm(false);
+        setSelectedProjectId('');
+        setConnectionType('rent_deposits');
+        await fetchConnections();
+      } catch (err) {
+        const msg = err instanceof Error ? err.message : 'Connection failed';
+        toast.error(msg, { id: tid });
+        setLinkToken(null);
+        setGeneratingToken(false);
+      }
+    },
+    onExit: () => {
+      setLinkToken(null);
+      setGeneratingToken(false);
+    },
+  });
+
+  useEffect(() => {
+    if (linkToken && ready) openPlaidLink();
+  }, [linkToken, ready, openPlaidLink]);
+
+  const handleDisconnectBank = async (connectionId: string) => {
+    if (!user || disconnecting) return;
+    setDisconnecting(connectionId);
+    const tid = toast.loading('Disconnecting…');
+    try {
+      const idToken = await user.getIdToken();
+      const res = await fetch(`/api/plaid/connections/${connectionId}`, {
+        method: 'DELETE',
+        headers: { Authorization: `Bearer ${idToken}` },
+      });
+      if (!res.ok) throw new Error('Disconnect failed');
+      toast.success('Bank account disconnected', { id: tid });
+      setConnections((prev) => prev.filter((c) => c.id !== connectionId));
+    } catch (err) {
+      const msg = err instanceof Error ? err.message : 'Failed to disconnect';
+      toast.error(msg, { id: tid });
+    } finally {
+      setDisconnecting(null);
+    }
+  };
+
+  const handleTogglePause = async (conn: BankConnection) => {
+    if (!user || pausing) return;
+    setPausing(conn.id);
+    const isPaused = conn.status === 'paused';
+    const tid = toast.loading(isPaused ? 'Resuming sync…' : 'Pausing sync…');
+    try {
+      const idToken = await user.getIdToken();
+      const res = await fetch(`/api/plaid/connections/${conn.id}/pause`, {
+        method: isPaused ? 'DELETE' : 'POST',
+        headers: { Authorization: `Bearer ${idToken}` },
+      });
+      if (!res.ok) throw new Error('Request failed');
+      toast.success(isPaused ? 'Sync resumed' : 'Sync paused', { id: tid });
+      setConnections((prev) =>
+        prev.map((c) =>
+          c.id === conn.id ? { ...c, status: isPaused ? 'active' : 'paused' } : c
+        )
+      );
+    } catch (err) {
+      const msg = err instanceof Error ? err.message : 'Failed';
+      toast.error(msg, { id: tid });
+    } finally {
+      setPausing(null);
+    }
+  };
+
+  const connTypeBadge = (type: string) =>
+    type === 'operating_expenses'
+      ? { label: 'OpEx', cls: 'bg-violet-50 text-violet-700 border-violet-200' }
+      : { label: 'Rent', cls: 'bg-emerald-50 text-emerald-700 border-emerald-200' };
+
+  const statusIcon = (status: string) => {
+    if (status === 'error') return <AlertTriangle className="w-4 h-4 text-amber-600" />;
+    if (status === 'paused') return <PauseCircle className="w-4 h-4 text-slate-400" />;
+    return <CheckCircle2 className="w-4 h-4 text-emerald-600" />;
+  };
+
+  const statusBg = (status: string) => {
+    if (status === 'error') return 'bg-amber-100';
+    if (status === 'paused') return 'bg-slate-100';
+    return 'bg-emerald-50';
+  };
+
+  const cardBorder = (status: string) => {
+    if (status === 'error') return 'border-amber-200 bg-amber-50';
+    if (status === 'paused') return 'border-slate-200 bg-slate-50/60';
+    return 'border-slate-100 bg-slate-50';
+  };
+
+  return (
+    <section className="bg-white border border-slate-100 rounded-xl p-6 shadow-sm space-y-5">
+      {/* ── Header ── */}
+      <div className="flex items-center justify-between">
+        <div className="flex items-center gap-3">
+          <div className="w-8 h-8 rounded-lg bg-blue-50 border border-blue-100 flex items-center justify-center shrink-0">
+            <Landmark className="w-4 h-4 text-blue-600" />
+          </div>
+          <div>
+            <h3 className="text-sm font-bold text-slate-900">Bank Accounts</h3>
+            <p className="text-xs text-slate-400 mt-0.5">
+              Connect via Plaid to auto-sync transactions into your projects.
+            </p>
+          </div>
+        </div>
+        <button
+          onClick={() => setShowTrustScreen(true)}
+          disabled={generatingToken}
+          className="h-9 px-4 rounded-lg bg-blue-600 hover:bg-blue-700 text-white text-xs font-semibold flex items-center gap-1.5 cursor-pointer transition-all disabled:opacity-60 border-0"
+        >
+          {generatingToken ? (
+            <><RefreshCw className="w-3.5 h-3.5 animate-spin" /> Connecting…</>
+          ) : (
+            <><Plus className="w-3.5 h-3.5" /> Connect a bank</>
+          )}
+        </button>
+      </div>
+
+      {/* ── Connect form (pre-Plaid Link config) ── */}
+      {showConnectForm && (
+        <div className="rounded-xl border border-blue-100 bg-blue-50/60 p-4 space-y-4">
+          <p className="text-xs font-semibold text-slate-700">Configure this connection</p>
+
+          {/* Project selector */}
+          <div className="space-y-1.5">
+            <label className="text-[11px] font-medium text-slate-500 flex items-center gap-1">
+              <Building2 className="w-3 h-3" /> Link to project (optional)
+            </label>
+            <select
+              value={selectedProjectId}
+              onChange={(e) => setSelectedProjectId(e.target.value)}
+              className="w-full h-8 px-2.5 rounded-lg border border-slate-200 bg-white text-xs text-slate-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
+            >
+              <option value="">Portfolio-wide (no specific project)</option>
+              {projects.map((p) => (
+                <option key={p.id} value={p.id}>{p.address}</option>
+              ))}
+            </select>
+          </div>
+
+          {/* Connection type */}
+          <div className="space-y-1.5">
+            <label className="text-[11px] font-medium text-slate-500 flex items-center gap-1">
+              <Tag className="w-3 h-3" /> Connection type
+            </label>
+            <div className="flex gap-2">
+              {(['rent_deposits', 'operating_expenses'] as const).map((type) => (
+                <button
+                  key={type}
+                  onClick={() => setConnectionType(type)}
+                  className={`flex-1 h-8 rounded-lg border text-[11px] font-medium transition-all cursor-pointer ${
+                    connectionType === type
+                      ? 'bg-blue-600 border-blue-600 text-white'
+                      : 'bg-white border-slate-200 text-slate-600 hover:border-blue-300'
+                  }`}
+                >
+                  {type === 'rent_deposits' ? 'Rent Deposits' : 'Operating Expenses'}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {/* Action buttons */}
+          <div className="flex gap-2 pt-1">
+            <button
+              onClick={() => { setShowConnectForm(false); setSelectedProjectId(''); setConnectionType('rent_deposits'); }}
+              className="h-8 px-3 rounded-lg border border-slate-200 text-xs text-slate-600 hover:bg-slate-100 cursor-pointer transition-all"
+            >
+              Cancel
+            </button>
+            <button
+              onClick={generateLinkToken}
+              disabled={generatingToken}
+              className="h-8 px-4 rounded-lg bg-blue-600 hover:bg-blue-700 text-white text-xs font-semibold flex items-center gap-1.5 cursor-pointer transition-all disabled:opacity-60 border-0"
+            >
+              {generatingToken ? <><RefreshCw className="w-3 h-3 animate-spin" /> Opening Plaid…</> : 'Continue to Plaid →'}
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* ── Connection list ── */}
+      {loadingConnections ? (
+        <div className="space-y-2 animate-pulse">
+          {[1, 2].map((i) => <div key={i} className="h-16 bg-slate-100 rounded-lg" />)}
+        </div>
+      ) : connections.length === 0 ? (
+        <div className="py-8 text-center rounded-xl border border-dashed border-slate-200 bg-slate-50">
+          <p className="text-xs text-slate-400">
+            No bank accounts connected. Click "Connect a bank" to get started.
+          </p>
+        </div>
+      ) : (
+        <ul className="space-y-2">
+          {connections.map((conn) => {
+            const badge = connTypeBadge(conn.connectionType ?? 'rent_deposits');
+            const lastSync = conn.lastSyncAt
+              ? new Date(conn.lastSyncAt).toLocaleDateString('en-US', {
+                  month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit',
+                })
+              : 'Never';
+            const displayName = conn.institutionName
+              ? `${conn.institutionName}${conn.accountMask ? ` (*${conn.accountMask})` : ''}`
+              : conn.accounts[0]?.officialName || conn.accounts[0]?.name
+                || `Connection (*${conn.accounts[0]?.mask ?? '????'})`;
+            const isPaused = conn.status === 'paused';
+
+            return (
+              <li
+                key={conn.id}
+                className={`flex items-center justify-between p-3 rounded-lg border ${
+                  cardBorder(conn.status)
+                }`}
+              >
+                <div className="flex items-center gap-3 min-w-0">
+                  <div className={`w-8 h-8 rounded-lg flex items-center justify-center shrink-0 ${statusBg(conn.status)}`}>
+                    {statusIcon(conn.status)}
+                  </div>
+                  <div className="min-w-0">
+                    <div className="flex items-center gap-1.5">
+                      <p className="text-xs font-semibold text-slate-800 truncate">{displayName}</p>
+                      <span className={`shrink-0 px-1.5 py-0.5 rounded text-[9px] font-bold border ${badge.cls}`}>
+                        {badge.label}
+                      </span>
+                      {isPaused && (
+                        <span className="shrink-0 px-1.5 py-0.5 rounded text-[9px] font-bold border bg-slate-100 text-slate-500 border-slate-200">
+                          PAUSED
+                        </span>
+                      )}
+                    </div>
+                    <p className="text-[10px] text-slate-400">
+                      {conn.status === 'error'
+                        ? <span className="text-amber-600 font-medium">Re-link required</span>
+                        : isPaused
+                          ? <span className="text-slate-400">Sync paused · Last sync: {lastSync}</span>
+                          : <>Last sync: {lastSync}{conn.projectId ? ' · Project-scoped' : ''}</>}
+                    </p>
+                  </div>
+                </div>
+
+                {/* Actions */}
+                <div className="flex items-center gap-1.5 ml-3 shrink-0">
+                  {/* Pause / Resume */}
+                  <button
+                    onClick={() => handleTogglePause(conn)}
+                    disabled={pausing === conn.id || conn.status === 'error'}
+                    title={isPaused ? 'Resume sync' : 'Pause sync'}
+                    className="h-7 w-7 rounded-lg border border-slate-200 text-slate-500 hover:bg-slate-100 flex items-center justify-center cursor-pointer transition-all disabled:opacity-40"
+                  >
+                    {isPaused
+                      ? <PlayCircle className="w-3.5 h-3.5 text-emerald-600" />
+                      : <PauseCircle className="w-3.5 h-3.5" />}
+                  </button>
+
+                  {/* Disconnect */}
+                  <button
+                    onClick={() => handleDisconnectBank(conn.id)}
+                    disabled={disconnecting === conn.id}
+                    className="h-7 px-2.5 rounded-lg border border-red-200 text-red-600 hover:bg-red-50 text-[10px] font-semibold flex items-center gap-1 cursor-pointer transition-all disabled:opacity-50"
+                  >
+                    <Trash2 className="w-3 h-3" />
+                    Disconnect
+                  </button>
+                </div>
+              </li>
+            );
+          })}
+        </ul>
+      )}
+
+      <p className="text-[10px] text-slate-400">
+        Secured by{' '}
+        <a href="https://plaid.com" target="_blank" rel="noopener noreferrer" className="text-blue-500 hover:underline">
+          Plaid
+        </a>
+        . PaperWorking stores only an encrypted access token — your credentials never touch our servers.
+      </p>
+
+      {/* Plaid Trust Screen — shown every time user initiates a connection */}
+      {showTrustScreen && (
+        <PlaidTrustScreen
+          onConfirm={async () => {
+            setShowTrustScreen(false);
+            setShowConnectForm(true);
+            await generateLinkToken();
+          }}
+          onCancel={() => setShowTrustScreen(false)}
+          loading={generatingToken}
+        />
+      )}
+    </section>
+  );
+}
+
+// ─── Main form ────────────────────────────────────────────────────────────────
+
 function IntegrationsSettingsForm() {
+
   const { integrations, fetchIntegrations, disconnectIntegration } = useSettingsStore();
 
   const [authorizingApp, setAuthorizingApp] = useState<IntegrationApp | null>(null);
@@ -144,10 +572,16 @@ function IntegrationsSettingsForm() {
 
   const connectedApps = integrations.data?.connectedApps || [];
 
+
   return (
     <div className="space-y-8 animate-in fade-in duration-200">
-      
+
+      {/* ─── Bank Accounts (Plaid) ─── */}
+      <BankConnectPanel />
+
+      {/* ─── Third-party app integrations ─── */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+
         {AVAILABLE_APPS.map((app) => {
           const isConnected = connectedApps.includes(app.id);
           const isProcessing = connectingId === app.id;

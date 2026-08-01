@@ -99,7 +99,7 @@ export async function GET(
           expiresAt: rawInv.expiresAt || new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString(),
           cardExchangeStatus: rawInv.cardExchangeStatus,
           inviteeBusinessCard: rawInv.inviteeBusinessCard,
-          sponsorBusinessCard: rawInv.sponsorBusinessCard,
+          leadInvestorBusinessCard: rawInv.leadInvestorBusinessCard,
         }
       : rawInv;
 
@@ -259,7 +259,7 @@ export async function GET(
       inquiries,
       cardExchangeStatus: inv.cardExchangeStatus || 'none',
       inviteeBusinessCard: inv.inviteeBusinessCard || null,
-      sponsorBusinessCard: inv.cardExchangeStatus === 'accepted' ? inv.sponsorBusinessCard || null : null,
+      leadInvestorBusinessCard: inv.cardExchangeStatus === 'accepted' ? inv.leadInvestorBusinessCard || null : null,
       indication: inv.indication || null,
     });
   } catch (error) {

@@ -1435,7 +1435,7 @@ export default function ClosingRoomModal({ projectId, onClose }: ClosingRoomProp
                                                 <div className="font-semibold font-mono text-pw-black flex gap-4">
                                                     <span>Total Private Equity: ${totalPE.toLocaleString()}</span>
                                                     {fractionalEquity > 0 && <span>Fractional: ${fractionalEquity.toLocaleString()}</span>}
-                                                    {privateMoneyEquity > 0 && <span>Sponsor/Private Money: ${privateMoneyEquity.toLocaleString()}</span>}
+                                                    {privateMoneyEquity > 0 && <span>LeadInvestor/Private Money: ${privateMoneyEquity.toLocaleString()}</span>}
                                                 </div>
                                                 <div className="text-[9px] text-pw-muted leading-none">Approved equity capitalization</div>
                                             </div>
@@ -1811,7 +1811,7 @@ export default function ClosingRoomModal({ projectId, onClose }: ClosingRoomProp
                             <textarea
                                 value={overrideReasonState}
                                 onChange={(e) => setOverrideReasonState(e.target.value)}
-                                placeholder="Explain why the variance is acceptable (e.g. sponsor funding remainder outside capital stack, seller credits adjusted post-closing disclosure)..."
+                                placeholder="Explain why the variance is acceptable (e.g. leadInvestor funding remainder outside capital stack, seller credits adjusted post-closing disclosure)..."
                                 className="w-full text-xs bg-pw-glass-bg/40 border border-pw-border rounded-xl p-3 text-pw-black outline-none focus:ring-1 focus:ring-[#7A9EAA] min-h-[70px] leading-relaxed"
                             />
                             <div className="flex justify-end gap-2">

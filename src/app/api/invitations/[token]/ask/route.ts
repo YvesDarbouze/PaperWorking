@@ -14,7 +14,7 @@ import { generateInvestorInquiryEmail } from '@/lib/emails/templates/InvestorInq
 
    Persists a real investor inquiry (projects/{id}/investorInquiries)
    and emails the deal owner — replaces the client-timer fake
-   "Ask Sponsor" behavior on the Guest Portal.
+   "Ask LeadInvestor" behavior on the Guest Portal.
    ═══════════════════════════════════════════════════════════════ */
 
 export const dynamic = 'force-dynamic';

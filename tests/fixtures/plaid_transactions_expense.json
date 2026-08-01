@@ -1,0 +1,41 @@
+[
+  {
+    "transaction_id": "plaid_tx_tax_01",
+    "account_id": "acc_depository_01",
+    "amount": 1400.00,
+    "date": "2026-08-02",
+    "name": "COUNTY TAX COLLECTOR REAL ESTATE TAX",
+    "merchant_name": "COUNTY TAX COLLECTOR",
+    "pending": false,
+    "personal_finance_category": {
+      "primary": "GOVERNMENT_AND_NON_PROFIT",
+      "detailed": "GOVERNMENT_AND_NON_PROFIT_TAX_PAYMENT"
+    }
+  },
+  {
+    "transaction_id": "plaid_tx_insurance_01",
+    "account_id": "acc_depository_01",
+    "amount": 850.00,
+    "date": "2026-08-03",
+    "name": "STATE FARM PROPERTY INSURANCE",
+    "merchant_name": "STATE FARM",
+    "pending": false,
+    "personal_finance_category": {
+      "primary": "INSURANCE",
+      "detailed": "INSURANCE_PROPERTY_INSURANCE"
+    }
+  },
+  {
+    "transaction_id": "plaid_tx_hvac_capex_01",
+    "account_id": "acc_depository_01",
+    "amount": 5000.00,
+    "date": "2026-08-04",
+    "name": "ABC HVAC HEATING & COOLING REPLACEMENT",
+    "merchant_name": "ABC HVAC",
+    "pending": false,
+    "personal_finance_category": {
+      "primary": "HOME_IMPROVEMENT",
+      "detailed": "HOME_IMPROVEMENT_REPAIR_AND_MAINTENANCE"
+    }
+  }
+]

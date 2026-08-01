@@ -13,7 +13,7 @@
 
 import redis from '../redis';
 
-export type JobType = 'bridge_sync' | 'member_sync' | 'office_sync' | 'webhook_process' | 'timeline_sync';
+export type JobType = 'bridge_sync' | 'member_sync' | 'office_sync' | 'webhook_process' | 'timeline_sync' | 'transaction_notification_batch';
 
 export interface Job<T = unknown> {
   id: string;

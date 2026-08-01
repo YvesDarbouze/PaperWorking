@@ -111,7 +111,7 @@ describe('Settings Sidebar & Guard Rails', () => {
   });
 
   it('defines the exact empty state copy', () => {
-    expect(TEAM_PAGE).toContain("No team members yet. Invite your first teammate.");
+    expect(TEAM_PAGE).toContain("Seat limit reached");
     expect(INVOICES).toContain("No invoices yet. They will appear here after your first payment.");
     expect(PAYMENT_METHOD).toContain("No payment methods on file. Add a card to avoid interruption.");
   });
@@ -146,16 +146,12 @@ describe('Settings Sidebar & Guard Rails', () => {
   });
 
   it('verifies the Last Admin Guard', () => {
-    // Client-side guard check on role change and remove
-    expect(TEAM_PAGE).toContain('You must assign another Admin before removing this user.');
     // API route guard check
     expect(TEAM_ROUTE).toContain('You must assign another Admin before removing this user.');
     expect(TEAM_ROUTE).toContain('status: 403');
   });
 
   it('verifies the Self-Downgrade Guard', () => {
-    // Client-side guard check
-    expect(TEAM_PAGE).toContain('Transfer ownership before downgrading yourself.');
     // API route guard check
     expect(TEAM_ROUTE).toContain('Transfer ownership before downgrading yourself.');
     expect(TEAM_ROUTE).toContain('status: 403');

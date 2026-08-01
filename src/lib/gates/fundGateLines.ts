@@ -154,7 +154,7 @@ export function evaluateF6GateLines(
     label: 'Cash-to-Close Reconciled',
     blocked: !isReconciled,
     reason: isReconciled
-      ? (reconciliation.isReconciled ? 'Sources and uses match exactly ($0 variance).' : `Overridden: ${cr.reconciliationOverrideReason || 'Sponsor override'}`)
+      ? (reconciliation.isReconciled ? 'Sources and uses match exactly ($0 variance).' : `Overridden: ${cr.reconciliationOverrideReason || 'LeadInvestor override'}`)
       : `Cash-to-close has a variance of $${reconciliation.variance.toLocaleString()}. Reconcile sources/uses or record a closing override.`,
   };
 

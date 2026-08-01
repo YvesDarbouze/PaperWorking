@@ -186,7 +186,7 @@ jest.mock('@/lib/firebase-admin/auth-guard', () => ({
     if (!authHeader || authHeader === 'Bearer invalid') {
       return { status: 401, error: 'Unauthorized' };
     }
-    return { uid: 'user_lead_investor', token: { email: 'sponsor@example.com' } };
+    return { uid: 'user_lead_investor', token: { email: 'leadInvestor@example.com' } };
   },
   isAuthError: (auth: any) => !!auth.error,
 }));
@@ -311,7 +311,7 @@ describe('DM-27 Question Threads Test Suite', () => {
     expect(mockAdd).toHaveBeenCalledWith('projects/proj_123/investorInquiries', expect.any(Object));
   });
 
-  it('POST /api/projects/[id]/inquiries/[inquiryId]/reply appends sponsor response', async () => {
+  it('POST /api/projects/[id]/inquiries/[inquiryId]/reply appends leadInvestor response', async () => {
     const thread = {
       id: 'inq_123',
       projectId: 'proj_123',
@@ -320,7 +320,7 @@ describe('DM-27 Question Threads Test Suite', () => {
       investorEmail: 'investor@example.com',
       status: 'open',
       isShared: false,
-      messages: [{ id: 'm1', sender: 'investor', text: 'Sponsor question', createdAt: new Date().toISOString() }],
+      messages: [{ id: 'm1', sender: 'investor', text: 'LeadInvestor question', createdAt: new Date().toISOString() }],
     };
     mockGet.mockImplementation((colName, docId) => {
       if (colName === 'projects' && docId === 'proj_123') return mockProjectData;
@@ -331,7 +331,7 @@ describe('DM-27 Question Threads Test Suite', () => {
 
     const req = new NextRequest('http://localhost/api/projects/proj_123/inquiries/inq_123/reply', {
       method: 'POST',
-      headers: { authorization: 'Bearer sponsor_token' },
+      headers: { authorization: 'Bearer leadInvestor_token' },
       body: JSON.stringify({ text: 'This is the answer' }),
     });
 
@@ -351,7 +351,7 @@ describe('DM-27 Question Threads Test Suite', () => {
       isShared: false,
       messages: [
         { id: 'm1', sender: 'investor', text: 'The Question', createdAt: new Date().toISOString() },
-        { id: 'm2', sender: 'sponsor', text: 'The Answer', createdAt: new Date().toISOString() },
+        { id: 'm2', sender: 'leadInvestor', text: 'The Answer', createdAt: new Date().toISOString() },
       ],
     };
     mockGet.mockImplementation((colName, docId) => {
@@ -362,7 +362,7 @@ describe('DM-27 Question Threads Test Suite', () => {
 
     const req = new NextRequest('http://localhost/api/projects/proj_123/inquiries/inq_123', {
       method: 'PATCH',
-      headers: { authorization: 'Bearer sponsor_token' },
+      headers: { authorization: 'Bearer leadInvestor_token' },
       body: JSON.stringify({ isShared: true }),
     });
 

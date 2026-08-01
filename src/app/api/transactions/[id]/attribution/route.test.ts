@@ -117,7 +117,7 @@ describe('Manual Attribution API Endpoint', () => {
       body: JSON.stringify({ projectId: 'proj_abc' }),
     });
 
-    const response = await PATCH(request, { params: { plaidId: 'tx_123' } });
+    const response = await PATCH(request, { params: { id: 'tx_123' } });
     expect(response.status).toBe(401);
   });
 
@@ -142,14 +142,14 @@ describe('Manual Attribution API Endpoint', () => {
       reviewedByUser: true,
     });
 
-    const response = await PATCH(request, { params: { plaidId: 'tx_123' } });
+    const response = await PATCH(request, { params: { id: 'tx_123' } });
     const json = await response.json();
 
     expect(response.status).toBe(200);
     expect(json.success).toBe(true);
     expect(mockUpdateTransaction).toHaveBeenCalledWith(
       expect.objectContaining({
-        where: { plaidId: 'tx_123' },
+        where: { id: 'tx_123' },
         data: expect.objectContaining({
           projectId: 'proj_abc',
           reviewedByUser: true,

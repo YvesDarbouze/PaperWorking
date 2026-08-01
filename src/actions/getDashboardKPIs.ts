@@ -3,6 +3,8 @@
 import { cookies } from 'next/headers';
 import { calculatePortfolioSummary } from '@/lib/analyticsUtils';
 import type { Project } from '@/types/schema';
+import { prisma } from '@/lib/prisma';
+
 
 /* ═══════════════════════════════════════════════════════
    getDashboardKPIs — Server Action
@@ -15,9 +17,69 @@ import type { Project } from '@/types/schema';
      2. Verify via Admin SDK → extract UID
      3. Look up user's organizationId
      4. Query all projects for that org
-     5. Run calculatePortfolioSummary() server-side
-     6. Return serializable result
+     5. Run calculatePortfolioSummary() server-side (Firestore)
+     6. Query prisma.transaction for live Plaid bank-feed KPIs
+     7. Merge and return serializable result
    ═══════════════════════════════════════════════════════ */
+
+/** REI categories that roll up to Operating Expenses */
+const OPEX_CATEGORIES = [
+  'maintenance',
+  'utilities',
+  'property_management',
+  'insurance',
+  'hoa_fees',
+] as const;
+
+/** Query Plaid transaction aggregations for the current calendar month */
+async function getPlaidKPIs(uid: string): Promise<{
+  rentalIncomeMtd: number;
+  debtServiceMtd: number;
+  operatingExpensesMtd: number;
+  unattributedTxCount: number;
+}> {
+  const empty = { rentalIncomeMtd: 0, debtServiceMtd: 0, operatingExpensesMtd: 0, unattributedTxCount: 0 };
+
+  try {
+    const now = new Date();
+    const monthStart = new Date(now.getFullYear(), now.getMonth(), 1);
+
+    // Run aggregations in parallel
+    const [rentalAgg, debtAgg, opexAgg, unattributedCount] = await Promise.all([
+      // Rental income: negative amount in Plaid convention (money in)
+      prisma.transaction.aggregate({
+        where: { userId: uid, reiCategory: 'rental_income', date: { gte: monthStart }, amount: { lt: 0 } },
+        _sum: { amount: true },
+      }),
+      // Debt service: positive amount (money out)
+      prisma.transaction.aggregate({
+        where: { userId: uid, reiCategory: 'debt_service', date: { gte: monthStart }, amount: { gt: 0 } },
+        _sum: { amount: true },
+      }),
+      // Operating expenses: positive amount (money out)
+      prisma.transaction.aggregate({
+        where: { userId: uid, reiCategory: { in: OPEX_CATEGORIES as unknown as string[] }, date: { gte: monthStart }, amount: { gt: 0 } },
+        _sum: { amount: true },
+      }),
+      // Unattributed transactions (not yet assigned to a project)
+      prisma.transaction.count({
+        where: { userId: uid, projectId: null },
+      }),
+    ]);
+
+    return {
+      // Amounts stored in cents; negate rental income (negative = money in → positive display)
+      rentalIncomeMtd: Math.abs(Number(rentalAgg._sum.amount ?? 0)),
+      debtServiceMtd: Number(debtAgg._sum.amount ?? 0),
+      operatingExpensesMtd: Number(opexAgg._sum.amount ?? 0),
+      unattributedTxCount: unattributedCount,
+    };
+  } catch (err) {
+    // Prisma not available or table doesn't exist yet — fail gracefully
+    console.warn('[getDashboardKPIs] Plaid KPI aggregation skipped:', (err as Error).message?.slice(0, 120));
+    return empty;
+  }
+}
 
 export interface DashboardKPIResult {
   avgGrossProfit: number;
@@ -27,6 +89,11 @@ export interface DashboardKPIResult {
   soldCount: number;
   activeCount: number;
   totalPortfolioValue: number;
+  // Plaid-sourced live bank-feed KPIs (current calendar month, in cents)
+  rentalIncomeMtd: number;
+  debtServiceMtd: number;
+  operatingExpensesMtd: number;
+  unattributedTxCount: number;
 }
 
 const EMPTY_KPIS: DashboardKPIResult = {
@@ -37,6 +104,10 @@ const EMPTY_KPIS: DashboardKPIResult = {
   soldCount: 0,
   activeCount: 0,
   totalPortfolioValue: 0,
+  rentalIncomeMtd: 0,
+  debtServiceMtd: 0,
+  operatingExpensesMtd: 0,
+  unattributedTxCount: 0,
 };
 
 function hasAdminCredentials(): boolean {
@@ -87,8 +158,11 @@ export async function getDashboardKPIs(): Promise<DashboardKPIResult> {
       ...doc.data(),
     })) as Project[];
 
-    // Run the shared analytics engine server-side
+    // Run the shared analytics engine server-side (Firestore)
     const summary = calculatePortfolioSummary(projects);
+
+    // Fetch live bank-feed KPIs from Prisma (Plaid transactions)
+    const plaidKPIs = await getPlaidKPIs(decoded.uid);
 
     return {
       avgGrossProfit: summary.avgGrossProfit,
@@ -98,6 +172,7 @@ export async function getDashboardKPIs(): Promise<DashboardKPIResult> {
       soldCount: summary.soldCount,
       activeCount: summary.activeCount,
       totalPortfolioValue: summary.totalPortfolioValue,
+      ...plaidKPIs,
     };
   } catch (error) {
     console.error('[getDashboardKPIs] Server action failed:', error);

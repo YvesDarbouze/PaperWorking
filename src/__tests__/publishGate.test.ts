@@ -246,7 +246,7 @@ describe('DM-21: Publish Gate', () => {
         return { exists: false };
       });
 
-      const result = await publishListing('mock_token', 'listing_123', 'Sponsor has option contract closing next week.');
+      const result = await publishListing('mock_token', 'listing_123', 'LeadInvestor has option contract closing next week.');
       expect(result.success).toBe(true);
 
       // Verify that publishGateResult is stored with override reason
@@ -254,7 +254,7 @@ describe('DM-21: Publish Gate', () => {
       expect(calls.length).toBeGreaterThan(0);
       const lastCall = calls[calls.length - 1];
       expect(lastCall[1].publishGateResult.passed).toBe(false);
-      expect(lastCall[1].publishGateResult.overrideReason).toBe('Sponsor has option contract closing next week.');
+      expect(lastCall[1].publishGateResult.overrideReason).toBe('LeadInvestor has option contract closing next week.');
     });
   });
 

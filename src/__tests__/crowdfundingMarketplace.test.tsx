@@ -15,7 +15,7 @@ describe('DM-36: Crowdfunding Deals in the Marketplace', () => {
     id: 'listing_cf_1',
     projectId: 'proj_cf_1',
     organizationId: 'org_1',
-    ownerUid: 'sponsor_1',
+    ownerUid: 'leadInvestor_1',
     status: 'published',
     visibilityMode: 'PUBLIC_SOLICITED',
     propertyName: 'Sunnyvale Crowdfunded Apts',
@@ -34,7 +34,7 @@ describe('DM-36: Crowdfunding Deals in the Marketplace', () => {
     transitionLog: [],
     capitalPlan: 'Default plan',
     leadInvestor: {
-      uid: 'sponsor_1',
+      uid: 'leadInvestor_1',
       displayName: 'Jane Lead',
     },
   } as DealListing;
@@ -58,7 +58,7 @@ describe('DM-36: Crowdfunding Deals in the Marketplace', () => {
       project: {
         id: 'proj_cf_1',
         propertyName: 'Sunnyvale Crowdfunded Apts',
-        ownerUid: 'sponsor_1',
+        ownerUid: 'leadInvestor_1',
       } as any,
       metrics: {
         capRate: 0.085,

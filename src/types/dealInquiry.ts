@@ -2,7 +2,7 @@ import { Timestamp } from 'firebase/firestore';
 
 export interface ThreadMessage {
   id: string;
-  sender: 'investor' | 'sponsor';
+  sender: 'investor' | 'leadInvestor';
   text: string;
   createdAt: string; // ISO String
 }

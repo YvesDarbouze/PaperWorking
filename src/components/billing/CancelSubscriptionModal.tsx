@@ -43,17 +43,17 @@ export const CancelSubscriptionModal: React.FC<CancelSubscriptionModalProps> = (
         <div className="space-y-2">
           <h3 className="text-base font-bold text-slate-900">Cancel Subscription?</h3>
           <p className="text-xs text-slate-500 leading-relaxed px-2">
-            Are you sure you want to cancel your paid plan? You will immediately lose access to team collaboration, search insights, and advanced deal underwriting models.
+            Leaving? Your data isn&apos;t. Export your full ledger, P&amp;L, and documents as CSV, plus 90 days of read access after you cancel.
           </p>
         </div>
 
         <div className="bg-slate-50 p-4 rounded-xl text-left space-y-2">
           <h4 className="text-xs font-semibold text-slate-800 uppercase tracking-wider">Consequences include:</h4>
           <ul className="text-[11px] text-slate-500 space-y-1.5 list-disc list-inside">
-            <li>Loss of 10 team seat capacities</li>
+            <li>Loss of team seat capacities</li>
             <li>Restricted property listing lookup quotas</li>
             <li>No shared workspace PDF export pipelines</li>
-            <li>Workspace data retained for only 30 days</li>
+            <li>90 days of read access after you cancel</li>
           </ul>
         </div>
 

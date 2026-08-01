@@ -109,7 +109,7 @@ const features: Feature[] = [
     icon: <IconLedger />,
     title: 'The Digital Ledger',
     description:
-      'Every dollar tracked, every receipt attached. Maintain a single source of truth for project finances with automated categorization and audit-ready exports.',
+      'Every dollar tracked, every receipt attached. Maintain a single source of truth for project finances with automated categorization and organized and reviewable exports.',
   },
   {
     icon: <IconEngine />,

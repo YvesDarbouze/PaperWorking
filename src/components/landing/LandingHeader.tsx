@@ -12,26 +12,17 @@ import { usePaywall } from '@/hooks/usePaywall';
 /* ═══════════════════════════════════════════════════════
    LandingHeader — Antigravity-style sticky nav.
 
-   Desktop nav (L → R):
-     Logo  |  Home  How It Works▾  Pricing  Support  |  Sign In  [Start 14-Day Free Trial]
+   Four-phase REIL framework: Acquisition, Fund, Hold, Exit
 
-   Scroll behaviour:
-     default  → bg/92 + blur(16px) + border-b
-     scrolled → bg/96 + blur(20px) + border-b + subtle shadow
+   Primary navigation (verbatim contract order):
+     How It Works · Marketplaces · Pricing · Playbook · Support · Sign In · Start Free 14-Day Trial
    ═══════════════════════════════════════════════════════ */
-
-const HOW_IT_WORKS_ITEMS = [
-  { icon: 'search_home', title: 'Acquisition', subtitle: 'Source deals and secure capital.' },
-  { icon: 'verified_user', title: 'Fund', subtitle: 'Contracts, title and compliance.' },
-  { icon: 'construction', title: 'Hold', subtitle: 'Budgets, bids and contractor tracking.' },
-  { icon: 'account_balance', title: 'Exit', subtitle: 'NOI tracking and ROI reporting.' },
-];
 
 export default function LandingHeader() {
   const [mobileOpen, setMobileOpen] = useState(false);
   const [scrolled, setScrolled]     = useState(false);
-  const [howOpen, setHowOpen]       = useState(false);
-  const dropRef  = useRef<HTMLDivElement>(null);
+  const [supportOpen, setSupportOpen] = useState(false);
+  const supportRef  = useRef<HTMLDivElement>(null);
   const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const { theme, toggleTheme } = useTheme();
   const [mounted, setMounted] = useState(false);
@@ -51,16 +42,16 @@ export default function LandingHeader() {
 
   useEffect(() => {
     const onOut = (e: MouseEvent) => {
-      if (dropRef.current && !dropRef.current.contains(e.target as Node)) {
-        setHowOpen(false);
+      if (supportRef.current && !supportRef.current.contains(e.target as Node)) {
+        setSupportOpen(false);
       }
     };
     document.addEventListener('mousedown', onOut);
     return () => document.removeEventListener('mousedown', onOut);
   }, []);
 
-  const enterDrop = () => { if (timerRef.current) clearTimeout(timerRef.current); setHowOpen(true); };
-  const leaveDrop = () => { timerRef.current = setTimeout(() => setHowOpen(false), 100); };
+  const enterSupport = () => { if (timerRef.current) clearTimeout(timerRef.current); setSupportOpen(true); };
+  const leaveSupport = () => { timerRef.current = setTimeout(() => setSupportOpen(false), 150); };
 
   return (
     <>
@@ -72,7 +63,6 @@ export default function LandingHeader() {
             : ''
         }`}
         style={{
-          /* Light mode: warm white / Dark mode: warm black — both with blur */
           backgroundColor: scrolled
             ? 'color-mix(in srgb, var(--color-background) 96%, transparent)'
             : 'color-mix(in srgb, var(--color-background) 90%, transparent)',
@@ -89,7 +79,7 @@ export default function LandingHeader() {
           {/* ── Logo ── */}
           <Logo href="/" surface="marketing-nav" size="sm" />
 
-          {/* ── Desktop center links ── */}
+          {/* ── Desktop center links: How It Works · Marketplaces · Pricing · Playbook · Support ── */}
           <div className="hidden md:flex items-center gap-7">
 
             <Link
@@ -132,27 +122,70 @@ export default function LandingHeader() {
               Playbook
             </Link>
 
-            <Link
-              href="/support"
-              className="text-[13.5px] font-medium transition-opacity duration-150"
-              style={{ color: 'var(--color-on-surface)', opacity: 0.7, textDecoration: 'none' }}
-              onMouseEnter={e => (e.currentTarget.style.opacity = '1')}
-              onMouseLeave={e => (e.currentTarget.style.opacity = '0.7')}
+            {/* Support Dropdown Menu */}
+            <div
+              ref={supportRef}
+              className="relative"
+              onMouseEnter={enterSupport}
+              onMouseLeave={leaveSupport}
             >
-              Support
-            </Link>
+              <Link
+                href="/support"
+                className="flex items-center gap-1 text-[13.5px] font-medium transition-opacity duration-150"
+                style={{ color: 'var(--color-on-surface)', opacity: 0.7, textDecoration: 'none' }}
+                onMouseEnter={e => (e.currentTarget.style.opacity = '1')}
+                onMouseLeave={e => (e.currentTarget.style.opacity = '0.7')}
+              >
+                Support
+                <span className="material-symbols-outlined text-[14px]">expand_more</span>
+              </Link>
+
+              <AnimatePresence>
+                {supportOpen && (
+                  <motion.div
+                    initial={{ opacity: 0, y: 6 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: 6 }}
+                    transition={{ duration: 0.15 }}
+                    className="absolute top-full left-0 mt-2 w-52 py-2 rounded-xl shadow-xl border overflow-hidden z-50"
+                    style={{
+                      backgroundColor: 'var(--color-surface)',
+                      borderColor: 'color-mix(in srgb, var(--color-on-background) 12%, transparent)',
+                    }}
+                  >
+                    <Link
+                      href="/support"
+                      className="block px-4 py-2 text-[13px] font-medium transition-colors"
+                      style={{ color: 'var(--color-on-surface)', textDecoration: 'none' }}
+                      onMouseEnter={e => (e.currentTarget.style.backgroundColor = 'color-mix(in srgb, var(--color-on-background) 6%, transparent)')}
+                      onMouseLeave={e => (e.currentTarget.style.backgroundColor = 'transparent')}
+                    >
+                      Support Center
+                    </Link>
+                    <Link
+                      href="/support/glossary"
+                      className="block px-4 py-2 text-[13px] font-medium transition-colors"
+                      style={{ color: 'var(--color-on-surface)', textDecoration: 'none' }}
+                      onMouseEnter={e => (e.currentTarget.style.backgroundColor = 'color-mix(in srgb, var(--color-on-background) 6%, transparent)')}
+                      onMouseLeave={e => (e.currentTarget.style.backgroundColor = 'transparent')}
+                    >
+                      Real Estate Glossary
+                    </Link>
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            </div>
+
           </div>
 
-          {/* ── Right actions ── */}
+          {/* ── Right actions: Sign In · Start Free 14-Day Trial ── */}
           <div className="flex items-center gap-3">
 
-
-            {/* Sign In / Sign Up / Sign Out */}
             {user ? (
               <>
                 <button
                   onClick={() => { logout(); router.push('/'); }}
-                  className="hidden md:inline-flex text-[13.5px] font-medium transition-opacity duration-150"
+                  className="hidden md:inline-flex text-[13.5px] font-medium transition-opacity duration-150 type-cta"
                   style={{ color: 'var(--color-on-surface)', opacity: 0.7, textDecoration: 'none', background: 'none', border: 'none', cursor: 'pointer' }}
                   onMouseEnter={e => (e.currentTarget.style.opacity = '1')}
                   onMouseLeave={e => (e.currentTarget.style.opacity = '0.7')}
@@ -162,7 +195,7 @@ export default function LandingHeader() {
                 {!(onPricingPage && !isPaid) && (
                 <Link
                   href={isPaid ? '/dashboard' : '/pricing'}
-                  className="hidden md:inline-flex items-center gap-1.5 text-[13px] font-semibold transition-all duration-150 active:scale-[0.98] whitespace-nowrap"
+                  className="hidden md:inline-flex items-center gap-1.5 text-[13px] font-semibold transition-all duration-150 active:scale-[0.98] whitespace-nowrap type-cta"
                   style={{
                     background: 'var(--color-on-surface)',
                     color: 'var(--color-surface)',
@@ -174,7 +207,7 @@ export default function LandingHeader() {
                   onMouseEnter={e => (e.currentTarget.style.opacity = '0.88')}
                   onMouseLeave={e => (e.currentTarget.style.opacity = '1')}
                 >
-                  {isPaid ? 'Dashboard' : 'Start 14 Day Trial'}
+                  {isPaid ? 'Dashboard' : 'Start Free 14-Day Trial'}
                   <span className="material-symbols-outlined text-[14px]" style={{ fontVariationSettings: "'FILL' 0, 'wght' 400" }}>
                     arrow_forward
                   </span>
@@ -185,26 +218,16 @@ export default function LandingHeader() {
               <>
                 <Link
                   href="/login"
-                  className="hidden md:inline-flex text-[13.5px] font-medium transition-opacity duration-150"
+                  className="hidden md:inline-flex text-[13.5px] font-medium transition-opacity duration-150 type-cta"
                   style={{ color: 'var(--color-on-surface)', opacity: 0.7, textDecoration: 'none' }}
                   onMouseEnter={e => (e.currentTarget.style.opacity = '1')}
                   onMouseLeave={e => (e.currentTarget.style.opacity = '0.7')}
                 >
                   Sign In
                 </Link>
-                <span className="hidden md:inline-block text-[13.5px] opacity-30 select-none">/</span>
-                <Link
-                  href="/register"
-                  className="hidden md:inline-flex text-[13.5px] font-medium transition-opacity duration-150"
-                  style={{ color: 'var(--color-on-surface)', opacity: 0.7, textDecoration: 'none' }}
-                  onMouseEnter={e => (e.currentTarget.style.opacity = '1')}
-                  onMouseLeave={e => (e.currentTarget.style.opacity = '0.7')}
-                >
-                  Sign Up
-                </Link>
                 <Link
                   href="/pricing"
-                  className="hidden md:inline-flex items-center gap-1.5 text-[13px] font-semibold transition-all duration-150 active:scale-[0.98] whitespace-nowrap"
+                  className="hidden md:inline-flex items-center gap-1.5 text-[13px] font-semibold transition-all duration-150 active:scale-[0.98] whitespace-nowrap type-cta"
                   style={{
                     background: 'var(--color-on-surface)',
                     color: 'var(--color-surface)',
@@ -216,7 +239,7 @@ export default function LandingHeader() {
                   onMouseEnter={e => (e.currentTarget.style.opacity = '0.88')}
                   onMouseLeave={e => (e.currentTarget.style.opacity = '1')}
                 >
-                  Start 14 Day Trial
+                  Start Free 14-Day Trial
                   <span className="material-symbols-outlined text-[14px]" style={{ fontVariationSettings: "'FILL' 0, 'wght' 400" }}>
                     arrow_forward
                   </span>
@@ -350,6 +373,18 @@ export default function LandingHeader() {
                   Support
                 </Link>
 
+                {/* Glossary under Support */}
+                <Link
+                  href="/support/glossary"
+                  onClick={() => setMobileOpen(false)}
+                  className="flex items-center gap-3 pl-8 py-2 rounded-xl text-[13px] font-medium transition-colors duration-150"
+                  style={{ color: 'var(--color-on-surface-variant)', textDecoration: 'none' }}
+                  onMouseEnter={e => (e.currentTarget.style.background = 'color-mix(in srgb, var(--color-on-background) 5%, transparent)')}
+                  onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
+                >
+                  Real Estate Glossary
+                </Link>
+
               </div>
 
               {/* CTA area */}
@@ -371,7 +406,7 @@ export default function LandingHeader() {
                           borderRadius: '9999px',
                         }}
                       >
-                        {isPaid ? 'Dashboard' : 'Start 14 Day Trial'}
+                        {isPaid ? 'Dashboard' : 'Start Free 14-Day Trial'}
                       </Link>
                     )}
                     <button
@@ -390,32 +425,18 @@ export default function LandingHeader() {
                   </>
                 ) : (
                   <>
-                    <div className="flex gap-2">
-                      <Link
-                        href="/login"
-                        onClick={() => setMobileOpen(false)}
-                        className="flex-1 flex items-center justify-center px-4 py-3 rounded-xl text-[14px] font-medium transition-colors duration-150"
-                        style={{
-                          color: 'var(--color-on-surface)',
-                          border: '1px solid color-mix(in srgb, var(--color-on-background) 12%, transparent)',
-                          textDecoration: 'none',
-                        }}
-                      >
-                        Sign In
-                      </Link>
-                      <Link
-                        href="/register"
-                        onClick={() => setMobileOpen(false)}
-                        className="flex-1 flex items-center justify-center px-4 py-3 rounded-xl text-[14px] font-medium transition-colors duration-150"
-                        style={{
-                          color: 'var(--color-on-surface)',
-                          border: '1px solid color-mix(in srgb, var(--color-on-background) 12%, transparent)',
-                          textDecoration: 'none',
-                        }}
-                      >
-                        Sign Up
-                      </Link>
-                    </div>
+                    <Link
+                      href="/login"
+                      onClick={() => setMobileOpen(false)}
+                      className="w-full flex items-center justify-center px-4 py-3 rounded-xl text-[14px] font-medium transition-colors duration-150"
+                      style={{
+                        color: 'var(--color-on-surface)',
+                        border: '1px solid color-mix(in srgb, var(--color-on-background) 12%, transparent)',
+                        textDecoration: 'none',
+                      }}
+                    >
+                      Sign In
+                    </Link>
                     <Link
                       href="/pricing"
                       onClick={() => setMobileOpen(false)}
@@ -427,7 +448,7 @@ export default function LandingHeader() {
                         borderRadius: '9999px',
                       }}
                     >
-                      Start 14 Day Trial
+                      Start Free 14-Day Trial
                     </Link>
                   </>
                 )}
@@ -439,3 +460,4 @@ export default function LandingHeader() {
     </>
   );
 }
+

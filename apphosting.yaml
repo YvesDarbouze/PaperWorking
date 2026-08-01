@@ -210,3 +210,18 @@ env:
     secret: WORKER_SECRET
     availability:
       - RUNTIME
+
+  # ─── Plaid sync cron jobs ─────────────────────────────────────────────────
+  # These endpoints must be called every 6 hours via Cloud Scheduler.
+  # Set up two Cloud Scheduler jobs pointing to:
+  #   POST https://paperworking.co/api/cron/sync-transactions
+  #   POST https://paperworking.co/api/cron/sync-liabilities
+  # With header: Authorization: Bearer <WORKER_SECRET>
+  # Schedule: every 6 hours  (cron: 0 */6 * * *)
+  - variable: PLAID_LIABILITIES_ENABLED
+    value: "true"
+    availability:
+      - RUNTIME
+
+
+

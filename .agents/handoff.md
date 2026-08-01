@@ -1,46 +1,28 @@
-# PaperWorking Handoff Note
+# Agent Handoff — 2026-07-30
 
-## Completed Features
-- **AQ-27: Marketplace Deal Visibility & Teaser Views**: Fully implemented the guest teaser vs subscriber views, dynamic financial approximations, blurred overlays, consent pref checkbox modal, vendor gates on Discover Deals, and automated closure when projects advance phases.
-- **E2E Test Suite**: Built the full `e2e/marketplace-postings.spec.ts` test suite. All 4 tests are green and passing.
-- **Type Safety**: Ensured complete TypeScript type safety across all Server Actions, components, and API routes.
-- **Prompt 14: Integration Polish & Launch Hardening**: 
-  - Wired **Cross-Phase Data Flow** transitions: Acquisition targets to actual parameters, financing terms & buy-side closing costs to Hold operating inputs, contractor & PM team members to Hold/Rehab assignments, and rehab actuals & holding costs to Exit calculators.
-  - Added home **CommandCenter Widgets**: Alerts panel (missed rent, unattributed transactions, overdue closing milestones), Active Projects linear progress, Quick Actions menu, and a 90-day Portfolio value sparkline.
-  - Performance-optimized database queries by injecting composite indexes on `Transaction` (`(userId, date)`, `(projectId, reiCategory)`) and `ReilProject` (`(createdById, currentPhase)`, `(createdById, acquisitionStatus)`).
-  - Verified compilation via `npx tsc --noEmit` and production build `npm run build` is 100% clean.
-  - Ran E2E integration test suites (`full-reil-journey.spec.ts`, `correctness.test.ts`, `accessibility.spec.ts`) successfully with all green results.
+## Completed this session
+**TransactionNotificationService** — full implementation, 27/27 tests passing
 
-- **Data Room Purge & Provenance Re-routing (RM-2 through RM-6)**:
-  - Deployed phase-scoped project files (`projectFiles`) and security controls, eliminating the central Data Room view.
-  - PURGED all user-facing "Data Room" copy and references from pages, components, toasts, notifications, and menus.
-  - Re-routed D-4 control evidence, B-2 deeds, C-3 metric provenance badges, G-4 card exchanges, and DM-20 dispatches to `projectFiles` or contacts.
-  - Created custom page `/dashboard/data-room` returning `notFound()` with a premium 404 layout redirecting users back to Projects.
-  - Updated all governing specifications (`dr-provenance-wiring-build-orders.md` marked `WITHDRAWN`, `dm-build-pack-deal-marketplace.md`, `dm-47-deal-marketplace-prompts.md`, and skill config) to match.
+### Files created
+- `prisma/schema.prisma` — added `EmailDigestMode`, `EmailAlertThreshold` enums + `UserNotificationPreferences`, `SentEmailLog` models + AppUser relations; `npx prisma generate` run
+- `src/lib/emails/templates/TransactionNotificationEmails.ts` — 7 HTML/text email templates with KPI boxes, dark mode, responsive layout
+- `src/lib/notifications/transactionNotifications.ts` — core service (7 preference gates, idempotent Resend dispatch, Firestore HOURLY_BATCH/DAILY_DIGEST queuing)
+- `src/app/api/user/notification-preferences/route.ts` — GET/PUT preferences (auto-create on first GET, Zod validation)
+- `src/app/api/notifications/test/route.ts` — test email sender for all 7 templates
+- `src/__tests__/transactionNotifications.test.ts` — 27 tests, all passing
 
-- **AI, OCR, and KYC Deletion Work**:
-  - Removed all code, UI elements, API routes, tests, and comments related to OCR, AI, machine learning, and KYC.
-  - Replaced the "AI Draft" buttons with clean template compilation actions in `ComposeEmailModal`, `DealUpdateComposer`, `GlobalInbox`, `DraftAssistant`, and `ProfessionalListingDashboard`.
-  - Replaced the "AI Scan" references in `SettlementDocPortal` and `GCBidUploader` with clean manual upload flows and processing cues.
-  - Renamed the `GenerativeInsights` component to `PrioritiesBanner` and replaced the Sparkles icon with a standard checklist icon to eliminate AI connotations.
-  - Verified all 2,356 unit tests pass successfully.
-  - Verified `npx tsc --noEmit` compiles with zero errors and `npm run build` generates a successful Next.js production bundle.
+### Files modified
+- `src/lib/queue/jobQueue.ts` — added `transaction_notification_batch` to `JobType`
+- `src/lib/queue/jobConsumer.ts` — added batch flush handler calling `TransactionNotificationService.flushHourlyBatches()`
 
-- **Command Center Render Crash Fix**:
-  - Resolved a runtime crash in `FeaturedMetricSlot` within `CommandCenter.tsx` caused by a conditional early return statement positioned before React Hook initializations (`useMemo`, `useState`, `useEffect`).
-  - Moved the early return statement after all hook declarations, restoring conformance to React hook execution rules.
-  - Verified that `/dashboard/command-center` now renders with status `200`.
+## What needs to happen next
+1. **`npx prisma migrate dev --name add_notification_preferences`** — creates SQL migration for production
+2. **Wire `onTransactionApproved`** into existing transaction approval routes after `status` update
+3. **Weekly cron** — add schedule for `sendWeeklySummary` in `vercel.json`
 
-- **Settings & Billing UI Audit & Compliance Fixes**:
-  - Audited and standardized all components, sub-components, pages, and selectors in `/settings/*` and `/billing/*` to enforce PaperWorking UI rules.
-  - Eliminated all high-saturation/neon green accent colors, replacing success states with muted sage green (`#E8F5E9` bg, `#2E7D32` text, `#4CAF50` icon/border) and active sidebar items with subtle left-border indicators.
-  - Enforced a standard button tier system (primary/secondary: `h-10 px-5 text-sm font-medium`, text buttons: `h-9 px-4`, gaps: `gap-2`, icon size: `16px`).
-  - Adjusted spacing rules, setting all card padding to `p-6` (24px) and layout spacing / grid gaps to `gap-8` / `space-y-8` (32px).
-  - Standardized all input fields to `h-10 rounded-lg` with a 2px blue focus ring.
-  - Audited and modified: `layout.tsx` (sidebar + keyboard navigation), `general/page.tsx` (timezones, buttons), `billing/page.tsx` (tables, pricing cards), `profile/page.tsx` (avatar, submit states), `team/page.tsx` (clearance toggles, invite tables), `notifications/page.tsx` (matrix table, DND quiet hours), `data/page.tsx` (privacy export/delete cards), `audit-logs/page.tsx` (chronological feed cards), `AccountTierSettings.tsx` (plan switcher), and `CloudStorageMeter.tsx` (progress bars & capacity triggers).
-
-## Current State
-- The codebase builds cleanly.
-- Unit and integration tests are green (2,356 tests passed).
-- Next steps are open for the user's next epic/feature implementation!
-
+## Pre-existing tsc errors (not introduced by this session)
+- `src/__tests__/financeMetrics.test.ts` — missing exports from `@/lib/finance/metrics`
+- `src/__tests__/notifications.test.ts` — `NotificationType` enum mismatch
+- `src/app/(auth)/login/page.tsx` + `register/page.tsx` — `searchParams` null checks
+- `src/app/blog/[slug]/page.tsx` — params typing issue
+- `scratch/login-page-*.tsx` — scratch file with null issues

@@ -38,7 +38,7 @@ const CONTACT_CHANNELS = [
     tier: 'All plans',
     tierStyle: 'text-on-surface-variant',
     headline: 'support@paperworking.co',
-    description: 'Response within 4 business hours on weekdays. Send your deal details and we jump straight to the issue.',
+    description: 'A real person answers every message. Send your deal details and we jump straight to the issue.',
     cta: 'Send an email',
     href: 'mailto:support@paperworking.co',
     borderStyle: 'border-white/8',
@@ -46,10 +46,10 @@ const CONTACT_CHANNELS = [
   {
     icon: 'chat',
     label: 'Live Chat',
-    tier: 'Pro & Portfolio',
+    tier: 'Investor & Team',
     tierStyle: 'text-primary',
     headline: 'Talk to a real person',
-    description: 'Pro and Portfolio investors get live chat — response in under 30 minutes during business hours.',
+    description: 'Investor and Investment Team accounts get live chat — response in under 30 minutes during business hours.',
     cta: 'Start chat',
     href: '#chat',
     borderStyle: 'border-primary/20',
@@ -57,10 +57,10 @@ const CONTACT_CHANNELS = [
   {
     icon: 'star',
     label: 'Priority Support',
-    tier: 'Portfolio only',
+    tier: 'Investment Team only',
     tierStyle: 'text-tertiary',
     headline: "Dedicated line — deals don't wait",
-    description: "Portfolio investors get a direct line. If you're mid-closing and something breaks, we pick up.",
+    description: "Investment Team accounts get a direct line. If you're mid-closing and something breaks, we pick up.",
     cta: 'Access priority support',
     href: '/account/support',
     borderStyle: 'border-tertiary/20',
@@ -191,7 +191,7 @@ export default function SupportPage() {
           </motion.h1>
 
           <motion.p variants={fadeUp} className="text-[16px] md:text-[17px] leading-[27px] text-on-surface-variant mb-10 max-w-xl mx-auto">
-            Search our knowledge base — most answers are already here. If not, a real person responds within 4 hours.
+            Search our knowledge base — most answers are already here. If not, a real person answers every message.
           </motion.p>
 
           {/* Search bar */}
@@ -565,7 +565,7 @@ export default function SupportPage() {
           <motion.div variants={fadeUp} className="mt-8 flex flex-wrap items-center justify-center gap-x-6 gap-y-2">
             {[
               { icon: 'lock', text: 'SOC 2-ready infrastructure' },
-              { icon: 'schedule', text: 'Response within 4 hours' },
+              { icon: 'schedule', text: 'A real person answers every message' },
               { icon: 'person', text: 'Real people, not bots' },
             ].map((s) => (
               <span key={s.text} className="flex items-center gap-2 text-[12px] text-on-surface-variant/35">

@@ -1,0 +1,137 @@
+/* ==== PaperWorking Responsive Readability Layer (additive) ==== */
+:root {
+  /* Fluid type scale — 375px floor → 1280px ceiling */
+  --type-display:     clamp(2.5rem, 1.25rem + 5.3vw, 5.5rem);      /* 40 → 88 */
+  --type-h2:          clamp(1.875rem, 1.3rem + 2.45vw, 3.25rem);   /* 30 → 52 */
+  --type-h3:          clamp(1.375rem, 1.22rem + 0.67vw, 1.75rem);  /* 22 → 28 */
+  --type-body-lg:     clamp(1.0625rem, 0.98rem + 0.34vw, 1.25rem); /* 17 → 20 */
+  --type-body:        clamp(1rem, 0.97rem + 0.11vw, 1.0625rem);    /* 16 → 17 */
+  --type-small:       clamp(0.875rem, 0.85rem + 0.11vw, 0.9375rem);/* 14 → 15 */
+  --type-caption:     clamp(0.8125rem, 0.79rem + 0.11vw, 0.875rem);/* 13 → 14 */
+  --type-eyebrow:     clamp(0.6875rem, 0.66rem + 0.11vw, 0.75rem); /* 11 → 12 */
+  --type-metric:      clamp(1.625rem, 1.16rem + 2vw, 2.75rem);     /* 26 → 44 */
+  --type-metric-hero: clamp(2.25rem, 1.63rem + 2.65vw, 3.75rem);   /* 36 → 60 */
+
+  /* Measure limits */
+  --measure-body: 66ch;
+  --measure-headline: 14ch;
+}
+
+/* Utility classes — apply only where needed; nothing global */
+.type-display {
+  font-size: var(--type-display);
+  line-height: 1.05;
+  letter-spacing: -0.02em;
+  max-width: 11ch;
+  overflow-wrap: break-word;
+  text-wrap: balance;
+}
+.type-h2 {
+  font-size: var(--type-h2);
+  line-height: 1.15;
+  letter-spacing: -0.015em;
+  max-width: var(--measure-headline);
+  overflow-wrap: break-word;
+  text-wrap: balance;
+}
+.type-h3 {
+  font-size: var(--type-h3);
+  line-height: 1.25;
+  letter-spacing: -0.005em;
+  max-width: 18ch;
+  overflow-wrap: break-word;
+}
+.type-body-lg {
+  font-size: var(--type-body-lg);
+  line-height: 1.6;
+  max-width: 60ch;
+  overflow-wrap: break-word;
+  hyphens: auto;
+}
+.type-body {
+  font-size: var(--type-body);
+  line-height: 1.65;
+  max-width: var(--measure-body);
+  overflow-wrap: break-word;
+  hyphens: auto;
+}
+.type-small {
+  font-size: var(--type-small);
+  line-height: 1.5;
+  letter-spacing: 0.005em;
+  overflow-wrap: break-word;
+}
+.type-caption {
+  font-size: var(--type-caption);
+  line-height: 1.45;
+  letter-spacing: 0.01em;
+  overflow-wrap: break-word;
+}
+.type-eyebrow {
+  font-size: var(--type-eyebrow);
+  line-height: 1.3;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+}
+.type-metric,
+.type-metric-hero {
+  line-height: 1.05;
+  letter-spacing: -0.01em;
+  font-variant-numeric: tabular-nums lining-nums;
+  font-feature-settings: "tnum" 1, "lnum" 1;
+  white-space: nowrap;              /* a figure never wraps mid-number */
+}
+.type-metric      { font-size: var(--type-metric); }
+.type-metric-hero { font-size: var(--type-metric-hero); }
+
+/* Text CTA minimum tap target (44px) — visual size unchanged */
+.type-cta {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  min-width: 44px;
+}
+
+/* Tailwind v4 theme extensions (additive) */
+@theme {
+  --font-size-display: clamp(2.5rem, 1.25rem + 5.3vw, 5.5rem);
+  --font-size-display--line-height: 1.05;
+  --font-size-display--letter-spacing: -0.02em;
+
+  --font-size-h2: clamp(1.875rem, 1.3rem + 2.45vw, 3.25rem);
+  --font-size-h2--line-height: 1.15;
+  --font-size-h2--letter-spacing: -0.015em;
+
+  --font-size-h3: clamp(1.375rem, 1.22rem + 0.67vw, 1.75rem);
+  --font-size-h3--line-height: 1.25;
+  --font-size-h3--letter-spacing: -0.005em;
+
+  --font-size-body-lg: clamp(1.0625rem, 0.98rem + 0.34vw, 1.25rem);
+  --font-size-body-lg--line-height: 1.6;
+
+  --font-size-body: clamp(1rem, 0.97rem + 0.11vw, 1.0625rem);
+  --font-size-body--line-height: 1.65;
+
+  --font-size-small: clamp(0.875rem, 0.85rem + 0.11vw, 0.9375rem);
+  --font-size-small--line-height: 1.5;
+  --font-size-small--letter-spacing: 0.005em;
+
+  --font-size-caption: clamp(0.8125rem, 0.79rem + 0.11vw, 0.875rem);
+  --font-size-caption--line-height: 1.45;
+  --font-size-caption--letter-spacing: 0.01em;
+
+  --font-size-eyebrow: clamp(0.6875rem, 0.66rem + 0.11vw, 0.75rem);
+  --font-size-eyebrow--line-height: 1.3;
+  --font-size-eyebrow--letter-spacing: 0.15em;
+
+  --font-size-metric: clamp(1.625rem, 1.16rem + 2vw, 2.75rem);
+  --font-size-metric--line-height: 1.05;
+  --font-size-metric--letter-spacing: -0.01em;
+
+  --font-size-metric-hero: clamp(2.25rem, 1.63rem + 2.65vw, 3.75rem);
+  --font-size-metric-hero--line-height: 1.05;
+  --font-size-metric-hero--letter-spacing: -0.01em;
+
+  --max-width-measure: 66ch;
+  --max-width-headline: 14ch;
+}

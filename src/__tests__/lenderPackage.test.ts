@@ -98,14 +98,14 @@ import { GET as runRemindersCron } from '@/app/api/cron/lender-package-reminders
 
 describe('Card F3.2 Lender Package Checklist API Tests', () => {
   const PROJECT_ID = 'proj_test_456';
-  const OWNER_UID = 'user_sponsor_seed';
+  const OWNER_UID = 'user_leadInvestor_seed';
 
   beforeEach(() => {
     jest.clearAllMocks();
 
     mockVerifyIdToken.mockResolvedValue({
       uid: OWNER_UID,
-      email: 'sponsor@apex.com',
+      email: 'leadInvestor@apex.com',
     });
 
     mockProjectDocGet.mockResolvedValue({
@@ -290,7 +290,7 @@ describe('Card F3.2 Lender Package Checklist API Tests', () => {
     it('PUT /api/admin/lender-checklists updates templates for admin users', async () => {
       mockUserDocGet.mockResolvedValueOnce({
         exists: true,
-        data: () => ({ orgRole: 'Lead Investor', email: 'sponsor@apex.com' })
+        data: () => ({ orgRole: 'Lead Investor', email: 'leadInvestor@apex.com' })
       });
 
       const req = new NextRequest('http://localhost/api/admin/lender-checklists', {
@@ -372,7 +372,7 @@ describe('Card F3.2 Lender Package Checklist API Tests', () => {
       // Mock user doc get for recipient preferences
       mockUserDocGet.mockResolvedValueOnce({
         exists: true,
-        data: () => ({ email: 'sponsor@apex.com' })
+        data: () => ({ email: 'leadInvestor@apex.com' })
       });
 
       const req = new NextRequest('http://localhost/api/cron/lender-package-reminders', {

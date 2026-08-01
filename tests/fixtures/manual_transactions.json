@@ -1,0 +1,32 @@
+[
+  {
+    "id": "manual_tx_rent_01",
+    "payee": "John Smith Tenant",
+    "amount": 1200.00,
+    "direction": "CREDIT",
+    "category": "RENT_INCOME",
+    "bucket": "REVENUE",
+    "source": "MANUAL",
+    "transactionDate": "2026-08-01T00:00:00.000Z"
+  },
+  {
+    "id": "manual_tx_expense_01",
+    "payee": "State Farm Insurance",
+    "amount": 500.00,
+    "direction": "DEBIT",
+    "category": "PROPERTY_INSURANCE",
+    "bucket": "EXPENSE",
+    "source": "MANUAL",
+    "transactionDate": "2026-08-03T00:00:00.000Z"
+  },
+  {
+    "id": "manual_tx_mortgage_01",
+    "payee": "Wells Fargo Mortgage",
+    "amount": 2847.00,
+    "direction": "DEBIT",
+    "category": "MORTGAGE_PAYMENT",
+    "bucket": "LIABILITY",
+    "source": "MANUAL",
+    "transactionDate": "2026-08-01T00:00:00.000Z"
+  }
+]

@@ -1,0 +1,28 @@
+[
+  {
+    "transaction_id": "plaid_tx_rent_01",
+    "account_id": "acc_depository_01",
+    "amount": -1200.00,
+    "date": "2026-08-01",
+    "name": "ZELLE FROM JOHN SMITH RENT",
+    "merchant_name": "ZELLE",
+    "pending": false,
+    "personal_finance_category": {
+      "primary": "INCOME",
+      "detailed": "INCOME_RENT"
+    }
+  },
+  {
+    "transaction_id": "plaid_tx_late_fee_01",
+    "account_id": "acc_depository_01",
+    "amount": -50.00,
+    "date": "2026-08-05",
+    "name": "TENANT LATE PAYMENT FEE",
+    "merchant_name": null,
+    "pending": false,
+    "personal_finance_category": {
+      "primary": "INCOME",
+      "detailed": "INCOME_OTHER"
+    }
+  }
+]

@@ -70,6 +70,62 @@ export interface DealMetrics {
   equityMultiple?: number;
 }
 
+// ─── Pure Financial Metric Functions ─────────────────────────
+
+export function calculateNOI(grossIncome: number, operatingExpenses: number): number {
+  return grossIncome - operatingExpenses;
+}
+
+export function calculateCapRate(noi: number, purchasePrice: number): number {
+  if (purchasePrice <= 0) return 0;
+  return (noi / purchasePrice) * 100;
+}
+
+export function calculateCoC(annualCashFlow: number, totalCashInvested: number): number {
+  if (totalCashInvested <= 0) return 0;
+  return (annualCashFlow / totalCashInvested) * 100;
+}
+
+export function calculateDSCR(noi: number, annualDebtService: number): number {
+  if (annualDebtService <= 0) return 0;
+  return noi / annualDebtService;
+}
+
+export function calculatePricePerUnit(price: number, units: number): number {
+  if (units <= 0) return 0;
+  return price / units;
+}
+
+export function calculateGRM(price: number, annualGrossRent: number): number {
+  if (annualGrossRent <= 0) return 0;
+  return price / annualGrossRent;
+}
+
+export function calculateIRR(cashFlows: number[], guess: number = 0.1): number {
+  if (!Array.isArray(cashFlows) || cashFlows.length < 2) return 0;
+  let rate = guess;
+  for (let i = 0; i < 100; i++) {
+    let npv = 0;
+    let dNpv = 0;
+    for (let t = 0; t < cashFlows.length; t++) {
+      const denom = Math.pow(1 + rate, t);
+      if (denom === 0) return 0;
+      npv += cashFlows[t] / denom;
+      dNpv -= (t * cashFlows[t]) / Math.pow(1 + rate, t + 1);
+    }
+    if (Math.abs(dNpv) < 1e-12) break;
+    const nextRate = rate - npv / dNpv;
+    if (Math.abs(nextRate - rate) < 1e-7) return nextRate * 100;
+    rate = nextRate;
+  }
+  return rate * 100;
+}
+
+export function calculateEquityMultiple(totalReturns: number, totalInvested: number): number {
+  if (totalInvested <= 0) return 0;
+  return totalReturns / totalInvested;
+}
+
 // ─── Shared Amortization Helpers ──────────────────────────────
 
 /**

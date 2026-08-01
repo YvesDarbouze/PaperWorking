@@ -25,7 +25,7 @@ export function InvestorQandATracker({ projectId }: InvestorQandATrackerProps) {
   // Invitations / Card Exchange States
   const [invitations, setInvitations] = useState<any[]>([]);
   const [selectedExchangeId, setSelectedExchangeId] = useState<string | null>(null);
-  const [sponsorCard, setSponsorCard] = useState({
+  const [leadInvestorCard, setLeadInvestorCard] = useState({
     name: '',
     email: '',
     phone: '',
@@ -86,12 +86,12 @@ export function InvestorQandATracker({ projectId }: InvestorQandATrackerProps) {
     return () => unsubscribe();
   }, [projectId]);
 
-  // 3. Load Sponsor Card Profile Defaults
+  // 3. Load LeadInvestor Card Profile Defaults
   useEffect(() => {
     const auth = getAuth();
     const currentUser = auth.currentUser;
     if (currentUser) {
-      setSponsorCard({
+      setLeadInvestorCard({
         name: currentUser.displayName || '',
         email: currentUser.email || '',
         phone: '',
@@ -103,7 +103,7 @@ export function InvestorQandATracker({ projectId }: InvestorQandATrackerProps) {
         .then((snap) => {
           if (snap.exists()) {
             const u = snap.data();
-            setSponsorCard({
+            setLeadInvestorCard({
               name: u.displayName || currentUser.displayName || '',
               email: u.email || currentUser.email || '',
               phone: u.phone || '',
@@ -225,7 +225,7 @@ export function InvestorQandATracker({ projectId }: InvestorQandATrackerProps) {
           'Content-Type': 'application/json',
           Authorization: `Bearer ${token}`,
         },
-        body: JSON.stringify({ action: 'accept', disclosedCard: sponsorCard }),
+        body: JSON.stringify({ action: 'accept', disclosedCard: leadInvestorCard }),
       });
 
       const data = await res.json();
@@ -431,16 +431,16 @@ export function InvestorQandATracker({ projectId }: InvestorQandATrackerProps) {
                       </div>
                     ) : (
                       activeInquiry.messages.map((msg) => {
-                        const isSponsor = msg.sender === 'sponsor';
+                        const isLeadInvestor = msg.sender === 'leadInvestor';
                         return (
                           <div
                             key={msg.id}
                             className={`flex flex-col gap-1 p-3 rounded-xl max-w-[85%] text-left ${
-                              isSponsor ? 'ml-auto bg-black/60 border border-[#454955]/30' : 'bg-white/5 border border-white/10'
+                              isLeadInvestor ? 'ml-auto bg-black/60 border border-[#454955]/30' : 'bg-white/5 border border-white/10'
                             }`}
                           >
-                            <span className={`text-[9px] font-bold font-mono uppercase ${isSponsor ? 'text-[#8a9b9b]' : 'text-primary'}`}>
-                              {isSponsor ? 'Sponsor' : 'Investor'}
+                            <span className={`text-[9px] font-bold font-mono uppercase ${isLeadInvestor ? 'text-[#8a9b9b]' : 'text-primary'}`}>
+                              {isLeadInvestor ? 'LeadInvestor' : 'Investor'}
                             </span>
                             <p className="text-xs text-white/90 whitespace-pre-wrap">{msg.text}</p>
                             <span className="text-[8px] text-[#9E9DA0] self-end mt-1 font-mono">
@@ -572,7 +572,7 @@ export function InvestorQandATracker({ projectId }: InvestorQandATrackerProps) {
 
                   {activeExchange.cardExchangeStatus === 'pending' ? (
                     <div className="space-y-4 border-t border-white/5 pt-4">
-                      {/* Sponsor card configuration details preview */}
+                      {/* LeadInvestor card configuration details preview */}
                       <div className="space-y-2.5">
                         <label className="block text-[9px] font-bold text-[#8a9b9b] uppercase tracking-wider">
                           Verify Your Card details to Disclose:
@@ -581,22 +581,22 @@ export function InvestorQandATracker({ projectId }: InvestorQandATrackerProps) {
                           <input
                             type="text"
                             placeholder="Name"
-                            value={sponsorCard.name}
-                            onChange={(e) => setSponsorCard({ ...sponsorCard, name: e.target.value })}
+                            value={leadInvestorCard.name}
+                            onChange={(e) => setLeadInvestorCard({ ...leadInvestorCard, name: e.target.value })}
                             className="p-2 bg-[#0d0a0b]/60 border border-white/10 rounded text-[10px] text-white focus:outline-none focus:border-primary"
                           />
                           <input
                             type="text"
                             placeholder="Company"
-                            value={sponsorCard.company}
-                            onChange={(e) => setSponsorCard({ ...sponsorCard, company: e.target.value })}
+                            value={leadInvestorCard.company}
+                            onChange={(e) => setLeadInvestorCard({ ...leadInvestorCard, company: e.target.value })}
                             className="p-2 bg-[#0d0a0b]/60 border border-white/10 rounded text-[10px] text-white focus:outline-none focus:border-primary"
                           />
                           <input
                             type="email"
                             placeholder="Email"
-                            value={sponsorCard.email}
-                            onChange={(e) => setSponsorCard({ ...sponsorCard, email: e.target.value })}
+                            value={leadInvestorCard.email}
+                            onChange={(e) => setLeadInvestorCard({ ...leadInvestorCard, email: e.target.value })}
                             className="p-2 bg-[#0d0a0b]/60 border border-white/10 rounded text-[10px] text-white focus:outline-none focus:border-primary col-span-2"
                           />
                         </div>
@@ -612,7 +612,7 @@ export function InvestorQandATracker({ projectId }: InvestorQandATrackerProps) {
                         </button>
                         <button
                           onClick={() => handleAcceptExchange(activeExchange.id)}
-                          disabled={submittingExchange || !sponsorCard.name || !sponsorCard.email}
+                          disabled={submittingExchange || !leadInvestorCard.name || !leadInvestorCard.email}
                           className="flex-1 py-2 px-3 bg-white/10 hover:bg-white/20 border border-white/15 text-white font-bold text-[10px] uppercase tracking-wider rounded-xl transition flex items-center justify-center gap-1.5"
                         >
                           {submittingExchange ? (

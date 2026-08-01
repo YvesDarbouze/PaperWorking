@@ -8,7 +8,7 @@ import { NextResponse } from 'next/server';
    pipeline is `invitations` -> POST /api/invitations/respond ->
    projects/{id}/commitments). It also wrote directly into
    `fractionalInvestors` with status 'confirmed' immediately upon
-   signature, bypassing the sponsor-confirmation step entirely.
+   signature, bypassing the leadInvestor-confirmation step entirely.
 
    Both handlers now return 410 so any stale outstanding link
    (e.g. from an old email) gets a clear, honest message instead
@@ -20,7 +20,7 @@ export const dynamic = 'force-dynamic';
 const LEGACY_RESPONSE = {
   success: false,
   legacy: true,
-  error: 'This investment link type is no longer supported. Please contact your sponsor for a new invitation.',
+  error: 'This investment link type is no longer supported. Please contact your leadInvestor for a new invitation.',
 };
 
 export async function GET() {

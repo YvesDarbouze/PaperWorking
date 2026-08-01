@@ -5,29 +5,19 @@ import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import LandingHeader from '@/components/landing/LandingHeader';
 import LandingHero from '@/components/landing/LandingHero';
-import MetricCarousel from '@/components/landing/MetricCarousel';
+import TrustStrip from '@/components/landing/TrustStrip';
+import ProblemSection from '@/components/landing/ProblemSection';
+import WhatItDoesSection from '@/components/landing/WhatItDoesSection';
+import LifecycleSection from '@/components/landing/LifecycleSection';
+import MetricsSection from '@/components/landing/MetricsSection';
 import LandingFooter from '@/components/landing/LandingFooter';
-import LandingNews from '@/components/landing/LandingNews';
-import FinalCTA from '@/components/landing/FinalCTA';
-import PricingSection from '@/components/landing/PricingSection';
 import { useAuth } from '@/context/AuthContext';
 import toast from 'react-hot-toast';
 import { CustomToaster } from '@/components/ui/CustomToaster';
 import { buildSignupForPricingLoginUrl } from '@/lib/auth/postAuthRedirect';
 import { useSearchParams } from 'next/navigation';
 
-/* ═══════════════════════════════════════════════════════
-   Landing Page — Stitch-aligned redesign.
-
-   Layout order matches "PaperWorking Landing Page (Desktop Redesign)":
-   1. Nav (LandingHeader)
-   2. Hero (centered, text-only)
-   3. Metric Carousel (verbatim positioning + 33 KPIs)
-   4. Dashboard Preview (standalone showcase)
-   5. REIL Phases + Risk Mitigation (PlatformOverview)
-   6. Pricing (PricingSection)
-   7. Footer
-   ═══════════════════════════════════════════════════════ */
+// TODO(VERIFY): Confirm Plaid live status before re-adding any integration claims.
 
 function SuccessModal() {
   const searchParams = useSearchParams();
@@ -84,7 +74,6 @@ export default function LandingPage() {
   const handleSelectPlan = useCallback(async (planIdentifier: string) => {
     setIsProcessing(planIdentifier);
 
-    // Parse "Vendor Marketplace Annual" → plan="Vendor Marketplace", interval="annual"
     const lower = planIdentifier.toLowerCase();
     const isAnnual = lower.endsWith(' annual');
     const isMonthly = lower.endsWith(' monthly');
@@ -95,13 +84,6 @@ export default function LandingPage() {
         ? planIdentifier.slice(0, -' Monthly'.length)
         : planIdentifier;
 
-
-    // Require an account before Stripe Checkout: client_reference_id must be a
-    // real Firebase uid so the subscription attaches to an account deterministically.
-    // Guest checkout (pay first, register later) was removed — it relied on a
-    // fragile email match to reconcile the purchase with an account, which
-    // silently orphaned the subscription whenever the sign-up email differed
-    // from the checkout email.
     if (!user) {
       sessionStorage.setItem('pw_pending_plan', JSON.stringify({ plan, interval, identifier: planIdentifier }));
       router.push(buildSignupForPricingLoginUrl());
@@ -152,23 +134,26 @@ export default function LandingPage() {
 
       <LandingHeader />
 
-      {/* ── Hero — Centered text-only ── */}
+      {/* ── Section 1 — Hero ── */}
       <LandingHero />
 
-      {/* ── The 10 Numbers Metric Carousel ── */}
-      <MetricCarousel />
+      {/* ── Section 2 — Standalone Trust Strip ── */}
+      <TrustStrip />
 
       {/* ── Foreground Content ── */}
       <div className="relative z-10 w-full">
 
-        {/* ── Final CTA — Risk Mitigation Reframe ── */}
-        <FinalCTA />
+        {/* ── Section 3 — Problem ── */}
+        <ProblemSection />
 
-        {/* ── Pricing ── */}
-        <PricingSection onSelectPlan={handleSelectPlan} />
+        {/* ── Section 4 — What PaperWorking Does ── */}
+        <WhatItDoesSection />
 
-        {/* ── News / Product Updates ── */}
-        <LandingNews />
+        {/* ── Section 5 — Four-phase Lifecycle ── */}
+        <LifecycleSection />
+
+        {/* ── Section 6 — 33 KPIs ── */}
+        <MetricsSection />
 
         <LandingFooter />
       </div>

@@ -276,10 +276,10 @@ function LoginPageInner() {
           </h1>
           <p className="text-xs md:text-sm text-pw-muted font-body-sm">
             {isSignUp
-              ? `Create your ${urlAccountType} account.`
+              ? `Create your account and start your first Project. 14-day trial, no charge until day 15.`
               : loginMode === 'magic-link'
               ? 'Enter your email for a secure passwordless sign-in.'
-              : 'Access your PaperWorking portfolio.'}
+              : 'Welcome back. Your deals kept moving while you were gone.'}
           </p>
         </div>
 

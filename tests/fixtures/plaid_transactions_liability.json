@@ -1,0 +1,15 @@
+[
+  {
+    "transaction_id": "plaid_tx_mortgage_01",
+    "account_id": "acc_mortgage_01",
+    "amount": 2847.00,
+    "date": "2026-08-01",
+    "name": "WELLS FARGO MORTGAGE PAYMENT",
+    "merchant_name": "WELLS FARGO",
+    "pending": false,
+    "personal_finance_category": {
+      "primary": "LOAN_PAYMENTS",
+      "detailed": "LOAN_PAYMENTS_MORTGAGE_PAYMENT"
+    }
+  }
+]

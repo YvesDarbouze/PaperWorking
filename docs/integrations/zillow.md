@@ -11,7 +11,7 @@ This document outlines the strategic partner APIs offered by Zillow Group, mappi
 *   **Integration Priority**: **Highest (Primary Candidate)**
 *   **Application Link**: [Zillow Group Mortgage Solutions](https://developer.zillowgroup.com/)
 *   **Requirements & Access Gating**:
-    *   **NMLS Registration**: The company must hold an active NMLS (Nationwide Multistate Licensing System) license number, or operate as an approved financial technology partner under a licensed sponsor.
+    *   **NMLS Registration**: The company must hold an active NMLS (Nationwide Multistate Licensing System) license number, or operate as an approved financial technology partner under a licensed leadInvestor.
     *   **Mortech / Custom Quotes Partnership**: Access is generally restricted to active participants in Zillow's Custom Quotes or Mortech pricing engine platforms.
     *   **Partner ID**: Authentication requires a verified `Partner ID` header.
     *   **Compliance & Brand Guidelines**: Co-branding requirements dictate displaying the "Powered by Zillow" logo and linking directly to Zillow's mortgage disclosure pages.

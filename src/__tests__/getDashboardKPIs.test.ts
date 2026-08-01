@@ -155,6 +155,10 @@ describe('getDashboardKPIs Server Action', () => {
       soldCount: 2,
       activeCount: 4,
       totalPortfolioValue: 1280000,
+      debtServiceMtd: 0,
+      operatingExpensesMtd: 0,
+      rentalIncomeMtd: 0,
+      unattributedTxCount: 0,
     });
   });
 

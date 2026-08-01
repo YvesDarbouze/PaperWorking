@@ -432,7 +432,7 @@ export default function NegotiationThreadDetail({ negotiationId, onBack }: Props
                   <span className="text-white font-medium">{negotiation.termsConfirmationRecord.investorName}</span>
                 </div>
                 <div className="flex justify-between">
-                  <span>DEAL SPONSOR:</span>
+                  <span>DEAL LEAD_INVESTOR:</span>
                   <span className="text-white font-medium">{negotiation.termsConfirmationRecord.leadName}</span>
                 </div>
                 <div className="flex justify-between pt-1 border-t border-white/5">
@@ -564,7 +564,7 @@ export default function NegotiationThreadDetail({ negotiationId, onBack }: Props
                     Action Required: Review and Confirm Final Terms
                   </h4>
                   <p className="text-[11px] text-[#9E9DA0] mt-0.5">
-                    Sponsor proposed Final Terms: price basis {fmtCents(negotiation.confirmations.finalTermsLead?.priceBasis)} · contribution {fmtCents(negotiation.confirmations.finalTermsLead?.contribution)} · equity {negotiation.confirmations.finalTermsLead?.equityPercentage}%.
+                    LeadInvestor proposed Final Terms: price basis {fmtCents(negotiation.confirmations.finalTermsLead?.priceBasis)} · contribution {fmtCents(negotiation.confirmations.finalTermsLead?.contribution)} · equity {negotiation.confirmations.finalTermsLead?.equityPercentage}%.
                   </p>
                 </div>
                 <div className="flex flex-col gap-2.5">

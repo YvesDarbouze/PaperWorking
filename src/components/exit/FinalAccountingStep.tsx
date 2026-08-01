@@ -37,13 +37,13 @@ export default function FinalAccountingStep({
     
     // Capital stack waterfall
     const lpReturn = cashInvested * 1.08; // LP gets initial capital + 8% preferred return
-    const sponsorPromote = Math.max(0, (netProfit - (lpReturn - cashInvested)) * 0.2); // 20% promote
+    const leadInvestorPromote = Math.max(0, (netProfit - (lpReturn - cashInvested)) * 0.2); // 20% promote
     return {
       grossProfit,
       netProfit,
       totalReturn,
       lpReturn,
-      sponsorPromote,
+      leadInvestorPromote,
       lenderPayoff: currentLoanPayoff,
     };
   }, [salePrice, purchasePrice, rehabCosts, holdingCosts, currentLoanPayoff, f.totalCashInvested]);
@@ -98,7 +98,7 @@ export default function FinalAccountingStep({
                 LP Returns (${Math.round(sellSummary.lpReturn / 1000)}k)
               </div>
               <div className="bg-emerald-400 h-full flex items-center justify-center" style={{ width: '15%' }}>
-                Sponsor Promote (${Math.round(sellSummary.sponsorPromote / 1000)}k)
+                LeadInvestor Promote (${Math.round(sellSummary.leadInvestorPromote / 1000)}k)
               </div>
             </div>
           </div>

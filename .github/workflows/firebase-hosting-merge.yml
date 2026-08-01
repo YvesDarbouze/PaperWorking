@@ -12,6 +12,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - run: npm ci
+      - run: npx eslint . --pass-on-unpruned-suppressions
       - run: npm run build
         env:
           NODE_OPTIONS: "--max-old-space-size=8192"

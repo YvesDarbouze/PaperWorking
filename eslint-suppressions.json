@@ -57,9 +57,27 @@
       "count": 1
     }
   },
-  "e2e/deal-analyzer.spec.ts": {
+  "e2e/deal-analyzer-address-autofill.spec.ts": {
     "@typescript-eslint/no-unused-vars": {
+      "count": 3
+    }
+  },
+  "e2e/deal-analyzer-truth-test.spec.ts": {
+    "@typescript-eslint/no-unused-vars": {
+      "count": 4
+    }
+  },
+  "e2e/deal-analyzer-wizard.spec.ts": {
+    "@typescript-eslint/no-unused-vars": {
+      "count": 2
+    }
+  },
+  "e2e/deal-analyzer.spec.ts": {
+    "@typescript-eslint/no-explicit-any": {
       "count": 1
+    },
+    "@typescript-eslint/no-unused-vars": {
+      "count": 4
     }
   },
   "e2e/disposition-strategy.spec.ts": {
@@ -774,6 +792,11 @@
       "count": 2
     }
   },
+  "src/__tests__/fieldRegistry.test.ts": {
+    "@typescript-eslint/no-unused-vars": {
+      "count": 4
+    }
+  },
   "src/__tests__/financialsActions.test.ts": {
     "@typescript-eslint/no-explicit-any": {
       "count": 3
@@ -1252,6 +1275,11 @@
       "count": 4
     }
   },
+  "src/__tests__/propertyLookup.test.ts": {
+    "@typescript-eslint/no-unused-vars": {
+      "count": 1
+    }
+  },
   "src/__tests__/propertyProvider.test.ts": {
     "@typescript-eslint/no-explicit-any": {
       "count": 4
@@ -1285,6 +1313,11 @@
     },
     "no-var": {
       "count": 5
+    }
+  },
+  "src/__tests__/reconciliationEngine.test.ts": {
+    "@typescript-eslint/no-explicit-any": {
+      "count": 7
     }
   },
   "src/__tests__/reilMetricsSpec.test.ts": {
@@ -1594,6 +1627,11 @@
   "src/__tests__/vz1Evidence.test.ts": {
     "@typescript-eslint/no-explicit-any": {
       "count": 2
+    }
+  },
+  "src/__tests__/wizardState.test.ts": {
+    "@typescript-eslint/no-unused-vars": {
+      "count": 3
     }
   },
   "src/actions/admin.ts": {
@@ -1951,6 +1989,21 @@
       "count": 1
     }
   },
+  "src/app/api/cron/sync-financial-transactions/route.ts": {
+    "@typescript-eslint/no-explicit-any": {
+      "count": 3
+    }
+  },
+  "src/app/api/cron/sync-liabilities/route.ts": {
+    "@typescript-eslint/no-explicit-any": {
+      "count": 2
+    }
+  },
+  "src/app/api/cron/sync-plaid-liabilities/route.ts": {
+    "@typescript-eslint/no-explicit-any": {
+      "count": 2
+    }
+  },
   "src/app/api/cron/sync-transactions/route.test.ts": {
     "@typescript-eslint/no-explicit-any": {
       "count": 14
@@ -1978,6 +2031,11 @@
       "count": 2
     }
   },
+  "src/app/api/deal-analyzer/property-lookup/route.ts": {
+    "@typescript-eslint/no-explicit-any": {
+      "count": 1
+    }
+  },
   "src/app/api/drive/provision/route.ts": {
     "@typescript-eslint/no-explicit-any": {
       "count": 2
@@ -2001,12 +2059,22 @@
       "count": 7
     }
   },
+  "src/app/api/events/stream/route.ts": {
+    "@typescript-eslint/no-explicit-any": {
+      "count": 12
+    }
+  },
   "src/app/api/exit/complete/route.ts": {
     "@typescript-eslint/no-explicit-any": {
       "count": 2
     },
     "@typescript-eslint/no-unused-vars": {
       "count": 1
+    }
+  },
+  "src/app/api/financial/transactions/route.ts": {
+    "@typescript-eslint/no-explicit-any": {
+      "count": 9
     }
   },
   "src/app/api/fund/close-deal/route.ts": {
@@ -2234,14 +2302,30 @@
       "count": 3
     }
   },
+  "src/app/api/plaid/connections/[connectionId]/route.ts": {
+    "@typescript-eslint/no-explicit-any": {
+      "count": 2
+    }
+  },
   "src/app/api/plaid/create-link-token/route.ts": {
     "@typescript-eslint/no-explicit-any": {
+      "count": 1
+    },
+    "@typescript-eslint/no-unused-vars": {
+      "count": 1
+    }
+  },
+  "src/app/api/plaid/exchange-v2/route.ts": {
+    "@typescript-eslint/no-explicit-any": {
+      "count": 10
+    },
+    "prefer-const": {
       "count": 1
     }
   },
   "src/app/api/plaid/exchange/route.ts": {
     "@typescript-eslint/no-explicit-any": {
-      "count": 1
+      "count": 2
     }
   },
   "src/app/api/presence/heartbeat/route.ts": {
@@ -2447,6 +2531,41 @@
       "count": 4
     }
   },
+  "src/app/api/reconciliations/[periodId]/finalize/route.ts": {
+    "@typescript-eslint/no-explicit-any": {
+      "count": 1
+    }
+  },
+  "src/app/api/reconciliations/[periodId]/match/route.ts": {
+    "@typescript-eslint/no-explicit-any": {
+      "count": 1
+    }
+  },
+  "src/app/api/reconciliations/[periodId]/report/route.ts": {
+    "@typescript-eslint/no-explicit-any": {
+      "count": 1
+    }
+  },
+  "src/app/api/reconciliations/[periodId]/route.ts": {
+    "@typescript-eslint/no-explicit-any": {
+      "count": 1
+    }
+  },
+  "src/app/api/reconciliations/items/[itemId]/adjust/route.ts": {
+    "@typescript-eslint/no-explicit-any": {
+      "count": 1
+    }
+  },
+  "src/app/api/reconciliations/items/[itemId]/verify/route.ts": {
+    "@typescript-eslint/no-explicit-any": {
+      "count": 1
+    }
+  },
+  "src/app/api/reconciliations/route.ts": {
+    "@typescript-eslint/no-explicit-any": {
+      "count": 3
+    }
+  },
   "src/app/api/reil/cron/refresh/route.ts": {
     "@typescript-eslint/no-explicit-any": {
       "count": 1
@@ -2504,6 +2623,16 @@
       "count": 2
     }
   },
+  "src/app/api/rules/[id]/route.ts": {
+    "@typescript-eslint/no-explicit-any": {
+      "count": 2
+    }
+  },
+  "src/app/api/rules/route.ts": {
+    "@typescript-eslint/no-explicit-any": {
+      "count": 3
+    }
+  },
   "src/app/api/street-view/route.ts": {
     "@typescript-eslint/no-unused-vars": {
       "count": 1
@@ -2555,6 +2684,24 @@
       "count": 2
     }
   },
+  "src/app/api/transactions/[id]/attribution/route.test.ts": {
+    "@typescript-eslint/no-explicit-any": {
+      "count": 5
+    },
+    "@typescript-eslint/no-unused-vars": {
+      "count": 3
+    }
+  },
+  "src/app/api/transactions/[id]/attribution/route.ts": {
+    "@typescript-eslint/no-explicit-any": {
+      "count": 4
+    }
+  },
+  "src/app/api/transactions/[id]/identify/route.ts": {
+    "@typescript-eslint/no-explicit-any": {
+      "count": 1
+    }
+  },
   "src/app/api/transactions/[plaidId]/attribution/route.test.ts": {
     "@typescript-eslint/no-explicit-any": {
       "count": 5
@@ -2566,6 +2713,11 @@
   "src/app/api/transactions/[plaidId]/attribution/route.ts": {
     "@typescript-eslint/no-explicit-any": {
       "count": 4
+    }
+  },
+  "src/app/api/transactions/project/[projectId]/identification-suggestions/route.ts": {
+    "@typescript-eslint/no-explicit-any": {
+      "count": 1
     }
   },
   "src/app/api/user/gdpr/route.ts": {
@@ -2840,6 +2992,55 @@
       "count": 1
     }
   },
+  "src/app/dashboard/projects/[id]/exit/financial-connections/page.tsx": {
+    "@typescript-eslint/no-unused-vars": {
+      "count": 2
+    },
+    "react-hooks/set-state-in-effect": {
+      "count": 1
+    }
+  },
+  "src/app/dashboard/projects/[id]/exit/insights/page.tsx": {
+    "@typescript-eslint/no-unused-vars": {
+      "count": 2
+    },
+    "react-hooks/set-state-in-effect": {
+      "count": 1
+    }
+  },
+  "src/app/dashboard/projects/[id]/exit/reconcile/page.tsx": {
+    "@typescript-eslint/no-explicit-any": {
+      "count": 6
+    },
+    "@typescript-eslint/no-unused-vars": {
+      "count": 12
+    },
+    "react-hooks/set-state-in-effect": {
+      "count": 1
+    }
+  },
+  "src/app/dashboard/projects/[id]/exit/review-queue/page.tsx": {
+    "@typescript-eslint/no-explicit-any": {
+      "count": 1
+    },
+    "@typescript-eslint/no-unused-vars": {
+      "count": 1
+    },
+    "react-hooks/set-state-in-effect": {
+      "count": 2
+    }
+  },
+  "src/app/dashboard/projects/[id]/exit/rules/page.tsx": {
+    "@typescript-eslint/no-explicit-any": {
+      "count": 2
+    },
+    "@typescript-eslint/no-unused-vars": {
+      "count": 1
+    },
+    "react-hooks/set-state-in-effect": {
+      "count": 1
+    }
+  },
   "src/app/dashboard/projects/[id]/instruments/page.tsx": {
     "@typescript-eslint/no-explicit-any": {
       "count": 15
@@ -3065,6 +3266,14 @@
       "count": 2
     }
   },
+  "src/app/dashboard/settings/integrations/page.tsx": {
+    "react-hooks/set-state-in-effect": {
+      "count": 2
+    },
+    "react/no-unescaped-entities": {
+      "count": 2
+    }
+  },
   "src/app/dashboard/settings/security/page.tsx": {
     "react-hooks/immutability": {
       "count": 1
@@ -3183,9 +3392,17 @@
     }
   },
   "src/app/page.tsx": {
+    "@typescript-eslint/no-unused-vars": {
+      "count": 1
+    },
     "react-hooks/exhaustive-deps": {
       "count": 1
     },
+    "react-hooks/set-state-in-effect": {
+      "count": 1
+    }
+  },
+  "src/app/pricing/PricingClient.tsx": {
     "react-hooks/set-state-in-effect": {
       "count": 1
     }
@@ -3718,6 +3935,11 @@
       "count": 1
     }
   },
+  "src/components/dashboard/MortgageSummaryCard.tsx": {
+    "react-hooks/set-state-in-effect": {
+      "count": 1
+    }
+  },
   "src/components/dashboard/OfferLetterQuickAction.tsx": {
     "@typescript-eslint/no-unused-vars": {
       "count": 2
@@ -3734,6 +3956,11 @@
   "src/components/dashboard/ProjectGroomingAlerts.tsx": {
     "@typescript-eslint/no-unused-vars": {
       "count": 2
+    }
+  },
+  "src/components/dashboard/TransactionLedger.tsx": {
+    "react-hooks/set-state-in-effect": {
+      "count": 1
     }
   },
   "src/components/dashboard/VarianceChart.tsx": {
@@ -3898,12 +4125,22 @@
       "count": 1
     }
   },
+  "src/components/dashboard/exit/ExpenseBreakdownWidget.tsx": {
+    "@typescript-eslint/no-unused-vars": {
+      "count": 1
+    }
+  },
   "src/components/dashboard/exit/SoldPropertyForm.tsx": {
     "@typescript-eslint/no-explicit-any": {
       "count": 3
     },
     "@typescript-eslint/no-unused-vars": {
       "count": 3
+    }
+  },
+  "src/components/dashboard/exit/TodayFinancialSnapshotWidget.tsx": {
+    "react/no-unescaped-entities": {
+      "count": 1
     }
   },
   "src/components/dashboard/home/ActivityFeed.tsx": {
@@ -4035,6 +4272,40 @@
     },
     "react-hooks/set-state-in-effect": {
       "count": 3
+    }
+  },
+  "src/components/evaluation/DealAnalyzerResults.tsx": {
+    "@typescript-eslint/no-explicit-any": {
+      "count": 5
+    },
+    "@typescript-eslint/no-unused-vars": {
+      "count": 9
+    }
+  },
+  "src/components/evaluation/DealAnalyzerWizard.tsx": {
+    "@typescript-eslint/no-explicit-any": {
+      "count": 9
+    },
+    "@typescript-eslint/no-unused-vars": {
+      "count": 16
+    },
+    "react-hooks/error-boundaries": {
+      "count": 97
+    },
+    "react-hooks/exhaustive-deps": {
+      "count": 1
+    },
+    "react-hooks/immutability": {
+      "count": 1
+    },
+    "react-hooks/purity": {
+      "count": 2
+    },
+    "react-hooks/set-state-in-effect": {
+      "count": 2
+    },
+    "react/no-unescaped-entities": {
+      "count": 2
     }
   },
   "src/components/evaluation/FundingSourceTracker.tsx": {
@@ -4597,7 +4868,7 @@
   },
   "src/components/landing/LandingHeader.tsx": {
     "@typescript-eslint/no-unused-vars": {
-      "count": 7
+      "count": 3
     },
     "react-hooks/set-state-in-effect": {
       "count": 1
@@ -4920,6 +5191,22 @@
       "count": 2
     }
   },
+  "src/components/plaid/PlaidLinkButton.tsx": {
+    "@typescript-eslint/no-explicit-any": {
+      "count": 2
+    },
+    "react-hooks/set-state-in-effect": {
+      "count": 1
+    }
+  },
+  "src/components/plaid/PlaidPreLinkTrustScreen.tsx": {
+    "react-hooks/set-state-in-effect": {
+      "count": 1
+    },
+    "react/no-unescaped-entities": {
+      "count": 1
+    }
+  },
   "src/components/portfolio/InsightsTab.tsx": {
     "@typescript-eslint/no-explicit-any": {
       "count": 2
@@ -4936,6 +5223,11 @@
   "src/components/portfolio/__tests__/InsightsTab.test.tsx": {
     "@typescript-eslint/no-explicit-any": {
       "count": 2
+    }
+  },
+  "src/components/pricing/FeatureComparisonTable.tsx": {
+    "@typescript-eslint/no-unused-vars": {
+      "count": 1
     }
   },
   "src/components/profile/ClaimHistorySection.tsx": {
@@ -5953,6 +6245,11 @@
       "count": 5
     }
   },
+  "src/components/projects/TransactionLedger.tsx": {
+    "react-hooks/set-state-in-effect": {
+      "count": 1
+    }
+  },
   "src/components/projects/VendorRatingModal.tsx": {
     "@typescript-eslint/no-unused-vars": {
       "count": 3
@@ -6094,6 +6391,17 @@
       "count": 1
     }
   },
+  "src/components/rules/RuleBuilderModal.tsx": {
+    "@typescript-eslint/no-explicit-any": {
+      "count": 4
+    },
+    "@typescript-eslint/no-unused-vars": {
+      "count": 3
+    },
+    "react/no-unescaped-entities": {
+      "count": 2
+    }
+  },
   "src/components/search/PublicAddressSearch.tsx": {
     "@typescript-eslint/no-unused-vars": {
       "count": 2
@@ -6164,7 +6472,7 @@
   },
   "src/components/shared/SubscriptionGate.tsx": {
     "@typescript-eslint/no-unused-vars": {
-      "count": 1
+      "count": 2
     }
   },
   "src/components/shared/TeamChatWidget.tsx": {
@@ -6373,9 +6681,27 @@
       "count": 2
     }
   },
+  "src/lib/accounting/reconciliationEngine.ts": {
+    "@typescript-eslint/no-explicit-any": {
+      "count": 2
+    }
+  },
+  "src/lib/accounting/reconciliationReport.ts": {
+    "@typescript-eslint/no-unused-vars": {
+      "count": 1
+    }
+  },
   "src/lib/alerts/rentMonitor.test.ts": {
     "@typescript-eslint/no-unused-vars": {
       "count": 2
+    }
+  },
+  "src/lib/analytics/kpiAutoReporter.ts": {
+    "@typescript-eslint/no-explicit-any": {
+      "count": 5
+    },
+    "@typescript-eslint/no-unused-vars": {
+      "count": 1
     }
   },
   "src/lib/analyticsUtils.ts": {
@@ -6406,15 +6732,33 @@
       "count": 1
     },
     "@typescript-eslint/no-unused-vars": {
-      "count": 6
+      "count": 7
     }
   },
   "src/lib/banking/plaid-provider.ts": {
     "@typescript-eslint/no-explicit-any": {
-      "count": 4
+      "count": 6
     },
     "@typescript-eslint/no-unused-vars": {
       "count": 1
+    }
+  },
+  "src/lib/banking/rulesEngine.ts": {
+    "@typescript-eslint/no-explicit-any": {
+      "count": 8
+    },
+    "@typescript-eslint/no-unused-vars": {
+      "count": 3
+    }
+  },
+  "src/lib/banking/transactionIdentificationEngine.ts": {
+    "prefer-const": {
+      "count": 2
+    }
+  },
+  "src/lib/banking/transactionRuleEngine.ts": {
+    "@typescript-eslint/no-explicit-any": {
+      "count": 4
     }
   },
   "src/lib/cache/dashboardCache.ts": {
@@ -6445,6 +6789,21 @@
   "src/lib/db/projects.ts": {
     "@typescript-eslint/no-explicit-any": {
       "count": 10
+    }
+  },
+  "src/lib/deal-analyzer/fieldRegistry.ts": {
+    "@typescript-eslint/no-explicit-any": {
+      "count": 4
+    }
+  },
+  "src/lib/deal-analyzer/propertyLookup.ts": {
+    "@typescript-eslint/no-explicit-any": {
+      "count": 1
+    }
+  },
+  "src/lib/deal-analyzer/wizardState.ts": {
+    "@typescript-eslint/no-explicit-any": {
+      "count": 3
     }
   },
   "src/lib/deals/publishGate.ts": {
@@ -6779,6 +7138,11 @@
   "src/lib/notifications/lifecycleAlertEngine.ts": {
     "@typescript-eslint/no-explicit-any": {
       "count": 2
+    }
+  },
+  "src/lib/notifications/transactionNotifications.ts": {
+    "@typescript-eslint/no-unused-vars": {
+      "count": 3
     }
   },
   "src/lib/operations/variance.ts": {

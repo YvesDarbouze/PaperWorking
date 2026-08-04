@@ -48,7 +48,7 @@ export default function RegisterPage() {
 function RegisterPageInner() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const invite = searchParams.get('invite');
+  const invite = searchParams?.get('invite');
   const [selectedType, setSelectedType] = useState<AccountType>('investor');
   const [isNavigating, setIsNavigating] = useState(false);
 
@@ -64,8 +64,8 @@ function RegisterPageInner() {
     if (typeof window !== 'undefined') {
       window.localStorage.setItem('pw_pending_account_type', selectedType);
     }
-    const name = searchParams.get('name') || '';
-    const email = searchParams.get('email') || '';
+    const name = searchParams?.get('name') || '';
+    const email = searchParams?.get('email') || '';
     const loginUrl = invite
       ? `/login?accountType=${selectedType}&mode=signup&redirectTo=${encodeURIComponent('/invest/' + invite)}&name=${encodeURIComponent(name)}&email=${encodeURIComponent(email)}`
       : buildSignupForPricingLoginUrl({ accountType: selectedType });

@@ -206,6 +206,12 @@ export async function getAdminUserStats(): Promise<AdminUserStats> {
 
     usersSnap.docs.forEach((doc) => {
       const d = doc.data();
+
+      // Test Account Governance: Exclude synthetic investor crew accounts from metrics/analytics
+      if (d.is_test_account === true || d.persona_key || (d.email && (d.email.includes('+crew') || d.email.endsWith('@paperworking.co')))) {
+        return;
+      }
+
       const plan = d.subscriptionPlan || 'None';
       const status = d.subscriptionStatus || '';
       const createdAt = d.createdAt;
@@ -274,7 +280,7 @@ export async function getAdminUserStats(): Promise<AdminUserStats> {
     users.sort((a, b) => (b.createdAt > a.createdAt ? 1 : -1));
 
     return {
-      totalUsers: usersSnap.size,
+      totalUsers: users.length,
       newUsersLast30Days: newUsersLast30,
       activeSubscriptions,
       trialUsers,

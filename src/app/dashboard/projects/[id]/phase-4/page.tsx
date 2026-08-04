@@ -61,7 +61,7 @@ export default function Phase4WorkspacePage() {
   const params    = useParams();
   const router    = useRouter();
   const { user }  = useAuth();
-  const projectId = params.id as string;
+  const projectId = params?.id as string;
 
   const { project, loading, refresh } = useWorkspaceProject();
   const { canView, canEdit, loading: accessLoading } = usePhaseAccess('phase-4');

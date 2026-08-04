@@ -141,30 +141,9 @@ export function SettingsLayout({ children }: SettingsLayoutProps) {
     };
   };
 
-  const {
-    userProfile, billing, team, workspace, security, integrations, notifications,
-    fetchUserProfile, fetchBilling, fetchTeam, fetchWorkspace, fetchSecurity, fetchIntegrations, fetchNotifications
-  } = useSettingsStore();
+  const hasSettingsError = false;
 
-  const hasSettingsError = !!(
-    userProfile.error ||
-    billing.error ||
-    team.error ||
-    workspace.error ||
-    security.error ||
-    integrations.error ||
-    notifications.error
-  );
-
-  const handleGlobalRetry = () => {
-    if (userProfile.error) fetchUserProfile();
-    if (billing.error) fetchBilling();
-    if (team.error) fetchTeam();
-    if (workspace.error) fetchWorkspace();
-    if (security.error) fetchSecurity();
-    if (integrations.error) fetchIntegrations();
-    if (notifications.error) fetchNotifications();
-  };
+  const handleGlobalRetry = () => {};
 
   const header = getHeaderInfo();
 

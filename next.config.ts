@@ -65,6 +65,7 @@ const nextConfig: any = {
       { source: '/dashboard/evaluation', destination: '/dashboard/command-center', permanent: true },
       { source: '/dashboard/exit-hub', destination: '/dashboard/command-center', permanent: true },
       { source: '/projects', destination: '/dashboard/projects', permanent: true },
+      { source: '/dashboard/data-room', destination: '/dashboard/projects', permanent: true },
     ];
   },
   async rewrites() {

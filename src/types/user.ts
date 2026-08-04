@@ -26,6 +26,9 @@ export interface UserProfile {
   organizationId?: string; // DEPRECATED: Transitioning to personalOrganizationId
   memberships?: Record<string, OrgRole | string>; // Map of tenant ID to role
 
+  syntheticAgent?: boolean;
+  agentPersona?: string;
+
   /* ── Subscription ── */
   subscriptionPlan: SubscriptionPlan;
   subscriptionStatus: SubscriptionStatus;

@@ -195,7 +195,7 @@ export default function GuestPortalPage() {
   useEffect(() => {
     if (!dealData || processedUrlAction) return;
 
-    const action = searchParams.get('action');
+    const action = searchParams?.get('action');
     if (!action) return;
 
     setProcessedUrlAction(true);

@@ -147,7 +147,7 @@ const COLUMNS: ColumnDefinition[] = [
 export default function Phase2AcquisitionPage() {
   const router = useRouter();
   const params    = useParams();
-  const projectId = params.id as string;
+  const projectId = params?.id as string;
   const { project, loading: isLoading, refresh } = useWorkspaceProject();
   const { user: authUser } = useAuth();
   const { canView, canEdit, loading: accessLoading } = usePhaseAccess('phase-2');

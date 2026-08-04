@@ -190,7 +190,7 @@ export default function Phase1WorkspacePage() {
   const params    = useParams();
   const router    = useRouter();
   const { user }  = useAuth();
-  const projectId = params.id as string;
+  const projectId = params?.id as string;
 
   /* ── Data from shared WorkspaceContext (fetched once by layout) ── */
   const { project, loading, refresh } = useWorkspaceProject();

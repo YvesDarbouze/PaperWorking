@@ -147,11 +147,11 @@ function DataPrivacySettingsForm() {
     setDeletingWorkspace(true);
     const tid = toast.loading('Scheduling workspace deletion...');
     try {
-      const delDate = await scheduleWorkspaceDeletion(confirmWorkspaceName);
+      await scheduleWorkspaceDeletion();
       toast.success('Workspace scheduled for deletion. 48-hour grace period active.', { id: tid });
       setShowDeleteConfirm(false);
       setConfirmWorkspaceName('');
-      setDeletionScheduledAt(delDate);
+      setDeletionScheduledAt(new Date().toISOString());
       loadDataControl();
     } catch (err: any) {
       toast.error(err.message || 'Failed to delete workspace.', { id: tid });

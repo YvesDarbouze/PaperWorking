@@ -155,14 +155,17 @@ function mapTypeParamToCategory(type: string | null): FilterCategory {
 }
 
 function MarketplaceContent() {
+  useEffect(() => {
+    document.title = "PaperWorking — Vendor Marketplace";
+  }, []);
   /* ── Preserved Firestore / data hooks ── */
   useAllDealsSync();
 
   const router = useRouter();
   const searchParams = useSearchParams();
-  const typeParam = searchParams.get('type');
-  const projectIdParam = searchParams.get('projectId');
-  const cityParam = searchParams.get('city');
+  const typeParam = searchParams?.get('type');
+  const projectIdParam = searchParams?.get('projectId');
+  const cityParam = searchParams?.get('city');
 
   const { profile, user } = useAuth();
   const projects = useProjectStore((state) => state.projects);

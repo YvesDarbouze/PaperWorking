@@ -100,8 +100,9 @@ export default function UnderwritingPage({ params }: { params: Promise<{ id: str
   const [scenarios, setScenarios] = useState<UnderwritingScenario[]>([]);
 
   useEffect(() => {
-    if (project?.underwritingScenarios && project.underwritingScenarios.length > 0) {
-      setScenarios(project.underwritingScenarios);
+    const proj: any = project;
+    if (proj?.underwritingScenarios && proj.underwritingScenarios.length > 0) {
+      setScenarios(proj.underwritingScenarios);
     } else {
       setScenarios(generateDefaultScenarios(assumptions));
     }

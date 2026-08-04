@@ -11,10 +11,12 @@ import { useProjectStore } from "@/store/projectStore";
 import Logo from "@/components/brand/Logo";
 import { SEEDED_VENDORS } from "@/lib/vendors/seededVendors";
 
+import { resolveMobileDrawerNav, resolveCmdKNav } from "@/lib/navigation/navContract";
+
 /* ═══════════════════════════════════════════════════════════════
    TopAppBar — Premium dashboard header
    Features: breadcrumb, search with Cmd+K, notifications dropdown,
-   theme toggle, user avatar dropdown
+   theme toggle, mobile navigation drawer, user avatar dropdown
    ═══════════════════════════════════════════════════════════════ */
 
 const PHASE_BADGE_COLORS: Record<string, { bg: string; text: string }> = {
@@ -37,6 +39,7 @@ const ROUTE_LABELS: Record<string, string> = {
   "/dashboard": "Portfolio",
   "/dashboard/command-center": "Portfolio",
   "/dashboard/projects": "Projects",
+  "/dashboard/deals": "Deals Marketplace",
   "/dashboard/inbox": "Inbox",
   "/dashboard/team": "Team",
   "/dashboard/reports": "Reports",
@@ -108,7 +111,7 @@ export function TopAppBar() {
 
 
 
-  const pageLabel = getPageLabel(pathname);
+  const pageLabel = getPageLabel(pathname || '');
 
   const handleDemoGuard = (e: React.MouseEvent | React.FocusEvent, actionName: string) => {
     if (typeof window !== 'undefined' && window.location.pathname.startsWith('/demo')) {
@@ -238,7 +241,18 @@ export function TopAppBar() {
   const filteredProjects = searchResults.projects;
   const filteredVendors = searchResults.vendors;
 
+  const [showMobileDrawer, setShowMobileDrawer] = useState(false);
+
+  const drawerNavItems = useMemo(() => {
+    return resolveMobileDrawerNav({
+      role: profile?.role,
+      accountType: profile?.accountType,
+      subscriptionPlan: profile?.subscriptionPlan,
+    });
+  }, [profile?.role, profile?.accountType, profile?.subscriptionPlan]);
+
   return (
+    <>
     <header
       className="w-full flex-shrink-0 flex items-center justify-between z-40"
       style={{
@@ -257,8 +271,18 @@ export function TopAppBar() {
         padding: '0 24px',
       }}
     >
-      {/* Left: Mobile logo + Breadcrumb */}
+      {/* Left: Mobile hamburger + Mobile logo + Breadcrumb */}
       <div className="flex items-center gap-3">
+        {/* Mobile: Hamburger drawer button */}
+        <button
+          type="button"
+          onClick={() => setShowMobileDrawer(!showMobileDrawer)}
+          className="md:hidden p-1.5 rounded-lg border border-white/10 text-on-surface hover:bg-white/5 transition-colors"
+          aria-label="Toggle navigation drawer"
+        >
+          <span className="material-symbols-outlined text-[20px] block">menu</span>
+        </button>
+
         {/* Mobile: compact logo */}
         <Logo surface="app-topbar" href="/dashboard/command-center" className="md:hidden" />
 
@@ -705,6 +729,21 @@ export function TopAppBar() {
                 <span className="text-sm font-medium">Billing</span>
               </Link>
               <Link
+                href="/dashboard/team"
+                onClick={(e) => {
+                  if (typeof window !== 'undefined' && window.location.pathname.startsWith('/demo')) {
+                    handleDemoGuard(e, 'team management');
+                  } else {
+                    setShowUserMenu(false);
+                  }
+                }}
+                className="flex items-center gap-3 px-4 py-2.5 transition-colors duration-150"
+                style={{ color: 'rgba(253,255,252,0.7)' }}
+              >
+                <span className="material-symbols-outlined text-[18px]">group</span>
+                <span className="text-sm font-medium">Team</span>
+              </Link>
+              <Link
                 href="/dashboard/settings"
                 onClick={(e) => {
                   if (typeof window !== 'undefined' && window.location.pathname.startsWith('/demo')) {
@@ -728,5 +767,73 @@ export function TopAppBar() {
         </div>
       </div>
     </header>
+
+    {/* Mobile Slide-Out Drawer Overlay (NAV-01 / NAV-02 / NAV-03) */}
+    {showMobileDrawer && (
+      <div className="md:hidden fixed inset-0 z-[100] flex">
+        {/* Backdrop */}
+        <div
+          className="fixed inset-0 bg-black/70 backdrop-blur-sm"
+          onClick={() => setShowMobileDrawer(false)}
+        />
+
+        {/* Drawer Panel */}
+        <div
+          className="relative w-4/5 max-w-xs h-full flex flex-col p-5 space-y-6 z-10 shadow-2xl overflow-y-auto"
+          style={{
+            background: isDark ? 'rgba(18,16,20,0.98)' : '#FDFFFC',
+            borderRight: isDark ? '1px solid rgba(255,255,255,0.1)' : '1px solid rgba(0,0,0,0.1)',
+          }}
+        >
+          {/* Header */}
+          <div className="flex items-center justify-between pb-4 border-b border-outline/10">
+            <Logo surface="app-sidebar" href="/dashboard/command-center" />
+            <button
+              type="button"
+              onClick={() => setShowMobileDrawer(false)}
+              className="p-1 rounded-lg hover:bg-surface-variant text-on-surface-variant"
+            >
+              <span className="material-symbols-outlined text-[20px]">close</span>
+            </button>
+          </div>
+
+          {/* Drawer Items */}
+          <div className="space-y-1 flex-1">
+            <div className="px-2 py-1 text-label-sm font-bold uppercase tracking-wider text-outline">
+              Secondary Navigation
+            </div>
+            {drawerNavItems.map((item) => (
+              <Link
+                key={item.id}
+                href={item.href}
+                onClick={(e) => {
+                  if (item.isLocked) {
+                    e.preventDefault();
+                    toast.error("Deals Marketplace requires an active subscription.", { id: "deals-locked-drawer" });
+                    router.push("/dashboard/settings/billing?paywall=deals");
+                    setShowMobileDrawer(false);
+                    return;
+                  }
+                  setShowMobileDrawer(false);
+                }}
+                className="flex items-center gap-3 px-3 py-3 rounded-lg text-on-surface hover:bg-surface-variant/40 transition-colors"
+              >
+                <span className="material-symbols-outlined text-[20px]">{item.icon}</span>
+                <span className="text-sm font-medium flex-1">{item.label}</span>
+                {item.isLocked && (
+                  <span className="material-symbols-outlined text-[16px] text-amber-500">lock</span>
+                )}
+              </Link>
+            ))}
+          </div>
+
+          {/* Footer User Info */}
+          <div className="pt-4 border-t border-outline/10">
+            <LogoutButton compact={false} className="w-full flex items-center gap-2 py-2 text-sm text-outline hover:text-on-surface" />
+          </div>
+        </div>
+      </div>
+    )}
+    </>
   );
 }

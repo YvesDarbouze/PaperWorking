@@ -13,7 +13,7 @@
 import { useState, useEffect } from "react";
 import { createPortal } from "react-dom";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { useAuth } from "@/context/AuthContext";
 import { useTenant } from "@/context/TenantContext";
 import { useNotification } from "@/context/NotificationContext";
@@ -24,22 +24,11 @@ import { AcquisitionWizard } from "@/components/acquisition/AcquisitionWizard";
 import { useCreateProjectModal } from "@/store/createProjectModalStore";
 import toast from "react-hot-toast";
 
-// ─── Navigation contract ──────────────────────────────────────────────────────
-
-const PRIMARY_NAV = [
-  { name: "Portfolio",     href: "/dashboard/command-center",  icon: "space_dashboard" },
-  { name: "Projects",      href: "/dashboard/projects",       icon: "folder"          },
-  { name: "Insights",      href: "/dashboard/insights",       icon: "monitoring"      },
-  { name: "Reports",       href: "/dashboard/reports",        icon: "bar_chart_4_bars"},
-  { name: "Inbox",         href: "/dashboard/inbox",          icon: "inbox"           },
-  { name: "Team",          href: "/dashboard/team",           icon: "group"           },
-] as const;
-
-const ACCOUNT_NAV = [
-  { name: "Profile",  href: "/dashboard/settings/profile", icon: "account_circle" },
-  { name: "Billing",  href: "/dashboard/settings/billing", icon: "payments"       },
-  { name: "Settings", href: "/dashboard/settings",         icon: "settings"       },
-] as const;
+import {
+  resolvePrimaryNav,
+  resolveAccountNav,
+  NavItem as ContractNavItem,
+} from "@/lib/navigation/navContract";
 
 // ─── User avatar ──────────────────────────────────────────────────────────────
 // Shows Firebase photoURL if available, otherwise an initials monogram.
@@ -103,12 +92,13 @@ interface NavItemProps {
   href: string;
   icon: string;
   isActive: boolean;
+  isLocked?: boolean;
   badge?: number;
   isDark: boolean;
   onClick?: (e: React.MouseEvent) => void;
 }
 
-function NavItem({ name, href, icon, isActive, badge, isDark, onClick }: NavItemProps) {
+function NavItem({ name, href, icon, isActive, isLocked, badge, isDark, onClick }: NavItemProps) {
   const activeTextColor  = isDark ? "rgba(253,255,252,0.92)" : "#0d0a0b";
   const inactiveTextColor = isDark ? "rgba(253,255,252,0.65)" : "rgba(55,59,69,0.82)";
   const activeBg    = isDark ? "rgba(69,73,85,0.25)"  : "rgba(69,73,85,0.09)";
@@ -141,6 +131,16 @@ function NavItem({ name, href, icon, isActive, badge, isDark, onClick }: NavItem
       >
         {name}
       </span>
+
+      {/* Lock badge for unsubscribed items */}
+      {isLocked && (
+        <span
+          className="material-symbols-outlined text-[16px] text-amber-500 flex-shrink-0"
+          title="Requires Subscription"
+        >
+          lock
+        </span>
+      )}
 
       {/* Inbox unread badge */}
       {badge !== undefined && badge > 0 && (
@@ -197,6 +197,7 @@ function SectionLabel({ label, isDark }: { label: string; isDark: boolean }) {
 
 export function Sidebar() {
   const pathname = usePathname();
+  const router = useRouter();
   const { user, profile, loading: authLoading } = useAuth();
   const { activeTenantId, switchTenant } = useTenant();
   const { unreadTotal } = useNotification();
@@ -270,32 +271,37 @@ export function Sidebar() {
       {/* ── Primary navigation ──────────────────────────────────────────── */}
       <nav className="flex-1 overflow-y-auto custom-scrollbar px-2 space-y-0.5">
         <SectionLabel label="PORTFOLIO" isDark={isDark} />
-        {PRIMARY_NAV.filter((item) => {
-          if (item.name === "Projects") {
-            const isVendor =
-              profile?.role === "Vendor" ||
-              profile?.accountType === "vendor" ||
-              profile?.subscriptionPlan === "Vendor Network";
-            return !isVendor;
-          }
-          return true;
+        {resolvePrimaryNav({
+          role: profile?.role,
+          accountType: profile?.accountType,
+          subscriptionPlan: profile?.subscriptionPlan,
         }).map((item) => {
-          // Portfolio (command-center): exact match only so sub-routes don't false-highlight
           const isActive =
             item.href === "/dashboard/command-center"
               ? pathname === "/dashboard/command-center" || pathname === "/dashboard"
-              : pathname.startsWith(item.href);
+              : Boolean(pathname?.startsWith(item.href));
+
+          const handleClick = (e: React.MouseEvent) => {
+            if (item.isLocked) {
+              e.preventDefault();
+              toast.error("Deals Marketplace requires an active subscription.", { id: "deals-locked" });
+              router.push("/dashboard/settings/billing?paywall=deals");
+              return;
+            }
+            handleNavClick(e, item.href, item.label);
+          };
 
           return (
             <NavItem
-              key={item.name}
-              name={item.name}
+              key={item.id}
+              name={item.label}
               href={item.href}
               icon={item.icon}
               isActive={isActive}
+              isLocked={item.isLocked}
               isDark={isDark}
-              badge={item.name === "Inbox" && mounted ? unreadTotal : undefined}
-              onClick={(e) => handleNavClick(e, item.href, item.name)}
+              badge={item.id === "inbox" && mounted ? unreadTotal : undefined}
+              onClick={handleClick}
             />
           );
         })}
@@ -303,24 +309,27 @@ export function Sidebar() {
         {/* ── Account section ─────────────────────────────────────────── */}
         <SectionLabel label="Account" isDark={isDark} />
 
-        {ACCOUNT_NAV.map((item) => {
-          // Settings exact-match: don't highlight when on /settings/profile or /settings/billing
+        {resolveAccountNav({
+          role: profile?.role,
+          accountType: profile?.accountType,
+          subscriptionPlan: profile?.subscriptionPlan,
+        }).map((item) => {
           const isActive =
             item.href === "/dashboard/settings"
-              ? pathname.startsWith("/dashboard/settings") &&
-                !pathname.startsWith("/dashboard/settings/profile") &&
-                !pathname.startsWith("/dashboard/settings/billing")
-              : pathname.startsWith(item.href);
+              ? Boolean(pathname?.startsWith("/dashboard/settings")) &&
+                !pathname?.startsWith("/dashboard/settings/profile") &&
+                !pathname?.startsWith("/dashboard/settings/billing")
+              : Boolean(pathname?.startsWith(item.href));
 
           return (
             <NavItem
-              key={item.name}
-              name={item.name}
+              key={item.id}
+              name={item.label}
               href={item.href}
               icon={item.icon}
               isActive={isActive}
               isDark={isDark}
-              onClick={(e) => handleNavClick(e, item.href, item.name)}
+              onClick={(e) => handleNavClick(e, item.href, item.label)}
             />
           );
         })}

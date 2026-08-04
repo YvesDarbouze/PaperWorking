@@ -3,11 +3,14 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useNotification } from "@/context/NotificationContext";
+import { useAuth } from "@/context/AuthContext";
+import { resolveBottomNav } from "@/lib/navigation/navContract";
 import toast from "react-hot-toast";
 
 export function BottomNav() {
   const pathname = usePathname();
   const { unreadTotal } = useNotification();
+  const { profile } = useAuth();
 
   const handleNavClick = (e: React.MouseEvent, itemHref: string, itemName: string) => {
     if (typeof window !== 'undefined' && window.location.pathname.startsWith('/demo')) {
@@ -24,13 +27,11 @@ export function BottomNav() {
     }
   };
 
-  const navItems = [
-    { name: "Portfolio", href: "/dashboard/command-center", icon: "space_dashboard" },
-    { name: "Insights",  href: "/dashboard/insights",       icon: "monitoring"      },
-    { name: "Projects",  href: "/dashboard/projects",       icon: "folder"          },
-    { name: "Reports",   href: "/dashboard/reports",        icon: "bar_chart_4_bars"},
-    { name: "Inbox",     href: "/dashboard/inbox",          icon: "inbox"           },
-  ];
+  const navItems = resolveBottomNav({
+    role: profile?.role,
+    accountType: profile?.accountType,
+    subscriptionPlan: profile?.subscriptionPlan,
+  });
 
   return (
     <nav
@@ -44,12 +45,12 @@ export function BottomNav() {
       }}
     >
       {navItems.map((item) => {
-        const isActive = pathname.startsWith(item.href) || (item.href === "/dashboard/command-center" && pathname === "/dashboard");
+        const isActive = Boolean(pathname?.startsWith(item.href)) || (item.href === "/dashboard/command-center" && pathname === "/dashboard");
         return (
           <Link
-            key={item.name}
+            key={item.id}
             href={item.href}
-            onClick={(e) => handleNavClick(e, item.href, item.name)}
+            onClick={(e) => handleNavClick(e, item.href, item.label)}
             className="flex flex-col items-center justify-center relative py-2 px-3 transition-all duration-200"
             style={{
               color: isActive ? 'var(--color-primary)' : 'rgba(253,255,252,0.4)',
@@ -63,7 +64,7 @@ export function BottomNav() {
               >
                 {item.icon}
               </span>
-              {item.name === "Inbox" && unreadTotal > 0 && (
+              {item.id === "inbox" && unreadTotal > 0 && (
                 <span
                   className="absolute -top-1 -right-2 text-[8px] font-bold w-4 h-4 rounded-full flex items-center justify-center"
                   style={{
@@ -84,7 +85,7 @@ export function BottomNav() {
                 letterSpacing: '0.02em',
               }}
             >
-              {item.name}
+              {item.label}
             </span>
             {/* Luminous dot indicator */}
             {isActive && (

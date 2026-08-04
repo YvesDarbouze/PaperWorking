@@ -7,6 +7,7 @@ import { BottomNav } from "../components/layout/BottomNav";
 // Mock Next.js navigation hooks
 jest.mock("next/navigation", () => ({
   usePathname: () => "/dashboard/command-center",
+  useRouter: () => ({ push: jest.fn() }),
 }));
 
 // Mock Auth Context
@@ -55,12 +56,13 @@ jest.mock("@/components/dashboard/LogoutButton", () => {
 });
 
 describe("GLOBAL NAVIGATION — FIXED CONTRACT FOR EVERY PAPERWORKING SCREEN", () => {
-  it("renders the primary group navigation in the exact contract order, labels, and case", () => {
+  it("renders the primary group navigation in the exact contract order, labels, and case for Investor accounts", () => {
     render(<Sidebar />);
 
     const primaryExpected = [
       "Portfolio",
       "Projects",
+      "Deals",
       "Insights",
       "Reports",
       "Inbox",
@@ -72,20 +74,19 @@ describe("GLOBAL NAVIGATION — FIXED CONTRACT FOR EVERY PAPERWORKING SCREEN", (
     const linkTexts = links.map((link) => link.textContent || "");
 
     // Verify all primary navigation items exist in correct order
-    primaryExpected.forEach((name, index) => {
+    primaryExpected.forEach((name) => {
       const match = linkTexts.find((text) => text.includes(name));
       expect(match).toBeTruthy();
       
-      // Let's verify exact label (case-sensitive) and unread count for Inbox
       if (name === "Inbox") {
         expect(screen.getByText("Inbox")).toBeTruthy();
-        expect(screen.getByText("5")).toBeTruthy(); // 5 unread from NotificationContext mock
+        expect(screen.getByText("5")).toBeTruthy();
       } else {
         expect(screen.getByText(name)).toBeTruthy();
       }
     });
 
-    // Verify the relative ordering of primary group items
+    // Verify relative ordering
     let lastIndex = -1;
     primaryExpected.forEach((name) => {
       const index = linkTexts.findIndex((text) => text.includes(name));
@@ -109,7 +110,6 @@ describe("GLOBAL NAVIGATION — FIXED CONTRACT FOR EVERY PAPERWORKING SCREEN", (
     const links = screen.getAllByRole("link");
     const linkTexts = links.map((link) => link.textContent || "");
 
-    // Verify account items in correct order
     accountExpected.forEach((name) => {
       expect(screen.getByText(name)).toBeTruthy();
     });
@@ -125,23 +125,21 @@ describe("GLOBAL NAVIGATION — FIXED CONTRACT FOR EVERY PAPERWORKING SCREEN", (
   it("renders the workspace switcher with acting as exactly as specified in the contract", () => {
     render(<Sidebar />);
 
-    // The active workspace name in mock is "Luminous Capital"
     expect(screen.getByText(/acting as:/i)).toBeTruthy();
     expect(screen.getAllByText("Luminous Capital").length).toBeGreaterThan(0);
 
-    // Verify profile menu options are rendered (name, role, logout button)
     expect(screen.getByText("Jane Doe")).toBeTruthy();
     expect(screen.getByText("Founder")).toBeTruthy();
     expect(screen.getByTestId("logout")).toBeTruthy();
   });
 
-  it("renders correct navigation elements in BottomNav for mobile compatibility", () => {
+  it("renders correct navigation elements in BottomNav for mobile compatibility per Contract v7", () => {
     render(<BottomNav />);
 
     const bottomExpected = [
       "Portfolio",
-      "Projects",
       "Insights",
+      "Projects",
       "Reports",
       "Inbox",
     ];
@@ -150,7 +148,6 @@ describe("GLOBAL NAVIGATION — FIXED CONTRACT FOR EVERY PAPERWORKING SCREEN", (
       expect(screen.getByText(name)).toBeTruthy();
     });
 
-    // Check unread count on mobile Inbox
     expect(screen.getByText("5")).toBeTruthy();
   });
 });

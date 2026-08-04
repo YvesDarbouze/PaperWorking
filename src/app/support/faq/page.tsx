@@ -33,7 +33,7 @@ const stagger = {
 
 export default function FAQPage() {
   const searchParams = useSearchParams();
-  const initialCategory = searchParams.get('category');
+  const initialCategory = searchParams?.get('category');
   const defaultCategory: FAQCategory | 'all' =
     initialCategory && VALID_CATEGORIES.has(initialCategory)
       ? (initialCategory as FAQCategory)

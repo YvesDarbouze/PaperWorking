@@ -751,6 +751,9 @@ function downloadPDFViaPrint(title: string, csvContent: string) {
 
 /* ═══ Main Page ═══ */
 export default function ReportsPage() {
+  useEffect(() => {
+    document.title = "PaperWorking — Expense Reports";
+  }, []);
   useAllDealsSync();
   const router = useRouter();
   const { user, profile } = useAuth();

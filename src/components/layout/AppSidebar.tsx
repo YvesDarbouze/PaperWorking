@@ -111,7 +111,7 @@ function SidebarLink({ item }: { item: NavItem }) {
   const { unreadTotal } = useNotification();
   const isActive = item.exact
     ? pathname === item.href
-    : pathname.startsWith(item.href);
+    : Boolean(pathname?.startsWith(item.href));
 
   return (
     <Link

@@ -3,6 +3,7 @@
 import { useMemo, useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import toast from "react-hot-toast";
 import dynamic from "next/dynamic";
 import { collection, doc, query, orderBy, limit, onSnapshot, Timestamp, where } from "firebase/firestore";
 import { db } from "@/lib/firebase/config";
@@ -2090,6 +2091,76 @@ function PortfolioSparklineWidget({ isDark }: { isDark: boolean }) {
   );
 }
 
+// ─── Deals Marketplace CTA Card ──────────────────────────────
+function DealsMarketplaceCard({ isDark }: { isDark: boolean }) {
+  const { profile } = useAuth();
+  const router = useRouter();
+
+  const isVendor =
+    profile?.role === "Vendor" ||
+    profile?.accountType === "vendor" ||
+    profile?.subscriptionPlan === "Vendor Network";
+
+  // Product Truth #2: Never rendered for Vendor role
+  if (isVendor) return null;
+
+  const plan = (profile?.subscriptionPlan || "").toLowerCase();
+  const isSubscribed = !plan.includes("free") && !plan.includes("none") && !plan.includes("unsubscribed");
+
+  const handleExplore = (e: React.MouseEvent) => {
+    if (!isSubscribed) {
+      e.preventDefault();
+      toast.error("Deals Marketplace requires an active subscription.", { id: "deals-card-locked" });
+      router.push("/dashboard/settings/billing?paywall=deals");
+    }
+  };
+
+  return (
+    <Panel isDark={isDark} className="p-5 h-full flex flex-col justify-between relative overflow-hidden group">
+      {/* Background glow */}
+      <div className="absolute top-0 right-0 w-32 h-32 bg-emerald-500/10 rounded-full blur-3xl pointer-events-none" />
+
+      <div>
+        <div className="flex items-center justify-between mb-2">
+          <div className="flex items-center gap-2">
+            <span className="material-symbols-outlined text-[20px] text-emerald-400">handshake</span>
+            <span className="text-[11px] font-bold uppercase tracking-wider text-slate-300">
+              Deals Marketplace
+            </span>
+          </div>
+          {!isSubscribed && (
+            <span className="px-2 py-0.5 text-[9px] font-bold uppercase bg-amber-500/10 text-amber-400 rounded border border-amber-500/20 flex items-center gap-1">
+              <span className="material-symbols-outlined text-[12px]">lock</span>
+              Locked
+            </span>
+          )}
+        </div>
+
+        <p className="text-xs text-slate-400 leading-relaxed mb-4">
+          Discover vetted real estate investment opportunities & co-investment syndications, or list your own deal.
+        </p>
+      </div>
+
+      <div className="flex items-center gap-3 pt-2">
+        <Link
+          href="/dashboard/deals"
+          onClick={handleExplore}
+          className="flex-1 py-2 px-3 text-center text-xs font-bold rounded-lg bg-emerald-500 text-slate-950 hover:bg-emerald-400 transition-all shadow-md text-nowrap"
+        >
+          Explore Deals →
+        </Link>
+        <Link
+          href="/dashboard/deals?action=create"
+          onClick={handleExplore}
+          className="py-2 px-3 text-center text-xs font-semibold rounded-lg border border-white/10 text-slate-200 hover:bg-white/5 transition-all text-nowrap"
+        >
+          List a Deal
+        </Link>
+      </div>
+    </Panel>
+  );
+}
+
 // ─── CommandCenter ────────────────────────────────────────────────────────────
 
 export function CommandCenter() {
@@ -2297,7 +2368,11 @@ export function CommandCenter() {
             <PortfolioSparklineWidget isDark={isDark} />
           </div>
 
-          {/* Row 2: KPIs / Metrics, Deal Map */}
+          {/* Row 2: Deals Marketplace CTA, KPIs / Metrics, Deal Map */}
+          <div className="lg:col-span-3">
+            <DealsMarketplaceCard isDark={isDark} />
+          </div>
+
           <div className="lg:col-span-6">
             <KPIMetricsModule isDark={isDark} />
           </div>

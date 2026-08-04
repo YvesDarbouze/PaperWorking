@@ -22,7 +22,7 @@ export default function AdminHeader() {
   const pathname = usePathname();
   const { profile } = useAuth();
 
-  const pageTitle = ROUTE_LABELS[pathname] || 'Admin';
+  const pageTitle = (pathname && ROUTE_LABELS[pathname]) || 'Admin';
 
   return (
     <header

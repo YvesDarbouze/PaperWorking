@@ -773,6 +773,8 @@ export interface Project {
   id: string; // Document ID
   organizationId: string; // REQUIRED: Maps project to exactly one tenant for B2B data isolation
   propertyName: string;
+  syntheticAgent?: boolean;
+  listedByAgent?: string;
   address: string;
   zip?: string;
   phase?: string;
@@ -1649,6 +1651,7 @@ export interface ProjectFinancials {
   target_rent?: number;                   // Target monthly rent (cents) (user_assumption)
   listing_ads?: ListingAdLogEntry[];     // Rent listing ad log
   screening_checklist?: ScreeningChecklistState; // Screening checklist configuration
+  underwritingScenarios?: any;            // Saved underwriting scenarios
   target_lease_terms?: TargetLeaseTerms;  // Commercial lease terms (rate, term, type)
   list_price_sale?: number;               // Target sale list price (cents) (user_assumption)
   listing_agent_vendor?: F4VendorAssignment | null; // Listing agent vendor assignment
@@ -2849,4 +2852,25 @@ export interface ClosingRecord {
   instrumentNumber?: string | null;
   countyName?: string | null;
   checklistState?: Record<string, boolean>; // checklist of executed docs
+}
+
+export interface ChecklistItem {
+  id: string;
+  task?: string;
+  label?: string;
+  description?: string;
+  category?: string;
+  status: 'pending' | 'in_progress' | 'completed';
+  requiredRole?: string;
+  dueDate?: string;
+  notes?: string;
+}
+
+export interface ReplacementProperty {
+  id: string;
+  address: string;
+  identifiedDate?: string;
+  targetPrice?: number;
+  status?: 'identified' | 'under_contract' | 'closed' | 'dropped';
+  notes?: string;
 }

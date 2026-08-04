@@ -118,32 +118,32 @@ describe('buildTeaserFromListing', () => {
     expect((teaser as unknown as Record<string, unknown>).address).toBeUndefined();
   });
 
-  it('obfuscates cap rate to range', () => {
-    expect(teaser.capRateRange).toBe('4–5%');
+  it('suppresses cap rate range from public teaser', () => {
+    expect(teaser.capRateRange).toBeUndefined();
   });
 
-  it('obfuscates cash-on-cash to range', () => {
-    expect(teaser.cashOnCashRange).toBe('8–10%');
+  it('suppresses cash-on-cash range from public teaser', () => {
+    expect(teaser.cashOnCashRange).toBeUndefined();
   });
 
-  it('obfuscates projected ROI to range', () => {
-    expect(teaser.projectedROIRange).toBe('20–25%');
+  it('suppresses projected ROI range from public teaser', () => {
+    expect(teaser.projectedROIRange).toBeUndefined();
   });
 
   it('approximates asking price', () => {
     expect(teaser.askingPriceApprox).toBe('~$450K');
   });
 
-  it('shows approximate funding target', () => {
-    expect(teaser.fundingTargetApprox).toBe('Seeking ~$100K');
+  it('suppresses funding target when asking price is present', () => {
+    expect(teaser.fundingTargetApprox).toBeUndefined();
   });
 
-  it('shows approximate min ticket', () => {
-    expect(teaser.minTicketApprox).toBe('~$25K minimum');
+  it('suppresses min ticket from public teaser', () => {
+    expect(teaser.minTicketApprox).toBeUndefined();
   });
 
   it('shows only lead investor name (no UID, no bio, no avatar)', () => {
-    expect(teaser.leadInvestorName).toBe('Jane Doe');
+    expect(teaser.leadInvestorName).toBe('Lead Investor');
     expect((teaser as unknown as Record<string, unknown>).leadInvestor).toBeUndefined();
     expect((teaser as unknown as Record<string, unknown>).leadInvestorBio).toBeUndefined();
     expect((teaser as unknown as Record<string, unknown>).leadInvestorAvatar).toBeUndefined();

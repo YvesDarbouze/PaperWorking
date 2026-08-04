@@ -15,7 +15,7 @@ import { useAcquisitionWizard } from "@/store/acquisitionWizardStore";
 function WizardLoader() {
   const searchParams = useSearchParams();
   const router = useRouter();
-  const resumeId = searchParams.get("resume") ?? undefined;
+  const resumeId = searchParams?.get("resume") ?? undefined;
   
   const store = useAcquisitionWizard();
 
@@ -24,8 +24,8 @@ function WizardLoader() {
     if (resumeId) return;
 
     // Check query params first, then fallback to sessionStorage (saved by ColdStartSurface)
-    const addressParam = searchParams.get("address");
-    const placeIdParam = searchParams.get("placeId");
+    const addressParam = searchParams?.get("address");
+    const placeIdParam = searchParams?.get("placeId");
     
     let resolvedAddr: any = null;
 
@@ -33,13 +33,13 @@ function WizardLoader() {
       resolvedAddr = {
         placeId: placeIdParam,
         formattedAddress: addressParam,
-        displayName: searchParams.get("displayName") || addressParam.split(',')[0],
-        addressLine: searchParams.get("addressLine") || addressParam.split(',')[0],
-        city: searchParams.get("city") || "",
-        state: searchParams.get("state") || "",
-        zip: searchParams.get("zip") || "",
-        lat: parseFloat(searchParams.get("lat") || "0"),
-        lng: parseFloat(searchParams.get("lng") || "0"),
+        displayName: searchParams?.get("displayName") || addressParam.split(',')[0],
+        addressLine: searchParams?.get("addressLine") || addressParam.split(',')[0],
+        city: searchParams?.get("city") || "",
+        state: searchParams?.get("state") || "",
+        zip: searchParams?.get("zip") || "",
+        lat: parseFloat(searchParams?.get("lat") || "0"),
+        lng: parseFloat(searchParams?.get("lng") || "0"),
       };
       // Clean query parameters from URL to avoid re-consumption on refresh
       router.replace('/dashboard/projects/new');

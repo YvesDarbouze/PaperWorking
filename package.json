@@ -15,7 +15,8 @@
     "db:seed": "npx ts-node --compiler-options '{\"module\":\"commonjs\"}' scripts/seed.ts",
     "postinstall": "npx prisma generate",
     "codebase:export": "npx ts-node --compiler-options '{\"module\":\"commonjs\"}' scripts/export-codebase.ts",
-    "codebase:index": "npx ts-node --compiler-options '{\"module\":\"commonjs\"}' scripts/generate-repo-index.ts"
+    "codebase:index": "npx ts-node --compiler-options '{\"module\":\"commonjs\"}' scripts/generate-repo-index.ts",
+    "crew:teardown": "npx ts-node --compiler-options '{\"module\":\"commonjs\"}' crew/teardown.ts"
   },
   "dependencies": {
     "@emotion/is-prop-valid": "^1.4.0",

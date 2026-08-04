@@ -1110,7 +1110,7 @@ export function DealAnalyzerResults({
                       </tr>
                     </thead>
                     <tbody className="divide-y divide-white/5 text-slate-200">
-                      {rentalResults.proFormaSchedule.map((row) => (
+                      {rentalResults.proFormaSchedule.map((row: any) => (
                         <tr key={row.year} className="hover:bg-white/5 transition-colors">
                           <td className="p-2.5 font-bold text-white">Yr {row.year}</td>
                           <td className="p-2.5">{formatCurrency(row.propertyValue)}</td>

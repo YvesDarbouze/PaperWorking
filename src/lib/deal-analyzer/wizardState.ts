@@ -1,6 +1,8 @@
 import { FIELD_REGISTRY, Strategy, validateField, deriveFields } from './fieldRegistry';
 import { getWizardStepsForStrategy } from './wizardStepMap';
 
+export type WizardFormData = Record<string, any>;
+
 export interface WizardDraftState {
   strategy: Strategy;
   currentStepIndex: number;

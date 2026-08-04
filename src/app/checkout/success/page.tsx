@@ -59,7 +59,7 @@ interface SessionData {
 function CheckoutSuccessInner() {
   const searchParams = useSearchParams();
   const router = useRouter();
-  const sessionId = searchParams.get('session_id');
+  const sessionId = searchParams?.get('session_id');
 
   const [sessionData, setSessionData] = useState<SessionData | null>(null);
   const [phase, setPhase] = useState<'loading' | 'success' | 'error'>('loading');

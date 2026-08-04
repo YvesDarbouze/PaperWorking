@@ -53,7 +53,7 @@ describe('DM-14 Mobile Search Shell visual alignment and touch target rules', ()
 
   it('provides a touch-friendly mobile filter drawer trigger button', () => {
     render(<DealsPage />);
-    const mobileFilterBtn = screen.getByRole('button', { name: /filter_list/i });
+    const mobileFilterBtn = screen.getByRole('button', { name: /filter/i });
     expect(mobileFilterBtn).toBeDefined();
     expect(mobileFilterBtn.className).toContain('h-12');
     expect(mobileFilterBtn.className).toContain('w-12');
@@ -63,14 +63,14 @@ describe('DM-14 Mobile Search Shell visual alignment and touch target rules', ()
     render(<DealsPage />);
     
     // Bottom drawer should not be visible initially
-    expect(screen.queryByText('Filter Listings')).toBeNull();
+    expect(screen.queryByText(/filter deals/i)).toBeNull();
 
     // Click mobile filter button
-    const mobileFilterBtn = screen.getByRole('button', { name: /filter_list/i });
+    const mobileFilterBtn = screen.getByRole('button', { name: /filter/i });
     fireEvent.click(mobileFilterBtn);
 
     // Filter drawer should now be open
-    expect(screen.getByText('Filter Listings')).toBeDefined();
+    expect(screen.getByText(/filter deals/i)).toBeDefined();
 
     // Drawer buttons should have thumb-reachable touch targets (h-11 / h-12)
     const assetClassHeader = screen.getByText('Asset Class');
@@ -82,6 +82,6 @@ describe('DM-14 Mobile Search Shell visual alignment and touch target rules', ()
 
     // Click Apply filters to dismiss the bottom drawer
     fireEvent.click(applyButton);
-    expect(screen.queryByText('Filter Listings')).toBeNull();
+    expect(screen.queryByText(/filter deals/i)).toBeNull();
   });
 });

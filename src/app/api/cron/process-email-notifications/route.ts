@@ -238,7 +238,16 @@ async function processQueuedEmails() {
     try {
       const userData = userCache.get(item.recipientId);
 
-      // Check opt-out
+      // Check opt-out or synthetic test account exclusion
+      if (userData?.is_test_account === true || userData?.persona_key || (item.recipientEmail && (item.recipientEmail.includes('+crew') || item.recipientEmail.endsWith('@paperworking.co')))) {
+        await item.ref.update({
+          status: 'cancelled',
+          error: 'Test account excluded from outbound emails',
+          cancelledAt: FieldValue.serverTimestamp(),
+        });
+        continue;
+      }
+
       if (userData?.preferences?.emailEnabled === false && item.sendEmail) {
         await item.ref.update({
           status: 'cancelled',

@@ -164,7 +164,7 @@ export function checkConsecutiveVarianceAlert(
  * Sourced via deriveAllProjectMetrics.
  */
 export function snapshotBudgetBaseline(project: Project): BudgetBaselineData {
-  const existing = project.financials?.budgetBaseline;
+  const existing = (project.financials as any)?.budgetBaseline;
   if (existing && existing.monthlyGrossRent > 0) {
     return existing; // Return frozen baseline
   }
@@ -173,7 +173,7 @@ export function snapshotBudgetBaseline(project: Project): BudgetBaselineData {
   const f: any = project.financials || {};
   const monthlyGrossRent = f.monthlyGrossRent ?? (f.purchasePrice ? (f.purchasePrice * 0.01) / 12 : 2500);
   const monthlyExpenses = f.monthlyExpenses ?? 800;
-  const monthlyNoi = Math.round((derived.noi / 12) * 100) / 100;
+  const monthlyNoi = Math.round(((derived.noi ?? 0) / 12) * 100) / 100;
 
   return {
     snapshottedAt: new Date().toISOString(),

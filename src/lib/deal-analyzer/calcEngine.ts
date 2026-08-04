@@ -126,11 +126,14 @@ export interface BRRRRDealInputs {
   monthlyRentPostRehab?: number;
   postRefiMonthlyRent?: number;       // alias
   bridgeLTC?: number;                 // % default 85
+  bridgeLTCPercent?: number;          // alias
   bridgeInterestRate?: number;       // % default 11.5
   bridgePoints?: number;             // % default 2
+  bridgePointsPercent?: number;      // alias
   holdPeriodMonths?: number;         // default 6
   preRefiHoldMonths?: number;        // alias
   monthlyHoldingCosts?: number;      // $ default 475
+  monthlyHoldingStack?: number;      // alias
   buyClosingCostsPercent?: number;   // % default 2
   purchaseClosingCostsPercent?: number; // alias
   refiLTV?: number;                  // % default 75
@@ -804,3 +807,7 @@ export function calculateProFormaProjections(inputs: ProFormaInputs): ProFormaYe
 
   return results;
 }
+
+export type RentalCalcOutputs = RentalDealResults;
+export type FlipCalcOutputs = FlipDealResults;
+export type BRRRRCalcOutputs = BRRRRDealResults;

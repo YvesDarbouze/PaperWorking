@@ -19,16 +19,21 @@ export default async function DashboardLayout({
   const cookieStore = await cookies();
   const sessionCookie = cookieStore.get("__session")?.value;
 
-  if (!sessionCookie) {
-    redirect("/login");
-  }
-
   // Get current pathname from x-pathname header (set in middleware)
   const headersList = await headers();
   const pathname = headersList.get("x-pathname") || "";
 
+  const isPublicTeaserPage =
+    pathname === "/dashboard/marketplace" ||
+    pathname === "/dashboard/deals";
+
+  if (!sessionCookie && !isPublicTeaserPage) {
+    redirect("/login");
+  }
+
   // Exclude billing and profile settings from server-side redirect checks
   const isExempt =
+    isPublicTeaserPage ||
     pathname.startsWith("/dashboard/settings/billing") ||
     pathname.startsWith("/dashboard/settings/profile") ||
     pathname === "/dashboard/settings" ||
@@ -36,7 +41,7 @@ export default async function DashboardLayout({
 
   const isMock = sessionCookie === "mock_session_token_123";
 
-  if (!isExempt && !isMock) {
+  if (!isExempt && !isMock && sessionCookie) {
     try {
       // __session may hold a Firebase session cookie OR a raw ID token — the
       // session route falls back to the ID token when createSessionCookie is

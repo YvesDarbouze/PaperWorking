@@ -343,6 +343,8 @@ model AppUser {
   id              String                @id
   email           String                @unique
   name            String?
+  syntheticAgent  Boolean               @default(false)
+  agentPersona    String?
   createdAt       DateTime              @default(now())
   updatedAt       DateTime              @updatedAt
   fieldAssignedBy FieldAssignment[]     @relation("FieldAssignedBy")
@@ -371,6 +373,8 @@ model ReilProject {
   displayName        String?
   acquisitionStatus  AcquisitionStatus   @default(PROSPECT)
   ownershipStructure OwnershipStructure?
+  syntheticAgent     Boolean             @default(false)
+  listedByAgent      String?
   createdAt          DateTime            @default(now())
   updatedAt          DateTime            @updatedAt
   createdById        String
@@ -1579,4 +1583,82 @@ model ReconciliationItem {
   @@index([itemType])
   @@index([status])
 }
+
+model User {
+  id             String               @id @default(uuid())
+  email          String               @unique
+  name           String?
+  syntheticAgent Boolean              @default(false)
+  agentPersona   String?
+  createdAt      DateTime             @default(now())
+  updatedAt      DateTime             @updatedAt
+  projects       Project[]
+  subscriptions  Subscription[]
+  messagesSent   Message[]            @relation("UserSentMessages")
+  messagesRecv   Message[]            @relation("UserReceivedMessages")
+  listings       MarketplaceListing[]
+}
+
+model Project {
+  id             String    @id @default(uuid())
+  title          String?
+  address        String?
+  city           String?
+  state          String?
+  zip            String?
+  syntheticAgent Boolean   @default(false)
+  listedByAgent  String?
+  userId         String?
+  user           User?     @relation(fields: [userId], references: [id])
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
+  messages       Message[]
+}
+
+model MarketplaceListing {
+  id             String   @id @default(uuid())
+  title          String?
+  syntheticAgent Boolean  @default(false)
+  userId         String?
+  user           User?    @relation(fields: [userId], references: [id])
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+}
+
+model Message {
+  id                  String   @id @default(uuid())
+  threadId            String
+  senderId            String
+  sender              User     @relation("UserSentMessages", fields: [senderId], references: [id], onDelete: Cascade)
+  recipientId         String
+  recipient           User     @relation("UserReceivedMessages", fields: [recipientId], references: [id], onDelete: Cascade)
+  subject             String
+  body                String
+  attachmentProjectId String?
+  attachmentProject   Project? @relation(fields: [attachmentProjectId], references: [id], onDelete: SetNull)
+  read                Boolean  @default(false)
+  syntheticAgent      Boolean  @default(false)
+  createdAt           DateTime @default(now())
+  updatedAt           DateTime @updatedAt
+
+  @@index([threadId])
+  @@index([senderId])
+  @@index([recipientId])
+  @@index([attachmentProjectId])
+}
+
+model Subscription {
+  id                   String   @id @default(uuid())
+  userId               String?
+  user                 User?    @relation(fields: [userId], references: [id])
+  stripeCustomerId     String?
+  stripeSubscriptionId String?
+  plan                 String?
+  status               String?
+  syntheticAgent       Boolean  @default(false)
+  stripeTestMode       Boolean  @default(false)
+  createdAt            DateTime @default(now())
+  updatedAt            DateTime @updatedAt
+}
+
 

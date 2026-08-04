@@ -372,6 +372,7 @@ export default function ProjectsPage() {
   const [viewMode, setViewModeState] = useState<'kanban' | 'list'>('kanban');
 
   useEffect(() => {
+    document.title = "PaperWorking — Projects";
     const saved = localStorage.getItem('pw_projects_view_mode');
     if (saved === 'kanban' || saved === 'list') {
       setViewModeState(saved);

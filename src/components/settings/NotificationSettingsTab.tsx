@@ -42,7 +42,7 @@ const EVENT_TYPE_LABELS = [
 export function NotificationSettingsTab() {
   const { profile } = useAuth();
   const { theme } = useTheme();
-  const { updateNotifications } = useSettingsStore();
+  const { toggleNotification, updateNotifications } = useSettingsStore();
   const isDark = theme === "dark";
 
   // In-App preferences state (defaulting all to true)

@@ -24,8 +24,8 @@ export default function CheckoutSuccessHandler() {
   const router = useRouter();
   const hasRedirected = useRef(false);
 
-  const checkoutStatus = searchParams.get('checkout');
-  const sessionId = searchParams.get('session_id');
+  const checkoutStatus = searchParams?.get('checkout');
+  const sessionId = searchParams?.get('session_id');
 
   useEffect(() => {
     if (checkoutStatus !== 'success' || !sessionId || hasRedirected.current) return;

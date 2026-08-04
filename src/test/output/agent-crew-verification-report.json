@@ -1,0 +1,63 @@
+{
+  "timestamp": "2026-08-03T11:39:20.598Z",
+  "overallPassed": true,
+  "checks": [
+    {
+      "check": "5 Users exist with syntheticAgent = true",
+      "passed": true,
+      "details": "Found 5 users with syntheticAgent = true (expected 5)."
+    },
+    {
+      "check": "15 Projects exist with syntheticAgent = true",
+      "passed": true,
+      "details": "Found 15 projects with syntheticAgent = true (expected 15)."
+    },
+    {
+      "check": "15 MarketplaceListings exist with syntheticAgent = true",
+      "passed": true,
+      "details": "Found 15 listings with syntheticAgent = true (expected 15)."
+    },
+    {
+      "check": "11 Messages exist with syntheticAgent = true",
+      "passed": true,
+      "details": "Found 11 messages with syntheticAgent = true (expected 11)."
+    },
+    {
+      "check": "5 Stripe test subscriptions are active/trialing",
+      "passed": true,
+      "details": "Found 5 active/trialing Stripe subscriptions (expected 5)."
+    },
+    {
+      "check": "All agent emails end in @paperworking.co",
+      "passed": true,
+      "details": "All 5 synthetic agents have valid @paperworking.co email addresses."
+    },
+    {
+      "check": "All passwords are set and can be used to log in",
+      "passed": true,
+      "details": "All 5 agents have valid credentials fixture and configured passwords."
+    },
+    {
+      "check": "All projects have valid financial numbers (no nulls on required KPI fields)",
+      "passed": true,
+      "details": "All 15 synthetic projects have valid purchase/contract prices."
+    },
+    {
+      "check": "All listings have valid project links",
+      "passed": true,
+      "details": "All 15 marketplace listings link to valid seeded projects."
+    },
+    {
+      "check": "No synthetic data has syntheticAgent = false (data integrity check)",
+      "passed": true,
+      "details": "Zero data leaks detected. All synthetic records carry syntheticAgent = true."
+    }
+  ],
+  "counts": {
+    "users": 5,
+    "projects": 15,
+    "listings": 15,
+    "messages": 11,
+    "subscriptions": 5
+  }
+}

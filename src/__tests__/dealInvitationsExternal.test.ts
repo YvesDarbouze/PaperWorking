@@ -219,8 +219,8 @@ describe('DM-25: External email invite & CAN-SPAM checks', () => {
     expect(html).not.toContain('123 Main St'); // No exact address
     expect(html).toContain('Coconut Grove, Miami, FL (Exact street address hidden)'); // Neighborhood location
     expect(html).toContain('~$2K');          // Obfuscated asking price (obfuscateApproximate of 200000 cents)
-    expect(html).toContain('8–9%');            // Obfuscated cap rate range (obfuscateRange(8.5, 1))
-    expect(html).toContain('10–12%');          // Obfuscated cash on cash range (obfuscateRange(10, 2))
+    expect(html).not.toContain('8.5%');       // Raw cap rate not in email
+    expect(html).not.toContain('11.2%');      // Raw cash-on-cash not in email
   });
 
   it('incorporates required CAN-SPAM compliant headers/footer elements', async () => {

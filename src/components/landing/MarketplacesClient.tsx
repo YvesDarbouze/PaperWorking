@@ -52,9 +52,14 @@ export default function MarketplacesClient() {
         <h1 className="font-headline-lg text-headline-lg text-on-surface tracking-[-0.025em] leading-[1.05] type-display font-semibold">
           Come for the tools. Stay for the community.
         </h1>
-        <p className="text-base sm:text-lg text-on-surface-variant max-w-2xl mx-auto leading-[1.65] type-body-lg">
-          PaperWorking subscribers run real deals through the same four phases you do. The marketplaces connect them: Projects that need capital and Projects that need real estate professionals when they need them.
-        </p>
+        <div className="space-y-4 max-w-3xl mx-auto text-center">
+          <p className="text-base sm:text-lg text-on-surface-variant font-medium leading-[1.65] type-body-lg">
+            PaperWorking subscribers have exclusive access to powerful tools for serious real estate investors.
+          </p>
+          <p className="text-sm sm:text-base text-on-surface-variant/90 leading-[1.65] type-body">
+            The &ldquo;Deal Marketplace&rdquo; helps investors crowdfund deals and gauge opportunities to partner with other real investors. The &ldquo;Vendor Marketplace&rdquo; helps real estate investors find vendors when they need them. Appraisers, contractors, lawyers, and even bankers can list their services, and PaperWorking will recommend them to investors at the moment they need them.
+          </p>
+        </div>
 
         {/* ── Marketplace Subnavigation (Option 1: Anchor Tab Row) ── */}
         <div className="pt-4 flex justify-center">

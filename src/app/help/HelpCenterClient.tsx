@@ -34,13 +34,13 @@ export default function HelpCenterClient({ initialArticles }: HelpCenterClientPr
   }, [filteredArticles]);
 
   return (
-    <div className="w-full max-w-4xl mx-auto py-12 px-6">
+    <div className="w-full max-w-4xl mx-auto py-8 px-6">
       {/* Hero Header */}
-      <div className="text-center mb-16">
+      <div className="text-center mb-10">
         <span className="uppercase tracking-widest text-xs font-black text-pw-success mb-3 block">
           Support & Knowledge Base
         </span>
-        <h1 className="text-4xl md:text-5xl font-light tracking-tighter text-[var(--pw-black)] mb-6">
+        <h1 className="font-light tracking-tighter text-[var(--pw-black)] mb-6 type-display font-semibold">
           How can we help you build?
         </h1>
         <p className="text-sm text-[var(--pw-muted)] max-w-xl mx-auto mb-8">

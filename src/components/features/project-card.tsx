@@ -4,6 +4,7 @@ import React, { useMemo } from 'react';
 import Link from 'next/link';
 import type { Project } from '@/types/schema';
 import { deriveAllMetrics } from '@/lib/metrics/reiMetrics';
+import { PHASE_COLORS as CANONICAL_PHASES } from '@/lib/constants/phaseColors';
 
 /* ═══════════════════════════════════════════════════════════════════
    ProjectCard — Shared project card used on Dashboard & Projects
@@ -23,10 +24,10 @@ import { deriveAllMetrics } from '@/lib/metrics/reiMetrics';
 
 /* ── Phase Color Map ── */
 const PHASE_COLORS: Record<number, { stripe: string; glow: string; label: string }> = {
-  1: { stripe: '#3B82F6', glow: 'rgba(59,130,246,0.15)', label: 'Acquisition' },
-  2: { stripe: '#3f7d20', glow: 'rgba(63, 125, 32,0.15)', label: 'Fund' },
-  3: { stripe: '#F59E0B', glow: 'rgba(245,158,11,0.15)', label: 'Hold' },
-  4: { stripe: '#454955', glow: 'rgba(69, 73, 85,0.15)', label: 'Exit' },
+  1: { stripe: CANONICAL_PHASES[1].hex, glow: CANONICAL_PHASES[1].bgHex, label: CANONICAL_PHASES[1].label },
+  2: { stripe: CANONICAL_PHASES[2].hex, glow: CANONICAL_PHASES[2].bgHex, label: CANONICAL_PHASES[2].label },
+  3: { stripe: CANONICAL_PHASES[3].hex, glow: CANONICAL_PHASES[3].bgHex, label: CANONICAL_PHASES[3].label },
+  4: { stripe: CANONICAL_PHASES[4].hex, glow: CANONICAL_PHASES[4].bgHex, label: CANONICAL_PHASES[4].label },
 };
 
 /* ── Strategy to display label ── */

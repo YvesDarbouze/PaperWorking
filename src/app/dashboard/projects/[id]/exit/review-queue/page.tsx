@@ -372,7 +372,7 @@ export default function ReviewQueuePage() {
           >
             {loading && (
               <div className="p-12 flex flex-col items-center justify-center gap-3">
-                <RefreshCw size={24} className="animate-spin text-emerald-500" />
+                <RefreshCw size={24} className="animate-spin text-slate-300" />
                 <span className="text-xs text-slate-400">Loading review queue…</span>
               </div>
             )}
@@ -507,7 +507,7 @@ export default function ReviewQueuePage() {
                 <div className="grid grid-cols-2 gap-2">
                   <button
                     onClick={() => { setIsChanging(true); setEditingCategory('RENT_INCOME'); }}
-                    className="p-2 rounded-xl border border-emerald-800/40 bg-emerald-950/20 text-xs font-bold text-emerald-400 text-left hover:bg-emerald-900/30"
+                    className="p-2 rounded-xl border border-emerald-800/40 bg-slate-800/20 text-xs font-bold text-slate-300 text-left hover:bg-slate-800/30"
                   >
                     💰 REVENUE
                   </button>
@@ -552,7 +552,7 @@ export default function ReviewQueuePage() {
                       `Payee "${selectedTx.payee}" matches tenant name`,
                     ]).map((r, idx) => (
                       <li key={idx} className="flex items-start gap-2 text-xs text-slate-300">
-                        <span className="text-emerald-500 font-bold">•</span>
+                        <span className="text-slate-300 font-bold">•</span>
                         <span>{r}</span>
                       </li>
                     ))}
@@ -669,7 +669,7 @@ export default function ReviewQueuePage() {
                       <span className="text-[11px] font-bold text-slate-300">If this transaction contains multiple items:</span>
                       <button
                         onClick={addSplitRow}
-                        className="flex items-center gap-1 text-[11px] font-bold text-emerald-400 hover:underline"
+                        className="flex items-center gap-1 text-[11px] font-bold text-slate-300 hover:underline"
                       >
                         <Plus size={12} /> Add Split
                       </button>

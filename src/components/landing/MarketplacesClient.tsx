@@ -1,39 +1,105 @@
 'use client';
 
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 
 /* ═══════════════════════════════════════════════════════
    MarketplacesClient — Verbatim approved COPY-M copy.
    antigravity.google design system: medium-weight (500-600) display,
    pill CTAs, 24px card radii, 6-9rem section padding.
+   Option 1 Subnavigation: Anchor-based subnav (#deals & #vendors)
    ═══════════════════════════════════════════════════════ */
 
 export default function MarketplacesClient() {
+  const [activeTab, setActiveTab] = useState<'deals' | 'vendors'>('deals');
+
+  useEffect(() => {
+    const handleHash = () => {
+      const hash = window.location.hash;
+      if (hash === '#vendors') {
+        setActiveTab('vendors');
+      } else if (hash === '#deals') {
+        setActiveTab('deals');
+      }
+    };
+
+    handleHash();
+    window.addEventListener('hashchange', handleHash);
+    return () => window.removeEventListener('hashchange', handleHash);
+  }, []);
+
+  const handleTabClick = (tab: 'deals' | 'vendors') => {
+    setActiveTab(tab);
+    window.history.pushState(null, '', `#${tab}`);
+    const el = document.getElementById(tab);
+    if (el) {
+      el.scrollIntoView?.({ behavior: 'smooth' });
+    }
+  };
+
   return (
-    <div className="space-y-24 md:space-y-32 max-w-[1200px] mx-auto py-12 md:py-20">
+    <div className="space-y-12 md:space-y-16 max-w-[1200px] mx-auto py-8 md:py-12">
       {/* ==========================================
           BLOCK 1 — Hero (COPY-M1)
          ========================================== */}
-      <section className="text-center space-y-6 max-w-3xl mx-auto pt-12 md:pt-16">
+      <section className="text-center space-y-6 max-w-3xl mx-auto pt-6 md:pt-8">
         <span className="inline-flex items-center gap-2 glass-panel px-4 py-1.5 rounded-full border border-white/10">
           <span className="w-1.5 h-1.5 rounded-full bg-primary" />
           <span className="font-jetbrains text-[10px] uppercase tracking-widest text-primary type-eyebrow font-mono">
             Two marketplaces, one network
           </span>
         </span>
-        <h1 className="font-headline-lg text-headline-lg text-on-surface tracking-[-0.025em] leading-[1.05] type-display text-4xl sm:text-5xl lg:text-[3.25rem] font-semibold">
+        <h1 className="font-headline-lg text-headline-lg text-on-surface tracking-[-0.025em] leading-[1.05] type-display font-semibold">
           Come for the tools. Stay for the community.
         </h1>
         <p className="text-base sm:text-lg text-on-surface-variant max-w-2xl mx-auto leading-[1.65] type-body-lg">
           PaperWorking subscribers run real deals through the same four phases you do. The marketplaces connect them: Projects that need capital and Projects that need real estate professionals when they need them.
         </p>
+
+        {/* ── Marketplace Subnavigation (Option 1: Anchor Tab Row) ── */}
+        <div className="pt-4 flex justify-center">
+          <div
+            role="tablist"
+            aria-label="Marketplace options"
+            className="inline-flex items-center p-1 rounded-full glass-panel border border-white/10 bg-surface-container-low/40 max-w-full overflow-x-auto no-scrollbar"
+          >
+            <button
+              type="button"
+              role="tab"
+              aria-selected={activeTab === 'deals'}
+              aria-controls="deals"
+              onClick={() => handleTabClick('deals')}
+              className={`px-6 py-2.5 rounded-full text-xs font-semibold tracking-wide transition-all duration-200 cursor-pointer min-h-[44px] flex items-center justify-center whitespace-nowrap focus:outline-none focus-visible:ring-2 focus-visible:ring-primary ${
+                activeTab === 'deals'
+                  ? 'bg-primary text-background shadow-md'
+                  : 'text-on-surface-variant hover:text-on-surface'
+              }`}
+            >
+              Deal Marketplace
+            </button>
+
+            <button
+              type="button"
+              role="tab"
+              aria-selected={activeTab === 'vendors'}
+              aria-controls="vendors"
+              onClick={() => handleTabClick('vendors')}
+              className={`px-6 py-2.5 rounded-full text-xs font-semibold tracking-wide transition-all duration-200 cursor-pointer min-h-[44px] flex items-center justify-center whitespace-nowrap focus:outline-none focus-visible:ring-2 focus-visible:ring-primary ${
+                activeTab === 'vendors'
+                  ? 'bg-primary text-background shadow-md'
+                  : 'text-on-surface-variant hover:text-on-surface'
+              }`}
+            >
+              Vendor Marketplace
+            </button>
+          </div>
+        </div>
       </section>
 
       {/* ==========================================
           BLOCK 2 — Deal Marketplace (COPY-M2)
          ========================================== */}
-      <section className="glass-card rounded-[24px] p-8 sm:p-12 space-y-8 border border-white/10 bg-white/[0.02]">
+      <section id="deals" className="scroll-mt-28 glass-card rounded-[24px] p-8 sm:p-12 space-y-8 border border-white/10 bg-white/[0.02]">
         <div className="space-y-4">
           <span className="text-[10px] font-medium uppercase tracking-widest text-primary font-mono type-eyebrow">
             Deal Marketplace
@@ -85,7 +151,7 @@ export default function MarketplacesClient() {
       {/* ==========================================
           BLOCK 3 — Vendor Marketplace (COPY-M3)
          ========================================== */}
-      <section className="glass-card rounded-[24px] p-8 sm:p-12 space-y-6 border border-white/10 bg-white/[0.02]">
+      <section id="vendors" className="scroll-mt-28 glass-card rounded-[24px] p-8 sm:p-12 space-y-6 border border-white/10 bg-white/[0.02]">
         <span className="text-[10px] font-medium uppercase tracking-widest text-primary font-mono type-eyebrow">
           Vendor Marketplace
         </span>

@@ -171,7 +171,7 @@ export function ReportViewModal({ isOpen, onClose, reportId, projects }: ReportV
         {/* Header Controls */}
         <div className="flex flex-wrap items-center justify-between gap-4 p-6 bg-slate-50 dark:bg-white/[0.02] border-b border-slate-200 dark:border-white/10">
           <div>
-            <span className="px-2.5 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider bg-emerald-500/10 text-emerald-500 border border-emerald-500/20">
+            <span className="px-2.5 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider bg-slate-800/10 text-slate-300 border border-slate-700/20">
               Report Engine
             </span>
             <h2 className="text-xl font-bold text-slate-900 dark:text-white mt-1">
@@ -285,7 +285,7 @@ export function ReportViewModal({ isOpen, onClose, reportId, projects }: ReportV
                 <h3 className="text-sm font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400">
                   Gross Rental Income
                 </h3>
-                <p className="text-2xl font-bold font-mono text-emerald-500 mt-1">
+                <p className="text-2xl font-bold font-mono text-slate-300 mt-1">
                   {formatCurrency(plData.grossRentalIncome)}
                 </p>
               </div>
@@ -322,16 +322,16 @@ export function ReportViewModal({ isOpen, onClose, reportId, projects }: ReportV
                 </div>
               </div>
 
-              <div className="p-5 rounded-xl bg-emerald-500/10 border border-emerald-500/30 flex items-center justify-between">
+              <div className="p-5 rounded-xl bg-slate-800/10 border border-slate-700/30 flex items-center justify-between">
                 <div>
-                  <h4 className="text-sm font-bold uppercase tracking-wider text-emerald-600 dark:text-emerald-400">
+                  <h4 className="text-sm font-bold uppercase tracking-wider text-slate-300 dark:text-slate-300">
                     Net Operating Income (NOI)
                   </h4>
                   <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
                     Gross Rental Income minus Total Operating Expenses
                   </p>
                 </div>
-                <p className="text-3xl font-extrabold font-mono text-emerald-500">
+                <p className="text-3xl font-extrabold font-mono text-slate-300">
                   {formatCurrency(plData.netOperatingIncome)}
                 </p>
               </div>
@@ -397,7 +397,7 @@ export function ReportViewModal({ isOpen, onClose, reportId, projects }: ReportV
                   </h4>
                   <p className="text-xs text-slate-400 mt-0.5">Total Assets minus Total Liabilities</p>
                 </div>
-                <p className="text-2xl font-bold font-mono text-emerald-500">
+                <p className="text-2xl font-bold font-mono text-slate-300">
                   {formatCurrency(bsData.equity.ownersEquity)}
                 </p>
               </div>
@@ -409,7 +409,7 @@ export function ReportViewModal({ isOpen, onClose, reportId, projects }: ReportV
             <div className="space-y-6" data-testid="cash-flow-view">
               <div className="p-4 rounded-xl bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/10 flex justify-between items-center">
                 <span className="text-sm font-bold uppercase tracking-wider text-slate-400">Net Operating Income (NOI)</span>
-                <span className="text-xl font-bold font-mono text-emerald-500">{formatCurrency(cfData.netOperatingIncome)}</span>
+                <span className="text-xl font-bold font-mono text-slate-300">{formatCurrency(cfData.netOperatingIncome)}</span>
               </div>
 
               {/* Separate Debt Principal Paydown breakout */}
@@ -424,7 +424,7 @@ export function ReportViewModal({ isOpen, onClose, reportId, projects }: ReportV
                   </div>
                   <div
                     data-testid="cashflow-principal-paydown-line"
-                    className="flex justify-between py-2 px-3 rounded-lg bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 font-bold"
+                    className="flex justify-between py-2 px-3 rounded-lg bg-slate-800/10 text-slate-300 dark:text-slate-300 font-bold"
                   >
                     <span>Loan Principal Paydown (Broken Out Separately)</span>
                     <span className="font-mono">{formatCurrency(cfData.debtService.principalPaydown)}</span>
@@ -442,14 +442,14 @@ export function ReportViewModal({ isOpen, onClose, reportId, projects }: ReportV
               </div>
 
               {/* Distributable Cash Result */}
-              <div className="p-5 rounded-xl bg-emerald-500/10 border border-emerald-500/30 flex items-center justify-between">
+              <div className="p-5 rounded-xl bg-slate-800/10 border border-slate-700/30 flex items-center justify-between">
                 <div>
-                  <h4 className="text-sm font-bold uppercase tracking-wider text-emerald-500">
+                  <h4 className="text-sm font-bold uppercase tracking-wider text-slate-300">
                     Net Distributable Cash Flow
                   </h4>
                   <p className="text-xs text-slate-400 mt-0.5">Real spendable cash after Principal & CapEx</p>
                 </div>
-                <p className="text-3xl font-extrabold font-mono text-emerald-500">
+                <p className="text-3xl font-extrabold font-mono text-slate-300">
                   {formatCurrency(cfData.netDistributableCash)}
                 </p>
               </div>
@@ -462,7 +462,7 @@ export function ReportViewModal({ isOpen, onClose, reportId, projects }: ReportV
               <div className="grid grid-cols-1 sm:grid-cols-4 gap-4">
                 <div className="p-4 rounded-xl bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/10">
                   <span className="text-xs font-semibold text-slate-400 uppercase tracking-wider">Occupancy Rate</span>
-                  <p className="text-xl font-bold font-mono text-emerald-500 mt-1">{formatPercent(rrData.occupancyRatePct)}</p>
+                  <p className="text-xl font-bold font-mono text-slate-300 mt-1">{formatPercent(rrData.occupancyRatePct)}</p>
                 </div>
                 <div className="p-4 rounded-xl bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/10">
                   <span className="text-xs font-semibold text-slate-400 uppercase tracking-wider">Units (Occupied / Total)</span>
@@ -470,7 +470,7 @@ export function ReportViewModal({ isOpen, onClose, reportId, projects }: ReportV
                 </div>
                 <div className="p-4 rounded-xl bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/10">
                   <span className="text-xs font-semibold text-slate-400 uppercase tracking-wider">Monthly Rent Roll</span>
-                  <p className="text-xl font-bold font-mono text-emerald-500 mt-1">{formatCurrency(rrData.totalMonthlyRent)}</p>
+                  <p className="text-xl font-bold font-mono text-slate-300 mt-1">{formatCurrency(rrData.totalMonthlyRent)}</p>
                 </div>
                 <div className="p-4 rounded-xl bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/10">
                   <span className="text-xs font-semibold text-slate-400 uppercase tracking-wider">Payment Tracking</span>
@@ -542,8 +542,8 @@ export function ReportViewModal({ isOpen, onClose, reportId, projects }: ReportV
                         <td className="p-3 text-slate-500">{p.propertyType}</td>
                         <td className="p-3 font-mono font-semibold">{formatCurrency(p.marketValue)}</td>
                         <td className="p-3 font-mono">{formatCurrency(p.mortgageBalance)}</td>
-                        <td className="p-3 font-mono text-emerald-500 font-bold">{formatCurrency(p.equity)}</td>
-                        <td className="p-3 font-mono text-emerald-500">{formatCurrency(p.noi)}</td>
+                        <td className="p-3 font-mono text-slate-300 font-bold">{formatCurrency(p.equity)}</td>
+                        <td className="p-3 font-mono text-slate-300">{formatCurrency(p.noi)}</td>
                       </tr>
                     ))}
                   </tbody>
@@ -568,9 +568,9 @@ export function ReportViewModal({ isOpen, onClose, reportId, projects }: ReportV
                   <span className="text-xs font-semibold text-slate-400 uppercase tracking-wider">Effective Tax Rate</span>
                   <p className="text-xl font-bold font-mono text-slate-900 dark:text-white mt-1">{taxData.estimatedEffectiveTaxRatePct}%</p>
                 </div>
-                <div className="p-4 rounded-xl bg-emerald-500/10 border border-emerald-500/30">
-                  <span className="text-xs font-bold uppercase tracking-wider text-emerald-500">Quarterly Payment</span>
-                  <p className="text-2xl font-extrabold font-mono text-emerald-500 mt-1">{formatCurrency(taxData.estimatedQuarterlyPayment)}</p>
+                <div className="p-4 rounded-xl bg-slate-800/10 border border-slate-700/30">
+                  <span className="text-xs font-bold uppercase tracking-wider text-slate-300">Quarterly Payment</span>
+                  <p className="text-2xl font-extrabold font-mono text-slate-300 mt-1">{formatCurrency(taxData.estimatedQuarterlyPayment)}</p>
                 </div>
               </div>
 
@@ -595,7 +595,7 @@ export function ReportViewModal({ isOpen, onClose, reportId, projects }: ReportV
                           <td className="p-3 font-semibold text-slate-900 dark:text-white">{p.propertyName}</td>
                           <td className="p-3 font-mono font-semibold">{formatCurrency(p.ytdNetIncome)}</td>
                           <td className="p-3 font-bold">
-                            <span className={`px-2 py-0.5 rounded text-[10px] uppercase tracking-wider ${p.activityType === 'Active' ? 'bg-amber-500/10 text-amber-500 border border-amber-500/20' : 'bg-emerald-500/10 text-emerald-500 border border-emerald-500/20'}`}>
+                            <span className={`px-2 py-0.5 rounded text-[10px] uppercase tracking-wider ${p.activityType === 'Active' ? 'bg-amber-500/10 text-amber-500 border border-amber-500/20' : 'bg-slate-800/10 text-slate-300 border border-slate-700/20'}`}>
                               {p.activityType} Income
                             </span>
                           </td>
@@ -635,7 +635,7 @@ export function ReportViewModal({ isOpen, onClose, reportId, projects }: ReportV
                 </div>
                 <div className="p-4 rounded-xl bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/10">
                   <span className="text-xs font-semibold text-slate-400 uppercase tracking-wider">NOI Variance</span>
-                  <p className="text-xl font-bold font-mono text-emerald-500 mt-1">
+                  <p className="text-xl font-bold font-mono text-slate-300 mt-1">
                     {bvaData.portfolioNOI.variancePercent > 0 ? '+' : ''}{bvaData.portfolioNOI.variancePercent}%
                   </p>
                 </div>
@@ -667,7 +667,7 @@ export function ReportViewModal({ isOpen, onClose, reportId, projects }: ReportV
                           <td className="p-3 font-mono">{formatCurrency(p.noi.varianceAmount)}</td>
                           <td className="p-3 font-mono font-bold">{p.noi.variancePercent}%</td>
                           <td className="p-3 font-bold" data-testid="variance-status-badge">
-                            <span className={`px-2 py-0.5 rounded text-[10px] uppercase tracking-wider ${p.noi.status === 'green' ? 'bg-emerald-500/10 text-emerald-500 border border-emerald-500/20' : p.noi.status === 'amber' ? 'bg-amber-500/10 text-amber-500 border border-amber-500/20' : 'bg-rose-500/10 text-rose-500 border border-rose-500/20'}`}>
+                            <span className={`px-2 py-0.5 rounded text-[10px] uppercase tracking-wider ${p.noi.status === 'green' ? 'bg-slate-800/10 text-slate-300 border border-slate-700/20' : p.noi.status === 'amber' ? 'bg-amber-500/10 text-amber-500 border border-amber-500/20' : 'bg-rose-500/10 text-rose-500 border border-rose-500/20'}`}>
                               {p.noi.status}
                             </span>
                           </td>
@@ -686,7 +686,7 @@ export function ReportViewModal({ isOpen, onClose, reportId, projects }: ReportV
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                 <div className="p-4 rounded-xl bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/10">
                   <span className="text-xs font-semibold text-slate-400 uppercase tracking-wider">Line 3 Total Rents Received</span>
-                  <p className="text-xl font-bold font-mono text-emerald-500 mt-1">{renderValueOrUnrecorded(schedEData.totalIncome)}</p>
+                  <p className="text-xl font-bold font-mono text-slate-300 mt-1">{renderValueOrUnrecorded(schedEData.totalIncome)}</p>
                 </div>
                 <div className="p-4 rounded-xl bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/10">
                   <span className="text-xs font-semibold text-slate-400 uppercase tracking-wider">Total Schedule E Expenses</span>
@@ -694,7 +694,7 @@ export function ReportViewModal({ isOpen, onClose, reportId, projects }: ReportV
                 </div>
                 <div className="p-4 rounded-xl bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/10">
                   <span className="text-xs font-semibold text-slate-400 uppercase tracking-wider">Net Schedule E Income</span>
-                  <p className="text-xl font-bold font-mono text-emerald-500 mt-1">{renderValueOrUnrecorded(schedEData.netIncome)}</p>
+                  <p className="text-xl font-bold font-mono text-slate-300 mt-1">{renderValueOrUnrecorded(schedEData.netIncome)}</p>
                 </div>
               </div>
 
@@ -716,7 +716,7 @@ export function ReportViewModal({ isOpen, onClose, reportId, projects }: ReportV
                         <tr key={lineKey} className="hover:bg-slate-50 dark:hover:bg-white/[0.02]">
                           <td className="p-3 font-bold text-slate-900 dark:text-white">{lineKey}</td>
                           <td className="p-3 text-slate-500">{SCHEDULE_E_LINE_NAMES[lineKey as ScheduleELineKey]}</td>
-                          <td className={`p-3 font-bold ${lineKey === 'line3_rents' ? 'text-emerald-500' : 'text-slate-900 dark:text-white'}`}>
+                          <td className={`p-3 font-bold ${lineKey === 'line3_rents' ? 'text-slate-300' : 'text-slate-900 dark:text-white'}`}>
                             {renderValueOrUnrecorded(amount)}
                           </td>
                         </tr>
@@ -738,7 +738,7 @@ export function ReportViewModal({ isOpen, onClose, reportId, projects }: ReportV
                 </div>
                 <div className="p-4 rounded-xl bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/10">
                   <span className="text-xs font-semibold text-slate-400 uppercase tracking-wider">Current Year Depreciation</span>
-                  <p className="text-xl font-bold font-mono text-emerald-500 mt-1">{renderValueOrUnrecorded(depData.totalCurrentYearDepreciation)}</p>
+                  <p className="text-xl font-bold font-mono text-slate-300 mt-1">{renderValueOrUnrecorded(depData.totalCurrentYearDepreciation)}</p>
                 </div>
                 <div className="p-4 rounded-xl bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/10">
                   <span className="text-xs font-semibold text-slate-400 uppercase tracking-wider">Total Accumulated Deprec.</span>
@@ -773,7 +773,7 @@ export function ReportViewModal({ isOpen, onClose, reportId, projects }: ReportV
                         <td className="p-3 text-slate-400">{renderValueOrUnrecorded(a.landValue)}</td>
                         <td className="p-3 font-bold">{renderValueOrUnrecorded(a.buildingCostBasis)}</td>
                         <td className="p-3">{a.placedInServiceDate || <span className="text-amber-500 italic font-normal text-xs">Unrecorded</span>}</td>
-                        <td className="p-3 font-bold text-emerald-500">{renderValueOrUnrecorded(a.currentYearDepreciation)}</td>
+                        <td className="p-3 font-bold text-slate-300">{renderValueOrUnrecorded(a.currentYearDepreciation)}</td>
                       </tr>
                     ))}
                   </tbody>
@@ -796,7 +796,7 @@ export function ReportViewModal({ isOpen, onClose, reportId, projects }: ReportV
                 </div>
                 <div className="p-4 rounded-xl bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/10">
                   <span className="text-xs font-semibold text-slate-400 uppercase tracking-wider">Reportable 1099 Payments</span>
-                  <p className="text-xl font-bold font-mono text-emerald-500 mt-1">{formatCurrency(form1099Data.totalReportablePayments)}</p>
+                  <p className="text-xl font-bold font-mono text-slate-300 mt-1">{formatCurrency(form1099Data.totalReportablePayments)}</p>
                 </div>
               </div>
 
@@ -849,7 +849,7 @@ export function ReportViewModal({ isOpen, onClose, reportId, projects }: ReportV
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                 <div className="p-4 rounded-xl bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/10">
                   <span className="text-xs font-semibold text-slate-400 uppercase tracking-wider">Total Mileage Deduction</span>
-                  <p className="text-xl font-bold font-mono text-emerald-500 mt-1">{formatCurrency(logData.totalMileageDeduction)} ({logData.totalMiles} mi)</p>
+                  <p className="text-xl font-bold font-mono text-slate-300 mt-1">{formatCurrency(logData.totalMileageDeduction)} ({logData.totalMiles} mi)</p>
                 </div>
                 <div className="p-4 rounded-xl bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/10">
                   <span className="text-xs font-semibold text-slate-400 uppercase tracking-wider">REPS Material Hours</span>
@@ -857,7 +857,7 @@ export function ReportViewModal({ isOpen, onClose, reportId, projects }: ReportV
                 </div>
                 <div className="p-4 rounded-xl bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/10">
                   <span className="text-xs font-semibold text-slate-400 uppercase tracking-wider">REPS 750-Hr Qualification</span>
-                  <p className={`text-xl font-bold font-mono mt-1 ${logData.isREPSMet ? 'text-emerald-500' : 'text-amber-500'}`}>
+                  <p className={`text-xl font-bold font-mono mt-1 ${logData.isREPSMet ? 'text-slate-300' : 'text-amber-500'}`}>
                     {logData.isREPSMet ? 'QUALIFIED ✓' : 'Unrecorded / Pending'}
                   </p>
                 </div>
@@ -892,7 +892,7 @@ export function ReportViewModal({ isOpen, onClose, reportId, projects }: ReportV
                             <td className="p-3 font-sans text-slate-900 dark:text-white">{m.propertyName}</td>
                             <td className="p-3 text-slate-500 font-sans">{m.purpose}</td>
                             <td className="p-3">{m.miles} mi</td>
-                            <td className="p-3 font-bold text-emerald-500">{formatCurrency(m.deductionAmount)}</td>
+                            <td className="p-3 font-bold text-slate-300">{formatCurrency(m.deductionAmount)}</td>
                           </tr>
                         ))}
                       </tbody>
@@ -964,7 +964,7 @@ export function ReportViewModal({ isOpen, onClose, reportId, projects }: ReportV
                         <tr key={i} className="hover:bg-slate-50 dark:hover:bg-white/[0.02]">
                           <td className="p-3 font-semibold text-slate-900 dark:text-white">{d.propertyName}</td>
                           <td className="p-3 text-slate-500">{d.documentType}</td>
-                          <td className="p-3 font-mono font-bold text-emerald-500">{d.documentName}</td>
+                          <td className="p-3 font-mono font-bold text-slate-300">{d.documentName}</td>
                           <td className="p-3 font-mono">{d.transactionDate}</td>
                           <td className="p-3 text-xs text-slate-400">{d.fileUrl}</td>
                         </tr>
@@ -980,7 +980,7 @@ export function ReportViewModal({ isOpen, onClose, reportId, projects }: ReportV
           {reportId === 'CPA_PACKAGE_BUNDLE' && cpaBundleData && (
             <div className="space-y-6" data-testid="cpa-package-bundle-view">
               <div className="p-6 rounded-xl bg-slate-900 text-white border border-white/10 space-y-4">
-                <h3 className="text-xl font-bold uppercase tracking-wide text-emerald-400">One-Click Annual CPA Tax Package</h3>
+                <h3 className="text-xl font-bold uppercase tracking-wide text-slate-300">One-Click Annual CPA Tax Package</h3>
                 <p className="text-xs text-slate-300">
                   Includes 1040 Schedule E statement, 27.5-Yr MACRS Depreciation Schedule, Form 1099 summary, Log Books (mileage & REPS), and Closing Document Index with cover sheet.
                 </p>
@@ -1011,7 +1011,7 @@ export function ReportViewModal({ isOpen, onClose, reportId, projects }: ReportV
                 </div>
                 <div className="p-4 rounded-xl bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/10">
                   <span className="text-xs font-semibold text-slate-400 uppercase tracking-wider">Total CapEx Spend</span>
-                  <p className="text-xl font-bold font-mono text-emerald-500 mt-1">{formatCurrency(capexData.totalCapExSpend)}</p>
+                  <p className="text-xl font-bold font-mono text-slate-300 mt-1">{formatCurrency(capexData.totalCapExSpend)}</p>
                 </div>
               </div>
 

@@ -141,7 +141,7 @@ export default function ExitInsightsPage() {
   if (loading) {
     return (
       <div className="min-h-screen p-12 flex flex-col items-center justify-center gap-3">
-        <RefreshCw size={28} className="animate-spin text-emerald-500" />
+        <RefreshCw size={28} className="animate-spin text-slate-300" />
         <span className="text-xs text-slate-400 font-mono">Recalculating 33 Investment KPIs…</span>
       </div>
     );
@@ -191,14 +191,14 @@ export default function ExitInsightsPage() {
   ];
 
   return (
-    <div className={`min-h-screen px-4 md:px-8 py-8 max-w-7xl mx-auto flex flex-col gap-8 transition-all ${isPulsing ? 'ring-2 ring-emerald-500/50 rounded-3xl' : ''}`}>
+    <div className={`min-h-screen px-4 md:px-8 py-8 max-w-7xl mx-auto flex flex-col gap-8 transition-all ${isPulsing ? 'ring-2 ring-slate-700/50 rounded-3xl' : ''}`}>
 
       {/* ── Page Header ── */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
           <div className="flex items-center gap-2 mb-1">
             <Zap size={13} style={{ color: '#10B981' }} />
-            <span className="text-[10px] font-bold uppercase tracking-widest text-emerald-400">
+            <span className="text-[10px] font-bold uppercase tracking-widest text-slate-300">
               Exit Phase · Live Analytics Engine
             </span>
           </div>
@@ -259,7 +259,7 @@ export default function ExitInsightsPage() {
       <div className="flex flex-col gap-4">
         <div className="flex items-center justify-between">
           <h2 className="text-sm font-bold text-white flex items-center gap-2">
-            <Activity size={16} className="text-emerald-400" /> KPI Movement Grid
+            <Activity size={16} className="text-slate-300" /> KPI Movement Grid
           </h2>
           <span className="text-[10px] text-slate-500 font-mono uppercase tracking-widest">
             Click card to expand historical chart
@@ -271,7 +271,7 @@ export default function ExitInsightsPage() {
             <div
               key={card.name}
               onClick={() => setSelectedKpiModal({ name: card.name, key: card.key })}
-              className="p-5 rounded-2xl cursor-pointer transition-all duration-200 hover:border-emerald-500/50 hover:bg-emerald-950/10 flex flex-col gap-3 group"
+              className="p-5 rounded-2xl cursor-pointer transition-all duration-200 hover:border-slate-700/50 hover:bg-slate-800/10 flex flex-col gap-3 group"
               style={{
                 background: 'rgba(18,16,20,0.97)',
                 border: '1px solid rgba(253,255,252,0.10)',
@@ -281,7 +281,7 @@ export default function ExitInsightsPage() {
                 <span className="text-xs font-semibold text-slate-300 group-hover:text-white transition-colors">
                   {card.name}
                 </span>
-                <span className="text-[10px] font-mono font-bold text-emerald-400 bg-emerald-950/40 px-2 py-0.5 rounded-full border border-emerald-900">
+                <span className="text-[10px] font-mono font-bold text-slate-300 bg-slate-800/40 px-2 py-0.5 rounded-full border border-emerald-900">
                   {card.delta}
                 </span>
               </div>
@@ -311,7 +311,7 @@ export default function ExitInsightsPage() {
       >
         <div className="flex items-center justify-between">
           <h3 className="text-sm font-bold text-white flex items-center gap-2">
-            <Clock size={16} className="text-emerald-400" /> Recent Activity &amp; KPI Impact
+            <Clock size={16} className="text-slate-300" /> Recent Activity &amp; KPI Impact
           </h3>
           <span className="text-[10px] font-mono text-slate-500 uppercase tracking-widest">
             Last 5 Approved
@@ -325,12 +325,12 @@ export default function ExitInsightsPage() {
               className="flex items-center justify-between p-3.5 rounded-xl border border-white/5 bg-white/5"
             >
               <div className="flex items-center gap-3">
-                <div className="w-8 h-8 rounded-lg bg-emerald-950/40 border border-emerald-900 flex items-center justify-center text-emerald-400 shrink-0">
+                <div className="w-8 h-8 rounded-lg bg-slate-800/40 border border-emerald-900 flex items-center justify-center text-slate-300 shrink-0">
                   <ArrowUpRight size={15} />
                 </div>
                 <div>
                   <div className="text-xs font-bold text-white">{act.payee}</div>
-                  <div className="text-[10px] text-emerald-400 font-mono">{act.impactNote}</div>
+                  <div className="text-[10px] text-slate-300 font-mono">{act.impactNote}</div>
                 </div>
               </div>
               <div className="text-right font-mono font-bold text-xs text-white">
@@ -347,7 +347,7 @@ export default function ExitInsightsPage() {
           <div className="relative w-full max-w-2xl bg-slate-950 rounded-2xl border border-slate-800 p-6 flex flex-col gap-6 shadow-2xl">
             <div className="flex items-center justify-between border-b border-slate-800 pb-4">
               <div className="flex items-center gap-2">
-                <Sparkles size={18} className="text-emerald-400" />
+                <Sparkles size={18} className="text-slate-300" />
                 <h3 className="text-base font-bold text-white">{selectedKpiModal.name} — 6 Month Trend</h3>
               </div>
               <button onClick={() => setSelectedKpiModal(null)} className="p-1 rounded-lg text-slate-400 hover:text-white">

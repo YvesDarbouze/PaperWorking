@@ -193,7 +193,7 @@ export default function RulesManagementPage() {
           style={{ background: 'rgba(16,185,129,0.06)', border: '1px solid rgba(16,185,129,0.20)' }}
         >
           <div className="flex items-center gap-2">
-            <Sparkles size={16} className="text-emerald-400" />
+            <Sparkles size={16} className="text-slate-300" />
             <h3 className="text-sm font-bold text-white">Smart Rule Suggestions</h3>
           </div>
 
@@ -209,7 +209,7 @@ export default function RulesManagementPage() {
                 </div>
                 <button
                   onClick={() => void handleCreateFromSuggestion(s)}
-                  className="w-full flex items-center justify-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold bg-emerald-950 text-emerald-300 border border-emerald-800 hover:bg-emerald-900/50 transition-all"
+                  className="w-full flex items-center justify-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold bg-emerald-950 text-slate-300 border border-emerald-800 hover:bg-slate-800/50 transition-all"
                 >
                   <Plus size={13} /> Accept &amp; Create
                 </button>
@@ -226,7 +226,7 @@ export default function RulesManagementPage() {
       >
         {loading && (
           <div className="p-12 flex flex-col items-center justify-center gap-3">
-            <RefreshCw size={24} className="animate-spin text-emerald-500" />
+            <RefreshCw size={24} className="animate-spin text-slate-300" />
             <span className="text-xs text-slate-400">Loading rules…</span>
           </div>
         )}
@@ -280,7 +280,7 @@ export default function RulesManagementPage() {
                       <span className="font-bold text-white">{r.name}</span>
                     </td>
                     <td className="p-3">
-                      <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-950 text-emerald-400 border border-emerald-900">
+                      <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-950 text-slate-300 border border-emerald-900">
                         {r.action?.category || 'RENT_INCOME'}
                       </span>
                     </td>
@@ -295,7 +295,7 @@ export default function RulesManagementPage() {
                         <button
                           onClick={() => void handleApplyRule(r.id)}
                           disabled={applyingRuleId === r.id}
-                          className="p-1.5 rounded-lg text-slate-400 hover:text-emerald-400 transition-all"
+                          className="p-1.5 rounded-lg text-slate-400 hover:text-slate-300 transition-all"
                           title="Run rule now"
                         >
                           <Play size={13} />

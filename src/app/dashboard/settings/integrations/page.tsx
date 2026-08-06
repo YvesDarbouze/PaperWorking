@@ -8,6 +8,8 @@ import toast from 'react-hot-toast';
 import { SettingsErrorBoundary } from '@/components/settings/ErrorBoundary';
 import { ConnectedServicesSkeleton } from '@/components/settings/SettingsSkeletons';
 import { PlaidTrustScreen } from '@/components/settings/PlaidTrustScreen';
+import { ApiUsageCard } from '@/components/settings/ApiUsageCard';
+import { MlsIntegrationCard } from '@/components/settings/MlsIntegrationCard';
 import {
   X, Check, ShieldAlert, FolderOpen, HardDrive, Mail,
   Landmark, Plus, Trash2, AlertTriangle, RefreshCw, CheckCircle2,
@@ -725,7 +727,15 @@ function IntegrationsSettingsForm() {
 export default function IntegrationsSettingsPage() {
   return (
     <SettingsErrorBoundary>
-      <IntegrationsSettingsForm />
+      <div className="space-y-6">
+        <IntegrationsSettingsForm />
+        {/* Relocated from Settings → General (Aug 2026): the only Connected
+            Service with a functional, user-facing action and no home here. */}
+        <MlsIntegrationCard />
+        {/* Relocated from Settings → Billing (Aug 2026 UX hardening): provider
+            call volume is an integration concern, not a subscription line item. */}
+        <ApiUsageCard />
+      </div>
     </SettingsErrorBoundary>
   );
 }

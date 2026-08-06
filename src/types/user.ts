@@ -42,6 +42,11 @@ export interface UserProfile {
   cardBrand?: string;
   cancelAtPeriodEnd?: boolean;
   currentPeriodEnd?: number;
+  /** Billing contact overrides — edited inline on Settings → Billing.
+   *  Distinct from the account `email`/`companyName`: invoices and receipts
+   *  may need to go to accounts payable rather than the account holder. */
+  billingEmail?: string;
+  billingAddress?: string;
 
   /* ── Contact Info ── */
   phone?: string;

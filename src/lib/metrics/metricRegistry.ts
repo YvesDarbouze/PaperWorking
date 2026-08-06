@@ -55,11 +55,79 @@ const KEY_MAP: Record<string, string> = {
 };
 
 /**
+ * Inputs a metric genuinely needs before its value can mean anything.
+ *
+ * The core formulas in `reiMetrics.ts` return 0 rather than null when their
+ * inputs are absent — a deliberate choice there, since 0 is a valid arithmetic
+ * result and other consumers rely on a number. But on the Insights dashboard
+ * that produced "Cap Rate 0.0%" for a project with no purchase price, which
+ * reads as a real measurement rather than missing data.
+ *
+ * This guard sits at the registry layer so `reiMetrics.ts` is untouched: if
+ * none of a metric's required inputs are present, the metric is unknown, not
+ * zero. A metric absent from this map is passed straight through.
+ */
+const RENT   = ['monthlyGrossRent', 'projectedMonthlyRent', 'gross_rent_per_unit'];
+const VALUE  = ['purchasePrice', 'listedPrice', 'estimatedARV', 'currentValue'];
+const EQUITY = ['downPayment', 'totalCashInvested', 'purchasePrice', 'listedPrice'];
+const DEBT   = ['monthlyDebtService', 'annualDebtService', 'loanAmount'];
+
+/**
+ * Each entry is a list of GROUPS, and every group must be satisfied by at
+ * least one present field. A ratio needs both sides: LTV without a property
+ * value is not 0% leverage, it is unknown — which is precisely the bug this
+ * guard exists to prevent.
+ */
+const REQUIRED_INPUTS: Record<string, string[][]> = {
+  noi:               [RENT],
+  cap_rate:          [RENT, VALUE],
+  cash_on_cash:      [RENT, EQUITY],
+  irr:               [RENT, VALUE],
+  cash_flow:         [RENT],
+  grm:               [RENT, VALUE],
+  dscr:              [RENT, DEBT],
+  ltv:               [['loanAmount'], VALUE],
+  oer:               [RENT],
+  goi:               [RENT],
+  occupancy_rate:    [RENT],
+  equity_to_value:   [VALUE],
+  interest_coverage: [RENT, DEBT],
+  equity_multiple:   [RENT, EQUITY],
+  payback_period:    [RENT, EQUITY],
+};
+
+/** True when every required input group has at least one usable number. */
+function hasRequiredInputs(project: unknown, metricId: string): boolean {
+  const groups = REQUIRED_INPUTS[metricId];
+  if (!groups) return true; // unguarded metric — pass through
+
+  const financials =
+    project && typeof project === 'object'
+      ? (project as { financials?: unknown }).financials
+      : undefined;
+  if (!financials || typeof financials !== 'object') return false;
+
+  const bag = financials as Record<string, unknown>;
+  const present = (key: string) => {
+    const v = bag[key];
+    // A recorded 0 is treated as a data gap, not a measurement: a property
+    // does not have a $0 purchase price or $0 rent in any real record.
+    return typeof v === 'number' && Number.isFinite(v) && v !== 0;
+  };
+
+  return groups.every((group) => group.some(present));
+}
+
+/**
  * Computes a single metric value for a project.
  * Derives all metrics via core engine and extracts the appropriate phase value (actual vs projected).
+ *
+ * Returns null — never 0 — when the metric's required inputs are absent, so the
+ * UI can render an em dash instead of a misleading zero.
  */
 export function computeSingleMetric(project: any, metricId: string): number | null {
   if (!project) return null;
+  if (!hasRequiredInputs(project, metricId)) return null;
   try {
     const derived = deriveAllProjectMetrics(project);
     const kpiKey = KEY_MAP[metricId];

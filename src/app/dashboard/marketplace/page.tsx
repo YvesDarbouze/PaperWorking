@@ -22,6 +22,7 @@ import type { DealListingTeaser } from '@/types/listing';
 import { getPublishedListings } from '@/actions/listings';
 import DealMap from '@/components/marketplace/DealMap';
 import { RatingDisplay } from '@/components/marketplace/RatingDisplay';
+import { MarketplaceSubnav } from '@/components/marketplace/MarketplaceSubnav';
 
 /* ═══════════════════════════════════════════════════════════════
    Vendor Marketplace — Stitch design: 3e7255323f7b493089506b6ecbf6cbf8
@@ -330,6 +331,7 @@ function MarketplaceContent() {
 
   return (
     <div className="min-h-full px-6 lg:px-8 py-8 space-y-6">
+      <MarketplaceSubnav />
       {/* ── Page Header & View Toggle ── */}
       <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 border-b border-white/5 pb-5">
         <div className="space-y-1">
@@ -538,6 +540,12 @@ function MarketplaceContent() {
           setIsQuoteModalOpen(true);
         }}
       />
+      {/* ── Compliance Disclaimer Bar (B6) ── */}
+      <div className="pt-6 border-t border-white/10">
+        <p className="text-xs text-slate-400/70 leading-relaxed font-mono">
+          PaperWorking facilitates introductions and interest tracking only. No funds, securities, or ownership interests are offered, sold, or transferred through the platform. All transactions occur outside PaperWorking, directly between the parties.
+        </p>
+      </div>
     </div>
   );
 }

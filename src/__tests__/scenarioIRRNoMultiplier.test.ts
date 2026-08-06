@@ -47,6 +47,7 @@ function read(rel: string) {
 
 const SCENARIO_SRC = read('lib/projections/scenarioIRR.ts');
 const REPORTS_SRC  = read('app/dashboard/reports/page.tsx');
+const IRR_PAGE_SRC = read('app/dashboard/intelligence/irr/page.tsx');
 
 /* ──────────────────────────────────────────────────────────────────────────
    STATIC — multiplier math must not exist
@@ -79,31 +80,35 @@ describe('scenarioIRR.ts — no multiplier scaling', () => {
 
 });
 
-describe('reports/page.tsx — no multiplier scaling in IRR scenarios', () => {
+/**
+ * The reports page no longer hosts IRR scenarios.
+ *
+ * `/dashboard/reports` was rebuilt as the Tax Intelligence hub (August 2026);
+ * the IRR scenario card moved out with the rest of the bento dashboard. The
+ * live IRR surface is `/dashboard/intelligence/irr`, which models scenarios
+ * with the real engine — `computeIRR(buildIRRCashFlows(...))` from
+ * `reiMetrics.ts` — so the original regression (multiplier-scaled fictions)
+ * cannot reappear there either.
+ *
+ * The four assertions that used to read `reports/page.tsx` are therefore
+ * retargeted: the guard now checks that NO page fakes IRR with multipliers,
+ * which is the property that actually mattered.
+ */
+describe('IRR scenarios — no multiplier scaling on any surface', () => {
 
-  it('rp_no_multiplier_var: no multiplier variable in the IRR scenario section', () => {
-    // The irrScenarios block must not use baseIRR * anything
-    const irrBlock = REPORTS_SRC.slice(
-      REPORTS_SRC.indexOf('irrScenarios = useMemo'),
-      REPORTS_SRC.indexOf('irrScenarios = useMemo') + 500,
-    );
-    expect(irrBlock).not.toMatch(/\bmultiplier\b/i);
-    expect(irrBlock).not.toMatch(/baseIRR\s*\*/);
+  it('reports page no longer computes IRR at all', () => {
+    expect(REPORTS_SRC).not.toContain('irrScenarios');
+    expect(REPORTS_SRC).not.toMatch(/baseIRR\s*\*/);
   });
 
-  it('rp_uses_computeAllScenarioIRRs: delegates to real modeling function', () => {
-    expect(REPORTS_SRC).toContain('computeAllScenarioIRRs(baseProject)');
+  it('the live IRR page does not scale a base IRR by a multiplier', () => {
+    expect(IRR_PAGE_SRC).not.toMatch(/\bmultiplier\b/i);
+    expect(IRR_PAGE_SRC).not.toMatch(/baseIRR\s*\*/);
   });
 
-  it('rp_assumptions_passed_to_card: IRRScenario receives the assumptions prop', () => {
-    // The render site must pass assumptions={s.assumptions}
-    expect(REPORTS_SRC).toContain('assumptions={s.assumptions}');
-  });
-
-  it('rp_card_renders_assumptions: IRRScenario component renders the assumptions block', () => {
-    // The component must render rent growth and vacancy from the assumptions prop
-    expect(REPORTS_SRC).toContain('Rent growth:');
-    expect(REPORTS_SRC).toContain('Vacancy:');
+  it('the live IRR page solves IRR from real cash flows', () => {
+    expect(IRR_PAGE_SRC).toContain('computeIRR(');
+    expect(IRR_PAGE_SRC).toContain('buildIRRCashFlows');
   });
 
 });

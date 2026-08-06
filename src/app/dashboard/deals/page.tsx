@@ -17,6 +17,7 @@ import { generateDealSlug, checkDuplicateDeal, DealData } from '@/lib/deals/slug
 import MyDealsHistoryTab from '@/components/deals/MyDealsHistoryTab';
 import { generateInvitationToken, DealInvitation, DealInterest } from '@/lib/deals/engagementUtils';
 import { DealThreadEvent } from '@/lib/deals/historyUtils';
+import { MarketplaceSubnav } from '@/components/marketplace/MarketplaceSubnav';
 import toast from 'react-hot-toast';
 
 const DealMap = dynamic(() => import('@/components/marketplace/DealMap'), { ssr: false });
@@ -393,11 +394,12 @@ export default function DealsPage() {
 
   return (
     <div className="space-y-6 max-w-7xl mx-auto px-4 md:px-6 py-6">
+      <MarketplaceSubnav />
       {/* ── Page Header & Creation Action ── */}
       <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
         <div>
           <h1 className="text-2xl font-bold text-[var(--color-on-surface)] flex items-center gap-2">
-            <Compass className="w-6 h-6 text-emerald-400" />
+            <Compass className="w-6 h-6 text-slate-300" />
             Deals Marketplace
           </h1>
           <p className="text-sm text-[var(--color-muted)] mt-1">
@@ -423,7 +425,7 @@ export default function DealsPage() {
             onClick={() => setTopTab('all')}
             className={`px-4 py-2 rounded-xl text-xs font-extrabold transition-all flex items-center gap-2 min-h-[40px] ${
               topTab === 'all'
-                ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/40 shadow-sm'
+                ? 'bg-slate-800/20 text-slate-300 border border-slate-700/40 shadow-sm'
                 : 'text-slate-400 hover:text-slate-100 hover:bg-white/5'
             }`}
           >
@@ -434,7 +436,7 @@ export default function DealsPage() {
             onClick={() => setTopTab('my-deals')}
             className={`px-4 py-2 rounded-xl text-xs font-extrabold transition-all flex items-center gap-2 min-h-[40px] ${
               topTab === 'my-deals'
-                ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/40 shadow-sm'
+                ? 'bg-slate-800/20 text-slate-300 border border-slate-700/40 shadow-sm'
                 : 'text-slate-400 hover:text-slate-100 hover:bg-white/5'
             }`}
           >
@@ -522,7 +524,7 @@ export default function DealsPage() {
                 {/* Search Icon */}
                 <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none z-10">
                   {isPredictionsLoading ? (
-                    <Loader2 className="w-5 h-5 text-emerald-400 animate-spin" />
+                    <Loader2 className="w-5 h-5 text-slate-300 animate-spin" />
                   ) : (
                     <Search className="w-5 h-5 text-slate-400" />
                   )}
@@ -547,7 +549,7 @@ export default function DealsPage() {
                     rounded-xl
                     text-sm md:text-base text-slate-100
                     placeholder:text-slate-500
-                    focus:outline-none focus:ring-2 focus:ring-emerald-500/30 focus:border-emerald-500/60
+                    focus:outline-none focus:ring-2 focus:ring-slate-700/30 focus:border-slate-700/60
                     transition-all duration-200
                   "
                 />
@@ -575,7 +577,7 @@ export default function DealsPage() {
               >
                 <Filter className="w-5 h-5" />
                 {((assetClass !== 'All' ? 1 : 0) + (strategy !== 'All' ? 1 : 0) + (statusFilter !== 'All' ? 1 : 0)) > 0 && (
-                  <span className="absolute -top-1 -right-1 w-5 h-5 bg-emerald-500 text-slate-950 font-extrabold text-[10px] flex items-center justify-center rounded-full border border-slate-950 shadow-md">
+                  <span className="absolute -top-1 -right-1 w-5 h-5 bg-slate-700 text-slate-950 font-extrabold text-[10px] flex items-center justify-center rounded-full border border-slate-950 shadow-md">
                     {(assetClass !== 'All' ? 1 : 0) + (strategy !== 'All' ? 1 : 0) + (statusFilter !== 'All' ? 1 : 0)}
                   </span>
                 )}
@@ -596,7 +598,7 @@ export default function DealsPage() {
                       className={`
                         flex items-center gap-3 px-4 py-3 cursor-pointer text-xs md:text-sm text-slate-200 min-h-[44px]
                         transition-colors duration-100
-                        ${i === selectedIndex ? 'bg-emerald-500/20 text-emerald-300 font-semibold' : 'hover:bg-white/5'}
+                        ${i === selectedIndex ? 'bg-slate-800/20 text-slate-300 font-semibold' : 'hover:bg-white/5'}
                       `}
                     >
                       <MapPin className="w-4 h-4 flex-shrink-0 text-slate-400" />
@@ -674,7 +676,7 @@ export default function DealsPage() {
                         onClick={() => setAssetClass(ac)}
                         className={`h-11 min-h-[44px] flex items-center justify-center rounded-xl text-xs font-bold uppercase border transition-all ${
                           assetClass === ac
-                            ? 'bg-emerald-500/20 text-emerald-400 border-emerald-500/40'
+                            ? 'bg-slate-800/20 text-slate-300 border-slate-700/40'
                             : 'text-slate-400 border-pw-border hover:border-white/20'
                         }`}
                       >
@@ -694,7 +696,7 @@ export default function DealsPage() {
                         onClick={() => setStrategy(s)}
                         className={`h-11 min-h-[44px] flex items-center justify-center rounded-xl text-xs font-bold uppercase border transition-all ${
                           strategy === s
-                            ? 'bg-emerald-500/20 text-emerald-400 border-emerald-500/40'
+                            ? 'bg-slate-800/20 text-slate-300 border-slate-700/40'
                             : 'text-slate-400 border-pw-border hover:border-white/20'
                         }`}
                       >
@@ -724,7 +726,7 @@ export default function DealsPage() {
             <select
               value={sortBy}
               onChange={(e) => setSortBy(e.target.value as any)}
-              className="h-10 px-3 bg-white/5 border border-pw-border rounded-xl text-xs font-bold text-slate-200 focus:outline-none focus:border-emerald-500 min-h-[44px]"
+              className="h-10 px-3 bg-white/5 border border-pw-border rounded-xl text-xs font-bold text-slate-200 focus:outline-none focus:border-slate-700 min-h-[44px]"
             >
               <option value="relevance">Relevance (Default)</option>
               <option value="freshness">Freshness (Newest)</option>
@@ -774,7 +776,7 @@ export default function DealsPage() {
                 return (
                   <div key={group.placeId || group.canonicalAddress} className="space-y-4">
                     <div className="flex items-center gap-3 border-b border-pw-border pb-3">
-                      <Building2 className="w-5 h-5 text-emerald-400" />
+                      <Building2 className="w-5 h-5 text-slate-300" />
                       <h2 className="text-base font-bold text-slate-100">{group.canonicalAddress}</h2>
                     </div>
                     <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
@@ -789,8 +791,8 @@ export default function DealsPage() {
           ) : (
             /* ZERO RESULTS EMPTY STATE → IMMEDIATE CREATE DEAL CTA (Prompt 2 requirement) */
             <div className="glass-card rounded-2xl border border-pw-border p-8 text-center max-w-xl mx-auto space-y-4 my-8">
-              <div className="w-14 h-14 mx-auto rounded-2xl bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center">
-                <Building2 className="w-7 h-7 text-emerald-400" />
+              <div className="w-14 h-14 mx-auto rounded-2xl bg-slate-800/10 border border-slate-700/20 flex items-center justify-center">
+                <Building2 className="w-7 h-7 text-slate-300" />
               </div>
               <div>
                 <h3 className="text-lg font-bold text-slate-100">
@@ -857,6 +859,13 @@ export default function DealsPage() {
       )}
       </>
       )}
+
+      {/* ── Compliance Disclaimer Bar (B6) ── */}
+      <div className="pt-6 border-t border-white/10">
+        <p className="text-xs text-slate-400/70 leading-relaxed font-mono">
+          PaperWorking facilitates introductions and interest tracking only. No funds, securities, or ownership interests are offered, sold, or transferred through the platform. All transactions occur outside PaperWorking, directly between the parties.
+        </p>
+      </div>
 
       {/* ── Deal Creation Sheet Component (Prompt 2 requirement) ── */}
       <CreateDealSheet

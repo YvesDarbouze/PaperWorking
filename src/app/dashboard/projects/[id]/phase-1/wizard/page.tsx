@@ -67,7 +67,7 @@ export default function AcquisitionWizardPage() {
   if (loading) {
     return (
       <div className="flex flex-col items-center justify-center min-h-[400px] space-y-4">
-        <Loader2 className="w-8 h-8 text-emerald-500 animate-spin" />
+        <Loader2 className="w-8 h-8 text-slate-300 animate-spin" />
         <p className="text-xs text-slate-400 font-medium">Loading Acquisition Wizard...</p>
       </div>
     );
@@ -136,7 +136,7 @@ export default function AcquisitionWizardPage() {
           <ArrowLeft className="w-4 h-4" />
           <span>Back to Acquisition Workspace</span>
         </button>
-        <span className="text-[10px] font-bold uppercase tracking-wider text-emerald-400 bg-emerald-500/5 border border-emerald-500/10 px-2.5 py-1 rounded-full">
+        <span className="text-[10px] font-bold uppercase tracking-wider text-slate-300 bg-slate-800/5 border border-slate-700/10 px-2.5 py-1 rounded-full">
           Acquisition Wizard
         </span>
       </div>

@@ -6,16 +6,7 @@ import { useAllDealsSync } from '@/hooks/useAllProjectsSync';
 import { projectsService } from '@/lib/firebase/projects';
 import type { Project, PhaseStatus } from '@/types/schema';
 import {
-  ArrowLeft,
-  Briefcase,
   FolderOpen,
-  MapPin,
-  ChevronRight,
-  X,
-  Settings,
-  FileDown,
-  Share2,
-  Archive,
   ListChecks,
 } from 'lucide-react';
 import { PhaseTodoList } from '@/components/projects/PhaseTodoList';
@@ -23,7 +14,10 @@ import { RetrospectiveWorkspace } from '@/components/project/RetrospectiveWorksp
 import {
   PhaseProgressTracker,
   PhaseProgressTrackerSkeleton,
+  PHASE_STEPS,
 } from '@/components/project/PhaseProgressTracker';
+import { ProjectActionBar } from '@/components/project/ProjectActionBar';
+import { DealVisibilityToggle } from '@/components/project/DealVisibilityToggle';
 import { ProjectPipelineProvider } from '@/context/ProjectPipelineContext';
 import { usePropertyMetricSnapshots } from '@/hooks/usePropertyMetricSnapshots';
 import { MetricDrillDownSheet } from '@/components/insights/MetricDrillDownSheet';
@@ -246,6 +240,12 @@ function WorkspaceHeader({ project, onOpenMetric }: { project: Project; onOpenMe
   const router = useRouter();
   const { snapshots } = usePropertyMetricSnapshots(project.id, 'monthly');
 
+  // Primary action routes to the phase the deal is actually in.
+  const [settingsOpen, setSettingsOpen] = useState(false);
+
+  const currentPhasePath =
+    PHASE_STEPS.find((p) => p.phaseKey === project.phaseStatus)?.path ?? 'phase-1';
+
   const phaseColor  = PHASE_BADGE_COLORS[project.phaseStatus ?? ''] ?? PHASE_BADGE_COLORS['Phase 1: Acquisition'];
   const statusColor = STATUS_COLORS[project.status] ?? { bg: '#F3F4F6', text: '#595959' };
   const folderColor = PHASE_FOLDER_COLORS[project.phaseStatus ?? ''] ?? PHASE_FOLDER_COLORS['Phase 1: Acquisition'];
@@ -426,76 +426,51 @@ function WorkspaceHeader({ project, onOpenMetric }: { project: Project; onOpenMe
           </div>
         </div>
 
-        {/* Right-side Action Menu */}
-        <div className="flex items-center gap-2 shrink-0">
-          <button
-            onClick={() => {
-              toast.success('Opening settings...');
-            }}
-            className="flex items-center gap-1.5 px-3 py-2 text-xs font-bold uppercase tracking-wider transition-all duration-150 hover:bg-black/5 dark:hover:bg-white/5 border rounded-lg text-text-secondary hover:text-text-primary"
-            style={{ color: 'var(--text-secondary)', borderColor: 'var(--border-ui)' }}
-            aria-label="Edit project settings"
-          >
-            <Settings className="w-3.5 h-3.5" />
-            <span className="hidden md:inline">Settings</span>
-          </button>
-          
-          <button
-            onClick={() => window.print()}
-            className="flex items-center gap-1.5 px-3 py-2 text-xs font-bold uppercase tracking-wider transition-all duration-150 hover:bg-black/5 dark:hover:bg-white/5 border rounded-lg text-text-secondary hover:text-text-primary"
-            style={{ color: 'var(--text-secondary)', borderColor: 'var(--border-ui)' }}
-            aria-label="Export project as PDF"
-          >
-            <FileDown className="w-3.5 h-3.5" />
-            <span className="hidden md:inline">Export PDF</span>
-          </button>
-
-          <button
-            onClick={() => {
-              navigator.clipboard.writeText(window.location.href);
-              toast.success('CPA Share link copied to clipboard!');
-            }}
-            className="flex items-center gap-1.5 px-3 py-2 text-xs font-bold uppercase tracking-wider transition-all duration-150 hover:bg-black/5 dark:hover:bg-white/5 border rounded-lg text-text-secondary hover:text-text-primary"
-            style={{ color: 'var(--text-secondary)', borderColor: 'var(--border-ui)' }}
-            aria-label="Share with CPA"
-          >
-            <Share2 className="w-3.5 h-3.5" />
-            <span className="hidden md:inline">Share CPA</span>
-          </button>
-
-
-
-          <a
-            href={`/dashboard/projects/${project.id}/instruments`}
-            className="flex items-center gap-1.5 px-3 py-2 text-xs font-bold uppercase tracking-wider transition-all duration-150 hover:bg-black/5 dark:hover:bg-white/5 border rounded-lg text-text-secondary hover:text-text-primary"
-            style={{ color: 'var(--text-secondary)', borderColor: 'var(--border-ui)' }}
-            aria-label="Manage Ingestion Instruments"
-          >
-            <ListChecks className="w-3.5 h-3.5" />
-            <span className="hidden md:inline">Instruments</span>
-          </a>
-
-          <a
-            href="/dashboard/marketplace"
-            className="flex items-center gap-1.5 px-3 py-2 text-xs font-bold uppercase tracking-wider transition-all duration-150 hover:bg-black/5 dark:hover:bg-white/5 border rounded-lg text-text-secondary hover:text-text-primary"
-            style={{ color: 'var(--text-secondary)', borderColor: 'var(--border-ui)' }}
-            aria-label="Hire a professional"
-          >
-            <Briefcase className="w-3.5 h-3.5" />
-            <span className="hidden md:inline">Hire Professional</span>
-          </a>
-
-          <button
-            onClick={handleArchive}
-            className="flex items-center gap-1.5 px-3 py-2 text-xs font-bold uppercase tracking-wider transition-all duration-150 border rounded-lg text-red-500 hover:bg-red-500/10"
-            style={{ borderColor: 'rgba(239,68,68,0.2)' }}
-            aria-label="Archive project"
-          >
-            <Archive className="w-3.5 h-3.5" />
-            <span className="hidden md:inline">Archive</span>
-          </button>
-        </div>
+        {/* Right-side actions — three-tier hierarchy, 12px gaps.
+            "Export PDF" intentionally removed: export lives in Reports /
+            Tax Intelligence, which owns the branded PDF pipeline. */}
+        <ProjectActionBar
+          projectId={project.id}
+          primaryLabel="Continue Workflow"
+          primaryHref={`/dashboard/projects/${project.id}/${currentPhasePath}`}
+          onArchive={handleArchive}
+          onOpenSettings={() => setSettingsOpen(true)}
+        />
       </div>
+
+      {/* ── Project settings drawer (hosts marketplace visibility) ── */}
+      {settingsOpen && (
+        <div
+          className="fixed inset-0 z-[200] flex justify-end bg-black/60 backdrop-blur-sm"
+          onClick={() => setSettingsOpen(false)}
+        >
+          <aside
+            role="dialog"
+            aria-label="Project settings"
+            data-testid="project-settings-drawer"
+            onClick={(e) => e.stopPropagation()}
+            className="w-full max-w-md h-full overflow-y-auto p-6 space-y-5"
+            style={{ background: 'var(--pw-surface)', borderLeft: '1px solid var(--pw-border)' }}
+          >
+            <div className="flex items-center justify-between">
+              <h2 className="text-lg font-bold text-white">Project Settings</h2>
+              <button
+                onClick={() => setSettingsOpen(false)}
+                aria-label="Close settings"
+                data-testid="project-settings-close"
+                className="pw-interactive-custom p-1.5 rounded-lg text-slate-400 hover:bg-white/10 cursor-pointer"
+              >
+                ✕
+              </button>
+            </div>
+
+            <DealVisibilityToggle
+              projectId={project.id}
+              initialIsPublic={(project as { isPublicOnMarketplace?: boolean }).isPublicOnMarketplace === true}
+            />
+          </aside>
+        </div>
+      )}
 
       {/* ── Row 3: Phase Progress Tracker (stepper) ── */}
       {!project.retrospective && (
@@ -508,11 +483,9 @@ function WorkspaceHeader({ project, onOpenMetric }: { project: Project; onOpenMe
       {/* ── Row 4: Persistent Metric Strip (~80px) ── */}
       {!project.retrospective && (
         <div
-          className="flex items-center gap-4 px-margin-mobile lg:px-margin-desktop py-2.5 h-[80px] overflow-x-auto select-none no-scrollbar"
-          style={{
-            borderBottom: '1px solid var(--border-ui)',
-            backgroundColor: 'rgba(255,255,255,0.01)',
-          }}
+          /* Single horizontal scroll on mobile, compact row on desktop. */
+          className="flex items-stretch gap-0 px-margin-mobile lg:px-margin-desktop h-[64px] overflow-x-auto select-none no-scrollbar"
+          style={{ borderBottom: '1px solid var(--border-ui)' }}
         >
           {METRICS_CONFIG.map((cfg) => {
             const isNa = cfg.result.state === 'n/a';
@@ -548,10 +521,14 @@ function WorkspaceHeader({ project, onOpenMetric }: { project: Project; onOpenMe
               <button
                 key={cfg.id}
                 onClick={() => onOpenMetric(cfg.id, cfg.label, cfg.result, cfg.format)}
-                className="flex-1 min-w-[140px] max-w-[200px] h-full rounded border p-3 flex flex-col justify-between hover:bg-black/5 dark:hover:bg-white/5 transition-all text-left relative group outline-none"
+                /* Req 3: borderless. Each metric was a bordered, padded card,
+                   so seven of them read as seven panels rather than one strip.
+                   A single hairline separator between items carries the same
+                   structure at a fraction of the visual weight. */
+                className="pw-interactive-custom flex-1 min-w-[132px] max-w-[190px] h-full px-3 py-2 flex flex-col justify-center gap-0.5 hover:bg-white/5 transition-colors text-left relative group outline-none border-0 border-l first:border-l-0 rounded-none"
                 style={{
-                  borderColor: 'var(--border-ui)',
-                  background: 'var(--bg-surface)'
+                  borderColor: 'var(--pw-border)',
+                  background: 'transparent'
                 }}
               >
                 {/* Metric title & state badge */}

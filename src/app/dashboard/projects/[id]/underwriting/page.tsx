@@ -301,7 +301,7 @@ export default function UnderwritingPage({ params }: { params: Promise<{ id: str
 
           <div className="p-4 rounded-xl border border-slate-200 dark:border-white/10 bg-white dark:bg-white/[0.02] backdrop-blur-md">
             <p className="text-[10px] font-bold uppercase tracking-wider text-slate-400 dark:text-slate-500">Year 1 CoC</p>
-            <p className="text-lg font-bold font-mono text-emerald-600 dark:text-emerald-400 mt-1">
+            <p className="text-lg font-bold font-mono text-slate-300 dark:text-slate-300 mt-1">
               {(proForma.years[0]?.coc ?? 0).toFixed(1)}%
             </p>
           </div>
@@ -546,7 +546,7 @@ export default function UnderwritingPage({ params }: { params: Promise<{ id: str
                   <tr className="font-bold text-slate-900 dark:text-white bg-slate-100/50 dark:bg-white/5">
                     <td className="py-3 px-4 font-sans">Net Operating Income (NOI)</td>
                     {proForma.years.map((y) => (
-                      <td key={y.year} className="py-3 px-4 text-right text-emerald-600 dark:text-emerald-400">${Math.round(y.noi).toLocaleString()}</td>
+                      <td key={y.year} className="py-3 px-4 text-right text-slate-300 dark:text-slate-300">${Math.round(y.noi).toLocaleString()}</td>
                     ))}
                   </tr>
                   <tr>
@@ -570,7 +570,7 @@ export default function UnderwritingPage({ params }: { params: Promise<{ id: str
                   <tr className="text-[11px] text-slate-500">
                     <td className="py-2.5 px-4 font-sans italic">Cash-on-Cash (CoC)</td>
                     {proForma.years.map((y) => (
-                      <td key={y.year} className="py-2.5 px-4 text-right font-medium text-emerald-600 dark:text-emerald-400">{y.coc.toFixed(1)}%</td>
+                      <td key={y.year} className="py-2.5 px-4 text-right font-medium text-slate-300 dark:text-slate-300">{y.coc.toFixed(1)}%</td>
                     ))}
                   </tr>
                   <tr className="text-[11px] text-slate-500">
@@ -623,9 +623,9 @@ export default function UnderwritingPage({ params }: { params: Promise<{ id: str
                           data-testid={cell.isBaseCase ? 'base-case-cell' : undefined}
                           className={`py-3 px-3 font-semibold transition-all ${
                             cell.isBaseCase
-                              ? 'bg-emerald-500/20 text-emerald-700 dark:text-emerald-300 font-bold border-2 border-emerald-500 shadow-sm rounded-lg'
+                              ? 'bg-slate-800/20 text-slate-300 dark:text-slate-300 font-bold border-2 border-slate-700 shadow-sm rounded-lg'
                               : cell.leveredIRR >= 15
-                              ? 'bg-emerald-50 dark:bg-emerald-500/10 text-emerald-600 dark:text-emerald-400'
+                              ? 'bg-emerald-50 dark:bg-slate-800/10 text-slate-300 dark:text-slate-300'
                               : cell.leveredIRR >= 10
                               ? 'bg-blue-50 dark:bg-blue-500/10 text-blue-600 dark:text-blue-400'
                               : 'bg-rose-50 dark:bg-rose-500/10 text-rose-600 dark:text-rose-400'
@@ -634,7 +634,7 @@ export default function UnderwritingPage({ params }: { params: Promise<{ id: str
                           <div className="flex flex-col items-center">
                             <span>{cell.leveredIRR.toFixed(1)}%</span>
                             {cell.isBaseCase && (
-                              <span className="text-[9px] font-bold uppercase tracking-wider px-1.5 py-0.2 rounded bg-emerald-500 text-white mt-0.5">
+                              <span className="text-[9px] font-bold uppercase tracking-wider px-1.5 py-0.2 rounded bg-slate-700 text-white mt-0.5">
                                 Base Case
                               </span>
                             )}
@@ -732,7 +732,7 @@ export default function UnderwritingPage({ params }: { params: Promise<{ id: str
                     <td className="py-2.5 px-4 font-sans text-slate-600 dark:text-slate-400">Year 1 Cash-on-Cash</td>
                     {scenarios.map((s) => {
                       const res = calculateProFormaAndMetrics(s.inputs);
-                      return <td key={s.id} className="py-2.5 px-4 text-right text-emerald-600 dark:text-emerald-400">{(res.years[0]?.coc ?? 0).toFixed(1)}%</td>;
+                      return <td key={s.id} className="py-2.5 px-4 text-right text-slate-300 dark:text-slate-300">{(res.years[0]?.coc ?? 0).toFixed(1)}%</td>;
                     })}
                   </tr>
                   <tr>

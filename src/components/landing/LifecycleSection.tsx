@@ -25,19 +25,19 @@ const PHASES = [
 
 export default function LifecycleSection() {
   return (
-    <section className="py-24 md:py-32 lg:py-36 relative overflow-hidden border-b border-white/5">
+    <section className="py-12 md:py-16 lg:py-20 relative overflow-hidden border-b border-white/5">
       <div className="max-w-[1200px] mx-auto px-6 md:px-8">
-        <div className="max-w-3xl mb-14">
+        <div className="max-w-3xl mb-10">
           <p className="font-jetbrains text-[10px] uppercase tracking-widest text-primary mb-4 type-eyebrow font-medium">
             Built on the Real Estate Investment Life Cycle
           </p>
-          <h2 className="text-3xl sm:text-4xl md:text-5xl font-semibold tracking-[-0.02em] text-on-surface mb-4 leading-tight type-h2">
+          <h2 className="font-semibold tracking-[-0.02em] text-on-surface mb-4 leading-tight type-h2">
             Acquisition, Fund, Hold, Exit. Four phases. One system.
           </h2>
         </div>
 
         {/* 4 Phase Cards Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
           {PHASES.map((p) => (
             <div
               key={p.name}
@@ -57,11 +57,6 @@ export default function LifecycleSection() {
             </div>
           ))}
         </div>
-
-        {/* Closing line */}
-        <p className="text-base sm:text-lg font-medium text-on-surface text-center max-w-2xl mx-auto type-body">
-          Deals move in order, Kanban-style; phase gates keep the pipeline reviewable.
-        </p>
       </div>
     </section>
   );

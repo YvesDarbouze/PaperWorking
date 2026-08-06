@@ -21,19 +21,23 @@ export function generatePortfolioCSV(projects: any[], isPremium: boolean): strin
 
     METRICS_REGISTRY.forEach(entry => {
       const rawVal = entry.compute(project);
-      
-      if (rawVal === null || rawVal === undefined || isNaN(rawVal)) {
-        row.push('N/A');
-        return;
-      }
 
-      // Respect paywall: strip/obfuscate sensitive metrics for non-subscribers
+      // Respect paywall: strip/obfuscate sensitive metrics for non-subscribers.
+      // This is checked BEFORE the null branch on purpose — emitting "N/A" for a
+      // locked metric would tell a non-subscriber whether data exists, and the
+      // registry now returns null (not 0) whenever inputs are missing, so the
+      // old ordering silently stopped locking anything on sparse portfolios.
       const isSensitive = [
         'noi', 'cap_rate', 'cash_on_cash', 'irr', 'dscr', 'ltv', 'oer', 'grm', 'roi', 'annual_cash_flow', 'capex', 'goi'
       ].includes(entry.id);
 
       if (isSensitive && !isPremium) {
         row.push('[Locked]');
+        return;
+      }
+
+      if (rawVal === null || rawVal === undefined || isNaN(rawVal)) {
+        row.push('N/A');
         return;
       }
 

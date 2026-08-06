@@ -122,15 +122,10 @@ describe("GLOBAL NAVIGATION — FIXED CONTRACT FOR EVERY PAPERWORKING SCREEN", (
     });
   });
 
-  it("renders the workspace switcher with acting as exactly as specified in the contract", () => {
+  it("does not render the deprecated acting-as workspace panel", () => {
     render(<Sidebar />);
 
-    expect(screen.getByText(/acting as:/i)).toBeTruthy();
-    expect(screen.getAllByText("Luminous Capital").length).toBeGreaterThan(0);
-
-    expect(screen.getByText("Jane Doe")).toBeTruthy();
-    expect(screen.getByText("Founder")).toBeTruthy();
-    expect(screen.getByTestId("logout")).toBeTruthy();
+    expect(screen.queryByText(/acting as:/i)).toBeNull();
   });
 
   it("renders correct navigation elements in BottomNav for mobile compatibility per Contract v7", () => {

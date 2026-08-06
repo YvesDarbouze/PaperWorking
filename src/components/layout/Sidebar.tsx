@@ -15,11 +15,9 @@ import { createPortal } from "react-dom";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useAuth } from "@/context/AuthContext";
-import { useTenant } from "@/context/TenantContext";
 import { useNotification } from "@/context/NotificationContext";
 import { useTheme } from "@/lib/utils/ThemeProvider";
 import Logo from "@/components/brand/Logo";
-import LogoutButton from "@/components/dashboard/LogoutButton";
 import { AcquisitionWizard } from "@/components/acquisition/AcquisitionWizard";
 import { useCreateProjectModal } from "@/store/createProjectModalStore";
 import toast from "react-hot-toast";
@@ -29,61 +27,6 @@ import {
   resolveAccountNav,
   NavItem as ContractNavItem,
 } from "@/lib/navigation/navContract";
-
-// ─── User avatar ──────────────────────────────────────────────────────────────
-// Shows Firebase photoURL if available, otherwise an initials monogram.
-
-interface AvatarProps {
-  photoURL?: string | null;
-  displayName?: string | null;
-  email?: string | null;
-  size?: number;
-  isDark: boolean;
-}
-
-function UserAvatar({ photoURL, displayName, email, size = 32, isDark }: AvatarProps) {
-  const [imgError, setImgError] = useState(false);
-
-  const initials = displayName
-    ? displayName.charAt(0).toUpperCase()
-    : email
-    ? email.charAt(0).toUpperCase()
-    : "U";
-
-  if (photoURL && !imgError) {
-    return (
-      // eslint-disable-next-line @next/next/no-img-element
-      <img
-        src={photoURL}
-        alt={displayName ?? "User avatar"}
-        width={size}
-        height={size}
-        onError={() => setImgError(true)}
-        className="rounded-full object-cover flex-shrink-0"
-        style={{ width: size, height: size }}
-        referrerPolicy="no-referrer"
-      />
-    );
-  }
-
-  return (
-    <span
-      className="rounded-full flex items-center justify-center flex-shrink-0 font-bold"
-      style={{
-        width: size,
-        height: size,
-        fontSize: size * 0.4,
-        background: isDark
-          ? "linear-gradient(135deg, rgba(69,73,85,0.8) 0%, rgba(110,116,128,0.6) 100%)"
-          : "linear-gradient(135deg, rgba(69,73,85,0.15) 0%, rgba(110,116,128,0.25) 100%)",
-        color: isDark ? "rgba(253,255,252,0.92)" : "rgba(69,73,85,0.9)",
-      }}
-    >
-      {initials}
-    </span>
-  );
-}
-
 
 // ─── Nav item ─────────────────────────────────────────────────────────────────
 
@@ -198,8 +141,7 @@ function SectionLabel({ label, isDark }: { label: string; isDark: boolean }) {
 export function Sidebar() {
   const pathname = usePathname();
   const router = useRouter();
-  const { user, profile, loading: authLoading } = useAuth();
-  const { activeTenantId, switchTenant } = useTenant();
+  const { profile } = useAuth();
   const { unreadTotal } = useNotification();
   const { theme } = useTheme();
   const [mounted, setMounted] = useState(false);
@@ -224,29 +166,7 @@ export function Sidebar() {
     }
   };
 
-  // Workspace list
-  const workspaces: Array<{ id: string; name: string; type: "personal" | "team" }> = profile
-    ? [{ id: profile.personalOrganizationId || `org_${user?.uid.slice(0, 8)}`, name: "Personal Workspace", type: "personal" }]
-    : [];
 
-  if (profile?.memberships) {
-    Object.entries(profile.memberships).forEach(([tenantId, membership]) => {
-      workspaces.push({
-        id: tenantId,
-        name: (membership as { tenantName?: string })?.tenantName || "Team Workspace",
-        type: "team",
-      });
-    });
-  }
-
-  const activeWorkspace = workspaces.find((w) => w.id === activeTenantId) || workspaces[0];
-  const isPersonal = activeWorkspace?.type === "personal";
-
-  // Token shortcuts
-  const dividerColor = isDark ? "rgba(230,234,240,0.10)" : "rgba(33,34,38,0.10)";
-  const selectBg     = isDark ? "rgba(255,255,255,0.04)" : "rgba(50,121,249,0.04)";
-  const selectBorder = isDark ? "rgba(255,255,255,0.08)" : "rgba(50,121,249,0.10)";
-  const mutedText    = isDark ? "rgba(253,255,252,0.55)" : "rgba(55,59,69,0.72)";
 
   return (
     <>
@@ -335,121 +255,8 @@ export function Sidebar() {
         })}
       </nav>
 
-      {/* ── Bottom area ─────────────────────────────────────────────────── */}
-      <div
-        className="px-2 pb-5 pt-3 space-y-1.5"
-        style={{ borderTop: `1px solid ${dividerColor}` }}
-      >
-
-        {/* Auth skeleton */}
-        {!mounted || authLoading || !user || !profile ? (
-          <div className="space-y-2 animate-pulse px-1 pt-1">
-            <div className="h-8 rounded-lg" style={{ background: selectBg }} />
-            <div className="h-11 rounded-xl" style={{ background: selectBg }} />
-          </div>
-        ) : (
-          <>
-            {/* Workspace switcher */}
-            <div className="relative px-1 pt-0.5">
-              <p
-                className="text-label-sm font-semibold uppercase mb-1 px-2"
-                style={{ letterSpacing: "0.08em", color: mutedText }}
-              >
-                acting as:{" "}
-                <span style={{ color: "var(--color-primary)", fontWeight: 800 }}>
-                  {isPersonal ? "Me" : activeWorkspace?.name}
-                </span>
-              </p>
-              <div className="relative">
-                <select
-                  value={activeTenantId || workspaces[0]?.id}
-                  onChange={(e) => {
-                    if (typeof window !== "undefined" && window.location.pathname.startsWith("/demo")) {
-                      toast.error("Demo Mode: Workspaces are read-only.", {
-                        id: "demo-workspace-guard",
-                        style: { background: "#111", color: "#fff", border: "1px solid #333" },
-                      });
-                      return;
-                    }
-                    switchTenant(e.target.value);
-                  }}
-                  aria-label="Select Workspace"
-                  className="w-full appearance-none text-body-sm font-semibold py-2 pl-8 pr-7 rounded-lg focus:outline-none transition-all cursor-pointer truncate"
-                  style={{
-                    background: selectBg,
-                    border: `1px solid ${selectBorder}`,
-                    color: isDark ? "rgba(253,255,252,0.80)" : "rgba(33,34,38,0.85)",
-                    letterSpacing: "-0.01em",
-                  }}
-                >
-                  {workspaces.map((ws) => (
-                    <option
-                      key={ws.id}
-                      value={ws.id}
-                      style={{ background: isDark ? "#1e1b20" : "#fff" }}
-                    >
-                      {ws.name}
-                    </option>
-                  ))}
-                </select>
-                <span
-                  className="material-symbols-outlined text-[15px] absolute left-2.5 top-1/2 -translate-y-1/2 pointer-events-none"
-                  style={{ color: mutedText }}
-                >
-                  {isPersonal ? "person" : "corporate_fare"}
-                </span>
-                <span
-                  className="material-symbols-outlined text-[15px] absolute right-2.5 top-1/2 -translate-y-1/2 pointer-events-none"
-                  style={{ color: mutedText }}
-                >
-                  keyboard_arrow_down
-                </span>
-              </div>
-            </div>
-
-            {/* Profile row — avatar + name + role + logout */}
-            <div
-              className="flex items-center justify-between gap-2 px-2 py-2 rounded-xl mx-1"
-              style={{
-                background: isDark ? "rgba(255,255,255,0.03)" : "rgba(69,73,85,0.04)",
-                border: `1px solid ${dividerColor}`,
-              }}
-            >
-              <div className="flex items-center gap-2.5 overflow-hidden">
-                <UserAvatar
-                  photoURL={user.photoURL}
-                  displayName={profile?.displayName ?? user?.displayName}
-                  email={user?.email}
-                  size={32}
-                  isDark={isDark}
-                />
-                <div className="flex flex-col overflow-hidden">
-                  <span
-                    className="text-body-sm font-semibold truncate leading-tight"
-                    style={{
-                      color: isDark ? "rgba(253,255,252,0.90)" : "#0d0a0b",
-                      letterSpacing: "-0.01em",
-                    }}
-                  >
-                    {profile?.displayName || user?.displayName || "User"}
-                  </span>
-                  <span
-                    className="text-label-sm truncate capitalize leading-tight"
-                    style={{ color: mutedText }}
-                  >
-                    {profile?.role || "Member"}
-                  </span>
-                </div>
-              </div>
-
-              <LogoutButton
-                compact
-                className="text-on-surface-variant hover:text-primary rounded-lg hover:bg-white/5 flex-shrink-0"
-              />
-            </div>
-          </>
-        )}
-      </div>
+      {/* Bottom spacer for visual balance */}
+      <div className="pb-5" />
     </aside>
 
     {/* ── Fullscreen wizard overlay — portalled to document.body ──────────

@@ -252,7 +252,7 @@ export default function OperationsPage({ params }: { params: Promise<{ id: strin
     const formatted = `${percent > 0 ? '+' : ''}${percent.toFixed(1)}%`;
     if (status === 'green') {
       return (
-        <span className="px-2.5 py-1 rounded-md text-xs font-bold bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20">
+        <span className="px-2.5 py-1 rounded-md text-xs font-bold bg-slate-800/10 text-slate-300 dark:text-slate-300 border border-slate-700/20">
           {formatted} (On Target)
         </span>
       );
@@ -386,7 +386,7 @@ export default function OperationsPage({ params }: { params: Promise<{ id: strin
 
             <div className="p-4 rounded-xl bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/5">
               <p className="text-[10px] font-bold uppercase tracking-wider text-slate-400 dark:text-slate-500">Underwritten Monthly NOI</p>
-              <p className="text-lg font-bold font-mono text-emerald-600 dark:text-emerald-400 mt-1">
+              <p className="text-lg font-bold font-mono text-slate-300 dark:text-slate-300 mt-1">
                 ${Math.round(budgetBaseline.monthlyNoi).toLocaleString()}
               </p>
             </div>
@@ -500,7 +500,7 @@ export default function OperationsPage({ params }: { params: Promise<{ id: strin
                       <td className="py-3 px-4 font-sans font-bold text-slate-900 dark:text-white">{act.period}</td>
                       <td className="py-3 px-4 text-right">${Math.round(act.grossRent).toLocaleString()}</td>
                       <td className="py-3 px-4 text-right text-rose-500">${Math.round(act.operatingExpenses).toLocaleString()}</td>
-                      <td className="py-3 px-4 text-right font-bold text-emerald-600 dark:text-emerald-400">${Math.round(noiVal).toLocaleString()}</td>
+                      <td className="py-3 px-4 text-right font-bold text-slate-300 dark:text-slate-300">${Math.round(noiVal).toLocaleString()}</td>
                       <td className="py-3 px-4 text-right text-slate-500">${Math.round(budgetBaseline.monthlyNoi).toLocaleString()}</td>
                       <td className="py-3 px-4 text-right">
                         {getStatusBadge(v.status, v.variancePercent)}
@@ -537,7 +537,7 @@ export default function OperationsPage({ params }: { params: Promise<{ id: strin
 
             <div className="flex items-center gap-4 p-3 rounded-xl bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/5">
               <span className="text-xs text-slate-500">Live Occupancy Rate:</span>
-              <span data-testid="live-occupancy-rate" className="text-lg font-bold font-mono text-emerald-600 dark:text-emerald-400">
+              <span data-testid="live-occupancy-rate" className="text-lg font-bold font-mono text-slate-300 dark:text-slate-300">
                 {liveOccupancyRate.toFixed(1)}%
               </span>
             </div>
@@ -618,7 +618,7 @@ export default function OperationsPage({ params }: { params: Promise<{ id: strin
                         data-testid={`select-unit-status-${item.unit}`}
                         className={`h-7 px-2 rounded text-[11px] font-bold uppercase tracking-wider focus:outline-none ${
                           item.status === 'occupied'
-                            ? 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20'
+                            ? 'bg-slate-800/10 text-slate-300 dark:text-slate-300 border border-slate-700/20'
                             : item.status === 'vacant'
                             ? 'bg-rose-500/10 text-rose-600 dark:text-rose-400 border border-rose-500/20'
                             : 'bg-amber-500/10 text-amber-600 dark:text-amber-400 border border-amber-500/20'

@@ -131,7 +131,7 @@ export function ComparisonSection() {
             <select
               value={selectedMetric}
               onChange={(e) => setSelectedMetric(e.target.value as MetricId)}
-              className="appearance-none bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-lg py-1.5 pl-3 pr-8 text-xs font-semibold text-slate-800 dark:text-slate-200 focus:outline-none focus:ring-1 focus:ring-emerald-500 cursor-pointer"
+              className="appearance-none bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-lg py-1.5 pl-3 pr-8 text-xs font-semibold text-slate-800 dark:text-slate-200 focus:outline-none focus:ring-1 focus:ring-slate-700 cursor-pointer"
             >
               {COMPARE_METRICS.map((opt) => (
                 <option key={opt.id} value={opt.id} className="dark:bg-slate-950">

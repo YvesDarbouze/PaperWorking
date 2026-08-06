@@ -14,8 +14,8 @@ import { usePaywall } from '@/hooks/usePaywall';
 
    Four-phase REIL framework: Acquisition, Fund, Hold, Exit
 
-   Primary navigation (verbatim contract order):
-     How It Works · Marketplaces · Pricing · Playbook · Support · Sign In · Start Free 14-Day Trial
+   Primary navigation (7-element order):
+     How It Works · Marketplaces · Pricing · Support · Sign In · Start Free 14-Day Trial
    ═══════════════════════════════════════════════════════ */
 
 export default function LandingHeader() {
@@ -79,7 +79,7 @@ export default function LandingHeader() {
           {/* ── Logo ── */}
           <Logo href="/" surface="marketing-nav" size="sm" />
 
-          {/* ── Desktop center links: How It Works · Marketplaces · Pricing · Playbook · Support ── */}
+          {/* ── Desktop center links: How It Works · Marketplaces · Pricing · Support ── */}
           <div className="hidden md:flex items-center gap-7">
 
             <Link
@@ -110,16 +110,6 @@ export default function LandingHeader() {
               onMouseLeave={e => (e.currentTarget.style.opacity = '0.7')}
             >
               Pricing
-            </Link>
-
-            <Link
-              href="/support/metrics"
-              className="text-[13.5px] font-medium transition-opacity duration-150"
-              style={{ color: 'var(--color-on-surface)', opacity: 0.7, textDecoration: 'none' }}
-              onMouseEnter={e => (e.currentTarget.style.opacity = '1')}
-              onMouseLeave={e => (e.currentTarget.style.opacity = '0.7')}
-            >
-              Playbook
             </Link>
 
             {/* Support Dropdown Menu */}
@@ -347,18 +337,6 @@ export default function LandingHeader() {
                   onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
                 >
                   Pricing
-                </Link>
-
-                {/* Playbook */}
-                <Link
-                  href="/support/metrics"
-                  onClick={() => setMobileOpen(false)}
-                  className="flex items-center gap-3 px-4 py-2.5 rounded-xl text-[14px] font-semibold transition-colors duration-150"
-                  style={{ color: 'var(--color-on-surface)', textDecoration: 'none' }}
-                  onMouseEnter={e => (e.currentTarget.style.background = 'color-mix(in srgb, var(--color-on-background) 5%, transparent)')}
-                  onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
-                >
-                  Playbook
                 </Link>
 
                 {/* Support */}

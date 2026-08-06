@@ -2,13 +2,13 @@
 
 export default function WhatItDoesSection() {
   return (
-    <section className="py-24 md:py-32 lg:py-36 relative overflow-hidden border-b border-white/5 bg-surface-container-low/20">
+    <section className="py-12 md:py-16 lg:py-20 relative overflow-hidden border-b border-white/5 bg-surface-container-low/20">
       <div className="max-w-[1200px] mx-auto px-6 md:px-8">
         <div className="max-w-3xl">
           <p className="font-jetbrains text-[10px] uppercase tracking-widest text-primary mb-4 type-eyebrow font-medium">
             What it does
           </p>
-          <h2 className="text-3xl sm:text-4xl md:text-5xl font-semibold tracking-[-0.02em] text-on-surface mb-6 leading-tight type-h2">
+          <h2 className="font-semibold tracking-[-0.02em] text-on-surface mb-6 leading-tight type-h2">
             One home for the whole deal, every deal.
           </h2>
           <p className="text-base sm:text-lg text-on-surface-variant leading-[1.65] mb-6 type-body">

@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { useProjectStore } from "@/store/projectStore";
 import { deriveAllMetrics } from "@/lib/metrics/reiMetrics";
 import type { Project } from "@/types/schema";
+import { PHASE_COLORS as CANONICAL_PHASES, getPhaseLabel } from '@/lib/constants/phaseColors';
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -22,17 +23,17 @@ interface PerformerRow {
 // ─── Constants ────────────────────────────────────────────────────────────────
 
 const PHASE_COLORS: Record<number, string> = {
-  1: "#454955",
-  2: "#7A9EAA",
-  3: "#ffac5a",
-  4: "var(--pw-success)",
+  1: CANONICAL_PHASES[1].hex,
+  2: CANONICAL_PHASES[2].hex,
+  3: CANONICAL_PHASES[3].hex,
+  4: CANONICAL_PHASES[4].hex,
 };
 
 const PHASE_LABELS: Record<number, string> = {
-  1: "Acquisition",
-  2: "Closing",
-  3: "Rehab",
-  4: "Hold / Exit",
+  1: getPhaseLabel(1),
+  2: getPhaseLabel(2),
+  3: getPhaseLabel(3),
+  4: getPhaseLabel(4),
 };
 
 // ─── Derivation ───────────────────────────────────────────────────────────────

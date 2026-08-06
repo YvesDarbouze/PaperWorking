@@ -11,6 +11,7 @@ import { usePathname } from 'next/navigation';
 const NAV_ITEMS = [
   { label: 'General',       href: '/dashboard/settings/general',       iconName: 'settings' },
   { label: 'Profile',       href: '/dashboard/settings/profile',       iconName: 'person' },
+  { label: 'Marketplace',   href: '/dashboard/settings/marketplace-profile', iconName: 'storefront' },
   { label: 'Team',          href: '/dashboard/settings/team',          iconName: 'group' },
   { label: 'Notifications', href: '/dashboard/settings/notifications', iconName: 'notifications' },
   { label: 'Billing',       href: '/dashboard/settings/billing',       iconName: 'payments' },
@@ -57,17 +58,21 @@ export default function SettingsLayout({ children }: { children: React.ReactNode
         </p>
 
         {/* ─── Mobile tab bar ─── */}
-        <nav className="flex sm:hidden gap-2 overflow-x-auto pb-4 mb-6 border-b border-pw-primary/10 no-scrollbar">
+        {/* Neutral divider — the emerald-tinted border here was the last green
+            left in the settings tab strip after the active states were fixed. */}
+        <nav className="flex sm:hidden gap-2 overflow-x-auto pb-4 mb-6 border-b border-pw-border no-scrollbar">
           {NAV_ITEMS.map(({ label, href, iconName }) => {
             const isActive = pathname === href;
             return (
               <Link
                 key={href}
                 href={href}
+                /* Active state mirrors the main sidebar: a subtle neutral fill
+                   with a hairline border, not the emerald accent. */
                 className={`
                   flex items-center gap-2 px-4 h-10 rounded-lg text-xs font-semibold whitespace-nowrap transition-all border
                   ${isActive
-                    ? 'bg-pw-primary/20 border-pw-primary/30 text-pw-primary font-bold shadow-sm'
+                    ? 'bg-pw-glass-bg border-pw-border text-pw-black font-bold'
                     : 'bg-transparent border-transparent text-pw-muted hover:text-pw-black hover:bg-white/5'
                   }
                 `}
@@ -79,8 +84,12 @@ export default function SettingsLayout({ children }: { children: React.ReactNode
           })}
         </nav>
 
-        {/* ─── Desktop: sidebar + content ─── */}
-        <div className="flex flex-col sm:flex-row gap-8">
+        {/* ─── Desktop: sidebar + content ───
+             Gutter is 24px (gap-6). The content pane is left-aligned against
+             the sidebar rather than centred: `mx-auto` on a 720px pane inside
+             a much wider flex track pushed the content away from the nav and
+             left dead whitespace columns on both sides at >=1440px. */}
+        <div className="flex flex-col sm:flex-row gap-6">
 
           {/* Sidebar — hidden on mobile */}
           <aside className="hidden sm:block w-56 flex-shrink-0">
@@ -94,11 +103,14 @@ export default function SettingsLayout({ children }: { children: React.ReactNode
                       id={`settings-nav-${index}`}
                       href={href}
                       onKeyDown={(e) => handleKeyDown(e, index)}
+                      /* Matches the main sidebar's active treatment — subtle
+                         neutral fill + hairline border, no emerald accent and
+                         no green left rail. */
                       className={`
-                        flex items-center gap-4 px-4 h-10 mx-2 transition-all font-label-md text-label-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-pw-primary focus-visible:ring-offset-2 focus-visible:ring-offset-pw-bg
+                        flex items-center gap-4 px-4 h-10 mx-2 rounded-lg transition-all font-label-md text-label-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-pw-border focus-visible:ring-offset-2 focus-visible:ring-offset-pw-bg
                         ${isActive
-                          ? 'bg-pw-primary/[0.08] border-y border-r border-l-2 border-y-transparent border-r-transparent border-l-pw-primary text-pw-primary font-bold rounded-r-lg rounded-l-none'
-                          : 'bg-transparent border border-transparent text-pw-muted hover:text-pw-black hover:bg-white/5 rounded-lg'
+                          ? 'bg-pw-glass-bg border border-pw-border text-pw-black font-bold'
+                          : 'bg-transparent border border-transparent text-pw-muted hover:text-pw-black hover:bg-white/5'
                         }
                       `}
                     >
@@ -124,8 +136,8 @@ export default function SettingsLayout({ children }: { children: React.ReactNode
             </div>
           </aside>
 
-          {/* Content pane */}
-          <main className="flex-1 min-w-0 max-w-[720px] mx-auto w-full">
+          {/* Content pane — left-aligned, capped at 900px */}
+          <main className="flex-1 min-w-0 w-full max-w-[900px]">
             {children}
           </main>
         </div>

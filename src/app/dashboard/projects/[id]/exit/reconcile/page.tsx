@@ -275,7 +275,7 @@ export default function BankReconciliationPage() {
               <span
                 className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold ${
                   period.status === 'RECONCILED'
-                    ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30'
+                    ? 'bg-slate-800/20 text-slate-300 border border-slate-700/30'
                     : period.status === 'DISCREPANCY_FOUND'
                     ? 'bg-rose-500/20 text-rose-400 border border-rose-500/30'
                     : 'bg-amber-500/20 text-amber-400 border border-amber-500/30'
@@ -359,7 +359,7 @@ export default function BankReconciliationPage() {
       {!period ? (
         /* Empty / Initial State */
         <div className="bg-slate-800/40 border border-slate-700/60 rounded-xl p-12 text-center max-w-xl mx-auto space-y-4">
-          <ShieldCheck className="w-12 h-12 text-emerald-400 mx-auto opacity-80" />
+          <ShieldCheck className="w-12 h-12 text-slate-300 mx-auto opacity-80" />
           <h2 className="text-xl font-semibold text-white">No Active Reconciliation Period</h2>
           <p className="text-sm text-slate-400">
             Begin the finalization phase by matching PaperWorking ledger transactions against your bank statement for{' '}
@@ -377,7 +377,7 @@ export default function BankReconciliationPage() {
                 placeholder="e.g. 75000.00"
                 value={statementBalanceInput}
                 onChange={(e) => setStatementBalanceInput(e.target.value)}
-                className="w-full bg-slate-900 border border-slate-700 rounded-lg px-4 py-2 text-white text-center font-mono text-lg focus:ring-2 focus:ring-emerald-500"
+                className="w-full bg-slate-900 border border-slate-700 rounded-lg px-4 py-2 text-white text-center font-mono text-lg focus:ring-2 focus:ring-slate-700"
               />
             </div>
 
@@ -404,7 +404,7 @@ export default function BankReconciliationPage() {
                 </span>
                 <button
                   onClick={() => setShowBalanceModal(true)}
-                  className="text-xs text-emerald-400 hover:underline"
+                  className="text-xs text-slate-300 hover:underline"
                 >
                   Edit
                 </button>
@@ -426,7 +426,7 @@ export default function BankReconciliationPage() {
               </span>
               <span
                 className={`block text-2xl font-bold font-mono ${
-                  Number(period.difference) === 0 ? 'text-emerald-400' : 'text-rose-400'
+                  Number(period.difference) === 0 ? 'text-slate-300' : 'text-rose-400'
                 }`}
               >
                 ${Number(period.difference).toLocaleString('en-US', { minimumFractionDigits: 2 })}
@@ -467,7 +467,7 @@ export default function BankReconciliationPage() {
           <div className="bg-slate-800/40 border border-slate-700/60 rounded-xl overflow-hidden">
             <div className="p-4 bg-slate-800/80 border-b border-slate-700 flex items-center justify-between">
               <div className="flex items-center gap-2">
-                <Layers className="w-5 h-5 text-emerald-400" />
+                <Layers className="w-5 h-5 text-slate-300" />
                 <h3 className="text-base font-semibold text-white">Reconciliation Ledger</h3>
                 <span className="text-xs px-2 py-0.5 bg-slate-700 text-slate-300 rounded-full font-mono">
                   {period.items.length} items
@@ -510,7 +510,7 @@ export default function BankReconciliationPage() {
                             <span
                               className={`text-xs px-2 py-0.5 rounded font-mono ${
                                 item.itemType === 'MATCHED'
-                                  ? 'bg-emerald-900/40 text-emerald-300'
+                                  ? 'bg-slate-800/40 text-slate-300'
                                   : item.itemType === 'BANK_ONLY'
                                   ? 'bg-blue-900/40 text-blue-300'
                                   : item.itemType === 'PAPERWORKING_ONLY'
@@ -523,7 +523,7 @@ export default function BankReconciliationPage() {
                           </td>
                           <td className="py-3.5 px-4 text-right font-mono">
                             {item.bankAmount !== null ? (
-                              <span className={item.bankAmount >= 0 ? 'text-emerald-400' : 'text-slate-200'}>
+                              <span className={item.bankAmount >= 0 ? 'text-slate-300' : 'text-slate-200'}>
                                 ${Number(item.bankAmount).toFixed(2)}
                               </span>
                             ) : (
@@ -534,7 +534,7 @@ export default function BankReconciliationPage() {
                             {item.paperWorkingAmount !== null ? (
                               <span
                                 className={
-                                  item.paperWorkingAmount >= 0 ? 'text-emerald-400' : 'text-slate-200'
+                                  item.paperWorkingAmount >= 0 ? 'text-slate-300' : 'text-slate-200'
                                 }
                               >
                                 ${Number(item.paperWorkingAmount).toFixed(2)}
@@ -547,7 +547,7 @@ export default function BankReconciliationPage() {
                             <span
                               className={`text-xs px-2.5 py-0.5 rounded-full font-semibold ${
                                 item.status === 'VERIFIED' || item.status === 'ADJUSTED'
-                                  ? 'bg-emerald-500/20 text-emerald-400'
+                                  ? 'bg-slate-800/20 text-slate-300'
                                   : item.status === 'IGNORED'
                                   ? 'bg-slate-700 text-slate-400'
                                   : 'bg-amber-500/20 text-amber-400'
@@ -600,7 +600,7 @@ export default function BankReconciliationPage() {
                 step="0.01"
                 value={statementBalanceInput}
                 onChange={(e) => setStatementBalanceInput(e.target.value)}
-                className="w-full bg-slate-900 border border-slate-700 rounded-lg px-4 py-2 text-white font-mono text-lg focus:ring-2 focus:ring-emerald-500"
+                className="w-full bg-slate-900 border border-slate-700 rounded-lg px-4 py-2 text-white font-mono text-lg focus:ring-2 focus:ring-slate-700"
               />
             </div>
 
@@ -658,7 +658,7 @@ export default function BankReconciliationPage() {
                 value={adjNotes}
                 onChange={(e) => setAdjNotes(e.target.value)}
                 placeholder="Reason for adjustment..."
-                className="w-full bg-slate-900 border border-slate-700 rounded-lg p-3 text-white text-sm h-24 focus:ring-2 focus:ring-emerald-500"
+                className="w-full bg-slate-900 border border-slate-700 rounded-lg p-3 text-white text-sm h-24 focus:ring-2 focus:ring-slate-700"
               />
             </div>
 
@@ -703,7 +703,7 @@ export default function BankReconciliationPage() {
                 value={finalizeNotes}
                 onChange={(e) => setFinalizeNotes(e.target.value)}
                 placeholder="Notes or explanation for discrepancy..."
-                className="w-full bg-slate-900 border border-slate-700 rounded-lg p-3 text-white text-sm h-24 focus:ring-2 focus:ring-emerald-500"
+                className="w-full bg-slate-900 border border-slate-700 rounded-lg p-3 text-white text-sm h-24 focus:ring-2 focus:ring-slate-700"
               />
             </div>
 

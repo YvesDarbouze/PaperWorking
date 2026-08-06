@@ -108,7 +108,7 @@ export default function MyDealsHistoryTab({
                 return (
                   <div key={deal.id} className="glass-card rounded-2xl border border-pw-border p-5 space-y-3">
                     <div className="flex items-center justify-between">
-                      <span className="text-[10px] font-extrabold uppercase bg-emerald-500/20 text-emerald-400 px-2.5 py-1 rounded-md border border-emerald-500/30">
+                      <span className="text-[10px] font-extrabold uppercase bg-slate-800/20 text-slate-300 px-2.5 py-1 rounded-md border border-slate-700/30">
                         {deal.status || 'LISTED'}
                       </span>
                       <span className="text-xs font-mono text-slate-400">{funding.percentFunded}% Funded</span>
@@ -124,7 +124,7 @@ export default function MyDealsHistoryTab({
                       <span className="text-slate-400">{funding.formattedCommitted} / {funding.formattedTarget}</span>
                       <Link
                         href={`/dashboard/deals/${deal.slug || deal.id}`}
-                        className="text-emerald-400 font-bold hover:underline flex items-center gap-1"
+                        className="text-slate-300 font-bold hover:underline flex items-center gap-1"
                       >
                         <span>Manage</span>
                         <ArrowRight className="w-3.5 h-3.5" />
@@ -192,13 +192,13 @@ export default function MyDealsHistoryTab({
                     <div className="flex items-center gap-2">
                       <span className="text-xs font-bold text-slate-100">{deal.displayAddress}</span>
                       <span className={`text-[10px] font-extrabold uppercase px-2 py-0.5 rounded border ${
-                        interest.status === 'WAITLIST' ? 'bg-amber-500/10 text-amber-400 border-amber-500/30' : 'bg-emerald-500/10 text-emerald-400 border-emerald-500/30'
+                        interest.status === 'WAITLIST' ? 'bg-amber-500/10 text-amber-400 border-amber-500/30' : 'bg-slate-800/10 text-slate-300 border-slate-700/30'
                       }`}>
                         {interest.status}
                       </span>
                     </div>
                     <p className="text-xs text-slate-300">
-                      Committed Intent: <span className="font-mono text-emerald-400 font-bold">
+                      Committed Intent: <span className="font-mono text-slate-300 font-bold">
                         {interest.amountIntent ? formatCurrencyAmount(interest.amountIntent, interest.currency) : `${interest.percentIntent}% of Target`}
                       </span>
                     </p>
@@ -222,10 +222,10 @@ export default function MyDealsHistoryTab({
       <div className="glass-card rounded-2xl border border-pw-border p-6 space-y-4">
         <div className="flex items-center justify-between border-b border-pw-border pb-3">
           <h3 className="text-base font-bold text-slate-100 flex items-center gap-2">
-            <MessageSquare className="w-5 h-5 text-emerald-400" />
+            <MessageSquare className="w-5 h-5 text-slate-300" />
             <span>Deal Communications & Inbound Email Trail</span>
           </h3>
-          <Link href="/dashboard/inbox" className="text-xs font-bold text-emerald-400 hover:underline">
+          <Link href="/dashboard/inbox" className="text-xs font-bold text-slate-300 hover:underline">
             Open Full Inbox
           </Link>
         </div>
@@ -254,8 +254,8 @@ export default function MyDealsHistoryTab({
 
                   {/* Business Card Snapshot display if present */}
                   {evt.metadata?.businessCard && (
-                    <div className="p-2.5 rounded-lg bg-black/40 border border-emerald-500/20 text-[11px] font-mono text-slate-300 space-y-0.5">
-                      <p>Shared Business Card: <span className="text-emerald-400 font-bold">{evt.metadata.businessCard.displayName}</span> ({evt.metadata.businessCard.email})</p>
+                    <div className="p-2.5 rounded-lg bg-black/40 border border-slate-700/20 text-[11px] font-mono text-slate-300 space-y-0.5">
+                      <p>Shared Business Card: <span className="text-slate-300 font-bold">{evt.metadata.businessCard.displayName}</span> ({evt.metadata.businessCard.email})</p>
                     </div>
                   )}
                 </div>

@@ -1,8 +1,10 @@
 "use client";
 
-import { useState, useEffect, useRef, useCallback } from "react";
+import { useState, useRef, useCallback, useMemo } from "react";
 import { useAcquisitionWizard } from "@/store/acquisitionWizardStore";
 import { defaultAddressProvider, type AddressSuggestion } from "@/lib/providers/address";
+import { SearchDropdown } from "@/components/search/SearchDropdown";
+import type { SearchItem } from "@/lib/search/searchDropdown";
 
 const US_STATES = [
   "AL", "AK", "AZ", "AR", "CA", "CO", "CT", "DE", "FL", "GA", "HI", "ID", "IL", "IN", "IA", "KS", "KY", "LA", "ME", "MD",
@@ -10,14 +12,9 @@ const US_STATES = [
   "SD", "TN", "TX", "UT", "VT", "VA", "WA", "WV", "WI", "WY"
 ];
 
-function useDebounce<T>(value: T, ms: number): T {
-  const [debounced, setDebounced] = useState(value);
-  useEffect(() => {
-    const t = setTimeout(() => setDebounced(value), ms);
-    return () => clearTimeout(t);
-  }, [value, ms]);
-  return debounced;
-}
+// Debouncing and the 3-character trigger now live inside <SearchDropdown />,
+// which is the single source of truth for predictive-search timing across the
+// dashboard header and this wizard step.
 
 export function AddressStep({ onNext }: { onNext: () => void }) {
   const { address, setAddress, setProjectName } = useAcquisitionWizard();
@@ -37,52 +34,49 @@ export function AddressStep({ onNext }: { onNext: () => void }) {
   const [manualState,       setManualState]       = useState("");
   const [manualZip,         setManualZip]         = useState("");
 
-  const [open,        setOpen]        = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
+  // Guards against an out-of-order response overwriting a newer one.
+  const requestSeq = useRef(0);
 
-  const debouncedQuery = useDebounce(query, 280);
+  /** Called by <SearchDropdown /> once debounced and past the 3-char trigger. */
+  const runAddressSearch = useCallback((q: string) => {
+    if (!q) { setSuggestions([]); setLoading(false); return; }
 
-  // Fetch suggestions whenever the debounced query changes
-  useEffect(() => {
-    if (selected) return; // already selected — don't re-query
-    if (debouncedQuery.trim().length < 2) { setSuggestions([]); return; }
-
-    let cancelled = false;
+    const seq = ++requestSeq.current;
     setLoading(true);
     setError(null);
 
     defaultAddressProvider
-      .autocomplete(debouncedQuery)
+      .autocomplete(q)
       .then((results) => {
-        if (cancelled) return;
+        if (seq !== requestSeq.current) return;
         setSuggestions(results);
-        setOpen(results.length > 0);
         setLoading(false);
       })
       .catch(() => {
-        if (cancelled) return;
+        if (seq !== requestSeq.current) return;
         setError("Address lookup failed. Try again.");
+        setSuggestions([]);
         setLoading(false);
       });
-
-    return () => { cancelled = true; };
-  }, [debouncedQuery, selected]);
-
-  // Close dropdown when clicking outside
-  useEffect(() => {
-    function handler(e: MouseEvent) {
-      if (containerRef.current && !containerRef.current.contains(e.target as Node)) {
-        setOpen(false);
-      }
-    }
-    document.addEventListener("mousedown", handler);
-    return () => document.removeEventListener("mousedown", handler);
   }, []);
+
+  /** Provider results -> dropdown items. Addresses are the "Properties" group. */
+  const searchItems = useMemo<SearchItem[]>(
+    () => suggestions.map((s) => ({
+      id: s.placeId,
+      label: s.formattedAddress,
+      group: 'properties' as const,
+      raw: s,
+    })),
+    [suggestions],
+  );
 
   const handleSelect = useCallback(async (s: AddressSuggestion) => {
     setSelected(s);
     setQuery(s.formattedAddress);
-    setOpen(false);
+    // Open/closed state is owned by <SearchDropdown />; clearing the results
+    // is what collapses the panel here.
     setSuggestions([]);
     
     setAddress({
@@ -182,81 +176,23 @@ export function AddressStep({ onNext }: { onNext: () => void }) {
                 Property Address *
               </label>
               <div ref={containerRef} className="relative">
-                <div
-                  className="flex items-center gap-3 rounded-xl px-4 py-3.5"
-                  style={{
-                    background: "rgba(22,19,24,0.8)",
-                    border: `1px solid ${selected ? "#45495540" : "rgba(255,255,255,0.1)"}`,
-                    boxShadow: selected ? "0 0 0 3px rgba(69,73,85,0.06)" : "none",
+                {/* Shared predictive-search component — same dropdown as the
+                    dashboard header. Replaces the bespoke input + suggestion
+                    list that used to live here. */}
+                <SearchDropdown
+                  testId="address-search"
+                  query={query}
+                  onQueryChange={(q) => {
+                    setQuery(q);
+                    if (selected) { setSelected(null); setAddress({}); }
                   }}
-                >
-                  <span
-                    className="material-symbols-outlined text-[20px] flex-shrink-0"
-                    style={{ color: selected ? "#454955" : "rgba(253,255,252,0.3)", fontVariationSettings: "'FILL' 0" }}
-                  >
-                    location_on
-                  </span>
-                  <input
-                    className="flex-1 bg-transparent outline-none text-sm placeholder:text-[rgba(253,255,252,0.3)]"
-                    style={{ color: "rgba(253,255,252,0.95)" }}
-                    placeholder="123 Main St, City, State"
-                    value={query}
-                    onChange={(e) => {
-                      setQuery(e.target.value);
-                      if (selected) { setSelected(null); setAddress({}); }
-                    }}
-                    onFocus={() => suggestions.length > 0 && setOpen(true)}
-                    autoComplete="off"
-                    spellCheck={false}
-                  />
-                  {loading && (
-                    <span
-                      className="w-4 h-4 border-2 rounded-full animate-spin flex-shrink-0"
-                      style={{ borderColor: "rgba(253,255,252,0.2)", borderTopColor: "#454955" }}
-                    />
-                  )}
-                </div>
-
-                {/* Suggestions Dropdown */}
-                {open && suggestions.length > 0 && (
-                  <div
-                    className="absolute z-50 top-full left-0 right-0 mt-1 rounded-xl overflow-hidden animate-in fade-in duration-100"
-                    style={{
-                      background: "rgba(18,27,34,0.98)",
-                      border: "1px solid rgba(255,255,255,0.1)",
-                      backdropFilter: "blur(24px)",
-                      boxShadow: "0 16px 40px rgba(0,0,0,0.5)",
-                    }}
-                  >
-                    {suggestions.map((s) => (
-                      <button
-                        key={s.placeId}
-                        className="w-full flex items-start gap-3 px-4 py-3 text-left transition-colors duration-100"
-                        style={{ borderBottom: "1px solid rgba(255,255,255,0.05)" }}
-                        onMouseEnter={(e) => (e.currentTarget.style.background = "rgba(69,73,85,0.06)")}
-                        onMouseLeave={(e) => (e.currentTarget.style.background = "transparent")}
-                        onClick={() => handleSelect(s)}
-                      >
-                        <span
-                          className="material-symbols-outlined text-[16px] mt-0.5 flex-shrink-0"
-                          style={{ color: "#454955", fontVariationSettings: "'FILL' 0" }}
-                        >
-                          location_on
-                        </span>
-                        <span className="text-[13px]" style={{ color: "rgba(253,255,252,0.85)" }}>
-                          {s.formattedAddress}
-                        </span>
-                      </button>
-                    ))}
-                  </div>
-                )}
-
-                {/* No results */}
-                {!loading && !open && query.trim().length >= 2 && !selected && suggestions.length === 0 && (
-                  <p className="mt-2 text-[12px]" style={{ color: "rgba(253,255,252,0.35)" }}>
-                    No addresses found. Try a different search.
-                  </p>
-                )}
+                  onDebouncedQueryChange={runAddressSearch}
+                  items={searchItems}
+                  loading={loading}
+                  onSelect={(item) => handleSelect(item.raw as AddressSuggestion)}
+                  placeholder="123 Main St, City, State"
+                  autoFocus
+                />
 
                 {/* Error */}
                 {error && (

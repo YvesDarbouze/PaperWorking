@@ -1,11 +1,19 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { useRouter, useSearchParams, usePathname } from 'next/navigation';
 import { useQuery } from '@tanstack/react-query';
 import { useProjectStore } from '@/store/projectStore';
+import { useAllDealsSync } from '@/hooks/useAllProjectsSync';
+import { usePortfolioMetricSnapshots } from '@/hooks/usePortfolioMetricSnapshots';
 import { useAuth } from '@/context/AuthContext';
 import { MetricsTable } from '@/components/insights/MetricsTable';
+import { KpiSectionGrid } from '@/components/insights/KpiSectionGrid';
+import {
+  priorPeriodValues,
+  TREND_PERIOD_LABELS,
+  type TrendPeriod,
+} from '@/lib/metrics/investorKpiView';
 import { TabNavigation } from '@/components/insights/TabNavigation';
 import { TimeSeriesSection } from '@/components/insights/TimeSeriesSection';
 import { ComparisonSection } from '@/components/insights/ComparisonSection';
@@ -51,12 +59,19 @@ export default function InsightsPage() {
   const { user } = useAuth();
   
   // Zustand projects store
+  // Hydrates the project store from Firestore. Without this `projects` is
+  // always empty: the scope toggle and project selector never render, and
+  // every KPI resolves to an em dash. This was missing on the page entirely.
+  useAllDealsSync();
+
   const projects = useProjectStore((s) => s.projects);
   const currentProject = useProjectStore((s) => s.currentProject);
   const setDeal = useProjectStore((s) => s.setDeal);
 
   // Scope: 'portfolio' | 'project'
   const [scope, setScope] = useState<'portfolio' | 'project'>('portfolio');
+  /** Granularity the trend arrows compare against. */
+  const [trendPeriod, setTrendPeriod] = useState<TrendPeriod>('monthly');
   const [selectedProjectId, setSelectedProjectId] = useState<string>('');
 
   // Active Tab determined by URL parameter '?tab='
@@ -132,18 +147,31 @@ export default function InsightsPage() {
     toast.success('Navigate to settings to link your Plaid bank account');
   };
 
+  // Historical snapshots at the selected granularity — the baseline for every
+  // trend arrow. With fewer than two periods `priorPeriodValues` returns {} and
+  // the arrows stay neutral rather than comparing against nothing.
+  const { snapshots: metricSnapshots } = usePortfolioMetricSnapshots(trendPeriod, projects);
+  const priorValues = useMemo(() => priorPeriodValues(metricSnapshots), [metricSnapshots]);
+
+  /** The project backing the per-project KPI view, if one is selected. */
+  const selectedProject = projects.find((p) => String(p.id) === selectedProjectId) ?? null;
+  const selectedProjectLabel =
+    (selectedProject as { address?: string; propertyName?: string } | null)?.address
+    ?? (selectedProject as { propertyName?: string } | null)?.propertyName
+    ?? 'Selected project';
+
   const hasProjects = projects.length > 0;
 
   return (
-    <div className="min-h-screen py-8 px-6 space-y-8 bg-slate-50 dark:bg-[#121014]/30">
+    <div className="min-h-screen py-8 px-6 space-y-8">
       
       {/* ── Header Area ── */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-6 border-b border-slate-200 dark:border-white/5">
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-6 border-b border-white/5">
         <div>
-          <h1 className="text-3xl font-bold tracking-tight text-slate-900 dark:text-white font-outfit">
+          <h1 className="text-3xl font-bold tracking-tight text-[var(--color-on-surface)] font-outfit">
             Insights
           </h1>
-          <p className="text-sm text-slate-500 dark:text-slate-400 mt-1.5 leading-relaxed">
+          <p className="text-sm text-[var(--color-on-surface-variant)] mt-1.5 leading-relaxed">
             Real-time calculations, persona KPIs, portfolio aggregation, and regulatory benchmarks.
           </p>
         </div>
@@ -155,7 +183,7 @@ export default function InsightsPage() {
             title={isCsvEnabled ? 'Export KPIs to CSV' : 'Upgrade to Professional to export CSV'}
             className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-semibold tracking-wide transition-all ${
               isCsvEnabled
-                ? 'bg-emerald-600 hover:bg-emerald-500 text-white shadow-sm cursor-pointer'
+                ? 'bg-slate-800 hover:bg-slate-700 text-white border border-slate-700 shadow-sm cursor-pointer'
                 : 'bg-slate-200 dark:bg-white/5 text-slate-400 cursor-not-allowed border border-slate-300 dark:border-white/10'
             }`}
           >
@@ -177,7 +205,16 @@ export default function InsightsPage() {
                   Portfolio
                 </button>
                 <button
-                  onClick={() => setScope('project')}
+                  onClick={() => {
+                    setScope('project');
+                    // The <select> below shows the first project as soon as it
+                    // mounts, but `selectedProjectId` starts empty — so without
+                    // this the UI shows a project while state says none is
+                    // chosen, and the context label reads "Selected project".
+                    if (!selectedProjectId && projects.length > 0) {
+                      setSelectedProjectId(String(projects[0].id));
+                    }
+                  }}
                   className={`px-3 py-1.5 rounded-md text-xs font-semibold tracking-wide transition-all duration-200 ${
                     scope === 'project'
                       ? 'bg-white dark:bg-white/10 text-slate-900 dark:text-white shadow-sm'
@@ -284,6 +321,46 @@ export default function InsightsPage() {
             </div>
           </div>
         ))}
+      </div>
+
+      {/* ── Viewing context + the 33 investor KPIs ── */}
+      <div className="space-y-4" data-testid="insights-kpi-block">
+        <div className="flex flex-wrap items-center justify-between gap-3">
+        <p className="text-sm text-[var(--color-on-surface-variant)]" data-testid="viewing-context">
+          Viewing insights for:{' '}
+          <span className="font-semibold text-white" data-testid="viewing-context-name">
+            {scope === 'portfolio' ? 'Portfolio Aggregate' : selectedProjectLabel}
+          </span>
+        </p>
+
+        <div className="flex items-center gap-2" data-testid="trend-period-selector">
+          <span className="text-xs text-[var(--color-on-surface-variant)]">Compare</span>
+          <div className="flex p-0.5 rounded-lg bg-white/5 border border-[var(--pw-border)]">
+            {(['monthly', 'quarterly', 'annual'] as TrendPeriod[]).map((tp) => (
+              <button
+                key={tp}
+                onClick={() => setTrendPeriod(tp)}
+                data-testid={`trend-period-${tp}`}
+                aria-pressed={trendPeriod === tp}
+                className={`pw-interactive-custom px-3 py-1 rounded-md text-xs font-semibold capitalize transition-colors cursor-pointer ${
+                  trendPeriod === tp
+                    ? 'bg-white/10 text-[var(--color-on-surface)]'
+                    : 'text-[var(--color-on-surface-variant)] hover:text-[var(--color-on-surface)]'
+                }`}
+              >
+                {tp === 'annual' ? 'Year' : tp === 'quarterly' ? 'Quarter' : 'Month'}
+              </button>
+            ))}
+          </div>
+        </div>
+        </div>
+
+        <KpiSectionGrid
+          project={scope === 'project' ? selectedProject : null}
+          portfolio={projects}
+          priorValues={priorValues}
+          periodLabel={TREND_PERIOD_LABELS[trendPeriod]}
+        />
       </div>
 
       {/* ── Analytics Visual Layer & Sub-sections ── */}

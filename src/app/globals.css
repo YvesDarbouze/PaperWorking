@@ -1,6 +1,20 @@
 @import "tailwindcss";
 @import "./typography-layer.css";
 
+/* ─────────────────────────────────────────────────────────────────────────────
+   Dark variant — class-based, not prefers-color-scheme.
+
+   ThemeProvider forces dark and sets BOTH `data-theme="dark"` and `class="dark"`
+   on <html>. Tailwind v4 defaults the `dark:` variant to the OS media query, so
+   without this registration every `dark:` utility in the app (905 of them across
+   42 files) only applied when the USER'S OPERATING SYSTEM was dark — not because
+   the app is. Components written `bg-white dark:bg-[#16141a]` rendered white for
+   light-OS users.
+
+   Both selectors are honoured so the attribute and the class stay interchangeable.
+   ───────────────────────────────────────────────────────────────────────────── */
+@custom-variant dark (&:where(.dark, .dark *, [data-theme="dark"], [data-theme="dark"] *));
+
 /* ═══════════════════════════════════════════════════════
    PaperWorking — v3 DESIGN SYSTEM
 

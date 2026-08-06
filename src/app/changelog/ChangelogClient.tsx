@@ -19,14 +19,14 @@ export default function ChangelogClient({ entries }: ChangelogClientProps) {
   }, []);
 
   return (
-    <div className="w-full max-w-4xl mx-auto py-12 px-6">
+    <div className="w-full max-w-4xl mx-auto py-8 px-6">
       {/* Header */}
-      <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-16 pb-6 border-b border-[var(--pw-border)]">
+      <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-10 pb-6 border-b border-[var(--pw-border)]">
         <div>
           <span className="uppercase tracking-widest text-xs font-black text-pw-success mb-3 block">
             Platform Updates
           </span>
-          <h1 className="text-4xl md:text-5xl font-light tracking-tighter text-[var(--pw-black)]">
+          <h1 className="font-semibold tracking-tighter text-[var(--pw-black)] type-display">
             What's New in PaperWorking
           </h1>
           <p className="text-sm text-[var(--pw-muted)] mt-2">

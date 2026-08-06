@@ -6,6 +6,7 @@ import { ArrowUpRight, Download } from 'lucide-react';
 import { useAllDealsSync } from '@/hooks/useAllProjectsSync';
 import { useProjectStore } from '@/store/projectStore';
 import { deriveAllMetrics } from '@/lib/metrics/reiMetrics';
+import { PHASE_COLORS_BY_NAME } from '@/lib/constants/phaseColors';
 
 /* ═══════════════════════════════════════════════════════════════
    Portfolio Comparison Matrix — Stitch screen b8ceb1c395c2458a979cb8feab4357e1
@@ -44,12 +45,7 @@ const METRIC_COLS: { key: SortKey; label: string; fmt: (v: number) => string; go
   { key: 'occupancy', label: 'Occupancy', fmt: (v) => `${v.toFixed(0)}%`,           good: 'high' },
 ];
 
-const PHASE_COLORS: Record<string, string> = {
-  Acquisition: 'text-blue-400 bg-blue-500/10 border-blue-500/20',
-  Fund:        'text-purple-400 bg-purple-500/10 border-purple-500/20',
-  Hold:        'text-[#6E7480] bg-[#454955]/10 border-[#454955]/20',
-  Exit:        'text-amber-400 bg-amber-500/10 border-amber-500/20',
-};
+const PHASE_COLORS: Record<string, string> = PHASE_COLORS_BY_NAME;
 
 function metricScore(col: typeof METRIC_COLS[number], values: number[], v: number): 'best' | 'worst' | 'mid' {
   const sorted = [...values].sort((a, b) => col.good === 'high' ? b - a : a - b);

@@ -25,11 +25,11 @@ import LandingFooter from '@/components/landing/LandingFooter';
    ═══════════════════════════════════════════════════════ */
 
 export const metadata: Metadata = {
-  title: 'Support & Knowledge Base | PaperWorking',
+  title: 'PaperWorking — Support Center',
   description:
     'Technical documentation, standard operating procedures, and direct support for real estate investors.',
   openGraph: {
-    title: 'Support & Knowledge Base | PaperWorking',
+    title: 'PaperWorking — Support Center',
     description:
       'Technical documentation, standard operating procedures, and direct support for real estate investors.',
     siteName: 'PaperWorking',

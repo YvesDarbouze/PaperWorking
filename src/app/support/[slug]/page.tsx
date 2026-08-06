@@ -40,7 +40,7 @@ export default async function SupportArticlePage({ params }: SupportArticlePageP
   const category = SUPPORT_CATEGORIES.find((c) => c.id === article.categoryId);
 
   return (
-    <article className="pt-16 pb-24 sm:pt-24 sm:pb-32">
+    <article className="pt-12 pb-16 sm:pt-16 sm:pb-20">
       <div className="mx-auto max-w-3xl px-6">
         {/* Back Link */}
         <Link
@@ -66,7 +66,7 @@ export default async function SupportArticlePage({ params }: SupportArticlePageP
             </div>
           )}
 
-          <h1 className="text-4xl sm:text-5xl lg:text-6xl tracking-tighter text-[var(--pw-black)] mb-6 leading-tight">
+          <h1 className="tracking-tighter text-[var(--pw-black)] mb-6 leading-tight type-display font-semibold">
             {article.title}
           </h1>
 

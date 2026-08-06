@@ -111,7 +111,7 @@ export default function DealDetailPage() {
       <div className="flex items-center justify-between">
         <Link
           href="/dashboard/deals"
-          className="inline-flex items-center gap-2 text-xs font-bold text-slate-400 hover:text-emerald-400 transition-colors"
+          className="inline-flex items-center gap-2 text-xs font-bold text-slate-400 hover:text-slate-300 transition-colors"
         >
           <ArrowLeft className="w-4 h-4" />
           <span>Back to Deals Marketplace</span>
@@ -125,7 +125,7 @@ export default function DealDetailPage() {
 
       {/* ── Address Hero Header ── */}
       <div className="glass-card rounded-2xl border border-pw-border p-6 md:p-8 space-y-6 relative overflow-hidden">
-        <div className="absolute top-0 right-0 w-96 h-96 bg-emerald-500/10 rounded-full blur-3xl pointer-events-none" />
+        <div className="absolute top-0 right-0 w-96 h-96 bg-slate-800/10 rounded-full blur-3xl pointer-events-none" />
 
         <div className="flex flex-col md:flex-row md:items-start justify-between gap-6 relative z-10">
           <div className="space-y-3">
@@ -147,11 +147,11 @@ export default function DealDetailPage() {
 
             <h1 className="text-2xl md:text-3xl font-extrabold text-slate-100">{deal.propertyName}</h1>
             <p className="text-sm text-slate-300 flex items-center gap-2">
-              <MapPin className="w-4 h-4 text-emerald-400 shrink-0" />
+              <MapPin className="w-4 h-4 text-slate-300 shrink-0" />
               <span>{deal.displayAddress}</span>
             </p>
             <p className="text-xs text-slate-400">
-              Canonical Slug: <code className="text-emerald-400 font-mono">{slugParam}</code>
+              Canonical Slug: <code className="text-slate-300 font-mono">{slugParam}</code>
             </p>
           </div>
 
@@ -161,7 +161,7 @@ export default function DealDetailPage() {
               onClick={handleSaveToggle}
               className={`h-11 px-4 rounded-xl border text-xs font-bold transition-all flex items-center gap-2 min-h-[44px] ${
                 isSaved
-                  ? 'bg-emerald-500/20 text-emerald-400 border-emerald-500/40'
+                  ? 'bg-slate-800/20 text-slate-300 border-slate-700/40'
                   : 'bg-white/5 text-slate-300 border-pw-border hover:bg-white/10'
               }`}
             >
@@ -194,12 +194,12 @@ export default function DealDetailPage() {
           <div className="glass-card rounded-2xl border border-pw-border p-6 space-y-6">
             <div className="flex items-center justify-between border-b border-pw-border pb-4">
               <h2 className="text-base font-bold text-slate-100 flex items-center gap-2">
-                <Calculator className="w-5 h-5 text-emerald-400" />
+                <Calculator className="w-5 h-5 text-slate-300" />
                 <span>Financial Underwriting Snapshot</span>
               </h2>
               <button
                 onClick={handleOpenAnalyzer}
-                className="text-xs font-bold text-emerald-400 hover:underline flex items-center gap-1"
+                className="text-xs font-bold text-slate-300 hover:underline flex items-center gap-1"
               >
                 <span>Deep Underwriting Mode</span>
                 <ExternalLink className="w-3.5 h-3.5" />
@@ -227,7 +227,7 @@ export default function DealDetailPage() {
                 <span className="text-[11px] font-bold uppercase tracking-wider text-slate-400 block mb-1">
                   After Repair Value
                 </span>
-                <span className="text-base font-extrabold font-mono text-emerald-400">
+                <span className="text-base font-extrabold font-mono text-slate-300">
                   {formatCurrencyAmount(metrics.arv)}
                 </span>
               </div>
@@ -235,7 +235,7 @@ export default function DealDetailPage() {
                 <span className="text-[11px] font-bold uppercase tracking-wider text-slate-400 block mb-1">
                   Monthly Rent
                 </span>
-                <span className="text-base font-extrabold font-mono text-emerald-400">
+                <span className="text-base font-extrabold font-mono text-slate-300">
                   {formatCurrencyAmount(metrics.monthlyRent)}
                 </span>
               </div>
@@ -243,32 +243,32 @@ export default function DealDetailPage() {
 
             {/* Return Metrics */}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4 pt-2">
-              <div className="p-4 rounded-xl bg-emerald-500/10 border border-emerald-500/30 flex items-center justify-between">
+              <div className="p-4 rounded-xl bg-slate-800/10 border border-slate-700/30 flex items-center justify-between">
                 <div>
                   <span className="text-xs font-bold uppercase text-slate-300 block">Cash-on-Cash Return</span>
-                  <span className="text-xl font-extrabold font-mono text-emerald-400 mt-1 block">
+                  <span className="text-xl font-extrabold font-mono text-white mt-1 block">
                     {metrics.cashOnCash}%
                   </span>
                 </div>
-                <TrendingUp className="w-6 h-6 text-emerald-400" />
+                <TrendingUp className="w-6 h-6 text-slate-300" />
               </div>
-              <div className="p-4 rounded-xl bg-emerald-500/10 border border-emerald-500/30 flex items-center justify-between">
+              <div className="p-4 rounded-xl bg-slate-800/10 border border-slate-700/30 flex items-center justify-between">
                 <div>
                   <span className="text-xs font-bold uppercase text-slate-300 block">Cap Rate</span>
-                  <span className="text-xl font-extrabold font-mono text-emerald-400 mt-1 block">
+                  <span className="text-xl font-extrabold font-mono text-white mt-1 block">
                     {metrics.capRate}%
                   </span>
                 </div>
-                <TrendingUp className="w-6 h-6 text-emerald-400" />
+                <TrendingUp className="w-6 h-6 text-slate-300" />
               </div>
-              <div className="p-4 rounded-xl bg-emerald-500/10 border border-emerald-500/30 flex items-center justify-between">
+              <div className="p-4 rounded-xl bg-slate-800/10 border border-slate-700/30 flex items-center justify-between">
                 <div>
                   <span className="text-xs font-bold uppercase text-slate-300 block">Projected ROI</span>
-                  <span className="text-xl font-extrabold font-mono text-emerald-400 mt-1 block">
+                  <span className="text-xl font-extrabold font-mono text-white mt-1 block">
                     {metrics.projectedROI}%
                   </span>
                 </div>
-                <TrendingUp className="w-6 h-6 text-emerald-400" />
+                <TrendingUp className="w-6 h-6 text-slate-300" />
               </div>
             </div>
           </div>
@@ -276,12 +276,12 @@ export default function DealDetailPage() {
           {/* Property Location Map */}
           <div className="glass-card rounded-2xl border border-pw-border p-6 space-y-4">
             <h3 className="text-sm font-bold text-slate-100 flex items-center gap-2">
-              <MapPin className="w-4 h-4 text-emerald-400" />
+              <MapPin className="w-4 h-4 text-slate-300" />
               <span>Location & Geographic Overview</span>
             </h3>
             <div className="h-64 w-full rounded-xl bg-slate-900 border border-pw-border relative overflow-hidden flex items-center justify-center">
               <div className="text-center space-y-2 p-6">
-                <MapPin className="w-8 h-8 text-emerald-400 mx-auto animate-bounce" />
+                <MapPin className="w-8 h-8 text-slate-300 mx-auto animate-bounce" />
                 <p className="text-sm font-bold text-slate-200">{deal.displayAddress}</p>
                 <p className="text-xs text-slate-400">Interactive geographic boundary & satellite view enabled</p>
               </div>
@@ -295,7 +295,7 @@ export default function DealDetailPage() {
           <div className="glass-card rounded-2xl border border-pw-border p-6 space-y-6">
             <div className="flex items-center justify-between">
               <h2 className="text-base font-bold text-slate-100 flex items-center gap-2">
-                <DollarSign className="w-5 h-5 text-emerald-400" />
+                <DollarSign className="w-5 h-5 text-slate-300" />
                 <span>Crowdfunding & Engagement</span>
               </h2>
               {funding.isFullyFunded && (
@@ -351,11 +351,11 @@ export default function DealDetailPage() {
               <img
                 src={deal.owner.avatarUrl}
                 alt={deal.owner.displayName}
-                className="w-14 h-14 rounded-2xl object-cover border border-emerald-500/30 shadow-md"
+                className="w-14 h-14 rounded-2xl object-cover border border-slate-700/30 shadow-md"
               />
               <div>
                 <h4 className="text-base font-extrabold text-slate-100">{deal.owner.displayName}</h4>
-                <p className="text-xs font-bold text-emerald-400">{deal.owner.title}</p>
+                <p className="text-xs font-bold text-slate-300">{deal.owner.title}</p>
                 <p className="text-xs text-slate-400">{deal.owner.organization}</p>
               </div>
             </div>

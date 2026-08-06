@@ -27,11 +27,11 @@ const FEATURES = [
 
 export default function ValuePropGrid() {
   return (
-    <section id="features" className="py-32 sm:py-48 bg-bg-surface border-t border-border-accent">
+    <section id="features" className="py-12 sm:py-20 bg-bg-surface border-t border-border-accent">
       <div className="mx-auto max-w-7xl px-10">
-        <div className="mx-auto max-w-4xl mb-32">
+        <div className="mx-auto max-w-4xl mb-12">
            <p className="text-xs font-black uppercase tracking-[0.5em] text-pw-accent mb-6">SYSTEM CORE — CORE FUNCTIONALITY</p>
-           <h2 className="text-5xl sm:text-7xl font-black text-text-primary tracking-tighter leading-none uppercase">
+           <h2 className="font-black text-text-primary tracking-tighter leading-none uppercase type-h2">
              THE ENGINE BUILT <br/> FOR SERIOUS OPERATORS.
            </h2>
         </div>

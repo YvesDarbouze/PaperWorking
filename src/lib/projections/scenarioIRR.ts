@@ -1,3 +1,22 @@
+/**
+ * SCOPE NOTE (Aug 2026 hardening sprint) — deliberately retained.
+ *
+ * Nothing in the app imports this module today; its only consumer is
+ * `src/__tests__/scenarioIRRNoMultiplier.test.ts` (26 tests). It was reviewed
+ * alongside the 3,668 lines of orphaned components deleted in this sprint and
+ * kept, for two reasons the deleted files did not share:
+ *
+ *   1. Those were React surfaces that duplicated live screens. This is a pure
+ *      finance primitive with no UI to duplicate.
+ *   2. Its test suite is a REGRESSION GUARD for a specific shipped bug —
+ *      scenario IRRs fabricated by scaling a base result with a hardcoded
+ *      coefficient instead of re-running the cash flows. Deleting the module
+ *      deletes the guard, and the next scenario feature can reintroduce the
+ *      same bug unnoticed.
+ *
+ * Wire it into a surface or delete it deliberately; do not let it rot silently.
+ */
+
 import type { Project } from '@/types/schema';
 import {
   computeNOI,

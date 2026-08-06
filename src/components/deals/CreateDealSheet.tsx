@@ -208,7 +208,7 @@ export default function CreateDealSheet({
         {/* Header */}
         <div className="flex items-center justify-between px-6 py-4 border-b border-pw-border bg-[var(--color-surface)]">
           <div className="flex items-center gap-2">
-            <Building2 className="w-5 h-5 text-emerald-400" />
+            <Building2 className="w-5 h-5 text-slate-300" />
             <h2 className="text-base font-bold text-slate-100">Create New Deal Listing</h2>
           </div>
           <button
@@ -252,11 +252,11 @@ export default function CreateDealSheet({
               value={address}
               onChange={(e) => setAddress(e.target.value)}
               placeholder="e.g. 123 Main St, Austin, TX 78701"
-              className="w-full px-4 py-2.5 rounded-xl bg-white/5 border border-pw-border text-slate-100 text-sm focus:border-emerald-500 focus:outline-none"
+              className="w-full px-4 py-2.5 rounded-xl bg-white/5 border border-pw-border text-slate-100 text-sm focus:border-slate-700 focus:outline-none"
             />
             {address && (
               <p className="text-[11px] text-slate-400">
-                Canonical Slug: <code className="text-emerald-400 font-mono">{generateDealSlug(address)}</code>
+                Canonical Slug: <code className="text-slate-300 font-mono">{generateDealSlug(address)}</code>
               </p>
             )}
           </div>
@@ -265,13 +265,13 @@ export default function CreateDealSheet({
           <div className="space-y-4 pt-2">
             <div className="flex items-center justify-between border-b border-pw-border pb-2">
               <h3 className="text-xs font-bold uppercase tracking-wider text-slate-300 flex items-center gap-2">
-                <Calculator className="w-4 h-4 text-emerald-400" />
+                <Calculator className="w-4 h-4 text-slate-300" />
                 <span>Investor Decision Metrics</span>
               </h3>
               <button
                 onClick={handleOpenInAnalyzer}
                 type="button"
-                className="text-xs font-bold text-emerald-400 hover:text-emerald-300 transition-all flex items-center gap-1"
+                className="text-xs font-bold text-slate-300 hover:text-slate-300 transition-all flex items-center gap-1"
               >
                 <span>Open in Deal Analyzer</span>
                 <ArrowRight className="w-3.5 h-3.5" />
@@ -285,7 +285,7 @@ export default function CreateDealSheet({
                   type="number"
                   value={price}
                   onChange={(e) => setPrice(e.target.value === '' ? '' : Number(e.target.value))}
-                  className="w-full px-3 py-2 rounded-lg bg-white/5 border border-pw-border text-slate-100 text-sm focus:border-emerald-500 focus:outline-none"
+                  className="w-full px-3 py-2 rounded-lg bg-white/5 border border-pw-border text-slate-100 text-sm focus:border-slate-700 focus:outline-none"
                 />
               </div>
               <div>
@@ -294,7 +294,7 @@ export default function CreateDealSheet({
                   type="number"
                   value={rehabCost}
                   onChange={(e) => setRehabCost(e.target.value === '' ? '' : Number(e.target.value))}
-                  className="w-full px-3 py-2 rounded-lg bg-white/5 border border-pw-border text-slate-100 text-sm focus:border-emerald-500 focus:outline-none"
+                  className="w-full px-3 py-2 rounded-lg bg-white/5 border border-pw-border text-slate-100 text-sm focus:border-slate-700 focus:outline-none"
                 />
               </div>
               <div>
@@ -303,7 +303,7 @@ export default function CreateDealSheet({
                   type="number"
                   value={arv}
                   onChange={(e) => setArv(e.target.value === '' ? '' : Number(e.target.value))}
-                  className="w-full px-3 py-2 rounded-lg bg-white/5 border border-pw-border text-slate-100 text-sm focus:border-emerald-500 focus:outline-none"
+                  className="w-full px-3 py-2 rounded-lg bg-white/5 border border-pw-border text-slate-100 text-sm focus:border-slate-700 focus:outline-none"
                 />
               </div>
               <div>
@@ -312,7 +312,7 @@ export default function CreateDealSheet({
                   type="number"
                   value={estimatedRent}
                   onChange={(e) => setEstimatedRent(e.target.value === '' ? '' : Number(e.target.value))}
-                  className="w-full px-3 py-2 rounded-lg bg-white/5 border border-pw-border text-slate-100 text-sm focus:border-emerald-500 focus:outline-none"
+                  className="w-full px-3 py-2 rounded-lg bg-white/5 border border-pw-border text-slate-100 text-sm focus:border-slate-700 focus:outline-none"
                 />
               </div>
             </div>
@@ -323,7 +323,7 @@ export default function CreateDealSheet({
                 type="number"
                 value={fundingTarget}
                 onChange={(e) => setFundingTarget(e.target.value === '' ? '' : Number(e.target.value))}
-                className="w-full px-3 py-2 rounded-lg bg-white/5 border border-pw-border text-slate-100 text-sm focus:border-emerald-500 focus:outline-none"
+                className="w-full px-3 py-2 rounded-lg bg-white/5 border border-pw-border text-slate-100 text-sm focus:border-slate-700 focus:outline-none"
               />
             </div>
           </div>

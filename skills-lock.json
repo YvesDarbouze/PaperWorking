@@ -11101,6 +11101,12 @@
       "skillPath": "skills/n8n-workflow-sdk/SKILL.md",
       "computedHash": "6bc2f4443f892dc5f1c7a974a6c7c1d08c9b2bba57f974c7e88f52ef5ee603d8"
     },
+    "n8n:content-design": {
+      "source": "n8n-io/n8n",
+      "sourceType": "github",
+      "skillPath": ".agents/skills/content-design/SKILL.md",
+      "computedHash": "e29cb30825a462dcdfc31820bf30992863ff6035c37272b81175961ab5ac85de"
+    },
     "nagios": {
       "source": "TerminalSkills/skills",
       "sourceType": "github",

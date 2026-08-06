@@ -92,36 +92,7 @@ const PLANS: Plan[] = [
   },
 ];
 
-const FAQ = [
-  {
-    q: 'I only close three or four deals a year. Is this worth it?',
-    a: "Low volume makes each deal matter more, not less. When one deal carries your year's returns, an expired contingency or a rehab that drifts over budget hurts. Run one live deal through the trial and decide.",
-  },
-  {
-    q: 'Is there a free trial? What happens to my data if I cancel?',
-    a: 'Every paid plan includes a 14-day trial. A card is required to start, but nothing is charged until day 15. If you cancel, you keep read access for 90 days and can export everything, including your full P&L, as CSV. Your data is yours.',
-  },
-  {
-    q: 'Can I add my CPA or business partner?',
-    a: 'On Investment Team, invite them with role permissions; your CPA can read everything and edit nothing. Investor is a solo plan; your CPA still gets the one-click P&L export.',
-  },
-  {
-    q: 'Is there a contract or minimum commitment?',
-    a: 'No contracts, no minimums. Cancel anytime from Settings — no call, no retention flow. Annual plans bill once a year and include a 30-day refund window; monthly plans bill month to month.',
-  },
-  {
-    q: 'My spreadsheet system works. Why switch?',
-    a: "Spreadsheets don't know when your earnest money goes hard. They don't alert you three days before your inspection period ends, tie draws to a line-item budget, or hand your CPA one organized export at year end. Run one deal in parallel and compare. If it doesn't catch something or save you time, cancel; the trial costs you nothing.",
-  },
-  {
-    q: 'Does PaperWorking replace my accounting software?',
-    a: 'No. It tracks project-level costs, budgets, and performance, and exports clean reports your accountant can use — alongside your accounting stack, not instead of it.',
-  },
-  {
-    q: 'How is my data protected?',
-    a: 'Encrypted storage, redundant backups, and SOC 2-ready infrastructure.',
-  },
-];
+
 
 /** Dynamically computes per-month equivalent from annual price (annual / 12, formatted to 2 decimals) */
 function formatMonthlyEquiv(annualPrice: number): string {
@@ -318,51 +289,7 @@ export default function PricingSection({ onSelectPlan }: { onSelectPlan?: (plan:
           </div>
         </motion.div>
 
-        {/* ── What does one missed deadline cost? ── */}
-        <motion.div
-          initial="hidden"
-          whileInView="visible"
-          viewport={{ once: true, margin: '-40px' }}
-          variants={stagger}
-          className="max-w-4xl mx-auto px-6 lg:px-8 py-10 md:py-12 border-t border-white/5"
-        >
-          <div className="glass-card rounded-[24px] p-6 sm:p-10 border border-white/10 bg-surface-container-low/20">
-            <h2 className="text-2xl sm:text-3xl font-semibold text-on-surface mb-3 leading-tight type-h2">
-              What does one missed deadline cost?
-            </h2>
-            <p className="text-base sm:text-lg text-on-surface-variant leading-[1.65] type-body">
-              A blown contingency window can put a five-figure earnest money deposit at risk — more than two years of an Investor plan. An untracked contractor draw can move tens of thousands off your margin before a spreadsheet shows it. PaperWorking won&apos;t catch every problem. It shows you the variance while you can still act.
-            </p>
-          </div>
-        </motion.div>
 
-        {/* ── FAQ ── */}
-        <motion.div
-          initial="hidden"
-          whileInView="visible"
-          viewport={{ once: true, margin: '-40px' }}
-          variants={stagger}
-          className="max-w-4xl mx-auto px-6 lg:px-8 py-10 md:py-12 border-t border-white/5"
-        >
-          <div className="mb-6">
-            <h2 className="text-2xl sm:text-3xl font-semibold text-on-surface mb-2 type-h2">
-              Frequently Asked Questions
-            </h2>
-          </div>
-
-          <div className="space-y-4">
-            {FAQ.map((item, i) => (
-              <div key={i} className="glass-card rounded-[20px] p-5 sm:p-6 border border-white/8 bg-surface-container-low/20">
-                <h3 className="text-lg font-semibold text-on-surface mb-2 leading-snug type-h3">
-                  {item.q}
-                </h3>
-                <p className="text-base text-on-surface-variant leading-[1.65] type-body">
-                  {item.a}
-                </p>
-              </div>
-            ))}
-          </div>
-        </motion.div>
 
         {/* ── Final CTA ── */}
         <motion.div

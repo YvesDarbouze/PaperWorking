@@ -87,27 +87,22 @@ describe('PROMPT 3 — Pricing Page Billing Toggle & Copy Purges Verification', 
       expect(content).not.toContain('Billed annually. Cancel anytime from Settings, no call required; annual plans include a 30-day refund window.');
     });
 
-    it('PricingSection preserves the Missed Deadline section, 7 FAQ items, and Final CTA section', () => {
+    it('PricingSection purges Missed Deadline and FAQ sections per user specification, preserving Final CTA section', () => {
       const content = fs.readFileSync(pricingSectionPath, 'utf8');
 
-      // What does one missed deadline cost? section preserved with tightened padding
-      expect(content).toContain('What does one missed deadline cost?');
-      expect(content).toContain('A blown contingency window can put a five-figure earnest money deposit at risk');
+      // Missed Deadline section purged
+      expect(content).not.toContain('What does one missed deadline cost?');
+      expect(content).not.toContain('A blown contingency window can put a five-figure earnest money deposit at risk');
 
-      // 7 FAQ items present
-      expect(content).toContain('I only close three or four deals a year. Is this worth it?');
-      expect(content).toContain('Is there a free trial? What happens to my data if I cancel?');
-      expect(content).toContain('Can I add my CPA or business partner?');
-      expect(content).toContain('Is there a contract or minimum commitment?');
-      expect(content).toContain('My spreadsheet system works. Why switch?');
-      expect(content).toContain('Does PaperWorking replace my accounting software?');
-      expect(content).toContain('How is my data protected?');
+      // FAQ section purged from PricingSection
+      expect(content).not.toContain('Frequently Asked Questions');
+      expect(content).not.toContain('I only close three or four deals a year. Is this worth it?');
 
-      // Final CTA section
+      // Final CTA section preserved
       expect(content).toContain('Start with one deal.');
       expect(content).toContain('Start Free 14-Day Trial');
 
-      // Integrations bar
+      // Integrations bar preserved
       expect(content).toContain('Integrates with the tools you already use: Plaid, MLS, DocuSign, Stripe, RentCast.');
     });
   });

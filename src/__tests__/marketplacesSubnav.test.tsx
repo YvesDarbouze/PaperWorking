@@ -45,16 +45,18 @@ describe('PROMPT 4 — Marketplaces Subnavigation & Compliance Verification', ()
       expect(vendorsTab.getAttribute('aria-selected')).toBe('false');
     });
 
-    it('preserves all verbatim marketing copy and compliance disclaimers', () => {
+    it('preserves all verbatim marketing copy and compliance disclaimers on Marketplaces surface', () => {
       const clientPath = path.resolve(process.cwd(), 'src/components/landing/MarketplacesClient.tsx');
       const content = fs.readFileSync(clientPath, 'utf8');
 
       expect(content).toContain('Two marketplaces, one network');
       expect(content).toContain('Come for the tools. Stay for the community.');
-      expect(content).toContain('Put your Project in front of investors who are looking.');
-      expect(content).toContain('Find the right professional when the deal needs them.');
-      expect(content).toContain('PaperWorking facilitates introductions and interest tracking only. No funds, securities, or ownership interests are offered, sold, or transferred through the platform');
+      expect(content).toContain('PaperWorking subscribers have exclusive access to powerful tools for serious real estate investors.');
       expect(content).toContain('PaperWorking is project management software, not investment advice. Marketplace listings are not offers to sell securities.');
+
+      // Below the fold blocks purged per user request
+      expect(content).not.toContain('Put your Project in front of investors who are looking.');
+      expect(content).not.toContain('Find the right professional when the deal needs them.');
     });
   });
 

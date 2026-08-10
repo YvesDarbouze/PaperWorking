@@ -9,6 +9,34 @@
       "count": 1
     }
   },
+  "crew/config.ts": {
+    "@typescript-eslint/no-explicit-any": {
+      "count": 1
+    }
+  },
+  "crew/personas.ts": {
+    "@typescript-eslint/no-explicit-any": {
+      "count": 1
+    }
+  },
+  "crew/teardown.ts": {
+    "@typescript-eslint/no-explicit-any": {
+      "count": 9
+    },
+    "@typescript-eslint/no-unused-vars": {
+      "count": 1
+    }
+  },
+  "e2e/agent-crew-real-space.spec.ts": {
+    "@typescript-eslint/no-explicit-any": {
+      "count": 1
+    }
+  },
+  "e2e/agent-messaging-real-space.spec.ts": {
+    "@typescript-eslint/no-explicit-any": {
+      "count": 7
+    }
+  },
   "e2e/aq3_shell_flow.spec.ts": {
     "@typescript-eslint/no-unused-vars": {
       "count": 1
@@ -119,6 +147,11 @@
   "e2e/income-assumptions.spec.ts": {
     "@typescript-eslint/no-unused-vars": {
       "count": 1
+    }
+  },
+  "e2e/insights-agent-crew.spec.ts": {
+    "@typescript-eslint/no-explicit-any": {
+      "count": 5
     }
   },
   "e2e/inspection-title.spec.ts": {
@@ -258,6 +291,11 @@
       "count": 8
     }
   },
+  "scripts/capture-final-screenshots.ts": {
+    "@typescript-eslint/no-explicit-any": {
+      "count": 3
+    }
+  },
   "scripts/capture-honesty.ts": {
     "@typescript-eslint/no-unused-vars": {
       "count": 1
@@ -271,6 +309,11 @@
   "scripts/db-proofs.ts": {
     "@typescript-eslint/no-explicit-any": {
       "count": 2
+    }
+  },
+  "scripts/deep_ux_audit.js": {
+    "@typescript-eslint/no-unused-vars": {
+      "count": 1
     }
   },
   "scripts/demoClosingTimeline.ts": {
@@ -299,6 +342,11 @@
   "scripts/find_spacing_offenders.js": {
     "@typescript-eslint/no-require-imports": {
       "count": 2
+    }
+  },
+  "scripts/finish_ux_audit_screenshots.js": {
+    "@typescript-eslint/no-unused-vars": {
+      "count": 1
     }
   },
   "scripts/live-golden-file-check.ts": {
@@ -340,6 +388,11 @@
       "count": 1
     }
   },
+  "scripts/run_reachability_audit.js": {
+    "@typescript-eslint/no-unused-vars": {
+      "count": 1
+    }
+  },
   "scripts/seed-additional-projects.ts": {
     "@typescript-eslint/no-unused-vars": {
       "count": 1
@@ -373,6 +426,11 @@
   },
   "scripts/verifySeeds.ts": {
     "@typescript-eslint/no-require-imports": {
+      "count": 3
+    }
+  },
+  "scripts/verify_reality_gate.js": {
+    "@typescript-eslint/no-unused-vars": {
       "count": 3
     }
   },
@@ -626,6 +684,14 @@
       "count": 2
     }
   },
+  "src/__tests__/crewGovernance.test.ts": {
+    "@typescript-eslint/no-explicit-any": {
+      "count": 2
+    },
+    "no-var": {
+      "count": 3
+    }
+  },
   "src/__tests__/crowdfundingMarketplace.test.tsx": {
     "@typescript-eslint/no-explicit-any": {
       "count": 6
@@ -732,6 +798,16 @@
   "src/__tests__/dealStateMachine.test.ts": {
     "@typescript-eslint/no-unused-vars": {
       "count": 3
+    }
+  },
+  "src/__tests__/dealsAddressSearch.test.ts": {
+    "@typescript-eslint/ban-ts-comment": {
+      "count": 1
+    }
+  },
+  "src/__tests__/dealsEngagement.test.ts": {
+    "@typescript-eslint/no-explicit-any": {
+      "count": 2
     }
   },
   "src/__tests__/dealsMapAndVisibility.test.tsx": {
@@ -1162,6 +1238,11 @@
       "count": 1
     }
   },
+  "src/__tests__/navContract.test.ts": {
+    "@typescript-eslint/no-unused-vars": {
+      "count": 2
+    }
+  },
   "src/__tests__/navigationContract.test.tsx": {
     "@typescript-eslint/no-unused-vars": {
       "count": 1
@@ -1228,6 +1309,11 @@
   "src/__tests__/permanentRecordArchive.test.tsx": {
     "@typescript-eslint/no-explicit-any": {
       "count": 2
+    }
+  },
+  "src/__tests__/pricingPageToggle.test.tsx": {
+    "@typescript-eslint/no-explicit-any": {
+      "count": 3
     }
   },
   "src/__tests__/pricingResumeCheckout.test.tsx": {
@@ -1525,6 +1611,11 @@
       "count": 4
     }
   },
+  "src/__tests__/supportSearchIndex.test.ts": {
+    "@typescript-eslint/no-unused-vars": {
+      "count": 1
+    }
+  },
   "src/__tests__/syndicationCapTable.test.tsx": {
     "@typescript-eslint/no-explicit-any": {
       "count": 2
@@ -1794,6 +1885,25 @@
       "count": 1
     }
   },
+  "src/app/admin/agent-crew/admin-dashboard.test.ts": {
+    "@typescript-eslint/no-explicit-any": {
+      "count": 1
+    }
+  },
+  "src/app/admin/agent-crew/page.tsx": {
+    "@typescript-eslint/no-explicit-any": {
+      "count": 8
+    },
+    "@typescript-eslint/no-unused-vars": {
+      "count": 1
+    },
+    "react-hooks/exhaustive-deps": {
+      "count": 1
+    },
+    "react-hooks/set-state-in-effect": {
+      "count": 2
+    }
+  },
   "src/app/admin/analytics/page.tsx": {
     "react-hooks/set-state-in-effect": {
       "count": 1
@@ -1840,6 +1950,29 @@
   "src/app/api/account/data/download/route.ts": {
     "@typescript-eslint/no-explicit-any": {
       "count": 5
+    }
+  },
+  "src/app/api/admin/agent-crew/[id]/impersonate/route.ts": {
+    "@typescript-eslint/no-explicit-any": {
+      "count": 2
+    }
+  },
+  "src/app/api/admin/agent-crew/[id]/route.ts": {
+    "@typescript-eslint/no-explicit-any": {
+      "count": 7
+    }
+  },
+  "src/app/api/admin/agent-crew/purge-all/route.ts": {
+    "@typescript-eslint/no-explicit-any": {
+      "count": 1
+    },
+    "@typescript-eslint/no-unused-vars": {
+      "count": 7
+    }
+  },
+  "src/app/api/admin/agent-crew/route.ts": {
+    "@typescript-eslint/no-explicit-any": {
+      "count": 4
     }
   },
   "src/app/api/admin/lender-checklists/route.ts": {
@@ -2159,6 +2292,19 @@
       "count": 4
     }
   },
+  "src/app/api/insights/portfolio/route.ts": {
+    "@typescript-eslint/no-explicit-any": {
+      "count": 3
+    },
+    "prefer-const": {
+      "count": 1
+    }
+  },
+  "src/app/api/insights/route.ts": {
+    "@typescript-eslint/no-explicit-any": {
+      "count": 4
+    }
+  },
   "src/app/api/insights/trends/route.ts": {
     "@typescript-eslint/no-explicit-any": {
       "count": 4
@@ -2276,11 +2422,34 @@
       "count": 1
     }
   },
+  "src/app/api/marketplace/listings/route.ts": {
+    "@typescript-eslint/no-explicit-any": {
+      "count": 2
+    },
+    "@typescript-eslint/no-unused-vars": {
+      "count": 1
+    }
+  },
   "src/app/api/mcp/[transport]/route.ts": {
     "@typescript-eslint/no-explicit-any": {
       "count": 1
     },
     "@typescript-eslint/no-unused-vars": {
+      "count": 1
+    }
+  },
+  "src/app/api/messages/[id]/read/route.ts": {
+    "@typescript-eslint/no-explicit-any": {
+      "count": 1
+    }
+  },
+  "src/app/api/messages/route.ts": {
+    "@typescript-eslint/no-explicit-any": {
+      "count": 4
+    }
+  },
+  "src/app/api/messages/thread/[threadId]/route.ts": {
+    "@typescript-eslint/no-explicit-any": {
       "count": 1
     }
   },
@@ -2753,6 +2922,11 @@
       "count": 4
     }
   },
+  "src/app/api/webhooks/inbound-email/route.ts": {
+    "@typescript-eslint/no-explicit-any": {
+      "count": 1
+    }
+  },
   "src/app/api/webhooks/resend/route.ts": {
     "@typescript-eslint/no-explicit-any": {
       "count": 3
@@ -2818,15 +2992,26 @@
       "count": 1
     }
   },
+  "src/app/dashboard/deals/[slug]/page.tsx": {
+    "@next/next/no-img-element": {
+      "count": 1
+    },
+    "@typescript-eslint/no-unused-vars": {
+      "count": 4
+    }
+  },
   "src/app/dashboard/deals/page.tsx": {
     "@typescript-eslint/no-explicit-any": {
       "count": 2
     },
     "@typescript-eslint/no-unused-vars": {
+      "count": 13
+    },
+    "react-hooks/rules-of-hooks": {
       "count": 1
     },
     "react-hooks/set-state-in-effect": {
-      "count": 3
+      "count": 4
     }
   },
   "src/app/dashboard/field-manager/page.tsx": {
@@ -2870,10 +3055,10 @@
       "count": 2
     },
     "@typescript-eslint/no-explicit-any": {
-      "count": 2
+      "count": 7
     },
     "@typescript-eslint/no-unused-vars": {
-      "count": 5
+      "count": 4
     },
     "react-hooks/set-state-in-effect": {
       "count": 1
@@ -3060,7 +3245,7 @@
       "count": 5
     },
     "@typescript-eslint/no-unused-vars": {
-      "count": 5
+      "count": 1
     },
     "react-hooks/set-state-in-effect": {
       "count": 1
@@ -3190,7 +3375,7 @@
   },
   "src/app/dashboard/projects/[id]/underwriting/page.tsx": {
     "@typescript-eslint/no-explicit-any": {
-      "count": 3
+      "count": 4
     },
     "@typescript-eslint/no-unused-vars": {
       "count": 7
@@ -3323,6 +3508,14 @@
       "count": 1
     }
   },
+  "src/app/deal/[slug]/preview/page.tsx": {
+    "@typescript-eslint/no-unused-vars": {
+      "count": 3
+    },
+    "react-hooks/set-state-in-effect": {
+      "count": 1
+    }
+  },
   "src/app/deals/[listingId]/DealListingClientPage.tsx": {
     "react-hooks/set-state-in-effect": {
       "count": 1
@@ -3370,6 +3563,22 @@
   },
   "src/app/layout.tsx": {
     "@next/next/no-page-custom-font": {
+      "count": 1
+    }
+  },
+  "src/app/marketplace/investors/[id]/page.tsx": {
+    "@typescript-eslint/no-explicit-any": {
+      "count": 1
+    },
+    "@typescript-eslint/no-unused-vars": {
+      "count": 1
+    }
+  },
+  "src/app/marketplace/page.tsx": {
+    "@typescript-eslint/no-explicit-any": {
+      "count": 1
+    },
+    "react-hooks/set-state-in-effect": {
       "count": 1
     }
   },
@@ -4090,10 +4299,10 @@
       "count": 1
     },
     "@typescript-eslint/no-explicit-any": {
-      "count": 13
+      "count": 12
     },
     "@typescript-eslint/no-unused-vars": {
-      "count": 7
+      "count": 8
     },
     "react-hooks/set-state-in-effect": {
       "count": 2
@@ -4221,6 +4430,11 @@
       "count": 1
     }
   },
+  "src/components/dashboard/home/ProjectsWidget.tsx": {
+    "@typescript-eslint/no-unused-vars": {
+      "count": 1
+    }
+  },
   "src/components/dashboard/home/ROIChart.tsx": {
     "@typescript-eslint/no-explicit-any": {
       "count": 2
@@ -4242,6 +4456,41 @@
   "src/components/dashboard/kanban/TransitionConfirmationModal.tsx": {
     "react/no-unescaped-entities": {
       "count": 2
+    }
+  },
+  "src/components/deals/CreateDealSheet.tsx": {
+    "@typescript-eslint/no-explicit-any": {
+      "count": 1
+    },
+    "@typescript-eslint/no-unused-vars": {
+      "count": 2
+    },
+    "react-hooks/set-state-in-effect": {
+      "count": 2
+    }
+  },
+  "src/components/deals/DealEngagementModule.tsx": {
+    "@typescript-eslint/no-unused-vars": {
+      "count": 3
+    },
+    "react/no-unescaped-entities": {
+      "count": 1
+    }
+  },
+  "src/components/deals/MarketplaceDealCard.tsx": {
+    "@next/next/no-img-element": {
+      "count": 1
+    },
+    "@typescript-eslint/no-unused-vars": {
+      "count": 2
+    }
+  },
+  "src/components/deals/MyDealsHistoryTab.tsx": {
+    "@typescript-eslint/no-explicit-any": {
+      "count": 1
+    },
+    "@typescript-eslint/no-unused-vars": {
+      "count": 10
     }
   },
   "src/components/engine/ContactManager.tsx": {
@@ -4276,7 +4525,7 @@
   },
   "src/components/evaluation/DealAnalyzerResults.tsx": {
     "@typescript-eslint/no-explicit-any": {
-      "count": 5
+      "count": 6
     },
     "@typescript-eslint/no-unused-vars": {
       "count": 9
@@ -4937,7 +5186,7 @@
   },
   "src/components/layout/Sidebar.tsx": {
     "@typescript-eslint/no-unused-vars": {
-      "count": 1
+      "count": 2
     },
     "react-hooks/immutability": {
       "count": 1
@@ -4954,13 +5203,13 @@
       "count": 6
     },
     "@typescript-eslint/no-unused-vars": {
-      "count": 3
+      "count": 2
     },
     "react-hooks/exhaustive-deps": {
       "count": 1
     },
     "react-hooks/set-state-in-effect": {
-      "count": 3
+      "count": 2
     },
     "react/no-unescaped-entities": {
       "count": 4
@@ -5253,7 +5502,7 @@
   },
   "src/components/project/ActivityTimeline.tsx": {
     "@typescript-eslint/no-explicit-any": {
-      "count": 2
+      "count": 1
     },
     "react-hooks/set-state-in-effect": {
       "count": 1
@@ -6424,11 +6673,17 @@
   "src/components/settings/NotificationSettingsTab.tsx": {
     "@typescript-eslint/no-explicit-any": {
       "count": 1
+    },
+    "@typescript-eslint/no-unused-vars": {
+      "count": 1
     }
   },
   "src/components/settings/SettingsLayout.tsx": {
     "@typescript-eslint/no-explicit-any": {
       "count": 2
+    },
+    "@typescript-eslint/no-unused-vars": {
+      "count": 1
     }
   },
   "src/components/settings/SettingsSidebar.tsx": {
@@ -6676,6 +6931,11 @@
       "count": 1
     }
   },
+  "src/insights/kpi-calculations.test.ts": {
+    "@typescript-eslint/no-explicit-any": {
+      "count": 6
+    }
+  },
   "src/jest.setup.ts": {
     "@typescript-eslint/no-explicit-any": {
       "count": 2
@@ -6803,7 +7063,12 @@
   },
   "src/lib/deal-analyzer/wizardState.ts": {
     "@typescript-eslint/no-explicit-any": {
-      "count": 3
+      "count": 4
+    }
+  },
+  "src/lib/deals/historyUtils.ts": {
+    "@typescript-eslint/no-explicit-any": {
+      "count": 4
     }
   },
   "src/lib/deals/publishGate.ts": {
@@ -6828,6 +7093,11 @@
   },
   "src/lib/entitlements/server.ts": {
     "@typescript-eslint/no-unused-vars": {
+      "count": 2
+    }
+  },
+  "src/lib/firebase-admin/admin-guard.ts": {
+    "@typescript-eslint/no-explicit-any": {
       "count": 2
     }
   },
@@ -6948,6 +7218,14 @@
       "count": 10
     }
   },
+  "src/lib/insights/kpiEngine.ts": {
+    "@typescript-eslint/no-explicit-any": {
+      "count": 8
+    },
+    "@typescript-eslint/no-unused-vars": {
+      "count": 2
+    }
+  },
   "src/lib/intelligence/__tests__/guards.test.ts": {
     "@typescript-eslint/no-unused-vars": {
       "count": 1
@@ -6986,6 +7264,11 @@
   },
   "src/lib/jobs/refreshPlaceIds.ts": {
     "@typescript-eslint/no-explicit-any": {
+      "count": 1
+    }
+  },
+  "src/lib/listings/obfuscation.ts": {
+    "@typescript-eslint/no-unused-vars": {
       "count": 1
     }
   },
@@ -7132,7 +7415,7 @@
   },
   "src/lib/notifications/eventStream.ts": {
     "@typescript-eslint/no-explicit-any": {
-      "count": 5
+      "count": 6
     }
   },
   "src/lib/notifications/lifecycleAlertEngine.ts": {
@@ -7147,7 +7430,7 @@
   },
   "src/lib/operations/variance.ts": {
     "@typescript-eslint/no-explicit-any": {
-      "count": 1
+      "count": 2
     }
   },
   "src/lib/packages/documentPackagesEngine.ts": {
@@ -7460,6 +7743,11 @@
       "count": 1
     }
   },
+  "src/lib/stripe/client.ts": {
+    "@typescript-eslint/no-explicit-any": {
+      "count": 1
+    }
+  },
   "src/lib/tax/pdfGenerator.ts": {
     "@typescript-eslint/no-unused-vars": {
       "count": 1
@@ -7570,6 +7858,16 @@
       "count": 2
     }
   },
+  "src/marketplace/listings.test.ts": {
+    "@typescript-eslint/no-explicit-any": {
+      "count": 2
+    }
+  },
+  "src/messaging/agent-messages.test.ts": {
+    "@typescript-eslint/no-explicit-any": {
+      "count": 2
+    }
+  },
   "src/scripts/market-vitals-scraper.ts": {
     "@typescript-eslint/no-unused-vars": {
       "count": 1
@@ -7583,6 +7881,27 @@
   "src/scripts/migrate-to-projects.ts": {
     "@typescript-eslint/no-unused-vars": {
       "count": 3
+    }
+  },
+  "src/scripts/seedAgentCrew.ts": {
+    "@typescript-eslint/no-explicit-any": {
+      "count": 7
+    },
+    "@typescript-eslint/no-unused-vars": {
+      "count": 1
+    },
+    "prefer-const": {
+      "count": 1
+    }
+  },
+  "src/scripts/seedAgentMessages.ts": {
+    "@typescript-eslint/no-explicit-any": {
+      "count": 3
+    }
+  },
+  "src/scripts/seedMarketplaceListings.ts": {
+    "@typescript-eslint/no-explicit-any": {
+      "count": 2
     }
   },
   "src/scripts/social-explorer-scraper.ts": {
@@ -7607,6 +7926,9 @@
     }
   },
   "src/store/settingsStore.ts": {
+    "@typescript-eslint/no-explicit-any": {
+      "count": 12
+    },
     "@typescript-eslint/no-unused-vars": {
       "count": 1
     }
@@ -7634,7 +7956,7 @@
   },
   "src/types/schema.ts": {
     "@typescript-eslint/no-explicit-any": {
-      "count": 33
+      "count": 34
     }
   },
   "verify_team_system.ts": {

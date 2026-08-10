@@ -21,7 +21,7 @@ export default function MobileBottomNav() {
       {navItems.map((item) => {
         const isActive = item.exact
           ? pathname === item.href
-          : pathname.startsWith(item.href);
+          : Boolean(pathname?.startsWith(item.href));
 
         const Icon = item.icon;
 

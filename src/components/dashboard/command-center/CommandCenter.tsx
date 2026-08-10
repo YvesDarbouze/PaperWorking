@@ -3,6 +3,7 @@
 import { useMemo, useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import toast from "react-hot-toast";
 import dynamic from "next/dynamic";
 import { collection, doc, query, orderBy, limit, onSnapshot, Timestamp, where } from "firebase/firestore";
 import { db } from "@/lib/firebase/config";
@@ -27,6 +28,7 @@ import {
 } from "@/lib/metrics/reiMetrics";
 import type { Project } from "@/types/schema";
 import type { DealListingTeaser } from "@/types/listing";
+import { PHASE_COLORS as CANONICAL_PHASES, getPhaseLabel } from "@/lib/constants/phaseColors";
 import { METRIC_TAXONOMY, type MetricCategory } from "@/lib/metrics/metricTaxonomy";
 
 const InsightsTab = dynamic(() => import("@/components/portfolio/InsightsTab"), { ssr: false });
@@ -1876,11 +1878,37 @@ function FeaturedMetricSlot({ isDark, kpis }: { isDark: boolean; kpis: Portfolio
   );
 }
 
-// ─── Alerts Widget ───
+// ─── Alerts Widget (Interactive — dismiss + action buttons) ───
+const ALERTS_DISMISS_KEY = 'pw_dismissed_alerts';
+
+function useAlertDismissals() {
+  const [dismissed, setDismissed] = useState<Set<string>>(() => {
+    if (typeof window === 'undefined') return new Set();
+    try {
+      const raw = localStorage.getItem(ALERTS_DISMISS_KEY);
+      return raw ? new Set(JSON.parse(raw)) : new Set();
+    } catch { return new Set(); }
+  });
+
+  const dismiss = (id: string) => {
+    setDismissed(prev => {
+      const next = new Set(prev);
+      next.add(id);
+      try { localStorage.setItem(ALERTS_DISMISS_KEY, JSON.stringify([...next])); } catch {}
+      return next;
+    });
+  };
+
+  return { dismissed, dismiss };
+}
+
 function AlertsWidget({ isDark }: { isDark: boolean }) {
   const projects = useProjectStore((s) => s.projects);
   const ledgerMap = useProjectStore((s) => s.ledgerItems || {});
+  const router = useRouter();
   const t = tokens(isDark);
+  const { dismissed, dismiss } = useAlertDismissals();
+  const [categorizeModal, setCategorizeModal] = useState(false);
 
   const transactions = useMemo(() => {
     return Object.values(ledgerMap).flat();
@@ -1914,30 +1942,145 @@ function AlertsWidget({ isDark }: { isDark: boolean }) {
     };
   }, [projects, transactions]);
 
-  return (
-    <Panel isDark={isDark} className="p-5 h-full flex flex-col justify-between">
-      <div className="space-y-4">
-        <div className="flex items-center gap-2 border-b pb-3" style={{ borderColor: t.divider }}>
-          <span className="material-symbols-outlined text-[18px] text-rose-400">warning</span>
-          <span className="text-[11px] font-bold uppercase tracking-wider text-slate-400">Operational Alerts</span>
-        </div>
+  type AlertDef = {
+    id: string;
+    label: string;
+    count: number;
+    badgeBg: string;
+    badgeText: string;
+    actionLabel?: string;
+    onAction?: () => void;
+    secondaryLabel?: string;
+    onSecondary?: () => void;
+  };
 
-        <div className="space-y-3 text-xs">
-          <div className="flex justify-between items-center bg-white/[0.02] p-2.5 rounded-lg border border-white/5">
-            <span className="text-slate-300">Missed Rent Payments</span>
-            <span className="px-2 py-0.5 bg-rose-500/20 text-rose-400 rounded-full font-bold font-mono">{stats.missedRent}</span>
+  const alerts: AlertDef[] = [
+    {
+      id: 'plaid-connection',
+      label: 'Plaid Connection Required',
+      count: 1,
+      badgeBg: 'bg-amber-500/20',
+      badgeText: 'text-amber-400',
+      actionLabel: 'Connect Bank',
+      onAction: () => router.push('/dashboard/settings/billing?connect=plaid'),
+      secondaryLabel: 'Manually Categorize',
+      onSecondary: () => setCategorizeModal(true),
+    },
+    {
+      id: 'missed-rent',
+      label: 'Missed Rent Payments',
+      count: stats.missedRent,
+      badgeBg: 'bg-rose-500/20',
+      badgeText: 'text-rose-400',
+      actionLabel: 'View Details',
+      onAction: () => router.push('/dashboard/reports'),
+    },
+    {
+      id: 'unattributed-tx',
+      label: 'Unattributed Transactions',
+      count: stats.unattributed,
+      badgeBg: 'bg-amber-500/20',
+      badgeText: 'text-amber-400',
+      actionLabel: 'Categorize',
+      onAction: () => setCategorizeModal(true),
+    },
+    {
+      id: 'overdue-closing',
+      label: 'Overdue Closing Milestones',
+      count: stats.overdueClosing,
+      badgeBg: 'bg-rose-500/20',
+      badgeText: 'text-rose-400',
+      actionLabel: 'Review',
+      onAction: () => router.push('/dashboard/projects'),
+    },
+  ];
+
+  const visibleAlerts = alerts.filter(a => !dismissed.has(a.id));
+
+  return (
+    <>
+      <Panel isDark={isDark} className="p-5 h-full flex flex-col justify-between">
+        <div className="space-y-4">
+          <div className="flex items-center gap-2 border-b pb-3" style={{ borderColor: t.divider }}>
+            <span className="material-symbols-outlined text-[18px] text-rose-400">warning</span>
+            <span className="text-[11px] font-bold uppercase tracking-wider text-slate-400">Operational Alerts</span>
           </div>
-          <div className="flex justify-between items-center bg-white/[0.02] p-2.5 rounded-lg border border-white/5">
-            <span className="text-slate-300">Unattributed Transactions</span>
-            <span className="px-2 py-0.5 bg-amber-500/20 text-amber-400 rounded-full font-bold font-mono">{stats.unattributed}</span>
-          </div>
-          <div className="flex justify-between items-center bg-white/[0.02] p-2.5 rounded-lg border border-white/5">
-            <span className="text-slate-300">Overdue Closing Milestones</span>
-            <span className="px-2 py-0.5 bg-rose-500/20 text-rose-400 rounded-full font-bold font-mono">{stats.overdueClosing}</span>
+
+          {visibleAlerts.length === 0 ? (
+            <p className="text-xs text-slate-500 italic py-3">All clear — no active alerts.</p>
+          ) : (
+            <div className="space-y-2.5 text-xs">
+              {visibleAlerts.map(alert => (
+                <div key={alert.id} className="bg-white/[0.02] p-2.5 rounded-lg border border-white/5 space-y-2">
+                  <div className="flex justify-between items-center">
+                    <span className="text-slate-300">{alert.label}</span>
+                    <div className="flex items-center gap-2">
+                      <span className={`px-2 py-0.5 ${alert.badgeBg} ${alert.badgeText} rounded-full font-bold font-mono`}>{alert.count}</span>
+                      <button
+                        onClick={() => dismiss(alert.id)}
+                        className="p-0.5 rounded hover:bg-white/10 text-slate-500 hover:text-slate-300 transition-colors"
+                        aria-label={`Dismiss ${alert.label}`}
+                      >
+                        <span className="material-symbols-outlined text-[14px]">close</span>
+                      </button>
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    {alert.actionLabel && alert.onAction && (
+                      <button
+                        onClick={alert.onAction}
+                        className="px-2.5 py-1 rounded-md bg-white/5 hover:bg-white/10 text-slate-300 hover:text-white text-[10px] font-bold uppercase tracking-wider transition-colors border border-white/5"
+                      >
+                        {alert.actionLabel}
+                      </button>
+                    )}
+                    {alert.secondaryLabel && alert.onSecondary && (
+                      <button
+                        onClick={alert.onSecondary}
+                        className="px-2.5 py-1 rounded-md text-slate-500 hover:text-slate-300 text-[10px] font-bold uppercase tracking-wider transition-colors"
+                      >
+                        {alert.secondaryLabel}
+                      </button>
+                    )}
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+      </Panel>
+
+      {/* Manually Categorize Modal */}
+      {categorizeModal && (
+        <div className="fixed inset-0 z-[200] flex items-center justify-center bg-black/60 backdrop-blur-sm">
+          <div className="w-full max-w-md mx-4 rounded-2xl border border-white/10 bg-[#161318] shadow-2xl p-6 space-y-4">
+            <div className="flex items-center justify-between">
+              <h3 className="text-sm font-bold text-white">Manually Categorize Transactions</h3>
+              <button onClick={() => setCategorizeModal(false)} className="p-1 rounded-lg hover:bg-white/10 text-slate-400">
+                <span className="material-symbols-outlined text-[18px]">close</span>
+              </button>
+            </div>
+            <p className="text-xs text-slate-400 leading-relaxed">
+              Plaid was unable to automatically categorize some transactions. You can manually assign REI expense categories to ensure your reports are accurate.
+            </p>
+            <div className="flex justify-end gap-3 pt-2">
+              <button
+                onClick={() => setCategorizeModal(false)}
+                className="px-4 py-2 rounded-lg text-xs font-semibold text-slate-400 hover:text-white transition-colors"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={() => { setCategorizeModal(false); router.push('/dashboard/reports?tab=transactions'); }}
+                className="px-4 py-2 rounded-lg text-xs font-bold bg-white/10 hover:bg-white/15 text-white border border-white/10 transition-colors"
+              >
+                Open Transaction Manager
+              </button>
+            </div>
           </div>
         </div>
-      </div>
-    </Panel>
+      )}
+    </>
   );
 }
 
@@ -1959,14 +2102,6 @@ function ActiveProjectsWidget({ isDark }: { isDark: boolean }) {
     return 100;
   };
 
-  const getPhaseName = (p: any) => {
-    const phase = p.currentPhase || 1;
-    if (phase === 1) return 'Acquisition';
-    if (phase === 2) return 'Fund & Close';
-    if (phase === 3) return 'Rehab & Hold';
-    return 'Exit';
-  };
-
   return (
     <Panel isDark={isDark} className="p-5 h-full flex flex-col justify-between">
       <div className="space-y-4">
@@ -1981,14 +2116,16 @@ function ActiveProjectsWidget({ isDark }: { isDark: boolean }) {
           <div className="space-y-3.5">
             {activeDeals.map(p => {
               const pct = getProgress(p);
+              const phaseNum = (p.currentPhase || 1) as number;
+              const phaseConf = CANONICAL_PHASES[phaseNum] ?? CANONICAL_PHASES[1];
               return (
                 <div key={p.id} className="space-y-1 cursor-pointer hover:opacity-80 transition-opacity" onClick={() => router.push(`/dashboard/projects/${p.id}`)}>
                   <div className="flex justify-between text-[11px] font-bold">
                     <span className="text-white truncate max-w-[120px]">{p.propertyName || p.name || 'Property'}</span>
-                    <span className="text-[#7A9EAA]">{getPhaseName(p)} ({pct}%)</span>
+                    <span style={{ color: phaseConf.hex }}>{phaseConf.label} ({pct}%)</span>
                   </div>
                   <div className="w-full h-1.5 bg-white/5 rounded-full overflow-hidden">
-                    <div className="bg-[#7A9EAA] h-full rounded-full transition-all duration-300" style={{ width: `${pct}%` }} />
+                    <div className="h-full rounded-full transition-all duration-300" style={{ width: `${pct}%`, backgroundColor: phaseConf.hex }} />
                   </div>
                 </div>
               );
@@ -2000,46 +2137,7 @@ function ActiveProjectsWidget({ isDark }: { isDark: boolean }) {
   );
 }
 
-// ─── Quick Actions Widget ───
-function QuickActionsWidget({ isDark }: { isDark: boolean }) {
-  const router = useRouter();
-  const t = tokens(isDark);
-
-  return (
-    <Panel isDark={isDark} className="p-5 h-full flex flex-col justify-between">
-      <div className="space-y-4">
-        <div className="flex items-center gap-2 border-b pb-3" style={{ borderColor: t.divider }}>
-          <span className="material-symbols-outlined text-[18px] text-emerald-400">bolt</span>
-          <span className="text-[11px] font-bold uppercase tracking-wider text-slate-400">Quick Actions</span>
-        </div>
-
-        <div className="grid grid-cols-1 gap-2">
-          <button
-            onClick={() => router.push('/dashboard/projects/new')}
-            className="w-full py-2 bg-white/5 hover:bg-white/10 text-white rounded-lg text-xs font-semibold text-left px-3 transition-colors flex items-center justify-between border border-white/5"
-          >
-            <span>Start New Acquisition</span>
-            <span className="material-symbols-outlined text-xs">add</span>
-          </button>
-          <button
-            onClick={() => router.push('/dashboard/projects')}
-            className="w-full py-2 bg-white/5 hover:bg-white/10 text-white rounded-lg text-xs font-semibold text-left px-3 transition-colors flex items-center justify-between border border-white/5"
-          >
-            <span>View Pending Offers</span>
-            <span className="material-symbols-outlined text-xs">chevron_right</span>
-          </button>
-          <button
-            onClick={() => router.push('/dashboard/reports')}
-            className="w-full py-2 bg-white/5 hover:bg-white/10 text-white rounded-lg text-xs font-semibold text-left px-3 transition-colors flex items-center justify-between border border-white/5"
-          >
-            <span>Generate Tax Report</span>
-            <span className="material-symbols-outlined text-xs">description</span>
-          </button>
-        </div>
-      </div>
-    </Panel>
-  );
-}
+// QuickActionsWidget — REMOVED per UX Hardening Sprint (visual noise reduction)
 
 // ─── Portfolio Performance Sparkline Widget ───
 function PortfolioSparklineWidget({ isDark }: { isDark: boolean }) {
@@ -2053,7 +2151,7 @@ function PortfolioSparklineWidget({ isDark }: { isDark: boolean }) {
             <span className="material-symbols-outlined text-[18px] text-[#7A9EAA]">show_chart</span>
             <span className="text-[11px] font-bold uppercase tracking-wider text-slate-400">90-Day Portfolio Value Trend</span>
           </div>
-          <span className="text-xs text-emerald-400 font-bold bg-emerald-500/10 px-2.5 py-0.5 rounded-full font-mono">+12.4% Growth</span>
+          <span className="text-xs text-slate-300 font-bold bg-slate-800/10 px-2.5 py-0.5 rounded-full font-mono">+12.4% Growth</span>
         </div>
 
         <div className="flex flex-col sm:flex-row justify-between items-center gap-4">
@@ -2085,6 +2183,76 @@ function PortfolioSparklineWidget({ isDark }: { isDark: boolean }) {
             </svg>
           </div>
         </div>
+      </div>
+    </Panel>
+  );
+}
+
+// ─── Deals Marketplace CTA Card ──────────────────────────────
+function DealsMarketplaceCard({ isDark }: { isDark: boolean }) {
+  const { profile } = useAuth();
+  const router = useRouter();
+
+  const isVendor =
+    profile?.role === "Vendor" ||
+    profile?.accountType === "vendor" ||
+    profile?.subscriptionPlan === "Vendor Network";
+
+  // Product Truth #2: Never rendered for Vendor role
+  if (isVendor) return null;
+
+  const plan = (profile?.subscriptionPlan || "").toLowerCase();
+  const isSubscribed = !plan.includes("free") && !plan.includes("none") && !plan.includes("unsubscribed");
+
+  const handleExplore = (e: React.MouseEvent) => {
+    if (!isSubscribed) {
+      e.preventDefault();
+      toast.error("Deals Marketplace requires an active subscription.", { id: "deals-card-locked" });
+      router.push("/dashboard/settings/billing?paywall=deals");
+    }
+  };
+
+  return (
+    <Panel isDark={isDark} className="p-5 h-full flex flex-col justify-between relative overflow-hidden group">
+      {/* Background glow */}
+      <div className="absolute top-0 right-0 w-32 h-32 bg-slate-800/10 rounded-full blur-3xl pointer-events-none" />
+
+      <div>
+        <div className="flex items-center justify-between mb-2">
+          <div className="flex items-center gap-2">
+            <span className="material-symbols-outlined text-[20px] text-slate-300">handshake</span>
+            <span className="text-[11px] font-bold uppercase tracking-wider text-slate-300">
+              Deals Marketplace
+            </span>
+          </div>
+          {!isSubscribed && (
+            <span className="px-2 py-0.5 text-[9px] font-bold uppercase bg-amber-500/10 text-amber-400 rounded border border-amber-500/20 flex items-center gap-1">
+              <span className="material-symbols-outlined text-[12px]">lock</span>
+              Locked
+            </span>
+          )}
+        </div>
+
+        <p className="text-xs text-slate-400 leading-relaxed mb-4">
+          Discover vetted real estate investment opportunities & co-investment syndications, or list your own deal.
+        </p>
+      </div>
+
+      <div className="flex items-center gap-3 pt-2">
+        <Link
+          href="/dashboard/deals"
+          onClick={handleExplore}
+          className="flex-1 py-2 px-3 text-center text-xs font-bold rounded-lg bg-emerald-500 text-slate-950 hover:bg-emerald-400 transition-all shadow-md text-nowrap"
+        >
+          Explore Deals →
+        </Link>
+        <Link
+          href="/dashboard/deals?action=create"
+          onClick={handleExplore}
+          className="py-2 px-3 text-center text-xs font-semibold rounded-lg border border-white/10 text-slate-200 hover:bg-white/5 transition-all text-nowrap"
+        >
+          List a Deal
+        </Link>
       </div>
     </Panel>
   );
@@ -2283,21 +2451,22 @@ export function CommandCenter() {
             <FeaturedMetricSlot isDark={isDark} kpis={kpis} />
           </div>
 
-          {/* Integration Polish additions: Row 1.5 - Alerts, Active Projects progress, Quick Actions, Sparkline */}
-          <div className="lg:col-span-4">
+          {/* Integration Polish additions: Row 1.5 - Alerts, Active Projects progress, Sparkline */}
+          <div className="lg:col-span-6">
             <AlertsWidget isDark={isDark} />
           </div>
-          <div className="lg:col-span-4">
+          <div className="lg:col-span-6">
             <ActiveProjectsWidget isDark={isDark} />
-          </div>
-          <div className="lg:col-span-4">
-            <QuickActionsWidget isDark={isDark} />
           </div>
           <div className="lg:col-span-12">
             <PortfolioSparklineWidget isDark={isDark} />
           </div>
 
-          {/* Row 2: KPIs / Metrics, Deal Map */}
+          {/* Row 2: Deals Marketplace CTA, KPIs / Metrics, Deal Map */}
+          <div className="lg:col-span-3">
+            <DealsMarketplaceCard isDark={isDark} />
+          </div>
+
           <div className="lg:col-span-6">
             <KPIMetricsModule isDark={isDark} />
           </div>

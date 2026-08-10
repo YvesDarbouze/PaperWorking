@@ -1,5 +1,10 @@
-import { notFound } from 'next/navigation';
+import { redirect, RedirectType } from 'next/navigation';
 
+/**
+ * Data Room Deprecation (Nav Contract §9.3 v6)
+ * Data Room has been removed; documents are phase-scoped within Projects.
+ * Permanent redirect to /dashboard/projects.
+ */
 export default function DataRoomPage() {
-  notFound();
+  redirect('/dashboard/projects', RedirectType.replace);
 }

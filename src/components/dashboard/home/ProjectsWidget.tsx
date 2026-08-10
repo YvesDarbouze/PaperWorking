@@ -8,6 +8,7 @@ import { useProjectStore } from '@/store/projectStore';
 import { useAllDealsSync } from '@/hooks/useAllProjectsSync';
 import { useRouter } from 'next/navigation';
 import { deriveAllMetrics } from '@/lib/metrics/reiMetrics';
+import { PHASE_COLORS as CANONICAL_PHASES, type PhaseColorConfig } from '@/lib/constants/phaseColors';
 
 interface ProjectsWidgetProps {
   projects: Project[];
@@ -17,10 +18,10 @@ interface ProjectsWidgetProps {
 
 /* ── Phase color mapping (matches Stitch/page.tsx design) ── */
 const PHASE_COLORS: Record<number, { border: string; bg: string; text: string; label: string }> = {
-  1: { border: 'border-l-primary',            bg: 'bg-primary/20',            text: 'text-primary',            label: 'Acquisition' },
-  2: { border: 'border-l-secondary',          bg: 'bg-secondary/20',          text: 'text-secondary',          label: 'Fund' },
-  3: { border: 'border-l-tertiary-container',  bg: 'bg-tertiary-container/20', text: 'text-tertiary-container', label: 'Hold' },
-  4: { border: 'border-l-primary-container',   bg: 'bg-primary-container/20',  text: 'text-primary-container',  label: 'Exit' },
+  1: { border: `border-l-amber-500`,   bg: CANONICAL_PHASES[1].bg, text: CANONICAL_PHASES[1].text, label: CANONICAL_PHASES[1].label },
+  2: { border: `border-l-blue-500`,    bg: CANONICAL_PHASES[2].bg, text: CANONICAL_PHASES[2].text, label: CANONICAL_PHASES[2].label },
+  3: { border: `border-l-emerald-400`, bg: CANONICAL_PHASES[3].bg, text: CANONICAL_PHASES[3].text, label: CANONICAL_PHASES[3].label },
+  4: { border: `border-l-purple-400`,  bg: CANONICAL_PHASES[4].bg, text: CANONICAL_PHASES[4].text, label: CANONICAL_PHASES[4].label },
 };
 
 function getPhaseConfig(phase?: number) {

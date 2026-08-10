@@ -424,7 +424,11 @@ export function generateBalanceSheet(projects: any[], options: ReportOptions): B
     const price = fin.purchasePrice || fin.listedPrice || 0;
     const arv = fin.estimatedARV || price;
     const loan = fin.loanAmount || Math.round(price * 0.75);
-    const downPayment = price - loan;
+    // Clamped at zero: when `purchasePrice` is missing but `loanAmount` is set,
+    // this went negative and produced a negative cash reserve — and with it a
+    // negative Total Assets on a CPA-facing balance sheet. A negative implied
+    // down payment means the record is incomplete, not that cash is negative.
+    const downPayment = Math.max(0, price - loan);
     const monthlyRent = fin.monthlyGrossRent || 0;
     const deposit = fin.securityDepositCents ? fin.securityDepositCents / 100 : monthlyRent; // typically 1 month rent
 

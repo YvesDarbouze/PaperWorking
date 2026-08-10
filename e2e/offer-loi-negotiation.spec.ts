@@ -213,9 +213,13 @@ test.describe('PaperWorking E2E — Offer, LOI Builder & Negotiation Tracker (AQ
     // Verify final price confirmed message is visible
     await expect(page.locator('p:has-text("Confirmed Final Agreed Price: $165,000")')).toBeVisible();
 
-    // Verify Stage 5 (Due Diligence) is unlocked
-    const ddTab = page.locator('span:has-text("5. Due Diligence")').first();
+    // Verify Stage 5 (Due Diligence) is unlocked.
+    // Retargeted from `span:has-text("5. Due Diligence")` to the stable id every
+    // other workflow spec uses: the stage rail is now a connected stepper, so
+    // the ordinal lives on the node circle rather than in the label text.
+    const ddTab = page.locator('#stage-tab-due_diligence').first();
     await expect(ddTab).toBeVisible();
+    await expect(ddTab).toBeEnabled();
 
     // Verify scorecard price basis updates to final agreed price.
     // At $165,000, purchase cap rate: NOI / 165000 = 12486 / 165000 = 7.57%.

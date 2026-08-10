@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useRef, useEffect, useMemo } from "react";
+import React, { useState, useRef, useEffect, useMemo, useCallback } from "react";
 import { usePathname, useRouter } from "next/navigation";
 import { useAuth } from "@/context/AuthContext";
 import { useTheme } from "@/lib/utils/ThemeProvider";
@@ -10,33 +10,23 @@ import toast from "react-hot-toast";
 import { useProjectStore } from "@/store/projectStore";
 import Logo from "@/components/brand/Logo";
 import { SEEDED_VENDORS } from "@/lib/vendors/seededVendors";
+import { SearchDropdown } from "@/components/search/SearchDropdown";
+import type { SearchItem } from "@/lib/search/searchDropdown";
+
+import { resolveMobileDrawerNav } from "@/lib/navigation/navContract";
 
 /* ═══════════════════════════════════════════════════════════════
    TopAppBar — Premium dashboard header
    Features: breadcrumb, search with Cmd+K, notifications dropdown,
-   theme toggle, user avatar dropdown
+   theme toggle, mobile navigation drawer, user avatar dropdown
    ═══════════════════════════════════════════════════════════════ */
 
-const PHASE_BADGE_COLORS: Record<string, { bg: string; text: string }> = {
-  'Phase 1: Find & Fund':       { bg: 'rgba(89,89,89,0.12)',  text: '#808080' },
-  'Phase 2: Acquisition':       { bg: 'rgba(37,99,235,0.10)', text: '#2563EB' },
-  'Phase 3: Holding & Rehab':   { bg: 'rgba(234,88,12,0.10)', text: '#EA580C' },
-  'Phase 4: Closing & Exit':    { bg: 'rgba(63, 125, 32,0.10)', text: '#3f7d20' },
-  // v2 equivalents
-  'Phase 1: Acquisition':       { bg: 'rgba(89,89,89,0.12)',  text: '#808080' },
-  'Phase 2: Transaction':       { bg: 'rgba(37,99,235,0.10)', text: '#2563EB' },
-  'Phase 3: Rehab':             { bg: 'rgba(234,88,12,0.10)', text: '#EA580C' },
-  'Phase 4: Hold / Exit':       { bg: 'rgba(63, 125, 32,0.10)', text: '#3f7d20' },
-  // v3 equivalents
-  'Phase 2: Fund':              { bg: 'rgba(37,99,235,0.10)', text: '#2563EB' },
-  'Phase 3: Hold':              { bg: 'rgba(234,88,12,0.10)', text: '#EA580C' },
-  'Phase 4: Exit':              { bg: 'rgba(63, 125, 32,0.10)', text: '#3f7d20' },
-};
 
 const ROUTE_LABELS: Record<string, string> = {
   "/dashboard": "Portfolio",
   "/dashboard/command-center": "Portfolio",
   "/dashboard/projects": "Projects",
+  "/dashboard/deals": "Deals Marketplace",
   "/dashboard/inbox": "Inbox",
   "/dashboard/team": "Team",
   "/dashboard/reports": "Reports",
@@ -68,7 +58,6 @@ export function TopAppBar() {
   const { theme } = useTheme();
   const isDark = theme === "dark";
   const [showUserMenu, setShowUserMenu] = useState(false);
-  const [searchFocused, setSearchFocused] = useState(false);
   const userMenuRef = useRef<HTMLDivElement>(null);
   const searchRef = useRef<HTMLInputElement>(null);
   const [isLoading, setIsLoading] = useState(false);
@@ -79,8 +68,10 @@ export function TopAppBar() {
   }>({ projects: [], vendors: [] });
 
   const [searchQuery, setSearchQuery] = useState("");
+  /** Debounced + 3-char-gated query, emitted by <SearchDropdown />. */
+  const [debouncedSearch, setDebouncedSearch] = useState("");
   const [searchScope, setSearchScope] = useState<'deals' | 'vendors'>('deals');
-  const [activeIndex, setActiveIndex] = useState(-1);
+  const [mobileSearchOpen, setMobileSearchOpen] = useState(false);
   const searchContainerRef = useRef<HTMLDivElement>(null);
   const projects = useProjectStore((s) => s.projects);
 
@@ -90,25 +81,11 @@ export function TopAppBar() {
     setMounted(true);
   }, []);
 
-  // Close search dropdown on outside click
-  useEffect(() => {
-    function handleClick(e: MouseEvent) {
-      if (searchContainerRef.current && !searchContainerRef.current.contains(e.target as Node)) {
-        setSearchFocused(false);
-      }
-    }
-    document.addEventListener("mousedown", handleClick);
-    return () => document.removeEventListener("mousedown", handleClick);
-  }, []);
-
-  // Reset activeIndex when query or scope changes
-  useEffect(() => {
-    setActiveIndex(-1);
-  }, [searchQuery, searchScope]);
+  // Outside-click dismissal is handled inside <SearchDropdown />.
 
 
 
-  const pageLabel = getPageLabel(pathname);
+  const pageLabel = getPageLabel(pathname || '');
 
   const handleDemoGuard = (e: React.MouseEvent | React.FocusEvent, actionName: string) => {
     if (typeof window !== 'undefined' && window.location.pathname.startsWith('/demo')) {
@@ -134,23 +111,24 @@ export function TopAppBar() {
     return () => document.removeEventListener("mousedown", handleClick);
   }, []);
 
-  // Cmd+K shortcut
+  // Cmd+K shortcut. `searchRef` is bound to the input inside <SearchDropdown />
+  // via its `inputRef` passthrough — without that this silently no-ops.
   useEffect(() => {
     function handleKeyDown(e: KeyboardEvent) {
       if ((e.metaKey || e.ctrlKey) && e.key === "k") {
         e.preventDefault();
         searchRef.current?.focus();
-      } else if (e.key === "Escape") {
-        setSearchFocused(false);
-        searchRef.current?.blur();
       }
+      // Escape is handled by <SearchDropdown /> itself (closes + blurs).
     }
     document.addEventListener("keydown", handleKeyDown);
     return () => document.removeEventListener("keydown", handleKeyDown);
   }, []);
 
-  // Debounced search results fetched dynamically from the database
+  // Search results fetched from the database. Debounce and the 3-character
+  // trigger are owned by <SearchDropdown />, which feeds `debouncedSearch`.
   useEffect(() => {
+    const searchQuery = debouncedSearch;
     if (!searchQuery.trim()) {
       setSearchResults(prev => {
         if (prev.projects.length === 0 && prev.vendors.length === 0) return prev;
@@ -164,7 +142,8 @@ export function TopAppBar() {
     setIsLoading(true);
     setIsError(false);
 
-    const delayDebounceFn = setTimeout(async () => {
+    let cancelled = false;
+    const run = async () => {
       try {
         const token = await user?.getIdToken();
         if (!token) {
@@ -225,20 +204,65 @@ export function TopAppBar() {
           setSearchResults(prev => ({ ...prev, vendors: filtered }));
         }
       } catch (err) {
+        if (cancelled) return;
         console.error('Search fetch error:', err);
         setIsError(true);
       } finally {
-        setIsLoading(false);
+        if (!cancelled) setIsLoading(false);
       }
-    }, 300);
+    };
 
-    return () => clearTimeout(delayDebounceFn);
-  }, [searchQuery, searchScope, user?.uid]);
+    void run();
+    return () => { cancelled = true; };
+  }, [debouncedSearch, searchScope, user?.uid]);
 
   const filteredProjects = searchResults.projects;
   const filteredVendors = searchResults.vendors;
 
+  /** Minimal shapes the dropdown mappers rely on. The upstream fetch is
+   *  loosely typed; these narrow it at the point of use. */
+  type ProjectHit = { id: string | number; address?: string; propertyName?: string };
+  type VendorHit  = { id?: string | number; name?: string; category?: string; location?: string };
+
+  /** Active-scope results mapped into dropdown items. */
+  const searchItems = useMemo<SearchItem[]>(() => {
+    if (searchScope === 'deals') {
+      return (filteredProjects as ProjectHit[]).map((p) => ({
+        id: String(p.id),
+        label: p.address || p.propertyName || 'Untitled project',
+        sublabel:
+          p.propertyName && p.propertyName !== p.address ? p.propertyName : undefined,
+        group: 'projects' as const,
+        href: `/dashboard/projects/${p.id}`,
+      }));
+    }
+    return (filteredVendors as VendorHit[]).map((v) => ({
+      id: String(v.id || v.name),
+      label: v.name || 'Unnamed vendor',
+      sublabel: [v.category, v.location].filter(Boolean).join(' · ') || undefined,
+      group: 'vendors' as const,
+      href: `/dashboard/marketplace/${v.id}`,
+    }));
+  }, [searchScope, filteredProjects, filteredVendors]);
+
+  const handleSearchSelect = useCallback((item: SearchItem) => {
+    setSearchQuery('');
+    setDebouncedSearch('');
+    if (item.href) router.push(item.href);
+  }, [router]);
+
+  const [showMobileDrawer, setShowMobileDrawer] = useState(false);
+
+  const drawerNavItems = useMemo(() => {
+    return resolveMobileDrawerNav({
+      role: profile?.role,
+      accountType: profile?.accountType,
+      subscriptionPlan: profile?.subscriptionPlan,
+    });
+  }, [profile?.role, profile?.accountType, profile?.subscriptionPlan]);
+
   return (
+    <>
     <header
       className="w-full flex-shrink-0 flex items-center justify-between z-40"
       style={{
@@ -257,8 +281,18 @@ export function TopAppBar() {
         padding: '0 24px',
       }}
     >
-      {/* Left: Mobile logo + Breadcrumb */}
+      {/* Left: Mobile hamburger + Mobile logo + Breadcrumb */}
       <div className="flex items-center gap-3">
+        {/* Mobile: Hamburger drawer button */}
+        <button
+          type="button"
+          onClick={() => setShowMobileDrawer(!showMobileDrawer)}
+          className="md:hidden p-1.5 rounded-lg border border-white/10 text-on-surface hover:bg-white/5 transition-colors"
+          aria-label="Toggle navigation drawer"
+        >
+          <span className="material-symbols-outlined text-[20px] block">menu</span>
+        </button>
+
         {/* Mobile: compact logo */}
         <Logo surface="app-topbar" href="/dashboard/command-center" className="md:hidden" />
 
@@ -285,319 +319,65 @@ export function TopAppBar() {
         </div>
       </div>
 
-      {/* Center: Search (desktop) */}
+      {/* Center: Search (desktop) — shared <SearchDropdown /> */}
       <div className="flex-1 max-w-2xl mx-8 hidden md:block" ref={searchContainerRef}>
-        <div className="relative">
-          <span
-            className="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-[18px] transition-colors duration-200"
-            style={{ color: searchFocused ? 'var(--color-primary)' : isDark ? 'rgba(253,255,252,0.3)' : 'rgba(69,73,85,0.4)' }}
+        {/* Scope toggle is INLINE with the field, not stacked above it: the
+            header has a fixed height, and a second row overflowed it and
+            overlapped the breadcrumb. Keeping it outside the panel still leaves
+            the dropdown a pure result surface. */}
+        <div className="relative flex items-center gap-2">
+          <div
+            className="flex p-0.5 rounded-lg shrink-0 h-11 items-center"
+            style={{ background: '#111111', border: '1px solid #222222' }}
           >
-            search
-          </span>
-          <input
-            ref={searchRef}
-            className="w-full py-2 pl-10 pr-16 text-sm rounded-lg transition-all duration-200 focus:outline-none"
-            placeholder={searchScope === 'deals' ? "Search deals by name or address..." : "Search vendors by name, category, or location..."}
-            type="text"
-            onFocus={(e) => {
-              if (typeof window !== 'undefined' && window.location.pathname.startsWith('/demo')) {
-                handleDemoGuard(e, 'search');
-              } else {
-                setSearchFocused(true);
-              }
-            }}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            value={searchQuery}
-            onKeyDown={(e) => {
-              if (e.key === "Escape") {
-                setSearchFocused(false);
-                searchRef.current?.blur();
-                return;
-              }
-              const isDeals = searchScope === 'deals';
-              const items = isDeals ? filteredProjects : filteredVendors;
-              const total = items.length;
-              if (total > 0) {
-                if (e.key === 'ArrowDown') {
-                  e.preventDefault();
-                  setActiveIndex(prev => (prev < total - 1 ? prev + 1 : 0));
-                } else if (e.key === 'ArrowUp') {
-                  e.preventDefault();
-                  setActiveIndex(prev => (prev > 0 ? prev - 1 : total - 1));
-                } else if (e.key === 'Enter') {
-                  e.preventDefault();
-                  if (activeIndex >= 0 && activeIndex < total) {
-                    const selectedItem = items[activeIndex];
-                    if (isDeals) {
-                      router.push(`/dashboard/projects/${selectedItem.id}`);
-                    } else {
-                      router.push(`/dashboard/marketplace/${selectedItem.id}`);
-                    }
-                    setSearchFocused(false);
-                    setSearchQuery("");
-                    setActiveIndex(-1);
-                  }
-                }
-              }
-            }}
-            style={{
-              background: isDark
-                ? (searchFocused ? 'rgba(255,255,255,0.08)' : 'rgba(255,255,255,0.04)')
-                : (searchFocused ? 'rgba(69,73,85,0.06)'    : 'rgba(69,73,85,0.04)'),
-              border: `1px solid ${searchFocused
-                ? 'rgba(69,73,85,0.35)'
-                : isDark ? 'rgba(255,255,255,0.07)' : 'rgba(69,73,85,0.12)'}`,
-              color: 'var(--color-on-surface)',
-              boxShadow: searchFocused ? '0 0 0 3px rgba(69,73,85,0.08)' : 'none',
-            }}
-          />
-          {/* Cmd+K hint or Spinner */}
-          <div className="absolute right-3 top-1/2 -translate-y-1/2 flex items-center gap-0.5 pointer-events-none">
-            {isLoading ? (
-              <div 
-                className="w-4 h-4 rounded-full border-2 border-solid animate-spin" 
-                style={{ 
-                  borderTopColor: 'transparent',
-                  borderColor: isDark ? 'rgba(255,255,255,0.4) rgba(255,255,255,0.15) rgba(255,255,255,0.15)' : 'rgba(98, 124, 133, 0.6) rgba(98, 124, 133, 0.15) rgba(98, 124, 133, 0.15)' 
-                }}
-              />
-            ) : (
-              <kbd
-                className="text-[10px] font-bold px-1.5 py-0.5 rounded"
+            {(['deals', 'vendors'] as const).map((scope) => (
+              <button
+                key={scope}
+                onClick={() => setSearchScope(scope)}
+                data-testid={`search-scope-${scope}`}
+                className="pw-interactive-custom px-3 h-9 rounded-md text-xs font-bold transition-colors duration-150 cursor-pointer text-center capitalize"
                 style={{
-                  background: isDark ? 'rgba(255,255,255,0.06)' : 'rgba(69,73,85,0.07)',
-                  color: isDark ? 'rgba(253,255,252,0.3)' : 'rgba(69,73,85,0.4)',
-                  border: isDark ? '1px solid rgba(255,255,255,0.08)' : '1px solid rgba(69,73,85,0.12)',
+                  background: searchScope === scope ? '#1f2937' : 'transparent',
+                  color: searchScope === scope ? '#ffffff' : '#6b7280',
                 }}
               >
-                ⌘K
-              </kbd>
-            )}
+                {scope}
+              </button>
+            ))}
           </div>
 
-          {/* Autocomplete dropdown */}
-          {searchFocused && (
-            <div
-              id="search-results-dropdown"
-              className="absolute left-0 right-0 top-full mt-2 rounded-xl z-50 overflow-hidden"
-              style={{
-                background: isDark ? 'rgba(13,10,11,0.96)' : '#FFFFFF',
-                border: isDark ? '1px solid rgba(255,255,255,0.08)' : '1px solid rgba(69,73,85,0.12)',
-                backdropFilter: 'blur(24px)',
-                boxShadow: isDark ? '0 16px 48px rgba(0,0,0,0.4)' : '0 10px 30px rgba(0,0,0,0.1)',
-                maxHeight: '340px',
-                overflowY: 'auto'
-              }}
-            >
-              {/* Scope Segmented Control */}
-              <div className="p-2.5 border-b border-solid" style={{ borderColor: isDark ? 'rgba(255,255,255,0.06)' : 'rgba(69,73,85,0.08)' }}>
-                <div className="flex p-0.5 rounded-lg bg-black/5 dark:bg-white/5 relative">
-                  <button
-                    onClick={() => setSearchScope('deals')}
-                    className="flex-1 py-1.5 rounded-md text-xs font-bold transition-all duration-150 relative z-10 cursor-pointer text-center"
-                    style={{
-                      background: searchScope === 'deals' ? '#627C85' : 'transparent',
-                      color: searchScope === 'deals' ? '#FFFFFF' : (isDark ? 'rgba(253,255,252,0.5)' : 'rgba(69,73,85,0.6)'),
-                      boxShadow: searchScope === 'deals' ? '0 1px 3px rgba(0,0,0,0.15)' : 'none',
-                    }}
-                  >
-                    Deals
-                  </button>
-                  <button
-                    onClick={() => setSearchScope('vendors')}
-                    className="flex-1 py-1.5 rounded-md text-xs font-bold transition-all duration-150 relative z-10 cursor-pointer text-center"
-                    style={{
-                      background: searchScope === 'vendors' ? '#627C85' : 'transparent',
-                      color: searchScope === 'vendors' ? '#FFFFFF' : (isDark ? 'rgba(253,255,252,0.5)' : 'rgba(69,73,85,0.6)'),
-                      boxShadow: searchScope === 'vendors' ? '0 1px 3px rgba(0,0,0,0.15)' : 'none',
-                    }}
-                  >
-                    Vendors
-                  </button>
-                </div>
-              </div>
-
-              {/* Scoped Content */}
-              {isLoading ? (
-                <div className="p-8 text-center text-xs flex flex-col items-center gap-2">
-                  <div 
-                    className="w-5 h-5 rounded-full border-2 border-solid animate-spin" 
-                    style={{ 
-                      borderTopColor: 'transparent',
-                      borderColor: '#627C85 rgba(98, 124, 133, 0.2) rgba(98, 124, 133, 0.2)' 
-                    }}
-                  />
-                  <span style={{ color: isDark ? 'rgba(253,255,252,0.4)' : 'rgba(69,73,85,0.5)' }}>
-                    Searching...
-                  </span>
-                </div>
-              ) : isError ? (
-                <div className="p-8 text-center text-xs flex flex-col items-center gap-2 text-red-500">
-                  <span className="material-symbols-outlined text-[24px]">error</span>
-                  <span>Failed to retrieve search results.</span>
-                </div>
-              ) : searchScope === 'deals' ? (
-                <>
-                  {searchQuery.trim() === "" ? (
-                    <div className="p-5 text-center text-xs" style={{ color: isDark ? 'rgba(253,255,252,0.4)' : 'rgba(69,73,85,0.5)' }}>
-                      <span className="material-symbols-outlined text-[20px] mb-1.5 block opacity-50">search</span>
-                      Type to search deal name or address
-                    </div>
-                  ) : filteredProjects.length > 0 ? (
-                    <div className="p-3">
-                      <div className="text-[10px] font-bold uppercase tracking-wider mb-2" style={{ color: isDark ? 'rgba(253,255,252,0.4)' : 'rgba(69,73,85,0.5)' }}>
-                        Deals & Projects ({filteredProjects.length})
-                      </div>
-                      <div className="space-y-1">
-                        {filteredProjects.map((p, index) => {
-                          const phaseColor = PHASE_BADGE_COLORS[p.phaseStatus ?? ''] ?? PHASE_BADGE_COLORS['Phase 1: Find & Fund'];
-                          const isActive = index === activeIndex;
-                          return (
-                            <Link
-                              key={p.id}
-                              href={`/dashboard/projects/${p.id}`}
-                              onClick={() => {
-                                setSearchFocused(false);
-                                setSearchQuery("");
-                                setActiveIndex(-1);
-                              }}
-                              onMouseEnter={() => setActiveIndex(index)}
-                              onMouseLeave={() => setActiveIndex(-1)}
-                              className="flex items-center gap-2.5 px-2.5 py-2 rounded-lg text-xs font-semibold transition-colors duration-150"
-                              style={{
-                                color: isDark ? '#FFF' : '#121317',
-                                background: isActive
-                                  ? (isDark ? 'rgba(255,255,255,0.08)' : 'rgba(69,73,85,0.06)')
-                                  : 'transparent'
-                              }}
-                            >
-                              <span className="material-symbols-outlined text-[16px]" style={{ color: '#627C85' }}>folder</span>
-                              <div className="flex-1 min-w-0 text-left flex items-center justify-between gap-2">
-                                <div className="flex-1 min-w-0">
-                                  <p className="truncate font-semibold">{p.address || p.propertyName}</p>
-                                  {p.propertyName && p.propertyName !== p.address && (
-                                    <p className="text-[10px] truncate" style={{ color: isDark ? 'rgba(253,255,252,0.4)' : 'rgba(69,73,85,0.5)' }}>
-                                      {p.propertyName}
-                                    </p>
-                                  )}
-                                </div>
-                                <span
-                                  className="px-1.5 py-0.5 rounded text-[9px] font-bold uppercase tracking-wider whitespace-nowrap"
-                                  style={{
-                                    background: phaseColor.bg,
-                                    color: phaseColor.text
-                                  }}
-                                >
-                                  {p.phaseStatus || `Phase ${p.currentPhase || 1}`}
-                                </span>
-                              </div>
-                            </Link>
-                          );
-                        })}
-                      </div>
-                    </div>
-                  ) : (
-                    <div className="p-6 text-center text-xs flex flex-col items-center gap-2">
-                      <span className="material-symbols-outlined text-[22px] opacity-40" style={{ color: isDark ? 'rgba(253,255,252,0.3)' : 'rgba(69,73,85,0.4)' }}>search_off</span>
-                      <span style={{ color: isDark ? 'rgba(253,255,252,0.4)' : 'rgba(69,73,85,0.5)' }}>
-                        No deals match "{searchQuery}"
-                      </span>
-                      <button
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          setSearchScope('vendors');
-                        }}
-                        className="mt-1 px-3 py-1.5 rounded-lg text-[10px] font-bold tracking-wider uppercase transition-all duration-150 active:scale-95 cursor-pointer"
-                        style={{
-                          background: 'rgba(98, 124, 133, 0.1)',
-                          color: '#627C85',
-                          border: '1px solid rgba(98, 124, 133, 0.2)'
-                        }}
-                      >
-                        Search in Vendors instead
-                      </button>
-                    </div>
-                  )}
-                </>
-              ) : (
-                <>
-                  {searchQuery.trim() === "" ? (
-                    <div className="p-5 text-center text-xs" style={{ color: isDark ? 'rgba(253,255,252,0.4)' : 'rgba(69,73,85,0.5)' }}>
-                      <span className="material-symbols-outlined text-[20px] mb-1.5 block opacity-50">search</span>
-                      Type to search vendors by name, category, or location
-                    </div>
-                  ) : filteredVendors.length > 0 ? (
-                    <div className="p-3">
-                      <div className="text-[10px] font-bold uppercase tracking-wider mb-2" style={{ color: isDark ? 'rgba(253,255,252,0.4)' : 'rgba(69,73,85,0.5)' }}>
-                        Vendors & Professionals ({filteredVendors.length})
-                      </div>
-                      <div className="space-y-1">
-                        {filteredVendors.map((v, index) => {
-                          const isActive = index === activeIndex;
-                          return (
-                            <Link
-                              key={v.id}
-                              href={`/dashboard/marketplace/${v.id}`}
-                              onClick={() => {
-                                setSearchFocused(false);
-                                setSearchQuery("");
-                                setActiveIndex(-1);
-                              }}
-                              onMouseEnter={() => setActiveIndex(index)}
-                              onMouseLeave={() => setActiveIndex(-1)}
-                              className="flex items-center gap-2.5 px-2.5 py-2 rounded-lg text-xs font-semibold transition-colors duration-150"
-                              style={{
-                                color: isDark ? '#FFF' : '#121317',
-                                background: isActive
-                                  ? (isDark ? 'rgba(255,255,255,0.08)' : 'rgba(69,73,85,0.06)')
-                                  : 'transparent'
-                              }}
-                            >
-                              <span className="material-symbols-outlined text-[16px]" style={{ color: '#7A9EAA' }}>handyman</span>
-                              <div className="flex-1 min-w-0 text-left">
-                                <p className="truncate font-semibold">{v.name}</p>
-                                <p className="text-[10px] truncate" style={{ color: isDark ? 'rgba(253,255,252,0.4)' : 'rgba(69,73,85,0.5)' }}>
-                                  {v.category} · {v.location}
-                                </p>
-                              </div>
-                            </Link>
-                          );
-                        })}
-                      </div>
-                    </div>
-                  ) : (
-                    <div className="p-6 text-center text-xs flex flex-col items-center gap-2">
-                      <span className="material-symbols-outlined text-[22px] opacity-40" style={{ color: isDark ? 'rgba(253,255,252,0.3)' : 'rgba(69,73,85,0.4)' }}>search_off</span>
-                      <span style={{ color: isDark ? 'rgba(253,255,252,0.4)' : 'rgba(69,73,85,0.5)' }}>
-                        No vendors match "{searchQuery}"
-                      </span>
-                      <button
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          setSearchScope('deals');
-                        }}
-                        className="mt-1 px-3 py-1.5 rounded-lg text-[10px] font-bold tracking-wider uppercase transition-all duration-150 active:scale-95 cursor-pointer"
-                        style={{
-                          background: 'rgba(98, 124, 133, 0.1)',
-                          color: '#627C85',
-                          border: '1px solid rgba(98, 124, 133, 0.2)'
-                        }}
-                      >
-                        Search in Deals instead
-                      </button>
-                    </div>
-                  )}
-                </>
-              )}
-            </div>
-          )}
+          <SearchDropdown
+            className="flex-1 min-w-0"
+            testId="global-search"
+            inputRef={searchRef}
+            query={searchQuery}
+            onQueryChange={setSearchQuery}
+            onDebouncedQueryChange={setDebouncedSearch}
+            items={searchItems}
+            loading={isLoading}
+            errorMessage={isError ? 'Failed to retrieve search results.' : null}
+            onSelect={handleSearchSelect}
+            placeholder="Search deals by name or address..."
+            recentKey="pw_recent_searches"
+          />
         </div>
       </div>
 
       {/* Right: Actions */}
       <div className="flex items-center gap-2">
-        {/* Mobile search */}
+        {/* Mobile search — the desktop field is `hidden md:block`, so below
+            that width this button is the only way in. It previously had no
+            onClick at all and did nothing. */}
         <button
+          onClick={(e) => {
+            if (typeof window !== 'undefined' && window.location.pathname.startsWith('/demo')) {
+              handleDemoGuard(e, 'search');
+              return;
+            }
+            setMobileSearchOpen(true);
+          }}
+          aria-label="Open search"
+          data-testid="mobile-search-trigger"
           className="md:hidden p-2 rounded-lg transition-colors duration-200"
           style={{ color: 'rgba(255, 255, 255, 0.85)' }}
         >
@@ -705,6 +485,21 @@ export function TopAppBar() {
                 <span className="text-sm font-medium">Billing</span>
               </Link>
               <Link
+                href="/dashboard/team"
+                onClick={(e) => {
+                  if (typeof window !== 'undefined' && window.location.pathname.startsWith('/demo')) {
+                    handleDemoGuard(e, 'team management');
+                  } else {
+                    setShowUserMenu(false);
+                  }
+                }}
+                className="flex items-center gap-3 px-4 py-2.5 transition-colors duration-150"
+                style={{ color: 'rgba(253,255,252,0.7)' }}
+              >
+                <span className="material-symbols-outlined text-[18px]">group</span>
+                <span className="text-sm font-medium">Team</span>
+              </Link>
+              <Link
                 href="/dashboard/settings"
                 onClick={(e) => {
                   if (typeof window !== 'undefined' && window.location.pathname.startsWith('/demo')) {
@@ -728,5 +523,98 @@ export function TopAppBar() {
         </div>
       </div>
     </header>
+
+    {/* Mobile full-screen search (requirement 8). <SearchDropdown /> renders
+        its own fixed overlay with a close button once focused, so this only
+        needs to mount it and clear state on dismiss. No backdrop blur — the
+        panel is opaque so there is no background clutter behind it. */}
+    {mobileSearchOpen && (
+      <div className="md:hidden" data-testid="mobile-search-overlay">
+        {/* Distinct testId: the desktop instance stays mounted (hidden by CSS)
+            at this width, so a shared id would match two nodes. */}
+        <SearchDropdown
+          testId="mobile-search"
+          query={searchQuery}
+          onQueryChange={setSearchQuery}
+          onDebouncedQueryChange={setDebouncedSearch}
+          items={searchItems}
+          loading={isLoading}
+          errorMessage={isError ? 'Failed to retrieve search results.' : null}
+          onSelect={(item) => { setMobileSearchOpen(false); handleSearchSelect(item); }}
+          placeholder="Search deals by name or address..."
+          recentKey="pw_recent_searches"
+          autoFocus
+          onRequestClose={() => setMobileSearchOpen(false)}
+        />
+      </div>
+    )}
+
+    {/* Mobile Slide-Out Drawer Overlay (NAV-01 / NAV-02 / NAV-03) */}
+    {showMobileDrawer && (
+      <div className="md:hidden fixed inset-0 z-[100] flex">
+        {/* Backdrop */}
+        <div
+          className="fixed inset-0 bg-black/70 backdrop-blur-sm"
+          onClick={() => setShowMobileDrawer(false)}
+        />
+
+        {/* Drawer Panel */}
+        <div
+          className="relative w-4/5 max-w-xs h-full flex flex-col p-5 space-y-6 z-10 shadow-2xl overflow-y-auto"
+          style={{
+            background: isDark ? 'rgba(18,16,20,0.98)' : '#FDFFFC',
+            borderRight: isDark ? '1px solid rgba(255,255,255,0.1)' : '1px solid rgba(0,0,0,0.1)',
+          }}
+        >
+          {/* Header */}
+          <div className="flex items-center justify-between pb-4 border-b border-outline/10">
+            <Logo surface="app-sidebar" href="/dashboard/command-center" />
+            <button
+              type="button"
+              onClick={() => setShowMobileDrawer(false)}
+              className="p-1 rounded-lg hover:bg-surface-variant text-on-surface-variant"
+            >
+              <span className="material-symbols-outlined text-[20px]">close</span>
+            </button>
+          </div>
+
+          {/* Drawer Items */}
+          <div className="space-y-1 flex-1">
+            <div className="px-2 py-1 text-label-sm font-bold uppercase tracking-wider text-outline">
+              Secondary Navigation
+            </div>
+            {drawerNavItems.map((item) => (
+              <Link
+                key={item.id}
+                href={item.href}
+                onClick={(e) => {
+                  if (item.isLocked) {
+                    e.preventDefault();
+                    toast.error("Deals Marketplace requires an active subscription.", { id: "deals-locked-drawer" });
+                    router.push("/dashboard/settings/billing?paywall=deals");
+                    setShowMobileDrawer(false);
+                    return;
+                  }
+                  setShowMobileDrawer(false);
+                }}
+                className="flex items-center gap-3 px-3 py-3 rounded-lg text-on-surface hover:bg-surface-variant/40 transition-colors"
+              >
+                <span className="material-symbols-outlined text-[20px]">{item.icon}</span>
+                <span className="text-sm font-medium flex-1">{item.label}</span>
+                {item.isLocked && (
+                  <span className="material-symbols-outlined text-[16px] text-amber-500">lock</span>
+                )}
+              </Link>
+            ))}
+          </div>
+
+          {/* Footer User Info */}
+          <div className="pt-4 border-t border-outline/10">
+            <LogoutButton compact={false} className="w-full flex items-center gap-2 py-2 text-sm text-outline hover:text-on-surface" />
+          </div>
+        </div>
+      </div>
+    )}
+    </>
   );
 }

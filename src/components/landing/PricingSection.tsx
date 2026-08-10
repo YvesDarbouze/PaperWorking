@@ -1,20 +1,22 @@
 'use client';
 
+import { useState } from 'react';
 import Link from 'next/link';
 import { motion } from 'framer-motion';
+import { PLAN_CATALOG } from '@/lib/stripe/plans';
 
 /* ═══════════════════════════════════════════════════════
    PricingSection — Verbatim Approved COPY-P for /pricing
-   Annual-Only Pricing ($499/yr, $999/yr, $390/yr)
+   Monthly & Annual Pricing ($499/yr or $59/mo, $999/yr or $99/mo, $390/yr or $39/mo)
    antigravity.google design system: medium-weight (500-600) display,
-   pill CTAs, 24px card radii, 6-9rem section padding.
+   pill CTAs, 24px card radii, compact header typography.
    ═══════════════════════════════════════════════════════ */
 
 const fadeUp = {
-  hidden: { opacity: 0, y: 24 },
-  visible: { opacity: 1, y: 0, transition: { duration: 0.6, ease: [0.19, 1, 0.22, 1] } },
+  hidden: { opacity: 0, y: 20 },
+  visible: { opacity: 1, y: 0, transition: { duration: 0.5, ease: [0.19, 1, 0.22, 1] } },
 };
-const stagger = { visible: { transition: { staggerChildren: 0.08 } } };
+const stagger = { visible: { transition: { staggerChildren: 0.06 } } };
 
 interface Plan {
   id: string;
@@ -23,6 +25,7 @@ interface Plan {
   badge?: string;
   tagline: string;
   annualPrice: number;
+  monthlyPrice: number;
   features: string[];
   cta: string;
   microcopy: string;
@@ -35,7 +38,8 @@ const PLANS: Plan[] = [
     stripeKey: 'Investor',
     name: 'Investor',
     tagline: 'Full pipeline visibility without a team subscription.',
-    annualPrice: 499,
+    annualPrice: PLAN_CATALOG.individual.annualPrice,
+    monthlyPrice: PLAN_CATALOG.individual.monthlyPrice,
     highlighted: false,
     features: [
       'Four-phase REIL project management',
@@ -56,7 +60,8 @@ const PLANS: Plan[] = [
     name: 'Investment Team',
     badge: 'Most popular',
     tagline: 'Role-based access and clean separation between what each person can see and do.',
-    annualPrice: 999,
+    annualPrice: PLAN_CATALOG.team.annualPrice,
+    monthlyPrice: PLAN_CATALOG.team.monthlyPrice,
     highlighted: true,
     features: [
       'Everything in Investor',
@@ -74,7 +79,8 @@ const PLANS: Plan[] = [
     stripeKey: 'Vendor',
     name: 'Vendor',
     tagline: 'Qualified leads from active investor projects in your service area.',
-    annualPrice: 390,
+    annualPrice: PLAN_CATALOG.vendor.annualPrice,
+    monthlyPrice: PLAN_CATALOG.vendor.monthlyPrice,
     highlighted: false,
     features: [
       'Vendor Marketplace listing by trade and geography',
@@ -86,40 +92,26 @@ const PLANS: Plan[] = [
   },
 ];
 
-const FAQ = [
-  {
-    q: 'I only close three or four deals a year. Is this worth it?',
-    a: "Low volume makes each deal matter more, not less. When one deal carries your year's returns, an expired contingency or a rehab that drifts over budget hurts. Run one live deal through the trial and decide.",
-  },
-  {
-    q: 'Is there a free trial? What happens to my data if I cancel?',
-    a: 'Every paid plan includes a 14-day trial. A card is required to start, but nothing is charged until day 15. If you cancel, you keep read access for 90 days and can export everything, including your full P&L, as CSV. Your data is yours.',
-  },
-  {
-    q: 'Can I add my CPA or business partner?',
-    a: 'On Investment Team, invite them with role permissions; your CPA can read everything and edit nothing. Investor is a solo plan; your CPA still gets the one-click P&L export.',
-  },
-  {
-    q: 'Is there a contract or minimum commitment?',
-    a: 'No contracts, no minimums. Cancel anytime from Settings — no call, no retention flow. Annual plans bill once a year and include a 30-day refund window; monthly plans, if offered, bill month to month.',
-  },
-  {
-    q: 'My spreadsheet system works. Why switch?',
-    a: "Spreadsheets don't know when your earnest money goes hard. They don't alert you three days before your inspection period ends, tie draws to a line-item budget, or hand your CPA one organized export at year end. Run one deal in parallel and compare. If it doesn't catch something or save you time, cancel; the trial costs you nothing.",
-  },
-  {
-    q: 'Does PaperWorking replace my accounting software?',
-    a: 'No. It tracks project-level costs, budgets, and performance, and exports clean reports your accountant can use — alongside your accounting stack, not instead of it.',
-  },
-  {
-    q: 'How is my data protected?',
-    a: 'Encrypted storage, redundant backups, and SOC 2-ready infrastructure.',
-  },
-];
+
+
+/** Dynamically computes per-month equivalent from annual price (annual / 12, formatted to 2 decimals) */
+function formatMonthlyEquiv(annualPrice: number): string {
+  const monthly = annualPrice / 12;
+  return `$${monthly.toFixed(2)}`;
+}
 
 export default function PricingSection({ onSelectPlan }: { onSelectPlan?: (plan: string) => void }) {
+  const [billingCycle, setBillingCycle] = useState<'annual' | 'monthly'>('annual');
+
   const handleSelect = (stripeKey: string) => {
-    onSelectPlan?.(`${stripeKey} Annual`);
+    onSelectPlan?.(`${stripeKey} ${billingCycle === 'annual' ? 'Annual' : 'Monthly'}`);
+  };
+
+  const handleKeyDown = (e: React.KeyboardEvent, cycle: 'annual' | 'monthly') => {
+    if (e.key === 'ArrowRight' || e.key === 'ArrowLeft') {
+      e.preventDefault();
+      setBillingCycle(cycle === 'annual' ? 'monthly' : 'annual');
+    }
   };
 
   return (
@@ -131,43 +123,76 @@ export default function PricingSection({ onSelectPlan }: { onSelectPlan?: (plan:
       </div>
 
       <div className="relative z-10">
-        {/* ── Hero (COPY-P1) ── */}
+        {/* ── Compact Hero Section (above-the-fold optimization) ── */}
         <motion.div
           initial="hidden"
           whileInView="visible"
           viewport={{ once: true, margin: '-60px' }}
           variants={stagger}
-          className="max-w-4xl mx-auto px-6 lg:px-8 pt-24 pb-16 text-center"
+          className="max-w-[1100px] mx-auto px-6 lg:px-8 pt-8 pb-6 md:pt-12 md:pb-8 text-center"
         >
-          <motion.p variants={fadeUp} className="font-jetbrains text-[10px] uppercase tracking-[0.12em] text-primary mb-4 type-eyebrow font-medium">
+          <motion.p variants={fadeUp} className="font-jetbrains text-[10px] uppercase tracking-[0.12em] text-primary mb-2.5 type-eyebrow font-medium">
             Real Estate Bloomberg Terminal
           </motion.p>
 
-          {/* Headline — COPY-P1 with Fix E4 (medium-weight 500-600, tight tracking) */}
-          <motion.h1 variants={fadeUp} className="text-3xl sm:text-4xl md:text-5xl lg:text-[3.25rem] font-semibold tracking-[-0.025em] text-on-surface leading-[1.05] mb-6 max-w-3xl mx-auto type-display">
+          <motion.h1
+            variants={fadeUp}
+            className="font-semibold tracking-[-0.02em] text-on-surface leading-[1.15] mb-3 max-w-[1000px] mx-auto type-display"
+          >
             The average stock trade is $5000, the average Real Estate deal is $429,000. Why do stock investors have better fintech apps?
           </motion.h1>
 
-          <motion.p variants={fadeUp} className="text-base sm:text-lg leading-[1.65] text-on-surface-variant max-w-3xl mx-auto mb-4 type-body-lg">
+          <motion.p variants={fadeUp} className="text-sm sm:text-base leading-[1.6] text-on-surface-variant max-w-3xl mx-auto type-body-lg">
             PaperWorking is the Bloomberg Terminal for serious Real Estate Investors. For people who understand the advantage sober data gives them.
-          </motion.p>
-
-          <motion.p variants={fadeUp} className="text-base sm:text-lg leading-[1.65] text-on-surface-variant max-w-3xl mx-auto mb-4 type-body-lg">
-            Deals go wrong expensively. A date slips, a draw goes untracked, and the spreadsheet finds out weeks later. PaperWorking exists to surface those problems early. Every plan includes the full four-phase lifecycle, the 33 investor KPIs, and a 14-day trial with no charge until day 15.
-          </motion.p>
-
-          <motion.p variants={fadeUp} className="text-base sm:text-lg leading-[1.65] text-on-surface-variant max-w-3xl mx-auto type-body-lg">
-            Billed annually. Cancel anytime from Settings, no call required; annual plans include a 30-day refund window.
           </motion.p>
         </motion.div>
 
-        {/* ── 3-Tier Plan Cards (COPY-P2, COPY-P3, COPY-P4) ── */}
+        {/* ── Accessible Billing Toggle (Monthly vs Annual) ── */}
+        <div className="flex justify-center mb-8 px-6">
+          <div
+            role="radiogroup"
+            aria-label="Billing cycle options"
+            className="inline-flex items-center p-1 rounded-full glass-panel border border-white/10 bg-surface-container-low/40"
+          >
+            <button
+              type="button"
+              role="radio"
+              aria-checked={billingCycle === 'annual'}
+              onClick={() => setBillingCycle('annual')}
+              onKeyDown={(e) => handleKeyDown(e, 'annual')}
+              className={`px-6 py-2.5 rounded-full text-xs font-semibold tracking-wide transition-all duration-200 cursor-pointer min-h-[44px] flex items-center justify-center focus:outline-none focus-visible:ring-2 focus-visible:ring-primary ${
+                billingCycle === 'annual'
+                  ? 'bg-primary text-background shadow-md'
+                  : 'text-on-surface-variant hover:text-on-surface'
+              }`}
+            >
+              Annual
+            </button>
+
+            <button
+              type="button"
+              role="radio"
+              aria-checked={billingCycle === 'monthly'}
+              onClick={() => setBillingCycle('monthly')}
+              onKeyDown={(e) => handleKeyDown(e, 'monthly')}
+              className={`px-6 py-2.5 rounded-full text-xs font-semibold tracking-wide transition-all duration-200 cursor-pointer min-h-[44px] flex items-center justify-center focus:outline-none focus-visible:ring-2 focus-visible:ring-primary ${
+                billingCycle === 'monthly'
+                  ? 'bg-primary text-background shadow-md'
+                  : 'text-on-surface-variant hover:text-on-surface'
+              }`}
+            >
+              Monthly
+            </button>
+          </div>
+        </div>
+
+        {/* ── 3-Tier Plan Cards (Visible Above The Fold) ── */}
         <motion.div
           initial="hidden"
           whileInView="visible"
           viewport={{ once: true, margin: '-40px' }}
           variants={stagger}
-          className="max-w-[1200px] mx-auto px-6 lg:px-8 pb-16"
+          className="max-w-[1200px] mx-auto px-6 lg:px-8 pb-10"
         >
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6 items-stretch">
             {PLANS.map((plan) => (
@@ -197,18 +222,22 @@ export default function PricingSection({ onSelectPlan }: { onSelectPlan?: (plan:
                   </p>
                 </div>
 
-                {/* Price (Annual Only) */}
+                {/* Price Display */}
                 <div className="py-5 border-b border-white/8">
                   <div className="flex items-baseline gap-1">
                     <span className="text-4xl font-extrabold text-on-surface tracking-tight type-metric">
-                      ${plan.annualPrice}
+                      {billingCycle === 'annual'
+                        ? formatMonthlyEquiv(plan.annualPrice)
+                        : `$${plan.monthlyPrice}`}
                     </span>
                     <span className="text-base text-on-surface-variant font-medium type-body">
-                      /year,
+                      /mo
                     </span>
                   </div>
                   <p className="text-xs text-on-surface-variant/70 mt-1 type-caption font-semibold">
-                    billed annually.
+                    {billingCycle === 'annual'
+                      ? `billed annually ($${plan.annualPrice}/year)`
+                      : 'billed monthly'}
                   </p>
                 </div>
 
@@ -217,7 +246,7 @@ export default function PricingSection({ onSelectPlan }: { onSelectPlan?: (plan:
                   <button
                     type="button"
                     onClick={() => handleSelect(plan.stripeKey)}
-                    className={`w-full py-3.5 rounded-full text-sm font-semibold transition-all duration-200 cursor-pointer type-cta ${
+                    className={`w-full py-3.5 rounded-full text-sm font-semibold transition-all duration-200 cursor-pointer type-cta focus:outline-none focus-visible:ring-2 focus-visible:ring-primary ${
                       plan.highlighted
                         ? 'luminous-button'
                         : 'border border-primary/40 text-primary hover:bg-primary/10'
@@ -252,69 +281,25 @@ export default function PricingSection({ onSelectPlan }: { onSelectPlan?: (plan:
             ))}
           </div>
 
-          {/* ── Single Integrations Line (directly under plan cards) ── */}
-          <div className="mt-8 text-center border-t border-white/5 pt-6">
+          {/* ── Single Integrations Line ── */}
+          <div className="mt-8 text-center border-t border-white/5 pt-5">
             <p className="font-jetbrains text-[13px] text-on-surface-variant/80 uppercase tracking-widest type-caption font-medium">
               Integrates with the tools you already use: Plaid, MLS, DocuSign, Stripe, RentCast.
             </p>
           </div>
         </motion.div>
 
-        {/* ── What does one missed deadline cost? (COPY-P5) ── */}
-        <motion.div
-          initial="hidden"
-          whileInView="visible"
-          viewport={{ once: true, margin: '-40px' }}
-          variants={stagger}
-          className="max-w-4xl mx-auto px-6 lg:px-8 py-20 border-t border-white/5"
-        >
-          <div className="glass-card rounded-[24px] p-8 sm:p-12 border border-white/10 bg-surface-container-low/20">
-            <h2 className="text-2xl sm:text-3xl font-semibold text-on-surface mb-4 leading-tight type-h2">
-              What does one missed deadline cost?
-            </h2>
-            <p className="text-base sm:text-lg text-on-surface-variant leading-[1.65] type-body">
-              A blown contingency window can put a five-figure earnest money deposit at risk — more than two years of an Investor plan. An untracked contractor draw can move tens of thousands off your margin before a spreadsheet shows it. PaperWorking won&apos;t catch every problem. It shows you the variance while you can still act.
-            </p>
-          </div>
-        </motion.div>
 
-        {/* ── FAQ (COPY-P6) ── */}
-        <motion.div
-          initial="hidden"
-          whileInView="visible"
-          viewport={{ once: true, margin: '-40px' }}
-          variants={stagger}
-          className="max-w-4xl mx-auto px-6 lg:px-8 py-20 border-t border-white/5"
-        >
-          <div className="mb-12">
-            <h2 className="text-2xl sm:text-3xl font-semibold text-on-surface mb-2 type-h2">
-              Frequently Asked Questions
-            </h2>
-          </div>
 
-          <div className="space-y-6">
-            {FAQ.map((item, i) => (
-              <div key={i} className="glass-card rounded-[20px] p-6 sm:p-7 border border-white/8 bg-surface-container-low/20">
-                <h3 className="text-lg font-semibold text-on-surface mb-3 leading-snug type-h3">
-                  {item.q}
-                </h3>
-                <p className="text-base text-on-surface-variant leading-[1.65] type-body">
-                  {item.a}
-                </p>
-              </div>
-            ))}
-          </div>
-        </motion.div>
-
-        {/* ── Final CTA (COPY-P7) ── */}
+        {/* ── Final CTA ── */}
         <motion.div
           initial="hidden"
           whileInView="visible"
           viewport={{ once: true, margin: '-40px' }}
           variants={fadeUp}
-          className="max-w-4xl mx-auto px-6 lg:px-8 py-24 border-t border-white/5"
+          className="max-w-4xl mx-auto px-6 lg:px-8 py-12 md:py-14 border-t border-white/5"
         >
-          <div className="glass-card rounded-[28px] p-8 sm:p-14 text-center relative overflow-hidden bg-surface-container-low/30 border border-white/10">
+          <div className="glass-card rounded-[28px] p-8 sm:p-12 text-center relative overflow-hidden bg-surface-container-low/30 border border-white/10">
             <div className="relative z-10">
               <h2 className="text-3xl sm:text-4xl font-semibold text-on-surface mb-4 leading-tight type-h2">
                 Start with one deal.
@@ -326,7 +311,7 @@ export default function PricingSection({ onSelectPlan }: { onSelectPlan?: (plan:
               <div className="flex justify-center mb-4">
                 <Link
                   href="/register"
-                  className="luminous-button px-8 py-4 rounded-full text-[15px] font-semibold tracking-wide inline-flex items-center gap-2.5 type-cta"
+                  className="luminous-button px-8 py-4 rounded-full text-[15px] font-semibold tracking-wide inline-flex items-center gap-2.5 type-cta focus:outline-none focus-visible:ring-2 focus-visible:ring-primary"
                 >
                   Start Free 14-Day Trial
                   <span className="material-symbols-outlined text-[18px]">

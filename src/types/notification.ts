@@ -25,7 +25,13 @@ export type NotificationType =
   | 'SLIPPAGE_DETECTED'
   | 'DEAL_MATERIAL_CHANGE'
   | 'unattributed_transaction'
-  | 'missed_rent';
+  | 'missed_rent'
+  | 'gate_criteria_failing'
+  | 'gate_override_executed'
+  | 'variance_threshold_tripped'
+  | 'exchange_1031_deadline'
+  | 'checklist_item_overdue'
+  | 'document_upload_completed';
 
 export type NotificationUrgency = 'informational' | 'actionable' | 'critical';
 
@@ -272,6 +278,36 @@ export const NOTIFICATION_METADATA: Record<
       if (!params.dealAddress) throw new Error('DEAL_MATERIAL_CHANGE requires an address in the title.');
       return `Material changes made to deal at ${params.dealAddress}`;
     }
+  },
+  gate_criteria_failing: {
+    urgency: 'actionable',
+    channels: ['in-app'],
+    templateTitle: (params) => `Phase Gate Criteria Failing: ${params.dealAddress || 'Project'}`
+  },
+  gate_override_executed: {
+    urgency: 'critical',
+    channels: ['in-app', 'email'],
+    templateTitle: (params) => `Phase Gate Override Executed: ${params.dealAddress || 'Project'}`
+  },
+  variance_threshold_tripped: {
+    urgency: 'critical',
+    channels: ['in-app', 'email'],
+    templateTitle: (params) => `Operational NOI Variance Tripped: ${params.dealAddress || 'Project'}`
+  },
+  exchange_1031_deadline: {
+    urgency: 'critical',
+    channels: ['in-app', 'email'],
+    templateTitle: () => `1031 Exchange Deadline Warning`
+  },
+  checklist_item_overdue: {
+    urgency: 'actionable',
+    channels: ['in-app'],
+    templateTitle: () => `Checklist Item Overdue`
+  },
+  document_upload_completed: {
+    urgency: 'informational',
+    channels: ['in-app'],
+    templateTitle: () => `Document Upload Completed`
   }
 };
 

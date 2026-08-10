@@ -397,7 +397,7 @@ export default function HowItWorksEntry() {
 
           <motion.h1
             variants={fadeUp}
-            className="text-4xl sm:text-5xl lg:text-6xl font-black tracking-tighter leading-[0.92] mb-6 text-balance"
+            className="font-black tracking-tighter leading-[0.92] mb-6 text-balance type-display"
             style={{ color: '#595959' }}
           >
             From lead to funded offer
@@ -546,7 +546,7 @@ export default function HowItWorksEntry() {
               />
 
               <h2
-                className="text-3xl sm:text-4xl lg:text-5xl font-black tracking-tighter leading-[0.95] mb-5"
+                className="font-black tracking-tighter leading-[0.95] mb-5 type-h2"
                 style={{ color: '#595959' }}
               >
                 Structure the money

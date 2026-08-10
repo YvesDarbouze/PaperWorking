@@ -12,8 +12,11 @@ const TEAM_PAGE = read('app/dashboard/settings/team/page.tsx');
 const TEAM_ROUTE = read('app/api/team/[[...action]]/route.ts');
 const WORKSPACE_PAGE = read('app/dashboard/settings/workspace/page.tsx');
 const DATAPRIVACY_PAGE = read('app/dashboard/settings/data-privacy/page.tsx');
-const INVOICES = read('components/billing/InvoiceTable.tsx');
-const PAYMENT_METHOD = read('components/billing/PaymentMethodCard.tsx');
+// Billing empty-state copy now lives on the page itself. It previously lived in
+// `components/billing/InvoiceTable.tsx` and `PaymentMethodCard.tsx`, which were
+// orphaned by the Aug 2026 billing redesign and deleted — this assertion was
+// guarding copy that no user could ever see. Retargeted at the live surface.
+const BILLING_PAGE = read('app/dashboard/settings/billing/page.tsx');
 
 describe('Settings Sidebar & Guard Rails', () => {
 
@@ -112,8 +115,11 @@ describe('Settings Sidebar & Guard Rails', () => {
 
   it('defines the exact empty state copy', () => {
     expect(TEAM_PAGE).toContain("Seat limit reached");
-    expect(INVOICES).toContain("No invoices yet. They will appear here after your first payment.");
-    expect(PAYMENT_METHOD).toContain("No payment methods on file. Add a card to avoid interruption.");
+    expect(BILLING_PAGE).toContain("No invoices yet. They will appear here after your first payment.");
+    // Singular "method": the redesign spec called for "No payment method on
+    // file", so the shipped copy is singular where the old dead component was
+    // plural. The guidance sentence is preserved.
+    expect(BILLING_PAGE).toContain("No payment method on file. Add a card to avoid interruption.");
   });
 
   it('defines mobile and tablet responsive layouts and widths', () => {

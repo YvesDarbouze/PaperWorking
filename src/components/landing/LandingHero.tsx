@@ -96,7 +96,7 @@ export default function LandingHero() {
         aria-hidden
       />
 
-      <div className="relative z-10 max-w-[1200px] mx-auto px-6 md:px-8 py-24 lg:py-32 xl:py-36 grid grid-cols-1 lg:grid-cols-[1fr_440px] xl:grid-cols-[1fr_480px] gap-12 lg:gap-16 items-center">
+      <div className="relative z-10 max-w-[1200px] mx-auto px-6 md:px-8 pt-8 pb-12 md:pt-12 md:pb-16 lg:pt-16 lg:pb-20 grid grid-cols-1 lg:grid-cols-[1fr_440px] xl:grid-cols-[1fr_480px] gap-10 lg:gap-14 items-center">
 
         {/* ── LEFT: Verbatim Section 1 Copy ────────────────── */}
         <div className="flex flex-col items-start text-left">
@@ -110,26 +110,39 @@ export default function LandingHero() {
           </span>
 
           {/* Headline — verbatim COPY-L1 (medium-weight 500-600, clamp scale, tight tracking) */}
-          <h1 className="text-[40px] sm:text-[52px] lg:text-[62px] leading-[1.05] font-semibold tracking-[-0.025em] text-on-surface mb-6 type-display">
+          <h1 className="leading-[1.05] font-semibold tracking-[-0.025em] text-on-surface mb-6 type-display">
             Finally, Project Management software made for serious real estate investors and Investments teams.
           </h1>
 
-          {/* Body — verbatim COPY-L1 */}
-          <p className="text-[16px] md:text-[18px] leading-[1.65] font-normal text-on-surface-variant mb-8 max-w-[560px] type-body-lg">
-            Every real estate deal runs through the same four phases: Acquisition, Fund, Hold, Exit. PaperWorking manages all four phases of an investment in one place and turns the work you&apos;re already doing into the 33 numbers that show whether your investments are actually working. NOI, cap rate, DSCR, cash-on-cash, IRR — calculated from your own project data, per deal and across your portfolio.
+          {/* Body — verbatim user script */}
+          <p className="text-[16px] md:text-[18px] leading-[1.65] font-normal text-on-surface-variant max-w-[560px] type-body-lg">
+            Real Estate investments have a unique lifecycle that is different from most work related projects. Real Estate Investments move through a unique lifecycle that includes the following phases &quot;Acquisition&quot;, &quot;Fund&quot;, &quot;Hold&quot;, &quot;Exit.&quot; PaperWorking organizes investments and investment teams to give Real Estate investors the tools to make their investments process more organized and informed.
           </p>
+        </div>
 
-          {/* CTAs — Pill Buttons */}
-          <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4 mb-4">
+        {/* ── RIGHT: Product proof Deal Card + Two CTAs Directly Underneath ── */}
+        <div className="relative w-full lg:w-auto flex flex-col items-center gap-5">
+          <div className="relative w-full">
+            <div
+              className="absolute inset-0 bg-primary/6 blur-[60px] rounded-3xl pointer-events-none"
+              aria-hidden
+            />
+            <div className="relative">
+              <HeroDealCard />
+            </div>
+          </div>
+
+          {/* TWO buttons directly underneath the demo KPI card */}
+          <div className="flex flex-col sm:flex-row items-center justify-center gap-3 w-full">
             <Link
               href="/pricing"
-              className="luminous-button relative overflow-hidden px-8 py-4 rounded-full font-semibold text-[15px] tracking-[-0.01em] inline-flex items-center gap-2.5 group cursor-pointer type-cta"
+              className="luminous-button relative overflow-hidden px-6 py-3 min-h-[44px] rounded-full font-semibold text-[14px] tracking-[-0.01em] inline-flex items-center justify-center gap-2 group cursor-pointer type-cta w-full sm:w-auto text-center"
             >
               <span
                 className="absolute inset-0 bg-gradient-to-r from-transparent via-white/12 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-700 pointer-events-none"
                 aria-hidden
               />
-              Start Free 14-Day Trial
+              <span>Start Your Free 14 Days Trial</span>
               <span className="material-symbols-outlined text-[18px] group-hover:translate-x-1 transition-transform">
                 arrow_forward
               </span>
@@ -137,29 +150,13 @@ export default function LandingHero() {
 
             <Link
               href="/support/metrics"
-              className="px-7 py-4 rounded-full border border-white/15 text-on-surface text-[15px] font-semibold hover:border-primary/40 hover:text-primary transition-all inline-flex items-center gap-2 type-cta"
+              className="px-6 py-3 min-h-[44px] rounded-full border border-white/15 text-on-surface text-[14px] font-semibold hover:border-primary/40 hover:text-primary transition-all inline-flex items-center justify-center gap-2 type-cta w-full sm:w-auto text-center"
             >
-              See the 33 metrics
+              <span>33 KPIs</span>
               <span className="material-symbols-outlined text-[18px]">
                 bar_chart
               </span>
             </Link>
-          </div>
-
-          {/* Microcopy — verbatim COPY-L1 */}
-          <p className="text-[12.5px] text-on-surface-variant/70 leading-relaxed type-caption">
-            Free 14-day trial.
-          </p>
-        </div>
-
-        {/* ── RIGHT: Product proof Deal Card ── */}
-        <div className="relative w-full lg:w-auto">
-          <div
-            className="absolute inset-0 bg-primary/6 blur-[60px] rounded-3xl pointer-events-none"
-            aria-hidden
-          />
-          <div className="relative">
-            <HeroDealCard />
           </div>
         </div>
 

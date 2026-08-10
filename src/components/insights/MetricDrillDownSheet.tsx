@@ -357,10 +357,10 @@ export function MetricDrillDownSheet({
                       </div>
                       {isDocument && project && (
                         <div className="flex items-center gap-1">
-                          <span className="text-[10px] text-emerald-400 font-medium">Source:</span>
+                          <span className="text-[10px] text-slate-300 font-medium">Source:</span>
                           <a
                             href={`/dashboard/projects/${project.id}/phase-1?focus=${focusParam}`}
-                            className="text-[10px] text-emerald-400/90 hover:text-emerald-300 font-medium underline flex items-center gap-0.5"
+                            className="text-[10px] text-slate-300/90 hover:text-slate-300 font-medium underline flex items-center gap-0.5"
                           >
                             {docLabel}
                             <ExternalLink className="w-2.5 h-2.5 inline" />

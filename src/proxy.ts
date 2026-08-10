@@ -134,6 +134,28 @@ export function proxy(request: NextRequest) {
     return withNoCache(nextWithHeader(request, pathname));
   }
 
+  // ── Data Room Deprecation Redirect (NAV-04) ───────────
+  if (pathname === '/dashboard/data-room' || pathname.startsWith('/dashboard/data-room/')) {
+    return withNoCache(NextResponse.redirect(new URL('/dashboard/projects', request.url), 301));
+  }
+
+  // ── Deals Marketplace Role Gating ──────────────────────
+  if (pathname.startsWith('/dashboard/deals')) {
+    if (acct === 'vendor') {
+      return withNoCache(NextResponse.redirect(new URL('/dashboard/marketplace', request.url)));
+    }
+  }
+
+  // ── Dashboard Public Teasers (SEO/Marketing) ───────────
+  if (pathname === '/dashboard/marketplace' || pathname === '/dashboard/deals') {
+    if (!hasSession) {
+      const url = new URL('/login', request.url);
+      url.searchParams.set('redirectTo', request.nextUrl.pathname + request.nextUrl.search);
+      return withNoCache(NextResponse.redirect(url));
+    }
+    return withNoCache(nextWithHeader(request, pathname));
+  }
+
   // ── Dashboard ──────────────────────────────────────────
   if (pathname.startsWith('/dashboard')) {
     if (!hasSession) {

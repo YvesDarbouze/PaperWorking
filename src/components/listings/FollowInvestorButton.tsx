@@ -2,7 +2,8 @@
 
 import React, { useState } from 'react';
 import { useAuth } from '@/context/AuthContext';
-import { followInvestor, unfollowInvestor, updateFollowConsent } from '@/actions/follows';
+import { updateFollowConsent } from '@/actions/follows';
+import { useFollowInvestor } from '@/hooks/useFollowInvestor';
 import ConsentModal from './ConsentModal';
 import posthog from 'posthog-js';
 
@@ -30,37 +31,25 @@ export default function FollowInvestorButton({
   className = '',
 }: FollowInvestorButtonProps) {
   const { user } = useAuth();
-  const [following, setFollowing] = useState(initialFollowing);
-  const [loading, setLoading] = useState(false);
   const [showConsent, setShowConsent] = useState(false);
 
-  const handleToggle = async () => {
-    if (!user) return;
-    setLoading(true);
-
-    try {
-      const idToken = await user.getIdToken();
-
-      if (following) {
-        await unfollowInvestor(idToken, investorUid);
-        setFollowing(false);
-        onFollowChange?.(false);
-      } else {
-        await followInvestor(idToken, investorUid);
-        setFollowing(true);
-        onFollowChange?.(true);
-        setShowConsent(true);
-
-        try {
-          posthog.capture('investor_followed', { investorUid });
-        } catch { /* telemetry non-fatal */ }
-      }
-    } catch (err) {
-      console.error('Follow investor failed:', err);
-    } finally {
-      setLoading(false);
-    }
-  };
+  /* Single shared follow path — optimistic, maintains follower/following
+     counts and creates the inbox notification. This component previously
+     called the server actions directly, which wrote the edge but neither
+     the counts nor the notification, so totals drifted depending on which
+     Follow button a user happened to use. */
+  const { following, pending, toggle } = useFollowInvestor({
+    targetUid: investorUid,
+    initialFollowing,
+    onFollowed: () => {
+      onFollowChange?.(true);
+      setShowConsent(true);
+      try {
+        posthog.capture('investor_followed', { investorUid });
+      } catch { /* telemetry non-fatal */ }
+    },
+    onUnfollowed: () => onFollowChange?.(false),
+  });
 
   const handleConsentSubmit = async (consent: { emailConsent: boolean; inAppConsent: boolean }) => {
     if (!user) return;
@@ -80,8 +69,10 @@ export default function FollowInvestorButton({
   return (
     <>
       <button
-        onClick={handleToggle}
-        disabled={loading}
+        onClick={toggle}
+        disabled={pending}
+        aria-pressed={following}
+        data-testid="follow-investor-btn"
         className={`
           inline-flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-semibold
           transition-all duration-200 disabled:opacity-50
@@ -95,7 +86,7 @@ export default function FollowInvestorButton({
         <span className="material-symbols-outlined text-lg">
           {following ? 'person_check' : 'person_add'}
         </span>
-        {loading ? 'Loading...' : following ? 'Following' : `Follow ${investorName.split(' ')[0]}`}
+        {pending ? 'Loading...' : following ? 'Following' : `Follow ${investorName.split(' ')[0]}`}
       </button>
 
       <ConsentModal

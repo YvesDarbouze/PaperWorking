@@ -102,6 +102,11 @@ export async function GET(
         subscriptionStatus: status,
         paymentMethods,
         invoices,
+        // Billing contact block — editable inline on Settings → Billing.
+        // Falls back to the account values when no override has been saved.
+        companyName: userData?.companyName || '',
+        billingEmail: userData?.billingEmail || userData?.email || '',
+        billingAddress: userData?.billingAddress || '',
       });
     }
 
@@ -342,6 +347,37 @@ export async function PUT(
         timezone: userData?.timezone || 'America/New_York',
         phone,
         companyName,
+      });
+    }
+
+    if (section === 'billing') {
+      // Inline edit of the billing contact block on Settings → Billing.
+      // Only these three fields are writable here; plan, status, and payment
+      // method are Stripe-authoritative and are never written from the client.
+      const { companyName, billingEmail, billingAddress } = body;
+
+      const trimmedEmail = typeof billingEmail === 'string' ? billingEmail.trim() : '';
+      if (trimmedEmail && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(trimmedEmail)) {
+        return NextResponse.json(
+          { error: 'Enter a valid billing email address.' },
+          { status: 400 },
+        );
+      }
+
+      const updates = {
+        companyName: typeof companyName === 'string' ? companyName.trim().slice(0, 200) : '',
+        billingEmail: trimmedEmail,
+        billingAddress:
+          typeof billingAddress === 'string' ? billingAddress.trim().slice(0, 500) : '',
+        updatedAt: admin.firestore.FieldValue.serverTimestamp(),
+      };
+
+      await userRef.set(updates, { merge: true });
+
+      return NextResponse.json({
+        companyName: updates.companyName,
+        billingEmail: updates.billingEmail,
+        billingAddress: updates.billingAddress,
       });
     }
 

@@ -205,7 +205,7 @@ export default function DealTeaserView({ teaser }: DealTeaserViewProps) {
         </div>
 
         {/* ── Subscribe CTA ── */}
-        <SubscribeCTA />
+        <SubscribeCTA listingId={teaser.id} />
       </div>
 
       {/* ── Footer Counters ── */}

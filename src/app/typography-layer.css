@@ -1,8 +1,8 @@
 /* ==== PaperWorking Responsive Readability Layer (additive) ==== */
 :root {
   /* Fluid type scale — 375px floor → 1280px ceiling */
-  --type-display:     clamp(2.5rem, 1.25rem + 5.3vw, 5.5rem);      /* 40 → 88 */
-  --type-h2:          clamp(1.875rem, 1.3rem + 2.45vw, 3.25rem);   /* 30 → 52 */
+  --type-display:     clamp(2rem, 1.35rem + 2.8vw, 3.5rem);        /* 32 → 56 */
+  --type-h2:          clamp(1.625rem, 1.35rem + 1.3vw, 2.25rem);   /* 26 → 36 */
   --type-h3:          clamp(1.375rem, 1.22rem + 0.67vw, 1.75rem);  /* 22 → 28 */
   --type-body-lg:     clamp(1.0625rem, 0.98rem + 0.34vw, 1.25rem); /* 17 → 20 */
   --type-body:        clamp(1rem, 0.97rem + 0.11vw, 1.0625rem);    /* 16 → 17 */
@@ -10,7 +10,7 @@
   --type-caption:     clamp(0.8125rem, 0.79rem + 0.11vw, 0.875rem);/* 13 → 14 */
   --type-eyebrow:     clamp(0.6875rem, 0.66rem + 0.11vw, 0.75rem); /* 11 → 12 */
   --type-metric:      clamp(1.625rem, 1.16rem + 2vw, 2.75rem);     /* 26 → 44 */
-  --type-metric-hero: clamp(2.25rem, 1.63rem + 2.65vw, 3.75rem);   /* 36 → 60 */
+  --type-metric-hero: clamp(2rem, 1.5rem + 2vw, 3rem);            /* 32 → 48 */
 
   /* Measure limits */
   --measure-body: 66ch;
@@ -20,45 +20,38 @@
 /* Utility classes — apply only where needed; nothing global */
 .type-display {
   font-size: var(--type-display);
-  font-weight: 600;
-  line-height: 1.05;
+  font-weight: 700;
+  line-height: 1.1;
   letter-spacing: -0.025em;
-  max-width: 13ch;
   overflow-wrap: break-word;
   text-wrap: balance;
 }
 .type-h2 {
   font-size: var(--type-h2);
   font-weight: 600;
-  line-height: 1.15;
+  line-height: 1.2;
   letter-spacing: -0.02em;
-  max-width: var(--measure-headline);
   overflow-wrap: break-word;
   text-wrap: balance;
 }
 .type-h3 {
   font-size: var(--type-h3);
   font-weight: 600;
-  line-height: 1.25;
+  line-height: 1.3;
   letter-spacing: -0.01em;
-  max-width: 18ch;
   overflow-wrap: break-word;
 }
 .type-body-lg {
   font-size: var(--type-body-lg);
   font-weight: 400;
   line-height: 1.65;
-  max-width: 60ch;
   overflow-wrap: break-word;
-  hyphens: auto;
 }
 .type-body {
   font-size: var(--type-body);
   font-weight: 400;
   line-height: 1.65;
-  max-width: var(--measure-body);
   overflow-wrap: break-word;
-  hyphens: auto;
 }
 .type-small {
   font-size: var(--type-small);
@@ -104,11 +97,11 @@
 
 /* Tailwind v4 theme extensions (additive) */
 @theme {
-  --font-size-display: clamp(2.5rem, 1.25rem + 5.3vw, 5.5rem);
+  --font-size-display: clamp(2rem, 1.35rem + 2.8vw, 3.5rem);
   --font-size-display--line-height: 1.05;
   --font-size-display--letter-spacing: -0.02em;
 
-  --font-size-h2: clamp(1.875rem, 1.3rem + 2.45vw, 3.25rem);
+  --font-size-h2: clamp(1.625rem, 1.35rem + 1.3vw, 2.25rem);
   --font-size-h2--line-height: 1.15;
   --font-size-h2--letter-spacing: -0.015em;
 
@@ -138,7 +131,7 @@
   --font-size-metric--line-height: 1.05;
   --font-size-metric--letter-spacing: -0.01em;
 
-  --font-size-metric-hero: clamp(2.25rem, 1.63rem + 2.65vw, 3.75rem);
+  --font-size-metric-hero: clamp(2rem, 1.5rem + 2vw, 3rem);
   --font-size-metric-hero--line-height: 1.05;
   --font-size-metric-hero--letter-spacing: -0.01em;
 

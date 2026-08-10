@@ -7,8 +7,8 @@ import Link from 'next/link';
 
 function UnsubscribeContent() {
   const searchParams = useSearchParams();
-  const email = searchParams.get('email');
-  const projectId = searchParams.get('projectId');
+  const email = searchParams?.get('email');
+  const projectId = searchParams?.get('projectId');
   const [status, setStatus] = useState<'loading' | 'success' | 'error'>('loading');
   const [message, setMessage] = useState('');
 

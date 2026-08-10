@@ -5,7 +5,7 @@ import { ArrowRight } from 'lucide-react';
 
 export default function FinalCTA() {
   return (
-    <section className="py-24 md:py-32 relative overflow-hidden">
+    <section className="py-12 md:py-16 lg:py-20 relative overflow-hidden">
       {/* Ambient background glow */}
       <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-3/4 h-3/4 bg-primary/8 blur-[120px] rounded-full pointer-events-none" />
 
@@ -16,7 +16,7 @@ export default function FinalCTA() {
 
           <div className="max-w-2xl relative z-10">
             {/* Headline */}
-            <h2 className="text-[28px] md:text-[40px] leading-tight font-bold tracking-tight text-on-surface mb-5 type-h2">
+            <h2 className="leading-tight font-bold tracking-tight text-on-surface mb-5 type-h2">
               Move your deals into one place.
             </h2>
 

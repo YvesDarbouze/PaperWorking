@@ -2,7 +2,7 @@
 
 import React, { useState, useMemo, useEffect, useRef } from 'react';
 import Link from 'next/link';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { useProjectStore } from '@/store/projectStore';
 import { projectsService } from '@/lib/firebase/deals';
 import { deriveAllMetrics } from '@/lib/metrics/reiMetrics';
@@ -115,6 +115,7 @@ function formatCurrency(v: number): string {
 export default function DealAnalyzerPage() {
   useAllDealsSync();
   const router = useRouter();
+  const searchParams = useSearchParams();
   const { activeTenantId } = useTenant();
   const { user } = useAuth();
   const projects = useProjectStore((state) => state.projects);
@@ -124,6 +125,27 @@ export default function DealAnalyzerPage() {
   const [mode, setMode] = useState<'wizard' | 'classic'>('wizard');
   const [selectedProjectId, setSelectedProjectId] = useState<string | null>(null);
   const [inputs, setInputs] = useState<DealInputs>(DEFAULT_INPUTS);
+  
+  // Prefill inputs from query parameters
+  useEffect(() => {
+    const queryAddress = searchParams?.get('address');
+    const queryPrice = searchParams?.get('purchasePrice');
+    const queryRehab = searchParams?.get('rehabCost');
+    const queryArv = searchParams?.get('arv');
+    const queryRent = searchParams?.get('rent');
+
+    if (queryAddress || queryPrice || queryRehab || queryArv || queryRent) {
+      setInputs((prev) => ({
+        ...prev,
+        address: queryAddress || prev.address,
+        purchasePrice: queryPrice || prev.purchasePrice,
+        projectedRehabCost: queryRehab || prev.projectedRehabCost,
+        estimatedARV: queryArv || prev.estimatedARV,
+        monthlyGrossRent: queryRent || prev.monthlyGrossRent,
+      }));
+    }
+  }, [searchParams]);
+
   const [customPeriods, setCustomPeriods] = useState<number[]>([30, 90, 180, 270]);
 
   const handlePeriodChange = (index: number, val: string) => {

@@ -113,7 +113,7 @@ export function ReportGenerator({ projectId }: ReportGeneratorProps) {
               onClick={() => handleDownload('pdf', 'portfolio')}
               className="flex items-center gap-2.5 w-full text-left px-4 py-2 text-xs font-semibold text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-white/5 transition-colors duration-150"
             >
-              <FileDown className="w-4 h-4 text-emerald-500" />
+              <FileDown className="w-4 h-4 text-slate-300" />
               Download PDF (Portfolio)
             </button>
             {projectId && (
@@ -121,7 +121,7 @@ export function ReportGenerator({ projectId }: ReportGeneratorProps) {
                 onClick={() => handleDownload('pdf', 'project')}
                 className="flex items-center gap-2.5 w-full text-left px-4 py-2 text-xs font-semibold text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-white/5 transition-colors duration-150"
               >
-                <FileDown className="w-4 h-4 text-emerald-500" />
+                <FileDown className="w-4 h-4 text-slate-300" />
                 Download PDF (This Project)
               </button>
             )}

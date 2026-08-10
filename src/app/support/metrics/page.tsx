@@ -335,9 +335,9 @@ export default function MetricsPlaybookPage() {
   }, [activeCategory, searchQuery]);
 
   return (
-    <div className="pt-12 pb-24 max-w-[1000px] mx-auto">
+    <div className="pt-8 pb-16 max-w-[1000px] mx-auto">
       {/* ── Header / Breadcrumb ── */}
-      <div className="mb-12">
+      <div className="mb-8">
         <Link
           href="/support"
           className="inline-flex items-center gap-2 text-xs font-bold uppercase tracking-widest text-[var(--color-on-surface-variant)]/60 hover:text-primary transition-colors mb-6 text-decoration-none"
@@ -345,7 +345,7 @@ export default function MetricsPlaybookPage() {
           <ArrowLeft className="w-3.5 h-3.5" />
           Back to Support
         </Link>
-        <h1 className="text-4xl sm:text-5xl font-semibold tracking-[-0.025em] text-on-background mb-4 type-display">
+        <h1 className="font-semibold tracking-[-0.025em] text-on-background mb-4 type-display">
           The PaperWorking Playbook
         </h1>
         <p className="text-base sm:text-lg text-on-surface-variant/80 max-w-[700px] leading-relaxed type-body-lg">
@@ -413,13 +413,17 @@ export default function MetricsPlaybookPage() {
             <motion.div
               layout
               key={m.id}
+              id={m.id}
               variants={fadeUp}
               exit={{ opacity: 0, scale: 0.95 }}
-              className="p-6 rounded-2xl border border-white/5 backdrop-blur-xl relative overflow-hidden transition-all duration-200"
+              className="p-6 rounded-2xl border border-white/5 backdrop-blur-xl relative overflow-hidden transition-all duration-200 scroll-mt-24"
               style={{
                 background: 'linear-gradient(135deg, rgba(24, 33, 39, 0.7) 0%, rgba(11, 20, 26, 0.8) 100%)',
               }}
             >
+              {/* Alias anchors for metrics mapping */}
+              {m.id === 'oer' && <span id="expense-ratio" className="sr-only" />}
+              {m.id === 'portfolio-growth' && <span id="appreciation" className="sr-only" />}
               {/* Index Number */}
               <div className="absolute top-4 right-4 font-mono text-[11px] font-bold text-on-surface-variant/20 tracking-wider">
                 #{String(idx + 1).padStart(2, '0')}

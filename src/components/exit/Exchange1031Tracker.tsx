@@ -206,7 +206,7 @@ export function Exchange1031Tracker({
                 <div>
                   <h5 className="font-bold text-white">{prop.address}</h5>
                   <p className="text-[10px] text-slate-400">
-                    Identified: {prop.identifiedDate} · Target Price: {fmtCurrency(prop.targetPrice)}
+                    Identified: {prop.identifiedDate} · Target Price: {fmtCurrency(prop.targetPrice || 0)}
                   </p>
                 </div>
                 <button

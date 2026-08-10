@@ -19,9 +19,9 @@ export default function ReportSpamPage() {
 
 function ReportSpamPageInner() {
   const searchParams = useSearchParams();
-  const email = searchParams.get('email') || '';
-  const token = searchParams.get('token') || '';
-  const projectId = searchParams.get('projectId') || '';
+  const email = searchParams?.get('email') || '';
+  const token = searchParams?.get('token') || '';
+  const projectId = searchParams?.get('projectId') || '';
 
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);

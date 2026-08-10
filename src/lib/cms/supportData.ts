@@ -317,11 +317,11 @@ export const SUPPORT_ARTICLES: SupportArticle[] = [
   {
     id: 'upgrade-plan',
     categoryId: 'billing',
-    title: 'How do I upgrade from Starter to Pro or Portfolio?',
+    title: 'How do I upgrade my plan?',
     excerpt:
-      'Upgrade from Settings → Billing. The cost is prorated for the remainder of your billing period and your data is instantly available on the new plan.',
+      'Upgrade anytime from Settings → Billing. Choose between Investor ($499/yr or $59/mo), Investment Team ($999/yr or $99/mo), or Vendor ($390/yr or $39/mo). The cost is prorated for the remainder of your billing period.',
     readTime: '3 min read',
-    tags: ['upgrade', 'plan', 'billing'],
+    tags: ['upgrade', 'plan', 'billing', 'Investor', 'Investment Team', 'Vendor'],
   },
   {
     id: 'cancel-subscription',
@@ -330,7 +330,7 @@ export const SUPPORT_ARTICLES: SupportArticle[] = [
     excerpt:
       'Your data is never deleted at cancellation. You get 90 days of read-only access and can export everything as CSV at any time. After 90 days, you can reactivate.',
     readTime: '3 min read',
-    tags: ['cancel', 'data', 'export', 'subscription'],
+    tags: ['cancel', 'data', 'export', 'subscription', 'refund'],
     popular: true,
   },
   {
@@ -364,43 +364,85 @@ export const POPULAR_SEARCHES: string[] = [
   'Cancel subscription',
 ];
 
-// ── Support FAQs — RE investor objections ───────────────
+// ── Support FAQs — Grounded in Real Product Code ───────────────
 
 export const SUPPORT_FAQS: SupportFAQ[] = [
   {
     id: 'faq-1',
     question: "I'm in the middle of a deal. Can I switch from spreadsheets without starting over?",
     answer:
-      "Yes. Enter your deal with today's numbers — purchase price, costs incurred to date, current rehab status — and set the deal start date to your contract execution date. PaperWorking doesn't require a clean start. You can be fully set up in under 20 minutes even on an active deal.",
+      "Yes. Enter your deal with today's numbers — purchase price, costs incurred to date, and current rehab status — and set the deal start date to your contract execution date. PaperWorking allows manual CSV import and transaction logging so you don't need a clean start. You can be fully operational on an active deal in under 20 minutes.",
     categoryId: 'first-deal',
   },
   {
     id: 'faq-2',
     question: 'My contractor wants to be paid before I can verify the work. How does that work?',
     answer:
-      "Draw requests go into a pending state until you approve them. You can approve a partial draw while keeping the remainder in pending. If your contractor submits a request before work is verifiable, mark it as \"pending inspection\" — it stays logged but doesn't release until you approve it.",
+      "Draw requests and contractor invoices remain in a pending state until approved by an account owner or authorized team member. You can grant contractors scoped access to submit draw requests and attach scope-of-work documentation without giving them financial visibility into your full deal or portfolio metrics.",
     categoryId: 'rehab',
   },
   {
     id: 'faq-3',
     question: "My CPA has never used PaperWorking. Will they understand the export?",
     answer:
-      "The P&L export is a plain CSV with labeled columns that match standard real estate accounting categories. Most CPAs recognize the format immediately. The export includes a legend sheet that maps PaperWorking categories to IRS Schedule E and Form 4797 line items. You can also invite your CPA as a read-only collaborator so they can pull their own reports.",
+      "The P&L export is a standardized CSV with clear line items matching IRS Schedule E and Form 4797 tax categories. Most CPAs recognize the format immediately. You can also invite your CPA as a read-only collaborator (supported on Investor and Investment Team plans) so they can view tax basis ledgers and download reports directly.",
     categoryId: 'cpa',
   },
   {
     id: 'faq-4',
     question: "I have multiple LLCs for different deals. How does that work?",
     answer:
-      "Each deal can be assigned to a different entity. In your account settings, you can add all your LLCs and tag each deal to the correct entity. The portfolio report can be filtered by entity, so your CPA can pull a clean year-end P&L for each LLC separately.",
+      "Each deal in PaperWorking is tagged to its owning legal entity or LLC. You can filter portfolio reports, P&L exports, and financial metrics by entity so your CPA gets clean, separated financial statements for every entity at tax time.",
     categoryId: 'first-deal',
   },
   {
     id: 'faq-5',
     question: "What if I lose internet access during a walkthrough?",
     answer:
-      "PaperWorking caches your active deals locally when you open them. If you lose connectivity, you can still view your deal data, deadlines, and budget. Changes made offline sync automatically when connectivity is restored. We recommend opening your active deals before heading to a site where reception is unreliable.",
+      "PaperWorking caches active deal structures and checklists in your browser's local state. When offline during a property walkthrough, you can still review existing property attributes and numbers. Note that live financial syncing and real-time messaging require an active network connection.",
     categoryId: 'first-deal',
+  },
+  {
+    id: 'faq-6',
+    question: "How do the 14-day trial and subscription plans work?",
+    answer:
+      "PaperWorking offers three plans: Investor ($499/year or $59/month), Investment Team ($999/year or $99/month), and Vendor ($390/year or $39/month). Every subscription starts with a 14-day free trial, and your card is not charged until day 15. You can switch between annual and monthly billing at any time.",
+    categoryId: 'billing',
+  },
+  {
+    id: 'faq-7',
+    question: "How do I cancel my subscription, and is there a refund window?",
+    answer:
+      "You can cancel your subscription at any time directly from Dashboard → Settings → Billing with zero phone calls required. Annual plans include a 30-day money-back refund window. Upon cancellation, your data remains accessible in read-only mode for 90 days so you can export all your records.",
+    categoryId: 'billing',
+  },
+  {
+    id: 'faq-8',
+    question: "What does the Plaid integration do, and is it required?",
+    answer:
+      "Plaid integration is completely optional. If connected, PaperWorking automatically syncs bank transactions and flags recurring income and expense items to streamline revenue and liability classification. If you prefer not to connect bank accounts, you can enter data manually or import via CSV.",
+    categoryId: 'cpa',
+  },
+  {
+    id: 'faq-9',
+    question: "How does CPA read-only access and data export work?",
+    answer:
+      "On Investor and Investment Team plans, you can invite your CPA or tax professional as a read-only collaborator. They can view P&L statements, cost basis ledgers, and expense reports, or export clean CSV files anytime without permission to modify deal numbers or settings.",
+    categoryId: 'cpa',
+  },
+  {
+    id: 'faq-10',
+    question: "What does the four-phase lifecycle (Acquisition, Fund, Hold, Exit) mean in practice?",
+    answer:
+      "PaperWorking organizes real estate investments into four distinct phases: Acquisition (sourcing, underwriting, ARV analysis), Fund (capital stack, loan closing, earnest money), Hold (rehab budgeting, draw requests, rental cash flow, NOI/DSCR tracking), and Exit (disposition, 1031 exchange, final IRR & equity multiple realization).",
+    categoryId: 'first-deal',
+  },
+  {
+    id: 'faq-11',
+    question: "How are team roles and Google Drive document storage handled on the Investment Team plan?",
+    answer:
+      "The Investment Team plan includes multi-seat access with role-based permissions (Lead Investor, Partner, CPA, Contractor). It also features automatic Google Drive folder provisioning for deal documents, title commitments, and inspection reports.",
+    categoryId: 'partners',
   },
 ];
 

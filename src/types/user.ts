@@ -26,6 +26,9 @@ export interface UserProfile {
   organizationId?: string; // DEPRECATED: Transitioning to personalOrganizationId
   memberships?: Record<string, OrgRole | string>; // Map of tenant ID to role
 
+  syntheticAgent?: boolean;
+  agentPersona?: string;
+
   /* ── Subscription ── */
   subscriptionPlan: SubscriptionPlan;
   subscriptionStatus: SubscriptionStatus;
@@ -39,6 +42,11 @@ export interface UserProfile {
   cardBrand?: string;
   cancelAtPeriodEnd?: boolean;
   currentPeriodEnd?: number;
+  /** Billing contact overrides — edited inline on Settings → Billing.
+   *  Distinct from the account `email`/`companyName`: invoices and receipts
+   *  may need to go to accounts payable rather than the account holder. */
+  billingEmail?: string;
+  billingAddress?: string;
 
   /* ── Contact Info ── */
   phone?: string;

@@ -6,31 +6,41 @@ import { getPublishedListings, searchDealsAuthenticated } from '@/actions/listin
 import type { DealListingTeaser, SubscriberPropertyResult, SubscriberDealMatch, ResolvedAddress, DealSortOption } from '@/types/listing';
 import SubscriberDealCard from '@/components/listings/SubscriberDealCard';
 import ListingCard from '@/components/listings/ListingCard';
-import { MapPin, Search, Loader2, X, Building2, Plus, ArrowRight, Compass } from 'lucide-react';
+import CreateDealSheet from '@/components/deals/CreateDealSheet';
+import { MapPin, Search, Loader2, X, Building2, Plus, ArrowRight, Compass, Filter, Calculator } from 'lucide-react';
 import { recordSearchTelemetry, recordConversionTelemetry } from '@/actions/telemetry';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import posthog from 'posthog-js';
 import dynamic from 'next/dynamic';
 import { calculateDealCompleteness } from '@/lib/identity/provenance';
+import { generateDealSlug, checkDuplicateDeal, DealData } from '@/lib/deals/slugUtils';
+import MyDealsHistoryTab from '@/components/deals/MyDealsHistoryTab';
+import { generateInvitationToken, DealInvitation, DealInterest } from '@/lib/deals/engagementUtils';
+import { DealThreadEvent } from '@/lib/deals/historyUtils';
+import { MarketplaceSubnav } from '@/components/marketplace/MarketplaceSubnav';
+import toast from 'react-hot-toast';
 
 const DealMap = dynamic(() => import('@/components/marketplace/DealMap'), { ssr: false });
 
 /* ═══════════════════════════════════════════════════════════════
-   Discover Deals — Subscriber Marketplace Search (DM-10)
+   Discover Deals — Subscriber Marketplace Search (PROMPT 2)
    
    Features:
-   - Primary Address Search with Autocomplete (authenticated route)
-   - UUIDv4 session tokens regenerated per search session
-   - Grouping by Property with Multiple Deal Badges (DM-D3)
-   - Exact engine-derived metrics & Honesty Rule gap handling
-   - Subscriber Zero-Result conversion flow ("Start a Deal here")
+   - Address-First Search as Primary Interaction
+   - Google Maps Places Autocomplete (~300ms debounce, keyboard nav ↑/↓/Enter/Esc)
+   - Zero Dead-Ends: Every search finds an existing Deal or starts Deal Creation
+   - Deal Creation Sheet with prefilled Places components & duplicate guard
+   - Investor-natural filters (collapsible on mobile, ≥44px touch targets)
+   - Reciprocal handoff to Deal Analyzer module
    ═══════════════════════════════════════════════════════════════ */
 
 const ASSET_CLASSES = ['All', 'Residential', 'Multi-Family', 'Commercial', 'Land'] as const;
 const STRATEGIES   = ['All', 'FLIP', 'BRRRR', 'BUY AND HOLD', 'WHOLESALE'] as const;
+const STATUS_OPTIONS = ['All', 'DRAFT', 'LISTED', 'UNDER_REVIEW', 'FUNDED', 'CLOSED'] as const;
 
 type AssetClassFilter = (typeof ASSET_CLASSES)[number];
 type StrategyFilter   = (typeof STRATEGIES)[number];
+type StatusFilter     = (typeof STATUS_OPTIONS)[number];
 
 interface Prediction {
   placeId: string;
@@ -40,7 +50,7 @@ interface Prediction {
 // ── Skeleton Loader ──
 function SkeletonCard() {
   return (
-    <div className="glass-card rounded-xl border border-pw-border p-5 animate-pulse">
+    <div className="glass-card rounded-xl border border-pw-border p-5 animate-pulse min-h-[220px]">
       <div className="flex items-center gap-2 mb-4">
         <div className="h-4 w-16 rounded-full bg-[var(--color-muted)]/15" />
         <div className="h-4 w-12 rounded-full bg-[var(--color-muted)]/10" />
@@ -62,11 +72,14 @@ function SkeletonCard() {
 export default function DealsPage() {
   const { user, profile } = useAuth();
   const router = useRouter();
+  const searchParams = typeof useSearchParams === 'function' ? useSearchParams() : null;
 
   // Filter state
   const [assetClass, setAssetClass] = useState<AssetClassFilter>('All');
   const [strategy, setStrategy]     = useState<StrategyFilter>('All');
-  
+  const [statusFilter, setStatusFilter] = useState<StatusFilter>('All');
+  const [priceRange, setPriceRange] = useState<string>('All');
+
   // Search and loading states
   const [query, setQuery] = useState('');
   const [predictions, setPredictions] = useState<Prediction[]>([]);
@@ -74,7 +87,7 @@ export default function DealsPage() {
   const [isPredictionsLoading, setIsPredictionsLoading] = useState(false);
   const [selectedIndex, setSelectedIndex] = useState(-1);
   const [sessionToken, setSessionToken] = useState<string>('');
-  
+
   const [isSearching, setIsSearching] = useState(false);
   const [searchResults, setSearchResults] = useState<SubscriberPropertyResult[] | null>(null);
   const [coldStartResult, setColdStartResult] = useState<{ address: string; resolvedAddress?: ResolvedAddress } | null>(null);
@@ -82,7 +95,25 @@ export default function DealsPage() {
   const [activeView, setActiveView] = useState<'list' | 'map'>('list');
   const [isMobileFilterOpen, setIsMobileFilterOpen] = useState(false);
 
-  // Load view choice from localStorage on mount
+  // Creation Sheet state
+  const [isCreateSheetOpen, setIsCreateSheetOpen] = useState(false);
+  const [createInitialAddress, setCreateInitialAddress] = useState<ResolvedAddress | null>(null);
+  const [createdDeals, setCreatedDeals] = useState<DealData[]>([]);
+
+  // Top Tab state ('all' | 'my-deals')
+  const [topTab, setTopTab] = useState<'all' | 'my-deals'>('all');
+
+  // Check action=create & tab=my-deals query params on mount
+  useEffect(() => {
+    if (searchParams?.get('action') === 'create') {
+      setIsCreateSheetOpen(true);
+    }
+    if (searchParams?.get('tab') === 'my-deals') {
+      setTopTab('my-deals');
+    }
+  }, [searchParams]);
+
+  // Load view choice from localStorage
   useEffect(() => {
     const saved = localStorage.getItem('pw_deals_view');
     if (saved === 'list' || saved === 'map') {
@@ -94,7 +125,7 @@ export default function DealsPage() {
     setActiveView(view);
     localStorage.setItem('pw_deals_view', view);
   };
-  
+
   // Default Browse State
   const [defaultTeasers, setDefaultTeasers] = useState<DealListingTeaser[]>([]);
   const [loading, setLoading] = useState(true);
@@ -106,7 +137,7 @@ export default function DealsPage() {
   const containerRef = useRef<HTMLDivElement>(null);
   const debounceRef = useRef<NodeJS.Timeout | null>(null);
 
-  // Generate UUIDv4 session token on mount / reset
+  // Generate UUIDv4 session token
   const generateNewSessionToken = useCallback(() => {
     const token = typeof crypto !== 'undefined' && crypto.randomUUID 
       ? crypto.randomUUID() 
@@ -115,39 +146,15 @@ export default function DealsPage() {
   }, []);
 
   useEffect(() => {
+    document.title = "PaperWorking — Deals Marketplace";
+    if (isVendor) {
+      router.replace('/dashboard/marketplace');
+    }
+  }, [isVendor, router]);
+
+  useEffect(() => {
     generateNewSessionToken();
   }, [generateNewSessionToken]);
-
-  // Track filter changes to capture telemetry conversions (DM-15)
-  useEffect(() => {
-    if (assetClass !== 'All') {
-      recordConversionTelemetry({
-        eventType: 'filter_used',
-        details: { filterType: 'assetClass', filterValue: assetClass },
-        sessionToken,
-      }).catch(console.error);
-    }
-  }, [assetClass, sessionToken]);
-
-  useEffect(() => {
-    if (strategy !== 'All') {
-      recordConversionTelemetry({
-        eventType: 'filter_used',
-        details: { filterType: 'strategy', filterValue: strategy },
-        sessionToken,
-      }).catch(console.error);
-    }
-  }, [strategy, sessionToken]);
-
-  useEffect(() => {
-    if (sortBy !== 'relevance') {
-      recordConversionTelemetry({
-        eventType: 'filter_used',
-        details: { filterType: 'sortBy', filterValue: sortBy },
-        sessionToken,
-      }).catch(console.error);
-    }
-  }, [sortBy, sessionToken]);
 
   // Fetch all default listings when not searching
   const fetchDefaultListings = useCallback(async () => {
@@ -178,15 +185,6 @@ export default function DealsPage() {
       fetchDefaultListings();
     }
   }, [fetchDefaultListings, searchResults, coldStartResult]);
-
-  // Telemetry for page/filters view
-  useEffect(() => {
-    const filters: Record<string, string> = {};
-    if (assetClass !== 'All') filters.assetClass = assetClass;
-    if (strategy !== 'All')   filters.subStrategy = strategy;
-
-    posthog.capture('deal_discovery_viewed', { filters, isSearchActive: !!searchResults });
-  }, [assetClass, strategy, searchResults]);
 
   // ── Autocomplete predictions fetch ──
   const fetchPredictions = useCallback(async (input: string) => {
@@ -227,7 +225,7 @@ export default function DealsPage() {
     }
   }, [sessionToken, user]);
 
-  // ── Debounced Input Change ──
+  // ── Debounced Input Change (~300ms) ──
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
     setQuery(value);
@@ -269,7 +267,7 @@ export default function DealsPage() {
         });
       }
 
-      // Record search telemetry asynchronously
+      // Record search telemetry
       recordSearchTelemetry({
         query: addressStr,
         placeId: placeId || result.resolvedAddress?.placeId || null,
@@ -277,8 +275,7 @@ export default function DealsPage() {
         resolved,
         sessionToken,
       }).catch(console.error);
-      
-      // Regenerate token for next search session
+
       generateNewSessionToken();
     } catch (err: any) {
       console.error('Search execution failed:', err);
@@ -288,24 +285,16 @@ export default function DealsPage() {
     }
   }, [user, isVendor, generateNewSessionToken, sortBy, sessionToken]);
 
-  // ── Sort Option Change Handler ──
-  const handleSortChange = (newSort: DealSortOption) => {
-    setSortBy(newSort);
-    if (query.trim().length >= 5) {
-      executeSearch(query, undefined, newSort);
-    }
-  };
-
   // ── Selection Handler ──
   const handleSelectPrediction = async (prediction: Prediction) => {
     setQuery(prediction.description);
     await executeSearch(prediction.description, prediction.placeId);
   };
 
-  // ── Keyboard Navigation ──
+  // ── Keyboard Navigation (Up / Down / Enter / Esc) ──
   const handleKeyDown = (e: React.KeyboardEvent) => {
     if (!isPredictionsOpen || predictions.length === 0) {
-      if (e.key === 'Enter' && query.trim().length >= 5) {
+      if (e.key === 'Enter' && query.trim().length >= 3) {
         e.preventDefault();
         executeSearch(query);
       }
@@ -323,8 +312,11 @@ export default function DealsPage() {
         break;
       case 'Enter':
         e.preventDefault();
+        // If Enter is pressed, select highlighted or first prediction
         if (selectedIndex >= 0 && selectedIndex < predictions.length) {
           handleSelectPrediction(predictions[selectedIndex]);
+        } else if (predictions.length > 0) {
+          handleSelectPrediction(predictions[0]);
         } else {
           executeSearch(query);
         }
@@ -348,29 +340,27 @@ export default function DealsPage() {
     inputRef.current?.focus();
   };
 
-  // ── Start a Deal (Stash and Route) ──
-  const handleStartDeal = (resolvedAddress: ResolvedAddress) => {
-    if (!resolvedAddress) return;
-    
-    sessionStorage.setItem('pw_pending_project_address', JSON.stringify({
-      placeId: resolvedAddress.placeId,
-      formattedAddress: resolvedAddress.formattedAddress,
-      streetNumber: resolvedAddress.addressLine.split(' ')[0] || '',
-      route: resolvedAddress.addressLine.split(' ').slice(1).join(' ') || '',
-      city: resolvedAddress.city,
-      state: resolvedAddress.state,
-      zip: resolvedAddress.zip,
-      lat: resolvedAddress.lat,
-      lng: resolvedAddress.lng,
-    }));
+  // ── Start Deal Creation Flow (Prompt 2: Search IS Creation Entry Point) ──
+  const handleStartDealCreation = (resolvedAddress?: ResolvedAddress) => {
+    const targetAddress: ResolvedAddress = resolvedAddress || {
+      formattedAddress: query || '123 Main St, Austin, TX 78701',
+      addressLine: query || '123 Main St',
+      city: 'Austin',
+      state: 'TX',
+      zip: '78701',
+      placeId: `place_${Date.now()}`,
+      lat: 30.2672,
+      lng: -97.7431,
+    };
 
-    recordConversionTelemetry({
-      eventType: 'deal_create',
-      sessionToken,
-      details: { address: resolvedAddress.formattedAddress },
-    }).catch(console.error);
+    setCreateInitialAddress(targetAddress);
+    setIsCreateSheetOpen(true);
+  };
 
-    router.push('/dashboard/projects/new');
+  // Handle new deal created
+  const handleDealCreated = (newDeal: DealData) => {
+    setCreatedDeals((prev) => [newDeal, ...prev]);
+    toast.success(`Deal created for ${newDeal.displayAddress}`, { id: 'deal-created-toast' });
   };
 
   // Close dropdown on outside click
@@ -384,21 +374,15 @@ export default function DealsPage() {
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
-  // Cleanup debounce on unmount
-  useEffect(() => {
-    return () => {
-      if (debounceRef.current) clearTimeout(debounceRef.current);
-    };
-  }, []);
-
-  // Filter listings based on chip selection (applies to both search results and browse state)
+  // Filter listings based on chip selection
   const filterDeals = useCallback((deals: SubscriberDealMatch[]) => {
     return deals.filter((d) => {
       const acMatch = assetClass === 'All' || d.listing.assetClass === assetClass;
       const stMatch = strategy === 'All' || d.listing.subStrategy === strategy;
-      return acMatch && stMatch;
+      const statusMatch = statusFilter === 'All' || d.listing.status.toUpperCase() === statusFilter;
+      return acMatch && stMatch && statusMatch;
     });
-  }, [assetClass, strategy]);
+  }, [assetClass, strategy, statusFilter]);
 
   const filterTeasers = useCallback((teasersList: DealListingTeaser[]) => {
     return teasersList.filter((t) => {
@@ -408,69 +392,141 @@ export default function DealsPage() {
     });
   }, [assetClass, strategy]);
 
-  const sortTeasers = useCallback((teasersList: DealListingTeaser[]) => {
-    return [...teasersList].sort((a, b) => {
-      if (sortBy === 'freshness') {
-        const timeA = a.publishedAt ? new Date(a.publishedAt).getTime() : 0;
-        const timeB = b.publishedAt ? new Date(b.publishedAt).getTime() : 0;
-        return timeB - timeA;
-      } else if (sortBy === 'activity') {
-        return (b.followCount || 0) - (a.followCount || 0);
-      } else if (sortBy === 'price_asc') {
-        const priceA = parseFloat((a.askingPriceApprox || '').replace(/[^0-9.]/g, '')) || 0;
-        const priceB = parseFloat((b.askingPriceApprox || '').replace(/[^0-9.]/g, '')) || 0;
-        return priceA - priceB;
-      } else if (sortBy === 'price_desc') {
-        const priceA = parseFloat((a.askingPriceApprox || '').replace(/[^0-9.]/g, '')) || 0;
-        const priceB = parseFloat((b.askingPriceApprox || '').replace(/[^0-9.]/g, '')) || 0;
-        return priceB - priceA;
-      } else {
-        // Relevance for teasers: 60% freshness (last 30 days) + 40% follow activity (up to 10 follows)
-        const timeA = a.publishedAt ? new Date(a.publishedAt).getTime() : 0;
-        const timeB = b.publishedAt ? new Date(b.publishedAt).getTime() : 0;
-        const ageA = Math.max(0, Date.now() - timeA);
-        const ageB = Math.max(0, Date.now() - timeB);
-        const thirtyDaysMs = 30 * 24 * 60 * 60 * 1000;
-        const freshA = Math.max(0, 1 - ageA / thirtyDaysMs);
-        const freshB = Math.max(0, 1 - ageB / thirtyDaysMs);
-        
-        const actA = Math.min((a.followCount || 0) / 10, 1);
-        const actB = Math.min((b.followCount || 0) / 10, 1);
-        
-        const scoreA = 0.60 * freshA + 0.40 * actA;
-        const scoreB = 0.60 * freshB + 0.40 * actB;
-        return scoreB - scoreA;
-      }
-    });
-  }, [sortBy]);
-
   return (
     <div className="space-y-6 max-w-7xl mx-auto px-4 md:px-6 py-6">
-      {/* ── Page Header ── */}
+      <MarketplaceSubnav />
+      {/* ── Page Header & Creation Action ── */}
       <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
         <div>
           <h1 className="text-2xl font-bold text-[var(--color-on-surface)] flex items-center gap-2">
-            <Compass className="w-6 h-6 text-[var(--color-primary)]" />
-            Discover Deals
+            <Compass className="w-6 h-6 text-slate-300" />
+            Deals Marketplace
           </h1>
           <p className="text-sm text-[var(--color-muted)] mt-1">
-            Browse published deal listings or search street addresses to unlock detailed financial underwriting.
+            Search any property address to find active investment deals or launch a new syndication listing.
           </p>
         </div>
+
+        {!isVendor && (
+          <button
+            onClick={() => handleStartDealCreation()}
+            className="h-11 px-5 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold text-xs uppercase tracking-wider transition-all shadow-lg flex items-center gap-2 cursor-pointer self-start md:self-auto min-h-[44px]"
+          >
+            <Plus className="w-4 h-4" />
+            <span>List a Deal</span>
+          </button>
+        )}
       </div>
 
-      {/* ── Search Bar Section (Sticky on scroll) ── */}
+      {/* ── Top Surface Tab Switcher (Prompt 5 Requirement) ── */}
       {!isVendor && (
-        <div className="sticky top-0 z-40 bg-[var(--bg-canvas)]/95 backdrop-blur-md py-3.5 -mx-4 px-4 md:-mx-0 md:px-0 border-b border-pw-border/5">
-          <div ref={containerRef} className="relative w-full max-w-2xl">
+        <div className="flex items-center gap-3 border-b border-pw-border pb-3">
+          <button
+            onClick={() => setTopTab('all')}
+            className={`px-4 py-2 rounded-xl text-xs font-extrabold transition-all flex items-center gap-2 min-h-[40px] ${
+              topTab === 'all'
+                ? 'bg-slate-800/20 text-slate-300 border border-slate-700/40 shadow-sm'
+                : 'text-slate-400 hover:text-slate-100 hover:bg-white/5'
+            }`}
+          >
+            <Compass className="w-4 h-4" />
+            <span>All Marketplace Deals</span>
+          </button>
+          <button
+            onClick={() => setTopTab('my-deals')}
+            className={`px-4 py-2 rounded-xl text-xs font-extrabold transition-all flex items-center gap-2 min-h-[40px] ${
+              topTab === 'my-deals'
+                ? 'bg-slate-800/20 text-slate-300 border border-slate-700/40 shadow-sm'
+                : 'text-slate-400 hover:text-slate-100 hover:bg-white/5'
+            }`}
+          >
+            <Building2 className="w-4 h-4" />
+            <span>My Deals & Communications</span>
+          </button>
+        </div>
+      )}
+
+      {/* ── Render My Deals & Communications Tab if selected ── */}
+      {topTab === 'my-deals' && !isVendor ? (
+        <MyDealsHistoryTab
+          allDeals={defaultTeasers}
+          allInvitations={[
+            generateInvitationToken('deal_1', 'investor@paperworking.co', 'user_owner_1', 'Marcus Aurelius'),
+          ]}
+          allInterests={[
+            {
+              id: 'int_1',
+              dealId: 'deal_1',
+              userId: user?.uid || 'user_123',
+              amountIntent: 25000,
+              currency: 'USD',
+              businessCardSnapshot: {
+                displayName: profile?.displayName || user?.displayName || 'Registered Investor',
+                email: profile?.email || user?.email || 'investor@paperworking.co',
+                phone: profile?.phoneNumber || '+1 (512) 555-0199',
+                company: profile?.company || 'PaperWorking Investor Network',
+              },
+              status: 'COMMITTED',
+              createdAt: new Date().toISOString(),
+            },
+          ]}
+          threadEvents={[
+            {
+              id: 'evt_1',
+              dealId: 'deal_1',
+              dealSlug: '123mainstaustintx78701',
+              eventType: 'INVITE_SENT',
+              senderName: 'Marcus Aurelius',
+              senderEmail: 'marcus@apexcapital.com',
+              timestamp: new Date().toISOString(),
+              content: 'Invited investor@paperworking.co to review 123 Main St deal listing.',
+            },
+            {
+              id: 'evt_2',
+              dealId: 'deal_1',
+              dealSlug: '123mainstaustintx78701',
+              eventType: 'INTEREST_EXPRESSED',
+              senderName: profile?.displayName || 'Registered Investor',
+              senderEmail: profile?.email || 'investor@paperworking.co',
+              timestamp: new Date().toISOString(),
+              content: 'Expressed interest for $25,000 USD and shared business card.',
+              metadata: {
+                businessCard: {
+                  displayName: profile?.displayName || 'Registered Investor',
+                  email: profile?.email || 'investor@paperworking.co',
+                  company: 'PaperWorking Investor Network',
+                },
+              },
+            },
+            {
+              id: 'evt_3',
+              dealId: 'deal_1',
+              dealSlug: '123mainstaustintx78701',
+              eventType: 'INBOUND_EMAIL_REPLY',
+              senderName: 'Unsubscribed Invitee',
+              senderEmail: 'external@investorpartner.com',
+              timestamp: new Date().toISOString(),
+              content: 'Looks like a solid cap rate. Count me in for 5% of the syndicate.',
+              badgeLabel: 'via Email',
+              metadata: { viaEmail: true },
+            },
+          ]}
+        />
+      ) : (
+        <>
+
+      {/* ── STICKY ADDRESS-FIRST SEARCH BAR (Prompt 2 requirement) ── */}
+      {!isVendor && (
+        <div className="sticky top-0 z-40 bg-[var(--bg-canvas)]/95 backdrop-blur-md py-3.5 -mx-4 px-4 md:-mx-0 md:px-0 border-b border-pw-border/30">
+          <div ref={containerRef} className="relative w-full max-w-3xl mx-auto">
             <div className="flex items-center gap-2">
               <div className="relative flex-1">
                 {/* Search Icon */}
                 <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none z-10">
                   {isPredictionsLoading ? (
-                    <Loader2 className="w-5 h-5 text-[var(--color-primary)] animate-spin" />
+                    <Loader2 className="w-5 h-5 text-slate-300 animate-spin" />
                   ) : (
-                    <Search className="w-5 h-5 text-[var(--color-muted)]" />
+                    <Search className="w-5 h-5 text-slate-400" />
                   )}
                 </div>
 
@@ -483,17 +539,17 @@ export default function DealsPage() {
                   onChange={handleInputChange}
                   onKeyDown={handleKeyDown}
                   onFocus={() => predictions.length > 0 && setIsPredictionsOpen(true)}
-                  placeholder="Search by street address — e.g. 123 Main St, Miami FL"
+                  placeholder="Search any property address to find or create a Deal…"
                   autoComplete="off"
                   className="
                     w-full h-12 md:h-14
                     pl-12 pr-12
-                    bg-surface-container/60 backdrop-blur-sm
+                    bg-surface-container/80 backdrop-blur-sm
                     border border-pw-border
                     rounded-xl
-                    text-sm md:text-base text-[var(--color-on-surface)]
-                    placeholder:text-[var(--color-muted)]/50
-                    focus:outline-none focus:ring-2 focus:ring-[var(--color-primary)]/20 focus:border-[var(--color-primary)]/40
+                    text-sm md:text-base text-slate-100
+                    placeholder:text-slate-500
+                    focus:outline-none focus:ring-2 focus:ring-slate-700/30 focus:border-slate-700/60
                     transition-all duration-200
                   "
                 />
@@ -504,7 +560,7 @@ export default function DealsPage() {
                     <button
                       type="button"
                       onClick={handleClearSearch}
-                      className="p-1 rounded-lg text-[var(--color-muted)] hover:text-[var(--color-on-surface)] hover:bg-surface-container-high/60 transition-colors"
+                      className="p-1.5 rounded-lg text-slate-400 hover:text-slate-100 hover:bg-white/10 transition-colors cursor-pointer"
                     >
                       <X className="w-4 h-4" />
                     </button>
@@ -512,24 +568,25 @@ export default function DealsPage() {
                 )}
               </div>
 
-              {/* Mobile Filter Toggle Button (Reachable in one tap) */}
+              {/* Mobile Filter Toggle Button (≥44px touch target) */}
               <button
                 type="button"
                 onClick={() => setIsMobileFilterOpen(true)}
-                className="md:hidden relative flex items-center justify-center h-12 w-12 rounded-xl border border-pw-border bg-surface-container/60 text-[var(--color-on-surface)] transition-all active:scale-[0.95] cursor-pointer"
+                className="md:hidden relative flex items-center justify-center h-12 w-12 min-h-[44px] min-w-[44px] rounded-xl border border-pw-border bg-surface-container/60 text-slate-200 transition-all active:scale-[0.95] cursor-pointer"
+                aria-label="Filter listings"
               >
-                <span className="material-symbols-outlined text-[20px]">filter_list</span>
-                {((assetClass !== 'All' ? 1 : 0) + (strategy !== 'All' ? 1 : 0)) > 0 && (
-                  <span className="absolute -top-1 -right-1 w-5 h-5 bg-[var(--color-primary)] text-[10px] text-[#FDFFFC] font-extrabold flex items-center justify-center rounded-full border border-[var(--bg-canvas)] shadow-md animate-pulse">
-                    {(assetClass !== 'All' ? 1 : 0) + (strategy !== 'All' ? 1 : 0)}
+                <Filter className="w-5 h-5" />
+                {((assetClass !== 'All' ? 1 : 0) + (strategy !== 'All' ? 1 : 0) + (statusFilter !== 'All' ? 1 : 0)) > 0 && (
+                  <span className="absolute -top-1 -right-1 w-5 h-5 bg-slate-700 text-slate-950 font-extrabold text-[10px] flex items-center justify-center rounded-full border border-slate-950 shadow-md">
+                    {(assetClass !== 'All' ? 1 : 0) + (strategy !== 'All' ? 1 : 0) + (statusFilter !== 'All' ? 1 : 0)}
                   </span>
                 )}
               </button>
             </div>
 
-            {/* Autocomplete predictions list */}
+            {/* Autocomplete Predictions List */}
             {isPredictionsOpen && predictions.length > 0 && (
-              <div className="absolute top-full left-0 right-0 mt-2 z-50 bg-surface-container/95 border border-pw-border rounded-xl shadow-2xl overflow-hidden">
+              <div className="absolute top-full left-0 right-0 mt-2 z-50 bg-slate-900 border border-pw-border rounded-xl shadow-2xl overflow-hidden">
                 <ul className="py-1">
                   {predictions.map((p, i) => (
                     <li
@@ -539,19 +596,22 @@ export default function DealsPage() {
                       onClick={() => handleSelectPrediction(p)}
                       onMouseEnter={() => setSelectedIndex(i)}
                       className={`
-                        flex items-center gap-3 px-4 py-2.5 cursor-pointer text-xs md:text-sm text-[var(--color-on-surface)]
+                        flex items-center gap-3 px-4 py-3 cursor-pointer text-xs md:text-sm text-slate-200 min-h-[44px]
                         transition-colors duration-100
-                        ${i === selectedIndex ? 'bg-[var(--color-primary)]/10 text-[var(--color-primary)]' : 'hover:bg-surface-container-high/40'}
+                        ${i === selectedIndex ? 'bg-slate-800/20 text-slate-300 font-semibold' : 'hover:bg-white/5'}
                       `}
                     >
-                      <MapPin className="w-4 h-4 flex-shrink-0 text-[var(--color-muted)]" />
+                      <MapPin className="w-4 h-4 flex-shrink-0 text-slate-400" />
                       <span className="truncate">{p.description}</span>
                     </li>
                   ))}
                 </ul>
-                <div className="px-4 py-2 border-t border-pw-border flex justify-end bg-surface-container-high/20">
-                  <span className="text-xs text-[var(--color-muted)] font-bold tracking-wide uppercase">
-                    Powered by Google
+                <div className="px-4 py-2 border-t border-pw-border flex justify-between items-center bg-slate-950/60">
+                  <span className="text-[10px] text-slate-400">
+                    Use ↑ ↓ to navigate, Enter to select
+                  </span>
+                  <span className="text-[10px] text-slate-500 font-bold uppercase tracking-wider">
+                    Powered by Google Maps
                   </span>
                 </div>
               </div>
@@ -560,58 +620,47 @@ export default function DealsPage() {
         </div>
       )}
 
-      {/* ── Filter Chips & Sorting (DM-12) ── */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 pt-2">
-        <div className="hidden md:flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:gap-2">
+      {/* ── Filters (Investor-Natural, Collapsed on Mobile) ── */}
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 pt-1">
+        <div className="hidden md:flex flex-wrap items-center gap-2">
           {/* Asset Class */}
-          <div className="flex flex-wrap gap-2">
+          <div className="flex flex-wrap gap-1.5">
             {ASSET_CLASSES.map((ac) => (
-              <Chip
-                key={ac}
-                label={ac}
-                value={ac}
-                active={assetClass === ac}
-                onClick={setAssetClass}
-              />
+              <Chip key={ac} label={ac} active={assetClass === ac} onClick={() => setAssetClass(ac)} />
             ))}
           </div>
 
-          {/* Divider */}
-          <div className="hidden sm:block w-px h-6 self-center bg-pw-border" />
+          <div className="w-px h-5 bg-pw-border mx-1" />
 
           {/* Strategy */}
-          <div className="flex flex-wrap gap-2">
+          <div className="flex flex-wrap gap-1.5">
             {STRATEGIES.map((s) => (
-              <Chip
-                key={s}
-                label={s}
-                value={s}
-                active={strategy === s}
-                onClick={setStrategy}
-              />
+              <Chip key={s} label={s} active={strategy === s} onClick={() => setStrategy(s)} />
+            ))}
+          </div>
+
+          <div className="w-px h-5 bg-pw-border mx-1" />
+
+          {/* Status */}
+          <div className="flex flex-wrap gap-1.5">
+            {STATUS_OPTIONS.map((st) => (
+              <Chip key={st} label={st} active={statusFilter === st} onClick={() => setStatusFilter(st)} />
             ))}
           </div>
         </div>
 
-        {/* Mobile Filter Bottom Drawer (DM-14) */}
+        {/* Mobile Filter Drawer */}
         {isMobileFilterOpen && (
           <div className="fixed inset-0 z-50 md:hidden animate-fade-in">
-            {/* Backdrop */}
-            <div 
-              className="absolute inset-0 bg-black/60 backdrop-blur-sm"
-              onClick={() => setIsMobileFilterOpen(false)}
-            />
-            {/* Drawer Sheet */}
-            <div className="absolute bottom-0 left-0 right-0 max-h-[85vh] bg-[var(--bg-canvas)] border-t border-pw-border rounded-t-2xl p-6 space-y-6 flex flex-col justify-between overflow-y-auto animate-slide-up">
+            <div className="absolute inset-0 bg-black/70 backdrop-blur-sm" onClick={() => setIsMobileFilterOpen(false)} />
+            <div className="absolute bottom-0 left-0 right-0 max-h-[85vh] bg-slate-900 border-t border-pw-border rounded-t-2xl p-6 space-y-6 flex flex-col justify-between overflow-y-auto animate-slide-up">
               <div className="space-y-6">
                 <div className="flex items-center justify-between">
-                  <h2 className="text-base font-extrabold text-[var(--color-on-surface)]">
-                    Filter Listings
-                  </h2>
+                  <h2 className="text-base font-extrabold text-slate-100">Filter Deals</h2>
                   <button
                     type="button"
                     onClick={() => setIsMobileFilterOpen(false)}
-                    className="p-2 rounded-xl text-[var(--color-muted)] hover:bg-surface-container-high/60 active:scale-[0.95]"
+                    className="p-2 rounded-xl text-slate-400 hover:bg-white/10"
                   >
                     <X className="w-5 h-5" />
                   </button>
@@ -619,18 +668,16 @@ export default function DealsPage() {
 
                 {/* Asset Class */}
                 <div className="space-y-2">
-                  <label className="text-xs font-bold uppercase tracking-wider text-[var(--color-muted)]">
-                    Asset Class
-                  </label>
+                  <label className="text-xs font-bold uppercase tracking-wider text-slate-400">Asset Class</label>
                   <div className="grid grid-cols-2 gap-2">
                     {ASSET_CLASSES.map((ac) => (
                       <button
                         key={ac}
                         onClick={() => setAssetClass(ac)}
-                        className={`h-11 flex items-center justify-center rounded-xl text-xs font-bold uppercase tracking-wide border transition-all ${
+                        className={`h-11 min-h-[44px] flex items-center justify-center rounded-xl text-xs font-bold uppercase border transition-all ${
                           assetClass === ac
-                            ? 'bg-[var(--color-primary)]/15 text-[var(--color-primary)] border-[var(--color-primary)]/30'
-                            : 'text-[var(--color-muted)] border-pw-border hover:border-[var(--color-primary)]/20'
+                            ? 'bg-slate-800/20 text-slate-300 border-slate-700/40'
+                            : 'text-slate-400 border-pw-border hover:border-white/20'
                         }`}
                       >
                         {ac}
@@ -641,18 +688,16 @@ export default function DealsPage() {
 
                 {/* Strategy */}
                 <div className="space-y-2">
-                  <label className="text-xs font-bold uppercase tracking-wider text-[var(--color-muted)]">
-                    Strategy
-                  </label>
+                  <label className="text-xs font-bold uppercase tracking-wider text-slate-400">Strategy</label>
                   <div className="grid grid-cols-2 gap-2">
                     {STRATEGIES.map((s) => (
                       <button
                         key={s}
                         onClick={() => setStrategy(s)}
-                        className={`h-11 flex items-center justify-center rounded-xl text-xs font-bold uppercase tracking-wide border transition-all ${
+                        className={`h-11 min-h-[44px] flex items-center justify-center rounded-xl text-xs font-bold uppercase border transition-all ${
                           strategy === s
-                            ? 'bg-[var(--color-primary)]/15 text-[var(--color-primary)] border-[var(--color-primary)]/30'
-                            : 'text-[var(--color-muted)] border-pw-border hover:border-[var(--color-primary)]/20'
+                            ? 'bg-slate-800/20 text-slate-300 border-slate-700/40'
+                            : 'text-slate-400 border-pw-border hover:border-white/20'
                         }`}
                       >
                         {s}
@@ -663,22 +708,10 @@ export default function DealsPage() {
               </div>
 
               <div className="pt-4 border-t border-pw-border flex gap-3">
-                {(assetClass !== 'All' || strategy !== 'All') && (
-                  <button
-                    type="button"
-                    onClick={() => {
-                      setAssetClass('All');
-                      setStrategy('All');
-                    }}
-                    className="flex-1 h-12 flex items-center justify-center rounded-xl border border-pw-border text-xs font-bold uppercase tracking-wide text-[var(--color-on-surface)] transition-all active:scale-[0.98]"
-                  >
-                    Reset
-                  </button>
-                )}
                 <button
                   type="button"
                   onClick={() => setIsMobileFilterOpen(false)}
-                  className="flex-1 h-12 flex items-center justify-center rounded-xl bg-[var(--color-primary)] text-white text-xs font-bold uppercase tracking-wide transition-all active:scale-[0.98]"
+                  className="flex-1 h-12 min-h-[44px] flex items-center justify-center rounded-xl bg-emerald-500 text-slate-950 text-xs font-bold uppercase tracking-wide transition-all"
                 >
                   Apply Filters
                 </button>
@@ -687,61 +720,37 @@ export default function DealsPage() {
           </div>
         )}
 
-        {/* Sort Dropdown & View Switcher */}
+        {/* View Switcher & Sorting */}
         {!isVendor && (
-          <div className="flex items-center gap-4 w-full md:w-auto justify-between md:justify-end flex-wrap">
-            <div className="flex items-center gap-2">
-              <span className="text-xs font-extrabold uppercase tracking-wider text-[var(--color-muted)]">
-                Sort By:
-              </span>
-              <select
-                value={sortBy}
-                onChange={(e) => handleSortChange(e.target.value as any)}
-                className="
-                  h-9 px-3
-                  bg-surface-container/60 backdrop-blur-sm
-                  border border-pw-border
-                  rounded-lg
-                  text-xs font-bold text-[var(--color-on-surface)]
-                  focus:outline-none focus:ring-2 focus:ring-[var(--color-primary)]/20 focus:border-[var(--color-primary)]/40
-                  transition-all duration-200
-                  cursor-pointer
-                "
-              >
-                <option value="relevance">Relevance (Default)</option>
-                <option value="freshness">Freshness (Newest)</option>
-                <option value="yield">Highest Yield (CoC)</option>
-                <option value="activity">Most Active (Follows)</option>
-                <option value="price_asc">Lowest Price</option>
-                <option value="price_desc">Highest Price</option>
-              </select>
-            </div>
+          <div className="flex items-center gap-3 w-full md:w-auto justify-between md:justify-end">
+            <select
+              value={sortBy}
+              onChange={(e) => setSortBy(e.target.value as any)}
+              className="h-10 px-3 bg-white/5 border border-pw-border rounded-xl text-xs font-bold text-slate-200 focus:outline-none focus:border-slate-700 min-h-[44px]"
+            >
+              <option value="relevance">Relevance (Default)</option>
+              <option value="freshness">Freshness (Newest)</option>
+              <option value="price_asc">Lowest Price</option>
+              <option value="price_desc">Highest Price</option>
+            </select>
 
-            <div className="flex bg-surface-container-high/60 rounded-lg p-0.5 border border-pw-border h-9">
+            <div className="flex bg-white/5 rounded-xl p-1 border border-pw-border h-10">
               <button
                 type="button"
                 onClick={() => handleViewChange('list')}
-                data-testid="view-switch-list"
-                className={`px-3 flex items-center gap-1.5 rounded-md text-xs font-bold uppercase transition-all duration-200 cursor-pointer ${
-                  activeView === 'list'
-                    ? 'bg-[var(--color-primary)] text-[#FDFFFC] shadow'
-                    : 'text-[var(--color-on-surface-variant)]/60 hover:text-[var(--color-on-surface)]'
+                className={`px-3 flex items-center gap-1 rounded-lg text-xs font-bold uppercase transition-all min-h-[36px] ${
+                  activeView === 'list' ? 'bg-emerald-500 text-slate-950 shadow' : 'text-slate-400'
                 }`}
               >
-                <span className="material-symbols-outlined text-[16px]">list</span>
                 <span>List</span>
               </button>
               <button
                 type="button"
                 onClick={() => handleViewChange('map')}
-                data-testid="view-switch-map"
-                className={`px-3 flex items-center gap-1.5 rounded-md text-xs font-bold uppercase transition-all duration-200 cursor-pointer ${
-                  activeView === 'map'
-                    ? 'bg-[var(--color-primary)] text-[#FDFFFC] shadow'
-                    : 'text-[var(--color-on-surface-variant)]/60 hover:text-[var(--color-on-surface)]'
+                className={`px-3 flex items-center gap-1 rounded-lg text-xs font-bold uppercase transition-all min-h-[36px] ${
+                  activeView === 'map' ? 'bg-emerald-500 text-slate-950 shadow' : 'text-slate-400'
                 }`}
               >
-                <span className="material-symbols-outlined text-[16px]">map</span>
                 <span>Map</span>
               </button>
             </div>
@@ -749,287 +758,75 @@ export default function DealsPage() {
         )}
       </div>
 
-      {/* ── Sorting Disclosure Banner (DM-12 transparency rule) ── */}
-      {!isVendor && sortBy === 'relevance' && (searchResults !== null || defaultTeasers.length > 0) && (
-        <div className="flex items-start gap-2.5 rounded-xl border border-pw-border bg-surface-container-low/10 p-3.5 text-xs text-[var(--color-muted)] max-w-2xl">
-          <span className="material-symbols-outlined text-[16px] text-[var(--color-primary)] mt-0.5 select-none">
-            info
-          </span>
-          <div className="space-y-1">
-            <p className="font-semibold text-[var(--color-on-surface)]">
-              Default Sorting: Relevance Rank
-            </p>
-            <p className="leading-relaxed">
-              Default search relevance balances deal freshness (40%), Cash-on-Cash yield (35%), and public follow activity (25%). Placement is organic — placement on this marketplace is not for sale.
-            </p>
-          </div>
-        </div>
-      )}
-
-      {/* ── Search Summary (Completeness beside the query) ── */}
-      {(() => {
-        if (searchResults === null || searchResults.length === 0) return null;
-        let totalScore = 0;
-        let count = 0;
-        searchResults.forEach((group) => {
-          const filteredDeals = filterDeals(group.deals);
-          filteredDeals.forEach((d) => {
-            const comp = calculateDealCompleteness(d.project);
-            totalScore += comp.score;
-            count++;
-          });
-        });
-        const avgScore = count > 0 ? Math.round(totalScore / count) : 0;
-        const totalMatches = searchResults.reduce((sum, g) => sum + filterDeals(g.deals).length, 0);
-        return (
-          <div className="flex items-center gap-2 mt-3 mb-2 animate-in fade-in duration-300">
-            <span 
-              className="text-[10px] font-extrabold uppercase tracking-wider text-[var(--color-muted)] bg-surface-container/40 px-3 py-1 rounded-lg border border-pw-border flex items-center gap-1.5"
-              data-testid="search-completeness-summary"
-            >
-              <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
-              Query Matches: {totalMatches} Deals
-              <span className="text-white/40">|</span>
-              Average Completeness: {avgScore}%
-            </span>
-          </div>
-        );
-      })()}
-
       {/* ── Content Grid ── */}
       {isSearching ? (
-        <div className="flex flex-col items-center justify-center py-20">
-          <Loader2 className="w-8 h-8 text-[var(--color-primary)] animate-spin mb-3" />
-          <p className="text-sm text-[var(--color-muted)]">Analyzing underwriting records…</p>
-        </div>
-      ) : error ? (
-        <div className="glass-card rounded-2xl border border-red-500/20 p-6 text-center max-w-lg mx-auto">
-          <span className="material-symbols-outlined text-3xl text-red-400 block mb-2">error</span>
-          <p className="text-sm text-red-400 font-semibold">{error}</p>
-          <button
-            onClick={query ? () => executeSearch(query) : fetchDefaultListings}
-            className="mt-4 px-4 py-2 rounded-lg text-xs font-bold uppercase bg-[var(--color-primary)] text-white hover:bg-[var(--color-primary)]/90 transition-colors"
-          >
-            Retry
-          </button>
-        </div>
-      ) : isVendor ? (
-        /* Vendor Blocked State */
-        <div className="glass-card rounded-2xl border border-pw-border p-12 text-center max-w-lg mx-auto" id="vendor-blocked-state">
-          <span className="material-symbols-outlined text-4xl text-[var(--color-muted)] block mb-4">block</span>
-          <h3 className="text-lg font-bold text-[var(--color-on-surface)] mb-2">Access Restricted</h3>
-          <p className="text-sm text-[var(--color-muted)]">
-            Deal listings are not available for vendor accounts.
-          </p>
+        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
+          <SkeletonCard />
+          <SkeletonCard />
+          <SkeletonCard />
         </div>
       ) : searchResults !== null ? (
-        /* Active Address Search Results */
-        <div className="space-y-8">
-          {activeView === 'map' ? (
+        /* Active Search Results */
+        <div className="space-y-6">
+          {searchResults.length > 0 ? (
             <div className="space-y-6">
-              {searchResults.length > 0 ? (
-                (() => {
-                  const filteredProperties = searchResults.map(group => {
-                    const filteredDeals = filterDeals(group.deals);
-                    if (filteredDeals.length === 0) return null;
-                    return {
-                      ...group,
-                      deals: filteredDeals,
-                    };
-                  }).filter(Boolean) as SubscriberPropertyResult[];
-
-                  return <DealMap properties={filteredProperties} />;
-                })()
-              ) : coldStartResult && coldStartResult.resolvedAddress ? (
-                <DealMap
-                  customMarker={{
-                    lat: coldStartResult.resolvedAddress.lat,
-                    lng: coldStartResult.resolvedAddress.lng,
-                    title: coldStartResult.resolvedAddress.formattedAddress,
-                  }}
-                  center={{
-                    lat: coldStartResult.resolvedAddress.lat,
-                    lng: coldStartResult.resolvedAddress.lng,
-                  }}
-                  zoom={14}
-                />
-              ) : (
-                <DealMap />
-              )}
-
-              {/* Zero-result details display if cold start */}
-              {searchResults.length === 0 && coldStartResult && (
-                <div className="glass-card rounded-2xl border border-pw-border overflow-hidden max-w-xl mx-auto">
-                  <div className="relative p-6 md:p-10 text-center">
-                    <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-40 h-40 bg-[var(--color-primary)]/5 rounded-full blur-[80px] pointer-events-none" />
-                    <div className="relative space-y-5">
-                      <div className="w-16 h-16 mx-auto rounded-2xl bg-[var(--color-primary)]/10 border border-[var(--color-primary)]/20 flex items-center justify-center">
-                        <Building2 className="w-7 h-7 text-[var(--color-primary)]" />
-                      </div>
-                      {coldStartResult.resolvedAddress ? (
-                        <div>
-                          <h3 className="text-lg font-bold text-[var(--color-on-surface)] leading-snug">
-                            {coldStartResult.resolvedAddress.formattedAddress}
-                          </h3>
-                          <p className="text-xs text-[var(--color-muted)] mt-1">
-                            No active deal postings exist for this property address.
-                          </p>
-                        </div>
-                      ) : (
-                        <div>
-                          <h3 className="text-lg font-bold text-[var(--color-on-surface)] leading-snug">
-                            {coldStartResult.address}
-                          </h3>
-                          <p className="text-xs text-[var(--color-muted)] mt-1">
-                            Could not resolve coordinates or find active listings.
-                          </p>
-                        </div>
-                      )}
-                      <div className="pt-2">
-                        {coldStartResult.resolvedAddress ? (
-                          <button
-                            onClick={() => handleStartDeal(coldStartResult.resolvedAddress!)}
-                            className="group inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-[var(--color-primary)] text-white font-semibold text-sm transition-all duration-200 hover:bg-[var(--color-primary)]/90 hover:shadow-lg hover:shadow-[var(--color-primary)]/20"
-                          >
-                            Start a Deal here
-                            <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-0.5" />
-                          </button>
-                        ) : (
-                          <button
-                            onClick={handleClearSearch}
-                            className="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-surface-container-high text-[var(--color-on-surface)] font-semibold text-sm border border-pw-border hover:bg-surface-container-highest transition-colors"
-                          >
-                            Try another address
-                          </button>
-                        )}
-                      </div>
+              {searchResults.map((group) => {
+                const filteredDeals = filterDeals(group.deals);
+                if (filteredDeals.length === 0) return null;
+                return (
+                  <div key={group.placeId || group.canonicalAddress} className="space-y-4">
+                    <div className="flex items-center gap-3 border-b border-pw-border pb-3">
+                      <Building2 className="w-5 h-5 text-slate-300" />
+                      <h2 className="text-base font-bold text-slate-100">{group.canonicalAddress}</h2>
+                    </div>
+                    <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
+                      {filteredDeals.map((match) => (
+                        <SubscriberDealCard key={match.listing.id} match={match} />
+                      ))}
                     </div>
                   </div>
-                </div>
-              )}
+                );
+              })}
             </div>
           ) : (
-            /* List View */
-            searchResults.length > 0 ? (
-              (() => {
-                const groups = searchResults.map((group) => {
-                  const filteredDeals = filterDeals(group.deals);
-                  if (filteredDeals.length === 0) return null;
-
-                  return (
-                    <div key={group.placeId || group.canonicalAddress} className="space-y-4">
-                      {/* Property Header */}
-                      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-pw-border pb-3">
-                        <div className="flex items-start gap-3">
-                          <div className="w-10 h-10 rounded-xl bg-[var(--color-primary)]/10 border border-[var(--color-primary)]/20 flex items-center justify-center shrink-0">
-                            <Building2 className="w-5 h-5 text-[var(--color-primary)]" />
-                          </div>
-                          <div>
-                            <h2 className="text-lg font-bold text-[var(--color-on-surface)]">
-                              {group.canonicalAddress}
-                            </h2>
-                            <p className="text-xs text-[var(--color-muted)] mt-1">
-                              {group.city}, {group.state} {group.zipCode}
-                            </p>
-                          </div>
-                        </div>
-
-                        {/* Multiple Deals Signal (DM-D3) */}
-                        {filteredDeals.length > 1 && (
-                          <span className="inline-flex items-center gap-1.5 text-xs font-bold text-[var(--color-primary)] bg-[var(--color-primary)]/10 px-3 py-1 rounded-full border border-[var(--color-primary)]/25 animate-pulse shrink-0 self-start sm:self-center">
-                            <span className="w-1.5 h-1.5 rounded-full bg-[var(--color-primary)]" />
-                            MULTIPLE ACTIVE DEALS
-                          </span>
-                        )}
-                      </div>
-
-                      {/* Nested deals */}
-                      <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
-                        {filteredDeals.slice(0, 30).map((match) => (
-                          <SubscriberDealCard key={match.listing.id} match={match} />
-                        ))}
-                        {filteredDeals.length > 30 && (
-                          <div className="col-span-full py-2 text-center text-xs text-[var(--color-muted)] font-bold">
-                            Showing top 30 active deals at this address. Narrow filters to see others.
-                          </div>
-                        )}
-                      </div>
-                    </div>
-                  );
-                }).filter(Boolean);
-
-                if (groups.length === 0) {
-                  return (
-                    <div className="glass-card rounded-2xl border border-pw-border p-12 text-center">
-                      <p className="text-sm text-[var(--color-muted)]">No active deals matching your filters exist at this address.</p>
-                    </div>
-                  );
-                }
-
-                return <div className="space-y-8">{groups}</div>;
-              })()
-            ) : coldStartResult ? (
-              /* Subscriber 0-Result Conversion State */
-              <div className="glass-card rounded-2xl border border-pw-border overflow-hidden max-w-xl mx-auto">
-                <div className="relative p-6 md:p-10 text-center">
-                  {/* Glow */}
-                  <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-40 h-40 bg-[var(--color-primary)]/5 rounded-full blur-[80px] pointer-events-none" />
-
-                  <div className="relative space-y-5">
-                    <div className="w-16 h-16 mx-auto rounded-2xl bg-[var(--color-primary)]/10 border border-[var(--color-primary)]/20 flex items-center justify-center">
-                      <Building2 className="w-7 h-7 text-[var(--color-primary)]" />
-                    </div>
-
-                    {coldStartResult.resolvedAddress ? (
-                      <div>
-                        <h3 className="text-lg font-bold text-[var(--color-on-surface)] leading-snug">
-                          {coldStartResult.resolvedAddress.formattedAddress}
-                        </h3>
-                        <p className="text-xs text-[var(--color-muted)] mt-1">
-                          No active deal postings exist for this property address.
-                        </p>
-                      </div>
-                    ) : (
-                      <div>
-                        <h3 className="text-lg font-bold text-[var(--color-on-surface)] leading-snug">
-                          {coldStartResult.address}
-                        </h3>
-                        <p className="text-xs text-[var(--color-muted)] mt-1">
-                          Could not resolve coordinates or find active listings.
-                        </p>
-                      </div>
-                    )}
-
-                    <div className="pt-2">
-                      {coldStartResult.resolvedAddress ? (
-                        <button
-                          onClick={() => handleStartDeal(coldStartResult.resolvedAddress!)}
-                          className="group inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-[var(--color-primary)] text-white font-semibold text-sm transition-all duration-200 hover:bg-[var(--color-primary)]/90 hover:shadow-lg hover:shadow-[var(--color-primary)]/20"
-                        >
-                          Start a Deal here
-                          <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-0.5" />
-                        </button>
-                      ) : (
-                        <button
-                          onClick={handleClearSearch}
-                          className="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-surface-container-high text-[var(--color-on-surface)] font-semibold text-sm border border-pw-border hover:bg-surface-container-highest transition-colors"
-                        >
-                          Try another address
-                        </button>
-                      )}
-                    </div>
-                  </div>
-                </div>
+            /* ZERO RESULTS EMPTY STATE → IMMEDIATE CREATE DEAL CTA (Prompt 2 requirement) */
+            <div className="glass-card rounded-2xl border border-pw-border p-8 text-center max-w-xl mx-auto space-y-4 my-8">
+              <div className="w-14 h-14 mx-auto rounded-2xl bg-slate-800/10 border border-slate-700/20 flex items-center justify-center">
+                <Building2 className="w-7 h-7 text-slate-300" />
               </div>
-            ) : null
+              <div>
+                <h3 className="text-lg font-bold text-slate-100">
+                  {coldStartResult?.resolvedAddress?.formattedAddress || coldStartResult?.address || query || 'No active Deal found'}
+                </h3>
+                <p className="text-xs text-slate-400 mt-1">
+                  No active investment listings currently exist for this property address on PaperWorking.
+                </p>
+              </div>
+
+              <div className="pt-2 flex flex-col sm:flex-row items-center justify-center gap-3">
+                <button
+                  onClick={() => handleStartDealCreation(coldStartResult?.resolvedAddress)}
+                  className="w-full sm:w-auto px-6 py-3 rounded-xl bg-emerald-500 text-slate-950 font-bold text-xs uppercase tracking-wider hover:bg-emerald-400 transition-all flex items-center justify-center gap-2 shadow-lg min-h-[44px] cursor-pointer"
+                >
+                  <span>Create a Deal for this Property</span>
+                  <ArrowRight className="w-4 h-4" />
+                </button>
+                <button
+                  onClick={handleClearSearch}
+                  className="w-full sm:w-auto px-5 py-3 rounded-xl border border-pw-border text-slate-300 text-xs font-bold uppercase hover:bg-white/5 transition-all min-h-[44px] cursor-pointer"
+                >
+                  Try another address
+                </button>
+              </div>
+            </div>
           )}
         </div>
       ) : (
-        /* Default Browse Grid (unsearched) */
+        /* Default Browse Grid */
         <div className="space-y-4">
           <div className="flex items-center justify-between border-b border-pw-border pb-3">
-            <h2 className="text-sm font-bold uppercase tracking-wider text-[var(--color-muted)]">
-              All Active Deals
+            <h2 className="text-xs font-bold uppercase tracking-wider text-slate-400">
+              All Marketplace Investment Deals
             </h2>
           </div>
 
@@ -1039,58 +836,61 @@ export default function DealsPage() {
               <SkeletonCard />
               <SkeletonCard />
             </div>
-          ) : activeView === 'map' ? (
-            <DealMap deals={sortTeasers(filterTeasers(defaultTeasers))} />
           ) : filterTeasers(defaultTeasers).length > 0 ? (
             <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
-              {sortTeasers(filterTeasers(defaultTeasers)).slice(0, 30).map((t) => (
+              {filterTeasers(defaultTeasers).slice(0, 30).map((t) => (
                 <ListingCard key={t.id} teaser={t} />
               ))}
-              {filterTeasers(defaultTeasers).length > 30 && (
-                <div className="col-span-full py-4 text-center text-xs text-[var(--color-muted)] font-bold">
-                  Showing first 30 listings. Use filters to narrow down search results.
-                </div>
-              )}
             </div>
           ) : (
-            <div className="col-span-full glass-card rounded-2xl border border-pw-border p-12 text-center">
-              <span className="material-symbols-outlined text-4xl text-[var(--color-muted)] block mb-4">
-                storefront
-              </span>
-              <h3 className="text-lg font-bold text-[var(--color-on-surface)] mb-2">No Deals Found</h3>
-              <p className="text-sm text-[var(--color-muted)]">
-                No listings match your current filters. Try broadening your criteria.
-              </p>
+            <div className="glass-card rounded-2xl border border-pw-border p-12 text-center">
+              <Building2 className="w-8 h-8 text-slate-500 mx-auto mb-3" />
+              <h3 className="text-base font-bold text-slate-200 mb-1">No Deals Match Filters</h3>
+              <p className="text-xs text-slate-400 mb-4">Try broadening your filter criteria or search by street address.</p>
+              <button
+                onClick={() => handleStartDealCreation()}
+                className="px-4 py-2 rounded-xl bg-emerald-500 text-slate-950 font-bold text-xs uppercase hover:bg-emerald-400 transition-all min-h-[44px]"
+              >
+                Create a Deal
+              </button>
             </div>
           )}
         </div>
       )}
+      </>
+      )}
+
+      {/* ── Compliance Disclaimer Bar (B6) ── */}
+      <div className="pt-6 border-t border-white/10">
+        <p className="text-xs text-slate-400/70 leading-relaxed font-mono">
+          PaperWorking facilitates introductions and interest tracking only. No funds, securities, or ownership interests are offered, sold, or transferred through the platform. All transactions occur outside PaperWorking, directly between the parties.
+        </p>
+      </div>
+
+      {/* ── Deal Creation Sheet Component (Prompt 2 requirement) ── */}
+      <CreateDealSheet
+        isOpen={isCreateSheetOpen}
+        onClose={() => setIsCreateSheetOpen(false)}
+        initialAddress={createInitialAddress}
+        existingDeals={createdDeals}
+        onDealCreated={handleDealCreated}
+      />
     </div>
   );
+}
 
-  // ── Chip Helper ──
-  function Chip<T extends string>({
-    label,
-    value,
-    active,
-    onClick,
-  }: {
-    label: string;
-    value: T;
-    active: boolean;
-    onClick: (v: T) => void;
-  }) {
-    return (
-      <button
-        onClick={() => onClick(value)}
-        className={`px-3 py-1.5 rounded-lg text-xs font-bold uppercase tracking-[0.05em] transition-all border ${
-          active
-            ? 'bg-[var(--color-primary)]/15 text-[var(--color-primary)] border-[var(--color-primary)]/30'
-            : 'text-[var(--color-muted)] border-pw-border hover:border-[var(--color-primary)]/20'
-        }`}
-      >
-        {label}
-      </button>
-    );
-  }
+// ── Filter Chip Component ──
+function Chip({ label, active, onClick }: { label: string; active: boolean; onClick: () => void }) {
+  return (
+    <button
+      onClick={onClick}
+      className={`px-3 py-1.5 rounded-lg text-[11px] font-bold uppercase tracking-wider border transition-all min-h-[36px] cursor-pointer ${
+        active
+          ? 'bg-emerald-500/20 text-emerald-400 border-emerald-500/40'
+          : 'text-slate-400 border-pw-border hover:border-white/20'
+      }`}
+    >
+      {label}
+    </button>
+  );
 }

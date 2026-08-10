@@ -233,11 +233,11 @@ export function calculateProFormaAndMetrics(assumptions: UnderwritingAssumptions
     });
     const derived = deriveAllProjectMetrics(yearProject);
 
-    const noi = derived.noi;
-    const netCashFlow = derived.annualCashFlow;
-    const capRate = derived.capRate;
-    const coc = derived.cashOnCashReturn;
-    const dscr = derived.dscr;
+    const noi = derived.noi ?? 0;
+    const netCashFlow = derived.annualCashFlow ?? 0;
+    const capRate = derived.capRate ?? 0;
+    const coc = derived.cashOnCashReturn ?? 0;
+    const dscr = derived.dscr ?? 0;
 
     years.push({
       year: y,
@@ -268,9 +268,10 @@ export function calculateProFormaAndMetrics(assumptions: UnderwritingAssumptions
   const baseProject = assumptionsToProject(assumptions);
   const baseDerived = deriveAllProjectMetrics(baseProject);
 
-  const leveredIRR = baseDerived.irr || baseDerived.annualizedIrr;
+  const leveredIRR = baseDerived.irr || baseDerived.annualizedIrr || 0;
   const totalCashReturned = years.reduce((sum, yr) => sum + yr.netCashFlow, 0) + netExitProceeds;
-  const equityMultiple = baseDerived.kpi33?.equityMultiple || (totalCashInvested > 0 ? totalCashReturned / totalCashInvested : 0);
+  const emKpi = baseDerived.kpi33?.EQUITY_MULTIPLE;
+  const equityMultiple = (emKpi && (emKpi.actual ?? emKpi.projected)) || (totalCashInvested > 0 ? totalCashReturned / totalCashInvested : 0);
 
   const year1 = years[0] ?? {
     noi: 0,
@@ -290,7 +291,7 @@ export function calculateProFormaAndMetrics(assumptions: UnderwritingAssumptions
     cashOnCash: year1.coc,
     dscr: year1.dscr,
     pricePerUnit: units > 0 ? purchasePrice / units : undefined,
-    grm: baseDerived.grossRentMultiplier,
+    grm: baseDerived.grossRentMultiplier ?? undefined,
     irr: leveredIRR,
     equityMultiple,
   };

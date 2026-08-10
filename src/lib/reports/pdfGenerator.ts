@@ -157,11 +157,14 @@ export function generateReportPDF(
          .text(metric.name, colX + 30, rowY + 12);
 
       // KPI Value
+      // Paywall is evaluated OUTSIDE the null check: a locked metric must read
+      // "[Locked]" whether or not data exists, otherwise "N/A" tells a
+      // non-subscriber which properties have figures behind the paywall.
       let displayVal = 'N/A';
-      if (val !== null && !isNaN(val)) {
-        if (!isPremium && ['noi', 'cap_rate', 'cash_on_cash', 'irr', 'dscr', 'ltv', 'oer', 'grm'].includes(metric.id)) {
-          displayVal = '[Locked]';
-        } else if (metric.unit === 'currency') {
+      if (!isPremium && ['noi', 'cap_rate', 'cash_on_cash', 'irr', 'dscr', 'ltv', 'oer', 'grm'].includes(metric.id)) {
+        displayVal = '[Locked]';
+      } else if (val !== null && !isNaN(val)) {
+        if (metric.unit === 'currency') {
           displayVal = fmtUSD(val);
         } else if (metric.unit === 'percent') {
           displayVal = `${val.toFixed(2)}%`;
@@ -275,10 +278,10 @@ export function generateReportPDF(
           'noi', 'cap_rate', 'cash_on_cash', 'irr', 'dscr', 'ltv', 'oer', 'grm', 'roi', 'annual_cash_flow', 'capex', 'goi'
         ].includes(entry.id);
 
-        if (rawVal !== null && !isNaN(rawVal)) {
-          if (!isPremium && isSensitive) {
-            valStr = '[Locked]';
-          } else if (entry.unit === 'currency') {
+        if (!isPremium && isSensitive) {
+          valStr = '[Locked]';
+        } else if (rawVal !== null && !isNaN(rawVal)) {
+          if (entry.unit === 'currency') {
             valStr = fmtUSD(rawVal);
           } else if (entry.unit === 'percent') {
             valStr = `${rawVal.toFixed(2)}%`;

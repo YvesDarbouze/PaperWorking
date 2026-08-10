@@ -4,10 +4,10 @@ import LandingFooter from '@/components/landing/LandingFooter';
 import MarketplacesClient from '@/components/landing/MarketplacesClient';
 
 export const metadata: Metadata = {
-  title: 'Marketplaces · PaperWorking',
+  title: 'PaperWorking — Marketplaces',
   description: 'Connect with verified dealflow and local real estate professionals inside the same workspace where your Projects live.',
   openGraph: {
-    title: 'Marketplaces · PaperWorking',
+    title: 'PaperWorking — Marketplaces',
     description: 'Connect with verified dealflow and local real estate professionals inside the same workspace where your Projects live.',
     type: 'website',
   },

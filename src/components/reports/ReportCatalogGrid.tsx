@@ -13,6 +13,7 @@ import {
   Clock,
   ArrowUpRight,
 } from 'lucide-react';
+import { getReportPreview } from '@/lib/reports/reportPreview';
 
 export type ReportCategory = 'Monthly' | 'Quarterly' | 'Annual' | 'Lender (SREO)';
 
@@ -142,43 +143,61 @@ export const REPORT_CATALOG: ReportCatalogItem[] = [
 export interface ReportCatalogGridProps {
   onSelectReport: (reportId: ReportCatalogItem['id']) => void;
   dataThroughDate?: string;
+  /**
+   * When supplied, the grid renders exactly these reports and hides its own
+   * category tabs — the Tax Intelligence page owns the period tabs, and two
+   * rows of tabs would be redundant. Omit for the standalone/uncontrolled use.
+   */
+  visibleReportIds?: ReportCatalogItem['id'][];
+  /** Projects in scope, used to compute each card's top-3 line preview. */
+  projects?: unknown[];
 }
 
-export function ReportCatalogGrid({ onSelectReport, dataThroughDate }: ReportCatalogGridProps) {
+export function ReportCatalogGrid({
+  onSelectReport,
+  dataThroughDate,
+  visibleReportIds,
+  projects = [],
+}: ReportCatalogGridProps) {
   const [activeTab, setActiveTab] = useState<ReportCategory>('Monthly');
   const currentDateStamp = dataThroughDate || new Date().toISOString().split('T')[0];
+  const controlled = Array.isArray(visibleReportIds);
 
   const categories: ReportCategory[] = ['Monthly', 'Quarterly', 'Annual', 'Lender (SREO)'];
 
-  const filteredReports = REPORT_CATALOG.filter(
-    (r) => r.category === activeTab || (activeTab === 'Quarterly' || activeTab === 'Annual' ? r.category === 'Monthly' || r.category === activeTab : r.category === activeTab)
-  );
+  const filteredReports = controlled
+    ? REPORT_CATALOG.filter((r) => visibleReportIds!.includes(r.id))
+    : REPORT_CATALOG.filter(
+        (r) => r.category === activeTab || (activeTab === 'Quarterly' || activeTab === 'Annual' ? r.category === 'Monthly' || r.category === activeTab : r.category === activeTab)
+      );
 
   return (
     <div className="space-y-8" data-testid="report-catalog">
-      {/* Category Tabs */}
-      <div className="flex flex-wrap items-center justify-between gap-4 pb-4 border-b border-slate-200 dark:border-white/10">
-        <div className="flex items-center gap-1.5 p-1 bg-slate-100 dark:bg-white/5 rounded-xl">
-          {categories.map((cat) => (
-            <button
-              key={cat}
-              type="button"
-              data-testid={`report-tab-${cat.toLowerCase().replace(/[^a-z0-9]+/g, '-')}`}
-              onClick={() => setActiveTab(cat)}
-              className={`px-4 py-2 text-xs font-semibold rounded-lg transition-all duration-200 ${
-                activeTab === cat
-                  ? 'bg-white dark:bg-white/10 text-slate-900 dark:text-white shadow-sm'
-                  : 'text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200'
-              }`}
-            >
-              {cat}
-            </button>
-          ))}
-        </div>
+      {/* Category Tabs — hidden when the parent controls the selection */}
+      <div className="flex flex-wrap items-center justify-between gap-4 pb-4 border-b border-white/10">
+        {!controlled && (
+          <div className="flex items-center gap-1.5 p-1 bg-slate-100 dark:bg-white/5 rounded-xl">
+            {categories.map((cat) => (
+              <button
+                key={cat}
+                type="button"
+                data-testid={`report-tab-${cat.toLowerCase().replace(/[^a-z0-9]+/g, '-')}`}
+                onClick={() => setActiveTab(cat)}
+                className={`pw-interactive-custom px-4 py-2 text-xs font-semibold rounded-lg transition-all duration-200 ${
+                  activeTab === cat
+                    ? 'bg-white dark:bg-white/10 text-slate-900 dark:text-white shadow-sm'
+                    : 'text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200'
+                }`}
+              >
+                {cat}
+              </button>
+            ))}
+          </div>
+        )}
 
-        <div className="flex items-center gap-2 text-xs text-slate-500 dark:text-slate-400 font-mono">
-          <Clock className="w-3.5 h-3.5 text-emerald-500" />
-          <span>Data through: <strong className="text-slate-800 dark:text-slate-200">{currentDateStamp}</strong></span>
+        <div className="flex items-center gap-2 text-xs text-[var(--color-on-surface-variant)] font-mono">
+          <Clock className="w-3.5 h-3.5 text-slate-300" />
+          <span>Last updated: <strong className="text-[var(--color-on-surface)]">{currentDateStamp}</strong></span>
         </div>
       </div>
 
@@ -188,12 +207,12 @@ export function ReportCatalogGrid({ onSelectReport, dataThroughDate }: ReportCat
           <div
             key={report.id}
             data-testid={`report-card-${report.id.toLowerCase().replace(/_/g, '-')}`}
-            className="group relative flex flex-col justify-between p-6 rounded-2xl bg-white dark:bg-[#16141a] border border-slate-200 dark:border-white/10 hover:border-emerald-500/50 hover:shadow-xl transition-all duration-200"
+            className="group relative flex flex-col justify-between p-6 rounded-2xl bg-[var(--pw-surface)] border border-[var(--pw-border)] hover:border-white/20 hover:shadow-xl transition-all duration-200"
           >
             <div>
               {/* Header Badge */}
               <div className="flex items-center justify-between gap-2 mb-4">
-                <span className="px-2.5 py-1 rounded-md text-[10px] font-bold uppercase tracking-wider bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20">
+                <span className="px-2.5 py-1 rounded-md text-[10px] font-bold uppercase tracking-wider bg-slate-800/10 text-slate-300 dark:text-slate-300 border border-slate-700/20">
                   {report.badge || report.category}
                 </span>
                 <span className="text-[10px] text-slate-400 font-mono">
@@ -202,25 +221,51 @@ export function ReportCatalogGrid({ onSelectReport, dataThroughDate }: ReportCat
               </div>
 
               {/* Title & Description */}
-              <h3 className="text-lg font-bold text-slate-900 dark:text-white mb-2.5 group-hover:text-emerald-400 transition-colors">
+              <h3 className="text-lg font-bold text-[var(--color-on-surface)] mb-2.5 transition-colors">
                 {report.title}
               </h3>
-              <p className="text-xs text-slate-500 dark:text-slate-400 leading-relaxed mb-6">
+              <p className="text-xs text-[var(--color-on-surface-variant)] leading-relaxed mb-4">
                 {report.description}
               </p>
+
+              {/* Top-3 line preview (req 2). Falls back to the description
+                  alone when the report has no headline summary or the data is
+                  too sparse to compute one. */}
+              {(() => {
+                const preview = getReportPreview(report.id, projects);
+                if (preview.length === 0) return null;
+                return (
+                  <dl
+                    className="mb-6 space-y-1.5 rounded-lg bg-white/[0.03] border border-white/5 p-3"
+                    data-testid={`report-preview-${report.id.toLowerCase().replace(/_/g, '-')}`}
+                  >
+                    {preview.map((line) => (
+                      <div key={line.label} className="flex items-baseline justify-between gap-3">
+                        <dt className="text-[11px] text-[var(--color-on-surface-variant)] truncate">
+                          {line.label}
+                        </dt>
+                        <dd className="text-[11px] font-semibold tabular-nums text-[var(--color-on-surface)] shrink-0">
+                          {line.value}
+                        </dd>
+                      </div>
+                    ))}
+                  </dl>
+                );
+              })()}
             </div>
 
-            {/* Action CTA */}
-            <div className="pt-4 border-t border-slate-100 dark:border-white/5 flex items-center justify-between">
+            {/* Action CTA — neutral, not the emerald accent: there are up to 14
+                cards on screen and the sprint allows one green CTA per view. */}
+            <div className="pt-4 border-t border-white/5 flex items-center justify-between">
               <span className="text-xs font-semibold text-slate-400">Ready to compute</span>
               <button
                 type="button"
                 data-testid="generate-report-btn"
                 data-report-id={report.id}
                 onClick={() => onSelectReport(report.id)}
-                className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl text-xs font-bold text-white bg-emerald-600 hover:bg-emerald-500 transition-all shadow-md shadow-emerald-600/20"
+                className="pw-interactive-custom inline-flex items-center gap-1.5 px-4 py-2 rounded-xl text-xs font-bold text-slate-100 bg-slate-800 hover:bg-slate-700 border border-slate-700 transition-all cursor-pointer"
               >
-                <span>Generate Report</span>
+                <span>View Full Report</span>
                 <ArrowUpRight className="w-3.5 h-3.5" />
               </button>
             </div>

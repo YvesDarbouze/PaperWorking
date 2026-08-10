@@ -116,12 +116,12 @@ export default function ForProsPage() {
       </nav>
 
       {/* ── Hero ── */}
-      <section className="max-w-6xl mx-auto px-6 pt-24 pb-20 text-center">
+      <section className="max-w-6xl mx-auto px-6 pt-16 pb-12 text-center">
         <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-[#454955]/10 border border-[#454955]/20 text-[#454955] text-xs font-bold uppercase tracking-widest mb-8 type-eyebrow">
           <Zap className="w-3.5 h-3.5" />
           For Real Estate Professionals
         </div>
-        <h1 className="text-5xl md:text-7xl font-bold tracking-tight leading-[1.1] mb-6 type-display">
+        <h1 className="font-bold tracking-tight leading-[1.1] mb-6 type-display">
           Investors Need You at
           <br />
           <span className="text-[#454955]">Exactly the Right Moment. Be There.</span>
@@ -153,7 +153,7 @@ export default function ForProsPage() {
 
       {/* ── Vendor Types Strip ── */}
       <section className="border-y border-white/5 bg-white/[0.01]">
-        <div className="max-w-6xl mx-auto px-6 py-8">
+        <div className="max-w-6xl mx-auto px-6 py-6">
           <p className="text-xs text-[#6B6870] uppercase tracking-widest text-center mb-6 type-eyebrow">
             Built for every real estate professional
           </p>
@@ -171,9 +171,9 @@ export default function ForProsPage() {
       </section>
 
       {/* ── Value Props ── */}
-      <section className="max-w-6xl mx-auto px-6 py-24">
-        <div className="text-center mb-16">
-          <h2 className="text-3xl md:text-4xl font-bold tracking-tight mb-4 type-h2">
+      <section className="max-w-6xl mx-auto px-6 py-12 md:py-16 lg:py-20">
+        <div className="text-center mb-10">
+          <h2 className="font-bold tracking-tight mb-4 type-h2">
             Why professionals choose PaperWorking
           </h2>
           <p className="text-[#9E9DA0] max-w-xl mx-auto type-body">
@@ -205,8 +205,8 @@ export default function ForProsPage() {
 
       {/* ── How It Works ── */}
       <section className="border-y border-white/5 bg-white/[0.01]">
-        <div className="max-w-6xl mx-auto px-6 py-24">
-          <h2 className="text-3xl font-bold text-center mb-16">
+        <div className="max-w-6xl mx-auto px-6 py-12 md:py-16 lg:py-20">
+          <h2 className="font-bold text-center mb-10 type-h2">
             How it works
           </h2>
           <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
@@ -248,9 +248,9 @@ export default function ForProsPage() {
 
       {/* ── Pricing ── */}
       <section id="pricing" className="border-y border-white/5 bg-white/[0.01]">
-        <div className="max-w-6xl mx-auto px-6 py-24">
-          <div className="text-center mb-16">
-            <h2 className="text-3xl md:text-4xl font-bold tracking-tight mb-4">
+        <div className="max-w-6xl mx-auto px-6 py-12 md:py-16 lg:py-20">
+          <div className="text-center mb-10">
+            <h2 className="font-bold tracking-tight mb-4 type-h2">
               Simple, transparent pricing
             </h2>
             <p className="text-[#9E9DA0]">

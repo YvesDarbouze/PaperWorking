@@ -78,7 +78,7 @@ export default function GlossaryPage() {
   return (
     <>
       {/* ── Hero ── */}
-      <section className="pt-16 pb-12 sm:pt-24 sm:pb-16">
+      <section className="pt-12 pb-8 sm:pt-16 sm:pb-10">
         <motion.div initial="hidden" animate="visible" variants={stagger} className="mx-auto max-w-3xl text-center">
           <motion.div variants={fadeUp}>
             <Link
@@ -90,7 +90,7 @@ export default function GlossaryPage() {
             </Link>
           </motion.div>
 
-          <motion.h1 variants={fadeUp} className="text-4xl sm:text-5xl lg:text-6xl tracking-tighter text-[var(--pw-fg)] mb-4">
+          <motion.h1 variants={fadeUp} className="tracking-tighter text-[var(--pw-fg)] mb-4 type-display font-semibold">
             Real Estate Glossary
           </motion.h1>
           <motion.p variants={fadeUp} className="text-base sm:text-lg text-[var(--pw-subtle)] max-w-xl mx-auto leading-relaxed mb-10">

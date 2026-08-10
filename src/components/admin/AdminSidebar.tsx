@@ -78,7 +78,7 @@ function SidebarLink({ item }: { item: NavItem }) {
   const pathname = usePathname();
   const isActive = item.exact
     ? pathname === item.href
-    : pathname.startsWith(item.href);
+    : Boolean(pathname?.startsWith(item.href));
 
   return (
     <Link

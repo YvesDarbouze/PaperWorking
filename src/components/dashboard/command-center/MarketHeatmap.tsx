@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState, useMemo } from "react";
+import Link from "next/link";
 import { useTheme } from "@/lib/utils/ThemeProvider";
 import toast from "react-hot-toast";
 
@@ -131,8 +132,17 @@ export function MarketHeatmap() {
             </button>
           ))}
         </div>
-        <div className="text-[10px] font-bold uppercase tracking-wider" style={{ color: t.muted }}>
-          {activeTab === "heatmap" ? "5 Submarkets" : activeTab === "deals" ? "5 Opportunities" : "Sourcing Directory"}
+        <div className="flex items-center gap-3">
+          <Link
+            href="/dashboard/deals"
+            className="text-[10px] font-bold uppercase tracking-wider px-2.5 py-1 rounded-md hover:bg-white/10 transition-colors flex items-center gap-1 text-decoration-none"
+            style={{ color: "#627C85", border: "1px solid rgba(98,124,133,0.25)" }}
+          >
+            Browse Marketplace →
+          </Link>
+          <div className="text-[10px] font-bold uppercase tracking-wider hidden sm:block" style={{ color: t.muted }}>
+            {activeTab === "heatmap" ? "5 Submarkets" : activeTab === "deals" ? "5 Opportunities" : "Sourcing Directory"}
+          </div>
         </div>
       </div>
 

@@ -156,6 +156,12 @@ export class TransactionNotificationService {
     templateType: TransactionEmailTemplate;
     transactionId?: string;
   }): Promise<void> {
+    // Governance Guard: Exclude synthetic investor crew accounts from outbound email dispatch
+    if (opts.to && (opts.to.includes('+crew') || opts.to.endsWith('@paperworking.co'))) {
+      console.info(`[TransactionNotifications] Skipped outbound email for synthetic test account: ${opts.to}`);
+      return;
+    }
+
     // Idempotency check — unique constraint on (transactionId, templateType)
     if (opts.transactionId) {
       try {

@@ -2,6 +2,7 @@
 
 import { useState, useRef, useCallback, useMemo } from 'react';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
   SUPPORT_CATEGORIES,
@@ -10,18 +11,10 @@ import {
   POPULAR_SEARCHES,
   SYSTEM_STATUS,
 } from '@/lib/cms/supportData';
+import { searchSupportIndex, type SearchResult } from '@/lib/search/supportSearch';
 
 /* ═══════════════════════════════════════════════════════
    Support Hub — /support
-
-   Architecture (docs-architect + customer-support skills):
-   ─ Problem-centric KB organization (not feature-organized)
-   ─ Search as primary deflection layer
-   ─ Popular articles for zero-scroll quick wins
-   ─ 6 categories named after investor goals
-   ─ Tier-based contact channels (Starter / Pro / Portfolio)
-   ─ Investor-specific FAQ accordion
-   ─ System status strip
    ═══════════════════════════════════════════════════════ */
 
 const fadeUp = {
@@ -96,33 +89,27 @@ function StatusBadge({ status }: { status: 'operational' | 'degraded' | 'outage'
   );
 }
 
-/* ═══════════════════════════════════════════════════════
-   Main Page
-   ═══════════════════════════════════════════════════════ */
 export default function SupportPage() {
+  const router = useRouter();
 
-  /* ── Search ───────────────────────────────────────────── */
+  /* ── Client-side search engine ────────────────────────── */
   const [query, setQuery] = useState('');
   const [searching, setSearching] = useState(false);
-  const [results, setResults] = useState(SUPPORT_ARTICLES);
+  const [searchResults, setSearchResults] = useState<SearchResult[]>([]);
   const [dropdownOpen, setDropdownOpen] = useState(false);
+  const [selectedIndex, setSelectedIndex] = useState<number>(-1);
   const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const inputRef = useRef<HTMLInputElement>(null);
 
   const runSearch = useCallback((q: string) => {
-    const lq = q.toLowerCase().trim();
-    if (!lq) { setResults(SUPPORT_ARTICLES); return; }
-    const matchedCatIds = SUPPORT_CATEGORIES
-      .filter((c) => c.title.toLowerCase().includes(lq) || c.description.toLowerCase().includes(lq))
-      .map((c) => c.id);
-    setResults(
-      SUPPORT_ARTICLES.filter((a) =>
-        a.title.toLowerCase().includes(lq) ||
-        a.excerpt.toLowerCase().includes(lq) ||
-        a.tags.some((t) => t.includes(lq)) ||
-        matchedCatIds.includes(a.categoryId)
-      )
-    );
+    const trimmed = q.trim();
+    if (!trimmed) {
+      setSearchResults([]);
+      return;
+    }
+    const matches = searchSupportIndex(trimmed, 8);
+    setSearchResults(matches);
+    setSelectedIndex(-1);
   }, []);
 
   const handleInput = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -130,12 +117,17 @@ export default function SupportPage() {
     setQuery(val);
     setDropdownOpen(val.trim().length > 0);
     if (timerRef.current) clearTimeout(timerRef.current);
+
     if (val.trim()) {
       setSearching(true);
-      timerRef.current = setTimeout(() => { runSearch(val); setSearching(false); }, 350);
+      timerRef.current = setTimeout(() => {
+        runSearch(val);
+        setSearching(false);
+      }, 200);
     } else {
       setSearching(false);
-      setResults(SUPPORT_ARTICLES);
+      setSearchResults([]);
+      setSelectedIndex(-1);
     }
   };
 
@@ -144,11 +136,41 @@ export default function SupportPage() {
     setDropdownOpen(true);
     setSearching(true);
     if (timerRef.current) clearTimeout(timerRef.current);
-    timerRef.current = setTimeout(() => { runSearch(tag); setSearching(false); }, 350);
+    timerRef.current = setTimeout(() => {
+      runSearch(tag);
+      setSearching(false);
+    }, 200);
     inputRef.current?.focus();
   };
 
-  /* ── FAQ ──────────────────────────────────────────────── */
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (!dropdownOpen) return;
+
+    if (e.key === 'ArrowDown') {
+      e.preventDefault();
+      if (searchResults.length > 0) {
+        setSelectedIndex((prev) => (prev < searchResults.length - 1 ? prev + 1 : 0));
+      }
+    } else if (e.key === 'ArrowUp') {
+      e.preventDefault();
+      if (searchResults.length > 0) {
+        setSelectedIndex((prev) => (prev > 0 ? prev - 1 : searchResults.length - 1));
+      }
+    } else if (e.key === 'Enter') {
+      if (selectedIndex >= 0 && selectedIndex < searchResults.length) {
+        e.preventDefault();
+        const target = searchResults[selectedIndex];
+        router.push(target.doc.route);
+        setDropdownOpen(false);
+      }
+    } else if (e.key === 'Escape') {
+      e.preventDefault();
+      setDropdownOpen(false);
+      setSelectedIndex(-1);
+    }
+  };
+
+  /* ── FAQ filtering ────────────────────────────────────── */
   const [openFaq, setOpenFaq] = useState<string | null>(null);
   const [faqFilter, setFaqFilter] = useState('');
 
@@ -160,11 +182,11 @@ export default function SupportPage() {
     );
   }, [faqFilter]);
 
-  /* ── All systems check ────────────────────────────────── */
+  /* ── System status check ──────────────────────────────── */
   const allOk = SYSTEM_STATUS.every((s) => s.status === 'operational');
 
   return (
-    <div className="min-h-screen bg-background text-on-surface pt-20 pb-24">
+    <div className="min-h-screen bg-background text-on-surface pt-16 pb-16">
 
       {/* ══════════════════════════════════════════════════
           § 1. HERO — search as primary deflection layer
@@ -176,7 +198,7 @@ export default function SupportPage() {
           initial="hidden"
           animate="visible"
           variants={stagger}
-          className="relative z-10 max-w-3xl mx-auto px-5 md:px-8 pt-14 md:pt-20 pb-14 md:pb-20 text-center"
+          className="relative z-10 max-w-3xl mx-auto px-5 md:px-8 pt-10 md:pt-14 pb-10 md:pb-14 text-center"
         >
           {/* Status pill */}
           <motion.div variants={fadeUp} className="inline-flex items-center gap-2.5 px-4 py-2 rounded-full glass-panel border border-primary/20 mb-9">
@@ -186,7 +208,7 @@ export default function SupportPage() {
             </span>
           </motion.div>
 
-          <motion.h1 variants={fadeUp} className="font-semibold text-[36px] md:text-[54px] lg:text-[60px] leading-[1.05] tracking-[-0.025em] text-on-surface mb-5 type-display">
+          <motion.h1 variants={fadeUp} className="font-semibold leading-[1.05] tracking-[-0.025em] text-on-surface mb-5 type-display">
             What are you trying<br className="hidden md:block" /> to figure out?
           </motion.h1>
 
@@ -208,14 +230,19 @@ export default function SupportPage() {
                 type="text"
                 value={query}
                 onChange={handleInput}
+                onKeyDown={handleKeyDown}
                 onFocus={() => { if (query.trim()) setDropdownOpen(true); }}
-                onBlur={() => setTimeout(() => setDropdownOpen(false), 180)}
+                onBlur={() => setTimeout(() => setDropdownOpen(false), 200)}
                 placeholder={`e.g. "contingency deadline", "CPA export", "approve a draw"`}
                 aria-label="Search PaperWorking knowledge base"
+                role="combobox"
+                aria-expanded={dropdownOpen}
+                aria-controls="support-search-listbox"
+                aria-activedescendant={selectedIndex >= 0 ? `search-option-${selectedIndex}` : undefined}
                 className="w-full h-14 pl-12 pr-12 rounded-xl glass-panel border border-white/12
                   text-[15px] text-on-surface placeholder:text-on-surface-variant/35
                   focus:outline-none focus:border-primary/40 focus:shadow-[0_0_0_3px_rgba(69,73,85,0.10)]
-                  transition-all duration-200"
+                  transition-all duration-200 min-h-[44px]"
               />
               {searching && (
                 <span
@@ -242,47 +269,61 @@ export default function SupportPage() {
                       <span className="material-symbols-outlined text-[18px] animate-spin text-primary/40">progress_activity</span>
                       Searching knowledge base…
                     </div>
-                  ) : results.length === 0 ? (
-                    <div className="px-5 py-6">
-                      <p className="text-[13px] text-on-surface-variant/60 mb-2">No articles matched &ldquo;{query}&rdquo;</p>
-                      <p className="text-[12px] text-on-surface-variant/40">
-                        Try different keywords, or{' '}
-                        <a href="mailto:support@paperworking.co" className="text-primary hover:underline">email us directly</a>.
+                  ) : searchResults.length === 0 ? (
+                    <div className="px-5 py-6 text-left" data-testid="search-empty-state">
+                      <p className="text-[13px] text-on-surface-variant/70 leading-relaxed">
+                        No matches in the knowledge base. Email{' '}
+                        <a href="mailto:support@paperworking.co" className="text-primary hover:underline font-semibold">
+                          support@paperworking.co
+                        </a>{' '}
+                        — a real person answers every message.
                       </p>
                     </div>
                   ) : (
-                    <ul className="p-2">
-                      <li className="px-3 pb-2 pt-1">
-                        <span className="font-jetbrains text-[9px] uppercase tracking-[0.1em] text-on-surface-variant/30">
-                          {results.length} result{results.length !== 1 ? 's' : ''}
+                    <ul id="support-search-listbox" role="listbox" className="p-2 space-y-1">
+                      <li className="px-3 pb-1 pt-1 border-b border-white/5">
+                        <span className="font-jetbrains text-[9px] uppercase tracking-[0.1em] text-on-surface-variant/40">
+                          {searchResults.length} result{searchResults.length !== 1 ? 's' : ''} found
                         </span>
                       </li>
-                      {results.slice(0, 6).map((article) => {
-                        const cat = SUPPORT_CATEGORIES.find((c) => c.id === article.categoryId);
-                        return (
-                          <li key={article.id}>
-                            <Link
-                              href={`/support/${article.id}`}
-                              className="flex items-start gap-3 px-3 py-3 rounded-lg hover:bg-white/5 transition-colors group/r"
+                      {searchResults.map((res, idx) => (
+                        <li key={res.doc.id} id={`search-option-${idx}`} role="option" aria-selected={selectedIndex === idx}>
+                          <Link
+                            href={res.doc.route}
+                            onMouseDown={(e) => {
+                              // Ensure click works before blur
+                              e.preventDefault();
+                              router.push(res.doc.route);
+                              setDropdownOpen(false);
+                            }}
+                            className={`flex items-start gap-3 px-3 py-3 rounded-lg transition-colors group/r ${
+                              selectedIndex === idx ? 'bg-primary/10 border border-primary/20' : 'hover:bg-white/5'
+                            }`}
+                          >
+                            <span
+                              className={`material-symbols-outlined text-[16px] flex-shrink-0 mt-0.5 ${
+                                selectedIndex === idx ? 'text-primary' : 'text-on-surface-variant/30 group-hover/r:text-primary'
+                              }`}
+                              style={{ fontVariationSettings: "'FILL' 0, 'wght' 300" }}
                             >
-                              <span
-                                className="material-symbols-outlined text-[15px] text-on-surface-variant/30 flex-shrink-0 mt-0.5 group-hover/r:text-primary transition-colors"
-                                style={{ fontVariationSettings: "'FILL' 0, 'wght' 300" }}
-                              >
-                                article
-                              </span>
-                              <div className="text-left min-w-0">
-                                <p className="text-[13px] font-semibold text-on-surface group-hover/r:text-primary transition-colors leading-snug">
-                                  {article.title}
+                              {res.doc.type === 'metric' ? 'monitoring' : res.doc.type === 'glossary' ? 'book_2' : res.doc.type === 'faq' ? 'help' : 'article'}
+                            </span>
+                            <div className="text-left min-w-0 flex-1">
+                              <div className="flex items-center justify-between gap-2 mb-0.5">
+                                <p className="text-[13px] font-semibold text-on-surface group-hover/r:text-primary transition-colors leading-snug truncate">
+                                  {res.doc.title}
                                 </p>
-                                <p className="text-[11px] text-on-surface-variant/40 mt-0.5">
-                                  {cat?.title} · {article.readTime}
-                                </p>
+                                <span className="font-jetbrains text-[9px] uppercase tracking-wider text-primary/60 px-2 py-0.5 rounded bg-primary/10 flex-shrink-0">
+                                  {res.doc.category}
+                                </span>
                               </div>
-                            </Link>
-                          </li>
-                        );
-                      })}
+                              <p className="text-[12px] text-on-surface-variant/60 leading-normal line-clamp-2">
+                                {res.snippet}
+                              </p>
+                            </div>
+                          </Link>
+                        </li>
+                      ))}
                     </ul>
                   )}
                 </motion.div>
@@ -302,7 +343,7 @@ export default function SupportPage() {
                 onClick={() => handleTagClick(tag)}
                 className="pw-interactive-custom px-3 py-1.5 rounded-full glass-panel border border-white/10
                   text-[12px] font-medium text-on-surface-variant hover:text-primary hover:border-primary/30
-                  transition-all duration-200"
+                  transition-all duration-200 min-h-[44px] cursor-pointer"
               >
                 {tag}
               </button>
@@ -323,7 +364,7 @@ export default function SupportPage() {
           <motion.div variants={fadeUp}>
             <Link
               href="/support/glossary"
-              className="flex items-center gap-5 p-5 glass-panel rounded-xl border border-white/8 hover:border-primary/20 transition-all duration-200 group text-decoration-none"
+              className="flex items-center gap-5 p-5 glass-panel rounded-xl border border-white/8 hover:border-primary/20 transition-all duration-200 group text-decoration-none min-h-[44px]"
             >
               <div className="w-12 h-12 rounded-lg bg-primary/10 border border-primary/20 flex items-center justify-center flex-shrink-0 group-hover:scale-105 transition-transform duration-200">
                 <span className="material-symbols-outlined text-[24px] text-primary" style={{ fontVariationSettings: "'FILL' 0, 'wght' 300" }}>
@@ -347,7 +388,7 @@ export default function SupportPage() {
           <motion.div variants={fadeUp}>
             <Link
               href="/support/metrics"
-              className="flex items-center gap-5 p-5 glass-panel rounded-xl border border-white/8 hover:border-primary/20 transition-all duration-200 group text-decoration-none"
+              className="flex items-center gap-5 p-5 glass-panel rounded-xl border border-white/8 hover:border-primary/20 transition-all duration-200 group text-decoration-none min-h-[44px]"
             >
               <div className="w-12 h-12 rounded-lg bg-primary/10 border border-primary/20 flex items-center justify-center flex-shrink-0 group-hover:scale-105 transition-transform duration-200">
                 <span className="material-symbols-outlined text-[24px] text-primary" style={{ fontVariationSettings: "'FILL' 0, 'wght' 300" }}>
@@ -387,7 +428,7 @@ export default function SupportPage() {
             </div>
             <Link
               href="/support/all"
-              className="pw-interactive-custom text-[13px] font-semibold text-primary/60 hover:text-primary flex items-center gap-1.5 transition-colors"
+              className="pw-interactive-custom text-[13px] font-semibold text-primary/60 hover:text-primary flex items-center gap-1.5 transition-colors min-h-[44px]"
             >
               Browse all
               <span className="material-symbols-outlined text-[16px]">arrow_forward</span>
@@ -402,7 +443,7 @@ export default function SupportPage() {
                   <Link
                     href={`/support/${article.id}`}
                     className="flex items-start gap-4 p-5 glass-panel rounded-xl border border-white/8
-                      hover:border-primary/20 hover:-translate-y-0.5 transition-all duration-200 group"
+                      hover:border-primary/20 hover:-translate-y-0.5 transition-all duration-200 group min-h-[44px]"
                   >
                     <span
                       className={`material-symbols-outlined text-[20px] flex-shrink-0 mt-0.5 ${cat?.color ?? 'text-on-surface-variant'} group-hover:scale-110 transition-transform`}
@@ -479,7 +520,7 @@ export default function SupportPage() {
                         <Link
                           href={`/support/${a.id}`}
                           className="flex items-start gap-2.5 px-3 py-2.5 rounded-lg hover:bg-white/5
-                            transition-colors text-[13px] text-on-surface-variant hover:text-on-surface group/a"
+                            transition-colors text-[13px] text-on-surface-variant hover:text-on-surface group/a min-h-[44px]"
                         >
                           <span
                             className="material-symbols-outlined text-[14px] text-on-surface-variant/25 flex-shrink-0 mt-0.5 group-hover/a:text-primary transition-colors"
@@ -494,7 +535,7 @@ export default function SupportPage() {
                     <li>
                       <Link
                         href={`/support/category/${cat.id}`}
-                        className={`flex items-center gap-1.5 px-3 py-2.5 mt-1 text-[12px] font-semibold ${cat.color} hover:opacity-75 transition-opacity`}
+                        className={`flex items-center gap-1.5 px-3 py-2.5 mt-1 text-[12px] font-semibold ${cat.color} hover:opacity-75 transition-opacity min-h-[44px]`}
                       >
                         See all {cat.articleCount} articles
                         <span className="material-symbols-outlined text-[14px]">arrow_forward</span>
@@ -552,7 +593,7 @@ export default function SupportPage() {
 
                 <Link
                   href={ch.href}
-                  className="pw-interactive-custom mt-auto flex items-center gap-2 text-[13px] font-semibold text-primary hover:opacity-75 transition-opacity"
+                  className="pw-interactive-custom mt-auto flex items-center gap-2 text-[13px] font-semibold text-primary hover:opacity-75 transition-opacity min-h-[44px]"
                 >
                   {ch.cta}
                   <span className="material-symbols-outlined text-[16px]">arrow_forward</span>
@@ -615,7 +656,7 @@ export default function SupportPage() {
                 onChange={(e) => { setFaqFilter(e.target.value); setOpenFaq(null); }}
                 className="w-full pl-10 pr-4 py-3 rounded-xl bg-surface-container-low/40 border border-white/8
                   text-[13px] text-on-surface placeholder:text-on-surface-variant/30
-                  focus:outline-none focus:border-primary/30 focus:ring-1 focus:ring-primary/20 transition-all duration-200"
+                  focus:outline-none focus:border-primary/30 focus:ring-1 focus:ring-primary/20 transition-all duration-200 min-h-[44px]"
               />
             </div>
           </motion.div>
@@ -640,7 +681,7 @@ export default function SupportPage() {
                     onClick={(e) => { e.preventDefault(); setOpenFaq(isOpen ? null : faq.id); }}
                     className="pw-interactive-custom flex items-start justify-between gap-4 px-6 py-5
                       cursor-pointer list-none select-none text-[14px] font-semibold text-on-surface
-                      tracking-[-0.01em] hover:text-primary transition-colors duration-200"
+                      tracking-[-0.01em] hover:text-primary transition-colors duration-200 min-h-[44px]"
                   >
                     <span className="leading-snug">{faq.question}</span>
                     <span
@@ -699,9 +740,9 @@ export default function SupportPage() {
             ].map((kpi, idx) => (
               <Link
                 key={kpi.anchor}
-                href={`/#metrics-${kpi.anchor}`}
+                href={`/support/metrics#${kpi.anchor}`}
                 className="flex items-center gap-4 px-5 py-4 rounded-xl glass-panel border border-white/8
-                  hover:border-primary/20 hover:bg-primary/3 transition-all duration-200 group"
+                  hover:border-primary/20 hover:bg-primary/3 transition-all duration-200 group text-decoration-none min-h-[44px]"
               >
                 <span className="flex-shrink-0 w-7 h-7 rounded-lg bg-primary/10 border border-primary/15
                   flex items-center justify-center text-[11px] font-bold text-primary tabular-nums">
@@ -728,7 +769,7 @@ export default function SupportPage() {
           <motion.div variants={fadeUp} className="mt-8 text-center">
             <Link
               href="/support/metrics"
-              className="inline-flex items-center gap-2 px-6 py-3 rounded-full bg-primary/10 border border-primary/20 text-xs font-bold uppercase tracking-wider text-primary hover:bg-primary/20 transition-all duration-200 text-decoration-none"
+              className="inline-flex items-center gap-2 px-6 py-3 rounded-full bg-primary/10 border border-primary/20 text-xs font-bold uppercase tracking-wider text-primary hover:bg-primary/20 transition-all duration-200 text-decoration-none min-h-[44px]"
             >
               Explore the Playbook (All 33 Metrics)
               <span className="material-symbols-outlined text-[14px]" style={{ fontVariationSettings: "'FILL' 0, 'wght' 400" }}>
@@ -760,13 +801,15 @@ export default function SupportPage() {
                 </span>
                 <span className="text-[13px] font-semibold text-on-surface">System Status</span>
               </div>
-              <Link
-                href="/status"
-                className="pw-interactive-custom font-jetbrains text-[10px] uppercase tracking-[0.06em] text-primary/40 hover:text-primary transition-colors flex items-center gap-1"
+              <a
+                href="https://status.paperworking.co"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="pw-interactive-custom font-jetbrains text-[10px] uppercase tracking-[0.06em] text-primary/40 hover:text-primary transition-colors flex items-center gap-1 min-h-[44px]"
               >
                 Full status page
                 <span className="material-symbols-outlined text-[12px]">open_in_new</span>
-              </Link>
+              </a>
             </div>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 divide-y sm:divide-y-0 sm:divide-x divide-white/5">
@@ -781,7 +824,7 @@ export default function SupportPage() {
 
           <p className="text-center mt-3 font-jetbrains text-[10px] text-on-surface-variant/25 tracking-[0.04em] uppercase">
             Status updated in real time · Incidents at{' '}
-            <a href="https://status.paperworking.co" className="text-primary/35 hover:text-primary transition-colors">
+            <a href="https://status.paperworking.co" target="_blank" rel="noopener noreferrer" className="text-primary/35 hover:text-primary transition-colors">
               status.paperworking.co
             </a>
           </p>

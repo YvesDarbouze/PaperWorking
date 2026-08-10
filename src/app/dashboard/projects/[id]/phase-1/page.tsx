@@ -11,6 +11,7 @@ import ProjectCalculator from '@/components/project/ProjectCalculator';
 import { MarketContextPanel } from '@/components/project/MarketContextPanel';
 import { PhaseExplainerVideo } from '@/components/project/PhaseExplainerVideo';
 import { PhaseLockedBanner } from '@/components/project/PhaseLockedBanner';
+import { WorkflowStepper } from '@/components/project/WorkflowStepper';
 import ConversationalForm from '@/components/conversational/ConversationalForm';
 import type { QuestionDef, FormAnswers } from '@/components/conversational/types';
 import { projectsService } from '@/lib/firebase/deals';
@@ -190,7 +191,7 @@ export default function Phase1WorkspacePage() {
   const params    = useParams();
   const router    = useRouter();
   const { user }  = useAuth();
-  const projectId = params.id as string;
+  const projectId = params?.id as string;
 
   /* ── Data from shared WorkspaceContext (fetched once by layout) ── */
   const { project, loading, refresh } = useWorkspaceProject();
@@ -1171,46 +1172,31 @@ export default function Phase1WorkspacePage() {
           </div>
         </section>
 
-        {/* ── Stage Stepper Rail (Stitch schema) ── */}
-          <section className="glass-card rounded-2xl p-4">
-            <div className="flex items-center gap-4 overflow-x-auto pb-2 scrollbar-none">
-              {[
-                { key: 'target', label: '1. Target', icon: 'gps_fixed', isComplete: isStage1Complete },
-                { key: 'underwrite', label: '2. Analyze & Underwrite', icon: 'analytics', isComplete: isStage2Complete },
-                { key: 'strategy', label: '3. Declare Strategy', icon: 'assignment', isComplete: isStage3Complete },
-                { key: 'offer', label: '4. Offer / LOI', icon: 'description', isComplete: isStage4Complete },
-                { key: 'due_diligence', label: '5. Due Diligence', icon: 'gavel', isComplete: isStage5Complete },
-                { key: 'raise_interest', label: '6. Raise Interest', icon: 'group', isComplete: isStage6Complete },
-                { key: 'phase_gate', label: '7. Phase Gate', icon: 'door_open', isComplete: canLockDeal },
-              ].map((stage) => {
-                const active = activeStage === stage.key;
-                const unlocked = isStageUnlocked(stage.key);
-                return (
-                  <button
-                    key={stage.key}
-                    id={`stage-tab-${stage.key}`}
-                    disabled={!unlocked}
-                    onClick={() => handleStageSelect(stage.key)}
-                    className={`flex items-center gap-2 px-4 py-3 rounded-xl text-[11px] font-bold uppercase tracking-wider transition-all whitespace-nowrap ${
-                      active
-                        ? 'bg-[#454955] text-black shadow-lg shadow-[#454955]/20 font-bold'
-                        : stage.isComplete
-                        ? 'bg-[var(--pw-success)]/15 text-[var(--pw-success)] hover:bg-[var(--pw-success)]/25'
-                        : unlocked
-                        ? 'bg-white/5 text-white hover:bg-white/10'
-                        : 'bg-transparent text-[#9E9DA0]/20 cursor-not-allowed'
-                    }`}
-                  >
-                    <span className="material-symbols-outlined text-[16px]">{stage.icon}</span>
-                    <span>{stage.label}</span>
-                  </button>
-                );
-              })}
-            </div>
+        {/* ── Stage rail ──
+            Req 5: was seven individually-boxed pills, each with its own fill,
+            which read as unrelated tabs rather than one ordered process. Now a
+            connected stepper — see `WorkflowStepper`. The `#stage-tab-{key}`
+            ids are preserved; ~12 e2e specs drive the workflow through them. */}
+          <section className="glass-card rounded-2xl px-4 py-4">
+            <WorkflowStepper
+              phaseNumber={1}
+              ariaLabel="Acquisition stages"
+              activeKey={activeStage}
+              onSelect={handleStageSelect}
+              stages={[
+                { key: 'target', label: '1. Target', isComplete: isStage1Complete, isUnlocked: isStageUnlocked('target') },
+                { key: 'underwrite', label: '2. Analyze & Underwrite', isComplete: isStage2Complete, isUnlocked: isStageUnlocked('underwrite') },
+                { key: 'strategy', label: '3. Declare Strategy', isComplete: isStage3Complete, isUnlocked: isStageUnlocked('strategy') },
+                { key: 'offer', label: '4. Offer / LOI', isComplete: isStage4Complete, isUnlocked: isStageUnlocked('offer') },
+                { key: 'due_diligence', label: '5. Due Diligence', isComplete: isStage5Complete, isUnlocked: isStageUnlocked('due_diligence') },
+                { key: 'raise_interest', label: '6. Raise Interest', isComplete: isStage6Complete, isUnlocked: isStageUnlocked('raise_interest') },
+                { key: 'phase_gate', label: '7. Phase Gate', isComplete: canLockDeal, isUnlocked: isStageUnlocked('phase_gate') },
+              ]}
+            />
           </section>
 
           {/* ── Guided Acquisition Wizard Callout Card ── */}
-          <div className="glass-card rounded-2xl p-6 border border-white/5 flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-gradient-to-r from-emerald-500/5 via-transparent to-transparent">
+          <div className="glass-card rounded-2xl p-6 border border-white/5 flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-gradient-to-r from-slate-800/5 via-transparent to-transparent">
             <div className="space-y-1">
               <h3 className="text-sm font-bold uppercase tracking-wider text-white">Prefer a Guided Experience?</h3>
               <p className="text-xs text-slate-400">Launch the step-by-step Acquisition Wizard to verify budget, research market trends, search properties, model underwriting, and draft LOIs.</p>
@@ -1561,7 +1547,7 @@ export default function Phase1WorkspacePage() {
                         const diff = (offer - asking) / 100;
                         const pct = ((offer - asking) / asking) * 100;
                         const sign = diff >= 0 ? '+' : '';
-                        const color = diff >= 0 ? 'text-red-400' : 'text-green-400';
+                        const color = diff >= 0 ? 'text-red-400' : 'text-slate-300';
                         return (
                           <span className={`font-mono text-sm font-bold ${color}`} id="context-delta">
                             {sign}${diff.toLocaleString()} ({sign}{pct.toFixed(1)}%)

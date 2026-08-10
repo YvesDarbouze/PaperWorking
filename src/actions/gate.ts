@@ -721,3 +721,8 @@ export async function advanceFundToHoldGate(
   }
 }
 
+export async function getProjectGateEvents(idToken: string, projectId: string) {
+  const { getGateEventsByProject } = await import('@/lib/db/gateEventsStore');
+  return getGateEventsByProject(projectId);
+}
+

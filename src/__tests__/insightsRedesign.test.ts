@@ -1,6 +1,8 @@
 import { getKPI33, CATEGORY_ORDER, type MetricCategory } from '@/lib/metrics/metricTaxonomy';
 import { KPI_LINEAGE_MAP } from '@/lib/kpi/lineage';
-import { calculatePeriodOverPeriod, generateSeriesData } from '@/components/insights/KPIDatapointExplorer';
+// Extracted from the orphaned KPIDatapointExplorer component (deleted Aug 2026);
+// the logic moved to a lib module so the dead UI could go without it.
+import { calculatePeriodOverPeriod, generateSeriesData } from '@/lib/kpi/kpiSeries';
 
 describe('IN-1 Insights Redesign Unit Tests', () => {
   const MANDATED_HEADINGS: MetricCategory[] = [

@@ -99,8 +99,8 @@ export default function ExitDirectPage({ params }: { params: Promise<{ id: strin
             Back
           </button>
           <div className="flex items-center gap-3">
-            <div className="p-2.5 rounded-xl bg-emerald-100 dark:bg-emerald-500/10">
-              <Home className="w-6 h-6 text-emerald-600 dark:text-emerald-400" />
+            <div className="p-2.5 rounded-xl bg-emerald-100 dark:bg-slate-800/10">
+              <Home className="w-6 h-6 text-slate-300 dark:text-slate-300" />
             </div>
             <div>
               <h1 className="text-2xl font-bold tracking-tight text-slate-900 dark:text-white">

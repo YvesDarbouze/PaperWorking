@@ -44,8 +44,8 @@ export default defineConfig({
 
   /* Run local dev server before starting the tests */
   webServer: {
-    command: 'npm run start',
-    url: 'http://localhost:3000',
+    command: 'npm run dev',
+    url: 'http://localhost:3000/dashboard/command-center',
     reuseExistingServer: true,
     timeout: 120000,
   },

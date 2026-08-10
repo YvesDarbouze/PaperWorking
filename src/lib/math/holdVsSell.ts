@@ -70,7 +70,7 @@ export function computeHoldVsSellComparison(input: HoldVsSellInput): HoldVsSellR
 
   const derived = deriveAllProjectMetrics(project);
 
-  const annualCashFlow = derived.annualCashFlow;
+  const annualCashFlow = derived.annualCashFlow ?? 0;
   const cumulativeCashFlow = annualCashFlow * holdYears;
 
   // Terminal value after holdYears of appreciation
@@ -81,7 +81,8 @@ export function computeHoldVsSellComparison(input: HoldVsSellInput): HoldVsSellR
   const netTerminalProceeds = Math.max(0, projectedTerminalValue - terminalSellingCosts - terminalMortgagePayoff);
 
   const totalHoldNetReturns = cumulativeCashFlow + netTerminalProceeds;
-  const equityMultipleHold = derived.kpi33?.equityMultiple || Number((totalHoldNetReturns / initialInvested).toFixed(2));
+  const emKpiHold = derived.kpi33?.EQUITY_MULTIPLE;
+  const equityMultipleHold = (emKpiHold && (emKpiHold.actual ?? emKpiHold.projected)) || Number((totalHoldNetReturns / initialInvested).toFixed(2));
 
   const irrCashFlows = [-initialInvested];
   for (let i = 1; i < holdYears; i++) {
@@ -215,7 +216,7 @@ export function computeActualizedReturns(params: {
   const derived = deriveAllProjectMetrics(project);
 
   const actualIRR = derived.irr || derived.annualizedIrr || null;
-  const actualEquityMultiple = derived.kpi33?.equityMultiple || (totalCashInvested > 0 ? Number(((derived.netProfit + totalCashInvested) / totalCashInvested).toFixed(2)) : null);
+  const actualEquityMultiple = totalCashInvested > 0 ? Number(((derived.netProfit + totalCashInvested) / totalCashInvested).toFixed(2)) : null;
   const netProfit = derived.netProfit;
 
   return {

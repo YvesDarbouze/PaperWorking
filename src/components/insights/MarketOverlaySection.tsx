@@ -59,7 +59,7 @@ export function MarketOverlaySection({ projectId }: MarketOverlaySectionProps) {
         <div>
           <h2 className="flex items-center gap-1.5 text-lg font-bold text-slate-900 dark:text-white font-outfit tracking-tight">
             Local Market Comparison
-            <span className="inline-flex items-center justify-center rounded-full bg-emerald-500/10 text-emerald-500 p-0.5" title="Sourced from RentCast live data">
+            <span className="inline-flex items-center justify-center rounded-full bg-slate-800/10 text-slate-300 p-0.5" title="Sourced from RentCast live data">
               <Info className="w-3.5 h-3.5" />
             </span>
           </h2>
@@ -74,7 +74,7 @@ export function MarketOverlaySection({ projectId }: MarketOverlaySectionProps) {
             <select
               value={metricId}
               onChange={(e) => setMetricId(e.target.value as MetricId)}
-              className="appearance-none bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-lg py-1.5 pl-3 pr-8 text-xs font-semibold text-slate-800 dark:text-slate-200 focus:outline-none focus:ring-1 focus:ring-emerald-500 cursor-pointer"
+              className="appearance-none bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-lg py-1.5 pl-3 pr-8 text-xs font-semibold text-slate-800 dark:text-slate-200 focus:outline-none focus:ring-1 focus:ring-slate-700 cursor-pointer"
             >
               {MARKET_METRICS.map((opt) => (
                 <option key={opt.id} value={opt.id} className="dark:bg-slate-950">

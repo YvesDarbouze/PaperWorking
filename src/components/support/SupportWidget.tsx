@@ -210,10 +210,14 @@ export default function SupportWidget() {
       {!isOpen && (
         <button
           onClick={() => setIsOpen(true)}
-          className="w-14 h-14 rounded-full bg-pw-success hover:bg-pw-success/90 active:scale-95 shadow-xl hover:shadow-pw-success/20 text-[#0d0a0b] flex items-center justify-center transition-all cursor-pointer border border-white/10"
+          className="w-14 h-14 rounded-full bg-transparent hover:scale-105 active:scale-95 flex items-center justify-center transition-all duration-200 cursor-pointer"
+          style={{
+            border: '2px solid var(--pw-success)',
+            boxShadow: '0 4px 20px rgba(0,0,0,0.25)',
+          }}
           aria-label="Open support chat"
         >
-          <MessageSquare className="w-6 h-6 animate-pulse" />
+          <MessageSquare className="w-6 h-6 text-pw-success" />
         </button>
       )}
 

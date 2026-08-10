@@ -275,7 +275,7 @@ export default function MetricCarousel() {
   };
 
   return (
-    <section className="relative py-24 bg-background overflow-hidden border-t border-b border-white/5">
+    <section className="relative py-12 md:py-16 lg:py-20 bg-background overflow-hidden border-t border-b border-white/5">
       {/* Background Glows */}
       <div className="absolute top-1/4 left-1/4 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-primary/5 rounded-full blur-[140px] pointer-events-none" />
       <div className="absolute bottom-1/4 right-1/4 translate-x-1/2 translate-y-1/2 w-[600px] h-[600px] bg-secondary/5 rounded-full blur-[140px] pointer-events-none" />
@@ -289,7 +289,7 @@ export default function MetricCarousel() {
             <span>The Hero Tier</span>
           </div>
 
-          <h2 className="text-3xl sm:text-4xl md:text-5xl font-extrabold tracking-tight text-on-background mb-6 leading-tight type-h2">
+          <h2 className="font-extrabold tracking-tight text-on-background mb-6 leading-tight type-h2">
             The 33 Numbers That Decide Whether Your Deal Makes Money
           </h2>
 

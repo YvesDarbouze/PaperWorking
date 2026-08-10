@@ -131,7 +131,8 @@ export function MetricsTable({
         </p>
         <button
           onClick={onConnectBank}
-          className="flex items-center gap-2 px-5 py-2.5 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white font-medium text-sm transition-all duration-200 shadow-md hover:shadow-emerald-900/10 active:scale-98"
+          className="flex items-center gap-2 px-5 py-2.5 rounded-lg text-white font-medium text-sm transition-all duration-200 shadow-md active:scale-98"
+          style={{ backgroundColor: 'var(--color-primary)' }}
         >
           <LinkIcon className="w-4 h-4" />
           Connect Bank Account
@@ -227,8 +228,8 @@ export function MetricsTable({
                     <div className="flex items-center gap-2">
                       {metric.benchmark === 'good' && (
                         <>
-                          <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse shadow-md shadow-emerald-500/20" />
-                          <span className="text-xs text-emerald-600 dark:text-emerald-400 font-medium">Optimal</span>
+                          <span className="w-2.5 h-2.5 rounded-full bg-slate-700 animate-pulse shadow-md shadow-slate-900/20" />
+                          <span className="text-xs text-slate-300 dark:text-slate-300 font-medium">Optimal</span>
                         </>
                       )}
                       {metric.benchmark === 'warning' && (
@@ -254,7 +255,7 @@ export function MetricsTable({
                   <td className="p-4">
                     <div className="flex items-center gap-1">
                       {metric.trend === 'up' && (
-                        <div className="flex items-center text-emerald-500 font-semibold text-sm">
+                        <div className="flex items-center text-slate-300 font-semibold text-sm">
                           <ArrowUpRight className="w-4 h-4 mr-0.5" />
                           <span>Improving</span>
                         </div>

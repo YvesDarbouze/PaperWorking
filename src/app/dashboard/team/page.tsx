@@ -57,6 +57,9 @@ function formatLastActive(iso: string | null | undefined): string {
 }
 
 export default function TeamDirectoryPage() {
+  useEffect(() => {
+    document.title = "PaperWorking — Team Management";
+  }, []);
   const { profile } = useAuth();
   const { theme } = useTheme();
   const isDark = theme === 'dark';

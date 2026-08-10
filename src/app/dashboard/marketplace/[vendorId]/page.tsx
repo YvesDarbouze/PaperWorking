@@ -47,7 +47,7 @@ type VendorDetail = {
 export default function VendorDetailPage() {
   const params = useParams();
   const router = useRouter();
-  const vendorId = params.vendorId as string;
+  const vendorId = params?.vendorId as string;
 
   const [vendor, setVendor] = useState<VendorDetail | null>(null);
   const [loading, setLoading] = useState(true);

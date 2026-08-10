@@ -20,7 +20,6 @@ import toast from 'react-hot-toast';
    Sections:
    1. Appearance (Theme toggle)
    2. Regional Preferences (Timezone, Language)
-   3. Connected Services (Firebase, Stripe, MLS, Drive)
    4. Danger Zone (Account deletion)
    ═══════════════════════════════════════════════════════ */
 
@@ -37,50 +36,6 @@ const TIMEZONES = [
   { value: 'Australia/Sydney',    label: 'Australian Eastern Time (AET)' },
 ] as const;
 
-interface ConnectedService {
-  id: string;
-  name: string;
-  iconName: string;
-  /** true = always on (platform service, no user OAuth needed) */
-  platform?: boolean;
-  connected: boolean;
-  description: string;
-  /** Set by status API; shown below the description */
-  detail?: string;
-}
-
-const BASE_SERVICES: ConnectedService[] = [
-  {
-    id: 'firebase',
-    name: 'Firebase',
-    iconName: 'cloud_done',
-    platform: true,
-    connected: true,
-    description: 'Authentication, Firestore database, and cloud storage.',
-  },
-  {
-    id: 'stripe',
-    name: 'Stripe',
-    iconName: 'payments',
-    platform: true,
-    connected: true,
-    description: 'Subscription billing and payment processing.',
-  },
-  {
-    id: 'mls',
-    name: 'MLS Data Feed',
-    iconName: 'apartment',
-    connected: false,
-    description: 'Real-time property listings and market comps.',
-  },
-  {
-    id: 'google-drive',
-    name: 'Google Drive',
-    iconName: 'folder_open',
-    connected: false,
-    description: 'Document storage and file sharing integration.',
-  },
-];
 
 export default function GeneralSettingsPage() {
   const { profile, user, logout } = useAuth();
@@ -302,47 +257,6 @@ export default function GeneralSettingsPage() {
       .finally(() => setPrefsLoading(false));
   }, []); // run once on mount; getAuth().currentUser is stable
 
-  // ─── Connected Services ────────────────────────────────
-  const [services, setServices] = useState<ConnectedService[]>(BASE_SERVICES);
-  const [connectingId, setConnectingId] = useState<string | null>(null);
-
-  // Load real connection status from Firestore on mount
-  const loadStatus = useCallback(async () => {
-    const currentUser = getAuth().currentUser;
-    if (!currentUser) return;
-    try {
-      const token = await currentUser.getIdToken();
-      const res   = await fetch('/api/integrations/status', {
-        headers: { Authorization: `Bearer ${token}` },
-      });
-      if (!res.ok) return;
-      const data = await res.json() as {
-        google_drive: { connected: boolean; email: string | null };
-        mls:          { connected: boolean; provider: string | null };
-      };
-      setServices((prev) =>
-        prev.map((s) => {
-          if (s.id === 'google-drive') {
-            return {
-              ...s,
-              connected: data.google_drive.connected,
-              detail:    data.google_drive.email ?? undefined,
-            };
-          }
-          if (s.id === 'mls') {
-            return { ...s, connected: data.mls.connected };
-          }
-          return s;
-        })
-      );
-    } catch (err) {
-      console.warn('[settings/general] status load error:', err);
-    }
-  }, []);
-
-  // eslint-disable-next-line react-hooks/set-state-in-effect
-  useEffect(() => { loadStatus(); }, [loadStatus]);
-
   // ─── Danger Zone ───────────────────────────────────────
   const [deleteConfirmOpen, setDeleteConfirmOpen] = useState(false);
   const [deleteInput, setDeleteInput] = useState('');
@@ -389,78 +303,6 @@ export default function GeneralSettingsPage() {
     }
   };
 
-  const handleConnect = async (serviceId: string) => {
-    const currentUser = getAuth().currentUser;
-    if (!currentUser) { toast.error('Not signed in.'); return; }
-
-    setConnectingId(serviceId);
-    try {
-      const token = await currentUser.getIdToken();
-
-      if (serviceId === 'google-drive') {
-        // 1. Get the OAuth URL from the server (token-authed)
-        const authRes = await fetch('/api/integrations/google-drive/authorize', {
-          headers: { Authorization: `Bearer ${token}` },
-        });
-        if (!authRes.ok) {
-          const body = await authRes.json().catch(() => ({}));
-          throw new Error(body.error ?? `Server error ${authRes.status}`);
-        }
-        const { authUrl } = await authRes.json() as { authUrl: string };
-
-        // 2. Open consent popup and wait for the callback page to post a message
-        await new Promise<void>((resolve, reject) => {
-          const popup = window.open(authUrl, 'google-drive-oauth', 'width=520,height=640,left=200,top=100');
-          if (!popup) {
-            reject(new Error('Popup blocked. Please allow popups for this site and try again.'));
-            return;
-          }
-          const handler = (event: MessageEvent) => {
-            if (event.origin !== window.location.origin) return;
-            const msg = event.data as { type?: string; success?: boolean; error?: string };
-            if (msg?.type !== 'google-drive-connected') return;
-            window.removeEventListener('message', handler);
-            if (msg.success) resolve();
-            else reject(new Error(msg.error ?? 'Connection failed'));
-          };
-          window.addEventListener('message', handler);
-          // Fallback: close listener if popup closes without posting
-          const poll = setInterval(() => {
-            if (popup.closed) {
-              clearInterval(poll);
-              window.removeEventListener('message', handler);
-              reject(new Error('Popup closed before completing authorization.'));
-            }
-          }, 500);
-        });
-
-      } else if (serviceId === 'mls') {
-        const res = await fetch('/api/integrations/mls/connect', {
-          method:  'POST',
-          headers: { Authorization: `Bearer ${token}` },
-        });
-        if (!res.ok) {
-          const body = await res.json().catch(() => ({}));
-          throw new Error(body.detail ?? body.error ?? `Server error ${res.status}`);
-        }
-      } else {
-        throw new Error(`No connect handler for service: ${serviceId}`);
-      }
-
-      // Reload statuses from Firestore after successful connect
-      await loadStatus();
-      toast.success('Service connected successfully.', {
-        style: { background: '#0d0d0d', color: '#fff' },
-      });
-    } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : 'Connection failed.';
-      toast.error(errorMessage, {
-        style: { background: '#0d0d0d', color: '#fff' },
-      });
-    } finally {
-      setConnectingId(null);
-    }
-  };
 
 
   return (
@@ -632,73 +474,6 @@ export default function GeneralSettingsPage() {
               </div>
               <span className="material-symbols-outlined text-pw-primary text-xl select-none">calendar_month</span>
             </div>
-          </div>
-        </section>
-
-        {/* ════════════════════════════════════════════════
-            4 · CONNECTED SERVICES (col-span-12)
-            ════════════════════════════════════════════════ */}
-        <section className="col-span-12 glass-card rounded-2xl p-6 relative overflow-hidden transition-all duration-200 hover:shadow-md">
-          <div className="flex items-center gap-2 border-b border-white/10 pb-4 mb-6">
-            <span className="material-symbols-outlined text-pw-primary text-xl select-none">hub</span>
-            <h4 className="text-base font-semibold text-pw-black">Connected Services</h4>
-          </div>
-
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            {services.map((service) => (
-              <div
-                key={service.id}
-                className="flex items-center justify-between p-6 rounded-xl bg-pw-glass-bg/30 border border-white/5 hover:bg-pw-glass-bg/50 transition-colors group"
-              >
-                <div className="flex items-center gap-4">
-                  <div className={`
-                    w-11 h-11 rounded-xl flex items-center justify-center border transition-colors
-                    ${service.connected
-                      ? 'bg-pw-primary/10 border-pw-primary/20 text-pw-primary'
-                      : 'bg-white/5 border-white/10 text-pw-muted'
-                    }
-                  `}>
-                    <span className="material-symbols-outlined text-xl">{service.iconName}</span>
-                  </div>
-                  <div>
-                    <p className="text-sm font-semibold text-pw-black">{service.name}</p>
-                    <p className="text-xs text-pw-muted mt-0.5 max-w-[200px]">{service.description}</p>
-                    {service.detail && (
-                      <p className="text-[10px] text-pw-primary/70 mt-1 font-mono truncate max-w-[200px]">
-                        {service.detail}
-                      </p>
-                    )}
-                  </div>
-                </div>
-
-                <div className="flex items-center gap-3">
-                  {service.connected || service.platform ? (
-                    <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-pw-primary/10 text-pw-primary text-[10px] font-bold border border-pw-primary/20 uppercase tracking-wider">
-                      <span className="w-1.5 h-1.5 rounded-full bg-pw-primary" />
-                      Connected
-                    </span>
-                  ) : (
-                    <button
-                      onClick={() => handleConnect(service.id)}
-                      disabled={connectingId === service.id}
-                      className="h-10 px-5 rounded-lg bg-pw-primary/10 text-pw-primary border border-pw-primary/20 hover:bg-pw-primary/20 active:scale-98 transition-all disabled:opacity-50 disabled:pointer-events-none text-sm font-medium flex items-center justify-center gap-2 cursor-pointer uppercase tracking-wider"
-                    >
-                      {connectingId === service.id ? (
-                        <>
-                          <span className="material-symbols-outlined animate-spin text-[16px] select-none">progress_activity</span>
-                          Connecting…
-                        </>
-                      ) : (
-                        <>
-                          <span className="material-symbols-outlined text-[16px] select-none">add_link</span>
-                          Connect
-                        </>
-                      )}
-                    </button>
-                  )}
-                </div>
-              </div>
-            ))}
           </div>
         </section>
 

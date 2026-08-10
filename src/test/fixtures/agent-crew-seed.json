@@ -1,0 +1,255 @@
+{
+  "seededAt": "2026-08-03T11:29:25.626Z",
+  "agents": [
+    {
+      "name": "Marcus Chen",
+      "email": "marcus.chen.synthetic@paperworking.co",
+      "persona": "wholesaler",
+      "handle": "marcus_chen",
+      "uid": "CtUnIHS2kObMyERLGVdHW8bE0g63",
+      "tier": "free_trial",
+      "stripeCustomerId": "cus_test_marcus_chen",
+      "stripeSubscriptionId": "sub_test_marcus_chen",
+      "stripeStatus": "trialing",
+      "syntheticAgent": true,
+      "stripeTestMode": true,
+      "projects": [
+        {
+          "id": "proj_marcus_chen_1",
+          "title": "Cleveland Assignment",
+          "createdAt": "2026-06-29T11:29:25.626Z",
+          "syntheticAgent": true,
+          "listedByAgent": "marcus_chen",
+          "financials": {
+            "contractPrice": 118000,
+            "wholesaleFee": 11800,
+            "assignmentFeePct": 10
+          }
+        },
+        {
+          "id": "proj_marcus_chen_2",
+          "title": "Akron Double-Close",
+          "createdAt": "2026-06-29T11:29:25.626Z",
+          "syntheticAgent": true,
+          "listedByAgent": "marcus_chen",
+          "financials": {
+            "contractPrice": 72000,
+            "wholesaleFee": 8500
+          }
+        },
+        {
+          "id": "proj_marcus_chen_3",
+          "title": "Columbus Wholesale Lead",
+          "createdAt": "2026-08-03T11:29:25.626Z",
+          "syntheticAgent": true,
+          "listedByAgent": "marcus_chen",
+          "financials": {
+            "contractPrice": 95000,
+            "wholesaleFee": 9000
+          }
+        }
+      ]
+    },
+    {
+      "name": "Dana Rodriguez",
+      "email": "dana.rodriguez.synthetic@paperworking.co",
+      "persona": "fix_and_flip",
+      "handle": "dana_rodriguez",
+      "uid": "JIPNJHVItwULeKUUk4TLh3QXI7D3",
+      "tier": "starter",
+      "stripeCustomerId": "cus_test_dana_rodriguez",
+      "stripeSubscriptionId": "sub_test_dana_rodriguez",
+      "stripeStatus": "active",
+      "syntheticAgent": true,
+      "stripeTestMode": true,
+      "projects": [
+        {
+          "id": "proj_dana_rodriguez_1",
+          "title": "Phoenix Flip",
+          "createdAt": "2026-06-29T11:29:25.626Z",
+          "syntheticAgent": true,
+          "listedByAgent": "dana_rodriguez",
+          "financials": {
+            "purchasePrice": 275000,
+            "rehabBudget": 55000,
+            "arv": 450000,
+            "projectedProfit": 85800
+          }
+        },
+        {
+          "id": "proj_dana_rodriguez_2",
+          "title": "Scottsdale Cosmetic",
+          "createdAt": "2026-06-29T11:29:25.626Z",
+          "syntheticAgent": true,
+          "listedByAgent": "dana_rodriguez",
+          "financials": {
+            "purchasePrice": 410000,
+            "projectedProfit": 300
+          }
+        },
+        {
+          "id": "proj_dana_rodriguez_3",
+          "title": "Tempe Full Gut",
+          "createdAt": "2026-08-03T11:29:25.626Z",
+          "syntheticAgent": true,
+          "listedByAgent": "dana_rodriguez",
+          "financials": {
+            "purchasePrice": 320000,
+            "rehabBudget": 75000,
+            "arv": 520000
+          }
+        }
+      ]
+    },
+    {
+      "name": "J. & Patricia Whitmore",
+      "email": "whitmore.synthetic@paperworking.co",
+      "persona": "buy_and_hold",
+      "handle": "whitmore",
+      "uid": "QnXFwo1Qc9NotjIi2BxgBsv65Qq2",
+      "tier": "professional",
+      "stripeCustomerId": "cus_test_whitmore",
+      "stripeSubscriptionId": "sub_test_whitmore",
+      "stripeStatus": "active",
+      "syntheticAgent": true,
+      "stripeTestMode": true,
+      "projects": [
+        {
+          "id": "proj_whitmore_1",
+          "title": "Austin 4-Plex",
+          "createdAt": "2026-06-29T11:29:25.626Z",
+          "syntheticAgent": true,
+          "listedByAgent": "whitmore",
+          "financials": {
+            "purchasePrice": 850000,
+            "monthlyCashFlow": -118,
+            "units": 4
+          }
+        },
+        {
+          "id": "proj_whitmore_2",
+          "title": "Houston Duplex",
+          "createdAt": "2026-06-29T11:29:25.626Z",
+          "syntheticAgent": true,
+          "listedByAgent": "whitmore",
+          "financials": {
+            "purchasePrice": 385000,
+            "monthlyCashFlow": 759,
+            "units": 2
+          }
+        },
+        {
+          "id": "proj_whitmore_3",
+          "title": "San Antonio Triplex",
+          "createdAt": "2026-08-03T11:29:25.626Z",
+          "syntheticAgent": true,
+          "listedByAgent": "whitmore",
+          "financials": {
+            "purchasePrice": 620000,
+            "rentPerUnit": 1200,
+            "units": 3
+          }
+        }
+      ]
+    },
+    {
+      "name": "Robert Kim / Atlas Commercial Group",
+      "email": "robert.kim.synthetic@paperworking.co",
+      "persona": "commercial",
+      "handle": "robert_kim",
+      "uid": "WBCXsjHD6zbmWD64rHegNq5zyIE2",
+      "tier": "enterprise",
+      "stripeCustomerId": "cus_test_robert_kim",
+      "stripeSubscriptionId": "sub_test_robert_kim",
+      "stripeStatus": "active",
+      "syntheticAgent": true,
+      "stripeTestMode": true,
+      "projects": [
+        {
+          "id": "proj_robert_kim_1",
+          "title": "Plano Retail Strip",
+          "createdAt": "2026-06-29T11:29:25.626Z",
+          "syntheticAgent": true,
+          "listedByAgent": "robert_kim",
+          "financials": {
+            "purchasePrice": 3200000,
+            "capRate": 8,
+            "cashFlow": 81800
+          }
+        },
+        {
+          "id": "proj_robert_kim_2",
+          "title": "Fort Worth Industrial",
+          "createdAt": "2026-06-29T11:29:25.626Z",
+          "syntheticAgent": true,
+          "listedByAgent": "robert_kim",
+          "financials": {
+            "purchasePrice": 2850000
+          }
+        },
+        {
+          "id": "proj_robert_kim_3",
+          "title": "Dallas Mixed-Use",
+          "createdAt": "2026-08-03T11:29:25.626Z",
+          "syntheticAgent": true,
+          "listedByAgent": "robert_kim",
+          "financials": {
+            "purchasePrice": 4100000,
+            "propertyType": "Mixed-Use (retail + office)"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Eleanor Vance",
+      "email": "eleanor.vance.synthetic@paperworking.co",
+      "persona": "syndicator",
+      "handle": "eleanor_vance",
+      "uid": "oNsrJgfyF5T61NzqixyQ0CjTQ9k2",
+      "tier": "professional",
+      "stripeCustomerId": "cus_test_eleanor_vance",
+      "stripeSubscriptionId": "sub_test_eleanor_vance",
+      "stripeStatus": "active",
+      "syntheticAgent": true,
+      "stripeTestMode": true,
+      "projects": [
+        {
+          "id": "proj_eleanor_vance_1",
+          "title": "Tampa 100-Unit",
+          "createdAt": "2026-06-29T11:29:25.626Z",
+          "syntheticAgent": true,
+          "listedByAgent": "eleanor_vance",
+          "financials": {
+            "purchasePrice": 14500000,
+            "irr": 18.4,
+            "units": 100
+          }
+        },
+        {
+          "id": "proj_eleanor_vance_2",
+          "title": "Orlando 60-Unit",
+          "createdAt": "2026-06-29T11:29:25.626Z",
+          "syntheticAgent": true,
+          "listedByAgent": "eleanor_vance",
+          "financials": {
+            "purchasePrice": 9200000,
+            "irr": 14.2,
+            "units": 60
+          }
+        },
+        {
+          "id": "proj_eleanor_vance_3",
+          "title": "Jacksonville 80-Unit",
+          "createdAt": "2026-08-03T11:29:25.626Z",
+          "syntheticAgent": true,
+          "listedByAgent": "eleanor_vance",
+          "financials": {
+            "purchasePrice": 11800000,
+            "strategy": "value-add",
+            "units": 80
+          }
+        }
+      ]
+    }
+  ]
+}

@@ -1,4 +1,5 @@
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
+import { useAuth } from '@/context/AuthContext';
 import {
   Mail,
   Eye,
@@ -11,7 +12,6 @@ import {
   Edit3,
   RefreshCw,
   Lock,
-  Loader2,
   AlertCircle
 } from 'lucide-react';
 
@@ -55,60 +55,94 @@ interface ActivityTimelineProps {
 }
 
 export function ActivityTimeline({ projectId, initialTimeline, isCrossDeal = false }: ActivityTimelineProps) {
+  const { user } = useAuth();
   const [timeline, setTimeline] = useState<DealActivity[]>(initialTimeline || []);
   const [loading, setLoading] = useState(!initialTimeline && !!(projectId || isCrossDeal));
   const [error, setError] = useState<string | null>(null);
+
+  /**
+   * Both timeline endpoints are guarded by `requireAuth`, which requires an
+   * `Authorization: Bearer <idToken>` header — cookies alone are rejected.
+   * This request previously sent no header at all, so it 401'd on every load
+   * and the panel always rendered "Timeline Load Error". The token is the
+   * actual fix; the retry UI below is the safety net.
+   */
+  const fetchTimeline = useCallback(async () => {
+    setLoading(true);
+    setError(null);
+
+    const url = isCrossDeal
+      ? '/api/investor/timeline'
+      : `/api/projects/${projectId}/timeline`;
+
+    try {
+      if (!user) throw new Error('No authenticated user');
+      const token = await user.getIdToken();
+
+      const res = await fetch(url, { headers: { Authorization: `Bearer ${token}` } });
+      if (!res.ok) {
+        throw new Error(`Timeline request failed: ${res.status} ${res.statusText}`);
+      }
+
+      const data = await res.json();
+      setTimeline(data.timeline || []);
+    } catch (err: unknown) {
+      // Diagnostics go to the console; the user sees a friendly message.
+      console.error('[ActivityTimeline] failed to load', url, err);
+      setError('load-failed');
+    } finally {
+      setLoading(false);
+    }
+  }, [projectId, isCrossDeal, user]);
 
   useEffect(() => {
     if (initialTimeline) {
       setTimeline(initialTimeline);
       return;
     }
-
-    async function fetchTimeline() {
-      try {
-        setLoading(true);
-        setError(null);
-
-        const url = isCrossDeal 
-          ? '/api/investor/timeline' 
-          : `/api/projects/${projectId}/timeline`;
-
-        const res = await fetch(url);
-        if (!res.ok) {
-          throw new Error('Failed to retrieve activity timeline');
-        }
-
-        const data = await res.json();
-        setTimeline(data.timeline || []);
-      } catch (err: any) {
-        setError(err.message || 'An error occurred while loading timeline');
-      } finally {
-        setLoading(false);
-      }
-    }
-
     if (projectId || isCrossDeal) {
-      fetchTimeline();
+      void fetchTimeline();
     }
-  }, [projectId, initialTimeline, isCrossDeal]);
+  }, [projectId, initialTimeline, isCrossDeal, fetchTimeline]);
 
   if (loading) {
+    // Skeleton rather than a spinner: it holds the row layout so the panel
+    // does not jump when content arrives.
     return (
-      <div className="flex flex-col items-center justify-center py-12 text-zinc-400">
-        <Loader2 className="w-8 h-8 animate-spin mb-3 text-emerald-500" />
-        <p className="text-sm font-mono tracking-wider">LOADING DEAL ACTIVITY TIMELINE...</p>
+      <div className="space-y-3 animate-pulse" data-testid="timeline-skeleton">
+        {[0, 1, 2].map((i) => (
+          <div key={i} className="flex items-start gap-3 p-3 rounded-xl border border-zinc-800 bg-zinc-950/40">
+            <div className="w-8 h-8 rounded-full bg-zinc-800 shrink-0" />
+            <div className="flex-1 space-y-2 pt-1">
+              <div className="h-3 rounded bg-zinc-800 w-1/3" />
+              <div className="h-2.5 rounded bg-zinc-800/70 w-1/2" />
+            </div>
+          </div>
+        ))}
       </div>
     );
   }
 
   if (error) {
     return (
-      <div className="p-6 rounded-xl border border-red-900/50 bg-red-950/20 text-red-400 flex items-start gap-3">
-        <AlertCircle className="w-5 h-5 shrink-0 mt-0.5" />
-        <div>
-          <h3 className="font-bold text-sm">Timeline Load Error</h3>
-          <p className="text-xs text-red-500/80 mt-1">{error}</p>
+      <div
+        className="p-6 rounded-xl border border-zinc-800 bg-zinc-950 flex items-start gap-3"
+        data-testid="timeline-error"
+      >
+        <AlertCircle className="w-5 h-5 shrink-0 mt-0.5 text-amber-400" />
+        <div className="flex-1">
+          <h3 className="font-bold text-sm text-zinc-200">Unable to load activity timeline.</h3>
+          <p className="text-xs text-zinc-500 mt-1">
+            This is usually temporary. Your activity is safe.
+          </p>
+          <button
+            onClick={() => void fetchTimeline()}
+            data-testid="timeline-retry"
+            className="pw-interactive-custom mt-3 inline-flex items-center gap-1.5 h-8 px-3 rounded-lg border border-zinc-700 text-zinc-300 hover:bg-zinc-800 hover:text-white text-xs font-semibold transition-colors cursor-pointer"
+          >
+            <RefreshCw className="w-3.5 h-3.5" />
+            Retry
+          </button>
         </div>
       </div>
     );

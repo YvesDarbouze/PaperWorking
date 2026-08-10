@@ -173,6 +173,12 @@ export const userSchema = z.object({
   /** Unix timestamp of current billing period end */
   currentPeriodEnd: z.number().optional(),
 
+  /** Billing contact email — where invoices go, if not the account email */
+  billingEmail: z.string().email().optional().or(z.literal('')),
+
+  /** Billing address, free-form multi-line */
+  billingAddress: z.string().max(500).optional(),
+
   // ── Contact Info ──
 
   /** Phone number (free-form, no strict validation at schema level) */

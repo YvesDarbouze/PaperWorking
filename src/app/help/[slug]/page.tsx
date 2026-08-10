@@ -40,7 +40,7 @@ export default async function HelpArticlePage({ params }: HelpArticlePageProps) 
   const relatedArticles = allArticles.filter((a) => a.category === article.category && a.slug !== article.slug);
 
   return (
-    <div className="w-full max-w-6xl mx-auto py-12 px-6">
+    <div className="w-full max-w-6xl mx-auto py-8 px-6">
       {/* Back to Help Center Link */}
       <Link
         href="/help"
@@ -58,7 +58,7 @@ export default async function HelpArticlePage({ params }: HelpArticlePageProps) 
               <span className="uppercase tracking-widest text-[10px] font-black text-pw-success mb-3 block">
                 {article.category === 'screens' ? 'Screen Guide' : 'Metric Explainer'}
               </span>
-              <h1 className="text-3xl md:text-5xl font-light tracking-tighter text-[var(--pw-black)] mb-4">
+              <h1 className="font-light tracking-tighter text-[var(--pw-black)] mb-4 type-display font-semibold">
                 {article.title}
               </h1>
               <p className="text-sm text-[var(--pw-muted)] leading-relaxed italic">

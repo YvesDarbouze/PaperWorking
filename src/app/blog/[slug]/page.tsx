@@ -24,7 +24,8 @@ import Link from 'next/link';
    ═══════════════════════════════════════════════════════ */
 
 export default function BlogPostPage() {
-  const { slug } = useParams();
+  const params = useParams();
+  const slug = params?.slug;
   const post = BLOG_POSTS.find((p) => p.slug === slug);
 
   if (!post) {

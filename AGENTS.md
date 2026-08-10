@@ -21,48 +21,51 @@ To ensure harmony, ALL agents MUST strictly follow these rules:
 <!-- BEGIN:global-navigation-contract -->
 # 🧭 GLOBAL NAVIGATION — FIXED CONTRACT FOR EVERY PAPERWORKING SCREEN
 
-All agents MUST strictly enforce the persistent left-side navigation contract.
-Source of truth: `src/components/layout/Sidebar.tsx`
+All agents MUST strictly enforce the navigation contract.
+Single Source of Truth: `src/lib/navigation/navContract.ts`
 
 ## Brand Area
 - PaperWorking SVG icon (currentColor — adapts to theme) + wordmark
 - Font: Inter · "Paper" fw-700 · "Working" fw-300 · zero letter-spacing gap
 - Href: `/dashboard/command-center`
 
-## Global Navigation Contract (§9.3)
+## Global Navigation Contract (§9.3 v7)
 
-### Primary Pages
+### Investor Role (Subscribed) — Desktop Primary Sidebar Order
 1. Portfolio (/dashboard/command-center) - default landing page — KPIs, action center, heatmap, activity
-2. Projects (/dashboard/projects) - all real estate investment projects in the portfolio
-3. Insights (/dashboard/insights) - portfolio-wide metrics, investment views, deep analytics
-4. Reports (/dashboard/reports) - generate monthly / quarterly / annual expense reports
-5. Inbox (/dashboard/inbox) - internal messages, to-dos, requests, deal crowdfund invites (unread badge + pulse)
-6. Team (/dashboard/team) - team management, invites, presence status
+2. Projects (/dashboard/projects) - real estate investment projects in the portfolio
+3. Deals (/dashboard/deals) - user-generated crowdfunding & investment opportunity marketplace (handshake icon)
+4. Insights (/dashboard/insights) - portfolio-wide metrics, investment views, deep analytics
+5. Reports (/dashboard/reports) - monthly / quarterly / annual expense reports
+6. Inbox (/dashboard/inbox) - messages, to-dos, requests, deal crowdfund invites (unread badge + pulse)
+7. Team (/dashboard/team) - team management, invites, presence status
+
+### Investor Role (Unsubscribed)
+- Deals (/dashboard/deals) renders in sidebar and drawer with a **lock badge**. Clicking routes to billing paywall (`/dashboard/settings/billing?paywall=deals`).
+
+### Vendor Role
+- Primary Nav: Portfolio, Vendor Marketplace (/dashboard/marketplace, icon "storefront"), Insights, Reports, Inbox, Team.
+- **Deals Marketplace is strictly STRIPPED** from navigation, Cmd+K search index, breadcrumbs, and direct URLs (redirected to `/dashboard/marketplace`).
+
+### Mobile Navigation (375px)
+- Fixed 72px 5-icon Bottom Bar (`BottomNav.tsx`): Portfolio, Insights, Projects, Reports, Inbox.
+- Top-App-Bar Drawer (`TopAppBar.tsx`): Hamburger icon button opens drawer listing secondary surfaces: Deals (lock badge if unsubscribed), Vendor Network, Team, Profile, Billing, Settings.
 
 ### Section Divider
 Uppercase label: **ACCOUNT**
 
 ### Account Pages
-- Profile (/dashboard/settings/profile) - avatar, company logo, licenses from vendor list
+- Profile (/dashboard/settings/profile) - avatar, company logo, licenses
 - Billing (/dashboard/settings/billing) - subscription plan, credit card on file
 - Settings (/dashboard/settings) - password, tier, app preferences
-
-### Bottom Area (top to bottom)
-1. **Theme toggle** — light/dark mode switch (sun/moon icon)
-2. **Workspace switcher** — "acting as: Me / [Team Account]" select
-3. **Profile row** — avatar + name + role + logout button
 
 ### Theme
 - Dark: `rgba(18,16,20,0.98)` bg, `blur(24px)`, `rgba(253,255,252,0.07)` border
 - Light: `#FDFFFC` bg, `rgba(69,73,85,0.10)` border
 - Controlled via `data-theme` on `<html>` + `useTheme()` from `@/lib/utils/ThemeProvider`
 
-### Notes
-- Data Room has been removed. Documents are phase-scoped within Projects.
-- Navigation order is strict and must not be reordered without architecture review.
-
-**No agent may add, remove, reorder, rename, or move navigation items without explicit human override.**
-Last updated: 2026-07-25 v6 (PF-2/RM-5: removed Data Room, dashboard hierarchy is Portfolio -> Insights, phase-scoped documents)
+### Changelog & Closed Findings
+- **v7 (2026-08-03):** Closed NAV-01 (Deals elevated to primary sidebar for subscribed investors), NAV-02 (Vendor Marketplace role-gated), NAV-03 (Team accessible in mobile top drawer), NAV-04 (HTTP 301 Data Room redirect to Projects), NAV-05 (Dynamic document.title "PaperWorking — <Surface>"). Unified single source of truth in `src/lib/navigation/navContract.ts`.
 <!-- END:global-navigation-contract -->
 
 <!-- BEGIN:mock-conversion-rules -->

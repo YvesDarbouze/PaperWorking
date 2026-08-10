@@ -74,29 +74,20 @@ export default function ChatbotWidget() {
 
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="pw-interactive-custom w-14 h-14 rounded-full flex items-center justify-center transition-all duration-200 hover:scale-105 active:scale-95 focus:outline-none focus:ring-2 focus:ring-offset-2"
+        /* `pw-interactive-custom` is load-bearing, not decorative: the global
+           rule at globals.css:1275 targets
+           `button:not(.pw-tab):not(.pw-menu-item):not([role="tab"]):not(.pw-interactive-custom)`
+           and applies `padding: 12px 28px`. On a 56px button that is 56px of
+           horizontal padding, so min-content forces the width to 60px and the
+           circle renders as a 56x60 ellipse. Do not remove this class. */
+        className="pw-interactive-custom w-14 h-14 shrink-0 box-border rounded-full flex items-center justify-center transition-all duration-200 hover:scale-105 active:scale-95 focus:outline-none focus:ring-2 focus:ring-[var(--color-primary)]/30 focus:ring-offset-2"
         style={{
-          backgroundColor: isOpen
-            ? 'var(--color-on-surface)'
-            : 'var(--color-surface-container-high)',
-          color: 'var(--color-on-surface)',
-          border: '1px solid color-mix(in srgb, var(--color-on-surface) 18%, transparent)',
-          boxShadow: '0 4px 24px rgba(0,0,0,0.35)',
+          backgroundColor: isOpen ? 'var(--color-primary)' : 'transparent',
+          border: '2px solid var(--color-primary)',
+          boxShadow: '0 4px 20px rgba(0,0,0,0.25)',
         }}
         aria-label={isOpen ? 'Close chat' : 'Open chat'}
         aria-expanded={isOpen}
-        onMouseEnter={e => {
-          (e.currentTarget as HTMLButtonElement).style.backgroundColor =
-            isOpen
-              ? 'var(--color-on-surface)'
-              : 'var(--color-surface-container-highest)';
-        }}
-        onMouseLeave={e => {
-          (e.currentTarget as HTMLButtonElement).style.backgroundColor =
-            isOpen
-              ? 'var(--color-on-surface)'
-              : 'var(--color-surface-container-high)';
-        }}
       >
         {isOpen ? (
           <X

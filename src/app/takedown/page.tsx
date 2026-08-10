@@ -20,8 +20,8 @@ export default function TakedownPage() {
 
 function TakedownPageInner() {
   const searchParams = useSearchParams();
-  const initialListingId = searchParams.get('listingId') || '';
-  const initialAddress = searchParams.get('address') || '';
+  const initialListingId = searchParams?.get('listingId') || '';
+  const initialAddress = searchParams?.get('address') || '';
 
   const [reporterName, setReporterName] = useState('');
   const [reporterEmail, setReporterEmail] = useState('');

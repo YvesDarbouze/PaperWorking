@@ -5,6 +5,7 @@ import { usePathname, useRouter } from 'next/navigation';
 import { Check, Lock } from 'lucide-react';
 import type { PhaseStatus } from '@/types/schema';
 import { useFeatureFlags } from '@/hooks/useFeatureFlags';
+import { getPhaseConfig } from '@/lib/constants/phaseColors';
 
 /* ═══════════════════════════════════════════════════════════════
    PhaseProgressTracker
@@ -117,42 +118,30 @@ interface StepNodeProps {
 function StepNode({ step, state, isViewing, onClick, isLast }: StepNodeProps) {
   const isLocked = state === 'locked';
 
-  /* ── Node circle styles ── */
-  const nodeStyle: React.CSSProperties = (() => {
-    if (state === 'completed') return {
-      background: '#1A1A1A',
-      border:     '2px solid #1A1A1A',
-      color:      '#FFFFFF',
-    };
-    if (state === 'active') return {
-      background: isViewing ? '#1A1A1A' : '#595959',
-      border:     `2px solid ${isViewing ? '#1A1A1A' : '#595959'}`,
-      color:      '#FFFFFF',
-    };
-    if (state === 'locked') return {
-      background: '#FFFFFF',
-      border:     '2px solid #CCCCCC',
-      color:      '#BFBFBF',
-    };
-    // viewing (browsing a past completed phase)
-    return {
-      background: '#F2F2F2',
-      border:     '2px solid #CCCCCC',
-      color:      '#1A1A1A',
-    };
-  })();
+  /* ── Node styling ──
+     Uses the canonical REIL phase palette (amber / blue / emerald / purple)
+     from `phaseColors.ts` rather than the previous hardcoded grayscale, which
+     also rendered "locked" as white circles on the dark workspace.
 
-  /* ── Label color ── */
-  const labelColor: string = (() => {
-    if (isViewing)           return '#1A1A1A';
-    if (state === 'completed') return '#1A1A1A';
-    if (state === 'active')    return '#1A1A1A';
-    return '#BFBFBF'; // locked
-  })();
+     Active + completed: filled with the phase colour.
+     Future (locked):    outline only, muted — no fill. */
+  const phase = getPhaseConfig(step.number);
+  const isFilled = state === 'completed' || state === 'active';
 
-  /* ── Sublabel color ── */
-  const sublabelColor: string = isLocked ? '#CCCCCC' : 'var(--text-secondary)';
+  const nodeStyle: React.CSSProperties = isFilled
+    ? {
+        background: phase.bgHex,
+        border: `1.5px solid ${phase.hex}`,
+        color: phase.hex,
+      }
+    : {
+        background: 'transparent',
+        border: '1.5px solid var(--pw-border)',
+        color: 'var(--text-secondary)',
+      };
 
+  const labelColor: string = isFilled ? 'var(--text-primary)' : 'var(--text-secondary)';
+  const sublabelColor: string = 'var(--text-secondary)';
 
   /* ── "Viewing" underline indicator ── */
   const showViewingBar = isViewing;
@@ -175,14 +164,7 @@ function StepNode({ step, state, isViewing, onClick, isLast }: StepNodeProps) {
         {/* Node circle */}
         <div
           className="relative w-9 h-9 rounded-full flex items-center justify-center shrink-0 transition-all duration-200"
-          style={{
-            ...nodeStyle,
-            boxShadow: isViewing
-              ? '0 0 0 4px rgba(26,26,26,0.12)'
-              : state === 'active' && !isViewing
-              ? '0 0 0 4px rgba(89,89,89,0.10)'
-              : 'none',
-          }}
+          style={nodeStyle}
         >
           {state === 'completed' ? (
             <Check className="w-4 h-4" strokeWidth={2.5} />
@@ -194,20 +176,13 @@ function StepNode({ step, state, isViewing, onClick, isLast }: StepNodeProps) {
             </span>
           )}
 
-          {/* Viewing pulse ring (active + viewing) */}
-          {isViewing && state === 'active' && (
-            <span
-              className="absolute inset-0 rounded-full animate-ping opacity-20"
-              style={{ background: '#1A1A1A' }}
-            />
-          )}
         </div>
 
         {/* Label block */}
         <div className="flex flex-col items-center gap-0.5">
           <span
             className="text-[11px] font-bold uppercase tracking-[0.1em] whitespace-nowrap transition-colors duration-200"
-            style={{ color: labelColor, fontWeight: isViewing ? 800 : 700 }}
+            style={{ color: labelColor, fontWeight: isFilled ? 700 : 500 }}
           >
             {step.label}
           </span>
@@ -223,35 +198,21 @@ function StepNode({ step, state, isViewing, onClick, isLast }: StepNodeProps) {
         {showViewingBar && (
           <div
             className="absolute -bottom-3.5 left-1/2 -translate-x-1/2 h-0.5 rounded-full transition-all duration-300"
-            style={{ width: '80%', background: '#1A1A1A' }}
+            style={{ width: '80%', background: phase.hex }}
           />
         )}
       </button>
 
-      {/* ── Connector line (not after last step) ── */}
+      {/* ── Connector: a single hairline, not a progress bar ── */}
       {!isLast && (
-        <div
-          className="flex-1 flex items-start pt-4 px-3 min-w-[24px]"
-          aria-hidden="true"
-        >
+        <div className="flex-1 flex items-start pt-4 px-3 min-w-[24px]" aria-hidden="true">
           <div
-            className="w-full h-[2px] rounded-full relative overflow-hidden"
-            style={{ background: '#E8E8E8' }}
-          >
-            {/* Filled portion — reflects completed state */}
-            {state === 'completed' && (
-              <div
-                className="absolute inset-y-0 left-0 right-0 rounded-full transition-all duration-500"
-                style={{ background: '#1A1A1A' }}
-              />
-            )}
-            {state === 'active' && (
-              <div
-                className="absolute inset-y-0 left-0 w-1/2 rounded-full"
-                style={{ background: '#595959', opacity: 0.4 }}
-              />
-            )}
-          </div>
+            className="w-full h-px"
+            style={{
+              background: state === 'completed' ? phase.hex : 'var(--pw-border)',
+              opacity: state === 'completed' ? 0.5 : 1,
+            }}
+          />
         </div>
       )}
     </div>

@@ -43,7 +43,7 @@ export default function ListingManagementPage() {
   const router = useRouter();
   const { user } = useAuth();
   const { project, refresh } = useWorkspaceProject();
-  const projectId = params.id as string;
+  const projectId = params?.id as string;
 
   const [listing, setListing] = useState<DealListing | null>(null);
   const [loading, setLoading] = useState(true);

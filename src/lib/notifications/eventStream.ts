@@ -92,15 +92,16 @@ export function deriveWorkflowNotifications(
     }
 
     // 3. variance_threshold_tripped: Phase 3 operational NOI variance > ±10% for 2+ consecutive periods
-    if (phase === 3 && f) {
-      const actuals = Array.isArray(f.propertyActuals) ? f.propertyActuals : [];
-      const baseNoi = f.budgetBaseline?.monthlyNoi || 2000;
+    const fin: any = p.financials;
+    if (phase === 3 && fin) {
+      const actuals = Array.isArray(fin.propertyActuals) ? fin.propertyActuals : [];
+      const baseNoi = fin.budgetBaseline?.monthlyNoi || 2000;
       const consecutiveExceeded = actuals.length >= 2 && actuals.filter((a: any) => {
         const noi = a.noi ?? (a.grossRent - a.operatingExpenses);
         return Math.abs(((noi - baseNoi) / baseNoi) * 100) > 10;
       }).length >= 2;
 
-      if ((f.operationalVarianceAlert || consecutiveExceeded) && preferences?.variance_threshold_tripped !== false) {
+      if ((fin.operationalVarianceAlert || consecutiveExceeded) && preferences?.variance_threshold_tripped !== false) {
         notifications.push({
           id: `variance-tripped-${pid}`,
           projectId: pid,

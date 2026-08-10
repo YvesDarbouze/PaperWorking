@@ -70,7 +70,10 @@ function storageKey(phaseKey: string) {
   return `pw_explainer_dismissed_${phaseKey}`;
 }
 
-/* ─── Sub-component: collapsed "Re-watch" chip ───────────────── */
+/* ─── Sub-component: collapsed accordion trigger ──────────────
+   One row, entirely clickable — "▶ Learn about the Acquisition Phase (2:45)".
+   Themed with app tokens: the previous chip hard-coded #FFFFFF and #A5A5A5,
+   which rendered as a white bar across a dark workspace. */
 function ReWatchChip({
   title,
   duration,
@@ -82,55 +85,39 @@ function ReWatchChip({
   description?: string;
   onRestore: () => void;
 }) {
-  return (
-    <div
-      className="flex items-center justify-between px-5 py-3"
-      style={{
-        background: '#FFFFFF',
-        borderBottom: '1px solid #A5A5A5',
-      }}
-    >
-      <div className="flex items-center gap-3">
-        {/* Mini play icon */}
-        <div
-          className="w-7 h-7 rounded-full flex items-center justify-center shrink-0"
-          style={{ background: '#F2F2F2', border: '1px solid #A5A5A5' }}
-        >
-          <Play
-            className="w-3 h-3"
-            style={{ color: '#595959', marginLeft: 1 }}
-            strokeWidth={2}
-          />
-        </div>
-        <div>
-          <p className="text-[11px] font-bold" style={{ color: '#595959' }}>
-            {title}
-          </p>
-          {duration && (
-            <p className="text-[10px] font-medium" style={{ color: '#7F7F7F' }}>
-              {duration} · {description || 'Explainer video'}
-            </p>
-          )}
-        </div>
-      </div>
+  // "Understanding Phase 1: Acquisition" → "the Acquisition Phase"
+  const subject = title.includes(':')
+    ? `the ${title.split(':').slice(1).join(':').trim()} Phase`
+    : title;
 
-      <button
-        onClick={onRestore}
-        className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg transition-all duration-150 hover:bg-[#F2F2F2]"
-        style={{
-          border: '1px solid #A5A5A5',
-          color: '#595959',
-          fontSize: 10,
-          fontWeight: 700,
-          letterSpacing: '0.1em',
-          textTransform: 'uppercase',
-        }}
-        aria-label="Show explainer video"
+  return (
+    <button
+      type="button"
+      onClick={onRestore}
+      aria-expanded={false}
+      data-testid="phase-video-trigger"
+      title={description}
+      className="pw-interactive-custom w-full flex items-center gap-2.5 px-4 py-2.5 rounded-xl border transition-colors cursor-pointer hover:bg-white/5"
+      style={{ borderColor: 'var(--pw-border)', background: 'transparent' }}
+    >
+      <span
+        className="w-6 h-6 rounded-full flex items-center justify-center shrink-0"
+        style={{ border: '1px solid var(--pw-border)' }}
       >
-        <ChevronDown className="w-3 h-3" strokeWidth={2} />
-        Watch
-      </button>
-    </div>
+        <Play className="w-2.5 h-2.5" style={{ color: 'var(--text-secondary)', marginLeft: 1 }} strokeWidth={2} />
+      </span>
+
+      <span className="text-xs font-semibold" style={{ color: 'var(--text-primary)' }}>
+        Learn about {subject}
+      </span>
+      {duration && (
+        <span className="text-xs" style={{ color: 'var(--text-secondary)' }}>
+          ({duration})
+        </span>
+      )}
+
+      <ChevronDown className="w-3.5 h-3.5 ml-auto opacity-60" style={{ color: 'var(--text-secondary)' }} />
+    </button>
   );
 }
 
@@ -145,13 +132,19 @@ export function PhaseExplainerVideo({
 }: PhaseExplainerVideoProps) {
   const videoRef = useRef<HTMLVideoElement>(null);
 
-  /* ── Dismiss / visibility state ── */
-  const [dismissed, setDismissed] = useState<boolean>(false);
+  /* ── Collapse / visibility state ──
+     Collapsed is the DEFAULT. The player previously mounted expanded and
+     dominated the top of every phase screen; it is a learning aid, not the
+     workflow. `true` here means "show the one-line accordion trigger".
+     An explicit stored 'false' is what re-expands it, so a user who opens it
+     keeps it open across visits. */
+  const [dismissed, setDismissed] = useState<boolean>(true);
   const [hasHydrated, setHasHydrated] = useState(false);
 
   useEffect(() => {
     const stored = localStorage.getItem(storageKey(phaseKey));
-    setDismissed(stored === 'true');
+    // Only an explicit 'false' expands; absent or 'true' stays collapsed.
+    setDismissed(stored !== 'false');
     setHasHydrated(true);
   }, [phaseKey]);
 
@@ -164,7 +157,9 @@ export function PhaseExplainerVideo({
 
   const handleRestore = useCallback(() => {
     setDismissed(false);
-    localStorage.removeItem(storageKey(phaseKey));
+    // Persist the EXPANDED choice explicitly — removing the key would fall
+    // back to the collapsed default and the panel would shut on next visit.
+    localStorage.setItem(storageKey(phaseKey), 'false');
   }, [phaseKey]);
 
   /* ── Playback state ── */

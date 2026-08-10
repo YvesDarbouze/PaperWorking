@@ -252,9 +252,9 @@ describe('DM-40: Paywall and Obfuscation (Server-Side)', () => {
 
       // Obfuscated ranges or approximations instead
       expect(teaser?.askingPriceApprox).toBe('~$500K');
-      expect(teaser?.capRateRange).toBe('9–10%');
-      expect(teaser?.cashOnCashRange).toBe('8–10%');
-      expect(teaser?.projectedROIRange).toBe('10–15%');
+      expect(teaser?.capRateRange).toBeUndefined();
+      expect(teaser?.cashOnCashRange).toBeUndefined();
+      expect(teaser?.projectedROIRange).toBeUndefined();
       expect(teaser?.neighborhood).toBe('Downtown Austin');
     });
 

@@ -114,6 +114,9 @@ function NotifMoreMenu({ item, onMarkUnread, onArchive, onDelete }: NotifMoreMen
 }
 
 function InboxNotificationCenter() {
+  useEffect(() => {
+    document.title = "PaperWorking — Inbox";
+  }, []);
   const searchParams = useSearchParams();
   const router = useRouter();
   const { user } = useAuth();
@@ -147,7 +150,7 @@ function InboxNotificationCenter() {
     markAsUnread: markThreadAsUnread,
   } = useInboxThreads();
 
-  const threadId = searchParams.get('threadId') || searchParams.get('thread') || null;
+  const threadId = searchParams?.get('threadId') || searchParams?.get('thread') || null;
   const [searchQuery, setSearchQuery] = useState('');
   const [composeOpen, setComposeOpen] = useState(false);
 
@@ -238,7 +241,7 @@ function InboxNotificationCenter() {
   // If we have an active thread from URL, use that, otherwise use selected notification
   const selectedItem = items.find(item => item.id === selectedNotificationId) || null;
 
-  const negotiationParamId = searchParams.get('negotiationId') || searchParams.get('negotiation') || null;
+  const negotiationParamId = searchParams?.get('negotiationId') || searchParams?.get('negotiation') || null;
   const activeNegotiationId = negotiationParamId || 
     (selectedItem?.type === 'NEGOTIATION_UPDATE' ? (selectedItem.objectReference.metadata?.negotiationId as string) : null);
 

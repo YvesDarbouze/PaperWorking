@@ -46,15 +46,15 @@ export default function LoginPage() {
 function LoginPageInner() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const urlRedirectTo = searchParams.get('redirectTo') || searchParams.get('redirect') || '';
-  const urlPlan       = searchParams.get('plan') || '';
-  const sessionReason = searchParams.get('reason');
-  const urlAccountType = (searchParams.get('accountType') || 'investor') as 'investor' | 'vendor';
-  const urlMode       = searchParams.get('mode'); // 'signup' when arriving from /register
+  const urlRedirectTo = searchParams?.get('redirectTo') || searchParams?.get('redirect') || '';
+  const urlPlan       = searchParams?.get('plan') || '';
+  const sessionReason = searchParams?.get('reason');
+  const urlAccountType = (searchParams?.get('accountType') || 'investor') as 'investor' | 'vendor';
+  const urlMode       = searchParams?.get('mode'); // 'signup' when arriving from /register
 
   useEffect(() => {
     if (typeof window !== 'undefined') {
-      const invite = searchParams.get('invite');
+      const invite = searchParams?.get('invite');
       if (invite) {
         window.sessionStorage.setItem('pw_pending_invite_token', invite);
       } else if (urlRedirectTo) {
@@ -179,8 +179,8 @@ function LoginPageInner() {
     defaultValues: { email: '', password: '' },
   });
 
-  const defaultName = searchParams.get('name') || '';
-  const defaultEmail = searchParams.get('email') || '';
+  const defaultName = searchParams?.get('name') || '';
+  const defaultEmail = searchParams?.get('email') || '';
 
   const { register: registerSignup, handleSubmit: handleSignupSubmit, watch: watchSignup, formState: { errors: signupErrors } } = useForm<RegisterFormValues>({
     resolver: zodResolver(registerSchema),

@@ -19,13 +19,13 @@ export default function BlogIndexPage() {
     <div className="min-h-screen bg-background text-on-surface dark">
       <LandingHeader />
 
-      <main className="max-w-7xl mx-auto px-6 md:px-margin-desktop pt-32 pb-24">
+      <main className="max-w-7xl mx-auto px-6 md:px-margin-desktop pt-20 pb-16">
         {/* ── Header ── */}
-        <div className="max-w-3xl mb-24">
+        <div className="max-w-3xl mb-12">
           <p className="font-label-sm text-label-sm text-primary uppercase tracking-widest mb-6">
             Operator Intelligence Ledger
           </p>
-          <h1 className="font-headline-lg text-headline-lg text-on-surface tracking-tight leading-none mb-6">
+          <h1 className="text-on-surface tracking-tight leading-none mb-6 type-display font-semibold">
             The Knowledge <br />
             Baseline.
           </h1>

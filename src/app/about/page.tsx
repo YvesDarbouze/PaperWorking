@@ -44,9 +44,9 @@ export default function AboutPage() {
     <div className="min-h-screen bg-background text-on-surface dark">
       <LandingHeader />
 
-      <main className="max-w-[1200px] mx-auto px-6 md:px-margin-desktop pt-32 pb-24 space-y-24 md:space-y-32">
+      <main className="max-w-[1200px] mx-auto px-6 md:px-margin-desktop pt-20 pb-16 space-y-12 md:space-y-16">
         {/* ── Hero (COPY-A1) ── */}
-        <section className="pt-8 md:pt-12">
+        <section className="pt-4 md:pt-6">
           <span className="inline-flex items-center gap-2 glass-panel px-4 py-1.5 rounded-full mb-8 border border-white/10">
             <span className="w-1.5 h-1.5 rounded-full bg-primary" />
             <span className="font-jetbrains text-[10px] uppercase tracking-widest text-primary type-eyebrow font-medium">

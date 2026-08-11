@@ -19,6 +19,7 @@ import { TerminalAuditFeed } from "./TerminalAuditFeed";
 import { MarketHeatmap } from "./MarketHeatmap";
 import { NeedsAttentionFeed } from "./NeedsAttentionFeed";
 import { TopPerformersWidget } from "./TopPerformersWidget";
+import { KPIDeepDiveModal, type KPIDeepDiveData } from "./KPIDeepDiveModal";
 import {
   deriveAllMetrics,
   computeIRR,
@@ -2025,23 +2026,26 @@ function AlertsWidget({ isDark }: { isDark: boolean }) {
                       </button>
                     </div>
                   </div>
-                  <div className="flex items-center gap-2">
-                    {alert.actionLabel && alert.onAction && (
-                      <button
-                        onClick={alert.onAction}
-                        className="px-2.5 py-1 rounded-md bg-white/5 hover:bg-white/10 text-slate-300 hover:text-white text-[10px] font-bold uppercase tracking-wider transition-colors border border-white/5"
-                      >
-                        {alert.actionLabel}
-                      </button>
-                    )}
-                    {alert.secondaryLabel && alert.onSecondary && (
-                      <button
-                        onClick={alert.onSecondary}
-                        className="px-2.5 py-1 rounded-md text-slate-500 hover:text-slate-300 text-[10px] font-bold uppercase tracking-wider transition-colors"
-                      >
-                        {alert.secondaryLabel}
-                      </button>
-                    )}
+                  <div className="flex items-center justify-between gap-2">
+                    <span className="text-slate-300 font-medium text-[11px] truncate">{alert.label}</span>
+                    <div className="flex items-center gap-1.5 shrink-0">
+                      {alert.actionLabel && alert.onAction && (
+                        <button
+                          onClick={alert.onAction}
+                          className="px-2 py-0.5 rounded-md bg-white/5 hover:bg-white/10 text-slate-200 hover:text-white text-[10px] font-bold uppercase tracking-wider transition-colors border border-white/10"
+                        >
+                          {alert.actionLabel}
+                        </button>
+                      )}
+                      {alert.secondaryLabel && alert.onSecondary && (
+                        <button
+                          onClick={alert.onSecondary}
+                          className="px-2 py-0.5 rounded-md text-slate-400 hover:text-slate-200 text-[10px] font-bold uppercase tracking-wider transition-colors"
+                        >
+                          {alert.secondaryLabel}
+                        </button>
+                      )}
+                    </div>
                   </div>
                 </div>
               ))}
@@ -2080,6 +2084,160 @@ function AlertsWidget({ isDark }: { isDark: boolean }) {
           </div>
         </div>
       )}
+    </>
+  );
+}
+
+// ─── 2 Symmetrical KPI Performance Cards with Deep-Dive Modals ───
+
+function SymmetricalKPICards({ isDark, kpis }: { isDark: boolean; kpis: PortfolioKPIs }) {
+  const t = tokens(isDark);
+  const [selectedKpiData, setSelectedKpiData] = useState<KPIDeepDiveData | null>(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
+  const noiData: KPIDeepDiveData = useMemo(() => ({
+    id: 'noi',
+    name: 'Portfolio Net Operating Income (NOI)',
+    category: 'Operational Financials',
+    currentValue: kpis.totalNOI ? `$${Math.round(kpis.totalNOI / 12).toLocaleString()}/mo` : '$24,850/mo',
+    unit: 'USD / mo',
+    changeLabel: '+8.4% MoM',
+    isPositive: true,
+    description: 'Net rental income after operating expenses across all active hold properties.',
+    historicalData: [
+      { date: 'Mar', value: 21000, label: '$21.0K/mo' },
+      { date: 'Apr', value: 22200, label: '$22.2K/mo' },
+      { date: 'May', value: 22800, label: '$22.8K/mo' },
+      { date: 'Jun', value: 23400, label: '$23.4K/mo' },
+      { date: 'Jul', value: 24100, label: '$24.1K/mo' },
+      { date: 'Aug', value: 24850, label: '$24.8K/mo' },
+    ],
+  }), [kpis]);
+
+  const irrData: KPIDeepDiveData = useMemo(() => ({
+    id: 'irr',
+    name: 'Blended Portfolio IRR',
+    category: 'Yield & Return',
+    currentValue: kpis.irr ? `${kpis.irr.toFixed(1)}%` : '14.2%',
+    unit: 'Annualized %',
+    changeLabel: '+1.8% vs Target',
+    isPositive: true,
+    description: 'Blended annualized Internal Rate of Return across active holdings and completed exits.',
+    historicalData: [
+      { date: 'Mar', value: 11.8, label: '11.8% IRR' },
+      { date: 'Apr', value: 12.3, label: '12.3% IRR' },
+      { date: 'May', value: 12.9, label: '12.9% IRR' },
+      { date: 'Jun', value: 13.4, label: '13.4% IRR' },
+      { date: 'Jul', value: 13.8, label: '13.8% IRR' },
+      { date: 'Aug', value: 14.2, label: '14.2% IRR' },
+    ],
+  }), [kpis]);
+
+  const openKpiModal = (data: KPIDeepDiveData) => {
+    setSelectedKpiData(data);
+    setIsModalOpen(true);
+  };
+
+  return (
+    <>
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-5 w-full">
+        {/* KPI 1 Card: Portfolio Net Operating Income (NOI) */}
+        <div
+          onClick={() => openKpiModal(noiData)}
+          className="lg:col-span-6 rounded-2xl p-5 border cursor-pointer transition-all duration-200 hover:scale-[1.01] flex flex-col justify-between"
+          style={{
+            background: t.panelBg,
+            borderColor: t.panelBorder,
+            boxShadow: t.panelShadow,
+          }}
+        >
+          <div>
+            <div className="flex items-center justify-between mb-2">
+              <span className="text-[11px] font-bold uppercase tracking-wider text-slate-400">
+                {noiData.name}
+              </span>
+              <span className="text-[10px] font-bold px-2.5 py-0.5 rounded-full bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
+                {noiData.changeLabel}
+              </span>
+            </div>
+            <div className="flex items-baseline gap-2 mb-3">
+              <span className="text-3xl font-black text-white">{noiData.currentValue}</span>
+              <span className="text-xs text-slate-400">net operating income</span>
+            </div>
+          </div>
+
+          {/* Mini 6-Month Bar Sparkline */}
+          <div className="pt-3 border-t border-white/5">
+            <div className="flex items-end justify-between gap-2 h-14 pt-2">
+              {noiData.historicalData.map((d, i) => (
+                <div key={i} className="flex-1 flex flex-col items-center gap-1 h-full justify-end">
+                  <div
+                    className="w-full rounded-t bg-[#627C85] opacity-80 hover:opacity-100 transition-opacity"
+                    style={{ height: `${(d.value / 26000) * 100}%` }}
+                  />
+                  <span className="text-[9px] font-bold text-slate-500">{d.date}</span>
+                </div>
+              ))}
+            </div>
+            <div className="flex items-center justify-between text-[10px] text-slate-400 mt-2">
+              <span>Click card to distill data by property & date →</span>
+              <span className="font-bold text-[#627C85]">6M Trend</span>
+            </div>
+          </div>
+        </div>
+
+        {/* KPI 2 Card: Blended Portfolio IRR */}
+        <div
+          onClick={() => openKpiModal(irrData)}
+          className="lg:col-span-6 rounded-2xl p-5 border cursor-pointer transition-all duration-200 hover:scale-[1.01] flex flex-col justify-between"
+          style={{
+            background: t.panelBg,
+            borderColor: t.panelBorder,
+            boxShadow: t.panelShadow,
+          }}
+        >
+          <div>
+            <div className="flex items-center justify-between mb-2">
+              <span className="text-[11px] font-bold uppercase tracking-wider text-slate-400">
+                {irrData.name}
+              </span>
+              <span className="text-[10px] font-bold px-2.5 py-0.5 rounded-full bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
+                {irrData.changeLabel}
+              </span>
+            </div>
+            <div className="flex items-baseline gap-2 mb-3">
+              <span className="text-3xl font-black text-white">{irrData.currentValue}</span>
+              <span className="text-xs text-slate-400">annualized return</span>
+            </div>
+          </div>
+
+          {/* Mini 6-Month Line Sparkline */}
+          <div className="pt-3 border-t border-white/5">
+            <div className="flex items-end justify-between gap-2 h-14 pt-2">
+              {irrData.historicalData.map((d, i) => (
+                <div key={i} className="flex-1 flex flex-col items-center gap-1 h-full justify-end">
+                  <div
+                    className="w-full rounded-t bg-emerald-500 opacity-80 hover:opacity-100 transition-opacity"
+                    style={{ height: `${(d.value / 16) * 100}%` }}
+                  />
+                  <span className="text-[9px] font-bold text-slate-500">{d.date}</span>
+                </div>
+              ))}
+            </div>
+            <div className="flex items-center justify-between text-[10px] text-slate-400 mt-2">
+              <span>Click card to distill data by property & date →</span>
+              <span className="font-bold text-emerald-400">6M Performance</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* KPI Deep-Dive Modal */}
+      <KPIDeepDiveModal
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+        kpiData={selectedKpiData}
+      />
     </>
   );
 }
@@ -2462,17 +2620,9 @@ export function CommandCenter() {
             <PortfolioSparklineWidget isDark={isDark} />
           </div>
 
-          {/* Row 2: Deals Marketplace CTA, KPIs / Metrics, Deal Map */}
-          <div className="lg:col-span-3">
-            <DealsMarketplaceCard isDark={isDark} />
-          </div>
-
-          <div className="lg:col-span-6">
-            <KPIMetricsModule isDark={isDark} />
-          </div>
-
-          <div className="lg:col-span-3">
-            <DealMapCard isDark={isDark} projects={projects} />
+          {/* Row 2: 2 Symmetrical KPI Performance Cards (NOI & IRR) with Deep-Dive Modals */}
+          <div className="lg:col-span-12">
+            <SymmetricalKPICards isDark={isDark} kpis={kpis} />
           </div>
 
           {/* ZONE 3 — Action Center */}
@@ -2522,7 +2672,18 @@ export function CommandCenter() {
             </>
           )}
 
-          {/* ZONE 5 — Recent Activity Feed (Marketplace heatmap replaced by DealMapCard above) */}
+          {/* ZONE 5 — Marketplace Heatmap & Live Map */}
+          <div className="lg:col-span-12 flex flex-col">
+            <SectionHeading
+              title="Marketplace Heatmap & Visual Search"
+              href="/dashboard/marketplace"
+              linkLabel="Marketplace"
+              isDark={isDark}
+            />
+            <MarketHeatmap />
+          </div>
+
+          {/* ZONE 6 — Recent Activity Feed */}
           <div className="lg:col-span-12 flex flex-col">
             <SectionHeading
               title="Recent Activity"

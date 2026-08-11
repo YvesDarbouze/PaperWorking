@@ -3,7 +3,12 @@
 import React, { useState, useMemo } from "react";
 import Link from "next/link";
 import { useTheme } from "@/lib/utils/ThemeProvider";
+import { useProjectStore } from "@/store/projectStore";
 import toast from "react-hot-toast";
+import DealMap, { MapPinData } from "@/components/marketplace/DealMap";
+import { MarketplaceMapModal } from "@/components/marketplace/MarketplaceMapModal";
+import { Maximize2, MapPin, Search } from "lucide-react";
+import type { DealListingTeaser } from "@/types/listing";
 
 interface Submarket {
   id: string;
@@ -13,7 +18,7 @@ interface Submarket {
   coc: number;
   density: number;
   yieldLevel: "Moderate" | "High" | "Very High";
-  colorIntensity: string; // Tailwind opacity suffix
+  colorIntensity: string;
 }
 
 interface SourcedDeal {
@@ -63,8 +68,11 @@ const MARKET_VENDORS: MarketVendor[] = [
 export function MarketHeatmap() {
   const { theme } = useTheme();
   const isDark = theme === "dark";
-  const [activeTab, setActiveTab] = useState<"heatmap" | "deals" | "vendors">("heatmap");
+  const projects = useProjectStore((s) => s.projects);
+
+  const [activeTab, setActiveTab] = useState<"map" | "heatmap" | "deals" | "vendors">("map");
   const [selectedSubmarketId, setSelectedSubmarketId] = useState<string | null>(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
   const t = useMemo(() => {
     return {
@@ -79,8 +87,30 @@ export function MarketHeatmap() {
     };
   }, [isDark]);
 
+  // Convert project store items into deal teasers for the map
+  const projectMapDeals = useMemo<DealListingTeaser[]>(() => {
+    return projects.map((p) => ({
+      id: `project_listing_${p.id}`,
+      projectId: p.id,
+      status: 'published',
+      propertyName: p.propertyName || p.name || 'Portfolio Property',
+      neighborhood: p.city && p.state ? `${p.city}, ${p.state}` : 'Target Market',
+      city: p.city || '',
+      state: p.state || '',
+      assetClass: p.assetClass || 'Residential',
+      subStrategy: p.subStrategy || 'LONG_TERM',
+      latitude: p.latitude,
+      longitude: p.longitude,
+      leadInvestorName: 'Lead Investor',
+      followCount: 3,
+      viewCount: 12,
+      price: (p.financials as any)?.purchasePrice || 250000,
+      capRate: 7.5,
+    } as any));
+  }, [projects]);
+
   const activeSubmarket = useMemo(() => {
-    return SUBMARKETS.find(sm => sm.id === selectedSubmarketId) || null;
+    return SUBMARKETS.find((sm) => sm.id === selectedSubmarketId) || null;
   }, [selectedSubmarketId]);
 
   const handleAnalyzeDeal = (dealTitle: string) => {
@@ -88,299 +118,330 @@ export function MarketHeatmap() {
       style: {
         background: isDark ? "#121317" : "#FFF",
         color: isDark ? "#FFF" : "#121317",
-        border: `1px solid ${t.panelBorder}`
-      }
+        border: `1px solid ${t.panelBorder}`,
+      },
     });
   };
 
   return (
-    <div
-      className="rounded-2xl overflow-hidden flex flex-col h-full min-h-[360px]"
-      style={{
-        background: t.panelBg,
-        backdropFilter: isDark ? "blur(24px)" : undefined,
-        WebkitBackdropFilter: isDark ? "blur(24px)" : undefined,
-        border: `1px solid ${t.panelBorder}`,
-        boxShadow: t.panelShadow,
-      }}
-    >
-      {/* Tab bar header */}
+    <>
       <div
-        className="px-5 py-3 flex items-center justify-between shrink-0"
-        style={{ borderBottom: `1px solid ${t.divider}` }}
+        className="rounded-2xl overflow-hidden flex flex-col h-full min-h-[420px]"
+        style={{
+          background: t.panelBg,
+          backdropFilter: isDark ? "blur(24px)" : undefined,
+          WebkitBackdropFilter: isDark ? "blur(24px)" : undefined,
+          border: `1px solid ${t.panelBorder}`,
+          boxShadow: t.panelShadow,
+        }}
       >
-        <div className="flex items-center gap-1.5">
-          {["heatmap", "deals", "vendors"].map((tab) => (
+        {/* Tab bar header */}
+        <div
+          className="px-5 py-3 flex items-center justify-between shrink-0 flex-wrap gap-2"
+          style={{ borderBottom: `1px solid ${t.divider}` }}
+        >
+          <div className="flex items-center gap-1.5 overflow-x-auto">
+            {[
+              { id: "map", label: "Live Marketplace Map" },
+              { id: "heatmap", label: "Yield Heatmap" },
+              { id: "deals", label: "Sourced Deals" },
+              { id: "vendors", label: "Local Vendors" },
+            ].map((tab) => (
+              <button
+                key={tab.id}
+                onClick={() => {
+                  setActiveTab(tab.id as any);
+                  setSelectedSubmarketId(null);
+                }}
+                className="text-[10px] font-bold uppercase tracking-wider px-3 py-1.5 rounded-lg transition-all cursor-pointer whitespace-nowrap"
+                style={{
+                  background: activeTab === tab.id
+                    ? (isDark ? "rgba(98,124,133,0.18)" : "rgba(98,124,133,0.12)")
+                    : "transparent",
+                  color: activeTab === tab.id ? (isDark ? "#FDFFFC" : "#627C85") : t.subtext,
+                  border: activeTab === tab.id
+                    ? "1px solid rgba(98,124,133,0.3)"
+                    : "1px solid transparent",
+                }}
+              >
+                {tab.label}
+              </button>
+            ))}
+          </div>
+
+          <div className="flex items-center gap-3">
             <button
-              key={tab}
-              onClick={() => {
-                setActiveTab(tab as any);
-                setSelectedSubmarketId(null);
-              }}
-              className="text-[10px] font-bold uppercase tracking-wider px-3 py-1.5 rounded-lg transition-all cursor-pointer"
-              style={{
-                background: activeTab === tab
-                  ? (isDark ? "rgba(98,124,133,0.12)" : "rgba(98,124,133,0.08)")
-                  : "transparent",
-                color: activeTab === tab ? "#627C85" : t.subtext,
-                border: activeTab === tab
-                  ? "1px solid rgba(98,124,133,0.25)"
-                  : "1px solid transparent"
-              }}
+              onClick={() => setIsModalOpen(true)}
+              className="text-[10px] font-bold uppercase tracking-wider px-2.5 py-1 rounded-md hover:bg-white/10 transition-colors flex items-center gap-1 text-decoration-none cursor-pointer"
+              style={{ color: "#627C85", border: "1px solid rgba(98,124,133,0.25)" }}
             >
-              {tab === "heatmap" ? "Yield Heatmap" : tab === "deals" ? "Sourced Deals" : "Local Vendors"}
+              <Maximize2 className="w-3 h-3" />
+              Full Screen Map
             </button>
-          ))}
-        </div>
-        <div className="flex items-center gap-3">
-          <Link
-            href="/dashboard/deals"
-            className="text-[10px] font-bold uppercase tracking-wider px-2.5 py-1 rounded-md hover:bg-white/10 transition-colors flex items-center gap-1 text-decoration-none"
-            style={{ color: "#627C85", border: "1px solid rgba(98,124,133,0.25)" }}
-          >
-            Browse Marketplace →
-          </Link>
-          <div className="text-[10px] font-bold uppercase tracking-wider hidden sm:block" style={{ color: t.muted }}>
-            {activeTab === "heatmap" ? "5 Submarkets" : activeTab === "deals" ? "5 Opportunities" : "Sourcing Directory"}
+            <Link
+              href="/dashboard/deals"
+              className="text-[10px] font-bold uppercase tracking-wider px-2.5 py-1 rounded-md hover:bg-white/10 transition-colors flex items-center gap-1 text-decoration-none"
+              style={{ color: "#627C85", border: "1px solid rgba(98,124,133,0.25)" }}
+            >
+              Marketplace →
+            </Link>
           </div>
         </div>
-      </div>
 
-      {/* Main panel content */}
-      <div className="flex-1 p-5 overflow-y-auto min-h-0 flex flex-col">
-        {activeTab === "heatmap" && (
-          <div className="grid grid-cols-1 md:grid-cols-12 gap-5 flex-1 items-stretch">
-            {/* Heatmap Grid (left 7 cols) */}
-            <div className="md:col-span-7 flex flex-col gap-2.5">
-              <p className="text-[11px] mb-1.5" style={{ color: t.subtext }}>
-                Select a target submarket tile to view annualized yield cap rates, deal volumes, and local presence.
-              </p>
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 flex-1">
-                {SUBMARKETS.map((sm) => {
-                  const isSelected = sm.id === selectedSubmarketId;
-                  const bgOpacity = sm.colorIntensity;
+        {/* Main panel content */}
+        <div className="flex-1 p-4 overflow-y-auto min-h-0 flex flex-col">
+          {/* TAB 1: LIVE MARKETPLACE MAP */}
+          {activeTab === "map" && (
+            <div className="w-full flex-1 min-h-[360px]">
+              <DealMap
+                deals={projectMapDeals}
+                height="380px"
+                enableControls={true}
+              />
+            </div>
+          )}
 
-                  return (
+          {/* TAB 2: YIELD HEATMAP */}
+          {activeTab === "heatmap" && (
+            <div className="grid grid-cols-1 md:grid-cols-12 gap-5 flex-1 items-stretch">
+              <div className="md:col-span-7 flex flex-col gap-2.5">
+                <p className="text-[11px] mb-1.5" style={{ color: t.subtext }}>
+                  Select a target submarket tile to view annualized yield cap rates, deal volumes, and local presence.
+                </p>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 flex-1">
+                  {SUBMARKETS.map((sm) => {
+                    const isSelected = sm.id === selectedSubmarketId;
+                    const bgOpacity = sm.colorIntensity;
+
+                    return (
+                      <button
+                        key={sm.id}
+                        onClick={() => setSelectedSubmarketId(sm.id === selectedSubmarketId ? null : sm.id)}
+                        className="rounded-xl p-3.5 text-left transition-all duration-200 hover:scale-[1.02] relative border cursor-pointer"
+                        style={{
+                          background: isSelected
+                            ? (isDark ? "rgba(98, 124, 133, 0.16)" : "rgba(98, 124, 133, 0.08)")
+                            : (isDark ? `rgba(98, 124, 133, 0.0${bgOpacity})` : `rgba(98, 124, 133, 0.0${bgOpacity})`),
+                          borderColor: isSelected
+                            ? "#627C85"
+                            : (isDark ? "rgba(255,255,255,0.06)" : "rgba(69,73,85,0.1)"),
+                          boxShadow: isSelected ? "0 0 12px rgba(98, 124, 133, 0.2)" : "none",
+                        }}
+                      >
+                        <div className="flex items-center justify-between mb-1">
+                          <span className="text-[12px] font-bold" style={{ color: t.heading }}>
+                            {sm.name}
+                          </span>
+                          <span
+                            className="text-[9px] font-bold px-1.5 py-0.5 rounded-full"
+                            style={{
+                              background: sm.yieldLevel === "Very High"
+                                ? "rgba(98, 124, 133, 0.15)"
+                                : sm.yieldLevel === "High"
+                                ? "rgba(98, 124, 133, 0.08)"
+                                : (isDark ? "rgba(255,255,255,0.04)" : "rgba(69,73,85,0.05)"),
+                              color: sm.yieldLevel === "Very High" || sm.yieldLevel === "High" ? "#627C85" : t.subtext,
+                            }}
+                          >
+                            {sm.yieldLevel} Yield
+                          </span>
+                        </div>
+                        <p className="text-[10px] mb-2" style={{ color: t.subtext }}>
+                          {sm.region}
+                        </p>
+                        <div className="flex items-baseline gap-2 mt-1">
+                          <span className="text-xl font-bold" style={{ color: t.heading }}>
+                            {sm.capRate.toFixed(1)}%
+                          </span>
+                          <span className="text-[10px]" style={{ color: t.muted }}>
+                            avg cap rate
+                          </span>
+                        </div>
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+
+              {/* Selected submarket details pane */}
+              <div className="md:col-span-5 flex flex-col justify-between p-4 rounded-xl border border-solid" style={{ borderColor: t.divider, background: isDark ? "rgba(255,255,255,0.01)" : "rgba(69,73,85,0.01)" }}>
+                {activeSubmarket ? (
+                  <div className="space-y-4 flex-1 flex flex-col justify-between">
+                    <div>
+                      <h4 className="text-[13px] font-bold" style={{ color: t.heading }}>
+                        {activeSubmarket.name}
+                      </h4>
+                      <p className="text-[10px] mb-3" style={{ color: t.subtext }}>
+                        {activeSubmarket.region}
+                      </p>
+                      <div className="h-px w-full my-2.5" style={{ background: t.divider }} />
+                      <div className="grid grid-cols-2 gap-3.5 my-3">
+                        <div>
+                          <p className="text-[9px] uppercase tracking-wider font-bold" style={{ color: t.muted }}>
+                            Cap Rate
+                          </p>
+                          <p className="text-[16px] font-extrabold" style={{ color: t.heading }}>
+                            {activeSubmarket.capRate}%
+                          </p>
+                        </div>
+                        <div>
+                          <p className="text-[9px] uppercase tracking-wider font-bold" style={{ color: t.muted }}>
+                            Cash-on-Cash
+                          </p>
+                          <p className="text-[16px] font-extrabold" style={{ color: "#627C85" }}>
+                            {activeSubmarket.coc}%
+                          </p>
+                        </div>
+                      </div>
+                      <div className="h-px w-full my-2.5" style={{ background: t.divider }} />
+                      <p className="text-[11px] leading-relaxed" style={{ color: t.subtext }}>
+                        Yield density is graded as <span className="font-semibold text-emerald-400">{activeSubmarket.yieldLevel}</span>, with <span className="font-semibold" style={{ color: t.heading }}>{activeSubmarket.density}</span> deals currently sourced or undergoing due diligence.
+                      </p>
+                    </div>
+
                     <button
-                      key={sm.id}
-                      onClick={() => setSelectedSubmarketId(sm.id === selectedSubmarketId ? null : sm.id)}
-                      className="rounded-xl p-3.5 text-left transition-all duration-200 hover:scale-[1.02] relative border cursor-pointer"
+                      onClick={() => setActiveTab("deals")}
+                      className="w-full mt-4 py-2 rounded-lg text-xs font-semibold hover:bg-[#627C85] hover:text-white transition-all duration-150 cursor-pointer text-center"
                       style={{
-                        background: isSelected
-                          ? (isDark ? "rgba(98, 124, 133, 0.16)" : "rgba(98, 124, 133, 0.08)")
-                          : (isDark ? `rgba(98, 124, 133, 0.0${bgOpacity})` : `rgba(98, 124, 133, 0.0${bgOpacity})`),
-                        borderColor: isSelected
-                          ? "#627C85"
-                          : (isDark ? "rgba(255,255,255,0.06)" : "rgba(69,73,85,0.1)"),
-                        boxShadow: isSelected ? "0 0 12px rgba(98, 124, 133, 0.2)" : "none",
+                        background: "rgba(98, 124, 133, 0.1)",
+                        color: "#627C85",
+                        border: "1px solid rgba(98, 124, 133, 0.2)",
                       }}
                     >
-                      <div className="flex items-center justify-between mb-1">
-                        <span className="text-[12px] font-bold" style={{ color: t.heading }}>
-                          {sm.name}
-                        </span>
-                        <span
-                          className="text-[9px] font-bold px-1.5 py-0.5 rounded-full"
-                          style={{
-                            background: sm.yieldLevel === "Very High"
-                              ? "rgba(98, 124, 133, 0.15)"
-                              : sm.yieldLevel === "High"
-                              ? "rgba(98, 124, 133, 0.08)"
-                              : (isDark ? "rgba(255,255,255,0.04)" : "rgba(69,73,85,0.05)"),
-                            color: sm.yieldLevel === "Very High" || sm.yieldLevel === "High" ? "#627C85" : t.subtext
-                          }}
-                        >
-                          {sm.yieldLevel} Yield
-                        </span>
-                      </div>
-                      <p className="text-[10px] mb-2" style={{ color: t.subtext }}>
-                        {sm.region}
-                      </p>
-                      <div className="flex items-baseline gap-2 mt-1">
-                        <span className="text-xl font-bold" style={{ color: t.heading }}>
-                          {sm.capRate.toFixed(1)}%
-                        </span>
-                        <span className="text-[10px]" style={{ color: t.muted }}>
-                          avg cap rate
-                        </span>
-                      </div>
+                      View {activeSubmarket.density} Sourced Deals
                     </button>
-                  );
-                })}
+                  </div>
+                ) : (
+                  <div className="flex flex-col items-center justify-center text-center py-12 flex-1">
+                    <span className="material-symbols-outlined text-[28px] mb-2" style={{ color: t.muted }}>
+                      ads_click
+                    </span>
+                    <p className="text-xs font-semibold" style={{ color: t.heading }}>
+                      No Submarket Selected
+                    </p>
+                    <p className="text-[10px] max-w-[150px] mt-1" style={{ color: t.muted }}>
+                      Click a submarket tile to analyze local cap rates and active deal counts.
+                    </p>
+                  </div>
+                )}
               </div>
             </div>
+          )}
 
-            {/* Selected submarket details pane (right 5 cols) */}
-            <div className="md:col-span-5 flex flex-col justify-between p-4 rounded-xl border border-solid" style={{ borderColor: t.divider, background: isDark ? "rgba(255,255,255,0.01)" : "rgba(69,73,85,0.01)" }}>
-              {activeSubmarket ? (
-                <div className="space-y-4 flex-1 flex flex-col justify-between">
-                  <div>
-                    <h4 className="text-[13px] font-bold" style={{ color: t.heading }}>
-                      {activeSubmarket.name}
-                    </h4>
-                    <p className="text-[10px] mb-3" style={{ color: t.subtext }}>
-                      {activeSubmarket.region}
-                    </p>
-                    <div className="h-px w-full my-2.5" style={{ background: t.divider }} />
-                    <div className="grid grid-cols-2 gap-3.5 my-3">
-                      <div>
-                        <p className="text-[9px] uppercase tracking-wider font-bold" style={{ color: t.muted }}>
-                          Cap Rate
-                        </p>
-                        <p className="text-[16px] font-extrabold" style={{ color: t.heading }}>
-                          {activeSubmarket.capRate}%
-                        </p>
-                      </div>
-                      <div>
-                        <p className="text-[9px] uppercase tracking-wider font-bold" style={{ color: t.muted }}>
-                          Cash-on-Cash
-                        </p>
-                        <p className="text-[16px] font-extrabold" style={{ color: "#627C85" }}>
-                          {activeSubmarket.coc}%
-                        </p>
-                      </div>
-                    </div>
-                    <div className="h-px w-full my-2.5" style={{ background: t.divider }} />
-                    <p className="text-[11px] leading-relaxed" style={{ color: t.subtext }}>
-                      Yield density is graded as <span className="font-semibold text-primary">{activeSubmarket.yieldLevel}</span>, with <span className="font-semibold" style={{ color: t.heading }}>{activeSubmarket.density}</span> deals currently sourced or undergoing due diligence.
-                    </p>
-                  </div>
-
-                  <button
-                    onClick={() => {
-                      setActiveTab("deals");
-                    }}
-                    className="w-full mt-4 py-2 rounded-lg text-xs font-semibold hover:bg-primary hover:text-white transition-all duration-150 cursor-pointer text-center"
+          {/* TAB 3: SOURCED DEALS */}
+          {activeTab === "deals" && (
+            <div className="flex-1 flex flex-col gap-2.5">
+              <p className="text-[11px]" style={{ color: t.subtext }}>
+                Deals sourced from active real estate co-investment groups, local professionals, and vendors.
+              </p>
+              <div className="space-y-2.5 flex-1 min-h-0">
+                {SOURCED_DEALS.map((deal) => (
+                  <div
+                    key={deal.id}
+                    className="flex items-center justify-between p-3 rounded-xl border border-solid transition-all duration-150 hover:bg-white/5"
                     style={{
-                      background: "rgba(98, 124, 133, 0.1)",
-                      color: "#627C85",
-                      border: "1px solid rgba(98, 124, 133, 0.2)"
+                      borderColor: t.divider,
+                      background: isDark ? "rgba(255,255,255,0.015)" : "rgba(69,73,85,0.02)",
                     }}
                   >
-                    View {activeSubmarket.density} Sourced Deals
-                  </button>
-                </div>
-              ) : (
-                <div className="flex flex-col items-center justify-center text-center py-12 flex-1">
-                  <span className="material-symbols-outlined text-[28px] mb-2" style={{ color: t.muted }}>
-                    ads_click
-                  </span>
-                  <p className="text-xs font-semibold" style={{ color: t.heading }}>
-                    No Submarket Selected
-                  </p>
-                  <p className="text-[10px] max-w-[150px] mt-1" style={{ color: t.muted }}>
-                    Click a submarket tile to analyze local cap rates and active deal counts.
-                  </p>
-                </div>
-              )}
-            </div>
-          </div>
-        )}
-
-        {activeTab === "deals" && (
-          <div className="flex-1 flex flex-col gap-2.5">
-            <p className="text-[11px]" style={{ color: t.subtext }}>
-              Deals sourced from active real estate co-investment groups, local professionals, and vendors.
-            </p>
-            <div className="space-y-2.5 flex-1 min-h-0">
-              {SOURCED_DEALS.map((deal) => (
-                <div
-                  key={deal.id}
-                  className="flex items-center justify-between p-3 rounded-xl border border-solid transition-all duration-150 hover:bg-white/5"
-                  style={{
-                    borderColor: t.divider,
-                    background: isDark ? "rgba(255,255,255,0.015)" : "rgba(69,73,85,0.02)"
-                  }}
-                >
-                  <div className="min-w-0 flex-1 pr-4">
-                    <div className="flex items-center gap-2 mb-1">
-                      <span className="text-[12px] font-bold truncate" style={{ color: t.heading }}>
-                        {deal.title}
-                      </span>
-                      <span className="text-[9px] font-semibold px-2 py-0.5 rounded-full" style={{ background: isDark ? "rgba(255,255,255,0.05)" : "rgba(69,73,85,0.08)", color: t.subtext }}>
-                        {deal.type}
-                      </span>
+                    <div className="min-w-0 flex-1 pr-4">
+                      <div className="flex items-center gap-2 mb-1">
+                        <span className="text-[12px] font-bold truncate" style={{ color: t.heading }}>
+                          {deal.title}
+                        </span>
+                        <span className="text-[9px] font-semibold px-2 py-0.5 rounded-full" style={{ background: isDark ? "rgba(255,255,255,0.05)" : "rgba(69,73,85,0.08)", color: t.subtext }}>
+                          {deal.type}
+                        </span>
+                      </div>
+                      <div className="flex items-center gap-2 text-[10px]" style={{ color: t.muted }}>
+                        <span>{deal.submarketName}</span>
+                        <span>•</span>
+                        <span>Sourced by {deal.source}</span>
+                      </div>
                     </div>
-                    <div className="flex items-center gap-2 text-[10px]" style={{ color: t.muted }}>
-                      <span>{deal.submarketName}</span>
-                      <span>•</span>
-                      <span>Sourced by {deal.source}</span>
+
+                    <div className="flex items-center gap-4 shrink-0">
+                      <div className="text-right">
+                        <p className="text-[12px] font-bold" style={{ color: t.heading }}>
+                          ${(deal.price / 1000).toFixed(0)}K
+                        </p>
+                        <p className="text-[9px]" style={{ color: t.muted }}>
+                          Cap: <span className="font-semibold" style={{ color: "#627C85" }}>{deal.capRate}%</span> · CoC: <span className="font-semibold">{deal.coc}%</span>
+                        </p>
+                      </div>
+                      <button
+                        onClick={() => handleAnalyzeDeal(deal.title)}
+                        className="px-3 py-1.5 rounded-lg text-[10px] font-bold tracking-wider uppercase transition-all duration-150 hover:bg-[#536A72] active:scale-95 cursor-pointer"
+                        style={{
+                          background: "#627C85",
+                          color: "#FFFFFF",
+                        }}
+                      >
+                        Analyze
+                      </button>
                     </div>
                   </div>
+                ))}
+              </div>
+            </div>
+          )}
 
-                  <div className="flex items-center gap-4 shrink-0">
-                    <div className="text-right">
-                      <p className="text-[12px] font-bold" style={{ color: t.heading }}>
-                        ${(deal.price / 1000).toFixed(0)}K
-                      </p>
-                      <p className="text-[9px]" style={{ color: t.muted }}>
-                        Cap: <span className="font-semibold" style={{ color: "#627C85" }}>{deal.capRate}%</span> · CoC: <span className="font-semibold">{deal.coc}%</span>
-                      </p>
+          {/* TAB 4: LOCAL VENDORS */}
+          {activeTab === "vendors" && (
+            <div className="flex-1 flex flex-col gap-2.5">
+              <p className="text-[11px]" style={{ color: t.subtext }}>
+                Local professionals active in target submarkets, ready to provide structural quotes or deal closing diligence.
+              </p>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-3 flex-1">
+                {MARKET_VENDORS.map((vendor) => (
+                  <div
+                    key={vendor.id}
+                    className="p-3.5 rounded-xl border border-solid flex flex-col justify-between transition-colors duration-150 hover:bg-white/5"
+                    style={{
+                      borderColor: t.divider,
+                      background: isDark ? "rgba(255,255,255,0.015)" : "rgba(69,73,85,0.02)",
+                    }}
+                  >
+                    <div className="flex justify-between items-start mb-2">
+                      <div>
+                        <h4 className="text-[12px] font-bold" style={{ color: t.heading }}>
+                          {vendor.name}
+                        </h4>
+                        <p className="text-[10px] mt-0.5" style={{ color: t.muted }}>
+                          {vendor.category} · {vendor.submarketName}
+                        </p>
+                      </div>
+                      <span className="flex items-center gap-1 text-[10px] font-bold px-1.5 py-0.5 rounded border border-amber-400/20 bg-amber-400/10 text-amber-400">
+                        ★ {vendor.rating.toFixed(1)}
+                      </span>
                     </div>
+
                     <button
-                      onClick={() => handleAnalyzeDeal(deal.title)}
-                      className="px-3 py-1.5 rounded-lg text-[10px] font-bold tracking-wider uppercase transition-all duration-150 hover:bg-[#536A72] active:scale-95 cursor-pointer"
+                      onClick={() => {
+                        toast.success(`Opening profile for ${vendor.name}`);
+                      }}
+                      className="w-full mt-2 py-1.5 rounded-lg text-[10px] font-bold tracking-wider uppercase hover:bg-white/5 transition-colors cursor-pointer text-center"
                       style={{
-                        background: "#627C85",
-                        color: "#FFFFFF"
+                        border: `1px solid ${t.panelBorder}`,
+                        color: t.subtext,
                       }}
                     >
-                      Analyze
+                      View Vendor Profile
                     </button>
                   </div>
-                </div>
-              ))}
+                ))}
+              </div>
             </div>
-          </div>
-        )}
-
-        {activeTab === "vendors" && (
-          <div className="flex-1 flex flex-col gap-2.5">
-            <p className="text-[11px]" style={{ color: t.subtext }}>
-              Local professionals active in target submarkets, ready to provide structural quotes or deal closing diligence.
-            </p>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-3 flex-1">
-              {MARKET_VENDORS.map((vendor) => (
-                <div
-                  key={vendor.id}
-                  className="p-3.5 rounded-xl border border-solid flex flex-col justify-between transition-colors duration-150 hover:bg-white/5"
-                  style={{
-                    borderColor: t.divider,
-                    background: isDark ? "rgba(255,255,255,0.015)" : "rgba(69,73,85,0.02)"
-                  }}
-                >
-                  <div className="flex justify-between items-start mb-2">
-                    <div>
-                      <h4 className="text-[12px] font-bold" style={{ color: t.heading }}>
-                        {vendor.name}
-                      </h4>
-                      <p className="text-[10px] mt-0.5" style={{ color: t.muted }}>
-                        {vendor.category} · {vendor.submarketName}
-                      </p>
-                    </div>
-                    <span className="flex items-center gap-1 text-[10px] font-bold px-1.5 py-0.5 rounded border border-amber-400/20 bg-amber-400/10 text-amber-400">
-                      ★ {vendor.rating.toFixed(1)}
-                    </span>
-                  </div>
-
-                  <button
-                    onClick={() => {
-                      toast.success(`Opening profile for ${vendor.name}`);
-                    }}
-                    className="w-full mt-2 py-1.5 rounded-lg text-[10px] font-bold tracking-wider uppercase hover:bg-white/5 transition-colors cursor-pointer text-center"
-                    style={{
-                      border: `1px solid ${t.panelBorder}`,
-                      color: t.subtext
-                    }}
-                  >
-                    View Vendor Profile
-                  </button>
-                </div>
-              ))}
-            </div>
-          </div>
-        )}
+          )}
+        </div>
       </div>
-    </div>
+
+      {/* Full Screen Visual Search Map Modal */}
+      <MarketplaceMapModal
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+        deals={projectMapDeals}
+      />
+    </>
   );
 }

@@ -115,15 +115,6 @@ export function resolvePrimaryNav(ctx: NavigationContext): NavItem[] {
       rolesAllowed: ['investor'],
     },
     {
-      id: 'deals',
-      label: 'Deals',
-      href: '/dashboard/deals',
-      icon: 'handshake',
-      requiresSubscription: true,
-      isLocked: !isSubscribed,
-      rolesAllowed: ['investor'],
-    },
-    {
       id: 'insights',
       label: 'Insights',
       href: '/dashboard/insights',

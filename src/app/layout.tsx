@@ -12,6 +12,8 @@ import { PostHogProvider } from "@/components/providers/PostHogProvider";
 import CookieConsent from "@/components/legal/CookieConsent";
 import { QueryProvider } from "@/components/providers/QueryProvider";
 
+import { GoogleAnalytics } from "@/components/providers/GoogleAnalytics";
+
 const inter = Inter({
   subsets: ["latin"],
   weight: ["100", "200", "300", "400", "500", "600", "700", "800", "900"],
@@ -76,6 +78,7 @@ export default function RootLayout({
       className={`${inter.variable} ${merriweather.variable} ${jetBrainsMono.variable} h-full`}
     >
       <head>
+        <GoogleAnalytics />
         <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200&display=swap" />
       </head>
       <body suppressHydrationWarning className="min-h-full flex flex-col font-sans antialiased bg-pw-bg text-pw-black mesh-bg relative overflow-x-hidden">

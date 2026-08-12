@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { middleware } from './middleware';
+import { proxy } from './proxy';
 
-describe('Root Middleware Integration Tests', () => {
+describe('Root Middleware / Proxy Integration Tests', () => {
   it('1. Returns 403 JSON when non-subscriber hits /deals', async () => {
     const req = new NextRequest('http://localhost:3000/deals', {
       headers: {
@@ -10,7 +10,7 @@ describe('Root Middleware Integration Tests', () => {
       },
     });
 
-    const res = middleware(req);
+    const res = proxy(req);
     expect(res).toBeInstanceOf(NextResponse);
     expect(res?.status).toBe(403);
 
@@ -27,7 +27,7 @@ describe('Root Middleware Integration Tests', () => {
       },
     });
 
-    const res = middleware(req);
+    const res = proxy(req);
     expect(res).toBeInstanceOf(NextResponse);
     expect(res?.status).toBe(307);
     expect(res?.headers.get('location')).toContain('/vendor/marketplace');
@@ -41,7 +41,7 @@ describe('Root Middleware Integration Tests', () => {
       },
     });
 
-    const res = middleware(req);
+    const res = proxy(req);
     expect(res).toBeInstanceOf(NextResponse);
     expect(res?.status).toBe(200);
   });
@@ -54,7 +54,7 @@ describe('Root Middleware Integration Tests', () => {
       },
     });
 
-    const res = middleware(req);
+    const res = proxy(req);
     expect(res).toBeInstanceOf(NextResponse);
     expect(res?.status).toBe(200);
     expect(res?.headers.get('x-marketplace-direct-access')).toBe('true');

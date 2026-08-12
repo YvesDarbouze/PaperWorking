@@ -1,5 +1,5 @@
 /** @jest-environment jsdom */
-import { generateMetadata as generateDealMetadata } from '@/app/deals/[listingId]/layout';
+import { generateMetadata as generateDealMetadata } from '@/app/deals/[slug]/layout';
 import { metadata as searchMetadata } from '@/app/search/layout';
 import sitemap from '@/app/sitemap';
 import { render } from '@testing-library/react';

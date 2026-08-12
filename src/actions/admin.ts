@@ -515,7 +515,7 @@ export async function getAdminAuditLogs(): Promise<(AdminAuditEntry & { hashChai
     const { adminDb } = await import('@/lib/firebase/admin');
     const snap = await adminDb.collection('audit_logs').orderBy('timestamp', 'desc').limit(200).get();
 
-    return snap.docs.map((doc) => {
+    return (snap.docs || []).map((doc) => {
       const d = doc.data();
       let ts = '';
       if (d.timestamp?.toDate) ts = d.timestamp.toDate().toISOString();
@@ -599,7 +599,7 @@ export async function getAdminTickets(): Promise<AdminTicketEntry[]> {
       .limit(200)
       .get();
 
-    return snap.docs.map((doc) => {
+    return (snap.docs || []).map((doc) => {
       const d = doc.data();
       return {
         id: d.ticketId || doc.id,

@@ -37,7 +37,7 @@ export function MarketplaceSubnav() {
             }`}
           >
             <Building2 className="w-4 h-4" />
-            <span>Deal's Marketplace</span>
+            <span>Deal Marketplace</span>
           </Link>
         )}
 
@@ -50,7 +50,7 @@ export function MarketplaceSubnav() {
           }`}
         >
           <Store className="w-4 h-4" />
-          <span>Vendor's Marketplace</span>
+          <span>Vendor Marketplace</span>
         </Link>
 
         {!isVendor && (

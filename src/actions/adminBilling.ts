@@ -126,6 +126,7 @@ export async function retryFailedInvoice(invoiceId: string): Promise<{ success: 
 
   try {
     const paidInvoice = await stripe.invoices.pay(invoiceId);
+    const isPaid = paidInvoice.status === 'paid';
 
     await logAdminAudit({
       actorUid: authz.user.uid,
@@ -134,16 +135,16 @@ export async function retryFailedInvoice(invoiceId: string): Promise<{ success: 
       action: 'admin:retry_failed_invoice',
       targetResource: 'stripe_invoices',
       targetResourceId: invoiceId,
-      status: paidInvoice.paid ? 'SUCCESS' : 'DENIED',
+      status: isPaid ? 'SUCCESS' : 'DENIED',
       severity: 'info',
       metadata: {
         invoiceId,
-        amountPaid: paidInvoice.amount_paid / 100,
+        amountPaid: (paidInvoice.amount_paid || 0) / 100,
         status: paidInvoice.status,
       },
     });
 
-    return { success: paidInvoice.paid };
+    return { success: isPaid };
   } catch (error: any) {
     console.error('[retryFailedInvoice] Error:', error);
     return { success: false, error: error?.message || 'Invoice payment retry failed.' };

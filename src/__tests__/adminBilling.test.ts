@@ -39,7 +39,7 @@ describe('PROMPT 4 — Billing Admin & Stripe Management Surface Unit Suite', ()
     it('grants grace period (access kept) for past_due status', () => {
       const status = 'past_due';
       const gracePeriodActive = status === 'past_due';
-      const accessRevoked = status === 'unpaid' || status === 'canceled';
+      const accessRevoked = (status as string) === 'unpaid' || (status as string) === 'canceled';
 
       expect(gracePeriodActive).toBe(true);
       expect(accessRevoked).toBe(false);

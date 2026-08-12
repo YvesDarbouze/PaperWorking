@@ -1,10 +1,10 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { Prisma } from '@prisma/client';
-import crypto from 'crypto';
 import { DailySyncOrchestrator } from '@/lib/banking/dailySyncOrchestrator';
 import { FinancialNotificationService } from '@/lib/notifications/financialNotifications';
 import { sseEventBus } from '@/lib/events/eventBus';
+import { verifyPlaidWebhook } from '@/lib/plaid/verifyWebhook';
 
 /**
  * POST /api/webhooks/plaid
@@ -19,35 +19,11 @@ import { sseEventBus } from '@/lib/events/eventBus';
  *   • ITEM/ERROR (ITEM_LOGIN_REQUIRED, INSUFFICIENT_CREDENTIALS, ADDITIONAL_CONSENT_REQUIRED)
  *
  * Security:
- *   - Verifies Plaid-Signature header / HMAC secret.
- *   - Rejects unauthenticated payload calls with 400/401.
+ *   - Verifies official Plaid-Verification JWT header (ES256 signature, JWK fetching, iat freshness, body SHA-256).
+ *   - Rejects unauthenticated or forged webhook calls with HTTP 401 before parsing payload or DB writes.
  */
 
 export const dynamic = 'force-dynamic';
-
-async function verifyPlaidSignature(req: NextRequest, rawBody: string): Promise<boolean> {
-  const secret = process.env.PLAID_WEBHOOK_SECRET;
-  if (!secret) {
-    if (process.env.BANKING_PROVIDER === 'mock' || process.env.NODE_ENV === 'development') {
-      return true;
-    }
-    console.error('[Plaid Webhook] PLAID_WEBHOOK_SECRET not set — rejecting signature.');
-    return false;
-  }
-
-  const plaidSig = req.headers.get('plaid-verification') || req.headers.get('Plaid-Signature');
-  if (!plaidSig) {
-    console.error('[Plaid Webhook] Missing signature header.');
-    return false;
-  }
-
-  try {
-    const expected = crypto.createHmac('sha256', secret).update(rawBody, 'utf8').digest('hex');
-    return crypto.timingSafeEqual(Buffer.from(plaidSig, 'hex'), Buffer.from(expected, 'hex'));
-  } catch {
-    return false;
-  }
-}
 
 export async function POST(req: NextRequest): Promise<NextResponse> {
   let rawBody: string;
@@ -57,8 +33,14 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
     return NextResponse.json({ error: 'Failed to read request body' }, { status: 400 });
   }
 
-  const isValid = await verifyPlaidSignature(req, rawBody);
-  if (!isValid) {
+  const plaidVerificationHeader =
+    req.headers.get('plaid-verification') || req.headers.get('Plaid-Verification');
+
+  const verificationResult = await verifyPlaidWebhook(plaidVerificationHeader, rawBody, {
+    requestPath: req.nextUrl?.pathname ?? '/api/webhooks/plaid',
+  });
+
+  if (!verificationResult.isValid) {
     return NextResponse.json({ error: 'Invalid webhook signature' }, { status: 401 });
   }
 

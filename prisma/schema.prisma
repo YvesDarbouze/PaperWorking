@@ -344,6 +344,7 @@ model AppUser {
   email                   String                       @unique
   name                    String?
   role                    String?
+  stripeCustomerId        String?                      @unique
   syntheticAgent          Boolean                      @default(false)
   agentPersona            String?
   createdAt               DateTime                     @default(now())

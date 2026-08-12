@@ -89,7 +89,7 @@ export async function getPlaidHealthStats(): Promise<PlaidHealthStats> {
     let erroredCount = 0;
 
     const connections: PlaidHealthConnectionItem[] = conns.map((c) => {
-      const statusStr = c.status || 'NOT_CONNECTED';
+      const statusStr = (c.status as string) || 'NOT_CONNECTED';
       const isLoginReq = statusStr === 'ITEM_LOGIN_REQUIRED' || (c.lastSyncErrorMessage || '').includes('ITEM_LOGIN_REQUIRED');
       const isStale = c.lastSuccessfulSyncAt ? (now - new Date(c.lastSuccessfulSyncAt).getTime() > sevenDaysMs) : true;
       const isErrored = c.syncErrorCount > 0 || statusStr === 'DISCONNECTED';

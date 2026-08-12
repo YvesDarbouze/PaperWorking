@@ -94,6 +94,8 @@ test.describe('Global Navigation Contract §9.3 v7 Verification', () => {
   test('NAV-05: Dynamic surface-specific document.title formatting', async ({ page }) => {
     await page.context().addCookies([
       { name: '__session', value: 'mock_session_token_123', domain: 'localhost', path: '/' },
+      { name: 'mock_user_role', value: 'Lead Investor', domain: 'localhost', path: '/' },
+      { name: 'mock_user_account_type', value: 'investor', domain: 'localhost', path: '/' },
     ]);
 
     const titleMap = [

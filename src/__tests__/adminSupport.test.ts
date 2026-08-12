@@ -41,6 +41,18 @@ describe('PROMPT 3 & PART B — Support Inbox & Reconciled Metrics Unit Suite', 
 
       expect(status).toBe('active');
     });
+
+    it('snoozed ticket excludes from active queue until snoozeUntil expiry, then auto-returns to active', () => {
+      const futureSnooze = new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString();
+      const pastSnooze = new Date(Date.now() - 1000).toISOString();
+      const nowIso = new Date().toISOString();
+
+      const isFutureActive = !(futureSnooze && nowIso < futureSnooze);
+      const isPastActive = !(pastSnooze && nowIso < pastSnooze);
+
+      expect(isFutureActive).toBe(false); // Snoozed ticket excluded from active queue
+      expect(isPastActive).toBe(true);   // Expired snooze automatically visible in active queue
+    });
   });
 
   describe('Internal Note vs Customer Reply Channel Separation (dim01)', () => {

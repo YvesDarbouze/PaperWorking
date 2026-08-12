@@ -4,6 +4,8 @@
 
 ## 1. Outstanding User Requests
 
+- **SAAS ADMIN PANEL EXCLUSIONS RATIFIED:**
+  - Created [`ADMIN_EXCLUSIONS.md`](file:///Users/yvesdarbouze/Documents/PaperWorking/ADMIN_EXCLUSIONS.md) locking all non-build boundaries (no impersonation, no SLA countdown timers, no AI chatbots/autonomous support, no internal ⌘K palette, no RFM analytics, no deep Stripe clone, no auto-routing, no self-hosted status page, no low-code Retool).
 - **PROMPTS 1–7 — COMPLETED, VERIFIED & RATIFIED:**
   - PROMPT 7 final ratification, standing copy-lock test suite (`src/__tests__/marketingCopyLock.test.ts`), screenshot PNG generation, and residual evidence close-out completed.
   - Final Walkthrough artifact delivered: [`prompt7_final_ratification_walkthrough.md`](file:///Users/yvesdarbouze/.gemini/antigravity/brain/a8154afa-27db-432e-8281-fe1c4105bbe2/prompt7_final_ratification_walkthrough.md).

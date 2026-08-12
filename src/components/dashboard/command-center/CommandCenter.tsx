@@ -2420,6 +2420,8 @@ function DealsMarketplaceCard({ isDark }: { isDark: boolean }) {
 
 export function CommandCenter() {
   useAllDealsSync();
+  const { user } = useAuth();
+  const router = useRouter();
   const projects = useProjectStore((s) => s.projects);
   const ledgerItems = useProjectStore((s) => s.ledgerItems);
   const kpis     = usePortfolioKPIs(projects);
@@ -2585,6 +2587,69 @@ export function CommandCenter() {
             </Link>
           </div>
         </header>
+
+        {/* Prominent Deals Marketplace CTA Banner (Sole Entry Point from Dashboard) */}
+        <Link
+          href="/deals?autofocus=true"
+          data-testid="deals-marketplace-cta"
+          className="group relative flex flex-col md:flex-row items-center justify-between gap-4 p-5 rounded-2xl border transition-all duration-300 overflow-hidden cursor-pointer"
+          style={{
+            background: isDark
+              ? 'linear-gradient(135deg, rgba(69,73,85,0.25) 0%, rgba(18,16,20,0.85) 100%)'
+              : 'linear-gradient(135deg, #FDFFFC 0%, rgba(69,73,85,0.06) 100%)',
+            borderColor: isDark ? 'rgba(255,255,255,0.12)' : 'rgba(69,73,85,0.15)',
+            boxShadow: '0 8px 32px rgba(0,0,0,0.12)',
+          }}
+        >
+          <div className="flex items-center gap-4">
+            <div
+              className="w-12 h-12 rounded-xl flex items-center justify-center shrink-0"
+              style={{
+                background: 'rgba(69,73,85,0.2)',
+                border: '1px solid rgba(255,255,255,0.1)',
+                color: '#FDFFFC',
+              }}
+            >
+              <span className="material-symbols-outlined text-[24px]">search</span>
+            </div>
+            <div>
+              <div className="flex items-center gap-2">
+                <h3 className="text-base font-bold text-[#FDFFFC] group-hover:text-emerald-400 transition-colors">
+                  Deals Marketplace
+                </h3>
+                <span className="px-2 py-0.5 rounded text-[10px] font-extrabold uppercase bg-emerald-500/20 text-emerald-400 border border-emerald-500/40">
+                  Exclusive
+                </span>
+              </div>
+              <p className="text-xs text-[#9E9DA0] mt-0.5">
+                Search any street address to discover crowdfunding investments, list new syndication opportunities, or connect with investors.
+              </p>
+            </div>
+          </div>
+
+          <div className="flex items-center gap-2 shrink-0 flex-wrap">
+            <Link
+              href="/projects/new?source=dashboard"
+              data-testid="create-project-cta"
+              onClick={(e) => {
+                e.stopPropagation();
+                if (!user) {
+                  e.preventDefault();
+                  router.push('/login?redirect=/projects/new');
+                }
+              }}
+              className="px-4 py-2 rounded-xl bg-[#34d399]/[0.08] border border-[#34d399]/25 hover:bg-[#34d399]/15 text-[#34d399] text-xs font-bold uppercase tracking-wider transition-all shadow-sm flex items-center gap-1.5"
+            >
+              <span className="material-symbols-outlined text-[16px]">add</span>
+              <span>Create new Project</span>
+            </Link>
+
+            <div className="flex items-center gap-2 px-4 py-2 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 text-xs font-bold uppercase tracking-wider transition-all shadow-md">
+              <span>Explore Deals</span>
+              <span className="material-symbols-outlined text-[16px]">arrow_forward</span>
+            </div>
+          </div>
+        </Link>
 
         {/* ══════════════════════════════════════════════════════════════════
             Unified Grid Layout Grid Canvas (12 columns)

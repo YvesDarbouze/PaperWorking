@@ -1585,31 +1585,43 @@ model ReconciliationItem {
 }
 
 model User {
-  id             String               @id @default(uuid())
-  email          String               @unique
-  name           String?
-  syntheticAgent Boolean              @default(false)
-  agentPersona   String?
-  createdAt      DateTime             @default(now())
-  updatedAt      DateTime             @updatedAt
-  projects       Project[]
-  subscriptions  Subscription[]
-  messagesSent   Message[]            @relation("UserSentMessages")
-  messagesRecv   Message[]            @relation("UserReceivedMessages")
-  listings       MarketplaceListing[]
+  id               String                 @id @default(uuid())
+  email            String                 @unique
+  name             String?
+  syntheticAgent   Boolean                @default(false)
+  agentPersona     String?
+  createdAt        DateTime               @default(now())
+  updatedAt        DateTime               @updatedAt
+  projects         Project[]              @relation("UserProjects")
+  investorProjects Project[]              @relation("InvestorProjects")
+  subscriptions    Subscription[]
+  messagesSent     Message[]              @relation("UserSentMessages")
+  messagesRecv     Message[]              @relation("UserReceivedMessages")
+  listings         MarketplaceListing[]
+  dealsCreated     Deal[]
+  dealInvitations  DealInvitation[]
+  commitments      InvestmentCommitment[]
+  dealMessages     DealMessage[]
+  businessCard     BusinessCard?
 }
 
 model Project {
   id             String    @id @default(uuid())
   title          String?
+  name           String?
   address        String?
   city           String?
   state          String?
   zip            String?
+  status         String?   @default("active")
   syntheticAgent Boolean   @default(false)
   listedByAgent  String?
   userId         String?
-  user           User?     @relation(fields: [userId], references: [id])
+  user           User?     @relation("UserProjects", fields: [userId], references: [id])
+  investorId     String?
+  investor       User?     @relation("InvestorProjects", fields: [investorId], references: [id])
+  dealId         String?
+  deal           Deal?     @relation(fields: [dealId], references: [id])
   createdAt      DateTime  @default(now())
   updatedAt      DateTime  @updatedAt
   messages       Message[]
@@ -1660,5 +1672,158 @@ model Subscription {
   createdAt            DateTime @default(now())
   updatedAt            DateTime @updatedAt
 }
+
+// ── Deal & Crowdfunding Marketplace Entities ──────────────────────────────────
+
+enum DealStatus {
+  draft
+  published
+  funding
+  closed
+  archived
+}
+
+enum DealInvitationStatus {
+  pending
+  declined
+  interested
+}
+
+enum InvestmentCommitmentCurrency {
+  USD
+  CAD
+  EUR
+  GBP
+}
+
+enum InvestmentCommitmentType {
+  percentage
+  fixed
+}
+
+enum InvestmentCommitmentStatus {
+  pending
+  confirmed
+  withdrawn
+}
+
+enum DealMessageSource {
+  platform
+  email_inbound
+}
+
+enum DealVisibility {
+  marketplace
+  invitation_only
+  private
+}
+
+model Deal {
+  id            String                 @id @default(uuid())
+  slug          String                 @unique
+  address       String
+  purchasePrice Decimal                @db.Decimal(14, 2)
+  rehabCost     Decimal                @db.Decimal(14, 2)
+  arv           Decimal                @db.Decimal(14, 2)
+  holdingCosts  Decimal                @db.Decimal(14, 2)
+  projectedRoi  Decimal                @db.Decimal(8, 4)
+  status        DealStatus             @default(draft)
+  visibility    DealVisibility         @default(private)
+  creatorId     String
+  creator       User                   @relation(fields: [creatorId], references: [id], onDelete: Cascade)
+  projects      Project[]
+  invitations   DealInvitation[]
+  commitments   InvestmentCommitment[]
+  broadcasts     DealBroadcast[]
+  createdAt     DateTime               @default(now())
+  updatedAt     DateTime               @updatedAt
+
+  @@index([creatorId])
+  @@index([status])
+  @@index([visibility])
+  @@index([slug])
+}
+
+model DealBroadcast {
+  id                  String   @id @default(uuid())
+  dealId              String
+  deal                Deal     @relation(fields: [dealId], references: [id], onDelete: Cascade)
+  senderId            String
+  sender              User     @relation(fields: [senderId], references: [id], onDelete: Cascade)
+  recipientEmails     Json
+  subject             String
+  message             String
+  includeBusinessCard Boolean  @default(true)
+  createdAt           DateTime @default(now())
+
+  @@index([dealId])
+  @@index([senderId])
+}
+
+model DealInvitation {
+  id                 String               @id @default(uuid())
+  dealId             String
+  deal               Deal                 @relation(fields: [dealId], references: [id], onDelete: Cascade)
+  inviteeEmail       String
+  inviteeUserId      String?
+  inviteeUser        User?                @relation(fields: [inviteeUserId], references: [id], onDelete: SetNull)
+  status             DealInvitationStatus @default(pending)
+  businessCardShared Boolean              @default(false)
+  createdAt          DateTime             @default(now())
+
+  @@index([dealId])
+  @@index([inviteeEmail])
+  @@index([status])
+}
+
+model InvestmentCommitment {
+  id         String                       @id @default(uuid())
+  dealId     String
+  deal       Deal                         @relation(fields: [dealId], references: [id], onDelete: Cascade)
+  investorId String
+  investor   User                         @relation(fields: [investorId], references: [id], onDelete: Cascade)
+  amount     Decimal                      @db.Decimal(14, 2)
+  currency   InvestmentCommitmentCurrency @default(USD)
+  type       InvestmentCommitmentType     @default(fixed)
+  status     InvestmentCommitmentStatus   @default(pending)
+  createdAt  DateTime                     @default(now())
+
+  @@index([dealId])
+  @@index([investorId])
+  @@index([status])
+}
+
+model DealMessage {
+  id          String            @id @default(uuid())
+  dealId      String
+  deal        Deal              @relation(fields: [dealId], references: [id], onDelete: Cascade)
+  senderId    String?
+  sender      User?             @relation(fields: [senderId], references: [id], onDelete: SetNull)
+  senderEmail String
+  content     String
+  source      DealMessageSource @default(platform)
+  createdAt   DateTime          @default(now())
+
+  @@index([dealId])
+  @@index([senderId])
+}
+
+model BusinessCard {
+  id                 String   @id @default(uuid())
+  userId             String   @unique
+  user               User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  name               String
+  email              String
+  phone              String?
+  company            String?
+  investmentCriteria Json?
+  isPublic           Boolean  @default(true)
+  createdAt          DateTime @default(now())
+  updatedAt          DateTime @updatedAt
+
+  @@index([userId])
+  @@index([email])
+}
+
 
 

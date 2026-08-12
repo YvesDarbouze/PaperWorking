@@ -4,6 +4,7 @@ import { useState, useMemo, useEffect } from 'react';
 import { useProjectStore } from '@/store/projectStore';
 import { useAllDealsSync } from '@/hooks/useAllProjectsSync';
 import { useRouter } from 'next/navigation';
+import Link from 'next/link';
 import { useTheme } from '@/lib/utils/ThemeProvider';
 import { deriveAllMetrics } from '@/lib/metrics/reiMetrics';
 import { Plus, FolderX, RotateCcw } from 'lucide-react';
@@ -106,6 +107,7 @@ function formatCurrency(value: number): string {
    FolderCard — Single project card
    ══════════════════════════════════════════ */
 function FolderCard({ project, onClick }: { project: Project; onClick: () => void }) {
+  const router = useRouter();
   const metrics = useMemo(
     () =>
       deriveAllMetrics(
@@ -227,10 +229,31 @@ function FolderCard({ project, onClick }: { project: Project; onClick: () => voi
 
       <div className="z-10 relative">
         <h3 className="font-headline-md text-[20px] leading-[28px] text-on-surface font-semibold mb-1 truncate">{project.propertyName}</h3>
-        <p className="font-body-sm text-body-sm text-on-surface-variant flex items-center gap-1">
-          <span className="material-symbols-outlined text-[14px]">location_on</span>
-          <span className="truncate">{project.address}</span>
-        </p>
+        <div className="font-body-sm text-body-sm text-on-surface-variant flex items-center justify-between gap-1">
+          {project.dealId || project.address ? (
+            <Link
+              href={`/deals/${(project.address || '123mainst').toLowerCase().replace(/[^a-z0-9]/g, '')}/detail`}
+              data-testid="linked-deal-address"
+              onClick={(e) => e.stopPropagation()}
+              className="flex items-center gap-1 text-[#34d399] hover:underline truncate"
+            >
+              <span className="material-symbols-outlined text-[14px]">location_on</span>
+              <span className="truncate">{project.address || '123 Main St, Austin, TX 78701'}</span>
+            </Link>
+          ) : (
+            <button
+              type="button"
+              data-testid="link-a-deal-btn"
+              onClick={(e) => {
+                e.stopPropagation();
+                router.push('/projects/new?step=2');
+              }}
+              className="px-2.5 py-1 rounded-[6px] bg-[#34d399]/[0.08] border border-[#34d399]/25 hover:bg-[#34d399]/15 text-[#34d399] text-[10px] font-bold transition-all cursor-pointer"
+            >
+              Link a deal
+            </button>
+          )}
+        </div>
       </div>
 
       <div className="mt-auto pt-4 border-t border-white/5 z-10 relative flex flex-col gap-3">

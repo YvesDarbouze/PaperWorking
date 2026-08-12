@@ -773,6 +773,7 @@ export interface Project {
   id: string; // Document ID
   organizationId: string; // REQUIRED: Maps project to exactly one tenant for B2B data isolation
   propertyName: string;
+  dealId?: string | null;
   syntheticAgent?: boolean;
   listedByAgent?: string;
   address: string;

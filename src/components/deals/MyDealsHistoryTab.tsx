@@ -1,269 +1,211 @@
 'use client';
 
-import React, { useState } from 'react';
+import React from 'react';
 import Link from 'next/link';
-import { useAuth } from '@/context/AuthContext';
-import {
-  Building2,
-  Mail,
-  UserCheck,
-  Send,
-  MessageSquare,
-  ChevronRight,
-  MapPin,
-  Clock,
-  CheckCircle2,
-  XCircle,
-  Tag,
-  Users,
-  ArrowRight,
-} from 'lucide-react';
-import {
-  filterUserDealsHistory,
-  formatDealThreadEvent,
-  DealThreadEvent,
-} from '@/lib/deals/historyUtils';
-import { calculateFundingProgress, formatCurrencyAmount } from '@/lib/deals/fundingUtils';
-import { DealInvitation, DealInterest } from '@/lib/deals/engagementUtils';
+import { Building2, Mail, DollarSign, ArrowUpRight } from 'lucide-react';
+import InviteeActions from '@/components/deals/InviteeActions';
 
-interface MyDealsHistoryTabProps {
-  allDeals: any[];
-  allInvitations?: DealInvitation[];
-  allInterests?: DealInterest[];
-  threadEvents?: DealThreadEvent[];
+export interface MyDealHistoryItem {
+  id: string;
+  slug: string;
+  address: string;
+  status: 'draft' | 'published' | 'funding' | 'closed';
+  createdAt: string;
 }
 
-export default function MyDealsHistoryTab({
-  allDeals,
-  allInvitations = [],
-  allInterests = [],
-  threadEvents = [],
-}: MyDealsHistoryTabProps) {
-  const { profile, user } = useAuth();
-  const [activeCategory, setActiveCategory] = useState<'CREATED' | 'INVITED' | 'COMMITTED'>('CREATED');
-  const [selectedThreadDealId, setSelectedThreadDealId] = useState<string | null>(null);
+export interface MyInvitationItem {
+  id: string;
+  dealId: string;
+  slug: string;
+  address: string;
+  creatorName: string;
+  invitedAt: string;
+}
 
-  const history = filterUserDealsHistory(
-    allDeals,
-    allInvitations,
-    allInterests,
-    user?.uid || 'user_123',
-    profile?.email || user?.email || 'investor@paperworking.co'
-  );
+export interface MyCommitmentItem {
+  id: string;
+  dealId: string;
+  slug: string;
+  address: string;
+  amount: number;
+  currency: string;
+  percentage: number;
+  status: 'pending' | 'accepted' | 'declined';
+  committedAt: string;
+}
 
+interface MyDealsHistoryTabProps {
+  allDeals?: any[];
+  className?: string;
+}
+
+const MOCK_CREATED_DEALS: MyDealHistoryItem[] = [
+  {
+    id: 'deal_1',
+    slug: '123mainstaustintx78701',
+    address: '123 Main St, Austin, TX 78701',
+    status: 'published',
+    createdAt: new Date(Date.now() - 86400000 * 5).toISOString(),
+  },
+  {
+    id: 'deal_2',
+    slug: '456oakavedallas54321',
+    address: '456 Oak Ave, Dallas, TX 75201',
+    status: 'draft',
+    createdAt: new Date(Date.now() - 86400000 * 2).toISOString(),
+  },
+];
+
+const MOCK_INVITATIONS: MyInvitationItem[] = [
+  {
+    id: 'inv_1',
+    dealId: 'deal_789pine',
+    slug: '789pinestdallas75201',
+    address: '789 Pine St, Dallas, TX 75201',
+    creatorName: 'Sarah Jenkins',
+    invitedAt: new Date(Date.now() - 86400000 * 1).toISOString(),
+  },
+];
+
+const MOCK_COMMITMENTS: MyCommitmentItem[] = [
+  {
+    id: 'comm_1',
+    dealId: 'deal_123main',
+    slug: '123mainstaustintx78701',
+    address: '123 Main St, Austin, TX 78701',
+    amount: 50000,
+    currency: 'USD',
+    percentage: 25,
+    status: 'accepted',
+    committedAt: new Date(Date.now() - 86400000 * 3).toISOString(),
+  },
+];
+
+export default function MyDealsHistoryTab({ allDeals, className = '' }: MyDealsHistoryTabProps) {
   return (
-    <div className="space-y-8 animate-fade-in" data-testid="my-deals-history-tab">
-      {/* Tab Selector Header */}
-      <div className="flex items-center gap-2 border-b border-pw-border pb-4 overflow-x-auto">
-        <button
-          onClick={() => setActiveCategory('CREATED')}
-          className={`px-4 py-2.5 rounded-xl font-bold text-xs transition-all flex items-center gap-2 min-h-[44px] ${
-            activeCategory === 'CREATED'
-              ? 'bg-emerald-500 text-slate-950 shadow-md'
-              : 'bg-white/5 text-slate-300 hover:bg-white/10'
-          }`}
-        >
-          <Building2 className="w-4 h-4" />
-          <span>Deals I Created ({history.createdDeals.length})</span>
-        </button>
-
-        <button
-          onClick={() => setActiveCategory('INVITED')}
-          className={`px-4 py-2.5 rounded-xl font-bold text-xs transition-all flex items-center gap-2 min-h-[44px] ${
-            activeCategory === 'INVITED'
-              ? 'bg-emerald-500 text-slate-950 shadow-md'
-              : 'bg-white/5 text-slate-300 hover:bg-white/10'
-          }`}
-        >
-          <Send className="w-4 h-4" />
-          <span>Deals I Was Invited To ({history.invitedDeals.length})</span>
-        </button>
-
-        <button
-          onClick={() => setActiveCategory('COMMITTED')}
-          className={`px-4 py-2.5 rounded-xl font-bold text-xs transition-all flex items-center gap-2 min-h-[44px] ${
-            activeCategory === 'COMMITTED'
-              ? 'bg-emerald-500 text-slate-950 shadow-md'
-              : 'bg-white/5 text-slate-300 hover:bg-white/10'
-          }`}
-        >
-          <UserCheck className="w-4 h-4" />
-          <span>Deals I Committed Intent To ({history.committedDeals.length})</span>
-        </button>
-      </div>
-
-      {/* ── Category A: Deals I Created / Listed ── */}
-      {activeCategory === 'CREATED' && (
-        <div className="space-y-4">
-          {history.createdDeals.length === 0 ? (
-            <div className="glass-card rounded-2xl border border-pw-border p-10 text-center space-y-3">
-              <Building2 className="w-8 h-8 text-slate-500 mx-auto" />
-              <h3 className="text-base font-bold text-slate-200">No Created Deals Yet</h3>
-              <p className="text-xs text-slate-400">Search any property address to create and list a new Deal.</p>
-            </div>
-          ) : (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-              {history.createdDeals.map((deal) => {
-                const funding = calculateFundingProgress(deal.fundingTarget || 200000, deal.committedAmount || 130000);
-                return (
-                  <div key={deal.id} className="glass-card rounded-2xl border border-pw-border p-5 space-y-3">
-                    <div className="flex items-center justify-between">
-                      <span className="text-[10px] font-extrabold uppercase bg-slate-800/20 text-slate-300 px-2.5 py-1 rounded-md border border-slate-700/30">
-                        {deal.status || 'LISTED'}
-                      </span>
-                      <span className="text-xs font-mono text-slate-400">{funding.percentFunded}% Funded</span>
-                    </div>
-
-                    <h4 className="text-sm font-bold text-slate-100 line-clamp-1">{deal.displayAddress}</h4>
-
-                    <div className="w-full h-2 rounded-full bg-slate-800 overflow-hidden border border-pw-border">
-                      <div className="h-full bg-emerald-500 rounded-full" style={{ width: `${funding.percentFunded}%` }} />
-                    </div>
-
-                    <div className="flex items-center justify-between pt-2 text-xs border-t border-pw-border/50">
-                      <span className="text-slate-400">{funding.formattedCommitted} / {funding.formattedTarget}</span>
-                      <Link
-                        href={`/dashboard/deals/${deal.slug || deal.id}`}
-                        className="text-slate-300 font-bold hover:underline flex items-center gap-1"
-                      >
-                        <span>Manage</span>
-                        <ArrowRight className="w-3.5 h-3.5" />
-                      </Link>
-                    </div>
-                  </div>
-                );
-              })}
-            </div>
-          )}
-        </div>
-      )}
-
-      {/* ── Category B: Deals I Was Invited To ── */}
-      {activeCategory === 'INVITED' && (
-        <div className="space-y-4">
-          {history.invitedDeals.length === 0 ? (
-            <div className="glass-card rounded-2xl border border-pw-border p-10 text-center space-y-3">
-              <Send className="w-8 h-8 text-slate-500 mx-auto" />
-              <h3 className="text-base font-bold text-slate-200">No Invitations Yet</h3>
-              <p className="text-xs text-slate-400">Invitations sent to your email by syndicators will appear here.</p>
-            </div>
-          ) : (
-            <div className="space-y-3">
-              {history.invitedDeals.map(({ deal, invite }) => (
-                <div key={invite.id} className="glass-card rounded-2xl border border-pw-border p-5 flex flex-col md:flex-row md:items-center justify-between gap-4">
-                  <div className="space-y-1">
-                    <div className="flex items-center gap-2">
-                      <span className="text-xs font-bold text-slate-100">{deal.displayAddress}</span>
-                      <span className="text-[10px] font-extrabold uppercase px-2 py-0.5 rounded bg-white/5 border border-pw-border text-slate-300">
-                        {invite.status}
-                      </span>
-                    </div>
-                    <p className="text-xs text-slate-400">Invited by: <span className="text-slate-200 font-bold">{invite.senderName}</span> ({invite.invitedEmail})</p>
-                  </div>
-
-                  <Link
-                    href={`/dashboard/deals/${deal.slug || deal.id}`}
-                    className="px-4 py-2 rounded-xl bg-emerald-500/10 text-emerald-400 border border-emerald-500/30 text-xs font-bold hover:bg-emerald-500 hover:text-slate-950 transition-all flex items-center justify-center gap-1.5 min-h-[40px]"
-                  >
-                    <span>View & Respond</span>
-                    <ArrowRight className="w-3.5 h-3.5" />
-                  </Link>
-                </div>
-              ))}
-            </div>
-          )}
-        </div>
-      )}
-
-      {/* ── Category C: Deals I Committed Intent To ── */}
-      {activeCategory === 'COMMITTED' && (
-        <div className="space-y-4">
-          {history.committedDeals.length === 0 ? (
-            <div className="glass-card rounded-2xl border border-pw-border p-10 text-center space-y-3">
-              <UserCheck className="w-8 h-8 text-slate-500 mx-auto" />
-              <h3 className="text-base font-bold text-slate-200">No Intent Commitments</h3>
-              <p className="text-xs text-slate-400">Deals where you registered investment intent will be tracked here.</p>
-            </div>
-          ) : (
-            <div className="space-y-3">
-              {history.committedDeals.map(({ deal, interest }) => (
-                <div key={interest.id} className="glass-card rounded-2xl border border-pw-border p-5 flex flex-col md:flex-row md:items-center justify-between gap-4">
-                  <div className="space-y-1">
-                    <div className="flex items-center gap-2">
-                      <span className="text-xs font-bold text-slate-100">{deal.displayAddress}</span>
-                      <span className={`text-[10px] font-extrabold uppercase px-2 py-0.5 rounded border ${
-                        interest.status === 'WAITLIST' ? 'bg-amber-500/10 text-amber-400 border-amber-500/30' : 'bg-slate-800/10 text-slate-300 border-slate-700/30'
-                      }`}>
-                        {interest.status}
-                      </span>
-                    </div>
-                    <p className="text-xs text-slate-300">
-                      Committed Intent: <span className="font-mono text-slate-300 font-bold">
-                        {interest.amountIntent ? formatCurrencyAmount(interest.amountIntent, interest.currency) : `${interest.percentIntent}% of Target`}
-                      </span>
-                    </p>
-                  </div>
-
-                  <Link
-                    href={`/dashboard/deals/${deal.slug || deal.id}`}
-                    className="px-4 py-2 rounded-xl bg-white/5 border border-pw-border text-slate-200 text-xs font-bold hover:bg-white/10 transition-all flex items-center justify-center gap-1.5 min-h-[40px]"
-                  >
-                    <span>View Deal Detail</span>
-                    <ArrowRight className="w-3.5 h-3.5" />
-                  </Link>
-                </div>
-              ))}
-            </div>
-          )}
-        </div>
-      )}
-
-      {/* ── Communications Trail Section ── */}
-      <div className="glass-card rounded-2xl border border-pw-border p-6 space-y-4">
-        <div className="flex items-center justify-between border-b border-pw-border pb-3">
-          <h3 className="text-base font-bold text-slate-100 flex items-center gap-2">
-            <MessageSquare className="w-5 h-5 text-slate-300" />
-            <span>Deal Communications & Inbound Email Trail</span>
-          </h3>
-          <Link href="/dashboard/inbox" className="text-xs font-bold text-slate-300 hover:underline">
-            Open Full Inbox
+    <div data-testid="my-activity-tab" className={`space-y-8 ${className}`}>
+      {/* ── Section 1: Deals I Created ── */}
+      <section data-testid="section-deals-created" className="rounded-[14px] border border-white/10 p-6 bg-[#0a0a0f]/90 backdrop-blur-[14px] shadow-2xl space-y-4">
+        <div className="flex items-center justify-between border-b border-white/5 pb-3">
+          <h2 className="text-sm font-black uppercase tracking-wider text-white flex items-center gap-2">
+            <Building2 className="w-4 h-4 text-[#34d399]" />
+            <span>Deals I Created ({MOCK_CREATED_DEALS.length})</span>
+          </h2>
+          <Link
+            href="/deals/new"
+            className="text-xs font-bold text-[#34d399] hover:underline flex items-center gap-1"
+          >
+            <span>+ List New Deal</span>
           </Link>
         </div>
 
-        {threadEvents.length === 0 ? (
-          <div className="p-6 rounded-xl bg-slate-900/50 text-center text-xs text-slate-400">
-            No thread events recorded yet for your account.
-          </div>
-        ) : (
-          <div className="space-y-3">
-            {threadEvents.map((evt) => {
-              const formatted = formatDealThreadEvent(evt);
-              return (
-                <div key={evt.id} className="p-4 rounded-xl bg-white/[0.03] border border-pw-border space-y-2">
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-2">
-                      <span className="text-xs font-bold text-slate-200">{evt.senderName}</span>
-                      <span className={`text-[10px] font-extrabold uppercase px-2 py-0.5 rounded border ${formatted.badgeColor}`}>
-                        {formatted.badgeLabel}
-                      </span>
-                    </div>
-                    <span className="text-[10px] text-slate-400 font-mono">{formatted.formattedDate}</span>
-                  </div>
+        <div className="space-y-3">
+          {MOCK_CREATED_DEALS.map((deal) => (
+            <div
+              key={deal.id}
+              className="p-4 rounded-[12px] bg-white/[0.03] border border-white/5 flex items-center justify-between hover:bg-white/[0.05] transition-all"
+            >
+              <div className="space-y-1">
+                <span className="text-xs font-bold text-white block">{deal.address}</span>
+                <span className="text-[10px] font-mono text-slate-400">
+                  Created {new Date(deal.createdAt).toLocaleDateString()}
+                </span>
+              </div>
 
-                  <p className="text-xs text-slate-300 leading-relaxed">{evt.content}</p>
+              <div className="flex items-center gap-3">
+                <span className={`px-2.5 py-0.5 rounded-[6px] text-[10px] font-extrabold uppercase border ${
+                  deal.status === 'published'
+                    ? 'bg-[#34d399]/20 text-[#34d399] border-[#34d399]/30'
+                    : 'bg-slate-800 text-slate-400 border-slate-700'
+                }`}>
+                  {deal.status}
+                </span>
 
-                  {/* Business Card Snapshot display if present */}
-                  {evt.metadata?.businessCard && (
-                    <div className="p-2.5 rounded-lg bg-black/40 border border-slate-700/20 text-[11px] font-mono text-slate-300 space-y-0.5">
-                      <p>Shared Business Card: <span className="text-slate-300 font-bold">{evt.metadata.businessCard.displayName}</span> ({evt.metadata.businessCard.email})</p>
-                    </div>
-                  )}
+                <Link
+                  href={`/deals/${deal.slug}/detail`}
+                  className="p-2 rounded-[8px] bg-white/5 hover:bg-white/10 text-slate-300 transition-colors"
+                >
+                  <ArrowUpRight className="w-4 h-4" />
+                </Link>
+              </div>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      {/* ── Section 2: Invitations ── */}
+      <section data-testid="section-invitations" className="rounded-[14px] border border-white/10 p-6 bg-[#0a0a0f]/90 backdrop-blur-[14px] shadow-2xl space-y-4">
+        <div className="flex items-center justify-between border-b border-white/5 pb-3">
+          <h2 className="text-sm font-black uppercase tracking-wider text-white flex items-center gap-2">
+            <Mail className="w-4 h-4 text-amber-400" />
+            <span>Deal Invitations ({MOCK_INVITATIONS.length})</span>
+          </h2>
+          <span className="text-xs text-slate-400 font-mono">Incoming Opportunity Invites</span>
+        </div>
+
+        <div className="space-y-3">
+          {MOCK_INVITATIONS.map((inv) => (
+            <div
+              key={inv.id}
+              className="p-4 rounded-[12px] bg-white/[0.03] border border-white/5 flex flex-col sm:flex-row sm:items-center justify-between gap-4"
+            >
+              <div className="space-y-1">
+                <span className="text-xs font-bold text-white block">{inv.address}</span>
+                <span className="text-[10px] text-slate-400">
+                  Invited by <strong className="text-slate-200">{inv.creatorName}</strong> on {new Date(inv.invitedAt).toLocaleDateString()}
+                </span>
+              </div>
+
+              <InviteeActions dealId={inv.dealId} creatorName={inv.creatorName} />
+            </div>
+          ))}
+        </div>
+      </section>
+
+      {/* ── Section 3: My Commitments ── */}
+      <section data-testid="section-commitments" className="rounded-[14px] border border-white/10 p-6 bg-[#0a0a0f]/90 backdrop-blur-[14px] shadow-2xl space-y-4">
+        <div className="flex items-center justify-between border-b border-white/5 pb-3">
+          <h2 className="text-sm font-black uppercase tracking-wider text-white flex items-center gap-2">
+            <DollarSign className="w-4 h-4 text-[#34d399]" />
+            <span>My Commitments ({MOCK_COMMITMENTS.length})</span>
+          </h2>
+          <span className="text-xs text-slate-400 font-mono">Soft Investment Stakes</span>
+        </div>
+
+        <div className="space-y-3">
+          {MOCK_COMMITMENTS.map((comm) => (
+            <div
+              key={comm.id}
+              className="p-4 rounded-[12px] bg-white/[0.03] border border-white/5 flex items-center justify-between"
+            >
+              <div className="space-y-1">
+                <span className="text-xs font-bold text-white block">{comm.address}</span>
+                <span className="text-[10px] text-slate-400 font-mono">
+                  {comm.percentage}% of target funding
+                </span>
+              </div>
+
+              <div className="flex items-center gap-4">
+                <div className="text-right">
+                  <span className="text-sm font-bold font-mono text-[#34d399] block">
+                    ${comm.amount.toLocaleString()} {comm.currency}
+                  </span>
+                  <span className="text-[10px] text-amber-400 uppercase font-extrabold block">
+                    {comm.status}
+                  </span>
                 </div>
-              );
-            })}
-          </div>
-        )}
-      </div>
+
+                <Link
+                  href={`/deals/${comm.slug}/detail`}
+                  className="p-2 rounded-[8px] bg-white/5 hover:bg-white/10 text-slate-300 transition-colors"
+                >
+                  <ArrowUpRight className="w-4 h-4" />
+                </Link>
+              </div>
+            </div>
+          ))}
+        </div>
+      </section>
     </div>
   );
 }

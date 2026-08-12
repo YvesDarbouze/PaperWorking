@@ -1179,6 +1179,10 @@ model PlaidConnection {
   consentVersion              String?
   /// JSON array from Plaid's additional_consented_products field.
   additionalConsentedProducts Json?
+  /// Plaid request ID captured on consent event
+  requestId                   String?
+  /// Plaid Link session ID captured on consent event
+  linkSessionId               String?
   createdAt                   DateTime               @default(now())
   updatedAt                   DateTime               @updatedAt
 
@@ -1212,6 +1216,10 @@ model PlaidConsentEvent {
   triggeredBy       String
   /// From Plaid's /consent/events/get endpoint, if available.
   plaidEventId      String?
+  /// Plaid request ID associated with consent event
+  requestId         String?
+  /// Plaid Link session ID associated with consent event
+  linkSessionId     String?
   createdAt         DateTime              @default(now())
 
   connection PlaidConnection @relation(fields: [plaidConnectionId], references: [id], onDelete: Cascade)

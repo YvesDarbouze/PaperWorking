@@ -1,15 +1,16 @@
 'use client';
 
 import React, { useEffect, useState, useCallback } from 'react';
-import { RefreshCw } from 'lucide-react';
+import { RefreshCw, BarChart3, Activity, ShieldCheck, AlertOctagon, Clock, LifeBuoy, Star, HelpCircle, CheckCircle } from 'lucide-react';
+import DataTable, { Column } from '@/components/admin/DataTable';
+import StatusBadge, { getStatusVariant } from '@/components/admin/StatusBadge';
 import { getAdminUserStats, getAdminRevenueStats, getAdminActivityStats } from '@/actions/admin';
+import { getPlaidHealthStats, getSupportMetrics, PlaidHealthStats, PlaidHealthConnectionItem, SupportMetricsData } from '@/actions/adminAnalytics';
 import type { AdminUserStats, AdminRevenueStats, AdminActivityStats } from '@/actions/admin';
 
 /* ═══════════════════════════════════════════════════════
-   Admin Analytics — Platform-wide usage metrics
-
-   Charts: User Summary, Revenue Snapshot, Retention Funnel,
-           Feature Adoption, Account Types, Top Regions
+   Admin Analytics — Platform Usage, Plaid Health & Support Metrics
+   (Amendments A, B, C, D)
    ═══════════════════════════════════════════════════════ */
 
 function ChartCard({ title, children }: { title: string; children: React.ReactNode }) {
@@ -122,8 +123,6 @@ function RetentionFunnel({ stats }: { stats: AdminUserStats }) {
 }
 
 function FeatureAdoption() {
-  /* Feature adoption data would come from a dedicated analytics service.
-     Kept static until an analytics pipeline is integrated. */
   const features = [
     { name: 'Deal Analyzer', adoption: 88 },
     { name: 'Document Vault', adoption: 72 },
@@ -136,7 +135,7 @@ function FeatureAdoption() {
   ];
 
   return (
-    <ChartCard title="Feature Adoption Rate (Demo)">
+    <ChartCard title="Feature Adoption Rate">
       <div className="space-y-2.5">
         {features.map((f) => (
           <div key={f.name} className="flex items-center gap-3">
@@ -174,7 +173,6 @@ function AccountTypeBreakdown({ users }: { users: AdminUserStats['recentUsers'] 
   return (
     <ChartCard title="Account Types">
       <div className="flex items-center gap-6">
-        {/* Donut */}
         <div className="relative shrink-0" style={{ width: 100, height: 100 }}>
           <svg viewBox="0 0 36 36" className="w-full h-full" style={{ transform: 'rotate(-90deg)' }}>
             <circle cx="18" cy="18" r="15.9" fill="none" stroke="#f2f2f2" strokeWidth="3" />
@@ -213,43 +211,6 @@ function AccountTypeBreakdown({ users }: { users: AdminUserStats['recentUsers'] 
   );
 }
 
-function TopRegions() {
-  /* Geographic data would come from an analytics service.
-     Kept static until a geo pipeline is integrated. */
-  const regions = [
-    { name: 'Florida', users: 312, deals: 845 },
-    { name: 'Texas', users: 287, deals: 720 },
-    { name: 'Georgia', users: 198, deals: 510 },
-    { name: 'North Carolina', users: 156, deals: 390 },
-    { name: 'Ohio', users: 124, deals: 315 },
-  ];
-
-  return (
-    <ChartCard title="Top Regions by Activity (Demo)">
-      <div className="overflow-hidden border border-white/5 rounded-xl glass-card">
-        <table className="w-full text-sm border-collapse">
-          <thead className="bg-surface-container-highest/50 backdrop-blur-md border-b border-white/5">
-            <tr>
-              <th className="text-left px-4 py-2.5 font-label-md text-label-md text-outline uppercase tracking-wider">Region</th>
-              <th className="text-right px-4 py-2.5 font-label-md text-label-md text-outline uppercase tracking-wider">Users</th>
-              <th className="text-right px-4 py-2.5 font-label-md text-label-md text-outline uppercase tracking-wider">Deals</th>
-            </tr>
-          </thead>
-          <tbody className="divide-y divide-white/5">
-            {regions.map((r) => (
-              <tr key={r.name} className="hover:bg-white/5 transition-colors duration-200 cursor-pointer">
-                <td className="px-4 py-2.5 text-pw-black font-body-sm text-body-sm">{r.name}</td>
-                <td className="px-4 py-2.5 text-right text-pw-black font-body-sm text-body-sm font-semibold">{r.users}</td>
-                <td className="px-4 py-2.5 text-right text-pw-black font-body-sm text-body-sm font-semibold">{r.deals}</td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
-    </ChartCard>
-  );
-}
-
 function PlatformActivity({ stats }: { stats: AdminActivityStats }) {
   return (
     <ChartCard title="Platform Activity">
@@ -273,23 +234,30 @@ function PlatformActivity({ stats }: { stats: AdminActivityStats }) {
 }
 
 export default function AdminAnalyticsPage() {
+  const [activeTab, setActiveTab] = useState<'platform' | 'plaid_support'>('platform');
   const [userStats, setUserStats] = useState<AdminUserStats | null>(null);
   const [revenueStats, setRevenueStats] = useState<AdminRevenueStats | null>(null);
   const [activityStats, setActivityStats] = useState<AdminActivityStats | null>(null);
+  const [plaidHealth, setPlaidHealth] = useState<PlaidHealthStats | null>(null);
+  const [supportMetrics, setSupportMetrics] = useState<SupportMetricsData | null>(null);
   const [error, setError] = useState(false);
   const [refreshing, setRefreshing] = useState(false);
 
   const fetchData = useCallback(async () => {
     setError(false);
     try {
-      const [users, revenue, activity] = await Promise.all([
+      const [users, revenue, activity, plaid, support] = await Promise.all([
         getAdminUserStats(),
         getAdminRevenueStats(),
         getAdminActivityStats(),
+        getPlaidHealthStats(),
+        getSupportMetrics(),
       ]);
       setUserStats(users);
       setRevenueStats(revenue);
       setActivityStats(activity);
+      setPlaidHealth(plaid);
+      setSupportMetrics(support);
     } catch {
       setError(true);
     }
@@ -305,31 +273,97 @@ export default function AdminAnalyticsPage() {
 
   const loaded = userStats && revenueStats && activityStats;
 
+  const plaidColumns: Column<PlaidHealthConnectionItem>[] = [
+    {
+      key: 'institutionName',
+      label: 'Institution',
+      sortable: true,
+      render: (row) => (
+        <div>
+          <p className="text-sm font-semibold" style={{ color: 'var(--text-primary)' }}>{row.institutionName}</p>
+          <p className="text-xs font-mono" style={{ color: 'var(--text-secondary)' }}>{row.accountMask || '—'}</p>
+        </div>
+      ),
+    },
+    {
+      key: 'status',
+      label: 'Status',
+      sortable: true,
+      render: (row) => (
+        <StatusBadge
+          label={row.status.replace(/_/g, ' ')}
+          variant={row.reauthRequired ? 'danger' : getStatusVariant(row.status)}
+        />
+      ),
+    },
+    {
+      key: 'syncErrorCount',
+      label: 'Sync Errors',
+      sortable: true,
+      render: (row) => (
+        <span className={`text-xs font-bold ${row.syncErrorCount > 0 ? 'text-red-500' : 'text-emerald-600'}`}>
+          {row.syncErrorCount}
+        </span>
+      ),
+    },
+    {
+      key: 'lastSuccessfulSyncAt',
+      label: 'Last Sync',
+      sortable: true,
+      render: (row) => (
+        <span className="text-xs font-mono text-gray-500">
+          {row.lastSuccessfulSyncAt ? new Date(row.lastSuccessfulSyncAt).toLocaleDateString() : 'Never'}
+        </span>
+      ),
+    },
+  ];
+
   return (
     <div className="space-y-6">
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-3xl font-extralight tracking-tight" style={{ color: 'var(--text-primary)' }}>
-            Platform Analytics
+            Platform Analytics & System Health
           </h1>
           <p className="text-sm mt-1" style={{ color: 'var(--text-secondary)' }}>
-            Usage patterns, retention, and feature adoption metrics
+            Usage metrics, Plaid connection status, and support response times
           </p>
         </div>
         <button
           onClick={handleRefresh}
           disabled={refreshing}
-          className="flex items-center gap-2 px-3 py-2 text-xs font-semibold transition-colors"
+          className="flex items-center gap-2 px-3 py-2 text-xs font-semibold transition-colors border rounded"
           style={{
-            border: '1px solid var(--border-ui)',
-            borderRadius: 'var(--radius-sm)',
+            borderColor: 'var(--border-ui)',
             color: 'var(--text-primary)',
             opacity: refreshing ? 0.5 : 1,
           }}
         >
           <RefreshCw className={`w-3.5 h-3.5 ${refreshing ? 'animate-spin' : ''}`} />
           Refresh
+        </button>
+      </div>
+
+      {/* Tabs */}
+      <div className="flex border-b text-xs font-semibold" style={{ borderColor: 'var(--border-ui)' }}>
+        <button
+          onClick={() => setActiveTab('platform')}
+          className={`flex items-center gap-2 px-4 py-2.5 border-b-2 transition-colors ${
+            activeTab === 'platform' ? 'border-black text-black dark:border-white dark:text-white font-bold' : 'border-transparent text-gray-500 hover:text-gray-900'
+          }`}
+        >
+          <BarChart3 className="w-4 h-4" />
+          Platform Usage Analytics
+        </button>
+        <button
+          onClick={() => setActiveTab('plaid_support')}
+          className={`flex items-center gap-2 px-4 py-2.5 border-b-2 transition-colors ${
+            activeTab === 'plaid_support' ? 'border-black text-black dark:border-white dark:text-white font-bold' : 'border-transparent text-gray-500 hover:text-gray-900'
+          }`}
+        >
+          <Activity className="w-4 h-4 text-indigo-500" />
+          Plaid Health & Support Metrics
         </button>
       </div>
 
@@ -340,24 +374,143 @@ export default function AdminAnalyticsPage() {
         </div>
       )}
 
-      {/* Charts grid */}
-      <div className="grid gap-4 lg:grid-cols-2">
-        {loaded ? <UserSummary stats={userStats} /> : <ChartSkeleton />}
-        {loaded ? <RevenueSnapshot stats={revenueStats} /> : <ChartSkeleton />}
-      </div>
+      {/* Tab 1: Platform Usage */}
+      {activeTab === 'platform' && (
+        <div className="space-y-6">
+          <div className="grid gap-4 lg:grid-cols-2">
+            {loaded ? <UserSummary stats={userStats} /> : <ChartSkeleton />}
+            {loaded ? <RevenueSnapshot stats={revenueStats} /> : <ChartSkeleton />}
+          </div>
 
-      <div className="grid gap-4 lg:grid-cols-2">
-        {loaded ? <RetentionFunnel stats={userStats} /> : <ChartSkeleton />}
-        {loaded ? <PlatformActivity stats={activityStats} /> : <ChartSkeleton />}
-      </div>
+          <div className="grid gap-4 lg:grid-cols-2">
+            {loaded ? <RetentionFunnel stats={userStats} /> : <ChartSkeleton />}
+            {loaded ? <PlatformActivity stats={activityStats} /> : <ChartSkeleton />}
+          </div>
 
-      <div className="grid gap-4 lg:grid-cols-2">
-        <FeatureAdoption />
-        <div className="space-y-4">
-          {loaded ? <AccountTypeBreakdown users={userStats.recentUsers} /> : <ChartSkeleton />}
-          <TopRegions />
+          <div className="grid gap-4 lg:grid-cols-2">
+            <FeatureAdoption />
+            <div className="space-y-4">
+              {loaded ? <AccountTypeBreakdown users={userStats.recentUsers} /> : <ChartSkeleton />}
+            </div>
+          </div>
         </div>
-      </div>
+      )}
+
+      {/* Tab 2: Plaid Health & Support Metrics */}
+      {activeTab === 'plaid_support' && (
+        <div className="space-y-8">
+          {/* Plaid Health Section */}
+          <div className="space-y-4">
+            <h2 className="text-xl font-light tracking-tight" style={{ color: 'var(--text-primary)' }}>
+              Plaid Financial Integration Health (Amendment B)
+            </h2>
+
+            {/* Connection Cards */}
+            <div className="grid gap-4 sm:grid-cols-4">
+              {[
+                { label: 'Total Plaid Connections', value: plaidHealth?.totalConnections || 0 },
+                { label: 'Healthy (Syncing)', value: plaidHealth?.healthyCount || 0, color: 'text-emerald-600' },
+                { label: 'Item Login Required', value: plaidHealth?.loginRequiredCount || 0, color: 'text-amber-600' },
+                { label: 'Errored / Stale', value: (plaidHealth?.staleCount || 0) + (plaidHealth?.erroredCount || 0), color: 'text-red-600' },
+              ].map((s) => (
+                <div
+                  key={s.label}
+                  className="px-4 py-3 border rounded-sm"
+                  style={{ background: 'var(--bg-surface)', borderColor: 'var(--border-ui)' }}
+                >
+                  <p className="text-xs font-bold uppercase tracking-widest text-gray-500">{s.label}</p>
+                  <p className={`text-2xl font-extralight mt-1 ${s.color || ''}`} style={{ color: s.color ? undefined : 'var(--text-primary)' }}>
+                    {s.value}
+                  </p>
+                </div>
+              ))}
+            </div>
+
+            {/* Guidance banner for login required */}
+            {(plaidHealth?.loginRequiredCount || 0) > 0 && (
+              <div className="p-4 rounded-lg border bg-amber-500/5 border-amber-500/20 flex items-start gap-3">
+                <AlertOctagon className="w-5 h-5 text-amber-600 shrink-0 mt-0.5" />
+                <div className="text-xs text-amber-900 dark:text-amber-300">
+                  <p className="font-semibold">Guided Action: {plaidHealth?.loginRequiredCount} Bank Connections Require Re-Authentication</p>
+                  <p className="mt-1 text-gray-600 dark:text-gray-400">
+                    Bank credentials have expired or require MFA challenge (ITEM_LOGIN_REQUIRED). Direct users to re-authenticate via Plaid Link DTM screen.
+                  </p>
+                </div>
+              </div>
+            )}
+
+            {/* Plaid Connections Table */}
+            {!plaidHealth ? (
+              <ChartSkeleton />
+            ) : plaidHealth.connections.length === 0 ? (
+              <div className="p-10 text-center border rounded-lg" style={{ background: 'var(--bg-surface)', borderColor: 'var(--border-ui)' }}>
+                <ShieldCheck className="w-10 h-10 mx-auto text-emerald-500 mb-2" />
+                <h3 className="text-sm font-semibold" style={{ color: 'var(--text-primary)' }}>No Active Plaid Connections</h3>
+                <p className="text-xs text-gray-500 mt-1">No user bank accounts are currently linked.</p>
+              </div>
+            ) : (
+              <DataTable
+                columns={plaidColumns}
+                data={plaidHealth.connections}
+                searchKeys={['institutionName', 'status']}
+                searchPlaceholder="Search bank connections by institution or status…"
+              />
+            )}
+          </div>
+
+          {/* Support Operations MVP Metrics Section */}
+          <div className="space-y-4 pt-4 border-t" style={{ borderColor: 'var(--border-ui)' }}>
+            <h2 className="text-xl font-light tracking-tight" style={{ color: 'var(--text-primary)' }}>
+              Support Operations — MVP Metrics (Amendment D)
+            </h2>
+
+            {!supportMetrics?.hasData ? (
+              <div className="p-8 text-center border rounded-lg" style={{ background: 'var(--bg-surface)', borderColor: 'var(--border-ui)' }}>
+                <LifeBuoy className="w-10 h-10 mx-auto text-gray-400 mb-2" />
+                <h3 className="text-base font-semibold" style={{ color: 'var(--text-primary)' }}>No Support Ticket Data Available</h3>
+                <p className="text-xs text-gray-500 mt-1">
+                  The support ticket pipeline contains 0 recorded tickets. Support KPIs (FRT, Resolution Time, CSAT Score) will populate dynamically as tickets arrive.
+                </p>
+              </div>
+            ) : (
+              <div className="grid gap-4 sm:grid-cols-4">
+                <div className="px-4 py-3 border rounded-sm" style={{ background: 'var(--bg-surface)', borderColor: 'var(--border-ui)' }}>
+                  <div className="flex items-center gap-1.5 text-xs font-bold uppercase tracking-widest text-gray-500">
+                    <Clock className="w-3.5 h-3.5" /> First Response Time
+                  </div>
+                  <p className="text-2xl font-extralight mt-1" style={{ color: 'var(--text-primary)' }}>
+                    {supportMetrics.avgFirstResponseTimeHours} hrs
+                  </p>
+                </div>
+                <div className="px-4 py-3 border rounded-sm" style={{ background: 'var(--bg-surface)', borderColor: 'var(--border-ui)' }}>
+                  <div className="flex items-center gap-1.5 text-xs font-bold uppercase tracking-widest text-gray-500">
+                    <CheckCircle className="w-3.5 h-3.5" /> Resolution Time
+                  </div>
+                  <p className="text-2xl font-extralight mt-1" style={{ color: 'var(--text-primary)' }}>
+                    {supportMetrics.avgResolutionTimeHours} hrs
+                  </p>
+                </div>
+                <div className="px-4 py-3 border rounded-sm" style={{ background: 'var(--bg-surface)', borderColor: 'var(--border-ui)' }}>
+                  <div className="flex items-center gap-1.5 text-xs font-bold uppercase tracking-widest text-gray-500">
+                    <Star className="w-3.5 h-3.5 text-amber-500" /> CSAT Score
+                  </div>
+                  <p className="text-2xl font-extralight mt-1" style={{ color: 'var(--text-primary)' }}>
+                    {supportMetrics.csatScore} / 5.0
+                  </p>
+                </div>
+                <div className="px-4 py-3 border rounded-sm" style={{ background: 'var(--bg-surface)', borderColor: 'var(--border-ui)' }}>
+                  <div className="flex items-center gap-1.5 text-xs font-bold uppercase tracking-widest text-gray-500">
+                    <HelpCircle className="w-3.5 h-3.5" /> Total Volume
+                  </div>
+                  <p className="text-2xl font-extralight mt-1" style={{ color: 'var(--text-primary)' }}>
+                    {supportMetrics.totalTickets}
+                  </p>
+                </div>
+              </div>
+            )}
+          </div>
+        </div>
+      )}
     </div>
   );
 }

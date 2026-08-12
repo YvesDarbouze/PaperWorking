@@ -106,7 +106,7 @@ export async function fetchUser360Data(targetUid: string): Promise<User360Data |
         plaidConnections = conns.map((c) => ({
           id: c.id,
           itemId: c.itemId,
-          institutionName: c.institutionName,
+          institutionName: c.institutionName || 'Bank Account',
           accountMask: c.accountMask || null,
           status: c.status,
           syncErrorCount: c.syncErrorCount,
@@ -130,7 +130,7 @@ export async function fetchUser360Data(targetUid: string): Promise<User360Data |
         });
 
         organizations = collabs.map((c) => ({
-          organizationId: c.project?.organizationId || `org_${c.projectId}`,
+          organizationId: (c.project as any)?.entityName || (c.project as any)?.createdById || `org_${c.projectId}`,
           projectId: c.projectId,
           projectDisplayName: c.project?.displayName || c.project?.addressLine || 'Property Project',
           role: c.role,

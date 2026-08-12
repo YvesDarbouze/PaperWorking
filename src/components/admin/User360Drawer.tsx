@@ -405,7 +405,7 @@ export default function User360Drawer({ targetUid, onClose, onRefreshParent }: U
                       <p className="text-xs uppercase font-bold text-gray-500">Subscription Status</p>
                       <div className="mt-1">
                         <StatusBadge
-                          label={billing?.subscriptionStatus.replace('_', ' ')}
+                          label={(billing?.subscriptionStatus || 'inactive').replace('_', ' ')}
                           variant={billing?.subscriptionStatus === 'active' ? 'success' : 'warning'}
                         />
                       </div>

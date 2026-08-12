@@ -32,8 +32,10 @@ export interface PlaidHealthStats {
 export interface SupportMetricsData {
   hasData: boolean;
   totalTickets: number;
-  avgFirstResponseTimeHours: number;
+  openBacklogCount: number;
+  medianFirstResponseTimeHours: number;
   avgResolutionTimeHours: number;
+  firstContactResolutionPct: number;
   csatScore: number;
   categoryBreakdown: { category: string; count: number; percentage: number }[];
 }
@@ -142,8 +144,8 @@ export async function getPlaidHealthStats(): Promise<PlaidHealthStats> {
 }
 
 /**
- * Server Action: Support Operations MVP Metrics Engine (Amendment D)
- * Computes FRT, Resolution Time, CSAT Score, and Category Volume.
+ * Server Action: Support Operations Metrics Engine Reconciled to real support_tickets (Part B)
+ * Computes Median FRT (excluding notes), FCR, Volume/Backlog, and Category Breakdown.
  */
 export async function getSupportMetrics(): Promise<SupportMetricsData> {
   const token = await getSessionToken();
@@ -152,21 +154,25 @@ export async function getSupportMetrics(): Promise<SupportMetricsData> {
     return {
       hasData: false,
       totalTickets: 0,
-      avgFirstResponseTimeHours: 0,
+      openBacklogCount: 0,
+      medianFirstResponseTimeHours: 0,
       avgResolutionTimeHours: 0,
+      firstContactResolutionPct: 0,
       csatScore: 0,
       categoryBreakdown: [],
     };
   }
 
   try {
-    const ticketsSnap = await adminDb.collection('tickets').get();
+    const ticketsSnap = await adminDb.collection('support_tickets').get();
     if (ticketsSnap.empty) {
       return {
         hasData: false,
         totalTickets: 0,
-        avgFirstResponseTimeHours: 0,
+        openBacklogCount: 0,
+        medianFirstResponseTimeHours: 0,
         avgResolutionTimeHours: 0,
+        firstContactResolutionPct: 0,
         csatScore: 0,
         categoryBreakdown: [],
       };
@@ -174,33 +180,33 @@ export async function getSupportMetrics(): Promise<SupportMetricsData> {
 
     const tickets = ticketsSnap.docs.map((doc) => doc.data());
     const totalTickets = tickets.length;
+    let openBacklogCount = 0;
 
-    let frtSum = 0;
-    let frtCount = 0;
+    const frtDurations: number[] = [];
     let resSum = 0;
     let resCount = 0;
+    let fcrSuccessCount = 0;
+    let closedCount = 0;
     let csatSum = 0;
     let csatCount = 0;
 
-    const categories: Record<string, number> = {
-      BILLING: 0,
-      TECHNICAL: 0,
-      ACCOUNT: 0,
-      PLAID: 0,
-      GENERAL: 0,
-    };
+    const categories: Record<string, number> = {};
 
     tickets.forEach((t) => {
-      const cat = (t.category || 'GENERAL').toUpperCase();
-      categories[cat] = (categories[cat] || 0) + 1;
+      if (t.status !== 'closed') openBacklogCount++;
 
-      const created = t.createdAt?.toDate ? t.createdAt.toDate().getTime() : null;
-      const firstResp = t.firstRespondedAt?.toDate ? t.firstRespondedAt.toDate().getTime() : null;
-      const resolved = t.resolvedAt?.toDate ? t.resolvedAt.toDate().getTime() : null;
+      // Tag categories
+      const tags: string[] = Array.isArray(t.tags) ? t.tags : ['general-inquiry'];
+      tags.forEach((tag) => {
+        categories[tag] = (categories[tag] || 0) + 1;
+      });
+
+      const created = t.createdAt?.toDate ? t.createdAt.toDate().getTime() : (t.createdAt ? new Date(t.createdAt).getTime() : null);
+      const firstResp = t.firstResponseAt?.toDate ? t.firstResponseAt.toDate().getTime() : (t.firstResponseAt ? new Date(t.firstResponseAt).getTime() : null);
+      const resolved = t.resolvedAt?.toDate ? t.resolvedAt.toDate().getTime() : (t.resolvedAt ? new Date(t.resolvedAt).getTime() : null);
 
       if (created && firstResp && firstResp >= created) {
-        frtSum += (firstResp - created) / (1000 * 60 * 60);
-        frtCount++;
+        frtDurations.push((firstResp - created) / (1000 * 60 * 60));
       }
 
       if (created && resolved && resolved >= created) {
@@ -208,11 +214,30 @@ export async function getSupportMetrics(): Promise<SupportMetricsData> {
         resCount++;
       }
 
-      if (typeof t.rating === 'number' && t.rating >= 1 && t.rating <= 5) {
-        csatSum += t.rating;
+      if (t.status === 'closed') {
+        closedCount++;
+        if (t.fcrEligible !== false && t.firstResponseAt) {
+          fcrSuccessCount++;
+        }
+      }
+
+      if (typeof t.csatRating === 'number' && t.csatRating >= 1 && t.csatRating <= 5) {
+        csatSum += t.csatRating;
         csatCount++;
       }
     });
+
+    // Compute MEDIAN First Response Time
+    let medianFirstResponseTimeHours = 0;
+    if (frtDurations.length > 0) {
+      frtDurations.sort((a, b) => a - b);
+      const mid = Math.floor(frtDurations.length / 2);
+      medianFirstResponseTimeHours = frtDurations.length % 2 !== 0
+        ? frtDurations[mid]
+        : (frtDurations[mid - 1] + frtDurations[mid]) / 2;
+    }
+
+    const firstContactResolutionPct = closedCount > 0 ? Math.round((fcrSuccessCount / closedCount) * 100) : 0;
 
     const categoryBreakdown = Object.entries(categories).map(([category, count]) => ({
       category,
@@ -223,8 +248,10 @@ export async function getSupportMetrics(): Promise<SupportMetricsData> {
     return {
       hasData: totalTickets > 0,
       totalTickets,
-      avgFirstResponseTimeHours: frtCount > 0 ? Number((frtSum / frtCount).toFixed(1)) : 0,
+      openBacklogCount,
+      medianFirstResponseTimeHours: Number(medianFirstResponseTimeHours.toFixed(1)),
       avgResolutionTimeHours: resCount > 0 ? Number((resSum / resCount).toFixed(1)) : 0,
+      firstContactResolutionPct,
       csatScore: csatCount > 0 ? Number((csatSum / csatCount).toFixed(1)) : 0,
       categoryBreakdown,
     };
@@ -233,8 +260,10 @@ export async function getSupportMetrics(): Promise<SupportMetricsData> {
     return {
       hasData: false,
       totalTickets: 0,
-      avgFirstResponseTimeHours: 0,
+      openBacklogCount: 0,
+      medianFirstResponseTimeHours: 0,
       avgResolutionTimeHours: 0,
+      firstContactResolutionPct: 0,
       csatScore: 0,
       categoryBreakdown: [],
     };

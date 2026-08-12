@@ -61,8 +61,10 @@ describe('PROMPT 5 — Support Metrics & Plaid Health Surface Unit Suite', () =>
       const emptyMetrics: SupportMetricsData = {
         hasData: false,
         totalTickets: 0,
-        avgFirstResponseTimeHours: 0,
+        openBacklogCount: 0,
+        medianFirstResponseTimeHours: 0,
         avgResolutionTimeHours: 0,
+        firstContactResolutionPct: 0,
         csatScore: 0,
         categoryBreakdown: [],
       };

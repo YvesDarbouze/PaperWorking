@@ -476,34 +476,37 @@ export default function AdminAnalyticsPage() {
               <div className="grid gap-4 sm:grid-cols-4">
                 <div className="px-4 py-3 border rounded-sm" style={{ background: 'var(--bg-surface)', borderColor: 'var(--border-ui)' }}>
                   <div className="flex items-center gap-1.5 text-xs font-bold uppercase tracking-widest text-gray-500">
-                    <Clock className="w-3.5 h-3.5" /> First Response Time
+                    <Clock className="w-3.5 h-3.5" /> Median FRT (excl. notes)
                   </div>
                   <p className="text-2xl font-extralight mt-1" style={{ color: 'var(--text-primary)' }}>
-                    {supportMetrics.avgFirstResponseTimeHours} hrs
+                    {supportMetrics.medianFirstResponseTimeHours} hrs
                   </p>
                 </div>
                 <div className="px-4 py-3 border rounded-sm" style={{ background: 'var(--bg-surface)', borderColor: 'var(--border-ui)' }}>
                   <div className="flex items-center gap-1.5 text-xs font-bold uppercase tracking-widest text-gray-500">
-                    <CheckCircle className="w-3.5 h-3.5" /> Resolution Time
+                    <CheckCircle className="w-3.5 h-3.5" /> First Contact Resolution
                   </div>
                   <p className="text-2xl font-extralight mt-1" style={{ color: 'var(--text-primary)' }}>
-                    {supportMetrics.avgResolutionTimeHours} hrs
+                    {supportMetrics.firstContactResolutionPct}%
                   </p>
+                  <span className="text-[10px] text-gray-500 block mt-0.5" title="Tickets closed with 1 internal reply and 0 reopens">
+                    1-reply resolution rate
+                  </span>
                 </div>
                 <div className="px-4 py-3 border rounded-sm" style={{ background: 'var(--bg-surface)', borderColor: 'var(--border-ui)' }}>
                   <div className="flex items-center gap-1.5 text-xs font-bold uppercase tracking-widest text-gray-500">
                     <Star className="w-3.5 h-3.5 text-amber-500" /> CSAT Score
                   </div>
                   <p className="text-2xl font-extralight mt-1" style={{ color: 'var(--text-primary)' }}>
-                    {supportMetrics.csatScore} / 5.0
+                    {supportMetrics.csatScore > 0 ? `${supportMetrics.csatScore} / 5.0` : '—'}
                   </p>
                 </div>
                 <div className="px-4 py-3 border rounded-sm" style={{ background: 'var(--bg-surface)', borderColor: 'var(--border-ui)' }}>
                   <div className="flex items-center gap-1.5 text-xs font-bold uppercase tracking-widest text-gray-500">
-                    <HelpCircle className="w-3.5 h-3.5" /> Total Volume
+                    <HelpCircle className="w-3.5 h-3.5" /> Total Volume (Open)
                   </div>
                   <p className="text-2xl font-extralight mt-1" style={{ color: 'var(--text-primary)' }}>
-                    {supportMetrics.totalTickets}
+                    {supportMetrics.totalTickets} ({supportMetrics.openBacklogCount})
                   </p>
                 </div>
               </div>

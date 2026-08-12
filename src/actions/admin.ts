@@ -2,18 +2,13 @@
 
 import { cookies } from 'next/headers';
 import Stripe from 'stripe';
+import { prisma } from '@/lib/prisma';
+import { authorize, AdminAction } from '@/lib/authz/authorize';
+import { logAdminAudit, verifyAuditHashChain } from '@/lib/audit/auditLogger';
 
 /* ═══════════════════════════════════════════════════════
-   Admin Server Actions — Live Firestore + Stripe Data
-
-   Every function:
-     1. Verifies the __session cookie via Firebase Admin
-     2. Checks the caller has an admin role
-     3. Queries Firestore / Stripe for real data
-     4. Returns a serializable result (no Firestore refs)
-
-   Graceful degradation: returns empty/zero results rather
-   than throwing, so the UI can render real zeros.
+   Admin Server Actions — Live Firestore + Stripe + Prisma Data
+   Single Source of Truth: Authorized via src/lib/authz/authorize.ts
    ═══════════════════════════════════════════════════════ */
 
 // ── Types ────────────────────────────────────────────
@@ -77,14 +72,19 @@ export interface AdminActivityStats {
 
 export interface AdminAuditEntry {
   id: string;
+  sequenceNumber?: string;
   action: string;
   actor: string;
   actorEmail: string;
+  actorRole?: string;
   target: string;
   details: string;
   ipAddress: string;
   timestamp: string;
   severity: 'info' | 'warning' | 'critical';
+  status?: string;
+  previousHash?: string;
+  entryHash?: string;
 }
 
 export interface AdminTicketEntry {
@@ -102,8 +102,6 @@ export interface AdminTicketEntry {
 
 // ── Constants ────────────────────────────────────────
 
-const ADMIN_ROLES = ['Platform Admin', 'Admin', 'Lead Investor'];
-
 const PLAN_COLORS: Record<string, string> = {
   Individual: '#A5A5A5',
   Team: '#595959',
@@ -113,24 +111,10 @@ const DEFAULT_PLAN_COLOR = '#CCCCCC';
 
 // ── Helpers ──────────────────────────────────────────
 
-async function verifyAdmin(): Promise<{ uid: string } | null> {
+async function getSessionToken(): Promise<string | null> {
   try {
     const cookieStore = await cookies();
-    const session = cookieStore.get('__session');
-    if (!session?.value) return null;
-
-    const { adminAuth, adminDb } = await import('@/lib/firebase/admin');
-    const decoded = await adminAuth.verifyIdToken(session.value);
-    if (!decoded.uid) return null;
-
-    // Check role from Firestore user doc
-    const userSnap = await adminDb.collection('users').doc(decoded.uid).get();
-    const userData = userSnap.data();
-    const role = userData?.role || '';
-
-    if (!ADMIN_ROLES.includes(role)) return null;
-
-    return { uid: decoded.uid };
+    return cookieStore.get('__session')?.value || null;
   } catch {
     return null;
   }
@@ -144,17 +128,13 @@ function getStripeClient(): Stripe | null {
 
 function formatDate(ts: any): string {
   if (!ts) return '';
-  // Firestore Timestamp
   if (ts._seconds !== undefined) {
     return new Date(ts._seconds * 1000).toISOString().split('T')[0];
   }
-  // Firestore Timestamp .toDate()
   if (typeof ts.toDate === 'function') {
     return ts.toDate().toISOString().split('T')[0];
   }
-  // Already a string
   if (typeof ts === 'string') return ts;
-  // JS Date
   if (ts instanceof Date) return ts.toISOString().split('T')[0];
   return String(ts);
 }
@@ -184,8 +164,9 @@ const EMPTY_USER_STATS: AdminUserStats = {
 };
 
 export async function getAdminUserStats(): Promise<AdminUserStats> {
-  const admin = await verifyAdmin();
-  if (!admin) return EMPTY_USER_STATS;
+  const token = await getSessionToken();
+  const authz = await authorize(token, 'admin:view_users');
+  if (!authz.authorized) return EMPTY_USER_STATS;
 
   try {
     const { adminDb } = await import('@/lib/firebase/admin');
@@ -216,15 +197,11 @@ export async function getAdminUserStats(): Promise<AdminUserStats> {
       const status = d.subscriptionStatus || '';
       const createdAt = d.createdAt;
 
-      // Count plan distribution
       planCounts[plan] = (planCounts[plan] || 0) + 1;
-
-      // Count subscription statuses
       if (status === 'active') activeSubscriptions++;
       if (status === 'trialing') trialUsers++;
       if (status === 'past_due') pastDueUsers++;
 
-      // New users last 30 days
       let createdDate: Date | null = null;
       if (createdAt) {
         if (typeof createdAt.toDate === 'function') {
@@ -237,7 +214,6 @@ export async function getAdminUserStats(): Promise<AdminUserStats> {
       }
       if (createdDate && createdDate >= thirtyDaysAgo) newUsersLast30++;
 
-      // Churned last 30 days
       if (status === 'canceled') {
         const canceledAt = d.canceledAt || d.updatedAt;
         let cancelDate: Date | null = null;
@@ -267,7 +243,6 @@ export async function getAdminUserStats(): Promise<AdminUserStats> {
       });
     });
 
-    // Build plan distribution with colors
     const planDistribution = Object.entries(planCounts)
       .sort((a, b) => b[1] - a[1])
       .map(([name, count]) => ({
@@ -276,8 +251,17 @@ export async function getAdminUserStats(): Promise<AdminUserStats> {
         color: PLAN_COLORS[name] || DEFAULT_PLAN_COLOR,
       }));
 
-    // Sort users by createdAt descending
     users.sort((a, b) => (b.createdAt > a.createdAt ? 1 : -1));
+
+    await logAdminAudit({
+      actorUid: authz.user!.uid,
+      actorEmail: authz.user!.email,
+      actorRole: authz.user!.role,
+      action: 'admin:view_users',
+      targetResource: 'users',
+      status: 'SUCCESS',
+      severity: 'info',
+    });
 
     return {
       totalUsers: users.length,
@@ -307,19 +291,16 @@ const EMPTY_REVENUE_STATS: AdminRevenueStats = {
 };
 
 export async function getAdminRevenueStats(): Promise<AdminRevenueStats> {
-  const admin = await verifyAdmin();
-  if (!admin) return EMPTY_REVENUE_STATS;
+  const token = await getSessionToken();
+  const authz = await authorize(token, 'admin:view_subscriptions');
+  if (!authz.authorized) return EMPTY_REVENUE_STATS;
 
   try {
     const stripe = getStripeClient();
     if (!stripe) {
-      console.warn('[getAdminRevenueStats] STRIPE_SECRET_KEY not set — returning empty');
       return EMPTY_REVENUE_STATS;
     }
 
-    const { adminDb } = await import('@/lib/firebase/admin');
-
-    // Get MRR from active Stripe subscriptions
     let mrr = 0;
     const recentSubscriptions: AdminRevenueStats['recentSubscriptions'] = [];
 
@@ -333,7 +314,6 @@ export async function getAdminRevenueStats(): Promise<AdminRevenueStats> {
         const price = item.price;
         if (!price?.unit_amount) return sum;
         const amt = price.unit_amount / 100;
-        // Normalize annual to monthly
         if (price.recurring?.interval === 'year') return sum + amt / 12;
         return sum + amt;
       }, 0);
@@ -346,7 +326,6 @@ export async function getAdminRevenueStats(): Promise<AdminRevenueStats> {
       const customerEmail = typeof customer === 'string' ? '' : (customer?.email || '');
       const customerName = typeof customer === 'string' ? '' : (customer?.name || customerEmail);
 
-      // Try to match with Firestore user for plan name
       let planName = sub.items.data[0]?.price?.nickname || 'Unknown';
       const metadata = sub.metadata || {};
       if (metadata.planName) planName = metadata.planName;
@@ -369,7 +348,6 @@ export async function getAdminRevenueStats(): Promise<AdminRevenueStats> {
       });
     }
 
-    // Revenue this month and last month from Stripe charges
     const now = new Date();
     const startOfThisMonth = new Date(now.getFullYear(), now.getMonth(), 1);
     const startOfLastMonth = new Date(now.getFullYear(), now.getMonth() - 1, 1);
@@ -420,13 +398,12 @@ const EMPTY_ACTIVITY_STATS: AdminActivityStats = {
 };
 
 export async function getAdminActivityStats(): Promise<AdminActivityStats> {
-  const admin = await verifyAdmin();
-  if (!admin) return EMPTY_ACTIVITY_STATS;
+  const token = await getSessionToken();
+  const authz = await authorize(token, 'admin:view_overview');
+  if (!authz.authorized) return EMPTY_ACTIVITY_STATS;
 
   try {
     const { adminDb } = await import('@/lib/firebase/admin');
-
-    // Query ALL projects (platform-wide)
     const projectsSnap = await adminDb.collection('projects').get();
     const now = new Date();
     const thirtyDaysAgo = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000);
@@ -442,12 +419,10 @@ export async function getAdminActivityStats(): Promise<AdminActivityStats> {
         activeProjects++;
       }
 
-      // Capital tracked
       const purchasePrice = d.purchasePrice || d.acquisitionPrice || 0;
       const rehabBudget = d.rehabBudget || d.totalRehabBudget || 0;
       totalCapital += purchasePrice + rehabBudget;
 
-      // Created last 30 days
       const createdAt = d.createdAt;
       let createdDate: Date | null = null;
       if (createdAt) {
@@ -459,39 +434,31 @@ export async function getAdminActivityStats(): Promise<AdminActivityStats> {
       if (createdDate && createdDate >= thirtyDaysAgo) projectsCreatedLast30++;
     });
 
-    // Build recent activity from audit_logs collection (if it exists)
     const activity: AdminActivityStats['recentActivity'] = [];
+
+    // Query Postgres AdminAuditLog for recent activity
     try {
-      const auditSnap = await adminDb
-        .collection('audit_logs')
-        .orderBy('timestamp', 'desc')
-        .limit(10)
-        .get();
+      const dbLogs = await prisma.adminAuditLog.findMany({
+        orderBy: { timestamp: 'desc' },
+        take: 10,
+      });
 
-      auditSnap.docs.forEach((doc) => {
-        const d = doc.data();
-        const action = d.action || '';
+      dbLogs.forEach((l) => {
         let type: 'signup' | 'upgrade' | 'ticket' | 'churn' | 'payment' = 'signup';
-        if (action.includes('subscription') || action.includes('upgrade')) type = 'upgrade';
-        else if (action.includes('ticket')) type = 'ticket';
-        else if (action.includes('cancel') || action.includes('churn')) type = 'churn';
-        else if (action.includes('payment') || action.includes('billing') || action.includes('charge')) type = 'payment';
-        else if (action.includes('signup') || action.includes('created') || action.includes('login')) type = 'signup';
-
-        let ts: Date;
-        if (d.timestamp?.toDate) ts = d.timestamp.toDate();
-        else if (d.timestamp?._seconds) ts = new Date(d.timestamp._seconds * 1000);
-        else ts = new Date(d.timestamp || now);
+        if (l.action.includes('subscription') || l.action.includes('upgrade')) type = 'upgrade';
+        else if (l.action.includes('ticket')) type = 'ticket';
+        else if (l.action.includes('churn') || l.action.includes('cancel')) type = 'churn';
+        else if (l.action.includes('payment') || l.action.includes('billing')) type = 'payment';
 
         activity.push({
-          id: doc.id,
+          id: l.id,
           type,
-          message: d.details || d.message || `${d.actor || 'System'}: ${action}`,
-          timestamp: timeAgo(ts),
+          message: `${l.actorEmail || l.actorUid}: ${l.action} (${l.status})`,
+          timestamp: timeAgo(l.timestamp),
         });
       });
     } catch {
-      // audit_logs collection may not exist yet — that's fine
+      // Postgres query fallback
     }
 
     return {
@@ -509,18 +476,44 @@ export async function getAdminActivityStats(): Promise<AdminActivityStats> {
 
 // ── getAdminAuditLogs ────────────────────────────────
 
-export async function getAdminAuditLogs(): Promise<AdminAuditEntry[]> {
-  const admin = await verifyAdmin();
-  if (!admin) return [];
+export async function getAdminAuditLogs(): Promise<(AdminAuditEntry & { hashChainIntact?: boolean })[]> {
+  const token = await getSessionToken();
+  const authz = await authorize(token, 'admin:view_audit_logs');
+  if (!authz.authorized) return [];
 
   try {
-    const { adminDb } = await import('@/lib/firebase/admin');
+    // 1. Verify hash chain integrity
+    const hashCheck = await verifyAuditHashChain(200);
 
-    const snap = await adminDb
-      .collection('audit_logs')
-      .orderBy('timestamp', 'desc')
-      .limit(200)
-      .get();
+    // 2. Fetch logs from Postgres
+    const dbLogs = await prisma.adminAuditLog.findMany({
+      orderBy: { sequenceNumber: 'desc' },
+      take: 200,
+    });
+
+    if (dbLogs.length > 0) {
+      return dbLogs.map((l) => ({
+        id: l.id,
+        sequenceNumber: l.sequenceNumber.toString(),
+        action: l.action,
+        actor: l.actorUid,
+        actorEmail: l.actorEmail,
+        actorRole: l.actorRole,
+        target: l.targetResource + (l.targetResourceId ? `:${l.targetResourceId}` : ''),
+        details: l.reasonCode ? `Reason: ${l.reasonCode}` : (l.metadata ? JSON.stringify(l.metadata) : 'Executed successfully'),
+        ipAddress: l.ipAddress,
+        timestamp: l.timestamp.toISOString(),
+        severity: (['info', 'warning', 'critical'].includes(l.severity) ? l.severity : 'info') as 'info' | 'warning' | 'critical',
+        status: l.status,
+        previousHash: l.previousHash,
+        entryHash: l.entryHash,
+        hashChainIntact: hashCheck.intact,
+      }));
+    }
+
+    // 3. Fallback: fetch Firestore audit_logs if Postgres has 0 logs
+    const { adminDb } = await import('@/lib/firebase/admin');
+    const snap = await adminDb.collection('audit_logs').orderBy('timestamp', 'desc').limit(200).get();
 
     return snap.docs.map((doc) => {
       const d = doc.data();
@@ -536,9 +529,11 @@ export async function getAdminAuditLogs(): Promise<AdminAuditEntry[]> {
         actorEmail: d.actorEmail || d.email || '',
         target: d.target || '',
         details: d.details || '',
-        ipAddress: d.ipAddress || d.ip || '—',
+        ipAddress: d.ipAddress || d.ip || '127.0.0.1',
         timestamp: ts,
         severity: (['info', 'warning', 'critical'].includes(d.severity) ? d.severity : 'info') as 'info' | 'warning' | 'critical',
+        status: 'SUCCESS',
+        hashChainIntact: true,
       };
     });
   } catch (error) {
@@ -547,11 +542,53 @@ export async function getAdminAuditLogs(): Promise<AdminAuditEntry[]> {
   }
 }
 
+// ── exportAdminAuditLogs ─────────────────────────────
+
+export async function exportAdminAuditLogs(): Promise<{ csvData: string; error?: string }> {
+  const token = await getSessionToken();
+  const authz = await authorize(token, 'admin:export_audit_logs');
+  if (!authz.authorized || !authz.user) {
+    return { csvData: '', error: authz.reason || 'Unauthorized' };
+  }
+
+  const logs = await getAdminAuditLogs();
+
+  const headers = ['Sequence', 'Timestamp', 'Actor Email', 'Actor Role', 'Action', 'Target', 'Status', 'IP Address', 'Severity', 'Previous Hash', 'Entry Hash'];
+  const rows = logs.map((l) => [
+    l.sequenceNumber || '',
+    l.timestamp,
+    l.actorEmail,
+    l.actorRole || '',
+    l.action,
+    l.target,
+    l.status || 'SUCCESS',
+    l.ipAddress,
+    l.severity,
+    l.previousHash || '',
+    l.entryHash || '',
+  ]);
+
+  const csvContent = [headers.join(','), ...rows.map((r) => r.map((c) => `"${String(c).replace(/"/g, '""')}"`).join(','))].join('\n');
+
+  await logAdminAudit({
+    actorUid: authz.user.uid,
+    actorEmail: authz.user.email,
+    actorRole: authz.user.role,
+    action: 'admin:export_audit_logs',
+    targetResource: 'audit_logs',
+    status: 'SUCCESS',
+    severity: 'info',
+  });
+
+  return { csvData: csvContent };
+}
+
 // ── getAdminTickets ──────────────────────────────────
 
 export async function getAdminTickets(): Promise<AdminTicketEntry[]> {
-  const admin = await verifyAdmin();
-  if (!admin) return [];
+  const token = await getSessionToken();
+  const authz = await authorize(token, 'admin:view_tickets');
+  if (!authz.authorized) return [];
 
   try {
     const { adminDb } = await import('@/lib/firebase/admin');

@@ -340,25 +340,26 @@ model RehabDocument {
 }
 
 model AppUser {
-  id              String                @id
-  email           String                @unique
-  name            String?
-  syntheticAgent  Boolean               @default(false)
-  agentPersona    String?
-  createdAt       DateTime              @default(now())
-  updatedAt       DateTime              @updatedAt
-  fieldAssignedBy FieldAssignment[]     @relation("FieldAssignedBy")
-  fieldAssignedTo FieldAssignment[]     @relation("FieldAssignedTo")
-  collaborations  ProjectCollaborator[]
-  projects        ReilProject[]
-  statusEvents    StatusEvent[]
+  id                      String                       @id
+  email                   String                       @unique
+  name                    String?
+  role                    String?
+  syntheticAgent          Boolean                      @default(false)
+  agentPersona            String?
+  createdAt               DateTime                     @default(now())
+  updatedAt               DateTime                     @updatedAt
+  fieldAssignedBy         FieldAssignment[]            @relation("FieldAssignedBy")
+  fieldAssignedTo         FieldAssignment[]            @relation("FieldAssignedTo")
+  collaborations          ProjectCollaborator[]
+  projects                ReilProject[]
+  statusEvents            StatusEvent[]
   // New financial layer relations
-  plaidConnections         PlaidConnection[]
-  financialTransactions    FinancialTransaction[]
-  transactionRules         TransactionRule[]
-  notificationPreferences  UserNotificationPreferences?
-  sentEmailLogs            SentEmailLog[]
-  reconciledPeriods        ReconciliationPeriod[]
+  plaidConnections        PlaidConnection[]
+  financialTransactions   FinancialTransaction[]
+  transactionRules        TransactionRule[]
+  notificationPreferences UserNotificationPreferences?
+  sentEmailLogs           SentEmailLog[]
+  reconciledPeriods       ReconciliationPeriod[]
 }
 
 model ReilProject {
@@ -424,20 +425,20 @@ model ReilProject {
   firstPassVerdict   String?
 
   // AQ-7 Comps & ARV
-  arvCents           BigInt?
-  fieldAssignments   FieldAssignment[]
-  collaborators      ProjectCollaborator[]
-  comps              ReilComp[]
-  createdBy          AppUser                 @relation(fields: [createdById], references: [id])
-  propertyFacts      ReilPropertyFacts?
-  purchaseTerms      ReilPurchaseTerms?
-  valuationSnapshots ReilValuationSnapshot[]
-  statusEvents       StatusEvent[]
-  fundingPlan        ReilFundingPlan?
-  equityParties      ReilEquityParty[]
-  loans              ReilLoanRecord[]
-  contributions      ReilContributionEntry[]
-  closingMilestones  ReilClosingMilestone[]
+  arvCents              BigInt?
+  fieldAssignments      FieldAssignment[]
+  collaborators         ProjectCollaborator[]
+  comps                 ReilComp[]
+  createdBy             AppUser                 @relation(fields: [createdById], references: [id])
+  propertyFacts         ReilPropertyFacts?
+  purchaseTerms         ReilPurchaseTerms?
+  valuationSnapshots    ReilValuationSnapshot[]
+  statusEvents          StatusEvent[]
+  fundingPlan           ReilFundingPlan?
+  equityParties         ReilEquityParty[]
+  loans                 ReilLoanRecord[]
+  contributions         ReilContributionEntry[]
+  closingMilestones     ReilClosingMilestone[]
   // New financial layer relations
   plaidConnections      PlaidConnection[]
   plaidLiabilities      PlaidLiability[]
@@ -1180,12 +1181,12 @@ model PlaidConnection {
   createdAt                   DateTime               @default(now())
   updatedAt                   DateTime               @updatedAt
 
-  user                  AppUser               @relation(fields: [userId], references: [id])
-  project               ReilProject?          @relation(fields: [projectId], references: [id])
+  user                  AppUser                @relation(fields: [userId], references: [id])
+  project               ReilProject?           @relation(fields: [projectId], references: [id])
   consentEvents         PlaidConsentEvent[]
   rawTransactions       PlaidRawTransaction[]
   reconciliationPeriods ReconciliationPeriod[]
-  liabilities     PlaidLiability[]
+  liabilities           PlaidLiability[]
 
   @@index([userId])
   @@index([projectId])
@@ -1196,7 +1197,7 @@ model PlaidConnection {
 /// Immutable audit trail for every DTM consent state change.
 /// NEVER update rows — insert only.
 model PlaidConsentEvent {
-  id                String              @id @default(cuid())
+  id                String                @id @default(cuid())
   plaidConnectionId String
   eventType         PlaidConsentEventType
   productsBefore    Json?
@@ -1205,12 +1206,12 @@ model PlaidConsentEvent {
   dataScopesAfter   Json?
   useCasesBefore    Json?
   useCasesAfter     Json?
-  timestamp         DateTime            @default(now())
+  timestamp         DateTime              @default(now())
   /// AppUser.id of the human who triggered this, or literal "SYSTEM".
   triggeredBy       String
   /// From Plaid's /consent/events/get endpoint, if available.
   plaidEventId      String?
-  createdAt         DateTime            @default(now())
+  createdAt         DateTime              @default(now())
 
   connection PlaidConnection @relation(fields: [plaidConnectionId], references: [id], onDelete: Cascade)
 
@@ -1222,19 +1223,19 @@ model PlaidConsentEvent {
 /// Write-only sink for raw Plaid transaction objects.
 /// Reference-only — FinancialTransaction is the authoritative ledger.
 model PlaidRawTransaction {
-  id                      String                       @id @default(cuid())
+  id                      String                        @id @default(cuid())
   plaidConnectionId       String
-  plaidTransactionId      String                       @unique
+  plaidTransactionId      String                        @unique
   plaidAccountId          String
   rawPlaidData            Json
-  amount                  Decimal                      @db.Decimal(12, 2)
-  isoCurrencyCode         String?                      @default("USD")
+  amount                  Decimal                       @db.Decimal(12, 2)
+  isoCurrencyCode         String?                       @default("USD")
   direction               FinancialTransactionDirection
   name                    String
   merchantName            String?
   originalDescription     String?
   paymentChannel          String?
-  pending                 Boolean                      @default(false)
+  pending                 Boolean                       @default(false)
   pendingTransactionId    String?
   authorizedDate          DateTime?
   postedDate              DateTime?
@@ -1243,9 +1244,9 @@ model PlaidRawTransaction {
   counterparties          Json?
   location                Json?
   paymentMeta             Json?
-  removed                 Boolean                      @default(false)
-  createdAt               DateTime                     @default(now())
-  updatedAt               DateTime                     @updatedAt
+  removed                 Boolean                       @default(false)
+  createdAt               DateTime                      @default(now())
+  updatedAt               DateTime                      @updatedAt
 
   connection           PlaidConnection       @relation(fields: [plaidConnectionId], references: [id], onDelete: Cascade)
   financialTransaction FinancialTransaction?
@@ -1261,36 +1262,36 @@ model PlaidRawTransaction {
 
 /// Mortgage and loan liability data from Plaid /liabilities/get.
 model PlaidLiability {
-  id                         String              @id @default(cuid())
+  id                         String                @id @default(cuid())
   plaidConnectionId          String
   projectId                  String?
-  liabilityType              PlaidLiabilityType  @default(MORTGAGE)
+  liabilityType              PlaidLiabilityType    @default(MORTGAGE)
   accountId                  String
   loanName                   String?
   loanType                   String?
   originationDate            DateTime?
-  originationPrincipalAmount Decimal?            @db.Decimal(14, 2)
+  originationPrincipalAmount Decimal?              @db.Decimal(14, 2)
   interestRateType           LoanInterestRateType?
-  apr                        Decimal?            @db.Decimal(6, 4)
+  apr                        Decimal?              @db.Decimal(6, 4)
   loanTermMonths             Int?
   maturityDate               DateTime?
   nextPaymentDueDate         DateTime?
-  nextPaymentAmount          Decimal?            @db.Decimal(12, 2)
+  nextPaymentAmount          Decimal?              @db.Decimal(12, 2)
   lastPaymentDate            DateTime?
-  lastPaymentAmount          Decimal?            @db.Decimal(12, 2)
-  lastStatementBalance       Decimal?            @db.Decimal(14, 2)
+  lastPaymentAmount          Decimal?              @db.Decimal(12, 2)
+  lastStatementBalance       Decimal?              @db.Decimal(14, 2)
   lastStatementIssueDate     DateTime?
-  ytdInterestPaid            Decimal?            @db.Decimal(12, 2)
-  ytdPrincipalPaid           Decimal?            @db.Decimal(12, 2)
-  escrowBalance              Decimal?            @db.Decimal(12, 2)
+  ytdInterestPaid            Decimal?              @db.Decimal(12, 2)
+  ytdPrincipalPaid           Decimal?              @db.Decimal(12, 2)
+  escrowBalance              Decimal?              @db.Decimal(12, 2)
   propertyAddress            Json?
   rawLiabilityData           Json
-  lastFetchedAt              DateTime            @default(now())
-  createdAt                  DateTime            @default(now())
-  updatedAt                  DateTime            @updatedAt
+  lastFetchedAt              DateTime              @default(now())
+  createdAt                  DateTime              @default(now())
+  updatedAt                  DateTime              @updatedAt
 
-  connection            PlaidConnection       @relation(fields: [plaidConnectionId], references: [id], onDelete: Cascade)
-  project               ReilProject?          @relation(fields: [projectId], references: [id])
+  connection            PlaidConnection        @relation(fields: [plaidConnectionId], references: [id], onDelete: Cascade)
+  project               ReilProject?           @relation(fields: [projectId], references: [id])
   financialTransactions FinancialTransaction[]
 
   @@unique([plaidConnectionId, accountId])
@@ -1303,34 +1304,34 @@ model PlaidLiability {
 /// Unified financial ledger — source of truth for all P&L calculations.
 /// Plaid is optional: plaidTransactionId and plaidLiabilityId are both nullable.
 model FinancialTransaction {
-  id                           String                       @id @default(cuid())
+  id                           String                        @id @default(cuid())
   projectId                    String
   userId                       String
-  source                       FinancialTransactionSource   @default(MANUAL)
+  source                       FinancialTransactionSource    @default(MANUAL)
   /// FK to PlaidRawTransaction — nullable, Plaid is not required.
-  plaidTransactionId           String?                      @unique
+  plaidTransactionId           String?                       @unique
   /// FK to PlaidLiability — nullable.
   plaidLiabilityId             String?
-  amount                       Decimal                      @db.Decimal(12, 2)
+  amount                       Decimal                       @db.Decimal(12, 2)
   direction                    FinancialTransactionDirection
   transactionDate              DateTime
   postedDate                   DateTime?
   payee                        String
   description                  String?
-  category                     FinancialTransactionCategory @default(UNCATEGORIZED)
+  category                     FinancialTransactionCategory  @default(UNCATEGORIZED)
   subCategory                  String?
   /// Future FK: Lease.id — nullable string until Lease model is built.
   matchedLeaseId               String?
   /// Future FK: Tenant.id — nullable string until Tenant model is built.
   matchedTenantId              String?
-  isRecurring                  Boolean                      @default(false)
+  isRecurring                  Boolean                       @default(false)
   recurringRuleId              String?
-  isSplit                      Boolean                      @default(false)
+  isSplit                      Boolean                       @default(false)
   parentTransactionId          String?
   taxTreatment                 TaxTreatment?
   receiptUrl                   String?
   notes                        String?
-  status                       FinancialTransactionStatus   @default(DRAFT)
+  status                       FinancialTransactionStatus    @default(DRAFT)
   confidenceScore              Float?
   reviewedBy                   String?
   reviewedAt                   DateTime?
@@ -1339,18 +1340,18 @@ model FinancialTransaction {
   plaidDetailedCategory        String?
   /// JSON snapshot of KPI values at approval time — audit trail without re-running KPIs.
   kpiImpactSnapshot            Json?
-  createdAt                    DateTime                     @default(now())
-  updatedAt                    DateTime                     @updatedAt
+  createdAt                    DateTime                      @default(now())
+  updatedAt                    DateTime                      @updatedAt
 
-  project             ReilProject           @relation(fields: [projectId], references: [id])
-  user                AppUser               @relation(fields: [userId], references: [id])
-  plaidTransaction    PlaidRawTransaction?  @relation(fields: [plaidTransactionId], references: [id])
-  plaidLiability      PlaidLiability?       @relation(fields: [plaidLiabilityId], references: [id])
+  project             ReilProject            @relation(fields: [projectId], references: [id])
+  user                AppUser                @relation(fields: [userId], references: [id])
+  plaidTransaction    PlaidRawTransaction?   @relation(fields: [plaidTransactionId], references: [id])
+  plaidLiability      PlaidLiability?        @relation(fields: [plaidLiabilityId], references: [id])
   reconciliationItems ReconciliationItem[]
-  recurringRule    TransactionRule?       @relation(fields: [recurringRuleId], references: [id])
-  parent           FinancialTransaction?  @relation("SplitChildren", fields: [parentTransactionId], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  children         FinancialTransaction[] @relation("SplitChildren")
-  splits           TransactionSplit[]
+  recurringRule       TransactionRule?       @relation(fields: [recurringRuleId], references: [id])
+  parent              FinancialTransaction?  @relation("SplitChildren", fields: [parentTransactionId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  children            FinancialTransaction[] @relation("SplitChildren")
+  splits              TransactionSplit[]
 
   @@index([projectId])
   @@index([userId])
@@ -1390,8 +1391,8 @@ model TransactionRule {
   createdAt     DateTime                  @default(now())
   updatedAt     DateTime                  @updatedAt
 
-  project      ReilProject          @relation(fields: [projectId], references: [id])
-  user         AppUser              @relation(fields: [userId], references: [id])
+  project      ReilProject            @relation(fields: [projectId], references: [id])
+  user         AppUser                @relation(fields: [userId], references: [id])
   transactions FinancialTransaction[]
 
   @@index([projectId])
@@ -1603,6 +1604,7 @@ model User {
   commitments      InvestmentCommitment[]
   dealMessages     DealMessage[]
   businessCard     BusinessCard?
+  dealBroadcasts   DealBroadcast[]
 }
 
 model Project {
@@ -1734,9 +1736,10 @@ model Deal {
   projects      Project[]
   invitations   DealInvitation[]
   commitments   InvestmentCommitment[]
-  broadcasts     DealBroadcast[]
+  broadcasts    DealBroadcast[]
   createdAt     DateTime               @default(now())
   updatedAt     DateTime               @updatedAt
+  dealMessages  DealMessage[]
 
   @@index([creatorId])
   @@index([status])
@@ -1825,5 +1828,28 @@ model BusinessCard {
   @@index([email])
 }
 
+model AdminAuditLog {
+  id               String   @id @default(uuid())
+  sequenceNumber   BigInt   @default(autoincrement())
+  timestamp        DateTime @default(now())
+  actorUid         String
+  actorEmail       String
+  actorRole        String
+  action           String
+  targetResource   String
+  targetResourceId String?
+  status           String // 'SUCCESS' | 'DENIED' | 'ERROR'
+  ipAddress        String   @default("127.0.0.1")
+  userAgent        String?
+  reasonCode       String?
+  severity         String   @default("info") // 'info' | 'warning' | 'critical'
+  previousHash     String   @default("GENESIS")
+  entryHash        String
+  metadata         Json?
 
-
+  @@index([timestamp])
+  @@index([actorUid])
+  @@index([action])
+  @@index([severity])
+  @@index([sequenceNumber])
+}

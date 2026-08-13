@@ -89,7 +89,7 @@ export function proxy(request: NextRequest) {
   const user       = getUserContextFromRequest(request);
 
   // ── 1. Local Development Bypass ──────────────────────────
-  if (!hasSession && (pathname.startsWith('/dashboard') || pathname.startsWith('/vendor-portal') || pathname.startsWith('/onboarding') || pathname === '/login')) {
+  if (!hasSession && (pathname.startsWith('/admin') || pathname.startsWith('/dashboard') || pathname.startsWith('/vendor-portal') || pathname.startsWith('/onboarding') || pathname === '/login')) {
     const isE2E = request.cookies.get('__e2e_test')?.value === '1';
     if (!isE2E &&
         process.env.NODE_ENV === 'development' && 
@@ -103,6 +103,11 @@ export function proxy(request: NextRequest) {
       }
       const response = NextResponse.redirect(url);
       response.cookies.set(SESSION_COOKIE, 'mock_session_token_123', {
+        path: '/',
+        maxAge: 60 * 60 * 24 * 14,
+        httpOnly: false,
+      });
+      response.cookies.set('mock_user_role', 'Platform Admin', {
         path: '/',
         maxAge: 60 * 60 * 24 * 14,
         httpOnly: false,

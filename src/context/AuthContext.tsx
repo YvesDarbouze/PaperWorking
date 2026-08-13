@@ -316,7 +316,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       const mockUid = getCookie('mock_user_uid') || 'user_lead_investor_seed';
       const mockEmail = getCookie('mock_user_email') || 'marcus@apexcapital.io';
       const mockName = getCookie('mock_user_name') || 'Marcus Aurelius';
-      const mockRole = getCookie('mock_user_role') || 'Lead Investor';
+      const mockRole = getCookie('mock_user_role') || (typeof window !== 'undefined' && window.location.pathname.startsWith('/admin') ? 'Platform Admin' : 'Lead Investor');
       const mockOrgId = getCookie('mock_user_org_id') || 'org_paperworking_seed';
       const mockAccountType = getCookie('mock_user_account_type') || (mockRole === 'Vendor' ? 'vendor' : 'investor');
       const mockSubPlan = getCookie('mock_user_subscription_plan') || 'Team';

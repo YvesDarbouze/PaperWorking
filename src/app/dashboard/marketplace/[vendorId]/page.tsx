@@ -13,6 +13,7 @@ import {
 } from 'lucide-react';
 import { VendorRequestModal } from '@/components/marketplace/VendorRequestModal';
 import { RatingDisplay } from '@/components/marketplace/RatingDisplay';
+import { useAuth } from '@/context/AuthContext';
 import type { VendorProfile } from '@/types/schema';
 
 /* ═══════════════════════════════════════════════════════════════
@@ -47,6 +48,7 @@ type VendorDetail = {
 export default function VendorDetailPage() {
   const params = useParams();
   const router = useRouter();
+  const { user, loading: authLoading } = useAuth();
   const vendorId = params?.vendorId as string;
 
   const [vendor, setVendor] = useState<VendorDetail | null>(null);
@@ -54,12 +56,23 @@ export default function VendorDetailPage() {
   const [isQuoteModalOpen, setIsQuoteModalOpen] = useState(false);
 
   useEffect(() => {
+    if (authLoading) return;
+
     const loadVendor = async () => {
       setLoading(true);
 
       /* Fetch from API / Firestore */
       try {
-        const res = await fetch(`/api/vendors?id=${encodeURIComponent(vendorId)}`);
+        const token = await user?.getIdToken();
+        if (!token) {
+          setVendor(null);
+          setLoading(false);
+          return;
+        }
+
+        const res = await fetch(`/api/vendors?id=${encodeURIComponent(vendorId)}`, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
         if (res.ok) {
           const data = await res.json();
           const allVendors = data.vendors ?? [];
@@ -93,7 +106,7 @@ export default function VendorDetailPage() {
     };
 
     if (vendorId) loadVendor();
-  }, [vendorId]);
+  }, [vendorId, user, authLoading]);
 
   const badgeClass = vendor
     ? (CATEGORY_BADGE_STYLES[vendor.category] ?? 'bg-white/5 border-white/10 text-[#9E9DA0]')

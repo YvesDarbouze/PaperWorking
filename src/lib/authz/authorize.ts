@@ -1,5 +1,15 @@
+import type { DecodedIdToken } from 'firebase-admin/auth';
 import { adminAuth, adminDb } from '@/lib/firebase/admin';
 import { logAdminAudit } from '@/lib/audit/auditLogger';
+
+/** __session may hold a Firebase session cookie or a raw ID token (session route fallback). */
+async function verifySessionOrIdToken(sessionToken: string): Promise<DecodedIdToken> {
+  try {
+    return await adminAuth.verifySessionCookie(sessionToken);
+  } catch {
+    return await adminAuth.verifyIdToken(sessionToken);
+  }
+}
 
 export type AdminAction =
   | 'admin:view_overview'
@@ -76,7 +86,7 @@ const ROLE_PERMISSIONS: Record<string, AdminAction[]> = {
 
 /**
  * Server-side authorization verification service.
- * Verifies Firebase ID Token, checks custom claims vs Firestore profile role,
+ * Verifies Firebase session cookie or ID token, checks custom claims vs Firestore profile role,
  * logs mismatches/denials, and verifies required permission against role matrix.
  */
 export async function authorize(
@@ -106,8 +116,8 @@ export async function authorize(
   }
 
   try {
-    // 1. Verify Firebase ID Token
-    const decodedToken = await adminAuth.verifyIdToken(idToken);
+    // 1. Verify Firebase session cookie or ID token from __session
+    const decodedToken = await verifySessionOrIdToken(idToken);
     const uid = decodedToken.uid;
     const email = decodedToken.email || '';
     const claimsRole = (decodedToken.role as string) || '';

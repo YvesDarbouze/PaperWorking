@@ -11,7 +11,7 @@ import { useAuth } from '@/context/AuthContext';
 import { isSubscriptionActive } from '@/lib/stripe/subscription';
 
 export default function VendorDirectory() {
-  const { profile } = useAuth();
+  const { profile, user, loading: authLoading } = useAuth();
   const hasActiveSub = isSubscriptionActive(profile);
   const [searchTerm, setSearchTerm] = useState('');
   const [typeFilter, setTypeFilter] = useState<VendorType | 'All'>('All');
@@ -24,9 +24,17 @@ export default function VendorDirectory() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    if (authLoading) return;
+
     const fetchVendors = async () => {
       setLoading(true);
       try {
+        const token = await user?.getIdToken();
+        if (!token) {
+          setVendors([]);
+          return;
+        }
+
         const params = new URLSearchParams();
         if (stateFilter !== 'All') {
           params.append('state', stateFilter);
@@ -37,7 +45,9 @@ export default function VendorDirectory() {
         if (zipFilter.trim() !== '') {
           params.append('zip', zipFilter.trim());
         }
-        const res = await fetch(`/api/vendors?${params.toString()}`);
+        const res = await fetch(`/api/vendors?${params.toString()}`, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
         if (res.ok) {
           const data = await res.json();
           setVendors(data.vendors || []);
@@ -51,7 +61,7 @@ export default function VendorDirectory() {
       }
     };
     fetchVendors();
-  }, [stateFilter, typeFilter, zipFilter]);
+  }, [stateFilter, typeFilter, zipFilter, user, authLoading]);
 
   const handleRequestQuote = (vendor: VendorProfile) => {
     setSelectedVendor(vendor);

@@ -149,7 +149,7 @@ const SAMPLE_DEALS: ApiDealPayload[] = [
 export async function GET(req: NextRequest) {
   const { searchParams } = new URL(req.url);
 
-  const tab = searchParams.get('tab') || 'discover';
+  const tab = (searchParams.get('tab') || 'discover').replace(/-/g, '_');
   const search = (searchParams.get('search') || '').toLowerCase().trim();
   const propertyType = searchParams.get('propertyType') || searchParams.get('assetClass') || 'All';
   const strategy = searchParams.get('strategy') || searchParams.get('subStrategy') || 'All';

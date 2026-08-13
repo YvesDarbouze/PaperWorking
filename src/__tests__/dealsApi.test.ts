@@ -32,6 +32,15 @@ describe('GET /api/deals Endpoint & Visibility Control', () => {
     expect(invitationOnlyDeal).toBeDefined();
   });
 
+  it('treats tab=my-activity the same as tab=my_activity', async () => {
+    const req = new NextRequest('http://localhost:3000/api/deals?tab=my-activity&userId=user_invited_2');
+    const res = await getDeals(req);
+    const json = await res.json();
+
+    const invitationOnlyDeal = json.deals.find((d: any) => d.id === 'deal_unlisted_invitation');
+    expect(invitationOnlyDeal).toBeDefined();
+  });
+
   it('filters deals by propertyType parameter', async () => {
     const req = new NextRequest('http://localhost:3000/api/deals?propertyType=Commercial');
     const res = await getDeals(req);

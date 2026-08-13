@@ -168,7 +168,7 @@ function MarketplaceContent() {
   const projectIdParam = searchParams?.get('projectId');
   const cityParam = searchParams?.get('city');
 
-  const { profile, user } = useAuth();
+  const { profile, user, loading: authLoading } = useAuth();
   const projects = useProjectStore((state) => state.projects);
   const hasActiveSub = isSubscriptionActive(profile);
 
@@ -228,15 +228,25 @@ function MarketplaceContent() {
 
   /* ── Fetch vendors from API (preserved from original) ── */
   useEffect(() => {
+    if (authLoading) return;
+
     const fetchVendors = async () => {
       setLoadingVendors(true);
       try {
+        const token = await user?.getIdToken();
+        if (!token) {
+          setVendors([]);
+          return;
+        }
+
         const params = new URLSearchParams();
         const apiType = CATEGORY_TO_API_TYPE[activeFilter];
         if (apiType !== 'All') params.append('type', apiType);
         if (searchQuery.trim()) params.append('zip', searchQuery.trim());
 
-        const res = await fetch(`/api/vendors?${params.toString()}`);
+        const res = await fetch(`/api/vendors?${params.toString()}`, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
         if (res.ok) {
           const data = await res.json();
           setVendors(data.vendors ?? []);
@@ -249,7 +259,7 @@ function MarketplaceContent() {
     };
 
     fetchVendors();
-  }, [activeFilter, searchQuery]);
+  }, [activeFilter, searchQuery, user, authLoading]);
 
   /* ── Derive display list: API results ── */
   const displayVendors = useMemo(() => {

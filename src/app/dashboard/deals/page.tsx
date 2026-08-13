@@ -141,9 +141,7 @@ export default function DealsMarketplacePage() {
         const res = await fetch(`/api/deals?${queryParams.toString()}`);
         if (res.ok) {
           const data = await res.json();
-          if (data.deals && data.deals.length > 0) {
-            setDeals(data.deals);
-          }
+          setDeals(data.deals ?? []);
         }
       } catch (err) {
         console.error('Failed to load deals from API:', err);

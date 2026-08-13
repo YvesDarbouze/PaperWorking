@@ -3,6 +3,18 @@ import { withSentryConfig } from "@sentry/nextjs";
 
 const nextConfig: any = {
   output: 'standalone',
+  // Firebase App Hosting standalone traces omit unreferenced public/ files.
+  // Force-include assets referenced by layout, manifest, and CSS.
+  outputFileTracingIncludes: {
+    '/': [
+      './public/noise.png',
+      './public/icon-16.png',
+      './public/icon-32.png',
+      './public/icon-192.png',
+      './public/icon-512.png',
+      './public/apple-touch-icon.png',
+    ],
+  },
   transpilePackages: ['framer-motion', 'motion-dom'],
   typescript: {
     ignoreBuildErrors: true,

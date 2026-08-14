@@ -11,14 +11,13 @@ var mockSet = jest.fn().mockResolvedValue(true);
 var mockUpdate = jest.fn().mockResolvedValue(true);
 var mockSendEmail = jest.fn().mockResolvedValue({ id: 'email-123' });
 
-// Mock Resend SDK
-jest.mock('resend', () => {
+// Mock Email Provider
+jest.mock('@/lib/email/getEmailProvider', () => {
   return {
-    Resend: jest.fn().mockImplementation(() => ({
-      emails: {
-        send: (...args: any[]) => mockSendEmail(...args),
-      },
-    })),
+    getEmailProvider: jest.fn().mockReturnValue({
+      name: 'mock',
+      sendEmail: (...args: any[]) => mockSendEmail(...args),
+    }),
   };
 });
 

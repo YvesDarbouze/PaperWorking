@@ -155,12 +155,11 @@ jest.mock('@/lib/redis', () => ({
   ttl: (...args: any[]) => mockTtl(...args),
 }));
 
-jest.mock('resend', () => ({
-  Resend: jest.fn().mockImplementation(() => ({
-    emails: {
-      send: jest.fn().mockResolvedValue({ id: 'email_123' }),
-    },
-  })),
+jest.mock('@/lib/email/getEmailProvider', () => ({
+  getEmailProvider: jest.fn().mockReturnValue({
+    name: 'mock',
+    sendEmail: jest.fn().mockResolvedValue({ success: true, messageId: 'email_123', mock: true, provider: 'mock' }),
+  }),
 }));
 
 describe('DM-28 Business Card Exchange Test Suite', () => {

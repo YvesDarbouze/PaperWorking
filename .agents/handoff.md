@@ -27,11 +27,29 @@
 
 ---
 
-## 3. Test & Verification Record
+## 4. EM Series v2 — SendGrid Cutover & Transactional Email Engine
 
-- **TypeScript Compilation:** `npx tsc --noEmit` → **0 errors**.
-- **Jest Unit Test Suite:** `npx jest src/__tests__/` → **255/255 test suites passed (2,566/2,566 tests green)**.
-- **Playwright E2E Suite:** `npx playwright test` → **337/337 E2E tests green**.
-- **Screenshot Assets:** 30 PNG screenshot files saved in `.agents/walkthrough-assets/final/` across 375px, 768px, and 1280px viewports.
-- **Standing Copy-Lock:** Installed in [`src/__tests__/marketingCopyLock.test.ts`](file:///Users/yvesdarbouze/Documents/PaperWorking/src/__tests__/marketingCopyLock.test.ts) (6/6 tests passing). Negative test verified by mutating H1 and observing test failure before reverting.
-- **Terminology Ban:** The word `"Sponsor"` is strictly forbidden across all copy, code identifiers, comments, alt text, and tests.
+- **Spec Document:** [`docs/spec/em-series-transactional-email-prompts.md`](file:///Users/yvesdarbouze/Documents/PaperWorking/docs/spec/em-series-transactional-email-prompts.md)
+- **Status:** COMPLETED & VERIFIED.
+- **Key Architectures Implemented:**
+  1. **Provider Cutover & Resend Deletion (Gate E-1, EM-3):**
+     - Complete retirement of Resend SDK, dependencies, and webhook endpoints.
+     - Production `SendGridEmailAdapter.ts` with domain validation (`@mail.paperworking.co`), `text/plain` before `text/html` (F-3), zero-PII `custom_args` (F-13), global kill switch, and sandbox mode.
+     - Mock fallback adapter `MockEmailAdapter.ts` via `getEmailProvider()`.
+  2. **Envelope & Identity Contract (Gate E-2, E-3, E-10, EM-4):**
+     - `src/lib/email/envelopeContract.ts` defining canonical from identities (`security@`, `billing@`, `team@`, `notifications@` `@mail.paperworking.co`), monitored `hi@paperworking.co` reply-to, CAN-SPAM physical postal address, and RFC 8058 `List-Unsubscribe` headers.
+  3. **Template Registry & UX-0 Styling (EM-5, EM-6, EM-7):**
+     - `src/lib/emails/templates/BaseLayout.ts` upgraded with dark mode support, message classes (E, O, C), and clean plain text extractor.
+     - `src/lib/email/templateRegistry.ts` defining canonical renderers for §4 catalog keys.
+  4. **Webhook Security & Ingestion (EM-8…EM-11):**
+     - `src/app/api/webhooks/sendgrid/route.ts` with ECDSA signature verification over raw bytes (`await req.text()`) and automated bounce/complaint suppression.
+  5. **Firebase Admin Action Links & Branded Action Handler (EM-12):**
+     - Removed all client SDK email links.
+     - Server endpoints `/api/auth/reset-password` and `/api/auth/magic-link` with silent enumeration protection (F-20).
+     - Branded `/auth/action` handler page for `mode=resetPassword` and `mode=verifyEmail`.
+  6. **Stripe Dunning Ladder (EM-13, F-16, F-17):**
+     - `src/app/api/stripe/webhook/route.ts` reading real `attempt_count` and `next_payment_attempt` timestamp from Stripe Invoice object to render `BILL-PAYMENT-FAILED`.
+- **Verification:**
+  - `npx tsc --noEmit` → **0 errors**.
+  - All EM series test suites (`sendgridIntegration.test.ts`, `invitationAbuse.test.ts`, `milestoneEmails.test.ts`, `transactionNotifications.test.ts`, `dealInvitationsExternal.test.ts`, `businessCardExchange.test.ts`, `softCommit.test.ts`) passing at **100% (94/94 tests green)**.
+

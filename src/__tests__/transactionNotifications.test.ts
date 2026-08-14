@@ -334,7 +334,9 @@ describe('TransactionNotificationService', () => {
   });
 
   describe('sendEmail', () => {
-    it('mocks email when RESEND_API_KEY absent and logs', async () => {
+    it('mocks email when SENDGRID_API_KEY absent and records mocked status', async () => {
+      delete process.env.SENDGRID_API_KEY;
+      process.env.SYSTEM_EMAIL_PROVIDER = 'mock';
       const consoleSpy = jest.spyOn(console, 'info').mockImplementation(() => {});
       prisma.sentEmailLog.create.mockResolvedValue({ id: 'log-1' });
       prisma.sentEmailLog.update.mockResolvedValue({});
@@ -349,9 +351,10 @@ describe('TransactionNotificationService', () => {
         transactionId: 'txn-1',
       });
 
-      expect(mockFetch).not.toHaveBeenCalled();
-      expect(consoleSpy).toHaveBeenCalledWith(
-        expect.stringContaining('MOCK email'),
+      expect(prisma.sentEmailLog.update).toHaveBeenCalledWith(
+        expect.objectContaining({
+          data: expect.objectContaining({ status: 'mocked' }),
+        }),
       );
       consoleSpy.mockRestore();
     });
@@ -383,11 +386,15 @@ describe('TransactionNotificationService', () => {
       consoleSpy.mockRestore();
     });
 
-    it('dispatches via Resend when API key is set', async () => {
-      process.env.RESEND_API_KEY = 'test-key';
+    it('dispatches via SendGrid when API key is set', async () => {
+      process.env.SENDGRID_API_KEY = 'SG.test-key';
+      delete process.env.SYSTEM_EMAIL_PROVIDER;
       mockFetch.mockResolvedValue({
-        ok: true,
-        json: async () => ({ id: 'resend-msg-1' }),
+        status: 202,
+        headers: {
+          get: (h: string) => (h.toLowerCase() === 'x-message-id' ? 'sg-msg-1' : null),
+        },
+        text: async () => '',
       });
       prisma.sentEmailLog.create.mockResolvedValue({ id: 'log-1' });
       prisma.sentEmailLog.update.mockResolvedValue({});
@@ -403,19 +410,24 @@ describe('TransactionNotificationService', () => {
       });
 
       expect(mockFetch).toHaveBeenCalledWith(
-        'https://api.resend.com/emails',
+        'https://api.sendgrid.com/v3/mail/send',
         expect.objectContaining({ method: 'POST' }),
       );
       expect(prisma.sentEmailLog.update).toHaveBeenCalledWith(
         expect.objectContaining({
-          data: expect.objectContaining({ status: 'sent', messageId: 'resend-msg-1' }),
+          data: expect.objectContaining({ status: 'sent', messageId: 'sg-msg-1' }),
         }),
       );
     });
 
-    it('marks status as failed and does not throw on Resend error', async () => {
-      process.env.RESEND_API_KEY = 'test-key';
-      mockFetch.mockResolvedValue({ ok: false, status: 429, text: async () => 'rate limited' });
+    it('marks status as failed and does not throw on provider error', async () => {
+      process.env.SENDGRID_API_KEY = 'SG.test-key';
+      delete process.env.SYSTEM_EMAIL_PROVIDER;
+      mockFetch.mockResolvedValue({
+        status: 429,
+        headers: { get: () => null },
+        text: async () => '{"errors":[{"message":"rate limited"}]}',
+      });
       prisma.sentEmailLog.create.mockResolvedValue({ id: 'log-1' });
       prisma.sentEmailLog.update.mockResolvedValue({});
 

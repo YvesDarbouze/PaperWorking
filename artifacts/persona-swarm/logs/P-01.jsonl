@@ -621,3 +621,183 @@
 {"ts":"2026-08-13T17:42:18.706Z","agentId":"P-01","wave":4,"step":"WAVE_4","action":"COMPLETE","result":"SUCCESS","details":{"interactions":3,"invites":2}}
 {"ts":"2026-08-13T17:42:18.861Z","agentId":"P-01","wave":5,"step":"WAVE_5","action":"START","result":"SUCCESS"}
 {"ts":"2026-08-13T17:42:18.883Z","agentId":"P-01","wave":5,"step":"WAVE_5","action":"COMPLETE","result":"SUCCESS","details":{"reportPath":"/Users/yvesdarbouze/Documents/PaperWorking/artifacts/persona-swarm/reports/P-01-experience-report.md"}}
+{"ts":"2026-08-14T12:08:07.348Z","agentId":"P-01","wave":1,"step":"WAVE_1","action":"START","result":"SUCCESS","details":{"email":"agent01.marcus.delgado@paperworking-test.dev"}}
+{"ts":"2026-08-14T12:08:07.349Z","agentId":"P-01","wave":1,"step":"WAVE_1","action":"START","result":"SUCCESS","details":{"email":"agent01.marcus.delgado@paperworking-test.dev"}}
+{"ts":"2026-08-14T12:08:07.946Z","agentId":"P-01","wave":0,"step":"SIGNUP","action":"SUCCESS_CREATED","result":"SUCCESS","details":{"uid":"uid_persona_p01","email":"agent01.marcus.delgado@paperworking-test.dev","name":"Marcus Mac Delgado","entity":"Delgado Rapid Deals LLC"}}
+{"ts":"2026-08-14T12:08:07.946Z","agentId":"P-01","wave":1,"step":"WAVE_1","action":"COMPLETE","result":"SUCCESS","details":{"uid":"uid_persona_p01"}}
+{"ts":"2026-08-14T12:08:07.947Z","agentId":"P-01","wave":0,"step":"SIGNUP","action":"SUCCESS_CREATED","result":"SUCCESS","details":{"uid":"uid_persona_p01","email":"agent01.marcus.delgado@paperworking-test.dev","name":"Marcus Mac Delgado","entity":"Delgado Rapid Deals LLC"}}
+{"ts":"2026-08-14T12:08:07.947Z","agentId":"P-01","wave":1,"step":"WAVE_1","action":"COMPLETE","result":"SUCCESS","details":{"uid":"uid_persona_p01"}}
+{"ts":"2026-08-14T12:08:08.034Z","agentId":"P-01","wave":2,"step":"WAVE_2","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-14T12:08:08.034Z","agentId":"P-01","wave":2,"step":"WAVE_2","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-14T12:08:08.035Z","agentId":"P-01","wave":0,"step":"BILLING","action":"SUBSCRIPTION_SUCCESS","result":"SUCCESS","details":{"plan":"Individual","stripeCustomerId":"cus_test_swarm_p-01","stripeSubscriptionId":"sub_test_swarm_p-01","cardLastFour":"4242","cardBrand":"visa"}}
+{"ts":"2026-08-14T12:08:08.035Z","agentId":"P-01","wave":0,"step":"BILLING","action":"SUBSCRIPTION_SUCCESS","result":"SUCCESS","details":{"plan":"Individual","stripeCustomerId":"cus_test_swarm_p-01","stripeSubscriptionId":"sub_test_swarm_p-01","cardLastFour":"4242","cardBrand":"visa"}}
+{"ts":"2026-08-14T12:08:08.035Z","agentId":"P-01","wave":2,"step":"WAVE_2","action":"COMPLETE","result":"SUCCESS","details":{"plan":"Individual"}}
+{"ts":"2026-08-14T12:08:08.035Z","agentId":"P-01","wave":2,"step":"WAVE_2","action":"COMPLETE","result":"SUCCESS","details":{"plan":"Individual"}}
+{"ts":"2026-08-14T12:08:08.075Z","agentId":"P-01","wave":3,"step":"WAVE_3","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-14T12:08:08.078Z","agentId":"P-01","wave":3,"step":"WAVE_3","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-14T12:08:08.079Z","agentId":"P-01","wave":0,"step":"PROJECTS","action":"CREATION_SUCCESS","result":"SUCCESS","details":{"created":10,"plaid":false}}
+{"ts":"2026-08-14T12:08:08.079Z","agentId":"P-01","wave":3,"step":"WAVE_3","action":"COMPLETE","result":"SUCCESS","details":{"created":10}}
+{"ts":"2026-08-14T12:08:08.081Z","agentId":"P-01","wave":0,"step":"PROJECTS","action":"CREATION_SUCCESS","result":"SUCCESS","details":{"created":10,"plaid":false}}
+{"ts":"2026-08-14T12:08:08.081Z","agentId":"P-01","wave":3,"step":"WAVE_3","action":"COMPLETE","result":"SUCCESS","details":{"created":10}}
+{"ts":"2026-08-14T12:08:08.239Z","agentId":"P-01","wave":4,"step":"WAVE_4","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-14T12:08:08.241Z","agentId":"P-01","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-01","to":"P-05","type":"Wholesale Assignment"}}
+{"ts":"2026-08-14T12:08:08.241Z","agentId":"P-01","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-02","to":"P-15","type":"Wholesale Assignment"}}
+{"ts":"2026-08-14T12:08:08.242Z","agentId":"P-01","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-24","to":"P-48","type":"Transactional Funding Referral"}}
+{"ts":"2026-08-14T12:08:08.242Z","agentId":"P-01","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-05"}}
+{"ts":"2026-08-14T12:08:08.242Z","agentId":"P-01","wave":4,"step":"WAVE_4","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-14T12:08:08.242Z","agentId":"P-01","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-15"}}
+{"ts":"2026-08-14T12:08:08.242Z","agentId":"P-01","wave":4,"step":"WAVE_4","action":"COMPLETE","result":"SUCCESS","details":{"interactions":3,"invites":2}}
+{"ts":"2026-08-14T12:08:08.243Z","agentId":"P-01","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-01","to":"P-05","type":"Wholesale Assignment"}}
+{"ts":"2026-08-14T12:08:08.243Z","agentId":"P-01","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-02","to":"P-15","type":"Wholesale Assignment"}}
+{"ts":"2026-08-14T12:08:08.244Z","agentId":"P-01","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-24","to":"P-48","type":"Transactional Funding Referral"}}
+{"ts":"2026-08-14T12:08:08.244Z","agentId":"P-01","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-05"}}
+{"ts":"2026-08-14T12:08:08.244Z","agentId":"P-01","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-15"}}
+{"ts":"2026-08-14T12:08:08.244Z","agentId":"P-01","wave":4,"step":"WAVE_4","action":"COMPLETE","result":"SUCCESS","details":{"interactions":3,"invites":2}}
+{"ts":"2026-08-14T12:08:08.305Z","agentId":"P-01","wave":5,"step":"WAVE_5","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-14T12:08:08.312Z","agentId":"P-01","wave":5,"step":"WAVE_5","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-14T12:08:08.320Z","agentId":"P-01","wave":5,"step":"WAVE_5","action":"COMPLETE","result":"SUCCESS","details":{"reportPath":"/Users/yvesdarbouze/Documents/PaperWorking/artifacts/persona-swarm/reports/P-01-experience-report.md"}}
+{"ts":"2026-08-14T12:08:08.326Z","agentId":"P-01","wave":5,"step":"WAVE_5","action":"COMPLETE","result":"SUCCESS","details":{"reportPath":"/Users/yvesdarbouze/Documents/PaperWorking/artifacts/persona-swarm/reports/P-01-experience-report.md"}}
+{"ts":"2026-08-14T15:14:46.088Z","agentId":"P-01","wave":1,"step":"WAVE_1","action":"START","result":"SUCCESS","details":{"email":"agent01.marcus.delgado@paperworking-test.dev"}}
+{"ts":"2026-08-14T15:14:46.088Z","agentId":"P-01","wave":1,"step":"WAVE_1","action":"START","result":"SUCCESS","details":{"email":"agent01.marcus.delgado@paperworking-test.dev"}}
+{"ts":"2026-08-14T15:14:46.742Z","agentId":"P-01","wave":0,"step":"SIGNUP","action":"SUCCESS_CREATED","result":"SUCCESS","details":{"uid":"uid_persona_p01","email":"agent01.marcus.delgado@paperworking-test.dev","name":"Marcus Mac Delgado","entity":"Delgado Rapid Deals LLC"}}
+{"ts":"2026-08-14T15:14:46.742Z","agentId":"P-01","wave":1,"step":"WAVE_1","action":"COMPLETE","result":"SUCCESS","details":{"uid":"uid_persona_p01"}}
+{"ts":"2026-08-14T15:14:46.874Z","agentId":"P-01","wave":2,"step":"WAVE_2","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-14T15:14:46.880Z","agentId":"P-01","wave":0,"step":"BILLING","action":"SUBSCRIPTION_SUCCESS","result":"SUCCESS","details":{"plan":"Individual","stripeCustomerId":"cus_test_swarm_p-01","stripeSubscriptionId":"sub_test_swarm_p-01","cardLastFour":"4242","cardBrand":"visa"}}
+{"ts":"2026-08-14T15:14:46.881Z","agentId":"P-01","wave":2,"step":"WAVE_2","action":"COMPLETE","result":"SUCCESS","details":{"plan":"Individual"}}
+{"ts":"2026-08-14T15:14:46.926Z","agentId":"P-01","wave":3,"step":"WAVE_3","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-14T15:14:46.933Z","agentId":"P-01","wave":0,"step":"PROJECTS","action":"CREATION_SUCCESS","result":"SUCCESS","details":{"created":10,"plaid":false}}
+{"ts":"2026-08-14T15:14:46.934Z","agentId":"P-01","wave":3,"step":"WAVE_3","action":"COMPLETE","result":"SUCCESS","details":{"created":10}}
+{"ts":"2026-08-14T15:14:47.080Z","agentId":"P-01","wave":0,"step":"SIGNUP","action":"SUCCESS_CREATED","result":"SUCCESS","details":{"uid":"uid_persona_p01","email":"agent01.marcus.delgado@paperworking-test.dev","name":"Marcus Mac Delgado","entity":"Delgado Rapid Deals LLC"}}
+{"ts":"2026-08-14T15:14:47.080Z","agentId":"P-01","wave":1,"step":"WAVE_1","action":"COMPLETE","result":"SUCCESS","details":{"uid":"uid_persona_p01"}}
+{"ts":"2026-08-14T15:14:47.149Z","agentId":"P-01","wave":2,"step":"WAVE_2","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-14T15:14:47.151Z","agentId":"P-01","wave":0,"step":"BILLING","action":"SUBSCRIPTION_SUCCESS","result":"SUCCESS","details":{"plan":"Individual","stripeCustomerId":"cus_test_swarm_p-01","stripeSubscriptionId":"sub_test_swarm_p-01","cardLastFour":"4242","cardBrand":"visa"}}
+{"ts":"2026-08-14T15:14:47.151Z","agentId":"P-01","wave":2,"step":"WAVE_2","action":"COMPLETE","result":"SUCCESS","details":{"plan":"Individual"}}
+{"ts":"2026-08-14T15:14:47.161Z","agentId":"P-01","wave":4,"step":"WAVE_4","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-14T15:14:47.166Z","agentId":"P-01","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-01","to":"P-05","type":"Wholesale Assignment"}}
+{"ts":"2026-08-14T15:14:47.168Z","agentId":"P-01","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-02","to":"P-15","type":"Wholesale Assignment"}}
+{"ts":"2026-08-14T15:14:47.168Z","agentId":"P-01","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-24","to":"P-48","type":"Transactional Funding Referral"}}
+{"ts":"2026-08-14T15:14:47.169Z","agentId":"P-01","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-05"}}
+{"ts":"2026-08-14T15:14:47.171Z","agentId":"P-01","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-15"}}
+{"ts":"2026-08-14T15:14:47.174Z","agentId":"P-01","wave":4,"step":"WAVE_4","action":"COMPLETE","result":"SUCCESS","details":{"interactions":3,"invites":2}}
+{"ts":"2026-08-14T15:14:47.206Z","agentId":"P-01","wave":3,"step":"WAVE_3","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-14T15:14:47.210Z","agentId":"P-01","wave":0,"step":"PROJECTS","action":"CREATION_SUCCESS","result":"SUCCESS","details":{"created":10,"plaid":false}}
+{"ts":"2026-08-14T15:14:47.210Z","agentId":"P-01","wave":3,"step":"WAVE_3","action":"COMPLETE","result":"SUCCESS","details":{"created":10}}
+{"ts":"2026-08-14T15:14:47.361Z","agentId":"P-01","wave":5,"step":"WAVE_5","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-14T15:14:47.383Z","agentId":"P-01","wave":5,"step":"WAVE_5","action":"COMPLETE","result":"SUCCESS","details":{"reportPath":"/Users/yvesdarbouze/Documents/PaperWorking/artifacts/persona-swarm/reports/P-01-experience-report.md"}}
+{"ts":"2026-08-14T15:14:47.519Z","agentId":"P-01","wave":4,"step":"WAVE_4","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-14T15:14:47.553Z","agentId":"P-01","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-01","to":"P-05","type":"Wholesale Assignment"}}
+{"ts":"2026-08-14T15:14:47.557Z","agentId":"P-01","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-02","to":"P-15","type":"Wholesale Assignment"}}
+{"ts":"2026-08-14T15:14:47.567Z","agentId":"P-01","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-24","to":"P-48","type":"Transactional Funding Referral"}}
+{"ts":"2026-08-14T15:14:47.568Z","agentId":"P-01","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-05"}}
+{"ts":"2026-08-14T15:14:47.569Z","agentId":"P-01","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-15"}}
+{"ts":"2026-08-14T15:14:47.569Z","agentId":"P-01","wave":4,"step":"WAVE_4","action":"COMPLETE","result":"SUCCESS","details":{"interactions":3,"invites":2}}
+{"ts":"2026-08-14T15:14:47.887Z","agentId":"P-01","wave":5,"step":"WAVE_5","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-14T15:14:47.895Z","agentId":"P-01","wave":5,"step":"WAVE_5","action":"COMPLETE","result":"SUCCESS","details":{"reportPath":"/Users/yvesdarbouze/Documents/PaperWorking/artifacts/persona-swarm/reports/P-01-experience-report.md"}}
+{"ts":"2026-08-14T15:16:32.193Z","agentId":"P-01","wave":1,"step":"WAVE_1","action":"START","result":"SUCCESS","details":{"email":"agent01.marcus.delgado@paperworking-test.dev"}}
+{"ts":"2026-08-14T15:16:33.121Z","agentId":"P-01","wave":1,"step":"WAVE_1","action":"START","result":"SUCCESS","details":{"email":"agent01.marcus.delgado@paperworking-test.dev"}}
+{"ts":"2026-08-14T15:16:33.228Z","agentId":"P-01","wave":0,"step":"SIGNUP","action":"SUCCESS_CREATED","result":"SUCCESS","details":{"uid":"uid_persona_p01","email":"agent01.marcus.delgado@paperworking-test.dev","name":"Marcus Mac Delgado","entity":"Delgado Rapid Deals LLC"}}
+{"ts":"2026-08-14T15:16:33.228Z","agentId":"P-01","wave":1,"step":"WAVE_1","action":"COMPLETE","result":"SUCCESS","details":{"uid":"uid_persona_p01"}}
+{"ts":"2026-08-14T15:16:33.398Z","agentId":"P-01","wave":2,"step":"WAVE_2","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-14T15:16:33.400Z","agentId":"P-01","wave":0,"step":"BILLING","action":"SUBSCRIPTION_SUCCESS","result":"SUCCESS","details":{"plan":"Individual","stripeCustomerId":"cus_test_swarm_p-01","stripeSubscriptionId":"sub_test_swarm_p-01","cardLastFour":"4242","cardBrand":"visa"}}
+{"ts":"2026-08-14T15:16:33.400Z","agentId":"P-01","wave":2,"step":"WAVE_2","action":"COMPLETE","result":"SUCCESS","details":{"plan":"Individual"}}
+{"ts":"2026-08-14T15:16:33.472Z","agentId":"P-01","wave":3,"step":"WAVE_3","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-14T15:16:33.483Z","agentId":"P-01","wave":0,"step":"PROJECTS","action":"CREATION_SUCCESS","result":"SUCCESS","details":{"created":10,"plaid":false}}
+{"ts":"2026-08-14T15:16:33.483Z","agentId":"P-01","wave":3,"step":"WAVE_3","action":"COMPLETE","result":"SUCCESS","details":{"created":10}}
+{"ts":"2026-08-14T15:16:33.759Z","agentId":"P-01","wave":4,"step":"WAVE_4","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-14T15:16:33.764Z","agentId":"P-01","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-01","to":"P-05","type":"Wholesale Assignment"}}
+{"ts":"2026-08-14T15:16:33.765Z","agentId":"P-01","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-02","to":"P-15","type":"Wholesale Assignment"}}
+{"ts":"2026-08-14T15:16:33.766Z","agentId":"P-01","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-24","to":"P-48","type":"Transactional Funding Referral"}}
+{"ts":"2026-08-14T15:16:33.767Z","agentId":"P-01","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-05"}}
+{"ts":"2026-08-14T15:16:33.768Z","agentId":"P-01","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-15"}}
+{"ts":"2026-08-14T15:16:33.768Z","agentId":"P-01","wave":4,"step":"WAVE_4","action":"COMPLETE","result":"SUCCESS","details":{"interactions":3,"invites":2}}
+{"ts":"2026-08-14T15:16:33.937Z","agentId":"P-01","wave":5,"step":"WAVE_5","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-14T15:16:33.954Z","agentId":"P-01","wave":5,"step":"WAVE_5","action":"COMPLETE","result":"SUCCESS","details":{"reportPath":"/Users/yvesdarbouze/Documents/PaperWorking/artifacts/persona-swarm/reports/P-01-experience-report.md"}}
+{"ts":"2026-08-14T15:16:34.122Z","agentId":"P-01","wave":0,"step":"SIGNUP","action":"SUCCESS_CREATED","result":"SUCCESS","details":{"uid":"uid_persona_p01","email":"agent01.marcus.delgado@paperworking-test.dev","name":"Marcus Mac Delgado","entity":"Delgado Rapid Deals LLC"}}
+{"ts":"2026-08-14T15:16:34.122Z","agentId":"P-01","wave":1,"step":"WAVE_1","action":"COMPLETE","result":"SUCCESS","details":{"uid":"uid_persona_p01"}}
+{"ts":"2026-08-14T15:16:34.192Z","agentId":"P-01","wave":2,"step":"WAVE_2","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-14T15:16:34.193Z","agentId":"P-01","wave":0,"step":"BILLING","action":"SUBSCRIPTION_SUCCESS","result":"SUCCESS","details":{"plan":"Individual","stripeCustomerId":"cus_test_swarm_p-01","stripeSubscriptionId":"sub_test_swarm_p-01","cardLastFour":"4242","cardBrand":"visa"}}
+{"ts":"2026-08-14T15:16:34.193Z","agentId":"P-01","wave":2,"step":"WAVE_2","action":"COMPLETE","result":"SUCCESS","details":{"plan":"Individual"}}
+{"ts":"2026-08-14T15:16:34.253Z","agentId":"P-01","wave":3,"step":"WAVE_3","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-14T15:16:34.277Z","agentId":"P-01","wave":0,"step":"PROJECTS","action":"CREATION_SUCCESS","result":"SUCCESS","details":{"created":10,"plaid":false}}
+{"ts":"2026-08-14T15:16:34.277Z","agentId":"P-01","wave":3,"step":"WAVE_3","action":"COMPLETE","result":"SUCCESS","details":{"created":10}}
+{"ts":"2026-08-14T15:16:34.562Z","agentId":"P-01","wave":4,"step":"WAVE_4","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-14T15:16:34.563Z","agentId":"P-01","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-01","to":"P-05","type":"Wholesale Assignment"}}
+{"ts":"2026-08-14T15:16:34.563Z","agentId":"P-01","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-02","to":"P-15","type":"Wholesale Assignment"}}
+{"ts":"2026-08-14T15:16:34.564Z","agentId":"P-01","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-24","to":"P-48","type":"Transactional Funding Referral"}}
+{"ts":"2026-08-14T15:16:34.564Z","agentId":"P-01","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-05"}}
+{"ts":"2026-08-14T15:16:34.564Z","agentId":"P-01","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-15"}}
+{"ts":"2026-08-14T15:16:34.564Z","agentId":"P-01","wave":4,"step":"WAVE_4","action":"COMPLETE","result":"SUCCESS","details":{"interactions":3,"invites":2}}
+{"ts":"2026-08-14T15:16:34.775Z","agentId":"P-01","wave":5,"step":"WAVE_5","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-14T15:16:34.777Z","agentId":"P-01","wave":5,"step":"WAVE_5","action":"COMPLETE","result":"SUCCESS","details":{"reportPath":"/Users/yvesdarbouze/Documents/PaperWorking/artifacts/persona-swarm/reports/P-01-experience-report.md"}}
+{"ts":"2026-08-14T15:19:01.010Z","agentId":"P-01","wave":1,"step":"WAVE_1","action":"START","result":"SUCCESS","details":{"email":"agent01.marcus.delgado@paperworking-test.dev"}}
+{"ts":"2026-08-14T15:19:01.387Z","agentId":"P-01","wave":1,"step":"WAVE_1","action":"START","result":"SUCCESS","details":{"email":"agent01.marcus.delgado@paperworking-test.dev"}}
+{"ts":"2026-08-14T15:19:01.519Z","agentId":"P-01","wave":0,"step":"SIGNUP","action":"SUCCESS_CREATED","result":"SUCCESS","details":{"uid":"uid_persona_p01","email":"agent01.marcus.delgado@paperworking-test.dev","name":"Marcus Mac Delgado","entity":"Delgado Rapid Deals LLC"}}
+{"ts":"2026-08-14T15:19:01.519Z","agentId":"P-01","wave":1,"step":"WAVE_1","action":"COMPLETE","result":"SUCCESS","details":{"uid":"uid_persona_p01"}}
+{"ts":"2026-08-14T15:19:01.649Z","agentId":"P-01","wave":2,"step":"WAVE_2","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-14T15:19:01.651Z","agentId":"P-01","wave":0,"step":"BILLING","action":"SUBSCRIPTION_SUCCESS","result":"SUCCESS","details":{"plan":"Individual","stripeCustomerId":"cus_test_swarm_p-01","stripeSubscriptionId":"sub_test_swarm_p-01","cardLastFour":"4242","cardBrand":"visa"}}
+{"ts":"2026-08-14T15:19:01.652Z","agentId":"P-01","wave":2,"step":"WAVE_2","action":"COMPLETE","result":"SUCCESS","details":{"plan":"Individual"}}
+{"ts":"2026-08-14T15:19:01.742Z","agentId":"P-01","wave":3,"step":"WAVE_3","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-14T15:19:01.749Z","agentId":"P-01","wave":0,"step":"PROJECTS","action":"CREATION_SUCCESS","result":"SUCCESS","details":{"created":10,"plaid":false}}
+{"ts":"2026-08-14T15:19:01.750Z","agentId":"P-01","wave":3,"step":"WAVE_3","action":"COMPLETE","result":"SUCCESS","details":{"created":10}}
+{"ts":"2026-08-14T15:19:01.826Z","agentId":"P-01","wave":0,"step":"SIGNUP","action":"SUCCESS_CREATED","result":"SUCCESS","details":{"uid":"uid_persona_p01","email":"agent01.marcus.delgado@paperworking-test.dev","name":"Marcus Mac Delgado","entity":"Delgado Rapid Deals LLC"}}
+{"ts":"2026-08-14T15:19:01.826Z","agentId":"P-01","wave":1,"step":"WAVE_1","action":"COMPLETE","result":"SUCCESS","details":{"uid":"uid_persona_p01"}}
+{"ts":"2026-08-14T15:19:01.905Z","agentId":"P-01","wave":2,"step":"WAVE_2","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-14T15:19:01.905Z","agentId":"P-01","wave":0,"step":"BILLING","action":"SUBSCRIPTION_SUCCESS","result":"SUCCESS","details":{"plan":"Individual","stripeCustomerId":"cus_test_swarm_p-01","stripeSubscriptionId":"sub_test_swarm_p-01","cardLastFour":"4242","cardBrand":"visa"}}
+{"ts":"2026-08-14T15:19:01.906Z","agentId":"P-01","wave":2,"step":"WAVE_2","action":"COMPLETE","result":"SUCCESS","details":{"plan":"Individual"}}
+{"ts":"2026-08-14T15:19:01.948Z","agentId":"P-01","wave":3,"step":"WAVE_3","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-14T15:19:01.951Z","agentId":"P-01","wave":0,"step":"PROJECTS","action":"CREATION_SUCCESS","result":"SUCCESS","details":{"created":10,"plaid":false}}
+{"ts":"2026-08-14T15:19:01.951Z","agentId":"P-01","wave":3,"step":"WAVE_3","action":"COMPLETE","result":"SUCCESS","details":{"created":10}}
+{"ts":"2026-08-14T15:19:01.983Z","agentId":"P-01","wave":4,"step":"WAVE_4","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-14T15:19:01.985Z","agentId":"P-01","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-01","to":"P-05","type":"Wholesale Assignment"}}
+{"ts":"2026-08-14T15:19:01.985Z","agentId":"P-01","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-02","to":"P-15","type":"Wholesale Assignment"}}
+{"ts":"2026-08-14T15:19:01.986Z","agentId":"P-01","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-24","to":"P-48","type":"Transactional Funding Referral"}}
+{"ts":"2026-08-14T15:19:01.986Z","agentId":"P-01","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-05"}}
+{"ts":"2026-08-14T15:19:01.986Z","agentId":"P-01","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-15"}}
+{"ts":"2026-08-14T15:19:01.986Z","agentId":"P-01","wave":4,"step":"WAVE_4","action":"COMPLETE","result":"SUCCESS","details":{"interactions":3,"invites":2}}
+{"ts":"2026-08-14T15:19:02.085Z","agentId":"P-01","wave":5,"step":"WAVE_5","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-14T15:19:02.085Z","agentId":"P-01","wave":5,"step":"WAVE_5","action":"COMPLETE","result":"SUCCESS","details":{"reportPath":"/Users/yvesdarbouze/Documents/PaperWorking/artifacts/persona-swarm/reports/P-01-experience-report.md"}}
+{"ts":"2026-08-14T15:19:02.130Z","agentId":"P-01","wave":4,"step":"WAVE_4","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-14T15:19:02.134Z","agentId":"P-01","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-01","to":"P-05","type":"Wholesale Assignment"}}
+{"ts":"2026-08-14T15:19:02.135Z","agentId":"P-01","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-02","to":"P-15","type":"Wholesale Assignment"}}
+{"ts":"2026-08-14T15:19:02.138Z","agentId":"P-01","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-24","to":"P-48","type":"Transactional Funding Referral"}}
+{"ts":"2026-08-14T15:19:02.138Z","agentId":"P-01","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-05"}}
+{"ts":"2026-08-14T15:19:02.139Z","agentId":"P-01","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-15"}}
+{"ts":"2026-08-14T15:19:02.139Z","agentId":"P-01","wave":4,"step":"WAVE_4","action":"COMPLETE","result":"SUCCESS","details":{"interactions":3,"invites":2}}
+{"ts":"2026-08-14T15:19:02.245Z","agentId":"P-01","wave":5,"step":"WAVE_5","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-14T15:19:02.246Z","agentId":"P-01","wave":5,"step":"WAVE_5","action":"COMPLETE","result":"SUCCESS","details":{"reportPath":"/Users/yvesdarbouze/Documents/PaperWorking/artifacts/persona-swarm/reports/P-01-experience-report.md"}}
+{"ts":"2026-08-14T19:22:00.751Z","agentId":"P-01","wave":1,"step":"WAVE_1","action":"START","result":"SUCCESS","details":{"email":"agent01.marcus.delgado@paperworking-test.dev"}}
+{"ts":"2026-08-14T19:22:02.345Z","agentId":"P-01","wave":1,"step":"WAVE_1","action":"START","result":"SUCCESS","details":{"email":"agent01.marcus.delgado@paperworking-test.dev"}}
+{"ts":"2026-08-14T19:22:03.388Z","agentId":"P-01","wave":0,"step":"SIGNUP","action":"SUCCESS_CREATED","result":"SUCCESS","details":{"uid":"uid_persona_p01","email":"agent01.marcus.delgado@paperworking-test.dev","name":"Marcus Mac Delgado","entity":"Delgado Rapid Deals LLC"}}
+{"ts":"2026-08-14T19:22:03.388Z","agentId":"P-01","wave":1,"step":"WAVE_1","action":"COMPLETE","result":"SUCCESS","details":{"uid":"uid_persona_p01"}}
+{"ts":"2026-08-14T19:22:03.520Z","agentId":"P-01","wave":2,"step":"WAVE_2","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-14T19:22:03.525Z","agentId":"P-01","wave":0,"step":"BILLING","action":"SUBSCRIPTION_SUCCESS","result":"SUCCESS","details":{"plan":"Individual","stripeCustomerId":"cus_test_swarm_p-01","stripeSubscriptionId":"sub_test_swarm_p-01","cardLastFour":"4242","cardBrand":"visa"}}
+{"ts":"2026-08-14T19:22:03.525Z","agentId":"P-01","wave":2,"step":"WAVE_2","action":"COMPLETE","result":"SUCCESS","details":{"plan":"Individual"}}
+{"ts":"2026-08-14T19:22:03.587Z","agentId":"P-01","wave":3,"step":"WAVE_3","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-14T19:22:03.591Z","agentId":"P-01","wave":0,"step":"PROJECTS","action":"CREATION_SUCCESS","result":"SUCCESS","details":{"created":10,"plaid":false}}
+{"ts":"2026-08-14T19:22:03.591Z","agentId":"P-01","wave":3,"step":"WAVE_3","action":"COMPLETE","result":"SUCCESS","details":{"created":10}}
+{"ts":"2026-08-14T19:22:03.838Z","agentId":"P-01","wave":4,"step":"WAVE_4","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-14T19:22:03.843Z","agentId":"P-01","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-01","to":"P-05","type":"Wholesale Assignment"}}
+{"ts":"2026-08-14T19:22:03.844Z","agentId":"P-01","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-02","to":"P-15","type":"Wholesale Assignment"}}
+{"ts":"2026-08-14T19:22:03.845Z","agentId":"P-01","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-24","to":"P-48","type":"Transactional Funding Referral"}}
+{"ts":"2026-08-14T19:22:03.845Z","agentId":"P-01","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-05"}}
+{"ts":"2026-08-14T19:22:03.846Z","agentId":"P-01","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-15"}}
+{"ts":"2026-08-14T19:22:03.846Z","agentId":"P-01","wave":4,"step":"WAVE_4","action":"COMPLETE","result":"SUCCESS","details":{"interactions":3,"invites":2}}
+{"ts":"2026-08-14T19:22:03.996Z","agentId":"P-01","wave":5,"step":"WAVE_5","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-14T19:22:04.029Z","agentId":"P-01","wave":5,"step":"WAVE_5","action":"COMPLETE","result":"SUCCESS","details":{"reportPath":"/Users/yvesdarbouze/Documents/PaperWorking/artifacts/persona-swarm/reports/P-01-experience-report.md"}}
+{"ts":"2026-08-14T19:22:04.978Z","agentId":"P-01","wave":0,"step":"SIGNUP","action":"SUCCESS_CREATED","result":"SUCCESS","details":{"uid":"uid_persona_p01","email":"agent01.marcus.delgado@paperworking-test.dev","name":"Marcus Mac Delgado","entity":"Delgado Rapid Deals LLC"}}
+{"ts":"2026-08-14T19:22:04.978Z","agentId":"P-01","wave":1,"step":"WAVE_1","action":"COMPLETE","result":"SUCCESS","details":{"uid":"uid_persona_p01"}}
+{"ts":"2026-08-14T19:22:05.092Z","agentId":"P-01","wave":2,"step":"WAVE_2","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-14T19:22:05.095Z","agentId":"P-01","wave":0,"step":"BILLING","action":"SUBSCRIPTION_SUCCESS","result":"SUCCESS","details":{"plan":"Individual","stripeCustomerId":"cus_test_swarm_p-01","stripeSubscriptionId":"sub_test_swarm_p-01","cardLastFour":"4242","cardBrand":"visa"}}
+{"ts":"2026-08-14T19:22:05.098Z","agentId":"P-01","wave":2,"step":"WAVE_2","action":"COMPLETE","result":"SUCCESS","details":{"plan":"Individual"}}
+{"ts":"2026-08-14T19:22:05.175Z","agentId":"P-01","wave":3,"step":"WAVE_3","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-14T19:22:05.179Z","agentId":"P-01","wave":0,"step":"PROJECTS","action":"CREATION_SUCCESS","result":"SUCCESS","details":{"created":10,"plaid":false}}
+{"ts":"2026-08-14T19:22:05.179Z","agentId":"P-01","wave":3,"step":"WAVE_3","action":"COMPLETE","result":"SUCCESS","details":{"created":10}}
+{"ts":"2026-08-14T19:22:05.452Z","agentId":"P-01","wave":4,"step":"WAVE_4","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-14T19:22:05.454Z","agentId":"P-01","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-01","to":"P-05","type":"Wholesale Assignment"}}
+{"ts":"2026-08-14T19:22:05.456Z","agentId":"P-01","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-02","to":"P-15","type":"Wholesale Assignment"}}
+{"ts":"2026-08-14T19:22:05.456Z","agentId":"P-01","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-24","to":"P-48","type":"Transactional Funding Referral"}}
+{"ts":"2026-08-14T19:22:05.457Z","agentId":"P-01","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-05"}}
+{"ts":"2026-08-14T19:22:05.458Z","agentId":"P-01","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-15"}}
+{"ts":"2026-08-14T19:22:05.458Z","agentId":"P-01","wave":4,"step":"WAVE_4","action":"COMPLETE","result":"SUCCESS","details":{"interactions":3,"invites":2}}
+{"ts":"2026-08-14T19:22:05.598Z","agentId":"P-01","wave":5,"step":"WAVE_5","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-14T19:22:05.623Z","agentId":"P-01","wave":5,"step":"WAVE_5","action":"COMPLETE","result":"SUCCESS","details":{"reportPath":"/Users/yvesdarbouze/Documents/PaperWorking/artifacts/persona-swarm/reports/P-01-experience-report.md"}}

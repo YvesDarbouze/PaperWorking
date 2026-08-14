@@ -689,3 +689,203 @@
 {"ts":"2026-08-13T17:42:18.811Z","agentId":"P-35","wave":4,"step":"WAVE_4","action":"COMPLETE","result":"SUCCESS","details":{"interactions":2,"invites":2}}
 {"ts":"2026-08-13T17:42:18.908Z","agentId":"P-35","wave":5,"step":"WAVE_5","action":"START","result":"SUCCESS"}
 {"ts":"2026-08-13T17:42:18.909Z","agentId":"P-35","wave":5,"step":"WAVE_5","action":"COMPLETE","result":"SUCCESS","details":{"reportPath":"/Users/yvesdarbouze/Documents/PaperWorking/artifacts/persona-swarm/reports/P-35-experience-report.md"}}
+{"ts":"2026-08-14T12:08:08.002Z","agentId":"P-35","wave":1,"step":"WAVE_1","action":"START","result":"SUCCESS","details":{"email":"agent35.alan.weiss@paperworking-test.dev"}}
+{"ts":"2026-08-14T12:08:08.002Z","agentId":"P-35","wave":1,"step":"WAVE_1","action":"START","result":"SUCCESS","details":{"email":"agent35.alan.weiss@paperworking-test.dev"}}
+{"ts":"2026-08-14T12:08:08.007Z","agentId":"P-35","wave":0,"step":"SIGNUP","action":"SUCCESS_CREATED","result":"SUCCESS","details":{"uid":"uid_persona_p35","email":"agent35.alan.weiss@paperworking-test.dev","name":"Dr Alan Weiss","entity":"Weiss Family Capital LLC"}}
+{"ts":"2026-08-14T12:08:08.007Z","agentId":"P-35","wave":1,"step":"WAVE_1","action":"COMPLETE","result":"SUCCESS","details":{"uid":"uid_persona_p35"}}
+{"ts":"2026-08-14T12:08:08.007Z","agentId":"P-35","wave":0,"step":"SIGNUP","action":"SUCCESS_CREATED","result":"SUCCESS","details":{"uid":"uid_persona_p35","email":"agent35.alan.weiss@paperworking-test.dev","name":"Dr Alan Weiss","entity":"Weiss Family Capital LLC"}}
+{"ts":"2026-08-14T12:08:08.008Z","agentId":"P-35","wave":1,"step":"WAVE_1","action":"COMPLETE","result":"SUCCESS","details":{"uid":"uid_persona_p35"}}
+{"ts":"2026-08-14T12:08:08.062Z","agentId":"P-35","wave":2,"step":"WAVE_2","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-14T12:08:08.062Z","agentId":"P-35","wave":0,"step":"BILLING","action":"CHECKOUT_INITIATED","result":"SUCCESS","details":{"plan":"Individual"}}
+{"ts":"2026-08-14T12:08:08.062Z","agentId":"P-35","wave":0,"step":"BILLING","action":"CHECKOUT_ABANDONED","result":"SUCCESS","details":{"reason":"User navigated away during trial setup"}}
+{"ts":"2026-08-14T12:08:08.062Z","agentId":"P-35","wave":0,"step":"BILLING","action":"CHECKOUT_RESUMED","result":"SUCCESS","details":{"reason":"User returned via abandoned checkout link"}}
+{"ts":"2026-08-14T12:08:08.063Z","agentId":"P-35","wave":0,"step":"BILLING","action":"SUBSCRIPTION_SUCCESS","result":"SUCCESS","details":{"plan":"Individual","stripeCustomerId":"cus_test_swarm_p-35","stripeSubscriptionId":"sub_test_swarm_p-35","cardLastFour":"4242","cardBrand":"visa"}}
+{"ts":"2026-08-14T12:08:08.063Z","agentId":"P-35","wave":2,"step":"WAVE_2","action":"COMPLETE","result":"SUCCESS","details":{"plan":"Individual"}}
+{"ts":"2026-08-14T12:08:08.063Z","agentId":"P-35","wave":2,"step":"WAVE_2","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-14T12:08:08.064Z","agentId":"P-35","wave":0,"step":"BILLING","action":"CHECKOUT_INITIATED","result":"SUCCESS","details":{"plan":"Individual"}}
+{"ts":"2026-08-14T12:08:08.064Z","agentId":"P-35","wave":0,"step":"BILLING","action":"CHECKOUT_ABANDONED","result":"SUCCESS","details":{"reason":"User navigated away during trial setup"}}
+{"ts":"2026-08-14T12:08:08.064Z","agentId":"P-35","wave":0,"step":"BILLING","action":"CHECKOUT_RESUMED","result":"SUCCESS","details":{"reason":"User returned via abandoned checkout link"}}
+{"ts":"2026-08-14T12:08:08.064Z","agentId":"P-35","wave":0,"step":"BILLING","action":"SUBSCRIPTION_SUCCESS","result":"SUCCESS","details":{"plan":"Individual","stripeCustomerId":"cus_test_swarm_p-35","stripeSubscriptionId":"sub_test_swarm_p-35","cardLastFour":"4242","cardBrand":"visa"}}
+{"ts":"2026-08-14T12:08:08.064Z","agentId":"P-35","wave":2,"step":"WAVE_2","action":"COMPLETE","result":"SUCCESS","details":{"plan":"Individual"}}
+{"ts":"2026-08-14T12:08:08.193Z","agentId":"P-35","wave":3,"step":"WAVE_3","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-14T12:08:08.193Z","agentId":"P-35","wave":3,"step":"WAVE_3","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-14T12:08:08.195Z","agentId":"P-35","wave":0,"step":"PROJECTS","action":"CREATION_SUCCESS","result":"SUCCESS","details":{"created":10,"plaid":false}}
+{"ts":"2026-08-14T12:08:08.195Z","agentId":"P-35","wave":3,"step":"WAVE_3","action":"COMPLETE","result":"SUCCESS","details":{"created":10}}
+{"ts":"2026-08-14T12:08:08.196Z","agentId":"P-35","wave":0,"step":"PROJECTS","action":"CREATION_SUCCESS","result":"SUCCESS","details":{"created":10,"plaid":false}}
+{"ts":"2026-08-14T12:08:08.196Z","agentId":"P-35","wave":3,"step":"WAVE_3","action":"COMPLETE","result":"SUCCESS","details":{"created":10}}
+{"ts":"2026-08-14T12:08:08.284Z","agentId":"P-35","wave":4,"step":"WAVE_4","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-14T12:08:08.284Z","agentId":"P-35","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-51","to":"P-39","type":"LP Fund Commitment"}}
+{"ts":"2026-08-14T12:08:08.285Z","agentId":"P-35","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-73","to":"P-36","type":"LP Peer Thread"}}
+{"ts":"2026-08-14T12:08:08.285Z","agentId":"P-35","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-39"}}
+{"ts":"2026-08-14T12:08:08.285Z","agentId":"P-35","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-36"}}
+{"ts":"2026-08-14T12:08:08.285Z","agentId":"P-35","wave":4,"step":"WAVE_4","action":"COMPLETE","result":"SUCCESS","details":{"interactions":2,"invites":2}}
+{"ts":"2026-08-14T12:08:08.289Z","agentId":"P-35","wave":4,"step":"WAVE_4","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-14T12:08:08.289Z","agentId":"P-35","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-51","to":"P-39","type":"LP Fund Commitment"}}
+{"ts":"2026-08-14T12:08:08.290Z","agentId":"P-35","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-73","to":"P-36","type":"LP Peer Thread"}}
+{"ts":"2026-08-14T12:08:08.290Z","agentId":"P-35","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-39"}}
+{"ts":"2026-08-14T12:08:08.290Z","agentId":"P-35","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-36"}}
+{"ts":"2026-08-14T12:08:08.290Z","agentId":"P-35","wave":4,"step":"WAVE_4","action":"COMPLETE","result":"SUCCESS","details":{"interactions":2,"invites":2}}
+{"ts":"2026-08-14T12:08:08.330Z","agentId":"P-35","wave":5,"step":"WAVE_5","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-14T12:08:08.331Z","agentId":"P-35","wave":5,"step":"WAVE_5","action":"COMPLETE","result":"SUCCESS","details":{"reportPath":"/Users/yvesdarbouze/Documents/PaperWorking/artifacts/persona-swarm/reports/P-35-experience-report.md"}}
+{"ts":"2026-08-14T12:08:08.340Z","agentId":"P-35","wave":5,"step":"WAVE_5","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-14T12:08:08.340Z","agentId":"P-35","wave":5,"step":"WAVE_5","action":"COMPLETE","result":"SUCCESS","details":{"reportPath":"/Users/yvesdarbouze/Documents/PaperWorking/artifacts/persona-swarm/reports/P-35-experience-report.md"}}
+{"ts":"2026-08-14T15:14:46.831Z","agentId":"P-35","wave":1,"step":"WAVE_1","action":"START","result":"SUCCESS","details":{"email":"agent35.alan.weiss@paperworking-test.dev"}}
+{"ts":"2026-08-14T15:14:46.833Z","agentId":"P-35","wave":0,"step":"SIGNUP","action":"SUCCESS_CREATED","result":"SUCCESS","details":{"uid":"uid_persona_p35","email":"agent35.alan.weiss@paperworking-test.dev","name":"Dr Alan Weiss","entity":"Weiss Family Capital LLC"}}
+{"ts":"2026-08-14T15:14:46.836Z","agentId":"P-35","wave":1,"step":"WAVE_1","action":"COMPLETE","result":"SUCCESS","details":{"uid":"uid_persona_p35"}}
+{"ts":"2026-08-14T15:14:46.911Z","agentId":"P-35","wave":2,"step":"WAVE_2","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-14T15:14:46.911Z","agentId":"P-35","wave":0,"step":"BILLING","action":"CHECKOUT_INITIATED","result":"SUCCESS","details":{"plan":"Individual"}}
+{"ts":"2026-08-14T15:14:46.911Z","agentId":"P-35","wave":0,"step":"BILLING","action":"CHECKOUT_ABANDONED","result":"SUCCESS","details":{"reason":"User navigated away during trial setup"}}
+{"ts":"2026-08-14T15:14:46.911Z","agentId":"P-35","wave":0,"step":"BILLING","action":"CHECKOUT_RESUMED","result":"SUCCESS","details":{"reason":"User returned via abandoned checkout link"}}
+{"ts":"2026-08-14T15:14:46.912Z","agentId":"P-35","wave":0,"step":"BILLING","action":"SUBSCRIPTION_SUCCESS","result":"SUCCESS","details":{"plan":"Individual","stripeCustomerId":"cus_test_swarm_p-35","stripeSubscriptionId":"sub_test_swarm_p-35","cardLastFour":"4242","cardBrand":"visa"}}
+{"ts":"2026-08-14T15:14:46.912Z","agentId":"P-35","wave":2,"step":"WAVE_2","action":"COMPLETE","result":"SUCCESS","details":{"plan":"Individual"}}
+{"ts":"2026-08-14T15:14:47.094Z","agentId":"P-35","wave":3,"step":"WAVE_3","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-14T15:14:47.099Z","agentId":"P-35","wave":0,"step":"PROJECTS","action":"CREATION_SUCCESS","result":"SUCCESS","details":{"created":10,"plaid":false}}
+{"ts":"2026-08-14T15:14:47.099Z","agentId":"P-35","wave":3,"step":"WAVE_3","action":"COMPLETE","result":"SUCCESS","details":{"created":10}}
+{"ts":"2026-08-14T15:14:47.118Z","agentId":"P-35","wave":1,"step":"WAVE_1","action":"START","result":"SUCCESS","details":{"email":"agent35.alan.weiss@paperworking-test.dev"}}
+{"ts":"2026-08-14T15:14:47.119Z","agentId":"P-35","wave":0,"step":"SIGNUP","action":"SUCCESS_CREATED","result":"SUCCESS","details":{"uid":"uid_persona_p35","email":"agent35.alan.weiss@paperworking-test.dev","name":"Dr Alan Weiss","entity":"Weiss Family Capital LLC"}}
+{"ts":"2026-08-14T15:14:47.119Z","agentId":"P-35","wave":1,"step":"WAVE_1","action":"COMPLETE","result":"SUCCESS","details":{"uid":"uid_persona_p35"}}
+{"ts":"2026-08-14T15:14:47.175Z","agentId":"P-35","wave":2,"step":"WAVE_2","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-14T15:14:47.175Z","agentId":"P-35","wave":0,"step":"BILLING","action":"CHECKOUT_INITIATED","result":"SUCCESS","details":{"plan":"Individual"}}
+{"ts":"2026-08-14T15:14:47.176Z","agentId":"P-35","wave":0,"step":"BILLING","action":"CHECKOUT_ABANDONED","result":"SUCCESS","details":{"reason":"User navigated away during trial setup"}}
+{"ts":"2026-08-14T15:14:47.176Z","agentId":"P-35","wave":0,"step":"BILLING","action":"CHECKOUT_RESUMED","result":"SUCCESS","details":{"reason":"User returned via abandoned checkout link"}}
+{"ts":"2026-08-14T15:14:47.177Z","agentId":"P-35","wave":0,"step":"BILLING","action":"SUBSCRIPTION_SUCCESS","result":"SUCCESS","details":{"plan":"Individual","stripeCustomerId":"cus_test_swarm_p-35","stripeSubscriptionId":"sub_test_swarm_p-35","cardLastFour":"4242","cardBrand":"visa"}}
+{"ts":"2026-08-14T15:14:47.182Z","agentId":"P-35","wave":2,"step":"WAVE_2","action":"COMPLETE","result":"SUCCESS","details":{"plan":"Individual"}}
+{"ts":"2026-08-14T15:14:47.305Z","agentId":"P-35","wave":4,"step":"WAVE_4","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-14T15:14:47.305Z","agentId":"P-35","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-51","to":"P-39","type":"LP Fund Commitment"}}
+{"ts":"2026-08-14T15:14:47.305Z","agentId":"P-35","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-73","to":"P-36","type":"LP Peer Thread"}}
+{"ts":"2026-08-14T15:14:47.307Z","agentId":"P-35","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-39"}}
+{"ts":"2026-08-14T15:14:47.308Z","agentId":"P-35","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-36"}}
+{"ts":"2026-08-14T15:14:47.308Z","agentId":"P-35","wave":4,"step":"WAVE_4","action":"COMPLETE","result":"SUCCESS","details":{"interactions":2,"invites":2}}
+{"ts":"2026-08-14T15:14:47.433Z","agentId":"P-35","wave":3,"step":"WAVE_3","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-14T15:14:47.436Z","agentId":"P-35","wave":0,"step":"PROJECTS","action":"CREATION_SUCCESS","result":"SUCCESS","details":{"created":10,"plaid":false}}
+{"ts":"2026-08-14T15:14:47.437Z","agentId":"P-35","wave":3,"step":"WAVE_3","action":"COMPLETE","result":"SUCCESS","details":{"created":10}}
+{"ts":"2026-08-14T15:14:47.442Z","agentId":"P-35","wave":5,"step":"WAVE_5","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-14T15:14:47.443Z","agentId":"P-35","wave":5,"step":"WAVE_5","action":"COMPLETE","result":"SUCCESS","details":{"reportPath":"/Users/yvesdarbouze/Documents/PaperWorking/artifacts/persona-swarm/reports/P-35-experience-report.md"}}
+{"ts":"2026-08-14T15:14:47.674Z","agentId":"P-35","wave":4,"step":"WAVE_4","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-14T15:14:47.674Z","agentId":"P-35","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-51","to":"P-39","type":"LP Fund Commitment"}}
+{"ts":"2026-08-14T15:14:47.675Z","agentId":"P-35","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-73","to":"P-36","type":"LP Peer Thread"}}
+{"ts":"2026-08-14T15:14:47.675Z","agentId":"P-35","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-39"}}
+{"ts":"2026-08-14T15:14:47.676Z","agentId":"P-35","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-36"}}
+{"ts":"2026-08-14T15:14:47.676Z","agentId":"P-35","wave":4,"step":"WAVE_4","action":"COMPLETE","result":"SUCCESS","details":{"interactions":2,"invites":2}}
+{"ts":"2026-08-14T15:14:47.945Z","agentId":"P-35","wave":5,"step":"WAVE_5","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-14T15:14:47.945Z","agentId":"P-35","wave":5,"step":"WAVE_5","action":"COMPLETE","result":"SUCCESS","details":{"reportPath":"/Users/yvesdarbouze/Documents/PaperWorking/artifacts/persona-swarm/reports/P-35-experience-report.md"}}
+{"ts":"2026-08-14T15:16:33.366Z","agentId":"P-35","wave":1,"step":"WAVE_1","action":"START","result":"SUCCESS","details":{"email":"agent35.alan.weiss@paperworking-test.dev"}}
+{"ts":"2026-08-14T15:16:33.369Z","agentId":"P-35","wave":0,"step":"SIGNUP","action":"SUCCESS_CREATED","result":"SUCCESS","details":{"uid":"uid_persona_p35","email":"agent35.alan.weiss@paperworking-test.dev","name":"Dr Alan Weiss","entity":"Weiss Family Capital LLC"}}
+{"ts":"2026-08-14T15:16:33.369Z","agentId":"P-35","wave":1,"step":"WAVE_1","action":"COMPLETE","result":"SUCCESS","details":{"uid":"uid_persona_p35"}}
+{"ts":"2026-08-14T15:16:33.434Z","agentId":"P-35","wave":2,"step":"WAVE_2","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-14T15:16:33.435Z","agentId":"P-35","wave":0,"step":"BILLING","action":"CHECKOUT_INITIATED","result":"SUCCESS","details":{"plan":"Individual"}}
+{"ts":"2026-08-14T15:16:33.435Z","agentId":"P-35","wave":0,"step":"BILLING","action":"CHECKOUT_ABANDONED","result":"SUCCESS","details":{"reason":"User navigated away during trial setup"}}
+{"ts":"2026-08-14T15:16:33.437Z","agentId":"P-35","wave":0,"step":"BILLING","action":"CHECKOUT_RESUMED","result":"SUCCESS","details":{"reason":"User returned via abandoned checkout link"}}
+{"ts":"2026-08-14T15:16:33.438Z","agentId":"P-35","wave":0,"step":"BILLING","action":"SUBSCRIPTION_SUCCESS","result":"SUCCESS","details":{"plan":"Individual","stripeCustomerId":"cus_test_swarm_p-35","stripeSubscriptionId":"sub_test_swarm_p-35","cardLastFour":"4242","cardBrand":"visa"}}
+{"ts":"2026-08-14T15:16:33.438Z","agentId":"P-35","wave":2,"step":"WAVE_2","action":"COMPLETE","result":"SUCCESS","details":{"plan":"Individual"}}
+{"ts":"2026-08-14T15:16:33.689Z","agentId":"P-35","wave":3,"step":"WAVE_3","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-14T15:16:33.693Z","agentId":"P-35","wave":0,"step":"PROJECTS","action":"CREATION_SUCCESS","result":"SUCCESS","details":{"created":10,"plaid":false}}
+{"ts":"2026-08-14T15:16:33.693Z","agentId":"P-35","wave":3,"step":"WAVE_3","action":"COMPLETE","result":"SUCCESS","details":{"created":10}}
+{"ts":"2026-08-14T15:16:33.892Z","agentId":"P-35","wave":4,"step":"WAVE_4","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-14T15:16:33.892Z","agentId":"P-35","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-51","to":"P-39","type":"LP Fund Commitment"}}
+{"ts":"2026-08-14T15:16:33.892Z","agentId":"P-35","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-73","to":"P-36","type":"LP Peer Thread"}}
+{"ts":"2026-08-14T15:16:33.893Z","agentId":"P-35","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-39"}}
+{"ts":"2026-08-14T15:16:33.893Z","agentId":"P-35","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-36"}}
+{"ts":"2026-08-14T15:16:33.893Z","agentId":"P-35","wave":4,"step":"WAVE_4","action":"COMPLETE","result":"SUCCESS","details":{"interactions":2,"invites":2}}
+{"ts":"2026-08-14T15:16:33.988Z","agentId":"P-35","wave":5,"step":"WAVE_5","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-14T15:16:33.989Z","agentId":"P-35","wave":5,"step":"WAVE_5","action":"COMPLETE","result":"SUCCESS","details":{"reportPath":"/Users/yvesdarbouze/Documents/PaperWorking/artifacts/persona-swarm/reports/P-35-experience-report.md"}}
+{"ts":"2026-08-14T15:16:34.175Z","agentId":"P-35","wave":1,"step":"WAVE_1","action":"START","result":"SUCCESS","details":{"email":"agent35.alan.weiss@paperworking-test.dev"}}
+{"ts":"2026-08-14T15:16:34.176Z","agentId":"P-35","wave":0,"step":"SIGNUP","action":"SUCCESS_CREATED","result":"SUCCESS","details":{"uid":"uid_persona_p35","email":"agent35.alan.weiss@paperworking-test.dev","name":"Dr Alan Weiss","entity":"Weiss Family Capital LLC"}}
+{"ts":"2026-08-14T15:16:34.176Z","agentId":"P-35","wave":1,"step":"WAVE_1","action":"COMPLETE","result":"SUCCESS","details":{"uid":"uid_persona_p35"}}
+{"ts":"2026-08-14T15:16:34.233Z","agentId":"P-35","wave":2,"step":"WAVE_2","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-14T15:16:34.233Z","agentId":"P-35","wave":0,"step":"BILLING","action":"CHECKOUT_INITIATED","result":"SUCCESS","details":{"plan":"Individual"}}
+{"ts":"2026-08-14T15:16:34.233Z","agentId":"P-35","wave":0,"step":"BILLING","action":"CHECKOUT_ABANDONED","result":"SUCCESS","details":{"reason":"User navigated away during trial setup"}}
+{"ts":"2026-08-14T15:16:34.233Z","agentId":"P-35","wave":0,"step":"BILLING","action":"CHECKOUT_RESUMED","result":"SUCCESS","details":{"reason":"User returned via abandoned checkout link"}}
+{"ts":"2026-08-14T15:16:34.233Z","agentId":"P-35","wave":0,"step":"BILLING","action":"SUBSCRIPTION_SUCCESS","result":"SUCCESS","details":{"plan":"Individual","stripeCustomerId":"cus_test_swarm_p-35","stripeSubscriptionId":"sub_test_swarm_p-35","cardLastFour":"4242","cardBrand":"visa"}}
+{"ts":"2026-08-14T15:16:34.234Z","agentId":"P-35","wave":2,"step":"WAVE_2","action":"COMPLETE","result":"SUCCESS","details":{"plan":"Individual"}}
+{"ts":"2026-08-14T15:16:34.478Z","agentId":"P-35","wave":3,"step":"WAVE_3","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-14T15:16:34.481Z","agentId":"P-35","wave":0,"step":"PROJECTS","action":"CREATION_SUCCESS","result":"SUCCESS","details":{"created":10,"plaid":false}}
+{"ts":"2026-08-14T15:16:34.481Z","agentId":"P-35","wave":3,"step":"WAVE_3","action":"COMPLETE","result":"SUCCESS","details":{"created":10}}
+{"ts":"2026-08-14T15:16:34.666Z","agentId":"P-35","wave":4,"step":"WAVE_4","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-14T15:16:34.667Z","agentId":"P-35","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-51","to":"P-39","type":"LP Fund Commitment"}}
+{"ts":"2026-08-14T15:16:34.671Z","agentId":"P-35","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-73","to":"P-36","type":"LP Peer Thread"}}
+{"ts":"2026-08-14T15:16:34.672Z","agentId":"P-35","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-39"}}
+{"ts":"2026-08-14T15:16:34.672Z","agentId":"P-35","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-36"}}
+{"ts":"2026-08-14T15:16:34.672Z","agentId":"P-35","wave":4,"step":"WAVE_4","action":"COMPLETE","result":"SUCCESS","details":{"interactions":2,"invites":2}}
+{"ts":"2026-08-14T15:16:34.910Z","agentId":"P-35","wave":5,"step":"WAVE_5","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-14T15:16:34.912Z","agentId":"P-35","wave":5,"step":"WAVE_5","action":"COMPLETE","result":"SUCCESS","details":{"reportPath":"/Users/yvesdarbouze/Documents/PaperWorking/artifacts/persona-swarm/reports/P-35-experience-report.md"}}
+{"ts":"2026-08-14T15:19:01.610Z","agentId":"P-35","wave":1,"step":"WAVE_1","action":"START","result":"SUCCESS","details":{"email":"agent35.alan.weiss@paperworking-test.dev"}}
+{"ts":"2026-08-14T15:19:01.615Z","agentId":"P-35","wave":0,"step":"SIGNUP","action":"SUCCESS_CREATED","result":"SUCCESS","details":{"uid":"uid_persona_p35","email":"agent35.alan.weiss@paperworking-test.dev","name":"Dr Alan Weiss","entity":"Weiss Family Capital LLC"}}
+{"ts":"2026-08-14T15:19:01.615Z","agentId":"P-35","wave":1,"step":"WAVE_1","action":"COMPLETE","result":"SUCCESS","details":{"uid":"uid_persona_p35"}}
+{"ts":"2026-08-14T15:19:01.723Z","agentId":"P-35","wave":2,"step":"WAVE_2","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-14T15:19:01.723Z","agentId":"P-35","wave":0,"step":"BILLING","action":"CHECKOUT_INITIATED","result":"SUCCESS","details":{"plan":"Individual"}}
+{"ts":"2026-08-14T15:19:01.724Z","agentId":"P-35","wave":0,"step":"BILLING","action":"CHECKOUT_ABANDONED","result":"SUCCESS","details":{"reason":"User navigated away during trial setup"}}
+{"ts":"2026-08-14T15:19:01.724Z","agentId":"P-35","wave":0,"step":"BILLING","action":"CHECKOUT_RESUMED","result":"SUCCESS","details":{"reason":"User returned via abandoned checkout link"}}
+{"ts":"2026-08-14T15:19:01.725Z","agentId":"P-35","wave":0,"step":"BILLING","action":"SUBSCRIPTION_SUCCESS","result":"SUCCESS","details":{"plan":"Individual","stripeCustomerId":"cus_test_swarm_p-35","stripeSubscriptionId":"sub_test_swarm_p-35","cardLastFour":"4242","cardBrand":"visa"}}
+{"ts":"2026-08-14T15:19:01.725Z","agentId":"P-35","wave":2,"step":"WAVE_2","action":"COMPLETE","result":"SUCCESS","details":{"plan":"Individual"}}
+{"ts":"2026-08-14T15:19:01.890Z","agentId":"P-35","wave":1,"step":"WAVE_1","action":"START","result":"SUCCESS","details":{"email":"agent35.alan.weiss@paperworking-test.dev"}}
+{"ts":"2026-08-14T15:19:01.891Z","agentId":"P-35","wave":0,"step":"SIGNUP","action":"SUCCESS_CREATED","result":"SUCCESS","details":{"uid":"uid_persona_p35","email":"agent35.alan.weiss@paperworking-test.dev","name":"Dr Alan Weiss","entity":"Weiss Family Capital LLC"}}
+{"ts":"2026-08-14T15:19:01.892Z","agentId":"P-35","wave":1,"step":"WAVE_1","action":"COMPLETE","result":"SUCCESS","details":{"uid":"uid_persona_p35"}}
+{"ts":"2026-08-14T15:19:01.931Z","agentId":"P-35","wave":2,"step":"WAVE_2","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-14T15:19:01.931Z","agentId":"P-35","wave":0,"step":"BILLING","action":"CHECKOUT_INITIATED","result":"SUCCESS","details":{"plan":"Individual"}}
+{"ts":"2026-08-14T15:19:01.931Z","agentId":"P-35","wave":0,"step":"BILLING","action":"CHECKOUT_ABANDONED","result":"SUCCESS","details":{"reason":"User navigated away during trial setup"}}
+{"ts":"2026-08-14T15:19:01.931Z","agentId":"P-35","wave":0,"step":"BILLING","action":"CHECKOUT_RESUMED","result":"SUCCESS","details":{"reason":"User returned via abandoned checkout link"}}
+{"ts":"2026-08-14T15:19:01.931Z","agentId":"P-35","wave":0,"step":"BILLING","action":"SUBSCRIPTION_SUCCESS","result":"SUCCESS","details":{"plan":"Individual","stripeCustomerId":"cus_test_swarm_p-35","stripeSubscriptionId":"sub_test_swarm_p-35","cardLastFour":"4242","cardBrand":"visa"}}
+{"ts":"2026-08-14T15:19:01.932Z","agentId":"P-35","wave":2,"step":"WAVE_2","action":"COMPLETE","result":"SUCCESS","details":{"plan":"Individual"}}
+{"ts":"2026-08-14T15:19:01.932Z","agentId":"P-35","wave":3,"step":"WAVE_3","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-14T15:19:01.935Z","agentId":"P-35","wave":0,"step":"PROJECTS","action":"CREATION_SUCCESS","result":"SUCCESS","details":{"created":10,"plaid":false}}
+{"ts":"2026-08-14T15:19:01.935Z","agentId":"P-35","wave":3,"step":"WAVE_3","action":"COMPLETE","result":"SUCCESS","details":{"created":10}}
+{"ts":"2026-08-14T15:19:02.059Z","agentId":"P-35","wave":4,"step":"WAVE_4","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-14T15:19:02.060Z","agentId":"P-35","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-51","to":"P-39","type":"LP Fund Commitment"}}
+{"ts":"2026-08-14T15:19:02.060Z","agentId":"P-35","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-73","to":"P-36","type":"LP Peer Thread"}}
+{"ts":"2026-08-14T15:19:02.060Z","agentId":"P-35","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-39"}}
+{"ts":"2026-08-14T15:19:02.061Z","agentId":"P-35","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-36"}}
+{"ts":"2026-08-14T15:19:02.061Z","agentId":"P-35","wave":4,"step":"WAVE_4","action":"COMPLETE","result":"SUCCESS","details":{"interactions":2,"invites":2}}
+{"ts":"2026-08-14T15:19:02.085Z","agentId":"P-35","wave":3,"step":"WAVE_3","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-14T15:19:02.087Z","agentId":"P-35","wave":0,"step":"PROJECTS","action":"CREATION_SUCCESS","result":"SUCCESS","details":{"created":10,"plaid":false}}
+{"ts":"2026-08-14T15:19:02.087Z","agentId":"P-35","wave":3,"step":"WAVE_3","action":"COMPLETE","result":"SUCCESS","details":{"created":10}}
+{"ts":"2026-08-14T15:19:02.106Z","agentId":"P-35","wave":5,"step":"WAVE_5","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-14T15:19:02.106Z","agentId":"P-35","wave":5,"step":"WAVE_5","action":"COMPLETE","result":"SUCCESS","details":{"reportPath":"/Users/yvesdarbouze/Documents/PaperWorking/artifacts/persona-swarm/reports/P-35-experience-report.md"}}
+{"ts":"2026-08-14T15:19:02.218Z","agentId":"P-35","wave":4,"step":"WAVE_4","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-14T15:19:02.218Z","agentId":"P-35","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-51","to":"P-39","type":"LP Fund Commitment"}}
+{"ts":"2026-08-14T15:19:02.219Z","agentId":"P-35","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-73","to":"P-36","type":"LP Peer Thread"}}
+{"ts":"2026-08-14T15:19:02.219Z","agentId":"P-35","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-39"}}
+{"ts":"2026-08-14T15:19:02.219Z","agentId":"P-35","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-36"}}
+{"ts":"2026-08-14T15:19:02.219Z","agentId":"P-35","wave":4,"step":"WAVE_4","action":"COMPLETE","result":"SUCCESS","details":{"interactions":2,"invites":2}}
+{"ts":"2026-08-14T15:19:02.263Z","agentId":"P-35","wave":5,"step":"WAVE_5","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-14T15:19:02.263Z","agentId":"P-35","wave":5,"step":"WAVE_5","action":"COMPLETE","result":"SUCCESS","details":{"reportPath":"/Users/yvesdarbouze/Documents/PaperWorking/artifacts/persona-swarm/reports/P-35-experience-report.md"}}
+{"ts":"2026-08-14T19:22:03.481Z","agentId":"P-35","wave":1,"step":"WAVE_1","action":"START","result":"SUCCESS","details":{"email":"agent35.alan.weiss@paperworking-test.dev"}}
+{"ts":"2026-08-14T19:22:03.485Z","agentId":"P-35","wave":0,"step":"SIGNUP","action":"SUCCESS_CREATED","result":"SUCCESS","details":{"uid":"uid_persona_p35","email":"agent35.alan.weiss@paperworking-test.dev","name":"Dr Alan Weiss","entity":"Weiss Family Capital LLC"}}
+{"ts":"2026-08-14T19:22:03.485Z","agentId":"P-35","wave":1,"step":"WAVE_1","action":"COMPLETE","result":"SUCCESS","details":{"uid":"uid_persona_p35"}}
+{"ts":"2026-08-14T19:22:03.564Z","agentId":"P-35","wave":2,"step":"WAVE_2","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-14T19:22:03.564Z","agentId":"P-35","wave":0,"step":"BILLING","action":"CHECKOUT_INITIATED","result":"SUCCESS","details":{"plan":"Individual"}}
+{"ts":"2026-08-14T19:22:03.565Z","agentId":"P-35","wave":0,"step":"BILLING","action":"CHECKOUT_ABANDONED","result":"SUCCESS","details":{"reason":"User navigated away during trial setup"}}
+{"ts":"2026-08-14T19:22:03.565Z","agentId":"P-35","wave":0,"step":"BILLING","action":"CHECKOUT_RESUMED","result":"SUCCESS","details":{"reason":"User returned via abandoned checkout link"}}
+{"ts":"2026-08-14T19:22:03.566Z","agentId":"P-35","wave":0,"step":"BILLING","action":"SUBSCRIPTION_SUCCESS","result":"SUCCESS","details":{"plan":"Individual","stripeCustomerId":"cus_test_swarm_p-35","stripeSubscriptionId":"sub_test_swarm_p-35","cardLastFour":"4242","cardBrand":"visa"}}
+{"ts":"2026-08-14T19:22:03.568Z","agentId":"P-35","wave":2,"step":"WAVE_2","action":"COMPLETE","result":"SUCCESS","details":{"plan":"Individual"}}
+{"ts":"2026-08-14T19:22:03.774Z","agentId":"P-35","wave":3,"step":"WAVE_3","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-14T19:22:03.777Z","agentId":"P-35","wave":0,"step":"PROJECTS","action":"CREATION_SUCCESS","result":"SUCCESS","details":{"created":10,"plaid":false}}
+{"ts":"2026-08-14T19:22:03.777Z","agentId":"P-35","wave":3,"step":"WAVE_3","action":"COMPLETE","result":"SUCCESS","details":{"created":10}}
+{"ts":"2026-08-14T19:22:03.943Z","agentId":"P-35","wave":4,"step":"WAVE_4","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-14T19:22:03.944Z","agentId":"P-35","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-51","to":"P-39","type":"LP Fund Commitment"}}
+{"ts":"2026-08-14T19:22:03.944Z","agentId":"P-35","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-73","to":"P-36","type":"LP Peer Thread"}}
+{"ts":"2026-08-14T19:22:03.944Z","agentId":"P-35","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-39"}}
+{"ts":"2026-08-14T19:22:03.945Z","agentId":"P-35","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-36"}}
+{"ts":"2026-08-14T19:22:03.945Z","agentId":"P-35","wave":4,"step":"WAVE_4","action":"COMPLETE","result":"SUCCESS","details":{"interactions":2,"invites":2}}
+{"ts":"2026-08-14T19:22:04.067Z","agentId":"P-35","wave":5,"step":"WAVE_5","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-14T19:22:04.067Z","agentId":"P-35","wave":5,"step":"WAVE_5","action":"COMPLETE","result":"SUCCESS","details":{"reportPath":"/Users/yvesdarbouze/Documents/PaperWorking/artifacts/persona-swarm/reports/P-35-experience-report.md"}}
+{"ts":"2026-08-14T19:22:05.061Z","agentId":"P-35","wave":1,"step":"WAVE_1","action":"START","result":"SUCCESS","details":{"email":"agent35.alan.weiss@paperworking-test.dev"}}
+{"ts":"2026-08-14T19:22:05.063Z","agentId":"P-35","wave":0,"step":"SIGNUP","action":"SUCCESS_CREATED","result":"SUCCESS","details":{"uid":"uid_persona_p35","email":"agent35.alan.weiss@paperworking-test.dev","name":"Dr Alan Weiss","entity":"Weiss Family Capital LLC"}}
+{"ts":"2026-08-14T19:22:05.063Z","agentId":"P-35","wave":1,"step":"WAVE_1","action":"COMPLETE","result":"SUCCESS","details":{"uid":"uid_persona_p35"}}
+{"ts":"2026-08-14T19:22:05.154Z","agentId":"P-35","wave":2,"step":"WAVE_2","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-14T19:22:05.154Z","agentId":"P-35","wave":0,"step":"BILLING","action":"CHECKOUT_INITIATED","result":"SUCCESS","details":{"plan":"Individual"}}
+{"ts":"2026-08-14T19:22:05.155Z","agentId":"P-35","wave":0,"step":"BILLING","action":"CHECKOUT_ABANDONED","result":"SUCCESS","details":{"reason":"User navigated away during trial setup"}}
+{"ts":"2026-08-14T19:22:05.155Z","agentId":"P-35","wave":0,"step":"BILLING","action":"CHECKOUT_RESUMED","result":"SUCCESS","details":{"reason":"User returned via abandoned checkout link"}}
+{"ts":"2026-08-14T19:22:05.156Z","agentId":"P-35","wave":0,"step":"BILLING","action":"SUBSCRIPTION_SUCCESS","result":"SUCCESS","details":{"plan":"Individual","stripeCustomerId":"cus_test_swarm_p-35","stripeSubscriptionId":"sub_test_swarm_p-35","cardLastFour":"4242","cardBrand":"visa"}}
+{"ts":"2026-08-14T19:22:05.156Z","agentId":"P-35","wave":2,"step":"WAVE_2","action":"COMPLETE","result":"SUCCESS","details":{"plan":"Individual"}}
+{"ts":"2026-08-14T19:22:05.355Z","agentId":"P-35","wave":3,"step":"WAVE_3","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-14T19:22:05.357Z","agentId":"P-35","wave":0,"step":"PROJECTS","action":"CREATION_SUCCESS","result":"SUCCESS","details":{"created":10,"plaid":false}}
+{"ts":"2026-08-14T19:22:05.357Z","agentId":"P-35","wave":3,"step":"WAVE_3","action":"COMPLETE","result":"SUCCESS","details":{"created":10}}
+{"ts":"2026-08-14T19:22:05.546Z","agentId":"P-35","wave":4,"step":"WAVE_4","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-14T19:22:05.552Z","agentId":"P-35","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-51","to":"P-39","type":"LP Fund Commitment"}}
+{"ts":"2026-08-14T19:22:05.552Z","agentId":"P-35","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-73","to":"P-36","type":"LP Peer Thread"}}
+{"ts":"2026-08-14T19:22:05.553Z","agentId":"P-35","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-39"}}
+{"ts":"2026-08-14T19:22:05.553Z","agentId":"P-35","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-36"}}
+{"ts":"2026-08-14T19:22:05.553Z","agentId":"P-35","wave":4,"step":"WAVE_4","action":"COMPLETE","result":"SUCCESS","details":{"interactions":2,"invites":2}}
+{"ts":"2026-08-14T19:22:05.703Z","agentId":"P-35","wave":5,"step":"WAVE_5","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-14T19:22:05.703Z","agentId":"P-35","wave":5,"step":"WAVE_5","action":"COMPLETE","result":"SUCCESS","details":{"reportPath":"/Users/yvesdarbouze/Documents/PaperWorking/artifacts/persona-swarm/reports/P-35-experience-report.md"}}

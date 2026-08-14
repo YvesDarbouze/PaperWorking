@@ -1,7 +1,7 @@
 import { IEmailProvider, EmailDispatchPayload, EmailDispatchResult } from '../emailProvider';
 
 /**
- * Mock Email Adapter — Local Development & Test Fallback
+ * Mock Email Adapter — Local Development & Test Transport (EM Series v2)
  *
  * Simulates system email dispatch without sending external API calls.
  */
@@ -14,7 +14,8 @@ export class MockEmailAdapter implements IEmailProvider {
       `[MockEmailAdapter] 📧 MOCK SYSTEM EMAIL DISPATCH:\n` +
         `  To: ${payload.to.join(', ')}\n` +
         `  Subject: ${payload.subject}\n` +
-        `  From: ${payload.from || 'notifications@paperworking.co'}\n` +
+        `  From: ${payload.from || 'notifications@mail.paperworking.co'}\n` +
+        `  Template Key: ${payload.templateKey || 'UNREGISTERED'}\n` +
         `  Message ID: ${mockId}`
     );
 
@@ -23,6 +24,7 @@ export class MockEmailAdapter implements IEmailProvider {
       messageId: mockId,
       mock: true,
       provider: 'mock',
+      acceptedAt: new Date().toISOString(),
     };
   }
 }

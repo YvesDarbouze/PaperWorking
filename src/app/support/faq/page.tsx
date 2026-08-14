@@ -247,7 +247,7 @@ export default function FAQPage() {
                 Glossary
               </Link>
               <Link
-                href="mailto:support@paperworking.co"
+                href="mailto:hi@paperworking.co"
                 className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full text-xs font-bold uppercase tracking-widest bg-white text-black hover:bg-white/90 transition-colors"
               >
                 Contact Us

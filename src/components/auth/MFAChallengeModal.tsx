@@ -96,8 +96,8 @@ export default function MFAChallengeModal({ resolver, onResolved, onCancel }: Pr
         {attempts >= 3 && (
           <p className="text-[11px] text-pw-muted text-center mt-4 leading-relaxed">
             Lost access to your authenticator? Contact{' '}
-            <a href="mailto:support@paperworking.co" className="text-pw-primary underline">
-              support@paperworking.co
+            <a href="mailto:hi@paperworking.co" className="text-pw-primary underline">
+              hi@paperworking.co
             </a>{' '}
             with proof of identity.
           </p>

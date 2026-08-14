@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { FieldValue } from 'firebase-admin/firestore';
 import { adminDb } from '@/lib/firebase/admin';
-import { Resend } from 'resend';
+import { getEmailProvider } from '@/lib/email/getEmailProvider';
 import { generateInvestorResponseEmail } from '@/lib/emails/templates/InvestorResponseEmail';
 import { logOrgActivity } from '@/lib/firebase/orgActivityWriter';
 import { syncFractionalInvestorFromCommitment, removeFractionalInvestorForCommitment } from '@/lib/firebase/syncFractionalInvestors';
@@ -23,15 +23,13 @@ import { checkRateLimit, rateLimitResponse } from '@/lib/places/placesRateLimit'
      1. Resolve invitation by token
      2. Validate: not expired, status in [pending, active]
      3. Write status update via Admin SDK (atomic, bypasses client rules)
-     4. Notify deal owner + invitedBy via Resend
+     4. Notify deal owner + invitedBy via SendGrid
      5. Append audit log entry
    ═══════════════════════════════════════════════════════════════ */
 
 export const dynamic = 'force-dynamic';
 
-const resend = process.env.RESEND_API_KEY ? new Resend(process.env.RESEND_API_KEY) : null;
 const APP_URL = process.env.NEXT_PUBLIC_APP_URL || 'https://paperworking.co';
-const FROM_EMAIL = process.env.RESEND_FROM_EMAIL || 'notifications@paperworking.co';
 
 interface RespondBody {
   token: string;
@@ -224,7 +222,7 @@ export async function POST(request: NextRequest) {
     const dealName = projectSnap.data()?.propertyName ?? inv.dealName ?? 'Untitled Deal';
     const ownerEmail: string | null = ownerSnap?.data()?.email ?? null;
 
-    if (resend && ownerEmail && action !== 'reopen') {
+    if (ownerEmail && action !== 'reopen') {
       const { subject, html, text } = generateInvestorResponseEmail({
         action: action === 'accept' ? 'accepted' : (action === 'interested' ? 'interested' : 'declined'),
         investorName: inv.name,
@@ -236,10 +234,14 @@ export async function POST(request: NextRequest) {
         appUrl: APP_URL,
       });
 
-      await resend.emails.send({
-        from: FROM_EMAIL,
+      const emailProvider = getEmailProvider();
+      await emailProvider.sendEmail({
+        from: 'notifications@mail.paperworking.co',
+        replyTo: inv.email || 'hi@paperworking.co',
         to: [ownerEmail],
         subject,
+        templateKey: action === 'accept' ? 'DEAL-MKT-DEAL-UPDATE' : 'DEAL-MKT-RESPONSE',
+        messageClass: 'O',
         html,
         text,
       });

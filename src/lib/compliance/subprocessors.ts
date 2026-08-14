@@ -86,14 +86,7 @@ export const SUBPROCESSORS: Subprocessor[] = [
     category: 'communications',
     privacyUrl: 'https://www.twilio.com/en-us/legal/privacy',
   },
-  {
-    name: 'Resend, Inc.',
-    purpose:
-      'Transactional email delivery including onboarding sequences, metric alert notifications, team invitations, and password reset emails.',
-    location: 'United States',
-    category: 'communications',
-    privacyUrl: 'https://resend.com/legal/privacy-policy',
-  },
+
   {
     name: 'DocuSign, Inc.',
     purpose:

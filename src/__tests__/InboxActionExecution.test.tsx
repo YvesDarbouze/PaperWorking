@@ -53,14 +53,13 @@ jest.mock('@/lib/firebase-admin/auth-guard', () => ({
   isAuthError: jest.fn(() => false),
 }));
 
-// Mock Resend Email SDK
-jest.mock('resend', () => ({
+// Mock SendGrid Email Provider
+jest.mock('@/lib/email/getEmailProvider', () => ({
   __esModule: true,
-  Resend: jest.fn().mockImplementation(() => ({
-    emails: {
-      send: jest.fn(() => Promise.resolve({ success: true })),
-    },
-  })),
+  getEmailProvider: jest.fn().mockReturnValue({
+    name: 'mock',
+    sendEmail: jest.fn(() => Promise.resolve({ success: true, messageId: 'msg-123', mock: true, provider: 'mock' })),
+  }),
 }));
 
 // Mock client-side firestore

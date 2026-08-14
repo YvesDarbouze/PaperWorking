@@ -6,7 +6,7 @@
 | Property Data | RentCast / ATTOM / Mashvisor | ⚠️ Partial | RentCast real; ATTOM/Mashvisor wired | Real + labeled | PROPERTY_DATA_PROVIDER | ✅ | §4.2 |
 | Banking | Plaid | ✅ Real | PlaidAdapter | MockPlaidAdapter | PLAID_PROVIDER | ✅ | §4.1 |
 | E-Signature | DocuSign | ✅ Real | DocuSignAdapter | MockEsignAdapter | ESIGN_PROVIDER | ✅ | §4.3 |
-| Email | Resend | ✅ Real | ResendAdapter | N/A | N/A | N/A | §4.4 |
+| Email | Twilio SendGrid | ✅ Real | SendGridEmailAdapter | MockEmailAdapter | SYSTEM_EMAIL_PROVIDER | N/A | EM Series v2 |
 | Billing | Stripe | ✅ Real | StripeAdapter | N/A | N/A | N/A | §4.5 |
 | Address | Google Places | ✅ Real | GooglePlacesAdapter | N/A | N/A | N/A | — |
 

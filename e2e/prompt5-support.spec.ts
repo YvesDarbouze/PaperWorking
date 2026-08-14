@@ -45,7 +45,7 @@ test.describe('PROMPT 5 — Support Page Search, FAQ & Link Crawl Verification',
 
     const emptyState = page.getByTestId('search-empty-state');
     await expect(emptyState).toBeVisible();
-    await expect(emptyState).toContainText('No matches in the knowledge base. Email support@paperworking.co — a real person answers every message.');
+    await expect(emptyState).toContainText('No matches in the knowledge base. Email hi@paperworking.co — a real person answers every message.');
   });
 
   test('/support — FAQ accordion open/close and "Filter questions…" filtering', async ({ page }) => {

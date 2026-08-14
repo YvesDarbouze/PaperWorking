@@ -30,10 +30,10 @@ const CONTACT_CHANNELS = [
     label: 'Email Support',
     tier: 'All plans',
     tierStyle: 'text-on-surface-variant',
-    headline: 'support@paperworking.co',
+    headline: 'hi@paperworking.co',
     description: 'A real person answers every message. Send your deal details and we jump straight to the issue.',
     cta: 'Send an email',
-    href: 'mailto:support@paperworking.co',
+    href: 'mailto:hi@paperworking.co',
     borderStyle: 'border-white/8',
   },
   {
@@ -273,8 +273,8 @@ export default function SupportPage() {
                     <div className="px-5 py-6 text-left" data-testid="search-empty-state">
                       <p className="text-[13px] text-on-surface-variant/70 leading-relaxed">
                         No matches in the knowledge base. Email{' '}
-                        <a href="mailto:support@paperworking.co" className="text-primary hover:underline font-semibold">
-                          support@paperworking.co
+                        <a href="mailto:hi@paperworking.co" className="text-primary hover:underline font-semibold">
+                          hi@paperworking.co
                         </a>{' '}
                         — a real person answers every message.
                       </p>

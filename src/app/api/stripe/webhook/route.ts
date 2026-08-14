@@ -2,7 +2,7 @@ import { NextResponse } from 'next/server';
 import Stripe from 'stripe';
 import { adminDb } from '@/lib/firebase/admin';
 import { FieldValue } from 'firebase-admin/firestore';
-import { Resend } from 'resend';
+import { getEmailProvider } from '@/lib/email/getEmailProvider';
 import { enforceProjectLimitsOnDowngrade } from '@/lib/entitlements/server';
 import { CommunicationEngine } from '@/lib/engine/CommunicationEngine';
 
@@ -10,22 +10,21 @@ import { CommunicationEngine } from '@/lib/engine/CommunicationEngine';
 export const dynamic = 'force-dynamic';
 export const maxDuration = 30;
 
-const resend = process.env.RESEND_API_KEY ? new Resend(process.env.RESEND_API_KEY) : null;
-const FROM_EMAIL = process.env.RESEND_FROM_EMAIL || 'notifications@paperworking.co';
-
-async function sendStripeEmail(to: string, subject: string, html: string) {
-  if (!resend) {
-    console.log(`[Stripe Webhook] Email mocked (no RESEND_API_KEY). To: ${to}, Subject: ${subject}`);
-    return;
-  }
+async function sendStripeEmail(to: string, subject: string, html: string, templateKey = 'BILL-TRANSACTIONAL') {
   try {
-    await resend.emails.send({
-      from: FROM_EMAIL,
-      to,
+    const emailProvider = getEmailProvider();
+    const plainText = html.replace(/<[^>]*>?/gm, ' ').replace(/\s+/g, ' ').trim();
+    await emailProvider.sendEmail({
+      from: 'billing@mail.paperworking.co',
+      replyTo: 'hi@paperworking.co',
+      to: [to],
       subject,
+      templateKey,
+      messageClass: 'E',
+      text: plainText,
       html,
     });
-    console.log(`[Stripe Webhook] Email sent successfully to ${to}`);
+    console.log(`[Stripe Webhook] Email accepted for delivery to ${to}`);
   } catch (error) {
     console.error('[Stripe Webhook] Non-fatal error sending email:', error);
   }
@@ -394,7 +393,7 @@ export async function POST(request: Request) {
       }
 
       // =========================================================
-      // INVOICE PAYMENT FAILED — Flag the account
+      // INVOICE PAYMENT FAILED — Flag account & dispatch dunning ladder (EM-13, F-16, F-17)
       // =========================================================
       case 'invoice.payment_failed': {
         const invoice = event.data.object as Stripe.Invoice;
@@ -406,13 +405,40 @@ export async function POST(request: Request) {
             subscriptionStatus: 'past_due',
           });
 
-          // Alert the user about the failed payment
+          // Alert user with accurate Stripe retry schedule (F-16, F-17)
           const userDoc = await adminDb.collection('users').doc(uid).get();
           const email = userDoc.data()?.email;
           if (email) {
-            const subject = 'Action Required: Payment Failed';
-            const html = '<p>We were unable to process your latest payment. Please update your payment method in billing settings to avoid service interruption.</p>';
-            sendStripeEmail(email, subject, html).catch(() => {});
+            const { renderBillPaymentFailed } = await import('@/lib/email/templateRegistry');
+            const appUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://paperworking.co';
+            const amountFormatted = `$${((invoice.amount_due || 0) / 100).toFixed(2)}`;
+            const attemptCount = invoice.attempt_count || 1;
+            const nextAttemptDateFormatted = invoice.next_payment_attempt
+              ? new Date(invoice.next_payment_attempt * 1000).toLocaleDateString('en-US', {
+                  month: 'long',
+                  day: 'numeric',
+                  year: 'numeric',
+                })
+              : undefined;
+
+            const rendered = renderBillPaymentFailed({
+              amountFormatted,
+              attemptCount,
+              nextAttemptDateFormatted,
+              updatePaymentUrl: `${appUrl}/dashboard/settings/billing`,
+            });
+
+            const emailProvider = getEmailProvider();
+            await emailProvider.sendEmail({
+              from: rendered.sender.email,
+              replyTo: 'hi@paperworking.co',
+              to: [email],
+              subject: rendered.subject,
+              templateKey: rendered.templateKey,
+              messageClass: rendered.messageClass,
+              html: rendered.html,
+              text: rendered.text,
+            }).catch((err) => console.error('[Stripe Webhook] Dunning email dispatch error:', err));
           }
         }
         break;

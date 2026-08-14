@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { FieldValue } from 'firebase-admin/firestore';
 import { adminDb } from '@/lib/firebase/admin';
-import { Resend } from 'resend';
+import { getEmailProvider } from '@/lib/email/getEmailProvider';
 import { generateInvestorInquiryEmail } from '@/lib/emails/templates/InvestorInquiryEmail';
 
 /* ═══════════════════════════════════════════════════════════════
@@ -19,8 +19,6 @@ import { generateInvestorInquiryEmail } from '@/lib/emails/templates/InvestorInq
 
 export const dynamic = 'force-dynamic';
 
-const resend = process.env.RESEND_API_KEY ? new Resend(process.env.RESEND_API_KEY) : null;
-const FROM_EMAIL = process.env.RESEND_FROM_EMAIL || 'notifications@paperworking.co';
 const MAX_INQUIRIES_PER_INVITATION = 5;
 const MAX_MESSAGE_LENGTH = 2000;
 
@@ -189,7 +187,7 @@ export async function POST(
     const dealName = projectSnap.data()?.propertyName ?? inv.dealName ?? 'Untitled Deal';
     const ownerEmail: string | null = ownerSnap?.data()?.email ?? null;
 
-    if (resend && ownerEmail) {
+    if (ownerEmail) {
       const { subject, html, text } = generateInvestorInquiryEmail({
         investorName: inv.name || 'Anonymous Investor',
         investorEmail: inv.email || 'unknown',
@@ -198,11 +196,14 @@ export async function POST(
         message,
       });
 
-      await resend.emails.send({
-        from: FROM_EMAIL,
+      const emailProvider = getEmailProvider();
+      await emailProvider.sendEmail({
+        from: 'notifications@mail.paperworking.co',
+        replyTo: inv.email || 'hi@paperworking.co',
         to: [ownerEmail],
-        replyTo: inv.email || undefined,
         subject,
+        templateKey: 'DEAL-MKT-INTEREST-RECEIVED',
+        messageClass: 'O',
         html,
         text,
       });

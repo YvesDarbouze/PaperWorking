@@ -1,0 +1,54 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="800" viewBox="0 0 1200 800">
+  <rect width="1200" height="800" fill="#121014"/>
+  <rect x="50" y="50" width="1100" height="700" rx="12" fill="#1A181F" stroke="#2D2A36" stroke-width="2"/>
+  <text x="100" y="120" fill="#FDFFFC" font-family="Inter, sans-serif" font-size="28" font-weight="700">PaperWorking — Portfolio Command Center</text>
+  <text x="100" y="160" fill="#9A9EA6" font-family="Inter, sans-serif" font-size="16">Agent: Marcus "Mac" Delgado (P-01) — 10 Active Wholesaling Projects</text>
+  
+  <rect x="100" y="200" width="250" height="100" rx="8" fill="#121014" stroke="#2D2A36"/>
+  <text x="120" y="240" fill="#9A9EA6" font-family="Inter, sans-serif" font-size="14">Total Active Projects</text>
+  <text x="120" y="280" fill="#FDFFFC" font-family="Inter, sans-serif" font-size="32" font-weight="700">10</text>
+  
+  <rect x="380" y="200" width="250" height="100" rx="8" fill="#121014" stroke="#2D2A36"/>
+  <text x="400" y="240" fill="#9A9EA6" font-family="Inter, sans-serif" font-size="14">Total Assignment Value</text>
+  <text x="400" y="280" fill="#10B981" font-family="Inter, sans-serif" font-size="32" font-weight="700">$2,145,000</text>
+  
+  <rect x="660" y="200" width="250" height="100" rx="8" fill="#121014" stroke="#2D2A36"/>
+  <text x="680" y="240" fill="#9A9EA6" font-family="Inter, sans-serif" font-size="14">Avg Fee Per Deal</text>
+  <text x="680" y="280" fill="#3B82F6" font-family="Inter, sans-serif" font-size="32" font-weight="700">$12,500</text>
+  
+  <rect x="940" y="200" width="210" height="100" rx="8" fill="#121014" stroke="#2D2A36"/>
+  <text x="960" y="240" fill="#9A9EA6" font-family="Inter, sans-serif" font-size="14">Avg Turnaround</text>
+  <text x="960" y="280" fill="#F59E0B" font-family="Inter, sans-serif" font-size="32" font-weight="700">14 Days</text>
+  
+  <rect x="100" y="330" width="1050" height="370" rx="8" fill="#121014" stroke="#2D2A36"/>
+  <text x="140" y="375" fill="#FDFFFC" font-family="Inter, sans-serif" font-size="18" font-weight="600">Active Real Estate Projects (10)</text>
+  
+  <text x="140" y="420" fill="#9A9EA6" font-family="Inter, sans-serif" font-size="14">PROJECT NAME</text>
+  <text x="450" y="420" fill="#9A9EA6" font-family="Inter, sans-serif" font-size="14">ADDRESS</text>
+  <text x="750" y="420" fill="#9A9EA6" font-family="Inter, sans-serif" font-size="14">PURCHASE</text>
+  <text x="900" y="420" fill="#9A9EA6" font-family="Inter, sans-serif" font-size="14">ARV</text>
+  <text x="1020" y="420" fill="#9A9EA6" font-family="Inter, sans-serif" font-size="14">PHASE</text>
+  
+  <line x1="140" y1="435" x2="1110" y2="435" stroke="#2D2A36" stroke-width="1"/>
+  
+  <text x="140" y="470" fill="#FDFFFC" font-family="Inter, sans-serif" font-size="14">2417 E Willetta St Assignment</text>
+  <text x="450" y="470" fill="#9A9EA6" font-family="Inter, sans-serif" font-size="14">2417 E Willetta St, Phoenix</text>
+  <text x="750" y="470" fill="#FDFFFC" font-family="Inter, sans-serif" font-size="14">$210,000</text>
+  <text x="900" y="470" fill="#10B981" font-family="Inter, sans-serif" font-size="14">$315,000</text>
+  <rect x="1020" y="455" width="80" height="22" rx="4" fill="#3B82F6"/>
+  <text x="1030" y="470" fill="#FFFFFF" font-family="Inter, sans-serif" font-size="12">Acquisition</text>
+  
+  <text x="140" y="510" fill="#FDFFFC" font-family="Inter, sans-serif" font-size="14">8842 W Catalina Dr Contract</text>
+  <text x="450" y="510" fill="#9A9EA6" font-family="Inter, sans-serif" font-size="14">8842 W Catalina Dr, Phoenix</text>
+  <text x="750" y="510" fill="#FDFFFC" font-family="Inter, sans-serif" font-size="14">$185,000</text>
+  <text x="900" y="510" fill="#10B981" font-family="Inter, sans-serif" font-size="14">$270,000</text>
+  <rect x="1020" y="495" width="80" height="22" rx="4" fill="#F59E0B"/>
+  <text x="1026" y="510" fill="#FFFFFF" font-family="Inter, sans-serif" font-size="12">Underwriting</text>
+
+  <text x="140" y="550" fill="#FDFFFC" font-family="Inter, sans-serif" font-size="14">3104 N 51st St Wholesale</text>
+  <text x="450" y="550" fill="#9A9EA6" font-family="Inter, sans-serif" font-size="14">3104 N 51st St, Phoenix</text>
+  <text x="750" y="550" fill="#FDFFFC" font-family="Inter, sans-serif" font-size="14">$340,000</text>
+  <text x="900" y="550" fill="#10B981" font-family="Inter, sans-serif" font-size="14">$485,000</text>
+  <rect x="1020" y="535" width="80" height="22" rx="4" fill="#10B981"/>
+  <text x="1030" y="550" fill="#FFFFFF" font-family="Inter, sans-serif" font-size="12">Disposition</text>
+</svg>

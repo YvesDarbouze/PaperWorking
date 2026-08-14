@@ -1,6 +1,7 @@
 import { adminDb, adminAuth } from '@/lib/firebase/admin';
 import { FieldValue } from 'firebase-admin/firestore';
 import { prisma } from '@/lib/prisma';
+import { getEmailProvider } from '@/lib/email/getEmailProvider';
 
 /* ═══════════════════════════════════════════════════════════════
    CommunicationEngine — Unified Transactional Mail Module
@@ -208,49 +209,24 @@ async function resolveEmails(uids: string[]): Promise<{ uid: string; email: stri
 }
 
 /**
- * Dispatches email via Resend API. Falls back to mock when RESEND_API_KEY is absent.
+ * Dispatches email via configured system email provider (SendGrid, Resend, or Mock fallback).
  */
 async function dispatchViaResend(payload: DispatchPayload): Promise<{ id: string; mock: boolean }> {
-  const apiKey = process.env.RESEND_API_KEY;
-
-  if (!apiKey) {
-    const mockId = `mock_${Date.now()}_${Math.random().toString(36).slice(2, 8)}`;
-    console.warn(
-      '[CommunicationEngine] ⚠️  RESEND_API_KEY is not set — email will be mocked.\n' +
-      `  To: ${payload.to.join(', ')}\n` +
-      `  Subject: ${payload.subject}\n` +
-      '  → Set RESEND_API_KEY in your .env.local to enable live email delivery.\n' +
-      '  → Get your API key at https://resend.com/api-keys'
-    );
-    return { id: mockId, mock: true };
-  }
-
-  const body = {
-    from: FROM_EMAIL,
+  const provider = getEmailProvider();
+  const res = await provider.sendEmail({
     to: payload.to,
     subject: payload.subject,
     html: payload.html,
-    ...(payload.text && { text: payload.text }),
-    ...(payload.replyTo && { reply_to: payload.replyTo }),
-    ...(payload.tags && { tags: payload.tags }),
-  };
-
-  const res = await fetch('https://api.resend.com/emails', {
-    method: 'POST',
-    headers: {
-      Authorization: `Bearer ${apiKey}`,
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify(body),
+    text: payload.text,
+    replyTo: payload.replyTo,
+    tags: payload.tags,
   });
 
-  if (!res.ok) {
-    const errorText = await res.text();
-    throw new Error(`Resend API error (${res.status}): ${errorText}`);
+  if (!res.success) {
+    throw new Error(`Email dispatch failed (${res.provider}): ${res.error || 'Unknown error'}`);
   }
 
-  const data = await res.json();
-  return { id: data.id, mock: false };
+  return { id: res.messageId, mock: res.mock };
 }
 
 /**

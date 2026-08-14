@@ -17,6 +17,7 @@
 import { Prisma, FinancialTransactionCategory, FinancialTransactionStatus, EmailDigestMode, EmailAlertThreshold } from '@prisma/client';
 import { prisma } from '@/lib/prisma';
 import { adminDb } from '@/lib/firebase/admin';
+import { getEmailProvider } from '@/lib/email/getEmailProvider';
 import {
   CATEGORY_TO_TEMPLATE,
   type TransactionEmailTemplate,
@@ -69,9 +70,7 @@ async function getUserEmail(userId: string): Promise<string | null> {
 }
 
 /**
- * Sends an email via Resend (raw fetch — same pattern as CommunicationEngine).
- * Falls back to a console mock when RESEND_API_KEY is absent.
- * Returns the provider message ID.
+ * Sends an email via configured system email provider (SendGrid, Resend, or Mock).
  */
 async function dispatchEmail(opts: {
   to: string;
@@ -79,40 +78,19 @@ async function dispatchEmail(opts: {
   html: string;
   text: string;
 }): Promise<{ messageId: string; mock: boolean }> {
-  const apiKey = process.env.RESEND_API_KEY;
-
-  if (!apiKey) {
-    const mockId = `mock_txn_notif_${Date.now()}`;
-    console.info(
-      `[TransactionNotifications] 📧 MOCK email (set RESEND_API_KEY to send live):\n` +
-        `  To: ${opts.to}\n` +
-        `  Subject: ${opts.subject}`,
-    );
-    return { messageId: mockId, mock: true };
-  }
-
-  const res = await fetch('https://api.resend.com/emails', {
-    method: 'POST',
-    headers: {
-      Authorization: `Bearer ${apiKey}`,
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify({
-      from: FROM_EMAIL,
-      to: [opts.to],
-      subject: opts.subject,
-      html: opts.html,
-      text: opts.text,
-    }),
+  const provider = getEmailProvider();
+  const res = await provider.sendEmail({
+    to: [opts.to],
+    subject: opts.subject,
+    html: opts.html,
+    text: opts.text,
   });
 
-  if (!res.ok) {
-    const errText = await res.text();
-    throw new Error(`[TransactionNotifications] Resend error (${res.status}): ${errText}`);
+  if (!res.success) {
+    throw new Error(`[TransactionNotifications] Email dispatch error (${res.provider}): ${res.error || 'Failed to send'}`);
   }
 
-  const data = (await res.json()) as { id: string };
-  return { messageId: data.id, mock: false };
+  return { messageId: res.messageId, mock: res.mock };
 }
 
 // ─── Main Service ─────────────────────────────────────────────────────────────

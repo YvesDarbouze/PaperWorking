@@ -79,6 +79,14 @@ export const SUBPROCESSORS: Subprocessor[] = [
 
   // ── Communications ──
   {
+    name: 'Twilio SendGrid, Inc.',
+    purpose:
+      'Transactional system email delivery, email verification, delivery event tracking, and automated notification dispatches.',
+    location: 'United States',
+    category: 'communications',
+    privacyUrl: 'https://www.twilio.com/en-us/legal/privacy',
+  },
+  {
     name: 'Resend, Inc.',
     purpose:
       'Transactional email delivery including onboarding sequences, metric alert notifications, team invitations, and password reset emails.',

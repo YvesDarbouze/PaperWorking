@@ -1,0 +1,1128 @@
+{
+  "updatedAt": "2026-08-13T17:42:18.919Z",
+  "totalPersonas": 50,
+  "completedWaves": [
+    1,
+    2,
+    3,
+    4,
+    5
+  ],
+  "targetUrl": "https://paperworking.co",
+  "stripeMode": "admin_comp",
+  "versionStamp": {
+    "gitCommitSha": "7e9cd5dbd23bf8ac6cb0c67b4acb77a1fd5b2740",
+    "timestamp": "2026-08-13T14:03:57.535Z"
+  },
+  "stats": {
+    "signupsCompleted": 50,
+    "subscriptionsActive": 50,
+    "projectsCreated": 500,
+    "interactionsExecuted": 80,
+    "invitesAccepted": 103,
+    "reportsGenerated": 50,
+    "screenshotsCaptured": 172
+  },
+  "agents": {
+    "P-01": {
+      "agentId": "P-01",
+      "email": "agent01.marcus.delgado@paperworking-test.dev",
+      "projectCount": 10,
+      "interactionCount": 3,
+      "inviteCount": 2,
+      "reportGenerated": true,
+      "signupResult": {
+        "success": true,
+        "uid": "uid_persona_p01",
+        "email": "agent01.marcus.delgado@paperworking-test.dev",
+        "isNew": true
+      },
+      "billingResult": {
+        "success": true,
+        "plan": "Individual",
+        "stripeCustomerId": "cus_test_swarm_p-01",
+        "stripeSubscriptionId": "sub_test_swarm_p-01"
+      },
+      "errors": [],
+      "uid": "uid_persona_p01"
+    },
+    "P-02": {
+      "agentId": "P-02",
+      "email": "agent02.tanya.whitfield@paperworking-test.dev",
+      "projectCount": 10,
+      "interactionCount": 3,
+      "inviteCount": 3,
+      "reportGenerated": true,
+      "signupResult": {
+        "success": true,
+        "uid": "uid_persona_p02",
+        "email": "agent02.tanya.whitfield@paperworking-test.dev",
+        "isNew": true
+      },
+      "billingResult": {
+        "success": true,
+        "plan": "Individual",
+        "stripeCustomerId": "cus_test_swarm_p-02",
+        "stripeSubscriptionId": "sub_test_swarm_p-02"
+      },
+      "errors": [],
+      "uid": "uid_persona_p02"
+    },
+    "P-03": {
+      "agentId": "P-03",
+      "email": "agent03.earl.kowalski@paperworking-test.dev",
+      "projectCount": 10,
+      "interactionCount": 3,
+      "inviteCount": 2,
+      "reportGenerated": true,
+      "signupResult": {
+        "success": true,
+        "uid": "uid_persona_p03",
+        "email": "agent03.earl.kowalski@paperworking-test.dev",
+        "isNew": true
+      },
+      "billingResult": {
+        "success": true,
+        "plan": "Individual",
+        "stripeCustomerId": "cus_test_swarm_p-03",
+        "stripeSubscriptionId": "sub_test_swarm_p-03"
+      },
+      "errors": [],
+      "uid": "uid_persona_p03"
+    },
+    "P-04": {
+      "agentId": "P-04",
+      "email": "agent04.priya.raman@paperworking-test.dev",
+      "projectCount": 10,
+      "interactionCount": 3,
+      "inviteCount": 2,
+      "reportGenerated": true,
+      "signupResult": {
+        "success": true,
+        "uid": "uid_persona_p04",
+        "email": "agent04.priya.raman@paperworking-test.dev",
+        "isNew": true
+      },
+      "billingResult": {
+        "success": true,
+        "plan": "Individual",
+        "stripeCustomerId": "cus_test_swarm_p-04",
+        "stripeSubscriptionId": "sub_test_swarm_p-04"
+      },
+      "errors": [],
+      "uid": "uid_persona_p04"
+    },
+    "P-05": {
+      "agentId": "P-05",
+      "email": "agent05.danny.reyes@paperworking-test.dev",
+      "projectCount": 10,
+      "interactionCount": 1,
+      "inviteCount": 2,
+      "reportGenerated": true,
+      "signupResult": {
+        "success": true,
+        "uid": "uid_persona_p05",
+        "email": "agent05.danny.reyes@paperworking-test.dev",
+        "isNew": true
+      },
+      "billingResult": {
+        "success": true,
+        "plan": "Individual",
+        "stripeCustomerId": "cus_test_swarm_p-05",
+        "stripeSubscriptionId": "sub_test_swarm_p-05"
+      },
+      "errors": [],
+      "uid": "uid_persona_p05"
+    },
+    "P-06": {
+      "agentId": "P-06",
+      "email": "agent06.samantha.ortega@paperworking-test.dev",
+      "projectCount": 10,
+      "interactionCount": 1,
+      "inviteCount": 2,
+      "reportGenerated": true,
+      "signupResult": {
+        "success": true,
+        "uid": "uid_persona_p06",
+        "email": "agent06.samantha.ortega@paperworking-test.dev",
+        "isNew": true
+      },
+      "billingResult": {
+        "success": true,
+        "plan": "Individual",
+        "stripeCustomerId": "cus_test_swarm_p-06",
+        "stripeSubscriptionId": "sub_test_swarm_p-06"
+      },
+      "errors": [],
+      "uid": "uid_persona_p06"
+    },
+    "P-07": {
+      "agentId": "P-07",
+      "email": "agent07.vince.moretti@paperworking-test.dev",
+      "projectCount": 10,
+      "interactionCount": 1,
+      "inviteCount": 2,
+      "reportGenerated": true,
+      "signupResult": {
+        "success": true,
+        "uid": "uid_persona_p07",
+        "email": "agent07.vince.moretti@paperworking-test.dev",
+        "isNew": true
+      },
+      "billingResult": {
+        "success": true,
+        "plan": "Individual",
+        "stripeCustomerId": "cus_test_swarm_p-07",
+        "stripeSubscriptionId": "sub_test_swarm_p-07"
+      },
+      "errors": [],
+      "uid": "uid_persona_p07"
+    },
+    "P-08": {
+      "agentId": "P-08",
+      "email": "agent08.chloe.nguyen@paperworking-test.dev",
+      "projectCount": 10,
+      "interactionCount": 1,
+      "inviteCount": 2,
+      "reportGenerated": true,
+      "signupResult": {
+        "success": true,
+        "uid": "uid_persona_p08",
+        "email": "agent08.chloe.nguyen@paperworking-test.dev",
+        "isNew": true
+      },
+      "billingResult": {
+        "success": true,
+        "plan": "Individual",
+        "stripeCustomerId": "cus_test_swarm_p-08",
+        "stripeSubscriptionId": "sub_test_swarm_p-08"
+      },
+      "errors": [],
+      "uid": "uid_persona_p08"
+    },
+    "P-09": {
+      "agentId": "P-09",
+      "email": "agent09.hank.beaumont@paperworking-test.dev",
+      "projectCount": 10,
+      "interactionCount": 2,
+      "inviteCount": 2,
+      "reportGenerated": true,
+      "signupResult": {
+        "success": true,
+        "uid": "uid_persona_p09",
+        "email": "agent09.hank.beaumont@paperworking-test.dev",
+        "isNew": true
+      },
+      "billingResult": {
+        "success": true,
+        "plan": "Individual",
+        "stripeCustomerId": "cus_test_swarm_p-09",
+        "stripeSubscriptionId": "sub_test_swarm_p-09"
+      },
+      "errors": [],
+      "uid": "uid_persona_p09"
+    },
+    "P-10": {
+      "agentId": "P-10",
+      "email": "agent10.gary.lindqvist@paperworking-test.dev",
+      "projectCount": 10,
+      "interactionCount": 1,
+      "inviteCount": 2,
+      "reportGenerated": true,
+      "signupResult": {
+        "success": true,
+        "uid": "uid_persona_p10",
+        "email": "agent10.gary.lindqvist@paperworking-test.dev",
+        "isNew": true
+      },
+      "billingResult": {
+        "success": true,
+        "plan": "Individual",
+        "stripeCustomerId": "cus_test_swarm_p-10",
+        "stripeSubscriptionId": "sub_test_swarm_p-10"
+      },
+      "errors": [],
+      "uid": "uid_persona_p10"
+    },
+    "P-11": {
+      "agentId": "P-11",
+      "email": "agent11.marisol.vega@paperworking-test.dev",
+      "projectCount": 10,
+      "interactionCount": 1,
+      "inviteCount": 2,
+      "reportGenerated": true,
+      "signupResult": {
+        "success": true,
+        "uid": "uid_persona_p11",
+        "email": "agent11.marisol.vega@paperworking-test.dev",
+        "isNew": true
+      },
+      "billingResult": {
+        "success": true,
+        "plan": "Individual",
+        "stripeCustomerId": "cus_test_swarm_p-11",
+        "stripeSubscriptionId": "sub_test_swarm_p-11"
+      },
+      "errors": [],
+      "uid": "uid_persona_p11"
+    },
+    "P-12": {
+      "agentId": "P-12",
+      "email": "agent12.tom.okafor@paperworking-test.dev",
+      "projectCount": 10,
+      "interactionCount": 2,
+      "inviteCount": 2,
+      "reportGenerated": true,
+      "signupResult": {
+        "success": true,
+        "uid": "uid_persona_p12",
+        "email": "agent12.tom.okafor@paperworking-test.dev",
+        "isNew": true
+      },
+      "billingResult": {
+        "success": true,
+        "plan": "Individual",
+        "stripeCustomerId": "cus_test_swarm_p-12",
+        "stripeSubscriptionId": "sub_test_swarm_p-12"
+      },
+      "errors": [],
+      "uid": "uid_persona_p12"
+    },
+    "P-13": {
+      "agentId": "P-13",
+      "email": "agent13.robert.haldane@paperworking-test.dev",
+      "projectCount": 10,
+      "interactionCount": 2,
+      "inviteCount": 2,
+      "reportGenerated": true,
+      "signupResult": {
+        "success": true,
+        "uid": "uid_persona_p13",
+        "email": "agent13.robert.haldane@paperworking-test.dev",
+        "isNew": true
+      },
+      "billingResult": {
+        "success": true,
+        "plan": "Individual",
+        "stripeCustomerId": "cus_test_swarm_p-13",
+        "stripeSubscriptionId": "sub_test_swarm_p-13"
+      },
+      "errors": [],
+      "uid": "uid_persona_p13"
+    },
+    "P-14": {
+      "agentId": "P-14",
+      "email": "agent14.denise.whitaker@paperworking-test.dev",
+      "projectCount": 10,
+      "interactionCount": 2,
+      "inviteCount": 2,
+      "reportGenerated": true,
+      "signupResult": {
+        "success": true,
+        "uid": "uid_persona_p14",
+        "email": "agent14.denise.whitaker@paperworking-test.dev",
+        "isNew": true
+      },
+      "billingResult": {
+        "success": true,
+        "plan": "Individual",
+        "stripeCustomerId": "cus_test_swarm_p-14",
+        "stripeSubscriptionId": "sub_test_swarm_p-14"
+      },
+      "errors": [],
+      "uid": "uid_persona_p14"
+    },
+    "P-15": {
+      "agentId": "P-15",
+      "email": "agent15.jordan.fields@paperworking-test.dev",
+      "projectCount": 10,
+      "interactionCount": 1,
+      "inviteCount": 2,
+      "reportGenerated": true,
+      "signupResult": {
+        "success": true,
+        "uid": "uid_persona_p15",
+        "email": "agent15.jordan.fields@paperworking-test.dev",
+        "isNew": true
+      },
+      "billingResult": {
+        "success": true,
+        "plan": "Individual",
+        "stripeCustomerId": "cus_test_swarm_p-15",
+        "stripeSubscriptionId": "sub_test_swarm_p-15"
+      },
+      "errors": [],
+      "uid": "uid_persona_p15"
+    },
+    "P-16": {
+      "agentId": "P-16",
+      "email": "agent16.aisha.bello@paperworking-test.dev",
+      "projectCount": 10,
+      "interactionCount": 1,
+      "inviteCount": 2,
+      "reportGenerated": true,
+      "signupResult": {
+        "success": true,
+        "uid": "uid_persona_p16",
+        "email": "agent16.aisha.bello@paperworking-test.dev",
+        "isNew": true
+      },
+      "billingResult": {
+        "success": true,
+        "plan": "Individual",
+        "stripeCustomerId": "cus_test_swarm_p-16",
+        "stripeSubscriptionId": "sub_test_swarm_p-16"
+      },
+      "errors": [],
+      "uid": "uid_persona_p16"
+    },
+    "P-17": {
+      "agentId": "P-17",
+      "email": "agent17.kevin.orourke@paperworking-test.dev",
+      "projectCount": 10,
+      "interactionCount": 1,
+      "inviteCount": 2,
+      "reportGenerated": true,
+      "signupResult": {
+        "success": true,
+        "uid": "uid_persona_p17",
+        "email": "agent17.kevin.orourke@paperworking-test.dev",
+        "isNew": true
+      },
+      "billingResult": {
+        "success": true,
+        "plan": "Individual",
+        "stripeCustomerId": "cus_test_swarm_p-17",
+        "stripeSubscriptionId": "sub_test_swarm_p-17"
+      },
+      "errors": [],
+      "uid": "uid_persona_p17"
+    },
+    "P-18": {
+      "agentId": "P-18",
+      "email": "agent18.lisa.tran@paperworking-test.dev",
+      "projectCount": 10,
+      "interactionCount": 1,
+      "inviteCount": 2,
+      "reportGenerated": true,
+      "signupResult": {
+        "success": true,
+        "uid": "uid_persona_p18",
+        "email": "agent18.lisa.tran@paperworking-test.dev",
+        "isNew": true
+      },
+      "billingResult": {
+        "success": true,
+        "plan": "Individual",
+        "stripeCustomerId": "cus_test_swarm_p-18",
+        "stripeSubscriptionId": "sub_test_swarm_p-18"
+      },
+      "errors": [],
+      "uid": "uid_persona_p18"
+    },
+    "P-19": {
+      "agentId": "P-19",
+      "email": "agent19.darnell.brooks@paperworking-test.dev",
+      "projectCount": 10,
+      "interactionCount": 0,
+      "inviteCount": 2,
+      "reportGenerated": true,
+      "signupResult": {
+        "success": true,
+        "uid": "uid_persona_p19",
+        "email": "agent19.darnell.brooks@paperworking-test.dev",
+        "isNew": true
+      },
+      "billingResult": {
+        "success": true,
+        "plan": "Individual",
+        "stripeCustomerId": "cus_test_swarm_p-19",
+        "stripeSubscriptionId": "sub_test_swarm_p-19"
+      },
+      "errors": [],
+      "uid": "uid_persona_p19"
+    },
+    "P-20": {
+      "agentId": "P-20",
+      "email": "agent20.harold.jenkins@paperworking-test.dev",
+      "projectCount": 10,
+      "interactionCount": 1,
+      "inviteCount": 2,
+      "reportGenerated": true,
+      "signupResult": {
+        "success": true,
+        "uid": "uid_persona_p20",
+        "email": "agent20.harold.jenkins@paperworking-test.dev",
+        "isNew": true
+      },
+      "billingResult": {
+        "success": true,
+        "plan": "Individual",
+        "stripeCustomerId": "cus_test_swarm_p-20",
+        "stripeSubscriptionId": "sub_test_swarm_p-20"
+      },
+      "errors": [],
+      "uid": "uid_persona_p20"
+    },
+    "P-21": {
+      "agentId": "P-21",
+      "email": "agent21.susan.park@paperworking-test.dev",
+      "projectCount": 10,
+      "interactionCount": 0,
+      "inviteCount": 2,
+      "reportGenerated": true,
+      "signupResult": {
+        "success": true,
+        "uid": "uid_persona_p21",
+        "email": "agent21.susan.park@paperworking-test.dev",
+        "isNew": true
+      },
+      "billingResult": {
+        "success": true,
+        "plan": "Individual",
+        "stripeCustomerId": "cus_test_swarm_p-21",
+        "stripeSubscriptionId": "sub_test_swarm_p-21"
+      },
+      "errors": [],
+      "uid": "uid_persona_p21"
+    },
+    "P-22": {
+      "agentId": "P-22",
+      "email": "agent22.miguel.santos@paperworking-test.dev",
+      "projectCount": 10,
+      "interactionCount": 2,
+      "inviteCount": 2,
+      "reportGenerated": true,
+      "signupResult": {
+        "success": true,
+        "uid": "uid_persona_p22",
+        "email": "agent22.miguel.santos@paperworking-test.dev",
+        "isNew": true
+      },
+      "billingResult": {
+        "success": true,
+        "plan": "Individual",
+        "stripeCustomerId": "cus_test_swarm_p-22",
+        "stripeSubscriptionId": "sub_test_swarm_p-22"
+      },
+      "errors": [],
+      "uid": "uid_persona_p22"
+    },
+    "P-23": {
+      "agentId": "P-23",
+      "email": "agent23.grace.adeyemi@paperworking-test.dev",
+      "projectCount": 10,
+      "interactionCount": 0,
+      "inviteCount": 2,
+      "reportGenerated": true,
+      "signupResult": {
+        "success": true,
+        "uid": "uid_persona_p23",
+        "email": "agent23.grace.adeyemi@paperworking-test.dev",
+        "isNew": true
+      },
+      "billingResult": {
+        "success": true,
+        "plan": "Individual",
+        "stripeCustomerId": "cus_test_swarm_p-23",
+        "stripeSubscriptionId": "sub_test_swarm_p-23"
+      },
+      "errors": [],
+      "uid": "uid_persona_p23"
+    },
+    "P-24": {
+      "agentId": "P-24",
+      "email": "agent24.frank.deluca@paperworking-test.dev",
+      "projectCount": 10,
+      "interactionCount": 1,
+      "inviteCount": 2,
+      "reportGenerated": true,
+      "signupResult": {
+        "success": true,
+        "uid": "uid_persona_p24",
+        "email": "agent24.frank.deluca@paperworking-test.dev",
+        "isNew": true
+      },
+      "billingResult": {
+        "success": true,
+        "plan": "Individual",
+        "stripeCustomerId": "cus_test_swarm_p-24",
+        "stripeSubscriptionId": "sub_test_swarm_p-24"
+      },
+      "errors": [],
+      "uid": "uid_persona_p24"
+    },
+    "P-25": {
+      "agentId": "P-25",
+      "email": "agent25.brittany.cole@paperworking-test.dev",
+      "projectCount": 10,
+      "interactionCount": 1,
+      "inviteCount": 2,
+      "reportGenerated": true,
+      "signupResult": {
+        "success": true,
+        "uid": "uid_persona_p25",
+        "email": "agent25.brittany.cole@paperworking-test.dev",
+        "isNew": true
+      },
+      "billingResult": {
+        "success": true,
+        "plan": "Individual",
+        "stripeCustomerId": "cus_test_swarm_p-25",
+        "stripeSubscriptionId": "sub_test_swarm_p-25"
+      },
+      "errors": [],
+      "uid": "uid_persona_p25"
+    },
+    "P-26": {
+      "agentId": "P-26",
+      "email": "agent26.diego.fuentes@paperworking-test.dev",
+      "projectCount": 10,
+      "interactionCount": 0,
+      "inviteCount": 2,
+      "reportGenerated": true,
+      "signupResult": {
+        "success": true,
+        "uid": "uid_persona_p26",
+        "email": "agent26.diego.fuentes@paperworking-test.dev",
+        "isNew": true
+      },
+      "billingResult": {
+        "success": true,
+        "plan": "Individual",
+        "stripeCustomerId": "cus_test_swarm_p-26",
+        "stripeSubscriptionId": "sub_test_swarm_p-26"
+      },
+      "errors": [],
+      "uid": "uid_persona_p26"
+    },
+    "P-27": {
+      "agentId": "P-27",
+      "email": "agent27.naomi.ishida@paperworking-test.dev",
+      "projectCount": 10,
+      "interactionCount": 1,
+      "inviteCount": 2,
+      "reportGenerated": true,
+      "signupResult": {
+        "success": true,
+        "uid": "uid_persona_p27",
+        "email": "agent27.naomi.ishida@paperworking-test.dev",
+        "isNew": true
+      },
+      "billingResult": {
+        "success": true,
+        "plan": "Individual",
+        "stripeCustomerId": "cus_test_swarm_p-27",
+        "stripeSubscriptionId": "sub_test_swarm_p-27"
+      },
+      "errors": [],
+      "uid": "uid_persona_p27"
+    },
+    "P-28": {
+      "agentId": "P-28",
+      "email": "agent28.tyler.bruin@paperworking-test.dev",
+      "projectCount": 10,
+      "interactionCount": 0,
+      "inviteCount": 2,
+      "reportGenerated": true,
+      "signupResult": {
+        "success": true,
+        "uid": "uid_persona_p28",
+        "email": "agent28.tyler.bruin@paperworking-test.dev",
+        "isNew": true
+      },
+      "billingResult": {
+        "success": true,
+        "plan": "Individual",
+        "stripeCustomerId": "cus_test_swarm_p-28",
+        "stripeSubscriptionId": "sub_test_swarm_p-28"
+      },
+      "errors": [],
+      "uid": "uid_persona_p28"
+    },
+    "P-29": {
+      "agentId": "P-29",
+      "email": "agent29.richard.calloway@paperworking-test.dev",
+      "projectCount": 10,
+      "interactionCount": 0,
+      "inviteCount": 2,
+      "reportGenerated": true,
+      "signupResult": {
+        "success": true,
+        "uid": "uid_persona_p29",
+        "email": "agent29.richard.calloway@paperworking-test.dev",
+        "isNew": true
+      },
+      "billingResult": {
+        "success": true,
+        "plan": "Individual",
+        "stripeCustomerId": "cus_test_swarm_p-29",
+        "stripeSubscriptionId": "sub_test_swarm_p-29"
+      },
+      "errors": [],
+      "uid": "uid_persona_p29"
+    },
+    "P-30": {
+      "agentId": "P-30",
+      "email": "agent30.ingrid.sorensen@paperworking-test.dev",
+      "projectCount": 10,
+      "interactionCount": 0,
+      "inviteCount": 2,
+      "reportGenerated": true,
+      "signupResult": {
+        "success": true,
+        "uid": "uid_persona_p30",
+        "email": "agent30.ingrid.sorensen@paperworking-test.dev",
+        "isNew": true
+      },
+      "billingResult": {
+        "success": true,
+        "plan": "Individual",
+        "stripeCustomerId": "cus_test_swarm_p-30",
+        "stripeSubscriptionId": "sub_test_swarm_p-30"
+      },
+      "errors": [],
+      "uid": "uid_persona_p30"
+    },
+    "P-31": {
+      "agentId": "P-31",
+      "email": "agent31.andre.baptiste@paperworking-test.dev",
+      "projectCount": 10,
+      "interactionCount": 0,
+      "inviteCount": 2,
+      "reportGenerated": true,
+      "signupResult": {
+        "success": true,
+        "uid": "uid_persona_p31",
+        "email": "agent31.andre.baptiste@paperworking-test.dev",
+        "isNew": true
+      },
+      "billingResult": {
+        "success": true,
+        "plan": "Individual",
+        "stripeCustomerId": "cus_test_swarm_p-31",
+        "stripeSubscriptionId": "sub_test_swarm_p-31"
+      },
+      "errors": [],
+      "uid": "uid_persona_p31"
+    },
+    "P-32": {
+      "agentId": "P-32",
+      "email": "agent32.evelyn.marsh@paperworking-test.dev",
+      "projectCount": 10,
+      "interactionCount": 4,
+      "inviteCount": 2,
+      "reportGenerated": true,
+      "signupResult": {
+        "success": true,
+        "uid": "uid_persona_p32",
+        "email": "agent32.evelyn.marsh@paperworking-test.dev",
+        "isNew": true
+      },
+      "billingResult": {
+        "success": true,
+        "plan": "Individual",
+        "stripeCustomerId": "cus_test_swarm_p-32",
+        "stripeSubscriptionId": "sub_test_swarm_p-32"
+      },
+      "errors": [],
+      "uid": "uid_persona_p32"
+    },
+    "P-33": {
+      "agentId": "P-33",
+      "email": "agent33.raj.mehta@paperworking-test.dev",
+      "projectCount": 10,
+      "interactionCount": 4,
+      "inviteCount": 2,
+      "reportGenerated": true,
+      "signupResult": {
+        "success": true,
+        "uid": "uid_persona_p33",
+        "email": "agent33.raj.mehta@paperworking-test.dev",
+        "isNew": true
+      },
+      "billingResult": {
+        "success": true,
+        "plan": "Individual",
+        "stripeCustomerId": "cus_test_swarm_p-33",
+        "stripeSubscriptionId": "sub_test_swarm_p-33"
+      },
+      "errors": [],
+      "uid": "uid_persona_p33"
+    },
+    "P-34": {
+      "agentId": "P-34",
+      "email": "agent34.carla.jimenez@paperworking-test.dev",
+      "projectCount": 10,
+      "interactionCount": 5,
+      "inviteCount": 3,
+      "reportGenerated": true,
+      "signupResult": {
+        "success": true,
+        "uid": "uid_persona_p34",
+        "email": "agent34.carla.jimenez@paperworking-test.dev",
+        "isNew": true
+      },
+      "billingResult": {
+        "success": true,
+        "plan": "Individual",
+        "stripeCustomerId": "cus_test_swarm_p-34",
+        "stripeSubscriptionId": "sub_test_swarm_p-34"
+      },
+      "errors": [],
+      "uid": "uid_persona_p34"
+    },
+    "P-35": {
+      "agentId": "P-35",
+      "email": "agent35.alan.weiss@paperworking-test.dev",
+      "projectCount": 10,
+      "interactionCount": 2,
+      "inviteCount": 2,
+      "reportGenerated": true,
+      "signupResult": {
+        "success": true,
+        "uid": "uid_persona_p35",
+        "email": "agent35.alan.weiss@paperworking-test.dev",
+        "isNew": true
+      },
+      "billingResult": {
+        "success": true,
+        "plan": "Individual",
+        "stripeCustomerId": "cus_test_swarm_p-35",
+        "stripeSubscriptionId": "sub_test_swarm_p-35"
+      },
+      "errors": [],
+      "uid": "uid_persona_p35"
+    },
+    "P-36": {
+      "agentId": "P-36",
+      "email": "agent36.beth.kowalchuk@paperworking-test.dev",
+      "projectCount": 10,
+      "interactionCount": 0,
+      "inviteCount": 2,
+      "reportGenerated": true,
+      "signupResult": {
+        "success": true,
+        "uid": "uid_persona_p36",
+        "email": "agent36.beth.kowalchuk@paperworking-test.dev",
+        "isNew": true
+      },
+      "billingResult": {
+        "success": true,
+        "plan": "Individual",
+        "stripeCustomerId": "cus_test_swarm_p-36",
+        "stripeSubscriptionId": "sub_test_swarm_p-36"
+      },
+      "errors": [],
+      "uid": "uid_persona_p36"
+    },
+    "P-37": {
+      "agentId": "P-37",
+      "email": "agent37.ken.tanaka@paperworking-test.dev",
+      "projectCount": 10,
+      "interactionCount": 2,
+      "inviteCount": 2,
+      "reportGenerated": true,
+      "signupResult": {
+        "success": true,
+        "uid": "uid_persona_p37",
+        "email": "agent37.ken.tanaka@paperworking-test.dev",
+        "isNew": true
+      },
+      "billingResult": {
+        "success": true,
+        "plan": "Individual",
+        "stripeCustomerId": "cus_test_swarm_p-37",
+        "stripeSubscriptionId": "sub_test_swarm_p-37"
+      },
+      "errors": [],
+      "uid": "uid_persona_p37"
+    },
+    "P-38": {
+      "agentId": "P-38",
+      "email": "agent38.rosa.castillo@paperworking-test.dev",
+      "projectCount": 10,
+      "interactionCount": 1,
+      "inviteCount": 2,
+      "reportGenerated": true,
+      "signupResult": {
+        "success": true,
+        "uid": "uid_persona_p38",
+        "email": "agent38.rosa.castillo@paperworking-test.dev",
+        "isNew": true
+      },
+      "billingResult": {
+        "success": true,
+        "plan": "Individual",
+        "stripeCustomerId": "cus_test_swarm_p-38",
+        "stripeSubscriptionId": "sub_test_swarm_p-38"
+      },
+      "errors": [],
+      "uid": "uid_persona_p38"
+    },
+    "P-39": {
+      "agentId": "P-39",
+      "email": "agent39.nathaniel.cross@paperworking-test.dev",
+      "projectCount": 10,
+      "interactionCount": 1,
+      "inviteCount": 2,
+      "reportGenerated": true,
+      "signupResult": {
+        "success": true,
+        "uid": "uid_persona_p39",
+        "email": "agent39.nathaniel.cross@paperworking-test.dev",
+        "isNew": true
+      },
+      "billingResult": {
+        "success": true,
+        "plan": "Individual",
+        "stripeCustomerId": "cus_test_swarm_p-39",
+        "stripeSubscriptionId": "sub_test_swarm_p-39"
+      },
+      "errors": [],
+      "uid": "uid_persona_p39"
+    },
+    "P-40": {
+      "agentId": "P-40",
+      "email": "agent40.victoria.huang@paperworking-test.dev",
+      "projectCount": 10,
+      "interactionCount": 1,
+      "inviteCount": 2,
+      "reportGenerated": true,
+      "signupResult": {
+        "success": true,
+        "uid": "uid_persona_p40",
+        "email": "agent40.victoria.huang@paperworking-test.dev",
+        "isNew": true
+      },
+      "billingResult": {
+        "success": true,
+        "plan": "Individual",
+        "stripeCustomerId": "cus_test_swarm_p-40",
+        "stripeSubscriptionId": "sub_test_swarm_p-40"
+      },
+      "errors": [],
+      "uid": "uid_persona_p40"
+    },
+    "P-41": {
+      "agentId": "P-41",
+      "email": "agent41.sebastian.rothwell@paperworking-test.dev",
+      "projectCount": 10,
+      "interactionCount": 3,
+      "inviteCount": 2,
+      "reportGenerated": true,
+      "signupResult": {
+        "success": true,
+        "uid": "uid_persona_p41",
+        "email": "agent41.sebastian.rothwell@paperworking-test.dev",
+        "isNew": true
+      },
+      "billingResult": {
+        "success": true,
+        "plan": "Individual",
+        "stripeCustomerId": "cus_test_swarm_p-41",
+        "stripeSubscriptionId": "sub_test_swarm_p-41"
+      },
+      "errors": [],
+      "uid": "uid_persona_p41"
+    },
+    "P-42": {
+      "agentId": "P-42",
+      "email": "agent42.amara.osei@paperworking-test.dev",
+      "projectCount": 10,
+      "interactionCount": 1,
+      "inviteCount": 2,
+      "reportGenerated": true,
+      "signupResult": {
+        "success": true,
+        "uid": "uid_persona_p42",
+        "email": "agent42.amara.osei@paperworking-test.dev",
+        "isNew": true
+      },
+      "billingResult": {
+        "success": true,
+        "plan": "Individual",
+        "stripeCustomerId": "cus_test_swarm_p-42",
+        "stripeSubscriptionId": "sub_test_swarm_p-42"
+      },
+      "errors": [],
+      "uid": "uid_persona_p42"
+    },
+    "P-43": {
+      "agentId": "P-43",
+      "email": "agent43.meredith.slade@paperworking-test.dev",
+      "projectCount": 10,
+      "interactionCount": 3,
+      "inviteCount": 2,
+      "reportGenerated": true,
+      "signupResult": {
+        "success": true,
+        "uid": "uid_persona_p43",
+        "email": "agent43.meredith.slade@paperworking-test.dev",
+        "isNew": true
+      },
+      "billingResult": {
+        "success": true,
+        "plan": "Individual",
+        "stripeCustomerId": "cus_test_swarm_p-43",
+        "stripeSubscriptionId": "sub_test_swarm_p-43"
+      },
+      "errors": [],
+      "uid": "uid_persona_p43"
+    },
+    "P-44": {
+      "agentId": "P-44",
+      "email": "agent44.walter.gibbs@paperworking-test.dev",
+      "projectCount": 10,
+      "interactionCount": 2,
+      "inviteCount": 2,
+      "reportGenerated": true,
+      "signupResult": {
+        "success": true,
+        "uid": "uid_persona_p44",
+        "email": "agent44.walter.gibbs@paperworking-test.dev",
+        "isNew": true
+      },
+      "billingResult": {
+        "success": true,
+        "plan": "Individual",
+        "stripeCustomerId": "cus_test_swarm_p-44",
+        "stripeSubscriptionId": "sub_test_swarm_p-44"
+      },
+      "errors": [],
+      "uid": "uid_persona_p44"
+    },
+    "P-45": {
+      "agentId": "P-45",
+      "email": "agent45.olivia.brennan@paperworking-test.dev",
+      "projectCount": 10,
+      "interactionCount": 0,
+      "inviteCount": 2,
+      "reportGenerated": true,
+      "signupResult": {
+        "success": true,
+        "uid": "uid_persona_p45",
+        "email": "agent45.olivia.brennan@paperworking-test.dev",
+        "isNew": true
+      },
+      "billingResult": {
+        "success": true,
+        "plan": "Individual",
+        "stripeCustomerId": "cus_test_swarm_p-45",
+        "stripeSubscriptionId": "sub_test_swarm_p-45"
+      },
+      "errors": [],
+      "uid": "uid_persona_p45"
+    },
+    "P-46": {
+      "agentId": "P-46",
+      "email": "agent46.jamal.carter@paperworking-test.dev",
+      "projectCount": 10,
+      "interactionCount": 0,
+      "inviteCount": 2,
+      "reportGenerated": true,
+      "signupResult": {
+        "success": true,
+        "uid": "uid_persona_p46",
+        "email": "agent46.jamal.carter@paperworking-test.dev",
+        "isNew": true
+      },
+      "billingResult": {
+        "success": true,
+        "plan": "Individual",
+        "stripeCustomerId": "cus_test_swarm_p-46",
+        "stripeSubscriptionId": "sub_test_swarm_p-46"
+      },
+      "errors": [],
+      "uid": "uid_persona_p46"
+    },
+    "P-47": {
+      "agentId": "P-47",
+      "email": "agent47.patricia.malone@paperworking-test.dev",
+      "projectCount": 10,
+      "interactionCount": 2,
+      "inviteCount": 3,
+      "reportGenerated": true,
+      "signupResult": {
+        "success": true,
+        "uid": "uid_persona_p47",
+        "email": "agent47.patricia.malone@paperworking-test.dev",
+        "isNew": true
+      },
+      "billingResult": {
+        "success": true,
+        "plan": "Individual",
+        "stripeCustomerId": "cus_test_swarm_p-47",
+        "stripeSubscriptionId": "sub_test_swarm_p-47"
+      },
+      "errors": [],
+      "uid": "uid_persona_p47"
+    },
+    "P-48": {
+      "agentId": "P-48",
+      "email": "agent48.gus.antonopoulos@paperworking-test.dev",
+      "projectCount": 10,
+      "interactionCount": 6,
+      "inviteCount": 2,
+      "reportGenerated": true,
+      "signupResult": {
+        "success": true,
+        "uid": "uid_persona_p48",
+        "email": "agent48.gus.antonopoulos@paperworking-test.dev",
+        "isNew": true
+      },
+      "billingResult": {
+        "success": true,
+        "plan": "Individual",
+        "stripeCustomerId": "cus_test_swarm_p-48",
+        "stripeSubscriptionId": "sub_test_swarm_p-48"
+      },
+      "errors": [],
+      "uid": "uid_persona_p48"
+    },
+    "P-49": {
+      "agentId": "P-49",
+      "email": "agent49.elaine.zhu@paperworking-test.dev",
+      "projectCount": 10,
+      "interactionCount": 5,
+      "inviteCount": 2,
+      "reportGenerated": true,
+      "signupResult": {
+        "success": true,
+        "uid": "uid_persona_p49",
+        "email": "agent49.elaine.zhu@paperworking-test.dev",
+        "isNew": true
+      },
+      "billingResult": {
+        "success": true,
+        "plan": "Individual",
+        "stripeCustomerId": "cus_test_swarm_p-49",
+        "stripeSubscriptionId": "sub_test_swarm_p-49"
+      },
+      "errors": [],
+      "uid": "uid_persona_p49"
+    },
+    "P-50": {
+      "agentId": "P-50",
+      "email": "agent50.douglas.harmon@paperworking-test.dev",
+      "projectCount": 10,
+      "interactionCount": 2,
+      "inviteCount": 2,
+      "reportGenerated": true,
+      "signupResult": {
+        "success": true,
+        "uid": "uid_persona_p50",
+        "email": "agent50.douglas.harmon@paperworking-test.dev",
+        "isNew": true
+      },
+      "billingResult": {
+        "success": true,
+        "plan": "Individual",
+        "stripeCustomerId": "cus_test_swarm_p-50",
+        "stripeSubscriptionId": "sub_test_swarm_p-50"
+      },
+      "errors": [],
+      "uid": "uid_persona_p50"
+    }
+  }
+}

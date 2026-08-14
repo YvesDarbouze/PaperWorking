@@ -1,0 +1,1457 @@
+[
+  {
+    "id": "P-01",
+    "name": "Marcus Mac Delgado",
+    "email": "agent01.marcus.delgado@paperworking-test.dev",
+    "entity": "Delgado Rapid Deals LLC",
+    "category": "wholesaler",
+    "market": "Phoenix, AZ",
+    "investorType": "High-Volume Wholesaler",
+    "bio": "Phoenix wholesaler, 6 years in, closing ~40 assignments a year across Maricopa County. Lives on his phone, hates long forms, and measures everything in 'days-to-fee.' Treats software as a necessary evil.",
+    "investmentCriteria": {
+      "targetReturn": "$12k avg fee / deal",
+      "assetTypes": ["Single Family", "Townhome"],
+      "minCheckSize": 5000,
+      "maxCheckSize": 25000,
+      "strategy": "Wholesale Arbitrage"
+    },
+    "projects": [
+      { "title": "2417 E Willetta St Assignment", "address": "2417 E Willetta St, Phoenix, AZ 85006", "purchasePrice": 210000, "renovationBudget": 35000, "arv": 315000, "currentPhase": "Acquisition", "assetType": "Single Family" },
+      { "title": "8842 W Catalina Dr Contract", "address": "8842 W Catalina Dr, Phoenix, AZ 85037", "purchasePrice": 185000, "renovationBudget": 28000, "arv": 270000, "currentPhase": "Underwriting", "assetType": "Single Family" },
+      { "title": "3104 N 51st St Wholesale", "address": "3104 N 51st St, Phoenix, AZ 85018", "purchasePrice": 340000, "renovationBudget": 45000, "arv": 485000, "currentPhase": "Disposition", "assetType": "Single Family" },
+      { "title": "1209 W Roosevelt St Lead", "address": "1209 W Roosevelt St, Phoenix, AZ 85007", "purchasePrice": 275000, "renovationBudget": 50000, "arv": 395000, "currentPhase": "Lead Intaking", "assetType": "Single Family" },
+      { "title": "742 E Morten Ave Assignment", "address": "742 E Morten Ave, Phoenix, AZ 85020", "purchasePrice": 290000, "renovationBudget": 40000, "arv": 410000, "currentPhase": "Underwriting", "assetType": "Single Family" },
+      { "title": "5102 W Indian School Rd", "address": "5102 W Indian School Rd, Phoenix, AZ 85031", "purchasePrice": 165000, "renovationBudget": 30000, "arv": 245000, "currentPhase": "Disposition", "assetType": "Townhome" },
+      { "title": "1420 E Thomas Rd Contract", "address": "1420 E Thomas Rd, Phoenix, AZ 85014", "purchasePrice": 225000, "renovationBudget": 32000, "arv": 320000, "currentPhase": "Acquisition", "assetType": "Single Family" },
+      { "title": "921 S Campbell Ave Wholesale", "address": "921 S Campbell Ave, Phoenix, AZ 85006", "purchasePrice": 195000, "renovationBudget": 25000, "arv": 275000, "currentPhase": "Lead Intaking", "assetType": "Single Family" },
+      { "title": "4312 N 27th Ave Deal", "address": "4312 N 27th Ave, Phoenix, AZ 85017", "purchasePrice": 150000, "renovationBudget": 22000, "arv": 220000, "currentPhase": "Underwriting", "assetType": "Single Family" },
+      { "title": "6801 W McDowell Rd Assignment", "address": "6801 W McDowell Rd, Phoenix, AZ 85035", "purchasePrice": 180000, "renovationBudget": 28000, "arv": 260000, "currentPhase": "Disposition", "assetType": "Single Family" }
+    ]
+  },
+  {
+    "id": "P-02",
+    "name": "Tanya Whitfield",
+    "email": "agent02.tanya.whitfield@paperworking-test.dev",
+    "entity": "Whitfield Property Solutions LLC",
+    "category": "wholesaler",
+    "market": "Atlanta, GA",
+    "investorType": "Virtual Wholesaler & CRM Power User",
+    "bio": "Atlanta virtual wholesaler & assignment specialist, 4 years in. Heavy user of CRM tags & automated workflows. Demands clean data export and instant assignment contract generation.",
+    "investmentCriteria": {
+      "targetReturn": "15% assignment fee margin",
+      "assetTypes": ["Single Family", "Duplex"],
+      "minCheckSize": 7500,
+      "maxCheckSize": 30000,
+      "strategy": "Virtual Off-Market Wholesaling"
+    },
+    "projects": [
+      { "title": "742 Peachtree St Assignment", "address": "742 Peachtree St NE, Atlanta, GA 30308", "purchasePrice": 280000, "renovationBudget": 45000, "arv": 390000, "currentPhase": "Acquisition", "assetType": "Single Family" },
+      { "title": "1204 Moreland Ave Wholesale", "address": "1204 Moreland Ave SE, Atlanta, GA 30316", "purchasePrice": 190000, "renovationBudget": 35000, "arv": 280000, "currentPhase": "Disposition", "assetType": "Duplex" },
+      { "title": "512 DeKalb Ave Contract", "address": "512 DeKalb Ave NE, Atlanta, GA 30307", "purchasePrice": 310000, "renovationBudget": 40000, "arv": 420000, "currentPhase": "Underwriting", "assetType": "Single Family" },
+      { "title": "889 Cascade Ave Assignment", "address": "889 Cascade Ave SW, Atlanta, GA 30311", "purchasePrice": 145000, "renovationBudget": 28000, "arv": 220000, "currentPhase": "Lead Intaking", "assetType": "Single Family" },
+      { "title": "1604 Memorial Dr Contract", "address": "1604 Memorial Dr SE, Atlanta, GA 30317", "purchasePrice": 240000, "renovationBudget": 38000, "arv": 340000, "currentPhase": "Acquisition", "assetType": "Single Family" },
+      { "title": "310 Edgewood Ave Wholesale", "address": "310 Edgewood Ave SE, Atlanta, GA 30312", "purchasePrice": 265000, "renovationBudget": 42000, "arv": 375000, "currentPhase": "Disposition", "assetType": "Duplex" },
+      { "title": "945 Glenwood Ave Deal", "address": "945 Glenwood Ave SE, Atlanta, GA 30316", "purchasePrice": 225000, "renovationBudget": 32000, "arv": 310000, "currentPhase": "Underwriting", "assetType": "Single Family" },
+      { "title": "1120 Ponce de Leon Ave", "address": "1120 Ponce de Leon Ave NE, Atlanta, GA 30306", "purchasePrice": 410000, "renovationBudget": 55000, "arv": 560000, "currentPhase": "Acquisition", "assetType": "Single Family" },
+      { "title": "450 Ralph David Abernathy", "address": "450 Ralph David Abernathy Blvd, Atlanta, GA 30312", "purchasePrice": 170000, "renovationBudget": 30000, "arv": 250000, "currentPhase": "Lead Intaking", "assetType": "Single Family" },
+      { "title": "2201 Bankhead Hwy Assignment", "address": "2201 Bankhead Hwy NW, Atlanta, GA 30318", "purchasePrice": 125000, "renovationBudget": 25000, "arv": 190000, "currentPhase": "Disposition", "assetType": "Single Family" }
+    ]
+  },
+  {
+    "id": "P-03",
+    "name": "Earl Rusty Kowalski",
+    "email": "agent03.earl.kowalski@paperworking-test.dev",
+    "entity": "RustyGate Acquisitions LLC",
+    "category": "wholesaler",
+    "market": "Cleveland, OH",
+    "investorType": "Distressed Property Specialist",
+    "bio": "Deep-discount Cleveland wholesaler specializing in probate and tax-delinquent 1-4 units. Wants straightforward deal metrics, zero fluff, and instant PDF contract exporting.",
+    "investmentCriteria": {
+      "targetReturn": "20% ROI on fee",
+      "assetTypes": ["Single Family", "Duplex", "Triplex"],
+      "minCheckSize": 4000,
+      "maxCheckSize": 20000,
+      "strategy": "Probate & Tax Delinquent Wholesaling"
+    },
+    "projects": [
+      { "title": "3104 E 147th St Probate", "address": "3104 E 147th St, Cleveland, OH 44120", "purchasePrice": 45000, "renovationBudget": 22000, "arv": 105000, "currentPhase": "Acquisition", "assetType": "Single Family" },
+      { "title": "7812 Lorain Ave Duplex", "address": "7812 Lorain Ave, Cleveland, OH 44102", "purchasePrice": 65000, "renovationBudget": 28000, "arv": 140000, "currentPhase": "Disposition", "assetType": "Duplex" },
+      { "title": "4120 Euclid Ave Assignment", "address": "4120 Euclid Ave, Cleveland, OH 44103", "purchasePrice": 85000, "renovationBudget": 35000, "arv": 175000, "currentPhase": "Underwriting", "assetType": "Single Family" },
+      { "title": "1904 Clark Ave Probate", "address": "1904 Clark Ave, Cleveland, OH 44109", "purchasePrice": 38000, "renovationBudget": 18000, "arv": 90000, "currentPhase": "Lead Intaking", "assetType": "Single Family" },
+      { "title": "6201 Detroit Ave Contract", "address": "6201 Detroit Ave, Cleveland, OH 44102", "purchasePrice": 95000, "renovationBudget": 30000, "arv": 180000, "currentPhase": "Acquisition", "assetType": "Duplex" },
+      { "title": "11405 St Clair Ave Triplex", "address": "11405 St Clair Ave, Cleveland, OH 44108", "purchasePrice": 70000, "renovationBudget": 32000, "arv": 155000, "currentPhase": "Disposition", "assetType": "Triplex" },
+      { "title": "3412 Fleet Ave Deal", "address": "3412 Fleet Ave, Cleveland, OH 44105", "purchasePrice": 52000, "renovationBudget": 24000, "arv": 115000, "currentPhase": "Underwriting", "assetType": "Single Family" },
+      { "title": "8902 Harvard Ave Probate", "address": "8902 Harvard Ave, Cleveland, OH 44105", "purchasePrice": 41000, "renovationBudget": 20000, "arv": 98000, "currentPhase": "Lead Intaking", "assetType": "Single Family" },
+      { "title": "2214 Superior Ave Contract", "address": "2214 Superior Ave, Cleveland, OH 44114", "purchasePrice": 110000, "renovationBudget": 40000, "arv": 210000, "currentPhase": "Acquisition", "assetType": "Duplex" },
+      { "title": "4901 Denison Ave Wholesale", "address": "4901 Denison Ave, Cleveland, OH 44102", "purchasePrice": 48000, "renovationBudget": 21000, "arv": 102000, "currentPhase": "Disposition", "assetType": "Single Family" }
+    ]
+  },
+  {
+    "id": "P-04",
+    "name": "Priya Raman",
+    "email": "agent04.priya.raman@paperworking-test.dev",
+    "entity": "PRV Off-Market Group LLC",
+    "category": "wholesaler",
+    "market": "Houston, TX",
+    "investorType": "Predictive List Stacker",
+    "bio": "Tech-savvy virtual wholesaler leveraging predictive list stackers in Harris County. Requires robust data integration and fast lead filtering.",
+    "investmentCriteria": {
+      "targetReturn": "14% post-refi CoC potential",
+      "assetTypes": ["Single Family", "Townhome"],
+      "minCheckSize": 8000,
+      "maxCheckSize": 35000,
+      "strategy": "Predictive List Stacking"
+    },
+    "projects": [
+      { "title": "5401 Westheimer Rd Deal", "address": "5401 Westheimer Rd, Houston, TX 77056", "purchasePrice": 310000, "renovationBudget": 45000, "arv": 430000, "currentPhase": "Underwriting", "assetType": "Single Family" },
+      { "title": "1802 Washington Ave Contract", "address": "1802 Washington Ave, Houston, TX 77007", "purchasePrice": 380000, "renovationBudget": 50000, "arv": 510000, "currentPhase": "Acquisition", "assetType": "Townhome" },
+      { "title": "710 Heights Blvd Assignment", "address": "710 Heights Blvd, Houston, TX 77007", "purchasePrice": 450000, "renovationBudget": 60000, "arv": 620000, "currentPhase": "Disposition", "assetType": "Single Family" },
+      { "title": "3401 Montrose Blvd Lead", "address": "3401 Montrose Blvd, Houston, TX 77006", "purchasePrice": 290000, "renovationBudget": 40000, "arv": 395000, "currentPhase": "Lead Intaking", "assetType": "Townhome" },
+      { "title": "912 Navigation Blvd Contract", "address": "912 Navigation Blvd, Houston, TX 77011", "purchasePrice": 210000, "renovationBudget": 35000, "arv": 310000, "currentPhase": "Acquisition", "assetType": "Single Family" },
+      { "title": "4205 Telge Rd Assignment", "address": "4205 Telge Rd, Houston, TX 77429", "purchasePrice": 240000, "renovationBudget": 38000, "arv": 345000, "currentPhase": "Disposition", "assetType": "Single Family" },
+      { "title": "8810 Westheimer Rd Deal", "address": "8810 Westheimer Rd, Houston, TX 77063", "purchasePrice": 260000, "renovationBudget": 42000, "arv": 370000, "currentPhase": "Underwriting", "assetType": "Single Family" },
+      { "title": "1502 E Texas Ave Lead", "address": "1502 E Texas Ave, Houston, TX 77520", "purchasePrice": 160000, "renovationBudget": 28000, "arv": 235000, "currentPhase": "Lead Intaking", "assetType": "Single Family" },
+      { "title": "610 Memorial Dr Contract", "address": "610 Memorial Dr, Houston, TX 77007", "purchasePrice": 490000, "renovationBudget": 65000, "arv": 680000, "currentPhase": "Acquisition", "assetType": "Single Family" },
+      { "title": "2304 Shepherd Dr Wholesale", "address": "2304 Shepherd Dr, Houston, TX 77019", "purchasePrice": 350000, "renovationBudget": 48000, "arv": 480000, "currentPhase": "Disposition", "assetType": "Townhome" }
+    ]
+  },
+  {
+    "id": "P-05",
+    "name": "Danny Reyes",
+    "email": "agent05.danny.reyes@paperworking-test.dev",
+    "entity": "Reyes Rebuild Group LLC",
+    "category": "house_flipper",
+    "market": "Phoenix, AZ",
+    "investorType": "High-Volume Cosmetic Flipper",
+    "bio": "High-volume Phoenix cosmetic flipper, 15 flips/year. Needs tight rehab budget tracking, milestone draw approvals, and instant hard money loan calculator integration.",
+    "investmentCriteria": {
+      "targetReturn": "22% Net ROI",
+      "assetTypes": ["Single Family"],
+      "minCheckSize": 50000,
+      "maxCheckSize": 350000,
+      "strategy": "Cosmetic Fix & Flip"
+    },
+    "projects": [
+      { "title": "510 Camelback Rd Flip", "address": "510 Camelback Rd, Phoenix, AZ 85013", "purchasePrice": 310000, "renovationBudget": 55000, "arv": 445000, "currentPhase": "Rehab", "assetType": "Single Family" },
+      { "title": "1802 E Bethany Home Rd", "address": "1802 E Bethany Home Rd, Phoenix, AZ 85016", "purchasePrice": 380000, "renovationBudget": 65000, "arv": 535000, "currentPhase": "Acquisition", "assetType": "Single Family" },
+      { "title": "4210 N 16th St Rehab", "address": "4210 N 16th St, Phoenix, AZ 85016", "purchasePrice": 295000, "renovationBudget": 48000, "arv": 415000, "currentPhase": "Rehab", "assetType": "Single Family" },
+      { "title": "7401 S 24th St Flip", "address": "7401 S 24th St, Phoenix, AZ 85042", "purchasePrice": 240000, "renovationBudget": 42000, "arv": 345000, "currentPhase": "Disposition", "assetType": "Single Family" },
+      { "title": "2910 W Northern Ave", "address": "2910 W Northern Ave, Phoenix, AZ 85051", "purchasePrice": 220000, "renovationBudget": 38000, "arv": 315000, "currentPhase": "Underwriting", "assetType": "Single Family" },
+      { "title": "8402 N 35th Ave Rehab", "address": "8402 N 35th Ave, Phoenix, AZ 85051", "purchasePrice": 210000, "renovationBudget": 36000, "arv": 298000, "currentPhase": "Rehab", "assetType": "Single Family" },
+      { "title": "1540 E Glendale Ave Flip", "address": "1540 E Glendale Ave, Phoenix, AZ 85020", "purchasePrice": 350000, "renovationBudget": 58000, "arv": 490000, "currentPhase": "Disposition", "assetType": "Single Family" },
+      { "title": "6201 N 7th St Renovation", "address": "6201 N 7th St, Phoenix, AZ 85014", "purchasePrice": 410000, "renovationBudget": 70000, "arv": 575000, "currentPhase": "Acquisition", "assetType": "Single Family" },
+      { "title": "3810 E Thomas Rd Rehab", "address": "3810 E Thomas Rd, Phoenix, AZ 85018", "purchasePrice": 330000, "renovationBudget": 52000, "arv": 460000, "currentPhase": "Rehab", "assetType": "Single Family" },
+      { "title": "902 W Baseline Rd Flip", "address": "902 W Baseline Rd, Phoenix, AZ 85041", "purchasePrice": 260000, "renovationBudget": 44000, "arv": 370000, "currentPhase": "Disposition", "assetType": "Single Family" }
+    ]
+  },
+  {
+    "id": "P-06",
+    "name": "Samantha Sam Ortega",
+    "email": "agent06.samantha.ortega@paperworking-test.dev",
+    "entity": "SO Renovations LLC",
+    "category": "house_flipper",
+    "market": "Atlanta, GA",
+    "investorType": "Design-Focused Historic Flipper",
+    "bio": "Atlanta historic rehab flipper in Inman Park and Grant Park. High attention to architectural finish, requires detailed photo/document attachment and subcontractor milestone tracking.",
+    "investmentCriteria": {
+      "targetReturn": "24% Net Margin",
+      "assetTypes": ["Single Family", "Historic Home"],
+      "minCheckSize": 75000,
+      "maxCheckSize": 450000,
+      "strategy": "Historic Gut Rehab & Flip"
+    },
+    "projects": [
+      { "title": "412 Moreland Ave Inman Park", "address": "412 Moreland Ave NE, Atlanta, GA 30307", "purchasePrice": 420000, "renovationBudget": 110000, "arv": 685000, "currentPhase": "Rehab", "assetType": "Historic Home" },
+      { "title": "885 Cherokee Ave Grant Park", "address": "885 Cherokee Ave SE, Atlanta, GA 30312", "purchasePrice": 390000, "renovationBudget": 95000, "arv": 615000, "currentPhase": "Acquisition", "assetType": "Single Family" },
+      { "title": "1502 McLendon Ave Rehab", "address": "1502 McLendon Ave NE, Atlanta, GA 30307", "purchasePrice": 460000, "renovationBudget": 125000, "arv": 745000, "currentPhase": "Rehab", "assetType": "Historic Home" },
+      { "title": "710 Edgewood Ave Renovation", "address": "710 Edgewood Ave SE, Atlanta, GA 30312", "purchasePrice": 340000, "renovationBudget": 85000, "arv": 540000, "currentPhase": "Disposition", "assetType": "Single Family" },
+      { "title": "1104 Boulevard SE Flip", "address": "1104 Boulevard SE, Atlanta, GA 30312", "purchasePrice": 310000, "renovationBudget": 78000, "arv": 490000, "currentPhase": "Underwriting", "assetType": "Single Family" },
+      { "title": "520 Kirkwood Ave Rehab", "address": "520 Kirkwood Ave SE, Atlanta, GA 30316", "purchasePrice": 290000, "renovationBudget": 72000, "arv": 455000, "currentPhase": "Rehab", "assetType": "Single Family" },
+      { "title": "930 Flat Shoals Ave", "address": "930 Flat Shoals Ave SE, Atlanta, GA 30316", "purchasePrice": 360000, "renovationBudget": 90000, "arv": 570000, "currentPhase": "Disposition", "assetType": "Single Family" },
+      { "title": "1640 Fairview Rd Historic", "address": "1640 Fairview Rd NE, Atlanta, GA 30306", "purchasePrice": 580000, "renovationBudget": 150000, "arv": 920000, "currentPhase": "Acquisition", "assetType": "Historic Home" },
+      { "title": "240 Hosea L Williams Dr", "address": "240 Hosea L Williams Dr SE, Atlanta, GA 30317", "purchasePrice": 320000, "renovationBudget": 80000, "arv": 510000, "currentPhase": "Rehab", "assetType": "Single Family" },
+      { "title": "802 Berne St Grant Park", "address": "802 Berne St SE, Atlanta, GA 30316", "purchasePrice": 375000, "renovationBudget": 92000, "arv": 590000, "currentPhase": "Disposition", "assetType": "Single Family" }
+    ]
+  },
+  {
+    "id": "P-07",
+    "name": "Vince Moretti",
+    "email": "agent07.vince.moretti@paperworking-test.dev",
+    "entity": "Moretti Homes Revived LLC",
+    "category": "house_flipper",
+    "market": "Cleveland, OH",
+    "investorType": "Heavy Gut Flipper",
+    "bio": "Cleveland heavy gut-rehab flipper. Relies on paper field notes, skeptical of software, needs an ultra-simple interface to log draws and contractor pay requests without submenus.",
+    "investmentCriteria": {
+      "targetReturn": "25% ROI",
+      "assetTypes": ["Single Family", "Duplex"],
+      "minCheckSize": 25000,
+      "maxCheckSize": 180000,
+      "strategy": "Heavy Structural Gut Flip"
+    },
+    "projects": [
+      { "title": "4102 Euclid Ave Gut Rehab", "address": "4102 Euclid Ave, Cleveland, OH 44103", "purchasePrice": 55000, "renovationBudget": 48000, "arv": 145000, "currentPhase": "Rehab", "assetType": "Single Family" },
+      { "title": "8901 Superior Ave Duplex", "address": "8901 Superior Ave, Cleveland, OH 44106", "purchasePrice": 65000, "renovationBudget": 52000, "arv": 168000, "currentPhase": "Acquisition", "assetType": "Duplex" },
+      { "title": "3204 Lorain Ave Rehab", "address": "3204 Lorain Ave, Cleveland, OH 44113", "purchasePrice": 82000, "renovationBudget": 58000, "arv": 195000, "currentPhase": "Rehab", "assetType": "Single Family" },
+      { "title": "1402 Clark Ave Flip", "address": "1402 Clark Ave, Cleveland, OH 44109", "purchasePrice": 42000, "renovationBudget": 38000, "arv": 115000, "currentPhase": "Disposition", "assetType": "Single Family" },
+      { "title": "6701 Detroit Ave Rehab", "address": "6701 Detroit Ave, Cleveland, OH 44102", "purchasePrice": 95000, "renovationBudget": 62000, "arv": 218000, "currentPhase": "Underwriting", "assetType": "Duplex" },
+      { "title": "10402 St Clair Gut Rehab", "address": "10402 St Clair Ave, Cleveland, OH 44108", "purchasePrice": 38000, "renovationBudget": 42000, "arv": 110000, "currentPhase": "Rehab", "assetType": "Single Family" },
+      { "title": "2810 Fleet Ave Flip", "address": "2810 Fleet Ave, Cleveland, OH 44105", "purchasePrice": 48000, "renovationBudget": 40000, "arv": 125000, "currentPhase": "Disposition", "assetType": "Single Family" },
+      { "title": "7504 Harvard Ave Renovation", "address": "7504 Harvard Ave, Cleveland, OH 44105", "purchasePrice": 35000, "renovationBudget": 35000, "arv": 98000, "currentPhase": "Acquisition", "assetType": "Single Family" },
+      { "title": "1802 W 25th St Rehab", "address": "1802 W 25th St, Cleveland, OH 44113", "purchasePrice": 120000, "renovationBudget": 75000, "arv": 265000, "currentPhase": "Rehab", "assetType": "Duplex" },
+      { "title": "5310 Denison Ave Flip", "address": "5310 Denison Ave, Cleveland, OH 44102", "purchasePrice": 44000, "renovationBudget": 39000, "arv": 118000, "currentPhase": "Disposition", "assetType": "Single Family" }
+    ]
+  },
+  {
+    "id": "P-08",
+    "name": "Chloe Nguyen",
+    "email": "agent08.chloe.nguyen@paperworking-test.dev",
+    "entity": "BrightHaus Flips LLC",
+    "category": "house_flipper",
+    "market": "Denver, CO",
+    "investorType": "Rookie Cautious Flipper",
+    "bio": "Denver rookie flipper on 3rd project. Obsessed with margin safety, contingency planning, and hard money loan interest calculations. Needs step-by-step guidance.",
+    "investmentCriteria": {
+      "targetReturn": "18% Margin (Conservative)",
+      "assetTypes": ["Single Family", "Townhome"],
+      "minCheckSize": 60000,
+      "maxCheckSize": 300000,
+      "strategy": "Entry-Level Fix & Flip"
+    },
+    "projects": [
+      { "title": "1402 Colfax Ave Rookie Flip", "address": "1402 E Colfax Ave, Denver, CO 80218", "purchasePrice": 380000, "renovationBudget": 60000, "arv": 520000, "currentPhase": "Rehab", "assetType": "Single Family" },
+      { "title": "2810 Speer Blvd Rehab", "address": "2810 Speer Blvd, Denver, CO 80211", "purchasePrice": 420000, "renovationBudget": 65000, "arv": 575000, "currentPhase": "Acquisition", "assetType": "Townhome" },
+      { "title": "915 Federal Blvd Flip", "address": "915 Federal Blvd, Denver, CO 80204", "purchasePrice": 340000, "renovationBudget": 52000, "arv": 465000, "currentPhase": "Rehab", "assetType": "Single Family" },
+      { "title": "4501 Colorado Blvd Rehab", "address": "4501 Colorado Blvd, Denver, CO 80216", "purchasePrice": 310000, "renovationBudget": 48000, "arv": 425000, "currentPhase": "Disposition", "assetType": "Single Family" },
+      { "title": "1204 Alameda Ave", "address": "1204 W Alameda Ave, Denver, CO 80223", "purchasePrice": 360000, "renovationBudget": 55000, "arv": 490000, "currentPhase": "Underwriting", "assetType": "Single Family" },
+      { "title": "3102 Sheridan Blvd Flip", "address": "3102 Sheridan Blvd, Denver, CO 80212", "purchasePrice": 390000, "renovationBudget": 58000, "arv": 530000, "currentPhase": "Rehab", "assetType": "Single Family" },
+      { "title": "802 Santa Fe Dr Rehab", "address": "802 Santa Fe Dr, Denver, CO 80204", "purchasePrice": 370000, "renovationBudget": 56000, "arv": 505000, "currentPhase": "Disposition", "assetType": "Townhome" },
+      { "title": "2201 Broadway Renovation", "address": "2201 Broadway, Denver, CO 80205", "purchasePrice": 450000, "renovationBudget": 70000, "arv": 615000, "currentPhase": "Acquisition", "assetType": "Single Family" },
+      { "title": "5104 MLK Blvd Flip", "address": "5104 Martin Luther King Jr Blvd, Denver, CO 80207", "purchasePrice": 330000, "renovationBudget": 50000, "arv": 450000, "currentPhase": "Rehab", "assetType": "Single Family" },
+      { "title": "1702 Washington St Rehab", "address": "1702 Washington St, Denver, CO 80203", "purchasePrice": 410000, "renovationBudget": 62000, "arv": 560000, "currentPhase": "Disposition", "assetType": "Single Family" }
+    ]
+  },
+  {
+    "id": "P-09",
+    "name": "Hank Beaumont",
+    "email": "agent09.hank.beaumont@paperworking-test.dev",
+    "entity": "Beaumont Restoration Co. LLC",
+    "category": "house_flipper",
+    "market": "Nashville, TN",
+    "investorType": "Historic Restoration Specialist",
+    "bio": "Nashville historic restoration flipper. Requires custom line-item rehab scope tracking, historic district permit approvals, and detailed draw management.",
+    "investmentCriteria": {
+      "targetReturn": "25% Net Margin",
+      "assetTypes": ["Historic Home", "Single Family"],
+      "minCheckSize": 80000,
+      "maxCheckSize": 500000,
+      "strategy": "Historic Restoration & Flip"
+    },
+    "projects": [
+      { "title": "1804 Broadway Victorian Rehab", "address": "1804 Broadway, Nashville, TN 37203", "purchasePrice": 520000, "renovationBudget": 140000, "arv": 845000, "currentPhase": "Rehab", "assetType": "Historic Home" },
+      { "title": "912 8th Ave S Restoration", "address": "912 8th Ave S, Nashville, TN 37203", "purchasePrice": 460000, "renovationBudget": 115000, "arv": 725000, "currentPhase": "Acquisition", "assetType": "Historic Home" },
+      { "title": "1402 Charlotte Ave Flip", "address": "1402 Charlotte Ave, Nashville, TN 37203", "purchasePrice": 410000, "renovationBudget": 98000, "arv": 635000, "currentPhase": "Rehab", "assetType": "Single Family" },
+      { "title": "2201 Gallatin Pike Rehab", "address": "2201 Gallatin Pike, Nashville, TN 37206", "purchasePrice": 380000, "renovationBudget": 90000, "arv": 585000, "currentPhase": "Disposition", "assetType": "Single Family" },
+      { "title": "504 Woodland St Restoration", "address": "504 Woodland St, Nashville, TN 37206", "purchasePrice": 490000, "renovationBudget": 120000, "arv": 780000, "currentPhase": "Underwriting", "assetType": "Historic Home" },
+      { "title": "1102 Holly St East Nashville", "address": "1102 Holly St, Nashville, TN 37206", "purchasePrice": 440000, "renovationBudget": 105000, "arv": 700000, "currentPhase": "Rehab", "assetType": "Single Family" },
+      { "title": "715 Shelby Ave Flip", "address": "715 Shelby Ave, Nashville, TN 37206", "purchasePrice": 420000, "renovationBudget": 100000, "arv": 665000, "currentPhase": "Disposition", "assetType": "Single Family" },
+      { "title": "1902 Blair Blvd Historic", "address": "1902 Blair Blvd, Nashville, TN 37212", "purchasePrice": 590000, "renovationBudget": 160000, "arv": 950000, "currentPhase": "Acquisition", "assetType": "Historic Home" },
+      { "title": "804 Monroe St Germantown", "address": "804 Monroe St, Nashville, TN 37208", "purchasePrice": 480000, "renovationBudget": 118000, "arv": 760000, "currentPhase": "Rehab", "assetType": "Single Family" },
+      { "title": "1305 Buchanan St Rehab", "address": "1305 Buchanan St, Nashville, TN 37208", "purchasePrice": 350000, "renovationBudget": 85000, "arv": 540000, "currentPhase": "Disposition", "assetType": "Single Family" }
+    ]
+  },
+  {
+    "id": "P-10",
+    "name": "Gary Lindqvist",
+    "email": "agent10.gary.lindqvist@paperworking-test.dev",
+    "entity": "Lindqvist Custom Homes LLC",
+    "category": "spec_builder",
+    "market": "Minneapolis, MN",
+    "investorType": "Precision Infill Builder",
+    "bio": "Twin Cities infill spec builder (single family & duplexes). Highly detailed cost-code tracking, subcontractor lien waiver tracking, and construction schedule gantt charts.",
+    "investmentCriteria": {
+      "targetReturn": "20% Builder Net Margin",
+      "assetTypes": ["Single Family", "Duplex"],
+      "minCheckSize": 100000,
+      "maxCheckSize": 600000,
+      "strategy": "Infill New Construction Spec"
+    },
+    "projects": [
+      { "title": "3401 Lake St Spec Build", "address": "3401 E Lake St, Minneapolis, MN 55406", "purchasePrice": 140000, "renovationBudget": 320000, "arv": 595000, "currentPhase": "Rehab", "assetType": "Single Family" },
+      { "title": "1804 Hennepin Ave Duplex", "address": "1804 Hennepin Ave, Minneapolis, MN 55403", "purchasePrice": 180000, "renovationBudget": 410000, "arv": 760000, "currentPhase": "Acquisition", "assetType": "Duplex" },
+      { "title": "2210 Nicollet Ave Infill", "address": "2210 Nicollet Ave, Minneapolis, MN 55404", "purchasePrice": 160000, "renovationBudget": 350000, "arv": 640000, "currentPhase": "Rehab", "assetType": "Single Family" },
+      { "title": "912 Lyndale Ave Spec", "address": "912 Lyndale Ave N, Minneapolis, MN 55411", "purchasePrice": 120000, "renovationBudget": 290000, "arv": 510000, "currentPhase": "Disposition", "assetType": "Single Family" },
+      { "title": "4501 Chicago Ave Build", "address": "4501 Chicago Ave, Minneapolis, MN 55407", "purchasePrice": 150000, "renovationBudget": 340000, "arv": 625000, "currentPhase": "Underwriting", "assetType": "Single Family" },
+      { "title": "2804 Bloomington Ave", "address": "2804 Bloomington Ave, Minneapolis, MN 55407", "purchasePrice": 130000, "renovationBudget": 310000, "arv": 560000, "currentPhase": "Rehab", "assetType": "Single Family" },
+      { "title": "5201 Penn Ave S Duplex", "address": "5201 Penn Ave S, Minneapolis, MN 55419", "purchasePrice": 210000, "renovationBudget": 450000, "arv": 820000, "currentPhase": "Disposition", "assetType": "Duplex" },
+      { "title": "1402 University Ave SE", "address": "1402 University Ave SE, Minneapolis, MN 55414", "purchasePrice": 190000, "renovationBudget": 420000, "arv": 750000, "currentPhase": "Acquisition", "assetType": "Duplex" },
+      { "title": "3804 Central Ave NE", "address": "3804 Central Ave NE, Minneapolis, MN 55421", "purchasePrice": 135000, "renovationBudget": 315000, "arv": 570000, "currentPhase": "Rehab", "assetType": "Single Family" },
+      { "title": "1104 E 38th St Infill", "address": "1104 E 38th St, Minneapolis, MN 55407", "purchasePrice": 125000, "renovationBudget": 300000, "arv": 535000, "currentPhase": "Disposition", "assetType": "Single Family" }
+    ]
+  },
+  {
+    "id": "P-11",
+    "name": "Marisol Vega",
+    "email": "agent11.marisol.vega@paperworking-test.dev",
+    "entity": "Vega Verde Construction LLC",
+    "category": "spec_builder",
+    "market": "Austin, TX",
+    "investorType": "Green Building Innovator",
+    "bio": "Austin net-zero solar spec builder. Measures HERS ratings, carbon offsets, and energy efficiency metrics alongside financial CoC yields.",
+    "investmentCriteria": {
+      "targetReturn": "18% CoC + Net Zero HERS Rating",
+      "assetTypes": ["Single Family", "Net-Zero Build"],
+      "minCheckSize": 120000,
+      "maxCheckSize": 750000,
+      "strategy": "Net-Zero Solar Spec Build"
+    },
+    "projects": [
+      { "title": "1802 S Congress Solar Spec", "address": "1802 S Congress Ave, Austin, TX 78704", "purchasePrice": 380000, "renovationBudget": 420000, "arv": 980000, "currentPhase": "Rehab", "assetType": "Net-Zero Build" },
+      { "title": "2401 E Cesar Chavez Build", "address": "2401 E Cesar Chavez St, Austin, TX 78702", "purchasePrice": 320000, "renovationBudget": 360000, "arv": 820000, "currentPhase": "Acquisition", "assetType": "Net-Zero Build" },
+      { "title": "4102 Lamar Blvd Green Spec", "address": "4102 N Lamar Blvd, Austin, TX 78756", "purchasePrice": 410000, "renovationBudget": 450000, "arv": 1050000, "currentPhase": "Rehab", "assetType": "Net-Zero Build" },
+      { "title": "912 E 11th St Solar Home", "address": "912 E 11th St, Austin, TX 78702", "purchasePrice": 350000, "renovationBudget": 390000, "arv": 890000, "currentPhase": "Disposition", "assetType": "Net-Zero Build" },
+      { "title": "1504 Manor Rd Infill", "address": "1504 Manor Rd, Austin, TX 78722", "purchasePrice": 290000, "renovationBudget": 330000, "arv": 740000, "currentPhase": "Underwriting", "assetType": "Single Family" },
+      { "title": "3102 S 1st St Green Build", "address": "3102 S 1st St, Austin, TX 78704", "purchasePrice": 360000, "renovationBudget": 400000, "arv": 910000, "currentPhase": "Rehab", "assetType": "Net-Zero Build" },
+      { "title": "5204 Burnet Rd Solar Spec", "address": "5204 Burnet Rd, Austin, TX 78756", "purchasePrice": 390000, "renovationBudget": 430000, "arv": 990000, "currentPhase": "Disposition", "assetType": "Net-Zero Build" },
+      { "title": "710 E 6th St Sustainable", "address": "710 E 6th St, Austin, TX 78702", "purchasePrice": 450000, "renovationBudget": 480000, "arv": 1150000, "currentPhase": "Acquisition", "assetType": "Net-Zero Build" },
+      { "title": "1204 E 7th St Net-Zero", "address": "1204 E 7th St, Austin, TX 78702", "purchasePrice": 340000, "renovationBudget": 380000, "arv": 860000, "currentPhase": "Rehab", "assetType": "Net-Zero Build" },
+      { "title": "2201 Pleasant Valley Rd", "address": "2201 S Pleasant Valley Rd, Austin, TX 78741", "purchasePrice": 260000, "renovationBudget": 300000, "arv": 670000, "currentPhase": "Disposition", "assetType": "Single Family" }
+    ]
+  },
+  {
+    "id": "P-12",
+    "name": "Tom Okafor",
+    "email": "agent12.tom.okafor@paperworking-test.dev",
+    "entity": "Okafor Signature Builds LLC",
+    "category": "spec_builder",
+    "market": "Charlotte, NC",
+    "investorType": "Subdivision Package Builder",
+    "bio": "Charlotte spec infill builder focused on 2-4 lot package developments. Manages civil site prep, horizontal infrastructure, and spec home delivery.",
+    "investmentCriteria": {
+      "targetReturn": "22% Net Margin",
+      "assetTypes": ["Single Family", "Townhome"],
+      "minCheckSize": 90000,
+      "maxCheckSize": 500000,
+      "strategy": "Small Lot Package Spec Build"
+    },
+    "projects": [
+      { "title": "2804 Sharon Rd Lot Package", "address": "2804 Sharon Rd, Charlotte, NC 28211", "purchasePrice": 250000, "renovationBudget": 350000, "arv": 720000, "currentPhase": "Rehab", "assetType": "Single Family" },
+      { "title": "1402 South Blvd Spec", "address": "1402 South Blvd, Charlotte, NC 28203", "purchasePrice": 310000, "renovationBudget": 410000, "arv": 860000, "currentPhase": "Acquisition", "assetType": "Townhome" },
+      { "title": "915 Central Ave Infill", "address": "915 Central Ave, Charlotte, NC 28204", "purchasePrice": 220000, "renovationBudget": 320000, "arv": 650000, "currentPhase": "Rehab", "assetType": "Single Family" },
+      { "title": "3401 The Plaza Spec", "address": "3401 The Plaza, Charlotte, NC 28205", "purchasePrice": 190000, "renovationBudget": 290000, "arv": 580000, "currentPhase": "Disposition", "assetType": "Single Family" },
+      { "title": "5104 Park Rd Package", "address": "5104 Park Rd, Charlotte, NC 28209", "purchasePrice": 280000, "renovationBudget": 380000, "arv": 790000, "currentPhase": "Underwriting", "assetType": "Single Family" },
+      { "title": "1802 Monroe Rd Spec", "address": "1802 Monroe Rd, Charlotte, NC 28205", "purchasePrice": 210000, "renovationBudget": 310000, "arv": 620000, "currentPhase": "Rehab", "assetType": "Single Family" },
+      { "title": "4201 Providence Rd Build", "address": "4201 Providence Rd, Charlotte, NC 28211", "purchasePrice": 350000, "renovationBudget": 450000, "arv": 950000, "currentPhase": "Disposition", "assetType": "Single Family" },
+      { "title": "710 E Morehead St Townhomes", "address": "710 E Morehead St, Charlotte, NC 28202", "purchasePrice": 390000, "renovationBudget": 490000, "arv": 1050000, "currentPhase": "Acquisition", "assetType": "Townhome" },
+      { "title": "1204 Davidson St Spec", "address": "1204 N Davidson St, Charlotte, NC 28206", "purchasePrice": 230000, "renovationBudget": 330000, "arv": 680000, "currentPhase": "Rehab", "assetType": "Single Family" },
+      { "title": "3102 Wilkinson Blvd", "address": "3102 Wilkinson Blvd, Charlotte, NC 28208", "purchasePrice": 160000, "renovationBudget": 260000, "arv": 510000, "currentPhase": "Disposition", "assetType": "Single Family" }
+    ]
+  },
+  {
+    "id": "P-13",
+    "name": "Robert Bob Haldane",
+    "email": "agent13.robert.haldane@paperworking-test.dev",
+    "entity": "Haldane Land Partners LLC",
+    "category": "land_developer",
+    "market": "Minneapolis, MN",
+    "investorType": "Civil Entitlement Specialist",
+    "bio": "Land developer entitling 10-25 lot subdivisions in Hennepin & Anoka counties. Needs civil engineering milestone tracking, municipal planning board approval logs, and lot take-down schedule tracking.",
+    "investmentCriteria": {
+      "targetReturn": "2.5x Equity Multiple",
+      "assetTypes": ["Raw Land", "Subdivision Plat"],
+      "minCheckSize": 250000,
+      "maxCheckSize": 2000000,
+      "strategy": "Subdivision Land Entitlement"
+    },
+    "projects": [
+      { "title": "Meadowcreek Phase 1 Plat", "address": "14200 Meadowcreek Pkwy, Maple Grove, MN 55311", "purchasePrice": 850000, "renovationBudget": 620000, "arv": 2450000, "currentPhase": "Acquisition", "assetType": "Subdivision Plat" },
+      { "title": "Anoka Infill 12-Lot Plat", "address": "4200 Round Lake Blvd, Anoka, MN 55303", "purchasePrice": 620000, "renovationBudget": 450000, "arv": 1780000, "currentPhase": "Underwriting", "assetType": "Raw Land" },
+      { "title": "Plymouth Woods Parcel", "address": "18900 County Rd 6, Plymouth, MN 55447", "purchasePrice": 1100000, "renovationBudget": 780000, "arv": 3100000, "currentPhase": "Lead Intaking", "assetType": "Raw Land" },
+      { "title": "Blaine North Plat 18-Lot", "address": "10900 Lexington Ave NE, Blaine, MN 55449", "purchasePrice": 950000, "renovationBudget": 690000, "arv": 2700000, "currentPhase": "Acquisition", "assetType": "Subdivision Plat" },
+      { "title": "Woodbury East Infill", "address": "8400 Valley Creek Rd, Woodbury, MN 55125", "purchasePrice": 1250000, "renovationBudget": 890000, "arv": 3550000, "currentPhase": "Underwriting", "assetType": "Raw Land" },
+      { "title": "Eagan Ridge 15-Lot Plat", "address": "3200 Pilot Knob Rd, Eagan, MN 55121", "purchasePrice": 880000, "renovationBudget": 610000, "arv": 2500000, "currentPhase": "Lead Intaking", "assetType": "Subdivision Plat" },
+      { "title": "Coon Rapids River Parcel", "address": "11200 Crooked Lake Blvd, Coon Rapids, MN 55433", "purchasePrice": 720000, "renovationBudget": 510000, "arv": 2050000, "currentPhase": "Acquisition", "assetType": "Raw Land" },
+      { "title": "Minnetonka Oak Subdivision", "address": "16400 Minnetonka Blvd, Minnetonka, MN 55345", "purchasePrice": 1450000, "renovationBudget": 950000, "arv": 4100000, "currentPhase": "Underwriting", "assetType": "Subdivision Plat" },
+      { "title": "Shakopee South 20-Lot", "address": "4100 Marschall Rd, Shakopee, MN 55379", "purchasePrice": 1050000, "renovationBudget": 720000, "arv": 2950000, "currentPhase": "Acquisition", "assetType": "Subdivision Plat" },
+      { "title": "Lakeville Crossing Parcel", "address": "17800 Kenwood Trail, Lakeville, MN 55044", "purchasePrice": 990000, "renovationBudget": 680000, "arv": 2800000, "currentPhase": "Lead Intaking", "assetType": "Raw Land" }
+    ]
+  },
+  {
+    "id": "P-14",
+    "name": "Denise Whitaker",
+    "email": "agent14.denise.whitaker@paperworking-test.dev",
+    "entity": "Whitaker Development Group LLC",
+    "category": "land_developer",
+    "market": "Raleigh, NC",
+    "investorType": "Zoning & Parcel Assembler",
+    "bio": "Raleigh-Durham infill land assembler and lot developer. Manages zoning variance petitions, utility main extension agreements, and builder lot option contracts.",
+    "investmentCriteria": {
+      "targetReturn": "2.2x Equity Multiple",
+      "assetTypes": ["Raw Land", "Infill Assemblage"],
+      "minCheckSize": 200000,
+      "maxCheckSize": 1500000,
+      "strategy": "Infill Parcel Assemblage & Zoning"
+    },
+    "projects": [
+      { "title": "Six Forks Rd Parcel Package", "address": "5400 Six Forks Rd, Raleigh, NC 27609", "purchasePrice": 780000, "renovationBudget": 480000, "arv": 2100000, "currentPhase": "Acquisition", "assetType": "Infill Assemblage" },
+      { "title": "Wake Forest Rd Assemblage", "address": "3800 Wake Forest Rd, Raleigh, NC 27609", "purchasePrice": 690000, "renovationBudget": 420000, "arv": 1850000, "currentPhase": "Underwriting", "assetType": "Raw Land" },
+      { "title": "Glenwood Ave 8-Lot Plat", "address": "6200 Glenwood Ave, Raleigh, NC 27612", "purchasePrice": 920000, "renovationBudget": 560000, "arv": 2500000, "currentPhase": "Lead Intaking", "assetType": "Infill Assemblage" },
+      { "title": "Apex Infill Subdivision", "address": "1200 Olive Chapel Rd, Apex, NC 27502", "purchasePrice": 850000, "renovationBudget": 510000, "arv": 2300000, "currentPhase": "Acquisition", "assetType": "Raw Land" },
+      { "title": "Cary Parkway Parcel", "address": "2400 NW Cary Pkwy, Cary, NC 27513", "purchasePrice": 1100000, "renovationBudget": 680000, "arv": 3000000, "currentPhase": "Underwriting", "assetType": "Infill Assemblage" },
+      { "title": "Garner Station Assemblage", "address": "1500 US-70, Garner, NC 27529", "purchasePrice": 620000, "renovationBudget": 390000, "arv": 1650000, "currentPhase": "Lead Intaking", "assetType": "Raw Land" },
+      { "title": "Durham Chapel Hill Infill", "address": "4100 Chapel Hill Rd, Durham, NC 27707", "purchasePrice": 880000, "renovationBudget": 530000, "arv": 2400000, "currentPhase": "Acquisition", "assetType": "Infill Assemblage" },
+      { "title": "Morrisville Town Parcel", "address": "3100 Morrisville Carpenter Rd, Morrisville, NC 27560", "purchasePrice": 950000, "renovationBudget": 590000, "arv": 2650000, "currentPhase": "Underwriting", "assetType": "Raw Land" },
+      { "title": "Holly Springs 12-Lot Plat", "address": "2100 Holly Springs Rd, Holly Springs, NC 27540", "purchasePrice": 790000, "renovationBudget": 470000, "arv": 2150000, "currentPhase": "Acquisition", "assetType": "Infill Assemblage" },
+      { "title": "Wake Forest North Parcel", "address": "1800 Capital Blvd, Wake Forest, NC 27587", "purchasePrice": 710000, "renovationBudget": 430000, "arv": 1900000, "currentPhase": "Lead Intaking", "assetType": "Raw Land" }
+    ]
+  },
+  {
+    "id": "P-15",
+    "name": "Jordan Fields",
+    "email": "agent15.jordan.fields@paperworking-test.dev",
+    "entity": "Fields Repeat Capital LLC",
+    "category": "brrrr_investor",
+    "market": "Phoenix, AZ",
+    "investorType": "BRRRR Scaling Specialist",
+    "bio": "Phoenix BRRRR investor scaling from 8 to 25 doors. Obsessed with post-refi equity extraction, cash-on-cash return, and DSCR lender requirements.",
+    "investmentCriteria": {
+      "targetReturn": "16.2% Post-Refi CoC Return",
+      "assetTypes": ["Single Family", "Duplex"],
+      "minCheckSize": 40000,
+      "maxCheckSize": 250000,
+      "strategy": "BRRRR Cash-Out Refinance"
+    },
+    "projects": [
+      { "title": "8842 W Catalina BRRRR", "address": "8842 W Catalina Dr, Phoenix, AZ 85037", "purchasePrice": 210000, "renovationBudget": 42000, "arv": 345000, "currentPhase": "Rehab", "assetType": "Single Family" },
+      { "title": "1410 E McDowell Rd Duplex", "address": "1410 E McDowell Rd, Phoenix, AZ 85006", "purchasePrice": 260000, "renovationBudget": 48000, "arv": 410000, "currentPhase": "Acquisition", "assetType": "Duplex" },
+      { "title": "3104 W Van Buren St BRRRR", "address": "3104 W Van Buren St, Phoenix, AZ 85009", "purchasePrice": 180000, "renovationBudget": 38000, "arv": 295000, "currentPhase": "Rehab", "assetType": "Single Family" },
+      { "title": "5201 N 19th Ave Refi", "address": "5201 N 19th Ave, Phoenix, AZ 85015", "purchasePrice": 230000, "renovationBudget": 40000, "arv": 360000, "currentPhase": "Disposition", "assetType": "Single Family" },
+      { "title": "7402 S 7th St BRRRR", "address": "7402 S 7th St, Phoenix, AZ 85042", "purchasePrice": 195000, "renovationBudget": 36000, "arv": 310000, "currentPhase": "Underwriting", "assetType": "Single Family" },
+      { "title": "1804 W Buckeye Rd Duplex", "address": "1804 W Buckeye Rd, Phoenix, AZ 85007", "purchasePrice": 220000, "renovationBudget": 44000, "arv": 355000, "currentPhase": "Rehab", "assetType": "Duplex" },
+      { "title": "4102 N 27th Ave BRRRR", "address": "4102 N 27th Ave, Phoenix, AZ 85017", "purchasePrice": 175000, "renovationBudget": 32000, "arv": 280000, "currentPhase": "Disposition", "assetType": "Single Family" },
+      { "title": "6210 W Thomas Rd Refi", "address": "6210 W Thomas Rd, Phoenix, AZ 85033", "purchasePrice": 205000, "renovationBudget": 38000, "arv": 325000, "currentPhase": "Acquisition", "assetType": "Single Family" },
+      { "title": "2901 E Indian School Rd", "address": "2901 E Indian School Rd, Phoenix, AZ 85016", "purchasePrice": 290000, "renovationBudget": 50000, "arv": 440000, "currentPhase": "Rehab", "assetType": "Single Family" },
+      { "title": "1204 S 16th St BRRRR", "address": "1204 S 16th St, Phoenix, AZ 85034", "purchasePrice": 165000, "renovationBudget": 30000, "arv": 260000, "currentPhase": "Disposition", "assetType": "Single Family" }
+    ]
+  },
+  {
+    "id": "P-16",
+    "name": "Aisha Bello",
+    "email": "agent16.aisha.bello@paperworking-test.dev",
+    "entity": "Bello Door Properties LLC",
+    "category": "brrrr_investor",
+    "market": "Atlanta, GA",
+    "investorType": "Section 8 BRRRR Operator",
+    "bio": "Atlanta Section 8 BRRRR investor. Plaid Sandbox user tracking rental deposits vs rehab draws, section 8 voucher disbursements, and DSCR loan seasoning deadlines.",
+    "plaidSandbox": true,
+    "investmentCriteria": {
+      "targetReturn": "17.5% CoC Return",
+      "assetTypes": ["Single Family", "Duplex"],
+      "minCheckSize": 35000,
+      "maxCheckSize": 220000,
+      "strategy": "Section 8 BRRRR Strategy"
+    },
+    "projects": [
+      { "title": "1204 DeKalb Ave BRRRR", "address": "1204 DeKalb Ave NE, Atlanta, GA 30307", "purchasePrice": 240000, "renovationBudget": 45000, "arv": 380000, "currentPhase": "Rehab", "assetType": "Single Family" },
+      { "title": "885 Campbellton Rd Duplex", "address": "885 Campbellton Rd SW, Atlanta, GA 30311", "purchasePrice": 180000, "renovationBudget": 40000, "arv": 295000, "currentPhase": "Acquisition", "assetType": "Duplex" },
+      { "title": "1602 Lakewood Ave BRRRR", "address": "1602 Lakewood Ave SE, Atlanta, GA 30315", "purchasePrice": 150000, "renovationBudget": 35000, "arv": 245000, "currentPhase": "Rehab", "assetType": "Single Family" },
+      { "title": "310 Sylvan Rd Refi", "address": "310 Sylvan Rd SW, Atlanta, GA 30310", "purchasePrice": 165000, "renovationBudget": 38000, "arv": 265000, "currentPhase": "Disposition", "assetType": "Single Family" },
+      { "title": "940 Metropolitan Pkwy", "address": "940 Metropolitan Pkwy SW, Atlanta, GA 30310", "purchasePrice": 190000, "renovationBudget": 42000, "arv": 310000, "currentPhase": "Underwriting", "assetType": "Single Family" },
+      { "title": "2204 Jonesboro Rd BRRRR", "address": "2204 Jonesboro Rd SE, Atlanta, GA 30315", "purchasePrice": 140000, "renovationBudget": 32000, "arv": 225000, "currentPhase": "Rehab", "assetType": "Single Family" },
+      { "title": "512 MLK Jr Dr Duplex", "address": "512 Martin Luther King Jr Dr NW, Atlanta, GA 30314", "purchasePrice": 210000, "renovationBudget": 46000, "arv": 340000, "currentPhase": "Disposition", "assetType": "Duplex" },
+      { "title": "1802 Bankhead Hwy Refi", "address": "1802 Bankhead Hwy NW, Atlanta, GA 30318", "purchasePrice": 135000, "renovationBudget": 30000, "arv": 215000, "currentPhase": "Acquisition", "assetType": "Single Family" },
+      { "title": "740 Cascade Ave BRRRR", "address": "740 Cascade Ave SW, Atlanta, GA 30310", "purchasePrice": 175000, "renovationBudget": 38000, "arv": 280000, "currentPhase": "Rehab", "assetType": "Single Family" },
+      { "title": "1104 Donald Lee Hollowell", "address": "1104 Donald Lee Hollowell Pkwy, Atlanta, GA 30318", "purchasePrice": 155000, "renovationBudget": 34000, "arv": 250000, "currentPhase": "Disposition", "assetType": "Single Family" }
+    ]
+  },
+  {
+    "id": "P-17",
+    "name": "Kevin O'Rourke",
+    "email": "agent17.kevin.orourke@paperworking-test.dev",
+    "entity": "O'Rourke Renewal Homes LLC",
+    "category": "brrrr_investor",
+    "market": "Houston, TX",
+    "investorType": "Virtual Out-of-State BRRRR",
+    "bio": "Virtual BRRRR investor living in CA, buying 2-4 units in Houston. Relies heavily on boots-on-the-ground property inspection photos and remote lender portal integrations.",
+    "investmentCriteria": {
+      "targetReturn": "15.8% CoC Return",
+      "assetTypes": ["Single Family", "Duplex", "Fourplex"],
+      "minCheckSize": 45000,
+      "maxCheckSize": 280000,
+      "strategy": "Remote BRRRR Strategy"
+    },
+    "projects": [
+      { "title": "4102 Westheimer BRRRR", "address": "4102 Westheimer Rd, Houston, TX 77027", "purchasePrice": 260000, "renovationBudget": 48000, "arv": 410000, "currentPhase": "Rehab", "assetType": "Single Family" },
+      { "title": "1904 Navigation Duplex", "address": "1904 Navigation Blvd, Houston, TX 77011", "purchasePrice": 220000, "renovationBudget": 42000, "arv": 350000, "currentPhase": "Acquisition", "assetType": "Duplex" },
+      { "title": "3201 Telepsen Fourplex", "address": "3201 Telepsen St, Houston, TX 77023", "purchasePrice": 340000, "renovationBudget": 65000, "arv": 540000, "currentPhase": "Rehab", "assetType": "Fourplex" },
+      { "title": "810 Wayside Dr BRRRR", "address": "810 S Wayside Dr, Houston, TX 77023", "purchasePrice": 185000, "renovationBudget": 36000, "arv": 290000, "currentPhase": "Disposition", "assetType": "Single Family" },
+      { "title": "5402 Bellfort Ave Refi", "address": "5402 Bellfort Ave, Houston, TX 77033", "purchasePrice": 160000, "renovationBudget": 32000, "arv": 255000, "currentPhase": "Underwriting", "assetType": "Single Family" },
+      { "title": "2801 Cullen Blvd Duplex", "address": "2801 Cullen Blvd, Houston, TX 77004", "purchasePrice": 240000, "renovationBudget": 44000, "arv": 375000, "currentPhase": "Rehab", "assetType": "Duplex" },
+      { "title": "6704 Homestead Rd BRRRR", "address": "6704 Homestead Rd, Houston, TX 77028", "purchasePrice": 145000, "renovationBudget": 30000, "arv": 230000, "currentPhase": "Disposition", "assetType": "Single Family" },
+      { "title": "1202 Scott St Refi", "address": "1202 Scott St, Houston, TX 77003", "purchasePrice": 280000, "renovationBudget": 50000, "arv": 430000, "currentPhase": "Acquisition", "assetType": "Single Family" },
+      { "title": "3904 Tidwell Rd Duplex", "address": "3904 Tidwell Rd, Houston, TX 77093", "purchasePrice": 175000, "renovationBudget": 34000, "arv": 275000, "currentPhase": "Rehab", "assetType": "Duplex" },
+      { "title": "2104 Yale St BRRRR", "address": "2104 Yale St, Houston, TX 77008", "purchasePrice": 390000, "renovationBudget": 60000, "arv": 590000, "currentPhase": "Disposition", "assetType": "Single Family" }
+    ]
+  },
+  {
+    "id": "P-18",
+    "name": "Lisa Tran",
+    "email": "agent18.lisa.tran@paperworking-test.dev",
+    "entity": "Tran Keystone Rentals LLC",
+    "category": "brrrr_investor",
+    "market": "Cleveland, OH",
+    "investorType": "C-Class Cashflow Specialist",
+    "bio": "Cleveland BRRRR investor targeting C-class cash flow properties. Focuses on low buy-in prices, high cap rates, and rapid tenant placement.",
+    "investmentCriteria": {
+      "targetReturn": "18.5% CoC Return",
+      "assetTypes": ["Single Family", "Duplex"],
+      "minCheckSize": 25000,
+      "maxCheckSize": 140000,
+      "strategy": "C-Class Cashflow BRRRR"
+    },
+    "projects": [
+      { "title": "6201 Detroit Ave BRRRR", "address": "6201 Detroit Ave, Cleveland, OH 44102", "purchasePrice": 85000, "renovationBudget": 28000, "arv": 165000, "currentPhase": "Rehab", "assetType": "Single Family" },
+      { "title": "3412 Lorain Ave Duplex", "address": "3412 Lorain Ave, Cleveland, OH 44113", "purchasePrice": 95000, "renovationBudget": 32000, "arv": 185000, "currentPhase": "Acquisition", "assetType": "Duplex" },
+      { "title": "1804 Clark Ave BRRRR", "address": "1804 Clark Ave, Cleveland, OH 44109", "purchasePrice": 52000, "renovationBudget": 22000, "arv": 110000, "currentPhase": "Rehab", "assetType": "Single Family" },
+      { "title": "4902 Fleet Ave Refi", "address": "4902 Fleet Ave, Cleveland, OH 44105", "purchasePrice": 48000, "renovationBudget": 20000, "arv": 102000, "currentPhase": "Disposition", "assetType": "Single Family" },
+      { "title": "11204 St Clair BRRRR", "address": "11204 St Clair Ave, Cleveland, OH 44108", "purchasePrice": 42000, "renovationBudget": 18000, "arv": 92000, "currentPhase": "Underwriting", "assetType": "Single Family" },
+      { "title": "7801 Harvard Ave Duplex", "address": "7801 Harvard Ave, Cleveland, OH 44105", "purchasePrice": 62000, "renovationBudget": 25000, "arv": 130000, "currentPhase": "Rehab", "assetType": "Duplex" },
+      { "title": "2410 Superior Ave Refi", "address": "2410 Superior Ave, Cleveland, OH 44114", "purchasePrice": 115000, "renovationBudget": 38000, "arv": 220000, "currentPhase": "Disposition", "assetType": "Duplex" },
+      { "title": "5204 Denison Ave BRRRR", "address": "5204 Denison Ave, Cleveland, OH 44102", "purchasePrice": 55000, "renovationBudget": 21000, "arv": 115000, "currentPhase": "Acquisition", "assetType": "Single Family" },
+      { "title": "8902 Euclid Ave Duplex", "address": "8902 Euclid Ave, Cleveland, OH 44106", "purchasePrice": 78000, "renovationBudget": 29000, "arv": 155000, "currentPhase": "Rehab", "assetType": "Duplex" },
+      { "title": "1402 E 105th St Refi", "address": "1402 E 105th St, Cleveland, OH 44106", "purchasePrice": 45000, "renovationBudget": 19000, "arv": 95000, "currentPhase": "Disposition", "assetType": "Single Family" }
+    ]
+  },
+  {
+    "id": "P-19",
+    "name": "Darnell Brooks",
+    "email": "agent19.darnell.brooks@paperworking-test.dev",
+    "entity": "Brooks Equity Loop LLC",
+    "category": "brrrr_investor",
+    "market": "Memphis, TN",
+    "investorType": "Submarket Cashflow Operator",
+    "bio": "Memphis Section 8 BRRRR operator with 18 doors. Focused on consistent voucher income, low property tax overhead, and high cash-on-cash yield.",
+    "investmentCriteria": {
+      "targetReturn": "19.0% CoC Return",
+      "assetTypes": ["Single Family", "Duplex"],
+      "minCheckSize": 20000,
+      "maxCheckSize": 120000,
+      "strategy": "Section 8 Cashflow BRRRR"
+    },
+    "projects": [
+      { "title": "1402 Beale St Section 8 BRRRR", "address": "1402 Beale St, Memphis, TN 38103", "purchasePrice": 65000, "renovationBudget": 24000, "arv": 135000, "currentPhase": "Rehab", "assetType": "Single Family" },
+      { "title": "2801 Union Ave Duplex", "address": "2801 Union Ave, Memphis, TN 38104", "purchasePrice": 85000, "renovationBudget": 28000, "arv": 170000, "currentPhase": "Acquisition", "assetType": "Duplex" },
+      { "title": "912 Poplar Ave BRRRR", "address": "912 Poplar Ave, Memphis, TN 38105", "purchasePrice": 58000, "renovationBudget": 22000, "arv": 120000, "currentPhase": "Rehab", "assetType": "Single Family" },
+      { "title": "3404 Jackson Ave Refi", "address": "3404 Jackson Ave, Memphis, TN 38112", "purchasePrice": 49000, "renovationBudget": 19000, "arv": 105000, "currentPhase": "Disposition", "assetType": "Single Family" },
+      { "title": "1802 Lamar Ave BRRRR", "address": "1802 Lamar Ave, Memphis, TN 38114", "purchasePrice": 52000, "renovationBudget": 20000, "arv": 110000, "currentPhase": "Underwriting", "assetType": "Single Family" },
+      { "title": "4102 Thomas St Duplex", "address": "4102 Thomas St, Memphis, TN 38127", "purchasePrice": 72000, "renovationBudget": 26000, "arv": 145000, "currentPhase": "Rehab", "assetType": "Duplex" },
+      { "title": "2201 Park Ave Refi", "address": "2201 Park Ave, Memphis, TN 38114", "purchasePrice": 55000, "renovationBudget": 21000, "arv": 115000, "currentPhase": "Disposition", "assetType": "Single Family" },
+      { "title": "1104 Chelsea Ave BRRRR", "address": "1104 Chelsea Ave, Memphis, TN 38107", "purchasePrice": 46000, "renovationBudget": 18000, "arv": 98000, "currentPhase": "Acquisition", "assetType": "Single Family" },
+      { "title": "3102 Airways Blvd Duplex", "address": "3102 Airways Blvd, Memphis, TN 38116", "purchasePrice": 78000, "renovationBudget": 27000, "arv": 155000, "currentPhase": "Rehab", "assetType": "Duplex" },
+      { "title": "804 Elvis Presley Blvd", "address": "804 Elvis Presley Blvd, Memphis, TN 38106", "purchasePrice": 50000, "renovationBudget": 19000, "arv": 108000, "currentPhase": "Disposition", "assetType": "Single Family" }
+    ]
+  },
+  {
+    "id": "P-20",
+    "name": "Harold Jenkins",
+    "email": "agent20.harold.jenkins@paperworking-test.dev",
+    "entity": "Jenkins Heritage Properties LLC",
+    "category": "residential_landlord",
+    "market": "Atlanta, GA",
+    "investorType": "Conservative Rent Roll Manager",
+    "bio": "Atlanta landlord with 32 single family rental doors. Focuses on low tenant turnover, preventative maintenance tracking, and long-term appreciation.",
+    "investmentCriteria": {
+      "targetReturn": "10.5% Net Cap Rate",
+      "assetTypes": ["Single Family", "Duplex"],
+      "minCheckSize": 80000,
+      "maxCheckSize": 450000,
+      "strategy": "Long-Term Rental Portfolio"
+    },
+    "projects": [
+      { "title": "1204 Moreland Ave Duplex", "address": "1204 Moreland Ave SE, Atlanta, GA 30316", "purchasePrice": 290000, "renovationBudget": 15000, "arv": 360000, "currentPhase": "Disposition", "assetType": "Duplex" },
+      { "title": "512 DeKalb Ave Rental", "address": "512 DeKalb Ave NE, Atlanta, GA 30307", "purchasePrice": 340000, "renovationBudget": 12000, "arv": 410000, "currentPhase": "Acquisition", "assetType": "Single Family" },
+      { "title": "1604 Memorial Dr Turnkey", "address": "1604 Memorial Dr SE, Atlanta, GA 30317", "purchasePrice": 280000, "renovationBudget": 10000, "arv": 345000, "currentPhase": "Disposition", "assetType": "Single Family" },
+      { "title": "889 Cascade Ave Rental", "address": "889 Cascade Ave SW, Atlanta, GA 30311", "purchasePrice": 195000, "renovationBudget": 8000, "arv": 240000, "currentPhase": "Underwriting", "assetType": "Single Family" },
+      { "title": "310 Edgewood Ave Duplex", "address": "310 Edgewood Ave SE, Atlanta, GA 30312", "purchasePrice": 310000, "renovationBudget": 14000, "arv": 380000, "currentPhase": "Disposition", "assetType": "Duplex" },
+      { "title": "945 Glenwood Ave Rental", "address": "945 Glenwood Ave SE, Atlanta, GA 30316", "purchasePrice": 260000, "renovationBudget": 9000, "arv": 320000, "currentPhase": "Acquisition", "assetType": "Single Family" },
+      { "title": "1120 Ponce de Leon Ave", "address": "1120 Ponce de Leon Ave NE, Atlanta, GA 30306", "purchasePrice": 480000, "renovationBudget": 18000, "arv": 570000, "currentPhase": "Disposition", "assetType": "Single Family" },
+      { "title": "450 Ralph David Abernathy", "address": "450 Ralph David Abernathy Blvd, Atlanta, GA 30312", "purchasePrice": 210000, "renovationBudget": 9000, "arv": 265000, "currentPhase": "Underwriting", "assetType": "Single Family" },
+      { "title": "2201 Bankhead Hwy Rental", "address": "2201 Bankhead Hwy NW, Atlanta, GA 30318", "purchasePrice": 160000, "renovationBudget": 7000, "arv": 205000, "currentPhase": "Disposition", "assetType": "Single Family" },
+      { "title": "742 Peachtree St Single", "address": "742 Peachtree St NE, Atlanta, GA 30308", "purchasePrice": 360000, "renovationBudget": 12000, "arv": 440000, "currentPhase": "Acquisition", "assetType": "Single Family" }
+    ]
+  },
+  {
+    "id": "P-21",
+    "name": "Susan Park",
+    "email": "agent21.susan.park@paperworking-test.dev",
+    "entity": "Park Cornerstone Rentals LLC",
+    "category": "residential_landlord",
+    "market": "Cleveland, OH",
+    "investorType": "Buy & Hold Duplex Veteran",
+    "bio": "Cleveland duplex landlord with 14 units. Focuses on stable tenant leases, low maintenance cost per door, and consistent cash flow.",
+    "investmentCriteria": {
+      "targetReturn": "12.0% Net Cap Rate",
+      "assetTypes": ["Duplex", "Single Family"],
+      "minCheckSize": 30000,
+      "maxCheckSize": 180000,
+      "strategy": "Duplex Buy & Hold"
+    },
+    "projects": [
+      { "title": "7812 Lorain Ave Duplex", "address": "7812 Lorain Ave, Cleveland, OH 44102", "purchasePrice": 115000, "renovationBudget": 12000, "arv": 150000, "currentPhase": "Disposition", "assetType": "Duplex" },
+      { "title": "6201 Detroit Ave Duplex", "address": "6201 Detroit Ave, Cleveland, OH 44102", "purchasePrice": 130000, "renovationBudget": 14000, "arv": 170000, "currentPhase": "Acquisition", "assetType": "Duplex" },
+      { "title": "11405 St Clair Triplex", "address": "11405 St Clair Ave, Cleveland, OH 44108", "purchasePrice": 125000, "renovationBudget": 15000, "arv": 165000, "currentPhase": "Disposition", "assetType": "Duplex" },
+      { "title": "3104 E 147th St Rental", "address": "3104 E 147th St, Cleveland, OH 44120", "purchasePrice": 75000, "renovationBudget": 8000, "arv": 105000, "currentPhase": "Underwriting", "assetType": "Single Family" },
+      { "title": "2214 Superior Ave Duplex", "address": "2214 Superior Ave, Cleveland, OH 44114", "purchasePrice": 160000, "renovationBudget": 18000, "arv": 210000, "currentPhase": "Disposition", "assetType": "Duplex" },
+      { "title": "1904 Clark Ave Rental", "address": "1904 Clark Ave, Cleveland, OH 44109", "purchasePrice": 68000, "renovationBudget": 7000, "arv": 95000, "currentPhase": "Acquisition", "assetType": "Single Family" },
+      { "title": "3412 Fleet Ave Duplex", "address": "3412 Fleet Ave, Cleveland, OH 44105", "purchasePrice": 88000, "renovationBudget": 9000, "arv": 120000, "currentPhase": "Disposition", "assetType": "Duplex" },
+      { "title": "8902 Harvard Ave Rental", "address": "8902 Harvard Ave, Cleveland, OH 44105", "purchasePrice": 72000, "renovationBudget": 8000, "arv": 100000, "currentPhase": "Underwriting", "assetType": "Single Family" },
+      { "title": "4901 Denison Ave Duplex", "address": "4901 Denison Ave, Cleveland, OH 44102", "purchasePrice": 82000, "renovationBudget": 9000, "arv": 112000, "currentPhase": "Disposition", "assetType": "Duplex" },
+      { "title": "4120 Euclid Ave Rental", "address": "4120 Euclid Ave, Cleveland, OH 44103", "purchasePrice": 120000, "renovationBudget": 12000, "arv": 155000, "currentPhase": "Acquisition", "assetType": "Single Family" }
+    ]
+  },
+  {
+    "id": "P-22",
+    "name": "Miguel Santos",
+    "email": "agent22.miguel.santos@paperworking-test.dev",
+    "entity": "Santos Familia Properties LLC",
+    "category": "residential_landlord",
+    "market": "Minneapolis, MN",
+    "investorType": "Tech-Forward Landlord",
+    "bio": "Twin Cities landlord managing 22 small multifamily units. Uses automated rent collection, digital lease signing, and tenant maintenance portal tools.",
+    "investmentCriteria": {
+      "targetReturn": "9.8% Net Cap Rate",
+      "assetTypes": ["Small Multifamily", "Duplex"],
+      "minCheckSize": 100000,
+      "maxCheckSize": 600000,
+      "strategy": "Small Multifamily Buy & Hold"
+    },
+    "projects": [
+      { "title": "3401 Lake St Spec Rental", "address": "3401 E Lake St, Minneapolis, MN 55406", "purchasePrice": 420000, "renovationBudget": 20000, "arv": 520000, "currentPhase": "Disposition", "assetType": "Small Multifamily" },
+      { "title": "1804 Hennepin Ave Duplex", "address": "1804 Hennepin Ave, Minneapolis, MN 55403", "purchasePrice": 520000, "renovationBudget": 25000, "arv": 640000, "currentPhase": "Acquisition", "assetType": "Duplex" },
+      { "title": "2210 Nicollet Ave Rental", "address": "2210 Nicollet Ave, Minneapolis, MN 55404", "purchasePrice": 460000, "renovationBudget": 22000, "arv": 570000, "currentPhase": "Disposition", "assetType": "Small Multifamily" },
+      { "title": "912 Lyndale Ave Duplex", "address": "912 Lyndale Ave N, Minneapolis, MN 55411", "purchasePrice": 380000, "renovationBudget": 18000, "arv": 470000, "currentPhase": "Underwriting", "assetType": "Duplex" },
+      { "title": "4501 Chicago Ave Rental", "address": "4501 Chicago Ave, Minneapolis, MN 55407", "purchasePrice": 440000, "renovationBudget": 21000, "arv": 550000, "currentPhase": "Disposition", "assetType": "Small Multifamily" },
+      { "title": "2804 Bloomington Ave", "address": "2804 Bloomington Ave, Minneapolis, MN 55407", "purchasePrice": 390000, "renovationBudget": 19000, "arv": 490000, "currentPhase": "Acquisition", "assetType": "Small Multifamily" },
+      { "title": "5201 Penn Ave S Duplex", "address": "5201 Penn Ave S, Minneapolis, MN 55419", "purchasePrice": 580000, "renovationBudget": 28000, "arv": 710000, "currentPhase": "Disposition", "assetType": "Duplex" },
+      { "title": "1402 University Ave Duplex", "address": "1402 University Ave SE, Minneapolis, MN 55414", "purchasePrice": 540000, "renovationBudget": 26000, "arv": 660000, "currentPhase": "Underwriting", "assetType": "Duplex" },
+      { "title": "3804 Central Ave Rental", "address": "3804 Central Ave NE, Minneapolis, MN 55421", "purchasePrice": 410000, "renovationBudget": 20000, "arv": 510000, "currentPhase": "Disposition", "assetType": "Small Multifamily" },
+      { "title": "1104 E 38th St Rental", "address": "1104 E 38th St, Minneapolis, MN 55407", "purchasePrice": 370000, "renovationBudget": 17000, "arv": 460000, "currentPhase": "Acquisition", "assetType": "Small Multifamily" }
+    ]
+  },
+  {
+    "id": "P-23",
+    "name": "Grace Adeyemi",
+    "email": "agent23.grace.adeyemi@paperworking-test.dev",
+    "entity": "Adeyemi Holdings LLC",
+    "category": "residential_landlord",
+    "market": "Dallas, TX",
+    "investorType": "Multifamily Plaid Power User",
+    "bio": "Dallas 12-unit small multifamily landlord. Integrates Plaid banking for automated revenue/expense ledger and monthly P&L benchmarking.",
+    "plaidSandbox": true,
+    "investmentCriteria": {
+      "targetReturn": "10.8% Net Cap Rate",
+      "assetTypes": ["Small Multifamily"],
+      "minCheckSize": 150000,
+      "maxCheckSize": 900000,
+      "strategy": "Small Multifamily Plaid Integration"
+    },
+    "projects": [
+      { "title": "2401 Ross Ave 6-Unit", "address": "2401 Ross Ave, Dallas, TX 75201", "purchasePrice": 750000, "renovationBudget": 45000, "arv": 950000, "currentPhase": "Disposition", "assetType": "Small Multifamily" },
+      { "title": "1802 Greenville Ave 4-Unit", "address": "1802 Greenville Ave, Dallas, TX 75206", "purchasePrice": 620000, "renovationBudget": 35000, "arv": 780000, "currentPhase": "Acquisition", "assetType": "Small Multifamily" },
+      { "title": "3104 Oak Lawn 8-Unit", "address": "3104 Oak Lawn Ave, Dallas, TX 75219", "purchasePrice": 980000, "renovationBudget": 60000, "arv": 1250000, "currentPhase": "Disposition", "assetType": "Small Multifamily" },
+      { "title": "912 Henderson Ave 4-Unit", "address": "912 N Henderson Ave, Dallas, TX 75206", "purchasePrice": 590000, "renovationBudget": 32000, "arv": 740000, "currentPhase": "Underwriting", "assetType": "Small Multifamily" },
+      { "title": "4501 Gaston Ave 6-Unit", "address": "4501 Gaston Ave, Dallas, TX 75246", "purchasePrice": 710000, "renovationBudget": 40000, "arv": 890000, "currentPhase": "Disposition", "assetType": "Small Multifamily" },
+      { "title": "2804 Live Oak St 4-Unit", "address": "2804 Live Oak St, Dallas, TX 75204", "purchasePrice": 540000, "renovationBudget": 30000, "arv": 680000, "currentPhase": "Acquisition", "assetType": "Small Multifamily" },
+      { "title": "5201 Maple Ave 8-Unit", "address": "5201 Maple Ave, Dallas, TX 75235", "purchasePrice": 920000, "renovationBudget": 55000, "arv": 1180000, "currentPhase": "Disposition", "assetType": "Small Multifamily" },
+      { "title": "1402 Fitzhugh Ave 4-Unit", "address": "1402 N Fitzhugh Ave, Dallas, TX 75204", "purchasePrice": 580000, "renovationBudget": 310000, "arv": 730000, "currentPhase": "Underwriting", "assetType": "Small Multifamily" },
+      { "title": "3804 Knox St 6-Unit", "address": "3804 Knox St, Dallas, TX 75205", "purchasePrice": 880000, "renovationBudget": 48000, "arv": 1100000, "currentPhase": "Disposition", "assetType": "Small Multifamily" },
+      { "title": "1104 Lemmon Ave 4-Unit", "address": "1104 Lemmon Ave, Dallas, TX 75209", "purchasePrice": 610000, "renovationBudget": 34000, "arv": 770000, "currentPhase": "Acquisition", "assetType": "Small Multifamily" }
+    ]
+  },
+  {
+    "id": "P-24",
+    "name": "Frank Deluca",
+    "email": "agent24.frank.deluca@paperworking-test.dev",
+    "entity": "Deluca Door Count LLC",
+    "category": "residential_landlord",
+    "market": "Charlotte, NC",
+    "investorType": "Cost-Conscious Landlord",
+    "bio": "Charlotte landlord with 15 doors. Tested invalid coupon `CHEAPSKATE10` during billing checkout. Demands high cost efficiency and simple expense logging.",
+    "investmentCriteria": {
+      "targetReturn": "11.2% Net Cap Rate",
+      "assetTypes": ["Single Family", "Duplex"],
+      "minCheckSize": 50000,
+      "maxCheckSize": 300000,
+      "strategy": "Cost-Conscious Buy & Hold"
+    },
+    "projects": [
+      { "title": "2804 Sharon Rd Duplex", "address": "2804 Sharon Rd, Charlotte, NC 28211", "purchasePrice": 290000, "renovationBudget": 14000, "arv": 360000, "currentPhase": "Disposition", "assetType": "Duplex" },
+      { "title": "1402 South Blvd Single", "address": "1402 South Blvd, Charlotte, NC 28203", "purchasePrice": 340000, "renovationBudget": 16000, "arv": 420000, "currentPhase": "Acquisition", "assetType": "Single Family" },
+      { "title": "915 Central Ave Rental", "address": "915 Central Ave, Charlotte, NC 28204", "purchasePrice": 240000, "renovationBudget": 12000, "arv": 300000, "currentPhase": "Disposition", "assetType": "Single Family" },
+      { "title": "3401 The Plaza Duplex", "address": "3401 The Plaza, Charlotte, NC 28205", "purchasePrice": 210000, "renovationBudget": 10000, "arv": 265000, "currentPhase": "Underwriting", "assetType": "Duplex" },
+      { "title": "5104 Park Rd Rental", "address": "5104 Park Rd, Charlotte, NC 28209", "purchasePrice": 310000, "renovationBudget": 15000, "arv": 390000, "currentPhase": "Disposition", "assetType": "Single Family" },
+      { "title": "1802 Monroe Rd Single", "address": "1802 Monroe Rd, Charlotte, NC 28205", "purchasePrice": 230000, "renovationBudget": 11000, "arv": 290000, "currentPhase": "Acquisition", "assetType": "Single Family" },
+      { "title": "4201 Providence Rd Rental", "address": "4201 Providence Rd, Charlotte, NC 28211", "purchasePrice": 380000, "renovationBudget": 18000, "arv": 475000, "currentPhase": "Disposition", "assetType": "Single Family" },
+      { "title": "710 E Morehead St Duplex", "address": "710 E Morehead St, Charlotte, NC 28202", "purchasePrice": 420000, "renovationBudget": 20000, "arv": 520000, "currentPhase": "Underwriting", "assetType": "Duplex" },
+      { "title": "1204 Davidson St Rental", "address": "1204 N Davidson St, Charlotte, NC 28206", "purchasePrice": 260000, "renovationBudget": 13000, "arv": 330000, "currentPhase": "Disposition", "assetType": "Single Family" },
+      { "title": "3102 Wilkinson Blvd Single", "address": "3102 Wilkinson Blvd, Charlotte, NC 28208", "purchasePrice": 180000, "renovationBudget": 9000, "arv": 230000, "currentPhase": "Acquisition", "assetType": "Single Family" }
+    ]
+  },
+  {
+    "id": "P-25",
+    "name": "Brittany Cole",
+    "email": "agent25.brittany.cole@paperworking-test.dev",
+    "entity": "Cole Coast Stays LLC",
+    "category": "str_operator",
+    "market": "Phoenix, AZ",
+    "investorType": "Luxury STR Operator",
+    "bio": "Scottsdale STR operator managing 6 luxury vacation rentals. Tracks RevPAR, ADR, and occupancy metrics alongside local lodging tax compliance.",
+    "investmentCriteria": {
+      "targetReturn": "24% Gross Yield / RevPAR $215",
+      "assetTypes": ["Single Family", "Luxury Villa"],
+      "minCheckSize": 150000,
+      "maxCheckSize": 950000,
+      "strategy": "Luxury Short-Term Vacation Rental"
+    },
+    "projects": [
+      { "title": "510 Camelback STR Villa", "address": "510 Camelback Rd, Phoenix, AZ 85013", "purchasePrice": 620000, "renovationBudget": 85000, "arv": 890000, "currentPhase": "Disposition", "assetType": "Luxury Villa" },
+      { "title": "1802 E Bethany STR House", "address": "1802 E Bethany Home Rd, Phoenix, AZ 85016", "purchasePrice": 710000, "renovationBudget": 95000, "arv": 1020000, "currentPhase": "Acquisition", "assetType": "Single Family" },
+      { "title": "4210 N 16th St STR", "address": "4210 N 16th St, Phoenix, AZ 85016", "purchasePrice": 580000, "renovationBudget": 75000, "arv": 820000, "currentPhase": "Disposition", "assetType": "Single Family" },
+      { "title": "7401 S 24th St STR House", "address": "7401 S 24th St, Phoenix, AZ 85042", "purchasePrice": 490000, "renovationBudget": 65000, "arv": 690000, "currentPhase": "Underwriting", "assetType": "Single Family" },
+      { "title": "2910 W Northern Villa", "address": "2910 W Northern Ave, Phoenix, AZ 85051", "purchasePrice": 440000, "renovationBudget": 60000, "arv": 620000, "currentPhase": "Disposition", "assetType": "Luxury Villa" },
+      { "title": "8402 N 35th Ave STR", "address": "8402 N 35th Ave, Phoenix, AZ 85051", "purchasePrice": 410000, "renovationBudget": 55000, "arv": 580000, "currentPhase": "Acquisition", "assetType": "Single Family" },
+      { "title": "1540 E Glendale Villa", "address": "1540 E Glendale Ave, Phoenix, AZ 85020", "purchasePrice": 680000, "renovationBudget": 90000, "arv": 960000, "currentPhase": "Disposition", "assetType": "Luxury Villa" },
+      { "title": "6201 N 7th St Luxury STR", "address": "6201 N 7th St, Phoenix, AZ 85014", "purchasePrice": 790000, "renovationBudget": 105000, "arv": 1150000, "currentPhase": "Underwriting", "assetType": "Luxury Villa" },
+      { "title": "3810 E Thomas Rd STR", "address": "3810 E Thomas Rd, Phoenix, AZ 85018", "purchasePrice": 640000, "renovationBudget": 82000, "arv": 910000, "currentPhase": "Disposition", "assetType": "Single Family" },
+      { "title": "902 W Baseline Rd STR", "address": "902 W Baseline Rd, Phoenix, AZ 85041", "purchasePrice": 510000, "renovationBudget": 68000, "arv": 720000, "currentPhase": "Acquisition", "assetType": "Single Family" }
+    ]
+  },
+  {
+    "id": "P-26",
+    "name": "Diego Fuentes",
+    "email": "agent26.diego.fuentes@paperworking-test.dev",
+    "entity": "Fuentes Vista Retreats LLC",
+    "category": "str_operator",
+    "market": "Smoky Mtns, TN",
+    "investorType": "Mountain Cabin Host",
+    "bio": "Gatlinburg/Pigeon Forge cabin STR operator with 8 cabins. Focuses on seasonal occupancy swings, cleaning crew scheduling, and high ADR.",
+    "investmentCriteria": {
+      "targetReturn": "26% Gross Yield / RevPAR $240",
+      "assetTypes": ["Log Cabin", "Vacation Chalet"],
+      "minCheckSize": 120000,
+      "maxCheckSize": 750000,
+      "strategy": "Mountain Cabin Short-Term Rental"
+    },
+    "projects": [
+      { "title": "412 Ski Mountain Cabin", "address": "412 Ski Mountain Rd, Gatlinburg, TN 37738", "purchasePrice": 520000, "renovationBudget": 65000, "arv": 740000, "currentPhase": "Disposition", "assetType": "Log Cabin" },
+      { "title": "1804 Parkway Chalet", "address": "1804 Parkway, Pigeon Forge, TN 37863", "purchasePrice": 590000, "renovationBudget": 75000, "arv": 840000, "currentPhase": "Acquisition", "assetType": "Vacation Chalet" },
+      { "title": "912 Glades Rd Cabin", "address": "912 Glades Rd, Gatlinburg, TN 37738", "purchasePrice": 480000, "renovationBudget": 60000, "arv": 680000, "currentPhase": "Disposition", "assetType": "Log Cabin" },
+      { "title": "3104 Wears Valley Cabin", "address": "3104 Wears Valley Rd, Sevierville, TN 37862", "purchasePrice": 430000, "renovationBudget": 55000, "arv": 610000, "currentPhase": "Underwriting", "assetType": "Log Cabin" },
+      { "title": "1502 Birds Creek Chalet", "address": "1502 Birds Creek Rd, Sevierville, TN 37876", "purchasePrice": 510000, "renovationBudget": 62000, "arv": 720000, "currentPhase": "Disposition", "assetType": "Vacation Chalet" },
+      { "title": "804 Upper Middle Creek", "address": "804 Upper Middle Creek Rd, Sevierville, TN 37876", "purchasePrice": 460000, "renovationBudget": 58000, "arv": 650000, "currentPhase": "Acquisition", "assetType": "Log Cabin" },
+      { "title": "2201 Teaster Lane Cabin", "address": "2201 Teaster Ln, Pigeon Forge, TN 37863", "purchasePrice": 640000, "renovationBudget": 80000, "arv": 910000, "currentPhase": "Disposition", "assetType": "Log Cabin" },
+      { "title": "1104 Roaring Fork Chalet", "address": "1104 Roaring Fork Rd, Gatlinburg, TN 37738", "purchasePrice": 550000, "renovationBudget": 70000, "arv": 780000, "currentPhase": "Underwriting", "assetType": "Vacation Chalet" },
+      { "title": "3804 Veterans Blvd Cabin", "address": "3804 Veterans Blvd, Pigeon Forge, TN 37863", "purchasePrice": 580000, "renovationBudget": 72000, "arv": 820000, "currentPhase": "Disposition", "assetType": "Log Cabin" },
+      { "title": "710 East Pkwy Cabin", "address": "710 East Pkwy, Gatlinburg, TN 37738", "purchasePrice": 490000, "renovationBudget": 62000, "arv": 690000, "currentPhase": "Acquisition", "assetType": "Log Cabin" }
+    ]
+  },
+  {
+    "id": "P-27",
+    "name": "Naomi Ishida",
+    "email": "agent27.naomi.ishida@paperworking-test.dev",
+    "entity": "Ishida Luxe Escapes LLC",
+    "category": "str_operator",
+    "market": "Nashville, TN",
+    "investorType": "Urban STR Specialist",
+    "bio": "Nashville urban STR operator with 5 boutique condos. Requires strict permit compliance tracking, local lodging tax automation, and dynamic price sync.",
+    "investmentCriteria": {
+      "targetReturn": "22% Gross Yield / RevPAR $195",
+      "assetTypes": ["Urban Condo", "Boutique Apartment"],
+      "minCheckSize": 100000,
+      "maxCheckSize": 600000,
+      "strategy": "Urban Short-Term Hospitality"
+    },
+    "projects": [
+      { "title": "912 8th Ave STR Condo", "address": "912 8th Ave S, Nashville, TN 37203", "purchasePrice": 440000, "renovationBudget": 45000, "arv": 580000, "currentPhase": "Disposition", "assetType": "Urban Condo" },
+      { "title": "1804 Broadway Condo", "address": "1804 Broadway, Nashville, TN 37203", "purchasePrice": 490000, "renovationBudget": 50000, "arv": 650000, "currentPhase": "Acquisition", "assetType": "Urban Condo" },
+      { "title": "1402 Charlotte STR", "address": "1402 Charlotte Ave, Nashville, TN 37203", "purchasePrice": 390000, "renovationBudget": 40000, "arv": 510000, "currentPhase": "Disposition", "assetType": "Boutique Apartment" },
+      { "title": "2201 Gallatin STR", "address": "2201 Gallatin Pike, Nashville, TN 37206", "purchasePrice": 360000, "renovationBudget": 38000, "arv": 470000, "currentPhase": "Underwriting", "assetType": "Urban Condo" },
+      { "title": "504 Woodland STR Condo", "address": "504 Woodland St, Nashville, TN 37206", "purchasePrice": 460000, "renovationBudget": 48000, "arv": 610000, "currentPhase": "Disposition", "assetType": "Urban Condo" },
+      { "title": "1102 Holly St STR", "address": "1102 Holly St, Nashville, TN 37206", "purchasePrice": 420000, "renovationBudget": 42000, "arv": 550000, "currentPhase": "Boutique Apartment" },
+      { "title": "715 Shelby Ave Condo", "address": "715 Shelby Ave, Nashville, TN 37206", "purchasePrice": 410000, "renovationBudget": 40000, "arv": 530000, "currentPhase": "Disposition", "assetType": "Urban Condo" },
+      { "title": "1902 Blair Blvd STR", "address": "1902 Blair Blvd, Nashville, TN 37212", "purchasePrice": 560000, "renovationBudget": 58000, "arv": 740000, "currentPhase": "Underwriting", "assetType": "Boutique Apartment" },
+      { "title": "804 Monroe St STR Condo", "address": "804 Monroe St, Nashville, TN 37208", "purchasePrice": 470000, "renovationBudget": 46000, "arv": 620000, "currentPhase": "Disposition", "assetType": "Urban Condo" },
+      { "title": "1305 Buchanan St STR", "address": "1305 Buchanan St, Nashville, TN 37208", "purchasePrice": 340000, "renovationBudget": 35000, "arv": 440000, "currentPhase": "Acquisition", "assetType": "Urban Condo" }
+    ]
+  },
+  {
+    "id": "P-28",
+    "name": "Tyler Bruin",
+    "email": "agent28.tyler.bruin@paperworking-test.dev",
+    "entity": "Bruin Peak Lodging LLC",
+    "category": "str_operator",
+    "market": "Denver, CO",
+    "investorType": "Seasonal STR Operator",
+    "bio": "Breckenridge/Denver mountain STR operator. Focuses on seasonal rate optimization, high winter/summer gross revenue, and strict local HOA STR guidelines.",
+    "investmentCriteria": {
+      "targetReturn": "23% Gross Yield / RevPAR $210",
+      "assetTypes": ["Mountain Home", "Condo"],
+      "minCheckSize": 140000,
+      "maxCheckSize": 850000,
+      "strategy": "Seasonal Mountain Short-Term Rental"
+    },
+    "projects": [
+      { "title": "2810 Speer Blvd STR", "address": "2810 Speer Blvd, Denver, CO 80211", "purchasePrice": 540000, "renovationBudget": 60000, "arv": 710000, "currentPhase": "Disposition", "assetType": "Condo" },
+      { "title": "1402 Colfax Mountain STR", "address": "1402 E Colfax Ave, Denver, CO 80218", "purchasePrice": 490000, "renovationBudget": 55000, "arv": 640000, "currentPhase": "Acquisition", "assetType": "Mountain Home" },
+      { "title": "915 Federal STR Condo", "address": "915 Federal Blvd, Denver, CO 80204", "purchasePrice": 420000, "renovationBudget": 48000, "arv": 550000, "currentPhase": "Disposition", "assetType": "Condo" },
+      { "title": "4501 Colorado Blvd STR", "address": "4501 Colorado Blvd, Denver, CO 80216", "purchasePrice": 390000, "renovationBudget": 45000, "arv": 510000, "currentPhase": "Underwriting", "assetType": "Mountain Home" },
+      { "title": "1204 Alameda STR", "address": "1204 W Alameda Ave, Denver, CO 80223", "purchasePrice": 460000, "renovationBudget": 52000, "arv": 600000, "currentPhase": "Disposition", "assetType": "Mountain Home" },
+      { "title": "3102 Sheridan STR Condo", "address": "3102 Sheridan Blvd, Denver, CO 80212", "purchasePrice": 480000, "renovationBudget": 54000, "arv": 620000, "currentPhase": "Acquisition", "assetType": "Condo" },
+      { "title": "802 Santa Fe STR", "address": "802 Santa Fe Dr, Denver, CO 80204", "purchasePrice": 470000, "renovationBudget": 52000, "arv": 610000, "currentPhase": "Disposition", "assetType": "Condo" },
+      { "title": "2201 Broadway Mountain STR", "address": "2201 Broadway, Denver, CO 80205", "purchasePrice": 580000, "renovationBudget": 65000, "arv": 760000, "currentPhase": "Underwriting", "assetType": "Mountain Home" },
+      { "title": "5104 MLK Blvd STR", "address": "5104 Martin Luther King Jr Blvd, Denver, CO 80207", "purchasePrice": 410000, "renovationBudget": 46000, "arv": 530000, "currentPhase": "Disposition", "assetType": "Mountain Home" },
+      { "title": "1702 Washington STR", "address": "1702 Washington St, Denver, CO 80203", "purchasePrice": 520000, "renovationBudget": 58000, "arv": 680000, "currentPhase": "Acquisition", "assetType": "Condo" }
+    ]
+  },
+  {
+    "id": "P-29",
+    "name": "Richard Calloway",
+    "email": "agent29.richard.calloway@paperworking-test.dev",
+    "entity": "Calloway Commercial Group LLC",
+    "category": "commercial_investor",
+    "market": "Chicago, IL",
+    "investorType": "NNN Commercial Specialist",
+    "bio": "Chicago commercial NNN retail strip center investor. Focuses on credit tenant leases, long-term NNN lease terms, and low vacancy risk.",
+    "investmentCriteria": {
+      "targetReturn": "7.5% Cap Rate / NNN",
+      "assetTypes": ["Retail Strip Center", "NNN Commercial"],
+      "minCheckSize": 300000,
+      "maxCheckSize": 2500000,
+      "strategy": "NNN Retail Strip Center Investment"
+    },
+    "projects": [
+      { "title": "Western Ave Retail Strip", "address": "2401 N Western Ave, Chicago, IL 60647", "purchasePrice": 1450000, "renovationBudget": 120000, "arv": 1950000, "currentPhase": "Disposition", "assetType": "Retail Strip Center" },
+      { "title": "Ashland Ave NNN Center", "address": "1802 S Ashland Ave, Chicago, IL 60608", "purchasePrice": 1200000, "renovationBudget": 95000, "arv": 1600000, "currentPhase": "Acquisition", "assetType": "NNN Commercial" },
+      { "title": "Kedzie Ave Commercial", "address": "3201 N Kedzie Ave, Chicago, IL 60618", "purchasePrice": 1650000, "renovationBudget": 140000, "arv": 2200000, "currentPhase": "Disposition", "assetType": "Retail Strip Center" },
+      { "title": "Milwaukee Ave Retail", "address": "2804 N Milwaukee Ave, Chicago, IL 60618", "purchasePrice": 1850000, "renovationBudget": 160000, "arv": 2450000, "currentPhase": "Underwriting", "assetType": "Retail Strip Center" },
+      { "title": "Pulaski Rd NNN Center", "address": "4102 S Pulaski Rd, Chicago, IL 60632", "purchasePrice": 1100000, "renovationBudget": 85000, "arv": 1480000, "currentPhase": "Disposition", "assetType": "NNN Commercial" },
+      { "title": "Cicero Ave Commercial", "address": "5201 S Cicero Ave, Chicago, IL 60638", "purchasePrice": 1350000, "renovationBudget": 110000, "arv": 1800000, "currentPhase": "Acquisition", "assetType": "Retail Strip Center" },
+      { "title": "Halsted St Retail Center", "address": "3104 S Halsted St, Chicago, IL 60608", "purchasePrice": 1550000, "renovationBudget": 130000, "arv": 2100000, "currentPhase": "Disposition", "assetType": "Retail Strip Center" },
+      { "title": "Clybourn Ave Commercial", "address": "1902 N Clybourn Ave, Chicago, IL 60614", "purchasePrice": 2200000, "renovationBudget": 180000, "arv": 2900000, "currentPhase": "Underwriting", "assetType": "NNN Commercial" },
+      { "title": "Grand Ave NNN Center", "address": "3804 W Grand Ave, Chicago, IL 60651", "purchasePrice": 980000, "renovationBudget": 75000, "arv": 1320000, "currentPhase": "Disposition", "assetType": "NNN Commercial" },
+      { "title": "Elston Ave Commercial", "address": "2601 N Elston Ave, Chicago, IL 60647", "purchasePrice": 1750000, "renovationBudget": 150000, "arv": 2350000, "currentPhase": "Acquisition", "assetType": "Retail Strip Center" }
+    ]
+  },
+  {
+    "id": "P-30",
+    "name": "Ingrid Sorensen",
+    "email": "agent30.ingrid.sorensen@paperworking-test.dev",
+    "entity": "Sorensen Income Properties LLC",
+    "category": "commercial_investor",
+    "market": "Seattle, WA",
+    "investorType": "Industrial Flex Landlord",
+    "bio": "Seattle industrial flex warehouse investor. Integrates Plaid banking to track monthly NNN tenant lease receipts, CAM reconciliations, and debt service ratios.",
+    "plaidSandbox": true,
+    "investmentCriteria": {
+      "targetReturn": "6.8% Cap Rate / Industrial NNN",
+      "assetTypes": ["Industrial Flex", "Warehouse"],
+      "minCheckSize": 400000,
+      "maxCheckSize": 3500000,
+      "strategy": "Industrial Flex Warehouse NNN"
+    },
+    "projects": [
+      { "title": "Aurora Ave Industrial Flex", "address": "14200 Aurora Ave N, Seattle, WA 98133", "purchasePrice": 2450000, "renovationBudget": 180000, "arv": 3250000, "currentPhase": "Disposition", "assetType": "Industrial Flex" },
+      { "title": "Airport Way Warehouse", "address": "3800 Airport Way S, Seattle, WA 98134", "purchasePrice": 3100000, "renovationBudget": 220000, "arv": 4100000, "currentPhase": "Acquisition", "assetType": "Warehouse" },
+      { "title": "1st Ave S Flex Building", "address": "5400 1st Ave S, Seattle, WA 98134", "purchasePrice": 2800000, "renovationBudget": 200000, "arv": 3750000, "currentPhase": "Disposition", "assetType": "Industrial Flex" },
+      { "title": "E Marginal Way Warehouse", "address": "6200 E Marginal Way S, Seattle, WA 98134", "purchasePrice": 3400000, "renovationBudget": 250000, "arv": 4500000, "currentPhase": "Underwriting", "assetType": "Warehouse" },
+      { "title": "Rainier Ave Industrial", "address": "4800 Rainier Ave S, Seattle, WA 98118", "purchasePrice": 2100000, "renovationBudget": 150000, "arv": 2850000, "currentPhase": "Disposition", "assetType": "Industrial Flex" },
+      { "title": "Ballard Flex Warehouse", "address": "1100 NW 52nd St, Seattle, WA 98107", "purchasePrice": 2950000, "renovationBudget": 210000, "arv": 3900000, "currentPhase": "Acquisition", "assetType": "Warehouse" },
+      { "title": "Interbay Industrial Center", "address": "2400 W Commodore Way, Seattle, WA 98199", "purchasePrice": 3250000, "renovationBudget": 240000, "arv": 4350000, "currentPhase": "Disposition", "assetType": "Industrial Flex" },
+      { "title": "SODO Flex Building", "address": "2200 4th Ave S, Seattle, WA 98134", "purchasePrice": 2700000, "renovationBudget": 190000, "arv": 3600000, "currentPhase": "Underwriting", "assetType": "Industrial Flex" },
+      { "title": "Tukwila Industrial Park", "address": "12800 Interurban Ave S, Tukwila, WA 98168", "purchasePrice": 2300000, "renovationBudget": 160000, "arv": 3100000, "currentPhase": "Disposition", "assetType": "Warehouse" },
+      { "title": "Kent Valley Warehouse", "address": "20400 72nd Ave S, Kent, WA 98032", "purchasePrice": 3600000, "renovationBudget": 260000, "arv": 4800000, "currentPhase": "Acquisition", "assetType": "Warehouse" }
+    ]
+  },
+  {
+    "id": "P-31",
+    "name": "Andre Baptiste",
+    "email": "agent31.andre.baptiste@paperworking-test.dev",
+    "entity": "Baptiste Corridor Holdings LLC",
+    "category": "commercial_investor",
+    "market": "New Orleans, LA",
+    "investorType": "Historic Mixed-Use Operator",
+    "bio": "French Quarter mixed-use commercial landlord. Manages ground-floor retail/restaurant leases with upper-floor residential apartments.",
+    "investmentCriteria": {
+      "targetReturn": "8.8% Cap Rate / Mixed-Use",
+      "assetTypes": ["Mixed-Use Commercial", "Historic Building"],
+      "minCheckSize": 250000,
+      "maxCheckSize": 1800000,
+      "strategy": "Historic Mixed-Use Redevelopment"
+    },
+    "projects": [
+      { "title": "Canal St Mixed-Use Building", "address": "801 Canal St, New Orleans, LA 70112", "purchasePrice": 1250000, "renovationBudget": 180000, "arv": 1780000, "currentPhase": "Disposition", "assetType": "Mixed-Use Commercial" },
+      { "title": "Magazine St Commercial", "address": "3201 Magazine St, New Orleans, LA 70115", "purchasePrice": 1450000, "renovationBudget": 210000, "arv": 2050000, "currentPhase": "Acquisition", "assetType": "Mixed-Use Commercial" },
+      { "title": "Royal St Historic Building", "address": "612 Royal St, New Orleans, LA 70130", "purchasePrice": 1650000, "renovationBudget": 240000, "arv": 2350000, "currentPhase": "Disposition", "assetType": "Historic Building" },
+      { "title": "Decatur St Retail & Living", "address": "1104 Decatur St, New Orleans, LA 70116", "purchasePrice": 1100000, "renovationBudget": 150000, "arv": 1550000, "currentPhase": "Underwriting", "assetType": "Mixed-Use Commercial" },
+      { "title": "St Charles Ave Commercial", "address": "2401 St Charles Ave, New Orleans, LA 70130", "purchasePrice": 1850000, "renovationBudget": 260000, "arv": 2600000, "currentPhase": "Disposition", "assetType": "Mixed-Use Commercial" },
+      { "title": "Tchoupitoulas Mixed-Use", "address": "1402 Tchoupitoulas St, New Orleans, LA 70130", "purchasePrice": 1350000, "renovationBudget": 190000, "arv": 1920000, "currentPhase": "Acquisition", "assetType": "Mixed-Use Commercial" },
+      { "title": "Frenchmen St Commercial", "address": "512 Frenchmen St, New Orleans, LA 70116", "purchasePrice": 1550000, "renovationBudget": 220000, "arv": 2200000, "currentPhase": "Disposition", "assetType": "Historic Building" },
+      { "title": "Carondelet St Building", "address": "902 Carondelet St, New Orleans, LA 70130", "purchasePrice": 1180000, "renovationBudget": 160000, "arv": 1680000, "currentPhase": "Underwriting", "assetType": "Mixed-Use Commercial" },
+      { "title": "Prytania St Historic", "address": "3801 Prytania St, New Orleans, LA 70115", "purchasePrice": 1280000, "renovationBudget": 175000, "arv": 1820000, "currentPhase": "Disposition", "assetType": "Historic Building" },
+      { "title": "Baronne St Commercial", "address": "710 Baronne St, New Orleans, LA 70113", "purchasePrice": 1050000, "renovationBudget": 140000, "arv": 1490000, "currentPhase": "Acquisition", "assetType": "Mixed-Use Commercial" }
+    ]
+  },
+  {
+    "id": "P-32",
+    "name": "Evelyn Marsh",
+    "email": "agent32.evelyn.marsh@paperworking-test.dev",
+    "entity": "Marsh Multifamily Partners LLC",
+    "category": "syndicator_gp",
+    "market": "Chicago, IL",
+    "investorType": "Polished Multifamily Syndicator",
+    "bio": "Chicago 300-unit multifamily deal lead, 12 years in. Polished, process-driven, and investor-relations obsessed. Manages LP deal rooms, subscription agreements, and quarterly investor reporting.",
+    "investmentCriteria": {
+      "targetReturn": "18.5% IRR / 2.0x EM",
+      "assetTypes": ["Multifamily 50+ Units"],
+      "minCheckSize": 50000,
+      "maxCheckSize": 500000,
+      "strategy": "Polished Multifamily Syndication"
+    },
+    "projects": [
+      { "title": "Marsh Multifamily VII (80 Units)", "address": "4801 N Sheridan Rd, Chicago, IL 60640", "purchasePrice": 12500000, "renovationBudget": 1400000, "arv": 17800000, "currentPhase": "Rehab", "assetType": "Multifamily 50+ Units" },
+      { "title": "Lincoln Park 52-Unit Deal", "address": "2201 N Lincoln Ave, Chicago, IL 60614", "purchasePrice": 9800000, "renovationBudget": 1100000, "arv": 13900000, "currentPhase": "Acquisition", "assetType": "Multifamily 50+ Units" },
+      { "title": "Hyde Park 64-Unit Value-Add", "address": "5401 S Hyde Park Blvd, Chicago, IL 60615", "purchasePrice": 10500000, "renovationBudget": 1250000, "arv": 15200000, "currentPhase": "Rehab", "assetType": "Multifamily 50+ Units" },
+      { "title": "Logan Square 45-Unit Deal", "address": "2804 N Logan Blvd, Chicago, IL 60647", "purchasePrice": 8200000, "renovationBudget": 950000, "arv": 11600000, "currentPhase": "Disposition", "assetType": "Multifamily 50+ Units" },
+      { "title": "Edgewater 70-Unit Asset", "address": "6101 N Winthrop Ave, Chicago, IL 60660", "purchasePrice": 11200000, "renovationBudget": 1300000, "arv": 16100000, "currentPhase": "Underwriting", "assetType": "Multifamily 50+ Units" },
+      { "title": "Lakeview 58-Unit Syndication", "address": "3401 N Broadway, Chicago, IL 60657", "purchasePrice": 9900000, "renovationBudget": 1150000, "arv": 14200000, "currentPhase": "Rehab", "assetType": "Multifamily 50+ Units" },
+      { "title": "Uptown 85-Unit Multifamily", "address": "4501 N Clarendon Ave, Chicago, IL 60640", "purchasePrice": 13800000, "renovationBudget": 1600000, "arv": 19500000, "currentPhase": "Disposition", "assetType": "Multifamily 50+ Units" },
+      { "title": "Rogers Park 50-Unit Deal", "address": "1402 W Morse Ave, Chicago, IL 60626", "purchasePrice": 7500000, "renovationBudget": 880000, "arv": 10800000, "currentPhase": "Acquisition", "assetType": "Multifamily 50+ Units" },
+      { "title": "Albany Park 60-Unit Asset", "address": "3804 W Lawrence Ave, Chicago, IL 60625", "purchasePrice": 9100000, "renovationBudget": 1050000, "arv": 13100000, "currentPhase": "Rehab", "assetType": "Multifamily 50+ Units" },
+      { "title": "Pilsen 42-Unit Value-Add", "address": "1802 S Blue Island Ave, Chicago, IL 60608", "purchasePrice": 7900000, "renovationBudget": 920000, "arv": 11300000, "currentPhase": "Disposition", "assetType": "Multifamily 50+ Units" }
+    ]
+  },
+  {
+    "id": "P-33",
+    "name": "Raj Mehta",
+    "email": "agent33.raj.mehta@paperworking-test.dev",
+    "entity": "Mehta Value-Add Capital LLC",
+    "category": "syndicator_gp",
+    "market": "Dallas, TX",
+    "investorType": "Quantitative Value-Add GP",
+    "bio": "DFW 450-unit value-add GP lead. Runs Monte Carlo IRR sensitivity models and Plaid distribution tracking.",
+    "plaidSandbox": true,
+    "investmentCriteria": {
+      "targetReturn": "19.2% IRR / 2.1x EM",
+      "assetTypes": ["Multifamily 100+ Units"],
+      "minCheckSize": 75000,
+      "maxCheckSize": 750000,
+      "strategy": "Value-Add Multifamily Syndication"
+    },
+    "projects": [
+      { "title": "Mehta Value-Add IV (110 Units)", "address": "1204 N LBJ Fwy, Dallas, TX 75234", "purchasePrice": 16500000, "renovationBudget": 1800000, "arv": 23500000, "currentPhase": "Rehab", "assetType": "Multifamily 100+ Units" },
+      { "title": "DFW Oaks 95-Unit Deal", "address": "3104 E Park Row Dr, Arlington, TX 76010", "purchasePrice": 13800000, "renovationBudget": 1500000, "arv": 19800000, "currentPhase": "Acquisition", "assetType": "Multifamily 100+ Units" },
+      { "title": "Fort Worth Vista 125 Units", "address": "4501 E Lancaster Ave, Fort Worth, TX 76103", "purchasePrice": 18200000, "renovationBudget": 2000000, "arv": 25800000, "currentPhase": "Rehab", "assetType": "Multifamily 100+ Units" },
+      { "title": "Plano Springs 88-Unit Asset", "address": "2804 W Plan Pkwy, Plano, TX 75075", "purchasePrice": 14200000, "renovationBudget": 1600000, "arv": 20200000, "currentPhase": "Disposition", "assetType": "Multifamily 100+ Units" },
+      { "title": "Irving Pointe 105-Unit Deal", "address": "1802 W Irving Blvd, Irving, TX 75061", "purchasePrice": 15600000, "renovationBudget": 1750000, "arv": 22400000, "currentPhase": "Underwriting", "assetType": "Multifamily 100+ Units" },
+      { "title": "Garland Ridge 90-Unit Value-Add", "address": "3804 N Garland Ave, Garland, TX 75040", "purchasePrice": 13100000, "renovationBudget": 1450000, "arv": 18900000, "currentPhase": "Rehab", "assetType": "Multifamily 100+ Units" },
+      { "title": "Denton Crossing 120 Units", "address": "1402 S Loop 288, Denton, TX 76205", "purchasePrice": 17400000, "renovationBudget": 1900000, "arv": 24800000, "currentPhase": "Disposition", "assetType": "Multifamily 100+ Units" },
+      { "title": "Richardson Heights 80 Units", "address": "912 E Campbell Rd, Richardson, TX 75081", "purchasePrice": 12800000, "renovationBudget": 1400000, "arv": 18200000, "currentPhase": "Acquisition", "assetType": "Multifamily 100+ Units" },
+      { "title": "Mesquite Arms 100 Units", "address": "2201 Military Pkwy, Mesquite, TX 75149", "purchasePrice": 14900000, "renovationBudget": 1650000, "arv": 21300000, "currentPhase": "Rehab", "assetType": "Multifamily 100+ Units" },
+      { "title": "Carrollton Park 92 Units", "address": "1104 E Belt Line Rd, Carrollton, TX 75006", "purchasePrice": 13900000, "renovationBudget": 1550000, "arv": 19900000, "currentPhase": "Disposition", "assetType": "Multifamily 100+ Units" }
+    ]
+  },
+  {
+    "id": "P-34",
+    "name": "Carla Jimenez",
+    "email": "agent34.carla.jimenez@paperworking-test.dev",
+    "entity": "Jimenez Sunbelt Fund Group LLC",
+    "category": "syndicator_gp",
+    "market": "Miami, FL",
+    "investorType": "Crowdfunded Syndicator",
+    "bio": "Miami Sunbelt syndicator raising LP capital online. Focuses on Florida and Southeast value-add multifamily assets.",
+    "investmentCriteria": {
+      "targetReturn": "17.8% IRR / 1.9x EM",
+      "assetTypes": ["Multifamily 40+ Units"],
+      "minCheckSize": 25000,
+      "maxCheckSize": 300000,
+      "strategy": "Crowdfunded Value-Add Syndication"
+    },
+    "projects": [
+      { "title": "Sunbelt Fund I (60 Units)", "address": "1402 NW 36th St, Miami, FL 33142", "purchasePrice": 9500000, "renovationBudget": 1100000, "arv": 13600000, "currentPhase": "Rehab", "assetType": "Multifamily 40+ Units" },
+      { "title": "Brickell Edge 45-Unit Deal", "address": "1204 SW 1st Ave, Miami, FL 33130", "purchasePrice": 8800000, "renovationBudget": 980000, "arv": 12400000, "currentPhase": "Acquisition", "assetType": "Multifamily 40+ Units" },
+      { "title": "Wynwood Heights 50 Units", "address": "2401 NW 2nd Ave, Miami, FL 33127", "purchasePrice": 9900000, "renovationBudget": 1150000, "arv": 14100000, "currentPhase": "Rehab", "assetType": "Multifamily 40+ Units" },
+      { "title": "Little Havana 38 Units", "address": "1802 SW 8th St, Miami, FL 33135", "purchasePrice": 6900000, "renovationBudget": 820000, "arv": 9800000, "currentPhase": "Disposition", "assetType": "Multifamily 40+ Units" },
+      { "title": "Edgewater Palms 55 Units", "address": "3104 NE 2nd Ave, Miami, FL 33137", "purchasePrice": 10500000, "renovationBudget": 1200000, "arv": 14900000, "currentPhase": "Underwriting", "assetType": "Multifamily 40+ Units" },
+      { "title": "Coral Gables Manor 42 Units", "address": "4102 Ponce de Leon Blvd, Coral Gables, FL 33146", "purchasePrice": 8400000, "renovationBudget": 950000, "arv": 11900000, "currentPhase": "Rehab", "assetType": "Multifamily 40+ Units" },
+      { "title": "Fort Lauderdale Bay 65 Units", "address": "1502 SE 17th St, Fort Lauderdale, FL 33316", "purchasePrice": 11800000, "renovationBudget": 1350000, "arv": 16800000, "currentPhase": "Disposition", "assetType": "Multifamily 40+ Units" },
+      { "title": "Tampa West 50-Unit Asset", "address": "2804 W Kennedy Blvd, Tampa, FL 33609", "purchasePrice": 8900000, "renovationBudget": 1000000, "arv": 12700000, "currentPhase": "Acquisition", "assetType": "Multifamily 40+ Units" },
+      { "title": "Orlando Lakes 60 Units", "address": "3804 S Orange Ave, Orlando, FL 32806", "purchasePrice": 9700000, "renovationBudget": 1100000, "arv": 13800000, "currentPhase": "Rehab", "assetType": "Multifamily 40+ Units" },
+      { "title": "Hialeah Gardens 48 Units", "address": "7104 W 12th Ave, Hialeah, FL 33014", "purchasePrice": 7800000, "renovationBudget": 900000, "arv": 11100000, "currentPhase": "Disposition", "assetType": "Multifamily 40+ Units" }
+    ]
+  },
+  {
+    "id": "P-35",
+    "name": "Dr Alan Weiss",
+    "email": "agent35.alan.weiss@paperworking-test.dev",
+    "entity": "Weiss Family Capital LLC",
+    "category": "passive_lp",
+    "market": "Boston, MA",
+    "investorType": "Analytical High-Net-Worth LP",
+    "bio": "Boston surgeon investing $100k-$250k tickets as LP across syndications. Tested abandoned checkout recovery during billing.",
+    "investmentCriteria": {
+      "targetReturn": "8% Preferred Return / 18% IRR",
+      "assetTypes": ["Passive LP Allocation"],
+      "minCheckSize": 50000,
+      "maxCheckSize": 250000,
+      "strategy": "Passive Syndication LP Investment"
+    },
+    "projects": [
+      { "title": "Marsh Multifamily VII LP", "address": "4801 N Sheridan Rd, Chicago, IL 60640", "purchasePrice": 100000, "renovationBudget": 0, "arv": 200000, "currentPhase": "Disposition", "assetType": "Passive LP Allocation" },
+      { "title": "Mehta Value-Add IV LP", "address": "1204 N LBJ Fwy, Dallas, TX 75234", "purchasePrice": 150000, "renovationBudget": 0, "arv": 315000, "currentPhase": "Disposition", "assetType": "Passive LP Allocation" },
+      { "title": "Sunbelt Fund I LP Ticket", "address": "1402 NW 36th St, Miami, FL 33142", "purchasePrice": 100000, "renovationBudget": 0, "arv": 190000, "currentPhase": "Disposition", "assetType": "Passive LP Allocation" },
+      { "title": "Crossbeam Fund II LP", "address": "280 Park Ave, New York, NY 10017", "purchasePrice": 150000, "renovationBudget": 0, "arv": 320000, "currentPhase": "Disposition", "assetType": "Passive LP Allocation" },
+      { "title": "Huang Pacific Fund I LP", "address": "1901 Ave of the Stars, Los Angeles, CA 90067", "purchasePrice": 200000, "renovationBudget": 0, "arv": 420000, "currentPhase": "Disposition", "assetType": "Passive LP Allocation" },
+      { "title": "Rothwell Direct LP Co-Invest", "address": "590 Madison Ave, New York, NY 10022", "purchasePrice": 125000, "renovationBudget": 0, "arv": 260000, "currentPhase": "Disposition", "assetType": "Passive LP Allocation" },
+      { "title": "Biscayne Bay Co-Invest LP", "address": "1111 Lincoln Rd, Miami, FL 33139", "purchasePrice": 100000, "renovationBudget": 0, "arv": 210000, "currentPhase": "Disposition", "assetType": "Passive LP Allocation" },
+      { "title": "Slade Pension Joint LP", "address": "10 S Wacker Dr, Chicago, IL 60606", "purchasePrice": 250000, "renovationBudget": 0, "arv": 525000, "currentPhase": "Disposition", "assetType": "Passive LP Allocation" },
+      { "title": "Liberty Dividend LP Ticket", "address": "1500 Market St, Philadelphia, PA 19102", "purchasePrice": 75000, "renovationBudget": 0, "arv": 150000, "currentPhase": "Disposition", "assetType": "Passive LP Allocation" },
+      { "title": "Sun Coast Fractional LP", "address": "600 B St, San Diego, CA 92101", "purchasePrice": 50000, "renovationBudget": 0, "arv": 105000, "currentPhase": "Disposition", "assetType": "Passive LP Allocation" }
+    ]
+  },
+  {
+    "id": "P-36",
+    "name": "Beth Kowalchuk",
+    "email": "agent36.beth.kowalchuk@paperworking-test.dev",
+    "entity": "Kowalchuk Investments LLC",
+    "category": "passive_lp",
+    "market": "New York, NY",
+    "investorType": "Sophisticated LP",
+    "bio": "NYC tech executive investing in 5 syndications. Demands transparent quarterly reporting, K-1 tax distribution tracking, and mobile portal updates.",
+    "investmentCriteria": {
+      "targetReturn": "8.5% Pref Return / 19% IRR",
+      "assetTypes": ["Passive LP Allocation"],
+      "minCheckSize": 50000,
+      "maxCheckSize": 200000,
+      "strategy": "Multi-Syndication Passive LP"
+    },
+    "projects": [
+      { "title": "Marsh Multifamily VII LP", "address": "4801 N Sheridan Rd, Chicago, IL 60640", "purchasePrice": 50000, "renovationBudget": 0, "arv": 100000, "currentPhase": "Disposition", "assetType": "Passive LP Allocation" },
+      { "title": "Sunbelt Fund I LP Ticket", "address": "1402 NW 36th St, Miami, FL 33142", "purchasePrice": 75000, "renovationBudget": 0, "arv": 145000, "currentPhase": "Disposition", "assetType": "Passive LP Allocation" },
+      { "title": "Mehta Value-Add IV LP", "address": "1204 N LBJ Fwy, Dallas, TX 75234", "purchasePrice": 100000, "renovationBudget": 0, "arv": 210000, "currentPhase": "Disposition", "assetType": "Passive LP Allocation" },
+      { "title": "Crossbeam Fund II LP", "address": "280 Park Ave, New York, NY 10017", "purchasePrice": 150000, "renovationBudget": 0, "arv": 315000, "currentPhase": "Disposition", "assetType": "Passive LP Allocation" },
+      { "title": "Huang Pacific Fund I LP", "address": "1901 Ave of the Stars, Los Angeles, CA 90067", "purchasePrice": 125000, "renovationBudget": 0, "arv": 260000, "currentPhase": "Disposition", "assetType": "Passive LP Allocation" },
+      { "title": "Rothwell Family Co-Invest LP", "address": "590 Madison Ave, New York, NY 10022", "purchasePrice": 80000, "renovationBudget": 0, "arv": 165000, "currentPhase": "Disposition", "assetType": "Passive LP Allocation" },
+      { "title": "Biscayne Bay Equity LP", "address": "1111 Lincoln Rd, Miami, FL 33139", "purchasePrice": 90000, "renovationBudget": 0, "arv": 185000, "currentPhase": "Disposition", "assetType": "Passive LP Allocation" },
+      { "title": "Slade Pension Co-Invest LP", "address": "10 S Wacker Dr, Chicago, IL 60606", "purchasePrice": 200000, "renovationBudget": 0, "arv": 420000, "currentPhase": "Disposition", "assetType": "Passive LP Allocation" },
+      { "title": "Liberty Income LP", "address": "1500 Market St, Philadelphia, PA 19102", "purchasePrice": 60000, "renovationBudget": 0, "arv": 120000, "currentPhase": "Disposition", "assetType": "Passive LP Allocation" },
+      { "title": "Peachtree Fractional LP", "address": "191 Peachtree St NE, Atlanta, GA 30303", "purchasePrice": 50000, "renovationBudget": 0, "arv": 105000, "currentPhase": "Disposition", "assetType": "Passive LP Allocation" }
+    ]
+  },
+  {
+    "id": "P-37",
+    "name": "Ken Tanaka",
+    "email": "agent37.ken.tanaka@paperworking-test.dev",
+    "entity": "Tanaka Growth Holdings LLC",
+    "category": "passive_lp",
+    "market": "San Francisco, CA",
+    "investorType": "Tech Founder LP",
+    "bio": "SF tech founder investing LP capital across 8 deals. Connects Plaid to track distribution direct deposits and real-time portfolio yield.",
+    "plaidSandbox": true,
+    "investmentCriteria": {
+      "targetReturn": "8.0% Pref Return / 20% IRR",
+      "assetTypes": ["Passive LP Allocation"],
+      "minCheckSize": 100000,
+      "maxCheckSize": 500000,
+      "strategy": "Tech-Forward Passive LP Allocation"
+    },
+    "projects": [
+      { "title": "Mehta Value-Add IV LP", "address": "1204 N LBJ Fwy, Dallas, TX 75234", "purchasePrice": 150000, "renovationBudget": 0, "arv": 315000, "currentPhase": "Disposition", "assetType": "Passive LP Allocation" },
+      { "title": "Huang Pacific Fund I LP", "address": "1901 Ave of the Stars, Los Angeles, CA 90067", "purchasePrice": 200000, "renovationBudget": 0, "arv": 420000, "currentPhase": "Disposition", "assetType": "Passive LP Allocation" },
+      { "title": "Marsh Multifamily VII LP", "address": "4801 N Sheridan Rd, Chicago, IL 60640", "purchasePrice": 125000, "renovationBudget": 0, "arv": 260000, "currentPhase": "Disposition", "assetType": "Passive LP Allocation" },
+      { "title": "Sunbelt Fund I LP Ticket", "address": "1402 NW 36th St, Miami, FL 33142", "purchasePrice": 100000, "renovationBudget": 0, "arv": 205000, "currentPhase": "Disposition", "assetType": "Passive LP Allocation" },
+      { "title": "Crossbeam Fund II LP", "address": "280 Park Ave, New York, NY 10017", "purchasePrice": 250000, "renovationBudget": 0, "arv": 525000, "currentPhase": "Disposition", "assetType": "Passive LP Allocation" },
+      { "title": "Rothwell Family Co-Invest", "address": "590 Madison Ave, New York, NY 10022", "purchasePrice": 175000, "renovationBudget": 0, "arv": 365000, "currentPhase": "Disposition", "assetType": "Passive LP Allocation" },
+      { "title": "Biscayne Bay Equity LP", "address": "1111 Lincoln Rd, Miami, FL 33139", "purchasePrice": 150000, "renovationBudget": 0, "arv": 310000, "currentPhase": "Disposition", "assetType": "Passive LP Allocation" },
+      { "title": "Slade Pension Co-Invest LP", "address": "10 S Wacker Dr, Chicago, IL 60606", "purchasePrice": 300000, "renovationBudget": 0, "arv": 630000, "currentPhase": "Disposition", "assetType": "Passive LP Allocation" },
+      { "title": "Liberty Income LP", "address": "1500 Market St, Philadelphia, PA 19102", "purchasePrice": 100000, "renovationBudget": 0, "arv": 200000, "currentPhase": "Disposition", "assetType": "Passive LP Allocation" },
+      { "title": "Sun Coast Fractional LP", "address": "600 B St, San Diego, CA 92101", "purchasePrice": 80000, "renovationBudget": 0, "arv": 165000, "currentPhase": "Disposition", "assetType": "Passive LP Allocation" }
+    ]
+  },
+  {
+    "id": "P-38",
+    "name": "Rosa Castillo",
+    "email": "agent38.rosa.castillo@paperworking-test.dev",
+    "entity": "Castillo Legacy Investments LLC",
+    "category": "passive_lp",
+    "market": "Washington, DC",
+    "investorType": "Impact LP Investor",
+    "bio": "DC policy attorney investing in affordable housing syndications. Measures social impact metrics alongside financial returns.",
+    "investmentCriteria": {
+      "targetReturn": "7.5% Pref Return + Impact Metrics",
+      "assetTypes": ["Passive LP Allocation"],
+      "minCheckSize": 40000,
+      "maxCheckSize": 200000,
+      "strategy": "Impact Passive LP Allocation"
+    },
+    "projects": [
+      { "title": "Sunbelt Fund I Impact LP", "address": "1402 NW 36th St, Miami, FL 33142", "purchasePrice": 150000, "renovationBudget": 0, "arv": 300000, "currentPhase": "Disposition", "assetType": "Passive LP Allocation" },
+      { "title": "Marsh Multifamily VII LP", "address": "4801 N Sheridan Rd, Chicago, IL 60640", "purchasePrice": 100000, "renovationBudget": 0, "arv": 205000, "currentPhase": "Disposition", "assetType": "Passive LP Allocation" },
+      { "title": "Mehta Value-Add IV LP", "address": "1204 N LBJ Fwy, Dallas, TX 75234", "purchasePrice": 125000, "renovationBudget": 0, "arv": 260000, "currentPhase": "Disposition", "assetType": "Passive LP Allocation" },
+      { "title": "Crossbeam Fund II LP", "address": "280 Park Ave, New York, NY 10017", "purchasePrice": 175000, "renovationBudget": 0, "arv": 365000, "currentPhase": "Disposition", "assetType": "Passive LP Allocation" },
+      { "title": "Huang Pacific Fund I LP", "address": "1901 Ave of the Stars, Los Angeles, CA 90067", "purchasePrice": 140000, "renovationBudget": 0, "arv": 290000, "currentPhase": "Disposition", "assetType": "Passive LP Allocation" },
+      { "title": "Rothwell Impact LP Ticket", "address": "590 Madison Ave, New York, NY 10022", "purchasePrice": 110000, "renovationBudget": 0, "arv": 225000, "currentPhase": "Disposition", "assetType": "Passive LP Allocation" },
+      { "title": "Biscayne Bay Impact LP", "address": "1111 Lincoln Rd, Miami, FL 33139", "purchasePrice": 95000, "renovationBudget": 0, "arv": 195000, "currentPhase": "Disposition", "assetType": "Passive LP Allocation" },
+      { "title": "Slade Pension Impact LP", "address": "10 S Wacker Dr, Chicago, IL 60606", "purchasePrice": 200000, "renovationBudget": 0, "arv": 420000, "currentPhase": "Disposition", "assetType": "Passive LP Allocation" },
+      { "title": "Liberty Dividend LP", "address": "1500 Market St, Philadelphia, PA 19102", "purchasePrice": 65000, "renovationBudget": 0, "arv": 130000, "currentPhase": "Disposition", "assetType": "Passive LP Allocation" },
+      { "title": "Peachtree Fractional LP", "address": "191 Peachtree St NE, Atlanta, GA 30303", "purchasePrice": 50000, "renovationBudget": 0, "arv": 105000, "currentPhase": "Disposition", "assetType": "Passive LP Allocation" }
+    ]
+  },
+  {
+    "id": "P-39",
+    "name": "Nathaniel Cross",
+    "email": "agent39.nathaniel.cross@paperworking-test.dev",
+    "entity": "Crossbeam Real Estate Partners LLC",
+    "category": "pe_fund",
+    "market": "New York, NY",
+    "investorType": "Institutional PE Fund Manager",
+    "bio": "NYC PE real estate fund manager ($150M AUM). Requires portfolio-wide debt service tracking, GP co-investment side letters, and institutional capital call management.",
+    "investmentCriteria": {
+      "targetReturn": "20% Net IRR / 2.2x EM",
+      "assetTypes": ["Institutional PE Fund"],
+      "minCheckSize": 1000000,
+      "maxCheckSize": 15000000,
+      "strategy": "Institutional PE Real Estate Fund"
+    },
+    "projects": [
+      { "title": "Crossbeam Fund II - Deal 1", "address": "280 Park Ave, New York, NY 10017", "purchasePrice": 25000000, "renovationBudget": 3500000, "arv": 38000000, "currentPhase": "Rehab", "assetType": "Institutional PE Fund" },
+      { "title": "Crossbeam Fund II - Deal 2", "address": "590 Madison Ave, New York, NY 10022", "purchasePrice": 32000000, "renovationBudget": 4200000, "arv": 49000000, "currentPhase": "Acquisition", "assetType": "Institutional PE Fund" },
+      { "title": "Crossbeam Fund II - Deal 3", "address": "1111 Lincoln Rd, Miami, FL 33139", "purchasePrice": 18500000, "renovationBudget": 2400000, "arv": 28000000, "currentPhase": "Rehab", "assetType": "Institutional PE Fund" },
+      { "title": "Crossbeam Fund II - Deal 4", "address": "10 S Wacker Dr, Chicago, IL 60606", "purchasePrice": 21000000, "renovationBudget": 2800000, "arv": 32000000, "currentPhase": "Disposition", "assetType": "Institutional PE Fund" },
+      { "title": "Crossbeam Fund II - Deal 5", "address": "1901 Ave of the Stars, Los Angeles, CA 90067", "purchasePrice": 29000000, "renovationBudget": 3900000, "arv": 44000000, "currentPhase": "Underwriting", "assetType": "Institutional PE Fund" },
+      { "title": "Crossbeam Fund II - Deal 6", "address": "600 B St, San Diego, CA 92101", "purchasePrice": 15500000, "renovationBudget": 2100000, "arv": 23500000, "currentPhase": "Rehab", "assetType": "Institutional PE Fund" },
+      { "title": "Crossbeam Fund II - Deal 7", "address": "1500 Market St, Philadelphia, PA 19102", "purchasePrice": 14000000, "renovationBudget": 1900000, "arv": 21000000, "currentPhase": "Disposition", "assetType": "Institutional PE Fund" },
+      { "title": "Crossbeam Fund II - Deal 8", "address": "191 Peachtree St NE, Atlanta, GA 30303", "purchasePrice": 19500000, "renovationBudget": 2600000, "arv": 29500000, "currentPhase": "Acquisition", "assetType": "Institutional PE Fund" },
+      { "title": "Crossbeam Fund II - Deal 9", "address": "1200 Smith St, Houston, TX 77002", "purchasePrice": 22500000, "renovationBudget": 3100000, "arv": 34000000, "currentPhase": "Rehab", "assetType": "Institutional PE Fund" },
+      { "title": "Crossbeam Fund II - Deal 10", "address": "1700 Lincoln St, Denver, CO 80203", "purchasePrice": 17800000, "renovationBudget": 2300000, "arv": 27000000, "currentPhase": "Disposition", "assetType": "Institutional PE Fund" }
+    ]
+  },
+  {
+    "id": "P-40",
+    "name": "Victoria Huang",
+    "email": "agent40.victoria.huang@paperworking-test.dev",
+    "entity": "Huang Pacific Realty Capital LLC",
+    "category": "pe_fund",
+    "market": "Los Angeles, CA",
+    "investorType": "Middle-Market PE Fund Lead",
+    "bio": "LA middle-market PE fund manager ($100M AUM). Focuses on West Coast value-add multifamily and commercial assets.",
+    "investmentCriteria": {
+      "targetReturn": "19.5% Net IRR / 2.1x EM",
+      "assetTypes": ["Middle-Market PE Fund"],
+      "minCheckSize": 750000,
+      "maxCheckSize": 10000000,
+      "strategy": "Middle-Market PE Real Estate Fund"
+    },
+    "projects": [
+      { "title": "Huang Pacific Fund I - Asset 1", "address": "1901 Ave of the Stars, Los Angeles, CA 90067", "purchasePrice": 18500000, "renovationBudget": 2400000, "arv": 28000000, "currentPhase": "Rehab", "assetType": "Middle-Market PE Fund" },
+      { "title": "Huang Pacific Fund I - Asset 2", "address": "600 B St, San Diego, CA 92101", "purchasePrice": 14200000, "renovationBudget": 1800000, "arv": 21500000, "currentPhase": "Acquisition", "assetType": "Middle-Market PE Fund" },
+      { "title": "Huang Pacific Fund I - Asset 3", "address": "100 Pine St, San Francisco, CA 94111", "purchasePrice": 22000000, "renovationBudget": 2900000, "arv": 33000000, "currentPhase": "Rehab", "assetType": "Middle-Market PE Fund" },
+      { "title": "Huang Pacific Fund I - Asset 4", "address": "14200 Aurora Ave N, Seattle, WA 98133", "purchasePrice": 16500000, "renovationBudget": 2100000, "arv": 24800000, "currentPhase": "Disposition", "assetType": "Middle-Market PE Fund" },
+      { "title": "Huang Pacific Fund I - Asset 5", "address": "1700 Lincoln St, Denver, CO 80203", "purchasePrice": 15800000, "renovationBudget": 2000000, "arv": 23800000, "currentPhase": "Underwriting", "assetType": "Middle-Market PE Fund" },
+      { "title": "Huang Pacific Fund I - Asset 6", "address": "2401 Ross Ave, Dallas, TX 75201", "purchasePrice": 13900000, "renovationBudget": 1750000, "arv": 20900000, "currentPhase": "Rehab", "assetType": "Middle-Market PE Fund" },
+      { "title": "Huang Pacific Fund I - Asset 7", "address": "1200 Smith St, Houston, TX 77002", "purchasePrice": 17200000, "renovationBudget": 2200000, "arv": 25900000, "currentPhase": "Disposition", "assetType": "Middle-Market PE Fund" },
+      { "title": "Huang Pacific Fund I - Asset 8", "address": "1802 S Congress Ave, Austin, TX 78704", "purchasePrice": 12500000, "renovationBudget": 1600000, "arv": 18800000, "currentPhase": "Acquisition", "assetType": "Middle-Market PE Fund" },
+      { "title": "Huang Pacific Fund I - Asset 9", "address": "510 Camelback Rd, Phoenix, AZ 85013", "purchasePrice": 11800000, "renovationBudget": 1500000, "arv": 17700000, "currentPhase": "Rehab", "assetType": "Middle-Market PE Fund" },
+      { "title": "Huang Pacific Fund I - Asset 10", "address": "10 S Wacker Dr, Chicago, IL 60606", "purchasePrice": 19800000, "renovationBudget": 2500000, "arv": 29800000, "currentPhase": "Disposition", "assetType": "Middle-Market PE Fund" }
+    ]
+  },
+  {
+    "id": "P-41",
+    "name": "Sebastian Rothwell",
+    "email": "agent41.sebastian.rothwell@paperworking-test.dev",
+    "entity": "Rothwell Family Trust Holdings LLC",
+    "category": "family_office",
+    "market": "New York, NY",
+    "investorType": "Generational Wealth Manager",
+    "bio": "NYC single family office CIO allocating $25M+ into real estate. Requires estate preservation metrics, intergenerational tax planning features, and custom LP side-letter terms.",
+    "investmentCriteria": {
+      "targetReturn": "15% Net IRR + Wealth Preservation",
+      "assetTypes": ["Family Office Equity"],
+      "minCheckSize": 500000,
+      "maxCheckSize": 5000000,
+      "strategy": "Generational Family Office Real Estate"
+    },
+    "projects": [
+      { "title": "Rothwell Real Estate Ticket 1", "address": "590 Madison Ave, New York, NY 10022", "purchasePrice": 5000000, "renovationBudget": 0, "arv": 10500000, "currentPhase": "Disposition", "assetType": "Family Office Equity" },
+      { "title": "Rothwell Real Estate Ticket 2", "address": "280 Park Ave, New York, NY 10017", "purchasePrice": 4000000, "renovationBudget": 0, "arv": 8400000, "currentPhase": "Disposition", "assetType": "Family Office Equity" },
+      { "title": "Rothwell Real Estate Ticket 3", "address": "1111 Lincoln Rd, Miami, FL 33139", "purchasePrice": 3500000, "renovationBudget": 0, "arv": 7350000, "currentPhase": "Disposition", "assetType": "Family Office Equity" },
+      { "title": "Rothwell Real Estate Ticket 4", "address": "10 S Wacker Dr, Chicago, IL 60606", "purchasePrice": 4500000, "renovationBudget": 0, "arv": 9450000, "currentPhase": "Disposition", "assetType": "Family Office Equity" },
+      { "title": "Rothwell Real Estate Ticket 5", "address": "1901 Ave of the Stars, Los Angeles, CA 90067", "purchasePrice": 6000000, "renovationBudget": 0, "arv": 12600000, "currentPhase": "Disposition", "assetType": "Family Office Equity" },
+      { "title": "Rothwell Real Estate Ticket 6", "address": "600 B St, San Diego, CA 92101", "purchasePrice": 2500000, "renovationBudget": 0, "arv": 5250000, "currentPhase": "Disposition", "assetType": "Family Office Equity" },
+      { "title": "Rothwell Real Estate Ticket 7", "address": "1500 Market St, Philadelphia, PA 19102", "purchasePrice": 2000000, "renovationBudget": 0, "arv": 4200000, "currentPhase": "Disposition", "assetType": "Family Office Equity" },
+      { "title": "Rothwell Real Estate Ticket 8", "address": "191 Peachtree St NE, Atlanta, GA 30303", "purchasePrice": 3000000, "renovationBudget": 0, "arv": 6300000, "currentPhase": "Disposition", "assetType": "Family Office Equity" },
+      { "title": "Rothwell Real Estate Ticket 9", "address": "1200 Smith St, Houston, TX 77002", "purchasePrice": 3800000, "renovationBudget": 0, "arv": 7980000, "currentPhase": "Disposition", "assetType": "Family Office Equity" },
+      { "title": "Rothwell Real Estate Ticket 10", "address": "1700 Lincoln St, Denver, CO 80203", "purchasePrice": 2800000, "renovationBudget": 0, "arv": 5880000, "currentPhase": "Disposition", "assetType": "Family Office Equity" }
+    ]
+  },
+  {
+    "id": "P-42",
+    "name": "Amara Osei",
+    "email": "agent42.amara.osei@paperworking-test.dev",
+    "entity": "Osei Generational Holdings LLC",
+    "category": "family_office",
+    "market": "Miami, FL",
+    "investorType": "Multi-Family Office Principal",
+    "bio": "Miami MFO principal managing generational real estate equity. Focuses on Florida and Sunbelt growth markets.",
+    "investmentCriteria": {
+      "targetReturn": "16% Net IRR",
+      "assetTypes": ["Family Office Equity"],
+      "minCheckSize": 400000,
+      "maxCheckSize": 4000000,
+      "strategy": "Sunbelt Multi-Family Office Equity"
+    },
+    "projects": [
+      { "title": "Biscayne Bay Allocation 1", "address": "1111 Lincoln Rd, Miami, FL 33139", "purchasePrice": 3200000, "renovationBudget": 0, "arv": 6720000, "currentPhase": "Disposition", "assetType": "Family Office Equity" },
+      { "title": "Biscayne Bay Allocation 2", "address": "1402 NW 36th St, Miami, FL 33142", "purchasePrice": 2500000, "renovationBudget": 0, "arv": 5250000, "currentPhase": "Disposition", "assetType": "Family Office Equity" },
+      { "title": "Biscayne Bay Allocation 3", "address": "280 Park Ave, New York, NY 10017", "purchasePrice": 4100000, "renovationBudget": 0, "arv": 8610000, "currentPhase": "Disposition", "assetType": "Family Office Equity" },
+      { "title": "Biscayne Bay Allocation 4", "address": "1901 Ave of the Stars, Los Angeles, CA 90067", "purchasePrice": 3800000, "renovationBudget": 0, "arv": 7980000, "currentPhase": "Disposition", "assetType": "Family Office Equity" },
+      { "title": "Biscayne Bay Allocation 5", "address": "10 S Wacker Dr, Chicago, IL 60606", "purchasePrice": 3000000, "renovationBudget": 0, "arv": 6300000, "currentPhase": "Disposition", "assetType": "Family Office Equity" },
+      { "title": "Biscayne Bay Allocation 6", "address": "1200 Smith St, Houston, TX 77002", "purchasePrice": 2800000, "renovationBudget": 0, "arv": 5880000, "currentPhase": "Disposition", "assetType": "Family Office Equity" },
+      { "title": "Biscayne Bay Allocation 7", "address": "2401 Ross Ave, Dallas, TX 75201", "purchasePrice": 3400000, "renovationBudget": 0, "arv": 7140000, "currentPhase": "Disposition", "assetType": "Family Office Equity" },
+      { "title": "Biscayne Bay Allocation 8", "address": "1802 S Congress Ave, Austin, TX 78704", "purchasePrice": 2900000, "renovationBudget": 0, "arv": 6090000, "currentPhase": "Disposition", "assetType": "Family Office Equity" },
+      { "title": "Biscayne Bay Allocation 9", "address": "191 Peachtree St NE, Atlanta, GA 30303", "purchasePrice": 2200000, "renovationBudget": 0, "arv": 4620000, "currentPhase": "Disposition", "assetType": "Family Office Equity" },
+      { "title": "Biscayne Bay Allocation 10", "address": "1700 Lincoln St, Denver, CO 80203", "purchasePrice": 2600000, "renovationBudget": 0, "arv": 5460000, "currentPhase": "Disposition", "assetType": "Family Office Equity" }
+    ]
+  },
+  {
+    "id": "P-43",
+    "name": "Meredith Slade",
+    "email": "agent43.meredith.slade@paperworking-test.dev",
+    "entity": "Slade Pension Realty Advisors LLC",
+    "category": "institutional_investor",
+    "market": "Chicago, IL",
+    "investorType": "Pension Fund Allocator",
+    "bio": "Chicago pension fund real estate director ($500M AUM allocation). Demands strict ESG compliance logs, ERISA fiduciary auditing features, and institutional-grade risk metrics.",
+    "investmentCriteria": {
+      "targetReturn": "12.5% Net Target Return",
+      "assetTypes": ["Institutional Equity"],
+      "minCheckSize": 5000000,
+      "maxCheckSize": 50000000,
+      "strategy": "Pension Fund Real Estate Allocation"
+    },
+    "projects": [
+      { "title": "Slade Pension Real Estate Ticket 1", "address": "10 S Wacker Dr, Chicago, IL 60606", "purchasePrice": 15000000, "renovationBudget": 0, "arv": 31500000, "currentPhase": "Disposition", "assetType": "Institutional Equity" },
+      { "title": "Slade Pension Real Estate Ticket 2", "address": "280 Park Ave, New York, NY 10017", "purchasePrice": 20000000, "renovationBudget": 0, "arv": 42000000, "currentPhase": "Disposition", "assetType": "Institutional Equity" },
+      { "title": "Slade Pension Real Estate Ticket 3", "address": "1901 Ave of the Stars, Los Angeles, CA 90067", "purchasePrice": 18000000, "renovationBudget": 0, "arv": 37800000, "currentPhase": "Disposition", "assetType": "Institutional Equity" },
+      { "title": "Slade Pension Real Estate Ticket 4", "address": "1111 Lincoln Rd, Miami, FL 33139", "purchasePrice": 12000000, "renovationBudget": 0, "arv": 25200000, "currentPhase": "Disposition", "assetType": "Institutional Equity" },
+      { "title": "Slade Pension Real Estate Ticket 5", "address": "1200 Smith St, Houston, TX 77002", "purchasePrice": 14000000, "renovationBudget": 0, "arv": 29400000, "currentPhase": "Disposition", "assetType": "Institutional Equity" },
+      { "title": "Slade Pension Real Estate Ticket 6", "address": "2401 Ross Ave, Dallas, TX 75201", "purchasePrice": 16000000, "renovationBudget": 0, "arv": 33600000, "currentPhase": "Disposition", "assetType": "Institutional Equity" },
+      { "title": "Slade Pension Real Estate Ticket 7", "address": "1802 S Congress Ave, Austin, TX 78704", "purchasePrice": 11000000, "renovationBudget": 0, "arv": 23100000, "currentPhase": "Disposition", "assetType": "Institutional Equity" },
+      { "title": "Slade Pension Real Estate Ticket 8", "address": "600 B St, San Diego, CA 92101", "purchasePrice": 13000000, "renovationBudget": 0, "arv": 27300000, "currentPhase": "Disposition", "assetType": "Institutional Equity" },
+      { "title": "Slade Pension Real Estate Ticket 9", "address": "191 Peachtree St NE, Atlanta, GA 30303", "purchasePrice": 10000000, "renovationBudget": 0, "arv": 21000000, "currentPhase": "Disposition", "assetType": "Institutional Equity" },
+      { "title": "Slade Pension Real Estate Ticket 10", "address": "1700 Lincoln St, Denver, CO 80203", "purchasePrice": 12500000, "renovationBudget": 0, "arv": 26250000, "currentPhase": "Disposition", "assetType": "Institutional Equity" }
+    ]
+  },
+  {
+    "id": "P-44",
+    "name": "Walter Gibbs",
+    "email": "agent44.walter.gibbs@paperworking-test.dev",
+    "entity": "Gibbs Dividend Ventures LLC",
+    "category": "reit_shareholder",
+    "market": "Philadelphia, PA",
+    "investorType": "Dividend Yield Analyst",
+    "bio": "Dividend income investor comparing REIT yield vs private deal returns. Requires dividend schedule tracking, REIT sector allocation graphs, and tax yield comparison tools.",
+    "investmentCriteria": {
+      "targetReturn": "6.5% Dividend Yield",
+      "assetTypes": ["REIT Shares", "Public Equity"],
+      "minCheckSize": 10000,
+      "maxCheckSize": 100000,
+      "strategy": "REIT Dividend Yield Comparison"
+    },
+    "projects": [
+      { "title": "Liberty Income REIT Holdings 1", "address": "1500 Market St, Philadelphia, PA 19102", "purchasePrice": 50000, "renovationBudget": 0, "arv": 65000, "currentPhase": "Disposition", "assetType": "REIT Shares" },
+      { "title": "Liberty Income REIT Holdings 2", "address": "280 Park Ave, New York, NY 10017", "purchasePrice": 40000, "renovationBudget": 0, "arv": 52000, "currentPhase": "Disposition", "assetType": "REIT Shares" },
+      { "title": "Liberty Income REIT Holdings 3", "address": "10 S Wacker Dr, Chicago, IL 60606", "purchasePrice": 35000, "renovationBudget": 0, "arv": 45500, "currentPhase": "Disposition", "assetType": "REIT Shares" },
+      { "title": "Liberty Income REIT Holdings 4", "address": "1111 Lincoln Rd, Miami, FL 33139", "purchasePrice": 45000, "renovationBudget": 0, "arv": 58500, "currentPhase": "Disposition", "assetType": "REIT Shares" },
+      { "title": "Liberty Income REIT Holdings 5", "address": "1901 Ave of the Stars, Los Angeles, CA 90067", "purchasePrice": 60000, "renovationBudget": 0, "arv": 78000, "currentPhase": "Disposition", "assetType": "REIT Shares" },
+      { "title": "Liberty Income REIT Holdings 6", "address": "600 B St, San Diego, CA 92101", "purchasePrice": 30000, "renovationBudget": 0, "arv": 39000, "currentPhase": "Disposition", "assetType": "REIT Shares" },
+      { "title": "Liberty Income REIT Holdings 7", "address": "191 Peachtree St NE, Atlanta, GA 30303", "purchasePrice": 25000, "renovationBudget": 0, "arv": 32500, "currentPhase": "Disposition", "assetType": "REIT Shares" },
+      { "title": "Liberty Income REIT Holdings 8", "address": "1200 Smith St, Houston, TX 77002", "purchasePrice": 40000, "renovationBudget": 0, "arv": 52000, "currentPhase": "Disposition", "assetType": "REIT Shares" },
+      { "title": "Liberty Income REIT Holdings 9", "address": "2401 Ross Ave, Dallas, TX 75201", "purchasePrice": 35000, "renovationBudget": 0, "arv": 45500, "currentPhase": "Disposition", "assetType": "REIT Shares" },
+      { "title": "Liberty Income REIT Holdings 10", "address": "1700 Lincoln St, Denver, CO 80203", "purchasePrice": 50000, "renovationBudget": 0, "arv": 65000, "currentPhase": "Disposition", "assetType": "REIT Shares" }
+    ]
+  },
+  {
+    "id": "P-45",
+    "name": "Olivia Brennan",
+    "email": "agent45.olivia.brennan@paperworking-test.dev",
+    "entity": "Brennan Micro-Invest LLC",
+    "category": "crowdfunding_investor",
+    "market": "San Diego, CA",
+    "investorType": "Online Crowdfund Investor",
+    "bio": "Accredited online crowdfund investor with 12 fractional allocations. Evaluates deal portal disclosures, platform fee transparency, and distribution frequency.",
+    "investmentCriteria": {
+      "targetReturn": "14% IRR / Fractional Equity",
+      "assetTypes": ["Fractional Equity"],
+      "minCheckSize": 5000,
+      "maxCheckSize": 50000,
+      "strategy": "Online Crowdfunded Fractional Equity"
+    },
+    "projects": [
+      { "title": "Sun Coast Fractional Ticket 1", "address": "600 B St, San Diego, CA 92101", "purchasePrice": 10000, "renovationBudget": 0, "arv": 18000, "currentPhase": "Disposition", "assetType": "Fractional Equity" },
+      { "title": "Sun Coast Fractional Ticket 2", "address": "1402 NW 36th St, Miami, FL 33142", "purchasePrice": 15000, "renovationBudget": 0, "arv": 27000, "currentPhase": "Disposition", "assetType": "Fractional Equity" },
+      { "title": "Sun Coast Fractional Ticket 3", "address": "1204 N LBJ Fwy, Dallas, TX 75234", "purchasePrice": 20000, "renovationBudget": 0, "arv": 36000, "currentPhase": "Disposition", "assetType": "Fractional Equity" },
+      { "title": "Sun Coast Fractional Ticket 4", "address": "4801 N Sheridan Rd, Chicago, IL 60640", "purchasePrice": 25000, "renovationBudget": 0, "arv": 45000, "currentPhase": "Disposition", "assetType": "Fractional Equity" },
+      { "title": "Sun Coast Fractional Ticket 5", "address": "1901 Ave of the Stars, Los Angeles, CA 90067", "purchasePrice": 30000, "renovationBudget": 0, "arv": 54000, "currentPhase": "Disposition", "assetType": "Fractional Equity" },
+      { "title": "Sun Coast Fractional Ticket 6", "address": "1802 S Congress Ave, Austin, TX 78704", "purchasePrice": 12000, "renovationBudget": 0, "arv": 21600, "currentPhase": "Disposition", "assetType": "Fractional Equity" },
+      { "title": "Sun Coast Fractional Ticket 7", "address": "510 Camelback Rd, Phoenix, AZ 85013", "purchasePrice": 8000, "renovationBudget": 0, "arv": 14400, "currentPhase": "Disposition", "assetType": "Fractional Equity" },
+      { "title": "Sun Coast Fractional Ticket 8", "address": "191 Peachtree St NE, Atlanta, GA 30303", "purchasePrice": 18000, "renovationBudget": 0, "arv": 32400, "currentPhase": "Disposition", "assetType": "Fractional Equity" },
+      { "title": "Sun Coast Fractional Ticket 9", "address": "1200 Smith St, Houston, TX 77002", "purchasePrice": 22000, "renovationBudget": 0, "arv": 39600, "currentPhase": "Disposition", "assetType": "Fractional Equity" },
+      { "title": "Sun Coast Fractional Ticket 10", "address": "1700 Lincoln St, Denver, CO 80203", "purchasePrice": 16000, "renovationBudget": 0, "arv": 28800, "currentPhase": "Disposition", "assetType": "Fractional Equity" }
+    ]
+  },
+  {
+    "id": "P-46",
+    "name": "Jamal Carter",
+    "email": "agent46.jamal.carter@paperworking-test.dev",
+    "entity": "Carter Collective Capital LLC",
+    "category": "crowdfunding_investor",
+    "market": "Atlanta, GA",
+    "investorType": "Micro-Equity Allocator",
+    "bio": "Atlanta fractional real estate investor ($5k-$15k tickets). Uses web dashboard to monitor multiple crowdfunded property allocations.",
+    "investmentCriteria": {
+      "targetReturn": "15% IRR / Fractional Debt & Equity",
+      "assetTypes": ["Fractional Debt", "Fractional Equity"],
+      "minCheckSize": 5000,
+      "maxCheckSize": 25000,
+      "strategy": "Micro-Equity & Debt Crowdfunding"
+    },
+    "projects": [
+      { "title": "Peachtree Fractional Deal 1", "address": "191 Peachtree St NE, Atlanta, GA 30303", "purchasePrice": 10000, "renovationBudget": 0, "arv": 18000, "currentPhase": "Disposition", "assetType": "Fractional Equity" },
+      { "title": "Peachtree Fractional Deal 2", "address": "1402 NW 36th St, Miami, FL 33142", "purchasePrice": 12000, "renovationBudget": 0, "arv": 21600, "currentPhase": "Disposition", "assetType": "Fractional Equity" },
+      { "title": "Peachtree Fractional Deal 3", "address": "1204 N LBJ Fwy, Dallas, TX 75234", "purchasePrice": 15000, "renovationBudget": 0, "arv": 27000, "currentPhase": "Disposition", "assetType": "Fractional Equity" },
+      { "title": "Peachtree Fractional Deal 4", "address": "4801 N Sheridan Rd, Chicago, IL 60640", "purchasePrice": 8000, "renovationBudget": 0, "arv": 14400, "currentPhase": "Disposition", "assetType": "Fractional Debt" },
+      { "title": "Peachtree Fractional Deal 5", "address": "600 B St, San Diego, CA 92101", "purchasePrice": 14000, "renovationBudget": 0, "arv": 25200, "currentPhase": "Disposition", "assetType": "Fractional Equity" },
+      { "title": "Peachtree Fractional Deal 6", "address": "1802 S Congress Ave, Austin, TX 78704", "purchasePrice": 11000, "renovationBudget": 0, "arv": 19800, "currentPhase": "Disposition", "assetType": "Fractional Debt" },
+      { "title": "Peachtree Fractional Deal 7", "address": "510 Camelback Rd, Phoenix, AZ 85013", "purchasePrice": 9000, "renovationBudget": 0, "arv": 16200, "currentPhase": "Disposition", "assetType": "Fractional Equity" },
+      { "title": "Peachtree Fractional Deal 8", "address": "1200 Smith St, Houston, TX 77002", "purchasePrice": 13000, "renovationBudget": 0, "arv": 23400, "currentPhase": "Disposition", "assetType": "Fractional Debt" },
+      { "title": "Peachtree Fractional Deal 9", "address": "280 Sharon Rd, Charlotte, NC 28211", "purchasePrice": 7000, "renovationBudget": 0, "arv": 12600, "currentPhase": "Disposition", "assetType": "Fractional Equity" },
+      { "title": "Peachtree Fractional Deal 10", "address": "1700 Lincoln St, Denver, CO 80203", "purchasePrice": 10000, "renovationBudget": 0, "arv": 18000, "currentPhase": "Disposition", "assetType": "Fractional Debt" }
+    ]
+  },
+  {
+    "id": "P-47",
+    "name": "Patricia Trish Malone",
+    "email": "agent47.patricia.malone@paperworking-test.dev",
+    "entity": "Malone Dental EPC LLC",
+    "category": "sba_borrower",
+    "market": "St. Louis, MO",
+    "investorType": "Owner-User Practice Owner",
+    "bio": "St. Louis dental practice owner executing SBA 504 sale-leaseback and owner-occupied commercial acquisition. Tracks SBA loan compliance and NNN leaseback payments.",
+    "investmentCriteria": {
+      "targetReturn": "SBA 504 90% LTV Loan",
+      "assetTypes": ["Owner-User Medical", "Commercial Building"],
+      "minCheckSize": 200000,
+      "maxCheckSize": 1800000,
+      "strategy": "SBA 504 Owner-Occupied Acquisition"
+    },
+    "projects": [
+      { "title": "Washington Ave Medical Center", "address": "1401 Washington Ave, St. Louis, MO 63103", "purchasePrice": 1250000, "renovationBudget": 180000, "arv": 1680000, "currentPhase": "Rehab", "assetType": "Owner-User Medical" },
+      { "title": "Delmar Blvd Dental Facility", "address": "6200 Delmar Blvd, St. Louis, MO 63130", "purchasePrice": 980000, "renovationBudget": 140000, "arv": 1320000, "currentPhase": "Acquisition", "assetType": "Owner-User Medical" },
+      { "title": "Forest Park Medical Building", "address": "4500 Forest Park Ave, St. Louis, MO 63108", "purchasePrice": 1450000, "renovationBudget": 210000, "arv": 1950000, "currentPhase": "Rehab", "assetType": "Owner-User Medical" },
+      { "title": "Hampton Ave Clinic", "address": "3104 S Hampton Ave, St. Louis, MO 63139", "purchasePrice": 850000, "renovationBudget": 120000, "arv": 1150000, "currentPhase": "Disposition", "assetType": "Owner-User Medical" },
+      { "title": "Clayton Rd Medical Facility", "address": "7800 Clayton Rd, St. Louis, MO 63117", "purchasePrice": 1650000, "renovationBudget": 230000, "arv": 2200000, "currentPhase": "Underwriting", "assetType": "Owner-User Medical" },
+      { "title": "Grand Blvd Practice Center", "address": "1802 S Grand Blvd, St. Louis, MO 63104", "purchasePrice": 1100000, "renovationBudget": 160000, "arv": 1480000, "currentPhase": "Rehab", "assetType": "Owner-User Medical" },
+      { "title": "Manchester Rd Medical", "address": "9200 Manchester Rd, St. Louis, MO 63144", "purchasePrice": 1350000, "renovationBudget": 190000, "arv": 1820000, "currentPhase": "Disposition", "assetType": "Owner-User Medical" },
+      { "title": "Gravois Ave Clinic", "address": "4102 Gravois Ave, St. Louis, MO 63116", "purchasePrice": 790000, "renovationBudget": 110000, "arv": 1050000, "currentPhase": "Acquisition", "assetType": "Owner-User Medical" },
+      { "title": "Lindbergh Blvd Practice", "address": "2201 S Lindbergh Blvd, St. Louis, MO 63131", "purchasePrice": 1550000, "renovationBudget": 220000, "arv": 2100000, "currentPhase": "Rehab", "assetType": "Owner-User Medical" },
+      { "title": "Olive Blvd Medical Center", "address": "10400 Olive Blvd, St. Louis, MO 63141", "purchasePrice": 1400000, "renovationBudget": 200000, "arv": 1880000, "currentPhase": "Disposition", "assetType": "Owner-User Medical" }
+    ]
+  },
+  {
+    "id": "P-48",
+    "name": "Gus Antonopoulos",
+    "email": "agent48.gus.antonopoulos@paperworking-test.dev",
+    "entity": "Antonopoulos Bridge Capital LLC",
+    "category": "hard_money_lender",
+    "market": "Denver, CO",
+    "investorType": "Private Debt Lender",
+    "bio": "Denver hard money lender ($20M loan book). Issues short-term bridge debt (2 pts + 12% APR) for rehabs and flips. Tracks LTV thresholds and draw schedules.",
+    "investmentCriteria": {
+      "targetReturn": "12.0% APR + 2 Pts",
+      "assetTypes": ["Hard Money Bridge Loan"],
+      "minCheckSize": 100000,
+      "maxCheckSize": 1500000,
+      "strategy": "Private Hard Money Debt Origination"
+    },
+    "projects": [
+      { "title": "Willetta St Loan Commitment", "address": "2417 E Willetta St, Phoenix, AZ 85006", "purchasePrice": 210000, "renovationBudget": 35000, "arv": 315000, "currentPhase": "Disposition", "assetType": "Hard Money Bridge Loan" },
+      { "title": "Peachtree Rehab Bridge Loan", "address": "412 Moreland Ave NE, Atlanta, GA 30307", "purchasePrice": 260000, "renovationBudget": 45000, "arv": 390000, "currentPhase": "Disposition", "assetType": "Hard Money Bridge Loan" },
+      { "title": "Colfax Flip Loan Commitment", "address": "1402 E Colfax Ave, Denver, CO 80218", "purchasePrice": 300000, "renovationBudget": 50000, "arv": 450000, "currentPhase": "Disposition", "assetType": "Hard Money Bridge Loan" },
+      { "title": "Broadway Historic Loan", "address": "1804 Broadway, Nashville, TN 37203", "purchasePrice": 420000, "renovationBudget": 80000, "arv": 650000, "currentPhase": "Disposition", "assetType": "Hard Money Bridge Loan" },
+      { "title": "Washington Ave Bridge Loan", "address": "1401 Washington Ave, St. Louis, MO 63103", "purchasePrice": 180000, "renovationBudget": 30000, "arv": 270000, "currentPhase": "Disposition", "assetType": "Hard Money Bridge Loan" },
+      { "title": "Speer Blvd Rehab Loan", "address": "2810 Speer Blvd, Denver, CO 80211", "purchasePrice": 340000, "renovationBudget": 55000, "arv": 510000, "currentPhase": "Disposition", "assetType": "Hard Money Bridge Loan" },
+      { "title": "Federal Blvd Bridge Loan", "address": "915 Federal Blvd, Denver, CO 80204", "purchasePrice": 280000, "renovationBudget": 42000, "arv": 420000, "currentPhase": "Disposition", "assetType": "Hard Money Bridge Loan" },
+      { "title": "Colorado Blvd Hard Money", "address": "4501 Colorado Blvd, Denver, CO 80216", "purchasePrice": 250000, "renovationBudget": 38000, "arv": 380000, "currentPhase": "Disposition", "assetType": "Hard Money Bridge Loan" },
+      { "title": "Alameda Ave Bridge Loan", "address": "1204 W Alameda Ave, Denver, CO 80223", "purchasePrice": 290000, "renovationBudget": 45000, "arv": 440000, "currentPhase": "Disposition", "assetType": "Hard Money Bridge Loan" },
+      { "title": "Sheridan Blvd Rehab Debt", "address": "3102 Sheridan Blvd, Denver, CO 80212", "purchasePrice": 310000, "renovationBudget": 48000, "arv": 470000, "currentPhase": "Disposition", "assetType": "Hard Money Bridge Loan" }
+    ]
+  },
+  {
+    "id": "P-49",
+    "name": "Elaine Zhu",
+    "email": "agent49.elaine.zhu@paperworking-test.dev",
+    "entity": "Zhu Swift Funding LLC",
+    "category": "hard_money_lender",
+    "market": "Houston, TX",
+    "investorType": "BRRRR Bridge Lender",
+    "bio": "Houston private lender funding BRRRR acquisition & rehab loans. Focuses on conservative 65-70% LTV underwriting and fast 5-day closings.",
+    "investmentCriteria": {
+      "targetReturn": "11.5% APR + 2 Pts",
+      "assetTypes": ["BRRRR Bridge Debt"],
+      "minCheckSize": 80000,
+      "maxCheckSize": 1200000,
+      "strategy": "BRRRR Bridge Debt Origination"
+    },
+    "projects": [
+      { "title": "E 147th St Flip Loan", "address": "3104 E 147th St, Cleveland, OH 44120", "purchasePrice": 130000, "renovationBudget": 22000, "arv": 195000, "currentPhase": "Disposition", "assetType": "BRRRR Bridge Debt" },
+      { "title": "Catalina BRRRR Loan", "address": "8842 W Catalina Dr, Phoenix, AZ 85037", "purchasePrice": 160000, "renovationBudget": 28000, "arv": 240000, "currentPhase": "Disposition", "assetType": "BRRRR Bridge Debt" },
+      { "title": "Peachtree BRRRR Bridge", "address": "1204 DeKalb Ave NE, Atlanta, GA 30307", "purchasePrice": 150000, "renovationBudget": 25000, "arv": 225000, "currentPhase": "Disposition", "assetType": "BRRRR Bridge Debt" },
+      { "title": "Beale St Section 8 Loan", "address": "1402 Beale St, Memphis, TN 38103", "purchasePrice": 95000, "renovationBudget": 18000, "arv": 145000, "currentPhase": "Disposition", "assetType": "BRRRR Bridge Debt" },
+      { "title": "Westheimer BRRRR Debt", "address": "4102 Westheimer Rd, Houston, TX 77027", "purchasePrice": 210000, "renovationBudget": 35000, "arv": 315000, "currentPhase": "Disposition", "assetType": "BRRRR Bridge Debt" },
+      { "title": "Navigation Duplex Debt", "address": "1904 Navigation Blvd, Houston, TX 77011", "purchasePrice": 175000, "renovationBudget": 28000, "arv": 260000, "currentPhase": "Disposition", "assetType": "BRRRR Bridge Debt" },
+      { "title": "Telepsen Fourplex Loan", "address": "3201 Telepsen St, Houston, TX 77023", "purchasePrice": 270000, "renovationBudget": 45000, "arv": 405000, "currentPhase": "Disposition", "assetType": "BRRRR Bridge Debt" },
+      { "title": "Wayside Dr BRRRR Debt", "address": "810 S Wayside Dr, Houston, TX 77023", "purchasePrice": 145000, "renovationBudget": 24000, "arv": 218000, "currentPhase": "Disposition", "assetType": "BRRRR Bridge Debt" },
+      { "title": "Bellfort Ave Refi Loan", "address": "5402 Bellfort Ave, Houston, TX 77033", "purchasePrice": 128000, "renovationBudget": 21000, "arv": 192000, "currentPhase": "Disposition", "assetType": "BRRRR Bridge Debt" },
+      { "title": "Cullen Blvd Duplex Loan", "address": "2801 Cullen Blvd, Houston, TX 77004", "purchasePrice": 190000, "renovationBudget": 32000, "arv": 285000, "currentPhase": "Disposition", "assetType": "BRRRR Bridge Debt" }
+    ]
+  },
+  {
+    "id": "P-50",
+    "name": "Douglas Harmon",
+    "email": "agent50.douglas.harmon@paperworking-test.dev",
+    "entity": "Harmon Note Exchange LLC",
+    "category": "note_investor",
+    "market": "Dallas, TX",
+    "investorType": "Distressed Note Buyer",
+    "bio": "Dallas non-performing & performing note buyer/workout specialist. Evaluates unpaid principal balance (UPB) discounts, collateral valuation, and loan modification workouts.",
+    "investmentCriteria": {
+      "targetReturn": "14.5% Yield-to-Maturity",
+      "assetTypes": ["Mortgage Note", "Distressed Debt"],
+      "minCheckSize": 50000,
+      "maxCheckSize": 500000,
+      "strategy": "Non-Performing Note Workout & Buying"
+    },
+    "projects": [
+      { "title": "Denver Performing Note 90% UPB", "address": "1402 E Colfax Ave, Denver, CO 80218", "purchasePrice": 270000, "renovationBudget": 0, "arv": 300000, "currentPhase": "Disposition", "assetType": "Mortgage Note" },
+      { "title": "Cleveland Note 91% UPB", "address": "3104 E 147th St, Cleveland, OH 44120", "purchasePrice": 118000, "renovationBudget": 0, "arv": 130000, "currentPhase": "Disposition", "assetType": "Mortgage Note" },
+      { "title": "Charlotte Seller-Financed Note", "address": "2804 Sharon Rd, Charlotte, NC 28211", "purchasePrice": 235000, "renovationBudget": 0, "arv": 260000, "currentPhase": "Disposition", "assetType": "Mortgage Note" },
+      { "title": "Crossbeam Secondary Note Portfolio", "address": "280 Park Ave, New York, NY 10017", "purchasePrice": 3150000, "renovationBudget": 0, "arv": 3500000, "currentPhase": "Disposition", "assetType": "Distressed Debt" },
+      { "title": "NOLA Canal St Non-Performing Note", "address": "801 Canal St, New Orleans, LA 70112", "purchasePrice": 850000, "renovationBudget": 0, "arv": 1100000, "currentPhase": "Disposition", "assetType": "Distressed Debt" },
+      { "title": "Houston Residential Note", "address": "4102 Westheimer Rd, Houston, TX 77027", "purchasePrice": 210000, "renovationBudget": 0, "arv": 240000, "currentPhase": "Disposition", "assetType": "Mortgage Note" },
+      { "title": "Phoenix Single Family Note", "address": "510 Camelback Rd, Phoenix, AZ 85013", "purchasePrice": 310000, "renovationBudget": 0, "arv": 350000, "currentPhase": "Disposition", "assetType": "Mortgage Note" },
+      { "title": "Atlanta Duplex Note", "address": "1204 DeKalb Ave NE, Atlanta, GA 30307", "purchasePrice": 195000, "renovationBudget": 0, "arv": 220000, "currentPhase": "Disposition", "assetType": "Mortgage Note" },
+      { "title": "Dallas Multifamily Note", "address": "2401 Ross Ave, Dallas, TX 75201", "purchasePrice": 620000, "renovationBudget": 0, "arv": 700000, "currentPhase": "Disposition", "assetType": "Mortgage Note" },
+      { "title": "Austin Net-Zero Note", "address": "1802 S Congress Ave, Austin, TX 78704", "purchasePrice": 340000, "renovationBudget": 0, "arv": 380000, "currentPhase": "Disposition", "assetType": "Mortgage Note" }
+    ]
+  }
+]

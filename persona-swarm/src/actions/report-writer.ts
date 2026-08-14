@@ -2,6 +2,7 @@ import * as fs from 'fs';
 import * as path from 'path';
 import type { PersonaAgent } from './signup';
 import type { AgentExecutionState } from '../agent-runner';
+import { errorMessage } from '../types';
 
 export interface ReportWriterResult {
   success: boolean;
@@ -9,7 +10,7 @@ export interface ReportWriterResult {
   error?: string;
 }
 
-function resolveCategoryMetrics(category: string, strategy: string): string {
+function resolveCategoryMetrics(category: string, _strategy: string): string {
   if (category === 'wholesaler' || category === 'wholesaling-assignments') return 'Fee Per Deal ($12k avg), Assignment Margin (18%), Deal Turnaround (14 days)';
   if (category === 'brrrr_investor' || category === 'brrrr-investing') return 'Cash-on-Cash Return (16.2%), Post-Refi Equity ($65k), Refi LTV (75%)';
   if (category === 'str_operator' || category === 'str-vacation-rentals') return 'RevPAR ($185), Occupancy Rate (78%), Average Daily Rate ($237)';
@@ -119,11 +120,11 @@ export async function executeReport(
       success: true,
       path: reportPath,
     };
-  } catch (err: any) {
+  } catch (err: unknown) {
     return {
       success: false,
       path: '',
-      error: err.message || 'Failed to write agent report',
+      error: errorMessage(err) || 'Failed to write agent report',
     };
   }
 }
@@ -205,11 +206,11 @@ export async function compileAggregateReport(allStates: AgentExecutionState[]): 
       success: true,
       path: aggregatePath,
     };
-  } catch (err: any) {
+  } catch (err: unknown) {
     return {
       success: false,
       path: '',
-      error: err.message || 'Failed to compile aggregate report',
+      error: errorMessage(err) || 'Failed to compile aggregate report',
     };
   }
 }

@@ -6,6 +6,8 @@ import * as fs from 'fs';
 import * as path from 'path';
 import { adminDb } from '@/lib/firebase/admin';
 import { logSwarmEvent } from '../lib/artifact-log';
+import type { InteractionGraph } from '../types';
+import { errorMessage } from '../types';
 import type { PersonaAgent } from './signup';
 
 export interface InteractionResult {
@@ -25,10 +27,10 @@ export async function executeInteractions(
 
   try {
     const graphPath = path.join(process.cwd(), 'persona-swarm', 'config', 'interaction-graph.json');
-    const graph = JSON.parse(fs.readFileSync(graphPath, 'utf-8'));
+    const graph = JSON.parse(fs.readFileSync(graphPath, 'utf-8')) as InteractionGraph;
 
     // 1. Process outbound deal interactions (edges where from === agentId)
-    const outboundEdges = graph.edges.filter((e: any) => e.from === agentId);
+    const outboundEdges = graph.edges.filter((e) => e.from === agentId);
     for (const edge of outboundEdges) {
       try {
         const dealDocRef = adminDb.collection('deal_interactions').doc(edge.id);
@@ -77,8 +79,8 @@ export async function executeInteractions(
       interactionsExecuted,
       invitesSent,
     };
-  } catch (err: any) {
-    const errorMsg = err.message || 'Unknown interaction error';
+  } catch (err: unknown) {
+    const errorMsg = errorMessage(err);
     logSwarmEvent(agentId, 'COLLABORATE', 'ERROR', { error: errorMsg });
     return {
       success: false,

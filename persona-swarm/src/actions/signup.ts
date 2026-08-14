@@ -6,6 +6,8 @@
 
 import { adminAuth, adminDb } from '@/lib/firebase/admin';
 import { logSwarmEvent } from '../lib/artifact-log';
+import type { PersonaProjectBlueprint } from '../types';
+import { errorMessage } from '../types';
 
 export interface PersonaAgent {
   id: string; // e.g. "P-01"
@@ -24,7 +26,7 @@ export interface PersonaAgent {
     strategy: string;
   };
   plaidSandbox?: boolean;
-  projects: any[];
+  projects: PersonaProjectBlueprint[];
 }
 
 export interface SignupResult {
@@ -107,8 +109,8 @@ export async function executeSignup(agent: PersonaAgent): Promise<SignupResult> 
       email: agent.email,
       isNew,
     };
-  } catch (err: any) {
-    const errorMsg = err.message || 'Unknown signup error';
+  } catch (err: unknown) {
+    const errorMsg = errorMessage(err);
     logSwarmEvent(agentId, 'SIGNUP', 'ERROR', { error: errorMsg });
     return {
       success: false,

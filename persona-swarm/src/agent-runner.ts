@@ -12,6 +12,7 @@ import { executeProjectCreation } from './actions/projects';
 import { executeInteractions } from './actions/collaborate';
 import { executeReport } from './actions/report-writer';
 import { logSwarmEvent } from './lib/artifact-log';
+import { errorMessage } from './types';
 
 export interface AgentExecutionState {
   agentId: string;
@@ -128,8 +129,8 @@ export async function runAgentWave(
       default:
         state.errors.push(`Unknown wave number: ${wave}`);
     }
-  } catch (err: any) {
-    const msg = err.message || 'Unknown wave error';
+  } catch (err: unknown) {
+    const msg = errorMessage(err);
     state.errors.push(`Wave ${wave} exception: ${msg}`);
     logSwarmEvent(agentId, `WAVE_${wave}`, 'EXCEPTION', { error: msg });
   }

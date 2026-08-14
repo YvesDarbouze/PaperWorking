@@ -36,6 +36,14 @@ const EVENT_STATUS_MAP: Record<string, EmailStatus> = {
   group_unsubscribe: 'Failed',
 };
 
+interface SendGridWebhookEvent {
+  event?: string;
+  sg_message_id?: string;
+  message_id?: string;
+  'smtp-id'?: string;
+  timestamp?: number;
+}
+
 function verifySendGridSignature(
   rawBody: string,
   signature: string | null,
@@ -76,12 +84,10 @@ export async function POST(request: NextRequest) {
     }
 
     // ── Parse Event Payload Array ────────────────────────────
-    let events: any[] = [];
+    let events: SendGridWebhookEvent[] = [];
     try {
-      events = JSON.parse(rawBody);
-      if (!Array.isArray(events)) {
-        events = [events];
-      }
+      const parsed: unknown = JSON.parse(rawBody);
+      events = Array.isArray(parsed) ? parsed : [parsed as SendGridWebhookEvent];
     } catch {
       return NextResponse.json({ error: 'Invalid JSON payload' }, { status: 400 });
     }
@@ -147,7 +153,7 @@ export async function POST(request: NextRequest) {
             const userSnap = await userRef.get();
             if (userSnap.exists) {
               const userData = userSnap.data() || {};
-              const userUpdates: Record<string, any> = {};
+              const userUpdates: Record<string, number | boolean | string> = {};
 
               if (status === 'Bounced') {
                 const currentBounces = userData.bounceCount || 0;
@@ -190,8 +196,9 @@ export async function POST(request: NextRequest) {
               }
             }
           }
-        } catch (err: any) {
-          console.error('[SendGrid Webhook] Abuse processing error:', err.message);
+        } catch (err: unknown) {
+          const message = err instanceof Error ? err.message : 'Unknown error';
+          console.error('[SendGrid Webhook] Abuse processing error:', message);
         }
       }
     }
@@ -201,10 +208,11 @@ export async function POST(request: NextRequest) {
       processed: processedCount,
       totalEvents: events.length,
     });
-  } catch (error: any) {
+  } catch (error: unknown) {
+    const message = error instanceof Error ? error.message : 'Unknown error';
     console.error('[SendGrid Webhook] Error:', error);
     return NextResponse.json(
-      { error: 'Webhook processing failed', details: error.message },
+      { error: 'Webhook processing failed', details: message },
       { status: 500 }
     );
   }

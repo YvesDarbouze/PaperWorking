@@ -8,6 +8,22 @@
 
 import * as fs from 'fs';
 import * as path from 'path';
+import type { InteractionGraph } from '../types';
+import type { PersonaAgent } from '../actions/signup';
+
+interface RosterFixtureEntry {
+  id: string;
+  name: string;
+  entity: string;
+  category: string;
+  market: string;
+}
+
+interface CategoryEntry {
+  id: string;
+  name: string;
+  archetype: string;
+}
 
 describe('Persona Registry & Interaction Graph Integrity', () => {
   const personasPath = path.join(process.cwd(), 'persona-swarm', 'config', 'personas.registry.json');
@@ -15,10 +31,10 @@ describe('Persona Registry & Interaction Graph Integrity', () => {
   const categoriesPath = path.join(process.cwd(), 'persona-swarm', 'config', 'categories.json');
   const graphPath = path.join(process.cwd(), 'persona-swarm', 'config', 'interaction-graph.json');
 
-  let personas: any[];
-  let rosterFixture: any[];
-  let categories: any[];
-  let graph: { edges: any[]; inviteMatrix: Record<string, string[]> };
+  let personas: PersonaAgent[];
+  let rosterFixture: RosterFixtureEntry[];
+  let categories: CategoryEntry[];
+  let graph: InteractionGraph;
 
   beforeAll(() => {
     personas = JSON.parse(fs.readFileSync(personasPath, 'utf-8'));
@@ -41,9 +57,7 @@ describe('Persona Registry & Interaction Graph Integrity', () => {
         expect(registryAgent.category).toBe(fixtureAgent.category);
         expect(registryAgent.market).toBe(fixtureAgent.market);
         
-        // Email pattern check
-        const expectedEmail = `agent${fixtureAgent.id.replace('P-', '')}.${fixtureAgent.name.toLowerCase().replace(/[^a-z0-9]+/g, '.').replace(/^\.+|\.+$/g, '')}@paperworking-test.dev`;
-        // Ensure email starts with agentNN and matches domain
+        // Email pattern check — agentNN prefix and test domain
         expect(registryAgent.email).toMatch(new RegExp(`^agent${fixtureAgent.id.replace('P-', '')}\\.`));
         expect(registryAgent.email).toMatch(/@paperworking-test\.dev$/);
       }
@@ -95,7 +109,7 @@ describe('Persona Registry & Interaction Graph Integrity', () => {
       }
 
       // 2. Max 2 agents sharing ANY surname across the entire roster
-      for (const [surname, count] of Object.entries(surnameCounts)) {
+      for (const [, count] of Object.entries(surnameCounts)) {
         expect(count).toBeLessThanOrEqual(2);
       }
     });

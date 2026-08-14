@@ -5,6 +5,7 @@
 import { adminDb } from '@/lib/firebase/admin';
 import { generateTestPdfBuffer } from '../lib/faker-seed';
 import { logSwarmEvent } from '../lib/artifact-log';
+import { errorMessage } from '../types';
 import type { PersonaAgent } from './signup';
 
 export interface ProjectCreationResult {
@@ -79,8 +80,8 @@ export async function executeProjectCreation(
       success: true,
       created: createdCount,
     };
-  } catch (err: any) {
-    const errorMsg = err.message || 'Unknown project creation error';
+  } catch (err: unknown) {
+    const errorMsg = errorMessage(err);
     logSwarmEvent(agentId, 'PROJECTS', 'ERROR', { error: errorMsg });
     return {
       success: false,

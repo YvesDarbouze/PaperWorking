@@ -13,7 +13,7 @@ export interface EmailDispatchPayload {
   from?: string;
   replyTo?: string;
   tags?: { name: string; value: string }[];
-  metadata?: Record<string, any>;
+  metadata?: Record<string, unknown>;
 }
 
 export interface EmailDispatchResult {

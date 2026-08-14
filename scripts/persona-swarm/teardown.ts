@@ -9,6 +9,7 @@ import * as fs from 'fs';
 import * as path from 'path';
 import { assertDisposableDatabase, assertSwarmFeatureFlag, assertStripeTestMode } from '../../persona-swarm/src/bootstrap';
 import { cleanupStripeTestCustomers } from '../../persona-swarm/src/lib/stripe-cleanup';
+import { errorMessage } from '../../persona-swarm/src/types';
 
 export interface TeardownOptions {
   dryRun?: boolean;
@@ -30,11 +31,11 @@ export async function teardownSwarm(options: TeardownOptions = {}) {
       const manifest = JSON.parse(fs.readFileSync(manifestPath, 'utf-8'));
       if (manifest.agents) {
         customerIds = Object.values(manifest.agents)
-          .map((a: any) => a.stripeCustomerId)
-          .filter((id: string) => id && id.startsWith('cus_'));
+          .map((a: { stripeCustomerId?: string }) => a.stripeCustomerId)
+          .filter((id): id is string => !!id && id.startsWith('cus_'));
       }
-    } catch (e: any) {
-      console.warn('Could not parse manifest file:', e.message);
+    } catch (e: unknown) {
+      console.warn('Could not parse manifest file:', errorMessage(e));
     }
   }
 

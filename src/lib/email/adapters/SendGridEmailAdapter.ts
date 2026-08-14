@@ -1,5 +1,14 @@
 import { IEmailProvider, EmailDispatchPayload, EmailDispatchResult } from '../emailProvider';
 
+interface SendGridMailBody {
+  personalizations: Array<{ to: Array<{ email: string }> }>;
+  from: { email: string };
+  subject: string;
+  content: Array<{ type: string; value: string }>;
+  reply_to?: { email: string };
+  custom_args?: Record<string, string>;
+}
+
 /**
  * SendGrid Email Adapter — Real SendGrid API v3 Implementation
  *
@@ -33,7 +42,7 @@ export class SendGridEmailAdapter implements IEmailProvider {
       'notifications@paperworking.co';
     const fromEmail = payload.from || defaultFrom;
 
-    const body: Record<string, any> = {
+    const body: SendGridMailBody = {
       personalizations: [
         {
           to: payload.to.map((email) => ({ email })),
@@ -116,8 +125,8 @@ export class SendGridEmailAdapter implements IEmailProvider {
         mock: false,
         provider: 'sendgrid',
       };
-    } catch (err: any) {
-      const errorMessage = err.message || 'Unknown network error';
+    } catch (err: unknown) {
+      const errorMessage = err instanceof Error ? err.message : 'Unknown network error';
       console.error('[SendGridEmailAdapter] ❌ Network error dispatching email:', errorMessage);
 
       this.emitTelemetry('system_email_send_failed', {
@@ -137,7 +146,7 @@ export class SendGridEmailAdapter implements IEmailProvider {
     }
   }
 
-  private emitTelemetry(event: string, properties: Record<string, any>) {
+  private emitTelemetry(event: string, properties: Record<string, unknown>) {
     try {
       const posthogKey = process.env.NEXT_PUBLIC_POSTHOG_KEY;
       if (posthogKey && typeof fetch !== 'undefined') {

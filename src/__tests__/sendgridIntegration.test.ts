@@ -14,7 +14,7 @@ describe('SendGrid & System Email Provider Integration', () => {
     delete process.env.SYSTEM_EMAIL_PROVIDER;
     delete process.env.SENDGRID_API_KEY;
     delete process.env.RESEND_API_KEY;
-    // @ts-ignore
+    // @ts-expect-error - mock global.fetch in Jest
     global.fetch = jest.fn();
   });
 

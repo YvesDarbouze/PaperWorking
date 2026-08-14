@@ -7,6 +7,7 @@
 
 import Stripe from 'stripe';
 import { assertStripeTestMode } from '../bootstrap';
+import { errorMessage } from '../types';
 
 export interface StripeCleanupResult {
   canceledSubscriptions: number;
@@ -24,9 +25,7 @@ export async function cleanupStripeTestCustomers(
   const sk = stripeSecretKey || process.env.STRIPE_SECRET_KEY || '';
   assertStripeTestMode(sk);
 
-  const stripe = new Stripe(sk, {
-    apiVersion: '2026-01-28' as any,
-  });
+  const stripe = new Stripe(sk);
 
   const result: StripeCleanupResult = {
     canceledSubscriptions: 0,
@@ -50,8 +49,8 @@ export async function cleanupStripeTestCustomers(
       // 2. Delete test customer
       await stripe.customers.del(customerId);
       result.deletedCustomers++;
-    } catch (err: any) {
-      result.errors.push(`Customer ${customerId}: ${err.message}`);
+    } catch (err: unknown) {
+      result.errors.push(`Customer ${customerId}: ${errorMessage(err)}`);
     }
   }
 

@@ -9,6 +9,7 @@
 import { assertStripeTestMode } from '../bootstrap';
 import { adminDb } from '@/lib/firebase/admin';
 import { logSwarmEvent } from '../lib/artifact-log';
+import { errorMessage } from '../types';
 import type { PersonaAgent } from './signup';
 
 export interface BillingResult {
@@ -80,8 +81,8 @@ export async function executeBilling(agent: PersonaAgent, uid: string): Promise<
       stripeCustomerId: testCustomerId,
       stripeSubscriptionId: testSubId,
     };
-  } catch (err: any) {
-    const errorMsg = err.message || 'Unknown billing error';
+  } catch (err: unknown) {
+    const errorMsg = errorMessage(err);
     logSwarmEvent(agentId, 'BILLING', 'ERROR', { error: errorMsg });
     return {
       success: false,

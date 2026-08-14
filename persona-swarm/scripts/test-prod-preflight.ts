@@ -61,7 +61,7 @@ async function testGate1And2() {
     console.log('\nCleaning up temporary pre-flight user...');
     await deleteUser(user);
     console.log('Cleanup complete.');
-  } catch (err: any) {
+  } catch (err: unknown) {
     console.error('Pre-flight test failed:', err);
   }
 }

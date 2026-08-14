@@ -1,0 +1,148 @@
+{
+  "categories": [
+    {
+      "id": "wholesaler",
+      "name": "Wholesalers",
+      "strategy": "Contract arbitrage",
+      "holdPeriod": "1–30 days",
+      "primaryMetrics": ["Fee per deal ($5k–$25k)"],
+      "coreDocs": ["Purchase & Sale Contracts", "Assignment Agreements", "Fee Agreements"]
+    },
+    {
+      "id": "house_flipper",
+      "name": "House Flippers",
+      "strategy": "Value-add rehab",
+      "holdPeriod": "3–12 months",
+      "primaryMetrics": ["Cash-on-cash", "Net margin"],
+      "coreDocs": ["Scope of Work", "Rehab Budgets", "Hard Money Loan Docs", "HUD-1"]
+    },
+    {
+      "id": "spec_builder",
+      "name": "Speculative Builders",
+      "strategy": "Ground-up construction",
+      "holdPeriod": "12–24 months",
+      "primaryMetrics": ["Return on Cost (ROC)", "Gross margin"],
+      "coreDocs": ["Building Permits", "Draw Schedules", "Contractor Agreements", "Title Policy"]
+    },
+    {
+      "id": "land_developer",
+      "name": "Land Developers",
+      "strategy": "Raw land entitlement & infra",
+      "holdPeriod": "2–7 years",
+      "primaryMetrics": ["IRR", "Equity multiple"],
+      "coreDocs": ["Zoning Permits", "Environmental Phase I/II", "Civil Engineering Plans", "Subdivision Plats"]
+    },
+    {
+      "id": "brrrr_investor",
+      "name": "BRRRR Investors",
+      "strategy": "Buy/rehab/rent/refinance/repeat",
+      "holdPeriod": "5–30+ yrs",
+      "primaryMetrics": ["Cash-on-cash", "Refi cash-out"],
+      "coreDocs": ["Rehab Invoices", "Residential Leases", "Refi Loan Applications", "Appraisal Reports"]
+    },
+    {
+      "id": "residential_landlord",
+      "name": "Residential Landlords",
+      "strategy": "Buy-and-hold",
+      "holdPeriod": "5–30+ yrs",
+      "primaryMetrics": ["Cash-on-cash", "DSCR", "Appreciation"],
+      "coreDocs": ["Leases", "Tenant Screenings", "Depreciation Schedules", "Schedule E"]
+    },
+    {
+      "id": "str_operator",
+      "name": "STR Operators",
+      "strategy": "Short-term rental/hospitality",
+      "holdPeriod": "3–10 yrs",
+      "primaryMetrics": ["Gross yield", "RevPAR"],
+      "coreDocs": ["Transient Occupancy Permits", "HOA Bylaws", "Occupancy Tax Filings", "Schedule C/E"]
+    },
+    {
+      "id": "commercial_investor",
+      "name": "Commercial Investors",
+      "strategy": "Income & value-add commercial",
+      "holdPeriod": "5–10+ yrs",
+      "primaryMetrics": ["NOI", "Cap rate", "DSCR"],
+      "coreDocs": ["NNN Leases", "Estoppel Certificates", "Environmental Reports", "Rent Rolls"]
+    },
+    {
+      "id": "syndicator_gp",
+      "name": "Syndicators (GPs)",
+      "strategy": "Capital pooling & asset mgmt",
+      "holdPeriod": "3–7 yrs",
+      "primaryMetrics": ["IRR", "Promote"],
+      "coreDocs": ["PPM", "Operating Agreements", "SEC Reg D filings"]
+    },
+    {
+      "id": "passive_lp",
+      "name": "Passive LPs",
+      "strategy": "Capital commitment",
+      "holdPeriod": "3–7 yrs",
+      "primaryMetrics": ["Preferred return", "Equity multiple"],
+      "coreDocs": ["Subscription Agreements", "Accredited Investor Verification", "K-1s"]
+    },
+    {
+      "id": "pe_fund",
+      "name": "Private Equity Funds",
+      "strategy": "Institutional value-add",
+      "holdPeriod": "5–10 yrs",
+      "primaryMetrics": ["Fund IRR", "Equity multiple"],
+      "coreDocs": ["Fund LPAs", "Subscription Agreements", "Capital Call Notices", "Side Letters"]
+    },
+    {
+      "id": "family_office",
+      "name": "Family Offices",
+      "strategy": "Generational wealth",
+      "holdPeriod": "10+ yrs / perpetual",
+      "primaryMetrics": ["Yield", "Risk-adjusted return"],
+      "coreDocs": ["Direct Title Docs", "Trust Docs", "Custom Debt Instruments"]
+    },
+    {
+      "id": "institutional_investor",
+      "name": "Institutional Investors",
+      "strategy": "Large-scale allocation",
+      "holdPeriod": "10–30 yrs",
+      "primaryMetrics": ["Risk-adjusted yield"],
+      "coreDocs": ["Asset Mgmt Agreements", "Institutional Loan Docs", "Audit Reports"]
+    },
+    {
+      "id": "reit_shareholder",
+      "name": "REIT Shareholders",
+      "strategy": "Liquid share purchase",
+      "holdPeriod": "Liquid",
+      "primaryMetrics": ["Dividend yield", "TSR"],
+      "coreDocs": ["Prospectus", "Dividend Statements", "10-Ks", "Brokerage Confirmations"]
+    },
+    {
+      "id": "crowdfunding_investor",
+      "name": "Crowdfunding Investors",
+      "strategy": "Fractional equity/debt",
+      "holdPeriod": "1–5 yrs",
+      "primaryMetrics": ["Cash yield"],
+      "coreDocs": ["Online Subscription Agreements", "Platform Disclosures", "Tax Statements"]
+    },
+    {
+      "id": "sba_borrower",
+      "name": "SBA EPC/OpCo Borrowers",
+      "strategy": "Owner-occupied commercial",
+      "holdPeriod": "10–25 yrs",
+      "primaryMetrics": ["Occupancy cost reduction"],
+      "coreDocs": ["SBA Form 413", "Spousal Guaranties", "Lease-Back Contracts", "SOP 50 10 8 forms"]
+    },
+    {
+      "id": "hard_money_lender",
+      "name": "Hard Money Lenders",
+      "strategy": "Short-term asset debt",
+      "holdPeriod": "6–24 months",
+      "primaryMetrics": ["Points + APR"],
+      "coreDocs": ["Promissory Notes", "Mortgages/Deeds of Trust", "Personal Guaranties", "Collateral Audits"]
+    },
+    {
+      "id": "note_investor",
+      "name": "Mortgage Note Investors",
+      "strategy": "Secondary debt trading",
+      "holdPeriod": "1–10 yrs",
+      "primaryMetrics": ["Yield to Maturity (YTM)", "Discount to par"],
+      "coreDocs": ["Note Purchase Agreements", "Loss Mitigation Docs", "Servicing Transfer Agreements"]
+    }
+  ]
+}

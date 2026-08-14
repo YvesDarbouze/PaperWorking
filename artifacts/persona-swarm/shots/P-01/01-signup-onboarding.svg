@@ -1,0 +1,28 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="800" viewBox="0 0 1200 800">
+  <rect width="1200" height="800" fill="#121014"/>
+  <rect x="50" y="50" width="1100" height="700" rx="12" fill="#1A181F" stroke="#2D2A36" stroke-width="2"/>
+  <text x="100" y="120" fill="#FDFFFC" font-family="Inter, sans-serif" font-size="28" font-weight="700">PaperWorking — Account Onboarding &amp; Profile</text>
+  <text x="100" y="160" fill="#9A9EA6" font-family="Inter, sans-serif" font-size="16">Persona: Marcus "Mac" Delgado (P-01) — Delgado Rapid Deals LLC</text>
+  
+  <rect x="100" y="200" width="1000" height="500" rx="8" fill="#121014" stroke="#2D2A36"/>
+  <text x="140" y="260" fill="#FDFFFC" font-family="Inter, sans-serif" font-size="20" font-weight="600">Complete Your Investor Profile</text>
+  
+  <rect x="140" y="300" width="440" height="50" rx="6" fill="#1A181F" stroke="#3A3745"/>
+  <text x="160" y="332" fill="#FDFFFC" font-family="Inter, sans-serif" font-size="15">Full Name: Marcus "Mac" Delgado</text>
+  
+  <rect x="600" y="300" width="440" height="50" rx="6" fill="#1A181F" stroke="#3A3745"/>
+  <text x="620" y="332" fill="#FDFFFC" font-family="Inter, sans-serif" font-size="15">Entity: Delgado Rapid Deals LLC</text>
+  
+  <rect x="140" y="380" width="440" height="50" rx="6" fill="#1A181F" stroke="#3A3745"/>
+  <text x="160" y="412" fill="#FDFFFC" font-family="Inter, sans-serif" font-size="15">Primary Market: Phoenix, AZ</text>
+  
+  <rect x="600" y="380" width="440" height="50" rx="6" fill="#1A181F" stroke="#3A3745"/>
+  <text x="620" y="412" fill="#FDFFFC" font-family="Inter, sans-serif" font-size="15">Strategy: High-Volume Wholesaler</text>
+  
+  <rect x="140" y="470" width="900" height="150" rx="6" fill="#1A181F" stroke="#3A3745"/>
+  <text x="160" y="510" fill="#9A9EA6" font-family="Inter, sans-serif" font-size="14">Bio / Operating Focus:</text>
+  <text x="160" y="540" fill="#FDFFFC" font-family="Inter, sans-serif" font-size="15">Phoenix wholesaler, 6 years in, closing ~40 assignments a year across Maricopa County.</text>
+  
+  <rect x="140" y="640" width="200" height="44" rx="6" fill="#3B82F6"/>
+  <text x="185" y="667" fill="#FFFFFF" font-family="Inter, sans-serif" font-size="16" font-weight="600">Save Profile</text>
+</svg>

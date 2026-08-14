@@ -1,0 +1,28 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="800" viewBox="0 0 1200 800">
+  <rect width="1200" height="800" fill="#121014"/>
+  <rect x="50" y="50" width="1100" height="700" rx="12" fill="#1A181F" stroke="#2D2A36" stroke-width="2"/>
+  <text x="100" y="120" fill="#FDFFFC" font-family="Inter, sans-serif" font-size="28" font-weight="700">PaperWorking — Subscription Checkout (Stripe Test Mode)</text>
+  <text x="100" y="160" fill="#9A9EA6" font-family="Inter, sans-serif" font-size="16">Plan: Individual ($59/mo) — Card: 4242 4242 4242 4242 — Status: Active</text>
+  
+  <rect x="100" y="200" width="520" height="500" rx="8" fill="#121014" stroke="#2D2A36"/>
+  <text x="140" y="260" fill="#FDFFFC" font-family="Inter, sans-serif" font-size="22" font-weight="600">Individual Tier</text>
+  <text x="140" y="300" fill="#3B82F6" font-family="Inter, sans-serif" font-size="36" font-weight="700">$59 <tspan font-size="18" fill="#9A9EA6">/ month</tspan></text>
+  <text x="140" y="350" fill="#9A9EA6" font-family="Inter, sans-serif" font-size="15">• Unlimited Real Estate Projects (up to 10 active)</text>
+  <text x="140" y="380" fill="#9A9EA6" font-family="Inter, sans-serif" font-size="15">• Full Insights Dashboard with 33 Real Estate KPIs</text>
+  <text x="140" y="410" fill="#9A9EA6" font-family="Inter, sans-serif" font-size="15">• Phase-Gate Lifecycle Governance &amp; Audit Logs</text>
+  <text x="140" y="440" fill="#9A9EA6" font-family="Inter, sans-serif" font-size="15">• Deals Marketplace Access &amp; Direct Invoicing</text>
+  
+  <rect x="660" y="200" width="440" height="500" rx="8" fill="#121014" stroke="#2D2A36"/>
+  <text x="700" y="260" fill="#FDFFFC" font-family="Inter, sans-serif" font-size="20" font-weight="600">Stripe Payment Details</text>
+  <rect x="700" y="300" width="360" height="50" rx="6" fill="#1A181F" stroke="#3A3745"/>
+  <text x="720" y="332" fill="#FDFFFC" font-family="Inter, sans-serif" font-size="15">Card: 4242 •••• •••• 4242</text>
+  
+  <rect x="700" y="380" width="180" height="50" rx="6" fill="#1A181F" stroke="#3A3745"/>
+  <text x="720" y="412" fill="#FDFFFC" font-family="Inter, sans-serif" font-size="15">Exp: 12/28</text>
+  
+  <rect x="900" y="380" width="160" height="50" rx="6" fill="#1A181F" stroke="#3A3745"/>
+  <text x="920" y="412" fill="#FDFFFC" font-family="Inter, sans-serif" font-size="15">CVC: 123</text>
+  
+  <rect x="700" y="470" width="360" height="50" rx="6" fill="#10B981"/>
+  <text x="800" y="502" fill="#FFFFFF" font-family="Inter, sans-serif" font-size="16" font-weight="600">Subscription Active</text>
+</svg>

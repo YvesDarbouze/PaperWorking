@@ -1,0 +1,555 @@
+{"ts":"2026-08-13T10:18:27.618Z","agentId":"P-10","wave":1,"step":"WAVE_1","action":"START","result":"SUCCESS","details":{"email":"agent10.gary.lindqvist@paperworking-test.dev"}}
+{"ts":"2026-08-13T10:18:27.618Z","agentId":"P-10","wave":0,"step":"SIGNUP","action":"ERROR","result":"FAILED","details":{"error":"Unable to detect a Project Id in the current environment. \nTo learn more about authentication and Google APIs, visit: \nhttps://cloud.google.com/docs/authentication/getting-started"}}
+{"ts":"2026-08-13T10:18:27.618Z","agentId":"P-10","wave":1,"step":"WAVE_1","action":"FAILED","result":"FAILED","details":{"error":"Unable to detect a Project Id in the current environment. \nTo learn more about authentication and Google APIs, visit: \nhttps://cloud.google.com/docs/authentication/getting-started"}}
+{"ts":"2026-08-13T10:18:27.634Z","agentId":"P-10","wave":2,"step":"WAVE_2","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-13T10:18:27.634Z","agentId":"P-10","wave":2,"step":"WAVE_2","action":"SKIPPED","result":"SUCCESS","details":{"reason":"UID missing"}}
+{"ts":"2026-08-13T10:18:27.641Z","agentId":"P-10","wave":3,"step":"WAVE_3","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-13T10:18:27.642Z","agentId":"P-10","wave":3,"step":"WAVE_3","action":"SKIPPED","result":"SUCCESS","details":{"reason":"UID missing"}}
+{"ts":"2026-08-13T10:18:27.649Z","agentId":"P-10","wave":4,"step":"WAVE_4","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-13T10:18:27.649Z","agentId":"P-10","wave":4,"step":"WAVE_4","action":"SKIPPED","result":"SUCCESS","details":{"reason":"UID missing"}}
+{"ts":"2026-08-13T10:18:27.660Z","agentId":"P-10","wave":5,"step":"WAVE_5","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-13T10:18:27.661Z","agentId":"P-10","wave":5,"step":"WAVE_5","action":"FAILED","result":"FAILED","details":{"error":"Cannot read properties of undefined (reading 'toLocaleString')"}}
+{"ts":"2026-08-13T10:18:49.088Z","agentId":"P-10","wave":1,"step":"WAVE_1","action":"START","result":"SUCCESS","details":{"email":"agent10.gary.lindqvist@paperworking-test.dev"}}
+{"ts":"2026-08-13T10:18:49.088Z","agentId":"P-10","wave":0,"step":"SIGNUP","action":"SUCCESS_CREATED","result":"SUCCESS","details":{"uid":"uid_persona_p10","email":"agent10.gary.lindqvist@paperworking-test.dev","name":"Gary Lindqvist","entity":"Lindqvist Custom Homes LLC"}}
+{"ts":"2026-08-13T10:18:49.088Z","agentId":"P-10","wave":1,"step":"WAVE_1","action":"COMPLETE","result":"SUCCESS","details":{"uid":"uid_persona_p10"}}
+{"ts":"2026-08-13T10:18:49.451Z","agentId":"P-10","wave":2,"step":"WAVE_2","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-13T10:18:49.452Z","agentId":"P-10","wave":0,"step":"BILLING","action":"SUBSCRIPTION_SUCCESS","result":"SUCCESS","details":{"plan":"Individual","stripeCustomerId":"cus_test_swarm_p-10","stripeSubscriptionId":"sub_test_swarm_p-10","cardLastFour":"4242","cardBrand":"visa"}}
+{"ts":"2026-08-13T10:18:49.452Z","agentId":"P-10","wave":2,"step":"WAVE_2","action":"COMPLETE","result":"SUCCESS","details":{"plan":"Individual"}}
+{"ts":"2026-08-13T10:18:49.484Z","agentId":"P-10","wave":3,"step":"WAVE_3","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-13T10:18:49.485Z","agentId":"P-10","wave":0,"step":"PROJECTS","action":"CREATION_SUCCESS","result":"SUCCESS","details":{"created":10,"plaid":false}}
+{"ts":"2026-08-13T10:18:49.485Z","agentId":"P-10","wave":3,"step":"WAVE_3","action":"COMPLETE","result":"SUCCESS","details":{"created":10}}
+{"ts":"2026-08-13T10:18:49.541Z","agentId":"P-10","wave":4,"step":"WAVE_4","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-13T10:18:49.542Z","agentId":"P-10","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-32","to":"P-22","type":"Finished Asset Sale"}}
+{"ts":"2026-08-13T10:18:49.542Z","agentId":"P-10","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-13"}}
+{"ts":"2026-08-13T10:18:49.542Z","agentId":"P-10","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-22"}}
+{"ts":"2026-08-13T10:18:49.542Z","agentId":"P-10","wave":4,"step":"WAVE_4","action":"COMPLETE","result":"SUCCESS","details":{"interactions":1,"invites":2}}
+{"ts":"2026-08-13T10:18:49.613Z","agentId":"P-10","wave":5,"step":"WAVE_5","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-13T10:18:49.613Z","agentId":"P-10","wave":5,"step":"WAVE_5","action":"COMPLETE","result":"SUCCESS","details":{"reportPath":"/Users/yvesdarbouze/Documents/PaperWorking/artifacts/persona-swarm/reports/P-10-experience-report.md"}}
+{"ts":"2026-08-13T10:18:55.972Z","agentId":"P-10","wave":1,"step":"WAVE_1","action":"START","result":"SUCCESS","details":{"email":"agent10.gary.lindqvist@paperworking-test.dev"}}
+{"ts":"2026-08-13T10:18:55.972Z","agentId":"P-10","wave":0,"step":"SIGNUP","action":"SUCCESS_CREATED","result":"SUCCESS","details":{"uid":"uid_persona_p10","email":"agent10.gary.lindqvist@paperworking-test.dev","name":"Gary Lindqvist","entity":"Lindqvist Custom Homes LLC"}}
+{"ts":"2026-08-13T10:18:55.972Z","agentId":"P-10","wave":1,"step":"WAVE_1","action":"COMPLETE","result":"SUCCESS","details":{"uid":"uid_persona_p10"}}
+{"ts":"2026-08-13T10:18:56.268Z","agentId":"P-10","wave":2,"step":"WAVE_2","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-13T10:18:56.268Z","agentId":"P-10","wave":0,"step":"BILLING","action":"SUBSCRIPTION_SUCCESS","result":"SUCCESS","details":{"plan":"Individual","stripeCustomerId":"cus_test_swarm_p-10","stripeSubscriptionId":"sub_test_swarm_p-10","cardLastFour":"4242","cardBrand":"visa"}}
+{"ts":"2026-08-13T10:18:56.268Z","agentId":"P-10","wave":2,"step":"WAVE_2","action":"COMPLETE","result":"SUCCESS","details":{"plan":"Individual"}}
+{"ts":"2026-08-13T10:18:56.309Z","agentId":"P-10","wave":3,"step":"WAVE_3","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-13T10:18:56.310Z","agentId":"P-10","wave":0,"step":"PROJECTS","action":"CREATION_SUCCESS","result":"SUCCESS","details":{"created":10,"plaid":false}}
+{"ts":"2026-08-13T10:18:56.310Z","agentId":"P-10","wave":3,"step":"WAVE_3","action":"COMPLETE","result":"SUCCESS","details":{"created":10}}
+{"ts":"2026-08-13T10:18:56.363Z","agentId":"P-10","wave":4,"step":"WAVE_4","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-13T10:18:56.363Z","agentId":"P-10","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-32","to":"P-22","type":"Finished Asset Sale"}}
+{"ts":"2026-08-13T10:18:56.363Z","agentId":"P-10","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-13"}}
+{"ts":"2026-08-13T10:18:56.364Z","agentId":"P-10","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-22"}}
+{"ts":"2026-08-13T10:18:56.364Z","agentId":"P-10","wave":4,"step":"WAVE_4","action":"COMPLETE","result":"SUCCESS","details":{"interactions":1,"invites":2}}
+{"ts":"2026-08-13T10:18:56.433Z","agentId":"P-10","wave":5,"step":"WAVE_5","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-13T10:18:56.433Z","agentId":"P-10","wave":5,"step":"WAVE_5","action":"COMPLETE","result":"SUCCESS","details":{"reportPath":"/Users/yvesdarbouze/Documents/PaperWorking/artifacts/persona-swarm/reports/P-10-experience-report.md"}}
+{"ts":"2026-08-13T10:20:00.080Z","agentId":"P-10","wave":1,"step":"WAVE_1","action":"START","result":"SUCCESS","details":{"email":"agent10.gary.lindqvist@paperworking-test.dev"}}
+{"ts":"2026-08-13T10:20:00.081Z","agentId":"P-10","wave":0,"step":"SIGNUP","action":"SUCCESS_CREATED","result":"SUCCESS","details":{"uid":"uid_persona_p10","email":"agent10.gary.lindqvist@paperworking-test.dev","name":"Gary Lindqvist","entity":"Lindqvist Custom Homes LLC"}}
+{"ts":"2026-08-13T10:20:00.081Z","agentId":"P-10","wave":1,"step":"WAVE_1","action":"COMPLETE","result":"SUCCESS","details":{"uid":"uid_persona_p10"}}
+{"ts":"2026-08-13T10:20:00.438Z","agentId":"P-10","wave":2,"step":"WAVE_2","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-13T10:20:00.438Z","agentId":"P-10","wave":0,"step":"BILLING","action":"SUBSCRIPTION_SUCCESS","result":"SUCCESS","details":{"plan":"Individual","stripeCustomerId":"cus_test_swarm_p-10","stripeSubscriptionId":"sub_test_swarm_p-10","cardLastFour":"4242","cardBrand":"visa"}}
+{"ts":"2026-08-13T10:20:00.439Z","agentId":"P-10","wave":2,"step":"WAVE_2","action":"COMPLETE","result":"SUCCESS","details":{"plan":"Individual"}}
+{"ts":"2026-08-13T10:20:00.478Z","agentId":"P-10","wave":3,"step":"WAVE_3","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-13T10:20:00.478Z","agentId":"P-10","wave":0,"step":"PROJECTS","action":"CREATION_SUCCESS","result":"SUCCESS","details":{"created":10,"plaid":false}}
+{"ts":"2026-08-13T10:20:00.478Z","agentId":"P-10","wave":3,"step":"WAVE_3","action":"COMPLETE","result":"SUCCESS","details":{"created":10}}
+{"ts":"2026-08-13T10:20:00.537Z","agentId":"P-10","wave":4,"step":"WAVE_4","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-13T10:20:00.538Z","agentId":"P-10","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-32","to":"P-22","type":"Finished Asset Sale"}}
+{"ts":"2026-08-13T10:20:00.538Z","agentId":"P-10","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-13"}}
+{"ts":"2026-08-13T10:20:00.539Z","agentId":"P-10","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-22"}}
+{"ts":"2026-08-13T10:20:00.540Z","agentId":"P-10","wave":4,"step":"WAVE_4","action":"COMPLETE","result":"SUCCESS","details":{"interactions":1,"invites":2}}
+{"ts":"2026-08-13T10:20:00.607Z","agentId":"P-10","wave":5,"step":"WAVE_5","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-13T10:20:00.607Z","agentId":"P-10","wave":5,"step":"WAVE_5","action":"COMPLETE","result":"SUCCESS","details":{"reportPath":"/Users/yvesdarbouze/Documents/PaperWorking/artifacts/persona-swarm/reports/P-10-experience-report.md"}}
+{"ts":"2026-08-13T10:20:27.889Z","agentId":"P-10","wave":1,"step":"WAVE_1","action":"START","result":"SUCCESS","details":{"email":"agent10.gary.lindqvist@paperworking-test.dev"}}
+{"ts":"2026-08-13T10:20:27.890Z","agentId":"P-10","wave":0,"step":"SIGNUP","action":"SUCCESS_CREATED","result":"SUCCESS","details":{"uid":"uid_persona_p10","email":"agent10.gary.lindqvist@paperworking-test.dev","name":"Gary Lindqvist","entity":"Lindqvist Custom Homes LLC"}}
+{"ts":"2026-08-13T10:20:27.890Z","agentId":"P-10","wave":1,"step":"WAVE_1","action":"COMPLETE","result":"SUCCESS","details":{"uid":"uid_persona_p10"}}
+{"ts":"2026-08-13T10:20:27.890Z","agentId":"P-10","wave":1,"step":"WAVE_1","action":"START","result":"SUCCESS","details":{"email":"agent10.gary.lindqvist@paperworking-test.dev"}}
+{"ts":"2026-08-13T10:20:27.890Z","agentId":"P-10","wave":0,"step":"SIGNUP","action":"SUCCESS_CREATED","result":"SUCCESS","details":{"uid":"uid_persona_p10","email":"agent10.gary.lindqvist@paperworking-test.dev","name":"Gary Lindqvist","entity":"Lindqvist Custom Homes LLC"}}
+{"ts":"2026-08-13T10:20:27.891Z","agentId":"P-10","wave":1,"step":"WAVE_1","action":"COMPLETE","result":"SUCCESS","details":{"uid":"uid_persona_p10"}}
+{"ts":"2026-08-13T10:20:28.214Z","agentId":"P-10","wave":2,"step":"WAVE_2","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-13T10:20:28.214Z","agentId":"P-10","wave":0,"step":"BILLING","action":"SUBSCRIPTION_SUCCESS","result":"SUCCESS","details":{"plan":"Individual","stripeCustomerId":"cus_test_swarm_p-10","stripeSubscriptionId":"sub_test_swarm_p-10","cardLastFour":"4242","cardBrand":"visa"}}
+{"ts":"2026-08-13T10:20:28.214Z","agentId":"P-10","wave":2,"step":"WAVE_2","action":"COMPLETE","result":"SUCCESS","details":{"plan":"Individual"}}
+{"ts":"2026-08-13T10:20:28.259Z","agentId":"P-10","wave":3,"step":"WAVE_3","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-13T10:20:28.259Z","agentId":"P-10","wave":0,"step":"PROJECTS","action":"CREATION_SUCCESS","result":"SUCCESS","details":{"created":10,"plaid":false}}
+{"ts":"2026-08-13T10:20:28.259Z","agentId":"P-10","wave":3,"step":"WAVE_3","action":"COMPLETE","result":"SUCCESS","details":{"created":10}}
+{"ts":"2026-08-13T10:20:28.311Z","agentId":"P-10","wave":4,"step":"WAVE_4","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-13T10:20:28.312Z","agentId":"P-10","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-32","to":"P-22","type":"Finished Asset Sale"}}
+{"ts":"2026-08-13T10:20:28.313Z","agentId":"P-10","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-13"}}
+{"ts":"2026-08-13T10:20:28.313Z","agentId":"P-10","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-22"}}
+{"ts":"2026-08-13T10:20:28.313Z","agentId":"P-10","wave":4,"step":"WAVE_4","action":"COMPLETE","result":"SUCCESS","details":{"interactions":1,"invites":2}}
+{"ts":"2026-08-13T10:20:28.377Z","agentId":"P-10","wave":5,"step":"WAVE_5","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-13T10:20:28.378Z","agentId":"P-10","wave":5,"step":"WAVE_5","action":"COMPLETE","result":"SUCCESS","details":{"reportPath":"/Users/yvesdarbouze/Documents/PaperWorking/artifacts/persona-swarm/reports/P-10-experience-report.md"}}
+{"ts":"2026-08-13T10:20:31.333Z","agentId":"P-10","wave":2,"step":"WAVE_2","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-13T10:20:31.333Z","agentId":"P-10","wave":0,"step":"BILLING","action":"SUBSCRIPTION_SUCCESS","result":"SUCCESS","details":{"plan":"Individual","stripeCustomerId":"cus_test_swarm_p-10","stripeSubscriptionId":"sub_test_swarm_p-10","cardLastFour":"4242","cardBrand":"visa"}}
+{"ts":"2026-08-13T10:20:31.333Z","agentId":"P-10","wave":2,"step":"WAVE_2","action":"COMPLETE","result":"SUCCESS","details":{"plan":"Individual"}}
+{"ts":"2026-08-13T10:20:31.369Z","agentId":"P-10","wave":3,"step":"WAVE_3","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-13T10:20:31.369Z","agentId":"P-10","wave":0,"step":"PROJECTS","action":"CREATION_SUCCESS","result":"SUCCESS","details":{"created":10,"plaid":false}}
+{"ts":"2026-08-13T10:20:31.369Z","agentId":"P-10","wave":3,"step":"WAVE_3","action":"COMPLETE","result":"SUCCESS","details":{"created":10}}
+{"ts":"2026-08-13T10:20:31.436Z","agentId":"P-10","wave":4,"step":"WAVE_4","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-13T10:20:31.436Z","agentId":"P-10","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-32","to":"P-22","type":"Finished Asset Sale"}}
+{"ts":"2026-08-13T10:20:31.436Z","agentId":"P-10","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-13"}}
+{"ts":"2026-08-13T10:20:31.437Z","agentId":"P-10","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-22"}}
+{"ts":"2026-08-13T10:20:31.437Z","agentId":"P-10","wave":4,"step":"WAVE_4","action":"COMPLETE","result":"SUCCESS","details":{"interactions":1,"invites":2}}
+{"ts":"2026-08-13T10:20:31.506Z","agentId":"P-10","wave":5,"step":"WAVE_5","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-13T10:20:31.506Z","agentId":"P-10","wave":5,"step":"WAVE_5","action":"COMPLETE","result":"SUCCESS","details":{"reportPath":"/Users/yvesdarbouze/Documents/PaperWorking/artifacts/persona-swarm/reports/P-10-experience-report.md"}}
+{"ts":"2026-08-13T10:20:40.393Z","agentId":"P-10","wave":1,"step":"WAVE_1","action":"START","result":"SUCCESS","details":{"email":"agent10.gary.lindqvist@paperworking-test.dev"}}
+{"ts":"2026-08-13T10:20:40.393Z","agentId":"P-10","wave":0,"step":"SIGNUP","action":"SUCCESS_CREATED","result":"SUCCESS","details":{"uid":"uid_persona_p10","email":"agent10.gary.lindqvist@paperworking-test.dev","name":"Gary Lindqvist","entity":"Lindqvist Custom Homes LLC"}}
+{"ts":"2026-08-13T10:20:40.393Z","agentId":"P-10","wave":1,"step":"WAVE_1","action":"COMPLETE","result":"SUCCESS","details":{"uid":"uid_persona_p10"}}
+{"ts":"2026-08-13T10:20:40.405Z","agentId":"P-10","wave":1,"step":"WAVE_1","action":"START","result":"SUCCESS","details":{"email":"agent10.gary.lindqvist@paperworking-test.dev"}}
+{"ts":"2026-08-13T10:20:40.406Z","agentId":"P-10","wave":0,"step":"SIGNUP","action":"SUCCESS_CREATED","result":"SUCCESS","details":{"uid":"uid_persona_p10","email":"agent10.gary.lindqvist@paperworking-test.dev","name":"Gary Lindqvist","entity":"Lindqvist Custom Homes LLC"}}
+{"ts":"2026-08-13T10:20:40.406Z","agentId":"P-10","wave":1,"step":"WAVE_1","action":"COMPLETE","result":"SUCCESS","details":{"uid":"uid_persona_p10"}}
+{"ts":"2026-08-13T10:20:40.619Z","agentId":"P-10","wave":2,"step":"WAVE_2","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-13T10:20:40.620Z","agentId":"P-10","wave":0,"step":"BILLING","action":"SUBSCRIPTION_SUCCESS","result":"SUCCESS","details":{"plan":"Individual","stripeCustomerId":"cus_test_swarm_p-10","stripeSubscriptionId":"sub_test_swarm_p-10","cardLastFour":"4242","cardBrand":"visa"}}
+{"ts":"2026-08-13T10:20:40.620Z","agentId":"P-10","wave":2,"step":"WAVE_2","action":"COMPLETE","result":"SUCCESS","details":{"plan":"Individual"}}
+{"ts":"2026-08-13T10:20:40.661Z","agentId":"P-10","wave":3,"step":"WAVE_3","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-13T10:20:40.661Z","agentId":"P-10","wave":0,"step":"PROJECTS","action":"CREATION_SUCCESS","result":"SUCCESS","details":{"created":10,"plaid":false}}
+{"ts":"2026-08-13T10:20:40.661Z","agentId":"P-10","wave":3,"step":"WAVE_3","action":"COMPLETE","result":"SUCCESS","details":{"created":10}}
+{"ts":"2026-08-13T10:20:40.709Z","agentId":"P-10","wave":4,"step":"WAVE_4","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-13T10:20:40.709Z","agentId":"P-10","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-32","to":"P-22","type":"Finished Asset Sale"}}
+{"ts":"2026-08-13T10:20:40.709Z","agentId":"P-10","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-13"}}
+{"ts":"2026-08-13T10:20:40.710Z","agentId":"P-10","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-22"}}
+{"ts":"2026-08-13T10:20:40.710Z","agentId":"P-10","wave":4,"step":"WAVE_4","action":"COMPLETE","result":"SUCCESS","details":{"interactions":1,"invites":2}}
+{"ts":"2026-08-13T10:20:40.770Z","agentId":"P-10","wave":5,"step":"WAVE_5","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-13T10:20:40.770Z","agentId":"P-10","wave":5,"step":"WAVE_5","action":"COMPLETE","result":"SUCCESS","details":{"reportPath":"/Users/yvesdarbouze/Documents/PaperWorking/artifacts/persona-swarm/reports/P-10-experience-report.md"}}
+{"ts":"2026-08-13T10:20:43.736Z","agentId":"P-10","wave":2,"step":"WAVE_2","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-13T10:20:43.737Z","agentId":"P-10","wave":0,"step":"BILLING","action":"SUBSCRIPTION_SUCCESS","result":"SUCCESS","details":{"plan":"Individual","stripeCustomerId":"cus_test_swarm_p-10","stripeSubscriptionId":"sub_test_swarm_p-10","cardLastFour":"4242","cardBrand":"visa"}}
+{"ts":"2026-08-13T10:20:43.737Z","agentId":"P-10","wave":2,"step":"WAVE_2","action":"COMPLETE","result":"SUCCESS","details":{"plan":"Individual"}}
+{"ts":"2026-08-13T10:20:43.772Z","agentId":"P-10","wave":3,"step":"WAVE_3","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-13T10:20:43.773Z","agentId":"P-10","wave":0,"step":"PROJECTS","action":"CREATION_SUCCESS","result":"SUCCESS","details":{"created":10,"plaid":false}}
+{"ts":"2026-08-13T10:20:43.773Z","agentId":"P-10","wave":3,"step":"WAVE_3","action":"COMPLETE","result":"SUCCESS","details":{"created":10}}
+{"ts":"2026-08-13T10:20:43.820Z","agentId":"P-10","wave":4,"step":"WAVE_4","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-13T10:20:43.820Z","agentId":"P-10","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-32","to":"P-22","type":"Finished Asset Sale"}}
+{"ts":"2026-08-13T10:20:43.821Z","agentId":"P-10","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-13"}}
+{"ts":"2026-08-13T10:20:43.821Z","agentId":"P-10","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-22"}}
+{"ts":"2026-08-13T10:20:43.821Z","agentId":"P-10","wave":4,"step":"WAVE_4","action":"COMPLETE","result":"SUCCESS","details":{"interactions":1,"invites":2}}
+{"ts":"2026-08-13T10:20:43.885Z","agentId":"P-10","wave":5,"step":"WAVE_5","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-13T10:20:43.885Z","agentId":"P-10","wave":5,"step":"WAVE_5","action":"COMPLETE","result":"SUCCESS","details":{"reportPath":"/Users/yvesdarbouze/Documents/PaperWorking/artifacts/persona-swarm/reports/P-10-experience-report.md"}}
+{"ts":"2026-08-13T10:20:52.436Z","agentId":"P-10","wave":1,"step":"WAVE_1","action":"START","result":"SUCCESS","details":{"email":"agent10.gary.lindqvist@paperworking-test.dev"}}
+{"ts":"2026-08-13T10:20:52.436Z","agentId":"P-10","wave":0,"step":"SIGNUP","action":"SUCCESS_CREATED","result":"SUCCESS","details":{"uid":"uid_persona_p10","email":"agent10.gary.lindqvist@paperworking-test.dev","name":"Gary Lindqvist","entity":"Lindqvist Custom Homes LLC"}}
+{"ts":"2026-08-13T10:20:52.436Z","agentId":"P-10","wave":1,"step":"WAVE_1","action":"COMPLETE","result":"SUCCESS","details":{"uid":"uid_persona_p10"}}
+{"ts":"2026-08-13T10:20:52.437Z","agentId":"P-10","wave":1,"step":"WAVE_1","action":"START","result":"SUCCESS","details":{"email":"agent10.gary.lindqvist@paperworking-test.dev"}}
+{"ts":"2026-08-13T10:20:52.437Z","agentId":"P-10","wave":0,"step":"SIGNUP","action":"SUCCESS_CREATED","result":"SUCCESS","details":{"uid":"uid_persona_p10","email":"agent10.gary.lindqvist@paperworking-test.dev","name":"Gary Lindqvist","entity":"Lindqvist Custom Homes LLC"}}
+{"ts":"2026-08-13T10:20:52.437Z","agentId":"P-10","wave":1,"step":"WAVE_1","action":"COMPLETE","result":"SUCCESS","details":{"uid":"uid_persona_p10"}}
+{"ts":"2026-08-13T10:20:52.742Z","agentId":"P-10","wave":2,"step":"WAVE_2","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-13T10:20:52.743Z","agentId":"P-10","wave":2,"step":"WAVE_2","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-13T10:20:52.743Z","agentId":"P-10","wave":0,"step":"BILLING","action":"SUBSCRIPTION_SUCCESS","result":"SUCCESS","details":{"plan":"Individual","stripeCustomerId":"cus_test_swarm_p-10","stripeSubscriptionId":"sub_test_swarm_p-10","cardLastFour":"4242","cardBrand":"visa"}}
+{"ts":"2026-08-13T10:20:52.743Z","agentId":"P-10","wave":2,"step":"WAVE_2","action":"COMPLETE","result":"SUCCESS","details":{"plan":"Individual"}}
+{"ts":"2026-08-13T10:20:52.743Z","agentId":"P-10","wave":0,"step":"BILLING","action":"SUBSCRIPTION_SUCCESS","result":"SUCCESS","details":{"plan":"Individual","stripeCustomerId":"cus_test_swarm_p-10","stripeSubscriptionId":"sub_test_swarm_p-10","cardLastFour":"4242","cardBrand":"visa"}}
+{"ts":"2026-08-13T10:20:52.743Z","agentId":"P-10","wave":2,"step":"WAVE_2","action":"COMPLETE","result":"SUCCESS","details":{"plan":"Individual"}}
+{"ts":"2026-08-13T10:20:52.787Z","agentId":"P-10","wave":3,"step":"WAVE_3","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-13T10:20:52.787Z","agentId":"P-10","wave":0,"step":"PROJECTS","action":"CREATION_SUCCESS","result":"SUCCESS","details":{"created":10,"plaid":false}}
+{"ts":"2026-08-13T10:20:52.787Z","agentId":"P-10","wave":3,"step":"WAVE_3","action":"COMPLETE","result":"SUCCESS","details":{"created":10}}
+{"ts":"2026-08-13T10:20:52.790Z","agentId":"P-10","wave":3,"step":"WAVE_3","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-13T10:20:52.790Z","agentId":"P-10","wave":0,"step":"PROJECTS","action":"CREATION_SUCCESS","result":"SUCCESS","details":{"created":10,"plaid":false}}
+{"ts":"2026-08-13T10:20:52.791Z","agentId":"P-10","wave":3,"step":"WAVE_3","action":"COMPLETE","result":"SUCCESS","details":{"created":10}}
+{"ts":"2026-08-13T10:20:52.846Z","agentId":"P-10","wave":4,"step":"WAVE_4","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-13T10:20:52.847Z","agentId":"P-10","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-32","to":"P-22","type":"Finished Asset Sale"}}
+{"ts":"2026-08-13T10:20:52.847Z","agentId":"P-10","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-13"}}
+{"ts":"2026-08-13T10:20:52.847Z","agentId":"P-10","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-22"}}
+{"ts":"2026-08-13T10:20:52.848Z","agentId":"P-10","wave":4,"step":"WAVE_4","action":"COMPLETE","result":"SUCCESS","details":{"interactions":1,"invites":2}}
+{"ts":"2026-08-13T10:20:52.854Z","agentId":"P-10","wave":4,"step":"WAVE_4","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-13T10:20:52.855Z","agentId":"P-10","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-32","to":"P-22","type":"Finished Asset Sale"}}
+{"ts":"2026-08-13T10:20:52.856Z","agentId":"P-10","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-13"}}
+{"ts":"2026-08-13T10:20:52.856Z","agentId":"P-10","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-22"}}
+{"ts":"2026-08-13T10:20:52.856Z","agentId":"P-10","wave":4,"step":"WAVE_4","action":"COMPLETE","result":"SUCCESS","details":{"interactions":1,"invites":2}}
+{"ts":"2026-08-13T10:20:52.929Z","agentId":"P-10","wave":5,"step":"WAVE_5","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-13T10:20:52.929Z","agentId":"P-10","wave":5,"step":"WAVE_5","action":"COMPLETE","result":"SUCCESS","details":{"reportPath":"/Users/yvesdarbouze/Documents/PaperWorking/artifacts/persona-swarm/reports/P-10-experience-report.md"}}
+{"ts":"2026-08-13T10:20:52.927Z","agentId":"P-10","wave":5,"step":"WAVE_5","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-13T10:20:52.930Z","agentId":"P-10","wave":5,"step":"WAVE_5","action":"COMPLETE","result":"SUCCESS","details":{"reportPath":"/Users/yvesdarbouze/Documents/PaperWorking/artifacts/persona-swarm/reports/P-10-experience-report.md"}}
+{"ts":"2026-08-13T10:21:40.912Z","agentId":"P-10","wave":1,"step":"WAVE_1","action":"START","result":"SUCCESS","details":{"email":"agent10.gary.lindqvist@paperworking-test.dev"}}
+{"ts":"2026-08-13T10:21:40.913Z","agentId":"P-10","wave":1,"step":"WAVE_1","action":"START","result":"SUCCESS","details":{"email":"agent10.gary.lindqvist@paperworking-test.dev"}}
+{"ts":"2026-08-13T10:21:40.915Z","agentId":"P-10","wave":0,"step":"SIGNUP","action":"SUCCESS_CREATED","result":"SUCCESS","details":{"uid":"uid_persona_p10","email":"agent10.gary.lindqvist@paperworking-test.dev","name":"Gary Lindqvist","entity":"Lindqvist Custom Homes LLC"}}
+{"ts":"2026-08-13T10:21:40.915Z","agentId":"P-10","wave":0,"step":"SIGNUP","action":"SUCCESS_CREATED","result":"SUCCESS","details":{"uid":"uid_persona_p10","email":"agent10.gary.lindqvist@paperworking-test.dev","name":"Gary Lindqvist","entity":"Lindqvist Custom Homes LLC"}}
+{"ts":"2026-08-13T10:21:40.916Z","agentId":"P-10","wave":1,"step":"WAVE_1","action":"COMPLETE","result":"SUCCESS","details":{"uid":"uid_persona_p10"}}
+{"ts":"2026-08-13T10:21:40.917Z","agentId":"P-10","wave":1,"step":"WAVE_1","action":"COMPLETE","result":"SUCCESS","details":{"uid":"uid_persona_p10"}}
+{"ts":"2026-08-13T10:21:41.574Z","agentId":"P-10","wave":2,"step":"WAVE_2","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-13T10:21:41.576Z","agentId":"P-10","wave":0,"step":"BILLING","action":"SUBSCRIPTION_SUCCESS","result":"SUCCESS","details":{"plan":"Individual","stripeCustomerId":"cus_test_swarm_p-10","stripeSubscriptionId":"sub_test_swarm_p-10","cardLastFour":"4242","cardBrand":"visa"}}
+{"ts":"2026-08-13T10:21:41.576Z","agentId":"P-10","wave":2,"step":"WAVE_2","action":"COMPLETE","result":"SUCCESS","details":{"plan":"Individual"}}
+{"ts":"2026-08-13T10:21:41.577Z","agentId":"P-10","wave":2,"step":"WAVE_2","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-13T10:21:41.579Z","agentId":"P-10","wave":0,"step":"BILLING","action":"SUBSCRIPTION_SUCCESS","result":"SUCCESS","details":{"plan":"Individual","stripeCustomerId":"cus_test_swarm_p-10","stripeSubscriptionId":"sub_test_swarm_p-10","cardLastFour":"4242","cardBrand":"visa"}}
+{"ts":"2026-08-13T10:21:41.580Z","agentId":"P-10","wave":2,"step":"WAVE_2","action":"COMPLETE","result":"SUCCESS","details":{"plan":"Individual"}}
+{"ts":"2026-08-13T10:21:41.672Z","agentId":"P-10","wave":3,"step":"WAVE_3","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-13T10:21:41.672Z","agentId":"P-10","wave":0,"step":"PROJECTS","action":"CREATION_SUCCESS","result":"SUCCESS","details":{"created":10,"plaid":false}}
+{"ts":"2026-08-13T10:21:41.672Z","agentId":"P-10","wave":3,"step":"WAVE_3","action":"COMPLETE","result":"SUCCESS","details":{"created":10}}
+{"ts":"2026-08-13T10:21:41.685Z","agentId":"P-10","wave":3,"step":"WAVE_3","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-13T10:21:41.685Z","agentId":"P-10","wave":0,"step":"PROJECTS","action":"CREATION_SUCCESS","result":"SUCCESS","details":{"created":10,"plaid":false}}
+{"ts":"2026-08-13T10:21:41.685Z","agentId":"P-10","wave":3,"step":"WAVE_3","action":"COMPLETE","result":"SUCCESS","details":{"created":10}}
+{"ts":"2026-08-13T10:21:41.788Z","agentId":"P-10","wave":4,"step":"WAVE_4","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-13T10:21:41.789Z","agentId":"P-10","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-32","to":"P-22","type":"Finished Asset Sale"}}
+{"ts":"2026-08-13T10:21:41.789Z","agentId":"P-10","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-13"}}
+{"ts":"2026-08-13T10:21:41.789Z","agentId":"P-10","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-22"}}
+{"ts":"2026-08-13T10:21:41.789Z","agentId":"P-10","wave":4,"step":"WAVE_4","action":"COMPLETE","result":"SUCCESS","details":{"interactions":1,"invites":2}}
+{"ts":"2026-08-13T10:21:41.815Z","agentId":"P-10","wave":4,"step":"WAVE_4","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-13T10:21:41.816Z","agentId":"P-10","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-32","to":"P-22","type":"Finished Asset Sale"}}
+{"ts":"2026-08-13T10:21:41.816Z","agentId":"P-10","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-13"}}
+{"ts":"2026-08-13T10:21:41.816Z","agentId":"P-10","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-22"}}
+{"ts":"2026-08-13T10:21:41.817Z","agentId":"P-10","wave":4,"step":"WAVE_4","action":"COMPLETE","result":"SUCCESS","details":{"interactions":1,"invites":2}}
+{"ts":"2026-08-13T10:21:41.924Z","agentId":"P-10","wave":5,"step":"WAVE_5","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-13T10:21:41.924Z","agentId":"P-10","wave":5,"step":"WAVE_5","action":"COMPLETE","result":"SUCCESS","details":{"reportPath":"/Users/yvesdarbouze/Documents/PaperWorking/artifacts/persona-swarm/reports/P-10-experience-report.md"}}
+{"ts":"2026-08-13T10:21:41.980Z","agentId":"P-10","wave":5,"step":"WAVE_5","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-13T10:21:41.980Z","agentId":"P-10","wave":5,"step":"WAVE_5","action":"COMPLETE","result":"SUCCESS","details":{"reportPath":"/Users/yvesdarbouze/Documents/PaperWorking/artifacts/persona-swarm/reports/P-10-experience-report.md"}}
+{"ts":"2026-08-13T10:21:51.233Z","agentId":"P-10","wave":1,"step":"WAVE_1","action":"START","result":"SUCCESS","details":{"email":"agent10.gary.lindqvist@paperworking-test.dev"}}
+{"ts":"2026-08-13T10:21:51.233Z","agentId":"P-10","wave":1,"step":"WAVE_1","action":"START","result":"SUCCESS","details":{"email":"agent10.gary.lindqvist@paperworking-test.dev"}}
+{"ts":"2026-08-13T10:21:51.233Z","agentId":"P-10","wave":0,"step":"SIGNUP","action":"SUCCESS_CREATED","result":"SUCCESS","details":{"uid":"uid_persona_p10","email":"agent10.gary.lindqvist@paperworking-test.dev","name":"Gary Lindqvist","entity":"Lindqvist Custom Homes LLC"}}
+{"ts":"2026-08-13T10:21:51.233Z","agentId":"P-10","wave":0,"step":"SIGNUP","action":"SUCCESS_CREATED","result":"SUCCESS","details":{"uid":"uid_persona_p10","email":"agent10.gary.lindqvist@paperworking-test.dev","name":"Gary Lindqvist","entity":"Lindqvist Custom Homes LLC"}}
+{"ts":"2026-08-13T10:21:51.233Z","agentId":"P-10","wave":1,"step":"WAVE_1","action":"COMPLETE","result":"SUCCESS","details":{"uid":"uid_persona_p10"}}
+{"ts":"2026-08-13T10:21:51.233Z","agentId":"P-10","wave":1,"step":"WAVE_1","action":"COMPLETE","result":"SUCCESS","details":{"uid":"uid_persona_p10"}}
+{"ts":"2026-08-13T10:21:51.512Z","agentId":"P-10","wave":2,"step":"WAVE_2","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-13T10:21:51.513Z","agentId":"P-10","wave":0,"step":"BILLING","action":"SUBSCRIPTION_SUCCESS","result":"SUCCESS","details":{"plan":"Individual","stripeCustomerId":"cus_test_swarm_p-10","stripeSubscriptionId":"sub_test_swarm_p-10","cardLastFour":"4242","cardBrand":"visa"}}
+{"ts":"2026-08-13T10:21:51.513Z","agentId":"P-10","wave":2,"step":"WAVE_2","action":"COMPLETE","result":"SUCCESS","details":{"plan":"Individual"}}
+{"ts":"2026-08-13T10:21:51.516Z","agentId":"P-10","wave":2,"step":"WAVE_2","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-13T10:21:51.517Z","agentId":"P-10","wave":0,"step":"BILLING","action":"SUBSCRIPTION_SUCCESS","result":"SUCCESS","details":{"plan":"Individual","stripeCustomerId":"cus_test_swarm_p-10","stripeSubscriptionId":"sub_test_swarm_p-10","cardLastFour":"4242","cardBrand":"visa"}}
+{"ts":"2026-08-13T10:21:51.517Z","agentId":"P-10","wave":2,"step":"WAVE_2","action":"COMPLETE","result":"SUCCESS","details":{"plan":"Individual"}}
+{"ts":"2026-08-13T10:21:51.578Z","agentId":"P-10","wave":3,"step":"WAVE_3","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-13T10:21:51.578Z","agentId":"P-10","wave":0,"step":"PROJECTS","action":"CREATION_SUCCESS","result":"SUCCESS","details":{"created":10,"plaid":false}}
+{"ts":"2026-08-13T10:21:51.578Z","agentId":"P-10","wave":3,"step":"WAVE_3","action":"COMPLETE","result":"SUCCESS","details":{"created":10}}
+{"ts":"2026-08-13T10:21:51.588Z","agentId":"P-10","wave":3,"step":"WAVE_3","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-13T10:21:51.589Z","agentId":"P-10","wave":0,"step":"PROJECTS","action":"CREATION_SUCCESS","result":"SUCCESS","details":{"created":10,"plaid":false}}
+{"ts":"2026-08-13T10:21:51.589Z","agentId":"P-10","wave":3,"step":"WAVE_3","action":"COMPLETE","result":"SUCCESS","details":{"created":10}}
+{"ts":"2026-08-13T10:21:51.644Z","agentId":"P-10","wave":4,"step":"WAVE_4","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-13T10:21:51.645Z","agentId":"P-10","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-32","to":"P-22","type":"Finished Asset Sale"}}
+{"ts":"2026-08-13T10:21:51.645Z","agentId":"P-10","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-13"}}
+{"ts":"2026-08-13T10:21:51.646Z","agentId":"P-10","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-22"}}
+{"ts":"2026-08-13T10:21:51.646Z","agentId":"P-10","wave":4,"step":"WAVE_4","action":"COMPLETE","result":"SUCCESS","details":{"interactions":1,"invites":2}}
+{"ts":"2026-08-13T10:21:51.646Z","agentId":"P-10","wave":4,"step":"WAVE_4","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-13T10:21:51.647Z","agentId":"P-10","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-32","to":"P-22","type":"Finished Asset Sale"}}
+{"ts":"2026-08-13T10:21:51.647Z","agentId":"P-10","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-13"}}
+{"ts":"2026-08-13T10:21:51.647Z","agentId":"P-10","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-22"}}
+{"ts":"2026-08-13T10:21:51.647Z","agentId":"P-10","wave":4,"step":"WAVE_4","action":"COMPLETE","result":"SUCCESS","details":{"interactions":1,"invites":2}}
+{"ts":"2026-08-13T10:21:51.732Z","agentId":"P-10","wave":5,"step":"WAVE_5","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-13T10:21:51.732Z","agentId":"P-10","wave":5,"step":"WAVE_5","action":"COMPLETE","result":"SUCCESS","details":{"reportPath":"/Users/yvesdarbouze/Documents/PaperWorking/artifacts/persona-swarm/reports/P-10-experience-report.md"}}
+{"ts":"2026-08-13T10:21:51.732Z","agentId":"P-10","wave":5,"step":"WAVE_5","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-13T10:21:51.732Z","agentId":"P-10","wave":5,"step":"WAVE_5","action":"COMPLETE","result":"SUCCESS","details":{"reportPath":"/Users/yvesdarbouze/Documents/PaperWorking/artifacts/persona-swarm/reports/P-10-experience-report.md"}}
+{"ts":"2026-08-13T10:51:52.884Z","agentId":"P-10","wave":1,"step":"WAVE_1","action":"START","result":"SUCCESS","details":{"email":"agent10.gary.lindqvist@paperworking-test.dev"}}
+{"ts":"2026-08-13T10:51:52.885Z","agentId":"P-10","wave":1,"step":"WAVE_1","action":"START","result":"SUCCESS","details":{"email":"agent10.gary.lindqvist@paperworking-test.dev"}}
+{"ts":"2026-08-13T10:51:52.887Z","agentId":"P-10","wave":0,"step":"SIGNUP","action":"SUCCESS_CREATED","result":"SUCCESS","details":{"uid":"uid_persona_p10","email":"agent10.gary.lindqvist@paperworking-test.dev","name":"Gary Lindqvist","entity":"North Star Custom Builders LLC"}}
+{"ts":"2026-08-13T10:51:52.887Z","agentId":"P-10","wave":0,"step":"SIGNUP","action":"SUCCESS_CREATED","result":"SUCCESS","details":{"uid":"uid_persona_p10","email":"agent10.gary.lindqvist@paperworking-test.dev","name":"Gary Lindqvist","entity":"North Star Custom Builders LLC"}}
+{"ts":"2026-08-13T10:51:52.887Z","agentId":"P-10","wave":1,"step":"WAVE_1","action":"COMPLETE","result":"SUCCESS","details":{"uid":"uid_persona_p10"}}
+{"ts":"2026-08-13T10:51:52.887Z","agentId":"P-10","wave":1,"step":"WAVE_1","action":"COMPLETE","result":"SUCCESS","details":{"uid":"uid_persona_p10"}}
+{"ts":"2026-08-13T10:51:52.956Z","agentId":"P-10","wave":2,"step":"WAVE_2","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-13T10:51:52.956Z","agentId":"P-10","wave":0,"step":"BILLING","action":"SUBSCRIPTION_SUCCESS","result":"SUCCESS","details":{"plan":"Individual","stripeCustomerId":"cus_test_swarm_p-10","stripeSubscriptionId":"sub_test_swarm_p-10","cardLastFour":"4242","cardBrand":"visa"}}
+{"ts":"2026-08-13T10:51:52.956Z","agentId":"P-10","wave":2,"step":"WAVE_2","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-13T10:51:52.956Z","agentId":"P-10","wave":2,"step":"WAVE_2","action":"COMPLETE","result":"SUCCESS","details":{"plan":"Individual"}}
+{"ts":"2026-08-13T10:51:52.957Z","agentId":"P-10","wave":0,"step":"BILLING","action":"SUBSCRIPTION_SUCCESS","result":"SUCCESS","details":{"plan":"Individual","stripeCustomerId":"cus_test_swarm_p-10","stripeSubscriptionId":"sub_test_swarm_p-10","cardLastFour":"4242","cardBrand":"visa"}}
+{"ts":"2026-08-13T10:51:52.957Z","agentId":"P-10","wave":2,"step":"WAVE_2","action":"COMPLETE","result":"SUCCESS","details":{"plan":"Individual"}}
+{"ts":"2026-08-13T10:51:53.037Z","agentId":"P-10","wave":3,"step":"WAVE_3","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-13T10:51:53.041Z","agentId":"P-10","wave":0,"step":"PROJECTS","action":"CREATION_SUCCESS","result":"SUCCESS","details":{"created":10,"plaid":false}}
+{"ts":"2026-08-13T10:51:53.042Z","agentId":"P-10","wave":3,"step":"WAVE_3","action":"COMPLETE","result":"SUCCESS","details":{"created":10}}
+{"ts":"2026-08-13T10:51:53.043Z","agentId":"P-10","wave":3,"step":"WAVE_3","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-13T10:51:53.045Z","agentId":"P-10","wave":0,"step":"PROJECTS","action":"CREATION_SUCCESS","result":"SUCCESS","details":{"created":10,"plaid":false}}
+{"ts":"2026-08-13T10:51:53.046Z","agentId":"P-10","wave":3,"step":"WAVE_3","action":"COMPLETE","result":"SUCCESS","details":{"created":10}}
+{"ts":"2026-08-13T10:51:53.186Z","agentId":"P-10","wave":4,"step":"WAVE_4","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-13T10:51:53.187Z","agentId":"P-10","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-32","to":"P-22","type":"Finished Asset Sale"}}
+{"ts":"2026-08-13T10:51:53.187Z","agentId":"P-10","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-13"}}
+{"ts":"2026-08-13T10:51:53.187Z","agentId":"P-10","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-22"}}
+{"ts":"2026-08-13T10:51:53.187Z","agentId":"P-10","wave":4,"step":"WAVE_4","action":"COMPLETE","result":"SUCCESS","details":{"interactions":1,"invites":2}}
+{"ts":"2026-08-13T10:51:53.194Z","agentId":"P-10","wave":4,"step":"WAVE_4","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-13T10:51:53.194Z","agentId":"P-10","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-32","to":"P-22","type":"Finished Asset Sale"}}
+{"ts":"2026-08-13T10:51:53.194Z","agentId":"P-10","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-13"}}
+{"ts":"2026-08-13T10:51:53.195Z","agentId":"P-10","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-22"}}
+{"ts":"2026-08-13T10:51:53.195Z","agentId":"P-10","wave":4,"step":"WAVE_4","action":"COMPLETE","result":"SUCCESS","details":{"interactions":1,"invites":2}}
+{"ts":"2026-08-13T10:51:53.299Z","agentId":"P-10","wave":5,"step":"WAVE_5","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-13T10:51:53.299Z","agentId":"P-10","wave":5,"step":"WAVE_5","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-13T10:51:53.299Z","agentId":"P-10","wave":5,"step":"WAVE_5","action":"COMPLETE","result":"SUCCESS","details":{"reportPath":"/Users/yvesdarbouze/Documents/PaperWorking/artifacts/persona-swarm/reports/P-10-experience-report.md"}}
+{"ts":"2026-08-13T10:51:53.299Z","agentId":"P-10","wave":5,"step":"WAVE_5","action":"COMPLETE","result":"SUCCESS","details":{"reportPath":"/Users/yvesdarbouze/Documents/PaperWorking/artifacts/persona-swarm/reports/P-10-experience-report.md"}}
+{"ts":"2026-08-13T10:52:06.242Z","agentId":"P-10","wave":1,"step":"WAVE_1","action":"START","result":"SUCCESS","details":{"email":"agent10.gary.lindqvist@paperworking-test.dev"}}
+{"ts":"2026-08-13T10:52:06.242Z","agentId":"P-10","wave":1,"step":"WAVE_1","action":"START","result":"SUCCESS","details":{"email":"agent10.gary.lindqvist@paperworking-test.dev"}}
+{"ts":"2026-08-13T10:52:06.245Z","agentId":"P-10","wave":0,"step":"SIGNUP","action":"SUCCESS_CREATED","result":"SUCCESS","details":{"uid":"uid_persona_p10","email":"agent10.gary.lindqvist@paperworking-test.dev","name":"Gary Lindqvist","entity":"North Star Custom Builders LLC"}}
+{"ts":"2026-08-13T10:52:06.245Z","agentId":"P-10","wave":0,"step":"SIGNUP","action":"SUCCESS_CREATED","result":"SUCCESS","details":{"uid":"uid_persona_p10","email":"agent10.gary.lindqvist@paperworking-test.dev","name":"Gary Lindqvist","entity":"North Star Custom Builders LLC"}}
+{"ts":"2026-08-13T10:52:06.245Z","agentId":"P-10","wave":1,"step":"WAVE_1","action":"COMPLETE","result":"SUCCESS","details":{"uid":"uid_persona_p10"}}
+{"ts":"2026-08-13T10:52:06.245Z","agentId":"P-10","wave":1,"step":"WAVE_1","action":"COMPLETE","result":"SUCCESS","details":{"uid":"uid_persona_p10"}}
+{"ts":"2026-08-13T10:52:06.308Z","agentId":"P-10","wave":2,"step":"WAVE_2","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-13T10:52:06.309Z","agentId":"P-10","wave":0,"step":"BILLING","action":"SUBSCRIPTION_SUCCESS","result":"SUCCESS","details":{"plan":"Individual","stripeCustomerId":"cus_test_swarm_p-10","stripeSubscriptionId":"sub_test_swarm_p-10","cardLastFour":"4242","cardBrand":"visa"}}
+{"ts":"2026-08-13T10:52:06.309Z","agentId":"P-10","wave":2,"step":"WAVE_2","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-13T10:52:06.309Z","agentId":"P-10","wave":2,"step":"WAVE_2","action":"COMPLETE","result":"SUCCESS","details":{"plan":"Individual"}}
+{"ts":"2026-08-13T10:52:06.309Z","agentId":"P-10","wave":0,"step":"BILLING","action":"SUBSCRIPTION_SUCCESS","result":"SUCCESS","details":{"plan":"Individual","stripeCustomerId":"cus_test_swarm_p-10","stripeSubscriptionId":"sub_test_swarm_p-10","cardLastFour":"4242","cardBrand":"visa"}}
+{"ts":"2026-08-13T10:52:06.309Z","agentId":"P-10","wave":2,"step":"WAVE_2","action":"COMPLETE","result":"SUCCESS","details":{"plan":"Individual"}}
+{"ts":"2026-08-13T10:52:06.374Z","agentId":"P-10","wave":3,"step":"WAVE_3","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-13T10:52:06.377Z","agentId":"P-10","wave":3,"step":"WAVE_3","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-13T10:52:06.377Z","agentId":"P-10","wave":0,"step":"PROJECTS","action":"CREATION_SUCCESS","result":"SUCCESS","details":{"created":10,"plaid":false}}
+{"ts":"2026-08-13T10:52:06.377Z","agentId":"P-10","wave":3,"step":"WAVE_3","action":"COMPLETE","result":"SUCCESS","details":{"created":10}}
+{"ts":"2026-08-13T10:52:06.379Z","agentId":"P-10","wave":0,"step":"PROJECTS","action":"CREATION_SUCCESS","result":"SUCCESS","details":{"created":10,"plaid":false}}
+{"ts":"2026-08-13T10:52:06.379Z","agentId":"P-10","wave":3,"step":"WAVE_3","action":"COMPLETE","result":"SUCCESS","details":{"created":10}}
+{"ts":"2026-08-13T10:52:06.498Z","agentId":"P-10","wave":4,"step":"WAVE_4","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-13T10:52:06.498Z","agentId":"P-10","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-32","to":"P-22","type":"Finished Asset Sale"}}
+{"ts":"2026-08-13T10:52:06.499Z","agentId":"P-10","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-13"}}
+{"ts":"2026-08-13T10:52:06.499Z","agentId":"P-10","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-22"}}
+{"ts":"2026-08-13T10:52:06.499Z","agentId":"P-10","wave":4,"step":"WAVE_4","action":"COMPLETE","result":"SUCCESS","details":{"interactions":1,"invites":2}}
+{"ts":"2026-08-13T10:52:06.502Z","agentId":"P-10","wave":4,"step":"WAVE_4","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-13T10:52:06.502Z","agentId":"P-10","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-32","to":"P-22","type":"Finished Asset Sale"}}
+{"ts":"2026-08-13T10:52:06.502Z","agentId":"P-10","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-13"}}
+{"ts":"2026-08-13T10:52:06.503Z","agentId":"P-10","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-22"}}
+{"ts":"2026-08-13T10:52:06.503Z","agentId":"P-10","wave":4,"step":"WAVE_4","action":"COMPLETE","result":"SUCCESS","details":{"interactions":1,"invites":2}}
+{"ts":"2026-08-13T10:52:06.599Z","agentId":"P-10","wave":5,"step":"WAVE_5","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-13T10:52:06.599Z","agentId":"P-10","wave":5,"step":"WAVE_5","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-13T10:52:06.599Z","agentId":"P-10","wave":5,"step":"WAVE_5","action":"COMPLETE","result":"SUCCESS","details":{"reportPath":"/Users/yvesdarbouze/Documents/PaperWorking/artifacts/persona-swarm/reports/P-10-experience-report.md"}}
+{"ts":"2026-08-13T10:52:06.600Z","agentId":"P-10","wave":5,"step":"WAVE_5","action":"COMPLETE","result":"SUCCESS","details":{"reportPath":"/Users/yvesdarbouze/Documents/PaperWorking/artifacts/persona-swarm/reports/P-10-experience-report.md"}}
+{"ts":"2026-08-13T10:52:14.081Z","agentId":"P-10","wave":1,"step":"WAVE_1","action":"START","result":"SUCCESS","details":{"email":"agent10.gary.lindqvist@paperworking-test.dev"}}
+{"ts":"2026-08-13T10:52:14.081Z","agentId":"P-10","wave":1,"step":"WAVE_1","action":"START","result":"SUCCESS","details":{"email":"agent10.gary.lindqvist@paperworking-test.dev"}}
+{"ts":"2026-08-13T10:52:14.082Z","agentId":"P-10","wave":0,"step":"SIGNUP","action":"SUCCESS_CREATED","result":"SUCCESS","details":{"uid":"uid_persona_p10","email":"agent10.gary.lindqvist@paperworking-test.dev","name":"Gary Lindqvist","entity":"North Star Custom Builders LLC"}}
+{"ts":"2026-08-13T10:52:14.082Z","agentId":"P-10","wave":0,"step":"SIGNUP","action":"SUCCESS_CREATED","result":"SUCCESS","details":{"uid":"uid_persona_p10","email":"agent10.gary.lindqvist@paperworking-test.dev","name":"Gary Lindqvist","entity":"North Star Custom Builders LLC"}}
+{"ts":"2026-08-13T10:52:14.082Z","agentId":"P-10","wave":1,"step":"WAVE_1","action":"COMPLETE","result":"SUCCESS","details":{"uid":"uid_persona_p10"}}
+{"ts":"2026-08-13T10:52:14.082Z","agentId":"P-10","wave":1,"step":"WAVE_1","action":"COMPLETE","result":"SUCCESS","details":{"uid":"uid_persona_p10"}}
+{"ts":"2026-08-13T10:52:14.134Z","agentId":"P-10","wave":2,"step":"WAVE_2","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-13T10:52:14.134Z","agentId":"P-10","wave":0,"step":"BILLING","action":"SUBSCRIPTION_SUCCESS","result":"SUCCESS","details":{"plan":"Individual","stripeCustomerId":"cus_test_swarm_p-10","stripeSubscriptionId":"sub_test_swarm_p-10","cardLastFour":"4242","cardBrand":"visa"}}
+{"ts":"2026-08-13T10:52:14.134Z","agentId":"P-10","wave":2,"step":"WAVE_2","action":"COMPLETE","result":"SUCCESS","details":{"plan":"Individual"}}
+{"ts":"2026-08-13T10:52:14.136Z","agentId":"P-10","wave":2,"step":"WAVE_2","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-13T10:52:14.136Z","agentId":"P-10","wave":0,"step":"BILLING","action":"SUBSCRIPTION_SUCCESS","result":"SUCCESS","details":{"plan":"Individual","stripeCustomerId":"cus_test_swarm_p-10","stripeSubscriptionId":"sub_test_swarm_p-10","cardLastFour":"4242","cardBrand":"visa"}}
+{"ts":"2026-08-13T10:52:14.136Z","agentId":"P-10","wave":2,"step":"WAVE_2","action":"COMPLETE","result":"SUCCESS","details":{"plan":"Individual"}}
+{"ts":"2026-08-13T10:52:14.215Z","agentId":"P-10","wave":3,"step":"WAVE_3","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-13T10:52:14.216Z","agentId":"P-10","wave":3,"step":"WAVE_3","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-13T10:52:14.218Z","agentId":"P-10","wave":0,"step":"PROJECTS","action":"CREATION_SUCCESS","result":"SUCCESS","details":{"created":10,"plaid":false}}
+{"ts":"2026-08-13T10:52:14.218Z","agentId":"P-10","wave":3,"step":"WAVE_3","action":"COMPLETE","result":"SUCCESS","details":{"created":10}}
+{"ts":"2026-08-13T10:52:14.219Z","agentId":"P-10","wave":0,"step":"PROJECTS","action":"CREATION_SUCCESS","result":"SUCCESS","details":{"created":10,"plaid":false}}
+{"ts":"2026-08-13T10:52:14.219Z","agentId":"P-10","wave":3,"step":"WAVE_3","action":"COMPLETE","result":"SUCCESS","details":{"created":10}}
+{"ts":"2026-08-13T10:52:14.343Z","agentId":"P-10","wave":4,"step":"WAVE_4","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-13T10:52:14.343Z","agentId":"P-10","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-32","to":"P-22","type":"Finished Asset Sale"}}
+{"ts":"2026-08-13T10:52:14.343Z","agentId":"P-10","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-13"}}
+{"ts":"2026-08-13T10:52:14.344Z","agentId":"P-10","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-22"}}
+{"ts":"2026-08-13T10:52:14.344Z","agentId":"P-10","wave":4,"step":"WAVE_4","action":"COMPLETE","result":"SUCCESS","details":{"interactions":1,"invites":2}}
+{"ts":"2026-08-13T10:52:14.360Z","agentId":"P-10","wave":4,"step":"WAVE_4","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-13T10:52:14.360Z","agentId":"P-10","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-32","to":"P-22","type":"Finished Asset Sale"}}
+{"ts":"2026-08-13T10:52:14.360Z","agentId":"P-10","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-13"}}
+{"ts":"2026-08-13T10:52:14.361Z","agentId":"P-10","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-22"}}
+{"ts":"2026-08-13T10:52:14.361Z","agentId":"P-10","wave":4,"step":"WAVE_4","action":"COMPLETE","result":"SUCCESS","details":{"interactions":1,"invites":2}}
+{"ts":"2026-08-13T10:52:14.440Z","agentId":"P-10","wave":5,"step":"WAVE_5","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-13T10:52:14.441Z","agentId":"P-10","wave":5,"step":"WAVE_5","action":"COMPLETE","result":"SUCCESS","details":{"reportPath":"/Users/yvesdarbouze/Documents/PaperWorking/artifacts/persona-swarm/reports/P-10-experience-report.md"}}
+{"ts":"2026-08-13T10:52:14.458Z","agentId":"P-10","wave":5,"step":"WAVE_5","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-13T10:52:14.458Z","agentId":"P-10","wave":5,"step":"WAVE_5","action":"COMPLETE","result":"SUCCESS","details":{"reportPath":"/Users/yvesdarbouze/Documents/PaperWorking/artifacts/persona-swarm/reports/P-10-experience-report.md"}}
+{"ts":"2026-08-13T10:52:42.815Z","agentId":"P-10","wave":1,"step":"WAVE_1","action":"START","result":"SUCCESS","details":{"email":"agent10.gary.lindqvist@paperworking-test.dev"}}
+{"ts":"2026-08-13T10:52:42.816Z","agentId":"P-10","wave":0,"step":"SIGNUP","action":"SUCCESS_CREATED","result":"SUCCESS","details":{"uid":"uid_persona_p10","email":"agent10.gary.lindqvist@paperworking-test.dev","name":"Gary Lindqvist","entity":"North Star Custom Builders LLC"}}
+{"ts":"2026-08-13T10:52:42.816Z","agentId":"P-10","wave":1,"step":"WAVE_1","action":"COMPLETE","result":"SUCCESS","details":{"uid":"uid_persona_p10"}}
+{"ts":"2026-08-13T10:52:42.883Z","agentId":"P-10","wave":2,"step":"WAVE_2","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-13T10:52:42.885Z","agentId":"P-10","wave":0,"step":"BILLING","action":"SUBSCRIPTION_SUCCESS","result":"SUCCESS","details":{"plan":"Individual","stripeCustomerId":"cus_test_swarm_p-10","stripeSubscriptionId":"sub_test_swarm_p-10","cardLastFour":"4242","cardBrand":"visa"}}
+{"ts":"2026-08-13T10:52:42.886Z","agentId":"P-10","wave":2,"step":"WAVE_2","action":"COMPLETE","result":"SUCCESS","details":{"plan":"Individual"}}
+{"ts":"2026-08-13T10:52:42.941Z","agentId":"P-10","wave":3,"step":"WAVE_3","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-13T10:52:42.942Z","agentId":"P-10","wave":0,"step":"PROJECTS","action":"CREATION_SUCCESS","result":"SUCCESS","details":{"created":10,"plaid":false}}
+{"ts":"2026-08-13T10:52:42.943Z","agentId":"P-10","wave":3,"step":"WAVE_3","action":"COMPLETE","result":"SUCCESS","details":{"created":10}}
+{"ts":"2026-08-13T10:52:43.077Z","agentId":"P-10","wave":4,"step":"WAVE_4","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-13T10:52:43.077Z","agentId":"P-10","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-32","to":"P-22","type":"Finished Asset Sale"}}
+{"ts":"2026-08-13T10:52:43.078Z","agentId":"P-10","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-13"}}
+{"ts":"2026-08-13T10:52:43.078Z","agentId":"P-10","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-22"}}
+{"ts":"2026-08-13T10:52:43.078Z","agentId":"P-10","wave":4,"step":"WAVE_4","action":"COMPLETE","result":"SUCCESS","details":{"interactions":1,"invites":2}}
+{"ts":"2026-08-13T10:52:43.159Z","agentId":"P-10","wave":5,"step":"WAVE_5","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-13T10:52:43.160Z","agentId":"P-10","wave":5,"step":"WAVE_5","action":"COMPLETE","result":"SUCCESS","details":{"reportPath":"/Users/yvesdarbouze/Documents/PaperWorking/artifacts/persona-swarm/reports/P-10-experience-report.md"}}
+{"ts":"2026-08-13T10:52:46.504Z","agentId":"P-10","wave":1,"step":"WAVE_1","action":"START","result":"SUCCESS","details":{"email":"agent10.gary.lindqvist@paperworking-test.dev"}}
+{"ts":"2026-08-13T10:52:46.505Z","agentId":"P-10","wave":0,"step":"SIGNUP","action":"SUCCESS_CREATED","result":"SUCCESS","details":{"uid":"uid_persona_p10","email":"agent10.gary.lindqvist@paperworking-test.dev","name":"Gary Lindqvist","entity":"North Star Custom Builders LLC"}}
+{"ts":"2026-08-13T10:52:46.505Z","agentId":"P-10","wave":1,"step":"WAVE_1","action":"COMPLETE","result":"SUCCESS","details":{"uid":"uid_persona_p10"}}
+{"ts":"2026-08-13T10:52:46.565Z","agentId":"P-10","wave":2,"step":"WAVE_2","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-13T10:52:46.565Z","agentId":"P-10","wave":0,"step":"BILLING","action":"SUBSCRIPTION_SUCCESS","result":"SUCCESS","details":{"plan":"Individual","stripeCustomerId":"cus_test_swarm_p-10","stripeSubscriptionId":"sub_test_swarm_p-10","cardLastFour":"4242","cardBrand":"visa"}}
+{"ts":"2026-08-13T10:52:46.565Z","agentId":"P-10","wave":2,"step":"WAVE_2","action":"COMPLETE","result":"SUCCESS","details":{"plan":"Individual"}}
+{"ts":"2026-08-13T10:52:46.629Z","agentId":"P-10","wave":3,"step":"WAVE_3","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-13T10:52:46.631Z","agentId":"P-10","wave":0,"step":"PROJECTS","action":"CREATION_SUCCESS","result":"SUCCESS","details":{"created":10,"plaid":false}}
+{"ts":"2026-08-13T10:52:46.631Z","agentId":"P-10","wave":3,"step":"WAVE_3","action":"COMPLETE","result":"SUCCESS","details":{"created":10}}
+{"ts":"2026-08-13T10:52:46.763Z","agentId":"P-10","wave":4,"step":"WAVE_4","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-13T10:52:46.763Z","agentId":"P-10","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-32","to":"P-22","type":"Finished Asset Sale"}}
+{"ts":"2026-08-13T10:52:46.764Z","agentId":"P-10","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-13"}}
+{"ts":"2026-08-13T10:52:46.764Z","agentId":"P-10","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-22"}}
+{"ts":"2026-08-13T10:52:46.764Z","agentId":"P-10","wave":4,"step":"WAVE_4","action":"COMPLETE","result":"SUCCESS","details":{"interactions":1,"invites":2}}
+{"ts":"2026-08-13T10:52:46.864Z","agentId":"P-10","wave":5,"step":"WAVE_5","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-13T10:52:46.865Z","agentId":"P-10","wave":5,"step":"WAVE_5","action":"COMPLETE","result":"SUCCESS","details":{"reportPath":"/Users/yvesdarbouze/Documents/PaperWorking/artifacts/persona-swarm/reports/P-10-experience-report.md"}}
+{"ts":"2026-08-13T11:25:14.408Z","agentId":"P-10","wave":1,"step":"WAVE_1","action":"START","result":"SUCCESS","details":{"email":"agent10.gary.lindqvist@paperworking-test.dev"}}
+{"ts":"2026-08-13T11:25:14.408Z","agentId":"P-10","wave":0,"step":"SIGNUP","action":"SUCCESS_CREATED","result":"SUCCESS","details":{"uid":"uid_persona_p10","email":"agent10.gary.lindqvist@paperworking-test.dev","name":"Gary Lindqvist","entity":"Lindqvist Custom Homes LLC"}}
+{"ts":"2026-08-13T11:25:14.409Z","agentId":"P-10","wave":1,"step":"WAVE_1","action":"COMPLETE","result":"SUCCESS","details":{"uid":"uid_persona_p10"}}
+{"ts":"2026-08-13T11:25:14.489Z","agentId":"P-10","wave":2,"step":"WAVE_2","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-13T11:25:14.489Z","agentId":"P-10","wave":0,"step":"BILLING","action":"SUBSCRIPTION_SUCCESS","result":"SUCCESS","details":{"plan":"Individual","stripeCustomerId":"cus_test_swarm_p-10","stripeSubscriptionId":"sub_test_swarm_p-10","cardLastFour":"4242","cardBrand":"visa"}}
+{"ts":"2026-08-13T11:25:14.489Z","agentId":"P-10","wave":2,"step":"WAVE_2","action":"COMPLETE","result":"SUCCESS","details":{"plan":"Individual"}}
+{"ts":"2026-08-13T11:25:14.554Z","agentId":"P-10","wave":3,"step":"WAVE_3","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-13T11:25:14.556Z","agentId":"P-10","wave":0,"step":"PROJECTS","action":"CREATION_SUCCESS","result":"SUCCESS","details":{"created":10,"plaid":false}}
+{"ts":"2026-08-13T11:25:14.556Z","agentId":"P-10","wave":3,"step":"WAVE_3","action":"COMPLETE","result":"SUCCESS","details":{"created":10}}
+{"ts":"2026-08-13T11:25:14.695Z","agentId":"P-10","wave":4,"step":"WAVE_4","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-13T11:25:14.696Z","agentId":"P-10","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-32","to":"P-22","type":"Finished Asset Sale"}}
+{"ts":"2026-08-13T11:25:14.696Z","agentId":"P-10","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-13"}}
+{"ts":"2026-08-13T11:25:14.696Z","agentId":"P-10","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-22"}}
+{"ts":"2026-08-13T11:25:14.696Z","agentId":"P-10","wave":4,"step":"WAVE_4","action":"COMPLETE","result":"SUCCESS","details":{"interactions":1,"invites":2}}
+{"ts":"2026-08-13T11:25:14.778Z","agentId":"P-10","wave":5,"step":"WAVE_5","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-13T11:25:14.778Z","agentId":"P-10","wave":5,"step":"WAVE_5","action":"COMPLETE","result":"SUCCESS","details":{"reportPath":"/Users/yvesdarbouze/Documents/PaperWorking/artifacts/persona-swarm/reports/P-10-experience-report.md"}}
+{"ts":"2026-08-13T11:27:50.684Z","agentId":"P-10","wave":1,"step":"WAVE_1","action":"START","result":"SUCCESS","details":{"email":"agent10.gary.lindqvist@paperworking-test.dev"}}
+{"ts":"2026-08-13T11:27:50.686Z","agentId":"P-10","wave":1,"step":"WAVE_1","action":"START","result":"SUCCESS","details":{"email":"agent10.gary.lindqvist@paperworking-test.dev"}}
+{"ts":"2026-08-13T11:27:50.687Z","agentId":"P-10","wave":0,"step":"SIGNUP","action":"SUCCESS_CREATED","result":"SUCCESS","details":{"uid":"uid_persona_p10","email":"agent10.gary.lindqvist@paperworking-test.dev","name":"Gary Lindqvist","entity":"Lindqvist Custom Homes LLC"}}
+{"ts":"2026-08-13T11:27:50.687Z","agentId":"P-10","wave":0,"step":"SIGNUP","action":"SUCCESS_CREATED","result":"SUCCESS","details":{"uid":"uid_persona_p10","email":"agent10.gary.lindqvist@paperworking-test.dev","name":"Gary Lindqvist","entity":"Lindqvist Custom Homes LLC"}}
+{"ts":"2026-08-13T11:27:50.687Z","agentId":"P-10","wave":1,"step":"WAVE_1","action":"COMPLETE","result":"SUCCESS","details":{"uid":"uid_persona_p10"}}
+{"ts":"2026-08-13T11:27:50.687Z","agentId":"P-10","wave":1,"step":"WAVE_1","action":"COMPLETE","result":"SUCCESS","details":{"uid":"uid_persona_p10"}}
+{"ts":"2026-08-13T11:27:50.786Z","agentId":"P-10","wave":2,"step":"WAVE_2","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-13T11:27:50.786Z","agentId":"P-10","wave":2,"step":"WAVE_2","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-13T11:27:50.787Z","agentId":"P-10","wave":0,"step":"BILLING","action":"SUBSCRIPTION_SUCCESS","result":"SUCCESS","details":{"plan":"Individual","stripeCustomerId":"cus_test_swarm_p-10","stripeSubscriptionId":"sub_test_swarm_p-10","cardLastFour":"4242","cardBrand":"visa"}}
+{"ts":"2026-08-13T11:27:50.788Z","agentId":"P-10","wave":2,"step":"WAVE_2","action":"COMPLETE","result":"SUCCESS","details":{"plan":"Individual"}}
+{"ts":"2026-08-13T11:27:50.788Z","agentId":"P-10","wave":0,"step":"BILLING","action":"SUBSCRIPTION_SUCCESS","result":"SUCCESS","details":{"plan":"Individual","stripeCustomerId":"cus_test_swarm_p-10","stripeSubscriptionId":"sub_test_swarm_p-10","cardLastFour":"4242","cardBrand":"visa"}}
+{"ts":"2026-08-13T11:27:50.788Z","agentId":"P-10","wave":2,"step":"WAVE_2","action":"COMPLETE","result":"SUCCESS","details":{"plan":"Individual"}}
+{"ts":"2026-08-13T11:27:50.883Z","agentId":"P-10","wave":3,"step":"WAVE_3","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-13T11:27:50.885Z","agentId":"P-10","wave":0,"step":"PROJECTS","action":"CREATION_SUCCESS","result":"SUCCESS","details":{"created":10,"plaid":false}}
+{"ts":"2026-08-13T11:27:50.885Z","agentId":"P-10","wave":3,"step":"WAVE_3","action":"COMPLETE","result":"SUCCESS","details":{"created":10}}
+{"ts":"2026-08-13T11:27:50.887Z","agentId":"P-10","wave":3,"step":"WAVE_3","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-13T11:27:50.889Z","agentId":"P-10","wave":0,"step":"PROJECTS","action":"CREATION_SUCCESS","result":"SUCCESS","details":{"created":10,"plaid":false}}
+{"ts":"2026-08-13T11:27:50.889Z","agentId":"P-10","wave":3,"step":"WAVE_3","action":"COMPLETE","result":"SUCCESS","details":{"created":10}}
+{"ts":"2026-08-13T11:27:51.043Z","agentId":"P-10","wave":4,"step":"WAVE_4","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-13T11:27:51.043Z","agentId":"P-10","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-32","to":"P-22","type":"Finished Asset Sale"}}
+{"ts":"2026-08-13T11:27:51.044Z","agentId":"P-10","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-13"}}
+{"ts":"2026-08-13T11:27:51.044Z","agentId":"P-10","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-22"}}
+{"ts":"2026-08-13T11:27:51.044Z","agentId":"P-10","wave":4,"step":"WAVE_4","action":"COMPLETE","result":"SUCCESS","details":{"interactions":1,"invites":2}}
+{"ts":"2026-08-13T11:27:51.058Z","agentId":"P-10","wave":4,"step":"WAVE_4","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-13T11:27:51.058Z","agentId":"P-10","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-32","to":"P-22","type":"Finished Asset Sale"}}
+{"ts":"2026-08-13T11:27:51.059Z","agentId":"P-10","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-13"}}
+{"ts":"2026-08-13T11:27:51.060Z","agentId":"P-10","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-22"}}
+{"ts":"2026-08-13T11:27:51.060Z","agentId":"P-10","wave":4,"step":"WAVE_4","action":"COMPLETE","result":"SUCCESS","details":{"interactions":1,"invites":2}}
+{"ts":"2026-08-13T11:27:51.135Z","agentId":"P-10","wave":5,"step":"WAVE_5","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-13T11:27:51.135Z","agentId":"P-10","wave":5,"step":"WAVE_5","action":"COMPLETE","result":"SUCCESS","details":{"reportPath":"/Users/yvesdarbouze/Documents/PaperWorking/artifacts/persona-swarm/reports/P-10-experience-report.md"}}
+{"ts":"2026-08-13T11:27:51.165Z","agentId":"P-10","wave":5,"step":"WAVE_5","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-13T11:27:51.166Z","agentId":"P-10","wave":5,"step":"WAVE_5","action":"COMPLETE","result":"SUCCESS","details":{"reportPath":"/Users/yvesdarbouze/Documents/PaperWorking/artifacts/persona-swarm/reports/P-10-experience-report.md"}}
+{"ts":"2026-08-13T13:11:18.159Z","agentId":"P-10","wave":1,"step":"WAVE_1","action":"START","result":"SUCCESS","details":{"email":"agent10.gary.lindqvist@paperworking-test.dev"}}
+{"ts":"2026-08-13T13:11:18.160Z","agentId":"P-10","wave":0,"step":"SIGNUP","action":"SUCCESS_CREATED","result":"SUCCESS","details":{"uid":"uid_persona_p10","email":"agent10.gary.lindqvist@paperworking-test.dev","name":"Gary Lindqvist","entity":"Lindqvist Custom Homes LLC"}}
+{"ts":"2026-08-13T13:11:18.160Z","agentId":"P-10","wave":1,"step":"WAVE_1","action":"COMPLETE","result":"SUCCESS","details":{"uid":"uid_persona_p10"}}
+{"ts":"2026-08-13T13:11:18.313Z","agentId":"P-10","wave":2,"step":"WAVE_2","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-13T13:11:18.313Z","agentId":"P-10","wave":0,"step":"BILLING","action":"SUBSCRIPTION_SUCCESS","result":"SUCCESS","details":{"plan":"Individual","stripeCustomerId":"cus_test_swarm_p-10","stripeSubscriptionId":"sub_test_swarm_p-10","cardLastFour":"4242","cardBrand":"visa"}}
+{"ts":"2026-08-13T13:11:18.313Z","agentId":"P-10","wave":2,"step":"WAVE_2","action":"COMPLETE","result":"SUCCESS","details":{"plan":"Individual"}}
+{"ts":"2026-08-13T13:11:18.510Z","agentId":"P-10","wave":3,"step":"WAVE_3","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-13T13:11:18.515Z","agentId":"P-10","wave":0,"step":"PROJECTS","action":"CREATION_SUCCESS","result":"SUCCESS","details":{"created":10,"plaid":false}}
+{"ts":"2026-08-13T13:11:18.515Z","agentId":"P-10","wave":3,"step":"WAVE_3","action":"COMPLETE","result":"SUCCESS","details":{"created":10}}
+{"ts":"2026-08-13T13:11:18.714Z","agentId":"P-10","wave":1,"step":"WAVE_1","action":"START","result":"SUCCESS","details":{"email":"agent10.gary.lindqvist@paperworking-test.dev"}}
+{"ts":"2026-08-13T13:11:18.714Z","agentId":"P-10","wave":0,"step":"SIGNUP","action":"SUCCESS_CREATED","result":"SUCCESS","details":{"uid":"uid_persona_p10","email":"agent10.gary.lindqvist@paperworking-test.dev","name":"Gary Lindqvist","entity":"Lindqvist Custom Homes LLC"}}
+{"ts":"2026-08-13T13:11:18.715Z","agentId":"P-10","wave":1,"step":"WAVE_1","action":"COMPLETE","result":"SUCCESS","details":{"uid":"uid_persona_p10"}}
+{"ts":"2026-08-13T13:11:18.816Z","agentId":"P-10","wave":2,"step":"WAVE_2","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-13T13:11:18.816Z","agentId":"P-10","wave":0,"step":"BILLING","action":"SUBSCRIPTION_SUCCESS","result":"SUCCESS","details":{"plan":"Individual","stripeCustomerId":"cus_test_swarm_p-10","stripeSubscriptionId":"sub_test_swarm_p-10","cardLastFour":"4242","cardBrand":"visa"}}
+{"ts":"2026-08-13T13:11:18.817Z","agentId":"P-10","wave":2,"step":"WAVE_2","action":"COMPLETE","result":"SUCCESS","details":{"plan":"Individual"}}
+{"ts":"2026-08-13T13:11:18.896Z","agentId":"P-10","wave":4,"step":"WAVE_4","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-13T13:11:18.897Z","agentId":"P-10","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-32","to":"P-22","type":"Finished Asset Sale"}}
+{"ts":"2026-08-13T13:11:18.897Z","agentId":"P-10","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-13"}}
+{"ts":"2026-08-13T13:11:18.898Z","agentId":"P-10","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-22"}}
+{"ts":"2026-08-13T13:11:18.898Z","agentId":"P-10","wave":4,"step":"WAVE_4","action":"COMPLETE","result":"SUCCESS","details":{"interactions":1,"invites":2}}
+{"ts":"2026-08-13T13:11:19.007Z","agentId":"P-10","wave":3,"step":"WAVE_3","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-13T13:11:19.009Z","agentId":"P-10","wave":0,"step":"PROJECTS","action":"CREATION_SUCCESS","result":"SUCCESS","details":{"created":10,"plaid":false}}
+{"ts":"2026-08-13T13:11:19.010Z","agentId":"P-10","wave":3,"step":"WAVE_3","action":"COMPLETE","result":"SUCCESS","details":{"created":10}}
+{"ts":"2026-08-13T13:11:19.179Z","agentId":"P-10","wave":5,"step":"WAVE_5","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-13T13:11:19.179Z","agentId":"P-10","wave":5,"step":"WAVE_5","action":"COMPLETE","result":"SUCCESS","details":{"reportPath":"/Users/yvesdarbouze/Documents/PaperWorking/artifacts/persona-swarm/reports/P-10-experience-report.md"}}
+{"ts":"2026-08-13T13:11:19.252Z","agentId":"P-10","wave":4,"step":"WAVE_4","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-13T13:11:19.255Z","agentId":"P-10","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-32","to":"P-22","type":"Finished Asset Sale"}}
+{"ts":"2026-08-13T13:11:19.255Z","agentId":"P-10","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-13"}}
+{"ts":"2026-08-13T13:11:19.256Z","agentId":"P-10","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-22"}}
+{"ts":"2026-08-13T13:11:19.256Z","agentId":"P-10","wave":4,"step":"WAVE_4","action":"COMPLETE","result":"SUCCESS","details":{"interactions":1,"invites":2}}
+{"ts":"2026-08-13T13:11:19.373Z","agentId":"P-10","wave":5,"step":"WAVE_5","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-13T13:11:19.374Z","agentId":"P-10","wave":5,"step":"WAVE_5","action":"COMPLETE","result":"SUCCESS","details":{"reportPath":"/Users/yvesdarbouze/Documents/PaperWorking/artifacts/persona-swarm/reports/P-10-experience-report.md"}}
+{"ts":"2026-08-13T13:11:34.117Z","agentId":"P-10","wave":1,"step":"WAVE_1","action":"START","result":"SUCCESS","details":{"email":"agent10.gary.lindqvist@paperworking-test.dev"}}
+{"ts":"2026-08-13T13:11:34.117Z","agentId":"P-10","wave":1,"step":"WAVE_1","action":"START","result":"SUCCESS","details":{"email":"agent10.gary.lindqvist@paperworking-test.dev"}}
+{"ts":"2026-08-13T13:11:34.119Z","agentId":"P-10","wave":0,"step":"SIGNUP","action":"SUCCESS_CREATED","result":"SUCCESS","details":{"uid":"uid_persona_p10","email":"agent10.gary.lindqvist@paperworking-test.dev","name":"Gary Lindqvist","entity":"Lindqvist Custom Homes LLC"}}
+{"ts":"2026-08-13T13:11:34.119Z","agentId":"P-10","wave":0,"step":"SIGNUP","action":"SUCCESS_CREATED","result":"SUCCESS","details":{"uid":"uid_persona_p10","email":"agent10.gary.lindqvist@paperworking-test.dev","name":"Gary Lindqvist","entity":"Lindqvist Custom Homes LLC"}}
+{"ts":"2026-08-13T13:11:34.119Z","agentId":"P-10","wave":1,"step":"WAVE_1","action":"COMPLETE","result":"SUCCESS","details":{"uid":"uid_persona_p10"}}
+{"ts":"2026-08-13T13:11:34.119Z","agentId":"P-10","wave":1,"step":"WAVE_1","action":"COMPLETE","result":"SUCCESS","details":{"uid":"uid_persona_p10"}}
+{"ts":"2026-08-13T13:11:34.200Z","agentId":"P-10","wave":2,"step":"WAVE_2","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-13T13:11:34.201Z","agentId":"P-10","wave":0,"step":"BILLING","action":"SUBSCRIPTION_SUCCESS","result":"SUCCESS","details":{"plan":"Individual","stripeCustomerId":"cus_test_swarm_p-10","stripeSubscriptionId":"sub_test_swarm_p-10","cardLastFour":"4242","cardBrand":"visa"}}
+{"ts":"2026-08-13T13:11:34.201Z","agentId":"P-10","wave":2,"step":"WAVE_2","action":"COMPLETE","result":"SUCCESS","details":{"plan":"Individual"}}
+{"ts":"2026-08-13T13:11:34.201Z","agentId":"P-10","wave":2,"step":"WAVE_2","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-13T13:11:34.202Z","agentId":"P-10","wave":0,"step":"BILLING","action":"SUBSCRIPTION_SUCCESS","result":"SUCCESS","details":{"plan":"Individual","stripeCustomerId":"cus_test_swarm_p-10","stripeSubscriptionId":"sub_test_swarm_p-10","cardLastFour":"4242","cardBrand":"visa"}}
+{"ts":"2026-08-13T13:11:34.202Z","agentId":"P-10","wave":2,"step":"WAVE_2","action":"COMPLETE","result":"SUCCESS","details":{"plan":"Individual"}}
+{"ts":"2026-08-13T13:11:34.272Z","agentId":"P-10","wave":3,"step":"WAVE_3","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-13T13:11:34.273Z","agentId":"P-10","wave":3,"step":"WAVE_3","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-13T13:11:34.274Z","agentId":"P-10","wave":0,"step":"PROJECTS","action":"CREATION_SUCCESS","result":"SUCCESS","details":{"created":10,"plaid":false}}
+{"ts":"2026-08-13T13:11:34.274Z","agentId":"P-10","wave":3,"step":"WAVE_3","action":"COMPLETE","result":"SUCCESS","details":{"created":10}}
+{"ts":"2026-08-13T13:11:34.275Z","agentId":"P-10","wave":0,"step":"PROJECTS","action":"CREATION_SUCCESS","result":"SUCCESS","details":{"created":10,"plaid":false}}
+{"ts":"2026-08-13T13:11:34.275Z","agentId":"P-10","wave":3,"step":"WAVE_3","action":"COMPLETE","result":"SUCCESS","details":{"created":10}}
+{"ts":"2026-08-13T13:11:34.413Z","agentId":"P-10","wave":4,"step":"WAVE_4","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-13T13:11:34.414Z","agentId":"P-10","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-32","to":"P-22","type":"Finished Asset Sale"}}
+{"ts":"2026-08-13T13:11:34.414Z","agentId":"P-10","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-13"}}
+{"ts":"2026-08-13T13:11:34.414Z","agentId":"P-10","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-22"}}
+{"ts":"2026-08-13T13:11:34.415Z","agentId":"P-10","wave":4,"step":"WAVE_4","action":"COMPLETE","result":"SUCCESS","details":{"interactions":1,"invites":2}}
+{"ts":"2026-08-13T13:11:34.424Z","agentId":"P-10","wave":4,"step":"WAVE_4","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-13T13:11:34.425Z","agentId":"P-10","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-32","to":"P-22","type":"Finished Asset Sale"}}
+{"ts":"2026-08-13T13:11:34.425Z","agentId":"P-10","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-13"}}
+{"ts":"2026-08-13T13:11:34.425Z","agentId":"P-10","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-22"}}
+{"ts":"2026-08-13T13:11:34.425Z","agentId":"P-10","wave":4,"step":"WAVE_4","action":"COMPLETE","result":"SUCCESS","details":{"interactions":1,"invites":2}}
+{"ts":"2026-08-13T13:11:34.521Z","agentId":"P-10","wave":5,"step":"WAVE_5","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-13T13:11:34.522Z","agentId":"P-10","wave":5,"step":"WAVE_5","action":"COMPLETE","result":"SUCCESS","details":{"reportPath":"/Users/yvesdarbouze/Documents/PaperWorking/artifacts/persona-swarm/reports/P-10-experience-report.md"}}
+{"ts":"2026-08-13T13:11:34.529Z","agentId":"P-10","wave":5,"step":"WAVE_5","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-13T13:11:34.529Z","agentId":"P-10","wave":5,"step":"WAVE_5","action":"COMPLETE","result":"SUCCESS","details":{"reportPath":"/Users/yvesdarbouze/Documents/PaperWorking/artifacts/persona-swarm/reports/P-10-experience-report.md"}}
+{"ts":"2026-08-13T13:20:39.846Z","agentId":"P-10","wave":1,"step":"WAVE_1","action":"START","result":"SUCCESS","details":{"email":"agent10.gary.lindqvist@paperworking-test.dev"}}
+{"ts":"2026-08-13T13:20:39.846Z","agentId":"P-10","wave":1,"step":"WAVE_1","action":"START","result":"SUCCESS","details":{"email":"agent10.gary.lindqvist@paperworking-test.dev"}}
+{"ts":"2026-08-13T13:20:39.849Z","agentId":"P-10","wave":0,"step":"SIGNUP","action":"SUCCESS_CREATED","result":"SUCCESS","details":{"uid":"uid_persona_p10","email":"agent10.gary.lindqvist@paperworking-test.dev","name":"Gary Lindqvist","entity":"Lindqvist Custom Homes LLC"}}
+{"ts":"2026-08-13T13:20:39.850Z","agentId":"P-10","wave":0,"step":"SIGNUP","action":"SUCCESS_CREATED","result":"SUCCESS","details":{"uid":"uid_persona_p10","email":"agent10.gary.lindqvist@paperworking-test.dev","name":"Gary Lindqvist","entity":"Lindqvist Custom Homes LLC"}}
+{"ts":"2026-08-13T13:20:39.850Z","agentId":"P-10","wave":1,"step":"WAVE_1","action":"COMPLETE","result":"SUCCESS","details":{"uid":"uid_persona_p10"}}
+{"ts":"2026-08-13T13:20:39.850Z","agentId":"P-10","wave":1,"step":"WAVE_1","action":"COMPLETE","result":"SUCCESS","details":{"uid":"uid_persona_p10"}}
+{"ts":"2026-08-13T13:20:39.927Z","agentId":"P-10","wave":2,"step":"WAVE_2","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-13T13:20:39.928Z","agentId":"P-10","wave":0,"step":"BILLING","action":"SUBSCRIPTION_SUCCESS","result":"SUCCESS","details":{"plan":"Individual","stripeCustomerId":"cus_test_swarm_p-10","stripeSubscriptionId":"sub_test_swarm_p-10","cardLastFour":"4242","cardBrand":"visa"}}
+{"ts":"2026-08-13T13:20:39.928Z","agentId":"P-10","wave":2,"step":"WAVE_2","action":"COMPLETE","result":"SUCCESS","details":{"plan":"Individual"}}
+{"ts":"2026-08-13T13:20:39.929Z","agentId":"P-10","wave":2,"step":"WAVE_2","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-13T13:20:39.929Z","agentId":"P-10","wave":0,"step":"BILLING","action":"SUBSCRIPTION_SUCCESS","result":"SUCCESS","details":{"plan":"Individual","stripeCustomerId":"cus_test_swarm_p-10","stripeSubscriptionId":"sub_test_swarm_p-10","cardLastFour":"4242","cardBrand":"visa"}}
+{"ts":"2026-08-13T13:20:39.929Z","agentId":"P-10","wave":2,"step":"WAVE_2","action":"COMPLETE","result":"SUCCESS","details":{"plan":"Individual"}}
+{"ts":"2026-08-13T13:20:40.005Z","agentId":"P-10","wave":3,"step":"WAVE_3","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-13T13:20:40.008Z","agentId":"P-10","wave":0,"step":"PROJECTS","action":"CREATION_SUCCESS","result":"SUCCESS","details":{"created":10,"plaid":false}}
+{"ts":"2026-08-13T13:20:40.008Z","agentId":"P-10","wave":3,"step":"WAVE_3","action":"COMPLETE","result":"SUCCESS","details":{"created":10}}
+{"ts":"2026-08-13T13:20:40.010Z","agentId":"P-10","wave":3,"step":"WAVE_3","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-13T13:20:40.012Z","agentId":"P-10","wave":0,"step":"PROJECTS","action":"CREATION_SUCCESS","result":"SUCCESS","details":{"created":10,"plaid":false}}
+{"ts":"2026-08-13T13:20:40.012Z","agentId":"P-10","wave":3,"step":"WAVE_3","action":"COMPLETE","result":"SUCCESS","details":{"created":10}}
+{"ts":"2026-08-13T13:20:40.209Z","agentId":"P-10","wave":4,"step":"WAVE_4","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-13T13:20:40.210Z","agentId":"P-10","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-32","to":"P-22","type":"Finished Asset Sale"}}
+{"ts":"2026-08-13T13:20:40.211Z","agentId":"P-10","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-13"}}
+{"ts":"2026-08-13T13:20:40.212Z","agentId":"P-10","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-22"}}
+{"ts":"2026-08-13T13:20:40.212Z","agentId":"P-10","wave":4,"step":"WAVE_4","action":"COMPLETE","result":"SUCCESS","details":{"interactions":1,"invites":2}}
+{"ts":"2026-08-13T13:20:40.226Z","agentId":"P-10","wave":4,"step":"WAVE_4","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-13T13:20:40.226Z","agentId":"P-10","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-32","to":"P-22","type":"Finished Asset Sale"}}
+{"ts":"2026-08-13T13:20:40.227Z","agentId":"P-10","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-13"}}
+{"ts":"2026-08-13T13:20:40.227Z","agentId":"P-10","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-22"}}
+{"ts":"2026-08-13T13:20:40.227Z","agentId":"P-10","wave":4,"step":"WAVE_4","action":"COMPLETE","result":"SUCCESS","details":{"interactions":1,"invites":2}}
+{"ts":"2026-08-13T13:20:40.306Z","agentId":"P-10","wave":5,"step":"WAVE_5","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-13T13:20:40.306Z","agentId":"P-10","wave":5,"step":"WAVE_5","action":"COMPLETE","result":"SUCCESS","details":{"reportPath":"/Users/yvesdarbouze/Documents/PaperWorking/artifacts/persona-swarm/reports/P-10-experience-report.md"}}
+{"ts":"2026-08-13T13:20:40.321Z","agentId":"P-10","wave":5,"step":"WAVE_5","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-13T13:20:40.321Z","agentId":"P-10","wave":5,"step":"WAVE_5","action":"COMPLETE","result":"SUCCESS","details":{"reportPath":"/Users/yvesdarbouze/Documents/PaperWorking/artifacts/persona-swarm/reports/P-10-experience-report.md"}}
+{"ts":"2026-08-13T14:04:26.287Z","agentId":"P-10","wave":1,"step":"WAVE_1","action":"START","result":"SUCCESS","details":{"email":"agent10.gary.lindqvist@paperworking-test.dev"}}
+{"ts":"2026-08-13T14:04:26.288Z","agentId":"P-10","wave":1,"step":"WAVE_1","action":"START","result":"SUCCESS","details":{"email":"agent10.gary.lindqvist@paperworking-test.dev"}}
+{"ts":"2026-08-13T14:04:26.290Z","agentId":"P-10","wave":0,"step":"SIGNUP","action":"SUCCESS_CREATED","result":"SUCCESS","details":{"uid":"uid_persona_p10","email":"agent10.gary.lindqvist@paperworking-test.dev","name":"Gary Lindqvist","entity":"Lindqvist Custom Homes LLC"}}
+{"ts":"2026-08-13T14:04:26.290Z","agentId":"P-10","wave":0,"step":"SIGNUP","action":"SUCCESS_CREATED","result":"SUCCESS","details":{"uid":"uid_persona_p10","email":"agent10.gary.lindqvist@paperworking-test.dev","name":"Gary Lindqvist","entity":"Lindqvist Custom Homes LLC"}}
+{"ts":"2026-08-13T14:04:26.290Z","agentId":"P-10","wave":1,"step":"WAVE_1","action":"COMPLETE","result":"SUCCESS","details":{"uid":"uid_persona_p10"}}
+{"ts":"2026-08-13T14:04:26.291Z","agentId":"P-10","wave":1,"step":"WAVE_1","action":"COMPLETE","result":"SUCCESS","details":{"uid":"uid_persona_p10"}}
+{"ts":"2026-08-13T14:04:26.371Z","agentId":"P-10","wave":2,"step":"WAVE_2","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-13T14:04:26.371Z","agentId":"P-10","wave":2,"step":"WAVE_2","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-13T14:04:26.371Z","agentId":"P-10","wave":0,"step":"BILLING","action":"SUBSCRIPTION_SUCCESS","result":"SUCCESS","details":{"plan":"Individual","stripeCustomerId":"cus_test_swarm_p-10","stripeSubscriptionId":"sub_test_swarm_p-10","cardLastFour":"4242","cardBrand":"visa"}}
+{"ts":"2026-08-13T14:04:26.371Z","agentId":"P-10","wave":0,"step":"BILLING","action":"SUBSCRIPTION_SUCCESS","result":"SUCCESS","details":{"plan":"Individual","stripeCustomerId":"cus_test_swarm_p-10","stripeSubscriptionId":"sub_test_swarm_p-10","cardLastFour":"4242","cardBrand":"visa"}}
+{"ts":"2026-08-13T14:04:26.371Z","agentId":"P-10","wave":2,"step":"WAVE_2","action":"COMPLETE","result":"SUCCESS","details":{"plan":"Individual"}}
+{"ts":"2026-08-13T14:04:26.372Z","agentId":"P-10","wave":2,"step":"WAVE_2","action":"COMPLETE","result":"SUCCESS","details":{"plan":"Individual"}}
+{"ts":"2026-08-13T14:04:26.438Z","agentId":"P-10","wave":3,"step":"WAVE_3","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-13T14:04:26.441Z","agentId":"P-10","wave":0,"step":"PROJECTS","action":"CREATION_SUCCESS","result":"SUCCESS","details":{"created":10,"plaid":false}}
+{"ts":"2026-08-13T14:04:26.441Z","agentId":"P-10","wave":3,"step":"WAVE_3","action":"COMPLETE","result":"SUCCESS","details":{"created":10}}
+{"ts":"2026-08-13T14:04:26.443Z","agentId":"P-10","wave":3,"step":"WAVE_3","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-13T14:04:26.446Z","agentId":"P-10","wave":0,"step":"PROJECTS","action":"CREATION_SUCCESS","result":"SUCCESS","details":{"created":10,"plaid":false}}
+{"ts":"2026-08-13T14:04:26.446Z","agentId":"P-10","wave":3,"step":"WAVE_3","action":"COMPLETE","result":"SUCCESS","details":{"created":10}}
+{"ts":"2026-08-13T14:04:26.570Z","agentId":"P-10","wave":4,"step":"WAVE_4","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-13T14:04:26.571Z","agentId":"P-10","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-32","to":"P-22","type":"Finished Asset Sale"}}
+{"ts":"2026-08-13T14:04:26.571Z","agentId":"P-10","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-13"}}
+{"ts":"2026-08-13T14:04:26.571Z","agentId":"P-10","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-22"}}
+{"ts":"2026-08-13T14:04:26.571Z","agentId":"P-10","wave":4,"step":"WAVE_4","action":"COMPLETE","result":"SUCCESS","details":{"interactions":1,"invites":2}}
+{"ts":"2026-08-13T14:04:26.576Z","agentId":"P-10","wave":4,"step":"WAVE_4","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-13T14:04:26.577Z","agentId":"P-10","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-32","to":"P-22","type":"Finished Asset Sale"}}
+{"ts":"2026-08-13T14:04:26.579Z","agentId":"P-10","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-13"}}
+{"ts":"2026-08-13T14:04:26.580Z","agentId":"P-10","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-22"}}
+{"ts":"2026-08-13T14:04:26.581Z","agentId":"P-10","wave":4,"step":"WAVE_4","action":"COMPLETE","result":"SUCCESS","details":{"interactions":1,"invites":2}}
+{"ts":"2026-08-13T14:04:26.665Z","agentId":"P-10","wave":5,"step":"WAVE_5","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-13T14:04:26.666Z","agentId":"P-10","wave":5,"step":"WAVE_5","action":"COMPLETE","result":"SUCCESS","details":{"reportPath":"/Users/yvesdarbouze/Documents/PaperWorking/artifacts/persona-swarm/reports/P-10-experience-report.md"}}
+{"ts":"2026-08-13T14:04:26.673Z","agentId":"P-10","wave":5,"step":"WAVE_5","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-13T14:04:26.673Z","agentId":"P-10","wave":5,"step":"WAVE_5","action":"COMPLETE","result":"SUCCESS","details":{"reportPath":"/Users/yvesdarbouze/Documents/PaperWorking/artifacts/persona-swarm/reports/P-10-experience-report.md"}}
+{"ts":"2026-08-13T17:42:17.542Z","agentId":"P-10","wave":1,"step":"WAVE_1","action":"START","result":"SUCCESS","details":{"email":"agent10.gary.lindqvist@paperworking-test.dev"}}
+{"ts":"2026-08-13T17:42:17.544Z","agentId":"P-10","wave":0,"step":"SIGNUP","action":"SUCCESS_CREATED","result":"SUCCESS","details":{"uid":"uid_persona_p10","email":"agent10.gary.lindqvist@paperworking-test.dev","name":"Gary Lindqvist","entity":"Lindqvist Custom Homes LLC"}}
+{"ts":"2026-08-13T17:42:17.544Z","agentId":"P-10","wave":1,"step":"WAVE_1","action":"COMPLETE","result":"SUCCESS","details":{"uid":"uid_persona_p10"}}
+{"ts":"2026-08-13T17:42:17.702Z","agentId":"P-10","wave":2,"step":"WAVE_2","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-13T17:42:17.703Z","agentId":"P-10","wave":0,"step":"BILLING","action":"SUBSCRIPTION_SUCCESS","result":"SUCCESS","details":{"plan":"Individual","stripeCustomerId":"cus_test_swarm_p-10","stripeSubscriptionId":"sub_test_swarm_p-10","cardLastFour":"4242","cardBrand":"visa"}}
+{"ts":"2026-08-13T17:42:17.703Z","agentId":"P-10","wave":2,"step":"WAVE_2","action":"COMPLETE","result":"SUCCESS","details":{"plan":"Individual"}}
+{"ts":"2026-08-13T17:42:17.852Z","agentId":"P-10","wave":3,"step":"WAVE_3","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-13T17:42:17.861Z","agentId":"P-10","wave":0,"step":"PROJECTS","action":"CREATION_SUCCESS","result":"SUCCESS","details":{"created":10,"plaid":false}}
+{"ts":"2026-08-13T17:42:17.861Z","agentId":"P-10","wave":3,"step":"WAVE_3","action":"COMPLETE","result":"SUCCESS","details":{"created":10}}
+{"ts":"2026-08-13T17:42:18.113Z","agentId":"P-10","wave":4,"step":"WAVE_4","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-13T17:42:18.113Z","agentId":"P-10","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-32","to":"P-22","type":"Finished Asset Sale"}}
+{"ts":"2026-08-13T17:42:18.114Z","agentId":"P-10","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-13"}}
+{"ts":"2026-08-13T17:42:18.115Z","agentId":"P-10","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-22"}}
+{"ts":"2026-08-13T17:42:18.116Z","agentId":"P-10","wave":4,"step":"WAVE_4","action":"COMPLETE","result":"SUCCESS","details":{"interactions":1,"invites":2}}
+{"ts":"2026-08-13T17:42:18.210Z","agentId":"P-10","wave":1,"step":"WAVE_1","action":"START","result":"SUCCESS","details":{"email":"agent10.gary.lindqvist@paperworking-test.dev"}}
+{"ts":"2026-08-13T17:42:18.211Z","agentId":"P-10","wave":0,"step":"SIGNUP","action":"SUCCESS_CREATED","result":"SUCCESS","details":{"uid":"uid_persona_p10","email":"agent10.gary.lindqvist@paperworking-test.dev","name":"Gary Lindqvist","entity":"Lindqvist Custom Homes LLC"}}
+{"ts":"2026-08-13T17:42:18.211Z","agentId":"P-10","wave":1,"step":"WAVE_1","action":"COMPLETE","result":"SUCCESS","details":{"uid":"uid_persona_p10"}}
+{"ts":"2026-08-13T17:42:18.295Z","agentId":"P-10","wave":2,"step":"WAVE_2","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-13T17:42:18.296Z","agentId":"P-10","wave":0,"step":"BILLING","action":"SUBSCRIPTION_SUCCESS","result":"SUCCESS","details":{"plan":"Individual","stripeCustomerId":"cus_test_swarm_p-10","stripeSubscriptionId":"sub_test_swarm_p-10","cardLastFour":"4242","cardBrand":"visa"}}
+{"ts":"2026-08-13T17:42:18.296Z","agentId":"P-10","wave":2,"step":"WAVE_2","action":"COMPLETE","result":"SUCCESS","details":{"plan":"Individual"}}
+{"ts":"2026-08-13T17:42:18.317Z","agentId":"P-10","wave":5,"step":"WAVE_5","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-13T17:42:18.319Z","agentId":"P-10","wave":5,"step":"WAVE_5","action":"COMPLETE","result":"SUCCESS","details":{"reportPath":"/Users/yvesdarbouze/Documents/PaperWorking/artifacts/persona-swarm/reports/P-10-experience-report.md"}}
+{"ts":"2026-08-13T17:42:18.412Z","agentId":"P-10","wave":3,"step":"WAVE_3","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-13T17:42:18.414Z","agentId":"P-10","wave":0,"step":"PROJECTS","action":"CREATION_SUCCESS","result":"SUCCESS","details":{"created":10,"plaid":false}}
+{"ts":"2026-08-13T17:42:18.414Z","agentId":"P-10","wave":3,"step":"WAVE_3","action":"COMPLETE","result":"SUCCESS","details":{"created":10}}
+{"ts":"2026-08-13T17:42:18.737Z","agentId":"P-10","wave":4,"step":"WAVE_4","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-13T17:42:18.738Z","agentId":"P-10","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-32","to":"P-22","type":"Finished Asset Sale"}}
+{"ts":"2026-08-13T17:42:18.738Z","agentId":"P-10","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-13"}}
+{"ts":"2026-08-13T17:42:18.739Z","agentId":"P-10","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-22"}}
+{"ts":"2026-08-13T17:42:18.739Z","agentId":"P-10","wave":4,"step":"WAVE_4","action":"COMPLETE","result":"SUCCESS","details":{"interactions":1,"invites":2}}
+{"ts":"2026-08-13T17:42:18.888Z","agentId":"P-10","wave":5,"step":"WAVE_5","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-13T17:42:18.888Z","agentId":"P-10","wave":5,"step":"WAVE_5","action":"COMPLETE","result":"SUCCESS","details":{"reportPath":"/Users/yvesdarbouze/Documents/PaperWorking/artifacts/persona-swarm/reports/P-10-experience-report.md"}}

@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="800" viewBox="0 0 1200 800">
+  <rect width="1200" height="800" fill="#121014"/>
+  <rect x="50" y="50" width="1100" height="700" rx="12" fill="#1A181F" stroke="#2D2A36" stroke-width="2"/>
+  <text x="100" y="120" fill="#FDFFFC" font-family="Inter, sans-serif" font-size="28" font-weight="700">PaperWorking — Phase-Gate Override Governance</text>
+  <text x="100" y="160" fill="#9A9EA6" font-family="Inter, sans-serif" font-size="16">Project: 2417 E Willetta St Assignment — Phase: Acquisition → Disposition</text>
+  
+  <rect x="100" y="200" width="1050" height="500" rx="8" fill="#121014" stroke="#2D2A36"/>
+  <text x="140" y="260" fill="#FDFFFC" font-family="Inter, sans-serif" font-size="20" font-weight="600">Audit Log &amp; Governance Override</text>
+  
+  <rect x="140" y="300" width="970" height="80" rx="6" fill="#1A181F" stroke="#F59E0B"/>
+  <text x="170" y="335" fill="#F59E0B" font-family="Inter, sans-serif" font-size="16" font-weight="600">⚠️ Phase-Gate Override Triggered</text>
+  <text x="170" y="360" fill="#FDFFFC" font-family="Inter, sans-serif" font-size="14">Bypassed Due Diligence document check with authorized manager signature: Marcus "Mac" Delgado (P-01)</text>
+  
+  <text x="140" y="420" fill="#FDFFFC" font-family="Inter, sans-serif" font-size="16" font-weight="600">Governance Audit Trail</text>
+  <text x="140" y="460" fill="#9A9EA6" font-family="Inter, sans-serif" font-size="14">• 2026-08-13 10:14:02 UTC — Lead Intaking completed by P-01</text>
+  <text x="140" y="490" fill="#9A9EA6" font-family="Inter, sans-serif" font-size="14">• 2026-08-13 10:14:15 UTC — Underwriting Phase unlocked (ARV $315,000, Purchase $210,000)</text>
+  <text x="140" y="520" fill="#9A9EA6" font-family="Inter, sans-serif" font-size="14">• 2026-08-13 10:14:28 UTC — Acquisition Contract Attached (PDF Watermarked)</text>
+  <text x="140" y="550" fill="#F59E0B" font-family="Inter, sans-serif" font-size="14">• 2026-08-13 10:14:40 UTC — Manager Override Applied: Accelerated Assignment to P-05 (Danny Reyes)</text>
+</svg>

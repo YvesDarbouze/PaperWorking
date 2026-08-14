@@ -1,0 +1,589 @@
+{"ts":"2026-08-13T10:18:27.628Z","agentId":"P-44","wave":1,"step":"WAVE_1","action":"START","result":"SUCCESS","details":{"email":"agent44.walter.gibbs@paperworking-test.dev"}}
+{"ts":"2026-08-13T10:18:27.629Z","agentId":"P-44","wave":0,"step":"SIGNUP","action":"ERROR","result":"FAILED","details":{"error":"Unable to detect a Project Id in the current environment. \nTo learn more about authentication and Google APIs, visit: \nhttps://cloud.google.com/docs/authentication/getting-started"}}
+{"ts":"2026-08-13T10:18:27.629Z","agentId":"P-44","wave":1,"step":"WAVE_1","action":"FAILED","result":"FAILED","details":{"error":"Unable to detect a Project Id in the current environment. \nTo learn more about authentication and Google APIs, visit: \nhttps://cloud.google.com/docs/authentication/getting-started"}}
+{"ts":"2026-08-13T10:18:27.639Z","agentId":"P-44","wave":2,"step":"WAVE_2","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-13T10:18:27.639Z","agentId":"P-44","wave":2,"step":"WAVE_2","action":"SKIPPED","result":"SUCCESS","details":{"reason":"UID missing"}}
+{"ts":"2026-08-13T10:18:27.646Z","agentId":"P-44","wave":3,"step":"WAVE_3","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-13T10:18:27.646Z","agentId":"P-44","wave":3,"step":"WAVE_3","action":"SKIPPED","result":"SUCCESS","details":{"reason":"UID missing"}}
+{"ts":"2026-08-13T10:18:27.656Z","agentId":"P-44","wave":4,"step":"WAVE_4","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-13T10:18:27.656Z","agentId":"P-44","wave":4,"step":"WAVE_4","action":"SKIPPED","result":"SUCCESS","details":{"reason":"UID missing"}}
+{"ts":"2026-08-13T10:18:27.667Z","agentId":"P-44","wave":5,"step":"WAVE_5","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-13T10:18:27.668Z","agentId":"P-44","wave":5,"step":"WAVE_5","action":"FAILED","result":"FAILED","details":{"error":"Cannot read properties of undefined (reading 'toLocaleString')"}}
+{"ts":"2026-08-13T10:18:49.106Z","agentId":"P-44","wave":1,"step":"WAVE_1","action":"START","result":"SUCCESS","details":{"email":"agent44.walter.gibbs@paperworking-test.dev"}}
+{"ts":"2026-08-13T10:18:49.106Z","agentId":"P-44","wave":0,"step":"SIGNUP","action":"SUCCESS_CREATED","result":"SUCCESS","details":{"uid":"uid_persona_p44","email":"agent44.walter.gibbs@paperworking-test.dev","name":"Walter Gibbs","entity":"Gibbs Dividend Ventures LLC"}}
+{"ts":"2026-08-13T10:18:49.106Z","agentId":"P-44","wave":1,"step":"WAVE_1","action":"COMPLETE","result":"SUCCESS","details":{"uid":"uid_persona_p44"}}
+{"ts":"2026-08-13T10:18:49.465Z","agentId":"P-44","wave":2,"step":"WAVE_2","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-13T10:18:49.466Z","agentId":"P-44","wave":0,"step":"BILLING","action":"SUBSCRIPTION_SUCCESS","result":"SUCCESS","details":{"plan":"Individual","stripeCustomerId":"cus_test_swarm_p-44","stripeSubscriptionId":"sub_test_swarm_p-44","cardLastFour":"4242","cardBrand":"visa"}}
+{"ts":"2026-08-13T10:18:49.466Z","agentId":"P-44","wave":2,"step":"WAVE_2","action":"COMPLETE","result":"SUCCESS","details":{"plan":"Individual"}}
+{"ts":"2026-08-13T10:18:49.514Z","agentId":"P-44","wave":3,"step":"WAVE_3","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-13T10:18:49.514Z","agentId":"P-44","wave":0,"step":"PROJECTS","action":"CREATION_SUCCESS","result":"SUCCESS","details":{"created":10,"plaid":false}}
+{"ts":"2026-08-13T10:18:49.514Z","agentId":"P-44","wave":3,"step":"WAVE_3","action":"COMPLETE","result":"SUCCESS","details":{"created":10}}
+{"ts":"2026-08-13T10:18:49.597Z","agentId":"P-44","wave":4,"step":"WAVE_4","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-13T10:18:49.597Z","agentId":"P-44","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-78","to":"P-45","type":"Fractional Mentoring"}}
+{"ts":"2026-08-13T10:18:49.598Z","agentId":"P-44","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-79","to":"P-46","type":"Income Investing Peer Thread"}}
+{"ts":"2026-08-13T10:18:49.598Z","agentId":"P-44","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-45"}}
+{"ts":"2026-08-13T10:18:49.599Z","agentId":"P-44","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-34"}}
+{"ts":"2026-08-13T10:18:49.599Z","agentId":"P-44","wave":4,"step":"WAVE_4","action":"COMPLETE","result":"SUCCESS","details":{"interactions":2,"invites":2}}
+{"ts":"2026-08-13T10:18:49.622Z","agentId":"P-44","wave":5,"step":"WAVE_5","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-13T10:18:49.622Z","agentId":"P-44","wave":5,"step":"WAVE_5","action":"COMPLETE","result":"SUCCESS","details":{"reportPath":"/Users/yvesdarbouze/Documents/PaperWorking/artifacts/persona-swarm/reports/P-44-experience-report.md"}}
+{"ts":"2026-08-13T10:18:55.983Z","agentId":"P-44","wave":1,"step":"WAVE_1","action":"START","result":"SUCCESS","details":{"email":"agent44.walter.gibbs@paperworking-test.dev"}}
+{"ts":"2026-08-13T10:18:55.983Z","agentId":"P-44","wave":0,"step":"SIGNUP","action":"SUCCESS_CREATED","result":"SUCCESS","details":{"uid":"uid_persona_p44","email":"agent44.walter.gibbs@paperworking-test.dev","name":"Walter Gibbs","entity":"Gibbs Dividend Ventures LLC"}}
+{"ts":"2026-08-13T10:18:55.983Z","agentId":"P-44","wave":1,"step":"WAVE_1","action":"COMPLETE","result":"SUCCESS","details":{"uid":"uid_persona_p44"}}
+{"ts":"2026-08-13T10:18:56.287Z","agentId":"P-44","wave":2,"step":"WAVE_2","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-13T10:18:56.288Z","agentId":"P-44","wave":0,"step":"BILLING","action":"SUBSCRIPTION_SUCCESS","result":"SUCCESS","details":{"plan":"Individual","stripeCustomerId":"cus_test_swarm_p-44","stripeSubscriptionId":"sub_test_swarm_p-44","cardLastFour":"4242","cardBrand":"visa"}}
+{"ts":"2026-08-13T10:18:56.288Z","agentId":"P-44","wave":2,"step":"WAVE_2","action":"COMPLETE","result":"SUCCESS","details":{"plan":"Individual"}}
+{"ts":"2026-08-13T10:18:56.341Z","agentId":"P-44","wave":3,"step":"WAVE_3","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-13T10:18:56.342Z","agentId":"P-44","wave":0,"step":"PROJECTS","action":"CREATION_SUCCESS","result":"SUCCESS","details":{"created":10,"plaid":false}}
+{"ts":"2026-08-13T10:18:56.342Z","agentId":"P-44","wave":3,"step":"WAVE_3","action":"COMPLETE","result":"SUCCESS","details":{"created":10}}
+{"ts":"2026-08-13T10:18:56.416Z","agentId":"P-44","wave":4,"step":"WAVE_4","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-13T10:18:56.417Z","agentId":"P-44","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-78","to":"P-45","type":"Fractional Mentoring"}}
+{"ts":"2026-08-13T10:18:56.417Z","agentId":"P-44","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-79","to":"P-46","type":"Income Investing Peer Thread"}}
+{"ts":"2026-08-13T10:18:56.417Z","agentId":"P-44","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-45"}}
+{"ts":"2026-08-13T10:18:56.417Z","agentId":"P-44","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-34"}}
+{"ts":"2026-08-13T10:18:56.417Z","agentId":"P-44","wave":4,"step":"WAVE_4","action":"COMPLETE","result":"SUCCESS","details":{"interactions":2,"invites":2}}
+{"ts":"2026-08-13T10:18:56.442Z","agentId":"P-44","wave":5,"step":"WAVE_5","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-13T10:18:56.442Z","agentId":"P-44","wave":5,"step":"WAVE_5","action":"COMPLETE","result":"SUCCESS","details":{"reportPath":"/Users/yvesdarbouze/Documents/PaperWorking/artifacts/persona-swarm/reports/P-44-experience-report.md"}}
+{"ts":"2026-08-13T10:20:00.107Z","agentId":"P-44","wave":1,"step":"WAVE_1","action":"START","result":"SUCCESS","details":{"email":"agent44.walter.gibbs@paperworking-test.dev"}}
+{"ts":"2026-08-13T10:20:00.107Z","agentId":"P-44","wave":0,"step":"SIGNUP","action":"SUCCESS_CREATED","result":"SUCCESS","details":{"uid":"uid_persona_p44","email":"agent44.walter.gibbs@paperworking-test.dev","name":"Walter Gibbs","entity":"Gibbs Dividend Ventures LLC"}}
+{"ts":"2026-08-13T10:20:00.108Z","agentId":"P-44","wave":1,"step":"WAVE_1","action":"COMPLETE","result":"SUCCESS","details":{"uid":"uid_persona_p44"}}
+{"ts":"2026-08-13T10:20:00.462Z","agentId":"P-44","wave":2,"step":"WAVE_2","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-13T10:20:00.463Z","agentId":"P-44","wave":0,"step":"BILLING","action":"SUBSCRIPTION_SUCCESS","result":"SUCCESS","details":{"plan":"Individual","stripeCustomerId":"cus_test_swarm_p-44","stripeSubscriptionId":"sub_test_swarm_p-44","cardLastFour":"4242","cardBrand":"visa"}}
+{"ts":"2026-08-13T10:20:00.463Z","agentId":"P-44","wave":2,"step":"WAVE_2","action":"COMPLETE","result":"SUCCESS","details":{"plan":"Individual"}}
+{"ts":"2026-08-13T10:20:00.511Z","agentId":"P-44","wave":3,"step":"WAVE_3","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-13T10:20:00.512Z","agentId":"P-44","wave":0,"step":"PROJECTS","action":"CREATION_SUCCESS","result":"SUCCESS","details":{"created":10,"plaid":false}}
+{"ts":"2026-08-13T10:20:00.512Z","agentId":"P-44","wave":3,"step":"WAVE_3","action":"COMPLETE","result":"SUCCESS","details":{"created":10}}
+{"ts":"2026-08-13T10:20:00.589Z","agentId":"P-44","wave":4,"step":"WAVE_4","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-13T10:20:00.590Z","agentId":"P-44","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-78","to":"P-45","type":"Fractional Mentoring"}}
+{"ts":"2026-08-13T10:20:00.590Z","agentId":"P-44","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-79","to":"P-46","type":"Income Investing Peer Thread"}}
+{"ts":"2026-08-13T10:20:00.591Z","agentId":"P-44","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-45"}}
+{"ts":"2026-08-13T10:20:00.591Z","agentId":"P-44","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-34"}}
+{"ts":"2026-08-13T10:20:00.591Z","agentId":"P-44","wave":4,"step":"WAVE_4","action":"COMPLETE","result":"SUCCESS","details":{"interactions":2,"invites":2}}
+{"ts":"2026-08-13T10:20:00.615Z","agentId":"P-44","wave":5,"step":"WAVE_5","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-13T10:20:00.616Z","agentId":"P-44","wave":5,"step":"WAVE_5","action":"COMPLETE","result":"SUCCESS","details":{"reportPath":"/Users/yvesdarbouze/Documents/PaperWorking/artifacts/persona-swarm/reports/P-44-experience-report.md"}}
+{"ts":"2026-08-13T10:20:27.903Z","agentId":"P-44","wave":1,"step":"WAVE_1","action":"START","result":"SUCCESS","details":{"email":"agent44.walter.gibbs@paperworking-test.dev"}}
+{"ts":"2026-08-13T10:20:27.904Z","agentId":"P-44","wave":0,"step":"SIGNUP","action":"SUCCESS_CREATED","result":"SUCCESS","details":{"uid":"uid_persona_p44","email":"agent44.walter.gibbs@paperworking-test.dev","name":"Walter Gibbs","entity":"Gibbs Dividend Ventures LLC"}}
+{"ts":"2026-08-13T10:20:27.904Z","agentId":"P-44","wave":1,"step":"WAVE_1","action":"COMPLETE","result":"SUCCESS","details":{"uid":"uid_persona_p44"}}
+{"ts":"2026-08-13T10:20:27.906Z","agentId":"P-44","wave":1,"step":"WAVE_1","action":"START","result":"SUCCESS","details":{"email":"agent44.walter.gibbs@paperworking-test.dev"}}
+{"ts":"2026-08-13T10:20:27.906Z","agentId":"P-44","wave":0,"step":"SIGNUP","action":"SUCCESS_CREATED","result":"SUCCESS","details":{"uid":"uid_persona_p44","email":"agent44.walter.gibbs@paperworking-test.dev","name":"Walter Gibbs","entity":"Gibbs Dividend Ventures LLC"}}
+{"ts":"2026-08-13T10:20:27.906Z","agentId":"P-44","wave":1,"step":"WAVE_1","action":"COMPLETE","result":"SUCCESS","details":{"uid":"uid_persona_p44"}}
+{"ts":"2026-08-13T10:20:28.240Z","agentId":"P-44","wave":2,"step":"WAVE_2","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-13T10:20:28.241Z","agentId":"P-44","wave":0,"step":"BILLING","action":"SUBSCRIPTION_SUCCESS","result":"SUCCESS","details":{"plan":"Individual","stripeCustomerId":"cus_test_swarm_p-44","stripeSubscriptionId":"sub_test_swarm_p-44","cardLastFour":"4242","cardBrand":"visa"}}
+{"ts":"2026-08-13T10:20:28.241Z","agentId":"P-44","wave":2,"step":"WAVE_2","action":"COMPLETE","result":"SUCCESS","details":{"plan":"Individual"}}
+{"ts":"2026-08-13T10:20:28.288Z","agentId":"P-44","wave":3,"step":"WAVE_3","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-13T10:20:28.288Z","agentId":"P-44","wave":0,"step":"PROJECTS","action":"CREATION_SUCCESS","result":"SUCCESS","details":{"created":10,"plaid":false}}
+{"ts":"2026-08-13T10:20:28.288Z","agentId":"P-44","wave":3,"step":"WAVE_3","action":"COMPLETE","result":"SUCCESS","details":{"created":10}}
+{"ts":"2026-08-13T10:20:28.364Z","agentId":"P-44","wave":4,"step":"WAVE_4","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-13T10:20:28.364Z","agentId":"P-44","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-78","to":"P-45","type":"Fractional Mentoring"}}
+{"ts":"2026-08-13T10:20:28.365Z","agentId":"P-44","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-79","to":"P-46","type":"Income Investing Peer Thread"}}
+{"ts":"2026-08-13T10:20:28.365Z","agentId":"P-44","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-45"}}
+{"ts":"2026-08-13T10:20:28.365Z","agentId":"P-44","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-34"}}
+{"ts":"2026-08-13T10:20:28.365Z","agentId":"P-44","wave":4,"step":"WAVE_4","action":"COMPLETE","result":"SUCCESS","details":{"interactions":2,"invites":2}}
+{"ts":"2026-08-13T10:20:28.390Z","agentId":"P-44","wave":5,"step":"WAVE_5","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-13T10:20:28.390Z","agentId":"P-44","wave":5,"step":"WAVE_5","action":"COMPLETE","result":"SUCCESS","details":{"reportPath":"/Users/yvesdarbouze/Documents/PaperWorking/artifacts/persona-swarm/reports/P-44-experience-report.md"}}
+{"ts":"2026-08-13T10:20:31.356Z","agentId":"P-44","wave":2,"step":"WAVE_2","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-13T10:20:31.356Z","agentId":"P-44","wave":0,"step":"BILLING","action":"SUBSCRIPTION_SUCCESS","result":"SUCCESS","details":{"plan":"Individual","stripeCustomerId":"cus_test_swarm_p-44","stripeSubscriptionId":"sub_test_swarm_p-44","cardLastFour":"4242","cardBrand":"visa"}}
+{"ts":"2026-08-13T10:20:31.356Z","agentId":"P-44","wave":2,"step":"WAVE_2","action":"COMPLETE","result":"SUCCESS","details":{"plan":"Individual"}}
+{"ts":"2026-08-13T10:20:31.405Z","agentId":"P-44","wave":3,"step":"WAVE_3","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-13T10:20:31.406Z","agentId":"P-44","wave":0,"step":"PROJECTS","action":"CREATION_SUCCESS","result":"SUCCESS","details":{"created":10,"plaid":false}}
+{"ts":"2026-08-13T10:20:31.406Z","agentId":"P-44","wave":3,"step":"WAVE_3","action":"COMPLETE","result":"SUCCESS","details":{"created":10}}
+{"ts":"2026-08-13T10:20:31.490Z","agentId":"P-44","wave":4,"step":"WAVE_4","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-13T10:20:31.491Z","agentId":"P-44","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-78","to":"P-45","type":"Fractional Mentoring"}}
+{"ts":"2026-08-13T10:20:31.491Z","agentId":"P-44","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-79","to":"P-46","type":"Income Investing Peer Thread"}}
+{"ts":"2026-08-13T10:20:31.491Z","agentId":"P-44","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-45"}}
+{"ts":"2026-08-13T10:20:31.492Z","agentId":"P-44","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-34"}}
+{"ts":"2026-08-13T10:20:31.492Z","agentId":"P-44","wave":4,"step":"WAVE_4","action":"COMPLETE","result":"SUCCESS","details":{"interactions":2,"invites":2}}
+{"ts":"2026-08-13T10:20:31.518Z","agentId":"P-44","wave":5,"step":"WAVE_5","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-13T10:20:31.518Z","agentId":"P-44","wave":5,"step":"WAVE_5","action":"COMPLETE","result":"SUCCESS","details":{"reportPath":"/Users/yvesdarbouze/Documents/PaperWorking/artifacts/persona-swarm/reports/P-44-experience-report.md"}}
+{"ts":"2026-08-13T10:20:40.409Z","agentId":"P-44","wave":1,"step":"WAVE_1","action":"START","result":"SUCCESS","details":{"email":"agent44.walter.gibbs@paperworking-test.dev"}}
+{"ts":"2026-08-13T10:20:40.409Z","agentId":"P-44","wave":0,"step":"SIGNUP","action":"SUCCESS_CREATED","result":"SUCCESS","details":{"uid":"uid_persona_p44","email":"agent44.walter.gibbs@paperworking-test.dev","name":"Walter Gibbs","entity":"Gibbs Dividend Ventures LLC"}}
+{"ts":"2026-08-13T10:20:40.409Z","agentId":"P-44","wave":1,"step":"WAVE_1","action":"COMPLETE","result":"SUCCESS","details":{"uid":"uid_persona_p44"}}
+{"ts":"2026-08-13T10:20:40.419Z","agentId":"P-44","wave":1,"step":"WAVE_1","action":"START","result":"SUCCESS","details":{"email":"agent44.walter.gibbs@paperworking-test.dev"}}
+{"ts":"2026-08-13T10:20:40.420Z","agentId":"P-44","wave":0,"step":"SIGNUP","action":"SUCCESS_CREATED","result":"SUCCESS","details":{"uid":"uid_persona_p44","email":"agent44.walter.gibbs@paperworking-test.dev","name":"Walter Gibbs","entity":"Gibbs Dividend Ventures LLC"}}
+{"ts":"2026-08-13T10:20:40.420Z","agentId":"P-44","wave":1,"step":"WAVE_1","action":"COMPLETE","result":"SUCCESS","details":{"uid":"uid_persona_p44"}}
+{"ts":"2026-08-13T10:20:40.644Z","agentId":"P-44","wave":2,"step":"WAVE_2","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-13T10:20:40.645Z","agentId":"P-44","wave":0,"step":"BILLING","action":"SUBSCRIPTION_SUCCESS","result":"SUCCESS","details":{"plan":"Individual","stripeCustomerId":"cus_test_swarm_p-44","stripeSubscriptionId":"sub_test_swarm_p-44","cardLastFour":"4242","cardBrand":"visa"}}
+{"ts":"2026-08-13T10:20:40.647Z","agentId":"P-44","wave":2,"step":"WAVE_2","action":"COMPLETE","result":"SUCCESS","details":{"plan":"Individual"}}
+{"ts":"2026-08-13T10:20:40.689Z","agentId":"P-44","wave":3,"step":"WAVE_3","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-13T10:20:40.690Z","agentId":"P-44","wave":0,"step":"PROJECTS","action":"CREATION_SUCCESS","result":"SUCCESS","details":{"created":10,"plaid":false}}
+{"ts":"2026-08-13T10:20:40.690Z","agentId":"P-44","wave":3,"step":"WAVE_3","action":"COMPLETE","result":"SUCCESS","details":{"created":10}}
+{"ts":"2026-08-13T10:20:40.754Z","agentId":"P-44","wave":4,"step":"WAVE_4","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-13T10:20:40.755Z","agentId":"P-44","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-78","to":"P-45","type":"Fractional Mentoring"}}
+{"ts":"2026-08-13T10:20:40.755Z","agentId":"P-44","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-79","to":"P-46","type":"Income Investing Peer Thread"}}
+{"ts":"2026-08-13T10:20:40.755Z","agentId":"P-44","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-45"}}
+{"ts":"2026-08-13T10:20:40.756Z","agentId":"P-44","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-34"}}
+{"ts":"2026-08-13T10:20:40.756Z","agentId":"P-44","wave":4,"step":"WAVE_4","action":"COMPLETE","result":"SUCCESS","details":{"interactions":2,"invites":2}}
+{"ts":"2026-08-13T10:20:40.779Z","agentId":"P-44","wave":5,"step":"WAVE_5","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-13T10:20:40.779Z","agentId":"P-44","wave":5,"step":"WAVE_5","action":"COMPLETE","result":"SUCCESS","details":{"reportPath":"/Users/yvesdarbouze/Documents/PaperWorking/artifacts/persona-swarm/reports/P-44-experience-report.md"}}
+{"ts":"2026-08-13T10:20:43.754Z","agentId":"P-44","wave":2,"step":"WAVE_2","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-13T10:20:43.754Z","agentId":"P-44","wave":0,"step":"BILLING","action":"SUBSCRIPTION_SUCCESS","result":"SUCCESS","details":{"plan":"Individual","stripeCustomerId":"cus_test_swarm_p-44","stripeSubscriptionId":"sub_test_swarm_p-44","cardLastFour":"4242","cardBrand":"visa"}}
+{"ts":"2026-08-13T10:20:43.754Z","agentId":"P-44","wave":2,"step":"WAVE_2","action":"COMPLETE","result":"SUCCESS","details":{"plan":"Individual"}}
+{"ts":"2026-08-13T10:20:43.800Z","agentId":"P-44","wave":3,"step":"WAVE_3","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-13T10:20:43.801Z","agentId":"P-44","wave":0,"step":"PROJECTS","action":"CREATION_SUCCESS","result":"SUCCESS","details":{"created":10,"plaid":false}}
+{"ts":"2026-08-13T10:20:43.801Z","agentId":"P-44","wave":3,"step":"WAVE_3","action":"COMPLETE","result":"SUCCESS","details":{"created":10}}
+{"ts":"2026-08-13T10:20:43.869Z","agentId":"P-44","wave":4,"step":"WAVE_4","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-13T10:20:43.870Z","agentId":"P-44","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-78","to":"P-45","type":"Fractional Mentoring"}}
+{"ts":"2026-08-13T10:20:43.870Z","agentId":"P-44","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-79","to":"P-46","type":"Income Investing Peer Thread"}}
+{"ts":"2026-08-13T10:20:43.871Z","agentId":"P-44","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-45"}}
+{"ts":"2026-08-13T10:20:43.871Z","agentId":"P-44","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-34"}}
+{"ts":"2026-08-13T10:20:43.871Z","agentId":"P-44","wave":4,"step":"WAVE_4","action":"COMPLETE","result":"SUCCESS","details":{"interactions":2,"invites":2}}
+{"ts":"2026-08-13T10:20:43.898Z","agentId":"P-44","wave":5,"step":"WAVE_5","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-13T10:20:43.898Z","agentId":"P-44","wave":5,"step":"WAVE_5","action":"COMPLETE","result":"SUCCESS","details":{"reportPath":"/Users/yvesdarbouze/Documents/PaperWorking/artifacts/persona-swarm/reports/P-44-experience-report.md"}}
+{"ts":"2026-08-13T10:20:52.452Z","agentId":"P-44","wave":1,"step":"WAVE_1","action":"START","result":"SUCCESS","details":{"email":"agent44.walter.gibbs@paperworking-test.dev"}}
+{"ts":"2026-08-13T10:20:52.452Z","agentId":"P-44","wave":0,"step":"SIGNUP","action":"SUCCESS_CREATED","result":"SUCCESS","details":{"uid":"uid_persona_p44","email":"agent44.walter.gibbs@paperworking-test.dev","name":"Walter Gibbs","entity":"Gibbs Dividend Ventures LLC"}}
+{"ts":"2026-08-13T10:20:52.452Z","agentId":"P-44","wave":1,"step":"WAVE_1","action":"COMPLETE","result":"SUCCESS","details":{"uid":"uid_persona_p44"}}
+{"ts":"2026-08-13T10:20:52.452Z","agentId":"P-44","wave":1,"step":"WAVE_1","action":"START","result":"SUCCESS","details":{"email":"agent44.walter.gibbs@paperworking-test.dev"}}
+{"ts":"2026-08-13T10:20:52.452Z","agentId":"P-44","wave":0,"step":"SIGNUP","action":"SUCCESS_CREATED","result":"SUCCESS","details":{"uid":"uid_persona_p44","email":"agent44.walter.gibbs@paperworking-test.dev","name":"Walter Gibbs","entity":"Gibbs Dividend Ventures LLC"}}
+{"ts":"2026-08-13T10:20:52.453Z","agentId":"P-44","wave":1,"step":"WAVE_1","action":"COMPLETE","result":"SUCCESS","details":{"uid":"uid_persona_p44"}}
+{"ts":"2026-08-13T10:20:52.775Z","agentId":"P-44","wave":2,"step":"WAVE_2","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-13T10:20:52.775Z","agentId":"P-44","wave":0,"step":"BILLING","action":"SUBSCRIPTION_SUCCESS","result":"SUCCESS","details":{"plan":"Individual","stripeCustomerId":"cus_test_swarm_p-44","stripeSubscriptionId":"sub_test_swarm_p-44","cardLastFour":"4242","cardBrand":"visa"}}
+{"ts":"2026-08-13T10:20:52.775Z","agentId":"P-44","wave":2,"step":"WAVE_2","action":"COMPLETE","result":"SUCCESS","details":{"plan":"Individual"}}
+{"ts":"2026-08-13T10:20:52.777Z","agentId":"P-44","wave":2,"step":"WAVE_2","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-13T10:20:52.777Z","agentId":"P-44","wave":0,"step":"BILLING","action":"SUBSCRIPTION_SUCCESS","result":"SUCCESS","details":{"plan":"Individual","stripeCustomerId":"cus_test_swarm_p-44","stripeSubscriptionId":"sub_test_swarm_p-44","cardLastFour":"4242","cardBrand":"visa"}}
+{"ts":"2026-08-13T10:20:52.777Z","agentId":"P-44","wave":2,"step":"WAVE_2","action":"COMPLETE","result":"SUCCESS","details":{"plan":"Individual"}}
+{"ts":"2026-08-13T10:20:52.821Z","agentId":"P-44","wave":3,"step":"WAVE_3","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-13T10:20:52.822Z","agentId":"P-44","wave":0,"step":"PROJECTS","action":"CREATION_SUCCESS","result":"SUCCESS","details":{"created":10,"plaid":false}}
+{"ts":"2026-08-13T10:20:52.822Z","agentId":"P-44","wave":3,"step":"WAVE_3","action":"COMPLETE","result":"SUCCESS","details":{"created":10}}
+{"ts":"2026-08-13T10:20:52.826Z","agentId":"P-44","wave":3,"step":"WAVE_3","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-13T10:20:52.826Z","agentId":"P-44","wave":0,"step":"PROJECTS","action":"CREATION_SUCCESS","result":"SUCCESS","details":{"created":10,"plaid":false}}
+{"ts":"2026-08-13T10:20:52.826Z","agentId":"P-44","wave":3,"step":"WAVE_3","action":"COMPLETE","result":"SUCCESS","details":{"created":10}}
+{"ts":"2026-08-13T10:20:52.911Z","agentId":"P-44","wave":4,"step":"WAVE_4","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-13T10:20:52.911Z","agentId":"P-44","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-78","to":"P-45","type":"Fractional Mentoring"}}
+{"ts":"2026-08-13T10:20:52.911Z","agentId":"P-44","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-79","to":"P-46","type":"Income Investing Peer Thread"}}
+{"ts":"2026-08-13T10:20:52.912Z","agentId":"P-44","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-45"}}
+{"ts":"2026-08-13T10:20:52.912Z","agentId":"P-44","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-34"}}
+{"ts":"2026-08-13T10:20:52.912Z","agentId":"P-44","wave":4,"step":"WAVE_4","action":"COMPLETE","result":"SUCCESS","details":{"interactions":2,"invites":2}}
+{"ts":"2026-08-13T10:20:52.913Z","agentId":"P-44","wave":4,"step":"WAVE_4","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-13T10:20:52.913Z","agentId":"P-44","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-78","to":"P-45","type":"Fractional Mentoring"}}
+{"ts":"2026-08-13T10:20:52.914Z","agentId":"P-44","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-79","to":"P-46","type":"Income Investing Peer Thread"}}
+{"ts":"2026-08-13T10:20:52.914Z","agentId":"P-44","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-45"}}
+{"ts":"2026-08-13T10:20:52.914Z","agentId":"P-44","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-34"}}
+{"ts":"2026-08-13T10:20:52.914Z","agentId":"P-44","wave":4,"step":"WAVE_4","action":"COMPLETE","result":"SUCCESS","details":{"interactions":2,"invites":2}}
+{"ts":"2026-08-13T10:20:52.940Z","agentId":"P-44","wave":5,"step":"WAVE_5","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-13T10:20:52.940Z","agentId":"P-44","wave":5,"step":"WAVE_5","action":"COMPLETE","result":"SUCCESS","details":{"reportPath":"/Users/yvesdarbouze/Documents/PaperWorking/artifacts/persona-swarm/reports/P-44-experience-report.md"}}
+{"ts":"2026-08-13T10:20:52.941Z","agentId":"P-44","wave":5,"step":"WAVE_5","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-13T10:20:52.941Z","agentId":"P-44","wave":5,"step":"WAVE_5","action":"COMPLETE","result":"SUCCESS","details":{"reportPath":"/Users/yvesdarbouze/Documents/PaperWorking/artifacts/persona-swarm/reports/P-44-experience-report.md"}}
+{"ts":"2026-08-13T10:21:40.949Z","agentId":"P-44","wave":1,"step":"WAVE_1","action":"START","result":"SUCCESS","details":{"email":"agent44.walter.gibbs@paperworking-test.dev"}}
+{"ts":"2026-08-13T10:21:40.949Z","agentId":"P-44","wave":0,"step":"SIGNUP","action":"SUCCESS_CREATED","result":"SUCCESS","details":{"uid":"uid_persona_p44","email":"agent44.walter.gibbs@paperworking-test.dev","name":"Walter Gibbs","entity":"Gibbs Dividend Ventures LLC"}}
+{"ts":"2026-08-13T10:21:40.949Z","agentId":"P-44","wave":1,"step":"WAVE_1","action":"COMPLETE","result":"SUCCESS","details":{"uid":"uid_persona_p44"}}
+{"ts":"2026-08-13T10:21:40.950Z","agentId":"P-44","wave":1,"step":"WAVE_1","action":"START","result":"SUCCESS","details":{"email":"agent44.walter.gibbs@paperworking-test.dev"}}
+{"ts":"2026-08-13T10:21:40.950Z","agentId":"P-44","wave":0,"step":"SIGNUP","action":"SUCCESS_CREATED","result":"SUCCESS","details":{"uid":"uid_persona_p44","email":"agent44.walter.gibbs@paperworking-test.dev","name":"Walter Gibbs","entity":"Gibbs Dividend Ventures LLC"}}
+{"ts":"2026-08-13T10:21:40.951Z","agentId":"P-44","wave":1,"step":"WAVE_1","action":"COMPLETE","result":"SUCCESS","details":{"uid":"uid_persona_p44"}}
+{"ts":"2026-08-13T10:21:41.636Z","agentId":"P-44","wave":2,"step":"WAVE_2","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-13T10:21:41.637Z","agentId":"P-44","wave":0,"step":"BILLING","action":"SUBSCRIPTION_SUCCESS","result":"SUCCESS","details":{"plan":"Individual","stripeCustomerId":"cus_test_swarm_p-44","stripeSubscriptionId":"sub_test_swarm_p-44","cardLastFour":"4242","cardBrand":"visa"}}
+{"ts":"2026-08-13T10:21:41.637Z","agentId":"P-44","wave":2,"step":"WAVE_2","action":"COMPLETE","result":"SUCCESS","details":{"plan":"Individual"}}
+{"ts":"2026-08-13T10:21:41.643Z","agentId":"P-44","wave":2,"step":"WAVE_2","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-13T10:21:41.644Z","agentId":"P-44","wave":0,"step":"BILLING","action":"SUBSCRIPTION_SUCCESS","result":"SUCCESS","details":{"plan":"Individual","stripeCustomerId":"cus_test_swarm_p-44","stripeSubscriptionId":"sub_test_swarm_p-44","cardLastFour":"4242","cardBrand":"visa"}}
+{"ts":"2026-08-13T10:21:41.646Z","agentId":"P-44","wave":2,"step":"WAVE_2","action":"COMPLETE","result":"SUCCESS","details":{"plan":"Individual"}}
+{"ts":"2026-08-13T10:21:41.742Z","agentId":"P-44","wave":3,"step":"WAVE_3","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-13T10:21:41.742Z","agentId":"P-44","wave":0,"step":"PROJECTS","action":"CREATION_SUCCESS","result":"SUCCESS","details":{"created":10,"plaid":false}}
+{"ts":"2026-08-13T10:21:41.743Z","agentId":"P-44","wave":3,"step":"WAVE_3","action":"COMPLETE","result":"SUCCESS","details":{"created":10}}
+{"ts":"2026-08-13T10:21:41.757Z","agentId":"P-44","wave":3,"step":"WAVE_3","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-13T10:21:41.760Z","agentId":"P-44","wave":0,"step":"PROJECTS","action":"CREATION_SUCCESS","result":"SUCCESS","details":{"created":10,"plaid":false}}
+{"ts":"2026-08-13T10:21:41.760Z","agentId":"P-44","wave":3,"step":"WAVE_3","action":"COMPLETE","result":"SUCCESS","details":{"created":10}}
+{"ts":"2026-08-13T10:21:41.894Z","agentId":"P-44","wave":4,"step":"WAVE_4","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-13T10:21:41.895Z","agentId":"P-44","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-78","to":"P-45","type":"Fractional Mentoring"}}
+{"ts":"2026-08-13T10:21:41.897Z","agentId":"P-44","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-79","to":"P-46","type":"Income Investing Peer Thread"}}
+{"ts":"2026-08-13T10:21:41.899Z","agentId":"P-44","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-45"}}
+{"ts":"2026-08-13T10:21:41.899Z","agentId":"P-44","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-34"}}
+{"ts":"2026-08-13T10:21:41.899Z","agentId":"P-44","wave":4,"step":"WAVE_4","action":"COMPLETE","result":"SUCCESS","details":{"interactions":2,"invites":2}}
+{"ts":"2026-08-13T10:21:41.940Z","agentId":"P-44","wave":4,"step":"WAVE_4","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-13T10:21:41.941Z","agentId":"P-44","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-78","to":"P-45","type":"Fractional Mentoring"}}
+{"ts":"2026-08-13T10:21:41.942Z","agentId":"P-44","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-79","to":"P-46","type":"Income Investing Peer Thread"}}
+{"ts":"2026-08-13T10:21:41.943Z","agentId":"P-44","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-45"}}
+{"ts":"2026-08-13T10:21:41.944Z","agentId":"P-44","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-34"}}
+{"ts":"2026-08-13T10:21:41.945Z","agentId":"P-44","wave":4,"step":"WAVE_4","action":"COMPLETE","result":"SUCCESS","details":{"interactions":2,"invites":2}}
+{"ts":"2026-08-13T10:21:41.948Z","agentId":"P-44","wave":5,"step":"WAVE_5","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-13T10:21:41.949Z","agentId":"P-44","wave":5,"step":"WAVE_5","action":"COMPLETE","result":"SUCCESS","details":{"reportPath":"/Users/yvesdarbouze/Documents/PaperWorking/artifacts/persona-swarm/reports/P-44-experience-report.md"}}
+{"ts":"2026-08-13T10:21:42.014Z","agentId":"P-44","wave":5,"step":"WAVE_5","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-13T10:21:42.014Z","agentId":"P-44","wave":5,"step":"WAVE_5","action":"COMPLETE","result":"SUCCESS","details":{"reportPath":"/Users/yvesdarbouze/Documents/PaperWorking/artifacts/persona-swarm/reports/P-44-experience-report.md"}}
+{"ts":"2026-08-13T10:21:51.249Z","agentId":"P-44","wave":1,"step":"WAVE_1","action":"START","result":"SUCCESS","details":{"email":"agent44.walter.gibbs@paperworking-test.dev"}}
+{"ts":"2026-08-13T10:21:51.249Z","agentId":"P-44","wave":0,"step":"SIGNUP","action":"SUCCESS_CREATED","result":"SUCCESS","details":{"uid":"uid_persona_p44","email":"agent44.walter.gibbs@paperworking-test.dev","name":"Walter Gibbs","entity":"Gibbs Dividend Ventures LLC"}}
+{"ts":"2026-08-13T10:21:51.249Z","agentId":"P-44","wave":1,"step":"WAVE_1","action":"COMPLETE","result":"SUCCESS","details":{"uid":"uid_persona_p44"}}
+{"ts":"2026-08-13T10:21:51.250Z","agentId":"P-44","wave":1,"step":"WAVE_1","action":"START","result":"SUCCESS","details":{"email":"agent44.walter.gibbs@paperworking-test.dev"}}
+{"ts":"2026-08-13T10:21:51.250Z","agentId":"P-44","wave":0,"step":"SIGNUP","action":"SUCCESS_CREATED","result":"SUCCESS","details":{"uid":"uid_persona_p44","email":"agent44.walter.gibbs@paperworking-test.dev","name":"Walter Gibbs","entity":"Gibbs Dividend Ventures LLC"}}
+{"ts":"2026-08-13T10:21:51.250Z","agentId":"P-44","wave":1,"step":"WAVE_1","action":"COMPLETE","result":"SUCCESS","details":{"uid":"uid_persona_p44"}}
+{"ts":"2026-08-13T10:21:51.560Z","agentId":"P-44","wave":2,"step":"WAVE_2","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-13T10:21:51.561Z","agentId":"P-44","wave":0,"step":"BILLING","action":"SUBSCRIPTION_SUCCESS","result":"SUCCESS","details":{"plan":"Individual","stripeCustomerId":"cus_test_swarm_p-44","stripeSubscriptionId":"sub_test_swarm_p-44","cardLastFour":"4242","cardBrand":"visa"}}
+{"ts":"2026-08-13T10:21:51.561Z","agentId":"P-44","wave":2,"step":"WAVE_2","action":"COMPLETE","result":"SUCCESS","details":{"plan":"Individual"}}
+{"ts":"2026-08-13T10:21:51.571Z","agentId":"P-44","wave":2,"step":"WAVE_2","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-13T10:21:51.572Z","agentId":"P-44","wave":0,"step":"BILLING","action":"SUBSCRIPTION_SUCCESS","result":"SUCCESS","details":{"plan":"Individual","stripeCustomerId":"cus_test_swarm_p-44","stripeSubscriptionId":"sub_test_swarm_p-44","cardLastFour":"4242","cardBrand":"visa"}}
+{"ts":"2026-08-13T10:21:51.572Z","agentId":"P-44","wave":2,"step":"WAVE_2","action":"COMPLETE","result":"SUCCESS","details":{"plan":"Individual"}}
+{"ts":"2026-08-13T10:21:51.618Z","agentId":"P-44","wave":3,"step":"WAVE_3","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-13T10:21:51.619Z","agentId":"P-44","wave":0,"step":"PROJECTS","action":"CREATION_SUCCESS","result":"SUCCESS","details":{"created":10,"plaid":false}}
+{"ts":"2026-08-13T10:21:51.619Z","agentId":"P-44","wave":3,"step":"WAVE_3","action":"COMPLETE","result":"SUCCESS","details":{"created":10}}
+{"ts":"2026-08-13T10:21:51.620Z","agentId":"P-44","wave":3,"step":"WAVE_3","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-13T10:21:51.620Z","agentId":"P-44","wave":0,"step":"PROJECTS","action":"CREATION_SUCCESS","result":"SUCCESS","details":{"created":10,"plaid":false}}
+{"ts":"2026-08-13T10:21:51.620Z","agentId":"P-44","wave":3,"step":"WAVE_3","action":"COMPLETE","result":"SUCCESS","details":{"created":10}}
+{"ts":"2026-08-13T10:21:51.713Z","agentId":"P-44","wave":4,"step":"WAVE_4","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-13T10:21:51.713Z","agentId":"P-44","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-78","to":"P-45","type":"Fractional Mentoring"}}
+{"ts":"2026-08-13T10:21:51.713Z","agentId":"P-44","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-79","to":"P-46","type":"Income Investing Peer Thread"}}
+{"ts":"2026-08-13T10:21:51.714Z","agentId":"P-44","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-45"}}
+{"ts":"2026-08-13T10:21:51.714Z","agentId":"P-44","wave":4,"step":"WAVE_4","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-13T10:21:51.714Z","agentId":"P-44","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-34"}}
+{"ts":"2026-08-13T10:21:51.714Z","agentId":"P-44","wave":4,"step":"WAVE_4","action":"COMPLETE","result":"SUCCESS","details":{"interactions":2,"invites":2}}
+{"ts":"2026-08-13T10:21:51.715Z","agentId":"P-44","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-78","to":"P-45","type":"Fractional Mentoring"}}
+{"ts":"2026-08-13T10:21:51.715Z","agentId":"P-44","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-79","to":"P-46","type":"Income Investing Peer Thread"}}
+{"ts":"2026-08-13T10:21:51.715Z","agentId":"P-44","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-45"}}
+{"ts":"2026-08-13T10:21:51.716Z","agentId":"P-44","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-34"}}
+{"ts":"2026-08-13T10:21:51.716Z","agentId":"P-44","wave":4,"step":"WAVE_4","action":"COMPLETE","result":"SUCCESS","details":{"interactions":2,"invites":2}}
+{"ts":"2026-08-13T10:21:51.749Z","agentId":"P-44","wave":5,"step":"WAVE_5","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-13T10:21:51.749Z","agentId":"P-44","wave":5,"step":"WAVE_5","action":"COMPLETE","result":"SUCCESS","details":{"reportPath":"/Users/yvesdarbouze/Documents/PaperWorking/artifacts/persona-swarm/reports/P-44-experience-report.md"}}
+{"ts":"2026-08-13T10:21:51.749Z","agentId":"P-44","wave":5,"step":"WAVE_5","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-13T10:21:51.749Z","agentId":"P-44","wave":5,"step":"WAVE_5","action":"COMPLETE","result":"SUCCESS","details":{"reportPath":"/Users/yvesdarbouze/Documents/PaperWorking/artifacts/persona-swarm/reports/P-44-experience-report.md"}}
+{"ts":"2026-08-13T10:51:52.940Z","agentId":"P-44","wave":1,"step":"WAVE_1","action":"START","result":"SUCCESS","details":{"email":"agent44.walter.penn@paperworking-test.dev"}}
+{"ts":"2026-08-13T10:51:52.942Z","agentId":"P-44","wave":1,"step":"WAVE_1","action":"START","result":"SUCCESS","details":{"email":"agent44.walter.penn@paperworking-test.dev"}}
+{"ts":"2026-08-13T10:51:52.942Z","agentId":"P-44","wave":0,"step":"SIGNUP","action":"SUCCESS_CREATED","result":"SUCCESS","details":{"uid":"uid_persona_p44","email":"agent44.walter.penn@paperworking-test.dev","name":"Walter Penn","entity":"Liberty Income Portfolios LLC"}}
+{"ts":"2026-08-13T10:51:52.942Z","agentId":"P-44","wave":1,"step":"WAVE_1","action":"COMPLETE","result":"SUCCESS","details":{"uid":"uid_persona_p44"}}
+{"ts":"2026-08-13T10:51:52.943Z","agentId":"P-44","wave":0,"step":"SIGNUP","action":"SUCCESS_CREATED","result":"SUCCESS","details":{"uid":"uid_persona_p44","email":"agent44.walter.penn@paperworking-test.dev","name":"Walter Penn","entity":"Liberty Income Portfolios LLC"}}
+{"ts":"2026-08-13T10:51:52.943Z","agentId":"P-44","wave":1,"step":"WAVE_1","action":"COMPLETE","result":"SUCCESS","details":{"uid":"uid_persona_p44"}}
+{"ts":"2026-08-13T10:51:52.987Z","agentId":"P-44","wave":2,"step":"WAVE_2","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-13T10:51:52.987Z","agentId":"P-44","wave":0,"step":"BILLING","action":"SUBSCRIPTION_SUCCESS","result":"SUCCESS","details":{"plan":"Individual","stripeCustomerId":"cus_test_swarm_p-44","stripeSubscriptionId":"sub_test_swarm_p-44","cardLastFour":"4242","cardBrand":"visa"}}
+{"ts":"2026-08-13T10:51:52.988Z","agentId":"P-44","wave":2,"step":"WAVE_2","action":"COMPLETE","result":"SUCCESS","details":{"plan":"Individual"}}
+{"ts":"2026-08-13T10:51:52.989Z","agentId":"P-44","wave":2,"step":"WAVE_2","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-13T10:51:52.989Z","agentId":"P-44","wave":0,"step":"BILLING","action":"SUBSCRIPTION_SUCCESS","result":"SUCCESS","details":{"plan":"Individual","stripeCustomerId":"cus_test_swarm_p-44","stripeSubscriptionId":"sub_test_swarm_p-44","cardLastFour":"4242","cardBrand":"visa"}}
+{"ts":"2026-08-13T10:51:52.989Z","agentId":"P-44","wave":2,"step":"WAVE_2","action":"COMPLETE","result":"SUCCESS","details":{"plan":"Individual"}}
+{"ts":"2026-08-13T10:51:53.140Z","agentId":"P-44","wave":3,"step":"WAVE_3","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-13T10:51:53.144Z","agentId":"P-44","wave":0,"step":"PROJECTS","action":"CREATION_SUCCESS","result":"SUCCESS","details":{"created":10,"plaid":false}}
+{"ts":"2026-08-13T10:51:53.144Z","agentId":"P-44","wave":3,"step":"WAVE_3","action":"COMPLETE","result":"SUCCESS","details":{"created":10}}
+{"ts":"2026-08-13T10:51:53.154Z","agentId":"P-44","wave":3,"step":"WAVE_3","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-13T10:51:53.157Z","agentId":"P-44","wave":0,"step":"PROJECTS","action":"CREATION_SUCCESS","result":"SUCCESS","details":{"created":10,"plaid":false}}
+{"ts":"2026-08-13T10:51:53.157Z","agentId":"P-44","wave":3,"step":"WAVE_3","action":"COMPLETE","result":"SUCCESS","details":{"created":10}}
+{"ts":"2026-08-13T10:51:53.243Z","agentId":"P-44","wave":4,"step":"WAVE_4","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-13T10:51:53.244Z","agentId":"P-44","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-78","to":"P-45","type":"Fractional Mentoring"}}
+{"ts":"2026-08-13T10:51:53.245Z","agentId":"P-44","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-79","to":"P-46","type":"Income Investing Peer Thread"}}
+{"ts":"2026-08-13T10:51:53.245Z","agentId":"P-44","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-45"}}
+{"ts":"2026-08-13T10:51:53.246Z","agentId":"P-44","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-34"}}
+{"ts":"2026-08-13T10:51:53.246Z","agentId":"P-44","wave":4,"step":"WAVE_4","action":"COMPLETE","result":"SUCCESS","details":{"interactions":2,"invites":2}}
+{"ts":"2026-08-13T10:51:53.254Z","agentId":"P-44","wave":4,"step":"WAVE_4","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-13T10:51:53.254Z","agentId":"P-44","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-78","to":"P-45","type":"Fractional Mentoring"}}
+{"ts":"2026-08-13T10:51:53.255Z","agentId":"P-44","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-79","to":"P-46","type":"Income Investing Peer Thread"}}
+{"ts":"2026-08-13T10:51:53.255Z","agentId":"P-44","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-45"}}
+{"ts":"2026-08-13T10:51:53.255Z","agentId":"P-44","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-34"}}
+{"ts":"2026-08-13T10:51:53.256Z","agentId":"P-44","wave":4,"step":"WAVE_4","action":"COMPLETE","result":"SUCCESS","details":{"interactions":2,"invites":2}}
+{"ts":"2026-08-13T10:51:53.315Z","agentId":"P-44","wave":5,"step":"WAVE_5","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-13T10:51:53.315Z","agentId":"P-44","wave":5,"step":"WAVE_5","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-13T10:51:53.315Z","agentId":"P-44","wave":5,"step":"WAVE_5","action":"COMPLETE","result":"SUCCESS","details":{"reportPath":"/Users/yvesdarbouze/Documents/PaperWorking/artifacts/persona-swarm/reports/P-44-experience-report.md"}}
+{"ts":"2026-08-13T10:51:53.316Z","agentId":"P-44","wave":5,"step":"WAVE_5","action":"COMPLETE","result":"SUCCESS","details":{"reportPath":"/Users/yvesdarbouze/Documents/PaperWorking/artifacts/persona-swarm/reports/P-44-experience-report.md"}}
+{"ts":"2026-08-13T10:52:06.293Z","agentId":"P-44","wave":1,"step":"WAVE_1","action":"START","result":"SUCCESS","details":{"email":"agent44.walter.penn@paperworking-test.dev"}}
+{"ts":"2026-08-13T10:52:06.293Z","agentId":"P-44","wave":1,"step":"WAVE_1","action":"START","result":"SUCCESS","details":{"email":"agent44.walter.penn@paperworking-test.dev"}}
+{"ts":"2026-08-13T10:52:06.294Z","agentId":"P-44","wave":0,"step":"SIGNUP","action":"SUCCESS_CREATED","result":"SUCCESS","details":{"uid":"uid_persona_p44","email":"agent44.walter.penn@paperworking-test.dev","name":"Walter Penn","entity":"Liberty Income Portfolios LLC"}}
+{"ts":"2026-08-13T10:52:06.294Z","agentId":"P-44","wave":0,"step":"SIGNUP","action":"SUCCESS_CREATED","result":"SUCCESS","details":{"uid":"uid_persona_p44","email":"agent44.walter.penn@paperworking-test.dev","name":"Walter Penn","entity":"Liberty Income Portfolios LLC"}}
+{"ts":"2026-08-13T10:52:06.294Z","agentId":"P-44","wave":1,"step":"WAVE_1","action":"COMPLETE","result":"SUCCESS","details":{"uid":"uid_persona_p44"}}
+{"ts":"2026-08-13T10:52:06.294Z","agentId":"P-44","wave":1,"step":"WAVE_1","action":"COMPLETE","result":"SUCCESS","details":{"uid":"uid_persona_p44"}}
+{"ts":"2026-08-13T10:52:06.334Z","agentId":"P-44","wave":2,"step":"WAVE_2","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-13T10:52:06.334Z","agentId":"P-44","wave":0,"step":"BILLING","action":"SUBSCRIPTION_SUCCESS","result":"SUCCESS","details":{"plan":"Individual","stripeCustomerId":"cus_test_swarm_p-44","stripeSubscriptionId":"sub_test_swarm_p-44","cardLastFour":"4242","cardBrand":"visa"}}
+{"ts":"2026-08-13T10:52:06.334Z","agentId":"P-44","wave":2,"step":"WAVE_2","action":"COMPLETE","result":"SUCCESS","details":{"plan":"Individual"}}
+{"ts":"2026-08-13T10:52:06.334Z","agentId":"P-44","wave":2,"step":"WAVE_2","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-13T10:52:06.335Z","agentId":"P-44","wave":0,"step":"BILLING","action":"SUBSCRIPTION_SUCCESS","result":"SUCCESS","details":{"plan":"Individual","stripeCustomerId":"cus_test_swarm_p-44","stripeSubscriptionId":"sub_test_swarm_p-44","cardLastFour":"4242","cardBrand":"visa"}}
+{"ts":"2026-08-13T10:52:06.335Z","agentId":"P-44","wave":2,"step":"WAVE_2","action":"COMPLETE","result":"SUCCESS","details":{"plan":"Individual"}}
+{"ts":"2026-08-13T10:52:06.465Z","agentId":"P-44","wave":3,"step":"WAVE_3","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-13T10:52:06.465Z","agentId":"P-44","wave":3,"step":"WAVE_3","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-13T10:52:06.467Z","agentId":"P-44","wave":0,"step":"PROJECTS","action":"CREATION_SUCCESS","result":"SUCCESS","details":{"created":10,"plaid":false}}
+{"ts":"2026-08-13T10:52:06.468Z","agentId":"P-44","wave":3,"step":"WAVE_3","action":"COMPLETE","result":"SUCCESS","details":{"created":10}}
+{"ts":"2026-08-13T10:52:06.468Z","agentId":"P-44","wave":0,"step":"PROJECTS","action":"CREATION_SUCCESS","result":"SUCCESS","details":{"created":10,"plaid":false}}
+{"ts":"2026-08-13T10:52:06.468Z","agentId":"P-44","wave":3,"step":"WAVE_3","action":"COMPLETE","result":"SUCCESS","details":{"created":10}}
+{"ts":"2026-08-13T10:52:06.566Z","agentId":"P-44","wave":4,"step":"WAVE_4","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-13T10:52:06.566Z","agentId":"P-44","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-78","to":"P-45","type":"Fractional Mentoring"}}
+{"ts":"2026-08-13T10:52:06.567Z","agentId":"P-44","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-79","to":"P-46","type":"Income Investing Peer Thread"}}
+{"ts":"2026-08-13T10:52:06.567Z","agentId":"P-44","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-45"}}
+{"ts":"2026-08-13T10:52:06.568Z","agentId":"P-44","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-34"}}
+{"ts":"2026-08-13T10:52:06.568Z","agentId":"P-44","wave":4,"step":"WAVE_4","action":"COMPLETE","result":"SUCCESS","details":{"interactions":2,"invites":2}}
+{"ts":"2026-08-13T10:52:06.567Z","agentId":"P-44","wave":4,"step":"WAVE_4","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-13T10:52:06.569Z","agentId":"P-44","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-78","to":"P-45","type":"Fractional Mentoring"}}
+{"ts":"2026-08-13T10:52:06.569Z","agentId":"P-44","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-79","to":"P-46","type":"Income Investing Peer Thread"}}
+{"ts":"2026-08-13T10:52:06.569Z","agentId":"P-44","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-45"}}
+{"ts":"2026-08-13T10:52:06.570Z","agentId":"P-44","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-34"}}
+{"ts":"2026-08-13T10:52:06.570Z","agentId":"P-44","wave":4,"step":"WAVE_4","action":"COMPLETE","result":"SUCCESS","details":{"interactions":2,"invites":2}}
+{"ts":"2026-08-13T10:52:06.616Z","agentId":"P-44","wave":5,"step":"WAVE_5","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-13T10:52:06.616Z","agentId":"P-44","wave":5,"step":"WAVE_5","action":"COMPLETE","result":"SUCCESS","details":{"reportPath":"/Users/yvesdarbouze/Documents/PaperWorking/artifacts/persona-swarm/reports/P-44-experience-report.md"}}
+{"ts":"2026-08-13T10:52:06.617Z","agentId":"P-44","wave":5,"step":"WAVE_5","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-13T10:52:06.617Z","agentId":"P-44","wave":5,"step":"WAVE_5","action":"COMPLETE","result":"SUCCESS","details":{"reportPath":"/Users/yvesdarbouze/Documents/PaperWorking/artifacts/persona-swarm/reports/P-44-experience-report.md"}}
+{"ts":"2026-08-13T10:52:14.121Z","agentId":"P-44","wave":1,"step":"WAVE_1","action":"START","result":"SUCCESS","details":{"email":"agent44.walter.penn@paperworking-test.dev"}}
+{"ts":"2026-08-13T10:52:14.122Z","agentId":"P-44","wave":1,"step":"WAVE_1","action":"START","result":"SUCCESS","details":{"email":"agent44.walter.penn@paperworking-test.dev"}}
+{"ts":"2026-08-13T10:52:14.122Z","agentId":"P-44","wave":0,"step":"SIGNUP","action":"SUCCESS_CREATED","result":"SUCCESS","details":{"uid":"uid_persona_p44","email":"agent44.walter.penn@paperworking-test.dev","name":"Walter Penn","entity":"Liberty Income Portfolios LLC"}}
+{"ts":"2026-08-13T10:52:14.122Z","agentId":"P-44","wave":1,"step":"WAVE_1","action":"COMPLETE","result":"SUCCESS","details":{"uid":"uid_persona_p44"}}
+{"ts":"2026-08-13T10:52:14.124Z","agentId":"P-44","wave":0,"step":"SIGNUP","action":"SUCCESS_CREATED","result":"SUCCESS","details":{"uid":"uid_persona_p44","email":"agent44.walter.penn@paperworking-test.dev","name":"Walter Penn","entity":"Liberty Income Portfolios LLC"}}
+{"ts":"2026-08-13T10:52:14.124Z","agentId":"P-44","wave":1,"step":"WAVE_1","action":"COMPLETE","result":"SUCCESS","details":{"uid":"uid_persona_p44"}}
+{"ts":"2026-08-13T10:52:14.166Z","agentId":"P-44","wave":2,"step":"WAVE_2","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-13T10:52:14.166Z","agentId":"P-44","wave":2,"step":"WAVE_2","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-13T10:52:14.167Z","agentId":"P-44","wave":0,"step":"BILLING","action":"SUBSCRIPTION_SUCCESS","result":"SUCCESS","details":{"plan":"Individual","stripeCustomerId":"cus_test_swarm_p-44","stripeSubscriptionId":"sub_test_swarm_p-44","cardLastFour":"4242","cardBrand":"visa"}}
+{"ts":"2026-08-13T10:52:14.167Z","agentId":"P-44","wave":2,"step":"WAVE_2","action":"COMPLETE","result":"SUCCESS","details":{"plan":"Individual"}}
+{"ts":"2026-08-13T10:52:14.167Z","agentId":"P-44","wave":0,"step":"BILLING","action":"SUBSCRIPTION_SUCCESS","result":"SUCCESS","details":{"plan":"Individual","stripeCustomerId":"cus_test_swarm_p-44","stripeSubscriptionId":"sub_test_swarm_p-44","cardLastFour":"4242","cardBrand":"visa"}}
+{"ts":"2026-08-13T10:52:14.167Z","agentId":"P-44","wave":2,"step":"WAVE_2","action":"COMPLETE","result":"SUCCESS","details":{"plan":"Individual"}}
+{"ts":"2026-08-13T10:52:14.311Z","agentId":"P-44","wave":3,"step":"WAVE_3","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-13T10:52:14.314Z","agentId":"P-44","wave":0,"step":"PROJECTS","action":"CREATION_SUCCESS","result":"SUCCESS","details":{"created":10,"plaid":false}}
+{"ts":"2026-08-13T10:52:14.315Z","agentId":"P-44","wave":3,"step":"WAVE_3","action":"COMPLETE","result":"SUCCESS","details":{"created":10}}
+{"ts":"2026-08-13T10:52:14.324Z","agentId":"P-44","wave":3,"step":"WAVE_3","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-13T10:52:14.327Z","agentId":"P-44","wave":0,"step":"PROJECTS","action":"CREATION_SUCCESS","result":"SUCCESS","details":{"created":10,"plaid":false}}
+{"ts":"2026-08-13T10:52:14.327Z","agentId":"P-44","wave":3,"step":"WAVE_3","action":"COMPLETE","result":"SUCCESS","details":{"created":10}}
+{"ts":"2026-08-13T10:52:14.409Z","agentId":"P-44","wave":4,"step":"WAVE_4","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-13T10:52:14.410Z","agentId":"P-44","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-78","to":"P-45","type":"Fractional Mentoring"}}
+{"ts":"2026-08-13T10:52:14.410Z","agentId":"P-44","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-79","to":"P-46","type":"Income Investing Peer Thread"}}
+{"ts":"2026-08-13T10:52:14.411Z","agentId":"P-44","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-45"}}
+{"ts":"2026-08-13T10:52:14.411Z","agentId":"P-44","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-34"}}
+{"ts":"2026-08-13T10:52:14.411Z","agentId":"P-44","wave":4,"step":"WAVE_4","action":"COMPLETE","result":"SUCCESS","details":{"interactions":2,"invites":2}}
+{"ts":"2026-08-13T10:52:14.422Z","agentId":"P-44","wave":4,"step":"WAVE_4","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-13T10:52:14.422Z","agentId":"P-44","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-78","to":"P-45","type":"Fractional Mentoring"}}
+{"ts":"2026-08-13T10:52:14.422Z","agentId":"P-44","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-79","to":"P-46","type":"Income Investing Peer Thread"}}
+{"ts":"2026-08-13T10:52:14.423Z","agentId":"P-44","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-45"}}
+{"ts":"2026-08-13T10:52:14.423Z","agentId":"P-44","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-34"}}
+{"ts":"2026-08-13T10:52:14.423Z","agentId":"P-44","wave":4,"step":"WAVE_4","action":"COMPLETE","result":"SUCCESS","details":{"interactions":2,"invites":2}}
+{"ts":"2026-08-13T10:52:14.457Z","agentId":"P-44","wave":5,"step":"WAVE_5","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-13T10:52:14.457Z","agentId":"P-44","wave":5,"step":"WAVE_5","action":"COMPLETE","result":"SUCCESS","details":{"reportPath":"/Users/yvesdarbouze/Documents/PaperWorking/artifacts/persona-swarm/reports/P-44-experience-report.md"}}
+{"ts":"2026-08-13T10:52:14.474Z","agentId":"P-44","wave":5,"step":"WAVE_5","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-13T10:52:14.475Z","agentId":"P-44","wave":5,"step":"WAVE_5","action":"COMPLETE","result":"SUCCESS","details":{"reportPath":"/Users/yvesdarbouze/Documents/PaperWorking/artifacts/persona-swarm/reports/P-44-experience-report.md"}}
+{"ts":"2026-08-13T10:52:42.864Z","agentId":"P-44","wave":1,"step":"WAVE_1","action":"START","result":"SUCCESS","details":{"email":"agent44.walter.penn@paperworking-test.dev"}}
+{"ts":"2026-08-13T10:52:42.865Z","agentId":"P-44","wave":0,"step":"SIGNUP","action":"SUCCESS_CREATED","result":"SUCCESS","details":{"uid":"uid_persona_p44","email":"agent44.walter.penn@paperworking-test.dev","name":"Walter Penn","entity":"Liberty Income Portfolios LLC"}}
+{"ts":"2026-08-13T10:52:42.865Z","agentId":"P-44","wave":1,"step":"WAVE_1","action":"COMPLETE","result":"SUCCESS","details":{"uid":"uid_persona_p44"}}
+{"ts":"2026-08-13T10:52:42.903Z","agentId":"P-44","wave":2,"step":"WAVE_2","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-13T10:52:42.903Z","agentId":"P-44","wave":0,"step":"BILLING","action":"SUBSCRIPTION_SUCCESS","result":"SUCCESS","details":{"plan":"Individual","stripeCustomerId":"cus_test_swarm_p-44","stripeSubscriptionId":"sub_test_swarm_p-44","cardLastFour":"4242","cardBrand":"visa"}}
+{"ts":"2026-08-13T10:52:42.904Z","agentId":"P-44","wave":2,"step":"WAVE_2","action":"COMPLETE","result":"SUCCESS","details":{"plan":"Individual"}}
+{"ts":"2026-08-13T10:52:43.040Z","agentId":"P-44","wave":3,"step":"WAVE_3","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-13T10:52:43.042Z","agentId":"P-44","wave":0,"step":"PROJECTS","action":"CREATION_SUCCESS","result":"SUCCESS","details":{"created":10,"plaid":false}}
+{"ts":"2026-08-13T10:52:43.043Z","agentId":"P-44","wave":3,"step":"WAVE_3","action":"COMPLETE","result":"SUCCESS","details":{"created":10}}
+{"ts":"2026-08-13T10:52:43.131Z","agentId":"P-44","wave":4,"step":"WAVE_4","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-13T10:52:43.131Z","agentId":"P-44","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-78","to":"P-45","type":"Fractional Mentoring"}}
+{"ts":"2026-08-13T10:52:43.131Z","agentId":"P-44","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-79","to":"P-46","type":"Income Investing Peer Thread"}}
+{"ts":"2026-08-13T10:52:43.131Z","agentId":"P-44","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-45"}}
+{"ts":"2026-08-13T10:52:43.132Z","agentId":"P-44","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-34"}}
+{"ts":"2026-08-13T10:52:43.132Z","agentId":"P-44","wave":4,"step":"WAVE_4","action":"COMPLETE","result":"SUCCESS","details":{"interactions":2,"invites":2}}
+{"ts":"2026-08-13T10:52:43.170Z","agentId":"P-44","wave":5,"step":"WAVE_5","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-13T10:52:43.170Z","agentId":"P-44","wave":5,"step":"WAVE_5","action":"COMPLETE","result":"SUCCESS","details":{"reportPath":"/Users/yvesdarbouze/Documents/PaperWorking/artifacts/persona-swarm/reports/P-44-experience-report.md"}}
+{"ts":"2026-08-13T10:52:46.545Z","agentId":"P-44","wave":1,"step":"WAVE_1","action":"START","result":"SUCCESS","details":{"email":"agent44.walter.penn@paperworking-test.dev"}}
+{"ts":"2026-08-13T10:52:46.546Z","agentId":"P-44","wave":0,"step":"SIGNUP","action":"SUCCESS_CREATED","result":"SUCCESS","details":{"uid":"uid_persona_p44","email":"agent44.walter.penn@paperworking-test.dev","name":"Walter Penn","entity":"Liberty Income Portfolios LLC"}}
+{"ts":"2026-08-13T10:52:46.547Z","agentId":"P-44","wave":1,"step":"WAVE_1","action":"COMPLETE","result":"SUCCESS","details":{"uid":"uid_persona_p44"}}
+{"ts":"2026-08-13T10:52:46.589Z","agentId":"P-44","wave":2,"step":"WAVE_2","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-13T10:52:46.589Z","agentId":"P-44","wave":0,"step":"BILLING","action":"SUBSCRIPTION_SUCCESS","result":"SUCCESS","details":{"plan":"Individual","stripeCustomerId":"cus_test_swarm_p-44","stripeSubscriptionId":"sub_test_swarm_p-44","cardLastFour":"4242","cardBrand":"visa"}}
+{"ts":"2026-08-13T10:52:46.589Z","agentId":"P-44","wave":2,"step":"WAVE_2","action":"COMPLETE","result":"SUCCESS","details":{"plan":"Individual"}}
+{"ts":"2026-08-13T10:52:46.725Z","agentId":"P-44","wave":3,"step":"WAVE_3","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-13T10:52:46.727Z","agentId":"P-44","wave":0,"step":"PROJECTS","action":"CREATION_SUCCESS","result":"SUCCESS","details":{"created":10,"plaid":false}}
+{"ts":"2026-08-13T10:52:46.728Z","agentId":"P-44","wave":3,"step":"WAVE_3","action":"COMPLETE","result":"SUCCESS","details":{"created":10}}
+{"ts":"2026-08-13T10:52:46.826Z","agentId":"P-44","wave":4,"step":"WAVE_4","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-13T10:52:46.827Z","agentId":"P-44","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-78","to":"P-45","type":"Fractional Mentoring"}}
+{"ts":"2026-08-13T10:52:46.827Z","agentId":"P-44","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-79","to":"P-46","type":"Income Investing Peer Thread"}}
+{"ts":"2026-08-13T10:52:46.827Z","agentId":"P-44","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-45"}}
+{"ts":"2026-08-13T10:52:46.828Z","agentId":"P-44","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-34"}}
+{"ts":"2026-08-13T10:52:46.828Z","agentId":"P-44","wave":4,"step":"WAVE_4","action":"COMPLETE","result":"SUCCESS","details":{"interactions":2,"invites":2}}
+{"ts":"2026-08-13T10:52:46.880Z","agentId":"P-44","wave":5,"step":"WAVE_5","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-13T10:52:46.880Z","agentId":"P-44","wave":5,"step":"WAVE_5","action":"COMPLETE","result":"SUCCESS","details":{"reportPath":"/Users/yvesdarbouze/Documents/PaperWorking/artifacts/persona-swarm/reports/P-44-experience-report.md"}}
+{"ts":"2026-08-13T11:25:14.467Z","agentId":"P-44","wave":1,"step":"WAVE_1","action":"START","result":"SUCCESS","details":{"email":"agent44.walter.gibbs@paperworking-test.dev"}}
+{"ts":"2026-08-13T11:25:14.467Z","agentId":"P-44","wave":0,"step":"SIGNUP","action":"SUCCESS_CREATED","result":"SUCCESS","details":{"uid":"uid_persona_p44","email":"agent44.walter.gibbs@paperworking-test.dev","name":"Walter Gibbs","entity":"Gibbs Dividend Ventures LLC"}}
+{"ts":"2026-08-13T11:25:14.467Z","agentId":"P-44","wave":1,"step":"WAVE_1","action":"COMPLETE","result":"SUCCESS","details":{"uid":"uid_persona_p44"}}
+{"ts":"2026-08-13T11:25:14.514Z","agentId":"P-44","wave":2,"step":"WAVE_2","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-13T11:25:14.514Z","agentId":"P-44","wave":0,"step":"BILLING","action":"SUBSCRIPTION_SUCCESS","result":"SUCCESS","details":{"plan":"Individual","stripeCustomerId":"cus_test_swarm_p-44","stripeSubscriptionId":"sub_test_swarm_p-44","cardLastFour":"4242","cardBrand":"visa"}}
+{"ts":"2026-08-13T11:25:14.514Z","agentId":"P-44","wave":2,"step":"WAVE_2","action":"COMPLETE","result":"SUCCESS","details":{"plan":"Individual"}}
+{"ts":"2026-08-13T11:25:14.639Z","agentId":"P-44","wave":3,"step":"WAVE_3","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-13T11:25:14.641Z","agentId":"P-44","wave":0,"step":"PROJECTS","action":"CREATION_SUCCESS","result":"SUCCESS","details":{"created":10,"plaid":false}}
+{"ts":"2026-08-13T11:25:14.641Z","agentId":"P-44","wave":3,"step":"WAVE_3","action":"COMPLETE","result":"SUCCESS","details":{"created":10}}
+{"ts":"2026-08-13T11:25:14.747Z","agentId":"P-44","wave":4,"step":"WAVE_4","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-13T11:25:14.747Z","agentId":"P-44","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-78","to":"P-45","type":"Fractional Mentoring"}}
+{"ts":"2026-08-13T11:25:14.747Z","agentId":"P-44","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-79","to":"P-46","type":"Income Investing Peer Thread"}}
+{"ts":"2026-08-13T11:25:14.748Z","agentId":"P-44","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-45"}}
+{"ts":"2026-08-13T11:25:14.748Z","agentId":"P-44","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-34"}}
+{"ts":"2026-08-13T11:25:14.748Z","agentId":"P-44","wave":4,"step":"WAVE_4","action":"COMPLETE","result":"SUCCESS","details":{"interactions":2,"invites":2}}
+{"ts":"2026-08-13T11:25:14.794Z","agentId":"P-44","wave":5,"step":"WAVE_5","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-13T11:25:14.794Z","agentId":"P-44","wave":5,"step":"WAVE_5","action":"COMPLETE","result":"SUCCESS","details":{"reportPath":"/Users/yvesdarbouze/Documents/PaperWorking/artifacts/persona-swarm/reports/P-44-experience-report.md"}}
+{"ts":"2026-08-13T11:27:50.759Z","agentId":"P-44","wave":1,"step":"WAVE_1","action":"START","result":"SUCCESS","details":{"email":"agent44.walter.gibbs@paperworking-test.dev"}}
+{"ts":"2026-08-13T11:27:50.759Z","agentId":"P-44","wave":1,"step":"WAVE_1","action":"START","result":"SUCCESS","details":{"email":"agent44.walter.gibbs@paperworking-test.dev"}}
+{"ts":"2026-08-13T11:27:50.760Z","agentId":"P-44","wave":0,"step":"SIGNUP","action":"SUCCESS_CREATED","result":"SUCCESS","details":{"uid":"uid_persona_p44","email":"agent44.walter.gibbs@paperworking-test.dev","name":"Walter Gibbs","entity":"Gibbs Dividend Ventures LLC"}}
+{"ts":"2026-08-13T11:27:50.760Z","agentId":"P-44","wave":0,"step":"SIGNUP","action":"SUCCESS_CREATED","result":"SUCCESS","details":{"uid":"uid_persona_p44","email":"agent44.walter.gibbs@paperworking-test.dev","name":"Walter Gibbs","entity":"Gibbs Dividend Ventures LLC"}}
+{"ts":"2026-08-13T11:27:50.760Z","agentId":"P-44","wave":1,"step":"WAVE_1","action":"COMPLETE","result":"SUCCESS","details":{"uid":"uid_persona_p44"}}
+{"ts":"2026-08-13T11:27:50.760Z","agentId":"P-44","wave":1,"step":"WAVE_1","action":"COMPLETE","result":"SUCCESS","details":{"uid":"uid_persona_p44"}}
+{"ts":"2026-08-13T11:27:50.825Z","agentId":"P-44","wave":2,"step":"WAVE_2","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-13T11:27:50.826Z","agentId":"P-44","wave":0,"step":"BILLING","action":"SUBSCRIPTION_SUCCESS","result":"SUCCESS","details":{"plan":"Individual","stripeCustomerId":"cus_test_swarm_p-44","stripeSubscriptionId":"sub_test_swarm_p-44","cardLastFour":"4242","cardBrand":"visa"}}
+{"ts":"2026-08-13T11:27:50.826Z","agentId":"P-44","wave":2,"step":"WAVE_2","action":"COMPLETE","result":"SUCCESS","details":{"plan":"Individual"}}
+{"ts":"2026-08-13T11:27:50.832Z","agentId":"P-44","wave":2,"step":"WAVE_2","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-13T11:27:50.832Z","agentId":"P-44","wave":0,"step":"BILLING","action":"SUBSCRIPTION_SUCCESS","result":"SUCCESS","details":{"plan":"Individual","stripeCustomerId":"cus_test_swarm_p-44","stripeSubscriptionId":"sub_test_swarm_p-44","cardLastFour":"4242","cardBrand":"visa"}}
+{"ts":"2026-08-13T11:27:50.832Z","agentId":"P-44","wave":2,"step":"WAVE_2","action":"COMPLETE","result":"SUCCESS","details":{"plan":"Individual"}}
+{"ts":"2026-08-13T11:27:50.995Z","agentId":"P-44","wave":3,"step":"WAVE_3","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-13T11:27:50.998Z","agentId":"P-44","wave":0,"step":"PROJECTS","action":"CREATION_SUCCESS","result":"SUCCESS","details":{"created":10,"plaid":false}}
+{"ts":"2026-08-13T11:27:50.998Z","agentId":"P-44","wave":3,"step":"WAVE_3","action":"COMPLETE","result":"SUCCESS","details":{"created":10}}
+{"ts":"2026-08-13T11:27:51.003Z","agentId":"P-44","wave":3,"step":"WAVE_3","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-13T11:27:51.007Z","agentId":"P-44","wave":0,"step":"PROJECTS","action":"CREATION_SUCCESS","result":"SUCCESS","details":{"created":10,"plaid":false}}
+{"ts":"2026-08-13T11:27:51.007Z","agentId":"P-44","wave":3,"step":"WAVE_3","action":"COMPLETE","result":"SUCCESS","details":{"created":10}}
+{"ts":"2026-08-13T11:27:51.100Z","agentId":"P-44","wave":4,"step":"WAVE_4","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-13T11:27:51.101Z","agentId":"P-44","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-78","to":"P-45","type":"Fractional Mentoring"}}
+{"ts":"2026-08-13T11:27:51.102Z","agentId":"P-44","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-79","to":"P-46","type":"Income Investing Peer Thread"}}
+{"ts":"2026-08-13T11:27:51.103Z","agentId":"P-44","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-45"}}
+{"ts":"2026-08-13T11:27:51.104Z","agentId":"P-44","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-34"}}
+{"ts":"2026-08-13T11:27:51.104Z","agentId":"P-44","wave":4,"step":"WAVE_4","action":"COMPLETE","result":"SUCCESS","details":{"interactions":2,"invites":2}}
+{"ts":"2026-08-13T11:27:51.123Z","agentId":"P-44","wave":4,"step":"WAVE_4","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-13T11:27:51.124Z","agentId":"P-44","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-78","to":"P-45","type":"Fractional Mentoring"}}
+{"ts":"2026-08-13T11:27:51.128Z","agentId":"P-44","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-79","to":"P-46","type":"Income Investing Peer Thread"}}
+{"ts":"2026-08-13T11:27:51.129Z","agentId":"P-44","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-45"}}
+{"ts":"2026-08-13T11:27:51.129Z","agentId":"P-44","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-34"}}
+{"ts":"2026-08-13T11:27:51.129Z","agentId":"P-44","wave":4,"step":"WAVE_4","action":"COMPLETE","result":"SUCCESS","details":{"interactions":2,"invites":2}}
+{"ts":"2026-08-13T11:27:51.163Z","agentId":"P-44","wave":5,"step":"WAVE_5","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-13T11:27:51.164Z","agentId":"P-44","wave":5,"step":"WAVE_5","action":"COMPLETE","result":"SUCCESS","details":{"reportPath":"/Users/yvesdarbouze/Documents/PaperWorking/artifacts/persona-swarm/reports/P-44-experience-report.md"}}
+{"ts":"2026-08-13T11:27:51.189Z","agentId":"P-44","wave":5,"step":"WAVE_5","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-13T11:27:51.189Z","agentId":"P-44","wave":5,"step":"WAVE_5","action":"COMPLETE","result":"SUCCESS","details":{"reportPath":"/Users/yvesdarbouze/Documents/PaperWorking/artifacts/persona-swarm/reports/P-44-experience-report.md"}}
+{"ts":"2026-08-13T13:11:18.278Z","agentId":"P-44","wave":1,"step":"WAVE_1","action":"START","result":"SUCCESS","details":{"email":"agent44.walter.gibbs@paperworking-test.dev"}}
+{"ts":"2026-08-13T13:11:18.280Z","agentId":"P-44","wave":0,"step":"SIGNUP","action":"SUCCESS_CREATED","result":"SUCCESS","details":{"uid":"uid_persona_p44","email":"agent44.walter.gibbs@paperworking-test.dev","name":"Walter Gibbs","entity":"Gibbs Dividend Ventures LLC"}}
+{"ts":"2026-08-13T13:11:18.280Z","agentId":"P-44","wave":1,"step":"WAVE_1","action":"COMPLETE","result":"SUCCESS","details":{"uid":"uid_persona_p44"}}
+{"ts":"2026-08-13T13:11:18.401Z","agentId":"P-44","wave":2,"step":"WAVE_2","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-13T13:11:18.401Z","agentId":"P-44","wave":0,"step":"BILLING","action":"SUBSCRIPTION_SUCCESS","result":"SUCCESS","details":{"plan":"Individual","stripeCustomerId":"cus_test_swarm_p-44","stripeSubscriptionId":"sub_test_swarm_p-44","cardLastFour":"4242","cardBrand":"visa"}}
+{"ts":"2026-08-13T13:11:18.401Z","agentId":"P-44","wave":2,"step":"WAVE_2","action":"COMPLETE","result":"SUCCESS","details":{"plan":"Individual"}}
+{"ts":"2026-08-13T13:11:18.795Z","agentId":"P-44","wave":1,"step":"WAVE_1","action":"START","result":"SUCCESS","details":{"email":"agent44.walter.gibbs@paperworking-test.dev"}}
+{"ts":"2026-08-13T13:11:18.795Z","agentId":"P-44","wave":0,"step":"SIGNUP","action":"SUCCESS_CREATED","result":"SUCCESS","details":{"uid":"uid_persona_p44","email":"agent44.walter.gibbs@paperworking-test.dev","name":"Walter Gibbs","entity":"Gibbs Dividend Ventures LLC"}}
+{"ts":"2026-08-13T13:11:18.795Z","agentId":"P-44","wave":1,"step":"WAVE_1","action":"COMPLETE","result":"SUCCESS","details":{"uid":"uid_persona_p44"}}
+{"ts":"2026-08-13T13:11:18.842Z","agentId":"P-44","wave":3,"step":"WAVE_3","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-13T13:11:18.844Z","agentId":"P-44","wave":0,"step":"PROJECTS","action":"CREATION_SUCCESS","result":"SUCCESS","details":{"created":10,"plaid":false}}
+{"ts":"2026-08-13T13:11:18.844Z","agentId":"P-44","wave":3,"step":"WAVE_3","action":"COMPLETE","result":"SUCCESS","details":{"created":10}}
+{"ts":"2026-08-13T13:11:18.910Z","agentId":"P-44","wave":2,"step":"WAVE_2","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-13T13:11:18.912Z","agentId":"P-44","wave":0,"step":"BILLING","action":"SUBSCRIPTION_SUCCESS","result":"SUCCESS","details":{"plan":"Individual","stripeCustomerId":"cus_test_swarm_p-44","stripeSubscriptionId":"sub_test_swarm_p-44","cardLastFour":"4242","cardBrand":"visa"}}
+{"ts":"2026-08-13T13:11:18.912Z","agentId":"P-44","wave":2,"step":"WAVE_2","action":"COMPLETE","result":"SUCCESS","details":{"plan":"Individual"}}
+{"ts":"2026-08-13T13:11:19.076Z","agentId":"P-44","wave":4,"step":"WAVE_4","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-13T13:11:19.076Z","agentId":"P-44","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-78","to":"P-45","type":"Fractional Mentoring"}}
+{"ts":"2026-08-13T13:11:19.077Z","agentId":"P-44","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-79","to":"P-46","type":"Income Investing Peer Thread"}}
+{"ts":"2026-08-13T13:11:19.078Z","agentId":"P-44","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-45"}}
+{"ts":"2026-08-13T13:11:19.079Z","agentId":"P-44","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-34"}}
+{"ts":"2026-08-13T13:11:19.079Z","agentId":"P-44","wave":4,"step":"WAVE_4","action":"COMPLETE","result":"SUCCESS","details":{"interactions":2,"invites":2}}
+{"ts":"2026-08-13T13:11:19.198Z","agentId":"P-44","wave":3,"step":"WAVE_3","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-13T13:11:19.200Z","agentId":"P-44","wave":0,"step":"PROJECTS","action":"CREATION_SUCCESS","result":"SUCCESS","details":{"created":10,"plaid":false}}
+{"ts":"2026-08-13T13:11:19.201Z","agentId":"P-44","wave":3,"step":"WAVE_3","action":"COMPLETE","result":"SUCCESS","details":{"created":10}}
+{"ts":"2026-08-13T13:11:19.219Z","agentId":"P-44","wave":5,"step":"WAVE_5","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-13T13:11:19.219Z","agentId":"P-44","wave":5,"step":"WAVE_5","action":"COMPLETE","result":"SUCCESS","details":{"reportPath":"/Users/yvesdarbouze/Documents/PaperWorking/artifacts/persona-swarm/reports/P-44-experience-report.md"}}
+{"ts":"2026-08-13T13:11:19.334Z","agentId":"P-44","wave":4,"step":"WAVE_4","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-13T13:11:19.335Z","agentId":"P-44","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-78","to":"P-45","type":"Fractional Mentoring"}}
+{"ts":"2026-08-13T13:11:19.335Z","agentId":"P-44","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-79","to":"P-46","type":"Income Investing Peer Thread"}}
+{"ts":"2026-08-13T13:11:19.335Z","agentId":"P-44","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-45"}}
+{"ts":"2026-08-13T13:11:19.336Z","agentId":"P-44","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-34"}}
+{"ts":"2026-08-13T13:11:19.336Z","agentId":"P-44","wave":4,"step":"WAVE_4","action":"COMPLETE","result":"SUCCESS","details":{"interactions":2,"invites":2}}
+{"ts":"2026-08-13T13:11:19.392Z","agentId":"P-44","wave":5,"step":"WAVE_5","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-13T13:11:19.393Z","agentId":"P-44","wave":5,"step":"WAVE_5","action":"COMPLETE","result":"SUCCESS","details":{"reportPath":"/Users/yvesdarbouze/Documents/PaperWorking/artifacts/persona-swarm/reports/P-44-experience-report.md"}}
+{"ts":"2026-08-13T13:11:34.182Z","agentId":"P-44","wave":1,"step":"WAVE_1","action":"START","result":"SUCCESS","details":{"email":"agent44.walter.gibbs@paperworking-test.dev"}}
+{"ts":"2026-08-13T13:11:34.184Z","agentId":"P-44","wave":0,"step":"SIGNUP","action":"SUCCESS_CREATED","result":"SUCCESS","details":{"uid":"uid_persona_p44","email":"agent44.walter.gibbs@paperworking-test.dev","name":"Walter Gibbs","entity":"Gibbs Dividend Ventures LLC"}}
+{"ts":"2026-08-13T13:11:34.184Z","agentId":"P-44","wave":1,"step":"WAVE_1","action":"COMPLETE","result":"SUCCESS","details":{"uid":"uid_persona_p44"}}
+{"ts":"2026-08-13T13:11:34.184Z","agentId":"P-44","wave":1,"step":"WAVE_1","action":"START","result":"SUCCESS","details":{"email":"agent44.walter.gibbs@paperworking-test.dev"}}
+{"ts":"2026-08-13T13:11:34.185Z","agentId":"P-44","wave":0,"step":"SIGNUP","action":"SUCCESS_CREATED","result":"SUCCESS","details":{"uid":"uid_persona_p44","email":"agent44.walter.gibbs@paperworking-test.dev","name":"Walter Gibbs","entity":"Gibbs Dividend Ventures LLC"}}
+{"ts":"2026-08-13T13:11:34.185Z","agentId":"P-44","wave":1,"step":"WAVE_1","action":"COMPLETE","result":"SUCCESS","details":{"uid":"uid_persona_p44"}}
+{"ts":"2026-08-13T13:11:34.226Z","agentId":"P-44","wave":2,"step":"WAVE_2","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-13T13:11:34.226Z","agentId":"P-44","wave":0,"step":"BILLING","action":"SUBSCRIPTION_SUCCESS","result":"SUCCESS","details":{"plan":"Individual","stripeCustomerId":"cus_test_swarm_p-44","stripeSubscriptionId":"sub_test_swarm_p-44","cardLastFour":"4242","cardBrand":"visa"}}
+{"ts":"2026-08-13T13:11:34.226Z","agentId":"P-44","wave":2,"step":"WAVE_2","action":"COMPLETE","result":"SUCCESS","details":{"plan":"Individual"}}
+{"ts":"2026-08-13T13:11:34.227Z","agentId":"P-44","wave":2,"step":"WAVE_2","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-13T13:11:34.227Z","agentId":"P-44","wave":0,"step":"BILLING","action":"SUBSCRIPTION_SUCCESS","result":"SUCCESS","details":{"plan":"Individual","stripeCustomerId":"cus_test_swarm_p-44","stripeSubscriptionId":"sub_test_swarm_p-44","cardLastFour":"4242","cardBrand":"visa"}}
+{"ts":"2026-08-13T13:11:34.228Z","agentId":"P-44","wave":2,"step":"WAVE_2","action":"COMPLETE","result":"SUCCESS","details":{"plan":"Individual"}}
+{"ts":"2026-08-13T13:11:34.374Z","agentId":"P-44","wave":3,"step":"WAVE_3","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-13T13:11:34.377Z","agentId":"P-44","wave":0,"step":"PROJECTS","action":"CREATION_SUCCESS","result":"SUCCESS","details":{"created":10,"plaid":false}}
+{"ts":"2026-08-13T13:11:34.377Z","agentId":"P-44","wave":3,"step":"WAVE_3","action":"COMPLETE","result":"SUCCESS","details":{"created":10}}
+{"ts":"2026-08-13T13:11:34.384Z","agentId":"P-44","wave":3,"step":"WAVE_3","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-13T13:11:34.388Z","agentId":"P-44","wave":0,"step":"PROJECTS","action":"CREATION_SUCCESS","result":"SUCCESS","details":{"created":10,"plaid":false}}
+{"ts":"2026-08-13T13:11:34.388Z","agentId":"P-44","wave":3,"step":"WAVE_3","action":"COMPLETE","result":"SUCCESS","details":{"created":10}}
+{"ts":"2026-08-13T13:11:34.488Z","agentId":"P-44","wave":4,"step":"WAVE_4","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-13T13:11:34.488Z","agentId":"P-44","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-78","to":"P-45","type":"Fractional Mentoring"}}
+{"ts":"2026-08-13T13:11:34.489Z","agentId":"P-44","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-79","to":"P-46","type":"Income Investing Peer Thread"}}
+{"ts":"2026-08-13T13:11:34.489Z","agentId":"P-44","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-45"}}
+{"ts":"2026-08-13T13:11:34.490Z","agentId":"P-44","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-34"}}
+{"ts":"2026-08-13T13:11:34.490Z","agentId":"P-44","wave":4,"step":"WAVE_4","action":"COMPLETE","result":"SUCCESS","details":{"interactions":2,"invites":2}}
+{"ts":"2026-08-13T13:11:34.499Z","agentId":"P-44","wave":4,"step":"WAVE_4","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-13T13:11:34.500Z","agentId":"P-44","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-78","to":"P-45","type":"Fractional Mentoring"}}
+{"ts":"2026-08-13T13:11:34.501Z","agentId":"P-44","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-79","to":"P-46","type":"Income Investing Peer Thread"}}
+{"ts":"2026-08-13T13:11:34.501Z","agentId":"P-44","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-45"}}
+{"ts":"2026-08-13T13:11:34.501Z","agentId":"P-44","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-34"}}
+{"ts":"2026-08-13T13:11:34.502Z","agentId":"P-44","wave":4,"step":"WAVE_4","action":"COMPLETE","result":"SUCCESS","details":{"interactions":2,"invites":2}}
+{"ts":"2026-08-13T13:11:34.539Z","agentId":"P-44","wave":5,"step":"WAVE_5","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-13T13:11:34.539Z","agentId":"P-44","wave":5,"step":"WAVE_5","action":"COMPLETE","result":"SUCCESS","details":{"reportPath":"/Users/yvesdarbouze/Documents/PaperWorking/artifacts/persona-swarm/reports/P-44-experience-report.md"}}
+{"ts":"2026-08-13T13:11:34.545Z","agentId":"P-44","wave":5,"step":"WAVE_5","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-13T13:11:34.546Z","agentId":"P-44","wave":5,"step":"WAVE_5","action":"COMPLETE","result":"SUCCESS","details":{"reportPath":"/Users/yvesdarbouze/Documents/PaperWorking/artifacts/persona-swarm/reports/P-44-experience-report.md"}}
+{"ts":"2026-08-13T13:20:39.907Z","agentId":"P-44","wave":1,"step":"WAVE_1","action":"START","result":"SUCCESS","details":{"email":"agent44.walter.gibbs@paperworking-test.dev"}}
+{"ts":"2026-08-13T13:20:39.908Z","agentId":"P-44","wave":0,"step":"SIGNUP","action":"SUCCESS_CREATED","result":"SUCCESS","details":{"uid":"uid_persona_p44","email":"agent44.walter.gibbs@paperworking-test.dev","name":"Walter Gibbs","entity":"Gibbs Dividend Ventures LLC"}}
+{"ts":"2026-08-13T13:20:39.908Z","agentId":"P-44","wave":1,"step":"WAVE_1","action":"COMPLETE","result":"SUCCESS","details":{"uid":"uid_persona_p44"}}
+{"ts":"2026-08-13T13:20:39.909Z","agentId":"P-44","wave":1,"step":"WAVE_1","action":"START","result":"SUCCESS","details":{"email":"agent44.walter.gibbs@paperworking-test.dev"}}
+{"ts":"2026-08-13T13:20:39.909Z","agentId":"P-44","wave":0,"step":"SIGNUP","action":"SUCCESS_CREATED","result":"SUCCESS","details":{"uid":"uid_persona_p44","email":"agent44.walter.gibbs@paperworking-test.dev","name":"Walter Gibbs","entity":"Gibbs Dividend Ventures LLC"}}
+{"ts":"2026-08-13T13:20:39.909Z","agentId":"P-44","wave":1,"step":"WAVE_1","action":"COMPLETE","result":"SUCCESS","details":{"uid":"uid_persona_p44"}}
+{"ts":"2026-08-13T13:20:39.955Z","agentId":"P-44","wave":2,"step":"WAVE_2","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-13T13:20:39.956Z","agentId":"P-44","wave":0,"step":"BILLING","action":"SUBSCRIPTION_SUCCESS","result":"SUCCESS","details":{"plan":"Individual","stripeCustomerId":"cus_test_swarm_p-44","stripeSubscriptionId":"sub_test_swarm_p-44","cardLastFour":"4242","cardBrand":"visa"}}
+{"ts":"2026-08-13T13:20:39.956Z","agentId":"P-44","wave":2,"step":"WAVE_2","action":"COMPLETE","result":"SUCCESS","details":{"plan":"Individual"}}
+{"ts":"2026-08-13T13:20:39.959Z","agentId":"P-44","wave":2,"step":"WAVE_2","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-13T13:20:39.959Z","agentId":"P-44","wave":0,"step":"BILLING","action":"SUBSCRIPTION_SUCCESS","result":"SUCCESS","details":{"plan":"Individual","stripeCustomerId":"cus_test_swarm_p-44","stripeSubscriptionId":"sub_test_swarm_p-44","cardLastFour":"4242","cardBrand":"visa"}}
+{"ts":"2026-08-13T13:20:39.960Z","agentId":"P-44","wave":2,"step":"WAVE_2","action":"COMPLETE","result":"SUCCESS","details":{"plan":"Individual"}}
+{"ts":"2026-08-13T13:20:40.126Z","agentId":"P-44","wave":3,"step":"WAVE_3","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-13T13:20:40.129Z","agentId":"P-44","wave":0,"step":"PROJECTS","action":"CREATION_SUCCESS","result":"SUCCESS","details":{"created":10,"plaid":false}}
+{"ts":"2026-08-13T13:20:40.129Z","agentId":"P-44","wave":3,"step":"WAVE_3","action":"COMPLETE","result":"SUCCESS","details":{"created":10}}
+{"ts":"2026-08-13T13:20:40.151Z","agentId":"P-44","wave":3,"step":"WAVE_3","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-13T13:20:40.157Z","agentId":"P-44","wave":0,"step":"PROJECTS","action":"CREATION_SUCCESS","result":"SUCCESS","details":{"created":10,"plaid":false}}
+{"ts":"2026-08-13T13:20:40.157Z","agentId":"P-44","wave":3,"step":"WAVE_3","action":"COMPLETE","result":"SUCCESS","details":{"created":10}}
+{"ts":"2026-08-13T13:20:40.273Z","agentId":"P-44","wave":4,"step":"WAVE_4","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-13T13:20:40.274Z","agentId":"P-44","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-78","to":"P-45","type":"Fractional Mentoring"}}
+{"ts":"2026-08-13T13:20:40.274Z","agentId":"P-44","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-79","to":"P-46","type":"Income Investing Peer Thread"}}
+{"ts":"2026-08-13T13:20:40.274Z","agentId":"P-44","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-45"}}
+{"ts":"2026-08-13T13:20:40.274Z","agentId":"P-44","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-34"}}
+{"ts":"2026-08-13T13:20:40.274Z","agentId":"P-44","wave":4,"step":"WAVE_4","action":"COMPLETE","result":"SUCCESS","details":{"interactions":2,"invites":2}}
+{"ts":"2026-08-13T13:20:40.286Z","agentId":"P-44","wave":4,"step":"WAVE_4","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-13T13:20:40.286Z","agentId":"P-44","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-78","to":"P-45","type":"Fractional Mentoring"}}
+{"ts":"2026-08-13T13:20:40.286Z","agentId":"P-44","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-79","to":"P-46","type":"Income Investing Peer Thread"}}
+{"ts":"2026-08-13T13:20:40.287Z","agentId":"P-44","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-45"}}
+{"ts":"2026-08-13T13:20:40.287Z","agentId":"P-44","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-34"}}
+{"ts":"2026-08-13T13:20:40.287Z","agentId":"P-44","wave":4,"step":"WAVE_4","action":"COMPLETE","result":"SUCCESS","details":{"interactions":2,"invites":2}}
+{"ts":"2026-08-13T13:20:40.320Z","agentId":"P-44","wave":5,"step":"WAVE_5","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-13T13:20:40.321Z","agentId":"P-44","wave":5,"step":"WAVE_5","action":"COMPLETE","result":"SUCCESS","details":{"reportPath":"/Users/yvesdarbouze/Documents/PaperWorking/artifacts/persona-swarm/reports/P-44-experience-report.md"}}
+{"ts":"2026-08-13T13:20:40.338Z","agentId":"P-44","wave":5,"step":"WAVE_5","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-13T13:20:40.338Z","agentId":"P-44","wave":5,"step":"WAVE_5","action":"COMPLETE","result":"SUCCESS","details":{"reportPath":"/Users/yvesdarbouze/Documents/PaperWorking/artifacts/persona-swarm/reports/P-44-experience-report.md"}}
+{"ts":"2026-08-13T14:04:26.350Z","agentId":"P-44","wave":1,"step":"WAVE_1","action":"START","result":"SUCCESS","details":{"email":"agent44.walter.gibbs@paperworking-test.dev"}}
+{"ts":"2026-08-13T14:04:26.350Z","agentId":"P-44","wave":0,"step":"SIGNUP","action":"SUCCESS_CREATED","result":"SUCCESS","details":{"uid":"uid_persona_p44","email":"agent44.walter.gibbs@paperworking-test.dev","name":"Walter Gibbs","entity":"Gibbs Dividend Ventures LLC"}}
+{"ts":"2026-08-13T14:04:26.350Z","agentId":"P-44","wave":1,"step":"WAVE_1","action":"COMPLETE","result":"SUCCESS","details":{"uid":"uid_persona_p44"}}
+{"ts":"2026-08-13T14:04:26.351Z","agentId":"P-44","wave":1,"step":"WAVE_1","action":"START","result":"SUCCESS","details":{"email":"agent44.walter.gibbs@paperworking-test.dev"}}
+{"ts":"2026-08-13T14:04:26.351Z","agentId":"P-44","wave":0,"step":"SIGNUP","action":"SUCCESS_CREATED","result":"SUCCESS","details":{"uid":"uid_persona_p44","email":"agent44.walter.gibbs@paperworking-test.dev","name":"Walter Gibbs","entity":"Gibbs Dividend Ventures LLC"}}
+{"ts":"2026-08-13T14:04:26.351Z","agentId":"P-44","wave":1,"step":"WAVE_1","action":"COMPLETE","result":"SUCCESS","details":{"uid":"uid_persona_p44"}}
+{"ts":"2026-08-13T14:04:26.397Z","agentId":"P-44","wave":2,"step":"WAVE_2","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-13T14:04:26.398Z","agentId":"P-44","wave":0,"step":"BILLING","action":"SUBSCRIPTION_SUCCESS","result":"SUCCESS","details":{"plan":"Individual","stripeCustomerId":"cus_test_swarm_p-44","stripeSubscriptionId":"sub_test_swarm_p-44","cardLastFour":"4242","cardBrand":"visa"}}
+{"ts":"2026-08-13T14:04:26.398Z","agentId":"P-44","wave":2,"step":"WAVE_2","action":"COMPLETE","result":"SUCCESS","details":{"plan":"Individual"}}
+{"ts":"2026-08-13T14:04:26.400Z","agentId":"P-44","wave":2,"step":"WAVE_2","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-13T14:04:26.400Z","agentId":"P-44","wave":0,"step":"BILLING","action":"SUBSCRIPTION_SUCCESS","result":"SUCCESS","details":{"plan":"Individual","stripeCustomerId":"cus_test_swarm_p-44","stripeSubscriptionId":"sub_test_swarm_p-44","cardLastFour":"4242","cardBrand":"visa"}}
+{"ts":"2026-08-13T14:04:26.400Z","agentId":"P-44","wave":2,"step":"WAVE_2","action":"COMPLETE","result":"SUCCESS","details":{"plan":"Individual"}}
+{"ts":"2026-08-13T14:04:26.539Z","agentId":"P-44","wave":3,"step":"WAVE_3","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-13T14:04:26.542Z","agentId":"P-44","wave":0,"step":"PROJECTS","action":"CREATION_SUCCESS","result":"SUCCESS","details":{"created":10,"plaid":false}}
+{"ts":"2026-08-13T14:04:26.542Z","agentId":"P-44","wave":3,"step":"WAVE_3","action":"COMPLETE","result":"SUCCESS","details":{"created":10}}
+{"ts":"2026-08-13T14:04:26.544Z","agentId":"P-44","wave":3,"step":"WAVE_3","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-13T14:04:26.547Z","agentId":"P-44","wave":0,"step":"PROJECTS","action":"CREATION_SUCCESS","result":"SUCCESS","details":{"created":10,"plaid":false}}
+{"ts":"2026-08-13T14:04:26.548Z","agentId":"P-44","wave":3,"step":"WAVE_3","action":"COMPLETE","result":"SUCCESS","details":{"created":10}}
+{"ts":"2026-08-13T14:04:26.634Z","agentId":"P-44","wave":4,"step":"WAVE_4","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-13T14:04:26.634Z","agentId":"P-44","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-78","to":"P-45","type":"Fractional Mentoring"}}
+{"ts":"2026-08-13T14:04:26.635Z","agentId":"P-44","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-79","to":"P-46","type":"Income Investing Peer Thread"}}
+{"ts":"2026-08-13T14:04:26.635Z","agentId":"P-44","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-45"}}
+{"ts":"2026-08-13T14:04:26.635Z","agentId":"P-44","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-34"}}
+{"ts":"2026-08-13T14:04:26.635Z","agentId":"P-44","wave":4,"step":"WAVE_4","action":"COMPLETE","result":"SUCCESS","details":{"interactions":2,"invites":2}}
+{"ts":"2026-08-13T14:04:26.642Z","agentId":"P-44","wave":4,"step":"WAVE_4","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-13T14:04:26.643Z","agentId":"P-44","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-78","to":"P-45","type":"Fractional Mentoring"}}
+{"ts":"2026-08-13T14:04:26.643Z","agentId":"P-44","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-79","to":"P-46","type":"Income Investing Peer Thread"}}
+{"ts":"2026-08-13T14:04:26.644Z","agentId":"P-44","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-45"}}
+{"ts":"2026-08-13T14:04:26.644Z","agentId":"P-44","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-34"}}
+{"ts":"2026-08-13T14:04:26.644Z","agentId":"P-44","wave":4,"step":"WAVE_4","action":"COMPLETE","result":"SUCCESS","details":{"interactions":2,"invites":2}}
+{"ts":"2026-08-13T14:04:26.676Z","agentId":"P-44","wave":5,"step":"WAVE_5","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-13T14:04:26.676Z","agentId":"P-44","wave":5,"step":"WAVE_5","action":"COMPLETE","result":"SUCCESS","details":{"reportPath":"/Users/yvesdarbouze/Documents/PaperWorking/artifacts/persona-swarm/reports/P-44-experience-report.md"}}
+{"ts":"2026-08-13T14:04:26.693Z","agentId":"P-44","wave":5,"step":"WAVE_5","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-13T14:04:26.694Z","agentId":"P-44","wave":5,"step":"WAVE_5","action":"COMPLETE","result":"SUCCESS","details":{"reportPath":"/Users/yvesdarbouze/Documents/PaperWorking/artifacts/persona-swarm/reports/P-44-experience-report.md"}}
+{"ts":"2026-08-13T17:42:17.661Z","agentId":"P-44","wave":1,"step":"WAVE_1","action":"START","result":"SUCCESS","details":{"email":"agent44.walter.gibbs@paperworking-test.dev"}}
+{"ts":"2026-08-13T17:42:17.663Z","agentId":"P-44","wave":0,"step":"SIGNUP","action":"SUCCESS_CREATED","result":"SUCCESS","details":{"uid":"uid_persona_p44","email":"agent44.walter.gibbs@paperworking-test.dev","name":"Walter Gibbs","entity":"Gibbs Dividend Ventures LLC"}}
+{"ts":"2026-08-13T17:42:17.663Z","agentId":"P-44","wave":1,"step":"WAVE_1","action":"COMPLETE","result":"SUCCESS","details":{"uid":"uid_persona_p44"}}
+{"ts":"2026-08-13T17:42:17.754Z","agentId":"P-44","wave":2,"step":"WAVE_2","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-13T17:42:17.762Z","agentId":"P-44","wave":0,"step":"BILLING","action":"SUBSCRIPTION_SUCCESS","result":"SUCCESS","details":{"plan":"Individual","stripeCustomerId":"cus_test_swarm_p-44","stripeSubscriptionId":"sub_test_swarm_p-44","cardLastFour":"4242","cardBrand":"visa"}}
+{"ts":"2026-08-13T17:42:17.765Z","agentId":"P-44","wave":2,"step":"WAVE_2","action":"COMPLETE","result":"SUCCESS","details":{"plan":"Individual"}}
+{"ts":"2026-08-13T17:42:18.044Z","agentId":"P-44","wave":3,"step":"WAVE_3","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-13T17:42:18.046Z","agentId":"P-44","wave":0,"step":"PROJECTS","action":"CREATION_SUCCESS","result":"SUCCESS","details":{"created":10,"plaid":false}}
+{"ts":"2026-08-13T17:42:18.047Z","agentId":"P-44","wave":3,"step":"WAVE_3","action":"COMPLETE","result":"SUCCESS","details":{"created":10}}
+{"ts":"2026-08-13T17:42:18.237Z","agentId":"P-44","wave":4,"step":"WAVE_4","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-13T17:42:18.238Z","agentId":"P-44","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-78","to":"P-45","type":"Fractional Mentoring"}}
+{"ts":"2026-08-13T17:42:18.239Z","agentId":"P-44","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-79","to":"P-46","type":"Income Investing Peer Thread"}}
+{"ts":"2026-08-13T17:42:18.242Z","agentId":"P-44","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-45"}}
+{"ts":"2026-08-13T17:42:18.242Z","agentId":"P-44","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-34"}}
+{"ts":"2026-08-13T17:42:18.243Z","agentId":"P-44","wave":4,"step":"WAVE_4","action":"COMPLETE","result":"SUCCESS","details":{"interactions":2,"invites":2}}
+{"ts":"2026-08-13T17:42:18.271Z","agentId":"P-44","wave":1,"step":"WAVE_1","action":"START","result":"SUCCESS","details":{"email":"agent44.walter.gibbs@paperworking-test.dev"}}
+{"ts":"2026-08-13T17:42:18.272Z","agentId":"P-44","wave":0,"step":"SIGNUP","action":"SUCCESS_CREATED","result":"SUCCESS","details":{"uid":"uid_persona_p44","email":"agent44.walter.gibbs@paperworking-test.dev","name":"Walter Gibbs","entity":"Gibbs Dividend Ventures LLC"}}
+{"ts":"2026-08-13T17:42:18.272Z","agentId":"P-44","wave":1,"step":"WAVE_1","action":"COMPLETE","result":"SUCCESS","details":{"uid":"uid_persona_p44"}}
+{"ts":"2026-08-13T17:42:18.342Z","agentId":"P-44","wave":2,"step":"WAVE_2","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-13T17:42:18.342Z","agentId":"P-44","wave":0,"step":"BILLING","action":"SUBSCRIPTION_SUCCESS","result":"SUCCESS","details":{"plan":"Individual","stripeCustomerId":"cus_test_swarm_p-44","stripeSubscriptionId":"sub_test_swarm_p-44","cardLastFour":"4242","cardBrand":"visa"}}
+{"ts":"2026-08-13T17:42:18.342Z","agentId":"P-44","wave":2,"step":"WAVE_2","action":"COMPLETE","result":"SUCCESS","details":{"plan":"Individual"}}
+{"ts":"2026-08-13T17:42:18.347Z","agentId":"P-44","wave":5,"step":"WAVE_5","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-13T17:42:18.350Z","agentId":"P-44","wave":5,"step":"WAVE_5","action":"COMPLETE","result":"SUCCESS","details":{"reportPath":"/Users/yvesdarbouze/Documents/PaperWorking/artifacts/persona-swarm/reports/P-44-experience-report.md"}}
+{"ts":"2026-08-13T17:42:18.664Z","agentId":"P-44","wave":3,"step":"WAVE_3","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-13T17:42:18.668Z","agentId":"P-44","wave":0,"step":"PROJECTS","action":"CREATION_SUCCESS","result":"SUCCESS","details":{"created":10,"plaid":false}}
+{"ts":"2026-08-13T17:42:18.669Z","agentId":"P-44","wave":3,"step":"WAVE_3","action":"COMPLETE","result":"SUCCESS","details":{"created":10}}
+{"ts":"2026-08-13T17:42:18.833Z","agentId":"P-44","wave":4,"step":"WAVE_4","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-13T17:42:18.834Z","agentId":"P-44","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-78","to":"P-45","type":"Fractional Mentoring"}}
+{"ts":"2026-08-13T17:42:18.835Z","agentId":"P-44","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-79","to":"P-46","type":"Income Investing Peer Thread"}}
+{"ts":"2026-08-13T17:42:18.835Z","agentId":"P-44","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-45"}}
+{"ts":"2026-08-13T17:42:18.836Z","agentId":"P-44","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-34"}}
+{"ts":"2026-08-13T17:42:18.836Z","agentId":"P-44","wave":4,"step":"WAVE_4","action":"COMPLETE","result":"SUCCESS","details":{"interactions":2,"invites":2}}
+{"ts":"2026-08-13T17:42:18.913Z","agentId":"P-44","wave":5,"step":"WAVE_5","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-13T17:42:18.914Z","agentId":"P-44","wave":5,"step":"WAVE_5","action":"COMPLETE","result":"SUCCESS","details":{"reportPath":"/Users/yvesdarbouze/Documents/PaperWorking/artifacts/persona-swarm/reports/P-44-experience-report.md"}}

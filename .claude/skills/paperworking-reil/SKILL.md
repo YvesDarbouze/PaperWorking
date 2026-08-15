@@ -28,6 +28,7 @@ You are building PaperWorking: project management + analytics for Real Estate In
 12. **Styling:** the UX-0 extracted token set (night theme; antigravity.google/pricing reference model) is the styling authority. No ad-hoc colors, fonts, or spacing values. Typography respects the UX-series readability floor — no small-text regressions. *(Founder-confirmed 2026-07-18; supersedes the former Stitch clause.)*
 13. **Dashboard hierarchy:** Portfolio → Insights. Fixed order, not interchangeable. *(Note: Data Room removed 2026-07-24 by founder direction.)*
 14. **Phase transitions:** Acquisition→Fund and Fund→Hold are checklist gates evaluated from live data (never user checkboxes; red criteria block unless a typed override reason is stored). Hold→Exit is EVENT-triggered: first confirmed rent, activated lease, or sale under contract advances the Project automatically.
+15. **Email:** SendGrid is the sole email provider platform-wide. Resend is retired; its reintroduction is a defect on sight. All outbound mail flows through the EM Series registry — no registered template key, no send. Every HTML message ships a genuine plain-text alternative. No `no-reply` address exists anywhere in this system. No mailer computes a metric.
 
 ## Definition of Done — runtime evidence only
 
@@ -37,7 +38,7 @@ An acceptance criterion is satisfied ONLY by evidence from the running app: scre
 
 - **Spec authority & phantom-spec discipline:** the repo is the spec authority. Build only against committed documents; quote the governing committed section verbatim before submitting any plan (reading proof). If a referenced document is missing from the repo, STOP and report — never build from memory of a chat, and never author, reconstruct, extract, or "improve" spec content. Spec content comes from the founder only.
 - **Audit before building (Logic Lens):** every dispatch begins by auditing the named existing surfaces and reporting findings. If the audit contradicts the spec, STOP and report — do not improvise reconciliation.
-- **What-not-how:** specs describe behavior and outcomes; implementation choices are yours within the existing stack (Next.js 15, React 19, TypeScript, Tailwind, Prisma, Firebase, Stripe, Resend, PostHog, Sentry).
+- **What-not-how:** specs describe behavior and outcomes; implementation choices are yours within the existing stack (Next.js 16.2.3, React 19, TypeScript, Tailwind, Prisma, Firebase, Stripe, SendGrid, PostHog, Sentry).
 - **Cross-referenced ACs** owed at later dispatches remain open items until evidenced.
 
 ## Reference documents (read the relevant one before building)
@@ -57,6 +58,7 @@ An acceptance criterion is satisfied ONLY by evidence from the running app: scre
 | `docs/spec/paperworking-reil-master-spec-v1.md` | The governing product spec (phases, intake router, Retrospective Mode, accounts, marketplaces). *(Pending commit — founder-attached; do not proceed against it until committed.)* |
 | `docs/spec/aq-series-30-acquisition-prompts.md` | The Acquisition build sequence (AQ-1…AQ-30). *(Pending commit — founder-attached.)* |
 | DA Series v2 pack (canonical filename set at commit) | The Deal Analyzer build sequence. *(Pending commit — founder-attached.)* |
+| `docs/spec/em-series-transactional-email-prompts.md` | The EM Series build pack — email catalog, ratified copy, gates E-1…E-12, dispatches EM-0…EM-26. Governing over any conflicting email, sender, or template content elsewhere in the repository. |
 
 **In service, subordinate** — useful references; never override the governing set:
 

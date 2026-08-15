@@ -4,12 +4,12 @@ import { prisma } from '@/lib/prisma';
 import { getEmailProvider } from '@/lib/email/getEmailProvider';
 
 /* ═══════════════════════════════════════════════════════════════
-   CommunicationEngine — Unified Transactional Mail Module
+   CommunicationEngine — Unified Transactional Mail Module (EM Series v2)
 
    Central module for all outbound email operations. Integrates:
      • Template rendering (canned + user-composed)
-     • Resend API dispatch (transactional mail provider)
-     • Per-recipient EmailLog tracking (Sent → Delivered → Opened → Clicked)
+     • SendGrid API v3 dispatch (transactional mail provider)
+     • Per-recipient EmailLog tracking (Accepted → Delivered → Opened → Clicked)
      • Firestore audit trail for real-time inbox display
      • Prisma CommunicationLog for portfolio analytics
 
@@ -18,7 +18,7 @@ import { getEmailProvider } from '@/lib/email/getEmailProvider';
      sendCustomEmail(opts)
      updateDeliveryStatus(messageId, status, timestamp)
 
-   Provider: Resend (drop-in replaceable with SendGrid/SES)
+   Provider: SendGrid (via IEmailProvider abstraction)
    ═══════════════════════════════════════════════════════════════ */
 
 // ─── Types ───────────────────────────────────────────────────
@@ -53,25 +53,28 @@ interface DispatchPayload {
   subject: string;
   html: string;
   text?: string;
+  from?: string;
   replyTo?: string;
+  templateKey?: string;
+  messageClass?: 'E' | 'O' | 'C';
   tags?: { name: string; value: string }[];
 }
 
 // ─── Constants ───────────────────────────────────────────────
 
 const APP_URL = process.env.NEXT_PUBLIC_APP_URL || 'https://paperworking.co';
-const FROM_EMAIL = process.env.RESEND_FROM_EMAIL || 'notifications@paperworking.co';
-const INBOUND_DOMAIN = process.env.INBOUND_EMAIL_DOMAIN || '';
+const FROM_EMAIL = 'notifications@mail.paperworking.co';
+const INBOUND_DOMAIN = process.env.INBOUND_EMAIL_DOMAIN || 'reply.paperworking.co';
 
 // ─── Template Registry ──────────────────────────────────────
 
 /**
  * Lazy-imports template generators to avoid circular deps.
- * Each returns { subject: string; html: string }.
+ * Each returns { subject: string; html: string; text?: string }.
  */
 const TEMPLATE_REGISTRY: Record<
   TemplateSlug,
-  (ctx: ContextData) => Promise<{ subject: string; html: string }>
+  (ctx: ContextData) => Promise<{ subject: string; html: string; text?: string }>
 > = {
   async phase_advance(ctx) {
     const { generatePhaseAdvanceEmail } = await import(
@@ -150,6 +153,7 @@ const TEMPLATE_REGISTRY: Record<
     return {
       subject,
       html,
+      text: (ctx.messageSnippet as string) || subject,
     };
   },
 
@@ -159,7 +163,8 @@ const TEMPLATE_REGISTRY: Record<
     const html =
       (ctx.html as string) ||
       `<div style="font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;line-height:1.6;color:#333;white-space:pre-wrap;">${(ctx.body as string) || ''}</div>`;
-    return { subject, html };
+    const text = (ctx.text as string) || (ctx.body as string) || subject;
+    return { subject, html, text };
   },
 };
 
@@ -209,16 +214,20 @@ async function resolveEmails(uids: string[]): Promise<{ uid: string; email: stri
 }
 
 /**
- * Dispatches email via configured system email provider (SendGrid, Resend, or Mock fallback).
+ * Dispatches email via configured system email provider (SendGrid or Mock fallback).
  */
-async function dispatchViaResend(payload: DispatchPayload): Promise<{ id: string; mock: boolean }> {
+async function dispatchViaProvider(payload: DispatchPayload): Promise<{ id: string; mock: boolean }> {
   const provider = getEmailProvider();
+  const plainText = payload.text || payload.html.replace(/<[^>]*>?/gm, ' ').replace(/\s+/g, ' ').trim();
   const res = await provider.sendEmail({
     to: payload.to,
+    from: payload.from || FROM_EMAIL,
     subject: payload.subject,
     html: payload.html,
-    text: payload.text,
-    replyTo: payload.replyTo,
+    text: plainText,
+    replyTo: payload.replyTo || 'hi@paperworking.co',
+    templateKey: payload.templateKey || 'COMM-DISPATCH',
+    messageClass: payload.messageClass || 'O',
     tags: payload.tags,
   });
 
@@ -294,7 +303,6 @@ async function persistAuditTrail(
   }
 
   // 3. Trigger Notification Engine (Asynchronous / Non-blocking)
-  // We use dynamic import to avoid circular dependency with NotificationEngine
   import('./NotificationEngine').then(({ NotificationEngine }) => {
     NotificationEngine.triggerMessageNotification(projectId, ref.id);
   }).catch(err => {
@@ -389,20 +397,21 @@ export const CommunicationEngine = {
   },
 
   /**
-   * sendRawEmail — Unified Resend API dispatch
+   * sendRawEmail — Unified SendGrid API dispatch
    */
   async sendRawEmail(
     to: string[],
     subject: string,
     html: string,
-    options?: { replyTo?: string; tags?: { name: string; value: string }[] }
+    options?: { replyTo?: string; tags?: { name: string; value: string }[]; templateKey?: string }
   ): Promise<{ id: string; mock: boolean }> {
-    return dispatchViaResend({
+    return dispatchViaProvider({
       to,
       subject,
       html,
       replyTo: options?.replyTo,
       tags: options?.tags,
+      templateKey: options?.templateKey,
     });
   },
 
@@ -452,11 +461,11 @@ export const CommunicationEngine = {
     }
 
     // 4. Render template
-    const { subject, html } = await templateFn(enrichedContext);
+    const { subject, html, text } = await templateFn(enrichedContext);
 
-    // 5. Inject tracking token + build reply-to
+    // 5. Inject tracking token + build reply-to (E-7)
     const trackingSubject = `${subject} [ref:deal_${projectId}]`;
-    const replyTo = INBOUND_DOMAIN ? `reply+${projectId}@${INBOUND_DOMAIN}` : undefined;
+    const replyTo = INBOUND_DOMAIN ? `reply+${projectId}@${INBOUND_DOMAIN}` : 'hi@paperworking.co';
 
     // 6. Process preferences & quiet hours per recipient
     const activeRecipients: typeof recipients = [];
@@ -505,12 +514,15 @@ export const CommunicationEngine = {
       };
     }
 
-    // 7. Dispatch via Resend
-    const { id: messageId, mock } = await dispatchViaResend({
+    // 7. Dispatch via SendGrid provider (E-1)
+    const { id: messageId, mock } = await dispatchViaProvider({
       to: activeRecipients.map((r) => r.email),
       subject: trackingSubject,
       html,
+      text,
       replyTo,
+      templateKey: `PROD-ACT-${templateId.toUpperCase()}`,
+      messageClass: 'O',
       tags: [
         { name: 'template', value: templateId },
         { name: 'project', value: projectId },
@@ -573,15 +585,17 @@ export const CommunicationEngine = {
 
     // Inject tracking
     const trackingSubject = `${subject} [ref:deal_${projectId}]`;
-    const replyTo = INBOUND_DOMAIN ? `reply+${projectId}@${INBOUND_DOMAIN}` : undefined;
+    const replyTo = INBOUND_DOMAIN ? `reply+${projectId}@${INBOUND_DOMAIN}` : 'hi@paperworking.co';
 
     // Dispatch
-    const { id: messageId, mock } = await dispatchViaResend({
+    const { id: messageId, mock } = await dispatchViaProvider({
       to,
       subject: trackingSubject,
       html,
       text,
       replyTo,
+      templateKey: 'COMM-USER-COMPOSED',
+      messageClass: 'O',
       tags: [
         { name: 'template', value: 'user_composed' },
         { name: 'project', value: projectId },
@@ -619,7 +633,7 @@ export const CommunicationEngine = {
   /**
    * updateDeliveryStatus — Webhook callback handler
    *
-   * Called by the Resend webhook endpoint when a delivery event fires.
+   * Called by the SendGrid webhook endpoint when a delivery event fires.
    * Updates the EmailLog row with the new status + timestamp.
    *
    * Status flow: Sent → Delivered → Opened → Clicked

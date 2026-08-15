@@ -276,7 +276,8 @@ export async function inviteSubscribers(
     // B. Send invitation emails (Side-effects occur AFTER successful db commit)
     const { CommunicationEngine } = require('@/lib/engine/CommunicationEngine');
     const appUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://paperworking.co';
-    const PHYSICAL_ADDRESS = 'PaperWorking Inc., 548 Market St, Suite 48921, San Francisco, CA 94104';
+    const { CAN_SPAM_PHYSICAL_ADDRESS } = await import('@/lib/email/envelopeContract');
+    const PHYSICAL_ADDRESS = CAN_SPAM_PHYSICAL_ADDRESS;
 
     for (const invite of invitationsToCommit) {
       let addressText = 'Address Unspecified';

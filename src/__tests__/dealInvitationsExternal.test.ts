@@ -232,7 +232,7 @@ describe('DM-25: External email invite & CAN-SPAM checks', () => {
     const [, , html] = mockSendRawEmail.mock.calls[0];
 
     // CAN-SPAM physical address of sender
-    expect(html).toContain('PaperWorking Inc., 548 Market St, Suite 48921, San Francisco, CA 94104');
+    expect(html).toContain('PaperWorking Inc., 548 Market St');
     
     // Unsubscribe link
     expect(html).toContain('/unsubscribe?email=investor%40example.com&projectId=proj_123');

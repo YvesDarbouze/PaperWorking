@@ -21,8 +21,8 @@ const CHANNELS = [
     icon: Mail,
     title: 'Email Support',
     body: 'For account, billing, or technical questions.',
-    action: 'support@paperworking.co',
-    href: 'mailto:support@paperworking.co',
+    action: 'hi@paperworking.co',
+    href: 'mailto:hi@paperworking.co',
   },
   {
     icon: MessageSquare,

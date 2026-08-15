@@ -42,7 +42,7 @@ export function MarketplaceSubnav() {
         )}
 
         <Link
-          href="/vendor/marketplace"
+          href="/dashboard/marketplace"
           className={`flex items-center gap-2 px-4 py-2 rounded-lg text-xs font-semibold transition-all min-h-[44px] ${
             isVendors
               ? 'bg-primary/10 text-primary border border-primary/30'

@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-08-13T17:42:18.919Z",
+  "updatedAt": "2026-08-14T19:22:05.710Z",
   "totalPersonas": 50,
   "completedWaves": [
     1,
@@ -12,7 +12,7 @@
   "stripeMode": "admin_comp",
   "versionStamp": {
     "gitCommitSha": "7e9cd5dbd23bf8ac6cb0c67b4acb77a1fd5b2740",
-    "timestamp": "2026-08-13T14:03:57.535Z"
+    "timestamp": "2026-08-14T12:07:50.831Z"
   },
   "stats": {
     "signupsCompleted": 50,

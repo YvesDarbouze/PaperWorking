@@ -190,10 +190,18 @@ export function generateDealSlug(address: string): string {
 }
 
 export function formatDecimalPrecision(value: any, precision: number = 2): string {
-  return Number(value).toFixed(precision);
+  if (value === null || value === undefined || value === '' || isNaN(Number(value))) {
+    throw new TypeError('Invalid numeric input for decimal formatting');
+  }
+  const num = Number(value);
+  if (!isFinite(num)) {
+    throw new TypeError('Invalid numeric input for decimal formatting');
+  }
+  return Number(Math.round(Number(num + 'e' + precision)) + 'e-' + precision).toFixed(precision);
 }
 
 export function isValidDecimal(value: any): boolean {
-  if (value === null || value === undefined) return false;
-  return !isNaN(Number(value));
+  if (value === null || value === undefined || value === '' || typeof value === 'boolean') return false;
+  const num = Number(value);
+  return !isNaN(num) && isFinite(num);
 }

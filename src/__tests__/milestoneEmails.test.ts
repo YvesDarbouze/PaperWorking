@@ -276,15 +276,15 @@ describe('Prompt 63 — Milestone Emails: wire stubs to real dispatch', () => {
   });
 
   // ─────────────────────────────────────────────────────────────────────────
-  // 10. RESEND_WEBHOOK_SECRET documented in .env.example
+  // 10. Webhook secret documented in .env.example
   // ─────────────────────────────────────────────────────────────────────────
   describe('.env.example documentation', () => {
-    it('documents RESEND_WEBHOOK_SECRET', () => {
-      expect(ENV_EXAMPLE).toContain('RESEND_WEBHOOK_SECRET');
+    it('documents webhook verification key', () => {
+      expect(ENV_EXAMPLE).toContain('SENDGRID_WEBHOOK_VERIFICATION_KEY');
     });
 
-    it('explains RESEND_WEBHOOK_SECRET purpose', () => {
-      expect(ENV_EXAMPLE).toContain('delivery tracking');
+    it('explains webhook verification purpose', () => {
+      expect(ENV_EXAMPLE).toContain('SendGrid Event Webhook settings');
     });
   });
 });

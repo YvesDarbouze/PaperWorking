@@ -9,7 +9,7 @@ import { generateSystemNotificationEmail } from '@/lib/emails/templates/SystemNo
 
 export const dynamic = 'force-dynamic';
 
-const FROM_EMAIL = process.env.RESEND_FROM_EMAIL || 'notifications@paperworking.co';
+const FROM_EMAIL = 'notifications@mail.paperworking.co';
 
 async function sendPushNotification(
   recipientId: string,

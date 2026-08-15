@@ -1,14 +1,11 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { adminDb, adminAuth } from '@/lib/firebase/admin';
-import { Resend } from 'resend';
+import { getEmailProvider } from '@/lib/email/getEmailProvider';
 import { renderEmailLayout } from '@/lib/emails/templates/BaseLayout';
 import { trackDealActivity } from '@/lib/invitations/activityTimeline';
 import { NON_BINDING_DISCLOSURE } from '@/lib/constants/disclosure';
 
 export const dynamic = 'force-dynamic';
-
-const getResend = () => process.env.RESEND_API_KEY ? new Resend(process.env.RESEND_API_KEY) : null;
-const FROM_EMAIL = process.env.RESEND_FROM_EMAIL || 'notifications@paperworking.co';
 
 async function blockVendor(request: NextRequest) {
   const authHeader = request.headers.get('authorization') ?? request.headers.get('Authorization');
@@ -143,8 +140,7 @@ export async function POST(
     const inviteeName = inv.inviteeName || inv.name || 'Anonymous Investor';
     const inviteeEmail = inv.inviteeEmail || inv.email;
 
-    const resend = getResend();
-    if (resend && ownerEmail) {
+    if (ownerEmail) {
       const formattedValue =
         type === 'amount'
           ? `${cleanCurrency} ${Number(value).toLocaleString()}`
@@ -176,11 +172,18 @@ export async function POST(
         appUrl: process.env.NEXT_PUBLIC_APP_URL,
       });
 
-      await resend.emails.send({
-        from: FROM_EMAIL,
+      const plainText = `Soft Commit Updated\nAn invitee has submitted or updated their non-binding indication of interest for ${dealName}.\n\nInvitee: ${inviteeName} (${inviteeEmail})\nIndicated Amount/Share: ${formattedValue}\n\nNote: ${NON_BINDING_DISCLOSURE}`;
+
+      const emailProvider = getEmailProvider();
+      await emailProvider.sendEmail({
+        from: 'notifications@mail.paperworking.co',
+        replyTo: inviteeEmail || 'hi@paperworking.co',
         to: [ownerEmail],
         subject: `[Soft Commit] Indication of Interest update for ${dealName}`,
+        templateKey: 'DEAL-MKT-INDICATION-UPDATED',
+        messageClass: 'O',
         html,
+        text: plainText,
       }).catch((e: any) => console.error('Failed to dispatch notification email:', e.message));
     }
 
@@ -283,8 +286,7 @@ export async function DELETE(
     const inviteeName = inv.inviteeName || inv.name || 'Anonymous Investor';
     const inviteeEmail = inv.inviteeEmail || inv.email;
 
-    const resend = getResend();
-    if (resend && ownerEmail) {
+    if (ownerEmail) {
       const emailBody = `
         <div style="font-family: sans-serif; line-height: 1.6; color: #333;">
           <h2 style="color: #ea580c;">Soft Commit Withdrawn</h2>
@@ -307,11 +309,18 @@ export async function DELETE(
         appUrl: process.env.NEXT_PUBLIC_APP_URL,
       });
 
-      await resend.emails.send({
-        from: FROM_EMAIL,
+      const plainText = `Soft Commit Withdrawn\nAn invitee has withdrawn their non-binding indication of interest for ${dealName}.\n\nInvitee: ${inviteeName} (${inviteeEmail})\n\nNote: ${NON_BINDING_DISCLOSURE}`;
+
+      const emailProvider = getEmailProvider();
+      await emailProvider.sendEmail({
+        from: 'notifications@mail.paperworking.co',
+        replyTo: inviteeEmail || 'hi@paperworking.co',
         to: [ownerEmail],
         subject: `[Soft Commit] Indication of Interest withdrawn for ${dealName}`,
+        templateKey: 'DEAL-MKT-INDICATION-WITHDRAWN',
+        messageClass: 'O',
         html,
+        text: plainText,
       }).catch((e: any) => console.error('Failed to dispatch notification email:', e.message));
     }
 

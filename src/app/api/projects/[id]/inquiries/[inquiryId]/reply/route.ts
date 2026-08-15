@@ -2,13 +2,10 @@ import { NextRequest, NextResponse } from 'next/server';
 import { FieldValue } from 'firebase-admin/firestore';
 import { adminDb } from '@/lib/firebase/admin';
 import { requireAuth, isAuthError } from '@/lib/firebase-admin/auth-guard';
-import { Resend } from 'resend';
+import { getEmailProvider } from '@/lib/email/getEmailProvider';
 import { renderEmailLayout } from '@/lib/emails/templates/BaseLayout';
 
 export const dynamic = 'force-dynamic';
-
-const resend = process.env.RESEND_API_KEY ? new Resend(process.env.RESEND_API_KEY) : null;
-const FROM_EMAIL = process.env.RESEND_FROM_EMAIL || 'notifications@paperworking.co';
 
 export async function POST(
   request: NextRequest,
@@ -158,21 +155,20 @@ LeadInvestor Response:
 Open discussion: ${portalUrl}
       `;
 
-      const inboundDomain = process.env.INBOUND_EMAIL_DOMAIN;
-      const replyTo = inboundDomain ? `reply+${token}@${inboundDomain}` : undefined;
+      const inboundDomain = process.env.INBOUND_EMAIL_DOMAIN || 'reply.paperworking.co';
+      const replyTo = `reply+${token}@${inboundDomain}`;
 
-      if (resend) {
-        await resend.emails.send({
-          from: FROM_EMAIL,
-          to: [investorEmail],
-          replyTo,
-          subject,
-          html: renderEmailLayout({ title: 'LeadInvestor Response', preheader: subject, bodyHtml }),
-          text: textFallback,
-        });
-      } else {
-        console.warn(`[InvestorReply] Mock email sent to ${investorEmail} with replyTo ${replyTo}: ${textFallback}`);
-      }
+      const emailProvider = getEmailProvider();
+      await emailProvider.sendEmail({
+        from: 'notifications@mail.paperworking.co',
+        to: [investorEmail],
+        replyTo,
+        subject,
+        templateKey: 'DEAL-MKT-REPLY-RECEIVED',
+        messageClass: 'O',
+        html: renderEmailLayout({ title: 'Lead Investor Response', preheader: subject, bodyHtml }),
+        text: textFallback.trim(),
+      });
     }
 
     return NextResponse.json({ success: true });

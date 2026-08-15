@@ -39,7 +39,7 @@ const db = getFirestore(app);
 
 const PROD_BASE_URL = 'https://paperworking.co';
 const DEFAULT_PASSWORD = 'PersonaSwarmPass2026!';
-const BATCH_ID = '2026-08-13-live-run-01';
+const BATCH_ID = '2026-08-14-live-run-02';
 
 const CATEGORY_LEAD_IDS = [
   'P-01', 'P-05', 'P-10', 'P-13', 'P-15', 'P-20', 'P-25', 'P-29',

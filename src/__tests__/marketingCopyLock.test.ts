@@ -67,7 +67,7 @@ describe('PROMPT 7 — Standing Marketing Copy-Lock Guardrail Suite', () => {
   it('LOCKED COPY 7: Support search empty state copy matches exact mandated string', () => {
     const supportContent = fs.readFileSync(supportPagePath, 'utf8');
     expect(supportContent).toContain('No matches in the knowledge base. Email');
-    expect(supportContent).toContain('support@paperworking.co');
+    expect(supportContent).toContain('hi@paperworking.co');
     expect(supportContent).toContain('— a real person answers every message.');
   });
 });

@@ -1,6 +1,6 @@
 import { POST as reportSpam } from '@/app/api/identity/report-spam/route';
 import { POST as appealSuspension } from '@/app/api/identity/appeal/route';
-import { POST as resendWebhook } from '@/app/api/webhooks/resend/route';
+import { POST as sendgridWebhook } from '@/app/api/webhooks/sendgrid/route';
 import { inviteSubscribers } from '@/actions/dealInvitations';
 import { NextRequest } from 'next/server';
 
@@ -454,11 +454,8 @@ describe('Invitation Abuse Control Tests', () => {
     });
   });
 
-  describe('POST /api/webhooks/resend bounce/complaint handling', () => {
+  describe('POST /api/webhooks/sendgrid bounce/complaint handling', () => {
     it('suspends user on bounce threshold breach (>= 5 bounces)', async () => {
-      // Mock webhook signature bypass or setting RESEND_WEBHOOK_SECRET
-      process.env.RESEND_WEBHOOK_SECRET = 'whsec_YWJjZGVm'; // Mock base64 secret
-
       mockEmailLogFindMany.mockResolvedValueOnce([
         { id: 'log_123', linkedProjectId: 'project_123', metadata: JSON.stringify({ userId: 'user_123' }) }
       ]);
@@ -469,35 +466,24 @@ describe('Invitation Abuse Control Tests', () => {
         return null;
       });
 
-      const payload = {
-        type: 'email.bounced',
-        data: {
-          id: 'msg_123',
-          created_at: new Date().toISOString(),
+      const payload = [
+        {
+          event: 'bounce',
+          sg_message_id: 'msg_123.filterdrecv-p3mdw1-755b77c5d9-4l54d-18-62029B85-1A.0',
+          timestamp: Math.floor(Date.now() / 1000),
         },
-      };
+      ];
 
-      // Mock Svix Headers for signature verification bypass or mock computed signature
-      // Since HMAC verification TimingSafeEqual requires valid signature, let's mock TimingsSafeEqual to pass
-      jest.mock('crypto', () => {
-        const originalCrypto = jest.requireActual('crypto');
-        return {
-          ...originalCrypto,
-          timingSafeEqual: () => true,
-        };
-      });
-
-      const req = new NextRequest('http://localhost/api/webhooks/resend', {
+      const req = new NextRequest('http://localhost/api/webhooks/sendgrid', {
         method: 'POST',
         headers: {
-          'svix-signature': 'v1,mock_sig',
-          'svix-id': 'evt_123',
-          'svix-timestamp': '1234567890',
+          'x-twilio-email-event-webhook-signature': 'mock_sig',
+          'x-twilio-email-event-webhook-timestamp': '1234567890',
         },
         body: JSON.stringify(payload),
       });
 
-      const res = await resendWebhook(req);
+      const res = await sendgridWebhook(req);
       expect(res.status).toBe(200);
 
       // Verify suspension applied

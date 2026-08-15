@@ -307,34 +307,25 @@ export async function sendCustomerReply(ticketId: string, body: string): Promise
     const tData = ticketDoc.data()!;
     const isFirstResponse = !tData.firstResponseAt;
 
-    // 1. Dispatch outbound email to requester via Resend API / CommunicationEngine fallback
+    // 1. Dispatch outbound email to requester via SendGrid System Email Adapter (E-1, E-3)
     if (tData.requesterEmail) {
       try {
-        const apiKey = process.env.RESEND_API_KEY;
-        const fromEmail = process.env.RESEND_FROM_EMAIL || 'support@paperworking.co';
-        
-        if (apiKey) {
-          await fetch('https://api.resend.com/emails', {
-            method: 'POST',
-            headers: {
-              Authorization: `Bearer ${apiKey}`,
-              'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-              from: fromEmail,
-              to: [tData.requesterEmail],
-              subject: `Re: ${tData.subject || 'PaperWorking Support'} [${ticketId}]`,
-              html: `<div style="font-family: sans-serif; line-height: 1.6; color: #111;">
-                <p>${body.trim().replace(/\n/g, '<br/>')}</p>
-                <hr style="border: none; border-top: 1px solid #eee; margin: 20px 0;" />
-                <p style="font-size: 12px; color: #666;">PaperWorking Customer Support • Ticket ID: ${ticketId}</p>
-              </div>`,
-              text: `${body.trim()}\n\n--- PaperWorking Customer Support • Ticket ID: ${ticketId}`,
-            }),
-          });
-        } else {
-          console.warn(`[sendCustomerReply] RESEND_API_KEY not set — email mocked for ${tData.requesterEmail}`);
-        }
+        const { getEmailProvider } = await import('@/lib/email/getEmailProvider');
+        const emailProvider = getEmailProvider();
+        await emailProvider.sendEmail({
+          from: 'notifications@mail.paperworking.co',
+          replyTo: 'hi@paperworking.co',
+          to: [tData.requesterEmail],
+          subject: `Re: ${tData.subject || 'PaperWorking Support'} [${ticketId}]`,
+          templateKey: 'SUPPORT-CUSTOMER-REPLY',
+          messageClass: 'O',
+          html: `<div style="font-family: sans-serif; line-height: 1.6; color: #111;">
+            <p>${body.trim().replace(/\n/g, '<br/>')}</p>
+            <hr style="border: none; border-top: 1px solid #eee; margin: 20px 0;" />
+            <p style="font-size: 12px; color: #666;">PaperWorking Customer Support • Ticket ID: ${ticketId}</p>
+          </div>`,
+          text: `${body.trim()}\n\n--- PaperWorking Customer Support • Ticket ID: ${ticketId}`,
+        });
       } catch (emailErr) {
         console.error('[sendCustomerReply] Outbound email dispatch error:', emailErr);
         // Continue ticket state update gracefully

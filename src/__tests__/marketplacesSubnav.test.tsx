@@ -16,6 +16,14 @@ jest.mock('next/navigation', () => ({
   useSearchParams: () => new URLSearchParams(),
 }));
 
+jest.mock('@/context/AuthContext', () => ({
+  useAuth: () => ({
+    user: { uid: 'test_user_id', email: 'test@example.com' },
+    profile: { role: 'Investor' },
+    loading: false,
+  }),
+}));
+
 describe('PROMPT 4 — Marketplaces Subnavigation & Compliance Verification', () => {
   describe('Marketing /marketplaces Subnavigation (Surface A)', () => {
     it('renders exact Deal Marketplace and Vendor Marketplace tabs with subnav accessibility', () => {

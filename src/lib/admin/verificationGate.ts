@@ -1,7 +1,7 @@
 import crypto from 'crypto';
-import { Resend } from 'resend';
 import { adminAuth, adminDb } from '@/lib/firebase/admin';
 import { logAdminAudit } from '@/lib/audit/auditLogger';
+import { getEmailProvider } from '@/lib/email/getEmailProvider';
 
 export type SensitiveActionType = 'EMAIL_CHANGE' | 'PASSWORD_RESET' | 'MFA_RESET';
 
@@ -18,15 +18,9 @@ export interface ConfirmationResult {
   error?: string;
 }
 
-function getResendClient(): Resend | null {
-  const key = process.env.RESEND_API_KEY;
-  if (!key) return null;
-  return new Resend(key);
-}
-
 /**
  * Initiates verification-before-change gate for sensitive admin actions (Amendment E).
- * Generates a 6-digit OTP code, stores it with a 15-minute TTL, and emails the user via Resend.
+ * Generates a 6-digit OTP code, stores it with a 15-minute TTL, and emails the user via SendGrid.
  */
 export async function initiateSensitiveActionVerification(params: {
   targetUid: string;
@@ -71,27 +65,34 @@ export async function initiateSensitiveActionVerification(params: {
       used: false,
     });
 
-    // Send code via Resend Communication Engine
-    const resend = getResendClient();
-    if (resend) {
-      const actionName = params.actionType === 'EMAIL_CHANGE' ? 'Email Address Change' : params.actionType === 'PASSWORD_RESET' ? 'Password Reset' : 'MFA Reset';
-      await resend.emails.send({
-        from: 'PaperWorking Security <security@paperworking.co>',
-        to: targetEmail,
-        subject: `Security Verification Code: ${actionName}`,
-        html: `
-          <div style="font-family: sans-serif; max-width: 500px; padding: 24px; border: 1px solid #e5e5e5; border-radius: 8px;">
-            <h2 style="color: #0d0d0d; margin-top: 0;">Security Verification Request</h2>
-            <p style="color: #454955; font-size: 14px;">An administrative action <strong>(${actionName})</strong> was requested for your PaperWorking account.</p>
-            <p style="color: #454955; font-size: 14px;">To authorize this change, provide the following 6-digit verification code to your administrator:</p>
-            <div style="background: #f4f4f5; padding: 16px; text-align: center; border-radius: 6px; margin: 20px 0;">
-              <span style="font-family: monospace; font-size: 28px; font-weight: bold; letter-spacing: 4px; color: #0d0d0d;">${code}</span>
-            </div>
-            <p style="color: #888; font-size: 12px;">This code will expire in 15 minutes. If you did not request this, please contact PaperWorking Security immediately.</p>
+    // Send code via SendGrid System Email Adapter (E-1, E-3)
+    const emailProvider = getEmailProvider();
+    const actionName =
+      params.actionType === 'EMAIL_CHANGE'
+        ? 'Email Address Change'
+        : params.actionType === 'PASSWORD_RESET'
+        ? 'Password Reset'
+        : 'MFA Reset';
+
+    await emailProvider.sendEmail({
+      from: 'security@mail.paperworking.co',
+      to: [targetEmail],
+      subject: `Security Verification Code: ${actionName}`,
+      templateKey: 'ACCT-SECURITY-OTP',
+      messageClass: 'E',
+      text: `An administrative action (${actionName}) was requested for your PaperWorking account.\n\nYour 6-digit verification code is: ${code}\n\nThis code expires in 15 minutes. If you did not request this, please contact hi@paperworking.co immediately.`,
+      html: `
+        <div style="font-family: sans-serif; max-width: 500px; padding: 24px; border: 1px solid #e5e5e5; border-radius: 8px;">
+          <h2 style="color: #0d0d0d; margin-top: 0;">Security Verification Request</h2>
+          <p style="color: #454955; font-size: 14px;">An administrative action <strong>(${actionName})</strong> was requested for your PaperWorking account.</p>
+          <p style="color: #454955; font-size: 14px;">To authorize this change, provide the following 6-digit verification code to your administrator:</p>
+          <div style="background: #f4f4f5; padding: 16px; text-align: center; border-radius: 6px; margin: 20px 0;">
+            <span style="font-family: monospace; font-size: 28px; font-weight: bold; letter-spacing: 4px; color: #0d0d0d;">${code}</span>
           </div>
-        `,
-      });
-    }
+          <p style="color: #888; font-size: 12px;">This code will expire in 15 minutes. If you did not request this, please contact PaperWorking Security immediately.</p>
+        </div>
+      `,
+    });
 
     // Log initiation to audit log
     await logAdminAudit({
@@ -168,15 +169,16 @@ export async function confirmSensitiveActionVerification(params: {
       await adminDb.collection('users').doc(targetUid).set({ email: data.newEmail, updatedAt: new Date() }, { merge: true });
     } else if (actionType === 'PASSWORD_RESET') {
       const resetLink = await adminAuth.generatePasswordResetLink(data.targetEmail);
-      const resend = getResendClient();
-      if (resend) {
-        await resend.emails.send({
-          from: 'PaperWorking Security <security@paperworking.co>',
-          to: data.targetEmail,
-          subject: 'Password Reset Link',
-          html: `<p>Your administrator has generated a password reset link for your account:</p><p><a href="${resetLink}">Reset Password</a></p>`,
-        });
-      }
+      const emailProvider = getEmailProvider();
+      await emailProvider.sendEmail({
+        from: 'security@mail.paperworking.co',
+        to: [data.targetEmail],
+        subject: 'Reset your PaperWorking password',
+        templateKey: 'ACCT-PASSWORD-RESET',
+        messageClass: 'E',
+        text: `Use the link below to set a new password. It expires in 60 minutes and can be used once.\n\n${resetLink}\n\nIf you didn't request this, no action is needed and your password is unchanged.`,
+        html: `<p>Use the link below to set a new password. It expires in 60 minutes and can be used once.</p><p><a href="${resetLink}">Reset password</a></p><p style="color:#888;font-size:12px;">If you didn't request this, no action is needed and your password is unchanged.</p>`,
+      });
     } else if (actionType === 'MFA_RESET') {
       await adminAuth.revokeRefreshTokens(targetUid);
       await adminDb.collection('users').doc(targetUid).set({ mfaEnabled: false, updatedAt: new Date() }, { merge: true });

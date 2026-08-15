@@ -587,3 +587,173 @@
 {"ts":"2026-08-13T17:42:18.758Z","agentId":"P-16","wave":4,"step":"WAVE_4","action":"COMPLETE","result":"SUCCESS","details":{"interactions":1,"invites":2}}
 {"ts":"2026-08-13T17:42:18.892Z","agentId":"P-16","wave":5,"step":"WAVE_5","action":"START","result":"SUCCESS"}
 {"ts":"2026-08-13T17:42:18.893Z","agentId":"P-16","wave":5,"step":"WAVE_5","action":"COMPLETE","result":"SUCCESS","details":{"reportPath":"/Users/yvesdarbouze/Documents/PaperWorking/artifacts/persona-swarm/reports/P-16-experience-report.md"}}
+{"ts":"2026-08-14T12:08:07.967Z","agentId":"P-16","wave":1,"step":"WAVE_1","action":"START","result":"SUCCESS","details":{"email":"agent16.aisha.bello@paperworking-test.dev"}}
+{"ts":"2026-08-14T12:08:07.967Z","agentId":"P-16","wave":1,"step":"WAVE_1","action":"START","result":"SUCCESS","details":{"email":"agent16.aisha.bello@paperworking-test.dev"}}
+{"ts":"2026-08-14T12:08:07.968Z","agentId":"P-16","wave":0,"step":"SIGNUP","action":"SUCCESS_CREATED","result":"SUCCESS","details":{"uid":"uid_persona_p16","email":"agent16.aisha.bello@paperworking-test.dev","name":"Aisha Bello","entity":"Bello Door Properties LLC"}}
+{"ts":"2026-08-14T12:08:07.968Z","agentId":"P-16","wave":1,"step":"WAVE_1","action":"COMPLETE","result":"SUCCESS","details":{"uid":"uid_persona_p16"}}
+{"ts":"2026-08-14T12:08:07.968Z","agentId":"P-16","wave":0,"step":"SIGNUP","action":"SUCCESS_CREATED","result":"SUCCESS","details":{"uid":"uid_persona_p16","email":"agent16.aisha.bello@paperworking-test.dev","name":"Aisha Bello","entity":"Bello Door Properties LLC"}}
+{"ts":"2026-08-14T12:08:07.968Z","agentId":"P-16","wave":1,"step":"WAVE_1","action":"COMPLETE","result":"SUCCESS","details":{"uid":"uid_persona_p16"}}
+{"ts":"2026-08-14T12:08:08.049Z","agentId":"P-16","wave":2,"step":"WAVE_2","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-14T12:08:08.049Z","agentId":"P-16","wave":2,"step":"WAVE_2","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-14T12:08:08.049Z","agentId":"P-16","wave":0,"step":"BILLING","action":"SUBSCRIPTION_SUCCESS","result":"SUCCESS","details":{"plan":"Individual","stripeCustomerId":"cus_test_swarm_p-16","stripeSubscriptionId":"sub_test_swarm_p-16","cardLastFour":"4242","cardBrand":"visa"}}
+{"ts":"2026-08-14T12:08:08.049Z","agentId":"P-16","wave":2,"step":"WAVE_2","action":"COMPLETE","result":"SUCCESS","details":{"plan":"Individual"}}
+{"ts":"2026-08-14T12:08:08.050Z","agentId":"P-16","wave":0,"step":"BILLING","action":"SUBSCRIPTION_SUCCESS","result":"SUCCESS","details":{"plan":"Individual","stripeCustomerId":"cus_test_swarm_p-16","stripeSubscriptionId":"sub_test_swarm_p-16","cardLastFour":"4242","cardBrand":"visa"}}
+{"ts":"2026-08-14T12:08:08.050Z","agentId":"P-16","wave":2,"step":"WAVE_2","action":"COMPLETE","result":"SUCCESS","details":{"plan":"Individual"}}
+{"ts":"2026-08-14T12:08:08.136Z","agentId":"P-16","wave":3,"step":"WAVE_3","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-14T12:08:08.136Z","agentId":"P-16","wave":3,"step":"WAVE_3","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-14T12:08:08.138Z","agentId":"P-16","wave":0,"step":"PLAID","action":"SANDBOX_TRANSACTIONS_INGESTED","result":"SUCCESS","details":{"agentId":"P-16","account":"Plaid Checking ***4432","revenueCount":12,"expenseCount":8}}
+{"ts":"2026-08-14T12:08:08.138Z","agentId":"P-16","wave":0,"step":"PROJECTS","action":"CREATION_SUCCESS","result":"SUCCESS","details":{"created":10,"plaid":true}}
+{"ts":"2026-08-14T12:08:08.139Z","agentId":"P-16","wave":3,"step":"WAVE_3","action":"COMPLETE","result":"SUCCESS","details":{"created":10}}
+{"ts":"2026-08-14T12:08:08.140Z","agentId":"P-16","wave":0,"step":"PLAID","action":"SANDBOX_TRANSACTIONS_INGESTED","result":"SUCCESS","details":{"agentId":"P-16","account":"Plaid Checking ***4432","revenueCount":12,"expenseCount":8}}
+{"ts":"2026-08-14T12:08:08.140Z","agentId":"P-16","wave":0,"step":"PROJECTS","action":"CREATION_SUCCESS","result":"SUCCESS","details":{"created":10,"plaid":true}}
+{"ts":"2026-08-14T12:08:08.141Z","agentId":"P-16","wave":3,"step":"WAVE_3","action":"COMPLETE","result":"SUCCESS","details":{"created":10}}
+{"ts":"2026-08-14T12:08:08.261Z","agentId":"P-16","wave":4,"step":"WAVE_4","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-14T12:08:08.261Z","agentId":"P-16","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-67","to":"P-17","type":"Peer Systems Exchange"}}
+{"ts":"2026-08-14T12:08:08.262Z","agentId":"P-16","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-02"}}
+{"ts":"2026-08-14T12:08:08.262Z","agentId":"P-16","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-49"}}
+{"ts":"2026-08-14T12:08:08.262Z","agentId":"P-16","wave":4,"step":"WAVE_4","action":"COMPLETE","result":"SUCCESS","details":{"interactions":1,"invites":2}}
+{"ts":"2026-08-14T12:08:08.263Z","agentId":"P-16","wave":4,"step":"WAVE_4","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-14T12:08:08.263Z","agentId":"P-16","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-67","to":"P-17","type":"Peer Systems Exchange"}}
+{"ts":"2026-08-14T12:08:08.264Z","agentId":"P-16","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-02"}}
+{"ts":"2026-08-14T12:08:08.264Z","agentId":"P-16","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-49"}}
+{"ts":"2026-08-14T12:08:08.264Z","agentId":"P-16","wave":4,"step":"WAVE_4","action":"COMPLETE","result":"SUCCESS","details":{"interactions":1,"invites":2}}
+{"ts":"2026-08-14T12:08:08.324Z","agentId":"P-16","wave":5,"step":"WAVE_5","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-14T12:08:08.325Z","agentId":"P-16","wave":5,"step":"WAVE_5","action":"COMPLETE","result":"SUCCESS","details":{"reportPath":"/Users/yvesdarbouze/Documents/PaperWorking/artifacts/persona-swarm/reports/P-16-experience-report.md"}}
+{"ts":"2026-08-14T12:08:08.332Z","agentId":"P-16","wave":5,"step":"WAVE_5","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-14T12:08:08.333Z","agentId":"P-16","wave":5,"step":"WAVE_5","action":"COMPLETE","result":"SUCCESS","details":{"reportPath":"/Users/yvesdarbouze/Documents/PaperWorking/artifacts/persona-swarm/reports/P-16-experience-report.md"}}
+{"ts":"2026-08-14T15:14:46.781Z","agentId":"P-16","wave":1,"step":"WAVE_1","action":"START","result":"SUCCESS","details":{"email":"agent16.aisha.bello@paperworking-test.dev"}}
+{"ts":"2026-08-14T15:14:46.783Z","agentId":"P-16","wave":0,"step":"SIGNUP","action":"SUCCESS_CREATED","result":"SUCCESS","details":{"uid":"uid_persona_p16","email":"agent16.aisha.bello@paperworking-test.dev","name":"Aisha Bello","entity":"Bello Door Properties LLC"}}
+{"ts":"2026-08-14T15:14:46.783Z","agentId":"P-16","wave":1,"step":"WAVE_1","action":"COMPLETE","result":"SUCCESS","details":{"uid":"uid_persona_p16"}}
+{"ts":"2026-08-14T15:14:46.892Z","agentId":"P-16","wave":2,"step":"WAVE_2","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-14T15:14:46.893Z","agentId":"P-16","wave":0,"step":"BILLING","action":"SUBSCRIPTION_SUCCESS","result":"SUCCESS","details":{"plan":"Individual","stripeCustomerId":"cus_test_swarm_p-16","stripeSubscriptionId":"sub_test_swarm_p-16","cardLastFour":"4242","cardBrand":"visa"}}
+{"ts":"2026-08-14T15:14:46.893Z","agentId":"P-16","wave":2,"step":"WAVE_2","action":"COMPLETE","result":"SUCCESS","details":{"plan":"Individual"}}
+{"ts":"2026-08-14T15:14:47.033Z","agentId":"P-16","wave":3,"step":"WAVE_3","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-14T15:14:47.035Z","agentId":"P-16","wave":0,"step":"PLAID","action":"SANDBOX_TRANSACTIONS_INGESTED","result":"SUCCESS","details":{"agentId":"P-16","account":"Plaid Checking ***4432","revenueCount":12,"expenseCount":8}}
+{"ts":"2026-08-14T15:14:47.035Z","agentId":"P-16","wave":0,"step":"PROJECTS","action":"CREATION_SUCCESS","result":"SUCCESS","details":{"created":10,"plaid":true}}
+{"ts":"2026-08-14T15:14:47.036Z","agentId":"P-16","wave":3,"step":"WAVE_3","action":"COMPLETE","result":"SUCCESS","details":{"created":10}}
+{"ts":"2026-08-14T15:14:47.102Z","agentId":"P-16","wave":1,"step":"WAVE_1","action":"START","result":"SUCCESS","details":{"email":"agent16.aisha.bello@paperworking-test.dev"}}
+{"ts":"2026-08-14T15:14:47.102Z","agentId":"P-16","wave":0,"step":"SIGNUP","action":"SUCCESS_CREATED","result":"SUCCESS","details":{"uid":"uid_persona_p16","email":"agent16.aisha.bello@paperworking-test.dev","name":"Aisha Bello","entity":"Bello Door Properties LLC"}}
+{"ts":"2026-08-14T15:14:47.102Z","agentId":"P-16","wave":1,"step":"WAVE_1","action":"COMPLETE","result":"SUCCESS","details":{"uid":"uid_persona_p16"}}
+{"ts":"2026-08-14T15:14:47.159Z","agentId":"P-16","wave":2,"step":"WAVE_2","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-14T15:14:47.159Z","agentId":"P-16","wave":0,"step":"BILLING","action":"SUBSCRIPTION_SUCCESS","result":"SUCCESS","details":{"plan":"Individual","stripeCustomerId":"cus_test_swarm_p-16","stripeSubscriptionId":"sub_test_swarm_p-16","cardLastFour":"4242","cardBrand":"visa"}}
+{"ts":"2026-08-14T15:14:47.160Z","agentId":"P-16","wave":2,"step":"WAVE_2","action":"COMPLETE","result":"SUCCESS","details":{"plan":"Individual"}}
+{"ts":"2026-08-14T15:14:47.212Z","agentId":"P-16","wave":4,"step":"WAVE_4","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-14T15:14:47.215Z","agentId":"P-16","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-67","to":"P-17","type":"Peer Systems Exchange"}}
+{"ts":"2026-08-14T15:14:47.216Z","agentId":"P-16","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-02"}}
+{"ts":"2026-08-14T15:14:47.218Z","agentId":"P-16","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-49"}}
+{"ts":"2026-08-14T15:14:47.219Z","agentId":"P-16","wave":4,"step":"WAVE_4","action":"COMPLETE","result":"SUCCESS","details":{"interactions":1,"invites":2}}
+{"ts":"2026-08-14T15:14:47.325Z","agentId":"P-16","wave":3,"step":"WAVE_3","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-14T15:14:47.332Z","agentId":"P-16","wave":0,"step":"PLAID","action":"SANDBOX_TRANSACTIONS_INGESTED","result":"SUCCESS","details":{"agentId":"P-16","account":"Plaid Checking ***4432","revenueCount":12,"expenseCount":8}}
+{"ts":"2026-08-14T15:14:47.333Z","agentId":"P-16","wave":0,"step":"PROJECTS","action":"CREATION_SUCCESS","result":"SUCCESS","details":{"created":10,"plaid":true}}
+{"ts":"2026-08-14T15:14:47.333Z","agentId":"P-16","wave":3,"step":"WAVE_3","action":"COMPLETE","result":"SUCCESS","details":{"created":10}}
+{"ts":"2026-08-14T15:14:47.409Z","agentId":"P-16","wave":5,"step":"WAVE_5","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-14T15:14:47.410Z","agentId":"P-16","wave":5,"step":"WAVE_5","action":"COMPLETE","result":"SUCCESS","details":{"reportPath":"/Users/yvesdarbouze/Documents/PaperWorking/artifacts/persona-swarm/reports/P-16-experience-report.md"}}
+{"ts":"2026-08-14T15:14:47.604Z","agentId":"P-16","wave":4,"step":"WAVE_4","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-14T15:14:47.610Z","agentId":"P-16","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-67","to":"P-17","type":"Peer Systems Exchange"}}
+{"ts":"2026-08-14T15:14:47.610Z","agentId":"P-16","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-02"}}
+{"ts":"2026-08-14T15:14:47.613Z","agentId":"P-16","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-49"}}
+{"ts":"2026-08-14T15:14:47.615Z","agentId":"P-16","wave":4,"step":"WAVE_4","action":"COMPLETE","result":"SUCCESS","details":{"interactions":1,"invites":2}}
+{"ts":"2026-08-14T15:14:47.926Z","agentId":"P-16","wave":5,"step":"WAVE_5","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-14T15:14:47.927Z","agentId":"P-16","wave":5,"step":"WAVE_5","action":"COMPLETE","result":"SUCCESS","details":{"reportPath":"/Users/yvesdarbouze/Documents/PaperWorking/artifacts/persona-swarm/reports/P-16-experience-report.md"}}
+{"ts":"2026-08-14T15:16:33.298Z","agentId":"P-16","wave":1,"step":"WAVE_1","action":"START","result":"SUCCESS","details":{"email":"agent16.aisha.bello@paperworking-test.dev"}}
+{"ts":"2026-08-14T15:16:33.299Z","agentId":"P-16","wave":0,"step":"SIGNUP","action":"SUCCESS_CREATED","result":"SUCCESS","details":{"uid":"uid_persona_p16","email":"agent16.aisha.bello@paperworking-test.dev","name":"Aisha Bello","entity":"Bello Door Properties LLC"}}
+{"ts":"2026-08-14T15:16:33.299Z","agentId":"P-16","wave":1,"step":"WAVE_1","action":"COMPLETE","result":"SUCCESS","details":{"uid":"uid_persona_p16"}}
+{"ts":"2026-08-14T15:16:33.416Z","agentId":"P-16","wave":2,"step":"WAVE_2","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-14T15:16:33.416Z","agentId":"P-16","wave":0,"step":"BILLING","action":"SUBSCRIPTION_SUCCESS","result":"SUCCESS","details":{"plan":"Individual","stripeCustomerId":"cus_test_swarm_p-16","stripeSubscriptionId":"sub_test_swarm_p-16","cardLastFour":"4242","cardBrand":"visa"}}
+{"ts":"2026-08-14T15:16:33.416Z","agentId":"P-16","wave":2,"step":"WAVE_2","action":"COMPLETE","result":"SUCCESS","details":{"plan":"Individual"}}
+{"ts":"2026-08-14T15:16:33.562Z","agentId":"P-16","wave":3,"step":"WAVE_3","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-14T15:16:33.575Z","agentId":"P-16","wave":0,"step":"PLAID","action":"SANDBOX_TRANSACTIONS_INGESTED","result":"SUCCESS","details":{"agentId":"P-16","account":"Plaid Checking ***4432","revenueCount":12,"expenseCount":8}}
+{"ts":"2026-08-14T15:16:33.575Z","agentId":"P-16","wave":0,"step":"PROJECTS","action":"CREATION_SUCCESS","result":"SUCCESS","details":{"created":10,"plaid":true}}
+{"ts":"2026-08-14T15:16:33.575Z","agentId":"P-16","wave":3,"step":"WAVE_3","action":"COMPLETE","result":"SUCCESS","details":{"created":10}}
+{"ts":"2026-08-14T15:16:33.815Z","agentId":"P-16","wave":4,"step":"WAVE_4","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-14T15:16:33.817Z","agentId":"P-16","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-67","to":"P-17","type":"Peer Systems Exchange"}}
+{"ts":"2026-08-14T15:16:33.817Z","agentId":"P-16","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-02"}}
+{"ts":"2026-08-14T15:16:33.818Z","agentId":"P-16","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-49"}}
+{"ts":"2026-08-14T15:16:33.820Z","agentId":"P-16","wave":4,"step":"WAVE_4","action":"COMPLETE","result":"SUCCESS","details":{"interactions":1,"invites":2}}
+{"ts":"2026-08-14T15:16:33.976Z","agentId":"P-16","wave":5,"step":"WAVE_5","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-14T15:16:33.977Z","agentId":"P-16","wave":5,"step":"WAVE_5","action":"COMPLETE","result":"SUCCESS","details":{"reportPath":"/Users/yvesdarbouze/Documents/PaperWorking/artifacts/persona-swarm/reports/P-16-experience-report.md"}}
+{"ts":"2026-08-14T15:16:34.150Z","agentId":"P-16","wave":1,"step":"WAVE_1","action":"START","result":"SUCCESS","details":{"email":"agent16.aisha.bello@paperworking-test.dev"}}
+{"ts":"2026-08-14T15:16:34.151Z","agentId":"P-16","wave":0,"step":"SIGNUP","action":"SUCCESS_CREATED","result":"SUCCESS","details":{"uid":"uid_persona_p16","email":"agent16.aisha.bello@paperworking-test.dev","name":"Aisha Bello","entity":"Bello Door Properties LLC"}}
+{"ts":"2026-08-14T15:16:34.152Z","agentId":"P-16","wave":1,"step":"WAVE_1","action":"COMPLETE","result":"SUCCESS","details":{"uid":"uid_persona_p16"}}
+{"ts":"2026-08-14T15:16:34.218Z","agentId":"P-16","wave":2,"step":"WAVE_2","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-14T15:16:34.218Z","agentId":"P-16","wave":0,"step":"BILLING","action":"SUBSCRIPTION_SUCCESS","result":"SUCCESS","details":{"plan":"Individual","stripeCustomerId":"cus_test_swarm_p-16","stripeSubscriptionId":"sub_test_swarm_p-16","cardLastFour":"4242","cardBrand":"visa"}}
+{"ts":"2026-08-14T15:16:34.219Z","agentId":"P-16","wave":2,"step":"WAVE_2","action":"COMPLETE","result":"SUCCESS","details":{"plan":"Individual"}}
+{"ts":"2026-08-14T15:16:34.388Z","agentId":"P-16","wave":3,"step":"WAVE_3","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-14T15:16:34.390Z","agentId":"P-16","wave":0,"step":"PLAID","action":"SANDBOX_TRANSACTIONS_INGESTED","result":"SUCCESS","details":{"agentId":"P-16","account":"Plaid Checking ***4432","revenueCount":12,"expenseCount":8}}
+{"ts":"2026-08-14T15:16:34.390Z","agentId":"P-16","wave":0,"step":"PROJECTS","action":"CREATION_SUCCESS","result":"SUCCESS","details":{"created":10,"plaid":true}}
+{"ts":"2026-08-14T15:16:34.390Z","agentId":"P-16","wave":3,"step":"WAVE_3","action":"COMPLETE","result":"SUCCESS","details":{"created":10}}
+{"ts":"2026-08-14T15:16:34.601Z","agentId":"P-16","wave":4,"step":"WAVE_4","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-14T15:16:34.601Z","agentId":"P-16","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-67","to":"P-17","type":"Peer Systems Exchange"}}
+{"ts":"2026-08-14T15:16:34.601Z","agentId":"P-16","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-02"}}
+{"ts":"2026-08-14T15:16:34.602Z","agentId":"P-16","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-49"}}
+{"ts":"2026-08-14T15:16:34.602Z","agentId":"P-16","wave":4,"step":"WAVE_4","action":"COMPLETE","result":"SUCCESS","details":{"interactions":1,"invites":2}}
+{"ts":"2026-08-14T15:16:34.805Z","agentId":"P-16","wave":5,"step":"WAVE_5","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-14T15:16:34.810Z","agentId":"P-16","wave":5,"step":"WAVE_5","action":"COMPLETE","result":"SUCCESS","details":{"reportPath":"/Users/yvesdarbouze/Documents/PaperWorking/artifacts/persona-swarm/reports/P-16-experience-report.md"}}
+{"ts":"2026-08-14T15:19:01.552Z","agentId":"P-16","wave":1,"step":"WAVE_1","action":"START","result":"SUCCESS","details":{"email":"agent16.aisha.bello@paperworking-test.dev"}}
+{"ts":"2026-08-14T15:19:01.554Z","agentId":"P-16","wave":0,"step":"SIGNUP","action":"SUCCESS_CREATED","result":"SUCCESS","details":{"uid":"uid_persona_p16","email":"agent16.aisha.bello@paperworking-test.dev","name":"Aisha Bello","entity":"Bello Door Properties LLC"}}
+{"ts":"2026-08-14T15:19:01.554Z","agentId":"P-16","wave":1,"step":"WAVE_1","action":"COMPLETE","result":"SUCCESS","details":{"uid":"uid_persona_p16"}}
+{"ts":"2026-08-14T15:19:01.667Z","agentId":"P-16","wave":2,"step":"WAVE_2","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-14T15:19:01.667Z","agentId":"P-16","wave":0,"step":"BILLING","action":"SUBSCRIPTION_SUCCESS","result":"SUCCESS","details":{"plan":"Individual","stripeCustomerId":"cus_test_swarm_p-16","stripeSubscriptionId":"sub_test_swarm_p-16","cardLastFour":"4242","cardBrand":"visa"}}
+{"ts":"2026-08-14T15:19:01.667Z","agentId":"P-16","wave":2,"step":"WAVE_2","action":"COMPLETE","result":"SUCCESS","details":{"plan":"Individual"}}
+{"ts":"2026-08-14T15:19:01.871Z","agentId":"P-16","wave":3,"step":"WAVE_3","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-14T15:19:01.872Z","agentId":"P-16","wave":1,"step":"WAVE_1","action":"START","result":"SUCCESS","details":{"email":"agent16.aisha.bello@paperworking-test.dev"}}
+{"ts":"2026-08-14T15:19:01.873Z","agentId":"P-16","wave":0,"step":"SIGNUP","action":"SUCCESS_CREATED","result":"SUCCESS","details":{"uid":"uid_persona_p16","email":"agent16.aisha.bello@paperworking-test.dev","name":"Aisha Bello","entity":"Bello Door Properties LLC"}}
+{"ts":"2026-08-14T15:19:01.873Z","agentId":"P-16","wave":1,"step":"WAVE_1","action":"COMPLETE","result":"SUCCESS","details":{"uid":"uid_persona_p16"}}
+{"ts":"2026-08-14T15:19:01.873Z","agentId":"P-16","wave":0,"step":"PLAID","action":"SANDBOX_TRANSACTIONS_INGESTED","result":"SUCCESS","details":{"agentId":"P-16","account":"Plaid Checking ***4432","revenueCount":12,"expenseCount":8}}
+{"ts":"2026-08-14T15:19:01.873Z","agentId":"P-16","wave":0,"step":"PROJECTS","action":"CREATION_SUCCESS","result":"SUCCESS","details":{"created":10,"plaid":true}}
+{"ts":"2026-08-14T15:19:01.874Z","agentId":"P-16","wave":3,"step":"WAVE_3","action":"COMPLETE","result":"SUCCESS","details":{"created":10}}
+{"ts":"2026-08-14T15:19:01.915Z","agentId":"P-16","wave":2,"step":"WAVE_2","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-14T15:19:01.916Z","agentId":"P-16","wave":0,"step":"BILLING","action":"SUBSCRIPTION_SUCCESS","result":"SUCCESS","details":{"plan":"Individual","stripeCustomerId":"cus_test_swarm_p-16","stripeSubscriptionId":"sub_test_swarm_p-16","cardLastFour":"4242","cardBrand":"visa"}}
+{"ts":"2026-08-14T15:19:01.916Z","agentId":"P-16","wave":2,"step":"WAVE_2","action":"COMPLETE","result":"SUCCESS","details":{"plan":"Individual"}}
+{"ts":"2026-08-14T15:19:02.010Z","agentId":"P-16","wave":3,"step":"WAVE_3","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-14T15:19:02.013Z","agentId":"P-16","wave":0,"step":"PLAID","action":"SANDBOX_TRANSACTIONS_INGESTED","result":"SUCCESS","details":{"agentId":"P-16","account":"Plaid Checking ***4432","revenueCount":12,"expenseCount":8}}
+{"ts":"2026-08-14T15:19:02.013Z","agentId":"P-16","wave":0,"step":"PROJECTS","action":"CREATION_SUCCESS","result":"SUCCESS","details":{"created":10,"plaid":true}}
+{"ts":"2026-08-14T15:19:02.013Z","agentId":"P-16","wave":4,"step":"WAVE_4","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-14T15:19:02.013Z","agentId":"P-16","wave":3,"step":"WAVE_3","action":"COMPLETE","result":"SUCCESS","details":{"created":10}}
+{"ts":"2026-08-14T15:19:02.014Z","agentId":"P-16","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-67","to":"P-17","type":"Peer Systems Exchange"}}
+{"ts":"2026-08-14T15:19:02.014Z","agentId":"P-16","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-02"}}
+{"ts":"2026-08-14T15:19:02.014Z","agentId":"P-16","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-49"}}
+{"ts":"2026-08-14T15:19:02.014Z","agentId":"P-16","wave":4,"step":"WAVE_4","action":"COMPLETE","result":"SUCCESS","details":{"interactions":1,"invites":2}}
+{"ts":"2026-08-14T15:19:02.092Z","agentId":"P-16","wave":5,"step":"WAVE_5","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-14T15:19:02.094Z","agentId":"P-16","wave":5,"step":"WAVE_5","action":"COMPLETE","result":"SUCCESS","details":{"reportPath":"/Users/yvesdarbouze/Documents/PaperWorking/artifacts/persona-swarm/reports/P-16-experience-report.md"}}
+{"ts":"2026-08-14T15:19:02.178Z","agentId":"P-16","wave":4,"step":"WAVE_4","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-14T15:19:02.178Z","agentId":"P-16","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-67","to":"P-17","type":"Peer Systems Exchange"}}
+{"ts":"2026-08-14T15:19:02.181Z","agentId":"P-16","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-02"}}
+{"ts":"2026-08-14T15:19:02.181Z","agentId":"P-16","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-49"}}
+{"ts":"2026-08-14T15:19:02.181Z","agentId":"P-16","wave":4,"step":"WAVE_4","action":"COMPLETE","result":"SUCCESS","details":{"interactions":1,"invites":2}}
+{"ts":"2026-08-14T15:19:02.252Z","agentId":"P-16","wave":5,"step":"WAVE_5","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-14T15:19:02.252Z","agentId":"P-16","wave":5,"step":"WAVE_5","action":"COMPLETE","result":"SUCCESS","details":{"reportPath":"/Users/yvesdarbouze/Documents/PaperWorking/artifacts/persona-swarm/reports/P-16-experience-report.md"}}
+{"ts":"2026-08-14T19:22:03.422Z","agentId":"P-16","wave":1,"step":"WAVE_1","action":"START","result":"SUCCESS","details":{"email":"agent16.aisha.bello@paperworking-test.dev"}}
+{"ts":"2026-08-14T19:22:03.422Z","agentId":"P-16","wave":0,"step":"SIGNUP","action":"SUCCESS_CREATED","result":"SUCCESS","details":{"uid":"uid_persona_p16","email":"agent16.aisha.bello@paperworking-test.dev","name":"Aisha Bello","entity":"Bello Door Properties LLC"}}
+{"ts":"2026-08-14T19:22:03.423Z","agentId":"P-16","wave":1,"step":"WAVE_1","action":"COMPLETE","result":"SUCCESS","details":{"uid":"uid_persona_p16"}}
+{"ts":"2026-08-14T19:22:03.536Z","agentId":"P-16","wave":2,"step":"WAVE_2","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-14T19:22:03.536Z","agentId":"P-16","wave":0,"step":"BILLING","action":"SUBSCRIPTION_SUCCESS","result":"SUCCESS","details":{"plan":"Individual","stripeCustomerId":"cus_test_swarm_p-16","stripeSubscriptionId":"sub_test_swarm_p-16","cardLastFour":"4242","cardBrand":"visa"}}
+{"ts":"2026-08-14T19:22:03.536Z","agentId":"P-16","wave":2,"step":"WAVE_2","action":"COMPLETE","result":"SUCCESS","details":{"plan":"Individual"}}
+{"ts":"2026-08-14T19:22:03.670Z","agentId":"P-16","wave":3,"step":"WAVE_3","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-14T19:22:03.672Z","agentId":"P-16","wave":0,"step":"PLAID","action":"SANDBOX_TRANSACTIONS_INGESTED","result":"SUCCESS","details":{"agentId":"P-16","account":"Plaid Checking ***4432","revenueCount":12,"expenseCount":8}}
+{"ts":"2026-08-14T19:22:03.672Z","agentId":"P-16","wave":0,"step":"PROJECTS","action":"CREATION_SUCCESS","result":"SUCCESS","details":{"created":10,"plaid":true}}
+{"ts":"2026-08-14T19:22:03.673Z","agentId":"P-16","wave":3,"step":"WAVE_3","action":"COMPLETE","result":"SUCCESS","details":{"created":10}}
+{"ts":"2026-08-14T19:22:03.896Z","agentId":"P-16","wave":4,"step":"WAVE_4","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-14T19:22:03.897Z","agentId":"P-16","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-67","to":"P-17","type":"Peer Systems Exchange"}}
+{"ts":"2026-08-14T19:22:03.897Z","agentId":"P-16","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-02"}}
+{"ts":"2026-08-14T19:22:03.897Z","agentId":"P-16","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-49"}}
+{"ts":"2026-08-14T19:22:03.898Z","agentId":"P-16","wave":4,"step":"WAVE_4","action":"COMPLETE","result":"SUCCESS","details":{"interactions":1,"invites":2}}
+{"ts":"2026-08-14T19:22:04.040Z","agentId":"P-16","wave":5,"step":"WAVE_5","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-14T19:22:04.042Z","agentId":"P-16","wave":5,"step":"WAVE_5","action":"COMPLETE","result":"SUCCESS","details":{"reportPath":"/Users/yvesdarbouze/Documents/PaperWorking/artifacts/persona-swarm/reports/P-16-experience-report.md"}}
+{"ts":"2026-08-14T19:22:05.015Z","agentId":"P-16","wave":1,"step":"WAVE_1","action":"START","result":"SUCCESS","details":{"email":"agent16.aisha.bello@paperworking-test.dev"}}
+{"ts":"2026-08-14T19:22:05.017Z","agentId":"P-16","wave":0,"step":"SIGNUP","action":"SUCCESS_CREATED","result":"SUCCESS","details":{"uid":"uid_persona_p16","email":"agent16.aisha.bello@paperworking-test.dev","name":"Aisha Bello","entity":"Bello Door Properties LLC"}}
+{"ts":"2026-08-14T19:22:05.017Z","agentId":"P-16","wave":1,"step":"WAVE_1","action":"COMPLETE","result":"SUCCESS","details":{"uid":"uid_persona_p16"}}
+{"ts":"2026-08-14T19:22:05.114Z","agentId":"P-16","wave":2,"step":"WAVE_2","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-14T19:22:05.115Z","agentId":"P-16","wave":0,"step":"BILLING","action":"SUBSCRIPTION_SUCCESS","result":"SUCCESS","details":{"plan":"Individual","stripeCustomerId":"cus_test_swarm_p-16","stripeSubscriptionId":"sub_test_swarm_p-16","cardLastFour":"4242","cardBrand":"visa"}}
+{"ts":"2026-08-14T19:22:05.115Z","agentId":"P-16","wave":2,"step":"WAVE_2","action":"COMPLETE","result":"SUCCESS","details":{"plan":"Individual"}}
+{"ts":"2026-08-14T19:22:05.256Z","agentId":"P-16","wave":3,"step":"WAVE_3","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-14T19:22:05.260Z","agentId":"P-16","wave":0,"step":"PLAID","action":"SANDBOX_TRANSACTIONS_INGESTED","result":"SUCCESS","details":{"agentId":"P-16","account":"Plaid Checking ***4432","revenueCount":12,"expenseCount":8}}
+{"ts":"2026-08-14T19:22:05.261Z","agentId":"P-16","wave":0,"step":"PROJECTS","action":"CREATION_SUCCESS","result":"SUCCESS","details":{"created":10,"plaid":true}}
+{"ts":"2026-08-14T19:22:05.261Z","agentId":"P-16","wave":3,"step":"WAVE_3","action":"COMPLETE","result":"SUCCESS","details":{"created":10}}
+{"ts":"2026-08-14T19:22:05.504Z","agentId":"P-16","wave":4,"step":"WAVE_4","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-14T19:22:05.505Z","agentId":"P-16","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-67","to":"P-17","type":"Peer Systems Exchange"}}
+{"ts":"2026-08-14T19:22:05.505Z","agentId":"P-16","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-02"}}
+{"ts":"2026-08-14T19:22:05.505Z","agentId":"P-16","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-49"}}
+{"ts":"2026-08-14T19:22:05.505Z","agentId":"P-16","wave":4,"step":"WAVE_4","action":"COMPLETE","result":"SUCCESS","details":{"interactions":1,"invites":2}}
+{"ts":"2026-08-14T19:22:05.641Z","agentId":"P-16","wave":5,"step":"WAVE_5","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-14T19:22:05.642Z","agentId":"P-16","wave":5,"step":"WAVE_5","action":"COMPLETE","result":"SUCCESS","details":{"reportPath":"/Users/yvesdarbouze/Documents/PaperWorking/artifacts/persona-swarm/reports/P-16-experience-report.md"}}

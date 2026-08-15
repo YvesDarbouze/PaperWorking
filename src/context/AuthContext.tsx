@@ -7,11 +7,9 @@ import {
   signInWithEmailAndPassword,
   createUserWithEmailAndPassword,
   signOut,
-  sendPasswordResetEmail,
   GoogleAuthProvider,
   FacebookAuthProvider,
   signInWithPopup,
-  sendSignInLinkToEmail,
   isSignInWithEmailLink,
   signInWithEmailLink,
   getMultiFactorResolver,
@@ -798,14 +796,18 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const sendMagicLink = async (email: string) => {
     setError(null);
     try {
-      const actionCodeSettings = {
-        url: `${window.location.origin}/login/finish`,
-        handleCodeInApp: true,
-      };
-      await sendSignInLinkToEmail(auth, email, actionCodeSettings);
+      const res = await fetch('/api/auth/magic-link', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email }),
+      });
+      if (!res.ok) {
+        const data = await res.json().catch(() => ({}));
+        throw new Error(data.error || 'Failed to send magic link');
+      }
       window.localStorage.setItem('emailForSignIn', email);
     } catch (err: any) {
-      setError(getAuthErrorMessage(err.code));
+      setError(err.message || 'Failed to send magic link');
       throw err;
     }
   };
@@ -853,9 +855,17 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const resetPassword = async (email: string) => {
     setError(null);
     try {
-      await sendPasswordResetEmail(auth, email);
+      const res = await fetch('/api/auth/reset-password', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email }),
+      });
+      if (!res.ok) {
+        const data = await res.json().catch(() => ({}));
+        throw new Error(data.error || 'Failed to request password reset');
+      }
     } catch (err: any) {
-      setError(getAuthErrorMessage(err.code));
+      setError(err.message || 'Failed to request password reset');
       throw err;
     }
   };

@@ -553,3 +553,163 @@
 {"ts":"2026-08-13T17:42:18.774Z","agentId":"P-23","wave":4,"step":"WAVE_4","action":"COMPLETE","result":"SUCCESS","details":{"interactions":0,"invites":2}}
 {"ts":"2026-08-13T17:42:18.900Z","agentId":"P-23","wave":5,"step":"WAVE_5","action":"START","result":"SUCCESS"}
 {"ts":"2026-08-13T17:42:18.900Z","agentId":"P-23","wave":5,"step":"WAVE_5","action":"COMPLETE","result":"SUCCESS","details":{"reportPath":"/Users/yvesdarbouze/Documents/PaperWorking/artifacts/persona-swarm/reports/P-23-experience-report.md"}}
+{"ts":"2026-08-14T12:08:07.977Z","agentId":"P-23","wave":1,"step":"WAVE_1","action":"START","result":"SUCCESS","details":{"email":"agent23.grace.adeyemi@paperworking-test.dev"}}
+{"ts":"2026-08-14T12:08:07.977Z","agentId":"P-23","wave":1,"step":"WAVE_1","action":"START","result":"SUCCESS","details":{"email":"agent23.grace.adeyemi@paperworking-test.dev"}}
+{"ts":"2026-08-14T12:08:07.979Z","agentId":"P-23","wave":0,"step":"SIGNUP","action":"SUCCESS_CREATED","result":"SUCCESS","details":{"uid":"uid_persona_p23","email":"agent23.grace.adeyemi@paperworking-test.dev","name":"Grace Adeyemi","entity":"Adeyemi Holdings LLC"}}
+{"ts":"2026-08-14T12:08:07.979Z","agentId":"P-23","wave":1,"step":"WAVE_1","action":"COMPLETE","result":"SUCCESS","details":{"uid":"uid_persona_p23"}}
+{"ts":"2026-08-14T12:08:07.979Z","agentId":"P-23","wave":0,"step":"SIGNUP","action":"SUCCESS_CREATED","result":"SUCCESS","details":{"uid":"uid_persona_p23","email":"agent23.grace.adeyemi@paperworking-test.dev","name":"Grace Adeyemi","entity":"Adeyemi Holdings LLC"}}
+{"ts":"2026-08-14T12:08:07.979Z","agentId":"P-23","wave":1,"step":"WAVE_1","action":"COMPLETE","result":"SUCCESS","details":{"uid":"uid_persona_p23"}}
+{"ts":"2026-08-14T12:08:08.053Z","agentId":"P-23","wave":2,"step":"WAVE_2","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-14T12:08:08.054Z","agentId":"P-23","wave":0,"step":"BILLING","action":"SUBSCRIPTION_SUCCESS","result":"SUCCESS","details":{"plan":"Individual","stripeCustomerId":"cus_test_swarm_p-23","stripeSubscriptionId":"sub_test_swarm_p-23","cardLastFour":"4242","cardBrand":"visa"}}
+{"ts":"2026-08-14T12:08:08.054Z","agentId":"P-23","wave":2,"step":"WAVE_2","action":"COMPLETE","result":"SUCCESS","details":{"plan":"Individual"}}
+{"ts":"2026-08-14T12:08:08.054Z","agentId":"P-23","wave":2,"step":"WAVE_2","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-14T12:08:08.054Z","agentId":"P-23","wave":0,"step":"BILLING","action":"SUBSCRIPTION_SUCCESS","result":"SUCCESS","details":{"plan":"Individual","stripeCustomerId":"cus_test_swarm_p-23","stripeSubscriptionId":"sub_test_swarm_p-23","cardLastFour":"4242","cardBrand":"visa"}}
+{"ts":"2026-08-14T12:08:08.055Z","agentId":"P-23","wave":2,"step":"WAVE_2","action":"COMPLETE","result":"SUCCESS","details":{"plan":"Individual"}}
+{"ts":"2026-08-14T12:08:08.154Z","agentId":"P-23","wave":3,"step":"WAVE_3","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-14T12:08:08.157Z","agentId":"P-23","wave":3,"step":"WAVE_3","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-14T12:08:08.158Z","agentId":"P-23","wave":0,"step":"PLAID","action":"SANDBOX_TRANSACTIONS_INGESTED","result":"SUCCESS","details":{"agentId":"P-23","account":"Plaid Checking ***4432","revenueCount":12,"expenseCount":8}}
+{"ts":"2026-08-14T12:08:08.158Z","agentId":"P-23","wave":0,"step":"PROJECTS","action":"CREATION_SUCCESS","result":"SUCCESS","details":{"created":10,"plaid":true}}
+{"ts":"2026-08-14T12:08:08.158Z","agentId":"P-23","wave":3,"step":"WAVE_3","action":"COMPLETE","result":"SUCCESS","details":{"created":10}}
+{"ts":"2026-08-14T12:08:08.159Z","agentId":"P-23","wave":0,"step":"PLAID","action":"SANDBOX_TRANSACTIONS_INGESTED","result":"SUCCESS","details":{"agentId":"P-23","account":"Plaid Checking ***4432","revenueCount":12,"expenseCount":8}}
+{"ts":"2026-08-14T12:08:08.159Z","agentId":"P-23","wave":0,"step":"PROJECTS","action":"CREATION_SUCCESS","result":"SUCCESS","details":{"created":10,"plaid":true}}
+{"ts":"2026-08-14T12:08:08.159Z","agentId":"P-23","wave":3,"step":"WAVE_3","action":"COMPLETE","result":"SUCCESS","details":{"created":10}}
+{"ts":"2026-08-14T12:08:08.267Z","agentId":"P-23","wave":4,"step":"WAVE_4","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-14T12:08:08.268Z","agentId":"P-23","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-22"}}
+{"ts":"2026-08-14T12:08:08.268Z","agentId":"P-23","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-33"}}
+{"ts":"2026-08-14T12:08:08.268Z","agentId":"P-23","wave":4,"step":"WAVE_4","action":"COMPLETE","result":"SUCCESS","details":{"interactions":0,"invites":2}}
+{"ts":"2026-08-14T12:08:08.270Z","agentId":"P-23","wave":4,"step":"WAVE_4","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-14T12:08:08.271Z","agentId":"P-23","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-22"}}
+{"ts":"2026-08-14T12:08:08.271Z","agentId":"P-23","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-33"}}
+{"ts":"2026-08-14T12:08:08.272Z","agentId":"P-23","wave":4,"step":"WAVE_4","action":"COMPLETE","result":"SUCCESS","details":{"interactions":0,"invites":2}}
+{"ts":"2026-08-14T12:08:08.326Z","agentId":"P-23","wave":5,"step":"WAVE_5","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-14T12:08:08.326Z","agentId":"P-23","wave":5,"step":"WAVE_5","action":"COMPLETE","result":"SUCCESS","details":{"reportPath":"/Users/yvesdarbouze/Documents/PaperWorking/artifacts/persona-swarm/reports/P-23-experience-report.md"}}
+{"ts":"2026-08-14T12:08:08.335Z","agentId":"P-23","wave":5,"step":"WAVE_5","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-14T12:08:08.335Z","agentId":"P-23","wave":5,"step":"WAVE_5","action":"COMPLETE","result":"SUCCESS","details":{"reportPath":"/Users/yvesdarbouze/Documents/PaperWorking/artifacts/persona-swarm/reports/P-23-experience-report.md"}}
+{"ts":"2026-08-14T15:14:46.796Z","agentId":"P-23","wave":1,"step":"WAVE_1","action":"START","result":"SUCCESS","details":{"email":"agent23.grace.adeyemi@paperworking-test.dev"}}
+{"ts":"2026-08-14T15:14:46.797Z","agentId":"P-23","wave":0,"step":"SIGNUP","action":"SUCCESS_CREATED","result":"SUCCESS","details":{"uid":"uid_persona_p23","email":"agent23.grace.adeyemi@paperworking-test.dev","name":"Grace Adeyemi","entity":"Adeyemi Holdings LLC"}}
+{"ts":"2026-08-14T15:14:46.797Z","agentId":"P-23","wave":1,"step":"WAVE_1","action":"COMPLETE","result":"SUCCESS","details":{"uid":"uid_persona_p23"}}
+{"ts":"2026-08-14T15:14:46.903Z","agentId":"P-23","wave":2,"step":"WAVE_2","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-14T15:14:46.903Z","agentId":"P-23","wave":0,"step":"BILLING","action":"SUBSCRIPTION_SUCCESS","result":"SUCCESS","details":{"plan":"Individual","stripeCustomerId":"cus_test_swarm_p-23","stripeSubscriptionId":"sub_test_swarm_p-23","cardLastFour":"4242","cardBrand":"visa"}}
+{"ts":"2026-08-14T15:14:46.903Z","agentId":"P-23","wave":2,"step":"WAVE_2","action":"COMPLETE","result":"SUCCESS","details":{"plan":"Individual"}}
+{"ts":"2026-08-14T15:14:47.058Z","agentId":"P-23","wave":3,"step":"WAVE_3","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-14T15:14:47.060Z","agentId":"P-23","wave":0,"step":"PLAID","action":"SANDBOX_TRANSACTIONS_INGESTED","result":"SUCCESS","details":{"agentId":"P-23","account":"Plaid Checking ***4432","revenueCount":12,"expenseCount":8}}
+{"ts":"2026-08-14T15:14:47.060Z","agentId":"P-23","wave":0,"step":"PROJECTS","action":"CREATION_SUCCESS","result":"SUCCESS","details":{"created":10,"plaid":true}}
+{"ts":"2026-08-14T15:14:47.060Z","agentId":"P-23","wave":3,"step":"WAVE_3","action":"COMPLETE","result":"SUCCESS","details":{"created":10}}
+{"ts":"2026-08-14T15:14:47.107Z","agentId":"P-23","wave":1,"step":"WAVE_1","action":"START","result":"SUCCESS","details":{"email":"agent23.grace.adeyemi@paperworking-test.dev"}}
+{"ts":"2026-08-14T15:14:47.108Z","agentId":"P-23","wave":0,"step":"SIGNUP","action":"SUCCESS_CREATED","result":"SUCCESS","details":{"uid":"uid_persona_p23","email":"agent23.grace.adeyemi@paperworking-test.dev","name":"Grace Adeyemi","entity":"Adeyemi Holdings LLC"}}
+{"ts":"2026-08-14T15:14:47.108Z","agentId":"P-23","wave":1,"step":"WAVE_1","action":"COMPLETE","result":"SUCCESS","details":{"uid":"uid_persona_p23"}}
+{"ts":"2026-08-14T15:14:47.164Z","agentId":"P-23","wave":2,"step":"WAVE_2","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-14T15:14:47.164Z","agentId":"P-23","wave":0,"step":"BILLING","action":"SUBSCRIPTION_SUCCESS","result":"SUCCESS","details":{"plan":"Individual","stripeCustomerId":"cus_test_swarm_p-23","stripeSubscriptionId":"sub_test_swarm_p-23","cardLastFour":"4242","cardBrand":"visa"}}
+{"ts":"2026-08-14T15:14:47.164Z","agentId":"P-23","wave":2,"step":"WAVE_2","action":"COMPLETE","result":"SUCCESS","details":{"plan":"Individual"}}
+{"ts":"2026-08-14T15:14:47.241Z","agentId":"P-23","wave":4,"step":"WAVE_4","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-14T15:14:47.242Z","agentId":"P-23","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-22"}}
+{"ts":"2026-08-14T15:14:47.242Z","agentId":"P-23","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-33"}}
+{"ts":"2026-08-14T15:14:47.242Z","agentId":"P-23","wave":4,"step":"WAVE_4","action":"COMPLETE","result":"SUCCESS","details":{"interactions":0,"invites":2}}
+{"ts":"2026-08-14T15:14:47.361Z","agentId":"P-23","wave":3,"step":"WAVE_3","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-14T15:14:47.364Z","agentId":"P-23","wave":0,"step":"PLAID","action":"SANDBOX_TRANSACTIONS_INGESTED","result":"SUCCESS","details":{"agentId":"P-23","account":"Plaid Checking ***4432","revenueCount":12,"expenseCount":8}}
+{"ts":"2026-08-14T15:14:47.364Z","agentId":"P-23","wave":0,"step":"PROJECTS","action":"CREATION_SUCCESS","result":"SUCCESS","details":{"created":10,"plaid":true}}
+{"ts":"2026-08-14T15:14:47.364Z","agentId":"P-23","wave":3,"step":"WAVE_3","action":"COMPLETE","result":"SUCCESS","details":{"created":10}}
+{"ts":"2026-08-14T15:14:47.420Z","agentId":"P-23","wave":5,"step":"WAVE_5","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-14T15:14:47.423Z","agentId":"P-23","wave":5,"step":"WAVE_5","action":"COMPLETE","result":"SUCCESS","details":{"reportPath":"/Users/yvesdarbouze/Documents/PaperWorking/artifacts/persona-swarm/reports/P-23-experience-report.md"}}
+{"ts":"2026-08-14T15:14:47.642Z","agentId":"P-23","wave":4,"step":"WAVE_4","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-14T15:14:47.643Z","agentId":"P-23","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-22"}}
+{"ts":"2026-08-14T15:14:47.644Z","agentId":"P-23","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-33"}}
+{"ts":"2026-08-14T15:14:47.644Z","agentId":"P-23","wave":4,"step":"WAVE_4","action":"COMPLETE","result":"SUCCESS","details":{"interactions":0,"invites":2}}
+{"ts":"2026-08-14T15:14:47.936Z","agentId":"P-23","wave":5,"step":"WAVE_5","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-14T15:14:47.936Z","agentId":"P-23","wave":5,"step":"WAVE_5","action":"COMPLETE","result":"SUCCESS","details":{"reportPath":"/Users/yvesdarbouze/Documents/PaperWorking/artifacts/persona-swarm/reports/P-23-experience-report.md"}}
+{"ts":"2026-08-14T15:16:33.324Z","agentId":"P-23","wave":1,"step":"WAVE_1","action":"START","result":"SUCCESS","details":{"email":"agent23.grace.adeyemi@paperworking-test.dev"}}
+{"ts":"2026-08-14T15:16:33.329Z","agentId":"P-23","wave":0,"step":"SIGNUP","action":"SUCCESS_CREATED","result":"SUCCESS","details":{"uid":"uid_persona_p23","email":"agent23.grace.adeyemi@paperworking-test.dev","name":"Grace Adeyemi","entity":"Adeyemi Holdings LLC"}}
+{"ts":"2026-08-14T15:16:33.330Z","agentId":"P-23","wave":1,"step":"WAVE_1","action":"COMPLETE","result":"SUCCESS","details":{"uid":"uid_persona_p23"}}
+{"ts":"2026-08-14T15:16:33.419Z","agentId":"P-23","wave":2,"step":"WAVE_2","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-14T15:16:33.420Z","agentId":"P-23","wave":0,"step":"BILLING","action":"SUBSCRIPTION_SUCCESS","result":"SUCCESS","details":{"plan":"Individual","stripeCustomerId":"cus_test_swarm_p-23","stripeSubscriptionId":"sub_test_swarm_p-23","cardLastFour":"4242","cardBrand":"visa"}}
+{"ts":"2026-08-14T15:16:33.420Z","agentId":"P-23","wave":2,"step":"WAVE_2","action":"COMPLETE","result":"SUCCESS","details":{"plan":"Individual"}}
+{"ts":"2026-08-14T15:16:33.601Z","agentId":"P-23","wave":3,"step":"WAVE_3","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-14T15:16:33.609Z","agentId":"P-23","wave":0,"step":"PLAID","action":"SANDBOX_TRANSACTIONS_INGESTED","result":"SUCCESS","details":{"agentId":"P-23","account":"Plaid Checking ***4432","revenueCount":12,"expenseCount":8}}
+{"ts":"2026-08-14T15:16:33.609Z","agentId":"P-23","wave":0,"step":"PROJECTS","action":"CREATION_SUCCESS","result":"SUCCESS","details":{"created":10,"plaid":true}}
+{"ts":"2026-08-14T15:16:33.609Z","agentId":"P-23","wave":3,"step":"WAVE_3","action":"COMPLETE","result":"SUCCESS","details":{"created":10}}
+{"ts":"2026-08-14T15:16:33.874Z","agentId":"P-23","wave":4,"step":"WAVE_4","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-14T15:16:33.875Z","agentId":"P-23","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-22"}}
+{"ts":"2026-08-14T15:16:33.875Z","agentId":"P-23","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-33"}}
+{"ts":"2026-08-14T15:16:33.875Z","agentId":"P-23","wave":4,"step":"WAVE_4","action":"COMPLETE","result":"SUCCESS","details":{"interactions":0,"invites":2}}
+{"ts":"2026-08-14T15:16:33.980Z","agentId":"P-23","wave":5,"step":"WAVE_5","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-14T15:16:33.980Z","agentId":"P-23","wave":5,"step":"WAVE_5","action":"COMPLETE","result":"SUCCESS","details":{"reportPath":"/Users/yvesdarbouze/Documents/PaperWorking/artifacts/persona-swarm/reports/P-23-experience-report.md"}}
+{"ts":"2026-08-14T15:16:34.157Z","agentId":"P-23","wave":1,"step":"WAVE_1","action":"START","result":"SUCCESS","details":{"email":"agent23.grace.adeyemi@paperworking-test.dev"}}
+{"ts":"2026-08-14T15:16:34.157Z","agentId":"P-23","wave":0,"step":"SIGNUP","action":"SUCCESS_CREATED","result":"SUCCESS","details":{"uid":"uid_persona_p23","email":"agent23.grace.adeyemi@paperworking-test.dev","name":"Grace Adeyemi","entity":"Adeyemi Holdings LLC"}}
+{"ts":"2026-08-14T15:16:34.157Z","agentId":"P-23","wave":1,"step":"WAVE_1","action":"COMPLETE","result":"SUCCESS","details":{"uid":"uid_persona_p23"}}
+{"ts":"2026-08-14T15:16:34.224Z","agentId":"P-23","wave":2,"step":"WAVE_2","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-14T15:16:34.224Z","agentId":"P-23","wave":0,"step":"BILLING","action":"SUBSCRIPTION_SUCCESS","result":"SUCCESS","details":{"plan":"Individual","stripeCustomerId":"cus_test_swarm_p-23","stripeSubscriptionId":"sub_test_swarm_p-23","cardLastFour":"4242","cardBrand":"visa"}}
+{"ts":"2026-08-14T15:16:34.224Z","agentId":"P-23","wave":2,"step":"WAVE_2","action":"COMPLETE","result":"SUCCESS","details":{"plan":"Individual"}}
+{"ts":"2026-08-14T15:16:34.409Z","agentId":"P-23","wave":3,"step":"WAVE_3","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-14T15:16:34.412Z","agentId":"P-23","wave":0,"step":"PLAID","action":"SANDBOX_TRANSACTIONS_INGESTED","result":"SUCCESS","details":{"agentId":"P-23","account":"Plaid Checking ***4432","revenueCount":12,"expenseCount":8}}
+{"ts":"2026-08-14T15:16:34.414Z","agentId":"P-23","wave":0,"step":"PROJECTS","action":"CREATION_SUCCESS","result":"SUCCESS","details":{"created":10,"plaid":true}}
+{"ts":"2026-08-14T15:16:34.414Z","agentId":"P-23","wave":3,"step":"WAVE_3","action":"COMPLETE","result":"SUCCESS","details":{"created":10}}
+{"ts":"2026-08-14T15:16:34.624Z","agentId":"P-23","wave":4,"step":"WAVE_4","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-14T15:16:34.624Z","agentId":"P-23","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-22"}}
+{"ts":"2026-08-14T15:16:34.625Z","agentId":"P-23","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-33"}}
+{"ts":"2026-08-14T15:16:34.625Z","agentId":"P-23","wave":4,"step":"WAVE_4","action":"COMPLETE","result":"SUCCESS","details":{"interactions":0,"invites":2}}
+{"ts":"2026-08-14T15:16:34.875Z","agentId":"P-23","wave":5,"step":"WAVE_5","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-14T15:16:34.879Z","agentId":"P-23","wave":5,"step":"WAVE_5","action":"COMPLETE","result":"SUCCESS","details":{"reportPath":"/Users/yvesdarbouze/Documents/PaperWorking/artifacts/persona-swarm/reports/P-23-experience-report.md"}}
+{"ts":"2026-08-14T15:19:01.575Z","agentId":"P-23","wave":1,"step":"WAVE_1","action":"START","result":"SUCCESS","details":{"email":"agent23.grace.adeyemi@paperworking-test.dev"}}
+{"ts":"2026-08-14T15:19:01.576Z","agentId":"P-23","wave":0,"step":"SIGNUP","action":"SUCCESS_CREATED","result":"SUCCESS","details":{"uid":"uid_persona_p23","email":"agent23.grace.adeyemi@paperworking-test.dev","name":"Grace Adeyemi","entity":"Adeyemi Holdings LLC"}}
+{"ts":"2026-08-14T15:19:01.576Z","agentId":"P-23","wave":1,"step":"WAVE_1","action":"COMPLETE","result":"SUCCESS","details":{"uid":"uid_persona_p23"}}
+{"ts":"2026-08-14T15:19:01.671Z","agentId":"P-23","wave":2,"step":"WAVE_2","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-14T15:19:01.672Z","agentId":"P-23","wave":0,"step":"BILLING","action":"SUBSCRIPTION_SUCCESS","result":"SUCCESS","details":{"plan":"Individual","stripeCustomerId":"cus_test_swarm_p-23","stripeSubscriptionId":"sub_test_swarm_p-23","cardLastFour":"4242","cardBrand":"visa"}}
+{"ts":"2026-08-14T15:19:01.673Z","agentId":"P-23","wave":2,"step":"WAVE_2","action":"COMPLETE","result":"SUCCESS","details":{"plan":"Individual"}}
+{"ts":"2026-08-14T15:19:01.880Z","agentId":"P-23","wave":1,"step":"WAVE_1","action":"START","result":"SUCCESS","details":{"email":"agent23.grace.adeyemi@paperworking-test.dev"}}
+{"ts":"2026-08-14T15:19:01.880Z","agentId":"P-23","wave":0,"step":"SIGNUP","action":"SUCCESS_CREATED","result":"SUCCESS","details":{"uid":"uid_persona_p23","email":"agent23.grace.adeyemi@paperworking-test.dev","name":"Grace Adeyemi","entity":"Adeyemi Holdings LLC"}}
+{"ts":"2026-08-14T15:19:01.880Z","agentId":"P-23","wave":1,"step":"WAVE_1","action":"COMPLETE","result":"SUCCESS","details":{"uid":"uid_persona_p23"}}
+{"ts":"2026-08-14T15:19:01.893Z","agentId":"P-23","wave":3,"step":"WAVE_3","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-14T15:19:01.896Z","agentId":"P-23","wave":0,"step":"PLAID","action":"SANDBOX_TRANSACTIONS_INGESTED","result":"SUCCESS","details":{"agentId":"P-23","account":"Plaid Checking ***4432","revenueCount":12,"expenseCount":8}}
+{"ts":"2026-08-14T15:19:01.896Z","agentId":"P-23","wave":0,"step":"PROJECTS","action":"CREATION_SUCCESS","result":"SUCCESS","details":{"created":10,"plaid":true}}
+{"ts":"2026-08-14T15:19:01.896Z","agentId":"P-23","wave":3,"step":"WAVE_3","action":"COMPLETE","result":"SUCCESS","details":{"created":10}}
+{"ts":"2026-08-14T15:19:01.919Z","agentId":"P-23","wave":2,"step":"WAVE_2","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-14T15:19:01.920Z","agentId":"P-23","wave":0,"step":"BILLING","action":"SUBSCRIPTION_SUCCESS","result":"SUCCESS","details":{"plan":"Individual","stripeCustomerId":"cus_test_swarm_p-23","stripeSubscriptionId":"sub_test_swarm_p-23","cardLastFour":"4242","cardBrand":"visa"}}
+{"ts":"2026-08-14T15:19:01.920Z","agentId":"P-23","wave":2,"step":"WAVE_2","action":"COMPLETE","result":"SUCCESS","details":{"plan":"Individual"}}
+{"ts":"2026-08-14T15:19:02.034Z","agentId":"P-23","wave":4,"step":"WAVE_4","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-14T15:19:02.034Z","agentId":"P-23","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-22"}}
+{"ts":"2026-08-14T15:19:02.034Z","agentId":"P-23","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-33"}}
+{"ts":"2026-08-14T15:19:02.034Z","agentId":"P-23","wave":4,"step":"WAVE_4","action":"COMPLETE","result":"SUCCESS","details":{"interactions":0,"invites":2}}
+{"ts":"2026-08-14T15:19:02.045Z","agentId":"P-23","wave":3,"step":"WAVE_3","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-14T15:19:02.047Z","agentId":"P-23","wave":0,"step":"PLAID","action":"SANDBOX_TRANSACTIONS_INGESTED","result":"SUCCESS","details":{"agentId":"P-23","account":"Plaid Checking ***4432","revenueCount":12,"expenseCount":8}}
+{"ts":"2026-08-14T15:19:02.047Z","agentId":"P-23","wave":0,"step":"PROJECTS","action":"CREATION_SUCCESS","result":"SUCCESS","details":{"created":10,"plaid":true}}
+{"ts":"2026-08-14T15:19:02.047Z","agentId":"P-23","wave":3,"step":"WAVE_3","action":"COMPLETE","result":"SUCCESS","details":{"created":10}}
+{"ts":"2026-08-14T15:19:02.098Z","agentId":"P-23","wave":5,"step":"WAVE_5","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-14T15:19:02.098Z","agentId":"P-23","wave":5,"step":"WAVE_5","action":"COMPLETE","result":"SUCCESS","details":{"reportPath":"/Users/yvesdarbouze/Documents/PaperWorking/artifacts/persona-swarm/reports/P-23-experience-report.md"}}
+{"ts":"2026-08-14T15:19:02.196Z","agentId":"P-23","wave":4,"step":"WAVE_4","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-14T15:19:02.197Z","agentId":"P-23","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-22"}}
+{"ts":"2026-08-14T15:19:02.197Z","agentId":"P-23","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-33"}}
+{"ts":"2026-08-14T15:19:02.197Z","agentId":"P-23","wave":4,"step":"WAVE_4","action":"COMPLETE","result":"SUCCESS","details":{"interactions":0,"invites":2}}
+{"ts":"2026-08-14T15:19:02.257Z","agentId":"P-23","wave":5,"step":"WAVE_5","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-14T15:19:02.258Z","agentId":"P-23","wave":5,"step":"WAVE_5","action":"COMPLETE","result":"SUCCESS","details":{"reportPath":"/Users/yvesdarbouze/Documents/PaperWorking/artifacts/persona-swarm/reports/P-23-experience-report.md"}}
+{"ts":"2026-08-14T19:22:03.455Z","agentId":"P-23","wave":1,"step":"WAVE_1","action":"START","result":"SUCCESS","details":{"email":"agent23.grace.adeyemi@paperworking-test.dev"}}
+{"ts":"2026-08-14T19:22:03.459Z","agentId":"P-23","wave":0,"step":"SIGNUP","action":"SUCCESS_CREATED","result":"SUCCESS","details":{"uid":"uid_persona_p23","email":"agent23.grace.adeyemi@paperworking-test.dev","name":"Grace Adeyemi","entity":"Adeyemi Holdings LLC"}}
+{"ts":"2026-08-14T19:22:03.459Z","agentId":"P-23","wave":1,"step":"WAVE_1","action":"COMPLETE","result":"SUCCESS","details":{"uid":"uid_persona_p23"}}
+{"ts":"2026-08-14T19:22:03.548Z","agentId":"P-23","wave":2,"step":"WAVE_2","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-14T19:22:03.549Z","agentId":"P-23","wave":0,"step":"BILLING","action":"SUBSCRIPTION_SUCCESS","result":"SUCCESS","details":{"plan":"Individual","stripeCustomerId":"cus_test_swarm_p-23","stripeSubscriptionId":"sub_test_swarm_p-23","cardLastFour":"4242","cardBrand":"visa"}}
+{"ts":"2026-08-14T19:22:03.551Z","agentId":"P-23","wave":2,"step":"WAVE_2","action":"COMPLETE","result":"SUCCESS","details":{"plan":"Individual"}}
+{"ts":"2026-08-14T19:22:03.701Z","agentId":"P-23","wave":3,"step":"WAVE_3","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-14T19:22:03.706Z","agentId":"P-23","wave":0,"step":"PLAID","action":"SANDBOX_TRANSACTIONS_INGESTED","result":"SUCCESS","details":{"agentId":"P-23","account":"Plaid Checking ***4432","revenueCount":12,"expenseCount":8}}
+{"ts":"2026-08-14T19:22:03.706Z","agentId":"P-23","wave":0,"step":"PROJECTS","action":"CREATION_SUCCESS","result":"SUCCESS","details":{"created":10,"plaid":true}}
+{"ts":"2026-08-14T19:22:03.706Z","agentId":"P-23","wave":3,"step":"WAVE_3","action":"COMPLETE","result":"SUCCESS","details":{"created":10}}
+{"ts":"2026-08-14T19:22:03.908Z","agentId":"P-23","wave":4,"step":"WAVE_4","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-14T19:22:03.909Z","agentId":"P-23","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-22"}}
+{"ts":"2026-08-14T19:22:03.909Z","agentId":"P-23","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-33"}}
+{"ts":"2026-08-14T19:22:03.909Z","agentId":"P-23","wave":4,"step":"WAVE_4","action":"COMPLETE","result":"SUCCESS","details":{"interactions":0,"invites":2}}
+{"ts":"2026-08-14T19:22:04.048Z","agentId":"P-23","wave":5,"step":"WAVE_5","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-14T19:22:04.049Z","agentId":"P-23","wave":5,"step":"WAVE_5","action":"COMPLETE","result":"SUCCESS","details":{"reportPath":"/Users/yvesdarbouze/Documents/PaperWorking/artifacts/persona-swarm/reports/P-23-experience-report.md"}}
+{"ts":"2026-08-14T19:22:05.026Z","agentId":"P-23","wave":1,"step":"WAVE_1","action":"START","result":"SUCCESS","details":{"email":"agent23.grace.adeyemi@paperworking-test.dev"}}
+{"ts":"2026-08-14T19:22:05.028Z","agentId":"P-23","wave":0,"step":"SIGNUP","action":"SUCCESS_CREATED","result":"SUCCESS","details":{"uid":"uid_persona_p23","email":"agent23.grace.adeyemi@paperworking-test.dev","name":"Grace Adeyemi","entity":"Adeyemi Holdings LLC"}}
+{"ts":"2026-08-14T19:22:05.029Z","agentId":"P-23","wave":1,"step":"WAVE_1","action":"COMPLETE","result":"SUCCESS","details":{"uid":"uid_persona_p23"}}
+{"ts":"2026-08-14T19:22:05.122Z","agentId":"P-23","wave":2,"step":"WAVE_2","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-14T19:22:05.123Z","agentId":"P-23","wave":0,"step":"BILLING","action":"SUBSCRIPTION_SUCCESS","result":"SUCCESS","details":{"plan":"Individual","stripeCustomerId":"cus_test_swarm_p-23","stripeSubscriptionId":"sub_test_swarm_p-23","cardLastFour":"4242","cardBrand":"visa"}}
+{"ts":"2026-08-14T19:22:05.123Z","agentId":"P-23","wave":2,"step":"WAVE_2","action":"COMPLETE","result":"SUCCESS","details":{"plan":"Individual"}}
+{"ts":"2026-08-14T19:22:05.286Z","agentId":"P-23","wave":3,"step":"WAVE_3","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-14T19:22:05.289Z","agentId":"P-23","wave":0,"step":"PLAID","action":"SANDBOX_TRANSACTIONS_INGESTED","result":"SUCCESS","details":{"agentId":"P-23","account":"Plaid Checking ***4432","revenueCount":12,"expenseCount":8}}
+{"ts":"2026-08-14T19:22:05.289Z","agentId":"P-23","wave":0,"step":"PROJECTS","action":"CREATION_SUCCESS","result":"SUCCESS","details":{"created":10,"plaid":true}}
+{"ts":"2026-08-14T19:22:05.290Z","agentId":"P-23","wave":3,"step":"WAVE_3","action":"COMPLETE","result":"SUCCESS","details":{"created":10}}
+{"ts":"2026-08-14T19:22:05.512Z","agentId":"P-23","wave":4,"step":"WAVE_4","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-14T19:22:05.513Z","agentId":"P-23","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-22"}}
+{"ts":"2026-08-14T19:22:05.513Z","agentId":"P-23","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-33"}}
+{"ts":"2026-08-14T19:22:05.513Z","agentId":"P-23","wave":4,"step":"WAVE_4","action":"COMPLETE","result":"SUCCESS","details":{"interactions":0,"invites":2}}
+{"ts":"2026-08-14T19:22:05.664Z","agentId":"P-23","wave":5,"step":"WAVE_5","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-14T19:22:05.665Z","agentId":"P-23","wave":5,"step":"WAVE_5","action":"COMPLETE","result":"SUCCESS","details":{"reportPath":"/Users/yvesdarbouze/Documents/PaperWorking/artifacts/persona-swarm/reports/P-23-experience-report.md"}}

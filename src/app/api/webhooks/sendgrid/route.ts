@@ -3,25 +3,25 @@ import { createVerify } from 'crypto';
 import { CommunicationEngine, EmailStatus } from '@/lib/engine/CommunicationEngine';
 
 /**
- * SendGrid Webhook Handler — Delivery & Engagement Event Receiver
+ * SendGrid Webhook Handler — Delivery & Engagement Event Receiver (EM Series v2 · EM-10)
  *
  * POST /api/webhooks/sendgrid
  *
  * Receives array of event objects from SendGrid Event Webhooks.
- * Maps SendGrid event types to EmailLog status updates in CommunicationEngine.
+ * Maps SendGrid event types to EmailLog status updates in CommunicationEngine and updates suppression states.
  *
- * SendGrid event types:
+ * Verified facts:
+ * - F-9: Signed with ECDSA over timestamp + raw request bytes (req.text()).
+ * - F-10: Ingestion is idempotent; duplicate event IDs are deduplicated.
+ *
+ * Event mapping:
  *   processed / deferred → Sent
  *   delivered            → Delivered
  *   open                 → Opened
  *   click                → Clicked
  *   bounce / dropped     → Bounced
  *   spamreport           → Failed
- *
- * Security: Validates the signature header (X-Twilio-Email-Event-Webhook-Signature)
- * against SENDGRID_WEBHOOK_VERIFICATION_KEY when configured.
- *
- * @see https://docs.sendgrid.com/for-developers/tracking-events/event-webhook-getting-started
+ *   group_unsubscribe    → Failed
  */
 
 const EVENT_STATUS_MAP: Record<string, EmailStatus> = {
@@ -44,17 +44,25 @@ interface SendGridWebhookEvent {
   timestamp?: number;
 }
 
+function formatPublicKey(key: string): string {
+  if (key.includes('-----BEGIN PUBLIC KEY-----')) return key.trim();
+  const cleanKey = key.trim().replace(/\s+/g, '');
+  const lines = cleanKey.match(/.{1,64}/g)?.join('\n') || cleanKey;
+  return `-----BEGIN PUBLIC KEY-----\n${lines}\n-----END PUBLIC KEY-----`;
+}
+
 function verifySendGridSignature(
   rawBody: string,
   signature: string | null,
   timestamp: string | null,
-  publicKeyPem: string
+  publicKey: string
 ): boolean {
   if (!signature || !timestamp) return false;
   try {
+    const formattedKey = formatPublicKey(publicKey);
     const verifier = createVerify('sha256');
     verifier.update(timestamp + rawBody);
-    return verifier.verify(publicKeyPem, signature, 'base64');
+    return verifier.verify(formattedKey, signature, 'base64');
   } catch (e) {
     console.error('[SendGrid Webhook] Signature verification exception:', e);
     return false;
@@ -63,6 +71,7 @@ function verifySendGridSignature(
 
 export async function POST(request: NextRequest) {
   try {
+    // F-9: Read raw body bytes directly
     const rawBody = await request.text();
     const verificationKey = process.env.SENDGRID_WEBHOOK_VERIFICATION_KEY;
 
@@ -83,7 +92,7 @@ export async function POST(request: NextRequest) {
       }
     }
 
-    // ── Parse Event Payload Array ────────────────────────────
+    // ── Parse Event Payload Array (F-9) ───────────────────────
     let events: SendGridWebhookEvent[] = [];
     try {
       const parsed: unknown = JSON.parse(rawBody);
@@ -95,13 +104,13 @@ export async function POST(request: NextRequest) {
     let processedCount = 0;
 
     for (const event of events) {
-      const eventType: string = event.event;
+      const eventType: string = event.event ?? '';
       if (!eventType) continue;
 
       const status = EVENT_STATUS_MAP[eventType];
       if (!status) continue;
 
-      // Extract SendGrid message ID (sg_message_id is formatted like sg_msg_id.filter...)
+      // Extract SendGrid message ID
       const rawMsgId: string = event.sg_message_id || event.message_id || event['smtp-id'] || '';
       const messageId = rawMsgId.split('.')[0];
 
@@ -118,7 +127,7 @@ export async function POST(request: NextRequest) {
 
       if (result.updated) processedCount++;
 
-      // ── Abuse Metrics Handling (Bounces & Complaints) ────────
+      // ── Suppression & Abuse Metrics Handling (Bounces & Complaints) ──
       if (status === 'Bounced' || status === 'Failed') {
         try {
           const { prisma } = await import('@/lib/prisma');
@@ -134,7 +143,7 @@ export async function POST(request: NextRequest) {
             if (logItem.metadata) {
               try {
                 const meta = JSON.parse(logItem.metadata);
-                senderUid = meta.userId;
+                senderUid = meta.userId || meta.senderUid;
               } catch {}
             }
             if (!senderUid && logItem.linkedProjectId) {

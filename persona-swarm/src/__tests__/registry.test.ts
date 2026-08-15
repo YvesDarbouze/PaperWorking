@@ -52,6 +52,7 @@ describe('Persona Registry & Interaction Graph Integrity', () => {
         const registryAgent = personas.find((p) => p.id === fixtureAgent.id);
 
         expect(registryAgent).toBeDefined();
+        if (!registryAgent) continue;
         expect(registryAgent.name).toBe(fixtureAgent.name);
         expect(registryAgent.entity).toBe(fixtureAgent.entity);
         expect(registryAgent.category).toBe(fixtureAgent.category);

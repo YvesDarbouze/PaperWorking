@@ -67,7 +67,7 @@ export async function POST(request: NextRequest) {
         html,
         text: htmlToPlainText(html),
       });
-    } catch (authError: any) {
+    } catch (authError: unknown) {
       console.error('[MagicLink] Non-fatal adminAuth error:', authError);
     }
 

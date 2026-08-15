@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useEffect, useState, Suspense } from 'react';
-import { useSearchParams, useRouter } from 'next/navigation';
+import { useSearchParams } from 'next/navigation';
 import {
   verifyPasswordResetCode,
   confirmPasswordReset,
@@ -12,7 +12,6 @@ import Link from 'next/link';
 
 function AuthActionHandler() {
   const searchParams = useSearchParams();
-  const router = useRouter();
 
   const mode = searchParams?.get('mode') ?? null;
   const oobCode = searchParams?.get('oobCode') ?? null;
@@ -29,6 +28,8 @@ function AuthActionHandler() {
 
   useEffect(() => {
     if (!oobCode || !mode) {
+      // Invalid links are validated once on mount before any async Firebase work.
+      // eslint-disable-next-line react-hooks/set-state-in-effect -- sync invalid-link UX before async handler
       setError('Invalid or expired authentication link.');
       setLoading(false);
       return;
@@ -80,9 +81,9 @@ function AuthActionHandler() {
     try {
       await confirmPasswordReset(auth, oobCode, password);
       setSuccess('Your password has been reset successfully. You can now sign in with your new password.');
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error('[AuthAction] Confirm reset error:', err);
-      setError(err.message || 'Failed to reset password. Please request a new link.');
+      setError(err instanceof Error ? err.message : 'Failed to reset password. Please request a new link.');
     } finally {
       setSubmitting(false);
     }

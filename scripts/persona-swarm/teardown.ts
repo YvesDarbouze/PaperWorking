@@ -30,8 +30,8 @@ export async function teardownSwarm(options: TeardownOptions = {}) {
     try {
       const manifest = JSON.parse(fs.readFileSync(manifestPath, 'utf-8'));
       if (manifest.agents) {
-        customerIds = Object.values(manifest.agents)
-          .map((a: { stripeCustomerId?: string }) => a.stripeCustomerId)
+        customerIds = (Object.values(manifest.agents) as Array<{ stripeCustomerId?: string }>)
+          .map((a) => a.stripeCustomerId)
           .filter((id): id is string => !!id && id.startsWith('cus_'));
       }
     } catch (e: unknown) {

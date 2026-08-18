@@ -669,3 +669,210 @@
 {"ts":"2026-08-14T19:22:05.554Z","agentId":"P-36","wave":4,"step":"WAVE_4","action":"COMPLETE","result":"SUCCESS","details":{"interactions":0,"invites":2}}
 {"ts":"2026-08-14T19:22:05.703Z","agentId":"P-36","wave":5,"step":"WAVE_5","action":"START","result":"SUCCESS"}
 {"ts":"2026-08-14T19:22:05.704Z","agentId":"P-36","wave":5,"step":"WAVE_5","action":"COMPLETE","result":"SUCCESS","details":{"reportPath":"/Users/yvesdarbouze/Documents/PaperWorking/artifacts/persona-swarm/reports/P-36-experience-report.md"}}
+{"ts":"2026-08-17T12:48:20.647Z","agentId":"P-36","wave":1,"step":"WAVE_1","action":"START","result":"SUCCESS","details":{"email":"agent36.beth.kowalchuk@paperworking-test.dev"}}
+{"ts":"2026-08-17T12:48:20.647Z","agentId":"P-36","wave":0,"step":"SIGNUP","action":"SUCCESS_CREATED","result":"SUCCESS","details":{"uid":"uid_persona_p36","email":"agent36.beth.kowalchuk@paperworking-test.dev","name":"Beth Kowalchuk","entity":"Kowalchuk Investments LLC"}}
+{"ts":"2026-08-17T12:48:20.647Z","agentId":"P-36","wave":1,"step":"WAVE_1","action":"COMPLETE","result":"SUCCESS","details":{"uid":"uid_persona_p36"}}
+{"ts":"2026-08-17T12:48:20.651Z","agentId":"P-36","wave":1,"step":"WAVE_1","action":"START","result":"SUCCESS","details":{"email":"agent36.beth.kowalchuk@paperworking-test.dev"}}
+{"ts":"2026-08-17T12:48:20.651Z","agentId":"P-36","wave":0,"step":"SIGNUP","action":"SUCCESS_CREATED","result":"SUCCESS","details":{"uid":"uid_persona_p36","email":"agent36.beth.kowalchuk@paperworking-test.dev","name":"Beth Kowalchuk","entity":"Kowalchuk Investments LLC"}}
+{"ts":"2026-08-17T12:48:20.651Z","agentId":"P-36","wave":1,"step":"WAVE_1","action":"COMPLETE","result":"SUCCESS","details":{"uid":"uid_persona_p36"}}
+{"ts":"2026-08-17T12:48:20.692Z","agentId":"P-36","wave":2,"step":"WAVE_2","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-17T12:48:20.692Z","agentId":"P-36","wave":0,"step":"BILLING","action":"SUBSCRIPTION_SUCCESS","result":"SUCCESS","details":{"plan":"Individual","stripeCustomerId":"cus_test_swarm_p-36","stripeSubscriptionId":"sub_test_swarm_p-36","cardLastFour":"4242","cardBrand":"visa"}}
+{"ts":"2026-08-17T12:48:20.692Z","agentId":"P-36","wave":2,"step":"WAVE_2","action":"COMPLETE","result":"SUCCESS","details":{"plan":"Individual"}}
+{"ts":"2026-08-17T12:48:20.695Z","agentId":"P-36","wave":2,"step":"WAVE_2","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-17T12:48:20.695Z","agentId":"P-36","wave":0,"step":"BILLING","action":"SUBSCRIPTION_SUCCESS","result":"SUCCESS","details":{"plan":"Individual","stripeCustomerId":"cus_test_swarm_p-36","stripeSubscriptionId":"sub_test_swarm_p-36","cardLastFour":"4242","cardBrand":"visa"}}
+{"ts":"2026-08-17T12:48:20.695Z","agentId":"P-36","wave":2,"step":"WAVE_2","action":"COMPLETE","result":"SUCCESS","details":{"plan":"Individual"}}
+{"ts":"2026-08-17T12:48:20.820Z","agentId":"P-36","wave":3,"step":"WAVE_3","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-17T12:48:20.828Z","agentId":"P-36","wave":0,"step":"PROJECTS","action":"CREATION_SUCCESS","result":"SUCCESS","details":{"created":10,"plaid":false}}
+{"ts":"2026-08-17T12:48:20.828Z","agentId":"P-36","wave":3,"step":"WAVE_3","action":"COMPLETE","result":"SUCCESS","details":{"created":10}}
+{"ts":"2026-08-17T12:48:20.833Z","agentId":"P-36","wave":3,"step":"WAVE_3","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-17T12:48:20.835Z","agentId":"P-36","wave":0,"step":"PROJECTS","action":"CREATION_SUCCESS","result":"SUCCESS","details":{"created":10,"plaid":false}}
+{"ts":"2026-08-17T12:48:20.835Z","agentId":"P-36","wave":3,"step":"WAVE_3","action":"COMPLETE","result":"SUCCESS","details":{"created":10}}
+{"ts":"2026-08-17T12:48:20.945Z","agentId":"P-36","wave":4,"step":"WAVE_4","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-17T12:48:20.945Z","agentId":"P-36","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-34"}}
+{"ts":"2026-08-17T12:48:20.946Z","agentId":"P-36","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-35"}}
+{"ts":"2026-08-17T12:48:20.946Z","agentId":"P-36","wave":4,"step":"WAVE_4","action":"COMPLETE","result":"SUCCESS","details":{"interactions":0,"invites":2}}
+{"ts":"2026-08-17T12:48:20.949Z","agentId":"P-36","wave":4,"step":"WAVE_4","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-17T12:48:20.949Z","agentId":"P-36","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-34"}}
+{"ts":"2026-08-17T12:48:20.950Z","agentId":"P-36","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-35"}}
+{"ts":"2026-08-17T12:48:20.950Z","agentId":"P-36","wave":4,"step":"WAVE_4","action":"COMPLETE","result":"SUCCESS","details":{"interactions":0,"invites":2}}
+{"ts":"2026-08-17T12:48:21.020Z","agentId":"P-36","wave":5,"step":"WAVE_5","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-17T12:48:21.020Z","agentId":"P-36","wave":5,"step":"WAVE_5","action":"COMPLETE","result":"SUCCESS","details":{"reportPath":"/Users/yvesdarbouze/Documents/PaperWorking/artifacts/persona-swarm/reports/P-36-experience-report.md"}}
+{"ts":"2026-08-17T12:48:21.020Z","agentId":"P-36","wave":5,"step":"WAVE_5","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-17T12:48:21.020Z","agentId":"P-36","wave":5,"step":"WAVE_5","action":"COMPLETE","result":"SUCCESS","details":{"reportPath":"/Users/yvesdarbouze/Documents/PaperWorking/artifacts/persona-swarm/reports/P-36-experience-report.md"}}
+{"ts":"2026-08-17T12:49:28.779Z","agentId":"P-36","wave":1,"step":"WAVE_1","action":"START","result":"SUCCESS","details":{"email":"agent36.beth.kowalchuk@paperworking-test.dev"}}
+{"ts":"2026-08-17T12:49:28.779Z","agentId":"P-36","wave":0,"step":"SIGNUP","action":"SUCCESS_CREATED","result":"SUCCESS","details":{"uid":"uid_persona_p36","email":"agent36.beth.kowalchuk@paperworking-test.dev","name":"Beth Kowalchuk","entity":"Kowalchuk Investments LLC"}}
+{"ts":"2026-08-17T12:49:28.779Z","agentId":"P-36","wave":1,"step":"WAVE_1","action":"COMPLETE","result":"SUCCESS","details":{"uid":"uid_persona_p36"}}
+{"ts":"2026-08-17T12:49:28.841Z","agentId":"P-36","wave":2,"step":"WAVE_2","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-17T12:49:28.841Z","agentId":"P-36","wave":0,"step":"BILLING","action":"SUBSCRIPTION_SUCCESS","result":"SUCCESS","details":{"plan":"Individual","stripeCustomerId":"cus_test_swarm_p-36","stripeSubscriptionId":"sub_test_swarm_p-36","cardLastFour":"4242","cardBrand":"visa"}}
+{"ts":"2026-08-17T12:49:28.841Z","agentId":"P-36","wave":2,"step":"WAVE_2","action":"COMPLETE","result":"SUCCESS","details":{"plan":"Individual"}}
+{"ts":"2026-08-17T12:49:28.988Z","agentId":"P-36","wave":3,"step":"WAVE_3","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-17T12:49:28.990Z","agentId":"P-36","wave":0,"step":"PROJECTS","action":"CREATION_SUCCESS","result":"SUCCESS","details":{"created":10,"plaid":false}}
+{"ts":"2026-08-17T12:49:28.990Z","agentId":"P-36","wave":3,"step":"WAVE_3","action":"COMPLETE","result":"SUCCESS","details":{"created":10}}
+{"ts":"2026-08-17T12:49:29.136Z","agentId":"P-36","wave":4,"step":"WAVE_4","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-17T12:49:29.138Z","agentId":"P-36","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-34"}}
+{"ts":"2026-08-17T12:49:29.138Z","agentId":"P-36","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-35"}}
+{"ts":"2026-08-17T12:49:29.139Z","agentId":"P-36","wave":4,"step":"WAVE_4","action":"COMPLETE","result":"SUCCESS","details":{"interactions":0,"invites":2}}
+{"ts":"2026-08-17T12:49:29.273Z","agentId":"P-36","wave":5,"step":"WAVE_5","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-17T12:49:29.273Z","agentId":"P-36","wave":5,"step":"WAVE_5","action":"COMPLETE","result":"SUCCESS","details":{"reportPath":"/Users/yvesdarbouze/Documents/PaperWorking/artifacts/persona-swarm/reports/P-36-experience-report.md"}}
+{"ts":"2026-08-17T12:49:29.276Z","agentId":"P-36","wave":1,"step":"WAVE_1","action":"START","result":"SUCCESS","details":{"email":"agent36.beth.kowalchuk@paperworking-test.dev"}}
+{"ts":"2026-08-17T12:49:29.277Z","agentId":"P-36","wave":0,"step":"SIGNUP","action":"SUCCESS_CREATED","result":"SUCCESS","details":{"uid":"uid_persona_p36","email":"agent36.beth.kowalchuk@paperworking-test.dev","name":"Beth Kowalchuk","entity":"Kowalchuk Investments LLC"}}
+{"ts":"2026-08-17T12:49:29.277Z","agentId":"P-36","wave":1,"step":"WAVE_1","action":"COMPLETE","result":"SUCCESS","details":{"uid":"uid_persona_p36"}}
+{"ts":"2026-08-17T12:49:29.344Z","agentId":"P-36","wave":2,"step":"WAVE_2","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-17T12:49:29.348Z","agentId":"P-36","wave":0,"step":"BILLING","action":"SUBSCRIPTION_SUCCESS","result":"SUCCESS","details":{"plan":"Individual","stripeCustomerId":"cus_test_swarm_p-36","stripeSubscriptionId":"sub_test_swarm_p-36","cardLastFour":"4242","cardBrand":"visa"}}
+{"ts":"2026-08-17T12:49:29.348Z","agentId":"P-36","wave":2,"step":"WAVE_2","action":"COMPLETE","result":"SUCCESS","details":{"plan":"Individual"}}
+{"ts":"2026-08-17T12:49:29.520Z","agentId":"P-36","wave":3,"step":"WAVE_3","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-17T12:49:29.525Z","agentId":"P-36","wave":0,"step":"PROJECTS","action":"CREATION_SUCCESS","result":"SUCCESS","details":{"created":10,"plaid":false}}
+{"ts":"2026-08-17T12:49:29.525Z","agentId":"P-36","wave":3,"step":"WAVE_3","action":"COMPLETE","result":"SUCCESS","details":{"created":10}}
+{"ts":"2026-08-17T12:49:29.648Z","agentId":"P-36","wave":4,"step":"WAVE_4","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-17T12:49:29.651Z","agentId":"P-36","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-34"}}
+{"ts":"2026-08-17T12:49:29.651Z","agentId":"P-36","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-35"}}
+{"ts":"2026-08-17T12:49:29.653Z","agentId":"P-36","wave":4,"step":"WAVE_4","action":"COMPLETE","result":"SUCCESS","details":{"interactions":0,"invites":2}}
+{"ts":"2026-08-17T12:49:29.699Z","agentId":"P-36","wave":5,"step":"WAVE_5","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-17T12:49:29.699Z","agentId":"P-36","wave":5,"step":"WAVE_5","action":"COMPLETE","result":"SUCCESS","details":{"reportPath":"/Users/yvesdarbouze/Documents/PaperWorking/artifacts/persona-swarm/reports/P-36-experience-report.md"}}
+{"ts":"2026-08-17T12:51:28.440Z","agentId":"P-36","wave":1,"step":"WAVE_1","action":"START","result":"SUCCESS","details":{"email":"agent36.beth.kowalchuk@paperworking-test.dev"}}
+{"ts":"2026-08-17T12:51:28.440Z","agentId":"P-36","wave":0,"step":"SIGNUP","action":"SUCCESS_CREATED","result":"SUCCESS","details":{"uid":"uid_persona_p36","email":"agent36.beth.kowalchuk@paperworking-test.dev","name":"Beth Kowalchuk","entity":"Kowalchuk Investments LLC"}}
+{"ts":"2026-08-17T12:51:28.440Z","agentId":"P-36","wave":1,"step":"WAVE_1","action":"COMPLETE","result":"SUCCESS","details":{"uid":"uid_persona_p36"}}
+{"ts":"2026-08-17T12:51:28.441Z","agentId":"P-36","wave":1,"step":"WAVE_1","action":"START","result":"SUCCESS","details":{"email":"agent36.beth.kowalchuk@paperworking-test.dev"}}
+{"ts":"2026-08-17T12:51:28.441Z","agentId":"P-36","wave":0,"step":"SIGNUP","action":"SUCCESS_CREATED","result":"SUCCESS","details":{"uid":"uid_persona_p36","email":"agent36.beth.kowalchuk@paperworking-test.dev","name":"Beth Kowalchuk","entity":"Kowalchuk Investments LLC"}}
+{"ts":"2026-08-17T12:51:28.441Z","agentId":"P-36","wave":1,"step":"WAVE_1","action":"COMPLETE","result":"SUCCESS","details":{"uid":"uid_persona_p36"}}
+{"ts":"2026-08-17T12:51:28.496Z","agentId":"P-36","wave":2,"step":"WAVE_2","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-17T12:51:28.496Z","agentId":"P-36","wave":0,"step":"BILLING","action":"SUBSCRIPTION_SUCCESS","result":"SUCCESS","details":{"plan":"Individual","stripeCustomerId":"cus_test_swarm_p-36","stripeSubscriptionId":"sub_test_swarm_p-36","cardLastFour":"4242","cardBrand":"visa"}}
+{"ts":"2026-08-17T12:51:28.496Z","agentId":"P-36","wave":2,"step":"WAVE_2","action":"COMPLETE","result":"SUCCESS","details":{"plan":"Individual"}}
+{"ts":"2026-08-17T12:51:28.501Z","agentId":"P-36","wave":2,"step":"WAVE_2","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-17T12:51:28.501Z","agentId":"P-36","wave":0,"step":"BILLING","action":"SUBSCRIPTION_SUCCESS","result":"SUCCESS","details":{"plan":"Individual","stripeCustomerId":"cus_test_swarm_p-36","stripeSubscriptionId":"sub_test_swarm_p-36","cardLastFour":"4242","cardBrand":"visa"}}
+{"ts":"2026-08-17T12:51:28.501Z","agentId":"P-36","wave":2,"step":"WAVE_2","action":"COMPLETE","result":"SUCCESS","details":{"plan":"Individual"}}
+{"ts":"2026-08-17T12:51:28.671Z","agentId":"P-36","wave":3,"step":"WAVE_3","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-17T12:51:28.673Z","agentId":"P-36","wave":0,"step":"PROJECTS","action":"CREATION_SUCCESS","result":"SUCCESS","details":{"created":10,"plaid":false}}
+{"ts":"2026-08-17T12:51:28.673Z","agentId":"P-36","wave":3,"step":"WAVE_3","action":"COMPLETE","result":"SUCCESS","details":{"created":10}}
+{"ts":"2026-08-17T12:51:28.681Z","agentId":"P-36","wave":3,"step":"WAVE_3","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-17T12:51:28.683Z","agentId":"P-36","wave":0,"step":"PROJECTS","action":"CREATION_SUCCESS","result":"SUCCESS","details":{"created":10,"plaid":false}}
+{"ts":"2026-08-17T12:51:28.683Z","agentId":"P-36","wave":3,"step":"WAVE_3","action":"COMPLETE","result":"SUCCESS","details":{"created":10}}
+{"ts":"2026-08-17T12:51:28.787Z","agentId":"P-36","wave":4,"step":"WAVE_4","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-17T12:51:28.787Z","agentId":"P-36","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-34"}}
+{"ts":"2026-08-17T12:51:28.788Z","agentId":"P-36","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-35"}}
+{"ts":"2026-08-17T12:51:28.788Z","agentId":"P-36","wave":4,"step":"WAVE_4","action":"COMPLETE","result":"SUCCESS","details":{"interactions":0,"invites":2}}
+{"ts":"2026-08-17T12:51:28.795Z","agentId":"P-36","wave":4,"step":"WAVE_4","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-17T12:51:28.796Z","agentId":"P-36","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-34"}}
+{"ts":"2026-08-17T12:51:28.797Z","agentId":"P-36","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-35"}}
+{"ts":"2026-08-17T12:51:28.797Z","agentId":"P-36","wave":4,"step":"WAVE_4","action":"COMPLETE","result":"SUCCESS","details":{"interactions":0,"invites":2}}
+{"ts":"2026-08-17T12:51:28.839Z","agentId":"P-36","wave":5,"step":"WAVE_5","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-17T12:51:28.840Z","agentId":"P-36","wave":5,"step":"WAVE_5","action":"COMPLETE","result":"SUCCESS","details":{"reportPath":"/Users/yvesdarbouze/Documents/PaperWorking/artifacts/persona-swarm/reports/P-36-experience-report.md"}}
+{"ts":"2026-08-17T12:51:28.861Z","agentId":"P-36","wave":5,"step":"WAVE_5","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-17T12:51:28.861Z","agentId":"P-36","wave":5,"step":"WAVE_5","action":"COMPLETE","result":"SUCCESS","details":{"reportPath":"/Users/yvesdarbouze/Documents/PaperWorking/artifacts/persona-swarm/reports/P-36-experience-report.md"}}
+{"ts":"2026-08-17T12:53:52.940Z","agentId":"P-36","wave":1,"step":"WAVE_1","action":"START","result":"SUCCESS","details":{"email":"agent36.beth.kowalchuk@paperworking-test.dev"}}
+{"ts":"2026-08-17T12:53:52.940Z","agentId":"P-36","wave":1,"step":"WAVE_1","action":"START","result":"SUCCESS","details":{"email":"agent36.beth.kowalchuk@paperworking-test.dev"}}
+{"ts":"2026-08-17T12:53:52.942Z","agentId":"P-36","wave":0,"step":"SIGNUP","action":"SUCCESS_CREATED","result":"SUCCESS","details":{"uid":"uid_persona_p36","email":"agent36.beth.kowalchuk@paperworking-test.dev","name":"Beth Kowalchuk","entity":"Kowalchuk Investments LLC"}}
+{"ts":"2026-08-17T12:53:52.942Z","agentId":"P-36","wave":1,"step":"WAVE_1","action":"COMPLETE","result":"SUCCESS","details":{"uid":"uid_persona_p36"}}
+{"ts":"2026-08-17T12:53:52.942Z","agentId":"P-36","wave":0,"step":"SIGNUP","action":"SUCCESS_CREATED","result":"SUCCESS","details":{"uid":"uid_persona_p36","email":"agent36.beth.kowalchuk@paperworking-test.dev","name":"Beth Kowalchuk","entity":"Kowalchuk Investments LLC"}}
+{"ts":"2026-08-17T12:53:52.944Z","agentId":"P-36","wave":1,"step":"WAVE_1","action":"COMPLETE","result":"SUCCESS","details":{"uid":"uid_persona_p36"}}
+{"ts":"2026-08-17T12:53:53.007Z","agentId":"P-36","wave":2,"step":"WAVE_2","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-17T12:53:53.008Z","agentId":"P-36","wave":0,"step":"BILLING","action":"SUBSCRIPTION_SUCCESS","result":"SUCCESS","details":{"plan":"Individual","stripeCustomerId":"cus_test_swarm_p-36","stripeSubscriptionId":"sub_test_swarm_p-36","cardLastFour":"4242","cardBrand":"visa"}}
+{"ts":"2026-08-17T12:53:53.008Z","agentId":"P-36","wave":2,"step":"WAVE_2","action":"COMPLETE","result":"SUCCESS","details":{"plan":"Individual"}}
+{"ts":"2026-08-17T12:53:53.017Z","agentId":"P-36","wave":2,"step":"WAVE_2","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-17T12:53:53.018Z","agentId":"P-36","wave":0,"step":"BILLING","action":"SUBSCRIPTION_SUCCESS","result":"SUCCESS","details":{"plan":"Individual","stripeCustomerId":"cus_test_swarm_p-36","stripeSubscriptionId":"sub_test_swarm_p-36","cardLastFour":"4242","cardBrand":"visa"}}
+{"ts":"2026-08-17T12:53:53.018Z","agentId":"P-36","wave":2,"step":"WAVE_2","action":"COMPLETE","result":"SUCCESS","details":{"plan":"Individual"}}
+{"ts":"2026-08-17T12:53:53.140Z","agentId":"P-36","wave":3,"step":"WAVE_3","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-17T12:53:53.143Z","agentId":"P-36","wave":0,"step":"PROJECTS","action":"CREATION_SUCCESS","result":"SUCCESS","details":{"created":10,"plaid":false}}
+{"ts":"2026-08-17T12:53:53.144Z","agentId":"P-36","wave":3,"step":"WAVE_3","action":"COMPLETE","result":"SUCCESS","details":{"created":10}}
+{"ts":"2026-08-17T12:53:53.153Z","agentId":"P-36","wave":3,"step":"WAVE_3","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-17T12:53:53.155Z","agentId":"P-36","wave":0,"step":"PROJECTS","action":"CREATION_SUCCESS","result":"SUCCESS","details":{"created":10,"plaid":false}}
+{"ts":"2026-08-17T12:53:53.156Z","agentId":"P-36","wave":3,"step":"WAVE_3","action":"COMPLETE","result":"SUCCESS","details":{"created":10}}
+{"ts":"2026-08-17T12:53:53.251Z","agentId":"P-36","wave":4,"step":"WAVE_4","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-17T12:53:53.252Z","agentId":"P-36","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-34"}}
+{"ts":"2026-08-17T12:53:53.252Z","agentId":"P-36","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-35"}}
+{"ts":"2026-08-17T12:53:53.252Z","agentId":"P-36","wave":4,"step":"WAVE_4","action":"COMPLETE","result":"SUCCESS","details":{"interactions":0,"invites":2}}
+{"ts":"2026-08-17T12:53:53.273Z","agentId":"P-36","wave":4,"step":"WAVE_4","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-17T12:53:53.273Z","agentId":"P-36","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-34"}}
+{"ts":"2026-08-17T12:53:53.274Z","agentId":"P-36","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-35"}}
+{"ts":"2026-08-17T12:53:53.274Z","agentId":"P-36","wave":4,"step":"WAVE_4","action":"COMPLETE","result":"SUCCESS","details":{"interactions":0,"invites":2}}
+{"ts":"2026-08-17T12:53:53.301Z","agentId":"P-36","wave":5,"step":"WAVE_5","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-17T12:53:53.301Z","agentId":"P-36","wave":5,"step":"WAVE_5","action":"COMPLETE","result":"SUCCESS","details":{"reportPath":"/Users/yvesdarbouze/Documents/PaperWorking/artifacts/persona-swarm/reports/P-36-experience-report.md"}}
+{"ts":"2026-08-17T12:53:53.339Z","agentId":"P-36","wave":5,"step":"WAVE_5","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-17T12:53:53.339Z","agentId":"P-36","wave":5,"step":"WAVE_5","action":"COMPLETE","result":"SUCCESS","details":{"reportPath":"/Users/yvesdarbouze/Documents/PaperWorking/artifacts/persona-swarm/reports/P-36-experience-report.md"}}
+{"ts":"2026-08-17T12:54:04.350Z","agentId":"P-36","wave":1,"step":"WAVE_1","action":"START","result":"SUCCESS","details":{"email":"agent36.beth.kowalchuk@paperworking-test.dev"}}
+{"ts":"2026-08-17T12:54:04.350Z","agentId":"P-36","wave":0,"step":"SIGNUP","action":"SUCCESS_CREATED","result":"SUCCESS","details":{"uid":"uid_persona_p36","email":"agent36.beth.kowalchuk@paperworking-test.dev","name":"Beth Kowalchuk","entity":"Kowalchuk Investments LLC"}}
+{"ts":"2026-08-17T12:54:04.350Z","agentId":"P-36","wave":1,"step":"WAVE_1","action":"COMPLETE","result":"SUCCESS","details":{"uid":"uid_persona_p36"}}
+{"ts":"2026-08-17T12:54:04.352Z","agentId":"P-36","wave":1,"step":"WAVE_1","action":"START","result":"SUCCESS","details":{"email":"agent36.beth.kowalchuk@paperworking-test.dev"}}
+{"ts":"2026-08-17T12:54:04.352Z","agentId":"P-36","wave":0,"step":"SIGNUP","action":"SUCCESS_CREATED","result":"SUCCESS","details":{"uid":"uid_persona_p36","email":"agent36.beth.kowalchuk@paperworking-test.dev","name":"Beth Kowalchuk","entity":"Kowalchuk Investments LLC"}}
+{"ts":"2026-08-17T12:54:04.355Z","agentId":"P-36","wave":1,"step":"WAVE_1","action":"COMPLETE","result":"SUCCESS","details":{"uid":"uid_persona_p36"}}
+{"ts":"2026-08-17T12:54:04.406Z","agentId":"P-36","wave":2,"step":"WAVE_2","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-17T12:54:04.407Z","agentId":"P-36","wave":0,"step":"BILLING","action":"SUBSCRIPTION_SUCCESS","result":"SUCCESS","details":{"plan":"Individual","stripeCustomerId":"cus_test_swarm_p-36","stripeSubscriptionId":"sub_test_swarm_p-36","cardLastFour":"4242","cardBrand":"visa"}}
+{"ts":"2026-08-17T12:54:04.407Z","agentId":"P-36","wave":2,"step":"WAVE_2","action":"COMPLETE","result":"SUCCESS","details":{"plan":"Individual"}}
+{"ts":"2026-08-17T12:54:04.410Z","agentId":"P-36","wave":2,"step":"WAVE_2","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-17T12:54:04.410Z","agentId":"P-36","wave":0,"step":"BILLING","action":"SUBSCRIPTION_SUCCESS","result":"SUCCESS","details":{"plan":"Individual","stripeCustomerId":"cus_test_swarm_p-36","stripeSubscriptionId":"sub_test_swarm_p-36","cardLastFour":"4242","cardBrand":"visa"}}
+{"ts":"2026-08-17T12:54:04.411Z","agentId":"P-36","wave":2,"step":"WAVE_2","action":"COMPLETE","result":"SUCCESS","details":{"plan":"Individual"}}
+{"ts":"2026-08-17T12:54:04.566Z","agentId":"P-36","wave":3,"step":"WAVE_3","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-17T12:54:04.570Z","agentId":"P-36","wave":3,"step":"WAVE_3","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-17T12:54:04.571Z","agentId":"P-36","wave":0,"step":"PROJECTS","action":"CREATION_SUCCESS","result":"SUCCESS","details":{"created":10,"plaid":false}}
+{"ts":"2026-08-17T12:54:04.571Z","agentId":"P-36","wave":3,"step":"WAVE_3","action":"COMPLETE","result":"SUCCESS","details":{"created":10}}
+{"ts":"2026-08-17T12:54:04.572Z","agentId":"P-36","wave":0,"step":"PROJECTS","action":"CREATION_SUCCESS","result":"SUCCESS","details":{"created":10,"plaid":false}}
+{"ts":"2026-08-17T12:54:04.572Z","agentId":"P-36","wave":3,"step":"WAVE_3","action":"COMPLETE","result":"SUCCESS","details":{"created":10}}
+{"ts":"2026-08-17T12:54:04.731Z","agentId":"P-36","wave":4,"step":"WAVE_4","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-17T12:54:04.731Z","agentId":"P-36","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-34"}}
+{"ts":"2026-08-17T12:54:04.732Z","agentId":"P-36","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-35"}}
+{"ts":"2026-08-17T12:54:04.732Z","agentId":"P-36","wave":4,"step":"WAVE_4","action":"COMPLETE","result":"SUCCESS","details":{"interactions":0,"invites":2}}
+{"ts":"2026-08-17T12:54:04.739Z","agentId":"P-36","wave":4,"step":"WAVE_4","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-17T12:54:04.739Z","agentId":"P-36","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-34"}}
+{"ts":"2026-08-17T12:54:04.740Z","agentId":"P-36","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-35"}}
+{"ts":"2026-08-17T12:54:04.740Z","agentId":"P-36","wave":4,"step":"WAVE_4","action":"COMPLETE","result":"SUCCESS","details":{"interactions":0,"invites":2}}
+{"ts":"2026-08-17T12:54:04.797Z","agentId":"P-36","wave":5,"step":"WAVE_5","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-17T12:54:04.797Z","agentId":"P-36","wave":5,"step":"WAVE_5","action":"COMPLETE","result":"SUCCESS","details":{"reportPath":"/Users/yvesdarbouze/Documents/PaperWorking/artifacts/persona-swarm/reports/P-36-experience-report.md"}}
+{"ts":"2026-08-17T12:54:04.798Z","agentId":"P-36","wave":5,"step":"WAVE_5","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-17T12:54:04.798Z","agentId":"P-36","wave":5,"step":"WAVE_5","action":"COMPLETE","result":"SUCCESS","details":{"reportPath":"/Users/yvesdarbouze/Documents/PaperWorking/artifacts/persona-swarm/reports/P-36-experience-report.md"}}
+{"ts":"2026-08-17T15:52:13.640Z","agentId":"P-36","wave":1,"step":"WAVE_1","action":"START","result":"SUCCESS","details":{"email":"agent36.beth.kowalchuk@paperworking-test.dev"}}
+{"ts":"2026-08-17T15:52:13.761Z","agentId":"P-36","wave":1,"step":"WAVE_1","action":"START","result":"SUCCESS","details":{"email":"agent36.beth.kowalchuk@paperworking-test.dev"}}
+{"ts":"2026-08-17T15:52:15.766Z","agentId":"P-36","wave":0,"step":"SIGNUP","action":"SUCCESS_CREATED","result":"SUCCESS","details":{"uid":"uid_persona_p36","email":"agent36.beth.kowalchuk@paperworking-test.dev","name":"Beth Kowalchuk","entity":"Kowalchuk Investments LLC"}}
+{"ts":"2026-08-17T15:52:15.766Z","agentId":"P-36","wave":1,"step":"WAVE_1","action":"COMPLETE","result":"SUCCESS","details":{"uid":"uid_persona_p36"}}
+{"ts":"2026-08-17T15:52:15.823Z","agentId":"P-36","wave":0,"step":"SIGNUP","action":"SUCCESS_CREATED","result":"SUCCESS","details":{"uid":"uid_persona_p36","email":"agent36.beth.kowalchuk@paperworking-test.dev","name":"Beth Kowalchuk","entity":"Kowalchuk Investments LLC"}}
+{"ts":"2026-08-17T15:52:15.823Z","agentId":"P-36","wave":1,"step":"WAVE_1","action":"COMPLETE","result":"SUCCESS","details":{"uid":"uid_persona_p36"}}
+{"ts":"2026-08-17T15:52:56.251Z","agentId":"P-36","wave":2,"step":"WAVE_2","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-17T15:52:56.251Z","agentId":"P-36","wave":2,"step":"WAVE_2","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-17T15:52:56.251Z","agentId":"P-36","wave":2,"step":"WAVE_2","action":"EXCEPTION","result":"SUCCESS","details":{"error":"CRITICAL SAFETY REFUSAL: Invalid or missing Stripe secret test key. Key must start with \"sk_test_\". Received: \"...\""}}
+{"ts":"2026-08-17T15:52:56.252Z","agentId":"P-36","wave":2,"step":"WAVE_2","action":"EXCEPTION","result":"SUCCESS","details":{"error":"CRITICAL SAFETY REFUSAL: Invalid or missing Stripe secret test key. Key must start with \"sk_test_\". Received: \"...\""}}
+{"ts":"2026-08-17T16:17:02.512Z","agentId":"P-36","wave":1,"step":"WAVE_1","action":"START","result":"SUCCESS","details":{"email":"agent36.beth.kowalchuk@paperworking-test.dev"}}
+{"ts":"2026-08-17T16:17:02.977Z","agentId":"P-36","wave":1,"step":"WAVE_1","action":"START","result":"SUCCESS","details":{"email":"agent36.beth.kowalchuk@paperworking-test.dev"}}
+{"ts":"2026-08-17T16:17:04.648Z","agentId":"P-36","wave":0,"step":"SIGNUP","action":"SUCCESS_CREATED","result":"SUCCESS","details":{"uid":"uid_persona_p36","email":"agent36.beth.kowalchuk@paperworking-test.dev","name":"Beth Kowalchuk","entity":"Kowalchuk Investments LLC"}}
+{"ts":"2026-08-17T16:17:04.649Z","agentId":"P-36","wave":1,"step":"WAVE_1","action":"COMPLETE","result":"SUCCESS","details":{"uid":"uid_persona_p36"}}
+{"ts":"2026-08-17T16:17:05.198Z","agentId":"P-36","wave":0,"step":"SIGNUP","action":"SUCCESS_CREATED","result":"SUCCESS","details":{"uid":"uid_persona_p36","email":"agent36.beth.kowalchuk@paperworking-test.dev","name":"Beth Kowalchuk","entity":"Kowalchuk Investments LLC"}}
+{"ts":"2026-08-17T16:17:05.198Z","agentId":"P-36","wave":1,"step":"WAVE_1","action":"COMPLETE","result":"SUCCESS","details":{"uid":"uid_persona_p36"}}
+{"ts":"2026-08-17T16:17:57.811Z","agentId":"P-36","wave":1,"step":"WAVE_1","action":"START","result":"SUCCESS","details":{"email":"agent36.beth.kowalchuk@paperworking-test.dev"}}
+{"ts":"2026-08-17T16:17:57.828Z","agentId":"P-36","wave":1,"step":"WAVE_1","action":"START","result":"SUCCESS","details":{"email":"agent36.beth.kowalchuk@paperworking-test.dev"}}
+{"ts":"2026-08-17T16:18:00.010Z","agentId":"P-36","wave":0,"step":"SIGNUP","action":"SUCCESS_CREATED","result":"SUCCESS","details":{"uid":"uid_persona_p36","email":"agent36.beth.kowalchuk@paperworking-test.dev","name":"Beth Kowalchuk","entity":"Kowalchuk Investments LLC"}}
+{"ts":"2026-08-17T16:18:00.010Z","agentId":"P-36","wave":0,"step":"SIGNUP","action":"SUCCESS_CREATED","result":"SUCCESS","details":{"uid":"uid_persona_p36","email":"agent36.beth.kowalchuk@paperworking-test.dev","name":"Beth Kowalchuk","entity":"Kowalchuk Investments LLC"}}
+{"ts":"2026-08-17T16:18:00.010Z","agentId":"P-36","wave":1,"step":"WAVE_1","action":"COMPLETE","result":"SUCCESS","details":{"uid":"uid_persona_p36"}}
+{"ts":"2026-08-17T16:18:00.010Z","agentId":"P-36","wave":1,"step":"WAVE_1","action":"COMPLETE","result":"SUCCESS","details":{"uid":"uid_persona_p36"}}
+{"ts":"2026-08-17T16:18:41.941Z","agentId":"P-36","wave":2,"step":"WAVE_2","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-17T16:18:41.942Z","agentId":"P-36","wave":2,"step":"WAVE_2","action":"EXCEPTION","result":"SUCCESS","details":{"error":"CRITICAL SAFETY REFUSAL: Invalid or missing Stripe secret test key. Key must start with \"sk_test_\". Received: \"...\""}}
+{"ts":"2026-08-17T16:18:41.977Z","agentId":"P-36","wave":2,"step":"WAVE_2","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-17T16:18:41.978Z","agentId":"P-36","wave":2,"step":"WAVE_2","action":"EXCEPTION","result":"SUCCESS","details":{"error":"CRITICAL SAFETY REFUSAL: Invalid or missing Stripe secret test key. Key must start with \"sk_test_\". Received: \"...\""}}
+{"ts":"2026-08-17T16:18:42.013Z","agentId":"P-36","wave":3,"step":"WAVE_3","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-17T16:18:42.013Z","agentId":"P-36","wave":0,"step":"PROJECTS","action":"CREATION_SUCCESS","result":"SUCCESS","details":{"created":10,"plaid":false}}
+{"ts":"2026-08-17T16:18:42.013Z","agentId":"P-36","wave":3,"step":"WAVE_3","action":"COMPLETE","result":"SUCCESS","details":{"created":10}}
+{"ts":"2026-08-17T19:42:23.454Z","agentId":"P-36","wave":1,"step":"WAVE_1","action":"START","result":"SUCCESS","details":{"email":"agent36.beth.kowalchuk@paperworking-test.dev"}}
+{"ts":"2026-08-17T19:42:24.757Z","agentId":"P-36","wave":1,"step":"WAVE_1","action":"START","result":"SUCCESS","details":{"email":"agent36.beth.kowalchuk@paperworking-test.dev"}}
+{"ts":"2026-08-17T19:42:25.486Z","agentId":"P-36","wave":0,"step":"SIGNUP","action":"SUCCESS_CREATED","result":"SUCCESS","details":{"uid":"uid_persona_p36","email":"agent36.beth.kowalchuk@paperworking-test.dev","name":"Beth Kowalchuk","entity":"Kowalchuk Investments LLC"}}
+{"ts":"2026-08-17T19:42:25.487Z","agentId":"P-36","wave":1,"step":"WAVE_1","action":"COMPLETE","result":"SUCCESS","details":{"uid":"uid_persona_p36"}}
+{"ts":"2026-08-17T19:42:26.774Z","agentId":"P-36","wave":0,"step":"SIGNUP","action":"SUCCESS_CREATED","result":"SUCCESS","details":{"uid":"uid_persona_p36","email":"agent36.beth.kowalchuk@paperworking-test.dev","name":"Beth Kowalchuk","entity":"Kowalchuk Investments LLC"}}
+{"ts":"2026-08-17T19:42:26.774Z","agentId":"P-36","wave":1,"step":"WAVE_1","action":"COMPLETE","result":"SUCCESS","details":{"uid":"uid_persona_p36"}}
+{"ts":"2026-08-17T19:43:07.925Z","agentId":"P-36","wave":2,"step":"WAVE_2","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-17T19:43:07.925Z","agentId":"P-36","wave":2,"step":"WAVE_2","action":"EXCEPTION","result":"SUCCESS","details":{"error":"CRITICAL SAFETY REFUSAL: Invalid or missing Stripe secret test key. Key must start with \"sk_test_\". Received: \"...\""}}
+{"ts":"2026-08-17T19:43:07.967Z","agentId":"P-36","wave":3,"step":"WAVE_3","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-17T19:43:07.968Z","agentId":"P-36","wave":0,"step":"PROJECTS","action":"CREATION_SUCCESS","result":"SUCCESS","details":{"created":10,"plaid":false}}
+{"ts":"2026-08-17T19:43:07.968Z","agentId":"P-36","wave":3,"step":"WAVE_3","action":"COMPLETE","result":"SUCCESS","details":{"created":10}}
+{"ts":"2026-08-17T19:43:07.995Z","agentId":"P-36","wave":4,"step":"WAVE_4","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-17T19:43:07.996Z","agentId":"P-36","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-34"}}
+{"ts":"2026-08-17T19:43:07.996Z","agentId":"P-36","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-35"}}
+{"ts":"2026-08-17T19:43:07.996Z","agentId":"P-36","wave":4,"step":"WAVE_4","action":"COMPLETE","result":"SUCCESS","details":{"interactions":0,"invites":2}}
+{"ts":"2026-08-17T19:43:08.029Z","agentId":"P-36","wave":5,"step":"WAVE_5","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-17T19:43:08.029Z","agentId":"P-36","wave":5,"step":"WAVE_5","action":"COMPLETE","result":"SUCCESS","details":{"reportPath":"/Users/yvesdarbouze/Documents/PaperWorking/artifacts/persona-swarm/reports/P-36-experience-report.md"}}
+{"ts":"2026-08-17T19:43:08.083Z","agentId":"P-36","wave":2,"step":"WAVE_2","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-17T19:43:08.083Z","agentId":"P-36","wave":2,"step":"WAVE_2","action":"EXCEPTION","result":"SUCCESS","details":{"error":"CRITICAL SAFETY REFUSAL: Invalid or missing Stripe secret test key. Key must start with \"sk_test_\". Received: \"...\""}}
+{"ts":"2026-08-17T19:43:08.116Z","agentId":"P-36","wave":3,"step":"WAVE_3","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-17T19:43:08.116Z","agentId":"P-36","wave":0,"step":"PROJECTS","action":"CREATION_SUCCESS","result":"SUCCESS","details":{"created":10,"plaid":false}}
+{"ts":"2026-08-17T19:43:08.116Z","agentId":"P-36","wave":3,"step":"WAVE_3","action":"COMPLETE","result":"SUCCESS","details":{"created":10}}
+{"ts":"2026-08-17T19:43:08.141Z","agentId":"P-36","wave":4,"step":"WAVE_4","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-17T19:43:08.142Z","agentId":"P-36","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-34"}}
+{"ts":"2026-08-17T19:43:08.142Z","agentId":"P-36","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-35"}}
+{"ts":"2026-08-17T19:43:08.142Z","agentId":"P-36","wave":4,"step":"WAVE_4","action":"COMPLETE","result":"SUCCESS","details":{"interactions":0,"invites":2}}
+{"ts":"2026-08-17T19:43:08.171Z","agentId":"P-36","wave":5,"step":"WAVE_5","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-17T19:43:08.171Z","agentId":"P-36","wave":5,"step":"WAVE_5","action":"COMPLETE","result":"SUCCESS","details":{"reportPath":"/Users/yvesdarbouze/Documents/PaperWorking/artifacts/persona-swarm/reports/P-36-experience-report.md"}}

@@ -8,12 +8,12 @@ import {
 } from '../actions/admin';
 
 // Mocks
-var mockVerifyIdToken = jest.fn();
-var mockGet = jest.fn();
-var mockLimit = jest.fn().mockReturnThis();
-var mockOrderBy = jest.fn().mockReturnThis();
+const mockVerifyIdToken = jest.fn();
+const mockGet = jest.fn();
+const mockLimit = jest.fn().mockReturnThis();
+const mockOrderBy = jest.fn().mockReturnThis();
 
-var mockCollection = {
+const mockCollection = {
   doc: jest.fn().mockImplementation(() => ({
     get: mockGet,
   })),
@@ -25,14 +25,14 @@ var mockCollection = {
 jest.mock('@/lib/firebase/admin', () => ({
   __esModule: true,
   adminAuth: {
-    verifyIdToken: (...args: any[]) => mockVerifyIdToken(...args),
+    verifyIdToken: (...args: unknown[]) => mockVerifyIdToken(...args),
   },
   adminDb: {
-    collection: (name: string) => mockCollection,
+    collection: (_name: string) => mockCollection,
   },
 }));
 
-var mockCookieGet = jest.fn();
+const mockCookieGet = jest.fn();
 jest.mock('next/headers', () => ({
   __esModule: true,
   cookies: jest.fn(() => ({
@@ -40,24 +40,24 @@ jest.mock('next/headers', () => ({
   })),
 }));
 
-var mockAuthorize = jest.fn();
+const mockAuthorize = jest.fn();
 jest.mock('@/lib/authz/authorize', () => ({
   __esModule: true,
-  authorize: (...args: any[]) => mockAuthorize(...args),
+  authorize: (...args: unknown[]) => mockAuthorize(...args),
 }));
 
 // Mock Stripe
-var mockSubscriptionsList = jest.fn();
-var mockChargesList = jest.fn();
+const mockSubscriptionsList = jest.fn();
+const mockChargesList = jest.fn();
 
 jest.mock('stripe', () => {
   return {
     default: jest.fn().mockImplementation(() => ({
       subscriptions: {
-        list: (...args: any[]) => mockSubscriptionsList(...args),
+        list: (...args: unknown[]) => mockSubscriptionsList(...args),
       },
       charges: {
-        list: (...args: any[]) => mockChargesList(...args),
+        list: (...args: unknown[]) => mockChargesList(...args),
       },
     })),
     __esModule: true,

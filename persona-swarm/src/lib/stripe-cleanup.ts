@@ -50,8 +50,8 @@ export async function cleanupStripeTestCustomers(
       // 2. Delete test customer
       await stripe.customers.del(customerId);
       result.deletedCustomers++;
-    } catch (err: any) {
-      result.errors.push(`Customer ${customerId}: ${err.message}`);
+    } catch (err: unknown) {
+      result.errors.push(`Customer ${customerId}: ${(err as Error).message}`);
     }
   }
 

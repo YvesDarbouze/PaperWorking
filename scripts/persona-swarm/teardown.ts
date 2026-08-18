@@ -30,11 +30,11 @@ export async function teardownSwarm(options: TeardownOptions = {}) {
       const manifest = JSON.parse(fs.readFileSync(manifestPath, 'utf-8'));
       if (manifest.agents) {
         customerIds = Object.values(manifest.agents)
-          .map((a: any) => a.stripeCustomerId)
+          .map((a: unknown) => (a as Record<string, unknown>)?.stripeCustomerId as string)
           .filter((id: string) => id && id.startsWith('cus_'));
       }
-    } catch (e: any) {
-      console.warn('Could not parse manifest file:', e.message);
+    } catch (e: unknown) {
+      console.warn('Could not parse manifest file:', (e as Error).message);
     }
   }
 

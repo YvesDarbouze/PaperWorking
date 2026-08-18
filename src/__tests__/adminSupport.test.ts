@@ -1,4 +1,4 @@
-import { SupportTicket, TicketMessage, TaxonomyTag } from '@/lib/support/types';
+import { SupportTicket, TaxonomyTag } from '@/lib/support/types';
 
 describe('PROMPT 3 & PART B — Support Inbox & Reconciled Metrics Unit Suite', () => {
   describe('Ticket Data Model & 3-State Conversation Transitions', () => {

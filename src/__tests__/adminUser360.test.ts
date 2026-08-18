@@ -1,5 +1,4 @@
 import { maskEmail, maskPhone, maskAccount, maskToken } from '@/lib/utils';
-import { computeEntryHash } from '@/lib/audit/auditLogger';
 
 describe('PROMPT 2 — User Management & User 360 Workspace Unit Suite', () => {
   describe('Standardized Masking Helpers (Amendment C)', () => {

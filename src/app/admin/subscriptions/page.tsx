@@ -146,14 +146,14 @@ export default function AdminSubscriptionsPage() {
       } else {
         alert(`Cancellation failed: ${res.error}`);
       }
-    } catch (err: any) {
-      alert(`Error: ${err?.message}`);
+    } catch (err: unknown) {
+      alert(`Error: ${(err as Error)?.message}`);
     }
   };
 
   const subs = revenue?.recentSubscriptions || [];
   const activeCount = subs.filter((s) => s.status === 'active').length;
-  const atRiskCount = (dunningQueue || []).filter((s) => s.status === 'past_due').length;
+  const _atRiskCount = (dunningQueue || []).filter((s) => s.status === 'past_due').length;
   const planDist = userStats?.planDistribution || [];
 
   const dunningColumns: Column<DunningEntry>[] = [

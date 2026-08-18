@@ -85,7 +85,7 @@ export async function POST(request: NextRequest) {
     }
 
     // ── Parse Event Payload Array (F-9) ───────────────────────
-    let events: any[] = [];
+    let events: Record<string, unknown>[] = [];
     try {
       events = JSON.parse(rawBody);
       if (!Array.isArray(events)) {
@@ -96,21 +96,28 @@ export async function POST(request: NextRequest) {
     }
 
     let processedCount = 0;
+    const eventsList = (Array.isArray(events) ? events : []) as Array<{
+      event?: string;
+      sg_message_id?: string;
+      message_id?: string;
+      'smtp-id'?: string;
+      timestamp?: number;
+    }>;
 
-    for (const event of events) {
-      const eventType: string = event.event;
+    for (const event of eventsList) {
+      const eventType = event.event || '';
       if (!eventType) continue;
 
       const status = EVENT_STATUS_MAP[eventType];
       if (!status) continue;
 
       // Extract SendGrid message ID
-      const rawMsgId: string = event.sg_message_id || event.message_id || event['smtp-id'] || '';
-      const messageId = rawMsgId.split('.')[0];
+      const rawMsgId = event.sg_message_id || event.message_id || event['smtp-id'] || '';
+      const messageId = typeof rawMsgId === 'string' ? rawMsgId.split('.')[0] : '';
 
       if (!messageId) continue;
 
-      const timestamp = event.timestamp ? new Date(event.timestamp * 1000) : new Date();
+      const timestamp = typeof event.timestamp === 'number' ? new Date(event.timestamp * 1000) : new Date();
 
       // ── Update Delivery Status in CommunicationEngine ───────
       const result = await CommunicationEngine.updateDeliveryStatus(
@@ -156,7 +163,7 @@ export async function POST(request: NextRequest) {
             const userSnap = await userRef.get();
             if (userSnap.exists) {
               const userData = userSnap.data() || {};
-              const userUpdates: Record<string, any> = {};
+              const userUpdates: Record<string, unknown> = {};
 
               if (status === 'Bounced') {
                 const currentBounces = userData.bounceCount || 0;
@@ -199,8 +206,8 @@ export async function POST(request: NextRequest) {
               }
             }
           }
-        } catch (err: any) {
-          console.error('[SendGrid Webhook] Abuse processing error:', err.message);
+        } catch (err: unknown) {
+          console.error('[SendGrid Webhook] Abuse processing error:', (err as Error).message);
         }
       }
     }
@@ -210,10 +217,10 @@ export async function POST(request: NextRequest) {
       processed: processedCount,
       totalEvents: events.length,
     });
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error('[SendGrid Webhook] Error:', error);
     return NextResponse.json(
-      { error: 'Webhook processing failed', details: error.message },
+      { error: 'Webhook processing failed', details: (error as Error).message },
       { status: 500 }
     );
   }

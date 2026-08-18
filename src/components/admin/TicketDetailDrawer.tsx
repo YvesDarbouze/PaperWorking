@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useEffect, useState, useCallback } from 'react';
-import { X, Send, Lock, UserCheck, ShieldAlert, Tag, Clock, MessageSquare, Bookmark, AlertTriangle, CheckCircle } from 'lucide-react';
+import { X, Send, Lock, UserCheck, ShieldAlert, Tag, Clock } from 'lucide-react';
 import { getTicketDetails, claimTicket, addInternalNote, sendCustomerReply, updateTicketStatus, updateTicketTags, snoozeTicket, getTaxonomy, getSavedReplies } from '@/actions/adminSupport';
 import type { SupportTicket, TicketMessage, TicketStatus, TaxonomyTag, SavedReply, PresenceLock } from '@/lib/support/types';
 
@@ -25,26 +25,24 @@ export default function TicketDetailDrawer({ ticketId, onClose, onRefreshParent 
   const [savedReplies, setSavedReplies] = useState<SavedReply[]>([]);
   const [selectedTag, setSelectedTag] = useState('');
 
-  const fetchDetails = useCallback(async () => {
+  const fetchDetails = useCallback(() => {
     if (!ticketId) return;
     setLoading(true);
-    try {
-      const [res, tax, replies] = await Promise.all([
-        getTicketDetails(ticketId),
-        getTaxonomy(),
-        getSavedReplies(),
-      ]);
+    Promise.all([
+      getTicketDetails(ticketId),
+      getTaxonomy(),
+      getSavedReplies(),
+    ]).then(([res, tax, replies]) => {
       setData(res);
       setTaxonomy(tax);
       setSavedReplies(replies);
-    } finally {
       setLoading(false);
-    }
+    });
   }, [ticketId]);
 
   useEffect(() => {
-    if (ticketId) fetchDetails();
-  }, [ticketId, fetchDetails]);
+    fetchDetails();
+  }, [fetchDetails]);
 
   if (!ticketId) return null;
 
@@ -232,7 +230,7 @@ export default function TicketDetailDrawer({ ticketId, onClose, onRefreshParent 
                 <h3 className="text-xs uppercase font-bold text-gray-500 tracking-wider">Conversation History</h3>
                 {data.messages.map((m) => {
                   const isNote = m.authorType === 'internal_note';
-                  const isCustomer = m.authorType === 'customer';
+                  const _isCustomer = m.authorType === 'customer';
                   const isReply = m.authorType === 'internal_reply';
 
                   return (

@@ -64,6 +64,8 @@ const eslintConfig = defineConfig([
     ".trae/**",
     ".vscode/**",
     ".windsurf/**",
+    "coverage/**",
+    "verify_team_system.ts",
     "playwright-report/**",
     "test-results/**",
     "scratch/**",

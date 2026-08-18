@@ -8,7 +8,7 @@
   "scripts": {
     "dev": "next dev",
     "dev:webpack": "next dev --webpack",
-    "build": "npx prisma generate && rm -rf .next && NODE_OPTIONS='--max-old-space-size=4096' next build",
+    "build": "npm run lint && npx prisma generate && rm -rf .next && NODE_OPTIONS='--max-old-space-size=4096' next build",
     "start": "next start",
     "lint": "eslint .",
     "test": "jest",

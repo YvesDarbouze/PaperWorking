@@ -194,7 +194,7 @@ export default function InvestmentPanel({
               <select
                 data-testid="currency-select"
                 value={currency}
-                onChange={(e) => setCurrency(e.target.value as any)}
+                onChange={(e) => setCurrency(e.target.value as 'USD' | 'CAD' | 'EUR' | 'GBP')}
                 className="w-full px-3 py-2.5 bg-white/[0.03] border border-white/10 rounded-[10px] text-xs font-bold text-slate-200 focus:outline-none focus:border-[#34d399]/40 appearance-none min-h-[44px] cursor-pointer"
               >
                 <option value="USD">USD ($)</option>

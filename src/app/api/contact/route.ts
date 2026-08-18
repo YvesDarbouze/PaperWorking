@@ -24,7 +24,7 @@ export async function POST(req: Request) {
 
     const cleanName = (name && typeof name === 'string') ? name.trim() : email.split('@')[0];
     const ticketId = `ticket_${Date.now()}_${Math.random().toString(36).substring(2, 7)}`;
-    const now = new Date();
+    const _now = new Date();
 
     // Default starter tags mapping
     const tag = (category && typeof category === 'string') ? category.toLowerCase().replace(/\s+/g, '-') : 'general-inquiry';
@@ -75,8 +75,8 @@ export async function POST(req: Request) {
       message: 'Thank you for reaching out. Your message has been received.',
       ticketId,
     });
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error('[POST /api/contact] Fatal handler error:', error);
-    return NextResponse.json({ success: false, error: error?.message || 'Server error' }, { status: 500 });
+    return NextResponse.json({ success: false, error: (error as Error)?.message || 'Server error' }, { status: 500 });
   }
 }

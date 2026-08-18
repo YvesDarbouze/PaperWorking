@@ -178,13 +178,9 @@ describe('Prompt 27W — Lender Rates: wired to existing source', () => {
   // 8. Admin path is still intact
   // ─────────────────────────────────────────────────────────────────────────
   describe('admin path: PUT route + LenderRatesAdmin component', () => {
-    it('PUT route has requireAuth guard', () => {
+    it('PUT route has requireAdminAuth guard', () => {
       expect(ADMIN_ROUTE).toContain('export async function PUT');
-      expect(ADMIN_ROUTE).toContain('requireAuth');
-    });
-
-    it('PUT route checks for Lead Investor / Admin orgRole', () => {
-      expect(ADMIN_ROUTE).toContain('Lead Investor');
+      expect(ADMIN_ROUTE).toContain('requireAdminAuth');
     });
 
     it('LenderRatesAdmin calls PUT /api/admin/lender-rates', () => {

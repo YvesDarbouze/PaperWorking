@@ -12,7 +12,7 @@ export interface User360Data {
     accountType: string;
     createdAt: string;
     lastLoginAt: string;
-    customClaims: Record<string, any>;
+    customClaims: Record<string, unknown>;
   };
   billing: {
     stripeCustomerId: string | null;
@@ -58,9 +58,9 @@ export interface User360Data {
 export async function fetchUser360Data(targetUid: string): Promise<User360Data | null> {
   try {
     // 1. Firebase Auth user object
-    let authUser: any = null;
+    let authUser: Record<string, unknown> | null = null;
     try {
-      authUser = await adminAuth.getUser(targetUid);
+      authUser = (await adminAuth.getUser(targetUid)) as unknown as Record<string, unknown>;
     } catch {
       // Fallback if not found in Firebase Auth directly
     }
@@ -69,22 +69,25 @@ export async function fetchUser360Data(targetUid: string): Promise<User360Data |
     const userDoc = await adminDb.collection('users').doc(targetUid).get();
     const userData = userDoc.exists ? userDoc.data() : {};
 
-    const email = authUser?.email || userData?.email || '';
-    const displayName = userData?.displayName || userData?.name || authUser?.displayName || email.split('@')[0] || 'Unknown';
-    const role = userData?.role || userData?.profile?.role || (authUser?.customClaims?.role as string) || 'investor';
+    const email = (authUser?.email as string) || userData?.email || '';
+    const displayName = userData?.displayName || userData?.name || (authUser?.displayName as string) || email.split('@')[0] || 'Unknown';
+    const role = userData?.role || userData?.profile?.role || ((authUser?.customClaims as Record<string, string>)?.role) || 'investor';
     const accountType = userData?.accountType || 'investor';
-    const disabled = authUser?.disabled || false;
-    const emailVerified = authUser?.emailVerified || false;
+    const disabled = (authUser?.disabled as boolean) || false;
+    const emailVerified = (authUser?.emailVerified as boolean) || false;
 
     // Dates
-    const createdAt = authUser?.metadata?.creationTime
-      ? new Date(authUser.metadata.creationTime).toISOString()
+    const meta = authUser?.metadata as { creationTime?: string; lastSignInTime?: string } | undefined;
+    const creationTime = meta?.creationTime;
+    const createdAt = creationTime
+      ? new Date(creationTime).toISOString()
       : userData?.createdAt?.toDate
       ? userData.createdAt.toDate().toISOString()
       : new Date().toISOString();
 
-    const lastLoginAt = authUser?.metadata?.lastSignInTime
-      ? new Date(authUser.metadata.lastSignInTime).toISOString()
+    const lastSignInTime = meta?.lastSignInTime;
+    const lastLoginAt = lastSignInTime
+      ? new Date(lastSignInTime).toISOString()
       : userData?.lastLoginAt?.toDate
       ? userData.lastLoginAt.toDate().toISOString()
       : createdAt;
@@ -130,7 +133,7 @@ export async function fetchUser360Data(targetUid: string): Promise<User360Data |
         });
 
         organizations = collabs.map((c) => ({
-          organizationId: (c.project as any)?.entityName || (c.project as any)?.createdById || `org_${c.projectId}`,
+          organizationId: ((c.project as unknown as Record<string, unknown>)?.entityName as string) || ((c.project as unknown as Record<string, unknown>)?.createdById as string) || `org_${c.projectId}`,
           projectId: c.projectId,
           projectDisplayName: c.project?.displayName || c.project?.addressLine || 'Property Project',
           role: c.role,
@@ -208,7 +211,7 @@ export async function fetchUser360Data(targetUid: string): Promise<User360Data |
         accountType,
         createdAt,
         lastLoginAt,
-        customClaims: authUser?.customClaims || {},
+        customClaims: (authUser?.customClaims as Record<string, unknown>) || {},
       },
       billing: {
         stripeCustomerId,

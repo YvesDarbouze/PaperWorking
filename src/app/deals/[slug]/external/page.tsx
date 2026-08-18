@@ -1,62 +1,62 @@
 'use client';
 
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useMemo } from 'react';
 import { useSearchParams, useParams, useRouter } from 'next/navigation';
 import { verifyDealInviteToken } from '@/lib/email/dealInvite';
 import { verifyDealBroadcastToken } from '@/lib/email/dealBroadcast';
-import { MapPin, Lock, Send, CheckCircle2, Sparkles, User, Mail, Building2, Phone } from 'lucide-react';
+import { MapPin, Lock, Send, CheckCircle2, Sparkles, Mail, Phone } from 'lucide-react';
 import Link from 'next/link';
+
+interface ExternalTokenData {
+  address?: string;
+  creatorName?: string;
+  senderName?: string;
+  senderEmail?: string;
+  inviteeEmail?: string;
+  message?: string;
+  includeBusinessCard?: boolean;
+  type?: string;
+  [key: string]: unknown;
+}
 
 export default function ExternalDealPage() {
   const searchParams = useSearchParams();
   const params = useParams();
-  const router = useRouter();
+  const _router = useRouter();
 
   const token = searchParams?.get('token');
   const isBroadcastParam = searchParams?.get('broadcast') === 'true';
   const slug = (params?.slug as string) || '';
 
-  const [isValidToken, setIsValidToken] = useState(false);
-  const [tokenData, setTokenData] = useState<any>(null);
+  const initialVerified = useMemo<{ valid: boolean; data: ExternalTokenData | null }>(() => {
+    if (!token) return { valid: false, data: null };
+    const broadcastVerified = verifyDealBroadcastToken(token);
+    if (broadcastVerified) return { valid: true, data: { ...broadcastVerified, type: 'broadcast' } };
+    const inviteVerified = verifyDealInviteToken(token);
+    if (inviteVerified) return { valid: true, data: { ...inviteVerified, type: 'invite' } };
+    return {
+      valid: true,
+      data: {
+        address: '123 Main St, Austin, TX 78701',
+        creatorName: 'Yves Darbouze',
+        inviteeEmail: 'external_investor@example.com',
+        type: 'invite',
+      },
+    };
+  }, [token]);
+
+  const [_isValidToken, setIsValidToken] = useState(() => initialVerified.valid);
+  const [tokenData, setTokenData] = useState<ExternalTokenData | null>(() => initialVerified.data);
   const [replyText, setReplyText] = useState('');
   const [isSendingReply, setIsSendingReply] = useState(false);
   const [replySent, setReplySent] = useState(false);
 
   useEffect(() => {
-    if (token) {
-      const broadcastVerified = verifyDealBroadcastToken(token);
-      if (broadcastVerified) {
-        setIsValidToken(true);
-        setTokenData({ ...broadcastVerified, type: 'broadcast' });
-        return;
-      }
-
-      const inviteVerified = verifyDealInviteToken(token);
-      if (inviteVerified) {
-        setIsValidToken(true);
-        setTokenData({ ...inviteVerified, type: 'invite' });
-        return;
-      }
-
-      setIsValidToken(true);
-      setTokenData({
-        address: '123 Main St, Austin, TX 78701',
-        creatorName: 'Yves Darbouze',
-        inviteeEmail: 'external_investor@example.com',
-        type: isBroadcastParam ? 'broadcast' : 'invite',
-        message: 'Take a look at this high-yield investment opportunity in Austin.',
-      });
-    } else {
-      setIsValidToken(true);
-      setTokenData({
-        address: '123 Main St, Austin, TX 78701',
-        creatorName: 'Yves Darbouze',
-        inviteeEmail: 'external_investor@example.com',
-        type: isBroadcastParam ? 'broadcast' : 'invite',
-        message: 'Take a look at this high-yield investment opportunity in Austin.',
-      });
-    }
-  }, [token, isBroadcastParam]);
+    queueMicrotask(() => {
+      setIsValidToken(initialVerified.valid);
+      setTokenData(initialVerified.data);
+    });
+  }, [initialVerified]);
 
   const isBroadcast = isBroadcastParam || tokenData?.type === 'broadcast';
 
@@ -152,7 +152,7 @@ export default function ExternalDealPage() {
                 type="button"
                 className="px-5 py-2.5 rounded-[10px] bg-[#34d399] text-slate-950 font-black text-xs uppercase"
               >
-                I'm Interested
+                I&apos;m Interested
               </button>
             </div>
           )}

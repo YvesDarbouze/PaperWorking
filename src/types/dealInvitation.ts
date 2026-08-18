@@ -33,5 +33,5 @@ export interface DealLedgerEntry {
   version: number;
   visibilityMode: VisibilityMode;
   timestamp: string; // ISO String
-  metadata?: any;
+  metadata?: Record<string, unknown>;
 }

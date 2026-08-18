@@ -5,7 +5,6 @@ import { authorize } from '@/lib/authz/authorize';
 import { logAdminAudit } from '@/lib/audit/auditLogger';
 import { adminDb } from '@/lib/firebase/admin';
 import { FieldValue } from 'firebase-admin/firestore';
-import { CommunicationEngine } from '@/lib/engine/CommunicationEngine';
 import type { SupportTicket, TicketMessage, TicketStatus, TaxonomyTag, SavedReply, PresenceLock } from '@/lib/support/types';
 
 const STARTER_TAXONOMY: { name: string; slug: string; description: string }[] = [
@@ -48,7 +47,7 @@ export async function getSupportTickets(params?: {
     if (snap.empty) return [];
 
     const now = new Date().getTime();
-    let tickets: SupportTicket[] = [];
+    const tickets: SupportTicket[] = [];
 
     snap.docs.forEach((doc) => {
       const d = doc.data();
@@ -228,9 +227,9 @@ export async function claimTicket(ticketId: string, claim: boolean = true): Prom
     });
 
     return { success: true };
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error('[claimTicket] Error:', error);
-    return { success: false, error: error?.message };
+    return { success: false, error: (error as Error)?.message };
   }
 }
 
@@ -280,9 +279,9 @@ export async function addInternalNote(ticketId: string, body: string): Promise<{
     });
 
     return { success: true };
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error('[addInternalNote] Error:', error);
-    return { success: false, error: error?.message };
+    return { success: false, error: (error as Error)?.message };
   }
 }
 
@@ -345,7 +344,7 @@ export async function sendCustomerReply(ticketId: string, body: string): Promise
     });
 
     // 3. Update ticket metadata (sets firstResponseAt ONCE)
-    const updatePayload: Record<string, any> = {
+    const updatePayload: Record<string, unknown> = {
       status: 'pending',
       lastInternalReplyAt: FieldValue.serverTimestamp(),
       updatedAt: FieldValue.serverTimestamp(),
@@ -374,9 +373,9 @@ export async function sendCustomerReply(ticketId: string, body: string): Promise
     });
 
     return { success: true };
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error('[sendCustomerReply] Error:', error);
-    return { success: false, error: error?.message };
+    return { success: false, error: (error as Error)?.message };
   }
 }
 
@@ -396,7 +395,7 @@ export async function updateTicketStatus(ticketId: string, status: TicketStatus)
     if (!doc.exists) return { success: false, error: 'Ticket not found' };
 
     const beforeStatus = doc.data()?.status || 'active';
-    const updatePayload: Record<string, any> = {
+    const updatePayload: Record<string, unknown> = {
       status,
       updatedAt: FieldValue.serverTimestamp(),
     };
@@ -423,9 +422,9 @@ export async function updateTicketStatus(ticketId: string, status: TicketStatus)
     });
 
     return { success: true };
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error('[updateTicketStatus] Error:', error);
-    return { success: false, error: error?.message };
+    return { success: false, error: (error as Error)?.message };
   }
 }
 
@@ -469,9 +468,9 @@ export async function updateTicketTags(ticketId: string, tags: string[]): Promis
     });
 
     return { success: true };
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error('[updateTicketTags] Error:', error);
-    return { success: false, error: error?.message };
+    return { success: false, error: (error as Error)?.message };
   }
 }
 
@@ -505,9 +504,9 @@ export async function snoozeTicket(ticketId: string, untilIso: string | null): P
     });
 
     return { success: true };
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error('[snoozeTicket] Error:', error);
-    return { success: false, error: error?.message };
+    return { success: false, error: (error as Error)?.message };
   }
 }
 
@@ -612,8 +611,8 @@ export async function createSavedReply(params: { title: string; content: string;
     });
 
     return { success: true };
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error('[createSavedReply] Error:', error);
-    return { success: false, error: error?.message };
+    return { success: false, error: (error as Error)?.message };
   }
 }

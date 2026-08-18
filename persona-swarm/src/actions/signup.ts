@@ -24,7 +24,7 @@ export interface PersonaAgent {
     strategy: string;
   };
   plaidSandbox?: boolean;
-  projects: any[];
+  projects: Record<string, unknown>[];
 }
 
 export interface SignupResult {
@@ -107,8 +107,8 @@ export async function executeSignup(agent: PersonaAgent): Promise<SignupResult> 
       email: agent.email,
       isNew,
     };
-  } catch (err: any) {
-    const errorMsg = err.message || 'Unknown signup error';
+  } catch (err: unknown) {
+    const errorMsg = (err as Error).message || 'Unknown signup error';
     logSwarmEvent(agentId, 'SIGNUP', 'ERROR', { error: errorMsg });
     return {
       success: false,

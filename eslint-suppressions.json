@@ -591,17 +591,6 @@
       "count": 3
     }
   },
-  "src/__tests__/adminActions.test.ts": {
-    "@typescript-eslint/no-explicit-any": {
-      "count": 3
-    },
-    "@typescript-eslint/no-unused-vars": {
-      "count": 2
-    },
-    "no-var": {
-      "count": 8
-    }
-  },
   "src/__tests__/authenticationGates.test.ts": {
     "@typescript-eslint/no-explicit-any": {
       "count": 7
@@ -1243,11 +1232,6 @@
       "count": 2
     }
   },
-  "src/__tests__/navigationContract.test.tsx": {
-    "@typescript-eslint/no-unused-vars": {
-      "count": 1
-    }
-  },
   "src/__tests__/notificationService.test.ts": {
     "@typescript-eslint/no-explicit-any": {
       "count": 8
@@ -1433,11 +1417,6 @@
     },
     "no-var": {
       "count": 4
-    }
-  },
-  "src/__tests__/resendWebhook.test.ts": {
-    "@typescript-eslint/no-explicit-any": {
-      "count": 1
     }
   },
   "src/__tests__/retrospectiveE0.test.tsx": {
@@ -2871,19 +2850,6 @@
       "count": 1
     }
   },
-  "src/app/api/transactions/[plaidId]/attribution/route.test.ts": {
-    "@typescript-eslint/no-explicit-any": {
-      "count": 5
-    },
-    "@typescript-eslint/no-unused-vars": {
-      "count": 3
-    }
-  },
-  "src/app/api/transactions/[plaidId]/attribution/route.ts": {
-    "@typescript-eslint/no-explicit-any": {
-      "count": 4
-    }
-  },
   "src/app/api/transactions/project/[projectId]/identification-suggestions/route.ts": {
     "@typescript-eslint/no-explicit-any": {
       "count": 1
@@ -2924,14 +2890,6 @@
   },
   "src/app/api/webhooks/inbound-email/route.ts": {
     "@typescript-eslint/no-explicit-any": {
-      "count": 1
-    }
-  },
-  "src/app/api/webhooks/resend/route.ts": {
-    "@typescript-eslint/no-explicit-any": {
-      "count": 3
-    },
-    "@typescript-eslint/no-unused-vars": {
       "count": 1
     }
   },
@@ -3002,16 +2960,10 @@
   },
   "src/app/dashboard/deals/page.tsx": {
     "@typescript-eslint/no-explicit-any": {
-      "count": 2
-    },
-    "@typescript-eslint/no-unused-vars": {
-      "count": 13
-    },
-    "react-hooks/rules-of-hooks": {
       "count": 1
     },
-    "react-hooks/set-state-in-effect": {
-      "count": 4
+    "@typescript-eslint/no-unused-vars": {
+      "count": 3
     }
   },
   "src/app/dashboard/field-manager/page.tsx": {
@@ -3051,9 +3003,6 @@
     }
   },
   "src/app/dashboard/insights/page.tsx": {
-    "@next/next/no-html-link-for-pages": {
-      "count": 2
-    },
     "@typescript-eslint/no-explicit-any": {
       "count": 7
     },
@@ -3238,9 +3187,6 @@
     }
   },
   "src/app/dashboard/projects/[id]/layout.tsx": {
-    "@next/next/no-html-link-for-pages": {
-      "count": 1
-    },
     "@typescript-eslint/no-explicit-any": {
       "count": 5
     },
@@ -3420,20 +3366,6 @@
       "count": 1
     }
   },
-  "src/app/dashboard/reports/page.tsx": {
-    "@typescript-eslint/no-explicit-any": {
-      "count": 15
-    },
-    "@typescript-eslint/no-unused-vars": {
-      "count": 3
-    },
-    "react-hooks/exhaustive-deps": {
-      "count": 6
-    },
-    "react-hooks/set-state-in-effect": {
-      "count": 1
-    }
-  },
   "src/app/dashboard/settings/data-privacy/page.tsx": {
     "@typescript-eslint/no-explicit-any": {
       "count": 4
@@ -3516,11 +3448,6 @@
       "count": 1
     }
   },
-  "src/app/deals/[listingId]/DealListingClientPage.tsx": {
-    "react-hooks/set-state-in-effect": {
-      "count": 1
-    }
-  },
   "src/app/demo/page.tsx": {
     "@typescript-eslint/no-explicit-any": {
       "count": 5
@@ -3582,11 +3509,6 @@
       "count": 1
     }
   },
-  "src/app/marketplaces/page.tsx": {
-    "@typescript-eslint/no-unused-vars": {
-      "count": 1
-    }
-  },
   "src/app/onboarding/intent/page.tsx": {
     "@typescript-eslint/no-unused-vars": {
       "count": 1
@@ -3612,11 +3534,6 @@
     }
   },
   "src/app/pricing/PricingClient.tsx": {
-    "react-hooks/set-state-in-effect": {
-      "count": 1
-    }
-  },
-  "src/app/pricing/page.tsx": {
     "react-hooks/set-state-in-effect": {
       "count": 1
     }
@@ -3961,9 +3878,6 @@
     }
   },
   "src/components/acquisition/steps/AddressStep.tsx": {
-    "react-hooks/set-state-in-effect": {
-      "count": 1
-    },
     "react/no-unescaped-entities": {
       "count": 3
     }
@@ -4009,22 +3923,6 @@
   },
   "src/components/auth/MFAUnenrollModal.tsx": {
     "@typescript-eslint/no-explicit-any": {
-      "count": 1
-    }
-  },
-  "src/components/billing/BillingPage.tsx": {
-    "@typescript-eslint/no-explicit-any": {
-      "count": 9
-    },
-    "@typescript-eslint/no-unused-vars": {
-      "count": 3
-    },
-    "react-hooks/purity": {
-      "count": 2
-    }
-  },
-  "src/components/billing/InvoiceTable.tsx": {
-    "@typescript-eslint/no-unused-vars": {
       "count": 1
     }
   },
@@ -4301,9 +4199,6 @@
     "@typescript-eslint/no-explicit-any": {
       "count": 12
     },
-    "@typescript-eslint/no-unused-vars": {
-      "count": 8
-    },
     "react-hooks/set-state-in-effect": {
       "count": 2
     },
@@ -4314,11 +4209,6 @@
   "src/components/dashboard/command-center/KPIDashStrip.tsx": {
     "@typescript-eslint/no-unused-vars": {
       "count": 3
-    }
-  },
-  "src/components/dashboard/command-center/MarketHeatmap.tsx": {
-    "@typescript-eslint/no-explicit-any": {
-      "count": 1
     }
   },
   "src/components/dashboard/command-center/PortfolioClustersGrid.tsx": {
@@ -4490,7 +4380,7 @@
       "count": 1
     },
     "@typescript-eslint/no-unused-vars": {
-      "count": 10
+      "count": 1
     }
   },
   "src/components/engine/ContactManager.tsx": {
@@ -4945,36 +4835,12 @@
       "count": 1
     }
   },
-  "src/components/insights/InsightsDatapointGrid.tsx": {
-    "@typescript-eslint/no-unused-vars": {
-      "count": 1
-    }
-  },
   "src/components/insights/KPICategoryCharts.tsx": {
     "@typescript-eslint/no-explicit-any": {
       "count": 6
     },
     "@typescript-eslint/no-unused-vars": {
       "count": 4
-    }
-  },
-  "src/components/insights/KPIDatapointExplorer.tsx": {
-    "@typescript-eslint/no-unused-vars": {
-      "count": 1
-    },
-    "react-hooks/rules-of-hooks": {
-      "count": 1
-    }
-  },
-  "src/components/insights/KPIInsightsDashboard.tsx": {
-    "@typescript-eslint/no-explicit-any": {
-      "count": 9
-    },
-    "@typescript-eslint/no-unused-vars": {
-      "count": 22
-    },
-    "prefer-const": {
-      "count": 1
     }
   },
   "src/components/insights/MarketOverlaySection.tsx": {
@@ -5107,14 +4973,6 @@
       "count": 2
     }
   },
-  "src/components/landing/HowItWorks.tsx": {
-    "@typescript-eslint/no-unused-vars": {
-      "count": 1
-    },
-    "react/no-unescaped-entities": {
-      "count": 6
-    }
-  },
   "src/components/landing/LandingHeader.tsx": {
     "@typescript-eslint/no-unused-vars": {
       "count": 3
@@ -5126,14 +4984,6 @@
   "src/components/landing/LifecycleCard.tsx": {
     "react/jsx-no-comment-textnodes": {
       "count": 1
-    }
-  },
-  "src/components/landing/MarketplacesClient.tsx": {
-    "@typescript-eslint/no-unused-vars": {
-      "count": 1
-    },
-    "react/no-unescaped-entities": {
-      "count": 5
     }
   },
   "src/components/landing/MetricCarousel.tsx": {
@@ -5210,9 +5060,6 @@
     },
     "react-hooks/set-state-in-effect": {
       "count": 2
-    },
-    "react/no-unescaped-entities": {
-      "count": 4
     }
   },
   "src/components/layout/TopHeader.tsx": {
@@ -5322,9 +5169,6 @@
     }
   },
   "src/components/marketplace/DealMap.tsx": {
-    "@typescript-eslint/no-explicit-any": {
-      "count": 2
-    },
     "react-hooks/set-state-in-effect": {
       "count": 1
     }
@@ -5862,10 +5706,7 @@
   },
   "src/components/project/HurdleTestCard.tsx": {
     "@typescript-eslint/no-explicit-any": {
-      "count": 12
-    },
-    "@typescript-eslint/no-unused-vars": {
-      "count": 1
+      "count": 11
     },
     "react-hooks/exhaustive-deps": {
       "count": 1
@@ -7423,11 +7264,6 @@
       "count": 2
     }
   },
-  "src/lib/notifications/transactionNotifications.ts": {
-    "@typescript-eslint/no-unused-vars": {
-      "count": 3
-    }
-  },
   "src/lib/operations/variance.ts": {
     "@typescript-eslint/no-explicit-any": {
       "count": 2
@@ -7858,11 +7694,6 @@
       "count": 2
     }
   },
-  "src/marketplace/listings.test.ts": {
-    "@typescript-eslint/no-explicit-any": {
-      "count": 2
-    }
-  },
   "src/messaging/agent-messages.test.ts": {
     "@typescript-eslint/no-explicit-any": {
       "count": 2
@@ -7928,27 +7759,6 @@
   "src/store/settingsStore.ts": {
     "@typescript-eslint/no-explicit-any": {
       "count": 12
-    },
-    "@typescript-eslint/no-unused-vars": {
-      "count": 1
-    }
-  },
-  "src/types/dealInquiry.ts": {
-    "@typescript-eslint/no-explicit-any": {
-      "count": 2
-    },
-    "@typescript-eslint/no-unused-vars": {
-      "count": 1
-    }
-  },
-  "src/types/dealInvitation.ts": {
-    "@typescript-eslint/no-explicit-any": {
-      "count": 1
-    }
-  },
-  "src/types/listing.ts": {
-    "@typescript-eslint/no-explicit-any": {
-      "count": 1
     },
     "@typescript-eslint/no-unused-vars": {
       "count": 1

@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useMemo } from 'react';
-import { X, TrendingUp, Calendar, Download, Filter, Building2, BarChart2, DollarSign } from 'lucide-react';
+import { X, TrendingUp, Download, Building2, BarChart2 } from 'lucide-react';
 import { useProjectStore } from '@/store/projectStore';
 import { deriveAllMetrics } from '@/lib/metrics/reiMetrics';
 import toast from 'react-hot-toast';
@@ -37,7 +37,7 @@ export function KPIDeepDiveModal({ isOpen, onClose, kpiData }: KPIDeepDiveModalP
     return projects.map((p) => {
       const f = p.financials || {};
       const metrics = deriveAllMetrics(
-        f as any,
+        f as unknown as Parameters<typeof deriveAllMetrics>[0],
         f.estimatedCurrentValue || f.estimatedARV,
         p.dispositionType,
         p.currentPhase,

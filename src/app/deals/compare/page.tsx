@@ -6,12 +6,8 @@ import {
   ArrowLeft,
   TrendingUp,
   DollarSign,
-  Building2,
   MapPin,
-  CheckCircle2,
   X,
-  Sparkles,
-  BarChart3,
   SlidersHorizontal,
 } from 'lucide-react';
 import Link from 'next/link';
@@ -38,101 +34,42 @@ interface DealComparePayload {
   investorCount: number;
 }
 
-const SAMPLE_COMPARE_DEALS: Record<string, DealComparePayload> = {
-  deal_123mainst: {
-    id: 'deal_123mainst',
-    slug: '123mainstaustintx78701',
-    address: '123 Main St, Austin, TX 78701',
-    propertyName: 'Austin Core Multifamily Project',
-    city: 'Austin',
-    state: 'TX',
-    assetClass: 'Multi-family',
-    subStrategy: 'FLIP',
-    purchasePrice: 350000,
-    rehabCost: 50000,
-    arv: 480000,
-    holdingCosts: 12000,
-    projectedRoi: 18.5,
-    capRate: 7.8,
-    cashOnCash: 12.4,
-    fundingTarget: 200000,
-    committedAmount: 130000,
-    investorCount: 5,
-  },
-  deal_456congress: {
-    id: 'deal_456congress',
-    slug: '456congressaveaustintx78701',
-    address: '456 Congress Ave, Austin, TX 78701',
-    propertyName: 'Congress Ave Commercial Mixed-Use',
-    city: 'Austin',
-    state: 'TX',
-    assetClass: 'Commercial',
-    subStrategy: 'BRRRR',
-    purchasePrice: 1250000,
-    rehabCost: 150000,
-    arv: 1750000,
-    holdingCosts: 35000,
-    projectedRoi: 22.4,
-    capRate: 8.5,
-    cashOnCash: 14.1,
-    fundingTarget: 500000,
-    committedAmount: 420000,
-    investorCount: 12,
-  },
-  deal_789oak: {
-    id: 'deal_789oak',
-    slug: '789oaklandrddallastx75201',
-    address: '789 Oakland Rd, Dallas, TX 75201',
-    propertyName: 'Dallas Residential Value-Add Flip',
-    city: 'Dallas',
-    state: 'TX',
-    assetClass: 'Residential',
-    subStrategy: 'FLIP',
-    purchasePrice: 280000,
-    rehabCost: 45000,
-    arv: 395000,
-    holdingCosts: 9500,
-    projectedRoi: 20.1,
-    capRate: 7.2,
-    cashOnCash: 11.8,
-    fundingTarget: 150000,
-    committedAmount: 150000,
-    investorCount: 4,
-  },
-};
-
 export default function DealComparisonPage() {
   const searchParams = useSearchParams();
-  const router = useRouter();
+  const _router = useRouter();
 
-  const idsParam = searchParams?.get('ids') || 'deal_123mainst,deal_456congress,deal_789oak';
-  const initialIds = idsParam.split(',').filter(Boolean);
+  const idsParam = searchParams?.get('ids') || '';
 
   const [compareDeals, setCompareDeals] = useState<DealComparePayload[]>([]);
 
   useEffect(() => {
-    const loaded = initialIds
-      .map((id) => SAMPLE_COMPARE_DEALS[id] || {
-        id,
-        slug: id,
-        address: `${id} Address`,
-        propertyName: `Deal ${id}`,
-        city: 'Austin',
-        state: 'TX',
-        assetClass: 'Residential',
-        subStrategy: 'FLIP',
-        purchasePrice: 300000,
-        rehabCost: 40000,
-        arv: 420000,
-        holdingCosts: 10000,
-        projectedRoi: 19.0,
-        capRate: 7.5,
-        cashOnCash: 12.0,
-        fundingTarget: 200000,
-        committedAmount: 100000,
-        investorCount: 3,
-      });
-    setCompareDeals(loaded);
+    async function loadCompareDeals() {
+      const initialIds = idsParam.split(',').filter(Boolean);
+      if (initialIds.length === 0) {
+        setCompareDeals([]);
+        return;
+      }
+
+      try {
+        const res = await fetch('/api/deals', {
+          headers: { authorization: 'Bearer mock_token' },
+        });
+        if (res.ok) {
+          const data = await res.json();
+          const allDeals: DealComparePayload[] = data.deals || [];
+          const matched = allDeals.filter(
+            (d) => initialIds.includes(d.id) || initialIds.includes(d.slug)
+          );
+          setCompareDeals(matched);
+        } else {
+          setCompareDeals([]);
+        }
+      } catch {
+        setCompareDeals([]);
+      }
+    }
+
+    loadCompareDeals();
   }, [idsParam]);
 
   const handleRemoveDeal = (dealId: string) => {

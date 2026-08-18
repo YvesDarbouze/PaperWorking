@@ -45,7 +45,7 @@ export async function POST(req: NextRequest) {
       broadcast: broadcastRecord,
       dispatchedCount: recipientTokens.length,
     });
-  } catch (error) {
+  } catch (_error) {
     return NextResponse.json({ error: 'Failed to process broadcast' }, { status: 500 });
   }
 }

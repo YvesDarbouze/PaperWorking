@@ -1,5 +1,3 @@
-import { Timestamp } from 'firebase/firestore';
-
 export interface ThreadMessage {
   id: string;
   sender: 'investor' | 'leadInvestor';
@@ -17,6 +15,6 @@ export interface InvestorInquiry {
   status: 'open' | 'answered';
   isShared: boolean;
   messages: ThreadMessage[];
-  createdAt: any; // Date | Timestamp | string
-  updatedAt: any; // Date | Timestamp | string
+  createdAt: Date | string | unknown; // Date | Timestamp | string
+  updatedAt: Date | string | unknown; // Date | Timestamp | string
 }

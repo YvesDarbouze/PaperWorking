@@ -5,10 +5,7 @@ const nextConfig: any = {
   output: 'standalone',
   transpilePackages: ['framer-motion', 'motion-dom'],
   typescript: {
-    ignoreBuildErrors: true,
-  },
-  eslint: {
-    ignoreDuringBuilds: true,
+    ignoreBuildErrors: false,
   },
   sentry: {
     autoInstrumentMiddleware: false,

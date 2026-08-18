@@ -1,11 +1,10 @@
 'use client';
 
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useCallback, useRef } from 'react';
+import Image from 'next/image';
 import {
   X,
-  MapPin,
   TrendingUp,
-  DollarSign,
   Building2,
   Share2,
   Mail,
@@ -14,7 +13,6 @@ import {
   BarChart3,
   Lock,
   Sparkles,
-  Maximize2,
 } from 'lucide-react';
 import Link from 'next/link';
 import { formatCurrencyAmount, calculateFundingProgress } from '@/lib/deals/fundingUtils';
@@ -58,16 +56,34 @@ export default function ExpandedModal({
   source = 'detail',
   isSubscribed = true,
 }: ExpandedModalProps) {
-  const [openTime, setOpenTime] = useState<number>(0);
+  const openTimeRef = useRef<number>(0);
   const [isMobileAnalyzerOpen, setIsMobileAnalyzerOpen] = useState(false);
   const [isInviteModalOpen, setIsInviteModalOpen] = useState(false);
   const [isShareModalOpen, setIsShareModalOpen] = useState(false);
+
+  const handleClose = useCallback(() => {
+    if (openTimeRef.current > 0) {
+      const duration = Math.round((Date.now() - openTimeRef.current) / 1000);
+      console.log(`[Analytics] Event: deal_expanded_modal_close`, {
+        dealId: deal.id,
+        durationSeconds: duration,
+      });
+    }
+
+    if (typeof window !== 'undefined') {
+      const url = new URL(window.location.href);
+      url.searchParams.delete('expanded');
+      window.history.pushState({}, '', url.toString());
+    }
+
+    onClose();
+  }, [deal.id, onClose]);
 
   // Synchronize URL query parameter ?expanded=true (shallow update)
   useEffect(() => {
     if (!isOpen) return;
 
-    setOpenTime(Date.now());
+    openTimeRef.current = Date.now();
     console.log(`[Analytics] Event: deal_expanded_modal_open`, {
       dealId: deal.id,
       source,
@@ -90,25 +106,7 @@ export default function ExpandedModal({
     return () => {
       window.removeEventListener('keydown', handleKeyDown);
     };
-  }, [isOpen]);
-
-  const handleClose = () => {
-    if (openTime > 0) {
-      const duration = Math.round((Date.now() - openTime) / 1000);
-      console.log(`[Analytics] Event: deal_expanded_modal_close`, {
-        dealId: deal.id,
-        durationSeconds: duration,
-      });
-    }
-
-    if (typeof window !== 'undefined') {
-      const url = new URL(window.location.href);
-      url.searchParams.delete('expanded');
-      window.history.pushState({}, '', url.toString());
-    }
-
-    onClose();
-  };
+  }, [isOpen, deal.id, source, handleClose]);
 
   if (!isOpen) return null;
 
@@ -168,7 +166,7 @@ export default function ExpandedModal({
             {/* Gallery Placeholder */}
             <div className="relative h-64 w-full rounded-[14px] bg-gradient-to-br from-slate-900 via-[#0a0a0f] to-slate-950 border border-white/10 overflow-hidden flex items-center justify-center">
               {deal.imageUrl ? (
-                <img src={deal.imageUrl} alt={deal.address} className="w-full h-full object-cover" />
+                <Image src={deal.imageUrl} alt={deal.address} fill className="object-cover" />
               ) : (
                 <div className="flex flex-col items-center justify-center space-y-2 opacity-40">
                   <Building2 className="w-12 h-12 text-[#34d399]" />

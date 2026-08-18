@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useCallback, useMemo } from 'react';
 import { UserCheck, Check, X, ShieldCheck, ExternalLink } from 'lucide-react';
 import Link from 'next/link';
 import { BusinessCard, BusinessCardShare } from '@/types/deals';
@@ -42,7 +42,10 @@ export default function InviteeActions({
   const [status, setStatus] = useState<'pending' | 'accepted' | 'declined'>('pending');
   const [isConfirmModalOpen, setIsConfirmModalOpen] = useState(false);
 
-  const cardData: BusinessCard = { ...DEFAULT_INVITEE_CARD, ...inviteeCard };
+  const cardData: BusinessCard = useMemo(
+    () => ({ ...DEFAULT_INVITEE_CARD, ...inviteeCard }),
+    [inviteeCard]
+  );
 
   const handleDecline = (e: React.MouseEvent) => {
     e.preventDefault();
@@ -51,20 +54,21 @@ export default function InviteeActions({
     if (onDecline) onDecline();
   };
 
-  const handleConfirmInterest = () => {
+  const handleConfirmInterest = useCallback(() => {
+    const timestamp = Date.now();
     const shareRecord: BusinessCardShare = {
-      id: `share_${Date.now()}`,
+      id: `share_${timestamp}`,
       dealId,
       senderUserId: cardData.userId,
       recipientUserId: 'user_creator_id',
       businessCardData: { ...cardData },
-      createdAt: new Date().toISOString(),
+      createdAt: new Date(timestamp).toISOString(),
     };
 
     setStatus('accepted');
     setIsConfirmModalOpen(false);
     if (onExpressInterest) onExpressInterest(shareRecord);
-  };
+  }, [cardData, dealId, onExpressInterest]);
 
   if (status === 'declined') {
     return null;
@@ -104,7 +108,7 @@ export default function InviteeActions({
         className="px-3.5 py-1.5 rounded-[10px] bg-[#34d399] hover:bg-[#34d399]/90 text-slate-950 font-black text-xs uppercase tracking-wider transition-all min-h-[36px] cursor-pointer flex items-center gap-1 shadow-md"
       >
         <UserCheck className="w-3.5 h-3.5 text-slate-950" />
-        <span>I'm interested</span>
+        <span>I&apos;m interested</span>
       </button>
 
       {/* Glass Business Card Confirmation Modal */}

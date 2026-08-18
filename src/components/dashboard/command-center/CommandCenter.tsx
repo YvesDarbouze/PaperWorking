@@ -1,11 +1,11 @@
 "use client";
 
-import { useMemo, useState, useEffect, useRef } from "react";
+import { useMemo, useState, useEffect } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import toast from "react-hot-toast";
 import dynamic from "next/dynamic";
-import { collection, doc, query, orderBy, limit, onSnapshot, Timestamp, where } from "firebase/firestore";
+import { collection, doc, query, orderBy, limit, onSnapshot, Timestamp } from "firebase/firestore";
 import { db } from "@/lib/firebase/config";
 import { useProjectStore } from "@/store/projectStore";
 import { useTheme } from "@/lib/utils/ThemeProvider";
@@ -15,7 +15,6 @@ import { useTenant } from "@/context/TenantContext";
 import { useInboxFeed } from "@/hooks/useInboxFeed";
 import { useAllDealsSync } from "@/hooks/useAllProjectsSync";
 import { ActivePipeline } from "./ActivePipeline";
-import { TerminalAuditFeed } from "./TerminalAuditFeed";
 import { MarketHeatmap } from "./MarketHeatmap";
 import { NeedsAttentionFeed } from "./NeedsAttentionFeed";
 import { TopPerformersWidget } from "./TopPerformersWidget";
@@ -29,10 +28,10 @@ import {
 } from "@/lib/metrics/reiMetrics";
 import type { Project } from "@/types/schema";
 import type { DealListingTeaser } from "@/types/listing";
-import { PHASE_COLORS as CANONICAL_PHASES, getPhaseLabel } from "@/lib/constants/phaseColors";
+import { PHASE_COLORS as CANONICAL_PHASES } from "@/lib/constants/phaseColors";
 import { METRIC_TAXONOMY, type MetricCategory } from "@/lib/metrics/metricTaxonomy";
 
-const InsightsTab = dynamic(() => import("@/components/portfolio/InsightsTab"), { ssr: false });
+const _InsightsTab = dynamic(() => import("@/components/portfolio/InsightsTab"), { ssr: false });
 const DealMap = dynamic(() => import("@/components/marketplace/DealMap"), { ssr: false });
 
 // ─── Portfolio KPI hook ───────────────────────────────────────────────────────
@@ -1062,7 +1061,7 @@ function formatMetricValue(id: string, val: number | null): string {
   return `${val.toFixed(1)}%`;
 }
 
-function KPIMetricsModule({ isDark }: { isDark: boolean }) {
+export function KPIMetricsModule({ isDark }: { isDark: boolean }) {
   const projects = useProjectStore((s) => s.projects);
   const t = tokens(isDark);
   
@@ -1328,7 +1327,7 @@ function KPIMetricsModule({ isDark }: { isDark: boolean }) {
 
 // ─── Deal Map Card ─────────────────────────────────────────────────────────────
 
-function DealMapCard({ isDark, projects }: { isDark: boolean; projects: Project[] }) {
+export function DealMapCard({ isDark, projects }: { isDark: boolean; projects: Project[] }) {
   const { user, profile } = useAuth();
   const t = tokens(isDark);
   const mapDeals = useMemo<DealListingTeaser[]>(() => {
@@ -2347,7 +2346,7 @@ function PortfolioSparklineWidget({ isDark }: { isDark: boolean }) {
 }
 
 // ─── Deals Marketplace CTA Card ──────────────────────────────
-function DealsMarketplaceCard({ isDark }: { isDark: boolean }) {
+export function DealsMarketplaceCard({ isDark }: { isDark: boolean }) {
   const { profile } = useAuth();
   const router = useRouter();
 
@@ -2423,7 +2422,7 @@ export function CommandCenter() {
   const { user } = useAuth();
   const router = useRouter();
   const projects = useProjectStore((s) => s.projects);
-  const ledgerItems = useProjectStore((s) => s.ledgerItems);
+  const _ledgerItems = useProjectStore((s) => s.ledgerItems);
   const kpis     = usePortfolioKPIs(projects);
   const { theme } = useTheme();
   const isDark    = theme === "dark";
@@ -2487,7 +2486,7 @@ export function CommandCenter() {
 
   const irrVal = fmtPct(kpis.irr);
   const emVal  = kpis.equityMultiple !== null ? kpis.equityMultiple.toFixed(2) : "—";
-  const capVal = fmtCompact(kpis.capitalDeployed);
+  const _capVal = fmtCompact(kpis.capitalDeployed);
   const noiVal = kpis.totalNOI !== null ? fmtCompact(kpis.totalNOI) : "—";
   const cfVal  = kpis.portfolioCashFlow !== null ? fmtCompact(kpis.portfolioCashFlow) : "—";
   const cfNeg  = kpis.portfolioCashFlow !== null && kpis.portfolioCashFlow < 0;

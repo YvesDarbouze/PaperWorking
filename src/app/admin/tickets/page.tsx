@@ -38,7 +38,7 @@ export default function AdminTicketsPage() {
   const [taxonomy, setTaxonomy] = useState<TaxonomyTag[]>([]);
   const [savedReplies, setSavedReplies] = useState<SavedReply[]>([]);
   const [selectedTicketId, setSelectedTicketId] = useState<string | null>(null);
-  const [error, setError] = useState(false);
+  const [_error, setError] = useState(false);
   const [refreshing, setRefreshing] = useState(false);
 
   // New saved reply state
@@ -163,9 +163,9 @@ export default function AdminTicketsPage() {
   ];
 
   const list = tickets || [];
-  const activeCount = list.filter((t) => t.status === 'active').length;
-  const pendingCount = list.filter((t) => t.status === 'pending').length;
-  const closedCount = list.filter((t) => t.status === 'closed').length;
+  const _activeCount = list.filter((t) => t.status === 'active').length;
+  const _pendingCount = list.filter((t) => t.status === 'pending').length;
+  const _closedCount = list.filter((t) => t.status === 'closed').length;
 
   return (
     <div className="space-y-6">

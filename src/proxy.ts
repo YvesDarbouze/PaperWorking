@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
-import { requireSubscriber, checkSubscriberStatus, UserContext } from './middleware/requireSubscriber';
+import { requireSubscriber, UserContext } from './middleware/requireSubscriber';
 import { requireNonVendor, isVendorUser } from './middleware/requireNonVendor';
 
 /* ═══════════════════════════════════════════════════════
@@ -123,6 +123,36 @@ export function proxy(request: NextRequest) {
     }
   }
 
+  // ── 1.5. Platform Admin Page Tree Server Protection ───────
+  if (pathname === '/admin' || pathname.startsWith('/admin/')) {
+    if (!hasSession) {
+      const url = new URL('/login', request.url);
+      url.searchParams.set('redirectTo', request.nextUrl.pathname + request.nextUrl.search);
+      return withNoCache(NextResponse.redirect(url));
+    }
+
+    const normalizedRole = (user.role || '').toLowerCase();
+    const normalizedAccount = (user.accountType || '').toLowerCase();
+    const isAdminRole =
+      normalizedRole === 'platform admin' ||
+      normalizedRole === 'admin' ||
+      normalizedRole === 'lead investor' ||
+      normalizedRole === 'superuser' ||
+      normalizedAccount === 'platform admin' ||
+      normalizedAccount === 'admin';
+
+    if (!isAdminRole) {
+      return withNoCache(
+        new NextResponse('403 Forbidden. Admin privileges required.', {
+          status: 403,
+          headers: { 'content-type': 'text/plain; charset=utf-8' },
+        })
+      );
+    }
+
+    return withNoCache(nextWithHeader(request, pathname));
+  }
+
   // ── 2. Data Room Deprecation Redirect (NAV-04) ───────────
   if (pathname === '/dashboard/data-room' || pathname.startsWith('/dashboard/data-room/')) {
     return withNoCache(NextResponse.redirect(new URL('/dashboard/projects', request.url), 301));
@@ -242,6 +272,8 @@ export function proxy(request: NextRequest) {
 
 export const config = {
   matcher: [
+    '/admin',
+    '/admin/:path*',
     '/dashboard/:path*',
     '/projects/:path*',
     '/vendor-portal/:path*',

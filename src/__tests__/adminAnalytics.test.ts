@@ -1,4 +1,4 @@
-import { PlaidHealthStats, SupportMetricsData } from '@/actions/adminAnalytics';
+import { SupportMetricsData } from '@/actions/adminAnalytics';
 
 describe('PROMPT 5 — Support Metrics & Plaid Health Surface Unit Suite', () => {
   describe('Plaid Health Connection Classification (Amendment B)', () => {

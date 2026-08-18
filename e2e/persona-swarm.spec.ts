@@ -29,7 +29,7 @@ test.describe('Persona Swarm — Smoke Cohort & Surface Integrity (Amendment 2)'
       expect(state.projectCount).toBe(10);
 
       // 2. Assert sent/received interaction counts match interaction-graph config
-      const expectedOutboundEdges = graph.edges.filter((e: any) => e.from === agentId).length;
+      const expectedOutboundEdges = graph.edges.filter((e: { from?: string }) => e.from === agentId).length;
       expect(state.interactionCount).toBe(expectedOutboundEdges);
 
       const expectedInvitesSent = (graph.inviteMatrix[agentId] || []).length;

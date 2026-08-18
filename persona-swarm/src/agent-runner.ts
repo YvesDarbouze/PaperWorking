@@ -128,8 +128,8 @@ export async function runAgentWave(
       default:
         state.errors.push(`Unknown wave number: ${wave}`);
     }
-  } catch (err: any) {
-    const msg = err.message || 'Unknown wave error';
+  } catch (err: unknown) {
+    const msg = (err as Error).message || 'Unknown wave error';
     state.errors.push(`Wave ${wave} exception: ${msg}`);
     logSwarmEvent(agentId, `WAVE_${wave}`, 'EXCEPTION', { error: msg });
   }

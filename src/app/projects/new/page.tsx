@@ -5,11 +5,21 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import { useAuth } from '@/context/AuthContext';
 import { Building2, MapPin, CheckCircle2, ArrowRight, ArrowLeft, Link as LinkIcon, Plus, Sparkles } from 'lucide-react';
 import AddressSearch from '@/components/deals/AddressSearch';
-import DealCard from '@/components/deals/DealCard';
+interface SelectedDeal {
+  id: string;
+  slug?: string;
+  address?: string;
+  propertyName?: string;
+  purchasePrice?: number;
+  projectedRoi?: number;
+  status?: string;
+  committedAmount?: number;
+  fundingTarget?: number;
+}
 
 export default function NewProjectWizardPage() {
   const router = useRouter();
-  const searchParams = useSearchParams();
+  const _searchParams = useSearchParams();
   const { user } = useAuth();
 
   useEffect(() => {
@@ -28,10 +38,10 @@ export default function NewProjectWizardPage() {
 
   // Step 2 Property Identification State
   const [selectedAddress, setSelectedAddress] = useState('');
-  const [selectedDeal, setSelectedDeal] = useState<any | null>(null);
-  const [dealAction, setDealAction] = useState<'linked_existing' | 'created_new' | null>(null);
+  const [selectedDeal, setSelectedDeal] = useState<SelectedDeal | null>(null);
+  const [_dealAction, setDealAction] = useState<'linked_existing' | 'created_new' | null>(null);
   const [linkedDealId, setLinkedDealId] = useState<string | null>(null);
-  const [isCheckingDeal, setIsCheckingDeal] = useState(false);
+  const [_isCheckingDeal, setIsCheckingDeal] = useState(false);
 
   // Handle Address Selection in Step 2
   const handleAddressSelect = async (address: string) => {

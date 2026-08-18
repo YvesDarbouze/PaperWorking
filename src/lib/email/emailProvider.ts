@@ -28,7 +28,7 @@ export interface EmailDispatchPayload {
   sandboxMode?: boolean; // CI sandbox mode (F-4)
   idempotencyKey?: string; // Event-derived deduplication key
   tags?: EmailTag[];
-  metadata?: Record<string, any>;
+  metadata?: Record<string, unknown>;
 }
 
 export interface EmailDispatchResult {

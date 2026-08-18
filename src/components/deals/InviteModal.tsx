@@ -9,7 +9,7 @@ interface InviteModalProps {
   dealId: string;
   dealAddress: string;
   creatorName?: string;
-  onInviteSent?: (invitations: any[]) => void;
+  onInviteSent?: (invitations: Record<string, unknown>[]) => void;
 }
 
 export default function InviteModal({
@@ -17,7 +17,7 @@ export default function InviteModal({
   onClose,
   dealId,
   dealAddress,
-  creatorName = 'Current Investor',
+  creatorName: _creatorName = 'Current Investor',
   onInviteSent,
 }: InviteModalProps) {
   const [emailsInput, setEmailsInput] = useState('');

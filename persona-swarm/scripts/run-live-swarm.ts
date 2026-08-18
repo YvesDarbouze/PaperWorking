@@ -49,6 +49,28 @@ async function delay(ms: number) {
   return new Promise((resolve) => setTimeout(resolve, ms));
 }
 
+interface SwarmManifest {
+  updatedAt: string;
+  totalPersonas: number;
+  completedWaves: number[];
+  targetUrl: string;
+  stripeMode: string;
+  versionStamp: {
+    gitCommitSha: string;
+    timestamp: string;
+  };
+  stats: {
+    signupsCompleted: number;
+    subscriptionsActive: number;
+    projectsCreated: number;
+    interactionsExecuted: number;
+    invitesAccepted: number;
+    reportsGenerated: number;
+    screenshotsCaptured: number;
+  };
+  agents: Record<string, any>;
+}
+
 async function runLiveSwarm() {
   console.log('====================================================');
   console.log('  PERSONA SWARM — LIVE PRODUCTION RUNNER');
@@ -62,7 +84,7 @@ async function runLiveSwarm() {
   const personas: PersonaAgent[] = JSON.parse(fs.readFileSync(registryPath, 'utf-8'));
 
   const manifestPath = path.join(process.cwd(), 'artifacts', 'persona-swarm', 'swarm-manifest.json');
-  const manifest: any = {
+  const manifest: SwarmManifest = {
     updatedAt: new Date().toISOString(),
     totalPersonas: personas.length,
     completedWaves: [1, 2, 3, 4, 5],
@@ -104,13 +126,14 @@ async function runLiveSwarm() {
         const userCredential = await createUserWithEmailAndPassword(auth, agent.email, DEFAULT_PASSWORD);
         uid = userCredential.user.uid;
         console.log(`  ✓ Auth created (UID: ${uid})`);
-      } catch (err: any) {
-        if (err.code === 'auth/email-already-in-use') {
+      } catch (err: unknown) {
+        const errorObj = err as { code?: string; message?: string };
+        if (errorObj.code === 'auth/email-already-in-use') {
           console.log(`  ℹ User already exists, signing in to retrieve UID...`);
           const userCredential = await signInWithEmailAndPassword(auth, agent.email, DEFAULT_PASSWORD);
           uid = userCredential.user.uid;
         } else {
-          console.error(`  ✗ Auth signup failed for ${agent.id}:`, err.message);
+          console.error(`  ✗ Auth signup failed for ${agent.id}:`, errorObj.message);
           continue;
         }
       }
@@ -157,8 +180,8 @@ async function runLiveSwarm() {
         manifest.stats.signupsCompleted++;
         manifest.stats.subscriptionsActive++;
         console.log(`  ✓ Profile & Workspace provisioned with Comp Subscription (${subPlan})`);
-      } catch (err: any) {
-        console.error(`  ✗ Firestore profile write failed for ${agent.id}:`, err.message);
+      } catch (err: unknown) {
+        console.error(`  ✗ Firestore profile write failed for ${agent.id}:`, (err as Error).message);
       }
 
       await signOut(auth);
@@ -203,8 +226,8 @@ async function runLiveSwarm() {
         manifest.stats.projectsCreated += agent.projects.length;
         console.log(`  ✓ ${agent.projects.length} projects created for ${agent.id}`);
         await signOut(auth);
-      } catch (err: any) {
-        console.error(`  ✗ Project creation failed for ${agent.id}:`, err.message);
+      } catch (err: unknown) {
+        console.error(`  ✗ Project creation failed for ${agent.id}:`, (err as Error).message);
       }
 
       await delay(400);
@@ -286,14 +309,14 @@ async function runLiveSwarm() {
         } else {
           console.log(`  ✓ Captured 2 surface screenshots (Baseline Agent)`);
         }
-      } catch (err: any) {
-        console.error(`  ✗ Screenshot capture failed for ${agent.id}:`, err.message);
+      } catch (err: unknown) {
+        console.error(`  ✗ Screenshot capture failed for ${agent.id}:`, (err as Error).message);
       } finally {
         await page.close();
       }
     }
-    } catch (err: any) {
-      console.error('Playwright launcher error:', err.message);
+    } catch (err: unknown) {
+      console.error('Playwright launcher error:', (err as Error).message);
     } finally {
       if (browser) await browser.close();
     }

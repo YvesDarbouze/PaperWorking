@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useEffect, useState, useCallback } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   X,
   User,
@@ -14,8 +14,6 @@ import {
   Eye,
   EyeOff,
   AlertTriangle,
-  CheckCircle,
-  Clock,
   Landmark,
 } from 'lucide-react';
 import StatusBadge from '@/components/admin/StatusBadge';
@@ -27,7 +25,7 @@ import {
 } from '@/actions/adminUserManagement';
 import type { User360Data } from '@/lib/admin/user360';
 import type { SensitiveActionType } from '@/lib/admin/verificationGate';
-import { maskEmail, maskPhone, maskAccount } from '@/lib/utils';
+import { maskEmail, maskPhone as _maskPhone, maskAccount } from '@/lib/utils';
 
 interface User360DrawerProps {
   targetUid: string | null;
@@ -50,29 +48,38 @@ export default function User360Drawer({ targetUid, onClose, onRefreshParent }: U
   const [verificationSuccess, setVerificationSuccess] = useState('');
   const [submitting, setSubmitting] = useState(false);
 
-  const fetchUser = useCallback(async () => {
-    if (!targetUid) return;
-    setLoading(true);
-    try {
-      const u360 = await getUser360(targetUid);
-      setData(u360);
-    } catch (err) {
-      console.error('[User360Drawer] Fetch failed:', err);
-    } finally {
-      setLoading(false);
-    }
-  }, [targetUid]);
-
   useEffect(() => {
-    if (targetUid) {
-      fetchUser();
+    let active = true;
+    if (!targetUid) return;
+
+    queueMicrotask(() => {
+      if (!active) return;
+      setLoading(true);
       setVerifyingAction(null);
       setVerificationId(null);
       setInputCode('');
       setVerificationError('');
       setVerificationSuccess('');
-    }
-  }, [targetUid, fetchUser]);
+    });
+
+    getUser360(targetUid)
+      .then((u360) => {
+        if (active) {
+          setData(u360);
+          setLoading(false);
+        }
+      })
+      .catch((err) => {
+        if (active) {
+          console.error('[User360Drawer] Fetch failed:', err);
+          setLoading(false);
+        }
+      });
+
+    return () => {
+      active = false;
+    };
+  }, [targetUid]);
 
   if (!targetUid) return null;
 
@@ -99,8 +106,8 @@ export default function User360Drawer({ targetUid, onClose, onRefreshParent }: U
       } else {
         setVerificationError(res.error || 'Failed to initiate verification.');
       }
-    } catch (err: any) {
-      setVerificationError(err?.message || 'Initiation error');
+    } catch (err: unknown) {
+      setVerificationError((err as Error)?.message || 'Initiation error');
     } finally {
       setSubmitting(false);
     }
@@ -125,13 +132,15 @@ export default function User360Drawer({ targetUid, onClose, onRefreshParent }: U
         setVerifyingAction(null);
         setVerificationId(null);
         setInputCode('');
-        fetchUser();
+        if (targetUid) {
+          getUser360(targetUid).then(setData).catch(console.error);
+        }
         if (onRefreshParent) onRefreshParent();
       } else {
         setVerificationError(res.error || 'Invalid verification code.');
       }
-    } catch (err: any) {
-      setVerificationError(err?.message || 'Confirmation error');
+    } catch (err: unknown) {
+      setVerificationError((err as Error)?.message || 'Confirmation error');
     } finally {
       setSubmitting(false);
     }
@@ -143,7 +152,9 @@ export default function User360Drawer({ targetUid, onClose, onRefreshParent }: U
     try {
       const res = await toggleUserAccountStatus({ targetUid, disabled });
       if (res.success) {
-        fetchUser();
+        if (targetUid) {
+          getUser360(targetUid).then(setData).catch(console.error);
+        }
         if (onRefreshParent) onRefreshParent();
       } else {
         alert(`Failed: ${res.error}`);
@@ -216,7 +227,7 @@ export default function User360Drawer({ targetUid, onClose, onRefreshParent }: U
             return (
               <button
                 key={t.id}
-                onClick={() => setActiveTab(t.id as any)}
+                onClick={() => setActiveTab(t.id as 'identity' | 'billing' | 'plaid' | 'org' | 'activity')}
                 className={`flex items-center gap-2 px-4 py-3 border-b-2 transition-colors whitespace-nowrap ${
                   active ? 'border-black text-black dark:border-white dark:text-white font-bold' : 'border-transparent text-gray-500 hover:text-gray-900'
                 }`}

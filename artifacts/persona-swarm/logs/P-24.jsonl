@@ -801,3 +801,250 @@
 {"ts":"2026-08-14T19:22:05.514Z","agentId":"P-24","wave":4,"step":"WAVE_4","action":"COMPLETE","result":"SUCCESS","details":{"interactions":1,"invites":2}}
 {"ts":"2026-08-14T19:22:05.665Z","agentId":"P-24","wave":5,"step":"WAVE_5","action":"START","result":"SUCCESS"}
 {"ts":"2026-08-14T19:22:05.665Z","agentId":"P-24","wave":5,"step":"WAVE_5","action":"COMPLETE","result":"SUCCESS","details":{"reportPath":"/Users/yvesdarbouze/Documents/PaperWorking/artifacts/persona-swarm/reports/P-24-experience-report.md"}}
+{"ts":"2026-08-17T12:48:20.638Z","agentId":"P-24","wave":1,"step":"WAVE_1","action":"START","result":"SUCCESS","details":{"email":"agent24.frank.deluca@paperworking-test.dev"}}
+{"ts":"2026-08-17T12:48:20.638Z","agentId":"P-24","wave":0,"step":"SIGNUP","action":"SUCCESS_CREATED","result":"SUCCESS","details":{"uid":"uid_persona_p24","email":"agent24.frank.deluca@paperworking-test.dev","name":"Frank Deluca","entity":"Deluca Door Count LLC"}}
+{"ts":"2026-08-17T12:48:20.638Z","agentId":"P-24","wave":1,"step":"WAVE_1","action":"COMPLETE","result":"SUCCESS","details":{"uid":"uid_persona_p24"}}
+{"ts":"2026-08-17T12:48:20.641Z","agentId":"P-24","wave":1,"step":"WAVE_1","action":"START","result":"SUCCESS","details":{"email":"agent24.frank.deluca@paperworking-test.dev"}}
+{"ts":"2026-08-17T12:48:20.641Z","agentId":"P-24","wave":0,"step":"SIGNUP","action":"SUCCESS_CREATED","result":"SUCCESS","details":{"uid":"uid_persona_p24","email":"agent24.frank.deluca@paperworking-test.dev","name":"Frank Deluca","entity":"Deluca Door Count LLC"}}
+{"ts":"2026-08-17T12:48:20.641Z","agentId":"P-24","wave":1,"step":"WAVE_1","action":"COMPLETE","result":"SUCCESS","details":{"uid":"uid_persona_p24"}}
+{"ts":"2026-08-17T12:48:20.685Z","agentId":"P-24","wave":2,"step":"WAVE_2","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-17T12:48:20.685Z","agentId":"P-24","wave":0,"step":"BILLING","action":"APPLY_COUPON_ATTEMPT","result":"SUCCESS","details":{"coupon":"CHEAPSKATE10"}}
+{"ts":"2026-08-17T12:48:20.685Z","agentId":"P-24","wave":0,"step":"BILLING","action":"COUPON_REJECTED","result":"SUCCESS","details":{"coupon":"CHEAPSKATE10","error":"Invalid coupon code CHEAPSKATE10"}}
+{"ts":"2026-08-17T12:48:20.685Z","agentId":"P-24","wave":0,"step":"BILLING","action":"SUBSCRIPTION_SUCCESS","result":"SUCCESS","details":{"plan":"Individual","stripeCustomerId":"cus_test_swarm_p-24","stripeSubscriptionId":"sub_test_swarm_p-24","cardLastFour":"4242","cardBrand":"visa"}}
+{"ts":"2026-08-17T12:48:20.685Z","agentId":"P-24","wave":2,"step":"WAVE_2","action":"COMPLETE","result":"SUCCESS","details":{"plan":"Individual"}}
+{"ts":"2026-08-17T12:48:20.686Z","agentId":"P-24","wave":2,"step":"WAVE_2","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-17T12:48:20.687Z","agentId":"P-24","wave":0,"step":"BILLING","action":"APPLY_COUPON_ATTEMPT","result":"SUCCESS","details":{"coupon":"CHEAPSKATE10"}}
+{"ts":"2026-08-17T12:48:20.687Z","agentId":"P-24","wave":0,"step":"BILLING","action":"COUPON_REJECTED","result":"SUCCESS","details":{"coupon":"CHEAPSKATE10","error":"Invalid coupon code CHEAPSKATE10"}}
+{"ts":"2026-08-17T12:48:20.687Z","agentId":"P-24","wave":0,"step":"BILLING","action":"SUBSCRIPTION_SUCCESS","result":"SUCCESS","details":{"plan":"Individual","stripeCustomerId":"cus_test_swarm_p-24","stripeSubscriptionId":"sub_test_swarm_p-24","cardLastFour":"4242","cardBrand":"visa"}}
+{"ts":"2026-08-17T12:48:20.687Z","agentId":"P-24","wave":2,"step":"WAVE_2","action":"COMPLETE","result":"SUCCESS","details":{"plan":"Individual"}}
+{"ts":"2026-08-17T12:48:20.778Z","agentId":"P-24","wave":3,"step":"WAVE_3","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-17T12:48:20.779Z","agentId":"P-24","wave":3,"step":"WAVE_3","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-17T12:48:20.780Z","agentId":"P-24","wave":0,"step":"PROJECTS","action":"CREATION_SUCCESS","result":"SUCCESS","details":{"created":10,"plaid":false}}
+{"ts":"2026-08-17T12:48:20.780Z","agentId":"P-24","wave":3,"step":"WAVE_3","action":"COMPLETE","result":"SUCCESS","details":{"created":10}}
+{"ts":"2026-08-17T12:48:20.785Z","agentId":"P-24","wave":0,"step":"PROJECTS","action":"CREATION_SUCCESS","result":"SUCCESS","details":{"created":10,"plaid":false}}
+{"ts":"2026-08-17T12:48:20.786Z","agentId":"P-24","wave":3,"step":"WAVE_3","action":"COMPLETE","result":"SUCCESS","details":{"created":10}}
+{"ts":"2026-08-17T12:48:20.923Z","agentId":"P-24","wave":4,"step":"WAVE_4","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-17T12:48:20.924Z","agentId":"P-24","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-61","to":"P-50","type":"Seller-Financed Note Sale"}}
+{"ts":"2026-08-17T12:48:20.924Z","agentId":"P-24","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-20"}}
+{"ts":"2026-08-17T12:48:20.924Z","agentId":"P-24","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-50"}}
+{"ts":"2026-08-17T12:48:20.924Z","agentId":"P-24","wave":4,"step":"WAVE_4","action":"COMPLETE","result":"SUCCESS","details":{"interactions":1,"invites":2}}
+{"ts":"2026-08-17T12:48:20.929Z","agentId":"P-24","wave":4,"step":"WAVE_4","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-17T12:48:20.929Z","agentId":"P-24","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-61","to":"P-50","type":"Seller-Financed Note Sale"}}
+{"ts":"2026-08-17T12:48:20.930Z","agentId":"P-24","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-20"}}
+{"ts":"2026-08-17T12:48:20.930Z","agentId":"P-24","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-50"}}
+{"ts":"2026-08-17T12:48:20.930Z","agentId":"P-24","wave":4,"step":"WAVE_4","action":"COMPLETE","result":"SUCCESS","details":{"interactions":1,"invites":2}}
+{"ts":"2026-08-17T12:48:21.009Z","agentId":"P-24","wave":5,"step":"WAVE_5","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-17T12:48:21.009Z","agentId":"P-24","wave":5,"step":"WAVE_5","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-17T12:48:21.009Z","agentId":"P-24","wave":5,"step":"WAVE_5","action":"COMPLETE","result":"SUCCESS","details":{"reportPath":"/Users/yvesdarbouze/Documents/PaperWorking/artifacts/persona-swarm/reports/P-24-experience-report.md"}}
+{"ts":"2026-08-17T12:48:21.012Z","agentId":"P-24","wave":5,"step":"WAVE_5","action":"COMPLETE","result":"SUCCESS","details":{"reportPath":"/Users/yvesdarbouze/Documents/PaperWorking/artifacts/persona-swarm/reports/P-24-experience-report.md"}}
+{"ts":"2026-08-17T12:49:28.752Z","agentId":"P-24","wave":1,"step":"WAVE_1","action":"START","result":"SUCCESS","details":{"email":"agent24.frank.deluca@paperworking-test.dev"}}
+{"ts":"2026-08-17T12:49:28.754Z","agentId":"P-24","wave":0,"step":"SIGNUP","action":"SUCCESS_CREATED","result":"SUCCESS","details":{"uid":"uid_persona_p24","email":"agent24.frank.deluca@paperworking-test.dev","name":"Frank Deluca","entity":"Deluca Door Count LLC"}}
+{"ts":"2026-08-17T12:49:28.754Z","agentId":"P-24","wave":1,"step":"WAVE_1","action":"COMPLETE","result":"SUCCESS","details":{"uid":"uid_persona_p24"}}
+{"ts":"2026-08-17T12:49:28.825Z","agentId":"P-24","wave":2,"step":"WAVE_2","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-17T12:49:28.825Z","agentId":"P-24","wave":0,"step":"BILLING","action":"APPLY_COUPON_ATTEMPT","result":"SUCCESS","details":{"coupon":"CHEAPSKATE10"}}
+{"ts":"2026-08-17T12:49:28.825Z","agentId":"P-24","wave":0,"step":"BILLING","action":"COUPON_REJECTED","result":"SUCCESS","details":{"coupon":"CHEAPSKATE10","error":"Invalid coupon code CHEAPSKATE10"}}
+{"ts":"2026-08-17T12:49:28.833Z","agentId":"P-24","wave":0,"step":"BILLING","action":"SUBSCRIPTION_SUCCESS","result":"SUCCESS","details":{"plan":"Individual","stripeCustomerId":"cus_test_swarm_p-24","stripeSubscriptionId":"sub_test_swarm_p-24","cardLastFour":"4242","cardBrand":"visa"}}
+{"ts":"2026-08-17T12:49:28.834Z","agentId":"P-24","wave":2,"step":"WAVE_2","action":"COMPLETE","result":"SUCCESS","details":{"plan":"Individual"}}
+{"ts":"2026-08-17T12:49:28.947Z","agentId":"P-24","wave":3,"step":"WAVE_3","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-17T12:49:28.949Z","agentId":"P-24","wave":0,"step":"PROJECTS","action":"CREATION_SUCCESS","result":"SUCCESS","details":{"created":10,"plaid":false}}
+{"ts":"2026-08-17T12:49:28.949Z","agentId":"P-24","wave":3,"step":"WAVE_3","action":"COMPLETE","result":"SUCCESS","details":{"created":10}}
+{"ts":"2026-08-17T12:49:29.110Z","agentId":"P-24","wave":4,"step":"WAVE_4","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-17T12:49:29.113Z","agentId":"P-24","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-61","to":"P-50","type":"Seller-Financed Note Sale"}}
+{"ts":"2026-08-17T12:49:29.113Z","agentId":"P-24","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-20"}}
+{"ts":"2026-08-17T12:49:29.115Z","agentId":"P-24","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-50"}}
+{"ts":"2026-08-17T12:49:29.116Z","agentId":"P-24","wave":4,"step":"WAVE_4","action":"COMPLETE","result":"SUCCESS","details":{"interactions":1,"invites":2}}
+{"ts":"2026-08-17T12:49:29.261Z","agentId":"P-24","wave":5,"step":"WAVE_5","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-17T12:49:29.262Z","agentId":"P-24","wave":5,"step":"WAVE_5","action":"COMPLETE","result":"SUCCESS","details":{"reportPath":"/Users/yvesdarbouze/Documents/PaperWorking/artifacts/persona-swarm/reports/P-24-experience-report.md"}}
+{"ts":"2026-08-17T12:49:29.266Z","agentId":"P-24","wave":1,"step":"WAVE_1","action":"START","result":"SUCCESS","details":{"email":"agent24.frank.deluca@paperworking-test.dev"}}
+{"ts":"2026-08-17T12:49:29.266Z","agentId":"P-24","wave":0,"step":"SIGNUP","action":"SUCCESS_CREATED","result":"SUCCESS","details":{"uid":"uid_persona_p24","email":"agent24.frank.deluca@paperworking-test.dev","name":"Frank Deluca","entity":"Deluca Door Count LLC"}}
+{"ts":"2026-08-17T12:49:29.266Z","agentId":"P-24","wave":1,"step":"WAVE_1","action":"COMPLETE","result":"SUCCESS","details":{"uid":"uid_persona_p24"}}
+{"ts":"2026-08-17T12:49:29.325Z","agentId":"P-24","wave":2,"step":"WAVE_2","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-17T12:49:29.325Z","agentId":"P-24","wave":0,"step":"BILLING","action":"APPLY_COUPON_ATTEMPT","result":"SUCCESS","details":{"coupon":"CHEAPSKATE10"}}
+{"ts":"2026-08-17T12:49:29.325Z","agentId":"P-24","wave":0,"step":"BILLING","action":"COUPON_REJECTED","result":"SUCCESS","details":{"coupon":"CHEAPSKATE10","error":"Invalid coupon code CHEAPSKATE10"}}
+{"ts":"2026-08-17T12:49:29.325Z","agentId":"P-24","wave":0,"step":"BILLING","action":"SUBSCRIPTION_SUCCESS","result":"SUCCESS","details":{"plan":"Individual","stripeCustomerId":"cus_test_swarm_p-24","stripeSubscriptionId":"sub_test_swarm_p-24","cardLastFour":"4242","cardBrand":"visa"}}
+{"ts":"2026-08-17T12:49:29.326Z","agentId":"P-24","wave":2,"step":"WAVE_2","action":"COMPLETE","result":"SUCCESS","details":{"plan":"Individual"}}
+{"ts":"2026-08-17T12:49:29.469Z","agentId":"P-24","wave":3,"step":"WAVE_3","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-17T12:49:29.473Z","agentId":"P-24","wave":0,"step":"PROJECTS","action":"CREATION_SUCCESS","result":"SUCCESS","details":{"created":10,"plaid":false}}
+{"ts":"2026-08-17T12:49:29.473Z","agentId":"P-24","wave":3,"step":"WAVE_3","action":"COMPLETE","result":"SUCCESS","details":{"created":10}}
+{"ts":"2026-08-17T12:49:29.615Z","agentId":"P-24","wave":4,"step":"WAVE_4","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-17T12:49:29.615Z","agentId":"P-24","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-61","to":"P-50","type":"Seller-Financed Note Sale"}}
+{"ts":"2026-08-17T12:49:29.616Z","agentId":"P-24","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-20"}}
+{"ts":"2026-08-17T12:49:29.616Z","agentId":"P-24","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-50"}}
+{"ts":"2026-08-17T12:49:29.617Z","agentId":"P-24","wave":4,"step":"WAVE_4","action":"COMPLETE","result":"SUCCESS","details":{"interactions":1,"invites":2}}
+{"ts":"2026-08-17T12:49:29.696Z","agentId":"P-24","wave":5,"step":"WAVE_5","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-17T12:49:29.696Z","agentId":"P-24","wave":5,"step":"WAVE_5","action":"COMPLETE","result":"SUCCESS","details":{"reportPath":"/Users/yvesdarbouze/Documents/PaperWorking/artifacts/persona-swarm/reports/P-24-experience-report.md"}}
+{"ts":"2026-08-17T12:51:28.429Z","agentId":"P-24","wave":1,"step":"WAVE_1","action":"START","result":"SUCCESS","details":{"email":"agent24.frank.deluca@paperworking-test.dev"}}
+{"ts":"2026-08-17T12:51:28.429Z","agentId":"P-24","wave":0,"step":"SIGNUP","action":"SUCCESS_CREATED","result":"SUCCESS","details":{"uid":"uid_persona_p24","email":"agent24.frank.deluca@paperworking-test.dev","name":"Frank Deluca","entity":"Deluca Door Count LLC"}}
+{"ts":"2026-08-17T12:51:28.429Z","agentId":"P-24","wave":1,"step":"WAVE_1","action":"COMPLETE","result":"SUCCESS","details":{"uid":"uid_persona_p24"}}
+{"ts":"2026-08-17T12:51:28.435Z","agentId":"P-24","wave":1,"step":"WAVE_1","action":"START","result":"SUCCESS","details":{"email":"agent24.frank.deluca@paperworking-test.dev"}}
+{"ts":"2026-08-17T12:51:28.435Z","agentId":"P-24","wave":0,"step":"SIGNUP","action":"SUCCESS_CREATED","result":"SUCCESS","details":{"uid":"uid_persona_p24","email":"agent24.frank.deluca@paperworking-test.dev","name":"Frank Deluca","entity":"Deluca Door Count LLC"}}
+{"ts":"2026-08-17T12:51:28.435Z","agentId":"P-24","wave":1,"step":"WAVE_1","action":"COMPLETE","result":"SUCCESS","details":{"uid":"uid_persona_p24"}}
+{"ts":"2026-08-17T12:51:28.488Z","agentId":"P-24","wave":2,"step":"WAVE_2","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-17T12:51:28.489Z","agentId":"P-24","wave":0,"step":"BILLING","action":"APPLY_COUPON_ATTEMPT","result":"SUCCESS","details":{"coupon":"CHEAPSKATE10"}}
+{"ts":"2026-08-17T12:51:28.489Z","agentId":"P-24","wave":0,"step":"BILLING","action":"COUPON_REJECTED","result":"SUCCESS","details":{"coupon":"CHEAPSKATE10","error":"Invalid coupon code CHEAPSKATE10"}}
+{"ts":"2026-08-17T12:51:28.489Z","agentId":"P-24","wave":0,"step":"BILLING","action":"SUBSCRIPTION_SUCCESS","result":"SUCCESS","details":{"plan":"Individual","stripeCustomerId":"cus_test_swarm_p-24","stripeSubscriptionId":"sub_test_swarm_p-24","cardLastFour":"4242","cardBrand":"visa"}}
+{"ts":"2026-08-17T12:51:28.489Z","agentId":"P-24","wave":2,"step":"WAVE_2","action":"COMPLETE","result":"SUCCESS","details":{"plan":"Individual"}}
+{"ts":"2026-08-17T12:51:28.490Z","agentId":"P-24","wave":2,"step":"WAVE_2","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-17T12:51:28.490Z","agentId":"P-24","wave":0,"step":"BILLING","action":"APPLY_COUPON_ATTEMPT","result":"SUCCESS","details":{"coupon":"CHEAPSKATE10"}}
+{"ts":"2026-08-17T12:51:28.490Z","agentId":"P-24","wave":0,"step":"BILLING","action":"COUPON_REJECTED","result":"SUCCESS","details":{"coupon":"CHEAPSKATE10","error":"Invalid coupon code CHEAPSKATE10"}}
+{"ts":"2026-08-17T12:51:28.491Z","agentId":"P-24","wave":0,"step":"BILLING","action":"SUBSCRIPTION_SUCCESS","result":"SUCCESS","details":{"plan":"Individual","stripeCustomerId":"cus_test_swarm_p-24","stripeSubscriptionId":"sub_test_swarm_p-24","cardLastFour":"4242","cardBrand":"visa"}}
+{"ts":"2026-08-17T12:51:28.491Z","agentId":"P-24","wave":2,"step":"WAVE_2","action":"COMPLETE","result":"SUCCESS","details":{"plan":"Individual"}}
+{"ts":"2026-08-17T12:51:28.602Z","agentId":"P-24","wave":3,"step":"WAVE_3","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-17T12:51:28.603Z","agentId":"P-24","wave":3,"step":"WAVE_3","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-17T12:51:28.607Z","agentId":"P-24","wave":0,"step":"PROJECTS","action":"CREATION_SUCCESS","result":"SUCCESS","details":{"created":10,"plaid":false}}
+{"ts":"2026-08-17T12:51:28.607Z","agentId":"P-24","wave":3,"step":"WAVE_3","action":"COMPLETE","result":"SUCCESS","details":{"created":10}}
+{"ts":"2026-08-17T12:51:28.609Z","agentId":"P-24","wave":0,"step":"PROJECTS","action":"CREATION_SUCCESS","result":"SUCCESS","details":{"created":10,"plaid":false}}
+{"ts":"2026-08-17T12:51:28.609Z","agentId":"P-24","wave":3,"step":"WAVE_3","action":"COMPLETE","result":"SUCCESS","details":{"created":10}}
+{"ts":"2026-08-17T12:51:28.762Z","agentId":"P-24","wave":4,"step":"WAVE_4","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-17T12:51:28.762Z","agentId":"P-24","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-61","to":"P-50","type":"Seller-Financed Note Sale"}}
+{"ts":"2026-08-17T12:51:28.763Z","agentId":"P-24","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-20"}}
+{"ts":"2026-08-17T12:51:28.763Z","agentId":"P-24","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-50"}}
+{"ts":"2026-08-17T12:51:28.763Z","agentId":"P-24","wave":4,"step":"WAVE_4","action":"COMPLETE","result":"SUCCESS","details":{"interactions":1,"invites":2}}
+{"ts":"2026-08-17T12:51:28.770Z","agentId":"P-24","wave":4,"step":"WAVE_4","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-17T12:51:28.771Z","agentId":"P-24","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-61","to":"P-50","type":"Seller-Financed Note Sale"}}
+{"ts":"2026-08-17T12:51:28.771Z","agentId":"P-24","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-20"}}
+{"ts":"2026-08-17T12:51:28.771Z","agentId":"P-24","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-50"}}
+{"ts":"2026-08-17T12:51:28.771Z","agentId":"P-24","wave":4,"step":"WAVE_4","action":"COMPLETE","result":"SUCCESS","details":{"interactions":1,"invites":2}}
+{"ts":"2026-08-17T12:51:28.834Z","agentId":"P-24","wave":5,"step":"WAVE_5","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-17T12:51:28.835Z","agentId":"P-24","wave":5,"step":"WAVE_5","action":"COMPLETE","result":"SUCCESS","details":{"reportPath":"/Users/yvesdarbouze/Documents/PaperWorking/artifacts/persona-swarm/reports/P-24-experience-report.md"}}
+{"ts":"2026-08-17T12:51:28.853Z","agentId":"P-24","wave":5,"step":"WAVE_5","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-17T12:51:28.853Z","agentId":"P-24","wave":5,"step":"WAVE_5","action":"COMPLETE","result":"SUCCESS","details":{"reportPath":"/Users/yvesdarbouze/Documents/PaperWorking/artifacts/persona-swarm/reports/P-24-experience-report.md"}}
+{"ts":"2026-08-17T12:53:52.925Z","agentId":"P-24","wave":1,"step":"WAVE_1","action":"START","result":"SUCCESS","details":{"email":"agent24.frank.deluca@paperworking-test.dev"}}
+{"ts":"2026-08-17T12:53:52.925Z","agentId":"P-24","wave":1,"step":"WAVE_1","action":"START","result":"SUCCESS","details":{"email":"agent24.frank.deluca@paperworking-test.dev"}}
+{"ts":"2026-08-17T12:53:52.925Z","agentId":"P-24","wave":0,"step":"SIGNUP","action":"SUCCESS_CREATED","result":"SUCCESS","details":{"uid":"uid_persona_p24","email":"agent24.frank.deluca@paperworking-test.dev","name":"Frank Deluca","entity":"Deluca Door Count LLC"}}
+{"ts":"2026-08-17T12:53:52.925Z","agentId":"P-24","wave":1,"step":"WAVE_1","action":"COMPLETE","result":"SUCCESS","details":{"uid":"uid_persona_p24"}}
+{"ts":"2026-08-17T12:53:52.926Z","agentId":"P-24","wave":0,"step":"SIGNUP","action":"SUCCESS_CREATED","result":"SUCCESS","details":{"uid":"uid_persona_p24","email":"agent24.frank.deluca@paperworking-test.dev","name":"Frank Deluca","entity":"Deluca Door Count LLC"}}
+{"ts":"2026-08-17T12:53:52.926Z","agentId":"P-24","wave":1,"step":"WAVE_1","action":"COMPLETE","result":"SUCCESS","details":{"uid":"uid_persona_p24"}}
+{"ts":"2026-08-17T12:53:52.999Z","agentId":"P-24","wave":2,"step":"WAVE_2","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-17T12:53:52.999Z","agentId":"P-24","wave":0,"step":"BILLING","action":"APPLY_COUPON_ATTEMPT","result":"SUCCESS","details":{"coupon":"CHEAPSKATE10"}}
+{"ts":"2026-08-17T12:53:53.000Z","agentId":"P-24","wave":0,"step":"BILLING","action":"COUPON_REJECTED","result":"SUCCESS","details":{"coupon":"CHEAPSKATE10","error":"Invalid coupon code CHEAPSKATE10"}}
+{"ts":"2026-08-17T12:53:53.000Z","agentId":"P-24","wave":0,"step":"BILLING","action":"SUBSCRIPTION_SUCCESS","result":"SUCCESS","details":{"plan":"Individual","stripeCustomerId":"cus_test_swarm_p-24","stripeSubscriptionId":"sub_test_swarm_p-24","cardLastFour":"4242","cardBrand":"visa"}}
+{"ts":"2026-08-17T12:53:53.000Z","agentId":"P-24","wave":2,"step":"WAVE_2","action":"COMPLETE","result":"SUCCESS","details":{"plan":"Individual"}}
+{"ts":"2026-08-17T12:53:53.003Z","agentId":"P-24","wave":2,"step":"WAVE_2","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-17T12:53:53.003Z","agentId":"P-24","wave":0,"step":"BILLING","action":"APPLY_COUPON_ATTEMPT","result":"SUCCESS","details":{"coupon":"CHEAPSKATE10"}}
+{"ts":"2026-08-17T12:53:53.003Z","agentId":"P-24","wave":0,"step":"BILLING","action":"COUPON_REJECTED","result":"SUCCESS","details":{"coupon":"CHEAPSKATE10","error":"Invalid coupon code CHEAPSKATE10"}}
+{"ts":"2026-08-17T12:53:53.004Z","agentId":"P-24","wave":0,"step":"BILLING","action":"SUBSCRIPTION_SUCCESS","result":"SUCCESS","details":{"plan":"Individual","stripeCustomerId":"cus_test_swarm_p-24","stripeSubscriptionId":"sub_test_swarm_p-24","cardLastFour":"4242","cardBrand":"visa"}}
+{"ts":"2026-08-17T12:53:53.004Z","agentId":"P-24","wave":2,"step":"WAVE_2","action":"COMPLETE","result":"SUCCESS","details":{"plan":"Individual"}}
+{"ts":"2026-08-17T12:53:53.103Z","agentId":"P-24","wave":3,"step":"WAVE_3","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-17T12:53:53.106Z","agentId":"P-24","wave":0,"step":"PROJECTS","action":"CREATION_SUCCESS","result":"SUCCESS","details":{"created":10,"plaid":false}}
+{"ts":"2026-08-17T12:53:53.106Z","agentId":"P-24","wave":3,"step":"WAVE_3","action":"COMPLETE","result":"SUCCESS","details":{"created":10}}
+{"ts":"2026-08-17T12:53:53.115Z","agentId":"P-24","wave":3,"step":"WAVE_3","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-17T12:53:53.117Z","agentId":"P-24","wave":0,"step":"PROJECTS","action":"CREATION_SUCCESS","result":"SUCCESS","details":{"created":10,"plaid":false}}
+{"ts":"2026-08-17T12:53:53.117Z","agentId":"P-24","wave":3,"step":"WAVE_3","action":"COMPLETE","result":"SUCCESS","details":{"created":10}}
+{"ts":"2026-08-17T12:53:53.214Z","agentId":"P-24","wave":4,"step":"WAVE_4","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-17T12:53:53.215Z","agentId":"P-24","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-61","to":"P-50","type":"Seller-Financed Note Sale"}}
+{"ts":"2026-08-17T12:53:53.215Z","agentId":"P-24","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-20"}}
+{"ts":"2026-08-17T12:53:53.215Z","agentId":"P-24","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-50"}}
+{"ts":"2026-08-17T12:53:53.215Z","agentId":"P-24","wave":4,"step":"WAVE_4","action":"COMPLETE","result":"SUCCESS","details":{"interactions":1,"invites":2}}
+{"ts":"2026-08-17T12:53:53.258Z","agentId":"P-24","wave":4,"step":"WAVE_4","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-17T12:53:53.259Z","agentId":"P-24","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-61","to":"P-50","type":"Seller-Financed Note Sale"}}
+{"ts":"2026-08-17T12:53:53.259Z","agentId":"P-24","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-20"}}
+{"ts":"2026-08-17T12:53:53.260Z","agentId":"P-24","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-50"}}
+{"ts":"2026-08-17T12:53:53.260Z","agentId":"P-24","wave":4,"step":"WAVE_4","action":"COMPLETE","result":"SUCCESS","details":{"interactions":1,"invites":2}}
+{"ts":"2026-08-17T12:53:53.298Z","agentId":"P-24","wave":5,"step":"WAVE_5","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-17T12:53:53.298Z","agentId":"P-24","wave":5,"step":"WAVE_5","action":"COMPLETE","result":"SUCCESS","details":{"reportPath":"/Users/yvesdarbouze/Documents/PaperWorking/artifacts/persona-swarm/reports/P-24-experience-report.md"}}
+{"ts":"2026-08-17T12:53:53.313Z","agentId":"P-24","wave":5,"step":"WAVE_5","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-17T12:53:53.313Z","agentId":"P-24","wave":5,"step":"WAVE_5","action":"COMPLETE","result":"SUCCESS","details":{"reportPath":"/Users/yvesdarbouze/Documents/PaperWorking/artifacts/persona-swarm/reports/P-24-experience-report.md"}}
+{"ts":"2026-08-17T12:54:04.341Z","agentId":"P-24","wave":1,"step":"WAVE_1","action":"START","result":"SUCCESS","details":{"email":"agent24.frank.deluca@paperworking-test.dev"}}
+{"ts":"2026-08-17T12:54:04.341Z","agentId":"P-24","wave":0,"step":"SIGNUP","action":"SUCCESS_CREATED","result":"SUCCESS","details":{"uid":"uid_persona_p24","email":"agent24.frank.deluca@paperworking-test.dev","name":"Frank Deluca","entity":"Deluca Door Count LLC"}}
+{"ts":"2026-08-17T12:54:04.341Z","agentId":"P-24","wave":1,"step":"WAVE_1","action":"COMPLETE","result":"SUCCESS","details":{"uid":"uid_persona_p24"}}
+{"ts":"2026-08-17T12:54:04.343Z","agentId":"P-24","wave":1,"step":"WAVE_1","action":"START","result":"SUCCESS","details":{"email":"agent24.frank.deluca@paperworking-test.dev"}}
+{"ts":"2026-08-17T12:54:04.343Z","agentId":"P-24","wave":0,"step":"SIGNUP","action":"SUCCESS_CREATED","result":"SUCCESS","details":{"uid":"uid_persona_p24","email":"agent24.frank.deluca@paperworking-test.dev","name":"Frank Deluca","entity":"Deluca Door Count LLC"}}
+{"ts":"2026-08-17T12:54:04.343Z","agentId":"P-24","wave":1,"step":"WAVE_1","action":"COMPLETE","result":"SUCCESS","details":{"uid":"uid_persona_p24"}}
+{"ts":"2026-08-17T12:54:04.397Z","agentId":"P-24","wave":2,"step":"WAVE_2","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-17T12:54:04.397Z","agentId":"P-24","wave":0,"step":"BILLING","action":"APPLY_COUPON_ATTEMPT","result":"SUCCESS","details":{"coupon":"CHEAPSKATE10"}}
+{"ts":"2026-08-17T12:54:04.398Z","agentId":"P-24","wave":0,"step":"BILLING","action":"COUPON_REJECTED","result":"SUCCESS","details":{"coupon":"CHEAPSKATE10","error":"Invalid coupon code CHEAPSKATE10"}}
+{"ts":"2026-08-17T12:54:04.398Z","agentId":"P-24","wave":0,"step":"BILLING","action":"SUBSCRIPTION_SUCCESS","result":"SUCCESS","details":{"plan":"Individual","stripeCustomerId":"cus_test_swarm_p-24","stripeSubscriptionId":"sub_test_swarm_p-24","cardLastFour":"4242","cardBrand":"visa"}}
+{"ts":"2026-08-17T12:54:04.398Z","agentId":"P-24","wave":2,"step":"WAVE_2","action":"COMPLETE","result":"SUCCESS","details":{"plan":"Individual"}}
+{"ts":"2026-08-17T12:54:04.402Z","agentId":"P-24","wave":2,"step":"WAVE_2","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-17T12:54:04.403Z","agentId":"P-24","wave":0,"step":"BILLING","action":"APPLY_COUPON_ATTEMPT","result":"SUCCESS","details":{"coupon":"CHEAPSKATE10"}}
+{"ts":"2026-08-17T12:54:04.403Z","agentId":"P-24","wave":0,"step":"BILLING","action":"COUPON_REJECTED","result":"SUCCESS","details":{"coupon":"CHEAPSKATE10","error":"Invalid coupon code CHEAPSKATE10"}}
+{"ts":"2026-08-17T12:54:04.403Z","agentId":"P-24","wave":0,"step":"BILLING","action":"SUBSCRIPTION_SUCCESS","result":"SUCCESS","details":{"plan":"Individual","stripeCustomerId":"cus_test_swarm_p-24","stripeSubscriptionId":"sub_test_swarm_p-24","cardLastFour":"4242","cardBrand":"visa"}}
+{"ts":"2026-08-17T12:54:04.403Z","agentId":"P-24","wave":2,"step":"WAVE_2","action":"COMPLETE","result":"SUCCESS","details":{"plan":"Individual"}}
+{"ts":"2026-08-17T12:54:04.530Z","agentId":"P-24","wave":3,"step":"WAVE_3","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-17T12:54:04.532Z","agentId":"P-24","wave":0,"step":"PROJECTS","action":"CREATION_SUCCESS","result":"SUCCESS","details":{"created":10,"plaid":false}}
+{"ts":"2026-08-17T12:54:04.532Z","agentId":"P-24","wave":3,"step":"WAVE_3","action":"COMPLETE","result":"SUCCESS","details":{"created":10}}
+{"ts":"2026-08-17T12:54:04.535Z","agentId":"P-24","wave":3,"step":"WAVE_3","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-17T12:54:04.537Z","agentId":"P-24","wave":0,"step":"PROJECTS","action":"CREATION_SUCCESS","result":"SUCCESS","details":{"created":10,"plaid":false}}
+{"ts":"2026-08-17T12:54:04.537Z","agentId":"P-24","wave":3,"step":"WAVE_3","action":"COMPLETE","result":"SUCCESS","details":{"created":10}}
+{"ts":"2026-08-17T12:54:04.709Z","agentId":"P-24","wave":4,"step":"WAVE_4","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-17T12:54:04.709Z","agentId":"P-24","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-61","to":"P-50","type":"Seller-Financed Note Sale"}}
+{"ts":"2026-08-17T12:54:04.709Z","agentId":"P-24","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-20"}}
+{"ts":"2026-08-17T12:54:04.710Z","agentId":"P-24","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-50"}}
+{"ts":"2026-08-17T12:54:04.710Z","agentId":"P-24","wave":4,"step":"WAVE_4","action":"COMPLETE","result":"SUCCESS","details":{"interactions":1,"invites":2}}
+{"ts":"2026-08-17T12:54:04.712Z","agentId":"P-24","wave":4,"step":"WAVE_4","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-17T12:54:04.713Z","agentId":"P-24","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-61","to":"P-50","type":"Seller-Financed Note Sale"}}
+{"ts":"2026-08-17T12:54:04.713Z","agentId":"P-24","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-20"}}
+{"ts":"2026-08-17T12:54:04.716Z","agentId":"P-24","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-50"}}
+{"ts":"2026-08-17T12:54:04.716Z","agentId":"P-24","wave":4,"step":"WAVE_4","action":"COMPLETE","result":"SUCCESS","details":{"interactions":1,"invites":2}}
+{"ts":"2026-08-17T12:54:04.793Z","agentId":"P-24","wave":5,"step":"WAVE_5","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-17T12:54:04.793Z","agentId":"P-24","wave":5,"step":"WAVE_5","action":"COMPLETE","result":"SUCCESS","details":{"reportPath":"/Users/yvesdarbouze/Documents/PaperWorking/artifacts/persona-swarm/reports/P-24-experience-report.md"}}
+{"ts":"2026-08-17T12:54:04.795Z","agentId":"P-24","wave":5,"step":"WAVE_5","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-17T12:54:04.795Z","agentId":"P-24","wave":5,"step":"WAVE_5","action":"COMPLETE","result":"SUCCESS","details":{"reportPath":"/Users/yvesdarbouze/Documents/PaperWorking/artifacts/persona-swarm/reports/P-24-experience-report.md"}}
+{"ts":"2026-08-17T15:51:48.302Z","agentId":"P-24","wave":1,"step":"WAVE_1","action":"START","result":"SUCCESS","details":{"email":"agent24.frank.deluca@paperworking-test.dev"}}
+{"ts":"2026-08-17T15:51:48.513Z","agentId":"P-24","wave":1,"step":"WAVE_1","action":"START","result":"SUCCESS","details":{"email":"agent24.frank.deluca@paperworking-test.dev"}}
+{"ts":"2026-08-17T15:51:50.391Z","agentId":"P-24","wave":0,"step":"SIGNUP","action":"SUCCESS_CREATED","result":"SUCCESS","details":{"uid":"uid_persona_p24","email":"agent24.frank.deluca@paperworking-test.dev","name":"Frank Deluca","entity":"Deluca Door Count LLC"}}
+{"ts":"2026-08-17T15:51:50.391Z","agentId":"P-24","wave":1,"step":"WAVE_1","action":"COMPLETE","result":"SUCCESS","details":{"uid":"uid_persona_p24"}}
+{"ts":"2026-08-17T15:51:50.594Z","agentId":"P-24","wave":0,"step":"SIGNUP","action":"SUCCESS_CREATED","result":"SUCCESS","details":{"uid":"uid_persona_p24","email":"agent24.frank.deluca@paperworking-test.dev","name":"Frank Deluca","entity":"Deluca Door Count LLC"}}
+{"ts":"2026-08-17T15:51:50.594Z","agentId":"P-24","wave":1,"step":"WAVE_1","action":"COMPLETE","result":"SUCCESS","details":{"uid":"uid_persona_p24"}}
+{"ts":"2026-08-17T15:52:56.245Z","agentId":"P-24","wave":2,"step":"WAVE_2","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-17T15:52:56.245Z","agentId":"P-24","wave":2,"step":"WAVE_2","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-17T15:52:56.246Z","agentId":"P-24","wave":2,"step":"WAVE_2","action":"EXCEPTION","result":"SUCCESS","details":{"error":"CRITICAL SAFETY REFUSAL: Invalid or missing Stripe secret test key. Key must start with \"sk_test_\". Received: \"...\""}}
+{"ts":"2026-08-17T15:52:56.246Z","agentId":"P-24","wave":2,"step":"WAVE_2","action":"EXCEPTION","result":"SUCCESS","details":{"error":"CRITICAL SAFETY REFUSAL: Invalid or missing Stripe secret test key. Key must start with \"sk_test_\". Received: \"...\""}}
+{"ts":"2026-08-17T16:16:36.571Z","agentId":"P-24","wave":1,"step":"WAVE_1","action":"START","result":"SUCCESS","details":{"email":"agent24.frank.deluca@paperworking-test.dev"}}
+{"ts":"2026-08-17T16:16:37.356Z","agentId":"P-24","wave":1,"step":"WAVE_1","action":"START","result":"SUCCESS","details":{"email":"agent24.frank.deluca@paperworking-test.dev"}}
+{"ts":"2026-08-17T16:16:38.866Z","agentId":"P-24","wave":0,"step":"SIGNUP","action":"SUCCESS_CREATED","result":"SUCCESS","details":{"uid":"uid_persona_p24","email":"agent24.frank.deluca@paperworking-test.dev","name":"Frank Deluca","entity":"Deluca Door Count LLC"}}
+{"ts":"2026-08-17T16:16:38.866Z","agentId":"P-24","wave":1,"step":"WAVE_1","action":"COMPLETE","result":"SUCCESS","details":{"uid":"uid_persona_p24"}}
+{"ts":"2026-08-17T16:16:39.445Z","agentId":"P-24","wave":0,"step":"SIGNUP","action":"SUCCESS_CREATED","result":"SUCCESS","details":{"uid":"uid_persona_p24","email":"agent24.frank.deluca@paperworking-test.dev","name":"Frank Deluca","entity":"Deluca Door Count LLC"}}
+{"ts":"2026-08-17T16:16:39.445Z","agentId":"P-24","wave":1,"step":"WAVE_1","action":"COMPLETE","result":"SUCCESS","details":{"uid":"uid_persona_p24"}}
+{"ts":"2026-08-17T16:17:32.809Z","agentId":"P-24","wave":1,"step":"WAVE_1","action":"START","result":"SUCCESS","details":{"email":"agent24.frank.deluca@paperworking-test.dev"}}
+{"ts":"2026-08-17T16:17:32.822Z","agentId":"P-24","wave":1,"step":"WAVE_1","action":"START","result":"SUCCESS","details":{"email":"agent24.frank.deluca@paperworking-test.dev"}}
+{"ts":"2026-08-17T16:17:35.042Z","agentId":"P-24","wave":0,"step":"SIGNUP","action":"SUCCESS_CREATED","result":"SUCCESS","details":{"uid":"uid_persona_p24","email":"agent24.frank.deluca@paperworking-test.dev","name":"Frank Deluca","entity":"Deluca Door Count LLC"}}
+{"ts":"2026-08-17T16:17:35.043Z","agentId":"P-24","wave":1,"step":"WAVE_1","action":"COMPLETE","result":"SUCCESS","details":{"uid":"uid_persona_p24"}}
+{"ts":"2026-08-17T16:17:35.043Z","agentId":"P-24","wave":0,"step":"SIGNUP","action":"SUCCESS_CREATED","result":"SUCCESS","details":{"uid":"uid_persona_p24","email":"agent24.frank.deluca@paperworking-test.dev","name":"Frank Deluca","entity":"Deluca Door Count LLC"}}
+{"ts":"2026-08-17T16:17:35.044Z","agentId":"P-24","wave":1,"step":"WAVE_1","action":"COMPLETE","result":"SUCCESS","details":{"uid":"uid_persona_p24"}}
+{"ts":"2026-08-17T16:18:41.939Z","agentId":"P-24","wave":2,"step":"WAVE_2","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-17T16:18:41.939Z","agentId":"P-24","wave":2,"step":"WAVE_2","action":"EXCEPTION","result":"SUCCESS","details":{"error":"CRITICAL SAFETY REFUSAL: Invalid or missing Stripe secret test key. Key must start with \"sk_test_\". Received: \"...\""}}
+{"ts":"2026-08-17T16:18:41.968Z","agentId":"P-24","wave":2,"step":"WAVE_2","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-17T16:18:41.968Z","agentId":"P-24","wave":2,"step":"WAVE_2","action":"EXCEPTION","result":"SUCCESS","details":{"error":"CRITICAL SAFETY REFUSAL: Invalid or missing Stripe secret test key. Key must start with \"sk_test_\". Received: \"...\""}}
+{"ts":"2026-08-17T16:18:42.000Z","agentId":"P-24","wave":3,"step":"WAVE_3","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-17T16:18:42.000Z","agentId":"P-24","wave":0,"step":"PROJECTS","action":"CREATION_SUCCESS","result":"SUCCESS","details":{"created":10,"plaid":false}}
+{"ts":"2026-08-17T16:18:42.000Z","agentId":"P-24","wave":3,"step":"WAVE_3","action":"COMPLETE","result":"SUCCESS","details":{"created":10}}
+{"ts":"2026-08-17T16:18:42.037Z","agentId":"P-24","wave":4,"step":"WAVE_4","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-17T16:18:42.037Z","agentId":"P-24","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-61","to":"P-50","type":"Seller-Financed Note Sale"}}
+{"ts":"2026-08-17T16:18:42.037Z","agentId":"P-24","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-20"}}
+{"ts":"2026-08-17T16:18:42.037Z","agentId":"P-24","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-50"}}
+{"ts":"2026-08-17T16:18:42.037Z","agentId":"P-24","wave":4,"step":"WAVE_4","action":"COMPLETE","result":"SUCCESS","details":{"interactions":1,"invites":2}}
+{"ts":"2026-08-17T16:18:42.038Z","agentId":"P-24","wave":3,"step":"WAVE_3","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-17T16:18:42.039Z","agentId":"P-24","wave":0,"step":"PROJECTS","action":"CREATION_SUCCESS","result":"SUCCESS","details":{"created":10,"plaid":false}}
+{"ts":"2026-08-17T16:18:42.039Z","agentId":"P-24","wave":3,"step":"WAVE_3","action":"COMPLETE","result":"SUCCESS","details":{"created":10}}
+{"ts":"2026-08-17T19:41:58.324Z","agentId":"P-24","wave":1,"step":"WAVE_1","action":"START","result":"SUCCESS","details":{"email":"agent24.frank.deluca@paperworking-test.dev"}}
+{"ts":"2026-08-17T19:41:59.667Z","agentId":"P-24","wave":1,"step":"WAVE_1","action":"START","result":"SUCCESS","details":{"email":"agent24.frank.deluca@paperworking-test.dev"}}
+{"ts":"2026-08-17T19:42:00.443Z","agentId":"P-24","wave":0,"step":"SIGNUP","action":"SUCCESS_CREATED","result":"SUCCESS","details":{"uid":"uid_persona_p24","email":"agent24.frank.deluca@paperworking-test.dev","name":"Frank Deluca","entity":"Deluca Door Count LLC"}}
+{"ts":"2026-08-17T19:42:00.443Z","agentId":"P-24","wave":1,"step":"WAVE_1","action":"COMPLETE","result":"SUCCESS","details":{"uid":"uid_persona_p24"}}
+{"ts":"2026-08-17T19:42:01.784Z","agentId":"P-24","wave":0,"step":"SIGNUP","action":"SUCCESS_CREATED","result":"SUCCESS","details":{"uid":"uid_persona_p24","email":"agent24.frank.deluca@paperworking-test.dev","name":"Frank Deluca","entity":"Deluca Door Count LLC"}}
+{"ts":"2026-08-17T19:42:01.784Z","agentId":"P-24","wave":1,"step":"WAVE_1","action":"COMPLETE","result":"SUCCESS","details":{"uid":"uid_persona_p24"}}
+{"ts":"2026-08-17T19:43:07.920Z","agentId":"P-24","wave":2,"step":"WAVE_2","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-17T19:43:07.920Z","agentId":"P-24","wave":2,"step":"WAVE_2","action":"EXCEPTION","result":"SUCCESS","details":{"error":"CRITICAL SAFETY REFUSAL: Invalid or missing Stripe secret test key. Key must start with \"sk_test_\". Received: \"...\""}}
+{"ts":"2026-08-17T19:43:07.963Z","agentId":"P-24","wave":3,"step":"WAVE_3","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-17T19:43:07.963Z","agentId":"P-24","wave":0,"step":"PROJECTS","action":"CREATION_SUCCESS","result":"SUCCESS","details":{"created":10,"plaid":false}}
+{"ts":"2026-08-17T19:43:07.963Z","agentId":"P-24","wave":3,"step":"WAVE_3","action":"COMPLETE","result":"SUCCESS","details":{"created":10}}
+{"ts":"2026-08-17T19:43:07.991Z","agentId":"P-24","wave":4,"step":"WAVE_4","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-17T19:43:07.991Z","agentId":"P-24","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-61","to":"P-50","type":"Seller-Financed Note Sale"}}
+{"ts":"2026-08-17T19:43:07.991Z","agentId":"P-24","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-20"}}
+{"ts":"2026-08-17T19:43:07.991Z","agentId":"P-24","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-50"}}
+{"ts":"2026-08-17T19:43:07.991Z","agentId":"P-24","wave":4,"step":"WAVE_4","action":"COMPLETE","result":"SUCCESS","details":{"interactions":1,"invites":2}}
+{"ts":"2026-08-17T19:43:08.027Z","agentId":"P-24","wave":5,"step":"WAVE_5","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-17T19:43:08.027Z","agentId":"P-24","wave":5,"step":"WAVE_5","action":"COMPLETE","result":"SUCCESS","details":{"reportPath":"/Users/yvesdarbouze/Documents/PaperWorking/artifacts/persona-swarm/reports/P-24-experience-report.md"}}
+{"ts":"2026-08-17T19:43:08.082Z","agentId":"P-24","wave":2,"step":"WAVE_2","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-17T19:43:08.082Z","agentId":"P-24","wave":2,"step":"WAVE_2","action":"EXCEPTION","result":"SUCCESS","details":{"error":"CRITICAL SAFETY REFUSAL: Invalid or missing Stripe secret test key. Key must start with \"sk_test_\". Received: \"...\""}}
+{"ts":"2026-08-17T19:43:08.111Z","agentId":"P-24","wave":3,"step":"WAVE_3","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-17T19:43:08.112Z","agentId":"P-24","wave":0,"step":"PROJECTS","action":"CREATION_SUCCESS","result":"SUCCESS","details":{"created":10,"plaid":false}}
+{"ts":"2026-08-17T19:43:08.112Z","agentId":"P-24","wave":3,"step":"WAVE_3","action":"COMPLETE","result":"SUCCESS","details":{"created":10}}
+{"ts":"2026-08-17T19:43:08.136Z","agentId":"P-24","wave":4,"step":"WAVE_4","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-17T19:43:08.136Z","agentId":"P-24","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-61","to":"P-50","type":"Seller-Financed Note Sale"}}
+{"ts":"2026-08-17T19:43:08.136Z","agentId":"P-24","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-20"}}
+{"ts":"2026-08-17T19:43:08.136Z","agentId":"P-24","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-50"}}
+{"ts":"2026-08-17T19:43:08.136Z","agentId":"P-24","wave":4,"step":"WAVE_4","action":"COMPLETE","result":"SUCCESS","details":{"interactions":1,"invites":2}}
+{"ts":"2026-08-17T19:43:08.168Z","agentId":"P-24","wave":5,"step":"WAVE_5","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-17T19:43:08.168Z","agentId":"P-24","wave":5,"step":"WAVE_5","action":"COMPLETE","result":"SUCCESS","details":{"reportPath":"/Users/yvesdarbouze/Documents/PaperWorking/artifacts/persona-swarm/reports/P-24-experience-report.md"}}

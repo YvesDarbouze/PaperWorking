@@ -79,8 +79,8 @@ export async function executeProjectCreation(
       success: true,
       created: createdCount,
     };
-  } catch (err: any) {
-    const errorMsg = err.message || 'Unknown project creation error';
+  } catch (err: unknown) {
+    const errorMsg = (err as Error).message || 'Unknown project creation error';
     logSwarmEvent(agentId, 'PROJECTS', 'ERROR', { error: errorMsg });
     return {
       success: false,

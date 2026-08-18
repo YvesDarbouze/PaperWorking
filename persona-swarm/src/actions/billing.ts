@@ -80,8 +80,8 @@ export async function executeBilling(agent: PersonaAgent, uid: string): Promise<
       stripeCustomerId: testCustomerId,
       stripeSubscriptionId: testSubId,
     };
-  } catch (err: any) {
-    const errorMsg = err.message || 'Unknown billing error';
+  } catch (err: unknown) {
+    const errorMsg = (err as Error).message || 'Unknown billing error';
     logSwarmEvent(agentId, 'BILLING', 'ERROR', { error: errorMsg });
     return {
       success: false,

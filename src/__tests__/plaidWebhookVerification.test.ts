@@ -11,7 +11,7 @@ import { prisma } from '@/lib/prisma';
 
 describe('Plaid Webhook Verification Module & Route Security', () => {
   let testKid: string;
-  let testJwk: any;
+  let testJwk: Record<string, unknown>;
   let privateKey: crypto.KeyObject;
 
   beforeAll(() => {
@@ -39,7 +39,7 @@ describe('Plaid Webhook Verification Module & Route Security', () => {
   });
 
   function createSignedJwt(
-    payloadObj: Record<string, any>,
+    payloadObj: Record<string, unknown>,
     kid: string = testKid,
     customPrivateKey: crypto.KeyObject = privateKey
   ): string {
@@ -95,15 +95,15 @@ describe('Plaid Webhook Verification Module & Route Security', () => {
     };
     const jwt = createSignedJwt(payload, 'unknown-kid-999');
 
-    const mockPlaidClient: any = {
+    const mockPlaidClient = {
       webhookVerificationKeyGet: jest.fn().mockRejectedValue(new Error('Plaid Key Not Found')),
-    };
+    } as unknown as NonNullable<Parameters<typeof verifyPlaidWebhook>[2]>['customPlaidClient'];
 
     const result = await verifyPlaidWebhook(jwt, rawBody, { customPlaidClient: mockPlaidClient });
 
     expect(result.isValid).toBe(false);
     expect(result.reason).toBe('unknown_kid');
-    expect(mockPlaidClient.webhookVerificationKeyGet).toHaveBeenCalledWith({ key_id: 'unknown-kid-999' });
+    expect(mockPlaidClient!.webhookVerificationKeyGet).toHaveBeenCalledWith({ key_id: 'unknown-kid-999' });
   });
 
   it('rejects request when ES256 signature is invalid', async () => {
@@ -194,13 +194,13 @@ describe('Plaid Webhook Verification Module & Route Security', () => {
 
   it('caches JWKs in module scope and reuses cached key for subsequent requests', async () => {
     const newKid = 'test-kid-cache-002';
-    const mockPlaidClient: any = {
+    const mockPlaidClient = {
       webhookVerificationKeyGet: jest.fn().mockResolvedValue({
         data: {
           key: { ...testJwk, kid: newKid },
         },
       }),
-    };
+    } as unknown as NonNullable<Parameters<typeof verifyPlaidWebhook>[2]>['customPlaidClient'];
 
     const rawBody = JSON.stringify({ item_id: 'item_cache_test' });
     const payload = {
@@ -212,13 +212,13 @@ describe('Plaid Webhook Verification Module & Route Security', () => {
     // First call: fetches key from Plaid API and populates cache
     const result1 = await verifyPlaidWebhook(jwt, rawBody, { customPlaidClient: mockPlaidClient });
     expect(result1.isValid).toBe(true);
-    expect(mockPlaidClient.webhookVerificationKeyGet).toHaveBeenCalledTimes(1);
+    expect(mockPlaidClient!.webhookVerificationKeyGet).toHaveBeenCalledTimes(1);
     expect(getCachedJwk(newKid)).toBeDefined();
 
     // Second call: uses cached key, does NOT call Plaid API again
     const result2 = await verifyPlaidWebhook(jwt, rawBody, { customPlaidClient: mockPlaidClient });
     expect(result2.isValid).toBe(true);
-    expect(mockPlaidClient.webhookVerificationKeyGet).toHaveBeenCalledTimes(1);
+    expect(mockPlaidClient!.webhookVerificationKeyGet).toHaveBeenCalledTimes(1);
   });
 
   it('enforces 401 rejection at the HTTP route boundary without executing downstream DB writes', async () => {

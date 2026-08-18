@@ -6,8 +6,6 @@
    obfuscated teaser (public).
    ═══════════════════════════════════════════════════════ */
 
-import type { EquityTerms } from './schema';
-
 // ── Lifecycle ────────────────────────────────────────────
 export type ListingStatus = 'draft' | 'published' | 'paused' | 'closed' | 'withdrawn' | 'takedown_review';
 export type ClosedReason = 'manual' | 'auto_phase_advance' | 'project_archived';
@@ -63,7 +61,7 @@ export interface DealListing {
 
   // Versioning (DM-23)
   version?: number;
-  versions?: any[];
+  versions?: Record<string, unknown>[];
 
   // Property snapshot (captured at publish, refreshable)
   propertyName: string;

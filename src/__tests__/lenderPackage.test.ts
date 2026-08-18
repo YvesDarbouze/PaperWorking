@@ -278,7 +278,7 @@ describe('Card F3.2 Lender Package Checklist API Tests', () => {
   describe('FD-18 Admin & Seeding Tests', () => {
     it('GET /api/admin/lender-checklists returns checklists definitions', async () => {
       const req = new NextRequest('http://localhost/api/admin/lender-checklists', {
-        headers: { 'Authorization': 'Bearer mock' }
+        headers: { 'Authorization': 'Bearer mock', 'x-user-role': 'ADMIN' }
       });
       const res = await getAdminChecklists(req);
       expect(res.status).toBe(200);
@@ -295,7 +295,7 @@ describe('Card F3.2 Lender Package Checklist API Tests', () => {
 
       const req = new NextRequest('http://localhost/api/admin/lender-checklists', {
         method: 'PUT',
-        headers: { 'Authorization': 'Bearer mock' },
+        headers: { 'Authorization': 'Bearer mock', 'x-user-role': 'ADMIN' },
         body: JSON.stringify({
           Conventional: ['Custom Tax Returns Ask'],
         })

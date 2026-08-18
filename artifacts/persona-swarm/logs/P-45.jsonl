@@ -669,3 +669,207 @@
 {"ts":"2026-08-14T19:22:05.579Z","agentId":"P-45","wave":4,"step":"WAVE_4","action":"COMPLETE","result":"SUCCESS","details":{"interactions":0,"invites":2}}
 {"ts":"2026-08-14T19:22:05.707Z","agentId":"P-45","wave":5,"step":"WAVE_5","action":"START","result":"SUCCESS"}
 {"ts":"2026-08-14T19:22:05.708Z","agentId":"P-45","wave":5,"step":"WAVE_5","action":"COMPLETE","result":"SUCCESS","details":{"reportPath":"/Users/yvesdarbouze/Documents/PaperWorking/artifacts/persona-swarm/reports/P-45-experience-report.md"}}
+{"ts":"2026-08-17T12:48:20.655Z","agentId":"P-45","wave":1,"step":"WAVE_1","action":"START","result":"SUCCESS","details":{"email":"agent45.olivia.brennan@paperworking-test.dev"}}
+{"ts":"2026-08-17T12:48:20.655Z","agentId":"P-45","wave":0,"step":"SIGNUP","action":"SUCCESS_CREATED","result":"SUCCESS","details":{"uid":"uid_persona_p45","email":"agent45.olivia.brennan@paperworking-test.dev","name":"Olivia Brennan","entity":"Brennan Micro-Invest LLC"}}
+{"ts":"2026-08-17T12:48:20.655Z","agentId":"P-45","wave":1,"step":"WAVE_1","action":"COMPLETE","result":"SUCCESS","details":{"uid":"uid_persona_p45"}}
+{"ts":"2026-08-17T12:48:20.658Z","agentId":"P-45","wave":1,"step":"WAVE_1","action":"START","result":"SUCCESS","details":{"email":"agent45.olivia.brennan@paperworking-test.dev"}}
+{"ts":"2026-08-17T12:48:20.658Z","agentId":"P-45","wave":0,"step":"SIGNUP","action":"SUCCESS_CREATED","result":"SUCCESS","details":{"uid":"uid_persona_p45","email":"agent45.olivia.brennan@paperworking-test.dev","name":"Olivia Brennan","entity":"Brennan Micro-Invest LLC"}}
+{"ts":"2026-08-17T12:48:20.658Z","agentId":"P-45","wave":1,"step":"WAVE_1","action":"COMPLETE","result":"SUCCESS","details":{"uid":"uid_persona_p45"}}
+{"ts":"2026-08-17T12:48:20.701Z","agentId":"P-45","wave":2,"step":"WAVE_2","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-17T12:48:20.701Z","agentId":"P-45","wave":0,"step":"BILLING","action":"SUBSCRIPTION_SUCCESS","result":"SUCCESS","details":{"plan":"Individual","stripeCustomerId":"cus_test_swarm_p-45","stripeSubscriptionId":"sub_test_swarm_p-45","cardLastFour":"4242","cardBrand":"visa"}}
+{"ts":"2026-08-17T12:48:20.701Z","agentId":"P-45","wave":2,"step":"WAVE_2","action":"COMPLETE","result":"SUCCESS","details":{"plan":"Individual"}}
+{"ts":"2026-08-17T12:48:20.705Z","agentId":"P-45","wave":2,"step":"WAVE_2","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-17T12:48:20.705Z","agentId":"P-45","wave":0,"step":"BILLING","action":"SUBSCRIPTION_SUCCESS","result":"SUCCESS","details":{"plan":"Individual","stripeCustomerId":"cus_test_swarm_p-45","stripeSubscriptionId":"sub_test_swarm_p-45","cardLastFour":"4242","cardBrand":"visa"}}
+{"ts":"2026-08-17T12:48:20.705Z","agentId":"P-45","wave":2,"step":"WAVE_2","action":"COMPLETE","result":"SUCCESS","details":{"plan":"Individual"}}
+{"ts":"2026-08-17T12:48:20.854Z","agentId":"P-45","wave":3,"step":"WAVE_3","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-17T12:48:20.858Z","agentId":"P-45","wave":0,"step":"PROJECTS","action":"CREATION_SUCCESS","result":"SUCCESS","details":{"created":10,"plaid":false}}
+{"ts":"2026-08-17T12:48:20.858Z","agentId":"P-45","wave":3,"step":"WAVE_3","action":"COMPLETE","result":"SUCCESS","details":{"created":10}}
+{"ts":"2026-08-17T12:48:20.866Z","agentId":"P-45","wave":3,"step":"WAVE_3","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-17T12:48:20.869Z","agentId":"P-45","wave":0,"step":"PROJECTS","action":"CREATION_SUCCESS","result":"SUCCESS","details":{"created":10,"plaid":false}}
+{"ts":"2026-08-17T12:48:20.869Z","agentId":"P-45","wave":3,"step":"WAVE_3","action":"COMPLETE","result":"SUCCESS","details":{"created":10}}
+{"ts":"2026-08-17T12:48:20.961Z","agentId":"P-45","wave":4,"step":"WAVE_4","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-17T12:48:20.962Z","agentId":"P-45","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-44"}}
+{"ts":"2026-08-17T12:48:20.962Z","agentId":"P-45","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-46"}}
+{"ts":"2026-08-17T12:48:20.962Z","agentId":"P-45","wave":4,"step":"WAVE_4","action":"COMPLETE","result":"SUCCESS","details":{"interactions":0,"invites":2}}
+{"ts":"2026-08-17T12:48:20.967Z","agentId":"P-45","wave":4,"step":"WAVE_4","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-17T12:48:20.967Z","agentId":"P-45","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-44"}}
+{"ts":"2026-08-17T12:48:20.968Z","agentId":"P-45","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-46"}}
+{"ts":"2026-08-17T12:48:20.968Z","agentId":"P-45","wave":4,"step":"WAVE_4","action":"COMPLETE","result":"SUCCESS","details":{"interactions":0,"invites":2}}
+{"ts":"2026-08-17T12:48:21.026Z","agentId":"P-45","wave":5,"step":"WAVE_5","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-17T12:48:21.026Z","agentId":"P-45","wave":5,"step":"WAVE_5","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-17T12:48:21.027Z","agentId":"P-45","wave":5,"step":"WAVE_5","action":"COMPLETE","result":"SUCCESS","details":{"reportPath":"/Users/yvesdarbouze/Documents/PaperWorking/artifacts/persona-swarm/reports/P-45-experience-report.md"}}
+{"ts":"2026-08-17T12:48:21.029Z","agentId":"P-45","wave":5,"step":"WAVE_5","action":"COMPLETE","result":"SUCCESS","details":{"reportPath":"/Users/yvesdarbouze/Documents/PaperWorking/artifacts/persona-swarm/reports/P-45-experience-report.md"}}
+{"ts":"2026-08-17T12:49:28.791Z","agentId":"P-45","wave":1,"step":"WAVE_1","action":"START","result":"SUCCESS","details":{"email":"agent45.olivia.brennan@paperworking-test.dev"}}
+{"ts":"2026-08-17T12:49:28.791Z","agentId":"P-45","wave":0,"step":"SIGNUP","action":"SUCCESS_CREATED","result":"SUCCESS","details":{"uid":"uid_persona_p45","email":"agent45.olivia.brennan@paperworking-test.dev","name":"Olivia Brennan","entity":"Brennan Micro-Invest LLC"}}
+{"ts":"2026-08-17T12:49:28.792Z","agentId":"P-45","wave":1,"step":"WAVE_1","action":"COMPLETE","result":"SUCCESS","details":{"uid":"uid_persona_p45"}}
+{"ts":"2026-08-17T12:49:28.848Z","agentId":"P-45","wave":2,"step":"WAVE_2","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-17T12:49:28.848Z","agentId":"P-45","wave":0,"step":"BILLING","action":"SUBSCRIPTION_SUCCESS","result":"SUCCESS","details":{"plan":"Individual","stripeCustomerId":"cus_test_swarm_p-45","stripeSubscriptionId":"sub_test_swarm_p-45","cardLastFour":"4242","cardBrand":"visa"}}
+{"ts":"2026-08-17T12:49:28.848Z","agentId":"P-45","wave":2,"step":"WAVE_2","action":"COMPLETE","result":"SUCCESS","details":{"plan":"Individual"}}
+{"ts":"2026-08-17T12:49:29.024Z","agentId":"P-45","wave":3,"step":"WAVE_3","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-17T12:49:29.026Z","agentId":"P-45","wave":0,"step":"PROJECTS","action":"CREATION_SUCCESS","result":"SUCCESS","details":{"created":10,"plaid":false}}
+{"ts":"2026-08-17T12:49:29.026Z","agentId":"P-45","wave":3,"step":"WAVE_3","action":"COMPLETE","result":"SUCCESS","details":{"created":10}}
+{"ts":"2026-08-17T12:49:29.174Z","agentId":"P-45","wave":4,"step":"WAVE_4","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-17T12:49:29.176Z","agentId":"P-45","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-44"}}
+{"ts":"2026-08-17T12:49:29.179Z","agentId":"P-45","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-46"}}
+{"ts":"2026-08-17T12:49:29.182Z","agentId":"P-45","wave":4,"step":"WAVE_4","action":"COMPLETE","result":"SUCCESS","details":{"interactions":0,"invites":2}}
+{"ts":"2026-08-17T12:49:29.286Z","agentId":"P-45","wave":5,"step":"WAVE_5","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-17T12:49:29.286Z","agentId":"P-45","wave":5,"step":"WAVE_5","action":"COMPLETE","result":"SUCCESS","details":{"reportPath":"/Users/yvesdarbouze/Documents/PaperWorking/artifacts/persona-swarm/reports/P-45-experience-report.md"}}
+{"ts":"2026-08-17T12:49:29.294Z","agentId":"P-45","wave":1,"step":"WAVE_1","action":"START","result":"SUCCESS","details":{"email":"agent45.olivia.brennan@paperworking-test.dev"}}
+{"ts":"2026-08-17T12:49:29.295Z","agentId":"P-45","wave":0,"step":"SIGNUP","action":"SUCCESS_CREATED","result":"SUCCESS","details":{"uid":"uid_persona_p45","email":"agent45.olivia.brennan@paperworking-test.dev","name":"Olivia Brennan","entity":"Brennan Micro-Invest LLC"}}
+{"ts":"2026-08-17T12:49:29.295Z","agentId":"P-45","wave":1,"step":"WAVE_1","action":"COMPLETE","result":"SUCCESS","details":{"uid":"uid_persona_p45"}}
+{"ts":"2026-08-17T12:49:29.354Z","agentId":"P-45","wave":2,"step":"WAVE_2","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-17T12:49:29.354Z","agentId":"P-45","wave":0,"step":"BILLING","action":"SUBSCRIPTION_SUCCESS","result":"SUCCESS","details":{"plan":"Individual","stripeCustomerId":"cus_test_swarm_p-45","stripeSubscriptionId":"sub_test_swarm_p-45","cardLastFour":"4242","cardBrand":"visa"}}
+{"ts":"2026-08-17T12:49:29.354Z","agentId":"P-45","wave":2,"step":"WAVE_2","action":"COMPLETE","result":"SUCCESS","details":{"plan":"Individual"}}
+{"ts":"2026-08-17T12:49:29.556Z","agentId":"P-45","wave":3,"step":"WAVE_3","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-17T12:49:29.558Z","agentId":"P-45","wave":0,"step":"PROJECTS","action":"CREATION_SUCCESS","result":"SUCCESS","details":{"created":10,"plaid":false}}
+{"ts":"2026-08-17T12:49:29.558Z","agentId":"P-45","wave":3,"step":"WAVE_3","action":"COMPLETE","result":"SUCCESS","details":{"created":10}}
+{"ts":"2026-08-17T12:49:29.667Z","agentId":"P-45","wave":4,"step":"WAVE_4","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-17T12:49:29.667Z","agentId":"P-45","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-44"}}
+{"ts":"2026-08-17T12:49:29.668Z","agentId":"P-45","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-46"}}
+{"ts":"2026-08-17T12:49:29.668Z","agentId":"P-45","wave":4,"step":"WAVE_4","action":"COMPLETE","result":"SUCCESS","details":{"interactions":0,"invites":2}}
+{"ts":"2026-08-17T12:49:29.702Z","agentId":"P-45","wave":5,"step":"WAVE_5","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-17T12:49:29.702Z","agentId":"P-45","wave":5,"step":"WAVE_5","action":"COMPLETE","result":"SUCCESS","details":{"reportPath":"/Users/yvesdarbouze/Documents/PaperWorking/artifacts/persona-swarm/reports/P-45-experience-report.md"}}
+{"ts":"2026-08-17T12:51:28.447Z","agentId":"P-45","wave":1,"step":"WAVE_1","action":"START","result":"SUCCESS","details":{"email":"agent45.olivia.brennan@paperworking-test.dev"}}
+{"ts":"2026-08-17T12:51:28.447Z","agentId":"P-45","wave":0,"step":"SIGNUP","action":"SUCCESS_CREATED","result":"SUCCESS","details":{"uid":"uid_persona_p45","email":"agent45.olivia.brennan@paperworking-test.dev","name":"Olivia Brennan","entity":"Brennan Micro-Invest LLC"}}
+{"ts":"2026-08-17T12:51:28.447Z","agentId":"P-45","wave":1,"step":"WAVE_1","action":"COMPLETE","result":"SUCCESS","details":{"uid":"uid_persona_p45"}}
+{"ts":"2026-08-17T12:51:28.448Z","agentId":"P-45","wave":1,"step":"WAVE_1","action":"START","result":"SUCCESS","details":{"email":"agent45.olivia.brennan@paperworking-test.dev"}}
+{"ts":"2026-08-17T12:51:28.448Z","agentId":"P-45","wave":0,"step":"SIGNUP","action":"SUCCESS_CREATED","result":"SUCCESS","details":{"uid":"uid_persona_p45","email":"agent45.olivia.brennan@paperworking-test.dev","name":"Olivia Brennan","entity":"Brennan Micro-Invest LLC"}}
+{"ts":"2026-08-17T12:51:28.448Z","agentId":"P-45","wave":1,"step":"WAVE_1","action":"COMPLETE","result":"SUCCESS","details":{"uid":"uid_persona_p45"}}
+{"ts":"2026-08-17T12:51:28.503Z","agentId":"P-45","wave":2,"step":"WAVE_2","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-17T12:51:28.504Z","agentId":"P-45","wave":0,"step":"BILLING","action":"SUBSCRIPTION_SUCCESS","result":"SUCCESS","details":{"plan":"Individual","stripeCustomerId":"cus_test_swarm_p-45","stripeSubscriptionId":"sub_test_swarm_p-45","cardLastFour":"4242","cardBrand":"visa"}}
+{"ts":"2026-08-17T12:51:28.504Z","agentId":"P-45","wave":2,"step":"WAVE_2","action":"COMPLETE","result":"SUCCESS","details":{"plan":"Individual"}}
+{"ts":"2026-08-17T12:51:28.510Z","agentId":"P-45","wave":2,"step":"WAVE_2","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-17T12:51:28.510Z","agentId":"P-45","wave":0,"step":"BILLING","action":"SUBSCRIPTION_SUCCESS","result":"SUCCESS","details":{"plan":"Individual","stripeCustomerId":"cus_test_swarm_p-45","stripeSubscriptionId":"sub_test_swarm_p-45","cardLastFour":"4242","cardBrand":"visa"}}
+{"ts":"2026-08-17T12:51:28.510Z","agentId":"P-45","wave":2,"step":"WAVE_2","action":"COMPLETE","result":"SUCCESS","details":{"plan":"Individual"}}
+{"ts":"2026-08-17T12:51:28.699Z","agentId":"P-45","wave":3,"step":"WAVE_3","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-17T12:51:28.703Z","agentId":"P-45","wave":0,"step":"PROJECTS","action":"CREATION_SUCCESS","result":"SUCCESS","details":{"created":10,"plaid":false}}
+{"ts":"2026-08-17T12:51:28.703Z","agentId":"P-45","wave":3,"step":"WAVE_3","action":"COMPLETE","result":"SUCCESS","details":{"created":10}}
+{"ts":"2026-08-17T12:51:28.709Z","agentId":"P-45","wave":3,"step":"WAVE_3","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-17T12:51:28.713Z","agentId":"P-45","wave":0,"step":"PROJECTS","action":"CREATION_SUCCESS","result":"SUCCESS","details":{"created":10,"plaid":false}}
+{"ts":"2026-08-17T12:51:28.714Z","agentId":"P-45","wave":3,"step":"WAVE_3","action":"COMPLETE","result":"SUCCESS","details":{"created":10}}
+{"ts":"2026-08-17T12:51:28.800Z","agentId":"P-45","wave":4,"step":"WAVE_4","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-17T12:51:28.801Z","agentId":"P-45","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-44"}}
+{"ts":"2026-08-17T12:51:28.801Z","agentId":"P-45","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-46"}}
+{"ts":"2026-08-17T12:51:28.801Z","agentId":"P-45","wave":4,"step":"WAVE_4","action":"COMPLETE","result":"SUCCESS","details":{"interactions":0,"invites":2}}
+{"ts":"2026-08-17T12:51:28.814Z","agentId":"P-45","wave":4,"step":"WAVE_4","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-17T12:51:28.814Z","agentId":"P-45","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-44"}}
+{"ts":"2026-08-17T12:51:28.815Z","agentId":"P-45","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-46"}}
+{"ts":"2026-08-17T12:51:28.815Z","agentId":"P-45","wave":4,"step":"WAVE_4","action":"COMPLETE","result":"SUCCESS","details":{"interactions":0,"invites":2}}
+{"ts":"2026-08-17T12:51:28.844Z","agentId":"P-45","wave":5,"step":"WAVE_5","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-17T12:51:28.844Z","agentId":"P-45","wave":5,"step":"WAVE_5","action":"COMPLETE","result":"SUCCESS","details":{"reportPath":"/Users/yvesdarbouze/Documents/PaperWorking/artifacts/persona-swarm/reports/P-45-experience-report.md"}}
+{"ts":"2026-08-17T12:51:28.865Z","agentId":"P-45","wave":5,"step":"WAVE_5","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-17T12:51:28.866Z","agentId":"P-45","wave":5,"step":"WAVE_5","action":"COMPLETE","result":"SUCCESS","details":{"reportPath":"/Users/yvesdarbouze/Documents/PaperWorking/artifacts/persona-swarm/reports/P-45-experience-report.md"}}
+{"ts":"2026-08-17T12:53:52.968Z","agentId":"P-45","wave":1,"step":"WAVE_1","action":"START","result":"SUCCESS","details":{"email":"agent45.olivia.brennan@paperworking-test.dev"}}
+{"ts":"2026-08-17T12:53:52.968Z","agentId":"P-45","wave":1,"step":"WAVE_1","action":"START","result":"SUCCESS","details":{"email":"agent45.olivia.brennan@paperworking-test.dev"}}
+{"ts":"2026-08-17T12:53:52.969Z","agentId":"P-45","wave":0,"step":"SIGNUP","action":"SUCCESS_CREATED","result":"SUCCESS","details":{"uid":"uid_persona_p45","email":"agent45.olivia.brennan@paperworking-test.dev","name":"Olivia Brennan","entity":"Brennan Micro-Invest LLC"}}
+{"ts":"2026-08-17T12:53:52.970Z","agentId":"P-45","wave":1,"step":"WAVE_1","action":"COMPLETE","result":"SUCCESS","details":{"uid":"uid_persona_p45"}}
+{"ts":"2026-08-17T12:53:52.970Z","agentId":"P-45","wave":0,"step":"SIGNUP","action":"SUCCESS_CREATED","result":"SUCCESS","details":{"uid":"uid_persona_p45","email":"agent45.olivia.brennan@paperworking-test.dev","name":"Olivia Brennan","entity":"Brennan Micro-Invest LLC"}}
+{"ts":"2026-08-17T12:53:52.970Z","agentId":"P-45","wave":1,"step":"WAVE_1","action":"COMPLETE","result":"SUCCESS","details":{"uid":"uid_persona_p45"}}
+{"ts":"2026-08-17T12:53:53.016Z","agentId":"P-45","wave":2,"step":"WAVE_2","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-17T12:53:53.017Z","agentId":"P-45","wave":0,"step":"BILLING","action":"SUBSCRIPTION_SUCCESS","result":"SUCCESS","details":{"plan":"Individual","stripeCustomerId":"cus_test_swarm_p-45","stripeSubscriptionId":"sub_test_swarm_p-45","cardLastFour":"4242","cardBrand":"visa"}}
+{"ts":"2026-08-17T12:53:53.017Z","agentId":"P-45","wave":2,"step":"WAVE_2","action":"COMPLETE","result":"SUCCESS","details":{"plan":"Individual"}}
+{"ts":"2026-08-17T12:53:53.026Z","agentId":"P-45","wave":2,"step":"WAVE_2","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-17T12:53:53.027Z","agentId":"P-45","wave":0,"step":"BILLING","action":"SUBSCRIPTION_SUCCESS","result":"SUCCESS","details":{"plan":"Individual","stripeCustomerId":"cus_test_swarm_p-45","stripeSubscriptionId":"sub_test_swarm_p-45","cardLastFour":"4242","cardBrand":"visa"}}
+{"ts":"2026-08-17T12:53:53.027Z","agentId":"P-45","wave":2,"step":"WAVE_2","action":"COMPLETE","result":"SUCCESS","details":{"plan":"Individual"}}
+{"ts":"2026-08-17T12:53:53.168Z","agentId":"P-45","wave":3,"step":"WAVE_3","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-17T12:53:53.171Z","agentId":"P-45","wave":0,"step":"PROJECTS","action":"CREATION_SUCCESS","result":"SUCCESS","details":{"created":10,"plaid":false}}
+{"ts":"2026-08-17T12:53:53.171Z","agentId":"P-45","wave":3,"step":"WAVE_3","action":"COMPLETE","result":"SUCCESS","details":{"created":10}}
+{"ts":"2026-08-17T12:53:53.184Z","agentId":"P-45","wave":3,"step":"WAVE_3","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-17T12:53:53.188Z","agentId":"P-45","wave":0,"step":"PROJECTS","action":"CREATION_SUCCESS","result":"SUCCESS","details":{"created":10,"plaid":false}}
+{"ts":"2026-08-17T12:53:53.188Z","agentId":"P-45","wave":3,"step":"WAVE_3","action":"COMPLETE","result":"SUCCESS","details":{"created":10}}
+{"ts":"2026-08-17T12:53:53.263Z","agentId":"P-45","wave":4,"step":"WAVE_4","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-17T12:53:53.263Z","agentId":"P-45","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-44"}}
+{"ts":"2026-08-17T12:53:53.263Z","agentId":"P-45","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-46"}}
+{"ts":"2026-08-17T12:53:53.264Z","agentId":"P-45","wave":4,"step":"WAVE_4","action":"COMPLETE","result":"SUCCESS","details":{"interactions":0,"invites":2}}
+{"ts":"2026-08-17T12:53:53.283Z","agentId":"P-45","wave":4,"step":"WAVE_4","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-17T12:53:53.283Z","agentId":"P-45","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-44"}}
+{"ts":"2026-08-17T12:53:53.283Z","agentId":"P-45","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-46"}}
+{"ts":"2026-08-17T12:53:53.283Z","agentId":"P-45","wave":4,"step":"WAVE_4","action":"COMPLETE","result":"SUCCESS","details":{"interactions":0,"invites":2}}
+{"ts":"2026-08-17T12:53:53.303Z","agentId":"P-45","wave":5,"step":"WAVE_5","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-17T12:53:53.303Z","agentId":"P-45","wave":5,"step":"WAVE_5","action":"COMPLETE","result":"SUCCESS","details":{"reportPath":"/Users/yvesdarbouze/Documents/PaperWorking/artifacts/persona-swarm/reports/P-45-experience-report.md"}}
+{"ts":"2026-08-17T12:53:53.353Z","agentId":"P-45","wave":5,"step":"WAVE_5","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-17T12:53:53.353Z","agentId":"P-45","wave":5,"step":"WAVE_5","action":"COMPLETE","result":"SUCCESS","details":{"reportPath":"/Users/yvesdarbouze/Documents/PaperWorking/artifacts/persona-swarm/reports/P-45-experience-report.md"}}
+{"ts":"2026-08-17T12:54:04.355Z","agentId":"P-45","wave":1,"step":"WAVE_1","action":"START","result":"SUCCESS","details":{"email":"agent45.olivia.brennan@paperworking-test.dev"}}
+{"ts":"2026-08-17T12:54:04.355Z","agentId":"P-45","wave":0,"step":"SIGNUP","action":"SUCCESS_CREATED","result":"SUCCESS","details":{"uid":"uid_persona_p45","email":"agent45.olivia.brennan@paperworking-test.dev","name":"Olivia Brennan","entity":"Brennan Micro-Invest LLC"}}
+{"ts":"2026-08-17T12:54:04.355Z","agentId":"P-45","wave":1,"step":"WAVE_1","action":"COMPLETE","result":"SUCCESS","details":{"uid":"uid_persona_p45"}}
+{"ts":"2026-08-17T12:54:04.368Z","agentId":"P-45","wave":1,"step":"WAVE_1","action":"START","result":"SUCCESS","details":{"email":"agent45.olivia.brennan@paperworking-test.dev"}}
+{"ts":"2026-08-17T12:54:04.369Z","agentId":"P-45","wave":0,"step":"SIGNUP","action":"SUCCESS_CREATED","result":"SUCCESS","details":{"uid":"uid_persona_p45","email":"agent45.olivia.brennan@paperworking-test.dev","name":"Olivia Brennan","entity":"Brennan Micro-Invest LLC"}}
+{"ts":"2026-08-17T12:54:04.369Z","agentId":"P-45","wave":1,"step":"WAVE_1","action":"COMPLETE","result":"SUCCESS","details":{"uid":"uid_persona_p45"}}
+{"ts":"2026-08-17T12:54:04.416Z","agentId":"P-45","wave":2,"step":"WAVE_2","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-17T12:54:04.416Z","agentId":"P-45","wave":0,"step":"BILLING","action":"SUBSCRIPTION_SUCCESS","result":"SUCCESS","details":{"plan":"Individual","stripeCustomerId":"cus_test_swarm_p-45","stripeSubscriptionId":"sub_test_swarm_p-45","cardLastFour":"4242","cardBrand":"visa"}}
+{"ts":"2026-08-17T12:54:04.416Z","agentId":"P-45","wave":2,"step":"WAVE_2","action":"COMPLETE","result":"SUCCESS","details":{"plan":"Individual"}}
+{"ts":"2026-08-17T12:54:04.419Z","agentId":"P-45","wave":2,"step":"WAVE_2","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-17T12:54:04.419Z","agentId":"P-45","wave":0,"step":"BILLING","action":"SUBSCRIPTION_SUCCESS","result":"SUCCESS","details":{"plan":"Individual","stripeCustomerId":"cus_test_swarm_p-45","stripeSubscriptionId":"sub_test_swarm_p-45","cardLastFour":"4242","cardBrand":"visa"}}
+{"ts":"2026-08-17T12:54:04.419Z","agentId":"P-45","wave":2,"step":"WAVE_2","action":"COMPLETE","result":"SUCCESS","details":{"plan":"Individual"}}
+{"ts":"2026-08-17T12:54:04.615Z","agentId":"P-45","wave":3,"step":"WAVE_3","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-17T12:54:04.616Z","agentId":"P-45","wave":3,"step":"WAVE_3","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-17T12:54:04.620Z","agentId":"P-45","wave":0,"step":"PROJECTS","action":"CREATION_SUCCESS","result":"SUCCESS","details":{"created":10,"plaid":false}}
+{"ts":"2026-08-17T12:54:04.620Z","agentId":"P-45","wave":3,"step":"WAVE_3","action":"COMPLETE","result":"SUCCESS","details":{"created":10}}
+{"ts":"2026-08-17T12:54:04.622Z","agentId":"P-45","wave":0,"step":"PROJECTS","action":"CREATION_SUCCESS","result":"SUCCESS","details":{"created":10,"plaid":false}}
+{"ts":"2026-08-17T12:54:04.622Z","agentId":"P-45","wave":3,"step":"WAVE_3","action":"COMPLETE","result":"SUCCESS","details":{"created":10}}
+{"ts":"2026-08-17T12:54:04.750Z","agentId":"P-45","wave":4,"step":"WAVE_4","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-17T12:54:04.753Z","agentId":"P-45","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-44"}}
+{"ts":"2026-08-17T12:54:04.753Z","agentId":"P-45","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-46"}}
+{"ts":"2026-08-17T12:54:04.753Z","agentId":"P-45","wave":4,"step":"WAVE_4","action":"COMPLETE","result":"SUCCESS","details":{"interactions":0,"invites":2}}
+{"ts":"2026-08-17T12:54:04.755Z","agentId":"P-45","wave":4,"step":"WAVE_4","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-17T12:54:04.756Z","agentId":"P-45","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-44"}}
+{"ts":"2026-08-17T12:54:04.756Z","agentId":"P-45","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-46"}}
+{"ts":"2026-08-17T12:54:04.756Z","agentId":"P-45","wave":4,"step":"WAVE_4","action":"COMPLETE","result":"SUCCESS","details":{"interactions":0,"invites":2}}
+{"ts":"2026-08-17T12:54:04.800Z","agentId":"P-45","wave":5,"step":"WAVE_5","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-17T12:54:04.801Z","agentId":"P-45","wave":5,"step":"WAVE_5","action":"COMPLETE","result":"SUCCESS","details":{"reportPath":"/Users/yvesdarbouze/Documents/PaperWorking/artifacts/persona-swarm/reports/P-45-experience-report.md"}}
+{"ts":"2026-08-17T12:54:04.806Z","agentId":"P-45","wave":5,"step":"WAVE_5","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-17T12:54:04.806Z","agentId":"P-45","wave":5,"step":"WAVE_5","action":"COMPLETE","result":"SUCCESS","details":{"reportPath":"/Users/yvesdarbouze/Documents/PaperWorking/artifacts/persona-swarm/reports/P-45-experience-report.md"}}
+{"ts":"2026-08-17T15:52:32.892Z","agentId":"P-45","wave":1,"step":"WAVE_1","action":"START","result":"SUCCESS","details":{"email":"agent45.olivia.brennan@paperworking-test.dev"}}
+{"ts":"2026-08-17T15:52:32.915Z","agentId":"P-45","wave":1,"step":"WAVE_1","action":"START","result":"SUCCESS","details":{"email":"agent45.olivia.brennan@paperworking-test.dev"}}
+{"ts":"2026-08-17T15:52:34.972Z","agentId":"P-45","wave":0,"step":"SIGNUP","action":"SUCCESS_CREATED","result":"SUCCESS","details":{"uid":"uid_persona_p45","email":"agent45.olivia.brennan@paperworking-test.dev","name":"Olivia Brennan","entity":"Brennan Micro-Invest LLC"}}
+{"ts":"2026-08-17T15:52:34.972Z","agentId":"P-45","wave":1,"step":"WAVE_1","action":"COMPLETE","result":"SUCCESS","details":{"uid":"uid_persona_p45"}}
+{"ts":"2026-08-17T15:52:35.003Z","agentId":"P-45","wave":0,"step":"SIGNUP","action":"SUCCESS_CREATED","result":"SUCCESS","details":{"uid":"uid_persona_p45","email":"agent45.olivia.brennan@paperworking-test.dev","name":"Olivia Brennan","entity":"Brennan Micro-Invest LLC"}}
+{"ts":"2026-08-17T15:52:35.004Z","agentId":"P-45","wave":1,"step":"WAVE_1","action":"COMPLETE","result":"SUCCESS","details":{"uid":"uid_persona_p45"}}
+{"ts":"2026-08-17T15:52:56.255Z","agentId":"P-45","wave":2,"step":"WAVE_2","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-17T16:17:21.665Z","agentId":"P-45","wave":1,"step":"WAVE_1","action":"START","result":"SUCCESS","details":{"email":"agent45.olivia.brennan@paperworking-test.dev"}}
+{"ts":"2026-08-17T16:17:23.065Z","agentId":"P-45","wave":1,"step":"WAVE_1","action":"START","result":"SUCCESS","details":{"email":"agent45.olivia.brennan@paperworking-test.dev"}}
+{"ts":"2026-08-17T16:17:23.750Z","agentId":"P-45","wave":0,"step":"SIGNUP","action":"SUCCESS_CREATED","result":"SUCCESS","details":{"uid":"uid_persona_p45","email":"agent45.olivia.brennan@paperworking-test.dev","name":"Olivia Brennan","entity":"Brennan Micro-Invest LLC"}}
+{"ts":"2026-08-17T16:17:23.751Z","agentId":"P-45","wave":1,"step":"WAVE_1","action":"COMPLETE","result":"SUCCESS","details":{"uid":"uid_persona_p45"}}
+{"ts":"2026-08-17T16:17:25.196Z","agentId":"P-45","wave":0,"step":"SIGNUP","action":"SUCCESS_CREATED","result":"SUCCESS","details":{"uid":"uid_persona_p45","email":"agent45.olivia.brennan@paperworking-test.dev","name":"Olivia Brennan","entity":"Brennan Micro-Invest LLC"}}
+{"ts":"2026-08-17T16:17:25.196Z","agentId":"P-45","wave":1,"step":"WAVE_1","action":"COMPLETE","result":"SUCCESS","details":{"uid":"uid_persona_p45"}}
+{"ts":"2026-08-17T16:18:16.834Z","agentId":"P-45","wave":1,"step":"WAVE_1","action":"START","result":"SUCCESS","details":{"email":"agent45.olivia.brennan@paperworking-test.dev"}}
+{"ts":"2026-08-17T16:18:16.834Z","agentId":"P-45","wave":1,"step":"WAVE_1","action":"START","result":"SUCCESS","details":{"email":"agent45.olivia.brennan@paperworking-test.dev"}}
+{"ts":"2026-08-17T16:18:18.934Z","agentId":"P-45","wave":0,"step":"SIGNUP","action":"SUCCESS_CREATED","result":"SUCCESS","details":{"uid":"uid_persona_p45","email":"agent45.olivia.brennan@paperworking-test.dev","name":"Olivia Brennan","entity":"Brennan Micro-Invest LLC"}}
+{"ts":"2026-08-17T16:18:18.934Z","agentId":"P-45","wave":0,"step":"SIGNUP","action":"SUCCESS_CREATED","result":"SUCCESS","details":{"uid":"uid_persona_p45","email":"agent45.olivia.brennan@paperworking-test.dev","name":"Olivia Brennan","entity":"Brennan Micro-Invest LLC"}}
+{"ts":"2026-08-17T16:18:18.934Z","agentId":"P-45","wave":1,"step":"WAVE_1","action":"COMPLETE","result":"SUCCESS","details":{"uid":"uid_persona_p45"}}
+{"ts":"2026-08-17T16:18:18.934Z","agentId":"P-45","wave":1,"step":"WAVE_1","action":"COMPLETE","result":"SUCCESS","details":{"uid":"uid_persona_p45"}}
+{"ts":"2026-08-17T16:18:41.943Z","agentId":"P-45","wave":2,"step":"WAVE_2","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-17T16:18:41.944Z","agentId":"P-45","wave":2,"step":"WAVE_2","action":"EXCEPTION","result":"SUCCESS","details":{"error":"CRITICAL SAFETY REFUSAL: Invalid or missing Stripe secret test key. Key must start with \"sk_test_\". Received: \"...\""}}
+{"ts":"2026-08-17T16:18:41.980Z","agentId":"P-45","wave":2,"step":"WAVE_2","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-17T16:18:41.980Z","agentId":"P-45","wave":2,"step":"WAVE_2","action":"EXCEPTION","result":"SUCCESS","details":{"error":"CRITICAL SAFETY REFUSAL: Invalid or missing Stripe secret test key. Key must start with \"sk_test_\". Received: \"...\""}}
+{"ts":"2026-08-17T16:18:42.018Z","agentId":"P-45","wave":3,"step":"WAVE_3","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-17T16:18:42.018Z","agentId":"P-45","wave":0,"step":"PROJECTS","action":"CREATION_SUCCESS","result":"SUCCESS","details":{"created":10,"plaid":false}}
+{"ts":"2026-08-17T16:18:42.018Z","agentId":"P-45","wave":3,"step":"WAVE_3","action":"COMPLETE","result":"SUCCESS","details":{"created":10}}
+{"ts":"2026-08-17T19:42:41.869Z","agentId":"P-45","wave":1,"step":"WAVE_1","action":"START","result":"SUCCESS","details":{"email":"agent45.olivia.brennan@paperworking-test.dev"}}
+{"ts":"2026-08-17T19:42:43.205Z","agentId":"P-45","wave":1,"step":"WAVE_1","action":"START","result":"SUCCESS","details":{"email":"agent45.olivia.brennan@paperworking-test.dev"}}
+{"ts":"2026-08-17T19:42:43.871Z","agentId":"P-45","wave":0,"step":"SIGNUP","action":"SUCCESS_CREATED","result":"SUCCESS","details":{"uid":"uid_persona_p45","email":"agent45.olivia.brennan@paperworking-test.dev","name":"Olivia Brennan","entity":"Brennan Micro-Invest LLC"}}
+{"ts":"2026-08-17T19:42:43.872Z","agentId":"P-45","wave":1,"step":"WAVE_1","action":"COMPLETE","result":"SUCCESS","details":{"uid":"uid_persona_p45"}}
+{"ts":"2026-08-17T19:42:45.231Z","agentId":"P-45","wave":0,"step":"SIGNUP","action":"SUCCESS_CREATED","result":"SUCCESS","details":{"uid":"uid_persona_p45","email":"agent45.olivia.brennan@paperworking-test.dev","name":"Olivia Brennan","entity":"Brennan Micro-Invest LLC"}}
+{"ts":"2026-08-17T19:42:45.232Z","agentId":"P-45","wave":1,"step":"WAVE_1","action":"COMPLETE","result":"SUCCESS","details":{"uid":"uid_persona_p45"}}
+{"ts":"2026-08-17T19:43:07.927Z","agentId":"P-45","wave":2,"step":"WAVE_2","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-17T19:43:07.927Z","agentId":"P-45","wave":2,"step":"WAVE_2","action":"EXCEPTION","result":"SUCCESS","details":{"error":"CRITICAL SAFETY REFUSAL: Invalid or missing Stripe secret test key. Key must start with \"sk_test_\". Received: \"...\""}}
+{"ts":"2026-08-17T19:43:07.970Z","agentId":"P-45","wave":3,"step":"WAVE_3","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-17T19:43:07.970Z","agentId":"P-45","wave":0,"step":"PROJECTS","action":"CREATION_SUCCESS","result":"SUCCESS","details":{"created":10,"plaid":false}}
+{"ts":"2026-08-17T19:43:07.970Z","agentId":"P-45","wave":3,"step":"WAVE_3","action":"COMPLETE","result":"SUCCESS","details":{"created":10}}
+{"ts":"2026-08-17T19:43:07.999Z","agentId":"P-45","wave":4,"step":"WAVE_4","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-17T19:43:07.999Z","agentId":"P-45","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-44"}}
+{"ts":"2026-08-17T19:43:07.999Z","agentId":"P-45","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-46"}}
+{"ts":"2026-08-17T19:43:07.999Z","agentId":"P-45","wave":4,"step":"WAVE_4","action":"COMPLETE","result":"SUCCESS","details":{"interactions":0,"invites":2}}
+{"ts":"2026-08-17T19:43:08.031Z","agentId":"P-45","wave":5,"step":"WAVE_5","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-17T19:43:08.031Z","agentId":"P-45","wave":5,"step":"WAVE_5","action":"COMPLETE","result":"SUCCESS","details":{"reportPath":"/Users/yvesdarbouze/Documents/PaperWorking/artifacts/persona-swarm/reports/P-45-experience-report.md"}}
+{"ts":"2026-08-17T19:43:08.085Z","agentId":"P-45","wave":2,"step":"WAVE_2","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-17T19:43:08.085Z","agentId":"P-45","wave":2,"step":"WAVE_2","action":"EXCEPTION","result":"SUCCESS","details":{"error":"CRITICAL SAFETY REFUSAL: Invalid or missing Stripe secret test key. Key must start with \"sk_test_\". Received: \"...\""}}
+{"ts":"2026-08-17T19:43:08.119Z","agentId":"P-45","wave":3,"step":"WAVE_3","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-17T19:43:08.119Z","agentId":"P-45","wave":0,"step":"PROJECTS","action":"CREATION_SUCCESS","result":"SUCCESS","details":{"created":10,"plaid":false}}
+{"ts":"2026-08-17T19:43:08.119Z","agentId":"P-45","wave":3,"step":"WAVE_3","action":"COMPLETE","result":"SUCCESS","details":{"created":10}}
+{"ts":"2026-08-17T19:43:08.146Z","agentId":"P-45","wave":4,"step":"WAVE_4","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-17T19:43:08.146Z","agentId":"P-45","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-44"}}
+{"ts":"2026-08-17T19:43:08.146Z","agentId":"P-45","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-46"}}
+{"ts":"2026-08-17T19:43:08.146Z","agentId":"P-45","wave":4,"step":"WAVE_4","action":"COMPLETE","result":"SUCCESS","details":{"interactions":0,"invites":2}}
+{"ts":"2026-08-17T19:43:08.173Z","agentId":"P-45","wave":5,"step":"WAVE_5","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-17T19:43:08.173Z","agentId":"P-45","wave":5,"step":"WAVE_5","action":"COMPLETE","result":"SUCCESS","details":{"reportPath":"/Users/yvesdarbouze/Documents/PaperWorking/artifacts/persona-swarm/reports/P-45-experience-report.md"}}

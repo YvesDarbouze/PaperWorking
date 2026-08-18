@@ -5,7 +5,7 @@
  */
 
 import { assertDisposableDatabase, assertSwarmFeatureFlag } from '../../persona-swarm/src/bootstrap';
-import { prisma } from '../../src/lib/prisma';
+import { prisma as _prisma } from '../../src/lib/prisma';
 
 export async function seedSwarmDatabase() {
   console.log('🌱 Initializing Persona Swarm Disposable Database Seed...');

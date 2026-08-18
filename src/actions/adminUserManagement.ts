@@ -106,8 +106,8 @@ export async function toggleUserAccountStatus(params: {
     });
 
     return { success: true };
-  } catch (error: any) {
-    return { success: false, error: error?.message || 'Toggle status failed' };
+  } catch (error: unknown) {
+    return { success: false, error: (error as Error)?.message || 'Toggle status failed' };
   }
 }
 
@@ -143,7 +143,7 @@ export async function exportSelectedUsersCSV(targetUids: string[]): Promise<{ cs
 
     const csvContent = [headers.join(','), ...rows.map((r) => r.map((c) => `"${String(c).replace(/"/g, '""')}"`).join(','))].join('\n');
     return { csvData: csvContent };
-  } catch (error: any) {
-    return { csvData: '', error: error?.message || 'Export failed' };
+  } catch (error: unknown) {
+    return { csvData: '', error: (error as Error)?.message || 'Export failed' };
   }
 }

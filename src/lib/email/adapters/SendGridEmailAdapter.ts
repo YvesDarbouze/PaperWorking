@@ -92,7 +92,7 @@ export class SendGridEmailAdapter implements IEmailProvider {
     ];
 
     // 5. Construct SendGrid Payload
-    const body: Record<string, any> = {
+    const body: Record<string, unknown> = {
       personalizations: [
         {
           to: payload.to.map((email) => ({ email })),
@@ -128,7 +128,7 @@ export class SendGridEmailAdapter implements IEmailProvider {
     body.categories = Array.from(new Set(categories)).slice(0, 10);
 
     // 8. Suppression & Mail Settings — bypass_list_management is strictly FORBIDDEN (F-5)
-    const mailSettings: Record<string, any> = {};
+    const mailSettings: Record<string, unknown> = {};
 
     if (payload.messageClass === 'E') {
       // Class E transactional bypasses unsubscribe suppression only (F-5)
@@ -220,8 +220,8 @@ export class SendGridEmailAdapter implements IEmailProvider {
         provider: 'sendgrid',
         acceptedAt: new Date().toISOString(),
       };
-    } catch (err: any) {
-      const errorMessage = err.message || 'Unknown network error';
+    } catch (err: unknown) {
+      const errorMessage = err instanceof Error ? err.message : 'Unknown network error';
       console.error('[SendGridEmailAdapter] ❌ Network error dispatching email:', errorMessage);
 
       this.emitTelemetry('system_email_send_failed', {
@@ -241,7 +241,7 @@ export class SendGridEmailAdapter implements IEmailProvider {
     }
   }
 
-  private emitTelemetry(event: string, properties: Record<string, any>) {
+  private emitTelemetry(event: string, properties: Record<string, unknown>) {
     try {
       const posthogKey = process.env.NEXT_PUBLIC_POSTHOG_KEY;
       if (posthogKey && typeof fetch !== 'undefined') {

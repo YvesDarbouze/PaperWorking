@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
-import { X, MapPin, Search, Layers, Compass, Building2, User, Wrench } from 'lucide-react';
+import { X, Compass } from 'lucide-react';
 import DealMap, { EntityCategory, MapPinData } from './DealMap';
 import type { DealListingTeaser } from '@/types/listing';
 
@@ -17,10 +17,10 @@ export function MarketplaceMapModal({
   isOpen,
   onClose,
   deals = [],
-  initialCategory = 'all',
-  initialZip = '',
+  initialCategory: _initialCategory = 'all',
+  initialZip: _initialZip = '',
 }: MarketplaceMapModalProps) {
-  const [selectedPin, setSelectedPin] = useState<MapPinData | null>(null);
+  const [_selectedPin, setSelectedPin] = useState<MapPinData | null>(null);
 
   if (!isOpen) return null;
 

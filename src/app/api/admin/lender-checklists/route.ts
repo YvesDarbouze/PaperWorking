@@ -1,20 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { requireAuth, isAuthError } from '@/lib/firebase-admin/auth-guard';
+import { isAuthError } from '@/lib/firebase-admin/auth-guard';
+import { requireAdminAuth } from '@/lib/firebase-admin/admin-guard';
 import { adminDb } from '@/lib/firebase/admin';
 import { FieldValue } from 'firebase-admin/firestore';
 import { DEFAULT_CHECKLIST_DEFINITIONS, parseChecklistsDoc } from '@/lib/providers/lenderChecklists';
-
-/* ═══════════════════════════════════════════════════════════════
-   GET  /api/admin/lender-checklists
-     Returns the current checklist templates from Firestore, or
-     DEFAULT_CHECKLIST_DEFINITIONS if the systemConfig doc hasn't been written.
-     Auth: any authenticated user
-
-   PUT  /api/admin/lender-checklists
-     Replaces the checklists templates object.
-     Body: { Conventional, "SBA 504", "Hard Money", Bridge }
-     Auth: Lead Investor or Admin orgRole only
-   ═══════════════════════════════════════════════════════════════ */
 
 const CONFIG_DOC = adminDb.collection('systemConfig').doc('lenderChecklists');
 
@@ -22,7 +11,7 @@ export const dynamic = 'force-dynamic';
 
 export async function GET(request: NextRequest) {
   try {
-    const auth = await requireAuth(request);
+    const auth = await requireAdminAuth(request);
     if (isAuthError(auth)) return auth;
 
     const snap = await CONFIG_DOC.get();
@@ -50,24 +39,9 @@ export async function GET(request: NextRequest) {
 
 export async function PUT(request: NextRequest) {
   try {
-    const auth = await requireAuth(request);
+    const auth = await requireAdminAuth(request);
     if (isAuthError(auth)) return auth;
     const { uid } = auth;
-
-    // Admin gate: Lead Investor or Admin orgRole
-    const userSnap = await adminDb.collection('users').doc(uid).get();
-    if (!userSnap.exists) {
-      return NextResponse.json({ error: 'User not found' }, { status: 404 });
-    }
-    const userData = userSnap.data()!;
-    const orgRole = userData.orgRole ?? '';
-    const isAdmin = orgRole === 'Lead Investor' || orgRole === 'Admin';
-    if (!isAdmin) {
-      return NextResponse.json(
-        { error: 'Only Lead Investors and Admins can update lender checklists' },
-        { status: 403 }
-      );
-    }
 
     const body = await request.json();
     const { Conventional, 'SBA 504': sba504, 'Hard Money': hardMoney, Bridge } = body;
@@ -94,7 +68,7 @@ export async function PUT(request: NextRequest) {
       Bridge: Bridge || DEFAULT_CHECKLIST_DEFINITIONS.Bridge,
       updatedAt: now,
       updatedByUid: uid,
-      updatedByEmail: userData.email ?? '',
+      updatedByEmail: auth.token.email ?? '',
     };
 
     await CONFIG_DOC.set(updateData);

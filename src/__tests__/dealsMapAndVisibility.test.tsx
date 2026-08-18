@@ -5,6 +5,12 @@ import DealMap from '@/components/marketplace/DealMap';
 import PublicAddressSearch from '@/components/search/PublicAddressSearch';
 import type { DealListingTeaser } from '@/types/listing';
 
+declare global {
+  interface Window {
+    google?: any;
+  }
+}
+
 // Mock routing & next/navigation
 const mockPush = jest.fn();
 jest.mock('next/navigation', () => ({

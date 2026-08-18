@@ -1,5 +1,8 @@
 declare module 'jsonwebtoken' {
-  export function sign(payload: any, secretOrPrivateKey: any, options?: any): string;
-  export function verify(token: string, secretOrPublicKey: any, options?: any): any;
-  export function decode(token: string, options?: any): any;
+  export interface JwtPayload {
+    [key: string]: unknown;
+  }
+  export function sign(payload: string | Buffer | object, secretOrPrivateKey: string | Buffer, options?: Record<string, unknown>): string;
+  export function verify(token: string, secretOrPublicKey: string | Buffer, options?: Record<string, unknown>): JwtPayload | string;
+  export function decode(token: string, options?: Record<string, unknown>): JwtPayload | string | null;
 }

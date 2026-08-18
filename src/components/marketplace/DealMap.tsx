@@ -2,7 +2,7 @@
 
 import React, { useEffect, useRef, useState, useMemo } from 'react';
 import { useRouter } from 'next/navigation';
-import { Search, MapPin, Building2, User, Wrench, X, ZoomIn, ZoomOut, Compass } from 'lucide-react';
+import { Search, X } from 'lucide-react';
 import type { DealListingTeaser, SubscriberPropertyResult } from '@/types/listing';
 import { GoogleAttribution } from '@/components/ui/GoogleAttribution';
 import { resolveLocation, getDeterministicCoordinates } from '@/lib/utils/geoLookup';
@@ -57,8 +57,8 @@ export interface MapPinData {
   lng: number;
   title: string;
   subtitle: string;
-  price?: number;
-  capRate?: number;
+  price?: number | string;
+  capRate?: number | string;
   rating?: number;
   category?: string;
   routeUrl?: string;
@@ -131,8 +131,8 @@ export default function DealMap({
     { id: 'i-3', name: 'Apex Real Estate Fund', role: 'Co-Investor', location: 'Los Angeles, CA', followersCount: 29, latitude: 34.0522, longitude: -118.2437 },
   ], []);
 
-  const effectiveVendors = vendors.length > 0 ? vendors : defaultVendors;
-  const effectiveInvestors = investors.length > 0 ? investors : defaultInvestors;
+  const _effectiveVendors = vendors.length > 0 ? vendors : defaultVendors;
+  const _effectiveInvestors = investors.length > 0 ? investors : defaultInvestors;
 
   // Combine deals, properties, vendors, and investors into unified mapPins
   const allMapPins: MapPinData[] = useMemo(() => {
@@ -141,6 +141,7 @@ export default function DealMap({
     // 1. Add deal teasers strictly with valid lat & lng
     deals.forEach((d) => {
       if (typeof d.latitude === 'number' && typeof d.longitude === 'number') {
+        const item = d as unknown as Record<string, unknown>;
         pins.push({
           id: `deal_${d.id}`,
           entityType: 'deal',
@@ -148,8 +149,8 @@ export default function DealMap({
           lng: d.longitude,
           title: d.propertyName || 'Deal Opportunity',
           subtitle: d.neighborhood || `${d.city || ''}, ${d.state || ''}`,
-          price: (d as any).price || (d as any).targetEquity,
-          capRate: (d as any).projectedIRR || (d as any).capRate,
+          price: (item.price || item.targetEquity) as number | string | undefined,
+          capRate: (item.projectedIRR || item.capRate) as number | string | undefined,
           category: d.assetClass || 'Residential',
           routeUrl: `/dashboard/deals/${d.id.replace('project_listing_', '')}`,
         });
@@ -476,7 +477,7 @@ export default function DealMap({
 
           {/* Render Pin Elements on Monochromatic Canvas */}
           <div className="absolute inset-0 p-8 flex flex-wrap items-center justify-around overflow-hidden">
-            {filteredMapPins.map((pin, idx) => {
+            {filteredMapPins.map((pin, _idx) => {
               const style = ENTITY_MARKER_STYLES[pin.entityType];
               const isSelected = selectedPin?.id === pin.id;
 

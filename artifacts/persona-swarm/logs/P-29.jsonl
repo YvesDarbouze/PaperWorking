@@ -669,3 +669,217 @@
 {"ts":"2026-08-14T19:22:05.520Z","agentId":"P-29","wave":4,"step":"WAVE_4","action":"COMPLETE","result":"SUCCESS","details":{"interactions":0,"invites":2}}
 {"ts":"2026-08-14T19:22:05.674Z","agentId":"P-29","wave":5,"step":"WAVE_5","action":"START","result":"SUCCESS"}
 {"ts":"2026-08-14T19:22:05.675Z","agentId":"P-29","wave":5,"step":"WAVE_5","action":"COMPLETE","result":"SUCCESS","details":{"reportPath":"/Users/yvesdarbouze/Documents/PaperWorking/artifacts/persona-swarm/reports/P-29-experience-report.md"}}
+{"ts":"2026-08-17T12:48:20.643Z","agentId":"P-29","wave":1,"step":"WAVE_1","action":"START","result":"SUCCESS","details":{"email":"agent29.richard.calloway@paperworking-test.dev"}}
+{"ts":"2026-08-17T12:48:20.643Z","agentId":"P-29","wave":0,"step":"SIGNUP","action":"SUCCESS_CREATED","result":"SUCCESS","details":{"uid":"uid_persona_p29","email":"agent29.richard.calloway@paperworking-test.dev","name":"Richard Calloway","entity":"Calloway Commercial Group LLC"}}
+{"ts":"2026-08-17T12:48:20.643Z","agentId":"P-29","wave":1,"step":"WAVE_1","action":"COMPLETE","result":"SUCCESS","details":{"uid":"uid_persona_p29"}}
+{"ts":"2026-08-17T12:48:20.645Z","agentId":"P-29","wave":1,"step":"WAVE_1","action":"START","result":"SUCCESS","details":{"email":"agent29.richard.calloway@paperworking-test.dev"}}
+{"ts":"2026-08-17T12:48:20.647Z","agentId":"P-29","wave":0,"step":"SIGNUP","action":"SUCCESS_CREATED","result":"SUCCESS","details":{"uid":"uid_persona_p29","email":"agent29.richard.calloway@paperworking-test.dev","name":"Richard Calloway","entity":"Calloway Commercial Group LLC"}}
+{"ts":"2026-08-17T12:48:20.647Z","agentId":"P-29","wave":1,"step":"WAVE_1","action":"COMPLETE","result":"SUCCESS","details":{"uid":"uid_persona_p29"}}
+{"ts":"2026-08-17T12:48:20.687Z","agentId":"P-29","wave":2,"step":"WAVE_2","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-17T12:48:20.687Z","agentId":"P-29","wave":0,"step":"BILLING","action":"SUBSCRIPTION_SUCCESS","result":"SUCCESS","details":{"plan":"Individual","stripeCustomerId":"cus_test_swarm_p-29","stripeSubscriptionId":"sub_test_swarm_p-29","cardLastFour":"4242","cardBrand":"visa"}}
+{"ts":"2026-08-17T12:48:20.688Z","agentId":"P-29","wave":2,"step":"WAVE_2","action":"COMPLETE","result":"SUCCESS","details":{"plan":"Individual"}}
+{"ts":"2026-08-17T12:48:20.691Z","agentId":"P-29","wave":2,"step":"WAVE_2","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-17T12:48:20.691Z","agentId":"P-29","wave":0,"step":"BILLING","action":"SUBSCRIPTION_SUCCESS","result":"SUCCESS","details":{"plan":"Individual","stripeCustomerId":"cus_test_swarm_p-29","stripeSubscriptionId":"sub_test_swarm_p-29","cardLastFour":"4242","cardBrand":"visa"}}
+{"ts":"2026-08-17T12:48:20.691Z","agentId":"P-29","wave":2,"step":"WAVE_2","action":"COMPLETE","result":"SUCCESS","details":{"plan":"Individual"}}
+{"ts":"2026-08-17T12:48:20.794Z","agentId":"P-29","wave":3,"step":"WAVE_3","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-17T12:48:20.796Z","agentId":"P-29","wave":0,"step":"PROJECTS","action":"CREATION_SUCCESS","result":"SUCCESS","details":{"created":10,"plaid":false}}
+{"ts":"2026-08-17T12:48:20.796Z","agentId":"P-29","wave":3,"step":"WAVE_3","action":"COMPLETE","result":"SUCCESS","details":{"created":10}}
+{"ts":"2026-08-17T12:48:20.799Z","agentId":"P-29","wave":3,"step":"WAVE_3","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-17T12:48:20.801Z","agentId":"P-29","wave":0,"step":"PROJECTS","action":"CREATION_SUCCESS","result":"SUCCESS","details":{"created":10,"plaid":false}}
+{"ts":"2026-08-17T12:48:20.801Z","agentId":"P-29","wave":3,"step":"WAVE_3","action":"COMPLETE","result":"SUCCESS","details":{"created":10}}
+{"ts":"2026-08-17T12:48:20.931Z","agentId":"P-29","wave":4,"step":"WAVE_4","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-17T12:48:20.931Z","agentId":"P-29","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-47"}}
+{"ts":"2026-08-17T12:48:20.932Z","agentId":"P-29","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-32"}}
+{"ts":"2026-08-17T12:48:20.932Z","agentId":"P-29","wave":4,"step":"WAVE_4","action":"COMPLETE","result":"SUCCESS","details":{"interactions":0,"invites":2}}
+{"ts":"2026-08-17T12:48:20.935Z","agentId":"P-29","wave":4,"step":"WAVE_4","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-17T12:48:20.936Z","agentId":"P-29","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-47"}}
+{"ts":"2026-08-17T12:48:20.936Z","agentId":"P-29","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-32"}}
+{"ts":"2026-08-17T12:48:20.936Z","agentId":"P-29","wave":4,"step":"WAVE_4","action":"COMPLETE","result":"SUCCESS","details":{"interactions":0,"invites":2}}
+{"ts":"2026-08-17T12:48:21.014Z","agentId":"P-29","wave":5,"step":"WAVE_5","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-17T12:48:21.014Z","agentId":"P-29","wave":5,"step":"WAVE_5","action":"COMPLETE","result":"SUCCESS","details":{"reportPath":"/Users/yvesdarbouze/Documents/PaperWorking/artifacts/persona-swarm/reports/P-29-experience-report.md"}}
+{"ts":"2026-08-17T12:48:21.014Z","agentId":"P-29","wave":5,"step":"WAVE_5","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-17T12:48:21.015Z","agentId":"P-29","wave":5,"step":"WAVE_5","action":"COMPLETE","result":"SUCCESS","details":{"reportPath":"/Users/yvesdarbouze/Documents/PaperWorking/artifacts/persona-swarm/reports/P-29-experience-report.md"}}
+{"ts":"2026-08-17T12:49:28.759Z","agentId":"P-29","wave":1,"step":"WAVE_1","action":"START","result":"SUCCESS","details":{"email":"agent29.richard.calloway@paperworking-test.dev"}}
+{"ts":"2026-08-17T12:49:28.759Z","agentId":"P-29","wave":0,"step":"SIGNUP","action":"SUCCESS_CREATED","result":"SUCCESS","details":{"uid":"uid_persona_p29","email":"agent29.richard.calloway@paperworking-test.dev","name":"Richard Calloway","entity":"Calloway Commercial Group LLC"}}
+{"ts":"2026-08-17T12:49:28.760Z","agentId":"P-29","wave":1,"step":"WAVE_1","action":"COMPLETE","result":"SUCCESS","details":{"uid":"uid_persona_p29"}}
+{"ts":"2026-08-17T12:49:28.837Z","agentId":"P-29","wave":2,"step":"WAVE_2","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-17T12:49:28.837Z","agentId":"P-29","wave":0,"step":"BILLING","action":"SUBSCRIPTION_SUCCESS","result":"SUCCESS","details":{"plan":"Individual","stripeCustomerId":"cus_test_swarm_p-29","stripeSubscriptionId":"sub_test_swarm_p-29","cardLastFour":"4242","cardBrand":"visa"}}
+{"ts":"2026-08-17T12:49:28.837Z","agentId":"P-29","wave":2,"step":"WAVE_2","action":"COMPLETE","result":"SUCCESS","details":{"plan":"Individual"}}
+{"ts":"2026-08-17T12:49:28.964Z","agentId":"P-29","wave":3,"step":"WAVE_3","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-17T12:49:28.966Z","agentId":"P-29","wave":0,"step":"PROJECTS","action":"CREATION_SUCCESS","result":"SUCCESS","details":{"created":10,"plaid":false}}
+{"ts":"2026-08-17T12:49:28.967Z","agentId":"P-29","wave":3,"step":"WAVE_3","action":"COMPLETE","result":"SUCCESS","details":{"created":10}}
+{"ts":"2026-08-17T12:49:29.121Z","agentId":"P-29","wave":4,"step":"WAVE_4","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-17T12:49:29.122Z","agentId":"P-29","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-47"}}
+{"ts":"2026-08-17T12:49:29.122Z","agentId":"P-29","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-32"}}
+{"ts":"2026-08-17T12:49:29.122Z","agentId":"P-29","wave":4,"step":"WAVE_4","action":"COMPLETE","result":"SUCCESS","details":{"interactions":0,"invites":2}}
+{"ts":"2026-08-17T12:49:29.268Z","agentId":"P-29","wave":5,"step":"WAVE_5","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-17T12:49:29.269Z","agentId":"P-29","wave":5,"step":"WAVE_5","action":"COMPLETE","result":"SUCCESS","details":{"reportPath":"/Users/yvesdarbouze/Documents/PaperWorking/artifacts/persona-swarm/reports/P-29-experience-report.md"}}
+{"ts":"2026-08-17T12:49:29.270Z","agentId":"P-29","wave":1,"step":"WAVE_1","action":"START","result":"SUCCESS","details":{"email":"agent29.richard.calloway@paperworking-test.dev"}}
+{"ts":"2026-08-17T12:49:29.271Z","agentId":"P-29","wave":0,"step":"SIGNUP","action":"SUCCESS_CREATED","result":"SUCCESS","details":{"uid":"uid_persona_p29","email":"agent29.richard.calloway@paperworking-test.dev","name":"Richard Calloway","entity":"Calloway Commercial Group LLC"}}
+{"ts":"2026-08-17T12:49:29.271Z","agentId":"P-29","wave":1,"step":"WAVE_1","action":"COMPLETE","result":"SUCCESS","details":{"uid":"uid_persona_p29"}}
+{"ts":"2026-08-17T12:49:29.334Z","agentId":"P-29","wave":2,"step":"WAVE_2","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-17T12:49:29.334Z","agentId":"P-29","wave":0,"step":"BILLING","action":"SUBSCRIPTION_SUCCESS","result":"SUCCESS","details":{"plan":"Individual","stripeCustomerId":"cus_test_swarm_p-29","stripeSubscriptionId":"sub_test_swarm_p-29","cardLastFour":"4242","cardBrand":"visa"}}
+{"ts":"2026-08-17T12:49:29.334Z","agentId":"P-29","wave":2,"step":"WAVE_2","action":"COMPLETE","result":"SUCCESS","details":{"plan":"Individual"}}
+{"ts":"2026-08-17T12:49:29.487Z","agentId":"P-29","wave":3,"step":"WAVE_3","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-17T12:49:29.497Z","agentId":"P-29","wave":0,"step":"PROJECTS","action":"CREATION_SUCCESS","result":"SUCCESS","details":{"created":10,"plaid":false}}
+{"ts":"2026-08-17T12:49:29.497Z","agentId":"P-29","wave":3,"step":"WAVE_3","action":"COMPLETE","result":"SUCCESS","details":{"created":10}}
+{"ts":"2026-08-17T12:49:29.626Z","agentId":"P-29","wave":4,"step":"WAVE_4","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-17T12:49:29.627Z","agentId":"P-29","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-47"}}
+{"ts":"2026-08-17T12:49:29.627Z","agentId":"P-29","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-32"}}
+{"ts":"2026-08-17T12:49:29.627Z","agentId":"P-29","wave":4,"step":"WAVE_4","action":"COMPLETE","result":"SUCCESS","details":{"interactions":0,"invites":2}}
+{"ts":"2026-08-17T12:49:29.697Z","agentId":"P-29","wave":5,"step":"WAVE_5","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-17T12:49:29.697Z","agentId":"P-29","wave":5,"step":"WAVE_5","action":"COMPLETE","result":"SUCCESS","details":{"reportPath":"/Users/yvesdarbouze/Documents/PaperWorking/artifacts/persona-swarm/reports/P-29-experience-report.md"}}
+{"ts":"2026-08-17T12:51:28.431Z","agentId":"P-29","wave":1,"step":"WAVE_1","action":"START","result":"SUCCESS","details":{"email":"agent29.richard.calloway@paperworking-test.dev"}}
+{"ts":"2026-08-17T12:51:28.432Z","agentId":"P-29","wave":0,"step":"SIGNUP","action":"SUCCESS_CREATED","result":"SUCCESS","details":{"uid":"uid_persona_p29","email":"agent29.richard.calloway@paperworking-test.dev","name":"Richard Calloway","entity":"Calloway Commercial Group LLC"}}
+{"ts":"2026-08-17T12:51:28.432Z","agentId":"P-29","wave":1,"step":"WAVE_1","action":"COMPLETE","result":"SUCCESS","details":{"uid":"uid_persona_p29"}}
+{"ts":"2026-08-17T12:51:28.437Z","agentId":"P-29","wave":1,"step":"WAVE_1","action":"START","result":"SUCCESS","details":{"email":"agent29.richard.calloway@paperworking-test.dev"}}
+{"ts":"2026-08-17T12:51:28.438Z","agentId":"P-29","wave":0,"step":"SIGNUP","action":"SUCCESS_CREATED","result":"SUCCESS","details":{"uid":"uid_persona_p29","email":"agent29.richard.calloway@paperworking-test.dev","name":"Richard Calloway","entity":"Calloway Commercial Group LLC"}}
+{"ts":"2026-08-17T12:51:28.438Z","agentId":"P-29","wave":1,"step":"WAVE_1","action":"COMPLETE","result":"SUCCESS","details":{"uid":"uid_persona_p29"}}
+{"ts":"2026-08-17T12:51:28.491Z","agentId":"P-29","wave":2,"step":"WAVE_2","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-17T12:51:28.491Z","agentId":"P-29","wave":0,"step":"BILLING","action":"SUBSCRIPTION_SUCCESS","result":"SUCCESS","details":{"plan":"Individual","stripeCustomerId":"cus_test_swarm_p-29","stripeSubscriptionId":"sub_test_swarm_p-29","cardLastFour":"4242","cardBrand":"visa"}}
+{"ts":"2026-08-17T12:51:28.491Z","agentId":"P-29","wave":2,"step":"WAVE_2","action":"COMPLETE","result":"SUCCESS","details":{"plan":"Individual"}}
+{"ts":"2026-08-17T12:51:28.494Z","agentId":"P-29","wave":2,"step":"WAVE_2","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-17T12:51:28.495Z","agentId":"P-29","wave":0,"step":"BILLING","action":"SUBSCRIPTION_SUCCESS","result":"SUCCESS","details":{"plan":"Individual","stripeCustomerId":"cus_test_swarm_p-29","stripeSubscriptionId":"sub_test_swarm_p-29","cardLastFour":"4242","cardBrand":"visa"}}
+{"ts":"2026-08-17T12:51:28.495Z","agentId":"P-29","wave":2,"step":"WAVE_2","action":"COMPLETE","result":"SUCCESS","details":{"plan":"Individual"}}
+{"ts":"2026-08-17T12:51:28.643Z","agentId":"P-29","wave":3,"step":"WAVE_3","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-17T12:51:28.645Z","agentId":"P-29","wave":0,"step":"PROJECTS","action":"CREATION_SUCCESS","result":"SUCCESS","details":{"created":10,"plaid":false}}
+{"ts":"2026-08-17T12:51:28.645Z","agentId":"P-29","wave":3,"step":"WAVE_3","action":"COMPLETE","result":"SUCCESS","details":{"created":10}}
+{"ts":"2026-08-17T12:51:28.658Z","agentId":"P-29","wave":3,"step":"WAVE_3","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-17T12:51:28.662Z","agentId":"P-29","wave":0,"step":"PROJECTS","action":"CREATION_SUCCESS","result":"SUCCESS","details":{"created":10,"plaid":false}}
+{"ts":"2026-08-17T12:51:28.662Z","agentId":"P-29","wave":3,"step":"WAVE_3","action":"COMPLETE","result":"SUCCESS","details":{"created":10}}
+{"ts":"2026-08-17T12:51:28.769Z","agentId":"P-29","wave":4,"step":"WAVE_4","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-17T12:51:28.770Z","agentId":"P-29","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-47"}}
+{"ts":"2026-08-17T12:51:28.770Z","agentId":"P-29","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-32"}}
+{"ts":"2026-08-17T12:51:28.770Z","agentId":"P-29","wave":4,"step":"WAVE_4","action":"COMPLETE","result":"SUCCESS","details":{"interactions":0,"invites":2}}
+{"ts":"2026-08-17T12:51:28.777Z","agentId":"P-29","wave":4,"step":"WAVE_4","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-17T12:51:28.778Z","agentId":"P-29","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-47"}}
+{"ts":"2026-08-17T12:51:28.779Z","agentId":"P-29","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-32"}}
+{"ts":"2026-08-17T12:51:28.779Z","agentId":"P-29","wave":4,"step":"WAVE_4","action":"COMPLETE","result":"SUCCESS","details":{"interactions":0,"invites":2}}
+{"ts":"2026-08-17T12:51:28.836Z","agentId":"P-29","wave":5,"step":"WAVE_5","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-17T12:51:28.837Z","agentId":"P-29","wave":5,"step":"WAVE_5","action":"COMPLETE","result":"SUCCESS","details":{"reportPath":"/Users/yvesdarbouze/Documents/PaperWorking/artifacts/persona-swarm/reports/P-29-experience-report.md"}}
+{"ts":"2026-08-17T12:51:28.856Z","agentId":"P-29","wave":5,"step":"WAVE_5","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-17T12:51:28.856Z","agentId":"P-29","wave":5,"step":"WAVE_5","action":"COMPLETE","result":"SUCCESS","details":{"reportPath":"/Users/yvesdarbouze/Documents/PaperWorking/artifacts/persona-swarm/reports/P-29-experience-report.md"}}
+{"ts":"2026-08-17T12:53:52.931Z","agentId":"P-29","wave":1,"step":"WAVE_1","action":"START","result":"SUCCESS","details":{"email":"agent29.richard.calloway@paperworking-test.dev"}}
+{"ts":"2026-08-17T12:53:52.931Z","agentId":"P-29","wave":1,"step":"WAVE_1","action":"START","result":"SUCCESS","details":{"email":"agent29.richard.calloway@paperworking-test.dev"}}
+{"ts":"2026-08-17T12:53:52.932Z","agentId":"P-29","wave":0,"step":"SIGNUP","action":"SUCCESS_CREATED","result":"SUCCESS","details":{"uid":"uid_persona_p29","email":"agent29.richard.calloway@paperworking-test.dev","name":"Richard Calloway","entity":"Calloway Commercial Group LLC"}}
+{"ts":"2026-08-17T12:53:52.932Z","agentId":"P-29","wave":1,"step":"WAVE_1","action":"COMPLETE","result":"SUCCESS","details":{"uid":"uid_persona_p29"}}
+{"ts":"2026-08-17T12:53:52.932Z","agentId":"P-29","wave":0,"step":"SIGNUP","action":"SUCCESS_CREATED","result":"SUCCESS","details":{"uid":"uid_persona_p29","email":"agent29.richard.calloway@paperworking-test.dev","name":"Richard Calloway","entity":"Calloway Commercial Group LLC"}}
+{"ts":"2026-08-17T12:53:52.932Z","agentId":"P-29","wave":1,"step":"WAVE_1","action":"COMPLETE","result":"SUCCESS","details":{"uid":"uid_persona_p29"}}
+{"ts":"2026-08-17T12:53:53.003Z","agentId":"P-29","wave":2,"step":"WAVE_2","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-17T12:53:53.003Z","agentId":"P-29","wave":0,"step":"BILLING","action":"SUBSCRIPTION_SUCCESS","result":"SUCCESS","details":{"plan":"Individual","stripeCustomerId":"cus_test_swarm_p-29","stripeSubscriptionId":"sub_test_swarm_p-29","cardLastFour":"4242","cardBrand":"visa"}}
+{"ts":"2026-08-17T12:53:53.003Z","agentId":"P-29","wave":2,"step":"WAVE_2","action":"COMPLETE","result":"SUCCESS","details":{"plan":"Individual"}}
+{"ts":"2026-08-17T12:53:53.007Z","agentId":"P-29","wave":2,"step":"WAVE_2","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-17T12:53:53.007Z","agentId":"P-29","wave":0,"step":"BILLING","action":"SUBSCRIPTION_SUCCESS","result":"SUCCESS","details":{"plan":"Individual","stripeCustomerId":"cus_test_swarm_p-29","stripeSubscriptionId":"sub_test_swarm_p-29","cardLastFour":"4242","cardBrand":"visa"}}
+{"ts":"2026-08-17T12:53:53.007Z","agentId":"P-29","wave":2,"step":"WAVE_2","action":"COMPLETE","result":"SUCCESS","details":{"plan":"Individual"}}
+{"ts":"2026-08-17T12:53:53.121Z","agentId":"P-29","wave":3,"step":"WAVE_3","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-17T12:53:53.124Z","agentId":"P-29","wave":0,"step":"PROJECTS","action":"CREATION_SUCCESS","result":"SUCCESS","details":{"created":10,"plaid":false}}
+{"ts":"2026-08-17T12:53:53.124Z","agentId":"P-29","wave":3,"step":"WAVE_3","action":"COMPLETE","result":"SUCCESS","details":{"created":10}}
+{"ts":"2026-08-17T12:53:53.128Z","agentId":"P-29","wave":3,"step":"WAVE_3","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-17T12:53:53.130Z","agentId":"P-29","wave":0,"step":"PROJECTS","action":"CREATION_SUCCESS","result":"SUCCESS","details":{"created":10,"plaid":false}}
+{"ts":"2026-08-17T12:53:53.130Z","agentId":"P-29","wave":3,"step":"WAVE_3","action":"COMPLETE","result":"SUCCESS","details":{"created":10}}
+{"ts":"2026-08-17T12:53:53.220Z","agentId":"P-29","wave":4,"step":"WAVE_4","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-17T12:53:53.220Z","agentId":"P-29","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-47"}}
+{"ts":"2026-08-17T12:53:53.220Z","agentId":"P-29","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-32"}}
+{"ts":"2026-08-17T12:53:53.220Z","agentId":"P-29","wave":4,"step":"WAVE_4","action":"COMPLETE","result":"SUCCESS","details":{"interactions":0,"invites":2}}
+{"ts":"2026-08-17T12:53:53.263Z","agentId":"P-29","wave":4,"step":"WAVE_4","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-17T12:53:53.264Z","agentId":"P-29","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-47"}}
+{"ts":"2026-08-17T12:53:53.264Z","agentId":"P-29","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-32"}}
+{"ts":"2026-08-17T12:53:53.264Z","agentId":"P-29","wave":4,"step":"WAVE_4","action":"COMPLETE","result":"SUCCESS","details":{"interactions":0,"invites":2}}
+{"ts":"2026-08-17T12:53:53.300Z","agentId":"P-29","wave":5,"step":"WAVE_5","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-17T12:53:53.300Z","agentId":"P-29","wave":5,"step":"WAVE_5","action":"COMPLETE","result":"SUCCESS","details":{"reportPath":"/Users/yvesdarbouze/Documents/PaperWorking/artifacts/persona-swarm/reports/P-29-experience-report.md"}}
+{"ts":"2026-08-17T12:53:53.320Z","agentId":"P-29","wave":5,"step":"WAVE_5","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-17T12:53:53.321Z","agentId":"P-29","wave":5,"step":"WAVE_5","action":"COMPLETE","result":"SUCCESS","details":{"reportPath":"/Users/yvesdarbouze/Documents/PaperWorking/artifacts/persona-swarm/reports/P-29-experience-report.md"}}
+{"ts":"2026-08-17T12:54:04.344Z","agentId":"P-29","wave":1,"step":"WAVE_1","action":"START","result":"SUCCESS","details":{"email":"agent29.richard.calloway@paperworking-test.dev"}}
+{"ts":"2026-08-17T12:54:04.345Z","agentId":"P-29","wave":0,"step":"SIGNUP","action":"SUCCESS_CREATED","result":"SUCCESS","details":{"uid":"uid_persona_p29","email":"agent29.richard.calloway@paperworking-test.dev","name":"Richard Calloway","entity":"Calloway Commercial Group LLC"}}
+{"ts":"2026-08-17T12:54:04.345Z","agentId":"P-29","wave":1,"step":"WAVE_1","action":"COMPLETE","result":"SUCCESS","details":{"uid":"uid_persona_p29"}}
+{"ts":"2026-08-17T12:54:04.346Z","agentId":"P-29","wave":1,"step":"WAVE_1","action":"START","result":"SUCCESS","details":{"email":"agent29.richard.calloway@paperworking-test.dev"}}
+{"ts":"2026-08-17T12:54:04.346Z","agentId":"P-29","wave":0,"step":"SIGNUP","action":"SUCCESS_CREATED","result":"SUCCESS","details":{"uid":"uid_persona_p29","email":"agent29.richard.calloway@paperworking-test.dev","name":"Richard Calloway","entity":"Calloway Commercial Group LLC"}}
+{"ts":"2026-08-17T12:54:04.346Z","agentId":"P-29","wave":1,"step":"WAVE_1","action":"COMPLETE","result":"SUCCESS","details":{"uid":"uid_persona_p29"}}
+{"ts":"2026-08-17T12:54:04.402Z","agentId":"P-29","wave":2,"step":"WAVE_2","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-17T12:54:04.402Z","agentId":"P-29","wave":0,"step":"BILLING","action":"SUBSCRIPTION_SUCCESS","result":"SUCCESS","details":{"plan":"Individual","stripeCustomerId":"cus_test_swarm_p-29","stripeSubscriptionId":"sub_test_swarm_p-29","cardLastFour":"4242","cardBrand":"visa"}}
+{"ts":"2026-08-17T12:54:04.402Z","agentId":"P-29","wave":2,"step":"WAVE_2","action":"COMPLETE","result":"SUCCESS","details":{"plan":"Individual"}}
+{"ts":"2026-08-17T12:54:04.406Z","agentId":"P-29","wave":2,"step":"WAVE_2","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-17T12:54:04.407Z","agentId":"P-29","wave":0,"step":"BILLING","action":"SUBSCRIPTION_SUCCESS","result":"SUCCESS","details":{"plan":"Individual","stripeCustomerId":"cus_test_swarm_p-29","stripeSubscriptionId":"sub_test_swarm_p-29","cardLastFour":"4242","cardBrand":"visa"}}
+{"ts":"2026-08-17T12:54:04.407Z","agentId":"P-29","wave":2,"step":"WAVE_2","action":"COMPLETE","result":"SUCCESS","details":{"plan":"Individual"}}
+{"ts":"2026-08-17T12:54:04.546Z","agentId":"P-29","wave":3,"step":"WAVE_3","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-17T12:54:04.548Z","agentId":"P-29","wave":0,"step":"PROJECTS","action":"CREATION_SUCCESS","result":"SUCCESS","details":{"created":10,"plaid":false}}
+{"ts":"2026-08-17T12:54:04.548Z","agentId":"P-29","wave":3,"step":"WAVE_3","action":"COMPLETE","result":"SUCCESS","details":{"created":10}}
+{"ts":"2026-08-17T12:54:04.549Z","agentId":"P-29","wave":3,"step":"WAVE_3","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-17T12:54:04.552Z","agentId":"P-29","wave":0,"step":"PROJECTS","action":"CREATION_SUCCESS","result":"SUCCESS","details":{"created":10,"plaid":false}}
+{"ts":"2026-08-17T12:54:04.552Z","agentId":"P-29","wave":3,"step":"WAVE_3","action":"COMPLETE","result":"SUCCESS","details":{"created":10}}
+{"ts":"2026-08-17T12:54:04.715Z","agentId":"P-29","wave":4,"step":"WAVE_4","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-17T12:54:04.716Z","agentId":"P-29","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-47"}}
+{"ts":"2026-08-17T12:54:04.716Z","agentId":"P-29","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-32"}}
+{"ts":"2026-08-17T12:54:04.716Z","agentId":"P-29","wave":4,"step":"WAVE_4","action":"COMPLETE","result":"SUCCESS","details":{"interactions":0,"invites":2}}
+{"ts":"2026-08-17T12:54:04.720Z","agentId":"P-29","wave":4,"step":"WAVE_4","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-17T12:54:04.721Z","agentId":"P-29","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-47"}}
+{"ts":"2026-08-17T12:54:04.721Z","agentId":"P-29","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-32"}}
+{"ts":"2026-08-17T12:54:04.721Z","agentId":"P-29","wave":4,"step":"WAVE_4","action":"COMPLETE","result":"SUCCESS","details":{"interactions":0,"invites":2}}
+{"ts":"2026-08-17T12:54:04.795Z","agentId":"P-29","wave":5,"step":"WAVE_5","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-17T12:54:04.795Z","agentId":"P-29","wave":5,"step":"WAVE_5","action":"COMPLETE","result":"SUCCESS","details":{"reportPath":"/Users/yvesdarbouze/Documents/PaperWorking/artifacts/persona-swarm/reports/P-29-experience-report.md"}}
+{"ts":"2026-08-17T12:54:04.796Z","agentId":"P-29","wave":5,"step":"WAVE_5","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-17T12:54:04.796Z","agentId":"P-29","wave":5,"step":"WAVE_5","action":"COMPLETE","result":"SUCCESS","details":{"reportPath":"/Users/yvesdarbouze/Documents/PaperWorking/artifacts/persona-swarm/reports/P-29-experience-report.md"}}
+{"ts":"2026-08-17T15:51:58.794Z","agentId":"P-29","wave":1,"step":"WAVE_1","action":"START","result":"SUCCESS","details":{"email":"agent29.richard.calloway@paperworking-test.dev"}}
+{"ts":"2026-08-17T15:51:59.101Z","agentId":"P-29","wave":1,"step":"WAVE_1","action":"START","result":"SUCCESS","details":{"email":"agent29.richard.calloway@paperworking-test.dev"}}
+{"ts":"2026-08-17T15:52:00.889Z","agentId":"P-29","wave":0,"step":"SIGNUP","action":"SUCCESS_CREATED","result":"SUCCESS","details":{"uid":"uid_persona_p29","email":"agent29.richard.calloway@paperworking-test.dev","name":"Richard Calloway","entity":"Calloway Commercial Group LLC"}}
+{"ts":"2026-08-17T15:52:00.889Z","agentId":"P-29","wave":1,"step":"WAVE_1","action":"COMPLETE","result":"SUCCESS","details":{"uid":"uid_persona_p29"}}
+{"ts":"2026-08-17T15:52:01.179Z","agentId":"P-29","wave":0,"step":"SIGNUP","action":"SUCCESS_CREATED","result":"SUCCESS","details":{"uid":"uid_persona_p29","email":"agent29.richard.calloway@paperworking-test.dev","name":"Richard Calloway","entity":"Calloway Commercial Group LLC"}}
+{"ts":"2026-08-17T15:52:01.180Z","agentId":"P-29","wave":1,"step":"WAVE_1","action":"COMPLETE","result":"SUCCESS","details":{"uid":"uid_persona_p29"}}
+{"ts":"2026-08-17T15:52:56.249Z","agentId":"P-29","wave":2,"step":"WAVE_2","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-17T15:52:56.249Z","agentId":"P-29","wave":2,"step":"WAVE_2","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-17T15:52:56.249Z","agentId":"P-29","wave":2,"step":"WAVE_2","action":"EXCEPTION","result":"SUCCESS","details":{"error":"CRITICAL SAFETY REFUSAL: Invalid or missing Stripe secret test key. Key must start with \"sk_test_\". Received: \"...\""}}
+{"ts":"2026-08-17T15:52:56.249Z","agentId":"P-29","wave":2,"step":"WAVE_2","action":"EXCEPTION","result":"SUCCESS","details":{"error":"CRITICAL SAFETY REFUSAL: Invalid or missing Stripe secret test key. Key must start with \"sk_test_\". Received: \"...\""}}
+{"ts":"2026-08-17T16:16:47.402Z","agentId":"P-29","wave":1,"step":"WAVE_1","action":"START","result":"SUCCESS","details":{"email":"agent29.richard.calloway@paperworking-test.dev"}}
+{"ts":"2026-08-17T16:16:47.955Z","agentId":"P-29","wave":1,"step":"WAVE_1","action":"START","result":"SUCCESS","details":{"email":"agent29.richard.calloway@paperworking-test.dev"}}
+{"ts":"2026-08-17T16:16:49.534Z","agentId":"P-29","wave":0,"step":"SIGNUP","action":"SUCCESS_CREATED","result":"SUCCESS","details":{"uid":"uid_persona_p29","email":"agent29.richard.calloway@paperworking-test.dev","name":"Richard Calloway","entity":"Calloway Commercial Group LLC"}}
+{"ts":"2026-08-17T16:16:49.535Z","agentId":"P-29","wave":1,"step":"WAVE_1","action":"COMPLETE","result":"SUCCESS","details":{"uid":"uid_persona_p29"}}
+{"ts":"2026-08-17T16:16:50.041Z","agentId":"P-29","wave":0,"step":"SIGNUP","action":"SUCCESS_CREATED","result":"SUCCESS","details":{"uid":"uid_persona_p29","email":"agent29.richard.calloway@paperworking-test.dev","name":"Richard Calloway","entity":"Calloway Commercial Group LLC"}}
+{"ts":"2026-08-17T16:16:50.042Z","agentId":"P-29","wave":1,"step":"WAVE_1","action":"COMPLETE","result":"SUCCESS","details":{"uid":"uid_persona_p29"}}
+{"ts":"2026-08-17T16:17:43.349Z","agentId":"P-29","wave":1,"step":"WAVE_1","action":"START","result":"SUCCESS","details":{"email":"agent29.richard.calloway@paperworking-test.dev"}}
+{"ts":"2026-08-17T16:17:43.354Z","agentId":"P-29","wave":1,"step":"WAVE_1","action":"START","result":"SUCCESS","details":{"email":"agent29.richard.calloway@paperworking-test.dev"}}
+{"ts":"2026-08-17T16:17:45.414Z","agentId":"P-29","wave":0,"step":"SIGNUP","action":"SUCCESS_CREATED","result":"SUCCESS","details":{"uid":"uid_persona_p29","email":"agent29.richard.calloway@paperworking-test.dev","name":"Richard Calloway","entity":"Calloway Commercial Group LLC"}}
+{"ts":"2026-08-17T16:17:45.414Z","agentId":"P-29","wave":0,"step":"SIGNUP","action":"SUCCESS_CREATED","result":"SUCCESS","details":{"uid":"uid_persona_p29","email":"agent29.richard.calloway@paperworking-test.dev","name":"Richard Calloway","entity":"Calloway Commercial Group LLC"}}
+{"ts":"2026-08-17T16:17:45.414Z","agentId":"P-29","wave":1,"step":"WAVE_1","action":"COMPLETE","result":"SUCCESS","details":{"uid":"uid_persona_p29"}}
+{"ts":"2026-08-17T16:17:45.414Z","agentId":"P-29","wave":1,"step":"WAVE_1","action":"COMPLETE","result":"SUCCESS","details":{"uid":"uid_persona_p29"}}
+{"ts":"2026-08-17T16:18:41.940Z","agentId":"P-29","wave":2,"step":"WAVE_2","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-17T16:18:41.940Z","agentId":"P-29","wave":2,"step":"WAVE_2","action":"EXCEPTION","result":"SUCCESS","details":{"error":"CRITICAL SAFETY REFUSAL: Invalid or missing Stripe secret test key. Key must start with \"sk_test_\". Received: \"...\""}}
+{"ts":"2026-08-17T16:18:41.972Z","agentId":"P-29","wave":2,"step":"WAVE_2","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-17T16:18:41.972Z","agentId":"P-29","wave":2,"step":"WAVE_2","action":"EXCEPTION","result":"SUCCESS","details":{"error":"CRITICAL SAFETY REFUSAL: Invalid or missing Stripe secret test key. Key must start with \"sk_test_\". Received: \"...\""}}
+{"ts":"2026-08-17T16:18:42.007Z","agentId":"P-29","wave":3,"step":"WAVE_3","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-17T16:18:42.008Z","agentId":"P-29","wave":0,"step":"PROJECTS","action":"CREATION_SUCCESS","result":"SUCCESS","details":{"created":10,"plaid":false}}
+{"ts":"2026-08-17T16:18:42.008Z","agentId":"P-29","wave":3,"step":"WAVE_3","action":"COMPLETE","result":"SUCCESS","details":{"created":10}}
+{"ts":"2026-08-17T16:18:42.039Z","agentId":"P-29","wave":4,"step":"WAVE_4","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-17T16:18:42.040Z","agentId":"P-29","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-47"}}
+{"ts":"2026-08-17T16:18:42.040Z","agentId":"P-29","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-32"}}
+{"ts":"2026-08-17T16:18:42.040Z","agentId":"P-29","wave":4,"step":"WAVE_4","action":"COMPLETE","result":"SUCCESS","details":{"interactions":0,"invites":2}}
+{"ts":"2026-08-17T16:18:42.041Z","agentId":"P-29","wave":3,"step":"WAVE_3","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-17T16:18:42.041Z","agentId":"P-29","wave":0,"step":"PROJECTS","action":"CREATION_SUCCESS","result":"SUCCESS","details":{"created":10,"plaid":false}}
+{"ts":"2026-08-17T16:18:42.041Z","agentId":"P-29","wave":3,"step":"WAVE_3","action":"COMPLETE","result":"SUCCESS","details":{"created":10}}
+{"ts":"2026-08-17T19:42:08.849Z","agentId":"P-29","wave":1,"step":"WAVE_1","action":"START","result":"SUCCESS","details":{"email":"agent29.richard.calloway@paperworking-test.dev"}}
+{"ts":"2026-08-17T19:42:10.222Z","agentId":"P-29","wave":1,"step":"WAVE_1","action":"START","result":"SUCCESS","details":{"email":"agent29.richard.calloway@paperworking-test.dev"}}
+{"ts":"2026-08-17T19:42:10.997Z","agentId":"P-29","wave":0,"step":"SIGNUP","action":"SUCCESS_CREATED","result":"SUCCESS","details":{"uid":"uid_persona_p29","email":"agent29.richard.calloway@paperworking-test.dev","name":"Richard Calloway","entity":"Calloway Commercial Group LLC"}}
+{"ts":"2026-08-17T19:42:10.997Z","agentId":"P-29","wave":1,"step":"WAVE_1","action":"COMPLETE","result":"SUCCESS","details":{"uid":"uid_persona_p29"}}
+{"ts":"2026-08-17T19:42:12.265Z","agentId":"P-29","wave":0,"step":"SIGNUP","action":"SUCCESS_CREATED","result":"SUCCESS","details":{"uid":"uid_persona_p29","email":"agent29.richard.calloway@paperworking-test.dev","name":"Richard Calloway","entity":"Calloway Commercial Group LLC"}}
+{"ts":"2026-08-17T19:42:12.265Z","agentId":"P-29","wave":1,"step":"WAVE_1","action":"COMPLETE","result":"SUCCESS","details":{"uid":"uid_persona_p29"}}
+{"ts":"2026-08-17T19:43:07.921Z","agentId":"P-29","wave":2,"step":"WAVE_2","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-17T19:43:07.922Z","agentId":"P-29","wave":2,"step":"WAVE_2","action":"EXCEPTION","result":"SUCCESS","details":{"error":"CRITICAL SAFETY REFUSAL: Invalid or missing Stripe secret test key. Key must start with \"sk_test_\". Received: \"...\""}}
+{"ts":"2026-08-17T19:43:07.965Z","agentId":"P-29","wave":3,"step":"WAVE_3","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-17T19:43:07.965Z","agentId":"P-29","wave":0,"step":"PROJECTS","action":"CREATION_SUCCESS","result":"SUCCESS","details":{"created":10,"plaid":false}}
+{"ts":"2026-08-17T19:43:07.965Z","agentId":"P-29","wave":3,"step":"WAVE_3","action":"COMPLETE","result":"SUCCESS","details":{"created":10}}
+{"ts":"2026-08-17T19:43:07.992Z","agentId":"P-29","wave":4,"step":"WAVE_4","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-17T19:43:07.993Z","agentId":"P-29","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-47"}}
+{"ts":"2026-08-17T19:43:07.993Z","agentId":"P-29","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-32"}}
+{"ts":"2026-08-17T19:43:07.993Z","agentId":"P-29","wave":4,"step":"WAVE_4","action":"COMPLETE","result":"SUCCESS","details":{"interactions":0,"invites":2}}
+{"ts":"2026-08-17T19:43:08.028Z","agentId":"P-29","wave":5,"step":"WAVE_5","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-17T19:43:08.028Z","agentId":"P-29","wave":5,"step":"WAVE_5","action":"COMPLETE","result":"SUCCESS","details":{"reportPath":"/Users/yvesdarbouze/Documents/PaperWorking/artifacts/persona-swarm/reports/P-29-experience-report.md"}}
+{"ts":"2026-08-17T19:43:08.083Z","agentId":"P-29","wave":2,"step":"WAVE_2","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-17T19:43:08.083Z","agentId":"P-29","wave":2,"step":"WAVE_2","action":"EXCEPTION","result":"SUCCESS","details":{"error":"CRITICAL SAFETY REFUSAL: Invalid or missing Stripe secret test key. Key must start with \"sk_test_\". Received: \"...\""}}
+{"ts":"2026-08-17T19:43:08.114Z","agentId":"P-29","wave":3,"step":"WAVE_3","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-17T19:43:08.114Z","agentId":"P-29","wave":0,"step":"PROJECTS","action":"CREATION_SUCCESS","result":"SUCCESS","details":{"created":10,"plaid":false}}
+{"ts":"2026-08-17T19:43:08.114Z","agentId":"P-29","wave":3,"step":"WAVE_3","action":"COMPLETE","result":"SUCCESS","details":{"created":10}}
+{"ts":"2026-08-17T19:43:08.137Z","agentId":"P-29","wave":4,"step":"WAVE_4","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-17T19:43:08.138Z","agentId":"P-29","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-47"}}
+{"ts":"2026-08-17T19:43:08.138Z","agentId":"P-29","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-32"}}
+{"ts":"2026-08-17T19:43:08.138Z","agentId":"P-29","wave":4,"step":"WAVE_4","action":"COMPLETE","result":"SUCCESS","details":{"interactions":0,"invites":2}}
+{"ts":"2026-08-17T19:43:08.169Z","agentId":"P-29","wave":5,"step":"WAVE_5","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-17T19:43:08.170Z","agentId":"P-29","wave":5,"step":"WAVE_5","action":"COMPLETE","result":"SUCCESS","details":{"reportPath":"/Users/yvesdarbouze/Documents/PaperWorking/artifacts/persona-swarm/reports/P-29-experience-report.md"}}

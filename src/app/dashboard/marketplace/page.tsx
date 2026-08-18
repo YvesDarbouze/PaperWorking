@@ -234,7 +234,7 @@ function MarketplaceContent() {
         const params = new URLSearchParams();
         const apiType = CATEGORY_TO_API_TYPE[activeFilter];
         if (apiType !== 'All') params.append('type', apiType);
-        if (searchQuery.trim()) params.append('zip', searchQuery.trim());
+        if (searchQuery.trim()) params.append('location', searchQuery.trim());
 
         const res = await fetch(`/api/vendors?${params.toString()}`);
         if (res.ok) {

@@ -14,7 +14,7 @@
  * Batching via Firestore queued_emails collection (same pattern as the rest of the app).
  */
 
-import { Prisma, FinancialTransactionCategory, FinancialTransactionStatus, EmailDigestMode, EmailAlertThreshold } from '@prisma/client';
+import { Prisma, FinancialTransactionCategory, FinancialTransactionStatus } from '@prisma/client';
 import { prisma } from '@/lib/prisma';
 import { adminDb } from '@/lib/firebase/admin';
 import { getEmailProvider } from '@/lib/email/getEmailProvider';
@@ -29,11 +29,6 @@ import {
   generateDailyDigestEmail,
   generateWeeklySummaryEmail,
 } from '@/lib/emails/templates/TransactionNotificationEmails';
-
-// ─── Constants ────────────────────────────────────────────────────────────────
-
-const APP_URL = process.env.NEXT_PUBLIC_APP_URL || 'https://paperworking.co';
-const FROM_EMAIL = process.env.RESEND_FROM_EMAIL || 'notifications@paperworking.co';
 
 /**
  * All 12 categories from the spec that are enabled by default.

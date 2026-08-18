@@ -1,27 +1,15 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { requireAuth, isAuthError } from '@/lib/firebase-admin/auth-guard';
+import { isAuthError } from '@/lib/firebase-admin/auth-guard';
+import { requireAdminAuth } from '@/lib/firebase-admin/admin-guard';
 import { adminDb } from '@/lib/firebase/admin';
 import { FieldValue } from 'firebase-admin/firestore';
 import { DEFAULT_RATES, parseRatesDoc } from '@/lib/providers/lenderRates';
-
-/* ═══════════════════════════════════════════════════════════════
-   GET  /api/admin/lender-rates
-     Returns the current lender rates from Firestore, or DEFAULT_RATES
-     if the systemConfig doc hasn't been written yet.
-     Auth: any authenticated user (rates are read-only for members)
-
-   PUT  /api/admin/lender-rates
-     Replaces the rates array. Caller must be orgRole 'Lead Investor'
-     or 'Admin'. Each rate gets an asOf = serverTimestamp().
-     Body: { rates: [{ id, name, interestRate, points, lenderFeesCents }] }
-     Auth: Lead Investor or Admin only
-   ═══════════════════════════════════════════════════════════════ */
 
 const CONFIG_DOC = adminDb.collection('systemConfig').doc('lenderRates');
 
 export async function GET(request: NextRequest) {
   try {
-    const auth = await requireAuth(request);
+    const auth = await requireAdminAuth(request);
     if (isAuthError(auth)) return auth;
 
     const snap = await CONFIG_DOC.get();
@@ -52,24 +40,9 @@ export async function GET(request: NextRequest) {
 
 export async function PUT(request: NextRequest) {
   try {
-    const auth = await requireAuth(request);
+    const auth = await requireAdminAuth(request);
     if (isAuthError(auth)) return auth;
     const { uid } = auth;
-
-    // Admin gate: Lead Investor or Admin orgRole
-    const userSnap = await adminDb.collection('users').doc(uid).get();
-    if (!userSnap.exists) {
-      return NextResponse.json({ error: 'User not found' }, { status: 404 });
-    }
-    const userData = userSnap.data()!;
-    const orgRole = userData.orgRole ?? '';
-    const isAdmin = orgRole === 'Lead Investor' || orgRole === 'Admin';
-    if (!isAdmin) {
-      return NextResponse.json(
-        { error: 'Only Lead Investors and Admins can update lender rates' },
-        { status: 403 }
-      );
-    }
 
     const body = await request.json();
     if (!Array.isArray(body.rates) || body.rates.length === 0) {
@@ -96,7 +69,7 @@ export async function PUT(request: NextRequest) {
       rates,
       updatedAt:       now,
       updatedByUid:    uid,
-      updatedByEmail:  userData.email ?? '',
+      updatedByEmail:  auth.token.email ?? '',
     });
 
     return NextResponse.json({ success: true });

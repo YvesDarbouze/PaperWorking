@@ -75,7 +75,7 @@ export interface BusinessCard {
   preferredMarkets?: string[];
   minInvestment?: number;
   maxInvestment?: number;
-  investmentCriteria?: Record<string, any> | null;
+  investmentCriteria?: Record<string, unknown> | null;
   isPublic: boolean;
   createdAt?: string;
   updatedAt?: string;
@@ -122,11 +122,11 @@ export interface Deal {
   id: string;
   slug: string;
   address: string;
-  purchasePrice: any;
-  rehabCost: any;
-  arv: any;
-  holdingCosts: any;
-  projectedRoi: any;
+  purchasePrice: number | string | null;
+  rehabCost: number | string | null;
+  arv: number | string | null;
+  holdingCosts: number | string | null;
+  projectedRoi: number | string | null;
   status: DealStatusType;
   visibility?: DealVisibilityType;
   creatorId: string;
@@ -189,7 +189,7 @@ export function generateDealSlug(address: string): string {
   return address.toLowerCase().replace(/[^a-z0-9]/g, '');
 }
 
-export function formatDecimalPrecision(value: any, precision: number = 2): string {
+export function formatDecimalPrecision(value: number | string | null | undefined, precision: number = 2): string {
   if (value === null || value === undefined || value === '' || isNaN(Number(value))) {
     throw new TypeError('Invalid numeric input for decimal formatting');
   }
@@ -200,7 +200,7 @@ export function formatDecimalPrecision(value: any, precision: number = 2): strin
   return Number(Math.round(Number(num + 'e' + precision)) + 'e-' + precision).toFixed(precision);
 }
 
-export function isValidDecimal(value: any): boolean {
+export function isValidDecimal(value: unknown): boolean {
   if (value === null || value === undefined || value === '' || typeof value === 'boolean') return false;
   const num = Number(value);
   return !isNaN(num) && isFinite(num);

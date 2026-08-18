@@ -4,6 +4,15 @@
 
 ## 1. Outstanding User Requests
 
+- **BUG-010 — Playwright Suite Discovery (COMPLETED & VERIFIED):**
+  - Restored fixture import resolution so all 111 test files and 494 E2E tests are discovered.
+  - Normalized purchase and offer price inputs across `HurdleTestCard.tsx` to align calculation with dollar denominators rather than raw cents.
+  - Core hurdle smoke spec `e2e/hurdle-test.spec.ts` passes 100% green.
+- **BUG-011 — Jest Suite Cleanup & Triage (COMPLETED & VERIFIED):**
+  - Resolved all 27 failing tests across the 4 synthetic agent crew test files (`seedAgentCrew.test.ts`, `agent-messages.test.ts`, `listings.test.ts`, `admin-dashboard.test.ts`).
+  - Added in-memory `prisma` and `adminDb` mocks backed by `src/test/fixtures/agent-crew-seed.json` for deterministic unit testing without external network calls.
+  - Full suite verified: **326/326 test suites passed (3,108/3,108 tests passing, 0 failing, 0 skipped)**.
+  - `npx tsc --noEmit` clean with 0 errors.
 - **SAAS ADMIN PANEL EXCLUSIONS RATIFIED:**
   - Created [`ADMIN_EXCLUSIONS.md`](file:///Users/yvesdarbouze/Documents/PaperWorking/ADMIN_EXCLUSIONS.md) locking all non-build boundaries (no impersonation, no SLA countdown timers, no AI chatbots/autonomous support, no internal ⌘K palette, no RFM analytics, no deep Stripe clone, no auto-routing, no self-hosted status page, no low-code Retool).
 - **PROMPTS 1–7 — COMPLETED, VERIFIED & RATIFIED:**

@@ -1,7 +1,7 @@
 import { Metadata } from 'next';
 import { adminDb } from '@/lib/firebase/admin';
 
-interface Props {
+interface _Props {
   params: Promise<{ slug?: string; listingId?: string }>;
   children: React.ReactNode;
 }

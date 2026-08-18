@@ -6,12 +6,12 @@ import { doc, updateDoc } from 'firebase/firestore';
 import { db } from '@/lib/firebase/config';
 import { deriveAllMetrics } from '@/lib/metrics/reiMetrics';
 import type { Project } from '@/types/schema';
-import { CheckCircle2, XCircle, ShieldAlert, Award, TrendingUp, DollarSign, Percent } from 'lucide-react';
+import { CheckCircle2, XCircle, ShieldAlert, Award, DollarSign, Percent } from 'lucide-react';
 import toast from 'react-hot-toast';
 
 interface HurdleTestCardProps {
   project: Project;
-  onSave: (updates: any) => Promise<void>;
+  onSave: (updates: Record<string, unknown>) => Promise<void>;
 }
 
 export function HurdleTestCard({ project, onSave }: HurdleTestCardProps) {
@@ -24,6 +24,9 @@ export function HurdleTestCard({ project, onSave }: HurdleTestCardProps) {
     copy.financials = {
       ...f,
       purchasePrice: f.purchasePrice ? f.purchasePrice / 100 : 0,
+      finalAgreedPrice: f.finalAgreedPrice ? f.finalAgreedPrice / 100 : undefined,
+      renegotiatedPrice: f.renegotiatedPrice ? f.renegotiatedPrice / 100 : undefined,
+      offer_price: f.offer_price ? f.offer_price / 100 : undefined,
       loanAmount: f.loanAmount ? f.loanAmount / 100 : 0,
       projectedRehabCost: f.projectedRehabCost ? f.projectedRehabCost / 100 : 0,
       estimatedARV: f.estimatedARV ? f.estimatedARV / 100 : 0,
@@ -131,8 +134,13 @@ export function HurdleTestCard({ project, onSave }: HurdleTestCardProps) {
 
   // Handle threshold modifications
   const handleThresholdUpdate = async (field: keyof typeof thresholds, val: number) => {
-    const next = { ...thresholds, [field]: val };
-    setThresholds(next);
+    setThresholds((prev) => {
+      const next = { ...prev, [field]: val };
+      try {
+        localStorage.setItem('pw_user_buy_box_thresholds', JSON.stringify(next));
+      } catch (_e) {}
+      return next;
+    });
 
     try {
       // Save project-level thresholds
@@ -146,9 +154,6 @@ export function HurdleTestCard({ project, onSave }: HurdleTestCardProps) {
           [userField]: val,
         });
       }
-
-      // Save localStorage as fallback/recording check
-      localStorage.setItem('pw_user_buy_box_thresholds', JSON.stringify(next));
     } catch (err) {
       console.error('Failed to save buy box threshold updates:', err);
       toast.error('Failed to save threshold changes');

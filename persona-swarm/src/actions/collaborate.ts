@@ -28,7 +28,7 @@ export async function executeInteractions(
     const graph = JSON.parse(fs.readFileSync(graphPath, 'utf-8'));
 
     // 1. Process outbound deal interactions (edges where from === agentId)
-    const outboundEdges = graph.edges.filter((e: any) => e.from === agentId);
+    const outboundEdges = graph.edges.filter((e: { from?: string }) => e.from === agentId);
     for (const edge of outboundEdges) {
       try {
         const dealDocRef = adminDb.collection('deal_interactions').doc(edge.id);
@@ -77,8 +77,8 @@ export async function executeInteractions(
       interactionsExecuted,
       invitesSent,
     };
-  } catch (err: any) {
-    const errorMsg = err.message || 'Unknown interaction error';
+  } catch (err: unknown) {
+    const errorMsg = (err as Error).message || 'Unknown interaction error';
     logSwarmEvent(agentId, 'COLLABORATE', 'ERROR', { error: errorMsg });
     return {
       success: false,

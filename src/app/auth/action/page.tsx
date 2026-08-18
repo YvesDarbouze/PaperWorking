@@ -12,13 +12,15 @@ import Link from 'next/link';
 
 function AuthActionHandler() {
   const searchParams = useSearchParams();
-  const router = useRouter();
+  const _router = useRouter();
 
   const mode = searchParams?.get('mode') ?? null;
   const oobCode = searchParams?.get('oobCode') ?? null;
 
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  const [loading, setLoading] = useState(() => (!oobCode || !mode ? false : true));
+  const [error, setError] = useState<string | null>(() =>
+    !oobCode || !mode ? 'Invalid or expired authentication link.' : null
+  );
   const [success, setSuccess] = useState<string | null>(null);
   const [email, setEmail] = useState<string>('');
 
@@ -28,11 +30,7 @@ function AuthActionHandler() {
   const [submitting, setSubmitting] = useState(false);
 
   useEffect(() => {
-    if (!oobCode || !mode) {
-      setError('Invalid or expired authentication link.');
-      setLoading(false);
-      return;
-    }
+    if (!oobCode || !mode) return;
 
     if (mode === 'resetPassword') {
       verifyPasswordResetCode(auth, oobCode)
@@ -57,8 +55,10 @@ function AuthActionHandler() {
           setLoading(false);
         });
     } else {
-      setError(`Unsupported action mode: ${mode}`);
-      setLoading(false);
+      queueMicrotask(() => {
+        setError(`Unsupported action mode: ${mode}`);
+        setLoading(false);
+      });
     }
   }, [mode, oobCode]);
 
@@ -80,9 +80,9 @@ function AuthActionHandler() {
     try {
       await confirmPasswordReset(auth, oobCode, password);
       setSuccess('Your password has been reset successfully. You can now sign in with your new password.');
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error('[AuthAction] Confirm reset error:', err);
-      setError(err.message || 'Failed to reset password. Please request a new link.');
+      setError((err as Error)?.message || 'Failed to reset password. Please request a new link.');
     } finally {
       setSubmitting(false);
     }

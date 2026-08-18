@@ -17,7 +17,7 @@ export interface WebhookVerificationResult {
 }
 
 // Module-scoped in-memory cache for Plaid verification JWKs
-const jwkCache = new Map<string, any>();
+const jwkCache = new Map<string, Record<string, unknown>>();
 
 /**
  * Clear the in-memory JWK cache (useful for test setup/teardown).
@@ -29,14 +29,14 @@ export function clearJwkCache(): void {
 /**
  * Get a cached JWK by key ID (kid).
  */
-export function getCachedJwk(kid: string): any | undefined {
+export function getCachedJwk(kid: string): Record<string, unknown> | undefined {
   return jwkCache.get(kid);
 }
 
 /**
  * Manually populate a cached JWK (useful for test suites).
  */
-export function setCachedJwk(kid: string, jwk: any): void {
+export function setCachedJwk(kid: string, jwk: Record<string, unknown>): void {
   jwkCache.set(kid, jwk);
 }
 
@@ -73,10 +73,10 @@ function getPlaidClient(): PlaidApi | null {
 async function fetchWebhookVerificationKey(
   kid: string,
   customPlaidClient?: PlaidApi
-): Promise<any | null> {
+): Promise<Record<string, unknown> | null> {
   // Check in-memory cache first
   if (jwkCache.has(kid)) {
-    return jwkCache.get(kid);
+    return jwkCache.get(kid) || null;
   }
 
   try {
@@ -86,7 +86,7 @@ async function fetchWebhookVerificationKey(
     }
 
     const response = await client.webhookVerificationKeyGet({ key_id: kid });
-    const jwk = response.data?.key;
+    const jwk = response.data?.key as unknown as Record<string, unknown>;
     if (jwk) {
       jwkCache.set(kid, jwk);
       return jwk;
@@ -104,7 +104,7 @@ async function fetchWebhookVerificationKey(
 function verifyEs256Signature(
   signingInput: string,
   signatureB64Url: string,
-  jwk: any
+  jwk: Record<string, unknown>
 ): boolean {
   try {
     const publicKey = crypto.createPublicKey({

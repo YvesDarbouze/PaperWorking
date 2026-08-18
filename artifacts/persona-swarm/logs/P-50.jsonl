@@ -757,3 +757,230 @@
 {"ts":"2026-08-14T19:22:05.598Z","agentId":"P-50","wave":4,"step":"WAVE_4","action":"COMPLETE","result":"SUCCESS","details":{"interactions":2,"invites":2}}
 {"ts":"2026-08-14T19:22:05.710Z","agentId":"P-50","wave":5,"step":"WAVE_5","action":"START","result":"SUCCESS"}
 {"ts":"2026-08-14T19:22:05.710Z","agentId":"P-50","wave":5,"step":"WAVE_5","action":"COMPLETE","result":"SUCCESS","details":{"reportPath":"/Users/yvesdarbouze/Documents/PaperWorking/artifacts/persona-swarm/reports/P-50-experience-report.md"}}
+{"ts":"2026-08-17T12:48:20.668Z","agentId":"P-50","wave":1,"step":"WAVE_1","action":"START","result":"SUCCESS","details":{"email":"agent50.douglas.harmon@paperworking-test.dev"}}
+{"ts":"2026-08-17T12:48:20.668Z","agentId":"P-50","wave":1,"step":"WAVE_1","action":"START","result":"SUCCESS","details":{"email":"agent50.douglas.harmon@paperworking-test.dev"}}
+{"ts":"2026-08-17T12:48:20.668Z","agentId":"P-50","wave":0,"step":"SIGNUP","action":"SUCCESS_CREATED","result":"SUCCESS","details":{"uid":"uid_persona_p50","email":"agent50.douglas.harmon@paperworking-test.dev","name":"Douglas Harmon","entity":"Harmon Note Exchange LLC"}}
+{"ts":"2026-08-17T12:48:20.668Z","agentId":"P-50","wave":1,"step":"WAVE_1","action":"COMPLETE","result":"SUCCESS","details":{"uid":"uid_persona_p50"}}
+{"ts":"2026-08-17T12:48:20.668Z","agentId":"P-50","wave":0,"step":"SIGNUP","action":"SUCCESS_CREATED","result":"SUCCESS","details":{"uid":"uid_persona_p50","email":"agent50.douglas.harmon@paperworking-test.dev","name":"Douglas Harmon","entity":"Harmon Note Exchange LLC"}}
+{"ts":"2026-08-17T12:48:20.668Z","agentId":"P-50","wave":1,"step":"WAVE_1","action":"COMPLETE","result":"SUCCESS","details":{"uid":"uid_persona_p50"}}
+{"ts":"2026-08-17T12:48:20.703Z","agentId":"P-50","wave":2,"step":"WAVE_2","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-17T12:48:20.703Z","agentId":"P-50","wave":0,"step":"BILLING","action":"SUBSCRIPTION_SUCCESS","result":"SUCCESS","details":{"plan":"Individual","stripeCustomerId":"cus_test_swarm_p-50","stripeSubscriptionId":"sub_test_swarm_p-50","cardLastFour":"4242","cardBrand":"visa"}}
+{"ts":"2026-08-17T12:48:20.703Z","agentId":"P-50","wave":2,"step":"WAVE_2","action":"COMPLETE","result":"SUCCESS","details":{"plan":"Individual"}}
+{"ts":"2026-08-17T12:48:20.708Z","agentId":"P-50","wave":2,"step":"WAVE_2","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-17T12:48:20.709Z","agentId":"P-50","wave":0,"step":"BILLING","action":"SUBSCRIPTION_SUCCESS","result":"SUCCESS","details":{"plan":"Individual","stripeCustomerId":"cus_test_swarm_p-50","stripeSubscriptionId":"sub_test_swarm_p-50","cardLastFour":"4242","cardBrand":"visa"}}
+{"ts":"2026-08-17T12:48:20.709Z","agentId":"P-50","wave":2,"step":"WAVE_2","action":"COMPLETE","result":"SUCCESS","details":{"plan":"Individual"}}
+{"ts":"2026-08-17T12:48:20.869Z","agentId":"P-50","wave":3,"step":"WAVE_3","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-17T12:48:20.871Z","agentId":"P-50","wave":0,"step":"PROJECTS","action":"CREATION_SUCCESS","result":"SUCCESS","details":{"created":10,"plaid":false}}
+{"ts":"2026-08-17T12:48:20.871Z","agentId":"P-50","wave":3,"step":"WAVE_3","action":"COMPLETE","result":"SUCCESS","details":{"created":10}}
+{"ts":"2026-08-17T12:48:20.879Z","agentId":"P-50","wave":3,"step":"WAVE_3","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-17T12:48:20.882Z","agentId":"P-50","wave":0,"step":"PROJECTS","action":"CREATION_SUCCESS","result":"SUCCESS","details":{"created":10,"plaid":false}}
+{"ts":"2026-08-17T12:48:20.883Z","agentId":"P-50","wave":3,"step":"WAVE_3","action":"COMPLETE","result":"SUCCESS","details":{"created":10}}
+{"ts":"2026-08-17T12:48:20.972Z","agentId":"P-50","wave":4,"step":"WAVE_4","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-17T12:48:20.973Z","agentId":"P-50","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-62","to":"P-39","type":"Note Portfolio Sale"}}
+{"ts":"2026-08-17T12:48:20.973Z","agentId":"P-50","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-63","to":"P-31","type":"Non-Performing Note Workout"}}
+{"ts":"2026-08-17T12:48:20.974Z","agentId":"P-50","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-39"}}
+{"ts":"2026-08-17T12:48:20.975Z","agentId":"P-50","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-31"}}
+{"ts":"2026-08-17T12:48:20.975Z","agentId":"P-50","wave":4,"step":"WAVE_4","action":"COMPLETE","result":"SUCCESS","details":{"interactions":2,"invites":2}}
+{"ts":"2026-08-17T12:48:20.977Z","agentId":"P-50","wave":4,"step":"WAVE_4","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-17T12:48:20.977Z","agentId":"P-50","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-62","to":"P-39","type":"Note Portfolio Sale"}}
+{"ts":"2026-08-17T12:48:20.978Z","agentId":"P-50","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-63","to":"P-31","type":"Non-Performing Note Workout"}}
+{"ts":"2026-08-17T12:48:20.978Z","agentId":"P-50","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-39"}}
+{"ts":"2026-08-17T12:48:20.979Z","agentId":"P-50","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-31"}}
+{"ts":"2026-08-17T12:48:20.979Z","agentId":"P-50","wave":4,"step":"WAVE_4","action":"COMPLETE","result":"SUCCESS","details":{"interactions":2,"invites":2}}
+{"ts":"2026-08-17T12:48:21.031Z","agentId":"P-50","wave":5,"step":"WAVE_5","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-17T12:48:21.031Z","agentId":"P-50","wave":5,"step":"WAVE_5","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-17T12:48:21.031Z","agentId":"P-50","wave":5,"step":"WAVE_5","action":"COMPLETE","result":"SUCCESS","details":{"reportPath":"/Users/yvesdarbouze/Documents/PaperWorking/artifacts/persona-swarm/reports/P-50-experience-report.md"}}
+{"ts":"2026-08-17T12:48:21.032Z","agentId":"P-50","wave":5,"step":"WAVE_5","action":"COMPLETE","result":"SUCCESS","details":{"reportPath":"/Users/yvesdarbouze/Documents/PaperWorking/artifacts/persona-swarm/reports/P-50-experience-report.md"}}
+{"ts":"2026-08-17T12:49:28.796Z","agentId":"P-50","wave":1,"step":"WAVE_1","action":"START","result":"SUCCESS","details":{"email":"agent50.douglas.harmon@paperworking-test.dev"}}
+{"ts":"2026-08-17T12:49:28.797Z","agentId":"P-50","wave":0,"step":"SIGNUP","action":"SUCCESS_CREATED","result":"SUCCESS","details":{"uid":"uid_persona_p50","email":"agent50.douglas.harmon@paperworking-test.dev","name":"Douglas Harmon","entity":"Harmon Note Exchange LLC"}}
+{"ts":"2026-08-17T12:49:28.797Z","agentId":"P-50","wave":1,"step":"WAVE_1","action":"COMPLETE","result":"SUCCESS","details":{"uid":"uid_persona_p50"}}
+{"ts":"2026-08-17T12:49:28.852Z","agentId":"P-50","wave":2,"step":"WAVE_2","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-17T12:49:28.852Z","agentId":"P-50","wave":0,"step":"BILLING","action":"SUBSCRIPTION_SUCCESS","result":"SUCCESS","details":{"plan":"Individual","stripeCustomerId":"cus_test_swarm_p-50","stripeSubscriptionId":"sub_test_swarm_p-50","cardLastFour":"4242","cardBrand":"visa"}}
+{"ts":"2026-08-17T12:49:28.852Z","agentId":"P-50","wave":2,"step":"WAVE_2","action":"COMPLETE","result":"SUCCESS","details":{"plan":"Individual"}}
+{"ts":"2026-08-17T12:49:29.047Z","agentId":"P-50","wave":3,"step":"WAVE_3","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-17T12:49:29.049Z","agentId":"P-50","wave":0,"step":"PROJECTS","action":"CREATION_SUCCESS","result":"SUCCESS","details":{"created":10,"plaid":false}}
+{"ts":"2026-08-17T12:49:29.049Z","agentId":"P-50","wave":3,"step":"WAVE_3","action":"COMPLETE","result":"SUCCESS","details":{"created":10}}
+{"ts":"2026-08-17T12:49:29.206Z","agentId":"P-50","wave":4,"step":"WAVE_4","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-17T12:49:29.206Z","agentId":"P-50","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-62","to":"P-39","type":"Note Portfolio Sale"}}
+{"ts":"2026-08-17T12:49:29.206Z","agentId":"P-50","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-63","to":"P-31","type":"Non-Performing Note Workout"}}
+{"ts":"2026-08-17T12:49:29.207Z","agentId":"P-50","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-39"}}
+{"ts":"2026-08-17T12:49:29.207Z","agentId":"P-50","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-31"}}
+{"ts":"2026-08-17T12:49:29.207Z","agentId":"P-50","wave":4,"step":"WAVE_4","action":"COMPLETE","result":"SUCCESS","details":{"interactions":2,"invites":2}}
+{"ts":"2026-08-17T12:49:29.293Z","agentId":"P-50","wave":5,"step":"WAVE_5","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-17T12:49:29.293Z","agentId":"P-50","wave":5,"step":"WAVE_5","action":"COMPLETE","result":"SUCCESS","details":{"reportPath":"/Users/yvesdarbouze/Documents/PaperWorking/artifacts/persona-swarm/reports/P-50-experience-report.md"}}
+{"ts":"2026-08-17T12:49:29.299Z","agentId":"P-50","wave":1,"step":"WAVE_1","action":"START","result":"SUCCESS","details":{"email":"agent50.douglas.harmon@paperworking-test.dev"}}
+{"ts":"2026-08-17T12:49:29.299Z","agentId":"P-50","wave":0,"step":"SIGNUP","action":"SUCCESS_CREATED","result":"SUCCESS","details":{"uid":"uid_persona_p50","email":"agent50.douglas.harmon@paperworking-test.dev","name":"Douglas Harmon","entity":"Harmon Note Exchange LLC"}}
+{"ts":"2026-08-17T12:49:29.299Z","agentId":"P-50","wave":1,"step":"WAVE_1","action":"COMPLETE","result":"SUCCESS","details":{"uid":"uid_persona_p50"}}
+{"ts":"2026-08-17T12:49:29.358Z","agentId":"P-50","wave":2,"step":"WAVE_2","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-17T12:49:29.359Z","agentId":"P-50","wave":0,"step":"BILLING","action":"SUBSCRIPTION_SUCCESS","result":"SUCCESS","details":{"plan":"Individual","stripeCustomerId":"cus_test_swarm_p-50","stripeSubscriptionId":"sub_test_swarm_p-50","cardLastFour":"4242","cardBrand":"visa"}}
+{"ts":"2026-08-17T12:49:29.360Z","agentId":"P-50","wave":2,"step":"WAVE_2","action":"COMPLETE","result":"SUCCESS","details":{"plan":"Individual"}}
+{"ts":"2026-08-17T12:49:29.568Z","agentId":"P-50","wave":3,"step":"WAVE_3","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-17T12:49:29.573Z","agentId":"P-50","wave":0,"step":"PROJECTS","action":"CREATION_SUCCESS","result":"SUCCESS","details":{"created":10,"plaid":false}}
+{"ts":"2026-08-17T12:49:29.573Z","agentId":"P-50","wave":3,"step":"WAVE_3","action":"COMPLETE","result":"SUCCESS","details":{"created":10}}
+{"ts":"2026-08-17T12:49:29.683Z","agentId":"P-50","wave":4,"step":"WAVE_4","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-17T12:49:29.684Z","agentId":"P-50","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-62","to":"P-39","type":"Note Portfolio Sale"}}
+{"ts":"2026-08-17T12:49:29.684Z","agentId":"P-50","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-63","to":"P-31","type":"Non-Performing Note Workout"}}
+{"ts":"2026-08-17T12:49:29.684Z","agentId":"P-50","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-39"}}
+{"ts":"2026-08-17T12:49:29.685Z","agentId":"P-50","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-31"}}
+{"ts":"2026-08-17T12:49:29.685Z","agentId":"P-50","wave":4,"step":"WAVE_4","action":"COMPLETE","result":"SUCCESS","details":{"interactions":2,"invites":2}}
+{"ts":"2026-08-17T12:49:29.704Z","agentId":"P-50","wave":5,"step":"WAVE_5","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-17T12:49:29.704Z","agentId":"P-50","wave":5,"step":"WAVE_5","action":"COMPLETE","result":"SUCCESS","details":{"reportPath":"/Users/yvesdarbouze/Documents/PaperWorking/artifacts/persona-swarm/reports/P-50-experience-report.md"}}
+{"ts":"2026-08-17T12:51:28.457Z","agentId":"P-50","wave":1,"step":"WAVE_1","action":"START","result":"SUCCESS","details":{"email":"agent50.douglas.harmon@paperworking-test.dev"}}
+{"ts":"2026-08-17T12:51:28.457Z","agentId":"P-50","wave":1,"step":"WAVE_1","action":"START","result":"SUCCESS","details":{"email":"agent50.douglas.harmon@paperworking-test.dev"}}
+{"ts":"2026-08-17T12:51:28.457Z","agentId":"P-50","wave":0,"step":"SIGNUP","action":"SUCCESS_CREATED","result":"SUCCESS","details":{"uid":"uid_persona_p50","email":"agent50.douglas.harmon@paperworking-test.dev","name":"Douglas Harmon","entity":"Harmon Note Exchange LLC"}}
+{"ts":"2026-08-17T12:51:28.457Z","agentId":"P-50","wave":0,"step":"SIGNUP","action":"SUCCESS_CREATED","result":"SUCCESS","details":{"uid":"uid_persona_p50","email":"agent50.douglas.harmon@paperworking-test.dev","name":"Douglas Harmon","entity":"Harmon Note Exchange LLC"}}
+{"ts":"2026-08-17T12:51:28.457Z","agentId":"P-50","wave":1,"step":"WAVE_1","action":"COMPLETE","result":"SUCCESS","details":{"uid":"uid_persona_p50"}}
+{"ts":"2026-08-17T12:51:28.457Z","agentId":"P-50","wave":1,"step":"WAVE_1","action":"COMPLETE","result":"SUCCESS","details":{"uid":"uid_persona_p50"}}
+{"ts":"2026-08-17T12:51:28.506Z","agentId":"P-50","wave":2,"step":"WAVE_2","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-17T12:51:28.507Z","agentId":"P-50","wave":0,"step":"BILLING","action":"SUBSCRIPTION_SUCCESS","result":"SUCCESS","details":{"plan":"Individual","stripeCustomerId":"cus_test_swarm_p-50","stripeSubscriptionId":"sub_test_swarm_p-50","cardLastFour":"4242","cardBrand":"visa"}}
+{"ts":"2026-08-17T12:51:28.507Z","agentId":"P-50","wave":2,"step":"WAVE_2","action":"COMPLETE","result":"SUCCESS","details":{"plan":"Individual"}}
+{"ts":"2026-08-17T12:51:28.512Z","agentId":"P-50","wave":2,"step":"WAVE_2","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-17T12:51:28.512Z","agentId":"P-50","wave":0,"step":"BILLING","action":"SUBSCRIPTION_SUCCESS","result":"SUCCESS","details":{"plan":"Individual","stripeCustomerId":"cus_test_swarm_p-50","stripeSubscriptionId":"sub_test_swarm_p-50","cardLastFour":"4242","cardBrand":"visa"}}
+{"ts":"2026-08-17T12:51:28.512Z","agentId":"P-50","wave":2,"step":"WAVE_2","action":"COMPLETE","result":"SUCCESS","details":{"plan":"Individual"}}
+{"ts":"2026-08-17T12:51:28.712Z","agentId":"P-50","wave":3,"step":"WAVE_3","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-17T12:51:28.714Z","agentId":"P-50","wave":0,"step":"PROJECTS","action":"CREATION_SUCCESS","result":"SUCCESS","details":{"created":10,"plaid":false}}
+{"ts":"2026-08-17T12:51:28.714Z","agentId":"P-50","wave":3,"step":"WAVE_3","action":"COMPLETE","result":"SUCCESS","details":{"created":10}}
+{"ts":"2026-08-17T12:51:28.723Z","agentId":"P-50","wave":3,"step":"WAVE_3","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-17T12:51:28.725Z","agentId":"P-50","wave":0,"step":"PROJECTS","action":"CREATION_SUCCESS","result":"SUCCESS","details":{"created":10,"plaid":false}}
+{"ts":"2026-08-17T12:51:28.725Z","agentId":"P-50","wave":3,"step":"WAVE_3","action":"COMPLETE","result":"SUCCESS","details":{"created":10}}
+{"ts":"2026-08-17T12:51:28.811Z","agentId":"P-50","wave":4,"step":"WAVE_4","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-17T12:51:28.811Z","agentId":"P-50","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-62","to":"P-39","type":"Note Portfolio Sale"}}
+{"ts":"2026-08-17T12:51:28.812Z","agentId":"P-50","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-63","to":"P-31","type":"Non-Performing Note Workout"}}
+{"ts":"2026-08-17T12:51:28.812Z","agentId":"P-50","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-39"}}
+{"ts":"2026-08-17T12:51:28.812Z","agentId":"P-50","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-31"}}
+{"ts":"2026-08-17T12:51:28.812Z","agentId":"P-50","wave":4,"step":"WAVE_4","action":"COMPLETE","result":"SUCCESS","details":{"interactions":2,"invites":2}}
+{"ts":"2026-08-17T12:51:28.825Z","agentId":"P-50","wave":4,"step":"WAVE_4","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-17T12:51:28.826Z","agentId":"P-50","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-62","to":"P-39","type":"Note Portfolio Sale"}}
+{"ts":"2026-08-17T12:51:28.827Z","agentId":"P-50","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-63","to":"P-31","type":"Non-Performing Note Workout"}}
+{"ts":"2026-08-17T12:51:28.827Z","agentId":"P-50","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-39"}}
+{"ts":"2026-08-17T12:51:28.828Z","agentId":"P-50","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-31"}}
+{"ts":"2026-08-17T12:51:28.828Z","agentId":"P-50","wave":4,"step":"WAVE_4","action":"COMPLETE","result":"SUCCESS","details":{"interactions":2,"invites":2}}
+{"ts":"2026-08-17T12:51:28.846Z","agentId":"P-50","wave":5,"step":"WAVE_5","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-17T12:51:28.847Z","agentId":"P-50","wave":5,"step":"WAVE_5","action":"COMPLETE","result":"SUCCESS","details":{"reportPath":"/Users/yvesdarbouze/Documents/PaperWorking/artifacts/persona-swarm/reports/P-50-experience-report.md"}}
+{"ts":"2026-08-17T12:51:28.869Z","agentId":"P-50","wave":5,"step":"WAVE_5","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-17T12:51:28.869Z","agentId":"P-50","wave":5,"step":"WAVE_5","action":"COMPLETE","result":"SUCCESS","details":{"reportPath":"/Users/yvesdarbouze/Documents/PaperWorking/artifacts/persona-swarm/reports/P-50-experience-report.md"}}
+{"ts":"2026-08-17T12:53:52.977Z","agentId":"P-50","wave":1,"step":"WAVE_1","action":"START","result":"SUCCESS","details":{"email":"agent50.douglas.harmon@paperworking-test.dev"}}
+{"ts":"2026-08-17T12:53:52.977Z","agentId":"P-50","wave":1,"step":"WAVE_1","action":"START","result":"SUCCESS","details":{"email":"agent50.douglas.harmon@paperworking-test.dev"}}
+{"ts":"2026-08-17T12:53:52.979Z","agentId":"P-50","wave":0,"step":"SIGNUP","action":"SUCCESS_CREATED","result":"SUCCESS","details":{"uid":"uid_persona_p50","email":"agent50.douglas.harmon@paperworking-test.dev","name":"Douglas Harmon","entity":"Harmon Note Exchange LLC"}}
+{"ts":"2026-08-17T12:53:52.979Z","agentId":"P-50","wave":0,"step":"SIGNUP","action":"SUCCESS_CREATED","result":"SUCCESS","details":{"uid":"uid_persona_p50","email":"agent50.douglas.harmon@paperworking-test.dev","name":"Douglas Harmon","entity":"Harmon Note Exchange LLC"}}
+{"ts":"2026-08-17T12:53:52.979Z","agentId":"P-50","wave":1,"step":"WAVE_1","action":"COMPLETE","result":"SUCCESS","details":{"uid":"uid_persona_p50"}}
+{"ts":"2026-08-17T12:53:52.979Z","agentId":"P-50","wave":1,"step":"WAVE_1","action":"COMPLETE","result":"SUCCESS","details":{"uid":"uid_persona_p50"}}
+{"ts":"2026-08-17T12:53:53.018Z","agentId":"P-50","wave":2,"step":"WAVE_2","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-17T12:53:53.019Z","agentId":"P-50","wave":0,"step":"BILLING","action":"SUBSCRIPTION_SUCCESS","result":"SUCCESS","details":{"plan":"Individual","stripeCustomerId":"cus_test_swarm_p-50","stripeSubscriptionId":"sub_test_swarm_p-50","cardLastFour":"4242","cardBrand":"visa"}}
+{"ts":"2026-08-17T12:53:53.019Z","agentId":"P-50","wave":2,"step":"WAVE_2","action":"COMPLETE","result":"SUCCESS","details":{"plan":"Individual"}}
+{"ts":"2026-08-17T12:53:53.029Z","agentId":"P-50","wave":2,"step":"WAVE_2","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-17T12:53:53.029Z","agentId":"P-50","wave":0,"step":"BILLING","action":"SUBSCRIPTION_SUCCESS","result":"SUCCESS","details":{"plan":"Individual","stripeCustomerId":"cus_test_swarm_p-50","stripeSubscriptionId":"sub_test_swarm_p-50","cardLastFour":"4242","cardBrand":"visa"}}
+{"ts":"2026-08-17T12:53:53.029Z","agentId":"P-50","wave":2,"step":"WAVE_2","action":"COMPLETE","result":"SUCCESS","details":{"plan":"Individual"}}
+{"ts":"2026-08-17T12:53:53.179Z","agentId":"P-50","wave":3,"step":"WAVE_3","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-17T12:53:53.180Z","agentId":"P-50","wave":0,"step":"PROJECTS","action":"CREATION_SUCCESS","result":"SUCCESS","details":{"created":10,"plaid":false}}
+{"ts":"2026-08-17T12:53:53.181Z","agentId":"P-50","wave":3,"step":"WAVE_3","action":"COMPLETE","result":"SUCCESS","details":{"created":10}}
+{"ts":"2026-08-17T12:53:53.199Z","agentId":"P-50","wave":3,"step":"WAVE_3","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-17T12:53:53.201Z","agentId":"P-50","wave":0,"step":"PROJECTS","action":"CREATION_SUCCESS","result":"SUCCESS","details":{"created":10,"plaid":false}}
+{"ts":"2026-08-17T12:53:53.201Z","agentId":"P-50","wave":3,"step":"WAVE_3","action":"COMPLETE","result":"SUCCESS","details":{"created":10}}
+{"ts":"2026-08-17T12:53:53.271Z","agentId":"P-50","wave":4,"step":"WAVE_4","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-17T12:53:53.271Z","agentId":"P-50","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-62","to":"P-39","type":"Note Portfolio Sale"}}
+{"ts":"2026-08-17T12:53:53.271Z","agentId":"P-50","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-63","to":"P-31","type":"Non-Performing Note Workout"}}
+{"ts":"2026-08-17T12:53:53.272Z","agentId":"P-50","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-39"}}
+{"ts":"2026-08-17T12:53:53.272Z","agentId":"P-50","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-31"}}
+{"ts":"2026-08-17T12:53:53.272Z","agentId":"P-50","wave":4,"step":"WAVE_4","action":"COMPLETE","result":"SUCCESS","details":{"interactions":2,"invites":2}}
+{"ts":"2026-08-17T12:53:53.290Z","agentId":"P-50","wave":4,"step":"WAVE_4","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-17T12:53:53.291Z","agentId":"P-50","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-62","to":"P-39","type":"Note Portfolio Sale"}}
+{"ts":"2026-08-17T12:53:53.291Z","agentId":"P-50","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-63","to":"P-31","type":"Non-Performing Note Workout"}}
+{"ts":"2026-08-17T12:53:53.291Z","agentId":"P-50","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-39"}}
+{"ts":"2026-08-17T12:53:53.291Z","agentId":"P-50","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-31"}}
+{"ts":"2026-08-17T12:53:53.291Z","agentId":"P-50","wave":4,"step":"WAVE_4","action":"COMPLETE","result":"SUCCESS","details":{"interactions":2,"invites":2}}
+{"ts":"2026-08-17T12:53:53.304Z","agentId":"P-50","wave":5,"step":"WAVE_5","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-17T12:53:53.304Z","agentId":"P-50","wave":5,"step":"WAVE_5","action":"COMPLETE","result":"SUCCESS","details":{"reportPath":"/Users/yvesdarbouze/Documents/PaperWorking/artifacts/persona-swarm/reports/P-50-experience-report.md"}}
+{"ts":"2026-08-17T12:53:53.354Z","agentId":"P-50","wave":5,"step":"WAVE_5","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-17T12:53:53.355Z","agentId":"P-50","wave":5,"step":"WAVE_5","action":"COMPLETE","result":"SUCCESS","details":{"reportPath":"/Users/yvesdarbouze/Documents/PaperWorking/artifacts/persona-swarm/reports/P-50-experience-report.md"}}
+{"ts":"2026-08-17T12:54:04.372Z","agentId":"P-50","wave":1,"step":"WAVE_1","action":"START","result":"SUCCESS","details":{"email":"agent50.douglas.harmon@paperworking-test.dev"}}
+{"ts":"2026-08-17T12:54:04.372Z","agentId":"P-50","wave":0,"step":"SIGNUP","action":"SUCCESS_CREATED","result":"SUCCESS","details":{"uid":"uid_persona_p50","email":"agent50.douglas.harmon@paperworking-test.dev","name":"Douglas Harmon","entity":"Harmon Note Exchange LLC"}}
+{"ts":"2026-08-17T12:54:04.372Z","agentId":"P-50","wave":1,"step":"WAVE_1","action":"COMPLETE","result":"SUCCESS","details":{"uid":"uid_persona_p50"}}
+{"ts":"2026-08-17T12:54:04.385Z","agentId":"P-50","wave":1,"step":"WAVE_1","action":"START","result":"SUCCESS","details":{"email":"agent50.douglas.harmon@paperworking-test.dev"}}
+{"ts":"2026-08-17T12:54:04.386Z","agentId":"P-50","wave":0,"step":"SIGNUP","action":"SUCCESS_CREATED","result":"SUCCESS","details":{"uid":"uid_persona_p50","email":"agent50.douglas.harmon@paperworking-test.dev","name":"Douglas Harmon","entity":"Harmon Note Exchange LLC"}}
+{"ts":"2026-08-17T12:54:04.386Z","agentId":"P-50","wave":1,"step":"WAVE_1","action":"COMPLETE","result":"SUCCESS","details":{"uid":"uid_persona_p50"}}
+{"ts":"2026-08-17T12:54:04.419Z","agentId":"P-50","wave":2,"step":"WAVE_2","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-17T12:54:04.419Z","agentId":"P-50","wave":0,"step":"BILLING","action":"SUBSCRIPTION_SUCCESS","result":"SUCCESS","details":{"plan":"Individual","stripeCustomerId":"cus_test_swarm_p-50","stripeSubscriptionId":"sub_test_swarm_p-50","cardLastFour":"4242","cardBrand":"visa"}}
+{"ts":"2026-08-17T12:54:04.419Z","agentId":"P-50","wave":2,"step":"WAVE_2","action":"COMPLETE","result":"SUCCESS","details":{"plan":"Individual"}}
+{"ts":"2026-08-17T12:54:04.424Z","agentId":"P-50","wave":2,"step":"WAVE_2","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-17T12:54:04.425Z","agentId":"P-50","wave":0,"step":"BILLING","action":"SUBSCRIPTION_SUCCESS","result":"SUCCESS","details":{"plan":"Individual","stripeCustomerId":"cus_test_swarm_p-50","stripeSubscriptionId":"sub_test_swarm_p-50","cardLastFour":"4242","cardBrand":"visa"}}
+{"ts":"2026-08-17T12:54:04.425Z","agentId":"P-50","wave":2,"step":"WAVE_2","action":"COMPLETE","result":"SUCCESS","details":{"plan":"Individual"}}
+{"ts":"2026-08-17T12:54:04.662Z","agentId":"P-50","wave":3,"step":"WAVE_3","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-17T12:54:04.663Z","agentId":"P-50","wave":3,"step":"WAVE_3","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-17T12:54:04.665Z","agentId":"P-50","wave":0,"step":"PROJECTS","action":"CREATION_SUCCESS","result":"SUCCESS","details":{"created":10,"plaid":false}}
+{"ts":"2026-08-17T12:54:04.665Z","agentId":"P-50","wave":3,"step":"WAVE_3","action":"COMPLETE","result":"SUCCESS","details":{"created":10}}
+{"ts":"2026-08-17T12:54:04.665Z","agentId":"P-50","wave":0,"step":"PROJECTS","action":"CREATION_SUCCESS","result":"SUCCESS","details":{"created":10,"plaid":false}}
+{"ts":"2026-08-17T12:54:04.665Z","agentId":"P-50","wave":3,"step":"WAVE_3","action":"COMPLETE","result":"SUCCESS","details":{"created":10}}
+{"ts":"2026-08-17T12:54:04.765Z","agentId":"P-50","wave":4,"step":"WAVE_4","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-17T12:54:04.766Z","agentId":"P-50","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-62","to":"P-39","type":"Note Portfolio Sale"}}
+{"ts":"2026-08-17T12:54:04.766Z","agentId":"P-50","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-63","to":"P-31","type":"Non-Performing Note Workout"}}
+{"ts":"2026-08-17T12:54:04.766Z","agentId":"P-50","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-39"}}
+{"ts":"2026-08-17T12:54:04.766Z","agentId":"P-50","wave":4,"step":"WAVE_4","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-17T12:54:04.767Z","agentId":"P-50","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-31"}}
+{"ts":"2026-08-17T12:54:04.767Z","agentId":"P-50","wave":4,"step":"WAVE_4","action":"COMPLETE","result":"SUCCESS","details":{"interactions":2,"invites":2}}
+{"ts":"2026-08-17T12:54:04.767Z","agentId":"P-50","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-62","to":"P-39","type":"Note Portfolio Sale"}}
+{"ts":"2026-08-17T12:54:04.767Z","agentId":"P-50","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-63","to":"P-31","type":"Non-Performing Note Workout"}}
+{"ts":"2026-08-17T12:54:04.768Z","agentId":"P-50","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-39"}}
+{"ts":"2026-08-17T12:54:04.768Z","agentId":"P-50","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-31"}}
+{"ts":"2026-08-17T12:54:04.769Z","agentId":"P-50","wave":4,"step":"WAVE_4","action":"COMPLETE","result":"SUCCESS","details":{"interactions":2,"invites":2}}
+{"ts":"2026-08-17T12:54:04.802Z","agentId":"P-50","wave":5,"step":"WAVE_5","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-17T12:54:04.803Z","agentId":"P-50","wave":5,"step":"WAVE_5","action":"COMPLETE","result":"SUCCESS","details":{"reportPath":"/Users/yvesdarbouze/Documents/PaperWorking/artifacts/persona-swarm/reports/P-50-experience-report.md"}}
+{"ts":"2026-08-17T12:54:04.807Z","agentId":"P-50","wave":5,"step":"WAVE_5","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-17T12:54:04.807Z","agentId":"P-50","wave":5,"step":"WAVE_5","action":"COMPLETE","result":"SUCCESS","details":{"reportPath":"/Users/yvesdarbouze/Documents/PaperWorking/artifacts/persona-swarm/reports/P-50-experience-report.md"}}
+{"ts":"2026-08-17T15:52:43.431Z","agentId":"P-50","wave":1,"step":"WAVE_1","action":"START","result":"SUCCESS","details":{"email":"agent50.douglas.harmon@paperworking-test.dev"}}
+{"ts":"2026-08-17T15:52:43.442Z","agentId":"P-50","wave":1,"step":"WAVE_1","action":"START","result":"SUCCESS","details":{"email":"agent50.douglas.harmon@paperworking-test.dev"}}
+{"ts":"2026-08-17T15:52:45.519Z","agentId":"P-50","wave":0,"step":"SIGNUP","action":"SUCCESS_CREATED","result":"SUCCESS","details":{"uid":"uid_persona_p50","email":"agent50.douglas.harmon@paperworking-test.dev","name":"Douglas Harmon","entity":"Harmon Note Exchange LLC"}}
+{"ts":"2026-08-17T15:52:45.519Z","agentId":"P-50","wave":0,"step":"SIGNUP","action":"SUCCESS_CREATED","result":"SUCCESS","details":{"uid":"uid_persona_p50","email":"agent50.douglas.harmon@paperworking-test.dev","name":"Douglas Harmon","entity":"Harmon Note Exchange LLC"}}
+{"ts":"2026-08-17T15:52:45.519Z","agentId":"P-50","wave":1,"step":"WAVE_1","action":"COMPLETE","result":"SUCCESS","details":{"uid":"uid_persona_p50"}}
+{"ts":"2026-08-17T15:52:45.520Z","agentId":"P-50","wave":1,"step":"WAVE_1","action":"COMPLETE","result":"SUCCESS","details":{"uid":"uid_persona_p50"}}
+{"ts":"2026-08-17T16:17:32.137Z","agentId":"P-50","wave":1,"step":"WAVE_1","action":"START","result":"SUCCESS","details":{"email":"agent50.douglas.harmon@paperworking-test.dev"}}
+{"ts":"2026-08-17T16:17:33.562Z","agentId":"P-50","wave":1,"step":"WAVE_1","action":"START","result":"SUCCESS","details":{"email":"agent50.douglas.harmon@paperworking-test.dev"}}
+{"ts":"2026-08-17T16:17:34.239Z","agentId":"P-50","wave":0,"step":"SIGNUP","action":"SUCCESS_CREATED","result":"SUCCESS","details":{"uid":"uid_persona_p50","email":"agent50.douglas.harmon@paperworking-test.dev","name":"Douglas Harmon","entity":"Harmon Note Exchange LLC"}}
+{"ts":"2026-08-17T16:17:34.239Z","agentId":"P-50","wave":1,"step":"WAVE_1","action":"COMPLETE","result":"SUCCESS","details":{"uid":"uid_persona_p50"}}
+{"ts":"2026-08-17T16:17:35.670Z","agentId":"P-50","wave":0,"step":"SIGNUP","action":"SUCCESS_CREATED","result":"SUCCESS","details":{"uid":"uid_persona_p50","email":"agent50.douglas.harmon@paperworking-test.dev","name":"Douglas Harmon","entity":"Harmon Note Exchange LLC"}}
+{"ts":"2026-08-17T16:17:35.671Z","agentId":"P-50","wave":1,"step":"WAVE_1","action":"COMPLETE","result":"SUCCESS","details":{"uid":"uid_persona_p50"}}
+{"ts":"2026-08-17T16:18:26.916Z","agentId":"P-50","wave":1,"step":"WAVE_1","action":"START","result":"SUCCESS","details":{"email":"agent50.douglas.harmon@paperworking-test.dev"}}
+{"ts":"2026-08-17T16:18:26.937Z","agentId":"P-50","wave":1,"step":"WAVE_1","action":"START","result":"SUCCESS","details":{"email":"agent50.douglas.harmon@paperworking-test.dev"}}
+{"ts":"2026-08-17T16:18:28.941Z","agentId":"P-50","wave":0,"step":"SIGNUP","action":"SUCCESS_CREATED","result":"SUCCESS","details":{"uid":"uid_persona_p50","email":"agent50.douglas.harmon@paperworking-test.dev","name":"Douglas Harmon","entity":"Harmon Note Exchange LLC"}}
+{"ts":"2026-08-17T16:18:28.941Z","agentId":"P-50","wave":1,"step":"WAVE_1","action":"COMPLETE","result":"SUCCESS","details":{"uid":"uid_persona_p50"}}
+{"ts":"2026-08-17T16:18:28.945Z","agentId":"P-50","wave":0,"step":"SIGNUP","action":"SUCCESS_CREATED","result":"SUCCESS","details":{"uid":"uid_persona_p50","email":"agent50.douglas.harmon@paperworking-test.dev","name":"Douglas Harmon","entity":"Harmon Note Exchange LLC"}}
+{"ts":"2026-08-17T16:18:28.946Z","agentId":"P-50","wave":1,"step":"WAVE_1","action":"COMPLETE","result":"SUCCESS","details":{"uid":"uid_persona_p50"}}
+{"ts":"2026-08-17T16:18:41.944Z","agentId":"P-50","wave":2,"step":"WAVE_2","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-17T16:18:41.944Z","agentId":"P-50","wave":2,"step":"WAVE_2","action":"EXCEPTION","result":"SUCCESS","details":{"error":"CRITICAL SAFETY REFUSAL: Invalid or missing Stripe secret test key. Key must start with \"sk_test_\". Received: \"...\""}}
+{"ts":"2026-08-17T16:18:41.981Z","agentId":"P-50","wave":2,"step":"WAVE_2","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-17T16:18:41.981Z","agentId":"P-50","wave":2,"step":"WAVE_2","action":"EXCEPTION","result":"SUCCESS","details":{"error":"CRITICAL SAFETY REFUSAL: Invalid or missing Stripe secret test key. Key must start with \"sk_test_\". Received: \"...\""}}
+{"ts":"2026-08-17T16:18:42.019Z","agentId":"P-50","wave":3,"step":"WAVE_3","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-17T16:18:42.019Z","agentId":"P-50","wave":0,"step":"PROJECTS","action":"CREATION_SUCCESS","result":"SUCCESS","details":{"created":10,"plaid":false}}
+{"ts":"2026-08-17T16:18:42.019Z","agentId":"P-50","wave":3,"step":"WAVE_3","action":"COMPLETE","result":"SUCCESS","details":{"created":10}}
+{"ts":"2026-08-17T19:42:52.009Z","agentId":"P-50","wave":1,"step":"WAVE_1","action":"START","result":"SUCCESS","details":{"email":"agent50.douglas.harmon@paperworking-test.dev"}}
+{"ts":"2026-08-17T19:42:53.412Z","agentId":"P-50","wave":1,"step":"WAVE_1","action":"START","result":"SUCCESS","details":{"email":"agent50.douglas.harmon@paperworking-test.dev"}}
+{"ts":"2026-08-17T19:42:54.017Z","agentId":"P-50","wave":0,"step":"SIGNUP","action":"SUCCESS_CREATED","result":"SUCCESS","details":{"uid":"uid_persona_p50","email":"agent50.douglas.harmon@paperworking-test.dev","name":"Douglas Harmon","entity":"Harmon Note Exchange LLC"}}
+{"ts":"2026-08-17T19:42:54.017Z","agentId":"P-50","wave":1,"step":"WAVE_1","action":"COMPLETE","result":"SUCCESS","details":{"uid":"uid_persona_p50"}}
+{"ts":"2026-08-17T19:42:55.458Z","agentId":"P-50","wave":0,"step":"SIGNUP","action":"SUCCESS_CREATED","result":"SUCCESS","details":{"uid":"uid_persona_p50","email":"agent50.douglas.harmon@paperworking-test.dev","name":"Douglas Harmon","entity":"Harmon Note Exchange LLC"}}
+{"ts":"2026-08-17T19:42:55.458Z","agentId":"P-50","wave":1,"step":"WAVE_1","action":"COMPLETE","result":"SUCCESS","details":{"uid":"uid_persona_p50"}}
+{"ts":"2026-08-17T19:43:07.930Z","agentId":"P-50","wave":2,"step":"WAVE_2","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-17T19:43:07.930Z","agentId":"P-50","wave":2,"step":"WAVE_2","action":"EXCEPTION","result":"SUCCESS","details":{"error":"CRITICAL SAFETY REFUSAL: Invalid or missing Stripe secret test key. Key must start with \"sk_test_\". Received: \"...\""}}
+{"ts":"2026-08-17T19:43:07.971Z","agentId":"P-50","wave":3,"step":"WAVE_3","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-17T19:43:07.972Z","agentId":"P-50","wave":0,"step":"PROJECTS","action":"CREATION_SUCCESS","result":"SUCCESS","details":{"created":10,"plaid":false}}
+{"ts":"2026-08-17T19:43:07.972Z","agentId":"P-50","wave":3,"step":"WAVE_3","action":"COMPLETE","result":"SUCCESS","details":{"created":10}}
+{"ts":"2026-08-17T19:43:08.002Z","agentId":"P-50","wave":4,"step":"WAVE_4","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-17T19:43:08.002Z","agentId":"P-50","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-62","to":"P-39","type":"Note Portfolio Sale"}}
+{"ts":"2026-08-17T19:43:08.002Z","agentId":"P-50","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-63","to":"P-31","type":"Non-Performing Note Workout"}}
+{"ts":"2026-08-17T19:43:08.003Z","agentId":"P-50","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-39"}}
+{"ts":"2026-08-17T19:43:08.003Z","agentId":"P-50","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-31"}}
+{"ts":"2026-08-17T19:43:08.003Z","agentId":"P-50","wave":4,"step":"WAVE_4","action":"COMPLETE","result":"SUCCESS","details":{"interactions":2,"invites":2}}
+{"ts":"2026-08-17T19:43:08.031Z","agentId":"P-50","wave":5,"step":"WAVE_5","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-17T19:43:08.032Z","agentId":"P-50","wave":5,"step":"WAVE_5","action":"COMPLETE","result":"SUCCESS","details":{"reportPath":"/Users/yvesdarbouze/Documents/PaperWorking/artifacts/persona-swarm/reports/P-50-experience-report.md"}}
+{"ts":"2026-08-17T19:43:08.085Z","agentId":"P-50","wave":2,"step":"WAVE_2","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-17T19:43:08.086Z","agentId":"P-50","wave":2,"step":"WAVE_2","action":"EXCEPTION","result":"SUCCESS","details":{"error":"CRITICAL SAFETY REFUSAL: Invalid or missing Stripe secret test key. Key must start with \"sk_test_\". Received: \"...\""}}
+{"ts":"2026-08-17T19:43:08.120Z","agentId":"P-50","wave":3,"step":"WAVE_3","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-17T19:43:08.120Z","agentId":"P-50","wave":0,"step":"PROJECTS","action":"CREATION_SUCCESS","result":"SUCCESS","details":{"created":10,"plaid":false}}
+{"ts":"2026-08-17T19:43:08.121Z","agentId":"P-50","wave":3,"step":"WAVE_3","action":"COMPLETE","result":"SUCCESS","details":{"created":10}}
+{"ts":"2026-08-17T19:43:08.148Z","agentId":"P-50","wave":4,"step":"WAVE_4","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-17T19:43:08.149Z","agentId":"P-50","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-62","to":"P-39","type":"Note Portfolio Sale"}}
+{"ts":"2026-08-17T19:43:08.149Z","agentId":"P-50","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-63","to":"P-31","type":"Non-Performing Note Workout"}}
+{"ts":"2026-08-17T19:43:08.149Z","agentId":"P-50","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-39"}}
+{"ts":"2026-08-17T19:43:08.149Z","agentId":"P-50","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-31"}}
+{"ts":"2026-08-17T19:43:08.149Z","agentId":"P-50","wave":4,"step":"WAVE_4","action":"COMPLETE","result":"SUCCESS","details":{"interactions":2,"invites":2}}
+{"ts":"2026-08-17T19:43:08.174Z","agentId":"P-50","wave":5,"step":"WAVE_5","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-17T19:43:08.174Z","agentId":"P-50","wave":5,"step":"WAVE_5","action":"COMPLETE","result":"SUCCESS","details":{"reportPath":"/Users/yvesdarbouze/Documents/PaperWorking/artifacts/persona-swarm/reports/P-50-experience-report.md"}}

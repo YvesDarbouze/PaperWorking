@@ -18,11 +18,28 @@ describe('AddressSearch Component & Collision Interception', () => {
   beforeEach(() => {
     jest.clearAllMocks();
 
-    // Default fetch mock returning no existing deal
-    global.fetch = jest.fn().mockResolvedValue({
-      ok: true,
-      json: async () => ({ exists: false, deal: null }),
-    } as any);
+    // Mock fetch handling autocomplete & deals collision
+    global.fetch = jest.fn().mockImplementation((url: string) => {
+      if (url.includes('/api/places/autocomplete')) {
+        return Promise.resolve({
+          ok: true,
+          json: async () => ({
+            predictions: [
+              {
+                placeId: 'place_123main',
+                description: '123 Main St, Austin, TX 78701',
+                mainText: '123 Main St',
+                secondaryText: 'Austin, TX 78701',
+              },
+            ],
+          }),
+        } as Response);
+      }
+      return Promise.resolve({
+        ok: true,
+        json: async () => ({ exists: false, deal: null }),
+      } as Response);
+    });
   });
 
   describe('AddressSearch component rendering', () => {
@@ -79,7 +96,7 @@ describe('AddressSearch Component & Collision Interception', () => {
             target: 200000,
           },
         }),
-      } as any);
+      } as unknown as Response);
 
       render(<AddressSearch />);
       const input = screen.getByTestId('deals-address-search-input');

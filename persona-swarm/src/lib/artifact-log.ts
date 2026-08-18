@@ -18,7 +18,7 @@ export interface SwarmEventLog {
   result: 'SUCCESS' | 'FAILED' | 'BLOCKED' | 'SKIPPED';
   screenshotPath?: string;
   error?: string;
-  details?: Record<string, any>;
+  details?: Record<string, unknown>;
 }
 
 export class AgentArtifactLogger {
@@ -69,8 +69,8 @@ export class AgentArtifactLogger {
 
     try {
       await page.screenshot({ path: absoluteShotPath, fullPage: true });
-    } catch (e: any) {
-      console.warn(`[${this.agentId}] Screenshot capture failed: ${e.message}`);
+    } catch (e: unknown) {
+      console.warn(`[${this.agentId}] Screenshot capture failed: ${(e as Error).message}`);
     }
 
     this.logEvent({
@@ -93,7 +93,7 @@ export function logSwarmEvent(
   agentId: string,
   category: string,
   action: string,
-  details?: Record<string, any>
+  details?: Record<string, unknown>
 ): void {
   const logger = new AgentArtifactLogger(agentId);
   logger.logEvent({

@@ -120,9 +120,9 @@ export async function initiateSensitiveActionVerification(params: {
       verificationId,
       expiresAt: expiresAt.toISOString(),
     };
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error('[initiateSensitiveActionVerification] Failed:', error);
-    return { success: false, error: error?.message || 'Initiation failed' };
+    return { success: false, error: (error as Error)?.message || 'Initiation failed' };
   }
 }
 
@@ -211,8 +211,8 @@ export async function confirmSensitiveActionVerification(params: {
       success: true,
       message: `Action ${actionType} successfully verified and executed.`,
     };
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error('[confirmSensitiveActionVerification] Failed:', error);
-    return { success: false, error: error?.message || 'Confirmation failed' };
+    return { success: false, error: (error as Error)?.message || 'Confirmation failed' };
   }
 }

@@ -15,8 +15,23 @@ describe('Persona Registry & Interaction Graph Integrity', () => {
   const categoriesPath = path.join(process.cwd(), 'persona-swarm', 'config', 'categories.json');
   const graphPath = path.join(process.cwd(), 'persona-swarm', 'config', 'interaction-graph.json');
 
-  let personas: any[];
-  let rosterFixture: any[];
+interface PersonaRecord {
+  id: string;
+  name: string;
+  email: string;
+  entity: string;
+  category?: string;
+  market: string;
+  investmentCriteria: {
+    strategy: string;
+    [key: string]: unknown;
+  };
+  projects?: unknown[];
+  [key: string]: unknown;
+}
+
+  let personas: PersonaRecord[];
+  let rosterFixture: PersonaRecord[];
   let categories: any[];
   let graph: { edges: any[]; inviteMatrix: Record<string, string[]> };
 
@@ -32,8 +47,8 @@ describe('Persona Registry & Interaction Graph Integrity', () => {
       expect(personas.length).toBe(rosterFixture.length);
 
       for (let i = 0; i < rosterFixture.length; i++) {
-        const fixtureAgent = rosterFixture[i];
-        const registryAgent = personas.find((p) => p.id === fixtureAgent.id);
+        const fixtureAgent = rosterFixture[i] as any;
+        const registryAgent = personas.find((p) => p.id === fixtureAgent.id) as any;
 
         expect(registryAgent).toBeDefined();
         expect(registryAgent.name).toBe(fixtureAgent.name);
@@ -42,7 +57,7 @@ describe('Persona Registry & Interaction Graph Integrity', () => {
         expect(registryAgent.market).toBe(fixtureAgent.market);
         
         // Email pattern check
-        const expectedEmail = `agent${fixtureAgent.id.replace('P-', '')}.${fixtureAgent.name.toLowerCase().replace(/[^a-z0-9]+/g, '.').replace(/^\.+|\.+$/g, '')}@paperworking-test.dev`;
+        const _expectedEmail = `agent${fixtureAgent.id.replace('P-', '')}.${fixtureAgent.name.toLowerCase().replace(/[^a-z0-9]+/g, '.').replace(/^\.+|\.+$/g, '')}@paperworking-test.dev`;
         // Ensure email starts with agentNN and matches domain
         expect(registryAgent.email).toMatch(new RegExp(`^agent${fixtureAgent.id.replace('P-', '')}\\.`));
         expect(registryAgent.email).toMatch(/@paperworking-test\.dev$/);
@@ -95,7 +110,7 @@ describe('Persona Registry & Interaction Graph Integrity', () => {
       }
 
       // 2. Max 2 agents sharing ANY surname across the entire roster
-      for (const [surname, count] of Object.entries(surnameCounts)) {
+      for (const [_surname, count] of Object.entries(surnameCounts)) {
         expect(count).toBeLessThanOrEqual(2);
       }
     });
@@ -125,8 +140,8 @@ describe('Persona Registry & Interaction Graph Integrity', () => {
       let totalProjects = 0;
       for (const p of personas) {
         expect(p.projects).toBeDefined();
-        expect(p.projects.length).toBe(10);
-        totalProjects += p.projects.length;
+        expect(p.projects?.length).toBe(10);
+        totalProjects += p.projects?.length || 0;
       }
       expect(totalProjects).toBe(500);
     });

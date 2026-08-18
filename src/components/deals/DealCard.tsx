@@ -2,6 +2,7 @@
 
 import React, { useState } from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { MapPin, Bookmark, Share2, Eye, TrendingUp, Building2, Maximize2 } from 'lucide-react';
 import { calculateFundingProgress, formatCurrencyAmount } from '@/lib/deals/fundingUtils';
 import ExpandedModal from '@/components/deals/ExpandedModal';
@@ -117,10 +118,11 @@ export default function DealCard({
         {/* ── Image Area ── */}
         <div className="relative h-44 w-full bg-gradient-to-br from-slate-900 via-[#0a0a0f] to-slate-950 overflow-hidden flex items-center justify-center border-b border-white/[0.04]">
           {deal.imageUrl ? (
-            <img
+            <Image
               src={deal.imageUrl}
               alt={displayTitle}
-              className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+              fill
+              className="object-cover group-hover:scale-105 transition-transform duration-500"
             />
           ) : (
             <div className="flex flex-col items-center justify-center space-y-2 opacity-30 group-hover:opacity-40 transition-opacity">

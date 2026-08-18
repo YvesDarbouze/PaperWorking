@@ -37,7 +37,7 @@ const DEFAULT_MESSAGES: ThreadMessage[] = [
 ];
 
 export default function UnifiedMessageThread({
-  dealId,
+  dealId: _dealId,
   initialMessages = DEFAULT_MESSAGES,
   className = '',
 }: UnifiedMessageThreadProps) {

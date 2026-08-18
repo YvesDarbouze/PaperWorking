@@ -1,18 +1,12 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { useParams, useRouter, useSearchParams } from 'next/navigation';
 import { useAuth } from '@/context/AuthContext';
 import {
   MapPin,
-  TrendingUp,
-  DollarSign,
   Users,
-  MessageSquare,
   Share2,
-  Lock,
-  Sparkles,
-  BarChart3,
   Mail,
   Building2,
   Maximize2,
@@ -65,13 +59,13 @@ const MOCK_SHARED_CARDS: BusinessCard[] = [
 
 export default function DealDetailPage() {
   const params = useParams();
-  const router = useRouter();
+  const _router = useRouter();
   const searchParams = useSearchParams();
   const { user } = useAuth();
 
   const slug = (params?.slug as string) || '123mainstaustintx78701';
 
-  const [deal, setDeal] = useState({
+  const [deal, _setDeal] = useState({
     id: 'deal_123mainst',
     slug,
     address: '123 Main St, Austin, TX 78701',
@@ -98,13 +92,7 @@ export default function DealDetailPage() {
   const [isInviteModalOpen, setIsInviteModalOpen] = useState(false);
   const [isBroadcastModalOpen, setIsBroadcastModalOpen] = useState(false);
   const [isShareModalOpen, setIsShareModalOpen] = useState(false);
-  const [isExpandedModalOpen, setIsExpandedModalOpen] = useState(false);
-
-  useEffect(() => {
-    if (searchParams?.get('expanded') === 'true') {
-      setIsExpandedModalOpen(true);
-    }
-  }, [searchParams]);
+  const [isExpandedModalOpen, setIsExpandedModalOpen] = useState(() => searchParams?.get('expanded') === 'true');
 
   const isSubscribed = user?.subscriptionStatus === 'active';
   const funding = calculateFundingProgress(deal.fundingTarget, deal.committedAmount);

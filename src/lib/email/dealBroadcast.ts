@@ -22,9 +22,9 @@ export function generateDealBroadcastToken(payload: DealBroadcastPayload): strin
 
 export function verifyDealBroadcastToken(token: string): DealBroadcastPayload | null {
   try {
-    const decoded = jwt.verify(token, JWT_SECRET) as any;
+    const decoded = jwt.verify(token, JWT_SECRET) as unknown as Record<string, unknown>;
     if (decoded && decoded.type === 'broadcast') {
-      return decoded as DealBroadcastPayload;
+      return decoded as unknown as DealBroadcastPayload;
     }
     return null;
   } catch {
@@ -37,7 +37,7 @@ export function renderDealBroadcastEmailHtml(
   tokenArg?: string
 ): string {
   const payload = payloadOrOptions;
-  const token = tokenArg || (payloadOrOptions as any).token || '';
+  const token = tokenArg || ('token' in payloadOrOptions ? (payloadOrOptions as { token: string }).token : '') || '';
   const inviteUrl = `https://paperworking.co/deals/${payload.slug}/external?token=${token}&broadcast=true`;
 
   return `

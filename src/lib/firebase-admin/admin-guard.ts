@@ -20,13 +20,13 @@ export async function requireAdminAuth(req: NextRequest): Promise<AdminAuthConte
 
   // Check role in token claims first
   const tokenRole = (token.role || token.orgRole || '').toString().toUpperCase();
-  if (tokenRole === 'ADMIN' || tokenRole === 'SUPERUSER' || token.admin === true) {
+  if (tokenRole === 'ADMIN' || tokenRole === 'SUPERUSER' || tokenRole === 'LEAD INVESTOR' || token.admin === true) {
     return { uid, token, role: tokenRole || 'ADMIN', isAdmin: true };
   }
 
   // Check role in header override or mock environment for testing/admin impersonation
   const headerRole = req.headers.get('x-user-role')?.toUpperCase();
-  if (headerRole === 'ADMIN' || headerRole === 'SUPERUSER') {
+  if (headerRole === 'ADMIN' || headerRole === 'SUPERUSER' || headerRole === 'LEAD INVESTOR') {
     return { uid, token, role: headerRole, isAdmin: true };
   }
 
@@ -36,7 +36,7 @@ export async function requireAdminAuth(req: NextRequest): Promise<AdminAuthConte
     if (userSnap.exists) {
       const data = userSnap.data()!;
       const userRole = (data.role || data.orgRole || '').toString().toUpperCase();
-      if (userRole === 'ADMIN' || userRole === 'SUPERUSER' || data.isAdmin === true) {
+      if (userRole === 'ADMIN' || userRole === 'SUPERUSER' || userRole === 'LEAD INVESTOR' || data.isAdmin === true) {
         return { uid, token, role: userRole || 'ADMIN', isAdmin: true };
       }
     }
@@ -48,16 +48,16 @@ export async function requireAdminAuth(req: NextRequest): Promise<AdminAuthConte
   try {
     const dbUser = (await prisma.user.findUnique({ where: { id: uid } })) as any;
     if (dbUser) {
-      const userRole = (dbUser.role || '').toString().toUpperCase();
-      if (userRole === 'ADMIN' || userRole === 'SUPERUSER') {
+      const userRole = (dbUser.role || dbUser.orgRole || '').toString().toUpperCase();
+      if (userRole === 'ADMIN' || userRole === 'SUPERUSER' || userRole === 'LEAD INVESTOR') {
         return { uid, token, role: userRole, isAdmin: true };
       }
     }
 
     const appUser = (await prisma.appUser.findUnique({ where: { id: uid } })) as any;
     if (appUser) {
-      const appRole = (appUser.role || '').toString().toUpperCase();
-      if (appRole === 'ADMIN' || appRole === 'SUPERUSER') {
+      const appRole = (appUser.role || appUser.orgRole || '').toString().toUpperCase();
+      if (appRole === 'ADMIN' || appRole === 'SUPERUSER' || appRole === 'LEAD INVESTOR') {
         return { uid, token, role: appRole, isAdmin: true };
       }
     }

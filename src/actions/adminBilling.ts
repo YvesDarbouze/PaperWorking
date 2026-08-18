@@ -74,7 +74,7 @@ export async function getDunningQueue(): Promise<DunningEntry[]> {
               amountDue = (inv.amount_due || 0) / 100;
               attemptCount = inv.attempt_count || 1;
               if (inv.created) lastFailedAt = new Date(inv.created * 1000).toISOString();
-              if ((inv as any).subscription) subscriptionId = String((inv as any).subscription);
+              if ((inv as unknown as Record<string, unknown>).subscription) subscriptionId = String((inv as unknown as Record<string, unknown>).subscription);
             }
           } catch {
             // Stripe API query fallback
@@ -145,9 +145,9 @@ export async function retryFailedInvoice(invoiceId: string): Promise<{ success: 
     });
 
     return { success: isPaid };
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error('[retryFailedInvoice] Error:', error);
-    return { success: false, error: error?.message || 'Invoice payment retry failed.' };
+    return { success: false, error: (error as Error)?.message || 'Invoice payment retry failed.' };
   }
 }
 
@@ -199,8 +199,8 @@ export async function cancelUserSubscriptionAdmin(params: {
     });
 
     return { success: true };
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error('[cancelUserSubscriptionAdmin] Error:', error);
-    return { success: false, error: error?.message || 'Cancellation failed.' };
+    return { success: false, error: (error as Error)?.message || 'Cancellation failed.' };
   }
 }

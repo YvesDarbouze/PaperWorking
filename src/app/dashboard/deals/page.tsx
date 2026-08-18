@@ -16,6 +16,7 @@ import ViewToggle, { ViewMode } from '@/components/deals/ViewToggle';
 import SortControl, { SortOption } from '@/components/deals/SortControl';
 import DealCard from '@/components/deals/DealCard';
 import EmptyState from '@/components/deals/EmptyState';
+import { matchesDealStatus } from '@/lib/deals/statuses';
 
 const DealMap = dynamic(() => import('@/components/marketplace/DealMap'), { ssr: false });
 
@@ -32,75 +33,6 @@ function SkeletonCard() {
     </div>
   );
 }
-
-const DEFAULT_SAMPLE_DEALS = [
-  {
-    id: 'deal_123mainst',
-    slug: '123mainstaustintx78701',
-    address: '123 Main St, Austin, TX 78701',
-    propertyName: 'Austin Core Multifamily Project',
-    city: 'Austin',
-    state: 'TX',
-    zipCode: '78701',
-    assetClass: 'Multi-family',
-    subStrategy: 'FLIP',
-    status: 'published',
-    purchasePrice: 350000,
-    rehabCost: 50000,
-    arv: 480000,
-    holdingCosts: 12000,
-    projectedRoi: 18.5,
-    fundingTarget: 200000,
-    committedAmount: 130000,
-    investorCount: 5,
-    bookmarkCount: 18,
-    viewCount: 245,
-  },
-  {
-    id: 'deal_456congress',
-    slug: '456congressaveaustintx78701',
-    address: '456 Congress Ave, Austin, TX 78701',
-    propertyName: 'Congress Ave Commercial Mixed-Use',
-    city: 'Austin',
-    state: 'TX',
-    zipCode: '78701',
-    assetClass: 'Commercial',
-    subStrategy: 'BRRRR',
-    status: 'published',
-    purchasePrice: 1250000,
-    rehabCost: 150000,
-    arv: 1750000,
-    holdingCosts: 35000,
-    projectedRoi: 22.4,
-    fundingTarget: 500000,
-    committedAmount: 420000,
-    investorCount: 12,
-    bookmarkCount: 42,
-    viewCount: 580,
-  },
-  {
-    id: 'deal_789oak',
-    slug: '789oaklandrddallastx75201',
-    address: '789 Oakland Rd, Dallas, TX 75201',
-    propertyName: 'Dallas Residential Value-Add Flip',
-    city: 'Dallas',
-    state: 'TX',
-    zipCode: '75201',
-    assetClass: 'Residential',
-    subStrategy: 'FLIP',
-    status: 'published',
-    purchasePrice: 280000,
-    rehabCost: 45000,
-    arv: 395000,
-    holdingCosts: 9500,
-    projectedRoi: 20.1,
-    fundingTarget: 150000,
-    committedAmount: 150000,
-    investorCount: 4,
-    bookmarkCount: 9,
-    viewCount: 190,
-  },
-];
 
 export default function DealsMarketplacePage() {
   const { user } = useAuth();
@@ -123,7 +55,7 @@ export default function DealsMarketplacePage() {
     priceRange: 'All',
   });
 
-  const [deals, setDeals] = useState<any[]>(DEFAULT_SAMPLE_DEALS);
+  const [deals, setDeals] = useState<any[]>([]);
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
@@ -141,7 +73,7 @@ export default function DealsMarketplacePage() {
         const res = await fetch(`/api/deals?${queryParams.toString()}`);
         if (res.ok) {
           const data = await res.json();
-          if (data.deals && data.deals.length > 0) {
+          if (data.deals && Array.isArray(data.deals)) {
             setDeals(data.deals);
           }
         }
@@ -174,7 +106,7 @@ export default function DealsMarketplacePage() {
     if (filters.strategy !== 'All' && deal.subStrategy?.toLowerCase() !== filters.strategy.toLowerCase()) {
       return false;
     }
-    if (filters.status !== 'All' && deal.status?.toLowerCase() !== filters.status.toLowerCase()) {
+    if (filters.status !== 'All' && !matchesDealStatus(deal.status, filters.status)) {
       return false;
     }
     return true;

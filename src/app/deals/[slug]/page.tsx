@@ -3,7 +3,6 @@
 import React, { useState } from 'react';
 import { useParams, useRouter, useSearchParams } from 'next/navigation';
 import {
-  Building2,
   DollarSign,
   BarChart3,
   Image as ImageIcon,
@@ -53,7 +52,7 @@ export default function DealSlugPage() {
   const [arv, setArv] = useState<number>(480000);
   const [holdingCosts, setHoldingCosts] = useState<number>(12000);
   const [description, setDescription] = useState('');
-  const [imageUrl, setImageUrl] = useState('');
+  const [_imageUrl, _setImageUrl] = useState('');
   const [publishMarketplace, setPublishMarketplace] = useState(true);
   const [organizeCrowdfund, setOrganizeCrowdfund] = useState(true);
   const [isSavedDraft, setIsSavedDraft] = useState(false);

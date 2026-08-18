@@ -8,6 +8,145 @@ import fs from 'fs';
 import { adminDb } from '../lib/firebase/admin';
 import { prisma } from '../lib/prisma';
 
+const mockFixturePath = path.resolve(process.cwd(), 'src/test/fixtures/agent-crew-seed.json');
+const mockFixture = fs.existsSync(mockFixturePath)
+  ? JSON.parse(fs.readFileSync(mockFixturePath, 'utf-8'))
+  : { agents: [] };
+const mockAgents = mockFixture.agents || [];
+const mockProjects = mockAgents.flatMap(
+  (a: { handle: string; projects?: Array<Record<string, unknown>> }) =>
+    (a.projects || []).map((p) => ({ ...p, syntheticAgent: true, listedByAgent: a.handle }))
+);
+
+jest.mock('../lib/prisma', () => ({
+  prisma: {
+    user: {
+      findUnique: jest.fn().mockImplementation(({ where }: { where: { email?: string; id?: string } }) => {
+        const agent = mockAgents.find(
+          (a: { email: string; uid: string; id?: string }) =>
+            (where.email && a.email === where.email) ||
+            (where.id && (a.uid === where.id || a.id === where.id))
+        );
+        if (!agent) return Promise.resolve(null);
+        return Promise.resolve({
+          id: agent.uid,
+          email: agent.email,
+          name: agent.name,
+          syntheticAgent: true,
+          agentPersona: agent.persona,
+        });
+      }),
+      findMany: jest.fn().mockImplementation(({ where }: { where?: { syntheticAgent?: boolean } }) => {
+        if (where?.syntheticAgent) {
+          return Promise.resolve(
+            mockAgents.map((a: { uid: string; email: string; name: string; persona: string }) => ({
+              id: a.uid,
+              email: a.email,
+              name: a.name,
+              syntheticAgent: true,
+              agentPersona: a.persona,
+            }))
+          );
+        }
+        return Promise.resolve([]);
+      }),
+    },
+    appUser: {
+      findUnique: jest.fn().mockImplementation(({ where }: { where: { email?: string; id?: string } }) => {
+        const agent = mockAgents.find(
+          (a: { email: string; uid: string; id?: string }) =>
+            (where.email && a.email === where.email) ||
+            (where.id && (a.uid === where.id || a.id === where.id))
+        );
+        if (!agent) return Promise.resolve(null);
+        return Promise.resolve({
+          id: agent.uid,
+          email: agent.email,
+          displayName: agent.name,
+          syntheticAgent: true,
+        });
+      }),
+    },
+    reilProject: {
+      findMany: jest.fn().mockImplementation(
+        ({ where }: { where?: { listedByAgent?: string; syntheticAgent?: boolean } }) => {
+          let res = mockProjects;
+          if (where?.listedByAgent) {
+            res = res.filter((p: { listedByAgent?: string }) => p.listedByAgent === where.listedByAgent);
+          }
+          if (where?.syntheticAgent) {
+            res = res.filter((p: { syntheticAgent?: boolean }) => p.syntheticAgent === true);
+          }
+          return Promise.resolve(res);
+        }
+      ),
+    },
+    $disconnect: jest.fn().mockResolvedValue(undefined),
+  },
+}));
+
+jest.mock('../lib/firebase/admin', () => ({
+  adminDb: {
+    collection: jest.fn().mockImplementation((collectionName: string) => {
+      if (collectionName === 'users') {
+        return {
+          where: jest.fn().mockImplementation((field: string, _op: string, val: unknown) => ({
+            get: jest.fn().mockImplementation(() => {
+              const filtered = mockAgents.filter((a: { email?: string; syntheticAgent?: boolean }) => {
+                if (field === 'email') return a.email === val;
+                if (field === 'syntheticAgent') return a.syntheticAgent === val;
+                return true;
+              });
+              return Promise.resolve({
+                empty: filtered.length === 0,
+                docs: filtered.map((a: { uid: string; email: string; name: string; persona: string; stripeCustomerId?: string; stripeSubscriptionId?: string }) => ({
+                  id: a.uid,
+                  data: () => ({
+                    uid: a.uid,
+                    email: a.email,
+                    displayName: a.name,
+                    syntheticAgent: true,
+                    agentPersona: a.persona,
+                    stripeCustomerId: a.stripeCustomerId,
+                    stripeSubscriptionId: a.stripeSubscriptionId,
+                  }),
+                })),
+              });
+            }),
+          })),
+        };
+      }
+      if (collectionName === 'projects') {
+        return {
+          where: jest.fn().mockImplementation((field: string, _op: string, val: unknown) => ({
+            get: jest.fn().mockImplementation(() => {
+              const filtered = mockProjects.filter((p: { listedByAgent?: string; syntheticAgent?: boolean }) => {
+                if (field === 'listedByAgent') return p.listedByAgent === val;
+                if (field === 'syntheticAgent') return p.syntheticAgent === val;
+                return true;
+              });
+              return Promise.resolve({
+                empty: filtered.length === 0,
+                docs: filtered.map((p: Record<string, unknown>) => ({
+                  id: p.id as string,
+                  data: () => ({
+                    ...p,
+                    syntheticAgent: true,
+                    listedByAgent: p.listedByAgent,
+                  }),
+                })),
+              });
+            }),
+          })),
+        };
+      }
+      return {
+        where: jest.fn().mockReturnValue({ get: jest.fn().mockResolvedValue({ empty: true, docs: [] }) }),
+      };
+    }),
+  },
+}));
+
 describe('Synthetic Agent Crew Seeder Tests', () => {
   const fixturePath = path.resolve(process.cwd(), 'src/test/fixtures/agent-crew-seed.json');
 

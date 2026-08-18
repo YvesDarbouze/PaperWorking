@@ -713,3 +713,222 @@
 {"ts":"2026-08-14T19:22:05.559Z","agentId":"P-40","wave":4,"step":"WAVE_4","action":"COMPLETE","result":"SUCCESS","details":{"interactions":1,"invites":2}}
 {"ts":"2026-08-14T19:22:05.705Z","agentId":"P-40","wave":5,"step":"WAVE_5","action":"START","result":"SUCCESS"}
 {"ts":"2026-08-14T19:22:05.705Z","agentId":"P-40","wave":5,"step":"WAVE_5","action":"COMPLETE","result":"SUCCESS","details":{"reportPath":"/Users/yvesdarbouze/Documents/PaperWorking/artifacts/persona-swarm/reports/P-40-experience-report.md"}}
+{"ts":"2026-08-17T12:48:20.652Z","agentId":"P-40","wave":1,"step":"WAVE_1","action":"START","result":"SUCCESS","details":{"email":"agent40.victoria.huang@paperworking-test.dev"}}
+{"ts":"2026-08-17T12:48:20.652Z","agentId":"P-40","wave":0,"step":"SIGNUP","action":"SUCCESS_CREATED","result":"SUCCESS","details":{"uid":"uid_persona_p40","email":"agent40.victoria.huang@paperworking-test.dev","name":"Victoria Huang","entity":"Huang Pacific Realty Capital LLC"}}
+{"ts":"2026-08-17T12:48:20.652Z","agentId":"P-40","wave":1,"step":"WAVE_1","action":"COMPLETE","result":"SUCCESS","details":{"uid":"uid_persona_p40"}}
+{"ts":"2026-08-17T12:48:20.655Z","agentId":"P-40","wave":1,"step":"WAVE_1","action":"START","result":"SUCCESS","details":{"email":"agent40.victoria.huang@paperworking-test.dev"}}
+{"ts":"2026-08-17T12:48:20.655Z","agentId":"P-40","wave":0,"step":"SIGNUP","action":"SUCCESS_CREATED","result":"SUCCESS","details":{"uid":"uid_persona_p40","email":"agent40.victoria.huang@paperworking-test.dev","name":"Victoria Huang","entity":"Huang Pacific Realty Capital LLC"}}
+{"ts":"2026-08-17T12:48:20.655Z","agentId":"P-40","wave":1,"step":"WAVE_1","action":"COMPLETE","result":"SUCCESS","details":{"uid":"uid_persona_p40"}}
+{"ts":"2026-08-17T12:48:20.698Z","agentId":"P-40","wave":2,"step":"WAVE_2","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-17T12:48:20.699Z","agentId":"P-40","wave":0,"step":"BILLING","action":"SUBSCRIPTION_SUCCESS","result":"SUCCESS","details":{"plan":"Individual","stripeCustomerId":"cus_test_swarm_p-40","stripeSubscriptionId":"sub_test_swarm_p-40","cardLastFour":"4242","cardBrand":"visa"}}
+{"ts":"2026-08-17T12:48:20.699Z","agentId":"P-40","wave":2,"step":"WAVE_2","action":"COMPLETE","result":"SUCCESS","details":{"plan":"Individual"}}
+{"ts":"2026-08-17T12:48:20.702Z","agentId":"P-40","wave":2,"step":"WAVE_2","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-17T12:48:20.702Z","agentId":"P-40","wave":0,"step":"BILLING","action":"SUBSCRIPTION_SUCCESS","result":"SUCCESS","details":{"plan":"Individual","stripeCustomerId":"cus_test_swarm_p-40","stripeSubscriptionId":"sub_test_swarm_p-40","cardLastFour":"4242","cardBrand":"visa"}}
+{"ts":"2026-08-17T12:48:20.702Z","agentId":"P-40","wave":2,"step":"WAVE_2","action":"COMPLETE","result":"SUCCESS","details":{"plan":"Individual"}}
+{"ts":"2026-08-17T12:48:20.842Z","agentId":"P-40","wave":3,"step":"WAVE_3","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-17T12:48:20.844Z","agentId":"P-40","wave":3,"step":"WAVE_3","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-17T12:48:20.845Z","agentId":"P-40","wave":0,"step":"PROJECTS","action":"CREATION_SUCCESS","result":"SUCCESS","details":{"created":10,"plaid":false}}
+{"ts":"2026-08-17T12:48:20.845Z","agentId":"P-40","wave":3,"step":"WAVE_3","action":"COMPLETE","result":"SUCCESS","details":{"created":10}}
+{"ts":"2026-08-17T12:48:20.853Z","agentId":"P-40","wave":0,"step":"PROJECTS","action":"CREATION_SUCCESS","result":"SUCCESS","details":{"created":10,"plaid":false}}
+{"ts":"2026-08-17T12:48:20.854Z","agentId":"P-40","wave":3,"step":"WAVE_3","action":"COMPLETE","result":"SUCCESS","details":{"created":10}}
+{"ts":"2026-08-17T12:48:20.951Z","agentId":"P-40","wave":4,"step":"WAVE_4","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-17T12:48:20.951Z","agentId":"P-40","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-50","to":"P-33","type":"PE Co-Invest"}}
+{"ts":"2026-08-17T12:48:20.951Z","agentId":"P-40","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-43"}}
+{"ts":"2026-08-17T12:48:20.952Z","agentId":"P-40","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-41"}}
+{"ts":"2026-08-17T12:48:20.952Z","agentId":"P-40","wave":4,"step":"WAVE_4","action":"COMPLETE","result":"SUCCESS","details":{"interactions":1,"invites":2}}
+{"ts":"2026-08-17T12:48:20.957Z","agentId":"P-40","wave":4,"step":"WAVE_4","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-17T12:48:20.958Z","agentId":"P-40","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-50","to":"P-33","type":"PE Co-Invest"}}
+{"ts":"2026-08-17T12:48:20.958Z","agentId":"P-40","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-43"}}
+{"ts":"2026-08-17T12:48:20.958Z","agentId":"P-40","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-41"}}
+{"ts":"2026-08-17T12:48:20.958Z","agentId":"P-40","wave":4,"step":"WAVE_4","action":"COMPLETE","result":"SUCCESS","details":{"interactions":1,"invites":2}}
+{"ts":"2026-08-17T12:48:21.024Z","agentId":"P-40","wave":5,"step":"WAVE_5","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-17T12:48:21.024Z","agentId":"P-40","wave":5,"step":"WAVE_5","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-17T12:48:21.024Z","agentId":"P-40","wave":5,"step":"WAVE_5","action":"COMPLETE","result":"SUCCESS","details":{"reportPath":"/Users/yvesdarbouze/Documents/PaperWorking/artifacts/persona-swarm/reports/P-40-experience-report.md"}}
+{"ts":"2026-08-17T12:48:21.024Z","agentId":"P-40","wave":5,"step":"WAVE_5","action":"COMPLETE","result":"SUCCESS","details":{"reportPath":"/Users/yvesdarbouze/Documents/PaperWorking/artifacts/persona-swarm/reports/P-40-experience-report.md"}}
+{"ts":"2026-08-17T12:49:28.784Z","agentId":"P-40","wave":1,"step":"WAVE_1","action":"START","result":"SUCCESS","details":{"email":"agent40.victoria.huang@paperworking-test.dev"}}
+{"ts":"2026-08-17T12:49:28.786Z","agentId":"P-40","wave":0,"step":"SIGNUP","action":"SUCCESS_CREATED","result":"SUCCESS","details":{"uid":"uid_persona_p40","email":"agent40.victoria.huang@paperworking-test.dev","name":"Victoria Huang","entity":"Huang Pacific Realty Capital LLC"}}
+{"ts":"2026-08-17T12:49:28.786Z","agentId":"P-40","wave":1,"step":"WAVE_1","action":"COMPLETE","result":"SUCCESS","details":{"uid":"uid_persona_p40"}}
+{"ts":"2026-08-17T12:49:28.843Z","agentId":"P-40","wave":2,"step":"WAVE_2","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-17T12:49:28.843Z","agentId":"P-40","wave":0,"step":"BILLING","action":"SUBSCRIPTION_SUCCESS","result":"SUCCESS","details":{"plan":"Individual","stripeCustomerId":"cus_test_swarm_p-40","stripeSubscriptionId":"sub_test_swarm_p-40","cardLastFour":"4242","cardBrand":"visa"}}
+{"ts":"2026-08-17T12:49:28.843Z","agentId":"P-40","wave":2,"step":"WAVE_2","action":"COMPLETE","result":"SUCCESS","details":{"plan":"Individual"}}
+{"ts":"2026-08-17T12:49:29.001Z","agentId":"P-40","wave":3,"step":"WAVE_3","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-17T12:49:29.003Z","agentId":"P-40","wave":0,"step":"PROJECTS","action":"CREATION_SUCCESS","result":"SUCCESS","details":{"created":10,"plaid":false}}
+{"ts":"2026-08-17T12:49:29.003Z","agentId":"P-40","wave":3,"step":"WAVE_3","action":"COMPLETE","result":"SUCCESS","details":{"created":10}}
+{"ts":"2026-08-17T12:49:29.150Z","agentId":"P-40","wave":4,"step":"WAVE_4","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-17T12:49:29.151Z","agentId":"P-40","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-50","to":"P-33","type":"PE Co-Invest"}}
+{"ts":"2026-08-17T12:49:29.153Z","agentId":"P-40","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-43"}}
+{"ts":"2026-08-17T12:49:29.153Z","agentId":"P-40","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-41"}}
+{"ts":"2026-08-17T12:49:29.154Z","agentId":"P-40","wave":4,"step":"WAVE_4","action":"COMPLETE","result":"SUCCESS","details":{"interactions":1,"invites":2}}
+{"ts":"2026-08-17T12:49:29.277Z","agentId":"P-40","wave":5,"step":"WAVE_5","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-17T12:49:29.280Z","agentId":"P-40","wave":5,"step":"WAVE_5","action":"COMPLETE","result":"SUCCESS","details":{"reportPath":"/Users/yvesdarbouze/Documents/PaperWorking/artifacts/persona-swarm/reports/P-40-experience-report.md"}}
+{"ts":"2026-08-17T12:49:29.285Z","agentId":"P-40","wave":1,"step":"WAVE_1","action":"START","result":"SUCCESS","details":{"email":"agent40.victoria.huang@paperworking-test.dev"}}
+{"ts":"2026-08-17T12:49:29.286Z","agentId":"P-40","wave":0,"step":"SIGNUP","action":"SUCCESS_CREATED","result":"SUCCESS","details":{"uid":"uid_persona_p40","email":"agent40.victoria.huang@paperworking-test.dev","name":"Victoria Huang","entity":"Huang Pacific Realty Capital LLC"}}
+{"ts":"2026-08-17T12:49:29.286Z","agentId":"P-40","wave":1,"step":"WAVE_1","action":"COMPLETE","result":"SUCCESS","details":{"uid":"uid_persona_p40"}}
+{"ts":"2026-08-17T12:49:29.350Z","agentId":"P-40","wave":2,"step":"WAVE_2","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-17T12:49:29.350Z","agentId":"P-40","wave":0,"step":"BILLING","action":"SUBSCRIPTION_SUCCESS","result":"SUCCESS","details":{"plan":"Individual","stripeCustomerId":"cus_test_swarm_p-40","stripeSubscriptionId":"sub_test_swarm_p-40","cardLastFour":"4242","cardBrand":"visa"}}
+{"ts":"2026-08-17T12:49:29.351Z","agentId":"P-40","wave":2,"step":"WAVE_2","action":"COMPLETE","result":"SUCCESS","details":{"plan":"Individual"}}
+{"ts":"2026-08-17T12:49:29.536Z","agentId":"P-40","wave":3,"step":"WAVE_3","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-17T12:49:29.539Z","agentId":"P-40","wave":0,"step":"PROJECTS","action":"CREATION_SUCCESS","result":"SUCCESS","details":{"created":10,"plaid":false}}
+{"ts":"2026-08-17T12:49:29.540Z","agentId":"P-40","wave":3,"step":"WAVE_3","action":"COMPLETE","result":"SUCCESS","details":{"created":10}}
+{"ts":"2026-08-17T12:49:29.659Z","agentId":"P-40","wave":4,"step":"WAVE_4","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-17T12:49:29.660Z","agentId":"P-40","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-50","to":"P-33","type":"PE Co-Invest"}}
+{"ts":"2026-08-17T12:49:29.660Z","agentId":"P-40","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-43"}}
+{"ts":"2026-08-17T12:49:29.660Z","agentId":"P-40","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-41"}}
+{"ts":"2026-08-17T12:49:29.660Z","agentId":"P-40","wave":4,"step":"WAVE_4","action":"COMPLETE","result":"SUCCESS","details":{"interactions":1,"invites":2}}
+{"ts":"2026-08-17T12:49:29.700Z","agentId":"P-40","wave":5,"step":"WAVE_5","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-17T12:49:29.700Z","agentId":"P-40","wave":5,"step":"WAVE_5","action":"COMPLETE","result":"SUCCESS","details":{"reportPath":"/Users/yvesdarbouze/Documents/PaperWorking/artifacts/persona-swarm/reports/P-40-experience-report.md"}}
+{"ts":"2026-08-17T12:51:28.443Z","agentId":"P-40","wave":1,"step":"WAVE_1","action":"START","result":"SUCCESS","details":{"email":"agent40.victoria.huang@paperworking-test.dev"}}
+{"ts":"2026-08-17T12:51:28.443Z","agentId":"P-40","wave":1,"step":"WAVE_1","action":"START","result":"SUCCESS","details":{"email":"agent40.victoria.huang@paperworking-test.dev"}}
+{"ts":"2026-08-17T12:51:28.444Z","agentId":"P-40","wave":0,"step":"SIGNUP","action":"SUCCESS_CREATED","result":"SUCCESS","details":{"uid":"uid_persona_p40","email":"agent40.victoria.huang@paperworking-test.dev","name":"Victoria Huang","entity":"Huang Pacific Realty Capital LLC"}}
+{"ts":"2026-08-17T12:51:28.444Z","agentId":"P-40","wave":0,"step":"SIGNUP","action":"SUCCESS_CREATED","result":"SUCCESS","details":{"uid":"uid_persona_p40","email":"agent40.victoria.huang@paperworking-test.dev","name":"Victoria Huang","entity":"Huang Pacific Realty Capital LLC"}}
+{"ts":"2026-08-17T12:51:28.444Z","agentId":"P-40","wave":1,"step":"WAVE_1","action":"COMPLETE","result":"SUCCESS","details":{"uid":"uid_persona_p40"}}
+{"ts":"2026-08-17T12:51:28.444Z","agentId":"P-40","wave":1,"step":"WAVE_1","action":"COMPLETE","result":"SUCCESS","details":{"uid":"uid_persona_p40"}}
+{"ts":"2026-08-17T12:51:28.501Z","agentId":"P-40","wave":2,"step":"WAVE_2","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-17T12:51:28.501Z","agentId":"P-40","wave":0,"step":"BILLING","action":"SUBSCRIPTION_SUCCESS","result":"SUCCESS","details":{"plan":"Individual","stripeCustomerId":"cus_test_swarm_p-40","stripeSubscriptionId":"sub_test_swarm_p-40","cardLastFour":"4242","cardBrand":"visa"}}
+{"ts":"2026-08-17T12:51:28.502Z","agentId":"P-40","wave":2,"step":"WAVE_2","action":"COMPLETE","result":"SUCCESS","details":{"plan":"Individual"}}
+{"ts":"2026-08-17T12:51:28.507Z","agentId":"P-40","wave":2,"step":"WAVE_2","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-17T12:51:28.508Z","agentId":"P-40","wave":0,"step":"BILLING","action":"SUBSCRIPTION_SUCCESS","result":"SUCCESS","details":{"plan":"Individual","stripeCustomerId":"cus_test_swarm_p-40","stripeSubscriptionId":"sub_test_swarm_p-40","cardLastFour":"4242","cardBrand":"visa"}}
+{"ts":"2026-08-17T12:51:28.508Z","agentId":"P-40","wave":2,"step":"WAVE_2","action":"COMPLETE","result":"SUCCESS","details":{"plan":"Individual"}}
+{"ts":"2026-08-17T12:51:28.682Z","agentId":"P-40","wave":3,"step":"WAVE_3","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-17T12:51:28.685Z","agentId":"P-40","wave":0,"step":"PROJECTS","action":"CREATION_SUCCESS","result":"SUCCESS","details":{"created":10,"plaid":false}}
+{"ts":"2026-08-17T12:51:28.686Z","agentId":"P-40","wave":3,"step":"WAVE_3","action":"COMPLETE","result":"SUCCESS","details":{"created":10}}
+{"ts":"2026-08-17T12:51:28.693Z","agentId":"P-40","wave":3,"step":"WAVE_3","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-17T12:51:28.695Z","agentId":"P-40","wave":0,"step":"PROJECTS","action":"CREATION_SUCCESS","result":"SUCCESS","details":{"created":10,"plaid":false}}
+{"ts":"2026-08-17T12:51:28.695Z","agentId":"P-40","wave":3,"step":"WAVE_3","action":"COMPLETE","result":"SUCCESS","details":{"created":10}}
+{"ts":"2026-08-17T12:51:28.793Z","agentId":"P-40","wave":4,"step":"WAVE_4","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-17T12:51:28.793Z","agentId":"P-40","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-50","to":"P-33","type":"PE Co-Invest"}}
+{"ts":"2026-08-17T12:51:28.793Z","agentId":"P-40","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-43"}}
+{"ts":"2026-08-17T12:51:28.794Z","agentId":"P-40","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-41"}}
+{"ts":"2026-08-17T12:51:28.794Z","agentId":"P-40","wave":4,"step":"WAVE_4","action":"COMPLETE","result":"SUCCESS","details":{"interactions":1,"invites":2}}
+{"ts":"2026-08-17T12:51:28.803Z","agentId":"P-40","wave":4,"step":"WAVE_4","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-17T12:51:28.803Z","agentId":"P-40","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-50","to":"P-33","type":"PE Co-Invest"}}
+{"ts":"2026-08-17T12:51:28.804Z","agentId":"P-40","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-43"}}
+{"ts":"2026-08-17T12:51:28.804Z","agentId":"P-40","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-41"}}
+{"ts":"2026-08-17T12:51:28.804Z","agentId":"P-40","wave":4,"step":"WAVE_4","action":"COMPLETE","result":"SUCCESS","details":{"interactions":1,"invites":2}}
+{"ts":"2026-08-17T12:51:28.841Z","agentId":"P-40","wave":5,"step":"WAVE_5","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-17T12:51:28.841Z","agentId":"P-40","wave":5,"step":"WAVE_5","action":"COMPLETE","result":"SUCCESS","details":{"reportPath":"/Users/yvesdarbouze/Documents/PaperWorking/artifacts/persona-swarm/reports/P-40-experience-report.md"}}
+{"ts":"2026-08-17T12:51:28.863Z","agentId":"P-40","wave":5,"step":"WAVE_5","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-17T12:51:28.863Z","agentId":"P-40","wave":5,"step":"WAVE_5","action":"COMPLETE","result":"SUCCESS","details":{"reportPath":"/Users/yvesdarbouze/Documents/PaperWorking/artifacts/persona-swarm/reports/P-40-experience-report.md"}}
+{"ts":"2026-08-17T12:53:52.950Z","agentId":"P-40","wave":1,"step":"WAVE_1","action":"START","result":"SUCCESS","details":{"email":"agent40.victoria.huang@paperworking-test.dev"}}
+{"ts":"2026-08-17T12:53:52.950Z","agentId":"P-40","wave":0,"step":"SIGNUP","action":"SUCCESS_CREATED","result":"SUCCESS","details":{"uid":"uid_persona_p40","email":"agent40.victoria.huang@paperworking-test.dev","name":"Victoria Huang","entity":"Huang Pacific Realty Capital LLC"}}
+{"ts":"2026-08-17T12:53:52.951Z","agentId":"P-40","wave":1,"step":"WAVE_1","action":"COMPLETE","result":"SUCCESS","details":{"uid":"uid_persona_p40"}}
+{"ts":"2026-08-17T12:53:52.951Z","agentId":"P-40","wave":1,"step":"WAVE_1","action":"START","result":"SUCCESS","details":{"email":"agent40.victoria.huang@paperworking-test.dev"}}
+{"ts":"2026-08-17T12:53:52.952Z","agentId":"P-40","wave":0,"step":"SIGNUP","action":"SUCCESS_CREATED","result":"SUCCESS","details":{"uid":"uid_persona_p40","email":"agent40.victoria.huang@paperworking-test.dev","name":"Victoria Huang","entity":"Huang Pacific Realty Capital LLC"}}
+{"ts":"2026-08-17T12:53:52.952Z","agentId":"P-40","wave":1,"step":"WAVE_1","action":"COMPLETE","result":"SUCCESS","details":{"uid":"uid_persona_p40"}}
+{"ts":"2026-08-17T12:53:53.013Z","agentId":"P-40","wave":2,"step":"WAVE_2","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-17T12:53:53.013Z","agentId":"P-40","wave":0,"step":"BILLING","action":"SUBSCRIPTION_SUCCESS","result":"SUCCESS","details":{"plan":"Individual","stripeCustomerId":"cus_test_swarm_p-40","stripeSubscriptionId":"sub_test_swarm_p-40","cardLastFour":"4242","cardBrand":"visa"}}
+{"ts":"2026-08-17T12:53:53.013Z","agentId":"P-40","wave":2,"step":"WAVE_2","action":"COMPLETE","result":"SUCCESS","details":{"plan":"Individual"}}
+{"ts":"2026-08-17T12:53:53.023Z","agentId":"P-40","wave":2,"step":"WAVE_2","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-17T12:53:53.023Z","agentId":"P-40","wave":0,"step":"BILLING","action":"SUBSCRIPTION_SUCCESS","result":"SUCCESS","details":{"plan":"Individual","stripeCustomerId":"cus_test_swarm_p-40","stripeSubscriptionId":"sub_test_swarm_p-40","cardLastFour":"4242","cardBrand":"visa"}}
+{"ts":"2026-08-17T12:53:53.023Z","agentId":"P-40","wave":2,"step":"WAVE_2","action":"COMPLETE","result":"SUCCESS","details":{"plan":"Individual"}}
+{"ts":"2026-08-17T12:53:53.155Z","agentId":"P-40","wave":3,"step":"WAVE_3","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-17T12:53:53.157Z","agentId":"P-40","wave":0,"step":"PROJECTS","action":"CREATION_SUCCESS","result":"SUCCESS","details":{"created":10,"plaid":false}}
+{"ts":"2026-08-17T12:53:53.157Z","agentId":"P-40","wave":3,"step":"WAVE_3","action":"COMPLETE","result":"SUCCESS","details":{"created":10}}
+{"ts":"2026-08-17T12:53:53.165Z","agentId":"P-40","wave":3,"step":"WAVE_3","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-17T12:53:53.169Z","agentId":"P-40","wave":0,"step":"PROJECTS","action":"CREATION_SUCCESS","result":"SUCCESS","details":{"created":10,"plaid":false}}
+{"ts":"2026-08-17T12:53:53.170Z","agentId":"P-40","wave":3,"step":"WAVE_3","action":"COMPLETE","result":"SUCCESS","details":{"created":10}}
+{"ts":"2026-08-17T12:53:53.256Z","agentId":"P-40","wave":4,"step":"WAVE_4","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-17T12:53:53.256Z","agentId":"P-40","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-50","to":"P-33","type":"PE Co-Invest"}}
+{"ts":"2026-08-17T12:53:53.256Z","agentId":"P-40","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-43"}}
+{"ts":"2026-08-17T12:53:53.257Z","agentId":"P-40","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-41"}}
+{"ts":"2026-08-17T12:53:53.257Z","agentId":"P-40","wave":4,"step":"WAVE_4","action":"COMPLETE","result":"SUCCESS","details":{"interactions":1,"invites":2}}
+{"ts":"2026-08-17T12:53:53.277Z","agentId":"P-40","wave":4,"step":"WAVE_4","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-17T12:53:53.278Z","agentId":"P-40","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-50","to":"P-33","type":"PE Co-Invest"}}
+{"ts":"2026-08-17T12:53:53.278Z","agentId":"P-40","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-43"}}
+{"ts":"2026-08-17T12:53:53.278Z","agentId":"P-40","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-41"}}
+{"ts":"2026-08-17T12:53:53.278Z","agentId":"P-40","wave":4,"step":"WAVE_4","action":"COMPLETE","result":"SUCCESS","details":{"interactions":1,"invites":2}}
+{"ts":"2026-08-17T12:53:53.302Z","agentId":"P-40","wave":5,"step":"WAVE_5","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-17T12:53:53.302Z","agentId":"P-40","wave":5,"step":"WAVE_5","action":"COMPLETE","result":"SUCCESS","details":{"reportPath":"/Users/yvesdarbouze/Documents/PaperWorking/artifacts/persona-swarm/reports/P-40-experience-report.md"}}
+{"ts":"2026-08-17T12:53:53.349Z","agentId":"P-40","wave":5,"step":"WAVE_5","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-17T12:53:53.350Z","agentId":"P-40","wave":5,"step":"WAVE_5","action":"COMPLETE","result":"SUCCESS","details":{"reportPath":"/Users/yvesdarbouze/Documents/PaperWorking/artifacts/persona-swarm/reports/P-40-experience-report.md"}}
+{"ts":"2026-08-17T12:54:04.352Z","agentId":"P-40","wave":1,"step":"WAVE_1","action":"START","result":"SUCCESS","details":{"email":"agent40.victoria.huang@paperworking-test.dev"}}
+{"ts":"2026-08-17T12:54:04.352Z","agentId":"P-40","wave":0,"step":"SIGNUP","action":"SUCCESS_CREATED","result":"SUCCESS","details":{"uid":"uid_persona_p40","email":"agent40.victoria.huang@paperworking-test.dev","name":"Victoria Huang","entity":"Huang Pacific Realty Capital LLC"}}
+{"ts":"2026-08-17T12:54:04.353Z","agentId":"P-40","wave":1,"step":"WAVE_1","action":"COMPLETE","result":"SUCCESS","details":{"uid":"uid_persona_p40"}}
+{"ts":"2026-08-17T12:54:04.358Z","agentId":"P-40","wave":1,"step":"WAVE_1","action":"START","result":"SUCCESS","details":{"email":"agent40.victoria.huang@paperworking-test.dev"}}
+{"ts":"2026-08-17T12:54:04.358Z","agentId":"P-40","wave":0,"step":"SIGNUP","action":"SUCCESS_CREATED","result":"SUCCESS","details":{"uid":"uid_persona_p40","email":"agent40.victoria.huang@paperworking-test.dev","name":"Victoria Huang","entity":"Huang Pacific Realty Capital LLC"}}
+{"ts":"2026-08-17T12:54:04.359Z","agentId":"P-40","wave":1,"step":"WAVE_1","action":"COMPLETE","result":"SUCCESS","details":{"uid":"uid_persona_p40"}}
+{"ts":"2026-08-17T12:54:04.413Z","agentId":"P-40","wave":2,"step":"WAVE_2","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-17T12:54:04.413Z","agentId":"P-40","wave":0,"step":"BILLING","action":"SUBSCRIPTION_SUCCESS","result":"SUCCESS","details":{"plan":"Individual","stripeCustomerId":"cus_test_swarm_p-40","stripeSubscriptionId":"sub_test_swarm_p-40","cardLastFour":"4242","cardBrand":"visa"}}
+{"ts":"2026-08-17T12:54:04.413Z","agentId":"P-40","wave":2,"step":"WAVE_2","action":"COMPLETE","result":"SUCCESS","details":{"plan":"Individual"}}
+{"ts":"2026-08-17T12:54:04.416Z","agentId":"P-40","wave":2,"step":"WAVE_2","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-17T12:54:04.416Z","agentId":"P-40","wave":0,"step":"BILLING","action":"SUBSCRIPTION_SUCCESS","result":"SUCCESS","details":{"plan":"Individual","stripeCustomerId":"cus_test_swarm_p-40","stripeSubscriptionId":"sub_test_swarm_p-40","cardLastFour":"4242","cardBrand":"visa"}}
+{"ts":"2026-08-17T12:54:04.416Z","agentId":"P-40","wave":2,"step":"WAVE_2","action":"COMPLETE","result":"SUCCESS","details":{"plan":"Individual"}}
+{"ts":"2026-08-17T12:54:04.581Z","agentId":"P-40","wave":3,"step":"WAVE_3","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-17T12:54:04.581Z","agentId":"P-40","wave":3,"step":"WAVE_3","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-17T12:54:04.583Z","agentId":"P-40","wave":0,"step":"PROJECTS","action":"CREATION_SUCCESS","result":"SUCCESS","details":{"created":10,"plaid":false}}
+{"ts":"2026-08-17T12:54:04.583Z","agentId":"P-40","wave":3,"step":"WAVE_3","action":"COMPLETE","result":"SUCCESS","details":{"created":10}}
+{"ts":"2026-08-17T12:54:04.583Z","agentId":"P-40","wave":0,"step":"PROJECTS","action":"CREATION_SUCCESS","result":"SUCCESS","details":{"created":10,"plaid":false}}
+{"ts":"2026-08-17T12:54:04.584Z","agentId":"P-40","wave":3,"step":"WAVE_3","action":"COMPLETE","result":"SUCCESS","details":{"created":10}}
+{"ts":"2026-08-17T12:54:04.740Z","agentId":"P-40","wave":4,"step":"WAVE_4","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-17T12:54:04.740Z","agentId":"P-40","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-50","to":"P-33","type":"PE Co-Invest"}}
+{"ts":"2026-08-17T12:54:04.740Z","agentId":"P-40","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-43"}}
+{"ts":"2026-08-17T12:54:04.741Z","agentId":"P-40","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-41"}}
+{"ts":"2026-08-17T12:54:04.741Z","agentId":"P-40","wave":4,"step":"WAVE_4","action":"COMPLETE","result":"SUCCESS","details":{"interactions":1,"invites":2}}
+{"ts":"2026-08-17T12:54:04.747Z","agentId":"P-40","wave":4,"step":"WAVE_4","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-17T12:54:04.747Z","agentId":"P-40","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-50","to":"P-33","type":"PE Co-Invest"}}
+{"ts":"2026-08-17T12:54:04.748Z","agentId":"P-40","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-43"}}
+{"ts":"2026-08-17T12:54:04.748Z","agentId":"P-40","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-41"}}
+{"ts":"2026-08-17T12:54:04.748Z","agentId":"P-40","wave":4,"step":"WAVE_4","action":"COMPLETE","result":"SUCCESS","details":{"interactions":1,"invites":2}}
+{"ts":"2026-08-17T12:54:04.799Z","agentId":"P-40","wave":5,"step":"WAVE_5","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-17T12:54:04.800Z","agentId":"P-40","wave":5,"step":"WAVE_5","action":"COMPLETE","result":"SUCCESS","details":{"reportPath":"/Users/yvesdarbouze/Documents/PaperWorking/artifacts/persona-swarm/reports/P-40-experience-report.md"}}
+{"ts":"2026-08-17T12:54:04.802Z","agentId":"P-40","wave":5,"step":"WAVE_5","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-17T12:54:04.803Z","agentId":"P-40","wave":5,"step":"WAVE_5","action":"COMPLETE","result":"SUCCESS","details":{"reportPath":"/Users/yvesdarbouze/Documents/PaperWorking/artifacts/persona-swarm/reports/P-40-experience-report.md"}}
+{"ts":"2026-08-17T15:52:22.148Z","agentId":"P-40","wave":1,"step":"WAVE_1","action":"START","result":"SUCCESS","details":{"email":"agent40.victoria.huang@paperworking-test.dev"}}
+{"ts":"2026-08-17T15:52:22.155Z","agentId":"P-40","wave":1,"step":"WAVE_1","action":"START","result":"SUCCESS","details":{"email":"agent40.victoria.huang@paperworking-test.dev"}}
+{"ts":"2026-08-17T15:52:24.283Z","agentId":"P-40","wave":0,"step":"SIGNUP","action":"SUCCESS_CREATED","result":"SUCCESS","details":{"uid":"uid_persona_p40","email":"agent40.victoria.huang@paperworking-test.dev","name":"Victoria Huang","entity":"Huang Pacific Realty Capital LLC"}}
+{"ts":"2026-08-17T15:52:24.283Z","agentId":"P-40","wave":1,"step":"WAVE_1","action":"COMPLETE","result":"SUCCESS","details":{"uid":"uid_persona_p40"}}
+{"ts":"2026-08-17T15:52:24.287Z","agentId":"P-40","wave":0,"step":"SIGNUP","action":"SUCCESS_CREATED","result":"SUCCESS","details":{"uid":"uid_persona_p40","email":"agent40.victoria.huang@paperworking-test.dev","name":"Victoria Huang","entity":"Huang Pacific Realty Capital LLC"}}
+{"ts":"2026-08-17T15:52:24.287Z","agentId":"P-40","wave":1,"step":"WAVE_1","action":"COMPLETE","result":"SUCCESS","details":{"uid":"uid_persona_p40"}}
+{"ts":"2026-08-17T15:52:56.252Z","agentId":"P-40","wave":2,"step":"WAVE_2","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-17T15:52:56.252Z","agentId":"P-40","wave":2,"step":"WAVE_2","action":"EXCEPTION","result":"SUCCESS","details":{"error":"CRITICAL SAFETY REFUSAL: Invalid or missing Stripe secret test key. Key must start with \"sk_test_\". Received: \"...\""}}
+{"ts":"2026-08-17T15:52:56.252Z","agentId":"P-40","wave":2,"step":"WAVE_2","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-17T15:52:56.253Z","agentId":"P-40","wave":2,"step":"WAVE_2","action":"EXCEPTION","result":"SUCCESS","details":{"error":"CRITICAL SAFETY REFUSAL: Invalid or missing Stripe secret test key. Key must start with \"sk_test_\". Received: \"...\""}}
+{"ts":"2026-08-17T16:17:10.986Z","agentId":"P-40","wave":1,"step":"WAVE_1","action":"START","result":"SUCCESS","details":{"email":"agent40.victoria.huang@paperworking-test.dev"}}
+{"ts":"2026-08-17T16:17:11.695Z","agentId":"P-40","wave":1,"step":"WAVE_1","action":"START","result":"SUCCESS","details":{"email":"agent40.victoria.huang@paperworking-test.dev"}}
+{"ts":"2026-08-17T16:17:13.221Z","agentId":"P-40","wave":0,"step":"SIGNUP","action":"SUCCESS_CREATED","result":"SUCCESS","details":{"uid":"uid_persona_p40","email":"agent40.victoria.huang@paperworking-test.dev","name":"Victoria Huang","entity":"Huang Pacific Realty Capital LLC"}}
+{"ts":"2026-08-17T16:17:13.221Z","agentId":"P-40","wave":1,"step":"WAVE_1","action":"COMPLETE","result":"SUCCESS","details":{"uid":"uid_persona_p40"}}
+{"ts":"2026-08-17T16:17:13.801Z","agentId":"P-40","wave":0,"step":"SIGNUP","action":"SUCCESS_CREATED","result":"SUCCESS","details":{"uid":"uid_persona_p40","email":"agent40.victoria.huang@paperworking-test.dev","name":"Victoria Huang","entity":"Huang Pacific Realty Capital LLC"}}
+{"ts":"2026-08-17T16:17:13.801Z","agentId":"P-40","wave":1,"step":"WAVE_1","action":"COMPLETE","result":"SUCCESS","details":{"uid":"uid_persona_p40"}}
+{"ts":"2026-08-17T16:18:06.343Z","agentId":"P-40","wave":1,"step":"WAVE_1","action":"START","result":"SUCCESS","details":{"email":"agent40.victoria.huang@paperworking-test.dev"}}
+{"ts":"2026-08-17T16:18:06.364Z","agentId":"P-40","wave":1,"step":"WAVE_1","action":"START","result":"SUCCESS","details":{"email":"agent40.victoria.huang@paperworking-test.dev"}}
+{"ts":"2026-08-17T16:18:08.391Z","agentId":"P-40","wave":0,"step":"SIGNUP","action":"SUCCESS_CREATED","result":"SUCCESS","details":{"uid":"uid_persona_p40","email":"agent40.victoria.huang@paperworking-test.dev","name":"Victoria Huang","entity":"Huang Pacific Realty Capital LLC"}}
+{"ts":"2026-08-17T16:18:08.391Z","agentId":"P-40","wave":0,"step":"SIGNUP","action":"SUCCESS_CREATED","result":"SUCCESS","details":{"uid":"uid_persona_p40","email":"agent40.victoria.huang@paperworking-test.dev","name":"Victoria Huang","entity":"Huang Pacific Realty Capital LLC"}}
+{"ts":"2026-08-17T16:18:08.391Z","agentId":"P-40","wave":1,"step":"WAVE_1","action":"COMPLETE","result":"SUCCESS","details":{"uid":"uid_persona_p40"}}
+{"ts":"2026-08-17T16:18:08.392Z","agentId":"P-40","wave":1,"step":"WAVE_1","action":"COMPLETE","result":"SUCCESS","details":{"uid":"uid_persona_p40"}}
+{"ts":"2026-08-17T16:18:41.942Z","agentId":"P-40","wave":2,"step":"WAVE_2","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-17T16:18:41.943Z","agentId":"P-40","wave":2,"step":"WAVE_2","action":"EXCEPTION","result":"SUCCESS","details":{"error":"CRITICAL SAFETY REFUSAL: Invalid or missing Stripe secret test key. Key must start with \"sk_test_\". Received: \"...\""}}
+{"ts":"2026-08-17T16:18:41.979Z","agentId":"P-40","wave":2,"step":"WAVE_2","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-17T16:18:41.979Z","agentId":"P-40","wave":2,"step":"WAVE_2","action":"EXCEPTION","result":"SUCCESS","details":{"error":"CRITICAL SAFETY REFUSAL: Invalid or missing Stripe secret test key. Key must start with \"sk_test_\". Received: \"...\""}}
+{"ts":"2026-08-17T16:18:42.016Z","agentId":"P-40","wave":3,"step":"WAVE_3","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-17T16:18:42.016Z","agentId":"P-40","wave":0,"step":"PROJECTS","action":"CREATION_SUCCESS","result":"SUCCESS","details":{"created":10,"plaid":false}}
+{"ts":"2026-08-17T16:18:42.016Z","agentId":"P-40","wave":3,"step":"WAVE_3","action":"COMPLETE","result":"SUCCESS","details":{"created":10}}
+{"ts":"2026-08-17T19:42:31.605Z","agentId":"P-40","wave":1,"step":"WAVE_1","action":"START","result":"SUCCESS","details":{"email":"agent40.victoria.huang@paperworking-test.dev"}}
+{"ts":"2026-08-17T19:42:32.869Z","agentId":"P-40","wave":1,"step":"WAVE_1","action":"START","result":"SUCCESS","details":{"email":"agent40.victoria.huang@paperworking-test.dev"}}
+{"ts":"2026-08-17T19:42:33.688Z","agentId":"P-40","wave":0,"step":"SIGNUP","action":"SUCCESS_CREATED","result":"SUCCESS","details":{"uid":"uid_persona_p40","email":"agent40.victoria.huang@paperworking-test.dev","name":"Victoria Huang","entity":"Huang Pacific Realty Capital LLC"}}
+{"ts":"2026-08-17T19:42:33.688Z","agentId":"P-40","wave":1,"step":"WAVE_1","action":"COMPLETE","result":"SUCCESS","details":{"uid":"uid_persona_p40"}}
+{"ts":"2026-08-17T19:42:34.929Z","agentId":"P-40","wave":0,"step":"SIGNUP","action":"SUCCESS_CREATED","result":"SUCCESS","details":{"uid":"uid_persona_p40","email":"agent40.victoria.huang@paperworking-test.dev","name":"Victoria Huang","entity":"Huang Pacific Realty Capital LLC"}}
+{"ts":"2026-08-17T19:42:34.929Z","agentId":"P-40","wave":1,"step":"WAVE_1","action":"COMPLETE","result":"SUCCESS","details":{"uid":"uid_persona_p40"}}
+{"ts":"2026-08-17T19:43:07.926Z","agentId":"P-40","wave":2,"step":"WAVE_2","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-17T19:43:07.926Z","agentId":"P-40","wave":2,"step":"WAVE_2","action":"EXCEPTION","result":"SUCCESS","details":{"error":"CRITICAL SAFETY REFUSAL: Invalid or missing Stripe secret test key. Key must start with \"sk_test_\". Received: \"...\""}}
+{"ts":"2026-08-17T19:43:07.969Z","agentId":"P-40","wave":3,"step":"WAVE_3","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-17T19:43:07.969Z","agentId":"P-40","wave":0,"step":"PROJECTS","action":"CREATION_SUCCESS","result":"SUCCESS","details":{"created":10,"plaid":false}}
+{"ts":"2026-08-17T19:43:07.969Z","agentId":"P-40","wave":3,"step":"WAVE_3","action":"COMPLETE","result":"SUCCESS","details":{"created":10}}
+{"ts":"2026-08-17T19:43:07.997Z","agentId":"P-40","wave":4,"step":"WAVE_4","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-17T19:43:07.997Z","agentId":"P-40","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-50","to":"P-33","type":"PE Co-Invest"}}
+{"ts":"2026-08-17T19:43:07.997Z","agentId":"P-40","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-43"}}
+{"ts":"2026-08-17T19:43:07.997Z","agentId":"P-40","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-41"}}
+{"ts":"2026-08-17T19:43:07.997Z","agentId":"P-40","wave":4,"step":"WAVE_4","action":"COMPLETE","result":"SUCCESS","details":{"interactions":1,"invites":2}}
+{"ts":"2026-08-17T19:43:08.030Z","agentId":"P-40","wave":5,"step":"WAVE_5","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-17T19:43:08.030Z","agentId":"P-40","wave":5,"step":"WAVE_5","action":"COMPLETE","result":"SUCCESS","details":{"reportPath":"/Users/yvesdarbouze/Documents/PaperWorking/artifacts/persona-swarm/reports/P-40-experience-report.md"}}
+{"ts":"2026-08-17T19:43:08.084Z","agentId":"P-40","wave":2,"step":"WAVE_2","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-17T19:43:08.084Z","agentId":"P-40","wave":2,"step":"WAVE_2","action":"EXCEPTION","result":"SUCCESS","details":{"error":"CRITICAL SAFETY REFUSAL: Invalid or missing Stripe secret test key. Key must start with \"sk_test_\". Received: \"...\""}}
+{"ts":"2026-08-17T19:43:08.117Z","agentId":"P-40","wave":3,"step":"WAVE_3","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-17T19:43:08.117Z","agentId":"P-40","wave":0,"step":"PROJECTS","action":"CREATION_SUCCESS","result":"SUCCESS","details":{"created":10,"plaid":false}}
+{"ts":"2026-08-17T19:43:08.118Z","agentId":"P-40","wave":3,"step":"WAVE_3","action":"COMPLETE","result":"SUCCESS","details":{"created":10}}
+{"ts":"2026-08-17T19:43:08.143Z","agentId":"P-40","wave":4,"step":"WAVE_4","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-17T19:43:08.144Z","agentId":"P-40","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-50","to":"P-33","type":"PE Co-Invest"}}
+{"ts":"2026-08-17T19:43:08.144Z","agentId":"P-40","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-43"}}
+{"ts":"2026-08-17T19:43:08.144Z","agentId":"P-40","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-41"}}
+{"ts":"2026-08-17T19:43:08.144Z","agentId":"P-40","wave":4,"step":"WAVE_4","action":"COMPLETE","result":"SUCCESS","details":{"interactions":1,"invites":2}}
+{"ts":"2026-08-17T19:43:08.172Z","agentId":"P-40","wave":5,"step":"WAVE_5","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-17T19:43:08.172Z","agentId":"P-40","wave":5,"step":"WAVE_5","action":"COMPLETE","result":"SUCCESS","details":{"reportPath":"/Users/yvesdarbouze/Documents/PaperWorking/artifacts/persona-swarm/reports/P-40-experience-report.md"}}

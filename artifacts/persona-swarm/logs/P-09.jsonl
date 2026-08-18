@@ -757,3 +757,255 @@
 {"ts":"2026-08-14T19:22:05.485Z","agentId":"P-09","wave":4,"step":"WAVE_4","action":"COMPLETE","result":"SUCCESS","details":{"interactions":2,"invites":2}}
 {"ts":"2026-08-14T19:22:05.629Z","agentId":"P-09","wave":5,"step":"WAVE_5","action":"START","result":"SUCCESS"}
 {"ts":"2026-08-14T19:22:05.633Z","agentId":"P-09","wave":5,"step":"WAVE_5","action":"COMPLETE","result":"SUCCESS","details":{"reportPath":"/Users/yvesdarbouze/Documents/PaperWorking/artifacts/persona-swarm/reports/P-09-experience-report.md"}}
+{"ts":"2026-08-17T12:48:20.626Z","agentId":"P-09","wave":1,"step":"WAVE_1","action":"START","result":"SUCCESS","details":{"email":"agent09.hank.beaumont@paperworking-test.dev"}}
+{"ts":"2026-08-17T12:48:20.627Z","agentId":"P-09","wave":0,"step":"SIGNUP","action":"SUCCESS_CREATED","result":"SUCCESS","details":{"uid":"uid_persona_p09","email":"agent09.hank.beaumont@paperworking-test.dev","name":"Hank Beaumont","entity":"Beaumont Restoration Co. LLC"}}
+{"ts":"2026-08-17T12:48:20.627Z","agentId":"P-09","wave":1,"step":"WAVE_1","action":"COMPLETE","result":"SUCCESS","details":{"uid":"uid_persona_p09"}}
+{"ts":"2026-08-17T12:48:20.629Z","agentId":"P-09","wave":1,"step":"WAVE_1","action":"START","result":"SUCCESS","details":{"email":"agent09.hank.beaumont@paperworking-test.dev"}}
+{"ts":"2026-08-17T12:48:20.630Z","agentId":"P-09","wave":0,"step":"SIGNUP","action":"SUCCESS_CREATED","result":"SUCCESS","details":{"uid":"uid_persona_p09","email":"agent09.hank.beaumont@paperworking-test.dev","name":"Hank Beaumont","entity":"Beaumont Restoration Co. LLC"}}
+{"ts":"2026-08-17T12:48:20.630Z","agentId":"P-09","wave":1,"step":"WAVE_1","action":"COMPLETE","result":"SUCCESS","details":{"uid":"uid_persona_p09"}}
+{"ts":"2026-08-17T12:48:20.675Z","agentId":"P-09","wave":2,"step":"WAVE_2","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-17T12:48:20.675Z","agentId":"P-09","wave":0,"step":"BILLING","action":"SUBSCRIPTION_SUCCESS","result":"SUCCESS","details":{"plan":"Individual","stripeCustomerId":"cus_test_swarm_p-09","stripeSubscriptionId":"sub_test_swarm_p-09","cardLastFour":"4242","cardBrand":"visa"}}
+{"ts":"2026-08-17T12:48:20.675Z","agentId":"P-09","wave":2,"step":"WAVE_2","action":"COMPLETE","result":"SUCCESS","details":{"plan":"Individual"}}
+{"ts":"2026-08-17T12:48:20.677Z","agentId":"P-09","wave":2,"step":"WAVE_2","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-17T12:48:20.677Z","agentId":"P-09","wave":0,"step":"BILLING","action":"SUBSCRIPTION_SUCCESS","result":"SUCCESS","details":{"plan":"Individual","stripeCustomerId":"cus_test_swarm_p-09","stripeSubscriptionId":"sub_test_swarm_p-09","cardLastFour":"4242","cardBrand":"visa"}}
+{"ts":"2026-08-17T12:48:20.677Z","agentId":"P-09","wave":2,"step":"WAVE_2","action":"COMPLETE","result":"SUCCESS","details":{"plan":"Individual"}}
+{"ts":"2026-08-17T12:48:20.736Z","agentId":"P-09","wave":3,"step":"WAVE_3","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-17T12:48:20.737Z","agentId":"P-09","wave":3,"step":"WAVE_3","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-17T12:48:20.744Z","agentId":"P-09","wave":0,"step":"PROJECTS","action":"CREATION_SUCCESS","result":"SUCCESS","details":{"created":10,"plaid":false}}
+{"ts":"2026-08-17T12:48:20.745Z","agentId":"P-09","wave":3,"step":"WAVE_3","action":"COMPLETE","result":"SUCCESS","details":{"created":10}}
+{"ts":"2026-08-17T12:48:20.745Z","agentId":"P-09","wave":0,"step":"PROJECTS","action":"CREATION_SUCCESS","result":"SUCCESS","details":{"created":10,"plaid":false}}
+{"ts":"2026-08-17T12:48:20.745Z","agentId":"P-09","wave":3,"step":"WAVE_3","action":"COMPLETE","result":"SUCCESS","details":{"created":10}}
+{"ts":"2026-08-17T12:48:20.897Z","agentId":"P-09","wave":4,"step":"WAVE_4","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-17T12:48:20.899Z","agentId":"P-09","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"to":"P-27","type":"Finished Asset Sale"}}
+{"ts":"2026-08-17T12:48:20.900Z","agentId":"P-09","wave":4,"step":"WAVE_4","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-17T12:48:20.900Z","agentId":"P-09","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-31","to":"P-26","type":"Finished Asset Sale"}}
+{"ts":"2026-08-17T12:48:20.900Z","agentId":"P-09","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"to":"P-27","type":"Finished Asset Sale"}}
+{"ts":"2026-08-17T12:48:20.900Z","agentId":"P-09","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-48"}}
+{"ts":"2026-08-17T12:48:20.900Z","agentId":"P-09","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-31","to":"P-26","type":"Finished Asset Sale"}}
+{"ts":"2026-08-17T12:48:20.901Z","agentId":"P-09","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-48"}}
+{"ts":"2026-08-17T12:48:20.901Z","agentId":"P-09","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-27"}}
+{"ts":"2026-08-17T12:48:20.901Z","agentId":"P-09","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-27"}}
+{"ts":"2026-08-17T12:48:20.901Z","agentId":"P-09","wave":4,"step":"WAVE_4","action":"COMPLETE","result":"SUCCESS","details":{"interactions":2,"invites":2}}
+{"ts":"2026-08-17T12:48:20.901Z","agentId":"P-09","wave":4,"step":"WAVE_4","action":"COMPLETE","result":"SUCCESS","details":{"interactions":2,"invites":2}}
+{"ts":"2026-08-17T12:48:21.000Z","agentId":"P-09","wave":5,"step":"WAVE_5","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-17T12:48:21.000Z","agentId":"P-09","wave":5,"step":"WAVE_5","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-17T12:48:21.000Z","agentId":"P-09","wave":5,"step":"WAVE_5","action":"COMPLETE","result":"SUCCESS","details":{"reportPath":"/Users/yvesdarbouze/Documents/PaperWorking/artifacts/persona-swarm/reports/P-09-experience-report.md"}}
+{"ts":"2026-08-17T12:48:21.000Z","agentId":"P-09","wave":5,"step":"WAVE_5","action":"COMPLETE","result":"SUCCESS","details":{"reportPath":"/Users/yvesdarbouze/Documents/PaperWorking/artifacts/persona-swarm/reports/P-09-experience-report.md"}}
+{"ts":"2026-08-17T12:49:28.731Z","agentId":"P-09","wave":1,"step":"WAVE_1","action":"START","result":"SUCCESS","details":{"email":"agent09.hank.beaumont@paperworking-test.dev"}}
+{"ts":"2026-08-17T12:49:28.733Z","agentId":"P-09","wave":0,"step":"SIGNUP","action":"SUCCESS_CREATED","result":"SUCCESS","details":{"uid":"uid_persona_p09","email":"agent09.hank.beaumont@paperworking-test.dev","name":"Hank Beaumont","entity":"Beaumont Restoration Co. LLC"}}
+{"ts":"2026-08-17T12:49:28.733Z","agentId":"P-09","wave":1,"step":"WAVE_1","action":"COMPLETE","result":"SUCCESS","details":{"uid":"uid_persona_p09"}}
+{"ts":"2026-08-17T12:49:28.806Z","agentId":"P-09","wave":2,"step":"WAVE_2","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-17T12:49:28.806Z","agentId":"P-09","wave":0,"step":"BILLING","action":"SUBSCRIPTION_SUCCESS","result":"SUCCESS","details":{"plan":"Individual","stripeCustomerId":"cus_test_swarm_p-09","stripeSubscriptionId":"sub_test_swarm_p-09","cardLastFour":"4242","cardBrand":"visa"}}
+{"ts":"2026-08-17T12:49:28.807Z","agentId":"P-09","wave":2,"step":"WAVE_2","action":"COMPLETE","result":"SUCCESS","details":{"plan":"Individual"}}
+{"ts":"2026-08-17T12:49:28.893Z","agentId":"P-09","wave":3,"step":"WAVE_3","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-17T12:49:28.895Z","agentId":"P-09","wave":0,"step":"PROJECTS","action":"CREATION_SUCCESS","result":"SUCCESS","details":{"created":10,"plaid":false}}
+{"ts":"2026-08-17T12:49:28.895Z","agentId":"P-09","wave":3,"step":"WAVE_3","action":"COMPLETE","result":"SUCCESS","details":{"created":10}}
+{"ts":"2026-08-17T12:49:29.071Z","agentId":"P-09","wave":4,"step":"WAVE_4","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-17T12:49:29.072Z","agentId":"P-09","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"to":"P-27","type":"Finished Asset Sale"}}
+{"ts":"2026-08-17T12:49:29.072Z","agentId":"P-09","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-31","to":"P-26","type":"Finished Asset Sale"}}
+{"ts":"2026-08-17T12:49:29.073Z","agentId":"P-09","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-48"}}
+{"ts":"2026-08-17T12:49:29.073Z","agentId":"P-09","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-27"}}
+{"ts":"2026-08-17T12:49:29.073Z","agentId":"P-09","wave":4,"step":"WAVE_4","action":"COMPLETE","result":"SUCCESS","details":{"interactions":2,"invites":2}}
+{"ts":"2026-08-17T12:49:29.237Z","agentId":"P-09","wave":5,"step":"WAVE_5","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-17T12:49:29.239Z","agentId":"P-09","wave":5,"step":"WAVE_5","action":"COMPLETE","result":"SUCCESS","details":{"reportPath":"/Users/yvesdarbouze/Documents/PaperWorking/artifacts/persona-swarm/reports/P-09-experience-report.md"}}
+{"ts":"2026-08-17T12:49:29.249Z","agentId":"P-09","wave":1,"step":"WAVE_1","action":"START","result":"SUCCESS","details":{"email":"agent09.hank.beaumont@paperworking-test.dev"}}
+{"ts":"2026-08-17T12:49:29.250Z","agentId":"P-09","wave":0,"step":"SIGNUP","action":"SUCCESS_CREATED","result":"SUCCESS","details":{"uid":"uid_persona_p09","email":"agent09.hank.beaumont@paperworking-test.dev","name":"Hank Beaumont","entity":"Beaumont Restoration Co. LLC"}}
+{"ts":"2026-08-17T12:49:29.250Z","agentId":"P-09","wave":1,"step":"WAVE_1","action":"COMPLETE","result":"SUCCESS","details":{"uid":"uid_persona_p09"}}
+{"ts":"2026-08-17T12:49:29.313Z","agentId":"P-09","wave":2,"step":"WAVE_2","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-17T12:49:29.314Z","agentId":"P-09","wave":0,"step":"BILLING","action":"SUBSCRIPTION_SUCCESS","result":"SUCCESS","details":{"plan":"Individual","stripeCustomerId":"cus_test_swarm_p-09","stripeSubscriptionId":"sub_test_swarm_p-09","cardLastFour":"4242","cardBrand":"visa"}}
+{"ts":"2026-08-17T12:49:29.314Z","agentId":"P-09","wave":2,"step":"WAVE_2","action":"COMPLETE","result":"SUCCESS","details":{"plan":"Individual"}}
+{"ts":"2026-08-17T12:49:29.408Z","agentId":"P-09","wave":3,"step":"WAVE_3","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-17T12:49:29.411Z","agentId":"P-09","wave":0,"step":"PROJECTS","action":"CREATION_SUCCESS","result":"SUCCESS","details":{"created":10,"plaid":false}}
+{"ts":"2026-08-17T12:49:29.411Z","agentId":"P-09","wave":3,"step":"WAVE_3","action":"COMPLETE","result":"SUCCESS","details":{"created":10}}
+{"ts":"2026-08-17T12:49:29.587Z","agentId":"P-09","wave":4,"step":"WAVE_4","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-17T12:49:29.587Z","agentId":"P-09","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"to":"P-27","type":"Finished Asset Sale"}}
+{"ts":"2026-08-17T12:49:29.588Z","agentId":"P-09","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-31","to":"P-26","type":"Finished Asset Sale"}}
+{"ts":"2026-08-17T12:49:29.588Z","agentId":"P-09","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-48"}}
+{"ts":"2026-08-17T12:49:29.588Z","agentId":"P-09","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-27"}}
+{"ts":"2026-08-17T12:49:29.588Z","agentId":"P-09","wave":4,"step":"WAVE_4","action":"COMPLETE","result":"SUCCESS","details":{"interactions":2,"invites":2}}
+{"ts":"2026-08-17T12:49:29.690Z","agentId":"P-09","wave":5,"step":"WAVE_5","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-17T12:49:29.691Z","agentId":"P-09","wave":5,"step":"WAVE_5","action":"COMPLETE","result":"SUCCESS","details":{"reportPath":"/Users/yvesdarbouze/Documents/PaperWorking/artifacts/persona-swarm/reports/P-09-experience-report.md"}}
+{"ts":"2026-08-17T12:51:28.419Z","agentId":"P-09","wave":1,"step":"WAVE_1","action":"START","result":"SUCCESS","details":{"email":"agent09.hank.beaumont@paperworking-test.dev"}}
+{"ts":"2026-08-17T12:51:28.420Z","agentId":"P-09","wave":0,"step":"SIGNUP","action":"SUCCESS_CREATED","result":"SUCCESS","details":{"uid":"uid_persona_p09","email":"agent09.hank.beaumont@paperworking-test.dev","name":"Hank Beaumont","entity":"Beaumont Restoration Co. LLC"}}
+{"ts":"2026-08-17T12:51:28.420Z","agentId":"P-09","wave":1,"step":"WAVE_1","action":"COMPLETE","result":"SUCCESS","details":{"uid":"uid_persona_p09"}}
+{"ts":"2026-08-17T12:51:28.421Z","agentId":"P-09","wave":1,"step":"WAVE_1","action":"START","result":"SUCCESS","details":{"email":"agent09.hank.beaumont@paperworking-test.dev"}}
+{"ts":"2026-08-17T12:51:28.423Z","agentId":"P-09","wave":0,"step":"SIGNUP","action":"SUCCESS_CREATED","result":"SUCCESS","details":{"uid":"uid_persona_p09","email":"agent09.hank.beaumont@paperworking-test.dev","name":"Hank Beaumont","entity":"Beaumont Restoration Co. LLC"}}
+{"ts":"2026-08-17T12:51:28.423Z","agentId":"P-09","wave":1,"step":"WAVE_1","action":"COMPLETE","result":"SUCCESS","details":{"uid":"uid_persona_p09"}}
+{"ts":"2026-08-17T12:51:28.476Z","agentId":"P-09","wave":2,"step":"WAVE_2","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-17T12:51:28.476Z","agentId":"P-09","wave":2,"step":"WAVE_2","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-17T12:51:28.477Z","agentId":"P-09","wave":0,"step":"BILLING","action":"SUBSCRIPTION_SUCCESS","result":"SUCCESS","details":{"plan":"Individual","stripeCustomerId":"cus_test_swarm_p-09","stripeSubscriptionId":"sub_test_swarm_p-09","cardLastFour":"4242","cardBrand":"visa"}}
+{"ts":"2026-08-17T12:51:28.477Z","agentId":"P-09","wave":2,"step":"WAVE_2","action":"COMPLETE","result":"SUCCESS","details":{"plan":"Individual"}}
+{"ts":"2026-08-17T12:51:28.477Z","agentId":"P-09","wave":0,"step":"BILLING","action":"SUBSCRIPTION_SUCCESS","result":"SUCCESS","details":{"plan":"Individual","stripeCustomerId":"cus_test_swarm_p-09","stripeSubscriptionId":"sub_test_swarm_p-09","cardLastFour":"4242","cardBrand":"visa"}}
+{"ts":"2026-08-17T12:51:28.477Z","agentId":"P-09","wave":2,"step":"WAVE_2","action":"COMPLETE","result":"SUCCESS","details":{"plan":"Individual"}}
+{"ts":"2026-08-17T12:51:28.540Z","agentId":"P-09","wave":3,"step":"WAVE_3","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-17T12:51:28.550Z","agentId":"P-09","wave":3,"step":"WAVE_3","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-17T12:51:28.556Z","agentId":"P-09","wave":0,"step":"PROJECTS","action":"CREATION_SUCCESS","result":"SUCCESS","details":{"created":10,"plaid":false}}
+{"ts":"2026-08-17T12:51:28.556Z","agentId":"P-09","wave":3,"step":"WAVE_3","action":"COMPLETE","result":"SUCCESS","details":{"created":10}}
+{"ts":"2026-08-17T12:51:28.561Z","agentId":"P-09","wave":0,"step":"PROJECTS","action":"CREATION_SUCCESS","result":"SUCCESS","details":{"created":10,"plaid":false}}
+{"ts":"2026-08-17T12:51:28.561Z","agentId":"P-09","wave":3,"step":"WAVE_3","action":"COMPLETE","result":"SUCCESS","details":{"created":10}}
+{"ts":"2026-08-17T12:51:28.736Z","agentId":"P-09","wave":4,"step":"WAVE_4","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-17T12:51:28.736Z","agentId":"P-09","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"to":"P-27","type":"Finished Asset Sale"}}
+{"ts":"2026-08-17T12:51:28.736Z","agentId":"P-09","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-31","to":"P-26","type":"Finished Asset Sale"}}
+{"ts":"2026-08-17T12:51:28.736Z","agentId":"P-09","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-48"}}
+{"ts":"2026-08-17T12:51:28.737Z","agentId":"P-09","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-27"}}
+{"ts":"2026-08-17T12:51:28.737Z","agentId":"P-09","wave":4,"step":"WAVE_4","action":"COMPLETE","result":"SUCCESS","details":{"interactions":2,"invites":2}}
+{"ts":"2026-08-17T12:51:28.741Z","agentId":"P-09","wave":4,"step":"WAVE_4","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-17T12:51:28.741Z","agentId":"P-09","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"to":"P-27","type":"Finished Asset Sale"}}
+{"ts":"2026-08-17T12:51:28.741Z","agentId":"P-09","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-31","to":"P-26","type":"Finished Asset Sale"}}
+{"ts":"2026-08-17T12:51:28.741Z","agentId":"P-09","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-48"}}
+{"ts":"2026-08-17T12:51:28.742Z","agentId":"P-09","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-27"}}
+{"ts":"2026-08-17T12:51:28.742Z","agentId":"P-09","wave":4,"step":"WAVE_4","action":"COMPLETE","result":"SUCCESS","details":{"interactions":2,"invites":2}}
+{"ts":"2026-08-17T12:51:28.828Z","agentId":"P-09","wave":5,"step":"WAVE_5","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-17T12:51:28.828Z","agentId":"P-09","wave":5,"step":"WAVE_5","action":"COMPLETE","result":"SUCCESS","details":{"reportPath":"/Users/yvesdarbouze/Documents/PaperWorking/artifacts/persona-swarm/reports/P-09-experience-report.md"}}
+{"ts":"2026-08-17T12:51:28.846Z","agentId":"P-09","wave":5,"step":"WAVE_5","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-17T12:51:28.846Z","agentId":"P-09","wave":5,"step":"WAVE_5","action":"COMPLETE","result":"SUCCESS","details":{"reportPath":"/Users/yvesdarbouze/Documents/PaperWorking/artifacts/persona-swarm/reports/P-09-experience-report.md"}}
+{"ts":"2026-08-17T12:53:52.906Z","agentId":"P-09","wave":1,"step":"WAVE_1","action":"START","result":"SUCCESS","details":{"email":"agent09.hank.beaumont@paperworking-test.dev"}}
+{"ts":"2026-08-17T12:53:52.906Z","agentId":"P-09","wave":1,"step":"WAVE_1","action":"START","result":"SUCCESS","details":{"email":"agent09.hank.beaumont@paperworking-test.dev"}}
+{"ts":"2026-08-17T12:53:52.907Z","agentId":"P-09","wave":0,"step":"SIGNUP","action":"SUCCESS_CREATED","result":"SUCCESS","details":{"uid":"uid_persona_p09","email":"agent09.hank.beaumont@paperworking-test.dev","name":"Hank Beaumont","entity":"Beaumont Restoration Co. LLC"}}
+{"ts":"2026-08-17T12:53:52.907Z","agentId":"P-09","wave":1,"step":"WAVE_1","action":"COMPLETE","result":"SUCCESS","details":{"uid":"uid_persona_p09"}}
+{"ts":"2026-08-17T12:53:52.907Z","agentId":"P-09","wave":0,"step":"SIGNUP","action":"SUCCESS_CREATED","result":"SUCCESS","details":{"uid":"uid_persona_p09","email":"agent09.hank.beaumont@paperworking-test.dev","name":"Hank Beaumont","entity":"Beaumont Restoration Co. LLC"}}
+{"ts":"2026-08-17T12:53:52.908Z","agentId":"P-09","wave":1,"step":"WAVE_1","action":"COMPLETE","result":"SUCCESS","details":{"uid":"uid_persona_p09"}}
+{"ts":"2026-08-17T12:53:52.991Z","agentId":"P-09","wave":2,"step":"WAVE_2","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-17T12:53:52.991Z","agentId":"P-09","wave":2,"step":"WAVE_2","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-17T12:53:52.991Z","agentId":"P-09","wave":0,"step":"BILLING","action":"SUBSCRIPTION_SUCCESS","result":"SUCCESS","details":{"plan":"Individual","stripeCustomerId":"cus_test_swarm_p-09","stripeSubscriptionId":"sub_test_swarm_p-09","cardLastFour":"4242","cardBrand":"visa"}}
+{"ts":"2026-08-17T12:53:52.991Z","agentId":"P-09","wave":0,"step":"BILLING","action":"SUBSCRIPTION_SUCCESS","result":"SUCCESS","details":{"plan":"Individual","stripeCustomerId":"cus_test_swarm_p-09","stripeSubscriptionId":"sub_test_swarm_p-09","cardLastFour":"4242","cardBrand":"visa"}}
+{"ts":"2026-08-17T12:53:52.991Z","agentId":"P-09","wave":2,"step":"WAVE_2","action":"COMPLETE","result":"SUCCESS","details":{"plan":"Individual"}}
+{"ts":"2026-08-17T12:53:52.991Z","agentId":"P-09","wave":2,"step":"WAVE_2","action":"COMPLETE","result":"SUCCESS","details":{"plan":"Individual"}}
+{"ts":"2026-08-17T12:53:53.047Z","agentId":"P-09","wave":3,"step":"WAVE_3","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-17T12:53:53.063Z","agentId":"P-09","wave":0,"step":"PROJECTS","action":"CREATION_SUCCESS","result":"SUCCESS","details":{"created":10,"plaid":false}}
+{"ts":"2026-08-17T12:53:53.063Z","agentId":"P-09","wave":3,"step":"WAVE_3","action":"COMPLETE","result":"SUCCESS","details":{"created":10}}
+{"ts":"2026-08-17T12:53:53.068Z","agentId":"P-09","wave":3,"step":"WAVE_3","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-17T12:53:53.073Z","agentId":"P-09","wave":0,"step":"PROJECTS","action":"CREATION_SUCCESS","result":"SUCCESS","details":{"created":10,"plaid":false}}
+{"ts":"2026-08-17T12:53:53.073Z","agentId":"P-09","wave":3,"step":"WAVE_3","action":"COMPLETE","result":"SUCCESS","details":{"created":10}}
+{"ts":"2026-08-17T12:53:53.195Z","agentId":"P-09","wave":4,"step":"WAVE_4","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-17T12:53:53.196Z","agentId":"P-09","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"to":"P-27","type":"Finished Asset Sale"}}
+{"ts":"2026-08-17T12:53:53.196Z","agentId":"P-09","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-31","to":"P-26","type":"Finished Asset Sale"}}
+{"ts":"2026-08-17T12:53:53.196Z","agentId":"P-09","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-48"}}
+{"ts":"2026-08-17T12:53:53.197Z","agentId":"P-09","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-27"}}
+{"ts":"2026-08-17T12:53:53.197Z","agentId":"P-09","wave":4,"step":"WAVE_4","action":"COMPLETE","result":"SUCCESS","details":{"interactions":2,"invites":2}}
+{"ts":"2026-08-17T12:53:53.214Z","agentId":"P-09","wave":4,"step":"WAVE_4","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-17T12:53:53.214Z","agentId":"P-09","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"to":"P-27","type":"Finished Asset Sale"}}
+{"ts":"2026-08-17T12:53:53.215Z","agentId":"P-09","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-31","to":"P-26","type":"Finished Asset Sale"}}
+{"ts":"2026-08-17T12:53:53.215Z","agentId":"P-09","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-48"}}
+{"ts":"2026-08-17T12:53:53.215Z","agentId":"P-09","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-27"}}
+{"ts":"2026-08-17T12:53:53.215Z","agentId":"P-09","wave":4,"step":"WAVE_4","action":"COMPLETE","result":"SUCCESS","details":{"interactions":2,"invites":2}}
+{"ts":"2026-08-17T12:53:53.294Z","agentId":"P-09","wave":5,"step":"WAVE_5","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-17T12:53:53.294Z","agentId":"P-09","wave":5,"step":"WAVE_5","action":"COMPLETE","result":"SUCCESS","details":{"reportPath":"/Users/yvesdarbouze/Documents/PaperWorking/artifacts/persona-swarm/reports/P-09-experience-report.md"}}
+{"ts":"2026-08-17T12:53:53.307Z","agentId":"P-09","wave":5,"step":"WAVE_5","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-17T12:53:53.307Z","agentId":"P-09","wave":5,"step":"WAVE_5","action":"COMPLETE","result":"SUCCESS","details":{"reportPath":"/Users/yvesdarbouze/Documents/PaperWorking/artifacts/persona-swarm/reports/P-09-experience-report.md"}}
+{"ts":"2026-08-17T12:54:04.327Z","agentId":"P-09","wave":1,"step":"WAVE_1","action":"START","result":"SUCCESS","details":{"email":"agent09.hank.beaumont@paperworking-test.dev"}}
+{"ts":"2026-08-17T12:54:04.328Z","agentId":"P-09","wave":0,"step":"SIGNUP","action":"SUCCESS_CREATED","result":"SUCCESS","details":{"uid":"uid_persona_p09","email":"agent09.hank.beaumont@paperworking-test.dev","name":"Hank Beaumont","entity":"Beaumont Restoration Co. LLC"}}
+{"ts":"2026-08-17T12:54:04.328Z","agentId":"P-09","wave":1,"step":"WAVE_1","action":"COMPLETE","result":"SUCCESS","details":{"uid":"uid_persona_p09"}}
+{"ts":"2026-08-17T12:54:04.331Z","agentId":"P-09","wave":1,"step":"WAVE_1","action":"START","result":"SUCCESS","details":{"email":"agent09.hank.beaumont@paperworking-test.dev"}}
+{"ts":"2026-08-17T12:54:04.332Z","agentId":"P-09","wave":0,"step":"SIGNUP","action":"SUCCESS_CREATED","result":"SUCCESS","details":{"uid":"uid_persona_p09","email":"agent09.hank.beaumont@paperworking-test.dev","name":"Hank Beaumont","entity":"Beaumont Restoration Co. LLC"}}
+{"ts":"2026-08-17T12:54:04.332Z","agentId":"P-09","wave":1,"step":"WAVE_1","action":"COMPLETE","result":"SUCCESS","details":{"uid":"uid_persona_p09"}}
+{"ts":"2026-08-17T12:54:04.385Z","agentId":"P-09","wave":2,"step":"WAVE_2","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-17T12:54:04.386Z","agentId":"P-09","wave":0,"step":"BILLING","action":"SUBSCRIPTION_SUCCESS","result":"SUCCESS","details":{"plan":"Individual","stripeCustomerId":"cus_test_swarm_p-09","stripeSubscriptionId":"sub_test_swarm_p-09","cardLastFour":"4242","cardBrand":"visa"}}
+{"ts":"2026-08-17T12:54:04.386Z","agentId":"P-09","wave":2,"step":"WAVE_2","action":"COMPLETE","result":"SUCCESS","details":{"plan":"Individual"}}
+{"ts":"2026-08-17T12:54:04.392Z","agentId":"P-09","wave":2,"step":"WAVE_2","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-17T12:54:04.392Z","agentId":"P-09","wave":0,"step":"BILLING","action":"SUBSCRIPTION_SUCCESS","result":"SUCCESS","details":{"plan":"Individual","stripeCustomerId":"cus_test_swarm_p-09","stripeSubscriptionId":"sub_test_swarm_p-09","cardLastFour":"4242","cardBrand":"visa"}}
+{"ts":"2026-08-17T12:54:04.393Z","agentId":"P-09","wave":2,"step":"WAVE_2","action":"COMPLETE","result":"SUCCESS","details":{"plan":"Individual"}}
+{"ts":"2026-08-17T12:54:04.469Z","agentId":"P-09","wave":3,"step":"WAVE_3","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-17T12:54:04.475Z","agentId":"P-09","wave":0,"step":"PROJECTS","action":"CREATION_SUCCESS","result":"SUCCESS","details":{"created":10,"plaid":false}}
+{"ts":"2026-08-17T12:54:04.476Z","agentId":"P-09","wave":3,"step":"WAVE_3","action":"COMPLETE","result":"SUCCESS","details":{"created":10}}
+{"ts":"2026-08-17T12:54:04.478Z","agentId":"P-09","wave":3,"step":"WAVE_3","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-17T12:54:04.486Z","agentId":"P-09","wave":0,"step":"PROJECTS","action":"CREATION_SUCCESS","result":"SUCCESS","details":{"created":10,"plaid":false}}
+{"ts":"2026-08-17T12:54:04.486Z","agentId":"P-09","wave":3,"step":"WAVE_3","action":"COMPLETE","result":"SUCCESS","details":{"created":10}}
+{"ts":"2026-08-17T12:54:04.685Z","agentId":"P-09","wave":4,"step":"WAVE_4","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-17T12:54:04.685Z","agentId":"P-09","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"to":"P-27","type":"Finished Asset Sale"}}
+{"ts":"2026-08-17T12:54:04.685Z","agentId":"P-09","wave":4,"step":"WAVE_4","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-17T12:54:04.686Z","agentId":"P-09","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"to":"P-27","type":"Finished Asset Sale"}}
+{"ts":"2026-08-17T12:54:04.686Z","agentId":"P-09","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-31","to":"P-26","type":"Finished Asset Sale"}}
+{"ts":"2026-08-17T12:54:04.686Z","agentId":"P-09","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-31","to":"P-26","type":"Finished Asset Sale"}}
+{"ts":"2026-08-17T12:54:04.686Z","agentId":"P-09","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-48"}}
+{"ts":"2026-08-17T12:54:04.687Z","agentId":"P-09","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-27"}}
+{"ts":"2026-08-17T12:54:04.687Z","agentId":"P-09","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-48"}}
+{"ts":"2026-08-17T12:54:04.687Z","agentId":"P-09","wave":4,"step":"WAVE_4","action":"COMPLETE","result":"SUCCESS","details":{"interactions":2,"invites":2}}
+{"ts":"2026-08-17T12:54:04.687Z","agentId":"P-09","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-27"}}
+{"ts":"2026-08-17T12:54:04.687Z","agentId":"P-09","wave":4,"step":"WAVE_4","action":"COMPLETE","result":"SUCCESS","details":{"interactions":2,"invites":2}}
+{"ts":"2026-08-17T12:54:04.788Z","agentId":"P-09","wave":5,"step":"WAVE_5","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-17T12:54:04.788Z","agentId":"P-09","wave":5,"step":"WAVE_5","action":"COMPLETE","result":"SUCCESS","details":{"reportPath":"/Users/yvesdarbouze/Documents/PaperWorking/artifacts/persona-swarm/reports/P-09-experience-report.md"}}
+{"ts":"2026-08-17T12:54:04.789Z","agentId":"P-09","wave":5,"step":"WAVE_5","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-17T12:54:04.790Z","agentId":"P-09","wave":5,"step":"WAVE_5","action":"COMPLETE","result":"SUCCESS","details":{"reportPath":"/Users/yvesdarbouze/Documents/PaperWorking/artifacts/persona-swarm/reports/P-09-experience-report.md"}}
+{"ts":"2026-08-17T15:51:16.728Z","agentId":"P-09","wave":1,"step":"WAVE_1","action":"START","result":"SUCCESS","details":{"email":"agent09.hank.beaumont@paperworking-test.dev"}}
+{"ts":"2026-08-17T15:51:16.885Z","agentId":"P-09","wave":1,"step":"WAVE_1","action":"START","result":"SUCCESS","details":{"email":"agent09.hank.beaumont@paperworking-test.dev"}}
+{"ts":"2026-08-17T15:51:18.888Z","agentId":"P-09","wave":0,"step":"SIGNUP","action":"SUCCESS_CREATED","result":"SUCCESS","details":{"uid":"uid_persona_p09","email":"agent09.hank.beaumont@paperworking-test.dev","name":"Hank Beaumont","entity":"Beaumont Restoration Co. LLC"}}
+{"ts":"2026-08-17T15:51:18.888Z","agentId":"P-09","wave":1,"step":"WAVE_1","action":"COMPLETE","result":"SUCCESS","details":{"uid":"uid_persona_p09"}}
+{"ts":"2026-08-17T15:51:19.095Z","agentId":"P-09","wave":0,"step":"SIGNUP","action":"SUCCESS_CREATED","result":"SUCCESS","details":{"uid":"uid_persona_p09","email":"agent09.hank.beaumont@paperworking-test.dev","name":"Hank Beaumont","entity":"Beaumont Restoration Co. LLC"}}
+{"ts":"2026-08-17T15:51:19.095Z","agentId":"P-09","wave":1,"step":"WAVE_1","action":"COMPLETE","result":"SUCCESS","details":{"uid":"uid_persona_p09"}}
+{"ts":"2026-08-17T15:52:52.689Z","agentId":"P-09","wave":2,"step":"WAVE_2","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-17T15:52:52.689Z","agentId":"P-09","wave":2,"step":"WAVE_2","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-17T15:52:53.586Z","agentId":"P-09","wave":0,"step":"BILLING","action":"SUBSCRIPTION_SUCCESS","result":"SUCCESS","details":{"plan":"Individual","stripeCustomerId":"cus_test_swarm_p-09","stripeSubscriptionId":"sub_test_swarm_p-09","cardLastFour":"4242","cardBrand":"visa"}}
+{"ts":"2026-08-17T15:52:53.587Z","agentId":"P-09","wave":2,"step":"WAVE_2","action":"COMPLETE","result":"SUCCESS","details":{"plan":"Individual"}}
+{"ts":"2026-08-17T15:52:53.587Z","agentId":"P-09","wave":0,"step":"BILLING","action":"SUBSCRIPTION_SUCCESS","result":"SUCCESS","details":{"plan":"Individual","stripeCustomerId":"cus_test_swarm_p-09","stripeSubscriptionId":"sub_test_swarm_p-09","cardLastFour":"4242","cardBrand":"visa"}}
+{"ts":"2026-08-17T15:52:53.587Z","agentId":"P-09","wave":2,"step":"WAVE_2","action":"COMPLETE","result":"SUCCESS","details":{"plan":"Individual"}}
+{"ts":"2026-08-17T16:16:03.777Z","agentId":"P-09","wave":1,"step":"WAVE_1","action":"START","result":"SUCCESS","details":{"email":"agent09.hank.beaumont@paperworking-test.dev"}}
+{"ts":"2026-08-17T16:16:04.580Z","agentId":"P-09","wave":1,"step":"WAVE_1","action":"START","result":"SUCCESS","details":{"email":"agent09.hank.beaumont@paperworking-test.dev"}}
+{"ts":"2026-08-17T16:16:05.914Z","agentId":"P-09","wave":0,"step":"SIGNUP","action":"SUCCESS_CREATED","result":"SUCCESS","details":{"uid":"uid_persona_p09","email":"agent09.hank.beaumont@paperworking-test.dev","name":"Hank Beaumont","entity":"Beaumont Restoration Co. LLC"}}
+{"ts":"2026-08-17T16:16:05.914Z","agentId":"P-09","wave":1,"step":"WAVE_1","action":"COMPLETE","result":"SUCCESS","details":{"uid":"uid_persona_p09"}}
+{"ts":"2026-08-17T16:16:06.789Z","agentId":"P-09","wave":0,"step":"SIGNUP","action":"SUCCESS_CREATED","result":"SUCCESS","details":{"uid":"uid_persona_p09","email":"agent09.hank.beaumont@paperworking-test.dev","name":"Hank Beaumont","entity":"Beaumont Restoration Co. LLC"}}
+{"ts":"2026-08-17T16:16:06.789Z","agentId":"P-09","wave":1,"step":"WAVE_1","action":"COMPLETE","result":"SUCCESS","details":{"uid":"uid_persona_p09"}}
+{"ts":"2026-08-17T16:17:00.408Z","agentId":"P-09","wave":1,"step":"WAVE_1","action":"START","result":"SUCCESS","details":{"email":"agent09.hank.beaumont@paperworking-test.dev"}}
+{"ts":"2026-08-17T16:17:00.466Z","agentId":"P-09","wave":1,"step":"WAVE_1","action":"START","result":"SUCCESS","details":{"email":"agent09.hank.beaumont@paperworking-test.dev"}}
+{"ts":"2026-08-17T16:17:02.642Z","agentId":"P-09","wave":0,"step":"SIGNUP","action":"SUCCESS_CREATED","result":"SUCCESS","details":{"uid":"uid_persona_p09","email":"agent09.hank.beaumont@paperworking-test.dev","name":"Hank Beaumont","entity":"Beaumont Restoration Co. LLC"}}
+{"ts":"2026-08-17T16:17:02.642Z","agentId":"P-09","wave":0,"step":"SIGNUP","action":"SUCCESS_CREATED","result":"SUCCESS","details":{"uid":"uid_persona_p09","email":"agent09.hank.beaumont@paperworking-test.dev","name":"Hank Beaumont","entity":"Beaumont Restoration Co. LLC"}}
+{"ts":"2026-08-17T16:17:02.642Z","agentId":"P-09","wave":1,"step":"WAVE_1","action":"COMPLETE","result":"SUCCESS","details":{"uid":"uid_persona_p09"}}
+{"ts":"2026-08-17T16:17:02.643Z","agentId":"P-09","wave":1,"step":"WAVE_1","action":"COMPLETE","result":"SUCCESS","details":{"uid":"uid_persona_p09"}}
+{"ts":"2026-08-17T16:17:41.258Z","agentId":"P-09","wave":2,"step":"WAVE_2","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-17T16:17:42.176Z","agentId":"P-09","wave":0,"step":"BILLING","action":"SUBSCRIPTION_SUCCESS","result":"SUCCESS","details":{"plan":"Individual","stripeCustomerId":"cus_test_swarm_p-09","stripeSubscriptionId":"sub_test_swarm_p-09","cardLastFour":"4242","cardBrand":"visa"}}
+{"ts":"2026-08-17T16:17:42.176Z","agentId":"P-09","wave":2,"step":"WAVE_2","action":"COMPLETE","result":"SUCCESS","details":{"plan":"Individual"}}
+{"ts":"2026-08-17T16:17:42.793Z","agentId":"P-09","wave":2,"step":"WAVE_2","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-17T16:17:43.755Z","agentId":"P-09","wave":0,"step":"BILLING","action":"SUBSCRIPTION_SUCCESS","result":"SUCCESS","details":{"plan":"Individual","stripeCustomerId":"cus_test_swarm_p-09","stripeSubscriptionId":"sub_test_swarm_p-09","cardLastFour":"4242","cardBrand":"visa"}}
+{"ts":"2026-08-17T16:17:43.755Z","agentId":"P-09","wave":2,"step":"WAVE_2","action":"COMPLETE","result":"SUCCESS","details":{"plan":"Individual"}}
+{"ts":"2026-08-17T16:18:35.795Z","agentId":"P-09","wave":2,"step":"WAVE_2","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-17T16:18:35.796Z","agentId":"P-09","wave":2,"step":"WAVE_2","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-17T16:18:36.759Z","agentId":"P-09","wave":0,"step":"BILLING","action":"SUBSCRIPTION_SUCCESS","result":"SUCCESS","details":{"plan":"Individual","stripeCustomerId":"cus_test_swarm_p-09","stripeSubscriptionId":"sub_test_swarm_p-09","cardLastFour":"4242","cardBrand":"visa"}}
+{"ts":"2026-08-17T16:18:36.759Z","agentId":"P-09","wave":0,"step":"BILLING","action":"SUBSCRIPTION_SUCCESS","result":"SUCCESS","details":{"plan":"Individual","stripeCustomerId":"cus_test_swarm_p-09","stripeSubscriptionId":"sub_test_swarm_p-09","cardLastFour":"4242","cardBrand":"visa"}}
+{"ts":"2026-08-17T16:18:36.760Z","agentId":"P-09","wave":2,"step":"WAVE_2","action":"COMPLETE","result":"SUCCESS","details":{"plan":"Individual"}}
+{"ts":"2026-08-17T16:18:36.760Z","agentId":"P-09","wave":2,"step":"WAVE_2","action":"COMPLETE","result":"SUCCESS","details":{"plan":"Individual"}}
+{"ts":"2026-08-17T16:18:41.979Z","agentId":"P-09","wave":3,"step":"WAVE_3","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-17T16:18:41.979Z","agentId":"P-09","wave":0,"step":"PROJECTS","action":"CREATION_SUCCESS","result":"SUCCESS","details":{"created":10,"plaid":false}}
+{"ts":"2026-08-17T16:18:41.979Z","agentId":"P-09","wave":3,"step":"WAVE_3","action":"COMPLETE","result":"SUCCESS","details":{"created":10}}
+{"ts":"2026-08-17T16:18:42.027Z","agentId":"P-09","wave":4,"step":"WAVE_4","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-17T16:18:42.027Z","agentId":"P-09","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"to":"P-27","type":"Finished Asset Sale"}}
+{"ts":"2026-08-17T16:18:42.027Z","agentId":"P-09","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-31","to":"P-26","type":"Finished Asset Sale"}}
+{"ts":"2026-08-17T16:18:42.027Z","agentId":"P-09","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-48"}}
+{"ts":"2026-08-17T16:18:42.027Z","agentId":"P-09","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-27"}}
+{"ts":"2026-08-17T16:18:42.027Z","agentId":"P-09","wave":4,"step":"WAVE_4","action":"COMPLETE","result":"SUCCESS","details":{"interactions":2,"invites":2}}
+{"ts":"2026-08-17T16:18:42.032Z","agentId":"P-09","wave":3,"step":"WAVE_3","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-17T16:18:42.033Z","agentId":"P-09","wave":0,"step":"PROJECTS","action":"CREATION_SUCCESS","result":"SUCCESS","details":{"created":10,"plaid":false}}
+{"ts":"2026-08-17T16:18:42.033Z","agentId":"P-09","wave":3,"step":"WAVE_3","action":"COMPLETE","result":"SUCCESS","details":{"created":10}}
+{"ts":"2026-08-17T19:41:27.599Z","agentId":"P-09","wave":1,"step":"WAVE_1","action":"START","result":"SUCCESS","details":{"email":"agent09.hank.beaumont@paperworking-test.dev"}}
+{"ts":"2026-08-17T19:41:28.480Z","agentId":"P-09","wave":1,"step":"WAVE_1","action":"START","result":"SUCCESS","details":{"email":"agent09.hank.beaumont@paperworking-test.dev"}}
+{"ts":"2026-08-17T19:41:29.579Z","agentId":"P-09","wave":0,"step":"SIGNUP","action":"SUCCESS_CREATED","result":"SUCCESS","details":{"uid":"uid_persona_p09","email":"agent09.hank.beaumont@paperworking-test.dev","name":"Hank Beaumont","entity":"Beaumont Restoration Co. LLC"}}
+{"ts":"2026-08-17T19:41:29.579Z","agentId":"P-09","wave":1,"step":"WAVE_1","action":"COMPLETE","result":"SUCCESS","details":{"uid":"uid_persona_p09"}}
+{"ts":"2026-08-17T19:41:30.500Z","agentId":"P-09","wave":0,"step":"SIGNUP","action":"SUCCESS_CREATED","result":"SUCCESS","details":{"uid":"uid_persona_p09","email":"agent09.hank.beaumont@paperworking-test.dev","name":"Hank Beaumont","entity":"Beaumont Restoration Co. LLC"}}
+{"ts":"2026-08-17T19:41:30.501Z","agentId":"P-09","wave":1,"step":"WAVE_1","action":"COMPLETE","result":"SUCCESS","details":{"uid":"uid_persona_p09"}}
+{"ts":"2026-08-17T19:43:01.113Z","agentId":"P-09","wave":2,"step":"WAVE_2","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-17T19:43:01.996Z","agentId":"P-09","wave":0,"step":"BILLING","action":"SUBSCRIPTION_SUCCESS","result":"SUCCESS","details":{"plan":"Individual","stripeCustomerId":"cus_test_swarm_p-09","stripeSubscriptionId":"sub_test_swarm_p-09","cardLastFour":"4242","cardBrand":"visa"}}
+{"ts":"2026-08-17T19:43:01.996Z","agentId":"P-09","wave":2,"step":"WAVE_2","action":"COMPLETE","result":"SUCCESS","details":{"plan":"Individual"}}
+{"ts":"2026-08-17T19:43:02.725Z","agentId":"P-09","wave":2,"step":"WAVE_2","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-17T19:43:03.650Z","agentId":"P-09","wave":0,"step":"BILLING","action":"SUBSCRIPTION_SUCCESS","result":"SUCCESS","details":{"plan":"Individual","stripeCustomerId":"cus_test_swarm_p-09","stripeSubscriptionId":"sub_test_swarm_p-09","cardLastFour":"4242","cardBrand":"visa"}}
+{"ts":"2026-08-17T19:43:03.650Z","agentId":"P-09","wave":2,"step":"WAVE_2","action":"COMPLETE","result":"SUCCESS","details":{"plan":"Individual"}}
+{"ts":"2026-08-17T19:43:07.959Z","agentId":"P-09","wave":3,"step":"WAVE_3","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-17T19:43:07.959Z","agentId":"P-09","wave":0,"step":"PROJECTS","action":"CREATION_SUCCESS","result":"SUCCESS","details":{"created":10,"plaid":false}}
+{"ts":"2026-08-17T19:43:07.959Z","agentId":"P-09","wave":3,"step":"WAVE_3","action":"COMPLETE","result":"SUCCESS","details":{"created":10}}
+{"ts":"2026-08-17T19:43:07.984Z","agentId":"P-09","wave":4,"step":"WAVE_4","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-17T19:43:07.984Z","agentId":"P-09","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"to":"P-27","type":"Finished Asset Sale"}}
+{"ts":"2026-08-17T19:43:07.984Z","agentId":"P-09","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-31","to":"P-26","type":"Finished Asset Sale"}}
+{"ts":"2026-08-17T19:43:07.984Z","agentId":"P-09","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-48"}}
+{"ts":"2026-08-17T19:43:07.984Z","agentId":"P-09","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-27"}}
+{"ts":"2026-08-17T19:43:07.984Z","agentId":"P-09","wave":4,"step":"WAVE_4","action":"COMPLETE","result":"SUCCESS","details":{"interactions":2,"invites":2}}
+{"ts":"2026-08-17T19:43:08.020Z","agentId":"P-09","wave":5,"step":"WAVE_5","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-17T19:43:08.021Z","agentId":"P-09","wave":5,"step":"WAVE_5","action":"COMPLETE","result":"SUCCESS","details":{"reportPath":"/Users/yvesdarbouze/Documents/PaperWorking/artifacts/persona-swarm/reports/P-09-experience-report.md"}}
+{"ts":"2026-08-17T19:43:08.107Z","agentId":"P-09","wave":3,"step":"WAVE_3","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-17T19:43:08.107Z","agentId":"P-09","wave":0,"step":"PROJECTS","action":"CREATION_SUCCESS","result":"SUCCESS","details":{"created":10,"plaid":false}}
+{"ts":"2026-08-17T19:43:08.107Z","agentId":"P-09","wave":3,"step":"WAVE_3","action":"COMPLETE","result":"SUCCESS","details":{"created":10}}
+{"ts":"2026-08-17T19:43:08.127Z","agentId":"P-09","wave":4,"step":"WAVE_4","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-17T19:43:08.127Z","agentId":"P-09","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"to":"P-27","type":"Finished Asset Sale"}}
+{"ts":"2026-08-17T19:43:08.127Z","agentId":"P-09","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-31","to":"P-26","type":"Finished Asset Sale"}}
+{"ts":"2026-08-17T19:43:08.127Z","agentId":"P-09","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-48"}}
+{"ts":"2026-08-17T19:43:08.128Z","agentId":"P-09","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-27"}}
+{"ts":"2026-08-17T19:43:08.128Z","agentId":"P-09","wave":4,"step":"WAVE_4","action":"COMPLETE","result":"SUCCESS","details":{"interactions":2,"invites":2}}
+{"ts":"2026-08-17T19:43:08.165Z","agentId":"P-09","wave":5,"step":"WAVE_5","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-17T19:43:08.165Z","agentId":"P-09","wave":5,"step":"WAVE_5","action":"COMPLETE","result":"SUCCESS","details":{"reportPath":"/Users/yvesdarbouze/Documents/PaperWorking/artifacts/persona-swarm/reports/P-09-experience-report.md"}}

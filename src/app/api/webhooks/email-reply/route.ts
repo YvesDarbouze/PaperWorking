@@ -56,9 +56,9 @@ export async function POST(req: NextRequest) {
       message: 'Inbound email message recorded successfully.',
       record: newMessage,
     });
-  } catch (err: any) {
+  } catch (err: unknown) {
     return NextResponse.json(
-      { error: err.message || 'Internal server error processing inbound email webhook.' },
+      { error: (err as Error).message || 'Internal server error processing inbound email webhook.' },
       { status: 500 }
     );
   }

@@ -23,8 +23,8 @@ export default function BroadcastModal({
   dealAddress,
   purchasePrice,
   projectedRoi,
-  senderName = 'Investor',
-  senderBusinessCard,
+  senderName: _senderName = 'Investor',
+  senderBusinessCard: _senderBusinessCard,
   onSendSuccess,
 }: BroadcastModalProps) {
   const [emails, setEmails] = useState('');

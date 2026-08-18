@@ -59,9 +59,9 @@ export async function POST(request: NextRequest) {
         html: rendered.html,
         text: rendered.text,
       });
-    } catch (authError: any) {
+    } catch (authError: unknown) {
       // If user does not exist (auth/user-not-found), do not leak information (F-20)
-      if (authError?.code !== 'auth/user-not-found') {
+      if ((authError as { code?: string })?.code !== 'auth/user-not-found') {
         console.error('[ResetPassword] Non-fatal adminAuth error:', authError);
       }
     }

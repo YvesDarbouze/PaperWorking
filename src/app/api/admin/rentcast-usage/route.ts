@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
-import { requireAuth, isAuthError } from "@/lib/firebase-admin/auth-guard";
+import { isAuthError } from "@/lib/firebase-admin/auth-guard";
+import { requireAdminAuth } from "@/lib/firebase-admin/admin-guard";
 import { adminDb } from "@/lib/firebase/admin";
 import { logger } from "@/lib/logger";
 
@@ -8,7 +9,7 @@ export const dynamic = "force-dynamic";
 // GET /api/admin/rentcast-usage
 // Retrieve the number of RentCast API calls made in the current calendar month
 export async function GET(req: NextRequest) {
-  const auth = await requireAuth(req);
+  const auth = await requireAdminAuth(req);
   if (isAuthError(auth)) return auth;
 
   // Optional: restrict to admin users if project had roles, but for now verifying auth token is sufficient

@@ -5,10 +5,224 @@ import { NextRequest } from 'next/server';
 dotenv.config({ path: path.resolve(process.cwd(), '.env.local') });
 dotenv.config({ path: path.resolve(process.cwd(), '.env') });
 
+import fs from 'fs';
 import { GET as getRoster } from '@/app/api/admin/agent-crew/route';
 import { GET as getAgentDetail } from '@/app/api/admin/agent-crew/[id]/route';
 import { POST as impersonateAgent } from '@/app/api/admin/agent-crew/[id]/impersonate/route';
 import { prisma } from '@/lib/prisma';
+
+const getMockAgents = () => {
+  const p = path.resolve(process.cwd(), 'src/test/fixtures/agent-crew-seed.json');
+  return fs.existsSync(p) ? (JSON.parse(fs.readFileSync(p, 'utf-8')).agents || []) : [];
+};
+
+jest.mock('@/lib/prisma', () => ({
+  prisma: {
+    user: {
+      findMany: jest.fn().mockImplementation(() => {
+        const p = require('path').resolve(process.cwd(), 'src/test/fixtures/agent-crew-seed.json');
+        const fsMod = require('fs');
+        const agents = fsMod.existsSync(p) ? (JSON.parse(fsMod.readFileSync(p, 'utf-8')).agents || []) : [];
+        return Promise.resolve(
+          agents.map((a: { uid: string; email: string; name: string; persona: string }) => ({
+            id: a.uid,
+            email: a.email,
+            name: a.name,
+            syntheticAgent: true,
+            agentPersona: a.persona,
+          }))
+        );
+      }),
+      findUnique: jest.fn().mockImplementation(({ where }: { where: { id?: string; email?: string } }) => {
+        const p = require('path').resolve(process.cwd(), 'src/test/fixtures/agent-crew-seed.json');
+        const fsMod = require('fs');
+        const agents = fsMod.existsSync(p) ? (JSON.parse(fsMod.readFileSync(p, 'utf-8')).agents || []) : [];
+        const agent = agents.find(
+          (a: { uid: string; email: string }) => a.uid === where.id || a.email === where.email
+        );
+        if (!agent) return Promise.resolve(null);
+        return Promise.resolve({
+          id: agent.uid,
+          email: agent.email,
+          name: agent.name,
+          syntheticAgent: true,
+          agentPersona: agent.persona,
+        });
+      }),
+      findFirst: jest.fn().mockImplementation(({ where }: { where?: { id?: string; email?: string } }) => {
+        const p = require('path').resolve(process.cwd(), 'src/test/fixtures/agent-crew-seed.json');
+        const fsMod = require('fs');
+        const agents = fsMod.existsSync(p) ? (JSON.parse(fsMod.readFileSync(p, 'utf-8')).agents || []) : [];
+        const agent = agents.find(
+          (a: { uid: string; email: string }) => a.uid === where?.id || a.email === where?.email
+        );
+        if (!agent) return Promise.resolve(null);
+        return Promise.resolve({
+          id: agent.uid,
+          email: agent.email,
+          name: agent.name,
+          syntheticAgent: true,
+          agentPersona: agent.persona,
+        });
+      }),
+    },
+    appUser: {
+      findUnique: jest.fn().mockResolvedValue(null),
+    },
+    reilProject: {
+      findMany: jest.fn().mockImplementation(({ where }: { where?: { listedByAgent?: string; syntheticAgent?: boolean } } = {}) => {
+        const pPath = require('path').resolve(process.cwd(), 'src/test/fixtures/agent-crew-seed.json');
+        const fsMod = require('fs');
+        const agents = fsMod.existsSync(pPath) ? (JSON.parse(fsMod.readFileSync(pPath, 'utf-8')).agents || []) : [];
+        let list = agents.flatMap((a: { handle: string; projects?: Array<Record<string, unknown>> }) =>
+          (a.projects || []).map((proj) => ({ ...proj, syntheticAgent: true, listedByAgent: a.handle }))
+        );
+        if (where?.listedByAgent) {
+          list = list.filter((p: { listedByAgent?: string }) => p.listedByAgent === where.listedByAgent);
+        }
+        if (where?.syntheticAgent) {
+          list = list.filter((p: { syntheticAgent?: boolean }) => p.syntheticAgent === true);
+        }
+        return Promise.resolve(list);
+      }),
+      count: jest.fn().mockImplementation(({ where }: { where?: { listedByAgent?: string; syntheticAgent?: boolean } } = {}) => {
+        const pPath = require('path').resolve(process.cwd(), 'src/test/fixtures/agent-crew-seed.json');
+        const fsMod = require('fs');
+        const agents = fsMod.existsSync(pPath) ? (JSON.parse(fsMod.readFileSync(pPath, 'utf-8')).agents || []) : [];
+        let list = agents.flatMap((a: { handle: string; projects?: Array<Record<string, unknown>> }) =>
+          (a.projects || []).map((proj) => ({ ...proj, syntheticAgent: true, listedByAgent: a.handle }))
+        );
+        if (where?.listedByAgent) {
+          list = list.filter((p: { listedByAgent?: string }) => p.listedByAgent === where.listedByAgent);
+        }
+        if (where?.syntheticAgent) {
+          list = list.filter((p: { syntheticAgent?: boolean }) => p.syntheticAgent === true);
+        }
+        return Promise.resolve(list.length);
+      }),
+    },
+    marketplaceListing: {
+      findMany: jest.fn().mockResolvedValue([]),
+      count: jest.fn().mockResolvedValue(3),
+    },
+    message: {
+      findMany: jest.fn().mockResolvedValue([]),
+      count: jest.fn().mockResolvedValue(2),
+    },
+    $disconnect: jest.fn().mockResolvedValue(undefined),
+  },
+}));
+
+jest.mock('@/lib/firebase/admin', () => {
+  const loadMockAgents = () => {
+    const p = require('path').resolve(process.cwd(), 'src/test/fixtures/agent-crew-seed.json');
+    const fsMod = require('fs');
+    return fsMod.existsSync(p) ? (JSON.parse(fsMod.readFileSync(p, 'utf-8')).agents || []) : [];
+  };
+  const loadMockProjects = () => {
+    const agents = loadMockAgents();
+    return agents.flatMap((a: { handle: string; projects?: Array<Record<string, unknown>> }) =>
+      (a.projects || []).map((proj) => ({ ...proj, syntheticAgent: true, listedByAgent: a.handle }))
+    );
+  };
+
+  return {
+    adminDb: {
+      collection: jest.fn().mockImplementation((collectionName: string) => {
+        if (collectionName === 'users') {
+          return {
+            doc: jest.fn().mockImplementation((id: string) => {
+              const agents = loadMockAgents();
+              const agent = agents.find(
+                (a: { uid: string; handle: string }) => a.uid === id || a.handle === id
+              );
+              return {
+                get: jest.fn().mockResolvedValue({
+                  exists: !!agent,
+                  id: agent ? agent.uid : id,
+                  data: () =>
+                    agent
+                      ? {
+                          id: agent.uid,
+                          uid: agent.uid,
+                          displayName: agent.name,
+                          name: agent.name,
+                          email: agent.email,
+                          syntheticAgent: true,
+                          agentPersona: agent.persona,
+                          handle: agent.handle,
+                          stripeCustomerId: agent.stripeCustomerId,
+                          stripeSubscriptionId: agent.stripeSubscriptionId,
+                        }
+                      : null,
+                }),
+              };
+            }),
+            where: jest.fn().mockImplementation((field: string, _op: string, val: unknown) => ({
+              get: jest.fn().mockImplementation(() => {
+                const agents = loadMockAgents();
+                const filtered = agents.filter((a: { syntheticAgent?: boolean }) => {
+                  if (field === 'syntheticAgent') return a.syntheticAgent === val;
+                  return true;
+                });
+                return Promise.resolve({
+                  empty: filtered.length === 0,
+                  size: filtered.length,
+                  docs: filtered.map((a: { uid: string; name: string; email: string; persona: string; handle: string; stripeCustomerId?: string; stripeSubscriptionId?: string }) => ({
+                    id: a.uid,
+                    data: () => ({
+                      id: a.uid,
+                      uid: a.uid,
+                      displayName: a.name,
+                      name: a.name,
+                      email: a.email,
+                      syntheticAgent: true,
+                      agentPersona: a.persona,
+                      handle: a.handle,
+                      stripeCustomerId: a.stripeCustomerId,
+                      stripeSubscriptionId: a.stripeSubscriptionId,
+                    }),
+                  })),
+                });
+              }),
+            })),
+          };
+        }
+        if (collectionName === 'projects') {
+          return {
+            where: jest.fn().mockImplementation((field: string, _op: string, val: unknown) => ({
+              get: jest.fn().mockImplementation(() => {
+                const projects = loadMockProjects();
+                const filtered = projects.filter((p: { listedByAgent?: string; syntheticAgent?: boolean }) => {
+                  if (field === 'listedByAgent') return p.listedByAgent === val;
+                  if (field === 'syntheticAgent') return p.syntheticAgent === val;
+                  return true;
+                });
+                return Promise.resolve({
+                  empty: filtered.length === 0,
+                  size: filtered.length,
+                  docs: filtered.map((p: Record<string, unknown>) => ({
+                    id: p.id,
+                    data: () => ({ ...p, syntheticAgent: true, listedByAgent: p.listedByAgent }),
+                  })),
+                });
+              }),
+            })),
+          };
+        }
+        return {
+          doc: jest.fn().mockReturnValue({ get: jest.fn().mockResolvedValue({ exists: false, data: () => null }) }),
+          where: jest.fn().mockReturnValue({
+            get: jest.fn().mockResolvedValue({ empty: true, size: 0, docs: [] }),
+          }),
+        };
+      }),
+    },
+    adminAuth: {
+      verifyIdToken: jest.fn().mockResolvedValue({ uid: 'mock_session_token_123', email: 'admin@paperworking.co' }),
+    },
+  };
+});
 
 describe('Admin Agent Crew Dashboard API & Route Guard Tests', () => {
   afterAll(async () => {

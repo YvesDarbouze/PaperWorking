@@ -5,9 +5,9 @@ import Link from "next/link";
 import { useTheme } from "@/lib/utils/ThemeProvider";
 import { useProjectStore } from "@/store/projectStore";
 import toast from "react-hot-toast";
-import DealMap, { MapPinData } from "@/components/marketplace/DealMap";
+import DealMap from "@/components/marketplace/DealMap";
 import { MarketplaceMapModal } from "@/components/marketplace/MarketplaceMapModal";
-import { Maximize2, MapPin, Search } from "lucide-react";
+import { Maximize2 } from "lucide-react";
 import type { DealListingTeaser } from "@/types/listing";
 
 interface Submarket {
@@ -104,9 +104,9 @@ export function MarketHeatmap() {
       leadInvestorName: 'Lead Investor',
       followCount: 3,
       viewCount: 12,
-      price: (p.financials as any)?.purchasePrice || 250000,
+      price: ((p.financials as unknown as Record<string, unknown>)?.purchasePrice as number) || 250000,
       capRate: 7.5,
-    } as any));
+    } as unknown as DealListingTeaser));
   }, [projects]);
 
   const activeSubmarket = useMemo(() => {
@@ -150,7 +150,7 @@ export function MarketHeatmap() {
               <button
                 key={tab.id}
                 onClick={() => {
-                  setActiveTab(tab.id as any);
+                  setActiveTab(tab.id as 'map' | 'heatmap' | 'deals' | 'vendors');
                   setSelectedSubmarketId(null);
                 }}
                 className="text-[10px] font-bold uppercase tracking-wider px-3 py-1.5 rounded-lg transition-all cursor-pointer whitespace-nowrap"

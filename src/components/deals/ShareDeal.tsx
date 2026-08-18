@@ -17,8 +17,8 @@ export default function ShareDeal({
   address,
   slug,
   percentFunded = 65,
-  teaser = 'Value-add real estate investment opportunity on PaperWorking',
-  isOpen = false,
+  teaser: _teaser = 'Value-add real estate investment opportunity on PaperWorking',
+  isOpen: _isOpen = false,
   onClose,
   className = '',
 }: ShareDealProps) {

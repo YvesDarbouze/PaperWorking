@@ -16,7 +16,7 @@ export function generateDealInviteToken(payload: DealInvitePayload): string {
 
 export function verifyDealInviteToken(token: string): DealInvitePayload | null {
   try {
-    return jwt.verify(token, JWT_SECRET) as DealInvitePayload;
+    return jwt.verify(token, JWT_SECRET) as unknown as DealInvitePayload;
   } catch {
     return null;
   }
@@ -27,7 +27,7 @@ export function renderDealInviteEmailHtml(
   tokenArg?: string
 ): string {
   const payload = payloadOrOptions;
-  const token = tokenArg || (payloadOrOptions as any).token || '';
+  const token = tokenArg || ('token' in payloadOrOptions ? (payloadOrOptions as { token: string }).token : '') || '';
   const inviteUrl = `https://paperworking.co/deals/${payload.slug}/external?token=${token}`;
 
   return `

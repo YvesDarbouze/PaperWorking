@@ -13,7 +13,6 @@ describe('SendGrid & System Email Provider Integration (EM Series v2)', () => {
     delete process.env.SYSTEM_EMAIL_PROVIDER;
     delete process.env.SENDGRID_API_KEY;
     delete process.env.EMAIL_GLOBAL_KILL_SWITCH;
-    // @ts-ignore
     global.fetch = jest.fn();
   });
 

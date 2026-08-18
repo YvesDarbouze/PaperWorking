@@ -45,6 +45,7 @@ test.describe('PaperWorking E2E — Buy-Box / Hurdle Test (AQ-13)', () => {
     project.firstPassVerdict = 'PURSUE';
     project.firstPassRentCents = 195000;
     project.dispositionType = 'RENT';
+    project.subStrategy = 'LONG_TERM';
     
     project.comps = [
       { id: 'c1', addressLine: '744 Evergreen Ter', soldPriceCents: 27900000, soldDate: '2026-01-01', sqft: 1200, distanceMiles: 0.1, condition: 'Good' },
@@ -63,6 +64,8 @@ test.describe('PaperWorking E2E — Buy-Box / Hurdle Test (AQ-13)', () => {
       totalCashInvested: 6000000,
       projectedRehabCost: 0,
       rehabBudget: 0,
+      offerStatus: 'Accepted',
+      finalAgreedPrice: 27900000,
 
       // Stage 5 & 6 exit conditions pre-filled to unlock Phase Gate
       psaDocumentUrl: '/mock/documents/Executed_PSA_Signed.pdf',
@@ -163,7 +166,7 @@ test.describe('PaperWorking E2E — Buy-Box / Hurdle Test (AQ-13)', () => {
     await expect(checklistItem.locator('span', { hasText: 'Pending' }).first()).toBeVisible();
 
     // Locate the transition/lock button
-    const advanceBtn = page.locator('button', { hasText: 'Lock Deal & Proceed to Purchase' }).first();
+    const advanceBtn = page.locator('button', { hasText: 'Lock Deal & Proceed to Fund' }).first();
     await expect(advanceBtn).toBeVisible();
     // Should be disabled because stages are incomplete (Stage 6 target raise not met + hurdles failed)
     await expect(advanceBtn).toBeDisabled();
@@ -173,7 +176,7 @@ test.describe('PaperWorking E2E — Buy-Box / Hurdle Test (AQ-13)', () => {
     await expect(overrideArea).toBeVisible();
 
     // Type override reason justification
-    const overrideTextarea = overrideArea.locator('textarea');
+    const overrideTextarea = overrideArea.locator('textarea').first();
     await overrideTextarea.fill('Investment board approved deal despite failing cap rate due to strategic location value.');
     await overrideTextarea.blur();
 

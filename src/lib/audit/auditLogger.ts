@@ -1,5 +1,6 @@
 import crypto from 'crypto';
 import { prisma } from '@/lib/prisma';
+import { Prisma } from '@prisma/client';
 
 export interface AuditLogInput {
   actorUid: string;
@@ -13,7 +14,7 @@ export interface AuditLogInput {
   userAgent?: string;
   reasonCode?: string;
   severity?: 'info' | 'warning' | 'critical';
-  metadata?: Record<string, any>;
+  metadata?: Record<string, unknown>;
 }
 
 export function computeEntryHash(
@@ -77,12 +78,12 @@ export async function logAdminAudit(input: AuditLogInput) {
         severity: input.severity || 'info',
         previousHash,
         entryHash,
-        metadata: input.metadata || undefined,
+        metadata: input.metadata ? (input.metadata as unknown as Prisma.InputJsonValue) : undefined,
       },
     });
 
     return createdLog;
-  } catch (error) {
+  } catch (_error) {
     // Silent fallback when running unit tests without DB
     return null;
   }
@@ -146,7 +147,7 @@ export async function verifyAuditHashChain(limit: number = 200): Promise<{
     }
 
     return { intact: true, totalChecked: logs.length };
-  } catch (error) {
+  } catch (_error) {
     return { intact: true, totalChecked: 0 };
   }
 }

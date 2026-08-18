@@ -35,27 +35,6 @@ interface AddressSearchProps {
   className?: string;
 }
 
-const MOCK_PREDICTIONS: AddressPrediction[] = [
-  {
-    placeId: 'place_1',
-    mainText: '123 Main St',
-    secondaryText: 'Austin, TX 78701',
-    fullAddress: '123 Main St, Austin, TX 78701',
-  },
-  {
-    placeId: 'place_2',
-    mainText: '456 Oak Ave',
-    secondaryText: 'Dallas, TX 75201',
-    fullAddress: '456 Oak Ave, Dallas, TX 75201',
-  },
-  {
-    placeId: 'place_3',
-    mainText: '789 Pine St',
-    secondaryText: 'Houston, TX 77002',
-    fullAddress: '789 Pine St, Houston, TX 77002',
-  },
-];
-
 export default function AddressSearch({
   onSearchSubmit,
   onListDealClick,
@@ -66,7 +45,7 @@ export default function AddressSearch({
   const [query, setQuery] = useState('');
   const [predictions, setPredictions] = useState<AddressPrediction[]>([]);
   const [isOpen, setIsOpen] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
+  const [_isLoading, setIsLoading] = useState(false);
 
   // Collision Modal State
   const [collisionDeal, setCollisionDeal] = useState<CollisionDealItem | null>(null);
@@ -75,36 +54,61 @@ export default function AddressSearch({
 
   const containerRef = useRef<HTMLDivElement>(null);
 
-  // Debounced search logic (300ms)
+  // Real debounced address autocomplete (300ms) calling server-side Places API endpoint
   useEffect(() => {
-    if (!query.trim()) {
+    const trimmed = query.trim();
+    if (!trimmed || trimmed.length < 2) {
       setPredictions([]);
       setIsOpen(false);
+      setIsLoading(false);
       return;
     }
 
     setIsLoading(true);
-    const timer = setTimeout(() => {
-      const filtered = MOCK_PREDICTIONS.filter(
-        (p) =>
-          p.fullAddress.toLowerCase().includes(query.toLowerCase()) ||
-          p.mainText.toLowerCase().includes(query.toLowerCase())
-      );
+    const timer = setTimeout(async () => {
+      try {
+        const res = await fetch('/api/places/autocomplete-public', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ input: trimmed }),
+        });
 
-      setPredictions(
-        filtered.length > 0
-          ? filtered
-          : [
-              {
-                placeId: `custom_${Date.now()}`,
-                mainText: query,
-                secondaryText: 'Custom Address Search',
-                fullAddress: query,
-              },
-            ]
-      );
-      setIsLoading(false);
+        if (res.ok) {
+          const data = await res.json();
+          if (data.predictions && Array.isArray(data.predictions) && data.predictions.length > 0) {
+            const mapped: AddressPrediction[] = data.predictions.map((p: any) => {
+              const fullAddress = p.description || p.fullAddress || p.mainText || trimmed;
+              const parts = fullAddress.split(',');
+              const mainText = p.mainText || parts[0]?.trim() || fullAddress;
+              const secondaryText = p.secondaryText || parts.slice(1).join(',').trim() || '';
+              return {
+                placeId: p.placeId || `place_${Math.random()}`,
+                mainText,
+                secondaryText,
+                fullAddress,
+              };
+            });
+            setPredictions(mapped);
+            setIsOpen(true);
+            setIsLoading(false);
+            return;
+          }
+        }
+      } catch (err) {
+        console.error('[AddressSearch] Autocomplete fetch failed:', err);
+      }
+
+      // Honest fallback: allow custom search for typed address when provider yields no results
+      setPredictions([
+        {
+          placeId: `custom_${Date.now()}`,
+          mainText: trimmed,
+          secondaryText: 'Custom Address Search',
+          fullAddress: trimmed,
+        },
+      ]);
       setIsOpen(true);
+      setIsLoading(false);
     }, 300);
 
     return () => clearTimeout(timer);
@@ -187,7 +191,14 @@ export default function AddressSearch({
           type="text"
           data-testid="deals-address-search-input"
           value={query}
-          onChange={(e) => setQuery(e.target.value)}
+          onChange={(e) => {
+            const val = e.target.value;
+            setQuery(val);
+            if (!val.trim()) {
+              setPredictions([]);
+              setIsOpen(false);
+            }
+          }}
           placeholder={placeholder}
           className="w-full pl-14 pr-32 py-3.5 bg-transparent text-xs sm:text-sm text-slate-100 placeholder-slate-400 focus:outline-none min-h-[44px]"
         />
@@ -260,7 +271,7 @@ export default function AddressSearch({
             {/* Compact DealCard Preview */}
             {collisionDeal && (
               <div className="border border-white/10 rounded-[14px] overflow-hidden bg-white/[0.02]">
-                <DealCard deal={collisionDeal as any} />
+                <DealCard deal={collisionDeal as unknown as React.ComponentProps<typeof DealCard>['deal']} />
               </div>
             )}
 

@@ -1,17 +1,17 @@
 import { NextRequest } from 'next/server';
 
 // Mock variables for Jest hoisting
-var mockVerifyIdToken = jest.fn();
-var mockProjectDocGet = jest.fn();
-var mockUserDocGet = jest.fn().mockResolvedValue({ exists: false });
-var mockOrgDocGet = jest.fn().mockResolvedValue({ exists: false });
-var mockSubDocGet = jest.fn();
-var mockSubDocSet = jest.fn();
-var mockSubDocUpdate = jest.fn();
-var mockSubDocDelete = jest.fn();
-var mockSubCollGet = jest.fn();
-var mockProjectFilesCollGet = jest.fn();
-var mockProjectFilesSet = jest.fn();
+const mockVerifyIdToken = jest.fn();
+const mockProjectDocGet = jest.fn();
+const mockUserDocGet = jest.fn().mockResolvedValue({ exists: false });
+const mockOrgDocGet = jest.fn().mockResolvedValue({ exists: false });
+const mockSubDocGet = jest.fn();
+const mockSubDocSet = jest.fn();
+const mockSubDocUpdate = jest.fn();
+const mockSubDocDelete = jest.fn();
+const mockSubCollGet = jest.fn();
+const mockProjectFilesCollGet = jest.fn();
+const mockProjectFilesSet = jest.fn();
 
 jest.mock('@/lib/firebase/admin', () => ({
   adminAuth: {

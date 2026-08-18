@@ -1,11 +1,11 @@
 import { POST } from '../route';
 import { NextRequest, NextResponse } from 'next/server';
 
-var mockRequireAuth = jest.fn();
-var mockGet = jest.fn();
-var mockAdd = jest.fn();
-var mockUpdate = jest.fn();
-var mockSet = jest.fn();
+const mockRequireAuth = jest.fn();
+const mockGet = jest.fn();
+const mockAdd = jest.fn();
+const mockUpdate = jest.fn();
+const mockSet = jest.fn();
 
 // Mock the auth guard
 jest.mock('@/lib/firebase-admin/auth-guard', () => ({
@@ -41,8 +41,8 @@ jest.mock('firebase-admin', () => {
 });
 
 // Mock telemetry singleton
-var mockCapture = jest.fn();
-var mockFlush = jest.fn();
+const mockCapture = jest.fn();
+const mockFlush = jest.fn();
 jest.mock('@/lib/telemetry', () => ({
   capture: (...args: any[]) => mockCapture(...args),
   flush: (...args: any[]) => mockFlush(...args),

@@ -30,7 +30,7 @@ export async function GET(req: NextRequest) {
     const bankingProvider = getBankingProvider();
 
     // Query active connections
-    let connections = await prisma.bankConnection.findMany({
+    const connections = await prisma.bankConnection.findMany({
       where: { status: 'active' },
     });
 
@@ -124,7 +124,7 @@ export async function GET(req: NextRequest) {
           );
         }
 
-        let currentCursor = connection.lastSyncCursor || undefined;
+        const currentCursor = connection.lastSyncCursor || undefined;
         let hasMore = true;
         let nextCursor = currentCursor;
 

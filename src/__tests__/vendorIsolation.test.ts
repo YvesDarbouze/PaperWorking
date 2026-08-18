@@ -9,11 +9,11 @@ import { NotificationService } from '@/lib/services/notificationService';
 import { NextRequest } from 'next/server';
 
 // Mock verifyIdToken
-var mockVerifyIdToken = jest.fn();
-var mockGet = jest.fn();
+const mockVerifyIdToken = jest.fn();
+const mockGet = jest.fn();
 
 // Mock next/headers cookies
-var mockCookieStore = {
+const mockCookieStore = {
   get: jest.fn((key: string) => ({ value: 'Vendor' } as any)),
 };
 jest.mock('next/headers', () => ({

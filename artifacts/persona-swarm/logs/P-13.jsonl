@@ -1001,3 +1001,37 @@
 {"ts":"2026-08-17T19:43:08.129Z","agentId":"P-13","wave":4,"step":"WAVE_4","action":"COMPLETE","result":"SUCCESS","details":{"interactions":2,"invites":2}}
 {"ts":"2026-08-17T19:43:08.166Z","agentId":"P-13","wave":5,"step":"WAVE_5","action":"START","result":"SUCCESS"}
 {"ts":"2026-08-17T19:43:08.166Z","agentId":"P-13","wave":5,"step":"WAVE_5","action":"COMPLETE","result":"SUCCESS","details":{"reportPath":"/Users/yvesdarbouze/Documents/PaperWorking/artifacts/persona-swarm/reports/P-13-experience-report.md"}}
+{"ts":"2026-08-18T09:41:59.654Z","agentId":"P-13","wave":1,"step":"WAVE_1","action":"START","result":"SUCCESS","details":{"email":"agent13.robert.haldane@paperworking-test.dev"}}
+{"ts":"2026-08-18T09:41:59.654Z","agentId":"P-13","wave":1,"step":"WAVE_1","action":"START","result":"SUCCESS","details":{"email":"agent13.robert.haldane@paperworking-test.dev"}}
+{"ts":"2026-08-18T09:41:59.655Z","agentId":"P-13","wave":0,"step":"SIGNUP","action":"SUCCESS_CREATED","result":"SUCCESS","details":{"uid":"uid_persona_p13","email":"agent13.robert.haldane@paperworking-test.dev","name":"Robert Bob Haldane","entity":"Haldane Land Partners LLC"}}
+{"ts":"2026-08-18T09:41:59.655Z","agentId":"P-13","wave":0,"step":"SIGNUP","action":"SUCCESS_CREATED","result":"SUCCESS","details":{"uid":"uid_persona_p13","email":"agent13.robert.haldane@paperworking-test.dev","name":"Robert Bob Haldane","entity":"Haldane Land Partners LLC"}}
+{"ts":"2026-08-18T09:41:59.655Z","agentId":"P-13","wave":1,"step":"WAVE_1","action":"COMPLETE","result":"SUCCESS","details":{"uid":"uid_persona_p13"}}
+{"ts":"2026-08-18T09:41:59.656Z","agentId":"P-13","wave":1,"step":"WAVE_1","action":"COMPLETE","result":"SUCCESS","details":{"uid":"uid_persona_p13"}}
+{"ts":"2026-08-18T09:41:59.721Z","agentId":"P-13","wave":2,"step":"WAVE_2","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T09:41:59.721Z","agentId":"P-13","wave":0,"step":"BILLING","action":"SUBSCRIPTION_SUCCESS","result":"SUCCESS","details":{"plan":"Individual","stripeCustomerId":"cus_test_swarm_p-13","stripeSubscriptionId":"sub_test_swarm_p-13","cardLastFour":"4242","cardBrand":"visa"}}
+{"ts":"2026-08-18T09:41:59.721Z","agentId":"P-13","wave":2,"step":"WAVE_2","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T09:41:59.721Z","agentId":"P-13","wave":2,"step":"WAVE_2","action":"COMPLETE","result":"SUCCESS","details":{"plan":"Individual"}}
+{"ts":"2026-08-18T09:41:59.722Z","agentId":"P-13","wave":0,"step":"BILLING","action":"SUBSCRIPTION_SUCCESS","result":"SUCCESS","details":{"plan":"Individual","stripeCustomerId":"cus_test_swarm_p-13","stripeSubscriptionId":"sub_test_swarm_p-13","cardLastFour":"4242","cardBrand":"visa"}}
+{"ts":"2026-08-18T09:41:59.722Z","agentId":"P-13","wave":2,"step":"WAVE_2","action":"COMPLETE","result":"SUCCESS","details":{"plan":"Individual"}}
+{"ts":"2026-08-18T09:41:59.809Z","agentId":"P-13","wave":3,"step":"WAVE_3","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T09:41:59.811Z","agentId":"P-13","wave":0,"step":"PROJECTS","action":"CREATION_SUCCESS","result":"SUCCESS","details":{"created":10,"plaid":false}}
+{"ts":"2026-08-18T09:41:59.811Z","agentId":"P-13","wave":3,"step":"WAVE_3","action":"COMPLETE","result":"SUCCESS","details":{"created":10}}
+{"ts":"2026-08-18T09:41:59.814Z","agentId":"P-13","wave":3,"step":"WAVE_3","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T09:41:59.817Z","agentId":"P-13","wave":0,"step":"PROJECTS","action":"CREATION_SUCCESS","result":"SUCCESS","details":{"created":10,"plaid":false}}
+{"ts":"2026-08-18T09:41:59.817Z","agentId":"P-13","wave":3,"step":"WAVE_3","action":"COMPLETE","result":"SUCCESS","details":{"created":10}}
+{"ts":"2026-08-18T09:41:59.996Z","agentId":"P-13","wave":4,"step":"WAVE_4","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T09:41:59.997Z","agentId":"P-13","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-11","to":"P-10","type":"Finished Lot Sale"}}
+{"ts":"2026-08-18T09:41:59.998Z","agentId":"P-13","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-12","to":"P-11","type":"Finished Lot Sale"}}
+{"ts":"2026-08-18T09:41:59.998Z","agentId":"P-13","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-10"}}
+{"ts":"2026-08-18T09:41:59.999Z","agentId":"P-13","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-43"}}
+{"ts":"2026-08-18T09:41:59.999Z","agentId":"P-13","wave":4,"step":"WAVE_4","action":"COMPLETE","result":"SUCCESS","details":{"interactions":2,"invites":2}}
+{"ts":"2026-08-18T09:42:00.004Z","agentId":"P-13","wave":4,"step":"WAVE_4","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T09:42:00.005Z","agentId":"P-13","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-11","to":"P-10","type":"Finished Lot Sale"}}
+{"ts":"2026-08-18T09:42:00.005Z","agentId":"P-13","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-12","to":"P-11","type":"Finished Lot Sale"}}
+{"ts":"2026-08-18T09:42:00.006Z","agentId":"P-13","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-10"}}
+{"ts":"2026-08-18T09:42:00.006Z","agentId":"P-13","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-43"}}
+{"ts":"2026-08-18T09:42:00.006Z","agentId":"P-13","wave":4,"step":"WAVE_4","action":"COMPLETE","result":"SUCCESS","details":{"interactions":2,"invites":2}}
+{"ts":"2026-08-18T09:42:00.109Z","agentId":"P-13","wave":5,"step":"WAVE_5","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T09:42:00.109Z","agentId":"P-13","wave":5,"step":"WAVE_5","action":"COMPLETE","result":"SUCCESS","details":{"reportPath":"/Users/yvesdarbouze/Documents/PaperWorking/artifacts/persona-swarm/reports/P-13-experience-report.md"}}
+{"ts":"2026-08-18T09:42:00.122Z","agentId":"P-13","wave":5,"step":"WAVE_5","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T09:42:00.123Z","agentId":"P-13","wave":5,"step":"WAVE_5","action":"COMPLETE","result":"SUCCESS","details":{"reportPath":"/Users/yvesdarbouze/Documents/PaperWorking/artifacts/persona-swarm/reports/P-13-experience-report.md"}}

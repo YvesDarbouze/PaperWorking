@@ -883,3 +883,33 @@
 {"ts":"2026-08-17T19:43:08.137Z","agentId":"P-28","wave":4,"step":"WAVE_4","action":"COMPLETE","result":"SUCCESS","details":{"interactions":0,"invites":2}}
 {"ts":"2026-08-17T19:43:08.169Z","agentId":"P-28","wave":5,"step":"WAVE_5","action":"START","result":"SUCCESS"}
 {"ts":"2026-08-17T19:43:08.169Z","agentId":"P-28","wave":5,"step":"WAVE_5","action":"COMPLETE","result":"SUCCESS","details":{"reportPath":"/Users/yvesdarbouze/Documents/PaperWorking/artifacts/persona-swarm/reports/P-28-experience-report.md"}}
+{"ts":"2026-08-18T09:41:59.680Z","agentId":"P-28","wave":1,"step":"WAVE_1","action":"START","result":"SUCCESS","details":{"email":"agent28.tyler.bruin@paperworking-test.dev"}}
+{"ts":"2026-08-18T09:41:59.681Z","agentId":"P-28","wave":0,"step":"SIGNUP","action":"SUCCESS_CREATED","result":"SUCCESS","details":{"uid":"uid_persona_p28","email":"agent28.tyler.bruin@paperworking-test.dev","name":"Tyler Bruin","entity":"Bruin Peak Lodging LLC"}}
+{"ts":"2026-08-18T09:41:59.681Z","agentId":"P-28","wave":1,"step":"WAVE_1","action":"COMPLETE","result":"SUCCESS","details":{"uid":"uid_persona_p28"}}
+{"ts":"2026-08-18T09:41:59.684Z","agentId":"P-28","wave":1,"step":"WAVE_1","action":"START","result":"SUCCESS","details":{"email":"agent28.tyler.bruin@paperworking-test.dev"}}
+{"ts":"2026-08-18T09:41:59.685Z","agentId":"P-28","wave":0,"step":"SIGNUP","action":"SUCCESS_CREATED","result":"SUCCESS","details":{"uid":"uid_persona_p28","email":"agent28.tyler.bruin@paperworking-test.dev","name":"Tyler Bruin","entity":"Bruin Peak Lodging LLC"}}
+{"ts":"2026-08-18T09:41:59.685Z","agentId":"P-28","wave":1,"step":"WAVE_1","action":"COMPLETE","result":"SUCCESS","details":{"uid":"uid_persona_p28"}}
+{"ts":"2026-08-18T09:41:59.733Z","agentId":"P-28","wave":2,"step":"WAVE_2","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T09:41:59.734Z","agentId":"P-28","wave":0,"step":"BILLING","action":"SUBSCRIPTION_SUCCESS","result":"SUCCESS","details":{"plan":"Individual","stripeCustomerId":"cus_test_swarm_p-28","stripeSubscriptionId":"sub_test_swarm_p-28","cardLastFour":"4242","cardBrand":"visa"}}
+{"ts":"2026-08-18T09:41:59.734Z","agentId":"P-28","wave":2,"step":"WAVE_2","action":"COMPLETE","result":"SUCCESS","details":{"plan":"Individual"}}
+{"ts":"2026-08-18T09:41:59.734Z","agentId":"P-28","wave":2,"step":"WAVE_2","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T09:41:59.735Z","agentId":"P-28","wave":0,"step":"BILLING","action":"SUBSCRIPTION_SUCCESS","result":"SUCCESS","details":{"plan":"Individual","stripeCustomerId":"cus_test_swarm_p-28","stripeSubscriptionId":"sub_test_swarm_p-28","cardLastFour":"4242","cardBrand":"visa"}}
+{"ts":"2026-08-18T09:41:59.735Z","agentId":"P-28","wave":2,"step":"WAVE_2","action":"COMPLETE","result":"SUCCESS","details":{"plan":"Individual"}}
+{"ts":"2026-08-18T09:41:59.858Z","agentId":"P-28","wave":3,"step":"WAVE_3","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T09:41:59.861Z","agentId":"P-28","wave":0,"step":"PROJECTS","action":"CREATION_SUCCESS","result":"SUCCESS","details":{"created":10,"plaid":false}}
+{"ts":"2026-08-18T09:41:59.862Z","agentId":"P-28","wave":3,"step":"WAVE_3","action":"COMPLETE","result":"SUCCESS","details":{"created":10}}
+{"ts":"2026-08-18T09:41:59.871Z","agentId":"P-28","wave":3,"step":"WAVE_3","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T09:41:59.874Z","agentId":"P-28","wave":0,"step":"PROJECTS","action":"CREATION_SUCCESS","result":"SUCCESS","details":{"created":10,"plaid":false}}
+{"ts":"2026-08-18T09:41:59.874Z","agentId":"P-28","wave":3,"step":"WAVE_3","action":"COMPLETE","result":"SUCCESS","details":{"created":10}}
+{"ts":"2026-08-18T09:42:00.028Z","agentId":"P-28","wave":4,"step":"WAVE_4","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T09:42:00.030Z","agentId":"P-28","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-27"}}
+{"ts":"2026-08-18T09:42:00.031Z","agentId":"P-28","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-11"}}
+{"ts":"2026-08-18T09:42:00.031Z","agentId":"P-28","wave":4,"step":"WAVE_4","action":"COMPLETE","result":"SUCCESS","details":{"interactions":0,"invites":2}}
+{"ts":"2026-08-18T09:42:00.053Z","agentId":"P-28","wave":4,"step":"WAVE_4","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T09:42:00.054Z","agentId":"P-28","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-27"}}
+{"ts":"2026-08-18T09:42:00.054Z","agentId":"P-28","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-11"}}
+{"ts":"2026-08-18T09:42:00.054Z","agentId":"P-28","wave":4,"step":"WAVE_4","action":"COMPLETE","result":"SUCCESS","details":{"interactions":0,"invites":2}}
+{"ts":"2026-08-18T09:42:00.118Z","agentId":"P-28","wave":5,"step":"WAVE_5","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T09:42:00.119Z","agentId":"P-28","wave":5,"step":"WAVE_5","action":"COMPLETE","result":"SUCCESS","details":{"reportPath":"/Users/yvesdarbouze/Documents/PaperWorking/artifacts/persona-swarm/reports/P-28-experience-report.md"}}
+{"ts":"2026-08-18T09:42:00.135Z","agentId":"P-28","wave":5,"step":"WAVE_5","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T09:42:00.135Z","agentId":"P-28","wave":5,"step":"WAVE_5","action":"COMPLETE","result":"SUCCESS","details":{"reportPath":"/Users/yvesdarbouze/Documents/PaperWorking/artifacts/persona-swarm/reports/P-28-experience-report.md"}}

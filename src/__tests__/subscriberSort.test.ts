@@ -40,7 +40,7 @@ jest.mock('@/lib/firebase/admin', () => ({
   adminAuth: { verifyIdToken: jest.fn() },
 }));
 
-var mockCookieGet = jest.fn();
+const mockCookieGet = jest.fn();
 jest.mock('next/headers', () => ({
   __esModule: true,
   cookies: jest.fn(() => ({

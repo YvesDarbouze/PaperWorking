@@ -71,7 +71,7 @@ export async function POST(req: NextRequest, { params }: Params) {
     projectData.members?.[uid]?.role === 'Lead Investor';
 
   // ── 4. Initialize Equity Sources list if empty ─────────────
-  let proofOfFunds: ProofOfFundsStatus[] = projectData.proofOfFunds || [];
+  const proofOfFunds: ProofOfFundsStatus[] = projectData.proofOfFunds || [];
 
   const capitalStack = projectData.financials?.capitalStack || [];
   const equitySources = capitalStack.filter((s: any) =>

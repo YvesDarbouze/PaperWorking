@@ -1,14 +1,14 @@
 import { GET, DELETE } from '@/app/api/user/gdpr/route';
 import { NextRequest } from 'next/server';
 
-var mockVerifyIdToken = jest.fn();
-var mockGet = jest.fn();
-var mockAdd = jest.fn();
-var mockUpdate = jest.fn();
-var mockBatchCommit = jest.fn();
-var mockBatchUpdate = jest.fn();
-var mockBatchDelete = jest.fn();
-var mockBatchSet = jest.fn();
+const mockVerifyIdToken = jest.fn();
+const mockGet = jest.fn();
+const mockAdd = jest.fn();
+const mockUpdate = jest.fn();
+const mockBatchCommit = jest.fn();
+const mockBatchUpdate = jest.fn();
+const mockBatchDelete = jest.fn();
+const mockBatchSet = jest.fn();
 
 jest.mock('@/lib/firebase/admin', () => ({
   adminAuth: {

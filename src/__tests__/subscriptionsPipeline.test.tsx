@@ -3,16 +3,16 @@ import { GET } from '@/app/api/invitations/[token]/route';
 import { POST } from '@/app/api/invitations/[token]/subscription/route';
 import { syncFractionalInvestorFromCommitment, removeFractionalInvestorForCommitment } from '@/lib/firebase/syncFractionalInvestors';
 
-var mockVerifyIdToken = jest.fn();
-var mockProjectDocGet = jest.fn();
-var mockProjectDocUpdate = jest.fn();
-var mockUserDocGet = jest.fn();
-var mockInvitationDocGet = jest.fn();
-var mockInvitationDocUpdate = jest.fn();
-var mockInvitationQueryGet = jest.fn();
-var mockCommitmentQueryGet = jest.fn();
-var mockCommitmentDocGet = jest.fn();
-var mockCommitmentDocUpdate = jest.fn();
+const mockVerifyIdToken = jest.fn();
+const mockProjectDocGet = jest.fn();
+const mockProjectDocUpdate = jest.fn();
+const mockUserDocGet = jest.fn();
+const mockInvitationDocGet = jest.fn();
+const mockInvitationDocUpdate = jest.fn();
+const mockInvitationQueryGet = jest.fn();
+const mockCommitmentQueryGet = jest.fn();
+const mockCommitmentDocGet = jest.fn();
+const mockCommitmentDocUpdate = jest.fn();
 
 jest.mock('@/lib/reporting/propertyMetricHistory', () => ({
   fetchPropertyMetricHistory: jest.fn().mockResolvedValue({

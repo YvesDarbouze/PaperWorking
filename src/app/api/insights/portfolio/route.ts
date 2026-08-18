@@ -5,7 +5,7 @@ import { calculateKPIs } from '@/lib/insights/kpiEngine';
 
 export async function GET() {
   try {
-    let dbProjects = await prisma.project.findMany({
+    const dbProjects = await prisma.project.findMany({
       orderBy: { createdAt: 'desc' },
     });
 

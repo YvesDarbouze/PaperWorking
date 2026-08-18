@@ -31,15 +31,15 @@ import { NextRequest } from 'next/server';
 /* ──────────────────────────────────────────────────────────────────────────
    Shared mock vars — must be var so Jest hoisting sees them before jest.mock()
    ────────────────────────────────────────────────────────────────────────── */
-var mockVerifyIdToken      = jest.fn();
-var mockProjectDocGet      = jest.fn();
-var mockProjectDocUpdate   = jest.fn();
-var mockUserDocGet         = jest.fn();
-var mockSubDocGet          = jest.fn();
-var mockSubDocSet          = jest.fn();
-var mockSubDocUpdate       = jest.fn();
-var mockSubDocDelete       = jest.fn();
-var mockSubCollGet         = jest.fn();
+const mockVerifyIdToken      = jest.fn();
+const mockProjectDocGet      = jest.fn();
+const mockProjectDocUpdate   = jest.fn();
+const mockUserDocGet         = jest.fn();
+const mockSubDocGet          = jest.fn();
+const mockSubDocSet          = jest.fn();
+const mockSubDocUpdate       = jest.fn();
+const mockSubDocDelete       = jest.fn();
+const mockSubCollGet         = jest.fn();
 
 /* ──────────────────────────────────────────────────────────────────────────
    Firebase Admin mock — collection-aware, with nested subcollection support

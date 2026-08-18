@@ -23,6 +23,7 @@
 # misc
 .DS_Store
 *.pem
+scratch_lint.json
 
 # debug
 npm-debug.log*

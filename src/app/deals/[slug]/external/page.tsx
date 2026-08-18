@@ -34,15 +34,7 @@ export default function ExternalDealPage() {
     if (broadcastVerified) return { valid: true, data: { ...broadcastVerified, type: 'broadcast' } };
     const inviteVerified = verifyDealInviteToken(token);
     if (inviteVerified) return { valid: true, data: { ...inviteVerified, type: 'invite' } };
-    return {
-      valid: true,
-      data: {
-        address: '123 Main St, Austin, TX 78701',
-        creatorName: 'Yves Darbouze',
-        inviteeEmail: 'external_investor@example.com',
-        type: 'invite',
-      },
-    };
+    return { valid: false, data: null };
   }, [token]);
 
   const [_isValidToken, setIsValidToken] = useState(() => initialVerified.valid);

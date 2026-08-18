@@ -66,7 +66,7 @@ jest.mock('@/lib/firebase/admin', () => ({
   },
 }));
 
-var mockCookieGet = jest.fn();
+const mockCookieGet = jest.fn();
 jest.mock('next/headers', () => ({
   __esModule: true,
   cookies: jest.fn(() => ({
@@ -74,7 +74,7 @@ jest.mock('next/headers', () => ({
   })),
 }));
 
-var mockGeocodeAddress = jest.fn();
+const mockGeocodeAddress = jest.fn();
 jest.mock('@/lib/providers/geocode', () => ({
   __esModule: true,
   geocodeAddress: (...args: any[]) => mockGeocodeAddress(...args),

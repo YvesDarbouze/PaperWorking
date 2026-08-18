@@ -3,11 +3,11 @@ import { getDashboardKPIs } from '../actions/getDashboardKPIs';
 import { calculatePortfolioSummary } from '@/lib/analyticsUtils';
 
 // Mocks
-var mockVerifyIdToken = jest.fn();
-var mockGet = jest.fn();
-var mockWhere = jest.fn().mockReturnThis();
+const mockVerifyIdToken = jest.fn();
+const mockGet = jest.fn();
+const mockWhere = jest.fn().mockReturnThis();
 
-var mockCollection = {
+const mockCollection = {
   doc: jest.fn().mockImplementation(() => ({
     get: mockGet,
   })),
@@ -25,7 +25,7 @@ jest.mock('@/lib/firebase/admin', () => ({
   },
 }));
 
-var mockCookieGet = jest.fn();
+const mockCookieGet = jest.fn();
 jest.mock('next/headers', () => ({
   __esModule: true,
   cookies: jest.fn(() => ({

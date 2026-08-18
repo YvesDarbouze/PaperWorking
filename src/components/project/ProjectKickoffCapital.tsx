@@ -7,7 +7,7 @@ export default function ProjectKickoffCapital() {
   const [initialCapital, setInitialCapital] = useState("350,000");
 
   const handleNumericInput = (e: React.ChangeEvent<HTMLInputElement>, setter: React.Dispatch<React.SetStateAction<string>>) => {
-    let value = e.target.value.replace(/,/g, "");
+    const value = e.target.value.replace(/,/g, "");
     if (!isNaN(Number(value)) && value.length > 0) {
       setter(parseFloat(value).toLocaleString("en-US"));
     } else if (value.length === 0) {

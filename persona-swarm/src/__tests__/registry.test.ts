@@ -32,8 +32,8 @@ interface PersonaRecord {
 
   let personas: PersonaRecord[];
   let rosterFixture: PersonaRecord[];
-  let categories: any[];
-  let graph: { edges: any[]; inviteMatrix: Record<string, string[]> };
+  let categories: Array<{ id: string }>;
+  let graph: { edges: Array<{ tier: string; from: string; to: string }>; inviteMatrix: Record<string, string[]> };
 
   beforeAll(() => {
     personas = JSON.parse(fs.readFileSync(personasPath, 'utf-8'));
@@ -47,8 +47,8 @@ interface PersonaRecord {
       expect(personas.length).toBe(rosterFixture.length);
 
       for (let i = 0; i < rosterFixture.length; i++) {
-        const fixtureAgent = rosterFixture[i] as any;
-        const registryAgent = personas.find((p) => p.id === fixtureAgent.id) as any;
+        const fixtureAgent = rosterFixture[i] as PersonaRecord;
+        const registryAgent = personas.find((p) => p.id === fixtureAgent.id)!;
 
         expect(registryAgent).toBeDefined();
         expect(registryAgent.name).toBe(fixtureAgent.name);

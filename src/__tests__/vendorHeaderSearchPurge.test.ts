@@ -36,11 +36,11 @@ describe('BUG-009 — Vendor Header Search SEEDED_VENDORS Purge Guard', () => {
 
   describe('TopAppBar search filtering logic verification', () => {
     it('returns honest empty array when API returns empty vendors list', () => {
-      const apiVendors: any[] = [];
+      const apiVendors: Record<string, string>[] = [];
       const searchQuery = 'Miami';
       const q = searchQuery.toLowerCase();
 
-      const filtered = apiVendors.filter((v: any) => {
+      const filtered = apiVendors.filter((v) => {
         const name = v.displayName || v.companyName || v.name || '';
         return name.toLowerCase().includes(q) || (v.location && v.location.toLowerCase().includes(q));
       });
@@ -55,7 +55,7 @@ describe('BUG-009 — Vendor Header Search SEEDED_VENDORS Purge Guard', () => {
 
     it('handles API error without falling back to seed vendors', async () => {
       let isError = false;
-      let vendorsResult: any[] | null = null;
+      const vendorsResult: unknown[] | null = null;
 
       try {
         // Simulate API error response (500)
@@ -63,7 +63,7 @@ describe('BUG-009 — Vendor Header Search SEEDED_VENDORS Purge Guard', () => {
         if (!mockResponse.ok) {
           throw new Error('Failed to fetch vendors');
         }
-      } catch (err) {
+      } catch (_err) {
         isError = true;
       }
 

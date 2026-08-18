@@ -86,8 +86,8 @@ export class TransactionIdentificationEngine {
     const fullName = `${name} ${merchantName}`.toLowerCase();
     const pfc = transaction.personalFinanceCategory || {};
 
-    let leases = contextOverride?.leases ?? [];
-    let mortgage = contextOverride?.mortgage;
+    const leases = contextOverride?.leases ?? [];
+    const mortgage = contextOverride?.mortgage;
 
     // Load active leases context from existing transactions if not overridden
     if (projectId && (!contextOverride || !contextOverride.leases)) {

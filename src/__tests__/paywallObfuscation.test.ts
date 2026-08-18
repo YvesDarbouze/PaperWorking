@@ -5,12 +5,12 @@ import { GET as downloadDocument } from '@/app/api/projects/[id]/documents/[docI
 import { NextRequest } from 'next/server';
 
 // ── Mock verifyIdToken & DB ──
-var mockVerifyIdToken = jest.fn();
-var mockGet = jest.fn();
-var mockWhere = jest.fn();
+const mockVerifyIdToken = jest.fn();
+const mockGet = jest.fn();
+const mockWhere = jest.fn();
 
 // Mock next/headers cookies
-var mockCookieStore = {
+const mockCookieStore = {
   get: jest.fn((key: string) => ({ value: 'None' } as any)),
 };
 jest.mock('next/headers', () => ({

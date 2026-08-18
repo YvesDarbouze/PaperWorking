@@ -4,24 +4,24 @@ import { render, screen } from '@testing-library/react';
 import ActivityFeed from '../components/dashboard/home/ActivityFeed';
 
 // Mock hooks
-var mockActiveTenantId: string | null = 'org-123';
+let mockActiveTenantId: string | null = 'org-123';
 jest.mock('@/context/TenantContext', () => ({
   useTenant: () => ({ activeTenantId: mockActiveTenantId }),
 }));
 
-var mockProfile = { displayName: 'Bob', email: 'bob@example.com' };
+const mockProfile = { displayName: 'Bob', email: 'bob@example.com' };
 jest.mock('@/context/AuthContext', () => ({
   useAuth: () => ({ profile: mockProfile, user: { uid: 'user-123' } }),
 }));
 
-var mockTheme = 'dark';
+let mockTheme = 'dark';
 jest.mock('@/lib/utils/ThemeProvider', () => ({
   useTheme: () => ({ theme: mockTheme }),
 }));
 
 // Mock Firestore onSnapshot
-var mockEvents: any[] = [];
-var snapshotCallback: any = null;
+let mockEvents: any[] = [];
+let snapshotCallback: any = null;
 
 jest.mock('firebase/firestore', () => {
   const original = jest.requireActual('firebase/firestore');

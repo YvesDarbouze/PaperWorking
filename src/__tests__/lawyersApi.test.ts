@@ -2,9 +2,9 @@
 import { GET } from '../app/api/lawyers/route';
 import { NextRequest } from 'next/server';
 
-var mockVerifyIdToken = jest.fn();
-var mockGet = jest.fn();
-var mockQuery: any = {};
+const mockVerifyIdToken = jest.fn();
+const mockGet = jest.fn();
+const mockQuery: any = {};
 mockQuery.where = jest.fn().mockImplementation(() => mockQuery);
 mockQuery.limit = jest.fn().mockImplementation(() => mockQuery);
 mockQuery.get = (...args: any[]) => mockGet(...args);

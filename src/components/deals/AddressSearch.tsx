@@ -58,14 +58,16 @@ export default function AddressSearch({
   useEffect(() => {
     const trimmed = query.trim();
     if (!trimmed || trimmed.length < 2) {
-      setPredictions([]);
-      setIsOpen(false);
-      setIsLoading(false);
-      return;
+      const timer = setTimeout(() => {
+        setPredictions([]);
+        setIsOpen(false);
+        setIsLoading(false);
+      }, 0);
+      return () => clearTimeout(timer);
     }
 
-    setIsLoading(true);
     const timer = setTimeout(async () => {
+      setIsLoading(true);
       try {
         const res = await fetch('/api/places/autocomplete-public', {
           method: 'POST',
@@ -76,7 +78,7 @@ export default function AddressSearch({
         if (res.ok) {
           const data = await res.json();
           if (data.predictions && Array.isArray(data.predictions) && data.predictions.length > 0) {
-            const mapped: AddressPrediction[] = data.predictions.map((p: any) => {
+            const mapped: AddressPrediction[] = data.predictions.map((p: { description?: string; fullAddress?: string; mainText?: string; secondaryText?: string; placeId?: string }) => {
               const fullAddress = p.description || p.fullAddress || p.mainText || trimmed;
               const parts = fullAddress.split(',');
               const mainText = p.mainText || parts[0]?.trim() || fullAddress;

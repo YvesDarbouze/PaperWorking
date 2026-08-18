@@ -4,8 +4,8 @@ import { proxy } from '@/proxy';
 import { NextRequest } from 'next/server';
 import * as admin from 'firebase-admin';
 
-var mockAdd = jest.fn().mockResolvedValue({ id: 'event_123' });
-var mockCollection = jest.fn().mockImplementation((colName) => ({
+const mockAdd = jest.fn().mockResolvedValue({ id: 'event_123' });
+const mockCollection = jest.fn().mockImplementation((colName) => ({
   add: mockAdd,
 }));
 

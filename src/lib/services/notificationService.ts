@@ -42,10 +42,10 @@ export function isUserInDND(userData: any): boolean {
     const minutes = hour * 60 + minute;
 
     // Default quiet hours: 10 PM (22:00) to 8 AM (08:00)
-    let startHour = 22;
-    let startMinute = 0;
-    let endHour = 8;
-    let endMinute = 0;
+    const startHour = 22;
+    const startMinute = 0;
+    const endHour = 8;
+    const endMinute = 0;
 
     // If user has custom quiet hours, respect them
     const userQuiet = userData?.preferences?.quietHours;

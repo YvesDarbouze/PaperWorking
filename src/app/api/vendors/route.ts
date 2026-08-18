@@ -4,17 +4,32 @@ import { adminDb } from '@/lib/firebase/admin';
 
 export const dynamic = "force-dynamic";
 
+export interface VendorRecord {
+  id?: string;
+  name?: string;
+  companyName?: string;
+  displayName?: string;
+  zip?: string;
+  zipCode?: string;
+  city?: string;
+  location?: string;
+  address?: string;
+  serviceAreas?: string[];
+  licensingStates?: string[];
+  [key: string]: unknown;
+}
+
 /**
  * Normalizes and filters vendor records against an investor's search query (ZIP or City/State/Text).
  */
-export function filterVendorsBySearch(vendors: any[], rawSearch: string): any[] {
+export function filterVendorsBySearch(vendors: VendorRecord[], rawSearch: string): VendorRecord[] {
   const clean = rawSearch.trim();
   if (!clean) return vendors;
 
   const isZip = /^\d{5}(-\d{4})?$/.test(clean);
 
   if (isZip) {
-    return vendors.filter((v: any) => {
+    return vendors.filter((v) => {
       const zips = Array.isArray(v.serviceAreas) ? v.serviceAreas : [];
       const zipCode = v.zip || v.zipCode || '';
       const loc = v.location || '';
@@ -35,7 +50,7 @@ export function filterVendorsBySearch(vendors: any[], rawSearch: string): any[] 
     }
   }
 
-  return vendors.filter((v: any) => {
+  return vendors.filter((v) => {
     const city = (v.city || '').toLowerCase();
     const location = (v.location || '').toLowerCase();
     const address = (v.address || '').toLowerCase();
@@ -103,7 +118,7 @@ export async function GET(request: NextRequest) {
 
     const snapshot = await query.get();
 
-    let vendors = snapshot.docs.map((doc) => {
+    let vendors: VendorRecord[] = snapshot.docs.map((doc) => {
       const data = doc.data();
       return {
         id: doc.id,

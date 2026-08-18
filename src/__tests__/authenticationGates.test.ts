@@ -5,10 +5,10 @@ import { POST as reportingExportPOST } from '@/app/api/reporting/export/route';
 import { POST as titleSearchPOST } from '@/app/api/closing/title-search/route';
 import { NextRequest, NextResponse } from 'next/server';
 
-var mockVerifyIdToken = jest.fn();
-var mockGet = jest.fn();
-var mockSet = jest.fn();
-var mockUpdate = jest.fn();
+const mockVerifyIdToken = jest.fn();
+const mockGet = jest.fn();
+const mockSet = jest.fn();
+const mockUpdate = jest.fn();
 
 // Mock the Firebase Admin SDK proxy imports
 jest.mock('@/lib/firebase/admin', () => ({

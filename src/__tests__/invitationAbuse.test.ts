@@ -5,14 +5,14 @@ import { inviteSubscribers } from '@/actions/dealInvitations';
 import { NextRequest } from 'next/server';
 
 // Mocks
-var mockVerifyIdToken = jest.fn();
-var mockGet = jest.fn();
-var mockSet = jest.fn().mockResolvedValue(true);
-var mockUpdate = jest.fn().mockResolvedValue(true);
-var mockDelete = jest.fn().mockResolvedValue(true);
-var mockAdd = jest.fn().mockResolvedValue({ id: 'new-alert-id' });
-var mockEmailLogFindMany = jest.fn();
-var mockEmailLogUpdateMany = jest.fn().mockResolvedValue({ count: 1 });
+const mockVerifyIdToken = jest.fn();
+const mockGet = jest.fn();
+const mockSet = jest.fn().mockResolvedValue(true);
+const mockUpdate = jest.fn().mockResolvedValue(true);
+const mockDelete = jest.fn().mockResolvedValue(true);
+const mockAdd = jest.fn().mockResolvedValue({ id: 'new-alert-id' });
+const mockEmailLogFindMany = jest.fn();
+const mockEmailLogUpdateMany = jest.fn().mockResolvedValue({ count: 1 });
 
 jest.mock('@/lib/firebase-admin/auth-guard', () => ({
   requireAuth: jest.fn().mockImplementation(async (req: NextRequest) => {

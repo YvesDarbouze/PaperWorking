@@ -2,12 +2,12 @@
 import { saveFinancials, loadFinancials, FinancialsPayload } from '../actions/financials';
 
 // Mocks
-var mockVerifyIdToken = jest.fn();
-var mockGet = jest.fn();
-var mockSet = jest.fn();
-var mockFieldValueServerTimestamp = jest.fn(() => 'mock-timestamp');
+const mockVerifyIdToken = jest.fn();
+const mockGet = jest.fn();
+const mockSet = jest.fn();
+const mockFieldValueServerTimestamp = jest.fn(() => 'mock-timestamp');
 
-var mockDoc = {
+const mockDoc = {
   get: mockGet,
   set: mockSet,
   collection: jest.fn().mockImplementation(() => mockCollection),

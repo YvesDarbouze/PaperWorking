@@ -92,9 +92,9 @@ export async function POST(req: NextRequest) {
     
     // Fallback logic
     const parts = address.split(',').map(s => s.trim());
-    let street = parts[0] || '';
-    let city = parts[1] || '';
-    let stateZip = parts[2] || '';
+    const street = parts[0] || '';
+    const city = parts[1] || '';
+    const stateZip = parts[2] || '';
     
     let state = '';
     let zip = '';

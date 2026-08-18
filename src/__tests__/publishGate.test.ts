@@ -1,9 +1,9 @@
 // Mock the admin auth and admin db
-var mockVerifyIdToken = jest.fn();
-var mockGet = jest.fn();
-var mockSet = jest.fn().mockResolvedValue(true);
-var mockUpdate = jest.fn().mockResolvedValue(true);
-var mockRunTransaction = jest.fn();
+const mockVerifyIdToken = jest.fn();
+const mockGet = jest.fn();
+const mockSet = jest.fn().mockResolvedValue(true);
+const mockUpdate = jest.fn().mockResolvedValue(true);
+const mockRunTransaction = jest.fn();
 
 jest.mock('@/lib/firebase/admin', () => {
   return {

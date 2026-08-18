@@ -2,16 +2,16 @@ import { inviteSubscribers, getDealInvitations } from '@/actions/dealInvitations
 import { getSubscriberListing } from '@/actions/listings';
 import { adminDb } from '@/lib/firebase/admin';
 
-var mockVerifyIdToken = jest.fn();
-var mockGet = jest.fn();
-var mockSet = jest.fn().mockResolvedValue(true);
-var mockUpdate = jest.fn().mockResolvedValue(true);
-var mockRunTransaction = jest.fn();
-var mockBatchSet = jest.fn();
-var mockBatchCommit = jest.fn().mockResolvedValue(true);
+const mockVerifyIdToken = jest.fn();
+const mockGet = jest.fn();
+const mockSet = jest.fn().mockResolvedValue(true);
+const mockUpdate = jest.fn().mockResolvedValue(true);
+const mockRunTransaction = jest.fn();
+const mockBatchSet = jest.fn();
+const mockBatchCommit = jest.fn().mockResolvedValue(true);
 
-var mockUserData = { role: 'Subscriber', email: 'test@subscriber.com' };
-var mockListingData = { id: 'listing_123', status: 'published', visibilityMode: 'PRIVATE', version: 1 };
+let mockUserData = { role: 'Subscriber', email: 'test@subscriber.com' };
+let mockListingData = { id: 'listing_123', status: 'published', visibilityMode: 'PRIVATE', version: 1 };
 
 jest.mock('@/lib/firebase/admin', () => {
   return {

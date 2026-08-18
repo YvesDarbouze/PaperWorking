@@ -3,21 +3,21 @@ import { NextRequest } from 'next/server';
 /* ──────────────────────────────────────────────────────────────────────────
    Shared mock vars
    ────────────────────────────────────────────────────────────────────────── */
-var mockVerifyIdToken = jest.fn();
-var mockProjectDocGet = jest.fn();
-var mockProjectDocUpdate = jest.fn();
-var mockUserDocGet = jest.fn();
-var mockSubDocGet = jest.fn();
-var mockSubDocSet = jest.fn();
-var mockSubDocUpdate = jest.fn();
-var mockSubDocDelete = jest.fn();
-var mockSubCollGet = jest.fn();
-var mockBatchCommit = jest.fn();
-var mockBatchSet = jest.fn();
-var mockNotificationCreate = jest.fn();
+const mockVerifyIdToken = jest.fn();
+const mockProjectDocGet = jest.fn();
+const mockProjectDocUpdate = jest.fn();
+const mockUserDocGet = jest.fn();
+const mockSubDocGet = jest.fn();
+const mockSubDocSet = jest.fn();
+const mockSubDocUpdate = jest.fn();
+const mockSubDocDelete = jest.fn();
+const mockSubCollGet = jest.fn();
+const mockBatchCommit = jest.fn();
+const mockBatchSet = jest.fn();
+const mockNotificationCreate = jest.fn();
 
 // Mock activityLog writer
-var mockWriteActivityLog = jest.fn();
+const mockWriteActivityLog = jest.fn();
 jest.mock('@/lib/firebase/activityLogWriter', () => ({
   writeActivityLog: (...args: any[]) => mockWriteActivityLog(...args)
 }));

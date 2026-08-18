@@ -5,14 +5,14 @@ import { POST as respondPost } from '../app/api/invitations/respond/route';
 import { NextRequest } from 'next/server';
 
 // Mock variables (must start with mock)
-var mockVerifyIdToken = jest.fn((...args: any[]) => Promise.resolve({ uid: 'user-123', email: 'user@example.com' }));
-var mockGet = jest.fn();
-var mockSet = jest.fn();
-var mockUpdate = jest.fn();
-var mockAdd = jest.fn();
-var mockCommit = jest.fn();
-var mockBatchUpdate = jest.fn();
-var mockRunTransaction = jest.fn();
+const mockVerifyIdToken = jest.fn((...args: any[]) => Promise.resolve({ uid: 'user-123', email: 'user@example.com' }));
+const mockGet = jest.fn();
+const mockSet = jest.fn();
+const mockUpdate = jest.fn();
+const mockAdd = jest.fn();
+const mockCommit = jest.fn();
+const mockBatchUpdate = jest.fn();
+const mockRunTransaction = jest.fn();
 
 var mockQuery: any = {
   doc: jest.fn().mockImplementation(() => mockDoc),
@@ -63,9 +63,9 @@ jest.mock('@/lib/email/getEmailProvider', () => ({
 }));
 
 // Mock client-side firestore
-var mockClientGetDocs = jest.fn();
-var mockClientGetDoc = jest.fn();
-var mockClientUpdateDoc = jest.fn();
+const mockClientGetDocs = jest.fn();
+const mockClientGetDoc = jest.fn();
+const mockClientUpdateDoc = jest.fn();
 
 jest.mock('firebase/firestore', () => ({
   __esModule: true,
@@ -92,14 +92,14 @@ jest.mock('@/lib/firebase/projects', () => ({
 }));
 
 // Mock team actions
-var mockAcceptTeamInvitation = jest.fn();
+const mockAcceptTeamInvitation = jest.fn();
 jest.mock('@/actions/team', () => ({
   __esModule: true,
   acceptTeamInvitation: (token: string) => mockAcceptTeamInvitation(token),
 }));
 
 // Mock other actions
-var mockApproveLedgerItem = jest.fn();
+const mockApproveLedgerItem = jest.fn();
 jest.mock('@/actions/index', () => ({
   __esModule: true,
   approveLedgerItem: (idToken: string, projectId: string, itemId: string) => mockApproveLedgerItem(idToken, projectId, itemId),

@@ -337,7 +337,7 @@ export async function GET(request: NextRequest) {
     const { searchParams } = new URL(request.url);
     const queryParam = searchParams.get('q') || '';
 
-    let projectsQuery = adminDb
+    const projectsQuery = adminDb
       .collection('projects')
       .where('organizationId', '==', organizationId);
 

@@ -1,21 +1,21 @@
 import { NextRequest } from 'next/server';
 
 // Mock variables for Jest hoisting
-var mockVerifyIdToken = jest.fn();
-var mockProjectDocGet = jest.fn();
-var mockUserDocGet = jest.fn().mockResolvedValue({ exists: false });
-var mockOrgDocGet = jest.fn().mockResolvedValue({ exists: false });
-var mockProjectFoldersGet = jest.fn();
-var mockProjectFoldersSet = jest.fn().mockResolvedValue(true);
-var mockProjectFoldersUpdate = jest.fn().mockResolvedValue(true);
-var mockProjectFilesCollGet = jest.fn();
-var mockProjectFilesSet = jest.fn().mockResolvedValue(true);
-var mockSubCollGet = jest.fn();
-var mockWriteActivityLog = jest.fn();
-var mockDocGet = jest.fn();
-var mockDocSet = jest.fn().mockResolvedValue(true);
-var mockDocUpdate = jest.fn().mockResolvedValue(true);
-var mockDocDelete = jest.fn().mockResolvedValue(true);
+const mockVerifyIdToken = jest.fn();
+const mockProjectDocGet = jest.fn();
+const mockUserDocGet = jest.fn().mockResolvedValue({ exists: false });
+const mockOrgDocGet = jest.fn().mockResolvedValue({ exists: false });
+const mockProjectFoldersGet = jest.fn();
+const mockProjectFoldersSet = jest.fn().mockResolvedValue(true);
+const mockProjectFoldersUpdate = jest.fn().mockResolvedValue(true);
+const mockProjectFilesCollGet = jest.fn();
+const mockProjectFilesSet = jest.fn().mockResolvedValue(true);
+const mockSubCollGet = jest.fn();
+const mockWriteActivityLog = jest.fn();
+const mockDocGet = jest.fn();
+const mockDocSet = jest.fn().mockResolvedValue(true);
+const mockDocUpdate = jest.fn().mockResolvedValue(true);
+const mockDocDelete = jest.fn().mockResolvedValue(true);
 
 jest.mock('@/lib/firebase/admin', () => ({
   adminAuth: {

@@ -8,9 +8,9 @@ let mockTickets: Record<string, any> = {};
 let mockLedgerEntries: Record<string, any[]> = {};
 let mockUsers: Record<string, any> = {};
 
-var mockBatchUpdate = jest.fn();
-var mockBatchSet = jest.fn();
-var mockBatchCommit = jest.fn();
+const mockBatchUpdate = jest.fn();
+const mockBatchSet = jest.fn();
+const mockBatchCommit = jest.fn();
 
 jest.mock('@/lib/firebase/admin', () => ({
   adminAuth: {

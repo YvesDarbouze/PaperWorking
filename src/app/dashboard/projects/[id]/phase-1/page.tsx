@@ -1694,7 +1694,7 @@ export default function Phase1WorkspacePage() {
                     const merged = { ...(project.financials ?? {}), ...updates };
                     
                     // Smart sync contingencies array
-                    let updatedContingencies = [...(project.contingencies || [])];
+                    const updatedContingencies = [...(project.contingencies || [])];
                     if (updates.loiContingencies && updates.loiContingencies.length > 0) {
                       const ddDays = updates.loiDueDiligenceDays || merged.loiDueDiligenceDays || 14;
                       const baseDate = merged.psaEffectiveDate ? new Date(merged.psaEffectiveDate) : new Date();
@@ -1743,7 +1743,7 @@ export default function Phase1WorkspacePage() {
                       const merged = { ...(project.financials ?? {}), ...updates };
                       
                       // Smart sync contingencies
-                      let updatedContingencies = [...(project.contingencies || [])];
+                      const updatedContingencies = [...(project.contingencies || [])];
                       if (updatedContingencies.length === 0 && merged.loiContingencies && merged.loiContingencies.length > 0) {
                         const ddDays = merged.loiDueDiligenceDays || 14;
                         const baseDate = merged.psaEffectiveDate ? new Date(merged.psaEffectiveDate) : new Date();

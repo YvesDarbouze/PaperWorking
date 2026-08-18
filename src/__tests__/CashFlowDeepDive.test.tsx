@@ -4,7 +4,7 @@ import { render, screen, fireEvent } from '@testing-library/react';
 import CashFlowDeepDive from '../components/dashboard/financials/CashFlowDeepDive';
 
 // Mock hook
-var mockSnapshots: any[] = [];
+let mockSnapshots: any[] = [];
 jest.mock('@/hooks/usePortfolioMetricSnapshots', () => ({
   usePortfolioMetricSnapshots: () => ({ snapshots: mockSnapshots }),
 }));

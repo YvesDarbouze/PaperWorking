@@ -13,7 +13,7 @@ jest.mock('@/lib/firebase/config', () => ({
   },
 }));
 
-var mockToastError = jest.fn();
+const mockToastError = jest.fn();
 jest.mock('react-hot-toast', () => ({
   __esModule: true,
   default: {
@@ -22,17 +22,17 @@ jest.mock('react-hot-toast', () => ({
 }));
 
 // ─── Setup Server-Side Mocks ──────────────────────────────────────
-var mockVerifyIdToken = jest.fn();
+const mockVerifyIdToken = jest.fn();
 jest.mock('@/lib/firebase-admin/auth-guard', () => ({
   requireAuth: jest.fn().mockImplementation(() => mockVerifyIdToken()),
   isAuthError: (auth: any) => auth && auth.status && auth.status !== 200,
 }));
 
-var mockTransactionGet = jest.fn();
-var mockTransactionUpdate = jest.fn();
-var mockGetDoc = jest.fn();
+const mockTransactionGet = jest.fn();
+const mockTransactionUpdate = jest.fn();
+const mockGetDoc = jest.fn();
 
-var mockRunTransaction = jest.fn(async (cb) => {
+const mockRunTransaction = jest.fn(async (cb) => {
   return cb({
     get: mockTransactionGet,
     update: mockTransactionUpdate,
@@ -50,7 +50,7 @@ jest.mock('@/lib/firebase/admin', () => ({
   },
 }));
 
-var mockSyncProjectFinancials = jest.fn();
+const mockSyncProjectFinancials = jest.fn();
 jest.mock('@/lib/services/financialsSyncService', () => ({
   financialsSyncService: {
     syncProjectFinancials: (deal: any) => mockSyncProjectFinancials(deal),

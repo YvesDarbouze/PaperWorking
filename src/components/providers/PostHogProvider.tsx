@@ -31,7 +31,7 @@ export function PostHogProvider({ children }: { children: React.ReactNode }) {
     const utmKeys = ['utm_source', 'utm_medium', 'utm_campaign', 'utm_term', 'utm_content'];
     const hasUtm = utmKeys.some(key => searchParams.has(key));
 
-    let utms: Record<string, string> = {};
+    const utms: Record<string, string> = {};
     if (hasUtm) {
       utmKeys.forEach(key => {
         const val = searchParams.get(key);

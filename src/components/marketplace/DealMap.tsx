@@ -7,13 +7,37 @@ import type { DealListingTeaser, SubscriberPropertyResult } from '@/types/listin
 import { GoogleAttribution } from '@/components/ui/GoogleAttribution';
 import { resolveLocation, getDeterministicCoordinates } from '@/lib/utils/geoLookup';
 
+export interface GoogleMapsApi {
+  maps: {
+    Map: new (element: HTMLElement, options: Record<string, unknown>) => {
+      setCenter: (center: unknown) => void;
+      setZoom: (zoom: number) => void;
+      getZoom: () => number;
+      fitBounds: (bounds: unknown) => void;
+    };
+    Circle: new (options: Record<string, unknown>) => {
+      setMap: (map: unknown) => void;
+    };
+    Marker: new (options: Record<string, unknown>) => {
+      setMap: (map: unknown) => void;
+      addListener: (event: string, handler: () => void) => void;
+    };
+    SymbolPath: { CIRCLE: unknown };
+    LatLngBounds: new () => { extend: (coord: { lat: number; lng: number }) => void };
+    event: {
+      addListener: (instance: unknown, eventName: string, handler: () => void) => unknown;
+      removeListener: (listener: unknown) => void;
+    };
+  };
+}
+
 declare global {
   interface Window {
-    google?: any;
+    google?: GoogleMapsApi;
   }
 }
 
-declare const google: any;
+declare const google: GoogleMapsApi;
 
 export type EntityCategory = 'all' | 'deals' | 'vendors' | 'investors';
 

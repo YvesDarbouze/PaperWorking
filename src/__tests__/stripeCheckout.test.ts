@@ -13,8 +13,8 @@
  *   and stays usable without credentials, per AGENTS.md.
  */
 
-var mockVerifyIdToken = jest.fn();
-var mockSessionsCreate = jest.fn();
+const mockVerifyIdToken = jest.fn();
+const mockSessionsCreate = jest.fn();
 
 jest.mock('@/lib/firebase/admin', () => ({
   adminAuth: {

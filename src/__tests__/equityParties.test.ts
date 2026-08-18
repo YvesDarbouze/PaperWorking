@@ -27,15 +27,15 @@ jest.mock('../hooks/usePermissions', () => ({
 }));
 
 // ─── Setup Server-Side Mocks ──────────────────────────────────────
-var mockVerifyIdToken = jest.fn();
+const mockVerifyIdToken = jest.fn();
 jest.mock('@/lib/firebase-admin/auth-guard', () => ({
   requireAuth: jest.fn().mockImplementation(() => mockVerifyIdToken()),
   isAuthError: (auth: any) => auth && auth.status && auth.status !== 200,
 }));
 
-var mockProjectGet = jest.fn();
-var mockProjectUpdate = jest.fn();
-var mockUserGet = jest.fn();
+const mockProjectGet = jest.fn();
+const mockProjectUpdate = jest.fn();
+const mockUserGet = jest.fn();
 
 jest.mock('@/lib/firebase/admin', () => ({
   adminDb: {

@@ -987,7 +987,7 @@ export function deriveAllMetrics(
   // Debt service — use stored term or default to 30-year conventional
   let loanAmount = financials.loanAmount ?? 0;
   let loanInterestRate = financials.loanInterestRate ?? 0;
-  let loanTermMonths = (financials.loanTermYears ?? 30) * 12;
+  const loanTermMonths = (financials.loanTermYears ?? 30) * 12;
   let annualDebtServiceVal = financials.annualDebtService;
 
   if (financials.capitalStack && Array.isArray(financials.capitalStack) && financials.capitalStack.length > 0) {
@@ -1258,8 +1258,8 @@ export function deriveAllMetrics(
           const kSecurity = baseSecurity * Math.pow(1 + expenseGrowthRate / 100, k - 1);
           const kCapex = baseCapex * Math.pow(1 + expenseGrowthRate / 100, k - 1);
           const kHOA = baseHOA * Math.pow(1 + expenseGrowthRate / 100, k - 1);
-          let kMgmt = financials.management_pct != null ? kGrossRent * (financials.management_pct / 100) : (financials.propertyManagementFeePercent != null ? kGrossRent * (financials.propertyManagementFeePercent / 100) : (financials.management ?? financials.propertyManagementFee ?? 0) * 12 * Math.pow(1 + expenseGrowthRate / 100, k - 1));
-          let kMaint = financials.maintenance_pct != null ? kGrossRent * (financials.maintenance_pct / 100) : (financials.maintenanceCapExPercent != null ? kGrossRent * (financials.maintenanceCapExPercent / 100) : (financials.maintenance ?? financials.monthlyMaintenanceReserve ?? 0) * 12 * Math.pow(1 + expenseGrowthRate / 100, k - 1));
+          const kMgmt = financials.management_pct != null ? kGrossRent * (financials.management_pct / 100) : (financials.propertyManagementFeePercent != null ? kGrossRent * (financials.propertyManagementFeePercent / 100) : (financials.management ?? financials.propertyManagementFee ?? 0) * 12 * Math.pow(1 + expenseGrowthRate / 100, k - 1));
+          const kMaint = financials.maintenance_pct != null ? kGrossRent * (financials.maintenance_pct / 100) : (financials.maintenanceCapExPercent != null ? kGrossRent * (financials.maintenanceCapExPercent / 100) : (financials.maintenance ?? financials.monthlyMaintenanceReserve ?? 0) * 12 * Math.pow(1 + expenseGrowthRate / 100, k - 1));
           const kTotalExpenses = kTaxes + kInsurance + kUtilities + kSecurity + kCapex + kHOA + kMgmt + kMaint;
           const kNOI = kGrossRent + kOtherIncome - kVacancyLoss - kTotalExpenses;
           const kCashFlow = kNOI - annualDebtService;
@@ -2806,7 +2806,7 @@ export function deriveAllProjectMetrics(
         const confirmedBasis = confirmedInvestors.reduce((sum, inv) => sum + (inv.contributionAmount || 0), 0);
 
         if (confirmedBasis > 0) {
-          let pcts = investors.map(inv => {
+          const pcts = investors.map(inv => {
             if (inv.status !== 'confirmed') return 0;
             const rawPct = ((inv.contributionAmount || 0) / confirmedBasis) * 100;
             return Math.round(rawPct * 100) / 100;
@@ -2836,7 +2836,7 @@ export function deriveAllProjectMetrics(
           }));
         } else if (totalCoBuyBasis > 0) {
           // Fallback to all committed contributions if no one is confirmed yet
-          let pcts = investors.map(inv => {
+          const pcts = investors.map(inv => {
             const rawPct = ((inv.contributionAmount || 0) / totalCoBuyBasis) * 100;
             return Math.round(rawPct * 100) / 100;
           });

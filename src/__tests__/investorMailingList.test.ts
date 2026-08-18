@@ -1,10 +1,10 @@
 import { inviteSubscribers } from '@/actions/dealInvitations';
 
-var mockVerifyIdToken = jest.fn();
-var mockGet = jest.fn();
-var mockSet = jest.fn().mockResolvedValue(true);
-var mockUpdate = jest.fn().mockResolvedValue(true);
-var mockDelete = jest.fn().mockResolvedValue(true);
+const mockVerifyIdToken = jest.fn();
+const mockGet = jest.fn();
+const mockSet = jest.fn().mockResolvedValue(true);
+const mockUpdate = jest.fn().mockResolvedValue(true);
+const mockDelete = jest.fn().mockResolvedValue(true);
 
 jest.mock('next/headers', () => ({
   cookies: async () => ({

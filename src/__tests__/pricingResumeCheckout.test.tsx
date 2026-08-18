@@ -14,10 +14,10 @@
 import React from 'react';
 import { render, fireEvent, waitFor, act } from '@testing-library/react';
 
-var mockPush = jest.fn();
-var mockReplace = jest.fn();
-var mockUser: any = null;
-var mockProfile: any = null;
+const mockPush = jest.fn();
+const mockReplace = jest.fn();
+let mockUser: any = null;
+let mockProfile: any = null;
 
 jest.mock('next/navigation', () => ({
   useRouter: () => ({ push: mockPush, replace: mockReplace }),

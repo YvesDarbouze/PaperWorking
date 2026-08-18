@@ -1044,3 +1044,39 @@
 {"ts":"2026-08-17T19:43:08.145Z","agentId":"P-43","wave":4,"step":"WAVE_4","action":"COMPLETE","result":"SUCCESS","details":{"interactions":3,"invites":2}}
 {"ts":"2026-08-17T19:43:08.172Z","agentId":"P-43","wave":5,"step":"WAVE_5","action":"START","result":"SUCCESS"}
 {"ts":"2026-08-17T19:43:08.172Z","agentId":"P-43","wave":5,"step":"WAVE_5","action":"COMPLETE","result":"SUCCESS","details":{"reportPath":"/Users/yvesdarbouze/Documents/PaperWorking/artifacts/persona-swarm/reports/P-43-experience-report.md"}}
+{"ts":"2026-08-18T09:41:59.699Z","agentId":"P-43","wave":1,"step":"WAVE_1","action":"START","result":"SUCCESS","details":{"email":"agent43.meredith.slade@paperworking-test.dev"}}
+{"ts":"2026-08-18T09:41:59.699Z","agentId":"P-43","wave":1,"step":"WAVE_1","action":"START","result":"SUCCESS","details":{"email":"agent43.meredith.slade@paperworking-test.dev"}}
+{"ts":"2026-08-18T09:41:59.699Z","agentId":"P-43","wave":0,"step":"SIGNUP","action":"SUCCESS_CREATED","result":"SUCCESS","details":{"uid":"uid_persona_p43","email":"agent43.meredith.slade@paperworking-test.dev","name":"Meredith Slade","entity":"Slade Pension Realty Advisors LLC"}}
+{"ts":"2026-08-18T09:41:59.700Z","agentId":"P-43","wave":1,"step":"WAVE_1","action":"COMPLETE","result":"SUCCESS","details":{"uid":"uid_persona_p43"}}
+{"ts":"2026-08-18T09:41:59.700Z","agentId":"P-43","wave":0,"step":"SIGNUP","action":"SUCCESS_CREATED","result":"SUCCESS","details":{"uid":"uid_persona_p43","email":"agent43.meredith.slade@paperworking-test.dev","name":"Meredith Slade","entity":"Slade Pension Realty Advisors LLC"}}
+{"ts":"2026-08-18T09:41:59.700Z","agentId":"P-43","wave":1,"step":"WAVE_1","action":"COMPLETE","result":"SUCCESS","details":{"uid":"uid_persona_p43"}}
+{"ts":"2026-08-18T09:41:59.747Z","agentId":"P-43","wave":2,"step":"WAVE_2","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T09:41:59.748Z","agentId":"P-43","wave":0,"step":"BILLING","action":"SUBSCRIPTION_SUCCESS","result":"SUCCESS","details":{"plan":"Individual","stripeCustomerId":"cus_test_swarm_p-43","stripeSubscriptionId":"sub_test_swarm_p-43","cardLastFour":"4242","cardBrand":"visa"}}
+{"ts":"2026-08-18T09:41:59.748Z","agentId":"P-43","wave":2,"step":"WAVE_2","action":"COMPLETE","result":"SUCCESS","details":{"plan":"Individual"}}
+{"ts":"2026-08-18T09:41:59.751Z","agentId":"P-43","wave":2,"step":"WAVE_2","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T09:41:59.752Z","agentId":"P-43","wave":0,"step":"BILLING","action":"SUBSCRIPTION_SUCCESS","result":"SUCCESS","details":{"plan":"Individual","stripeCustomerId":"cus_test_swarm_p-43","stripeSubscriptionId":"sub_test_swarm_p-43","cardLastFour":"4242","cardBrand":"visa"}}
+{"ts":"2026-08-18T09:41:59.752Z","agentId":"P-43","wave":2,"step":"WAVE_2","action":"COMPLETE","result":"SUCCESS","details":{"plan":"Individual"}}
+{"ts":"2026-08-18T09:41:59.925Z","agentId":"P-43","wave":3,"step":"WAVE_3","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T09:41:59.927Z","agentId":"P-43","wave":0,"step":"PROJECTS","action":"CREATION_SUCCESS","result":"SUCCESS","details":{"created":10,"plaid":false}}
+{"ts":"2026-08-18T09:41:59.928Z","agentId":"P-43","wave":3,"step":"WAVE_3","action":"COMPLETE","result":"SUCCESS","details":{"created":10}}
+{"ts":"2026-08-18T09:41:59.940Z","agentId":"P-43","wave":3,"step":"WAVE_3","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T09:41:59.943Z","agentId":"P-43","wave":0,"step":"PROJECTS","action":"CREATION_SUCCESS","result":"SUCCESS","details":{"created":10,"plaid":false}}
+{"ts":"2026-08-18T09:41:59.944Z","agentId":"P-43","wave":3,"step":"WAVE_3","action":"COMPLETE","result":"SUCCESS","details":{"created":10}}
+{"ts":"2026-08-18T09:42:00.070Z","agentId":"P-43","wave":4,"step":"WAVE_4","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T09:42:00.071Z","agentId":"P-43","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-55","to":"P-39","type":"Institutional Allocation"}}
+{"ts":"2026-08-18T09:42:00.071Z","agentId":"P-43","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-56","to":"P-40","type":"Institutional Allocation"}}
+{"ts":"2026-08-18T09:42:00.072Z","agentId":"P-43","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-57","to":"P-13","type":"Entitlement Capital JV"}}
+{"ts":"2026-08-18T09:42:00.072Z","agentId":"P-43","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-39"}}
+{"ts":"2026-08-18T09:42:00.072Z","agentId":"P-43","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-13"}}
+{"ts":"2026-08-18T09:42:00.073Z","agentId":"P-43","wave":4,"step":"WAVE_4","action":"COMPLETE","result":"SUCCESS","details":{"interactions":3,"invites":2}}
+{"ts":"2026-08-18T09:42:00.082Z","agentId":"P-43","wave":4,"step":"WAVE_4","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T09:42:00.082Z","agentId":"P-43","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-55","to":"P-39","type":"Institutional Allocation"}}
+{"ts":"2026-08-18T09:42:00.083Z","agentId":"P-43","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-56","to":"P-40","type":"Institutional Allocation"}}
+{"ts":"2026-08-18T09:42:00.083Z","agentId":"P-43","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-57","to":"P-13","type":"Entitlement Capital JV"}}
+{"ts":"2026-08-18T09:42:00.083Z","agentId":"P-43","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-39"}}
+{"ts":"2026-08-18T09:42:00.083Z","agentId":"P-43","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-13"}}
+{"ts":"2026-08-18T09:42:00.083Z","agentId":"P-43","wave":4,"step":"WAVE_4","action":"COMPLETE","result":"SUCCESS","details":{"interactions":3,"invites":2}}
+{"ts":"2026-08-18T09:42:00.128Z","agentId":"P-43","wave":5,"step":"WAVE_5","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T09:42:00.131Z","agentId":"P-43","wave":5,"step":"WAVE_5","action":"COMPLETE","result":"SUCCESS","details":{"reportPath":"/Users/yvesdarbouze/Documents/PaperWorking/artifacts/persona-swarm/reports/P-43-experience-report.md"}}
+{"ts":"2026-08-18T09:42:00.144Z","agentId":"P-43","wave":5,"step":"WAVE_5","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T09:42:00.145Z","agentId":"P-43","wave":5,"step":"WAVE_5","action":"COMPLETE","result":"SUCCESS","details":{"reportPath":"/Users/yvesdarbouze/Documents/PaperWorking/artifacts/persona-swarm/reports/P-43-experience-report.md"}}

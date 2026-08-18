@@ -537,7 +537,7 @@ export default function ProjectsPage() {
 
   /* Sort the final array for list view if selected */
   const sortedListProjects = useMemo(() => {
-    let data = [...filteredProjects];
+    const data = [...filteredProjects];
     data.sort((a, b) => {
       // Primary: compare by listSortBy choice
       if (listSortBy === 'year') {

@@ -56,16 +56,16 @@ export async function GET(req: NextRequest) {
       },
     });
 
-    const mappedDeals: ApiDealPayload[] = (rawDeals || []).map((d: any) => {
-      const project = d.projects?.[0];
+    const mappedDeals: ApiDealPayload[] = (rawDeals || []).map((d) => {
+      const project = d.projects?.[0] as { name?: string | null; title?: string | null; city?: string | null; state?: string | null; zip?: string | null; propertyType?: string; subStrategy?: string } | undefined;
       const committedAmount = (d.commitments || []).reduce(
-        (sum: number, c: any) => sum + Number(c.amount || 0),
+        (sum: number, c) => sum + Number(c.amount || 0),
         0
       );
-      const investorCount = new Set((d.commitments || []).map((c: any) => c.investorId)).size;
-      const invitedUsers = (d.invitations || [])
-        .map((inv: any) => inv.inviteeUserId || inv.inviteeEmail)
-        .filter(Boolean);
+      const investorCount = new Set((d.commitments || []).map((c) => c.investorId)).size;
+      const invitedUsers: string[] = (d.invitations || [])
+        .map((inv) => inv.inviteeUserId || inv.inviteeEmail)
+        .filter((u): u is string => Boolean(u));
 
       const addrParts = (d.address || '').split(',').map((s: string) => s.trim());
       const city = project?.city || (addrParts.length >= 2 ? addrParts[1] : '') || '';

@@ -96,7 +96,7 @@ export function EarnestMoneyCard({
     }
 
     setVerified(checked);
-    let updates: any = { emdVerified: checked };
+    const updates: any = { emdVerified: checked };
     if (checked && !clearedDate) {
       const today = new Date().toISOString().split('T')[0];
       setClearedDate(today);

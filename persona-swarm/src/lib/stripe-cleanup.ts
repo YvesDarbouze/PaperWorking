@@ -25,7 +25,7 @@ export async function cleanupStripeTestCustomers(
   assertStripeTestMode(sk);
 
   const stripe = new Stripe(sk, {
-    apiVersion: '2026-01-28' as any,
+    apiVersion: '2026-01-28' as unknown as NonNullable<ConstructorParameters<typeof Stripe>[1]>['apiVersion'],
   });
 
   const result: StripeCleanupResult = {

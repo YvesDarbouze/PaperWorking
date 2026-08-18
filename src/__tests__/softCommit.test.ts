@@ -5,11 +5,11 @@ import { POST as saveIndication, DELETE as withdrawIndication } from '@/app/api/
 import { NextRequest } from 'next/server';
 
 // ─── Setup Mocks ───────────────────────────────────────
-var mockVerifyIdToken = jest.fn();
-var mockGet = jest.fn();
-var mockSet = jest.fn().mockResolvedValue(true);
-var mockUpdate = jest.fn().mockResolvedValue(true);
-var mockSendEmail = jest.fn().mockResolvedValue({ id: 'email-123' });
+const mockVerifyIdToken = jest.fn();
+const mockGet = jest.fn();
+const mockSet = jest.fn().mockResolvedValue(true);
+const mockUpdate = jest.fn().mockResolvedValue(true);
+const mockSendEmail = jest.fn().mockResolvedValue({ id: 'email-123' });
 
 // Mock Email Provider
 jest.mock('@/lib/email/getEmailProvider', () => {
@@ -27,9 +27,9 @@ jest.mock('@/lib/invitations/activityTimeline', () => ({
 }));
 
 // Mock firebase admin DB
-var mockInvitationDocs: any[] = [];
-var mockProjectDocs: any[] = [];
-var mockUserDocs: any[] = [];
+let mockInvitationDocs: any[] = [];
+let mockProjectDocs: any[] = [];
+let mockUserDocs: any[] = [];
 
 jest.mock('@/lib/firebase/admin', () => ({
   adminDb: {

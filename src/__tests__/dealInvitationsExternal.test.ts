@@ -1,16 +1,16 @@
 import { inviteSubscribers } from '@/actions/dealInvitations';
 import { adminDb } from '@/lib/firebase/admin';
 
-var mockVerifyIdToken = jest.fn();
-var mockGet = jest.fn();
-var mockSet = jest.fn().mockResolvedValue(true);
-var mockUpdate = jest.fn().mockResolvedValue(true);
-var mockBatchSet = jest.fn();
-var mockBatchCommit = jest.fn().mockResolvedValue(true);
-var mockSendRawEmail = jest.fn().mockResolvedValue({ id: 'msg_123', mock: true });
+const mockVerifyIdToken = jest.fn();
+const mockGet = jest.fn();
+const mockSet = jest.fn().mockResolvedValue(true);
+const mockUpdate = jest.fn().mockResolvedValue(true);
+const mockBatchSet = jest.fn();
+const mockBatchCommit = jest.fn().mockResolvedValue(true);
+const mockSendRawEmail = jest.fn().mockResolvedValue({ id: 'msg_123', mock: true });
 
-var mockUserData = { role: 'Subscriber', email: 'test@subscriber.com' };
-var mockListingData: any = {
+const mockUserData = { role: 'Subscriber', email: 'test@subscriber.com' };
+const mockListingData: any = {
   id: 'listing_123',
   projectId: 'proj_123',
   status: 'published',
@@ -27,7 +27,7 @@ var mockListingData: any = {
   },
   leadInvestor: { displayName: 'Marcus Aurelius' },
 };
-var mockProjectData: any = {
+const mockProjectData: any = {
   id: 'proj_123',
   organizationId: 'org_123',
   ownerUid: 'user_lead_investor_seed',
@@ -39,7 +39,7 @@ var mockProjectData: any = {
     zip: '33101',
   },
 };
-var mockGlobalUnsubscribed = false;
+let mockGlobalUnsubscribed = false;
 
 jest.mock('@/lib/firebase/admin', () => {
   return {

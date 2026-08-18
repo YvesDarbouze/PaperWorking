@@ -5,8 +5,8 @@ import { isFeatureEnabled } from '@/lib/flags';
 import { NextRequest } from 'next/server';
 
 // ── Mock Prisma & Firestore ───────────────────────────────────────
-var mockQueryRaw = jest.fn();
-var mockGetDocs = jest.fn();
+const mockQueryRaw = jest.fn();
+const mockGetDocs = jest.fn();
 
 jest.mock('@/lib/prisma', () => ({
   prisma: {

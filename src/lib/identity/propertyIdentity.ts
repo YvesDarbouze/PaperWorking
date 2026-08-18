@@ -97,11 +97,11 @@ export function canonicalizeAddress(components: AddressComponents): string {
   
   const routeStr = routeParts.map((p, i) => i === routeParts.length - 1 ? (STREET_TYPE_ABBREVIATIONS[p.toLowerCase()] || titleCase(p)) : titleCase(p)).join(' ');
 
-  let streetStr = `${streetNum} ${routeStr}`;
+  const streetStr = `${streetNum} ${routeStr}`;
   
   let unitStr = '';
   if (components.unitNumber) {
-    let unit = components.unitNumber.trim();
+    const unit = components.unitNumber.trim();
     // basic splitting to separate prefix and number if they are in one string
     let unitParts = unit.split(' ').filter(Boolean);
     if (unitParts.length === 1) {

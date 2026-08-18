@@ -282,7 +282,7 @@ export function calculate10YearProForma(
     // Amortization details for Year t (months 12*(t-1) + 1 to 12*t)
     let debtService = 0;
     let principalPaidYear = 0;
-    let finalMonthIdx = year * 12 - 1;
+    const finalMonthIdx = year * 12 - 1;
     let outstandingBalance = 0;
 
     if (amortization.length > 0) {

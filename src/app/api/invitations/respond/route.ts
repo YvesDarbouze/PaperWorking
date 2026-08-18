@@ -269,7 +269,7 @@ export async function POST(request: NextRequest) {
 
     const { trackDealActivity } = require('@/lib/invitations/activityTimeline');
     let timelineType: any = null;
-    let timelineMeta: any = { inviteeEmail: emailLower };
+    const timelineMeta: any = { inviteeEmail: emailLower };
     if (action === 'accept') {
       timelineType = 'interest';
       timelineMeta.status = 'accepted';

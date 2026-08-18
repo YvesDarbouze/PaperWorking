@@ -15,9 +15,9 @@ import { getAdminUserStats } from '../actions/admin';
 import { TransactionNotificationService } from '../lib/notifications/transactionNotifications';
 
 // Mock Firebase Admin and next/headers for admin auth in unit tests
-var mockVerifyIdToken = jest.fn();
-var mockUserDocGet = jest.fn();
-var mockCollectionGet = jest.fn();
+const mockVerifyIdToken = jest.fn();
+const mockUserDocGet = jest.fn();
+const mockCollectionGet = jest.fn();
 
 jest.mock('../lib/firebase/admin', () => ({
   __esModule: true,

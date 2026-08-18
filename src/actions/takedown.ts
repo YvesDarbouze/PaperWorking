@@ -29,7 +29,7 @@ export async function submitTakedownReport(input: TakedownReportInput): Promise<
   const ticketRef = adminDb.collection('support_tickets').doc();
   const ticketId = ticketRef.id;
 
-  let targetListingId = input.listingId || '';
+  const targetListingId = input.listingId || '';
   let targetProjectId = '';
   let targetAddress = input.propertyAddress || '';
   let visibilityMode = 'PUBLIC_SOLICITED';

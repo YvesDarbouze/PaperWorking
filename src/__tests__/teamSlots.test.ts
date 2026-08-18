@@ -3,12 +3,12 @@ import { NextRequest } from 'next/server';
 /* ──────────────────────────────────────────────────────────────────────────
    Shared mock vars
    ────────────────────────────────────────────────────────────────────────── */
-var mockVerifyIdToken = jest.fn();
-var mockProjectDocGet = jest.fn();
-var mockProjectDocUpdate = jest.fn();
-var mockOrgDocGet = jest.fn();
-var mockWriteActivityLog = jest.fn();
-var mockCreateNotification = jest.fn();
+const mockVerifyIdToken = jest.fn();
+const mockProjectDocGet = jest.fn();
+const mockProjectDocUpdate = jest.fn();
+const mockOrgDocGet = jest.fn();
+const mockWriteActivityLog = jest.fn();
+const mockCreateNotification = jest.fn();
 
 /* ──────────────────────────────────────────────────────────────────────────
    Firebase Admin mock

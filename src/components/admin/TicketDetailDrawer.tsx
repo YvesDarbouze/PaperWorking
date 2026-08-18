@@ -27,7 +27,6 @@ export default function TicketDetailDrawer({ ticketId, onClose, onRefreshParent 
 
   const fetchDetails = useCallback(() => {
     if (!ticketId) return;
-    setLoading(true);
     Promise.all([
       getTicketDetails(ticketId),
       getTaxonomy(),

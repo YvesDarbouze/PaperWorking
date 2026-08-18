@@ -13,9 +13,9 @@ import { render, fireEvent, waitFor, act } from '@testing-library/react';
    no real users; we assert on where window.location.replace lands.
    ═══════════════════════════════════════════════════════════════ */
 
-var mockSearchParams: Record<string, string | null> = {};
-var mockLogin = jest.fn().mockResolvedValue(undefined);
-var mockRegister = jest.fn().mockResolvedValue(undefined);
+let mockSearchParams: Record<string, string | null> = {};
+const mockLogin = jest.fn().mockResolvedValue(undefined);
+const mockRegister = jest.fn().mockResolvedValue(undefined);
 
 jest.mock('next/navigation', () => ({
   useRouter: () => ({ replace: jest.fn(), push: jest.fn() }),

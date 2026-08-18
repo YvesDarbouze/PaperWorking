@@ -129,7 +129,7 @@ export function generateReportPDF(
     const primaryMetrics = METRICS_REGISTRY.filter(m => primaryKPIIds.includes(m.id));
 
     // Dynamic grid layout (2 columns, 5 rows)
-    let y = 100;
+    const y = 100;
     primaryMetrics.forEach((metric, index) => {
       const isCol2 = index % 2 !== 0;
       const colX = isCol2 ? 300 : 50;
@@ -274,7 +274,7 @@ export function generateReportPDF(
         const rawVal = entry.compute(project);
         
         let valStr = 'N/A';
-        let isSensitive = [
+        const isSensitive = [
           'noi', 'cap_rate', 'cash_on_cash', 'irr', 'dscr', 'ltv', 'oer', 'grm', 'roi', 'annual_cash_flow', 'capex', 'goi'
         ].includes(entry.id);
 

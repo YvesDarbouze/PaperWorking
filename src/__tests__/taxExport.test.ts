@@ -6,10 +6,10 @@ import { Project, LedgerItem } from '@/types/schema';
 import { NextRequest } from 'next/server';
 
 // ── Mock Firebase Admin SDK ───────────────────────────────────────
-var mockVerifyIdToken = jest.fn();
-var mockGet = jest.fn();
-var mockSet = jest.fn();
-var mockUpdate = jest.fn();
+const mockVerifyIdToken = jest.fn();
+const mockGet = jest.fn();
+const mockSet = jest.fn();
+const mockUpdate = jest.fn();
 
 jest.mock('@/lib/firebase/admin', () => ({
   adminAuth: {

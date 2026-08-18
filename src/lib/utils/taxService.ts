@@ -128,7 +128,7 @@ export function getActiveMonthsInPeriod(
   let totalMonths = 0;
   
   // Set current date to 1st of month of overlapStart
-  let current = new Date(overlapStart.getFullYear(), overlapStart.getMonth(), 1);
+  const current = new Date(overlapStart.getFullYear(), overlapStart.getMonth(), 1);
   const end = new Date(overlapEnd.getFullYear(), overlapEnd.getMonth(), 1);
 
   while (current <= end) {
@@ -189,7 +189,7 @@ export function calculateMortgageAmortization(
   let totalPrincipal = 0;
 
   // Iterate calendar month-by-calendar-month
-  let current = new Date(periodStart.getFullYear(), periodStart.getMonth(), 1);
+  const current = new Date(periodStart.getFullYear(), periodStart.getMonth(), 1);
   const end = new Date(periodEnd.getFullYear(), periodEnd.getMonth(), 1);
 
   while (current <= end) {
@@ -257,7 +257,7 @@ export function getDepreciationMonthsInPeriod(
   let totalDepreciationMonths = 0;
 
   // Iterate month-by-month over the target periodStart to periodEnd
-  let current = new Date(periodStart.getFullYear(), periodStart.getMonth(), 1);
+  const current = new Date(periodStart.getFullYear(), periodStart.getMonth(), 1);
   const end = new Date(periodEnd.getFullYear(), periodEnd.getMonth(), 1);
 
   while (current <= end) {

@@ -12,7 +12,7 @@ import * as admin from 'firebase-admin';
 import { prisma } from '../lib/prisma';
 
 // ── 1. FAIL LOUDLY IF STRIPE KEYS ARE LIVE ────────────────────────────────────
-let stripeKey = process.env.STRIPE_SECRET_KEY || '';
+const stripeKey = process.env.STRIPE_SECRET_KEY || '';
 
 if (stripeKey.startsWith('sk_live_')) {
   throw new Error('CRITICAL SECURITY FAILURE: STRIPE_SECRET_KEY is live mode (sk_live_). Seeder must run in test mode only!');

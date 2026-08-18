@@ -461,16 +461,10 @@
     },
     "@typescript-eslint/no-unused-vars": {
       "count": 2
-    },
-    "no-var": {
-      "count": 5
     }
   },
   "src/__tests__/CashFlowDeepDive.test.tsx": {
     "@typescript-eslint/no-explicit-any": {
-      "count": 1
-    },
-    "no-var": {
       "count": 1
     }
   },
@@ -480,9 +474,6 @@
     },
     "@typescript-eslint/no-unused-vars": {
       "count": 2
-    },
-    "no-var": {
-      "count": 6
     },
     "react/display-name": {
       "count": 2
@@ -508,9 +499,6 @@
     "@typescript-eslint/no-unused-vars": {
       "count": 1
     },
-    "no-var": {
-      "count": 5
-    },
     "react/display-name": {
       "count": 2
     }
@@ -523,7 +511,7 @@
       "count": 3
     },
     "no-var": {
-      "count": 15
+      "count": 2
     }
   },
   "src/__tests__/MetricChart.test.tsx": {
@@ -534,9 +522,6 @@
   "src/__tests__/ProjectTeamManager.test.tsx": {
     "@typescript-eslint/no-explicit-any": {
       "count": 1
-    },
-    "no-var": {
-      "count": 8
     }
   },
   "src/__tests__/accountDeletion.test.ts": {
@@ -545,9 +530,6 @@
     },
     "@typescript-eslint/no-unused-vars": {
       "count": 1
-    },
-    "no-var": {
-      "count": 21
     }
   },
   "src/__tests__/acquisitionPhaseGate.test.ts": {
@@ -571,9 +553,6 @@
   "src/__tests__/acquisitionWizard.test.ts": {
     "@typescript-eslint/no-explicit-any": {
       "count": 2
-    },
-    "no-var": {
-      "count": 4
     }
   },
   "src/__tests__/actualScorecard.test.tsx": {
@@ -594,9 +573,6 @@
   "src/__tests__/authenticationGates.test.ts": {
     "@typescript-eslint/no-explicit-any": {
       "count": 7
-    },
-    "no-var": {
-      "count": 4
     }
   },
   "src/__tests__/autocompletePublic.test.ts": {
@@ -615,9 +591,6 @@
   "src/__tests__/businessCardExchange.test.ts": {
     "@typescript-eslint/no-explicit-any": {
       "count": 22
-    },
-    "no-var": {
-      "count": 10
     }
   },
   "src/__tests__/calculatorUtils.test.ts": {
@@ -633,16 +606,10 @@
   "src/__tests__/capitalRaiseCommitments.test.ts": {
     "@typescript-eslint/no-explicit-any": {
       "count": 9
-    },
-    "no-var": {
-      "count": 9
     }
   },
   "src/__tests__/closingLedgerExport.test.ts": {
     "@typescript-eslint/no-explicit-any": {
-      "count": 6
-    },
-    "no-var": {
       "count": 6
     }
   },
@@ -660,25 +627,16 @@
     },
     "@typescript-eslint/no-unused-vars": {
       "count": 2
-    },
-    "no-var": {
-      "count": 11
     }
   },
   "src/__tests__/coordinatesCacheRefresh.test.ts": {
     "@typescript-eslint/no-explicit-any": {
       "count": 1
-    },
-    "no-var": {
-      "count": 2
     }
   },
   "src/__tests__/crewGovernance.test.ts": {
     "@typescript-eslint/no-explicit-any": {
       "count": 2
-    },
-    "no-var": {
-      "count": 3
     }
   },
   "src/__tests__/crowdfundingMarketplace.test.tsx": {
@@ -700,9 +658,6 @@
     },
     "@typescript-eslint/no-unused-vars": {
       "count": 4
-    },
-    "no-var": {
-      "count": 9
     }
   },
   "src/__tests__/dealAttachmentsSecurity.test.ts": {
@@ -711,9 +666,6 @@
     },
     "@typescript-eslint/no-unused-vars": {
       "count": 6
-    },
-    "no-var": {
-      "count": 10
     }
   },
   "src/__tests__/dealCreationFlow.test.tsx": {
@@ -724,9 +676,6 @@
   "src/__tests__/dealInquiriesThread.test.ts": {
     "@typescript-eslint/no-explicit-any": {
       "count": 24
-    },
-    "no-var": {
-      "count": 10
     }
   },
   "src/__tests__/dealInvitations.test.ts": {
@@ -738,9 +687,6 @@
     },
     "@typescript-eslint/no-unused-vars": {
       "count": 3
-    },
-    "no-var": {
-      "count": 9
     }
   },
   "src/__tests__/dealInvitationsExternal.test.ts": {
@@ -749,9 +695,6 @@
     },
     "@typescript-eslint/no-unused-vars": {
       "count": 3
-    },
-    "no-var": {
-      "count": 11
     }
   },
   "src/__tests__/dealInvitationsResponse.test.ts": {
@@ -760,9 +703,6 @@
     },
     "@typescript-eslint/no-unused-vars": {
       "count": 1
-    },
-    "no-var": {
-      "count": 8
     }
   },
   "src/__tests__/dealOnePager.test.tsx": {
@@ -799,11 +739,6 @@
       "count": 2
     }
   },
-  "src/__tests__/dealsMapAndVisibility.test.tsx": {
-    "@typescript-eslint/no-explicit-any": {
-      "count": 2
-    }
-  },
   "src/__tests__/deferredIntegrations.test.tsx": {
     "@typescript-eslint/no-explicit-any": {
       "count": 1
@@ -818,9 +753,6 @@
     },
     "@typescript-eslint/no-unused-vars": {
       "count": 3
-    },
-    "no-var": {
-      "count": 1
     }
   },
   "src/__tests__/equityParties.test.ts": {
@@ -829,17 +761,11 @@
     },
     "@typescript-eslint/no-unused-vars": {
       "count": 2
-    },
-    "no-var": {
-      "count": 4
     }
   },
   "src/__tests__/eventTaxonomy.test.ts": {
     "@typescript-eslint/no-explicit-any": {
       "count": 5
-    },
-    "no-var": {
-      "count": 1
     }
   },
   "src/__tests__/exitUnderwriting.test.ts": {
@@ -870,7 +796,7 @@
       "count": 1
     },
     "no-var": {
-      "count": 6
+      "count": 1
     }
   },
   "src/__tests__/financingRoute.test.ts": {
@@ -879,17 +805,11 @@
     },
     "@typescript-eslint/no-unused-vars": {
       "count": 3
-    },
-    "no-var": {
-      "count": 14
     }
   },
   "src/__tests__/fundDataRoom.test.ts": {
     "@typescript-eslint/no-explicit-any": {
       "count": 14
-    },
-    "no-var": {
-      "count": 11
     }
   },
   "src/__tests__/fundFixturesValidation.test.ts": {
@@ -911,9 +831,6 @@
     },
     "@typescript-eslint/no-unused-vars": {
       "count": 1
-    },
-    "no-var": {
-      "count": 7
     }
   },
   "src/__tests__/fundSecurityAudit.test.ts": {
@@ -922,40 +839,25 @@
     },
     "@typescript-eslint/no-unused-vars": {
       "count": 7
-    },
-    "no-var": {
-      "count": 15
     }
   },
   "src/__tests__/fundVendorMarketplace.test.ts": {
     "@typescript-eslint/no-explicit-any": {
       "count": 8
-    },
-    "no-var": {
-      "count": 7
     }
   },
   "src/__tests__/fundWizard.test.ts": {
     "@typescript-eslint/no-explicit-any": {
       "count": 4
-    },
-    "no-var": {
-      "count": 5
     }
   },
   "src/__tests__/gdpr.test.ts": {
     "@typescript-eslint/no-explicit-any": {
       "count": 9
-    },
-    "no-var": {
-      "count": 8
     }
   },
   "src/__tests__/gdprAndDevOps.test.ts": {
     "@typescript-eslint/no-explicit-any": {
-      "count": 2
-    },
-    "no-var": {
       "count": 2
     }
   },
@@ -965,9 +867,6 @@
     },
     "@typescript-eslint/no-unused-vars": {
       "count": 1
-    },
-    "no-var": {
-      "count": 5
     }
   },
   "src/__tests__/getTeamMembers.test.ts": {
@@ -978,7 +877,7 @@
       "count": 1
     },
     "no-var": {
-      "count": 9
+      "count": 1
     }
   },
   "src/__tests__/growthReferrals.test.ts": {
@@ -995,9 +894,6 @@
     },
     "@typescript-eslint/no-unused-vars": {
       "count": 2
-    },
-    "no-var": {
-      "count": 7
     }
   },
   "src/__tests__/holdAutoAdvance.test.ts": {
@@ -1006,9 +902,6 @@
     },
     "@typescript-eslint/no-unused-vars": {
       "count": 1
-    },
-    "no-var": {
-      "count": 4
     }
   },
   "src/__tests__/holdInterview.test.ts": {
@@ -1030,9 +923,6 @@
     },
     "@typescript-eslint/no-unused-vars": {
       "count": 3
-    },
-    "no-var": {
-      "count": 7
     }
   },
   "src/__tests__/inboundEmailLoop.test.ts": {
@@ -1041,9 +931,6 @@
     },
     "@typescript-eslint/no-unused-vars": {
       "count": 2
-    },
-    "no-var": {
-      "count": 7
     }
   },
   "src/__tests__/indexActions.test.ts": {
@@ -1054,7 +941,7 @@
       "count": 1
     },
     "no-var": {
-      "count": 9
+      "count": 1
     }
   },
   "src/__tests__/insightsDashboardNoDemo.test.ts": {
@@ -1091,9 +978,6 @@
   "src/__tests__/investorMailingList.test.ts": {
     "@typescript-eslint/no-explicit-any": {
       "count": 17
-    },
-    "no-var": {
-      "count": 5
     }
   },
   "src/__tests__/invitationAbuse.test.ts": {
@@ -1102,16 +986,10 @@
     },
     "@typescript-eslint/no-unused-vars": {
       "count": 2
-    },
-    "no-var": {
-      "count": 8
     }
   },
   "src/__tests__/lawyersApi.test.ts": {
     "@typescript-eslint/no-explicit-any": {
-      "count": 3
-    },
-    "no-var": {
       "count": 3
     }
   },
@@ -1126,9 +1004,6 @@
     },
     "@typescript-eslint/no-unused-vars": {
       "count": 2
-    },
-    "no-var": {
-      "count": 13
     }
   },
   "src/__tests__/lenderRatesWiring.test.ts": {
@@ -1147,9 +1022,6 @@
     },
     "@typescript-eslint/no-unused-vars": {
       "count": 2
-    },
-    "no-var": {
-      "count": 12
     }
   },
   "src/__tests__/loanMilestones.test.ts": {
@@ -1158,9 +1030,6 @@
     },
     "@typescript-eslint/no-unused-vars": {
       "count": 5
-    },
-    "no-var": {
-      "count": 13
     }
   },
   "src/__tests__/lockedTerms.test.ts": {
@@ -1169,9 +1038,6 @@
     },
     "@typescript-eslint/no-unused-vars": {
       "count": 2
-    },
-    "no-var": {
-      "count": 10
     }
   },
   "src/__tests__/lockedTermsFd21.test.ts": {
@@ -1180,14 +1046,6 @@
     },
     "@typescript-eslint/no-unused-vars": {
       "count": 1
-    },
-    "no-var": {
-      "count": 12
-    }
-  },
-  "src/__tests__/loginRedirect.test.tsx": {
-    "no-var": {
-      "count": 3
     }
   },
   "src/__tests__/mapTileApi.test.ts": {
@@ -1211,9 +1069,6 @@
     },
     "@typescript-eslint/no-unused-vars": {
       "count": 1
-    },
-    "no-var": {
-      "count": 2
     }
   },
   "src/__tests__/modalityReconciliation.test.ts": {
@@ -1235,9 +1090,6 @@
   "src/__tests__/notificationService.test.ts": {
     "@typescript-eslint/no-explicit-any": {
       "count": 8
-    },
-    "no-var": {
-      "count": 7
     }
   },
   "src/__tests__/offerCalculator.test.ts": {
@@ -1266,9 +1118,6 @@
     },
     "@typescript-eslint/no-unused-vars": {
       "count": 1
-    },
-    "no-var": {
-      "count": 11
     }
   },
   "src/__tests__/paywallObfuscation.test.ts": {
@@ -1276,9 +1125,6 @@
       "count": 6
     },
     "@typescript-eslint/no-unused-vars": {
-      "count": 4
-    },
-    "no-var": {
       "count": 4
     }
   },
@@ -1304,9 +1150,6 @@
     "@typescript-eslint/no-explicit-any": {
       "count": 3
     },
-    "no-var": {
-      "count": 4
-    },
     "react/display-name": {
       "count": 2
     }
@@ -1314,9 +1157,6 @@
   "src/__tests__/projectFinancialsPersistence.test.ts": {
     "@typescript-eslint/no-explicit-any": {
       "count": 8
-    },
-    "no-var": {
-      "count": 7
     }
   },
   "src/__tests__/projectWizard.test.ts": {
@@ -1340,9 +1180,6 @@
   "src/__tests__/proofOfFunds.test.ts": {
     "@typescript-eslint/no-explicit-any": {
       "count": 5
-    },
-    "no-var": {
-      "count": 4
     }
   },
   "src/__tests__/propertyLookup.test.ts": {
@@ -1369,9 +1206,6 @@
     },
     "@typescript-eslint/no-unused-vars": {
       "count": 1
-    },
-    "no-var": {
-      "count": 3
     }
   },
   "src/__tests__/publishGate.test.ts": {
@@ -1380,9 +1214,6 @@
     },
     "@typescript-eslint/no-unused-vars": {
       "count": 11
-    },
-    "no-var": {
-      "count": 5
     }
   },
   "src/__tests__/reconciliationEngine.test.ts": {
@@ -1414,9 +1245,6 @@
   "src/__tests__/reports.test.ts": {
     "@typescript-eslint/no-explicit-any": {
       "count": 3
-    },
-    "no-var": {
-      "count": 4
     }
   },
   "src/__tests__/retrospectiveE0.test.tsx": {
@@ -1462,9 +1290,6 @@
     },
     "@typescript-eslint/no-unused-vars": {
       "count": 1
-    },
-    "no-var": {
-      "count": 7
     }
   },
   "src/__tests__/scenarioIRRNoMultiplier.test.ts": {
@@ -1493,16 +1318,10 @@
   "src/__tests__/searchDealByAddress.test.ts": {
     "@typescript-eslint/no-explicit-any": {
       "count": 6
-    },
-    "no-var": {
-      "count": 3
     }
   },
   "src/__tests__/searchTelemetry.test.tsx": {
     "@typescript-eslint/no-unused-vars": {
-      "count": 1
-    },
-    "no-var": {
       "count": 1
     }
   },
@@ -1512,9 +1331,6 @@
     },
     "@typescript-eslint/no-unused-vars": {
       "count": 2
-    },
-    "no-var": {
-      "count": 8
     }
   },
   "src/__tests__/streetViewApi.test.ts": {
@@ -1525,25 +1341,16 @@
   "src/__tests__/stripeCheckout.test.ts": {
     "@typescript-eslint/no-explicit-any": {
       "count": 2
-    },
-    "no-var": {
-      "count": 2
     }
   },
   "src/__tests__/stripeSessionStatus.test.ts": {
     "@typescript-eslint/no-explicit-any": {
-      "count": 1
-    },
-    "no-var": {
       "count": 1
     }
   },
   "src/__tests__/subscriberSearch.test.tsx": {
     "@typescript-eslint/no-explicit-any": {
       "count": 2
-    },
-    "no-var": {
-      "count": 3
     }
   },
   "src/__tests__/subscriberSort.test.ts": {
@@ -1552,9 +1359,6 @@
     },
     "@typescript-eslint/no-require-imports": {
       "count": 2
-    },
-    "no-var": {
-      "count": 1
     }
   },
   "src/__tests__/subscriptions.test.ts": {
@@ -1566,9 +1370,6 @@
     },
     "@typescript-eslint/no-unused-vars": {
       "count": 2
-    },
-    "no-var": {
-      "count": 11
     }
   },
   "src/__tests__/subscriptionsPipeline.test.tsx": {
@@ -1580,9 +1381,6 @@
     },
     "@typescript-eslint/no-unused-vars": {
       "count": 7
-    },
-    "no-var": {
-      "count": 10
     }
   },
   "src/__tests__/supportProvider.test.ts": {
@@ -1611,9 +1409,6 @@
   "src/__tests__/taxExport.test.ts": {
     "@typescript-eslint/no-explicit-any": {
       "count": 5
-    },
-    "no-var": {
-      "count": 4
     }
   },
   "src/__tests__/teamLastActive.test.ts": {
@@ -1627,9 +1422,6 @@
     },
     "@typescript-eslint/no-unused-vars": {
       "count": 1
-    },
-    "no-var": {
-      "count": 8
     }
   },
   "src/__tests__/teamSlots.test.ts": {
@@ -1638,9 +1430,6 @@
     },
     "@typescript-eslint/no-unused-vars": {
       "count": 1
-    },
-    "no-var": {
-      "count": 6
     }
   },
   "src/__tests__/timelineSyncWorker.test.ts": {
@@ -1667,9 +1456,6 @@
   "src/__tests__/useEntitlementsRetry.test.ts": {
     "@typescript-eslint/no-explicit-any": {
       "count": 3
-    },
-    "no-var": {
-      "count": 2
     }
   },
   "src/__tests__/vendorAssignmentActions.test.ts": {
@@ -1680,7 +1466,7 @@
       "count": 1
     },
     "no-var": {
-      "count": 10
+      "count": 1
     }
   },
   "src/__tests__/vendorIsolation.test.ts": {
@@ -1689,9 +1475,6 @@
     },
     "@typescript-eslint/no-unused-vars": {
       "count": 2
-    },
-    "no-var": {
-      "count": 3
     }
   },
   "src/__tests__/vz1Evidence.test.ts": {
@@ -1764,9 +1547,6 @@
     },
     "@typescript-eslint/no-unused-vars": {
       "count": 1
-    },
-    "prefer-const": {
-      "count": 3
     }
   },
   "src/actions/listings.ts": {
@@ -1804,9 +1584,6 @@
   "src/actions/takedown.ts": {
     "@typescript-eslint/no-explicit-any": {
       "count": 3
-    },
-    "prefer-const": {
-      "count": 1
     }
   },
   "src/actions/team.ts": {
@@ -2081,9 +1858,6 @@
   "src/app/api/cron/process-team-invites/route.ts": {
     "@typescript-eslint/no-explicit-any": {
       "count": 8
-    },
-    "prefer-const": {
-      "count": 2
     }
   },
   "src/app/api/cron/refresh-place-ids/route.ts": {
@@ -2130,9 +1904,6 @@
     },
     "@typescript-eslint/no-unused-vars": {
       "count": 1
-    },
-    "prefer-const": {
-      "count": 2
     }
   },
   "src/app/api/dashboard/route.ts": {
@@ -2166,9 +1937,6 @@
   "src/app/api/events/__tests__/route.test.ts": {
     "@typescript-eslint/no-explicit-any": {
       "count": 8
-    },
-    "no-var": {
-      "count": 7
     }
   },
   "src/app/api/events/stream/route.ts": {
@@ -2274,9 +2042,6 @@
   "src/app/api/insights/portfolio/route.ts": {
     "@typescript-eslint/no-explicit-any": {
       "count": 3
-    },
-    "prefer-const": {
-      "count": 1
     }
   },
   "src/app/api/insights/route.ts": {
@@ -2372,9 +2137,6 @@
     },
     "@typescript-eslint/no-unused-vars": {
       "count": 1
-    },
-    "prefer-const": {
-      "count": 1
     }
   },
   "src/app/api/invitations/respond/route.ts": {
@@ -2383,9 +2145,6 @@
     },
     "@typescript-eslint/no-require-imports": {
       "count": 2
-    },
-    "prefer-const": {
-      "count": 1
     }
   },
   "src/app/api/lawyers/route.ts": {
@@ -2445,9 +2204,6 @@
   "src/app/api/places/validate/route.ts": {
     "@typescript-eslint/no-explicit-any": {
       "count": 1
-    },
-    "prefer-const": {
-      "count": 3
     }
   },
   "src/app/api/plaid/connections/[connectionId]/route.ts": {
@@ -2466,9 +2222,6 @@
   "src/app/api/plaid/exchange-v2/route.ts": {
     "@typescript-eslint/no-explicit-any": {
       "count": 10
-    },
-    "prefer-const": {
-      "count": 1
     }
   },
   "src/app/api/plaid/exchange/route.ts": {
@@ -2635,9 +2388,6 @@
     },
     "@typescript-eslint/no-unused-vars": {
       "count": 1
-    },
-    "prefer-const": {
-      "count": 1
     }
   },
   "src/app/api/projects/[id]/route.ts": {
@@ -2668,9 +2418,6 @@
       "count": 2
     },
     "@typescript-eslint/no-unused-vars": {
-      "count": 1
-    },
-    "prefer-const": {
       "count": 1
     }
   },
@@ -2756,9 +2503,6 @@
   "src/app/api/rent-history/import/route.ts": {
     "@typescript-eslint/no-explicit-any": {
       "count": 3
-    },
-    "prefer-const": {
-      "count": 1
     }
   },
   "src/app/api/reports/[period]/route.ts": {
@@ -2870,11 +2614,6 @@
       "count": 1
     },
     "@typescript-eslint/no-unused-vars": {
-      "count": 1
-    }
-  },
-  "src/app/api/vendors/route.ts": {
-    "@typescript-eslint/no-explicit-any": {
       "count": 1
     }
   },
@@ -3229,9 +2968,6 @@
     "@typescript-eslint/no-unused-vars": {
       "count": 35
     },
-    "prefer-const": {
-      "count": 2
-    },
     "react-hooks/exhaustive-deps": {
       "count": 3
     },
@@ -3341,9 +3077,6 @@
   "src/app/dashboard/projects/page.tsx": {
     "@typescript-eslint/no-explicit-any": {
       "count": 2
-    },
-    "prefer-const": {
-      "count": 1
     },
     "react-hooks/preserve-manual-memoization": {
       "count": 1
@@ -4606,11 +4339,6 @@
       "count": 1
     }
   },
-  "src/components/features/project-card.tsx": {
-    "prefer-const": {
-      "count": 1
-    }
-  },
   "src/components/financing/DebtFinancingAdvanced.tsx": {
     "@typescript-eslint/no-unused-vars": {
       "count": 1
@@ -5050,10 +4778,10 @@
       "count": 1
     },
     "@typescript-eslint/no-explicit-any": {
-      "count": 6
+      "count": 5
     },
     "@typescript-eslint/no-unused-vars": {
-      "count": 2
+      "count": 1
     },
     "react-hooks/exhaustive-deps": {
       "count": 1
@@ -5545,9 +5273,6 @@
     "@typescript-eslint/no-unused-vars": {
       "count": 2
     },
-    "prefer-const": {
-      "count": 1
-    },
     "react-hooks/exhaustive-deps": {
       "count": 1
     },
@@ -5903,9 +5628,6 @@
     "@typescript-eslint/no-unused-vars": {
       "count": 2
     },
-    "prefer-const": {
-      "count": 1
-    },
     "react-hooks/exhaustive-deps": {
       "count": 2
     },
@@ -5986,9 +5708,6 @@
     }
   },
   "src/components/project/ProjectKickoffCapital.tsx": {
-    "prefer-const": {
-      "count": 1
-    },
     "react/no-unescaped-entities": {
       "count": 1
     }
@@ -6343,11 +6062,6 @@
   "src/components/projects/VendorRatingModal.tsx": {
     "@typescript-eslint/no-unused-vars": {
       "count": 3
-    }
-  },
-  "src/components/providers/PostHogProvider.tsx": {
-    "prefer-const": {
-      "count": 1
     }
   },
   "src/components/purchase/PurchaseInterview.tsx": {
@@ -6736,9 +6450,6 @@
   "src/hooks/usePortfolioInsights.ts": {
     "@typescript-eslint/no-unused-vars": {
       "count": 7
-    },
-    "prefer-const": {
-      "count": 1
     }
   },
   "src/hooks/usePortfolioMetricSnapshots.ts": {
@@ -6850,11 +6561,6 @@
     },
     "@typescript-eslint/no-unused-vars": {
       "count": 3
-    }
-  },
-  "src/lib/banking/transactionIdentificationEngine.ts": {
-    "prefer-const": {
-      "count": 2
     }
   },
   "src/lib/banking/transactionRuleEngine.ts": {
@@ -7036,16 +6742,6 @@
   },
   "src/lib/gates/fundGateLines.ts": {
     "@typescript-eslint/no-explicit-any": {
-      "count": 2
-    }
-  },
-  "src/lib/help/loader.ts": {
-    "prefer-const": {
-      "count": 1
-    }
-  },
-  "src/lib/identity/propertyIdentity.ts": {
-    "prefer-const": {
       "count": 2
     }
   },
@@ -7231,9 +6927,6 @@
     },
     "@typescript-eslint/no-unused-vars": {
       "count": 9
-    },
-    "prefer-const": {
-      "count": 5
     }
   },
   "src/lib/metrics/snapshotService.ts": {
@@ -7410,9 +7103,6 @@
   "src/lib/reports/pdfGenerator.ts": {
     "@typescript-eslint/no-explicit-any": {
       "count": 2
-    },
-    "prefer-const": {
-      "count": 2
     }
   },
   "src/lib/reports/reportEngine.ts": {
@@ -7528,9 +7218,6 @@
     },
     "@typescript-eslint/no-unused-vars": {
       "count": 2
-    },
-    "prefer-const": {
-      "count": 4
     }
   },
   "src/lib/services/officeReplicationWorker.ts": {
@@ -7597,14 +7284,6 @@
   "src/lib/tax/profitAndLoss.ts": {
     "@typescript-eslint/no-unused-vars": {
       "count": 2
-    },
-    "prefer-const": {
-      "count": 1
-    }
-  },
-  "src/lib/tax/scheduleE.ts": {
-    "prefer-const": {
-      "count": 1
     }
   },
   "src/lib/telemetry/__tests__/telemetry.test.ts": {
@@ -7681,9 +7360,6 @@
     },
     "@typescript-eslint/no-unused-vars": {
       "count": 1
-    },
-    "prefer-const": {
-      "count": 3
     }
   },
   "src/lib/web3RegistryHooks.ts": {
@@ -7719,9 +7395,6 @@
       "count": 7
     },
     "@typescript-eslint/no-unused-vars": {
-      "count": 1
-    },
-    "prefer-const": {
       "count": 1
     }
   },

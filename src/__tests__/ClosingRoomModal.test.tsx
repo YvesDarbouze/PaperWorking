@@ -9,8 +9,8 @@ import { uploadFile } from '@/lib/storage/uploadService';
 import toast from 'react-hot-toast';
 
 // Setup Mocks
-var mockUser: any = { uid: 'user-123', getIdToken: jest.fn(() => Promise.resolve('mock-token')) };
-var mockProfile: any = { displayName: 'Bob', email: 'bob@example.com', role: 'Lead Investor' };
+let mockUser: any = { uid: 'user-123', getIdToken: jest.fn(() => Promise.resolve('mock-token')) };
+let mockProfile: any = { displayName: 'Bob', email: 'bob@example.com', role: 'Lead Investor' };
 
 jest.mock('@/lib/firebase/config', () => ({
   db: {},
@@ -42,10 +42,10 @@ jest.mock('@/context/AuthContext', () => ({
   useAuth: () => ({ profile: mockProfile, user: mockUser }),
 }));
 
-var mockUpdateClosingRoom = jest.fn();
-var mockProjects: any[] = [];
-var mockSetDeals = jest.fn();
-var mockSetDeal = jest.fn();
+const mockUpdateClosingRoom = jest.fn();
+let mockProjects: any[] = [];
+const mockSetDeals = jest.fn();
+const mockSetDeal = jest.fn();
 
 jest.mock('@/store/projectStore', () => {
   const storeInstance: any = (selector: any) => selector({

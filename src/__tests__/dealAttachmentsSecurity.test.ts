@@ -3,15 +3,15 @@ import { POST, GET } from '@/app/api/projects/[id]/documents/route';
 import { GET as downloadGET } from '@/app/api/projects/[id]/documents/[docId]/download/route';
 import { NextRequest, NextResponse } from 'next/server';
 
-var mockVerifyIdToken = jest.fn();
-var mockGet = jest.fn();
-var mockSet = jest.fn().mockResolvedValue(true);
-var mockUpdate = jest.fn().mockResolvedValue(true);
-var mockVerifyProjectAccessAndRole = jest.fn();
-var mockSave = jest.fn();
-var mockMakePublic = jest.fn();
-var mockDownload = jest.fn();
-var mockExists = jest.fn();
+const mockVerifyIdToken = jest.fn();
+const mockGet = jest.fn();
+const mockSet = jest.fn().mockResolvedValue(true);
+const mockUpdate = jest.fn().mockResolvedValue(true);
+const mockVerifyProjectAccessAndRole = jest.fn();
+const mockSave = jest.fn();
+const mockMakePublic = jest.fn();
+const mockDownload = jest.fn();
+const mockExists = jest.fn();
 
 jest.mock('@/lib/firebase/admin', () => ({
   adminAuth: {
@@ -59,7 +59,7 @@ jest.mock('@/lib/firebase-admin/project-guard', () => ({
   verifyProjectAccessAndRole: (...args: any[]) => mockVerifyProjectAccessAndRole(...args),
 }));
 
-var mockRequireAuth = jest.fn();
+const mockRequireAuth = jest.fn();
 jest.mock('@/lib/firebase-admin/auth-guard', () => ({
   requireAuth: (...args: any[]) => mockRequireAuth(...args),
   isAuthError: (result: any) => result instanceof NextResponse,

@@ -8,7 +8,7 @@ import type { DealListingTeaser } from '@/types/listing';
 import React from 'react';
 
 // Mock DB
-var mockGet = jest.fn();
+const mockGet = jest.fn();
 jest.mock('@/lib/firebase/admin', () => ({
   adminDb: {
     collection: jest.fn((colName) => ({

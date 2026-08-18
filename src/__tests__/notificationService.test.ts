@@ -2,14 +2,14 @@
 //  NotificationService Unit Tests
 // ═══════════════════════════════════════════════════════
 
-var mockSet = jest.fn();
-var mockUpdate = jest.fn();
-var mockGet = jest.fn();
-var mockAdd = jest.fn();
+const mockSet = jest.fn();
+const mockUpdate = jest.fn();
+const mockGet = jest.fn();
+const mockAdd = jest.fn();
 
-var mockSendEachForMulticast = jest.fn();
-var mockSendRawEmail = jest.fn().mockResolvedValue({ id: 'resend_123' });
-var mockIsQuietHoursActive = jest.fn().mockReturnValue(false);
+const mockSendEachForMulticast = jest.fn();
+const mockSendRawEmail = jest.fn().mockResolvedValue({ id: 'resend_123' });
+const mockIsQuietHoursActive = jest.fn().mockReturnValue(false);
 
 // Mock CommunicationEngine
 jest.mock('@/lib/engine/CommunicationEngine', () => ({

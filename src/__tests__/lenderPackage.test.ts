@@ -3,21 +3,21 @@ import { NextRequest } from 'next/server';
 /* ──────────────────────────────────────────────────────────────────────────
    Shared mock vars
    ────────────────────────────────────────────────────────────────────────── */
-var mockVerifyIdToken = jest.fn();
-var mockProjectDocGet = jest.fn();
-var mockProjectDocUpdate = jest.fn();
-var mockUserDocGet = jest.fn();
-var mockSubDocGet = jest.fn();
-var mockSubDocSet = jest.fn();
-var mockSubDocUpdate = jest.fn();
-var mockSubDocDelete = jest.fn();
-var mockSubCollGet = jest.fn();
-var mockBatchCommit = jest.fn();
-var mockBatchDelete = jest.fn();
-var mockBatchSet = jest.fn();
+const mockVerifyIdToken = jest.fn();
+const mockProjectDocGet = jest.fn();
+const mockProjectDocUpdate = jest.fn();
+const mockUserDocGet = jest.fn();
+const mockSubDocGet = jest.fn();
+const mockSubDocSet = jest.fn();
+const mockSubDocUpdate = jest.fn();
+const mockSubDocDelete = jest.fn();
+const mockSubCollGet = jest.fn();
+const mockBatchCommit = jest.fn();
+const mockBatchDelete = jest.fn();
+const mockBatchSet = jest.fn();
 
 // Mock Firestore batch
-var mockBatch = jest.fn(() => ({
+const mockBatch = jest.fn(() => ({
   set: (...args: any[]) => mockBatchSet(...args),
   delete: (...args: any[]) => mockBatchDelete(...args),
   commit: (...args: any[]) => mockBatchCommit(...args),

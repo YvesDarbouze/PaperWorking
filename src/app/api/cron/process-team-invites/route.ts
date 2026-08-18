@@ -53,8 +53,8 @@ export async function GET(req: NextRequest) {
       // 2. Reminders check
       const daysSinceCreation = (now.getTime() - createdAt.getTime()) / (1000 * 60 * 60 * 24);
       
-      let shouldSendDay3 = daysSinceCreation >= 3 && daysSinceCreation < 6 && !invite.day3ReminderSent;
-      let shouldSendDay6 = daysSinceCreation >= 6 && !invite.day6ReminderSent;
+      const shouldSendDay3 = daysSinceCreation >= 3 && daysSinceCreation < 6 && !invite.day3ReminderSent;
+      const shouldSendDay6 = daysSinceCreation >= 6 && !invite.day6ReminderSent;
 
       if (shouldSendDay3 || shouldSendDay6) {
         try {

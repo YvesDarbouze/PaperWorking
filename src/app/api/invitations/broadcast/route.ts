@@ -270,7 +270,7 @@ export async function POST(request: NextRequest) {
       // B. Process External Email Invitation
       if (r.emailConsent) {
         // Format Prose and inject variables
-        let formattedBody = bodyTemplate
+        const formattedBody = bodyTemplate
           .replaceAll('{{PROPERTY_ADDRESS}}', deal.propertyAddress || dealName)
           .replaceAll('{{TARGET_PRICE}}', fin.finalAgreedPrice ? `$${(fin.finalAgreedPrice / 100).toLocaleString()}` : fin.purchasePrice ? `$${(fin.purchasePrice / 100).toLocaleString()}` : '$0')
           .replaceAll('{{PROJECTED_NOI}}', fin.projectedNOI ? `$${(fin.projectedNOI / 100).toLocaleString()}` : '$0')

@@ -4,15 +4,15 @@ import { POST as replyRoute } from '@/app/api/projects/[id]/inquiries/[inquiryId
 import { PATCH as updateInquiryRoute } from '@/app/api/projects/[id]/inquiries/[inquiryId]/route';
 import { NextRequest } from 'next/server';
 
-var mockVerifyIdToken = jest.fn();
-var mockGet = jest.fn();
-var mockSet = jest.fn().mockResolvedValue(true);
-var mockUpdate = jest.fn().mockResolvedValue(true);
-var mockDelete = jest.fn().mockResolvedValue(true);
-var mockAdd = jest.fn().mockResolvedValue({ id: 'new_doc_123' });
-var mockCommit = jest.fn().mockResolvedValue(true);
+const mockVerifyIdToken = jest.fn();
+const mockGet = jest.fn();
+const mockSet = jest.fn().mockResolvedValue(true);
+const mockUpdate = jest.fn().mockResolvedValue(true);
+const mockDelete = jest.fn().mockResolvedValue(true);
+const mockAdd = jest.fn().mockResolvedValue({ id: 'new_doc_123' });
+const mockCommit = jest.fn().mockResolvedValue(true);
 
-var mockInvitationData: any = {
+const mockInvitationData: any = {
   id: 'inv_123',
   token: 'valid_token_1234567890',
   inviteeEmail: 'investor@example.com',
@@ -25,7 +25,7 @@ var mockInvitationData: any = {
   expiresAt: new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString(),
 };
 
-var mockProjectData: any = {
+const mockProjectData: any = {
   ownerUid: 'user_lead_investor',
   propertyName: '123 Main St',
   activeListingId: 'listing_123',
@@ -36,7 +36,7 @@ var mockProjectData: any = {
   },
 };
 
-var mockInquiries: any[] = [];
+let mockInquiries: any[] = [];
 
 jest.mock('@/lib/firebase/admin', () => {
   return {

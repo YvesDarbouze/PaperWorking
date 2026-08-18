@@ -2,13 +2,13 @@ import { inboundEmailHandler, stripQuotedHistoryAndSignatures } from '@/lib/serv
 import { POST as webhookRoute } from '@/app/api/webhooks/emails/route';
 import { NextRequest } from 'next/server';
 
-var mockGet = jest.fn();
-var mockSet = jest.fn().mockResolvedValue(true);
-var mockUpdate = jest.fn().mockResolvedValue(true);
-var mockAdd = jest.fn().mockResolvedValue({ id: 'new_doc_123' });
-var mockWhereGet = jest.fn();
+const mockGet = jest.fn();
+const mockSet = jest.fn().mockResolvedValue(true);
+const mockUpdate = jest.fn().mockResolvedValue(true);
+const mockAdd = jest.fn().mockResolvedValue({ id: 'new_doc_123' });
+const mockWhereGet = jest.fn();
 
-var mockInvitationData: any = {
+const mockInvitationData: any = {
   id: 'inv_123',
   token: 'valid_token_1234567890',
   inviteeEmail: 'investor@example.com',
@@ -21,7 +21,7 @@ var mockInvitationData: any = {
   expiresAt: new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString(),
 };
 
-var mockProjectData: any = {
+const mockProjectData: any = {
   ownerUid: 'user_lead_investor',
   propertyName: '123 Main St',
   organizationId: 'org_123',

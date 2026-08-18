@@ -9,16 +9,16 @@ import { isSubscriptionActive } from '@/lib/stripe/subscription';
 import { NotificationService } from '@/lib/services/notificationService';
 
 // Mocks
-var mockVerifyIdToken = jest.fn();
-var mockGet = jest.fn();
-var mockSet = jest.fn();
-var mockUpdate = jest.fn();
-var mockCommit = jest.fn();
-var mockBatchUpdate = jest.fn();
-var mockBatchSet = jest.fn();
-var mockFieldValueServerTimestamp = jest.fn(() => 'mock-timestamp');
+const mockVerifyIdToken = jest.fn();
+const mockGet = jest.fn();
+const mockSet = jest.fn();
+const mockUpdate = jest.fn();
+const mockCommit = jest.fn();
+const mockBatchUpdate = jest.fn();
+const mockBatchSet = jest.fn();
+const mockFieldValueServerTimestamp = jest.fn(() => 'mock-timestamp');
 
-var mockDoc = {
+const mockDoc = {
   get: mockGet,
   collection: jest.fn().mockImplementation(() => mockCollection),
   set: mockSet,

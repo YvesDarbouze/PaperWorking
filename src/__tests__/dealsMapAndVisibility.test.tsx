@@ -5,11 +5,16 @@ import DealMap from '@/components/marketplace/DealMap';
 import PublicAddressSearch from '@/components/search/PublicAddressSearch';
 import type { DealListingTeaser } from '@/types/listing';
 
-declare global {
-  interface Window {
-    google?: any;
-  }
+interface GoogleMapsMock {
+  maps: {
+    Map: jest.Mock;
+    Circle: jest.Mock;
+    Marker: jest.Mock;
+    SymbolPath: { CIRCLE: number };
+    LatLngBounds: jest.Mock;
+  };
 }
+
 
 // Mock routing & next/navigation
 const mockPush = jest.fn();
@@ -32,7 +37,7 @@ jest.mock('posthog-js', () => ({
 const mockSearchDealByAddress = jest.fn();
 jest.mock('@/actions/listings', () => ({
   __esModule: true,
-  searchDealByAddress: (...args: any[]) => mockSearchDealByAddress(...args),
+  searchDealByAddress: (...args: unknown[]) => mockSearchDealByAddress(...args),
 }));
 
 // Mock Google Maps SDK globally in window
@@ -48,7 +53,7 @@ beforeAll(() => {
       Circle: jest.fn().mockImplementation(() => ({
         setMap: jest.fn(),
       })),
-      Marker: jest.fn().mockImplementation((opts: any) => ({
+      Marker: jest.fn().mockImplementation((opts: { position?: unknown; title?: string }) => ({
         setMap: jest.fn(),
         addListener: jest.fn(),
         position: opts.position,
@@ -127,8 +132,9 @@ describe('DM-13 Map and List Views & Visibility Matrix', () => {
       ];
 
       render(<DealMap deals={mockDeals} />);
+      const googleMock = window.google as unknown as GoogleMapsMock;
       // Should succeed without throwing
-      expect(window.google.maps.Marker).not.toHaveBeenCalled();
+      expect(googleMock.maps.Marker).not.toHaveBeenCalled();
     });
   });
 
@@ -164,10 +170,11 @@ describe('DM-13 Map and List Views & Visibility Matrix', () => {
 
       // DealMap is rendered for PUBLIC_SOLICITED mode
       render(<DealMap deals={[publicTeaser]} />);
+      const googleMock = window.google as unknown as GoogleMapsMock;
 
       // Pin should exist (window.google.maps.Marker should have been constructed)
-      expect(window.google.maps.Marker).toHaveBeenCalledTimes(1);
-      expect(window.google.maps.Marker).toHaveBeenCalledWith(
+      expect(googleMock.maps.Marker).toHaveBeenCalledTimes(1);
+      expect(googleMock.maps.Marker).toHaveBeenCalledWith(
         expect.objectContaining({
           position: { lat: 25.7617, lng: -80.1918 },
           title: expect.stringContaining('Public Solicited Prop'),
@@ -178,9 +185,10 @@ describe('DM-13 Map and List Views & Visibility Matrix', () => {
     it('does NOT render a pin on the map for MARKETPLACE deals viewed anonymously', () => {
       // For MARKETPLACE deals, anonymous map receives an empty list of deals
       render(<DealMap deals={[]} />);
+      const googleMock = window.google as unknown as GoogleMapsMock;
 
       // No pin should exist
-      expect(window.google.maps.Marker).not.toHaveBeenCalled();
+      expect(googleMock.maps.Marker).not.toHaveBeenCalled();
     });
   });
 });

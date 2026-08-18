@@ -7,16 +7,16 @@ import { projectsService } from '@/lib/firebase/projects';
 import toast from 'react-hot-toast';
 
 // Setup Mocks
-var mockUser: any = { uid: 'user-123', getIdToken: jest.fn(() => Promise.resolve('mock-token')) };
-var mockProfile: any = { displayName: 'Bob', email: 'bob@example.com', role: 'Lead Investor' };
+const mockUser: any = { uid: 'user-123', getIdToken: jest.fn(() => Promise.resolve('mock-token')) };
+const mockProfile: any = { displayName: 'Bob', email: 'bob@example.com', role: 'Lead Investor' };
 
 jest.mock('@/context/AuthContext', () => ({
   useAuth: () => ({ profile: mockProfile, user: mockUser }),
 }));
 
-var mockUpdateProjectFinancials = jest.fn();
-var mockSetDeals = jest.fn();
-var mockProjects: any[] = [];
+const mockUpdateProjectFinancials = jest.fn();
+const mockSetDeals = jest.fn();
+let mockProjects: any[] = [];
 
 jest.mock('@/store/projectStore', () => ({
   useProjectStore: (selector: any) => selector({

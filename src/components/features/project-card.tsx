@@ -69,7 +69,7 @@ const STATE_PILLS: Record<ProjectState, { bg: string; text: string; label: strin
 /* ── Wizard completion heuristic for drafts ── */
 function getWizardCompletion(project: Project): number {
   let filled = 0;
-  let total = 6;
+  const total = 6;
   if (project.propertyName) filled++;
   if (project.address) filled++;
   if (project.financials?.purchasePrice) filled++;

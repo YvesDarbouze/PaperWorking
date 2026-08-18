@@ -1,11 +1,11 @@
 import { NextRequest } from 'next/server';
 
 // ── Mock verifyIdToken, requireAuth, & DB ──
-var mockVerifyIdToken = jest.fn();
-var mockUserDocGet = jest.fn();
-var mockProjectDocGet = jest.fn();
-var mockDocSet = jest.fn();
-var mockProjectUpdate = jest.fn();
+const mockVerifyIdToken = jest.fn();
+const mockUserDocGet = jest.fn();
+const mockProjectDocGet = jest.fn();
+const mockDocSet = jest.fn();
+const mockProjectUpdate = jest.fn();
 
 jest.mock('@/lib/firebase-admin/auth-guard', () => ({
   requireAuth: jest.fn().mockImplementation(async () => {

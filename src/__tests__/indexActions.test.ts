@@ -8,22 +8,22 @@ import {
 import { isSubscriptionActive } from '@/lib/stripe/subscription';
 
 // Mocks
-var mockVerifyIdToken = jest.fn();
-var mockGet = jest.fn();
-var mockSet = jest.fn();
-var mockUpdate = jest.fn();
-var mockFieldValueServerTimestamp = jest.fn(() => 'mock-timestamp');
+const mockVerifyIdToken = jest.fn();
+const mockGet = jest.fn();
+const mockSet = jest.fn();
+const mockUpdate = jest.fn();
+const mockFieldValueServerTimestamp = jest.fn(() => 'mock-timestamp');
 
 // Transaction mock
-var mockTransaction = {
+const mockTransaction = {
   get: mockGet,
   update: mockUpdate,
   set: mockSet,
 };
-var mockRunTransaction = jest.fn((fn) => fn(mockTransaction));
+const mockRunTransaction = jest.fn((fn) => fn(mockTransaction));
 
 // Mock Firestore references
-var mockDocRef = {
+const mockDocRef = {
   id: 'mock-doc-id',
   collection: jest.fn().mockImplementation(() => mockCollectionRef),
   get: mockGet,

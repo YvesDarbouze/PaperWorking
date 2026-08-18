@@ -1,9 +1,9 @@
 import { NextRequest } from 'next/server';
 
 // ── Mock verifyIdToken, requireAuth, & DB ──
-var mockVerifyIdToken = jest.fn();
-var mockUserDocGet = jest.fn();
-var mockProjectCollectionGet = jest.fn();
+const mockVerifyIdToken = jest.fn();
+const mockUserDocGet = jest.fn();
+const mockProjectCollectionGet = jest.fn();
 
 jest.mock('@/lib/firebase-admin/auth-guard', () => ({
   requireAuth: jest.fn().mockImplementation(async () => {
@@ -58,7 +58,7 @@ jest.mock('@/lib/firebase/admin', () => ({
 }));
 
 // Mock Prisma
-var mockTransactionFindMany = jest.fn();
+const mockTransactionFindMany = jest.fn();
 jest.mock('@/lib/prisma', () => ({
   __esModule: true,
   default: {

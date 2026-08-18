@@ -132,7 +132,7 @@ export function PSACard({
   // Calculate default DD and Closing dates from Effective Date + LOI terms if not already set
   const handleEffectiveDateChange = (val: string) => {
     setEffectiveDate(val);
-    let updatedUpdates: any = { psaEffectiveDate: val };
+    const updatedUpdates: any = { psaEffectiveDate: val };
     
     if (val) {
       const baseDate = new Date(val);

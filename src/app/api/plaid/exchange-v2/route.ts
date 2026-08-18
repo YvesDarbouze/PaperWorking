@@ -117,7 +117,7 @@ export async function POST(req: NextRequest) {
     let authoritativeConsentedScopes: string[]   = clientConsentedScopes;
     let institutionName:    string | null = null;
     let institutionId:      string | null = null;
-    let institutionLogoUrl: string | null = null;
+    const institutionLogoUrl: string | null = null;
 
     // ── Step 4: /accounts/get → account details ───────────────────────────────
     let accountId:      string | null = null;

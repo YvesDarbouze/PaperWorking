@@ -4,11 +4,11 @@ import { GET as getInvestorTimeline } from '@/app/api/investor/timeline/route';
 import { NextRequest } from 'next/server';
 
 // ─── Setup Mocks ───────────────────────────────────────
-var mockVerifyIdToken = jest.fn();
-var mockGet = jest.fn();
-var mockSet = jest.fn().mockResolvedValue(true);
-var mockUpdate = jest.fn().mockResolvedValue(true);
-var mockAdd = jest.fn().mockResolvedValue({ id: 'new-activity-id' });
+const mockVerifyIdToken = jest.fn();
+const mockGet = jest.fn();
+const mockSet = jest.fn().mockResolvedValue(true);
+const mockUpdate = jest.fn().mockResolvedValue(true);
+const mockAdd = jest.fn().mockResolvedValue({ id: 'new-activity-id' });
 
 jest.mock('@/lib/firebase-admin/auth-guard', () => ({
   requireAuth: jest.fn().mockImplementation(async (req: NextRequest) => {
@@ -49,10 +49,10 @@ jest.mock('@/lib/firebase-admin/project-guard', () => ({
 }));
 
 // Mock firebase admin DB
-var mockTimelineDocs: any[] = [];
-var mockProjectDocs: any[] = [];
-var mockUserDocs: any[] = [];
-var mockInvitationDocs: any[] = [];
+let mockTimelineDocs: any[] = [];
+let mockProjectDocs: any[] = [];
+let mockUserDocs: any[] = [];
+let mockInvitationDocs: any[] = [];
 
 jest.mock('@/lib/firebase/admin', () => ({
   adminDb: {

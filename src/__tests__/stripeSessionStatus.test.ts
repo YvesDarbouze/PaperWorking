@@ -12,7 +12,7 @@
  * mock branch always has.
  */
 
-var mockSessionsRetrieve = jest.fn();
+const mockSessionsRetrieve = jest.fn();
 
 jest.mock('stripe', () => {
   return jest.fn().mockImplementation(() => ({

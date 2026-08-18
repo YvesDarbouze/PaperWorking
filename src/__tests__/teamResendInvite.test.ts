@@ -1,19 +1,19 @@
 /** @jest-environment node */
 import { resendTeamInvite } from '../actions/team';
 
-var mockVerifyIdToken = jest.fn();
-var mockGet = jest.fn();
-var mockUpdate = jest.fn();
-var mockAdd = jest.fn();
-var mockSet = jest.fn();
+const mockVerifyIdToken = jest.fn();
+const mockGet = jest.fn();
+const mockUpdate = jest.fn();
+const mockAdd = jest.fn();
+const mockSet = jest.fn();
 
-var mockDoc = {
+const mockDoc = {
   get: mockGet,
   update: mockUpdate,
   set: mockSet,
 };
 
-var mockCollection = {
+const mockCollection = {
   doc: jest.fn(() => mockDoc),
   where: jest.fn().mockReturnThis(),
   limit: jest.fn().mockReturnThis(),
@@ -39,7 +39,7 @@ jest.mock('next/headers', () => ({
 }));
 
 // Mock NotificationService
-var mockCreateNotification = jest.fn();
+const mockCreateNotification = jest.fn();
 jest.mock('@/lib/services/notificationService', () => ({
   __esModule: true,
   NotificationService: {

@@ -11,7 +11,7 @@ import { GET as getAgentDetail } from '@/app/api/admin/agent-crew/[id]/route';
 import { POST as impersonateAgent } from '@/app/api/admin/agent-crew/[id]/impersonate/route';
 import { prisma } from '@/lib/prisma';
 
-const getMockAgents = () => {
+const mockGetSeedAgents = () => {
   const p = path.resolve(process.cwd(), 'src/test/fixtures/agent-crew-seed.json');
   return fs.existsSync(p) ? (JSON.parse(fs.readFileSync(p, 'utf-8')).agents || []) : [];
 };
@@ -20,9 +20,7 @@ jest.mock('@/lib/prisma', () => ({
   prisma: {
     user: {
       findMany: jest.fn().mockImplementation(() => {
-        const p = require('path').resolve(process.cwd(), 'src/test/fixtures/agent-crew-seed.json');
-        const fsMod = require('fs');
-        const agents = fsMod.existsSync(p) ? (JSON.parse(fsMod.readFileSync(p, 'utf-8')).agents || []) : [];
+        const agents = mockGetSeedAgents();
         return Promise.resolve(
           agents.map((a: { uid: string; email: string; name: string; persona: string }) => ({
             id: a.uid,
@@ -34,9 +32,7 @@ jest.mock('@/lib/prisma', () => ({
         );
       }),
       findUnique: jest.fn().mockImplementation(({ where }: { where: { id?: string; email?: string } }) => {
-        const p = require('path').resolve(process.cwd(), 'src/test/fixtures/agent-crew-seed.json');
-        const fsMod = require('fs');
-        const agents = fsMod.existsSync(p) ? (JSON.parse(fsMod.readFileSync(p, 'utf-8')).agents || []) : [];
+        const agents = mockGetSeedAgents();
         const agent = agents.find(
           (a: { uid: string; email: string }) => a.uid === where.id || a.email === where.email
         );
@@ -50,9 +46,7 @@ jest.mock('@/lib/prisma', () => ({
         });
       }),
       findFirst: jest.fn().mockImplementation(({ where }: { where?: { id?: string; email?: string } }) => {
-        const p = require('path').resolve(process.cwd(), 'src/test/fixtures/agent-crew-seed.json');
-        const fsMod = require('fs');
-        const agents = fsMod.existsSync(p) ? (JSON.parse(fsMod.readFileSync(p, 'utf-8')).agents || []) : [];
+        const agents = mockGetSeedAgents();
         const agent = agents.find(
           (a: { uid: string; email: string }) => a.uid === where?.id || a.email === where?.email
         );
@@ -71,9 +65,7 @@ jest.mock('@/lib/prisma', () => ({
     },
     reilProject: {
       findMany: jest.fn().mockImplementation(({ where }: { where?: { listedByAgent?: string; syntheticAgent?: boolean } } = {}) => {
-        const pPath = require('path').resolve(process.cwd(), 'src/test/fixtures/agent-crew-seed.json');
-        const fsMod = require('fs');
-        const agents = fsMod.existsSync(pPath) ? (JSON.parse(fsMod.readFileSync(pPath, 'utf-8')).agents || []) : [];
+        const agents = mockGetSeedAgents();
         let list = agents.flatMap((a: { handle: string; projects?: Array<Record<string, unknown>> }) =>
           (a.projects || []).map((proj) => ({ ...proj, syntheticAgent: true, listedByAgent: a.handle }))
         );
@@ -86,9 +78,7 @@ jest.mock('@/lib/prisma', () => ({
         return Promise.resolve(list);
       }),
       count: jest.fn().mockImplementation(({ where }: { where?: { listedByAgent?: string; syntheticAgent?: boolean } } = {}) => {
-        const pPath = require('path').resolve(process.cwd(), 'src/test/fixtures/agent-crew-seed.json');
-        const fsMod = require('fs');
-        const agents = fsMod.existsSync(pPath) ? (JSON.parse(fsMod.readFileSync(pPath, 'utf-8')).agents || []) : [];
+        const agents = mockGetSeedAgents();
         let list = agents.flatMap((a: { handle: string; projects?: Array<Record<string, unknown>> }) =>
           (a.projects || []).map((proj) => ({ ...proj, syntheticAgent: true, listedByAgent: a.handle }))
         );
@@ -114,13 +104,8 @@ jest.mock('@/lib/prisma', () => ({
 }));
 
 jest.mock('@/lib/firebase/admin', () => {
-  const loadMockAgents = () => {
-    const p = require('path').resolve(process.cwd(), 'src/test/fixtures/agent-crew-seed.json');
-    const fsMod = require('fs');
-    return fsMod.existsSync(p) ? (JSON.parse(fsMod.readFileSync(p, 'utf-8')).agents || []) : [];
-  };
   const loadMockProjects = () => {
-    const agents = loadMockAgents();
+    const agents = mockGetSeedAgents();
     return agents.flatMap((a: { handle: string; projects?: Array<Record<string, unknown>> }) =>
       (a.projects || []).map((proj) => ({ ...proj, syntheticAgent: true, listedByAgent: a.handle }))
     );
@@ -132,7 +117,7 @@ jest.mock('@/lib/firebase/admin', () => {
         if (collectionName === 'users') {
           return {
             doc: jest.fn().mockImplementation((id: string) => {
-              const agents = loadMockAgents();
+              const agents = mockGetSeedAgents();
               const agent = agents.find(
                 (a: { uid: string; handle: string }) => a.uid === id || a.handle === id
               );
@@ -160,7 +145,7 @@ jest.mock('@/lib/firebase/admin', () => {
             }),
             where: jest.fn().mockImplementation((field: string, _op: string, val: unknown) => ({
               get: jest.fn().mockImplementation(() => {
-                const agents = loadMockAgents();
+                const agents = mockGetSeedAgents();
                 const filtered = agents.filter((a: { syntheticAgent?: boolean }) => {
                   if (field === 'syntheticAgent') return a.syntheticAgent === val;
                   return true;

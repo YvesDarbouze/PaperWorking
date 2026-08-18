@@ -4,13 +4,13 @@ import { POST as bindToken } from '@/app/api/identity/claim/bind-token/route';
 import { NextRequest } from 'next/server';
 
 // Mocks
-var mockVerifyIdToken = jest.fn();
-var mockGet = jest.fn();
-var mockSet = jest.fn().mockResolvedValue(true);
-var mockUpdate = jest.fn().mockResolvedValue(true);
-var mockDelete = jest.fn().mockResolvedValue(true);
-var mockSendRawEmail = jest.fn().mockResolvedValue(true);
-var mockCapture = jest.fn().mockResolvedValue(true);
+const mockVerifyIdToken = jest.fn();
+const mockGet = jest.fn();
+const mockSet = jest.fn().mockResolvedValue(true);
+const mockUpdate = jest.fn().mockResolvedValue(true);
+const mockDelete = jest.fn().mockResolvedValue(true);
+const mockSendRawEmail = jest.fn().mockResolvedValue(true);
+const mockCapture = jest.fn().mockResolvedValue(true);
 
 jest.mock('@/lib/firebase-admin/auth-guard', () => {
   return {

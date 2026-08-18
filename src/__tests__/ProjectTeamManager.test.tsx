@@ -1,20 +1,20 @@
 /** @jest-environment node */
 import { mutateProjectTeam } from '../actions';
 
-var mockVerifyIdToken = jest.fn();
-var mockGet = jest.fn();
-var mockUpdate = jest.fn();
-var mockSet = jest.fn();
-var mockUserDocGet = jest.fn();
-var mockUserQueryGet = jest.fn();
+const mockVerifyIdToken = jest.fn();
+const mockGet = jest.fn();
+const mockUpdate = jest.fn();
+const mockSet = jest.fn();
+const mockUserDocGet = jest.fn();
+const mockUserQueryGet = jest.fn();
 
-var mockTransaction = {
+const mockTransaction = {
   get: mockGet,
   update: mockUpdate,
   set: mockSet,
 };
 
-var mockRunTransaction = jest.fn((fn) => fn(mockTransaction));
+const mockRunTransaction = jest.fn((fn) => fn(mockTransaction));
 
 jest.mock('@/lib/firebase/admin', () => ({
   __esModule: true,

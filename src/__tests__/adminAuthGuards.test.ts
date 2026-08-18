@@ -1,4 +1,4 @@
-import { NextRequest } from 'next/server';
+import { NextRequest, NextResponse } from 'next/server';
 import { GET as getAgentCrew } from '@/app/api/admin/agent-crew/route';
 import { GET as getAgentDetail, DELETE as deleteAgent } from '@/app/api/admin/agent-crew/[id]/route';
 import { POST as impersonateAgent } from '@/app/api/admin/agent-crew/[id]/impersonate/route';
@@ -59,10 +59,10 @@ jest.mock('@/lib/prisma', () => ({
 describe('BUG-004 — Admin API Route Authorization Matrix', () => {
   const routes: Array<{
     name: string;
-    handler: (req: NextRequest, ctx?: any) => Promise<any>;
-    params?: any;
+    handler: (req: NextRequest, ctx?: unknown) => Promise<NextResponse>;
+    params?: Record<string, unknown>;
     method: string;
-    body?: any;
+    body?: unknown;
   }> = [
     { name: 'GET /api/admin/agent-crew', handler: getAgentCrew, method: 'GET' },
     { name: 'GET /api/admin/agent-crew/[id]', handler: (req) => getAgentDetail(req, { params: Promise.resolve({ id: 'agent_1' }) }), method: 'GET' },
@@ -79,20 +79,20 @@ describe('BUG-004 — Admin API Route Authorization Matrix', () => {
   routes.forEach(({ name, handler, method, body }) => {
     describe(name, () => {
       it('rejects unauthenticated caller with 401 Unauthorized', async () => {
-        const init: any = { method };
+        const init: Record<string, unknown> = { method };
         if (body) init.body = JSON.stringify(body);
-        const req = new NextRequest(`http://localhost:3000${name.split(' ')[1]}`, init);
+        const req = new NextRequest(`http://localhost:3000${name.split(' ')[1]}`, init as unknown as Request);
         const res = await handler(req);
         expect(res.status).toBe(401);
       });
 
       it('rejects authenticated non-admin caller with 403 Forbidden', async () => {
-        const init: any = {
+        const init: Record<string, unknown> = {
           method,
           headers: { authorization: 'Bearer non_admin_token' },
         };
         if (body) init.body = JSON.stringify(body);
-        const req = new NextRequest(`http://localhost:3000${name.split(' ')[1]}`, init);
+        const req = new NextRequest(`http://localhost:3000${name.split(' ')[1]}`, init as unknown as Request);
         const res = await handler(req);
         expect(res.status).toBe(403);
         const json = await res.json();
@@ -100,12 +100,12 @@ describe('BUG-004 — Admin API Route Authorization Matrix', () => {
       });
 
       it('allows authenticated admin caller to execute handler', async () => {
-        const init: any = {
+        const init: Record<string, unknown> = {
           method,
           headers: { authorization: 'Bearer admin_token' },
         };
         if (body) init.body = JSON.stringify(body);
-        const req = new NextRequest(`http://localhost:3000${name.split(' ')[1]}`, init);
+        const req = new NextRequest(`http://localhost:3000${name.split(' ')[1]}`, init as unknown as Request);
         const res = await handler(req);
         expect(res.status).not.toBe(401);
         expect(res.status).not.toBe(403);

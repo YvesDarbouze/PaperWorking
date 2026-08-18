@@ -2,37 +2,37 @@ import { POST, GET } from '@/app/api/account/data/delete/route';
 import { NextRequest } from 'next/server';
 
 // Mock variables
-var mockVerifyIdToken = jest.fn();
-var mockGetUser = jest.fn();
-var mockDeleteUser = jest.fn();
-var mockGet = jest.fn();
-var mockSet = jest.fn();
-var mockUpdate = jest.fn();
-var mockDelete = jest.fn();
+const mockVerifyIdToken = jest.fn();
+const mockGetUser = jest.fn();
+const mockDeleteUser = jest.fn();
+const mockGet = jest.fn();
+const mockSet = jest.fn();
+const mockUpdate = jest.fn();
+const mockDelete = jest.fn();
 
 // Mock Prisma
-var mockAppUserUpsert = jest.fn();
-var mockAppUserDelete = jest.fn();
-var mockAppUserDeleteMany = jest.fn();
-var mockStatusEventUpdateMany = jest.fn();
-var mockFieldAssignmentUpdateMany = jest.fn();
-var mockProjectCollaboratorFindMany = jest.fn();
-var mockProjectCollaboratorDeleteMany = jest.fn();
-var mockReilProjectDeleteMany = jest.fn();
+const mockAppUserUpsert = jest.fn();
+const mockAppUserDelete = jest.fn();
+const mockAppUserDeleteMany = jest.fn();
+const mockStatusEventUpdateMany = jest.fn();
+const mockFieldAssignmentUpdateMany = jest.fn();
+const mockProjectCollaboratorFindMany = jest.fn();
+const mockProjectCollaboratorDeleteMany = jest.fn();
+const mockReilProjectDeleteMany = jest.fn();
 
 // Mock Stripe
-var mockSubscriptionList = jest.fn();
-var mockSubscriptionCancel = jest.fn();
+const mockSubscriptionList = jest.fn();
+const mockSubscriptionCancel = jest.fn();
 
 // Mock Storage
-var mockGetFiles = jest.fn();
-var mockFileDelete = jest.fn();
+const mockGetFiles = jest.fn();
+const mockFileDelete = jest.fn();
 
 // Mock Telemetry
-var mockCapture = jest.fn();
+const mockCapture = jest.fn();
 
 // Mock CommunicationEngine
-var mockSendRawEmail = jest.fn();
+const mockSendRawEmail = jest.fn();
 
 jest.mock('@/lib/prisma', () => ({
   prisma: {

@@ -68,7 +68,7 @@ interface SwarmManifest {
     reportsGenerated: number;
     screenshotsCaptured: number;
   };
-  agents: Record<string, any>;
+  agents: Record<string, unknown>;
 }
 
 async function runLiveSwarm() {

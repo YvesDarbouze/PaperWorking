@@ -2,12 +2,12 @@ import { GET } from '@/app/api/reil/projects/[id]/closing-ledger/export/route';
 import { NextRequest } from 'next/server';
 
 // Mock variables
-var mockVerifyIdToken = jest.fn();
-var mockGet = jest.fn();
-var mockSet = jest.fn();
-var mockUpdate = jest.fn();
-var mockDelete = jest.fn();
-var mockCapture = jest.fn();
+const mockVerifyIdToken = jest.fn();
+const mockGet = jest.fn();
+const mockSet = jest.fn();
+const mockUpdate = jest.fn();
+const mockDelete = jest.fn();
+const mockCapture = jest.fn();
 
 jest.mock('@/lib/firebase/admin', () => ({
   adminAuth: {

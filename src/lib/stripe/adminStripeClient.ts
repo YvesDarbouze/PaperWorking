@@ -15,6 +15,6 @@ export function getAdminStripeClient(): Stripe | null {
   }
 
   return new Stripe(apiKey, {
-    apiVersion: '2026-04-22.dahlia' as any,
+    apiVersion: '2026-04-22.dahlia' as unknown as NonNullable<ConstructorParameters<typeof Stripe>[1]>['apiVersion'],
   });
 }

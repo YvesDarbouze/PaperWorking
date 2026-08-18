@@ -3,16 +3,16 @@ import { GET as getInvitationRoute } from '@/app/api/invitations/[token]/route';
 import { POST as exchangeRoute } from '@/app/api/projects/[id]/invitations/[invitationId]/exchange/route';
 import { NextRequest } from 'next/server';
 
-var mockVerifyIdToken = jest.fn();
-var mockGet = jest.fn();
-var mockSet = jest.fn().mockResolvedValue(true);
-var mockUpdate = jest.fn().mockResolvedValue(true);
-var mockAdd = jest.fn().mockResolvedValue({ id: 'new_doc_123' });
-var mockIncr = jest.fn().mockResolvedValue(1);
-var mockExpire = jest.fn().mockResolvedValue(true);
-var mockTtl = jest.fn().mockResolvedValue(60);
+const mockVerifyIdToken = jest.fn();
+const mockGet = jest.fn();
+const mockSet = jest.fn().mockResolvedValue(true);
+const mockUpdate = jest.fn().mockResolvedValue(true);
+const mockAdd = jest.fn().mockResolvedValue({ id: 'new_doc_123' });
+const mockIncr = jest.fn().mockResolvedValue(1);
+const mockExpire = jest.fn().mockResolvedValue(true);
+const mockTtl = jest.fn().mockResolvedValue(60);
 
-var mockInvitationData: any = {
+const mockInvitationData: any = {
   id: 'inv_123',
   token: 'valid_token_1234567890',
   inviteeEmail: 'investor@example.com',
@@ -32,7 +32,7 @@ var mockInvitationData: any = {
   },
 };
 
-var mockProjectData: any = {
+const mockProjectData: any = {
   ownerUid: 'user_lead_investor',
   propertyName: '123 Main St',
   activeListingId: 'listing_123',

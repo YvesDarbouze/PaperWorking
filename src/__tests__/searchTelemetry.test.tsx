@@ -19,7 +19,7 @@ jest.mock('@/lib/firebase/admin', () => ({
   },
 }));
 
-var mockCapture = jest.fn();
+const mockCapture = jest.fn();
 jest.mock('@/lib/flags', () => ({
   __esModule: true,
   getPostHogServer: () => ({

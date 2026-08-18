@@ -114,7 +114,7 @@ export async function POST(req: NextRequest) {
       const end = listing.removedDate ? new Date(listing.removedDate) : new Date();
 
       // Loop month by month
-      let current = new Date(start.getFullYear(), start.getMonth(), 1);
+      const current = new Date(start.getFullYear(), start.getMonth(), 1);
       const endLimit = new Date(end.getFullYear(), end.getMonth(), 1);
 
       while (current <= endLimit) {

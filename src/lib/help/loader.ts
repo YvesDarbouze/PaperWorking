@@ -44,7 +44,7 @@ export function compileMarkdown(markdown: string): string {
   let inList = false;
   const processedLines: string[] = [];
 
-  for (let line of lines) {
+  for (const line of lines) {
     const trimmed = line.trim();
     if (trimmed.startsWith('- ') || trimmed.startsWith('* ')) {
       if (!inList) {

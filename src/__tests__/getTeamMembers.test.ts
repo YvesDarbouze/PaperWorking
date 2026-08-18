@@ -2,14 +2,14 @@
 import { getTeamMembers } from '../actions/getTeamMembers';
 
 // Mocks
-var mockVerifyIdToken = jest.fn();
-var mockGet = jest.fn();
-var mockWhere = jest.fn().mockReturnThis();
-var mockLimit = jest.fn().mockReturnThis();
-var mockOrderBy = jest.fn().mockReturnThis();
+const mockVerifyIdToken = jest.fn();
+const mockGet = jest.fn();
+const mockWhere = jest.fn().mockReturnThis();
+const mockLimit = jest.fn().mockReturnThis();
+const mockOrderBy = jest.fn().mockReturnThis();
 
 // Mock Firestore document and collections
-var mockDoc = {
+const mockDoc = {
   get: mockGet,
   collection: jest.fn().mockImplementation(() => mockSubCollection),
 };
@@ -20,7 +20,7 @@ var mockSubCollection = {
   get: mockGet,
 };
 
-var mockCollection = {
+const mockCollection = {
   doc: jest.fn().mockImplementation(() => mockDoc),
   where: mockWhere,
   get: mockGet,
@@ -36,7 +36,7 @@ jest.mock('@/lib/firebase/admin', () => ({
   },
 }));
 
-var mockCookieGet = jest.fn();
+const mockCookieGet = jest.fn();
 jest.mock('next/headers', () => ({
   __esModule: true,
   cookies: jest.fn(() => ({

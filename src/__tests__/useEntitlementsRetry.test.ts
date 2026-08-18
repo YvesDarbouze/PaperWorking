@@ -13,8 +13,8 @@
  */
 import { renderHook, waitFor } from '@testing-library/react';
 
-var mockGetIdToken = jest.fn();
-var mockUser: any = { uid: 'u1', getIdToken: (...args: any[]) => mockGetIdToken(...args) };
+const mockGetIdToken = jest.fn();
+let mockUser: any = { uid: 'u1', getIdToken: (...args: any[]) => mockGetIdToken(...args) };
 
 jest.mock('@/context/AuthContext', () => ({
   useAuth: () => ({ user: mockUser, profile: { subscriptionPlan: 'Individual', subscriptionStatus: 'active' } }),

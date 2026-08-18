@@ -258,8 +258,8 @@ export async function closeProjectAndArchiveServerAction(idToken: string, projec
     
     // We add 1 for the current project because it hasn't been committed as closed_won/closed_lost yet
     // unless it was ALREADY closed_won/closed_lost (which we should handle).
-    let isAlreadyClosed = ['closed_won', 'closed_lost'].includes(projectData?.status);
-    let closedCount = closedProjectsSnap.docs.length + (isAlreadyClosed ? 0 : 1);
+    const isAlreadyClosed = ['closed_won', 'closed_lost'].includes(projectData?.status);
+    const closedCount = closedProjectsSnap.docs.length + (isAlreadyClosed ? 0 : 1);
 
     closedProjectsSnap.docs.forEach(docSnap => {
       // Don't double count the current project if it's already in the query results
@@ -337,7 +337,7 @@ export async function mutateProjectTeam(
     }
 
     let projectTeam: ProjectTeamMember[] = projectData.projectTeam || [];
-    let members: Record<string, ProjectMember> = projectData.members || {};
+    const members: Record<string, ProjectMember> = projectData.members || {};
 
     const targetEmail = payload.email.toLowerCase();
 

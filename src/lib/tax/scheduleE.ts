@@ -146,7 +146,7 @@ export function computeScheduleE(
       
     if (!isNaN(monthlyPayment) && isFinite(monthlyPayment)) {
       let interestTotal = 0;
-      let current = new Date(yearStart.getFullYear(), yearStart.getMonth(), 1);
+      const current = new Date(yearStart.getFullYear(), yearStart.getMonth(), 1);
       const end = new Date(yearEnd.getFullYear(), yearEnd.getMonth(), 1);
       
       while (current <= end) {

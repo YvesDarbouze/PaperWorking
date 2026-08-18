@@ -16,7 +16,24 @@ export function generateDealInviteToken(payload: DealInvitePayload): string {
 
 export function verifyDealInviteToken(token: string): DealInvitePayload | null {
   try {
-    return jwt.verify(token, JWT_SECRET) as unknown as DealInvitePayload;
+    const verified = jwt.verify(token, JWT_SECRET);
+    if (!verified || typeof verified !== 'object') return null;
+    const decoded = verified as Record<string, unknown>;
+    if (
+      typeof decoded.dealId === 'string' &&
+      typeof decoded.slug === 'string' &&
+      typeof decoded.address === 'string' &&
+      typeof decoded.inviteeEmail === 'string'
+    ) {
+      return {
+        dealId: decoded.dealId,
+        slug: decoded.slug,
+        address: decoded.address,
+        inviteeEmail: decoded.inviteeEmail,
+        creatorName: typeof decoded.creatorName === 'string' ? decoded.creatorName : 'An Investor',
+      };
+    }
+    return null;
   } catch {
     return null;
   }

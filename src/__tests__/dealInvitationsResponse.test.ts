@@ -2,14 +2,14 @@ import { POST as respondRoute } from '@/app/api/invitations/respond/route';
 import { NextRequest } from 'next/server';
 import { adminDb } from '@/lib/firebase/admin';
 
-var mockVerifyIdToken = jest.fn();
-var mockGet = jest.fn();
-var mockSet = jest.fn().mockResolvedValue(true);
-var mockUpdate = jest.fn().mockResolvedValue(true);
-var mockDelete = jest.fn().mockResolvedValue(true);
-var mockAdd = jest.fn().mockResolvedValue({ id: 'new_doc_123' });
+const mockVerifyIdToken = jest.fn();
+const mockGet = jest.fn();
+const mockSet = jest.fn().mockResolvedValue(true);
+const mockUpdate = jest.fn().mockResolvedValue(true);
+const mockDelete = jest.fn().mockResolvedValue(true);
+const mockAdd = jest.fn().mockResolvedValue({ id: 'new_doc_123' });
 
-var mockInvitationData: any = {
+const mockInvitationData: any = {
   id: 'inv_123',
   token: 'valid_token_1234567890',
   inviteeEmail: 'investor@example.com',
@@ -22,7 +22,7 @@ var mockInvitationData: any = {
   expiresAt: new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString(), // Tomorrow
 };
 
-var mockCommitmentData: any = null;
+let mockCommitmentData: any = null;
 
 jest.mock('@/lib/firebase/admin', () => {
   return {

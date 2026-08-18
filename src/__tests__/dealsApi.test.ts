@@ -139,7 +139,7 @@ describe('GET /api/deals Endpoint & Visibility Control', () => {
 describe('GET /api/deals/exists Search Collision & Visibility Filtering', () => {
   beforeEach(() => {
     jest.clearAllMocks();
-    (prisma.deal.findFirst as jest.Mock).mockImplementation((args: any) => {
+    (prisma.deal.findFirst as jest.Mock).mockImplementation((args: { where?: { slug?: string } }) => {
       const slug = args?.where?.slug;
       const found = MOCK_DB_DEALS.find((d) => d.slug === slug);
       return Promise.resolve(found || null);

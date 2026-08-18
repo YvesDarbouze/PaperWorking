@@ -46,14 +46,14 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ exists: false, deal: null });
     }
 
-    const project = dbDeal.projects?.[0];
+    const project = dbDeal.projects?.[0] as { name?: string | null; title?: string | null; propertyType?: string; subStrategy?: string } | undefined;
     const committedAmount = (dbDeal.commitments || []).reduce(
-      (sum: number, c: any) => sum + Number(c.amount || 0),
+      (sum: number, c) => sum + Number(c.amount || 0),
       0
     );
-    const invitedUsers = (dbDeal.invitations || [])
-      .map((inv: any) => inv.inviteeUserId || inv.inviteeEmail)
-      .filter(Boolean);
+    const invitedUsers: string[] = (dbDeal.invitations || [])
+      .map((inv) => inv.inviteeUserId || inv.inviteeEmail)
+      .filter((u): u is string => Boolean(u));
 
     const purchasePrice = Number(dbDeal.purchasePrice || 0);
     const rehabCost = Number(dbDeal.rehabCost || 0);
@@ -72,8 +72,8 @@ export async function GET(request: NextRequest) {
       invitedUsers,
       committed: committedAmount,
       target: purchasePrice + rehabCost,
-      assetClass: (project as any)?.propertyType || 'Multi-family',
-      subStrategy: (project as any)?.subStrategy || 'FLIP',
+      assetClass: project?.propertyType || 'Multi-family',
+      subStrategy: project?.subStrategy || 'FLIP',
     };
 
     const visibility = existingDeal.visibility || 'marketplace';

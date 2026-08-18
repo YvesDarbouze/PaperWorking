@@ -6,6 +6,7 @@ import Image from 'next/image';
 import { MapPin, Bookmark, Share2, Eye, TrendingUp, Building2, Maximize2 } from 'lucide-react';
 import { calculateFundingProgress, formatCurrencyAmount } from '@/lib/deals/fundingUtils';
 import ExpandedModal from '@/components/deals/ExpandedModal';
+import { PropertyStreetViewTile } from '@/components/project/PropertyStreetViewTile';
 
 export interface DealCardProps {
   deal: {
@@ -29,6 +30,10 @@ export interface DealCardProps {
     bookmarkCount?: number;
     viewCount?: number;
     imageUrl?: string;
+    lat?: number;
+    lng?: number;
+    latitude?: number;
+    longitude?: number;
   };
   isCompareMode?: boolean;
   isSelected?: boolean;
@@ -125,12 +130,13 @@ export default function DealCard({
               className="object-cover group-hover:scale-105 transition-transform duration-500"
             />
           ) : (
-            <div className="flex flex-col items-center justify-center space-y-2 opacity-30 group-hover:opacity-40 transition-opacity">
-              <Building2 className="w-10 h-10 text-slate-400" />
-              <span className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400">
-                PaperWorking Listing
-              </span>
-            </div>
+            <PropertyStreetViewTile
+              address={deal.address || deal.propertyName || displayTitle}
+              lat={deal.lat ?? deal.latitude}
+              lng={deal.lng ?? deal.longitude}
+              aspectRatio="video"
+              className="w-full h-full border-none rounded-none"
+            />
           )}
 
           {/* Top-Left Glass Badges */}

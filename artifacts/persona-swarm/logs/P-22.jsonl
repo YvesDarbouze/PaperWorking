@@ -1031,3 +1031,517 @@
 {"ts":"2026-08-18T09:42:00.114Z","agentId":"P-22","wave":5,"step":"WAVE_5","action":"COMPLETE","result":"SUCCESS","details":{"reportPath":"/Users/yvesdarbouze/Documents/PaperWorking/artifacts/persona-swarm/reports/P-22-experience-report.md"}}
 {"ts":"2026-08-18T09:42:00.128Z","agentId":"P-22","wave":5,"step":"WAVE_5","action":"START","result":"SUCCESS"}
 {"ts":"2026-08-18T09:42:00.128Z","agentId":"P-22","wave":5,"step":"WAVE_5","action":"COMPLETE","result":"SUCCESS","details":{"reportPath":"/Users/yvesdarbouze/Documents/PaperWorking/artifacts/persona-swarm/reports/P-22-experience-report.md"}}
+{"ts":"2026-08-18T10:57:59.993Z","agentId":"P-22","wave":1,"step":"WAVE_1","action":"START","result":"SUCCESS","details":{"email":"agent22.miguel.santos@paperworking-test.dev"}}
+{"ts":"2026-08-18T10:57:59.994Z","agentId":"P-22","wave":1,"step":"WAVE_1","action":"START","result":"SUCCESS","details":{"email":"agent22.miguel.santos@paperworking-test.dev"}}
+{"ts":"2026-08-18T10:57:59.995Z","agentId":"P-22","wave":0,"step":"SIGNUP","action":"SUCCESS_CREATED","result":"SUCCESS","details":{"uid":"uid_persona_p22","email":"agent22.miguel.santos@paperworking-test.dev","name":"Miguel Santos","entity":"Santos Familia Properties LLC"}}
+{"ts":"2026-08-18T10:57:59.995Z","agentId":"P-22","wave":1,"step":"WAVE_1","action":"COMPLETE","result":"SUCCESS","details":{"uid":"uid_persona_p22"}}
+{"ts":"2026-08-18T10:57:59.996Z","agentId":"P-22","wave":0,"step":"SIGNUP","action":"SUCCESS_CREATED","result":"SUCCESS","details":{"uid":"uid_persona_p22","email":"agent22.miguel.santos@paperworking-test.dev","name":"Miguel Santos","entity":"Santos Familia Properties LLC"}}
+{"ts":"2026-08-18T10:57:59.996Z","agentId":"P-22","wave":1,"step":"WAVE_1","action":"COMPLETE","result":"SUCCESS","details":{"uid":"uid_persona_p22"}}
+{"ts":"2026-08-18T10:58:00.059Z","agentId":"P-22","wave":2,"step":"WAVE_2","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T10:58:00.059Z","agentId":"P-22","wave":0,"step":"BILLING","action":"SUBSCRIPTION_SUCCESS","result":"SUCCESS","details":{"plan":"Individual","stripeCustomerId":"cus_test_swarm_p-22","stripeSubscriptionId":"sub_test_swarm_p-22","cardLastFour":"4242","cardBrand":"visa"}}
+{"ts":"2026-08-18T10:58:00.059Z","agentId":"P-22","wave":2,"step":"WAVE_2","action":"COMPLETE","result":"SUCCESS","details":{"plan":"Individual"}}
+{"ts":"2026-08-18T10:58:00.060Z","agentId":"P-22","wave":2,"step":"WAVE_2","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T10:58:00.060Z","agentId":"P-22","wave":0,"step":"BILLING","action":"SUBSCRIPTION_SUCCESS","result":"SUCCESS","details":{"plan":"Individual","stripeCustomerId":"cus_test_swarm_p-22","stripeSubscriptionId":"sub_test_swarm_p-22","cardLastFour":"4242","cardBrand":"visa"}}
+{"ts":"2026-08-18T10:58:00.060Z","agentId":"P-22","wave":2,"step":"WAVE_2","action":"COMPLETE","result":"SUCCESS","details":{"plan":"Individual"}}
+{"ts":"2026-08-18T10:58:00.167Z","agentId":"P-22","wave":3,"step":"WAVE_3","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T10:58:00.169Z","agentId":"P-22","wave":0,"step":"PROJECTS","action":"CREATION_SUCCESS","result":"SUCCESS","details":{"created":10,"plaid":false}}
+{"ts":"2026-08-18T10:58:00.169Z","agentId":"P-22","wave":3,"step":"WAVE_3","action":"COMPLETE","result":"SUCCESS","details":{"created":10}}
+{"ts":"2026-08-18T10:58:00.170Z","agentId":"P-22","wave":3,"step":"WAVE_3","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T10:58:00.173Z","agentId":"P-22","wave":0,"step":"PROJECTS","action":"CREATION_SUCCESS","result":"SUCCESS","details":{"created":10,"plaid":false}}
+{"ts":"2026-08-18T10:58:00.173Z","agentId":"P-22","wave":3,"step":"WAVE_3","action":"COMPLETE","result":"SUCCESS","details":{"created":10}}
+{"ts":"2026-08-18T10:58:00.347Z","agentId":"P-22","wave":4,"step":"WAVE_4","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T10:58:00.348Z","agentId":"P-22","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-58","to":"P-39","type":"Scaling Discussion"}}
+{"ts":"2026-08-18T10:58:00.348Z","agentId":"P-22","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-70","to":"P-23","type":"P&L Benchmarking"}}
+{"ts":"2026-08-18T10:58:00.348Z","agentId":"P-22","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-23"}}
+{"ts":"2026-08-18T10:58:00.350Z","agentId":"P-22","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-39"}}
+{"ts":"2026-08-18T10:58:00.350Z","agentId":"P-22","wave":4,"step":"WAVE_4","action":"COMPLETE","result":"SUCCESS","details":{"interactions":2,"invites":2}}
+{"ts":"2026-08-18T10:58:00.363Z","agentId":"P-22","wave":4,"step":"WAVE_4","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T10:58:00.364Z","agentId":"P-22","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-58","to":"P-39","type":"Scaling Discussion"}}
+{"ts":"2026-08-18T10:58:00.364Z","agentId":"P-22","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-70","to":"P-23","type":"P&L Benchmarking"}}
+{"ts":"2026-08-18T10:58:00.365Z","agentId":"P-22","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-23"}}
+{"ts":"2026-08-18T10:58:00.365Z","agentId":"P-22","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-39"}}
+{"ts":"2026-08-18T10:58:00.365Z","agentId":"P-22","wave":4,"step":"WAVE_4","action":"COMPLETE","result":"SUCCESS","details":{"interactions":2,"invites":2}}
+{"ts":"2026-08-18T10:58:00.479Z","agentId":"P-22","wave":5,"step":"WAVE_5","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T10:58:00.479Z","agentId":"P-22","wave":5,"step":"WAVE_5","action":"COMPLETE","result":"SUCCESS","details":{"reportPath":"/Users/yvesdarbouze/Documents/PaperWorking/artifacts/persona-swarm/reports/P-22-experience-report.md"}}
+{"ts":"2026-08-18T10:58:00.479Z","agentId":"P-22","wave":5,"step":"WAVE_5","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T10:58:00.480Z","agentId":"P-22","wave":5,"step":"WAVE_5","action":"COMPLETE","result":"SUCCESS","details":{"reportPath":"/Users/yvesdarbouze/Documents/PaperWorking/artifacts/persona-swarm/reports/P-22-experience-report.md"}}
+{"ts":"2026-08-18T10:58:28.470Z","agentId":"P-22","wave":1,"step":"WAVE_1","action":"START","result":"SUCCESS","details":{"email":"agent22.miguel.santos@paperworking-test.dev"}}
+{"ts":"2026-08-18T10:58:28.471Z","agentId":"P-22","wave":0,"step":"SIGNUP","action":"SUCCESS_CREATED","result":"SUCCESS","details":{"uid":"uid_persona_p22","email":"agent22.miguel.santos@paperworking-test.dev","name":"Miguel Santos","entity":"Santos Familia Properties LLC"}}
+{"ts":"2026-08-18T10:58:28.471Z","agentId":"P-22","wave":1,"step":"WAVE_1","action":"COMPLETE","result":"SUCCESS","details":{"uid":"uid_persona_p22"}}
+{"ts":"2026-08-18T10:58:28.525Z","agentId":"P-22","wave":2,"step":"WAVE_2","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T10:58:28.525Z","agentId":"P-22","wave":0,"step":"BILLING","action":"SUBSCRIPTION_SUCCESS","result":"SUCCESS","details":{"plan":"Individual","stripeCustomerId":"cus_test_swarm_p-22","stripeSubscriptionId":"sub_test_swarm_p-22","cardLastFour":"4242","cardBrand":"visa"}}
+{"ts":"2026-08-18T10:58:28.526Z","agentId":"P-22","wave":2,"step":"WAVE_2","action":"COMPLETE","result":"SUCCESS","details":{"plan":"Individual"}}
+{"ts":"2026-08-18T10:58:28.611Z","agentId":"P-22","wave":3,"step":"WAVE_3","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T10:58:28.613Z","agentId":"P-22","wave":0,"step":"PROJECTS","action":"CREATION_SUCCESS","result":"SUCCESS","details":{"created":10,"plaid":false}}
+{"ts":"2026-08-18T10:58:28.613Z","agentId":"P-22","wave":3,"step":"WAVE_3","action":"COMPLETE","result":"SUCCESS","details":{"created":10}}
+{"ts":"2026-08-18T10:58:28.707Z","agentId":"P-22","wave":4,"step":"WAVE_4","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T10:58:28.707Z","agentId":"P-22","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-58","to":"P-39","type":"Scaling Discussion"}}
+{"ts":"2026-08-18T10:58:28.708Z","agentId":"P-22","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-70","to":"P-23","type":"P&L Benchmarking"}}
+{"ts":"2026-08-18T10:58:28.708Z","agentId":"P-22","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-23"}}
+{"ts":"2026-08-18T10:58:28.708Z","agentId":"P-22","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-39"}}
+{"ts":"2026-08-18T10:58:28.708Z","agentId":"P-22","wave":4,"step":"WAVE_4","action":"COMPLETE","result":"SUCCESS","details":{"interactions":2,"invites":2}}
+{"ts":"2026-08-18T10:58:28.768Z","agentId":"P-22","wave":5,"step":"WAVE_5","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T10:58:28.768Z","agentId":"P-22","wave":5,"step":"WAVE_5","action":"COMPLETE","result":"SUCCESS","details":{"reportPath":"/Users/yvesdarbouze/Documents/PaperWorking/artifacts/persona-swarm/reports/P-22-experience-report.md"}}
+{"ts":"2026-08-18T10:58:35.169Z","agentId":"P-22","wave":1,"step":"WAVE_1","action":"START","result":"SUCCESS","details":{"email":"agent22.miguel.santos@paperworking-test.dev"}}
+{"ts":"2026-08-18T10:58:35.170Z","agentId":"P-22","wave":0,"step":"SIGNUP","action":"SUCCESS_CREATED","result":"SUCCESS","details":{"uid":"uid_persona_p22","email":"agent22.miguel.santos@paperworking-test.dev","name":"Miguel Santos","entity":"Santos Familia Properties LLC"}}
+{"ts":"2026-08-18T10:58:35.170Z","agentId":"P-22","wave":1,"step":"WAVE_1","action":"COMPLETE","result":"SUCCESS","details":{"uid":"uid_persona_p22"}}
+{"ts":"2026-08-18T10:58:35.312Z","agentId":"P-22","wave":2,"step":"WAVE_2","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T10:58:35.314Z","agentId":"P-22","wave":0,"step":"BILLING","action":"SUBSCRIPTION_SUCCESS","result":"SUCCESS","details":{"plan":"Individual","stripeCustomerId":"cus_test_swarm_p-22","stripeSubscriptionId":"sub_test_swarm_p-22","cardLastFour":"4242","cardBrand":"visa"}}
+{"ts":"2026-08-18T10:58:35.314Z","agentId":"P-22","wave":2,"step":"WAVE_2","action":"COMPLETE","result":"SUCCESS","details":{"plan":"Individual"}}
+{"ts":"2026-08-18T10:58:35.499Z","agentId":"P-22","wave":3,"step":"WAVE_3","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T10:58:35.502Z","agentId":"P-22","wave":0,"step":"PROJECTS","action":"CREATION_SUCCESS","result":"SUCCESS","details":{"created":10,"plaid":false}}
+{"ts":"2026-08-18T10:58:35.502Z","agentId":"P-22","wave":3,"step":"WAVE_3","action":"COMPLETE","result":"SUCCESS","details":{"created":10}}
+{"ts":"2026-08-18T10:58:35.863Z","agentId":"P-22","wave":4,"step":"WAVE_4","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T10:58:35.863Z","agentId":"P-22","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-58","to":"P-39","type":"Scaling Discussion"}}
+{"ts":"2026-08-18T10:58:35.864Z","agentId":"P-22","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-70","to":"P-23","type":"P&L Benchmarking"}}
+{"ts":"2026-08-18T10:58:35.864Z","agentId":"P-22","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-23"}}
+{"ts":"2026-08-18T10:58:35.864Z","agentId":"P-22","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-39"}}
+{"ts":"2026-08-18T10:58:35.864Z","agentId":"P-22","wave":4,"step":"WAVE_4","action":"COMPLETE","result":"SUCCESS","details":{"interactions":2,"invites":2}}
+{"ts":"2026-08-18T10:58:36.032Z","agentId":"P-22","wave":5,"step":"WAVE_5","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T10:58:36.032Z","agentId":"P-22","wave":5,"step":"WAVE_5","action":"COMPLETE","result":"SUCCESS","details":{"reportPath":"/Users/yvesdarbouze/Documents/PaperWorking/artifacts/persona-swarm/reports/P-22-experience-report.md"}}
+{"ts":"2026-08-18T10:59:01.700Z","agentId":"P-22","wave":1,"step":"WAVE_1","action":"START","result":"SUCCESS","details":{"email":"agent22.miguel.santos@paperworking-test.dev"}}
+{"ts":"2026-08-18T10:59:01.700Z","agentId":"P-22","wave":0,"step":"SIGNUP","action":"SUCCESS_CREATED","result":"SUCCESS","details":{"uid":"uid_persona_p22","email":"agent22.miguel.santos@paperworking-test.dev","name":"Miguel Santos","entity":"Santos Familia Properties LLC"}}
+{"ts":"2026-08-18T10:59:01.700Z","agentId":"P-22","wave":1,"step":"WAVE_1","action":"COMPLETE","result":"SUCCESS","details":{"uid":"uid_persona_p22"}}
+{"ts":"2026-08-18T10:59:01.743Z","agentId":"P-22","wave":1,"step":"WAVE_1","action":"START","result":"SUCCESS","details":{"email":"agent22.miguel.santos@paperworking-test.dev"}}
+{"ts":"2026-08-18T10:59:01.744Z","agentId":"P-22","wave":0,"step":"SIGNUP","action":"SUCCESS_CREATED","result":"SUCCESS","details":{"uid":"uid_persona_p22","email":"agent22.miguel.santos@paperworking-test.dev","name":"Miguel Santos","entity":"Santos Familia Properties LLC"}}
+{"ts":"2026-08-18T10:59:01.744Z","agentId":"P-22","wave":1,"step":"WAVE_1","action":"COMPLETE","result":"SUCCESS","details":{"uid":"uid_persona_p22"}}
+{"ts":"2026-08-18T10:59:01.762Z","agentId":"P-22","wave":2,"step":"WAVE_2","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T10:59:01.762Z","agentId":"P-22","wave":0,"step":"BILLING","action":"SUBSCRIPTION_SUCCESS","result":"SUCCESS","details":{"plan":"Individual","stripeCustomerId":"cus_test_swarm_p-22","stripeSubscriptionId":"sub_test_swarm_p-22","cardLastFour":"4242","cardBrand":"visa"}}
+{"ts":"2026-08-18T10:59:01.763Z","agentId":"P-22","wave":2,"step":"WAVE_2","action":"COMPLETE","result":"SUCCESS","details":{"plan":"Individual"}}
+{"ts":"2026-08-18T10:59:01.791Z","agentId":"P-22","wave":2,"step":"WAVE_2","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T10:59:01.791Z","agentId":"P-22","wave":0,"step":"BILLING","action":"SUBSCRIPTION_SUCCESS","result":"SUCCESS","details":{"plan":"Individual","stripeCustomerId":"cus_test_swarm_p-22","stripeSubscriptionId":"sub_test_swarm_p-22","cardLastFour":"4242","cardBrand":"visa"}}
+{"ts":"2026-08-18T10:59:01.791Z","agentId":"P-22","wave":2,"step":"WAVE_2","action":"COMPLETE","result":"SUCCESS","details":{"plan":"Individual"}}
+{"ts":"2026-08-18T10:59:01.883Z","agentId":"P-22","wave":3,"step":"WAVE_3","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T10:59:01.885Z","agentId":"P-22","wave":0,"step":"PROJECTS","action":"CREATION_SUCCESS","result":"SUCCESS","details":{"created":10,"plaid":false}}
+{"ts":"2026-08-18T10:59:01.885Z","agentId":"P-22","wave":3,"step":"WAVE_3","action":"COMPLETE","result":"SUCCESS","details":{"created":10}}
+{"ts":"2026-08-18T10:59:01.924Z","agentId":"P-22","wave":3,"step":"WAVE_3","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T10:59:01.926Z","agentId":"P-22","wave":0,"step":"PROJECTS","action":"CREATION_SUCCESS","result":"SUCCESS","details":{"created":10,"plaid":false}}
+{"ts":"2026-08-18T10:59:01.926Z","agentId":"P-22","wave":3,"step":"WAVE_3","action":"COMPLETE","result":"SUCCESS","details":{"created":10}}
+{"ts":"2026-08-18T10:59:02.009Z","agentId":"P-22","wave":4,"step":"WAVE_4","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T10:59:02.009Z","agentId":"P-22","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-58","to":"P-39","type":"Scaling Discussion"}}
+{"ts":"2026-08-18T10:59:02.009Z","agentId":"P-22","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-70","to":"P-23","type":"P&L Benchmarking"}}
+{"ts":"2026-08-18T10:59:02.010Z","agentId":"P-22","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-23"}}
+{"ts":"2026-08-18T10:59:02.010Z","agentId":"P-22","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-39"}}
+{"ts":"2026-08-18T10:59:02.010Z","agentId":"P-22","wave":4,"step":"WAVE_4","action":"COMPLETE","result":"SUCCESS","details":{"interactions":2,"invites":2}}
+{"ts":"2026-08-18T10:59:02.045Z","agentId":"P-22","wave":4,"step":"WAVE_4","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T10:59:02.046Z","agentId":"P-22","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-58","to":"P-39","type":"Scaling Discussion"}}
+{"ts":"2026-08-18T10:59:02.046Z","agentId":"P-22","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-70","to":"P-23","type":"P&L Benchmarking"}}
+{"ts":"2026-08-18T10:59:02.046Z","agentId":"P-22","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-23"}}
+{"ts":"2026-08-18T10:59:02.047Z","agentId":"P-22","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-39"}}
+{"ts":"2026-08-18T10:59:02.047Z","agentId":"P-22","wave":4,"step":"WAVE_4","action":"COMPLETE","result":"SUCCESS","details":{"interactions":2,"invites":2}}
+{"ts":"2026-08-18T10:59:02.086Z","agentId":"P-22","wave":5,"step":"WAVE_5","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T10:59:02.087Z","agentId":"P-22","wave":5,"step":"WAVE_5","action":"COMPLETE","result":"SUCCESS","details":{"reportPath":"/Users/yvesdarbouze/Documents/PaperWorking/artifacts/persona-swarm/reports/P-22-experience-report.md"}}
+{"ts":"2026-08-18T10:59:02.150Z","agentId":"P-22","wave":5,"step":"WAVE_5","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T10:59:02.150Z","agentId":"P-22","wave":5,"step":"WAVE_5","action":"COMPLETE","result":"SUCCESS","details":{"reportPath":"/Users/yvesdarbouze/Documents/PaperWorking/artifacts/persona-swarm/reports/P-22-experience-report.md"}}
+{"ts":"2026-08-18T10:59:26.998Z","agentId":"P-22","wave":1,"step":"WAVE_1","action":"START","result":"SUCCESS","details":{"email":"agent22.miguel.santos@paperworking-test.dev"}}
+{"ts":"2026-08-18T10:59:26.999Z","agentId":"P-22","wave":0,"step":"SIGNUP","action":"SUCCESS_CREATED","result":"SUCCESS","details":{"uid":"uid_persona_p22","email":"agent22.miguel.santos@paperworking-test.dev","name":"Miguel Santos","entity":"Santos Familia Properties LLC"}}
+{"ts":"2026-08-18T10:59:26.999Z","agentId":"P-22","wave":1,"step":"WAVE_1","action":"COMPLETE","result":"SUCCESS","details":{"uid":"uid_persona_p22"}}
+{"ts":"2026-08-18T10:59:27.060Z","agentId":"P-22","wave":2,"step":"WAVE_2","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T10:59:27.061Z","agentId":"P-22","wave":0,"step":"BILLING","action":"SUBSCRIPTION_SUCCESS","result":"SUCCESS","details":{"plan":"Individual","stripeCustomerId":"cus_test_swarm_p-22","stripeSubscriptionId":"sub_test_swarm_p-22","cardLastFour":"4242","cardBrand":"visa"}}
+{"ts":"2026-08-18T10:59:27.061Z","agentId":"P-22","wave":2,"step":"WAVE_2","action":"COMPLETE","result":"SUCCESS","details":{"plan":"Individual"}}
+{"ts":"2026-08-18T10:59:27.148Z","agentId":"P-22","wave":3,"step":"WAVE_3","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T10:59:27.150Z","agentId":"P-22","wave":0,"step":"PROJECTS","action":"CREATION_SUCCESS","result":"SUCCESS","details":{"created":10,"plaid":false}}
+{"ts":"2026-08-18T10:59:27.150Z","agentId":"P-22","wave":3,"step":"WAVE_3","action":"COMPLETE","result":"SUCCESS","details":{"created":10}}
+{"ts":"2026-08-18T10:59:27.254Z","agentId":"P-22","wave":4,"step":"WAVE_4","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T10:59:27.254Z","agentId":"P-22","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-58","to":"P-39","type":"Scaling Discussion"}}
+{"ts":"2026-08-18T10:59:27.255Z","agentId":"P-22","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-70","to":"P-23","type":"P&L Benchmarking"}}
+{"ts":"2026-08-18T10:59:27.255Z","agentId":"P-22","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-23"}}
+{"ts":"2026-08-18T10:59:27.255Z","agentId":"P-22","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-39"}}
+{"ts":"2026-08-18T10:59:27.255Z","agentId":"P-22","wave":4,"step":"WAVE_4","action":"COMPLETE","result":"SUCCESS","details":{"interactions":2,"invites":2}}
+{"ts":"2026-08-18T10:59:27.306Z","agentId":"P-22","wave":5,"step":"WAVE_5","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T10:59:27.306Z","agentId":"P-22","wave":5,"step":"WAVE_5","action":"COMPLETE","result":"SUCCESS","details":{"reportPath":"/Users/yvesdarbouze/Documents/PaperWorking/artifacts/persona-swarm/reports/P-22-experience-report.md"}}
+{"ts":"2026-08-18T10:59:30.126Z","agentId":"P-22","wave":1,"step":"WAVE_1","action":"START","result":"SUCCESS","details":{"email":"agent22.miguel.santos@paperworking-test.dev"}}
+{"ts":"2026-08-18T10:59:30.128Z","agentId":"P-22","wave":0,"step":"SIGNUP","action":"SUCCESS_CREATED","result":"SUCCESS","details":{"uid":"uid_persona_p22","email":"agent22.miguel.santos@paperworking-test.dev","name":"Miguel Santos","entity":"Santos Familia Properties LLC"}}
+{"ts":"2026-08-18T10:59:30.128Z","agentId":"P-22","wave":1,"step":"WAVE_1","action":"COMPLETE","result":"SUCCESS","details":{"uid":"uid_persona_p22"}}
+{"ts":"2026-08-18T10:59:30.194Z","agentId":"P-22","wave":2,"step":"WAVE_2","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T10:59:30.195Z","agentId":"P-22","wave":0,"step":"BILLING","action":"SUBSCRIPTION_SUCCESS","result":"SUCCESS","details":{"plan":"Individual","stripeCustomerId":"cus_test_swarm_p-22","stripeSubscriptionId":"sub_test_swarm_p-22","cardLastFour":"4242","cardBrand":"visa"}}
+{"ts":"2026-08-18T10:59:30.195Z","agentId":"P-22","wave":2,"step":"WAVE_2","action":"COMPLETE","result":"SUCCESS","details":{"plan":"Individual"}}
+{"ts":"2026-08-18T10:59:30.317Z","agentId":"P-22","wave":3,"step":"WAVE_3","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T10:59:30.319Z","agentId":"P-22","wave":0,"step":"PROJECTS","action":"CREATION_SUCCESS","result":"SUCCESS","details":{"created":10,"plaid":false}}
+{"ts":"2026-08-18T10:59:30.319Z","agentId":"P-22","wave":3,"step":"WAVE_3","action":"COMPLETE","result":"SUCCESS","details":{"created":10}}
+{"ts":"2026-08-18T10:59:30.465Z","agentId":"P-22","wave":4,"step":"WAVE_4","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T10:59:30.466Z","agentId":"P-22","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-58","to":"P-39","type":"Scaling Discussion"}}
+{"ts":"2026-08-18T10:59:30.466Z","agentId":"P-22","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-70","to":"P-23","type":"P&L Benchmarking"}}
+{"ts":"2026-08-18T10:59:30.466Z","agentId":"P-22","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-23"}}
+{"ts":"2026-08-18T10:59:30.466Z","agentId":"P-22","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-39"}}
+{"ts":"2026-08-18T10:59:30.466Z","agentId":"P-22","wave":4,"step":"WAVE_4","action":"COMPLETE","result":"SUCCESS","details":{"interactions":2,"invites":2}}
+{"ts":"2026-08-18T10:59:30.572Z","agentId":"P-22","wave":5,"step":"WAVE_5","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T10:59:30.572Z","agentId":"P-22","wave":5,"step":"WAVE_5","action":"COMPLETE","result":"SUCCESS","details":{"reportPath":"/Users/yvesdarbouze/Documents/PaperWorking/artifacts/persona-swarm/reports/P-22-experience-report.md"}}
+{"ts":"2026-08-18T11:00:11.724Z","agentId":"P-22","wave":1,"step":"WAVE_1","action":"START","result":"SUCCESS","details":{"email":"agent22.miguel.santos@paperworking-test.dev"}}
+{"ts":"2026-08-18T11:00:11.725Z","agentId":"P-22","wave":0,"step":"SIGNUP","action":"SUCCESS_CREATED","result":"SUCCESS","details":{"uid":"uid_persona_p22","email":"agent22.miguel.santos@paperworking-test.dev","name":"Miguel Santos","entity":"Santos Familia Properties LLC"}}
+{"ts":"2026-08-18T11:00:11.726Z","agentId":"P-22","wave":1,"step":"WAVE_1","action":"COMPLETE","result":"SUCCESS","details":{"uid":"uid_persona_p22"}}
+{"ts":"2026-08-18T11:00:11.743Z","agentId":"P-22","wave":1,"step":"WAVE_1","action":"START","result":"SUCCESS","details":{"email":"agent22.miguel.santos@paperworking-test.dev"}}
+{"ts":"2026-08-18T11:00:11.743Z","agentId":"P-22","wave":0,"step":"SIGNUP","action":"SUCCESS_CREATED","result":"SUCCESS","details":{"uid":"uid_persona_p22","email":"agent22.miguel.santos@paperworking-test.dev","name":"Miguel Santos","entity":"Santos Familia Properties LLC"}}
+{"ts":"2026-08-18T11:00:11.744Z","agentId":"P-22","wave":1,"step":"WAVE_1","action":"COMPLETE","result":"SUCCESS","details":{"uid":"uid_persona_p22"}}
+{"ts":"2026-08-18T11:00:11.789Z","agentId":"P-22","wave":2,"step":"WAVE_2","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T11:00:11.789Z","agentId":"P-22","wave":2,"step":"WAVE_2","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T11:00:11.789Z","agentId":"P-22","wave":0,"step":"BILLING","action":"SUBSCRIPTION_SUCCESS","result":"SUCCESS","details":{"plan":"Individual","stripeCustomerId":"cus_test_swarm_p-22","stripeSubscriptionId":"sub_test_swarm_p-22","cardLastFour":"4242","cardBrand":"visa"}}
+{"ts":"2026-08-18T11:00:11.789Z","agentId":"P-22","wave":0,"step":"BILLING","action":"SUBSCRIPTION_SUCCESS","result":"SUCCESS","details":{"plan":"Individual","stripeCustomerId":"cus_test_swarm_p-22","stripeSubscriptionId":"sub_test_swarm_p-22","cardLastFour":"4242","cardBrand":"visa"}}
+{"ts":"2026-08-18T11:00:11.790Z","agentId":"P-22","wave":2,"step":"WAVE_2","action":"COMPLETE","result":"SUCCESS","details":{"plan":"Individual"}}
+{"ts":"2026-08-18T11:00:11.790Z","agentId":"P-22","wave":2,"step":"WAVE_2","action":"COMPLETE","result":"SUCCESS","details":{"plan":"Individual"}}
+{"ts":"2026-08-18T11:00:11.883Z","agentId":"P-22","wave":3,"step":"WAVE_3","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T11:00:11.885Z","agentId":"P-22","wave":0,"step":"PROJECTS","action":"CREATION_SUCCESS","result":"SUCCESS","details":{"created":10,"plaid":false}}
+{"ts":"2026-08-18T11:00:11.885Z","agentId":"P-22","wave":3,"step":"WAVE_3","action":"COMPLETE","result":"SUCCESS","details":{"created":10}}
+{"ts":"2026-08-18T11:00:11.888Z","agentId":"P-22","wave":3,"step":"WAVE_3","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T11:00:11.891Z","agentId":"P-22","wave":0,"step":"PROJECTS","action":"CREATION_SUCCESS","result":"SUCCESS","details":{"created":10,"plaid":false}}
+{"ts":"2026-08-18T11:00:11.891Z","agentId":"P-22","wave":3,"step":"WAVE_3","action":"COMPLETE","result":"SUCCESS","details":{"created":10}}
+{"ts":"2026-08-18T11:00:11.990Z","agentId":"P-22","wave":4,"step":"WAVE_4","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T11:00:11.990Z","agentId":"P-22","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-58","to":"P-39","type":"Scaling Discussion"}}
+{"ts":"2026-08-18T11:00:11.990Z","agentId":"P-22","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-70","to":"P-23","type":"P&L Benchmarking"}}
+{"ts":"2026-08-18T11:00:11.990Z","agentId":"P-22","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-23"}}
+{"ts":"2026-08-18T11:00:11.991Z","agentId":"P-22","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-39"}}
+{"ts":"2026-08-18T11:00:11.991Z","agentId":"P-22","wave":4,"step":"WAVE_4","action":"COMPLETE","result":"SUCCESS","details":{"interactions":2,"invites":2}}
+{"ts":"2026-08-18T11:00:12.007Z","agentId":"P-22","wave":4,"step":"WAVE_4","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T11:00:12.008Z","agentId":"P-22","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-58","to":"P-39","type":"Scaling Discussion"}}
+{"ts":"2026-08-18T11:00:12.008Z","agentId":"P-22","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-70","to":"P-23","type":"P&L Benchmarking"}}
+{"ts":"2026-08-18T11:00:12.008Z","agentId":"P-22","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-23"}}
+{"ts":"2026-08-18T11:00:12.008Z","agentId":"P-22","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-39"}}
+{"ts":"2026-08-18T11:00:12.008Z","agentId":"P-22","wave":4,"step":"WAVE_4","action":"COMPLETE","result":"SUCCESS","details":{"interactions":2,"invites":2}}
+{"ts":"2026-08-18T11:00:12.074Z","agentId":"P-22","wave":5,"step":"WAVE_5","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T11:00:12.074Z","agentId":"P-22","wave":5,"step":"WAVE_5","action":"COMPLETE","result":"SUCCESS","details":{"reportPath":"/Users/yvesdarbouze/Documents/PaperWorking/artifacts/persona-swarm/reports/P-22-experience-report.md"}}
+{"ts":"2026-08-18T11:00:12.089Z","agentId":"P-22","wave":5,"step":"WAVE_5","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T11:00:12.089Z","agentId":"P-22","wave":5,"step":"WAVE_5","action":"COMPLETE","result":"SUCCESS","details":{"reportPath":"/Users/yvesdarbouze/Documents/PaperWorking/artifacts/persona-swarm/reports/P-22-experience-report.md"}}
+{"ts":"2026-08-18T11:12:29.723Z","agentId":"P-22","wave":1,"step":"WAVE_1","action":"START","result":"SUCCESS","details":{"email":"agent22.miguel.santos@paperworking-test.dev"}}
+{"ts":"2026-08-18T11:12:29.724Z","agentId":"P-22","wave":0,"step":"SIGNUP","action":"SUCCESS_CREATED","result":"SUCCESS","details":{"uid":"uid_persona_p22","email":"agent22.miguel.santos@paperworking-test.dev","name":"Miguel Santos","entity":"Santos Familia Properties LLC"}}
+{"ts":"2026-08-18T11:12:29.724Z","agentId":"P-22","wave":1,"step":"WAVE_1","action":"COMPLETE","result":"SUCCESS","details":{"uid":"uid_persona_p22"}}
+{"ts":"2026-08-18T11:12:29.785Z","agentId":"P-22","wave":2,"step":"WAVE_2","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T11:12:29.785Z","agentId":"P-22","wave":0,"step":"BILLING","action":"SUBSCRIPTION_SUCCESS","result":"SUCCESS","details":{"plan":"Individual","stripeCustomerId":"cus_test_swarm_p-22","stripeSubscriptionId":"sub_test_swarm_p-22","cardLastFour":"4242","cardBrand":"visa"}}
+{"ts":"2026-08-18T11:12:29.786Z","agentId":"P-22","wave":2,"step":"WAVE_2","action":"COMPLETE","result":"SUCCESS","details":{"plan":"Individual"}}
+{"ts":"2026-08-18T11:12:29.873Z","agentId":"P-22","wave":3,"step":"WAVE_3","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T11:12:29.875Z","agentId":"P-22","wave":0,"step":"PROJECTS","action":"CREATION_SUCCESS","result":"SUCCESS","details":{"created":10,"plaid":false}}
+{"ts":"2026-08-18T11:12:29.875Z","agentId":"P-22","wave":3,"step":"WAVE_3","action":"COMPLETE","result":"SUCCESS","details":{"created":10}}
+{"ts":"2026-08-18T11:12:30.021Z","agentId":"P-22","wave":4,"step":"WAVE_4","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T11:12:30.021Z","agentId":"P-22","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-58","to":"P-39","type":"Scaling Discussion"}}
+{"ts":"2026-08-18T11:12:30.021Z","agentId":"P-22","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-70","to":"P-23","type":"P&L Benchmarking"}}
+{"ts":"2026-08-18T11:12:30.022Z","agentId":"P-22","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-23"}}
+{"ts":"2026-08-18T11:12:30.022Z","agentId":"P-22","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-39"}}
+{"ts":"2026-08-18T11:12:30.022Z","agentId":"P-22","wave":4,"step":"WAVE_4","action":"COMPLETE","result":"SUCCESS","details":{"interactions":2,"invites":2}}
+{"ts":"2026-08-18T11:12:30.101Z","agentId":"P-22","wave":5,"step":"WAVE_5","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T11:12:30.101Z","agentId":"P-22","wave":5,"step":"WAVE_5","action":"COMPLETE","result":"SUCCESS","details":{"reportPath":"/Users/yvesdarbouze/Documents/PaperWorking/artifacts/persona-swarm/reports/P-22-experience-report.md"}}
+{"ts":"2026-08-18T11:12:32.920Z","agentId":"P-22","wave":1,"step":"WAVE_1","action":"START","result":"SUCCESS","details":{"email":"agent22.miguel.santos@paperworking-test.dev"}}
+{"ts":"2026-08-18T11:12:32.921Z","agentId":"P-22","wave":0,"step":"SIGNUP","action":"SUCCESS_CREATED","result":"SUCCESS","details":{"uid":"uid_persona_p22","email":"agent22.miguel.santos@paperworking-test.dev","name":"Miguel Santos","entity":"Santos Familia Properties LLC"}}
+{"ts":"2026-08-18T11:12:32.921Z","agentId":"P-22","wave":1,"step":"WAVE_1","action":"COMPLETE","result":"SUCCESS","details":{"uid":"uid_persona_p22"}}
+{"ts":"2026-08-18T11:12:33.010Z","agentId":"P-22","wave":2,"step":"WAVE_2","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T11:12:33.010Z","agentId":"P-22","wave":0,"step":"BILLING","action":"SUBSCRIPTION_SUCCESS","result":"SUCCESS","details":{"plan":"Individual","stripeCustomerId":"cus_test_swarm_p-22","stripeSubscriptionId":"sub_test_swarm_p-22","cardLastFour":"4242","cardBrand":"visa"}}
+{"ts":"2026-08-18T11:12:33.010Z","agentId":"P-22","wave":2,"step":"WAVE_2","action":"COMPLETE","result":"SUCCESS","details":{"plan":"Individual"}}
+{"ts":"2026-08-18T11:12:33.210Z","agentId":"P-22","wave":3,"step":"WAVE_3","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T11:12:33.215Z","agentId":"P-22","wave":0,"step":"PROJECTS","action":"CREATION_SUCCESS","result":"SUCCESS","details":{"created":10,"plaid":false}}
+{"ts":"2026-08-18T11:12:33.216Z","agentId":"P-22","wave":3,"step":"WAVE_3","action":"COMPLETE","result":"SUCCESS","details":{"created":10}}
+{"ts":"2026-08-18T11:12:33.422Z","agentId":"P-22","wave":4,"step":"WAVE_4","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T11:12:33.422Z","agentId":"P-22","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-58","to":"P-39","type":"Scaling Discussion"}}
+{"ts":"2026-08-18T11:12:33.423Z","agentId":"P-22","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-70","to":"P-23","type":"P&L Benchmarking"}}
+{"ts":"2026-08-18T11:12:33.423Z","agentId":"P-22","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-23"}}
+{"ts":"2026-08-18T11:12:33.423Z","agentId":"P-22","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-39"}}
+{"ts":"2026-08-18T11:12:33.423Z","agentId":"P-22","wave":4,"step":"WAVE_4","action":"COMPLETE","result":"SUCCESS","details":{"interactions":2,"invites":2}}
+{"ts":"2026-08-18T11:12:33.577Z","agentId":"P-22","wave":5,"step":"WAVE_5","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T11:12:33.578Z","agentId":"P-22","wave":5,"step":"WAVE_5","action":"COMPLETE","result":"SUCCESS","details":{"reportPath":"/Users/yvesdarbouze/Documents/PaperWorking/artifacts/persona-swarm/reports/P-22-experience-report.md"}}
+{"ts":"2026-08-18T11:19:05.489Z","agentId":"P-22","wave":1,"step":"WAVE_1","action":"START","result":"SUCCESS","details":{"email":"agent22.miguel.santos@paperworking-test.dev"}}
+{"ts":"2026-08-18T11:19:05.491Z","agentId":"P-22","wave":1,"step":"WAVE_1","action":"START","result":"SUCCESS","details":{"email":"agent22.miguel.santos@paperworking-test.dev"}}
+{"ts":"2026-08-18T11:19:05.491Z","agentId":"P-22","wave":0,"step":"SIGNUP","action":"SUCCESS_CREATED","result":"SUCCESS","details":{"uid":"uid_persona_p22","email":"agent22.miguel.santos@paperworking-test.dev","name":"Miguel Santos","entity":"Santos Familia Properties LLC"}}
+{"ts":"2026-08-18T11:19:05.492Z","agentId":"P-22","wave":1,"step":"WAVE_1","action":"COMPLETE","result":"SUCCESS","details":{"uid":"uid_persona_p22"}}
+{"ts":"2026-08-18T11:19:05.492Z","agentId":"P-22","wave":0,"step":"SIGNUP","action":"SUCCESS_CREATED","result":"SUCCESS","details":{"uid":"uid_persona_p22","email":"agent22.miguel.santos@paperworking-test.dev","name":"Miguel Santos","entity":"Santos Familia Properties LLC"}}
+{"ts":"2026-08-18T11:19:05.492Z","agentId":"P-22","wave":1,"step":"WAVE_1","action":"COMPLETE","result":"SUCCESS","details":{"uid":"uid_persona_p22"}}
+{"ts":"2026-08-18T11:19:05.551Z","agentId":"P-22","wave":2,"step":"WAVE_2","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T11:19:05.551Z","agentId":"P-22","wave":0,"step":"BILLING","action":"SUBSCRIPTION_SUCCESS","result":"SUCCESS","details":{"plan":"Individual","stripeCustomerId":"cus_test_swarm_p-22","stripeSubscriptionId":"sub_test_swarm_p-22","cardLastFour":"4242","cardBrand":"visa"}}
+{"ts":"2026-08-18T11:19:05.551Z","agentId":"P-22","wave":2,"step":"WAVE_2","action":"COMPLETE","result":"SUCCESS","details":{"plan":"Individual"}}
+{"ts":"2026-08-18T11:19:05.553Z","agentId":"P-22","wave":2,"step":"WAVE_2","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T11:19:05.553Z","agentId":"P-22","wave":0,"step":"BILLING","action":"SUBSCRIPTION_SUCCESS","result":"SUCCESS","details":{"plan":"Individual","stripeCustomerId":"cus_test_swarm_p-22","stripeSubscriptionId":"sub_test_swarm_p-22","cardLastFour":"4242","cardBrand":"visa"}}
+{"ts":"2026-08-18T11:19:05.553Z","agentId":"P-22","wave":2,"step":"WAVE_2","action":"COMPLETE","result":"SUCCESS","details":{"plan":"Individual"}}
+{"ts":"2026-08-18T11:19:05.660Z","agentId":"P-22","wave":3,"step":"WAVE_3","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T11:19:05.662Z","agentId":"P-22","wave":0,"step":"PROJECTS","action":"CREATION_SUCCESS","result":"SUCCESS","details":{"created":10,"plaid":false}}
+{"ts":"2026-08-18T11:19:05.662Z","agentId":"P-22","wave":3,"step":"WAVE_3","action":"COMPLETE","result":"SUCCESS","details":{"created":10}}
+{"ts":"2026-08-18T11:19:05.662Z","agentId":"P-22","wave":3,"step":"WAVE_3","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T11:19:05.664Z","agentId":"P-22","wave":0,"step":"PROJECTS","action":"CREATION_SUCCESS","result":"SUCCESS","details":{"created":10,"plaid":false}}
+{"ts":"2026-08-18T11:19:05.664Z","agentId":"P-22","wave":3,"step":"WAVE_3","action":"COMPLETE","result":"SUCCESS","details":{"created":10}}
+{"ts":"2026-08-18T11:19:05.855Z","agentId":"P-22","wave":4,"step":"WAVE_4","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T11:19:05.855Z","agentId":"P-22","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-58","to":"P-39","type":"Scaling Discussion"}}
+{"ts":"2026-08-18T11:19:05.856Z","agentId":"P-22","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-70","to":"P-23","type":"P&L Benchmarking"}}
+{"ts":"2026-08-18T11:19:05.856Z","agentId":"P-22","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-23"}}
+{"ts":"2026-08-18T11:19:05.856Z","agentId":"P-22","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-39"}}
+{"ts":"2026-08-18T11:19:05.856Z","agentId":"P-22","wave":4,"step":"WAVE_4","action":"COMPLETE","result":"SUCCESS","details":{"interactions":2,"invites":2}}
+{"ts":"2026-08-18T11:19:05.857Z","agentId":"P-22","wave":4,"step":"WAVE_4","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T11:19:05.857Z","agentId":"P-22","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-58","to":"P-39","type":"Scaling Discussion"}}
+{"ts":"2026-08-18T11:19:05.857Z","agentId":"P-22","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-70","to":"P-23","type":"P&L Benchmarking"}}
+{"ts":"2026-08-18T11:19:05.858Z","agentId":"P-22","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-23"}}
+{"ts":"2026-08-18T11:19:05.858Z","agentId":"P-22","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-39"}}
+{"ts":"2026-08-18T11:19:05.858Z","agentId":"P-22","wave":4,"step":"WAVE_4","action":"COMPLETE","result":"SUCCESS","details":{"interactions":2,"invites":2}}
+{"ts":"2026-08-18T11:19:05.955Z","agentId":"P-22","wave":5,"step":"WAVE_5","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T11:19:05.955Z","agentId":"P-22","wave":5,"step":"WAVE_5","action":"COMPLETE","result":"SUCCESS","details":{"reportPath":"/Users/yvesdarbouze/Documents/PaperWorking/artifacts/persona-swarm/reports/P-22-experience-report.md"}}
+{"ts":"2026-08-18T11:19:05.964Z","agentId":"P-22","wave":5,"step":"WAVE_5","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T11:19:05.964Z","agentId":"P-22","wave":5,"step":"WAVE_5","action":"COMPLETE","result":"SUCCESS","details":{"reportPath":"/Users/yvesdarbouze/Documents/PaperWorking/artifacts/persona-swarm/reports/P-22-experience-report.md"}}
+{"ts":"2026-08-18T14:00:23.580Z","agentId":"P-22","wave":1,"step":"WAVE_1","action":"START","result":"SUCCESS","details":{"email":"agent22.miguel.santos@paperworking-test.dev"}}
+{"ts":"2026-08-18T14:00:23.581Z","agentId":"P-22","wave":0,"step":"SIGNUP","action":"SUCCESS_CREATED","result":"SUCCESS","details":{"uid":"uid_persona_p22","email":"agent22.miguel.santos@paperworking-test.dev","name":"Miguel Santos","entity":"Santos Familia Properties LLC"}}
+{"ts":"2026-08-18T14:00:23.581Z","agentId":"P-22","wave":1,"step":"WAVE_1","action":"COMPLETE","result":"SUCCESS","details":{"uid":"uid_persona_p22"}}
+{"ts":"2026-08-18T14:00:23.594Z","agentId":"P-22","wave":1,"step":"WAVE_1","action":"START","result":"SUCCESS","details":{"email":"agent22.miguel.santos@paperworking-test.dev"}}
+{"ts":"2026-08-18T14:00:23.595Z","agentId":"P-22","wave":0,"step":"SIGNUP","action":"SUCCESS_CREATED","result":"SUCCESS","details":{"uid":"uid_persona_p22","email":"agent22.miguel.santos@paperworking-test.dev","name":"Miguel Santos","entity":"Santos Familia Properties LLC"}}
+{"ts":"2026-08-18T14:00:23.595Z","agentId":"P-22","wave":1,"step":"WAVE_1","action":"COMPLETE","result":"SUCCESS","details":{"uid":"uid_persona_p22"}}
+{"ts":"2026-08-18T14:00:23.653Z","agentId":"P-22","wave":2,"step":"WAVE_2","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T14:00:23.653Z","agentId":"P-22","wave":0,"step":"BILLING","action":"SUBSCRIPTION_SUCCESS","result":"SUCCESS","details":{"plan":"Individual","stripeCustomerId":"cus_test_swarm_p-22","stripeSubscriptionId":"sub_test_swarm_p-22","cardLastFour":"4242","cardBrand":"visa"}}
+{"ts":"2026-08-18T14:00:23.653Z","agentId":"P-22","wave":2,"step":"WAVE_2","action":"COMPLETE","result":"SUCCESS","details":{"plan":"Individual"}}
+{"ts":"2026-08-18T14:00:23.657Z","agentId":"P-22","wave":2,"step":"WAVE_2","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T14:00:23.658Z","agentId":"P-22","wave":0,"step":"BILLING","action":"SUBSCRIPTION_SUCCESS","result":"SUCCESS","details":{"plan":"Individual","stripeCustomerId":"cus_test_swarm_p-22","stripeSubscriptionId":"sub_test_swarm_p-22","cardLastFour":"4242","cardBrand":"visa"}}
+{"ts":"2026-08-18T14:00:23.659Z","agentId":"P-22","wave":2,"step":"WAVE_2","action":"COMPLETE","result":"SUCCESS","details":{"plan":"Individual"}}
+{"ts":"2026-08-18T14:00:23.770Z","agentId":"P-22","wave":3,"step":"WAVE_3","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T14:00:23.772Z","agentId":"P-22","wave":0,"step":"PROJECTS","action":"CREATION_SUCCESS","result":"SUCCESS","details":{"created":10,"plaid":false}}
+{"ts":"2026-08-18T14:00:23.772Z","agentId":"P-22","wave":3,"step":"WAVE_3","action":"COMPLETE","result":"SUCCESS","details":{"created":10}}
+{"ts":"2026-08-18T14:00:23.782Z","agentId":"P-22","wave":3,"step":"WAVE_3","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T14:00:23.786Z","agentId":"P-22","wave":0,"step":"PROJECTS","action":"CREATION_SUCCESS","result":"SUCCESS","details":{"created":10,"plaid":false}}
+{"ts":"2026-08-18T14:00:23.786Z","agentId":"P-22","wave":3,"step":"WAVE_3","action":"COMPLETE","result":"SUCCESS","details":{"created":10}}
+{"ts":"2026-08-18T14:00:23.948Z","agentId":"P-22","wave":4,"step":"WAVE_4","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T14:00:23.949Z","agentId":"P-22","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-58","to":"P-39","type":"Scaling Discussion"}}
+{"ts":"2026-08-18T14:00:23.950Z","agentId":"P-22","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-70","to":"P-23","type":"P&L Benchmarking"}}
+{"ts":"2026-08-18T14:00:23.950Z","agentId":"P-22","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-23"}}
+{"ts":"2026-08-18T14:00:23.953Z","agentId":"P-22","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-39"}}
+{"ts":"2026-08-18T14:00:23.953Z","agentId":"P-22","wave":4,"step":"WAVE_4","action":"COMPLETE","result":"SUCCESS","details":{"interactions":2,"invites":2}}
+{"ts":"2026-08-18T14:00:23.971Z","agentId":"P-22","wave":4,"step":"WAVE_4","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T14:00:23.972Z","agentId":"P-22","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-58","to":"P-39","type":"Scaling Discussion"}}
+{"ts":"2026-08-18T14:00:23.972Z","agentId":"P-22","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-70","to":"P-23","type":"P&L Benchmarking"}}
+{"ts":"2026-08-18T14:00:23.973Z","agentId":"P-22","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-23"}}
+{"ts":"2026-08-18T14:00:23.973Z","agentId":"P-22","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-39"}}
+{"ts":"2026-08-18T14:00:23.973Z","agentId":"P-22","wave":4,"step":"WAVE_4","action":"COMPLETE","result":"SUCCESS","details":{"interactions":2,"invites":2}}
+{"ts":"2026-08-18T14:00:24.083Z","agentId":"P-22","wave":5,"step":"WAVE_5","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T14:00:24.084Z","agentId":"P-22","wave":5,"step":"WAVE_5","action":"COMPLETE","result":"SUCCESS","details":{"reportPath":"/Users/yvesdarbouze/Documents/PaperWorking/artifacts/persona-swarm/reports/P-22-experience-report.md"}}
+{"ts":"2026-08-18T14:00:24.103Z","agentId":"P-22","wave":5,"step":"WAVE_5","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T14:00:24.103Z","agentId":"P-22","wave":5,"step":"WAVE_5","action":"COMPLETE","result":"SUCCESS","details":{"reportPath":"/Users/yvesdarbouze/Documents/PaperWorking/artifacts/persona-swarm/reports/P-22-experience-report.md"}}
+{"ts":"2026-08-18T14:00:41.221Z","agentId":"P-22","wave":1,"step":"WAVE_1","action":"START","result":"SUCCESS","details":{"email":"agent22.miguel.santos@paperworking-test.dev"}}
+{"ts":"2026-08-18T14:00:41.358Z","agentId":"P-22","wave":1,"step":"WAVE_1","action":"START","result":"SUCCESS","details":{"email":"agent22.miguel.santos@paperworking-test.dev"}}
+{"ts":"2026-08-18T14:00:43.247Z","agentId":"P-22","wave":0,"step":"SIGNUP","action":"SUCCESS_CREATED","result":"SUCCESS","details":{"uid":"uid_persona_p22","email":"agent22.miguel.santos@paperworking-test.dev","name":"Miguel Santos","entity":"Santos Familia Properties LLC"}}
+{"ts":"2026-08-18T14:00:43.247Z","agentId":"P-22","wave":1,"step":"WAVE_1","action":"COMPLETE","result":"SUCCESS","details":{"uid":"uid_persona_p22"}}
+{"ts":"2026-08-18T14:00:43.472Z","agentId":"P-22","wave":0,"step":"SIGNUP","action":"SUCCESS_CREATED","result":"SUCCESS","details":{"uid":"uid_persona_p22","email":"agent22.miguel.santos@paperworking-test.dev","name":"Miguel Santos","entity":"Santos Familia Properties LLC"}}
+{"ts":"2026-08-18T14:00:43.472Z","agentId":"P-22","wave":1,"step":"WAVE_1","action":"COMPLETE","result":"SUCCESS","details":{"uid":"uid_persona_p22"}}
+{"ts":"2026-08-18T14:00:58.789Z","agentId":"P-22","wave":1,"step":"WAVE_1","action":"START","result":"SUCCESS","details":{"email":"agent22.miguel.santos@paperworking-test.dev"}}
+{"ts":"2026-08-18T14:00:58.789Z","agentId":"P-22","wave":0,"step":"SIGNUP","action":"SUCCESS_CREATED","result":"SUCCESS","details":{"uid":"uid_persona_p22","email":"agent22.miguel.santos@paperworking-test.dev","name":"Miguel Santos","entity":"Santos Familia Properties LLC"}}
+{"ts":"2026-08-18T14:00:58.789Z","agentId":"P-22","wave":1,"step":"WAVE_1","action":"COMPLETE","result":"SUCCESS","details":{"uid":"uid_persona_p22"}}
+{"ts":"2026-08-18T14:00:58.834Z","agentId":"P-22","wave":2,"step":"WAVE_2","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T14:00:58.834Z","agentId":"P-22","wave":0,"step":"BILLING","action":"SUBSCRIPTION_SUCCESS","result":"SUCCESS","details":{"plan":"Individual","stripeCustomerId":"cus_test_swarm_p-22","stripeSubscriptionId":"sub_test_swarm_p-22","cardLastFour":"4242","cardBrand":"visa"}}
+{"ts":"2026-08-18T14:00:58.835Z","agentId":"P-22","wave":2,"step":"WAVE_2","action":"COMPLETE","result":"SUCCESS","details":{"plan":"Individual"}}
+{"ts":"2026-08-18T14:00:58.913Z","agentId":"P-22","wave":3,"step":"WAVE_3","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T14:00:58.915Z","agentId":"P-22","wave":0,"step":"PROJECTS","action":"CREATION_SUCCESS","result":"SUCCESS","details":{"created":10,"plaid":false}}
+{"ts":"2026-08-18T14:00:58.915Z","agentId":"P-22","wave":3,"step":"WAVE_3","action":"COMPLETE","result":"SUCCESS","details":{"created":10}}
+{"ts":"2026-08-18T14:00:59.021Z","agentId":"P-22","wave":4,"step":"WAVE_4","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T14:00:59.022Z","agentId":"P-22","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-58","to":"P-39","type":"Scaling Discussion"}}
+{"ts":"2026-08-18T14:00:59.022Z","agentId":"P-22","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-70","to":"P-23","type":"P&L Benchmarking"}}
+{"ts":"2026-08-18T14:00:59.022Z","agentId":"P-22","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-23"}}
+{"ts":"2026-08-18T14:00:59.022Z","agentId":"P-22","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-39"}}
+{"ts":"2026-08-18T14:00:59.022Z","agentId":"P-22","wave":4,"step":"WAVE_4","action":"COMPLETE","result":"SUCCESS","details":{"interactions":2,"invites":2}}
+{"ts":"2026-08-18T14:00:59.109Z","agentId":"P-22","wave":5,"step":"WAVE_5","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T14:00:59.109Z","agentId":"P-22","wave":5,"step":"WAVE_5","action":"COMPLETE","result":"SUCCESS","details":{"reportPath":"/Users/yvesdarbouze/Documents/PaperWorking/artifacts/persona-swarm/reports/P-22-experience-report.md"}}
+{"ts":"2026-08-18T14:01:09.218Z","agentId":"P-22","wave":1,"step":"WAVE_1","action":"START","result":"SUCCESS","details":{"email":"agent22.miguel.santos@paperworking-test.dev"}}
+{"ts":"2026-08-18T14:01:09.218Z","agentId":"P-22","wave":0,"step":"SIGNUP","action":"SUCCESS_CREATED","result":"SUCCESS","details":{"uid":"uid_persona_p22","email":"agent22.miguel.santos@paperworking-test.dev","name":"Miguel Santos","entity":"Santos Familia Properties LLC"}}
+{"ts":"2026-08-18T14:01:09.219Z","agentId":"P-22","wave":1,"step":"WAVE_1","action":"COMPLETE","result":"SUCCESS","details":{"uid":"uid_persona_p22"}}
+{"ts":"2026-08-18T14:01:09.259Z","agentId":"P-22","wave":2,"step":"WAVE_2","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T14:01:09.259Z","agentId":"P-22","wave":0,"step":"BILLING","action":"SUBSCRIPTION_SUCCESS","result":"SUCCESS","details":{"plan":"Individual","stripeCustomerId":"cus_test_swarm_p-22","stripeSubscriptionId":"sub_test_swarm_p-22","cardLastFour":"4242","cardBrand":"visa"}}
+{"ts":"2026-08-18T14:01:09.259Z","agentId":"P-22","wave":2,"step":"WAVE_2","action":"COMPLETE","result":"SUCCESS","details":{"plan":"Individual"}}
+{"ts":"2026-08-18T14:01:09.335Z","agentId":"P-22","wave":3,"step":"WAVE_3","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T14:01:09.337Z","agentId":"P-22","wave":0,"step":"PROJECTS","action":"CREATION_SUCCESS","result":"SUCCESS","details":{"created":10,"plaid":false}}
+{"ts":"2026-08-18T14:01:09.337Z","agentId":"P-22","wave":3,"step":"WAVE_3","action":"COMPLETE","result":"SUCCESS","details":{"created":10}}
+{"ts":"2026-08-18T14:01:09.439Z","agentId":"P-22","wave":4,"step":"WAVE_4","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T14:01:09.440Z","agentId":"P-22","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-58","to":"P-39","type":"Scaling Discussion"}}
+{"ts":"2026-08-18T14:01:09.440Z","agentId":"P-22","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-70","to":"P-23","type":"P&L Benchmarking"}}
+{"ts":"2026-08-18T14:01:09.440Z","agentId":"P-22","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-23"}}
+{"ts":"2026-08-18T14:01:09.440Z","agentId":"P-22","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-39"}}
+{"ts":"2026-08-18T14:01:09.440Z","agentId":"P-22","wave":4,"step":"WAVE_4","action":"COMPLETE","result":"SUCCESS","details":{"interactions":2,"invites":2}}
+{"ts":"2026-08-18T14:01:09.506Z","agentId":"P-22","wave":5,"step":"WAVE_5","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T14:01:09.506Z","agentId":"P-22","wave":5,"step":"WAVE_5","action":"COMPLETE","result":"SUCCESS","details":{"reportPath":"/Users/yvesdarbouze/Documents/PaperWorking/artifacts/persona-swarm/reports/P-22-experience-report.md"}}
+{"ts":"2026-08-18T14:01:24.890Z","agentId":"P-22","wave":1,"step":"WAVE_1","action":"START","result":"SUCCESS","details":{"email":"agent22.miguel.santos@paperworking-test.dev"}}
+{"ts":"2026-08-18T14:01:24.891Z","agentId":"P-22","wave":0,"step":"SIGNUP","action":"SUCCESS_CREATED","result":"SUCCESS","details":{"uid":"uid_persona_p22","email":"agent22.miguel.santos@paperworking-test.dev","name":"Miguel Santos","entity":"Santos Familia Properties LLC"}}
+{"ts":"2026-08-18T14:01:24.891Z","agentId":"P-22","wave":1,"step":"WAVE_1","action":"COMPLETE","result":"SUCCESS","details":{"uid":"uid_persona_p22"}}
+{"ts":"2026-08-18T14:01:24.963Z","agentId":"P-22","wave":2,"step":"WAVE_2","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T14:01:24.963Z","agentId":"P-22","wave":0,"step":"BILLING","action":"SUBSCRIPTION_SUCCESS","result":"SUCCESS","details":{"plan":"Individual","stripeCustomerId":"cus_test_swarm_p-22","stripeSubscriptionId":"sub_test_swarm_p-22","cardLastFour":"4242","cardBrand":"visa"}}
+{"ts":"2026-08-18T14:01:24.963Z","agentId":"P-22","wave":2,"step":"WAVE_2","action":"COMPLETE","result":"SUCCESS","details":{"plan":"Individual"}}
+{"ts":"2026-08-18T14:01:25.067Z","agentId":"P-22","wave":3,"step":"WAVE_3","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T14:01:25.070Z","agentId":"P-22","wave":0,"step":"PROJECTS","action":"CREATION_SUCCESS","result":"SUCCESS","details":{"created":10,"plaid":false}}
+{"ts":"2026-08-18T14:01:25.070Z","agentId":"P-22","wave":3,"step":"WAVE_3","action":"COMPLETE","result":"SUCCESS","details":{"created":10}}
+{"ts":"2026-08-18T14:01:25.193Z","agentId":"P-22","wave":4,"step":"WAVE_4","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T14:01:25.194Z","agentId":"P-22","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-58","to":"P-39","type":"Scaling Discussion"}}
+{"ts":"2026-08-18T14:01:25.194Z","agentId":"P-22","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-70","to":"P-23","type":"P&L Benchmarking"}}
+{"ts":"2026-08-18T14:01:25.194Z","agentId":"P-22","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-23"}}
+{"ts":"2026-08-18T14:01:25.195Z","agentId":"P-22","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-39"}}
+{"ts":"2026-08-18T14:01:25.195Z","agentId":"P-22","wave":4,"step":"WAVE_4","action":"COMPLETE","result":"SUCCESS","details":{"interactions":2,"invites":2}}
+{"ts":"2026-08-18T14:01:25.285Z","agentId":"P-22","wave":5,"step":"WAVE_5","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T14:01:25.285Z","agentId":"P-22","wave":5,"step":"WAVE_5","action":"COMPLETE","result":"SUCCESS","details":{"reportPath":"/Users/yvesdarbouze/Documents/PaperWorking/artifacts/persona-swarm/reports/P-22-experience-report.md"}}
+{"ts":"2026-08-18T14:01:25.629Z","agentId":"P-22","wave":1,"step":"WAVE_1","action":"START","result":"SUCCESS","details":{"email":"agent22.miguel.santos@paperworking-test.dev"}}
+{"ts":"2026-08-18T14:01:25.630Z","agentId":"P-22","wave":0,"step":"SIGNUP","action":"SUCCESS_CREATED","result":"SUCCESS","details":{"uid":"uid_persona_p22","email":"agent22.miguel.santos@paperworking-test.dev","name":"Miguel Santos","entity":"Santos Familia Properties LLC"}}
+{"ts":"2026-08-18T14:01:25.630Z","agentId":"P-22","wave":1,"step":"WAVE_1","action":"COMPLETE","result":"SUCCESS","details":{"uid":"uid_persona_p22"}}
+{"ts":"2026-08-18T14:01:25.692Z","agentId":"P-22","wave":2,"step":"WAVE_2","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T14:01:25.693Z","agentId":"P-22","wave":0,"step":"BILLING","action":"SUBSCRIPTION_SUCCESS","result":"SUCCESS","details":{"plan":"Individual","stripeCustomerId":"cus_test_swarm_p-22","stripeSubscriptionId":"sub_test_swarm_p-22","cardLastFour":"4242","cardBrand":"visa"}}
+{"ts":"2026-08-18T14:01:25.693Z","agentId":"P-22","wave":2,"step":"WAVE_2","action":"COMPLETE","result":"SUCCESS","details":{"plan":"Individual"}}
+{"ts":"2026-08-18T14:01:25.820Z","agentId":"P-22","wave":3,"step":"WAVE_3","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T14:01:25.821Z","agentId":"P-22","wave":0,"step":"PROJECTS","action":"CREATION_SUCCESS","result":"SUCCESS","details":{"created":10,"plaid":false}}
+{"ts":"2026-08-18T14:01:25.822Z","agentId":"P-22","wave":3,"step":"WAVE_3","action":"COMPLETE","result":"SUCCESS","details":{"created":10}}
+{"ts":"2026-08-18T14:01:25.972Z","agentId":"P-22","wave":4,"step":"WAVE_4","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T14:01:25.973Z","agentId":"P-22","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-58","to":"P-39","type":"Scaling Discussion"}}
+{"ts":"2026-08-18T14:01:25.974Z","agentId":"P-22","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-70","to":"P-23","type":"P&L Benchmarking"}}
+{"ts":"2026-08-18T14:01:25.974Z","agentId":"P-22","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-23"}}
+{"ts":"2026-08-18T14:01:25.975Z","agentId":"P-22","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-39"}}
+{"ts":"2026-08-18T14:01:25.975Z","agentId":"P-22","wave":4,"step":"WAVE_4","action":"COMPLETE","result":"SUCCESS","details":{"interactions":2,"invites":2}}
+{"ts":"2026-08-18T14:01:26.067Z","agentId":"P-22","wave":5,"step":"WAVE_5","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T14:01:26.067Z","agentId":"P-22","wave":5,"step":"WAVE_5","action":"COMPLETE","result":"SUCCESS","details":{"reportPath":"/Users/yvesdarbouze/Documents/PaperWorking/artifacts/persona-swarm/reports/P-22-experience-report.md"}}
+{"ts":"2026-08-18T14:16:29.117Z","agentId":"P-22","wave":1,"step":"WAVE_1","action":"START","result":"SUCCESS","details":{"email":"agent22.miguel.santos@paperworking-test.dev"}}
+{"ts":"2026-08-18T14:16:29.117Z","agentId":"P-22","wave":1,"step":"WAVE_1","action":"START","result":"SUCCESS","details":{"email":"agent22.miguel.santos@paperworking-test.dev"}}
+{"ts":"2026-08-18T14:16:29.118Z","agentId":"P-22","wave":0,"step":"SIGNUP","action":"SUCCESS_CREATED","result":"SUCCESS","details":{"uid":"uid_persona_p22","email":"agent22.miguel.santos@paperworking-test.dev","name":"Miguel Santos","entity":"Santos Familia Properties LLC"}}
+{"ts":"2026-08-18T14:16:29.118Z","agentId":"P-22","wave":1,"step":"WAVE_1","action":"COMPLETE","result":"SUCCESS","details":{"uid":"uid_persona_p22"}}
+{"ts":"2026-08-18T14:16:29.118Z","agentId":"P-22","wave":0,"step":"SIGNUP","action":"SUCCESS_CREATED","result":"SUCCESS","details":{"uid":"uid_persona_p22","email":"agent22.miguel.santos@paperworking-test.dev","name":"Miguel Santos","entity":"Santos Familia Properties LLC"}}
+{"ts":"2026-08-18T14:16:29.119Z","agentId":"P-22","wave":1,"step":"WAVE_1","action":"COMPLETE","result":"SUCCESS","details":{"uid":"uid_persona_p22"}}
+{"ts":"2026-08-18T14:16:29.180Z","agentId":"P-22","wave":2,"step":"WAVE_2","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T14:16:29.181Z","agentId":"P-22","wave":2,"step":"WAVE_2","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T14:16:29.181Z","agentId":"P-22","wave":0,"step":"BILLING","action":"SUBSCRIPTION_SUCCESS","result":"SUCCESS","details":{"plan":"Individual","stripeCustomerId":"cus_test_swarm_p-22","stripeSubscriptionId":"sub_test_swarm_p-22","cardLastFour":"4242","cardBrand":"visa"}}
+{"ts":"2026-08-18T14:16:29.181Z","agentId":"P-22","wave":2,"step":"WAVE_2","action":"COMPLETE","result":"SUCCESS","details":{"plan":"Individual"}}
+{"ts":"2026-08-18T14:16:29.181Z","agentId":"P-22","wave":0,"step":"BILLING","action":"SUBSCRIPTION_SUCCESS","result":"SUCCESS","details":{"plan":"Individual","stripeCustomerId":"cus_test_swarm_p-22","stripeSubscriptionId":"sub_test_swarm_p-22","cardLastFour":"4242","cardBrand":"visa"}}
+{"ts":"2026-08-18T14:16:29.181Z","agentId":"P-22","wave":2,"step":"WAVE_2","action":"COMPLETE","result":"SUCCESS","details":{"plan":"Individual"}}
+{"ts":"2026-08-18T14:16:29.291Z","agentId":"P-22","wave":3,"step":"WAVE_3","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T14:16:29.292Z","agentId":"P-22","wave":3,"step":"WAVE_3","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T14:16:29.293Z","agentId":"P-22","wave":0,"step":"PROJECTS","action":"CREATION_SUCCESS","result":"SUCCESS","details":{"created":10,"plaid":false}}
+{"ts":"2026-08-18T14:16:29.293Z","agentId":"P-22","wave":3,"step":"WAVE_3","action":"COMPLETE","result":"SUCCESS","details":{"created":10}}
+{"ts":"2026-08-18T14:16:29.295Z","agentId":"P-22","wave":0,"step":"PROJECTS","action":"CREATION_SUCCESS","result":"SUCCESS","details":{"created":10,"plaid":false}}
+{"ts":"2026-08-18T14:16:29.295Z","agentId":"P-22","wave":3,"step":"WAVE_3","action":"COMPLETE","result":"SUCCESS","details":{"created":10}}
+{"ts":"2026-08-18T14:16:29.425Z","agentId":"P-22","wave":4,"step":"WAVE_4","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T14:16:29.426Z","agentId":"P-22","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-58","to":"P-39","type":"Scaling Discussion"}}
+{"ts":"2026-08-18T14:16:29.427Z","agentId":"P-22","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-70","to":"P-23","type":"P&L Benchmarking"}}
+{"ts":"2026-08-18T14:16:29.427Z","agentId":"P-22","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-23"}}
+{"ts":"2026-08-18T14:16:29.428Z","agentId":"P-22","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-39"}}
+{"ts":"2026-08-18T14:16:29.428Z","agentId":"P-22","wave":4,"step":"WAVE_4","action":"COMPLETE","result":"SUCCESS","details":{"interactions":2,"invites":2}}
+{"ts":"2026-08-18T14:16:29.433Z","agentId":"P-22","wave":4,"step":"WAVE_4","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T14:16:29.434Z","agentId":"P-22","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-58","to":"P-39","type":"Scaling Discussion"}}
+{"ts":"2026-08-18T14:16:29.434Z","agentId":"P-22","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-70","to":"P-23","type":"P&L Benchmarking"}}
+{"ts":"2026-08-18T14:16:29.434Z","agentId":"P-22","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-23"}}
+{"ts":"2026-08-18T14:16:29.435Z","agentId":"P-22","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-39"}}
+{"ts":"2026-08-18T14:16:29.435Z","agentId":"P-22","wave":4,"step":"WAVE_4","action":"COMPLETE","result":"SUCCESS","details":{"interactions":2,"invites":2}}
+{"ts":"2026-08-18T14:16:29.533Z","agentId":"P-22","wave":5,"step":"WAVE_5","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T14:16:29.533Z","agentId":"P-22","wave":5,"step":"WAVE_5","action":"COMPLETE","result":"SUCCESS","details":{"reportPath":"/Users/yvesdarbouze/Documents/PaperWorking/artifacts/persona-swarm/reports/P-22-experience-report.md"}}
+{"ts":"2026-08-18T14:16:29.546Z","agentId":"P-22","wave":5,"step":"WAVE_5","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T14:16:29.547Z","agentId":"P-22","wave":5,"step":"WAVE_5","action":"COMPLETE","result":"SUCCESS","details":{"reportPath":"/Users/yvesdarbouze/Documents/PaperWorking/artifacts/persona-swarm/reports/P-22-experience-report.md"}}
+{"ts":"2026-08-18T15:27:30.093Z","agentId":"P-22","wave":1,"step":"WAVE_1","action":"START","result":"SUCCESS","details":{"email":"agent22.miguel.santos@paperworking-test.dev"}}
+{"ts":"2026-08-18T15:27:30.096Z","agentId":"P-22","wave":0,"step":"SIGNUP","action":"SUCCESS_CREATED","result":"SUCCESS","details":{"uid":"uid_persona_p22","email":"agent22.miguel.santos@paperworking-test.dev","name":"Miguel Santos","entity":"Santos Familia Properties LLC"}}
+{"ts":"2026-08-18T15:27:30.096Z","agentId":"P-22","wave":1,"step":"WAVE_1","action":"COMPLETE","result":"SUCCESS","details":{"uid":"uid_persona_p22"}}
+{"ts":"2026-08-18T15:27:30.118Z","agentId":"P-22","wave":1,"step":"WAVE_1","action":"START","result":"SUCCESS","details":{"email":"agent22.miguel.santos@paperworking-test.dev"}}
+{"ts":"2026-08-18T15:27:30.119Z","agentId":"P-22","wave":0,"step":"SIGNUP","action":"SUCCESS_CREATED","result":"SUCCESS","details":{"uid":"uid_persona_p22","email":"agent22.miguel.santos@paperworking-test.dev","name":"Miguel Santos","entity":"Santos Familia Properties LLC"}}
+{"ts":"2026-08-18T15:27:30.120Z","agentId":"P-22","wave":1,"step":"WAVE_1","action":"COMPLETE","result":"SUCCESS","details":{"uid":"uid_persona_p22"}}
+{"ts":"2026-08-18T15:27:30.270Z","agentId":"P-22","wave":2,"step":"WAVE_2","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T15:27:30.270Z","agentId":"P-22","wave":0,"step":"BILLING","action":"SUBSCRIPTION_SUCCESS","result":"SUCCESS","details":{"plan":"Individual","stripeCustomerId":"cus_test_swarm_p-22","stripeSubscriptionId":"sub_test_swarm_p-22","cardLastFour":"4242","cardBrand":"visa"}}
+{"ts":"2026-08-18T15:27:30.270Z","agentId":"P-22","wave":2,"step":"WAVE_2","action":"COMPLETE","result":"SUCCESS","details":{"plan":"Individual"}}
+{"ts":"2026-08-18T15:27:30.281Z","agentId":"P-22","wave":2,"step":"WAVE_2","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T15:27:30.281Z","agentId":"P-22","wave":0,"step":"BILLING","action":"SUBSCRIPTION_SUCCESS","result":"SUCCESS","details":{"plan":"Individual","stripeCustomerId":"cus_test_swarm_p-22","stripeSubscriptionId":"sub_test_swarm_p-22","cardLastFour":"4242","cardBrand":"visa"}}
+{"ts":"2026-08-18T15:27:30.281Z","agentId":"P-22","wave":2,"step":"WAVE_2","action":"COMPLETE","result":"SUCCESS","details":{"plan":"Individual"}}
+{"ts":"2026-08-18T15:27:30.488Z","agentId":"P-22","wave":3,"step":"WAVE_3","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T15:27:30.493Z","agentId":"P-22","wave":0,"step":"PROJECTS","action":"CREATION_SUCCESS","result":"SUCCESS","details":{"created":10,"plaid":false}}
+{"ts":"2026-08-18T15:27:30.493Z","agentId":"P-22","wave":3,"step":"WAVE_3","action":"COMPLETE","result":"SUCCESS","details":{"created":10}}
+{"ts":"2026-08-18T15:27:30.598Z","agentId":"P-22","wave":3,"step":"WAVE_3","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T15:27:30.602Z","agentId":"P-22","wave":0,"step":"PROJECTS","action":"CREATION_SUCCESS","result":"SUCCESS","details":{"created":10,"plaid":false}}
+{"ts":"2026-08-18T15:27:30.602Z","agentId":"P-22","wave":3,"step":"WAVE_3","action":"COMPLETE","result":"SUCCESS","details":{"created":10}}
+{"ts":"2026-08-18T15:27:30.764Z","agentId":"P-22","wave":4,"step":"WAVE_4","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T15:27:30.765Z","agentId":"P-22","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-58","to":"P-39","type":"Scaling Discussion"}}
+{"ts":"2026-08-18T15:27:30.766Z","agentId":"P-22","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-70","to":"P-23","type":"P&L Benchmarking"}}
+{"ts":"2026-08-18T15:27:30.767Z","agentId":"P-22","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-23"}}
+{"ts":"2026-08-18T15:27:30.767Z","agentId":"P-22","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-39"}}
+{"ts":"2026-08-18T15:27:30.767Z","agentId":"P-22","wave":4,"step":"WAVE_4","action":"COMPLETE","result":"SUCCESS","details":{"interactions":2,"invites":2}}
+{"ts":"2026-08-18T15:27:30.811Z","agentId":"P-22","wave":4,"step":"WAVE_4","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T15:27:30.811Z","agentId":"P-22","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-58","to":"P-39","type":"Scaling Discussion"}}
+{"ts":"2026-08-18T15:27:30.813Z","agentId":"P-22","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-70","to":"P-23","type":"P&L Benchmarking"}}
+{"ts":"2026-08-18T15:27:30.814Z","agentId":"P-22","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-23"}}
+{"ts":"2026-08-18T15:27:30.814Z","agentId":"P-22","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-39"}}
+{"ts":"2026-08-18T15:27:30.814Z","agentId":"P-22","wave":4,"step":"WAVE_4","action":"COMPLETE","result":"SUCCESS","details":{"interactions":2,"invites":2}}
+{"ts":"2026-08-18T15:27:30.894Z","agentId":"P-22","wave":5,"step":"WAVE_5","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T15:27:30.894Z","agentId":"P-22","wave":5,"step":"WAVE_5","action":"COMPLETE","result":"SUCCESS","details":{"reportPath":"/Users/yvesdarbouze/Documents/PaperWorking/artifacts/persona-swarm/reports/P-22-experience-report.md"}}
+{"ts":"2026-08-18T15:27:30.931Z","agentId":"P-22","wave":5,"step":"WAVE_5","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T15:27:30.931Z","agentId":"P-22","wave":5,"step":"WAVE_5","action":"COMPLETE","result":"SUCCESS","details":{"reportPath":"/Users/yvesdarbouze/Documents/PaperWorking/artifacts/persona-swarm/reports/P-22-experience-report.md"}}
+{"ts":"2026-08-18T15:28:00.306Z","agentId":"P-22","wave":1,"step":"WAVE_1","action":"START","result":"SUCCESS","details":{"email":"agent22.miguel.santos@paperworking-test.dev"}}
+{"ts":"2026-08-18T15:28:00.307Z","agentId":"P-22","wave":1,"step":"WAVE_1","action":"START","result":"SUCCESS","details":{"email":"agent22.miguel.santos@paperworking-test.dev"}}
+{"ts":"2026-08-18T15:28:00.307Z","agentId":"P-22","wave":0,"step":"SIGNUP","action":"SUCCESS_CREATED","result":"SUCCESS","details":{"uid":"uid_persona_p22","email":"agent22.miguel.santos@paperworking-test.dev","name":"Miguel Santos","entity":"Santos Familia Properties LLC"}}
+{"ts":"2026-08-18T15:28:00.308Z","agentId":"P-22","wave":0,"step":"SIGNUP","action":"SUCCESS_CREATED","result":"SUCCESS","details":{"uid":"uid_persona_p22","email":"agent22.miguel.santos@paperworking-test.dev","name":"Miguel Santos","entity":"Santos Familia Properties LLC"}}
+{"ts":"2026-08-18T15:28:00.308Z","agentId":"P-22","wave":1,"step":"WAVE_1","action":"COMPLETE","result":"SUCCESS","details":{"uid":"uid_persona_p22"}}
+{"ts":"2026-08-18T15:28:00.308Z","agentId":"P-22","wave":1,"step":"WAVE_1","action":"COMPLETE","result":"SUCCESS","details":{"uid":"uid_persona_p22"}}
+{"ts":"2026-08-18T15:28:00.369Z","agentId":"P-22","wave":2,"step":"WAVE_2","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T15:28:00.370Z","agentId":"P-22","wave":0,"step":"BILLING","action":"SUBSCRIPTION_SUCCESS","result":"SUCCESS","details":{"plan":"Individual","stripeCustomerId":"cus_test_swarm_p-22","stripeSubscriptionId":"sub_test_swarm_p-22","cardLastFour":"4242","cardBrand":"visa"}}
+{"ts":"2026-08-18T15:28:00.371Z","agentId":"P-22","wave":2,"step":"WAVE_2","action":"COMPLETE","result":"SUCCESS","details":{"plan":"Individual"}}
+{"ts":"2026-08-18T15:28:00.373Z","agentId":"P-22","wave":2,"step":"WAVE_2","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T15:28:00.374Z","agentId":"P-22","wave":0,"step":"BILLING","action":"SUBSCRIPTION_SUCCESS","result":"SUCCESS","details":{"plan":"Individual","stripeCustomerId":"cus_test_swarm_p-22","stripeSubscriptionId":"sub_test_swarm_p-22","cardLastFour":"4242","cardBrand":"visa"}}
+{"ts":"2026-08-18T15:28:00.374Z","agentId":"P-22","wave":2,"step":"WAVE_2","action":"COMPLETE","result":"SUCCESS","details":{"plan":"Individual"}}
+{"ts":"2026-08-18T15:28:00.502Z","agentId":"P-22","wave":3,"step":"WAVE_3","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T15:28:00.507Z","agentId":"P-22","wave":3,"step":"WAVE_3","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T15:28:00.507Z","agentId":"P-22","wave":0,"step":"PROJECTS","action":"CREATION_SUCCESS","result":"SUCCESS","details":{"created":10,"plaid":false}}
+{"ts":"2026-08-18T15:28:00.507Z","agentId":"P-22","wave":3,"step":"WAVE_3","action":"COMPLETE","result":"SUCCESS","details":{"created":10}}
+{"ts":"2026-08-18T15:28:00.512Z","agentId":"P-22","wave":0,"step":"PROJECTS","action":"CREATION_SUCCESS","result":"SUCCESS","details":{"created":10,"plaid":false}}
+{"ts":"2026-08-18T15:28:00.513Z","agentId":"P-22","wave":3,"step":"WAVE_3","action":"COMPLETE","result":"SUCCESS","details":{"created":10}}
+{"ts":"2026-08-18T15:28:00.727Z","agentId":"P-22","wave":4,"step":"WAVE_4","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T15:28:00.727Z","agentId":"P-22","wave":4,"step":"WAVE_4","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T15:28:00.728Z","agentId":"P-22","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-58","to":"P-39","type":"Scaling Discussion"}}
+{"ts":"2026-08-18T15:28:00.728Z","agentId":"P-22","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-70","to":"P-23","type":"P&L Benchmarking"}}
+{"ts":"2026-08-18T15:28:00.728Z","agentId":"P-22","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-23"}}
+{"ts":"2026-08-18T15:28:00.728Z","agentId":"P-22","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-58","to":"P-39","type":"Scaling Discussion"}}
+{"ts":"2026-08-18T15:28:00.728Z","agentId":"P-22","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-39"}}
+{"ts":"2026-08-18T15:28:00.729Z","agentId":"P-22","wave":4,"step":"WAVE_4","action":"COMPLETE","result":"SUCCESS","details":{"interactions":2,"invites":2}}
+{"ts":"2026-08-18T15:28:00.729Z","agentId":"P-22","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-70","to":"P-23","type":"P&L Benchmarking"}}
+{"ts":"2026-08-18T15:28:00.730Z","agentId":"P-22","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-23"}}
+{"ts":"2026-08-18T15:28:00.730Z","agentId":"P-22","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-39"}}
+{"ts":"2026-08-18T15:28:00.730Z","agentId":"P-22","wave":4,"step":"WAVE_4","action":"COMPLETE","result":"SUCCESS","details":{"interactions":2,"invites":2}}
+{"ts":"2026-08-18T15:28:00.838Z","agentId":"P-22","wave":5,"step":"WAVE_5","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T15:28:00.839Z","agentId":"P-22","wave":5,"step":"WAVE_5","action":"COMPLETE","result":"SUCCESS","details":{"reportPath":"/Users/yvesdarbouze/Documents/PaperWorking/artifacts/persona-swarm/reports/P-22-experience-report.md"}}
+{"ts":"2026-08-18T15:28:00.862Z","agentId":"P-22","wave":5,"step":"WAVE_5","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T15:28:00.863Z","agentId":"P-22","wave":5,"step":"WAVE_5","action":"COMPLETE","result":"SUCCESS","details":{"reportPath":"/Users/yvesdarbouze/Documents/PaperWorking/artifacts/persona-swarm/reports/P-22-experience-report.md"}}
+{"ts":"2026-08-18T15:56:03.775Z","agentId":"P-22","wave":1,"step":"WAVE_1","action":"START","result":"SUCCESS","details":{"email":"agent22.miguel.santos@paperworking-test.dev"}}
+{"ts":"2026-08-18T15:56:03.879Z","agentId":"P-22","wave":1,"step":"WAVE_1","action":"START","result":"SUCCESS","details":{"email":"agent22.miguel.santos@paperworking-test.dev"}}
+{"ts":"2026-08-18T15:56:05.768Z","agentId":"P-22","wave":0,"step":"SIGNUP","action":"SUCCESS_CREATED","result":"SUCCESS","details":{"uid":"uid_persona_p22","email":"agent22.miguel.santos@paperworking-test.dev","name":"Miguel Santos","entity":"Santos Familia Properties LLC"}}
+{"ts":"2026-08-18T15:56:05.768Z","agentId":"P-22","wave":1,"step":"WAVE_1","action":"COMPLETE","result":"SUCCESS","details":{"uid":"uid_persona_p22"}}
+{"ts":"2026-08-18T15:56:05.887Z","agentId":"P-22","wave":0,"step":"SIGNUP","action":"SUCCESS_CREATED","result":"SUCCESS","details":{"uid":"uid_persona_p22","email":"agent22.miguel.santos@paperworking-test.dev","name":"Miguel Santos","entity":"Santos Familia Properties LLC"}}
+{"ts":"2026-08-18T15:56:05.887Z","agentId":"P-22","wave":1,"step":"WAVE_1","action":"COMPLETE","result":"SUCCESS","details":{"uid":"uid_persona_p22"}}
+{"ts":"2026-08-18T15:57:17.837Z","agentId":"P-22","wave":2,"step":"WAVE_2","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T15:57:17.837Z","agentId":"P-22","wave":2,"step":"WAVE_2","action":"EXCEPTION","result":"SUCCESS","details":{"error":"CRITICAL SAFETY REFUSAL: Invalid or missing Stripe secret test key. Key must start with \"sk_test_\". Received: \"...\""}}
+{"ts":"2026-08-18T15:57:17.892Z","agentId":"P-22","wave":2,"step":"WAVE_2","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T15:57:17.892Z","agentId":"P-22","wave":2,"step":"WAVE_2","action":"EXCEPTION","result":"SUCCESS","details":{"error":"CRITICAL SAFETY REFUSAL: Invalid or missing Stripe secret test key. Key must start with \"sk_test_\". Received: \"...\""}}
+{"ts":"2026-08-18T15:57:17.892Z","agentId":"P-22","wave":3,"step":"WAVE_3","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T15:57:17.893Z","agentId":"P-22","wave":0,"step":"PROJECTS","action":"CREATION_SUCCESS","result":"SUCCESS","details":{"created":10,"plaid":false}}
+{"ts":"2026-08-18T15:57:17.893Z","agentId":"P-22","wave":3,"step":"WAVE_3","action":"COMPLETE","result":"SUCCESS","details":{"created":10}}
+{"ts":"2026-08-18T15:57:17.927Z","agentId":"P-22","wave":4,"step":"WAVE_4","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T15:57:17.928Z","agentId":"P-22","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-58","to":"P-39","type":"Scaling Discussion"}}
+{"ts":"2026-08-18T15:57:17.928Z","agentId":"P-22","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-70","to":"P-23","type":"P&L Benchmarking"}}
+{"ts":"2026-08-18T15:57:17.928Z","agentId":"P-22","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-23"}}
+{"ts":"2026-08-18T15:57:17.928Z","agentId":"P-22","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-39"}}
+{"ts":"2026-08-18T15:57:17.928Z","agentId":"P-22","wave":4,"step":"WAVE_4","action":"COMPLETE","result":"SUCCESS","details":{"interactions":2,"invites":2}}
+{"ts":"2026-08-18T15:57:17.935Z","agentId":"P-22","wave":3,"step":"WAVE_3","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T15:57:17.935Z","agentId":"P-22","wave":0,"step":"PROJECTS","action":"CREATION_SUCCESS","result":"SUCCESS","details":{"created":10,"plaid":false}}
+{"ts":"2026-08-18T15:57:17.936Z","agentId":"P-22","wave":3,"step":"WAVE_3","action":"COMPLETE","result":"SUCCESS","details":{"created":10}}
+{"ts":"2026-08-18T15:57:17.966Z","agentId":"P-22","wave":4,"step":"WAVE_4","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T15:57:17.967Z","agentId":"P-22","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-58","to":"P-39","type":"Scaling Discussion"}}
+{"ts":"2026-08-18T15:57:17.967Z","agentId":"P-22","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-70","to":"P-23","type":"P&L Benchmarking"}}
+{"ts":"2026-08-18T15:57:17.967Z","agentId":"P-22","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-23"}}
+{"ts":"2026-08-18T15:57:17.967Z","agentId":"P-22","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-39"}}
+{"ts":"2026-08-18T15:57:17.967Z","agentId":"P-22","wave":4,"step":"WAVE_4","action":"COMPLETE","result":"SUCCESS","details":{"interactions":2,"invites":2}}
+{"ts":"2026-08-18T15:57:17.983Z","agentId":"P-22","wave":5,"step":"WAVE_5","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T15:57:17.983Z","agentId":"P-22","wave":5,"step":"WAVE_5","action":"COMPLETE","result":"SUCCESS","details":{"reportPath":"/Users/yvesdarbouze/Documents/PaperWorking/artifacts/persona-swarm/reports/P-22-experience-report.md"}}
+{"ts":"2026-08-18T15:57:18.011Z","agentId":"P-22","wave":5,"step":"WAVE_5","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T15:57:18.012Z","agentId":"P-22","wave":5,"step":"WAVE_5","action":"COMPLETE","result":"SUCCESS","details":{"reportPath":"/Users/yvesdarbouze/Documents/PaperWorking/artifacts/persona-swarm/reports/P-22-experience-report.md"}}
+{"ts":"2026-08-18T16:11:37.835Z","agentId":"P-22","wave":1,"step":"WAVE_1","action":"START","result":"SUCCESS","details":{"email":"agent22.miguel.santos@paperworking-test.dev"}}
+{"ts":"2026-08-18T16:11:37.836Z","agentId":"P-22","wave":0,"step":"SIGNUP","action":"SUCCESS_CREATED","result":"SUCCESS","details":{"uid":"uid_persona_p22","email":"agent22.miguel.santos@paperworking-test.dev","name":"Miguel Santos","entity":"Santos Familia Properties LLC"}}
+{"ts":"2026-08-18T16:11:37.836Z","agentId":"P-22","wave":1,"step":"WAVE_1","action":"COMPLETE","result":"SUCCESS","details":{"uid":"uid_persona_p22"}}
+{"ts":"2026-08-18T16:11:37.877Z","agentId":"P-22","wave":2,"step":"WAVE_2","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T16:11:37.877Z","agentId":"P-22","wave":0,"step":"BILLING","action":"SUBSCRIPTION_SUCCESS","result":"SUCCESS","details":{"plan":"Individual","stripeCustomerId":"cus_test_swarm_p-22","stripeSubscriptionId":"sub_test_swarm_p-22","cardLastFour":"4242","cardBrand":"visa"}}
+{"ts":"2026-08-18T16:11:37.878Z","agentId":"P-22","wave":2,"step":"WAVE_2","action":"COMPLETE","result":"SUCCESS","details":{"plan":"Individual"}}
+{"ts":"2026-08-18T16:11:37.899Z","agentId":"P-22","wave":3,"step":"WAVE_3","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T16:11:37.899Z","agentId":"P-22","wave":0,"step":"PROJECTS","action":"CREATION_SUCCESS","result":"SUCCESS","details":{"created":10,"plaid":false}}
+{"ts":"2026-08-18T16:11:37.899Z","agentId":"P-22","wave":3,"step":"WAVE_3","action":"COMPLETE","result":"SUCCESS","details":{"created":10}}
+{"ts":"2026-08-18T16:11:37.932Z","agentId":"P-22","wave":4,"step":"WAVE_4","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T16:11:37.932Z","agentId":"P-22","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-58","to":"P-39","type":"Scaling Discussion"}}
+{"ts":"2026-08-18T16:11:37.932Z","agentId":"P-22","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-70","to":"P-23","type":"P&L Benchmarking"}}
+{"ts":"2026-08-18T16:11:37.932Z","agentId":"P-22","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-23"}}
+{"ts":"2026-08-18T16:11:37.932Z","agentId":"P-22","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-39"}}
+{"ts":"2026-08-18T16:11:37.932Z","agentId":"P-22","wave":4,"step":"WAVE_4","action":"COMPLETE","result":"SUCCESS","details":{"interactions":2,"invites":2}}
+{"ts":"2026-08-18T16:11:37.969Z","agentId":"P-22","wave":5,"step":"WAVE_5","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T16:11:37.969Z","agentId":"P-22","wave":5,"step":"WAVE_5","action":"COMPLETE","result":"SUCCESS","details":{"reportPath":"/Users/yvesdarbouze/Documents/PaperWorking/artifacts/persona-swarm/reports/P-22-experience-report.md"}}
+{"ts":"2026-08-18T16:11:38.118Z","agentId":"P-22","wave":1,"step":"WAVE_1","action":"START","result":"SUCCESS","details":{"email":"agent22.miguel.santos@paperworking-test.dev"}}
+{"ts":"2026-08-18T16:11:38.118Z","agentId":"P-22","wave":0,"step":"SIGNUP","action":"SUCCESS_CREATED","result":"SUCCESS","details":{"uid":"uid_persona_p22","email":"agent22.miguel.santos@paperworking-test.dev","name":"Miguel Santos","entity":"Santos Familia Properties LLC"}}
+{"ts":"2026-08-18T16:11:38.118Z","agentId":"P-22","wave":1,"step":"WAVE_1","action":"COMPLETE","result":"SUCCESS","details":{"uid":"uid_persona_p22"}}
+{"ts":"2026-08-18T16:11:38.135Z","agentId":"P-22","wave":2,"step":"WAVE_2","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T16:11:38.135Z","agentId":"P-22","wave":0,"step":"BILLING","action":"SUBSCRIPTION_SUCCESS","result":"SUCCESS","details":{"plan":"Individual","stripeCustomerId":"cus_test_swarm_p-22","stripeSubscriptionId":"sub_test_swarm_p-22","cardLastFour":"4242","cardBrand":"visa"}}
+{"ts":"2026-08-18T16:11:38.135Z","agentId":"P-22","wave":2,"step":"WAVE_2","action":"COMPLETE","result":"SUCCESS","details":{"plan":"Individual"}}
+{"ts":"2026-08-18T16:11:38.167Z","agentId":"P-22","wave":3,"step":"WAVE_3","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T16:11:38.168Z","agentId":"P-22","wave":0,"step":"PROJECTS","action":"CREATION_SUCCESS","result":"SUCCESS","details":{"created":10,"plaid":false}}
+{"ts":"2026-08-18T16:11:38.168Z","agentId":"P-22","wave":3,"step":"WAVE_3","action":"COMPLETE","result":"SUCCESS","details":{"created":10}}
+{"ts":"2026-08-18T16:11:38.194Z","agentId":"P-22","wave":4,"step":"WAVE_4","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T16:11:38.194Z","agentId":"P-22","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-58","to":"P-39","type":"Scaling Discussion"}}
+{"ts":"2026-08-18T16:11:38.194Z","agentId":"P-22","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-70","to":"P-23","type":"P&L Benchmarking"}}
+{"ts":"2026-08-18T16:11:38.194Z","agentId":"P-22","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-23"}}
+{"ts":"2026-08-18T16:11:38.194Z","agentId":"P-22","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-39"}}
+{"ts":"2026-08-18T16:11:38.195Z","agentId":"P-22","wave":4,"step":"WAVE_4","action":"COMPLETE","result":"SUCCESS","details":{"interactions":2,"invites":2}}
+{"ts":"2026-08-18T16:11:38.216Z","agentId":"P-22","wave":5,"step":"WAVE_5","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T16:11:38.216Z","agentId":"P-22","wave":5,"step":"WAVE_5","action":"COMPLETE","result":"SUCCESS","details":{"reportPath":"/Users/yvesdarbouze/Documents/PaperWorking/artifacts/persona-swarm/reports/P-22-experience-report.md"}}

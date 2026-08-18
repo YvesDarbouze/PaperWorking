@@ -1081,3 +1081,547 @@
 {"ts":"2026-08-18T09:42:00.125Z","agentId":"P-37","wave":5,"step":"WAVE_5","action":"COMPLETE","result":"SUCCESS","details":{"reportPath":"/Users/yvesdarbouze/Documents/PaperWorking/artifacts/persona-swarm/reports/P-37-experience-report.md"}}
 {"ts":"2026-08-18T09:42:00.140Z","agentId":"P-37","wave":5,"step":"WAVE_5","action":"START","result":"SUCCESS"}
 {"ts":"2026-08-18T09:42:00.141Z","agentId":"P-37","wave":5,"step":"WAVE_5","action":"COMPLETE","result":"SUCCESS","details":{"reportPath":"/Users/yvesdarbouze/Documents/PaperWorking/artifacts/persona-swarm/reports/P-37-experience-report.md"}}
+{"ts":"2026-08-18T10:58:00.021Z","agentId":"P-37","wave":1,"step":"WAVE_1","action":"START","result":"SUCCESS","details":{"email":"agent37.ken.tanaka@paperworking-test.dev"}}
+{"ts":"2026-08-18T10:58:00.021Z","agentId":"P-37","wave":1,"step":"WAVE_1","action":"START","result":"SUCCESS","details":{"email":"agent37.ken.tanaka@paperworking-test.dev"}}
+{"ts":"2026-08-18T10:58:00.022Z","agentId":"P-37","wave":0,"step":"SIGNUP","action":"SUCCESS_CREATED","result":"SUCCESS","details":{"uid":"uid_persona_p37","email":"agent37.ken.tanaka@paperworking-test.dev","name":"Ken Tanaka","entity":"Tanaka Growth Holdings LLC"}}
+{"ts":"2026-08-18T10:58:00.022Z","agentId":"P-37","wave":0,"step":"SIGNUP","action":"SUCCESS_CREATED","result":"SUCCESS","details":{"uid":"uid_persona_p37","email":"agent37.ken.tanaka@paperworking-test.dev","name":"Ken Tanaka","entity":"Tanaka Growth Holdings LLC"}}
+{"ts":"2026-08-18T10:58:00.022Z","agentId":"P-37","wave":1,"step":"WAVE_1","action":"COMPLETE","result":"SUCCESS","details":{"uid":"uid_persona_p37"}}
+{"ts":"2026-08-18T10:58:00.022Z","agentId":"P-37","wave":1,"step":"WAVE_1","action":"COMPLETE","result":"SUCCESS","details":{"uid":"uid_persona_p37"}}
+{"ts":"2026-08-18T10:58:00.072Z","agentId":"P-37","wave":2,"step":"WAVE_2","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T10:58:00.073Z","agentId":"P-37","wave":2,"step":"WAVE_2","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T10:58:00.074Z","agentId":"P-37","wave":0,"step":"BILLING","action":"SUBSCRIPTION_SUCCESS","result":"SUCCESS","details":{"plan":"Individual","stripeCustomerId":"cus_test_swarm_p-37","stripeSubscriptionId":"sub_test_swarm_p-37","cardLastFour":"4242","cardBrand":"visa"}}
+{"ts":"2026-08-18T10:58:00.075Z","agentId":"P-37","wave":2,"step":"WAVE_2","action":"COMPLETE","result":"SUCCESS","details":{"plan":"Individual"}}
+{"ts":"2026-08-18T10:58:00.076Z","agentId":"P-37","wave":0,"step":"BILLING","action":"SUBSCRIPTION_SUCCESS","result":"SUCCESS","details":{"plan":"Individual","stripeCustomerId":"cus_test_swarm_p-37","stripeSubscriptionId":"sub_test_swarm_p-37","cardLastFour":"4242","cardBrand":"visa"}}
+{"ts":"2026-08-18T10:58:00.076Z","agentId":"P-37","wave":2,"step":"WAVE_2","action":"COMPLETE","result":"SUCCESS","details":{"plan":"Individual"}}
+{"ts":"2026-08-18T10:58:00.216Z","agentId":"P-37","wave":3,"step":"WAVE_3","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T10:58:00.219Z","agentId":"P-37","wave":0,"step":"PLAID","action":"SANDBOX_TRANSACTIONS_INGESTED","result":"SUCCESS","details":{"agentId":"P-37","account":"Plaid Checking ***4432","revenueCount":12,"expenseCount":8}}
+{"ts":"2026-08-18T10:58:00.220Z","agentId":"P-37","wave":0,"step":"PROJECTS","action":"CREATION_SUCCESS","result":"SUCCESS","details":{"created":10,"plaid":true}}
+{"ts":"2026-08-18T10:58:00.222Z","agentId":"P-37","wave":3,"step":"WAVE_3","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T10:58:00.221Z","agentId":"P-37","wave":3,"step":"WAVE_3","action":"COMPLETE","result":"SUCCESS","details":{"created":10}}
+{"ts":"2026-08-18T10:58:00.224Z","agentId":"P-37","wave":0,"step":"PLAID","action":"SANDBOX_TRANSACTIONS_INGESTED","result":"SUCCESS","details":{"agentId":"P-37","account":"Plaid Checking ***4432","revenueCount":12,"expenseCount":8}}
+{"ts":"2026-08-18T10:58:00.224Z","agentId":"P-37","wave":0,"step":"PROJECTS","action":"CREATION_SUCCESS","result":"SUCCESS","details":{"created":10,"plaid":true}}
+{"ts":"2026-08-18T10:58:00.225Z","agentId":"P-37","wave":3,"step":"WAVE_3","action":"COMPLETE","result":"SUCCESS","details":{"created":10}}
+{"ts":"2026-08-18T10:58:00.394Z","agentId":"P-37","wave":4,"step":"WAVE_4","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T10:58:00.396Z","agentId":"P-37","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-52","to":"P-40","type":"LP Fund Commitment"}}
+{"ts":"2026-08-18T10:58:00.396Z","agentId":"P-37","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-74","to":"P-38","type":"LP Analytics Thread"}}
+{"ts":"2026-08-18T10:58:00.396Z","agentId":"P-37","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-40"}}
+{"ts":"2026-08-18T10:58:00.399Z","agentId":"P-37","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-38"}}
+{"ts":"2026-08-18T10:58:00.399Z","agentId":"P-37","wave":4,"step":"WAVE_4","action":"COMPLETE","result":"SUCCESS","details":{"interactions":2,"invites":2}}
+{"ts":"2026-08-18T10:58:00.403Z","agentId":"P-37","wave":4,"step":"WAVE_4","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T10:58:00.404Z","agentId":"P-37","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-52","to":"P-40","type":"LP Fund Commitment"}}
+{"ts":"2026-08-18T10:58:00.404Z","agentId":"P-37","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-74","to":"P-38","type":"LP Analytics Thread"}}
+{"ts":"2026-08-18T10:58:00.405Z","agentId":"P-37","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-40"}}
+{"ts":"2026-08-18T10:58:00.407Z","agentId":"P-37","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-38"}}
+{"ts":"2026-08-18T10:58:00.407Z","agentId":"P-37","wave":4,"step":"WAVE_4","action":"COMPLETE","result":"SUCCESS","details":{"interactions":2,"invites":2}}
+{"ts":"2026-08-18T10:58:00.492Z","agentId":"P-37","wave":5,"step":"WAVE_5","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T10:58:00.492Z","agentId":"P-37","wave":5,"step":"WAVE_5","action":"COMPLETE","result":"SUCCESS","details":{"reportPath":"/Users/yvesdarbouze/Documents/PaperWorking/artifacts/persona-swarm/reports/P-37-experience-report.md"}}
+{"ts":"2026-08-18T10:58:00.493Z","agentId":"P-37","wave":5,"step":"WAVE_5","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T10:58:00.493Z","agentId":"P-37","wave":5,"step":"WAVE_5","action":"COMPLETE","result":"SUCCESS","details":{"reportPath":"/Users/yvesdarbouze/Documents/PaperWorking/artifacts/persona-swarm/reports/P-37-experience-report.md"}}
+{"ts":"2026-08-18T10:58:28.478Z","agentId":"P-37","wave":1,"step":"WAVE_1","action":"START","result":"SUCCESS","details":{"email":"agent37.ken.tanaka@paperworking-test.dev"}}
+{"ts":"2026-08-18T10:58:28.480Z","agentId":"P-37","wave":0,"step":"SIGNUP","action":"SUCCESS_CREATED","result":"SUCCESS","details":{"uid":"uid_persona_p37","email":"agent37.ken.tanaka@paperworking-test.dev","name":"Ken Tanaka","entity":"Tanaka Growth Holdings LLC"}}
+{"ts":"2026-08-18T10:58:28.480Z","agentId":"P-37","wave":1,"step":"WAVE_1","action":"COMPLETE","result":"SUCCESS","details":{"uid":"uid_persona_p37"}}
+{"ts":"2026-08-18T10:58:28.534Z","agentId":"P-37","wave":2,"step":"WAVE_2","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T10:58:28.535Z","agentId":"P-37","wave":0,"step":"BILLING","action":"SUBSCRIPTION_SUCCESS","result":"SUCCESS","details":{"plan":"Individual","stripeCustomerId":"cus_test_swarm_p-37","stripeSubscriptionId":"sub_test_swarm_p-37","cardLastFour":"4242","cardBrand":"visa"}}
+{"ts":"2026-08-18T10:58:28.535Z","agentId":"P-37","wave":2,"step":"WAVE_2","action":"COMPLETE","result":"SUCCESS","details":{"plan":"Individual"}}
+{"ts":"2026-08-18T10:58:28.645Z","agentId":"P-37","wave":3,"step":"WAVE_3","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T10:58:28.647Z","agentId":"P-37","wave":0,"step":"PLAID","action":"SANDBOX_TRANSACTIONS_INGESTED","result":"SUCCESS","details":{"agentId":"P-37","account":"Plaid Checking ***4432","revenueCount":12,"expenseCount":8}}
+{"ts":"2026-08-18T10:58:28.647Z","agentId":"P-37","wave":0,"step":"PROJECTS","action":"CREATION_SUCCESS","result":"SUCCESS","details":{"created":10,"plaid":true}}
+{"ts":"2026-08-18T10:58:28.647Z","agentId":"P-37","wave":3,"step":"WAVE_3","action":"COMPLETE","result":"SUCCESS","details":{"created":10}}
+{"ts":"2026-08-18T10:58:28.726Z","agentId":"P-37","wave":4,"step":"WAVE_4","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T10:58:28.726Z","agentId":"P-37","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-52","to":"P-40","type":"LP Fund Commitment"}}
+{"ts":"2026-08-18T10:58:28.726Z","agentId":"P-37","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-74","to":"P-38","type":"LP Analytics Thread"}}
+{"ts":"2026-08-18T10:58:28.726Z","agentId":"P-37","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-40"}}
+{"ts":"2026-08-18T10:58:28.727Z","agentId":"P-37","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-38"}}
+{"ts":"2026-08-18T10:58:28.727Z","agentId":"P-37","wave":4,"step":"WAVE_4","action":"COMPLETE","result":"SUCCESS","details":{"interactions":2,"invites":2}}
+{"ts":"2026-08-18T10:58:28.773Z","agentId":"P-37","wave":5,"step":"WAVE_5","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T10:58:28.773Z","agentId":"P-37","wave":5,"step":"WAVE_5","action":"COMPLETE","result":"SUCCESS","details":{"reportPath":"/Users/yvesdarbouze/Documents/PaperWorking/artifacts/persona-swarm/reports/P-37-experience-report.md"}}
+{"ts":"2026-08-18T10:58:35.221Z","agentId":"P-37","wave":1,"step":"WAVE_1","action":"START","result":"SUCCESS","details":{"email":"agent37.ken.tanaka@paperworking-test.dev"}}
+{"ts":"2026-08-18T10:58:35.222Z","agentId":"P-37","wave":0,"step":"SIGNUP","action":"SUCCESS_CREATED","result":"SUCCESS","details":{"uid":"uid_persona_p37","email":"agent37.ken.tanaka@paperworking-test.dev","name":"Ken Tanaka","entity":"Tanaka Growth Holdings LLC"}}
+{"ts":"2026-08-18T10:58:35.222Z","agentId":"P-37","wave":1,"step":"WAVE_1","action":"COMPLETE","result":"SUCCESS","details":{"uid":"uid_persona_p37"}}
+{"ts":"2026-08-18T10:58:35.347Z","agentId":"P-37","wave":2,"step":"WAVE_2","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T10:58:35.348Z","agentId":"P-37","wave":0,"step":"BILLING","action":"SUBSCRIPTION_SUCCESS","result":"SUCCESS","details":{"plan":"Individual","stripeCustomerId":"cus_test_swarm_p-37","stripeSubscriptionId":"sub_test_swarm_p-37","cardLastFour":"4242","cardBrand":"visa"}}
+{"ts":"2026-08-18T10:58:35.348Z","agentId":"P-37","wave":2,"step":"WAVE_2","action":"COMPLETE","result":"SUCCESS","details":{"plan":"Individual"}}
+{"ts":"2026-08-18T10:58:35.623Z","agentId":"P-37","wave":3,"step":"WAVE_3","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T10:58:35.628Z","agentId":"P-37","wave":0,"step":"PLAID","action":"SANDBOX_TRANSACTIONS_INGESTED","result":"SUCCESS","details":{"agentId":"P-37","account":"Plaid Checking ***4432","revenueCount":12,"expenseCount":8}}
+{"ts":"2026-08-18T10:58:35.628Z","agentId":"P-37","wave":0,"step":"PROJECTS","action":"CREATION_SUCCESS","result":"SUCCESS","details":{"created":10,"plaid":true}}
+{"ts":"2026-08-18T10:58:35.628Z","agentId":"P-37","wave":3,"step":"WAVE_3","action":"COMPLETE","result":"SUCCESS","details":{"created":10}}
+{"ts":"2026-08-18T10:58:35.915Z","agentId":"P-37","wave":4,"step":"WAVE_4","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T10:58:35.916Z","agentId":"P-37","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-52","to":"P-40","type":"LP Fund Commitment"}}
+{"ts":"2026-08-18T10:58:35.916Z","agentId":"P-37","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-74","to":"P-38","type":"LP Analytics Thread"}}
+{"ts":"2026-08-18T10:58:35.917Z","agentId":"P-37","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-40"}}
+{"ts":"2026-08-18T10:58:35.918Z","agentId":"P-37","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-38"}}
+{"ts":"2026-08-18T10:58:35.918Z","agentId":"P-37","wave":4,"step":"WAVE_4","action":"COMPLETE","result":"SUCCESS","details":{"interactions":2,"invites":2}}
+{"ts":"2026-08-18T10:58:36.041Z","agentId":"P-37","wave":5,"step":"WAVE_5","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T10:58:36.041Z","agentId":"P-37","wave":5,"step":"WAVE_5","action":"COMPLETE","result":"SUCCESS","details":{"reportPath":"/Users/yvesdarbouze/Documents/PaperWorking/artifacts/persona-swarm/reports/P-37-experience-report.md"}}
+{"ts":"2026-08-18T10:59:01.728Z","agentId":"P-37","wave":1,"step":"WAVE_1","action":"START","result":"SUCCESS","details":{"email":"agent37.ken.tanaka@paperworking-test.dev"}}
+{"ts":"2026-08-18T10:59:01.728Z","agentId":"P-37","wave":0,"step":"SIGNUP","action":"SUCCESS_CREATED","result":"SUCCESS","details":{"uid":"uid_persona_p37","email":"agent37.ken.tanaka@paperworking-test.dev","name":"Ken Tanaka","entity":"Tanaka Growth Holdings LLC"}}
+{"ts":"2026-08-18T10:59:01.728Z","agentId":"P-37","wave":1,"step":"WAVE_1","action":"COMPLETE","result":"SUCCESS","details":{"uid":"uid_persona_p37"}}
+{"ts":"2026-08-18T10:59:01.759Z","agentId":"P-37","wave":1,"step":"WAVE_1","action":"START","result":"SUCCESS","details":{"email":"agent37.ken.tanaka@paperworking-test.dev"}}
+{"ts":"2026-08-18T10:59:01.760Z","agentId":"P-37","wave":0,"step":"SIGNUP","action":"SUCCESS_CREATED","result":"SUCCESS","details":{"uid":"uid_persona_p37","email":"agent37.ken.tanaka@paperworking-test.dev","name":"Ken Tanaka","entity":"Tanaka Growth Holdings LLC"}}
+{"ts":"2026-08-18T10:59:01.760Z","agentId":"P-37","wave":1,"step":"WAVE_1","action":"COMPLETE","result":"SUCCESS","details":{"uid":"uid_persona_p37"}}
+{"ts":"2026-08-18T10:59:01.780Z","agentId":"P-37","wave":2,"step":"WAVE_2","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T10:59:01.780Z","agentId":"P-37","wave":0,"step":"BILLING","action":"SUBSCRIPTION_SUCCESS","result":"SUCCESS","details":{"plan":"Individual","stripeCustomerId":"cus_test_swarm_p-37","stripeSubscriptionId":"sub_test_swarm_p-37","cardLastFour":"4242","cardBrand":"visa"}}
+{"ts":"2026-08-18T10:59:01.781Z","agentId":"P-37","wave":2,"step":"WAVE_2","action":"COMPLETE","result":"SUCCESS","details":{"plan":"Individual"}}
+{"ts":"2026-08-18T10:59:01.817Z","agentId":"P-37","wave":2,"step":"WAVE_2","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T10:59:01.818Z","agentId":"P-37","wave":0,"step":"BILLING","action":"SUBSCRIPTION_SUCCESS","result":"SUCCESS","details":{"plan":"Individual","stripeCustomerId":"cus_test_swarm_p-37","stripeSubscriptionId":"sub_test_swarm_p-37","cardLastFour":"4242","cardBrand":"visa"}}
+{"ts":"2026-08-18T10:59:01.818Z","agentId":"P-37","wave":2,"step":"WAVE_2","action":"COMPLETE","result":"SUCCESS","details":{"plan":"Individual"}}
+{"ts":"2026-08-18T10:59:01.930Z","agentId":"P-37","wave":3,"step":"WAVE_3","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T10:59:01.933Z","agentId":"P-37","wave":0,"step":"PLAID","action":"SANDBOX_TRANSACTIONS_INGESTED","result":"SUCCESS","details":{"agentId":"P-37","account":"Plaid Checking ***4432","revenueCount":12,"expenseCount":8}}
+{"ts":"2026-08-18T10:59:01.934Z","agentId":"P-37","wave":0,"step":"PROJECTS","action":"CREATION_SUCCESS","result":"SUCCESS","details":{"created":10,"plaid":true}}
+{"ts":"2026-08-18T10:59:01.934Z","agentId":"P-37","wave":3,"step":"WAVE_3","action":"COMPLETE","result":"SUCCESS","details":{"created":10}}
+{"ts":"2026-08-18T10:59:01.969Z","agentId":"P-37","wave":3,"step":"WAVE_3","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T10:59:01.975Z","agentId":"P-37","wave":0,"step":"PLAID","action":"SANDBOX_TRANSACTIONS_INGESTED","result":"SUCCESS","details":{"agentId":"P-37","account":"Plaid Checking ***4432","revenueCount":12,"expenseCount":8}}
+{"ts":"2026-08-18T10:59:01.975Z","agentId":"P-37","wave":0,"step":"PROJECTS","action":"CREATION_SUCCESS","result":"SUCCESS","details":{"created":10,"plaid":true}}
+{"ts":"2026-08-18T10:59:01.975Z","agentId":"P-37","wave":3,"step":"WAVE_3","action":"COMPLETE","result":"SUCCESS","details":{"created":10}}
+{"ts":"2026-08-18T10:59:02.030Z","agentId":"P-37","wave":4,"step":"WAVE_4","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T10:59:02.031Z","agentId":"P-37","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-52","to":"P-40","type":"LP Fund Commitment"}}
+{"ts":"2026-08-18T10:59:02.031Z","agentId":"P-37","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-74","to":"P-38","type":"LP Analytics Thread"}}
+{"ts":"2026-08-18T10:59:02.031Z","agentId":"P-37","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-40"}}
+{"ts":"2026-08-18T10:59:02.031Z","agentId":"P-37","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-38"}}
+{"ts":"2026-08-18T10:59:02.031Z","agentId":"P-37","wave":4,"step":"WAVE_4","action":"COMPLETE","result":"SUCCESS","details":{"interactions":2,"invites":2}}
+{"ts":"2026-08-18T10:59:02.069Z","agentId":"P-37","wave":4,"step":"WAVE_4","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T10:59:02.069Z","agentId":"P-37","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-52","to":"P-40","type":"LP Fund Commitment"}}
+{"ts":"2026-08-18T10:59:02.070Z","agentId":"P-37","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-74","to":"P-38","type":"LP Analytics Thread"}}
+{"ts":"2026-08-18T10:59:02.070Z","agentId":"P-37","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-40"}}
+{"ts":"2026-08-18T10:59:02.070Z","agentId":"P-37","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-38"}}
+{"ts":"2026-08-18T10:59:02.071Z","agentId":"P-37","wave":4,"step":"WAVE_4","action":"COMPLETE","result":"SUCCESS","details":{"interactions":2,"invites":2}}
+{"ts":"2026-08-18T10:59:02.115Z","agentId":"P-37","wave":5,"step":"WAVE_5","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T10:59:02.115Z","agentId":"P-37","wave":5,"step":"WAVE_5","action":"COMPLETE","result":"SUCCESS","details":{"reportPath":"/Users/yvesdarbouze/Documents/PaperWorking/artifacts/persona-swarm/reports/P-37-experience-report.md"}}
+{"ts":"2026-08-18T10:59:02.157Z","agentId":"P-37","wave":5,"step":"WAVE_5","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T10:59:02.157Z","agentId":"P-37","wave":5,"step":"WAVE_5","action":"COMPLETE","result":"SUCCESS","details":{"reportPath":"/Users/yvesdarbouze/Documents/PaperWorking/artifacts/persona-swarm/reports/P-37-experience-report.md"}}
+{"ts":"2026-08-18T10:59:27.020Z","agentId":"P-37","wave":1,"step":"WAVE_1","action":"START","result":"SUCCESS","details":{"email":"agent37.ken.tanaka@paperworking-test.dev"}}
+{"ts":"2026-08-18T10:59:27.020Z","agentId":"P-37","wave":0,"step":"SIGNUP","action":"SUCCESS_CREATED","result":"SUCCESS","details":{"uid":"uid_persona_p37","email":"agent37.ken.tanaka@paperworking-test.dev","name":"Ken Tanaka","entity":"Tanaka Growth Holdings LLC"}}
+{"ts":"2026-08-18T10:59:27.021Z","agentId":"P-37","wave":1,"step":"WAVE_1","action":"COMPLETE","result":"SUCCESS","details":{"uid":"uid_persona_p37"}}
+{"ts":"2026-08-18T10:59:27.071Z","agentId":"P-37","wave":2,"step":"WAVE_2","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T10:59:27.071Z","agentId":"P-37","wave":0,"step":"BILLING","action":"SUBSCRIPTION_SUCCESS","result":"SUCCESS","details":{"plan":"Individual","stripeCustomerId":"cus_test_swarm_p-37","stripeSubscriptionId":"sub_test_swarm_p-37","cardLastFour":"4242","cardBrand":"visa"}}
+{"ts":"2026-08-18T10:59:27.071Z","agentId":"P-37","wave":2,"step":"WAVE_2","action":"COMPLETE","result":"SUCCESS","details":{"plan":"Individual"}}
+{"ts":"2026-08-18T10:59:27.188Z","agentId":"P-37","wave":3,"step":"WAVE_3","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T10:59:27.190Z","agentId":"P-37","wave":0,"step":"PLAID","action":"SANDBOX_TRANSACTIONS_INGESTED","result":"SUCCESS","details":{"agentId":"P-37","account":"Plaid Checking ***4432","revenueCount":12,"expenseCount":8}}
+{"ts":"2026-08-18T10:59:27.190Z","agentId":"P-37","wave":0,"step":"PROJECTS","action":"CREATION_SUCCESS","result":"SUCCESS","details":{"created":10,"plaid":true}}
+{"ts":"2026-08-18T10:59:27.190Z","agentId":"P-37","wave":3,"step":"WAVE_3","action":"COMPLETE","result":"SUCCESS","details":{"created":10}}
+{"ts":"2026-08-18T10:59:27.270Z","agentId":"P-37","wave":4,"step":"WAVE_4","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T10:59:27.270Z","agentId":"P-37","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-52","to":"P-40","type":"LP Fund Commitment"}}
+{"ts":"2026-08-18T10:59:27.270Z","agentId":"P-37","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-74","to":"P-38","type":"LP Analytics Thread"}}
+{"ts":"2026-08-18T10:59:27.271Z","agentId":"P-37","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-40"}}
+{"ts":"2026-08-18T10:59:27.271Z","agentId":"P-37","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-38"}}
+{"ts":"2026-08-18T10:59:27.271Z","agentId":"P-37","wave":4,"step":"WAVE_4","action":"COMPLETE","result":"SUCCESS","details":{"interactions":2,"invites":2}}
+{"ts":"2026-08-18T10:59:27.312Z","agentId":"P-37","wave":5,"step":"WAVE_5","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T10:59:27.312Z","agentId":"P-37","wave":5,"step":"WAVE_5","action":"COMPLETE","result":"SUCCESS","details":{"reportPath":"/Users/yvesdarbouze/Documents/PaperWorking/artifacts/persona-swarm/reports/P-37-experience-report.md"}}
+{"ts":"2026-08-18T10:59:30.160Z","agentId":"P-37","wave":1,"step":"WAVE_1","action":"START","result":"SUCCESS","details":{"email":"agent37.ken.tanaka@paperworking-test.dev"}}
+{"ts":"2026-08-18T10:59:30.160Z","agentId":"P-37","wave":0,"step":"SIGNUP","action":"SUCCESS_CREATED","result":"SUCCESS","details":{"uid":"uid_persona_p37","email":"agent37.ken.tanaka@paperworking-test.dev","name":"Ken Tanaka","entity":"Tanaka Growth Holdings LLC"}}
+{"ts":"2026-08-18T10:59:30.160Z","agentId":"P-37","wave":1,"step":"WAVE_1","action":"COMPLETE","result":"SUCCESS","details":{"uid":"uid_persona_p37"}}
+{"ts":"2026-08-18T10:59:30.213Z","agentId":"P-37","wave":2,"step":"WAVE_2","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T10:59:30.213Z","agentId":"P-37","wave":0,"step":"BILLING","action":"SUBSCRIPTION_SUCCESS","result":"SUCCESS","details":{"plan":"Individual","stripeCustomerId":"cus_test_swarm_p-37","stripeSubscriptionId":"sub_test_swarm_p-37","cardLastFour":"4242","cardBrand":"visa"}}
+{"ts":"2026-08-18T10:59:30.214Z","agentId":"P-37","wave":2,"step":"WAVE_2","action":"COMPLETE","result":"SUCCESS","details":{"plan":"Individual"}}
+{"ts":"2026-08-18T10:59:30.362Z","agentId":"P-37","wave":3,"step":"WAVE_3","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T10:59:30.365Z","agentId":"P-37","wave":0,"step":"PLAID","action":"SANDBOX_TRANSACTIONS_INGESTED","result":"SUCCESS","details":{"agentId":"P-37","account":"Plaid Checking ***4432","revenueCount":12,"expenseCount":8}}
+{"ts":"2026-08-18T10:59:30.365Z","agentId":"P-37","wave":0,"step":"PROJECTS","action":"CREATION_SUCCESS","result":"SUCCESS","details":{"created":10,"plaid":true}}
+{"ts":"2026-08-18T10:59:30.366Z","agentId":"P-37","wave":3,"step":"WAVE_3","action":"COMPLETE","result":"SUCCESS","details":{"created":10}}
+{"ts":"2026-08-18T10:59:30.490Z","agentId":"P-37","wave":4,"step":"WAVE_4","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T10:59:30.491Z","agentId":"P-37","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-52","to":"P-40","type":"LP Fund Commitment"}}
+{"ts":"2026-08-18T10:59:30.492Z","agentId":"P-37","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-74","to":"P-38","type":"LP Analytics Thread"}}
+{"ts":"2026-08-18T10:59:30.492Z","agentId":"P-37","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-40"}}
+{"ts":"2026-08-18T10:59:30.493Z","agentId":"P-37","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-38"}}
+{"ts":"2026-08-18T10:59:30.493Z","agentId":"P-37","wave":4,"step":"WAVE_4","action":"COMPLETE","result":"SUCCESS","details":{"interactions":2,"invites":2}}
+{"ts":"2026-08-18T10:59:30.588Z","agentId":"P-37","wave":5,"step":"WAVE_5","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T10:59:30.588Z","agentId":"P-37","wave":5,"step":"WAVE_5","action":"COMPLETE","result":"SUCCESS","details":{"reportPath":"/Users/yvesdarbouze/Documents/PaperWorking/artifacts/persona-swarm/reports/P-37-experience-report.md"}}
+{"ts":"2026-08-18T11:00:11.754Z","agentId":"P-37","wave":1,"step":"WAVE_1","action":"START","result":"SUCCESS","details":{"email":"agent37.ken.tanaka@paperworking-test.dev"}}
+{"ts":"2026-08-18T11:00:11.755Z","agentId":"P-37","wave":0,"step":"SIGNUP","action":"SUCCESS_CREATED","result":"SUCCESS","details":{"uid":"uid_persona_p37","email":"agent37.ken.tanaka@paperworking-test.dev","name":"Ken Tanaka","entity":"Tanaka Growth Holdings LLC"}}
+{"ts":"2026-08-18T11:00:11.755Z","agentId":"P-37","wave":1,"step":"WAVE_1","action":"COMPLETE","result":"SUCCESS","details":{"uid":"uid_persona_p37"}}
+{"ts":"2026-08-18T11:00:11.756Z","agentId":"P-37","wave":1,"step":"WAVE_1","action":"START","result":"SUCCESS","details":{"email":"agent37.ken.tanaka@paperworking-test.dev"}}
+{"ts":"2026-08-18T11:00:11.757Z","agentId":"P-37","wave":0,"step":"SIGNUP","action":"SUCCESS_CREATED","result":"SUCCESS","details":{"uid":"uid_persona_p37","email":"agent37.ken.tanaka@paperworking-test.dev","name":"Ken Tanaka","entity":"Tanaka Growth Holdings LLC"}}
+{"ts":"2026-08-18T11:00:11.757Z","agentId":"P-37","wave":1,"step":"WAVE_1","action":"COMPLETE","result":"SUCCESS","details":{"uid":"uid_persona_p37"}}
+{"ts":"2026-08-18T11:00:11.802Z","agentId":"P-37","wave":2,"step":"WAVE_2","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T11:00:11.802Z","agentId":"P-37","wave":0,"step":"BILLING","action":"SUBSCRIPTION_SUCCESS","result":"SUCCESS","details":{"plan":"Individual","stripeCustomerId":"cus_test_swarm_p-37","stripeSubscriptionId":"sub_test_swarm_p-37","cardLastFour":"4242","cardBrand":"visa"}}
+{"ts":"2026-08-18T11:00:11.802Z","agentId":"P-37","wave":2,"step":"WAVE_2","action":"COMPLETE","result":"SUCCESS","details":{"plan":"Individual"}}
+{"ts":"2026-08-18T11:00:11.804Z","agentId":"P-37","wave":2,"step":"WAVE_2","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T11:00:11.804Z","agentId":"P-37","wave":0,"step":"BILLING","action":"SUBSCRIPTION_SUCCESS","result":"SUCCESS","details":{"plan":"Individual","stripeCustomerId":"cus_test_swarm_p-37","stripeSubscriptionId":"sub_test_swarm_p-37","cardLastFour":"4242","cardBrand":"visa"}}
+{"ts":"2026-08-18T11:00:11.804Z","agentId":"P-37","wave":2,"step":"WAVE_2","action":"COMPLETE","result":"SUCCESS","details":{"plan":"Individual"}}
+{"ts":"2026-08-18T11:00:11.923Z","agentId":"P-37","wave":3,"step":"WAVE_3","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T11:00:11.929Z","agentId":"P-37","wave":0,"step":"PLAID","action":"SANDBOX_TRANSACTIONS_INGESTED","result":"SUCCESS","details":{"agentId":"P-37","account":"Plaid Checking ***4432","revenueCount":12,"expenseCount":8}}
+{"ts":"2026-08-18T11:00:11.929Z","agentId":"P-37","wave":0,"step":"PROJECTS","action":"CREATION_SUCCESS","result":"SUCCESS","details":{"created":10,"plaid":true}}
+{"ts":"2026-08-18T11:00:11.929Z","agentId":"P-37","wave":3,"step":"WAVE_3","action":"COMPLETE","result":"SUCCESS","details":{"created":10}}
+{"ts":"2026-08-18T11:00:11.939Z","agentId":"P-37","wave":3,"step":"WAVE_3","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T11:00:11.941Z","agentId":"P-37","wave":0,"step":"PLAID","action":"SANDBOX_TRANSACTIONS_INGESTED","result":"SUCCESS","details":{"agentId":"P-37","account":"Plaid Checking ***4432","revenueCount":12,"expenseCount":8}}
+{"ts":"2026-08-18T11:00:11.941Z","agentId":"P-37","wave":0,"step":"PROJECTS","action":"CREATION_SUCCESS","result":"SUCCESS","details":{"created":10,"plaid":true}}
+{"ts":"2026-08-18T11:00:11.942Z","agentId":"P-37","wave":3,"step":"WAVE_3","action":"COMPLETE","result":"SUCCESS","details":{"created":10}}
+{"ts":"2026-08-18T11:00:12.008Z","agentId":"P-37","wave":4,"step":"WAVE_4","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T11:00:12.008Z","agentId":"P-37","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-52","to":"P-40","type":"LP Fund Commitment"}}
+{"ts":"2026-08-18T11:00:12.009Z","agentId":"P-37","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-74","to":"P-38","type":"LP Analytics Thread"}}
+{"ts":"2026-08-18T11:00:12.009Z","agentId":"P-37","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-40"}}
+{"ts":"2026-08-18T11:00:12.009Z","agentId":"P-37","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-38"}}
+{"ts":"2026-08-18T11:00:12.010Z","agentId":"P-37","wave":4,"step":"WAVE_4","action":"COMPLETE","result":"SUCCESS","details":{"interactions":2,"invites":2}}
+{"ts":"2026-08-18T11:00:12.027Z","agentId":"P-37","wave":4,"step":"WAVE_4","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T11:00:12.028Z","agentId":"P-37","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-52","to":"P-40","type":"LP Fund Commitment"}}
+{"ts":"2026-08-18T11:00:12.029Z","agentId":"P-37","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-74","to":"P-38","type":"LP Analytics Thread"}}
+{"ts":"2026-08-18T11:00:12.030Z","agentId":"P-37","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-40"}}
+{"ts":"2026-08-18T11:00:12.031Z","agentId":"P-37","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-38"}}
+{"ts":"2026-08-18T11:00:12.031Z","agentId":"P-37","wave":4,"step":"WAVE_4","action":"COMPLETE","result":"SUCCESS","details":{"interactions":2,"invites":2}}
+{"ts":"2026-08-18T11:00:12.081Z","agentId":"P-37","wave":5,"step":"WAVE_5","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T11:00:12.081Z","agentId":"P-37","wave":5,"step":"WAVE_5","action":"COMPLETE","result":"SUCCESS","details":{"reportPath":"/Users/yvesdarbouze/Documents/PaperWorking/artifacts/persona-swarm/reports/P-37-experience-report.md"}}
+{"ts":"2026-08-18T11:00:12.096Z","agentId":"P-37","wave":5,"step":"WAVE_5","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T11:00:12.096Z","agentId":"P-37","wave":5,"step":"WAVE_5","action":"COMPLETE","result":"SUCCESS","details":{"reportPath":"/Users/yvesdarbouze/Documents/PaperWorking/artifacts/persona-swarm/reports/P-37-experience-report.md"}}
+{"ts":"2026-08-18T11:12:29.754Z","agentId":"P-37","wave":1,"step":"WAVE_1","action":"START","result":"SUCCESS","details":{"email":"agent37.ken.tanaka@paperworking-test.dev"}}
+{"ts":"2026-08-18T11:12:29.755Z","agentId":"P-37","wave":0,"step":"SIGNUP","action":"SUCCESS_CREATED","result":"SUCCESS","details":{"uid":"uid_persona_p37","email":"agent37.ken.tanaka@paperworking-test.dev","name":"Ken Tanaka","entity":"Tanaka Growth Holdings LLC"}}
+{"ts":"2026-08-18T11:12:29.755Z","agentId":"P-37","wave":1,"step":"WAVE_1","action":"COMPLETE","result":"SUCCESS","details":{"uid":"uid_persona_p37"}}
+{"ts":"2026-08-18T11:12:29.797Z","agentId":"P-37","wave":2,"step":"WAVE_2","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T11:12:29.798Z","agentId":"P-37","wave":0,"step":"BILLING","action":"SUBSCRIPTION_SUCCESS","result":"SUCCESS","details":{"plan":"Individual","stripeCustomerId":"cus_test_swarm_p-37","stripeSubscriptionId":"sub_test_swarm_p-37","cardLastFour":"4242","cardBrand":"visa"}}
+{"ts":"2026-08-18T11:12:29.798Z","agentId":"P-37","wave":2,"step":"WAVE_2","action":"COMPLETE","result":"SUCCESS","details":{"plan":"Individual"}}
+{"ts":"2026-08-18T11:12:29.947Z","agentId":"P-37","wave":3,"step":"WAVE_3","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T11:12:29.949Z","agentId":"P-37","wave":0,"step":"PLAID","action":"SANDBOX_TRANSACTIONS_INGESTED","result":"SUCCESS","details":{"agentId":"P-37","account":"Plaid Checking ***4432","revenueCount":12,"expenseCount":8}}
+{"ts":"2026-08-18T11:12:29.949Z","agentId":"P-37","wave":0,"step":"PROJECTS","action":"CREATION_SUCCESS","result":"SUCCESS","details":{"created":10,"plaid":true}}
+{"ts":"2026-08-18T11:12:29.949Z","agentId":"P-37","wave":3,"step":"WAVE_3","action":"COMPLETE","result":"SUCCESS","details":{"created":10}}
+{"ts":"2026-08-18T11:12:30.040Z","agentId":"P-37","wave":4,"step":"WAVE_4","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T11:12:30.041Z","agentId":"P-37","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-52","to":"P-40","type":"LP Fund Commitment"}}
+{"ts":"2026-08-18T11:12:30.041Z","agentId":"P-37","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-74","to":"P-38","type":"LP Analytics Thread"}}
+{"ts":"2026-08-18T11:12:30.041Z","agentId":"P-37","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-40"}}
+{"ts":"2026-08-18T11:12:30.042Z","agentId":"P-37","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-38"}}
+{"ts":"2026-08-18T11:12:30.042Z","agentId":"P-37","wave":4,"step":"WAVE_4","action":"COMPLETE","result":"SUCCESS","details":{"interactions":2,"invites":2}}
+{"ts":"2026-08-18T11:12:30.107Z","agentId":"P-37","wave":5,"step":"WAVE_5","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T11:12:30.107Z","agentId":"P-37","wave":5,"step":"WAVE_5","action":"COMPLETE","result":"SUCCESS","details":{"reportPath":"/Users/yvesdarbouze/Documents/PaperWorking/artifacts/persona-swarm/reports/P-37-experience-report.md"}}
+{"ts":"2026-08-18T11:12:32.947Z","agentId":"P-37","wave":1,"step":"WAVE_1","action":"START","result":"SUCCESS","details":{"email":"agent37.ken.tanaka@paperworking-test.dev"}}
+{"ts":"2026-08-18T11:12:32.949Z","agentId":"P-37","wave":0,"step":"SIGNUP","action":"SUCCESS_CREATED","result":"SUCCESS","details":{"uid":"uid_persona_p37","email":"agent37.ken.tanaka@paperworking-test.dev","name":"Ken Tanaka","entity":"Tanaka Growth Holdings LLC"}}
+{"ts":"2026-08-18T11:12:32.949Z","agentId":"P-37","wave":1,"step":"WAVE_1","action":"COMPLETE","result":"SUCCESS","details":{"uid":"uid_persona_p37"}}
+{"ts":"2026-08-18T11:12:33.042Z","agentId":"P-37","wave":2,"step":"WAVE_2","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T11:12:33.043Z","agentId":"P-37","wave":0,"step":"BILLING","action":"SUBSCRIPTION_SUCCESS","result":"SUCCESS","details":{"plan":"Individual","stripeCustomerId":"cus_test_swarm_p-37","stripeSubscriptionId":"sub_test_swarm_p-37","cardLastFour":"4242","cardBrand":"visa"}}
+{"ts":"2026-08-18T11:12:33.043Z","agentId":"P-37","wave":2,"step":"WAVE_2","action":"COMPLETE","result":"SUCCESS","details":{"plan":"Individual"}}
+{"ts":"2026-08-18T11:12:33.271Z","agentId":"P-37","wave":3,"step":"WAVE_3","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T11:12:33.275Z","agentId":"P-37","wave":0,"step":"PLAID","action":"SANDBOX_TRANSACTIONS_INGESTED","result":"SUCCESS","details":{"agentId":"P-37","account":"Plaid Checking ***4432","revenueCount":12,"expenseCount":8}}
+{"ts":"2026-08-18T11:12:33.275Z","agentId":"P-37","wave":0,"step":"PROJECTS","action":"CREATION_SUCCESS","result":"SUCCESS","details":{"created":10,"plaid":true}}
+{"ts":"2026-08-18T11:12:33.275Z","agentId":"P-37","wave":3,"step":"WAVE_3","action":"COMPLETE","result":"SUCCESS","details":{"created":10}}
+{"ts":"2026-08-18T11:12:33.492Z","agentId":"P-37","wave":4,"step":"WAVE_4","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T11:12:33.493Z","agentId":"P-37","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-52","to":"P-40","type":"LP Fund Commitment"}}
+{"ts":"2026-08-18T11:12:33.498Z","agentId":"P-37","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-74","to":"P-38","type":"LP Analytics Thread"}}
+{"ts":"2026-08-18T11:12:33.501Z","agentId":"P-37","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-40"}}
+{"ts":"2026-08-18T11:12:33.501Z","agentId":"P-37","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-38"}}
+{"ts":"2026-08-18T11:12:33.501Z","agentId":"P-37","wave":4,"step":"WAVE_4","action":"COMPLETE","result":"SUCCESS","details":{"interactions":2,"invites":2}}
+{"ts":"2026-08-18T11:12:33.588Z","agentId":"P-37","wave":5,"step":"WAVE_5","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T11:12:33.588Z","agentId":"P-37","wave":5,"step":"WAVE_5","action":"COMPLETE","result":"SUCCESS","details":{"reportPath":"/Users/yvesdarbouze/Documents/PaperWorking/artifacts/persona-swarm/reports/P-37-experience-report.md"}}
+{"ts":"2026-08-18T11:19:05.517Z","agentId":"P-37","wave":1,"step":"WAVE_1","action":"START","result":"SUCCESS","details":{"email":"agent37.ken.tanaka@paperworking-test.dev"}}
+{"ts":"2026-08-18T11:19:05.517Z","agentId":"P-37","wave":1,"step":"WAVE_1","action":"START","result":"SUCCESS","details":{"email":"agent37.ken.tanaka@paperworking-test.dev"}}
+{"ts":"2026-08-18T11:19:05.518Z","agentId":"P-37","wave":0,"step":"SIGNUP","action":"SUCCESS_CREATED","result":"SUCCESS","details":{"uid":"uid_persona_p37","email":"agent37.ken.tanaka@paperworking-test.dev","name":"Ken Tanaka","entity":"Tanaka Growth Holdings LLC"}}
+{"ts":"2026-08-18T11:19:05.518Z","agentId":"P-37","wave":1,"step":"WAVE_1","action":"COMPLETE","result":"SUCCESS","details":{"uid":"uid_persona_p37"}}
+{"ts":"2026-08-18T11:19:05.518Z","agentId":"P-37","wave":0,"step":"SIGNUP","action":"SUCCESS_CREATED","result":"SUCCESS","details":{"uid":"uid_persona_p37","email":"agent37.ken.tanaka@paperworking-test.dev","name":"Ken Tanaka","entity":"Tanaka Growth Holdings LLC"}}
+{"ts":"2026-08-18T11:19:05.518Z","agentId":"P-37","wave":1,"step":"WAVE_1","action":"COMPLETE","result":"SUCCESS","details":{"uid":"uid_persona_p37"}}
+{"ts":"2026-08-18T11:19:05.566Z","agentId":"P-37","wave":2,"step":"WAVE_2","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T11:19:05.566Z","agentId":"P-37","wave":0,"step":"BILLING","action":"SUBSCRIPTION_SUCCESS","result":"SUCCESS","details":{"plan":"Individual","stripeCustomerId":"cus_test_swarm_p-37","stripeSubscriptionId":"sub_test_swarm_p-37","cardLastFour":"4242","cardBrand":"visa"}}
+{"ts":"2026-08-18T11:19:05.566Z","agentId":"P-37","wave":2,"step":"WAVE_2","action":"COMPLETE","result":"SUCCESS","details":{"plan":"Individual"}}
+{"ts":"2026-08-18T11:19:05.569Z","agentId":"P-37","wave":2,"step":"WAVE_2","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T11:19:05.570Z","agentId":"P-37","wave":0,"step":"BILLING","action":"SUBSCRIPTION_SUCCESS","result":"SUCCESS","details":{"plan":"Individual","stripeCustomerId":"cus_test_swarm_p-37","stripeSubscriptionId":"sub_test_swarm_p-37","cardLastFour":"4242","cardBrand":"visa"}}
+{"ts":"2026-08-18T11:19:05.570Z","agentId":"P-37","wave":2,"step":"WAVE_2","action":"COMPLETE","result":"SUCCESS","details":{"plan":"Individual"}}
+{"ts":"2026-08-18T11:19:05.749Z","agentId":"P-37","wave":3,"step":"WAVE_3","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T11:19:05.754Z","agentId":"P-37","wave":0,"step":"PLAID","action":"SANDBOX_TRANSACTIONS_INGESTED","result":"SUCCESS","details":{"agentId":"P-37","account":"Plaid Checking ***4432","revenueCount":12,"expenseCount":8}}
+{"ts":"2026-08-18T11:19:05.754Z","agentId":"P-37","wave":0,"step":"PROJECTS","action":"CREATION_SUCCESS","result":"SUCCESS","details":{"created":10,"plaid":true}}
+{"ts":"2026-08-18T11:19:05.754Z","agentId":"P-37","wave":3,"step":"WAVE_3","action":"COMPLETE","result":"SUCCESS","details":{"created":10}}
+{"ts":"2026-08-18T11:19:05.756Z","agentId":"P-37","wave":3,"step":"WAVE_3","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T11:19:05.759Z","agentId":"P-37","wave":0,"step":"PLAID","action":"SANDBOX_TRANSACTIONS_INGESTED","result":"SUCCESS","details":{"agentId":"P-37","account":"Plaid Checking ***4432","revenueCount":12,"expenseCount":8}}
+{"ts":"2026-08-18T11:19:05.759Z","agentId":"P-37","wave":0,"step":"PROJECTS","action":"CREATION_SUCCESS","result":"SUCCESS","details":{"created":10,"plaid":true}}
+{"ts":"2026-08-18T11:19:05.760Z","agentId":"P-37","wave":3,"step":"WAVE_3","action":"COMPLETE","result":"SUCCESS","details":{"created":10}}
+{"ts":"2026-08-18T11:19:05.891Z","agentId":"P-37","wave":4,"step":"WAVE_4","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T11:19:05.892Z","agentId":"P-37","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-52","to":"P-40","type":"LP Fund Commitment"}}
+{"ts":"2026-08-18T11:19:05.893Z","agentId":"P-37","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-74","to":"P-38","type":"LP Analytics Thread"}}
+{"ts":"2026-08-18T11:19:05.893Z","agentId":"P-37","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-40"}}
+{"ts":"2026-08-18T11:19:05.893Z","agentId":"P-37","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-38"}}
+{"ts":"2026-08-18T11:19:05.893Z","agentId":"P-37","wave":4,"step":"WAVE_4","action":"COMPLETE","result":"SUCCESS","details":{"interactions":2,"invites":2}}
+{"ts":"2026-08-18T11:19:05.902Z","agentId":"P-37","wave":4,"step":"WAVE_4","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T11:19:05.903Z","agentId":"P-37","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-52","to":"P-40","type":"LP Fund Commitment"}}
+{"ts":"2026-08-18T11:19:05.903Z","agentId":"P-37","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-74","to":"P-38","type":"LP Analytics Thread"}}
+{"ts":"2026-08-18T11:19:05.903Z","agentId":"P-37","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-40"}}
+{"ts":"2026-08-18T11:19:05.904Z","agentId":"P-37","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-38"}}
+{"ts":"2026-08-18T11:19:05.904Z","agentId":"P-37","wave":4,"step":"WAVE_4","action":"COMPLETE","result":"SUCCESS","details":{"interactions":2,"invites":2}}
+{"ts":"2026-08-18T11:19:05.964Z","agentId":"P-37","wave":5,"step":"WAVE_5","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T11:19:05.964Z","agentId":"P-37","wave":5,"step":"WAVE_5","action":"COMPLETE","result":"SUCCESS","details":{"reportPath":"/Users/yvesdarbouze/Documents/PaperWorking/artifacts/persona-swarm/reports/P-37-experience-report.md"}}
+{"ts":"2026-08-18T11:19:05.973Z","agentId":"P-37","wave":5,"step":"WAVE_5","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T11:19:05.973Z","agentId":"P-37","wave":5,"step":"WAVE_5","action":"COMPLETE","result":"SUCCESS","details":{"reportPath":"/Users/yvesdarbouze/Documents/PaperWorking/artifacts/persona-swarm/reports/P-37-experience-report.md"}}
+{"ts":"2026-08-18T14:00:23.614Z","agentId":"P-37","wave":1,"step":"WAVE_1","action":"START","result":"SUCCESS","details":{"email":"agent37.ken.tanaka@paperworking-test.dev"}}
+{"ts":"2026-08-18T14:00:23.615Z","agentId":"P-37","wave":0,"step":"SIGNUP","action":"SUCCESS_CREATED","result":"SUCCESS","details":{"uid":"uid_persona_p37","email":"agent37.ken.tanaka@paperworking-test.dev","name":"Ken Tanaka","entity":"Tanaka Growth Holdings LLC"}}
+{"ts":"2026-08-18T14:00:23.615Z","agentId":"P-37","wave":1,"step":"WAVE_1","action":"COMPLETE","result":"SUCCESS","details":{"uid":"uid_persona_p37"}}
+{"ts":"2026-08-18T14:00:23.622Z","agentId":"P-37","wave":1,"step":"WAVE_1","action":"START","result":"SUCCESS","details":{"email":"agent37.ken.tanaka@paperworking-test.dev"}}
+{"ts":"2026-08-18T14:00:23.623Z","agentId":"P-37","wave":0,"step":"SIGNUP","action":"SUCCESS_CREATED","result":"SUCCESS","details":{"uid":"uid_persona_p37","email":"agent37.ken.tanaka@paperworking-test.dev","name":"Ken Tanaka","entity":"Tanaka Growth Holdings LLC"}}
+{"ts":"2026-08-18T14:00:23.623Z","agentId":"P-37","wave":1,"step":"WAVE_1","action":"COMPLETE","result":"SUCCESS","details":{"uid":"uid_persona_p37"}}
+{"ts":"2026-08-18T14:00:23.666Z","agentId":"P-37","wave":2,"step":"WAVE_2","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T14:00:23.667Z","agentId":"P-37","wave":0,"step":"BILLING","action":"SUBSCRIPTION_SUCCESS","result":"SUCCESS","details":{"plan":"Individual","stripeCustomerId":"cus_test_swarm_p-37","stripeSubscriptionId":"sub_test_swarm_p-37","cardLastFour":"4242","cardBrand":"visa"}}
+{"ts":"2026-08-18T14:00:23.667Z","agentId":"P-37","wave":2,"step":"WAVE_2","action":"COMPLETE","result":"SUCCESS","details":{"plan":"Individual"}}
+{"ts":"2026-08-18T14:00:23.676Z","agentId":"P-37","wave":2,"step":"WAVE_2","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T14:00:23.677Z","agentId":"P-37","wave":0,"step":"BILLING","action":"SUBSCRIPTION_SUCCESS","result":"SUCCESS","details":{"plan":"Individual","stripeCustomerId":"cus_test_swarm_p-37","stripeSubscriptionId":"sub_test_swarm_p-37","cardLastFour":"4242","cardBrand":"visa"}}
+{"ts":"2026-08-18T14:00:23.677Z","agentId":"P-37","wave":2,"step":"WAVE_2","action":"COMPLETE","result":"SUCCESS","details":{"plan":"Individual"}}
+{"ts":"2026-08-18T14:00:23.821Z","agentId":"P-37","wave":3,"step":"WAVE_3","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T14:00:23.824Z","agentId":"P-37","wave":0,"step":"PLAID","action":"SANDBOX_TRANSACTIONS_INGESTED","result":"SUCCESS","details":{"agentId":"P-37","account":"Plaid Checking ***4432","revenueCount":12,"expenseCount":8}}
+{"ts":"2026-08-18T14:00:23.824Z","agentId":"P-37","wave":0,"step":"PROJECTS","action":"CREATION_SUCCESS","result":"SUCCESS","details":{"created":10,"plaid":true}}
+{"ts":"2026-08-18T14:00:23.824Z","agentId":"P-37","wave":3,"step":"WAVE_3","action":"COMPLETE","result":"SUCCESS","details":{"created":10}}
+{"ts":"2026-08-18T14:00:23.837Z","agentId":"P-37","wave":3,"step":"WAVE_3","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T14:00:23.841Z","agentId":"P-37","wave":0,"step":"PLAID","action":"SANDBOX_TRANSACTIONS_INGESTED","result":"SUCCESS","details":{"agentId":"P-37","account":"Plaid Checking ***4432","revenueCount":12,"expenseCount":8}}
+{"ts":"2026-08-18T14:00:23.841Z","agentId":"P-37","wave":0,"step":"PROJECTS","action":"CREATION_SUCCESS","result":"SUCCESS","details":{"created":10,"plaid":true}}
+{"ts":"2026-08-18T14:00:23.841Z","agentId":"P-37","wave":3,"step":"WAVE_3","action":"COMPLETE","result":"SUCCESS","details":{"created":10}}
+{"ts":"2026-08-18T14:00:23.996Z","agentId":"P-37","wave":4,"step":"WAVE_4","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T14:00:23.996Z","agentId":"P-37","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-52","to":"P-40","type":"LP Fund Commitment"}}
+{"ts":"2026-08-18T14:00:23.996Z","agentId":"P-37","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-74","to":"P-38","type":"LP Analytics Thread"}}
+{"ts":"2026-08-18T14:00:23.996Z","agentId":"P-37","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-40"}}
+{"ts":"2026-08-18T14:00:23.997Z","agentId":"P-37","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-38"}}
+{"ts":"2026-08-18T14:00:23.997Z","agentId":"P-37","wave":4,"step":"WAVE_4","action":"COMPLETE","result":"SUCCESS","details":{"interactions":2,"invites":2}}
+{"ts":"2026-08-18T14:00:24.009Z","agentId":"P-37","wave":4,"step":"WAVE_4","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T14:00:24.009Z","agentId":"P-37","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-52","to":"P-40","type":"LP Fund Commitment"}}
+{"ts":"2026-08-18T14:00:24.010Z","agentId":"P-37","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-74","to":"P-38","type":"LP Analytics Thread"}}
+{"ts":"2026-08-18T14:00:24.010Z","agentId":"P-37","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-40"}}
+{"ts":"2026-08-18T14:00:24.011Z","agentId":"P-37","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-38"}}
+{"ts":"2026-08-18T14:00:24.011Z","agentId":"P-37","wave":4,"step":"WAVE_4","action":"COMPLETE","result":"SUCCESS","details":{"interactions":2,"invites":2}}
+{"ts":"2026-08-18T14:00:24.093Z","agentId":"P-37","wave":5,"step":"WAVE_5","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T14:00:24.093Z","agentId":"P-37","wave":5,"step":"WAVE_5","action":"COMPLETE","result":"SUCCESS","details":{"reportPath":"/Users/yvesdarbouze/Documents/PaperWorking/artifacts/persona-swarm/reports/P-37-experience-report.md"}}
+{"ts":"2026-08-18T14:00:24.114Z","agentId":"P-37","wave":5,"step":"WAVE_5","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T14:00:24.115Z","agentId":"P-37","wave":5,"step":"WAVE_5","action":"COMPLETE","result":"SUCCESS","details":{"reportPath":"/Users/yvesdarbouze/Documents/PaperWorking/artifacts/persona-swarm/reports/P-37-experience-report.md"}}
+{"ts":"2026-08-18T14:00:58.803Z","agentId":"P-37","wave":1,"step":"WAVE_1","action":"START","result":"SUCCESS","details":{"email":"agent37.ken.tanaka@paperworking-test.dev"}}
+{"ts":"2026-08-18T14:00:58.805Z","agentId":"P-37","wave":0,"step":"SIGNUP","action":"SUCCESS_CREATED","result":"SUCCESS","details":{"uid":"uid_persona_p37","email":"agent37.ken.tanaka@paperworking-test.dev","name":"Ken Tanaka","entity":"Tanaka Growth Holdings LLC"}}
+{"ts":"2026-08-18T14:00:58.806Z","agentId":"P-37","wave":1,"step":"WAVE_1","action":"COMPLETE","result":"SUCCESS","details":{"uid":"uid_persona_p37"}}
+{"ts":"2026-08-18T14:00:58.845Z","agentId":"P-37","wave":2,"step":"WAVE_2","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T14:00:58.845Z","agentId":"P-37","wave":0,"step":"BILLING","action":"SUBSCRIPTION_SUCCESS","result":"SUCCESS","details":{"plan":"Individual","stripeCustomerId":"cus_test_swarm_p-37","stripeSubscriptionId":"sub_test_swarm_p-37","cardLastFour":"4242","cardBrand":"visa"}}
+{"ts":"2026-08-18T14:00:58.845Z","agentId":"P-37","wave":2,"step":"WAVE_2","action":"COMPLETE","result":"SUCCESS","details":{"plan":"Individual"}}
+{"ts":"2026-08-18T14:00:58.964Z","agentId":"P-37","wave":3,"step":"WAVE_3","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T14:00:58.966Z","agentId":"P-37","wave":0,"step":"PLAID","action":"SANDBOX_TRANSACTIONS_INGESTED","result":"SUCCESS","details":{"agentId":"P-37","account":"Plaid Checking ***4432","revenueCount":12,"expenseCount":8}}
+{"ts":"2026-08-18T14:00:58.966Z","agentId":"P-37","wave":0,"step":"PROJECTS","action":"CREATION_SUCCESS","result":"SUCCESS","details":{"created":10,"plaid":true}}
+{"ts":"2026-08-18T14:00:58.966Z","agentId":"P-37","wave":3,"step":"WAVE_3","action":"COMPLETE","result":"SUCCESS","details":{"created":10}}
+{"ts":"2026-08-18T14:00:59.066Z","agentId":"P-37","wave":4,"step":"WAVE_4","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T14:00:59.066Z","agentId":"P-37","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-52","to":"P-40","type":"LP Fund Commitment"}}
+{"ts":"2026-08-18T14:00:59.066Z","agentId":"P-37","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-74","to":"P-38","type":"LP Analytics Thread"}}
+{"ts":"2026-08-18T14:00:59.066Z","agentId":"P-37","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-40"}}
+{"ts":"2026-08-18T14:00:59.067Z","agentId":"P-37","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-38"}}
+{"ts":"2026-08-18T14:00:59.067Z","agentId":"P-37","wave":4,"step":"WAVE_4","action":"COMPLETE","result":"SUCCESS","details":{"interactions":2,"invites":2}}
+{"ts":"2026-08-18T14:00:59.112Z","agentId":"P-37","wave":5,"step":"WAVE_5","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T14:00:59.113Z","agentId":"P-37","wave":5,"step":"WAVE_5","action":"COMPLETE","result":"SUCCESS","details":{"reportPath":"/Users/yvesdarbouze/Documents/PaperWorking/artifacts/persona-swarm/reports/P-37-experience-report.md"}}
+{"ts":"2026-08-18T14:01:09.226Z","agentId":"P-37","wave":1,"step":"WAVE_1","action":"START","result":"SUCCESS","details":{"email":"agent37.ken.tanaka@paperworking-test.dev"}}
+{"ts":"2026-08-18T14:01:09.227Z","agentId":"P-37","wave":0,"step":"SIGNUP","action":"SUCCESS_CREATED","result":"SUCCESS","details":{"uid":"uid_persona_p37","email":"agent37.ken.tanaka@paperworking-test.dev","name":"Ken Tanaka","entity":"Tanaka Growth Holdings LLC"}}
+{"ts":"2026-08-18T14:01:09.227Z","agentId":"P-37","wave":1,"step":"WAVE_1","action":"COMPLETE","result":"SUCCESS","details":{"uid":"uid_persona_p37"}}
+{"ts":"2026-08-18T14:01:09.268Z","agentId":"P-37","wave":2,"step":"WAVE_2","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T14:01:09.268Z","agentId":"P-37","wave":0,"step":"BILLING","action":"SUBSCRIPTION_SUCCESS","result":"SUCCESS","details":{"plan":"Individual","stripeCustomerId":"cus_test_swarm_p-37","stripeSubscriptionId":"sub_test_swarm_p-37","cardLastFour":"4242","cardBrand":"visa"}}
+{"ts":"2026-08-18T14:01:09.268Z","agentId":"P-37","wave":2,"step":"WAVE_2","action":"COMPLETE","result":"SUCCESS","details":{"plan":"Individual"}}
+{"ts":"2026-08-18T14:01:09.378Z","agentId":"P-37","wave":3,"step":"WAVE_3","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T14:01:09.380Z","agentId":"P-37","wave":0,"step":"PLAID","action":"SANDBOX_TRANSACTIONS_INGESTED","result":"SUCCESS","details":{"agentId":"P-37","account":"Plaid Checking ***4432","revenueCount":12,"expenseCount":8}}
+{"ts":"2026-08-18T14:01:09.380Z","agentId":"P-37","wave":0,"step":"PROJECTS","action":"CREATION_SUCCESS","result":"SUCCESS","details":{"created":10,"plaid":true}}
+{"ts":"2026-08-18T14:01:09.380Z","agentId":"P-37","wave":3,"step":"WAVE_3","action":"COMPLETE","result":"SUCCESS","details":{"created":10}}
+{"ts":"2026-08-18T14:01:09.455Z","agentId":"P-37","wave":4,"step":"WAVE_4","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T14:01:09.455Z","agentId":"P-37","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-52","to":"P-40","type":"LP Fund Commitment"}}
+{"ts":"2026-08-18T14:01:09.455Z","agentId":"P-37","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-74","to":"P-38","type":"LP Analytics Thread"}}
+{"ts":"2026-08-18T14:01:09.456Z","agentId":"P-37","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-40"}}
+{"ts":"2026-08-18T14:01:09.456Z","agentId":"P-37","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-38"}}
+{"ts":"2026-08-18T14:01:09.456Z","agentId":"P-37","wave":4,"step":"WAVE_4","action":"COMPLETE","result":"SUCCESS","details":{"interactions":2,"invites":2}}
+{"ts":"2026-08-18T14:01:09.512Z","agentId":"P-37","wave":5,"step":"WAVE_5","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T14:01:09.512Z","agentId":"P-37","wave":5,"step":"WAVE_5","action":"COMPLETE","result":"SUCCESS","details":{"reportPath":"/Users/yvesdarbouze/Documents/PaperWorking/artifacts/persona-swarm/reports/P-37-experience-report.md"}}
+{"ts":"2026-08-18T14:01:12.179Z","agentId":"P-37","wave":1,"step":"WAVE_1","action":"START","result":"SUCCESS","details":{"email":"agent37.ken.tanaka@paperworking-test.dev"}}
+{"ts":"2026-08-18T14:01:12.882Z","agentId":"P-37","wave":1,"step":"WAVE_1","action":"START","result":"SUCCESS","details":{"email":"agent37.ken.tanaka@paperworking-test.dev"}}
+{"ts":"2026-08-18T14:01:14.211Z","agentId":"P-37","wave":0,"step":"SIGNUP","action":"SUCCESS_CREATED","result":"SUCCESS","details":{"uid":"uid_persona_p37","email":"agent37.ken.tanaka@paperworking-test.dev","name":"Ken Tanaka","entity":"Tanaka Growth Holdings LLC"}}
+{"ts":"2026-08-18T14:01:14.211Z","agentId":"P-37","wave":1,"step":"WAVE_1","action":"COMPLETE","result":"SUCCESS","details":{"uid":"uid_persona_p37"}}
+{"ts":"2026-08-18T14:01:14.894Z","agentId":"P-37","wave":0,"step":"SIGNUP","action":"SUCCESS_CREATED","result":"SUCCESS","details":{"uid":"uid_persona_p37","email":"agent37.ken.tanaka@paperworking-test.dev","name":"Ken Tanaka","entity":"Tanaka Growth Holdings LLC"}}
+{"ts":"2026-08-18T14:01:14.894Z","agentId":"P-37","wave":1,"step":"WAVE_1","action":"COMPLETE","result":"SUCCESS","details":{"uid":"uid_persona_p37"}}
+{"ts":"2026-08-18T14:01:24.923Z","agentId":"P-37","wave":1,"step":"WAVE_1","action":"START","result":"SUCCESS","details":{"email":"agent37.ken.tanaka@paperworking-test.dev"}}
+{"ts":"2026-08-18T14:01:24.925Z","agentId":"P-37","wave":0,"step":"SIGNUP","action":"SUCCESS_CREATED","result":"SUCCESS","details":{"uid":"uid_persona_p37","email":"agent37.ken.tanaka@paperworking-test.dev","name":"Ken Tanaka","entity":"Tanaka Growth Holdings LLC"}}
+{"ts":"2026-08-18T14:01:24.926Z","agentId":"P-37","wave":1,"step":"WAVE_1","action":"COMPLETE","result":"SUCCESS","details":{"uid":"uid_persona_p37"}}
+{"ts":"2026-08-18T14:01:24.976Z","agentId":"P-37","wave":2,"step":"WAVE_2","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T14:01:24.976Z","agentId":"P-37","wave":0,"step":"BILLING","action":"SUBSCRIPTION_SUCCESS","result":"SUCCESS","details":{"plan":"Individual","stripeCustomerId":"cus_test_swarm_p-37","stripeSubscriptionId":"sub_test_swarm_p-37","cardLastFour":"4242","cardBrand":"visa"}}
+{"ts":"2026-08-18T14:01:24.976Z","agentId":"P-37","wave":2,"step":"WAVE_2","action":"COMPLETE","result":"SUCCESS","details":{"plan":"Individual"}}
+{"ts":"2026-08-18T14:01:25.108Z","agentId":"P-37","wave":3,"step":"WAVE_3","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T14:01:25.111Z","agentId":"P-37","wave":0,"step":"PLAID","action":"SANDBOX_TRANSACTIONS_INGESTED","result":"SUCCESS","details":{"agentId":"P-37","account":"Plaid Checking ***4432","revenueCount":12,"expenseCount":8}}
+{"ts":"2026-08-18T14:01:25.111Z","agentId":"P-37","wave":0,"step":"PROJECTS","action":"CREATION_SUCCESS","result":"SUCCESS","details":{"created":10,"plaid":true}}
+{"ts":"2026-08-18T14:01:25.111Z","agentId":"P-37","wave":3,"step":"WAVE_3","action":"COMPLETE","result":"SUCCESS","details":{"created":10}}
+{"ts":"2026-08-18T14:01:25.218Z","agentId":"P-37","wave":4,"step":"WAVE_4","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T14:01:25.219Z","agentId":"P-37","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-52","to":"P-40","type":"LP Fund Commitment"}}
+{"ts":"2026-08-18T14:01:25.219Z","agentId":"P-37","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-74","to":"P-38","type":"LP Analytics Thread"}}
+{"ts":"2026-08-18T14:01:25.220Z","agentId":"P-37","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-40"}}
+{"ts":"2026-08-18T14:01:25.220Z","agentId":"P-37","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-38"}}
+{"ts":"2026-08-18T14:01:25.220Z","agentId":"P-37","wave":4,"step":"WAVE_4","action":"COMPLETE","result":"SUCCESS","details":{"interactions":2,"invites":2}}
+{"ts":"2026-08-18T14:01:25.292Z","agentId":"P-37","wave":5,"step":"WAVE_5","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T14:01:25.293Z","agentId":"P-37","wave":5,"step":"WAVE_5","action":"COMPLETE","result":"SUCCESS","details":{"reportPath":"/Users/yvesdarbouze/Documents/PaperWorking/artifacts/persona-swarm/reports/P-37-experience-report.md"}}
+{"ts":"2026-08-18T14:01:25.641Z","agentId":"P-37","wave":1,"step":"WAVE_1","action":"START","result":"SUCCESS","details":{"email":"agent37.ken.tanaka@paperworking-test.dev"}}
+{"ts":"2026-08-18T14:01:25.643Z","agentId":"P-37","wave":0,"step":"SIGNUP","action":"SUCCESS_CREATED","result":"SUCCESS","details":{"uid":"uid_persona_p37","email":"agent37.ken.tanaka@paperworking-test.dev","name":"Ken Tanaka","entity":"Tanaka Growth Holdings LLC"}}
+{"ts":"2026-08-18T14:01:25.644Z","agentId":"P-37","wave":1,"step":"WAVE_1","action":"COMPLETE","result":"SUCCESS","details":{"uid":"uid_persona_p37"}}
+{"ts":"2026-08-18T14:01:25.721Z","agentId":"P-37","wave":2,"step":"WAVE_2","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T14:01:25.722Z","agentId":"P-37","wave":0,"step":"BILLING","action":"SUBSCRIPTION_SUCCESS","result":"SUCCESS","details":{"plan":"Individual","stripeCustomerId":"cus_test_swarm_p-37","stripeSubscriptionId":"sub_test_swarm_p-37","cardLastFour":"4242","cardBrand":"visa"}}
+{"ts":"2026-08-18T14:01:25.722Z","agentId":"P-37","wave":2,"step":"WAVE_2","action":"COMPLETE","result":"SUCCESS","details":{"plan":"Individual"}}
+{"ts":"2026-08-18T14:01:25.872Z","agentId":"P-37","wave":3,"step":"WAVE_3","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T14:01:25.875Z","agentId":"P-37","wave":0,"step":"PLAID","action":"SANDBOX_TRANSACTIONS_INGESTED","result":"SUCCESS","details":{"agentId":"P-37","account":"Plaid Checking ***4432","revenueCount":12,"expenseCount":8}}
+{"ts":"2026-08-18T14:01:25.876Z","agentId":"P-37","wave":0,"step":"PROJECTS","action":"CREATION_SUCCESS","result":"SUCCESS","details":{"created":10,"plaid":true}}
+{"ts":"2026-08-18T14:01:25.876Z","agentId":"P-37","wave":3,"step":"WAVE_3","action":"COMPLETE","result":"SUCCESS","details":{"created":10}}
+{"ts":"2026-08-18T14:01:26.006Z","agentId":"P-37","wave":4,"step":"WAVE_4","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T14:01:26.006Z","agentId":"P-37","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-52","to":"P-40","type":"LP Fund Commitment"}}
+{"ts":"2026-08-18T14:01:26.007Z","agentId":"P-37","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-74","to":"P-38","type":"LP Analytics Thread"}}
+{"ts":"2026-08-18T14:01:26.007Z","agentId":"P-37","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-40"}}
+{"ts":"2026-08-18T14:01:26.007Z","agentId":"P-37","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-38"}}
+{"ts":"2026-08-18T14:01:26.007Z","agentId":"P-37","wave":4,"step":"WAVE_4","action":"COMPLETE","result":"SUCCESS","details":{"interactions":2,"invites":2}}
+{"ts":"2026-08-18T14:01:26.077Z","agentId":"P-37","wave":5,"step":"WAVE_5","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T14:01:26.078Z","agentId":"P-37","wave":5,"step":"WAVE_5","action":"COMPLETE","result":"SUCCESS","details":{"reportPath":"/Users/yvesdarbouze/Documents/PaperWorking/artifacts/persona-swarm/reports/P-37-experience-report.md"}}
+{"ts":"2026-08-18T14:16:29.145Z","agentId":"P-37","wave":1,"step":"WAVE_1","action":"START","result":"SUCCESS","details":{"email":"agent37.ken.tanaka@paperworking-test.dev"}}
+{"ts":"2026-08-18T14:16:29.145Z","agentId":"P-37","wave":1,"step":"WAVE_1","action":"START","result":"SUCCESS","details":{"email":"agent37.ken.tanaka@paperworking-test.dev"}}
+{"ts":"2026-08-18T14:16:29.145Z","agentId":"P-37","wave":0,"step":"SIGNUP","action":"SUCCESS_CREATED","result":"SUCCESS","details":{"uid":"uid_persona_p37","email":"agent37.ken.tanaka@paperworking-test.dev","name":"Ken Tanaka","entity":"Tanaka Growth Holdings LLC"}}
+{"ts":"2026-08-18T14:16:29.145Z","agentId":"P-37","wave":1,"step":"WAVE_1","action":"COMPLETE","result":"SUCCESS","details":{"uid":"uid_persona_p37"}}
+{"ts":"2026-08-18T14:16:29.145Z","agentId":"P-37","wave":0,"step":"SIGNUP","action":"SUCCESS_CREATED","result":"SUCCESS","details":{"uid":"uid_persona_p37","email":"agent37.ken.tanaka@paperworking-test.dev","name":"Ken Tanaka","entity":"Tanaka Growth Holdings LLC"}}
+{"ts":"2026-08-18T14:16:29.146Z","agentId":"P-37","wave":1,"step":"WAVE_1","action":"COMPLETE","result":"SUCCESS","details":{"uid":"uid_persona_p37"}}
+{"ts":"2026-08-18T14:16:29.195Z","agentId":"P-37","wave":2,"step":"WAVE_2","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T14:16:29.196Z","agentId":"P-37","wave":0,"step":"BILLING","action":"SUBSCRIPTION_SUCCESS","result":"SUCCESS","details":{"plan":"Individual","stripeCustomerId":"cus_test_swarm_p-37","stripeSubscriptionId":"sub_test_swarm_p-37","cardLastFour":"4242","cardBrand":"visa"}}
+{"ts":"2026-08-18T14:16:29.196Z","agentId":"P-37","wave":2,"step":"WAVE_2","action":"COMPLETE","result":"SUCCESS","details":{"plan":"Individual"}}
+{"ts":"2026-08-18T14:16:29.196Z","agentId":"P-37","wave":2,"step":"WAVE_2","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T14:16:29.196Z","agentId":"P-37","wave":0,"step":"BILLING","action":"SUBSCRIPTION_SUCCESS","result":"SUCCESS","details":{"plan":"Individual","stripeCustomerId":"cus_test_swarm_p-37","stripeSubscriptionId":"sub_test_swarm_p-37","cardLastFour":"4242","cardBrand":"visa"}}
+{"ts":"2026-08-18T14:16:29.197Z","agentId":"P-37","wave":2,"step":"WAVE_2","action":"COMPLETE","result":"SUCCESS","details":{"plan":"Individual"}}
+{"ts":"2026-08-18T14:16:29.342Z","agentId":"P-37","wave":3,"step":"WAVE_3","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T14:16:29.343Z","agentId":"P-37","wave":3,"step":"WAVE_3","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T14:16:29.347Z","agentId":"P-37","wave":0,"step":"PLAID","action":"SANDBOX_TRANSACTIONS_INGESTED","result":"SUCCESS","details":{"agentId":"P-37","account":"Plaid Checking ***4432","revenueCount":12,"expenseCount":8}}
+{"ts":"2026-08-18T14:16:29.347Z","agentId":"P-37","wave":0,"step":"PROJECTS","action":"CREATION_SUCCESS","result":"SUCCESS","details":{"created":10,"plaid":true}}
+{"ts":"2026-08-18T14:16:29.347Z","agentId":"P-37","wave":3,"step":"WAVE_3","action":"COMPLETE","result":"SUCCESS","details":{"created":10}}
+{"ts":"2026-08-18T14:16:29.352Z","agentId":"P-37","wave":0,"step":"PLAID","action":"SANDBOX_TRANSACTIONS_INGESTED","result":"SUCCESS","details":{"agentId":"P-37","account":"Plaid Checking ***4432","revenueCount":12,"expenseCount":8}}
+{"ts":"2026-08-18T14:16:29.352Z","agentId":"P-37","wave":0,"step":"PROJECTS","action":"CREATION_SUCCESS","result":"SUCCESS","details":{"created":10,"plaid":true}}
+{"ts":"2026-08-18T14:16:29.352Z","agentId":"P-37","wave":3,"step":"WAVE_3","action":"COMPLETE","result":"SUCCESS","details":{"created":10}}
+{"ts":"2026-08-18T14:16:29.455Z","agentId":"P-37","wave":4,"step":"WAVE_4","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T14:16:29.455Z","agentId":"P-37","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-52","to":"P-40","type":"LP Fund Commitment"}}
+{"ts":"2026-08-18T14:16:29.456Z","agentId":"P-37","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-74","to":"P-38","type":"LP Analytics Thread"}}
+{"ts":"2026-08-18T14:16:29.456Z","agentId":"P-37","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-40"}}
+{"ts":"2026-08-18T14:16:29.456Z","agentId":"P-37","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-38"}}
+{"ts":"2026-08-18T14:16:29.456Z","agentId":"P-37","wave":4,"step":"WAVE_4","action":"COMPLETE","result":"SUCCESS","details":{"interactions":2,"invites":2}}
+{"ts":"2026-08-18T14:16:29.465Z","agentId":"P-37","wave":4,"step":"WAVE_4","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T14:16:29.467Z","agentId":"P-37","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-52","to":"P-40","type":"LP Fund Commitment"}}
+{"ts":"2026-08-18T14:16:29.468Z","agentId":"P-37","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-74","to":"P-38","type":"LP Analytics Thread"}}
+{"ts":"2026-08-18T14:16:29.468Z","agentId":"P-37","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-40"}}
+{"ts":"2026-08-18T14:16:29.469Z","agentId":"P-37","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-38"}}
+{"ts":"2026-08-18T14:16:29.469Z","agentId":"P-37","wave":4,"step":"WAVE_4","action":"COMPLETE","result":"SUCCESS","details":{"interactions":2,"invites":2}}
+{"ts":"2026-08-18T14:16:29.543Z","agentId":"P-37","wave":5,"step":"WAVE_5","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T14:16:29.545Z","agentId":"P-37","wave":5,"step":"WAVE_5","action":"COMPLETE","result":"SUCCESS","details":{"reportPath":"/Users/yvesdarbouze/Documents/PaperWorking/artifacts/persona-swarm/reports/P-37-experience-report.md"}}
+{"ts":"2026-08-18T14:16:29.559Z","agentId":"P-37","wave":5,"step":"WAVE_5","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T14:16:29.559Z","agentId":"P-37","wave":5,"step":"WAVE_5","action":"COMPLETE","result":"SUCCESS","details":{"reportPath":"/Users/yvesdarbouze/Documents/PaperWorking/artifacts/persona-swarm/reports/P-37-experience-report.md"}}
+{"ts":"2026-08-18T15:27:30.144Z","agentId":"P-37","wave":1,"step":"WAVE_1","action":"START","result":"SUCCESS","details":{"email":"agent37.ken.tanaka@paperworking-test.dev"}}
+{"ts":"2026-08-18T15:27:30.145Z","agentId":"P-37","wave":0,"step":"SIGNUP","action":"SUCCESS_CREATED","result":"SUCCESS","details":{"uid":"uid_persona_p37","email":"agent37.ken.tanaka@paperworking-test.dev","name":"Ken Tanaka","entity":"Tanaka Growth Holdings LLC"}}
+{"ts":"2026-08-18T15:27:30.146Z","agentId":"P-37","wave":1,"step":"WAVE_1","action":"COMPLETE","result":"SUCCESS","details":{"uid":"uid_persona_p37"}}
+{"ts":"2026-08-18T15:27:30.155Z","agentId":"P-37","wave":1,"step":"WAVE_1","action":"START","result":"SUCCESS","details":{"email":"agent37.ken.tanaka@paperworking-test.dev"}}
+{"ts":"2026-08-18T15:27:30.155Z","agentId":"P-37","wave":0,"step":"SIGNUP","action":"SUCCESS_CREATED","result":"SUCCESS","details":{"uid":"uid_persona_p37","email":"agent37.ken.tanaka@paperworking-test.dev","name":"Ken Tanaka","entity":"Tanaka Growth Holdings LLC"}}
+{"ts":"2026-08-18T15:27:30.156Z","agentId":"P-37","wave":1,"step":"WAVE_1","action":"COMPLETE","result":"SUCCESS","details":{"uid":"uid_persona_p37"}}
+{"ts":"2026-08-18T15:27:30.304Z","agentId":"P-37","wave":2,"step":"WAVE_2","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T15:27:30.318Z","agentId":"P-37","wave":2,"step":"WAVE_2","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T15:27:30.318Z","agentId":"P-37","wave":0,"step":"BILLING","action":"SUBSCRIPTION_SUCCESS","result":"SUCCESS","details":{"plan":"Individual","stripeCustomerId":"cus_test_swarm_p-37","stripeSubscriptionId":"sub_test_swarm_p-37","cardLastFour":"4242","cardBrand":"visa"}}
+{"ts":"2026-08-18T15:27:30.318Z","agentId":"P-37","wave":2,"step":"WAVE_2","action":"COMPLETE","result":"SUCCESS","details":{"plan":"Individual"}}
+{"ts":"2026-08-18T15:27:30.319Z","agentId":"P-37","wave":0,"step":"BILLING","action":"SUBSCRIPTION_SUCCESS","result":"SUCCESS","details":{"plan":"Individual","stripeCustomerId":"cus_test_swarm_p-37","stripeSubscriptionId":"sub_test_swarm_p-37","cardLastFour":"4242","cardBrand":"visa"}}
+{"ts":"2026-08-18T15:27:30.319Z","agentId":"P-37","wave":2,"step":"WAVE_2","action":"COMPLETE","result":"SUCCESS","details":{"plan":"Individual"}}
+{"ts":"2026-08-18T15:27:30.628Z","agentId":"P-37","wave":3,"step":"WAVE_3","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T15:27:30.634Z","agentId":"P-37","wave":0,"step":"PLAID","action":"SANDBOX_TRANSACTIONS_INGESTED","result":"SUCCESS","details":{"agentId":"P-37","account":"Plaid Checking ***4432","revenueCount":12,"expenseCount":8}}
+{"ts":"2026-08-18T15:27:30.634Z","agentId":"P-37","wave":0,"step":"PROJECTS","action":"CREATION_SUCCESS","result":"SUCCESS","details":{"created":10,"plaid":true}}
+{"ts":"2026-08-18T15:27:30.634Z","agentId":"P-37","wave":3,"step":"WAVE_3","action":"COMPLETE","result":"SUCCESS","details":{"created":10}}
+{"ts":"2026-08-18T15:27:30.680Z","agentId":"P-37","wave":3,"step":"WAVE_3","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T15:27:30.683Z","agentId":"P-37","wave":0,"step":"PLAID","action":"SANDBOX_TRANSACTIONS_INGESTED","result":"SUCCESS","details":{"agentId":"P-37","account":"Plaid Checking ***4432","revenueCount":12,"expenseCount":8}}
+{"ts":"2026-08-18T15:27:30.683Z","agentId":"P-37","wave":0,"step":"PROJECTS","action":"CREATION_SUCCESS","result":"SUCCESS","details":{"created":10,"plaid":true}}
+{"ts":"2026-08-18T15:27:30.683Z","agentId":"P-37","wave":3,"step":"WAVE_3","action":"COMPLETE","result":"SUCCESS","details":{"created":10}}
+{"ts":"2026-08-18T15:27:30.807Z","agentId":"P-37","wave":4,"step":"WAVE_4","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T15:27:30.808Z","agentId":"P-37","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-52","to":"P-40","type":"LP Fund Commitment"}}
+{"ts":"2026-08-18T15:27:30.808Z","agentId":"P-37","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-74","to":"P-38","type":"LP Analytics Thread"}}
+{"ts":"2026-08-18T15:27:30.808Z","agentId":"P-37","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-40"}}
+{"ts":"2026-08-18T15:27:30.809Z","agentId":"P-37","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-38"}}
+{"ts":"2026-08-18T15:27:30.809Z","agentId":"P-37","wave":4,"step":"WAVE_4","action":"COMPLETE","result":"SUCCESS","details":{"interactions":2,"invites":2}}
+{"ts":"2026-08-18T15:27:30.851Z","agentId":"P-37","wave":4,"step":"WAVE_4","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T15:27:30.851Z","agentId":"P-37","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-52","to":"P-40","type":"LP Fund Commitment"}}
+{"ts":"2026-08-18T15:27:30.853Z","agentId":"P-37","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-74","to":"P-38","type":"LP Analytics Thread"}}
+{"ts":"2026-08-18T15:27:30.856Z","agentId":"P-37","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-40"}}
+{"ts":"2026-08-18T15:27:30.857Z","agentId":"P-37","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-38"}}
+{"ts":"2026-08-18T15:27:30.857Z","agentId":"P-37","wave":4,"step":"WAVE_4","action":"COMPLETE","result":"SUCCESS","details":{"interactions":2,"invites":2}}
+{"ts":"2026-08-18T15:27:30.906Z","agentId":"P-37","wave":5,"step":"WAVE_5","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T15:27:30.907Z","agentId":"P-37","wave":5,"step":"WAVE_5","action":"COMPLETE","result":"SUCCESS","details":{"reportPath":"/Users/yvesdarbouze/Documents/PaperWorking/artifacts/persona-swarm/reports/P-37-experience-report.md"}}
+{"ts":"2026-08-18T15:27:30.940Z","agentId":"P-37","wave":5,"step":"WAVE_5","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T15:27:30.940Z","agentId":"P-37","wave":5,"step":"WAVE_5","action":"COMPLETE","result":"SUCCESS","details":{"reportPath":"/Users/yvesdarbouze/Documents/PaperWorking/artifacts/persona-swarm/reports/P-37-experience-report.md"}}
+{"ts":"2026-08-18T15:28:00.331Z","agentId":"P-37","wave":1,"step":"WAVE_1","action":"START","result":"SUCCESS","details":{"email":"agent37.ken.tanaka@paperworking-test.dev"}}
+{"ts":"2026-08-18T15:28:00.331Z","agentId":"P-37","wave":0,"step":"SIGNUP","action":"SUCCESS_CREATED","result":"SUCCESS","details":{"uid":"uid_persona_p37","email":"agent37.ken.tanaka@paperworking-test.dev","name":"Ken Tanaka","entity":"Tanaka Growth Holdings LLC"}}
+{"ts":"2026-08-18T15:28:00.332Z","agentId":"P-37","wave":1,"step":"WAVE_1","action":"COMPLETE","result":"SUCCESS","details":{"uid":"uid_persona_p37"}}
+{"ts":"2026-08-18T15:28:00.332Z","agentId":"P-37","wave":1,"step":"WAVE_1","action":"START","result":"SUCCESS","details":{"email":"agent37.ken.tanaka@paperworking-test.dev"}}
+{"ts":"2026-08-18T15:28:00.333Z","agentId":"P-37","wave":0,"step":"SIGNUP","action":"SUCCESS_CREATED","result":"SUCCESS","details":{"uid":"uid_persona_p37","email":"agent37.ken.tanaka@paperworking-test.dev","name":"Ken Tanaka","entity":"Tanaka Growth Holdings LLC"}}
+{"ts":"2026-08-18T15:28:00.333Z","agentId":"P-37","wave":1,"step":"WAVE_1","action":"COMPLETE","result":"SUCCESS","details":{"uid":"uid_persona_p37"}}
+{"ts":"2026-08-18T15:28:00.382Z","agentId":"P-37","wave":2,"step":"WAVE_2","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T15:28:00.382Z","agentId":"P-37","wave":0,"step":"BILLING","action":"SUBSCRIPTION_SUCCESS","result":"SUCCESS","details":{"plan":"Individual","stripeCustomerId":"cus_test_swarm_p-37","stripeSubscriptionId":"sub_test_swarm_p-37","cardLastFour":"4242","cardBrand":"visa"}}
+{"ts":"2026-08-18T15:28:00.382Z","agentId":"P-37","wave":2,"step":"WAVE_2","action":"COMPLETE","result":"SUCCESS","details":{"plan":"Individual"}}
+{"ts":"2026-08-18T15:28:00.388Z","agentId":"P-37","wave":2,"step":"WAVE_2","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T15:28:00.388Z","agentId":"P-37","wave":0,"step":"BILLING","action":"SUBSCRIPTION_SUCCESS","result":"SUCCESS","details":{"plan":"Individual","stripeCustomerId":"cus_test_swarm_p-37","stripeSubscriptionId":"sub_test_swarm_p-37","cardLastFour":"4242","cardBrand":"visa"}}
+{"ts":"2026-08-18T15:28:00.388Z","agentId":"P-37","wave":2,"step":"WAVE_2","action":"COMPLETE","result":"SUCCESS","details":{"plan":"Individual"}}
+{"ts":"2026-08-18T15:28:00.588Z","agentId":"P-37","wave":3,"step":"WAVE_3","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T15:28:00.594Z","agentId":"P-37","wave":0,"step":"PLAID","action":"SANDBOX_TRANSACTIONS_INGESTED","result":"SUCCESS","details":{"agentId":"P-37","account":"Plaid Checking ***4432","revenueCount":12,"expenseCount":8}}
+{"ts":"2026-08-18T15:28:00.597Z","agentId":"P-37","wave":0,"step":"PROJECTS","action":"CREATION_SUCCESS","result":"SUCCESS","details":{"created":10,"plaid":true}}
+{"ts":"2026-08-18T15:28:00.597Z","agentId":"P-37","wave":3,"step":"WAVE_3","action":"COMPLETE","result":"SUCCESS","details":{"created":10}}
+{"ts":"2026-08-18T15:28:00.608Z","agentId":"P-37","wave":3,"step":"WAVE_3","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T15:28:00.615Z","agentId":"P-37","wave":0,"step":"PLAID","action":"SANDBOX_TRANSACTIONS_INGESTED","result":"SUCCESS","details":{"agentId":"P-37","account":"Plaid Checking ***4432","revenueCount":12,"expenseCount":8}}
+{"ts":"2026-08-18T15:28:00.615Z","agentId":"P-37","wave":0,"step":"PROJECTS","action":"CREATION_SUCCESS","result":"SUCCESS","details":{"created":10,"plaid":true}}
+{"ts":"2026-08-18T15:28:00.615Z","agentId":"P-37","wave":3,"step":"WAVE_3","action":"COMPLETE","result":"SUCCESS","details":{"created":10}}
+{"ts":"2026-08-18T15:28:00.770Z","agentId":"P-37","wave":4,"step":"WAVE_4","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T15:28:00.772Z","agentId":"P-37","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-52","to":"P-40","type":"LP Fund Commitment"}}
+{"ts":"2026-08-18T15:28:00.773Z","agentId":"P-37","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-74","to":"P-38","type":"LP Analytics Thread"}}
+{"ts":"2026-08-18T15:28:00.773Z","agentId":"P-37","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-40"}}
+{"ts":"2026-08-18T15:28:00.773Z","agentId":"P-37","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-38"}}
+{"ts":"2026-08-18T15:28:00.773Z","agentId":"P-37","wave":4,"step":"WAVE_4","action":"COMPLETE","result":"SUCCESS","details":{"interactions":2,"invites":2}}
+{"ts":"2026-08-18T15:28:00.790Z","agentId":"P-37","wave":4,"step":"WAVE_4","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T15:28:00.791Z","agentId":"P-37","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-52","to":"P-40","type":"LP Fund Commitment"}}
+{"ts":"2026-08-18T15:28:00.792Z","agentId":"P-37","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-74","to":"P-38","type":"LP Analytics Thread"}}
+{"ts":"2026-08-18T15:28:00.792Z","agentId":"P-37","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-40"}}
+{"ts":"2026-08-18T15:28:00.793Z","agentId":"P-37","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-38"}}
+{"ts":"2026-08-18T15:28:00.793Z","agentId":"P-37","wave":4,"step":"WAVE_4","action":"COMPLETE","result":"SUCCESS","details":{"interactions":2,"invites":2}}
+{"ts":"2026-08-18T15:28:00.846Z","agentId":"P-37","wave":5,"step":"WAVE_5","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T15:28:00.846Z","agentId":"P-37","wave":5,"step":"WAVE_5","action":"COMPLETE","result":"SUCCESS","details":{"reportPath":"/Users/yvesdarbouze/Documents/PaperWorking/artifacts/persona-swarm/reports/P-37-experience-report.md"}}
+{"ts":"2026-08-18T15:28:00.874Z","agentId":"P-37","wave":5,"step":"WAVE_5","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T15:28:00.875Z","agentId":"P-37","wave":5,"step":"WAVE_5","action":"COMPLETE","result":"SUCCESS","details":{"reportPath":"/Users/yvesdarbouze/Documents/PaperWorking/artifacts/persona-swarm/reports/P-37-experience-report.md"}}
+{"ts":"2026-08-18T15:56:33.862Z","agentId":"P-37","wave":1,"step":"WAVE_1","action":"START","result":"SUCCESS","details":{"email":"agent37.ken.tanaka@paperworking-test.dev"}}
+{"ts":"2026-08-18T15:56:33.991Z","agentId":"P-37","wave":1,"step":"WAVE_1","action":"START","result":"SUCCESS","details":{"email":"agent37.ken.tanaka@paperworking-test.dev"}}
+{"ts":"2026-08-18T15:56:35.853Z","agentId":"P-37","wave":0,"step":"SIGNUP","action":"SUCCESS_CREATED","result":"SUCCESS","details":{"uid":"uid_persona_p37","email":"agent37.ken.tanaka@paperworking-test.dev","name":"Ken Tanaka","entity":"Tanaka Growth Holdings LLC"}}
+{"ts":"2026-08-18T15:56:35.853Z","agentId":"P-37","wave":1,"step":"WAVE_1","action":"COMPLETE","result":"SUCCESS","details":{"uid":"uid_persona_p37"}}
+{"ts":"2026-08-18T15:56:35.979Z","agentId":"P-37","wave":0,"step":"SIGNUP","action":"SUCCESS_CREATED","result":"SUCCESS","details":{"uid":"uid_persona_p37","email":"agent37.ken.tanaka@paperworking-test.dev","name":"Ken Tanaka","entity":"Tanaka Growth Holdings LLC"}}
+{"ts":"2026-08-18T15:56:35.980Z","agentId":"P-37","wave":1,"step":"WAVE_1","action":"COMPLETE","result":"SUCCESS","details":{"uid":"uid_persona_p37"}}
+{"ts":"2026-08-18T15:57:17.839Z","agentId":"P-37","wave":2,"step":"WAVE_2","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T15:57:17.839Z","agentId":"P-37","wave":2,"step":"WAVE_2","action":"EXCEPTION","result":"SUCCESS","details":{"error":"CRITICAL SAFETY REFUSAL: Invalid or missing Stripe secret test key. Key must start with \"sk_test_\". Received: \"...\""}}
+{"ts":"2026-08-18T15:57:17.894Z","agentId":"P-37","wave":2,"step":"WAVE_2","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T15:57:17.894Z","agentId":"P-37","wave":2,"step":"WAVE_2","action":"EXCEPTION","result":"SUCCESS","details":{"error":"CRITICAL SAFETY REFUSAL: Invalid or missing Stripe secret test key. Key must start with \"sk_test_\". Received: \"...\""}}
+{"ts":"2026-08-18T15:57:17.899Z","agentId":"P-37","wave":3,"step":"WAVE_3","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T15:57:17.900Z","agentId":"P-37","wave":0,"step":"PLAID","action":"SANDBOX_TRANSACTIONS_INGESTED","result":"SUCCESS","details":{"agentId":"P-37","account":"Plaid Checking ***4432","revenueCount":12,"expenseCount":8}}
+{"ts":"2026-08-18T15:57:17.900Z","agentId":"P-37","wave":0,"step":"PROJECTS","action":"CREATION_SUCCESS","result":"SUCCESS","details":{"created":10,"plaid":true}}
+{"ts":"2026-08-18T15:57:17.900Z","agentId":"P-37","wave":3,"step":"WAVE_3","action":"COMPLETE","result":"SUCCESS","details":{"created":10}}
+{"ts":"2026-08-18T15:57:17.939Z","agentId":"P-37","wave":4,"step":"WAVE_4","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T15:57:17.939Z","agentId":"P-37","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-52","to":"P-40","type":"LP Fund Commitment"}}
+{"ts":"2026-08-18T15:57:17.939Z","agentId":"P-37","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-74","to":"P-38","type":"LP Analytics Thread"}}
+{"ts":"2026-08-18T15:57:17.939Z","agentId":"P-37","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-40"}}
+{"ts":"2026-08-18T15:57:17.939Z","agentId":"P-37","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-38"}}
+{"ts":"2026-08-18T15:57:17.940Z","agentId":"P-37","wave":4,"step":"WAVE_4","action":"COMPLETE","result":"SUCCESS","details":{"interactions":2,"invites":2}}
+{"ts":"2026-08-18T15:57:17.942Z","agentId":"P-37","wave":3,"step":"WAVE_3","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T15:57:17.943Z","agentId":"P-37","wave":0,"step":"PLAID","action":"SANDBOX_TRANSACTIONS_INGESTED","result":"SUCCESS","details":{"agentId":"P-37","account":"Plaid Checking ***4432","revenueCount":12,"expenseCount":8}}
+{"ts":"2026-08-18T15:57:17.943Z","agentId":"P-37","wave":0,"step":"PROJECTS","action":"CREATION_SUCCESS","result":"SUCCESS","details":{"created":10,"plaid":true}}
+{"ts":"2026-08-18T15:57:17.943Z","agentId":"P-37","wave":3,"step":"WAVE_3","action":"COMPLETE","result":"SUCCESS","details":{"created":10}}
+{"ts":"2026-08-18T15:57:17.975Z","agentId":"P-37","wave":4,"step":"WAVE_4","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T15:57:17.976Z","agentId":"P-37","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-52","to":"P-40","type":"LP Fund Commitment"}}
+{"ts":"2026-08-18T15:57:17.976Z","agentId":"P-37","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-74","to":"P-38","type":"LP Analytics Thread"}}
+{"ts":"2026-08-18T15:57:17.976Z","agentId":"P-37","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-40"}}
+{"ts":"2026-08-18T15:57:17.976Z","agentId":"P-37","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-38"}}
+{"ts":"2026-08-18T15:57:17.976Z","agentId":"P-37","wave":4,"step":"WAVE_4","action":"COMPLETE","result":"SUCCESS","details":{"interactions":2,"invites":2}}
+{"ts":"2026-08-18T15:57:17.989Z","agentId":"P-37","wave":5,"step":"WAVE_5","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T15:57:17.989Z","agentId":"P-37","wave":5,"step":"WAVE_5","action":"COMPLETE","result":"SUCCESS","details":{"reportPath":"/Users/yvesdarbouze/Documents/PaperWorking/artifacts/persona-swarm/reports/P-37-experience-report.md"}}
+{"ts":"2026-08-18T15:57:18.019Z","agentId":"P-37","wave":5,"step":"WAVE_5","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T15:57:18.019Z","agentId":"P-37","wave":5,"step":"WAVE_5","action":"COMPLETE","result":"SUCCESS","details":{"reportPath":"/Users/yvesdarbouze/Documents/PaperWorking/artifacts/persona-swarm/reports/P-37-experience-report.md"}}
+{"ts":"2026-08-18T16:11:37.850Z","agentId":"P-37","wave":1,"step":"WAVE_1","action":"START","result":"SUCCESS","details":{"email":"agent37.ken.tanaka@paperworking-test.dev"}}
+{"ts":"2026-08-18T16:11:37.852Z","agentId":"P-37","wave":0,"step":"SIGNUP","action":"SUCCESS_CREATED","result":"SUCCESS","details":{"uid":"uid_persona_p37","email":"agent37.ken.tanaka@paperworking-test.dev","name":"Ken Tanaka","entity":"Tanaka Growth Holdings LLC"}}
+{"ts":"2026-08-18T16:11:37.853Z","agentId":"P-37","wave":1,"step":"WAVE_1","action":"COMPLETE","result":"SUCCESS","details":{"uid":"uid_persona_p37"}}
+{"ts":"2026-08-18T16:11:37.883Z","agentId":"P-37","wave":2,"step":"WAVE_2","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T16:11:37.883Z","agentId":"P-37","wave":0,"step":"BILLING","action":"SUBSCRIPTION_SUCCESS","result":"SUCCESS","details":{"plan":"Individual","stripeCustomerId":"cus_test_swarm_p-37","stripeSubscriptionId":"sub_test_swarm_p-37","cardLastFour":"4242","cardBrand":"visa"}}
+{"ts":"2026-08-18T16:11:37.883Z","agentId":"P-37","wave":2,"step":"WAVE_2","action":"COMPLETE","result":"SUCCESS","details":{"plan":"Individual"}}
+{"ts":"2026-08-18T16:11:37.905Z","agentId":"P-37","wave":3,"step":"WAVE_3","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T16:11:37.905Z","agentId":"P-37","wave":0,"step":"PLAID","action":"SANDBOX_TRANSACTIONS_INGESTED","result":"SUCCESS","details":{"agentId":"P-37","account":"Plaid Checking ***4432","revenueCount":12,"expenseCount":8}}
+{"ts":"2026-08-18T16:11:37.905Z","agentId":"P-37","wave":0,"step":"PROJECTS","action":"CREATION_SUCCESS","result":"SUCCESS","details":{"created":10,"plaid":true}}
+{"ts":"2026-08-18T16:11:37.905Z","agentId":"P-37","wave":3,"step":"WAVE_3","action":"COMPLETE","result":"SUCCESS","details":{"created":10}}
+{"ts":"2026-08-18T16:11:37.940Z","agentId":"P-37","wave":4,"step":"WAVE_4","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T16:11:37.941Z","agentId":"P-37","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-52","to":"P-40","type":"LP Fund Commitment"}}
+{"ts":"2026-08-18T16:11:37.941Z","agentId":"P-37","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-74","to":"P-38","type":"LP Analytics Thread"}}
+{"ts":"2026-08-18T16:11:37.941Z","agentId":"P-37","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-40"}}
+{"ts":"2026-08-18T16:11:37.941Z","agentId":"P-37","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-38"}}
+{"ts":"2026-08-18T16:11:37.941Z","agentId":"P-37","wave":4,"step":"WAVE_4","action":"COMPLETE","result":"SUCCESS","details":{"interactions":2,"invites":2}}
+{"ts":"2026-08-18T16:11:37.973Z","agentId":"P-37","wave":5,"step":"WAVE_5","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T16:11:37.974Z","agentId":"P-37","wave":5,"step":"WAVE_5","action":"COMPLETE","result":"SUCCESS","details":{"reportPath":"/Users/yvesdarbouze/Documents/PaperWorking/artifacts/persona-swarm/reports/P-37-experience-report.md"}}
+{"ts":"2026-08-18T16:11:38.121Z","agentId":"P-37","wave":1,"step":"WAVE_1","action":"START","result":"SUCCESS","details":{"email":"agent37.ken.tanaka@paperworking-test.dev"}}
+{"ts":"2026-08-18T16:11:38.121Z","agentId":"P-37","wave":0,"step":"SIGNUP","action":"SUCCESS_CREATED","result":"SUCCESS","details":{"uid":"uid_persona_p37","email":"agent37.ken.tanaka@paperworking-test.dev","name":"Ken Tanaka","entity":"Tanaka Growth Holdings LLC"}}
+{"ts":"2026-08-18T16:11:38.121Z","agentId":"P-37","wave":1,"step":"WAVE_1","action":"COMPLETE","result":"SUCCESS","details":{"uid":"uid_persona_p37"}}
+{"ts":"2026-08-18T16:11:38.139Z","agentId":"P-37","wave":2,"step":"WAVE_2","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T16:11:38.139Z","agentId":"P-37","wave":0,"step":"BILLING","action":"SUBSCRIPTION_SUCCESS","result":"SUCCESS","details":{"plan":"Individual","stripeCustomerId":"cus_test_swarm_p-37","stripeSubscriptionId":"sub_test_swarm_p-37","cardLastFour":"4242","cardBrand":"visa"}}
+{"ts":"2026-08-18T16:11:38.139Z","agentId":"P-37","wave":2,"step":"WAVE_2","action":"COMPLETE","result":"SUCCESS","details":{"plan":"Individual"}}
+{"ts":"2026-08-18T16:11:38.175Z","agentId":"P-37","wave":3,"step":"WAVE_3","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T16:11:38.175Z","agentId":"P-37","wave":0,"step":"PLAID","action":"SANDBOX_TRANSACTIONS_INGESTED","result":"SUCCESS","details":{"agentId":"P-37","account":"Plaid Checking ***4432","revenueCount":12,"expenseCount":8}}
+{"ts":"2026-08-18T16:11:38.175Z","agentId":"P-37","wave":0,"step":"PROJECTS","action":"CREATION_SUCCESS","result":"SUCCESS","details":{"created":10,"plaid":true}}
+{"ts":"2026-08-18T16:11:38.175Z","agentId":"P-37","wave":3,"step":"WAVE_3","action":"COMPLETE","result":"SUCCESS","details":{"created":10}}
+{"ts":"2026-08-18T16:11:38.203Z","agentId":"P-37","wave":4,"step":"WAVE_4","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T16:11:38.203Z","agentId":"P-37","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-52","to":"P-40","type":"LP Fund Commitment"}}
+{"ts":"2026-08-18T16:11:38.204Z","agentId":"P-37","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-74","to":"P-38","type":"LP Analytics Thread"}}
+{"ts":"2026-08-18T16:11:38.204Z","agentId":"P-37","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-40"}}
+{"ts":"2026-08-18T16:11:38.204Z","agentId":"P-37","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-38"}}
+{"ts":"2026-08-18T16:11:38.204Z","agentId":"P-37","wave":4,"step":"WAVE_4","action":"COMPLETE","result":"SUCCESS","details":{"interactions":2,"invites":2}}
+{"ts":"2026-08-18T16:11:38.220Z","agentId":"P-37","wave":5,"step":"WAVE_5","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T16:11:38.221Z","agentId":"P-37","wave":5,"step":"WAVE_5","action":"COMPLETE","result":"SUCCESS","details":{"reportPath":"/Users/yvesdarbouze/Documents/PaperWorking/artifacts/persona-swarm/reports/P-37-experience-report.md"}}

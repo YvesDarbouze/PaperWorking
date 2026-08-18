@@ -20,6 +20,7 @@ import InvestmentPanel from '@/components/deals/InvestmentPanel';
 import UnifiedMessageThread from '@/components/deals/UnifiedMessageThread';
 import InviteModal from '@/components/deals/InviteModal';
 import ShareDeal from '@/components/deals/ShareDeal';
+import { PropertyStreetViewTile } from '@/components/project/PropertyStreetViewTile';
 
 export interface ExpandedModalProps {
   isOpen: boolean;
@@ -44,6 +45,10 @@ export interface ExpandedModalProps {
     investorCount?: number;
     description?: string;
     imageUrl?: string;
+    lat?: number;
+    lng?: number;
+    latitude?: number;
+    longitude?: number;
   };
   source?: 'card' | 'detail';
   isSubscribed?: boolean;
@@ -163,17 +168,18 @@ export default function ExpandedModal({
         <div className="flex-1 overflow-y-auto grid grid-cols-1 md:grid-cols-12 gap-0 divide-y md:divide-y-0 md:divide-x divide-white/[0.06]">
           {/* ── Left Panel (60% width on Desktop: md:col-span-7) ── */}
           <div data-testid="expanded-modal-left-panel" className="md:col-span-7 p-6 space-y-6 overflow-y-auto">
-            {/* Gallery Placeholder */}
+            {/* Street View / Property Media Hero Header */}
             <div className="relative h-64 w-full rounded-[14px] bg-gradient-to-br from-slate-900 via-[#0a0a0f] to-slate-950 border border-white/10 overflow-hidden flex items-center justify-center">
               {deal.imageUrl ? (
                 <Image src={deal.imageUrl} alt={deal.address} fill className="object-cover" />
               ) : (
-                <div className="flex flex-col items-center justify-center space-y-2 opacity-40">
-                  <Building2 className="w-12 h-12 text-[#34d399]" />
-                  <span className="text-xs font-mono font-bold uppercase tracking-wider text-slate-400">
-                    High-Resolution Property Media
-                  </span>
-                </div>
+                <PropertyStreetViewTile
+                  address={deal.address || deal.propertyName}
+                  lat={deal.lat ?? deal.latitude}
+                  lng={deal.lng ?? deal.longitude}
+                  aspectRatio="hero"
+                  className="w-full h-full border-none rounded-none"
+                />
               )}
             </div>
 

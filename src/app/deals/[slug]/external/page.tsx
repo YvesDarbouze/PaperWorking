@@ -6,16 +6,20 @@ import { verifyDealInviteToken } from '@/lib/email/dealInvite';
 import { verifyDealBroadcastToken } from '@/lib/email/dealBroadcast';
 import { MapPin, Lock, Send, CheckCircle2, Sparkles, Mail, Phone } from 'lucide-react';
 import Link from 'next/link';
+import { StreetViewHeader } from '@/components/deals/StreetViewHeader';
 
-interface ExternalTokenData {
+interface TokenData {
   address?: string;
-  creatorName?: string;
   senderName?: string;
+  creatorName?: string;
+  message?: string;
   senderEmail?: string;
   inviteeEmail?: string;
-  message?: string;
   includeBusinessCard?: boolean;
   type?: string;
+  streetViewUrl?: string | null;
+  lat?: number;
+  lng?: number;
   [key: string]: unknown;
 }
 
@@ -28,7 +32,7 @@ export default function ExternalDealPage() {
   const isBroadcastParam = searchParams?.get('broadcast') === 'true';
   const slug = (params?.slug as string) || '';
 
-  const initialVerified = useMemo<{ valid: boolean; data: ExternalTokenData | null }>(() => {
+  const initialVerified = useMemo<{ valid: boolean; data: TokenData | null }>(() => {
     if (!token) return { valid: false, data: null };
     const broadcastVerified = verifyDealBroadcastToken(token);
     if (broadcastVerified) return { valid: true, data: { ...broadcastVerified, type: 'broadcast' } };
@@ -38,7 +42,7 @@ export default function ExternalDealPage() {
   }, [token]);
 
   const [_isValidToken, setIsValidToken] = useState(() => initialVerified.valid);
-  const [tokenData, setTokenData] = useState<ExternalTokenData | null>(() => initialVerified.data);
+  const [tokenData, setTokenData] = useState<TokenData | null>(() => initialVerified.data);
   const [replyText, setReplyText] = useState('');
   const [isSendingReply, setIsSendingReply] = useState(false);
   const [replySent, setReplySent] = useState(false);
@@ -99,6 +103,13 @@ export default function ExternalDealPage() {
               <span>Austin, TX · Shared by <strong className="text-slate-200">{tokenData?.senderName || tokenData?.creatorName || 'Yves Darbouze'}</strong></span>
             </p>
           </div>
+
+          {/* Property Street View Hero Header */}
+          <StreetViewHeader
+            address={tokenData?.address || 'Property Address'}
+            streetViewUrl={tokenData?.streetViewUrl}
+            height={250}
+          />
 
           {/* Broadcast Sender Message */}
           {isBroadcast && tokenData?.message && (

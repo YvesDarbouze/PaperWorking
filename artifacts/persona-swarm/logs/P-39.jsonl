@@ -964,3 +964,487 @@
 {"ts":"2026-08-18T09:42:00.126Z","agentId":"P-39","wave":5,"step":"WAVE_5","action":"COMPLETE","result":"SUCCESS","details":{"reportPath":"/Users/yvesdarbouze/Documents/PaperWorking/artifacts/persona-swarm/reports/P-39-experience-report.md"}}
 {"ts":"2026-08-18T09:42:00.142Z","agentId":"P-39","wave":5,"step":"WAVE_5","action":"START","result":"SUCCESS"}
 {"ts":"2026-08-18T09:42:00.142Z","agentId":"P-39","wave":5,"step":"WAVE_5","action":"COMPLETE","result":"SUCCESS","details":{"reportPath":"/Users/yvesdarbouze/Documents/PaperWorking/artifacts/persona-swarm/reports/P-39-experience-report.md"}}
+{"ts":"2026-08-18T10:58:00.025Z","agentId":"P-39","wave":1,"step":"WAVE_1","action":"START","result":"SUCCESS","details":{"email":"agent39.nathaniel.cross@paperworking-test.dev"}}
+{"ts":"2026-08-18T10:58:00.025Z","agentId":"P-39","wave":1,"step":"WAVE_1","action":"START","result":"SUCCESS","details":{"email":"agent39.nathaniel.cross@paperworking-test.dev"}}
+{"ts":"2026-08-18T10:58:00.026Z","agentId":"P-39","wave":0,"step":"SIGNUP","action":"SUCCESS_CREATED","result":"SUCCESS","details":{"uid":"uid_persona_p39","email":"agent39.nathaniel.cross@paperworking-test.dev","name":"Nathaniel Cross","entity":"Crossbeam Real Estate Partners LLC"}}
+{"ts":"2026-08-18T10:58:00.026Z","agentId":"P-39","wave":0,"step":"SIGNUP","action":"SUCCESS_CREATED","result":"SUCCESS","details":{"uid":"uid_persona_p39","email":"agent39.nathaniel.cross@paperworking-test.dev","name":"Nathaniel Cross","entity":"Crossbeam Real Estate Partners LLC"}}
+{"ts":"2026-08-18T10:58:00.026Z","agentId":"P-39","wave":1,"step":"WAVE_1","action":"COMPLETE","result":"SUCCESS","details":{"uid":"uid_persona_p39"}}
+{"ts":"2026-08-18T10:58:00.026Z","agentId":"P-39","wave":1,"step":"WAVE_1","action":"COMPLETE","result":"SUCCESS","details":{"uid":"uid_persona_p39"}}
+{"ts":"2026-08-18T10:58:00.076Z","agentId":"P-39","wave":2,"step":"WAVE_2","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T10:58:00.076Z","agentId":"P-39","wave":0,"step":"BILLING","action":"SUBSCRIPTION_SUCCESS","result":"SUCCESS","details":{"plan":"Individual","stripeCustomerId":"cus_test_swarm_p-39","stripeSubscriptionId":"sub_test_swarm_p-39","cardLastFour":"4242","cardBrand":"visa"}}
+{"ts":"2026-08-18T10:58:00.076Z","agentId":"P-39","wave":2,"step":"WAVE_2","action":"COMPLETE","result":"SUCCESS","details":{"plan":"Individual"}}
+{"ts":"2026-08-18T10:58:00.077Z","agentId":"P-39","wave":2,"step":"WAVE_2","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T10:58:00.077Z","agentId":"P-39","wave":0,"step":"BILLING","action":"SUBSCRIPTION_SUCCESS","result":"SUCCESS","details":{"plan":"Individual","stripeCustomerId":"cus_test_swarm_p-39","stripeSubscriptionId":"sub_test_swarm_p-39","cardLastFour":"4242","cardBrand":"visa"}}
+{"ts":"2026-08-18T10:58:00.078Z","agentId":"P-39","wave":2,"step":"WAVE_2","action":"COMPLETE","result":"SUCCESS","details":{"plan":"Individual"}}
+{"ts":"2026-08-18T10:58:00.226Z","agentId":"P-39","wave":3,"step":"WAVE_3","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T10:58:00.229Z","agentId":"P-39","wave":3,"step":"WAVE_3","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T10:58:00.231Z","agentId":"P-39","wave":0,"step":"PROJECTS","action":"CREATION_SUCCESS","result":"SUCCESS","details":{"created":10,"plaid":false}}
+{"ts":"2026-08-18T10:58:00.231Z","agentId":"P-39","wave":3,"step":"WAVE_3","action":"COMPLETE","result":"SUCCESS","details":{"created":10}}
+{"ts":"2026-08-18T10:58:00.238Z","agentId":"P-39","wave":0,"step":"PROJECTS","action":"CREATION_SUCCESS","result":"SUCCESS","details":{"created":10,"plaid":false}}
+{"ts":"2026-08-18T10:58:00.238Z","agentId":"P-39","wave":3,"step":"WAVE_3","action":"COMPLETE","result":"SUCCESS","details":{"created":10}}
+{"ts":"2026-08-18T10:58:00.403Z","agentId":"P-39","wave":4,"step":"WAVE_4","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T10:58:00.404Z","agentId":"P-39","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-49","to":"P-32","type":"PE Co-Invest"}}
+{"ts":"2026-08-18T10:58:00.404Z","agentId":"P-39","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-43"}}
+{"ts":"2026-08-18T10:58:00.404Z","agentId":"P-39","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-32"}}
+{"ts":"2026-08-18T10:58:00.409Z","agentId":"P-39","wave":4,"step":"WAVE_4","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T10:58:00.410Z","agentId":"P-39","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-49","to":"P-32","type":"PE Co-Invest"}}
+{"ts":"2026-08-18T10:58:00.411Z","agentId":"P-39","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-43"}}
+{"ts":"2026-08-18T10:58:00.412Z","agentId":"P-39","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-32"}}
+{"ts":"2026-08-18T10:58:00.412Z","agentId":"P-39","wave":4,"step":"WAVE_4","action":"COMPLETE","result":"SUCCESS","details":{"interactions":1,"invites":2}}
+{"ts":"2026-08-18T10:58:00.416Z","agentId":"P-39","wave":4,"step":"WAVE_4","action":"COMPLETE","result":"SUCCESS","details":{"interactions":1,"invites":2}}
+{"ts":"2026-08-18T10:58:00.493Z","agentId":"P-39","wave":5,"step":"WAVE_5","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T10:58:00.494Z","agentId":"P-39","wave":5,"step":"WAVE_5","action":"COMPLETE","result":"SUCCESS","details":{"reportPath":"/Users/yvesdarbouze/Documents/PaperWorking/artifacts/persona-swarm/reports/P-39-experience-report.md"}}
+{"ts":"2026-08-18T10:58:00.494Z","agentId":"P-39","wave":5,"step":"WAVE_5","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T10:58:00.495Z","agentId":"P-39","wave":5,"step":"WAVE_5","action":"COMPLETE","result":"SUCCESS","details":{"reportPath":"/Users/yvesdarbouze/Documents/PaperWorking/artifacts/persona-swarm/reports/P-39-experience-report.md"}}
+{"ts":"2026-08-18T10:58:28.481Z","agentId":"P-39","wave":1,"step":"WAVE_1","action":"START","result":"SUCCESS","details":{"email":"agent39.nathaniel.cross@paperworking-test.dev"}}
+{"ts":"2026-08-18T10:58:28.481Z","agentId":"P-39","wave":0,"step":"SIGNUP","action":"SUCCESS_CREATED","result":"SUCCESS","details":{"uid":"uid_persona_p39","email":"agent39.nathaniel.cross@paperworking-test.dev","name":"Nathaniel Cross","entity":"Crossbeam Real Estate Partners LLC"}}
+{"ts":"2026-08-18T10:58:28.481Z","agentId":"P-39","wave":1,"step":"WAVE_1","action":"COMPLETE","result":"SUCCESS","details":{"uid":"uid_persona_p39"}}
+{"ts":"2026-08-18T10:58:28.539Z","agentId":"P-39","wave":2,"step":"WAVE_2","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T10:58:28.539Z","agentId":"P-39","wave":0,"step":"BILLING","action":"SUBSCRIPTION_SUCCESS","result":"SUCCESS","details":{"plan":"Individual","stripeCustomerId":"cus_test_swarm_p-39","stripeSubscriptionId":"sub_test_swarm_p-39","cardLastFour":"4242","cardBrand":"visa"}}
+{"ts":"2026-08-18T10:58:28.539Z","agentId":"P-39","wave":2,"step":"WAVE_2","action":"COMPLETE","result":"SUCCESS","details":{"plan":"Individual"}}
+{"ts":"2026-08-18T10:58:28.650Z","agentId":"P-39","wave":3,"step":"WAVE_3","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T10:58:28.652Z","agentId":"P-39","wave":0,"step":"PROJECTS","action":"CREATION_SUCCESS","result":"SUCCESS","details":{"created":10,"plaid":false}}
+{"ts":"2026-08-18T10:58:28.653Z","agentId":"P-39","wave":3,"step":"WAVE_3","action":"COMPLETE","result":"SUCCESS","details":{"created":10}}
+{"ts":"2026-08-18T10:58:28.728Z","agentId":"P-39","wave":4,"step":"WAVE_4","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T10:58:28.729Z","agentId":"P-39","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-49","to":"P-32","type":"PE Co-Invest"}}
+{"ts":"2026-08-18T10:58:28.729Z","agentId":"P-39","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-43"}}
+{"ts":"2026-08-18T10:58:28.730Z","agentId":"P-39","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-32"}}
+{"ts":"2026-08-18T10:58:28.730Z","agentId":"P-39","wave":4,"step":"WAVE_4","action":"COMPLETE","result":"SUCCESS","details":{"interactions":1,"invites":2}}
+{"ts":"2026-08-18T10:58:28.773Z","agentId":"P-39","wave":5,"step":"WAVE_5","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T10:58:28.773Z","agentId":"P-39","wave":5,"step":"WAVE_5","action":"COMPLETE","result":"SUCCESS","details":{"reportPath":"/Users/yvesdarbouze/Documents/PaperWorking/artifacts/persona-swarm/reports/P-39-experience-report.md"}}
+{"ts":"2026-08-18T10:58:35.224Z","agentId":"P-39","wave":1,"step":"WAVE_1","action":"START","result":"SUCCESS","details":{"email":"agent39.nathaniel.cross@paperworking-test.dev"}}
+{"ts":"2026-08-18T10:58:35.225Z","agentId":"P-39","wave":0,"step":"SIGNUP","action":"SUCCESS_CREATED","result":"SUCCESS","details":{"uid":"uid_persona_p39","email":"agent39.nathaniel.cross@paperworking-test.dev","name":"Nathaniel Cross","entity":"Crossbeam Real Estate Partners LLC"}}
+{"ts":"2026-08-18T10:58:35.225Z","agentId":"P-39","wave":1,"step":"WAVE_1","action":"COMPLETE","result":"SUCCESS","details":{"uid":"uid_persona_p39"}}
+{"ts":"2026-08-18T10:58:35.352Z","agentId":"P-39","wave":2,"step":"WAVE_2","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T10:58:35.353Z","agentId":"P-39","wave":0,"step":"BILLING","action":"SUBSCRIPTION_SUCCESS","result":"SUCCESS","details":{"plan":"Individual","stripeCustomerId":"cus_test_swarm_p-39","stripeSubscriptionId":"sub_test_swarm_p-39","cardLastFour":"4242","cardBrand":"visa"}}
+{"ts":"2026-08-18T10:58:35.354Z","agentId":"P-39","wave":2,"step":"WAVE_2","action":"COMPLETE","result":"SUCCESS","details":{"plan":"Individual"}}
+{"ts":"2026-08-18T10:58:35.633Z","agentId":"P-39","wave":3,"step":"WAVE_3","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T10:58:35.637Z","agentId":"P-39","wave":0,"step":"PROJECTS","action":"CREATION_SUCCESS","result":"SUCCESS","details":{"created":10,"plaid":false}}
+{"ts":"2026-08-18T10:58:35.637Z","agentId":"P-39","wave":3,"step":"WAVE_3","action":"COMPLETE","result":"SUCCESS","details":{"created":10}}
+{"ts":"2026-08-18T10:58:35.919Z","agentId":"P-39","wave":4,"step":"WAVE_4","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T10:58:35.920Z","agentId":"P-39","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-49","to":"P-32","type":"PE Co-Invest"}}
+{"ts":"2026-08-18T10:58:35.920Z","agentId":"P-39","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-43"}}
+{"ts":"2026-08-18T10:58:35.920Z","agentId":"P-39","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-32"}}
+{"ts":"2026-08-18T10:58:35.920Z","agentId":"P-39","wave":4,"step":"WAVE_4","action":"COMPLETE","result":"SUCCESS","details":{"interactions":1,"invites":2}}
+{"ts":"2026-08-18T10:58:36.041Z","agentId":"P-39","wave":5,"step":"WAVE_5","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T10:58:36.042Z","agentId":"P-39","wave":5,"step":"WAVE_5","action":"COMPLETE","result":"SUCCESS","details":{"reportPath":"/Users/yvesdarbouze/Documents/PaperWorking/artifacts/persona-swarm/reports/P-39-experience-report.md"}}
+{"ts":"2026-08-18T10:59:01.731Z","agentId":"P-39","wave":1,"step":"WAVE_1","action":"START","result":"SUCCESS","details":{"email":"agent39.nathaniel.cross@paperworking-test.dev"}}
+{"ts":"2026-08-18T10:59:01.731Z","agentId":"P-39","wave":0,"step":"SIGNUP","action":"SUCCESS_CREATED","result":"SUCCESS","details":{"uid":"uid_persona_p39","email":"agent39.nathaniel.cross@paperworking-test.dev","name":"Nathaniel Cross","entity":"Crossbeam Real Estate Partners LLC"}}
+{"ts":"2026-08-18T10:59:01.731Z","agentId":"P-39","wave":1,"step":"WAVE_1","action":"COMPLETE","result":"SUCCESS","details":{"uid":"uid_persona_p39"}}
+{"ts":"2026-08-18T10:59:01.761Z","agentId":"P-39","wave":1,"step":"WAVE_1","action":"START","result":"SUCCESS","details":{"email":"agent39.nathaniel.cross@paperworking-test.dev"}}
+{"ts":"2026-08-18T10:59:01.761Z","agentId":"P-39","wave":0,"step":"SIGNUP","action":"SUCCESS_CREATED","result":"SUCCESS","details":{"uid":"uid_persona_p39","email":"agent39.nathaniel.cross@paperworking-test.dev","name":"Nathaniel Cross","entity":"Crossbeam Real Estate Partners LLC"}}
+{"ts":"2026-08-18T10:59:01.762Z","agentId":"P-39","wave":1,"step":"WAVE_1","action":"COMPLETE","result":"SUCCESS","details":{"uid":"uid_persona_p39"}}
+{"ts":"2026-08-18T10:59:01.781Z","agentId":"P-39","wave":2,"step":"WAVE_2","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T10:59:01.781Z","agentId":"P-39","wave":0,"step":"BILLING","action":"SUBSCRIPTION_SUCCESS","result":"SUCCESS","details":{"plan":"Individual","stripeCustomerId":"cus_test_swarm_p-39","stripeSubscriptionId":"sub_test_swarm_p-39","cardLastFour":"4242","cardBrand":"visa"}}
+{"ts":"2026-08-18T10:59:01.781Z","agentId":"P-39","wave":2,"step":"WAVE_2","action":"COMPLETE","result":"SUCCESS","details":{"plan":"Individual"}}
+{"ts":"2026-08-18T10:59:01.821Z","agentId":"P-39","wave":2,"step":"WAVE_2","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T10:59:01.822Z","agentId":"P-39","wave":0,"step":"BILLING","action":"SUBSCRIPTION_SUCCESS","result":"SUCCESS","details":{"plan":"Individual","stripeCustomerId":"cus_test_swarm_p-39","stripeSubscriptionId":"sub_test_swarm_p-39","cardLastFour":"4242","cardBrand":"visa"}}
+{"ts":"2026-08-18T10:59:01.823Z","agentId":"P-39","wave":2,"step":"WAVE_2","action":"COMPLETE","result":"SUCCESS","details":{"plan":"Individual"}}
+{"ts":"2026-08-18T10:59:01.937Z","agentId":"P-39","wave":3,"step":"WAVE_3","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T10:59:01.940Z","agentId":"P-39","wave":0,"step":"PROJECTS","action":"CREATION_SUCCESS","result":"SUCCESS","details":{"created":10,"plaid":false}}
+{"ts":"2026-08-18T10:59:01.940Z","agentId":"P-39","wave":3,"step":"WAVE_3","action":"COMPLETE","result":"SUCCESS","details":{"created":10}}
+{"ts":"2026-08-18T10:59:01.978Z","agentId":"P-39","wave":3,"step":"WAVE_3","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T10:59:01.981Z","agentId":"P-39","wave":0,"step":"PROJECTS","action":"CREATION_SUCCESS","result":"SUCCESS","details":{"created":10,"plaid":false}}
+{"ts":"2026-08-18T10:59:01.981Z","agentId":"P-39","wave":3,"step":"WAVE_3","action":"COMPLETE","result":"SUCCESS","details":{"created":10}}
+{"ts":"2026-08-18T10:59:02.032Z","agentId":"P-39","wave":4,"step":"WAVE_4","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T10:59:02.033Z","agentId":"P-39","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-49","to":"P-32","type":"PE Co-Invest"}}
+{"ts":"2026-08-18T10:59:02.033Z","agentId":"P-39","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-43"}}
+{"ts":"2026-08-18T10:59:02.033Z","agentId":"P-39","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-32"}}
+{"ts":"2026-08-18T10:59:02.033Z","agentId":"P-39","wave":4,"step":"WAVE_4","action":"COMPLETE","result":"SUCCESS","details":{"interactions":1,"invites":2}}
+{"ts":"2026-08-18T10:59:02.074Z","agentId":"P-39","wave":4,"step":"WAVE_4","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T10:59:02.075Z","agentId":"P-39","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-49","to":"P-32","type":"PE Co-Invest"}}
+{"ts":"2026-08-18T10:59:02.075Z","agentId":"P-39","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-43"}}
+{"ts":"2026-08-18T10:59:02.075Z","agentId":"P-39","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-32"}}
+{"ts":"2026-08-18T10:59:02.075Z","agentId":"P-39","wave":4,"step":"WAVE_4","action":"COMPLETE","result":"SUCCESS","details":{"interactions":1,"invites":2}}
+{"ts":"2026-08-18T10:59:02.116Z","agentId":"P-39","wave":5,"step":"WAVE_5","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T10:59:02.116Z","agentId":"P-39","wave":5,"step":"WAVE_5","action":"COMPLETE","result":"SUCCESS","details":{"reportPath":"/Users/yvesdarbouze/Documents/PaperWorking/artifacts/persona-swarm/reports/P-39-experience-report.md"}}
+{"ts":"2026-08-18T10:59:02.157Z","agentId":"P-39","wave":5,"step":"WAVE_5","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T10:59:02.158Z","agentId":"P-39","wave":5,"step":"WAVE_5","action":"COMPLETE","result":"SUCCESS","details":{"reportPath":"/Users/yvesdarbouze/Documents/PaperWorking/artifacts/persona-swarm/reports/P-39-experience-report.md"}}
+{"ts":"2026-08-18T10:59:27.023Z","agentId":"P-39","wave":1,"step":"WAVE_1","action":"START","result":"SUCCESS","details":{"email":"agent39.nathaniel.cross@paperworking-test.dev"}}
+{"ts":"2026-08-18T10:59:27.023Z","agentId":"P-39","wave":0,"step":"SIGNUP","action":"SUCCESS_CREATED","result":"SUCCESS","details":{"uid":"uid_persona_p39","email":"agent39.nathaniel.cross@paperworking-test.dev","name":"Nathaniel Cross","entity":"Crossbeam Real Estate Partners LLC"}}
+{"ts":"2026-08-18T10:59:27.023Z","agentId":"P-39","wave":1,"step":"WAVE_1","action":"COMPLETE","result":"SUCCESS","details":{"uid":"uid_persona_p39"}}
+{"ts":"2026-08-18T10:59:27.074Z","agentId":"P-39","wave":2,"step":"WAVE_2","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T10:59:27.075Z","agentId":"P-39","wave":0,"step":"BILLING","action":"SUBSCRIPTION_SUCCESS","result":"SUCCESS","details":{"plan":"Individual","stripeCustomerId":"cus_test_swarm_p-39","stripeSubscriptionId":"sub_test_swarm_p-39","cardLastFour":"4242","cardBrand":"visa"}}
+{"ts":"2026-08-18T10:59:27.075Z","agentId":"P-39","wave":2,"step":"WAVE_2","action":"COMPLETE","result":"SUCCESS","details":{"plan":"Individual"}}
+{"ts":"2026-08-18T10:59:27.194Z","agentId":"P-39","wave":3,"step":"WAVE_3","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T10:59:27.196Z","agentId":"P-39","wave":0,"step":"PROJECTS","action":"CREATION_SUCCESS","result":"SUCCESS","details":{"created":10,"plaid":false}}
+{"ts":"2026-08-18T10:59:27.197Z","agentId":"P-39","wave":3,"step":"WAVE_3","action":"COMPLETE","result":"SUCCESS","details":{"created":10}}
+{"ts":"2026-08-18T10:59:27.272Z","agentId":"P-39","wave":4,"step":"WAVE_4","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T10:59:27.272Z","agentId":"P-39","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-49","to":"P-32","type":"PE Co-Invest"}}
+{"ts":"2026-08-18T10:59:27.272Z","agentId":"P-39","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-43"}}
+{"ts":"2026-08-18T10:59:27.273Z","agentId":"P-39","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-32"}}
+{"ts":"2026-08-18T10:59:27.273Z","agentId":"P-39","wave":4,"step":"WAVE_4","action":"COMPLETE","result":"SUCCESS","details":{"interactions":1,"invites":2}}
+{"ts":"2026-08-18T10:59:27.313Z","agentId":"P-39","wave":5,"step":"WAVE_5","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T10:59:27.313Z","agentId":"P-39","wave":5,"step":"WAVE_5","action":"COMPLETE","result":"SUCCESS","details":{"reportPath":"/Users/yvesdarbouze/Documents/PaperWorking/artifacts/persona-swarm/reports/P-39-experience-report.md"}}
+{"ts":"2026-08-18T10:59:30.161Z","agentId":"P-39","wave":1,"step":"WAVE_1","action":"START","result":"SUCCESS","details":{"email":"agent39.nathaniel.cross@paperworking-test.dev"}}
+{"ts":"2026-08-18T10:59:30.162Z","agentId":"P-39","wave":0,"step":"SIGNUP","action":"SUCCESS_CREATED","result":"SUCCESS","details":{"uid":"uid_persona_p39","email":"agent39.nathaniel.cross@paperworking-test.dev","name":"Nathaniel Cross","entity":"Crossbeam Real Estate Partners LLC"}}
+{"ts":"2026-08-18T10:59:30.162Z","agentId":"P-39","wave":1,"step":"WAVE_1","action":"COMPLETE","result":"SUCCESS","details":{"uid":"uid_persona_p39"}}
+{"ts":"2026-08-18T10:59:30.215Z","agentId":"P-39","wave":2,"step":"WAVE_2","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T10:59:30.215Z","agentId":"P-39","wave":0,"step":"BILLING","action":"SUBSCRIPTION_SUCCESS","result":"SUCCESS","details":{"plan":"Individual","stripeCustomerId":"cus_test_swarm_p-39","stripeSubscriptionId":"sub_test_swarm_p-39","cardLastFour":"4242","cardBrand":"visa"}}
+{"ts":"2026-08-18T10:59:30.215Z","agentId":"P-39","wave":2,"step":"WAVE_2","action":"COMPLETE","result":"SUCCESS","details":{"plan":"Individual"}}
+{"ts":"2026-08-18T10:59:30.371Z","agentId":"P-39","wave":3,"step":"WAVE_3","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T10:59:30.376Z","agentId":"P-39","wave":0,"step":"PROJECTS","action":"CREATION_SUCCESS","result":"SUCCESS","details":{"created":10,"plaid":false}}
+{"ts":"2026-08-18T10:59:30.376Z","agentId":"P-39","wave":3,"step":"WAVE_3","action":"COMPLETE","result":"SUCCESS","details":{"created":10}}
+{"ts":"2026-08-18T10:59:30.495Z","agentId":"P-39","wave":4,"step":"WAVE_4","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T10:59:30.496Z","agentId":"P-39","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-49","to":"P-32","type":"PE Co-Invest"}}
+{"ts":"2026-08-18T10:59:30.496Z","agentId":"P-39","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-43"}}
+{"ts":"2026-08-18T10:59:30.496Z","agentId":"P-39","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-32"}}
+{"ts":"2026-08-18T10:59:30.496Z","agentId":"P-39","wave":4,"step":"WAVE_4","action":"COMPLETE","result":"SUCCESS","details":{"interactions":1,"invites":2}}
+{"ts":"2026-08-18T10:59:30.589Z","agentId":"P-39","wave":5,"step":"WAVE_5","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T10:59:30.589Z","agentId":"P-39","wave":5,"step":"WAVE_5","action":"COMPLETE","result":"SUCCESS","details":{"reportPath":"/Users/yvesdarbouze/Documents/PaperWorking/artifacts/persona-swarm/reports/P-39-experience-report.md"}}
+{"ts":"2026-08-18T11:00:11.755Z","agentId":"P-39","wave":1,"step":"WAVE_1","action":"START","result":"SUCCESS","details":{"email":"agent39.nathaniel.cross@paperworking-test.dev"}}
+{"ts":"2026-08-18T11:00:11.756Z","agentId":"P-39","wave":0,"step":"SIGNUP","action":"SUCCESS_CREATED","result":"SUCCESS","details":{"uid":"uid_persona_p39","email":"agent39.nathaniel.cross@paperworking-test.dev","name":"Nathaniel Cross","entity":"Crossbeam Real Estate Partners LLC"}}
+{"ts":"2026-08-18T11:00:11.756Z","agentId":"P-39","wave":1,"step":"WAVE_1","action":"COMPLETE","result":"SUCCESS","details":{"uid":"uid_persona_p39"}}
+{"ts":"2026-08-18T11:00:11.758Z","agentId":"P-39","wave":1,"step":"WAVE_1","action":"START","result":"SUCCESS","details":{"email":"agent39.nathaniel.cross@paperworking-test.dev"}}
+{"ts":"2026-08-18T11:00:11.759Z","agentId":"P-39","wave":0,"step":"SIGNUP","action":"SUCCESS_CREATED","result":"SUCCESS","details":{"uid":"uid_persona_p39","email":"agent39.nathaniel.cross@paperworking-test.dev","name":"Nathaniel Cross","entity":"Crossbeam Real Estate Partners LLC"}}
+{"ts":"2026-08-18T11:00:11.759Z","agentId":"P-39","wave":1,"step":"WAVE_1","action":"COMPLETE","result":"SUCCESS","details":{"uid":"uid_persona_p39"}}
+{"ts":"2026-08-18T11:00:11.806Z","agentId":"P-39","wave":2,"step":"WAVE_2","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T11:00:11.806Z","agentId":"P-39","wave":0,"step":"BILLING","action":"SUBSCRIPTION_SUCCESS","result":"SUCCESS","details":{"plan":"Individual","stripeCustomerId":"cus_test_swarm_p-39","stripeSubscriptionId":"sub_test_swarm_p-39","cardLastFour":"4242","cardBrand":"visa"}}
+{"ts":"2026-08-18T11:00:11.806Z","agentId":"P-39","wave":2,"step":"WAVE_2","action":"COMPLETE","result":"SUCCESS","details":{"plan":"Individual"}}
+{"ts":"2026-08-18T11:00:11.807Z","agentId":"P-39","wave":2,"step":"WAVE_2","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T11:00:11.807Z","agentId":"P-39","wave":0,"step":"BILLING","action":"SUBSCRIPTION_SUCCESS","result":"SUCCESS","details":{"plan":"Individual","stripeCustomerId":"cus_test_swarm_p-39","stripeSubscriptionId":"sub_test_swarm_p-39","cardLastFour":"4242","cardBrand":"visa"}}
+{"ts":"2026-08-18T11:00:11.807Z","agentId":"P-39","wave":2,"step":"WAVE_2","action":"COMPLETE","result":"SUCCESS","details":{"plan":"Individual"}}
+{"ts":"2026-08-18T11:00:11.933Z","agentId":"P-39","wave":3,"step":"WAVE_3","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T11:00:11.936Z","agentId":"P-39","wave":0,"step":"PROJECTS","action":"CREATION_SUCCESS","result":"SUCCESS","details":{"created":10,"plaid":false}}
+{"ts":"2026-08-18T11:00:11.936Z","agentId":"P-39","wave":3,"step":"WAVE_3","action":"COMPLETE","result":"SUCCESS","details":{"created":10}}
+{"ts":"2026-08-18T11:00:11.945Z","agentId":"P-39","wave":3,"step":"WAVE_3","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T11:00:11.948Z","agentId":"P-39","wave":0,"step":"PROJECTS","action":"CREATION_SUCCESS","result":"SUCCESS","details":{"created":10,"plaid":false}}
+{"ts":"2026-08-18T11:00:11.948Z","agentId":"P-39","wave":3,"step":"WAVE_3","action":"COMPLETE","result":"SUCCESS","details":{"created":10}}
+{"ts":"2026-08-18T11:00:12.011Z","agentId":"P-39","wave":4,"step":"WAVE_4","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T11:00:12.011Z","agentId":"P-39","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-49","to":"P-32","type":"PE Co-Invest"}}
+{"ts":"2026-08-18T11:00:12.012Z","agentId":"P-39","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-43"}}
+{"ts":"2026-08-18T11:00:12.012Z","agentId":"P-39","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-32"}}
+{"ts":"2026-08-18T11:00:12.012Z","agentId":"P-39","wave":4,"step":"WAVE_4","action":"COMPLETE","result":"SUCCESS","details":{"interactions":1,"invites":2}}
+{"ts":"2026-08-18T11:00:12.037Z","agentId":"P-39","wave":4,"step":"WAVE_4","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T11:00:12.038Z","agentId":"P-39","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-49","to":"P-32","type":"PE Co-Invest"}}
+{"ts":"2026-08-18T11:00:12.039Z","agentId":"P-39","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-43"}}
+{"ts":"2026-08-18T11:00:12.039Z","agentId":"P-39","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-32"}}
+{"ts":"2026-08-18T11:00:12.039Z","agentId":"P-39","wave":4,"step":"WAVE_4","action":"COMPLETE","result":"SUCCESS","details":{"interactions":1,"invites":2}}
+{"ts":"2026-08-18T11:00:12.081Z","agentId":"P-39","wave":5,"step":"WAVE_5","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T11:00:12.082Z","agentId":"P-39","wave":5,"step":"WAVE_5","action":"COMPLETE","result":"SUCCESS","details":{"reportPath":"/Users/yvesdarbouze/Documents/PaperWorking/artifacts/persona-swarm/reports/P-39-experience-report.md"}}
+{"ts":"2026-08-18T11:00:12.097Z","agentId":"P-39","wave":5,"step":"WAVE_5","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T11:00:12.097Z","agentId":"P-39","wave":5,"step":"WAVE_5","action":"COMPLETE","result":"SUCCESS","details":{"reportPath":"/Users/yvesdarbouze/Documents/PaperWorking/artifacts/persona-swarm/reports/P-39-experience-report.md"}}
+{"ts":"2026-08-18T11:12:29.756Z","agentId":"P-39","wave":1,"step":"WAVE_1","action":"START","result":"SUCCESS","details":{"email":"agent39.nathaniel.cross@paperworking-test.dev"}}
+{"ts":"2026-08-18T11:12:29.756Z","agentId":"P-39","wave":0,"step":"SIGNUP","action":"SUCCESS_CREATED","result":"SUCCESS","details":{"uid":"uid_persona_p39","email":"agent39.nathaniel.cross@paperworking-test.dev","name":"Nathaniel Cross","entity":"Crossbeam Real Estate Partners LLC"}}
+{"ts":"2026-08-18T11:12:29.756Z","agentId":"P-39","wave":1,"step":"WAVE_1","action":"COMPLETE","result":"SUCCESS","details":{"uid":"uid_persona_p39"}}
+{"ts":"2026-08-18T11:12:29.798Z","agentId":"P-39","wave":2,"step":"WAVE_2","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T11:12:29.798Z","agentId":"P-39","wave":0,"step":"BILLING","action":"SUBSCRIPTION_SUCCESS","result":"SUCCESS","details":{"plan":"Individual","stripeCustomerId":"cus_test_swarm_p-39","stripeSubscriptionId":"sub_test_swarm_p-39","cardLastFour":"4242","cardBrand":"visa"}}
+{"ts":"2026-08-18T11:12:29.799Z","agentId":"P-39","wave":2,"step":"WAVE_2","action":"COMPLETE","result":"SUCCESS","details":{"plan":"Individual"}}
+{"ts":"2026-08-18T11:12:29.953Z","agentId":"P-39","wave":3,"step":"WAVE_3","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T11:12:29.956Z","agentId":"P-39","wave":0,"step":"PROJECTS","action":"CREATION_SUCCESS","result":"SUCCESS","details":{"created":10,"plaid":false}}
+{"ts":"2026-08-18T11:12:29.956Z","agentId":"P-39","wave":3,"step":"WAVE_3","action":"COMPLETE","result":"SUCCESS","details":{"created":10}}
+{"ts":"2026-08-18T11:12:30.043Z","agentId":"P-39","wave":4,"step":"WAVE_4","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T11:12:30.043Z","agentId":"P-39","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-49","to":"P-32","type":"PE Co-Invest"}}
+{"ts":"2026-08-18T11:12:30.043Z","agentId":"P-39","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-43"}}
+{"ts":"2026-08-18T11:12:30.043Z","agentId":"P-39","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-32"}}
+{"ts":"2026-08-18T11:12:30.044Z","agentId":"P-39","wave":4,"step":"WAVE_4","action":"COMPLETE","result":"SUCCESS","details":{"interactions":1,"invites":2}}
+{"ts":"2026-08-18T11:12:30.107Z","agentId":"P-39","wave":5,"step":"WAVE_5","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T11:12:30.108Z","agentId":"P-39","wave":5,"step":"WAVE_5","action":"COMPLETE","result":"SUCCESS","details":{"reportPath":"/Users/yvesdarbouze/Documents/PaperWorking/artifacts/persona-swarm/reports/P-39-experience-report.md"}}
+{"ts":"2026-08-18T11:12:32.950Z","agentId":"P-39","wave":1,"step":"WAVE_1","action":"START","result":"SUCCESS","details":{"email":"agent39.nathaniel.cross@paperworking-test.dev"}}
+{"ts":"2026-08-18T11:12:32.950Z","agentId":"P-39","wave":0,"step":"SIGNUP","action":"SUCCESS_CREATED","result":"SUCCESS","details":{"uid":"uid_persona_p39","email":"agent39.nathaniel.cross@paperworking-test.dev","name":"Nathaniel Cross","entity":"Crossbeam Real Estate Partners LLC"}}
+{"ts":"2026-08-18T11:12:32.950Z","agentId":"P-39","wave":1,"step":"WAVE_1","action":"COMPLETE","result":"SUCCESS","details":{"uid":"uid_persona_p39"}}
+{"ts":"2026-08-18T11:12:33.044Z","agentId":"P-39","wave":2,"step":"WAVE_2","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T11:12:33.044Z","agentId":"P-39","wave":0,"step":"BILLING","action":"SUBSCRIPTION_SUCCESS","result":"SUCCESS","details":{"plan":"Individual","stripeCustomerId":"cus_test_swarm_p-39","stripeSubscriptionId":"sub_test_swarm_p-39","cardLastFour":"4242","cardBrand":"visa"}}
+{"ts":"2026-08-18T11:12:33.044Z","agentId":"P-39","wave":2,"step":"WAVE_2","action":"COMPLETE","result":"SUCCESS","details":{"plan":"Individual"}}
+{"ts":"2026-08-18T11:12:33.281Z","agentId":"P-39","wave":3,"step":"WAVE_3","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T11:12:33.284Z","agentId":"P-39","wave":0,"step":"PROJECTS","action":"CREATION_SUCCESS","result":"SUCCESS","details":{"created":10,"plaid":false}}
+{"ts":"2026-08-18T11:12:33.284Z","agentId":"P-39","wave":3,"step":"WAVE_3","action":"COMPLETE","result":"SUCCESS","details":{"created":10}}
+{"ts":"2026-08-18T11:12:33.503Z","agentId":"P-39","wave":4,"step":"WAVE_4","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T11:12:33.503Z","agentId":"P-39","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-49","to":"P-32","type":"PE Co-Invest"}}
+{"ts":"2026-08-18T11:12:33.504Z","agentId":"P-39","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-43"}}
+{"ts":"2026-08-18T11:12:33.504Z","agentId":"P-39","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-32"}}
+{"ts":"2026-08-18T11:12:33.505Z","agentId":"P-39","wave":4,"step":"WAVE_4","action":"COMPLETE","result":"SUCCESS","details":{"interactions":1,"invites":2}}
+{"ts":"2026-08-18T11:12:33.588Z","agentId":"P-39","wave":5,"step":"WAVE_5","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T11:12:33.589Z","agentId":"P-39","wave":5,"step":"WAVE_5","action":"COMPLETE","result":"SUCCESS","details":{"reportPath":"/Users/yvesdarbouze/Documents/PaperWorking/artifacts/persona-swarm/reports/P-39-experience-report.md"}}
+{"ts":"2026-08-18T11:19:05.519Z","agentId":"P-39","wave":1,"step":"WAVE_1","action":"START","result":"SUCCESS","details":{"email":"agent39.nathaniel.cross@paperworking-test.dev"}}
+{"ts":"2026-08-18T11:19:05.519Z","agentId":"P-39","wave":1,"step":"WAVE_1","action":"START","result":"SUCCESS","details":{"email":"agent39.nathaniel.cross@paperworking-test.dev"}}
+{"ts":"2026-08-18T11:19:05.520Z","agentId":"P-39","wave":0,"step":"SIGNUP","action":"SUCCESS_CREATED","result":"SUCCESS","details":{"uid":"uid_persona_p39","email":"agent39.nathaniel.cross@paperworking-test.dev","name":"Nathaniel Cross","entity":"Crossbeam Real Estate Partners LLC"}}
+{"ts":"2026-08-18T11:19:05.520Z","agentId":"P-39","wave":0,"step":"SIGNUP","action":"SUCCESS_CREATED","result":"SUCCESS","details":{"uid":"uid_persona_p39","email":"agent39.nathaniel.cross@paperworking-test.dev","name":"Nathaniel Cross","entity":"Crossbeam Real Estate Partners LLC"}}
+{"ts":"2026-08-18T11:19:05.520Z","agentId":"P-39","wave":1,"step":"WAVE_1","action":"COMPLETE","result":"SUCCESS","details":{"uid":"uid_persona_p39"}}
+{"ts":"2026-08-18T11:19:05.520Z","agentId":"P-39","wave":1,"step":"WAVE_1","action":"COMPLETE","result":"SUCCESS","details":{"uid":"uid_persona_p39"}}
+{"ts":"2026-08-18T11:19:05.571Z","agentId":"P-39","wave":2,"step":"WAVE_2","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T11:19:05.571Z","agentId":"P-39","wave":2,"step":"WAVE_2","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T11:19:05.571Z","agentId":"P-39","wave":0,"step":"BILLING","action":"SUBSCRIPTION_SUCCESS","result":"SUCCESS","details":{"plan":"Individual","stripeCustomerId":"cus_test_swarm_p-39","stripeSubscriptionId":"sub_test_swarm_p-39","cardLastFour":"4242","cardBrand":"visa"}}
+{"ts":"2026-08-18T11:19:05.571Z","agentId":"P-39","wave":0,"step":"BILLING","action":"SUBSCRIPTION_SUCCESS","result":"SUCCESS","details":{"plan":"Individual","stripeCustomerId":"cus_test_swarm_p-39","stripeSubscriptionId":"sub_test_swarm_p-39","cardLastFour":"4242","cardBrand":"visa"}}
+{"ts":"2026-08-18T11:19:05.571Z","agentId":"P-39","wave":2,"step":"WAVE_2","action":"COMPLETE","result":"SUCCESS","details":{"plan":"Individual"}}
+{"ts":"2026-08-18T11:19:05.572Z","agentId":"P-39","wave":2,"step":"WAVE_2","action":"COMPLETE","result":"SUCCESS","details":{"plan":"Individual"}}
+{"ts":"2026-08-18T11:19:05.760Z","agentId":"P-39","wave":3,"step":"WAVE_3","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T11:19:05.764Z","agentId":"P-39","wave":0,"step":"PROJECTS","action":"CREATION_SUCCESS","result":"SUCCESS","details":{"created":10,"plaid":false}}
+{"ts":"2026-08-18T11:19:05.765Z","agentId":"P-39","wave":3,"step":"WAVE_3","action":"COMPLETE","result":"SUCCESS","details":{"created":10}}
+{"ts":"2026-08-18T11:19:05.770Z","agentId":"P-39","wave":3,"step":"WAVE_3","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T11:19:05.773Z","agentId":"P-39","wave":0,"step":"PROJECTS","action":"CREATION_SUCCESS","result":"SUCCESS","details":{"created":10,"plaid":false}}
+{"ts":"2026-08-18T11:19:05.773Z","agentId":"P-39","wave":3,"step":"WAVE_3","action":"COMPLETE","result":"SUCCESS","details":{"created":10}}
+{"ts":"2026-08-18T11:19:05.897Z","agentId":"P-39","wave":4,"step":"WAVE_4","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T11:19:05.898Z","agentId":"P-39","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-49","to":"P-32","type":"PE Co-Invest"}}
+{"ts":"2026-08-18T11:19:05.898Z","agentId":"P-39","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-43"}}
+{"ts":"2026-08-18T11:19:05.898Z","agentId":"P-39","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-32"}}
+{"ts":"2026-08-18T11:19:05.898Z","agentId":"P-39","wave":4,"step":"WAVE_4","action":"COMPLETE","result":"SUCCESS","details":{"interactions":1,"invites":2}}
+{"ts":"2026-08-18T11:19:05.907Z","agentId":"P-39","wave":4,"step":"WAVE_4","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T11:19:05.908Z","agentId":"P-39","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-49","to":"P-32","type":"PE Co-Invest"}}
+{"ts":"2026-08-18T11:19:05.908Z","agentId":"P-39","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-43"}}
+{"ts":"2026-08-18T11:19:05.908Z","agentId":"P-39","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-32"}}
+{"ts":"2026-08-18T11:19:05.908Z","agentId":"P-39","wave":4,"step":"WAVE_4","action":"COMPLETE","result":"SUCCESS","details":{"interactions":1,"invites":2}}
+{"ts":"2026-08-18T11:19:05.965Z","agentId":"P-39","wave":5,"step":"WAVE_5","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T11:19:05.966Z","agentId":"P-39","wave":5,"step":"WAVE_5","action":"COMPLETE","result":"SUCCESS","details":{"reportPath":"/Users/yvesdarbouze/Documents/PaperWorking/artifacts/persona-swarm/reports/P-39-experience-report.md"}}
+{"ts":"2026-08-18T11:19:05.974Z","agentId":"P-39","wave":5,"step":"WAVE_5","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T11:19:05.974Z","agentId":"P-39","wave":5,"step":"WAVE_5","action":"COMPLETE","result":"SUCCESS","details":{"reportPath":"/Users/yvesdarbouze/Documents/PaperWorking/artifacts/persona-swarm/reports/P-39-experience-report.md"}}
+{"ts":"2026-08-18T14:00:23.616Z","agentId":"P-39","wave":1,"step":"WAVE_1","action":"START","result":"SUCCESS","details":{"email":"agent39.nathaniel.cross@paperworking-test.dev"}}
+{"ts":"2026-08-18T14:00:23.617Z","agentId":"P-39","wave":0,"step":"SIGNUP","action":"SUCCESS_CREATED","result":"SUCCESS","details":{"uid":"uid_persona_p39","email":"agent39.nathaniel.cross@paperworking-test.dev","name":"Nathaniel Cross","entity":"Crossbeam Real Estate Partners LLC"}}
+{"ts":"2026-08-18T14:00:23.617Z","agentId":"P-39","wave":1,"step":"WAVE_1","action":"COMPLETE","result":"SUCCESS","details":{"uid":"uid_persona_p39"}}
+{"ts":"2026-08-18T14:00:23.623Z","agentId":"P-39","wave":1,"step":"WAVE_1","action":"START","result":"SUCCESS","details":{"email":"agent39.nathaniel.cross@paperworking-test.dev"}}
+{"ts":"2026-08-18T14:00:23.624Z","agentId":"P-39","wave":0,"step":"SIGNUP","action":"SUCCESS_CREATED","result":"SUCCESS","details":{"uid":"uid_persona_p39","email":"agent39.nathaniel.cross@paperworking-test.dev","name":"Nathaniel Cross","entity":"Crossbeam Real Estate Partners LLC"}}
+{"ts":"2026-08-18T14:00:23.624Z","agentId":"P-39","wave":1,"step":"WAVE_1","action":"COMPLETE","result":"SUCCESS","details":{"uid":"uid_persona_p39"}}
+{"ts":"2026-08-18T14:00:23.673Z","agentId":"P-39","wave":2,"step":"WAVE_2","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T14:00:23.673Z","agentId":"P-39","wave":0,"step":"BILLING","action":"SUBSCRIPTION_SUCCESS","result":"SUCCESS","details":{"plan":"Individual","stripeCustomerId":"cus_test_swarm_p-39","stripeSubscriptionId":"sub_test_swarm_p-39","cardLastFour":"4242","cardBrand":"visa"}}
+{"ts":"2026-08-18T14:00:23.673Z","agentId":"P-39","wave":2,"step":"WAVE_2","action":"COMPLETE","result":"SUCCESS","details":{"plan":"Individual"}}
+{"ts":"2026-08-18T14:00:23.678Z","agentId":"P-39","wave":2,"step":"WAVE_2","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T14:00:23.679Z","agentId":"P-39","wave":0,"step":"BILLING","action":"SUBSCRIPTION_SUCCESS","result":"SUCCESS","details":{"plan":"Individual","stripeCustomerId":"cus_test_swarm_p-39","stripeSubscriptionId":"sub_test_swarm_p-39","cardLastFour":"4242","cardBrand":"visa"}}
+{"ts":"2026-08-18T14:00:23.679Z","agentId":"P-39","wave":2,"step":"WAVE_2","action":"COMPLETE","result":"SUCCESS","details":{"plan":"Individual"}}
+{"ts":"2026-08-18T14:00:23.827Z","agentId":"P-39","wave":3,"step":"WAVE_3","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T14:00:23.832Z","agentId":"P-39","wave":0,"step":"PROJECTS","action":"CREATION_SUCCESS","result":"SUCCESS","details":{"created":10,"plaid":false}}
+{"ts":"2026-08-18T14:00:23.832Z","agentId":"P-39","wave":3,"step":"WAVE_3","action":"COMPLETE","result":"SUCCESS","details":{"created":10}}
+{"ts":"2026-08-18T14:00:23.846Z","agentId":"P-39","wave":3,"step":"WAVE_3","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T14:00:23.848Z","agentId":"P-39","wave":0,"step":"PROJECTS","action":"CREATION_SUCCESS","result":"SUCCESS","details":{"created":10,"plaid":false}}
+{"ts":"2026-08-18T14:00:23.848Z","agentId":"P-39","wave":3,"step":"WAVE_3","action":"COMPLETE","result":"SUCCESS","details":{"created":10}}
+{"ts":"2026-08-18T14:00:24.000Z","agentId":"P-39","wave":4,"step":"WAVE_4","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T14:00:24.001Z","agentId":"P-39","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-49","to":"P-32","type":"PE Co-Invest"}}
+{"ts":"2026-08-18T14:00:24.003Z","agentId":"P-39","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-43"}}
+{"ts":"2026-08-18T14:00:24.003Z","agentId":"P-39","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-32"}}
+{"ts":"2026-08-18T14:00:24.003Z","agentId":"P-39","wave":4,"step":"WAVE_4","action":"COMPLETE","result":"SUCCESS","details":{"interactions":1,"invites":2}}
+{"ts":"2026-08-18T14:00:24.015Z","agentId":"P-39","wave":4,"step":"WAVE_4","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T14:00:24.015Z","agentId":"P-39","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-49","to":"P-32","type":"PE Co-Invest"}}
+{"ts":"2026-08-18T14:00:24.016Z","agentId":"P-39","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-43"}}
+{"ts":"2026-08-18T14:00:24.016Z","agentId":"P-39","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-32"}}
+{"ts":"2026-08-18T14:00:24.016Z","agentId":"P-39","wave":4,"step":"WAVE_4","action":"COMPLETE","result":"SUCCESS","details":{"interactions":1,"invites":2}}
+{"ts":"2026-08-18T14:00:24.094Z","agentId":"P-39","wave":5,"step":"WAVE_5","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T14:00:24.094Z","agentId":"P-39","wave":5,"step":"WAVE_5","action":"COMPLETE","result":"SUCCESS","details":{"reportPath":"/Users/yvesdarbouze/Documents/PaperWorking/artifacts/persona-swarm/reports/P-39-experience-report.md"}}
+{"ts":"2026-08-18T14:00:24.116Z","agentId":"P-39","wave":5,"step":"WAVE_5","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T14:00:24.117Z","agentId":"P-39","wave":5,"step":"WAVE_5","action":"COMPLETE","result":"SUCCESS","details":{"reportPath":"/Users/yvesdarbouze/Documents/PaperWorking/artifacts/persona-swarm/reports/P-39-experience-report.md"}}
+{"ts":"2026-08-18T14:00:58.810Z","agentId":"P-39","wave":1,"step":"WAVE_1","action":"START","result":"SUCCESS","details":{"email":"agent39.nathaniel.cross@paperworking-test.dev"}}
+{"ts":"2026-08-18T14:00:58.811Z","agentId":"P-39","wave":0,"step":"SIGNUP","action":"SUCCESS_CREATED","result":"SUCCESS","details":{"uid":"uid_persona_p39","email":"agent39.nathaniel.cross@paperworking-test.dev","name":"Nathaniel Cross","entity":"Crossbeam Real Estate Partners LLC"}}
+{"ts":"2026-08-18T14:00:58.812Z","agentId":"P-39","wave":1,"step":"WAVE_1","action":"COMPLETE","result":"SUCCESS","details":{"uid":"uid_persona_p39"}}
+{"ts":"2026-08-18T14:00:58.846Z","agentId":"P-39","wave":2,"step":"WAVE_2","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T14:00:58.846Z","agentId":"P-39","wave":0,"step":"BILLING","action":"SUBSCRIPTION_SUCCESS","result":"SUCCESS","details":{"plan":"Individual","stripeCustomerId":"cus_test_swarm_p-39","stripeSubscriptionId":"sub_test_swarm_p-39","cardLastFour":"4242","cardBrand":"visa"}}
+{"ts":"2026-08-18T14:00:58.846Z","agentId":"P-39","wave":2,"step":"WAVE_2","action":"COMPLETE","result":"SUCCESS","details":{"plan":"Individual"}}
+{"ts":"2026-08-18T14:00:58.970Z","agentId":"P-39","wave":3,"step":"WAVE_3","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T14:00:58.972Z","agentId":"P-39","wave":0,"step":"PROJECTS","action":"CREATION_SUCCESS","result":"SUCCESS","details":{"created":10,"plaid":false}}
+{"ts":"2026-08-18T14:00:58.972Z","agentId":"P-39","wave":3,"step":"WAVE_3","action":"COMPLETE","result":"SUCCESS","details":{"created":10}}
+{"ts":"2026-08-18T14:00:59.068Z","agentId":"P-39","wave":4,"step":"WAVE_4","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T14:00:59.068Z","agentId":"P-39","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-49","to":"P-32","type":"PE Co-Invest"}}
+{"ts":"2026-08-18T14:00:59.068Z","agentId":"P-39","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-43"}}
+{"ts":"2026-08-18T14:00:59.069Z","agentId":"P-39","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-32"}}
+{"ts":"2026-08-18T14:00:59.069Z","agentId":"P-39","wave":4,"step":"WAVE_4","action":"COMPLETE","result":"SUCCESS","details":{"interactions":1,"invites":2}}
+{"ts":"2026-08-18T14:00:59.113Z","agentId":"P-39","wave":5,"step":"WAVE_5","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T14:00:59.113Z","agentId":"P-39","wave":5,"step":"WAVE_5","action":"COMPLETE","result":"SUCCESS","details":{"reportPath":"/Users/yvesdarbouze/Documents/PaperWorking/artifacts/persona-swarm/reports/P-39-experience-report.md"}}
+{"ts":"2026-08-18T14:01:09.228Z","agentId":"P-39","wave":1,"step":"WAVE_1","action":"START","result":"SUCCESS","details":{"email":"agent39.nathaniel.cross@paperworking-test.dev"}}
+{"ts":"2026-08-18T14:01:09.229Z","agentId":"P-39","wave":0,"step":"SIGNUP","action":"SUCCESS_CREATED","result":"SUCCESS","details":{"uid":"uid_persona_p39","email":"agent39.nathaniel.cross@paperworking-test.dev","name":"Nathaniel Cross","entity":"Crossbeam Real Estate Partners LLC"}}
+{"ts":"2026-08-18T14:01:09.229Z","agentId":"P-39","wave":1,"step":"WAVE_1","action":"COMPLETE","result":"SUCCESS","details":{"uid":"uid_persona_p39"}}
+{"ts":"2026-08-18T14:01:09.269Z","agentId":"P-39","wave":2,"step":"WAVE_2","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T14:01:09.269Z","agentId":"P-39","wave":0,"step":"BILLING","action":"SUBSCRIPTION_SUCCESS","result":"SUCCESS","details":{"plan":"Individual","stripeCustomerId":"cus_test_swarm_p-39","stripeSubscriptionId":"sub_test_swarm_p-39","cardLastFour":"4242","cardBrand":"visa"}}
+{"ts":"2026-08-18T14:01:09.269Z","agentId":"P-39","wave":2,"step":"WAVE_2","action":"COMPLETE","result":"SUCCESS","details":{"plan":"Individual"}}
+{"ts":"2026-08-18T14:01:09.384Z","agentId":"P-39","wave":3,"step":"WAVE_3","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T14:01:09.387Z","agentId":"P-39","wave":0,"step":"PROJECTS","action":"CREATION_SUCCESS","result":"SUCCESS","details":{"created":10,"plaid":false}}
+{"ts":"2026-08-18T14:01:09.387Z","agentId":"P-39","wave":3,"step":"WAVE_3","action":"COMPLETE","result":"SUCCESS","details":{"created":10}}
+{"ts":"2026-08-18T14:01:09.457Z","agentId":"P-39","wave":4,"step":"WAVE_4","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T14:01:09.457Z","agentId":"P-39","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-49","to":"P-32","type":"PE Co-Invest"}}
+{"ts":"2026-08-18T14:01:09.457Z","agentId":"P-39","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-43"}}
+{"ts":"2026-08-18T14:01:09.458Z","agentId":"P-39","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-32"}}
+{"ts":"2026-08-18T14:01:09.458Z","agentId":"P-39","wave":4,"step":"WAVE_4","action":"COMPLETE","result":"SUCCESS","details":{"interactions":1,"invites":2}}
+{"ts":"2026-08-18T14:01:09.513Z","agentId":"P-39","wave":5,"step":"WAVE_5","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T14:01:09.513Z","agentId":"P-39","wave":5,"step":"WAVE_5","action":"COMPLETE","result":"SUCCESS","details":{"reportPath":"/Users/yvesdarbouze/Documents/PaperWorking/artifacts/persona-swarm/reports/P-39-experience-report.md"}}
+{"ts":"2026-08-18T14:01:16.358Z","agentId":"P-39","wave":1,"step":"WAVE_1","action":"START","result":"SUCCESS","details":{"email":"agent39.nathaniel.cross@paperworking-test.dev"}}
+{"ts":"2026-08-18T14:01:16.900Z","agentId":"P-39","wave":1,"step":"WAVE_1","action":"START","result":"SUCCESS","details":{"email":"agent39.nathaniel.cross@paperworking-test.dev"}}
+{"ts":"2026-08-18T14:01:18.350Z","agentId":"P-39","wave":0,"step":"SIGNUP","action":"SUCCESS_CREATED","result":"SUCCESS","details":{"uid":"uid_persona_p39","email":"agent39.nathaniel.cross@paperworking-test.dev","name":"Nathaniel Cross","entity":"Crossbeam Real Estate Partners LLC"}}
+{"ts":"2026-08-18T14:01:18.350Z","agentId":"P-39","wave":1,"step":"WAVE_1","action":"COMPLETE","result":"SUCCESS","details":{"uid":"uid_persona_p39"}}
+{"ts":"2026-08-18T14:01:18.971Z","agentId":"P-39","wave":0,"step":"SIGNUP","action":"SUCCESS_CREATED","result":"SUCCESS","details":{"uid":"uid_persona_p39","email":"agent39.nathaniel.cross@paperworking-test.dev","name":"Nathaniel Cross","entity":"Crossbeam Real Estate Partners LLC"}}
+{"ts":"2026-08-18T14:01:18.971Z","agentId":"P-39","wave":1,"step":"WAVE_1","action":"COMPLETE","result":"SUCCESS","details":{"uid":"uid_persona_p39"}}
+{"ts":"2026-08-18T14:01:24.927Z","agentId":"P-39","wave":1,"step":"WAVE_1","action":"START","result":"SUCCESS","details":{"email":"agent39.nathaniel.cross@paperworking-test.dev"}}
+{"ts":"2026-08-18T14:01:24.928Z","agentId":"P-39","wave":0,"step":"SIGNUP","action":"SUCCESS_CREATED","result":"SUCCESS","details":{"uid":"uid_persona_p39","email":"agent39.nathaniel.cross@paperworking-test.dev","name":"Nathaniel Cross","entity":"Crossbeam Real Estate Partners LLC"}}
+{"ts":"2026-08-18T14:01:24.928Z","agentId":"P-39","wave":1,"step":"WAVE_1","action":"COMPLETE","result":"SUCCESS","details":{"uid":"uid_persona_p39"}}
+{"ts":"2026-08-18T14:01:24.977Z","agentId":"P-39","wave":2,"step":"WAVE_2","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T14:01:24.977Z","agentId":"P-39","wave":0,"step":"BILLING","action":"SUBSCRIPTION_SUCCESS","result":"SUCCESS","details":{"plan":"Individual","stripeCustomerId":"cus_test_swarm_p-39","stripeSubscriptionId":"sub_test_swarm_p-39","cardLastFour":"4242","cardBrand":"visa"}}
+{"ts":"2026-08-18T14:01:24.977Z","agentId":"P-39","wave":2,"step":"WAVE_2","action":"COMPLETE","result":"SUCCESS","details":{"plan":"Individual"}}
+{"ts":"2026-08-18T14:01:25.116Z","agentId":"P-39","wave":3,"step":"WAVE_3","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T14:01:25.119Z","agentId":"P-39","wave":0,"step":"PROJECTS","action":"CREATION_SUCCESS","result":"SUCCESS","details":{"created":10,"plaid":false}}
+{"ts":"2026-08-18T14:01:25.119Z","agentId":"P-39","wave":3,"step":"WAVE_3","action":"COMPLETE","result":"SUCCESS","details":{"created":10}}
+{"ts":"2026-08-18T14:01:25.221Z","agentId":"P-39","wave":4,"step":"WAVE_4","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T14:01:25.222Z","agentId":"P-39","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-49","to":"P-32","type":"PE Co-Invest"}}
+{"ts":"2026-08-18T14:01:25.222Z","agentId":"P-39","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-43"}}
+{"ts":"2026-08-18T14:01:25.222Z","agentId":"P-39","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-32"}}
+{"ts":"2026-08-18T14:01:25.222Z","agentId":"P-39","wave":4,"step":"WAVE_4","action":"COMPLETE","result":"SUCCESS","details":{"interactions":1,"invites":2}}
+{"ts":"2026-08-18T14:01:25.293Z","agentId":"P-39","wave":5,"step":"WAVE_5","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T14:01:25.294Z","agentId":"P-39","wave":5,"step":"WAVE_5","action":"COMPLETE","result":"SUCCESS","details":{"reportPath":"/Users/yvesdarbouze/Documents/PaperWorking/artifacts/persona-swarm/reports/P-39-experience-report.md"}}
+{"ts":"2026-08-18T14:01:25.645Z","agentId":"P-39","wave":1,"step":"WAVE_1","action":"START","result":"SUCCESS","details":{"email":"agent39.nathaniel.cross@paperworking-test.dev"}}
+{"ts":"2026-08-18T14:01:25.645Z","agentId":"P-39","wave":0,"step":"SIGNUP","action":"SUCCESS_CREATED","result":"SUCCESS","details":{"uid":"uid_persona_p39","email":"agent39.nathaniel.cross@paperworking-test.dev","name":"Nathaniel Cross","entity":"Crossbeam Real Estate Partners LLC"}}
+{"ts":"2026-08-18T14:01:25.645Z","agentId":"P-39","wave":1,"step":"WAVE_1","action":"COMPLETE","result":"SUCCESS","details":{"uid":"uid_persona_p39"}}
+{"ts":"2026-08-18T14:01:25.723Z","agentId":"P-39","wave":2,"step":"WAVE_2","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T14:01:25.724Z","agentId":"P-39","wave":0,"step":"BILLING","action":"SUBSCRIPTION_SUCCESS","result":"SUCCESS","details":{"plan":"Individual","stripeCustomerId":"cus_test_swarm_p-39","stripeSubscriptionId":"sub_test_swarm_p-39","cardLastFour":"4242","cardBrand":"visa"}}
+{"ts":"2026-08-18T14:01:25.724Z","agentId":"P-39","wave":2,"step":"WAVE_2","action":"COMPLETE","result":"SUCCESS","details":{"plan":"Individual"}}
+{"ts":"2026-08-18T14:01:25.879Z","agentId":"P-39","wave":3,"step":"WAVE_3","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T14:01:25.882Z","agentId":"P-39","wave":0,"step":"PROJECTS","action":"CREATION_SUCCESS","result":"SUCCESS","details":{"created":10,"plaid":false}}
+{"ts":"2026-08-18T14:01:25.882Z","agentId":"P-39","wave":3,"step":"WAVE_3","action":"COMPLETE","result":"SUCCESS","details":{"created":10}}
+{"ts":"2026-08-18T14:01:26.009Z","agentId":"P-39","wave":4,"step":"WAVE_4","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T14:01:26.009Z","agentId":"P-39","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-49","to":"P-32","type":"PE Co-Invest"}}
+{"ts":"2026-08-18T14:01:26.009Z","agentId":"P-39","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-43"}}
+{"ts":"2026-08-18T14:01:26.012Z","agentId":"P-39","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-32"}}
+{"ts":"2026-08-18T14:01:26.012Z","agentId":"P-39","wave":4,"step":"WAVE_4","action":"COMPLETE","result":"SUCCESS","details":{"interactions":1,"invites":2}}
+{"ts":"2026-08-18T14:01:26.079Z","agentId":"P-39","wave":5,"step":"WAVE_5","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T14:01:26.079Z","agentId":"P-39","wave":5,"step":"WAVE_5","action":"COMPLETE","result":"SUCCESS","details":{"reportPath":"/Users/yvesdarbouze/Documents/PaperWorking/artifacts/persona-swarm/reports/P-39-experience-report.md"}}
+{"ts":"2026-08-18T14:16:29.146Z","agentId":"P-39","wave":1,"step":"WAVE_1","action":"START","result":"SUCCESS","details":{"email":"agent39.nathaniel.cross@paperworking-test.dev"}}
+{"ts":"2026-08-18T14:16:29.147Z","agentId":"P-39","wave":1,"step":"WAVE_1","action":"START","result":"SUCCESS","details":{"email":"agent39.nathaniel.cross@paperworking-test.dev"}}
+{"ts":"2026-08-18T14:16:29.148Z","agentId":"P-39","wave":0,"step":"SIGNUP","action":"SUCCESS_CREATED","result":"SUCCESS","details":{"uid":"uid_persona_p39","email":"agent39.nathaniel.cross@paperworking-test.dev","name":"Nathaniel Cross","entity":"Crossbeam Real Estate Partners LLC"}}
+{"ts":"2026-08-18T14:16:29.148Z","agentId":"P-39","wave":0,"step":"SIGNUP","action":"SUCCESS_CREATED","result":"SUCCESS","details":{"uid":"uid_persona_p39","email":"agent39.nathaniel.cross@paperworking-test.dev","name":"Nathaniel Cross","entity":"Crossbeam Real Estate Partners LLC"}}
+{"ts":"2026-08-18T14:16:29.149Z","agentId":"P-39","wave":1,"step":"WAVE_1","action":"COMPLETE","result":"SUCCESS","details":{"uid":"uid_persona_p39"}}
+{"ts":"2026-08-18T14:16:29.148Z","agentId":"P-39","wave":1,"step":"WAVE_1","action":"COMPLETE","result":"SUCCESS","details":{"uid":"uid_persona_p39"}}
+{"ts":"2026-08-18T14:16:29.196Z","agentId":"P-39","wave":2,"step":"WAVE_2","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T14:16:29.197Z","agentId":"P-39","wave":0,"step":"BILLING","action":"SUBSCRIPTION_SUCCESS","result":"SUCCESS","details":{"plan":"Individual","stripeCustomerId":"cus_test_swarm_p-39","stripeSubscriptionId":"sub_test_swarm_p-39","cardLastFour":"4242","cardBrand":"visa"}}
+{"ts":"2026-08-18T14:16:29.197Z","agentId":"P-39","wave":2,"step":"WAVE_2","action":"COMPLETE","result":"SUCCESS","details":{"plan":"Individual"}}
+{"ts":"2026-08-18T14:16:29.197Z","agentId":"P-39","wave":2,"step":"WAVE_2","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T14:16:29.197Z","agentId":"P-39","wave":0,"step":"BILLING","action":"SUBSCRIPTION_SUCCESS","result":"SUCCESS","details":{"plan":"Individual","stripeCustomerId":"cus_test_swarm_p-39","stripeSubscriptionId":"sub_test_swarm_p-39","cardLastFour":"4242","cardBrand":"visa"}}
+{"ts":"2026-08-18T14:16:29.198Z","agentId":"P-39","wave":2,"step":"WAVE_2","action":"COMPLETE","result":"SUCCESS","details":{"plan":"Individual"}}
+{"ts":"2026-08-18T14:16:29.353Z","agentId":"P-39","wave":3,"step":"WAVE_3","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T14:16:29.355Z","agentId":"P-39","wave":0,"step":"PROJECTS","action":"CREATION_SUCCESS","result":"SUCCESS","details":{"created":10,"plaid":false}}
+{"ts":"2026-08-18T14:16:29.355Z","agentId":"P-39","wave":3,"step":"WAVE_3","action":"COMPLETE","result":"SUCCESS","details":{"created":10}}
+{"ts":"2026-08-18T14:16:29.355Z","agentId":"P-39","wave":3,"step":"WAVE_3","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T14:16:29.358Z","agentId":"P-39","wave":0,"step":"PROJECTS","action":"CREATION_SUCCESS","result":"SUCCESS","details":{"created":10,"plaid":false}}
+{"ts":"2026-08-18T14:16:29.358Z","agentId":"P-39","wave":3,"step":"WAVE_3","action":"COMPLETE","result":"SUCCESS","details":{"created":10}}
+{"ts":"2026-08-18T14:16:29.459Z","agentId":"P-39","wave":4,"step":"WAVE_4","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T14:16:29.459Z","agentId":"P-39","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-49","to":"P-32","type":"PE Co-Invest"}}
+{"ts":"2026-08-18T14:16:29.460Z","agentId":"P-39","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-43"}}
+{"ts":"2026-08-18T14:16:29.460Z","agentId":"P-39","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-32"}}
+{"ts":"2026-08-18T14:16:29.460Z","agentId":"P-39","wave":4,"step":"WAVE_4","action":"COMPLETE","result":"SUCCESS","details":{"interactions":1,"invites":2}}
+{"ts":"2026-08-18T14:16:29.472Z","agentId":"P-39","wave":4,"step":"WAVE_4","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T14:16:29.472Z","agentId":"P-39","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-49","to":"P-32","type":"PE Co-Invest"}}
+{"ts":"2026-08-18T14:16:29.473Z","agentId":"P-39","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-43"}}
+{"ts":"2026-08-18T14:16:29.473Z","agentId":"P-39","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-32"}}
+{"ts":"2026-08-18T14:16:29.473Z","agentId":"P-39","wave":4,"step":"WAVE_4","action":"COMPLETE","result":"SUCCESS","details":{"interactions":1,"invites":2}}
+{"ts":"2026-08-18T14:16:29.545Z","agentId":"P-39","wave":5,"step":"WAVE_5","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T14:16:29.546Z","agentId":"P-39","wave":5,"step":"WAVE_5","action":"COMPLETE","result":"SUCCESS","details":{"reportPath":"/Users/yvesdarbouze/Documents/PaperWorking/artifacts/persona-swarm/reports/P-39-experience-report.md"}}
+{"ts":"2026-08-18T14:16:29.560Z","agentId":"P-39","wave":5,"step":"WAVE_5","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T14:16:29.561Z","agentId":"P-39","wave":5,"step":"WAVE_5","action":"COMPLETE","result":"SUCCESS","details":{"reportPath":"/Users/yvesdarbouze/Documents/PaperWorking/artifacts/persona-swarm/reports/P-39-experience-report.md"}}
+{"ts":"2026-08-18T15:27:30.149Z","agentId":"P-39","wave":1,"step":"WAVE_1","action":"START","result":"SUCCESS","details":{"email":"agent39.nathaniel.cross@paperworking-test.dev"}}
+{"ts":"2026-08-18T15:27:30.150Z","agentId":"P-39","wave":0,"step":"SIGNUP","action":"SUCCESS_CREATED","result":"SUCCESS","details":{"uid":"uid_persona_p39","email":"agent39.nathaniel.cross@paperworking-test.dev","name":"Nathaniel Cross","entity":"Crossbeam Real Estate Partners LLC"}}
+{"ts":"2026-08-18T15:27:30.150Z","agentId":"P-39","wave":1,"step":"WAVE_1","action":"COMPLETE","result":"SUCCESS","details":{"uid":"uid_persona_p39"}}
+{"ts":"2026-08-18T15:27:30.158Z","agentId":"P-39","wave":1,"step":"WAVE_1","action":"START","result":"SUCCESS","details":{"email":"agent39.nathaniel.cross@paperworking-test.dev"}}
+{"ts":"2026-08-18T15:27:30.159Z","agentId":"P-39","wave":0,"step":"SIGNUP","action":"SUCCESS_CREATED","result":"SUCCESS","details":{"uid":"uid_persona_p39","email":"agent39.nathaniel.cross@paperworking-test.dev","name":"Nathaniel Cross","entity":"Crossbeam Real Estate Partners LLC"}}
+{"ts":"2026-08-18T15:27:30.159Z","agentId":"P-39","wave":1,"step":"WAVE_1","action":"COMPLETE","result":"SUCCESS","details":{"uid":"uid_persona_p39"}}
+{"ts":"2026-08-18T15:27:30.319Z","agentId":"P-39","wave":2,"step":"WAVE_2","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T15:27:30.320Z","agentId":"P-39","wave":0,"step":"BILLING","action":"SUBSCRIPTION_SUCCESS","result":"SUCCESS","details":{"plan":"Individual","stripeCustomerId":"cus_test_swarm_p-39","stripeSubscriptionId":"sub_test_swarm_p-39","cardLastFour":"4242","cardBrand":"visa"}}
+{"ts":"2026-08-18T15:27:30.320Z","agentId":"P-39","wave":2,"step":"WAVE_2","action":"COMPLETE","result":"SUCCESS","details":{"plan":"Individual"}}
+{"ts":"2026-08-18T15:27:30.321Z","agentId":"P-39","wave":2,"step":"WAVE_2","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T15:27:30.322Z","agentId":"P-39","wave":0,"step":"BILLING","action":"SUBSCRIPTION_SUCCESS","result":"SUCCESS","details":{"plan":"Individual","stripeCustomerId":"cus_test_swarm_p-39","stripeSubscriptionId":"sub_test_swarm_p-39","cardLastFour":"4242","cardBrand":"visa"}}
+{"ts":"2026-08-18T15:27:30.324Z","agentId":"P-39","wave":2,"step":"WAVE_2","action":"COMPLETE","result":"SUCCESS","details":{"plan":"Individual"}}
+{"ts":"2026-08-18T15:27:30.642Z","agentId":"P-39","wave":3,"step":"WAVE_3","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T15:27:30.645Z","agentId":"P-39","wave":0,"step":"PROJECTS","action":"CREATION_SUCCESS","result":"SUCCESS","details":{"created":10,"plaid":false}}
+{"ts":"2026-08-18T15:27:30.647Z","agentId":"P-39","wave":3,"step":"WAVE_3","action":"COMPLETE","result":"SUCCESS","details":{"created":10}}
+{"ts":"2026-08-18T15:27:30.701Z","agentId":"P-39","wave":3,"step":"WAVE_3","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T15:27:30.705Z","agentId":"P-39","wave":0,"step":"PROJECTS","action":"CREATION_SUCCESS","result":"SUCCESS","details":{"created":10,"plaid":false}}
+{"ts":"2026-08-18T15:27:30.705Z","agentId":"P-39","wave":3,"step":"WAVE_3","action":"COMPLETE","result":"SUCCESS","details":{"created":10}}
+{"ts":"2026-08-18T15:27:30.810Z","agentId":"P-39","wave":4,"step":"WAVE_4","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T15:27:30.811Z","agentId":"P-39","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-49","to":"P-32","type":"PE Co-Invest"}}
+{"ts":"2026-08-18T15:27:30.811Z","agentId":"P-39","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-43"}}
+{"ts":"2026-08-18T15:27:30.811Z","agentId":"P-39","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-32"}}
+{"ts":"2026-08-18T15:27:30.811Z","agentId":"P-39","wave":4,"step":"WAVE_4","action":"COMPLETE","result":"SUCCESS","details":{"interactions":1,"invites":2}}
+{"ts":"2026-08-18T15:27:30.858Z","agentId":"P-39","wave":4,"step":"WAVE_4","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T15:27:30.859Z","agentId":"P-39","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-49","to":"P-32","type":"PE Co-Invest"}}
+{"ts":"2026-08-18T15:27:30.859Z","agentId":"P-39","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-43"}}
+{"ts":"2026-08-18T15:27:30.859Z","agentId":"P-39","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-32"}}
+{"ts":"2026-08-18T15:27:30.859Z","agentId":"P-39","wave":4,"step":"WAVE_4","action":"COMPLETE","result":"SUCCESS","details":{"interactions":1,"invites":2}}
+{"ts":"2026-08-18T15:27:30.907Z","agentId":"P-39","wave":5,"step":"WAVE_5","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T15:27:30.908Z","agentId":"P-39","wave":5,"step":"WAVE_5","action":"COMPLETE","result":"SUCCESS","details":{"reportPath":"/Users/yvesdarbouze/Documents/PaperWorking/artifacts/persona-swarm/reports/P-39-experience-report.md"}}
+{"ts":"2026-08-18T15:27:30.941Z","agentId":"P-39","wave":5,"step":"WAVE_5","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T15:27:30.941Z","agentId":"P-39","wave":5,"step":"WAVE_5","action":"COMPLETE","result":"SUCCESS","details":{"reportPath":"/Users/yvesdarbouze/Documents/PaperWorking/artifacts/persona-swarm/reports/P-39-experience-report.md"}}
+{"ts":"2026-08-18T15:28:00.333Z","agentId":"P-39","wave":1,"step":"WAVE_1","action":"START","result":"SUCCESS","details":{"email":"agent39.nathaniel.cross@paperworking-test.dev"}}
+{"ts":"2026-08-18T15:28:00.333Z","agentId":"P-39","wave":0,"step":"SIGNUP","action":"SUCCESS_CREATED","result":"SUCCESS","details":{"uid":"uid_persona_p39","email":"agent39.nathaniel.cross@paperworking-test.dev","name":"Nathaniel Cross","entity":"Crossbeam Real Estate Partners LLC"}}
+{"ts":"2026-08-18T15:28:00.333Z","agentId":"P-39","wave":1,"step":"WAVE_1","action":"COMPLETE","result":"SUCCESS","details":{"uid":"uid_persona_p39"}}
+{"ts":"2026-08-18T15:28:00.334Z","agentId":"P-39","wave":1,"step":"WAVE_1","action":"START","result":"SUCCESS","details":{"email":"agent39.nathaniel.cross@paperworking-test.dev"}}
+{"ts":"2026-08-18T15:28:00.334Z","agentId":"P-39","wave":0,"step":"SIGNUP","action":"SUCCESS_CREATED","result":"SUCCESS","details":{"uid":"uid_persona_p39","email":"agent39.nathaniel.cross@paperworking-test.dev","name":"Nathaniel Cross","entity":"Crossbeam Real Estate Partners LLC"}}
+{"ts":"2026-08-18T15:28:00.335Z","agentId":"P-39","wave":1,"step":"WAVE_1","action":"COMPLETE","result":"SUCCESS","details":{"uid":"uid_persona_p39"}}
+{"ts":"2026-08-18T15:28:00.387Z","agentId":"P-39","wave":2,"step":"WAVE_2","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T15:28:00.388Z","agentId":"P-39","wave":0,"step":"BILLING","action":"SUBSCRIPTION_SUCCESS","result":"SUCCESS","details":{"plan":"Individual","stripeCustomerId":"cus_test_swarm_p-39","stripeSubscriptionId":"sub_test_swarm_p-39","cardLastFour":"4242","cardBrand":"visa"}}
+{"ts":"2026-08-18T15:28:00.388Z","agentId":"P-39","wave":2,"step":"WAVE_2","action":"COMPLETE","result":"SUCCESS","details":{"plan":"Individual"}}
+{"ts":"2026-08-18T15:28:00.392Z","agentId":"P-39","wave":2,"step":"WAVE_2","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T15:28:00.393Z","agentId":"P-39","wave":0,"step":"BILLING","action":"SUBSCRIPTION_SUCCESS","result":"SUCCESS","details":{"plan":"Individual","stripeCustomerId":"cus_test_swarm_p-39","stripeSubscriptionId":"sub_test_swarm_p-39","cardLastFour":"4242","cardBrand":"visa"}}
+{"ts":"2026-08-18T15:28:00.393Z","agentId":"P-39","wave":2,"step":"WAVE_2","action":"COMPLETE","result":"SUCCESS","details":{"plan":"Individual"}}
+{"ts":"2026-08-18T15:28:00.608Z","agentId":"P-39","wave":3,"step":"WAVE_3","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T15:28:00.615Z","agentId":"P-39","wave":0,"step":"PROJECTS","action":"CREATION_SUCCESS","result":"SUCCESS","details":{"created":10,"plaid":false}}
+{"ts":"2026-08-18T15:28:00.615Z","agentId":"P-39","wave":3,"step":"WAVE_3","action":"COMPLETE","result":"SUCCESS","details":{"created":10}}
+{"ts":"2026-08-18T15:28:00.624Z","agentId":"P-39","wave":3,"step":"WAVE_3","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T15:28:00.629Z","agentId":"P-39","wave":0,"step":"PROJECTS","action":"CREATION_SUCCESS","result":"SUCCESS","details":{"created":10,"plaid":false}}
+{"ts":"2026-08-18T15:28:00.630Z","agentId":"P-39","wave":3,"step":"WAVE_3","action":"COMPLETE","result":"SUCCESS","details":{"created":10}}
+{"ts":"2026-08-18T15:28:00.775Z","agentId":"P-39","wave":4,"step":"WAVE_4","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T15:28:00.776Z","agentId":"P-39","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-49","to":"P-32","type":"PE Co-Invest"}}
+{"ts":"2026-08-18T15:28:00.777Z","agentId":"P-39","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-43"}}
+{"ts":"2026-08-18T15:28:00.777Z","agentId":"P-39","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-32"}}
+{"ts":"2026-08-18T15:28:00.777Z","agentId":"P-39","wave":4,"step":"WAVE_4","action":"COMPLETE","result":"SUCCESS","details":{"interactions":1,"invites":2}}
+{"ts":"2026-08-18T15:28:00.795Z","agentId":"P-39","wave":4,"step":"WAVE_4","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T15:28:00.796Z","agentId":"P-39","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-49","to":"P-32","type":"PE Co-Invest"}}
+{"ts":"2026-08-18T15:28:00.796Z","agentId":"P-39","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-43"}}
+{"ts":"2026-08-18T15:28:00.797Z","agentId":"P-39","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-32"}}
+{"ts":"2026-08-18T15:28:00.797Z","agentId":"P-39","wave":4,"step":"WAVE_4","action":"COMPLETE","result":"SUCCESS","details":{"interactions":1,"invites":2}}
+{"ts":"2026-08-18T15:28:00.848Z","agentId":"P-39","wave":5,"step":"WAVE_5","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T15:28:00.849Z","agentId":"P-39","wave":5,"step":"WAVE_5","action":"COMPLETE","result":"SUCCESS","details":{"reportPath":"/Users/yvesdarbouze/Documents/PaperWorking/artifacts/persona-swarm/reports/P-39-experience-report.md"}}
+{"ts":"2026-08-18T15:28:00.875Z","agentId":"P-39","wave":5,"step":"WAVE_5","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T15:28:00.878Z","agentId":"P-39","wave":5,"step":"WAVE_5","action":"COMPLETE","result":"SUCCESS","details":{"reportPath":"/Users/yvesdarbouze/Documents/PaperWorking/artifacts/persona-swarm/reports/P-39-experience-report.md"}}
+{"ts":"2026-08-18T15:56:37.844Z","agentId":"P-39","wave":1,"step":"WAVE_1","action":"START","result":"SUCCESS","details":{"email":"agent39.nathaniel.cross@paperworking-test.dev"}}
+{"ts":"2026-08-18T15:56:37.960Z","agentId":"P-39","wave":1,"step":"WAVE_1","action":"START","result":"SUCCESS","details":{"email":"agent39.nathaniel.cross@paperworking-test.dev"}}
+{"ts":"2026-08-18T15:56:39.888Z","agentId":"P-39","wave":0,"step":"SIGNUP","action":"SUCCESS_CREATED","result":"SUCCESS","details":{"uid":"uid_persona_p39","email":"agent39.nathaniel.cross@paperworking-test.dev","name":"Nathaniel Cross","entity":"Crossbeam Real Estate Partners LLC"}}
+{"ts":"2026-08-18T15:56:39.888Z","agentId":"P-39","wave":1,"step":"WAVE_1","action":"COMPLETE","result":"SUCCESS","details":{"uid":"uid_persona_p39"}}
+{"ts":"2026-08-18T15:56:39.962Z","agentId":"P-39","wave":0,"step":"SIGNUP","action":"SUCCESS_CREATED","result":"SUCCESS","details":{"uid":"uid_persona_p39","email":"agent39.nathaniel.cross@paperworking-test.dev","name":"Nathaniel Cross","entity":"Crossbeam Real Estate Partners LLC"}}
+{"ts":"2026-08-18T15:56:39.962Z","agentId":"P-39","wave":1,"step":"WAVE_1","action":"COMPLETE","result":"SUCCESS","details":{"uid":"uid_persona_p39"}}
+{"ts":"2026-08-18T15:57:17.839Z","agentId":"P-39","wave":2,"step":"WAVE_2","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T15:57:17.839Z","agentId":"P-39","wave":2,"step":"WAVE_2","action":"EXCEPTION","result":"SUCCESS","details":{"error":"CRITICAL SAFETY REFUSAL: Invalid or missing Stripe secret test key. Key must start with \"sk_test_\". Received: \"...\""}}
+{"ts":"2026-08-18T15:57:17.895Z","agentId":"P-39","wave":2,"step":"WAVE_2","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T15:57:17.895Z","agentId":"P-39","wave":2,"step":"WAVE_2","action":"EXCEPTION","result":"SUCCESS","details":{"error":"CRITICAL SAFETY REFUSAL: Invalid or missing Stripe secret test key. Key must start with \"sk_test_\". Received: \"...\""}}
+{"ts":"2026-08-18T15:57:17.900Z","agentId":"P-39","wave":3,"step":"WAVE_3","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T15:57:17.901Z","agentId":"P-39","wave":0,"step":"PROJECTS","action":"CREATION_SUCCESS","result":"SUCCESS","details":{"created":10,"plaid":false}}
+{"ts":"2026-08-18T15:57:17.901Z","agentId":"P-39","wave":3,"step":"WAVE_3","action":"COMPLETE","result":"SUCCESS","details":{"created":10}}
+{"ts":"2026-08-18T15:57:17.940Z","agentId":"P-39","wave":4,"step":"WAVE_4","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T15:57:17.941Z","agentId":"P-39","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-49","to":"P-32","type":"PE Co-Invest"}}
+{"ts":"2026-08-18T15:57:17.941Z","agentId":"P-39","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-43"}}
+{"ts":"2026-08-18T15:57:17.941Z","agentId":"P-39","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-32"}}
+{"ts":"2026-08-18T15:57:17.941Z","agentId":"P-39","wave":4,"step":"WAVE_4","action":"COMPLETE","result":"SUCCESS","details":{"interactions":1,"invites":2}}
+{"ts":"2026-08-18T15:57:17.943Z","agentId":"P-39","wave":3,"step":"WAVE_3","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T15:57:17.944Z","agentId":"P-39","wave":0,"step":"PROJECTS","action":"CREATION_SUCCESS","result":"SUCCESS","details":{"created":10,"plaid":false}}
+{"ts":"2026-08-18T15:57:17.944Z","agentId":"P-39","wave":3,"step":"WAVE_3","action":"COMPLETE","result":"SUCCESS","details":{"created":10}}
+{"ts":"2026-08-18T15:57:17.977Z","agentId":"P-39","wave":4,"step":"WAVE_4","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T15:57:17.977Z","agentId":"P-39","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-49","to":"P-32","type":"PE Co-Invest"}}
+{"ts":"2026-08-18T15:57:17.978Z","agentId":"P-39","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-43"}}
+{"ts":"2026-08-18T15:57:17.978Z","agentId":"P-39","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-32"}}
+{"ts":"2026-08-18T15:57:17.978Z","agentId":"P-39","wave":4,"step":"WAVE_4","action":"COMPLETE","result":"SUCCESS","details":{"interactions":1,"invites":2}}
+{"ts":"2026-08-18T15:57:17.990Z","agentId":"P-39","wave":5,"step":"WAVE_5","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T15:57:17.990Z","agentId":"P-39","wave":5,"step":"WAVE_5","action":"COMPLETE","result":"SUCCESS","details":{"reportPath":"/Users/yvesdarbouze/Documents/PaperWorking/artifacts/persona-swarm/reports/P-39-experience-report.md"}}
+{"ts":"2026-08-18T15:57:18.019Z","agentId":"P-39","wave":5,"step":"WAVE_5","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T15:57:18.020Z","agentId":"P-39","wave":5,"step":"WAVE_5","action":"COMPLETE","result":"SUCCESS","details":{"reportPath":"/Users/yvesdarbouze/Documents/PaperWorking/artifacts/persona-swarm/reports/P-39-experience-report.md"}}
+{"ts":"2026-08-18T16:11:37.855Z","agentId":"P-39","wave":1,"step":"WAVE_1","action":"START","result":"SUCCESS","details":{"email":"agent39.nathaniel.cross@paperworking-test.dev"}}
+{"ts":"2026-08-18T16:11:37.856Z","agentId":"P-39","wave":0,"step":"SIGNUP","action":"SUCCESS_CREATED","result":"SUCCESS","details":{"uid":"uid_persona_p39","email":"agent39.nathaniel.cross@paperworking-test.dev","name":"Nathaniel Cross","entity":"Crossbeam Real Estate Partners LLC"}}
+{"ts":"2026-08-18T16:11:37.856Z","agentId":"P-39","wave":1,"step":"WAVE_1","action":"COMPLETE","result":"SUCCESS","details":{"uid":"uid_persona_p39"}}
+{"ts":"2026-08-18T16:11:37.884Z","agentId":"P-39","wave":2,"step":"WAVE_2","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T16:11:37.884Z","agentId":"P-39","wave":0,"step":"BILLING","action":"SUBSCRIPTION_SUCCESS","result":"SUCCESS","details":{"plan":"Individual","stripeCustomerId":"cus_test_swarm_p-39","stripeSubscriptionId":"sub_test_swarm_p-39","cardLastFour":"4242","cardBrand":"visa"}}
+{"ts":"2026-08-18T16:11:37.884Z","agentId":"P-39","wave":2,"step":"WAVE_2","action":"COMPLETE","result":"SUCCESS","details":{"plan":"Individual"}}
+{"ts":"2026-08-18T16:11:37.906Z","agentId":"P-39","wave":3,"step":"WAVE_3","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T16:11:37.906Z","agentId":"P-39","wave":0,"step":"PROJECTS","action":"CREATION_SUCCESS","result":"SUCCESS","details":{"created":10,"plaid":false}}
+{"ts":"2026-08-18T16:11:37.906Z","agentId":"P-39","wave":3,"step":"WAVE_3","action":"COMPLETE","result":"SUCCESS","details":{"created":10}}
+{"ts":"2026-08-18T16:11:37.941Z","agentId":"P-39","wave":4,"step":"WAVE_4","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T16:11:37.942Z","agentId":"P-39","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-49","to":"P-32","type":"PE Co-Invest"}}
+{"ts":"2026-08-18T16:11:37.942Z","agentId":"P-39","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-43"}}
+{"ts":"2026-08-18T16:11:37.942Z","agentId":"P-39","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-32"}}
+{"ts":"2026-08-18T16:11:37.942Z","agentId":"P-39","wave":4,"step":"WAVE_4","action":"COMPLETE","result":"SUCCESS","details":{"interactions":1,"invites":2}}
+{"ts":"2026-08-18T16:11:37.974Z","agentId":"P-39","wave":5,"step":"WAVE_5","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T16:11:37.974Z","agentId":"P-39","wave":5,"step":"WAVE_5","action":"COMPLETE","result":"SUCCESS","details":{"reportPath":"/Users/yvesdarbouze/Documents/PaperWorking/artifacts/persona-swarm/reports/P-39-experience-report.md"}}
+{"ts":"2026-08-18T16:11:38.121Z","agentId":"P-39","wave":1,"step":"WAVE_1","action":"START","result":"SUCCESS","details":{"email":"agent39.nathaniel.cross@paperworking-test.dev"}}
+{"ts":"2026-08-18T16:11:38.121Z","agentId":"P-39","wave":0,"step":"SIGNUP","action":"SUCCESS_CREATED","result":"SUCCESS","details":{"uid":"uid_persona_p39","email":"agent39.nathaniel.cross@paperworking-test.dev","name":"Nathaniel Cross","entity":"Crossbeam Real Estate Partners LLC"}}
+{"ts":"2026-08-18T16:11:38.122Z","agentId":"P-39","wave":1,"step":"WAVE_1","action":"COMPLETE","result":"SUCCESS","details":{"uid":"uid_persona_p39"}}
+{"ts":"2026-08-18T16:11:38.140Z","agentId":"P-39","wave":2,"step":"WAVE_2","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T16:11:38.140Z","agentId":"P-39","wave":0,"step":"BILLING","action":"SUBSCRIPTION_SUCCESS","result":"SUCCESS","details":{"plan":"Individual","stripeCustomerId":"cus_test_swarm_p-39","stripeSubscriptionId":"sub_test_swarm_p-39","cardLastFour":"4242","cardBrand":"visa"}}
+{"ts":"2026-08-18T16:11:38.140Z","agentId":"P-39","wave":2,"step":"WAVE_2","action":"COMPLETE","result":"SUCCESS","details":{"plan":"Individual"}}
+{"ts":"2026-08-18T16:11:38.176Z","agentId":"P-39","wave":3,"step":"WAVE_3","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T16:11:38.176Z","agentId":"P-39","wave":0,"step":"PROJECTS","action":"CREATION_SUCCESS","result":"SUCCESS","details":{"created":10,"plaid":false}}
+{"ts":"2026-08-18T16:11:38.176Z","agentId":"P-39","wave":3,"step":"WAVE_3","action":"COMPLETE","result":"SUCCESS","details":{"created":10}}
+{"ts":"2026-08-18T16:11:38.205Z","agentId":"P-39","wave":4,"step":"WAVE_4","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T16:11:38.205Z","agentId":"P-39","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-49","to":"P-32","type":"PE Co-Invest"}}
+{"ts":"2026-08-18T16:11:38.205Z","agentId":"P-39","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-43"}}
+{"ts":"2026-08-18T16:11:38.205Z","agentId":"P-39","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-32"}}
+{"ts":"2026-08-18T16:11:38.205Z","agentId":"P-39","wave":4,"step":"WAVE_4","action":"COMPLETE","result":"SUCCESS","details":{"interactions":1,"invites":2}}
+{"ts":"2026-08-18T16:11:38.221Z","agentId":"P-39","wave":5,"step":"WAVE_5","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T16:11:38.221Z","agentId":"P-39","wave":5,"step":"WAVE_5","action":"COMPLETE","result":"SUCCESS","details":{"reportPath":"/Users/yvesdarbouze/Documents/PaperWorking/artifacts/persona-swarm/reports/P-39-experience-report.md"}}

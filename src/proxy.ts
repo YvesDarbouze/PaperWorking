@@ -65,10 +65,21 @@ function hasActiveSubscription(request: NextRequest): boolean {
 }
 
 /**
- * Prevent Next.js from caching middleware responses.
+ * Attach security headers (CSP, HSTS, X-Content-Type-Options, X-Frame-Options)
+ * and prevent Next.js from caching middleware responses.
  */
 function withNoCache(response: NextResponse): NextResponse {
   response.headers.set('x-middleware-cache', 'no-cache');
+  response.headers.set(
+    'Content-Security-Policy',
+    "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://maps.googleapis.com https://js.stripe.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; img-src 'self' https://maps.googleapis.com https://streetviewpixels-pa.googleapis.com data: blob:; connect-src 'self' https://api.plaid.com https://api.stripe.com https://maps.googleapis.com; frame-src 'self' https://js.stripe.com https://hooks.stripe.com; font-src 'self' data: https://fonts.gstatic.com;"
+  );
+  response.headers.set('Strict-Transport-Security', 'max-age=63072000; includeSubDomains; preload');
+  response.headers.set('X-Content-Type-Options', 'nosniff');
+  response.headers.set('X-Frame-Options', 'SAMEORIGIN');
+  response.headers.set('X-XSS-Protection', '1; mode=block');
+  response.headers.set('Referrer-Policy', 'strict-origin-when-cross-origin');
+  response.headers.set('Permissions-Policy', 'camera=(), microphone=(), geolocation=(self)');
   return response;
 }
 

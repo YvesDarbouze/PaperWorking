@@ -29,7 +29,8 @@ const config = {
     '<rootDir>/.next/',
     '<rootDir>/.next-app/',
     '<rootDir>/.next.old_1777068220/',
-    '<rootDir>/out/'
+    '<rootDir>/out/',
+    '<rootDir>/persona-swarm/'
   ],
   testMatch: ['**/__tests__/**/*.test.ts', '**/__tests__/**/*.test.tsx', '**/*.test.ts'],
 };

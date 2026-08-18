@@ -1,7 +1,7 @@
 /** @jest-environment jsdom */
 import React from 'react';
 import { render } from '@testing-library/react';
-import DealMap from '@/components/marketplace/DealMap';
+import DealMap, { type GoogleMapsApi } from '@/components/marketplace/DealMap';
 import PublicAddressSearch from '@/components/search/PublicAddressSearch';
 import type { DealListingTeaser } from '@/types/listing';
 
@@ -12,9 +12,12 @@ interface GoogleMapsMock {
     Marker: jest.Mock;
     SymbolPath: { CIRCLE: number };
     LatLngBounds: jest.Mock;
+    event: {
+      addListener: jest.Mock;
+      removeListener: jest.Mock;
+    };
   };
 }
-
 
 // Mock routing & next/navigation
 const mockPush = jest.fn();
@@ -40,37 +43,36 @@ jest.mock('@/actions/listings', () => ({
   searchDealByAddress: (...args: unknown[]) => mockSearchDealByAddress(...args),
 }));
 
-// Mock Google Maps SDK globally in window
+// Setup mock before tests
 beforeAll(() => {
-  window.google = {
-    maps: {
-      Map: jest.fn().mockImplementation(() => ({
-        addListener: jest.fn(),
-        getZoom: jest.fn().mockReturnValue(12),
-        setZoom: jest.fn(),
-        fitBounds: jest.fn(),
-      })),
-      Circle: jest.fn().mockImplementation(() => ({
-        setMap: jest.fn(),
-      })),
-      Marker: jest.fn().mockImplementation((opts: { position?: unknown; title?: string }) => ({
-        setMap: jest.fn(),
-        addListener: jest.fn(),
-        position: opts.position,
-        title: opts.title,
-      })),
-      SymbolPath: {
-        CIRCLE: 0,
-      },
-      LatLngBounds: jest.fn().mockImplementation(() => ({
-        extend: jest.fn(),
-      })),
-      event: {
-        addListener: jest.fn().mockReturnValue({}),
-        removeListener: jest.fn(),
+  Object.defineProperty(window, 'google', {
+    writable: true,
+    value: {
+      maps: {
+        Marker: jest.fn().mockImplementation((opts?: { position?: unknown; title?: string }) => ({
+          setMap: jest.fn(),
+          addListener: jest.fn(),
+          position: opts?.position,
+          title: opts?.title,
+        })),
+        Map: jest.fn().mockImplementation(() => ({
+          setCenter: jest.fn(),
+          setZoom: jest.fn(),
+          fitBounds: jest.fn(),
+          getZoom: jest.fn().mockReturnValue(12),
+          addListener: jest.fn(),
+        })),
+        LatLngBounds: jest.fn().mockImplementation(() => ({
+          extend: jest.fn(),
+        })),
+        SymbolPath: { CIRCLE: 0 },
+        event: {
+          addListener: jest.fn().mockReturnValue({ remove: jest.fn() }),
+          removeListener: jest.fn(),
+        },
       },
     },
-  };
+  });
 });
 
 describe('DM-13 Map and List Views & Visibility Matrix', () => {

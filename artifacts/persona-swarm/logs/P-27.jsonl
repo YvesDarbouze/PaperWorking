@@ -972,3 +972,487 @@
 {"ts":"2026-08-18T09:42:00.118Z","agentId":"P-27","wave":5,"step":"WAVE_5","action":"COMPLETE","result":"SUCCESS","details":{"reportPath":"/Users/yvesdarbouze/Documents/PaperWorking/artifacts/persona-swarm/reports/P-27-experience-report.md"}}
 {"ts":"2026-08-18T09:42:00.133Z","agentId":"P-27","wave":5,"step":"WAVE_5","action":"START","result":"SUCCESS"}
 {"ts":"2026-08-18T09:42:00.134Z","agentId":"P-27","wave":5,"step":"WAVE_5","action":"COMPLETE","result":"SUCCESS","details":{"reportPath":"/Users/yvesdarbouze/Documents/PaperWorking/artifacts/persona-swarm/reports/P-27-experience-report.md"}}
+{"ts":"2026-08-18T10:58:00.004Z","agentId":"P-27","wave":1,"step":"WAVE_1","action":"START","result":"SUCCESS","details":{"email":"agent27.naomi.ishida@paperworking-test.dev"}}
+{"ts":"2026-08-18T10:58:00.005Z","agentId":"P-27","wave":1,"step":"WAVE_1","action":"START","result":"SUCCESS","details":{"email":"agent27.naomi.ishida@paperworking-test.dev"}}
+{"ts":"2026-08-18T10:58:00.007Z","agentId":"P-27","wave":0,"step":"SIGNUP","action":"SUCCESS_CREATED","result":"SUCCESS","details":{"uid":"uid_persona_p27","email":"agent27.naomi.ishida@paperworking-test.dev","name":"Naomi Ishida","entity":"Ishida Luxe Escapes LLC"}}
+{"ts":"2026-08-18T10:58:00.007Z","agentId":"P-27","wave":1,"step":"WAVE_1","action":"COMPLETE","result":"SUCCESS","details":{"uid":"uid_persona_p27"}}
+{"ts":"2026-08-18T10:58:00.009Z","agentId":"P-27","wave":0,"step":"SIGNUP","action":"SUCCESS_CREATED","result":"SUCCESS","details":{"uid":"uid_persona_p27","email":"agent27.naomi.ishida@paperworking-test.dev","name":"Naomi Ishida","entity":"Ishida Luxe Escapes LLC"}}
+{"ts":"2026-08-18T10:58:00.009Z","agentId":"P-27","wave":1,"step":"WAVE_1","action":"COMPLETE","result":"SUCCESS","details":{"uid":"uid_persona_p27"}}
+{"ts":"2026-08-18T10:58:00.062Z","agentId":"P-27","wave":2,"step":"WAVE_2","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T10:58:00.062Z","agentId":"P-27","wave":0,"step":"BILLING","action":"SUBSCRIPTION_SUCCESS","result":"SUCCESS","details":{"plan":"Individual","stripeCustomerId":"cus_test_swarm_p-27","stripeSubscriptionId":"sub_test_swarm_p-27","cardLastFour":"4242","cardBrand":"visa"}}
+{"ts":"2026-08-18T10:58:00.062Z","agentId":"P-27","wave":2,"step":"WAVE_2","action":"COMPLETE","result":"SUCCESS","details":{"plan":"Individual"}}
+{"ts":"2026-08-18T10:58:00.063Z","agentId":"P-27","wave":2,"step":"WAVE_2","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T10:58:00.063Z","agentId":"P-27","wave":0,"step":"BILLING","action":"SUBSCRIPTION_SUCCESS","result":"SUCCESS","details":{"plan":"Individual","stripeCustomerId":"cus_test_swarm_p-27","stripeSubscriptionId":"sub_test_swarm_p-27","cardLastFour":"4242","cardBrand":"visa"}}
+{"ts":"2026-08-18T10:58:00.063Z","agentId":"P-27","wave":2,"step":"WAVE_2","action":"COMPLETE","result":"SUCCESS","details":{"plan":"Individual"}}
+{"ts":"2026-08-18T10:58:00.181Z","agentId":"P-27","wave":3,"step":"WAVE_3","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T10:58:00.184Z","agentId":"P-27","wave":0,"step":"PROJECTS","action":"CREATION_SUCCESS","result":"SUCCESS","details":{"created":10,"plaid":false}}
+{"ts":"2026-08-18T10:58:00.184Z","agentId":"P-27","wave":3,"step":"WAVE_3","action":"COMPLETE","result":"SUCCESS","details":{"created":10}}
+{"ts":"2026-08-18T10:58:00.186Z","agentId":"P-27","wave":3,"step":"WAVE_3","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T10:58:00.189Z","agentId":"P-27","wave":0,"step":"PROJECTS","action":"CREATION_SUCCESS","result":"SUCCESS","details":{"created":10,"plaid":false}}
+{"ts":"2026-08-18T10:58:00.189Z","agentId":"P-27","wave":3,"step":"WAVE_3","action":"COMPLETE","result":"SUCCESS","details":{"created":10}}
+{"ts":"2026-08-18T10:58:00.360Z","agentId":"P-27","wave":4,"step":"WAVE_4","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T10:58:00.361Z","agentId":"P-27","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-72","to":"P-28","type":"STR Mastermind"}}
+{"ts":"2026-08-18T10:58:00.362Z","agentId":"P-27","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-28"}}
+{"ts":"2026-08-18T10:58:00.363Z","agentId":"P-27","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-26"}}
+{"ts":"2026-08-18T10:58:00.364Z","agentId":"P-27","wave":4,"step":"WAVE_4","action":"COMPLETE","result":"SUCCESS","details":{"interactions":1,"invites":2}}
+{"ts":"2026-08-18T10:58:00.371Z","agentId":"P-27","wave":4,"step":"WAVE_4","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T10:58:00.371Z","agentId":"P-27","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-72","to":"P-28","type":"STR Mastermind"}}
+{"ts":"2026-08-18T10:58:00.372Z","agentId":"P-27","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-28"}}
+{"ts":"2026-08-18T10:58:00.373Z","agentId":"P-27","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-26"}}
+{"ts":"2026-08-18T10:58:00.374Z","agentId":"P-27","wave":4,"step":"WAVE_4","action":"COMPLETE","result":"SUCCESS","details":{"interactions":1,"invites":2}}
+{"ts":"2026-08-18T10:58:00.484Z","agentId":"P-27","wave":5,"step":"WAVE_5","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T10:58:00.485Z","agentId":"P-27","wave":5,"step":"WAVE_5","action":"COMPLETE","result":"SUCCESS","details":{"reportPath":"/Users/yvesdarbouze/Documents/PaperWorking/artifacts/persona-swarm/reports/P-27-experience-report.md"}}
+{"ts":"2026-08-18T10:58:00.485Z","agentId":"P-27","wave":5,"step":"WAVE_5","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T10:58:00.485Z","agentId":"P-27","wave":5,"step":"WAVE_5","action":"COMPLETE","result":"SUCCESS","details":{"reportPath":"/Users/yvesdarbouze/Documents/PaperWorking/artifacts/persona-swarm/reports/P-27-experience-report.md"}}
+{"ts":"2026-08-18T10:58:28.473Z","agentId":"P-27","wave":1,"step":"WAVE_1","action":"START","result":"SUCCESS","details":{"email":"agent27.naomi.ishida@paperworking-test.dev"}}
+{"ts":"2026-08-18T10:58:28.473Z","agentId":"P-27","wave":0,"step":"SIGNUP","action":"SUCCESS_CREATED","result":"SUCCESS","details":{"uid":"uid_persona_p27","email":"agent27.naomi.ishida@paperworking-test.dev","name":"Naomi Ishida","entity":"Ishida Luxe Escapes LLC"}}
+{"ts":"2026-08-18T10:58:28.473Z","agentId":"P-27","wave":1,"step":"WAVE_1","action":"COMPLETE","result":"SUCCESS","details":{"uid":"uid_persona_p27"}}
+{"ts":"2026-08-18T10:58:28.528Z","agentId":"P-27","wave":2,"step":"WAVE_2","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T10:58:28.528Z","agentId":"P-27","wave":0,"step":"BILLING","action":"SUBSCRIPTION_SUCCESS","result":"SUCCESS","details":{"plan":"Individual","stripeCustomerId":"cus_test_swarm_p-27","stripeSubscriptionId":"sub_test_swarm_p-27","cardLastFour":"4242","cardBrand":"visa"}}
+{"ts":"2026-08-18T10:58:28.528Z","agentId":"P-27","wave":2,"step":"WAVE_2","action":"COMPLETE","result":"SUCCESS","details":{"plan":"Individual"}}
+{"ts":"2026-08-18T10:58:28.622Z","agentId":"P-27","wave":3,"step":"WAVE_3","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T10:58:28.624Z","agentId":"P-27","wave":0,"step":"PROJECTS","action":"CREATION_SUCCESS","result":"SUCCESS","details":{"created":10,"plaid":false}}
+{"ts":"2026-08-18T10:58:28.624Z","agentId":"P-27","wave":3,"step":"WAVE_3","action":"COMPLETE","result":"SUCCESS","details":{"created":10}}
+{"ts":"2026-08-18T10:58:28.712Z","agentId":"P-27","wave":4,"step":"WAVE_4","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T10:58:28.712Z","agentId":"P-27","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-72","to":"P-28","type":"STR Mastermind"}}
+{"ts":"2026-08-18T10:58:28.713Z","agentId":"P-27","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-28"}}
+{"ts":"2026-08-18T10:58:28.713Z","agentId":"P-27","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-26"}}
+{"ts":"2026-08-18T10:58:28.713Z","agentId":"P-27","wave":4,"step":"WAVE_4","action":"COMPLETE","result":"SUCCESS","details":{"interactions":1,"invites":2}}
+{"ts":"2026-08-18T10:58:28.769Z","agentId":"P-27","wave":5,"step":"WAVE_5","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T10:58:28.770Z","agentId":"P-27","wave":5,"step":"WAVE_5","action":"COMPLETE","result":"SUCCESS","details":{"reportPath":"/Users/yvesdarbouze/Documents/PaperWorking/artifacts/persona-swarm/reports/P-27-experience-report.md"}}
+{"ts":"2026-08-18T10:58:35.176Z","agentId":"P-27","wave":1,"step":"WAVE_1","action":"START","result":"SUCCESS","details":{"email":"agent27.naomi.ishida@paperworking-test.dev"}}
+{"ts":"2026-08-18T10:58:35.177Z","agentId":"P-27","wave":0,"step":"SIGNUP","action":"SUCCESS_CREATED","result":"SUCCESS","details":{"uid":"uid_persona_p27","email":"agent27.naomi.ishida@paperworking-test.dev","name":"Naomi Ishida","entity":"Ishida Luxe Escapes LLC"}}
+{"ts":"2026-08-18T10:58:35.177Z","agentId":"P-27","wave":1,"step":"WAVE_1","action":"COMPLETE","result":"SUCCESS","details":{"uid":"uid_persona_p27"}}
+{"ts":"2026-08-18T10:58:35.321Z","agentId":"P-27","wave":2,"step":"WAVE_2","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T10:58:35.323Z","agentId":"P-27","wave":0,"step":"BILLING","action":"SUBSCRIPTION_SUCCESS","result":"SUCCESS","details":{"plan":"Individual","stripeCustomerId":"cus_test_swarm_p-27","stripeSubscriptionId":"sub_test_swarm_p-27","cardLastFour":"4242","cardBrand":"visa"}}
+{"ts":"2026-08-18T10:58:35.323Z","agentId":"P-27","wave":2,"step":"WAVE_2","action":"COMPLETE","result":"SUCCESS","details":{"plan":"Individual"}}
+{"ts":"2026-08-18T10:58:35.533Z","agentId":"P-27","wave":3,"step":"WAVE_3","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T10:58:35.548Z","agentId":"P-27","wave":0,"step":"PROJECTS","action":"CREATION_SUCCESS","result":"SUCCESS","details":{"created":10,"plaid":false}}
+{"ts":"2026-08-18T10:58:35.548Z","agentId":"P-27","wave":3,"step":"WAVE_3","action":"COMPLETE","result":"SUCCESS","details":{"created":10}}
+{"ts":"2026-08-18T10:58:35.873Z","agentId":"P-27","wave":4,"step":"WAVE_4","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T10:58:35.874Z","agentId":"P-27","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-72","to":"P-28","type":"STR Mastermind"}}
+{"ts":"2026-08-18T10:58:35.875Z","agentId":"P-27","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-28"}}
+{"ts":"2026-08-18T10:58:35.877Z","agentId":"P-27","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-26"}}
+{"ts":"2026-08-18T10:58:35.877Z","agentId":"P-27","wave":4,"step":"WAVE_4","action":"COMPLETE","result":"SUCCESS","details":{"interactions":1,"invites":2}}
+{"ts":"2026-08-18T10:58:36.036Z","agentId":"P-27","wave":5,"step":"WAVE_5","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T10:58:36.036Z","agentId":"P-27","wave":5,"step":"WAVE_5","action":"COMPLETE","result":"SUCCESS","details":{"reportPath":"/Users/yvesdarbouze/Documents/PaperWorking/artifacts/persona-swarm/reports/P-27-experience-report.md"}}
+{"ts":"2026-08-18T10:59:01.704Z","agentId":"P-27","wave":1,"step":"WAVE_1","action":"START","result":"SUCCESS","details":{"email":"agent27.naomi.ishida@paperworking-test.dev"}}
+{"ts":"2026-08-18T10:59:01.704Z","agentId":"P-27","wave":0,"step":"SIGNUP","action":"SUCCESS_CREATED","result":"SUCCESS","details":{"uid":"uid_persona_p27","email":"agent27.naomi.ishida@paperworking-test.dev","name":"Naomi Ishida","entity":"Ishida Luxe Escapes LLC"}}
+{"ts":"2026-08-18T10:59:01.705Z","agentId":"P-27","wave":1,"step":"WAVE_1","action":"COMPLETE","result":"SUCCESS","details":{"uid":"uid_persona_p27"}}
+{"ts":"2026-08-18T10:59:01.747Z","agentId":"P-27","wave":1,"step":"WAVE_1","action":"START","result":"SUCCESS","details":{"email":"agent27.naomi.ishida@paperworking-test.dev"}}
+{"ts":"2026-08-18T10:59:01.748Z","agentId":"P-27","wave":0,"step":"SIGNUP","action":"SUCCESS_CREATED","result":"SUCCESS","details":{"uid":"uid_persona_p27","email":"agent27.naomi.ishida@paperworking-test.dev","name":"Naomi Ishida","entity":"Ishida Luxe Escapes LLC"}}
+{"ts":"2026-08-18T10:59:01.748Z","agentId":"P-27","wave":1,"step":"WAVE_1","action":"COMPLETE","result":"SUCCESS","details":{"uid":"uid_persona_p27"}}
+{"ts":"2026-08-18T10:59:01.766Z","agentId":"P-27","wave":2,"step":"WAVE_2","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T10:59:01.773Z","agentId":"P-27","wave":0,"step":"BILLING","action":"SUBSCRIPTION_SUCCESS","result":"SUCCESS","details":{"plan":"Individual","stripeCustomerId":"cus_test_swarm_p-27","stripeSubscriptionId":"sub_test_swarm_p-27","cardLastFour":"4242","cardBrand":"visa"}}
+{"ts":"2026-08-18T10:59:01.773Z","agentId":"P-27","wave":2,"step":"WAVE_2","action":"COMPLETE","result":"SUCCESS","details":{"plan":"Individual"}}
+{"ts":"2026-08-18T10:59:01.797Z","agentId":"P-27","wave":2,"step":"WAVE_2","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T10:59:01.801Z","agentId":"P-27","wave":0,"step":"BILLING","action":"SUBSCRIPTION_SUCCESS","result":"SUCCESS","details":{"plan":"Individual","stripeCustomerId":"cus_test_swarm_p-27","stripeSubscriptionId":"sub_test_swarm_p-27","cardLastFour":"4242","cardBrand":"visa"}}
+{"ts":"2026-08-18T10:59:01.801Z","agentId":"P-27","wave":2,"step":"WAVE_2","action":"COMPLETE","result":"SUCCESS","details":{"plan":"Individual"}}
+{"ts":"2026-08-18T10:59:01.900Z","agentId":"P-27","wave":3,"step":"WAVE_3","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T10:59:01.902Z","agentId":"P-27","wave":0,"step":"PROJECTS","action":"CREATION_SUCCESS","result":"SUCCESS","details":{"created":10,"plaid":false}}
+{"ts":"2026-08-18T10:59:01.902Z","agentId":"P-27","wave":3,"step":"WAVE_3","action":"COMPLETE","result":"SUCCESS","details":{"created":10}}
+{"ts":"2026-08-18T10:59:01.937Z","agentId":"P-27","wave":3,"step":"WAVE_3","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T10:59:01.941Z","agentId":"P-27","wave":0,"step":"PROJECTS","action":"CREATION_SUCCESS","result":"SUCCESS","details":{"created":10,"plaid":false}}
+{"ts":"2026-08-18T10:59:01.941Z","agentId":"P-27","wave":3,"step":"WAVE_3","action":"COMPLETE","result":"SUCCESS","details":{"created":10}}
+{"ts":"2026-08-18T10:59:02.014Z","agentId":"P-27","wave":4,"step":"WAVE_4","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T10:59:02.014Z","agentId":"P-27","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-72","to":"P-28","type":"STR Mastermind"}}
+{"ts":"2026-08-18T10:59:02.015Z","agentId":"P-27","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-28"}}
+{"ts":"2026-08-18T10:59:02.015Z","agentId":"P-27","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-26"}}
+{"ts":"2026-08-18T10:59:02.015Z","agentId":"P-27","wave":4,"step":"WAVE_4","action":"COMPLETE","result":"SUCCESS","details":{"interactions":1,"invites":2}}
+{"ts":"2026-08-18T10:59:02.051Z","agentId":"P-27","wave":4,"step":"WAVE_4","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T10:59:02.051Z","agentId":"P-27","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-72","to":"P-28","type":"STR Mastermind"}}
+{"ts":"2026-08-18T10:59:02.052Z","agentId":"P-27","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-28"}}
+{"ts":"2026-08-18T10:59:02.052Z","agentId":"P-27","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-26"}}
+{"ts":"2026-08-18T10:59:02.052Z","agentId":"P-27","wave":4,"step":"WAVE_4","action":"COMPLETE","result":"SUCCESS","details":{"interactions":1,"invites":2}}
+{"ts":"2026-08-18T10:59:02.095Z","agentId":"P-27","wave":5,"step":"WAVE_5","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T10:59:02.098Z","agentId":"P-27","wave":5,"step":"WAVE_5","action":"COMPLETE","result":"SUCCESS","details":{"reportPath":"/Users/yvesdarbouze/Documents/PaperWorking/artifacts/persona-swarm/reports/P-27-experience-report.md"}}
+{"ts":"2026-08-18T10:59:02.153Z","agentId":"P-27","wave":5,"step":"WAVE_5","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T10:59:02.154Z","agentId":"P-27","wave":5,"step":"WAVE_5","action":"COMPLETE","result":"SUCCESS","details":{"reportPath":"/Users/yvesdarbouze/Documents/PaperWorking/artifacts/persona-swarm/reports/P-27-experience-report.md"}}
+{"ts":"2026-08-18T10:59:27.003Z","agentId":"P-27","wave":1,"step":"WAVE_1","action":"START","result":"SUCCESS","details":{"email":"agent27.naomi.ishida@paperworking-test.dev"}}
+{"ts":"2026-08-18T10:59:27.003Z","agentId":"P-27","wave":0,"step":"SIGNUP","action":"SUCCESS_CREATED","result":"SUCCESS","details":{"uid":"uid_persona_p27","email":"agent27.naomi.ishida@paperworking-test.dev","name":"Naomi Ishida","entity":"Ishida Luxe Escapes LLC"}}
+{"ts":"2026-08-18T10:59:27.003Z","agentId":"P-27","wave":1,"step":"WAVE_1","action":"COMPLETE","result":"SUCCESS","details":{"uid":"uid_persona_p27"}}
+{"ts":"2026-08-18T10:59:27.063Z","agentId":"P-27","wave":2,"step":"WAVE_2","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T10:59:27.064Z","agentId":"P-27","wave":0,"step":"BILLING","action":"SUBSCRIPTION_SUCCESS","result":"SUCCESS","details":{"plan":"Individual","stripeCustomerId":"cus_test_swarm_p-27","stripeSubscriptionId":"sub_test_swarm_p-27","cardLastFour":"4242","cardBrand":"visa"}}
+{"ts":"2026-08-18T10:59:27.064Z","agentId":"P-27","wave":2,"step":"WAVE_2","action":"COMPLETE","result":"SUCCESS","details":{"plan":"Individual"}}
+{"ts":"2026-08-18T10:59:27.162Z","agentId":"P-27","wave":3,"step":"WAVE_3","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T10:59:27.166Z","agentId":"P-27","wave":0,"step":"PROJECTS","action":"CREATION_SUCCESS","result":"SUCCESS","details":{"created":10,"plaid":false}}
+{"ts":"2026-08-18T10:59:27.166Z","agentId":"P-27","wave":3,"step":"WAVE_3","action":"COMPLETE","result":"SUCCESS","details":{"created":10}}
+{"ts":"2026-08-18T10:59:27.258Z","agentId":"P-27","wave":4,"step":"WAVE_4","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T10:59:27.258Z","agentId":"P-27","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-72","to":"P-28","type":"STR Mastermind"}}
+{"ts":"2026-08-18T10:59:27.259Z","agentId":"P-27","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-28"}}
+{"ts":"2026-08-18T10:59:27.259Z","agentId":"P-27","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-26"}}
+{"ts":"2026-08-18T10:59:27.259Z","agentId":"P-27","wave":4,"step":"WAVE_4","action":"COMPLETE","result":"SUCCESS","details":{"interactions":1,"invites":2}}
+{"ts":"2026-08-18T10:59:27.307Z","agentId":"P-27","wave":5,"step":"WAVE_5","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T10:59:27.307Z","agentId":"P-27","wave":5,"step":"WAVE_5","action":"COMPLETE","result":"SUCCESS","details":{"reportPath":"/Users/yvesdarbouze/Documents/PaperWorking/artifacts/persona-swarm/reports/P-27-experience-report.md"}}
+{"ts":"2026-08-18T10:59:30.137Z","agentId":"P-27","wave":1,"step":"WAVE_1","action":"START","result":"SUCCESS","details":{"email":"agent27.naomi.ishida@paperworking-test.dev"}}
+{"ts":"2026-08-18T10:59:30.138Z","agentId":"P-27","wave":0,"step":"SIGNUP","action":"SUCCESS_CREATED","result":"SUCCESS","details":{"uid":"uid_persona_p27","email":"agent27.naomi.ishida@paperworking-test.dev","name":"Naomi Ishida","entity":"Ishida Luxe Escapes LLC"}}
+{"ts":"2026-08-18T10:59:30.139Z","agentId":"P-27","wave":1,"step":"WAVE_1","action":"COMPLETE","result":"SUCCESS","details":{"uid":"uid_persona_p27"}}
+{"ts":"2026-08-18T10:59:30.201Z","agentId":"P-27","wave":2,"step":"WAVE_2","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T10:59:30.202Z","agentId":"P-27","wave":0,"step":"BILLING","action":"SUBSCRIPTION_SUCCESS","result":"SUCCESS","details":{"plan":"Individual","stripeCustomerId":"cus_test_swarm_p-27","stripeSubscriptionId":"sub_test_swarm_p-27","cardLastFour":"4242","cardBrand":"visa"}}
+{"ts":"2026-08-18T10:59:30.202Z","agentId":"P-27","wave":2,"step":"WAVE_2","action":"COMPLETE","result":"SUCCESS","details":{"plan":"Individual"}}
+{"ts":"2026-08-18T10:59:30.330Z","agentId":"P-27","wave":3,"step":"WAVE_3","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T10:59:30.333Z","agentId":"P-27","wave":0,"step":"PROJECTS","action":"CREATION_SUCCESS","result":"SUCCESS","details":{"created":10,"plaid":false}}
+{"ts":"2026-08-18T10:59:30.333Z","agentId":"P-27","wave":3,"step":"WAVE_3","action":"COMPLETE","result":"SUCCESS","details":{"created":10}}
+{"ts":"2026-08-18T10:59:30.471Z","agentId":"P-27","wave":4,"step":"WAVE_4","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T10:59:30.471Z","agentId":"P-27","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-72","to":"P-28","type":"STR Mastermind"}}
+{"ts":"2026-08-18T10:59:30.471Z","agentId":"P-27","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-28"}}
+{"ts":"2026-08-18T10:59:30.472Z","agentId":"P-27","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-26"}}
+{"ts":"2026-08-18T10:59:30.472Z","agentId":"P-27","wave":4,"step":"WAVE_4","action":"COMPLETE","result":"SUCCESS","details":{"interactions":1,"invites":2}}
+{"ts":"2026-08-18T10:59:30.583Z","agentId":"P-27","wave":5,"step":"WAVE_5","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T10:59:30.583Z","agentId":"P-27","wave":5,"step":"WAVE_5","action":"COMPLETE","result":"SUCCESS","details":{"reportPath":"/Users/yvesdarbouze/Documents/PaperWorking/artifacts/persona-swarm/reports/P-27-experience-report.md"}}
+{"ts":"2026-08-18T11:00:11.742Z","agentId":"P-27","wave":1,"step":"WAVE_1","action":"START","result":"SUCCESS","details":{"email":"agent27.naomi.ishida@paperworking-test.dev"}}
+{"ts":"2026-08-18T11:00:11.743Z","agentId":"P-27","wave":0,"step":"SIGNUP","action":"SUCCESS_CREATED","result":"SUCCESS","details":{"uid":"uid_persona_p27","email":"agent27.naomi.ishida@paperworking-test.dev","name":"Naomi Ishida","entity":"Ishida Luxe Escapes LLC"}}
+{"ts":"2026-08-18T11:00:11.743Z","agentId":"P-27","wave":1,"step":"WAVE_1","action":"COMPLETE","result":"SUCCESS","details":{"uid":"uid_persona_p27"}}
+{"ts":"2026-08-18T11:00:11.747Z","agentId":"P-27","wave":1,"step":"WAVE_1","action":"START","result":"SUCCESS","details":{"email":"agent27.naomi.ishida@paperworking-test.dev"}}
+{"ts":"2026-08-18T11:00:11.747Z","agentId":"P-27","wave":0,"step":"SIGNUP","action":"SUCCESS_CREATED","result":"SUCCESS","details":{"uid":"uid_persona_p27","email":"agent27.naomi.ishida@paperworking-test.dev","name":"Naomi Ishida","entity":"Ishida Luxe Escapes LLC"}}
+{"ts":"2026-08-18T11:00:11.747Z","agentId":"P-27","wave":1,"step":"WAVE_1","action":"COMPLETE","result":"SUCCESS","details":{"uid":"uid_persona_p27"}}
+{"ts":"2026-08-18T11:00:11.794Z","agentId":"P-27","wave":2,"step":"WAVE_2","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T11:00:11.794Z","agentId":"P-27","wave":0,"step":"BILLING","action":"SUBSCRIPTION_SUCCESS","result":"SUCCESS","details":{"plan":"Individual","stripeCustomerId":"cus_test_swarm_p-27","stripeSubscriptionId":"sub_test_swarm_p-27","cardLastFour":"4242","cardBrand":"visa"}}
+{"ts":"2026-08-18T11:00:11.794Z","agentId":"P-27","wave":2,"step":"WAVE_2","action":"COMPLETE","result":"SUCCESS","details":{"plan":"Individual"}}
+{"ts":"2026-08-18T11:00:11.796Z","agentId":"P-27","wave":2,"step":"WAVE_2","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T11:00:11.796Z","agentId":"P-27","wave":0,"step":"BILLING","action":"SUBSCRIPTION_SUCCESS","result":"SUCCESS","details":{"plan":"Individual","stripeCustomerId":"cus_test_swarm_p-27","stripeSubscriptionId":"sub_test_swarm_p-27","cardLastFour":"4242","cardBrand":"visa"}}
+{"ts":"2026-08-18T11:00:11.796Z","agentId":"P-27","wave":2,"step":"WAVE_2","action":"COMPLETE","result":"SUCCESS","details":{"plan":"Individual"}}
+{"ts":"2026-08-18T11:00:11.896Z","agentId":"P-27","wave":3,"step":"WAVE_3","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T11:00:11.898Z","agentId":"P-27","wave":0,"step":"PROJECTS","action":"CREATION_SUCCESS","result":"SUCCESS","details":{"created":10,"plaid":false}}
+{"ts":"2026-08-18T11:00:11.898Z","agentId":"P-27","wave":3,"step":"WAVE_3","action":"COMPLETE","result":"SUCCESS","details":{"created":10}}
+{"ts":"2026-08-18T11:00:11.900Z","agentId":"P-27","wave":3,"step":"WAVE_3","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T11:00:11.903Z","agentId":"P-27","wave":0,"step":"PROJECTS","action":"CREATION_SUCCESS","result":"SUCCESS","details":{"created":10,"plaid":false}}
+{"ts":"2026-08-18T11:00:11.903Z","agentId":"P-27","wave":3,"step":"WAVE_3","action":"COMPLETE","result":"SUCCESS","details":{"created":10}}
+{"ts":"2026-08-18T11:00:11.995Z","agentId":"P-27","wave":4,"step":"WAVE_4","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T11:00:11.995Z","agentId":"P-27","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-72","to":"P-28","type":"STR Mastermind"}}
+{"ts":"2026-08-18T11:00:11.996Z","agentId":"P-27","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-28"}}
+{"ts":"2026-08-18T11:00:11.996Z","agentId":"P-27","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-26"}}
+{"ts":"2026-08-18T11:00:11.996Z","agentId":"P-27","wave":4,"step":"WAVE_4","action":"COMPLETE","result":"SUCCESS","details":{"interactions":1,"invites":2}}
+{"ts":"2026-08-18T11:00:12.012Z","agentId":"P-27","wave":4,"step":"WAVE_4","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T11:00:12.013Z","agentId":"P-27","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-72","to":"P-28","type":"STR Mastermind"}}
+{"ts":"2026-08-18T11:00:12.013Z","agentId":"P-27","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-28"}}
+{"ts":"2026-08-18T11:00:12.013Z","agentId":"P-27","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-26"}}
+{"ts":"2026-08-18T11:00:12.013Z","agentId":"P-27","wave":4,"step":"WAVE_4","action":"COMPLETE","result":"SUCCESS","details":{"interactions":1,"invites":2}}
+{"ts":"2026-08-18T11:00:12.076Z","agentId":"P-27","wave":5,"step":"WAVE_5","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T11:00:12.076Z","agentId":"P-27","wave":5,"step":"WAVE_5","action":"COMPLETE","result":"SUCCESS","details":{"reportPath":"/Users/yvesdarbouze/Documents/PaperWorking/artifacts/persona-swarm/reports/P-27-experience-report.md"}}
+{"ts":"2026-08-18T11:00:12.091Z","agentId":"P-27","wave":5,"step":"WAVE_5","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T11:00:12.091Z","agentId":"P-27","wave":5,"step":"WAVE_5","action":"COMPLETE","result":"SUCCESS","details":{"reportPath":"/Users/yvesdarbouze/Documents/PaperWorking/artifacts/persona-swarm/reports/P-27-experience-report.md"}}
+{"ts":"2026-08-18T11:12:29.733Z","agentId":"P-27","wave":1,"step":"WAVE_1","action":"START","result":"SUCCESS","details":{"email":"agent27.naomi.ishida@paperworking-test.dev"}}
+{"ts":"2026-08-18T11:12:29.735Z","agentId":"P-27","wave":0,"step":"SIGNUP","action":"SUCCESS_CREATED","result":"SUCCESS","details":{"uid":"uid_persona_p27","email":"agent27.naomi.ishida@paperworking-test.dev","name":"Naomi Ishida","entity":"Ishida Luxe Escapes LLC"}}
+{"ts":"2026-08-18T11:12:29.735Z","agentId":"P-27","wave":1,"step":"WAVE_1","action":"COMPLETE","result":"SUCCESS","details":{"uid":"uid_persona_p27"}}
+{"ts":"2026-08-18T11:12:29.788Z","agentId":"P-27","wave":2,"step":"WAVE_2","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T11:12:29.789Z","agentId":"P-27","wave":0,"step":"BILLING","action":"SUBSCRIPTION_SUCCESS","result":"SUCCESS","details":{"plan":"Individual","stripeCustomerId":"cus_test_swarm_p-27","stripeSubscriptionId":"sub_test_swarm_p-27","cardLastFour":"4242","cardBrand":"visa"}}
+{"ts":"2026-08-18T11:12:29.789Z","agentId":"P-27","wave":2,"step":"WAVE_2","action":"COMPLETE","result":"SUCCESS","details":{"plan":"Individual"}}
+{"ts":"2026-08-18T11:12:29.918Z","agentId":"P-27","wave":3,"step":"WAVE_3","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T11:12:29.920Z","agentId":"P-27","wave":0,"step":"PROJECTS","action":"CREATION_SUCCESS","result":"SUCCESS","details":{"created":10,"plaid":false}}
+{"ts":"2026-08-18T11:12:29.921Z","agentId":"P-27","wave":3,"step":"WAVE_3","action":"COMPLETE","result":"SUCCESS","details":{"created":10}}
+{"ts":"2026-08-18T11:12:30.028Z","agentId":"P-27","wave":4,"step":"WAVE_4","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T11:12:30.028Z","agentId":"P-27","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-72","to":"P-28","type":"STR Mastermind"}}
+{"ts":"2026-08-18T11:12:30.029Z","agentId":"P-27","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-28"}}
+{"ts":"2026-08-18T11:12:30.029Z","agentId":"P-27","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-26"}}
+{"ts":"2026-08-18T11:12:30.029Z","agentId":"P-27","wave":4,"step":"WAVE_4","action":"COMPLETE","result":"SUCCESS","details":{"interactions":1,"invites":2}}
+{"ts":"2026-08-18T11:12:30.103Z","agentId":"P-27","wave":5,"step":"WAVE_5","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T11:12:30.103Z","agentId":"P-27","wave":5,"step":"WAVE_5","action":"COMPLETE","result":"SUCCESS","details":{"reportPath":"/Users/yvesdarbouze/Documents/PaperWorking/artifacts/persona-swarm/reports/P-27-experience-report.md"}}
+{"ts":"2026-08-18T11:12:32.934Z","agentId":"P-27","wave":1,"step":"WAVE_1","action":"START","result":"SUCCESS","details":{"email":"agent27.naomi.ishida@paperworking-test.dev"}}
+{"ts":"2026-08-18T11:12:32.936Z","agentId":"P-27","wave":0,"step":"SIGNUP","action":"SUCCESS_CREATED","result":"SUCCESS","details":{"uid":"uid_persona_p27","email":"agent27.naomi.ishida@paperworking-test.dev","name":"Naomi Ishida","entity":"Ishida Luxe Escapes LLC"}}
+{"ts":"2026-08-18T11:12:32.936Z","agentId":"P-27","wave":1,"step":"WAVE_1","action":"COMPLETE","result":"SUCCESS","details":{"uid":"uid_persona_p27"}}
+{"ts":"2026-08-18T11:12:33.022Z","agentId":"P-27","wave":2,"step":"WAVE_2","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T11:12:33.024Z","agentId":"P-27","wave":0,"step":"BILLING","action":"SUBSCRIPTION_SUCCESS","result":"SUCCESS","details":{"plan":"Individual","stripeCustomerId":"cus_test_swarm_p-27","stripeSubscriptionId":"sub_test_swarm_p-27","cardLastFour":"4242","cardBrand":"visa"}}
+{"ts":"2026-08-18T11:12:33.024Z","agentId":"P-27","wave":2,"step":"WAVE_2","action":"COMPLETE","result":"SUCCESS","details":{"plan":"Individual"}}
+{"ts":"2026-08-18T11:12:33.227Z","agentId":"P-27","wave":3,"step":"WAVE_3","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T11:12:33.233Z","agentId":"P-27","wave":0,"step":"PROJECTS","action":"CREATION_SUCCESS","result":"SUCCESS","details":{"created":10,"plaid":false}}
+{"ts":"2026-08-18T11:12:33.233Z","agentId":"P-27","wave":3,"step":"WAVE_3","action":"COMPLETE","result":"SUCCESS","details":{"created":10}}
+{"ts":"2026-08-18T11:12:33.429Z","agentId":"P-27","wave":4,"step":"WAVE_4","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T11:12:33.429Z","agentId":"P-27","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-72","to":"P-28","type":"STR Mastermind"}}
+{"ts":"2026-08-18T11:12:33.430Z","agentId":"P-27","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-28"}}
+{"ts":"2026-08-18T11:12:33.430Z","agentId":"P-27","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-26"}}
+{"ts":"2026-08-18T11:12:33.430Z","agentId":"P-27","wave":4,"step":"WAVE_4","action":"COMPLETE","result":"SUCCESS","details":{"interactions":1,"invites":2}}
+{"ts":"2026-08-18T11:12:33.581Z","agentId":"P-27","wave":5,"step":"WAVE_5","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T11:12:33.582Z","agentId":"P-27","wave":5,"step":"WAVE_5","action":"COMPLETE","result":"SUCCESS","details":{"reportPath":"/Users/yvesdarbouze/Documents/PaperWorking/artifacts/persona-swarm/reports/P-27-experience-report.md"}}
+{"ts":"2026-08-18T11:19:05.502Z","agentId":"P-27","wave":1,"step":"WAVE_1","action":"START","result":"SUCCESS","details":{"email":"agent27.naomi.ishida@paperworking-test.dev"}}
+{"ts":"2026-08-18T11:19:05.502Z","agentId":"P-27","wave":1,"step":"WAVE_1","action":"START","result":"SUCCESS","details":{"email":"agent27.naomi.ishida@paperworking-test.dev"}}
+{"ts":"2026-08-18T11:19:05.503Z","agentId":"P-27","wave":0,"step":"SIGNUP","action":"SUCCESS_CREATED","result":"SUCCESS","details":{"uid":"uid_persona_p27","email":"agent27.naomi.ishida@paperworking-test.dev","name":"Naomi Ishida","entity":"Ishida Luxe Escapes LLC"}}
+{"ts":"2026-08-18T11:19:05.503Z","agentId":"P-27","wave":1,"step":"WAVE_1","action":"COMPLETE","result":"SUCCESS","details":{"uid":"uid_persona_p27"}}
+{"ts":"2026-08-18T11:19:05.504Z","agentId":"P-27","wave":0,"step":"SIGNUP","action":"SUCCESS_CREATED","result":"SUCCESS","details":{"uid":"uid_persona_p27","email":"agent27.naomi.ishida@paperworking-test.dev","name":"Naomi Ishida","entity":"Ishida Luxe Escapes LLC"}}
+{"ts":"2026-08-18T11:19:05.504Z","agentId":"P-27","wave":1,"step":"WAVE_1","action":"COMPLETE","result":"SUCCESS","details":{"uid":"uid_persona_p27"}}
+{"ts":"2026-08-18T11:19:05.554Z","agentId":"P-27","wave":2,"step":"WAVE_2","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T11:19:05.555Z","agentId":"P-27","wave":0,"step":"BILLING","action":"SUBSCRIPTION_SUCCESS","result":"SUCCESS","details":{"plan":"Individual","stripeCustomerId":"cus_test_swarm_p-27","stripeSubscriptionId":"sub_test_swarm_p-27","cardLastFour":"4242","cardBrand":"visa"}}
+{"ts":"2026-08-18T11:19:05.555Z","agentId":"P-27","wave":2,"step":"WAVE_2","action":"COMPLETE","result":"SUCCESS","details":{"plan":"Individual"}}
+{"ts":"2026-08-18T11:19:05.556Z","agentId":"P-27","wave":2,"step":"WAVE_2","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T11:19:05.557Z","agentId":"P-27","wave":0,"step":"BILLING","action":"SUBSCRIPTION_SUCCESS","result":"SUCCESS","details":{"plan":"Individual","stripeCustomerId":"cus_test_swarm_p-27","stripeSubscriptionId":"sub_test_swarm_p-27","cardLastFour":"4242","cardBrand":"visa"}}
+{"ts":"2026-08-18T11:19:05.557Z","agentId":"P-27","wave":2,"step":"WAVE_2","action":"COMPLETE","result":"SUCCESS","details":{"plan":"Individual"}}
+{"ts":"2026-08-18T11:19:05.672Z","agentId":"P-27","wave":3,"step":"WAVE_3","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T11:19:05.675Z","agentId":"P-27","wave":0,"step":"PROJECTS","action":"CREATION_SUCCESS","result":"SUCCESS","details":{"created":10,"plaid":false}}
+{"ts":"2026-08-18T11:19:05.675Z","agentId":"P-27","wave":3,"step":"WAVE_3","action":"COMPLETE","result":"SUCCESS","details":{"created":10}}
+{"ts":"2026-08-18T11:19:05.678Z","agentId":"P-27","wave":3,"step":"WAVE_3","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T11:19:05.680Z","agentId":"P-27","wave":0,"step":"PROJECTS","action":"CREATION_SUCCESS","result":"SUCCESS","details":{"created":10,"plaid":false}}
+{"ts":"2026-08-18T11:19:05.680Z","agentId":"P-27","wave":3,"step":"WAVE_3","action":"COMPLETE","result":"SUCCESS","details":{"created":10}}
+{"ts":"2026-08-18T11:19:05.861Z","agentId":"P-27","wave":4,"step":"WAVE_4","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T11:19:05.862Z","agentId":"P-27","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-72","to":"P-28","type":"STR Mastermind"}}
+{"ts":"2026-08-18T11:19:05.862Z","agentId":"P-27","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-28"}}
+{"ts":"2026-08-18T11:19:05.862Z","agentId":"P-27","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-26"}}
+{"ts":"2026-08-18T11:19:05.862Z","agentId":"P-27","wave":4,"step":"WAVE_4","action":"COMPLETE","result":"SUCCESS","details":{"interactions":1,"invites":2}}
+{"ts":"2026-08-18T11:19:05.864Z","agentId":"P-27","wave":4,"step":"WAVE_4","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T11:19:05.865Z","agentId":"P-27","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-72","to":"P-28","type":"STR Mastermind"}}
+{"ts":"2026-08-18T11:19:05.865Z","agentId":"P-27","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-28"}}
+{"ts":"2026-08-18T11:19:05.865Z","agentId":"P-27","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-26"}}
+{"ts":"2026-08-18T11:19:05.865Z","agentId":"P-27","wave":4,"step":"WAVE_4","action":"COMPLETE","result":"SUCCESS","details":{"interactions":1,"invites":2}}
+{"ts":"2026-08-18T11:19:05.958Z","agentId":"P-27","wave":5,"step":"WAVE_5","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T11:19:05.958Z","agentId":"P-27","wave":5,"step":"WAVE_5","action":"COMPLETE","result":"SUCCESS","details":{"reportPath":"/Users/yvesdarbouze/Documents/PaperWorking/artifacts/persona-swarm/reports/P-27-experience-report.md"}}
+{"ts":"2026-08-18T11:19:05.967Z","agentId":"P-27","wave":5,"step":"WAVE_5","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T11:19:05.967Z","agentId":"P-27","wave":5,"step":"WAVE_5","action":"COMPLETE","result":"SUCCESS","details":{"reportPath":"/Users/yvesdarbouze/Documents/PaperWorking/artifacts/persona-swarm/reports/P-27-experience-report.md"}}
+{"ts":"2026-08-18T14:00:23.593Z","agentId":"P-27","wave":1,"step":"WAVE_1","action":"START","result":"SUCCESS","details":{"email":"agent27.naomi.ishida@paperworking-test.dev"}}
+{"ts":"2026-08-18T14:00:23.596Z","agentId":"P-27","wave":0,"step":"SIGNUP","action":"SUCCESS_CREATED","result":"SUCCESS","details":{"uid":"uid_persona_p27","email":"agent27.naomi.ishida@paperworking-test.dev","name":"Naomi Ishida","entity":"Ishida Luxe Escapes LLC"}}
+{"ts":"2026-08-18T14:00:23.596Z","agentId":"P-27","wave":1,"step":"WAVE_1","action":"COMPLETE","result":"SUCCESS","details":{"uid":"uid_persona_p27"}}
+{"ts":"2026-08-18T14:00:23.613Z","agentId":"P-27","wave":1,"step":"WAVE_1","action":"START","result":"SUCCESS","details":{"email":"agent27.naomi.ishida@paperworking-test.dev"}}
+{"ts":"2026-08-18T14:00:23.613Z","agentId":"P-27","wave":0,"step":"SIGNUP","action":"SUCCESS_CREATED","result":"SUCCESS","details":{"uid":"uid_persona_p27","email":"agent27.naomi.ishida@paperworking-test.dev","name":"Naomi Ishida","entity":"Ishida Luxe Escapes LLC"}}
+{"ts":"2026-08-18T14:00:23.613Z","agentId":"P-27","wave":1,"step":"WAVE_1","action":"COMPLETE","result":"SUCCESS","details":{"uid":"uid_persona_p27"}}
+{"ts":"2026-08-18T14:00:23.657Z","agentId":"P-27","wave":2,"step":"WAVE_2","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T14:00:23.658Z","agentId":"P-27","wave":0,"step":"BILLING","action":"SUBSCRIPTION_SUCCESS","result":"SUCCESS","details":{"plan":"Individual","stripeCustomerId":"cus_test_swarm_p-27","stripeSubscriptionId":"sub_test_swarm_p-27","cardLastFour":"4242","cardBrand":"visa"}}
+{"ts":"2026-08-18T14:00:23.658Z","agentId":"P-27","wave":2,"step":"WAVE_2","action":"COMPLETE","result":"SUCCESS","details":{"plan":"Individual"}}
+{"ts":"2026-08-18T14:00:23.662Z","agentId":"P-27","wave":2,"step":"WAVE_2","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T14:00:23.663Z","agentId":"P-27","wave":0,"step":"BILLING","action":"SUBSCRIPTION_SUCCESS","result":"SUCCESS","details":{"plan":"Individual","stripeCustomerId":"cus_test_swarm_p-27","stripeSubscriptionId":"sub_test_swarm_p-27","cardLastFour":"4242","cardBrand":"visa"}}
+{"ts":"2026-08-18T14:00:23.663Z","agentId":"P-27","wave":2,"step":"WAVE_2","action":"COMPLETE","result":"SUCCESS","details":{"plan":"Individual"}}
+{"ts":"2026-08-18T14:00:23.783Z","agentId":"P-27","wave":3,"step":"WAVE_3","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T14:00:23.789Z","agentId":"P-27","wave":0,"step":"PROJECTS","action":"CREATION_SUCCESS","result":"SUCCESS","details":{"created":10,"plaid":false}}
+{"ts":"2026-08-18T14:00:23.789Z","agentId":"P-27","wave":3,"step":"WAVE_3","action":"COMPLETE","result":"SUCCESS","details":{"created":10}}
+{"ts":"2026-08-18T14:00:23.800Z","agentId":"P-27","wave":3,"step":"WAVE_3","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T14:00:23.804Z","agentId":"P-27","wave":0,"step":"PROJECTS","action":"CREATION_SUCCESS","result":"SUCCESS","details":{"created":10,"plaid":false}}
+{"ts":"2026-08-18T14:00:23.804Z","agentId":"P-27","wave":3,"step":"WAVE_3","action":"COMPLETE","result":"SUCCESS","details":{"created":10}}
+{"ts":"2026-08-18T14:00:23.963Z","agentId":"P-27","wave":4,"step":"WAVE_4","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T14:00:23.963Z","agentId":"P-27","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-72","to":"P-28","type":"STR Mastermind"}}
+{"ts":"2026-08-18T14:00:23.964Z","agentId":"P-27","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-28"}}
+{"ts":"2026-08-18T14:00:23.965Z","agentId":"P-27","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-26"}}
+{"ts":"2026-08-18T14:00:23.966Z","agentId":"P-27","wave":4,"step":"WAVE_4","action":"COMPLETE","result":"SUCCESS","details":{"interactions":1,"invites":2}}
+{"ts":"2026-08-18T14:00:23.981Z","agentId":"P-27","wave":4,"step":"WAVE_4","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T14:00:23.982Z","agentId":"P-27","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-72","to":"P-28","type":"STR Mastermind"}}
+{"ts":"2026-08-18T14:00:23.983Z","agentId":"P-27","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-28"}}
+{"ts":"2026-08-18T14:00:23.983Z","agentId":"P-27","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-26"}}
+{"ts":"2026-08-18T14:00:23.984Z","agentId":"P-27","wave":4,"step":"WAVE_4","action":"COMPLETE","result":"SUCCESS","details":{"interactions":1,"invites":2}}
+{"ts":"2026-08-18T14:00:24.087Z","agentId":"P-27","wave":5,"step":"WAVE_5","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T14:00:24.087Z","agentId":"P-27","wave":5,"step":"WAVE_5","action":"COMPLETE","result":"SUCCESS","details":{"reportPath":"/Users/yvesdarbouze/Documents/PaperWorking/artifacts/persona-swarm/reports/P-27-experience-report.md"}}
+{"ts":"2026-08-18T14:00:24.106Z","agentId":"P-27","wave":5,"step":"WAVE_5","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T14:00:24.107Z","agentId":"P-27","wave":5,"step":"WAVE_5","action":"COMPLETE","result":"SUCCESS","details":{"reportPath":"/Users/yvesdarbouze/Documents/PaperWorking/artifacts/persona-swarm/reports/P-27-experience-report.md"}}
+{"ts":"2026-08-18T14:00:51.581Z","agentId":"P-27","wave":1,"step":"WAVE_1","action":"START","result":"SUCCESS","details":{"email":"agent27.naomi.ishida@paperworking-test.dev"}}
+{"ts":"2026-08-18T14:00:52.217Z","agentId":"P-27","wave":1,"step":"WAVE_1","action":"START","result":"SUCCESS","details":{"email":"agent27.naomi.ishida@paperworking-test.dev"}}
+{"ts":"2026-08-18T14:00:53.648Z","agentId":"P-27","wave":0,"step":"SIGNUP","action":"SUCCESS_CREATED","result":"SUCCESS","details":{"uid":"uid_persona_p27","email":"agent27.naomi.ishida@paperworking-test.dev","name":"Naomi Ishida","entity":"Ishida Luxe Escapes LLC"}}
+{"ts":"2026-08-18T14:00:53.648Z","agentId":"P-27","wave":1,"step":"WAVE_1","action":"COMPLETE","result":"SUCCESS","details":{"uid":"uid_persona_p27"}}
+{"ts":"2026-08-18T14:00:54.324Z","agentId":"P-27","wave":0,"step":"SIGNUP","action":"SUCCESS_CREATED","result":"SUCCESS","details":{"uid":"uid_persona_p27","email":"agent27.naomi.ishida@paperworking-test.dev","name":"Naomi Ishida","entity":"Ishida Luxe Escapes LLC"}}
+{"ts":"2026-08-18T14:00:54.325Z","agentId":"P-27","wave":1,"step":"WAVE_1","action":"COMPLETE","result":"SUCCESS","details":{"uid":"uid_persona_p27"}}
+{"ts":"2026-08-18T14:00:58.792Z","agentId":"P-27","wave":1,"step":"WAVE_1","action":"START","result":"SUCCESS","details":{"email":"agent27.naomi.ishida@paperworking-test.dev"}}
+{"ts":"2026-08-18T14:00:58.793Z","agentId":"P-27","wave":0,"step":"SIGNUP","action":"SUCCESS_CREATED","result":"SUCCESS","details":{"uid":"uid_persona_p27","email":"agent27.naomi.ishida@paperworking-test.dev","name":"Naomi Ishida","entity":"Ishida Luxe Escapes LLC"}}
+{"ts":"2026-08-18T14:00:58.793Z","agentId":"P-27","wave":1,"step":"WAVE_1","action":"COMPLETE","result":"SUCCESS","details":{"uid":"uid_persona_p27"}}
+{"ts":"2026-08-18T14:00:58.838Z","agentId":"P-27","wave":2,"step":"WAVE_2","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T14:00:58.838Z","agentId":"P-27","wave":0,"step":"BILLING","action":"SUBSCRIPTION_SUCCESS","result":"SUCCESS","details":{"plan":"Individual","stripeCustomerId":"cus_test_swarm_p-27","stripeSubscriptionId":"sub_test_swarm_p-27","cardLastFour":"4242","cardBrand":"visa"}}
+{"ts":"2026-08-18T14:00:58.839Z","agentId":"P-27","wave":2,"step":"WAVE_2","action":"COMPLETE","result":"SUCCESS","details":{"plan":"Individual"}}
+{"ts":"2026-08-18T14:00:58.926Z","agentId":"P-27","wave":3,"step":"WAVE_3","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T14:00:58.930Z","agentId":"P-27","wave":0,"step":"PROJECTS","action":"CREATION_SUCCESS","result":"SUCCESS","details":{"created":10,"plaid":false}}
+{"ts":"2026-08-18T14:00:58.931Z","agentId":"P-27","wave":3,"step":"WAVE_3","action":"COMPLETE","result":"SUCCESS","details":{"created":10}}
+{"ts":"2026-08-18T14:00:59.026Z","agentId":"P-27","wave":4,"step":"WAVE_4","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T14:00:59.026Z","agentId":"P-27","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-72","to":"P-28","type":"STR Mastermind"}}
+{"ts":"2026-08-18T14:00:59.026Z","agentId":"P-27","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-28"}}
+{"ts":"2026-08-18T14:00:59.027Z","agentId":"P-27","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-26"}}
+{"ts":"2026-08-18T14:00:59.027Z","agentId":"P-27","wave":4,"step":"WAVE_4","action":"COMPLETE","result":"SUCCESS","details":{"interactions":1,"invites":2}}
+{"ts":"2026-08-18T14:00:59.110Z","agentId":"P-27","wave":5,"step":"WAVE_5","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T14:00:59.110Z","agentId":"P-27","wave":5,"step":"WAVE_5","action":"COMPLETE","result":"SUCCESS","details":{"reportPath":"/Users/yvesdarbouze/Documents/PaperWorking/artifacts/persona-swarm/reports/P-27-experience-report.md"}}
+{"ts":"2026-08-18T14:01:09.221Z","agentId":"P-27","wave":1,"step":"WAVE_1","action":"START","result":"SUCCESS","details":{"email":"agent27.naomi.ishida@paperworking-test.dev"}}
+{"ts":"2026-08-18T14:01:09.222Z","agentId":"P-27","wave":0,"step":"SIGNUP","action":"SUCCESS_CREATED","result":"SUCCESS","details":{"uid":"uid_persona_p27","email":"agent27.naomi.ishida@paperworking-test.dev","name":"Naomi Ishida","entity":"Ishida Luxe Escapes LLC"}}
+{"ts":"2026-08-18T14:01:09.222Z","agentId":"P-27","wave":1,"step":"WAVE_1","action":"COMPLETE","result":"SUCCESS","details":{"uid":"uid_persona_p27"}}
+{"ts":"2026-08-18T14:01:09.261Z","agentId":"P-27","wave":2,"step":"WAVE_2","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T14:01:09.261Z","agentId":"P-27","wave":0,"step":"BILLING","action":"SUBSCRIPTION_SUCCESS","result":"SUCCESS","details":{"plan":"Individual","stripeCustomerId":"cus_test_swarm_p-27","stripeSubscriptionId":"sub_test_swarm_p-27","cardLastFour":"4242","cardBrand":"visa"}}
+{"ts":"2026-08-18T14:01:09.261Z","agentId":"P-27","wave":2,"step":"WAVE_2","action":"COMPLETE","result":"SUCCESS","details":{"plan":"Individual"}}
+{"ts":"2026-08-18T14:01:09.347Z","agentId":"P-27","wave":3,"step":"WAVE_3","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T14:01:09.349Z","agentId":"P-27","wave":0,"step":"PROJECTS","action":"CREATION_SUCCESS","result":"SUCCESS","details":{"created":10,"plaid":false}}
+{"ts":"2026-08-18T14:01:09.349Z","agentId":"P-27","wave":3,"step":"WAVE_3","action":"COMPLETE","result":"SUCCESS","details":{"created":10}}
+{"ts":"2026-08-18T14:01:09.444Z","agentId":"P-27","wave":4,"step":"WAVE_4","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T14:01:09.444Z","agentId":"P-27","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-72","to":"P-28","type":"STR Mastermind"}}
+{"ts":"2026-08-18T14:01:09.444Z","agentId":"P-27","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-28"}}
+{"ts":"2026-08-18T14:01:09.445Z","agentId":"P-27","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-26"}}
+{"ts":"2026-08-18T14:01:09.445Z","agentId":"P-27","wave":4,"step":"WAVE_4","action":"COMPLETE","result":"SUCCESS","details":{"interactions":1,"invites":2}}
+{"ts":"2026-08-18T14:01:09.508Z","agentId":"P-27","wave":5,"step":"WAVE_5","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T14:01:09.508Z","agentId":"P-27","wave":5,"step":"WAVE_5","action":"COMPLETE","result":"SUCCESS","details":{"reportPath":"/Users/yvesdarbouze/Documents/PaperWorking/artifacts/persona-swarm/reports/P-27-experience-report.md"}}
+{"ts":"2026-08-18T14:01:24.894Z","agentId":"P-27","wave":1,"step":"WAVE_1","action":"START","result":"SUCCESS","details":{"email":"agent27.naomi.ishida@paperworking-test.dev"}}
+{"ts":"2026-08-18T14:01:24.895Z","agentId":"P-27","wave":0,"step":"SIGNUP","action":"SUCCESS_CREATED","result":"SUCCESS","details":{"uid":"uid_persona_p27","email":"agent27.naomi.ishida@paperworking-test.dev","name":"Naomi Ishida","entity":"Ishida Luxe Escapes LLC"}}
+{"ts":"2026-08-18T14:01:24.896Z","agentId":"P-27","wave":1,"step":"WAVE_1","action":"COMPLETE","result":"SUCCESS","details":{"uid":"uid_persona_p27"}}
+{"ts":"2026-08-18T14:01:24.966Z","agentId":"P-27","wave":2,"step":"WAVE_2","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T14:01:24.966Z","agentId":"P-27","wave":0,"step":"BILLING","action":"SUBSCRIPTION_SUCCESS","result":"SUCCESS","details":{"plan":"Individual","stripeCustomerId":"cus_test_swarm_p-27","stripeSubscriptionId":"sub_test_swarm_p-27","cardLastFour":"4242","cardBrand":"visa"}}
+{"ts":"2026-08-18T14:01:24.966Z","agentId":"P-27","wave":2,"step":"WAVE_2","action":"COMPLETE","result":"SUCCESS","details":{"plan":"Individual"}}
+{"ts":"2026-08-18T14:01:25.081Z","agentId":"P-27","wave":3,"step":"WAVE_3","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T14:01:25.083Z","agentId":"P-27","wave":0,"step":"PROJECTS","action":"CREATION_SUCCESS","result":"SUCCESS","details":{"created":10,"plaid":false}}
+{"ts":"2026-08-18T14:01:25.083Z","agentId":"P-27","wave":3,"step":"WAVE_3","action":"COMPLETE","result":"SUCCESS","details":{"created":10}}
+{"ts":"2026-08-18T14:01:25.200Z","agentId":"P-27","wave":4,"step":"WAVE_4","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T14:01:25.200Z","agentId":"P-27","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-72","to":"P-28","type":"STR Mastermind"}}
+{"ts":"2026-08-18T14:01:25.200Z","agentId":"P-27","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-28"}}
+{"ts":"2026-08-18T14:01:25.201Z","agentId":"P-27","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-26"}}
+{"ts":"2026-08-18T14:01:25.201Z","agentId":"P-27","wave":4,"step":"WAVE_4","action":"COMPLETE","result":"SUCCESS","details":{"interactions":1,"invites":2}}
+{"ts":"2026-08-18T14:01:25.287Z","agentId":"P-27","wave":5,"step":"WAVE_5","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T14:01:25.287Z","agentId":"P-27","wave":5,"step":"WAVE_5","action":"COMPLETE","result":"SUCCESS","details":{"reportPath":"/Users/yvesdarbouze/Documents/PaperWorking/artifacts/persona-swarm/reports/P-27-experience-report.md"}}
+{"ts":"2026-08-18T14:01:25.632Z","agentId":"P-27","wave":1,"step":"WAVE_1","action":"START","result":"SUCCESS","details":{"email":"agent27.naomi.ishida@paperworking-test.dev"}}
+{"ts":"2026-08-18T14:01:25.633Z","agentId":"P-27","wave":0,"step":"SIGNUP","action":"SUCCESS_CREATED","result":"SUCCESS","details":{"uid":"uid_persona_p27","email":"agent27.naomi.ishida@paperworking-test.dev","name":"Naomi Ishida","entity":"Ishida Luxe Escapes LLC"}}
+{"ts":"2026-08-18T14:01:25.633Z","agentId":"P-27","wave":1,"step":"WAVE_1","action":"COMPLETE","result":"SUCCESS","details":{"uid":"uid_persona_p27"}}
+{"ts":"2026-08-18T14:01:25.708Z","agentId":"P-27","wave":2,"step":"WAVE_2","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T14:01:25.708Z","agentId":"P-27","wave":0,"step":"BILLING","action":"SUBSCRIPTION_SUCCESS","result":"SUCCESS","details":{"plan":"Individual","stripeCustomerId":"cus_test_swarm_p-27","stripeSubscriptionId":"sub_test_swarm_p-27","cardLastFour":"4242","cardBrand":"visa"}}
+{"ts":"2026-08-18T14:01:25.708Z","agentId":"P-27","wave":2,"step":"WAVE_2","action":"COMPLETE","result":"SUCCESS","details":{"plan":"Individual"}}
+{"ts":"2026-08-18T14:01:25.839Z","agentId":"P-27","wave":3,"step":"WAVE_3","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T14:01:25.841Z","agentId":"P-27","wave":0,"step":"PROJECTS","action":"CREATION_SUCCESS","result":"SUCCESS","details":{"created":10,"plaid":false}}
+{"ts":"2026-08-18T14:01:25.841Z","agentId":"P-27","wave":3,"step":"WAVE_3","action":"COMPLETE","result":"SUCCESS","details":{"created":10}}
+{"ts":"2026-08-18T14:01:25.981Z","agentId":"P-27","wave":4,"step":"WAVE_4","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T14:01:25.982Z","agentId":"P-27","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-72","to":"P-28","type":"STR Mastermind"}}
+{"ts":"2026-08-18T14:01:25.982Z","agentId":"P-27","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-28"}}
+{"ts":"2026-08-18T14:01:25.982Z","agentId":"P-27","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-26"}}
+{"ts":"2026-08-18T14:01:25.982Z","agentId":"P-27","wave":4,"step":"WAVE_4","action":"COMPLETE","result":"SUCCESS","details":{"interactions":1,"invites":2}}
+{"ts":"2026-08-18T14:01:26.072Z","agentId":"P-27","wave":5,"step":"WAVE_5","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T14:01:26.072Z","agentId":"P-27","wave":5,"step":"WAVE_5","action":"COMPLETE","result":"SUCCESS","details":{"reportPath":"/Users/yvesdarbouze/Documents/PaperWorking/artifacts/persona-swarm/reports/P-27-experience-report.md"}}
+{"ts":"2026-08-18T14:16:29.126Z","agentId":"P-27","wave":1,"step":"WAVE_1","action":"START","result":"SUCCESS","details":{"email":"agent27.naomi.ishida@paperworking-test.dev"}}
+{"ts":"2026-08-18T14:16:29.127Z","agentId":"P-27","wave":1,"step":"WAVE_1","action":"START","result":"SUCCESS","details":{"email":"agent27.naomi.ishida@paperworking-test.dev"}}
+{"ts":"2026-08-18T14:16:29.128Z","agentId":"P-27","wave":0,"step":"SIGNUP","action":"SUCCESS_CREATED","result":"SUCCESS","details":{"uid":"uid_persona_p27","email":"agent27.naomi.ishida@paperworking-test.dev","name":"Naomi Ishida","entity":"Ishida Luxe Escapes LLC"}}
+{"ts":"2026-08-18T14:16:29.129Z","agentId":"P-27","wave":0,"step":"SIGNUP","action":"SUCCESS_CREATED","result":"SUCCESS","details":{"uid":"uid_persona_p27","email":"agent27.naomi.ishida@paperworking-test.dev","name":"Naomi Ishida","entity":"Ishida Luxe Escapes LLC"}}
+{"ts":"2026-08-18T14:16:29.129Z","agentId":"P-27","wave":1,"step":"WAVE_1","action":"COMPLETE","result":"SUCCESS","details":{"uid":"uid_persona_p27"}}
+{"ts":"2026-08-18T14:16:29.129Z","agentId":"P-27","wave":1,"step":"WAVE_1","action":"COMPLETE","result":"SUCCESS","details":{"uid":"uid_persona_p27"}}
+{"ts":"2026-08-18T14:16:29.184Z","agentId":"P-27","wave":2,"step":"WAVE_2","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T14:16:29.185Z","agentId":"P-27","wave":2,"step":"WAVE_2","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T14:16:29.185Z","agentId":"P-27","wave":0,"step":"BILLING","action":"SUBSCRIPTION_SUCCESS","result":"SUCCESS","details":{"plan":"Individual","stripeCustomerId":"cus_test_swarm_p-27","stripeSubscriptionId":"sub_test_swarm_p-27","cardLastFour":"4242","cardBrand":"visa"}}
+{"ts":"2026-08-18T14:16:29.185Z","agentId":"P-27","wave":2,"step":"WAVE_2","action":"COMPLETE","result":"SUCCESS","details":{"plan":"Individual"}}
+{"ts":"2026-08-18T14:16:29.185Z","agentId":"P-27","wave":0,"step":"BILLING","action":"SUBSCRIPTION_SUCCESS","result":"SUCCESS","details":{"plan":"Individual","stripeCustomerId":"cus_test_swarm_p-27","stripeSubscriptionId":"sub_test_swarm_p-27","cardLastFour":"4242","cardBrand":"visa"}}
+{"ts":"2026-08-18T14:16:29.185Z","agentId":"P-27","wave":2,"step":"WAVE_2","action":"COMPLETE","result":"SUCCESS","details":{"plan":"Individual"}}
+{"ts":"2026-08-18T14:16:29.309Z","agentId":"P-27","wave":3,"step":"WAVE_3","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T14:16:29.310Z","agentId":"P-27","wave":3,"step":"WAVE_3","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T14:16:29.312Z","agentId":"P-27","wave":0,"step":"PROJECTS","action":"CREATION_SUCCESS","result":"SUCCESS","details":{"created":10,"plaid":false}}
+{"ts":"2026-08-18T14:16:29.312Z","agentId":"P-27","wave":3,"step":"WAVE_3","action":"COMPLETE","result":"SUCCESS","details":{"created":10}}
+{"ts":"2026-08-18T14:16:29.313Z","agentId":"P-27","wave":0,"step":"PROJECTS","action":"CREATION_SUCCESS","result":"SUCCESS","details":{"created":10,"plaid":false}}
+{"ts":"2026-08-18T14:16:29.313Z","agentId":"P-27","wave":3,"step":"WAVE_3","action":"COMPLETE","result":"SUCCESS","details":{"created":10}}
+{"ts":"2026-08-18T14:16:29.435Z","agentId":"P-27","wave":4,"step":"WAVE_4","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T14:16:29.435Z","agentId":"P-27","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-72","to":"P-28","type":"STR Mastermind"}}
+{"ts":"2026-08-18T14:16:29.436Z","agentId":"P-27","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-28"}}
+{"ts":"2026-08-18T14:16:29.436Z","agentId":"P-27","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-26"}}
+{"ts":"2026-08-18T14:16:29.436Z","agentId":"P-27","wave":4,"step":"WAVE_4","action":"COMPLETE","result":"SUCCESS","details":{"interactions":1,"invites":2}}
+{"ts":"2026-08-18T14:16:29.441Z","agentId":"P-27","wave":4,"step":"WAVE_4","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T14:16:29.441Z","agentId":"P-27","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-72","to":"P-28","type":"STR Mastermind"}}
+{"ts":"2026-08-18T14:16:29.442Z","agentId":"P-27","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-28"}}
+{"ts":"2026-08-18T14:16:29.443Z","agentId":"P-27","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-26"}}
+{"ts":"2026-08-18T14:16:29.443Z","agentId":"P-27","wave":4,"step":"WAVE_4","action":"COMPLETE","result":"SUCCESS","details":{"interactions":1,"invites":2}}
+{"ts":"2026-08-18T14:16:29.537Z","agentId":"P-27","wave":5,"step":"WAVE_5","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T14:16:29.537Z","agentId":"P-27","wave":5,"step":"WAVE_5","action":"COMPLETE","result":"SUCCESS","details":{"reportPath":"/Users/yvesdarbouze/Documents/PaperWorking/artifacts/persona-swarm/reports/P-27-experience-report.md"}}
+{"ts":"2026-08-18T14:16:29.552Z","agentId":"P-27","wave":5,"step":"WAVE_5","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T14:16:29.552Z","agentId":"P-27","wave":5,"step":"WAVE_5","action":"COMPLETE","result":"SUCCESS","details":{"reportPath":"/Users/yvesdarbouze/Documents/PaperWorking/artifacts/persona-swarm/reports/P-27-experience-report.md"}}
+{"ts":"2026-08-18T15:27:30.112Z","agentId":"P-27","wave":1,"step":"WAVE_1","action":"START","result":"SUCCESS","details":{"email":"agent27.naomi.ishida@paperworking-test.dev"}}
+{"ts":"2026-08-18T15:27:30.115Z","agentId":"P-27","wave":0,"step":"SIGNUP","action":"SUCCESS_CREATED","result":"SUCCESS","details":{"uid":"uid_persona_p27","email":"agent27.naomi.ishida@paperworking-test.dev","name":"Naomi Ishida","entity":"Ishida Luxe Escapes LLC"}}
+{"ts":"2026-08-18T15:27:30.127Z","agentId":"P-27","wave":1,"step":"WAVE_1","action":"COMPLETE","result":"SUCCESS","details":{"uid":"uid_persona_p27"}}
+{"ts":"2026-08-18T15:27:30.128Z","agentId":"P-27","wave":1,"step":"WAVE_1","action":"START","result":"SUCCESS","details":{"email":"agent27.naomi.ishida@paperworking-test.dev"}}
+{"ts":"2026-08-18T15:27:30.129Z","agentId":"P-27","wave":0,"step":"SIGNUP","action":"SUCCESS_CREATED","result":"SUCCESS","details":{"uid":"uid_persona_p27","email":"agent27.naomi.ishida@paperworking-test.dev","name":"Naomi Ishida","entity":"Ishida Luxe Escapes LLC"}}
+{"ts":"2026-08-18T15:27:30.129Z","agentId":"P-27","wave":1,"step":"WAVE_1","action":"COMPLETE","result":"SUCCESS","details":{"uid":"uid_persona_p27"}}
+{"ts":"2026-08-18T15:27:30.287Z","agentId":"P-27","wave":2,"step":"WAVE_2","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T15:27:30.287Z","agentId":"P-27","wave":0,"step":"BILLING","action":"SUBSCRIPTION_SUCCESS","result":"SUCCESS","details":{"plan":"Individual","stripeCustomerId":"cus_test_swarm_p-27","stripeSubscriptionId":"sub_test_swarm_p-27","cardLastFour":"4242","cardBrand":"visa"}}
+{"ts":"2026-08-18T15:27:30.287Z","agentId":"P-27","wave":2,"step":"WAVE_2","action":"COMPLETE","result":"SUCCESS","details":{"plan":"Individual"}}
+{"ts":"2026-08-18T15:27:30.304Z","agentId":"P-27","wave":2,"step":"WAVE_2","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T15:27:30.305Z","agentId":"P-27","wave":0,"step":"BILLING","action":"SUBSCRIPTION_SUCCESS","result":"SUCCESS","details":{"plan":"Individual","stripeCustomerId":"cus_test_swarm_p-27","stripeSubscriptionId":"sub_test_swarm_p-27","cardLastFour":"4242","cardBrand":"visa"}}
+{"ts":"2026-08-18T15:27:30.305Z","agentId":"P-27","wave":2,"step":"WAVE_2","action":"COMPLETE","result":"SUCCESS","details":{"plan":"Individual"}}
+{"ts":"2026-08-18T15:27:30.586Z","agentId":"P-27","wave":3,"step":"WAVE_3","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T15:27:30.591Z","agentId":"P-27","wave":0,"step":"PROJECTS","action":"CREATION_SUCCESS","result":"SUCCESS","details":{"created":10,"plaid":false}}
+{"ts":"2026-08-18T15:27:30.592Z","agentId":"P-27","wave":3,"step":"WAVE_3","action":"COMPLETE","result":"SUCCESS","details":{"created":10}}
+{"ts":"2026-08-18T15:27:30.626Z","agentId":"P-27","wave":3,"step":"WAVE_3","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T15:27:30.632Z","agentId":"P-27","wave":0,"step":"PROJECTS","action":"CREATION_SUCCESS","result":"SUCCESS","details":{"created":10,"plaid":false}}
+{"ts":"2026-08-18T15:27:30.633Z","agentId":"P-27","wave":3,"step":"WAVE_3","action":"COMPLETE","result":"SUCCESS","details":{"created":10}}
+{"ts":"2026-08-18T15:27:30.775Z","agentId":"P-27","wave":4,"step":"WAVE_4","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T15:27:30.776Z","agentId":"P-27","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-72","to":"P-28","type":"STR Mastermind"}}
+{"ts":"2026-08-18T15:27:30.776Z","agentId":"P-27","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-28"}}
+{"ts":"2026-08-18T15:27:30.777Z","agentId":"P-27","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-26"}}
+{"ts":"2026-08-18T15:27:30.777Z","agentId":"P-27","wave":4,"step":"WAVE_4","action":"COMPLETE","result":"SUCCESS","details":{"interactions":1,"invites":2}}
+{"ts":"2026-08-18T15:27:30.820Z","agentId":"P-27","wave":4,"step":"WAVE_4","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T15:27:30.821Z","agentId":"P-27","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-72","to":"P-28","type":"STR Mastermind"}}
+{"ts":"2026-08-18T15:27:30.822Z","agentId":"P-27","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-28"}}
+{"ts":"2026-08-18T15:27:30.823Z","agentId":"P-27","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-26"}}
+{"ts":"2026-08-18T15:27:30.823Z","agentId":"P-27","wave":4,"step":"WAVE_4","action":"COMPLETE","result":"SUCCESS","details":{"interactions":1,"invites":2}}
+{"ts":"2026-08-18T15:27:30.901Z","agentId":"P-27","wave":5,"step":"WAVE_5","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T15:27:30.902Z","agentId":"P-27","wave":5,"step":"WAVE_5","action":"COMPLETE","result":"SUCCESS","details":{"reportPath":"/Users/yvesdarbouze/Documents/PaperWorking/artifacts/persona-swarm/reports/P-27-experience-report.md"}}
+{"ts":"2026-08-18T15:27:30.935Z","agentId":"P-27","wave":5,"step":"WAVE_5","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T15:27:30.935Z","agentId":"P-27","wave":5,"step":"WAVE_5","action":"COMPLETE","result":"SUCCESS","details":{"reportPath":"/Users/yvesdarbouze/Documents/PaperWorking/artifacts/persona-swarm/reports/P-27-experience-report.md"}}
+{"ts":"2026-08-18T15:28:00.317Z","agentId":"P-27","wave":1,"step":"WAVE_1","action":"START","result":"SUCCESS","details":{"email":"agent27.naomi.ishida@paperworking-test.dev"}}
+{"ts":"2026-08-18T15:28:00.317Z","agentId":"P-27","wave":1,"step":"WAVE_1","action":"START","result":"SUCCESS","details":{"email":"agent27.naomi.ishida@paperworking-test.dev"}}
+{"ts":"2026-08-18T15:28:00.318Z","agentId":"P-27","wave":0,"step":"SIGNUP","action":"SUCCESS_CREATED","result":"SUCCESS","details":{"uid":"uid_persona_p27","email":"agent27.naomi.ishida@paperworking-test.dev","name":"Naomi Ishida","entity":"Ishida Luxe Escapes LLC"}}
+{"ts":"2026-08-18T15:28:00.318Z","agentId":"P-27","wave":0,"step":"SIGNUP","action":"SUCCESS_CREATED","result":"SUCCESS","details":{"uid":"uid_persona_p27","email":"agent27.naomi.ishida@paperworking-test.dev","name":"Naomi Ishida","entity":"Ishida Luxe Escapes LLC"}}
+{"ts":"2026-08-18T15:28:00.318Z","agentId":"P-27","wave":1,"step":"WAVE_1","action":"COMPLETE","result":"SUCCESS","details":{"uid":"uid_persona_p27"}}
+{"ts":"2026-08-18T15:28:00.318Z","agentId":"P-27","wave":1,"step":"WAVE_1","action":"COMPLETE","result":"SUCCESS","details":{"uid":"uid_persona_p27"}}
+{"ts":"2026-08-18T15:28:00.374Z","agentId":"P-27","wave":2,"step":"WAVE_2","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T15:28:00.375Z","agentId":"P-27","wave":0,"step":"BILLING","action":"SUBSCRIPTION_SUCCESS","result":"SUCCESS","details":{"plan":"Individual","stripeCustomerId":"cus_test_swarm_p-27","stripeSubscriptionId":"sub_test_swarm_p-27","cardLastFour":"4242","cardBrand":"visa"}}
+{"ts":"2026-08-18T15:28:00.375Z","agentId":"P-27","wave":2,"step":"WAVE_2","action":"COMPLETE","result":"SUCCESS","details":{"plan":"Individual"}}
+{"ts":"2026-08-18T15:28:00.377Z","agentId":"P-27","wave":2,"step":"WAVE_2","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T15:28:00.378Z","agentId":"P-27","wave":0,"step":"BILLING","action":"SUBSCRIPTION_SUCCESS","result":"SUCCESS","details":{"plan":"Individual","stripeCustomerId":"cus_test_swarm_p-27","stripeSubscriptionId":"sub_test_swarm_p-27","cardLastFour":"4242","cardBrand":"visa"}}
+{"ts":"2026-08-18T15:28:00.378Z","agentId":"P-27","wave":2,"step":"WAVE_2","action":"COMPLETE","result":"SUCCESS","details":{"plan":"Individual"}}
+{"ts":"2026-08-18T15:28:00.533Z","agentId":"P-27","wave":3,"step":"WAVE_3","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T15:28:00.540Z","agentId":"P-27","wave":0,"step":"PROJECTS","action":"CREATION_SUCCESS","result":"SUCCESS","details":{"created":10,"plaid":false}}
+{"ts":"2026-08-18T15:28:00.544Z","agentId":"P-27","wave":3,"step":"WAVE_3","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T15:28:00.544Z","agentId":"P-27","wave":3,"step":"WAVE_3","action":"COMPLETE","result":"SUCCESS","details":{"created":10}}
+{"ts":"2026-08-18T15:28:00.549Z","agentId":"P-27","wave":0,"step":"PROJECTS","action":"CREATION_SUCCESS","result":"SUCCESS","details":{"created":10,"plaid":false}}
+{"ts":"2026-08-18T15:28:00.549Z","agentId":"P-27","wave":3,"step":"WAVE_3","action":"COMPLETE","result":"SUCCESS","details":{"created":10}}
+{"ts":"2026-08-18T15:28:00.736Z","agentId":"P-27","wave":4,"step":"WAVE_4","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T15:28:00.737Z","agentId":"P-27","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-72","to":"P-28","type":"STR Mastermind"}}
+{"ts":"2026-08-18T15:28:00.738Z","agentId":"P-27","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-28"}}
+{"ts":"2026-08-18T15:28:00.740Z","agentId":"P-27","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-26"}}
+{"ts":"2026-08-18T15:28:00.740Z","agentId":"P-27","wave":4,"step":"WAVE_4","action":"COMPLETE","result":"SUCCESS","details":{"interactions":1,"invites":2}}
+{"ts":"2026-08-18T15:28:00.752Z","agentId":"P-27","wave":4,"step":"WAVE_4","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T15:28:00.752Z","agentId":"P-27","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-72","to":"P-28","type":"STR Mastermind"}}
+{"ts":"2026-08-18T15:28:00.759Z","agentId":"P-27","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-28"}}
+{"ts":"2026-08-18T15:28:00.759Z","agentId":"P-27","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-26"}}
+{"ts":"2026-08-18T15:28:00.759Z","agentId":"P-27","wave":4,"step":"WAVE_4","action":"COMPLETE","result":"SUCCESS","details":{"interactions":1,"invites":2}}
+{"ts":"2026-08-18T15:28:00.841Z","agentId":"P-27","wave":5,"step":"WAVE_5","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T15:28:00.842Z","agentId":"P-27","wave":5,"step":"WAVE_5","action":"COMPLETE","result":"SUCCESS","details":{"reportPath":"/Users/yvesdarbouze/Documents/PaperWorking/artifacts/persona-swarm/reports/P-27-experience-report.md"}}
+{"ts":"2026-08-18T15:28:00.866Z","agentId":"P-27","wave":5,"step":"WAVE_5","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T15:28:00.867Z","agentId":"P-27","wave":5,"step":"WAVE_5","action":"COMPLETE","result":"SUCCESS","details":{"reportPath":"/Users/yvesdarbouze/Documents/PaperWorking/artifacts/persona-swarm/reports/P-27-experience-report.md"}}
+{"ts":"2026-08-18T15:56:13.772Z","agentId":"P-27","wave":1,"step":"WAVE_1","action":"START","result":"SUCCESS","details":{"email":"agent27.naomi.ishida@paperworking-test.dev"}}
+{"ts":"2026-08-18T15:56:13.903Z","agentId":"P-27","wave":1,"step":"WAVE_1","action":"START","result":"SUCCESS","details":{"email":"agent27.naomi.ishida@paperworking-test.dev"}}
+{"ts":"2026-08-18T15:56:15.771Z","agentId":"P-27","wave":0,"step":"SIGNUP","action":"SUCCESS_CREATED","result":"SUCCESS","details":{"uid":"uid_persona_p27","email":"agent27.naomi.ishida@paperworking-test.dev","name":"Naomi Ishida","entity":"Ishida Luxe Escapes LLC"}}
+{"ts":"2026-08-18T15:56:15.771Z","agentId":"P-27","wave":1,"step":"WAVE_1","action":"COMPLETE","result":"SUCCESS","details":{"uid":"uid_persona_p27"}}
+{"ts":"2026-08-18T15:56:15.882Z","agentId":"P-27","wave":0,"step":"SIGNUP","action":"SUCCESS_CREATED","result":"SUCCESS","details":{"uid":"uid_persona_p27","email":"agent27.naomi.ishida@paperworking-test.dev","name":"Naomi Ishida","entity":"Ishida Luxe Escapes LLC"}}
+{"ts":"2026-08-18T15:56:15.882Z","agentId":"P-27","wave":1,"step":"WAVE_1","action":"COMPLETE","result":"SUCCESS","details":{"uid":"uid_persona_p27"}}
+{"ts":"2026-08-18T15:57:17.838Z","agentId":"P-27","wave":2,"step":"WAVE_2","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T15:57:17.838Z","agentId":"P-27","wave":2,"step":"WAVE_2","action":"EXCEPTION","result":"SUCCESS","details":{"error":"CRITICAL SAFETY REFUSAL: Invalid or missing Stripe secret test key. Key must start with \"sk_test_\". Received: \"...\""}}
+{"ts":"2026-08-18T15:57:17.893Z","agentId":"P-27","wave":2,"step":"WAVE_2","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T15:57:17.893Z","agentId":"P-27","wave":2,"step":"WAVE_2","action":"EXCEPTION","result":"SUCCESS","details":{"error":"CRITICAL SAFETY REFUSAL: Invalid or missing Stripe secret test key. Key must start with \"sk_test_\". Received: \"...\""}}
+{"ts":"2026-08-18T15:57:17.894Z","agentId":"P-27","wave":3,"step":"WAVE_3","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T15:57:17.895Z","agentId":"P-27","wave":0,"step":"PROJECTS","action":"CREATION_SUCCESS","result":"SUCCESS","details":{"created":10,"plaid":false}}
+{"ts":"2026-08-18T15:57:17.895Z","agentId":"P-27","wave":3,"step":"WAVE_3","action":"COMPLETE","result":"SUCCESS","details":{"created":10}}
+{"ts":"2026-08-18T15:57:17.932Z","agentId":"P-27","wave":4,"step":"WAVE_4","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T15:57:17.932Z","agentId":"P-27","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-72","to":"P-28","type":"STR Mastermind"}}
+{"ts":"2026-08-18T15:57:17.932Z","agentId":"P-27","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-28"}}
+{"ts":"2026-08-18T15:57:17.932Z","agentId":"P-27","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-26"}}
+{"ts":"2026-08-18T15:57:17.932Z","agentId":"P-27","wave":4,"step":"WAVE_4","action":"COMPLETE","result":"SUCCESS","details":{"interactions":1,"invites":2}}
+{"ts":"2026-08-18T15:57:17.938Z","agentId":"P-27","wave":3,"step":"WAVE_3","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T15:57:17.938Z","agentId":"P-27","wave":0,"step":"PROJECTS","action":"CREATION_SUCCESS","result":"SUCCESS","details":{"created":10,"plaid":false}}
+{"ts":"2026-08-18T15:57:17.938Z","agentId":"P-27","wave":3,"step":"WAVE_3","action":"COMPLETE","result":"SUCCESS","details":{"created":10}}
+{"ts":"2026-08-18T15:57:17.969Z","agentId":"P-27","wave":4,"step":"WAVE_4","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T15:57:17.969Z","agentId":"P-27","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-72","to":"P-28","type":"STR Mastermind"}}
+{"ts":"2026-08-18T15:57:17.969Z","agentId":"P-27","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-28"}}
+{"ts":"2026-08-18T15:57:17.969Z","agentId":"P-27","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-26"}}
+{"ts":"2026-08-18T15:57:17.969Z","agentId":"P-27","wave":4,"step":"WAVE_4","action":"COMPLETE","result":"SUCCESS","details":{"interactions":1,"invites":2}}
+{"ts":"2026-08-18T15:57:17.984Z","agentId":"P-27","wave":5,"step":"WAVE_5","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T15:57:17.985Z","agentId":"P-27","wave":5,"step":"WAVE_5","action":"COMPLETE","result":"SUCCESS","details":{"reportPath":"/Users/yvesdarbouze/Documents/PaperWorking/artifacts/persona-swarm/reports/P-27-experience-report.md"}}
+{"ts":"2026-08-18T15:57:18.014Z","agentId":"P-27","wave":5,"step":"WAVE_5","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T15:57:18.015Z","agentId":"P-27","wave":5,"step":"WAVE_5","action":"COMPLETE","result":"SUCCESS","details":{"reportPath":"/Users/yvesdarbouze/Documents/PaperWorking/artifacts/persona-swarm/reports/P-27-experience-report.md"}}
+{"ts":"2026-08-18T16:11:37.838Z","agentId":"P-27","wave":1,"step":"WAVE_1","action":"START","result":"SUCCESS","details":{"email":"agent27.naomi.ishida@paperworking-test.dev"}}
+{"ts":"2026-08-18T16:11:37.839Z","agentId":"P-27","wave":0,"step":"SIGNUP","action":"SUCCESS_CREATED","result":"SUCCESS","details":{"uid":"uid_persona_p27","email":"agent27.naomi.ishida@paperworking-test.dev","name":"Naomi Ishida","entity":"Ishida Luxe Escapes LLC"}}
+{"ts":"2026-08-18T16:11:37.840Z","agentId":"P-27","wave":1,"step":"WAVE_1","action":"COMPLETE","result":"SUCCESS","details":{"uid":"uid_persona_p27"}}
+{"ts":"2026-08-18T16:11:37.880Z","agentId":"P-27","wave":2,"step":"WAVE_2","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T16:11:37.880Z","agentId":"P-27","wave":0,"step":"BILLING","action":"SUBSCRIPTION_SUCCESS","result":"SUCCESS","details":{"plan":"Individual","stripeCustomerId":"cus_test_swarm_p-27","stripeSubscriptionId":"sub_test_swarm_p-27","cardLastFour":"4242","cardBrand":"visa"}}
+{"ts":"2026-08-18T16:11:37.880Z","agentId":"P-27","wave":2,"step":"WAVE_2","action":"COMPLETE","result":"SUCCESS","details":{"plan":"Individual"}}
+{"ts":"2026-08-18T16:11:37.901Z","agentId":"P-27","wave":3,"step":"WAVE_3","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T16:11:37.901Z","agentId":"P-27","wave":0,"step":"PROJECTS","action":"CREATION_SUCCESS","result":"SUCCESS","details":{"created":10,"plaid":false}}
+{"ts":"2026-08-18T16:11:37.901Z","agentId":"P-27","wave":3,"step":"WAVE_3","action":"COMPLETE","result":"SUCCESS","details":{"created":10}}
+{"ts":"2026-08-18T16:11:37.934Z","agentId":"P-27","wave":4,"step":"WAVE_4","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T16:11:37.934Z","agentId":"P-27","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-72","to":"P-28","type":"STR Mastermind"}}
+{"ts":"2026-08-18T16:11:37.934Z","agentId":"P-27","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-28"}}
+{"ts":"2026-08-18T16:11:37.934Z","agentId":"P-27","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-26"}}
+{"ts":"2026-08-18T16:11:37.934Z","agentId":"P-27","wave":4,"step":"WAVE_4","action":"COMPLETE","result":"SUCCESS","details":{"interactions":1,"invites":2}}
+{"ts":"2026-08-18T16:11:37.970Z","agentId":"P-27","wave":5,"step":"WAVE_5","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T16:11:37.970Z","agentId":"P-27","wave":5,"step":"WAVE_5","action":"COMPLETE","result":"SUCCESS","details":{"reportPath":"/Users/yvesdarbouze/Documents/PaperWorking/artifacts/persona-swarm/reports/P-27-experience-report.md"}}
+{"ts":"2026-08-18T16:11:38.119Z","agentId":"P-27","wave":1,"step":"WAVE_1","action":"START","result":"SUCCESS","details":{"email":"agent27.naomi.ishida@paperworking-test.dev"}}
+{"ts":"2026-08-18T16:11:38.119Z","agentId":"P-27","wave":0,"step":"SIGNUP","action":"SUCCESS_CREATED","result":"SUCCESS","details":{"uid":"uid_persona_p27","email":"agent27.naomi.ishida@paperworking-test.dev","name":"Naomi Ishida","entity":"Ishida Luxe Escapes LLC"}}
+{"ts":"2026-08-18T16:11:38.119Z","agentId":"P-27","wave":1,"step":"WAVE_1","action":"COMPLETE","result":"SUCCESS","details":{"uid":"uid_persona_p27"}}
+{"ts":"2026-08-18T16:11:38.137Z","agentId":"P-27","wave":2,"step":"WAVE_2","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T16:11:38.137Z","agentId":"P-27","wave":0,"step":"BILLING","action":"SUBSCRIPTION_SUCCESS","result":"SUCCESS","details":{"plan":"Individual","stripeCustomerId":"cus_test_swarm_p-27","stripeSubscriptionId":"sub_test_swarm_p-27","cardLastFour":"4242","cardBrand":"visa"}}
+{"ts":"2026-08-18T16:11:38.137Z","agentId":"P-27","wave":2,"step":"WAVE_2","action":"COMPLETE","result":"SUCCESS","details":{"plan":"Individual"}}
+{"ts":"2026-08-18T16:11:38.170Z","agentId":"P-27","wave":3,"step":"WAVE_3","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T16:11:38.170Z","agentId":"P-27","wave":0,"step":"PROJECTS","action":"CREATION_SUCCESS","result":"SUCCESS","details":{"created":10,"plaid":false}}
+{"ts":"2026-08-18T16:11:38.170Z","agentId":"P-27","wave":3,"step":"WAVE_3","action":"COMPLETE","result":"SUCCESS","details":{"created":10}}
+{"ts":"2026-08-18T16:11:38.196Z","agentId":"P-27","wave":4,"step":"WAVE_4","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T16:11:38.197Z","agentId":"P-27","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-72","to":"P-28","type":"STR Mastermind"}}
+{"ts":"2026-08-18T16:11:38.197Z","agentId":"P-27","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-28"}}
+{"ts":"2026-08-18T16:11:38.197Z","agentId":"P-27","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-26"}}
+{"ts":"2026-08-18T16:11:38.197Z","agentId":"P-27","wave":4,"step":"WAVE_4","action":"COMPLETE","result":"SUCCESS","details":{"interactions":1,"invites":2}}
+{"ts":"2026-08-18T16:11:38.217Z","agentId":"P-27","wave":5,"step":"WAVE_5","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T16:11:38.217Z","agentId":"P-27","wave":5,"step":"WAVE_5","action":"COMPLETE","result":"SUCCESS","details":{"reportPath":"/Users/yvesdarbouze/Documents/PaperWorking/artifacts/persona-swarm/reports/P-27-experience-report.md"}}

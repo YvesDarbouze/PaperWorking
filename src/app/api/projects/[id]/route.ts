@@ -449,3 +449,34 @@ export async function PATCH(
     );
   }
 }
+
+export async function GET(
+  request: NextRequest,
+  { params }: { params: Promise<{ id: string }> }
+) {
+  try {
+    const auth = await requireAuth(request);
+    if (isAuthError(auth)) return auth;
+
+    const { id: projectId } = await params;
+    if (!projectId) {
+      return NextResponse.json({ error: 'Missing project ID' }, { status: 400 });
+    }
+
+    const projectSnap = await adminDb.collection('projects').doc(projectId).get();
+    if (!projectSnap.exists) {
+      return NextResponse.json({ error: 'Project not found' }, { status: 404 });
+    }
+
+    const project = { id: projectSnap.id, project_id: projectSnap.id, ...projectSnap.data() };
+    return NextResponse.json({ success: true, project });
+  } catch (error: unknown) {
+    const errMsg = error instanceof Error ? error.message : 'Unknown error';
+    console.error('[Projects GET] Error:', errMsg);
+    return NextResponse.json(
+      { error: 'Failed to fetch project', details: errMsg },
+      { status: 500 }
+    );
+  }
+}
+

@@ -37,6 +37,78 @@ export interface MetricResult {
   projectsExcluded?: string[];
 }
 
+export type MetricValue = {
+  value: number | null;
+  projected: boolean;
+  missingInputs?: string[];
+  sourceCardId?: string;
+  computedAt: Date;
+};
+
+export type ProjectMetricsResult = {
+  projectId: string;
+  asOfDate: Date;
+  scorecard: {
+    noi: MetricValue;
+    capRate: MetricValue;
+    cashOnCash: MetricValue;
+    irr: MetricValue;
+    cashFlow: MetricValue;
+    grm: MetricValue;
+    dscr: MetricValue;
+    occupancyRate: MetricValue;
+    expenseRatio: MetricValue;
+    longTermAppreciation: MetricValue;
+  };
+  insights: {
+    financial: {
+      ltv: MetricValue;
+      equityToValue: MetricValue;
+      interestCoverageRatio: MetricValue;
+      roi: MetricValue;
+      capex: MetricValue;
+      goi: MetricValue;
+      aar: MetricValue;
+      equityMultiple: MetricValue;
+      revenueGrowth: MetricValue;
+    };
+    operational: {
+      tenantTurnover: MetricValue;
+      averageRentPerProperty: MetricValue;
+      leaseRenewalRate: MetricValue;
+      maintenanceCostPerUnit: MetricValue;
+      dom: MetricValue;
+      constructionCostPerSqFt: MetricValue;
+    };
+    assetPortfolio: {
+      portfolioValueGrowth: MetricValue;
+      paybackPeriod: MetricValue;
+      yoyVarianceAvgSoldPrice: MetricValue;
+      soldHomesPerInventory: MetricValue;
+      demandGrowth: MetricValue;
+    };
+    marketingSales: {
+      listingToMeetingRatio: MetricValue;
+      averageCommissionPerSale: MetricValue;
+    };
+    riskCompliance: {
+      riskAssessmentScore: MetricValue;
+      complianceRate: MetricValue;
+    };
+  };
+  // Raw derived values for downstream use
+  derived: {
+    monthlyMortgagePayment: number | null;
+    monthlyInterest: number | null;
+    monthlyPrincipal: number | null;
+    totalDebtService: number | null;
+    adjustedBasis: number | null;
+    capitalGainLoss: number | null;
+    holdingPeriodMonths: number | null;
+    annualDepreciation: number | null;
+  };
+};
+
 /**
  * Machine-readable reason code for metrics that return null because
  * their data instrument doesn't exist yet. Components render these
@@ -130,3 +202,55 @@ export type MetricId =
   | 'BREAK_EVEN_OCCUPANCY'
   | 'CAPITAL_RESERVES'
   | 'BUDGET_VARIANCE';
+
+/**
+ * Canonical 8 Expense Tags — PaperWorking Spec v2.0
+ * These align with Schedule E line items for tax automation.
+ * NEVER add tags outside this set.
+ */
+export const CANONICAL_EXPENSE_TAGS = [
+  'tax',
+  'insurance',
+  'security',
+  'maintenance',
+  'utilities',
+  'management',
+  'HOA',
+  'capex',
+] as const;
+
+export type CanonicalExpenseTag = typeof CANONICAL_EXPENSE_TAGS[number];
+export type ExpenseTag = CanonicalExpenseTag;
+
+/**
+ * DEPRECATED — These tags were incorrectly used in an earlier build.
+ * They must be rejected to prevent tax form misalignment.
+ */
+export const REJECTED_EXPENSE_TAGS = [
+  'mortgage_payment',      // Debt service computed by amortization engine
+  'property_tax',          // Use 'tax'
+  'repair',                // Use 'maintenance'
+  'utility',               // Use 'utilities'
+  'contractor_payment',    // Use 'maintenance' or 'capex'
+  'marketing',             // Not in canonical 8
+  'management_fee',        // Use 'management'
+] as const;
+
+export function isValidExpenseTag(tag: string): tag is ExpenseTag {
+  return CANONICAL_EXPENSE_TAGS.includes(tag as ExpenseTag);
+}
+
+export function validateExpenseTag(tag: string): ExpenseTag {
+  if (REJECTED_EXPENSE_TAGS.includes(tag as any)) {
+    throw new Error(
+      `REJECTED expense tag: "${tag}". This tag is not in the canonical 8. ` +
+      `Use one of: ${CANONICAL_EXPENSE_TAGS.join(', ')}.`
+    );
+  }
+  if (!isValidExpenseTag(tag)) {
+    throw new Error(
+      `Invalid expense tag: "${tag}". Must be one of: ${CANONICAL_EXPENSE_TAGS.join(', ')}`
+    );
+  }
+  return tag;
+}

@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { requireAuth, isAuthError } from '@/lib/firebase-admin/auth-guard';
+import { getStreetViewImage } from '@/lib/maps/street-view';
 
 export const dynamic = 'force-dynamic';
 
@@ -83,5 +84,38 @@ export async function GET(request: NextRequest) {
   } catch (err) {
     console.error('[street-view] Proxy error:', err);
     return new NextResponse('Internal server error', { status: 500 });
+  }
+}
+
+/**
+ * POST /api/street-view
+ * Body: { lat: number, lng: number }
+ * Returns: { imageUrl: string | null, metadata: object | null, available: boolean }
+ */
+export async function POST(request: NextRequest) {
+  try {
+    const { lat, lng } = await request.json();
+
+    if (typeof lat !== 'number' || typeof lng !== 'number') {
+      return NextResponse.json(
+        { error: 'Invalid coordinates' },
+        { status: 400 }
+      );
+    }
+
+    const result = await getStreetViewImage(lat, lng, {
+      width: 1200,
+      height: 400,
+      fov: 90,
+      pitch: 10, // Slight upward angle for better building shots
+    });
+
+    return NextResponse.json(result);
+  } catch (error) {
+    console.error('Street View API error:', error);
+    return NextResponse.json(
+      { imageUrl: null, metadata: null, available: false },
+      { status: 500 }
+    );
   }
 }

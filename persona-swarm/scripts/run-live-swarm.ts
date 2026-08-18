@@ -84,27 +84,32 @@ async function runLiveSwarm() {
   const personas: PersonaAgent[] = JSON.parse(fs.readFileSync(registryPath, 'utf-8'));
 
   const manifestPath = path.join(process.cwd(), 'artifacts', 'persona-swarm', 'swarm-manifest.json');
-  const manifest: SwarmManifest = {
-    updatedAt: new Date().toISOString(),
-    totalPersonas: personas.length,
-    completedWaves: [1, 2, 3, 4, 5],
-    targetUrl: PROD_BASE_URL,
-    stripeMode: 'admin_comp',
-    versionStamp: {
-      gitCommitSha: '7e9cd5dbd23bf8ac6cb0c67b4acb77a1fd5b2740',
-      timestamp: new Date().toISOString(),
-    },
-    stats: {
-      signupsCompleted: 0,
-      subscriptionsActive: 0,
-      projectsCreated: 0,
-      interactionsExecuted: 0,
-      invitesAccepted: 0,
-      reportsGenerated: 0,
-      screenshotsCaptured: 0,
-    },
-    agents: {},
-  };
+  let manifest: SwarmManifest;
+  if (fs.existsSync(manifestPath)) {
+    manifest = JSON.parse(fs.readFileSync(manifestPath, 'utf-8')) as SwarmManifest;
+  } else {
+    manifest = {
+      updatedAt: new Date().toISOString(),
+      totalPersonas: personas.length,
+      completedWaves: [1, 2, 3, 4, 5],
+      targetUrl: PROD_BASE_URL,
+      stripeMode: 'admin_comp',
+      versionStamp: {
+        gitCommitSha: '7e9cd5dbd23bf8ac6cb0c67b4acb77a1fd5b2740',
+        timestamp: new Date().toISOString(),
+      },
+      stats: {
+        signupsCompleted: 0,
+        subscriptionsActive: 0,
+        projectsCreated: 0,
+        interactionsExecuted: 0,
+        invitesAccepted: 0,
+        reportsGenerated: 0,
+        screenshotsCaptured: 0,
+      },
+      agents: {},
+    };
+  }
 
   const shotsDir = path.join(process.cwd(), 'artifacts', 'persona-swarm', 'shots', 'live');
   if (!fs.existsSync(shotsDir)) {

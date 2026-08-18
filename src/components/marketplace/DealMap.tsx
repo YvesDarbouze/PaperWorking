@@ -7,37 +7,17 @@ import type { DealListingTeaser, SubscriberPropertyResult } from '@/types/listin
 import { GoogleAttribution } from '@/components/ui/GoogleAttribution';
 import { resolveLocation, getDeterministicCoordinates } from '@/lib/utils/geoLookup';
 
-export interface GoogleMapsApi {
-  maps: {
-    Map: new (element: HTMLElement, options: Record<string, unknown>) => {
-      setCenter: (center: unknown) => void;
-      setZoom: (zoom: number) => void;
-      getZoom: () => number;
-      fitBounds: (bounds: unknown) => void;
-    };
-    Circle: new (options: Record<string, unknown>) => {
-      setMap: (map: unknown) => void;
-    };
-    Marker: new (options: Record<string, unknown>) => {
-      setMap: (map: unknown) => void;
-      addListener: (event: string, handler: () => void) => void;
-    };
-    SymbolPath: { CIRCLE: unknown };
-    LatLngBounds: new () => { extend: (coord: { lat: number; lng: number }) => void };
-    event: {
-      addListener: (instance: unknown, eventName: string, handler: () => void) => unknown;
-      removeListener: (listener: unknown) => void;
-    };
-  };
+import type { GoogleMapInstance } from '@/types/google-maps';
+import { loadGoogleMapsApi } from '@/lib/maps/google-maps-loader';
+
+function getGoogleMaps(): GoogleMapInstance | null {
+  if (typeof window === 'undefined') return null;
+  return window.google?.maps || null;
 }
 
-declare global {
-  interface Window {
-    google?: GoogleMapsApi;
-  }
-}
-
-declare const google: GoogleMapsApi;
+export type GoogleMapsApi = {
+  maps: GoogleMapInstance;
+};
 
 export type EntityCategory = 'all' | 'deals' | 'vendors' | 'investors';
 
@@ -173,8 +153,8 @@ export default function DealMap({
           lng: d.longitude,
           title: d.propertyName || 'Deal Opportunity',
           subtitle: d.neighborhood || `${d.city || ''}, ${d.state || ''}`,
-          price: (item.price || item.targetEquity) as number | string | undefined,
-          capRate: (item.projectedIRR || item.capRate) as number | string | undefined,
+          price: typeof item.price === 'number' ? item.price : Number(item.targetEquity) || undefined,
+          capRate: typeof item.capRate === 'number' ? item.capRate : Number(item.projectedIRR) || undefined,
           category: d.assetClass || 'Residential',
           routeUrl: `/dashboard/deals/${d.id.replace('project_listing_', '')}`,
         });
@@ -280,13 +260,13 @@ export default function DealMap({
 
   // Google Maps SDK Initialization
   useEffect(() => {
-    if (window.google?.maps) {
+    if (getGoogleMaps()) {
       setMapLoaded(true);
       return;
     }
 
     const timeout = setTimeout(() => {
-      if (!window.google?.maps) {
+      if (!getGoogleMaps()) {
         setLoadError(true);
       }
     }, 8000);
@@ -304,28 +284,15 @@ export default function DealMap({
       };
     }
 
-    const key = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY;
-    if (!key) {
-      setLoadError(true);
-      clearTimeout(timeout);
-      return;
-    }
-
-    const script = document.createElement('script');
-    script.id = 'google-maps-sdk-script';
-    script.src = `https://maps.googleapis.com/maps/api/js?key=${key}&libraries=places`;
-    script.async = true;
-    script.defer = true;
-    script.onload = () => {
-      clearTimeout(timeout);
-      setMapLoaded(true);
-    };
-    script.onerror = () => {
-      clearTimeout(timeout);
-      setLoadError(true);
-    };
-
-    document.head.appendChild(script);
+    loadGoogleMapsApi()
+      .then(() => {
+        clearTimeout(timeout);
+        setMapLoaded(true);
+      })
+      .catch(() => {
+        clearTimeout(timeout);
+        setLoadError(true);
+      });
 
     return () => {
       clearTimeout(timeout);
@@ -334,7 +301,10 @@ export default function DealMap({
 
   // Google Maps Instance Setup
   useEffect(() => {
-    if (!mapLoaded || !mapRef.current || !window.google?.maps) return;
+    const maps = getGoogleMaps();
+    if (!mapLoaded || !mapRef.current || !maps) return;
+
+    const mapsApi = maps;
 
     // Custom monochromatic night theme map style
     const monochromaticStyles = [
@@ -354,7 +324,7 @@ export default function DealMap({
     const initialCenter = searchCenter || center || { lat: 39.8283, lng: -98.5795 };
     const initialZoom = zoom !== undefined ? zoom : searchCenter ? 12 : center ? 10 : 4;
 
-    const map = new google.maps.Map(mapRef.current, {
+    const map = new mapsApi.Map(mapRef.current, {
       center: initialCenter,
       zoom: initialZoom,
       styles: monochromaticStyles,
@@ -368,12 +338,12 @@ export default function DealMap({
     const markers = filteredMapPins.map((p) => {
       const style = p.isCustom ? ENTITY_MARKER_STYLES.custom : ENTITY_MARKER_STYLES[p.entityType];
 
-      const marker = new google.maps.Marker({
+      const marker = new mapsApi.Marker({
         position: { lat: p.lat, lng: p.lng },
         title: `${p.title} (${p.subtitle})`,
         map,
         icon: {
-          path: google.maps.SymbolPath.CIRCLE,
+          path: mapsApi.SymbolPath.CIRCLE,
           fillColor: style.fillColor,
           fillOpacity: 0.95,
           strokeColor: style.strokeColor,
@@ -382,10 +352,12 @@ export default function DealMap({
         },
       });
 
-      marker.addListener('click', () => {
-        setSelectedPin(p);
-        if (onSelectPin) onSelectPin(p);
-      });
+      if (marker.addListener) {
+        marker.addListener('click', () => {
+          setSelectedPin(p);
+          if (onSelectPin) onSelectPin(p);
+        });
+      }
 
       return marker;
     });
@@ -395,13 +367,13 @@ export default function DealMap({
       map.setCenter(searchCenter);
       map.setZoom(12);
     } else if (filteredMapPins.length > 0 && !center) {
-      const bounds = new google.maps.LatLngBounds();
+      const bounds = new mapsApi.LatLngBounds();
       filteredMapPins.forEach((p) => bounds.extend({ lat: p.lat, lng: p.lng }));
       map.fitBounds(bounds);
 
-      const listener = google.maps.event.addListener(map, 'bounds_changed', () => {
+      const listener = mapsApi.event.addListener(map, 'bounds_changed', () => {
         if (map.getZoom() > 13) map.setZoom(13);
-        google.maps.event.removeListener(listener);
+        mapsApi.event.removeListener(listener);
       });
     }
 

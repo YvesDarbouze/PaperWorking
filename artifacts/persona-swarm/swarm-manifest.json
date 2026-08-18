@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-08-18T09:42:00.150Z",
+  "updatedAt": "2026-08-18T17:38:37.847Z",
   "totalPersonas": 50,
   "completedWaves": [
     1,
@@ -492,6 +492,7 @@
         "stripeSubscriptionId": "sub_test_swarm_p-21"
       },
       "errors": [
+        "Wave 2 exception: CRITICAL SAFETY REFUSAL: Invalid or missing Stripe secret test key. Key must start with \"sk_test_\". Received: \"...\"",
         "Wave 2 exception: CRITICAL SAFETY REFUSAL: Invalid or missing Stripe secret test key. Key must start with \"sk_test_\". Received: \"...\""
       ],
       "uid": "uid_persona_p21"
@@ -516,6 +517,7 @@
         "stripeSubscriptionId": "sub_test_swarm_p-22"
       },
       "errors": [
+        "Wave 2 exception: CRITICAL SAFETY REFUSAL: Invalid or missing Stripe secret test key. Key must start with \"sk_test_\". Received: \"...\"",
         "Wave 2 exception: CRITICAL SAFETY REFUSAL: Invalid or missing Stripe secret test key. Key must start with \"sk_test_\". Received: \"...\""
       ],
       "uid": "uid_persona_p22"
@@ -540,6 +542,7 @@
         "stripeSubscriptionId": "sub_test_swarm_p-23"
       },
       "errors": [
+        "Wave 2 exception: CRITICAL SAFETY REFUSAL: Invalid or missing Stripe secret test key. Key must start with \"sk_test_\". Received: \"...\"",
         "Wave 2 exception: CRITICAL SAFETY REFUSAL: Invalid or missing Stripe secret test key. Key must start with \"sk_test_\". Received: \"...\""
       ],
       "uid": "uid_persona_p23"
@@ -564,6 +567,7 @@
         "stripeSubscriptionId": "sub_test_swarm_p-24"
       },
       "errors": [
+        "Wave 2 exception: CRITICAL SAFETY REFUSAL: Invalid or missing Stripe secret test key. Key must start with \"sk_test_\". Received: \"...\"",
         "Wave 2 exception: CRITICAL SAFETY REFUSAL: Invalid or missing Stripe secret test key. Key must start with \"sk_test_\". Received: \"...\""
       ],
       "uid": "uid_persona_p24"
@@ -588,6 +592,7 @@
         "stripeSubscriptionId": "sub_test_swarm_p-25"
       },
       "errors": [
+        "Wave 2 exception: CRITICAL SAFETY REFUSAL: Invalid or missing Stripe secret test key. Key must start with \"sk_test_\". Received: \"...\"",
         "Wave 2 exception: CRITICAL SAFETY REFUSAL: Invalid or missing Stripe secret test key. Key must start with \"sk_test_\". Received: \"...\""
       ],
       "uid": "uid_persona_p25"
@@ -612,6 +617,7 @@
         "stripeSubscriptionId": "sub_test_swarm_p-26"
       },
       "errors": [
+        "Wave 2 exception: CRITICAL SAFETY REFUSAL: Invalid or missing Stripe secret test key. Key must start with \"sk_test_\". Received: \"...\"",
         "Wave 2 exception: CRITICAL SAFETY REFUSAL: Invalid or missing Stripe secret test key. Key must start with \"sk_test_\". Received: \"...\""
       ],
       "uid": "uid_persona_p26"
@@ -636,6 +642,7 @@
         "stripeSubscriptionId": "sub_test_swarm_p-27"
       },
       "errors": [
+        "Wave 2 exception: CRITICAL SAFETY REFUSAL: Invalid or missing Stripe secret test key. Key must start with \"sk_test_\". Received: \"...\"",
         "Wave 2 exception: CRITICAL SAFETY REFUSAL: Invalid or missing Stripe secret test key. Key must start with \"sk_test_\". Received: \"...\""
       ],
       "uid": "uid_persona_p27"
@@ -660,6 +667,7 @@
         "stripeSubscriptionId": "sub_test_swarm_p-28"
       },
       "errors": [
+        "Wave 2 exception: CRITICAL SAFETY REFUSAL: Invalid or missing Stripe secret test key. Key must start with \"sk_test_\". Received: \"...\"",
         "Wave 2 exception: CRITICAL SAFETY REFUSAL: Invalid or missing Stripe secret test key. Key must start with \"sk_test_\". Received: \"...\""
       ],
       "uid": "uid_persona_p28"
@@ -684,6 +692,7 @@
         "stripeSubscriptionId": "sub_test_swarm_p-29"
       },
       "errors": [
+        "Wave 2 exception: CRITICAL SAFETY REFUSAL: Invalid or missing Stripe secret test key. Key must start with \"sk_test_\". Received: \"...\"",
         "Wave 2 exception: CRITICAL SAFETY REFUSAL: Invalid or missing Stripe secret test key. Key must start with \"sk_test_\". Received: \"...\""
       ],
       "uid": "uid_persona_p29"
@@ -708,6 +717,7 @@
         "stripeSubscriptionId": "sub_test_swarm_p-30"
       },
       "errors": [
+        "Wave 2 exception: CRITICAL SAFETY REFUSAL: Invalid or missing Stripe secret test key. Key must start with \"sk_test_\". Received: \"...\"",
         "Wave 2 exception: CRITICAL SAFETY REFUSAL: Invalid or missing Stripe secret test key. Key must start with \"sk_test_\". Received: \"...\""
       ],
       "uid": "uid_persona_p30"
@@ -732,6 +742,7 @@
         "stripeSubscriptionId": "sub_test_swarm_p-31"
       },
       "errors": [
+        "Wave 2 exception: CRITICAL SAFETY REFUSAL: Invalid or missing Stripe secret test key. Key must start with \"sk_test_\". Received: \"...\"",
         "Wave 2 exception: CRITICAL SAFETY REFUSAL: Invalid or missing Stripe secret test key. Key must start with \"sk_test_\". Received: \"...\""
       ],
       "uid": "uid_persona_p31"
@@ -756,6 +767,7 @@
         "stripeSubscriptionId": "sub_test_swarm_p-32"
       },
       "errors": [
+        "Wave 2 exception: CRITICAL SAFETY REFUSAL: Invalid or missing Stripe secret test key. Key must start with \"sk_test_\". Received: \"...\"",
         "Wave 2 exception: CRITICAL SAFETY REFUSAL: Invalid or missing Stripe secret test key. Key must start with \"sk_test_\". Received: \"...\""
       ],
       "uid": "uid_persona_p32"
@@ -780,6 +792,7 @@
         "stripeSubscriptionId": "sub_test_swarm_p-33"
       },
       "errors": [
+        "Wave 2 exception: CRITICAL SAFETY REFUSAL: Invalid or missing Stripe secret test key. Key must start with \"sk_test_\". Received: \"...\"",
         "Wave 2 exception: CRITICAL SAFETY REFUSAL: Invalid or missing Stripe secret test key. Key must start with \"sk_test_\". Received: \"...\""
       ],
       "uid": "uid_persona_p33"
@@ -804,6 +817,7 @@
         "stripeSubscriptionId": "sub_test_swarm_p-34"
       },
       "errors": [
+        "Wave 2 exception: CRITICAL SAFETY REFUSAL: Invalid or missing Stripe secret test key. Key must start with \"sk_test_\". Received: \"...\"",
         "Wave 2 exception: CRITICAL SAFETY REFUSAL: Invalid or missing Stripe secret test key. Key must start with \"sk_test_\". Received: \"...\""
       ],
       "uid": "uid_persona_p34"
@@ -828,6 +842,7 @@
         "stripeSubscriptionId": "sub_test_swarm_p-35"
       },
       "errors": [
+        "Wave 2 exception: CRITICAL SAFETY REFUSAL: Invalid or missing Stripe secret test key. Key must start with \"sk_test_\". Received: \"...\"",
         "Wave 2 exception: CRITICAL SAFETY REFUSAL: Invalid or missing Stripe secret test key. Key must start with \"sk_test_\". Received: \"...\""
       ],
       "uid": "uid_persona_p35"
@@ -852,6 +867,7 @@
         "stripeSubscriptionId": "sub_test_swarm_p-36"
       },
       "errors": [
+        "Wave 2 exception: CRITICAL SAFETY REFUSAL: Invalid or missing Stripe secret test key. Key must start with \"sk_test_\". Received: \"...\"",
         "Wave 2 exception: CRITICAL SAFETY REFUSAL: Invalid or missing Stripe secret test key. Key must start with \"sk_test_\". Received: \"...\""
       ],
       "uid": "uid_persona_p36"
@@ -876,6 +892,7 @@
         "stripeSubscriptionId": "sub_test_swarm_p-37"
       },
       "errors": [
+        "Wave 2 exception: CRITICAL SAFETY REFUSAL: Invalid or missing Stripe secret test key. Key must start with \"sk_test_\". Received: \"...\"",
         "Wave 2 exception: CRITICAL SAFETY REFUSAL: Invalid or missing Stripe secret test key. Key must start with \"sk_test_\". Received: \"...\""
       ],
       "uid": "uid_persona_p37"
@@ -900,6 +917,7 @@
         "stripeSubscriptionId": "sub_test_swarm_p-38"
       },
       "errors": [
+        "Wave 2 exception: CRITICAL SAFETY REFUSAL: Invalid or missing Stripe secret test key. Key must start with \"sk_test_\". Received: \"...\"",
         "Wave 2 exception: CRITICAL SAFETY REFUSAL: Invalid or missing Stripe secret test key. Key must start with \"sk_test_\". Received: \"...\""
       ],
       "uid": "uid_persona_p38"
@@ -924,6 +942,7 @@
         "stripeSubscriptionId": "sub_test_swarm_p-39"
       },
       "errors": [
+        "Wave 2 exception: CRITICAL SAFETY REFUSAL: Invalid or missing Stripe secret test key. Key must start with \"sk_test_\". Received: \"...\"",
         "Wave 2 exception: CRITICAL SAFETY REFUSAL: Invalid or missing Stripe secret test key. Key must start with \"sk_test_\". Received: \"...\""
       ],
       "uid": "uid_persona_p39"
@@ -948,6 +967,7 @@
         "stripeSubscriptionId": "sub_test_swarm_p-40"
       },
       "errors": [
+        "Wave 2 exception: CRITICAL SAFETY REFUSAL: Invalid or missing Stripe secret test key. Key must start with \"sk_test_\". Received: \"...\"",
         "Wave 2 exception: CRITICAL SAFETY REFUSAL: Invalid or missing Stripe secret test key. Key must start with \"sk_test_\". Received: \"...\""
       ],
       "uid": "uid_persona_p40"
@@ -972,6 +992,7 @@
         "stripeSubscriptionId": "sub_test_swarm_p-41"
       },
       "errors": [
+        "Wave 2 exception: CRITICAL SAFETY REFUSAL: Invalid or missing Stripe secret test key. Key must start with \"sk_test_\". Received: \"...\"",
         "Wave 2 exception: CRITICAL SAFETY REFUSAL: Invalid or missing Stripe secret test key. Key must start with \"sk_test_\". Received: \"...\""
       ],
       "uid": "uid_persona_p41"
@@ -996,6 +1017,7 @@
         "stripeSubscriptionId": "sub_test_swarm_p-42"
       },
       "errors": [
+        "Wave 2 exception: CRITICAL SAFETY REFUSAL: Invalid or missing Stripe secret test key. Key must start with \"sk_test_\". Received: \"...\"",
         "Wave 2 exception: CRITICAL SAFETY REFUSAL: Invalid or missing Stripe secret test key. Key must start with \"sk_test_\". Received: \"...\""
       ],
       "uid": "uid_persona_p42"
@@ -1020,6 +1042,7 @@
         "stripeSubscriptionId": "sub_test_swarm_p-43"
       },
       "errors": [
+        "Wave 2 exception: CRITICAL SAFETY REFUSAL: Invalid or missing Stripe secret test key. Key must start with \"sk_test_\". Received: \"...\"",
         "Wave 2 exception: CRITICAL SAFETY REFUSAL: Invalid or missing Stripe secret test key. Key must start with \"sk_test_\". Received: \"...\""
       ],
       "uid": "uid_persona_p43"
@@ -1044,6 +1067,7 @@
         "stripeSubscriptionId": "sub_test_swarm_p-44"
       },
       "errors": [
+        "Wave 2 exception: CRITICAL SAFETY REFUSAL: Invalid or missing Stripe secret test key. Key must start with \"sk_test_\". Received: \"...\"",
         "Wave 2 exception: CRITICAL SAFETY REFUSAL: Invalid or missing Stripe secret test key. Key must start with \"sk_test_\". Received: \"...\""
       ],
       "uid": "uid_persona_p44"
@@ -1068,6 +1092,7 @@
         "stripeSubscriptionId": "sub_test_swarm_p-45"
       },
       "errors": [
+        "Wave 2 exception: CRITICAL SAFETY REFUSAL: Invalid or missing Stripe secret test key. Key must start with \"sk_test_\". Received: \"...\"",
         "Wave 2 exception: CRITICAL SAFETY REFUSAL: Invalid or missing Stripe secret test key. Key must start with \"sk_test_\". Received: \"...\""
       ],
       "uid": "uid_persona_p45"
@@ -1092,6 +1117,7 @@
         "stripeSubscriptionId": "sub_test_swarm_p-46"
       },
       "errors": [
+        "Wave 2 exception: CRITICAL SAFETY REFUSAL: Invalid or missing Stripe secret test key. Key must start with \"sk_test_\". Received: \"...\"",
         "Wave 2 exception: CRITICAL SAFETY REFUSAL: Invalid or missing Stripe secret test key. Key must start with \"sk_test_\". Received: \"...\""
       ],
       "uid": "uid_persona_p46"
@@ -1116,6 +1142,7 @@
         "stripeSubscriptionId": "sub_test_swarm_p-47"
       },
       "errors": [
+        "Wave 2 exception: CRITICAL SAFETY REFUSAL: Invalid or missing Stripe secret test key. Key must start with \"sk_test_\". Received: \"...\"",
         "Wave 2 exception: CRITICAL SAFETY REFUSAL: Invalid or missing Stripe secret test key. Key must start with \"sk_test_\". Received: \"...\""
       ],
       "uid": "uid_persona_p47"
@@ -1140,6 +1167,7 @@
         "stripeSubscriptionId": "sub_test_swarm_p-48"
       },
       "errors": [
+        "Wave 2 exception: CRITICAL SAFETY REFUSAL: Invalid or missing Stripe secret test key. Key must start with \"sk_test_\". Received: \"...\"",
         "Wave 2 exception: CRITICAL SAFETY REFUSAL: Invalid or missing Stripe secret test key. Key must start with \"sk_test_\". Received: \"...\""
       ],
       "uid": "uid_persona_p48"
@@ -1164,6 +1192,7 @@
         "stripeSubscriptionId": "sub_test_swarm_p-49"
       },
       "errors": [
+        "Wave 2 exception: CRITICAL SAFETY REFUSAL: Invalid or missing Stripe secret test key. Key must start with \"sk_test_\". Received: \"...\"",
         "Wave 2 exception: CRITICAL SAFETY REFUSAL: Invalid or missing Stripe secret test key. Key must start with \"sk_test_\". Received: \"...\""
       ],
       "uid": "uid_persona_p49"
@@ -1188,6 +1217,7 @@
         "stripeSubscriptionId": "sub_test_swarm_p-50"
       },
       "errors": [
+        "Wave 2 exception: CRITICAL SAFETY REFUSAL: Invalid or missing Stripe secret test key. Key must start with \"sk_test_\". Received: \"...\"",
         "Wave 2 exception: CRITICAL SAFETY REFUSAL: Invalid or missing Stripe secret test key. Key must start with \"sk_test_\". Received: \"...\""
       ],
       "uid": "uid_persona_p50"

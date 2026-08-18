@@ -1,9 +1,17 @@
-import { GET } from '@/app/api/street-view/route';
+import { GET, POST } from '@/app/api/street-view/route';
 import { NextRequest } from 'next/server';
 
 jest.mock('@/lib/firebase-admin/auth-guard', () => ({
   requireAuth: jest.fn().mockResolvedValue({ uid: 'user_123', email: 'test@example.com' }),
   isAuthError: jest.fn().mockReturnValue(false),
+}));
+
+jest.mock('@/lib/maps/street-view', () => ({
+  getStreetViewImage: jest.fn().mockResolvedValue({
+    imageUrl: 'https://maps.googleapis.com/maps/api/streetview?location=37.422,-122.084',
+    metadata: { lat: 37.422, lng: -122.084, heading: 0, pitch: 10, fov: 90 },
+    available: true,
+  }),
 }));
 
 describe('Street View API Proxy Endpoint', () => {
@@ -67,5 +75,29 @@ describe('Street View API Proxy Endpoint', () => {
     expect(res.status).toBe(200);
     expect(res.headers.get('Content-Type')).toBe('image/jpeg');
     expect(res.headers.get('X-StreetView-Source')).toBe('google-street-view-static');
+  });
+
+  it('handles POST requests with valid coordinates', async () => {
+    const req = new NextRequest('http://localhost:3000/api/street-view', {
+      method: 'POST',
+      body: JSON.stringify({ lat: 37.422, lng: -122.084 }),
+    });
+    const res = await POST(req);
+
+    expect(res.status).toBe(200);
+    const body = await res.json();
+    expect(body.available).toBe(true);
+  });
+
+  it('returns 400 on POST with invalid coordinates', async () => {
+    const req = new NextRequest('http://localhost:3000/api/street-view', {
+      method: 'POST',
+      body: JSON.stringify({ lat: 'invalid' }),
+    });
+    const res = await POST(req);
+
+    expect(res.status).toBe(400);
+    const body = await res.json();
+    expect(body.error).toBe('Invalid coordinates');
   });
 });

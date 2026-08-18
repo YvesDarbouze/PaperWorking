@@ -5,11 +5,7 @@
  *  - reiMetrics.ts       (new pure formula functions + DerivedMetrics types)
  *  - dealMetrics.ts      (computeFlipMetrics, computeHoldMetrics, dealHealthColor)
  *  - calculatorUtils.ts  (computeAutopsyMetrics, calculateSeventyPercentRule, etc.)
- *
- * Structured metric wrappers (MetricResult-returning):
- *  - computeNOI.ts, computeCashFlow.ts, computeCapRate.ts, etc.
- *  - types.ts            (MetricResult, MetricState, MetricId)
- *  - whatChanged.ts      (diff-based recomputation trigger)
+ *  - deriveAllProjectMetrics.ts (Agent 4 SOLE 33-Metric Engine)
  *
  * Import from '@/lib/metrics' to access all calculation functions and types.
  */
@@ -19,8 +15,14 @@ export * from './reiMetrics';
 export * from '@/lib/financials/dealMetrics';
 export * from '@/lib/math/calculatorUtils';
 
+// ── Agent 4 Single Source of Truth Override ───────────────────────────────────
+export { deriveAllProjectMetrics } from './deriveAllProjectMetrics';
+export { computeAmortizationSchedule, computeMonthlyPayment } from './amortization-engine';
+export { computeFundPhaseMetrics, computeIRR } from './fund-phase-engine';
+export * from './fixtures/canonical-seed-deal';
+
 // ── Structured metric types ───────────────────────────────────────────────────
-export type { MetricResult, MetricState, MetricId } from './types';
+export type { MetricResult, MetricState, MetricId, MetricValue, ProjectMetricsResult } from './types';
 
 // ── Structured metric wrappers ────────────────────────────────────────────────
 export { computeNOIMetric } from './computeNOI';
@@ -66,7 +68,7 @@ export type { MetricCategory, MetricTier, MetricTaxonomyEntry } from './metricTa
 // ── Demo projects data ────────────────────────────────────────────────────────
 export { DEMO_PROJECTS } from './demoProjects';
 
-// ── Metric Registry ───────────────────────────────────────────────────────────
+// ── Metric Registry & Canonical Engine ─────────────────────────────────────────
 export * from './metricRegistry';
-
-
+export * from './registry';
+export * from './canonicalEngine';

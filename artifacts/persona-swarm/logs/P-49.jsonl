@@ -1192,3 +1192,607 @@
 {"ts":"2026-08-18T09:42:00.136Z","agentId":"P-49","wave":5,"step":"WAVE_5","action":"COMPLETE","result":"SUCCESS","details":{"reportPath":"/Users/yvesdarbouze/Documents/PaperWorking/artifacts/persona-swarm/reports/P-49-experience-report.md"}}
 {"ts":"2026-08-18T09:42:00.148Z","agentId":"P-49","wave":5,"step":"WAVE_5","action":"START","result":"SUCCESS"}
 {"ts":"2026-08-18T09:42:00.148Z","agentId":"P-49","wave":5,"step":"WAVE_5","action":"COMPLETE","result":"SUCCESS","details":{"reportPath":"/Users/yvesdarbouze/Documents/PaperWorking/artifacts/persona-swarm/reports/P-49-experience-report.md"}}
+{"ts":"2026-08-18T10:58:00.039Z","agentId":"P-49","wave":1,"step":"WAVE_1","action":"START","result":"SUCCESS","details":{"email":"agent49.elaine.zhu@paperworking-test.dev"}}
+{"ts":"2026-08-18T10:58:00.040Z","agentId":"P-49","wave":0,"step":"SIGNUP","action":"SUCCESS_CREATED","result":"SUCCESS","details":{"uid":"uid_persona_p49","email":"agent49.elaine.zhu@paperworking-test.dev","name":"Elaine Zhu","entity":"Zhu Swift Funding LLC"}}
+{"ts":"2026-08-18T10:58:00.040Z","agentId":"P-49","wave":1,"step":"WAVE_1","action":"COMPLETE","result":"SUCCESS","details":{"uid":"uid_persona_p49"}}
+{"ts":"2026-08-18T10:58:00.040Z","agentId":"P-49","wave":1,"step":"WAVE_1","action":"START","result":"SUCCESS","details":{"email":"agent49.elaine.zhu@paperworking-test.dev"}}
+{"ts":"2026-08-18T10:58:00.041Z","agentId":"P-49","wave":0,"step":"SIGNUP","action":"SUCCESS_CREATED","result":"SUCCESS","details":{"uid":"uid_persona_p49","email":"agent49.elaine.zhu@paperworking-test.dev","name":"Elaine Zhu","entity":"Zhu Swift Funding LLC"}}
+{"ts":"2026-08-18T10:58:00.041Z","agentId":"P-49","wave":1,"step":"WAVE_1","action":"COMPLETE","result":"SUCCESS","details":{"uid":"uid_persona_p49"}}
+{"ts":"2026-08-18T10:58:00.082Z","agentId":"P-49","wave":2,"step":"WAVE_2","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T10:58:00.082Z","agentId":"P-49","wave":0,"step":"BILLING","action":"SUBSCRIPTION_SUCCESS","result":"SUCCESS","details":{"plan":"Individual","stripeCustomerId":"cus_test_swarm_p-49","stripeSubscriptionId":"sub_test_swarm_p-49","cardLastFour":"4242","cardBrand":"visa"}}
+{"ts":"2026-08-18T10:58:00.082Z","agentId":"P-49","wave":2,"step":"WAVE_2","action":"COMPLETE","result":"SUCCESS","details":{"plan":"Individual"}}
+{"ts":"2026-08-18T10:58:00.083Z","agentId":"P-49","wave":2,"step":"WAVE_2","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T10:58:00.083Z","agentId":"P-49","wave":0,"step":"BILLING","action":"SUBSCRIPTION_SUCCESS","result":"SUCCESS","details":{"plan":"Individual","stripeCustomerId":"cus_test_swarm_p-49","stripeSubscriptionId":"sub_test_swarm_p-49","cardLastFour":"4242","cardBrand":"visa"}}
+{"ts":"2026-08-18T10:58:00.083Z","agentId":"P-49","wave":2,"step":"WAVE_2","action":"COMPLETE","result":"SUCCESS","details":{"plan":"Individual"}}
+{"ts":"2026-08-18T10:58:00.259Z","agentId":"P-49","wave":3,"step":"WAVE_3","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T10:58:00.262Z","agentId":"P-49","wave":0,"step":"PROJECTS","action":"CREATION_SUCCESS","result":"SUCCESS","details":{"created":10,"plaid":false}}
+{"ts":"2026-08-18T10:58:00.262Z","agentId":"P-49","wave":3,"step":"WAVE_3","action":"COMPLETE","result":"SUCCESS","details":{"created":10}}
+{"ts":"2026-08-18T10:58:00.276Z","agentId":"P-49","wave":3,"step":"WAVE_3","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T10:58:00.280Z","agentId":"P-49","wave":0,"step":"PROJECTS","action":"CREATION_SUCCESS","result":"SUCCESS","details":{"created":10,"plaid":false}}
+{"ts":"2026-08-18T10:58:00.280Z","agentId":"P-49","wave":3,"step":"WAVE_3","action":"COMPLETE","result":"SUCCESS","details":{"created":10}}
+{"ts":"2026-08-18T10:58:00.433Z","agentId":"P-49","wave":4,"step":"WAVE_4","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T10:58:00.434Z","agentId":"P-49","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-20","to":"P-07","type":"Hard Money Loan"}}
+{"ts":"2026-08-18T10:58:00.434Z","agentId":"P-49","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-21","to":"P-15","type":"BRRRR Bridge Loan"}}
+{"ts":"2026-08-18T10:58:00.435Z","agentId":"P-49","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-22","to":"P-16","type":"BRRRR Bridge Loan"}}
+{"ts":"2026-08-18T10:58:00.436Z","agentId":"P-49","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-23","to":"P-19","type":"BRRRR Bridge Loan"}}
+{"ts":"2026-08-18T10:58:00.436Z","agentId":"P-49","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-60","to":"P-50","type":"Seasoned Note Sale"}}
+{"ts":"2026-08-18T10:58:00.436Z","agentId":"P-49","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-50"}}
+{"ts":"2026-08-18T10:58:00.437Z","agentId":"P-49","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-07"}}
+{"ts":"2026-08-18T10:58:00.437Z","agentId":"P-49","wave":4,"step":"WAVE_4","action":"COMPLETE","result":"SUCCESS","details":{"interactions":5,"invites":2}}
+{"ts":"2026-08-18T10:58:00.437Z","agentId":"P-49","wave":4,"step":"WAVE_4","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T10:58:00.438Z","agentId":"P-49","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-20","to":"P-07","type":"Hard Money Loan"}}
+{"ts":"2026-08-18T10:58:00.438Z","agentId":"P-49","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-21","to":"P-15","type":"BRRRR Bridge Loan"}}
+{"ts":"2026-08-18T10:58:00.438Z","agentId":"P-49","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-22","to":"P-16","type":"BRRRR Bridge Loan"}}
+{"ts":"2026-08-18T10:58:00.439Z","agentId":"P-49","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-23","to":"P-19","type":"BRRRR Bridge Loan"}}
+{"ts":"2026-08-18T10:58:00.439Z","agentId":"P-49","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-60","to":"P-50","type":"Seasoned Note Sale"}}
+{"ts":"2026-08-18T10:58:00.440Z","agentId":"P-49","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-50"}}
+{"ts":"2026-08-18T10:58:00.440Z","agentId":"P-49","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-07"}}
+{"ts":"2026-08-18T10:58:00.440Z","agentId":"P-49","wave":4,"step":"WAVE_4","action":"COMPLETE","result":"SUCCESS","details":{"interactions":5,"invites":2}}
+{"ts":"2026-08-18T10:58:00.500Z","agentId":"P-49","wave":5,"step":"WAVE_5","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T10:58:00.500Z","agentId":"P-49","wave":5,"step":"WAVE_5","action":"COMPLETE","result":"SUCCESS","details":{"reportPath":"/Users/yvesdarbouze/Documents/PaperWorking/artifacts/persona-swarm/reports/P-49-experience-report.md"}}
+{"ts":"2026-08-18T10:58:00.501Z","agentId":"P-49","wave":5,"step":"WAVE_5","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T10:58:00.501Z","agentId":"P-49","wave":5,"step":"WAVE_5","action":"COMPLETE","result":"SUCCESS","details":{"reportPath":"/Users/yvesdarbouze/Documents/PaperWorking/artifacts/persona-swarm/reports/P-49-experience-report.md"}}
+{"ts":"2026-08-18T10:58:28.509Z","agentId":"P-49","wave":1,"step":"WAVE_1","action":"START","result":"SUCCESS","details":{"email":"agent49.elaine.zhu@paperworking-test.dev"}}
+{"ts":"2026-08-18T10:58:28.509Z","agentId":"P-49","wave":0,"step":"SIGNUP","action":"SUCCESS_CREATED","result":"SUCCESS","details":{"uid":"uid_persona_p49","email":"agent49.elaine.zhu@paperworking-test.dev","name":"Elaine Zhu","entity":"Zhu Swift Funding LLC"}}
+{"ts":"2026-08-18T10:58:28.509Z","agentId":"P-49","wave":1,"step":"WAVE_1","action":"COMPLETE","result":"SUCCESS","details":{"uid":"uid_persona_p49"}}
+{"ts":"2026-08-18T10:58:28.545Z","agentId":"P-49","wave":2,"step":"WAVE_2","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T10:58:28.546Z","agentId":"P-49","wave":0,"step":"BILLING","action":"SUBSCRIPTION_SUCCESS","result":"SUCCESS","details":{"plan":"Individual","stripeCustomerId":"cus_test_swarm_p-49","stripeSubscriptionId":"sub_test_swarm_p-49","cardLastFour":"4242","cardBrand":"visa"}}
+{"ts":"2026-08-18T10:58:28.546Z","agentId":"P-49","wave":2,"step":"WAVE_2","action":"COMPLETE","result":"SUCCESS","details":{"plan":"Individual"}}
+{"ts":"2026-08-18T10:58:28.679Z","agentId":"P-49","wave":3,"step":"WAVE_3","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T10:58:28.681Z","agentId":"P-49","wave":0,"step":"PROJECTS","action":"CREATION_SUCCESS","result":"SUCCESS","details":{"created":10,"plaid":false}}
+{"ts":"2026-08-18T10:58:28.681Z","agentId":"P-49","wave":3,"step":"WAVE_3","action":"COMPLETE","result":"SUCCESS","details":{"created":10}}
+{"ts":"2026-08-18T10:58:28.743Z","agentId":"P-49","wave":4,"step":"WAVE_4","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T10:58:28.744Z","agentId":"P-49","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-20","to":"P-07","type":"Hard Money Loan"}}
+{"ts":"2026-08-18T10:58:28.744Z","agentId":"P-49","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-21","to":"P-15","type":"BRRRR Bridge Loan"}}
+{"ts":"2026-08-18T10:58:28.744Z","agentId":"P-49","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-22","to":"P-16","type":"BRRRR Bridge Loan"}}
+{"ts":"2026-08-18T10:58:28.744Z","agentId":"P-49","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-23","to":"P-19","type":"BRRRR Bridge Loan"}}
+{"ts":"2026-08-18T10:58:28.745Z","agentId":"P-49","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-60","to":"P-50","type":"Seasoned Note Sale"}}
+{"ts":"2026-08-18T10:58:28.745Z","agentId":"P-49","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-50"}}
+{"ts":"2026-08-18T10:58:28.745Z","agentId":"P-49","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-07"}}
+{"ts":"2026-08-18T10:58:28.746Z","agentId":"P-49","wave":4,"step":"WAVE_4","action":"COMPLETE","result":"SUCCESS","details":{"interactions":5,"invites":2}}
+{"ts":"2026-08-18T10:58:28.777Z","agentId":"P-49","wave":5,"step":"WAVE_5","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T10:58:28.777Z","agentId":"P-49","wave":5,"step":"WAVE_5","action":"COMPLETE","result":"SUCCESS","details":{"reportPath":"/Users/yvesdarbouze/Documents/PaperWorking/artifacts/persona-swarm/reports/P-49-experience-report.md"}}
+{"ts":"2026-08-18T10:58:35.258Z","agentId":"P-49","wave":1,"step":"WAVE_1","action":"START","result":"SUCCESS","details":{"email":"agent49.elaine.zhu@paperworking-test.dev"}}
+{"ts":"2026-08-18T10:58:35.262Z","agentId":"P-49","wave":0,"step":"SIGNUP","action":"SUCCESS_CREATED","result":"SUCCESS","details":{"uid":"uid_persona_p49","email":"agent49.elaine.zhu@paperworking-test.dev","name":"Elaine Zhu","entity":"Zhu Swift Funding LLC"}}
+{"ts":"2026-08-18T10:58:35.262Z","agentId":"P-49","wave":1,"step":"WAVE_1","action":"COMPLETE","result":"SUCCESS","details":{"uid":"uid_persona_p49"}}
+{"ts":"2026-08-18T10:58:35.365Z","agentId":"P-49","wave":2,"step":"WAVE_2","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T10:58:35.365Z","agentId":"P-49","wave":0,"step":"BILLING","action":"SUBSCRIPTION_SUCCESS","result":"SUCCESS","details":{"plan":"Individual","stripeCustomerId":"cus_test_swarm_p-49","stripeSubscriptionId":"sub_test_swarm_p-49","cardLastFour":"4242","cardBrand":"visa"}}
+{"ts":"2026-08-18T10:58:35.365Z","agentId":"P-49","wave":2,"step":"WAVE_2","action":"COMPLETE","result":"SUCCESS","details":{"plan":"Individual"}}
+{"ts":"2026-08-18T10:58:35.723Z","agentId":"P-49","wave":3,"step":"WAVE_3","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T10:58:35.728Z","agentId":"P-49","wave":0,"step":"PROJECTS","action":"CREATION_SUCCESS","result":"SUCCESS","details":{"created":10,"plaid":false}}
+{"ts":"2026-08-18T10:58:35.729Z","agentId":"P-49","wave":3,"step":"WAVE_3","action":"COMPLETE","result":"SUCCESS","details":{"created":10}}
+{"ts":"2026-08-18T10:58:35.960Z","agentId":"P-49","wave":4,"step":"WAVE_4","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T10:58:35.961Z","agentId":"P-49","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-20","to":"P-07","type":"Hard Money Loan"}}
+{"ts":"2026-08-18T10:58:35.963Z","agentId":"P-49","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-21","to":"P-15","type":"BRRRR Bridge Loan"}}
+{"ts":"2026-08-18T10:58:35.964Z","agentId":"P-49","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-22","to":"P-16","type":"BRRRR Bridge Loan"}}
+{"ts":"2026-08-18T10:58:35.965Z","agentId":"P-49","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-23","to":"P-19","type":"BRRRR Bridge Loan"}}
+{"ts":"2026-08-18T10:58:35.965Z","agentId":"P-49","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-60","to":"P-50","type":"Seasoned Note Sale"}}
+{"ts":"2026-08-18T10:58:35.966Z","agentId":"P-49","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-50"}}
+{"ts":"2026-08-18T10:58:35.969Z","agentId":"P-49","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-07"}}
+{"ts":"2026-08-18T10:58:35.969Z","agentId":"P-49","wave":4,"step":"WAVE_4","action":"COMPLETE","result":"SUCCESS","details":{"interactions":5,"invites":2}}
+{"ts":"2026-08-18T10:58:36.046Z","agentId":"P-49","wave":5,"step":"WAVE_5","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T10:58:36.046Z","agentId":"P-49","wave":5,"step":"WAVE_5","action":"COMPLETE","result":"SUCCESS","details":{"reportPath":"/Users/yvesdarbouze/Documents/PaperWorking/artifacts/persona-swarm/reports/P-49-experience-report.md"}}
+{"ts":"2026-08-18T10:59:01.740Z","agentId":"P-49","wave":1,"step":"WAVE_1","action":"START","result":"SUCCESS","details":{"email":"agent49.elaine.zhu@paperworking-test.dev"}}
+{"ts":"2026-08-18T10:59:01.741Z","agentId":"P-49","wave":0,"step":"SIGNUP","action":"SUCCESS_CREATED","result":"SUCCESS","details":{"uid":"uid_persona_p49","email":"agent49.elaine.zhu@paperworking-test.dev","name":"Elaine Zhu","entity":"Zhu Swift Funding LLC"}}
+{"ts":"2026-08-18T10:59:01.741Z","agentId":"P-49","wave":1,"step":"WAVE_1","action":"COMPLETE","result":"SUCCESS","details":{"uid":"uid_persona_p49"}}
+{"ts":"2026-08-18T10:59:01.770Z","agentId":"P-49","wave":1,"step":"WAVE_1","action":"START","result":"SUCCESS","details":{"email":"agent49.elaine.zhu@paperworking-test.dev"}}
+{"ts":"2026-08-18T10:59:01.771Z","agentId":"P-49","wave":0,"step":"SIGNUP","action":"SUCCESS_CREATED","result":"SUCCESS","details":{"uid":"uid_persona_p49","email":"agent49.elaine.zhu@paperworking-test.dev","name":"Elaine Zhu","entity":"Zhu Swift Funding LLC"}}
+{"ts":"2026-08-18T10:59:01.771Z","agentId":"P-49","wave":1,"step":"WAVE_1","action":"COMPLETE","result":"SUCCESS","details":{"uid":"uid_persona_p49"}}
+{"ts":"2026-08-18T10:59:01.787Z","agentId":"P-49","wave":2,"step":"WAVE_2","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T10:59:01.787Z","agentId":"P-49","wave":0,"step":"BILLING","action":"SUBSCRIPTION_SUCCESS","result":"SUCCESS","details":{"plan":"Individual","stripeCustomerId":"cus_test_swarm_p-49","stripeSubscriptionId":"sub_test_swarm_p-49","cardLastFour":"4242","cardBrand":"visa"}}
+{"ts":"2026-08-18T10:59:01.787Z","agentId":"P-49","wave":2,"step":"WAVE_2","action":"COMPLETE","result":"SUCCESS","details":{"plan":"Individual"}}
+{"ts":"2026-08-18T10:59:01.834Z","agentId":"P-49","wave":2,"step":"WAVE_2","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T10:59:01.835Z","agentId":"P-49","wave":0,"step":"BILLING","action":"SUBSCRIPTION_SUCCESS","result":"SUCCESS","details":{"plan":"Individual","stripeCustomerId":"cus_test_swarm_p-49","stripeSubscriptionId":"sub_test_swarm_p-49","cardLastFour":"4242","cardBrand":"visa"}}
+{"ts":"2026-08-18T10:59:01.835Z","agentId":"P-49","wave":2,"step":"WAVE_2","action":"COMPLETE","result":"SUCCESS","details":{"plan":"Individual"}}
+{"ts":"2026-08-18T10:59:01.966Z","agentId":"P-49","wave":3,"step":"WAVE_3","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T10:59:01.975Z","agentId":"P-49","wave":0,"step":"PROJECTS","action":"CREATION_SUCCESS","result":"SUCCESS","details":{"created":10,"plaid":false}}
+{"ts":"2026-08-18T10:59:01.975Z","agentId":"P-49","wave":3,"step":"WAVE_3","action":"COMPLETE","result":"SUCCESS","details":{"created":10}}
+{"ts":"2026-08-18T10:59:02.007Z","agentId":"P-49","wave":3,"step":"WAVE_3","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T10:59:02.010Z","agentId":"P-49","wave":0,"step":"PROJECTS","action":"CREATION_SUCCESS","result":"SUCCESS","details":{"created":10,"plaid":false}}
+{"ts":"2026-08-18T10:59:02.010Z","agentId":"P-49","wave":3,"step":"WAVE_3","action":"COMPLETE","result":"SUCCESS","details":{"created":10}}
+{"ts":"2026-08-18T10:59:02.051Z","agentId":"P-49","wave":4,"step":"WAVE_4","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T10:59:02.051Z","agentId":"P-49","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-20","to":"P-07","type":"Hard Money Loan"}}
+{"ts":"2026-08-18T10:59:02.052Z","agentId":"P-49","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-21","to":"P-15","type":"BRRRR Bridge Loan"}}
+{"ts":"2026-08-18T10:59:02.053Z","agentId":"P-49","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-22","to":"P-16","type":"BRRRR Bridge Loan"}}
+{"ts":"2026-08-18T10:59:02.053Z","agentId":"P-49","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-23","to":"P-19","type":"BRRRR Bridge Loan"}}
+{"ts":"2026-08-18T10:59:02.054Z","agentId":"P-49","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-60","to":"P-50","type":"Seasoned Note Sale"}}
+{"ts":"2026-08-18T10:59:02.054Z","agentId":"P-49","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-50"}}
+{"ts":"2026-08-18T10:59:02.055Z","agentId":"P-49","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-07"}}
+{"ts":"2026-08-18T10:59:02.055Z","agentId":"P-49","wave":4,"step":"WAVE_4","action":"COMPLETE","result":"SUCCESS","details":{"interactions":5,"invites":2}}
+{"ts":"2026-08-18T10:59:02.116Z","agentId":"P-49","wave":4,"step":"WAVE_4","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T10:59:02.117Z","agentId":"P-49","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-20","to":"P-07","type":"Hard Money Loan"}}
+{"ts":"2026-08-18T10:59:02.117Z","agentId":"P-49","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-21","to":"P-15","type":"BRRRR Bridge Loan"}}
+{"ts":"2026-08-18T10:59:02.117Z","agentId":"P-49","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-22","to":"P-16","type":"BRRRR Bridge Loan"}}
+{"ts":"2026-08-18T10:59:02.117Z","agentId":"P-49","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-23","to":"P-19","type":"BRRRR Bridge Loan"}}
+{"ts":"2026-08-18T10:59:02.118Z","agentId":"P-49","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-60","to":"P-50","type":"Seasoned Note Sale"}}
+{"ts":"2026-08-18T10:59:02.118Z","agentId":"P-49","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-50"}}
+{"ts":"2026-08-18T10:59:02.118Z","agentId":"P-49","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-07"}}
+{"ts":"2026-08-18T10:59:02.118Z","agentId":"P-49","wave":4,"step":"WAVE_4","action":"COMPLETE","result":"SUCCESS","details":{"interactions":5,"invites":2}}
+{"ts":"2026-08-18T10:59:02.122Z","agentId":"P-49","wave":5,"step":"WAVE_5","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T10:59:02.122Z","agentId":"P-49","wave":5,"step":"WAVE_5","action":"COMPLETE","result":"SUCCESS","details":{"reportPath":"/Users/yvesdarbouze/Documents/PaperWorking/artifacts/persona-swarm/reports/P-49-experience-report.md"}}
+{"ts":"2026-08-18T10:59:02.164Z","agentId":"P-49","wave":5,"step":"WAVE_5","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T10:59:02.164Z","agentId":"P-49","wave":5,"step":"WAVE_5","action":"COMPLETE","result":"SUCCESS","details":{"reportPath":"/Users/yvesdarbouze/Documents/PaperWorking/artifacts/persona-swarm/reports/P-49-experience-report.md"}}
+{"ts":"2026-08-18T10:59:27.043Z","agentId":"P-49","wave":1,"step":"WAVE_1","action":"START","result":"SUCCESS","details":{"email":"agent49.elaine.zhu@paperworking-test.dev"}}
+{"ts":"2026-08-18T10:59:27.044Z","agentId":"P-49","wave":0,"step":"SIGNUP","action":"SUCCESS_CREATED","result":"SUCCESS","details":{"uid":"uid_persona_p49","email":"agent49.elaine.zhu@paperworking-test.dev","name":"Elaine Zhu","entity":"Zhu Swift Funding LLC"}}
+{"ts":"2026-08-18T10:59:27.044Z","agentId":"P-49","wave":1,"step":"WAVE_1","action":"COMPLETE","result":"SUCCESS","details":{"uid":"uid_persona_p49"}}
+{"ts":"2026-08-18T10:59:27.081Z","agentId":"P-49","wave":2,"step":"WAVE_2","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T10:59:27.082Z","agentId":"P-49","wave":0,"step":"BILLING","action":"SUBSCRIPTION_SUCCESS","result":"SUCCESS","details":{"plan":"Individual","stripeCustomerId":"cus_test_swarm_p-49","stripeSubscriptionId":"sub_test_swarm_p-49","cardLastFour":"4242","cardBrand":"visa"}}
+{"ts":"2026-08-18T10:59:27.082Z","agentId":"P-49","wave":2,"step":"WAVE_2","action":"COMPLETE","result":"SUCCESS","details":{"plan":"Individual"}}
+{"ts":"2026-08-18T10:59:27.218Z","agentId":"P-49","wave":3,"step":"WAVE_3","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T10:59:27.219Z","agentId":"P-49","wave":0,"step":"PROJECTS","action":"CREATION_SUCCESS","result":"SUCCESS","details":{"created":10,"plaid":false}}
+{"ts":"2026-08-18T10:59:27.219Z","agentId":"P-49","wave":3,"step":"WAVE_3","action":"COMPLETE","result":"SUCCESS","details":{"created":10}}
+{"ts":"2026-08-18T10:59:27.284Z","agentId":"P-49","wave":4,"step":"WAVE_4","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T10:59:27.284Z","agentId":"P-49","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-20","to":"P-07","type":"Hard Money Loan"}}
+{"ts":"2026-08-18T10:59:27.284Z","agentId":"P-49","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-21","to":"P-15","type":"BRRRR Bridge Loan"}}
+{"ts":"2026-08-18T10:59:27.284Z","agentId":"P-49","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-22","to":"P-16","type":"BRRRR Bridge Loan"}}
+{"ts":"2026-08-18T10:59:27.285Z","agentId":"P-49","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-23","to":"P-19","type":"BRRRR Bridge Loan"}}
+{"ts":"2026-08-18T10:59:27.285Z","agentId":"P-49","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-60","to":"P-50","type":"Seasoned Note Sale"}}
+{"ts":"2026-08-18T10:59:27.285Z","agentId":"P-49","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-50"}}
+{"ts":"2026-08-18T10:59:27.285Z","agentId":"P-49","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-07"}}
+{"ts":"2026-08-18T10:59:27.285Z","agentId":"P-49","wave":4,"step":"WAVE_4","action":"COMPLETE","result":"SUCCESS","details":{"interactions":5,"invites":2}}
+{"ts":"2026-08-18T10:59:27.317Z","agentId":"P-49","wave":5,"step":"WAVE_5","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T10:59:27.318Z","agentId":"P-49","wave":5,"step":"WAVE_5","action":"COMPLETE","result":"SUCCESS","details":{"reportPath":"/Users/yvesdarbouze/Documents/PaperWorking/artifacts/persona-swarm/reports/P-49-experience-report.md"}}
+{"ts":"2026-08-18T10:59:30.173Z","agentId":"P-49","wave":1,"step":"WAVE_1","action":"START","result":"SUCCESS","details":{"email":"agent49.elaine.zhu@paperworking-test.dev"}}
+{"ts":"2026-08-18T10:59:30.174Z","agentId":"P-49","wave":0,"step":"SIGNUP","action":"SUCCESS_CREATED","result":"SUCCESS","details":{"uid":"uid_persona_p49","email":"agent49.elaine.zhu@paperworking-test.dev","name":"Elaine Zhu","entity":"Zhu Swift Funding LLC"}}
+{"ts":"2026-08-18T10:59:30.174Z","agentId":"P-49","wave":1,"step":"WAVE_1","action":"COMPLETE","result":"SUCCESS","details":{"uid":"uid_persona_p49"}}
+{"ts":"2026-08-18T10:59:30.221Z","agentId":"P-49","wave":2,"step":"WAVE_2","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T10:59:30.221Z","agentId":"P-49","wave":0,"step":"BILLING","action":"SUBSCRIPTION_SUCCESS","result":"SUCCESS","details":{"plan":"Individual","stripeCustomerId":"cus_test_swarm_p-49","stripeSubscriptionId":"sub_test_swarm_p-49","cardLastFour":"4242","cardBrand":"visa"}}
+{"ts":"2026-08-18T10:59:30.221Z","agentId":"P-49","wave":2,"step":"WAVE_2","action":"COMPLETE","result":"SUCCESS","details":{"plan":"Individual"}}
+{"ts":"2026-08-18T10:59:30.423Z","agentId":"P-49","wave":3,"step":"WAVE_3","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T10:59:30.425Z","agentId":"P-49","wave":0,"step":"PROJECTS","action":"CREATION_SUCCESS","result":"SUCCESS","details":{"created":10,"plaid":false}}
+{"ts":"2026-08-18T10:59:30.425Z","agentId":"P-49","wave":3,"step":"WAVE_3","action":"COMPLETE","result":"SUCCESS","details":{"created":10}}
+{"ts":"2026-08-18T10:59:30.523Z","agentId":"P-49","wave":4,"step":"WAVE_4","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T10:59:30.524Z","agentId":"P-49","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-20","to":"P-07","type":"Hard Money Loan"}}
+{"ts":"2026-08-18T10:59:30.524Z","agentId":"P-49","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-21","to":"P-15","type":"BRRRR Bridge Loan"}}
+{"ts":"2026-08-18T10:59:30.525Z","agentId":"P-49","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-22","to":"P-16","type":"BRRRR Bridge Loan"}}
+{"ts":"2026-08-18T10:59:30.526Z","agentId":"P-49","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-23","to":"P-19","type":"BRRRR Bridge Loan"}}
+{"ts":"2026-08-18T10:59:30.527Z","agentId":"P-49","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-60","to":"P-50","type":"Seasoned Note Sale"}}
+{"ts":"2026-08-18T10:59:30.528Z","agentId":"P-49","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-50"}}
+{"ts":"2026-08-18T10:59:30.528Z","agentId":"P-49","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-07"}}
+{"ts":"2026-08-18T10:59:30.528Z","agentId":"P-49","wave":4,"step":"WAVE_4","action":"COMPLETE","result":"SUCCESS","details":{"interactions":5,"invites":2}}
+{"ts":"2026-08-18T10:59:30.598Z","agentId":"P-49","wave":5,"step":"WAVE_5","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T10:59:30.598Z","agentId":"P-49","wave":5,"step":"WAVE_5","action":"COMPLETE","result":"SUCCESS","details":{"reportPath":"/Users/yvesdarbouze/Documents/PaperWorking/artifacts/persona-swarm/reports/P-49-experience-report.md"}}
+{"ts":"2026-08-18T11:00:11.766Z","agentId":"P-49","wave":1,"step":"WAVE_1","action":"START","result":"SUCCESS","details":{"email":"agent49.elaine.zhu@paperworking-test.dev"}}
+{"ts":"2026-08-18T11:00:11.767Z","agentId":"P-49","wave":0,"step":"SIGNUP","action":"SUCCESS_CREATED","result":"SUCCESS","details":{"uid":"uid_persona_p49","email":"agent49.elaine.zhu@paperworking-test.dev","name":"Elaine Zhu","entity":"Zhu Swift Funding LLC"}}
+{"ts":"2026-08-18T11:00:11.767Z","agentId":"P-49","wave":1,"step":"WAVE_1","action":"COMPLETE","result":"SUCCESS","details":{"uid":"uid_persona_p49"}}
+{"ts":"2026-08-18T11:00:11.769Z","agentId":"P-49","wave":1,"step":"WAVE_1","action":"START","result":"SUCCESS","details":{"email":"agent49.elaine.zhu@paperworking-test.dev"}}
+{"ts":"2026-08-18T11:00:11.770Z","agentId":"P-49","wave":0,"step":"SIGNUP","action":"SUCCESS_CREATED","result":"SUCCESS","details":{"uid":"uid_persona_p49","email":"agent49.elaine.zhu@paperworking-test.dev","name":"Elaine Zhu","entity":"Zhu Swift Funding LLC"}}
+{"ts":"2026-08-18T11:00:11.770Z","agentId":"P-49","wave":1,"step":"WAVE_1","action":"COMPLETE","result":"SUCCESS","details":{"uid":"uid_persona_p49"}}
+{"ts":"2026-08-18T11:00:11.812Z","agentId":"P-49","wave":2,"step":"WAVE_2","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T11:00:11.813Z","agentId":"P-49","wave":0,"step":"BILLING","action":"SUBSCRIPTION_SUCCESS","result":"SUCCESS","details":{"plan":"Individual","stripeCustomerId":"cus_test_swarm_p-49","stripeSubscriptionId":"sub_test_swarm_p-49","cardLastFour":"4242","cardBrand":"visa"}}
+{"ts":"2026-08-18T11:00:11.813Z","agentId":"P-49","wave":2,"step":"WAVE_2","action":"COMPLETE","result":"SUCCESS","details":{"plan":"Individual"}}
+{"ts":"2026-08-18T11:00:11.813Z","agentId":"P-49","wave":2,"step":"WAVE_2","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T11:00:11.814Z","agentId":"P-49","wave":0,"step":"BILLING","action":"SUBSCRIPTION_SUCCESS","result":"SUCCESS","details":{"plan":"Individual","stripeCustomerId":"cus_test_swarm_p-49","stripeSubscriptionId":"sub_test_swarm_p-49","cardLastFour":"4242","cardBrand":"visa"}}
+{"ts":"2026-08-18T11:00:11.814Z","agentId":"P-49","wave":2,"step":"WAVE_2","action":"COMPLETE","result":"SUCCESS","details":{"plan":"Individual"}}
+{"ts":"2026-08-18T11:00:11.957Z","agentId":"P-49","wave":3,"step":"WAVE_3","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T11:00:11.959Z","agentId":"P-49","wave":0,"step":"PROJECTS","action":"CREATION_SUCCESS","result":"SUCCESS","details":{"created":10,"plaid":false}}
+{"ts":"2026-08-18T11:00:11.959Z","agentId":"P-49","wave":3,"step":"WAVE_3","action":"COMPLETE","result":"SUCCESS","details":{"created":10}}
+{"ts":"2026-08-18T11:00:11.973Z","agentId":"P-49","wave":3,"step":"WAVE_3","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T11:00:11.975Z","agentId":"P-49","wave":0,"step":"PROJECTS","action":"CREATION_SUCCESS","result":"SUCCESS","details":{"created":10,"plaid":false}}
+{"ts":"2026-08-18T11:00:11.975Z","agentId":"P-49","wave":3,"step":"WAVE_3","action":"COMPLETE","result":"SUCCESS","details":{"created":10}}
+{"ts":"2026-08-18T11:00:12.029Z","agentId":"P-49","wave":4,"step":"WAVE_4","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T11:00:12.030Z","agentId":"P-49","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-20","to":"P-07","type":"Hard Money Loan"}}
+{"ts":"2026-08-18T11:00:12.031Z","agentId":"P-49","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-21","to":"P-15","type":"BRRRR Bridge Loan"}}
+{"ts":"2026-08-18T11:00:12.031Z","agentId":"P-49","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-22","to":"P-16","type":"BRRRR Bridge Loan"}}
+{"ts":"2026-08-18T11:00:12.031Z","agentId":"P-49","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-23","to":"P-19","type":"BRRRR Bridge Loan"}}
+{"ts":"2026-08-18T11:00:12.032Z","agentId":"P-49","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-60","to":"P-50","type":"Seasoned Note Sale"}}
+{"ts":"2026-08-18T11:00:12.051Z","agentId":"P-49","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-50"}}
+{"ts":"2026-08-18T11:00:12.051Z","agentId":"P-49","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-07"}}
+{"ts":"2026-08-18T11:00:12.052Z","agentId":"P-49","wave":4,"step":"WAVE_4","action":"COMPLETE","result":"SUCCESS","details":{"interactions":5,"invites":2}}
+{"ts":"2026-08-18T11:00:12.062Z","agentId":"P-49","wave":4,"step":"WAVE_4","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T11:00:12.063Z","agentId":"P-49","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-20","to":"P-07","type":"Hard Money Loan"}}
+{"ts":"2026-08-18T11:00:12.063Z","agentId":"P-49","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-21","to":"P-15","type":"BRRRR Bridge Loan"}}
+{"ts":"2026-08-18T11:00:12.063Z","agentId":"P-49","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-22","to":"P-16","type":"BRRRR Bridge Loan"}}
+{"ts":"2026-08-18T11:00:12.063Z","agentId":"P-49","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-23","to":"P-19","type":"BRRRR Bridge Loan"}}
+{"ts":"2026-08-18T11:00:12.064Z","agentId":"P-49","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-60","to":"P-50","type":"Seasoned Note Sale"}}
+{"ts":"2026-08-18T11:00:12.064Z","agentId":"P-49","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-50"}}
+{"ts":"2026-08-18T11:00:12.064Z","agentId":"P-49","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-07"}}
+{"ts":"2026-08-18T11:00:12.064Z","agentId":"P-49","wave":4,"step":"WAVE_4","action":"COMPLETE","result":"SUCCESS","details":{"interactions":5,"invites":2}}
+{"ts":"2026-08-18T11:00:12.086Z","agentId":"P-49","wave":5,"step":"WAVE_5","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T11:00:12.086Z","agentId":"P-49","wave":5,"step":"WAVE_5","action":"COMPLETE","result":"SUCCESS","details":{"reportPath":"/Users/yvesdarbouze/Documents/PaperWorking/artifacts/persona-swarm/reports/P-49-experience-report.md"}}
+{"ts":"2026-08-18T11:00:12.100Z","agentId":"P-49","wave":5,"step":"WAVE_5","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T11:00:12.100Z","agentId":"P-49","wave":5,"step":"WAVE_5","action":"COMPLETE","result":"SUCCESS","details":{"reportPath":"/Users/yvesdarbouze/Documents/PaperWorking/artifacts/persona-swarm/reports/P-49-experience-report.md"}}
+{"ts":"2026-08-18T11:12:29.769Z","agentId":"P-49","wave":1,"step":"WAVE_1","action":"START","result":"SUCCESS","details":{"email":"agent49.elaine.zhu@paperworking-test.dev"}}
+{"ts":"2026-08-18T11:12:29.770Z","agentId":"P-49","wave":0,"step":"SIGNUP","action":"SUCCESS_CREATED","result":"SUCCESS","details":{"uid":"uid_persona_p49","email":"agent49.elaine.zhu@paperworking-test.dev","name":"Elaine Zhu","entity":"Zhu Swift Funding LLC"}}
+{"ts":"2026-08-18T11:12:29.770Z","agentId":"P-49","wave":1,"step":"WAVE_1","action":"COMPLETE","result":"SUCCESS","details":{"uid":"uid_persona_p49"}}
+{"ts":"2026-08-18T11:12:29.803Z","agentId":"P-49","wave":2,"step":"WAVE_2","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T11:12:29.803Z","agentId":"P-49","wave":0,"step":"BILLING","action":"SUBSCRIPTION_SUCCESS","result":"SUCCESS","details":{"plan":"Individual","stripeCustomerId":"cus_test_swarm_p-49","stripeSubscriptionId":"sub_test_swarm_p-49","cardLastFour":"4242","cardBrand":"visa"}}
+{"ts":"2026-08-18T11:12:29.804Z","agentId":"P-49","wave":2,"step":"WAVE_2","action":"COMPLETE","result":"SUCCESS","details":{"plan":"Individual"}}
+{"ts":"2026-08-18T11:12:29.982Z","agentId":"P-49","wave":3,"step":"WAVE_3","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T11:12:29.984Z","agentId":"P-49","wave":0,"step":"PROJECTS","action":"CREATION_SUCCESS","result":"SUCCESS","details":{"created":10,"plaid":false}}
+{"ts":"2026-08-18T11:12:29.984Z","agentId":"P-49","wave":3,"step":"WAVE_3","action":"COMPLETE","result":"SUCCESS","details":{"created":10}}
+{"ts":"2026-08-18T11:12:30.063Z","agentId":"P-49","wave":4,"step":"WAVE_4","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T11:12:30.064Z","agentId":"P-49","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-20","to":"P-07","type":"Hard Money Loan"}}
+{"ts":"2026-08-18T11:12:30.064Z","agentId":"P-49","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-21","to":"P-15","type":"BRRRR Bridge Loan"}}
+{"ts":"2026-08-18T11:12:30.065Z","agentId":"P-49","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-22","to":"P-16","type":"BRRRR Bridge Loan"}}
+{"ts":"2026-08-18T11:12:30.066Z","agentId":"P-49","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-23","to":"P-19","type":"BRRRR Bridge Loan"}}
+{"ts":"2026-08-18T11:12:30.067Z","agentId":"P-49","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-60","to":"P-50","type":"Seasoned Note Sale"}}
+{"ts":"2026-08-18T11:12:30.068Z","agentId":"P-49","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-50"}}
+{"ts":"2026-08-18T11:12:30.070Z","agentId":"P-49","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-07"}}
+{"ts":"2026-08-18T11:12:30.070Z","agentId":"P-49","wave":4,"step":"WAVE_4","action":"COMPLETE","result":"SUCCESS","details":{"interactions":5,"invites":2}}
+{"ts":"2026-08-18T11:12:30.112Z","agentId":"P-49","wave":5,"step":"WAVE_5","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T11:12:30.113Z","agentId":"P-49","wave":5,"step":"WAVE_5","action":"COMPLETE","result":"SUCCESS","details":{"reportPath":"/Users/yvesdarbouze/Documents/PaperWorking/artifacts/persona-swarm/reports/P-49-experience-report.md"}}
+{"ts":"2026-08-18T11:12:32.972Z","agentId":"P-49","wave":1,"step":"WAVE_1","action":"START","result":"SUCCESS","details":{"email":"agent49.elaine.zhu@paperworking-test.dev"}}
+{"ts":"2026-08-18T11:12:32.973Z","agentId":"P-49","wave":0,"step":"SIGNUP","action":"SUCCESS_CREATED","result":"SUCCESS","details":{"uid":"uid_persona_p49","email":"agent49.elaine.zhu@paperworking-test.dev","name":"Elaine Zhu","entity":"Zhu Swift Funding LLC"}}
+{"ts":"2026-08-18T11:12:32.973Z","agentId":"P-49","wave":1,"step":"WAVE_1","action":"COMPLETE","result":"SUCCESS","details":{"uid":"uid_persona_p49"}}
+{"ts":"2026-08-18T11:12:33.056Z","agentId":"P-49","wave":2,"step":"WAVE_2","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T11:12:33.056Z","agentId":"P-49","wave":0,"step":"BILLING","action":"SUBSCRIPTION_SUCCESS","result":"SUCCESS","details":{"plan":"Individual","stripeCustomerId":"cus_test_swarm_p-49","stripeSubscriptionId":"sub_test_swarm_p-49","cardLastFour":"4242","cardBrand":"visa"}}
+{"ts":"2026-08-18T11:12:33.057Z","agentId":"P-49","wave":2,"step":"WAVE_2","action":"COMPLETE","result":"SUCCESS","details":{"plan":"Individual"}}
+{"ts":"2026-08-18T11:12:33.340Z","agentId":"P-49","wave":3,"step":"WAVE_3","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T11:12:33.344Z","agentId":"P-49","wave":0,"step":"PROJECTS","action":"CREATION_SUCCESS","result":"SUCCESS","details":{"created":10,"plaid":false}}
+{"ts":"2026-08-18T11:12:33.345Z","agentId":"P-49","wave":3,"step":"WAVE_3","action":"COMPLETE","result":"SUCCESS","details":{"created":10}}
+{"ts":"2026-08-18T11:12:33.543Z","agentId":"P-49","wave":4,"step":"WAVE_4","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T11:12:33.544Z","agentId":"P-49","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-20","to":"P-07","type":"Hard Money Loan"}}
+{"ts":"2026-08-18T11:12:33.545Z","agentId":"P-49","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-21","to":"P-15","type":"BRRRR Bridge Loan"}}
+{"ts":"2026-08-18T11:12:33.546Z","agentId":"P-49","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-22","to":"P-16","type":"BRRRR Bridge Loan"}}
+{"ts":"2026-08-18T11:12:33.547Z","agentId":"P-49","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-23","to":"P-19","type":"BRRRR Bridge Loan"}}
+{"ts":"2026-08-18T11:12:33.547Z","agentId":"P-49","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-60","to":"P-50","type":"Seasoned Note Sale"}}
+{"ts":"2026-08-18T11:12:33.548Z","agentId":"P-49","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-50"}}
+{"ts":"2026-08-18T11:12:33.548Z","agentId":"P-49","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-07"}}
+{"ts":"2026-08-18T11:12:33.548Z","agentId":"P-49","wave":4,"step":"WAVE_4","action":"COMPLETE","result":"SUCCESS","details":{"interactions":5,"invites":2}}
+{"ts":"2026-08-18T11:12:33.600Z","agentId":"P-49","wave":5,"step":"WAVE_5","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T11:12:33.602Z","agentId":"P-49","wave":5,"step":"WAVE_5","action":"COMPLETE","result":"SUCCESS","details":{"reportPath":"/Users/yvesdarbouze/Documents/PaperWorking/artifacts/persona-swarm/reports/P-49-experience-report.md"}}
+{"ts":"2026-08-18T11:19:05.533Z","agentId":"P-49","wave":1,"step":"WAVE_1","action":"START","result":"SUCCESS","details":{"email":"agent49.elaine.zhu@paperworking-test.dev"}}
+{"ts":"2026-08-18T11:19:05.533Z","agentId":"P-49","wave":0,"step":"SIGNUP","action":"SUCCESS_CREATED","result":"SUCCESS","details":{"uid":"uid_persona_p49","email":"agent49.elaine.zhu@paperworking-test.dev","name":"Elaine Zhu","entity":"Zhu Swift Funding LLC"}}
+{"ts":"2026-08-18T11:19:05.533Z","agentId":"P-49","wave":1,"step":"WAVE_1","action":"COMPLETE","result":"SUCCESS","details":{"uid":"uid_persona_p49"}}
+{"ts":"2026-08-18T11:19:05.534Z","agentId":"P-49","wave":1,"step":"WAVE_1","action":"START","result":"SUCCESS","details":{"email":"agent49.elaine.zhu@paperworking-test.dev"}}
+{"ts":"2026-08-18T11:19:05.534Z","agentId":"P-49","wave":0,"step":"SIGNUP","action":"SUCCESS_CREATED","result":"SUCCESS","details":{"uid":"uid_persona_p49","email":"agent49.elaine.zhu@paperworking-test.dev","name":"Elaine Zhu","entity":"Zhu Swift Funding LLC"}}
+{"ts":"2026-08-18T11:19:05.534Z","agentId":"P-49","wave":1,"step":"WAVE_1","action":"COMPLETE","result":"SUCCESS","details":{"uid":"uid_persona_p49"}}
+{"ts":"2026-08-18T11:19:05.577Z","agentId":"P-49","wave":2,"step":"WAVE_2","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T11:19:05.577Z","agentId":"P-49","wave":2,"step":"WAVE_2","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T11:19:05.577Z","agentId":"P-49","wave":0,"step":"BILLING","action":"SUBSCRIPTION_SUCCESS","result":"SUCCESS","details":{"plan":"Individual","stripeCustomerId":"cus_test_swarm_p-49","stripeSubscriptionId":"sub_test_swarm_p-49","cardLastFour":"4242","cardBrand":"visa"}}
+{"ts":"2026-08-18T11:19:05.577Z","agentId":"P-49","wave":2,"step":"WAVE_2","action":"COMPLETE","result":"SUCCESS","details":{"plan":"Individual"}}
+{"ts":"2026-08-18T11:19:05.577Z","agentId":"P-49","wave":0,"step":"BILLING","action":"SUBSCRIPTION_SUCCESS","result":"SUCCESS","details":{"plan":"Individual","stripeCustomerId":"cus_test_swarm_p-49","stripeSubscriptionId":"sub_test_swarm_p-49","cardLastFour":"4242","cardBrand":"visa"}}
+{"ts":"2026-08-18T11:19:05.577Z","agentId":"P-49","wave":2,"step":"WAVE_2","action":"COMPLETE","result":"SUCCESS","details":{"plan":"Individual"}}
+{"ts":"2026-08-18T11:19:05.795Z","agentId":"P-49","wave":3,"step":"WAVE_3","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T11:19:05.799Z","agentId":"P-49","wave":0,"step":"PROJECTS","action":"CREATION_SUCCESS","result":"SUCCESS","details":{"created":10,"plaid":false}}
+{"ts":"2026-08-18T11:19:05.799Z","agentId":"P-49","wave":3,"step":"WAVE_3","action":"COMPLETE","result":"SUCCESS","details":{"created":10}}
+{"ts":"2026-08-18T11:19:05.802Z","agentId":"P-49","wave":3,"step":"WAVE_3","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T11:19:05.807Z","agentId":"P-49","wave":0,"step":"PROJECTS","action":"CREATION_SUCCESS","result":"SUCCESS","details":{"created":10,"plaid":false}}
+{"ts":"2026-08-18T11:19:05.807Z","agentId":"P-49","wave":3,"step":"WAVE_3","action":"COMPLETE","result":"SUCCESS","details":{"created":10}}
+{"ts":"2026-08-18T11:19:05.924Z","agentId":"P-49","wave":4,"step":"WAVE_4","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T11:19:05.924Z","agentId":"P-49","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-20","to":"P-07","type":"Hard Money Loan"}}
+{"ts":"2026-08-18T11:19:05.925Z","agentId":"P-49","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-21","to":"P-15","type":"BRRRR Bridge Loan"}}
+{"ts":"2026-08-18T11:19:05.925Z","agentId":"P-49","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-22","to":"P-16","type":"BRRRR Bridge Loan"}}
+{"ts":"2026-08-18T11:19:05.926Z","agentId":"P-49","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-23","to":"P-19","type":"BRRRR Bridge Loan"}}
+{"ts":"2026-08-18T11:19:05.926Z","agentId":"P-49","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-60","to":"P-50","type":"Seasoned Note Sale"}}
+{"ts":"2026-08-18T11:19:05.927Z","agentId":"P-49","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-50"}}
+{"ts":"2026-08-18T11:19:05.927Z","agentId":"P-49","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-07"}}
+{"ts":"2026-08-18T11:19:05.927Z","agentId":"P-49","wave":4,"step":"WAVE_4","action":"COMPLETE","result":"SUCCESS","details":{"interactions":5,"invites":2}}
+{"ts":"2026-08-18T11:19:05.931Z","agentId":"P-49","wave":4,"step":"WAVE_4","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T11:19:05.932Z","agentId":"P-49","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-20","to":"P-07","type":"Hard Money Loan"}}
+{"ts":"2026-08-18T11:19:05.932Z","agentId":"P-49","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-21","to":"P-15","type":"BRRRR Bridge Loan"}}
+{"ts":"2026-08-18T11:19:05.933Z","agentId":"P-49","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-22","to":"P-16","type":"BRRRR Bridge Loan"}}
+{"ts":"2026-08-18T11:19:05.933Z","agentId":"P-49","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-23","to":"P-19","type":"BRRRR Bridge Loan"}}
+{"ts":"2026-08-18T11:19:05.933Z","agentId":"P-49","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-60","to":"P-50","type":"Seasoned Note Sale"}}
+{"ts":"2026-08-18T11:19:05.934Z","agentId":"P-49","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-50"}}
+{"ts":"2026-08-18T11:19:05.935Z","agentId":"P-49","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-07"}}
+{"ts":"2026-08-18T11:19:05.935Z","agentId":"P-49","wave":4,"step":"WAVE_4","action":"COMPLETE","result":"SUCCESS","details":{"interactions":5,"invites":2}}
+{"ts":"2026-08-18T11:19:05.971Z","agentId":"P-49","wave":5,"step":"WAVE_5","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T11:19:05.972Z","agentId":"P-49","wave":5,"step":"WAVE_5","action":"COMPLETE","result":"SUCCESS","details":{"reportPath":"/Users/yvesdarbouze/Documents/PaperWorking/artifacts/persona-swarm/reports/P-49-experience-report.md"}}
+{"ts":"2026-08-18T11:19:05.982Z","agentId":"P-49","wave":5,"step":"WAVE_5","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T11:19:05.982Z","agentId":"P-49","wave":5,"step":"WAVE_5","action":"COMPLETE","result":"SUCCESS","details":{"reportPath":"/Users/yvesdarbouze/Documents/PaperWorking/artifacts/persona-swarm/reports/P-49-experience-report.md"}}
+{"ts":"2026-08-18T14:00:23.633Z","agentId":"P-49","wave":1,"step":"WAVE_1","action":"START","result":"SUCCESS","details":{"email":"agent49.elaine.zhu@paperworking-test.dev"}}
+{"ts":"2026-08-18T14:00:23.635Z","agentId":"P-49","wave":0,"step":"SIGNUP","action":"SUCCESS_CREATED","result":"SUCCESS","details":{"uid":"uid_persona_p49","email":"agent49.elaine.zhu@paperworking-test.dev","name":"Elaine Zhu","entity":"Zhu Swift Funding LLC"}}
+{"ts":"2026-08-18T14:00:23.635Z","agentId":"P-49","wave":1,"step":"WAVE_1","action":"COMPLETE","result":"SUCCESS","details":{"uid":"uid_persona_p49"}}
+{"ts":"2026-08-18T14:00:23.636Z","agentId":"P-49","wave":1,"step":"WAVE_1","action":"START","result":"SUCCESS","details":{"email":"agent49.elaine.zhu@paperworking-test.dev"}}
+{"ts":"2026-08-18T14:00:23.637Z","agentId":"P-49","wave":0,"step":"SIGNUP","action":"SUCCESS_CREATED","result":"SUCCESS","details":{"uid":"uid_persona_p49","email":"agent49.elaine.zhu@paperworking-test.dev","name":"Elaine Zhu","entity":"Zhu Swift Funding LLC"}}
+{"ts":"2026-08-18T14:00:23.637Z","agentId":"P-49","wave":1,"step":"WAVE_1","action":"COMPLETE","result":"SUCCESS","details":{"uid":"uid_persona_p49"}}
+{"ts":"2026-08-18T14:00:23.681Z","agentId":"P-49","wave":2,"step":"WAVE_2","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T14:00:23.681Z","agentId":"P-49","wave":0,"step":"BILLING","action":"SUBSCRIPTION_SUCCESS","result":"SUCCESS","details":{"plan":"Individual","stripeCustomerId":"cus_test_swarm_p-49","stripeSubscriptionId":"sub_test_swarm_p-49","cardLastFour":"4242","cardBrand":"visa"}}
+{"ts":"2026-08-18T14:00:23.682Z","agentId":"P-49","wave":2,"step":"WAVE_2","action":"COMPLETE","result":"SUCCESS","details":{"plan":"Individual"}}
+{"ts":"2026-08-18T14:00:23.684Z","agentId":"P-49","wave":2,"step":"WAVE_2","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T14:00:23.685Z","agentId":"P-49","wave":0,"step":"BILLING","action":"SUBSCRIPTION_SUCCESS","result":"SUCCESS","details":{"plan":"Individual","stripeCustomerId":"cus_test_swarm_p-49","stripeSubscriptionId":"sub_test_swarm_p-49","cardLastFour":"4242","cardBrand":"visa"}}
+{"ts":"2026-08-18T14:00:23.685Z","agentId":"P-49","wave":2,"step":"WAVE_2","action":"COMPLETE","result":"SUCCESS","details":{"plan":"Individual"}}
+{"ts":"2026-08-18T14:00:23.887Z","agentId":"P-49","wave":3,"step":"WAVE_3","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T14:00:23.889Z","agentId":"P-49","wave":0,"step":"PROJECTS","action":"CREATION_SUCCESS","result":"SUCCESS","details":{"created":10,"plaid":false}}
+{"ts":"2026-08-18T14:00:23.889Z","agentId":"P-49","wave":3,"step":"WAVE_3","action":"COMPLETE","result":"SUCCESS","details":{"created":10}}
+{"ts":"2026-08-18T14:00:23.890Z","agentId":"P-49","wave":3,"step":"WAVE_3","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T14:00:23.894Z","agentId":"P-49","wave":0,"step":"PROJECTS","action":"CREATION_SUCCESS","result":"SUCCESS","details":{"created":10,"plaid":false}}
+{"ts":"2026-08-18T14:00:23.895Z","agentId":"P-49","wave":3,"step":"WAVE_3","action":"COMPLETE","result":"SUCCESS","details":{"created":10}}
+{"ts":"2026-08-18T14:00:24.039Z","agentId":"P-49","wave":4,"step":"WAVE_4","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T14:00:24.040Z","agentId":"P-49","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-20","to":"P-07","type":"Hard Money Loan"}}
+{"ts":"2026-08-18T14:00:24.042Z","agentId":"P-49","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-21","to":"P-15","type":"BRRRR Bridge Loan"}}
+{"ts":"2026-08-18T14:00:24.043Z","agentId":"P-49","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-22","to":"P-16","type":"BRRRR Bridge Loan"}}
+{"ts":"2026-08-18T14:00:24.044Z","agentId":"P-49","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-23","to":"P-19","type":"BRRRR Bridge Loan"}}
+{"ts":"2026-08-18T14:00:24.045Z","agentId":"P-49","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-60","to":"P-50","type":"Seasoned Note Sale"}}
+{"ts":"2026-08-18T14:00:24.045Z","agentId":"P-49","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-50"}}
+{"ts":"2026-08-18T14:00:24.046Z","agentId":"P-49","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-07"}}
+{"ts":"2026-08-18T14:00:24.046Z","agentId":"P-49","wave":4,"step":"WAVE_4","action":"COMPLETE","result":"SUCCESS","details":{"interactions":5,"invites":2}}
+{"ts":"2026-08-18T14:00:24.061Z","agentId":"P-49","wave":4,"step":"WAVE_4","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T14:00:24.063Z","agentId":"P-49","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-20","to":"P-07","type":"Hard Money Loan"}}
+{"ts":"2026-08-18T14:00:24.064Z","agentId":"P-49","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-21","to":"P-15","type":"BRRRR Bridge Loan"}}
+{"ts":"2026-08-18T14:00:24.064Z","agentId":"P-49","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-22","to":"P-16","type":"BRRRR Bridge Loan"}}
+{"ts":"2026-08-18T14:00:24.064Z","agentId":"P-49","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-23","to":"P-19","type":"BRRRR Bridge Loan"}}
+{"ts":"2026-08-18T14:00:24.066Z","agentId":"P-49","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-60","to":"P-50","type":"Seasoned Note Sale"}}
+{"ts":"2026-08-18T14:00:24.067Z","agentId":"P-49","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-50"}}
+{"ts":"2026-08-18T14:00:24.067Z","agentId":"P-49","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-07"}}
+{"ts":"2026-08-18T14:00:24.067Z","agentId":"P-49","wave":4,"step":"WAVE_4","action":"COMPLETE","result":"SUCCESS","details":{"interactions":5,"invites":2}}
+{"ts":"2026-08-18T14:00:24.100Z","agentId":"P-49","wave":5,"step":"WAVE_5","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T14:00:24.100Z","agentId":"P-49","wave":5,"step":"WAVE_5","action":"COMPLETE","result":"SUCCESS","details":{"reportPath":"/Users/yvesdarbouze/Documents/PaperWorking/artifacts/persona-swarm/reports/P-49-experience-report.md"}}
+{"ts":"2026-08-18T14:00:24.124Z","agentId":"P-49","wave":5,"step":"WAVE_5","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T14:00:24.125Z","agentId":"P-49","wave":5,"step":"WAVE_5","action":"COMPLETE","result":"SUCCESS","details":{"reportPath":"/Users/yvesdarbouze/Documents/PaperWorking/artifacts/persona-swarm/reports/P-49-experience-report.md"}}
+{"ts":"2026-08-18T14:00:58.820Z","agentId":"P-49","wave":1,"step":"WAVE_1","action":"START","result":"SUCCESS","details":{"email":"agent49.elaine.zhu@paperworking-test.dev"}}
+{"ts":"2026-08-18T14:00:58.821Z","agentId":"P-49","wave":0,"step":"SIGNUP","action":"SUCCESS_CREATED","result":"SUCCESS","details":{"uid":"uid_persona_p49","email":"agent49.elaine.zhu@paperworking-test.dev","name":"Elaine Zhu","entity":"Zhu Swift Funding LLC"}}
+{"ts":"2026-08-18T14:00:58.821Z","agentId":"P-49","wave":1,"step":"WAVE_1","action":"COMPLETE","result":"SUCCESS","details":{"uid":"uid_persona_p49"}}
+{"ts":"2026-08-18T14:00:58.851Z","agentId":"P-49","wave":2,"step":"WAVE_2","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T14:00:58.852Z","agentId":"P-49","wave":0,"step":"BILLING","action":"SUBSCRIPTION_SUCCESS","result":"SUCCESS","details":{"plan":"Individual","stripeCustomerId":"cus_test_swarm_p-49","stripeSubscriptionId":"sub_test_swarm_p-49","cardLastFour":"4242","cardBrand":"visa"}}
+{"ts":"2026-08-18T14:00:58.852Z","agentId":"P-49","wave":2,"step":"WAVE_2","action":"COMPLETE","result":"SUCCESS","details":{"plan":"Individual"}}
+{"ts":"2026-08-18T14:00:58.993Z","agentId":"P-49","wave":3,"step":"WAVE_3","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T14:00:58.995Z","agentId":"P-49","wave":0,"step":"PROJECTS","action":"CREATION_SUCCESS","result":"SUCCESS","details":{"created":10,"plaid":false}}
+{"ts":"2026-08-18T14:00:58.995Z","agentId":"P-49","wave":3,"step":"WAVE_3","action":"COMPLETE","result":"SUCCESS","details":{"created":10}}
+{"ts":"2026-08-18T14:00:59.083Z","agentId":"P-49","wave":4,"step":"WAVE_4","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T14:00:59.084Z","agentId":"P-49","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-20","to":"P-07","type":"Hard Money Loan"}}
+{"ts":"2026-08-18T14:00:59.084Z","agentId":"P-49","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-21","to":"P-15","type":"BRRRR Bridge Loan"}}
+{"ts":"2026-08-18T14:00:59.084Z","agentId":"P-49","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-22","to":"P-16","type":"BRRRR Bridge Loan"}}
+{"ts":"2026-08-18T14:00:59.085Z","agentId":"P-49","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-23","to":"P-19","type":"BRRRR Bridge Loan"}}
+{"ts":"2026-08-18T14:00:59.085Z","agentId":"P-49","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-60","to":"P-50","type":"Seasoned Note Sale"}}
+{"ts":"2026-08-18T14:00:59.085Z","agentId":"P-49","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-50"}}
+{"ts":"2026-08-18T14:00:59.085Z","agentId":"P-49","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-07"}}
+{"ts":"2026-08-18T14:00:59.085Z","agentId":"P-49","wave":4,"step":"WAVE_4","action":"COMPLETE","result":"SUCCESS","details":{"interactions":5,"invites":2}}
+{"ts":"2026-08-18T14:00:59.116Z","agentId":"P-49","wave":5,"step":"WAVE_5","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T14:00:59.117Z","agentId":"P-49","wave":5,"step":"WAVE_5","action":"COMPLETE","result":"SUCCESS","details":{"reportPath":"/Users/yvesdarbouze/Documents/PaperWorking/artifacts/persona-swarm/reports/P-49-experience-report.md"}}
+{"ts":"2026-08-18T14:01:09.243Z","agentId":"P-49","wave":1,"step":"WAVE_1","action":"START","result":"SUCCESS","details":{"email":"agent49.elaine.zhu@paperworking-test.dev"}}
+{"ts":"2026-08-18T14:01:09.244Z","agentId":"P-49","wave":0,"step":"SIGNUP","action":"SUCCESS_CREATED","result":"SUCCESS","details":{"uid":"uid_persona_p49","email":"agent49.elaine.zhu@paperworking-test.dev","name":"Elaine Zhu","entity":"Zhu Swift Funding LLC"}}
+{"ts":"2026-08-18T14:01:09.245Z","agentId":"P-49","wave":1,"step":"WAVE_1","action":"COMPLETE","result":"SUCCESS","details":{"uid":"uid_persona_p49"}}
+{"ts":"2026-08-18T14:01:09.275Z","agentId":"P-49","wave":2,"step":"WAVE_2","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T14:01:09.275Z","agentId":"P-49","wave":0,"step":"BILLING","action":"SUBSCRIPTION_SUCCESS","result":"SUCCESS","details":{"plan":"Individual","stripeCustomerId":"cus_test_swarm_p-49","stripeSubscriptionId":"sub_test_swarm_p-49","cardLastFour":"4242","cardBrand":"visa"}}
+{"ts":"2026-08-18T14:01:09.275Z","agentId":"P-49","wave":2,"step":"WAVE_2","action":"COMPLETE","result":"SUCCESS","details":{"plan":"Individual"}}
+{"ts":"2026-08-18T14:01:09.409Z","agentId":"P-49","wave":3,"step":"WAVE_3","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T14:01:09.411Z","agentId":"P-49","wave":0,"step":"PROJECTS","action":"CREATION_SUCCESS","result":"SUCCESS","details":{"created":10,"plaid":false}}
+{"ts":"2026-08-18T14:01:09.411Z","agentId":"P-49","wave":3,"step":"WAVE_3","action":"COMPLETE","result":"SUCCESS","details":{"created":10}}
+{"ts":"2026-08-18T14:01:09.480Z","agentId":"P-49","wave":4,"step":"WAVE_4","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T14:01:09.481Z","agentId":"P-49","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-20","to":"P-07","type":"Hard Money Loan"}}
+{"ts":"2026-08-18T14:01:09.482Z","agentId":"P-49","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-21","to":"P-15","type":"BRRRR Bridge Loan"}}
+{"ts":"2026-08-18T14:01:09.482Z","agentId":"P-49","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-22","to":"P-16","type":"BRRRR Bridge Loan"}}
+{"ts":"2026-08-18T14:01:09.482Z","agentId":"P-49","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-23","to":"P-19","type":"BRRRR Bridge Loan"}}
+{"ts":"2026-08-18T14:01:09.483Z","agentId":"P-49","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-60","to":"P-50","type":"Seasoned Note Sale"}}
+{"ts":"2026-08-18T14:01:09.483Z","agentId":"P-49","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-50"}}
+{"ts":"2026-08-18T14:01:09.483Z","agentId":"P-49","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-07"}}
+{"ts":"2026-08-18T14:01:09.483Z","agentId":"P-49","wave":4,"step":"WAVE_4","action":"COMPLETE","result":"SUCCESS","details":{"interactions":5,"invites":2}}
+{"ts":"2026-08-18T14:01:09.516Z","agentId":"P-49","wave":5,"step":"WAVE_5","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T14:01:09.516Z","agentId":"P-49","wave":5,"step":"WAVE_5","action":"COMPLETE","result":"SUCCESS","details":{"reportPath":"/Users/yvesdarbouze/Documents/PaperWorking/artifacts/persona-swarm/reports/P-49-experience-report.md"}}
+{"ts":"2026-08-18T14:01:24.943Z","agentId":"P-49","wave":1,"step":"WAVE_1","action":"START","result":"SUCCESS","details":{"email":"agent49.elaine.zhu@paperworking-test.dev"}}
+{"ts":"2026-08-18T14:01:24.943Z","agentId":"P-49","wave":0,"step":"SIGNUP","action":"SUCCESS_CREATED","result":"SUCCESS","details":{"uid":"uid_persona_p49","email":"agent49.elaine.zhu@paperworking-test.dev","name":"Elaine Zhu","entity":"Zhu Swift Funding LLC"}}
+{"ts":"2026-08-18T14:01:24.943Z","agentId":"P-49","wave":1,"step":"WAVE_1","action":"COMPLETE","result":"SUCCESS","details":{"uid":"uid_persona_p49"}}
+{"ts":"2026-08-18T14:01:24.982Z","agentId":"P-49","wave":2,"step":"WAVE_2","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T14:01:24.983Z","agentId":"P-49","wave":0,"step":"BILLING","action":"SUBSCRIPTION_SUCCESS","result":"SUCCESS","details":{"plan":"Individual","stripeCustomerId":"cus_test_swarm_p-49","stripeSubscriptionId":"sub_test_swarm_p-49","cardLastFour":"4242","cardBrand":"visa"}}
+{"ts":"2026-08-18T14:01:24.983Z","agentId":"P-49","wave":2,"step":"WAVE_2","action":"COMPLETE","result":"SUCCESS","details":{"plan":"Individual"}}
+{"ts":"2026-08-18T14:01:25.145Z","agentId":"P-49","wave":3,"step":"WAVE_3","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T14:01:25.150Z","agentId":"P-49","wave":0,"step":"PROJECTS","action":"CREATION_SUCCESS","result":"SUCCESS","details":{"created":10,"plaid":false}}
+{"ts":"2026-08-18T14:01:25.151Z","agentId":"P-49","wave":3,"step":"WAVE_3","action":"COMPLETE","result":"SUCCESS","details":{"created":10}}
+{"ts":"2026-08-18T14:01:25.239Z","agentId":"P-49","wave":4,"step":"WAVE_4","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T14:01:25.240Z","agentId":"P-49","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-20","to":"P-07","type":"Hard Money Loan"}}
+{"ts":"2026-08-18T14:01:25.241Z","agentId":"P-49","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-21","to":"P-15","type":"BRRRR Bridge Loan"}}
+{"ts":"2026-08-18T14:01:25.241Z","agentId":"P-49","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-22","to":"P-16","type":"BRRRR Bridge Loan"}}
+{"ts":"2026-08-18T14:01:25.242Z","agentId":"P-49","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-23","to":"P-19","type":"BRRRR Bridge Loan"}}
+{"ts":"2026-08-18T14:01:25.242Z","agentId":"P-49","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-60","to":"P-50","type":"Seasoned Note Sale"}}
+{"ts":"2026-08-18T14:01:25.243Z","agentId":"P-49","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-50"}}
+{"ts":"2026-08-18T14:01:25.243Z","agentId":"P-49","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-07"}}
+{"ts":"2026-08-18T14:01:25.243Z","agentId":"P-49","wave":4,"step":"WAVE_4","action":"COMPLETE","result":"SUCCESS","details":{"interactions":5,"invites":2}}
+{"ts":"2026-08-18T14:01:25.298Z","agentId":"P-49","wave":5,"step":"WAVE_5","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T14:01:25.298Z","agentId":"P-49","wave":5,"step":"WAVE_5","action":"COMPLETE","result":"SUCCESS","details":{"reportPath":"/Users/yvesdarbouze/Documents/PaperWorking/artifacts/persona-swarm/reports/P-49-experience-report.md"}}
+{"ts":"2026-08-18T14:01:25.653Z","agentId":"P-49","wave":1,"step":"WAVE_1","action":"START","result":"SUCCESS","details":{"email":"agent49.elaine.zhu@paperworking-test.dev"}}
+{"ts":"2026-08-18T14:01:25.654Z","agentId":"P-49","wave":0,"step":"SIGNUP","action":"SUCCESS_CREATED","result":"SUCCESS","details":{"uid":"uid_persona_p49","email":"agent49.elaine.zhu@paperworking-test.dev","name":"Elaine Zhu","entity":"Zhu Swift Funding LLC"}}
+{"ts":"2026-08-18T14:01:25.654Z","agentId":"P-49","wave":1,"step":"WAVE_1","action":"COMPLETE","result":"SUCCESS","details":{"uid":"uid_persona_p49"}}
+{"ts":"2026-08-18T14:01:25.733Z","agentId":"P-49","wave":2,"step":"WAVE_2","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T14:01:25.733Z","agentId":"P-49","wave":0,"step":"BILLING","action":"SUBSCRIPTION_SUCCESS","result":"SUCCESS","details":{"plan":"Individual","stripeCustomerId":"cus_test_swarm_p-49","stripeSubscriptionId":"sub_test_swarm_p-49","cardLastFour":"4242","cardBrand":"visa"}}
+{"ts":"2026-08-18T14:01:25.733Z","agentId":"P-49","wave":2,"step":"WAVE_2","action":"COMPLETE","result":"SUCCESS","details":{"plan":"Individual"}}
+{"ts":"2026-08-18T14:01:25.915Z","agentId":"P-49","wave":3,"step":"WAVE_3","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T14:01:25.917Z","agentId":"P-49","wave":0,"step":"PROJECTS","action":"CREATION_SUCCESS","result":"SUCCESS","details":{"created":10,"plaid":false}}
+{"ts":"2026-08-18T14:01:25.917Z","agentId":"P-49","wave":3,"step":"WAVE_3","action":"COMPLETE","result":"SUCCESS","details":{"created":10}}
+{"ts":"2026-08-18T14:01:26.039Z","agentId":"P-49","wave":4,"step":"WAVE_4","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T14:01:26.040Z","agentId":"P-49","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-20","to":"P-07","type":"Hard Money Loan"}}
+{"ts":"2026-08-18T14:01:26.041Z","agentId":"P-49","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-21","to":"P-15","type":"BRRRR Bridge Loan"}}
+{"ts":"2026-08-18T14:01:26.041Z","agentId":"P-49","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-22","to":"P-16","type":"BRRRR Bridge Loan"}}
+{"ts":"2026-08-18T14:01:26.042Z","agentId":"P-49","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-23","to":"P-19","type":"BRRRR Bridge Loan"}}
+{"ts":"2026-08-18T14:01:26.043Z","agentId":"P-49","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-60","to":"P-50","type":"Seasoned Note Sale"}}
+{"ts":"2026-08-18T14:01:26.044Z","agentId":"P-49","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-50"}}
+{"ts":"2026-08-18T14:01:26.045Z","agentId":"P-49","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-07"}}
+{"ts":"2026-08-18T14:01:26.045Z","agentId":"P-49","wave":4,"step":"WAVE_4","action":"COMPLETE","result":"SUCCESS","details":{"interactions":5,"invites":2}}
+{"ts":"2026-08-18T14:01:26.084Z","agentId":"P-49","wave":5,"step":"WAVE_5","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T14:01:26.085Z","agentId":"P-49","wave":5,"step":"WAVE_5","action":"COMPLETE","result":"SUCCESS","details":{"reportPath":"/Users/yvesdarbouze/Documents/PaperWorking/artifacts/persona-swarm/reports/P-49-experience-report.md"}}
+{"ts":"2026-08-18T14:01:36.860Z","agentId":"P-49","wave":1,"step":"WAVE_1","action":"START","result":"SUCCESS","details":{"email":"agent49.elaine.zhu@paperworking-test.dev"}}
+{"ts":"2026-08-18T14:01:38.065Z","agentId":"P-49","wave":1,"step":"WAVE_1","action":"START","result":"SUCCESS","details":{"email":"agent49.elaine.zhu@paperworking-test.dev"}}
+{"ts":"2026-08-18T14:01:38.862Z","agentId":"P-49","wave":0,"step":"SIGNUP","action":"SUCCESS_CREATED","result":"SUCCESS","details":{"uid":"uid_persona_p49","email":"agent49.elaine.zhu@paperworking-test.dev","name":"Elaine Zhu","entity":"Zhu Swift Funding LLC"}}
+{"ts":"2026-08-18T14:01:38.863Z","agentId":"P-49","wave":1,"step":"WAVE_1","action":"COMPLETE","result":"SUCCESS","details":{"uid":"uid_persona_p49"}}
+{"ts":"2026-08-18T14:01:40.087Z","agentId":"P-49","wave":0,"step":"SIGNUP","action":"SUCCESS_CREATED","result":"SUCCESS","details":{"uid":"uid_persona_p49","email":"agent49.elaine.zhu@paperworking-test.dev","name":"Elaine Zhu","entity":"Zhu Swift Funding LLC"}}
+{"ts":"2026-08-18T14:01:40.091Z","agentId":"P-49","wave":1,"step":"WAVE_1","action":"COMPLETE","result":"SUCCESS","details":{"uid":"uid_persona_p49"}}
+{"ts":"2026-08-18T14:16:29.161Z","agentId":"P-49","wave":1,"step":"WAVE_1","action":"START","result":"SUCCESS","details":{"email":"agent49.elaine.zhu@paperworking-test.dev"}}
+{"ts":"2026-08-18T14:16:29.161Z","agentId":"P-49","wave":1,"step":"WAVE_1","action":"START","result":"SUCCESS","details":{"email":"agent49.elaine.zhu@paperworking-test.dev"}}
+{"ts":"2026-08-18T14:16:29.163Z","agentId":"P-49","wave":0,"step":"SIGNUP","action":"SUCCESS_CREATED","result":"SUCCESS","details":{"uid":"uid_persona_p49","email":"agent49.elaine.zhu@paperworking-test.dev","name":"Elaine Zhu","entity":"Zhu Swift Funding LLC"}}
+{"ts":"2026-08-18T14:16:29.163Z","agentId":"P-49","wave":1,"step":"WAVE_1","action":"COMPLETE","result":"SUCCESS","details":{"uid":"uid_persona_p49"}}
+{"ts":"2026-08-18T14:16:29.163Z","agentId":"P-49","wave":0,"step":"SIGNUP","action":"SUCCESS_CREATED","result":"SUCCESS","details":{"uid":"uid_persona_p49","email":"agent49.elaine.zhu@paperworking-test.dev","name":"Elaine Zhu","entity":"Zhu Swift Funding LLC"}}
+{"ts":"2026-08-18T14:16:29.163Z","agentId":"P-49","wave":1,"step":"WAVE_1","action":"COMPLETE","result":"SUCCESS","details":{"uid":"uid_persona_p49"}}
+{"ts":"2026-08-18T14:16:29.203Z","agentId":"P-49","wave":2,"step":"WAVE_2","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T14:16:29.204Z","agentId":"P-49","wave":0,"step":"BILLING","action":"SUBSCRIPTION_SUCCESS","result":"SUCCESS","details":{"plan":"Individual","stripeCustomerId":"cus_test_swarm_p-49","stripeSubscriptionId":"sub_test_swarm_p-49","cardLastFour":"4242","cardBrand":"visa"}}
+{"ts":"2026-08-18T14:16:29.204Z","agentId":"P-49","wave":2,"step":"WAVE_2","action":"COMPLETE","result":"SUCCESS","details":{"plan":"Individual"}}
+{"ts":"2026-08-18T14:16:29.204Z","agentId":"P-49","wave":2,"step":"WAVE_2","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T14:16:29.204Z","agentId":"P-49","wave":0,"step":"BILLING","action":"SUBSCRIPTION_SUCCESS","result":"SUCCESS","details":{"plan":"Individual","stripeCustomerId":"cus_test_swarm_p-49","stripeSubscriptionId":"sub_test_swarm_p-49","cardLastFour":"4242","cardBrand":"visa"}}
+{"ts":"2026-08-18T14:16:29.204Z","agentId":"P-49","wave":2,"step":"WAVE_2","action":"COMPLETE","result":"SUCCESS","details":{"plan":"Individual"}}
+{"ts":"2026-08-18T14:16:29.378Z","agentId":"P-49","wave":3,"step":"WAVE_3","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T14:16:29.380Z","agentId":"P-49","wave":0,"step":"PROJECTS","action":"CREATION_SUCCESS","result":"SUCCESS","details":{"created":10,"plaid":false}}
+{"ts":"2026-08-18T14:16:29.380Z","agentId":"P-49","wave":3,"step":"WAVE_3","action":"COMPLETE","result":"SUCCESS","details":{"created":10}}
+{"ts":"2026-08-18T14:16:29.383Z","agentId":"P-49","wave":3,"step":"WAVE_3","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T14:16:29.385Z","agentId":"P-49","wave":0,"step":"PROJECTS","action":"CREATION_SUCCESS","result":"SUCCESS","details":{"created":10,"plaid":false}}
+{"ts":"2026-08-18T14:16:29.385Z","agentId":"P-49","wave":3,"step":"WAVE_3","action":"COMPLETE","result":"SUCCESS","details":{"created":10}}
+{"ts":"2026-08-18T14:16:29.489Z","agentId":"P-49","wave":4,"step":"WAVE_4","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T14:16:29.490Z","agentId":"P-49","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-20","to":"P-07","type":"Hard Money Loan"}}
+{"ts":"2026-08-18T14:16:29.491Z","agentId":"P-49","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-21","to":"P-15","type":"BRRRR Bridge Loan"}}
+{"ts":"2026-08-18T14:16:29.491Z","agentId":"P-49","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-22","to":"P-16","type":"BRRRR Bridge Loan"}}
+{"ts":"2026-08-18T14:16:29.492Z","agentId":"P-49","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-23","to":"P-19","type":"BRRRR Bridge Loan"}}
+{"ts":"2026-08-18T14:16:29.492Z","agentId":"P-49","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-60","to":"P-50","type":"Seasoned Note Sale"}}
+{"ts":"2026-08-18T14:16:29.493Z","agentId":"P-49","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-50"}}
+{"ts":"2026-08-18T14:16:29.494Z","agentId":"P-49","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-07"}}
+{"ts":"2026-08-18T14:16:29.495Z","agentId":"P-49","wave":4,"step":"WAVE_4","action":"COMPLETE","result":"SUCCESS","details":{"interactions":5,"invites":2}}
+{"ts":"2026-08-18T14:16:29.510Z","agentId":"P-49","wave":4,"step":"WAVE_4","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T14:16:29.511Z","agentId":"P-49","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-20","to":"P-07","type":"Hard Money Loan"}}
+{"ts":"2026-08-18T14:16:29.511Z","agentId":"P-49","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-21","to":"P-15","type":"BRRRR Bridge Loan"}}
+{"ts":"2026-08-18T14:16:29.511Z","agentId":"P-49","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-22","to":"P-16","type":"BRRRR Bridge Loan"}}
+{"ts":"2026-08-18T14:16:29.512Z","agentId":"P-49","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-23","to":"P-19","type":"BRRRR Bridge Loan"}}
+{"ts":"2026-08-18T14:16:29.512Z","agentId":"P-49","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-60","to":"P-50","type":"Seasoned Note Sale"}}
+{"ts":"2026-08-18T14:16:29.512Z","agentId":"P-49","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-50"}}
+{"ts":"2026-08-18T14:16:29.512Z","agentId":"P-49","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-07"}}
+{"ts":"2026-08-18T14:16:29.512Z","agentId":"P-49","wave":4,"step":"WAVE_4","action":"COMPLETE","result":"SUCCESS","details":{"interactions":5,"invites":2}}
+{"ts":"2026-08-18T14:16:29.554Z","agentId":"P-49","wave":5,"step":"WAVE_5","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T14:16:29.554Z","agentId":"P-49","wave":5,"step":"WAVE_5","action":"COMPLETE","result":"SUCCESS","details":{"reportPath":"/Users/yvesdarbouze/Documents/PaperWorking/artifacts/persona-swarm/reports/P-49-experience-report.md"}}
+{"ts":"2026-08-18T14:16:29.568Z","agentId":"P-49","wave":5,"step":"WAVE_5","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T14:16:29.569Z","agentId":"P-49","wave":5,"step":"WAVE_5","action":"COMPLETE","result":"SUCCESS","details":{"reportPath":"/Users/yvesdarbouze/Documents/PaperWorking/artifacts/persona-swarm/reports/P-49-experience-report.md"}}
+{"ts":"2026-08-18T15:27:30.190Z","agentId":"P-49","wave":1,"step":"WAVE_1","action":"START","result":"SUCCESS","details":{"email":"agent49.elaine.zhu@paperworking-test.dev"}}
+{"ts":"2026-08-18T15:27:30.192Z","agentId":"P-49","wave":1,"step":"WAVE_1","action":"START","result":"SUCCESS","details":{"email":"agent49.elaine.zhu@paperworking-test.dev"}}
+{"ts":"2026-08-18T15:27:30.192Z","agentId":"P-49","wave":0,"step":"SIGNUP","action":"SUCCESS_CREATED","result":"SUCCESS","details":{"uid":"uid_persona_p49","email":"agent49.elaine.zhu@paperworking-test.dev","name":"Elaine Zhu","entity":"Zhu Swift Funding LLC"}}
+{"ts":"2026-08-18T15:27:30.192Z","agentId":"P-49","wave":1,"step":"WAVE_1","action":"COMPLETE","result":"SUCCESS","details":{"uid":"uid_persona_p49"}}
+{"ts":"2026-08-18T15:27:30.193Z","agentId":"P-49","wave":0,"step":"SIGNUP","action":"SUCCESS_CREATED","result":"SUCCESS","details":{"uid":"uid_persona_p49","email":"agent49.elaine.zhu@paperworking-test.dev","name":"Elaine Zhu","entity":"Zhu Swift Funding LLC"}}
+{"ts":"2026-08-18T15:27:30.193Z","agentId":"P-49","wave":1,"step":"WAVE_1","action":"COMPLETE","result":"SUCCESS","details":{"uid":"uid_persona_p49"}}
+{"ts":"2026-08-18T15:27:30.331Z","agentId":"P-49","wave":2,"step":"WAVE_2","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T15:27:30.332Z","agentId":"P-49","wave":0,"step":"BILLING","action":"SUBSCRIPTION_SUCCESS","result":"SUCCESS","details":{"plan":"Individual","stripeCustomerId":"cus_test_swarm_p-49","stripeSubscriptionId":"sub_test_swarm_p-49","cardLastFour":"4242","cardBrand":"visa"}}
+{"ts":"2026-08-18T15:27:30.332Z","agentId":"P-49","wave":2,"step":"WAVE_2","action":"COMPLETE","result":"SUCCESS","details":{"plan":"Individual"}}
+{"ts":"2026-08-18T15:27:30.333Z","agentId":"P-49","wave":2,"step":"WAVE_2","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T15:27:30.333Z","agentId":"P-49","wave":0,"step":"BILLING","action":"SUBSCRIPTION_SUCCESS","result":"SUCCESS","details":{"plan":"Individual","stripeCustomerId":"cus_test_swarm_p-49","stripeSubscriptionId":"sub_test_swarm_p-49","cardLastFour":"4242","cardBrand":"visa"}}
+{"ts":"2026-08-18T15:27:30.334Z","agentId":"P-49","wave":2,"step":"WAVE_2","action":"COMPLETE","result":"SUCCESS","details":{"plan":"Individual"}}
+{"ts":"2026-08-18T15:27:30.688Z","agentId":"P-49","wave":3,"step":"WAVE_3","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T15:27:30.700Z","agentId":"P-49","wave":0,"step":"PROJECTS","action":"CREATION_SUCCESS","result":"SUCCESS","details":{"created":10,"plaid":false}}
+{"ts":"2026-08-18T15:27:30.700Z","agentId":"P-49","wave":3,"step":"WAVE_3","action":"COMPLETE","result":"SUCCESS","details":{"created":10}}
+{"ts":"2026-08-18T15:27:30.741Z","agentId":"P-49","wave":3,"step":"WAVE_3","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T15:27:30.743Z","agentId":"P-49","wave":0,"step":"PROJECTS","action":"CREATION_SUCCESS","result":"SUCCESS","details":{"created":10,"plaid":false}}
+{"ts":"2026-08-18T15:27:30.743Z","agentId":"P-49","wave":3,"step":"WAVE_3","action":"COMPLETE","result":"SUCCESS","details":{"created":10}}
+{"ts":"2026-08-18T15:27:30.839Z","agentId":"P-49","wave":4,"step":"WAVE_4","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T15:27:30.840Z","agentId":"P-49","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-20","to":"P-07","type":"Hard Money Loan"}}
+{"ts":"2026-08-18T15:27:30.841Z","agentId":"P-49","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-21","to":"P-15","type":"BRRRR Bridge Loan"}}
+{"ts":"2026-08-18T15:27:30.841Z","agentId":"P-49","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-22","to":"P-16","type":"BRRRR Bridge Loan"}}
+{"ts":"2026-08-18T15:27:30.841Z","agentId":"P-49","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-23","to":"P-19","type":"BRRRR Bridge Loan"}}
+{"ts":"2026-08-18T15:27:30.842Z","agentId":"P-49","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-60","to":"P-50","type":"Seasoned Note Sale"}}
+{"ts":"2026-08-18T15:27:30.842Z","agentId":"P-49","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-50"}}
+{"ts":"2026-08-18T15:27:30.842Z","agentId":"P-49","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-07"}}
+{"ts":"2026-08-18T15:27:30.843Z","agentId":"P-49","wave":4,"step":"WAVE_4","action":"COMPLETE","result":"SUCCESS","details":{"interactions":5,"invites":2}}
+{"ts":"2026-08-18T15:27:30.887Z","agentId":"P-49","wave":4,"step":"WAVE_4","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T15:27:30.888Z","agentId":"P-49","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-20","to":"P-07","type":"Hard Money Loan"}}
+{"ts":"2026-08-18T15:27:30.888Z","agentId":"P-49","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-21","to":"P-15","type":"BRRRR Bridge Loan"}}
+{"ts":"2026-08-18T15:27:30.889Z","agentId":"P-49","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-22","to":"P-16","type":"BRRRR Bridge Loan"}}
+{"ts":"2026-08-18T15:27:30.889Z","agentId":"P-49","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-23","to":"P-19","type":"BRRRR Bridge Loan"}}
+{"ts":"2026-08-18T15:27:30.890Z","agentId":"P-49","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-60","to":"P-50","type":"Seasoned Note Sale"}}
+{"ts":"2026-08-18T15:27:30.890Z","agentId":"P-49","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-50"}}
+{"ts":"2026-08-18T15:27:30.890Z","agentId":"P-49","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-07"}}
+{"ts":"2026-08-18T15:27:30.890Z","agentId":"P-49","wave":4,"step":"WAVE_4","action":"COMPLETE","result":"SUCCESS","details":{"interactions":5,"invites":2}}
+{"ts":"2026-08-18T15:27:30.914Z","agentId":"P-49","wave":5,"step":"WAVE_5","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T15:27:30.915Z","agentId":"P-49","wave":5,"step":"WAVE_5","action":"COMPLETE","result":"SUCCESS","details":{"reportPath":"/Users/yvesdarbouze/Documents/PaperWorking/artifacts/persona-swarm/reports/P-49-experience-report.md"}}
+{"ts":"2026-08-18T15:27:30.948Z","agentId":"P-49","wave":5,"step":"WAVE_5","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T15:27:30.948Z","agentId":"P-49","wave":5,"step":"WAVE_5","action":"COMPLETE","result":"SUCCESS","details":{"reportPath":"/Users/yvesdarbouze/Documents/PaperWorking/artifacts/persona-swarm/reports/P-49-experience-report.md"}}
+{"ts":"2026-08-18T15:28:00.347Z","agentId":"P-49","wave":1,"step":"WAVE_1","action":"START","result":"SUCCESS","details":{"email":"agent49.elaine.zhu@paperworking-test.dev"}}
+{"ts":"2026-08-18T15:28:00.348Z","agentId":"P-49","wave":1,"step":"WAVE_1","action":"START","result":"SUCCESS","details":{"email":"agent49.elaine.zhu@paperworking-test.dev"}}
+{"ts":"2026-08-18T15:28:00.349Z","agentId":"P-49","wave":0,"step":"SIGNUP","action":"SUCCESS_CREATED","result":"SUCCESS","details":{"uid":"uid_persona_p49","email":"agent49.elaine.zhu@paperworking-test.dev","name":"Elaine Zhu","entity":"Zhu Swift Funding LLC"}}
+{"ts":"2026-08-18T15:28:00.349Z","agentId":"P-49","wave":0,"step":"SIGNUP","action":"SUCCESS_CREATED","result":"SUCCESS","details":{"uid":"uid_persona_p49","email":"agent49.elaine.zhu@paperworking-test.dev","name":"Elaine Zhu","entity":"Zhu Swift Funding LLC"}}
+{"ts":"2026-08-18T15:28:00.349Z","agentId":"P-49","wave":1,"step":"WAVE_1","action":"COMPLETE","result":"SUCCESS","details":{"uid":"uid_persona_p49"}}
+{"ts":"2026-08-18T15:28:00.349Z","agentId":"P-49","wave":1,"step":"WAVE_1","action":"COMPLETE","result":"SUCCESS","details":{"uid":"uid_persona_p49"}}
+{"ts":"2026-08-18T15:28:00.394Z","agentId":"P-49","wave":2,"step":"WAVE_2","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T15:28:00.395Z","agentId":"P-49","wave":0,"step":"BILLING","action":"SUBSCRIPTION_SUCCESS","result":"SUCCESS","details":{"plan":"Individual","stripeCustomerId":"cus_test_swarm_p-49","stripeSubscriptionId":"sub_test_swarm_p-49","cardLastFour":"4242","cardBrand":"visa"}}
+{"ts":"2026-08-18T15:28:00.395Z","agentId":"P-49","wave":2,"step":"WAVE_2","action":"COMPLETE","result":"SUCCESS","details":{"plan":"Individual"}}
+{"ts":"2026-08-18T15:28:00.399Z","agentId":"P-49","wave":2,"step":"WAVE_2","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T15:28:00.400Z","agentId":"P-49","wave":0,"step":"BILLING","action":"SUBSCRIPTION_SUCCESS","result":"SUCCESS","details":{"plan":"Individual","stripeCustomerId":"cus_test_swarm_p-49","stripeSubscriptionId":"sub_test_swarm_p-49","cardLastFour":"4242","cardBrand":"visa"}}
+{"ts":"2026-08-18T15:28:00.400Z","agentId":"P-49","wave":2,"step":"WAVE_2","action":"COMPLETE","result":"SUCCESS","details":{"plan":"Individual"}}
+{"ts":"2026-08-18T15:28:00.670Z","agentId":"P-49","wave":3,"step":"WAVE_3","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T15:28:00.672Z","agentId":"P-49","wave":3,"step":"WAVE_3","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T15:28:00.673Z","agentId":"P-49","wave":0,"step":"PROJECTS","action":"CREATION_SUCCESS","result":"SUCCESS","details":{"created":10,"plaid":false}}
+{"ts":"2026-08-18T15:28:00.673Z","agentId":"P-49","wave":3,"step":"WAVE_3","action":"COMPLETE","result":"SUCCESS","details":{"created":10}}
+{"ts":"2026-08-18T15:28:00.675Z","agentId":"P-49","wave":0,"step":"PROJECTS","action":"CREATION_SUCCESS","result":"SUCCESS","details":{"created":10,"plaid":false}}
+{"ts":"2026-08-18T15:28:00.675Z","agentId":"P-49","wave":3,"step":"WAVE_3","action":"COMPLETE","result":"SUCCESS","details":{"created":10}}
+{"ts":"2026-08-18T15:28:00.802Z","agentId":"P-49","wave":4,"step":"WAVE_4","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T15:28:00.802Z","agentId":"P-49","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-20","to":"P-07","type":"Hard Money Loan"}}
+{"ts":"2026-08-18T15:28:00.803Z","agentId":"P-49","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-21","to":"P-15","type":"BRRRR Bridge Loan"}}
+{"ts":"2026-08-18T15:28:00.803Z","agentId":"P-49","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-22","to":"P-16","type":"BRRRR Bridge Loan"}}
+{"ts":"2026-08-18T15:28:00.804Z","agentId":"P-49","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-23","to":"P-19","type":"BRRRR Bridge Loan"}}
+{"ts":"2026-08-18T15:28:00.805Z","agentId":"P-49","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-60","to":"P-50","type":"Seasoned Note Sale"}}
+{"ts":"2026-08-18T15:28:00.805Z","agentId":"P-49","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-50"}}
+{"ts":"2026-08-18T15:28:00.805Z","agentId":"P-49","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-07"}}
+{"ts":"2026-08-18T15:28:00.805Z","agentId":"P-49","wave":4,"step":"WAVE_4","action":"COMPLETE","result":"SUCCESS","details":{"interactions":5,"invites":2}}
+{"ts":"2026-08-18T15:28:00.825Z","agentId":"P-49","wave":4,"step":"WAVE_4","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T15:28:00.825Z","agentId":"P-49","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-20","to":"P-07","type":"Hard Money Loan"}}
+{"ts":"2026-08-18T15:28:00.825Z","agentId":"P-49","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-21","to":"P-15","type":"BRRRR Bridge Loan"}}
+{"ts":"2026-08-18T15:28:00.826Z","agentId":"P-49","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-22","to":"P-16","type":"BRRRR Bridge Loan"}}
+{"ts":"2026-08-18T15:28:00.827Z","agentId":"P-49","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-23","to":"P-19","type":"BRRRR Bridge Loan"}}
+{"ts":"2026-08-18T15:28:00.827Z","agentId":"P-49","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-60","to":"P-50","type":"Seasoned Note Sale"}}
+{"ts":"2026-08-18T15:28:00.827Z","agentId":"P-49","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-50"}}
+{"ts":"2026-08-18T15:28:00.828Z","agentId":"P-49","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-07"}}
+{"ts":"2026-08-18T15:28:00.828Z","agentId":"P-49","wave":4,"step":"WAVE_4","action":"COMPLETE","result":"SUCCESS","details":{"interactions":5,"invites":2}}
+{"ts":"2026-08-18T15:28:00.857Z","agentId":"P-49","wave":5,"step":"WAVE_5","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T15:28:00.857Z","agentId":"P-49","wave":5,"step":"WAVE_5","action":"COMPLETE","result":"SUCCESS","details":{"reportPath":"/Users/yvesdarbouze/Documents/PaperWorking/artifacts/persona-swarm/reports/P-49-experience-report.md"}}
+{"ts":"2026-08-18T15:28:00.885Z","agentId":"P-49","wave":5,"step":"WAVE_5","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T15:28:00.885Z","agentId":"P-49","wave":5,"step":"WAVE_5","action":"COMPLETE","result":"SUCCESS","details":{"reportPath":"/Users/yvesdarbouze/Documents/PaperWorking/artifacts/persona-swarm/reports/P-49-experience-report.md"}}
+{"ts":"2026-08-18T15:56:57.963Z","agentId":"P-49","wave":1,"step":"WAVE_1","action":"START","result":"SUCCESS","details":{"email":"agent49.elaine.zhu@paperworking-test.dev"}}
+{"ts":"2026-08-18T15:56:58.099Z","agentId":"P-49","wave":1,"step":"WAVE_1","action":"START","result":"SUCCESS","details":{"email":"agent49.elaine.zhu@paperworking-test.dev"}}
+{"ts":"2026-08-18T15:56:59.964Z","agentId":"P-49","wave":0,"step":"SIGNUP","action":"SUCCESS_CREATED","result":"SUCCESS","details":{"uid":"uid_persona_p49","email":"agent49.elaine.zhu@paperworking-test.dev","name":"Elaine Zhu","entity":"Zhu Swift Funding LLC"}}
+{"ts":"2026-08-18T15:56:59.965Z","agentId":"P-49","wave":1,"step":"WAVE_1","action":"COMPLETE","result":"SUCCESS","details":{"uid":"uid_persona_p49"}}
+{"ts":"2026-08-18T15:57:00.110Z","agentId":"P-49","wave":0,"step":"SIGNUP","action":"SUCCESS_CREATED","result":"SUCCESS","details":{"uid":"uid_persona_p49","email":"agent49.elaine.zhu@paperworking-test.dev","name":"Elaine Zhu","entity":"Zhu Swift Funding LLC"}}
+{"ts":"2026-08-18T15:57:00.110Z","agentId":"P-49","wave":1,"step":"WAVE_1","action":"COMPLETE","result":"SUCCESS","details":{"uid":"uid_persona_p49"}}
+{"ts":"2026-08-18T15:57:17.841Z","agentId":"P-49","wave":2,"step":"WAVE_2","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T15:57:17.841Z","agentId":"P-49","wave":2,"step":"WAVE_2","action":"EXCEPTION","result":"SUCCESS","details":{"error":"CRITICAL SAFETY REFUSAL: Invalid or missing Stripe secret test key. Key must start with \"sk_test_\". Received: \"...\""}}
+{"ts":"2026-08-18T15:57:17.897Z","agentId":"P-49","wave":2,"step":"WAVE_2","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T15:57:17.898Z","agentId":"P-49","wave":2,"step":"WAVE_2","action":"EXCEPTION","result":"SUCCESS","details":{"error":"CRITICAL SAFETY REFUSAL: Invalid or missing Stripe secret test key. Key must start with \"sk_test_\". Received: \"...\""}}
+{"ts":"2026-08-18T15:57:17.905Z","agentId":"P-49","wave":3,"step":"WAVE_3","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T15:57:17.905Z","agentId":"P-49","wave":0,"step":"PROJECTS","action":"CREATION_SUCCESS","result":"SUCCESS","details":{"created":10,"plaid":false}}
+{"ts":"2026-08-18T15:57:17.905Z","agentId":"P-49","wave":3,"step":"WAVE_3","action":"COMPLETE","result":"SUCCESS","details":{"created":10}}
+{"ts":"2026-08-18T15:57:17.949Z","agentId":"P-49","wave":3,"step":"WAVE_3","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T15:57:17.949Z","agentId":"P-49","wave":0,"step":"PROJECTS","action":"CREATION_SUCCESS","result":"SUCCESS","details":{"created":10,"plaid":false}}
+{"ts":"2026-08-18T15:57:17.949Z","agentId":"P-49","wave":3,"step":"WAVE_3","action":"COMPLETE","result":"SUCCESS","details":{"created":10}}
+{"ts":"2026-08-18T15:57:17.949Z","agentId":"P-49","wave":4,"step":"WAVE_4","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T15:57:17.950Z","agentId":"P-49","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-20","to":"P-07","type":"Hard Money Loan"}}
+{"ts":"2026-08-18T15:57:17.950Z","agentId":"P-49","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-21","to":"P-15","type":"BRRRR Bridge Loan"}}
+{"ts":"2026-08-18T15:57:17.950Z","agentId":"P-49","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-22","to":"P-16","type":"BRRRR Bridge Loan"}}
+{"ts":"2026-08-18T15:57:17.950Z","agentId":"P-49","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-23","to":"P-19","type":"BRRRR Bridge Loan"}}
+{"ts":"2026-08-18T15:57:17.950Z","agentId":"P-49","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-60","to":"P-50","type":"Seasoned Note Sale"}}
+{"ts":"2026-08-18T15:57:17.950Z","agentId":"P-49","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-50"}}
+{"ts":"2026-08-18T15:57:17.951Z","agentId":"P-49","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-07"}}
+{"ts":"2026-08-18T15:57:17.951Z","agentId":"P-49","wave":4,"step":"WAVE_4","action":"COMPLETE","result":"SUCCESS","details":{"interactions":5,"invites":2}}
+{"ts":"2026-08-18T15:57:17.986Z","agentId":"P-49","wave":4,"step":"WAVE_4","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T15:57:17.987Z","agentId":"P-49","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-20","to":"P-07","type":"Hard Money Loan"}}
+{"ts":"2026-08-18T15:57:17.987Z","agentId":"P-49","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-21","to":"P-15","type":"BRRRR Bridge Loan"}}
+{"ts":"2026-08-18T15:57:17.987Z","agentId":"P-49","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-22","to":"P-16","type":"BRRRR Bridge Loan"}}
+{"ts":"2026-08-18T15:57:17.987Z","agentId":"P-49","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-23","to":"P-19","type":"BRRRR Bridge Loan"}}
+{"ts":"2026-08-18T15:57:17.987Z","agentId":"P-49","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-60","to":"P-50","type":"Seasoned Note Sale"}}
+{"ts":"2026-08-18T15:57:17.987Z","agentId":"P-49","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-50"}}
+{"ts":"2026-08-18T15:57:17.987Z","agentId":"P-49","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-07"}}
+{"ts":"2026-08-18T15:57:17.987Z","agentId":"P-49","wave":4,"step":"WAVE_4","action":"COMPLETE","result":"SUCCESS","details":{"interactions":5,"invites":2}}
+{"ts":"2026-08-18T15:57:17.996Z","agentId":"P-49","wave":5,"step":"WAVE_5","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T15:57:17.996Z","agentId":"P-49","wave":5,"step":"WAVE_5","action":"COMPLETE","result":"SUCCESS","details":{"reportPath":"/Users/yvesdarbouze/Documents/PaperWorking/artifacts/persona-swarm/reports/P-49-experience-report.md"}}
+{"ts":"2026-08-18T15:57:18.023Z","agentId":"P-49","wave":5,"step":"WAVE_5","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T15:57:18.023Z","agentId":"P-49","wave":5,"step":"WAVE_5","action":"COMPLETE","result":"SUCCESS","details":{"reportPath":"/Users/yvesdarbouze/Documents/PaperWorking/artifacts/persona-swarm/reports/P-49-experience-report.md"}}
+{"ts":"2026-08-18T16:11:37.871Z","agentId":"P-49","wave":1,"step":"WAVE_1","action":"START","result":"SUCCESS","details":{"email":"agent49.elaine.zhu@paperworking-test.dev"}}
+{"ts":"2026-08-18T16:11:37.871Z","agentId":"P-49","wave":0,"step":"SIGNUP","action":"SUCCESS_CREATED","result":"SUCCESS","details":{"uid":"uid_persona_p49","email":"agent49.elaine.zhu@paperworking-test.dev","name":"Elaine Zhu","entity":"Zhu Swift Funding LLC"}}
+{"ts":"2026-08-18T16:11:37.871Z","agentId":"P-49","wave":1,"step":"WAVE_1","action":"COMPLETE","result":"SUCCESS","details":{"uid":"uid_persona_p49"}}
+{"ts":"2026-08-18T16:11:37.888Z","agentId":"P-49","wave":2,"step":"WAVE_2","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T16:11:37.888Z","agentId":"P-49","wave":0,"step":"BILLING","action":"SUBSCRIPTION_SUCCESS","result":"SUCCESS","details":{"plan":"Individual","stripeCustomerId":"cus_test_swarm_p-49","stripeSubscriptionId":"sub_test_swarm_p-49","cardLastFour":"4242","cardBrand":"visa"}}
+{"ts":"2026-08-18T16:11:37.888Z","agentId":"P-49","wave":2,"step":"WAVE_2","action":"COMPLETE","result":"SUCCESS","details":{"plan":"Individual"}}
+{"ts":"2026-08-18T16:11:37.911Z","agentId":"P-49","wave":3,"step":"WAVE_3","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T16:11:37.911Z","agentId":"P-49","wave":0,"step":"PROJECTS","action":"CREATION_SUCCESS","result":"SUCCESS","details":{"created":10,"plaid":false}}
+{"ts":"2026-08-18T16:11:37.911Z","agentId":"P-49","wave":3,"step":"WAVE_3","action":"COMPLETE","result":"SUCCESS","details":{"created":10}}
+{"ts":"2026-08-18T16:11:37.947Z","agentId":"P-49","wave":4,"step":"WAVE_4","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T16:11:37.947Z","agentId":"P-49","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-20","to":"P-07","type":"Hard Money Loan"}}
+{"ts":"2026-08-18T16:11:37.947Z","agentId":"P-49","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-21","to":"P-15","type":"BRRRR Bridge Loan"}}
+{"ts":"2026-08-18T16:11:37.947Z","agentId":"P-49","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-22","to":"P-16","type":"BRRRR Bridge Loan"}}
+{"ts":"2026-08-18T16:11:37.947Z","agentId":"P-49","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-23","to":"P-19","type":"BRRRR Bridge Loan"}}
+{"ts":"2026-08-18T16:11:37.947Z","agentId":"P-49","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-60","to":"P-50","type":"Seasoned Note Sale"}}
+{"ts":"2026-08-18T16:11:37.947Z","agentId":"P-49","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-50"}}
+{"ts":"2026-08-18T16:11:37.947Z","agentId":"P-49","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-07"}}
+{"ts":"2026-08-18T16:11:37.947Z","agentId":"P-49","wave":4,"step":"WAVE_4","action":"COMPLETE","result":"SUCCESS","details":{"interactions":5,"invites":2}}
+{"ts":"2026-08-18T16:11:37.977Z","agentId":"P-49","wave":5,"step":"WAVE_5","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T16:11:37.977Z","agentId":"P-49","wave":5,"step":"WAVE_5","action":"COMPLETE","result":"SUCCESS","details":{"reportPath":"/Users/yvesdarbouze/Documents/PaperWorking/artifacts/persona-swarm/reports/P-49-experience-report.md"}}
+{"ts":"2026-08-18T16:11:38.130Z","agentId":"P-49","wave":1,"step":"WAVE_1","action":"START","result":"SUCCESS","details":{"email":"agent49.elaine.zhu@paperworking-test.dev"}}
+{"ts":"2026-08-18T16:11:38.130Z","agentId":"P-49","wave":0,"step":"SIGNUP","action":"SUCCESS_CREATED","result":"SUCCESS","details":{"uid":"uid_persona_p49","email":"agent49.elaine.zhu@paperworking-test.dev","name":"Elaine Zhu","entity":"Zhu Swift Funding LLC"}}
+{"ts":"2026-08-18T16:11:38.130Z","agentId":"P-49","wave":1,"step":"WAVE_1","action":"COMPLETE","result":"SUCCESS","details":{"uid":"uid_persona_p49"}}
+{"ts":"2026-08-18T16:11:38.142Z","agentId":"P-49","wave":2,"step":"WAVE_2","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T16:11:38.142Z","agentId":"P-49","wave":0,"step":"BILLING","action":"SUBSCRIPTION_SUCCESS","result":"SUCCESS","details":{"plan":"Individual","stripeCustomerId":"cus_test_swarm_p-49","stripeSubscriptionId":"sub_test_swarm_p-49","cardLastFour":"4242","cardBrand":"visa"}}
+{"ts":"2026-08-18T16:11:38.142Z","agentId":"P-49","wave":2,"step":"WAVE_2","action":"COMPLETE","result":"SUCCESS","details":{"plan":"Individual"}}
+{"ts":"2026-08-18T16:11:38.180Z","agentId":"P-49","wave":3,"step":"WAVE_3","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T16:11:38.180Z","agentId":"P-49","wave":0,"step":"PROJECTS","action":"CREATION_SUCCESS","result":"SUCCESS","details":{"created":10,"plaid":false}}
+{"ts":"2026-08-18T16:11:38.180Z","agentId":"P-49","wave":3,"step":"WAVE_3","action":"COMPLETE","result":"SUCCESS","details":{"created":10}}
+{"ts":"2026-08-18T16:11:38.210Z","agentId":"P-49","wave":4,"step":"WAVE_4","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T16:11:38.210Z","agentId":"P-49","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-20","to":"P-07","type":"Hard Money Loan"}}
+{"ts":"2026-08-18T16:11:38.210Z","agentId":"P-49","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-21","to":"P-15","type":"BRRRR Bridge Loan"}}
+{"ts":"2026-08-18T16:11:38.210Z","agentId":"P-49","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-22","to":"P-16","type":"BRRRR Bridge Loan"}}
+{"ts":"2026-08-18T16:11:38.210Z","agentId":"P-49","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-23","to":"P-19","type":"BRRRR Bridge Loan"}}
+{"ts":"2026-08-18T16:11:38.210Z","agentId":"P-49","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-60","to":"P-50","type":"Seasoned Note Sale"}}
+{"ts":"2026-08-18T16:11:38.210Z","agentId":"P-49","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-50"}}
+{"ts":"2026-08-18T16:11:38.211Z","agentId":"P-49","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-07"}}
+{"ts":"2026-08-18T16:11:38.211Z","agentId":"P-49","wave":4,"step":"WAVE_4","action":"COMPLETE","result":"SUCCESS","details":{"interactions":5,"invites":2}}
+{"ts":"2026-08-18T16:11:38.224Z","agentId":"P-49","wave":5,"step":"WAVE_5","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T16:11:38.224Z","agentId":"P-49","wave":5,"step":"WAVE_5","action":"COMPLETE","result":"SUCCESS","details":{"reportPath":"/Users/yvesdarbouze/Documents/PaperWorking/artifacts/persona-swarm/reports/P-49-experience-report.md"}}

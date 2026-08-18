@@ -972,3 +972,489 @@
 {"ts":"2026-08-18T09:42:00.111Z","agentId":"P-17","wave":5,"step":"WAVE_5","action":"COMPLETE","result":"SUCCESS","details":{"reportPath":"/Users/yvesdarbouze/Documents/PaperWorking/artifacts/persona-swarm/reports/P-17-experience-report.md"}}
 {"ts":"2026-08-18T09:42:00.125Z","agentId":"P-17","wave":5,"step":"WAVE_5","action":"START","result":"SUCCESS"}
 {"ts":"2026-08-18T09:42:00.125Z","agentId":"P-17","wave":5,"step":"WAVE_5","action":"COMPLETE","result":"SUCCESS","details":{"reportPath":"/Users/yvesdarbouze/Documents/PaperWorking/artifacts/persona-swarm/reports/P-17-experience-report.md"}}
+{"ts":"2026-08-18T10:57:59.983Z","agentId":"P-17","wave":1,"step":"WAVE_1","action":"START","result":"SUCCESS","details":{"email":"agent17.kevin.orourke@paperworking-test.dev"}}
+{"ts":"2026-08-18T10:57:59.984Z","agentId":"P-17","wave":1,"step":"WAVE_1","action":"START","result":"SUCCESS","details":{"email":"agent17.kevin.orourke@paperworking-test.dev"}}
+{"ts":"2026-08-18T10:57:59.984Z","agentId":"P-17","wave":0,"step":"SIGNUP","action":"SUCCESS_CREATED","result":"SUCCESS","details":{"uid":"uid_persona_p17","email":"agent17.kevin.orourke@paperworking-test.dev","name":"Kevin O'Rourke","entity":"O'Rourke Renewal Homes LLC"}}
+{"ts":"2026-08-18T10:57:59.985Z","agentId":"P-17","wave":1,"step":"WAVE_1","action":"COMPLETE","result":"SUCCESS","details":{"uid":"uid_persona_p17"}}
+{"ts":"2026-08-18T10:57:59.986Z","agentId":"P-17","wave":0,"step":"SIGNUP","action":"SUCCESS_CREATED","result":"SUCCESS","details":{"uid":"uid_persona_p17","email":"agent17.kevin.orourke@paperworking-test.dev","name":"Kevin O'Rourke","entity":"O'Rourke Renewal Homes LLC"}}
+{"ts":"2026-08-18T10:57:59.987Z","agentId":"P-17","wave":1,"step":"WAVE_1","action":"COMPLETE","result":"SUCCESS","details":{"uid":"uid_persona_p17"}}
+{"ts":"2026-08-18T10:58:00.056Z","agentId":"P-17","wave":2,"step":"WAVE_2","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T10:58:00.056Z","agentId":"P-17","wave":0,"step":"BILLING","action":"SUBSCRIPTION_SUCCESS","result":"SUCCESS","details":{"plan":"Individual","stripeCustomerId":"cus_test_swarm_p-17","stripeSubscriptionId":"sub_test_swarm_p-17","cardLastFour":"4242","cardBrand":"visa"}}
+{"ts":"2026-08-18T10:58:00.056Z","agentId":"P-17","wave":2,"step":"WAVE_2","action":"COMPLETE","result":"SUCCESS","details":{"plan":"Individual"}}
+{"ts":"2026-08-18T10:58:00.056Z","agentId":"P-17","wave":2,"step":"WAVE_2","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T10:58:00.057Z","agentId":"P-17","wave":0,"step":"BILLING","action":"SUBSCRIPTION_SUCCESS","result":"SUCCESS","details":{"plan":"Individual","stripeCustomerId":"cus_test_swarm_p-17","stripeSubscriptionId":"sub_test_swarm_p-17","cardLastFour":"4242","cardBrand":"visa"}}
+{"ts":"2026-08-18T10:58:00.057Z","agentId":"P-17","wave":2,"step":"WAVE_2","action":"COMPLETE","result":"SUCCESS","details":{"plan":"Individual"}}
+{"ts":"2026-08-18T10:58:00.152Z","agentId":"P-17","wave":3,"step":"WAVE_3","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T10:58:00.154Z","agentId":"P-17","wave":3,"step":"WAVE_3","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T10:58:00.156Z","agentId":"P-17","wave":0,"step":"PROJECTS","action":"CREATION_SUCCESS","result":"SUCCESS","details":{"created":10,"plaid":false}}
+{"ts":"2026-08-18T10:58:00.156Z","agentId":"P-17","wave":3,"step":"WAVE_3","action":"COMPLETE","result":"SUCCESS","details":{"created":10}}
+{"ts":"2026-08-18T10:58:00.157Z","agentId":"P-17","wave":0,"step":"PROJECTS","action":"CREATION_SUCCESS","result":"SUCCESS","details":{"created":10,"plaid":false}}
+{"ts":"2026-08-18T10:58:00.157Z","agentId":"P-17","wave":3,"step":"WAVE_3","action":"COMPLETE","result":"SUCCESS","details":{"created":10}}
+{"ts":"2026-08-18T10:58:00.339Z","agentId":"P-17","wave":4,"step":"WAVE_4","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T10:58:00.340Z","agentId":"P-17","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-35","to":"P-08","type":"Mentorship Joint Project"}}
+{"ts":"2026-08-18T10:58:00.341Z","agentId":"P-17","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-08"}}
+{"ts":"2026-08-18T10:58:00.341Z","agentId":"P-17","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-04"}}
+{"ts":"2026-08-18T10:58:00.341Z","agentId":"P-17","wave":4,"step":"WAVE_4","action":"COMPLETE","result":"SUCCESS","details":{"interactions":1,"invites":2}}
+{"ts":"2026-08-18T10:58:00.352Z","agentId":"P-17","wave":4,"step":"WAVE_4","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T10:58:00.353Z","agentId":"P-17","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-35","to":"P-08","type":"Mentorship Joint Project"}}
+{"ts":"2026-08-18T10:58:00.354Z","agentId":"P-17","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-08"}}
+{"ts":"2026-08-18T10:58:00.354Z","agentId":"P-17","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-04"}}
+{"ts":"2026-08-18T10:58:00.354Z","agentId":"P-17","wave":4,"step":"WAVE_4","action":"COMPLETE","result":"SUCCESS","details":{"interactions":1,"invites":2}}
+{"ts":"2026-08-18T10:58:00.473Z","agentId":"P-17","wave":5,"step":"WAVE_5","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T10:58:00.474Z","agentId":"P-17","wave":5,"step":"WAVE_5","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T10:58:00.476Z","agentId":"P-17","wave":5,"step":"WAVE_5","action":"COMPLETE","result":"SUCCESS","details":{"reportPath":"/Users/yvesdarbouze/Documents/PaperWorking/artifacts/persona-swarm/reports/P-17-experience-report.md"}}
+{"ts":"2026-08-18T10:58:00.476Z","agentId":"P-17","wave":5,"step":"WAVE_5","action":"COMPLETE","result":"SUCCESS","details":{"reportPath":"/Users/yvesdarbouze/Documents/PaperWorking/artifacts/persona-swarm/reports/P-17-experience-report.md"}}
+{"ts":"2026-08-18T10:58:28.468Z","agentId":"P-17","wave":1,"step":"WAVE_1","action":"START","result":"SUCCESS","details":{"email":"agent17.kevin.orourke@paperworking-test.dev"}}
+{"ts":"2026-08-18T10:58:28.468Z","agentId":"P-17","wave":0,"step":"SIGNUP","action":"SUCCESS_CREATED","result":"SUCCESS","details":{"uid":"uid_persona_p17","email":"agent17.kevin.orourke@paperworking-test.dev","name":"Kevin O'Rourke","entity":"O'Rourke Renewal Homes LLC"}}
+{"ts":"2026-08-18T10:58:28.468Z","agentId":"P-17","wave":1,"step":"WAVE_1","action":"COMPLETE","result":"SUCCESS","details":{"uid":"uid_persona_p17"}}
+{"ts":"2026-08-18T10:58:28.521Z","agentId":"P-17","wave":2,"step":"WAVE_2","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T10:58:28.522Z","agentId":"P-17","wave":0,"step":"BILLING","action":"SUBSCRIPTION_SUCCESS","result":"SUCCESS","details":{"plan":"Individual","stripeCustomerId":"cus_test_swarm_p-17","stripeSubscriptionId":"sub_test_swarm_p-17","cardLastFour":"4242","cardBrand":"visa"}}
+{"ts":"2026-08-18T10:58:28.522Z","agentId":"P-17","wave":2,"step":"WAVE_2","action":"COMPLETE","result":"SUCCESS","details":{"plan":"Individual"}}
+{"ts":"2026-08-18T10:58:28.599Z","agentId":"P-17","wave":3,"step":"WAVE_3","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T10:58:28.601Z","agentId":"P-17","wave":0,"step":"PROJECTS","action":"CREATION_SUCCESS","result":"SUCCESS","details":{"created":10,"plaid":false}}
+{"ts":"2026-08-18T10:58:28.601Z","agentId":"P-17","wave":3,"step":"WAVE_3","action":"COMPLETE","result":"SUCCESS","details":{"created":10}}
+{"ts":"2026-08-18T10:58:28.702Z","agentId":"P-17","wave":4,"step":"WAVE_4","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T10:58:28.703Z","agentId":"P-17","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-35","to":"P-08","type":"Mentorship Joint Project"}}
+{"ts":"2026-08-18T10:58:28.703Z","agentId":"P-17","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-08"}}
+{"ts":"2026-08-18T10:58:28.703Z","agentId":"P-17","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-04"}}
+{"ts":"2026-08-18T10:58:28.703Z","agentId":"P-17","wave":4,"step":"WAVE_4","action":"COMPLETE","result":"SUCCESS","details":{"interactions":1,"invites":2}}
+{"ts":"2026-08-18T10:58:28.767Z","agentId":"P-17","wave":5,"step":"WAVE_5","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T10:58:28.767Z","agentId":"P-17","wave":5,"step":"WAVE_5","action":"COMPLETE","result":"SUCCESS","details":{"reportPath":"/Users/yvesdarbouze/Documents/PaperWorking/artifacts/persona-swarm/reports/P-17-experience-report.md"}}
+{"ts":"2026-08-18T10:58:35.164Z","agentId":"P-17","wave":1,"step":"WAVE_1","action":"START","result":"SUCCESS","details":{"email":"agent17.kevin.orourke@paperworking-test.dev"}}
+{"ts":"2026-08-18T10:58:35.165Z","agentId":"P-17","wave":0,"step":"SIGNUP","action":"SUCCESS_CREATED","result":"SUCCESS","details":{"uid":"uid_persona_p17","email":"agent17.kevin.orourke@paperworking-test.dev","name":"Kevin O'Rourke","entity":"O'Rourke Renewal Homes LLC"}}
+{"ts":"2026-08-18T10:58:35.165Z","agentId":"P-17","wave":1,"step":"WAVE_1","action":"COMPLETE","result":"SUCCESS","details":{"uid":"uid_persona_p17"}}
+{"ts":"2026-08-18T10:58:35.298Z","agentId":"P-17","wave":2,"step":"WAVE_2","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T10:58:35.299Z","agentId":"P-17","wave":0,"step":"BILLING","action":"SUBSCRIPTION_SUCCESS","result":"SUCCESS","details":{"plan":"Individual","stripeCustomerId":"cus_test_swarm_p-17","stripeSubscriptionId":"sub_test_swarm_p-17","cardLastFour":"4242","cardBrand":"visa"}}
+{"ts":"2026-08-18T10:58:35.299Z","agentId":"P-17","wave":2,"step":"WAVE_2","action":"COMPLETE","result":"SUCCESS","details":{"plan":"Individual"}}
+{"ts":"2026-08-18T10:58:35.476Z","agentId":"P-17","wave":3,"step":"WAVE_3","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T10:58:35.480Z","agentId":"P-17","wave":0,"step":"PROJECTS","action":"CREATION_SUCCESS","result":"SUCCESS","details":{"created":10,"plaid":false}}
+{"ts":"2026-08-18T10:58:35.480Z","agentId":"P-17","wave":3,"step":"WAVE_3","action":"COMPLETE","result":"SUCCESS","details":{"created":10}}
+{"ts":"2026-08-18T10:58:35.847Z","agentId":"P-17","wave":4,"step":"WAVE_4","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T10:58:35.848Z","agentId":"P-17","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-35","to":"P-08","type":"Mentorship Joint Project"}}
+{"ts":"2026-08-18T10:58:35.849Z","agentId":"P-17","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-08"}}
+{"ts":"2026-08-18T10:58:35.849Z","agentId":"P-17","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-04"}}
+{"ts":"2026-08-18T10:58:35.849Z","agentId":"P-17","wave":4,"step":"WAVE_4","action":"COMPLETE","result":"SUCCESS","details":{"interactions":1,"invites":2}}
+{"ts":"2026-08-18T10:58:36.029Z","agentId":"P-17","wave":5,"step":"WAVE_5","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T10:58:36.030Z","agentId":"P-17","wave":5,"step":"WAVE_5","action":"COMPLETE","result":"SUCCESS","details":{"reportPath":"/Users/yvesdarbouze/Documents/PaperWorking/artifacts/persona-swarm/reports/P-17-experience-report.md"}}
+{"ts":"2026-08-18T10:59:01.696Z","agentId":"P-17","wave":1,"step":"WAVE_1","action":"START","result":"SUCCESS","details":{"email":"agent17.kevin.orourke@paperworking-test.dev"}}
+{"ts":"2026-08-18T10:59:01.696Z","agentId":"P-17","wave":0,"step":"SIGNUP","action":"SUCCESS_CREATED","result":"SUCCESS","details":{"uid":"uid_persona_p17","email":"agent17.kevin.orourke@paperworking-test.dev","name":"Kevin O'Rourke","entity":"O'Rourke Renewal Homes LLC"}}
+{"ts":"2026-08-18T10:59:01.696Z","agentId":"P-17","wave":1,"step":"WAVE_1","action":"COMPLETE","result":"SUCCESS","details":{"uid":"uid_persona_p17"}}
+{"ts":"2026-08-18T10:59:01.739Z","agentId":"P-17","wave":1,"step":"WAVE_1","action":"START","result":"SUCCESS","details":{"email":"agent17.kevin.orourke@paperworking-test.dev"}}
+{"ts":"2026-08-18T10:59:01.740Z","agentId":"P-17","wave":0,"step":"SIGNUP","action":"SUCCESS_CREATED","result":"SUCCESS","details":{"uid":"uid_persona_p17","email":"agent17.kevin.orourke@paperworking-test.dev","name":"Kevin O'Rourke","entity":"O'Rourke Renewal Homes LLC"}}
+{"ts":"2026-08-18T10:59:01.740Z","agentId":"P-17","wave":1,"step":"WAVE_1","action":"COMPLETE","result":"SUCCESS","details":{"uid":"uid_persona_p17"}}
+{"ts":"2026-08-18T10:59:01.758Z","agentId":"P-17","wave":2,"step":"WAVE_2","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T10:59:01.759Z","agentId":"P-17","wave":0,"step":"BILLING","action":"SUBSCRIPTION_SUCCESS","result":"SUCCESS","details":{"plan":"Individual","stripeCustomerId":"cus_test_swarm_p-17","stripeSubscriptionId":"sub_test_swarm_p-17","cardLastFour":"4242","cardBrand":"visa"}}
+{"ts":"2026-08-18T10:59:01.759Z","agentId":"P-17","wave":2,"step":"WAVE_2","action":"COMPLETE","result":"SUCCESS","details":{"plan":"Individual"}}
+{"ts":"2026-08-18T10:59:01.786Z","agentId":"P-17","wave":2,"step":"WAVE_2","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T10:59:01.787Z","agentId":"P-17","wave":0,"step":"BILLING","action":"SUBSCRIPTION_SUCCESS","result":"SUCCESS","details":{"plan":"Individual","stripeCustomerId":"cus_test_swarm_p-17","stripeSubscriptionId":"sub_test_swarm_p-17","cardLastFour":"4242","cardBrand":"visa"}}
+{"ts":"2026-08-18T10:59:01.787Z","agentId":"P-17","wave":2,"step":"WAVE_2","action":"COMPLETE","result":"SUCCESS","details":{"plan":"Individual"}}
+{"ts":"2026-08-18T10:59:01.862Z","agentId":"P-17","wave":3,"step":"WAVE_3","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T10:59:01.865Z","agentId":"P-17","wave":0,"step":"PROJECTS","action":"CREATION_SUCCESS","result":"SUCCESS","details":{"created":10,"plaid":false}}
+{"ts":"2026-08-18T10:59:01.867Z","agentId":"P-17","wave":3,"step":"WAVE_3","action":"COMPLETE","result":"SUCCESS","details":{"created":10}}
+{"ts":"2026-08-18T10:59:01.910Z","agentId":"P-17","wave":3,"step":"WAVE_3","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T10:59:01.914Z","agentId":"P-17","wave":0,"step":"PROJECTS","action":"CREATION_SUCCESS","result":"SUCCESS","details":{"created":10,"plaid":false}}
+{"ts":"2026-08-18T10:59:01.914Z","agentId":"P-17","wave":3,"step":"WAVE_3","action":"COMPLETE","result":"SUCCESS","details":{"created":10}}
+{"ts":"2026-08-18T10:59:02.003Z","agentId":"P-17","wave":4,"step":"WAVE_4","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T10:59:02.003Z","agentId":"P-17","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-35","to":"P-08","type":"Mentorship Joint Project"}}
+{"ts":"2026-08-18T10:59:02.004Z","agentId":"P-17","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-08"}}
+{"ts":"2026-08-18T10:59:02.004Z","agentId":"P-17","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-04"}}
+{"ts":"2026-08-18T10:59:02.004Z","agentId":"P-17","wave":4,"step":"WAVE_4","action":"COMPLETE","result":"SUCCESS","details":{"interactions":1,"invites":2}}
+{"ts":"2026-08-18T10:59:02.039Z","agentId":"P-17","wave":4,"step":"WAVE_4","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T10:59:02.039Z","agentId":"P-17","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-35","to":"P-08","type":"Mentorship Joint Project"}}
+{"ts":"2026-08-18T10:59:02.039Z","agentId":"P-17","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-08"}}
+{"ts":"2026-08-18T10:59:02.040Z","agentId":"P-17","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-04"}}
+{"ts":"2026-08-18T10:59:02.040Z","agentId":"P-17","wave":4,"step":"WAVE_4","action":"COMPLETE","result":"SUCCESS","details":{"interactions":1,"invites":2}}
+{"ts":"2026-08-18T10:59:02.080Z","agentId":"P-17","wave":5,"step":"WAVE_5","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T10:59:02.081Z","agentId":"P-17","wave":5,"step":"WAVE_5","action":"COMPLETE","result":"SUCCESS","details":{"reportPath":"/Users/yvesdarbouze/Documents/PaperWorking/artifacts/persona-swarm/reports/P-17-experience-report.md"}}
+{"ts":"2026-08-18T10:59:02.147Z","agentId":"P-17","wave":5,"step":"WAVE_5","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T10:59:02.148Z","agentId":"P-17","wave":5,"step":"WAVE_5","action":"COMPLETE","result":"SUCCESS","details":{"reportPath":"/Users/yvesdarbouze/Documents/PaperWorking/artifacts/persona-swarm/reports/P-17-experience-report.md"}}
+{"ts":"2026-08-18T10:59:26.996Z","agentId":"P-17","wave":1,"step":"WAVE_1","action":"START","result":"SUCCESS","details":{"email":"agent17.kevin.orourke@paperworking-test.dev"}}
+{"ts":"2026-08-18T10:59:26.996Z","agentId":"P-17","wave":0,"step":"SIGNUP","action":"SUCCESS_CREATED","result":"SUCCESS","details":{"uid":"uid_persona_p17","email":"agent17.kevin.orourke@paperworking-test.dev","name":"Kevin O'Rourke","entity":"O'Rourke Renewal Homes LLC"}}
+{"ts":"2026-08-18T10:59:26.996Z","agentId":"P-17","wave":1,"step":"WAVE_1","action":"COMPLETE","result":"SUCCESS","details":{"uid":"uid_persona_p17"}}
+{"ts":"2026-08-18T10:59:27.055Z","agentId":"P-17","wave":2,"step":"WAVE_2","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T10:59:27.056Z","agentId":"P-17","wave":0,"step":"BILLING","action":"SUBSCRIPTION_SUCCESS","result":"SUCCESS","details":{"plan":"Individual","stripeCustomerId":"cus_test_swarm_p-17","stripeSubscriptionId":"sub_test_swarm_p-17","cardLastFour":"4242","cardBrand":"visa"}}
+{"ts":"2026-08-18T10:59:27.056Z","agentId":"P-17","wave":2,"step":"WAVE_2","action":"COMPLETE","result":"SUCCESS","details":{"plan":"Individual"}}
+{"ts":"2026-08-18T10:59:27.135Z","agentId":"P-17","wave":3,"step":"WAVE_3","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T10:59:27.137Z","agentId":"P-17","wave":0,"step":"PROJECTS","action":"CREATION_SUCCESS","result":"SUCCESS","details":{"created":10,"plaid":false}}
+{"ts":"2026-08-18T10:59:27.138Z","agentId":"P-17","wave":3,"step":"WAVE_3","action":"COMPLETE","result":"SUCCESS","details":{"created":10}}
+{"ts":"2026-08-18T10:59:27.250Z","agentId":"P-17","wave":4,"step":"WAVE_4","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T10:59:27.250Z","agentId":"P-17","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-35","to":"P-08","type":"Mentorship Joint Project"}}
+{"ts":"2026-08-18T10:59:27.251Z","agentId":"P-17","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-08"}}
+{"ts":"2026-08-18T10:59:27.251Z","agentId":"P-17","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-04"}}
+{"ts":"2026-08-18T10:59:27.251Z","agentId":"P-17","wave":4,"step":"WAVE_4","action":"COMPLETE","result":"SUCCESS","details":{"interactions":1,"invites":2}}
+{"ts":"2026-08-18T10:59:27.304Z","agentId":"P-17","wave":5,"step":"WAVE_5","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T10:59:27.304Z","agentId":"P-17","wave":5,"step":"WAVE_5","action":"COMPLETE","result":"SUCCESS","details":{"reportPath":"/Users/yvesdarbouze/Documents/PaperWorking/artifacts/persona-swarm/reports/P-17-experience-report.md"}}
+{"ts":"2026-08-18T10:59:30.121Z","agentId":"P-17","wave":1,"step":"WAVE_1","action":"START","result":"SUCCESS","details":{"email":"agent17.kevin.orourke@paperworking-test.dev"}}
+{"ts":"2026-08-18T10:59:30.122Z","agentId":"P-17","wave":0,"step":"SIGNUP","action":"SUCCESS_CREATED","result":"SUCCESS","details":{"uid":"uid_persona_p17","email":"agent17.kevin.orourke@paperworking-test.dev","name":"Kevin O'Rourke","entity":"O'Rourke Renewal Homes LLC"}}
+{"ts":"2026-08-18T10:59:30.122Z","agentId":"P-17","wave":1,"step":"WAVE_1","action":"COMPLETE","result":"SUCCESS","details":{"uid":"uid_persona_p17"}}
+{"ts":"2026-08-18T10:59:30.191Z","agentId":"P-17","wave":2,"step":"WAVE_2","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T10:59:30.191Z","agentId":"P-17","wave":0,"step":"BILLING","action":"SUBSCRIPTION_SUCCESS","result":"SUCCESS","details":{"plan":"Individual","stripeCustomerId":"cus_test_swarm_p-17","stripeSubscriptionId":"sub_test_swarm_p-17","cardLastFour":"4242","cardBrand":"visa"}}
+{"ts":"2026-08-18T10:59:30.191Z","agentId":"P-17","wave":2,"step":"WAVE_2","action":"COMPLETE","result":"SUCCESS","details":{"plan":"Individual"}}
+{"ts":"2026-08-18T10:59:30.297Z","agentId":"P-17","wave":3,"step":"WAVE_3","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T10:59:30.299Z","agentId":"P-17","wave":0,"step":"PROJECTS","action":"CREATION_SUCCESS","result":"SUCCESS","details":{"created":10,"plaid":false}}
+{"ts":"2026-08-18T10:59:30.300Z","agentId":"P-17","wave":3,"step":"WAVE_3","action":"COMPLETE","result":"SUCCESS","details":{"created":10}}
+{"ts":"2026-08-18T10:59:30.460Z","agentId":"P-17","wave":4,"step":"WAVE_4","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T10:59:30.461Z","agentId":"P-17","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-35","to":"P-08","type":"Mentorship Joint Project"}}
+{"ts":"2026-08-18T10:59:30.461Z","agentId":"P-17","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-08"}}
+{"ts":"2026-08-18T10:59:30.462Z","agentId":"P-17","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-04"}}
+{"ts":"2026-08-18T10:59:30.462Z","agentId":"P-17","wave":4,"step":"WAVE_4","action":"COMPLETE","result":"SUCCESS","details":{"interactions":1,"invites":2}}
+{"ts":"2026-08-18T10:59:30.564Z","agentId":"P-17","wave":5,"step":"WAVE_5","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T10:59:30.567Z","agentId":"P-17","wave":5,"step":"WAVE_5","action":"COMPLETE","result":"SUCCESS","details":{"reportPath":"/Users/yvesdarbouze/Documents/PaperWorking/artifacts/persona-swarm/reports/P-17-experience-report.md"}}
+{"ts":"2026-08-18T11:00:11.716Z","agentId":"P-17","wave":1,"step":"WAVE_1","action":"START","result":"SUCCESS","details":{"email":"agent17.kevin.orourke@paperworking-test.dev"}}
+{"ts":"2026-08-18T11:00:11.720Z","agentId":"P-17","wave":1,"step":"WAVE_1","action":"START","result":"SUCCESS","details":{"email":"agent17.kevin.orourke@paperworking-test.dev"}}
+{"ts":"2026-08-18T11:00:11.722Z","agentId":"P-17","wave":0,"step":"SIGNUP","action":"SUCCESS_CREATED","result":"SUCCESS","details":{"uid":"uid_persona_p17","email":"agent17.kevin.orourke@paperworking-test.dev","name":"Kevin O'Rourke","entity":"O'Rourke Renewal Homes LLC"}}
+{"ts":"2026-08-18T11:00:11.722Z","agentId":"P-17","wave":1,"step":"WAVE_1","action":"COMPLETE","result":"SUCCESS","details":{"uid":"uid_persona_p17"}}
+{"ts":"2026-08-18T11:00:11.741Z","agentId":"P-17","wave":0,"step":"SIGNUP","action":"SUCCESS_CREATED","result":"SUCCESS","details":{"uid":"uid_persona_p17","email":"agent17.kevin.orourke@paperworking-test.dev","name":"Kevin O'Rourke","entity":"O'Rourke Renewal Homes LLC"}}
+{"ts":"2026-08-18T11:00:11.741Z","agentId":"P-17","wave":1,"step":"WAVE_1","action":"COMPLETE","result":"SUCCESS","details":{"uid":"uid_persona_p17"}}
+{"ts":"2026-08-18T11:00:11.786Z","agentId":"P-17","wave":2,"step":"WAVE_2","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T11:00:11.786Z","agentId":"P-17","wave":2,"step":"WAVE_2","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T11:00:11.786Z","agentId":"P-17","wave":0,"step":"BILLING","action":"SUBSCRIPTION_SUCCESS","result":"SUCCESS","details":{"plan":"Individual","stripeCustomerId":"cus_test_swarm_p-17","stripeSubscriptionId":"sub_test_swarm_p-17","cardLastFour":"4242","cardBrand":"visa"}}
+{"ts":"2026-08-18T11:00:11.786Z","agentId":"P-17","wave":2,"step":"WAVE_2","action":"COMPLETE","result":"SUCCESS","details":{"plan":"Individual"}}
+{"ts":"2026-08-18T11:00:11.786Z","agentId":"P-17","wave":0,"step":"BILLING","action":"SUBSCRIPTION_SUCCESS","result":"SUCCESS","details":{"plan":"Individual","stripeCustomerId":"cus_test_swarm_p-17","stripeSubscriptionId":"sub_test_swarm_p-17","cardLastFour":"4242","cardBrand":"visa"}}
+{"ts":"2026-08-18T11:00:11.786Z","agentId":"P-17","wave":2,"step":"WAVE_2","action":"COMPLETE","result":"SUCCESS","details":{"plan":"Individual"}}
+{"ts":"2026-08-18T11:00:11.870Z","agentId":"P-17","wave":3,"step":"WAVE_3","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T11:00:11.873Z","agentId":"P-17","wave":0,"step":"PROJECTS","action":"CREATION_SUCCESS","result":"SUCCESS","details":{"created":10,"plaid":false}}
+{"ts":"2026-08-18T11:00:11.873Z","agentId":"P-17","wave":3,"step":"WAVE_3","action":"COMPLETE","result":"SUCCESS","details":{"created":10}}
+{"ts":"2026-08-18T11:00:11.876Z","agentId":"P-17","wave":3,"step":"WAVE_3","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T11:00:11.878Z","agentId":"P-17","wave":0,"step":"PROJECTS","action":"CREATION_SUCCESS","result":"SUCCESS","details":{"created":10,"plaid":false}}
+{"ts":"2026-08-18T11:00:11.878Z","agentId":"P-17","wave":3,"step":"WAVE_3","action":"COMPLETE","result":"SUCCESS","details":{"created":10}}
+{"ts":"2026-08-18T11:00:11.984Z","agentId":"P-17","wave":4,"step":"WAVE_4","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T11:00:11.985Z","agentId":"P-17","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-35","to":"P-08","type":"Mentorship Joint Project"}}
+{"ts":"2026-08-18T11:00:11.985Z","agentId":"P-17","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-08"}}
+{"ts":"2026-08-18T11:00:11.986Z","agentId":"P-17","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-04"}}
+{"ts":"2026-08-18T11:00:11.986Z","agentId":"P-17","wave":4,"step":"WAVE_4","action":"COMPLETE","result":"SUCCESS","details":{"interactions":1,"invites":2}}
+{"ts":"2026-08-18T11:00:12.003Z","agentId":"P-17","wave":4,"step":"WAVE_4","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T11:00:12.003Z","agentId":"P-17","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-35","to":"P-08","type":"Mentorship Joint Project"}}
+{"ts":"2026-08-18T11:00:12.003Z","agentId":"P-17","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-08"}}
+{"ts":"2026-08-18T11:00:12.004Z","agentId":"P-17","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-04"}}
+{"ts":"2026-08-18T11:00:12.004Z","agentId":"P-17","wave":4,"step":"WAVE_4","action":"COMPLETE","result":"SUCCESS","details":{"interactions":1,"invites":2}}
+{"ts":"2026-08-18T11:00:12.073Z","agentId":"P-17","wave":5,"step":"WAVE_5","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T11:00:12.073Z","agentId":"P-17","wave":5,"step":"WAVE_5","action":"COMPLETE","result":"SUCCESS","details":{"reportPath":"/Users/yvesdarbouze/Documents/PaperWorking/artifacts/persona-swarm/reports/P-17-experience-report.md"}}
+{"ts":"2026-08-18T11:00:12.086Z","agentId":"P-17","wave":5,"step":"WAVE_5","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T11:00:12.086Z","agentId":"P-17","wave":5,"step":"WAVE_5","action":"COMPLETE","result":"SUCCESS","details":{"reportPath":"/Users/yvesdarbouze/Documents/PaperWorking/artifacts/persona-swarm/reports/P-17-experience-report.md"}}
+{"ts":"2026-08-18T11:12:29.714Z","agentId":"P-17","wave":1,"step":"WAVE_1","action":"START","result":"SUCCESS","details":{"email":"agent17.kevin.orourke@paperworking-test.dev"}}
+{"ts":"2026-08-18T11:12:29.715Z","agentId":"P-17","wave":0,"step":"SIGNUP","action":"SUCCESS_CREATED","result":"SUCCESS","details":{"uid":"uid_persona_p17","email":"agent17.kevin.orourke@paperworking-test.dev","name":"Kevin O'Rourke","entity":"O'Rourke Renewal Homes LLC"}}
+{"ts":"2026-08-18T11:12:29.715Z","agentId":"P-17","wave":1,"step":"WAVE_1","action":"COMPLETE","result":"SUCCESS","details":{"uid":"uid_persona_p17"}}
+{"ts":"2026-08-18T11:12:29.782Z","agentId":"P-17","wave":2,"step":"WAVE_2","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T11:12:29.783Z","agentId":"P-17","wave":0,"step":"BILLING","action":"SUBSCRIPTION_SUCCESS","result":"SUCCESS","details":{"plan":"Individual","stripeCustomerId":"cus_test_swarm_p-17","stripeSubscriptionId":"sub_test_swarm_p-17","cardLastFour":"4242","cardBrand":"visa"}}
+{"ts":"2026-08-18T11:12:29.783Z","agentId":"P-17","wave":2,"step":"WAVE_2","action":"COMPLETE","result":"SUCCESS","details":{"plan":"Individual"}}
+{"ts":"2026-08-18T11:12:29.860Z","agentId":"P-17","wave":3,"step":"WAVE_3","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T11:12:29.862Z","agentId":"P-17","wave":0,"step":"PROJECTS","action":"CREATION_SUCCESS","result":"SUCCESS","details":{"created":10,"plaid":false}}
+{"ts":"2026-08-18T11:12:29.862Z","agentId":"P-17","wave":3,"step":"WAVE_3","action":"COMPLETE","result":"SUCCESS","details":{"created":10}}
+{"ts":"2026-08-18T11:12:30.015Z","agentId":"P-17","wave":4,"step":"WAVE_4","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T11:12:30.015Z","agentId":"P-17","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-35","to":"P-08","type":"Mentorship Joint Project"}}
+{"ts":"2026-08-18T11:12:30.016Z","agentId":"P-17","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-08"}}
+{"ts":"2026-08-18T11:12:30.016Z","agentId":"P-17","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-04"}}
+{"ts":"2026-08-18T11:12:30.016Z","agentId":"P-17","wave":4,"step":"WAVE_4","action":"COMPLETE","result":"SUCCESS","details":{"interactions":1,"invites":2}}
+{"ts":"2026-08-18T11:12:30.099Z","agentId":"P-17","wave":5,"step":"WAVE_5","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T11:12:30.099Z","agentId":"P-17","wave":5,"step":"WAVE_5","action":"COMPLETE","result":"SUCCESS","details":{"reportPath":"/Users/yvesdarbouze/Documents/PaperWorking/artifacts/persona-swarm/reports/P-17-experience-report.md"}}
+{"ts":"2026-08-18T11:12:32.909Z","agentId":"P-17","wave":1,"step":"WAVE_1","action":"START","result":"SUCCESS","details":{"email":"agent17.kevin.orourke@paperworking-test.dev"}}
+{"ts":"2026-08-18T11:12:32.909Z","agentId":"P-17","wave":0,"step":"SIGNUP","action":"SUCCESS_CREATED","result":"SUCCESS","details":{"uid":"uid_persona_p17","email":"agent17.kevin.orourke@paperworking-test.dev","name":"Kevin O'Rourke","entity":"O'Rourke Renewal Homes LLC"}}
+{"ts":"2026-08-18T11:12:32.909Z","agentId":"P-17","wave":1,"step":"WAVE_1","action":"COMPLETE","result":"SUCCESS","details":{"uid":"uid_persona_p17"}}
+{"ts":"2026-08-18T11:12:33.007Z","agentId":"P-17","wave":2,"step":"WAVE_2","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T11:12:33.008Z","agentId":"P-17","wave":0,"step":"BILLING","action":"SUBSCRIPTION_SUCCESS","result":"SUCCESS","details":{"plan":"Individual","stripeCustomerId":"cus_test_swarm_p-17","stripeSubscriptionId":"sub_test_swarm_p-17","cardLastFour":"4242","cardBrand":"visa"}}
+{"ts":"2026-08-18T11:12:33.008Z","agentId":"P-17","wave":2,"step":"WAVE_2","action":"COMPLETE","result":"SUCCESS","details":{"plan":"Individual"}}
+{"ts":"2026-08-18T11:12:33.155Z","agentId":"P-17","wave":3,"step":"WAVE_3","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T11:12:33.158Z","agentId":"P-17","wave":0,"step":"PROJECTS","action":"CREATION_SUCCESS","result":"SUCCESS","details":{"created":10,"plaid":false}}
+{"ts":"2026-08-18T11:12:33.159Z","agentId":"P-17","wave":3,"step":"WAVE_3","action":"COMPLETE","result":"SUCCESS","details":{"created":10}}
+{"ts":"2026-08-18T11:12:33.412Z","agentId":"P-17","wave":4,"step":"WAVE_4","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T11:12:33.413Z","agentId":"P-17","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-35","to":"P-08","type":"Mentorship Joint Project"}}
+{"ts":"2026-08-18T11:12:33.414Z","agentId":"P-17","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-08"}}
+{"ts":"2026-08-18T11:12:33.414Z","agentId":"P-17","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-04"}}
+{"ts":"2026-08-18T11:12:33.414Z","agentId":"P-17","wave":4,"step":"WAVE_4","action":"COMPLETE","result":"SUCCESS","details":{"interactions":1,"invites":2}}
+{"ts":"2026-08-18T11:12:33.574Z","agentId":"P-17","wave":5,"step":"WAVE_5","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T11:12:33.575Z","agentId":"P-17","wave":5,"step":"WAVE_5","action":"COMPLETE","result":"SUCCESS","details":{"reportPath":"/Users/yvesdarbouze/Documents/PaperWorking/artifacts/persona-swarm/reports/P-17-experience-report.md"}}
+{"ts":"2026-08-18T11:19:05.479Z","agentId":"P-17","wave":1,"step":"WAVE_1","action":"START","result":"SUCCESS","details":{"email":"agent17.kevin.orourke@paperworking-test.dev"}}
+{"ts":"2026-08-18T11:19:05.480Z","agentId":"P-17","wave":0,"step":"SIGNUP","action":"SUCCESS_CREATED","result":"SUCCESS","details":{"uid":"uid_persona_p17","email":"agent17.kevin.orourke@paperworking-test.dev","name":"Kevin O'Rourke","entity":"O'Rourke Renewal Homes LLC"}}
+{"ts":"2026-08-18T11:19:05.480Z","agentId":"P-17","wave":1,"step":"WAVE_1","action":"COMPLETE","result":"SUCCESS","details":{"uid":"uid_persona_p17"}}
+{"ts":"2026-08-18T11:19:05.481Z","agentId":"P-17","wave":1,"step":"WAVE_1","action":"START","result":"SUCCESS","details":{"email":"agent17.kevin.orourke@paperworking-test.dev"}}
+{"ts":"2026-08-18T11:19:05.481Z","agentId":"P-17","wave":0,"step":"SIGNUP","action":"SUCCESS_CREATED","result":"SUCCESS","details":{"uid":"uid_persona_p17","email":"agent17.kevin.orourke@paperworking-test.dev","name":"Kevin O'Rourke","entity":"O'Rourke Renewal Homes LLC"}}
+{"ts":"2026-08-18T11:19:05.482Z","agentId":"P-17","wave":1,"step":"WAVE_1","action":"COMPLETE","result":"SUCCESS","details":{"uid":"uid_persona_p17"}}
+{"ts":"2026-08-18T11:19:05.547Z","agentId":"P-17","wave":2,"step":"WAVE_2","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T11:19:05.548Z","agentId":"P-17","wave":0,"step":"BILLING","action":"SUBSCRIPTION_SUCCESS","result":"SUCCESS","details":{"plan":"Individual","stripeCustomerId":"cus_test_swarm_p-17","stripeSubscriptionId":"sub_test_swarm_p-17","cardLastFour":"4242","cardBrand":"visa"}}
+{"ts":"2026-08-18T11:19:05.548Z","agentId":"P-17","wave":2,"step":"WAVE_2","action":"COMPLETE","result":"SUCCESS","details":{"plan":"Individual"}}
+{"ts":"2026-08-18T11:19:05.549Z","agentId":"P-17","wave":2,"step":"WAVE_2","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T11:19:05.550Z","agentId":"P-17","wave":0,"step":"BILLING","action":"SUBSCRIPTION_SUCCESS","result":"SUCCESS","details":{"plan":"Individual","stripeCustomerId":"cus_test_swarm_p-17","stripeSubscriptionId":"sub_test_swarm_p-17","cardLastFour":"4242","cardBrand":"visa"}}
+{"ts":"2026-08-18T11:19:05.550Z","agentId":"P-17","wave":2,"step":"WAVE_2","action":"COMPLETE","result":"SUCCESS","details":{"plan":"Individual"}}
+{"ts":"2026-08-18T11:19:05.640Z","agentId":"P-17","wave":3,"step":"WAVE_3","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T11:19:05.642Z","agentId":"P-17","wave":0,"step":"PROJECTS","action":"CREATION_SUCCESS","result":"SUCCESS","details":{"created":10,"plaid":false}}
+{"ts":"2026-08-18T11:19:05.642Z","agentId":"P-17","wave":3,"step":"WAVE_3","action":"COMPLETE","result":"SUCCESS","details":{"created":10}}
+{"ts":"2026-08-18T11:19:05.649Z","agentId":"P-17","wave":3,"step":"WAVE_3","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T11:19:05.652Z","agentId":"P-17","wave":0,"step":"PROJECTS","action":"CREATION_SUCCESS","result":"SUCCESS","details":{"created":10,"plaid":false}}
+{"ts":"2026-08-18T11:19:05.652Z","agentId":"P-17","wave":3,"step":"WAVE_3","action":"COMPLETE","result":"SUCCESS","details":{"created":10}}
+{"ts":"2026-08-18T11:19:05.840Z","agentId":"P-17","wave":4,"step":"WAVE_4","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T11:19:05.840Z","agentId":"P-17","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-35","to":"P-08","type":"Mentorship Joint Project"}}
+{"ts":"2026-08-18T11:19:05.841Z","agentId":"P-17","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-08"}}
+{"ts":"2026-08-18T11:19:05.841Z","agentId":"P-17","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-04"}}
+{"ts":"2026-08-18T11:19:05.841Z","agentId":"P-17","wave":4,"step":"WAVE_4","action":"COMPLETE","result":"SUCCESS","details":{"interactions":1,"invites":2}}
+{"ts":"2026-08-18T11:19:05.852Z","agentId":"P-17","wave":4,"step":"WAVE_4","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T11:19:05.852Z","agentId":"P-17","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-35","to":"P-08","type":"Mentorship Joint Project"}}
+{"ts":"2026-08-18T11:19:05.853Z","agentId":"P-17","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-08"}}
+{"ts":"2026-08-18T11:19:05.853Z","agentId":"P-17","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-04"}}
+{"ts":"2026-08-18T11:19:05.853Z","agentId":"P-17","wave":4,"step":"WAVE_4","action":"COMPLETE","result":"SUCCESS","details":{"interactions":1,"invites":2}}
+{"ts":"2026-08-18T11:19:05.952Z","agentId":"P-17","wave":5,"step":"WAVE_5","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T11:19:05.952Z","agentId":"P-17","wave":5,"step":"WAVE_5","action":"COMPLETE","result":"SUCCESS","details":{"reportPath":"/Users/yvesdarbouze/Documents/PaperWorking/artifacts/persona-swarm/reports/P-17-experience-report.md"}}
+{"ts":"2026-08-18T11:19:05.961Z","agentId":"P-17","wave":5,"step":"WAVE_5","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T11:19:05.962Z","agentId":"P-17","wave":5,"step":"WAVE_5","action":"COMPLETE","result":"SUCCESS","details":{"reportPath":"/Users/yvesdarbouze/Documents/PaperWorking/artifacts/persona-swarm/reports/P-17-experience-report.md"}}
+{"ts":"2026-08-18T14:00:23.571Z","agentId":"P-17","wave":1,"step":"WAVE_1","action":"START","result":"SUCCESS","details":{"email":"agent17.kevin.orourke@paperworking-test.dev"}}
+{"ts":"2026-08-18T14:00:23.572Z","agentId":"P-17","wave":0,"step":"SIGNUP","action":"SUCCESS_CREATED","result":"SUCCESS","details":{"uid":"uid_persona_p17","email":"agent17.kevin.orourke@paperworking-test.dev","name":"Kevin O'Rourke","entity":"O'Rourke Renewal Homes LLC"}}
+{"ts":"2026-08-18T14:00:23.572Z","agentId":"P-17","wave":1,"step":"WAVE_1","action":"COMPLETE","result":"SUCCESS","details":{"uid":"uid_persona_p17"}}
+{"ts":"2026-08-18T14:00:23.587Z","agentId":"P-17","wave":1,"step":"WAVE_1","action":"START","result":"SUCCESS","details":{"email":"agent17.kevin.orourke@paperworking-test.dev"}}
+{"ts":"2026-08-18T14:00:23.589Z","agentId":"P-17","wave":0,"step":"SIGNUP","action":"SUCCESS_CREATED","result":"SUCCESS","details":{"uid":"uid_persona_p17","email":"agent17.kevin.orourke@paperworking-test.dev","name":"Kevin O'Rourke","entity":"O'Rourke Renewal Homes LLC"}}
+{"ts":"2026-08-18T14:00:23.589Z","agentId":"P-17","wave":1,"step":"WAVE_1","action":"COMPLETE","result":"SUCCESS","details":{"uid":"uid_persona_p17"}}
+{"ts":"2026-08-18T14:00:23.648Z","agentId":"P-17","wave":2,"step":"WAVE_2","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T14:00:23.648Z","agentId":"P-17","wave":0,"step":"BILLING","action":"SUBSCRIPTION_SUCCESS","result":"SUCCESS","details":{"plan":"Individual","stripeCustomerId":"cus_test_swarm_p-17","stripeSubscriptionId":"sub_test_swarm_p-17","cardLastFour":"4242","cardBrand":"visa"}}
+{"ts":"2026-08-18T14:00:23.649Z","agentId":"P-17","wave":2,"step":"WAVE_2","action":"COMPLETE","result":"SUCCESS","details":{"plan":"Individual"}}
+{"ts":"2026-08-18T14:00:23.653Z","agentId":"P-17","wave":2,"step":"WAVE_2","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T14:00:23.654Z","agentId":"P-17","wave":0,"step":"BILLING","action":"SUBSCRIPTION_SUCCESS","result":"SUCCESS","details":{"plan":"Individual","stripeCustomerId":"cus_test_swarm_p-17","stripeSubscriptionId":"sub_test_swarm_p-17","cardLastFour":"4242","cardBrand":"visa"}}
+{"ts":"2026-08-18T14:00:23.654Z","agentId":"P-17","wave":2,"step":"WAVE_2","action":"COMPLETE","result":"SUCCESS","details":{"plan":"Individual"}}
+{"ts":"2026-08-18T14:00:23.753Z","agentId":"P-17","wave":3,"step":"WAVE_3","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T14:00:23.756Z","agentId":"P-17","wave":0,"step":"PROJECTS","action":"CREATION_SUCCESS","result":"SUCCESS","details":{"created":10,"plaid":false}}
+{"ts":"2026-08-18T14:00:23.756Z","agentId":"P-17","wave":3,"step":"WAVE_3","action":"COMPLETE","result":"SUCCESS","details":{"created":10}}
+{"ts":"2026-08-18T14:00:23.767Z","agentId":"P-17","wave":3,"step":"WAVE_3","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T14:00:23.770Z","agentId":"P-17","wave":0,"step":"PROJECTS","action":"CREATION_SUCCESS","result":"SUCCESS","details":{"created":10,"plaid":false}}
+{"ts":"2026-08-18T14:00:23.771Z","agentId":"P-17","wave":3,"step":"WAVE_3","action":"COMPLETE","result":"SUCCESS","details":{"created":10}}
+{"ts":"2026-08-18T14:00:23.938Z","agentId":"P-17","wave":4,"step":"WAVE_4","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T14:00:23.940Z","agentId":"P-17","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-35","to":"P-08","type":"Mentorship Joint Project"}}
+{"ts":"2026-08-18T14:00:23.941Z","agentId":"P-17","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-08"}}
+{"ts":"2026-08-18T14:00:23.941Z","agentId":"P-17","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-04"}}
+{"ts":"2026-08-18T14:00:23.942Z","agentId":"P-17","wave":4,"step":"WAVE_4","action":"COMPLETE","result":"SUCCESS","details":{"interactions":1,"invites":2}}
+{"ts":"2026-08-18T14:00:23.960Z","agentId":"P-17","wave":4,"step":"WAVE_4","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T14:00:23.961Z","agentId":"P-17","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-35","to":"P-08","type":"Mentorship Joint Project"}}
+{"ts":"2026-08-18T14:00:23.961Z","agentId":"P-17","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-08"}}
+{"ts":"2026-08-18T14:00:23.962Z","agentId":"P-17","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-04"}}
+{"ts":"2026-08-18T14:00:23.962Z","agentId":"P-17","wave":4,"step":"WAVE_4","action":"COMPLETE","result":"SUCCESS","details":{"interactions":1,"invites":2}}
+{"ts":"2026-08-18T14:00:24.080Z","agentId":"P-17","wave":5,"step":"WAVE_5","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T14:00:24.080Z","agentId":"P-17","wave":5,"step":"WAVE_5","action":"COMPLETE","result":"SUCCESS","details":{"reportPath":"/Users/yvesdarbouze/Documents/PaperWorking/artifacts/persona-swarm/reports/P-17-experience-report.md"}}
+{"ts":"2026-08-18T14:00:24.099Z","agentId":"P-17","wave":5,"step":"WAVE_5","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T14:00:24.099Z","agentId":"P-17","wave":5,"step":"WAVE_5","action":"COMPLETE","result":"SUCCESS","details":{"reportPath":"/Users/yvesdarbouze/Documents/PaperWorking/artifacts/persona-swarm/reports/P-17-experience-report.md"}}
+{"ts":"2026-08-18T14:00:30.823Z","agentId":"P-17","wave":1,"step":"WAVE_1","action":"START","result":"SUCCESS","details":{"email":"agent17.kevin.orourke@paperworking-test.dev"}}
+{"ts":"2026-08-18T14:00:30.952Z","agentId":"P-17","wave":1,"step":"WAVE_1","action":"START","result":"SUCCESS","details":{"email":"agent17.kevin.orourke@paperworking-test.dev"}}
+{"ts":"2026-08-18T14:00:32.889Z","agentId":"P-17","wave":0,"step":"SIGNUP","action":"SUCCESS_CREATED","result":"SUCCESS","details":{"uid":"uid_persona_p17","email":"agent17.kevin.orourke@paperworking-test.dev","name":"Kevin O'Rourke","entity":"O'Rourke Renewal Homes LLC"}}
+{"ts":"2026-08-18T14:00:32.890Z","agentId":"P-17","wave":1,"step":"WAVE_1","action":"COMPLETE","result":"SUCCESS","details":{"uid":"uid_persona_p17"}}
+{"ts":"2026-08-18T14:00:33.077Z","agentId":"P-17","wave":0,"step":"SIGNUP","action":"SUCCESS_CREATED","result":"SUCCESS","details":{"uid":"uid_persona_p17","email":"agent17.kevin.orourke@paperworking-test.dev","name":"Kevin O'Rourke","entity":"O'Rourke Renewal Homes LLC"}}
+{"ts":"2026-08-18T14:00:33.077Z","agentId":"P-17","wave":1,"step":"WAVE_1","action":"COMPLETE","result":"SUCCESS","details":{"uid":"uid_persona_p17"}}
+{"ts":"2026-08-18T14:00:58.786Z","agentId":"P-17","wave":1,"step":"WAVE_1","action":"START","result":"SUCCESS","details":{"email":"agent17.kevin.orourke@paperworking-test.dev"}}
+{"ts":"2026-08-18T14:00:58.786Z","agentId":"P-17","wave":0,"step":"SIGNUP","action":"SUCCESS_CREATED","result":"SUCCESS","details":{"uid":"uid_persona_p17","email":"agent17.kevin.orourke@paperworking-test.dev","name":"Kevin O'Rourke","entity":"O'Rourke Renewal Homes LLC"}}
+{"ts":"2026-08-18T14:00:58.787Z","agentId":"P-17","wave":1,"step":"WAVE_1","action":"COMPLETE","result":"SUCCESS","details":{"uid":"uid_persona_p17"}}
+{"ts":"2026-08-18T14:00:58.831Z","agentId":"P-17","wave":2,"step":"WAVE_2","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T14:00:58.832Z","agentId":"P-17","wave":0,"step":"BILLING","action":"SUBSCRIPTION_SUCCESS","result":"SUCCESS","details":{"plan":"Individual","stripeCustomerId":"cus_test_swarm_p-17","stripeSubscriptionId":"sub_test_swarm_p-17","cardLastFour":"4242","cardBrand":"visa"}}
+{"ts":"2026-08-18T14:00:58.832Z","agentId":"P-17","wave":2,"step":"WAVE_2","action":"COMPLETE","result":"SUCCESS","details":{"plan":"Individual"}}
+{"ts":"2026-08-18T14:00:58.901Z","agentId":"P-17","wave":3,"step":"WAVE_3","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T14:00:58.904Z","agentId":"P-17","wave":0,"step":"PROJECTS","action":"CREATION_SUCCESS","result":"SUCCESS","details":{"created":10,"plaid":false}}
+{"ts":"2026-08-18T14:00:58.904Z","agentId":"P-17","wave":3,"step":"WAVE_3","action":"COMPLETE","result":"SUCCESS","details":{"created":10}}
+{"ts":"2026-08-18T14:00:59.018Z","agentId":"P-17","wave":4,"step":"WAVE_4","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T14:00:59.018Z","agentId":"P-17","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-35","to":"P-08","type":"Mentorship Joint Project"}}
+{"ts":"2026-08-18T14:00:59.018Z","agentId":"P-17","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-08"}}
+{"ts":"2026-08-18T14:00:59.019Z","agentId":"P-17","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-04"}}
+{"ts":"2026-08-18T14:00:59.019Z","agentId":"P-17","wave":4,"step":"WAVE_4","action":"COMPLETE","result":"SUCCESS","details":{"interactions":1,"invites":2}}
+{"ts":"2026-08-18T14:00:59.107Z","agentId":"P-17","wave":5,"step":"WAVE_5","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T14:00:59.107Z","agentId":"P-17","wave":5,"step":"WAVE_5","action":"COMPLETE","result":"SUCCESS","details":{"reportPath":"/Users/yvesdarbouze/Documents/PaperWorking/artifacts/persona-swarm/reports/P-17-experience-report.md"}}
+{"ts":"2026-08-18T14:01:09.216Z","agentId":"P-17","wave":1,"step":"WAVE_1","action":"START","result":"SUCCESS","details":{"email":"agent17.kevin.orourke@paperworking-test.dev"}}
+{"ts":"2026-08-18T14:01:09.216Z","agentId":"P-17","wave":0,"step":"SIGNUP","action":"SUCCESS_CREATED","result":"SUCCESS","details":{"uid":"uid_persona_p17","email":"agent17.kevin.orourke@paperworking-test.dev","name":"Kevin O'Rourke","entity":"O'Rourke Renewal Homes LLC"}}
+{"ts":"2026-08-18T14:01:09.216Z","agentId":"P-17","wave":1,"step":"WAVE_1","action":"COMPLETE","result":"SUCCESS","details":{"uid":"uid_persona_p17"}}
+{"ts":"2026-08-18T14:01:09.256Z","agentId":"P-17","wave":2,"step":"WAVE_2","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T14:01:09.257Z","agentId":"P-17","wave":0,"step":"BILLING","action":"SUBSCRIPTION_SUCCESS","result":"SUCCESS","details":{"plan":"Individual","stripeCustomerId":"cus_test_swarm_p-17","stripeSubscriptionId":"sub_test_swarm_p-17","cardLastFour":"4242","cardBrand":"visa"}}
+{"ts":"2026-08-18T14:01:09.257Z","agentId":"P-17","wave":2,"step":"WAVE_2","action":"COMPLETE","result":"SUCCESS","details":{"plan":"Individual"}}
+{"ts":"2026-08-18T14:01:09.323Z","agentId":"P-17","wave":3,"step":"WAVE_3","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T14:01:09.325Z","agentId":"P-17","wave":0,"step":"PROJECTS","action":"CREATION_SUCCESS","result":"SUCCESS","details":{"created":10,"plaid":false}}
+{"ts":"2026-08-18T14:01:09.325Z","agentId":"P-17","wave":3,"step":"WAVE_3","action":"COMPLETE","result":"SUCCESS","details":{"created":10}}
+{"ts":"2026-08-18T14:01:09.435Z","agentId":"P-17","wave":4,"step":"WAVE_4","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T14:01:09.435Z","agentId":"P-17","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-35","to":"P-08","type":"Mentorship Joint Project"}}
+{"ts":"2026-08-18T14:01:09.436Z","agentId":"P-17","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-08"}}
+{"ts":"2026-08-18T14:01:09.436Z","agentId":"P-17","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-04"}}
+{"ts":"2026-08-18T14:01:09.436Z","agentId":"P-17","wave":4,"step":"WAVE_4","action":"COMPLETE","result":"SUCCESS","details":{"interactions":1,"invites":2}}
+{"ts":"2026-08-18T14:01:09.504Z","agentId":"P-17","wave":5,"step":"WAVE_5","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T14:01:09.504Z","agentId":"P-17","wave":5,"step":"WAVE_5","action":"COMPLETE","result":"SUCCESS","details":{"reportPath":"/Users/yvesdarbouze/Documents/PaperWorking/artifacts/persona-swarm/reports/P-17-experience-report.md"}}
+{"ts":"2026-08-18T14:01:24.888Z","agentId":"P-17","wave":1,"step":"WAVE_1","action":"START","result":"SUCCESS","details":{"email":"agent17.kevin.orourke@paperworking-test.dev"}}
+{"ts":"2026-08-18T14:01:24.888Z","agentId":"P-17","wave":0,"step":"SIGNUP","action":"SUCCESS_CREATED","result":"SUCCESS","details":{"uid":"uid_persona_p17","email":"agent17.kevin.orourke@paperworking-test.dev","name":"Kevin O'Rourke","entity":"O'Rourke Renewal Homes LLC"}}
+{"ts":"2026-08-18T14:01:24.888Z","agentId":"P-17","wave":1,"step":"WAVE_1","action":"COMPLETE","result":"SUCCESS","details":{"uid":"uid_persona_p17"}}
+{"ts":"2026-08-18T14:01:24.959Z","agentId":"P-17","wave":2,"step":"WAVE_2","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T14:01:24.960Z","agentId":"P-17","wave":0,"step":"BILLING","action":"SUBSCRIPTION_SUCCESS","result":"SUCCESS","details":{"plan":"Individual","stripeCustomerId":"cus_test_swarm_p-17","stripeSubscriptionId":"sub_test_swarm_p-17","cardLastFour":"4242","cardBrand":"visa"}}
+{"ts":"2026-08-18T14:01:24.960Z","agentId":"P-17","wave":2,"step":"WAVE_2","action":"COMPLETE","result":"SUCCESS","details":{"plan":"Individual"}}
+{"ts":"2026-08-18T14:01:25.055Z","agentId":"P-17","wave":3,"step":"WAVE_3","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T14:01:25.057Z","agentId":"P-17","wave":0,"step":"PROJECTS","action":"CREATION_SUCCESS","result":"SUCCESS","details":{"created":10,"plaid":false}}
+{"ts":"2026-08-18T14:01:25.057Z","agentId":"P-17","wave":3,"step":"WAVE_3","action":"COMPLETE","result":"SUCCESS","details":{"created":10}}
+{"ts":"2026-08-18T14:01:25.189Z","agentId":"P-17","wave":4,"step":"WAVE_4","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T14:01:25.189Z","agentId":"P-17","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-35","to":"P-08","type":"Mentorship Joint Project"}}
+{"ts":"2026-08-18T14:01:25.189Z","agentId":"P-17","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-08"}}
+{"ts":"2026-08-18T14:01:25.189Z","agentId":"P-17","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-04"}}
+{"ts":"2026-08-18T14:01:25.189Z","agentId":"P-17","wave":4,"step":"WAVE_4","action":"COMPLETE","result":"SUCCESS","details":{"interactions":1,"invites":2}}
+{"ts":"2026-08-18T14:01:25.282Z","agentId":"P-17","wave":5,"step":"WAVE_5","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T14:01:25.283Z","agentId":"P-17","wave":5,"step":"WAVE_5","action":"COMPLETE","result":"SUCCESS","details":{"reportPath":"/Users/yvesdarbouze/Documents/PaperWorking/artifacts/persona-swarm/reports/P-17-experience-report.md"}}
+{"ts":"2026-08-18T14:01:25.625Z","agentId":"P-17","wave":1,"step":"WAVE_1","action":"START","result":"SUCCESS","details":{"email":"agent17.kevin.orourke@paperworking-test.dev"}}
+{"ts":"2026-08-18T14:01:25.625Z","agentId":"P-17","wave":0,"step":"SIGNUP","action":"SUCCESS_CREATED","result":"SUCCESS","details":{"uid":"uid_persona_p17","email":"agent17.kevin.orourke@paperworking-test.dev","name":"Kevin O'Rourke","entity":"O'Rourke Renewal Homes LLC"}}
+{"ts":"2026-08-18T14:01:25.625Z","agentId":"P-17","wave":1,"step":"WAVE_1","action":"COMPLETE","result":"SUCCESS","details":{"uid":"uid_persona_p17"}}
+{"ts":"2026-08-18T14:01:25.683Z","agentId":"P-17","wave":2,"step":"WAVE_2","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T14:01:25.686Z","agentId":"P-17","wave":0,"step":"BILLING","action":"SUBSCRIPTION_SUCCESS","result":"SUCCESS","details":{"plan":"Individual","stripeCustomerId":"cus_test_swarm_p-17","stripeSubscriptionId":"sub_test_swarm_p-17","cardLastFour":"4242","cardBrand":"visa"}}
+{"ts":"2026-08-18T14:01:25.688Z","agentId":"P-17","wave":2,"step":"WAVE_2","action":"COMPLETE","result":"SUCCESS","details":{"plan":"Individual"}}
+{"ts":"2026-08-18T14:01:25.801Z","agentId":"P-17","wave":3,"step":"WAVE_3","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T14:01:25.805Z","agentId":"P-17","wave":0,"step":"PROJECTS","action":"CREATION_SUCCESS","result":"SUCCESS","details":{"created":10,"plaid":false}}
+{"ts":"2026-08-18T14:01:25.805Z","agentId":"P-17","wave":3,"step":"WAVE_3","action":"COMPLETE","result":"SUCCESS","details":{"created":10}}
+{"ts":"2026-08-18T14:01:25.962Z","agentId":"P-17","wave":4,"step":"WAVE_4","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T14:01:25.962Z","agentId":"P-17","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-35","to":"P-08","type":"Mentorship Joint Project"}}
+{"ts":"2026-08-18T14:01:25.962Z","agentId":"P-17","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-08"}}
+{"ts":"2026-08-18T14:01:25.963Z","agentId":"P-17","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-04"}}
+{"ts":"2026-08-18T14:01:25.963Z","agentId":"P-17","wave":4,"step":"WAVE_4","action":"COMPLETE","result":"SUCCESS","details":{"interactions":1,"invites":2}}
+{"ts":"2026-08-18T14:01:26.062Z","agentId":"P-17","wave":5,"step":"WAVE_5","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T14:01:26.063Z","agentId":"P-17","wave":5,"step":"WAVE_5","action":"COMPLETE","result":"SUCCESS","details":{"reportPath":"/Users/yvesdarbouze/Documents/PaperWorking/artifacts/persona-swarm/reports/P-17-experience-report.md"}}
+{"ts":"2026-08-18T14:16:29.101Z","agentId":"P-17","wave":1,"step":"WAVE_1","action":"START","result":"SUCCESS","details":{"email":"agent17.kevin.orourke@paperworking-test.dev"}}
+{"ts":"2026-08-18T14:16:29.101Z","agentId":"P-17","wave":1,"step":"WAVE_1","action":"START","result":"SUCCESS","details":{"email":"agent17.kevin.orourke@paperworking-test.dev"}}
+{"ts":"2026-08-18T14:16:29.102Z","agentId":"P-17","wave":0,"step":"SIGNUP","action":"SUCCESS_CREATED","result":"SUCCESS","details":{"uid":"uid_persona_p17","email":"agent17.kevin.orourke@paperworking-test.dev","name":"Kevin O'Rourke","entity":"O'Rourke Renewal Homes LLC"}}
+{"ts":"2026-08-18T14:16:29.102Z","agentId":"P-17","wave":0,"step":"SIGNUP","action":"SUCCESS_CREATED","result":"SUCCESS","details":{"uid":"uid_persona_p17","email":"agent17.kevin.orourke@paperworking-test.dev","name":"Kevin O'Rourke","entity":"O'Rourke Renewal Homes LLC"}}
+{"ts":"2026-08-18T14:16:29.102Z","agentId":"P-17","wave":1,"step":"WAVE_1","action":"COMPLETE","result":"SUCCESS","details":{"uid":"uid_persona_p17"}}
+{"ts":"2026-08-18T14:16:29.102Z","agentId":"P-17","wave":1,"step":"WAVE_1","action":"COMPLETE","result":"SUCCESS","details":{"uid":"uid_persona_p17"}}
+{"ts":"2026-08-18T14:16:29.176Z","agentId":"P-17","wave":2,"step":"WAVE_2","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T14:16:29.176Z","agentId":"P-17","wave":0,"step":"BILLING","action":"SUBSCRIPTION_SUCCESS","result":"SUCCESS","details":{"plan":"Individual","stripeCustomerId":"cus_test_swarm_p-17","stripeSubscriptionId":"sub_test_swarm_p-17","cardLastFour":"4242","cardBrand":"visa"}}
+{"ts":"2026-08-18T14:16:29.177Z","agentId":"P-17","wave":2,"step":"WAVE_2","action":"COMPLETE","result":"SUCCESS","details":{"plan":"Individual"}}
+{"ts":"2026-08-18T14:16:29.177Z","agentId":"P-17","wave":2,"step":"WAVE_2","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T14:16:29.177Z","agentId":"P-17","wave":0,"step":"BILLING","action":"SUBSCRIPTION_SUCCESS","result":"SUCCESS","details":{"plan":"Individual","stripeCustomerId":"cus_test_swarm_p-17","stripeSubscriptionId":"sub_test_swarm_p-17","cardLastFour":"4242","cardBrand":"visa"}}
+{"ts":"2026-08-18T14:16:29.177Z","agentId":"P-17","wave":2,"step":"WAVE_2","action":"COMPLETE","result":"SUCCESS","details":{"plan":"Individual"}}
+{"ts":"2026-08-18T14:16:29.271Z","agentId":"P-17","wave":3,"step":"WAVE_3","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T14:16:29.272Z","agentId":"P-17","wave":3,"step":"WAVE_3","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T14:16:29.274Z","agentId":"P-17","wave":0,"step":"PROJECTS","action":"CREATION_SUCCESS","result":"SUCCESS","details":{"created":10,"plaid":false}}
+{"ts":"2026-08-18T14:16:29.274Z","agentId":"P-17","wave":3,"step":"WAVE_3","action":"COMPLETE","result":"SUCCESS","details":{"created":10}}
+{"ts":"2026-08-18T14:16:29.276Z","agentId":"P-17","wave":0,"step":"PROJECTS","action":"CREATION_SUCCESS","result":"SUCCESS","details":{"created":10,"plaid":false}}
+{"ts":"2026-08-18T14:16:29.276Z","agentId":"P-17","wave":3,"step":"WAVE_3","action":"COMPLETE","result":"SUCCESS","details":{"created":10}}
+{"ts":"2026-08-18T14:16:29.418Z","agentId":"P-17","wave":4,"step":"WAVE_4","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T14:16:29.420Z","agentId":"P-17","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-35","to":"P-08","type":"Mentorship Joint Project"}}
+{"ts":"2026-08-18T14:16:29.421Z","agentId":"P-17","wave":4,"step":"WAVE_4","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T14:16:29.421Z","agentId":"P-17","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-08"}}
+{"ts":"2026-08-18T14:16:29.422Z","agentId":"P-17","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-04"}}
+{"ts":"2026-08-18T14:16:29.422Z","agentId":"P-17","wave":4,"step":"WAVE_4","action":"COMPLETE","result":"SUCCESS","details":{"interactions":1,"invites":2}}
+{"ts":"2026-08-18T14:16:29.422Z","agentId":"P-17","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-35","to":"P-08","type":"Mentorship Joint Project"}}
+{"ts":"2026-08-18T14:16:29.422Z","agentId":"P-17","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-08"}}
+{"ts":"2026-08-18T14:16:29.422Z","agentId":"P-17","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-04"}}
+{"ts":"2026-08-18T14:16:29.422Z","agentId":"P-17","wave":4,"step":"WAVE_4","action":"COMPLETE","result":"SUCCESS","details":{"interactions":1,"invites":2}}
+{"ts":"2026-08-18T14:16:29.529Z","agentId":"P-17","wave":5,"step":"WAVE_5","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T14:16:29.529Z","agentId":"P-17","wave":5,"step":"WAVE_5","action":"COMPLETE","result":"SUCCESS","details":{"reportPath":"/Users/yvesdarbouze/Documents/PaperWorking/artifacts/persona-swarm/reports/P-17-experience-report.md"}}
+{"ts":"2026-08-18T14:16:29.542Z","agentId":"P-17","wave":5,"step":"WAVE_5","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T14:16:29.542Z","agentId":"P-17","wave":5,"step":"WAVE_5","action":"COMPLETE","result":"SUCCESS","details":{"reportPath":"/Users/yvesdarbouze/Documents/PaperWorking/artifacts/persona-swarm/reports/P-17-experience-report.md"}}
+{"ts":"2026-08-18T15:27:30.075Z","agentId":"P-17","wave":1,"step":"WAVE_1","action":"START","result":"SUCCESS","details":{"email":"agent17.kevin.orourke@paperworking-test.dev"}}
+{"ts":"2026-08-18T15:27:30.077Z","agentId":"P-17","wave":0,"step":"SIGNUP","action":"SUCCESS_CREATED","result":"SUCCESS","details":{"uid":"uid_persona_p17","email":"agent17.kevin.orourke@paperworking-test.dev","name":"Kevin O'Rourke","entity":"O'Rourke Renewal Homes LLC"}}
+{"ts":"2026-08-18T15:27:30.077Z","agentId":"P-17","wave":1,"step":"WAVE_1","action":"COMPLETE","result":"SUCCESS","details":{"uid":"uid_persona_p17"}}
+{"ts":"2026-08-18T15:27:30.107Z","agentId":"P-17","wave":1,"step":"WAVE_1","action":"START","result":"SUCCESS","details":{"email":"agent17.kevin.orourke@paperworking-test.dev"}}
+{"ts":"2026-08-18T15:27:30.108Z","agentId":"P-17","wave":0,"step":"SIGNUP","action":"SUCCESS_CREATED","result":"SUCCESS","details":{"uid":"uid_persona_p17","email":"agent17.kevin.orourke@paperworking-test.dev","name":"Kevin O'Rourke","entity":"O'Rourke Renewal Homes LLC"}}
+{"ts":"2026-08-18T15:27:30.109Z","agentId":"P-17","wave":1,"step":"WAVE_1","action":"COMPLETE","result":"SUCCESS","details":{"uid":"uid_persona_p17"}}
+{"ts":"2026-08-18T15:27:30.239Z","agentId":"P-17","wave":2,"step":"WAVE_2","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T15:27:30.241Z","agentId":"P-17","wave":0,"step":"BILLING","action":"SUBSCRIPTION_SUCCESS","result":"SUCCESS","details":{"plan":"Individual","stripeCustomerId":"cus_test_swarm_p-17","stripeSubscriptionId":"sub_test_swarm_p-17","cardLastFour":"4242","cardBrand":"visa"}}
+{"ts":"2026-08-18T15:27:30.241Z","agentId":"P-17","wave":2,"step":"WAVE_2","action":"COMPLETE","result":"SUCCESS","details":{"plan":"Individual"}}
+{"ts":"2026-08-18T15:27:30.268Z","agentId":"P-17","wave":2,"step":"WAVE_2","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T15:27:30.270Z","agentId":"P-17","wave":0,"step":"BILLING","action":"SUBSCRIPTION_SUCCESS","result":"SUCCESS","details":{"plan":"Individual","stripeCustomerId":"cus_test_swarm_p-17","stripeSubscriptionId":"sub_test_swarm_p-17","cardLastFour":"4242","cardBrand":"visa"}}
+{"ts":"2026-08-18T15:27:30.270Z","agentId":"P-17","wave":2,"step":"WAVE_2","action":"COMPLETE","result":"SUCCESS","details":{"plan":"Individual"}}
+{"ts":"2026-08-18T15:27:30.467Z","agentId":"P-17","wave":3,"step":"WAVE_3","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T15:27:30.469Z","agentId":"P-17","wave":0,"step":"PROJECTS","action":"CREATION_SUCCESS","result":"SUCCESS","details":{"created":10,"plaid":false}}
+{"ts":"2026-08-18T15:27:30.469Z","agentId":"P-17","wave":3,"step":"WAVE_3","action":"COMPLETE","result":"SUCCESS","details":{"created":10}}
+{"ts":"2026-08-18T15:27:30.570Z","agentId":"P-17","wave":3,"step":"WAVE_3","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T15:27:30.574Z","agentId":"P-17","wave":0,"step":"PROJECTS","action":"CREATION_SUCCESS","result":"SUCCESS","details":{"created":10,"plaid":false}}
+{"ts":"2026-08-18T15:27:30.574Z","agentId":"P-17","wave":3,"step":"WAVE_3","action":"COMPLETE","result":"SUCCESS","details":{"created":10}}
+{"ts":"2026-08-18T15:27:30.757Z","agentId":"P-17","wave":4,"step":"WAVE_4","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T15:27:30.757Z","agentId":"P-17","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-35","to":"P-08","type":"Mentorship Joint Project"}}
+{"ts":"2026-08-18T15:27:30.758Z","agentId":"P-17","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-08"}}
+{"ts":"2026-08-18T15:27:30.758Z","agentId":"P-17","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-04"}}
+{"ts":"2026-08-18T15:27:30.758Z","agentId":"P-17","wave":4,"step":"WAVE_4","action":"COMPLETE","result":"SUCCESS","details":{"interactions":1,"invites":2}}
+{"ts":"2026-08-18T15:27:30.801Z","agentId":"P-17","wave":4,"step":"WAVE_4","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T15:27:30.802Z","agentId":"P-17","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-35","to":"P-08","type":"Mentorship Joint Project"}}
+{"ts":"2026-08-18T15:27:30.802Z","agentId":"P-17","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-08"}}
+{"ts":"2026-08-18T15:27:30.803Z","agentId":"P-17","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-04"}}
+{"ts":"2026-08-18T15:27:30.803Z","agentId":"P-17","wave":4,"step":"WAVE_4","action":"COMPLETE","result":"SUCCESS","details":{"interactions":1,"invites":2}}
+{"ts":"2026-08-18T15:27:30.891Z","agentId":"P-17","wave":5,"step":"WAVE_5","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T15:27:30.891Z","agentId":"P-17","wave":5,"step":"WAVE_5","action":"COMPLETE","result":"SUCCESS","details":{"reportPath":"/Users/yvesdarbouze/Documents/PaperWorking/artifacts/persona-swarm/reports/P-17-experience-report.md"}}
+{"ts":"2026-08-18T15:27:30.927Z","agentId":"P-17","wave":5,"step":"WAVE_5","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T15:27:30.927Z","agentId":"P-17","wave":5,"step":"WAVE_5","action":"COMPLETE","result":"SUCCESS","details":{"reportPath":"/Users/yvesdarbouze/Documents/PaperWorking/artifacts/persona-swarm/reports/P-17-experience-report.md"}}
+{"ts":"2026-08-18T15:28:00.285Z","agentId":"P-17","wave":1,"step":"WAVE_1","action":"START","result":"SUCCESS","details":{"email":"agent17.kevin.orourke@paperworking-test.dev"}}
+{"ts":"2026-08-18T15:28:00.290Z","agentId":"P-17","wave":1,"step":"WAVE_1","action":"START","result":"SUCCESS","details":{"email":"agent17.kevin.orourke@paperworking-test.dev"}}
+{"ts":"2026-08-18T15:28:00.291Z","agentId":"P-17","wave":0,"step":"SIGNUP","action":"SUCCESS_CREATED","result":"SUCCESS","details":{"uid":"uid_persona_p17","email":"agent17.kevin.orourke@paperworking-test.dev","name":"Kevin O'Rourke","entity":"O'Rourke Renewal Homes LLC"}}
+{"ts":"2026-08-18T15:28:00.291Z","agentId":"P-17","wave":1,"step":"WAVE_1","action":"COMPLETE","result":"SUCCESS","details":{"uid":"uid_persona_p17"}}
+{"ts":"2026-08-18T15:28:00.292Z","agentId":"P-17","wave":0,"step":"SIGNUP","action":"SUCCESS_CREATED","result":"SUCCESS","details":{"uid":"uid_persona_p17","email":"agent17.kevin.orourke@paperworking-test.dev","name":"Kevin O'Rourke","entity":"O'Rourke Renewal Homes LLC"}}
+{"ts":"2026-08-18T15:28:00.292Z","agentId":"P-17","wave":1,"step":"WAVE_1","action":"COMPLETE","result":"SUCCESS","details":{"uid":"uid_persona_p17"}}
+{"ts":"2026-08-18T15:28:00.365Z","agentId":"P-17","wave":2,"step":"WAVE_2","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T15:28:00.366Z","agentId":"P-17","wave":0,"step":"BILLING","action":"SUBSCRIPTION_SUCCESS","result":"SUCCESS","details":{"plan":"Individual","stripeCustomerId":"cus_test_swarm_p-17","stripeSubscriptionId":"sub_test_swarm_p-17","cardLastFour":"4242","cardBrand":"visa"}}
+{"ts":"2026-08-18T15:28:00.366Z","agentId":"P-17","wave":2,"step":"WAVE_2","action":"COMPLETE","result":"SUCCESS","details":{"plan":"Individual"}}
+{"ts":"2026-08-18T15:28:00.369Z","agentId":"P-17","wave":2,"step":"WAVE_2","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T15:28:00.369Z","agentId":"P-17","wave":0,"step":"BILLING","action":"SUBSCRIPTION_SUCCESS","result":"SUCCESS","details":{"plan":"Individual","stripeCustomerId":"cus_test_swarm_p-17","stripeSubscriptionId":"sub_test_swarm_p-17","cardLastFour":"4242","cardBrand":"visa"}}
+{"ts":"2026-08-18T15:28:00.370Z","agentId":"P-17","wave":2,"step":"WAVE_2","action":"COMPLETE","result":"SUCCESS","details":{"plan":"Individual"}}
+{"ts":"2026-08-18T15:28:00.483Z","agentId":"P-17","wave":3,"step":"WAVE_3","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T15:28:00.485Z","agentId":"P-17","wave":0,"step":"PROJECTS","action":"CREATION_SUCCESS","result":"SUCCESS","details":{"created":10,"plaid":false}}
+{"ts":"2026-08-18T15:28:00.485Z","agentId":"P-17","wave":3,"step":"WAVE_3","action":"COMPLETE","result":"SUCCESS","details":{"created":10}}
+{"ts":"2026-08-18T15:28:00.486Z","agentId":"P-17","wave":3,"step":"WAVE_3","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T15:28:00.490Z","agentId":"P-17","wave":0,"step":"PROJECTS","action":"CREATION_SUCCESS","result":"SUCCESS","details":{"created":10,"plaid":false}}
+{"ts":"2026-08-18T15:28:00.490Z","agentId":"P-17","wave":3,"step":"WAVE_3","action":"COMPLETE","result":"SUCCESS","details":{"created":10}}
+{"ts":"2026-08-18T15:28:00.718Z","agentId":"P-17","wave":4,"step":"WAVE_4","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T15:28:00.719Z","agentId":"P-17","wave":4,"step":"WAVE_4","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T15:28:00.719Z","agentId":"P-17","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-35","to":"P-08","type":"Mentorship Joint Project"}}
+{"ts":"2026-08-18T15:28:00.719Z","agentId":"P-17","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-08"}}
+{"ts":"2026-08-18T15:28:00.719Z","agentId":"P-17","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-04"}}
+{"ts":"2026-08-18T15:28:00.719Z","agentId":"P-17","wave":4,"step":"WAVE_4","action":"COMPLETE","result":"SUCCESS","details":{"interactions":1,"invites":2}}
+{"ts":"2026-08-18T15:28:00.719Z","agentId":"P-17","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-35","to":"P-08","type":"Mentorship Joint Project"}}
+{"ts":"2026-08-18T15:28:00.720Z","agentId":"P-17","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-08"}}
+{"ts":"2026-08-18T15:28:00.722Z","agentId":"P-17","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-04"}}
+{"ts":"2026-08-18T15:28:00.722Z","agentId":"P-17","wave":4,"step":"WAVE_4","action":"COMPLETE","result":"SUCCESS","details":{"interactions":1,"invites":2}}
+{"ts":"2026-08-18T15:28:00.836Z","agentId":"P-17","wave":5,"step":"WAVE_5","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T15:28:00.836Z","agentId":"P-17","wave":5,"step":"WAVE_5","action":"COMPLETE","result":"SUCCESS","details":{"reportPath":"/Users/yvesdarbouze/Documents/PaperWorking/artifacts/persona-swarm/reports/P-17-experience-report.md"}}
+{"ts":"2026-08-18T15:28:00.858Z","agentId":"P-17","wave":5,"step":"WAVE_5","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T15:28:00.859Z","agentId":"P-17","wave":5,"step":"WAVE_5","action":"COMPLETE","result":"SUCCESS","details":{"reportPath":"/Users/yvesdarbouze/Documents/PaperWorking/artifacts/persona-swarm/reports/P-17-experience-report.md"}}
+{"ts":"2026-08-18T15:55:53.644Z","agentId":"P-17","wave":1,"step":"WAVE_1","action":"START","result":"SUCCESS","details":{"email":"agent17.kevin.orourke@paperworking-test.dev"}}
+{"ts":"2026-08-18T15:55:53.715Z","agentId":"P-17","wave":1,"step":"WAVE_1","action":"START","result":"SUCCESS","details":{"email":"agent17.kevin.orourke@paperworking-test.dev"}}
+{"ts":"2026-08-18T15:55:55.653Z","agentId":"P-17","wave":0,"step":"SIGNUP","action":"SUCCESS_CREATED","result":"SUCCESS","details":{"uid":"uid_persona_p17","email":"agent17.kevin.orourke@paperworking-test.dev","name":"Kevin O'Rourke","entity":"O'Rourke Renewal Homes LLC"}}
+{"ts":"2026-08-18T15:55:55.654Z","agentId":"P-17","wave":1,"step":"WAVE_1","action":"COMPLETE","result":"SUCCESS","details":{"uid":"uid_persona_p17"}}
+{"ts":"2026-08-18T15:55:55.749Z","agentId":"P-17","wave":0,"step":"SIGNUP","action":"SUCCESS_CREATED","result":"SUCCESS","details":{"uid":"uid_persona_p17","email":"agent17.kevin.orourke@paperworking-test.dev","name":"Kevin O'Rourke","entity":"O'Rourke Renewal Homes LLC"}}
+{"ts":"2026-08-18T15:55:55.750Z","agentId":"P-17","wave":1,"step":"WAVE_1","action":"COMPLETE","result":"SUCCESS","details":{"uid":"uid_persona_p17"}}
+{"ts":"2026-08-18T15:57:14.654Z","agentId":"P-17","wave":2,"step":"WAVE_2","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T15:57:14.666Z","agentId":"P-17","wave":2,"step":"WAVE_2","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T15:57:15.437Z","agentId":"P-17","wave":0,"step":"BILLING","action":"SUBSCRIPTION_SUCCESS","result":"SUCCESS","details":{"plan":"Individual","stripeCustomerId":"cus_test_swarm_p-17","stripeSubscriptionId":"sub_test_swarm_p-17","cardLastFour":"4242","cardBrand":"visa"}}
+{"ts":"2026-08-18T15:57:15.437Z","agentId":"P-17","wave":2,"step":"WAVE_2","action":"COMPLETE","result":"SUCCESS","details":{"plan":"Individual"}}
+{"ts":"2026-08-18T15:57:15.446Z","agentId":"P-17","wave":0,"step":"BILLING","action":"SUBSCRIPTION_SUCCESS","result":"SUCCESS","details":{"plan":"Individual","stripeCustomerId":"cus_test_swarm_p-17","stripeSubscriptionId":"sub_test_swarm_p-17","cardLastFour":"4242","cardBrand":"visa"}}
+{"ts":"2026-08-18T15:57:15.446Z","agentId":"P-17","wave":2,"step":"WAVE_2","action":"COMPLETE","result":"SUCCESS","details":{"plan":"Individual"}}
+{"ts":"2026-08-18T15:57:17.891Z","agentId":"P-17","wave":3,"step":"WAVE_3","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T15:57:17.891Z","agentId":"P-17","wave":0,"step":"PROJECTS","action":"CREATION_SUCCESS","result":"SUCCESS","details":{"created":10,"plaid":false}}
+{"ts":"2026-08-18T15:57:17.891Z","agentId":"P-17","wave":3,"step":"WAVE_3","action":"COMPLETE","result":"SUCCESS","details":{"created":10}}
+{"ts":"2026-08-18T15:57:17.923Z","agentId":"P-17","wave":4,"step":"WAVE_4","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T15:57:17.924Z","agentId":"P-17","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-35","to":"P-08","type":"Mentorship Joint Project"}}
+{"ts":"2026-08-18T15:57:17.924Z","agentId":"P-17","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-08"}}
+{"ts":"2026-08-18T15:57:17.924Z","agentId":"P-17","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-04"}}
+{"ts":"2026-08-18T15:57:17.924Z","agentId":"P-17","wave":4,"step":"WAVE_4","action":"COMPLETE","result":"SUCCESS","details":{"interactions":1,"invites":2}}
+{"ts":"2026-08-18T15:57:17.933Z","agentId":"P-17","wave":3,"step":"WAVE_3","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T15:57:17.933Z","agentId":"P-17","wave":0,"step":"PROJECTS","action":"CREATION_SUCCESS","result":"SUCCESS","details":{"created":10,"plaid":false}}
+{"ts":"2026-08-18T15:57:17.933Z","agentId":"P-17","wave":3,"step":"WAVE_3","action":"COMPLETE","result":"SUCCESS","details":{"created":10}}
+{"ts":"2026-08-18T15:57:17.963Z","agentId":"P-17","wave":4,"step":"WAVE_4","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T15:57:17.964Z","agentId":"P-17","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-35","to":"P-08","type":"Mentorship Joint Project"}}
+{"ts":"2026-08-18T15:57:17.964Z","agentId":"P-17","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-08"}}
+{"ts":"2026-08-18T15:57:17.964Z","agentId":"P-17","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-04"}}
+{"ts":"2026-08-18T15:57:17.964Z","agentId":"P-17","wave":4,"step":"WAVE_4","action":"COMPLETE","result":"SUCCESS","details":{"interactions":1,"invites":2}}
+{"ts":"2026-08-18T15:57:17.979Z","agentId":"P-17","wave":5,"step":"WAVE_5","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T15:57:17.979Z","agentId":"P-17","wave":5,"step":"WAVE_5","action":"COMPLETE","result":"SUCCESS","details":{"reportPath":"/Users/yvesdarbouze/Documents/PaperWorking/artifacts/persona-swarm/reports/P-17-experience-report.md"}}
+{"ts":"2026-08-18T15:57:18.010Z","agentId":"P-17","wave":5,"step":"WAVE_5","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T15:57:18.010Z","agentId":"P-17","wave":5,"step":"WAVE_5","action":"COMPLETE","result":"SUCCESS","details":{"reportPath":"/Users/yvesdarbouze/Documents/PaperWorking/artifacts/persona-swarm/reports/P-17-experience-report.md"}}
+{"ts":"2026-08-18T16:11:37.832Z","agentId":"P-17","wave":1,"step":"WAVE_1","action":"START","result":"SUCCESS","details":{"email":"agent17.kevin.orourke@paperworking-test.dev"}}
+{"ts":"2026-08-18T16:11:37.832Z","agentId":"P-17","wave":0,"step":"SIGNUP","action":"SUCCESS_CREATED","result":"SUCCESS","details":{"uid":"uid_persona_p17","email":"agent17.kevin.orourke@paperworking-test.dev","name":"Kevin O'Rourke","entity":"O'Rourke Renewal Homes LLC"}}
+{"ts":"2026-08-18T16:11:37.832Z","agentId":"P-17","wave":1,"step":"WAVE_1","action":"COMPLETE","result":"SUCCESS","details":{"uid":"uid_persona_p17"}}
+{"ts":"2026-08-18T16:11:37.876Z","agentId":"P-17","wave":2,"step":"WAVE_2","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T16:11:37.876Z","agentId":"P-17","wave":0,"step":"BILLING","action":"SUBSCRIPTION_SUCCESS","result":"SUCCESS","details":{"plan":"Individual","stripeCustomerId":"cus_test_swarm_p-17","stripeSubscriptionId":"sub_test_swarm_p-17","cardLastFour":"4242","cardBrand":"visa"}}
+{"ts":"2026-08-18T16:11:37.876Z","agentId":"P-17","wave":2,"step":"WAVE_2","action":"COMPLETE","result":"SUCCESS","details":{"plan":"Individual"}}
+{"ts":"2026-08-18T16:11:37.897Z","agentId":"P-17","wave":3,"step":"WAVE_3","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T16:11:37.897Z","agentId":"P-17","wave":0,"step":"PROJECTS","action":"CREATION_SUCCESS","result":"SUCCESS","details":{"created":10,"plaid":false}}
+{"ts":"2026-08-18T16:11:37.897Z","agentId":"P-17","wave":3,"step":"WAVE_3","action":"COMPLETE","result":"SUCCESS","details":{"created":10}}
+{"ts":"2026-08-18T16:11:37.929Z","agentId":"P-17","wave":4,"step":"WAVE_4","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T16:11:37.929Z","agentId":"P-17","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-35","to":"P-08","type":"Mentorship Joint Project"}}
+{"ts":"2026-08-18T16:11:37.930Z","agentId":"P-17","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-08"}}
+{"ts":"2026-08-18T16:11:37.930Z","agentId":"P-17","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-04"}}
+{"ts":"2026-08-18T16:11:37.930Z","agentId":"P-17","wave":4,"step":"WAVE_4","action":"COMPLETE","result":"SUCCESS","details":{"interactions":1,"invites":2}}
+{"ts":"2026-08-18T16:11:37.967Z","agentId":"P-17","wave":5,"step":"WAVE_5","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T16:11:37.967Z","agentId":"P-17","wave":5,"step":"WAVE_5","action":"COMPLETE","result":"SUCCESS","details":{"reportPath":"/Users/yvesdarbouze/Documents/PaperWorking/artifacts/persona-swarm/reports/P-17-experience-report.md"}}
+{"ts":"2026-08-18T16:11:38.117Z","agentId":"P-17","wave":1,"step":"WAVE_1","action":"START","result":"SUCCESS","details":{"email":"agent17.kevin.orourke@paperworking-test.dev"}}
+{"ts":"2026-08-18T16:11:38.117Z","agentId":"P-17","wave":0,"step":"SIGNUP","action":"SUCCESS_CREATED","result":"SUCCESS","details":{"uid":"uid_persona_p17","email":"agent17.kevin.orourke@paperworking-test.dev","name":"Kevin O'Rourke","entity":"O'Rourke Renewal Homes LLC"}}
+{"ts":"2026-08-18T16:11:38.117Z","agentId":"P-17","wave":1,"step":"WAVE_1","action":"COMPLETE","result":"SUCCESS","details":{"uid":"uid_persona_p17"}}
+{"ts":"2026-08-18T16:11:38.134Z","agentId":"P-17","wave":2,"step":"WAVE_2","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T16:11:38.134Z","agentId":"P-17","wave":0,"step":"BILLING","action":"SUBSCRIPTION_SUCCESS","result":"SUCCESS","details":{"plan":"Individual","stripeCustomerId":"cus_test_swarm_p-17","stripeSubscriptionId":"sub_test_swarm_p-17","cardLastFour":"4242","cardBrand":"visa"}}
+{"ts":"2026-08-18T16:11:38.134Z","agentId":"P-17","wave":2,"step":"WAVE_2","action":"COMPLETE","result":"SUCCESS","details":{"plan":"Individual"}}
+{"ts":"2026-08-18T16:11:38.165Z","agentId":"P-17","wave":3,"step":"WAVE_3","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T16:11:38.165Z","agentId":"P-17","wave":0,"step":"PROJECTS","action":"CREATION_SUCCESS","result":"SUCCESS","details":{"created":10,"plaid":false}}
+{"ts":"2026-08-18T16:11:38.165Z","agentId":"P-17","wave":3,"step":"WAVE_3","action":"COMPLETE","result":"SUCCESS","details":{"created":10}}
+{"ts":"2026-08-18T16:11:38.191Z","agentId":"P-17","wave":4,"step":"WAVE_4","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T16:11:38.191Z","agentId":"P-17","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-35","to":"P-08","type":"Mentorship Joint Project"}}
+{"ts":"2026-08-18T16:11:38.191Z","agentId":"P-17","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-08"}}
+{"ts":"2026-08-18T16:11:38.191Z","agentId":"P-17","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-04"}}
+{"ts":"2026-08-18T16:11:38.191Z","agentId":"P-17","wave":4,"step":"WAVE_4","action":"COMPLETE","result":"SUCCESS","details":{"interactions":1,"invites":2}}
+{"ts":"2026-08-18T16:11:38.215Z","agentId":"P-17","wave":5,"step":"WAVE_5","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T16:11:38.215Z","agentId":"P-17","wave":5,"step":"WAVE_5","action":"COMPLETE","result":"SUCCESS","details":{"reportPath":"/Users/yvesdarbouze/Documents/PaperWorking/artifacts/persona-swarm/reports/P-17-experience-report.md"}}

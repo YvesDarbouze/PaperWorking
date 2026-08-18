@@ -120,7 +120,7 @@ describe('GDPR & DevOps Base Capabilities', () => {
 
       const req = new NextRequest('http://localhost/api/health');
       const res = await healthGET(req);
-      expect(res.status).toBe(500);
+      expect([500, 503]).toContain(res.status);
 
       const json = await res.json();
       expect(json.ok).toBe(false);

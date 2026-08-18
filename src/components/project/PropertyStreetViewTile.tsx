@@ -36,7 +36,14 @@ export function PropertyStreetViewTile({
   className = '',
   aspectRatio = 'hero',
 }: PropertyStreetViewTileProps) {
-  const { user } = useAuth();
+  let user: { getIdToken: () => Promise<string> } | null = null;
+  try {
+    const auth = useAuth();
+    user = auth?.user || null;
+  } catch {
+    user = null;
+  }
+
   const [status, setStatus] = useState<'loading' | 'available' | 'unavailable' | 'error'>('loading');
   const [resolvedPanoId, setResolvedPanoId] = useState<string | null>(panoId || null);
 

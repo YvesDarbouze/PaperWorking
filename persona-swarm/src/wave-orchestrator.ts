@@ -27,14 +27,20 @@ export interface SwarmManifest {
   agents: Record<string, AgentExecutionState>;
 }
 
-export async function orchestrateWaves(wavesToRun: number[]): Promise<SwarmManifest> {
+export async function orchestrateWaves(
+  wavesToRun: number[],
+  options?: { maxPersonas?: number }
+): Promise<SwarmManifest> {
   // Safety checks
   assertSwarmFeatureFlag();
   assertStripeTestMode();
   assertDisposableDatabase();
 
   const personasPath = path.join(process.cwd(), 'persona-swarm', 'config', 'personas.registry.json');
-  const personas: PersonaAgent[] = JSON.parse(fs.readFileSync(personasPath, 'utf-8'));
+  let personas: PersonaAgent[] = JSON.parse(fs.readFileSync(personasPath, 'utf-8'));
+  if (options?.maxPersonas && options.maxPersonas > 0) {
+    personas = personas.slice(0, options.maxPersonas);
+  }
 
   const manifestPath = path.join(process.cwd(), 'artifacts', 'persona-swarm', 'swarm-manifest.json');
   let manifest: SwarmManifest;
@@ -73,15 +79,21 @@ export async function orchestrateWaves(wavesToRun: number[]): Promise<SwarmManif
     }
   }
 
-  // Execute waves sequentially across all 50 agents
+  // Execute waves sequentially across agents
   for (const wave of wavesToRun) {
     console.log(`\n========================================`);
     console.log(`  Executing Persona Swarm Wave ${wave}...`);
     console.log(`========================================\n`);
 
+    let index = 0;
+    const total = personas.length;
     for (const agent of personas) {
+      index++;
       const state = manifest.agents[agent.id];
       manifest.agents[agent.id] = await runAgentWave(agent, wave, state);
+      if (process.env.NODE_ENV === 'test') {
+        console.log(`[Wave ${wave}] ${index}/${total} (${Math.round((index / total) * 100)}%) ${agent.id}`);
+      }
     }
 
     if (!manifest.completedWaves.includes(wave)) {

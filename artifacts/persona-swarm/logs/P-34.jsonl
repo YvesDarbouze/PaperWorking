@@ -1255,3 +1255,637 @@
 {"ts":"2026-08-18T09:42:00.123Z","agentId":"P-34","wave":5,"step":"WAVE_5","action":"COMPLETE","result":"SUCCESS","details":{"reportPath":"/Users/yvesdarbouze/Documents/PaperWorking/artifacts/persona-swarm/reports/P-34-experience-report.md"}}
 {"ts":"2026-08-18T09:42:00.138Z","agentId":"P-34","wave":5,"step":"WAVE_5","action":"START","result":"SUCCESS"}
 {"ts":"2026-08-18T09:42:00.138Z","agentId":"P-34","wave":5,"step":"WAVE_5","action":"COMPLETE","result":"SUCCESS","details":{"reportPath":"/Users/yvesdarbouze/Documents/PaperWorking/artifacts/persona-swarm/reports/P-34-experience-report.md"}}
+{"ts":"2026-08-18T10:58:00.018Z","agentId":"P-34","wave":1,"step":"WAVE_1","action":"START","result":"SUCCESS","details":{"email":"agent34.carla.jimenez@paperworking-test.dev"}}
+{"ts":"2026-08-18T10:58:00.018Z","agentId":"P-34","wave":1,"step":"WAVE_1","action":"START","result":"SUCCESS","details":{"email":"agent34.carla.jimenez@paperworking-test.dev"}}
+{"ts":"2026-08-18T10:58:00.019Z","agentId":"P-34","wave":0,"step":"SIGNUP","action":"SUCCESS_CREATED","result":"SUCCESS","details":{"uid":"uid_persona_p34","email":"agent34.carla.jimenez@paperworking-test.dev","name":"Carla Jimenez","entity":"Jimenez Sunbelt Fund Group LLC"}}
+{"ts":"2026-08-18T10:58:00.019Z","agentId":"P-34","wave":0,"step":"SIGNUP","action":"SUCCESS_CREATED","result":"SUCCESS","details":{"uid":"uid_persona_p34","email":"agent34.carla.jimenez@paperworking-test.dev","name":"Carla Jimenez","entity":"Jimenez Sunbelt Fund Group LLC"}}
+{"ts":"2026-08-18T10:58:00.019Z","agentId":"P-34","wave":1,"step":"WAVE_1","action":"COMPLETE","result":"SUCCESS","details":{"uid":"uid_persona_p34"}}
+{"ts":"2026-08-18T10:58:00.019Z","agentId":"P-34","wave":1,"step":"WAVE_1","action":"COMPLETE","result":"SUCCESS","details":{"uid":"uid_persona_p34"}}
+{"ts":"2026-08-18T10:58:00.066Z","agentId":"P-34","wave":2,"step":"WAVE_2","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T10:58:00.067Z","agentId":"P-34","wave":2,"step":"WAVE_2","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T10:58:00.067Z","agentId":"P-34","wave":0,"step":"BILLING","action":"SUBSCRIPTION_SUCCESS","result":"SUCCESS","details":{"plan":"Individual","stripeCustomerId":"cus_test_swarm_p-34","stripeSubscriptionId":"sub_test_swarm_p-34","cardLastFour":"4242","cardBrand":"visa"}}
+{"ts":"2026-08-18T10:58:00.067Z","agentId":"P-34","wave":2,"step":"WAVE_2","action":"COMPLETE","result":"SUCCESS","details":{"plan":"Individual"}}
+{"ts":"2026-08-18T10:58:00.068Z","agentId":"P-34","wave":0,"step":"BILLING","action":"SUBSCRIPTION_SUCCESS","result":"SUCCESS","details":{"plan":"Individual","stripeCustomerId":"cus_test_swarm_p-34","stripeSubscriptionId":"sub_test_swarm_p-34","cardLastFour":"4242","cardBrand":"visa"}}
+{"ts":"2026-08-18T10:58:00.068Z","agentId":"P-34","wave":2,"step":"WAVE_2","action":"COMPLETE","result":"SUCCESS","details":{"plan":"Individual"}}
+{"ts":"2026-08-18T10:58:00.206Z","agentId":"P-34","wave":3,"step":"WAVE_3","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T10:58:00.211Z","agentId":"P-34","wave":3,"step":"WAVE_3","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T10:58:00.211Z","agentId":"P-34","wave":0,"step":"PROJECTS","action":"CREATION_SUCCESS","result":"SUCCESS","details":{"created":10,"plaid":false}}
+{"ts":"2026-08-18T10:58:00.211Z","agentId":"P-34","wave":3,"step":"WAVE_3","action":"COMPLETE","result":"SUCCESS","details":{"created":10}}
+{"ts":"2026-08-18T10:58:00.214Z","agentId":"P-34","wave":0,"step":"PROJECTS","action":"CREATION_SUCCESS","result":"SUCCESS","details":{"created":10,"plaid":false}}
+{"ts":"2026-08-18T10:58:00.214Z","agentId":"P-34","wave":3,"step":"WAVE_3","action":"COMPLETE","result":"SUCCESS","details":{"created":10}}
+{"ts":"2026-08-18T10:58:00.379Z","agentId":"P-34","wave":4,"step":"WAVE_4","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T10:58:00.382Z","agentId":"P-34","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-39","to":"P-38","type":"LP Subscription Invite"}}
+{"ts":"2026-08-18T10:58:00.383Z","agentId":"P-34","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-40","to":"P-45","type":"Crowdfunded Allocation"}}
+{"ts":"2026-08-18T10:58:00.384Z","agentId":"P-34","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-41","to":"P-46","type":"Crowdfunded Allocation"}}
+{"ts":"2026-08-18T10:58:00.385Z","agentId":"P-34","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-42","to":"P-42","type":"Family Office Allocation"}}
+{"ts":"2026-08-18T10:58:00.386Z","agentId":"P-34","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-43","to":"P-44","type":"REIT vs Syndication Comparison"}}
+{"ts":"2026-08-18T10:58:00.387Z","agentId":"P-34","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-38"}}
+{"ts":"2026-08-18T10:58:00.387Z","agentId":"P-34","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-45"}}
+{"ts":"2026-08-18T10:58:00.387Z","agentId":"P-34","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-46"}}
+{"ts":"2026-08-18T10:58:00.387Z","agentId":"P-34","wave":4,"step":"WAVE_4","action":"COMPLETE","result":"SUCCESS","details":{"interactions":5,"invites":3}}
+{"ts":"2026-08-18T10:58:00.386Z","agentId":"P-34","wave":4,"step":"WAVE_4","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T10:58:00.390Z","agentId":"P-34","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-39","to":"P-38","type":"LP Subscription Invite"}}
+{"ts":"2026-08-18T10:58:00.391Z","agentId":"P-34","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-40","to":"P-45","type":"Crowdfunded Allocation"}}
+{"ts":"2026-08-18T10:58:00.392Z","agentId":"P-34","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-41","to":"P-46","type":"Crowdfunded Allocation"}}
+{"ts":"2026-08-18T10:58:00.393Z","agentId":"P-34","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-42","to":"P-42","type":"Family Office Allocation"}}
+{"ts":"2026-08-18T10:58:00.393Z","agentId":"P-34","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-43","to":"P-44","type":"REIT vs Syndication Comparison"}}
+{"ts":"2026-08-18T10:58:00.393Z","agentId":"P-34","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-38"}}
+{"ts":"2026-08-18T10:58:00.395Z","agentId":"P-34","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-45"}}
+{"ts":"2026-08-18T10:58:00.395Z","agentId":"P-34","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-46"}}
+{"ts":"2026-08-18T10:58:00.396Z","agentId":"P-34","wave":4,"step":"WAVE_4","action":"COMPLETE","result":"SUCCESS","details":{"interactions":5,"invites":3}}
+{"ts":"2026-08-18T10:58:00.490Z","agentId":"P-34","wave":5,"step":"WAVE_5","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T10:58:00.490Z","agentId":"P-34","wave":5,"step":"WAVE_5","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T10:58:00.490Z","agentId":"P-34","wave":5,"step":"WAVE_5","action":"COMPLETE","result":"SUCCESS","details":{"reportPath":"/Users/yvesdarbouze/Documents/PaperWorking/artifacts/persona-swarm/reports/P-34-experience-report.md"}}
+{"ts":"2026-08-18T10:58:00.491Z","agentId":"P-34","wave":5,"step":"WAVE_5","action":"COMPLETE","result":"SUCCESS","details":{"reportPath":"/Users/yvesdarbouze/Documents/PaperWorking/artifacts/persona-swarm/reports/P-34-experience-report.md"}}
+{"ts":"2026-08-18T10:58:28.476Z","agentId":"P-34","wave":1,"step":"WAVE_1","action":"START","result":"SUCCESS","details":{"email":"agent34.carla.jimenez@paperworking-test.dev"}}
+{"ts":"2026-08-18T10:58:28.477Z","agentId":"P-34","wave":0,"step":"SIGNUP","action":"SUCCESS_CREATED","result":"SUCCESS","details":{"uid":"uid_persona_p34","email":"agent34.carla.jimenez@paperworking-test.dev","name":"Carla Jimenez","entity":"Jimenez Sunbelt Fund Group LLC"}}
+{"ts":"2026-08-18T10:58:28.477Z","agentId":"P-34","wave":1,"step":"WAVE_1","action":"COMPLETE","result":"SUCCESS","details":{"uid":"uid_persona_p34"}}
+{"ts":"2026-08-18T10:58:28.532Z","agentId":"P-34","wave":2,"step":"WAVE_2","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T10:58:28.533Z","agentId":"P-34","wave":0,"step":"BILLING","action":"SUBSCRIPTION_SUCCESS","result":"SUCCESS","details":{"plan":"Individual","stripeCustomerId":"cus_test_swarm_p-34","stripeSubscriptionId":"sub_test_swarm_p-34","cardLastFour":"4242","cardBrand":"visa"}}
+{"ts":"2026-08-18T10:58:28.533Z","agentId":"P-34","wave":2,"step":"WAVE_2","action":"COMPLETE","result":"SUCCESS","details":{"plan":"Individual"}}
+{"ts":"2026-08-18T10:58:28.638Z","agentId":"P-34","wave":3,"step":"WAVE_3","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T10:58:28.641Z","agentId":"P-34","wave":0,"step":"PROJECTS","action":"CREATION_SUCCESS","result":"SUCCESS","details":{"created":10,"plaid":false}}
+{"ts":"2026-08-18T10:58:28.641Z","agentId":"P-34","wave":3,"step":"WAVE_3","action":"COMPLETE","result":"SUCCESS","details":{"created":10}}
+{"ts":"2026-08-18T10:58:28.721Z","agentId":"P-34","wave":4,"step":"WAVE_4","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T10:58:28.722Z","agentId":"P-34","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-39","to":"P-38","type":"LP Subscription Invite"}}
+{"ts":"2026-08-18T10:58:28.722Z","agentId":"P-34","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-40","to":"P-45","type":"Crowdfunded Allocation"}}
+{"ts":"2026-08-18T10:58:28.722Z","agentId":"P-34","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-41","to":"P-46","type":"Crowdfunded Allocation"}}
+{"ts":"2026-08-18T10:58:28.723Z","agentId":"P-34","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-42","to":"P-42","type":"Family Office Allocation"}}
+{"ts":"2026-08-18T10:58:28.723Z","agentId":"P-34","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-43","to":"P-44","type":"REIT vs Syndication Comparison"}}
+{"ts":"2026-08-18T10:58:28.723Z","agentId":"P-34","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-38"}}
+{"ts":"2026-08-18T10:58:28.723Z","agentId":"P-34","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-45"}}
+{"ts":"2026-08-18T10:58:28.724Z","agentId":"P-34","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-46"}}
+{"ts":"2026-08-18T10:58:28.724Z","agentId":"P-34","wave":4,"step":"WAVE_4","action":"COMPLETE","result":"SUCCESS","details":{"interactions":5,"invites":3}}
+{"ts":"2026-08-18T10:58:28.772Z","agentId":"P-34","wave":5,"step":"WAVE_5","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T10:58:28.772Z","agentId":"P-34","wave":5,"step":"WAVE_5","action":"COMPLETE","result":"SUCCESS","details":{"reportPath":"/Users/yvesdarbouze/Documents/PaperWorking/artifacts/persona-swarm/reports/P-34-experience-report.md"}}
+{"ts":"2026-08-18T10:58:35.217Z","agentId":"P-34","wave":1,"step":"WAVE_1","action":"START","result":"SUCCESS","details":{"email":"agent34.carla.jimenez@paperworking-test.dev"}}
+{"ts":"2026-08-18T10:58:35.219Z","agentId":"P-34","wave":0,"step":"SIGNUP","action":"SUCCESS_CREATED","result":"SUCCESS","details":{"uid":"uid_persona_p34","email":"agent34.carla.jimenez@paperworking-test.dev","name":"Carla Jimenez","entity":"Jimenez Sunbelt Fund Group LLC"}}
+{"ts":"2026-08-18T10:58:35.219Z","agentId":"P-34","wave":1,"step":"WAVE_1","action":"COMPLETE","result":"SUCCESS","details":{"uid":"uid_persona_p34"}}
+{"ts":"2026-08-18T10:58:35.340Z","agentId":"P-34","wave":2,"step":"WAVE_2","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T10:58:35.341Z","agentId":"P-34","wave":0,"step":"BILLING","action":"SUBSCRIPTION_SUCCESS","result":"SUCCESS","details":{"plan":"Individual","stripeCustomerId":"cus_test_swarm_p-34","stripeSubscriptionId":"sub_test_swarm_p-34","cardLastFour":"4242","cardBrand":"visa"}}
+{"ts":"2026-08-18T10:58:35.342Z","agentId":"P-34","wave":2,"step":"WAVE_2","action":"COMPLETE","result":"SUCCESS","details":{"plan":"Individual"}}
+{"ts":"2026-08-18T10:58:35.611Z","agentId":"P-34","wave":3,"step":"WAVE_3","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T10:58:35.615Z","agentId":"P-34","wave":0,"step":"PROJECTS","action":"CREATION_SUCCESS","result":"SUCCESS","details":{"created":10,"plaid":false}}
+{"ts":"2026-08-18T10:58:35.615Z","agentId":"P-34","wave":3,"step":"WAVE_3","action":"COMPLETE","result":"SUCCESS","details":{"created":10}}
+{"ts":"2026-08-18T10:58:35.903Z","agentId":"P-34","wave":4,"step":"WAVE_4","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T10:58:35.903Z","agentId":"P-34","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-39","to":"P-38","type":"LP Subscription Invite"}}
+{"ts":"2026-08-18T10:58:35.904Z","agentId":"P-34","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-40","to":"P-45","type":"Crowdfunded Allocation"}}
+{"ts":"2026-08-18T10:58:35.905Z","agentId":"P-34","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-41","to":"P-46","type":"Crowdfunded Allocation"}}
+{"ts":"2026-08-18T10:58:35.907Z","agentId":"P-34","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-42","to":"P-42","type":"Family Office Allocation"}}
+{"ts":"2026-08-18T10:58:35.908Z","agentId":"P-34","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-43","to":"P-44","type":"REIT vs Syndication Comparison"}}
+{"ts":"2026-08-18T10:58:35.908Z","agentId":"P-34","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-38"}}
+{"ts":"2026-08-18T10:58:35.908Z","agentId":"P-34","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-45"}}
+{"ts":"2026-08-18T10:58:35.909Z","agentId":"P-34","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-46"}}
+{"ts":"2026-08-18T10:58:35.909Z","agentId":"P-34","wave":4,"step":"WAVE_4","action":"COMPLETE","result":"SUCCESS","details":{"interactions":5,"invites":3}}
+{"ts":"2026-08-18T10:58:36.040Z","agentId":"P-34","wave":5,"step":"WAVE_5","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T10:58:36.040Z","agentId":"P-34","wave":5,"step":"WAVE_5","action":"COMPLETE","result":"SUCCESS","details":{"reportPath":"/Users/yvesdarbouze/Documents/PaperWorking/artifacts/persona-swarm/reports/P-34-experience-report.md"}}
+{"ts":"2026-08-18T10:59:01.714Z","agentId":"P-34","wave":1,"step":"WAVE_1","action":"START","result":"SUCCESS","details":{"email":"agent34.carla.jimenez@paperworking-test.dev"}}
+{"ts":"2026-08-18T10:59:01.716Z","agentId":"P-34","wave":0,"step":"SIGNUP","action":"SUCCESS_CREATED","result":"SUCCESS","details":{"uid":"uid_persona_p34","email":"agent34.carla.jimenez@paperworking-test.dev","name":"Carla Jimenez","entity":"Jimenez Sunbelt Fund Group LLC"}}
+{"ts":"2026-08-18T10:59:01.716Z","agentId":"P-34","wave":1,"step":"WAVE_1","action":"COMPLETE","result":"SUCCESS","details":{"uid":"uid_persona_p34"}}
+{"ts":"2026-08-18T10:59:01.754Z","agentId":"P-34","wave":1,"step":"WAVE_1","action":"START","result":"SUCCESS","details":{"email":"agent34.carla.jimenez@paperworking-test.dev"}}
+{"ts":"2026-08-18T10:59:01.755Z","agentId":"P-34","wave":0,"step":"SIGNUP","action":"SUCCESS_CREATED","result":"SUCCESS","details":{"uid":"uid_persona_p34","email":"agent34.carla.jimenez@paperworking-test.dev","name":"Carla Jimenez","entity":"Jimenez Sunbelt Fund Group LLC"}}
+{"ts":"2026-08-18T10:59:01.755Z","agentId":"P-34","wave":1,"step":"WAVE_1","action":"COMPLETE","result":"SUCCESS","details":{"uid":"uid_persona_p34"}}
+{"ts":"2026-08-18T10:59:01.777Z","agentId":"P-34","wave":2,"step":"WAVE_2","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T10:59:01.778Z","agentId":"P-34","wave":0,"step":"BILLING","action":"SUBSCRIPTION_SUCCESS","result":"SUCCESS","details":{"plan":"Individual","stripeCustomerId":"cus_test_swarm_p-34","stripeSubscriptionId":"sub_test_swarm_p-34","cardLastFour":"4242","cardBrand":"visa"}}
+{"ts":"2026-08-18T10:59:01.778Z","agentId":"P-34","wave":2,"step":"WAVE_2","action":"COMPLETE","result":"SUCCESS","details":{"plan":"Individual"}}
+{"ts":"2026-08-18T10:59:01.811Z","agentId":"P-34","wave":2,"step":"WAVE_2","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T10:59:01.813Z","agentId":"P-34","wave":0,"step":"BILLING","action":"SUBSCRIPTION_SUCCESS","result":"SUCCESS","details":{"plan":"Individual","stripeCustomerId":"cus_test_swarm_p-34","stripeSubscriptionId":"sub_test_swarm_p-34","cardLastFour":"4242","cardBrand":"visa"}}
+{"ts":"2026-08-18T10:59:01.814Z","agentId":"P-34","wave":2,"step":"WAVE_2","action":"COMPLETE","result":"SUCCESS","details":{"plan":"Individual"}}
+{"ts":"2026-08-18T10:59:01.921Z","agentId":"P-34","wave":3,"step":"WAVE_3","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T10:59:01.924Z","agentId":"P-34","wave":0,"step":"PROJECTS","action":"CREATION_SUCCESS","result":"SUCCESS","details":{"created":10,"plaid":false}}
+{"ts":"2026-08-18T10:59:01.924Z","agentId":"P-34","wave":3,"step":"WAVE_3","action":"COMPLETE","result":"SUCCESS","details":{"created":10}}
+{"ts":"2026-08-18T10:59:01.957Z","agentId":"P-34","wave":3,"step":"WAVE_3","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T10:59:01.959Z","agentId":"P-34","wave":0,"step":"PROJECTS","action":"CREATION_SUCCESS","result":"SUCCESS","details":{"created":10,"plaid":false}}
+{"ts":"2026-08-18T10:59:01.959Z","agentId":"P-34","wave":3,"step":"WAVE_3","action":"COMPLETE","result":"SUCCESS","details":{"created":10}}
+{"ts":"2026-08-18T10:59:02.025Z","agentId":"P-34","wave":4,"step":"WAVE_4","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T10:59:02.026Z","agentId":"P-34","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-39","to":"P-38","type":"LP Subscription Invite"}}
+{"ts":"2026-08-18T10:59:02.026Z","agentId":"P-34","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-40","to":"P-45","type":"Crowdfunded Allocation"}}
+{"ts":"2026-08-18T10:59:02.026Z","agentId":"P-34","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-41","to":"P-46","type":"Crowdfunded Allocation"}}
+{"ts":"2026-08-18T10:59:02.027Z","agentId":"P-34","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-42","to":"P-42","type":"Family Office Allocation"}}
+{"ts":"2026-08-18T10:59:02.027Z","agentId":"P-34","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-43","to":"P-44","type":"REIT vs Syndication Comparison"}}
+{"ts":"2026-08-18T10:59:02.027Z","agentId":"P-34","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-38"}}
+{"ts":"2026-08-18T10:59:02.028Z","agentId":"P-34","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-45"}}
+{"ts":"2026-08-18T10:59:02.028Z","agentId":"P-34","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-46"}}
+{"ts":"2026-08-18T10:59:02.028Z","agentId":"P-34","wave":4,"step":"WAVE_4","action":"COMPLETE","result":"SUCCESS","details":{"interactions":5,"invites":3}}
+{"ts":"2026-08-18T10:59:02.064Z","agentId":"P-34","wave":4,"step":"WAVE_4","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T10:59:02.064Z","agentId":"P-34","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-39","to":"P-38","type":"LP Subscription Invite"}}
+{"ts":"2026-08-18T10:59:02.064Z","agentId":"P-34","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-40","to":"P-45","type":"Crowdfunded Allocation"}}
+{"ts":"2026-08-18T10:59:02.065Z","agentId":"P-34","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-41","to":"P-46","type":"Crowdfunded Allocation"}}
+{"ts":"2026-08-18T10:59:02.065Z","agentId":"P-34","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-42","to":"P-42","type":"Family Office Allocation"}}
+{"ts":"2026-08-18T10:59:02.065Z","agentId":"P-34","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-43","to":"P-44","type":"REIT vs Syndication Comparison"}}
+{"ts":"2026-08-18T10:59:02.066Z","agentId":"P-34","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-38"}}
+{"ts":"2026-08-18T10:59:02.066Z","agentId":"P-34","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-45"}}
+{"ts":"2026-08-18T10:59:02.067Z","agentId":"P-34","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-46"}}
+{"ts":"2026-08-18T10:59:02.067Z","agentId":"P-34","wave":4,"step":"WAVE_4","action":"COMPLETE","result":"SUCCESS","details":{"interactions":5,"invites":3}}
+{"ts":"2026-08-18T10:59:02.110Z","agentId":"P-34","wave":5,"step":"WAVE_5","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T10:59:02.111Z","agentId":"P-34","wave":5,"step":"WAVE_5","action":"COMPLETE","result":"SUCCESS","details":{"reportPath":"/Users/yvesdarbouze/Documents/PaperWorking/artifacts/persona-swarm/reports/P-34-experience-report.md"}}
+{"ts":"2026-08-18T10:59:02.156Z","agentId":"P-34","wave":5,"step":"WAVE_5","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T10:59:02.156Z","agentId":"P-34","wave":5,"step":"WAVE_5","action":"COMPLETE","result":"SUCCESS","details":{"reportPath":"/Users/yvesdarbouze/Documents/PaperWorking/artifacts/persona-swarm/reports/P-34-experience-report.md"}}
+{"ts":"2026-08-18T10:59:27.014Z","agentId":"P-34","wave":1,"step":"WAVE_1","action":"START","result":"SUCCESS","details":{"email":"agent34.carla.jimenez@paperworking-test.dev"}}
+{"ts":"2026-08-18T10:59:27.015Z","agentId":"P-34","wave":0,"step":"SIGNUP","action":"SUCCESS_CREATED","result":"SUCCESS","details":{"uid":"uid_persona_p34","email":"agent34.carla.jimenez@paperworking-test.dev","name":"Carla Jimenez","entity":"Jimenez Sunbelt Fund Group LLC"}}
+{"ts":"2026-08-18T10:59:27.015Z","agentId":"P-34","wave":1,"step":"WAVE_1","action":"COMPLETE","result":"SUCCESS","details":{"uid":"uid_persona_p34"}}
+{"ts":"2026-08-18T10:59:27.068Z","agentId":"P-34","wave":2,"step":"WAVE_2","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T10:59:27.069Z","agentId":"P-34","wave":0,"step":"BILLING","action":"SUBSCRIPTION_SUCCESS","result":"SUCCESS","details":{"plan":"Individual","stripeCustomerId":"cus_test_swarm_p-34","stripeSubscriptionId":"sub_test_swarm_p-34","cardLastFour":"4242","cardBrand":"visa"}}
+{"ts":"2026-08-18T10:59:27.069Z","agentId":"P-34","wave":2,"step":"WAVE_2","action":"COMPLETE","result":"SUCCESS","details":{"plan":"Individual"}}
+{"ts":"2026-08-18T10:59:27.181Z","agentId":"P-34","wave":3,"step":"WAVE_3","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T10:59:27.183Z","agentId":"P-34","wave":0,"step":"PROJECTS","action":"CREATION_SUCCESS","result":"SUCCESS","details":{"created":10,"plaid":false}}
+{"ts":"2026-08-18T10:59:27.183Z","agentId":"P-34","wave":3,"step":"WAVE_3","action":"COMPLETE","result":"SUCCESS","details":{"created":10}}
+{"ts":"2026-08-18T10:59:27.266Z","agentId":"P-34","wave":4,"step":"WAVE_4","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T10:59:27.267Z","agentId":"P-34","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-39","to":"P-38","type":"LP Subscription Invite"}}
+{"ts":"2026-08-18T10:59:27.267Z","agentId":"P-34","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-40","to":"P-45","type":"Crowdfunded Allocation"}}
+{"ts":"2026-08-18T10:59:27.267Z","agentId":"P-34","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-41","to":"P-46","type":"Crowdfunded Allocation"}}
+{"ts":"2026-08-18T10:59:27.267Z","agentId":"P-34","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-42","to":"P-42","type":"Family Office Allocation"}}
+{"ts":"2026-08-18T10:59:27.268Z","agentId":"P-34","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-43","to":"P-44","type":"REIT vs Syndication Comparison"}}
+{"ts":"2026-08-18T10:59:27.268Z","agentId":"P-34","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-38"}}
+{"ts":"2026-08-18T10:59:27.268Z","agentId":"P-34","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-45"}}
+{"ts":"2026-08-18T10:59:27.268Z","agentId":"P-34","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-46"}}
+{"ts":"2026-08-18T10:59:27.268Z","agentId":"P-34","wave":4,"step":"WAVE_4","action":"COMPLETE","result":"SUCCESS","details":{"interactions":5,"invites":3}}
+{"ts":"2026-08-18T10:59:27.311Z","agentId":"P-34","wave":5,"step":"WAVE_5","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T10:59:27.311Z","agentId":"P-34","wave":5,"step":"WAVE_5","action":"COMPLETE","result":"SUCCESS","details":{"reportPath":"/Users/yvesdarbouze/Documents/PaperWorking/artifacts/persona-swarm/reports/P-34-experience-report.md"}}
+{"ts":"2026-08-18T10:59:30.151Z","agentId":"P-34","wave":1,"step":"WAVE_1","action":"START","result":"SUCCESS","details":{"email":"agent34.carla.jimenez@paperworking-test.dev"}}
+{"ts":"2026-08-18T10:59:30.154Z","agentId":"P-34","wave":0,"step":"SIGNUP","action":"SUCCESS_CREATED","result":"SUCCESS","details":{"uid":"uid_persona_p34","email":"agent34.carla.jimenez@paperworking-test.dev","name":"Carla Jimenez","entity":"Jimenez Sunbelt Fund Group LLC"}}
+{"ts":"2026-08-18T10:59:30.154Z","agentId":"P-34","wave":1,"step":"WAVE_1","action":"COMPLETE","result":"SUCCESS","details":{"uid":"uid_persona_p34"}}
+{"ts":"2026-08-18T10:59:30.206Z","agentId":"P-34","wave":2,"step":"WAVE_2","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T10:59:30.210Z","agentId":"P-34","wave":0,"step":"BILLING","action":"SUBSCRIPTION_SUCCESS","result":"SUCCESS","details":{"plan":"Individual","stripeCustomerId":"cus_test_swarm_p-34","stripeSubscriptionId":"sub_test_swarm_p-34","cardLastFour":"4242","cardBrand":"visa"}}
+{"ts":"2026-08-18T10:59:30.210Z","agentId":"P-34","wave":2,"step":"WAVE_2","action":"COMPLETE","result":"SUCCESS","details":{"plan":"Individual"}}
+{"ts":"2026-08-18T10:59:30.354Z","agentId":"P-34","wave":3,"step":"WAVE_3","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T10:59:30.356Z","agentId":"P-34","wave":0,"step":"PROJECTS","action":"CREATION_SUCCESS","result":"SUCCESS","details":{"created":10,"plaid":false}}
+{"ts":"2026-08-18T10:59:30.356Z","agentId":"P-34","wave":3,"step":"WAVE_3","action":"COMPLETE","result":"SUCCESS","details":{"created":10}}
+{"ts":"2026-08-18T10:59:30.482Z","agentId":"P-34","wave":4,"step":"WAVE_4","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T10:59:30.482Z","agentId":"P-34","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-39","to":"P-38","type":"LP Subscription Invite"}}
+{"ts":"2026-08-18T10:59:30.485Z","agentId":"P-34","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-40","to":"P-45","type":"Crowdfunded Allocation"}}
+{"ts":"2026-08-18T10:59:30.485Z","agentId":"P-34","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-41","to":"P-46","type":"Crowdfunded Allocation"}}
+{"ts":"2026-08-18T10:59:30.485Z","agentId":"P-34","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-42","to":"P-42","type":"Family Office Allocation"}}
+{"ts":"2026-08-18T10:59:30.486Z","agentId":"P-34","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-43","to":"P-44","type":"REIT vs Syndication Comparison"}}
+{"ts":"2026-08-18T10:59:30.486Z","agentId":"P-34","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-38"}}
+{"ts":"2026-08-18T10:59:30.487Z","agentId":"P-34","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-45"}}
+{"ts":"2026-08-18T10:59:30.487Z","agentId":"P-34","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-46"}}
+{"ts":"2026-08-18T10:59:30.487Z","agentId":"P-34","wave":4,"step":"WAVE_4","action":"COMPLETE","result":"SUCCESS","details":{"interactions":5,"invites":3}}
+{"ts":"2026-08-18T10:59:30.585Z","agentId":"P-34","wave":5,"step":"WAVE_5","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T10:59:30.585Z","agentId":"P-34","wave":5,"step":"WAVE_5","action":"COMPLETE","result":"SUCCESS","details":{"reportPath":"/Users/yvesdarbouze/Documents/PaperWorking/artifacts/persona-swarm/reports/P-34-experience-report.md"}}
+{"ts":"2026-08-18T11:00:11.750Z","agentId":"P-34","wave":1,"step":"WAVE_1","action":"START","result":"SUCCESS","details":{"email":"agent34.carla.jimenez@paperworking-test.dev"}}
+{"ts":"2026-08-18T11:00:11.750Z","agentId":"P-34","wave":0,"step":"SIGNUP","action":"SUCCESS_CREATED","result":"SUCCESS","details":{"uid":"uid_persona_p34","email":"agent34.carla.jimenez@paperworking-test.dev","name":"Carla Jimenez","entity":"Jimenez Sunbelt Fund Group LLC"}}
+{"ts":"2026-08-18T11:00:11.750Z","agentId":"P-34","wave":1,"step":"WAVE_1","action":"COMPLETE","result":"SUCCESS","details":{"uid":"uid_persona_p34"}}
+{"ts":"2026-08-18T11:00:11.752Z","agentId":"P-34","wave":1,"step":"WAVE_1","action":"START","result":"SUCCESS","details":{"email":"agent34.carla.jimenez@paperworking-test.dev"}}
+{"ts":"2026-08-18T11:00:11.753Z","agentId":"P-34","wave":0,"step":"SIGNUP","action":"SUCCESS_CREATED","result":"SUCCESS","details":{"uid":"uid_persona_p34","email":"agent34.carla.jimenez@paperworking-test.dev","name":"Carla Jimenez","entity":"Jimenez Sunbelt Fund Group LLC"}}
+{"ts":"2026-08-18T11:00:11.754Z","agentId":"P-34","wave":1,"step":"WAVE_1","action":"COMPLETE","result":"SUCCESS","details":{"uid":"uid_persona_p34"}}
+{"ts":"2026-08-18T11:00:11.799Z","agentId":"P-34","wave":2,"step":"WAVE_2","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T11:00:11.799Z","agentId":"P-34","wave":0,"step":"BILLING","action":"SUBSCRIPTION_SUCCESS","result":"SUCCESS","details":{"plan":"Individual","stripeCustomerId":"cus_test_swarm_p-34","stripeSubscriptionId":"sub_test_swarm_p-34","cardLastFour":"4242","cardBrand":"visa"}}
+{"ts":"2026-08-18T11:00:11.799Z","agentId":"P-34","wave":2,"step":"WAVE_2","action":"COMPLETE","result":"SUCCESS","details":{"plan":"Individual"}}
+{"ts":"2026-08-18T11:00:11.800Z","agentId":"P-34","wave":2,"step":"WAVE_2","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T11:00:11.801Z","agentId":"P-34","wave":0,"step":"BILLING","action":"SUBSCRIPTION_SUCCESS","result":"SUCCESS","details":{"plan":"Individual","stripeCustomerId":"cus_test_swarm_p-34","stripeSubscriptionId":"sub_test_swarm_p-34","cardLastFour":"4242","cardBrand":"visa"}}
+{"ts":"2026-08-18T11:00:11.801Z","agentId":"P-34","wave":2,"step":"WAVE_2","action":"COMPLETE","result":"SUCCESS","details":{"plan":"Individual"}}
+{"ts":"2026-08-18T11:00:11.913Z","agentId":"P-34","wave":3,"step":"WAVE_3","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T11:00:11.915Z","agentId":"P-34","wave":0,"step":"PROJECTS","action":"CREATION_SUCCESS","result":"SUCCESS","details":{"created":10,"plaid":false}}
+{"ts":"2026-08-18T11:00:11.915Z","agentId":"P-34","wave":3,"step":"WAVE_3","action":"COMPLETE","result":"SUCCESS","details":{"created":10}}
+{"ts":"2026-08-18T11:00:11.919Z","agentId":"P-34","wave":3,"step":"WAVE_3","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T11:00:11.932Z","agentId":"P-34","wave":0,"step":"PROJECTS","action":"CREATION_SUCCESS","result":"SUCCESS","details":{"created":10,"plaid":false}}
+{"ts":"2026-08-18T11:00:11.932Z","agentId":"P-34","wave":3,"step":"WAVE_3","action":"COMPLETE","result":"SUCCESS","details":{"created":10}}
+{"ts":"2026-08-18T11:00:12.004Z","agentId":"P-34","wave":4,"step":"WAVE_4","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T11:00:12.004Z","agentId":"P-34","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-39","to":"P-38","type":"LP Subscription Invite"}}
+{"ts":"2026-08-18T11:00:12.005Z","agentId":"P-34","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-40","to":"P-45","type":"Crowdfunded Allocation"}}
+{"ts":"2026-08-18T11:00:12.005Z","agentId":"P-34","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-41","to":"P-46","type":"Crowdfunded Allocation"}}
+{"ts":"2026-08-18T11:00:12.005Z","agentId":"P-34","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-42","to":"P-42","type":"Family Office Allocation"}}
+{"ts":"2026-08-18T11:00:12.005Z","agentId":"P-34","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-43","to":"P-44","type":"REIT vs Syndication Comparison"}}
+{"ts":"2026-08-18T11:00:12.005Z","agentId":"P-34","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-38"}}
+{"ts":"2026-08-18T11:00:12.006Z","agentId":"P-34","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-45"}}
+{"ts":"2026-08-18T11:00:12.006Z","agentId":"P-34","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-46"}}
+{"ts":"2026-08-18T11:00:12.006Z","agentId":"P-34","wave":4,"step":"WAVE_4","action":"COMPLETE","result":"SUCCESS","details":{"interactions":5,"invites":3}}
+{"ts":"2026-08-18T11:00:12.022Z","agentId":"P-34","wave":4,"step":"WAVE_4","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T11:00:12.023Z","agentId":"P-34","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-39","to":"P-38","type":"LP Subscription Invite"}}
+{"ts":"2026-08-18T11:00:12.023Z","agentId":"P-34","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-40","to":"P-45","type":"Crowdfunded Allocation"}}
+{"ts":"2026-08-18T11:00:12.024Z","agentId":"P-34","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-41","to":"P-46","type":"Crowdfunded Allocation"}}
+{"ts":"2026-08-18T11:00:12.024Z","agentId":"P-34","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-42","to":"P-42","type":"Family Office Allocation"}}
+{"ts":"2026-08-18T11:00:12.024Z","agentId":"P-34","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-43","to":"P-44","type":"REIT vs Syndication Comparison"}}
+{"ts":"2026-08-18T11:00:12.024Z","agentId":"P-34","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-38"}}
+{"ts":"2026-08-18T11:00:12.024Z","agentId":"P-34","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-45"}}
+{"ts":"2026-08-18T11:00:12.025Z","agentId":"P-34","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-46"}}
+{"ts":"2026-08-18T11:00:12.025Z","agentId":"P-34","wave":4,"step":"WAVE_4","action":"COMPLETE","result":"SUCCESS","details":{"interactions":5,"invites":3}}
+{"ts":"2026-08-18T11:00:12.078Z","agentId":"P-34","wave":5,"step":"WAVE_5","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T11:00:12.079Z","agentId":"P-34","wave":5,"step":"WAVE_5","action":"COMPLETE","result":"SUCCESS","details":{"reportPath":"/Users/yvesdarbouze/Documents/PaperWorking/artifacts/persona-swarm/reports/P-34-experience-report.md"}}
+{"ts":"2026-08-18T11:00:12.094Z","agentId":"P-34","wave":5,"step":"WAVE_5","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T11:00:12.095Z","agentId":"P-34","wave":5,"step":"WAVE_5","action":"COMPLETE","result":"SUCCESS","details":{"reportPath":"/Users/yvesdarbouze/Documents/PaperWorking/artifacts/persona-swarm/reports/P-34-experience-report.md"}}
+{"ts":"2026-08-18T11:12:29.748Z","agentId":"P-34","wave":1,"step":"WAVE_1","action":"START","result":"SUCCESS","details":{"email":"agent34.carla.jimenez@paperworking-test.dev"}}
+{"ts":"2026-08-18T11:12:29.750Z","agentId":"P-34","wave":0,"step":"SIGNUP","action":"SUCCESS_CREATED","result":"SUCCESS","details":{"uid":"uid_persona_p34","email":"agent34.carla.jimenez@paperworking-test.dev","name":"Carla Jimenez","entity":"Jimenez Sunbelt Fund Group LLC"}}
+{"ts":"2026-08-18T11:12:29.750Z","agentId":"P-34","wave":1,"step":"WAVE_1","action":"COMPLETE","result":"SUCCESS","details":{"uid":"uid_persona_p34"}}
+{"ts":"2026-08-18T11:12:29.793Z","agentId":"P-34","wave":2,"step":"WAVE_2","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T11:12:29.793Z","agentId":"P-34","wave":0,"step":"BILLING","action":"SUBSCRIPTION_SUCCESS","result":"SUCCESS","details":{"plan":"Individual","stripeCustomerId":"cus_test_swarm_p-34","stripeSubscriptionId":"sub_test_swarm_p-34","cardLastFour":"4242","cardBrand":"visa"}}
+{"ts":"2026-08-18T11:12:29.793Z","agentId":"P-34","wave":2,"step":"WAVE_2","action":"COMPLETE","result":"SUCCESS","details":{"plan":"Individual"}}
+{"ts":"2026-08-18T11:12:29.937Z","agentId":"P-34","wave":3,"step":"WAVE_3","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T11:12:29.939Z","agentId":"P-34","wave":0,"step":"PROJECTS","action":"CREATION_SUCCESS","result":"SUCCESS","details":{"created":10,"plaid":false}}
+{"ts":"2026-08-18T11:12:29.939Z","agentId":"P-34","wave":3,"step":"WAVE_3","action":"COMPLETE","result":"SUCCESS","details":{"created":10}}
+{"ts":"2026-08-18T11:12:30.036Z","agentId":"P-34","wave":4,"step":"WAVE_4","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T11:12:30.037Z","agentId":"P-34","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-39","to":"P-38","type":"LP Subscription Invite"}}
+{"ts":"2026-08-18T11:12:30.037Z","agentId":"P-34","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-40","to":"P-45","type":"Crowdfunded Allocation"}}
+{"ts":"2026-08-18T11:12:30.037Z","agentId":"P-34","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-41","to":"P-46","type":"Crowdfunded Allocation"}}
+{"ts":"2026-08-18T11:12:30.037Z","agentId":"P-34","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-42","to":"P-42","type":"Family Office Allocation"}}
+{"ts":"2026-08-18T11:12:30.038Z","agentId":"P-34","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-43","to":"P-44","type":"REIT vs Syndication Comparison"}}
+{"ts":"2026-08-18T11:12:30.038Z","agentId":"P-34","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-38"}}
+{"ts":"2026-08-18T11:12:30.038Z","agentId":"P-34","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-45"}}
+{"ts":"2026-08-18T11:12:30.038Z","agentId":"P-34","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-46"}}
+{"ts":"2026-08-18T11:12:30.038Z","agentId":"P-34","wave":4,"step":"WAVE_4","action":"COMPLETE","result":"SUCCESS","details":{"interactions":5,"invites":3}}
+{"ts":"2026-08-18T11:12:30.106Z","agentId":"P-34","wave":5,"step":"WAVE_5","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T11:12:30.106Z","agentId":"P-34","wave":5,"step":"WAVE_5","action":"COMPLETE","result":"SUCCESS","details":{"reportPath":"/Users/yvesdarbouze/Documents/PaperWorking/artifacts/persona-swarm/reports/P-34-experience-report.md"}}
+{"ts":"2026-08-18T11:12:32.944Z","agentId":"P-34","wave":1,"step":"WAVE_1","action":"START","result":"SUCCESS","details":{"email":"agent34.carla.jimenez@paperworking-test.dev"}}
+{"ts":"2026-08-18T11:12:32.945Z","agentId":"P-34","wave":0,"step":"SIGNUP","action":"SUCCESS_CREATED","result":"SUCCESS","details":{"uid":"uid_persona_p34","email":"agent34.carla.jimenez@paperworking-test.dev","name":"Carla Jimenez","entity":"Jimenez Sunbelt Fund Group LLC"}}
+{"ts":"2026-08-18T11:12:32.945Z","agentId":"P-34","wave":1,"step":"WAVE_1","action":"COMPLETE","result":"SUCCESS","details":{"uid":"uid_persona_p34"}}
+{"ts":"2026-08-18T11:12:33.038Z","agentId":"P-34","wave":2,"step":"WAVE_2","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T11:12:33.039Z","agentId":"P-34","wave":0,"step":"BILLING","action":"SUBSCRIPTION_SUCCESS","result":"SUCCESS","details":{"plan":"Individual","stripeCustomerId":"cus_test_swarm_p-34","stripeSubscriptionId":"sub_test_swarm_p-34","cardLastFour":"4242","cardBrand":"visa"}}
+{"ts":"2026-08-18T11:12:33.039Z","agentId":"P-34","wave":2,"step":"WAVE_2","action":"COMPLETE","result":"SUCCESS","details":{"plan":"Individual"}}
+{"ts":"2026-08-18T11:12:33.257Z","agentId":"P-34","wave":3,"step":"WAVE_3","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T11:12:33.260Z","agentId":"P-34","wave":0,"step":"PROJECTS","action":"CREATION_SUCCESS","result":"SUCCESS","details":{"created":10,"plaid":false}}
+{"ts":"2026-08-18T11:12:33.260Z","agentId":"P-34","wave":3,"step":"WAVE_3","action":"COMPLETE","result":"SUCCESS","details":{"created":10}}
+{"ts":"2026-08-18T11:12:33.467Z","agentId":"P-34","wave":4,"step":"WAVE_4","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T11:12:33.467Z","agentId":"P-34","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-39","to":"P-38","type":"LP Subscription Invite"}}
+{"ts":"2026-08-18T11:12:33.468Z","agentId":"P-34","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-40","to":"P-45","type":"Crowdfunded Allocation"}}
+{"ts":"2026-08-18T11:12:33.469Z","agentId":"P-34","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-41","to":"P-46","type":"Crowdfunded Allocation"}}
+{"ts":"2026-08-18T11:12:33.469Z","agentId":"P-34","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-42","to":"P-42","type":"Family Office Allocation"}}
+{"ts":"2026-08-18T11:12:33.471Z","agentId":"P-34","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-43","to":"P-44","type":"REIT vs Syndication Comparison"}}
+{"ts":"2026-08-18T11:12:33.471Z","agentId":"P-34","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-38"}}
+{"ts":"2026-08-18T11:12:33.472Z","agentId":"P-34","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-45"}}
+{"ts":"2026-08-18T11:12:33.472Z","agentId":"P-34","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-46"}}
+{"ts":"2026-08-18T11:12:33.472Z","agentId":"P-34","wave":4,"step":"WAVE_4","action":"COMPLETE","result":"SUCCESS","details":{"interactions":5,"invites":3}}
+{"ts":"2026-08-18T11:12:33.586Z","agentId":"P-34","wave":5,"step":"WAVE_5","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T11:12:33.587Z","agentId":"P-34","wave":5,"step":"WAVE_5","action":"COMPLETE","result":"SUCCESS","details":{"reportPath":"/Users/yvesdarbouze/Documents/PaperWorking/artifacts/persona-swarm/reports/P-34-experience-report.md"}}
+{"ts":"2026-08-18T11:19:05.512Z","agentId":"P-34","wave":1,"step":"WAVE_1","action":"START","result":"SUCCESS","details":{"email":"agent34.carla.jimenez@paperworking-test.dev"}}
+{"ts":"2026-08-18T11:19:05.512Z","agentId":"P-34","wave":1,"step":"WAVE_1","action":"START","result":"SUCCESS","details":{"email":"agent34.carla.jimenez@paperworking-test.dev"}}
+{"ts":"2026-08-18T11:19:05.512Z","agentId":"P-34","wave":0,"step":"SIGNUP","action":"SUCCESS_CREATED","result":"SUCCESS","details":{"uid":"uid_persona_p34","email":"agent34.carla.jimenez@paperworking-test.dev","name":"Carla Jimenez","entity":"Jimenez Sunbelt Fund Group LLC"}}
+{"ts":"2026-08-18T11:19:05.513Z","agentId":"P-34","wave":1,"step":"WAVE_1","action":"COMPLETE","result":"SUCCESS","details":{"uid":"uid_persona_p34"}}
+{"ts":"2026-08-18T11:19:05.513Z","agentId":"P-34","wave":0,"step":"SIGNUP","action":"SUCCESS_CREATED","result":"SUCCESS","details":{"uid":"uid_persona_p34","email":"agent34.carla.jimenez@paperworking-test.dev","name":"Carla Jimenez","entity":"Jimenez Sunbelt Fund Group LLC"}}
+{"ts":"2026-08-18T11:19:05.513Z","agentId":"P-34","wave":1,"step":"WAVE_1","action":"COMPLETE","result":"SUCCESS","details":{"uid":"uid_persona_p34"}}
+{"ts":"2026-08-18T11:19:05.561Z","agentId":"P-34","wave":2,"step":"WAVE_2","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T11:19:05.561Z","agentId":"P-34","wave":0,"step":"BILLING","action":"SUBSCRIPTION_SUCCESS","result":"SUCCESS","details":{"plan":"Individual","stripeCustomerId":"cus_test_swarm_p-34","stripeSubscriptionId":"sub_test_swarm_p-34","cardLastFour":"4242","cardBrand":"visa"}}
+{"ts":"2026-08-18T11:19:05.562Z","agentId":"P-34","wave":2,"step":"WAVE_2","action":"COMPLETE","result":"SUCCESS","details":{"plan":"Individual"}}
+{"ts":"2026-08-18T11:19:05.564Z","agentId":"P-34","wave":2,"step":"WAVE_2","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T11:19:05.565Z","agentId":"P-34","wave":0,"step":"BILLING","action":"SUBSCRIPTION_SUCCESS","result":"SUCCESS","details":{"plan":"Individual","stripeCustomerId":"cus_test_swarm_p-34","stripeSubscriptionId":"sub_test_swarm_p-34","cardLastFour":"4242","cardBrand":"visa"}}
+{"ts":"2026-08-18T11:19:05.565Z","agentId":"P-34","wave":2,"step":"WAVE_2","action":"COMPLETE","result":"SUCCESS","details":{"plan":"Individual"}}
+{"ts":"2026-08-18T11:19:05.693Z","agentId":"P-34","wave":3,"step":"WAVE_3","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T11:19:05.695Z","agentId":"P-34","wave":0,"step":"PROJECTS","action":"CREATION_SUCCESS","result":"SUCCESS","details":{"created":10,"plaid":false}}
+{"ts":"2026-08-18T11:19:05.695Z","agentId":"P-34","wave":3,"step":"WAVE_3","action":"COMPLETE","result":"SUCCESS","details":{"created":10}}
+{"ts":"2026-08-18T11:19:05.699Z","agentId":"P-34","wave":3,"step":"WAVE_3","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T11:19:05.705Z","agentId":"P-34","wave":0,"step":"PROJECTS","action":"CREATION_SUCCESS","result":"SUCCESS","details":{"created":10,"plaid":false}}
+{"ts":"2026-08-18T11:19:05.745Z","agentId":"P-34","wave":3,"step":"WAVE_3","action":"COMPLETE","result":"SUCCESS","details":{"created":10}}
+{"ts":"2026-08-18T11:19:05.874Z","agentId":"P-34","wave":4,"step":"WAVE_4","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T11:19:05.875Z","agentId":"P-34","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-39","to":"P-38","type":"LP Subscription Invite"}}
+{"ts":"2026-08-18T11:19:05.875Z","agentId":"P-34","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-40","to":"P-45","type":"Crowdfunded Allocation"}}
+{"ts":"2026-08-18T11:19:05.876Z","agentId":"P-34","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-41","to":"P-46","type":"Crowdfunded Allocation"}}
+{"ts":"2026-08-18T11:19:05.876Z","agentId":"P-34","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-42","to":"P-42","type":"Family Office Allocation"}}
+{"ts":"2026-08-18T11:19:05.876Z","agentId":"P-34","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-43","to":"P-44","type":"REIT vs Syndication Comparison"}}
+{"ts":"2026-08-18T11:19:05.879Z","agentId":"P-34","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-38"}}
+{"ts":"2026-08-18T11:19:05.884Z","agentId":"P-34","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-45"}}
+{"ts":"2026-08-18T11:19:05.885Z","agentId":"P-34","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-46"}}
+{"ts":"2026-08-18T11:19:05.885Z","agentId":"P-34","wave":4,"step":"WAVE_4","action":"COMPLETE","result":"SUCCESS","details":{"interactions":5,"invites":3}}
+{"ts":"2026-08-18T11:19:05.892Z","agentId":"P-34","wave":4,"step":"WAVE_4","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T11:19:05.892Z","agentId":"P-34","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-39","to":"P-38","type":"LP Subscription Invite"}}
+{"ts":"2026-08-18T11:19:05.892Z","agentId":"P-34","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-40","to":"P-45","type":"Crowdfunded Allocation"}}
+{"ts":"2026-08-18T11:19:05.893Z","agentId":"P-34","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-41","to":"P-46","type":"Crowdfunded Allocation"}}
+{"ts":"2026-08-18T11:19:05.894Z","agentId":"P-34","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-42","to":"P-42","type":"Family Office Allocation"}}
+{"ts":"2026-08-18T11:19:05.894Z","agentId":"P-34","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-43","to":"P-44","type":"REIT vs Syndication Comparison"}}
+{"ts":"2026-08-18T11:19:05.895Z","agentId":"P-34","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-38"}}
+{"ts":"2026-08-18T11:19:05.896Z","agentId":"P-34","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-45"}}
+{"ts":"2026-08-18T11:19:05.897Z","agentId":"P-34","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-46"}}
+{"ts":"2026-08-18T11:19:05.897Z","agentId":"P-34","wave":4,"step":"WAVE_4","action":"COMPLETE","result":"SUCCESS","details":{"interactions":5,"invites":3}}
+{"ts":"2026-08-18T11:19:05.961Z","agentId":"P-34","wave":5,"step":"WAVE_5","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T11:19:05.962Z","agentId":"P-34","wave":5,"step":"WAVE_5","action":"COMPLETE","result":"SUCCESS","details":{"reportPath":"/Users/yvesdarbouze/Documents/PaperWorking/artifacts/persona-swarm/reports/P-34-experience-report.md"}}
+{"ts":"2026-08-18T11:19:05.971Z","agentId":"P-34","wave":5,"step":"WAVE_5","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T11:19:05.972Z","agentId":"P-34","wave":5,"step":"WAVE_5","action":"COMPLETE","result":"SUCCESS","details":{"reportPath":"/Users/yvesdarbouze/Documents/PaperWorking/artifacts/persona-swarm/reports/P-34-experience-report.md"}}
+{"ts":"2026-08-18T14:00:23.611Z","agentId":"P-34","wave":1,"step":"WAVE_1","action":"START","result":"SUCCESS","details":{"email":"agent34.carla.jimenez@paperworking-test.dev"}}
+{"ts":"2026-08-18T14:00:23.612Z","agentId":"P-34","wave":0,"step":"SIGNUP","action":"SUCCESS_CREATED","result":"SUCCESS","details":{"uid":"uid_persona_p34","email":"agent34.carla.jimenez@paperworking-test.dev","name":"Carla Jimenez","entity":"Jimenez Sunbelt Fund Group LLC"}}
+{"ts":"2026-08-18T14:00:23.612Z","agentId":"P-34","wave":1,"step":"WAVE_1","action":"COMPLETE","result":"SUCCESS","details":{"uid":"uid_persona_p34"}}
+{"ts":"2026-08-18T14:00:23.619Z","agentId":"P-34","wave":1,"step":"WAVE_1","action":"START","result":"SUCCESS","details":{"email":"agent34.carla.jimenez@paperworking-test.dev"}}
+{"ts":"2026-08-18T14:00:23.620Z","agentId":"P-34","wave":0,"step":"SIGNUP","action":"SUCCESS_CREATED","result":"SUCCESS","details":{"uid":"uid_persona_p34","email":"agent34.carla.jimenez@paperworking-test.dev","name":"Carla Jimenez","entity":"Jimenez Sunbelt Fund Group LLC"}}
+{"ts":"2026-08-18T14:00:23.620Z","agentId":"P-34","wave":1,"step":"WAVE_1","action":"COMPLETE","result":"SUCCESS","details":{"uid":"uid_persona_p34"}}
+{"ts":"2026-08-18T14:00:23.662Z","agentId":"P-34","wave":2,"step":"WAVE_2","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T14:00:23.662Z","agentId":"P-34","wave":0,"step":"BILLING","action":"SUBSCRIPTION_SUCCESS","result":"SUCCESS","details":{"plan":"Individual","stripeCustomerId":"cus_test_swarm_p-34","stripeSubscriptionId":"sub_test_swarm_p-34","cardLastFour":"4242","cardBrand":"visa"}}
+{"ts":"2026-08-18T14:00:23.664Z","agentId":"P-34","wave":2,"step":"WAVE_2","action":"COMPLETE","result":"SUCCESS","details":{"plan":"Individual"}}
+{"ts":"2026-08-18T14:00:23.674Z","agentId":"P-34","wave":2,"step":"WAVE_2","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T14:00:23.674Z","agentId":"P-34","wave":0,"step":"BILLING","action":"SUBSCRIPTION_SUCCESS","result":"SUCCESS","details":{"plan":"Individual","stripeCustomerId":"cus_test_swarm_p-34","stripeSubscriptionId":"sub_test_swarm_p-34","cardLastFour":"4242","cardBrand":"visa"}}
+{"ts":"2026-08-18T14:00:23.674Z","agentId":"P-34","wave":2,"step":"WAVE_2","action":"COMPLETE","result":"SUCCESS","details":{"plan":"Individual"}}
+{"ts":"2026-08-18T14:00:23.813Z","agentId":"P-34","wave":3,"step":"WAVE_3","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T14:00:23.815Z","agentId":"P-34","wave":0,"step":"PROJECTS","action":"CREATION_SUCCESS","result":"SUCCESS","details":{"created":10,"plaid":false}}
+{"ts":"2026-08-18T14:00:23.816Z","agentId":"P-34","wave":3,"step":"WAVE_3","action":"COMPLETE","result":"SUCCESS","details":{"created":10}}
+{"ts":"2026-08-18T14:00:23.825Z","agentId":"P-34","wave":3,"step":"WAVE_3","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T14:00:23.829Z","agentId":"P-34","wave":0,"step":"PROJECTS","action":"CREATION_SUCCESS","result":"SUCCESS","details":{"created":10,"plaid":false}}
+{"ts":"2026-08-18T14:00:23.829Z","agentId":"P-34","wave":3,"step":"WAVE_3","action":"COMPLETE","result":"SUCCESS","details":{"created":10}}
+{"ts":"2026-08-18T14:00:23.979Z","agentId":"P-34","wave":4,"step":"WAVE_4","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T14:00:23.980Z","agentId":"P-34","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-39","to":"P-38","type":"LP Subscription Invite"}}
+{"ts":"2026-08-18T14:00:23.980Z","agentId":"P-34","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-40","to":"P-45","type":"Crowdfunded Allocation"}}
+{"ts":"2026-08-18T14:00:23.983Z","agentId":"P-34","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-41","to":"P-46","type":"Crowdfunded Allocation"}}
+{"ts":"2026-08-18T14:00:23.985Z","agentId":"P-34","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-42","to":"P-42","type":"Family Office Allocation"}}
+{"ts":"2026-08-18T14:00:23.986Z","agentId":"P-34","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-43","to":"P-44","type":"REIT vs Syndication Comparison"}}
+{"ts":"2026-08-18T14:00:23.987Z","agentId":"P-34","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-38"}}
+{"ts":"2026-08-18T14:00:23.988Z","agentId":"P-34","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-45"}}
+{"ts":"2026-08-18T14:00:23.989Z","agentId":"P-34","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-46"}}
+{"ts":"2026-08-18T14:00:23.989Z","agentId":"P-34","wave":4,"step":"WAVE_4","action":"COMPLETE","result":"SUCCESS","details":{"interactions":5,"invites":3}}
+{"ts":"2026-08-18T14:00:23.999Z","agentId":"P-34","wave":4,"step":"WAVE_4","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T14:00:24.000Z","agentId":"P-34","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-39","to":"P-38","type":"LP Subscription Invite"}}
+{"ts":"2026-08-18T14:00:24.000Z","agentId":"P-34","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-40","to":"P-45","type":"Crowdfunded Allocation"}}
+{"ts":"2026-08-18T14:00:24.000Z","agentId":"P-34","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-41","to":"P-46","type":"Crowdfunded Allocation"}}
+{"ts":"2026-08-18T14:00:24.000Z","agentId":"P-34","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-42","to":"P-42","type":"Family Office Allocation"}}
+{"ts":"2026-08-18T14:00:24.001Z","agentId":"P-34","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-43","to":"P-44","type":"REIT vs Syndication Comparison"}}
+{"ts":"2026-08-18T14:00:24.003Z","agentId":"P-34","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-38"}}
+{"ts":"2026-08-18T14:00:24.004Z","agentId":"P-34","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-45"}}
+{"ts":"2026-08-18T14:00:24.005Z","agentId":"P-34","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-46"}}
+{"ts":"2026-08-18T14:00:24.005Z","agentId":"P-34","wave":4,"step":"WAVE_4","action":"COMPLETE","result":"SUCCESS","details":{"interactions":5,"invites":3}}
+{"ts":"2026-08-18T14:00:24.091Z","agentId":"P-34","wave":5,"step":"WAVE_5","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T14:00:24.091Z","agentId":"P-34","wave":5,"step":"WAVE_5","action":"COMPLETE","result":"SUCCESS","details":{"reportPath":"/Users/yvesdarbouze/Documents/PaperWorking/artifacts/persona-swarm/reports/P-34-experience-report.md"}}
+{"ts":"2026-08-18T14:00:24.111Z","agentId":"P-34","wave":5,"step":"WAVE_5","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T14:00:24.112Z","agentId":"P-34","wave":5,"step":"WAVE_5","action":"COMPLETE","result":"SUCCESS","details":{"reportPath":"/Users/yvesdarbouze/Documents/PaperWorking/artifacts/persona-swarm/reports/P-34-experience-report.md"}}
+{"ts":"2026-08-18T14:00:58.798Z","agentId":"P-34","wave":1,"step":"WAVE_1","action":"START","result":"SUCCESS","details":{"email":"agent34.carla.jimenez@paperworking-test.dev"}}
+{"ts":"2026-08-18T14:00:58.799Z","agentId":"P-34","wave":0,"step":"SIGNUP","action":"SUCCESS_CREATED","result":"SUCCESS","details":{"uid":"uid_persona_p34","email":"agent34.carla.jimenez@paperworking-test.dev","name":"Carla Jimenez","entity":"Jimenez Sunbelt Fund Group LLC"}}
+{"ts":"2026-08-18T14:00:58.800Z","agentId":"P-34","wave":1,"step":"WAVE_1","action":"COMPLETE","result":"SUCCESS","details":{"uid":"uid_persona_p34"}}
+{"ts":"2026-08-18T14:00:58.843Z","agentId":"P-34","wave":2,"step":"WAVE_2","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T14:00:58.844Z","agentId":"P-34","wave":0,"step":"BILLING","action":"SUBSCRIPTION_SUCCESS","result":"SUCCESS","details":{"plan":"Individual","stripeCustomerId":"cus_test_swarm_p-34","stripeSubscriptionId":"sub_test_swarm_p-34","cardLastFour":"4242","cardBrand":"visa"}}
+{"ts":"2026-08-18T14:00:58.844Z","agentId":"P-34","wave":2,"step":"WAVE_2","action":"COMPLETE","result":"SUCCESS","details":{"plan":"Individual"}}
+{"ts":"2026-08-18T14:00:58.957Z","agentId":"P-34","wave":3,"step":"WAVE_3","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T14:00:58.959Z","agentId":"P-34","wave":0,"step":"PROJECTS","action":"CREATION_SUCCESS","result":"SUCCESS","details":{"created":10,"plaid":false}}
+{"ts":"2026-08-18T14:00:58.959Z","agentId":"P-34","wave":3,"step":"WAVE_3","action":"COMPLETE","result":"SUCCESS","details":{"created":10}}
+{"ts":"2026-08-18T14:00:59.046Z","agentId":"P-34","wave":4,"step":"WAVE_4","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T14:00:59.053Z","agentId":"P-34","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-39","to":"P-38","type":"LP Subscription Invite"}}
+{"ts":"2026-08-18T14:00:59.059Z","agentId":"P-34","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-40","to":"P-45","type":"Crowdfunded Allocation"}}
+{"ts":"2026-08-18T14:00:59.060Z","agentId":"P-34","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-41","to":"P-46","type":"Crowdfunded Allocation"}}
+{"ts":"2026-08-18T14:00:59.060Z","agentId":"P-34","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-42","to":"P-42","type":"Family Office Allocation"}}
+{"ts":"2026-08-18T14:00:59.061Z","agentId":"P-34","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-43","to":"P-44","type":"REIT vs Syndication Comparison"}}
+{"ts":"2026-08-18T14:00:59.061Z","agentId":"P-34","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-38"}}
+{"ts":"2026-08-18T14:00:59.062Z","agentId":"P-34","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-45"}}
+{"ts":"2026-08-18T14:00:59.063Z","agentId":"P-34","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-46"}}
+{"ts":"2026-08-18T14:00:59.063Z","agentId":"P-34","wave":4,"step":"WAVE_4","action":"COMPLETE","result":"SUCCESS","details":{"interactions":5,"invites":3}}
+{"ts":"2026-08-18T14:00:59.111Z","agentId":"P-34","wave":5,"step":"WAVE_5","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T14:00:59.112Z","agentId":"P-34","wave":5,"step":"WAVE_5","action":"COMPLETE","result":"SUCCESS","details":{"reportPath":"/Users/yvesdarbouze/Documents/PaperWorking/artifacts/persona-swarm/reports/P-34-experience-report.md"}}
+{"ts":"2026-08-18T14:01:06.096Z","agentId":"P-34","wave":1,"step":"WAVE_1","action":"START","result":"SUCCESS","details":{"email":"agent34.carla.jimenez@paperworking-test.dev"}}
+{"ts":"2026-08-18T14:01:06.651Z","agentId":"P-34","wave":1,"step":"WAVE_1","action":"START","result":"SUCCESS","details":{"email":"agent34.carla.jimenez@paperworking-test.dev"}}
+{"ts":"2026-08-18T14:01:08.097Z","agentId":"P-34","wave":0,"step":"SIGNUP","action":"SUCCESS_CREATED","result":"SUCCESS","details":{"uid":"uid_persona_p34","email":"agent34.carla.jimenez@paperworking-test.dev","name":"Carla Jimenez","entity":"Jimenez Sunbelt Fund Group LLC"}}
+{"ts":"2026-08-18T14:01:08.097Z","agentId":"P-34","wave":1,"step":"WAVE_1","action":"COMPLETE","result":"SUCCESS","details":{"uid":"uid_persona_p34"}}
+{"ts":"2026-08-18T14:01:08.663Z","agentId":"P-34","wave":0,"step":"SIGNUP","action":"SUCCESS_CREATED","result":"SUCCESS","details":{"uid":"uid_persona_p34","email":"agent34.carla.jimenez@paperworking-test.dev","name":"Carla Jimenez","entity":"Jimenez Sunbelt Fund Group LLC"}}
+{"ts":"2026-08-18T14:01:08.664Z","agentId":"P-34","wave":1,"step":"WAVE_1","action":"COMPLETE","result":"SUCCESS","details":{"uid":"uid_persona_p34"}}
+{"ts":"2026-08-18T14:01:09.225Z","agentId":"P-34","wave":1,"step":"WAVE_1","action":"START","result":"SUCCESS","details":{"email":"agent34.carla.jimenez@paperworking-test.dev"}}
+{"ts":"2026-08-18T14:01:09.225Z","agentId":"P-34","wave":0,"step":"SIGNUP","action":"SUCCESS_CREATED","result":"SUCCESS","details":{"uid":"uid_persona_p34","email":"agent34.carla.jimenez@paperworking-test.dev","name":"Carla Jimenez","entity":"Jimenez Sunbelt Fund Group LLC"}}
+{"ts":"2026-08-18T14:01:09.225Z","agentId":"P-34","wave":1,"step":"WAVE_1","action":"COMPLETE","result":"SUCCESS","details":{"uid":"uid_persona_p34"}}
+{"ts":"2026-08-18T14:01:09.267Z","agentId":"P-34","wave":2,"step":"WAVE_2","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T14:01:09.267Z","agentId":"P-34","wave":0,"step":"BILLING","action":"SUBSCRIPTION_SUCCESS","result":"SUCCESS","details":{"plan":"Individual","stripeCustomerId":"cus_test_swarm_p-34","stripeSubscriptionId":"sub_test_swarm_p-34","cardLastFour":"4242","cardBrand":"visa"}}
+{"ts":"2026-08-18T14:01:09.267Z","agentId":"P-34","wave":2,"step":"WAVE_2","action":"COMPLETE","result":"SUCCESS","details":{"plan":"Individual"}}
+{"ts":"2026-08-18T14:01:09.364Z","agentId":"P-34","wave":3,"step":"WAVE_3","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T14:01:09.366Z","agentId":"P-34","wave":0,"step":"PROJECTS","action":"CREATION_SUCCESS","result":"SUCCESS","details":{"created":10,"plaid":false}}
+{"ts":"2026-08-18T14:01:09.366Z","agentId":"P-34","wave":3,"step":"WAVE_3","action":"COMPLETE","result":"SUCCESS","details":{"created":10}}
+{"ts":"2026-08-18T14:01:09.451Z","agentId":"P-34","wave":4,"step":"WAVE_4","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T14:01:09.451Z","agentId":"P-34","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-39","to":"P-38","type":"LP Subscription Invite"}}
+{"ts":"2026-08-18T14:01:09.452Z","agentId":"P-34","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-40","to":"P-45","type":"Crowdfunded Allocation"}}
+{"ts":"2026-08-18T14:01:09.452Z","agentId":"P-34","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-41","to":"P-46","type":"Crowdfunded Allocation"}}
+{"ts":"2026-08-18T14:01:09.452Z","agentId":"P-34","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-42","to":"P-42","type":"Family Office Allocation"}}
+{"ts":"2026-08-18T14:01:09.452Z","agentId":"P-34","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-43","to":"P-44","type":"REIT vs Syndication Comparison"}}
+{"ts":"2026-08-18T14:01:09.452Z","agentId":"P-34","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-38"}}
+{"ts":"2026-08-18T14:01:09.453Z","agentId":"P-34","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-45"}}
+{"ts":"2026-08-18T14:01:09.453Z","agentId":"P-34","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-46"}}
+{"ts":"2026-08-18T14:01:09.453Z","agentId":"P-34","wave":4,"step":"WAVE_4","action":"COMPLETE","result":"SUCCESS","details":{"interactions":5,"invites":3}}
+{"ts":"2026-08-18T14:01:09.511Z","agentId":"P-34","wave":5,"step":"WAVE_5","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T14:01:09.511Z","agentId":"P-34","wave":5,"step":"WAVE_5","action":"COMPLETE","result":"SUCCESS","details":{"reportPath":"/Users/yvesdarbouze/Documents/PaperWorking/artifacts/persona-swarm/reports/P-34-experience-report.md"}}
+{"ts":"2026-08-18T14:01:24.913Z","agentId":"P-34","wave":1,"step":"WAVE_1","action":"START","result":"SUCCESS","details":{"email":"agent34.carla.jimenez@paperworking-test.dev"}}
+{"ts":"2026-08-18T14:01:24.914Z","agentId":"P-34","wave":0,"step":"SIGNUP","action":"SUCCESS_CREATED","result":"SUCCESS","details":{"uid":"uid_persona_p34","email":"agent34.carla.jimenez@paperworking-test.dev","name":"Carla Jimenez","entity":"Jimenez Sunbelt Fund Group LLC"}}
+{"ts":"2026-08-18T14:01:24.914Z","agentId":"P-34","wave":1,"step":"WAVE_1","action":"COMPLETE","result":"SUCCESS","details":{"uid":"uid_persona_p34"}}
+{"ts":"2026-08-18T14:01:24.974Z","agentId":"P-34","wave":2,"step":"WAVE_2","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T14:01:24.974Z","agentId":"P-34","wave":0,"step":"BILLING","action":"SUBSCRIPTION_SUCCESS","result":"SUCCESS","details":{"plan":"Individual","stripeCustomerId":"cus_test_swarm_p-34","stripeSubscriptionId":"sub_test_swarm_p-34","cardLastFour":"4242","cardBrand":"visa"}}
+{"ts":"2026-08-18T14:01:24.974Z","agentId":"P-34","wave":2,"step":"WAVE_2","action":"COMPLETE","result":"SUCCESS","details":{"plan":"Individual"}}
+{"ts":"2026-08-18T14:01:25.099Z","agentId":"P-34","wave":3,"step":"WAVE_3","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T14:01:25.103Z","agentId":"P-34","wave":0,"step":"PROJECTS","action":"CREATION_SUCCESS","result":"SUCCESS","details":{"created":10,"plaid":false}}
+{"ts":"2026-08-18T14:01:25.103Z","agentId":"P-34","wave":3,"step":"WAVE_3","action":"COMPLETE","result":"SUCCESS","details":{"created":10}}
+{"ts":"2026-08-18T14:01:25.212Z","agentId":"P-34","wave":4,"step":"WAVE_4","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T14:01:25.213Z","agentId":"P-34","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-39","to":"P-38","type":"LP Subscription Invite"}}
+{"ts":"2026-08-18T14:01:25.213Z","agentId":"P-34","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-40","to":"P-45","type":"Crowdfunded Allocation"}}
+{"ts":"2026-08-18T14:01:25.213Z","agentId":"P-34","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-41","to":"P-46","type":"Crowdfunded Allocation"}}
+{"ts":"2026-08-18T14:01:25.214Z","agentId":"P-34","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-42","to":"P-42","type":"Family Office Allocation"}}
+{"ts":"2026-08-18T14:01:25.214Z","agentId":"P-34","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-43","to":"P-44","type":"REIT vs Syndication Comparison"}}
+{"ts":"2026-08-18T14:01:25.215Z","agentId":"P-34","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-38"}}
+{"ts":"2026-08-18T14:01:25.215Z","agentId":"P-34","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-45"}}
+{"ts":"2026-08-18T14:01:25.215Z","agentId":"P-34","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-46"}}
+{"ts":"2026-08-18T14:01:25.215Z","agentId":"P-34","wave":4,"step":"WAVE_4","action":"COMPLETE","result":"SUCCESS","details":{"interactions":5,"invites":3}}
+{"ts":"2026-08-18T14:01:25.290Z","agentId":"P-34","wave":5,"step":"WAVE_5","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T14:01:25.291Z","agentId":"P-34","wave":5,"step":"WAVE_5","action":"COMPLETE","result":"SUCCESS","details":{"reportPath":"/Users/yvesdarbouze/Documents/PaperWorking/artifacts/persona-swarm/reports/P-34-experience-report.md"}}
+{"ts":"2026-08-18T14:01:25.639Z","agentId":"P-34","wave":1,"step":"WAVE_1","action":"START","result":"SUCCESS","details":{"email":"agent34.carla.jimenez@paperworking-test.dev"}}
+{"ts":"2026-08-18T14:01:25.639Z","agentId":"P-34","wave":0,"step":"SIGNUP","action":"SUCCESS_CREATED","result":"SUCCESS","details":{"uid":"uid_persona_p34","email":"agent34.carla.jimenez@paperworking-test.dev","name":"Carla Jimenez","entity":"Jimenez Sunbelt Fund Group LLC"}}
+{"ts":"2026-08-18T14:01:25.639Z","agentId":"P-34","wave":1,"step":"WAVE_1","action":"COMPLETE","result":"SUCCESS","details":{"uid":"uid_persona_p34"}}
+{"ts":"2026-08-18T14:01:25.717Z","agentId":"P-34","wave":2,"step":"WAVE_2","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T14:01:25.717Z","agentId":"P-34","wave":0,"step":"BILLING","action":"SUBSCRIPTION_SUCCESS","result":"SUCCESS","details":{"plan":"Individual","stripeCustomerId":"cus_test_swarm_p-34","stripeSubscriptionId":"sub_test_swarm_p-34","cardLastFour":"4242","cardBrand":"visa"}}
+{"ts":"2026-08-18T14:01:25.717Z","agentId":"P-34","wave":2,"step":"WAVE_2","action":"COMPLETE","result":"SUCCESS","details":{"plan":"Individual"}}
+{"ts":"2026-08-18T14:01:25.862Z","agentId":"P-34","wave":3,"step":"WAVE_3","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T14:01:25.863Z","agentId":"P-34","wave":0,"step":"PROJECTS","action":"CREATION_SUCCESS","result":"SUCCESS","details":{"created":10,"plaid":false}}
+{"ts":"2026-08-18T14:01:25.864Z","agentId":"P-34","wave":3,"step":"WAVE_3","action":"COMPLETE","result":"SUCCESS","details":{"created":10}}
+{"ts":"2026-08-18T14:01:25.995Z","agentId":"P-34","wave":4,"step":"WAVE_4","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T14:01:25.996Z","agentId":"P-34","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-39","to":"P-38","type":"LP Subscription Invite"}}
+{"ts":"2026-08-18T14:01:25.996Z","agentId":"P-34","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-40","to":"P-45","type":"Crowdfunded Allocation"}}
+{"ts":"2026-08-18T14:01:25.996Z","agentId":"P-34","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-41","to":"P-46","type":"Crowdfunded Allocation"}}
+{"ts":"2026-08-18T14:01:25.996Z","agentId":"P-34","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-42","to":"P-42","type":"Family Office Allocation"}}
+{"ts":"2026-08-18T14:01:25.997Z","agentId":"P-34","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-43","to":"P-44","type":"REIT vs Syndication Comparison"}}
+{"ts":"2026-08-18T14:01:25.997Z","agentId":"P-34","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-38"}}
+{"ts":"2026-08-18T14:01:25.998Z","agentId":"P-34","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-45"}}
+{"ts":"2026-08-18T14:01:25.999Z","agentId":"P-34","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-46"}}
+{"ts":"2026-08-18T14:01:25.999Z","agentId":"P-34","wave":4,"step":"WAVE_4","action":"COMPLETE","result":"SUCCESS","details":{"interactions":5,"invites":3}}
+{"ts":"2026-08-18T14:01:26.075Z","agentId":"P-34","wave":5,"step":"WAVE_5","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T14:01:26.076Z","agentId":"P-34","wave":5,"step":"WAVE_5","action":"COMPLETE","result":"SUCCESS","details":{"reportPath":"/Users/yvesdarbouze/Documents/PaperWorking/artifacts/persona-swarm/reports/P-34-experience-report.md"}}
+{"ts":"2026-08-18T14:16:29.141Z","agentId":"P-34","wave":1,"step":"WAVE_1","action":"START","result":"SUCCESS","details":{"email":"agent34.carla.jimenez@paperworking-test.dev"}}
+{"ts":"2026-08-18T14:16:29.141Z","agentId":"P-34","wave":1,"step":"WAVE_1","action":"START","result":"SUCCESS","details":{"email":"agent34.carla.jimenez@paperworking-test.dev"}}
+{"ts":"2026-08-18T14:16:29.142Z","agentId":"P-34","wave":0,"step":"SIGNUP","action":"SUCCESS_CREATED","result":"SUCCESS","details":{"uid":"uid_persona_p34","email":"agent34.carla.jimenez@paperworking-test.dev","name":"Carla Jimenez","entity":"Jimenez Sunbelt Fund Group LLC"}}
+{"ts":"2026-08-18T14:16:29.142Z","agentId":"P-34","wave":1,"step":"WAVE_1","action":"COMPLETE","result":"SUCCESS","details":{"uid":"uid_persona_p34"}}
+{"ts":"2026-08-18T14:16:29.142Z","agentId":"P-34","wave":0,"step":"SIGNUP","action":"SUCCESS_CREATED","result":"SUCCESS","details":{"uid":"uid_persona_p34","email":"agent34.carla.jimenez@paperworking-test.dev","name":"Carla Jimenez","entity":"Jimenez Sunbelt Fund Group LLC"}}
+{"ts":"2026-08-18T14:16:29.142Z","agentId":"P-34","wave":1,"step":"WAVE_1","action":"COMPLETE","result":"SUCCESS","details":{"uid":"uid_persona_p34"}}
+{"ts":"2026-08-18T14:16:29.190Z","agentId":"P-34","wave":2,"step":"WAVE_2","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T14:16:29.193Z","agentId":"P-34","wave":2,"step":"WAVE_2","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T14:16:29.193Z","agentId":"P-34","wave":0,"step":"BILLING","action":"SUBSCRIPTION_SUCCESS","result":"SUCCESS","details":{"plan":"Individual","stripeCustomerId":"cus_test_swarm_p-34","stripeSubscriptionId":"sub_test_swarm_p-34","cardLastFour":"4242","cardBrand":"visa"}}
+{"ts":"2026-08-18T14:16:29.194Z","agentId":"P-34","wave":2,"step":"WAVE_2","action":"COMPLETE","result":"SUCCESS","details":{"plan":"Individual"}}
+{"ts":"2026-08-18T14:16:29.194Z","agentId":"P-34","wave":0,"step":"BILLING","action":"SUBSCRIPTION_SUCCESS","result":"SUCCESS","details":{"plan":"Individual","stripeCustomerId":"cus_test_swarm_p-34","stripeSubscriptionId":"sub_test_swarm_p-34","cardLastFour":"4242","cardBrand":"visa"}}
+{"ts":"2026-08-18T14:16:29.194Z","agentId":"P-34","wave":2,"step":"WAVE_2","action":"COMPLETE","result":"SUCCESS","details":{"plan":"Individual"}}
+{"ts":"2026-08-18T14:16:29.329Z","agentId":"P-34","wave":3,"step":"WAVE_3","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T14:16:29.333Z","agentId":"P-34","wave":0,"step":"PROJECTS","action":"CREATION_SUCCESS","result":"SUCCESS","details":{"created":10,"plaid":false}}
+{"ts":"2026-08-18T14:16:29.334Z","agentId":"P-34","wave":3,"step":"WAVE_3","action":"COMPLETE","result":"SUCCESS","details":{"created":10}}
+{"ts":"2026-08-18T14:16:29.335Z","agentId":"P-34","wave":3,"step":"WAVE_3","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T14:16:29.337Z","agentId":"P-34","wave":0,"step":"PROJECTS","action":"CREATION_SUCCESS","result":"SUCCESS","details":{"created":10,"plaid":false}}
+{"ts":"2026-08-18T14:16:29.337Z","agentId":"P-34","wave":3,"step":"WAVE_3","action":"COMPLETE","result":"SUCCESS","details":{"created":10}}
+{"ts":"2026-08-18T14:16:29.447Z","agentId":"P-34","wave":4,"step":"WAVE_4","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T14:16:29.448Z","agentId":"P-34","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-39","to":"P-38","type":"LP Subscription Invite"}}
+{"ts":"2026-08-18T14:16:29.448Z","agentId":"P-34","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-40","to":"P-45","type":"Crowdfunded Allocation"}}
+{"ts":"2026-08-18T14:16:29.450Z","agentId":"P-34","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-41","to":"P-46","type":"Crowdfunded Allocation"}}
+{"ts":"2026-08-18T14:16:29.451Z","agentId":"P-34","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-42","to":"P-42","type":"Family Office Allocation"}}
+{"ts":"2026-08-18T14:16:29.451Z","agentId":"P-34","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-43","to":"P-44","type":"REIT vs Syndication Comparison"}}
+{"ts":"2026-08-18T14:16:29.451Z","agentId":"P-34","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-38"}}
+{"ts":"2026-08-18T14:16:29.452Z","agentId":"P-34","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-45"}}
+{"ts":"2026-08-18T14:16:29.452Z","agentId":"P-34","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-46"}}
+{"ts":"2026-08-18T14:16:29.452Z","agentId":"P-34","wave":4,"step":"WAVE_4","action":"COMPLETE","result":"SUCCESS","details":{"interactions":5,"invites":3}}
+{"ts":"2026-08-18T14:16:29.456Z","agentId":"P-34","wave":4,"step":"WAVE_4","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T14:16:29.458Z","agentId":"P-34","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-39","to":"P-38","type":"LP Subscription Invite"}}
+{"ts":"2026-08-18T14:16:29.458Z","agentId":"P-34","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-40","to":"P-45","type":"Crowdfunded Allocation"}}
+{"ts":"2026-08-18T14:16:29.458Z","agentId":"P-34","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-41","to":"P-46","type":"Crowdfunded Allocation"}}
+{"ts":"2026-08-18T14:16:29.458Z","agentId":"P-34","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-42","to":"P-42","type":"Family Office Allocation"}}
+{"ts":"2026-08-18T14:16:29.459Z","agentId":"P-34","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-43","to":"P-44","type":"REIT vs Syndication Comparison"}}
+{"ts":"2026-08-18T14:16:29.459Z","agentId":"P-34","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-38"}}
+{"ts":"2026-08-18T14:16:29.460Z","agentId":"P-34","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-45"}}
+{"ts":"2026-08-18T14:16:29.460Z","agentId":"P-34","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-46"}}
+{"ts":"2026-08-18T14:16:29.460Z","agentId":"P-34","wave":4,"step":"WAVE_4","action":"COMPLETE","result":"SUCCESS","details":{"interactions":5,"invites":3}}
+{"ts":"2026-08-18T14:16:29.542Z","agentId":"P-34","wave":5,"step":"WAVE_5","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T14:16:29.542Z","agentId":"P-34","wave":5,"step":"WAVE_5","action":"COMPLETE","result":"SUCCESS","details":{"reportPath":"/Users/yvesdarbouze/Documents/PaperWorking/artifacts/persona-swarm/reports/P-34-experience-report.md"}}
+{"ts":"2026-08-18T14:16:29.557Z","agentId":"P-34","wave":5,"step":"WAVE_5","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T14:16:29.557Z","agentId":"P-34","wave":5,"step":"WAVE_5","action":"COMPLETE","result":"SUCCESS","details":{"reportPath":"/Users/yvesdarbouze/Documents/PaperWorking/artifacts/persona-swarm/reports/P-34-experience-report.md"}}
+{"ts":"2026-08-18T15:27:30.138Z","agentId":"P-34","wave":1,"step":"WAVE_1","action":"START","result":"SUCCESS","details":{"email":"agent34.carla.jimenez@paperworking-test.dev"}}
+{"ts":"2026-08-18T15:27:30.139Z","agentId":"P-34","wave":1,"step":"WAVE_1","action":"START","result":"SUCCESS","details":{"email":"agent34.carla.jimenez@paperworking-test.dev"}}
+{"ts":"2026-08-18T15:27:30.139Z","agentId":"P-34","wave":0,"step":"SIGNUP","action":"SUCCESS_CREATED","result":"SUCCESS","details":{"uid":"uid_persona_p34","email":"agent34.carla.jimenez@paperworking-test.dev","name":"Carla Jimenez","entity":"Jimenez Sunbelt Fund Group LLC"}}
+{"ts":"2026-08-18T15:27:30.140Z","agentId":"P-34","wave":1,"step":"WAVE_1","action":"COMPLETE","result":"SUCCESS","details":{"uid":"uid_persona_p34"}}
+{"ts":"2026-08-18T15:27:30.152Z","agentId":"P-34","wave":0,"step":"SIGNUP","action":"SUCCESS_CREATED","result":"SUCCESS","details":{"uid":"uid_persona_p34","email":"agent34.carla.jimenez@paperworking-test.dev","name":"Carla Jimenez","entity":"Jimenez Sunbelt Fund Group LLC"}}
+{"ts":"2026-08-18T15:27:30.152Z","agentId":"P-34","wave":1,"step":"WAVE_1","action":"COMPLETE","result":"SUCCESS","details":{"uid":"uid_persona_p34"}}
+{"ts":"2026-08-18T15:27:30.294Z","agentId":"P-34","wave":2,"step":"WAVE_2","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T15:27:30.296Z","agentId":"P-34","wave":0,"step":"BILLING","action":"SUBSCRIPTION_SUCCESS","result":"SUCCESS","details":{"plan":"Individual","stripeCustomerId":"cus_test_swarm_p-34","stripeSubscriptionId":"sub_test_swarm_p-34","cardLastFour":"4242","cardBrand":"visa"}}
+{"ts":"2026-08-18T15:27:30.297Z","agentId":"P-34","wave":2,"step":"WAVE_2","action":"COMPLETE","result":"SUCCESS","details":{"plan":"Individual"}}
+{"ts":"2026-08-18T15:27:30.314Z","agentId":"P-34","wave":2,"step":"WAVE_2","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T15:27:30.315Z","agentId":"P-34","wave":0,"step":"BILLING","action":"SUBSCRIPTION_SUCCESS","result":"SUCCESS","details":{"plan":"Individual","stripeCustomerId":"cus_test_swarm_p-34","stripeSubscriptionId":"sub_test_swarm_p-34","cardLastFour":"4242","cardBrand":"visa"}}
+{"ts":"2026-08-18T15:27:30.316Z","agentId":"P-34","wave":2,"step":"WAVE_2","action":"COMPLETE","result":"SUCCESS","details":{"plan":"Individual"}}
+{"ts":"2026-08-18T15:27:30.617Z","agentId":"P-34","wave":3,"step":"WAVE_3","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T15:27:30.620Z","agentId":"P-34","wave":0,"step":"PROJECTS","action":"CREATION_SUCCESS","result":"SUCCESS","details":{"created":10,"plaid":false}}
+{"ts":"2026-08-18T15:27:30.620Z","agentId":"P-34","wave":3,"step":"WAVE_3","action":"COMPLETE","result":"SUCCESS","details":{"created":10}}
+{"ts":"2026-08-18T15:27:30.668Z","agentId":"P-34","wave":3,"step":"WAVE_3","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T15:27:30.672Z","agentId":"P-34","wave":0,"step":"PROJECTS","action":"CREATION_SUCCESS","result":"SUCCESS","details":{"created":10,"plaid":false}}
+{"ts":"2026-08-18T15:27:30.673Z","agentId":"P-34","wave":3,"step":"WAVE_3","action":"COMPLETE","result":"SUCCESS","details":{"created":10}}
+{"ts":"2026-08-18T15:27:30.799Z","agentId":"P-34","wave":4,"step":"WAVE_4","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T15:27:30.800Z","agentId":"P-34","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-39","to":"P-38","type":"LP Subscription Invite"}}
+{"ts":"2026-08-18T15:27:30.800Z","agentId":"P-34","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-40","to":"P-45","type":"Crowdfunded Allocation"}}
+{"ts":"2026-08-18T15:27:30.801Z","agentId":"P-34","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-41","to":"P-46","type":"Crowdfunded Allocation"}}
+{"ts":"2026-08-18T15:27:30.801Z","agentId":"P-34","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-42","to":"P-42","type":"Family Office Allocation"}}
+{"ts":"2026-08-18T15:27:30.801Z","agentId":"P-34","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-43","to":"P-44","type":"REIT vs Syndication Comparison"}}
+{"ts":"2026-08-18T15:27:30.801Z","agentId":"P-34","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-38"}}
+{"ts":"2026-08-18T15:27:30.802Z","agentId":"P-34","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-45"}}
+{"ts":"2026-08-18T15:27:30.802Z","agentId":"P-34","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-46"}}
+{"ts":"2026-08-18T15:27:30.802Z","agentId":"P-34","wave":4,"step":"WAVE_4","action":"COMPLETE","result":"SUCCESS","details":{"interactions":5,"invites":3}}
+{"ts":"2026-08-18T15:27:30.840Z","agentId":"P-34","wave":4,"step":"WAVE_4","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T15:27:30.840Z","agentId":"P-34","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-39","to":"P-38","type":"LP Subscription Invite"}}
+{"ts":"2026-08-18T15:27:30.841Z","agentId":"P-34","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-40","to":"P-45","type":"Crowdfunded Allocation"}}
+{"ts":"2026-08-18T15:27:30.841Z","agentId":"P-34","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-41","to":"P-46","type":"Crowdfunded Allocation"}}
+{"ts":"2026-08-18T15:27:30.843Z","agentId":"P-34","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-42","to":"P-42","type":"Family Office Allocation"}}
+{"ts":"2026-08-18T15:27:30.844Z","agentId":"P-34","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-43","to":"P-44","type":"REIT vs Syndication Comparison"}}
+{"ts":"2026-08-18T15:27:30.848Z","agentId":"P-34","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-38"}}
+{"ts":"2026-08-18T15:27:30.848Z","agentId":"P-34","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-45"}}
+{"ts":"2026-08-18T15:27:30.848Z","agentId":"P-34","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-46"}}
+{"ts":"2026-08-18T15:27:30.849Z","agentId":"P-34","wave":4,"step":"WAVE_4","action":"COMPLETE","result":"SUCCESS","details":{"interactions":5,"invites":3}}
+{"ts":"2026-08-18T15:27:30.904Z","agentId":"P-34","wave":5,"step":"WAVE_5","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T15:27:30.904Z","agentId":"P-34","wave":5,"step":"WAVE_5","action":"COMPLETE","result":"SUCCESS","details":{"reportPath":"/Users/yvesdarbouze/Documents/PaperWorking/artifacts/persona-swarm/reports/P-34-experience-report.md"}}
+{"ts":"2026-08-18T15:27:30.938Z","agentId":"P-34","wave":5,"step":"WAVE_5","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T15:27:30.939Z","agentId":"P-34","wave":5,"step":"WAVE_5","action":"COMPLETE","result":"SUCCESS","details":{"reportPath":"/Users/yvesdarbouze/Documents/PaperWorking/artifacts/persona-swarm/reports/P-34-experience-report.md"}}
+{"ts":"2026-08-18T15:28:00.325Z","agentId":"P-34","wave":1,"step":"WAVE_1","action":"START","result":"SUCCESS","details":{"email":"agent34.carla.jimenez@paperworking-test.dev"}}
+{"ts":"2026-08-18T15:28:00.326Z","agentId":"P-34","wave":1,"step":"WAVE_1","action":"START","result":"SUCCESS","details":{"email":"agent34.carla.jimenez@paperworking-test.dev"}}
+{"ts":"2026-08-18T15:28:00.327Z","agentId":"P-34","wave":0,"step":"SIGNUP","action":"SUCCESS_CREATED","result":"SUCCESS","details":{"uid":"uid_persona_p34","email":"agent34.carla.jimenez@paperworking-test.dev","name":"Carla Jimenez","entity":"Jimenez Sunbelt Fund Group LLC"}}
+{"ts":"2026-08-18T15:28:00.327Z","agentId":"P-34","wave":0,"step":"SIGNUP","action":"SUCCESS_CREATED","result":"SUCCESS","details":{"uid":"uid_persona_p34","email":"agent34.carla.jimenez@paperworking-test.dev","name":"Carla Jimenez","entity":"Jimenez Sunbelt Fund Group LLC"}}
+{"ts":"2026-08-18T15:28:00.327Z","agentId":"P-34","wave":1,"step":"WAVE_1","action":"COMPLETE","result":"SUCCESS","details":{"uid":"uid_persona_p34"}}
+{"ts":"2026-08-18T15:28:00.327Z","agentId":"P-34","wave":1,"step":"WAVE_1","action":"COMPLETE","result":"SUCCESS","details":{"uid":"uid_persona_p34"}}
+{"ts":"2026-08-18T15:28:00.379Z","agentId":"P-34","wave":2,"step":"WAVE_2","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T15:28:00.379Z","agentId":"P-34","wave":0,"step":"BILLING","action":"SUBSCRIPTION_SUCCESS","result":"SUCCESS","details":{"plan":"Individual","stripeCustomerId":"cus_test_swarm_p-34","stripeSubscriptionId":"sub_test_swarm_p-34","cardLastFour":"4242","cardBrand":"visa"}}
+{"ts":"2026-08-18T15:28:00.379Z","agentId":"P-34","wave":2,"step":"WAVE_2","action":"COMPLETE","result":"SUCCESS","details":{"plan":"Individual"}}
+{"ts":"2026-08-18T15:28:00.383Z","agentId":"P-34","wave":2,"step":"WAVE_2","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T15:28:00.384Z","agentId":"P-34","wave":0,"step":"BILLING","action":"SUBSCRIPTION_SUCCESS","result":"SUCCESS","details":{"plan":"Individual","stripeCustomerId":"cus_test_swarm_p-34","stripeSubscriptionId":"sub_test_swarm_p-34","cardLastFour":"4242","cardBrand":"visa"}}
+{"ts":"2026-08-18T15:28:00.384Z","agentId":"P-34","wave":2,"step":"WAVE_2","action":"COMPLETE","result":"SUCCESS","details":{"plan":"Individual"}}
+{"ts":"2026-08-18T15:28:00.578Z","agentId":"P-34","wave":3,"step":"WAVE_3","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T15:28:00.582Z","agentId":"P-34","wave":0,"step":"PROJECTS","action":"CREATION_SUCCESS","result":"SUCCESS","details":{"created":10,"plaid":false}}
+{"ts":"2026-08-18T15:28:00.582Z","agentId":"P-34","wave":3,"step":"WAVE_3","action":"COMPLETE","result":"SUCCESS","details":{"created":10}}
+{"ts":"2026-08-18T15:28:00.590Z","agentId":"P-34","wave":3,"step":"WAVE_3","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T15:28:00.593Z","agentId":"P-34","wave":0,"step":"PROJECTS","action":"CREATION_SUCCESS","result":"SUCCESS","details":{"created":10,"plaid":false}}
+{"ts":"2026-08-18T15:28:00.593Z","agentId":"P-34","wave":3,"step":"WAVE_3","action":"COMPLETE","result":"SUCCESS","details":{"created":10}}
+{"ts":"2026-08-18T15:28:00.762Z","agentId":"P-34","wave":4,"step":"WAVE_4","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T15:28:00.763Z","agentId":"P-34","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-39","to":"P-38","type":"LP Subscription Invite"}}
+{"ts":"2026-08-18T15:28:00.765Z","agentId":"P-34","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-40","to":"P-45","type":"Crowdfunded Allocation"}}
+{"ts":"2026-08-18T15:28:00.765Z","agentId":"P-34","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-41","to":"P-46","type":"Crowdfunded Allocation"}}
+{"ts":"2026-08-18T15:28:00.766Z","agentId":"P-34","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-42","to":"P-42","type":"Family Office Allocation"}}
+{"ts":"2026-08-18T15:28:00.766Z","agentId":"P-34","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-43","to":"P-44","type":"REIT vs Syndication Comparison"}}
+{"ts":"2026-08-18T15:28:00.767Z","agentId":"P-34","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-38"}}
+{"ts":"2026-08-18T15:28:00.767Z","agentId":"P-34","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-45"}}
+{"ts":"2026-08-18T15:28:00.767Z","agentId":"P-34","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-46"}}
+{"ts":"2026-08-18T15:28:00.767Z","agentId":"P-34","wave":4,"step":"WAVE_4","action":"COMPLETE","result":"SUCCESS","details":{"interactions":5,"invites":3}}
+{"ts":"2026-08-18T15:28:00.775Z","agentId":"P-34","wave":4,"step":"WAVE_4","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T15:28:00.776Z","agentId":"P-34","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-39","to":"P-38","type":"LP Subscription Invite"}}
+{"ts":"2026-08-18T15:28:00.777Z","agentId":"P-34","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-40","to":"P-45","type":"Crowdfunded Allocation"}}
+{"ts":"2026-08-18T15:28:00.779Z","agentId":"P-34","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-41","to":"P-46","type":"Crowdfunded Allocation"}}
+{"ts":"2026-08-18T15:28:00.779Z","agentId":"P-34","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-42","to":"P-42","type":"Family Office Allocation"}}
+{"ts":"2026-08-18T15:28:00.780Z","agentId":"P-34","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-43","to":"P-44","type":"REIT vs Syndication Comparison"}}
+{"ts":"2026-08-18T15:28:00.781Z","agentId":"P-34","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-38"}}
+{"ts":"2026-08-18T15:28:00.781Z","agentId":"P-34","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-45"}}
+{"ts":"2026-08-18T15:28:00.782Z","agentId":"P-34","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-46"}}
+{"ts":"2026-08-18T15:28:00.782Z","agentId":"P-34","wave":4,"step":"WAVE_4","action":"COMPLETE","result":"SUCCESS","details":{"interactions":5,"invites":3}}
+{"ts":"2026-08-18T15:28:00.844Z","agentId":"P-34","wave":5,"step":"WAVE_5","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T15:28:00.844Z","agentId":"P-34","wave":5,"step":"WAVE_5","action":"COMPLETE","result":"SUCCESS","details":{"reportPath":"/Users/yvesdarbouze/Documents/PaperWorking/artifacts/persona-swarm/reports/P-34-experience-report.md"}}
+{"ts":"2026-08-18T15:28:00.872Z","agentId":"P-34","wave":5,"step":"WAVE_5","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T15:28:00.872Z","agentId":"P-34","wave":5,"step":"WAVE_5","action":"COMPLETE","result":"SUCCESS","details":{"reportPath":"/Users/yvesdarbouze/Documents/PaperWorking/artifacts/persona-swarm/reports/P-34-experience-report.md"}}
+{"ts":"2026-08-18T15:56:27.833Z","agentId":"P-34","wave":1,"step":"WAVE_1","action":"START","result":"SUCCESS","details":{"email":"agent34.carla.jimenez@paperworking-test.dev"}}
+{"ts":"2026-08-18T15:56:27.940Z","agentId":"P-34","wave":1,"step":"WAVE_1","action":"START","result":"SUCCESS","details":{"email":"agent34.carla.jimenez@paperworking-test.dev"}}
+{"ts":"2026-08-18T15:56:29.821Z","agentId":"P-34","wave":0,"step":"SIGNUP","action":"SUCCESS_CREATED","result":"SUCCESS","details":{"uid":"uid_persona_p34","email":"agent34.carla.jimenez@paperworking-test.dev","name":"Carla Jimenez","entity":"Jimenez Sunbelt Fund Group LLC"}}
+{"ts":"2026-08-18T15:56:29.821Z","agentId":"P-34","wave":1,"step":"WAVE_1","action":"COMPLETE","result":"SUCCESS","details":{"uid":"uid_persona_p34"}}
+{"ts":"2026-08-18T15:56:29.958Z","agentId":"P-34","wave":0,"step":"SIGNUP","action":"SUCCESS_CREATED","result":"SUCCESS","details":{"uid":"uid_persona_p34","email":"agent34.carla.jimenez@paperworking-test.dev","name":"Carla Jimenez","entity":"Jimenez Sunbelt Fund Group LLC"}}
+{"ts":"2026-08-18T15:56:29.959Z","agentId":"P-34","wave":1,"step":"WAVE_1","action":"COMPLETE","result":"SUCCESS","details":{"uid":"uid_persona_p34"}}
+{"ts":"2026-08-18T15:57:17.839Z","agentId":"P-34","wave":2,"step":"WAVE_2","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T15:57:17.839Z","agentId":"P-34","wave":2,"step":"WAVE_2","action":"EXCEPTION","result":"SUCCESS","details":{"error":"CRITICAL SAFETY REFUSAL: Invalid or missing Stripe secret test key. Key must start with \"sk_test_\". Received: \"...\""}}
+{"ts":"2026-08-18T15:57:17.894Z","agentId":"P-34","wave":2,"step":"WAVE_2","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T15:57:17.894Z","agentId":"P-34","wave":2,"step":"WAVE_2","action":"EXCEPTION","result":"SUCCESS","details":{"error":"CRITICAL SAFETY REFUSAL: Invalid or missing Stripe secret test key. Key must start with \"sk_test_\". Received: \"...\""}}
+{"ts":"2026-08-18T15:57:17.898Z","agentId":"P-34","wave":3,"step":"WAVE_3","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T15:57:17.898Z","agentId":"P-34","wave":0,"step":"PROJECTS","action":"CREATION_SUCCESS","result":"SUCCESS","details":{"created":10,"plaid":false}}
+{"ts":"2026-08-18T15:57:17.899Z","agentId":"P-34","wave":3,"step":"WAVE_3","action":"COMPLETE","result":"SUCCESS","details":{"created":10}}
+{"ts":"2026-08-18T15:57:17.936Z","agentId":"P-34","wave":4,"step":"WAVE_4","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T15:57:17.937Z","agentId":"P-34","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-39","to":"P-38","type":"LP Subscription Invite"}}
+{"ts":"2026-08-18T15:57:17.937Z","agentId":"P-34","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-40","to":"P-45","type":"Crowdfunded Allocation"}}
+{"ts":"2026-08-18T15:57:17.937Z","agentId":"P-34","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-41","to":"P-46","type":"Crowdfunded Allocation"}}
+{"ts":"2026-08-18T15:57:17.937Z","agentId":"P-34","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-42","to":"P-42","type":"Family Office Allocation"}}
+{"ts":"2026-08-18T15:57:17.937Z","agentId":"P-34","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-43","to":"P-44","type":"REIT vs Syndication Comparison"}}
+{"ts":"2026-08-18T15:57:17.937Z","agentId":"P-34","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-38"}}
+{"ts":"2026-08-18T15:57:17.937Z","agentId":"P-34","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-45"}}
+{"ts":"2026-08-18T15:57:17.937Z","agentId":"P-34","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-46"}}
+{"ts":"2026-08-18T15:57:17.937Z","agentId":"P-34","wave":4,"step":"WAVE_4","action":"COMPLETE","result":"SUCCESS","details":{"interactions":5,"invites":3}}
+{"ts":"2026-08-18T15:57:17.941Z","agentId":"P-34","wave":3,"step":"WAVE_3","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T15:57:17.941Z","agentId":"P-34","wave":0,"step":"PROJECTS","action":"CREATION_SUCCESS","result":"SUCCESS","details":{"created":10,"plaid":false}}
+{"ts":"2026-08-18T15:57:17.942Z","agentId":"P-34","wave":3,"step":"WAVE_3","action":"COMPLETE","result":"SUCCESS","details":{"created":10}}
+{"ts":"2026-08-18T15:57:17.973Z","agentId":"P-34","wave":4,"step":"WAVE_4","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T15:57:17.973Z","agentId":"P-34","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-39","to":"P-38","type":"LP Subscription Invite"}}
+{"ts":"2026-08-18T15:57:17.973Z","agentId":"P-34","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-40","to":"P-45","type":"Crowdfunded Allocation"}}
+{"ts":"2026-08-18T15:57:17.973Z","agentId":"P-34","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-41","to":"P-46","type":"Crowdfunded Allocation"}}
+{"ts":"2026-08-18T15:57:17.973Z","agentId":"P-34","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-42","to":"P-42","type":"Family Office Allocation"}}
+{"ts":"2026-08-18T15:57:17.974Z","agentId":"P-34","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-43","to":"P-44","type":"REIT vs Syndication Comparison"}}
+{"ts":"2026-08-18T15:57:17.974Z","agentId":"P-34","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-38"}}
+{"ts":"2026-08-18T15:57:17.974Z","agentId":"P-34","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-45"}}
+{"ts":"2026-08-18T15:57:17.974Z","agentId":"P-34","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-46"}}
+{"ts":"2026-08-18T15:57:17.974Z","agentId":"P-34","wave":4,"step":"WAVE_4","action":"COMPLETE","result":"SUCCESS","details":{"interactions":5,"invites":3}}
+{"ts":"2026-08-18T15:57:17.988Z","agentId":"P-34","wave":5,"step":"WAVE_5","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T15:57:17.988Z","agentId":"P-34","wave":5,"step":"WAVE_5","action":"COMPLETE","result":"SUCCESS","details":{"reportPath":"/Users/yvesdarbouze/Documents/PaperWorking/artifacts/persona-swarm/reports/P-34-experience-report.md"}}
+{"ts":"2026-08-18T15:57:18.018Z","agentId":"P-34","wave":5,"step":"WAVE_5","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T15:57:18.018Z","agentId":"P-34","wave":5,"step":"WAVE_5","action":"COMPLETE","result":"SUCCESS","details":{"reportPath":"/Users/yvesdarbouze/Documents/PaperWorking/artifacts/persona-swarm/reports/P-34-experience-report.md"}}
+{"ts":"2026-08-18T16:11:37.846Z","agentId":"P-34","wave":1,"step":"WAVE_1","action":"START","result":"SUCCESS","details":{"email":"agent34.carla.jimenez@paperworking-test.dev"}}
+{"ts":"2026-08-18T16:11:37.847Z","agentId":"P-34","wave":0,"step":"SIGNUP","action":"SUCCESS_CREATED","result":"SUCCESS","details":{"uid":"uid_persona_p34","email":"agent34.carla.jimenez@paperworking-test.dev","name":"Carla Jimenez","entity":"Jimenez Sunbelt Fund Group LLC"}}
+{"ts":"2026-08-18T16:11:37.847Z","agentId":"P-34","wave":1,"step":"WAVE_1","action":"COMPLETE","result":"SUCCESS","details":{"uid":"uid_persona_p34"}}
+{"ts":"2026-08-18T16:11:37.882Z","agentId":"P-34","wave":2,"step":"WAVE_2","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T16:11:37.882Z","agentId":"P-34","wave":0,"step":"BILLING","action":"SUBSCRIPTION_SUCCESS","result":"SUCCESS","details":{"plan":"Individual","stripeCustomerId":"cus_test_swarm_p-34","stripeSubscriptionId":"sub_test_swarm_p-34","cardLastFour":"4242","cardBrand":"visa"}}
+{"ts":"2026-08-18T16:11:37.882Z","agentId":"P-34","wave":2,"step":"WAVE_2","action":"COMPLETE","result":"SUCCESS","details":{"plan":"Individual"}}
+{"ts":"2026-08-18T16:11:37.904Z","agentId":"P-34","wave":3,"step":"WAVE_3","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T16:11:37.904Z","agentId":"P-34","wave":0,"step":"PROJECTS","action":"CREATION_SUCCESS","result":"SUCCESS","details":{"created":10,"plaid":false}}
+{"ts":"2026-08-18T16:11:37.904Z","agentId":"P-34","wave":3,"step":"WAVE_3","action":"COMPLETE","result":"SUCCESS","details":{"created":10}}
+{"ts":"2026-08-18T16:11:37.938Z","agentId":"P-34","wave":4,"step":"WAVE_4","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T16:11:37.938Z","agentId":"P-34","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-39","to":"P-38","type":"LP Subscription Invite"}}
+{"ts":"2026-08-18T16:11:37.939Z","agentId":"P-34","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-40","to":"P-45","type":"Crowdfunded Allocation"}}
+{"ts":"2026-08-18T16:11:37.939Z","agentId":"P-34","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-41","to":"P-46","type":"Crowdfunded Allocation"}}
+{"ts":"2026-08-18T16:11:37.939Z","agentId":"P-34","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-42","to":"P-42","type":"Family Office Allocation"}}
+{"ts":"2026-08-18T16:11:37.939Z","agentId":"P-34","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-43","to":"P-44","type":"REIT vs Syndication Comparison"}}
+{"ts":"2026-08-18T16:11:37.939Z","agentId":"P-34","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-38"}}
+{"ts":"2026-08-18T16:11:37.939Z","agentId":"P-34","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-45"}}
+{"ts":"2026-08-18T16:11:37.939Z","agentId":"P-34","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-46"}}
+{"ts":"2026-08-18T16:11:37.939Z","agentId":"P-34","wave":4,"step":"WAVE_4","action":"COMPLETE","result":"SUCCESS","details":{"interactions":5,"invites":3}}
+{"ts":"2026-08-18T16:11:37.973Z","agentId":"P-34","wave":5,"step":"WAVE_5","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T16:11:37.973Z","agentId":"P-34","wave":5,"step":"WAVE_5","action":"COMPLETE","result":"SUCCESS","details":{"reportPath":"/Users/yvesdarbouze/Documents/PaperWorking/artifacts/persona-swarm/reports/P-34-experience-report.md"}}
+{"ts":"2026-08-18T16:11:38.120Z","agentId":"P-34","wave":1,"step":"WAVE_1","action":"START","result":"SUCCESS","details":{"email":"agent34.carla.jimenez@paperworking-test.dev"}}
+{"ts":"2026-08-18T16:11:38.120Z","agentId":"P-34","wave":0,"step":"SIGNUP","action":"SUCCESS_CREATED","result":"SUCCESS","details":{"uid":"uid_persona_p34","email":"agent34.carla.jimenez@paperworking-test.dev","name":"Carla Jimenez","entity":"Jimenez Sunbelt Fund Group LLC"}}
+{"ts":"2026-08-18T16:11:38.121Z","agentId":"P-34","wave":1,"step":"WAVE_1","action":"COMPLETE","result":"SUCCESS","details":{"uid":"uid_persona_p34"}}
+{"ts":"2026-08-18T16:11:38.138Z","agentId":"P-34","wave":2,"step":"WAVE_2","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T16:11:38.138Z","agentId":"P-34","wave":0,"step":"BILLING","action":"SUBSCRIPTION_SUCCESS","result":"SUCCESS","details":{"plan":"Individual","stripeCustomerId":"cus_test_swarm_p-34","stripeSubscriptionId":"sub_test_swarm_p-34","cardLastFour":"4242","cardBrand":"visa"}}
+{"ts":"2026-08-18T16:11:38.138Z","agentId":"P-34","wave":2,"step":"WAVE_2","action":"COMPLETE","result":"SUCCESS","details":{"plan":"Individual"}}
+{"ts":"2026-08-18T16:11:38.174Z","agentId":"P-34","wave":3,"step":"WAVE_3","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T16:11:38.174Z","agentId":"P-34","wave":0,"step":"PROJECTS","action":"CREATION_SUCCESS","result":"SUCCESS","details":{"created":10,"plaid":false}}
+{"ts":"2026-08-18T16:11:38.174Z","agentId":"P-34","wave":3,"step":"WAVE_3","action":"COMPLETE","result":"SUCCESS","details":{"created":10}}
+{"ts":"2026-08-18T16:11:38.201Z","agentId":"P-34","wave":4,"step":"WAVE_4","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T16:11:38.201Z","agentId":"P-34","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-39","to":"P-38","type":"LP Subscription Invite"}}
+{"ts":"2026-08-18T16:11:38.201Z","agentId":"P-34","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-40","to":"P-45","type":"Crowdfunded Allocation"}}
+{"ts":"2026-08-18T16:11:38.201Z","agentId":"P-34","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-41","to":"P-46","type":"Crowdfunded Allocation"}}
+{"ts":"2026-08-18T16:11:38.201Z","agentId":"P-34","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-42","to":"P-42","type":"Family Office Allocation"}}
+{"ts":"2026-08-18T16:11:38.201Z","agentId":"P-34","wave":0,"step":"INTERACTION","action":"EDGE_EXECUTED","result":"SUCCESS","details":{"edgeId":"E-43","to":"P-44","type":"REIT vs Syndication Comparison"}}
+{"ts":"2026-08-18T16:11:38.201Z","agentId":"P-34","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-38"}}
+{"ts":"2026-08-18T16:11:38.201Z","agentId":"P-34","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-45"}}
+{"ts":"2026-08-18T16:11:38.201Z","agentId":"P-34","wave":0,"step":"TEAM","action":"INVITE_SENT","result":"SUCCESS","details":{"recipientId":"P-46"}}
+{"ts":"2026-08-18T16:11:38.202Z","agentId":"P-34","wave":4,"step":"WAVE_4","action":"COMPLETE","result":"SUCCESS","details":{"interactions":5,"invites":3}}
+{"ts":"2026-08-18T16:11:38.220Z","agentId":"P-34","wave":5,"step":"WAVE_5","action":"START","result":"SUCCESS"}
+{"ts":"2026-08-18T16:11:38.220Z","agentId":"P-34","wave":5,"step":"WAVE_5","action":"COMPLETE","result":"SUCCESS","details":{"reportPath":"/Users/yvesdarbouze/Documents/PaperWorking/artifacts/persona-swarm/reports/P-34-experience-report.md"}}

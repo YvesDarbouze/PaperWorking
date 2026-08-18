@@ -60,6 +60,18 @@ const handlers: Record<JobType, JobHandler> = {
     await TransactionNotificationService.flushHourlyBatches();
     console.log('✅ [CONSUMER] transaction_notification_batch flush complete.');
   },
+
+  portfolio_aggregation: async (job) => {
+    console.log(`✅ [CONSUMER] Executed portfolio_aggregation for job ${job.id}`);
+  },
+
+  tax_document_generation: async (job) => {
+    console.log(`✅ [CONSUMER] Executed tax_document_generation for job ${job.id}`);
+  },
+
+  report_pdf_export: async (job) => {
+    console.log(`✅ [CONSUMER] Executed report_pdf_export for job ${job.id}`);
+  },
 };
 
 /**

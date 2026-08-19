@@ -130,6 +130,18 @@ export async function POST(request: NextRequest) {
     if (isAuthError(auth)) return auth;
     const { uid } = auth;
 
+    // Vendor account type check
+    const userDoc = await adminDb.collection('users').doc(uid).get();
+    const userData = userDoc.data();
+    const accountType = userData?.accountType || userData?.account_type;
+
+    if (accountType === 'vendor') {
+      return NextResponse.json(
+        { error: 'Vendors cannot create projects. Upgrade to Investor or join an Investment Team.' },
+        { status: 403 }
+      );
+    }
+
     // 2. Parse & validate body
     const body = await request.json();
     const validation = wizardSubmitSchema.safeParse(body);

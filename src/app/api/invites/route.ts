@@ -19,6 +19,19 @@ export async function POST(request: NextRequest) {
     if (isAuthError(auth)) return auth;
     const { uid } = auth;
 
+    // Fetch inviter user accountType
+    const inviterSnap = await adminDb.collection('users').doc(uid).get();
+    const inviterData = inviterSnap.data();
+    const inviterAccountType = inviterData?.accountType || inviterData?.account_type || 'investor';
+
+    // ONLY Investment Team accounts can invite to Deals / Projects
+    if (inviterAccountType !== 'investment_team' && inviterAccountType !== 'team') {
+      return NextResponse.json(
+        { error: 'Only Investment Team accounts can invite others to Deals.' },
+        { status: 403 }
+      );
+    }
+
     const body = await request.json();
     const validation = createInviteSchema.safeParse(body);
 
@@ -30,6 +43,24 @@ export async function POST(request: NextRequest) {
     }
 
     const payload = validation.data;
+
+    // Validate recipient is part of an Investment Team
+    const recipientSnap = await adminDb.collection('users').where('email', '==', payload.email.toLowerCase()).get();
+    if (!recipientSnap.empty) {
+      const recipientData = recipientSnap.docs[0].data();
+      const recipientAccountType = recipientData.accountType || recipientData.account_type;
+      const recipientTeamId = recipientData.teamId || recipientData.organizationId;
+      if (recipientAccountType === 'investor' && !recipientTeamId) {
+        return NextResponse.json(
+          {
+            error: 'Recipient must be part of an Investment Team to participate in this Deal.',
+            action: 'prompt_join_team',
+            teamOptions: []
+          },
+          { status: 400 }
+        );
+      }
+    }
     const inviteRef = adminDb.collection('invites').doc();
     const now = new Date();
     const expiresAt = new Date(now.getTime() + 14 * 24 * 60 * 60 * 1000); // 14 days expiration

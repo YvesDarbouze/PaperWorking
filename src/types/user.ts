@@ -10,7 +10,8 @@ import { Timestamp } from 'firebase/firestore';
 
 import { Role, OrgRole } from './schema';
 
-export type AccountType = 'investor' | 'vendor';
+export type AccountType = 'investor' | 'investment_team' | 'vendor' | 'admin';
+export type UserTier = 'investor' | 'investment_team' | 'vendor';
 export type UserRole = Role;
 export type SubscriptionPlan = 'None' | 'Individual' | 'Team' | 'Vendor Network';
 export type SubscriptionStatus = 'active' | 'inactive' | 'past_due' | 'canceled' | 'trialing' | 'incomplete' | 'paused';

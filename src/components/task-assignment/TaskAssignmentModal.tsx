@@ -18,7 +18,7 @@ export default function TaskAssignmentModal({
   onClose,
   todoContent,
   projectName,
-  currentUserAccountType = 'standard',
+  currentUserAccountType = 'investor',
   onAssignSuccess,
 }: TaskAssignmentModalProps) {
   const [assigneeEmail, setAssigneeEmail] = useState('');
@@ -29,7 +29,7 @@ export default function TaskAssignmentModal({
 
   if (!isOpen) return null;
 
-  const isStandardUser = currentUserAccountType === 'standard';
+  const isSoloInvestor = currentUserAccountType === 'investor';
 
   const handleInviteOrAssign = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -109,8 +109,8 @@ export default function TaskAssignmentModal({
           <span className="text-emerald-400 text-[11px] block pt-1 font-mono">Project: {projectName}</span>
         </div>
 
-        {/* STANDARD USER UPGRADE / INVITE PROMPT */}
-        {isStandardUser ? (
+        {/* INVESTOR TIER UPGRADE / INVITE PROMPT */}
+        {isSoloInvestor ? (
           <div data-testid="standard-tier-upgrade-prompt" className="space-y-4">
             <div className="p-4 rounded-xl bg-amber-500/10 border border-amber-500/30 text-amber-200 text-xs space-y-2">
               <div className="flex items-center gap-2 font-bold text-amber-300 text-sm">

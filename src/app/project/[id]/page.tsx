@@ -57,7 +57,7 @@ export default function ProjectWorkdeskPage({ params }: { params: Promise<{ id: 
   const [todos, setTodos] = useState<TodoItem[]>([]);
   const [completionPct, setCompletionPct] = useState<number>(0);
   const [currentPhase, setCurrentPhase] = useState<REIPhase>('acquisition');
-  const [userAccountType, setUserAccountType] = useState<AccountType>('standard');
+  const [userAccountType, setUserAccountType] = useState<AccountType>('investor');
 
   // Task assignment modal state
   const [isAssignModalOpen, setIsAssignModalOpen] = useState(false);

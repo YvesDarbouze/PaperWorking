@@ -31,8 +31,8 @@ export function getUserProfileBadges(profile: Partial<UserProfile>): {
   primaryBadge: string;
   roleBadge?: string;
 } {
-  const accountType = profile.account_type || 'standard';
-  const badgeType = profile.badge || (accountType === 'team' ? 'Company' : 'Person');
+  const accountType = profile.account_type || 'investor';
+  const badgeType = profile.badge || (accountType === 'investment_team' ? 'Company' : 'Person');
 
   const primaryBadge = badgeType === 'Company' ? 'Company' : 'Person';
   const roleBadge = profile.professionalRole || (accountType === 'vendor' ? 'Vendor Network' : undefined);

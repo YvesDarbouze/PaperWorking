@@ -344,6 +344,7 @@ model AppUser {
   email                   String                       @unique
   name                    String?
   role                    String?
+  accountType             AccountType                  @default(investor)
   stripeCustomerId        String?                      @unique
   syntheticAgent          Boolean                      @default(false)
   agentPersona            String?
@@ -577,6 +578,13 @@ model FieldAssignment {
 
   @@index([projectId])
   @@index([assignedToId])
+}
+
+enum AccountType {
+  investor        // Solo investor (was "standard")
+  investment_team // Multi-user team (was "team")
+  vendor          // Service provider (task-only)
+  admin           // Internal PaperWorking staff ONLY
 }
 
 enum AcquisitionStatus {

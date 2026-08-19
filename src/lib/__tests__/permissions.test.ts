@@ -1,102 +1,52 @@
-import { hasPermission, getRequiredTierForAction } from '../permissions';
+import { hasPermission, getRequiredTierForAction, validateAccountType } from '../permissions';
 
-describe('Agent 3: Permission Matrix Enforcement Unit Tests', () => {
-  describe('create_project action', () => {
-    test('allows Standard and Team accounts, blocks Vendor and Investor accounts', () => {
-      expect(hasPermission('standard', 'create_project')).toBe(true);
-      expect(hasPermission('team', 'create_project')).toBe(true);
-      expect(hasPermission('vendor', 'create_project')).toBe(false);
-      expect(hasPermission('investor', 'create_project')).toBe(false);
-    });
+describe('Permission Matrix — 3-Tier Hierarchy', () => {
+  test('Investor can create projects but cannot assign tasks or invite to deal', () => {
+    expect(hasPermission('investor', 'create_project')).toBe(true);
+    expect(hasPermission('investor', 'assign_tasks')).toBe(false);
+    expect(hasPermission('investor', 'invite_to_deal')).toBe(false);
+    expect(hasPermission('investor', 'view_portfolio')).toBe(true);
+    expect(hasPermission('investor', 'generate_tax_reports')).toBe(true);
   });
 
-  describe('delete_project action', () => {
-    test('allows Standard ONLY for own projects, Team for all projects, blocks Vendor and Investor', () => {
-      expect(hasPermission('standard', 'delete_project', { isOwner: true })).toBe(true);
-      expect(hasPermission('standard', 'delete_project', { isOwner: false })).toBe(false);
-      expect(hasPermission('team', 'delete_project')).toBe(true);
-      expect(hasPermission('vendor', 'delete_project')).toBe(false);
-      expect(hasPermission('investor', 'delete_project')).toBe(false);
-    });
+  test('Investment Team can assign tasks and invite to deals', () => {
+    expect(hasPermission('investment_team', 'create_project')).toBe(true);
+    expect(hasPermission('investment_team', 'assign_tasks')).toBe(true);
+    expect(hasPermission('investment_team', 'invite_to_deal')).toBe(true);
+    expect(hasPermission('investment_team', 'view_team_portfolio')).toBe(true);
+    expect(hasPermission('investment_team', 'generate_tax_reports')).toBe(true);
   });
 
-  describe('assign_tasks action', () => {
-    test('allows Team tier ONLY, blocks Standard (requires upgrade prompt), Vendor, and Investor', () => {
-      expect(hasPermission('standard', 'assign_tasks')).toBe(false);
-      expect(hasPermission('team', 'assign_tasks')).toBe(true);
-      expect(hasPermission('vendor', 'assign_tasks')).toBe(false);
-      expect(hasPermission('investor', 'assign_tasks')).toBe(false);
-    });
+  test('Vendor cannot create projects or view portfolio', () => {
+    expect(hasPermission('vendor', 'create_project')).toBe(false);
+    expect(hasPermission('vendor', 'view_portfolio')).toBe(false);
+    expect(hasPermission('vendor', 'receive_tasks')).toBe(true);
+    expect(hasPermission('vendor', 'list_services')).toBe(true);
   });
 
-  describe('receive_tasks action', () => {
-    test('allows Standard, Team, and Vendor accounts, blocks pure Investor accounts', () => {
-      expect(hasPermission('standard', 'receive_tasks')).toBe(true);
-      expect(hasPermission('team', 'receive_tasks')).toBe(true);
-      expect(hasPermission('vendor', 'receive_tasks')).toBe(true);
-      expect(hasPermission('investor', 'receive_tasks')).toBe(false);
-    });
+  test('Vendor with dual team membership can assign tasks and create projects', () => {
+    expect(hasPermission('vendor', 'assign_tasks', { hasTeamMembership: true })).toBe(true);
+    expect(hasPermission('vendor', 'create_project', { hasTeamMembership: true })).toBe(true);
   });
 
-  describe('answer_vendor_requests action', () => {
-    test('allows all 4 account tiers (Standard, Team, Vendor, Investor)', () => {
-      expect(hasPermission('standard', 'answer_vendor_requests')).toBe(true);
-      expect(hasPermission('team', 'answer_vendor_requests')).toBe(true);
-      expect(hasPermission('vendor', 'answer_vendor_requests')).toBe(true);
-      expect(hasPermission('investor', 'answer_vendor_requests')).toBe(true);
-    });
+  test('Master Admin has full access to platform actions', () => {
+    expect(hasPermission('admin', 'create_project')).toBe(true);
+    expect(hasPermission('admin', 'assign_tasks')).toBe(true);
+    expect(hasPermission('admin', 'invite_to_deal')).toBe(true);
   });
 
-  describe('respond_investment_opportunities action', () => {
-    test('allows Standard, Team, and Investor accounts, blocks Vendor', () => {
-      expect(hasPermission('standard', 'respond_investment_opportunities')).toBe(true);
-      expect(hasPermission('team', 'respond_investment_opportunities')).toBe(true);
-      expect(hasPermission('vendor', 'respond_investment_opportunities')).toBe(false);
-      expect(hasPermission('investor', 'respond_investment_opportunities')).toBe(true);
-    });
+  test('Admin is not a public user tier and cannot sign up as admin', () => {
+    expect(() => validateAccountType('admin')).toThrow('Admin accounts are internal only');
   });
 
-  describe('access_vendor_marketplace action', () => {
-    test('allows Standard, Team, and Vendor, blocks Investor', () => {
-      expect(hasPermission('standard', 'access_vendor_marketplace')).toBe(true);
-      expect(hasPermission('team', 'access_vendor_marketplace')).toBe(true);
-      expect(hasPermission('vendor', 'access_vendor_marketplace')).toBe(true);
-      expect(hasPermission('investor', 'access_vendor_marketplace')).toBe(false);
-    });
+  test('Old role names are rejected with actionable error messages', () => {
+    expect(() => validateAccountType('standard')).toThrow('Use "investor" instead');
+    expect(() => validateAccountType('team')).toThrow('Use "investment_team" instead');
   });
 
-  describe('list_services action', () => {
-    test('allows Standard, Team, and Vendor, blocks Investor', () => {
-      expect(hasPermission('standard', 'list_services')).toBe(true);
-      expect(hasPermission('team', 'list_services')).toBe(true);
-      expect(hasPermission('vendor', 'list_services')).toBe(true);
-      expect(hasPermission('investor', 'list_services')).toBe(false);
-    });
-  });
-
-  describe('view_portfolio action', () => {
-    test('allows Standard and Team, allows Investor ONLY if invested, blocks Vendor', () => {
-      expect(hasPermission('standard', 'view_portfolio')).toBe(true);
-      expect(hasPermission('team', 'view_portfolio')).toBe(true);
-      expect(hasPermission('vendor', 'view_portfolio')).toBe(false);
-      expect(hasPermission('investor', 'view_portfolio', { isInvested: true })).toBe(true);
-      expect(hasPermission('investor', 'view_portfolio', { isInvested: false })).toBe(false);
-    });
-  });
-
-  describe('generate_tax_reports action', () => {
-    test('allows Standard and Team, blocks Vendor and Investor', () => {
-      expect(hasPermission('standard', 'generate_tax_reports')).toBe(true);
-      expect(hasPermission('team', 'generate_tax_reports')).toBe(true);
-      expect(hasPermission('vendor', 'generate_tax_reports')).toBe(false);
-      expect(hasPermission('investor', 'generate_tax_reports')).toBe(false);
-    });
-  });
-
-  describe('getRequiredTierForAction helper', () => {
-    test('returns correct tier label for upgrades', () => {
-      expect(getRequiredTierForAction('assign_tasks')).toBe('Team');
-      expect(getRequiredTierForAction('create_project')).toBe('Standard or Team');
-    });
+  test('getRequiredTierForAction helper returns updated tier labels', () => {
+    expect(getRequiredTierForAction('assign_tasks')).toBe('Investment Team');
+    expect(getRequiredTierForAction('invite_to_deal')).toBe('Investment Team');
+    expect(getRequiredTierForAction('create_project')).toBe('Investor or Investment Team');
   });
 });

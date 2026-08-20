@@ -1,0 +1,123 @@
+# Settings for Backend (on Cloud Run) — MIGRATION STACK
+# Template only. Copy to Firebase App Hosting config after founder approval.
+# Source reference (read-only): ../../PaperWorking/apphosting.yaml
+#
+# Usage:
+#   1. Copy this file to your Firebase App Hosting backend config
+#   2. Replace placeholder values marked CHANGE_ME
+#   3. Bind secrets via Google Secret Manager (same keys as production)
+#   4. Deploy to PREVIEW channel first — never directly to prod
+
+runConfig:
+  minInstances: 0
+  maxInstances: 10
+  concurrency: 80
+  cpu: 1
+  memoryMiB: 1024
+
+env:
+  - variable: NODE_OPTIONS
+    value: "--max-old-space-size=8192"
+    availability:
+      - BUILD
+
+  # ─── Migration stack marker ───────────────────────────────────────────────
+  - variable: MIGRATION_STACK
+    value: "true"
+    availability:
+      - RUNTIME
+
+  - variable: ENABLE_MOCK_AUTH
+    value: "false"
+    availability:
+      - RUNTIME
+
+  # ─── Firebase client SDK (public) ─────────────────────────────────────────
+  - variable: NEXT_PUBLIC_FIREBASE_API_KEY
+    value: "CHANGE_ME"
+    availability:
+      - BUILD
+      - RUNTIME
+
+  - variable: NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN
+    value: "paperworking-97055.firebaseapp.com"
+    availability:
+      - BUILD
+      - RUNTIME
+
+  - variable: NEXT_PUBLIC_FIREBASE_PROJECT_ID
+    value: "paperworking-97055"
+    availability:
+      - BUILD
+      - RUNTIME
+
+  - variable: NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET
+    value: "paperworking-97055.firebasestorage.app"
+    availability:
+      - BUILD
+      - RUNTIME
+
+  - variable: NEXT_PUBLIC_APP_URL
+    value: "https://migrate-preview.paperworking.co"
+    availability:
+      - BUILD
+      - RUNTIME
+
+  # ─── Firebase Admin SDK ───────────────────────────────────────────────────
+  - variable: FIREBASE_PROJECT_ID
+    value: "paperworking-97055"
+    availability:
+      - RUNTIME
+
+  - variable: FIREBASE_CLIENT_EMAIL
+    secret: FIREBASE_CLIENT_EMAIL
+    availability:
+      - RUNTIME
+
+  - variable: FIREBASE_PRIVATE_KEY
+    secret: FIREBASE_PRIVATE_KEY
+    availability:
+      - RUNTIME
+
+  # ─── Database (Neon PostgreSQL) ───────────────────────────────────────────
+  - variable: DATABASE_URL
+    secret: DATABASE_URL
+    availability:
+      - RUNTIME
+
+  # ─── Stripe ───────────────────────────────────────────────────────────────
+  - variable: STRIPE_SECRET_KEY
+    secret: STRIPE_SECRET_KEY
+    availability:
+      - RUNTIME
+
+  - variable: STRIPE_WEBHOOK_SECRET
+    secret: STRIPE_WEBHOOK_SECRET
+    availability:
+      - RUNTIME
+
+  - variable: NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY
+    secret: NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY
+    availability:
+      - BUILD
+      - RUNTIME
+
+  # ─── SendGrid ───────────────────────────────────────────────────────────────
+  - variable: SENDGRID_API_KEY
+    secret: SENDGRID_API_KEY
+    availability:
+      - RUNTIME
+
+  - variable: SENDGRID_WEBHOOK_VERIFICATION_KEY
+    secret: SENDGRID_WEBHOOK_VERIFICATION_KEY
+    availability:
+      - RUNTIME
+
+  # ─── Redis (optional — enable when cache/queue wired) ─────────────────────
+  - variable: REDIS_URL
+    secret: REDIS_URL
+    availability:
+      - RUNTIME
+
+  # Add remaining secrets from ../PaperWorking/apphosting.yaml as needed:
+  # GOOGLE_GENERATIVE_AI_API_KEY, BRIDGE_*, PLAID_*, RENTCAST_*, WORKER_SECRET, etc.

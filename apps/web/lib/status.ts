@@ -1,0 +1,50 @@
+import { REILPhase, REIL_PHASE_ORDER } from '@paperworking/shared';
+
+export const WEB_APP_STATUS = {
+  phase: 'migration-complete',
+  routes: [
+    '/',
+    '/home',
+    '/support',
+    '/how-it-works',
+    '/pricing',
+    '/contact',
+    '/help',
+    '/privacy',
+    '/terms',
+    '/login',
+    '/signup',
+    '/register',
+    '/forgot-password',
+    '/login/finish',
+    '/auth/action',
+    '/dashboard',
+    '/dashboard/command-center',
+    '/projects',
+    '/dashboard/projects',
+  ],
+  dashboardRoutes: [
+    '/dashboard/deals',
+    '/dashboard/insights',
+    '/dashboard/reports',
+    '/dashboard/inbox',
+    '/dashboard/team',
+    '/dashboard/marketplace',
+    '/dashboard/settings',
+  ],
+  projectRoutes: [
+    '/project/deal-1',
+    '/project/deal-1/insights',
+    '/project/deal-1/documents',
+    '/project/deal-1/reports',
+    '/project/deal-1/scorecard',
+  ],
+  dealRoutes: ['/deals/1247elmst', '/deals/melroseduplex'],
+  vendorPortalRoutes: ['/vendor-portal', '/vendor-portal/profile'],
+  reilPhases: REIL_PHASE_ORDER,
+  firstPhase: REILPhase.ACQUISITION,
+  adminRoute: '/admin',
+  adminRoutes: ['/admin', '/admin/agent-crew', '/admin/lender-config'],
+} as const;
+
+export type WebAppStatus = typeof WEB_APP_STATUS;

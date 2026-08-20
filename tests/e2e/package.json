@@ -1,0 +1,15 @@
+{
+  "name": "@paperworking/e2e",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Phase 7b — Playwright E2E against migration apps/web (adapted from source)",
+  "scripts": {
+    "test:e2e": "playwright test",
+    "test:ui": "playwright test --ui",
+    "report": "playwright show-report"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.60.0"
+  }
+}

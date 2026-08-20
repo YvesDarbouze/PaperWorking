@@ -45,7 +45,7 @@ export default function CommandCenterPanel() {
   const displayName = PROFILE_CARD.displayName;
   const roleLabel =
     profile?.accountType === 'vendor' ? 'Vendor Partner' : PROFILE_CARD.role;
-  const pendingTasks = ASSIGNED_TASKS.filter((task) => !task.done).length;
+  const pendingTasks = ASSIGNED_TASKS.filter((task) => !task.done).length as number;
 
   return (
     <div className="w-full min-h-full">
@@ -265,9 +265,7 @@ export default function CommandCenterPanel() {
                 Inbox
               </Link>
             </div>
-            {RECENT_MESSAGES.length === 0 ? (
-              <p className="py-6 text-center text-xs text-white/45">No recent messages.</p>
-            ) : (
+            {RECENT_MESSAGES.length > 0 ? (
               <ul className="space-y-3">
                 {RECENT_MESSAGES.map((message) => (
                   <li key={message.id} className="border-b border-white/6 pb-2.5 last:border-0">
@@ -279,6 +277,8 @@ export default function CommandCenterPanel() {
                   </li>
                 ))}
               </ul>
+            ) : (
+              <p className="py-6 text-center text-xs text-white/45">No recent messages.</p>
             )}
           </article>
 
@@ -342,7 +342,7 @@ export default function CommandCenterPanel() {
                     >
                       {alert.actionLabel}
                     </Link>
-                    {alert.secondaryLabel && alert.secondaryHref ? (
+                    {'secondaryLabel' in alert && alert.secondaryLabel && 'secondaryHref' in alert && alert.secondaryHref ? (
                       <Link
                         href={alert.secondaryHref}
                         className="rounded-md border border-white/10 px-2.5 py-1 text-[10px] font-bold uppercase tracking-wide text-white/55 no-underline"

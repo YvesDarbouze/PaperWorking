@@ -6,9 +6,9 @@ import DashboardPageHeader from '@/components/dashboard/DashboardPageHeader';
 import { PROFILE_PREVIEW } from '@/lib/dashboard/shell-seed';
 
 export default function ProfilePreviewPanel() {
-  const [name, setName] = useState(PROFILE_PREVIEW.name);
-  const [phone, setPhone] = useState(PROFILE_PREVIEW.phone);
-  const [org, setOrg] = useState(PROFILE_PREVIEW.organization);
+  const [name, setName] = useState<string>(PROFILE_PREVIEW.name);
+  const [phone, setPhone] = useState<string>(PROFILE_PREVIEW.phone);
+  const [org, setOrg] = useState<string>(PROFILE_PREVIEW.organization);
   const [saved, setSaved] = useState(false);
 
   const initials = name

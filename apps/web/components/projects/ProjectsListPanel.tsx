@@ -121,14 +121,15 @@ export default function ProjectsListPanel() {
           className="w-full rounded-xl border border-white/10 bg-white/[0.04] px-4 py-2.5 text-sm text-white lg:max-w-sm"
         />
         <div className="flex flex-wrap gap-2">
-          {([{ id: 'all' as const, label: 'All phases' }] as const)
-            .concat(
-              PHASE_COLUMNS.map((phase) => ({
-                id: phase,
+          {(
+            [
+              { id: 'all' as const, label: 'All phases' },
+              ...PHASE_COLUMNS.map((phase) => ({
+                id: phase as PhaseFilter,
                 label: PHASE_LABELS[phase],
               })),
-            )
-            .map((option) => (
+            ] as Array<{ id: PhaseFilter; label: string }>
+          ).map((option) => (
               <button
                 key={option.id}
                 type="button"

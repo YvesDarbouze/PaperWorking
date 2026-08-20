@@ -17,3 +17,10 @@
 - **Unit Suite**: `npm run test:unit` (365/365 Passed, 3,286 tests green)
 - **Integration Suite**: `npm run test:integration` (7/7 Passed, 42 tests green)
 - **Full Platform Suite**: `npm run test:all` (372/372 Passed, 3,328 tests green)
+
+## Workflow Directives
+- **Active Branch Requirement**: Always write code and commit changes on the `Yves-update-UI` branch.
+- **Pre-Coding Pull**: Always pull the latest code from `origin main` (specifically in `PaperWorking_v1`) before implementing new features or making code changes.
+
+
+

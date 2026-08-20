@@ -29,6 +29,9 @@ export interface ProjectSummary {
   dispositionType: ProjectDisposition;
   purchasePrice: number;
   estimatedIrr?: number;
+  phaseCompletionPct?: number;
+  ownershipPercentage?: number;
+  estimatedExitValue?: number;
 }
 
 export interface ProjectWorkspace extends ProjectSummary {

@@ -6,11 +6,25 @@ import {
   scorecardEntries,
   seedProjectsForInsights,
 } from '../../lib/insights/adapters.js';
+import {
+  DEFAULT_PORTFOLIO_33_KPIS,
+  money,
+  pct,
+} from '../../lib/insights/portfolio-33-kpis.js';
 
 describe('phase 5e — web app status', () => {
   it('includes insights routes', () => {
     expect(WEB_APP_STATUS.dashboardRoutes).toContain('/dashboard/insights');
     expect(WEB_APP_STATUS.projectRoutes).toContain('/project/deal-1/scorecard');
+  });
+});
+
+describe('phase 5e — portfolio 33 KPI seed surface', () => {
+  it('exposes all 33 KPI keys with seed defaults', () => {
+    expect(Object.keys(DEFAULT_PORTFOLIO_33_KPIS)).toHaveLength(33);
+    expect(DEFAULT_PORTFOLIO_33_KPIS.offersSentTotal).toBe(42);
+    expect(money(285000)).toMatch(/^\$/);
+    expect(pct(64.2)).toBe('64.2%');
   });
 });
 

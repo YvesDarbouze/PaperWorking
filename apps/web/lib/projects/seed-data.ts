@@ -158,6 +158,9 @@ export function listSeedProjectSummaries(): ProjectSummary[] {
     dispositionType: project.dispositionType,
     purchasePrice: project.purchasePrice,
     estimatedIrr: project.estimatedIrr,
+    phaseCompletionPct: project.phase_completion_pct,
+    ownershipPercentage: 100,
+    estimatedExitValue: Math.round(project.purchasePrice * 1.22),
   }));
 }
 
@@ -176,6 +179,9 @@ export function seedProjectsForApiList(): Array<Record<string, unknown>> {
     dispositionType: project.dispositionType,
     purchasePrice: project.purchasePrice,
     estimatedIrr: project.estimatedIrr,
+    phaseCompletionPct: project.phase_completion_pct,
+    ownershipPercentage: 100,
+    estimatedExitValue: Math.round(project.purchasePrice * 1.22),
     financials: { purchasePrice: project.purchasePrice },
   }));
 }

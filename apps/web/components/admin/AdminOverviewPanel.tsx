@@ -1,26 +1,45 @@
 'use client';
 
-import { useEffect, useState } from 'react';
 import Link from 'next/link';
+import { useEffect, useState } from 'react';
+import {
+  AdminPageShell,
+  AdminStateBlock,
+  useAdminOpsSection,
+} from '@/components/admin/admin-ui';
 
-interface AdminOverviewState {
-  rentcast?: { count: number; limit: number; year: number; month: number };
-  agents?: { count: number };
-  rates?: { count: number; updatedByEmail: string | null };
-  checklists?: { productCount: number; updatedByEmail: string | null };
+interface OverviewData {
+  mrr: number;
+  revenueThisMonth: number;
+  revenueLastMonth: number;
+  activeUsers: number;
+  churnRate: number;
+  trialUsers: number;
+  totalUsers: number;
+  totalProjects: number;
+  plans: Array<{ name: string; count: number; color: string }>;
+  activity: Array<{ id: string; title: string; detail: string; at: string }>;
+}
+
+interface InfraState {
+  rentcast?: string;
+  agents?: string;
+  rates?: string;
+  checklists?: string;
+}
+
+function money(n: number) {
+  if (n >= 1000) return `$${(n / 1000).toFixed(1)}k`;
+  return `$${n}`;
 }
 
 export default function AdminOverviewPanel() {
-  const [data, setData] = useState<AdminOverviewState | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  const { data, loading, error, reload } = useAdminOpsSection<OverviewData>('overview');
+  const [infra, setInfra] = useState<InfraState>({});
 
   useEffect(() => {
     let cancelled = false;
-
-    async function load() {
-      setLoading(true);
-      setError(null);
+    async function loadInfra() {
       try {
         const [rentcastRes, agentsRes, ratesRes, checklistsRes] = await Promise.all([
           fetch('/api/admin/rentcast-usage', { credentials: 'include', cache: 'no-store' }),
@@ -28,133 +47,166 @@ export default function AdminOverviewPanel() {
           fetch('/api/admin/lender-rates', { credentials: 'include', cache: 'no-store' }),
           fetch('/api/admin/lender-checklists', { credentials: 'include', cache: 'no-store' }),
         ]);
-
-        const rentcast = (await rentcastRes.json()) as AdminOverviewState['rentcast'] & {
-          error?: string;
-        };
-        const agentsBody = (await agentsRes.json()) as { count?: number; error?: string };
-        const ratesBody = (await ratesRes.json()) as {
-          rates?: unknown[];
-          updatedByEmail?: string | null;
-          error?: string;
-        };
-        const checklistsBody = (await checklistsRes.json()) as {
-          checklists?: Record<string, unknown>;
-          updatedByEmail?: string | null;
-          error?: string;
-        };
-
-        if (!rentcastRes.ok) throw new Error(rentcast.error ?? 'RentCast usage failed');
-        if (!agentsRes.ok) throw new Error(agentsBody.error ?? 'Agent crew failed');
-        if (!ratesRes.ok) throw new Error(ratesBody.error ?? 'Lender rates failed');
-        if (!checklistsRes.ok) throw new Error(checklistsBody.error ?? 'Checklists failed');
-
-        if (!cancelled) {
-          setData({
-            rentcast: rentcast as AdminOverviewState['rentcast'],
-            agents: { count: agentsBody.count ?? 0 },
-            rates: {
-              count: ratesBody.rates?.length ?? 0,
-              updatedByEmail: ratesBody.updatedByEmail ?? null,
-            },
-            checklists: {
-              productCount: Object.keys(checklistsBody.checklists ?? {}).length,
-              updatedByEmail: checklistsBody.updatedByEmail ?? null,
-            },
-          });
-        }
-      } catch (loadError) {
-        if (!cancelled) {
-          setError(loadError instanceof Error ? loadError.message : 'Failed to load admin overview');
-        }
-      } finally {
-        if (!cancelled) setLoading(false);
+        const rentcast = (await rentcastRes.json()) as { count?: number; limit?: number };
+        const agents = (await agentsRes.json()) as { count?: number };
+        const rates = (await ratesRes.json()) as { rates?: unknown[] };
+        const checklists = (await checklistsRes.json()) as { checklists?: Record<string, unknown> };
+        if (cancelled) return;
+        setInfra({
+          rentcast: rentcastRes.ok ? `${rentcast.count ?? 0}/${rentcast.limit ?? 0}` : '—',
+          agents: agentsRes.ok ? String(agents.count ?? 0) : '—',
+          rates: ratesRes.ok ? String(rates.rates?.length ?? 0) : '—',
+          checklists: checklistsRes.ok
+            ? String(Object.keys(checklists.checklists ?? {}).length)
+            : '—',
+        });
+      } catch {
+        // keep empty infra cards
       }
     }
-
-    load();
+    loadInfra();
     return () => {
       cancelled = true;
     };
   }, []);
 
-  if (loading) {
+  if (loading || error || !data) {
     return (
-      <div className="mx-auto max-w-[1280px] px-4 py-8 text-sm text-black/55 md:px-8">
-        Loading admin overview…
-      </div>
+      <AdminPageShell title="Command center" subtitle="Platform admin overview from v0 ops seed.">
+        <AdminStateBlock loading={loading} error={error} onRetry={reload} />
+      </AdminPageShell>
     );
   }
 
-  if (error || !data) {
-    return (
-      <div className="mx-auto max-w-[1280px] px-4 py-8 md:px-8">
-        <div className="rounded-2xl border border-red-300 bg-red-50 p-6 text-sm text-red-800">
-          {error ?? 'Overview unavailable'}
-        </div>
-        <p className="mt-4 text-sm text-black/60">
-          Sign in with{' '}
-          <Link href="/login?accountType=admin&redirectTo=/admin" className="underline">
-            admin dev session
-          </Link>{' '}
-          to access this panel.
-        </p>
-      </div>
-    );
-  }
+  const bars = [
+    { label: 'Last Mo', value: data.revenueLastMonth },
+    { label: 'This Mo', value: data.revenueThisMonth },
+    { label: 'MRR', value: data.mrr },
+  ];
+  const maxBar = Math.max(...bars.map((b) => b.value), 1);
+  const planTotal = data.plans.reduce((s, p) => s + p.count, 0) || 1;
 
   return (
-    <div className="mx-auto max-w-[1280px] space-y-8 px-4 py-6 md:px-8 md:py-8">
-      <section>
-        <h2 className="text-3xl font-semibold tracking-[-0.02em]">Command center</h2>
-        <p className="mt-2 max-w-[60ch] text-sm text-black/60">
-          Read-only admin adapters for lender config, RentCast usage, and synthetic agent crew.
-        </p>
-      </section>
-
-      <section className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
+    <AdminPageShell
+      title="Command center"
+      subtitle="KPI grid + revenue + plan mix + activity — seed-backed port of v0 /admin."
+      actions={
+        <button
+          type="button"
+          onClick={reload}
+          className="rounded-lg border border-black/10 bg-white px-3 py-2 text-xs font-semibold"
+        >
+          Refresh
+        </button>
+      }
+    >
+      <section className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
         {[
-          {
-            label: 'RentCast calls',
-            value: `${data.rentcast?.count ?? 0} / ${data.rentcast?.limit ?? 0}`,
-            hint: `${data.rentcast?.month}/${data.rentcast?.year}`,
-          },
-          { label: 'Synthetic agents', value: String(data.agents?.count ?? 0), hint: 'Active roster' },
-          { label: 'Lender rates', value: String(data.rates?.count ?? 0), hint: data.rates?.updatedByEmail ?? '—' },
-          {
-            label: 'Checklist products',
-            value: String(data.checklists?.productCount ?? 0),
-            hint: data.checklists?.updatedByEmail ?? '—',
-          },
-        ].map((item) => (
-          <article key={item.label} className="rounded-2xl border border-black/10 bg-white p-5 shadow-sm">
-            <p className="text-[11px] uppercase tracking-[0.08em] text-black/45">{item.label}</p>
-            <p className="mt-2 text-2xl font-semibold">{item.value}</p>
-            <p className="mt-2 text-xs text-black/55">{item.hint}</p>
+          { label: 'MRR', value: money(data.mrr) },
+          { label: 'Active users', value: String(data.activeUsers) },
+          { label: 'Churn', value: `${data.churnRate}%` },
+          { label: 'Trials', value: String(data.trialUsers) },
+          { label: 'Total users', value: String(data.totalUsers) },
+          { label: 'Total projects', value: String(data.totalProjects) },
+        ].map((kpi) => (
+          <article key={kpi.label} className="rounded-2xl border border-black/10 bg-white p-5 shadow-sm">
+            <p className="text-[11px] uppercase tracking-[0.08em] text-black/45">{kpi.label}</p>
+            <p className="mt-2 text-2xl font-semibold">{kpi.value}</p>
           </article>
         ))}
       </section>
 
-      <section className="grid gap-4 md:grid-cols-2">
-        <Link
-          href="/admin/agent-crew"
-          className="rounded-2xl border border-black/10 bg-white p-5 shadow-sm transition hover:border-black/20"
-        >
-          <h3 className="text-lg font-semibold">Agent crew</h3>
-          <p className="mt-2 text-sm text-black/60">
-            Inspect synthetic agents, impersonate for QA, and delete test personas.
-          </p>
-        </Link>
-        <Link
-          href="/admin/lender-config"
-          className="rounded-2xl border border-black/10 bg-white p-5 shadow-sm transition hover:border-black/20"
-        >
-          <h3 className="text-lg font-semibold">Lender config</h3>
-          <p className="mt-2 text-sm text-black/60">
-            Review migrated lender rate sheets and checklist definitions.
-          </p>
-        </Link>
+      <section className="grid gap-4 lg:grid-cols-2">
+        <article className="rounded-2xl border border-black/10 bg-white p-5 shadow-sm">
+          <p className="text-[11px] font-bold uppercase tracking-widest text-black/45">Revenue overview</p>
+          <div className="mt-4 flex h-44 items-end gap-3">
+            {bars.map((bar) => (
+              <div key={bar.label} className="flex flex-1 flex-col items-center gap-2">
+                <span className="text-xs font-semibold">{money(bar.value)}</span>
+                <div
+                  className="w-full rounded-t bg-black"
+                  style={{ height: `${Math.max(8, (bar.value / maxBar) * 100)}%` }}
+                />
+                <span className="text-xs text-black/50">{bar.label}</span>
+              </div>
+            ))}
+          </div>
+        </article>
+
+        <article className="rounded-2xl border border-black/10 bg-white p-5 shadow-sm">
+          <p className="text-[11px] font-bold uppercase tracking-widest text-black/45">Plan distribution</p>
+          <div className="mt-4 flex h-3 overflow-hidden rounded">
+            {data.plans.map((plan) => (
+              <div
+                key={plan.name}
+                style={{ width: `${(plan.count / planTotal) * 100}%`, background: plan.color }}
+              />
+            ))}
+          </div>
+          <ul className="mt-4 space-y-2">
+            {data.plans.map((plan) => (
+              <li key={plan.name} className="flex items-center justify-between text-sm">
+                <span className="flex items-center gap-2">
+                  <span className="h-3 w-3 rounded-sm" style={{ background: plan.color }} />
+                  {plan.name}
+                </span>
+                <span className="font-semibold">{plan.count}</span>
+              </li>
+            ))}
+          </ul>
+        </article>
       </section>
-    </div>
+
+      <section className="grid gap-4 md:grid-cols-2">
+        <article className="rounded-2xl border border-black/10 bg-white p-5 shadow-sm">
+          <p className="mb-3 text-[11px] font-bold uppercase tracking-widest text-black/45">
+            Recent activity
+          </p>
+          <ul className="space-y-3">
+            {data.activity.map((item) => (
+              <li key={item.id} className="border-b border-black/5 pb-3 last:border-0">
+                <p className="text-sm font-semibold">{item.title}</p>
+                <p className="text-xs text-black/55">{item.detail}</p>
+              </li>
+            ))}
+          </ul>
+        </article>
+
+        <article className="rounded-2xl border border-black/10 bg-white p-5 shadow-sm">
+          <p className="mb-3 text-[11px] font-bold uppercase tracking-widest text-black/45">
+            Infra adapters
+          </p>
+          <div className="grid grid-cols-2 gap-3 text-sm">
+            <div>
+              <p className="text-black/45">RentCast</p>
+              <p className="font-semibold">{infra.rentcast ?? '…'}</p>
+            </div>
+            <div>
+              <p className="text-black/45">Agents</p>
+              <p className="font-semibold">{infra.agents ?? '…'}</p>
+            </div>
+            <div>
+              <p className="text-black/45">Lender rates</p>
+              <p className="font-semibold">{infra.rates ?? '…'}</p>
+            </div>
+            <div>
+              <p className="text-black/45">Checklists</p>
+              <p className="font-semibold">{infra.checklists ?? '…'}</p>
+            </div>
+          </div>
+          <div className="mt-4 flex flex-wrap gap-2">
+            <Link href="/admin/users" className="rounded-lg bg-black px-3 py-2 text-xs font-semibold text-white">
+              Manage users
+            </Link>
+            <Link
+              href="/admin/agent-crew"
+              className="rounded-lg border border-black/10 px-3 py-2 text-xs font-semibold"
+            >
+              Agent crew
+            </Link>
+          </div>
+        </article>
+      </section>
+    </AdminPageShell>
   );
 }

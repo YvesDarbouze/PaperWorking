@@ -1,6 +1,7 @@
 'use client';
 
 import Link from 'next/link';
+import { useEffect, useMemo, useState } from 'react';
 import { useAuth } from '@/context/AuthContext';
 import {
   ACTIVE_PROJECT_PROGRESS,
@@ -18,6 +19,17 @@ import {
 
 const panel =
   'rounded-2xl border border-white/10 bg-[#121014]/90 shadow-[0_8px_32px_rgba(0,0,0,0.12)]';
+
+function formatUsd(value: number): string {
+  if (!Number.isFinite(value)) return '—';
+  if (Math.abs(value) >= 1_000_000) return `$${(value / 1_000_000).toFixed(2)}M`;
+  if (Math.abs(value) >= 1_000) return `$${Math.round(value / 1000)}K`;
+  return new Intl.NumberFormat('en-US', {
+    style: 'currency',
+    currency: 'USD',
+    maximumFractionDigits: 0,
+  }).format(value);
+}
 
 function SectionHeading({
   title,
@@ -40,12 +52,96 @@ function SectionHeading({
   );
 }
 
+interface PortfolioMetricsPayload {
+  success?: boolean;
+  portfolio?: {
+    totalActiveProjects?: number;
+    totalPortfolioValue?: number;
+    totalCashInvested?: number;
+    portfolioNoi?: number;
+    portfolioCashFlow?: number;
+    portfolioCapRate?: number;
+  };
+}
+
+interface MarketplaceProfilePayload {
+  profile?: {
+    displayName?: string;
+    publicBio?: string;
+    location?: string;
+    followerCount?: number;
+  };
+}
+
 export default function CommandCenterPanel() {
   const { profile } = useAuth();
-  const displayName = PROFILE_CARD.displayName;
+  const [metrics, setMetrics] = useState<PortfolioMetricsPayload['portfolio'] | null>(null);
+  const [mpProfile, setMpProfile] = useState<MarketplaceProfilePayload['profile'] | null>(null);
+
+  useEffect(() => {
+    let cancelled = false;
+
+    async function loadLive() {
+      try {
+        const [metricsRes, profileRes] = await Promise.all([
+          fetch('/api/portfolio/metrics?period=monthly', { credentials: 'include', cache: 'no-store' }),
+          fetch('/api/marketplace/profile', { credentials: 'include', cache: 'no-store' }),
+        ]);
+
+        if (metricsRes.ok) {
+          const body = (await metricsRes.json()) as PortfolioMetricsPayload;
+          if (!cancelled) setMetrics(body.portfolio ?? null);
+        }
+        if (profileRes.ok) {
+          const body = (await profileRes.json()) as MarketplaceProfilePayload;
+          if (!cancelled) setMpProfile(body.profile ?? null);
+        }
+      } catch {
+        // Keep seed fallbacks when live adapters are unavailable.
+      }
+    }
+
+    loadLive();
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
+  const summary = useMemo(() => {
+    const activeDeals = metrics?.totalActiveProjects ?? PORTFOLIO_SUMMARY.activeDeals;
+    const portfolioValue = metrics?.totalPortfolioValue
+      ? formatUsd(metrics.totalPortfolioValue)
+      : PORTFOLIO_SUMMARY.portfolioValue;
+    const totalNoi = metrics?.portfolioNoi
+      ? formatUsd(metrics.portfolioNoi)
+      : PORTFOLIO_SUMMARY.totalNoi;
+    const monthlyCashFlow = metrics?.portfolioCashFlow
+      ? formatUsd(metrics.portfolioCashFlow)
+      : PORTFOLIO_SUMMARY.monthlyCashFlow;
+    const capitalDeployed = metrics?.totalCashInvested
+      ? formatUsd(metrics.totalCashInvested)
+      : PORTFOLIO_SUMMARY.capitalDeployed;
+    const portfolioIrr =
+      metrics?.portfolioCapRate != null
+        ? `${metrics.portfolioCapRate.toFixed(1)}%`
+        : PORTFOLIO_SUMMARY.portfolioIrr;
+
+    return {
+      ...PORTFOLIO_SUMMARY,
+      activeDeals,
+      portfolioValue,
+      totalNoi,
+      monthlyCashFlow,
+      capitalDeployed,
+      portfolioIrr,
+    };
+  }, [metrics]);
+
+  const displayName = mpProfile?.displayName || PROFILE_CARD.displayName;
   const roleLabel =
     profile?.accountType === 'vendor' ? 'Vendor Partner' : PROFILE_CARD.role;
   const pendingTasks = ASSIGNED_TASKS.filter((task) => !task.done).length as number;
+  const followerCount = mpProfile?.followerCount ?? PROFILE_CARD.followers;
 
   return (
     <div className="w-full min-h-full">
@@ -74,11 +170,11 @@ export default function CommandCenterPanel() {
                   <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-[#F06543] opacity-75" />
                   <span className="relative inline-flex h-1.5 w-1.5 rounded-full bg-[#F06543]" />
                 </span>
-                {PORTFOLIO_SUMMARY.needsAttention} Caution
+                {summary.needsAttention} Caution
               </Link>
             </div>
             <p className="text-[13px] text-white/55">
-              {PORTFOLIO_SUMMARY.activeDeals} active deals across your portfolio
+              {summary.activeDeals} active deals across your portfolio
             </p>
           </div>
 
@@ -181,7 +277,7 @@ export default function CommandCenterPanel() {
                     {roleLabel}
                   </p>
                   <p className="mt-0.5 text-[10px] text-white/45">
-                    {PROFILE_CARD.followers} Followers · {PROFILE_CARD.teamCount} Team
+                    {followerCount} Followers · {PROFILE_CARD.teamCount} Team
                   </p>
                 </div>
               </div>
@@ -295,7 +391,7 @@ export default function CommandCenterPanel() {
                 Portfolio IRR
               </p>
               <p className="mt-2 text-3xl font-bold tracking-tight text-[#fdfffc]">
-                {PORTFOLIO_SUMMARY.portfolioIrr}
+                {summary.portfolioIrr}
               </p>
               <p className="mt-2 text-[11px] text-white/45">
                 Seed highlight — live KPI engine wires in a later wave.
@@ -396,7 +492,7 @@ export default function CommandCenterPanel() {
                 </span>
               </div>
               <span className="rounded-full bg-slate-800/40 px-2.5 py-0.5 font-mono text-xs font-bold text-slate-300">
-                {PORTFOLIO_SUMMARY.sparklineGrowth} Growth
+                {summary.sparklineGrowth} Growth
               </span>
             </div>
             <div className="flex flex-col items-center justify-between gap-4 sm:flex-row">
@@ -405,7 +501,7 @@ export default function CommandCenterPanel() {
                   Total Portfolio Assets Value
                 </p>
                 <p className="font-mono text-2xl font-bold text-white">
-                  {PORTFOLIO_SUMMARY.portfolioValue}{' '}
+                  {summary.portfolioValue}{' '}
                   <span className="text-xs font-medium text-slate-400">USD</span>
                 </p>
               </div>
@@ -439,13 +535,13 @@ export default function CommandCenterPanel() {
             {[
               {
                 label: 'Portfolio Net Operating Income (NOI)',
-                value: PORTFOLIO_SUMMARY.totalNoi,
+                value: summary.totalNoi,
                 meta: '/yr · hold-phase',
                 icon: 'home_work',
               },
               {
                 label: 'Blended Portfolio IRR',
-                value: PORTFOLIO_SUMMARY.portfolioIrr,
+                value: summary.portfolioIrr,
                 meta: 'annualized · on track',
                 icon: 'trending_up',
               },
@@ -592,28 +688,28 @@ export default function CommandCenterPanel() {
               {
                 label: 'Portfolio IRR',
                 icon: 'trending_up',
-                value: PORTFOLIO_SUMMARY.portfolioIrr,
+                value: summary.portfolioIrr,
                 meta: 'annualized',
                 chip: 'On track',
               },
               {
                 label: 'Equity Multiple',
                 icon: 'layers',
-                value: `${PORTFOLIO_SUMMARY.equityMultiple}×`,
+                value: `${summary.equityMultiple}×`,
                 meta: 'vs. 2.5× target',
                 chip: 'On track',
               },
               {
                 label: 'Total NOI',
                 icon: 'home_work',
-                value: PORTFOLIO_SUMMARY.totalNoi,
+                value: summary.totalNoi,
                 meta: 'hold-phase',
                 chip: 'Rental',
               },
               {
                 label: 'Monthly Cash Flow',
                 icon: 'waterfall_chart',
-                value: PORTFOLIO_SUMMARY.monthlyCashFlow,
+                value: summary.monthlyCashFlow,
                 meta: 'rental income',
                 chip: 'Positive',
               },

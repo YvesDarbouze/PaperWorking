@@ -1,10 +1,12 @@
 # API Surface — Migration Stack
 
-**Last updated:** 2026-08-20
+**Last updated:** 2026-08-22
 **Handler count:** 297 framework-agnostic handlers in `apps/api/` (`@paperworking/api`)
-**Web adapters:** 26 Next.js routes in `apps/web/app/api/` (wired now; remaining handlers ready for cutover)
+**Web adapters:** 27 Next.js route files in `apps/web/app/api/` (**31** method+path pairs wired now; remaining handlers ready for cutover)
 
 Source of truth: exports in `apps/api/src/index.ts` + JSDoc `METHOD /api/...` on each handler.
+
+**Connection audit:** see [API_CONNECTION_STATUS.md](./API_CONNECTION_STATUS.md) for which adapters have UI, which are ops-only, and the full unwired inventory (~269 handlers).
 
 ---
 
@@ -12,34 +14,35 @@ Source of truth: exports in `apps/api/src/index.ts` + JSDoc `METHOD /api/...` on
 
 Live when running `npm run dev` (Next.js serves UI + these adapters).
 
-| Method | Route | Handler(s) |
-|---|---|---|
-| GET | `/api/health` | `handleHealthGet` |
-| POST, DELETE | `/api/auth/session` | `handleSessionPost`, `handleSessionDelete` |
-| GET | `/api/auth/me` | Inline (session cookies) |
-| GET | `/api/projects` | `handleProjectsListGet` |
-| GET | `/api/projects/[id]` | `handleProjectGet` |
-| GET | `/api/projects/[id]/kpis/current` | `handleProjectKpisCurrentGet` |
-| GET | `/api/portfolio/metrics` | `handlePortfolioMetricsGet` |
-| GET | `/api/insights` | `handleInsightsGet` |
-| GET | `/api/reports/portfolio` | `handleReportsPortfolioGet` |
-| POST | `/api/reports/generate` | `handleReportsGeneratePost` |
-| GET | `/api/reports/[period]` | `handleReportsPeriodGet` |
-| GET | `/api/marketplace/listings` | `handleMarketplaceListingsGet` |
-| GET | `/api/marketplace/profile` | `handleMarketplaceProfileGet` |
-| GET | `/api/marketplace/investors` | `handleMarketplaceInvestorsGet` |
-| POST | `/api/marketplace/investors/follow` | `handleMarketplaceInvestorsFollowPost` |
-| GET | `/api/marketplace/investors/[id]` | `handleMarketplaceInvestorByIdGet` |
-| GET | `/api/deals` | `handleDealsGet` |
-| GET | `/api/deals/exists` | `handleDealsExistsGet` |
-| GET, PUT | `/api/vendor-portal/requests` | `handleVendorPortalRequestsGet`, `handleVendorPortalRequestsPut` |
-| GET, PUT | `/api/vendor-portal/profile` | Inline (seed data) |
-| GET | `/api/admin/lender-rates` | `handleAdminLenderRatesGet` |
-| GET | `/api/admin/lender-checklists` | `handleAdminLenderChecklistsGet` |
-| GET | `/api/admin/rentcast-usage` | `handleAdminRentcastUsageGet` |
-| GET | `/api/admin/agent-crew` | `handleAdminAgentCrewGet` |
-| GET, DELETE | `/api/admin/agent-crew/[id]` | `handleAdminAgentCrewByIdGet`, `handleAdminAgentCrewByIdDelete` |
-| POST | `/api/admin/agent-crew/[id]/impersonate` | `handleAdminAgentCrewImpersonatePost` |
+| Method | Route | Handler(s) | UI |
+|---|---|---|---|
+| GET | `/api/health` | `handleHealthGet` | Ops only |
+| POST, DELETE | `/api/auth/session` | `handleSessionPost`, `handleSessionDelete` | Login / logout |
+| GET | `/api/auth/me` | Inline (session cookies) | AuthContext |
+| GET | `/api/projects` | `handleProjectsListGet` | ProjectsListPanel |
+| GET | `/api/projects/[id]` | `handleProjectGet` | Project workspace |
+| GET | `/api/projects/[id]/kpis/current` | `handleProjectKpisCurrentGet` | Project insights/scorecard |
+| GET | `/api/portfolio/metrics` | `handlePortfolioMetricsGet` | CommandCenterPanel |
+| GET | `/api/insights` | `handleInsightsGet` | PortfolioInsightsPanel |
+| GET | `/api/reports/portfolio` | `handleReportsPortfolioGet` | PortfolioReportsPanel |
+| POST | `/api/reports/generate` | `handleReportsGeneratePost` | PortfolioReportsPanel |
+| GET | `/api/reports/[period]` | `handleReportsPeriodGet` | ProjectReportsPanel |
+| GET | `/api/marketplace/listings` | `handleMarketplaceListingsGet` | VendorMarketplacePanel |
+| GET | `/api/marketplace/profile` | `handleMarketplaceProfileGet` | CommandCenterPanel |
+| GET | `/api/marketplace/investors` | `handleMarketplaceInvestorsGet` | VendorMarketplacePanel |
+| POST | `/api/marketplace/investors/follow` | `handleMarketplaceInvestorsFollowPost` | Marketplace panels |
+| GET | `/api/marketplace/investors/[id]` | `handleMarketplaceInvestorByIdGet` | InvestorProfilePanel |
+| GET | `/api/deals` | `handleDealsGet` | DealsMarketplacePanel |
+| GET | `/api/deals/exists` | `handleDealsExistsGet` | DealDetailPanel |
+| GET | `/api/vendors` | `handleVendorsGet` | VendorMarketplacePanel |
+| GET, PUT | `/api/vendor-portal/requests` | `handleVendorPortalRequestsGet`, `handleVendorPortalRequestsPut` | VendorRequestsPanel |
+| GET, PUT | `/api/vendor-portal/profile` | Inline (seed data) | VendorProfilePanel |
+| GET | `/api/admin/lender-rates` | `handleAdminLenderRatesGet` | Admin panels |
+| GET | `/api/admin/lender-checklists` | `handleAdminLenderChecklistsGet` | Admin panels |
+| GET | `/api/admin/rentcast-usage` | `handleAdminRentcastUsageGet` | AdminOverviewPanel |
+| GET | `/api/admin/agent-crew` | `handleAdminAgentCrewGet` | AdminAgentCrewPanel |
+| GET, DELETE | `/api/admin/agent-crew/[id]` | `handleAdminAgentCrewByIdGet`, `handleAdminAgentCrewByIdDelete` | AdminAgentCrewPanel |
+| POST | `/api/admin/agent-crew/[id]/impersonate` | `handleAdminAgentCrewImpersonatePost` | AdminAgentCrewPanel |
 
 ---
 

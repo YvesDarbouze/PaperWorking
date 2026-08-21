@@ -199,6 +199,19 @@ function MarketplaceContent() {
   const [loadingDeals, setLoadingDeals] = useState(false);
   const [dealsError, setDealsError] = useState<string | null>(null);
 
+  const [listings, setListings] = useState<
+    Array<{
+      id: string;
+      title: string;
+      vendorType: string;
+      city: string;
+      budgetRange: string;
+      responseTime: string;
+      isNewListing?: boolean;
+    }>
+  >([]);
+  const [listingsCount, setListingsCount] = useState(0);
+
   const [investors, setInvestors] = useState<InvestorProfile[]>([]);
   const [following, setFollowing] = useState<string[]>([]);
   const [loadingInvestors, setLoadingInvestors] = useState(false);
@@ -238,13 +251,37 @@ function MarketplaceContent() {
         if (apiType !== 'All') params.append('type', apiType);
         if (searchQuery.trim()) params.append('location', searchQuery.trim());
 
-        const res = await fetch(`/api/vendors?${params.toString()}`, {
-          credentials: 'include',
-          cache: 'no-store',
-        });
-        if (!cancelled && res.ok) {
-          const data = (await res.json()) as { vendors?: ApiVendor[] };
+        const [vendorsRes, listingsRes] = await Promise.all([
+          fetch(`/api/vendors?${params.toString()}`, {
+            credentials: 'include',
+            cache: 'no-store',
+          }),
+          fetch('/api/marketplace/listings', {
+            credentials: 'include',
+            cache: 'no-store',
+          }),
+        ]);
+
+        if (!cancelled && vendorsRes.ok) {
+          const data = (await vendorsRes.json()) as { vendors?: ApiVendor[] };
           setVendors(data.vendors ?? []);
+        }
+
+        if (!cancelled && listingsRes.ok) {
+          const data = (await listingsRes.json()) as {
+            listings?: Array<{
+              id: string;
+              title: string;
+              vendorType: string;
+              city: string;
+              budgetRange: string;
+              responseTime: string;
+              isNewListing?: boolean;
+            }>;
+            count?: number;
+          };
+          setListings(data.listings ?? []);
+          setListingsCount(data.count ?? data.listings?.length ?? 0);
         }
       } catch (err) {
         console.error('Vendor fetch error', err);
@@ -604,6 +641,40 @@ function MarketplaceContent() {
               engaging.
             </p>
           </div>
+
+          {listings.length > 0 ? (
+            <section className="space-y-3">
+              <div className="flex items-center justify-between">
+                <h3 className="text-sm font-semibold text-[#fdfffc]">Open vendor listings</h3>
+                <span className="text-xs text-white/45">{listingsCount} visible</span>
+              </div>
+              <div className="grid gap-3 md:grid-cols-2 lg:grid-cols-3">
+                {listings.map((listing) => (
+                  <article
+                    key={listing.id}
+                    className="rounded-xl border border-white/8 bg-white/[0.03] p-4"
+                  >
+                    <div className="mb-1 flex items-center gap-2">
+                      <p className="text-[11px] uppercase tracking-[0.07em] text-white/45">
+                        {listing.vendorType}
+                      </p>
+                      {listing.isNewListing ? (
+                        <span className="rounded-full bg-white/10 px-2 py-0.5 text-[10px] uppercase tracking-[0.06em]">
+                          New
+                        </span>
+                      ) : null}
+                    </div>
+                    <h4 className="text-base font-semibold text-[#fdfffc]">{listing.title}</h4>
+                    <p className="mt-1 text-sm text-white/55">{listing.city}</p>
+                    <div className="mt-3 flex flex-wrap gap-3 text-xs text-white/60">
+                      <span>{listing.budgetRange}</span>
+                      <span>Response {listing.responseTime}</span>
+                    </div>
+                  </article>
+                ))}
+              </div>
+            </section>
+          ) : null}
 
           {loadingVendors ? (
             <div className="flex items-center justify-center gap-3 py-24 text-white/45">

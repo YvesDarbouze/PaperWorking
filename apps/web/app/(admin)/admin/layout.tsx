@@ -18,8 +18,9 @@ export default async function AdminLayout({ children }: { children: React.ReactN
     redirect('/login?accountType=admin&redirectTo=/admin');
   }
 
+  // Investor/vendor sessions must re-auth as admin — don't silently dump to dashboard.
   if (accountType !== 'admin') {
-    redirect('/dashboard');
+    redirect('/login?accountType=admin&redirectTo=/admin');
   }
 
   return <AdminPortalShell>{children}</AdminPortalShell>;

@@ -4,7 +4,13 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 
 const NAV_ITEMS = [
-  { href: '/admin', label: 'Overview' },
+  { href: '/admin', label: 'Overview', exact: true },
+  { href: '/admin/users', label: 'Users' },
+  { href: '/admin/subscriptions', label: 'Billing' },
+  { href: '/admin/tickets', label: 'Tickets' },
+  { href: '/admin/audit', label: 'Audit' },
+  { href: '/admin/analytics', label: 'Analytics' },
+  { href: '/admin/marketplace', label: 'Marketplace' },
   { href: '/admin/agent-crew', label: 'Agent crew' },
   { href: '/admin/lender-config', label: 'Lender config' },
 ];
@@ -26,17 +32,16 @@ export default function AdminPortalShell({ children }: { children: React.ReactNo
             Exit to dashboard
           </Link>
         </div>
-        <nav className="mx-auto flex max-w-[1280px] gap-2 px-4 pb-4 md:px-8">
+        <nav className="mx-auto flex max-w-[1280px] gap-2 overflow-x-auto px-4 pb-4 md:px-8">
           {NAV_ITEMS.map((item) => {
-            const active =
-              item.href === '/admin'
-                ? pathname === '/admin'
-                : pathname.startsWith(item.href);
+            const active = item.exact
+              ? pathname === item.href
+              : Boolean(pathname?.startsWith(item.href));
             return (
               <Link
                 key={item.href}
                 href={item.href}
-                className={`rounded-full px-4 py-2 text-sm transition ${
+                className={`shrink-0 rounded-full px-4 py-2 text-sm transition ${
                   active
                     ? 'bg-black text-white'
                     : 'border border-black/10 text-black/70 hover:bg-black/5'

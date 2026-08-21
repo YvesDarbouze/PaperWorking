@@ -3,6 +3,8 @@
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import { useAuth } from '@/context/AuthContext';
+import UserAccountMenu from '@/components/shared/UserAccountMenu';
+import { PROFILE_CARD } from '@/lib/dashboard/content';
 import { getPageLabel } from '@/lib/navigation/nav-contract';
 
 export default function DashboardTopBar() {
@@ -57,27 +59,18 @@ export default function DashboardTopBar() {
       </div>
 
       <div className="flex items-center gap-2 md:gap-3">
-        <div className="hidden text-right sm:block">
-          <p className="text-[12px] font-semibold leading-tight text-[#fdfffc]">
-            {profile?.subscriptionPlan ?? 'Individual'} investor
-          </p>
-          <p className="text-[10px] font-bold uppercase tracking-wider text-[#627C85]">
-            Lead Investor
-          </p>
-        </div>
         <Link
           href="/support"
-          className="rounded-lg border border-white/10 px-3 py-2 text-sm text-white/75 no-underline transition-colors hover:text-white"
+          className="hidden rounded-lg border border-white/10 px-3 py-2 text-sm text-white/75 no-underline transition-colors hover:text-white sm:inline-flex"
         >
           Support
         </Link>
-        <button
-          type="button"
-          onClick={handleLogout}
-          className="rounded-lg bg-white/8 px-3 py-2 text-sm font-medium text-[#fdfffc]"
-        >
-          Sign out
-        </button>
+        <UserAccountMenu
+          displayName={PROFILE_CARD.displayName}
+          accountType={profile?.accountType}
+          role={PROFILE_CARD.role}
+          onSignOut={handleLogout}
+        />
       </div>
     </header>
   );

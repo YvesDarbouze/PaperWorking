@@ -1,302 +1,598 @@
 'use client';
 
-import { useEffect, useState, type ReactNode } from 'react';
+import Link from 'next/link';
+import { useEffect, useMemo, useState } from 'react';
+import ProjectComparisonChart from '@/components/insights/ProjectComparisonChart';
+import { SEED_PROJECTS } from '@/lib/projects/seed-data';
 import {
-  DEFAULT_PORTFOLIO_33_KPIS,
-  money,
-  pct,
-  type Portfolio33KPIs,
-} from '@/lib/insights/portfolio-33-kpis';
+  COMPARISON_POINTS,
+  COMPARE_METRIC_OPTIONS,
+  formatInvestorValue,
+  INSIGHTS_TAB_CATEGORIES,
+  INVESTOR_KPI_SECTIONS,
+  TREND_METRIC_OPTIONS,
+  TREND_PERIOD_LABELS,
+  TREND_SERIES,
+  trendTone,
+  type TrendPeriod,
+  type InvestorKpiCard,
+} from '@/lib/insights/insights-dashboard-seed';
 
-function KPICard({ title, value, sub }: { title: string; value: string; sub: string }) {
-  return (
-    <div className="space-y-1.5 rounded-xl border border-white/10 bg-slate-900/90 p-4 backdrop-blur-sm transition hover:border-white/20">
-      <span className="block truncate text-[11px] font-semibold uppercase tracking-wider text-slate-400">
-        {title}
-      </span>
-      <p className="truncate text-lg font-black text-white">{value}</p>
-      <span className="block truncate text-[10px] text-emerald-400">{sub}</span>
-    </div>
-  );
+interface ApiMetric {
+  id: string;
+  name: string;
+  value: string | number;
+  trend?: 'up' | 'down' | 'flat';
+  benchmark?: string;
+  category: string;
+  isWarning?: boolean;
 }
 
-function CategoryHeading({
-  icon,
-  colorClass,
-  children,
-}: {
-  icon: string;
-  colorClass: string;
-  children: ReactNode;
-}) {
-  return (
-    <h2
-      className={`flex items-center gap-2 text-sm font-extrabold uppercase tracking-wider ${colorClass}`}
-    >
-      <span className="material-symbols-outlined text-[18px]">{icon}</span>
-      {children}
-    </h2>
-  );
+interface ApiCategory {
+  category: string;
+  metrics: ApiMetric[];
 }
 
+const TONE_CLASS = {
+  positive: 'text-emerald-400',
+  negative: 'text-rose-400',
+  neutral: 'text-slate-500',
+} as const;
+
+/**
+ * Full Insights dashboard — port of PaperWorking insights page
+ * (commit era with Portfolio Aggregate / Trends / Project Comparison).
+ */
 export default function PortfolioInsightsPanel() {
-  const [kpis, setKpis] = useState<Portfolio33KPIs | null>(null);
-  const [loading, setLoading] = useState(true);
+  const projects = SEED_PROJECTS;
+  const [scope, setScope] = useState<'portfolio' | 'project'>('portfolio');
+  const [selectedProjectId, setSelectedProjectId] = useState(projects[0]?.id ?? '');
+  const [trendPeriod, setTrendPeriod] = useState<TrendPeriod>('monthly');
+  const [activeTab, setActiveTab] = useState('financial');
+  const [categories, setCategories] = useState<ApiCategory[]>([]);
+  const [loadingCats, setLoadingCats] = useState(true);
+  const [openMetric, setOpenMetric] = useState<InvestorKpiCard | null>(null);
+  const [watchlist, setWatchlist] = useState<Set<string>>(new Set());
+  const [compareMetric, setCompareMetric] = useState<string>('cap_rate');
+  const [sortOrder, setSortOrder] = useState<'none' | 'asc' | 'desc'>('none');
+  const [trendMetrics, setTrendMetrics] = useState<[string, string, string]>([
+    'noi',
+    'cash_flow',
+    'occupancy',
+  ]);
 
   useEffect(() => {
     let cancelled = false;
-
-    async function loadData() {
+    async function load() {
       try {
-        const res = await fetch('/api/reports/portfolio?period=overall', {
+        const res = await fetch('/api/insights?userId=dev-user-1', {
           credentials: 'include',
           cache: 'no-store',
         });
         if (res.ok) {
-          const data = (await res.json()) as { kpis33?: Portfolio33KPIs };
-          if (!cancelled && data.kpis33) setKpis(data.kpis33);
+          const data = (await res.json()) as { categories?: ApiCategory[] };
+          if (!cancelled && data.categories) setCategories(data.categories);
         }
       } catch {
-        // Keep seed fallback
+        // Seed UI still works without API
       } finally {
-        if (!cancelled) setLoading(false);
+        if (!cancelled) setLoadingCats(false);
       }
     }
-
-    loadData();
+    void load();
     return () => {
       cancelled = true;
     };
   }, []);
 
-  if (loading) {
-    return (
-      <div className="flex min-h-[60vh] items-center justify-center p-8 text-white">
-        <div className="animate-pulse space-y-3 text-center">
-          <span className="material-symbols-outlined mx-auto block animate-spin text-3xl text-emerald-400">
-            progress_activity
-          </span>
-          <p className="text-sm font-semibold text-slate-400">
-            Aggregating 33 Deep Portfolio KPIs...
-          </p>
-        </div>
-      </div>
+  const selectedProject = projects.find((p) => p.id === selectedProjectId) ?? null;
+  const selectedProjectLabel =
+    selectedProject?.address ?? selectedProject?.propertyName ?? 'Selected project';
+  const hasProjects = projects.length > 0;
+
+  const tabMatch = INSIGHTS_TAB_CATEGORIES.find((t) => t.id === activeTab)?.match;
+  const tabMetrics = useMemo(() => {
+    if (!tabMatch) return [];
+    const group = categories.find((c) => c.category === tabMatch);
+    return group?.metrics ?? [];
+  }, [categories, tabMatch]);
+
+  const portfolioCategoryCards = useMemo(() => {
+    return categories.filter((c) =>
+      ['Deal Metrics', 'Financial Metrics', 'Portfolio Metrics', 'Syndication Metrics'].includes(
+        c.category,
+      ),
     );
+  }, [categories]);
+
+  const comparisonPoints = useMemo(() => {
+    let points = COMPARISON_POINTS.map((p) => ({
+      projectId: p.projectId,
+      projectName: p.projectName,
+      value: p.metrics[compareMetric] ?? 0,
+    }));
+    if (sortOrder === 'asc') points = [...points].sort((a, b) => a.value - b.value);
+    if (sortOrder === 'desc') points = [...points].sort((a, b) => b.value - a.value);
+    return points;
+  }, [compareMetric, sortOrder]);
+
+  const compareAvg =
+    comparisonPoints.reduce((s, p) => s + p.value, 0) / Math.max(comparisonPoints.length, 1);
+
+  function toggleWatch(id: string) {
+    setWatchlist((prev) => {
+      const next = new Set(prev);
+      if (next.has(id)) next.delete(id);
+      else next.add(id);
+      return next;
+    });
   }
 
-  const kpiData = kpis ?? DEFAULT_PORTFOLIO_33_KPIS;
-
   return (
-    <div
-      data-testid="insights-tab"
-      className="mx-auto max-w-7xl space-y-8 p-6 text-white md:p-10"
-    >
-      <div className="flex flex-col justify-between gap-4 border-b border-white/10 pb-6 md:flex-row md:items-center">
+    <div className="min-h-screen space-y-8 px-6 py-8 text-white">
+      {/* Header */}
+      <div className="flex flex-col justify-between gap-4 border-b border-white/5 pb-6 md:flex-row md:items-center">
         <div>
-          <h1 className="flex items-center gap-2 text-2xl font-black tracking-tight text-white">
-            <span className="material-symbols-outlined text-[28px] text-emerald-400">monitoring</span>
-            PaperWorking — Portfolio Insights & Analytics
-          </h1>
-          <p className="mt-1 text-xs text-slate-400">
-            Real-time Bloomberg Terminal analytics aggregated across all active real estate
-            investments.
+          <h1 className="text-3xl font-bold tracking-tight text-white">Insights</h1>
+          <p className="mt-1.5 text-sm leading-relaxed text-white/55">
+            Real-time calculations, persona KPIs, portfolio aggregation, and regulatory benchmarks.
           </p>
         </div>
-        <div className="flex items-center gap-2">
-          <span className="rounded-full border border-emerald-500/30 bg-emerald-500/20 px-3 py-1 text-xs font-semibold text-emerald-300">
-            33 KPIs Live Synchronized
-          </span>
+
+        <div className="flex flex-wrap items-center gap-3">
+          <button
+            type="button"
+            className="flex cursor-pointer items-center gap-2 rounded-xl border border-white/10 bg-slate-800 px-4 py-2 text-xs font-semibold tracking-wide text-white shadow-sm hover:bg-slate-700"
+          >
+            <span className="material-symbols-outlined text-[16px]">download</span>
+            Export to CSV
+          </button>
+
+          {hasProjects ? (
+            <div className="flex flex-wrap items-center gap-3 rounded-xl border border-white/10 bg-white/[0.02] p-1.5 backdrop-blur-md">
+              <div className="flex shrink-0 rounded-lg bg-white/5 p-0.5">
+                <button
+                  type="button"
+                  onClick={() => setScope('portfolio')}
+                  className={`min-w-[72px] rounded-md px-3 py-1.5 text-xs font-semibold tracking-wide transition-colors ${
+                    scope === 'portfolio'
+                      ? 'bg-white/10 text-white shadow-sm'
+                      : 'text-white/45 hover:text-white'
+                  }`}
+                >
+                  Portfolio
+                </button>
+                <button
+                  type="button"
+                  onClick={() => {
+                    if (!selectedProjectId && projects[0]) setSelectedProjectId(projects[0].id);
+                    setScope('project');
+                  }}
+                  className={`min-w-[72px] rounded-md px-3 py-1.5 text-xs font-semibold tracking-wide transition-colors ${
+                    scope === 'project'
+                      ? 'bg-white/10 text-white shadow-sm'
+                      : 'text-white/45 hover:text-white'
+                  }`}
+                >
+                  Project
+                </button>
+              </div>
+
+              {/* Always visible — selecting a deal switches scope to Project without layout jump */}
+              <select
+                value={scope === 'portfolio' ? '' : selectedProjectId}
+                onChange={(e) => {
+                  const id = e.target.value;
+                  if (!id) {
+                    setScope('portfolio');
+                    return;
+                  }
+                  setSelectedProjectId(id);
+                  setScope('project');
+                }}
+                className="min-w-[168px] appearance-none rounded-lg border border-white/10 bg-white/5 py-1.5 pl-3 pr-8 text-xs font-medium text-white focus:outline-none focus:ring-1 focus:ring-emerald-500"
+              >
+                <option value="" className="bg-slate-950">
+                  All projects
+                </option>
+                {projects.map((proj) => (
+                  <option key={proj.id} value={proj.id} className="bg-slate-950">
+                    {proj.propertyName}
+                  </option>
+                ))}
+              </select>
+            </div>
+          ) : null}
+
+          <Link
+            href="/support/metrics"
+            className="rounded-xl border border-white/10 px-4 py-2 text-xs font-semibold text-white/70 no-underline hover:text-white"
+          >
+            Playbook
+          </Link>
         </div>
       </div>
 
-      <section className="space-y-4">
-        <CategoryHeading icon="work" colorClass="text-emerald-400">
-          1. Acquisition & Sourcing KPIs (7)
-        </CategoryHeading>
-        <div className="grid grid-cols-2 gap-4 md:grid-cols-4">
-          <KPICard title="Offers Sent" value={kpiData.offersSentTotal.toString()} sub="Total deal offers" />
-          <KPICard title="Response Rate" value={pct(kpiData.responseRatePct)} sub="Seller response" />
-          <KPICard
-            title="Avg Offer Amount"
-            value={money(kpiData.avgOfferAmount)}
-            sub="Capital committed per offer"
-          />
-          <KPICard
-            title="Deals Under Contract"
-            value={kpiData.dealsUnderContract.toString()}
-            sub="Active escrow"
-          />
-          <KPICard
-            title="Acceptance Rate"
-            value={pct(kpiData.acceptanceRatePct)}
-            sub="Offer conversion"
-          />
-          <KPICard
-            title="Crowdfunded Capital"
-            value={money(kpiData.crowdfundingRaisedTotal)}
-            sub="Investor equity"
-          />
-          <KPICard
-            title="Total Investors"
-            value={kpiData.investorCountTotal.toString()}
-            sub="Active LP partners"
-          />
-        </div>
-      </section>
+      {/* Persona / engine category cards (Portfolio Metrics etc.) */}
+      <div className="space-y-8">
+        {loadingCats ? (
+          <div className="animate-pulse rounded-2xl border border-dashed border-white/10 p-8 text-center text-sm text-white/40">
+            Calculating portfolio metrics…
+          </div>
+        ) : (
+          portfolioCategoryCards.map((catGroup) => (
+            <div key={catGroup.category} className="space-y-4">
+              <div className="flex items-center justify-between">
+                <h2 className="flex items-center gap-2 text-lg font-bold tracking-tight text-white">
+                  <span className="material-symbols-outlined text-[18px] text-emerald-500">
+                    trending_up
+                  </span>
+                  {catGroup.category}
+                </h2>
+                <span className="text-xs font-medium text-slate-400">
+                  {catGroup.metrics.length} Metrics
+                </span>
+              </div>
+              <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
+                {catGroup.metrics.map((metric) => (
+                  <div
+                    key={metric.id}
+                    id={metric.id}
+                    className={`rounded-2xl border p-5 shadow-sm backdrop-blur-md transition-all ${
+                      metric.isWarning
+                        ? 'border-rose-500/30 bg-rose-500/10'
+                        : 'border-white/10 bg-white/[0.03] hover:border-white/20'
+                    }`}
+                  >
+                    <div className="flex items-start justify-between">
+                      <span className="text-xs font-semibold uppercase tracking-wider text-slate-400">
+                        {metric.name}
+                      </span>
+                      {metric.trend ? (
+                        <span
+                          className={`inline-flex items-center rounded-full px-2 py-0.5 text-xs font-semibold ${
+                            metric.trend === 'up'
+                              ? 'bg-emerald-500/10 text-emerald-400'
+                              : metric.trend === 'down'
+                                ? 'bg-amber-500/10 text-amber-400'
+                                : 'bg-slate-500/10 text-slate-400'
+                          }`}
+                        >
+                          {metric.trend.toUpperCase()}
+                        </span>
+                      ) : null}
+                    </div>
+                    <div
+                      className={`mt-4 text-2xl font-bold ${
+                        metric.isWarning ? 'text-rose-400' : 'text-white'
+                      }`}
+                    >
+                      {metric.value}
+                    </div>
+                    {metric.benchmark ? (
+                      <div className="mt-3 flex items-center justify-between border-t border-white/5 pt-3 text-xs text-slate-400">
+                        <span>Benchmark:</span>
+                        <span className="font-medium text-slate-300">{metric.benchmark}</span>
+                      </div>
+                    ) : null}
+                  </div>
+                ))}
+              </div>
+            </div>
+          ))
+        )}
+      </div>
 
-      <section className="space-y-4">
-        <CategoryHeading icon="fact_check" colorClass="text-blue-400">
-          2. Purchase & Escrow KPIs (6)
-        </CategoryHeading>
-        <div className="grid grid-cols-2 gap-4 md:grid-cols-3">
-          <KPICard
-            title="Avg Closing Time"
-            value={`${kpiData.avgClosingDays} Days`}
-            sub="PSA to Title closing"
-          />
-          <KPICard
-            title="Loan Approval Rate"
-            value={pct(kpiData.loanApprovalRatePct)}
-            sub="Underwriting pass rate"
-          />
-          <KPICard
-            title="Doc Completion"
-            value={pct(kpiData.docCompletionRatePct)}
-            sub="Checklist status"
-          />
-          <KPICard
-            title="Total Closing Costs"
-            value={money(kpiData.totalClosingCosts)}
-            sub="Title & settlement fees"
-          />
-          <KPICard
-            title="Origination Fees"
-            value={money(kpiData.totalOriginationFees)}
-            sub="Lender points"
-          />
-          <KPICard
-            title="Title Insurance"
-            value={money(kpiData.totalTitleInsurance)}
-            sub="Policy premiums"
-          />
-        </div>
-      </section>
+      {/* Viewing context + investor KPI sections */}
+      <div className="space-y-4" data-testid="insights-kpi-block">
+        <div className="flex flex-wrap items-center justify-between gap-3">
+          <p className="text-sm text-white/55" data-testid="viewing-context">
+            Viewing insights for:{' '}
+            <span className="font-semibold text-white" data-testid="viewing-context-name">
+              {scope === 'portfolio' ? 'Portfolio Aggregate' : selectedProjectLabel}
+            </span>
+          </p>
 
-      <section className="space-y-4">
-        <CategoryHeading icon="home_work" colorClass="text-amber-400">
-          3. Hold & Operations KPIs (7)
-        </CategoryHeading>
-        <div className="grid grid-cols-2 gap-4 md:grid-cols-4">
-          <KPICard
-            title="Avg Daily Holding Cost"
-            value={`$${kpiData.avgDailyHoldingCost}`}
-            sub="Mortgage, tax, insurance"
-          />
-          <KPICard title="Rehab Overrun" value={pct(kpiData.rehabOverrunPct)} sub="Budget variance" />
-          <KPICard
-            title="Rental Occupancy"
-            value={pct(kpiData.rentalOccupancyRatePct)}
-            sub="Lease fulfillment"
-          />
-          <KPICard
-            title="Cash-on-Cash Return"
-            value={pct(kpiData.cashOnCashReturnPct)}
-            sub="Annual yield"
-          />
-          <KPICard title="Cap Rate" value={pct(kpiData.capRatePct)} sub="Unleveraged return" />
-          <KPICard
-            title="Monthly Gross Rent"
-            value={money(kpiData.monthlyGrossRentTotal)}
-            sub="Rental income stream"
-          />
-          <KPICard
-            title="Monthly Expenses"
-            value={money(kpiData.monthlyExpensesTotal)}
-            sub="OpEx sum"
-          />
+          <div className="flex items-center gap-2" data-testid="trend-period-selector">
+            <span className="text-xs text-white/45">Compare</span>
+            <div className="flex rounded-lg border border-white/10 bg-white/5 p-0.5">
+              {(['monthly', 'quarterly', 'annual'] as TrendPeriod[]).map((tp) => (
+                <button
+                  key={tp}
+                  type="button"
+                  onClick={() => setTrendPeriod(tp)}
+                  data-testid={`trend-period-${tp}`}
+                  aria-pressed={trendPeriod === tp}
+                  className={`cursor-pointer rounded-md px-3 py-1 text-xs font-semibold capitalize transition-colors ${
+                    trendPeriod === tp
+                      ? 'bg-white/10 text-white'
+                      : 'text-white/45 hover:text-white'
+                  }`}
+                >
+                  {tp === 'annual' ? 'Year' : tp === 'quarterly' ? 'Quarter' : 'Month'}
+                </button>
+              ))}
+            </div>
+          </div>
         </div>
-      </section>
 
-      <section className="space-y-4">
-        <CategoryHeading icon="trending_up" colorClass="text-purple-400">
-          4. Exit & Capital Gains KPIs (7)
-        </CategoryHeading>
-        <div className="grid grid-cols-2 gap-4 md:grid-cols-4">
-          <KPICard
-            title="Avg Days on Market"
-            value={`${kpiData.avgDaysOnMarket} Days`}
-            sub="Listing to contract"
-          />
-          <KPICard
-            title="Sale-to-List Ratio"
-            value={pct(kpiData.saleToListRatioPct)}
-            sub="Listing price realization"
-          />
-          <KPICard
-            title="Avg Net Profit / Deal"
-            value={money(kpiData.avgNetProfitPerDeal)}
-            sub="Net returns per flip"
-          />
-          <KPICard
-            title="Annualized ROI"
-            value={pct(kpiData.annualizedROIPct)}
-            sub="IRR estimate"
-          />
-          <KPICard
-            title="Total Capital Gains"
-            value={money(kpiData.totalCapitalGains)}
-            sub="Taxable gain sum"
-          />
-          <KPICard
-            title="1031 Exchange Rate"
-            value={pct(kpiData.exchange1031RatePct)}
-            sub="Tax deferred sales"
-          />
-          <KPICard
-            title="Total Exit Revenue"
-            value={money(kpiData.totalExitRevenue)}
-            sub="Gross disposition sales"
-          />
+        <div className="space-y-8" data-testid="kpi-sections">
+          {INVESTOR_KPI_SECTIONS.map((section) => (
+            <section key={section.key} data-testid={`kpi-section-${section.key}`}>
+              <h2 className="mb-3 text-xs font-bold uppercase tracking-wider text-white/45">
+                {section.title}
+                <span className="ml-2 font-normal normal-case tracking-normal text-white/30">
+                  ({TREND_PERIOD_LABELS[trendPeriod]})
+                </span>
+              </h2>
+              <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
+                {section.metrics.map((metric) => {
+                  const trend = trendTone(metric.higherIsBetter, metric.value, metric.prior);
+                  return (
+                    <button
+                      key={metric.id}
+                      type="button"
+                      onClick={() => setOpenMetric(metric)}
+                      data-testid="kpi-card"
+                      data-metric-id={metric.id}
+                      className="cursor-pointer rounded-xl border border-white/10 bg-[#161318] p-4 text-left transition-colors hover:border-white/20"
+                    >
+                      <p className="truncate text-[11px] uppercase tracking-wider text-white/45">
+                        {metric.name}
+                      </p>
+                      <div className="mt-2 flex items-baseline justify-between gap-2">
+                        <span
+                          className="truncate text-xl font-bold tabular-nums text-white"
+                          data-testid="kpi-value"
+                        >
+                          {formatInvestorValue(metric.value, metric.unit)}
+                        </span>
+                        {trend.arrow !== 'none' ? (
+                          <span
+                            className={`inline-flex shrink-0 items-center gap-0.5 text-[11px] font-semibold ${TONE_CLASS[trend.tone]}`}
+                            data-testid="kpi-trend"
+                            data-tone={trend.tone}
+                          >
+                            <span className="material-symbols-outlined text-[14px]">
+                              {trend.arrow === 'up'
+                                ? 'arrow_upward'
+                                : trend.arrow === 'down'
+                                  ? 'arrow_downward'
+                                  : 'remove'}
+                            </span>
+                            {trend.label}
+                          </span>
+                        ) : null}
+                      </div>
+                    </button>
+                  );
+                })}
+              </div>
+            </section>
+          ))}
         </div>
-      </section>
+      </div>
 
-      <section className="space-y-4">
-        <CategoryHeading icon="verified_user" colorClass="text-rose-400">
-          5. Tax & IRS Compliance KPIs (6)
-        </CategoryHeading>
-        <div className="grid grid-cols-2 gap-4 md:grid-cols-3">
-          <KPICard
-            title="Est. Quarterly Tax"
-            value={money(kpiData.estQuarterlyTaxLiability)}
-            sub="Form 1040-ES liability"
-          />
-          <KPICard
-            title="YTD Depreciation"
-            value={money(kpiData.ytdDepreciationTotal)}
-            sub="Form 4562 deduction"
-          />
-          <KPICard
-            title="1099s Required"
-            value={kpiData.total1099sIssued.toString()}
-            sub="Contractors >$600"
-          />
-          <KPICard
-            title="Schedule E Income"
-            value={money(kpiData.scheduleENetIncomeTotal)}
-            sub="Net rental P&L"
-          />
-          <KPICard
-            title="Safe Harbor Met"
-            value={pct(kpiData.safeHarborMetPct)}
-            sub="Penalty protection"
-          />
-          <KPICard
-            title="Tax Docs Generated"
-            value={kpiData.totalTaxDocumentsGenerated.toString()}
-            sub="Vault storage count"
-          />
+      {/* Trends */}
+      <div className="space-y-4">
+        <div className="flex items-center justify-between">
+          <h2 className="text-lg font-bold tracking-tight text-white">Trends</h2>
+          <span className="text-[10px] font-bold uppercase tracking-wider text-slate-500">
+            Last 24 Months
+          </span>
         </div>
-      </section>
+        <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
+          {trendMetrics.map((metricId, idx) => {
+            const opt =
+              TREND_METRIC_OPTIONS.find((o) => o.id === metricId) ?? TREND_METRIC_OPTIONS[0]!;
+            const series = TREND_SERIES[opt.id] ?? [];
+            const max = Math.max(...series.map((p) => p.value), 1);
+            return (
+              <div
+                key={`${opt.id}-${idx}`}
+                className="space-y-4 rounded-2xl border border-white/10 bg-[#121014]/50 p-5 shadow-sm"
+              >
+                <div className="flex items-center justify-between gap-2">
+                  <h3 className="text-sm font-semibold uppercase tracking-wide text-slate-400">
+                    {opt.name}
+                  </h3>
+                  <select
+                    value={opt.id}
+                    onChange={(e) => {
+                      const next = [...trendMetrics] as [string, string, string];
+                      next[idx] = e.target.value;
+                      setTrendMetrics(next);
+                    }}
+                    className="appearance-none rounded-lg border border-white/10 bg-white/5 py-1 pl-3 pr-7 text-xs font-semibold text-white focus:outline-none"
+                  >
+                    {TREND_METRIC_OPTIONS.map((o) => (
+                      <option key={o.id} value={o.id} className="bg-slate-950">
+                        {o.name}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+                <div className="flex h-[180px] items-end gap-1.5 px-1">
+                  {series.map((point) => (
+                    <div
+                      key={point.label}
+                      className="flex flex-1 flex-col items-center justify-end gap-1"
+                      title={`${point.label}: ${point.value}`}
+                    >
+                      <div
+                        className="w-full rounded-t"
+                        style={{
+                          height: `${Math.max(8, (point.value / max) * 100)}%`,
+                          backgroundColor: opt.color,
+                          opacity: 0.85,
+                        }}
+                      />
+                      <span className="text-[8px] text-white/30">{point.label.replace('M-', '')}</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      </div>
+
+      {/* Project Comparison — always mounted (fixed height) to avoid page jump */}
+      <div className="min-h-[420px] space-y-6 rounded-2xl border border-white/10 bg-[#121014]/50 p-6 shadow-sm">
+        <div className="flex flex-col justify-between gap-4 border-b border-white/5 pb-4 sm:flex-row sm:items-center">
+          <div>
+            <h2 className="text-lg font-bold tracking-tight text-white">Project Comparison</h2>
+            <p className="mt-1 text-xs text-slate-400">
+              {scope === 'portfolio'
+                ? 'Compare active real estate projects. Top performers in green, bottom in red.'
+                : `Highlighting ${selectedProjectLabel} against the portfolio set.`}
+            </p>
+          </div>
+          <div className="flex items-center gap-2">
+            <button
+              type="button"
+              onClick={() =>
+                setSortOrder((s) => (s === 'none' ? 'desc' : s === 'desc' ? 'asc' : 'none'))
+              }
+              className="flex cursor-pointer items-center gap-1.5 rounded-lg border border-white/10 bg-white/5 px-3 py-1.5 text-xs font-semibold text-white/70 hover:bg-white/10"
+            >
+              <span className="material-symbols-outlined text-[14px]">swap_vert</span>
+              Sort:{' '}
+              {sortOrder === 'none' ? 'Default' : sortOrder === 'asc' ? 'Low to High' : 'High to Low'}
+            </button>
+            <select
+              value={compareMetric}
+              onChange={(e) => setCompareMetric(e.target.value)}
+              className="appearance-none rounded-lg border border-white/10 bg-white/5 py-1.5 pl-3 pr-8 text-xs font-semibold text-white focus:outline-none"
+            >
+              {COMPARE_METRIC_OPTIONS.map((opt) => (
+                <option key={opt.id} value={opt.id} className="bg-slate-950">
+                  {opt.name}
+                </option>
+              ))}
+            </select>
+          </div>
+        </div>
+
+        <ProjectComparisonChart
+          data={comparisonPoints}
+          metricId={compareMetric}
+          averageValue={compareAvg}
+          height={320}
+        />
+      </div>
+
+      {/* Category tabs + metrics table strip */}
+      <div className="space-y-6">
+        <div className="flex gap-1.5 overflow-x-auto border-b border-white/5 pb-2">
+          {INSIGHTS_TAB_CATEGORIES.map((cat) => {
+            const isActive = activeTab === cat.id;
+            return (
+              <button
+                key={cat.id}
+                type="button"
+                onClick={() => setActiveTab(cat.id)}
+                className={`flex cursor-pointer items-center gap-2 whitespace-nowrap rounded-lg px-4 py-2.5 text-xs font-semibold tracking-wide transition-all ${
+                  isActive
+                    ? 'border border-[color:var(--color-primary)]/30 bg-[color:var(--color-primary)] text-[#0d0a0b] shadow-md'
+                    : 'border border-white/10 bg-white/[0.02] text-slate-400 hover:bg-white/[0.05] hover:text-white'
+                }`}
+              >
+                <span className="material-symbols-outlined text-[16px]">{cat.icon}</span>
+                {cat.name}
+              </button>
+            );
+          })}
+        </div>
+
+        <div className="overflow-hidden rounded-xl border border-white/10">
+          <table className="w-full text-left text-sm">
+            <thead className="bg-white/[0.03] text-[11px] uppercase tracking-wider text-white/40">
+              <tr>
+                <th className="px-4 py-3 font-semibold">Metric</th>
+                <th className="px-4 py-3 font-semibold">Value</th>
+                <th className="px-4 py-3 font-semibold">Trend</th>
+                <th className="px-4 py-3 font-semibold">Benchmark</th>
+              </tr>
+            </thead>
+            <tbody>
+              {tabMetrics.length === 0 ? (
+                <tr>
+                  <td colSpan={4} className="px-4 py-8 text-center text-white/40">
+                    {loadingCats
+                      ? 'Loading metrics…'
+                      : 'No metrics in this category for the current persona.'}
+                  </td>
+                </tr>
+              ) : (
+                tabMetrics.map((m) => (
+                  <tr key={m.id} className="border-t border-white/5 hover:bg-white/[0.02]">
+                    <td className="px-4 py-3 font-medium text-white/85">{m.name}</td>
+                    <td className="px-4 py-3 tabular-nums text-white">{m.value}</td>
+                    <td className="px-4 py-3 capitalize text-white/50">{m.trend ?? '—'}</td>
+                    <td className="px-4 py-3 text-white/50">{m.benchmark ?? '—'}</td>
+                  </tr>
+                ))
+              )}
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      {/* KPI detail drawer */}
+      {openMetric ? (
+        <div
+          className="fixed inset-0 z-[200] flex justify-end bg-black/60 backdrop-blur-sm"
+          onClick={() => setOpenMetric(null)}
+        >
+          <aside
+            role="dialog"
+            aria-label={`${openMetric.name} detail`}
+            data-testid="kpi-drawer"
+            onClick={(e) => e.stopPropagation()}
+            className="h-full w-full max-w-md space-y-5 overflow-y-auto border-l border-white/10 bg-[#161318] p-6"
+          >
+            <div className="flex items-start justify-between gap-4">
+              <div>
+                <p className="text-[11px] uppercase tracking-wider text-white/45">Investor KPI</p>
+                <h3 className="mt-0.5 text-lg font-bold text-white">{openMetric.name}</h3>
+              </div>
+              <button
+                type="button"
+                onClick={() => setOpenMetric(null)}
+                aria-label="Close"
+                data-testid="kpi-drawer-close"
+                className="cursor-pointer rounded-lg p-1.5 text-slate-400 hover:bg-white/10"
+              >
+                <span className="material-symbols-outlined">close</span>
+              </button>
+            </div>
+
+            <p className="text-3xl font-bold tabular-nums text-white">
+              {formatInvestorValue(openMetric.value, openMetric.unit)}
+            </p>
+            <p className="text-sm leading-relaxed text-white/60">{openMetric.description}</p>
+
+            <div>
+              <p className="mb-1 text-[11px] font-bold uppercase tracking-wider text-white/40">
+                Formula
+              </p>
+              <div className="rounded-lg border border-emerald-500/20 bg-emerald-500/5 p-3 font-mono text-xs text-emerald-400">
+                {openMetric.formula}
+              </div>
+            </div>
+
+            <button
+              type="button"
+              data-testid="kpi-watchlist-toggle"
+              onClick={() => toggleWatch(openMetric.id)}
+              className="w-full cursor-pointer rounded-xl border border-white/15 px-4 py-2.5 text-sm font-semibold text-white hover:bg-white/5"
+            >
+              {watchlist.has(openMetric.id) ? 'Remove from Watchlist' : 'Add to Watchlist'}
+            </button>
+          </aside>
+        </div>
+      ) : null}
     </div>
   );
 }

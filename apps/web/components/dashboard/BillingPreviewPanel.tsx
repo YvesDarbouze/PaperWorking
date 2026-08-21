@@ -2,7 +2,6 @@
 
 import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
-import DashboardPageHeader from '@/components/dashboard/DashboardPageHeader';
 import { BILLING_PREVIEW } from '@/lib/dashboard/shell-seed';
 
 export default function BillingPreviewPanel() {
@@ -10,15 +9,13 @@ export default function BillingPreviewPanel() {
   const paywall = searchParams.get('paywall');
 
   return (
-    <div className="mx-auto max-w-[1100px] space-y-6 px-5 py-6 lg:px-8 lg:py-7">
-      <Link href="/dashboard/settings" className="text-sm text-[#7A9EAA] no-underline hover:underline">
-        ← Settings
-      </Link>
-
-      <DashboardPageHeader
-        title="Billing"
-        subtitle={`${BILLING_PREVIEW.plan} plan · ${BILLING_PREVIEW.status}`}
-      />
+    <div className="w-full space-y-6">
+      <div>
+        <h2 className="text-xl font-bold text-[#fdfffc]">Billing</h2>
+        <p className="mt-1 text-sm text-white/45">
+          {BILLING_PREVIEW.plan} plan · {BILLING_PREVIEW.status}
+        </p>
+      </div>
 
       {paywall === 'deals' ? (
         <div className="rounded-2xl border border-amber-500/30 bg-amber-500/[0.08] p-5">

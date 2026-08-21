@@ -19,11 +19,35 @@ html.dark {
   --color-surface-container-low: #1e1b20;
   --color-on-surface: #fdfffc;
   --color-on-surface-variant: #c8c9cc;
-  --color-primary: #454955;
+  --color-primary: #00DD94;
   --color-outline: rgba(253, 255, 252, 0.08);
   --nav-border: rgba(253, 255, 252, 0.07);
-  --cta-bg: #454955;
-  --cta-text: #fdfffc;
+  --cta-bg: #00DD94;
+  --cta-text: #0d0a0b;
+}
+
+/* Marketing surfaces match v0 dark landing */
+.marketing-shell {
+  --color-background: #0d0a0b;
+  --color-surface: #121014;
+  --color-surface-container-low: #1e1b20;
+  --color-on-surface: #fdfffc;
+  --color-on-surface-variant: #c8c9cc;
+  --color-primary: #00dd94;
+  --color-outline: rgba(253, 255, 252, 0.08);
+  --nav-border: rgba(253, 255, 252, 0.07);
+  --cta-bg: #ffffff;
+  --cta-text: #0d0a0b;
+  color: var(--color-on-surface);
+  background: var(--color-background);
+}
+
+.marketing-shell .landing-display {
+  font-size: clamp(1.75rem, 3.6vw, 2.75rem);
+}
+
+.marketing-shell .glass-card {
+  background: linear-gradient(135deg, rgba(30, 27, 32, 0.65) 0%, rgba(13, 10, 11, 0.82) 100%);
 }
 
 body {
@@ -162,8 +186,11 @@ body {
 }
 
 .dashboard-context {
+  --color-primary: #00dd94;
+  --color-on-surface: #fdfffc;
+  --color-surface: #121014;
   background:
-    radial-gradient(circle at top right, rgba(69, 73, 85, 0.18), transparent 30%),
+    radial-gradient(circle at top right, rgba(0, 221, 148, 0.08), transparent 30%),
     #0d0a0b;
 }
 

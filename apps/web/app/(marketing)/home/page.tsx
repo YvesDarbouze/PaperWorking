@@ -1,11 +1,6 @@
-import HeroSection from '@/components/marketing/HeroSection';
-import ReilPhasesSection from '@/components/marketing/ReilPhasesSection';
+import { redirect } from 'next/navigation';
 
+/** Alias kept for older links; marketing home is `/`. */
 export default function MarketingHomePage() {
-  return (
-    <>
-      <HeroSection />
-      <ReilPhasesSection />
-    </>
-  );
+  redirect('/');
 }

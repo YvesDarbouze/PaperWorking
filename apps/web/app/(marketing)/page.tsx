@@ -1,6 +1,14 @@
-import { redirect } from 'next/navigation';
+import ChatbotWidget from '@/components/marketing/ChatbotWidget';
+import LandingBelowFold from '@/components/marketing/LandingBelowFold';
+import LandingHero from '@/components/marketing/LandingHero';
 
-/** App entry: open Portfolio (sidebar) instead of marketing landing. */
+/** Marketing landing — v0 composition: Hero → Trust → Problem → Lifecycle → Metrics. */
 export default function RootPage() {
-  redirect('/dashboard');
+  return (
+    <>
+      <LandingHero />
+      <LandingBelowFold />
+      <ChatbotWidget />
+    </>
+  );
 }

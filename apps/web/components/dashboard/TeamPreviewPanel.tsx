@@ -24,7 +24,7 @@ export default function TeamPreviewPanel() {
     <div className="mx-auto max-w-[1400px] space-y-6 px-5 py-6 lg:px-8 lg:py-7">
       <DashboardPageHeader
         title="Team"
-        subtitle={`${TEAM_SEATS.used}/${TEAM_SEATS.limit} seats · ${TEAM_SEATS.tier}`}
+        subtitle={`${TEAM_SEATS.used}/${TEAM_SEATS.limit} seats · ${TEAM_SEATS.tierLabel}`}
         actions={
           <button
             type="button"

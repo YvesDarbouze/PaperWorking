@@ -20,6 +20,9 @@ describe('phase 5a — web app status', () => {
     expect(WEB_APP_STATUS.routes).toContain('/');
     expect(WEB_APP_STATUS.routes).toContain('/home');
     expect(WEB_APP_STATUS.routes).toContain('/support');
+    expect(WEB_APP_STATUS.routes).toContain('/support/glossary');
+    expect(WEB_APP_STATUS.routes).toContain('/support/metrics');
+    expect(WEB_APP_STATUS.routes).toContain('/marketplaces');
     expect(WEB_APP_STATUS.adminRoute).toBe('/admin');
     expect(WEB_APP_STATUS.reilPhases).toEqual(REIL_PHASE_ORDER);
     expect(WEB_APP_STATUS.firstPhase).toBe(REILPhase.ACQUISITION);
@@ -27,7 +30,16 @@ describe('phase 5a — web app status', () => {
 });
 
 describe('phase 5a — marketing content', () => {
-  it('includes support in primary navigation', () => {
+  it('includes v0 primary navigation links', () => {
+    expect(MARKETING_NAV_LINKS.map((link) => link.label)).toEqual([
+      'How It Works',
+      'Marketplaces',
+      'Pricing',
+      'Support',
+    ]);
+    expect(MARKETING_NAV_LINKS.find((link) => link.label === 'Marketplaces')?.href).toBe(
+      '/marketplaces',
+    );
     expect(MARKETING_NAV_LINKS.some((link) => link.href === '/support')).toBe(true);
   });
 
@@ -47,6 +59,12 @@ describe('phase 5a — marketing content', () => {
   it('defines footer columns with links', () => {
     expect(FOOTER_COLUMNS.length).toBeGreaterThanOrEqual(4);
     expect(FOOTER_COLUMNS.flatMap((column) => column.links).some((link) => link.href === '/support')).toBe(true);
+    expect(FOOTER_COLUMNS.find((c) => c.heading === 'Product')?.links.map((l) => l.label)).toEqual([
+      'How It Works',
+      'Marketplaces',
+      'Pricing',
+      'Changelog',
+    ]);
   });
 });
 

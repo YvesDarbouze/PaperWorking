@@ -61,7 +61,7 @@ export default function DashboardSidebar() {
       className="hidden h-screen w-[240px] shrink-0 flex-col border-r border-white/6 bg-[#121014] md:flex"
     >
       <div className="border-b border-white/6 px-5 py-5">
-        <Logo href="/dashboard" tone="auth" />
+        <Logo href="/dashboard" tone="dashboard" theme="dark" size={22} />
       </div>
 
       <nav className="flex-1 space-y-1 overflow-y-auto px-3 py-4">

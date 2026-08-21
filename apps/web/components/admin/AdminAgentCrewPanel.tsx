@@ -101,16 +101,16 @@ export default function AdminAgentCrewPanel() {
 
   if (loading) {
     return (
-      <div className="mx-auto max-w-[1280px] px-4 py-8 text-sm text-black/55 md:px-8">
+      <div className="w-full py-4 text-sm text-black/55">
         Loading agent crew…
       </div>
     );
   }
 
   return (
-    <div className="mx-auto max-w-[1280px] space-y-6 px-4 py-6 md:px-8 md:py-8">
+    <div className="w-full min-w-0 space-y-6">
       <section>
-        <h2 className="text-3xl font-semibold tracking-[-0.02em]">Synthetic agent crew</h2>
+        <h2 className="text-2xl font-extralight tracking-tight sm:text-3xl">Synthetic agent crew</h2>
         <p className="mt-2 text-sm text-black/60">
           `handleAdminAgentCrewGet`, detail, impersonate, and delete adapters.
         </p>

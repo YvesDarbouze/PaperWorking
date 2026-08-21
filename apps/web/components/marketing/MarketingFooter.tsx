@@ -5,7 +5,7 @@ import { FOOTER_BOTTOM_LINKS, FOOTER_COLUMNS } from '@/lib/marketing/content';
 export default function MarketingFooter() {
   return (
     <footer className="w-full" style={{ borderTop: '1px solid var(--nav-border)' }}>
-      <div className="mx-auto max-w-[1280px] px-5 pb-12 pt-16 md:px-10">
+      <div className="w-full min-w-0 px-5 pb-12 pt-16 sm:px-6 md:px-8 lg:px-10 xl:px-12 2xl:px-16">
         <div className="mb-16 grid grid-cols-2 gap-10 md:grid-cols-5 md:gap-8">
           <div className="col-span-2 md:col-span-1">
             <Logo href="/" className="mb-5 block" tone="auth" theme="dark" size="h-10" />

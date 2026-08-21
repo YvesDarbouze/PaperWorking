@@ -46,7 +46,7 @@ export default function SettingsLayout({ children }: { children: React.ReactNode
 
   return (
     <div className="min-h-screen bg-[#0d0a0b] text-[#fdfffc] antialiased">
-      <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 sm:py-10 lg:px-8">
+      <div className="w-full min-w-0 px-4 py-6 sm:px-5 sm:py-8 lg:px-6 xl:px-8">
         <Link
           href="/dashboard"
           className="group mb-8 inline-flex items-center gap-2 text-sm text-white/45 no-underline transition-colors hover:text-emerald-300"

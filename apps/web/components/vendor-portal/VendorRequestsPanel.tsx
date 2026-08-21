@@ -135,7 +135,7 @@ export default function VendorRequestsPanel() {
   };
 
   return (
-    <div className="mx-auto max-w-[1280px] space-y-8 px-4 py-6 md:px-8 md:py-8">
+    <div className="w-full min-w-0 space-y-8 px-4 py-5 sm:px-5 sm:py-6 lg:px-6 xl:px-8">
       <section>
         <p className="mb-2 text-[11px] font-semibold uppercase tracking-[0.08em] text-white/45">
           Vendor requests

@@ -21,7 +21,7 @@ export default function TeamPreviewPanel() {
   }, [query]);
 
   return (
-    <div className="mx-auto max-w-[1400px] space-y-6 px-5 py-6 lg:px-8 lg:py-7">
+    <div className="w-full min-w-0 space-y-6 px-4 py-5 sm:px-5 sm:py-6 lg:px-6 lg:py-7 xl:px-8">
       <DashboardPageHeader
         title="Team"
         subtitle={`${TEAM_SEATS.used}/${TEAM_SEATS.limit} seats · ${TEAM_SEATS.tierLabel}`}

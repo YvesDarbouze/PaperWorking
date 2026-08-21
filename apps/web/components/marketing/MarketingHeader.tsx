@@ -79,7 +79,7 @@ export default function MarketingHeader() {
         }}
       >
         <nav
-          className="mx-auto flex h-16 max-w-[1280px] items-center justify-between px-5 md:h-[72px] md:px-10"
+          className="flex h-16 w-full min-w-0 items-center justify-between px-5 sm:px-6 md:h-[72px] md:px-8 lg:px-10 xl:px-12 2xl:px-16"
           aria-label="Main navigation"
         >
           <Logo href="/" tone="auth" size="h-8" theme="dark" />

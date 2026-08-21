@@ -78,7 +78,7 @@ export default function VendorProfilePanel() {
 
   if (loading) {
     return (
-      <div className="mx-auto max-w-[960px] px-4 py-8 text-sm text-white/60 md:px-8">
+      <div className="w-full min-w-0 px-4 py-8 text-sm text-white/60 md:px-8">
         Loading vendor profile…
       </div>
     );
@@ -86,7 +86,7 @@ export default function VendorProfilePanel() {
 
   if (error && !profile) {
     return (
-      <div className="mx-auto max-w-[960px] px-4 py-8 md:px-8">
+      <div className="w-full min-w-0 px-4 py-8 md:px-8">
         <div className="rounded-2xl border border-red-400/20 bg-red-400/5 p-6 text-sm text-red-100">
           {error}
         </div>
@@ -97,7 +97,7 @@ export default function VendorProfilePanel() {
   if (!profile) return null;
 
   return (
-    <form onSubmit={handleSave} className="mx-auto max-w-[960px] space-y-6 px-4 py-6 md:px-8 md:py-8">
+    <form onSubmit={handleSave} className="w-full min-w-0 space-y-6 px-4 py-6 md:px-8 md:py-8">
       <section>
         <p className="mb-2 text-[11px] font-semibold uppercase tracking-[0.08em] text-white/45">
           Vendor profile

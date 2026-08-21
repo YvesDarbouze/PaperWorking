@@ -142,7 +142,7 @@ export default function TeamDirectoryPanel() {
 
   return (
     <div
-      className="mx-auto max-w-7xl space-y-6 px-4 pb-20 pt-4 sm:px-6"
+      className="w-full min-w-0 space-y-6 px-4 pb-20 pt-4 sm:px-5 lg:px-6 xl:px-8"
       data-testid="team-directory-page"
     >
       {flash ? (

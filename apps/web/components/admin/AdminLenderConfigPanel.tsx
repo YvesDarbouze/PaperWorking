@@ -56,7 +56,7 @@ export default function AdminLenderConfigPanel() {
 
   if (loading) {
     return (
-      <div className="mx-auto max-w-[1280px] px-4 py-8 text-sm text-black/55 md:px-8">
+      <div className="w-full py-4 text-sm text-black/55">
         Loading lender config…
       </div>
     );
@@ -64,16 +64,16 @@ export default function AdminLenderConfigPanel() {
 
   if (error) {
     return (
-      <div className="mx-auto max-w-[1280px] px-4 py-8 md:px-8">
+      <div className="w-full">
         <div className="rounded-2xl border border-red-300 bg-red-50 p-6 text-sm text-red-800">{error}</div>
       </div>
     );
   }
 
   return (
-    <div className="mx-auto max-w-[1280px] space-y-8 px-4 py-6 md:px-8 md:py-8">
+    <div className="w-full min-w-0 space-y-8">
       <section>
-        <h2 className="text-3xl font-semibold tracking-[-0.02em]">Lender configuration</h2>
+        <h2 className="text-2xl font-extralight tracking-tight sm:text-3xl">Lender configuration</h2>
         <p className="mt-2 text-sm text-black/60">
           Read paths from `handleAdminLenderRatesGet` and `handleAdminLenderChecklistsGet`.
         </p>
@@ -83,6 +83,7 @@ export default function AdminLenderConfigPanel() {
         <div className="border-b border-black/8 px-5 py-4">
           <h3 className="text-lg font-semibold">Rate sheet</h3>
         </div>
+        <div className="overflow-x-auto">
         <table className="min-w-full text-left text-sm">
           <thead className="bg-black/[0.03] text-black/55">
             <tr>
@@ -103,6 +104,7 @@ export default function AdminLenderConfigPanel() {
             ))}
           </tbody>
         </table>
+        </div>
       </section>
 
       <section className="grid gap-4 md:grid-cols-2">

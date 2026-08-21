@@ -86,7 +86,7 @@ export default function DealDetailPanel({ slug }: { slug: string }) {
   const progress = calculateFundingProgress(deal.committed, deal.target);
 
   return (
-    <div className="mx-auto max-w-[960px] space-y-8 px-4 py-8 md:px-8">
+    <div className="w-full min-w-0 space-y-8 px-4 py-8 md:px-8">
       <Link href="/dashboard/deals" className="text-sm text-white/60 underline-offset-4 hover:underline">
         ← Back to marketplace
       </Link>

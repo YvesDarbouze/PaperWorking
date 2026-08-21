@@ -194,6 +194,39 @@ body {
     #0d0a0b;
 }
 
+/* Admin shell — visual parity with PaperWorking main /admin (Antigravity tokens) */
+.admin-context {
+  --bg-canvas: #f4f2ed;
+  --bg-surface: #ffffff;
+  --border-ui: rgba(13, 10, 11, 0.1);
+  --text-primary: #0d0a0b;
+  --text-secondary: rgba(13, 10, 11, 0.55);
+  --radius-lg: 12px;
+  --color-primary: #0d0a0b;
+  color: var(--text-primary);
+  background: var(--bg-canvas);
+}
+
+.admin-context .animate-shimmer {
+  background: linear-gradient(
+    90deg,
+    rgba(13, 10, 11, 0.04) 0%,
+    rgba(13, 10, 11, 0.08) 50%,
+    rgba(13, 10, 11, 0.04) 100%
+  );
+  background-size: 200% 100%;
+  animation: admin-shimmer 1.2s ease-in-out infinite;
+}
+
+@keyframes admin-shimmer {
+  0% {
+    background-position: 200% 0;
+  }
+  100% {
+    background-position: -200% 0;
+  }
+}
+
 .material-symbols-outlined {
   font-family: 'Material Symbols Outlined';
   font-weight: normal;

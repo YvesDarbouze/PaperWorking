@@ -91,8 +91,8 @@ export default function LandingHero() {
         aria-hidden
       />
 
-      <div className="relative z-10 mx-auto grid max-w-[1200px] grid-cols-1 items-center gap-10 px-6 pb-12 pt-8 md:gap-14 md:px-8 md:pb-16 md:pt-12 lg:grid-cols-[1fr_440px] lg:pb-20 lg:pt-16 xl:grid-cols-[1fr_480px]">
-        <div className="flex flex-col items-start text-left">
+      <div className="relative z-10 grid w-full min-w-0 grid-cols-1 items-center gap-10 px-5 pb-12 pt-8 sm:px-6 md:gap-14 md:px-8 md:pb-16 md:pt-12 lg:grid-cols-[minmax(0,1fr)_minmax(280px,440px)] lg:gap-12 lg:px-10 lg:pb-20 lg:pt-16 xl:grid-cols-[minmax(0,1fr)_minmax(320px,520px)] xl:px-12 2xl:px-16">
+        <div className="flex min-w-0 flex-col items-start text-left">
           <span className="mb-8 inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/[0.04] px-4 py-1.5 backdrop-blur-sm">
             <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-[color:var(--color-primary)]" />
             <span className="font-[family-name:var(--font-jetbrains-mono)] text-[10px] uppercase tracking-widest text-white/60">
@@ -100,12 +100,12 @@ export default function LandingHero() {
             </span>
           </span>
 
-          <h1 className="landing-display mb-6 font-semibold leading-[1.05] tracking-[-0.025em] text-white">
+          <h1 className="landing-display mb-6 max-w-[28ch] font-semibold leading-[1.05] tracking-[-0.025em] text-white lg:max-w-none">
             Finally, Project Management software made for serious real estate investors and
             Investments teams.
           </h1>
 
-          <p className="max-w-[560px] text-[16px] font-normal leading-[1.65] text-white/65 md:text-[18px]">
+          <p className="max-w-prose text-[16px] font-normal leading-[1.65] text-white/65 md:text-[18px] lg:max-w-[65ch]">
             Real Estate investments have a unique lifecycle that is different from most work related
             projects. Real Estate Investments move through a unique lifecycle that includes the
             following phases &quot;Acquisition&quot;, &quot;Fund&quot;, &quot;Hold&quot;,
@@ -115,7 +115,7 @@ export default function LandingHero() {
           </p>
         </div>
 
-        <div className="relative flex w-full flex-col items-center gap-5 lg:w-auto">
+        <div className="relative flex w-full min-w-0 flex-col items-center gap-5 lg:max-w-none">
           <div className="relative w-full">
             <div
               className="pointer-events-none absolute inset-0 rounded-3xl bg-[color:var(--color-primary)]/[0.06] blur-[60px]"

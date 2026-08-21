@@ -84,7 +84,7 @@ export default function InvestorProfilePanel({ investorId }: { investorId: strin
   const { profile } = payload;
 
   return (
-    <div className="mx-auto max-w-[960px] space-y-8 px-4 py-6 md:px-8 md:py-8">
+    <div className="w-full min-w-0 space-y-8 px-4 py-6 md:px-8 md:py-8">
       <Link href="/dashboard/marketplace" className="text-sm text-white/60 underline-offset-4 hover:underline">
         ← Back to marketplace
       </Link>

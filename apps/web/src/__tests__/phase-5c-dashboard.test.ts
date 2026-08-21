@@ -20,14 +20,18 @@ describe('phase 5c — web app status', () => {
 });
 
 describe('phase 5c — navigation contract', () => {
-  it('returns investor primary nav with portfolio first', () => {
+  it('returns investor primary nav with portfolio first and marketplace entry', () => {
     const nav = resolvePrimaryNav({ accountType: 'investor', subscriptionPlan: 'Individual' });
     expect(nav[0]?.href).toBe('/dashboard');
     expect(nav.find((item) => item.id === 'projects')?.href).toBe('/projects');
+    expect(nav.find((item) => item.id === 'marketplace')?.href).toBe('/dashboard/marketplace');
   });
 
   it('returns five bottom-nav items for investors', () => {
     expect(resolveBottomNav({ accountType: 'investor' })).toHaveLength(5);
+    expect(resolveBottomNav({ accountType: 'investor' }).find((item) => item.id === 'marketplace')?.href).toBe(
+      '/dashboard/marketplace',
+    );
   });
 
   it('labels portfolio and projects paths', () => {

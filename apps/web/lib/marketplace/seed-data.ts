@@ -134,6 +134,149 @@ export const SEED_RAW_DEALS: Array<{
   },
 ];
 
+/** Vendor directory seed for GET /api/vendors (ported from v0 marketplace). */
+export const SEED_MARKETPLACE_VENDORS: Array<{
+  id: string;
+  uid: string;
+  companyName: string;
+  type: string;
+  bio: string;
+  specialties: string[];
+  licensingStates: string[];
+  serviceAreas: string[];
+  city: string;
+  location: string;
+  zip: string;
+  avgTurnaroundDays: number;
+  overallRating: number;
+  totalReviews: number;
+  availability: 'Available' | 'Busy' | 'Available in 1 week';
+  feeRangeLabel: string;
+  verified: boolean;
+  insuranceVerified: boolean;
+}> = [
+  {
+    id: 'vendor-1',
+    uid: 'vendor-1',
+    companyName: 'Lone Star Inspections',
+    type: 'Inspector',
+    bio: 'Full residential and light-commercial inspections with same-week turnaround across Central Texas.',
+    specialties: ['Pre-purchase', 'New construction', 'Sewer scope'],
+    licensingStates: ['TX'],
+    serviceAreas: ['Austin, TX', '78702', '78704'],
+    city: 'Austin',
+    location: 'Austin, TX',
+    zip: '78702',
+    avgTurnaroundDays: 2,
+    overallRating: 4.8,
+    totalReviews: 42,
+    availability: 'Available',
+    feeRangeLabel: '$450–$750',
+    verified: true,
+    insuranceVerified: true,
+  },
+  {
+    id: 'vendor-2',
+    uid: 'vendor-2',
+    companyName: 'Summit Hard Money',
+    type: 'Lender',
+    bio: 'Bridge and fix-and-flip financing with 48-hour term sheets for experienced operators.',
+    specialties: ['Bridge loans', 'Fix & flip', 'DSCR'],
+    licensingStates: ['TX', 'CA', 'CO'],
+    serviceAreas: ['Austin, TX', 'Los Angeles, CA', 'Denver, CO'],
+    city: 'Austin',
+    location: 'Austin, TX',
+    zip: '78701',
+    avgTurnaroundDays: 3,
+    overallRating: 4.5,
+    totalReviews: 28,
+    availability: 'Available',
+    feeRangeLabel: 'Points + rate quote',
+    verified: true,
+    insuranceVerified: false,
+  },
+  {
+    id: 'vendor-3',
+    uid: 'vendor-3',
+    companyName: 'Harbor Title & Counsel',
+    type: 'Lawyer',
+    bio: 'Real estate closings, entity formation, and investor-side contract review.',
+    specialties: ['Closings', 'Entity setup', 'Contract review'],
+    licensingStates: ['CA', 'NV'],
+    serviceAreas: ['Los Angeles, CA', '90029'],
+    city: 'Los Angeles',
+    location: 'Los Angeles, CA',
+    zip: '90029',
+    avgTurnaroundDays: 5,
+    overallRating: 4.9,
+    totalReviews: 61,
+    availability: 'Busy',
+    feeRangeLabel: '$1.2k–$3.5k',
+    verified: true,
+    insuranceVerified: true,
+  },
+  {
+    id: 'vendor-4',
+    uid: 'vendor-4',
+    companyName: 'Ridge Line Builders',
+    type: 'Contractor',
+    bio: 'Value-add rehabs and punch-list crews specializing in kitchen, bath, and roof packages.',
+    specialties: ['Rehab', 'Kitchen remodel', 'Roofing'],
+    licensingStates: ['CO', 'TX'],
+    serviceAreas: ['Denver, CO', '80202', 'Austin, TX'],
+    city: 'Denver',
+    location: 'Denver, CO',
+    zip: '80202',
+    avgTurnaroundDays: 7,
+    overallRating: 0,
+    totalReviews: 0,
+    availability: 'Available in 1 week',
+    feeRangeLabel: '$50k–$120k',
+    verified: false,
+    insuranceVerified: true,
+  },
+  {
+    id: 'vendor-5',
+    uid: 'vendor-5',
+    companyName: 'Metro Stay Property Mgmt',
+    type: 'Property Manager',
+    bio: 'Full-service leasing and resident ops for small multifamily portfolios.',
+    specialties: ['Leasing', 'Maintenance', 'Owner reporting'],
+    licensingStates: ['TN', 'GA'],
+    serviceAreas: ['Nashville, TN', '37201'],
+    city: 'Nashville',
+    location: 'Nashville, TN',
+    zip: '37201',
+    avgTurnaroundDays: 1,
+    overallRating: 4.2,
+    totalReviews: 19,
+    availability: 'Available',
+    feeRangeLabel: '8–10% of rent',
+    verified: true,
+    insuranceVerified: true,
+  },
+  {
+    id: 'vendor-6',
+    uid: 'vendor-6',
+    companyName: 'Coastal Listing Partners',
+    type: 'Listing Agent',
+    bio: 'Investor-focused listing and acquisition brokerage for flips and BRRRR exits.',
+    specialties: ['Off-market', 'ARV pricing', 'Buyer rep'],
+    licensingStates: ['FL', 'TX'],
+    serviceAreas: ['Miami, FL', '33101', 'Austin, TX'],
+    city: 'Miami',
+    location: 'Miami, FL',
+    zip: '33101',
+    avgTurnaroundDays: 4,
+    overallRating: 4.6,
+    totalReviews: 33,
+    availability: 'Available',
+    feeRangeLabel: '2.5–3% commission',
+    verified: true,
+    insuranceVerified: false,
+  },
+];
+
 export const SEED_INVESTOR_PROFILES: Array<{ uid: string; data: Record<string, unknown> }> = [
   {
     uid: 'inv-1',

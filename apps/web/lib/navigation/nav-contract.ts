@@ -49,6 +49,13 @@ export function resolvePrimaryNav(ctx: NavigationContext): NavItem[] {
     { id: 'portfolio', label: 'Portfolio', href: '/dashboard', icon: 'analytics', rolesAllowed: ['investor'] },
     { id: 'projects', label: 'Projects', href: '/projects', icon: 'folder_open', rolesAllowed: ['investor'] },
     {
+      id: 'marketplace',
+      label: 'Marketplace',
+      href: '/dashboard/marketplace',
+      icon: 'storefront',
+      rolesAllowed: ['investor'],
+    },
+    {
       id: 'deals',
       label: 'Deals',
       href: '/dashboard/deals',
@@ -85,7 +92,7 @@ export function resolveBottomNav(ctx: NavigationContext): NavItem[] {
 
   return [
     { id: 'portfolio', label: 'Portfolio', href: '/dashboard', icon: 'analytics', rolesAllowed: ['investor'] },
-    { id: 'insights', label: 'Insights', href: '/dashboard/insights', icon: 'insights', rolesAllowed: ['investor'] },
+    { id: 'marketplace', label: 'Marketplace', href: '/dashboard/marketplace', icon: 'storefront', rolesAllowed: ['investor'] },
     { id: 'projects', label: 'Projects', href: '/projects', icon: 'folder_open', rolesAllowed: ['investor'] },
     { id: 'reports', label: 'Reports', href: '/dashboard/reports', icon: 'description', rolesAllowed: ['investor'] },
     { id: 'inbox', label: 'Inbox', href: '/dashboard/inbox', icon: 'inbox', rolesAllowed: ['investor'] },
@@ -102,7 +109,7 @@ const ROUTE_LABELS: Record<string, string> = {
   '/dashboard/team': 'Team',
   '/dashboard/reports': 'Reports',
   '/dashboard/insights': 'Insights',
-  '/dashboard/marketplace': 'Marketplace',
+  '/dashboard/marketplace': 'Vendor Marketplace',
   '/dashboard/settings': 'Settings',
 };
 

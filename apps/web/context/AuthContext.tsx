@@ -76,15 +76,20 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     setProfile(null);
   }, []);
 
-  const navContext = useMemo<NavigationContext>(
-    () => ({
+  const navContext = useMemo<NavigationContext>(() => {
+    const plan = (profile?.subscriptionPlan ?? 'Individual').toLowerCase();
+    const status = (profile?.subscriptionStatus ?? '').toLowerCase();
+    const statusActive = status === 'active' || status === 'trialing';
+    const planActive =
+      !!plan && !plan.includes('free') && !plan.includes('none') && !plan.includes('unsubscribed');
+
+    return {
       accountType: profile?.accountType ?? 'investor',
       subscriptionPlan: profile?.subscriptionPlan ?? 'Individual',
-      isSubscribed:
-        profile?.subscriptionStatus === 'active' || profile?.subscriptionStatus === 'trialing',
-    }),
-    [profile],
-  );
+      // While auth is still loading, don't treat Deals as locked (avoids paywall flash/redirect).
+      isSubscribed: loading ? true : statusActive || planActive,
+    };
+  }, [profile, loading]);
 
   const value = useMemo(
     () => ({

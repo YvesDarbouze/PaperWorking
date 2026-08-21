@@ -13,6 +13,10 @@ export interface SessionProfile {
   mode?: 'mock' | 'session' | 'dev';
 }
 
+export function encodeSubCookie(plan: string, status: string): string {
+  return Buffer.from(JSON.stringify({ plan, status }), 'utf8').toString('base64');
+}
+
 export function decodeSubCookie(raw: string | undefined): { plan: string; status: string } {
   if (!raw) return { plan: 'Individual', status: 'active' };
   try {

@@ -26,13 +26,25 @@ export async function GET(): Promise<NextResponse<SessionProfile>> {
   }
 
   const accountType = cookieStore.get(ACCT_COOKIE)?.value ?? 'investor';
-  const subscription = decodeSubCookie(cookieStore.get(SUB_COOKIE)?.value);
+  let subscription = decodeSubCookie(cookieStore.get(SUB_COOKIE)?.value);
+
+  // Mock/dev sessions default to an active Individual plan so Deals is not paywalled locally.
+  const isMock = session === DEV_MOCK_SESSION_TOKEN;
+  if (
+    isMock &&
+    (subscription.status === 'inactive' ||
+      !subscription.status ||
+      subscription.plan === 'None' ||
+      subscription.plan.toLowerCase() === 'none')
+  ) {
+    subscription = { plan: 'Individual', status: 'active' };
+  }
 
   return NextResponse.json({
     authenticated: true,
     accountType,
     subscriptionPlan: subscription.plan,
     subscriptionStatus: subscription.status,
-    mode: session === DEV_MOCK_SESSION_TOKEN ? 'mock' : 'session',
+    mode: isMock ? 'mock' : 'session',
   });
 }

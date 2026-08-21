@@ -1,6 +1,11 @@
 import { handleSessionDelete, handleSessionPost } from '@paperworking/api';
 import { toNextResponse } from '@/lib/api/adapt-route-result';
-import { ACCT_COOKIE } from '@/lib/auth/session-cookies';
+import {
+  ACCT_COOKIE,
+  DEV_MOCK_SESSION_TOKEN,
+  encodeSubCookie,
+  SUB_COOKIE,
+} from '@/lib/auth/session-cookies';
 
 function mockAuthEnabled(): boolean {
   return process.env.ENABLE_MOCK_AUTH === 'true' || process.env.NODE_ENV !== 'production';
@@ -32,9 +37,15 @@ export async function POST(request: Request) {
     result.cookies.length > 0
   ) {
     const accountType = normalizeDevAccountType(body.accountType);
-    result.cookies = result.cookies.map((cookie) =>
-      cookie.name === ACCT_COOKIE ? { ...cookie, value: accountType } : cookie,
-    );
+    const isMockToken = body.idToken === DEV_MOCK_SESSION_TOKEN;
+    result.cookies = result.cookies.map((cookie) => {
+      if (cookie.name === ACCT_COOKIE) return { ...cookie, value: accountType };
+      // Dev/mock logins should unlock Deals (sidebar paywall checks __sub).
+      if (isMockToken && cookie.name === SUB_COOKIE) {
+        return { ...cookie, value: encodeSubCookie('Individual', 'active') };
+      }
+      return cookie;
+    });
   }
 
   return toNextResponse(result);

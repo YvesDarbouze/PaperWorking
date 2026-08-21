@@ -50,10 +50,13 @@ export default function DashboardSidebar() {
   const account = resolveAccountNav(navContext);
 
   function handleNavigate(item: NavItem, event: MouseEvent) {
-    if (item.isLocked) {
-      event.preventDefault();
-      router.push('/dashboard/settings/billing?paywall=deals');
+    if (!item.isLocked) return;
+    // Keep the lock affordance, but still allow opening Deals during local migration preview.
+    if (item.id === 'deals' && process.env.NODE_ENV !== 'production') {
+      return;
     }
+    event.preventDefault();
+    router.push('/dashboard/settings/billing?paywall=deals');
   }
 
   return (

@@ -1,0 +1,18 @@
+﻿ID;Router;Path;Trạng thái;Lý do
+api1–2;Auth;/api/auth/session, /api/auth/me;Đã kết nối (live);Firebase Admin + cookie
+api3–4;Dashboard;/api/portfolio/metrics, /api/marketplace/profile;Đã kết nối (seed);"Command Center fetch; data seed"
+api5–7;Projects;/api/projects, /[id], /kpis/current;Đã kết nối (seed);"UI gọi GET; CRUD/phases/docs chưa"
+api8;Insights;/api/insights;Đã kết nối (seed);Seed userId=dev-user-1
+api9–11;Reports;/api/reports/portfolio, /generate, /[period];Đã kết nối (partial);"Handler có; data mỏng"
+api12–15;Marketplace;/api/marketplace/listings, investors, follow…;Đã kết nối (seed);Seed
+api16–17;Deals;/api/deals, /deals/exists;Đã kết nối (seed);Seed
+api18;Vendors;/api/vendors;Đã kết nối (seed);Seed
+api19–20;Vendor portal;/api/vendor-portal/profile, /requests;Đã kết nối (seed);Seed / dev store
+api21–27;Admin;/api/admin/ops, agent-crew, lender-*, rentcast;Đã kết nối (seed);Seed ops
+api28;Ops;/api/health;Đã kết nối (live);Ops only — không UI
+—;Inbox / search;/api/inbox*, /api/messages*;Chưa kết nối;UI dùng INBOX_THREADS seed, không fetch
+—;Team;/api/team*;Chưa kết nối;TEAM_MEMBERS seed
+—;Settings;/api/settings*;Chưa kết nối;Preview / localStorage
+—;Settings / Billing;/api/billing*, /api/stripe/*;Chưa kết nối;"Preview; chưa adapter Stripe"
+—;Projects (còn lại);/api/projects/create, phases, docs… (39);Chưa kết nối;"Handler có; UI chưa gọi"
+—;Auth (còn lại);/api/auth/magic-link, 2fa, sessions… (7);Chưa kết nối;"Session/me đã nối; phần còn lại chưa"

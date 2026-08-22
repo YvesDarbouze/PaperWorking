@@ -6,7 +6,9 @@ dist/
 coverage/
 *.tsbuildinfo
 .env
-.env.local
+.env.*
+!.env.example
+!**/.env.example
 .DS_Store
 playwright-report/
 test-results/

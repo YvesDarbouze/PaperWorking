@@ -4,6 +4,8 @@
 
 Companion to [list_APIs_.md](./list_APIs_.md). Use this to track what is live in Next.js vs still handler-only.
 
+**Checklist có lý do từng path (để cấu hình):** [API_WIRING_CHECKLIST.md](./API_WIRING_CHECKLIST.md) (cập nhật 2026-08-23).
+
 ## Snapshot
 
 | Layer | Count |

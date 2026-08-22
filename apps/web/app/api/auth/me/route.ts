@@ -14,15 +14,12 @@ export async function GET(): Promise<NextResponse<SessionProfile>> {
   const session = cookieStore.get(SESSION_COOKIE)?.value;
 
   if (!session) {
-    return NextResponse.json(
-      {
-        authenticated: false,
-        accountType: 'investor',
-        subscriptionPlan: 'None',
-        subscriptionStatus: 'inactive',
-      },
-      { status: 401 },
-    );
+    return NextResponse.json({
+      authenticated: false,
+      accountType: 'investor',
+      subscriptionPlan: 'None',
+      subscriptionStatus: 'inactive',
+    });
   }
 
   const accountType = cookieStore.get(ACCT_COOKIE)?.value ?? 'investor';

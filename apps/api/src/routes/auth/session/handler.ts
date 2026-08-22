@@ -197,7 +197,7 @@ export async function handleSessionPost(
       }
     }
 
-    const cookieOpts = prodCookieOpts();
+    const cookieOpts = nodeEnv === 'production' ? prodCookieOpts() : devCookieOpts();
     return jsonResponse(
       200,
       { status: 'success', uid: decoded.uid },

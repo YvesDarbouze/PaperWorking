@@ -1,4 +1,3 @@
-import ChatbotWidget from '@/components/marketing/ChatbotWidget';
 import LandingBelowFold from '@/components/marketing/LandingBelowFold';
 import LandingHero from '@/components/marketing/LandingHero';
 
@@ -8,7 +7,6 @@ export default function RootPage() {
     <>
       <LandingHero />
       <LandingBelowFold />
-      <ChatbotWidget />
     </>
   );
 }

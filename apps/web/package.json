@@ -12,9 +12,10 @@
     "test": "node --experimental-vm-modules ../../node_modules/jest/bin/jest.js"
   },
   "dependencies": {
-    "@paperworking/api": "*",
-    "@paperworking/financial-engine": "*",
-    "@paperworking/shared": "*",
+    "@paperworking/api": "file:../api",
+    "@paperworking/financial-engine": "file:../../packages/financial-engine",
+    "@paperworking/shared": "file:../../packages/shared",
+    "@supabase/supabase-js": "^2.112.4",
     "firebase": "^12.18.0",
     "firebase-admin": "^13.10.0",
     "next": "^15.3.0",

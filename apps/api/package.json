@@ -20,9 +20,9 @@
     "test": "node --experimental-vm-modules ../../node_modules/jest/bin/jest.js"
   },
   "dependencies": {
-    "@paperworking/database": "*",
-    "@paperworking/financial-engine": "*",
-    "@paperworking/shared": "*",
+    "@paperworking/database": "file:../../packages/database",
+    "@paperworking/financial-engine": "file:../../packages/financial-engine",
+    "@paperworking/shared": "file:../../packages/shared",
     "pdfkit": "^0.17.1",
     "zod": "^3.24.2"
   },

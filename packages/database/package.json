@@ -20,12 +20,14 @@
     "test": "node --experimental-vm-modules ../../node_modules/jest/bin/jest.js"
   },
   "dependencies": {
-    "@paperworking/validation": "*",
-    "@prisma/adapter-neon": "^7.7.0",
+    "@paperworking/validation": "file:../validation",
+    "@prisma/adapter-pg": "^7.10.0",
     "@prisma/client": "^7.7.0",
-    "firebase-admin": "^13.4.0"
+    "firebase-admin": "^13.4.0",
+    "pg": "^8.23.0"
   },
   "devDependencies": {
+    "@types/pg": "^8.23.1",
     "prisma": "^7.7.0",
     "typescript": "^5.8.3"
   }

@@ -11,13 +11,14 @@
   "scripts": {
     "dev": "npm run dev --workspace=@paperworking/web",
     "start": "npm run start --workspace=@paperworking/web",
-    "build": "npm run build --workspaces --if-present",
+    "build:libs": "npm run build --workspace=@paperworking/shared && npm run build --workspace=@paperworking/validation && npm run build --workspace=@paperworking/financial-engine && npm run build --workspace=@paperworking/database",
+    "build": "npm run build:libs && npm run build --workspace=@paperworking/api && npm run build --workspace=@paperworking/web",
     "typecheck": "npm run typecheck --workspaces --if-present",
     "test": "npm run test --workspaces --if-present",
     "lint": "npm run lint --workspaces --if-present",
     "verify:integration": "npm run test --workspace=@paperworking/integration",
     "test:e2e": "npm run test:e2e --workspace=@paperworking/e2e",
-    "verify": "npm run build --workspace=@paperworking/shared --workspace=@paperworking/validation --workspace=@paperworking/database --workspace=@paperworking/financial-engine --workspace=@paperworking/api && npm run typecheck --workspaces --if-present && npm run test --workspaces --if-present && npm run build --workspaces --if-present"
+    "verify": "npm run build && npm run typecheck --workspaces --if-present && npm run test --workspaces --if-present"
   },
   "engines": {
     "node": ">=20"

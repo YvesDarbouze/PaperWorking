@@ -1,0 +1,219 @@
+# Settings for Backend (on Cloud Run).
+# See https://firebase.google.com/docs/app-hosting/configure#cloud-run
+#
+# Monorepo: root npm run build builds packages → api → web in order
+# (do not use npm run build --workspaces — parallel builds break workspace deps).
+runConfig:
+  minInstances: 0
+  maxInstances: 10
+  concurrency: 80
+  cpu: 1
+  memoryMiB: 1024
+
+scripts:
+  buildCommand: npm run build
+  runCommand: npm run start
+
+# Environment variables and secrets.
+# See https://firebase.google.com/docs/app-hosting/configure#user-defined-environment
+env:
+  # ─── Build config ──────────────────────────────────────────────────────────
+  - variable: NODE_OPTIONS
+    value: "--max-old-space-size=8192"
+    availability:
+      - BUILD
+
+  # ─── Firebase client SDK (public — already in browser bundle) ──────────────
+  - variable: NEXT_PUBLIC_FIREBASE_API_KEY
+    value: "AIzaSyDlmH8L2s9_IXXKUx9DIhhWP4nMYDzUlvg"
+    availability:
+      - BUILD
+      - RUNTIME
+
+  - variable: NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN
+    value: "paperworking-97055.firebaseapp.com"
+    availability:
+      - BUILD
+      - RUNTIME
+
+  - variable: NEXT_PUBLIC_FIREBASE_PROJECT_ID
+    value: "paperworking-97055"
+    availability:
+      - BUILD
+      - RUNTIME
+
+  - variable: NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET
+    value: "paperworking-97055.firebasestorage.app"
+    availability:
+      - BUILD
+      - RUNTIME
+
+  - variable: NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID
+    value: "779101817926"
+    availability:
+      - BUILD
+      - RUNTIME
+
+  - variable: NEXT_PUBLIC_FIREBASE_APP_ID
+    value: "1:779101817926:web:0dfce37fddc70718e70e47"
+    availability:
+      - BUILD
+      - RUNTIME
+
+  - variable: NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID
+    value: "G-7JX7B7KF0D"
+    availability:
+      - BUILD
+      - RUNTIME
+
+  - variable: NEXT_PUBLIC_FACEBOOK_APP_ID
+    value: "846487651808178"
+    availability:
+      - BUILD
+      - RUNTIME
+
+  - variable: NEXT_PUBLIC_APP_URL
+    value: "https://paperworking.co"
+    availability:
+      - BUILD
+      - RUNTIME
+
+  # ─── Firebase Admin SDK (server-side) ──────────────────────────────────────
+  - variable: FIREBASE_PROJECT_ID
+    value: "paperworking-97055"
+    availability:
+      - RUNTIME
+
+  - variable: FIREBASE_CLIENT_EMAIL
+    secret: FIREBASE_CLIENT_EMAIL
+    availability:
+      - RUNTIME
+
+  - variable: FIREBASE_PRIVATE_KEY
+    secret: FIREBASE_PRIVATE_KEY
+    availability:
+      - RUNTIME
+
+  # ─── AI / Generative ───────────────────────────────────────────────────────
+  - variable: GOOGLE_GENERATIVE_AI_API_KEY
+    secret: GOOGLE_GENERATIVE_AI_API_KEY
+    availability:
+      - RUNTIME
+
+  # ─── Stripe ────────────────────────────────────────────────────────────────
+  - variable: STRIPE_WEBHOOK_SECRET
+    secret: STRIPE_WEBHOOK_SECRET
+    availability:
+      - RUNTIME
+
+  - variable: STRIPE_SECRET_KEY
+    secret: STRIPE_SECRET_KEY
+    availability:
+      - RUNTIME
+
+  - variable: NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY
+    secret: NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY
+    availability:
+      - BUILD
+      - RUNTIME
+
+  - variable: STRIPE_PRICE_INDIVIDUAL_MONTHLY
+    secret: STRIPE_PRICE_INDIVIDUAL_MONTHLY
+    availability:
+      - RUNTIME
+
+  - variable: STRIPE_PRICE_INDIVIDUAL_ANNUAL
+    secret: STRIPE_PRICE_INDIVIDUAL_ANNUAL
+    availability:
+      - RUNTIME
+
+  - variable: STRIPE_PRICE_TEAM_MONTHLY
+    secret: STRIPE_PRICE_TEAM_MONTHLY
+    availability:
+      - RUNTIME
+
+  - variable: STRIPE_PRICE_TEAM_ANNUAL
+    secret: STRIPE_PRICE_TEAM_ANNUAL
+    availability:
+      - RUNTIME
+
+  - variable: STRIPE_PRICE_VENDOR_MONTHLY
+    secret: STRIPE_PRICE_VENDOR_MONTHLY
+    availability:
+      - RUNTIME
+
+  - variable: STRIPE_PRICE_VENDOR_ANNUAL
+    secret: STRIPE_PRICE_VENDOR_ANNUAL
+    availability:
+      - RUNTIME
+
+  # ─── Bridge Interactive / MLS ──────────────────────────────────────────────
+  - variable: BRIDGE_API_BASE_URL
+    value: "https://api.bridgedataoutput.com/api/v2/OData/"
+    availability:
+      - RUNTIME
+
+  - variable: BRIDGE_CLIENT_ID
+    secret: BRIDGE_CLIENT_ID
+    availability:
+      - RUNTIME
+
+  - variable: BRIDGE_CLIENT_SECRET
+    secret: BRIDGE_CLIENT_SECRET
+    availability:
+      - RUNTIME
+
+  - variable: BRIDGE_SERVER_TOKEN
+    secret: BRIDGE_SERVER_TOKEN
+    availability:
+      - RUNTIME
+
+  - variable: BRIDGE_VIRTUAL_DATASET_ID
+    secret: BRIDGE_VIRTUAL_DATASET_ID
+    availability:
+      - RUNTIME
+
+  - variable: BRIDGE_DATASET_ID
+    secret: BRIDGE_DATASET_ID
+    availability:
+      - RUNTIME
+
+  - variable: BRIDGE_WEBHOOK_SECRET
+    secret: BRIDGE_WEBHOOK_SECRET
+    availability:
+      - RUNTIME
+
+  # ─── Database (Neon PostgreSQL) ────────────────────────────────────────────
+  - variable: DATABASE_URL
+    secret: DATABASE_URL
+    availability:
+      - RUNTIME
+
+  - variable: DIRECT_URL
+    secret: DIRECT_URL
+    availability:
+      - RUNTIME
+
+  # ─── Redis ─────────────────────────────────────────────────────────────────
+  - variable: REDIS_URL
+    secret: REDIS_URL
+    availability:
+      - RUNTIME
+
+  # ─── Facebook ──────────────────────────────────────────────────────────────
+  - variable: FACEBOOK_APP_SECRET
+    secret: FACEBOOK_APP_SECRET
+    availability:
+      - RUNTIME
+
+  # ─── Google Places ─────────────────────────────────────────────────────────
+  - variable: GOOGLE_PLACES_API_KEY
+    secret: GOOGLE_PLACES_API_KEY
+    availability:
+      - RUNTIME
+
+  # ─── Worker / internal cron auth ───────────────────────────────────────────
+  - variable: WORKER_SECRET
+    secret: WORKER_SECRET
+    availability:
+      - RUNTIME

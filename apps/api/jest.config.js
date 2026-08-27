@@ -17,4 +17,7 @@ export default {
     ],
   },
   testMatch: ['**/__tests__/**/*.test.ts'],
+  // Webhook/CSRF negative-path tests leave intentional console noise; forceExit
+  // avoids CI hang from open handles (timers / clients) after 366 passing tests.
+  forceExit: true,
 };

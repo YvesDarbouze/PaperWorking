@@ -86,12 +86,7 @@ export async function PUT(request: Request, context: Ctx) {
     body = {};
   }
 
-  const result = await handleSettingsPut(
-    section,
-    body,
-    Object.fromEntries(request.headers.entries()),
-    settingsDeps(auth.uid),
-  );
+  const result = await handleSettingsPut(section, body, settingsDeps(auth.uid));
   return toNextResponse(result);
 }
 

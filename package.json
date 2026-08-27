@@ -9,10 +9,11 @@
     "tests/*"
   ],
   "scripts": {
-    "dev": "npm run dev --workspace=@paperworking/web",
-    "start": "npm run start --workspace=@paperworking/web",
-    "build:libs": "npm run build --workspace=@paperworking/shared && npm run build --workspace=@paperworking/validation && npm run build --workspace=@paperworking/financial-engine && npm run build --workspace=@paperworking/database",
-    "build": "npm run build:libs && npm run build --workspace=@paperworking/api && npm run build --workspace=@paperworking/web",
+    "dev": "npm --prefix apps/web run dev",
+    "start": "npm --prefix apps/web run start",
+    "build:libs": "npm --prefix packages/shared run build && npm --prefix packages/validation run build && npm --prefix packages/financial-engine run build && npm --prefix packages/database run build",
+    "build": "npm run build:libs && npm --prefix apps/api run build && npm --prefix apps/web run build",
+    "apphosting:build": "bash scripts/apphosting-build.sh",
     "typecheck": "npm run typecheck --workspaces --if-present",
     "test": "npm run test --workspaces --if-present",
     "lint": "npm run lint --workspaces --if-present",

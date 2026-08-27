@@ -11,8 +11,10 @@ runConfig:
   memoryMiB: 1024
 
 scripts:
-  buildCommand: npm run build
-  runCommand: npm run start
+  # Use shell script — App Hosting often breaks `npm --workspace=` ("No workspaces found").
+  # Firebase console "Root directory" must be repository root (.), not apps/web.
+  buildCommand: npm run apphosting:build
+  runCommand: npm --prefix apps/web run start
 
 # Environment variables and secrets.
 # See https://firebase.google.com/docs/app-hosting/configure#user-defined-environment

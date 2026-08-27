@@ -1,6 +1,9 @@
 import { handleMarketplaceInvestorsFollowPost } from '@paperworking/api';
 import { toNextResponse } from '@/lib/api/adapt-route-result';
-import { updateSeedFollowState } from '@/lib/marketplace/seed-data';
+import {
+  listInvestorFollowers,
+  upsertInvestorFollower,
+} from '@/lib/membership/p1-seed-store';
 import {
   isDevAuthFailure,
   requireDevSessionAuth,
@@ -21,8 +24,11 @@ export async function POST(request: Request) {
       if (isDevAuthFailure(auth)) return auth;
       return { uid: auth.uid };
     },
-    updateFollow: async (followerUid, targetUid, follow) =>
-      updateSeedFollowState(followerUid, targetUid, follow),
+    updateFollow: async (followerUid, targetUid, follow) => {
+      const wasFollowing = listInvestorFollowers(followerUid, targetUid).length > 0;
+      upsertInvestorFollower(followerUid, targetUid, follow);
+      return { following: follow, changed: wasFollowing !== follow };
+    },
   });
 
   return toNextResponse(result);

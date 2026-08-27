@@ -130,7 +130,11 @@ export const rehabTierEnum = z.enum([
 
 // ── Nested Schemas ─────────────────────────────────────────
 
-/** Project member entry in the `members` map */
+/**
+ * Embedded project member entry in the `projects.members` map.
+ * @deprecated RBAC SoT is `/projectMembers` (`projectMembershipSchema`).
+ * Keep this map only as optional denormalized summary until migrated.
+ */
 export const projectMemberSchema = z.object({
   /** Firebase Auth UID */
   uid: z.string().min(1),

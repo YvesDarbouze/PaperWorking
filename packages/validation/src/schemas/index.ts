@@ -121,3 +121,55 @@ export {
   dataCompletionTaskSchema,
   type DataCompletionTask,
 } from './dataCompletionTaskSchema.js';
+
+// ── Organization Members (P0) ───────────────────────────────
+export {
+  organizationMemberRoleEnum,
+  organizationMemberStatusEnum,
+  organizationMemberSchema,
+  type OrganizationMember,
+} from './organizationMemberSchema.js';
+
+// ── Project Members / Memberships (P0 SoT) ──────────────────
+// Distinct from embedded projectMemberSchema on projects.members (deprecated).
+export {
+  projectMembershipRoleEnum,
+  projectMembershipStatusEnum,
+  projectMembershipSchema,
+  type ProjectMembership,
+} from './projectMembershipSchema.js';
+
+// ── Task Assignments (P0) ───────────────────────────────────
+export {
+  taskAssignmentStatusEnum,
+  taskAssignmentPriorityEnum,
+  taskAssignmentSchema,
+  type TaskAssignment,
+} from './taskAssignmentSchema.js';
+
+// ── Vendor Services (P1) ────────────────────────────────────
+export {
+  vendorServiceStatusEnum,
+  vendorServiceSchema,
+  type VendorService,
+} from './vendorServiceSchema.js';
+
+// ── Deal Invitations (P1) ───────────────────────────────────
+export {
+  dealInvitationStatusEnum,
+  dealInvitationSchema,
+  type DealInvitation,
+} from './dealInvitationSchema.js';
+
+// ── Investor Followers (P1) ─────────────────────────────────
+export {
+  investorFollowerSchema,
+  type InvestorFollower,
+} from './investorFollowerSchema.js';
+
+// ── Message Threads (P1) ────────────────────────────────────
+export {
+  messageThreadTypeEnum,
+  messageThreadSchema,
+  type MessageThread,
+} from './messageThreadSchema.js';

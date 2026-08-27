@@ -1,8 +1,9 @@
 import { existsSync } from 'node:fs';
 import { join } from 'node:path';
+import { fileURLToPath } from 'node:url';
 import { WEB_APP_STATUS } from '../index.js';
 
-const REPO_ROOT = join(import.meta.dirname, '../../../../');
+const REPO_ROOT = join(fileURLToPath(new URL('.', import.meta.url)), '../../../../');
 
 describe('phase 7 — cutover planning status', () => {
   it('includes cutover planning artifacts', () => {

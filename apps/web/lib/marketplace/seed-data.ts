@@ -45,7 +45,10 @@ export const SEED_RAW_DEALS: Array<{
   projectedRoi?: number;
   creatorId: string;
   createdAt: string;
+  projectId?: string | null;
   projects?: Array<{
+    id?: string;
+    dealId?: string;
     name?: string;
     city?: string;
     state?: string;
@@ -70,7 +73,8 @@ export const SEED_RAW_DEALS: Array<{
     projectedRoi: 18.4,
     creatorId: 'creator-1',
     createdAt: '2026-07-01T00:00:00.000Z',
-    projects: [{ name: 'Elm Street Flip', city: 'Austin', state: 'TX', zip: '78702', propertyType: 'Single-family', subStrategy: 'FLIP' }],
+    projectId: 'deal-1',
+    projects: [{ id: 'deal-1', name: 'Elm Street Flip', city: 'Austin', state: 'TX', zip: '78702', propertyType: 'Single-family', subStrategy: 'FLIP' }],
     commitments: [{ amount: 120_000, investorId: 'inv-1' }],
     invitations: [],
     creator: { name: 'PaperWorking Capital' },
@@ -107,12 +111,12 @@ export const SEED_RAW_DEALS: Array<{
     arv: 780_000,
     holdingCosts: 12_000,
     projectedRoi: 9.5,
-    creatorId: 'dev-user-1',
+    creatorId: 'creator-private-3',
     createdAt: '2026-08-10T00:00:00.000Z',
     projects: [{ name: 'Oak Ridge Hold', city: 'Denver', state: 'CO', zip: '80202', propertyType: 'Single-family', subStrategy: 'BUY_AND_HOLD' }],
     commitments: [],
     invitations: [],
-    creator: { name: 'Dev User' },
+    creator: { name: 'Private Investor' },
   },
   {
     id: 'deal-mp-4',
@@ -368,7 +372,21 @@ export function isSeedFollowing(followerUid: string, targetUid: string): boolean
 }
 
 export function findSeedDealBySlug(normalizedSlug: string) {
-  return SEED_RAW_DEALS.find((deal) => deal.slug === normalizedSlug) ?? null;
+  const norm = (s: string) => s.toLowerCase().replace(/[^a-z0-9]/g, '');
+  const searchNorm = norm(normalizedSlug);
+  return (
+    SEED_RAW_DEALS.find((deal) => {
+      const dealSlugNorm = norm(deal.slug);
+      const dealAddrNorm = norm(deal.address);
+      const dealNameNorm = deal.projects?.[0]?.name ? norm(deal.projects[0].name) : '';
+      return (
+        dealSlugNorm === searchNorm ||
+        dealAddrNorm.includes(searchNorm) ||
+        searchNorm.includes(dealSlugNorm) ||
+        (dealNameNorm && (dealNameNorm.includes(searchNorm) || searchNorm.includes(dealNameNorm)))
+      );
+    }) ?? null
+  );
 }
 
 export function seedPublicDealsForOwner(ownerUid: string): Array<Record<string, unknown> & { id: string }> {
@@ -404,3 +422,60 @@ export function calculateFundingProgress(committed: number, target: number): num
   if (target <= 0) return 0;
   return Math.min(100, Math.round((committed / target) * 100));
 }
+
+export function addSeedDeal(rawDeal: (typeof SEED_RAW_DEALS)[number]): (typeof SEED_RAW_DEALS)[number] {
+  const existingIdx = SEED_RAW_DEALS.findIndex((d) => d.id === rawDeal.id || d.slug === rawDeal.slug);
+  if (existingIdx >= 0) {
+    SEED_RAW_DEALS[existingIdx] = { ...SEED_RAW_DEALS[existingIdx], ...rawDeal };
+    return SEED_RAW_DEALS[existingIdx];
+  }
+  SEED_RAW_DEALS.unshift(rawDeal);
+  return rawDeal;
+}
+
+export interface SeedDealBroadcast {
+  id: string;
+  dealId: string;
+  senderId: string;
+  senderName: string;
+  recipientEmails: string[];
+  subject: string;
+  message: string;
+  includeBusinessCard: boolean;
+  createdAt: string;
+}
+
+export const SEED_DEAL_BROADCASTS: SeedDealBroadcast[] = [];
+
+export function addSeedBroadcast(broadcast: SeedDealBroadcast): SeedDealBroadcast {
+  SEED_DEAL_BROADCASTS.unshift(broadcast);
+  return broadcast;
+}
+
+export function getSeedBroadcasts(dealId?: string): SeedDealBroadcast[] {
+  if (!dealId) return SEED_DEAL_BROADCASTS;
+  return SEED_DEAL_BROADCASTS.filter((b) => b.dealId === dealId);
+}
+
+export interface SeedDealMessage {
+  id: string;
+  dealId: string;
+  senderId?: string | null;
+  senderEmail: string;
+  content: string;
+  source: 'platform' | 'email_inbound';
+  createdAt: string;
+}
+
+export const SEED_DEAL_MESSAGES: SeedDealMessage[] = [];
+
+export function addSeedDealMessage(msg: SeedDealMessage): SeedDealMessage {
+  SEED_DEAL_MESSAGES.unshift(msg);
+  return msg;
+}
+
+export function getSeedDealMessages(dealId?: string): SeedDealMessage[] {
+  if (!dealId) return SEED_DEAL_MESSAGES;
+  return SEED_DEAL_MESSAGES.filter((m) => m.dealId === dealId);
+}
+

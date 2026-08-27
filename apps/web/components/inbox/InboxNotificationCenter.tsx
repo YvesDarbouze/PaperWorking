@@ -115,6 +115,24 @@ function NotifMoreMenu({
  * Unified Inbox — port of PaperWorking `/dashboard/inbox` notification center
  * (two-pane list + reading pane, tabs, compose, mark-all-read).
  */
+function mapApiThread(raw: Record<string, unknown>): InboxThread {
+  return {
+    id: String(raw.id),
+    tab: (raw.tab as InboxTabId) || 'system',
+    type: (raw.type as InboxThread['type']) || 'SYSTEM',
+    subject: String(raw.subject ?? ''),
+    project: String(raw.project ?? ''),
+    from: String(raw.from ?? ''),
+    fromRole: typeof raw.fromRole === 'string' ? raw.fromRole : undefined,
+    preview: String(raw.preview ?? ''),
+    body: String(raw.body ?? ''),
+    unread: Boolean(raw.unread),
+    receivedAt: String(raw.receivedAt ?? new Date().toISOString()),
+    deepLinkUrl: typeof raw.deepLinkUrl === 'string' ? raw.deepLinkUrl : undefined,
+    actionable: Boolean(raw.actionable),
+  };
+}
+
 export default function InboxNotificationCenter() {
   const [items, setItems] = useState<InboxThread[]>(() => [...INBOX_THREADS]);
   const [activeTab, setActiveTab] = useState<InboxTabId>('all');
@@ -124,6 +142,28 @@ export default function InboxNotificationCenter() {
   const [readOverrides, setReadOverrides] = useState<Record<string, boolean>>({});
   const [archivedIds, setArchivedIds] = useState<Set<string>>(() => new Set());
   const [actionFlash, setActionFlash] = useState<string | null>(null);
+  const [loadError, setLoadError] = useState<string | null>(null);
+
+  useEffect(() => {
+    let cancelled = false;
+    (async () => {
+      try {
+        const res = await fetch('/api/inbox', { credentials: 'include' });
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        const data = (await res.json()) as { threads?: Record<string, unknown>[] };
+        if (cancelled) return;
+        if (Array.isArray(data.threads) && data.threads.length > 0) {
+          setItems(data.threads.map(mapApiThread));
+          setLoadError(null);
+        }
+      } catch {
+        if (!cancelled) setLoadError('Using local preview — /api/inbox unavailable.');
+      }
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, []);
 
   const isUnread = useCallback(
     (item: InboxThread) => {
@@ -164,16 +204,36 @@ export default function InboxNotificationCenter() {
 
   function markRead(id: string) {
     setReadOverrides((prev) => ({ ...prev, [id]: true }));
+    void fetch(`/api/inbox/${id}`, {
+      method: 'PATCH',
+      credentials: 'include',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ read: true }),
+    }).catch(() => undefined);
   }
 
   function markUnread(id: string) {
     setReadOverrides((prev) => ({ ...prev, [id]: false }));
+    void fetch(`/api/inbox/${id}`, {
+      method: 'PATCH',
+      credentials: 'include',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ read: false }),
+    }).catch(() => undefined);
   }
 
   function markAllRead() {
     const next: Record<string, boolean> = { ...readOverrides };
     for (const item of items) {
-      if (!archivedIds.has(item.id)) next[item.id] = true;
+      if (!archivedIds.has(item.id)) {
+        next[item.id] = true;
+        void fetch(`/api/inbox/${item.id}`, {
+          method: 'PATCH',
+          credentials: 'include',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ read: true }),
+        }).catch(() => undefined);
+      }
     }
     setReadOverrides(next);
   }
@@ -181,11 +241,21 @@ export default function InboxNotificationCenter() {
   function archiveItem(id: string) {
     setArchivedIds((prev) => new Set(prev).add(id));
     if (selectedId === id) setSelectedId(null);
+    void fetch(`/api/inbox/${id}`, {
+      method: 'PATCH',
+      credentials: 'include',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ archived: true }),
+    }).catch(() => undefined);
   }
 
   function deleteItem(id: string) {
     setItems((prev) => prev.filter((i) => i.id !== id));
     if (selectedId === id) setSelectedId(null);
+    void fetch(`/api/inbox/${id}`, {
+      method: 'DELETE',
+      credentials: 'include',
+    }).catch(() => undefined);
   }
 
   function selectItem(id: string) {
@@ -218,6 +288,11 @@ export default function InboxNotificationCenter() {
             <div className="flex items-center justify-between">
               <h1 className="text-2xl font-bold text-[#fdfffc]">Inbox</h1>
               <div className="flex items-center gap-2">
+                {loadError ? (
+                  <span className="hidden max-w-[140px] truncate text-[10px] text-amber-300/80 sm:inline">
+                    {loadError}
+                  </span>
+                ) : null}
                 {unreadTotal > 0 ? (
                   <span className="rounded border border-emerald-500/25 bg-emerald-500/10 px-2 py-0.5 font-mono text-[10px] font-bold text-emerald-300">
                     {unreadTotal} UNREAD

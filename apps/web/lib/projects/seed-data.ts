@@ -70,6 +70,9 @@ export const SEED_PROJECTS: ProjectWorkspace[] = [
     entity_type: 'LLC (single)',
     phase_completion_pct: 42,
     estimatedIrr: 0.184,
+    dealId: 'deal-mp-1',
+    dealSlug: '1247elmst',
+    dealAddress: '1247 Elm Street, Austin, TX 78702',
     storage_used_bytes: 1_240_000,
     storageQuotaBytes: 536_870_912,
     todos: BASE_TODOS.acquisition,
@@ -101,6 +104,9 @@ export const SEED_PROJECTS: ProjectWorkspace[] = [
     entity_type: 'LLC (single)',
     phase_completion_pct: 58,
     estimatedIrr: 0.162,
+    dealId: null,
+    dealSlug: null,
+    dealAddress: null,
     storage_used_bytes: 2_480_000,
     storageQuotaBytes: 536_870_912,
     todos: BASE_TODOS.purchase,
@@ -132,6 +138,9 @@ export const SEED_PROJECTS: ProjectWorkspace[] = [
     entity_type: 'Series LLC',
     phase_completion_pct: 71,
     estimatedIrr: 0.128,
+    dealId: 'deal-mp-3',
+    dealSlug: 'oakridgehold',
+    dealAddress: '88 Oak Ridge Dr, Denver, CO 80202',
     storage_used_bytes: 4_120_000,
     storageQuotaBytes: 536_870_912,
     todos: BASE_TODOS.hold,
@@ -147,6 +156,43 @@ export const SEED_PROJECTS: ProjectWorkspace[] = [
   },
 ];
 
+export function addSeedProject(project: Partial<ProjectWorkspace> & { id: string; propertyName: string }): ProjectWorkspace {
+  const newProject: ProjectWorkspace = {
+    id: project.id,
+    project_id: project.id,
+    propertyName: project.propertyName,
+    address: project.address || project.property_address || 'Property Address',
+    property_address: project.property_address || project.address || 'Property Address',
+    city: project.city || 'Austin, TX',
+    currentPhase: project.currentPhase || 'acquisition',
+    phase: project.phase || 'acquisition',
+    status: project.status || 'Active',
+    dispositionType: project.dispositionType || 'SALE',
+    purchasePrice: project.purchasePrice || project.purchase_price || 450000,
+    purchase_price: project.purchase_price || project.purchasePrice || 450000,
+    rehab_costs: project.rehab_costs || 50000,
+    exit_strategy: project.exit_strategy || 'Fix & Flip',
+    entity_type: project.entity_type || 'LLC',
+    phase_completion_pct: project.phase_completion_pct || 10,
+    estimatedIrr: project.estimatedIrr || 0.15,
+    dealId: project.dealId || null,
+    dealSlug: project.dealSlug || null,
+    dealAddress: project.dealAddress || project.address || null,
+    storage_used_bytes: 1000,
+    storageQuotaBytes: 536_870_912,
+    todos: BASE_TODOS.acquisition,
+    documents: [],
+  };
+
+  const existingIndex = SEED_PROJECTS.findIndex((p) => p.id === newProject.id);
+  if (existingIndex >= 0) {
+    SEED_PROJECTS[existingIndex] = newProject;
+  } else {
+    SEED_PROJECTS.unshift(newProject);
+  }
+  return newProject;
+}
+
 export function listSeedProjectSummaries(): ProjectSummary[] {
   return SEED_PROJECTS.map((project) => ({
     id: project.id,
@@ -161,6 +207,9 @@ export function listSeedProjectSummaries(): ProjectSummary[] {
     phaseCompletionPct: project.phase_completion_pct,
     ownershipPercentage: 100,
     estimatedExitValue: Math.round(project.purchasePrice * 1.22),
+    dealId: project.dealId,
+    dealSlug: project.dealSlug,
+    dealAddress: project.dealAddress,
   }));
 }
 
@@ -183,6 +232,9 @@ export function seedProjectsForApiList(): Array<Record<string, unknown>> {
     ownershipPercentage: 100,
     estimatedExitValue: Math.round(project.purchasePrice * 1.22),
     financials: { purchasePrice: project.purchasePrice },
+    dealId: project.dealId,
+    dealSlug: project.dealSlug,
+    dealAddress: project.dealAddress,
   }));
 }
 

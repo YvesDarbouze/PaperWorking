@@ -1,10 +1,12 @@
 'use client';
 
-import { FormEvent, useMemo, useState } from 'react';
+import { FormEvent, useEffect, useMemo, useState } from 'react';
 import { PROFILE_PREVIEW } from '@/lib/dashboard/shell-seed';
 
 const inputClass =
   'w-full rounded-lg border border-white/10 bg-[#0d0a0b] px-4 h-10 text-sm text-white outline-none transition placeholder:text-white/30 focus:border-emerald-500/40 focus:ring-1 focus:ring-emerald-500/30';
+
+type SessionRow = { id: string; label: string; detail: string; current: boolean };
 
 /**
  * Profile & Security Settings — port of PaperWorking
@@ -29,7 +31,51 @@ export default function ProfileSettingsPanel() {
   const [mfaEnabled, setMfaEnabled] = useState<boolean>(PROFILE_PREVIEW.mfaEnabled);
   const [revoking, setRevoking] = useState(false);
   const [revokeSuccess, setRevokeSuccess] = useState(false);
-  const [sessions, setSessions] = useState(() => [...PROFILE_PREVIEW.sessions]);
+  const [sessions, setSessions] = useState<SessionRow[]>(() =>
+    PROFILE_PREVIEW.sessions.map((s) => ({ ...s })),
+  );
+
+  useEffect(() => {
+    let cancelled = false;
+    (async () => {
+      try {
+        const [profileRes, sessionsRes] = await Promise.all([
+          fetch('/api/settings/profile', { credentials: 'include' }),
+          fetch('/api/auth/sessions', { credentials: 'include' }),
+        ]);
+        if (profileRes.ok) {
+          const profile = (await profileRes.json()) as Record<string, unknown>;
+          if (!cancelled) {
+            const name = String(profile.name ?? profile.displayName ?? '');
+            const parts = name.split(/\s+/).filter(Boolean);
+            if (parts[0]) setFirstName(parts[0]);
+            if (parts.length > 1) setLastName(parts.slice(1).join(' '));
+            if (typeof profile.phone === 'string') setPhone(profile.phone);
+            if (typeof profile.companyName === 'string') setCompany(profile.companyName);
+            if (typeof profile.twoFaEnabled === 'boolean') setMfaEnabled(profile.twoFaEnabled);
+          }
+        }
+        if (sessionsRes.ok) {
+          const list = (await sessionsRes.json()) as Array<Record<string, unknown>>;
+          if (!cancelled && Array.isArray(list) && list.length > 0) {
+            setSessions(
+              list.map((s) => ({
+                id: String(s.id),
+                label: String(s.device ?? 'Device'),
+                detail: [s.location, s.ip].filter(Boolean).join(' · ') || 'Active session',
+                current: Boolean(s.isCurrent),
+              })),
+            );
+          }
+        }
+      } catch {
+        /* keep seed preview */
+      }
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, []);
 
   const [claimedEmails, setClaimedEmails] = useState<string[]>([
     ...PROFILE_PREVIEW.claimedEmails,
@@ -55,10 +101,25 @@ export default function ProfileSettingsPanel() {
   async function handleSaveProfile(e: FormEvent) {
     e.preventDefault();
     setSaving(true);
-    await new Promise((r) => setTimeout(r, 400));
-    setSaving(false);
-    setSaved(true);
-    setTimeout(() => setSaved(false), 3000);
+    try {
+      await fetch('/api/settings/profile', {
+        method: 'PUT',
+        credentials: 'include',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          firstName,
+          lastName,
+          phone,
+          companyName: company,
+        }),
+      });
+      setSaved(true);
+      setTimeout(() => setSaved(false), 3000);
+    } catch {
+      /* keep UI optimistic */
+    } finally {
+      setSaving(false);
+    }
   }
 
   async function handlePasswordChange(e: FormEvent) {

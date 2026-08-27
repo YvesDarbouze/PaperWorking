@@ -55,6 +55,8 @@ export function mapRawDealToPayload(d: RawDealRecord): ApiDealPayload {
     creatorId: d.creatorId,
     invitedUsers,
     createdAt: d.createdAt instanceof Date ? d.createdAt.toISOString() : String(d.createdAt),
+    projectId: d.projectId || project?.id || null,
+    projectName: project?.name || project?.title || null,
   };
 }
 

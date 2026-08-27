@@ -60,6 +60,7 @@ export default function LoginPanel() {
     authenticated,
     loading: authLoading,
     firebaseReady,
+    logout,
   } = useAuth();
 
   const urlMode = searchParams.get('mode');
@@ -83,18 +84,49 @@ export default function LoginPanel() {
     clearError();
   }, [clearError]);
 
+  // If the server bounced us here (missing session cookie), clear stale client auth
+  // so we do not immediately navigate back to /dashboard and loop.
   useEffect(() => {
+    if (sessionReason !== 'session_expired') return;
     if (authLoading) return;
-    if (authenticated && sessionReason !== 'session_expired' && !isSignUp) {
-      router.replace(
-        resolveLoginRedirect({
-          isNewUser: false,
-          urlRedirectTo: redirectTo,
-          hasActiveSubscription: true,
-        }),
-      );
+    let cancelled = false;
+    void (async () => {
+      try {
+        await logout();
+      } catch {
+        // ignore
+      }
+      if (!cancelled) {
+        // Drop the reason query so this effect does not re-fire forever.
+        router.replace('/login');
+      }
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, [sessionReason, authLoading, logout, router]);
+
+  useEffect(() => {
+    if (authLoading || isSubmitting || loadingProvider) return;
+    if (sessionReason === 'session_expired') return;
+    if (authenticated && !isSignUp) {
+      const dest = resolveLoginRedirect({
+        isNewUser: false,
+        urlRedirectTo: redirectTo,
+        hasActiveSubscription: true,
+      });
+      // Hard navigation avoids RSC soft-nav races with cookie/session layout guards.
+      window.location.replace(dest);
     }
-  }, [authenticated, authLoading, isSignUp, redirectTo, router, sessionReason]);
+  }, [
+    authenticated,
+    authLoading,
+    isSignUp,
+    redirectTo,
+    sessionReason,
+    isSubmitting,
+    loadingProvider,
+  ]);
 
   function redirectAfterAuth(isNewUser: boolean) {
     const dest = resolveLoginRedirect({

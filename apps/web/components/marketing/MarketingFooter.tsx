@@ -5,7 +5,7 @@ import { FOOTER_BOTTOM_LINKS, FOOTER_COLUMNS } from '@/lib/marketing/content';
 export default function MarketingFooter() {
   return (
     <footer className="w-full" style={{ borderTop: '1px solid var(--nav-border)' }}>
-      <div className="w-full min-w-0 px-5 pb-12 pt-16 sm:px-6 md:px-8 lg:px-10 xl:px-12 2xl:px-16">
+      <div className="mx-auto max-w-[1280px] px-5 pb-12 pt-16 md:px-10">
         <div className="mb-16 grid grid-cols-2 gap-10 md:grid-cols-5 md:gap-8">
           <div className="col-span-2 md:col-span-1">
             <Logo href="/" className="mb-5 block" tone="auth" theme="dark" size="h-10" />
@@ -71,6 +71,15 @@ export default function MarketingFooter() {
               </Link>
             ))}
           </div>
+        </div>
+
+        <div className="mt-8 border-t pt-6 text-center" style={{ borderColor: 'rgba(253, 255, 252, 0.06)' }}>
+          <p
+            className="mx-auto max-w-[960px] text-[12px] leading-relaxed text-center"
+            style={{ color: 'var(--color-on-surface-variant)', opacity: 0.45 }}
+          >
+            PaperWorking is a project management software platform, not an investment advisor or registered broker-dealer. Marketplace listings are for operational deal organization and tracking soft interest only; they do not constitute offers to sell securities.
+          </p>
         </div>
       </div>
     </footer>

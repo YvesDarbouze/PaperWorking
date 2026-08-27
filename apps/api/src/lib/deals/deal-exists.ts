@@ -25,6 +25,8 @@ export function mapRawDealToPreview(dbDeal: RawDealRecord): DealPreview {
     target: payload.fundingTarget,
     assetClass: payload.assetClass,
     subStrategy: payload.subStrategy,
+    projectId: payload.projectId || dbDeal.projectId || project?.id || null,
+    projectName: payload.projectName || project?.name || project?.title || null,
   };
 }
 
@@ -32,9 +34,15 @@ export function evaluateDealVisibility(
   deal: DealPreview,
   userId: string,
 ): { exists: boolean; deal: DealPreview | null } {
-  const visibility = deal.visibility || 'marketplace';
   const isCreator = deal.creatorId === userId;
   const isInvited = deal.invitedUsers?.includes(userId);
+
+  const status = String(deal.status);
+  if ((status === 'draft' || status === 'archived') && !isCreator) {
+    return { exists: false, deal: null };
+  }
+
+  const visibility = deal.visibility || 'marketplace';
 
   if (visibility === 'invitation_only' && !isInvited && !isCreator) {
     return { exists: false, deal: null };

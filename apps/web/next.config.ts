@@ -8,26 +8,14 @@ const nextConfig: NextConfig = {
     '@paperworking/shared',
     '@paperworking/financial-engine',
   ],
-  // Firebase Auth popup needs opener access (Google/Facebook SSO).
-  async headers() {
-    return [
-      {
-        source: '/:path*',
-        headers: [
-          {
-            key: 'Cross-Origin-Opener-Policy',
-            value: 'same-origin-allow-popups',
-          },
-        ],
-      },
-    ];
-  },
   async redirects() {
     return [
       { source: '/account/support', destination: '/support', permanent: false },
       { source: '/dashboard/command-center', destination: '/dashboard', permanent: false },
       { source: '/dashboard/projects', destination: '/projects', permanent: false },
       { source: '/dashboard/projects/:id', destination: '/project/:id', permanent: false },
+      { source: '/deal-analyzer', destination: '/deal-calculator', permanent: false },
+      { source: '/dashboard/deal-analyzer', destination: '/dashboard/deal-calculator', permanent: false },
     ];
   },
 };

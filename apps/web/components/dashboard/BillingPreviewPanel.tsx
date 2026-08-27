@@ -2,18 +2,84 @@
 
 import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
+import { useEffect, useState } from 'react';
 import { BILLING_PREVIEW } from '@/lib/dashboard/shell-seed';
+
+type BillingView = {
+  plan: string;
+  status: string;
+  monthlyPrice: number;
+  paymentMethod: string;
+  billingEmail: string;
+  invoices: Array<{ id: string; date: string; amount: number; status: string }>;
+  trialEnds?: string;
+};
+
+function toView(data: Record<string, unknown>): BillingView {
+  const methods = Array.isArray(data.paymentMethods)
+    ? (data.paymentMethods as Array<Record<string, unknown>>)
+    : [];
+  const defaultPm = methods.find((m) => m.isDefault) ?? methods[0];
+  const paymentMethod = defaultPm
+    ? `${String(defaultPm.brand ?? 'card').toUpperCase()} •••• ${String(defaultPm.last4 ?? '••••')}`
+    : BILLING_PREVIEW.paymentMethod;
+
+  const invoices = Array.isArray(data.invoices)
+    ? (data.invoices as Array<Record<string, unknown>>).map((inv) => ({
+        id: String(inv.number ?? inv.id ?? 'inv'),
+        date: String(inv.date ?? ''),
+        amount: Number(inv.amount ?? 0),
+        status: String(inv.status ?? ''),
+      }))
+    : [...BILLING_PREVIEW.invoices];
+
+  return {
+    plan: String(data.plan ?? BILLING_PREVIEW.plan),
+    status: String(data.status ?? BILLING_PREVIEW.status),
+    monthlyPrice: Number(data.monthlyPrice ?? BILLING_PREVIEW.monthlyPrice),
+    paymentMethod,
+    billingEmail: String(data.billingEmail ?? BILLING_PREVIEW.billingEmail),
+    invoices,
+    trialEnds: BILLING_PREVIEW.trialEnds,
+  };
+}
 
 export default function BillingPreviewPanel() {
   const searchParams = useSearchParams();
   const paywall = searchParams.get('paywall');
+  const [billing, setBilling] = useState<BillingView>(() => ({
+    plan: BILLING_PREVIEW.plan,
+    status: BILLING_PREVIEW.status,
+    monthlyPrice: BILLING_PREVIEW.monthlyPrice,
+    paymentMethod: BILLING_PREVIEW.paymentMethod,
+    billingEmail: BILLING_PREVIEW.billingEmail,
+    invoices: [...BILLING_PREVIEW.invoices],
+    trialEnds: BILLING_PREVIEW.trialEnds,
+  }));
+
+  useEffect(() => {
+    let cancelled = false;
+    (async () => {
+      try {
+        const res = await fetch('/api/billing', { credentials: 'include' });
+        if (!res.ok) return;
+        const data = (await res.json()) as Record<string, unknown>;
+        if (!cancelled) setBilling(toView(data));
+      } catch {
+        /* keep seed preview */
+      }
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, []);
 
   return (
     <div className="w-full space-y-6">
       <div>
         <h2 className="text-xl font-bold text-[#fdfffc]">Billing</h2>
         <p className="mt-1 text-sm text-white/45">
-          {BILLING_PREVIEW.plan} plan · {BILLING_PREVIEW.status}
+          {billing.plan} plan · {billing.status}
         </p>
       </div>
 
@@ -35,9 +101,10 @@ export default function BillingPreviewPanel() {
             <p className="text-[11px] font-bold uppercase tracking-[0.08em] text-white/45">
               Current plan
             </p>
-            <h2 className="mt-1 text-3xl font-bold text-[#fdfffc]">{BILLING_PREVIEW.plan}</h2>
+            <h2 className="mt-1 text-3xl font-bold text-[#fdfffc]">{billing.plan}</h2>
             <p className="mt-2 text-sm text-white/55">
-              ${BILLING_PREVIEW.monthlyPrice}/mo · Trial ends {BILLING_PREVIEW.trialEnds}
+              ${billing.monthlyPrice}/mo
+              {billing.trialEnds ? ` · Trial ends ${billing.trialEnds}` : null}
             </p>
           </div>
           <div className="flex flex-wrap gap-2">
@@ -62,7 +129,7 @@ export default function BillingPreviewPanel() {
           <h3 className="mb-3 text-[11px] font-bold uppercase tracking-[0.08em] text-white/45">
             Payment method
           </h3>
-          <p className="text-sm text-white/75">{BILLING_PREVIEW.paymentMethod}</p>
+          <p className="text-sm text-white/75">{billing.paymentMethod}</p>
           <button
             type="button"
             className="mt-4 rounded-lg border border-white/12 px-3 py-2 text-[12px] font-semibold text-white/70"
@@ -77,11 +144,11 @@ export default function BillingPreviewPanel() {
           <dl className="space-y-2 text-sm">
             <div className="flex justify-between gap-3">
               <dt className="text-white/45">Email</dt>
-              <dd className="text-white/85">{BILLING_PREVIEW.billingEmail}</dd>
+              <dd className="text-white/85">{billing.billingEmail}</dd>
             </div>
             <div className="flex justify-between gap-3">
               <dt className="text-white/45">Status</dt>
-              <dd className="capitalize text-emerald-300">{BILLING_PREVIEW.status}</dd>
+              <dd className="capitalize text-emerald-300">{billing.status}</dd>
             </div>
           </dl>
         </article>
@@ -101,7 +168,7 @@ export default function BillingPreviewPanel() {
             </tr>
           </thead>
           <tbody>
-            {BILLING_PREVIEW.invoices.map((invoice) => (
+            {billing.invoices.map((invoice) => (
               <tr key={invoice.id} className="border-t border-white/8">
                 <td className="px-5 py-3 font-mono text-xs text-white/70">{invoice.id}</td>
                 <td className="px-5 py-3 text-white/65">{invoice.date}</td>

@@ -21,6 +21,8 @@ export interface ApiDealPayload {
   creatorId: string;
   invitedUsers?: string[];
   createdAt: string;
+  projectId?: string | null;
+  projectName?: string | null;
 }
 
 export interface DealPreview {
@@ -39,9 +41,13 @@ export interface DealPreview {
   target: number;
   assetClass?: string;
   subStrategy?: string;
+  projectId?: string | null;
+  projectName?: string | null;
 }
 
 export interface RawDealProject {
+  id?: string | null;
+  dealId?: string | null;
   name?: string | null;
   title?: string | null;
   city?: string | null;
@@ -74,6 +80,7 @@ export interface RawDealRecord {
   projectedRoi?: number | string | null;
   creatorId: string;
   createdAt: Date | string;
+  projectId?: string | null;
   projects?: RawDealProject[];
   commitments?: RawDealCommitment[];
   invitations?: RawDealInvitation[];

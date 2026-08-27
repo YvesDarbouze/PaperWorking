@@ -8,8 +8,8 @@ type SizeKey = 'h-6' | 'h-8' | 'h-10' | 'h-12' | 'sm' | 'md' | 'lg';
 
 interface LogoProps {
   href?: string;
-  /** `full` = icon+wordmark; `icon` = mark only */
-  variant?: 'full' | 'icon';
+  /** `full` = icon+wordmark; `icon` = mark only; `hero-landing` = full with w-1/2 */
+  variant?: 'full' | 'icon' | 'hero-landing';
   /** light = black mark; dark = white mark; auto follows tone */
   theme?: 'light' | 'dark' | 'auto';
   size?: SizeKey | number;
@@ -47,10 +47,10 @@ export default function Logo({
     theme === 'auto' ? (tone === 'auth' || tone === 'dashboard' ? 'dark' : 'dark') : theme;
 
   // Marketing landing is dark-first (v0 parity); light pages can pass theme="light".
-  const color = resolvedTheme === 'dark' ? '#fdfffc' : '#0d0a0b';
+  const color = resolvedTheme === 'dark' ? '#fdfffc' : '#0a0a0f';
 
   const targetVariant: 'full' | 'icon' =
-    variant ?? (collapsed || tone === 'dashboard' ? 'icon' : 'full');
+    variant === 'hero-landing' ? 'full' : (variant ?? (collapsed || tone === 'dashboard' ? 'icon' : 'full'));
 
   let resolvedHeight = 24;
   if (typeof size === 'number') resolvedHeight = size;
@@ -60,35 +60,48 @@ export default function Logo({
   const resolvedWidth = Math.round(resolvedHeight * ASPECT_RATIOS[targetVariant]);
   const Svg = targetVariant === 'full' ? PaperWorkingLogotype : PaperWorkingIcon;
 
+  // Sizing utilities: responsive when size is not provided, clamping to max-width 50%
+  let widthClass = '';
+  let svgClassName = 'select-none max-w-none';
+
+  if (!size) {
+    widthClass = variant === 'hero-landing'
+      ? 'w-1/2 max-w-[50%]'
+      : 'w-[25%] md:w-[20%] lg:w-[18%] max-w-[50%]';
+    svgClassName = 'w-full h-auto select-none';
+  } else {
+    widthClass = 'max-w-[50%]';
+  }
+
   const mark = (
     <>
       {targetVariant === 'full' ? (
         <>
           <PaperWorkingLogotype
-            width={resolvedWidth}
-            height={resolvedHeight}
+            width={!size ? '100%' : resolvedWidth}
+            height={!size ? '100%' : resolvedHeight}
             role="img"
             aria-label="PaperWorking"
             style={{ color, flexShrink: 0 }}
-            className="hidden max-w-none select-none md:block"
+            className={`hidden select-none md:block ${svgClassName}`}
           />
           <PaperWorkingIcon
-            width={Math.round(resolvedHeight * ASPECT_RATIOS.icon)}
-            height={resolvedHeight}
+            width={!size ? '100%' : Math.round(resolvedHeight * ASPECT_RATIOS.icon)}
+            height={!size ? '100%' : resolvedHeight}
             role="img"
             aria-label="PaperWorking"
             style={{ color, flexShrink: 0 }}
-            className="block max-w-none select-none md:hidden"
+            className={`block select-none md:hidden ${svgClassName}`}
           />
         </>
       ) : (
         <Svg
-          width={resolvedWidth}
-          height={resolvedHeight}
+          width={!size ? '100%' : resolvedWidth}
+          height={!size ? '100%' : resolvedHeight}
           role="img"
           aria-label="PaperWorking"
           style={{ color, flexShrink: 0 }}
-          className="max-w-none select-none"
+          className={svgClassName}
         />
       )}
     </>
@@ -98,7 +111,7 @@ export default function Logo({
     return (
       <Link
         href={href}
-        className={`inline-flex shrink-0 transition-opacity duration-150 hover:opacity-75 focus-visible:opacity-75 focus-visible:outline-none ${className}`}
+        className={`inline-flex shrink-0 transition-opacity duration-150 hover:opacity-75 focus-visible:opacity-75 focus-visible:outline-none ${widthClass} ${className}`}
         aria-label="PaperWorking — Return to homepage"
       >
         {mark}
@@ -106,5 +119,5 @@ export default function Logo({
     );
   }
 
-  return <span className={`inline-flex items-center shrink-0 ${className}`}>{mark}</span>;
+  return <span className={`inline-flex items-center shrink-0 ${widthClass} ${className}`}>{mark}</span>;
 }

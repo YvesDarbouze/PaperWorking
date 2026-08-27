@@ -1,10 +1,12 @@
 # API Wiring Checklist (PaperWorking_v1)
 
-**Cập nhật:** 2026-08-23
+**Cập nhật:** 2026-08-27
 
 Mở bằng Excel (khuyên dùng):
 - [`API_WIRING_CHECKLIST.csv`](./API_WIRING_CHECKLIST.csv) — double-click hoặc File → Open trong Excel
 - [`API_WIRING_CHECKLIST.tsv`](./API_WIRING_CHECKLIST.tsv) — tab-separated (paste ổn định)
+
+Tổng quan gap mới: [`API_GAP_OVERVIEW.md`](./API_GAP_OVERVIEW.md).
 
 Không copy bảng markdown có dấu `|` sang Excel (hay bị lệch cột).
 
@@ -27,12 +29,13 @@ Cột: **ID · Router · Path · Trạng thái · Lý do**
 | api19–20 | Vendor portal | /api/vendor-portal/profile, /requests | Đã kết nối (seed) | Seed / dev store |
 | api21–27 | Admin | /api/admin/ops, agent-crew, lender-*, rentcast | Đã kết nối (seed) | Seed ops |
 | api28 | Ops | /api/health | Đã kết nối (live) | Ops only — không UI |
-| — | Inbox / search | /api/inbox*, /api/messages* | Chưa kết nối | UI dùng INBOX_THREADS seed, không fetch |
-| — | Team | /api/team* | Chưa kết nối | TEAM_MEMBERS seed |
-| — | Settings | /api/settings* | Chưa kết nối | Preview / localStorage |
-| — | Settings / Billing | /api/billing*, /api/stripe/* | Chưa kết nối | Preview; chưa adapter Stripe |
+| — | Inbox | /api/inbox, /api/inbox/[id] | Đã kết nối (seed) 2026-08-27 | GET list + PATCH/DELETE; UI InboxNotificationCenter |
+| — | Messages / team members | /api/messages*, /api/team*, membership | Route sẵn (seed) | Team Directory UI còn seed local |
+| — | Settings | /api/settings/* | Đã kết nối (seed) 2026-08-27 | Profile panel fetch/put |
+| — | Billing | /api/billing/* | Đã kết nối (seed) 2026-08-27 | Preview panel; Stripe thật chưa |
+| — | Auth extras | magic-link, reset-password, sessions | Đã kết nối (seed) 2026-08-27 | 2FA / change-password / revoke còn thiếu |
 | — | Projects (còn lại) | /api/projects/create, phases, docs… (39) | Chưa kết nối | Handler có; UI chưa gọi |
-| — | Auth (còn lại) | /api/auth/magic-link, 2fa, sessions… (7) | Chưa kết nối | Session/me đã nối; phần còn lại chưa |
+| — | Stripe | /api/stripe/* | Chưa kết nối | Checkout/portal chưa adapter |
 
 **Cách paste tóm tắt vào Excel:** chọn bảng trên → copy → Excel → Paste → **Data → Text to Columns** nếu cần, hoặc dùng file CSV bên dưới.
 
@@ -43,9 +46,9 @@ Cột: **ID · Router · Path · Trạng thái · Lý do**
 | Layer | Count |
 |---|---|
 | Handlers `@paperworking/api` | ~297 |
-| Next route files | 28 |
-| UI đã fetch | 27 |
-| Chưa Next adapter | ~267 |
+| Next route files | **49** |
+| UI đã fetch (ước lượng) | ~35+ |
+| Chưa Next adapter | ~240+ |
 | Broken UI fetch | 0 |
 
 ---
@@ -134,10 +137,10 @@ Mở trực tiếp:
 | api68 | auth | POST | /api/auth/2fa/[action] | Chưa kết nối (high) | Session/me đã nối; magic-link/2FA/sessions list chưa có route Next. Handler: handleAuthTwoFaPost | — |
 | api69 | auth | POST | /api/auth/change-password | Chưa kết nối (high) | Session/me đã nối; magic-link/2FA/sessions list chưa có route Next. Handler: handleAuthChangePasswordPost | — |
 | api70 | auth | GET | /api/auth/ip | Chưa kết nối (high) | Session/me đã nối; magic-link/2FA/sessions list chưa có route Next. Handler: handleAuthIpGet | — |
-| api71 | auth | POST | /api/auth/magic-link | Chưa kết nối (high) | Session/me đã nối; magic-link/2FA/sessions list chưa có route Next. Handler: handleAuthMagicLinkPost | — |
-| api72 | auth | POST | /api/auth/reset-password | Chưa kết nối (high) | Session/me đã nối; magic-link/2FA/sessions list chưa có route Next. Handler: handleAuthResetPasswordPost | — |
+| api71 | auth | POST | /api/auth/magic-link | Đã kết nối (seed) 2026-08-27 | Dev no-op email sender. Handler: handleAuthMagicLinkPost | apps/web/app/api/auth/magic-link |
+| api72 | auth | POST | /api/auth/reset-password | Đã kết nối (seed) 2026-08-27 | Dev no-op email sender. Handler: handleAuthResetPasswordPost | apps/web/app/api/auth/reset-password |
 | api73 | auth | POST | /api/auth/revoke | Chưa kết nối (high) | Session/me đã nối; magic-link/2FA/sessions list chưa có route Next. Handler: handleAuthRevokePost | — |
-| api74 | auth | GET | /api/auth/sessions | Chưa kết nối (high) | Session/me đã nối; magic-link/2FA/sessions list chưa có route Next. Handler: handleSessionsGet | — |
+| api74 | auth | GET | /api/auth/sessions | Đã kết nối (seed) 2026-08-27 | ProfileSettingsPanel fetch. Handler: handleSessionsGet | apps/web/app/api/auth/sessions |
 | api75 | stripe | POST | /api/stripe/checkout | Chưa kết nối (high) | Checkout/portal handlers có; chưa Next adapter + UI billing thật. Handler: handleStripeCheckoutPost | — |
 | api76 | stripe | POST | /api/stripe/invoices | Chưa kết nối (high) | Checkout/portal handlers có; chưa Next adapter + UI billing thật. Handler: handleStripeInvoicesPost | — |
 | api77 | stripe | POST | /api/stripe/payment-method | Chưa kết nối (high) | Checkout/portal handlers có; chưa Next adapter + UI billing thật. Handler: handleStripePaymentMethodPost | — |
@@ -145,27 +148,27 @@ Mở trực tiếp:
 | api79 | stripe | GET | /api/stripe/session-status | Chưa kết nối (high) | Checkout/portal handlers có; chưa Next adapter + UI billing thật. Handler: handleStripeSessionStatusGet | — |
 | api80 | stripe | POST | /api/stripe/subscription | Chưa kết nối (high) | Checkout/portal handlers có; chưa Next adapter + UI billing thật. Handler: handleStripeSubscriptionPost | — |
 | api81 | stripe | POST | /api/stripe/webhook | Chưa kết nối (high) | Checkout/portal handlers có; chưa Next adapter + UI billing thật. Handler: handleStripeWebhookPost | — |
-| api82 | inbox | POST | /api/inbox | Chưa kết nối (high) | Inbox UI dùng INBOX_THREADS seed, không fetch /api/inbox*. Handler: handleInboxPost | — |
-| api83 | inbox | DELETE | /api/inbox/[id] | Chưa kết nối (high) | Inbox UI dùng INBOX_THREADS seed, không fetch /api/inbox*. Handler: handleInboxByIdDelete | — |
-| api84 | inbox | PATCH | /api/inbox/[id] | Chưa kết nối (high) | Inbox UI dùng INBOX_THREADS seed, không fetch /api/inbox*. Handler: handleInboxByIdPatch | — |
+| api82 | inbox | POST | /api/inbox | Đã kết nối (seed) 2026-08-27 | Seed store + InboxNotificationCenter. Handler: handleInboxPost | apps/web/app/api/inbox |
+| api83 | inbox | DELETE | /api/inbox/[id] | Đã kết nối (seed) 2026-08-27 | Inbox UI DELETE. Handler: handleInboxByIdDelete | apps/web/app/api/inbox/[id] |
+| api84 | inbox | PATCH | /api/inbox/[id] | Đã kết nối (seed) 2026-08-27 | Inbox UI mark read/archive. Handler: handleInboxByIdPatch | apps/web/app/api/inbox/[id] |
 | api85 | inbox | POST | /api/inbox/[id]/actions | Chưa kết nối (high) | Inbox UI dùng INBOX_THREADS seed, không fetch /api/inbox*. Handler: handleInboxActionsPost | — |
 | api86 | inbox | POST | /api/inbox/backfill | Chưa kết nối (high) | Inbox UI dùng INBOX_THREADS seed, không fetch /api/inbox*. Handler: handleInboxBackfillPost | — |
-| api87 | billing | DELETE | /api/billing/* | Chưa kết nối (high) | Billing preview UI; chưa adapter /api/billing*. Handler: handleBillingDelete | — |
-| api88 | billing | GET | /api/billing/* | Chưa kết nối (high) | Billing preview UI; chưa adapter /api/billing*. Handler: handleBillingGet | — |
-| api89 | billing | POST | /api/billing/* | Chưa kết nối (high) | Billing preview UI; chưa adapter /api/billing*. Handler: handleBillingPost | — |
-| api90 | billing | PUT | /api/billing/* | Chưa kết nối (high) | Billing preview UI; chưa adapter /api/billing*. Handler: handleBillingPut | — |
-| api91 | messages | GET | /api/messages | Chưa kết nối (high) | Liên quan inbox; chưa Next route; search chạy trên seed client. Handler: handleMessagesGet | — |
-| api92 | messages | POST | /api/messages | Chưa kết nối (high) | Liên quan inbox; chưa Next route; search chạy trên seed client. Handler: handleMessagesPost | — |
-| api93 | messages | PATCH | /api/messages/[id]/read | Chưa kết nối (high) | Liên quan inbox; chưa Next route; search chạy trên seed client. Handler: handleMessageReadPatch | — |
-| api94 | messages | GET | /api/messages/thread/[threadId] | Chưa kết nối (high) | Liên quan inbox; chưa Next route; search chạy trên seed client. Handler: handleMessagesThreadGet | — |
-| api95 | settings | DELETE | /api/settings/* | Chưa kết nối (high) | Settings panels preview/localStorage, không fetch /api/settings*. Handler: handleSettingsDelete | — |
-| api96 | settings | GET | /api/settings/* | Chưa kết nối (high) | Settings panels preview/localStorage, không fetch /api/settings*. Handler: handleSettingsGet | — |
-| api97 | settings | POST | /api/settings/* | Chưa kết nối (high) | Settings panels preview/localStorage, không fetch /api/settings*. Handler: handleSettingsPost | — |
-| api98 | settings | PUT | /api/settings/* | Chưa kết nối (high) | Settings panels preview/localStorage, không fetch /api/settings*. Handler: handleSettingsPut | — |
-| api99 | team | DELETE | /api/team/* | Chưa kết nối (high) | Team Directory dùng TEAM_MEMBERS seed, không fetch /api/team*. Handler: handleTeamDelete | — |
-| api100 | team | GET | /api/team/* | Chưa kết nối (high) | Team Directory dùng TEAM_MEMBERS seed, không fetch /api/team*. Handler: handleTeamGet | — |
-| api101 | team | POST | /api/team/* | Chưa kết nối (high) | Team Directory dùng TEAM_MEMBERS seed, không fetch /api/team*. Handler: handleTeamPost | — |
-| api102 | team | PUT | /api/team/* | Chưa kết nối (high) | Team Directory dùng TEAM_MEMBERS seed, không fetch /api/team*. Handler: handleTeamPut | — |
+| api87 | billing | DELETE | /api/billing/* | Đã kết nối (seed) 2026-08-27 | Next catch-all adapter. Handler: handleBillingDelete | apps/web/app/api/billing/[[...action]] |
+| api88 | billing | GET | /api/billing/* | Đã kết nối (seed) 2026-08-27 | BillingPreviewPanel fetch. Handler: handleBillingGet | apps/web/app/api/billing/[[...action]] |
+| api89 | billing | POST | /api/billing/* | Đã kết nối (seed) 2026-08-27 | Next catch-all adapter. Handler: handleBillingPost | apps/web/app/api/billing/[[...action]] |
+| api90 | billing | PUT | /api/billing/* | Đã kết nối (seed) 2026-08-27 | Next catch-all adapter. Handler: handleBillingPut | apps/web/app/api/billing/[[...action]] |
+| api91 | messages | GET | /api/messages | Đã kết nối (seed) | Route sẵn; search UI có thể còn seed client. Handler: handleMessagesGet | apps/web/app/api/messages |
+| api92 | messages | POST | /api/messages | Đã kết nối (seed) | Route sẵn. Handler: handleMessagesPost | apps/web/app/api/messages |
+| api93 | messages | PATCH | /api/messages/[id]/read | Chưa kết nối (high) | Read-mark path riêng chưa adapter. Handler: handleMessageReadPatch | — |
+| api94 | messages | GET | /api/messages/thread/[threadId] | Đã kết nối (seed) | Route sẵn. Handler: handleMessagesThreadGet | apps/web/app/api/messages/thread/[threadId] |
+| api95 | settings | DELETE | /api/settings/* | Đã kết nối (seed) 2026-08-27 | Catch-all adapter. Handler: handleSettingsDelete | apps/web/app/api/settings/[[...section]] |
+| api96 | settings | GET | /api/settings/* | Đã kết nối (seed) 2026-08-27 | ProfileSettingsPanel. Handler: handleSettingsGet | apps/web/app/api/settings/[[...section]] |
+| api97 | settings | POST | /api/settings/* | Đã kết nối (seed) 2026-08-27 | Catch-all adapter. Handler: handleSettingsPost | apps/web/app/api/settings/[[...section]] |
+| api98 | settings | PUT | /api/settings/* | Đã kết nối (seed) 2026-08-27 | Profile PUT. Handler: handleSettingsPut | apps/web/app/api/settings/[[...section]] |
+| api99 | team | DELETE | /api/team/* | Đã kết nối (seed) | Route sẵn; Team Directory UI còn seed. Handler: handleTeamDelete | apps/web/app/api/team/[[...action]] |
+| api100 | team | GET | /api/team/* | Đã kết nối (seed) | Route sẵn; UI chưa fetch. Handler: handleTeamGet | apps/web/app/api/team/[[...action]] |
+| api101 | team | POST | /api/team/* | Đã kết nối (seed) | Route sẵn; UI chưa fetch. Handler: handleTeamPost | apps/web/app/api/team/[[...action]] |
+| api102 | team | PUT | /api/team/* | Đã kết nối (seed) | Route sẵn; UI chưa fetch. Handler: handleTeamPut | apps/web/app/api/team/[[...action]] |
 | api103 | reil | POST | /api/reil/cron/refresh | Chưa kết nối (med) | REIL engine handlers; UI project chưa gọi các path này. Handler: handleReilCronRefreshPost | — |
 | api104 | reil | GET | /api/reil/listings | Chưa kết nối (med) | REIL engine handlers; UI project chưa gọi các path này. Handler: handleReilListingsGet | — |
 | api105 | reil | GET | /api/reil/market-stats | Chưa kết nối (med) | REIL engine handlers; UI project chưa gọi các path này. Handler: handleReilMarketStatsGet | — |

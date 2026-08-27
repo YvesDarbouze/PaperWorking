@@ -16,6 +16,7 @@ import {
   RECENT_MESSAGES,
   TOP_PERFORMERS,
 } from '@/lib/dashboard/content';
+import { listSeedProjectSummaries } from '@/lib/projects/seed-data';
 
 const panel =
   'rounded-2xl border border-white/10 bg-[#121014]/90 shadow-[0_8px_32px_rgba(0,0,0,0.12)]';
@@ -145,7 +146,7 @@ export default function CommandCenterPanel() {
 
   return (
     <div className="w-full min-h-full">
-      <div className="w-full min-w-0 space-y-7 px-4 py-5 sm:px-5 sm:py-6 lg:px-6 lg:py-7 xl:px-8">
+      <div className="mx-auto max-w-[1400px] space-y-7 px-5 py-6 lg:px-8 lg:py-7">
         {/* Zone 1 — Page header */}
         <header className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
           <div>
@@ -184,7 +185,7 @@ export default function CommandCenterPanel() {
               className="flex items-center gap-1.5 rounded-lg border border-white/10 bg-white/[0.05] px-3.5 py-2 text-[12px] font-semibold text-white/70 no-underline transition-colors hover:text-white"
             >
               <span className="material-symbols-outlined text-[15px]">query_stats</span>
-              Deal Analyzer
+              Deal Calculator
             </Link>
             <Link
               href="/projects"
@@ -196,47 +197,78 @@ export default function CommandCenterPanel() {
           </div>
         </header>
 
-        {/* Deals Marketplace banner */}
-        <div
-          className="relative flex flex-col items-center justify-between gap-4 overflow-hidden rounded-2xl border border-white/12 p-5 md:flex-row"
-          style={{
-            background:
-              'linear-gradient(135deg, rgba(69,73,85,0.25) 0%, rgba(18,16,20,0.85) 100%)',
-            boxShadow: '0 8px 32px rgba(0,0,0,0.12)',
-          }}
-        >
-          <div className="flex items-center gap-4">
-            <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl border border-white/10 bg-[#454955]/30 text-[#fdfffc]">
-              <span className="material-symbols-outlined text-[24px]">search</span>
-            </div>
-            <div>
-              <div className="flex items-center gap-2">
-                <h3 className="text-base font-bold text-[#fdfffc]">Deals Marketplace</h3>
-                <span className="rounded border border-emerald-500/40 bg-emerald-500/20 px-2 py-0.5 text-[10px] font-extrabold uppercase text-emerald-400">
-                  Exclusive
-                </span>
+        {/* Quick Launch Actions: Deals Marketplace & Create new Project */}
+        <div className="grid grid-cols-1 gap-5 md:grid-cols-2">
+          {/* Deals Marketplace card */}
+          <div
+            className="relative flex flex-col justify-between gap-4 overflow-hidden rounded-[14px] border border-white/12 p-5 backdrop-blur-xl"
+            style={{
+              background:
+                'linear-gradient(135deg, rgba(69,73,85,0.25) 0%, rgba(18,16,20,0.85) 100%)',
+              boxShadow: '0 8px 32px rgba(0,0,0,0.12)',
+            }}
+          >
+            <div className="flex items-start gap-4">
+              <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl border border-white/10 bg-[#454955]/30 text-[#fdfffc]">
+                <span className="material-symbols-outlined text-[24px]">search</span>
               </div>
-              <p className="mt-0.5 text-xs text-[#9E9DA0]">
-                Search any street address to discover crowdfunding investments, list new syndication
-                opportunities, or connect with investors.
-              </p>
+              <div>
+                <div className="flex items-center gap-2">
+                  <h3 className="text-base font-bold text-[#fdfffc]">Deals Marketplace</h3>
+                  <span className="rounded border border-emerald-500/40 bg-emerald-500/20 px-2 py-0.5 text-[10px] font-extrabold uppercase text-emerald-400">
+                    Exclusive
+                  </span>
+                </div>
+                <p className="mt-1 text-xs text-[#9E9DA0]">
+                  Search any street address to discover crowdfunding investments, list new syndication opportunities, or connect with investors.
+                </p>
+              </div>
+            </div>
+            <div className="flex items-center justify-end">
+              <Link
+                href="/dashboard/deals"
+                className="flex items-center gap-2 rounded-xl bg-emerald-500 px-4 py-2 text-xs font-bold uppercase tracking-wider text-slate-950 no-underline shadow-md hover:bg-emerald-400 transition"
+              >
+                Explore Deals
+                <span className="material-symbols-outlined text-[16px]">arrow_forward</span>
+              </Link>
             </div>
           </div>
-          <div className="flex shrink-0 flex-wrap items-center gap-2">
-            <Link
-              href="/projects"
-              className="flex items-center gap-1.5 rounded-xl border border-[#34d399]/25 bg-[#34d399]/[0.08] px-4 py-2 text-xs font-bold uppercase tracking-wider text-[#34d399] no-underline"
-            >
-              <span className="material-symbols-outlined text-[16px]">add</span>
-              Create new Project
-            </Link>
-            <Link
-              href="/dashboard/deals"
-              className="flex items-center gap-2 rounded-xl bg-emerald-500 px-4 py-2 text-xs font-bold uppercase tracking-wider text-slate-950 no-underline shadow-md hover:bg-emerald-400"
-            >
-              Explore Deals
-              <span className="material-symbols-outlined text-[16px]">arrow_forward</span>
-            </Link>
+
+          {/* Create new Project CTA card */}
+          <div
+            className="relative flex flex-col justify-between gap-4 overflow-hidden rounded-[14px] border border-white/12 p-5 backdrop-blur-xl"
+            style={{
+              background:
+                'linear-gradient(135deg, rgba(0,221,148,0.10) 0%, rgba(18,16,20,0.85) 100%)',
+              boxShadow: '0 8px 32px rgba(0,0,0,0.12)',
+            }}
+          >
+            <div className="flex items-start gap-4">
+              <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl border border-[#00DD94]/30 bg-[#00DD94]/15 text-[#00DD94]">
+                <span className="material-symbols-outlined text-[24px]">create_new_folder</span>
+              </div>
+              <div>
+                <div className="flex items-center gap-2">
+                  <h3 className="text-base font-bold text-[#fdfffc]">Create new Project</h3>
+                  <span className="rounded border border-[#00DD94]/40 bg-[#00DD94]/20 px-2 py-0.5 text-[10px] font-extrabold uppercase text-[#00DD94]">
+                    3-Step Flow
+                  </span>
+                </div>
+                <p className="mt-1 text-xs text-[#9E9DA0]">
+                  Launch a new project workspace, assign team members, and link property acquisition deals with automated collision check.
+                </p>
+              </div>
+            </div>
+            <div className="flex items-center justify-end">
+              <Link
+                href="/projects/new?source=dashboard"
+                className="flex items-center gap-2 rounded-xl bg-[#00DD94] px-4 py-2 text-xs font-bold uppercase tracking-wider text-[#0a0a0f] no-underline shadow-md hover:brightness-110 transition"
+              >
+                <span className="material-symbols-outlined text-[16px]">add</span>
+                Create new Project
+              </Link>
+            </div>
           </div>
         </div>
 
@@ -454,30 +486,70 @@ export default function CommandCenterPanel() {
 
           {/* Active projects progress */}
           <article className={`${panel} p-5 lg:col-span-6`}>
-            <div className="mb-3 flex items-center gap-2 border-b border-white/8 pb-3">
-              <span className="material-symbols-outlined text-[18px] text-[#7A9EAA]">folder_open</span>
-              <span className="text-[11px] font-bold uppercase tracking-wider text-white/55">
-                Active Projects
-              </span>
+            <div className="mb-3 flex items-center justify-between border-b border-white/8 pb-3">
+              <div className="flex items-center gap-2">
+                <span className="material-symbols-outlined text-[18px] text-[#7A9EAA]">folder_open</span>
+                <span className="text-[11px] font-bold uppercase tracking-wider text-white/55">
+                  Active Projects
+                </span>
+              </div>
+              <Link
+                href="/projects/new?source=dashboard"
+                className="text-[11px] font-semibold text-[#00DD94] no-underline hover:underline"
+              >
+                + New Project
+              </Link>
             </div>
             <div className="space-y-3">
-              {ACTIVE_PROJECT_PROGRESS.map((project) => (
-                <Link
+              {listSeedProjectSummaries().map((project) => (
+                <div
                   key={project.id}
-                  href={`/project/${project.id}`}
-                  className="block no-underline"
+                  className="rounded-xl border border-white/5 bg-white/[0.02] p-3 transition hover:border-white/10"
                 >
-                  <div className="mb-1 flex items-center justify-between text-xs">
-                    <span className="font-medium text-white/85">{project.name}</span>
-                    <span className="text-white/45">{project.phase}</span>
+                  <div className="mb-1.5 flex items-center justify-between text-xs">
+                    <Link
+                      href={`/project/${project.id}`}
+                      className="font-medium text-white/90 hover:text-white transition"
+                    >
+                      {project.propertyName}
+                    </Link>
+                    <span className="text-white/45 capitalize">{project.currentPhase}</span>
                   </div>
-                  <div className="h-1.5 overflow-hidden rounded-full bg-white/8">
+
+                  <div className="mb-2.5 h-1.5 overflow-hidden rounded-full bg-white/8">
                     <div
-                      className="h-full rounded-full bg-[#7A9EAA]"
-                      style={{ width: `${project.progress}%` }}
+                      className="h-full rounded-full bg-[#00DD94]"
+                      style={{ width: `${project.phaseCompletionPct ?? 45}%` }}
                     />
                   </div>
-                </Link>
+
+                  {/* Backlink or Link a deal CTA */}
+                  <div className="flex items-center justify-between text-[11px]">
+                    {project.dealId || project.dealSlug ? (
+                      <Link
+                        href={`/deals/${project.dealSlug || '1247elmst'}/detail`}
+                        className="flex items-center gap-1 text-[#00DD94] hover:underline"
+                      >
+                        <span className="material-symbols-outlined text-[14px]">location_on</span>
+                        <span className="truncate max-w-[200px]">{project.dealAddress || project.address}</span>
+                      </Link>
+                    ) : (
+                      <Link
+                        href={`/projects/new?step=2&projectId=${project.id}`}
+                        className="inline-flex items-center gap-1 rounded-md border border-[#00DD94]/30 bg-[#00DD94]/10 px-2 py-0.5 font-semibold text-[#00DD94] hover:bg-[#00DD94]/20 transition"
+                      >
+                        <span className="material-symbols-outlined text-[12px]">add_link</span>
+                        Link a deal
+                      </Link>
+                    )}
+                    <Link
+                      href={`/project/${project.id}`}
+                      className="text-white/40 hover:text-white/70 transition"
+                    >
+                      Workspace →
+                    </Link>
+                  </div>
+                </div>
               ))}
             </div>
           </article>

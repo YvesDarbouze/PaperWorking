@@ -2,6 +2,13 @@
 
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
+import {
+  twoMarketplacesTitle,
+  twoMarketplacesBody,
+  dealMarketplaceBlurb,
+  vendorMarketplaceBlurb,
+  legalDisclaimer,
+} from '@/lib/marketing/copy';
 
 /** Ported from PaperWorking `components/landing/MarketplacesClient.tsx`. */
 export default function MarketplacesClient() {
@@ -35,20 +42,15 @@ export default function MarketplacesClient() {
         </span>
 
         <h1 className="landing-display font-semibold leading-[1.05] tracking-[-0.025em] text-white">
-          Come for the tools. Stay for the community.
+          {twoMarketplacesTitle}
         </h1>
 
         <div className="mx-auto max-w-3xl space-y-4 text-center">
           <p className="text-base font-medium leading-[1.65] text-white/70 sm:text-lg">
-            PaperWorking subscribers have exclusive access to powerful tools for serious real estate
-            investors.
+            {twoMarketplacesBody}
           </p>
           <p className="text-sm leading-[1.65] text-white/60 sm:text-base">
-            The &ldquo;Deal Marketplace&rdquo; helps investors crowdfund deals and gauge
-            opportunities to partner with other real investors. The &ldquo;Vendor Marketplace&rdquo;
-            helps real estate investors find vendors when they need them. Appraisers, contractors,
-            lawyers, and even bankers can list their services, and PaperWorking will recommend them to
-            investors at the moment they need them.
+            {activeTab === 'deals' ? dealMarketplaceBlurb : vendorMarketplaceBlurb}
           </p>
         </div>
 
@@ -66,7 +68,7 @@ export default function MarketplacesClient() {
               onClick={() => handleTabClick('deals')}
               className={`flex min-h-[44px] cursor-pointer items-center justify-center whitespace-nowrap rounded-full px-6 py-2.5 text-xs font-semibold tracking-wide transition-all duration-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--color-primary)] ${
                 activeTab === 'deals'
-                  ? 'bg-[color:var(--color-primary)] text-[#0d0a0b] shadow-md'
+                  ? 'bg-[color:var(--color-primary)] text-[#0a0a0f] shadow-md'
                   : 'text-white/55 hover:text-white'
               }`}
             >
@@ -81,7 +83,7 @@ export default function MarketplacesClient() {
               onClick={() => handleTabClick('vendors')}
               className={`flex min-h-[44px] cursor-pointer items-center justify-center whitespace-nowrap rounded-full px-6 py-2.5 text-xs font-semibold tracking-wide transition-all duration-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--color-primary)] ${
                 activeTab === 'vendors'
-                  ? 'bg-[color:var(--color-primary)] text-[#0d0a0b] shadow-md'
+                  ? 'bg-[color:var(--color-primary)] text-[#0a0a0f] shadow-md'
                   : 'text-white/55 hover:text-white'
               }`}
             >
@@ -94,7 +96,7 @@ export default function MarketplacesClient() {
           <div className="flex flex-col items-center justify-center gap-4 sm:flex-row">
             <Link
               href={activeTab === 'deals' ? '/dashboard/deals' : '/dashboard/marketplace'}
-              className="inline-flex items-center gap-2 rounded-full bg-[color:var(--color-primary)] px-8 py-4 text-[14px] font-semibold tracking-wide text-[#0d0a0b] shadow-[0_0_24px_-4px_rgba(0,221,148,0.45)] transition-all duration-150 active:scale-95"
+              className="inline-flex items-center gap-2 rounded-full bg-[color:var(--color-primary)] px-8 py-4 text-[14px] font-semibold tracking-wide text-[#0a0a0f] shadow-[0_0_24px_-4px_rgba(0,221,148,0.45)] transition-all duration-150 active:scale-95"
             >
               Browse the marketplaces
               <span className="material-symbols-outlined text-[18px]">arrow_forward</span>
@@ -108,8 +110,7 @@ export default function MarketplacesClient() {
             </Link>
           </div>
           <p className="mx-auto max-w-lg font-[family-name:var(--font-jetbrains-mono)] text-xs leading-relaxed text-white/40">
-            PaperWorking is project management software, not investment advice. Marketplace listings
-            are not offers to sell securities.
+            {legalDisclaimer}
           </p>
         </div>
       </section>

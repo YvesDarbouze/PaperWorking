@@ -32,6 +32,9 @@ export interface ProjectSummary {
   phaseCompletionPct?: number;
   ownershipPercentage?: number;
   estimatedExitValue?: number;
+  dealId?: string | null;
+  dealSlug?: string | null;
+  dealAddress?: string | null;
 }
 
 export interface ProjectWorkspace extends ProjectSummary {

@@ -2,6 +2,14 @@
 
 import Link from 'next/link';
 import HowItWorksLifecycleGraphic from '@/components/marketing/HowItWorksLifecycleGraphic';
+import {
+  howItWorksHeader,
+  howItWorksSubheadline,
+  howItWorksBody,
+  dealCalculatorSectionTitle,
+  dealCalculatorSectionBody,
+  dealCalculatorSectionSub,
+} from '@/lib/marketing/copy';
 
 const PHASE_CARDS = [
   {
@@ -10,7 +18,7 @@ const PHASE_CARDS = [
     color: 'text-[color:var(--color-primary)]',
     accentBg: 'bg-[color:var(--color-primary)]/10 border-[color:var(--color-primary)]/20',
     description:
-      'Acquisition: Decide if the deal works before you buy. The Deal Analyzer pulls live property data, an automated valuation, and projected cap rate, IRR, and cash-on-cash.',
+      'Acquisition: Decide if the deal works before you buy. The Deal Calculator pulls live property data, an automated valuation, and projected cap rate, IRR, and cash-on-cash.',
   },
   {
     num: 'PHASE 02',
@@ -48,18 +56,15 @@ export default function HowItWorks() {
         <div className="relative z-10 mx-auto max-w-[1280px] px-6 text-center">
           <div className="mb-6 inline-flex items-center gap-2 rounded-full border border-[color:var(--color-primary)]/20 bg-[color:var(--color-primary)]/10 px-4 py-1.5 text-xs font-semibold uppercase tracking-[0.12em] text-[color:var(--color-primary)]">
             <span className="material-symbols-outlined text-sm">hub</span>
-            HUB · The REIL
+            {howItWorksHeader}
           </div>
 
           <h1 className="landing-display mx-auto mb-6 max-w-4xl font-semibold leading-[1.1] tracking-[-0.025em] text-white">
-            How PaperWorking Works
+            {howItWorksSubheadline}
           </h1>
 
           <p className="mx-auto mb-14 max-w-3xl text-base leading-[1.65] text-white/65 sm:text-lg">
-            Real estate investments move through a unique four-phase lifecycle: &quot;Acquisition&quot;,
-            &quot;Fund&quot;, &quot;Hold&quot;, &quot;Exit.&quot; PaperWorking organizes investments and
-            investment teams to give real estate investors the tools to make their investment process
-            more organized and informed.
+            {howItWorksBody}
           </p>
 
           <div className="grid grid-cols-1 gap-5 text-left md:grid-cols-2 md:gap-6 lg:grid-cols-4">
@@ -122,15 +127,14 @@ export default function HowItWorks() {
 
           <div className="glass-card rounded-[24px] border border-white/[0.08] bg-white/[0.03] p-8 backdrop-blur-xl sm:p-10">
             <span className="mb-3 block font-[family-name:var(--font-jetbrains-mono)] text-[10px] font-medium uppercase tracking-widest text-[color:var(--color-primary)]">
-              PHASE 01 · UNDERWRITE & ANALYZE
+              {dealCalculatorSectionTitle}
             </span>
             <h3 className="mb-4 text-2xl font-semibold leading-tight tracking-[-0.02em] text-white">
-              Phase 1 — Acquisition
+              {dealCalculatorSectionBody}
             </h3>
             <div className="space-y-4 text-base leading-[1.65] text-white/65">
               <p>
-                Acquisition: Decide if the deal works before you buy. The Deal Analyzer pulls live
-                property data, an automated valuation, and projected cap rate, IRR, and cash-on-cash.
+                {dealCalculatorSectionSub}
               </p>
               <p>
                 What you log here (purchase price, projected rents, rehab estimate) becomes the
@@ -228,7 +232,7 @@ export default function HowItWorks() {
             </h2>
             <div className="space-y-6 text-base leading-[1.65] text-white/65 sm:text-lg">
               <p>
-                Take one deal. You find a duplex and run the address through the Deal Analyzer; the
+                Take one deal. You find a duplex and run the address through the Deal Calculator; the
                 projected cap rate and cash-on-cash clear your bar, so you save it to the pipeline.
                 Those projections become your baseline.
               </p>
@@ -286,7 +290,7 @@ export default function HowItWorks() {
           <div className="flex flex-col items-center justify-center gap-4 sm:flex-row">
             <Link
               href="/pricing"
-              className="inline-flex cursor-pointer items-center gap-2.5 rounded-full bg-[color:var(--color-primary)] px-8 py-4 text-[15px] font-semibold tracking-wide text-[#0d0a0b] shadow-[0_0_24px_-4px_rgba(0,221,148,0.45)]"
+              className="inline-flex cursor-pointer items-center gap-2.5 rounded-full bg-[color:var(--color-primary)] px-8 py-4 text-[15px] font-semibold tracking-wide text-[#0a0a0f] shadow-[0_0_24px_-4px_rgba(0,221,148,0.45)]"
             >
               Start Free 14-Day Trial
               <span className="material-symbols-outlined text-[18px]">arrow_forward</span>

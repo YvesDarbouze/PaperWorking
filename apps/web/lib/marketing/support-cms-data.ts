@@ -111,21 +111,21 @@ export const SUPPORT_ARTICLES: SupportArticle[] = [
   {
     id: 'create-first-deal',
     categoryId: 'first-deal',
-    title: 'How do I add my first property and run a deal analysis?',
+    title: 'How do I add my first property and run a deal calculation?',
     excerpt:
       'Walk through creating a deal from scratch — entering the address, purchase price, ARV, and rehab budget to get your first IRR and cap rate calculation.',
     readTime: '4 min read',
-    tags: ['getting started', 'deal analyzer', 'IRR', 'cap rate'],
+    tags: ['getting started', 'deal calculator', 'IRR', 'cap rate'],
     popular: true,
   },
   {
-    id: 'deal-analyzer-fields',
+    id: 'deal-calculator-fields',
     categoryId: 'first-deal',
-    title: 'What does each field in the Deal Analyzer mean?',
+    title: 'What does each field in the Deal Calculator mean?',
     excerpt:
       'Plain-English explanations of ARV, IRR, CoC return, cap rate, and equity multiple — and how PaperWorking calculates each one.',
     readTime: '6 min read',
-    tags: ['deal analyzer', 'IRR', 'definitions'],
+    tags: ['deal calculator', 'IRR', 'definitions'],
     popular: true,
   },
   {

@@ -15,14 +15,19 @@ export async function fetchSessionProfile(): Promise<{
   subscriptionPlan?: string;
   subscriptionStatus?: string;
 }> {
-  const response = await apiFetch('/api/auth/me', { credentials: 'include', cache: 'no-store' });
-  if (!response.ok) return { authenticated: false };
-  return response.json();
+  try {
+    const response = await apiFetch('/api/auth/me', { credentials: 'include', cache: 'no-store' });
+    if (!response.ok) return { authenticated: false };
+    return response.json();
+  } catch {
+    // API unreachable (not running, CORS, offline) — treat as logged out.
+    return { authenticated: false };
+  }
 }
 
 export async function createDevSession(accountType = 'investor'): Promise<CreateSessionResult> {
   if (!useMockAuth()) {
-    throw new Error('Firebase is required');
+    throw new Error('Supabase Auth is required');
   }
 
   const response = await apiFetch('/api/auth/session', {
@@ -43,11 +48,15 @@ export async function createDevSession(accountType = 'investor'): Promise<Create
 }
 
 export async function destroySession(): Promise<boolean> {
-  const response = await apiFetch('/api/auth/session', {
-    method: 'DELETE',
-    credentials: 'include',
-  });
-  return response.ok;
+  try {
+    const response = await apiFetch('/api/auth/session', {
+      method: 'DELETE',
+      credentials: 'include',
+    });
+    return response.ok;
+  } catch {
+    return false;
+  }
 }
 
 export function resolveLoginRedirect(options?: {

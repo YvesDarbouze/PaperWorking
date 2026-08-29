@@ -33,7 +33,7 @@ const FORBIDDEN_FIELDS = new Set([
   'isAdmin',
   'organizationId',
   'orgId',
-  'firebaseUid',
+  'legacyFirebaseUid',
   'stripeCustomerId',
   'subscriptionStatus',
   'subscriptionPlan',
@@ -88,7 +88,7 @@ export class SettingsService {
     const section = this.sectionFromPath(path);
     this.assertAllowedSection(section);
     const row = await this.prisma.user.findFirst({
-      where: { OR: [{ id: user.uid }, { firebaseUid: user.uid }] },
+      where: { OR: [{ id: user.uid }, { legacyFirebaseUid: user.uid }] },
     });
     const settings =
       row?.settings && typeof row.settings === 'object'
@@ -133,7 +133,7 @@ export class SettingsService {
     const safeBody = this.stripForbidden(body);
 
     const row = await this.prisma.user.findFirst({
-      where: { OR: [{ id: user.uid }, { firebaseUid: user.uid }] },
+      where: { OR: [{ id: user.uid }, { legacyFirebaseUid: user.uid }] },
     });
     if (!row) {
       return { success: false, error: 'User not found' };
@@ -189,7 +189,7 @@ export class SettingsService {
         throw new ForbiddenException({ error: 'Cannot delete profile section' });
       }
       const row = await this.prisma.user.findFirst({
-        where: { OR: [{ id: user.uid }, { firebaseUid: user.uid }] },
+        where: { OR: [{ id: user.uid }, { legacyFirebaseUid: user.uid }] },
       });
       if (!row) return { success: false, error: 'User not found' };
       const existing =

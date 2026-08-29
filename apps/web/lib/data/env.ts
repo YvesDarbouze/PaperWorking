@@ -3,13 +3,17 @@
  *
  * Contract (must match Nest AuthService.mockAuthEnabled):
  * - production → always false (even if flags are true)
- * - non-production → true unless USE_MOCK_DATA / ENABLE_MOCK_AUTH / NEXT_PUBLIC_* is false|0
+ * - non-production → true unless the flag is false|0
  *
- * Precedence for the flag value:
+ * Precedence (NEXT_PUBLIC_* first — required for Client Components):
  *   NEXT_PUBLIC_USE_MOCK_DATA
- *   ?? USE_MOCK_DATA
  *   ?? NEXT_PUBLIC_ENABLE_MOCK_AUTH
- *   ?? ENABLE_MOCK_AUTH
+ *   ?? USE_MOCK_DATA          (server-only; ignored in the browser bundle)
+ *   ?? ENABLE_MOCK_AUTH       (server-only; ignored in the browser bundle)
+ *
+ * Set NEXT_PUBLIC_USE_MOCK_DATA (or NEXT_PUBLIC_ENABLE_MOCK_AUTH) explicitly.
+ * A private-only ENABLE_MOCK_AUTH=false makes SSR skip mock UI while the
+ * client still enables it → React hydration mismatches.
  */
 export function isProductionRuntime(): boolean {
   return process.env.NODE_ENV === 'production';
@@ -18,8 +22,8 @@ export function isProductionRuntime(): boolean {
 function readMockFlag(): string | undefined {
   return (
     process.env.NEXT_PUBLIC_USE_MOCK_DATA ??
-    process.env.USE_MOCK_DATA ??
     process.env.NEXT_PUBLIC_ENABLE_MOCK_AUTH ??
+    process.env.USE_MOCK_DATA ??
     process.env.ENABLE_MOCK_AUTH
   );
 }

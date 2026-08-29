@@ -16,9 +16,10 @@
     "build": "tsc -p tsconfig.json",
     "typecheck": "tsc -p tsconfig.json --noEmit",
     "test": "node --experimental-vm-modules ../../node_modules/jest/bin/jest.js",
-    "start:api": "node dist/main.js",
-    "dev:api": "npm run build && node --watch dist/main.js",
-    "start:dev": "npm run dev:api"
+    "start:api": "node --env-file=../../.env dist/main.js",
+    "dev:api": "npm run build && node --env-file=../../.env --watch dist/main.js",
+    "start:dev": "npm run dev:api",
+    "start:with-env": "node scripts/start-with-env.mjs"
   },
   "dependencies": {
     "@nestjs/common": "^12.0.1",
@@ -29,8 +30,8 @@
     "@paperworking/financial-engine": "file:../../packages/financial-engine",
     "@paperworking/shared": "file:../../packages/shared",
     "@paperworking/validation": "file:../../packages/validation",
+    "@supabase/supabase-js": "^2.112.4",
     "cookie-parser": "^1.4.7",
-    "firebase-admin": "^13.4.0",
     "pdfkit": "^0.17.1",
     "reflect-metadata": "^0.2.2",
     "rxjs": "^7.8.2",

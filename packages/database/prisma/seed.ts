@@ -17,8 +17,7 @@ async function main() {
   const user = await prisma.user.upsert({
     where: { email: 'dev@paperworking.test' },
     create: {
-      id: 'dev-user-1',
-      firebaseUid: 'dev-user-1',
+      id: '00000000-0000-4000-8000-000000000001',
       email: 'dev@paperworking.test',
       name: 'Dev User',
       displayName: 'Dev User',

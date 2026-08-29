@@ -5,7 +5,10 @@
 export function getApiBaseUrl(): string {
   const raw = process.env.NEXT_PUBLIC_API_URL?.trim();
   if (raw) return raw.replace(/\/$/, '');
-  // Local Nest default when FE runs on :3000 without env override
+  // Local Nest: match the browser host so LAN dev (e.g. 192.168.x.x:3000) hits :8080 on same host.
+  if (typeof window !== 'undefined' && process.env.NODE_ENV !== 'production') {
+    return `http://${window.location.hostname}:8080`;
+  }
   if (process.env.NODE_ENV !== 'production') return 'http://localhost:8080';
   throw new Error('NEXT_PUBLIC_API_URL is required in production');
 }
@@ -17,7 +20,7 @@ export function apiUrl(path: string): string {
 }
 
 export type ApiFetchInit = RequestInit & {
-  /** When true (default), include cookies for Firebase session auth */
+  /** When true (default), include cookies for Nest httpOnly session auth */
   credentials?: RequestCredentials;
 };
 

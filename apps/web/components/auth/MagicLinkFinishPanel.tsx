@@ -2,15 +2,14 @@
 
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
-import {
-  isSignInWithEmailLink,
-  signInWithEmailLink,
-} from 'firebase/auth';
 import AuthCard, { AuthFieldError, AuthNotice } from '@/components/auth/AuthCard';
 import { AUTH_ROUTES } from '@/lib/auth/routes';
 import { resolveLoginRedirect } from '@/lib/auth/session-client';
-import { syncSessionCookie } from '@/lib/firebase/auth-client';
-import { auth, isFirebaseConfigured } from '@/lib/firebase/config';
+import {
+  getSupabaseBrowserClient,
+  isSupabaseConfigured,
+  syncNestSession,
+} from '@/lib/supabase/auth-client';
 
 export default function MagicLinkFinishPanel() {
   const [email, setEmail] = useState('');
@@ -20,6 +19,25 @@ export default function MagicLinkFinishPanel() {
   useEffect(() => {
     const stored = window.localStorage.getItem('emailForSignIn');
     if (stored) setEmail(stored);
+
+    // Prefer auto-complete when Supabase already established a session from the link.
+    void (async () => {
+      if (!isSupabaseConfigured()) return;
+      const supabase = await getSupabaseBrowserClient();
+      const { data } = await supabase.auth.getSession();
+      if (data.session?.access_token) {
+        const pending = window.localStorage.getItem('pw_pending_account_type') || undefined;
+        try {
+          await syncNestSession(data.session.access_token, pending);
+          window.localStorage.removeItem('emailForSignIn');
+          window.location.replace(
+            resolveLoginRedirect({ isNewUser: false, hasActiveSubscription: true }),
+          );
+        } catch {
+          /* fall through to manual confirm */
+        }
+      }
+    })();
   }, []);
 
   async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
@@ -30,19 +48,23 @@ export default function MagicLinkFinishPanel() {
       setError('Enter the email address that received the magic link.');
       return;
     }
-    if (!isFirebaseConfigured()) {
-      setError('Firebase is not configured. Cannot complete magic-link sign-in.');
-      return;
-    }
-    if (!isSignInWithEmailLink(auth, window.location.href)) {
-      setError('This page is not a valid magic-link destination.');
+    if (!isSupabaseConfigured()) {
+      setError('Supabase is not configured. Cannot complete magic-link sign-in.');
       return;
     }
 
     setSubmitting(true);
     try {
-      const result = await signInWithEmailLink(auth, email.trim(), window.location.href);
-      await syncSessionCookie(result.user);
+      const supabase = await getSupabaseBrowserClient();
+      const { data, error: verifyError } = await supabase.auth.getSession();
+      if (verifyError || !data.session?.access_token) {
+        throw new Error(
+          verifyError?.message ||
+            'No active magic-link session. Open the link from your email again.',
+        );
+      }
+      const pending = window.localStorage.getItem('pw_pending_account_type') || undefined;
+      await syncNestSession(data.session.access_token, pending);
       window.localStorage.removeItem('emailForSignIn');
       window.location.replace(
         resolveLoginRedirect({
@@ -65,10 +87,10 @@ export default function MagicLinkFinishPanel() {
         </p>
       </div>
 
-      {!isFirebaseConfigured() ? (
+      {!isSupabaseConfigured() ? (
         <div className="mb-4">
           <AuthNotice>
-            Firebase public config is missing. Magic-link completion requires NEXT_PUBLIC_FIREBASE_*.
+            Supabase public config is missing. Magic-link completion requires NEXT_PUBLIC_SUPABASE_*.
           </AuthNotice>
         </div>
       ) : null}

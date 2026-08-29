@@ -16,7 +16,7 @@ export class MarketplaceService {
 
   async profile(user: AuthUser) {
     const row = await this.prisma.user.findFirst({
-      where: { OR: [{ id: user.uid }, { firebaseUid: user.uid }] },
+      where: { OR: [{ id: user.uid }, { legacyFirebaseUid: user.uid }] },
     });
     const following = await this.prisma.investorFollower.count({
       where: { followerUid: row?.id || user.uid },
@@ -81,7 +81,7 @@ export class MarketplaceService {
 
   async investorById(id: string) {
     const investor = await this.prisma.user.findFirst({
-      where: { OR: [{ id }, { firebaseUid: id }] },
+      where: { OR: [{ id }, { legacyFirebaseUid: id }] },
       select: {
         id: true,
         name: true,

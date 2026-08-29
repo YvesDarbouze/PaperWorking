@@ -5,11 +5,6 @@ import {
   FinancialTransactionRepository,
   ReilProjectRepository,
 } from './repositories/index.js';
-import {
-  FirestoreProjectRepository,
-  FirestoreUserRepository,
-  getMigrationFirestore,
-} from './firestore/index.js';
 
 export const DATABASE_PACKAGE_STATUS = 'wave-1-writable-api' as const;
 
@@ -18,25 +13,19 @@ export interface ReadOnlyDatabaseAdapters {
   reilProjects: ReilProjectRepository;
   appUsers: AppUserRepository;
   financialTransactions: FinancialTransactionRepository;
-  firestoreProjects: FirestoreProjectRepository;
-  firestoreUsers: FirestoreUserRepository;
 }
 
-/** Factory for read-only Postgres + Firestore adapters (Phase 3). */
+/** Factory for Postgres adapters (Firestore removed from V1 runtime). */
 export function createReadOnlyAdapters(options?: {
   prisma?: MigrationPrismaClient;
-  firestore?: Parameters<typeof getMigrationFirestore>[0];
 }): ReadOnlyDatabaseAdapters {
   const prisma = options?.prisma ?? migrationDb;
-  const firestore = getMigrationFirestore(options?.firestore);
 
   return {
     prisma,
     reilProjects: new ReilProjectRepository(prisma),
     appUsers: new AppUserRepository(prisma),
     financialTransactions: new FinancialTransactionRepository(prisma),
-    firestoreProjects: new FirestoreProjectRepository(firestore),
-    firestoreUsers: new FirestoreUserRepository(firestore),
   };
 }
 
@@ -59,10 +48,3 @@ export {
   type ListFinancialTransactionsInput,
   type FinancialTransactionPage,
 } from './repositories/index.js';
-export {
-  getMigrationFirestore,
-  FirestoreProjectRepository,
-  FirestoreUserRepository,
-  type FirestoreReader,
-  type FirestoreProjectDocument,
-} from './firestore/index.js';

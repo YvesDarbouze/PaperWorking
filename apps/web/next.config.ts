@@ -3,6 +3,8 @@ import type { NextConfig } from 'next';
 const nextConfig: NextConfig = {
   reactStrictMode: true,
   output: 'standalone',
+  // Keep Supabase out of the SSR bundle — avoids Next OTEL stub conflicts.
+  serverExternalPackages: ['@supabase/supabase-js', '@supabase/auth-js'],
   // Allow importing root-level /mockdata from apps/web
   experimental: {
     externalDir: true,

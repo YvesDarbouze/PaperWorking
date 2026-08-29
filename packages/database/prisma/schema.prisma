@@ -1605,8 +1605,9 @@ model ReconciliationItem {
 
 model User {
   id               String                 @id @default(uuid())
-  /// Firebase Auth UID when linked (may equal id for new Nest users).
-  firebaseUid      String?                @unique
+  /// Legacy Firebase Auth UID retained only for deterministic remaps → auth.users.id.
+  /// New identities must use id === Supabase auth.users.id. Do not use for authz.
+  legacyFirebaseUid String?               @unique
   email            String                 @unique
   name             String?
   displayName      String?

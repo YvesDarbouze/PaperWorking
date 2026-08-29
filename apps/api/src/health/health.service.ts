@@ -15,7 +15,7 @@ export class HealthService {
     }
     return {
       ok: postgres === 'healthy',
-      status: { postgres, firestore: 'n/a' },
+      status: { postgres },
       app: 'PaperWorking API (Nest)',
       environment: process.env.NODE_ENV ?? 'development',
       timestamp: new Date().toISOString(),

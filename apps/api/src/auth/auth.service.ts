@@ -8,7 +8,8 @@ import {
   SUB_COOKIE,
   type AuthUser,
 } from './auth.types.js';
-import { FirebaseAdminService } from './firebase-admin.service.js';
+import { SupabaseAuthService } from './supabase-auth.service.js';
+import { remapUserPrimaryKey } from './user-id-remap.js';
 
 const SESSION_EXPIRES_MS = 1000 * 60 * 60 * 24 * 5; // 5 days
 
@@ -18,13 +19,11 @@ export class AuthService {
 
   constructor(
     private readonly prisma: PrismaService,
-    private readonly firebase: FirebaseAdminService,
+    private readonly supabaseAuth: SupabaseAuthService,
   ) {}
 
   mockAuthEnabled(): boolean {
-    // Production can NEVER enable mock auth — even if ENABLE_MOCK_AUTH / USE_MOCK_DATA is true.
     if (process.env.NODE_ENV === 'production') return false;
-    // Align with FE env.ts: USE_MOCK_DATA and ENABLE_MOCK_AUTH are interchangeable.
     const flag = process.env.USE_MOCK_DATA ?? process.env.ENABLE_MOCK_AUTH;
     if (flag === 'false' || flag === '0') return false;
     return true;
@@ -37,11 +36,11 @@ export class AuthService {
       if (token === 'dev-session' && this.mockAuthEnabled()) {
         return this.ensureDevUser();
       }
-      if (this.firebase.hasCredentials()) {
+      // Bearer is accepted for non-browser clients; primary browser session is httpOnly cookie.
+      if (this.supabaseAuth.hasCredentials() && !token.startsWith('mock')) {
         try {
-          const decoded = await this.firebase.verifyIdToken(token);
-          // Never pass cookies/headers for privilege — DB only.
-          return this.toAuthUser(decoded.uid);
+          const decoded = await this.supabaseAuth.verifyAccessToken(token);
+          return this.toAuthUser(decoded.id);
         } catch {
           /* fall through to cookie */
         }
@@ -55,10 +54,10 @@ export class AuthService {
       return this.ensureDevUser();
     }
 
-    if (this.firebase.hasCredentials()) {
+    if (this.supabaseAuth.hasCredentials()) {
       try {
-        const decoded = await this.firebase.verifySessionCookie(session);
-        return this.toAuthUser(decoded.uid);
+        const decoded = await this.supabaseAuth.verifyAccessToken(session);
+        return this.toAuthUser(decoded.id);
       } catch (err) {
         this.logger.warn(`Invalid session cookie: ${(err as Error).message}`);
         return null;
@@ -72,12 +71,11 @@ export class AuthService {
   }
 
   private async ensureDevUser(): Promise<AuthUser> {
-    const uid = 'dev-user-1';
+    const uid = '00000000-0000-4000-8000-000000000001';
     await this.prisma.user.upsert({
       where: { email: 'dev@paperworking.test' },
       create: {
         id: uid,
-        firebaseUid: uid,
         email: 'dev@paperworking.test',
         name: 'Dev User',
         displayName: 'Dev User',
@@ -85,7 +83,6 @@ export class AuthService {
       },
       update: {},
     });
-    // Privileges always from DB row — never from cookie/body.
     return this.toAuthUser(uid);
   }
 
@@ -95,7 +92,9 @@ export class AuthService {
    */
   private async toAuthUser(uid: string): Promise<AuthUser> {
     const user = await this.prisma.user.findFirst({
-      where: { OR: [{ firebaseUid: uid }, { id: uid }] },
+      where: {
+        OR: [{ id: uid }, { legacyFirebaseUid: uid }],
+      },
     });
     const dbAccountType = (user?.accountType || 'investor').trim().toLowerCase();
     const dbRole = (user?.role || '').trim().toLowerCase();
@@ -118,33 +117,36 @@ export class AuthService {
 
   async createSession(
     res: Response,
-    body: { idToken?: string; accountType?: string },
+    body: { accessToken?: string; idToken?: string; accountType?: string },
   ): Promise<{ ok: true; uid: string } | { status: number; body: unknown }> {
-    // Client may request investor/vendor only — never admin.
     const accountType = normalizeClientAccountType(body.accountType);
     const mockEnabled = this.mockAuthEnabled();
+    const accessToken = body.accessToken || body.idToken;
 
-    if (!body.idToken) {
-      return { status: 400, body: { error: 'idToken required' } };
+    if (!accessToken) {
+      return { status: 400, body: { error: 'accessToken required' } };
     }
 
-    if (this.firebase.hasCredentials() && !body.idToken.startsWith('mock')) {
-      const decoded = await this.firebase.verifyIdToken(body.idToken);
-      const cookie = await this.firebase.createSessionCookie(body.idToken, SESSION_EXPIRES_MS);
-      const authUser = await this.upsertFirebaseUser(decoded.uid, accountType);
-      // Cookie is UI hint only; authz ignores it.
-      this.setSessionCookies(res, cookie, authUser.accountType, false);
-      return { ok: true, uid: decoded.uid };
+    if (this.supabaseAuth.hasCredentials() && !accessToken.startsWith('mock')) {
+      try {
+        const decoded = await this.supabaseAuth.verifyAccessToken(accessToken);
+        const authUser = await this.upsertSupabaseUser(decoded.id, decoded.email, accountType);
+        this.setSessionCookies(res, accessToken, authUser.accountType, false);
+        return { ok: true, uid: authUser.uid };
+      } catch (err) {
+        this.logger.warn(`createSession verify failed: ${(err as Error).message}`);
+        return { status: 401, body: { error: 'Invalid access token' } };
+      }
     }
 
     if (mockEnabled) {
-      const cookie = `mock:${body.idToken}`;
+      const cookie = `mock:${accessToken}`;
       const authUser = await this.ensureDevUser();
       this.setSessionCookies(res, cookie, authUser.accountType, true);
-      return { ok: true, uid: 'dev-user-1' };
+      return { ok: true, uid: authUser.uid };
     }
 
-    return { status: 503, body: { error: 'Auth credentials not configured' } };
+    return { status: 503, body: { error: 'Supabase Auth credentials not configured' } };
   }
 
   async clearSession(res: Response): Promise<void> {
@@ -156,7 +158,7 @@ export class AuthService {
 
   async getMe(user: AuthUser) {
     const row = await this.prisma.user.findFirst({
-      where: { OR: [{ id: user.uid }, { firebaseUid: user.uid }] },
+      where: { OR: [{ id: user.uid }, { legacyFirebaseUid: user.uid }] },
     });
     const sub = await this.prisma.subscription.findFirst({
       where: { userId: row?.id || user.uid },
@@ -175,7 +177,6 @@ export class AuthService {
   }
 
   async listSessions(user: AuthUser, userAgent?: string) {
-    // Nest does not persist multi-device session rows — only the current cookie session.
     return {
       success: true,
       incomplete: true,
@@ -194,34 +195,75 @@ export class AuthService {
     };
   }
 
-  private async upsertFirebaseUser(uid: string, accountType: string): Promise<AuthUser> {
-    const existing = await this.prisma.user.findFirst({
-      where: { OR: [{ firebaseUid: uid }, { id: uid }] },
-    });
-    if (existing) {
-      const existingIsAdmin =
-        (existing.accountType || '').toLowerCase() === 'admin' ||
-        (existing.role || '').toLowerCase() === 'admin';
-      // Never elevate to admin from client. Never downgrade existing admin.
-      const data: { firebaseUid: string; accountType?: string } = { firebaseUid: uid };
-      if (!existingIsAdmin) {
-        data.accountType = accountType; // investor | vendor | investment_team only
-      }
-      await this.prisma.user.update({
-        where: { id: existing.id },
-        data,
-      });
-      return this.toAuthUser(existing.id);
+  /**
+   * Ensure public.User.id === auth.users.id.
+   * Remaps existing email / legacyFirebaseUid rows when needed.
+   */
+  private async upsertSupabaseUser(
+    authUserId: string,
+    email: string | undefined,
+    accountType: string,
+  ): Promise<AuthUser> {
+    const normalizedEmail = (email || '').trim().toLowerCase();
+    if (!normalizedEmail) {
+      throw new Error('Supabase user email is required to provision application User');
     }
+
+    const byId = await this.prisma.user.findUnique({ where: { id: authUserId } });
+    if (byId) {
+      const existingIsAdmin =
+        (byId.accountType || '').toLowerCase() === 'admin' ||
+        (byId.role || '').toLowerCase() === 'admin';
+      await this.prisma.user.update({
+        where: { id: byId.id },
+        data: {
+          email: normalizedEmail,
+          ...(!existingIsAdmin ? { accountType } : {}),
+        },
+      });
+      return this.toAuthUser(byId.id);
+    }
+
+    const byLegacy = await this.prisma.user.findFirst({
+      where: { legacyFirebaseUid: authUserId },
+    });
+    if (byLegacy) {
+      if (byLegacy.id !== authUserId) {
+        await remapUserPrimaryKey(this.prisma.client, byLegacy.id, authUserId);
+      }
+      return this.toAuthUser(authUserId);
+    }
+
+    const byEmail = await this.prisma.user.findUnique({ where: { email: normalizedEmail } });
+    if (byEmail) {
+      if (byEmail.id !== authUserId) {
+        this.logger.log(
+          `Remapping User ${byEmail.id} → ${authUserId} for email ${normalizedEmail}`,
+        );
+        await remapUserPrimaryKey(this.prisma.client, byEmail.id, authUserId);
+      }
+      const existingIsAdmin =
+        (byEmail.accountType || '').toLowerCase() === 'admin' ||
+        (byEmail.role || '').toLowerCase() === 'admin';
+      await this.prisma.user.update({
+        where: { id: authUserId },
+        data: {
+          email: normalizedEmail,
+          legacyFirebaseUid: byEmail.legacyFirebaseUid ?? byEmail.id,
+          ...(!existingIsAdmin ? { accountType } : {}),
+        },
+      });
+      return this.toAuthUser(authUserId);
+    }
+
     await this.prisma.user.create({
       data: {
-        id: uid,
-        firebaseUid: uid,
-        email: `${uid}@users.firebase`,
+        id: authUserId,
+        email: normalizedEmail,
         accountType,
       },
     });
-    return this.toAuthUser(uid);
+    return this.toAuthUser(authUserId);
   }
 
   private setSessionCookies(
@@ -231,7 +273,7 @@ export class AuthService {
     isMock: boolean,
   ) {
     const secure = process.env.NODE_ENV === 'production';
-    const maxAge = SESSION_EXPIRES_MS; // express cookie maxAge is milliseconds
+    const maxAge = SESSION_EXPIRES_MS;
     res.cookie(SESSION_COOKIE, sessionValue, {
       httpOnly: true,
       secure,
@@ -239,7 +281,6 @@ export class AuthService {
       path: '/',
       maxAge,
     });
-    // Display cookie only — AuthorizationService / toAuthUser never read this for privileges.
     res.cookie(ACCT_COOKIE, accountType === 'admin' ? 'admin' : accountType, {
       httpOnly: false,
       secure,
@@ -260,13 +301,11 @@ export class AuthService {
   }
 }
 
-/** Client-supplied account type — admin is NEVER accepted from the client. */
 function normalizeClientAccountType(value: unknown): string {
   if (typeof value !== 'string') return 'investor';
   const n = value.trim().toLowerCase();
   if (n === 'vendor') return 'vendor';
   if (n === 'investment_team') return 'investment_team';
-  // Reject admin and unknown values — fall back to investor.
   return 'investor';
 }
 

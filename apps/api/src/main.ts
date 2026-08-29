@@ -20,8 +20,20 @@ async function bootstrap() {
     .map((s) => s.trim())
     .filter(Boolean);
 
+  const isDev = process.env.NODE_ENV !== 'production';
+  const devOriginPattern =
+    /^https?:\/\/(localhost|127\.0\.0\.1|192\.168\.\d{1,3}\.\d{1,3}|10\.\d{1,3}\.\d{1,3}\.\d{1,3})(:\d+)?$/;
+
   app.enableCors({
-    origin: origins,
+    origin: (
+      origin: string | undefined,
+      callback: (err: Error | null, allow?: boolean | string) => void,
+    ) => {
+      if (!origin) return callback(null, true);
+      if (origins.includes(origin)) return callback(null, origin);
+      if (isDev && devOriginPattern.test(origin)) return callback(null, origin);
+      callback(new Error(`CORS blocked origin: ${origin}`));
+    },
     credentials: true,
     methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
     allowedHeaders: ['Content-Type', 'Authorization', 'stripe-signature'],

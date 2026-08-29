@@ -48,7 +48,6 @@ export {
   type ProjectDocument,
   type GetProjectByIdFn,
 } from './routes/projects/get/handler.js';
-export { createFirestoreProjectGetter } from './routes/projects/get/firestore-adapter.js';
 export {
   handleAdminLenderRatesGet,
   type AdminLenderRatesGetDeps,

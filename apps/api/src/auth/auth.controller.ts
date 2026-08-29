@@ -14,8 +14,12 @@ import { AuthService } from './auth.service.js';
 import { CurrentUser, Public, type AuthUser } from './auth.types.js';
 
 const sessionBodySchema = z.object({
-  idToken: z.string().min(1),
+  accessToken: z.string().min(1).optional(),
+  /** @deprecated Alias for accessToken during FE cutover */
+  idToken: z.string().min(1).optional(),
   accountType: z.string().optional(),
+}).refine((b) => Boolean(b.accessToken || b.idToken), {
+  message: 'accessToken required',
 });
 
 const emailBodySchema = z.object({
@@ -61,14 +65,14 @@ export class AuthController {
   async resetPassword(
     @Body(new ZodValidationPipe(emailBodySchema)) body: z.infer<typeof emailBodySchema>,
   ) {
-    // Password reset is owned by Firebase client SDK — Nest does not send email.
+    // Password reset is owned by Supabase Auth client — Nest does not send email.
     // Never claim success as if mail was sent.
     void body.email;
     return {
       success: false,
       code: 'NOT_IMPLEMENTED',
       message:
-        'Password reset must be initiated via Firebase Auth client. This API does not send email.',
+        'Password reset must be initiated via Supabase Auth client. This API does not send email.',
       stub: true,
     };
   }
@@ -83,7 +87,7 @@ export class AuthController {
       success: false,
       code: 'NOT_IMPLEMENTED',
       message:
-        'Magic link sign-in must be initiated via Firebase Auth client. This API does not send email.',
+        'Magic link sign-in must be initiated via Supabase Auth client. This API does not send email.',
       stub: true,
     };
   }

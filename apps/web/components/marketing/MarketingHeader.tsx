@@ -29,11 +29,16 @@ export default function MarketingHeader() {
 
   useEffect(() => {
     let cancelled = false;
-    fetchSessionProfile().then((profile) => {
-      if (cancelled) return;
-      setAuthenticated(Boolean(profile.authenticated));
-      setAccountType(profile.accountType ?? 'investor');
-    });
+    fetchSessionProfile()
+      .then((profile) => {
+        if (cancelled) return;
+        setAuthenticated(Boolean(profile.authenticated));
+        setAccountType(profile.accountType ?? 'investor');
+      })
+      .catch(() => {
+        if (cancelled) return;
+        setAuthenticated(false);
+      });
     return () => {
       cancelled = true;
     };

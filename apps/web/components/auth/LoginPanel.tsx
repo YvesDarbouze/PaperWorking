@@ -59,7 +59,7 @@ export default function LoginPanel() {
     clearError,
     authenticated,
     loading: authLoading,
-    firebaseReady,
+    supabaseReady,
     logout,
   } = useAuth();
 
@@ -234,20 +234,21 @@ export default function LoginPanel() {
       setLocalError('You must accept the Terms of Service and Privacy Policy to register.');
       return;
     }
-    if (!firebaseReady) {
+    if (!supabaseReady) {
       setLocalError(
-        'Firebase is not configured. Add NEXT_PUBLIC_FIREBASE_* to enable Google/Facebook sign-in.',
+        'Supabase is not configured. Add NEXT_PUBLIC_SUPABASE_URL and NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY.',
       );
       return;
     }
 
     setLoadingProvider(provider);
     try {
-      const isNewUser =
-        provider === 'google'
-          ? await loginWithGoogle(accountType)
-          : await loginWithFacebook(accountType);
-      redirectAfterAuth(isNewUser || isSignUp);
+      if (provider === 'facebook') {
+        await loginWithFacebook(accountType);
+        return;
+      }
+      // Google uses OAuth redirect; Nest session is synced on /auth/callback.
+      await loginWithGoogle(accountType);
     } catch {
       /* error in AuthContext */
     } finally {

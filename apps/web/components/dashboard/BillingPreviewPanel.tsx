@@ -2,8 +2,9 @@
 
 import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
-import { useEffect, useState } from 'react';
-import { BILLING_PREVIEW } from '@/lib/dashboard/shell-seed';
+import { useCallback, useEffect, useState } from 'react';
+import { apiFetch } from '@/lib/api/client';
+import { loadBillingPreview } from '@/lib/data';
 
 type BillingView = {
   plan: string;
@@ -15,64 +16,184 @@ type BillingView = {
   trialEnds?: string;
 };
 
-function toView(data: Record<string, unknown>): BillingView {
-  const methods = Array.isArray(data.paymentMethods)
-    ? (data.paymentMethods as Array<Record<string, unknown>>)
-    : [];
-  const defaultPm = methods.find((m) => m.isDefault) ?? methods[0];
-  const paymentMethod = defaultPm
-    ? `${String(defaultPm.brand ?? 'card').toUpperCase()} •••• ${String(defaultPm.last4 ?? '••••')}`
-    : BILLING_PREVIEW.paymentMethod;
-
-  const invoices = Array.isArray(data.invoices)
-    ? (data.invoices as Array<Record<string, unknown>>).map((inv) => ({
-        id: String(inv.number ?? inv.id ?? 'inv'),
-        date: String(inv.date ?? ''),
-        amount: Number(inv.amount ?? 0),
-        status: String(inv.status ?? ''),
-      }))
-    : [...BILLING_PREVIEW.invoices];
-
-  return {
-    plan: String(data.plan ?? BILLING_PREVIEW.plan),
-    status: String(data.status ?? BILLING_PREVIEW.status),
-    monthlyPrice: Number(data.monthlyPrice ?? BILLING_PREVIEW.monthlyPrice),
-    paymentMethod,
-    billingEmail: String(data.billingEmail ?? BILLING_PREVIEW.billingEmail),
-    invoices,
-    trialEnds: BILLING_PREVIEW.trialEnds,
-  };
-}
+const EMPTY_BILLING: BillingView = {
+  plan: '—',
+  status: '—',
+  monthlyPrice: 0,
+  paymentMethod: 'No payment method',
+  billingEmail: '',
+  invoices: [],
+};
 
 export default function BillingPreviewPanel() {
   const searchParams = useSearchParams();
   const paywall = searchParams.get('paywall');
-  const [billing, setBilling] = useState<BillingView>(() => ({
-    plan: BILLING_PREVIEW.plan,
-    status: BILLING_PREVIEW.status,
-    monthlyPrice: BILLING_PREVIEW.monthlyPrice,
-    paymentMethod: BILLING_PREVIEW.paymentMethod,
-    billingEmail: BILLING_PREVIEW.billingEmail,
-    invoices: [...BILLING_PREVIEW.invoices],
-    trialEnds: BILLING_PREVIEW.trialEnds,
-  }));
+  const checkoutSessionId = searchParams.get('session_id');
+  const [billing, setBilling] = useState<BillingView>(EMPTY_BILLING);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const [actionMsg, setActionMsg] = useState<string | null>(null);
+  const [busy, setBusy] = useState(false);
+
+  const refreshBilling = useCallback(async () => {
+    const data = await loadBillingPreview();
+    setBilling({
+      plan: data.plan ?? '—',
+      status: data.status ?? '—',
+      monthlyPrice: data.monthlyPrice ?? 0,
+      paymentMethod: data.paymentMethod ?? 'No payment method',
+      billingEmail: data.billingEmail ?? '',
+      invoices: Array.isArray(data.invoices) ? data.invoices : [],
+      trialEnds: data.trialEnds,
+    });
+  }, []);
 
   useEffect(() => {
     let cancelled = false;
     (async () => {
+      setLoading(true);
+      setError(null);
       try {
-        const res = await fetch('/api/billing', { credentials: 'include' });
-        if (!res.ok) return;
-        const data = (await res.json()) as Record<string, unknown>;
-        if (!cancelled) setBilling(toView(data));
-      } catch {
-        /* keep seed preview */
+        // After Stripe redirect: verify session ownership on Nest — never invent paid status.
+        if (checkoutSessionId) {
+          const statusRes = await apiFetch(
+            `/api/stripe/session-status?session_id=${encodeURIComponent(checkoutSessionId)}`,
+            { credentials: 'include', cache: 'no-store' },
+          );
+          const statusBody = (await statusRes.json().catch(() => ({}))) as {
+            error?: string;
+            payment_status?: string;
+            status?: string;
+          };
+          if (!statusRes.ok) {
+            if (!cancelled) {
+              setActionMsg(statusBody.error ?? 'Checkout session could not be verified');
+            }
+          } else if (!cancelled) {
+            setActionMsg(
+              `Checkout ${statusBody.status ?? 'complete'} · payment ${statusBody.payment_status ?? 'unknown'}`,
+            );
+          }
+        }
+        await refreshBilling();
+      } catch (err) {
+        if (!cancelled) {
+          setBilling(EMPTY_BILLING);
+          setError(err instanceof Error ? err.message : 'Failed to load billing');
+        }
+      } finally {
+        if (!cancelled) setLoading(false);
       }
     })();
     return () => {
       cancelled = true;
     };
-  }, []);
+  }, [checkoutSessionId, refreshBilling]);
+
+  async function startCheckout() {
+    setBusy(true);
+    setActionMsg(null);
+    try {
+      const res = await apiFetch('/api/stripe/checkout', {
+        method: 'POST',
+        credentials: 'include',
+        body: JSON.stringify({
+          successUrl:
+            typeof window !== 'undefined'
+              ? `${window.location.origin}/billing?success=1`
+              : undefined,
+          cancelUrl:
+            typeof window !== 'undefined'
+              ? `${window.location.origin}/billing?canceled=1`
+              : undefined,
+        }),
+      });
+      const body = (await res.json().catch(() => ({}))) as {
+        url?: string;
+        error?: string;
+        mock?: boolean;
+      };
+      if (!res.ok || !body.url) {
+        setActionMsg(body.error ?? 'Checkout unavailable — Stripe may not be configured');
+        return;
+      }
+      window.location.href = body.url;
+    } catch (err) {
+      setActionMsg(err instanceof Error ? err.message : 'Checkout failed');
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  async function openPortal() {
+    setBusy(true);
+    setActionMsg(null);
+    try {
+      const res = await apiFetch('/api/stripe/portal', {
+        method: 'POST',
+        credentials: 'include',
+        body: JSON.stringify({
+          returnUrl:
+            typeof window !== 'undefined' ? `${window.location.origin}/billing` : undefined,
+        }),
+      });
+      const body = (await res.json().catch(() => ({}))) as {
+        url?: string;
+        error?: string;
+      };
+      if (!res.ok || !body.url) {
+        setActionMsg(body.error ?? 'Customer portal unavailable');
+        return;
+      }
+      window.location.href = body.url;
+    } catch (err) {
+      setActionMsg(err instanceof Error ? err.message : 'Portal failed');
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  async function cancelSubscription() {
+    setBusy(true);
+    setActionMsg(null);
+    try {
+      const res = await apiFetch('/api/billing/cancel', {
+        method: 'POST',
+        credentials: 'include',
+        body: JSON.stringify({}),
+      });
+      const body = (await res.json().catch(() => ({}))) as {
+        error?: string;
+        subscriptionStatus?: string;
+      };
+      if (!res.ok) {
+        setActionMsg(body.error ?? 'Cancel failed');
+        return;
+      }
+      setActionMsg(`Subscription ${body.subscriptionStatus ?? 'canceled'}`);
+      await refreshBilling();
+    } catch (err) {
+      setActionMsg(err instanceof Error ? err.message : 'Cancel failed');
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  if (loading) {
+    return (
+      <div className="flex min-h-[30vh] items-center justify-center text-sm text-white/50">
+        Loading billing…
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="rounded-2xl border border-rose-500/30 bg-rose-500/10 p-6 text-sm text-rose-200">
+        Unable to load billing: {error}
+      </div>
+    );
+  }
 
   return (
     <div className="w-full space-y-6">
@@ -82,6 +203,12 @@ export default function BillingPreviewPanel() {
           {billing.plan} plan · {billing.status}
         </p>
       </div>
+
+      {actionMsg ? (
+        <div className="rounded-2xl border border-white/15 bg-white/[0.04] p-4 text-sm text-white/75">
+          {actionMsg}
+        </div>
+      ) : null}
 
       {paywall === 'deals' ? (
         <div className="rounded-2xl border border-amber-500/30 bg-amber-500/[0.08] p-5">
@@ -110,13 +237,17 @@ export default function BillingPreviewPanel() {
           <div className="flex flex-wrap gap-2">
             <button
               type="button"
-              className="rounded-lg border border-white/12 px-3.5 py-2 text-[12px] font-semibold text-white/75"
+              disabled={busy}
+              onClick={() => void startCheckout()}
+              className="rounded-lg border border-white/12 px-3.5 py-2 text-[12px] font-semibold text-white/75 disabled:opacity-50"
             >
               Change plan
             </button>
             <button
               type="button"
-              className="rounded-lg border border-rose-400/25 px-3.5 py-2 text-[12px] font-semibold text-rose-300"
+              disabled={busy}
+              onClick={() => void cancelSubscription()}
+              className="rounded-lg border border-rose-400/25 px-3.5 py-2 text-[12px] font-semibold text-rose-300 disabled:opacity-50"
             >
               Cancel
             </button>
@@ -132,7 +263,9 @@ export default function BillingPreviewPanel() {
           <p className="text-sm text-white/75">{billing.paymentMethod}</p>
           <button
             type="button"
-            className="mt-4 rounded-lg border border-white/12 px-3 py-2 text-[12px] font-semibold text-white/70"
+            disabled={busy}
+            onClick={() => void openPortal()}
+            className="mt-4 rounded-lg border border-white/12 px-3 py-2 text-[12px] font-semibold text-white/70 disabled:opacity-50"
           >
             Update card
           </button>
@@ -144,7 +277,7 @@ export default function BillingPreviewPanel() {
           <dl className="space-y-2 text-sm">
             <div className="flex justify-between gap-3">
               <dt className="text-white/45">Email</dt>
-              <dd className="text-white/85">{billing.billingEmail}</dd>
+              <dd className="text-white/85">{billing.billingEmail || '—'}</dd>
             </div>
             <div className="flex justify-between gap-3">
               <dt className="text-white/45">Status</dt>
@@ -158,26 +291,30 @@ export default function BillingPreviewPanel() {
         <div className="border-b border-white/8 px-5 py-3">
           <h3 className="text-[11px] font-bold uppercase tracking-[0.08em] text-white/45">Invoices</h3>
         </div>
-        <table className="w-full text-left text-sm">
-          <thead className="bg-white/[0.03] text-[11px] uppercase tracking-wider text-white/40">
-            <tr>
-              <th className="px-5 py-2.5 font-medium">Invoice</th>
-              <th className="px-5 py-2.5 font-medium">Date</th>
-              <th className="px-5 py-2.5 font-medium">Amount</th>
-              <th className="px-5 py-2.5 font-medium">Status</th>
-            </tr>
-          </thead>
-          <tbody>
-            {billing.invoices.map((invoice) => (
-              <tr key={invoice.id} className="border-t border-white/8">
-                <td className="px-5 py-3 font-mono text-xs text-white/70">{invoice.id}</td>
-                <td className="px-5 py-3 text-white/65">{invoice.date}</td>
-                <td className="px-5 py-3 text-white/85">${invoice.amount}</td>
-                <td className="px-5 py-3 text-white/65">{invoice.status}</td>
+        {billing.invoices.length === 0 ? (
+          <p className="px-5 py-8 text-sm text-white/45">No invoices yet.</p>
+        ) : (
+          <table className="w-full text-left text-sm">
+            <thead className="bg-white/[0.03] text-[11px] uppercase tracking-wider text-white/40">
+              <tr>
+                <th className="px-5 py-2.5 font-medium">Invoice</th>
+                <th className="px-5 py-2.5 font-medium">Date</th>
+                <th className="px-5 py-2.5 font-medium">Amount</th>
+                <th className="px-5 py-2.5 font-medium">Status</th>
               </tr>
-            ))}
-          </tbody>
-        </table>
+            </thead>
+            <tbody>
+              {billing.invoices.map((invoice) => (
+                <tr key={invoice.id} className="border-t border-white/8">
+                  <td className="px-5 py-3 font-mono text-xs text-white/70">{invoice.id}</td>
+                  <td className="px-5 py-3 text-white/65">{invoice.date}</td>
+                  <td className="px-5 py-3 text-white/85">${invoice.amount}</td>
+                  <td className="px-5 py-3 text-white/65">{invoice.status}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        )}
       </section>
 
       <section className="rounded-2xl border border-white/10 bg-gradient-to-br from-[#454955]/40 to-[#121014] p-5">

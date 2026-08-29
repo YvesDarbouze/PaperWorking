@@ -1,16 +1,20 @@
 'use client';
 
 import Link from 'next/link';
-import { FormEvent, useMemo, useState } from 'react';
-import { SEED_PROJECTS } from '@/lib/projects/seed-data';
+import { FormEvent, useEffect, useMemo, useState } from 'react';
+import { loadProjects, loadTeamDirectory } from '@/lib/data';
 import {
   INTERNAL_ROLES,
   ROLE_PERMISSIONS,
-  TEAM_MEMBERS,
-  TEAM_SEATS,
+  canManageOrganization,
   type InternalRole,
   type TeamMember,
-} from '@/lib/dashboard/shell-seed';
+} from '@/lib/team/roles';
+
+type ProjectOption = { id: string; propertyName?: string; name?: string; title?: string };
+type SeatInfo = { used: number; limit: number; tier: 'Individual' | 'Team' };
+
+const DEFAULT_SEATS: SeatInfo = { used: 0, limit: 5, tier: 'Individual' };
 
 function initials(name: string, email: string): string {
   const parts = name.trim().split(/\s+/).filter(Boolean);
@@ -23,20 +27,40 @@ function roleBadgeClass(role: string, isInternal: boolean): string {
   if (!isInternal) {
     return 'border-white/10 bg-white/5 text-[#9E9DA0]';
   }
-  if (role === 'CEO' || role === 'President' || role === 'Admin') {
+  // Manage roles get stronger badge — never treat "Deal Lead" as manage via includes('lead').
+  if (canManageOrganization(role)) {
     return 'border-violet-500/30 bg-violet-500/15 text-violet-300';
   }
   return 'border-[#7A9EAA]/30 bg-[#7A9EAA]/15 text-[#7A9EAA]';
+}
+
+function mapMember(raw: unknown): TeamMember | null {
+  if (!raw || typeof raw !== 'object') return null;
+  const m = raw as Record<string, unknown>;
+  return {
+    id: String(m.id ?? ''),
+    name: String(m.name ?? m.displayName ?? ''),
+    email: String(m.email ?? ''),
+    role: String(m.role ?? 'Deal Lead'),
+    type: (m.type as TeamMember['type']) || 'Internal',
+    status: (m.status as TeamMember['status']) || 'Active',
+    projects: Number(m.projects ?? 0),
+    lastActive: String(m.lastActive ?? '—'),
+    invitedAt: m.invitedAt ? String(m.invitedAt) : undefined,
+    isYou: Boolean(m.isYou),
+  };
 }
 
 /**
  * Team Directory & Scopes — port of PaperWorking `/dashboard/team`.
  */
 export default function TeamDirectoryPanel() {
-  const [members, setMembers] = useState<TeamMember[]>(() =>
-    TEAM_MEMBERS.map((m) => ({ ...m })),
-  );
-  const [accountTier, setAccountTier] = useState<'Individual' | 'Team'>(TEAM_SEATS.tier);
+  const [members, setMembers] = useState<TeamMember[]>([]);
+  const [seats, setSeats] = useState<SeatInfo>(DEFAULT_SEATS);
+  const [projects, setProjects] = useState<ProjectOption[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [loadError, setLoadError] = useState<string | null>(null);
+  const [accountTier, setAccountTier] = useState<'Individual' | 'Team'>('Individual');
   const [searchQuery, setSearchQuery] = useState('');
   const [inviteModalOpen, setInviteModalOpen] = useState(false);
   const [bulkEmailInput, setBulkEmailInput] = useState('');
@@ -46,6 +70,50 @@ export default function TeamDirectoryPanel() {
   const [assignTabOrTask, setAssignTabOrTask] = useState('');
   const [flash, setFlash] = useState<string | null>(null);
   const [hoveredRoleId, setHoveredRoleId] = useState<string | null>(null);
+
+  useEffect(() => {
+    let cancelled = false;
+    (async () => {
+      setLoading(true);
+      setLoadError(null);
+      try {
+        const [team, projectList] = await Promise.all([loadTeamDirectory(), loadProjects()]);
+        if (cancelled) return;
+        const mapped = (team.members ?? []).map(mapMember).filter(Boolean) as TeamMember[];
+        setMembers(mapped);
+        const seatRaw = team.seats as Record<string, unknown> | undefined;
+        const nextSeats: SeatInfo = {
+          used: Number(seatRaw?.used ?? mapped.length),
+          limit: Number(seatRaw?.limit ?? seatRaw?.total ?? Math.max(mapped.length, 5)),
+          tier: (seatRaw?.tier as SeatInfo['tier']) || (mapped.length > 1 ? 'Team' : 'Individual'),
+        };
+        setSeats(nextSeats);
+        setAccountTier(nextSeats.tier);
+        setProjects(
+          (Array.isArray(projectList) ? projectList : []).map((p) => {
+            const row = p as Record<string, unknown>;
+            return {
+              id: String(row.id ?? ''),
+              propertyName: String(row.propertyName ?? row.name ?? row.title ?? row.id ?? ''),
+              name: String(row.name ?? ''),
+              title: String(row.title ?? ''),
+            };
+          }),
+        );
+      } catch (err) {
+        if (!cancelled) {
+          setMembers([]);
+          setProjects([]);
+          setLoadError(err instanceof Error ? err.message : 'Failed to load team');
+        }
+      } finally {
+        if (!cancelled) setLoading(false);
+      }
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, []);
 
   const activePersonnel = useMemo(() => {
     const q = searchQuery.trim().toLowerCase();
@@ -105,15 +173,17 @@ export default function TeamDirectoryPanel() {
       showFlash('Select a project for scoped invite, or disable the restriction.');
       return;
     }
-    if (activeSeatsCount + emails.length > TEAM_SEATS.limit) {
+    if (activeSeatsCount + emails.length > seats.limit) {
       showFlash(
-        `Cannot invite ${emails.length} — only ${TEAM_SEATS.limit - activeSeatsCount} seats remaining.`,
+        `Cannot invite ${emails.length} — only ${seats.limit - activeSeatsCount} seats remaining.`,
       );
       return;
     }
 
     const projectName =
-      SEED_PROJECTS.find((p) => p.id === assignProject)?.propertyName ?? assignProject;
+      projects.find((p) => p.id === assignProject)?.propertyName ??
+      projects.find((p) => p.id === assignProject)?.name ??
+      assignProject;
 
     const newMembers: TeamMember[] = emails.map((email, i) => ({
       id: `invite-${Date.now()}-${i}`,
@@ -136,7 +206,25 @@ export default function TeamDirectoryPanel() {
     showFlash(
       enableScopedInvite
         ? `Sent ${emails.length} scoped invite(s) — restricted to “${projectName}”.`
-        : `Sent ${emails.length} invitation(s) (seed preview).`,
+        : `Sent ${emails.length} invitation(s).`,
+    );
+  }
+
+  if (loading) {
+    return (
+      <div className="flex min-h-[40vh] items-center justify-center px-4 text-sm text-white/50">
+        Loading team directory…
+      </div>
+    );
+  }
+
+  if (loadError) {
+    return (
+      <div className="mx-auto max-w-3xl px-4 py-16">
+        <div className="rounded-2xl border border-rose-500/30 bg-rose-500/10 p-6 text-sm text-rose-200">
+          Unable to load team: {loadError}
+        </div>
+      </div>
     );
   }
 
@@ -212,14 +300,14 @@ export default function TeamDirectoryPanel() {
                 <div className="flex justify-between text-[11px] font-medium text-white/55">
                   <span>Workspace Seat Capacity</span>
                   <span className="font-mono">
-                    {activeSeatsCount} / {TEAM_SEATS.limit} Seats Used
+                    {activeSeatsCount} / {seats.limit} Seats Used
                   </span>
                 </div>
                 <div className="h-2 overflow-hidden rounded-full bg-white/10">
                   <div
                     className="h-full rounded-full bg-emerald-500 transition-all duration-300"
                     style={{
-                      width: `${Math.min(100, (activeSeatsCount / TEAM_SEATS.limit) * 100)}%`,
+                      width: `${Math.min(100, (activeSeatsCount / seats.limit) * 100)}%`,
                     }}
                   />
                 </div>
@@ -227,7 +315,7 @@ export default function TeamDirectoryPanel() {
                   type="button"
                   onClick={() => {
                     setAccountTier('Individual');
-                    showFlash('Downgrade queued (seed preview).');
+                    showFlash('Downgrade queued.');
                   }}
                   className="mt-2 block cursor-pointer text-left text-[11px] font-semibold text-red-400 hover:underline"
                 >
@@ -239,7 +327,7 @@ export default function TeamDirectoryPanel() {
                 type="button"
                 onClick={() => {
                   setAccountTier('Team');
-                  showFlash('Upgraded to Investment Team (seed preview).');
+                  showFlash('Upgraded to Investment Team.');
                 }}
                 className="flex cursor-pointer items-center justify-center gap-1.5 rounded-md bg-emerald-500 px-5 py-2 text-[13px] font-semibold text-slate-950 transition-all hover:brightness-110"
               >
@@ -568,7 +656,7 @@ export default function TeamDirectoryPanel() {
             </h3>
             <p className="mb-4 text-[11px] leading-normal text-white/40">
               Enter email addresses to provision workspace credentials. Seats invited count towards
-              your {TEAM_SEATS.limit}-operator cap.
+              your {seats.limit}-operator cap.
             </p>
 
             <form onSubmit={handleSendInvites} className="space-y-4">
@@ -632,9 +720,9 @@ export default function TeamDirectoryPanel() {
                         className="w-full cursor-pointer rounded border border-white/10 bg-[#0d0a0b] p-1.5 text-[10px] text-white outline-none"
                       >
                         <option value="">Select Target Project</option>
-                        {SEED_PROJECTS.map((p) => (
+                        {projects.map((p) => (
                           <option key={p.id} value={p.id}>
-                            {p.propertyName}
+                            {p.propertyName || p.name || p.id}
                           </option>
                         ))}
                       </select>

@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { scorecardEntries } from '@/lib/insights/adapters';
+import { apiFetch } from '@/lib/api/client';
 
 interface ProjectKpiPayload {
   success?: boolean;
@@ -22,7 +23,7 @@ export default function ProjectScorecardPanel({ projectId }: { projectId: string
       setLoading(true);
       setError(null);
       try {
-        const response = await fetch(`/api/projects/${projectId}/kpis/current`, {
+        const response = await apiFetch(`/api/projects/${projectId}/kpis/current`, {
           credentials: 'include',
           cache: 'no-store',
         });

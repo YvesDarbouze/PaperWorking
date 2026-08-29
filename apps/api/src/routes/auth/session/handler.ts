@@ -116,7 +116,10 @@ export async function handleSessionPost(
   }
 
   const nodeEnv = deps.env?.nodeEnv ?? process.env.NODE_ENV ?? 'development';
-  const enableMockAuth = deps.env?.enableMockAuth ?? process.env.ENABLE_MOCK_AUTH === 'true';
+  // Production can never enable mock auth, even if ENABLE_MOCK_AUTH=true.
+  const requestedMock =
+    deps.env?.enableMockAuth ?? process.env.ENABLE_MOCK_AUTH === 'true';
+  const enableMockAuth = nodeEnv !== 'production' && Boolean(requestedMock);
   const hasCredentials = deps.hasCredentials ?? hasAdminCredentials;
 
   if (!hasCredentials()) {

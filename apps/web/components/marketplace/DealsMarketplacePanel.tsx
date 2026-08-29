@@ -7,6 +7,7 @@ import AddressSearch from '@/components/deals/AddressSearch';
 import DashboardPageHeader, {
   DashboardSecondaryButton,
 } from '@/components/dashboard/DashboardPageHeader';
+import { apiFetch } from '@/lib/api/client';
 
 type DealsTab = 'discover' | 'my_activity';
 type ViewMode = 'grid' | 'map';
@@ -42,7 +43,7 @@ export default function DealsMarketplacePanel() {
     else setRefreshing(true);
     setError(null);
     try {
-      const response = await fetch(`/api/deals?tab=${tab}`, {
+      const response = await apiFetch(`/api/deals?tab=${tab}`, {
         credentials: 'include',
         cache: 'no-store',
       });

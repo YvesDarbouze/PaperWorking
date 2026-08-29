@@ -6,6 +6,7 @@ import {
   formatReportMoney,
   resolveSeedProjectName,
 } from '@/lib/reports/adapters';
+import { apiFetch } from '@/lib/api/client';
 
 interface PeriodReportPayload {
   period: string;
@@ -42,11 +43,15 @@ export default function ProjectReportsPanel({ projectId }: { projectId: string }
       setLoading(true);
       setError(null);
       try {
-        const response = await fetch(
-          `/api/reports/${period}?organizationId=org-1&projectId=${projectId}`,
+        // Auth + project ACL on Nest — never hardcode organizationId.
+        const response = await apiFetch(
+          `/api/reports/${period}?projectId=${encodeURIComponent(projectId)}`,
           { credentials: 'include', cache: 'no-store' },
         );
-        const body = (await response.json()) as PeriodReportPayload & { error?: string };
+        const body = (await response.json()) as PeriodReportPayload & {
+          error?: string;
+          success?: boolean;
+        };
         if (!response.ok) throw new Error(body.error ?? 'Failed to load period report');
         if (!cancelled) setPayload(body);
       } catch (loadError) {
@@ -90,8 +95,7 @@ export default function ProjectReportsPanel({ projectId }: { projectId: string }
           {resolveSeedProjectName(projectId)}
         </h2>
         <p className="mt-2 text-sm text-white/65">
-          Period ledger via `handleReportsPeriodGet` — {payload.periodStart.slice(0, 10)} to{' '}
-          {payload.periodEnd.slice(0, 10)}.
+          Period ledger — {payload.periodStart.slice(0, 10)} to {payload.periodEnd.slice(0, 10)}.
         </p>
       </section>
 

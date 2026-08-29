@@ -50,9 +50,9 @@ function isLocalDevOrigin(origin: string): boolean {
 
 function isAllowedOrigin(origin: string, isE2e: boolean): boolean {
   if (allowedOrigins(isE2e).has(origin)) return true;
-  // Next.js dev may bind to 3002, 3003, etc. when 3000 is taken
-  const isMockAuth = process.env.ENABLE_MOCK_AUTH === 'true';
-  if ((process.env.NODE_ENV !== 'production' || isE2e || isMockAuth) && isLocalDevOrigin(origin)) return true;
+  // Next.js dev may bind to 3002, 3003, etc. when 3000 is taken.
+  // Never widen origins via ENABLE_MOCK_AUTH in production.
+  if ((process.env.NODE_ENV !== 'production' || isE2e) && isLocalDevOrigin(origin)) return true;
   return false;
 }
 
@@ -118,7 +118,8 @@ export function validateCsrf(request: Request): CsrfResult {
   // Browsers always send Origin for cross-origin fetch(). A missing Origin in
   // production means a non-browser client (curl, server-to-server). Reject in
   // production; allow in dev for tooling convenience.
-  if (process.env.NODE_ENV === 'production' && !isE2e && process.env.ENABLE_MOCK_AUTH !== 'true') {
+  // ENABLE_MOCK_AUTH must NEVER bypass this in production.
+  if (process.env.NODE_ENV === 'production' && !isE2e) {
     console.warn('[CSRF] Rejected — no Origin or Referer header in production request');
     return { ok: false, status: 403, reason: 'Missing origin headers' };
   }

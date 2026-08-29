@@ -1605,8 +1605,19 @@ model ReconciliationItem {
 
 model User {
   id               String                 @id @default(uuid())
+  /// Firebase Auth UID when linked (may equal id for new Nest users).
+  firebaseUid      String?                @unique
   email            String                 @unique
   name             String?
+  displayName      String?
+  phone            String?
+  role             String?                @default("investor")
+  accountType      String?                @default("investor")
+  timezone         String?
+  avatarUrl        String?
+  companyName      String?
+  twoFaEnabled     Boolean                @default(false)
+  settings         Json?
   syntheticAgent   Boolean                @default(false)
   agentPersona     String?
   createdAt        DateTime               @default(now())
@@ -1623,28 +1634,185 @@ model User {
   dealMessages     DealMessage[]
   businessCard     BusinessCard?
   dealBroadcasts   DealBroadcast[]
+  orgMemberships   OrganizationMember[]
+  projectMemberships ProjectMember[]
+  inboxItems       InboxItem[]            @relation("InboxRecipient")
+  inboxItemsSent   InboxItem[]            @relation("InboxSender")
+  followers        InvestorFollower[]     @relation("FollowedUser")
+  following        InvestorFollower[]     @relation("FollowerUser")
+  taskAssignments  TaskAssignment[]
+  ownedOrgs        Organization[]         @relation("OrgOwner")
+}
+
+model Organization {
+  id        String               @id @default(uuid())
+  name      String
+  slug      String?              @unique
+  settings  Json?
+  ownerId   String?
+  owner     User?                @relation("OrgOwner", fields: [ownerId], references: [id])
+  createdAt DateTime             @default(now())
+  updatedAt DateTime             @updatedAt
+  members   OrganizationMember[]
+  projects  Project[]
+  invites   OrganizationInvite[]
+}
+
+model OrganizationMember {
+  id             String       @id @default(uuid())
+  organizationId String
+  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  userId         String?
+  user           User?        @relation(fields: [userId], references: [id], onDelete: SetNull)
+  email          String?
+  role           String       @default("Contributor")
+  status         String       @default("active")
+  createdAt      DateTime     @default(now())
+  updatedAt      DateTime     @updatedAt
+
+  @@index([organizationId])
+  @@index([userId])
+  @@index([email])
+}
+
+model OrganizationInvite {
+  id             String       @id @default(uuid())
+  organizationId String
+  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  email          String
+  role           String       @default("Contributor")
+  invitedBy      String?
+  status         String       @default("pending")
+  createdAt      DateTime     @default(now())
+  updatedAt      DateTime     @updatedAt
+
+  @@index([organizationId])
+  @@index([email])
 }
 
 model Project {
-  id             String    @id @default(uuid())
-  title          String?
-  name           String?
-  address        String?
-  city           String?
-  state          String?
-  zip            String?
-  status         String?   @default("active")
-  syntheticAgent Boolean   @default(false)
-  listedByAgent  String?
-  userId         String?
-  user           User?     @relation("UserProjects", fields: [userId], references: [id])
-  investorId     String?
-  investor       User?     @relation("InvestorProjects", fields: [investorId], references: [id])
-  dealId         String?
-  deal           Deal?     @relation(fields: [dealId], references: [id])
-  createdAt      DateTime  @default(now())
-  updatedAt      DateTime  @updatedAt
-  messages       Message[]
+  id               String            @id @default(uuid())
+  title            String?
+  name             String?
+  address          String?
+  city             String?
+  state            String?
+  zip              String?
+  status           String?           @default("active")
+  currentPhase     Int               @default(1)
+  purchasePrice    Float?
+  visibility       String?           @default("private")
+  /// Phase-specific payloads (acquisition/purchase/hold/exit).
+  phaseData        Json?
+  /// Catch-all subcollections formerly served by /projects/:id/sub/:name.
+  subcollections   Json?
+  organizationId   String?
+  organization     Organization?     @relation(fields: [organizationId], references: [id], onDelete: SetNull)
+  syntheticAgent   Boolean           @default(false)
+  listedByAgent    String?
+  userId           String?
+  user             User?             @relation("UserProjects", fields: [userId], references: [id])
+  investorId       String?
+  investor         User?             @relation("InvestorProjects", fields: [investorId], references: [id])
+  dealId           String?
+  deal             Deal?             @relation(fields: [dealId], references: [id])
+  createdAt        DateTime          @default(now())
+  updatedAt        DateTime          @updatedAt
+  messages         Message[]
+  documents        ProjectDocument[]
+  members          ProjectMember[]
+  taskAssignments  TaskAssignment[]
+
+  @@index([organizationId])
+  @@index([userId])
+  @@index([status])
+}
+
+model ProjectDocument {
+  id          String   @id @default(uuid())
+  projectId   String
+  project     Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  name        String
+  mimeType    String?
+  storageKey  String?
+  sizeBytes   Int?
+  uploadedBy  String?
+  metadata    Json?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([projectId])
+}
+
+model ProjectMember {
+  id        String   @id @default(uuid())
+  projectId String
+  project   Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  userId    String?
+  user      User?    @relation(fields: [userId], references: [id], onDelete: SetNull)
+  email     String?
+  role      String   @default("member")
+  status    String   @default("active")
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([projectId])
+  @@index([userId])
+}
+
+model InboxItem {
+  id            String   @id @default(uuid())
+  recipientUid  String
+  recipient     User     @relation("InboxRecipient", fields: [recipientUid], references: [id], onDelete: Cascade)
+  senderUid     String?
+  sender        User?    @relation("InboxSender", fields: [senderUid], references: [id], onDelete: SetNull)
+  type          String   @default("notification")
+  title         String
+  body          String?
+  href          String?
+  read          Boolean  @default(false)
+  metadata      Json?
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  @@index([recipientUid])
+  @@index([read])
+}
+
+model InvestorFollower {
+  id          String   @id @default(uuid())
+  followerUid String
+  follower    User     @relation("FollowerUser", fields: [followerUid], references: [id], onDelete: Cascade)
+  targetUid   String
+  target      User     @relation("FollowedUser", fields: [targetUid], references: [id], onDelete: Cascade)
+  createdAt   DateTime @default(now())
+
+  @@unique([followerUid, targetUid])
+  @@index([targetUid])
+}
+
+model TaskAssignment {
+  id          String   @id @default(uuid())
+  projectId   String?
+  project     Project? @relation(fields: [projectId], references: [id], onDelete: SetNull)
+  assigneeId  String?
+  assignee    User?    @relation(fields: [assigneeId], references: [id], onDelete: SetNull)
+  title       String
+  status      String   @default("open")
+  dueAt       DateTime?
+  metadata    Json?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([projectId])
+  @@index([assigneeId])
+}
+
+model AppConfig {
+  key       String   @id
+  value     Json
+  updatedAt DateTime @updatedAt
+  updatedBy String?
 }
 
 model MarketplaceListing {

@@ -24,6 +24,7 @@ import {
   firebaseSendMagicLink,
 } from '@/lib/firebase/auth-client';
 import { isFirebaseConfigured } from '@/lib/firebase/config';
+import { useMockAuth } from '@/lib/data';
 import type { NavigationContext } from '@/lib/navigation/nav-contract';
 
 export interface AuthProfile {
@@ -88,6 +89,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const loginWithDevSession = useCallback(
     async (accountType = 'investor') => {
+      if (!useMockAuth()) {
+        return { ok: false, error: 'Firebase is required' };
+      }
       const result = await createDevSession(accountType);
       if (!result.ok) {
         const message =
@@ -108,9 +112,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       try {
         if (firebaseReady) {
           await firebaseLogin(email, password);
-        } else {
+        } else if (useMockAuth()) {
           const result = await createDevSession(accountType);
           if (!result.ok) throw new Error('Unable to establish a dev session');
+        } else {
+          throw new Error('Firebase is required');
         }
         await refresh();
       } catch (err) {
@@ -128,9 +134,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       try {
         if (firebaseReady) {
           await firebaseRegister(email, password, displayName, accountType);
-        } else {
+        } else if (useMockAuth()) {
           const result = await createDevSession(accountType);
           if (!result.ok) throw new Error('Unable to establish a dev session');
+        } else {
+          throw new Error('Firebase is required');
         }
         await refresh();
       } catch (err) {

@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "type": "module",
-  "description": "Migrated API handlers — Phase 4 (framework-agnostic route logic)",
+  "description": "API handlers (framework-agnostic) + NestJS HTTP adapter for Cloud Run",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
   "exports": {
@@ -13,20 +13,33 @@
     }
   },
   "scripts": {
-    "dev": "npm run dev --workspace=@paperworking/web",
-    "start:dev": "npm run dev --workspace=@paperworking/web",
     "build": "tsc -p tsconfig.json",
     "typecheck": "tsc -p tsconfig.json --noEmit",
-    "test": "node --experimental-vm-modules ../../node_modules/jest/bin/jest.js"
+    "test": "node --experimental-vm-modules ../../node_modules/jest/bin/jest.js",
+    "start:api": "node dist/main.js",
+    "dev:api": "npm run build && node --watch dist/main.js",
+    "start:dev": "npm run dev:api"
   },
   "dependencies": {
+    "@nestjs/common": "^12.0.1",
+    "@nestjs/config": "^12.0.0",
+    "@nestjs/core": "^12.0.1",
+    "@nestjs/platform-express": "^12.0.1",
     "@paperworking/database": "file:../../packages/database",
     "@paperworking/financial-engine": "file:../../packages/financial-engine",
     "@paperworking/shared": "file:../../packages/shared",
+    "@paperworking/validation": "file:../../packages/validation",
+    "cookie-parser": "^1.4.7",
+    "firebase-admin": "^13.4.0",
     "pdfkit": "^0.17.1",
+    "reflect-metadata": "^0.2.2",
+    "rxjs": "^7.8.2",
+    "stripe": "^18.0.0",
     "zod": "^3.24.2"
   },
   "devDependencies": {
+    "@types/cookie-parser": "^1.4.8",
+    "@types/express": "^5.0.6",
     "@types/pdfkit": "^0.13.9",
     "typescript": "^5.8.3"
   }

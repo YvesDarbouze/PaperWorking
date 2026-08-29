@@ -6,7 +6,6 @@ import { useEffect, useRef, useState } from 'react';
 import Logo from '@/components/marketing/Logo';
 import UserAccountMenu from '@/components/shared/UserAccountMenu';
 import { destroySession, fetchSessionProfile } from '@/lib/auth/session-client';
-import { PROFILE_CARD } from '@/lib/dashboard/content';
 
 const NAV_LINKS = [
   { label: 'How it works', href: '/#how-it-works' },
@@ -82,9 +81,9 @@ export default function MarketingHeader() {
             {authenticated ? (
               <UserAccountMenu
                 className="hidden md:block"
-                displayName={PROFILE_CARD.displayName}
+                displayName="Account"
                 accountType={accountType}
-                role={PROFILE_CARD.role}
+                role={accountType === 'vendor' ? 'Vendor Partner' : 'Investor'}
                 onSignOut={handleSignOut}
               />
             ) : (
@@ -166,10 +165,10 @@ export default function MarketingHeader() {
                 <>
                   <div className="rounded-2xl border border-[color:var(--color-primary)]/40 bg-white/[0.03] px-4 py-3">
                     <p className="text-[11px] font-bold uppercase tracking-[0.04em] text-white">
-                      {PROFILE_CARD.displayName}
+                      Account
                     </p>
                     <p className="mt-0.5 text-[9px] font-bold uppercase tracking-[0.12em] text-[color:var(--color-primary)]">
-                      {PROFILE_CARD.role}
+                      {accountType === 'vendor' ? 'Vendor Partner' : 'Investor'}
                     </p>
                   </div>
                   <Link

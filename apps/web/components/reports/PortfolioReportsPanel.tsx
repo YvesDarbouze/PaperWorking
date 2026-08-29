@@ -4,19 +4,23 @@ import Link from 'next/link';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import ReportCatalogGrid from '@/components/reports/ReportCatalogGrid';
 import ReportViewModal from '@/components/reports/ReportViewModal';
-import { SEED_PROJECTS } from '@/lib/projects/seed-data';
 import {
   formatReportMoney,
   type ReportPeriodOption,
 } from '@/lib/reports/adapters';
 import {
-  PHASE_BREAKDOWN_SEED,
   PERIOD_TABS,
   REPORT_CATALOG,
   TAB_CATEGORIES,
   type PeriodTab,
   type ReportCatalogItem,
 } from '@/lib/reports/report-catalog';
+import {
+  loadProjects,
+  loadReportsPhaseBreakdownMockOnly,
+  useMockData,
+} from '@/lib/data';
+import { apiFetch } from '@/lib/api/client';
 
 interface PortfolioReportPayload {
   period: ReportPeriodOption;
@@ -37,6 +41,16 @@ interface PortfolioReportPayload {
     totalExitRevenue: number;
   };
 }
+
+type PhaseBreakdownRow = {
+  phase: string;
+  label: string;
+  amount: number;
+  count: number;
+  unconfidentCount: number;
+};
+
+type ProjectOption = { id: string; address?: string; propertyName?: string; name?: string };
 
 const ALL_PROJECTS = '__all__';
 
@@ -63,7 +77,9 @@ function downloadBlob(blob: Blob, filename: string) {
  * simplified investment reports surface.
  */
 export default function PortfolioReportsPanel() {
-  const projects = SEED_PROJECTS;
+  const mockMode = useMockData();
+  const [projects, setProjects] = useState<ProjectOption[]>([]);
+  const [phaseBreakdown, setPhaseBreakdown] = useState<PhaseBreakdownRow[]>([]);
   const [period, setPeriod] = useState<PeriodTab>('Monthly');
   const [projectFilter, setProjectFilter] = useState(ALL_PROJECTS);
   const [openReport, setOpenReport] = useState<ReportCatalogItem['id'] | null>(null);
@@ -75,19 +91,70 @@ export default function PortfolioReportsPanel() {
 
   useEffect(() => {
     let cancelled = false;
+    async function loadProjectsList() {
+      try {
+        if (mockMode) {
+          const list = await loadProjects();
+          if (cancelled) return;
+          setProjects(
+            (Array.isArray(list) ? list : []).map((p) => {
+              const row = p as Record<string, unknown>;
+              return {
+                id: String(row.id ?? ''),
+                address: row.address ? String(row.address) : undefined,
+                propertyName: String(row.propertyName ?? row.name ?? ''),
+              };
+            }),
+          );
+          setPhaseBreakdown(
+            loadReportsPhaseBreakdownMockOnly() as PhaseBreakdownRow[],
+          );
+        } else {
+          const list = await loadProjects();
+          if (cancelled) return;
+          setProjects(
+            (Array.isArray(list) ? list : []).map((p) => {
+              const row = p as Record<string, unknown>;
+              return {
+                id: String(row.id ?? ''),
+                address: row.address ? String(row.address) : undefined,
+                propertyName: String(row.propertyName ?? row.name ?? row.title ?? ''),
+                name: row.name ? String(row.name) : undefined,
+              };
+            }),
+          );
+          setPhaseBreakdown([]);
+        }
+      } catch {
+        if (!cancelled) {
+          setProjects([]);
+          setPhaseBreakdown([]);
+        }
+      }
+    }
+    void loadProjectsList();
+    return () => {
+      cancelled = true;
+    };
+  }, [mockMode]);
+
+  useEffect(() => {
+    let cancelled = false;
     async function load() {
       setLoading(true);
       try {
-        const response = await fetch(`/api/reports/portfolio?period=${apiPeriod}`, {
+        const response = await apiFetch(`/api/reports/portfolio?period=${apiPeriod}`, {
           credentials: 'include',
           cache: 'no-store',
         });
         if (response.ok) {
           const body = (await response.json()) as PortfolioReportPayload;
           if (!cancelled) setReport(body);
+        } else if (!cancelled && !mockMode) {
+          setReport(null);
         }
       } catch {
-        // Seed overview still renders
+        if (!cancelled && !mockMode) setReport(null);
       } finally {
         if (!cancelled) setLoading(false);
       }
@@ -96,7 +163,7 @@ export default function PortfolioReportsPanel() {
     return () => {
       cancelled = true;
     };
-  }, [apiPeriod]);
+  }, [apiPeriod, mockMode]);
 
   const scopedProjects = useMemo(() => {
     if (projectFilter === ALL_PROJECTS) return projects;
@@ -113,19 +180,19 @@ export default function PortfolioReportsPanel() {
     const scope =
       projectFilter === ALL_PROJECTS
         ? `${projects.length} propert${projects.length === 1 ? 'y' : 'ies'}`
-        : first?.address ?? first?.propertyName ?? 'Selected property';
+        : first?.address ?? first?.propertyName ?? first?.name ?? 'Selected property';
     return `${scope} · ${period}`;
   }, [projectFilter, projects.length, scopedProjects, period]);
 
   const overview = report?.overview;
-  const portfolioValue = overview?.totalPortfolioValue ?? 2_642_000;
-  const cashInvested = overview?.totalCashInvested ?? 450_000;
-  const totalReturns = overview?.totalReturns ?? 274_000;
-  const portfolioROI = overview?.portfolioROIPercent ?? 24.6;
+  const portfolioValue = overview?.totalPortfolioValue;
+  const cashInvested = overview?.totalCashInvested;
+  const totalReturns = overview?.totalReturns;
+  const portfolioROI = overview?.portfolioROIPercent;
   const narrative =
     report?.narrative ||
     report?.executiveSummary ||
-    'Executive Summary: Portfolio has generated $274,000 in capital gains with a 24.6% overall return across 3 active projects.';
+    (loading ? 'Loading investment reports…' : 'No executive narrative available yet.');
 
   const handleExport = useCallback(
     async (format: 'pdf' | 'csv') => {
@@ -134,11 +201,11 @@ export default function PortfolioReportsPanel() {
         if (format === 'csv') {
           const csv =
             'data:text/csv;charset=utf-8,Metric,Value\n' +
-            `Active Projects,${overview?.totalActiveProjects ?? 3}\n` +
-            `Portfolio Value,${portfolioValue}\n` +
-            `Cash Invested,${cashInvested}\n` +
-            `Total Returns,${totalReturns}\n` +
-            `ROI,${portfolioROI}%\n`;
+            `Active Projects,${overview?.totalActiveProjects ?? 0}\n` +
+            `Portfolio Value,${portfolioValue ?? ''}\n` +
+            `Cash Invested,${cashInvested ?? ''}\n` +
+            `Total Returns,${totalReturns ?? ''}\n` +
+            `ROI,${portfolioROI ?? ''}%\n`;
           const link = document.createElement('a');
           link.href = encodeURI(csv);
           link.download = `PaperWorking_Portfolio_Metrics_${apiPeriod}.csv`;
@@ -146,7 +213,7 @@ export default function PortfolioReportsPanel() {
           return;
         }
 
-        const response = await fetch('/api/reports/generate', {
+        const response = await apiFetch('/api/reports/generate', {
           method: 'POST',
           credentials: 'include',
           headers: { 'Content-Type': 'application/json' },
@@ -289,7 +356,12 @@ export default function PortfolioReportsPanel() {
 
       {/* Phase breakdown */}
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-3" data-testid="phase-breakdown">
-        {PHASE_BREAKDOWN_SEED.map((t) => (
+        {phaseBreakdown.length === 0 ? (
+          <div className="col-span-full rounded-xl border border-white/10 bg-white/[0.02] p-6 text-center text-sm text-white/45">
+            No phase breakdown data yet.
+          </div>
+        ) : (
+          phaseBreakdown.map((t) => (
           <div
             key={t.phase}
             data-testid={`phase-card-${t.phase}`}
@@ -304,7 +376,8 @@ export default function PortfolioReportsPanel() {
               {t.unconfidentCount > 0 ? ` · ${t.unconfidentCount} need review` : ''}
             </p>
           </div>
-        ))}
+          ))
+        )}
       </div>
 
       {/* Quarterly tax alert */}
@@ -339,25 +412,33 @@ export default function PortfolioReportsPanel() {
           <span className="text-[11px] font-semibold uppercase tracking-wider text-slate-400">
             Total Value
           </span>
-          <p className="text-xl font-black text-white">${portfolioValue.toLocaleString()}</p>
+          <p className="text-xl font-black text-white">
+            {portfolioValue != null ? `$${portfolioValue.toLocaleString()}` : '—'}
+          </p>
         </div>
         <div className="space-y-1 rounded-2xl border border-white/10 bg-black/30 p-5">
           <span className="text-[11px] font-semibold uppercase tracking-wider text-slate-400">
             Cash Invested
           </span>
-          <p className="text-xl font-black text-white">${cashInvested.toLocaleString()}</p>
+          <p className="text-xl font-black text-white">
+            {cashInvested != null ? `$${cashInvested.toLocaleString()}` : '—'}
+          </p>
         </div>
         <div className="space-y-1 rounded-2xl border border-white/10 bg-black/30 p-5">
           <span className="text-[11px] font-semibold uppercase tracking-wider text-slate-400">
             Total Returns
           </span>
-          <p className="text-xl font-black text-emerald-400">${totalReturns.toLocaleString()}</p>
+          <p className="text-xl font-black text-emerald-400">
+            {totalReturns != null ? `$${totalReturns.toLocaleString()}` : '—'}
+          </p>
         </div>
         <div className="space-y-1 rounded-2xl border border-white/10 bg-black/30 p-5">
           <span className="text-[11px] font-semibold uppercase tracking-wider text-slate-400">
             Portfolio ROI
           </span>
-          <p className="text-xl font-black text-emerald-400">{portfolioROI}%</p>
+          <p className="text-xl font-black text-emerald-400">
+            {portfolioROI != null ? `${portfolioROI}%` : '—'}
+          </p>
         </div>
       </div>
 

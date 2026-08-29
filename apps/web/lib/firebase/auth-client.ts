@@ -12,6 +12,7 @@ import {
   type User,
 } from 'firebase/auth';
 import { auth, isFirebaseConfigured } from '@/lib/firebase/config';
+import { apiFetch } from '@/lib/api/client';
 
 function authErrorMessage(code: string | undefined, fallback?: string): string {
   switch (code) {
@@ -66,7 +67,7 @@ export function requireFirebaseConfigured(): void {
 export async function syncSessionCookie(user: User | null, accountType?: string): Promise<void> {
   if (user) {
     const idToken = await user.getIdToken();
-    const res = await fetch('/api/auth/session', {
+    const res = await apiFetch('/api/auth/session', {
       method: 'POST',
       credentials: 'include',
       headers: { 'Content-Type': 'application/json' },
@@ -79,7 +80,7 @@ export async function syncSessionCookie(user: User | null, accountType?: string)
     return;
   }
 
-  await fetch('/api/auth/session', { method: 'DELETE', credentials: 'include' });
+  await apiFetch('/api/auth/session', { method: 'DELETE', credentials: 'include' });
 }
 
 export async function firebaseLogin(email: string, password: string): Promise<User> {

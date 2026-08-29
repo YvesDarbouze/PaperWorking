@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import { apiFetch } from '@/lib/api/client';
 
 export interface DealBroadcastModalProps {
   dealId: string;
@@ -48,7 +49,7 @@ export default function DealBroadcastModal({
     }
 
     try {
-      const response = await fetch('/api/deals/broadcast', {
+      const response = await apiFetch('/api/deals/broadcast', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         credentials: 'include',

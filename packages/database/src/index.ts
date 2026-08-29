@@ -11,7 +11,7 @@ import {
   getMigrationFirestore,
 } from './firestore/index.js';
 
-export const DATABASE_PACKAGE_STATUS = 'phase-3-read-only' as const;
+export const DATABASE_PACKAGE_STATUS = 'wave-1-writable-api' as const;
 
 export interface ReadOnlyDatabaseAdapters {
   prisma: MigrationPrismaClient;
@@ -42,8 +42,11 @@ export function createReadOnlyAdapters(options?: {
 
 export {
   getMigrationPrismaClient,
+  getApiPrismaClient,
   migrationDb,
+  apiDb,
   type MigrationPrismaClient,
+  type ApiPrismaClient,
 } from './client.js';
 export { sanitizeDbRecord } from './sanitize.js';
 export { ReadOnlyDatabaseError, asReadOnlyClient } from './read-only-guard.js';

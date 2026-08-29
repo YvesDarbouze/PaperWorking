@@ -1,6 +1,6 @@
 import Link from 'next/link';
 import DashboardPageHeader from '@/components/dashboard/DashboardPageHeader';
-import { SETTINGS_SECTIONS } from '@/lib/dashboard/shell-seed';
+import { SETTINGS_SECTIONS } from '@/lib/settings/sections';
 
 export default function SettingsHubPanel() {
   return (

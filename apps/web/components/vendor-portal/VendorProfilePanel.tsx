@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import type { VendorProfileData } from '@/lib/vendor-portal/seed-data';
+import { apiFetch } from '@/lib/api/client';
 
 const VENDOR_TYPES = [
   'General Contractor',
@@ -25,7 +26,7 @@ export default function VendorProfilePanel() {
       setLoading(true);
       setError(null);
       try {
-        const response = await fetch('/api/vendor-portal/profile', {
+        const response = await apiFetch('/api/vendor-portal/profile', {
           credentials: 'include',
           cache: 'no-store',
         });
@@ -59,7 +60,7 @@ export default function VendorProfilePanel() {
     setSaving(true);
     setError(null);
     try {
-      const response = await fetch('/api/vendor-portal/profile', {
+      const response = await apiFetch('/api/vendor-portal/profile', {
         method: 'PUT',
         credentials: 'include',
         headers: { 'Content-Type': 'application/json' },

@@ -9,6 +9,7 @@ import {
   AdminStateBlock,
   useAdminOpsSection,
 } from '@/components/admin/admin-ui';
+import { apiFetch } from '@/lib/api/client';
 
 interface OverviewData {
   mrr: number;
@@ -46,10 +47,10 @@ export default function AdminOverviewPanel() {
     async function loadInfra() {
       try {
         const [rentcastRes, agentsRes, ratesRes, checklistsRes] = await Promise.all([
-          fetch('/api/admin/rentcast-usage', { credentials: 'include', cache: 'no-store' }),
-          fetch('/api/admin/agent-crew', { credentials: 'include', cache: 'no-store' }),
-          fetch('/api/admin/lender-rates', { credentials: 'include', cache: 'no-store' }),
-          fetch('/api/admin/lender-checklists', { credentials: 'include', cache: 'no-store' }),
+          apiFetch('/api/admin/rentcast-usage', { credentials: 'include', cache: 'no-store' }),
+          apiFetch('/api/admin/agent-crew', { credentials: 'include', cache: 'no-store' }),
+          apiFetch('/api/admin/lender-rates', { credentials: 'include', cache: 'no-store' }),
+          apiFetch('/api/admin/lender-checklists', { credentials: 'include', cache: 'no-store' }),
         ]);
         const rentcast = (await rentcastRes.json()) as { count?: number; limit?: number };
         const agents = (await agentsRes.json()) as { count?: number };

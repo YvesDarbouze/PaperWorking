@@ -3,6 +3,10 @@ import type { NextConfig } from 'next';
 const nextConfig: NextConfig = {
   reactStrictMode: true,
   output: 'standalone',
+  // Allow importing root-level /mockdata from apps/web
+  experimental: {
+    externalDir: true,
+  },
   transpilePackages: [
     '@paperworking/api',
     '@paperworking/shared',

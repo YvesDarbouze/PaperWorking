@@ -5,7 +5,7 @@ import Link from 'next/link';
 import {
   calculateFundingProgress,
   formatDealCurrency,
-} from '@/lib/marketplace/seed-data';
+} from '@/lib/marketplace/format';
 import DealBroadcastModal from '@/components/marketplace/DealBroadcastModal';
 
 export interface DealCardData {

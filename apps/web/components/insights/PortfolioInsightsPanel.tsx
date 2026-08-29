@@ -3,20 +3,23 @@
 import Link from 'next/link';
 import { useEffect, useMemo, useState } from 'react';
 import ProjectComparisonChart from '@/components/insights/ProjectComparisonChart';
-import { SEED_PROJECTS } from '@/lib/projects/seed-data';
 import {
-  COMPARISON_POINTS,
   COMPARE_METRIC_OPTIONS,
   formatInvestorValue,
   INSIGHTS_TAB_CATEGORIES,
-  INVESTOR_KPI_SECTIONS,
   TREND_METRIC_OPTIONS,
   TREND_PERIOD_LABELS,
-  TREND_SERIES,
   trendTone,
   type TrendPeriod,
   type InvestorKpiCard,
 } from '@/lib/insights/insights-dashboard-seed';
+import {
+  loadInsightsDashboardMockOnly,
+  loadProjects,
+  useMockData,
+} from '@/lib/data';
+import { apiFetch } from '@/lib/api/client';
+import type { ProjectWorkspace } from '@/lib/projects/types';
 
 interface ApiMetric {
   id: string;
@@ -33,6 +36,19 @@ interface ApiCategory {
   metrics: ApiMetric[];
 }
 
+type ComparisonPoint = {
+  projectId: string;
+  projectName: string;
+  metrics: Record<string, number>;
+};
+
+type TrendPoint = { label: string; value: number };
+type KpiSection = {
+  key: string;
+  title: string;
+  metrics: InvestorKpiCard[];
+};
+
 const TONE_CLASS = {
   positive: 'text-emerald-400',
   negative: 'text-rose-400',
@@ -44,9 +60,13 @@ const TONE_CLASS = {
  * (commit era with Portfolio Aggregate / Trends / Project Comparison).
  */
 export default function PortfolioInsightsPanel() {
-  const projects = SEED_PROJECTS;
+  const mockMode = useMockData();
+  const [projects, setProjects] = useState<Array<{ id: string; address?: string; propertyName?: string; name?: string }>>([]);
+  const [kpiSections, setKpiSections] = useState<KpiSection[]>([]);
+  const [trendSeries, setTrendSeries] = useState<Record<string, TrendPoint[]>>({});
+  const [comparisonSeed, setComparisonSeed] = useState<ComparisonPoint[]>([]);
   const [scope, setScope] = useState<'portfolio' | 'project'>('portfolio');
-  const [selectedProjectId, setSelectedProjectId] = useState(projects[0]?.id ?? '');
+  const [selectedProjectId, setSelectedProjectId] = useState('');
   const [trendPeriod, setTrendPeriod] = useState<TrendPeriod>('monthly');
   const [activeTab, setActiveTab] = useState('financial');
   const [categories, setCategories] = useState<ApiCategory[]>([]);
@@ -65,7 +85,40 @@ export default function PortfolioInsightsPanel() {
     let cancelled = false;
     async function load() {
       try {
-        const res = await fetch('/api/insights?userId=dev-user-1', {
+        if (mockMode) {
+          const dash = loadInsightsDashboardMockOnly();
+          if (cancelled) return;
+          setProjects(
+            (dash.projects as ProjectWorkspace[]).map((p) => ({
+              id: p.id,
+              address: p.address,
+              propertyName: p.propertyName,
+            })),
+          );
+          setKpiSections(dash.kpiSections as KpiSection[]);
+          setTrendSeries(dash.trendSeries as Record<string, TrendPoint[]>);
+          setComparisonSeed(dash.comparisonPoints as ComparisonPoint[]);
+          setSelectedProjectId(dash.projects[0]?.id ?? '');
+        } else {
+          const list = await loadProjects();
+          if (cancelled) return;
+          const mapped = (Array.isArray(list) ? list : []).map((p) => {
+            const row = p as Record<string, unknown>;
+            return {
+              id: String(row.id ?? ''),
+              address: row.address ? String(row.address) : undefined,
+              propertyName: String(row.propertyName ?? row.name ?? row.title ?? ''),
+              name: row.name ? String(row.name) : undefined,
+            };
+          });
+          setProjects(mapped);
+          setSelectedProjectId(mapped[0]?.id ?? '');
+          setKpiSections([]);
+          setTrendSeries({});
+          setComparisonSeed([]);
+        }
+
+        const res = await apiFetch('/api/insights', {
           credentials: 'include',
           cache: 'no-store',
         });
@@ -74,7 +127,11 @@ export default function PortfolioInsightsPanel() {
           if (!cancelled && data.categories) setCategories(data.categories);
         }
       } catch {
-        // Seed UI still works without API
+        if (!cancelled && !mockMode) {
+          setKpiSections([]);
+          setTrendSeries({});
+          setComparisonSeed([]);
+        }
       } finally {
         if (!cancelled) setLoadingCats(false);
       }
@@ -83,11 +140,11 @@ export default function PortfolioInsightsPanel() {
     return () => {
       cancelled = true;
     };
-  }, []);
+  }, [mockMode]);
 
   const selectedProject = projects.find((p) => p.id === selectedProjectId) ?? null;
   const selectedProjectLabel =
-    selectedProject?.address ?? selectedProject?.propertyName ?? 'Selected project';
+    selectedProject?.address ?? selectedProject?.propertyName ?? selectedProject?.name ?? 'Selected project';
   const hasProjects = projects.length > 0;
 
   const tabMatch = INSIGHTS_TAB_CATEGORIES.find((t) => t.id === activeTab)?.match;
@@ -106,7 +163,7 @@ export default function PortfolioInsightsPanel() {
   }, [categories]);
 
   const comparisonPoints = useMemo(() => {
-    let points = COMPARISON_POINTS.map((p) => ({
+    let points = comparisonSeed.map((p) => ({
       projectId: p.projectId,
       projectName: p.projectName,
       value: p.metrics[compareMetric] ?? 0,
@@ -114,10 +171,12 @@ export default function PortfolioInsightsPanel() {
     if (sortOrder === 'asc') points = [...points].sort((a, b) => a.value - b.value);
     if (sortOrder === 'desc') points = [...points].sort((a, b) => b.value - a.value);
     return points;
-  }, [compareMetric, sortOrder]);
+  }, [compareMetric, sortOrder, comparisonSeed]);
 
   const compareAvg =
-    comparisonPoints.reduce((s, p) => s + p.value, 0) / Math.max(comparisonPoints.length, 1);
+    comparisonPoints.length > 0
+      ? comparisonPoints.reduce((s, p) => s + p.value, 0) / comparisonPoints.length
+      : 0;
 
   function toggleWatch(id: string) {
     setWatchlist((prev) => {
@@ -317,7 +376,12 @@ export default function PortfolioInsightsPanel() {
         </div>
 
         <div className="space-y-8" data-testid="kpi-sections">
-          {INVESTOR_KPI_SECTIONS.map((section) => (
+          {kpiSections.length === 0 ? (
+            <p className="py-8 text-center text-sm text-white/45">
+              {loadingCats ? 'Loading KPIs…' : 'No KPI data yet.'}
+            </p>
+          ) : (
+            kpiSections.map((section) => (
             <section key={section.key} data-testid={`kpi-section-${section.key}`}>
               <h2 className="mb-3 text-xs font-bold uppercase tracking-wider text-white/45">
                 {section.title}
@@ -369,7 +433,8 @@ export default function PortfolioInsightsPanel() {
                 })}
               </div>
             </section>
-          ))}
+          ))
+          )}
         </div>
       </div>
 
@@ -385,7 +450,7 @@ export default function PortfolioInsightsPanel() {
           {trendMetrics.map((metricId, idx) => {
             const opt =
               TREND_METRIC_OPTIONS.find((o) => o.id === metricId) ?? TREND_METRIC_OPTIONS[0]!;
-            const series = TREND_SERIES[opt.id] ?? [];
+            const series = trendSeries[opt.id] ?? [];
             const max = Math.max(...series.map((p) => p.value), 1);
             return (
               <div

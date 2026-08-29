@@ -5,16 +5,9 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import AddressSearch from '@/components/deals/AddressSearch';
 import type { CollisionDeal } from '@/components/deals/CollisionModal';
-import { addSeedProject } from '@/lib/projects/seed-data';
-import { addSeedDeal } from '@/lib/marketplace/seed-data';
-
-const AVAILABLE_TEAM_MEMBERS = [
-  { id: 'tm-1', name: 'Sarah Jenkins', role: 'Lead Investor' },
-  { id: 'tm-2', name: 'Marcus Vance', role: 'CPA & Advisor' },
-  { id: 'tm-3', name: 'Elena Rostova', role: 'Legal Counsel' },
-  { id: 'tm-4', name: 'David Chen', role: 'General Contractor' },
-  { id: 'tm-5', name: 'Amara Okafor', role: 'Property Manager' },
-];
+import { apiFetch } from '@/lib/api/client';
+import { loadTeamDirectory, mockProvider, useMockData } from '@/lib/data';
+import type { ProjectWorkspace } from '@/lib/projects/types';
 
 export default function NewProjectPage() {
   const router = useRouter();
@@ -38,10 +31,10 @@ export default function NewProjectPage() {
   const [projectId] = useState(() => `proj-${Date.now().toString().slice(-6)}`);
   const [projectName, setProjectName] = useState('');
   const [description, setDescription] = useState('');
-  const [selectedTeam, setSelectedTeam] = useState<string[]>([
-    'Sarah Jenkins',
-    'Marcus Vance',
-  ]);
+  const [assignees, setAssignees] = useState<Array<{ id: string; name: string; role: string }>>(
+    [],
+  );
+  const [selectedTeam, setSelectedTeam] = useState<string[]>([]);
   const [dealId, setDealId] = useState<string | null>(null);
   const [dealSlug, setDealSlug] = useState<string | null>(null);
   const [dealAddress, setDealAddress] = useState<string | null>(null);
@@ -49,6 +42,34 @@ export default function NewProjectPage() {
   const [draftDealCreated, setDraftDealCreated] = useState(false);
   const [isLaunching, setIsLaunching] = useState(false);
   const [validationError, setValidationError] = useState<string | null>(null);
+
+  useEffect(() => {
+    let cancelled = false;
+    async function loadAssignees() {
+      if (useMockData()) {
+        const options = mockProvider.projectAssigneeOptions();
+        if (cancelled) return;
+        setAssignees(options);
+        setSelectedTeam(options.slice(0, 2).map((m) => m.name));
+        return;
+      }
+      try {
+        const data = await loadTeamDirectory();
+        if (cancelled) return;
+        const options = (data.members as Array<{ id: string; name: string; role: string }>).map(
+          (m) => ({ id: m.id, name: m.name, role: m.role }),
+        );
+        setAssignees(options);
+        setSelectedTeam(options.slice(0, 2).map((m) => m.name));
+      } catch {
+        if (!cancelled) setAssignees([]);
+      }
+    }
+    loadAssignees();
+    return () => {
+      cancelled = true;
+    };
+  }, []);
 
   // Sync step query changes
   function setStep(stepNumber: number) {
@@ -86,12 +107,10 @@ export default function NewProjectPage() {
   }
 
   // Step 2: Handle Create New Deal for This Project (Collision alternative)
-  function handleCreateNewDealAnyway(deal: CollisionDeal) {
+  async function handleCreateNewDealAnyway(deal: CollisionDeal) {
     const newDealId = `deal-draft-${Date.now().toString().slice(-6)}`;
     const slug = deal.slug || deal.address.toLowerCase().replace(/[^a-z0-9]/g, '');
-
-    // Auto-create draft deal linked to project
-    addSeedDeal({
+    const payload = {
       id: newDealId,
       slug,
       address: deal.address,
@@ -106,7 +125,17 @@ export default function NewProjectPage() {
       createdAt: new Date().toISOString(),
       projectId,
       projects: [{ id: projectId, name: projectName || 'New Project' }],
-    });
+    };
+
+    if (useMockData()) {
+      mockProvider.addDeal(payload);
+    } else {
+      await apiFetch('/api/deals', {
+        method: 'POST',
+        credentials: 'include',
+        body: JSON.stringify(payload),
+      }).catch(() => undefined);
+    }
 
     setDealId(newDealId);
     setDealSlug(slug);
@@ -116,11 +145,9 @@ export default function NewProjectPage() {
   }
 
   // Step 2: Handle No Deal Exists (New Address Search)
-  function handleNoDealFound(address: string, slug: string) {
+  async function handleNoDealFound(address: string, slug: string) {
     const newDealId = `deal-draft-${Date.now().toString().slice(-6)}`;
-
-    // Auto-create draft deal linked to project
-    addSeedDeal({
+    const payload = {
       id: newDealId,
       slug,
       address,
@@ -135,7 +162,17 @@ export default function NewProjectPage() {
       createdAt: new Date().toISOString(),
       projectId,
       projects: [{ id: projectId, name: projectName || 'New Project' }],
-    });
+    };
+
+    if (useMockData()) {
+      mockProvider.addDeal(payload);
+    } else {
+      await apiFetch('/api/deals', {
+        method: 'POST',
+        credentials: 'include',
+        body: JSON.stringify(payload),
+      }).catch(() => undefined);
+    }
 
     setDealId(newDealId);
     setDealSlug(slug);
@@ -148,8 +185,7 @@ export default function NewProjectPage() {
     setIsLaunching(true);
 
     try {
-      // Store in memory seed projects list
-      addSeedProject({
+      const projectPayload = {
         id: projectId,
         project_id: projectId,
         propertyName: projectName || 'New Project',
@@ -159,16 +195,27 @@ export default function NewProjectPage() {
         dealSlug: dealSlug || '1247elmst',
         dealAddress: dealAddress || '1247 Elm Street, Austin, TX 78702',
         status: 'Active',
-        currentPhase: 'acquisition',
-        phase: 'acquisition',
-      });
+        currentPhase: 'acquisition' as const,
+        phase: 'acquisition' as const,
+      };
 
-      // Brief delay for transition feel
+      if (useMockData()) {
+        mockProvider.addProject(projectPayload as ProjectWorkspace);
+      } else {
+        const res = await apiFetch('/api/projects', {
+          method: 'POST',
+          credentials: 'include',
+          body: JSON.stringify(projectPayload),
+        });
+        if (!res.ok) throw new Error(`Failed to create project (${res.status})`);
+      }
+
       setTimeout(() => {
         router.push('/dashboard?projectCreated=true');
       }, 600);
     } catch {
-      router.push('/dashboard');
+      setIsLaunching(false);
+      setValidationError('Unable to create project. Please try again.');
     }
   }
 
@@ -283,7 +330,7 @@ export default function NewProjectPage() {
                   Assigned Team Members
                 </label>
                 <div className="grid gap-2 sm:grid-cols-2">
-                  {AVAILABLE_TEAM_MEMBERS.map((member) => {
+                  {assignees.map((member) => {
                     const isSelected = selectedTeam.includes(member.name);
                     return (
                       <button

@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
+import { apiFetch } from '@/lib/api/client';
 
 interface InvestorDetailPayload {
   profile?: {
@@ -30,7 +31,7 @@ export default function InvestorProfilePanel({ investorId }: { investorId: strin
       setLoading(true);
       setError(null);
       try {
-        const response = await fetch(`/api/marketplace/investors/${investorId}`, {
+        const response = await apiFetch(`/api/marketplace/investors/${investorId}`, {
           credentials: 'include',
           cache: 'no-store',
         });
@@ -56,7 +57,7 @@ export default function InvestorProfilePanel({ investorId }: { investorId: strin
   }, [investorId]);
 
   const toggleFollow = async () => {
-    const response = await fetch('/api/marketplace/investors/follow', {
+    const response = await apiFetch('/api/marketplace/investors/follow', {
       method: 'POST',
       credentials: 'include',
       headers: { 'Content-Type': 'application/json' },

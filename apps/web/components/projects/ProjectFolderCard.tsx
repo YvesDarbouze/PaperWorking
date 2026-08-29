@@ -101,7 +101,9 @@ export default function ProjectFolderCard({ project }: { project: ProjectSummary
         }
       : {
           label: 'Est. Exit',
-          value: formatCurrency(project.estimatedExitValue ?? project.purchasePrice * 1.25),
+          value: project.estimatedExitValue
+            ? formatCurrency(project.estimatedExitValue)
+            : 'Unavailable',
         };
 
   return (

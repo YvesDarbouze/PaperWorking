@@ -9,6 +9,7 @@ import VendorSideSheet, {
   type VendorSideSheetData,
 } from '@/components/marketplace/VendorSideSheet';
 import { VendorRequestModal } from '@/components/marketplace/VendorRequestModal';
+import { apiFetch } from '@/lib/api/client';
 
 type FilterCategory =
   | 'All'
@@ -252,11 +253,11 @@ function MarketplaceContent() {
         if (searchQuery.trim()) params.append('location', searchQuery.trim());
 
         const [vendorsRes, listingsRes] = await Promise.all([
-          fetch(`/api/vendors?${params.toString()}`, {
+          apiFetch(`/api/vendors?${params.toString()}`, {
             credentials: 'include',
             cache: 'no-store',
           }),
-          fetch('/api/marketplace/listings', {
+          apiFetch('/api/marketplace/listings', {
             credentials: 'include',
             cache: 'no-store',
           }),
@@ -304,7 +305,7 @@ function MarketplaceContent() {
       setLoadingDeals(true);
       setDealsError(null);
       try {
-        const res = await fetch('/api/deals?tab=discover', {
+        const res = await apiFetch('/api/deals?tab=discover', {
           credentials: 'include',
           cache: 'no-store',
         });
@@ -333,7 +334,7 @@ function MarketplaceContent() {
     async function fetchInvestors() {
       setLoadingInvestors(true);
       try {
-        const res = await fetch('/api/marketplace/investors', {
+        const res = await apiFetch('/api/marketplace/investors', {
           credentials: 'include',
           cache: 'no-store',
         });
@@ -434,7 +435,7 @@ function MarketplaceContent() {
   const toggleFollow = useCallback(
     async (targetUid: string) => {
       const isFollowing = following.includes(targetUid);
-      const response = await fetch('/api/marketplace/investors/follow', {
+      const response = await apiFetch('/api/marketplace/investors/follow', {
         method: 'POST',
         credentials: 'include',
         headers: { 'Content-Type': 'application/json' },

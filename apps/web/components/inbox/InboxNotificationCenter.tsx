@@ -5,12 +5,9 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import ComposeEmailModal from '@/components/inbox/ComposeEmailModal';
 import InboxItemCard from '@/components/inbox/InboxItemCard';
 import InboxTabs from '@/components/inbox/InboxTabs';
-import {
-  INBOX_TABS,
-  INBOX_THREADS,
-  type InboxTabId,
-  type InboxThread,
-} from '@/lib/dashboard/shell-seed';
+import { INBOX_TABS, type InboxTabId, type InboxThread } from '@/lib/inbox/types';
+import { loadInboxThreads } from '@/lib/data';
+import { apiFetch } from '@/lib/api/client';
 
 function emptyCounts(): Record<InboxTabId, number> {
   return {
@@ -115,26 +112,9 @@ function NotifMoreMenu({
  * Unified Inbox — port of PaperWorking `/dashboard/inbox` notification center
  * (two-pane list + reading pane, tabs, compose, mark-all-read).
  */
-function mapApiThread(raw: Record<string, unknown>): InboxThread {
-  return {
-    id: String(raw.id),
-    tab: (raw.tab as InboxTabId) || 'system',
-    type: (raw.type as InboxThread['type']) || 'SYSTEM',
-    subject: String(raw.subject ?? ''),
-    project: String(raw.project ?? ''),
-    from: String(raw.from ?? ''),
-    fromRole: typeof raw.fromRole === 'string' ? raw.fromRole : undefined,
-    preview: String(raw.preview ?? ''),
-    body: String(raw.body ?? ''),
-    unread: Boolean(raw.unread),
-    receivedAt: String(raw.receivedAt ?? new Date().toISOString()),
-    deepLinkUrl: typeof raw.deepLinkUrl === 'string' ? raw.deepLinkUrl : undefined,
-    actionable: Boolean(raw.actionable),
-  };
-}
-
 export default function InboxNotificationCenter() {
-  const [items, setItems] = useState<InboxThread[]>(() => [...INBOX_THREADS]);
+  const [items, setItems] = useState<InboxThread[]>([]);
+  const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState<InboxTabId>('all');
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState('');
@@ -147,17 +127,19 @@ export default function InboxNotificationCenter() {
   useEffect(() => {
     let cancelled = false;
     (async () => {
+      setLoading(true);
       try {
-        const res = await fetch('/api/inbox', { credentials: 'include' });
-        if (!res.ok) throw new Error(`HTTP ${res.status}`);
-        const data = (await res.json()) as { threads?: Record<string, unknown>[] };
+        const threads = await loadInboxThreads();
         if (cancelled) return;
-        if (Array.isArray(data.threads) && data.threads.length > 0) {
-          setItems(data.threads.map(mapApiThread));
-          setLoadError(null);
+        setItems(Array.isArray(threads) ? threads : []);
+        setLoadError(null);
+      } catch (err) {
+        if (!cancelled) {
+          setItems([]);
+          setLoadError(err instanceof Error ? err.message : 'Failed to load inbox');
         }
-      } catch {
-        if (!cancelled) setLoadError('Using local preview — /api/inbox unavailable.');
+      } finally {
+        if (!cancelled) setLoading(false);
       }
     })();
     return () => {
@@ -204,7 +186,7 @@ export default function InboxNotificationCenter() {
 
   function markRead(id: string) {
     setReadOverrides((prev) => ({ ...prev, [id]: true }));
-    void fetch(`/api/inbox/${id}`, {
+    void apiFetch(`/api/inbox/${id}`, {
       method: 'PATCH',
       credentials: 'include',
       headers: { 'Content-Type': 'application/json' },
@@ -214,7 +196,7 @@ export default function InboxNotificationCenter() {
 
   function markUnread(id: string) {
     setReadOverrides((prev) => ({ ...prev, [id]: false }));
-    void fetch(`/api/inbox/${id}`, {
+    void apiFetch(`/api/inbox/${id}`, {
       method: 'PATCH',
       credentials: 'include',
       headers: { 'Content-Type': 'application/json' },
@@ -227,7 +209,7 @@ export default function InboxNotificationCenter() {
     for (const item of items) {
       if (!archivedIds.has(item.id)) {
         next[item.id] = true;
-        void fetch(`/api/inbox/${item.id}`, {
+        void apiFetch(`/api/inbox/${item.id}`, {
           method: 'PATCH',
           credentials: 'include',
           headers: { 'Content-Type': 'application/json' },
@@ -241,7 +223,7 @@ export default function InboxNotificationCenter() {
   function archiveItem(id: string) {
     setArchivedIds((prev) => new Set(prev).add(id));
     if (selectedId === id) setSelectedId(null);
-    void fetch(`/api/inbox/${id}`, {
+    void apiFetch(`/api/inbox/${id}`, {
       method: 'PATCH',
       credentials: 'include',
       headers: { 'Content-Type': 'application/json' },
@@ -252,7 +234,7 @@ export default function InboxNotificationCenter() {
   function deleteItem(id: string) {
     setItems((prev) => prev.filter((i) => i.id !== id));
     if (selectedId === id) setSelectedId(null);
-    void fetch(`/api/inbox/${id}`, {
+    void apiFetch(`/api/inbox/${id}`, {
       method: 'DELETE',
       credentials: 'include',
     }).catch(() => undefined);
@@ -265,7 +247,7 @@ export default function InboxNotificationCenter() {
 
   function executeAction() {
     if (!selectedItem) return;
-    setActionFlash(`Action queued for “${selectedItem.subject}” (seed preview).`);
+    setActionFlash(`Action queued for “${selectedItem.subject}”.`);
     markRead(selectedItem.id);
     setTimeout(() => setActionFlash(null), 2500);
   }
@@ -343,10 +325,20 @@ export default function InboxNotificationCenter() {
           />
 
           <div className="relative flex-1 overflow-y-auto">
-            {visibleItems.length === 0 ? (
+            {loading ? (
+              <div className="flex flex-col items-center justify-center px-6 py-16 text-center">
+                <p className="text-sm font-medium text-white/60">Loading notifications…</p>
+              </div>
+            ) : loadError ? (
+              <div className="flex flex-col items-center justify-center px-6 py-16 text-center">
+                <span className="material-symbols-outlined mb-3 text-5xl opacity-20">error</span>
+                <p className="text-sm font-medium text-rose-300/90">Unable to load inbox</p>
+                <p className="mt-1 text-xs text-white/35">{loadError}</p>
+              </div>
+            ) : visibleItems.length === 0 ? (
               <div className="flex flex-col items-center justify-center px-6 py-16 text-center">
                 <span className="material-symbols-outlined mb-3 text-5xl opacity-20">inbox</span>
-                <p className="text-sm font-medium text-white/60">No items in this view</p>
+                <p className="text-sm font-medium text-white/60">No notifications yet</p>
                 <p className="mt-1 text-xs text-white/35">
                   {searchQuery
                     ? 'Try a different search.'

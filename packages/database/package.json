@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "type": "module",
-  "description": "Read-only database adapters (Phase 3). No production migrations.",
+  "description": "Prisma + Supabase PostgreSQL adapters (Nest API writable + Phase-3 read adapters)",
   "main": "./dist/src/index.js",
   "types": "./dist/src/index.d.ts",
   "exports": {
@@ -14,10 +14,14 @@
   },
   "scripts": {
     "generate": "prisma generate --config prisma.config.ts",
+    "migrate:dev": "prisma migrate dev --config prisma.config.ts",
+    "migrate:deploy": "prisma migrate deploy --config prisma.config.ts",
+    "db:push": "prisma db push --config prisma.config.ts",
     "prebuild": "npm run generate",
     "build": "tsc -p tsconfig.json",
     "typecheck": "npm run generate && tsc -p tsconfig.json --noEmit",
-    "test": "node --experimental-vm-modules ../../node_modules/jest/bin/jest.js"
+    "test": "node --experimental-vm-modules ../../node_modules/jest/bin/jest.js",
+    "seed": "node --import tsx prisma/seed.ts"
   },
   "dependencies": {
     "@paperworking/validation": "file:../validation",
@@ -29,6 +33,7 @@
   "devDependencies": {
     "@types/pg": "^8.23.1",
     "prisma": "^7.7.0",
+    "tsx": "^4.19.0",
     "typescript": "^5.8.3"
   }
 }

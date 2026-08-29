@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import { apiFetch } from '@/lib/api/client';
 
 interface LenderRate {
   id: string;
@@ -25,8 +26,8 @@ export default function AdminLenderConfigPanel() {
       setError(null);
       try {
         const [ratesRes, checklistsRes] = await Promise.all([
-          fetch('/api/admin/lender-rates', { credentials: 'include', cache: 'no-store' }),
-          fetch('/api/admin/lender-checklists', { credentials: 'include', cache: 'no-store' }),
+          apiFetch('/api/admin/lender-rates', { credentials: 'include', cache: 'no-store' }),
+          apiFetch('/api/admin/lender-checklists', { credentials: 'include', cache: 'no-store' }),
         ]);
         const ratesBody = (await ratesRes.json()) as { rates?: LenderRate[]; error?: string };
         const checklistsBody = (await checklistsRes.json()) as {

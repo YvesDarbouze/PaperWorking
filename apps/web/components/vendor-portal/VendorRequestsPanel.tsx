@@ -6,6 +6,7 @@ import {
   formatVendorFee,
   type VendorRequestFilter,
 } from '@/lib/vendor-portal/seed-data';
+import { apiFetch } from '@/lib/api/client';
 
 interface VendorRequest {
   id: string;
@@ -35,7 +36,7 @@ export default function VendorRequestsPanel() {
     setLoading(true);
     setError(null);
     try {
-      const response = await fetch('/api/vendor-portal/requests', {
+      const response = await apiFetch('/api/vendor-portal/requests', {
         credentials: 'include',
         cache: 'no-store',
       });
@@ -85,7 +86,7 @@ export default function VendorRequestsPanel() {
     setSubmitting(true);
     setError(null);
     try {
-      const response = await fetch('/api/vendor-portal/requests', {
+      const response = await apiFetch('/api/vendor-portal/requests', {
         method: 'PUT',
         credentials: 'include',
         headers: { 'Content-Type': 'application/json' },
@@ -114,7 +115,7 @@ export default function VendorRequestsPanel() {
     setSubmitting(true);
     setError(null);
     try {
-      const response = await fetch('/api/vendor-portal/requests', {
+      const response = await apiFetch('/api/vendor-portal/requests', {
         method: 'PUT',
         credentials: 'include',
         headers: { 'Content-Type': 'application/json' },

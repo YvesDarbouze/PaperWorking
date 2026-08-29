@@ -5,8 +5,9 @@ import Link from 'next/link';
 import {
   calculateFundingProgress,
   formatDealCurrency,
-} from '@/lib/marketplace/seed-data';
+} from '@/lib/marketplace/format';
 import DealBroadcastModal from '@/components/marketplace/DealBroadcastModal';
+import { apiFetch } from '@/lib/api/client';
 
 interface DealPreview {
   id: string;
@@ -39,7 +40,7 @@ export default function DealDetailPanel({ slug }: { slug: string }) {
       setLoading(true);
       setError(null);
       try {
-        const response = await fetch(`/api/deals/exists?slug=${encodeURIComponent(slug)}`, {
+        const response = await apiFetch(`/api/deals/exists?slug=${encodeURIComponent(slug)}`, {
           credentials: 'include',
           cache: 'no-store',
         });

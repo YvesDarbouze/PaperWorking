@@ -4,6 +4,7 @@ import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { useParams, useSearchParams } from 'next/navigation';
 import { decodeBroadcastToken, type BroadcastTokenPayload } from '@/lib/deals/token';
+import { apiFetch } from '@/lib/api/client';
 
 interface ExternalDealData {
   id: string;
@@ -67,7 +68,7 @@ export default function ExternalDealPage() {
 
     async function fetchDeal() {
       try {
-        const res = await fetch(`/api/deals/exists?slug=${encodeURIComponent(slug)}`);
+        const res = await apiFetch(`/api/deals/exists?slug=${encodeURIComponent(slug)}`);
         const data = (await res.json()) as { exists: boolean; deal: Record<string, unknown> | null };
         if (cancelled) return;
 
@@ -100,7 +101,7 @@ export default function ExternalDealPage() {
     setReplyError(null);
 
     try {
-      const response = await fetch('/api/deals/reply', {
+      const response = await apiFetch('/api/deals/reply', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({

@@ -1,17 +1,16 @@
 'use client';
 
 import { useCallback, useEffect, useRef, useState } from 'react';
+import { mockProvider, useMockData } from '@/lib/data';
 
 /**
  * Floating support chat — port of PaperWorking feature/update-all-UI ChatbotWidget.
  * Keeps v1 brand green (#00DD94) instead of brass/gold accents.
  * Icons: Material Symbols (v1 convention), not Lucide.
+ * Only rendered when useMockData() is true (demo chatbot).
  */
 
 const STORAGE_KEY = 'pw-assistant-demo-chat';
-
-const WELCOME_TEXT =
-  'PaperWorking Support. Briefly describe your issue, or ask a question about our SOPs and platform features.';
 
 /** Dark marketing / app shell tokens — green primary (not gold #C4A574). */
 const t = {
@@ -68,17 +67,6 @@ function saveMessages(messages: DemoMessage[]) {
   }
 }
 
-function demoReply(userText: string): string {
-  const q = userText.trim().toLowerCase();
-  if (/^(hi|hello|hey|xin chào|chào)\b/.test(q)) {
-    return 'Hi — this is a local demo chat. Messages stay on this device only (localStorage). How can we help with PaperWorking?';
-  }
-  if (/sop|feature|how|help|hướng dẫn|tính năng/.test(q)) {
-    return 'Demo reply: ask about Portfolio, Projects, Inbox, or Settings. Nothing here is sent to a server.';
-  }
-  return 'Got it (demo). Your message is saved locally on this browser only — not synced to support tickets.';
-}
-
 function formatChatTime(at: number): string {
   try {
     return new Intl.DateTimeFormat(undefined, {
@@ -100,6 +88,12 @@ function Icon({ name, size = 20 }: { name: string; size?: number }) {
 }
 
 export default function ChatbotWidget() {
+  if (!useMockData()) return null;
+
+  return <ChatbotWidgetInner />;
+}
+
+function ChatbotWidgetInner() {
   const [isOpen, setIsOpen] = useState(false);
   const [message, setMessage] = useState('');
   const [messages, setMessages] = useState<DemoMessage[]>([]);
@@ -136,7 +130,7 @@ export default function ChatbotWidget() {
     setMessage('');
     append('user', text);
     window.setTimeout(() => {
-      append('assistant', demoReply(text));
+      append('assistant', mockProvider.chatbotReply(text));
     }, 350);
   };
 
@@ -240,7 +234,7 @@ export default function ChatbotWidget() {
                     boxShadow: t.panelShadow,
                   }}
                 >
-                  {WELCOME_TEXT}
+                  {mockProvider.chatbotWelcome()}
                 </div>
                 {welcomeAt ? (
                   <p className="mt-1 text-[10px]" style={{ color: t.muted }}>

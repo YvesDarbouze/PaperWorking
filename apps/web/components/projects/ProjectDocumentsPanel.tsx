@@ -1,13 +1,67 @@
 'use client';
 
 import Link from 'next/link';
-import { getSeedProjectById } from '@/lib/projects/seed-data';
+import { useEffect, useState } from 'react';
+import { loadProjectById } from '@/lib/data';
+import type { ProjectDocument, ProjectWorkspace } from '@/lib/projects/types';
 
 export default function ProjectDocumentsPanel({ projectId }: { projectId: string }) {
-  const project = getSeedProjectById(projectId);
-  const documents = project?.documents ?? [];
+  const [project, setProject] = useState<ProjectWorkspace | null>(null);
+  const [documents, setDocuments] = useState<ProjectDocument[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const [notFound, setNotFound] = useState(false);
 
-  if (!project) {
+  useEffect(() => {
+    let cancelled = false;
+    (async () => {
+      setLoading(true);
+      setError(null);
+      setNotFound(false);
+      try {
+        const data = await loadProjectById(projectId);
+        if (cancelled) return;
+        if (!data) {
+          setNotFound(true);
+          setProject(null);
+          setDocuments([]);
+          return;
+        }
+        const workspace = data as ProjectWorkspace;
+        setProject(workspace);
+        setDocuments(Array.isArray(workspace.documents) ? workspace.documents : []);
+      } catch (err) {
+        if (!cancelled) {
+          setProject(null);
+          setDocuments([]);
+          setError(err instanceof Error ? err.message : 'Failed to load project');
+        }
+      } finally {
+        if (!cancelled) setLoading(false);
+      }
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, [projectId]);
+
+  if (loading) {
+    return (
+      <div className="rounded-2xl border border-white/10 bg-black/25 p-8 text-sm text-white/65">
+        Loading documents…
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="rounded-2xl border border-rose-500/30 bg-rose-500/10 p-8 text-sm text-rose-200">
+        Unable to load documents: {error}
+      </div>
+    );
+  }
+
+  if (notFound || !project) {
     return (
       <div className="rounded-2xl border border-white/10 bg-black/25 p-8 text-sm text-white/65">
         Project not found.
@@ -19,11 +73,11 @@ export default function ProjectDocumentsPanel({ projectId }: { projectId: string
     <div className="space-y-6">
       <div>
         <p className="mb-2 text-[11px] font-semibold uppercase tracking-[0.08em] text-white/45">
-          {project.propertyName}
+          {project.propertyName || project.address || projectId}
         </p>
         <h2 className="text-2xl font-semibold tracking-[-0.02em]">Document vault</h2>
         <p className="mt-2 max-w-2xl text-sm text-white/65">
-          Seed documents from project workspace. Upload pipeline connects via `handleProjectsDocumentsPost` post-cutover.
+          Project workspace documents. Upload pipeline connects via the projects documents API.
         </p>
       </div>
 

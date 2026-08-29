@@ -3,6 +3,7 @@
 import { useState, useRef, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import CollisionModal, { type CollisionDeal } from '@/components/deals/CollisionModal';
+import { apiFetch } from '@/lib/api/client';
 
 export interface AddressSearchProps {
   placeholder?: string;
@@ -64,7 +65,7 @@ export default function AddressSearch({
     }, 200);
 
     try {
-      const response = await fetch(`/api/deals/exists?slug=${encodeURIComponent(slug)}`, {
+      const response = await apiFetch(`/api/deals/exists?slug=${encodeURIComponent(slug)}`, {
         credentials: 'include',
         cache: 'no-store',
       });

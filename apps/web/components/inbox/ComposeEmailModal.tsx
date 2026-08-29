@@ -1,7 +1,9 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { SEED_PROJECTS } from '@/lib/projects/seed-data';
+import { loadProjects } from '@/lib/data';
+
+type ProjectOption = { id: string; label: string };
 
 export default function ComposeEmailModal({
   isOpen,
@@ -15,9 +17,38 @@ export default function ComposeEmailModal({
   const [to, setTo] = useState('');
   const [subject, setSubject] = useState('');
   const [body, setBody] = useState('');
-  const [projectId, setProjectId] = useState(defaultProjectId ?? SEED_PROJECTS[0]?.id ?? '');
+  const [projects, setProjects] = useState<ProjectOption[]>([]);
+  const [projectId, setProjectId] = useState(defaultProjectId ?? '');
   const [sending, setSending] = useState(false);
   const [sent, setSent] = useState(false);
+
+  useEffect(() => {
+    if (!isOpen) return;
+    let cancelled = false;
+    (async () => {
+      try {
+        const list = await loadProjects();
+        if (cancelled) return;
+        const options = (Array.isArray(list) ? list : []).map((p) => {
+          const row = p as Record<string, unknown>;
+          return {
+            id: String(row.id ?? ''),
+            label: String(row.propertyName ?? row.name ?? row.title ?? row.id ?? ''),
+          };
+        });
+        setProjects(options);
+        setProjectId(defaultProjectId ?? options[0]?.id ?? '');
+      } catch {
+        if (!cancelled) {
+          setProjects([]);
+          setProjectId(defaultProjectId ?? '');
+        }
+      }
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, [isOpen, defaultProjectId]);
 
   useEffect(() => {
     if (!isOpen) return;
@@ -25,8 +56,7 @@ export default function ComposeEmailModal({
     setTo('');
     setSubject('');
     setBody('');
-    setProjectId(defaultProjectId ?? SEED_PROJECTS[0]?.id ?? '');
-  }, [isOpen, defaultProjectId]);
+  }, [isOpen]);
 
   if (!isOpen) return null;
 
@@ -64,7 +94,7 @@ export default function ComposeEmailModal({
 
         {sent ? (
           <p className="py-8 text-center text-sm font-semibold text-emerald-400">
-            Message queued (seed preview).
+            Message queued.
           </p>
         ) : (
           <div className="space-y-3">
@@ -77,11 +107,17 @@ export default function ComposeEmailModal({
                 onChange={(e) => setProjectId(e.target.value)}
                 className="h-10 w-full cursor-pointer rounded-lg border border-white/10 bg-[#0d0a0b] px-3 text-sm text-white outline-none focus:border-emerald-500/40"
               >
-                {SEED_PROJECTS.map((p) => (
-                  <option key={p.id} value={p.id} className="bg-slate-950">
-                    {p.propertyName}
+                {projects.length === 0 ? (
+                  <option value="" className="bg-slate-950">
+                    No projects
                   </option>
-                ))}
+                ) : (
+                  projects.map((p) => (
+                    <option key={p.id} value={p.id} className="bg-slate-950">
+                      {p.label}
+                    </option>
+                  ))
+                )}
               </select>
             </label>
             <label className="block space-y-1">
@@ -100,8 +136,7 @@ export default function ComposeEmailModal({
               <input
                 value={subject}
                 onChange={(e) => setSubject(e.target.value)}
-                placeholder="Subject"
-                className="h-10 w-full rounded-lg border border-white/10 bg-[#0d0a0b] px-3 text-sm text-white outline-none placeholder:text-white/30 focus:border-emerald-500/40"
+                className="h-10 w-full rounded-lg border border-white/10 bg-[#0d0a0b] px-3 text-sm text-white outline-none focus:border-emerald-500/40"
               />
             </label>
             <label className="block space-y-1">
@@ -112,24 +147,22 @@ export default function ComposeEmailModal({
                 value={body}
                 onChange={(e) => setBody(e.target.value)}
                 rows={5}
-                placeholder="Write your message…"
-                className="w-full resize-none rounded-lg border border-white/10 bg-[#0d0a0b] px-3 py-2.5 text-sm text-white outline-none placeholder:text-white/30 focus:border-emerald-500/40"
+                className="w-full resize-none rounded-lg border border-white/10 bg-[#0d0a0b] px-3 py-2 text-sm text-white outline-none focus:border-emerald-500/40"
               />
             </label>
-
             <div className="flex justify-end gap-2 pt-2">
               <button
                 type="button"
                 onClick={onClose}
-                className="cursor-pointer rounded-xl border border-white/15 px-4 py-2.5 text-xs font-semibold text-white/70 hover:bg-white/5"
+                className="cursor-pointer rounded-lg border border-white/10 px-4 py-2 text-sm text-white/70"
               >
                 Cancel
               </button>
               <button
                 type="button"
-                disabled={sending || !to.trim() || !subject.trim()}
                 onClick={() => void handleSend()}
-                className="cursor-pointer rounded-xl bg-emerald-500 px-4 py-2.5 text-xs font-bold text-slate-950 disabled:opacity-40"
+                disabled={sending}
+                className="cursor-pointer rounded-lg bg-emerald-500 px-4 py-2 text-sm font-bold text-slate-950 disabled:opacity-50"
               >
                 {sending ? 'Sending…' : 'Send'}
               </button>

@@ -1,18 +1,66 @@
-import { PrismaClient } from '../generated/client/index.js';
+import { createRequire } from 'node:module';
+import { existsSync } from 'node:fs';
+import { dirname, join } from 'node:path';
+import { fileURLToPath } from 'node:url';
 import { PrismaPg } from '@prisma/adapter-pg';
 import pg from 'pg';
 import { asReadOnlyClient } from './read-only-guard.js';
 
-export type MigrationPrismaClient = PrismaClient;
+const require = createRequire(import.meta.url);
+const here = dirname(fileURLToPath(import.meta.url));
+const generatedDir = [join(here, '../generated/client'), join(here, '../../generated/client')].find(
+  (p) => existsSync(join(p, 'index.js')),
+);
+if (!generatedDir) {
+  throw new Error('Prisma generated client not found under packages/database/generated/client');
+}
+
+// Runtime require keeps ESM dist/src → ../../generated resolution working.
+// eslint-disable-next-line @typescript-eslint/no-require-imports
+const prismaGenerated = require(generatedDir) as {
+  PrismaClient: new (args?: unknown) => ApiPrismaClient;
+};
+
+export type ApiPrismaClient = {
+  $disconnect: () => Promise<void>;
+  $queryRaw: (strings: TemplateStringsArray, ...values: unknown[]) => Promise<unknown>;
+  user: any;
+  organization: any;
+  organizationMember: any;
+  organizationInvite: any;
+  project: any;
+  projectDocument: any;
+  projectMember: any;
+  inboxItem: any;
+  investorFollower: any;
+  taskAssignment: any;
+  appConfig: any;
+  deal: any;
+  dealBroadcast: any;
+  dealInvitation: any;
+  dealMessage: any;
+  marketplaceListing: any;
+  message: any;
+  subscription: any;
+  vendor: any;
+  vendorBid: any;
+  phaseTransition: any;
+  adminAuditLog: any;
+  [key: string]: any;
+};
+
+export type MigrationPrismaClient = ApiPrismaClient;
+
+const PrismaClient = prismaGenerated.PrismaClient;
 
 declare global {
   // eslint-disable-next-line no-var
-  var __paperworkingMigrationPrisma: PrismaClient | undefined;
+  var __paperworkingMigrationPrisma: ApiPrismaClient | undefined;
   // eslint-disable-next-line no-var
   var __paperworkingMigrationPgPool: pg.Pool | undefined;
 }
 
-function createPrismaClient(): PrismaClient {
+function createPrismaClient(): ApiPrismaClient {
   const url = process.env.DATABASE_URL;
   if (!url) {
     throw new Error('DATABASE_URL is not set — required for @paperworking/database client');
@@ -21,7 +69,6 @@ function createPrismaClient(): PrismaClient {
   if (!globalThis.__paperworkingMigrationPgPool) {
     globalThis.__paperworkingMigrationPgPool = new pg.Pool({
       connectionString: url,
-      // node-pg treats sslmode=require as verify-full unless uselibpqcompat=true is set on the URL.
       ssl: url.includes('localhost') || url.includes('127.0.0.1')
         ? undefined
         : { rejectUnauthorized: false },
@@ -33,18 +80,24 @@ function createPrismaClient(): PrismaClient {
   return new PrismaClient({ adapter });
 }
 
-export function getMigrationPrismaClient(options?: { readOnly?: boolean }): MigrationPrismaClient {
-  const readOnly = options?.readOnly ?? true;
-
+function getSharedClient(): ApiPrismaClient {
   if (!globalThis.__paperworkingMigrationPrisma) {
     globalThis.__paperworkingMigrationPrisma = createPrismaClient();
   }
+  return globalThis.__paperworkingMigrationPrisma;
+}
 
-  const client = globalThis.__paperworkingMigrationPrisma;
+export function getMigrationPrismaClient(options?: { readOnly?: boolean }): MigrationPrismaClient {
+  const readOnly = options?.readOnly ?? true;
+  const client = getSharedClient();
   return readOnly ? asReadOnlyClient(client) : client;
 }
 
-/** Default export: read-only client for Phase 3 safety. */
+export function getApiPrismaClient(): ApiPrismaClient {
+  return getSharedClient();
+}
+
 export const migrationDb = getMigrationPrismaClient({ readOnly: true });
+export const apiDb = getApiPrismaClient();
 
 export { PrismaClient };

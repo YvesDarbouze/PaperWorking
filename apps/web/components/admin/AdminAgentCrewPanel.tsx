@@ -1,6 +1,7 @@
 'use client';
 
 import { useCallback, useEffect, useState } from 'react';
+import { apiFetch } from '@/lib/api/client';
 
 interface SyntheticAgent {
   id: string;
@@ -29,7 +30,7 @@ export default function AdminAgentCrewPanel() {
     setLoading(true);
     setError(null);
     try {
-      const response = await fetch('/api/admin/agent-crew', {
+      const response = await apiFetch('/api/admin/agent-crew', {
         credentials: 'include',
         cache: 'no-store',
       });
@@ -54,7 +55,7 @@ export default function AdminAgentCrewPanel() {
     let cancelled = false;
 
     async function loadDetail() {
-      const response = await fetch(`/api/admin/agent-crew/${selectedId}`, {
+      const response = await apiFetch(`/api/admin/agent-crew/${selectedId}`, {
         credentials: 'include',
         cache: 'no-store',
       });
@@ -70,7 +71,7 @@ export default function AdminAgentCrewPanel() {
 
   const impersonate = async (agentId: string) => {
     setActionMessage(null);
-    const response = await fetch(`/api/admin/agent-crew/${agentId}/impersonate`, {
+    const response = await apiFetch(`/api/admin/agent-crew/${agentId}/impersonate`, {
       method: 'POST',
       credentials: 'include',
     });
@@ -84,7 +85,7 @@ export default function AdminAgentCrewPanel() {
 
   const removeAgent = async (agentId: string) => {
     setActionMessage(null);
-    const response = await fetch(`/api/admin/agent-crew/${agentId}`, {
+    const response = await apiFetch(`/api/admin/agent-crew/${agentId}`, {
       method: 'DELETE',
       credentials: 'include',
     });

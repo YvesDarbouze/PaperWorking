@@ -4,7 +4,6 @@ import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import { useAuth } from '@/context/AuthContext';
 import UserAccountMenu from '@/components/shared/UserAccountMenu';
-import { PROFILE_CARD } from '@/lib/dashboard/content';
 import { getPageLabel } from '@/lib/navigation/nav-contract';
 
 export default function DashboardTopBar() {
@@ -12,6 +11,13 @@ export default function DashboardTopBar() {
   const router = useRouter();
   const { profile, logout } = useAuth();
   const pageLabel = getPageLabel(pathname || '/dashboard');
+  const displayName = 'Account';
+  const role =
+    profile?.accountType === 'vendor'
+      ? 'Vendor Partner'
+      : profile?.accountType
+        ? profile.accountType.charAt(0).toUpperCase() + profile.accountType.slice(1)
+        : 'Investor';
 
   async function handleLogout() {
     await logout();
@@ -66,9 +72,9 @@ export default function DashboardTopBar() {
           Support
         </Link>
         <UserAccountMenu
-          displayName={PROFILE_CARD.displayName}
+          displayName={displayName}
           accountType={profile?.accountType}
-          role={PROFILE_CARD.role}
+          role={role}
           onSignOut={handleLogout}
         />
       </div>

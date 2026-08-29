@@ -1,6 +1,7 @@
 'use client';
 
 import { useCallback, useEffect, useState } from 'react';
+import { apiFetch } from '@/lib/api/client';
 
 export function useAdminOpsSection<T>(section: string) {
   const [data, setData] = useState<T | null>(null);
@@ -11,7 +12,7 @@ export function useAdminOpsSection<T>(section: string) {
     setLoading(true);
     setError(null);
     try {
-      const res = await fetch(`/api/admin/ops?section=${section}`, {
+      const res = await apiFetch(`/api/admin/ops?section=${section}`, {
         credentials: 'include',
         cache: 'no-store',
       });

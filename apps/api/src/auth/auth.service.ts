@@ -150,9 +150,9 @@ export class AuthService {
   }
 
   async clearSession(res: Response): Promise<void> {
-    const secure = process.env.NODE_ENV === 'production';
+    const base = cookieBaseOptions();
     for (const name of [SESSION_COOKIE, ACCT_COOKIE, SUB_COOKIE]) {
-      res.clearCookie(name, { path: '/', httpOnly: name === SESSION_COOKIE, secure, sameSite: 'lax' });
+      res.clearCookie(name, { ...base, httpOnly: name === SESSION_COOKIE });
     }
   }
 
@@ -272,33 +272,52 @@ export class AuthService {
     accountType: string,
     isMock: boolean,
   ) {
-    const secure = process.env.NODE_ENV === 'production';
+    const base = cookieBaseOptions();
     const maxAge = SESSION_EXPIRES_MS;
     res.cookie(SESSION_COOKIE, sessionValue, {
+      ...base,
       httpOnly: true,
-      secure,
-      sameSite: 'lax',
-      path: '/',
       maxAge,
     });
     res.cookie(ACCT_COOKIE, accountType === 'admin' ? 'admin' : accountType, {
+      ...base,
       httpOnly: false,
-      secure,
-      sameSite: 'lax',
-      path: '/',
       maxAge,
     });
     res.cookie(SUB_COOKIE, encodeSub('Individual', 'active'), {
+      ...base,
       httpOnly: false,
-      secure,
-      sameSite: 'lax',
-      path: '/',
       maxAge,
     });
     if (isMock) {
       this.logger.debug('Issued mock session cookies');
     }
   }
+}
+
+/**
+ * Vercel (FE) → Cloud Run (API) is cross-site. Browsers only send credentials
+ * cookies when SameSite=None; Secure. Use COOKIE_SAMESITE=lax only if FE and
+ * API share a registrable domain (e.g. paperworking.co + api.paperworking.co).
+ */
+function cookieBaseOptions(): {
+  path: string;
+  secure: boolean;
+  sameSite: 'lax' | 'none';
+} {
+  const sameSiteEnv = (process.env.COOKIE_SAMESITE || '').trim().toLowerCase();
+  const production = process.env.NODE_ENV === 'production';
+  const sameSite: 'lax' | 'none' =
+    sameSiteEnv === 'lax'
+      ? 'lax'
+      : sameSiteEnv === 'none' || production
+        ? 'none'
+        : 'lax';
+  return {
+    path: '/',
+    secure: production || sameSite === 'none',
+    sameSite,
+  };
 }
 
 function normalizeClientAccountType(value: unknown): string {

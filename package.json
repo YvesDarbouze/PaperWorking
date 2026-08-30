@@ -21,7 +21,8 @@
     "lint": "npm run lint --workspaces --if-present",
     "verify:integration": "npm run test --workspace=@paperworking/integration",
     "test:e2e": "npm run test:e2e --workspace=@paperworking/e2e",
-    "verify": "npm run build && npm run typecheck --workspaces --if-present && npm run test --workspaces --if-present"
+    "verify": "npm run build && npm run typecheck --workspaces --if-present && npm run test --workspaces --if-present",
+    "deploy:api": "bash scripts/deploy-api-cloud-run.sh"
   },
   "engines": {
     "node": ">=20"

@@ -1,10 +1,9 @@
 # NestJS API — Cloud Run
 # Build context: repo root (PaperWorking_v1)
 #   docker build -f apps/api/Dockerfile -t paperworking-api .
-#   docker run -p 8080:8080 -e PORT=8080 paperworking-api
 
 FROM node:22-alpine AS builder
-RUN apk add --no-cache libc6-compat
+RUN apk add --no-cache libc6-compat openssl
 WORKDIR /app
 
 COPY package.json package-lock.json ./
@@ -23,6 +22,9 @@ COPY packages ./packages
 COPY apps/api ./apps/api
 COPY tsconfig.base.json ./
 
+# prisma generate reads prisma.config.ts datasource URL — dummy is enough at build time
+ENV DATABASE_URL="postgresql://build:build@127.0.0.1:5432/build"
+
 RUN npm run build --workspace=@paperworking/shared \
     --workspace=@paperworking/validation \
     --workspace=@paperworking/financial-engine \
@@ -33,7 +35,9 @@ FROM node:22-alpine AS runner
 WORKDIR /app
 ENV NODE_ENV=production
 
-RUN addgroup --system --gid 1001 nodejs && adduser --system --uid 1001 apiuser
+RUN apk add --no-cache libc6-compat openssl \
+    && addgroup --system --gid 1001 nodejs \
+    && adduser --system --uid 1001 apiuser
 
 COPY --from=builder /app/package.json /app/package-lock.json ./
 COPY --from=builder /app/node_modules ./node_modules

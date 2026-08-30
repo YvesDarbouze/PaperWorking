@@ -12,8 +12,8 @@
 - [ ] `ENABLE_MOCK_AUTH=false` (alias; must not enable mocks)
 - [ ] `NEXT_PUBLIC_API_URL=https://<NEST_CLOUD_RUN_HOST>` (no trailing slash)
 - [ ] `CORS_ORIGINS` includes production FE origin(s), credentials enabled
-- [ ] Firebase client: `NEXT_PUBLIC_FIREBASE_*` complete
-- [ ] Firebase Admin: `FIREBASE_PROJECT_ID`, `FIREBASE_CLIENT_EMAIL`, `FIREBASE_PRIVATE_KEY`
+- [ ] `COOKIE_SAMESITE=none` unless API is on `api.paperworking.co` (then `lax`)
+- [ ] Supabase: `SUPABASE_URL` + `SUPABASE_ANON_KEY` (or `NEXT_PUBLIC_SUPABASE_*`) on Nest
 - [ ] `DATABASE_URL` (Supabase pooler) configured for Nest
 - [ ] Secrets only in platform secret stores — not in git
 

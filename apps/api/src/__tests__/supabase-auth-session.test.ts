@@ -1,7 +1,12 @@
-import { describe, expect, it, jest, beforeEach } from '@jest/globals';
-import { AuthService } from '../auth/auth.service.js';
+import { describe, expect, it, jest, beforeEach, beforeAll } from '@jest/globals';
+
+process.env.DATABASE_URL =
+  process.env.DATABASE_URL || 'postgresql://test:test@127.0.0.1:5432/test';
+
+type AuthServiceCtor = typeof import('../auth/auth.service.js').AuthService;
 
 describe('AuthService Supabase session', () => {
+  let AuthService: AuthServiceCtor;
   const prisma = {
     user: {
       upsert: jest.fn(),
@@ -21,13 +26,17 @@ describe('AuthService Supabase session', () => {
     verifyAccessToken: jest.fn(),
   };
 
-  let auth: AuthService;
+  let auth: InstanceType<AuthServiceCtor>;
   const cookies: Array<{ name: string; value: string; httpOnly?: boolean }> = [];
   const res = {
     cookie: (name: string, value: string, opts: { httpOnly?: boolean }) => {
       cookies.push({ name, value, httpOnly: opts.httpOnly });
     },
   };
+
+  beforeAll(async () => {
+    ({ AuthService } = await import('../auth/auth.service.js'));
+  });
 
   beforeEach(() => {
     cookies.length = 0;

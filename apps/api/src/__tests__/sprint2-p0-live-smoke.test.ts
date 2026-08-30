@@ -1,11 +1,13 @@
 /**
- * Sprint 2 P0 live smoke (optional — skips if Nest not up).
+ * Sprint 2 P0 live smoke (optional — set NEST_SMOKE_URL with Nest running).
  */
 import { describe, expect, it } from '@jest/globals';
 
-const API = process.env.NEST_SMOKE_URL || 'http://127.0.0.1:18084';
+const API = process.env.NEST_SMOKE_URL;
+const liveEnabled = Boolean(API);
 
 async function tryFetch(path: string, init?: RequestInit) {
+  if (!API) return null;
   try {
     return await fetch(`${API}${path}`, init);
   } catch {
@@ -15,12 +17,14 @@ async function tryFetch(path: string, init?: RequestInit) {
 
 describe('Sprint 2 P0 live smoke (optional)', () => {
   it('unauthenticated task-assignments → 401', async () => {
+    if (!liveEnabled) return;
     const res = await tryFetch('/api/task-assignments');
     if (!res) return;
     expect(res.status).toBe(401);
   });
 
   it('authenticated task list does not 500', async () => {
+    if (!liveEnabled) return;
     const res = await tryFetch('/api/task-assignments', {
       headers: { Authorization: 'Bearer dev-session' },
     });
@@ -33,6 +37,7 @@ describe('Sprint 2 P0 live smoke (optional)', () => {
   });
 
   it('task assign without projectId → 400', async () => {
+    if (!liveEnabled) return;
     const res = await tryFetch('/api/tasks/assign', {
       method: 'POST',
       headers: {
@@ -46,12 +51,14 @@ describe('Sprint 2 P0 live smoke (optional)', () => {
   });
 
   it('stripe session-status unauthenticated → 401', async () => {
+    if (!liveEnabled) return;
     const res = await tryFetch('/api/stripe/session-status?session_id=cs_test_x');
     if (!res) return;
     expect(res.status).toBe(401);
   });
 
   it('stripe session-status foreign mock → 403', async () => {
+    if (!liveEnabled) return;
     const res = await tryFetch(
       '/api/stripe/session-status?session_id=cs_test_mock_other-user_1',
       { headers: { Authorization: 'Bearer dev-session' } },
@@ -62,6 +69,7 @@ describe('Sprint 2 P0 live smoke (optional)', () => {
   });
 
   it('stripe session-status own mock → 200 or 503', async () => {
+    if (!liveEnabled) return;
     const res = await tryFetch(
       '/api/stripe/session-status?session_id=cs_test_mock_dev-user-1_1',
       { headers: { Authorization: 'Bearer dev-session' } },
@@ -75,6 +83,7 @@ describe('Sprint 2 P0 live smoke (optional)', () => {
   });
 
   it('vendor portal update without profile → 403', async () => {
+    if (!liveEnabled) return;
     const res = await tryFetch('/api/vendor-portal/requests', {
       method: 'PUT',
       headers: {

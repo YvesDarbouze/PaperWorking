@@ -1,12 +1,14 @@
 /**
  * Integration smoke tests for Nest Wave-1 auth + projects (Prisma).
- * Run with Nest listening or against handlers via Jest env DATABASE_URL.
+ * Opt-in only — set NEST_SMOKE_URL (e.g. http://127.0.0.1:8080) with Nest running.
  */
 import { describe, expect, it } from '@jest/globals';
 
-const API = process.env.NEST_SMOKE_URL || 'http://127.0.0.1:18080';
+const API = process.env.NEST_SMOKE_URL;
+const liveEnabled = Boolean(API);
 
 async function tryFetch(path: string, init?: RequestInit) {
+  if (!API) return null;
   try {
     return await fetch(`${API}${path}`, init);
   } catch {
@@ -16,6 +18,7 @@ async function tryFetch(path: string, init?: RequestInit) {
 
 describe('Nest Wave-1 smoke (optional live server)', () => {
   it('GET /api/health', async () => {
+    if (!liveEnabled) return;
     const res = await tryFetch('/api/health');
     if (!res) return; // server not up — skip
     expect(res.status).toBe(200);
@@ -24,6 +27,7 @@ describe('Nest Wave-1 smoke (optional live server)', () => {
   });
 
   it('GET /api/projects with Bearer dev-session', async () => {
+    if (!liveEnabled) return;
     const res = await tryFetch('/api/projects', {
       headers: { Authorization: 'Bearer dev-session' },
     });
@@ -34,6 +38,7 @@ describe('Nest Wave-1 smoke (optional live server)', () => {
   });
 
   it('POST /api/auth/session mock', async () => {
+    if (!liveEnabled) return;
     const res = await tryFetch('/api/auth/session', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -44,6 +49,7 @@ describe('Nest Wave-1 smoke (optional live server)', () => {
   });
 
   it('admin without DB role is forbidden', async () => {
+    if (!liveEnabled) return;
     const res = await tryFetch('/api/admin/agent-crew', {
       headers: { Authorization: 'Bearer dev-session' },
     });

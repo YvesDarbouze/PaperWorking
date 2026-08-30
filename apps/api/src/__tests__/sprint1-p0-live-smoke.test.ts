@@ -1,5 +1,5 @@
 /**
- * Live security smoke for Sprint 1 P0 (optional — skips if Nest not up).
+ * Live security smoke for Sprint 1 P0 (optional — set NEST_SMOKE_URL with Nest running).
  *
  * Verifies:
  * - POST /api/deals creates a Prisma-backed deal
@@ -8,9 +8,11 @@
  */
 import { describe, expect, it } from '@jest/globals';
 
-const API = process.env.NEST_SMOKE_URL || 'http://127.0.0.1:18080';
+const API = process.env.NEST_SMOKE_URL;
+const liveEnabled = Boolean(API);
 
 async function tryFetch(path: string, init?: RequestInit) {
+  if (!API) return null;
   try {
     return await fetch(`${API}${path}`, init);
   } catch {
@@ -20,6 +22,7 @@ async function tryFetch(path: string, init?: RequestInit) {
 
 describe('Sprint 1 P0 live smoke (optional)', () => {
   it('POST /api/deals creates a deal for authenticated investor', async () => {
+    if (!liveEnabled) return;
     const res = await tryFetch('/api/deals', {
       method: 'POST',
       headers: {
@@ -52,6 +55,7 @@ describe('Sprint 1 P0 live smoke (optional)', () => {
   });
 
   it('GET /api/projects/:id returns 403/404 for inaccessible id', async () => {
+    if (!liveEnabled) return;
     const res = await tryFetch('/api/projects/00000000-0000-4000-8000-000000000099', {
       headers: { Authorization: 'Bearer dev-session' },
     });
@@ -61,6 +65,7 @@ describe('Sprint 1 P0 live smoke (optional)', () => {
   });
 
   it('accountType=admin in session body does not unlock admin routes', async () => {
+    if (!liveEnabled) return;
     const sessionRes = await tryFetch('/api/auth/session', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -78,6 +83,7 @@ describe('Sprint 1 P0 live smoke (optional)', () => {
   });
 
   it('organization-members rejects foreign organizationId with 403', async () => {
+    if (!liveEnabled) return;
     const res = await tryFetch(
       '/api/organization-members?organizationId=00000000-0000-4000-8000-000000000088',
       { headers: { Authorization: 'Bearer dev-session' } },

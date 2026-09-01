@@ -15,6 +15,7 @@
     "dev:api": "npm run dev:api --workspace=@paperworking/api",
     "build:libs": "npm --prefix packages/shared run build && npm --prefix packages/validation run build && npm --prefix packages/financial-engine run build && npm --prefix packages/authz run build && npm --prefix packages/identity run build && npm --prefix packages/database run build && npm --prefix packages/services run build",
     "build": "npm run build:libs && npm --prefix apps/api run build && npm --prefix apps/web run build",
+    "apphosting:build": "bash scripts/apphosting-build.sh",
     "build:apphosting": "bash scripts/apphosting-build.sh",
     "typecheck": "npm run typecheck --workspaces --if-present",
     "test": "npm run test --workspaces --if-present",

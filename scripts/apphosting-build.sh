@@ -25,8 +25,20 @@ need apps/api/package.json
 need apps/web/package.json
 
 echo "[apphosting-build] installing workspace dependencies"
-# App Hosting buildpack npm ci often installs root-only; link all workspace packages/deps.
-npm install --workspaces --include-workspace-root --no-fund --no-audit
+# App Hosting breaks `npm --workspaces` ("No workspaces found") and root npm ci skips workspace deps.
+for dir in \
+  packages/shared \
+  packages/validation \
+  packages/financial-engine \
+  packages/authz \
+  packages/identity \
+  packages/database \
+  packages/services \
+  apps/api \
+  apps/web; do
+  echo "[apphosting-build] npm install in ${dir}"
+  npm install --prefix "${dir}" --no-fund --no-audit
+done
 
 echo "[apphosting-build] building packages/shared"
 npm --prefix packages/shared run build

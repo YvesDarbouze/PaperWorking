@@ -1,5 +1,5 @@
 import type { MigrationPrismaClient } from './client.js';
-import { getMigrationPrismaClient, migrationDb } from './client.js';
+import { getMigrationPrismaClient } from './client.js';
 import {
   AppUserRepository,
   FinancialTransactionRepository,
@@ -19,7 +19,7 @@ export interface ReadOnlyDatabaseAdapters {
 export function createReadOnlyAdapters(options?: {
   prisma?: MigrationPrismaClient;
 }): ReadOnlyDatabaseAdapters {
-  const prisma = options?.prisma ?? migrationDb;
+  const prisma = options?.prisma ?? getMigrationPrismaClient({ readOnly: true });
 
   return {
     prisma,
@@ -32,6 +32,7 @@ export function createReadOnlyAdapters(options?: {
 export {
   getMigrationPrismaClient,
   getApiPrismaClient,
+  getMigrationDb,
   migrationDb,
   apiDb,
   resetMigrationPrismaForTests,

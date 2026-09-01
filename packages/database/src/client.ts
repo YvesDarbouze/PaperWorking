@@ -91,7 +91,28 @@ export function resetMigrationPrismaForTests(): void {
   resetPgPoolForTests();
 }
 
-export const migrationDb = getMigrationPrismaClient({ readOnly: true });
-export const apiDb = getApiPrismaClient();
+/** Lazy read-only singleton — do not connect at module import (Next.js build-safe). */
+export function getMigrationDb(): MigrationPrismaClient {
+  return getMigrationPrismaClient({ readOnly: true });
+}
+
+function createLazyPrismaProxy<T extends ApiPrismaClient>(getClient: () => T): T {
+  return new Proxy({} as T, {
+    get(_target, prop, receiver) {
+      const client = getClient();
+      const value = Reflect.get(client, prop, receiver);
+      if (typeof value === 'function') {
+        return (value as (...args: unknown[]) => unknown).bind(client);
+      }
+      return value;
+    },
+  });
+}
+
+/** @deprecated Use getMigrationDb() — lazy alias; defers DATABASE_URL until first access. */
+export const migrationDb = createLazyPrismaProxy(() => getMigrationDb());
+
+/** @deprecated Use getApiPrismaClient() — lazy alias; defers DATABASE_URL until first access. */
+export const apiDb = createLazyPrismaProxy(getApiPrismaClient);
 
 export { PrismaClient };

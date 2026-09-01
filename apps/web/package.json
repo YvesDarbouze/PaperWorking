@@ -13,8 +13,13 @@
     "test": "node --experimental-vm-modules ../../node_modules/jest/bin/jest.js"
   },
   "dependencies": {
+    "firebase": "^11.10.0",
     "@opentelemetry/api": "^1.9.1",
     "@paperworking/api": "file:../api",
+    "@paperworking/authz": "file:../../packages/authz",
+    "@paperworking/database": "file:../../packages/database",
+    "@paperworking/identity": "file:../../packages/identity",
+    "@paperworking/services": "file:../../packages/services",
     "@paperworking/financial-engine": "file:../../packages/financial-engine",
     "@paperworking/shared": "file:../../packages/shared",
     "@supabase/supabase-js": "^2.112.4",

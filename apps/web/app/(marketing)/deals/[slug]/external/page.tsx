@@ -106,6 +106,7 @@ export default function ExternalDealPage() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           dealId: deal.id || tokenPayload?.dealId || 'deal-1',
+          token: tokenParam || undefined,
           senderEmail:
             replySenderEmail.trim() ||
             tokenPayload?.email ||

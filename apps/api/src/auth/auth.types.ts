@@ -3,18 +3,13 @@ import {
   ExecutionContext,
   SetMetadata,
 } from '@nestjs/common';
+import type { AuthUser } from '@paperworking/authz';
+
+export type { AuthUser };
 
 export const SESSION_COOKIE = '__session';
 export const ACCT_COOKIE = '__acct';
 export const SUB_COOKIE = '__sub';
-
-export type AuthUser = {
-  uid: string;
-  email?: string | null;
-  accountType: string;
-  isAdmin: boolean;
-  role?: string | null;
-};
 
 export const IS_PUBLIC_KEY = 'isPublic';
 export const Public = () => SetMetadata(IS_PUBLIC_KEY, true);

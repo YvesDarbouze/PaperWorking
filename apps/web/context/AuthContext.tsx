@@ -15,6 +15,16 @@ import {
   fetchSessionProfile,
 } from '@/lib/auth/session-client';
 import {
+  firebaseLogin,
+  firebaseLoginWithGoogle,
+  firebaseLogout,
+  firebaseRegister,
+  firebaseResetPassword,
+  firebaseSendMagicLink,
+  shouldUseFirebaseAuthClient,
+  syncSessionFromFirebase,
+} from '@/lib/firebase/auth-client';
+import {
   getSupabaseBrowserClient,
   isSupabaseConfigured,
   supabaseLogin,
@@ -41,10 +51,10 @@ interface AuthContextValue {
   profile: AuthProfile | null;
   navContext: NavigationContext;
   error: string | null;
-  /** True when Supabase public env is configured (replaces firebaseReady). */
-  supabaseReady: boolean;
-  /** @deprecated Use supabaseReady */
+  /** True when Firebase Auth is enabled via feature flag and configured. */
   firebaseReady: boolean;
+  /** True when Supabase is the active IdP (Firebase flag off). */
+  supabaseReady: boolean;
   clearError: () => void;
   login: (email: string, password: string, accountType?: string) => Promise<void>;
   register: (
@@ -69,7 +79,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [authenticated, setAuthenticated] = useState(false);
   const [profile, setProfile] = useState<AuthProfile | null>(null);
   const [error, setError] = useState<string | null>(null);
-  const supabaseReady = isSupabaseConfigured();
+  const firebaseReady = shouldUseFirebaseAuthClient();
+  const supabaseReady = !firebaseReady && isSupabaseConfigured();
 
   const clearError = useCallback(() => setError(null), []);
 
@@ -91,7 +102,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     let cancelled = false;
     (async () => {
       try {
-        if (supabaseReady) {
+        if (firebaseReady) {
+          const pending =
+            typeof window !== 'undefined'
+              ? window.localStorage.getItem('pw_pending_account_type') || undefined
+              : undefined;
+          await syncSessionFromFirebase(pending || undefined);
+        } else if (supabaseReady) {
           const pending =
             typeof window !== 'undefined'
               ? window.localStorage.getItem('pw_pending_account_type') || undefined
@@ -108,7 +125,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     return () => {
       cancelled = true;
     };
-  }, [refresh, supabaseReady]);
+  }, [refresh, supabaseReady, firebaseReady]);
 
   useEffect(() => {
     if (!supabaseReady) return;
@@ -167,13 +184,15 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     async (email: string, password: string, accountType = 'investor') => {
       setError(null);
       try {
-        if (supabaseReady) {
+        if (firebaseReady) {
+          await firebaseLogin(email, password);
+        } else if (supabaseReady) {
           await supabaseLogin(email, password);
         } else if (useMockAuth()) {
           const result = await createDevSession(accountType);
           if (!result.ok) throw new Error('Unable to establish a dev session');
         } else {
-          throw new Error('Supabase Auth is required');
+          throw new Error('Authentication provider is not configured');
         }
         await refresh();
       } catch (err) {
@@ -182,20 +201,22 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         throw err;
       }
     },
-    [supabaseReady, refresh],
+    [firebaseReady, supabaseReady, refresh],
   );
 
   const register = useCallback(
     async (email: string, password: string, displayName: string, accountType = 'investor') => {
       setError(null);
       try {
-        if (supabaseReady) {
+        if (firebaseReady) {
+          await firebaseRegister(email, password, displayName, accountType);
+        } else if (supabaseReady) {
           await supabaseRegister(email, password, displayName, accountType);
         } else if (useMockAuth()) {
           const result = await createDevSession(accountType);
           if (!result.ok) throw new Error('Unable to establish a dev session');
         } else {
-          throw new Error('Supabase Auth is required');
+          throw new Error('Authentication provider is not configured');
         }
         await refresh();
       } catch (err) {
@@ -204,13 +225,18 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         throw err;
       }
     },
-    [supabaseReady, refresh],
+    [firebaseReady, supabaseReady, refresh],
   );
 
   const loginWithGoogle = useCallback(
     async (accountType = 'investor') => {
       setError(null);
       try {
+        if (firebaseReady) {
+          await firebaseLoginWithGoogle(accountType);
+          await refresh();
+          return true;
+        }
         await supabaseLoginWithGoogle(accountType);
         // Redirect flow — caller should not expect immediate return after navigation.
         return false;
@@ -220,7 +246,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         throw err;
       }
     },
-    [],
+    [firebaseReady, refresh],
   );
 
   const loginWithFacebook = useCallback(async (accountType = 'investor') => {
@@ -237,19 +263,25 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const sendMagicLink = useCallback(async (email: string) => {
     setError(null);
     try {
-      await supabaseSendMagicLink(email);
+      if (firebaseReady) {
+        await firebaseSendMagicLink(email);
+      } else {
+        await supabaseSendMagicLink(email);
+      }
     } catch (err) {
       const message = err instanceof Error ? err.message : 'Failed to send magic link';
       setError(message);
       throw err;
     }
-  }, []);
+  }, [firebaseReady]);
 
   const resetPassword = useCallback(
     async (email: string) => {
       setError(null);
       try {
-        if (supabaseReady) {
+        if (firebaseReady) {
+          await firebaseResetPassword(email);
+        } else if (supabaseReady) {
           await supabaseResetPassword(email);
         } else {
           throw new Error('Password reset requires Supabase configuration.');
@@ -260,12 +292,14 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         throw err;
       }
     },
-    [supabaseReady],
+    [firebaseReady, supabaseReady],
   );
 
   const logout = useCallback(async () => {
     try {
-      if (supabaseReady) {
+      if (firebaseReady) {
+        await firebaseLogout();
+      } else if (supabaseReady) {
         await supabaseLogout();
       } else {
         await destroySession();
@@ -275,7 +309,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
     setAuthenticated(false);
     setProfile(null);
-  }, [supabaseReady]);
+  }, [firebaseReady, supabaseReady]);
 
   const navContext = useMemo<NavigationContext>(() => {
     const plan = (profile?.subscriptionPlan ?? 'Individual').toLowerCase();
@@ -299,7 +333,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       navContext,
       error,
       supabaseReady,
-      firebaseReady: supabaseReady,
+      firebaseReady,
       clearError,
       login,
       register,
@@ -318,6 +352,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       navContext,
       error,
       supabaseReady,
+      firebaseReady,
       clearError,
       login,
       register,

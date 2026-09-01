@@ -5,6 +5,24 @@ process.env.DATABASE_URL =
 
 type AuthServiceCtor = typeof import('../auth/auth.service.js').AuthService;
 
+function makeIdentityDeps(supabaseAuth: {
+  hasCredentials: () => boolean;
+  verifyAccessToken: (token: string) => Promise<{ uid: string; email?: string; provider: 'supabase' }>;
+}) {
+  return {
+    supabase: {
+      hasCredentials: supabaseAuth.hasCredentials,
+      verifyAccessToken: supabaseAuth.verifyAccessToken,
+    },
+    firebase: {
+      hasCredentials: () => false,
+      verifyIdToken: jest.fn(),
+      verifySessionCookie: jest.fn(),
+      createSessionCookie: jest.fn(),
+    },
+  };
+}
+
 describe('AuthService Supabase session', () => {
   let AuthService: AuthServiceCtor;
   const prisma = {
@@ -21,7 +39,7 @@ describe('AuthService Supabase session', () => {
     client: {},
   };
 
-  const supabaseAuth = {
+  const supabaseVerifier = {
     hasCredentials: jest.fn(() => true),
     verifyAccessToken: jest.fn(),
   };
@@ -41,9 +59,22 @@ describe('AuthService Supabase session', () => {
   beforeEach(() => {
     cookies.length = 0;
     jest.clearAllMocks();
-    auth = new AuthService(prisma as never, supabaseAuth as never);
+    auth = new AuthService(
+      prisma as never,
+      makeIdentityDeps({
+        hasCredentials: () => supabaseVerifier.hasCredentials(),
+        verifyAccessToken: (token) =>
+          supabaseVerifier.verifyAccessToken(token).then((r) => ({
+            uid: r.id,
+            email: r.email,
+            provider: 'supabase' as const,
+          })),
+      }) as never,
+    );
     process.env.NODE_ENV = 'test';
     process.env.ENABLE_MOCK_AUTH = 'false';
+    delete process.env.USE_FIREBASE_AUTH;
+    delete process.env.NEXT_PUBLIC_USE_FIREBASE_AUTH;
   });
 
   it('rejects missing accessToken', async () => {
@@ -52,14 +83,18 @@ describe('AuthService Supabase session', () => {
   });
 
   it('sets httpOnly __session cookie after Supabase JWT verify', async () => {
-    supabaseAuth.verifyAccessToken.mockResolvedValue({
+    supabaseVerifier.verifyAccessToken.mockResolvedValue({
       id: '11111111-1111-4111-8111-111111111111',
       email: 'investor@example.com',
     });
-    prisma.user.findUnique.mockResolvedValueOnce(null); // by id
-    prisma.user.findFirst.mockResolvedValueOnce(null); // by legacy
-    prisma.user.findUnique.mockResolvedValueOnce(null); // by email
+    prisma.user.findUnique.mockResolvedValueOnce(null);
+    prisma.user.findFirst.mockResolvedValueOnce(null);
+    prisma.user.findUnique.mockResolvedValueOnce(null);
     prisma.user.create.mockResolvedValue({});
+    prisma.subscription.findFirst.mockResolvedValue({
+      plan: 'Individual',
+      status: 'active',
+    });
     prisma.user.findFirst.mockResolvedValueOnce({
       id: '11111111-1111-4111-8111-111111111111',
       email: 'investor@example.com',
@@ -79,7 +114,7 @@ describe('AuthService Supabase session', () => {
   });
 
   it('returns 401 for invalid JWT', async () => {
-    supabaseAuth.verifyAccessToken.mockRejectedValue(new Error('bad token'));
+    supabaseVerifier.verifyAccessToken.mockRejectedValue(new Error('bad token'));
     const result = await auth.createSession(res as never, { accessToken: 'bad' });
     expect(result).toMatchObject({ status: 401 });
   });

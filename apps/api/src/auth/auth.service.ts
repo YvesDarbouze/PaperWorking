@@ -1,26 +1,40 @@
 import { Injectable, Logger } from '@nestjs/common';
 import type { Request, Response } from 'express';
+import {
+  createDefaultIdentityDeps,
+  verifyAccessToken,
+  type IdentityVerificationDeps,
+} from '@paperworking/identity';
+import {
+  buildAuthUserForUid,
+  createPrismaSessionUserStore,
+  normalizeClientAccountType,
+  resolveAuthUserFromAccessToken,
+  type SessionUserStore,
+} from '@paperworking/services';
+import type { AuthUser } from '@paperworking/authz';
 import { PrismaService } from '../prisma/prisma.service.js';
 import { readCookie } from './auth-cookies.js';
-import {
-  ACCT_COOKIE,
-  SESSION_COOKIE,
-  SUB_COOKIE,
-  type AuthUser,
-} from './auth.types.js';
-import { SupabaseAuthService } from './supabase-auth.service.js';
+import { ACCT_COOKIE, SESSION_COOKIE, SUB_COOKIE } from './auth.types.js';
 import { remapUserPrimaryKey } from './user-id-remap.js';
+import { buildAuthMeResponse } from '../routes/auth/me/handler.js';
+import { buildAuthSessionsResponse } from '../routes/auth/sessions/handler.js';
 
 const SESSION_EXPIRES_MS = 1000 * 60 * 60 * 24 * 5; // 5 days
 
 @Injectable()
 export class AuthService {
   private readonly logger = new Logger(AuthService.name);
+  private readonly identityDeps: IdentityVerificationDeps;
+  private readonly sessionStore: SessionUserStore;
 
   constructor(
     private readonly prisma: PrismaService,
-    private readonly supabaseAuth: SupabaseAuthService,
-  ) {}
+    identityDeps?: IdentityVerificationDeps,
+  ) {
+    this.identityDeps = identityDeps ?? createDefaultIdentityDeps();
+    this.sessionStore = createPrismaSessionUserStore(this.prisma);
+  }
 
   mockAuthEnabled(): boolean {
     if (process.env.NODE_ENV === 'production') return false;
@@ -37,13 +51,9 @@ export class AuthService {
         return this.ensureDevUser();
       }
       // Bearer is accepted for non-browser clients; primary browser session is httpOnly cookie.
-      if (this.supabaseAuth.hasCredentials() && !token.startsWith('mock')) {
-        try {
-          const decoded = await this.supabaseAuth.verifyAccessToken(token);
-          return this.toAuthUser(decoded.id);
-        } catch {
-          /* fall through to cookie */
-        }
+      if (this.hasIdentityCredentials() && !token.startsWith('mock')) {
+        const user = await resolveAuthUserFromAccessToken(token, this.sessionDeps());
+        if (user) return user;
       }
     }
 
@@ -54,14 +64,12 @@ export class AuthService {
       return this.ensureDevUser();
     }
 
-    if (this.supabaseAuth.hasCredentials()) {
-      try {
-        const decoded = await this.supabaseAuth.verifyAccessToken(session);
-        return this.toAuthUser(decoded.id);
-      } catch (err) {
-        this.logger.warn(`Invalid session cookie: ${(err as Error).message}`);
-        return null;
+    if (this.hasIdentityCredentials()) {
+      const user = await resolveAuthUserFromAccessToken(session, this.sessionDeps());
+      if (!user) {
+        this.logger.warn('Invalid session cookie');
       }
+      return user;
     }
 
     if (this.mockAuthEnabled()) {
@@ -86,32 +94,14 @@ export class AuthService {
     return this.toAuthUser(uid);
   }
 
-  /**
-   * Build AuthUser from database only.
-   * Cookies (__acct), body.accountType, query, and headers MUST NOT grant admin.
-   */
   private async toAuthUser(uid: string): Promise<AuthUser> {
-    const user = await this.prisma.user.findFirst({
-      where: {
-        OR: [{ id: uid }, { legacyFirebaseUid: uid }],
-      },
-    });
-    const dbAccountType = (user?.accountType || 'investor').trim().toLowerCase();
-    const dbRole = (user?.role || '').trim().toLowerCase();
-    const isAdmin = dbAccountType === 'admin' || dbRole === 'admin';
+    return buildAuthUserForUid(uid, this.sessionStore);
+  }
 
-    let accountType = 'investor';
-    if (isAdmin) accountType = 'admin';
-    else if (dbAccountType === 'vendor') accountType = 'vendor';
-    else if (dbAccountType === 'investment_team') accountType = 'investment_team';
-    else accountType = 'investor';
-
+  private sessionDeps() {
     return {
-      uid: user?.id || uid,
-      email: user?.email,
-      accountType,
-      isAdmin,
-      role: user?.role,
+      identity: this.identityDeps,
+      store: this.sessionStore,
     };
   }
 
@@ -127,11 +117,15 @@ export class AuthService {
       return { status: 400, body: { error: 'accessToken required' } };
     }
 
-    if (this.supabaseAuth.hasCredentials() && !accessToken.startsWith('mock')) {
+    if (this.hasIdentityCredentials() && !accessToken.startsWith('mock')) {
       try {
-        const decoded = await this.supabaseAuth.verifyAccessToken(accessToken);
-        const authUser = await this.upsertSupabaseUser(decoded.id, decoded.email, accountType);
-        this.setSessionCookies(res, accessToken, authUser.accountType, false);
+        const decoded = await this.verifyIdentityToken(accessToken);
+        const authUser = await this.upsertIdentityUser(
+          decoded.uid,
+          decoded.email,
+          accountType,
+        );
+        await this.setSessionCookies(res, accessToken, authUser.uid, false);
         return { ok: true, uid: authUser.uid };
       } catch (err) {
         this.logger.warn(`createSession verify failed: ${(err as Error).message}`);
@@ -142,11 +136,11 @@ export class AuthService {
     if (mockEnabled) {
       const cookie = `mock:${accessToken}`;
       const authUser = await this.ensureDevUser();
-      this.setSessionCookies(res, cookie, authUser.accountType, true);
+      await this.setSessionCookies(res, cookie, authUser.uid, true);
       return { ok: true, uid: authUser.uid };
     }
 
-    return { status: 503, body: { error: 'Supabase Auth credentials not configured' } };
+    return { status: 503, body: { error: 'Identity provider credentials not configured' } };
   }
 
   async clearSession(res: Response): Promise<void> {
@@ -157,69 +151,43 @@ export class AuthService {
   }
 
   async getMe(user: AuthUser) {
-    const row = await this.prisma.user.findFirst({
-      where: { OR: [{ id: user.uid }, { legacyFirebaseUid: user.uid }] },
+    return buildAuthMeResponse(user, {
+      findUser: (uid) =>
+        this.prisma.user.findFirst({
+          where: { OR: [{ id: uid }, { legacyFirebaseUid: uid }] },
+        }),
+      findSubscription: (userId) =>
+        this.prisma.subscription.findFirst({
+          where: { userId },
+          orderBy: { updatedAt: 'desc' },
+        }),
     });
-    const sub = await this.prisma.subscription.findFirst({
-      where: { userId: row?.id || user.uid },
-      orderBy: { updatedAt: 'desc' },
-    });
-    return {
-      authenticated: true,
-      uid: user.uid,
-      email: row?.email || user.email,
-      displayName: row?.displayName || row?.name,
-      accountType: user.accountType,
-      isAdmin: user.isAdmin,
-      subscriptionPlan: sub?.plan || 'Individual',
-      subscriptionStatus: sub?.status || 'active',
-    };
   }
 
   async listSessions(user: AuthUser, userAgent?: string) {
-    return {
-      success: true,
-      incomplete: true,
-      stub: true,
-      message: 'Multi-device session listing is not implemented; showing current session only.',
-      sessions: [
-        {
-          id: 'sess_current',
-          uid: user.uid,
-          createdAt: new Date().toISOString(),
-          lastActiveAt: new Date().toISOString(),
-          userAgent: userAgent || 'unknown',
-          current: true,
-        },
-      ],
-    };
+    return buildAuthSessionsResponse(user, userAgent);
   }
 
   /**
-   * Ensure public.User.id === auth.users.id.
+   * Ensure public.User.id === IdP uid (Firebase or Supabase).
    * Remaps existing email / legacyFirebaseUid rows when needed.
    */
-  private async upsertSupabaseUser(
+  private async upsertIdentityUser(
     authUserId: string,
     email: string | undefined,
     accountType: string,
   ): Promise<AuthUser> {
     const normalizedEmail = (email || '').trim().toLowerCase();
     if (!normalizedEmail) {
-      throw new Error('Supabase user email is required to provision application User');
+      throw new Error('Identity user email is required to provision application User');
     }
 
     const byId = await this.prisma.user.findUnique({ where: { id: authUserId } });
     if (byId) {
-      const existingIsAdmin =
-        (byId.accountType || '').toLowerCase() === 'admin' ||
-        (byId.role || '').toLowerCase() === 'admin';
+      // Existing user: sync email only — never overwrite authoritative accountType from client.
       await this.prisma.user.update({
         where: { id: byId.id },
-        data: {
-          email: normalizedEmail,
-          ...(!existingIsAdmin ? { accountType } : {}),
-        },
+        data: { email: normalizedEmail },
       });
       return this.toAuthUser(byId.id);
     }
@@ -242,20 +210,17 @@ export class AuthService {
         );
         await remapUserPrimaryKey(this.prisma.client, byEmail.id, authUserId);
       }
-      const existingIsAdmin =
-        (byEmail.accountType || '').toLowerCase() === 'admin' ||
-        (byEmail.role || '').toLowerCase() === 'admin';
       await this.prisma.user.update({
         where: { id: authUserId },
         data: {
           email: normalizedEmail,
           legacyFirebaseUid: byEmail.legacyFirebaseUid ?? byEmail.id,
-          ...(!existingIsAdmin ? { accountType } : {}),
         },
       });
       return this.toAuthUser(authUserId);
     }
 
+    // First-time provisioning: client accountType accepted once (admin never accepted).
     await this.prisma.user.create({
       data: {
         id: authUserId,
@@ -266,12 +231,23 @@ export class AuthService {
     return this.toAuthUser(authUserId);
   }
 
-  private setSessionCookies(
+  /**
+   * Display-only cookies (__acct, __sub) mirror DB state for UX — never used for authz.
+   */
+  private async setSessionCookies(
     res: Response,
     sessionValue: string,
-    accountType: string,
+    uid: string,
     isMock: boolean,
   ) {
+    const user = await this.prisma.user.findFirst({
+      where: { OR: [{ id: uid }, { legacyFirebaseUid: uid }] },
+    });
+    const sub = await this.prisma.subscription.findFirst({
+      where: { userId: user?.id || uid },
+      orderBy: { updatedAt: 'desc' },
+    });
+    const authUser = await this.toAuthUser(uid);
     const base = cookieBaseOptions();
     const maxAge = SESSION_EXPIRES_MS;
     res.cookie(SESSION_COOKIE, sessionValue, {
@@ -279,19 +255,38 @@ export class AuthService {
       httpOnly: true,
       maxAge,
     });
-    res.cookie(ACCT_COOKIE, accountType === 'admin' ? 'admin' : accountType, {
-      ...base,
-      httpOnly: false,
-      maxAge,
-    });
-    res.cookie(SUB_COOKIE, encodeSub('Individual', 'active'), {
-      ...base,
-      httpOnly: false,
-      maxAge,
-    });
+    res.cookie(
+      ACCT_COOKIE,
+      authUser.accountType === 'admin' ? 'admin' : authUser.accountType,
+      {
+        ...base,
+        httpOnly: false,
+        maxAge,
+      },
+    );
+    res.cookie(
+      SUB_COOKIE,
+      encodeSub(sub?.plan || 'Individual', sub?.status || 'active'),
+      {
+        ...base,
+        httpOnly: false,
+        maxAge,
+      },
+    );
     if (isMock) {
       this.logger.debug('Issued mock session cookies');
     }
+  }
+
+  private hasIdentityCredentials(): boolean {
+    return (
+      Boolean(this.identityDeps.supabase?.hasCredentials()) ||
+      Boolean(this.identityDeps.firebase?.hasCredentials())
+    );
+  }
+
+  private verifyIdentityToken(token: string) {
+    return verifyAccessToken(token, this.identityDeps);
   }
 }
 
@@ -320,13 +315,7 @@ function cookieBaseOptions(): {
   };
 }
 
-function normalizeClientAccountType(value: unknown): string {
-  if (typeof value !== 'string') return 'investor';
-  const n = value.trim().toLowerCase();
-  if (n === 'vendor') return 'vendor';
-  if (n === 'investment_team') return 'investment_team';
-  return 'investor';
-}
+export { normalizeClientAccountType } from './account-type.js';
 
 function encodeSub(plan: string, status: string): string {
   return Buffer.from(JSON.stringify({ plan, status }), 'utf8').toString('base64url');

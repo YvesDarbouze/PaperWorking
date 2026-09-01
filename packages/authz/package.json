@@ -1,0 +1,23 @@
+{
+  "name": "@paperworking/authz",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "RBAC, AuthorizationService, CSRF — framework-agnostic authorization layer",
+  "main": "./dist/src/index.js",
+  "types": "./dist/src/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/src/index.d.ts",
+      "import": "./dist/src/index.js"
+    }
+  },
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "test": "node --experimental-vm-modules ../../node_modules/jest/bin/jest.js"
+  },
+  "devDependencies": {
+    "typescript": "^5.8.3"
+  }
+}

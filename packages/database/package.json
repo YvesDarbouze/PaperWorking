@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "type": "module",
-  "description": "Prisma + Supabase PostgreSQL adapters (Nest API writable + Phase-3 read adapters)",
+  "description": "Firestore + Neon/Prisma repositories and sync layer (migration Phase 1+)",
   "main": "./dist/src/index.js",
   "types": "./dist/src/index.d.ts",
   "exports": {
@@ -24,9 +24,13 @@
     "seed": "node --import tsx prisma/seed.ts"
   },
   "dependencies": {
+    "@paperworking/authz": "file:../authz",
     "@paperworking/validation": "file:../validation",
+    "@prisma/adapter-neon": "^7.10.0",
     "@prisma/adapter-pg": "^7.10.0",
     "@prisma/client": "^7.7.0",
+    "@neondatabase/serverless": "^1.0.0",
+    "firebase-admin": "^13.4.0",
     "pg": "^8.23.0"
   },
   "devDependencies": {

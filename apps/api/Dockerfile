@@ -1,5 +1,7 @@
-# NestJS API — Cloud Run
+# NestJS API — Cloud Run (alias of repository root Dockerfile)
+# Cloud Build default path uses /Dockerfile at repo root.
 # Build context: repo root (PaperWorking_v1)
+#   docker build -f Dockerfile -t paperworking-api .
 #   docker build -f apps/api/Dockerfile -t paperworking-api .
 
 FROM node:22-alpine AS builder

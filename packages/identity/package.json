@@ -1,0 +1,27 @@
+{
+  "name": "@paperworking/identity",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Framework-agnostic identity verification (Firebase + Supabase parallel)",
+  "main": "./dist/src/index.js",
+  "types": "./dist/src/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/src/index.d.ts",
+      "import": "./dist/src/index.js"
+    }
+  },
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "test": "node --experimental-vm-modules ../../node_modules/jest/bin/jest.js"
+  },
+  "dependencies": {
+    "@supabase/supabase-js": "^2.112.4",
+    "firebase-admin": "^13.4.0"
+  },
+  "devDependencies": {
+    "typescript": "^5.8.3"
+  }
+}

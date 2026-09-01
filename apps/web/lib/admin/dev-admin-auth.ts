@@ -1,24 +1,22 @@
-import { cookies } from 'next/headers';
 import type { AdminAuthContext } from '@paperworking/api';
-import { ACCT_COOKIE, SESSION_COOKIE } from '@/lib/auth/session-cookies';
+import { isAuthorizedAdmin, resolveServerAuthUser } from '@/lib/api/server-session';
 
 export type DevAdminAuthResult = AdminAuthContext | { status: number; body: unknown };
 
 export async function requireDevAdminAuth(): Promise<DevAdminAuthResult> {
-  const cookieStore = await cookies();
-  const session = cookieStore.get(SESSION_COOKIE)?.value;
-  if (!session) {
+  const authUser = await resolveServerAuthUser();
+  if (!authUser) {
     return { status: 401, body: { error: 'Unauthorized' } };
   }
 
-  const accountType = cookieStore.get(ACCT_COOKIE)?.value ?? 'investor';
-  if (accountType !== 'admin') {
+  // DB-authoritative isAdmin only — __acct cookie must not grant admin access.
+  if (!isAuthorizedAdmin(authUser)) {
     return { status: 403, body: { error: 'Admin access required' } };
   }
 
   return {
-    uid: 'dev-admin-1',
-    role: 'admin',
+    uid: authUser.uid,
+    role: authUser.role ?? 'admin',
     isAdmin: true,
   };
 }

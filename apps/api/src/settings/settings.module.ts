@@ -144,9 +144,21 @@ export class SettingsService {
       for (const key of PROFILE_FIELDS) {
         if (typeof safeBody[key] === 'string') data[key] = safeBody[key];
       }
-      // Unknown profile keys rejected
+      // FE sends firstName/lastName — map to name + displayName
+      const firstName =
+        typeof safeBody.firstName === 'string' ? safeBody.firstName.trim() : '';
+      const lastName =
+        typeof safeBody.lastName === 'string' ? safeBody.lastName.trim() : '';
+      if (firstName || lastName) {
+        const full = [firstName, lastName].filter(Boolean).join(' ').trim();
+        if (full) {
+          data.name = full;
+          data.displayName = full;
+        }
+      }
+      const allowedKeys = new Set([...PROFILE_FIELDS, 'firstName', 'lastName', 'profile']);
       for (const key of Object.keys(safeBody)) {
-        if (!PROFILE_FIELDS.has(key) && key !== 'profile') {
+        if (!allowedKeys.has(key)) {
           throw new BadRequestException({
             error: 'Unknown profile field',
             field: key,

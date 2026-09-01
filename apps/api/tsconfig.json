@@ -10,6 +10,9 @@
   "include": ["src/**/*"],
   "exclude": ["src/**/*.test.ts"],
   "references": [
+    { "path": "../../packages/authz" },
+    { "path": "../../packages/identity" },
+    { "path": "../../packages/services" },
     { "path": "../../packages/shared" },
     { "path": "../../packages/financial-engine" },
     { "path": "../../packages/database" }

@@ -37,25 +37,40 @@ export class ReportsService {
       status: string | null;
     };
     const list = projects as Proj[];
+    const totalPurchase = list.reduce(
+      (s: number, p: Proj) => s + (p.purchasePrice || 0),
+      0,
+    );
+    const activeCount = list.filter((p) => p.status !== 'exit' && p.status !== 'closed').length;
+    const report = {
+      type: 'portfolio',
+      generatedAt: new Date().toISOString(),
+      projectCount: list.length,
+      totalPurchasePrice: totalPurchase,
+      projects: list.map((p) => ({
+        id: p.id,
+        name: p.name || p.title,
+        address: p.address,
+        purchasePrice: p.purchasePrice,
+        currentPhase: p.currentPhase,
+        status: p.status,
+      })),
+    };
     return {
       success: true,
-      report: {
-        type: 'portfolio',
-        generatedAt: new Date().toISOString(),
-        projectCount: list.length,
-        totalPurchasePrice: list.reduce(
-          (s: number, p: Proj) => s + (p.purchasePrice || 0),
-          0,
-        ),
-        projects: list.map((p) => ({
-          id: p.id,
-          name: p.name || p.title,
-          address: p.address,
-          purchasePrice: p.purchasePrice,
-          currentPhase: p.currentPhase,
-          status: p.status,
-        })),
+      report,
+      overview: {
+        totalActiveProjects: activeCount,
+        totalPortfolioValue: totalPurchase,
+        totalCashInvested: totalPurchase,
+        totalReturns: 0,
+        portfolioROIPercent: 0,
+        avgDaysHeld: 0,
       },
+      narrative:
+        list.length === 0
+          ? 'No projects in your portfolio yet. Create a project to generate investment reports.'
+          : `Portfolio summary for ${list.length} project(s) with ${formatUsd(totalPurchase)} total purchase price. Detailed transaction ledger and ROI metrics are not yet available in production.`,
     };
   }
 
@@ -144,6 +159,14 @@ export class ReportsService {
       },
     };
   }
+}
+
+function formatUsd(value: number): string {
+  return new Intl.NumberFormat('en-US', {
+    style: 'currency',
+    currency: 'USD',
+    maximumFractionDigits: 0,
+  }).format(value);
 }
 
 const generateSchema = z.object({

@@ -18,8 +18,8 @@ export class VendorsController {
   constructor(private readonly vendors: VendorsService) {}
 
   @Get()
-  list(@Query('q') q?: string) {
-    return this.vendors.list(q);
+  list(@CurrentUser() user: AuthUser, @Query('q') q?: string) {
+    return this.vendors.list(user, q);
   }
 }
 

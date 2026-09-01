@@ -41,12 +41,20 @@ export class PortfolioService {
       metrics: {
         projectCount: projects.length,
         totalPurchasePrice: totalPurchase,
-        // No invented portfolio multiple — mark unavailable until valuation formula exists.
         estimatedPortfolioValue: null,
         estimatedPortfolioValueStatus: 'unavailable',
         byPhase,
         activeCount: projects.filter((p: { status: string | null }) => p.status !== 'exit')
           .length,
+      },
+      portfolio: {
+        totalActiveProjects: projects.filter((p: { status: string | null }) => p.status !== 'exit')
+          .length,
+        totalPortfolioValue: totalPurchase,
+        portfolioNoi: null,
+        portfolioCashFlow: null,
+        totalCashInvested: totalPurchase,
+        portfolioCapRate: null,
       },
     };
   }

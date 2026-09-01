@@ -30,7 +30,29 @@ export class InboxService {
       orderBy: { createdAt: 'desc' },
       take: 100,
     });
-    return { success: true, items };
+    const threads = items.map((item: (typeof items)[number]) => {
+      const meta =
+        item.metadata && typeof item.metadata === 'object'
+          ? (item.metadata as Record<string, unknown>)
+          : {};
+      return {
+        id: item.id,
+        subject: item.title,
+        title: item.title,
+        body: item.body,
+        preview: item.body?.slice(0, 120) ?? '',
+        from: item.senderUid ?? '',
+        senderUid: item.senderUid,
+        type: item.type,
+        unread: !item.read,
+        read: item.read,
+        archived: Boolean(meta.archived),
+        receivedAt: item.createdAt.toISOString(),
+        createdAt: item.createdAt.toISOString(),
+        href: item.href,
+      };
+    });
+    return { success: true, items, threads };
   }
 
   async create(user: AuthUser, body: Record<string, unknown>) {
@@ -62,14 +84,28 @@ export class InboxService {
       where: { id, recipientUid: user.uid },
     });
     if (!existing) throw new NotFoundException({ error: 'Inbox item not found' });
+
+    const existingMeta =
+      existing.metadata && typeof existing.metadata === 'object'
+        ? { ...(existing.metadata as Record<string, unknown>) }
+        : {};
+    if (typeof body.archived === 'boolean') {
+      existingMeta.archived = body.archived;
+    }
+
     const item = await this.prisma.inboxItem.update({
       where: { id },
       data: {
-        read: typeof body.read === 'boolean' ? body.read : undefined,
+        read:
+          typeof body.read === 'boolean'
+            ? body.read
+            : typeof body.archived === 'boolean' && body.archived
+              ? true
+              : undefined,
         title: typeof body.title === 'string' ? body.title : undefined,
         body: typeof body.body === 'string' ? body.body : undefined,
         href: typeof body.href === 'string' ? body.href : undefined,
-        metadata: body.metadata !== undefined ? (body.metadata as object) : undefined,
+        metadata: Object.keys(existingMeta).length ? existingMeta : undefined,
       },
     });
     return { success: true, item };

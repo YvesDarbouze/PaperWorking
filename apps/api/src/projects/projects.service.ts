@@ -18,7 +18,10 @@ export class ProjectsService {
     this.authz.assertPermission(user, 'projects.read');
     const orgIds = await this.authz.resolveUserOrgIds(user.uid);
     const projects = await this.repo.list(user.uid, q, orgIds);
-    return { success: true, projects };
+    return {
+      success: true,
+      projects: projects.map((p: (typeof projects)[number]) => this.serializeProject(p)),
+    };
   }
 
   async create(
@@ -48,7 +51,7 @@ export class ProjectsService {
 
   async getById(user: AuthUser, id: string) {
     const project = await this.authz.assertProjectAccess(user, id, 'projects.read');
-    return { success: true, project };
+    return { success: true, project: this.serializeProject(project) };
   }
 
   async patch(user: AuthUser, id: string, body: Record<string, unknown>) {
@@ -93,7 +96,7 @@ export class ProjectsService {
         estimatedArvStatus: 'unavailable',
         estimatedEquityStatus: 'unavailable',
         estimatedCashNeededStatus: 'unavailable',
-        currentPhase: this.repo.phaseNumberToName(project.currentPhase),
+        currentPhase: this.repo.phaseNumberToName(project.currentPhase ?? 1),
         incomplete: true,
       },
     };
@@ -188,5 +191,27 @@ export class ProjectsService {
       body,
     );
     return { success: true, name, item };
+  }
+
+  private serializeProject(project: {
+    id: string;
+    name?: string | null;
+    title?: string | null;
+    address?: string | null;
+    city?: string | null;
+    state?: string | null;
+    zip?: string | null;
+    purchasePrice?: number | null;
+    status?: string | null;
+    currentPhase?: number;
+    [key: string]: unknown;
+  }) {
+    const phaseNumber = project.currentPhase ?? 1;
+    return {
+      ...project,
+      propertyName: project.name || project.title || '',
+      currentPhase: this.repo.phaseNumberToName(phaseNumber),
+      currentPhaseNumber: phaseNumber,
+    };
   }
 }

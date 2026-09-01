@@ -71,6 +71,9 @@ export class PrismaService implements OnModuleDestroy {
   get adminAuditLog() {
     return this.client.adminAuditLog;
   }
+  get stripeWebhookEvent() {
+    return this.client.stripeWebhookEvent;
+  }
 
   async onModuleDestroy(): Promise<void> {
     await this.client.$disconnect();

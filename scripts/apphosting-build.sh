@@ -17,7 +17,10 @@ need package.json
 need packages/shared/package.json
 need packages/validation/package.json
 need packages/financial-engine/package.json
+need packages/authz/package.json
+need packages/identity/package.json
 need packages/database/package.json
+need packages/services/package.json
 need apps/api/package.json
 need apps/web/package.json
 
@@ -30,8 +33,17 @@ npm --prefix packages/validation run build
 echo "[apphosting-build] building packages/financial-engine"
 npm --prefix packages/financial-engine run build
 
+echo "[apphosting-build] building packages/authz"
+npm --prefix packages/authz run build
+
+echo "[apphosting-build] building packages/identity"
+npm --prefix packages/identity run build
+
 echo "[apphosting-build] building packages/database"
 npm --prefix packages/database run build
+
+echo "[apphosting-build] building packages/services"
+npm --prefix packages/services run build
 
 echo "[apphosting-build] building apps/api"
 npm --prefix apps/api run build

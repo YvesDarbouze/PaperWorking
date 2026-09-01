@@ -1,3 +1,4 @@
+import { OrganizationsModule } from './organizations/organizations.module.js';
 import { AdminModule } from './admin/admin.module.js';
 import { DealsModule } from './deals/deals.module.js';
 import { InboxModule } from './inbox/inbox.module.js';
@@ -18,6 +19,7 @@ import { VendorsModule } from './vendors/vendors.module.js';
  * AuthModule / PrismaModule / HealthModule are registered separately.
  */
 export const Wave1Modules = [
+  OrganizationsModule,
   ProjectsModule,
   PaymentsModule,
   DealsModule,
@@ -35,6 +37,7 @@ export const Wave1Modules = [
 ] as const;
 
 export {
+  OrganizationsModule,
   AdminModule,
   DealsModule,
   InboxModule,

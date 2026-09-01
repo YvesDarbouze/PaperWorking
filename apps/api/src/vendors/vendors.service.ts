@@ -25,18 +25,20 @@ export class VendorsService {
     });
   }
 
-  async list(q?: string) {
+  async list(user: AuthUser, q?: string) {
+    const orgIds = await this.authz.resolveUserOrgIds(user.uid);
     const where = q?.trim()
       ? {
+          organizationId: { in: orgIds },
           OR: [
             { name: { contains: q.trim(), mode: 'insensitive' as const } },
             { type: { contains: q.trim(), mode: 'insensitive' as const } },
             { contactEmail: { contains: q.trim(), mode: 'insensitive' as const } },
           ],
         }
-      : {};
+      : { organizationId: { in: orgIds } };
     const vendors = await this.prisma.vendor.findMany({
-      where,
+      where: orgIds.length > 0 ? where : { organizationId: { in: [] } },
       orderBy: { updatedAt: 'desc' },
       take: 100,
     });
@@ -179,7 +181,7 @@ export class VendorsService {
   }
 
   async updatePortalRequest(user: AuthUser, body: Record<string, unknown>) {
-    const bidId = String(body.id || body.bidId || '');
+    const bidId = String(body.id || body.bidId || body.requestId || '');
     if (!bidId) throw new NotFoundException({ error: 'id required' });
 
     // Ignore client-supplied ownership fields — session only.
@@ -208,14 +210,27 @@ export class VendorsService {
       });
     }
 
+    const quotedFee =
+      typeof body.quotedFee === 'number'
+        ? body.quotedFee
+        : typeof body.bidAmount === 'number' || typeof body.bidAmount === 'bigint'
+          ? Number(body.bidAmount)
+          : undefined;
+    const notes =
+      typeof body.notes === 'string'
+        ? body.notes
+        : typeof body.message === 'string'
+          ? body.message
+          : undefined;
+
     const updated = await this.prisma.vendorBid.update({
       where: { id: bid.id },
       data: {
         status: typeof body.status === 'string' ? body.status : undefined,
-        notes: typeof body.notes === 'string' ? body.notes : undefined,
+        notes,
         bidAmount:
-          typeof body.bidAmount === 'number' || typeof body.bidAmount === 'bigint'
-            ? BigInt(body.bidAmount as number)
+          quotedFee != null && Number.isFinite(quotedFee)
+            ? BigInt(Math.round(quotedFee))
             : undefined,
       },
     });

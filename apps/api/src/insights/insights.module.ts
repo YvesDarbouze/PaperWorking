@@ -50,6 +50,60 @@ export class InsightsService {
           holdAssets: list.filter((p) => p.currentPhase === 3).length,
         },
       },
+      categories: [
+        {
+          category: 'financial',
+          metrics: [
+            {
+              id: 'total_exposure',
+              name: 'Total Exposure',
+              value: total,
+              category: 'financial',
+            },
+            {
+              id: 'avg_purchase_price',
+              name: 'Average Purchase Price',
+              value: Math.round(avg),
+              category: 'financial',
+            },
+            {
+              id: 'project_count',
+              name: 'Active Projects',
+              value: list.length,
+              category: 'financial',
+            },
+          ],
+        },
+        {
+          category: 'pipeline',
+          metrics: [
+            {
+              id: 'acquisition_pipeline',
+              name: 'Acquisition Pipeline',
+              value: list.filter((p) => p.currentPhase === 1).length,
+              category: 'pipeline',
+            },
+            {
+              id: 'hold_assets',
+              name: 'Hold Assets',
+              value: list.filter((p) => p.currentPhase === 3).length,
+              category: 'pipeline',
+            },
+          ],
+        },
+        {
+          category: 'market',
+          metrics: Object.entries(cityCounts)
+            .sort((a, b) => b[1] - a[1])
+            .slice(0, 3)
+            .map(([city, count]) => ({
+              id: `city_${city.toLowerCase().replace(/\s+/g, '_')}`,
+              name: city,
+              value: count,
+              category: 'market',
+            })),
+        },
+      ],
     };
   }
 }

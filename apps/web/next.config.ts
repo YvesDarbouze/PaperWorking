@@ -4,7 +4,16 @@ const nextConfig: NextConfig = {
   reactStrictMode: true,
   output: 'standalone',
   // Keep Supabase out of the SSR bundle — avoids Next OTEL stub conflicts.
-  serverExternalPackages: ['@supabase/supabase-js', '@supabase/auth-js'],
+  serverExternalPackages: [
+    '@supabase/supabase-js',
+    '@supabase/auth-js',
+    'firebase-admin',
+    'firebase',
+    'firebase/app',
+    'firebase/auth',
+    '@paperworking/database',
+    '@paperworking/identity',
+  ],
   // Allow importing root-level /mockdata from apps/web
   experimental: {
     externalDir: true,
@@ -13,6 +22,7 @@ const nextConfig: NextConfig = {
     '@paperworking/api',
     '@paperworking/shared',
     '@paperworking/financial-engine',
+    '@paperworking/authz',
   ],
   async redirects() {
     return [

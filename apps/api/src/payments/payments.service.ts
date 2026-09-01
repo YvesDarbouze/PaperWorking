@@ -8,22 +8,10 @@ import {
 import type { AuthUser } from '../auth/auth.types.js';
 import { AuthorizationService } from '../authz/authorization.service.js';
 import { PrismaService } from '../prisma/prisma.service.js';
-
-/** Free-tier plan ids — may activate without Stripe. */
-const FREE_PLANS = new Set(['individual', 'free', 'trial', 'none', '']);
-
-function isFreePlan(planId: string): boolean {
-  return FREE_PLANS.has(planId.trim().toLowerCase());
-}
-
-function hasVerifiedPaidSubscription(sub: {
-  stripeSubscriptionId: string | null;
-  status: string | null;
-}): boolean {
-  if (!sub.stripeSubscriptionId) return false;
-  const status = (sub.status || '').toLowerCase();
-  return status === 'active' || status === 'trialing';
-}
+import {
+  hasVerifiedPaidSubscription,
+  isFreePlan,
+} from './entitlement.js';
 
 type PaymentMethod = {
   id: string;
@@ -78,6 +66,8 @@ export class PaymentsService {
     if (actionPath.length === 0) {
       return {
         success: true,
+        plan: sub.plan,
+        status: sub.status,
         subscription: {
           id: sub.id,
           plan: sub.plan,
@@ -173,6 +163,24 @@ export class PaymentsService {
     }
 
     if (method === 'POST' && actionPath[0] === 'cancel') {
+      if (sub.stripeSubscriptionId) {
+        const key = process.env.STRIPE_SECRET_KEY;
+        if (!key) {
+          throw new ServiceUnavailableException({ error: 'Stripe not configured' });
+        }
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const Stripe = (await import('stripe' as string).catch(() => null)) as any;
+        if (!Stripe) {
+          throw new ServiceUnavailableException({ error: 'Stripe SDK unavailable' });
+        }
+        const stripe = new Stripe.default ? new Stripe.default(key) : new Stripe(key);
+        await stripe.subscriptions.cancel(sub.stripeSubscriptionId);
+      } else if (!isFreePlan(sub.plan || 'Individual')) {
+        throw new ForbiddenException({
+          error: 'Use Stripe customer portal to cancel paid subscription',
+          code: 'PORTAL_REQUIRED',
+        });
+      }
       const updated = await this.prisma.subscription.update({
         where: { id: sub.id },
         data: { status: 'canceled' },
@@ -478,15 +486,45 @@ export class PaymentsService {
     // client-supplied metadata alone. Missing user binding → acknowledge, no grant.
     // Full event-id dedupe table: not available without schema migration (documented).
     const object = event.data?.object || {};
+    const eventId = event.id ? String(event.id) : '';
 
-    if (event.type === 'checkout.session.completed') {
+    if (eventId) {
+      const prior = await this.prisma.stripeWebhookEvent.findUnique({
+        where: { eventId },
+      });
+      if (prior) {
+        return { received: true, applied: false, reason: 'duplicate', eventId };
+      }
+    }
+
+    const applyResult = await this.applyStripeWebhookEvent(event.type, object);
+
+    if (eventId) {
+      await this.prisma.stripeWebhookEvent.create({
+        data: {
+          eventId,
+          eventType: event.type,
+          status: applyResult.applied ? 'processed' : 'skipped',
+          metadata: applyResult,
+        },
+      });
+    }
+
+    return { received: true, ...applyResult, eventType: event.type, eventId };
+  }
+
+  private async applyStripeWebhookEvent(
+    eventType: string,
+    object: Record<string, unknown>,
+  ): Promise<{ applied: boolean; reason?: string }> {
+    if (eventType === 'checkout.session.completed') {
       const userId = String(
         object.client_reference_id ||
           (object.metadata as Record<string, unknown> | undefined)?.userId ||
           '',
       );
       if (!userId) {
-        return { received: true, applied: false, reason: 'missing_user_binding' };
+        return { applied: false, reason: 'missing_user_binding' };
       }
       const sub = await this.getOrCreateSubscription(userId);
       await this.prisma.subscription.update({
@@ -501,55 +539,58 @@ export class PaymentsService {
             : sub.stripeSubscriptionId,
         },
       });
-      return { received: true, applied: true, eventType: event.type };
+      return { applied: true };
     }
 
     if (
-      event.type === 'customer.subscription.deleted' ||
-      event.type === 'customer.subscription.updated'
+      eventType === 'customer.subscription.deleted' ||
+      eventType === 'customer.subscription.updated'
     ) {
       const stripeSubId = object.id ? String(object.id) : '';
       const status = String(object.status || '').toLowerCase();
       if (!stripeSubId) {
-        return { received: true, applied: false, reason: 'unknown_subscription' };
+        return { applied: false, reason: 'unknown_subscription' };
       }
       const existing = await this.prisma.subscription.findFirst({
         where: { stripeSubscriptionId: stripeSubId },
       });
       if (!existing) {
-        return { received: true, applied: false, reason: 'unknown_subscription' };
+        return { applied: false, reason: 'unknown_subscription' };
       }
       const nextStatus =
-        event.type === 'customer.subscription.deleted'
+        eventType === 'customer.subscription.deleted'
           ? 'canceled'
-          : status === 'active' || status === 'trialing' || status === 'past_due' || status === 'canceled'
+          : status === 'active' ||
+              status === 'trialing' ||
+              status === 'past_due' ||
+              status === 'canceled'
             ? status
             : existing.status;
       await this.prisma.subscription.update({
         where: { id: existing.id },
         data: { status: nextStatus },
       });
-      return { received: true, applied: true, eventType: event.type };
+      return { applied: true };
     }
 
-    if (event.type === 'invoice.payment_failed') {
+    if (eventType === 'invoice.payment_failed') {
       const stripeSubId = object.subscription ? String(object.subscription) : '';
       if (!stripeSubId) {
-        return { received: true, applied: false, reason: 'unknown_subscription' };
+        return { applied: false, reason: 'unknown_subscription' };
       }
       const existing = await this.prisma.subscription.findFirst({
         where: { stripeSubscriptionId: stripeSubId },
       });
       if (!existing) {
-        return { received: true, applied: false, reason: 'unknown_subscription' };
+        return { applied: false, reason: 'unknown_subscription' };
       }
       await this.prisma.subscription.update({
         where: { id: existing.id },
         data: { status: 'past_due' },
       });
-      return { received: true, applied: true, eventType: event.type };
+      return { applied: true };
     }
 
-    return { received: true, applied: false, eventType: event.type };
+    return { applied: false, reason: 'unhandled_event_type' };
   }
 }

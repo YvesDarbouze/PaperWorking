@@ -2,9 +2,12 @@ import { createRequire } from 'node:module';
 import { existsSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { PrismaPg } from '@prisma/adapter-pg';
-import pg from 'pg';
 import { asReadOnlyClient } from './read-only-guard.js';
+import {
+  createPrismaDriverAdapter,
+  resetPgPoolForTests,
+} from './neon/adapter.js';
+import { resolveDatabaseAdapterMode, resolveDatabaseUrl } from './neon/config.js';
 
 const require = createRequire(import.meta.url);
 const here = dirname(fileURLToPath(import.meta.url));
@@ -56,27 +59,12 @@ const PrismaClient = prismaGenerated.PrismaClient;
 declare global {
   // eslint-disable-next-line no-var
   var __paperworkingMigrationPrisma: ApiPrismaClient | undefined;
-  // eslint-disable-next-line no-var
-  var __paperworkingMigrationPgPool: pg.Pool | undefined;
 }
 
 function createPrismaClient(): ApiPrismaClient {
-  const url = process.env.DATABASE_URL;
-  if (!url) {
-    throw new Error('DATABASE_URL is not set — required for @paperworking/database client');
-  }
-
-  if (!globalThis.__paperworkingMigrationPgPool) {
-    globalThis.__paperworkingMigrationPgPool = new pg.Pool({
-      connectionString: url,
-      ssl: url.includes('localhost') || url.includes('127.0.0.1')
-        ? undefined
-        : { rejectUnauthorized: false },
-      max: 10,
-    });
-  }
-
-  const adapter = new PrismaPg(globalThis.__paperworkingMigrationPgPool);
+  const connectionString = resolveDatabaseUrl();
+  const adapterMode = resolveDatabaseAdapterMode();
+  const adapter = createPrismaDriverAdapter(adapterMode, connectionString);
   return new PrismaClient({ adapter });
 }
 
@@ -95,6 +83,12 @@ export function getMigrationPrismaClient(options?: { readOnly?: boolean }): Migr
 
 export function getApiPrismaClient(): ApiPrismaClient {
   return getSharedClient();
+}
+
+/** Test helper — resets singleton Prisma client and pg pool. */
+export function resetMigrationPrismaForTests(): void {
+  globalThis.__paperworkingMigrationPrisma = undefined;
+  resetPgPoolForTests();
 }
 
 export const migrationDb = getMigrationPrismaClient({ readOnly: true });

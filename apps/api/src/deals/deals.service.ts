@@ -5,6 +5,7 @@ import {
 } from '@nestjs/common';
 import type { AuthUser } from '../auth/auth.types.js';
 import { AuthorizationService } from '../authz/authorization.service.js';
+import { verifyBroadcastToken } from '../lib/deals/broadcast-token.js';
 import { PrismaService } from '../prisma/prisma.service.js';
 
 function slugify(input: string): string {
@@ -176,7 +177,39 @@ export class DealsService {
     return { success: true, broadcast, dispatchedCount: recipientEmails.length };
   }
 
-  async reply(body: Record<string, unknown>) {
+  async replyInbound(body: Record<string, unknown>) {
+    return this.createDealMessage(body, 'email_inbound', undefined);
+  }
+
+  async replyWithBroadcastToken(body: Record<string, unknown>, token: string) {
+    const payload = verifyBroadcastToken(token);
+    const dealId = String(body.dealId || '');
+    if (!payload?.dealId || payload.dealId !== dealId) {
+      throw new BadRequestException({ error: 'Invalid or expired reply token' });
+    }
+    const senderEmail = String(
+      body.senderEmail || body.email || payload.email || '',
+    );
+    if (!senderEmail) {
+      throw new BadRequestException({ error: 'senderEmail required' });
+    }
+    return this.createDealMessage(body, 'email_inbound', undefined);
+  }
+
+  async replyAuthenticated(user: AuthUser, body: Record<string, unknown>) {
+    const dealId = String(body.dealId || '');
+    if (!dealId) {
+      throw new BadRequestException({ error: 'dealId required' });
+    }
+    await this.authz.assertDealAccess(user, dealId, 'deals.read');
+    return this.createDealMessage(body, 'platform', user.uid);
+  }
+
+  private async createDealMessage(
+    body: Record<string, unknown>,
+    source: 'platform' | 'email_inbound',
+    senderId: string | undefined,
+  ) {
     const dealId = String(body.dealId || '');
     const content = String(body.content || body.message || '');
     const senderEmail = String(body.senderEmail || body.email || '');
@@ -193,11 +226,16 @@ export class DealsService {
         dealId,
         senderEmail,
         content,
-        senderId: typeof body.senderId === 'string' ? body.senderId : undefined,
-        source: 'email_inbound',
+        senderId,
+        source,
       },
     });
     return { success: true, message };
+  }
+
+  /** @deprecated Use replyInbound or replyAuthenticated */
+  async reply(body: Record<string, unknown>) {
+    return this.replyInbound(body);
   }
 
   async listInvitations(user: AuthUser) {

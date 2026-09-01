@@ -96,13 +96,29 @@ export const apiProvider = {
         portfolio?: {
           totalActiveProjects?: number;
           totalPortfolioValue?: number;
-          portfolioNoi?: number;
-          portfolioCashFlow?: number;
+          portfolioNoi?: number | null;
+          portfolioCashFlow?: number | null;
           totalCashInvested?: number;
-          portfolioCapRate?: number;
+          portfolioCapRate?: number | null;
+        };
+        metrics?: {
+          projectCount?: number;
+          totalPurchasePrice?: number;
+          activeCount?: number;
         };
       };
-      const p = body.portfolio;
+      const p =
+        body.portfolio ??
+        (body.metrics
+          ? {
+              totalActiveProjects: body.metrics.activeCount ?? body.metrics.projectCount,
+              totalPortfolioValue: body.metrics.totalPurchasePrice,
+              totalCashInvested: body.metrics.totalPurchasePrice,
+              portfolioNoi: null,
+              portfolioCashFlow: null,
+              portfolioCapRate: null,
+            }
+          : undefined);
       if (p) {
         empty.portfolioSummary = {
           activeDeals: p.totalActiveProjects ?? 0,
@@ -197,6 +213,10 @@ export const apiProvider = {
 
   async billingPreview() {
     const data = await apiJson<Record<string, unknown>>('/api/billing');
+    const subscription =
+      data.subscription && typeof data.subscription === 'object'
+        ? (data.subscription as Record<string, unknown>)
+        : null;
     const methods = Array.isArray(data.paymentMethods)
       ? (data.paymentMethods as Array<Record<string, unknown>>)
       : [];
@@ -215,8 +235,8 @@ export const apiProvider = {
       : [];
 
     return {
-      plan: String(data.plan ?? data.subscriptionPlan ?? '—'),
-      status: String(data.status ?? data.subscriptionStatus ?? '—'),
+      plan: String(data.plan ?? subscription?.plan ?? data.subscriptionPlan ?? '—'),
+      status: String(data.status ?? subscription?.status ?? data.subscriptionStatus ?? '—'),
       monthlyPrice: Number(data.monthlyPrice ?? 0),
       paymentMethod,
       billingEmail: String(data.billingEmail ?? ''),

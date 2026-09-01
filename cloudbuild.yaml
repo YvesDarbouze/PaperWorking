@@ -1,4 +1,5 @@
 # Cloud Build — NestJS API → Artifact Registry → Cloud Run
+# Dockerfile: ./Dockerfile (repo root; required for triggers that default to /workspace/Dockerfile)
 # Usage (from PaperWorking_v1 root):
 #   gcloud builds submit --config cloudbuild.yaml \
 #     --substitutions=_REGION=us-east4,_SERVICE=paperworking-api,_REPO=paperworking
@@ -19,7 +20,7 @@ steps:
     args:
       - build
       - -f
-      - apps/api/Dockerfile
+      - Dockerfile
       - -t
       - ${_REGION}-docker.pkg.dev/${PROJECT_ID}/${_REPO}/${_SERVICE}:${SHORT_SHA}
       - -t

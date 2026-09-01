@@ -28,6 +28,7 @@ export class MarketplaceService {
       success: true,
       profile: {
         id: row?.id || user.uid,
+        uid: row?.id || user.uid,
         email: row?.email || user.email,
         displayName: row?.displayName || row?.name,
         accountType: row?.accountType || user.accountType,
@@ -35,6 +36,7 @@ export class MarketplaceService {
         avatarUrl: row?.avatarUrl,
         following,
         followers,
+        followerCount: followers,
       },
     };
   }
@@ -99,6 +101,12 @@ export class MarketplaceService {
     return {
       success: true,
       investor: { ...this.toPublicInvestor(investor), followers, createdAt: investor.createdAt },
+      profile: {
+        uid: investor.id,
+        displayName: investor.displayName || investor.name || 'Investor',
+        followerCount: followers,
+        dealCount: 0,
+      },
     };
   }
 

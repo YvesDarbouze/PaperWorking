@@ -34,9 +34,17 @@ export {
   type SessionDeleteDeps,
 } from './routes/auth/session/handler.js';
 export {
-  handleSessionsGet,
-  type SessionsListDeps,
-  type SessionRecord,
+  handleAuthMeGet,
+  buildAuthMeResponse,
+  type AuthMeDeps,
+  type AuthMeResponse,
+} from './routes/auth/me/handler.js';
+export {
+  handleAuthSessionsGet,
+  buildAuthSessionsResponse,
+  type AuthSessionsResponse,
+  type AuthSessionsDeps,
+  type AuthSessionRecord,
   type RequireAuthFn,
   type AuthContext,
   type AuthFailure,

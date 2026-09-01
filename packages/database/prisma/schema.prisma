@@ -270,6 +270,7 @@ model RehabMilestone {
 model Vendor {
   id             String         @id @default(uuid())
   organizationId String
+  organization   Organization   @relation(fields: [organizationId], references: [id], onDelete: Cascade)
   name           String
   type           String
   contactEmail   String?
@@ -1657,6 +1658,7 @@ model Organization {
   members   OrganizationMember[]
   projects  Project[]
   invites   OrganizationInvite[]
+  vendors   Vendor[]
 }
 
 model OrganizationMember {
@@ -1860,6 +1862,19 @@ model Subscription {
   stripeTestMode       Boolean  @default(false)
   createdAt            DateTime @default(now())
   updatedAt            DateTime @updatedAt
+}
+
+model StripeWebhookEvent {
+  id          String   @id @default(uuid())
+  eventId     String   @unique
+  eventType   String
+  status      String   @default("processed")
+  processedAt DateTime @default(now())
+  error       String?
+  metadata    Json?
+
+  @@index([eventType])
+  @@index([processedAt])
 }
 
 // ── Deal & Crowdfunding Marketplace Entities ──────────────────────────────────

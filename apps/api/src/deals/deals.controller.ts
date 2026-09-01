@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Post, Query } from '@nestjs/common';
+import { Body, Controller, ForbiddenException, Get, Headers, Post, Query } from '@nestjs/common';
 import { z } from 'zod';
 import { CurrentUser, Public, type AuthUser } from '../auth/auth.types.js';
 import { RequirePermissions } from '../authz/require-permissions.decorator.js';
@@ -35,6 +35,8 @@ const replySchema = z.object({
   senderEmail: z.string().email().optional(),
   email: z.string().email().optional(),
   senderId: z.string().optional(),
+  token: z.string().optional(),
+  broadcastToken: z.string().optional(),
 });
 
 const invitationSchema = z.object({
@@ -85,8 +87,26 @@ export class DealsController {
 
   @Public()
   @Post('reply')
-  reply(@Body(new ZodValidationPipe(replySchema)) body: z.infer<typeof replySchema>) {
-    return this.deals.reply(body);
+  reply(
+    @Headers('x-deal-reply-secret') inboundSecret: string | undefined,
+    @CurrentUser() user: AuthUser | undefined,
+    @Body(new ZodValidationPipe(replySchema)) body: z.infer<typeof replySchema>,
+  ) {
+    const configured = process.env.DEAL_REPLY_WEBHOOK_SECRET?.trim();
+    if (configured && inboundSecret === configured) {
+      return this.deals.replyInbound(body);
+    }
+    if (user) {
+      return this.deals.replyAuthenticated(user, body);
+    }
+    const token = body.token || body.broadcastToken;
+    if (token) {
+      return this.deals.replyWithBroadcastToken(body, token);
+    }
+    throw new ForbiddenException({
+      error: 'Forbidden',
+      reason: 'deal_reply_auth_required',
+    });
   }
 }
 

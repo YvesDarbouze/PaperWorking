@@ -6,7 +6,7 @@ import {
   ReilProjectRepository,
 } from './repositories/index.js';
 
-export const DATABASE_PACKAGE_STATUS = 'wave-1-writable-api' as const;
+export const DATABASE_PACKAGE_STATUS = 'phase-8-neon-adapter' as const;
 
 export interface ReadOnlyDatabaseAdapters {
   prisma: MigrationPrismaClient;
@@ -34,6 +34,7 @@ export {
   getApiPrismaClient,
   migrationDb,
   apiDb,
+  resetMigrationPrismaForTests,
   type MigrationPrismaClient,
   type ApiPrismaClient,
 } from './client.js';
@@ -48,3 +49,6 @@ export {
   type ListFinancialTransactionsInput,
   type FinancialTransactionPage,
 } from './repositories/index.js';
+export * from './neon/index.js';
+export * from './firestore/index.js';
+export * from './sync/index.js';

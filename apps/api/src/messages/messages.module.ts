@@ -78,6 +78,12 @@ export class MessagesService {
       throw new BadRequestException({ error: 'Cannot message yourself' });
     }
 
+    await this.authz.assertMessageRecipientAllowed(
+      user,
+      recipientId,
+      typeof body.threadId === 'string' ? body.threadId : undefined,
+    );
+
     let threadId: string;
     if (typeof body.threadId === 'string' && body.threadId.trim()) {
       // Existing thread only — must already be a participant.

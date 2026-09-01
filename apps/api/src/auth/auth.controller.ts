@@ -1,16 +1,9 @@
-import {
-  Body,
-  Controller,
-  Delete,
-  Get,
-  Post,
-  Req,
-  Res,
-} from '@nestjs/common';
+import { Body, Controller, Delete, Get, Post, Req, Res, UseGuards } from '@nestjs/common';
 import type { Request, Response } from 'express';
 import { z } from 'zod';
 import { ZodValidationPipe } from '../common/zod-validation.pipe.js';
 import { AuthService } from './auth.service.js';
+import { CsrfGuard } from './csrf.guard.js';
 import { CurrentUser, Public, type AuthUser } from './auth.types.js';
 
 const sessionBodySchema = z.object({
@@ -31,6 +24,7 @@ export class AuthController {
   constructor(private readonly auth: AuthService) {}
 
   @Public()
+  @UseGuards(CsrfGuard)
   @Post('session')
   async createSession(
     @Body(new ZodValidationPipe(sessionBodySchema))
@@ -44,6 +38,7 @@ export class AuthController {
   }
 
   @Public()
+  @UseGuards(CsrfGuard)
   @Delete('session')
   async deleteSession(@Res({ passthrough: true }) res: Response) {
     await this.auth.clearSession(res);

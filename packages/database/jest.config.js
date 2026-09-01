@@ -6,6 +6,7 @@ export default {
   moduleNameMapper: {
     '^(\\.{1,2}/.*)\\.js$': '$1',
     '^@paperworking/validation$': '<rootDir>/../validation/src/index.ts',
+    '^@paperworking/authz$': '<rootDir>/../authz/src/index.ts',
   },
   transform: {
     '^.+\\.tsx?$': [

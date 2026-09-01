@@ -16,9 +16,14 @@ export function useAdminOpsSection<T>(section: string) {
         credentials: 'include',
         cache: 'no-store',
       });
-      const body = (await res.json()) as { data?: T; error?: string };
-      if (!res.ok) throw new Error(body.error ?? `Failed to load ${section}`);
-      setData(body.data ?? null);
+      const body = (await res.json()) as Record<string, unknown> & { data?: T; error?: string };
+      if (!res.ok) throw new Error(String(body.error ?? `Failed to load ${section}`));
+      if (body.data !== undefined) {
+        setData(body.data);
+      } else {
+        const { success: _s, section: _sec, ...rest } = body;
+        setData(rest as T);
+      }
     } catch (err) {
       setError(err instanceof Error ? err.message : `Failed to load ${section}`);
       setData(null);

@@ -37,7 +37,7 @@ let cachedDeps: HandlerDeps | null = null;
 
 function buildHealthDeps(): HealthCheckDeps {
   const pingPostgres = async () => {
-    const client = getApiPrismaClient();
+    const client = requirePrismaClient();
     await client.$queryRaw`SELECT 1`;
   };
 
@@ -49,10 +49,17 @@ function buildHealthDeps(): HealthCheckDeps {
   };
 }
 
+function requirePrismaClient(): ApiPrismaClient {
+  if (!process.env.DATABASE_URL?.trim()) {
+    throw new Error('DATABASE_URL is not set — required for @paperworking/database client');
+  }
+  return getApiPrismaClient();
+}
+
 /** Shared dependencies for Next.js API route adapters. */
 export function buildHandlerDeps(): HandlerDeps {
   if (!cachedDeps) {
-    const prisma = getApiPrismaClient();
+    const prisma = requirePrismaClient();
     const identity = createDefaultIdentityDeps();
     const sessionStore = createPrismaSessionUserStore(prisma);
     const authzStore = createPrismaAuthzStore(prisma);

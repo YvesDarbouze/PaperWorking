@@ -39,6 +39,10 @@ export async function resolveAuthUserFromRequest(
 export async function resolveServerAuthUser(
   credentials?: ServerSessionCredentials,
 ): Promise<AuthUser | null> {
+  if (!process.env.DATABASE_URL?.trim()) {
+    return null;
+  }
+
   const deps = buildHandlerDeps();
 
   let sessionCookie = credentials?.sessionCookie;

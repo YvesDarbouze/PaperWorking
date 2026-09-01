@@ -3,6 +3,8 @@ import { redirect } from 'next/navigation';
 import AdminPortalShell from '@/components/admin/AdminPortalShell';
 import { isAuthorizedAdmin, resolveServerAuthUser } from '@/lib/api/server-session';
 
+export const dynamic = 'force-dynamic';
+
 export const metadata: Metadata = {
   title: 'Admin',
   robots: 'noindex, nofollow',

@@ -13,7 +13,9 @@ runConfig:
 scripts:
   # Use shell script — App Hosting often breaks `npm --workspace=` ("No workspaces found").
   # Firebase console "Root directory" must be repository root (.), not apps/web.
-  buildCommand: npm run apphosting:build
+  # Call the shell script directly — `npm run apphosting:build` can recurse when the
+  # App Hosting buildpack also registers an apphosting:build npm lifecycle hook.
+  buildCommand: bash scripts/apphosting-build.sh
   runCommand: npm --prefix apps/web run start
 
 # Environment variables and secrets.

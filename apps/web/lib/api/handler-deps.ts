@@ -1,4 +1,4 @@
-import type { HealthCheckDeps, AuthMeDeps } from '@paperworking/api';
+import type { HealthCheckDeps, AuthMeDeps, SessionPostDeps, SessionDeleteDeps } from '@paperworking/api';
 import { circuitBreakers } from '@paperworking/api';
 import {
   AuthorizationService,
@@ -12,6 +12,7 @@ import {
 } from '@paperworking/database';
 import {
   createDefaultIdentityDeps,
+  isFirebaseAuthEnabled,
   type IdentityVerificationDeps,
 } from '@paperworking/identity';
 import {
@@ -97,5 +98,68 @@ export function buildAuthMeDeps(deps: HandlerDeps = buildHandlerDeps()): AuthMeD
         where: { userId },
         orderBy: { updatedAt: 'desc' },
       }),
+  };
+}
+
+/** Firebase/Supabase session exchange for POST/DELETE /api/auth/session. */
+export function buildSessionPostDeps(deps: HandlerDeps = buildHandlerDeps()): SessionPostDeps {
+  const { prisma, identity } = deps;
+  const firebase = identity.firebase;
+  const supabase = identity.supabase;
+
+  return {
+    hasCredentials: () =>
+      Boolean(
+        firebase?.hasCredentials() ||
+          supabase?.hasCredentials() ||
+          process.env.FIREBASE_CLIENT_EMAIL,
+      ),
+    verifyIdToken: async (token) => {
+      if (isFirebaseAuthEnabled() && firebase?.hasCredentials()) {
+        const verified = await firebase.verifyIdToken(token);
+        return { uid: verified.uid };
+      }
+      if (supabase?.hasCredentials()) {
+        const verified = await supabase.verifyAccessToken(token);
+        return { uid: verified.uid };
+      }
+      if (firebase?.hasCredentials()) {
+        const verified = await firebase.verifyIdToken(token);
+        return { uid: verified.uid };
+      }
+      throw new Error('No identity provider configured');
+    },
+    createSessionCookie: firebase?.hasCredentials()
+      ? (idToken, expiresInMs) => firebase.createSessionCookie(idToken, expiresInMs)
+      : undefined,
+    getUserProfile: async (uid) => {
+      const user = await prisma.user.findFirst({
+        where: { OR: [{ id: uid }, { legacyFirebaseUid: uid }] },
+      });
+      const subscription = user
+        ? await prisma.subscription.findFirst({
+            where: { userId: user.id },
+            orderBy: { updatedAt: 'desc' },
+          })
+        : null;
+      return {
+        subscriptionPlan: subscription?.plan ?? 'Individual',
+        subscriptionStatus: subscription?.status ?? 'inactive',
+        accountType: user?.accountType ?? 'investor',
+      };
+    },
+  };
+}
+
+export function buildSessionDeleteDeps(deps: HandlerDeps = buildHandlerDeps()): SessionDeleteDeps {
+  const firebase = deps.identity.firebase;
+  return {
+    hasCredentials: () => Boolean(firebase?.hasCredentials()),
+    verifySessionCookie: firebase?.hasCredentials()
+      ? async (sessionCookie) => {
+          const verified = await firebase.verifySessionCookie(sessionCookie);
+          return { uid: verified.uid };
+        }
+      : undefined,
   };
 }

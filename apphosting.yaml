@@ -82,6 +82,19 @@ env:
       - BUILD
       - RUNTIME
 
+  # ─── Auth (V0 parity — Firebase Google/Facebook popup) ───────────────────
+  - variable: USE_FIREBASE_AUTH
+    value: "true"
+    availability:
+      - BUILD
+      - RUNTIME
+
+  - variable: NEXT_PUBLIC_USE_FIREBASE_AUTH
+    value: "true"
+    availability:
+      - BUILD
+      - RUNTIME
+
   # ─── Firebase Admin SDK (server-side) ──────────────────────────────────────
   - variable: FIREBASE_PROJECT_ID
     value: "paperworking-97055"

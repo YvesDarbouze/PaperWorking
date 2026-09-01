@@ -95,6 +95,19 @@ export async function firebaseLoginWithGoogle(accountType = 'investor'): Promise
   const authMod: FirebaseAuthModule = await import('firebase/auth');
   const auth = await getFirebaseAuth();
   const provider = new authMod.GoogleAuthProvider();
+  provider.addScope('email');
+  provider.addScope('profile');
+  await authMod.signInWithPopup(auth, provider);
+  await syncSessionFromFirebase(accountType);
+}
+
+export async function firebaseLoginWithFacebook(accountType = 'investor'): Promise<void> {
+  window.localStorage.setItem('pw_pending_account_type', accountType);
+  const authMod: FirebaseAuthModule = await import('firebase/auth');
+  const auth = await getFirebaseAuth();
+  const provider = new authMod.FacebookAuthProvider();
+  provider.addScope('email');
+  provider.addScope('public_profile');
   await authMod.signInWithPopup(auth, provider);
   await syncSessionFromFirebase(accountType);
 }

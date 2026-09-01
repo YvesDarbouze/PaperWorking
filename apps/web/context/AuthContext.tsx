@@ -16,6 +16,7 @@ import {
 } from '@/lib/auth/session-client';
 import {
   firebaseLogin,
+  firebaseLoginWithFacebook,
   firebaseLoginWithGoogle,
   firebaseLogout,
   firebaseRegister,
@@ -237,28 +238,39 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           await refresh();
           return true;
         }
-        await supabaseLoginWithGoogle(accountType);
-        // Redirect flow — caller should not expect immediate return after navigation.
-        return false;
+        if (supabaseReady) {
+          await supabaseLoginWithGoogle(accountType);
+          // Redirect flow — caller should not expect immediate return after navigation.
+          return false;
+        }
+        throw new Error('Authentication provider is not configured');
       } catch (err) {
         const message = err instanceof Error ? err.message : 'Google sign-in failed';
         setError(message);
         throw err;
       }
     },
-    [firebaseReady, refresh],
+    [firebaseReady, supabaseReady, refresh],
   );
 
   const loginWithFacebook = useCallback(async (accountType = 'investor') => {
     setError(null);
     try {
-      return await supabaseLoginWithFacebook(accountType);
+      if (firebaseReady) {
+        await firebaseLoginWithFacebook(accountType);
+        await refresh();
+        return true;
+      }
+      if (supabaseReady) {
+        return await supabaseLoginWithFacebook(accountType);
+      }
+      throw new Error('Authentication provider is not configured');
     } catch (err) {
       const message = err instanceof Error ? err.message : 'Facebook sign-in failed';
       setError(message);
       throw err;
     }
-  }, []);
+  }, [firebaseReady, supabaseReady, refresh]);
 
   const sendMagicLink = useCallback(async (email: string) => {
     setError(null);

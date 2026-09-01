@@ -1,11 +1,22 @@
+import { firebaseAdminHasCredentials } from './firebase-verifier.js';
+
+function readAuthFlag(value: string | undefined): boolean | undefined {
+  const normalized = value?.trim().toLowerCase();
+  if (normalized === 'true' || normalized === '1') return true;
+  if (normalized === 'false' || normalized === '0') return false;
+  return undefined;
+}
+
 /**
- * Feature flag: parallel Firebase Auth (Phase F2/F3).
- * Default OFF — Supabase remains production fallback.
+ * Firebase Auth (V0 parity): enabled when flagged on or when Firebase Admin is configured.
+ * Set USE_FIREBASE_AUTH=false to force Supabase-only verification.
  */
 export function isFirebaseAuthEnabled(): boolean {
-  const server = process.env.USE_FIREBASE_AUTH?.trim().toLowerCase();
-  const publicFlag = process.env.NEXT_PUBLIC_USE_FIREBASE_AUTH?.trim().toLowerCase();
-  return server === 'true' || server === '1' || publicFlag === 'true' || publicFlag === '1';
+  const server = readAuthFlag(process.env.USE_FIREBASE_AUTH);
+  if (server !== undefined) return server;
+  const publicFlag = readAuthFlag(process.env.NEXT_PUBLIC_USE_FIREBASE_AUTH);
+  if (publicFlag !== undefined) return publicFlag;
+  return firebaseAdminHasCredentials();
 }
 
 export function isFirebaseAuthEmulator(): boolean {

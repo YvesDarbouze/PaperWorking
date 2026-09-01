@@ -1,5 +1,15 @@
+function readAuthFlag(value: string | undefined): boolean | undefined {
+  const normalized = value?.trim().toLowerCase();
+  if (normalized === 'true' || normalized === '1') return true;
+  if (normalized === 'false' || normalized === '0') return false;
+  return undefined;
+}
+
+/** V0 parity: Firebase when configured unless explicitly disabled. */
 export function isFirebaseAuthEnabled(): boolean {
-  return process.env.NEXT_PUBLIC_USE_FIREBASE_AUTH === 'true';
+  const explicit = readAuthFlag(process.env.NEXT_PUBLIC_USE_FIREBASE_AUTH);
+  if (explicit !== undefined) return explicit;
+  return isFirebaseConfigured();
 }
 
 export function isFirebaseConfigured(): boolean {

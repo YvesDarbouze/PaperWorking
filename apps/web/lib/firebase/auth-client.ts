@@ -1,4 +1,4 @@
-import { apiFetch } from '@/lib/api/client';
+import { authFetch } from '@/lib/auth/auth-fetch';
 import {
   firebasePublicConfig,
   isFirebaseAuthEnabled,
@@ -29,25 +29,28 @@ async function getFirebaseAuth() {
   return authPromise;
 }
 
-/** Exchange Firebase ID token for Nest/Next httpOnly session cookie. */
+/** Exchange Firebase ID token for same-origin Next httpOnly session cookies. */
 export async function syncNestSession(
   idToken: string | null,
   accountType?: string,
 ): Promise<void> {
   if (idToken) {
-    const res = await apiFetch('/api/auth/session', {
+    const res = await authFetch('/api/auth/session', {
       method: 'POST',
       credentials: 'include',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ accessToken: idToken, idToken, accountType }),
     });
-    const data = (await res.json().catch(() => ({}))) as { error?: string };
+    const data = (await res.json().catch(() => ({}))) as {
+      error?: string;
+      status?: string;
+    };
     if (!res.ok) {
       throw new Error(data.error || `Session sync failed (${res.status})`);
     }
     return;
   }
-  await apiFetch('/api/auth/session', { method: 'DELETE', credentials: 'include' });
+  await authFetch('/api/auth/session', { method: 'DELETE', credentials: 'include' });
 }
 
 export async function syncSessionFromFirebase(accountType?: string) {
@@ -128,8 +131,17 @@ export async function firebaseResetPassword(email: string): Promise<void> {
   const authMod: FirebaseAuthModule = await import('firebase/auth');
   const auth = await getFirebaseAuth();
   await authMod.sendPasswordResetEmail(auth, email, {
-    url: `${window.location.origin}/login`,
+    url: `${window.location.origin}/auth/action?mode=resetPassword`,
   });
+}
+
+export async function firebaseConfirmPasswordReset(
+  oobCode: string,
+  newPassword: string,
+): Promise<void> {
+  const authMod: FirebaseAuthModule = await import('firebase/auth');
+  const auth = await getFirebaseAuth();
+  await authMod.confirmPasswordReset(auth, oobCode, newPassword);
 }
 
 export async function firebaseSendMagicLink(_email: string): Promise<void> {

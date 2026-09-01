@@ -21,3 +21,9 @@ export function isSupabaseIssuedToken(token: string): boolean {
   const iss = peekTokenIssuer(token);
   return iss?.includes('supabase.co/auth') ?? false;
 }
+
+/** Firebase Admin session cookies (Next adapter path) use this issuer. */
+export function isFirebaseSessionCookieToken(token: string): boolean {
+  const iss = peekTokenIssuer(token);
+  return iss === 'https://session.firebase.google.com';
+}

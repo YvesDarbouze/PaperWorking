@@ -6,7 +6,7 @@ import ProjectFolderCard from '@/components/projects/ProjectFolderCard';
 import REILKanBan from '@/components/projects/REILKanBan';
 import { PHASE_LABELS } from '@/lib/projects/phase-utils';
 import type { LegacyProjectPhase, ProjectSummary } from '@/lib/projects/types';
-import { apiFetch } from '@/lib/api/client';
+import { bffFetch } from '@/lib/api/bff-fetch';
 
 type ViewMode = 'kanban' | 'list';
 type PhaseFilter = '' | '1' | '2' | '3' | '4';
@@ -61,7 +61,7 @@ export default function ProjectsListPanel() {
       setLoading(true);
       setError(null);
       try {
-        const response = await apiFetch('/api/projects', { credentials: 'include', cache: 'no-store' });
+        const response = await bffFetch('/api/projects', { credentials: 'include', cache: 'no-store' });
         const body = (await response.json()) as {
           projects?: Array<Record<string, unknown>>;
           error?: string;

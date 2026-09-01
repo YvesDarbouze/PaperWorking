@@ -11,6 +11,8 @@ import {
   Post,
 } from '@nestjs/common';
 import { z } from 'zod';
+import { createPrismaInboxReadRepository } from '@paperworking/database';
+import { InboxReadService, createInboxReadService } from '@paperworking/services';
 import type { AuthUser } from '../auth/auth.types.js';
 import { CurrentUser } from '../auth/auth.types.js';
 import { AuthorizationService } from '../authz/authorization.service.js';
@@ -22,37 +24,11 @@ export class InboxService {
   constructor(
     private readonly prisma: PrismaService,
     private readonly authz: AuthorizationService,
+    private readonly inboxRead: InboxReadService,
   ) {}
 
   async list(user: AuthUser) {
-    const items = await this.prisma.inboxItem.findMany({
-      where: { recipientUid: user.uid },
-      orderBy: { createdAt: 'desc' },
-      take: 100,
-    });
-    const threads = items.map((item: (typeof items)[number]) => {
-      const meta =
-        item.metadata && typeof item.metadata === 'object'
-          ? (item.metadata as Record<string, unknown>)
-          : {};
-      return {
-        id: item.id,
-        subject: item.title,
-        title: item.title,
-        body: item.body,
-        preview: item.body?.slice(0, 120) ?? '',
-        from: item.senderUid ?? '',
-        senderUid: item.senderUid,
-        type: item.type,
-        unread: !item.read,
-        read: item.read,
-        archived: Boolean(meta.archived),
-        receivedAt: item.createdAt.toISOString(),
-        createdAt: item.createdAt.toISOString(),
-        href: item.href,
-      };
-    });
-    return { success: true, items, threads };
+    return this.inboxRead.listInbox(user);
   }
 
   async create(user: AuthUser, body: Record<string, unknown>) {
@@ -164,7 +140,17 @@ export class InboxController {
 
 @Module({
   controllers: [InboxController],
-  providers: [InboxService],
+  providers: [
+    InboxService,
+    {
+      provide: InboxReadService,
+      useFactory: (prisma: PrismaService) =>
+        createInboxReadService({
+          repository: createPrismaInboxReadRepository(prisma.client),
+        }),
+      inject: [PrismaService],
+    },
+  ],
   exports: [InboxService],
 })
 export class InboxModule {}

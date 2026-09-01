@@ -25,6 +25,12 @@ function makeStore(
   return { findUserByUid: async () => profile };
 }
 
+function fakeJwt(payload: Record<string, unknown>): string {
+  const header = Buffer.from(JSON.stringify({ alg: 'RS256' })).toString('base64url');
+  const body = Buffer.from(JSON.stringify(payload)).toString('base64url');
+  return `${header}.${body}.signature`;
+}
+
 function makeResolverDeps(
   store: SessionUserStore,
   identity: SessionResolverDeps['identity'],
@@ -139,8 +145,9 @@ describe('phase 9c — GET /api/auth/sessions authentication', () => {
 
   it('resolves Firebase token when Firebase flag is enabled', async () => {
     process.env.USE_FIREBASE_AUTH = 'true';
+    const firebaseToken = fakeJwt({ iss: 'https://securetoken.google.com/paperworking-97055' });
     const request = new Request('http://localhost/api/auth/sessions', {
-      headers: { Authorization: 'Bearer firebase-jwt' },
+      headers: { Authorization: `Bearer ${firebaseToken}` },
     });
 
     const user = await resolveAuthUserFromCredentials(

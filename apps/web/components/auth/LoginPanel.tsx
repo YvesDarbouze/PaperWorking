@@ -59,9 +59,13 @@ export default function LoginPanel() {
     clearError,
     authenticated,
     loading: authLoading,
+    firebaseReady,
     supabaseReady,
     logout,
   } = useAuth();
+
+  const socialAuthReady = firebaseReady || supabaseReady;
+  const magicLinkSupported = supabaseReady && !firebaseReady;
 
   const urlMode = searchParams.get('mode');
   const accountType = searchParams.get('accountType') ?? 'investor';
@@ -83,6 +87,12 @@ export default function LoginPanel() {
   useEffect(() => {
     clearError();
   }, [clearError]);
+
+  useEffect(() => {
+    if (!magicLinkSupported && loginMode === 'magic-link') {
+      setLoginMode('password');
+    }
+  }, [magicLinkSupported, loginMode]);
 
   // If the server bounced us here (missing session cookie), clear stale client auth
   // so we do not immediately navigate back to /dashboard and loop.
@@ -234,9 +244,9 @@ export default function LoginPanel() {
       setLocalError('You must accept the Terms of Service and Privacy Policy to register.');
       return;
     }
-    if (!supabaseReady) {
+    if (!socialAuthReady) {
       setLocalError(
-        'Supabase is not configured. Add NEXT_PUBLIC_SUPABASE_URL and NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY.',
+        'Authentication is not configured. Enable Firebase or add NEXT_PUBLIC_SUPABASE_URL and NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY.',
       );
       return;
     }
@@ -244,11 +254,12 @@ export default function LoginPanel() {
     setLoadingProvider(provider);
     try {
       if (provider === 'facebook') {
-        await loginWithFacebook(accountType);
+        const ok = await loginWithFacebook(accountType);
+        if (ok) redirectAfterAuth(isSignUp);
         return;
       }
-      // Google uses OAuth redirect; Nest session is synced on /auth/callback.
-      await loginWithGoogle(accountType);
+      const ok = await loginWithGoogle(accountType);
+      if (ok) redirectAfterAuth(isSignUp);
     } catch {
       /* error in AuthContext */
     } finally {
@@ -334,7 +345,8 @@ export default function LoginPanel() {
           <div className="h-px flex-1 bg-white/5" />
         </div>
 
-        {/* Password / Magic Link toggle */}
+        {/* Password / Magic Link toggle — magic link is Supabase-only during transition */}
+        {magicLinkSupported ? (
         <div
           className="mb-5 flex w-full rounded-xl border border-white/5 p-1"
           style={{ backgroundColor: 'rgba(13, 10, 11, 0.6)' }}
@@ -360,6 +372,7 @@ export default function LoginPanel() {
             </button>
           ))}
         </div>
+        ) : null}
 
         <div className="relative w-full" style={{ minHeight: 220 }}>
           {/* Sign in — password */}

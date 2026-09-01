@@ -8,7 +8,8 @@ import { forgotPasswordSchema } from '@/lib/auth/schemas';
 import { AUTH_ROUTES } from '@/lib/auth/routes';
 
 export default function ForgotPasswordPanel() {
-  const { resetPassword, supabaseReady, error: authError, clearError } = useAuth();
+  const { resetPassword, firebaseReady, supabaseReady, error: authError, clearError } = useAuth();
+  const authProviderReady = firebaseReady || supabaseReady;
   const [submitting, setSubmitting] = useState(false);
   const [success, setSuccess] = useState(false);
   const [submittedEmail, setSubmittedEmail] = useState('');
@@ -83,11 +84,11 @@ export default function ForgotPasswordPanel() {
         </div>
       ) : null}
 
-      {!supabaseReady ? (
+      {!authProviderReady ? (
         <div className="mb-4">
           <AuthNotice>
-            Supabase is not configured yet. Add NEXT_PUBLIC_SUPABASE_* env vars to send real reset
-            emails.
+            Authentication is not configured yet. Enable Firebase or add NEXT_PUBLIC_SUPABASE_* env
+            vars to send reset emails.
           </AuthNotice>
         </div>
       ) : null}
@@ -100,7 +101,7 @@ export default function ForgotPasswordPanel() {
           <input id="email" name="email" type="email" className="auth-input" autoComplete="email" />
           <AuthFieldError message={errors.email} />
         </div>
-        <button type="submit" className="auth-button-luminous" disabled={submitting || !supabaseReady}>
+        <button type="submit" className="auth-button-luminous" disabled={submitting || !authProviderReady}>
           {submitting ? 'Sending…' : 'Send reset link'}
         </button>
       </form>

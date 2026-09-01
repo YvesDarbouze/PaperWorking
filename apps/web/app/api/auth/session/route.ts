@@ -11,7 +11,10 @@ import {
 
 export const dynamic = 'force-dynamic';
 
-/** POST /api/auth/session — Firebase ID token → httpOnly session cookies (V0 parity). */
+/**
+ * POST /api/auth/session — Firebase ID token → httpOnly session cookies (V0 parity).
+ * Provisioning and cookie values are shared via SessionCommandService (P1).
+ */
 export async function POST(request: Request) {
   let body: SessionPostBody;
   try {

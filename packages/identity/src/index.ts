@@ -6,6 +6,7 @@ export {
 export {
   peekTokenIssuer,
   isFirebaseIssuedToken,
+  isFirebaseSessionCookieToken,
   isSupabaseIssuedToken,
 } from './jwt-routing.js';
 export {

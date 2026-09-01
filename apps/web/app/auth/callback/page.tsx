@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { resolveLoginRedirect } from '@/lib/auth/session-client';
-import { apiFetch } from '@/lib/api/client';
+import { authFetch } from '@/lib/auth/auth-fetch';
 import {
   getSupabaseBrowserClient,
   isSupabaseConfigured,
@@ -39,7 +39,7 @@ export default function AuthCallbackPage() {
         const pending = window.localStorage.getItem('pw_pending_account_type') || 'investor';
         await syncNestSession(data.session.access_token, pending);
 
-        const profileRes = await apiFetch('/api/auth/me', { credentials: 'include' });
+        const profileRes = await authFetch('/api/auth/me', { credentials: 'include' });
         const profile = profileRes.ok ? await profileRes.json() : null;
         const hasActiveSubscription = Boolean(profile?.hasActiveSubscription);
 

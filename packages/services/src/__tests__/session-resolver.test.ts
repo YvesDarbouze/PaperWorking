@@ -8,6 +8,12 @@ import {
   type SessionUserStore,
 } from '../session/index.js';
 
+function fakeJwt(payload: Record<string, unknown>): string {
+  const header = Buffer.from(JSON.stringify({ alg: 'RS256' })).toString('base64url');
+  const body = Buffer.from(JSON.stringify(payload)).toString('base64url');
+  return `${header}.${body}.signature`;
+}
+
 function makeStore(profile: PostgresUserProfile | null): SessionUserStore {
   return {
     findUserByUid: async () => profile,
@@ -141,7 +147,10 @@ describe('shared session resolver', () => {
     );
 
     process.env.USE_FIREBASE_AUTH = 'true';
-    const user = await resolveAuthUserFromAccessToken('firebase-jwt', deps);
+    const user = await resolveAuthUserFromAccessToken(
+      fakeJwt({ iss: 'https://securetoken.google.com/paperworking-97055' }),
+      deps,
+    );
     delete process.env.USE_FIREBASE_AUTH;
     expect(user?.uid).toBe('firebase-uid-1');
   });

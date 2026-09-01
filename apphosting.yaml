@@ -82,6 +82,16 @@ env:
       - BUILD
       - RUNTIME
 
+  # Nest Cloud Run base URL for browser apiFetch (no trailing slash).
+  # NEXT_PUBLIC_* is inlined at `next build` — MUST be available at BUILD time.
+  # Create Secret Manager secret NEXT_PUBLIC_API_URL with the Cloud Run HTTPS URL
+  # (e.g. output of scripts/deploy-api-cloud-run.sh) before App Hosting build.
+  - variable: NEXT_PUBLIC_API_URL
+    secret: NEXT_PUBLIC_API_URL
+    availability:
+      - BUILD
+      - RUNTIME
+
   # ─── Auth (V0 parity — Firebase Google/Facebook popup) ───────────────────
   - variable: USE_FIREBASE_AUTH
     value: "true"

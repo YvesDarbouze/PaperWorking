@@ -1,4 +1,5 @@
 import { apiFetch, apiJson } from '@/lib/api/client';
+import { bffFetch, bffJson } from '@/lib/api/bff-fetch';
 import type { InboxThread } from '@/lib/inbox/types';
 
 export type DashboardOverviewLive = {
@@ -86,9 +87,9 @@ export const apiProvider = {
     };
 
     const [metricsRes, profileRes, projectsRes] = await Promise.all([
-      apiFetch('/api/portfolio/metrics?period=monthly', { credentials: 'include', cache: 'no-store' }),
+      bffFetch('/api/portfolio/metrics?period=monthly', { credentials: 'include', cache: 'no-store' }),
       apiFetch('/api/marketplace/profile', { credentials: 'include', cache: 'no-store' }),
-      apiFetch('/api/projects', { credentials: 'include', cache: 'no-store' }),
+      bffFetch('/api/projects', { credentials: 'include', cache: 'no-store' }),
     ]);
 
     if (metricsRes.ok) {
@@ -158,7 +159,7 @@ export const apiProvider = {
   },
 
   async inboxThreads(): Promise<InboxThread[]> {
-    const res = await apiFetch('/api/inbox', { credentials: 'include' });
+    const res = await bffFetch('/api/inbox', { credentials: 'include' });
     if (!res.ok) throw new Error(`Inbox API ${res.status}`);
     const data = (await res.json()) as { threads?: Record<string, unknown>[] };
     if (!Array.isArray(data.threads)) return [];
@@ -180,7 +181,7 @@ export const apiProvider = {
     }>;
     seats: { used: number; limit: number; tierLabel: string };
   }> {
-    const res = await apiFetch('/api/team/members', { credentials: 'include' });
+    const res = await bffFetch('/api/team/members', { credentials: 'include' });
     if (!res.ok) throw new Error(`Team API ${res.status}`);
     const data = (await res.json()) as {
       members?: Array<Record<string, unknown>>;
@@ -275,11 +276,11 @@ export const apiProvider = {
   },
 
   async projects() {
-    const data = await apiJson<{ projects?: unknown[] }>('/api/projects');
+    const data = await bffJson<{ projects?: unknown[] }>('/api/projects');
     return Array.isArray(data.projects) ? data.projects : [];
   },
 
   async projectById(id: string) {
-    return apiJson(`/api/projects/${encodeURIComponent(id)}`);
+    return bffJson(`/api/projects/${encodeURIComponent(id)}`);
   },
 };

@@ -1,6 +1,7 @@
 /**
- * Central backend API client — always targets Nest (Cloud Run / local).
- * Never hardcode production hosts; use NEXT_PUBLIC_API_URL.
+ * Central backend API client for non-auth domain routes.
+ * Auth browser traffic uses same-origin `@/lib/auth/auth-fetch` (App Hosting BFF).
+ * Non-auth routes may still target Nest via NEXT_PUBLIC_API_URL until migrated.
  */
 export function getApiBaseUrl(): string {
   const raw = process.env.NEXT_PUBLIC_API_URL?.trim();

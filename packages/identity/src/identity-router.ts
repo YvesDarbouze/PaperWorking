@@ -1,6 +1,10 @@
 import { isFirebaseAuthEnabled } from './config.js';
 import { createFirebaseIdentityVerifier } from './firebase-verifier.js';
-import { isFirebaseIssuedToken, isSupabaseIssuedToken } from './jwt-routing.js';
+import {
+  isFirebaseIssuedToken,
+  isFirebaseSessionCookieToken,
+  isSupabaseIssuedToken,
+} from './jwt-routing.js';
 import { createSupabaseIdentityVerifier } from './supabase-verifier.js';
 import type { IdentityVerificationDeps, VerifiedIdentity } from './types.js';
 
@@ -23,9 +27,56 @@ function mapFirebaseError(error: unknown): IdentityVerificationError {
   return new IdentityVerificationError(message, 'invalid_token');
 }
 
+function mapSupabaseError(error: unknown): IdentityVerificationError {
+  const message = error instanceof Error ? error.message : String(error);
+  return new IdentityVerificationError(message, 'invalid_token');
+}
+
+async function verifyFirebaseSessionCookie(
+  token: string,
+  deps: IdentityVerificationDeps,
+): Promise<VerifiedIdentity> {
+  if (!deps.firebase?.hasCredentials()) {
+    throw new IdentityVerificationError('Firebase Auth not configured', 'provider_unavailable');
+  }
+  try {
+    return await deps.firebase.verifySessionCookie(token);
+  } catch (error) {
+    throw mapFirebaseError(error);
+  }
+}
+
+async function verifyFirebaseIdToken(
+  token: string,
+  deps: IdentityVerificationDeps,
+): Promise<VerifiedIdentity> {
+  if (!deps.firebase?.hasCredentials()) {
+    throw new IdentityVerificationError('Firebase Auth not configured', 'provider_unavailable');
+  }
+  try {
+    return await deps.firebase.verifyIdToken(token);
+  } catch (error) {
+    throw mapFirebaseError(error);
+  }
+}
+
+async function verifySupabaseAccessToken(
+  token: string,
+  deps: IdentityVerificationDeps,
+): Promise<VerifiedIdentity> {
+  if (!deps.supabase?.hasCredentials()) {
+    throw new IdentityVerificationError('Supabase Auth not configured', 'provider_unavailable');
+  }
+  try {
+    return await deps.supabase.verifyAccessToken(token);
+  } catch (error) {
+    throw mapSupabaseError(error);
+  }
+}
+
 /**
- * Verify an access/ID token using Firebase (when flagged) and/or Supabase.
- * Identity only — application authorization happens afterward via @paperworking/authz.
+ * Verify an access/ID token using issuer-based routing — no silent cross-IdP fallback
+ * when Firebase mode is enabled (hides Firebase misconfiguration).
  */
 export async function verifyAccessToken(
   accessToken: string | undefined | null,
@@ -38,47 +89,42 @@ export async function verifyAccessToken(
   const token = accessToken.trim();
   const firebaseEnabled = isFirebaseAuthEnabled();
   const firebaseIssued = isFirebaseIssuedToken(token);
+  const firebaseSession = isFirebaseSessionCookieToken(token);
   const supabaseIssued = isSupabaseIssuedToken(token);
 
-  if (firebaseEnabled && firebaseIssued) {
-    if (!deps.firebase?.hasCredentials()) {
-      throw new IdentityVerificationError(
-        'Firebase Auth not configured',
-        'provider_unavailable',
-      );
-    }
-    try {
-      return await deps.firebase.verifyIdToken(token);
-    } catch (error) {
-      throw mapFirebaseError(error);
-    }
+  if (firebaseSession) {
+    return verifyFirebaseSessionCookie(token, deps);
   }
 
-  if (supabaseIssued || !firebaseEnabled) {
-    if (deps.supabase?.hasCredentials()) {
-      try {
-        return await deps.supabase.verifyAccessToken(token);
-      } catch (error) {
-        const message = error instanceof Error ? error.message : String(error);
-        throw new IdentityVerificationError(message, 'invalid_token');
-      }
-    }
+  if (firebaseIssued) {
+    return verifyFirebaseIdToken(token, deps);
   }
 
-  if (firebaseEnabled && deps.firebase?.hasCredentials()) {
-    try {
-      return await deps.firebase.verifyIdToken(token);
-    } catch (error) {
-      throw mapFirebaseError(error);
-    }
+  if (supabaseIssued) {
+    return verifySupabaseAccessToken(token, deps);
   }
 
+  if (firebaseEnabled) {
+    throw new IdentityVerificationError(
+      'Unsupported identity token issuer',
+      'invalid_token',
+    );
+  }
+
+  // Legacy Supabase-only mode (Firebase flag off): preserve opaque-token fallback.
   if (deps.supabase?.hasCredentials()) {
     try {
       return await deps.supabase.verifyAccessToken(token);
     } catch (error) {
-      const message = error instanceof Error ? error.message : String(error);
-      throw new IdentityVerificationError(message, 'invalid_token');
+      throw mapSupabaseError(error);
+    }
+  }
+
+  if (deps.firebase?.hasCredentials()) {
+    try {
+      return await deps.firebase.verifyIdToken(token);
+    } catch (error) {
+      throw mapFirebaseError(error);
     }
   }
 

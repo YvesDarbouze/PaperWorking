@@ -6,7 +6,28 @@ import {
   type AuthzStore,
 } from '@paperworking/authz';
 import {
+  createIdentityProvisioningService,
+  createProjectsReadService,
+  createInboxReadService,
+  createPortfolioMetricsReadService,
+  createTeamMembersReadService,
+  createPrismaSessionUserStore,
+  resolveAuthUserFromCredentials,
+  sessionCommandService,
+  type ProjectsReadService,
+  type InboxReadService,
+  type PortfolioMetricsReadService,
+  type TeamMembersReadService,
+  type SessionResolverDeps,
+  type SessionUserStore,
+} from '@paperworking/services';
+import {
   createPrismaAuthzStore,
+  createPrismaIdentityUserRepository,
+  createPrismaProjectsReadRepository,
+  createPrismaInboxReadRepository,
+  createPrismaPortfolioMetricsReadRepository,
+  createPrismaTeamMembersReadRepository,
   getApiPrismaClient,
   type ApiPrismaClient,
 } from '@paperworking/database';
@@ -15,12 +36,6 @@ import {
   isFirebaseAuthEnabled,
   type IdentityVerificationDeps,
 } from '@paperworking/identity';
-import {
-  createPrismaSessionUserStore,
-  resolveAuthUserFromCredentials,
-  type SessionResolverDeps,
-  type SessionUserStore,
-} from '@paperworking/services';
 
 export type HandlerDeps = {
   health: HealthCheckDeps;
@@ -35,6 +50,10 @@ export type HandlerDeps = {
 };
 
 let cachedDeps: HandlerDeps | null = null;
+let cachedProjectsRead: ProjectsReadService | null = null;
+let cachedInboxRead: InboxReadService | null = null;
+let cachedPortfolioMetricsRead: PortfolioMetricsReadService | null = null;
+let cachedTeamMembersRead: TeamMembersReadService | null = null;
 
 function buildHealthDeps(): HealthCheckDeps {
   const pingPostgres = async () => {
@@ -57,7 +76,15 @@ function requirePrismaClient(): ApiPrismaClient {
   return getApiPrismaClient();
 }
 
-/** Shared dependencies for Next.js API route adapters. */
+/**
+ * Shared dependencies for Next.js API route adapters.
+ *
+ * Boundary rule (P2.9+): apps/web is a transport adapter — it must NOT depend on
+ * Nest business logic. Temporary imports from `@paperworking/api` are limited to
+ * framework-neutral HTTP handlers for already-migrated routes (auth, health).
+ * Phase B+ migrations MUST wire Next routes → packages/services → authz → database,
+ * not → Nest controllers/services or internal HTTP to Cloud Run.
+ */
 export function buildHandlerDeps(): HandlerDeps {
   if (!cachedDeps) {
     const prisma = requirePrismaClient();
@@ -83,6 +110,57 @@ export function buildHandlerDeps(): HandlerDeps {
 /** Reset cached deps (tests only). */
 export function resetHandlerDepsForTests(): void {
   cachedDeps = null;
+  cachedProjectsRead = null;
+  cachedInboxRead = null;
+  cachedPortfolioMetricsRead = null;
+  cachedTeamMembersRead = null;
+}
+
+/** Shared project read service for Next GET /api/projects* adapters (Phase B1). */
+export function buildProjectsReadService(deps: HandlerDeps = buildHandlerDeps()): ProjectsReadService {
+  if (!cachedProjectsRead) {
+    cachedProjectsRead = createProjectsReadService({
+      authz: deps.authorization,
+      repository: createPrismaProjectsReadRepository(deps.prisma),
+    });
+  }
+  return cachedProjectsRead;
+}
+
+/** Shared inbox read service for Next GET /api/inbox adapter (Phase B2). */
+export function buildInboxReadService(deps: HandlerDeps = buildHandlerDeps()): InboxReadService {
+  if (!cachedInboxRead) {
+    cachedInboxRead = createInboxReadService({
+      repository: createPrismaInboxReadRepository(deps.prisma),
+    });
+  }
+  return cachedInboxRead;
+}
+
+/** Shared portfolio metrics read service for Next GET /api/portfolio/metrics (Phase B3). */
+export function buildPortfolioMetricsReadService(
+  deps: HandlerDeps = buildHandlerDeps(),
+): PortfolioMetricsReadService {
+  if (!cachedPortfolioMetricsRead) {
+    cachedPortfolioMetricsRead = createPortfolioMetricsReadService({
+      authz: deps.authorization,
+      repository: createPrismaPortfolioMetricsReadRepository(deps.prisma),
+    });
+  }
+  return cachedPortfolioMetricsRead;
+}
+
+/** Shared team members read service for Next GET /api/team/members (Phase B4). */
+export function buildTeamMembersReadService(
+  deps: HandlerDeps = buildHandlerDeps(),
+): TeamMembersReadService {
+  if (!cachedTeamMembersRead) {
+    cachedTeamMembersRead = createTeamMembersReadService({
+      authz: deps.authorization,
+      repository: createPrismaTeamMembersReadRepository(deps.prisma),
+    });
+  }
+  return cachedTeamMembersRead;
 }
 
 /** Prisma-backed deps for GET /api/auth/me handler. */
@@ -101,11 +179,43 @@ export function buildAuthMeDeps(deps: HandlerDeps = buildHandlerDeps()): AuthMeD
   };
 }
 
+/** Shared auth command services for Nest/Next session convergence (P1). */
+export function buildSharedAuthServices(deps: HandlerDeps = buildHandlerDeps()) {
+  const { prisma, identity, sessionStore } = deps;
+  const repository = createPrismaIdentityUserRepository(prisma);
+  const identityProvisioning = createIdentityProvisioningService({
+    repository,
+    sessionStore,
+  });
+  const subscriptionLookup = {
+    findForUserId: async (userId: string) => {
+      const user = await prisma.user.findFirst({
+        where: { OR: [{ id: userId }, { legacyFirebaseUid: userId }] },
+      });
+      const subscription = user
+        ? await prisma.subscription.findFirst({
+            where: { userId: user.id },
+            orderBy: { updatedAt: 'desc' },
+          })
+        : null;
+      return subscription ? { plan: subscription.plan, status: subscription.status } : null;
+    },
+  };
+
+  return {
+    identity,
+    identityProvisioning,
+    sessionCommand: sessionCommandService,
+    subscriptionLookup,
+  };
+}
+
 /** Firebase/Supabase session exchange for POST/DELETE /api/auth/session. */
 export function buildSessionPostDeps(deps: HandlerDeps = buildHandlerDeps()): SessionPostDeps {
   const { prisma, identity } = deps;
   const firebase = identity.firebase;
   const supabase = identity.supabase;
+  const shared = buildSharedAuthServices(deps);
 
   return {
     hasCredentials: () =>
@@ -114,6 +224,19 @@ export function buildSessionPostDeps(deps: HandlerDeps = buildHandlerDeps()): Se
           supabase?.hasCredentials() ||
           process.env.FIREBASE_CLIENT_EMAIL,
       ),
+    establishSharedSession: async ({ idToken, sessionId }) =>
+      shared.sessionCommand.establishSession({
+        accessToken: idToken,
+        identity: shared.identity,
+        identityProvisioning: shared.identityProvisioning,
+        subscriptionLookup: shared.subscriptionLookup,
+        policy: 'next',
+        nodeEnv: process.env.NODE_ENV,
+        sessionValueTransform: firebase?.hasCredentials()
+          ? (token, expiresInMs) => firebase.createSessionCookie(token, expiresInMs)
+          : undefined,
+        sessionId,
+      }),
     verifyIdToken: async (token) => {
       if (isFirebaseAuthEnabled() && firebase?.hasCredentials()) {
         const verified = await firebase.verifyIdToken(token);

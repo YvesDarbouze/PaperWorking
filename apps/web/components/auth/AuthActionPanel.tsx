@@ -4,15 +4,20 @@ import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
 import { useMemo, useState } from 'react';
 import AuthCard, { AuthFieldError, AuthNotice } from '@/components/auth/AuthCard';
+import { useAuth } from '@/context/AuthContext';
+import { firebaseConfirmPasswordReset } from '@/lib/firebase/auth-client';
 import { passwordResetSchema } from '@/lib/auth/schemas';
 import { AUTH_ROUTES, isAuthActionMode } from '@/lib/auth/routes';
 
 export default function AuthActionPanel() {
   const searchParams = useSearchParams();
+  const { firebaseReady } = useAuth();
   const mode = searchParams.get('mode');
   const oobCode = searchParams.get('oobCode');
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [success, setSuccess] = useState<string | null>(null);
+  const [submitting, setSubmitting] = useState(false);
+  const [submitError, setSubmitError] = useState<string | null>(null);
 
   const invalidLink = !oobCode || !isAuthActionMode(mode);
   const title = useMemo(() => {
@@ -21,8 +26,9 @@ export default function AuthActionPanel() {
     return 'Verify your email';
   }, [invalidLink, mode]);
 
-  function handleResetSubmit(event: React.FormEvent<HTMLFormElement>) {
+  async function handleResetSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
+    setSubmitError(null);
     const formData = new FormData(event.currentTarget);
     const parsed = passwordResetSchema.safeParse({
       password: String(formData.get('password') ?? ''),
@@ -39,7 +45,20 @@ export default function AuthActionPanel() {
       return;
     }
 
-    setSuccess('Password reset form validated. Firebase action handler connects at cutover.');
+    if (!firebaseReady || !oobCode) {
+      setSubmitError('Password reset requires Firebase Auth to be configured.');
+      return;
+    }
+
+    setSubmitting(true);
+    try {
+      await firebaseConfirmPasswordReset(oobCode, parsed.data.password);
+      setSuccess('Your password has been updated. You can sign in with your new password.');
+    } catch (err) {
+      setSubmitError(err instanceof Error ? err.message : 'Password reset failed.');
+    } finally {
+      setSubmitting(false);
+    }
   }
 
   if (invalidLink) {
@@ -78,8 +97,8 @@ export default function AuthActionPanel() {
         <div className="text-center">
           <h1 className="mb-2 text-2xl font-semibold">{title}</h1>
           <AuthNotice>
-            Email verification for code <span className="font-mono text-[#fdfffc]">{oobCode.slice(0, 8)}…</span> will
-            Firebase verification runs when action codes are wired at cutover.
+            Email verification is not yet available in Firebase mode. Return to sign in or contact
+            support if you need help accessing your account.
           </AuthNotice>
           <Link href={AUTH_ROUTES.login} className="auth-button-primary mt-6 inline-flex items-center justify-center no-underline">
             Return to sign in
@@ -97,6 +116,11 @@ export default function AuthActionPanel() {
       </div>
 
       <form className="space-y-4" onSubmit={handleResetSubmit}>
+        {submitError ? (
+          <div className="rounded-xl border border-red-800/30 bg-red-950/40 px-4 py-3 text-xs text-red-300">
+            {submitError}
+          </div>
+        ) : null}
         <div>
           <label className="auth-label" htmlFor="password">New password</label>
           <input id="password" name="password" type="password" className="auth-input" autoComplete="new-password" />
@@ -107,7 +131,9 @@ export default function AuthActionPanel() {
           <input id="confirmPassword" name="confirmPassword" type="password" className="auth-input" autoComplete="new-password" />
           <AuthFieldError message={errors.confirmPassword} />
         </div>
-        <button type="submit" className="auth-button-primary">Save new password</button>
+        <button type="submit" className="auth-button-primary" disabled={submitting}>
+          {submitting ? 'Saving…' : 'Save new password'}
+        </button>
       </form>
     </AuthCard>
   );

@@ -1,5 +1,15 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
+import {
+  BadRequestException,
+  ForbiddenException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import type { AuthUser } from '../auth/auth.types.js';
+import { AuthzForbiddenError, AuthzNotFoundError } from '@paperworking/authz';
+import {
+  ProjectsReadValidationError,
+  type ProjectsReadService,
+} from '@paperworking/services';
 import { AuthorizationService } from '../authz/authorization.service.js';
 import {
   ProjectsRepository,
@@ -7,21 +17,33 @@ import {
   type SubcollectionName,
 } from './projects.repository.js';
 
+function mapProjectsReadError(error: unknown): never {
+  if (error instanceof ProjectsReadValidationError) {
+    throw new BadRequestException({ error: error.message });
+  }
+  if (error instanceof AuthzForbiddenError) {
+    throw new ForbiddenException(error.payload);
+  }
+  if (error instanceof AuthzNotFoundError) {
+    throw new NotFoundException(error.payload);
+  }
+  throw error;
+}
+
 @Injectable()
 export class ProjectsService {
   constructor(
     private readonly repo: ProjectsRepository,
     private readonly authz: AuthorizationService,
+    private readonly projectsRead: ProjectsReadService,
   ) {}
 
   async list(user: AuthUser, q?: string) {
-    this.authz.assertPermission(user, 'projects.read');
-    const orgIds = await this.authz.resolveUserOrgIds(user.uid);
-    const projects = await this.repo.list(user.uid, q, orgIds);
-    return {
-      success: true,
-      projects: projects.map((p: (typeof projects)[number]) => this.serializeProject(p)),
-    };
+    try {
+      return await this.projectsRead.listProjects(user, q);
+    } catch (error) {
+      mapProjectsReadError(error);
+    }
   }
 
   async create(
@@ -50,8 +72,11 @@ export class ProjectsService {
   }
 
   async getById(user: AuthUser, id: string) {
-    const project = await this.authz.assertProjectAccess(user, id, 'projects.read');
-    return { success: true, project: this.serializeProject(project) };
+    try {
+      return await this.projectsRead.getProjectById(user, id);
+    } catch (error) {
+      mapProjectsReadError(error);
+    }
   }
 
   async patch(user: AuthUser, id: string, body: Record<string, unknown>) {

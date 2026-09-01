@@ -2,10 +2,11 @@
 
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useState } from 'react';
 import Logo from '@/components/marketing/Logo';
 import UserAccountMenu from '@/components/shared/UserAccountMenu';
-import { destroySession, fetchSessionProfile } from '@/lib/auth/session-client';
+import { useAuth } from '@/context/AuthContext';
+import { fetchSessionProfile } from '@/lib/auth/session-client';
 
 const NAV_LINKS = [
   { label: 'How it works', href: '/#how-it-works' },
@@ -16,6 +17,7 @@ const NAV_LINKS = [
 export default function MarketingHeader() {
   const pathname = usePathname();
   const router = useRouter();
+  const { logout } = useAuth();
   const [mobileOpen, setMobileOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const [authenticated, setAuthenticated] = useState(false);
@@ -45,7 +47,7 @@ export default function MarketingHeader() {
   }, [pathname]);
 
   async function handleSignOut() {
-    await destroySession();
+    await logout();
     setAuthenticated(false);
     router.push('/');
     router.refresh();

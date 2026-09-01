@@ -3,6 +3,7 @@
 import { FormEvent, useEffect, useMemo, useState } from 'react';
 import { loadProfilePreview } from '@/lib/data';
 import { apiFetch } from '@/lib/api/client';
+import { authFetch } from '@/lib/auth/auth-fetch';
 
 const inputClass =
   'w-full rounded-lg border border-white/10 bg-[#0d0a0b] px-4 h-10 text-sm text-white outline-none transition placeholder:text-white/30 focus:border-emerald-500/40 focus:ring-1 focus:ring-emerald-500/30';
@@ -55,7 +56,7 @@ export default function ProfileSettingsPanel() {
       try {
         const [preview, sessionsRes] = await Promise.all([
           loadProfilePreview(),
-          apiFetch('/api/auth/sessions', { credentials: 'include' }).catch(() => null),
+          authFetch('/api/auth/sessions', { credentials: 'include' }).catch(() => null),
         ]);
         if (cancelled) return;
 

@@ -11,6 +11,15 @@ import {
   Req,
 } from '@nestjs/common';
 import type { Request } from 'express';
+import { AuthorizationService as CoreAuthorizationService } from '@paperworking/authz';
+import {
+  createPrismaAuthzStore,
+  createPrismaTeamMembersReadRepository,
+} from '@paperworking/database';
+import {
+  TeamMembersReadService,
+  createTeamMembersReadService,
+} from '@paperworking/services';
 import type { AuthUser } from '../auth/auth.types.js';
 import { CurrentUser } from '../auth/auth.types.js';
 import { AuthorizationService } from '../authz/authorization.service.js';
@@ -26,6 +35,7 @@ export class TeamService {
   constructor(
     private readonly prisma: PrismaService,
     private readonly authz: AuthorizationService,
+    private readonly teamMembersRead: TeamMembersReadService,
   ) {}
 
   /**
@@ -37,14 +47,7 @@ export class TeamService {
   }
 
   async listMembers(user: AuthUser, organizationId?: string) {
-    this.authz.assertPermission(user, 'team.read');
-    const orgId = await this.resolveOrgId(user, organizationId);
-    if (!orgId) return { success: true, members: [], organizationId: null };
-    const members = await this.prisma.organizationMember.findMany({
-      where: { organizationId: orgId },
-      orderBy: { createdAt: 'asc' },
-    });
-    return { success: true, members, organizationId: orgId };
+    return this.teamMembersRead.listTeamMembers(user, { organizationId });
   }
 
   private normalizeIncomingRole(role: unknown): string {
@@ -253,7 +256,18 @@ export class ProjectMembersController {
     OrganizationMembersController,
     ProjectMembersController,
   ],
-  providers: [TeamService],
+  providers: [
+    TeamService,
+    {
+      provide: TeamMembersReadService,
+      useFactory: (prisma: PrismaService) =>
+        createTeamMembersReadService({
+          authz: new CoreAuthorizationService(createPrismaAuthzStore(prisma.client)),
+          repository: createPrismaTeamMembersReadRepository(prisma.client),
+        }),
+      inject: [PrismaService],
+    },
+  ],
   exports: [TeamService],
 })
 export class TeamModule {}

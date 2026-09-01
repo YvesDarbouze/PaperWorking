@@ -1,5 +1,5 @@
 import type { Session, SupabaseClient, User } from '@supabase/supabase-js';
-import { apiFetch } from '@/lib/api/client';
+import { authFetch } from '@/lib/auth/auth-fetch';
 
 let browserClient: SupabaseClient | null = null;
 let browserClientPromise: Promise<SupabaseClient> | null = null;
@@ -76,28 +76,31 @@ export function requireSupabaseConfigured(): void {
   }
 }
 
-/** Exchange Supabase access token for Nest httpOnly session cookie. */
+/** Exchange Supabase access token for same-origin Next httpOnly session cookies. */
 export async function syncNestSession(
   accessToken: string | null,
   accountType?: string,
 ): Promise<void> {
   try {
     if (accessToken) {
-      const res = await apiFetch('/api/auth/session', {
+      const res = await authFetch('/api/auth/session', {
         method: 'POST',
         credentials: 'include',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ accessToken, accountType }),
+        body: JSON.stringify({ accessToken, idToken: accessToken, accountType }),
       });
-      const data = (await res.json().catch(() => ({}))) as { error?: string };
+      const data = (await res.json().catch(() => ({}))) as {
+        error?: string;
+        status?: string;
+      };
       if (!res.ok) {
         throw new Error(data.error || `Session sync failed (${res.status})`);
       }
       return;
     }
-    await apiFetch('/api/auth/session', { method: 'DELETE', credentials: 'include' });
+    await authFetch('/api/auth/session', { method: 'DELETE', credentials: 'include' });
   } catch (err) {
-    // Logout/session-clear is best-effort when Nest is offline.
+    // Logout/session-clear is best-effort when the auth BFF is offline.
     if (!accessToken) return;
     throw err;
   }

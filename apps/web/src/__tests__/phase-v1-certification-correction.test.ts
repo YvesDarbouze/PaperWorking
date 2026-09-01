@@ -84,14 +84,22 @@ describe('V1 certification correction — broadcast token secret domain', () => 
   });
 
   it('production fails closed when BROADCAST_TOKEN_SECRET is absent', () => {
-    const prevNode = process.env.NODE_ENV;
     const prevSecret = process.env.BROADCAST_TOKEN_SECRET;
-    process.env.NODE_ENV = 'production';
+    const prevNodeEnv = process.env.NODE_ENV;
+    Object.defineProperty(process.env, 'NODE_ENV', {
+      value: 'production',
+      configurable: true,
+      writable: true,
+    });
     delete process.env.BROADCAST_TOKEN_SECRET;
     try {
       expect(() => requireBroadcastTokenSecret()).toThrow(/BROADCAST_TOKEN_SECRET is required/);
     } finally {
-      process.env.NODE_ENV = prevNode;
+      Object.defineProperty(process.env, 'NODE_ENV', {
+        value: prevNodeEnv,
+        configurable: true,
+        writable: true,
+      });
       if (prevSecret === undefined) delete process.env.BROADCAST_TOKEN_SECRET;
       else process.env.BROADCAST_TOKEN_SECRET = prevSecret;
     }

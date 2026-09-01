@@ -37,7 +37,9 @@ export function isBffApiPath(path: string): boolean {
   const normalized = bffUrl(path);
   if (normalized === '/api/projects') return true;
   if (normalized === '/api/inbox') return true;
+  if (/^\/api\/inbox\/[^/]+$/.test(normalized)) return true;
   if (normalized === '/api/portfolio/metrics') return true;
   if (normalized === '/api/team/members') return true;
+  if (normalized === '/api/marketplace/profile') return true;
   return /^\/api\/projects\/[^/]+$/.test(normalized);
 }

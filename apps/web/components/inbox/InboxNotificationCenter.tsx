@@ -7,7 +7,7 @@ import InboxItemCard from '@/components/inbox/InboxItemCard';
 import InboxTabs from '@/components/inbox/InboxTabs';
 import { INBOX_TABS, type InboxTabId, type InboxThread } from '@/lib/inbox/types';
 import { loadInboxThreads } from '@/lib/data';
-import { apiFetch } from '@/lib/api/client';
+import { bffFetch } from '@/lib/api/bff-fetch';
 
 function emptyCounts(): Record<InboxTabId, number> {
   return {
@@ -186,7 +186,7 @@ export default function InboxNotificationCenter() {
 
   function markRead(id: string) {
     setReadOverrides((prev) => ({ ...prev, [id]: true }));
-    void apiFetch(`/api/inbox/${id}`, {
+    void bffFetch(`/api/inbox/${id}`, {
       method: 'PATCH',
       credentials: 'include',
       headers: { 'Content-Type': 'application/json' },
@@ -196,7 +196,7 @@ export default function InboxNotificationCenter() {
 
   function markUnread(id: string) {
     setReadOverrides((prev) => ({ ...prev, [id]: false }));
-    void apiFetch(`/api/inbox/${id}`, {
+    void bffFetch(`/api/inbox/${id}`, {
       method: 'PATCH',
       credentials: 'include',
       headers: { 'Content-Type': 'application/json' },
@@ -209,7 +209,7 @@ export default function InboxNotificationCenter() {
     for (const item of items) {
       if (!archivedIds.has(item.id)) {
         next[item.id] = true;
-        void apiFetch(`/api/inbox/${item.id}`, {
+        void bffFetch(`/api/inbox/${item.id}`, {
           method: 'PATCH',
           credentials: 'include',
           headers: { 'Content-Type': 'application/json' },
@@ -223,7 +223,7 @@ export default function InboxNotificationCenter() {
   function archiveItem(id: string) {
     setArchivedIds((prev) => new Set(prev).add(id));
     if (selectedId === id) setSelectedId(null);
-    void apiFetch(`/api/inbox/${id}`, {
+    void bffFetch(`/api/inbox/${id}`, {
       method: 'PATCH',
       credentials: 'include',
       headers: { 'Content-Type': 'application/json' },
@@ -234,7 +234,7 @@ export default function InboxNotificationCenter() {
   function deleteItem(id: string) {
     setItems((prev) => prev.filter((i) => i.id !== id));
     if (selectedId === id) setSelectedId(null);
-    void apiFetch(`/api/inbox/${id}`, {
+    void bffFetch(`/api/inbox/${id}`, {
       method: 'DELETE',
       credentials: 'include',
     }).catch(() => undefined);

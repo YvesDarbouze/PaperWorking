@@ -58,9 +58,9 @@ describe('phase B2 — bffFetch transport for inbox GET', () => {
     expect(bffUrl('/api/inbox')).toBe('/api/inbox');
   });
 
-  it('isBffApiPath matches GET /api/inbox only (not PATCH/DELETE by id)', () => {
+  it('isBffApiPath matches GET /api/inbox only (item mutations added in B6)', () => {
     expect(isBffApiPath('/api/inbox')).toBe(true);
-    expect(isBffApiPath('/api/inbox/item-1')).toBe(false);
+    expect(isBffApiPath('/api/inbox/item-1')).toBe(true);
   });
 
   it('bffFetch for inbox does not use NEXT_PUBLIC_API_URL', async () => {

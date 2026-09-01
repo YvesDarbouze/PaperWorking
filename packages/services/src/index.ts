@@ -1,7 +1,7 @@
 /**
  * Framework-independent application services extracted from Nest modules.
  */
-export const SERVICES_PACKAGE_STATUS = 'phase-b4-team-members-read' as const;
+export const SERVICES_PACKAGE_STATUS = 'phase-b6-inbox-mutations' as const;
 
 export {
   SESSION_COOKIE,
@@ -62,9 +62,17 @@ export {
 export {
   InboxReadService,
   createInboxReadService,
+  InboxCommandService,
+  createInboxCommandService,
+  InboxItemNotFoundError,
   serializeInboxThread,
   type InboxReadRepository,
   type InboxReadServiceDeps,
+  type InboxCommandRepository,
+  type InboxCommandServiceDeps,
+  type InboxPatchInput,
+  type InboxUpdateResult,
+  type InboxDeleteResult,
   type InboxItemRecord,
   type InboxThreadRecord,
   type InboxListResult,
@@ -92,3 +100,14 @@ export {
   type TeamMembersListResult,
   type OrganizationMemberRecord,
 } from './team/index.js';
+
+export {
+  MarketplaceProfileReadService,
+  createMarketplaceProfileReadService,
+  serializeMarketplaceProfile,
+  type MarketplaceProfileReadRepository,
+  type MarketplaceProfileReadServiceDeps,
+  type MarketplaceProfileUserRow,
+  type MarketplaceProfileRecord,
+  type MarketplaceProfileResult,
+} from './marketplace/index.js';

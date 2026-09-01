@@ -1,10 +1,16 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  MarketplaceProfileReadService,
+} from '@paperworking/services';
 import type { AuthUser } from '../auth/auth.types.js';
 import { PrismaService } from '../prisma/prisma.service.js';
 
 @Injectable()
 export class MarketplaceService {
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(
+    private readonly prisma: PrismaService,
+    private readonly marketplaceProfileRead: MarketplaceProfileReadService,
+  ) {}
 
   async listings() {
     const listings = await this.prisma.marketplaceListing.findMany({
@@ -15,30 +21,7 @@ export class MarketplaceService {
   }
 
   async profile(user: AuthUser) {
-    const row = await this.prisma.user.findFirst({
-      where: { OR: [{ id: user.uid }, { legacyFirebaseUid: user.uid }] },
-    });
-    const following = await this.prisma.investorFollower.count({
-      where: { followerUid: row?.id || user.uid },
-    });
-    const followers = await this.prisma.investorFollower.count({
-      where: { targetUid: row?.id || user.uid },
-    });
-    return {
-      success: true,
-      profile: {
-        id: row?.id || user.uid,
-        uid: row?.id || user.uid,
-        email: row?.email || user.email,
-        displayName: row?.displayName || row?.name,
-        accountType: row?.accountType || user.accountType,
-        companyName: row?.companyName,
-        avatarUrl: row?.avatarUrl,
-        following,
-        followers,
-        followerCount: followers,
-      },
-    };
+    return this.marketplaceProfileRead.getMarketplaceProfile(user);
   }
 
   async investors(q?: string) {

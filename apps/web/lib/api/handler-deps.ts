@@ -9,15 +9,19 @@ import {
   createIdentityProvisioningService,
   createProjectsReadService,
   createInboxReadService,
+  createInboxCommandService,
   createPortfolioMetricsReadService,
   createTeamMembersReadService,
+  createMarketplaceProfileReadService,
   createPrismaSessionUserStore,
   resolveAuthUserFromCredentials,
   sessionCommandService,
   type ProjectsReadService,
   type InboxReadService,
+  type InboxCommandService,
   type PortfolioMetricsReadService,
   type TeamMembersReadService,
+  type MarketplaceProfileReadService,
   type SessionResolverDeps,
   type SessionUserStore,
 } from '@paperworking/services';
@@ -26,8 +30,10 @@ import {
   createPrismaIdentityUserRepository,
   createPrismaProjectsReadRepository,
   createPrismaInboxReadRepository,
+  createPrismaInboxCommandRepository,
   createPrismaPortfolioMetricsReadRepository,
   createPrismaTeamMembersReadRepository,
+  createPrismaMarketplaceProfileReadRepository,
   getApiPrismaClient,
   type ApiPrismaClient,
 } from '@paperworking/database';
@@ -52,8 +58,10 @@ export type HandlerDeps = {
 let cachedDeps: HandlerDeps | null = null;
 let cachedProjectsRead: ProjectsReadService | null = null;
 let cachedInboxRead: InboxReadService | null = null;
+let cachedInboxCommand: InboxCommandService | null = null;
 let cachedPortfolioMetricsRead: PortfolioMetricsReadService | null = null;
 let cachedTeamMembersRead: TeamMembersReadService | null = null;
+let cachedMarketplaceProfileRead: MarketplaceProfileReadService | null = null;
 
 function buildHealthDeps(): HealthCheckDeps {
   const pingPostgres = async () => {
@@ -112,8 +120,10 @@ export function resetHandlerDepsForTests(): void {
   cachedDeps = null;
   cachedProjectsRead = null;
   cachedInboxRead = null;
+  cachedInboxCommand = null;
   cachedPortfolioMetricsRead = null;
   cachedTeamMembersRead = null;
+  cachedMarketplaceProfileRead = null;
 }
 
 /** Shared project read service for Next GET /api/projects* adapters (Phase B1). */
@@ -135,6 +145,18 @@ export function buildInboxReadService(deps: HandlerDeps = buildHandlerDeps()): I
     });
   }
   return cachedInboxRead;
+}
+
+/** Shared inbox command service for Next PATCH/DELETE /api/inbox/:id (Phase B6). */
+export function buildInboxCommandService(
+  deps: HandlerDeps = buildHandlerDeps(),
+): InboxCommandService {
+  if (!cachedInboxCommand) {
+    cachedInboxCommand = createInboxCommandService({
+      repository: createPrismaInboxCommandRepository(deps.prisma),
+    });
+  }
+  return cachedInboxCommand;
 }
 
 /** Shared portfolio metrics read service for Next GET /api/portfolio/metrics (Phase B3). */
@@ -161,6 +183,18 @@ export function buildTeamMembersReadService(
     });
   }
   return cachedTeamMembersRead;
+}
+
+/** Shared marketplace profile read service for Next GET /api/marketplace/profile (Phase B5). */
+export function buildMarketplaceProfileReadService(
+  deps: HandlerDeps = buildHandlerDeps(),
+): MarketplaceProfileReadService {
+  if (!cachedMarketplaceProfileRead) {
+    cachedMarketplaceProfileRead = createMarketplaceProfileReadService({
+      repository: createPrismaMarketplaceProfileReadRepository(deps.prisma),
+    });
+  }
+  return cachedMarketplaceProfileRead;
 }
 
 /** Prisma-backed deps for GET /api/auth/me handler. */

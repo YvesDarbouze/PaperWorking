@@ -82,12 +82,11 @@ env:
       - BUILD
       - RUNTIME
 
-  # Nest Cloud Run base URL for browser apiFetch (no trailing slash).
+  # Nest Cloud Run base URL for browser apiFetch on unmigrated routes (billing, inbox mutations, etc.).
   # NEXT_PUBLIC_* is inlined at `next build` — MUST be available at BUILD time.
-  # Create Secret Manager secret NEXT_PUBLIC_API_URL with the Cloud Run HTTPS URL
-  # (e.g. output of scripts/deploy-api-cloud-run.sh) before App Hosting build.
+  # Plain value (not Secret Manager): this URL is public in the client bundle anyway.
   - variable: NEXT_PUBLIC_API_URL
-    secret: NEXT_PUBLIC_API_URL
+    value: "https://paperworking-api-779101817926.us-east4.run.app"
     availability:
       - BUILD
       - RUNTIME

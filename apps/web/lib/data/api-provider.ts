@@ -88,7 +88,7 @@ export const apiProvider = {
 
     const [metricsRes, profileRes, projectsRes] = await Promise.all([
       bffFetch('/api/portfolio/metrics?period=monthly', { credentials: 'include', cache: 'no-store' }),
-      apiFetch('/api/marketplace/profile', { credentials: 'include', cache: 'no-store' }),
+      bffFetch('/api/marketplace/profile', { credentials: 'include', cache: 'no-store' }),
       bffFetch('/api/projects', { credentials: 'include', cache: 'no-store' }),
     ]);
 

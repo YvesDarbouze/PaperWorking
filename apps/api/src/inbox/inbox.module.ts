@@ -11,8 +11,17 @@ import {
   Post,
 } from '@nestjs/common';
 import { z } from 'zod';
-import { createPrismaInboxReadRepository } from '@paperworking/database';
-import { InboxReadService, createInboxReadService } from '@paperworking/services';
+import {
+  createPrismaInboxReadRepository,
+  createPrismaInboxCommandRepository,
+} from '@paperworking/database';
+import {
+  InboxReadService,
+  InboxCommandService,
+  InboxItemNotFoundError,
+  createInboxReadService,
+  createInboxCommandService,
+} from '@paperworking/services';
 import type { AuthUser } from '../auth/auth.types.js';
 import { CurrentUser } from '../auth/auth.types.js';
 import { AuthorizationService } from '../authz/authorization.service.js';
@@ -25,6 +34,7 @@ export class InboxService {
     private readonly prisma: PrismaService,
     private readonly authz: AuthorizationService,
     private readonly inboxRead: InboxReadService,
+    private readonly inboxCommand: InboxCommandService,
   ) {}
 
   async list(user: AuthUser) {
@@ -56,44 +66,31 @@ export class InboxService {
   }
 
   async patch(user: AuthUser, id: string, body: Record<string, unknown>) {
-    const existing = await this.prisma.inboxItem.findFirst({
-      where: { id, recipientUid: user.uid },
-    });
-    if (!existing) throw new NotFoundException({ error: 'Inbox item not found' });
-
-    const existingMeta =
-      existing.metadata && typeof existing.metadata === 'object'
-        ? { ...(existing.metadata as Record<string, unknown>) }
-        : {};
-    if (typeof body.archived === 'boolean') {
-      existingMeta.archived = body.archived;
-    }
-
-    const item = await this.prisma.inboxItem.update({
-      where: { id },
-      data: {
-        read:
-          typeof body.read === 'boolean'
-            ? body.read
-            : typeof body.archived === 'boolean' && body.archived
-              ? true
-              : undefined,
+    try {
+      return await this.inboxCommand.updateInboxItem(user, id, {
+        read: typeof body.read === 'boolean' ? body.read : undefined,
+        archived: typeof body.archived === 'boolean' ? body.archived : undefined,
         title: typeof body.title === 'string' ? body.title : undefined,
         body: typeof body.body === 'string' ? body.body : undefined,
         href: typeof body.href === 'string' ? body.href : undefined,
-        metadata: Object.keys(existingMeta).length ? existingMeta : undefined,
-      },
-    });
-    return { success: true, item };
+      });
+    } catch (error) {
+      if (error instanceof InboxItemNotFoundError) {
+        throw new NotFoundException({ error: 'Inbox item not found' });
+      }
+      throw error;
+    }
   }
 
   async remove(user: AuthUser, id: string) {
-    const existing = await this.prisma.inboxItem.findFirst({
-      where: { id, recipientUid: user.uid },
-    });
-    if (!existing) throw new NotFoundException({ error: 'Inbox item not found' });
-    await this.prisma.inboxItem.delete({ where: { id } });
-    return { success: true, deleted: true };
+    try {
+      return await this.inboxCommand.deleteInboxItem(user, id);
+    } catch (error) {
+      if (error instanceof InboxItemNotFoundError) {
+        throw new NotFoundException({ error: 'Inbox item not found' });
+      }
+      throw error;
+    }
   }
 }
 
@@ -147,6 +144,14 @@ export class InboxController {
       useFactory: (prisma: PrismaService) =>
         createInboxReadService({
           repository: createPrismaInboxReadRepository(prisma.client),
+        }),
+      inject: [PrismaService],
+    },
+    {
+      provide: InboxCommandService,
+      useFactory: (prisma: PrismaService) =>
+        createInboxCommandService({
+          repository: createPrismaInboxCommandRepository(prisma.client),
         }),
       inject: [PrismaService],
     },

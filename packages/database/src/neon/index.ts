@@ -13,8 +13,10 @@ export { createPrismaIdentityUserRepository } from './prisma-identity-user-repos
 export type { PrismaIdentityUserRepository } from './prisma-identity-user-repository.js';
 export { createPrismaProjectsReadRepository } from './prisma-projects-read-repository.js';
 export { createPrismaInboxReadRepository } from './prisma-inbox-read-repository.js';
+export { createPrismaInboxCommandRepository } from './prisma-inbox-command-repository.js';
 export { createPrismaPortfolioMetricsReadRepository } from './prisma-portfolio-metrics-read-repository.js';
 export { createPrismaTeamMembersReadRepository } from './prisma-team-members-read-repository.js';
+export { createPrismaMarketplaceProfileReadRepository } from './prisma-marketplace-profile-read-repository.js';
 export {
   resolveDatabaseAdapterMode,
   isNeonAdapterMode,

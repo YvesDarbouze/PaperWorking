@@ -45,6 +45,7 @@ const PATCH_ALLOWED_FIELDS = [
   'status',
   'visibility',
   'currentPhase',
+  'dealId',
 ] as const;
 
 /**
@@ -112,6 +113,11 @@ export class ProjectsCommandService {
     if (typeof input.organizationId === 'string') {
       await this.deps.authz.assertOrgAccess(user, input.organizationId);
       patch.organizationId = input.organizationId;
+    }
+
+    if (typeof input.dealId === 'string' && input.dealId.trim()) {
+      await this.deps.authz.assertDealAccess(user, input.dealId.trim(), 'deals.update');
+      patch.dealId = input.dealId.trim();
     }
 
     const project = await this.deps.repository.update(trimmed, patch);

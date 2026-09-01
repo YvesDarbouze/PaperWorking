@@ -2,8 +2,8 @@
 
 import { useEffect, useState } from 'react';
 import MetricCard from '@/components/insights/MetricCard';
-import { scorecardEntries } from '@/lib/insights/adapters';
-import { apiFetch } from '@/lib/api/client';
+import { bffFetch } from '@/lib/api/bff-fetch';
+import { scorecardEntries, scorecardSourceStatusCopy, trendStatusCopy } from '@/lib/insights/adapters';
 
 interface KpiTrendPoint {
   month: string;
@@ -17,13 +17,16 @@ interface KpiTrendPoint {
 
 interface ProjectKpiPayload {
   success?: boolean;
+  trendStatus?: string;
   kpis?: {
+    sourceStatus?: string;
     scorecard?: Record<
       string,
       { value: number | null; projected?: boolean; missingInputs?: string[] }
     >;
   };
   trends?: KpiTrendPoint[];
+  recentActivityStatus?: string;
   recentActivity?: Array<{
     id: string;
     payee: string | null;
@@ -45,7 +48,7 @@ export default function ProjectInsightsPanel({ projectId }: { projectId: string 
       setLoading(true);
       setError(null);
       try {
-        const response = await apiFetch(`/api/projects/${projectId}/kpis/current`, {
+        const response = await bffFetch(`/api/projects/${projectId}/kpis/current`, {
           credentials: 'include',
           cache: 'no-store',
         });
@@ -93,7 +96,7 @@ export default function ProjectInsightsPanel({ projectId }: { projectId: string 
         </p>
         <h2 className="text-2xl font-semibold tracking-[-0.02em]">Project KPI engine</h2>
         <p className="mt-2 text-sm text-white/65">
-          Derived via `deriveAllProjectMetrics()` and served through `handleProjectKpisCurrentGet`.
+          {scorecardSourceStatusCopy(payload.kpis.sourceStatus)}
         </p>
       </section>
 
@@ -104,13 +107,24 @@ export default function ProjectInsightsPanel({ projectId }: { projectId: string 
             name={metric.label}
             value={metric.display}
             category="Scorecard"
+            projected={metric.projected}
           />
         ))}
       </section>
 
       {payload.trends?.length ? (
         <section className="rounded-2xl border border-white/10 bg-black/25 p-5">
-          <h3 className="mb-4 text-lg font-semibold">Six-month trend strip</h3>
+          <div className="mb-4 flex flex-wrap items-center gap-3">
+            <h3 className="text-lg font-semibold">Six-month trend strip</h3>
+            {payload.trendStatus === 'demo' ? (
+              <span className="rounded-full border border-amber-400/30 bg-amber-400/10 px-2.5 py-1 text-[10px] font-semibold uppercase tracking-wide text-amber-100/90">
+                Demo data
+              </span>
+            ) : null}
+          </div>
+          {trendStatusCopy(payload.trendStatus) ? (
+            <p className="mb-4 text-xs text-white/55">{trendStatusCopy(payload.trendStatus)}</p>
+          ) : null}
           <div className="grid gap-3 md:grid-cols-3 xl:grid-cols-6">
             {payload.trends.map((point) => (
               <article key={point.month} className="rounded-xl border border-white/8 px-3 py-3 text-sm">
@@ -125,7 +139,14 @@ export default function ProjectInsightsPanel({ projectId }: { projectId: string 
 
       {payload.recentActivity?.length ? (
         <section className="rounded-2xl border border-white/10 bg-black/25 p-5">
-          <h3 className="mb-4 text-lg font-semibold">Recent activity</h3>
+          <div className="mb-4 flex flex-wrap items-center gap-3">
+            <h3 className="text-lg font-semibold">Recent activity</h3>
+            {payload.recentActivityStatus === 'actual' ? (
+              <span className="rounded-full border border-emerald-400/25 bg-emerald-400/10 px-2.5 py-1 text-[10px] font-semibold uppercase tracking-wide text-emerald-100/90">
+                From transactions
+              </span>
+            ) : null}
+          </div>
           <div className="space-y-3">
             {payload.recentActivity.map((item) => (
               <div key={item.id} className="rounded-xl border border-white/8 px-4 py-3 text-sm">

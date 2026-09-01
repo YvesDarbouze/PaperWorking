@@ -1,131 +1,71 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import {
   MarketplaceProfileReadService,
+  MarketplaceInvestorsReadService,
+  MarketplaceFollowCommandService,
+  MarketplaceFollowCommandValidationError,
+  type SetInvestorFollowInput,
 } from '@paperworking/services';
 import type { AuthUser } from '../auth/auth.types.js';
+import { AuthzNotFoundError } from '@paperworking/authz';
 import { PrismaService } from '../prisma/prisma.service.js';
+
+function mapInvestorNotFound(error: unknown): never {
+  if (error instanceof AuthzNotFoundError) {
+    throw new NotFoundException(error.payload);
+  }
+  throw error;
+}
+
+function mapFollowCommandError(error: unknown): never {
+  if (error instanceof MarketplaceFollowCommandValidationError) {
+    throw new BadRequestException({ error: error.message });
+  }
+  throw error;
+}
 
 @Injectable()
 export class MarketplaceService {
   constructor(
     private readonly prisma: PrismaService,
     private readonly marketplaceProfileRead: MarketplaceProfileReadService,
+    private readonly marketplaceInvestorsRead: MarketplaceInvestorsReadService,
+    private readonly marketplaceFollowCommand: MarketplaceFollowCommandService,
   ) {}
 
   async listings() {
-    const listings = await this.prisma.marketplaceListing.findMany({
-      orderBy: { updatedAt: 'desc' },
-      take: 100,
-    });
-    return { success: true, listings };
+    return this.marketplaceInvestorsRead.listListings();
   }
 
   async profile(user: AuthUser) {
     return this.marketplaceProfileRead.getMarketplaceProfile(user);
   }
 
-  async investors(q?: string) {
-    // Public directory — never select or return email. Search must not use email either.
-    const where = {
-      accountType: 'investor',
-      ...(q?.trim()
-        ? {
-            OR: [
-              { name: { contains: q.trim(), mode: 'insensitive' as const } },
-              { displayName: { contains: q.trim(), mode: 'insensitive' as const } },
-              { companyName: { contains: q.trim(), mode: 'insensitive' as const } },
-            ],
-          }
-        : {}),
-    };
-    const investors = await this.prisma.user.findMany({
-      where,
-      take: 50,
-      orderBy: { updatedAt: 'desc' },
-      select: {
-        id: true,
-        name: true,
-        displayName: true,
-        companyName: true,
-        avatarUrl: true,
-        accountType: true,
-      },
-    });
-    return {
-      success: true,
-      investors: investors.map((inv: {
-        id: string;
-        name: string | null;
-        displayName: string | null;
-        companyName: string | null;
-        avatarUrl: string | null;
-        accountType: string | null;
-      }) => this.toPublicInvestor(inv)),
-    };
+  async investors(q?: string, viewer?: AuthUser | null) {
+    return this.marketplaceInvestorsRead.listInvestors(q, viewer);
   }
 
-  async investorById(id: string) {
-    const investor = await this.prisma.user.findFirst({
-      where: { OR: [{ id }, { legacyFirebaseUid: id }] },
-      select: {
-        id: true,
-        name: true,
-        displayName: true,
-        companyName: true,
-        avatarUrl: true,
-        accountType: true,
-        createdAt: true,
-      },
-    });
-    if (!investor) throw new NotFoundException({ error: 'Investor not found' });
-    const followers = await this.prisma.investorFollower.count({
-      where: { targetUid: investor.id },
-    });
-    return {
-      success: true,
-      investor: { ...this.toPublicInvestor(investor), followers, createdAt: investor.createdAt },
-      profile: {
-        uid: investor.id,
-        displayName: investor.displayName || investor.name || 'Investor',
-        followerCount: followers,
-        dealCount: 0,
-      },
-    };
-  }
-
-  /** Public DTO — email deliberately omitted (serialization safety). */
-  private toPublicInvestor(inv: {
-    id: string;
-    name?: string | null;
-    displayName?: string | null;
-    companyName?: string | null;
-    avatarUrl?: string | null;
-    accountType?: string | null;
-  }) {
-    return {
-      id: inv.id,
-      name: inv.name,
-      displayName: inv.displayName,
-      companyName: inv.companyName,
-      avatarUrl: inv.avatarUrl,
-      accountType: inv.accountType,
-    };
+  async investorById(id: string, viewer?: AuthUser | null) {
+    try {
+      return await this.marketplaceInvestorsRead.getInvestorById(id, viewer);
+    } catch (error) {
+      mapInvestorNotFound(error);
+    }
   }
 
   async follow(user: AuthUser, body: Record<string, unknown>) {
-    const targetUid = String(body.targetUid || body.investorId || body.id || '');
-    if (!targetUid) throw new NotFoundException({ error: 'targetUid required' });
-    const row = await this.prisma.investorFollower.upsert({
-      where: {
-        followerUid_targetUid: {
-          followerUid: user.uid,
-          targetUid,
-        },
-      },
-      create: { followerUid: user.uid, targetUid },
-      update: {},
-    });
-    return { success: true, follow: row };
+    try {
+      return await this.marketplaceFollowCommand.setInvestorFollow(
+        user,
+        body as SetInvestorFollowInput,
+      );
+    } catch (error) {
+      mapFollowCommandError(error);
+    }
   }
 
   async listFollowers(user: AuthUser) {

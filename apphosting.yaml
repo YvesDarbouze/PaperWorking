@@ -88,7 +88,7 @@ env:
     availability:
       - RUNTIME
 
-  # Nest Cloud Run base URL for browser apiFetch on unmigrated routes (billing, inbox mutations, etc.).
+  # Nest Cloud Run base URL for browser apiFetch on unmigrated routes (billing, portfolio reports, etc.).
   # NEXT_PUBLIC_* is inlined at `next build` — MUST be available at BUILD time.
   # Plain value (not Secret Manager): this URL is public in the client bundle anyway.
   - variable: NEXT_PUBLIC_API_URL
@@ -123,6 +123,11 @@ env:
 
   - variable: FIREBASE_PRIVATE_KEY
     secret: FIREBASE_PRIVATE_KEY
+    availability:
+      - RUNTIME
+
+  - variable: FIREBASE_STORAGE_BUCKET
+    value: "paperworking-97055.firebasestorage.app"
     availability:
       - RUNTIME
 

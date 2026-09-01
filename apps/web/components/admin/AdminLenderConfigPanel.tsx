@@ -1,7 +1,10 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { apiFetch } from '@/lib/api/client';
+import {
+  getAdminLenderChecklistsFromBff,
+  getAdminLenderRatesFromBff,
+} from '@/lib/admin/admin-api';
 
 interface LenderRate {
   id: string;
@@ -25,20 +28,13 @@ export default function AdminLenderConfigPanel() {
       setLoading(true);
       setError(null);
       try {
-        const [ratesRes, checklistsRes] = await Promise.all([
-          apiFetch('/api/admin/lender-rates', { credentials: 'include', cache: 'no-store' }),
-          apiFetch('/api/admin/lender-checklists', { credentials: 'include', cache: 'no-store' }),
+        const [ratesBody, checklistsBody] = await Promise.all([
+          getAdminLenderRatesFromBff(),
+          getAdminLenderChecklistsFromBff(),
         ]);
-        const ratesBody = (await ratesRes.json()) as { rates?: LenderRate[]; error?: string };
-        const checklistsBody = (await checklistsRes.json()) as {
-          checklists?: Record<string, string[]>;
-          error?: string;
-        };
-        if (!ratesRes.ok) throw new Error(ratesBody.error ?? 'Rates request failed');
-        if (!checklistsRes.ok) throw new Error(checklistsBody.error ?? 'Checklists request failed');
         if (!cancelled) {
-          setRates(ratesBody.rates ?? []);
-          setChecklists(checklistsBody.checklists ?? {});
+          setRates((ratesBody.rates ?? []) as LenderRate[]);
+          setChecklists((checklistsBody.checklists ?? {}) as Record<string, string[]>);
         }
       } catch (loadError) {
         if (!cancelled) {

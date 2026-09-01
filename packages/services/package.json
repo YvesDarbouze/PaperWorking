@@ -20,6 +20,7 @@
   "dependencies": {
     "@paperworking/authz": "file:../authz",
     "@paperworking/database": "file:../database",
+    "@paperworking/financial-engine": "file:../financial-engine",
     "@paperworking/identity": "file:../identity",
     "@paperworking/validation": "file:../validation"
   },

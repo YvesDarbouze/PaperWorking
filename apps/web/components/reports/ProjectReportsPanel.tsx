@@ -6,7 +6,7 @@ import {
   formatReportMoney,
   resolveSeedProjectName,
 } from '@/lib/reports/adapters';
-import { apiFetch } from '@/lib/api/client';
+import { getPeriodReportFromBff } from '@/lib/reports/reports-api';
 
 interface PeriodReportPayload {
   period: string;
@@ -44,15 +44,9 @@ export default function ProjectReportsPanel({ projectId }: { projectId: string }
       setError(null);
       try {
         // Auth + project ACL on Nest — never hardcode organizationId.
-        const response = await apiFetch(
-          `/api/reports/${period}?projectId=${encodeURIComponent(projectId)}`,
-          { credentials: 'include', cache: 'no-store' },
-        );
-        const body = (await response.json()) as PeriodReportPayload & {
+        const body = (await getPeriodReportFromBff(period, projectId)) as PeriodReportPayload & {
           error?: string;
-          success?: boolean;
         };
-        if (!response.ok) throw new Error(body.error ?? 'Failed to load period report');
         if (!cancelled) setPayload(body);
       } catch (loadError) {
         if (!cancelled) {

@@ -79,7 +79,8 @@ describe('phase B8 — bffFetch transport for project writes', () => {
   it('isBffApiPath matches core project list/detail (reads + writes share paths)', () => {
     expect(isBffApiPath('/api/projects')).toBe(true);
     expect(isBffApiPath('/api/projects/p1')).toBe(true);
-    expect(isBffApiPath('/api/projects/p1/kpis/current')).toBe(false);
+    expect(isBffApiPath('/api/projects/p1/kpis/current')).toBe(true);
+    expect(isBffApiPath('/api/projects/p1/kpis/breakdown')).toBe(false);
   });
 
   it('bffFetch POST /api/projects does not use NEXT_PUBLIC_API_URL', async () => {
@@ -213,7 +214,7 @@ describe('phase B8 — command service integration shape', () => {
 });
 
 describe('phase B8 — remaining Nest project endpoints', () => {
-  it('KPI panels still reference apiFetch to Nest subresource', () => {
+  it('KPI panels now use bffFetch same-origin (B9)', () => {
     const scorecard = readFileSync(
       join(here, '../../components/insights/ProjectScorecardPanel.tsx'),
       'utf8',
@@ -222,7 +223,7 @@ describe('phase B8 — remaining Nest project endpoints', () => {
       join(here, '../../components/insights/ProjectInsightsPanel.tsx'),
       'utf8',
     );
-    expect(scorecard).toContain('apiFetch(`/api/projects/${projectId}/kpis/current`');
-    expect(insights).toContain('apiFetch(`/api/projects/${projectId}/kpis/current`');
+    expect(scorecard).toContain('bffFetch(`/api/projects/${projectId}/kpis/current`');
+    expect(insights).toContain('bffFetch(`/api/projects/${projectId}/kpis/current`');
   });
 });

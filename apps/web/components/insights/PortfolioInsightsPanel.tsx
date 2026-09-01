@@ -18,7 +18,7 @@ import {
   loadProjects,
   useMockData,
 } from '@/lib/data';
-import { apiFetch } from '@/lib/api/client';
+import { getPortfolioInsightsFromBff } from '@/lib/insights/insights-api';
 import type { ProjectWorkspace } from '@/lib/projects/types';
 
 interface ApiMetric {
@@ -118,14 +118,8 @@ export default function PortfolioInsightsPanel() {
           setComparisonSeed([]);
         }
 
-        const res = await apiFetch('/api/insights', {
-          credentials: 'include',
-          cache: 'no-store',
-        });
-        if (res.ok) {
-          const data = (await res.json()) as { categories?: ApiCategory[] };
-          if (!cancelled && data.categories) setCategories(data.categories);
-        }
+        const data = await getPortfolioInsightsFromBff();
+        if (!cancelled && data.categories) setCategories(data.categories);
       } catch {
         if (!cancelled && !mockMode) {
           setKpiSections([]);

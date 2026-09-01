@@ -27,14 +27,14 @@ export class MarketplaceController {
 
   @Public()
   @Get('investors')
-  investors(@Query('q') q?: string) {
-    return this.marketplace.investors(q);
+  investors(@Query('q') q?: string, @CurrentUser() user?: AuthUser) {
+    return this.marketplace.investors(q, user);
   }
 
   @Public()
   @Get('investors/:id')
-  investorById(@Param('id') id: string) {
-    return this.marketplace.investorById(id);
+  investorById(@Param('id') id: string, @CurrentUser() user?: AuthUser) {
+    return this.marketplace.investorById(id, user);
   }
 
   @Post('investors/follow')

@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { apiFetch } from '@/lib/api/client';
+import { broadcastDealFromBff } from '@/lib/deals/deal-api';
 
 export interface DealBroadcastModalProps {
   dealId: string;
@@ -28,7 +28,10 @@ export default function DealBroadcastModal({
   const [includeBusinessCard, setIncludeBusinessCard] = useState(true);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [successResult, setSuccessResult] = useState<{ dispatchedCount: number } | null>(null);
+  const [successResult, setSuccessResult] = useState<{
+    invitationCount: number;
+    deliveryStatus: string;
+  } | null>(null);
 
   if (!isOpen) return null;
 
@@ -49,32 +52,24 @@ export default function DealBroadcastModal({
     }
 
     try {
-      const response = await apiFetch('/api/deals/broadcast', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        credentials: 'include',
-        body: JSON.stringify({
-          dealId,
-          recipientEmails,
-          subject,
-          message,
-          includeBusinessCard,
-        }),
+      const body = await broadcastDealFromBff({
+        dealId,
+        recipientEmails,
+        subject,
+        message,
+        includeBusinessCard,
       });
 
-      const body = (await response.json()) as {
-        success?: boolean;
-        dispatchedCount?: number;
-        error?: string;
-      };
-
-      if (!response.ok || !body.success) {
-        throw new Error(body.error ?? 'Failed to send broadcast');
+      if (!body.success) {
+        throw new Error('Failed to save broadcast');
       }
 
-      setSuccessResult({ dispatchedCount: body.dispatchedCount ?? recipientEmails.length });
+      setSuccessResult({
+        invitationCount: body.invitationCount ?? body.dispatchedCount ?? recipientEmails.length,
+        deliveryStatus: body.deliveryStatus ?? 'not_configured',
+      });
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to dispatch broadcast');
+      setError(err instanceof Error ? err.message : 'Failed to save broadcast');
     } finally {
       setLoading(false);
     }
@@ -108,12 +103,14 @@ export default function DealBroadcastModal({
           <div className="mt-6 space-y-4 rounded-xl border border-[#00DD94]/30 bg-[#00DD94]/10 p-5 text-center">
             <span className="material-symbols-outlined text-3xl text-[#00DD94]">check_circle</span>
             <p className="text-sm font-semibold text-white">
-              Analysis broadcast successfully dispatched!
+              Broadcast saved — invitations created
             </p>
             <p className="text-xs text-white/70">
-              Sent to {successResult.dispatchedCount} recipient
-              {successResult.dispatchedCount === 1 ? '' : 's'}. Secure deal preview links have been
-              emailed.
+              Created {successResult.invitationCount} invitation
+              {successResult.invitationCount === 1 ? '' : 's'} with secure reply links.
+              {successResult.deliveryStatus === 'not_configured'
+                ? ' Email delivery is not configured; share the generated external links manually.'
+                : null}
             </p>
             <button
               type="button"
@@ -202,7 +199,7 @@ export default function DealBroadcastModal({
                     <span className="material-symbols-outlined animate-spin text-[14px]">
                       progress_activity
                     </span>
-                    Sending…
+                    Saving…
                   </>
                 ) : (
                   <>

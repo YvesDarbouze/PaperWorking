@@ -1,7 +1,7 @@
 /**
- * Central backend API client for non-auth domain routes.
- * Auth browser traffic uses same-origin `@/lib/auth/auth-fetch` (App Hosting BFF).
- * Non-auth routes may still target Nest via NEXT_PUBLIC_API_URL until migrated.
+ * Legacy Nest API client — privileged admin exception only (Phase B18).
+ * Normal browser traffic uses same-origin `@/lib/api/bff-fetch`.
+ * Retained for POST /api/admin/agent-crew/:id/impersonate until session architecture is redesigned.
  */
 export function getApiBaseUrl(): string {
   const raw = process.env.NEXT_PUBLIC_API_URL?.trim();

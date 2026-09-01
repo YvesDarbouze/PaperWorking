@@ -4,12 +4,21 @@ import {
   createPrismaAuthzStore,
   createPrismaProjectsReadRepository,
   createPrismaProjectsCommandRepository,
+  createPrismaProjectKpiReadRepository,
+  createPrismaProjectDocumentsRepository,
+  createFirebaseFileStorage,
+  firebaseStorageHasCredentials,
+  createUnavailableFileStorage,
 } from '@paperworking/database';
 import {
   ProjectsReadService,
   ProjectsCommandService,
+  ProjectKpiReadService,
+  ProjectDocumentsReadService,
   createProjectsReadService,
   createProjectsCommandService,
+  createProjectKpiReadService,
+  createProjectDocumentsReadService,
 } from '@paperworking/services';
 import { PrismaService } from '../prisma/prisma.service.js';
 import { ProjectsController } from './projects.controller.js';
@@ -36,6 +45,27 @@ import { ProjectsService } from './projects.service.js';
         createProjectsCommandService({
           authz: new CoreAuthorizationService(createPrismaAuthzStore(prisma.client)),
           repository: createPrismaProjectsCommandRepository(prisma.client),
+        }),
+      inject: [PrismaService],
+    },
+    {
+      provide: ProjectKpiReadService,
+      useFactory: (prisma: PrismaService) =>
+        createProjectKpiReadService({
+          authz: new CoreAuthorizationService(createPrismaAuthzStore(prisma.client)),
+          repository: createPrismaProjectKpiReadRepository(prisma.client),
+        }),
+      inject: [PrismaService],
+    },
+    {
+      provide: ProjectDocumentsReadService,
+      useFactory: (prisma: PrismaService) =>
+        createProjectDocumentsReadService({
+          authz: new CoreAuthorizationService(createPrismaAuthzStore(prisma.client)),
+          repository: createPrismaProjectDocumentsRepository(prisma.client),
+          storage: firebaseStorageHasCredentials()
+            ? createFirebaseFileStorage()
+            : createUnavailableFileStorage('Firebase Storage is not configured'),
         }),
       inject: [PrismaService],
     },

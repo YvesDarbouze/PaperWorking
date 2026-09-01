@@ -1,5 +1,6 @@
 import {
   verifyAccessToken,
+  IdentityVerificationError,
   type IdentityVerificationDeps,
 } from '@paperworking/identity';
 import { normalizeClientAccountType } from '../session/account-type.js';
@@ -95,11 +96,51 @@ export class SessionCommandService {
         cookies,
       };
     } catch (err) {
+      if (err instanceof IdentityVerificationError) {
+        return {
+          ok: false,
+          status: 401,
+          body: {
+            error: 'Token verification failed',
+            detail: err.code,
+          },
+        };
+      }
       const message = err instanceof Error ? err.message : String(err);
       if (message.includes('email is required')) {
-        return { ok: false, status: 401, body: { error: 'Invalid access token' } };
+        return {
+          ok: false,
+          status: 400,
+          body: {
+            error: 'Email required from identity provider',
+            detail: 'email_required',
+          },
+        };
       }
-      return { ok: false, status: 401, body: { error: 'Invalid access token' } };
+      if (
+        message.includes('DATABASE_URL') ||
+        message.includes('Prisma') ||
+        message.includes('connect')
+      ) {
+        console.error('[SessionCommand] database error during provisioning:', message);
+        return {
+          ok: false,
+          status: 503,
+          body: {
+            error: 'Auth provisioning unavailable',
+            detail: 'database_error',
+          },
+        };
+      }
+      console.error('[SessionCommand] unexpected establishSession error:', message);
+      return {
+        ok: false,
+        status: 503,
+        body: {
+          error: 'Authentication failed',
+          detail: 'internal_error',
+        },
+      };
     }
   }
 

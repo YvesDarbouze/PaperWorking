@@ -4,7 +4,7 @@ import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { useParams, useSearchParams } from 'next/navigation';
 import { decodeBroadcastToken, type BroadcastTokenPayload } from '@/lib/deals/token';
-import { apiFetch } from '@/lib/api/client';
+import { checkDealExistsFromBff, replyToDealFromBff } from '@/lib/deals/deal-api';
 
 interface ExternalDealData {
   id: string;
@@ -68,8 +68,7 @@ export default function ExternalDealPage() {
 
     async function fetchDeal() {
       try {
-        const res = await apiFetch(`/api/deals/exists?slug=${encodeURIComponent(slug)}`);
-        const data = (await res.json()) as { exists: boolean; deal: Record<string, unknown> | null };
+        const data = await checkDealExistsFromBff(slug);
         if (cancelled) return;
 
         if (data.exists && data.deal) {
@@ -101,10 +100,8 @@ export default function ExternalDealPage() {
     setReplyError(null);
 
     try {
-      const response = await apiFetch('/api/deals/reply', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
+      await replyToDealFromBff(
+        {
           dealId: deal.id || tokenPayload?.dealId || 'deal-1',
           token: tokenParam || undefined,
           senderEmail:
@@ -112,14 +109,9 @@ export default function ExternalDealPage() {
             tokenPayload?.email ||
             'external_investor@example.com',
           content: replyText,
-          source: 'email_inbound',
-        }),
-      });
-
-      const resBody = (await response.json()) as { success?: boolean; error?: string };
-      if (!response.ok || !resBody.success) {
-        throw new Error(resBody.error ?? 'Failed to send reply');
-      }
+        },
+        { credentials: 'omit' },
+      );
 
       setReplySuccess(true);
       setReplyText('');

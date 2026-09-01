@@ -1,14 +1,15 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { scorecardEntries } from '@/lib/insights/adapters';
-import { apiFetch } from '@/lib/api/client';
+import { bffFetch } from '@/lib/api/bff-fetch';
+import { scorecardEntries, scorecardSourceStatusCopy } from '@/lib/insights/adapters';
 
 interface ProjectKpiPayload {
   success?: boolean;
   kpis?: {
     snapshotAt?: string;
-    scorecard?: Record<string, { value: number | null }>;
+    sourceStatus?: string;
+    scorecard?: Record<string, { value: number | null; projected?: boolean }>;
   };
 }
 
@@ -23,7 +24,7 @@ export default function ProjectScorecardPanel({ projectId }: { projectId: string
       setLoading(true);
       setError(null);
       try {
-        const response = await apiFetch(`/api/projects/${projectId}/kpis/current`, {
+        const response = await bffFetch(`/api/projects/${projectId}/kpis/current`, {
           credentials: 'include',
           cache: 'no-store',
         });
@@ -70,9 +71,10 @@ export default function ProjectScorecardPanel({ projectId }: { projectId: string
         <p className="mb-2 text-[11px] font-semibold uppercase tracking-[0.08em] text-white/45">
           REIL scorecard
         </p>
-        <h2 className="text-2xl font-semibold tracking-[-0.02em]">Canonical metric snapshot</h2>
+        <h2 className="text-2xl font-semibold tracking-[-0.02em]">Scorecard snapshot</h2>
         <p className="mt-2 text-sm text-white/65">
-          Snapshot at {payload.kpis.snapshotAt ?? 'latest'} — financial engine authoritative values.
+          Snapshot at {payload.kpis.snapshotAt ?? 'latest'}.{' '}
+          {scorecardSourceStatusCopy(payload.kpis.sourceStatus)}
         </p>
       </section>
 
@@ -82,6 +84,7 @@ export default function ProjectScorecardPanel({ projectId }: { projectId: string
             <tr>
               <th className="px-4 py-3 font-medium">Metric</th>
               <th className="px-4 py-3 font-medium">Value</th>
+              <th className="px-4 py-3 font-medium">Status</th>
             </tr>
           </thead>
           <tbody>
@@ -89,6 +92,10 @@ export default function ProjectScorecardPanel({ projectId }: { projectId: string
               <tr key={entry.key} className="border-t border-white/8">
                 <td className="px-4 py-3 font-medium">{entry.label}</td>
                 <td className="px-4 py-3 text-white/80">{entry.display}</td>
+                <td className="px-4 py-3 text-xs text-white/55">
+                  {entry.projected ? 'Projected' : 'Calculated'}
+                  {entry.missingInputs ? ' · inputs missing' : ''}
+                </td>
               </tr>
             ))}
           </tbody>

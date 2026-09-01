@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
-import { apiFetch } from '@/lib/api/client';
+import { getMarketplaceInvestorFromBff, setMarketplaceInvestorFollowFromBff } from '@/lib/marketplace/marketplace-api';
 
 interface InvestorDetailPayload {
   profile?: {
@@ -31,12 +31,9 @@ export default function InvestorProfilePanel({ investorId }: { investorId: strin
       setLoading(true);
       setError(null);
       try {
-        const response = await apiFetch(`/api/marketplace/investors/${investorId}`, {
-          credentials: 'include',
-          cache: 'no-store',
-        });
-        const body = (await response.json()) as InvestorDetailPayload & { error?: string };
-        if (!response.ok) throw new Error(body.error ?? 'Investor not found');
+        const body = (await getMarketplaceInvestorFromBff(investorId)) as InvestorDetailPayload & {
+          error?: string;
+        };
         if (!cancelled) {
           setPayload(body);
           setIsFollowing(Boolean(body.isFollowing));
@@ -57,13 +54,15 @@ export default function InvestorProfilePanel({ investorId }: { investorId: strin
   }, [investorId]);
 
   const toggleFollow = async () => {
-    const response = await apiFetch('/api/marketplace/investors/follow', {
-      method: 'POST',
-      credentials: 'include',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ targetUid: investorId, follow: !isFollowing }),
-    });
-    if (response.ok) setIsFollowing((current) => !current);
+    try {
+      await setMarketplaceInvestorFollowFromBff({
+        targetUid: investorId,
+        follow: !isFollowing,
+      });
+      setIsFollowing((current) => !current);
+    } catch {
+      // keep server-authoritative follow state on failure
+    }
   };
 
   if (loading) {

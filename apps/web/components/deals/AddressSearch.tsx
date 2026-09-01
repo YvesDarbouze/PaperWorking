@@ -3,7 +3,7 @@
 import { useState, useRef, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import CollisionModal, { type CollisionDeal } from '@/components/deals/CollisionModal';
-import { apiFetch } from '@/lib/api/client';
+import { checkDealExistsFromBff } from '@/lib/deals/deal-api';
 
 export interface AddressSearchProps {
   placeholder?: string;
@@ -65,21 +65,12 @@ export default function AddressSearch({
     }, 200);
 
     try {
-      const response = await apiFetch(`/api/deals/exists?slug=${encodeURIComponent(slug)}`, {
-        credentials: 'include',
-        cache: 'no-store',
-      });
+      const body = await checkDealExistsFromBff(slug);
 
-      const body = (await response.json()) as {
-        exists: boolean;
-        deal: CollisionDeal | null;
-        error?: string;
-      };
-
-      if (response.ok && body.exists && body.deal) {
-        // Collision found: show modal
-        setCollisionDeal(body.deal);
-        if (onExistingDealFound) onExistingDealFound(body.deal);
+      if (body.exists && body.deal) {
+        const collision = body.deal as unknown as CollisionDeal;
+        setCollisionDeal(collision);
+        if (onExistingDealFound) onExistingDealFound(collision);
       } else {
         // No collision found
         if (onNoDealFound) {

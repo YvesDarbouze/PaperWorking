@@ -2,7 +2,7 @@
 
 import { FormEvent, useEffect, useMemo, useState } from 'react';
 import { loadProfilePreview } from '@/lib/data';
-import { apiFetch } from '@/lib/api/client';
+import { updateProfileFromBff } from '@/lib/settings/profile-api';
 import { authFetch } from '@/lib/auth/auth-fetch';
 
 const inputClass =
@@ -149,17 +149,20 @@ export default function ProfileSettingsPanel() {
     e.preventDefault();
     setSaving(true);
     try {
-      await apiFetch('/api/settings/profile', {
-        method: 'PUT',
-        credentials: 'include',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          firstName,
-          lastName,
-          phone,
-          companyName: company,
-        }),
+      const { ok, profile } = await updateProfileFromBff({
+        firstName,
+        lastName,
+        phone,
+        companyName: company,
       });
+      if (!ok) return;
+      if (profile) {
+        setFirstName(profile.firstName);
+        setLastName(profile.lastName);
+        setPhone(profile.phone);
+        setCompany(profile.organization);
+        setRole(profile.role);
+      }
       setSaved(true);
       setTimeout(() => setSaved(false), 3000);
     } catch {

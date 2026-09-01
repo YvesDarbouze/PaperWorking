@@ -1,6 +1,7 @@
 import {
   Controller,
   Delete,
+  ForbiddenException,
   Get,
   Injectable,
   Module,
@@ -9,107 +10,70 @@ import {
   Post,
   Query,
 } from '@nestjs/common';
+import { AuthzForbiddenError } from '@paperworking/authz';
 import type { AuthUser } from '../auth/auth.types.js';
-import { CurrentUser, Roles } from '../auth/auth.types.js';
+import { CurrentUser } from '../auth/auth.types.js';
+import { Roles } from '../auth/auth.types.js';
 import { RequirePermissions } from '../authz/require-permissions.decorator.js';
 import { PrismaService } from '../prisma/prisma.service.js';
+import { buildNestAdminServices, type NestAdminServices } from './admin-factory.js';
 
 @Injectable()
 export class AdminService {
-  constructor(private readonly prisma: PrismaService) {}
+  private readonly admin: NestAdminServices;
 
-  async ops(section?: string) {
-    const [users, subscriptions, audits, listings, projects] = await Promise.all([
-      this.prisma.user.count(),
-      this.prisma.subscription.count(),
-      this.prisma.adminAuditLog.findMany({
-        orderBy: { timestamp: 'desc' },
-        take: 50,
-      }),
-      this.prisma.marketplaceListing.count(),
-      this.prisma.project.count(),
-    ]);
-
-    const base = {
-      success: true,
-      section: section || 'overview',
-      kpis: {
-        users,
-        subscriptions,
-        projects,
-        listings,
-        auditEvents: audits.length,
-      },
-    };
-
-    if (section === 'users') {
-      const list = await this.prisma.user.findMany({
-        take: 100,
-        orderBy: { createdAt: 'desc' },
-        select: {
-          id: true,
-          email: true,
-          name: true,
-          accountType: true,
-          role: true,
-          syntheticAgent: true,
-          createdAt: true,
-        },
-      });
-      return { ...base, users: list };
-    }
-
-    if (section === 'billing') {
-      const subs = await this.prisma.subscription.findMany({
-        take: 100,
-        orderBy: { updatedAt: 'desc' },
-      });
-      return { ...base, subscriptions: subs };
-    }
-
-    if (section === 'audit') {
-      return { ...base, audit: audits };
-    }
-
-    if (section === 'marketplace') {
-      const items = await this.prisma.marketplaceListing.findMany({
-        take: 100,
-        orderBy: { updatedAt: 'desc' },
-      });
-      return { ...base, listings: items };
-    }
-
-    return { ...base, audit: audits.slice(0, 10) };
+  constructor(private readonly prisma: PrismaService) {
+    this.admin = buildNestAdminServices(this.prisma);
   }
 
-  async listAgentCrew() {
-    const agents = await this.prisma.user.findMany({
-      where: { syntheticAgent: true },
-      orderBy: { updatedAt: 'desc' },
-    });
-    return { success: true, agents };
+  private mapError(err: unknown): never {
+    if (err instanceof AuthzForbiddenError) {
+      throw new ForbiddenException(err.payload);
+    }
+    throw err;
   }
 
-  async getAgent(id: string) {
-    const agent = await this.prisma.user.findFirst({
-      where: { id, syntheticAgent: true },
-    });
-    if (!agent) throw new NotFoundException({ error: 'Agent not found' });
-    return { success: true, agent };
+  async ops(user: AuthUser, section?: string) {
+    try {
+      return await this.admin.ops.getOpsSection(user, section);
+    } catch (err) {
+      this.mapError(err);
+    }
   }
 
-  async deleteAgent(id: string) {
-    const agent = await this.prisma.user.findFirst({
-      where: { id, syntheticAgent: true },
-    });
-    if (!agent) throw new NotFoundException({ error: 'Agent not found' });
-    await this.prisma.user.delete({ where: { id } });
-    return { success: true, deleted: true };
+  async listAgentCrew(user: AuthUser) {
+    try {
+      return await this.admin.agentCrewRead.listAgents(user);
+    } catch (err) {
+      this.mapError(err);
+    }
   }
 
+  async getAgent(user: AuthUser, id: string) {
+    try {
+      const result = await this.admin.agentCrewRead.getAgent(user, id);
+      if (!result.success) throw new NotFoundException(result);
+      return result;
+    } catch (err) {
+      this.mapError(err);
+    }
+  }
+
+  async deleteAgent(user: AuthUser, id: string) {
+    try {
+      const result = await this.admin.agentCrewCommand.deleteAgent(user, id);
+      if (!result.success) throw new NotFoundException(result);
+      return result;
+    } catch (err) {
+      this.mapError(err);
+    }
+  }
+
+  /** Retained on Nest — privileged identity boundary (Phase B18). */
   async impersonate(actor: AuthUser, id: string) {
     const agent = await this.prisma.user.findFirst({
       where: { id, syntheticAgent: true },
+      select: { id: true, email: true, displayName: true, name: true, agentPersona: true },
     });
     if (!agent) throw new NotFoundException({ error: 'Agent not found' });
     await this.prisma.adminAuditLog.create({
@@ -136,52 +100,28 @@ export class AdminService {
     };
   }
 
-  async rentcastUsage() {
-    const config = await this.prisma.appConfig.findUnique({
-      where: { key: 'rentcast.usage' },
-    });
-    return {
-      success: true,
-      usage: config?.value ?? {
-        requestsToday: 0,
-        requestsMonth: 0,
-        limit: 1000,
-        stub: true,
-      },
-    };
+  async rentcastUsage(user: AuthUser, year?: number, month?: number) {
+    try {
+      return await this.admin.rentcast.getUsage(user, { year, month });
+    } catch (err) {
+      this.mapError(err);
+    }
   }
 
-  async lenderRates() {
-    const config = await this.prisma.appConfig.findUnique({
-      where: { key: 'lender.rates' },
-    });
-    return {
-      success: true,
-      rates: config?.value ?? {
-        purchase: 7.25,
-        refinance: 6.9,
-        bridge: 9.5,
-        stub: true,
-      },
-    };
+  async lenderRates(user: AuthUser): Promise<Record<string, unknown>> {
+    try {
+      return await this.admin.lender.getRates(user);
+    } catch (err) {
+      this.mapError(err);
+    }
   }
 
-  async lenderChecklists() {
-    const config = await this.prisma.appConfig.findUnique({
-      where: { key: 'lender.checklists' },
-    });
-    return {
-      success: true,
-      checklists: config?.value ?? {
-        items: [
-          'Purchase agreement',
-          'Insurance binder',
-          'Entity docs',
-          'Bank statements',
-        ],
-        stub: true,
-      },
-    };
+  async lenderChecklists(user: AuthUser): Promise<Record<string, unknown>> {
+    try {
+      return await this.admin.lender.getChecklists(user);
+    } catch (err) {
+      this.mapError(err);
+    }
   }
 }
 
@@ -192,23 +132,23 @@ export class AdminController {
   constructor(private readonly admin: AdminService) {}
 
   @Get('ops')
-  ops(@Query('section') section?: string) {
-    return this.admin.ops(section);
+  ops(@CurrentUser() user: AuthUser, @Query('section') section?: string) {
+    return this.admin.ops(user, section);
   }
 
   @Get('agent-crew')
-  listAgents() {
-    return this.admin.listAgentCrew();
+  listAgents(@CurrentUser() user: AuthUser) {
+    return this.admin.listAgentCrew(user);
   }
 
   @Get('agent-crew/:id')
-  getAgent(@Param('id') id: string) {
-    return this.admin.getAgent(id);
+  getAgent(@CurrentUser() user: AuthUser, @Param('id') id: string) {
+    return this.admin.getAgent(user, id);
   }
 
   @Delete('agent-crew/:id')
-  deleteAgent(@Param('id') id: string) {
-    return this.admin.deleteAgent(id);
+  deleteAgent(@CurrentUser() user: AuthUser, @Param('id') id: string) {
+    return this.admin.deleteAgent(user, id);
   }
 
   @Post('agent-crew/:id/impersonate')
@@ -217,18 +157,26 @@ export class AdminController {
   }
 
   @Get('rentcast-usage')
-  rentcast() {
-    return this.admin.rentcastUsage();
+  rentcast(
+    @CurrentUser() user: AuthUser,
+    @Query('year') year?: string,
+    @Query('month') month?: string,
+  ) {
+    return this.admin.rentcastUsage(
+      user,
+      year ? Number(year) : undefined,
+      month ? Number(month) : undefined,
+    );
   }
 
   @Get('lender-rates')
-  lenderRates() {
-    return this.admin.lenderRates();
+  lenderRates(@CurrentUser() user: AuthUser) {
+    return this.admin.lenderRates(user);
   }
 
   @Get('lender-checklists')
-  lenderChecklists() {
-    return this.admin.lenderChecklists();
+  lenderChecklists(@CurrentUser() user: AuthUser) {
+    return this.admin.lenderChecklists(user);
   }
 }
 

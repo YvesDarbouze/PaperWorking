@@ -46,7 +46,12 @@ export async function syncNestSession(
       status?: string;
     };
     if (!res.ok) {
-      throw new Error(data.error || `Session sync failed (${res.status})`);
+      const detail =
+        data && typeof data === 'object' && 'detail' in data
+          ? String((data as { detail?: unknown }).detail)
+          : undefined;
+      const base = data.error || `Session sync failed (${res.status})`;
+      throw new Error(detail ? `${base} (${detail})` : base);
     }
     return;
   }

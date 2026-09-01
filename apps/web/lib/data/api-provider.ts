@@ -1,5 +1,6 @@
-import { apiFetch, apiJson } from '@/lib/api/client';
+import { getProfileFromBff } from '@/lib/settings/profile-api';
 import { bffFetch, bffJson } from '@/lib/api/bff-fetch';
+import { getBillingSummaryFromBff } from '@/lib/billing/billing-api';
 import type { InboxThread } from '@/lib/inbox/types';
 import { toUiMemberStatus } from '@/lib/team/roles';
 
@@ -212,66 +213,11 @@ export const apiProvider = {
   },
 
   async billingPreview() {
-    const data = await apiJson<Record<string, unknown>>('/api/billing');
-    const subscription =
-      data.subscription && typeof data.subscription === 'object'
-        ? (data.subscription as Record<string, unknown>)
-        : null;
-    const methods = Array.isArray(data.paymentMethods)
-      ? (data.paymentMethods as Array<Record<string, unknown>>)
-      : [];
-    const defaultPm = methods.find((m) => m.isDefault) ?? methods[0];
-    const paymentMethod = defaultPm
-      ? `${String(defaultPm.brand ?? 'card').toUpperCase()} •••• ${String(defaultPm.last4 ?? '••••')}`
-      : 'No payment method';
-
-    const invoices = Array.isArray(data.invoices)
-      ? (data.invoices as Array<Record<string, unknown>>).map((inv) => ({
-          id: String(inv.number ?? inv.id ?? 'inv'),
-          date: String(inv.date ?? ''),
-          amount: Number(inv.amount ?? 0),
-          status: String(inv.status ?? ''),
-        }))
-      : [];
-
-    return {
-      plan: String(data.plan ?? subscription?.plan ?? data.subscriptionPlan ?? '—'),
-      status: String(data.status ?? subscription?.status ?? data.subscriptionStatus ?? '—'),
-      monthlyPrice: Number(data.monthlyPrice ?? 0),
-      paymentMethod,
-      billingEmail: String(data.billingEmail ?? ''),
-      invoices,
-      trialEnds: undefined as string | undefined,
-    };
+    return getBillingSummaryFromBff();
   },
 
   async profilePreview() {
-    const data = await apiJson<{
-      settings?: Record<string, unknown>;
-      success?: boolean;
-    }>('/api/settings/profile');
-    const s = data.settings ?? {};
-    const name = String(s.displayName ?? s.name ?? '');
-    return {
-      firstName: String(s.firstName ?? name.split(/\s+/)[0] ?? ''),
-      lastName: String(s.lastName ?? name.split(/\s+/).slice(1).join(' ') ?? ''),
-      name: name || '—',
-      email: String(s.email ?? ''),
-      phone: String(s.phone ?? ''),
-      accountType: String(s.accountType ?? ''),
-      organization: String(s.companyName ?? s.organization ?? ''),
-      role: String(s.role ?? s.accountType ?? '—'),
-      mfaEnabled: Boolean(s.mfaEnabled),
-      invitationSuspended: Boolean(s.invitationSuspended),
-      claimedEmails: [] as string[],
-      activity: [] as Array<{ id: string; title: string; time: string }>,
-      sessions: [] as Array<{
-        id: string;
-        label: string;
-        detail: string;
-        current?: boolean;
-      }>,
-    };
+    return getProfileFromBff();
   },
 
   async projects() {

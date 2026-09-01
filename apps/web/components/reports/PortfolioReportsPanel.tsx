@@ -20,7 +20,10 @@ import {
   loadReportsPhaseBreakdownMockOnly,
   useMockData,
 } from '@/lib/data';
-import { apiFetch } from '@/lib/api/client';
+import {
+  generateReportExportFromBff,
+  getPortfolioReportFromBff,
+} from '@/lib/reports/reports-api';
 
 interface PortfolioReportPayload {
   period: ReportPeriodOption;
@@ -143,16 +146,8 @@ export default function PortfolioReportsPanel() {
     async function load() {
       setLoading(true);
       try {
-        const response = await apiFetch(`/api/reports/portfolio?period=${apiPeriod}`, {
-          credentials: 'include',
-          cache: 'no-store',
-        });
-        if (response.ok) {
-          const body = (await response.json()) as PortfolioReportPayload;
-          if (!cancelled) setReport(body);
-        } else if (!cancelled && !mockMode) {
-          setReport(null);
-        }
+        const body = await getPortfolioReportFromBff(apiPeriod);
+        if (!cancelled) setReport(body as PortfolioReportPayload);
       } catch {
         if (!cancelled && !mockMode) setReport(null);
       } finally {
@@ -213,17 +208,11 @@ export default function PortfolioReportsPanel() {
           return;
         }
 
-        const response = await apiFetch('/api/reports/generate', {
-          method: 'POST',
-          credentials: 'include',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            type: apiPeriod === 'overall' ? 'quarterly' : apiPeriod,
-            format: 'pdf',
-          }),
+        const { ok, blob } = await generateReportExportFromBff({
+          type: apiPeriod === 'overall' ? 'quarterly' : apiPeriod,
+          format: 'pdf',
         });
-        if (!response.ok) throw new Error('Export failed');
-        const blob = await response.blob();
+        if (!ok || !blob) throw new Error('Export failed');
         downloadBlob(blob, `PaperWorking_${apiPeriod.toUpperCase()}_Report_2026.pdf`);
       } catch {
         // Soft-fail for seed environment

@@ -3,8 +3,13 @@
 import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
 import { useCallback, useEffect, useState } from 'react';
-import { apiFetch } from '@/lib/api/client';
-import { loadBillingPreview } from '@/lib/data';
+import {
+  cancelBillingSubscriptionFromBff,
+  createStripeCheckoutFromBff,
+  createStripePortalFromBff,
+  getBillingSummaryFromBff,
+  getStripeSessionStatusFromBff,
+} from '@/lib/billing/billing-api';
 
 type BillingView = {
   plan: string;
@@ -36,7 +41,7 @@ export default function BillingPreviewPanel() {
   const [busy, setBusy] = useState(false);
 
   const refreshBilling = useCallback(async () => {
-    const data = await loadBillingPreview();
+    const data = await getBillingSummaryFromBff();
     setBilling({
       plan: data.plan ?? '—',
       status: data.status ?? '—',
@@ -54,24 +59,19 @@ export default function BillingPreviewPanel() {
       setLoading(true);
       setError(null);
       try {
-        // After Stripe redirect: verify session ownership on Nest — never invent paid status.
         if (checkoutSessionId) {
-          const statusRes = await apiFetch(
-            `/api/stripe/session-status?session_id=${encodeURIComponent(checkoutSessionId)}`,
-            { credentials: 'include', cache: 'no-store' },
-          );
-          const statusBody = (await statusRes.json().catch(() => ({}))) as {
-            error?: string;
-            payment_status?: string;
-            status?: string;
-          };
-          if (!statusRes.ok) {
+          const statusBody = await getStripeSessionStatusFromBff(checkoutSessionId);
+          const session =
+            statusBody.session && typeof statusBody.session === 'object'
+              ? (statusBody.session as Record<string, unknown>)
+              : null;
+          if (statusBody.error) {
             if (!cancelled) {
-              setActionMsg(statusBody.error ?? 'Checkout session could not be verified');
+              setActionMsg(String(statusBody.error));
             }
           } else if (!cancelled) {
             setActionMsg(
-              `Checkout ${statusBody.status ?? 'complete'} · payment ${statusBody.payment_status ?? 'unknown'}`,
+              `Checkout ${String(session?.status ?? 'complete')} · payment ${String(session?.payment_status ?? 'unknown')}`,
             );
           }
         }
@@ -94,30 +94,17 @@ export default function BillingPreviewPanel() {
     setBusy(true);
     setActionMsg(null);
     try {
-      const res = await apiFetch('/api/stripe/checkout', {
-        method: 'POST',
-        credentials: 'include',
-        body: JSON.stringify({
-          successUrl:
-            typeof window !== 'undefined'
-              ? `${window.location.origin}/billing?success=1`
-              : undefined,
-          cancelUrl:
-            typeof window !== 'undefined'
-              ? `${window.location.origin}/billing?canceled=1`
-              : undefined,
-        }),
+      const origin = typeof window !== 'undefined' ? window.location.origin : undefined;
+      const { ok, body } = await createStripeCheckoutFromBff({
+        successUrl: origin ? `${origin}/billing?success=1` : undefined,
+        cancelUrl: origin ? `${origin}/billing?canceled=1` : undefined,
       });
-      const body = (await res.json().catch(() => ({}))) as {
-        url?: string;
-        error?: string;
-        mock?: boolean;
-      };
-      if (!res.ok || !body.url) {
-        setActionMsg(body.error ?? 'Checkout unavailable — Stripe may not be configured');
+      const url = typeof body.url === 'string' ? body.url : undefined;
+      if (!ok || !url) {
+        setActionMsg(String(body.error ?? 'Checkout unavailable — Stripe may not be configured'));
         return;
       }
-      window.location.href = body.url;
+      window.location.href = url;
     } catch (err) {
       setActionMsg(err instanceof Error ? err.message : 'Checkout failed');
     } finally {
@@ -129,23 +116,14 @@ export default function BillingPreviewPanel() {
     setBusy(true);
     setActionMsg(null);
     try {
-      const res = await apiFetch('/api/stripe/portal', {
-        method: 'POST',
-        credentials: 'include',
-        body: JSON.stringify({
-          returnUrl:
-            typeof window !== 'undefined' ? `${window.location.origin}/billing` : undefined,
-        }),
-      });
-      const body = (await res.json().catch(() => ({}))) as {
-        url?: string;
-        error?: string;
-      };
-      if (!res.ok || !body.url) {
-        setActionMsg(body.error ?? 'Customer portal unavailable');
+      const origin = typeof window !== 'undefined' ? window.location.origin : undefined;
+      const { ok, body } = await createStripePortalFromBff(origin ? `${origin}/billing` : undefined);
+      const url = typeof body.url === 'string' ? body.url : undefined;
+      if (!ok || !url) {
+        setActionMsg(String(body.error ?? 'Customer portal unavailable'));
         return;
       }
-      window.location.href = body.url;
+      window.location.href = url;
     } catch (err) {
       setActionMsg(err instanceof Error ? err.message : 'Portal failed');
     } finally {
@@ -157,20 +135,12 @@ export default function BillingPreviewPanel() {
     setBusy(true);
     setActionMsg(null);
     try {
-      const res = await apiFetch('/api/billing/cancel', {
-        method: 'POST',
-        credentials: 'include',
-        body: JSON.stringify({}),
-      });
-      const body = (await res.json().catch(() => ({}))) as {
-        error?: string;
-        subscriptionStatus?: string;
-      };
-      if (!res.ok) {
-        setActionMsg(body.error ?? 'Cancel failed');
+      const { ok, body } = await cancelBillingSubscriptionFromBff();
+      if (!ok) {
+        setActionMsg(String(body.error ?? 'Cancel failed'));
         return;
       }
-      setActionMsg(`Subscription ${body.subscriptionStatus ?? 'canceled'}`);
+      setActionMsg(`Subscription ${String(body.subscriptionStatus ?? 'canceled')}`);
       await refreshBilling();
     } catch (err) {
       setActionMsg(err instanceof Error ? err.message : 'Cancel failed');

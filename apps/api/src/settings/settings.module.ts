@@ -9,9 +9,15 @@ import {
   Req,
 } from '@nestjs/common';
 import type { Request } from 'express';
+import {
+  ProfileForbiddenError,
+  ProfileNotFoundError,
+  ProfileValidationError,
+} from '@paperworking/services';
 import type { AuthUser } from '../auth/auth.types.js';
 import { CurrentUser } from '../auth/auth.types.js';
 import { PrismaService } from '../prisma/prisma.service.js';
+import { buildNestProfileServices, type NestProfileServices } from './settings-factory.js';
 
 /** Writable settings sections for normal users. */
 const ALLOWED_SECTIONS = new Set([
@@ -40,19 +46,13 @@ const FORBIDDEN_FIELDS = new Set([
   'permissions',
 ]);
 
-/** Profile column allowlist on User. */
-const PROFILE_FIELDS = new Set([
-  'name',
-  'displayName',
-  'phone',
-  'timezone',
-  'companyName',
-  'avatarUrl',
-]);
-
 @Injectable()
 export class SettingsService {
-  constructor(private readonly prisma: PrismaService) {}
+  private readonly profileServices: NestProfileServices;
+
+  constructor(private readonly prisma: PrismaService) {
+    this.profileServices = buildNestProfileServices(this.prisma);
+  }
 
   private sectionFromPath(path: string): string {
     const idx = path.indexOf('/api/settings');
@@ -84,9 +84,28 @@ export class SettingsService {
     return out;
   }
 
+  private mapProfileError(err: unknown): never {
+    if (err instanceof ProfileForbiddenError) {
+      throw new ForbiddenException(err.payload);
+    }
+    if (err instanceof ProfileValidationError) {
+      throw new BadRequestException(err.payload);
+    }
+    throw err;
+  }
+
   async get(user: AuthUser, path: string) {
     const section = this.sectionFromPath(path);
     this.assertAllowedSection(section);
+
+    if (section === 'profile') {
+      try {
+        return await this.profileServices.read.getProfile(user);
+      } catch (err) {
+        this.mapProfileError(err);
+      }
+    }
+
     const row = await this.prisma.user.findFirst({
       where: { OR: [{ id: user.uid }, { legacyFirebaseUid: user.uid }] },
     });
@@ -94,25 +113,6 @@ export class SettingsService {
       row?.settings && typeof row.settings === 'object'
         ? (row.settings as Record<string, unknown>)
         : {};
-
-    if (section === 'profile') {
-      return {
-        success: true,
-        section,
-        settings: {
-          id: row?.id || user.uid,
-          email: row?.email || user.email,
-          name: row?.name,
-          displayName: row?.displayName,
-          phone: row?.phone,
-          timezone: row?.timezone,
-          companyName: row?.companyName,
-          avatarUrl: row?.avatarUrl,
-          accountType: row?.accountType || user.accountType,
-          ...((settings.profile as object) || {}),
-        },
-      };
-    }
 
     return {
       success: true,
@@ -124,6 +124,17 @@ export class SettingsService {
   async put(user: AuthUser, path: string, body: Record<string, unknown>) {
     const section = this.sectionFromPath(path);
     this.assertAllowedSection(section);
+
+    if (section === 'profile') {
+      try {
+        return await this.profileServices.command.updateProfile(user, body);
+      } catch (err) {
+        if (err instanceof ProfileNotFoundError) {
+          return err.payload;
+        }
+        this.mapProfileError(err);
+      }
+    }
 
     // Never trust client ownership ids.
     void body.userId;
@@ -137,39 +148,6 @@ export class SettingsService {
     });
     if (!row) {
       return { success: false, error: 'User not found' };
-    }
-
-    if (section === 'profile') {
-      const data: Record<string, unknown> = {};
-      for (const key of PROFILE_FIELDS) {
-        if (typeof safeBody[key] === 'string') data[key] = safeBody[key];
-      }
-      // FE sends firstName/lastName — map to name + displayName
-      const firstName =
-        typeof safeBody.firstName === 'string' ? safeBody.firstName.trim() : '';
-      const lastName =
-        typeof safeBody.lastName === 'string' ? safeBody.lastName.trim() : '';
-      if (firstName || lastName) {
-        const full = [firstName, lastName].filter(Boolean).join(' ').trim();
-        if (full) {
-          data.name = full;
-          data.displayName = full;
-        }
-      }
-      const allowedKeys = new Set([...PROFILE_FIELDS, 'firstName', 'lastName', 'profile']);
-      for (const key of Object.keys(safeBody)) {
-        if (!allowedKeys.has(key)) {
-          throw new BadRequestException({
-            error: 'Unknown profile field',
-            field: key,
-          });
-        }
-      }
-      const updated = await this.prisma.user.update({
-        where: { id: row.id },
-        data,
-      });
-      return { success: true, section, settings: updated };
     }
 
     const existing =

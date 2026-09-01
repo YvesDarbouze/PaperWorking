@@ -1,5 +1,6 @@
 import { Body, Controller, ForbiddenException, Get, Headers, Post, Query } from '@nestjs/common';
 import { z } from 'zod';
+import { resolveDealReplyWebhookSecret } from '@paperworking/services';
 import { CurrentUser, Public, type AuthUser } from '../auth/auth.types.js';
 import { RequirePermissions } from '../authz/require-permissions.decorator.js';
 import { ZodValidationPipe } from '../common/zod-validation.pipe.js';
@@ -92,7 +93,7 @@ export class DealsController {
     @CurrentUser() user: AuthUser | undefined,
     @Body(new ZodValidationPipe(replySchema)) body: z.infer<typeof replySchema>,
   ) {
-    const configured = process.env.DEAL_REPLY_WEBHOOK_SECRET?.trim();
+    const configured = resolveDealReplyWebhookSecret();
     if (configured && inboundSecret === configured) {
       return this.deals.replyInbound(body);
     }

@@ -5,8 +5,8 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import AddressSearch from '@/components/deals/AddressSearch';
 import type { CollisionDeal } from '@/components/deals/CollisionModal';
-import { apiFetch } from '@/lib/api/client';
-import { createProjectFromBff } from '@/lib/projects/project-api';
+import { createProjectFromBff, patchProjectFromBff } from '@/lib/projects/project-api';
+import { createDealFromBff } from '@/lib/deals/deal-api';
 import { loadTeamDirectory, mockProvider, useMockData } from '@/lib/data';
 import type { ProjectWorkspace } from '@/lib/projects/types';
 
@@ -109,36 +109,38 @@ export default function NewProjectPage() {
 
   // Step 2: Handle Create New Deal for This Project (Collision alternative)
   async function handleCreateNewDealAnyway(deal: CollisionDeal) {
-    const newDealId = `deal-draft-${Date.now().toString().slice(-6)}`;
     const slug = deal.slug || deal.address.toLowerCase().replace(/[^a-z0-9]/g, '');
     const payload = {
-      id: newDealId,
       slug,
       address: deal.address,
-      status: 'draft',
-      visibility: 'private',
+      status: 'draft' as const,
+      visibility: 'private' as const,
       purchasePrice: deal.purchasePrice || deal.price || 485000,
       rehabCost: 50000,
       arv: 620000,
       holdingCosts: 15000,
       projectedRoi: 15.5,
-      creatorId: 'dev-user-1',
-      createdAt: new Date().toISOString(),
-      projectId,
-      projects: [{ id: projectId, name: projectName || 'New Project' }],
     };
 
     if (useMockData()) {
-      mockProvider.addDeal(payload);
+      const newDealId = `deal-draft-${Date.now().toString().slice(-6)}`;
+      mockProvider.addDeal({
+        ...payload,
+        id: newDealId,
+        projectId,
+        creatorId: 'dev-user-1',
+        createdAt: new Date().toISOString(),
+      });
+      setDealId(newDealId);
     } else {
-      await apiFetch('/api/deals', {
-        method: 'POST',
-        credentials: 'include',
-        body: JSON.stringify(payload),
-      }).catch(() => undefined);
+      try {
+        const created = await createDealFromBff(payload);
+        setDealId(created.id);
+      } catch {
+        return;
+      }
     }
 
-    setDealId(newDealId);
     setDealSlug(slug);
     setDealAddress(deal.address);
 
@@ -147,35 +149,37 @@ export default function NewProjectPage() {
 
   // Step 2: Handle No Deal Exists (New Address Search)
   async function handleNoDealFound(address: string, slug: string) {
-    const newDealId = `deal-draft-${Date.now().toString().slice(-6)}`;
     const payload = {
-      id: newDealId,
       slug,
       address,
-      status: 'draft',
-      visibility: 'private',
+      status: 'draft' as const,
+      visibility: 'private' as const,
       purchasePrice: 450000,
       rehabCost: 50000,
       arv: 580000,
       holdingCosts: 15000,
       projectedRoi: 16.0,
-      creatorId: 'dev-user-1',
-      createdAt: new Date().toISOString(),
-      projectId,
-      projects: [{ id: projectId, name: projectName || 'New Project' }],
     };
 
     if (useMockData()) {
-      mockProvider.addDeal(payload);
+      const newDealId = `deal-draft-${Date.now().toString().slice(-6)}`;
+      mockProvider.addDeal({
+        ...payload,
+        id: newDealId,
+        projectId,
+        creatorId: 'dev-user-1',
+        createdAt: new Date().toISOString(),
+      });
+      setDealId(newDealId);
     } else {
-      await apiFetch('/api/deals', {
-        method: 'POST',
-        credentials: 'include',
-        body: JSON.stringify(payload),
-      }).catch(() => undefined);
+      try {
+        const created = await createDealFromBff(payload);
+        setDealId(created.id);
+      } catch {
+        return;
+      }
     }
 
-    setDealId(newDealId);
     setDealSlug(slug);
     setDealAddress(address);
     setDraftDealCreated(true);
@@ -209,6 +213,9 @@ export default function NewProjectPage() {
         });
         if (!created?.id) {
           throw new Error('Project created without server id');
+        }
+        if (dealId) {
+          await patchProjectFromBff(created.id, { dealId });
         }
       }
 

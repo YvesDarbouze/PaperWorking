@@ -9,7 +9,12 @@ import {
   AdminStateBlock,
   useAdminOpsSection,
 } from '@/components/admin/admin-ui';
-import { apiFetch } from '@/lib/api/client';
+import {
+  getAdminAgentCrewFromBff,
+  getAdminLenderChecklistsFromBff,
+  getAdminLenderRatesFromBff,
+  getAdminRentcastUsageFromBff,
+} from '@/lib/admin/admin-api';
 
 interface OverviewData {
   mrr: number;
@@ -46,24 +51,18 @@ export default function AdminOverviewPanel() {
     let cancelled = false;
     async function loadInfra() {
       try {
-        const [rentcastRes, agentsRes, ratesRes, checklistsRes] = await Promise.all([
-          apiFetch('/api/admin/rentcast-usage', { credentials: 'include', cache: 'no-store' }),
-          apiFetch('/api/admin/agent-crew', { credentials: 'include', cache: 'no-store' }),
-          apiFetch('/api/admin/lender-rates', { credentials: 'include', cache: 'no-store' }),
-          apiFetch('/api/admin/lender-checklists', { credentials: 'include', cache: 'no-store' }),
+        const [rentcast, agents, rates, checklists] = await Promise.all([
+          getAdminRentcastUsageFromBff(),
+          getAdminAgentCrewFromBff(),
+          getAdminLenderRatesFromBff(),
+          getAdminLenderChecklistsFromBff(),
         ]);
-        const rentcast = (await rentcastRes.json()) as { count?: number; limit?: number };
-        const agents = (await agentsRes.json()) as { count?: number };
-        const rates = (await ratesRes.json()) as { rates?: unknown[] };
-        const checklists = (await checklistsRes.json()) as { checklists?: Record<string, unknown> };
         if (cancelled) return;
         setInfra({
-          rentcast: rentcastRes.ok ? `${rentcast.count ?? 0}/${rentcast.limit ?? 0}` : '—',
-          agents: agentsRes.ok ? String(agents.count ?? 0) : '—',
-          rates: ratesRes.ok ? String(rates.rates?.length ?? 0) : '—',
-          checklists: checklistsRes.ok
-            ? String(Object.keys(checklists.checklists ?? {}).length)
-            : '—',
+          rentcast: `${rentcast.count ?? 0}/${rentcast.limit ?? 0}`,
+          agents: String(agents.count ?? 0),
+          rates: String(rates.rates?.length ?? 0),
+          checklists: String(Object.keys(checklists.checklists ?? {}).length),
         });
       } catch {
         // keep empty

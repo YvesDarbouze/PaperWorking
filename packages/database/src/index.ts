@@ -53,3 +53,16 @@ export {
 export * from './neon/index.js';
 export * from './firestore/index.js';
 export * from './sync/index.js';
+export type { FileStoragePort } from './storage/file-storage-port.js';
+export {
+  createFirebaseFileStorage,
+  firebaseStorageHasCredentials,
+  resolveFirebaseStorageConfig,
+  resetFirebaseStorageForTests,
+} from './firebase/firebase-file-storage.js';
+export { createUnavailableFileStorage } from './storage/unavailable-file-storage.js';
+export {
+  createStripeBillingProvider,
+  type StripeBillingProvider,
+} from './stripe/stripe-billing-provider.js';
+export { createReportPdfExportPort, type ReportPdfExportAdapter } from './reports/report-pdf-export.js';

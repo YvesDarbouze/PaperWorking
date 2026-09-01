@@ -67,10 +67,11 @@ describe('phase B1 — bffFetch transport', () => {
     expect(bffUrl('/api/projects/p1')).toBe('/api/projects/p1');
   });
 
-  it('isBffApiPath matches list and detail only', () => {
+  it('isBffApiPath matches list, detail, and KPI current routes', () => {
     expect(isBffApiPath('/api/projects')).toBe(true);
     expect(isBffApiPath('/api/projects/p1')).toBe(true);
-    expect(isBffApiPath('/api/projects/p1/kpis/current')).toBe(false);
+    expect(isBffApiPath('/api/projects/p1/kpis/current')).toBe(true);
+    expect(isBffApiPath('/api/projects/p1/kpis/breakdown')).toBe(false);
   });
 
   it('bffFetch does not use NEXT_PUBLIC_API_URL', async () => {

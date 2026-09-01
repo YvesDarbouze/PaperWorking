@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import type { VendorProfileData } from '@/lib/vendor-portal/seed-data';
-import { apiFetch } from '@/lib/api/client';
+import { getVendorPortalProfileFromBff, updateVendorPortalProfileFromBff } from '@/lib/vendor-portal/vendor-portal-api';
 
 const VENDOR_TYPES = [
   'General Contractor',
@@ -26,13 +26,8 @@ export default function VendorProfilePanel() {
       setLoading(true);
       setError(null);
       try {
-        const response = await apiFetch('/api/vendor-portal/profile', {
-          credentials: 'include',
-          cache: 'no-store',
-        });
-        const body = (await response.json()) as { profile?: VendorProfileData; error?: string };
-        if (!response.ok) throw new Error(body.error ?? 'Failed to load profile');
-        if (!cancelled) setProfile(body.profile ?? null);
+        const body = await getVendorPortalProfileFromBff();
+        if (!cancelled) setProfile((body.profile ?? null) as VendorProfileData | null);
       } catch (loadError) {
         if (!cancelled) {
           setError(loadError instanceof Error ? loadError.message : 'Failed to load profile');
@@ -60,15 +55,8 @@ export default function VendorProfilePanel() {
     setSaving(true);
     setError(null);
     try {
-      const response = await apiFetch('/api/vendor-portal/profile', {
-        method: 'PUT',
-        credentials: 'include',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(profile),
-      });
-      const body = (await response.json()) as { profile?: VendorProfileData; error?: string };
-      if (!response.ok) throw new Error(body.error ?? 'Failed to save profile');
-      setProfile(body.profile ?? profile);
+      const body = await updateVendorPortalProfileFromBff(profile as unknown as Record<string, unknown>);
+      setProfile((body.profile ?? profile) as VendorProfileData);
       setSaved(true);
     } catch (saveError) {
       setError(saveError instanceof Error ? saveError.message : 'Failed to save profile');

@@ -1,3 +1,7 @@
+/**
+ * Client-side broadcast token payload decode for external deal page display.
+ * Signing happens server-side only (packages/services broadcast-token.ts).
+ */
 export interface BroadcastTokenPayload {
   dealId: string;
   email?: string;
@@ -21,26 +25,8 @@ export interface BroadcastTokenPayload {
     investmentCriteria?: string;
   } | null;
   exp?: number;
-}
-
-export function createBroadcastToken(payload: BroadcastTokenPayload): string {
-  const header = { alg: 'HS256', typ: 'JWT' };
-  const encodeBase64Url = (obj: unknown) =>
-    Buffer.from(JSON.stringify(obj))
-      .toString('base64')
-      .replace(/=/g, '')
-      .replace(/\+/g, '-')
-      .replace(/\//g, '_');
-
-  const encodedHeader = encodeBase64Url(header);
-  const encodedPayload = encodeBase64Url({
-    ...payload,
-    exp: payload.exp || Math.floor(Date.now() / 1000) + 14 * 86400,
-  });
-  const signature = Buffer.from(`${encodedHeader}.${encodedPayload}.paperworking_secret`).toString(
-    'base64url',
-  );
-  return `${encodedHeader}.${encodedPayload}.${signature}`;
+  invitationId?: string;
+  broadcastId?: string;
 }
 
 export function decodeBroadcastToken(token: string): BroadcastTokenPayload | null {

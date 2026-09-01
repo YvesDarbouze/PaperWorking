@@ -59,9 +59,9 @@ describe('phase B5 — bffFetch transport for marketplace profile GET', () => {
     expect(bffUrl('/api/marketplace/profile')).toBe('/api/marketplace/profile');
   });
 
-  it('isBffApiPath matches GET /api/marketplace/profile only', () => {
+  it('isBffApiPath matches marketplace profile read route', () => {
     expect(isBffApiPath('/api/marketplace/profile')).toBe(true);
-    expect(isBffApiPath('/api/marketplace/listings')).toBe(false);
+    expect(isBffApiPath('/api/marketplace/investors/follow')).toBe(true);
   });
 
   it('bffFetch for marketplace profile does not use NEXT_PUBLIC_API_URL', async () => {

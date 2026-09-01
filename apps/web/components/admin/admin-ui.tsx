@@ -1,7 +1,7 @@
 'use client';
 
 import { useCallback, useEffect, useState } from 'react';
-import { apiFetch } from '@/lib/api/client';
+import { getAdminOpsFromBff } from '@/lib/admin/admin-api';
 
 export function useAdminOpsSection<T>(section: string) {
   const [data, setData] = useState<T | null>(null);
@@ -12,12 +12,9 @@ export function useAdminOpsSection<T>(section: string) {
     setLoading(true);
     setError(null);
     try {
-      const res = await apiFetch(`/api/admin/ops?section=${section}`, {
-        credentials: 'include',
-        cache: 'no-store',
-      });
-      const body = (await res.json()) as Record<string, unknown> & { data?: T; error?: string };
-      if (!res.ok) throw new Error(String(body.error ?? `Failed to load ${section}`));
+      const body = await getAdminOpsFromBff<Record<string, unknown> & { data?: T; error?: string }>(
+        section,
+      );
       if (body.data !== undefined) {
         setData(body.data);
       } else {

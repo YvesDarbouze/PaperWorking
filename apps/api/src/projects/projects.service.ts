@@ -9,8 +9,12 @@ import { AuthzForbiddenError, AuthzNotFoundError } from '@paperworking/authz';
 import {
   ProjectsReadValidationError,
   ProjectsCommandValidationError,
+  ProjectDocumentsValidationError,
+  ProjectDocumentsStorageError,
   type ProjectsReadService,
   type ProjectsCommandService,
+  type ProjectKpiReadService,
+  type ProjectDocumentsReadService,
   type CreateProjectInput,
 } from '@paperworking/services';
 import { AuthorizationService } from '../authz/authorization.service.js';
@@ -25,6 +29,12 @@ function mapProjectsServiceError(error: unknown): never {
     throw new BadRequestException({ error: error.message });
   }
   if (error instanceof ProjectsCommandValidationError) {
+    throw new BadRequestException({ error: error.message });
+  }
+  if (error instanceof ProjectDocumentsValidationError) {
+    throw new BadRequestException({ error: error.message });
+  }
+  if (error instanceof ProjectDocumentsStorageError) {
     throw new BadRequestException({ error: error.message });
   }
   if (error instanceof AuthzForbiddenError) {
@@ -43,6 +53,8 @@ export class ProjectsService {
     private readonly authz: AuthorizationService,
     private readonly projectsRead: ProjectsReadService,
     private readonly projectsCommand: ProjectsCommandService,
+    private readonly projectKpiRead: ProjectKpiReadService,
+    private readonly projectDocumentsRead: ProjectDocumentsReadService,
   ) {}
 
   async list(user: AuthUser, q?: string) {
@@ -78,24 +90,11 @@ export class ProjectsService {
   }
 
   async currentKpis(user: AuthUser, id: string) {
-    const project = await this.authz.assertProjectAccess(user, id, 'projects.read');
-    const purchasePrice = project.purchasePrice ?? 0;
-    return {
-      success: true,
-      projectId: id,
-      kpis: {
-        purchasePrice,
-        // Heuristic multipliers removed — formulas unknown; do not present as real.
-        estimatedArv: null,
-        estimatedEquity: null,
-        estimatedCashNeeded: null,
-        estimatedArvStatus: 'unavailable',
-        estimatedEquityStatus: 'unavailable',
-        estimatedCashNeededStatus: 'unavailable',
-        currentPhase: this.repo.phaseNumberToName(project.currentPhase ?? 1),
-        incomplete: true,
-      },
-    };
+    try {
+      return await this.projectKpiRead.getCurrentProjectKpis(user, id);
+    } catch (error) {
+      mapProjectsServiceError(error);
+    }
   }
 
   async patchPhase(id: string, phase: string, body: Record<string, unknown>, user: AuthUser) {
@@ -118,44 +117,36 @@ export class ProjectsService {
   }
 
   async listDocuments(user: AuthUser, projectId: string) {
-    await this.authz.assertProjectAccess(user, projectId, 'projects.read');
-    const documents = await this.repo.listDocuments(projectId);
-    return { success: true, documents };
+    try {
+      return await this.projectDocumentsRead.listDocuments(user, projectId);
+    } catch (error) {
+      mapProjectsServiceError(error);
+    }
   }
 
   async createDocument(
-    projectId: string,
-    body: {
+    _projectId: string,
+    _body: {
       name: string;
       mimeType?: string;
       storageKey?: string;
       sizeBytes?: number;
       metadata?: Record<string, unknown>;
     },
-    user: AuthUser,
+    _user: AuthUser,
   ) {
-    await this.authz.assertProjectAccess(user, projectId, 'projects.update');
-    const document = await this.repo.createDocument(projectId, {
-      ...body,
-      uploadedBy: user.uid,
+    throw new BadRequestException({
+      error:
+        'JSON document creation without file bytes is deprecated. Use multipart POST /api/projects/:id/documents on the Next BFF.',
     });
-    return { success: true, document };
   }
 
   async downloadDocument(user: AuthUser, projectId: string, docId: string) {
-    await this.authz.assertProjectAccess(user, projectId, 'projects.read');
-    const document = await this.repo.getDocument(projectId, docId);
-    return {
-      success: true,
-      document: {
-        id: document.id,
-        name: document.name,
-        mimeType: document.mimeType,
-        storageKey: document.storageKey,
-        sizeBytes: document.sizeBytes,
-        metadata: document.metadata,
-      },
-    };
+    try {
+      return await this.projectDocumentsRead.getDocumentAccess(user, projectId, docId);
+    } catch (error) {
+      mapProjectsServiceError(error);
+    }
   }
 
   async getSub(user: AuthUser, projectId: string, name: string) {

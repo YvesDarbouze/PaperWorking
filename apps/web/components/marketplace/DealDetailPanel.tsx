@@ -7,7 +7,7 @@ import {
   formatDealCurrency,
 } from '@/lib/marketplace/format';
 import DealBroadcastModal from '@/components/marketplace/DealBroadcastModal';
-import { apiFetch } from '@/lib/api/client';
+import { checkDealExistsFromBff } from '@/lib/deals/deal-api';
 
 interface DealPreview {
   id: string;
@@ -40,18 +40,9 @@ export default function DealDetailPanel({ slug }: { slug: string }) {
       setLoading(true);
       setError(null);
       try {
-        const response = await apiFetch(`/api/deals/exists?slug=${encodeURIComponent(slug)}`, {
-          credentials: 'include',
-          cache: 'no-store',
-        });
-        const body = (await response.json()) as {
-          exists: boolean;
-          deal: DealPreview | null;
-          error?: string;
-        };
-        if (!response.ok) throw new Error(body.error ?? 'Failed to load deal');
+        const body = await checkDealExistsFromBff(slug);
         if (!body.exists || !body.deal) throw new Error('Deal not found or not visible');
-        if (!cancelled) setDeal(body.deal);
+        if (!cancelled) setDeal(body.deal as unknown as DealPreview);
       } catch (loadError) {
         if (!cancelled) {
           setError(loadError instanceof Error ? loadError.message : 'Failed to load deal');

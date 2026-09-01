@@ -7,7 +7,7 @@ import AddressSearch from '@/components/deals/AddressSearch';
 import DashboardPageHeader, {
   DashboardSecondaryButton,
 } from '@/components/dashboard/DashboardPageHeader';
-import { apiFetch } from '@/lib/api/client';
+import { listDealsFromBff } from '@/lib/deals/deal-api';
 
 type DealsTab = 'discover' | 'my_activity';
 type ViewMode = 'grid' | 'map';
@@ -43,13 +43,8 @@ export default function DealsMarketplacePanel() {
     else setRefreshing(true);
     setError(null);
     try {
-      const response = await apiFetch(`/api/deals?tab=${tab}`, {
-        credentials: 'include',
-        cache: 'no-store',
-      });
-      const body = (await response.json()) as DealsPayload & { error?: string };
-      if (!response.ok) throw new Error(body.error ?? 'Failed to load deals');
-      setPayload(body);
+      const body = await listDealsFromBff({ tab });
+      setPayload(body as unknown as DealsPayload);
       setAssetFilter((current) => {
         if (current === 'all') return current;
         const types = new Set((body.deals ?? []).map((deal) => deal.assetClass));

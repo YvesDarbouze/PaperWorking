@@ -168,12 +168,11 @@ export async function handleSessionPost(
     if (establishSharedSession) {
       const shared = await establishSharedSession({ idToken, sessionId });
       if (!shared.ok) {
-        if (shared.status === 401) {
-          return jsonResponse(401, {
-            error: 'Token verification failed',
-            detail: 'verify_failed',
-          });
-        }
+        console.error(
+          '[POST /api/auth/session] establishSession failed:',
+          shared.status,
+          shared.body,
+        );
         return jsonResponse(shared.status, shared.body as Record<string, unknown>);
       }
 

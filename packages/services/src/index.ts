@@ -1,7 +1,7 @@
 /**
  * Framework-independent application services extracted from Nest modules.
  */
-export const SERVICES_PACKAGE_STATUS = 'phase-b6-inbox-mutations' as const;
+export const SERVICES_PACKAGE_STATUS = 'phase-b8-project-writes' as const;
 
 export {
   SESSION_COOKIE,
@@ -50,6 +50,9 @@ export {
   ProjectsReadService,
   ProjectsReadValidationError,
   createProjectsReadService,
+  ProjectsCommandService,
+  ProjectsCommandValidationError,
+  createProjectsCommandService,
   serializeProject,
   phaseNumberToName,
   type ProjectsReadRepository,
@@ -57,6 +60,14 @@ export {
   type ProjectsListResult,
   type ProjectGetResult,
   type SerializedProject,
+  type ProjectCommandRecord,
+  type ProjectCreateData,
+  type ProjectsCommandRepository,
+  type CreateProjectInput,
+  type UpdateProjectInput,
+  type ProjectCreateResult,
+  type ProjectUpdateResult,
+  type ProjectsCommandServiceDeps,
 } from './projects/index.js';
 
 export {
@@ -94,11 +105,29 @@ export {
 export {
   TeamMembersReadService,
   createTeamMembersReadService,
+  TeamCommandService,
+  createTeamCommandService,
+  TeamInvalidRoleError,
+  TeamMemberNotFoundError,
+  TeamMemberIdRequiredError,
+  TeamNoOrganizationError,
   type TeamMembersReadRepository,
   type TeamMembersReadServiceDeps,
   type TeamMembersReadInput,
   type TeamMembersListResult,
   type OrganizationMemberRecord,
+  type TeamCommandRepository,
+  type TeamCommandServiceDeps,
+  type TeamOrgInput,
+  type TeamInviteInput,
+  type TeamCreateMemberInput,
+  type TeamUpdateMemberInput,
+  type OrganizationInviteRecord,
+  type TeamInvitesListResult,
+  type TeamInviteResult,
+  type TeamCreateMemberResult,
+  type TeamUpdateMemberResult,
+  type TeamRemoveMemberResult,
 } from './team/index.js';
 
 export {

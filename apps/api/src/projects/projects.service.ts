@@ -8,7 +8,10 @@ import type { AuthUser } from '../auth/auth.types.js';
 import { AuthzForbiddenError, AuthzNotFoundError } from '@paperworking/authz';
 import {
   ProjectsReadValidationError,
+  ProjectsCommandValidationError,
   type ProjectsReadService,
+  type ProjectsCommandService,
+  type CreateProjectInput,
 } from '@paperworking/services';
 import { AuthorizationService } from '../authz/authorization.service.js';
 import {
@@ -17,8 +20,11 @@ import {
   type SubcollectionName,
 } from './projects.repository.js';
 
-function mapProjectsReadError(error: unknown): never {
+function mapProjectsServiceError(error: unknown): never {
   if (error instanceof ProjectsReadValidationError) {
+    throw new BadRequestException({ error: error.message });
+  }
+  if (error instanceof ProjectsCommandValidationError) {
     throw new BadRequestException({ error: error.message });
   }
   if (error instanceof AuthzForbiddenError) {
@@ -36,74 +42,39 @@ export class ProjectsService {
     private readonly repo: ProjectsRepository,
     private readonly authz: AuthorizationService,
     private readonly projectsRead: ProjectsReadService,
+    private readonly projectsCommand: ProjectsCommandService,
   ) {}
 
   async list(user: AuthUser, q?: string) {
     try {
       return await this.projectsRead.listProjects(user, q);
     } catch (error) {
-      mapProjectsReadError(error);
+      mapProjectsServiceError(error);
     }
   }
 
-  async create(
-    user: AuthUser,
-    body: {
-      name: string;
-      address?: string;
-      city?: string;
-      state?: string;
-      zip?: string;
-      purchasePrice?: number;
-      organizationId?: string;
-    },
-  ) {
-    this.authz.assertPermission(user, 'projects.create');
-    const organizationId = await this.authz.resolveTrustedOrgId(
-      user,
-      body.organizationId,
-    );
-    const project = await this.repo.create({
-      ...body,
-      organizationId,
-      userId: user.uid,
-    });
-    return { success: true, project };
+  async create(user: AuthUser, body: CreateProjectInput) {
+    try {
+      return await this.projectsCommand.createProject(user, body);
+    } catch (error) {
+      mapProjectsServiceError(error);
+    }
   }
 
   async getById(user: AuthUser, id: string) {
     try {
       return await this.projectsRead.getProjectById(user, id);
     } catch (error) {
-      mapProjectsReadError(error);
+      mapProjectsServiceError(error);
     }
   }
 
   async patch(user: AuthUser, id: string, body: Record<string, unknown>) {
-    await this.authz.assertProjectAccess(user, id, 'projects.update');
-    const allowed = [
-      'name',
-      'title',
-      'address',
-      'city',
-      'state',
-      'zip',
-      'purchasePrice',
-      'status',
-      'visibility',
-      'currentPhase',
-    ];
-    const patch: Record<string, unknown> = {};
-    for (const key of allowed) {
-      if (body[key] !== undefined) patch[key] = body[key];
+    try {
+      return await this.projectsCommand.updateProject(user, id, body);
+    } catch (error) {
+      mapProjectsServiceError(error);
     }
-    // organizationId changes must be membership-verified
-    if (typeof body.organizationId === 'string') {
-      await this.authz.assertOrgAccess(user, body.organizationId);
-      patch.organizationId = body.organizationId;
-    }
-    const project = await this.repo.update(id, patch);
-    return { success: true, project };
   }
 
   async currentKpis(user: AuthUser, id: string) {

@@ -12,10 +12,12 @@ export { createPrismaAuthzStore } from './prisma-authz-store.js';
 export { createPrismaIdentityUserRepository } from './prisma-identity-user-repository.js';
 export type { PrismaIdentityUserRepository } from './prisma-identity-user-repository.js';
 export { createPrismaProjectsReadRepository } from './prisma-projects-read-repository.js';
+export { createPrismaProjectsCommandRepository } from './prisma-projects-command-repository.js';
 export { createPrismaInboxReadRepository } from './prisma-inbox-read-repository.js';
 export { createPrismaInboxCommandRepository } from './prisma-inbox-command-repository.js';
 export { createPrismaPortfolioMetricsReadRepository } from './prisma-portfolio-metrics-read-repository.js';
 export { createPrismaTeamMembersReadRepository } from './prisma-team-members-read-repository.js';
+export { createPrismaTeamCommandRepository } from './prisma-team-command-repository.js';
 export { createPrismaMarketplaceProfileReadRepository } from './prisma-marketplace-profile-read-repository.js';
 export {
   resolveDatabaseAdapterMode,

@@ -6,6 +6,7 @@ import Link from 'next/link';
 import AddressSearch from '@/components/deals/AddressSearch';
 import type { CollisionDeal } from '@/components/deals/CollisionModal';
 import { apiFetch } from '@/lib/api/client';
+import { createProjectFromBff } from '@/lib/projects/project-api';
 import { loadTeamDirectory, mockProvider, useMockData } from '@/lib/data';
 import type { ProjectWorkspace } from '@/lib/projects/types';
 
@@ -202,12 +203,13 @@ export default function NewProjectPage() {
       if (useMockData()) {
         mockProvider.addProject(projectPayload as ProjectWorkspace);
       } else {
-        const res = await apiFetch('/api/projects', {
-          method: 'POST',
-          credentials: 'include',
-          body: JSON.stringify(projectPayload),
+        const created = await createProjectFromBff({
+          propertyName: projectName || 'New Project',
+          address: dealAddress || undefined,
         });
-        if (!res.ok) throw new Error(`Failed to create project (${res.status})`);
+        if (!created?.id) {
+          throw new Error('Project created without server id');
+        }
       }
 
       setTimeout(() => {

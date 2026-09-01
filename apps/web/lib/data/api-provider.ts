@@ -1,6 +1,7 @@
 import { apiFetch, apiJson } from '@/lib/api/client';
 import { bffFetch, bffJson } from '@/lib/api/bff-fetch';
 import type { InboxThread } from '@/lib/inbox/types';
+import { toUiMemberStatus } from '@/lib/team/roles';
 
 export type DashboardOverviewLive = {
   portfolioSummary: {
@@ -194,9 +195,7 @@ export const apiProvider = {
       email: String(m.email ?? ''),
       role: String(m.role ?? 'Member'),
       type: (m.type === 'External' ? 'External' : 'Internal') as 'Internal' | 'External',
-      status: (['Active', 'Invited', 'Suspended', 'Removed'].includes(String(m.status))
-        ? String(m.status)
-        : 'Active') as 'Active' | 'Invited' | 'Suspended' | 'Removed',
+      status: toUiMemberStatus(String(m.status ?? 'active')),
       projects: Number(m.projects ?? 0),
       lastActive: String(m.lastActive ?? '—'),
       invitedAt: m.invitedAt ? String(m.invitedAt) : undefined,

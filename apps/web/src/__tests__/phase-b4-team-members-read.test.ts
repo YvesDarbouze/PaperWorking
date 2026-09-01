@@ -80,9 +80,11 @@ describe('phase B4 — bffFetch transport for team members GET', () => {
     expect(bffUrl('/api/team/members')).toBe('/api/team/members');
   });
 
-  it('isBffApiPath matches GET /api/team/members only', () => {
+  it('isBffApiPath matches GET /api/team/members and B7 mutation paths', () => {
     expect(isBffApiPath('/api/team/members')).toBe(true);
-    expect(isBffApiPath('/api/team/invite')).toBe(false);
+    expect(isBffApiPath('/api/team/invite')).toBe(true);
+    expect(isBffApiPath('/api/team/invites')).toBe(true);
+    expect(isBffApiPath('/api/team/members/member-1')).toBe(true);
   });
 
   it('bffFetch for team members does not use NEXT_PUBLIC_API_URL', async () => {

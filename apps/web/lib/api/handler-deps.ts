@@ -8,19 +8,23 @@ import {
 import {
   createIdentityProvisioningService,
   createProjectsReadService,
+  createProjectsCommandService,
   createInboxReadService,
   createInboxCommandService,
   createPortfolioMetricsReadService,
   createTeamMembersReadService,
+  createTeamCommandService,
   createMarketplaceProfileReadService,
   createPrismaSessionUserStore,
   resolveAuthUserFromCredentials,
   sessionCommandService,
   type ProjectsReadService,
+  type ProjectsCommandService,
   type InboxReadService,
   type InboxCommandService,
   type PortfolioMetricsReadService,
   type TeamMembersReadService,
+  type TeamCommandService,
   type MarketplaceProfileReadService,
   type SessionResolverDeps,
   type SessionUserStore,
@@ -29,10 +33,12 @@ import {
   createPrismaAuthzStore,
   createPrismaIdentityUserRepository,
   createPrismaProjectsReadRepository,
+  createPrismaProjectsCommandRepository,
   createPrismaInboxReadRepository,
   createPrismaInboxCommandRepository,
   createPrismaPortfolioMetricsReadRepository,
   createPrismaTeamMembersReadRepository,
+  createPrismaTeamCommandRepository,
   createPrismaMarketplaceProfileReadRepository,
   getApiPrismaClient,
   type ApiPrismaClient,
@@ -57,10 +63,12 @@ export type HandlerDeps = {
 
 let cachedDeps: HandlerDeps | null = null;
 let cachedProjectsRead: ProjectsReadService | null = null;
+let cachedProjectsCommand: ProjectsCommandService | null = null;
 let cachedInboxRead: InboxReadService | null = null;
 let cachedInboxCommand: InboxCommandService | null = null;
 let cachedPortfolioMetricsRead: PortfolioMetricsReadService | null = null;
 let cachedTeamMembersRead: TeamMembersReadService | null = null;
+let cachedTeamCommand: TeamCommandService | null = null;
 let cachedMarketplaceProfileRead: MarketplaceProfileReadService | null = null;
 
 function buildHealthDeps(): HealthCheckDeps {
@@ -119,10 +127,12 @@ export function buildHandlerDeps(): HandlerDeps {
 export function resetHandlerDepsForTests(): void {
   cachedDeps = null;
   cachedProjectsRead = null;
+  cachedProjectsCommand = null;
   cachedInboxRead = null;
   cachedInboxCommand = null;
   cachedPortfolioMetricsRead = null;
   cachedTeamMembersRead = null;
+  cachedTeamCommand = null;
   cachedMarketplaceProfileRead = null;
 }
 
@@ -135,6 +145,19 @@ export function buildProjectsReadService(deps: HandlerDeps = buildHandlerDeps())
     });
   }
   return cachedProjectsRead;
+}
+
+/** Shared project command service for Next POST/PATCH /api/projects* (Phase B8). */
+export function buildProjectsCommandService(
+  deps: HandlerDeps = buildHandlerDeps(),
+): ProjectsCommandService {
+  if (!cachedProjectsCommand) {
+    cachedProjectsCommand = createProjectsCommandService({
+      authz: deps.authorization,
+      repository: createPrismaProjectsCommandRepository(deps.prisma),
+    });
+  }
+  return cachedProjectsCommand;
 }
 
 /** Shared inbox read service for Next GET /api/inbox adapter (Phase B2). */
@@ -183,6 +206,19 @@ export function buildTeamMembersReadService(
     });
   }
   return cachedTeamMembersRead;
+}
+
+/** Shared team command service for Next team mutation routes (Phase B7). */
+export function buildTeamCommandService(
+  deps: HandlerDeps = buildHandlerDeps(),
+): TeamCommandService {
+  if (!cachedTeamCommand) {
+    cachedTeamCommand = createTeamCommandService({
+      authz: deps.authorization,
+      repository: createPrismaTeamCommandRepository(deps.prisma),
+    });
+  }
+  return cachedTeamCommand;
 }
 
 /** Shared marketplace profile read service for Next GET /api/marketplace/profile (Phase B5). */

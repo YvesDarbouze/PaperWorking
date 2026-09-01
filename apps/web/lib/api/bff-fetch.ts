@@ -32,7 +32,7 @@ export async function bffJson<T = unknown>(path: string, init: BffFetchInit = {}
   return res.json() as Promise<T>;
 }
 
-/** True when path is a migrated same-origin BFF route (GET list/detail only). */
+/** True when path is a migrated same-origin BFF route (reads + core writes). */
 export function isBffApiPath(path: string): boolean {
   const normalized = bffUrl(path);
   if (normalized === '/api/projects') return true;
@@ -40,6 +40,9 @@ export function isBffApiPath(path: string): boolean {
   if (/^\/api\/inbox\/[^/]+$/.test(normalized)) return true;
   if (normalized === '/api/portfolio/metrics') return true;
   if (normalized === '/api/team/members') return true;
+  if (normalized === '/api/team/invites') return true;
+  if (normalized === '/api/team/invite') return true;
+  if (/^\/api\/team\/members\/[^/]+$/.test(normalized)) return true;
   if (normalized === '/api/marketplace/profile') return true;
   return /^\/api\/projects\/[^/]+$/.test(normalized);
 }

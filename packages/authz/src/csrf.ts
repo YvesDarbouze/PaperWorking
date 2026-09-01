@@ -13,7 +13,26 @@ const PRODUCTION_ORIGINS: ReadonlySet<string> = new Set([
   'https://www.paperworking.co',
   'https://paperworking-97055.web.app',
   'https://paperworking-97055.firebaseapp.com',
+  // Firebase App Hosting default URL (staging / preview)
+  'https://paperworker--paperworking-97055.us-east4.hosted.app',
 ]);
+
+/** Firebase App Hosting serves each backend at https://<backend>--<project>.<region>.hosted.app */
+function isFirebaseAppHostingOrigin(origin: string): boolean {
+  try {
+    const { protocol, hostname } = new URL(origin);
+    return protocol === 'https:' && hostname.endsWith('.hosted.app');
+  } catch {
+    return false;
+  }
+}
+
+function extraOriginsFromEnv(): string[] {
+  return (process.env.CORS_ORIGINS || '')
+    .split(',')
+    .map((s) => s.trim())
+    .filter(Boolean);
+}
 
 const DEV_ORIGINS: ReadonlySet<string> = new Set([
   'http://localhost:3000',
@@ -25,10 +44,11 @@ const DEV_ORIGINS: ReadonlySet<string> = new Set([
 ]);
 
 function allowedOrigins(isE2e: boolean): ReadonlySet<string> {
+  const base = new Set([...PRODUCTION_ORIGINS, ...extraOriginsFromEnv()]);
   if (process.env.NODE_ENV !== 'production' || isE2e) {
-    return new Set([...PRODUCTION_ORIGINS, ...DEV_ORIGINS]);
+    return new Set([...base, ...DEV_ORIGINS]);
   }
-  return PRODUCTION_ORIGINS;
+  return base;
 }
 
 function isLocalDevOrigin(origin: string): boolean {
@@ -42,6 +62,7 @@ function isLocalDevOrigin(origin: string): boolean {
 
 function isAllowedOrigin(origin: string, isE2e: boolean): boolean {
   if (allowedOrigins(isE2e).has(origin)) return true;
+  if (isFirebaseAppHostingOrigin(origin)) return true;
   if ((process.env.NODE_ENV !== 'production' || isE2e) && isLocalDevOrigin(origin)) return true;
   return false;
 }

@@ -82,6 +82,12 @@ env:
       - BUILD
       - RUNTIME
 
+  # CSRF allowlist for POST/DELETE /api/auth/session (same-origin BFF on App Hosting).
+  - variable: CORS_ORIGINS
+    value: "https://paperworker--paperworking-97055.us-east4.hosted.app"
+    availability:
+      - RUNTIME
+
   # Nest Cloud Run base URL for browser apiFetch on unmigrated routes (billing, inbox mutations, etc.).
   # NEXT_PUBLIC_* is inlined at `next build` — MUST be available at BUILD time.
   # Plain value (not Secret Manager): this URL is public in the client bundle anyway.

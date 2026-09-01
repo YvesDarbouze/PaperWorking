@@ -62,3 +62,17 @@ export function canManageOrganization(role: string | null | undefined): boolean 
   if (NON_MANAGE_ROLES.has(n)) return false;
   return MANAGE_ROLES.has(n);
 }
+
+/** Map Neon/Postgres member status to UI label. */
+export function toUiMemberStatus(status: string | null | undefined): TeamMemberStatus {
+  const s = String(status ?? 'active').toLowerCase();
+  if (s === 'invited') return 'Invited';
+  if (s === 'suspended') return 'Suspended';
+  if (s === 'removed') return 'Removed';
+  return 'Active';
+}
+
+/** Map UI status label to API/Prisma value. */
+export function toApiMemberStatus(status: TeamMemberStatus): string {
+  return status.toLowerCase();
+}

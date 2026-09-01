@@ -15,18 +15,21 @@ import { AuthorizationService as CoreAuthorizationService } from '@paperworking/
 import {
   createPrismaAuthzStore,
   createPrismaTeamMembersReadRepository,
+  createPrismaTeamCommandRepository,
 } from '@paperworking/database';
 import {
   TeamMembersReadService,
+  TeamCommandService,
+  TeamInvalidRoleError,
+  TeamMemberIdRequiredError,
+  TeamMemberNotFoundError,
+  TeamNoOrganizationError,
   createTeamMembersReadService,
+  createTeamCommandService,
 } from '@paperworking/services';
 import type { AuthUser } from '../auth/auth.types.js';
 import { CurrentUser } from '../auth/auth.types.js';
 import { AuthorizationService } from '../authz/authorization.service.js';
-import {
-  displayOrgRole,
-  isAllowedOrgRole,
-} from '../authz/org-roles.js';
 import { RequirePermissions } from '../authz/require-permissions.decorator.js';
 import { PrismaService } from '../prisma/prisma.service.js';
 
@@ -36,47 +39,25 @@ export class TeamService {
     private readonly prisma: PrismaService,
     private readonly authz: AuthorizationService,
     private readonly teamMembersRead: TeamMembersReadService,
+    private readonly teamCommand: TeamCommandService,
   ) {}
-
-  /**
-   * Org context from session membership only.
-   * Client organizationId is accepted only after membership verification.
-   */
-  private async resolveOrgId(user: AuthUser, explicit?: string) {
-    return this.authz.resolveTrustedOrgId(user, explicit);
-  }
 
   async listMembers(user: AuthUser, organizationId?: string) {
     return this.teamMembersRead.listTeamMembers(user, { organizationId });
   }
 
-  private normalizeIncomingRole(role: unknown): string {
-    if (typeof role !== 'string' || !role.trim()) return 'Contributor';
-    if (!isAllowedOrgRole(role)) {
-      throw new ForbiddenException({ error: 'Invalid organization role', role });
-    }
-    return displayOrgRole(role);
-  }
-
   async createMember(user: AuthUser, body: Record<string, unknown>) {
-    const orgId = await this.resolveOrgId(
-      user,
-      typeof body.organizationId === 'string' ? body.organizationId : undefined,
-    );
-    if (!orgId) {
-      return { success: false, error: 'No organization found for user' };
-    }
-    await this.authz.assertTeamManage(user, orgId);
-    const member = await this.prisma.organizationMember.create({
-      data: {
-        organizationId: orgId,
+    try {
+      return await this.teamCommand.createMember(user, {
+        organizationId:
+          typeof body.organizationId === 'string' ? body.organizationId : undefined,
         userId: typeof body.userId === 'string' ? body.userId : undefined,
-        email: typeof body.email === 'string' ? body.email : user.email || undefined,
-        role: this.normalizeIncomingRole(body.role),
-        status: 'active',
-      },
-    });
-    return { success: true, member };
+        email: typeof body.email === 'string' ? body.email : undefined,
+        role: typeof body.role === 'string' ? body.role : undefined,
+      });
+    } catch (error) {
+      return this.mapCommandError(error);
+    }
   }
 
   async teamHandle(
@@ -92,34 +73,29 @@ export class TeamService {
 
     if (method === 'GET') {
       if (action === 'invites') {
-        this.authz.assertPermission(user, 'team.read');
-        const orgId = await this.resolveOrgId(user);
-        if (!orgId) return { success: true, invites: [] };
-        const invites = await this.prisma.organizationInvite.findMany({
-          where: { organizationId: orgId },
-          orderBy: { createdAt: 'desc' },
-        });
-        return { success: true, invites };
+        try {
+          return await this.teamCommand.listInvites(user, {
+            organizationId:
+              typeof body.organizationId === 'string' ? body.organizationId : undefined,
+          });
+        } catch (error) {
+          return this.mapCommandError(error);
+        }
       }
       return this.listMembers(user);
     }
 
     if (method === 'POST' && action === 'invite') {
-      const orgId = await this.resolveOrgId(
-        user,
-        typeof body.organizationId === 'string' ? body.organizationId : undefined,
-      );
-      if (!orgId) return { success: false, error: 'No organization' };
-      await this.authz.assertTeamManage(user, orgId);
-      const invite = await this.prisma.organizationInvite.create({
-        data: {
-          organizationId: orgId,
-          email: String(body.email || ''),
-          role: this.normalizeIncomingRole(body.role),
-          invitedBy: user.uid,
-        },
-      });
-      return { success: true, invite };
+      try {
+        return await this.teamCommand.inviteMember(user, {
+          organizationId:
+            typeof body.organizationId === 'string' ? body.organizationId : undefined,
+          email: typeof body.email === 'string' ? body.email : String(body.email ?? ''),
+          role: typeof body.role === 'string' ? body.role : undefined,
+        });
+      } catch (error) {
+        return this.mapCommandError(error);
+      }
     }
 
     if (method === 'POST') {
@@ -128,33 +104,23 @@ export class TeamService {
 
     if (method === 'PUT' || method === 'PATCH') {
       const memberId = parts[1] || String(body.id || '');
-      if (!memberId) return { success: false, error: 'member id required' };
-      const existing = await this.prisma.organizationMember.findUnique({
-        where: { id: memberId },
-      });
-      if (!existing) return { success: false, error: 'Member not found' };
-      await this.authz.assertTeamManage(user, existing.organizationId);
-      const member = await this.prisma.organizationMember.update({
-        where: { id: memberId },
-        data: {
-          role:
-            body.role !== undefined ? this.normalizeIncomingRole(body.role) : undefined,
+      try {
+        return await this.teamCommand.updateMember(user, memberId, {
+          role: body.role !== undefined && typeof body.role === 'string' ? body.role : undefined,
           status: typeof body.status === 'string' ? body.status : undefined,
-        },
-      });
-      return { success: true, member };
+        });
+      } catch (error) {
+        return this.mapCommandError(error);
+      }
     }
 
     if (method === 'DELETE') {
       const memberId = parts[1] || String(body.id || '');
-      if (!memberId) return { success: false, error: 'member id required' };
-      const existing = await this.prisma.organizationMember.findUnique({
-        where: { id: memberId },
-      });
-      if (!existing) return { success: false, error: 'Member not found' };
-      await this.authz.assertTeamManage(user, existing.organizationId);
-      await this.prisma.organizationMember.delete({ where: { id: memberId } });
-      return { success: true, deleted: true };
+      try {
+        return await this.teamCommand.removeMember(user, memberId);
+      } catch (error) {
+        return this.mapCommandError(error);
+      }
     }
 
     return { success: false, error: 'Unsupported team action' };
@@ -168,7 +134,7 @@ export class TeamService {
       });
     }
     await this.authz.assertProjectAccess(user, projectId, 'projects.read');
-    const members = await this.prisma.projectMember.findMany({
+    const members = await this.prisma.client.projectMember.findMany({
       where: { projectId },
       orderBy: { createdAt: 'desc' },
       take: 200,
@@ -180,7 +146,7 @@ export class TeamService {
     const projectId = String(body.projectId || '');
     if (!projectId) return { success: false, error: 'projectId required' };
     await this.authz.assertProjectAccess(user, projectId, 'projects.update');
-    const member = await this.prisma.projectMember.create({
+    const member = await this.prisma.client.projectMember.create({
       data: {
         projectId,
         userId: typeof body.userId === 'string' ? body.userId : undefined,
@@ -190,6 +156,20 @@ export class TeamService {
       },
     });
     return { success: true, member };
+  }
+
+  private mapCommandError(error: unknown): Record<string, unknown> {
+    if (error instanceof TeamInvalidRoleError) {
+      throw new ForbiddenException(error.payload);
+    }
+    if (
+      error instanceof TeamMemberNotFoundError ||
+      error instanceof TeamMemberIdRequiredError ||
+      error instanceof TeamNoOrganizationError
+    ) {
+      return error.payload;
+    }
+    throw error;
   }
 }
 
@@ -264,6 +244,15 @@ export class ProjectMembersController {
         createTeamMembersReadService({
           authz: new CoreAuthorizationService(createPrismaAuthzStore(prisma.client)),
           repository: createPrismaTeamMembersReadRepository(prisma.client),
+        }),
+      inject: [PrismaService],
+    },
+    {
+      provide: TeamCommandService,
+      useFactory: (prisma: PrismaService) =>
+        createTeamCommandService({
+          authz: new CoreAuthorizationService(createPrismaAuthzStore(prisma.client)),
+          repository: createPrismaTeamCommandRepository(prisma.client),
         }),
       inject: [PrismaService],
     },

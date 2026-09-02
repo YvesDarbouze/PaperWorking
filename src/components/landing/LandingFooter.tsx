@@ -101,13 +101,7 @@ export default function LandingFooter() {
 
           {/* Brand column */}
           <div className="col-span-2 md:col-span-1">
-            <Logo href="/" surface="marketing-footer" className="mb-5" />
-            <p
-              className="text-[13.5px] leading-relaxed mb-6 type-caption"
-              style={{ color: 'var(--color-on-surface-variant)', opacity: 0.75, maxWidth: '200px' }}
-            >
-              Precision deal management for serious real estate investors.
-            </p>
+            <Logo href="/" surface="marketing-footer" className="mb-6" />
 
             {/* CTA */}
             <Link

@@ -1,7 +1,6 @@
 'use client';
 
 import Link from 'next/link';
-import HowItWorksLifecycleGraphic from './HowItWorksLifecycleGraphic';
 
 /* ═══════════════════════════════════════════════════════
    HowItWorks — The REIL System
@@ -11,45 +10,10 @@ import HowItWorksLifecycleGraphic from './HowItWorksLifecycleGraphic';
 export default function HowItWorks() {
   const showDemoCta = process.env.NEXT_PUBLIC_ENABLE_DEMO_CTA === 'true';
 
-  const phaseCards = [
-    {
-      num: 'PHASE 01',
-      title: 'Acquisition',
-      color: 'text-primary',
-      accentBg: 'bg-primary/10 border-primary/20',
-      description:
-        'Acquisition: Decide if the deal works before you buy. The Deal Analyzer pulls live property data, an automated valuation, and projected cap rate, IRR, and cash-on-cash.',
-    },
-    {
-      num: 'PHASE 02',
-      title: 'Fund',
-      color: 'text-secondary',
-      accentBg: 'bg-secondary/10 border-secondary/20',
-      description:
-        'Fund: Get the money and paperwork lined up. Track contingency deadlines and earnest money, keep contracts in one vault, get alerted before dates go hard.',
-    },
-    {
-      num: 'PHASE 03',
-      title: 'Hold',
-      color: 'text-tertiary',
-      accentBg: 'bg-tertiary/10 border-tertiary/20',
-      description:
-        'Hold: Own it and improve it. Link milestones to your budget, log expenses as they happen, watch holding costs and budget-vs-actual in real time.',
-    },
-    {
-      num: 'PHASE 04',
-      title: 'Exit',
-      color: 'text-outline',
-      accentBg: 'bg-white/5 border-white/15',
-      description:
-        'Exit: Sell it or keep it as a rental, and prove what it made. Generate the performance record your buyer, lender, or appraiser expects.',
-    },
-  ];
-
   return (
     <div className="bg-background text-on-background">
 
-      {/* ════════════ 1. HERO + 4-PHASE CARDS GRID (SCREENSHOT 2 RECONCILIATION) ════════════ */}
+      {/* ════════════ 1. HERO ════════════ */}
       <section className="relative pt-16 pb-16 md:pt-20 md:pb-24 overflow-hidden border-b border-white/5">
         <div className="absolute top-1/4 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-primary/5 rounded-full blur-[160px] pointer-events-none" />
 
@@ -57,43 +21,18 @@ export default function HowItWorks() {
           {/* Eyebrow Pill */}
           <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-primary/10 border border-primary/20 text-xs font-semibold text-primary uppercase tracking-[0.12em] mb-6 type-eyebrow">
             <span className="material-symbols-outlined text-sm">hub</span>
-            HUB · The REIL
+            The REIL
           </div>
 
           {/* Main Headline */}
           <h1 className="font-semibold tracking-[-0.025em] leading-[1.1] mb-6 text-on-surface type-display max-w-4xl mx-auto">
-            How PaperWorking Works
+            Four phases. One record. Thirty-three key datapoints.
           </h1>
 
-          {/* Ratified Body Copy */}
-          <p className="text-base sm:text-lg text-on-surface-variant leading-[1.65] max-w-3xl mx-auto type-body-lg mb-14">
-            Real estate investments move through a unique four-phase lifecycle: &quot;Acquisition&quot;, &quot;Fund&quot;, &quot;Hold&quot;, &quot;Exit.&quot; PaperWorking organizes investments and investment teams to give real estate investors the tools to make their investment process more organized and informed.
+          {/* Sub */}
+          <p className="text-base sm:text-lg text-on-surface-variant leading-[1.65] max-w-3xl mx-auto type-body-lg">
+            Every investment property moves through the same lifecycle: Acquisition, Fund, Hold, Exit. PaperWorking is built on that lifecycle, not adapted from generic project software. Here&apos;s what happens at each phase.
           </p>
-
-          {/* 4 Phase Cards Horizontal Grid (Directly under Hero Copy per Screenshot 2) */}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5 md:gap-6 text-left">
-            {phaseCards.map((card) => (
-              <div
-                key={card.num}
-                className="glass-card rounded-[22px] p-6 sm:p-7 border border-white/10 bg-[#0c090b]/80 backdrop-blur-xl flex flex-col justify-between hover:border-primary/40 transition-all duration-300 shadow-xl group hover:-translate-y-1"
-              >
-                <div>
-                  <div className="flex items-center justify-between mb-4">
-                    <span className={`font-jetbrains text-[11px] uppercase tracking-[0.15em] font-medium ${card.color} type-caption`}>
-                      {card.num}
-                    </span>
-                    <span className={`w-2 h-2 rounded-full ${card.accentBg}`} />
-                  </div>
-                  <h2 className="text-2xl font-bold tracking-[-0.02em] text-on-surface mb-3 group-hover:text-primary transition-colors">
-                    {card.title}
-                  </h2>
-                  <p className="text-[13.5px] sm:text-[14px] text-on-surface-variant leading-[1.6] type-body">
-                    {card.description}
-                  </p>
-                </div>
-              </div>
-            ))}
-          </div>
         </div>
       </section>
 
@@ -114,30 +53,21 @@ export default function HowItWorks() {
         </div>
       </section>
 
-      {/* ════════════ 3. DEEP-DIVE PHASE BREAKDOWNS ════════════ */}
+      {/* ════════════ 3. PHASES (1, 2, 3, 4) ════════════ */}
       <section className="py-14 md:py-20 border-b border-white/5">
         <div className="max-w-[1280px] mx-auto px-6 md:px-10 space-y-10">
-          
-          <div className="max-w-3xl mb-8">
-            <span className="font-jetbrains text-[10px] uppercase tracking-widest text-primary font-medium mb-2 block type-caption">
-              DEEP-DIVE WORKFLOWS
-            </span>
-            <h2 className="font-semibold tracking-[-0.02em] text-on-surface leading-tight type-h2">
-              Inside each phase of your deal
-            </h2>
-          </div>
 
-          {/* Phase 1 — Acquisition Deep-Dive */}
+          {/* Phase 1 — Acquisition */}
           <div className="glass-card rounded-[24px] p-8 sm:p-10 border border-white/8 bg-surface-container-low/30 backdrop-blur-xl">
             <span className="font-jetbrains text-[10px] uppercase tracking-widest text-primary font-medium mb-3 block type-caption">
-              PHASE 01 · UNDERWRITE & ANALYZE
+              PHASE 01 · UNDERWRITE &amp; ANALYZE
             </span>
-            <h3 className="text-2xl font-semibold tracking-[-0.02em] text-on-surface mb-4 leading-tight">
-              Phase 1 — Acquisition
-            </h3>
+            <h2 className="text-2xl font-semibold tracking-[-0.02em] text-on-surface mb-4 leading-tight type-h2">
+              Phase 1 — Acquisition: decide if the deal works before you buy
+            </h2>
             <div className="space-y-4 text-base text-on-surface-variant leading-[1.65] type-body">
               <p>
-                Acquisition: Decide if the deal works before you buy. The Deal Analyzer pulls live property data, an automated valuation, and projected cap rate, IRR, and cash-on-cash.
+                Drop in an address and deal goals and the Deal Analyzer will make an automated valuation, then projects cap rate, IRR, and cash-on-cash before you&apos;ve spent a dollar on diligence. Save the deals worth chasing to your pipeline; let the rest go with a record of why.
               </p>
               <p>
                 What you log here (purchase price, projected rents, rehab estimate) becomes the baseline your actuals are measured against later.
@@ -148,32 +78,32 @@ export default function HowItWorks() {
             </div>
           </div>
 
-          {/* Phase 2 — Fund Deep-Dive */}
+          {/* Phase 2 — Fund */}
           <div className="glass-card rounded-[24px] p-8 sm:p-10 border border-white/8 bg-surface-container-low/30 backdrop-blur-xl">
             <span className="font-jetbrains text-[10px] uppercase tracking-widest text-secondary font-medium mb-3 block type-caption">
-              PHASE 02 · CAPITAL & CONTINGENCIES
+              PHASE 02 · CAPITAL &amp; CONTINGENCIES
             </span>
-            <h3 className="text-2xl font-semibold tracking-[-0.02em] text-on-surface mb-4 leading-tight">
-              Phase 2 — Fund
-            </h3>
+            <h2 className="text-2xl font-semibold tracking-[-0.02em] text-on-surface mb-4 leading-tight type-h2">
+              Phase 2 — Fund: get the money and paperwork lined up
+            </h2>
             <div className="space-y-4 text-base text-on-surface-variant leading-[1.65] type-body">
               <p>
-                Fund: Get the money and paperwork lined up. Track contingency deadlines and earnest money, keep contracts in one vault, get alerted before dates go hard.
+                Fund is the phase where PaperWorking helps you manage the transaction. Organizing every stakeholder in the process and contingency dates and earnest money, and alerts you before they expire. Contracts, title, and entity papers go into the document vault and once the transaction is complete the app moves to the next stage of the investments lifecycle.
               </p>
             </div>
           </div>
 
-          {/* Phase 3 — Hold Deep-Dive */}
+          {/* Phase 3 — Hold */}
           <div className="glass-card rounded-[24px] p-8 sm:p-10 border border-white/8 bg-surface-container-low/30 backdrop-blur-xl">
             <span className="font-jetbrains text-[10px] uppercase tracking-widest text-tertiary font-medium mb-3 block type-caption">
-              PHASE 03 · EXECUTE & OPTIMIZE
+              PHASE 03 · EXECUTE &amp; OPTIMIZE
             </span>
-            <h3 className="text-2xl font-semibold tracking-[-0.02em] text-on-surface mb-4 leading-tight">
-              Phase 3 — Hold
-            </h3>
+            <h2 className="text-2xl font-semibold tracking-[-0.02em] text-on-surface mb-4 leading-tight type-h2">
+              Phase 3 — Hold: own it and improve it
+            </h2>
             <div className="space-y-4 text-base text-on-surface-variant leading-[1.65] type-body">
               <p>
-                Hold: Own it and improve it. Link milestones to your budget, log expenses as they happen, watch holding costs and budget-vs-actual in real time.
+                Hold is where you prepare the property for the market. Are you selling, are you renting are you developing the land? This is where cost and profitability is lost and even serious REIs lie to themselves counting on the top line numbers. Hold links each milestone (inspection, rehab draw, staging, lease-up) to your line-item budget. Log expenses as they happen, or connect your accounts through Plaid to track rent payments and recurring costs automatically. The Holding Cost Clock shows what every extra day costs. Budget vs. actual stays visible, so a drifting rehab shows up in week three, not at closing.
               </p>
               <p>
                 The Vendor Marketplace earns its keep here: find the contractor, appraiser, or attorney when the project needs them.
@@ -181,17 +111,17 @@ export default function HowItWorks() {
             </div>
           </div>
 
-          {/* Phase 4 — Exit Deep-Dive */}
+          {/* Phase 4 — Exit */}
           <div className="glass-card rounded-[24px] p-8 sm:p-10 border border-white/8 bg-surface-container-low/30 backdrop-blur-xl">
             <span className="font-jetbrains text-[10px] uppercase tracking-widest text-outline font-medium mb-3 block type-caption">
-              PHASE 04 · REALIZE & PROVE
+              PHASE 04 · REALIZE &amp; PROVE
             </span>
-            <h3 className="text-2xl font-semibold tracking-[-0.02em] text-on-surface mb-4 leading-tight">
-              Phase 4 — Exit
-            </h3>
+            <h2 className="text-2xl font-semibold tracking-[-0.02em] text-on-surface mb-4 leading-tight type-h2">
+              Phase 4 — Exit: prove what it made
+            </h2>
             <div className="space-y-4 text-base text-on-surface-variant leading-[1.65] type-body">
               <p>
-                Exit: Sell it or keep it as a rental, and prove what it made. Generate the performance record your buyer, lender, or appraiser expects.
+                Sell it, or keep it as a rental. Either way, Exit is where the record pays off. PaperWorking generates performance reports from your actual project data: the documentation a buyer, lender, or appraiser expects. Walk into your refi with the files your lender wants, not a scattered folder you&apos;ll apologize for.
               </p>
             </div>
           </div>
@@ -199,26 +129,7 @@ export default function HowItWorks() {
         </div>
       </section>
 
-      {/* ════════════ 4. LIFECYCLE BODY COPY ════════════ */}
-      <section className="py-14 md:py-20 border-b border-white/5 bg-surface-container-low/20">
-        <div className="max-w-[1280px] mx-auto px-6 md:px-10">
-          <div className="max-w-3xl">
-            <h2 className="text-2xl sm:text-3xl md:text-4xl font-semibold tracking-[-0.02em] text-on-surface mb-6 leading-tight type-h2">
-              The Real Estate Investment Lifecycle
-            </h2>
-            <div className="space-y-5 text-base sm:text-lg text-on-surface-variant leading-[1.65] type-body">
-              <p>
-                Real Estate investments move through a unique lifecycle that is different from most traditional project management workflows. PaperWorking structures every deal around four core phases: Acquisition, Fund, Hold, and Exit. Each phase has its own specific inputs, milestones, compliance gates, and financial calculations.
-              </p>
-              <p>
-                By organizing your work around these four phases, PaperWorking ensures that no critical deadline is missed, expenses are tracked from day one, and investment metrics are calculated automatically from your actual project data — per deal and across your entire portfolio.
-              </p>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* ════════════ 5. ONE DEAL, ALL THE WAY THROUGH ════════════ */}
+      {/* ════════════ 4. ONE DEAL, ALL THE WAY THROUGH ════════════ */}
       <section className="py-14 md:py-20 border-b border-white/5">
         <div className="max-w-[1280px] mx-auto px-6 md:px-10">
           <div className="max-w-3xl">
@@ -243,7 +154,7 @@ export default function HowItWorks() {
         </div>
       </section>
 
-      {/* ════════════ 6. LEAD INVESTOR AND TEAM ROLES ════════════ */}
+      {/* ════════════ 5. LEAD INVESTOR AND TEAM ROLES ════════════ */}
       <section className="py-14 md:py-20 border-b border-white/5 bg-surface-container-low/20">
         <div className="max-w-[1280px] mx-auto px-6 md:px-10">
           <div className="max-w-3xl">
@@ -265,7 +176,7 @@ export default function HowItWorks() {
         </div>
       </section>
 
-      {/* ════════════ 7. DEMO CTA ════════════ */}
+      {/* ════════════ 6. DEMO CTA ════════════ */}
       <section className="py-14 md:py-20 lg:py-24 relative overflow-hidden bg-surface-container-low/30 border-b border-white/5">
         <div className="absolute inset-0 bg-gradient-to-b from-transparent via-primary/3 to-transparent pointer-events-none" />
 
@@ -299,9 +210,6 @@ export default function HowItWorks() {
           </div>
         </div>
       </section>
-
-      {/* ════════════ 8. LIFECYCLE GRAPHIC (2C) ════════════ */}
-      <HowItWorksLifecycleGraphic />
 
     </div>
   );

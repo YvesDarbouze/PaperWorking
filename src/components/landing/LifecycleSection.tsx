@@ -57,6 +57,11 @@ export default function LifecycleSection() {
             </div>
           ))}
         </div>
+
+        {/* Approved closing line */}
+        <p className="text-sm md:text-base text-on-surface-variant leading-relaxed">
+          Deals move in order, Kanban-style; phase gates keep the pipeline reviewable.
+        </p>
       </div>
     </section>
   );

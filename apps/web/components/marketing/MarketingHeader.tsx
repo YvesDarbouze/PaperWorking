@@ -9,9 +9,10 @@ import { useAuth } from '@/context/AuthContext';
 import { fetchSessionProfile } from '@/lib/auth/session-client';
 
 const NAV_LINKS = [
-  { label: 'How it works', href: '/#how-it-works' },
+  { label: 'How It Works', href: '/how-it-works' },
+  { label: 'Marketplaces', href: '/marketplaces' },
   { label: 'Pricing', href: '/pricing' },
-  { label: 'Marketplace', href: '/#marketplace' },
+  { label: 'Support', href: '/support' },
 ];
 
 export default function MarketingHeader() {
@@ -103,9 +104,9 @@ export default function MarketingHeader() {
                 </Link>
                 <Link
                   href="/signup"
-                  className="hidden items-center gap-1.5 rounded-[10px] bg-[color:var(--color-primary)] px-5 py-2.5 text-[13px] font-semibold tracking-[-0.01em] text-[#0a0a0f] no-underline hover:brightness-110 transition md:inline-flex"
+                  className="hidden items-center gap-1.5 rounded-full bg-[color:var(--color-primary)] px-5 py-2.5 text-[13px] font-semibold tracking-[-0.01em] text-[#0a0a0f] no-underline hover:brightness-110 transition md:inline-flex"
                 >
-                  Get started
+                  Start Free 14-Day Trial
                 </Link>
               </>
             )}
@@ -211,15 +212,15 @@ export default function MarketingHeader() {
                     className="flex w-full items-center justify-center rounded-xl border border-white/15 px-4 py-3 text-[14px] font-medium text-white no-underline hover:bg-white/5"
                     onClick={() => setMobileOpen(false)}
                   >
-                    Log in
-                  </Link>
-                  <Link
-                    href="/signup"
-                    className="flex items-center justify-center rounded-[10px] bg-[color:var(--color-primary)] px-4 py-3 text-[14px] font-semibold text-[#0a0a0f] no-underline hover:brightness-110 transition"
-                    onClick={() => setMobileOpen(false)}
-                  >
-                    Get started
-                  </Link>
+                  Log in
+                </Link>
+                <Link
+                  href="/signup"
+                  className="flex items-center justify-center rounded-full bg-[color:var(--color-primary)] px-4 py-3 text-[14px] font-semibold text-[#0a0a0f] no-underline hover:brightness-110 transition"
+                  onClick={() => setMobileOpen(false)}
+                >
+                  Start Free 14-Day Trial
+                </Link>
                 </>
               )}
             </div>

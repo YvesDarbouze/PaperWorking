@@ -1,4 +1,4 @@
-import { Injectable, Logger } from '@nestjs/common';
+import { Injectable, Logger, Optional } from '@nestjs/common';
 import type { Request, Response } from 'express';
 import {
   createDefaultIdentityDeps,
@@ -36,7 +36,7 @@ export class AuthService {
 
   constructor(
     private readonly prisma: PrismaService,
-    identityDeps?: IdentityVerificationDeps,
+    @Optional() identityDeps?: IdentityVerificationDeps,
   ) {
     this.identityDeps = identityDeps ?? createDefaultIdentityDeps();
     const prismaClient = resolveApiPrismaClient(this.prisma);

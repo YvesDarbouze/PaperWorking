@@ -1,10 +1,19 @@
 @import "tailwindcss";
 
 @theme {
-  --color-primary: var(--color-primary);
-  --color-accent: var(--color-accent);
+  --color-primary: #00dd94;
+  --color-accent: #00dd94;
   --color-primary-emerald: #00DD94;
   --color-light-green: #00B67A;
+  --color-on-surface: #fdfffc;
+  --color-on-surface-variant: #c8c9cc;
+  --color-surface-container-low: #1e1b20;
+  --color-surface-container-high: #2a272c;
+  --color-secondary: #9e9da0;
+  --color-tertiary: #c4a35a;
+  --color-outline: rgba(253, 255, 252, 0.08);
+  --color-background: #0a0a0f;
+  --font-jetbrains: var(--font-jetbrains-mono), monospace;
 }
 
 html {
@@ -48,10 +57,18 @@ html.dark {
   --color-on-surface-variant: #c8c9cc;
   --color-primary: #00dd94;
   --color-accent: #00dd94;
+  --color-secondary: #9e9da0;
+  --color-tertiary: #c4a35a;
   --color-outline: rgba(253, 255, 252, 0.08);
   --nav-border: rgba(253, 255, 252, 0.07);
   --cta-bg: #ffffff;
   --cta-text: #0a0a0f;
+  --color-glass-panel-bg: rgba(255, 255, 255, 0.03);
+  --color-glass-panel-border: rgba(255, 255, 255, 0.1);
+  --color-glass-panel-shadow: inset 0 0 20px rgba(255, 255, 255, 0.02);
+  --pw-btn-primary-bg: #00dd94;
+  --pw-btn-primary-text: #0a0a0f;
+  --pw-btn-primary-hover-bg: #00f0a0;
   color: var(--color-on-surface);
   background: var(--color-background);
 }
@@ -62,6 +79,36 @@ html.dark {
 
 .marketing-shell .glass-card {
   background: linear-gradient(135deg, rgba(30, 27, 32, 0.65) 0%, rgba(13, 10, 11, 0.82) 100%);
+}
+
+.marketing-shell .glass-panel {
+  background: var(--color-glass-panel-bg);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid var(--color-glass-panel-border);
+  box-shadow: var(--color-glass-panel-shadow);
+}
+
+.marketing-shell .font-jetbrains {
+  font-family: var(--font-jetbrains-mono), monospace;
+}
+
+.marketing-shell .luminous-button {
+  background-color: var(--pw-btn-primary-bg);
+  color: var(--pw-btn-primary-text);
+  border-radius: 9999px;
+  box-shadow: 0 0 20px -5px rgba(0, 221, 148, 0.35);
+  transition: all 0.3s ease;
+}
+
+.marketing-shell .luminous-button:hover {
+  background-color: var(--pw-btn-primary-hover-bg);
+  box-shadow: 0 0 25px -2px rgba(0, 221, 148, 0.5);
+  transform: translateY(-1px);
+}
+
+.marketing-shell .luminous-button:active {
+  transform: scale(0.97);
 }
 
 body {

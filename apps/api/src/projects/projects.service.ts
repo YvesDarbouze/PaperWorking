@@ -11,10 +11,10 @@ import {
   ProjectsCommandValidationError,
   ProjectDocumentsValidationError,
   ProjectDocumentsStorageError,
-  type ProjectsReadService,
-  type ProjectsCommandService,
-  type ProjectKpiReadService,
-  type ProjectDocumentsReadService,
+  ProjectsReadService,
+  ProjectsCommandService,
+  ProjectKpiReadService,
+  ProjectDocumentsReadService,
   type CreateProjectInput,
 } from '@paperworking/services';
 import { AuthorizationService } from '../authz/authorization.service.js';

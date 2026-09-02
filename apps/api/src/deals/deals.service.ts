@@ -9,11 +9,11 @@ import { AuthzForbiddenError, AuthzNotFoundError } from '@paperworking/authz';
 import {
   DealsCommandValidationError,
   DealCommunicationValidationError,
-  type DealsReadService,
-  type DealsCommandService,
+  DealsReadService,
+  DealsCommandService,
+  DealBroadcastService,
+  DealReplyService,
   type CreateDealInput,
-  type DealBroadcastService,
-  type DealReplyService,
   type DealReplyInput,
 } from '@paperworking/services';
 import { AuthorizationService } from '../authz/authorization.service.js';

@@ -120,15 +120,18 @@ export class SessionCommandService {
       if (
         message.includes('DATABASE_URL') ||
         message.includes('Prisma') ||
-        message.includes('connect')
+        message.includes('prisma.') ||
+        message.includes('connect') ||
+        message.includes('does not exist in the current database')
       ) {
         console.error('[SessionCommand] database error during provisioning:', message);
+        const schemaDrift = message.includes('does not exist in the current database');
         return {
           ok: false,
           status: 503,
           body: {
             error: 'Auth provisioning unavailable',
-            detail: 'database_error',
+            detail: schemaDrift ? 'schema_out_of_date' : 'database_error',
           },
         };
       }

@@ -58,7 +58,6 @@ export const metadata: Metadata = {
       { url: "/favicon.ico", sizes: "any" },
       { url: "/icon-16.png", sizes: "16x16", type: "image/png" },
       { url: "/icon-32.png", sizes: "32x32", type: "image/png" },
-      { url: "/brand/PaperWorking_White_Logo_Icon_32.png", sizes: "32x32", type: "image/png", media: "(prefers-color-scheme: dark)" },
     ],
     apple: [
       { url: "/apple-touch-icon.png", sizes: "180x180", type: "image/png" },

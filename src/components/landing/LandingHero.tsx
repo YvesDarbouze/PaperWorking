@@ -114,9 +114,9 @@ export default function LandingHero() {
             Finally, Project Management software made for serious real estate investors and Investments teams.
           </h1>
 
-          {/* Body — verbatim user script */}
+          {/* Body — verbatim approved copy */}
           <p className="text-[16px] md:text-[18px] leading-[1.65] font-normal text-on-surface-variant max-w-[560px] type-body-lg">
-            Real Estate investments have a unique lifecycle that is different from most work related projects. Real Estate Investments move through a unique lifecycle that includes the following phases &quot;Acquisition&quot;, &quot;Fund&quot;, &quot;Hold&quot;, &quot;Exit.&quot; PaperWorking organizes investments and investment teams to give Real Estate investors the tools to make their investments process more organized and informed.
+            Every real estate deal runs through the same four phases: Acquisition, Fund, Hold, Exit. PaperWorking manages all four phases of an investment in one place and turns the work you&apos;re already doing into the 33 numbers that show whether your investments are actually working. NOI, cap rate, DSCR, cash-on-cash, IRR — calculated from your own project data, per deal and across your portfolio.
           </p>
         </div>
 
@@ -132,31 +132,36 @@ export default function LandingHero() {
             </div>
           </div>
 
-          {/* TWO buttons directly underneath the demo KPI card */}
-          <div className="flex flex-col sm:flex-row items-center justify-center gap-3 w-full">
-            <Link
-              href="/pricing"
-              className="luminous-button relative overflow-hidden px-6 py-3 min-h-[44px] rounded-full font-semibold text-[14px] tracking-[-0.01em] inline-flex items-center justify-center gap-2 group cursor-pointer type-cta w-full sm:w-auto text-center"
-            >
-              <span
-                className="absolute inset-0 bg-gradient-to-r from-transparent via-white/12 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-700 pointer-events-none"
-                aria-hidden
-              />
-              <span>Start Your Free 14 Days Trial</span>
-              <span className="material-symbols-outlined text-[18px] group-hover:translate-x-1 transition-transform">
-                arrow_forward
-              </span>
-            </Link>
+          {/* TWO buttons directly underneath the demo KPI card + microcopy */}
+          <div className="flex flex-col items-center gap-2 w-full">
+            <div className="flex flex-col sm:flex-row items-center justify-center gap-3 w-full">
+              <Link
+                href="/pricing"
+                className="luminous-button relative overflow-hidden px-6 py-3 min-h-[44px] rounded-full font-semibold text-[14px] tracking-[-0.01em] inline-flex items-center justify-center gap-2 group cursor-pointer type-cta w-full sm:w-auto text-center"
+              >
+                <span
+                  className="absolute inset-0 bg-gradient-to-r from-transparent via-white/12 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-700 pointer-events-none"
+                  aria-hidden
+                />
+                <span>Start Free 14-Day Trial</span>
+                <span className="material-symbols-outlined text-[18px] group-hover:translate-x-1 transition-transform">
+                  arrow_forward
+                </span>
+              </Link>
 
-            <Link
-              href="/support/metrics"
-              className="px-6 py-3 min-h-[44px] rounded-full border border-white/15 text-on-surface text-[14px] font-semibold hover:border-primary/40 hover:text-primary transition-all inline-flex items-center justify-center gap-2 type-cta w-full sm:w-auto text-center"
-            >
-              <span>33 KPIs</span>
-              <span className="material-symbols-outlined text-[18px]">
-                bar_chart
-              </span>
-            </Link>
+              <Link
+                href="/support/metrics"
+                className="px-6 py-3 min-h-[44px] rounded-full border border-white/15 text-on-surface text-[14px] font-semibold hover:border-primary/40 hover:text-primary transition-all inline-flex items-center justify-center gap-2 type-cta w-full sm:w-auto text-center"
+              >
+                <span>See the 33 metrics</span>
+                <span className="material-symbols-outlined text-[18px]">
+                  bar_chart
+                </span>
+              </Link>
+            </div>
+            <p className="text-[12px] text-on-surface-variant/70 text-center type-caption">
+              Free 14-day trial.
+            </p>
           </div>
         </div>
 

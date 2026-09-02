@@ -82,7 +82,7 @@ const heightMap: Record<SizeKey, number> = {
 
 const ASPECT_RATIOS = {
   full: 400 / 51.38,
-  icon: 512 / 474,
+  icon: 1.0,
 };
 
 export default function Logo({

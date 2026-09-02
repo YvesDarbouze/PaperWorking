@@ -22,7 +22,7 @@ import { setupMocks, createDefaultState, MockState } from './mocks';
    Themes: light + dark (where surface bg is theme-dependent)
    ═══════════════════════════════════════════════════════ */
 
-const ICON_SELECTOR = 'svg[viewBox="0 0 512 474"]';
+const ICON_SELECTOR = 'svg[viewBox="0 0 1024 1024"]';
 const FULL_SELECTOR = 'svg[viewBox="0 0 400 51.38"]';
 const BLACK = 'rgb(0, 0, 0)';
 const WHITE = 'rgb(255, 255, 255)';

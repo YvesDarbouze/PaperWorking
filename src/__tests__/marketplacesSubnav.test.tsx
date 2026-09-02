@@ -59,12 +59,16 @@ describe('PROMPT 4 — Marketplaces Subnavigation & Compliance Verification', ()
 
       expect(content).toContain('Two marketplaces, one network');
       expect(content).toContain('Come for the tools. Stay for the community.');
-      expect(content).toContain('PaperWorking subscribers have exclusive access to powerful tools for serious real estate investors.');
+      expect(content).toContain('PaperWorking subscribers run real deals through the same four phases you do.');
+      expect(content).toContain('Put your Project in front of investors who are looking.');
+      expect(content).toContain('Find the right professional when the deal needs them.');
+      expect(content).toContain('PaperWorking facilitates introductions and interest tracking only. No funds, securities, or ownership interests are offered, sold, or transferred through the platform. All transactions occur outside PaperWorking, directly between the parties.');
       expect(content).toContain('PaperWorking is project management software, not investment advice. Marketplace listings are not offers to sell securities.');
 
-      // Below the fold blocks purged per user request
-      expect(content).not.toContain('Put your Project in front of investors who are looking.');
-      expect(content).not.toContain('Find the right professional when the deal needs them.');
+      // Prohibited terms strictly absent
+      expect(content).not.toContain('exclusive access to powerful tools');
+      expect(content).not.toContain('crowdfund');
+      expect(content).not.toContain('will recommend them');
     });
   });
 

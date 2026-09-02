@@ -27,17 +27,18 @@ describe('PROMPT 1 — Landing Page & Navigation Verification', () => {
   it('LandingHero contains verbatim subcopy script with authorized fixes', () => {
     const content = fs.readFileSync(landingHeroPath, 'utf8');
 
-    const expectedSubcopy = 'Real Estate investments have a unique lifecycle that is different from most work related projects. Real Estate Investments move through a unique lifecycle that includes the following phases &quot;Acquisition&quot;, &quot;Fund&quot;, &quot;Hold&quot;, &quot;Exit.&quot; PaperWorking organizes investments and investment teams to give Real Estate investors the tools to make their investments process more organized and informed.';
+    const expectedSubcopy = 'Every real estate deal runs through the same four phases: Acquisition, Fund, Hold, Exit. PaperWorking manages all four phases of an investment in one place and turns the work you&apos;re already doing into the 33 numbers that show whether your investments are actually working. NOI, cap rate, DSCR, cash-on-cash, IRR — calculated from your own project data, per deal and across your portfolio.';
     
     expect(content).toContain(expectedSubcopy);
   });
 
-  it('LandingHero places TWO CTAs directly under HeroDealCard with exact copy and min-h-[44px]', () => {
+  it('LandingHero places TWO CTAs directly under HeroDealCard with exact copy, microcopy, and min-h-[44px]', () => {
     const content = fs.readFileSync(landingHeroPath, 'utf8');
 
     // Exact button text
-    expect(content).toContain('Start Your Free 14 Days Trial');
-    expect(content).toContain('33 KPIs');
+    expect(content).toContain('Start Free 14-Day Trial');
+    expect(content).toContain('See the 33 metrics');
+    expect(content).toContain('Free 14-day trial.');
 
     // Min height 44px touch targets
     expect(content).toContain('min-h-[44px]');
@@ -45,9 +46,6 @@ describe('PROMPT 1 — Landing Page & Navigation Verification', () => {
     // Destination hrefs
     expect(content).toContain('href="/pricing"');
     expect(content).toContain('href="/support/metrics"');
-
-    // Old left CTAs removed
-    expect(content).not.toContain('See the 33 metrics');
   });
 
   it('All marketing route metadata titles adhere to PaperWorking — <Surface>', () => {

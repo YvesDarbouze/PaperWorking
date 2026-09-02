@@ -8,7 +8,6 @@ describe('REIL Phase Marketing Copy Integrity', () => {
     'src/components/landing/HowItWorks.tsx',
     'src/components/landing/FlippingPhases.tsx',
     'src/components/landing/LifecycleGrid.tsx',
-    'src/components/landing/HowItWorksEntry.tsx',
   ];
 
   // Specific incorrect patterns used as phase labels

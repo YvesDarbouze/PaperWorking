@@ -173,7 +173,7 @@ export default function AppSidebar() {
     >
       {/* ── Header ── */}
       <div className="mb-8 flex flex-col gap-4 shrink-0">
-        <Logo surface="app-sidebar" href="/dashboard" />
+        <Logo surface="app-sidebar" href="/" />
         <h1 className="font-headline-lg text-headline-lg text-primary mt-4">Command Center</h1>
       </div>
 

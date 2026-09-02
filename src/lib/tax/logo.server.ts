@@ -11,7 +11,7 @@ import path from 'path';
  */
 export function getLogoBase64(): string {
   try {
-    const logoPath = path.join(process.cwd(), 'public/brand/PaperWorking_White_full_Logo_.png');
+    const logoPath = path.join(process.cwd(), 'public/brand/paperworking-logotype-white-transparent.png');
     const logoBuffer = fs.readFileSync(logoPath);
     return `data:image/png;base64,${logoBuffer.toString('base64')}`;
   } catch (err) {

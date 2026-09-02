@@ -2,53 +2,42 @@
 
 import React from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { useTheme, useSurface } from '@/lib/utils/ThemeProvider';
-import { PaperWorkingIcon } from '@/components/brand/icons/PaperWorkingIcon';
-import { PaperWorkingLogotype } from '@/components/brand/icons/PaperWorkingLogotype';
 
 /* ═══════════════════════════════════════════════════════
-   PaperWorking — Brand Logo Component (v6, vector)
+   PaperWorking — Brand Logo Component (Canonical Masters)
+   
+   Renders the canonical master raster brand assets with
+   surface-aware theme, variant, and responsive breakpoint resolution.
+   
+   Aspect ratios:
+   - Full Logotype: 1926 / 311 (≈6.1929:1)
+   - Icon:          2134 / 2134 (1.0:1)
 
-   Renders the canonical inline SVG icon/logotype with
-   surface-aware theme, variant, and breakpoint resolution.
-   Color is driven by CSS `color` (fill="currentColor" on
-   the source SVGs) — no more separate black/white asset
-   files, and no upscale-blur ceiling since these are vector.
-
-   Surface presets (unchanged from v5 audit)
-   ────────────────────────────────
-   - marketing-nav:    auto theme
-   - marketing-footer: auto theme
-   - app-sidebar:      auto theme
-   - app-topbar:       auto theme
-   - auth:             explicit 'dark' (bg is always #0d0a0b)
-   - empty-state:      auto theme
-   - loading:          auto theme
-   - email:            explicit 'light' (email bg is always white)
-   - pdf:              explicit 'light' (page bg is always white)
-
-   Note: email templates and jsPDF-based PDF exports can't
-   render inline/currentColor SVG (poor email-client SVG support,
-   and jsPDF.addImage requires a raster image) — those two
-   contexts continue to reference the raster PNGs in
-   /public/brand/ directly, regenerated from this same vector
-   source at proper resolution. See public/brand/README.md.
+   Master Assets:
+   - /brand/paperworking-logotype-white-transparent.png
+   - /brand/paperworking-logotype-black-transparent.png
+   - /brand/paperworking-icon-white-transparent.png
+   - /brand/paperworking-icon-black-transparent.png
+   - /brand/paperworking-icon-white-on-black.png
+   - /brand/paperworking-icon-black-on-white.png
    ═══════════════════════════════════════════════════════ */
 
 type SizeKey = 'h-6' | 'h-8' | 'h-10' | 'h-12' | 'h-16' | 'sm' | 'md' | 'lg' | 'xl';
 
 interface LogoProps {
-  /** Target link when clicked. If omitted, renders non-interactively. */
+  /** Target link when clicked. Defaults to '/' to return to homepage. */
   href?: string;
   /** Explicit variant override. Omit to let surface context decide. */
-  variant?: 'full' | 'icon';
+  variant?: 'full' | 'icon' | 'icon-solid';
   /** Explicit theme override ('light' | 'dark' | 'auto'). Defaults to 'auto'. */
   theme?: 'light' | 'dark' | 'auto';
   /** Screen-reader alt text override. */
   alt?: string;
-  /** Tailwind spacing token height or raw px number. Maps default heights if omitted. */
+  /** Tailwind spacing token height or raw px number. */
   size?: SizeKey | number;
-  /** Tailwind classes for margins, positioning, or custom animations. */
+  /** Tailwind classes for margins, positioning, or custom styling. */
   className?: string;
   /** Identifies layout context for automatic theme, variant, and breakpoint selection. */
   surface?:
@@ -66,6 +55,10 @@ interface LogoProps {
   collapsed?: boolean;
   /** Paired with visible text (disables redundant alt narration). */
   paired?: boolean;
+  /** Force unoptimized <img> for SSR/PDF/Email contexts. */
+  unoptimized?: boolean;
+  /** Priority loading flag for above-the-fold banners. */
+  priority?: boolean;
 }
 
 const heightMap: Record<SizeKey, number> = {
@@ -74,19 +67,20 @@ const heightMap: Record<SizeKey, number> = {
   'h-10': 40,
   'h-12': 48,
   'h-16': 64,
-  sm: 20,
-  md: 24,
-  lg: 30,
+  sm: 24,
+  md: 28,
+  lg: 32,
   xl: 40,
 };
 
 const ASPECT_RATIOS = {
-  full: 400 / 51.38,
+  full: 1926 / 311,
   icon: 1.0,
+  'icon-solid': 1.0,
 };
 
 export default function Logo({
-  href,
+  href = '/',
   variant,
   theme = 'auto',
   alt,
@@ -95,18 +89,20 @@ export default function Logo({
   surface = 'custom',
   collapsed = false,
   paired = false,
+  unoptimized = false,
+  priority = true,
 }: LogoProps) {
   const { theme: appTheme } = useTheme();
   const { isOnDark } = useSurface();
 
-  // Helper to render a single logo graphic with rigid dimensions
+  // Helper to render a single logo graphic with rigid dimensions and canonical masters
   const renderSingleGraphic = (
-    v: 'full' | 'icon',
+    v: 'full' | 'icon' | 'icon-solid',
     t: 'light' | 'dark' | 'auto',
     s: SizeKey | number | undefined,
     extraClass: string = ''
   ) => {
-    // Resolve theme: 'light' (black) or 'dark' (white)
+    // Resolve theme: 'light' (black mark) or 'dark' (white mark)
     let resolvedTheme: 'light' | 'dark' = 'light';
     if (t === 'dark') {
       resolvedTheme = 'dark';
@@ -118,47 +114,69 @@ export default function Logo({
     }
 
     // Resolve size / height
-    let resolvedHeight = 24; // default md
+    let resolvedHeight = 28;
     if (typeof s === 'number') {
       resolvedHeight = s;
     } else if (s && s in heightMap) {
       resolvedHeight = heightMap[s as SizeKey];
     } else {
-      // Defaults based on variant & surface (UX-10: dashboard chrome downsized 10% from 32px -> 28.8px)
-      const isDashboardChrome = surface === 'app-sidebar' || surface === 'app-topbar';
-      const baseHeight = v === 'icon' ? 24 : 32;
-      resolvedHeight = isDashboardChrome ? baseHeight * 0.9 : baseHeight;
+      if (surface === 'marketing-nav') {
+        resolvedHeight = v === 'icon' ? 28 : 28;
+      } else if (surface === 'marketing-footer') {
+        resolvedHeight = 32;
+      } else if (surface === 'auth') {
+        resolvedHeight = 36;
+      } else {
+        resolvedHeight = v === 'icon' || v === 'icon-solid' ? 24 : 28;
+      }
     }
 
     const resolvedWidth = Math.round(resolvedHeight * ASPECT_RATIOS[v]);
-    const color = resolvedTheme === 'dark' ? '#fff' : '#000';
 
-    // Resolve accessibility: icon paired with visible text should not be
-    // double-announced by a screen reader; standalone graphics need a name.
-    const isDecorative = v === 'icon' && paired;
+    // Select canonical master file
+    let src = '';
+    if (v === 'full') {
+      src = resolvedTheme === 'dark'
+        ? '/brand/paperworking-logotype-white-transparent.png'
+        : '/brand/paperworking-logotype-black-transparent.png';
+    } else if (v === 'icon-solid') {
+      src = resolvedTheme === 'dark'
+        ? '/brand/paperworking-icon-white-on-black.png'
+        : '/brand/paperworking-icon-black-on-white.png';
+    } else {
+      src = resolvedTheme === 'dark'
+        ? '/brand/paperworking-icon-white-transparent.png'
+        : '/brand/paperworking-icon-black-transparent.png';
+    }
+
+    const isDecorative = (v === 'icon' || v === 'icon-solid') && paired;
     const resolvedAlt = alt ?? 'PaperWorking';
 
-    const SvgComponent = v === 'full' ? PaperWorkingLogotype : PaperWorkingIcon;
-
     return (
-      <SvgComponent
+      <Image
+        src={src}
+        alt={isDecorative ? '' : resolvedAlt}
         width={resolvedWidth}
         height={resolvedHeight}
-        role={isDecorative ? undefined : 'img'}
-        aria-label={isDecorative ? undefined : resolvedAlt}
+        priority={priority}
+        unoptimized={unoptimized}
         aria-hidden={isDecorative ? true : undefined}
-        style={{ color, flexShrink: 0 }}
-        className={`max-w-none select-none shrink-0 ${extraClass || 'block'}`}
+        className={`object-contain max-w-none select-none shrink-0 ${extraClass || 'block'}`}
+        style={{
+          width: resolvedWidth,
+          height: resolvedHeight,
+          flexShrink: 0,
+        }}
       />
     );
   };
 
-  // ─── Surface rendering matrix (unchanged from v5 audit) ────────
+  // ─── Surface rendering matrix ────────
 
   let logoContent: React.ReactNode = null;
 
   if (surface === 'marketing-nav') {
-    const navSize = size ?? 'h-8';
+    const navSize = size ?? 28;
     logoContent = (
       <>
         {renderSingleGraphic('full', theme, navSize, 'hidden md:block')}
@@ -166,13 +184,13 @@ export default function Logo({
       </>
     );
   } else if (surface === 'marketing-footer') {
-    logoContent = renderSingleGraphic('full', theme, size ?? 'h-10');
+    logoContent = renderSingleGraphic('full', theme === 'auto' ? 'dark' : theme, size ?? 32);
   } else if (surface === 'app-sidebar') {
     if (collapsed) {
-      logoContent = renderSingleGraphic('icon', theme, size ?? 19.2);
+      logoContent = renderSingleGraphic('icon', theme, size ?? 24);
     } else {
-      const desktopSize = size ?? 24; // 30px - 20% = 24px
-      const mobileSize = size ?? 25.6; // 32px - 20% = 25.6px
+      const desktopSize = size ?? 28;
+      const mobileSize = size ?? 24;
       logoContent = (
         <>
           {renderSingleGraphic('full', theme, desktopSize, 'hidden md:block')}
@@ -181,17 +199,17 @@ export default function Logo({
       );
     }
   } else if (surface === 'app-topbar') {
-    logoContent = renderSingleGraphic('icon', theme, size ?? 25.6); // 32px - 20% = 25.6px
+    logoContent = renderSingleGraphic('icon', theme, size ?? 24);
   } else if (surface === 'auth') {
-    logoContent = renderSingleGraphic('full', 'dark', size ?? 'h-12');
+    logoContent = renderSingleGraphic('full', 'dark', size ?? 32);
   } else if (surface === 'empty-state') {
-    logoContent = renderSingleGraphic('icon', theme, size ?? 'h-12');
+    logoContent = renderSingleGraphic('icon', theme, size ?? 40);
   } else if (surface === 'loading') {
-    logoContent = renderSingleGraphic('icon', theme, size ?? 'h-8', 'animate-pulse');
+    logoContent = renderSingleGraphic('icon', theme, size ?? 32, 'animate-pulse');
   } else if (surface === 'email') {
-    logoContent = renderSingleGraphic('full', 'light', size ?? 'h-8');
+    logoContent = renderSingleGraphic('full', 'light', size ?? 32);
   } else if (surface === 'pdf') {
-    logoContent = renderSingleGraphic('full', 'light', size ?? 'h-8');
+    logoContent = renderSingleGraphic('full', 'light', size ?? 32);
   } else {
     // Custom / Fallback
     const targetVariant = variant ?? 'full';
@@ -203,7 +221,7 @@ export default function Logo({
     return (
       <Link
         href={href}
-        className={`inline-flex transition-opacity duration-150 hover:opacity-75 focus-visible:opacity-75 focus-visible:outline-none shrink-0 ${className}`}
+        className={`inline-flex items-center transition-opacity duration-150 hover:opacity-85 focus-visible:opacity-85 focus-visible:outline-none shrink-0 ${className}`}
         aria-label={`${alt ?? 'PaperWorking'} — Return to homepage`}
       >
         {logoContent}
@@ -217,3 +235,4 @@ export default function Logo({
     </span>
   );
 }
+

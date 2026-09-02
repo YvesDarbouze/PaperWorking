@@ -173,7 +173,7 @@ function generateItemizedPDF(deal: Project, tax: TaxEstimate, salePrice: number,
     `$${n.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
 
   // Header
-  doc.addImage('/brand/PaperWorking_Black_full_Logo_.png', 'PNG', 14, 10, 30.4, 5);
+  doc.addImage('/brand/paperworking-logotype-black-transparent.png', 'PNG', 14, 10, 30.96, 5);
 
   doc.setFontSize(10);
   doc.setFont('helvetica', 'bold');

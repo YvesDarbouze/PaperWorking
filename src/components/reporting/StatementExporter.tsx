@@ -65,7 +65,7 @@ export default function StatementExporter({ activeStatement }: { activeStatement
                    activeStatement === 'cashflow' ? 'Cash Flow Statement' : 'Balance Sheet';
 
       // Header
-      doc.addImage('/brand/PaperWorking_Black_full_Logo_.png', 'PNG', 14, 10, 30.4, 5);
+      doc.addImage('/brand/paperworking-logotype-black-transparent.png', 'PNG', 14, 10, 30.96, 5);
 
       doc.setFontSize(20);
       doc.setTextColor(33, 33, 33);

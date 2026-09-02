@@ -67,12 +67,12 @@ function buildPdf(lines: ClosingCostLine[], total: number, address: string, date
   const path = require('path');
   let logoBase64 = '';
   try {
-    const logoPath = path.join(process.cwd(), 'public/brand/PaperWorking_White_full_Logo_.png');
+    const logoPath = path.join(process.cwd(), 'public/brand/paperworking-logotype-white-transparent.png');
     logoBase64 = `data:image/png;base64,${fs.readFileSync(logoPath).toString('base64')}`;
   } catch {}
 
   if (logoBase64) {
-    doc.addImage(logoBase64, 'PNG', margin, 7, 24.3, 4);
+    doc.addImage(logoBase64, 'PNG', margin, 7, 24.77, 4);
   } else {
     doc.setFont('helvetica', 'bold');
     doc.setFontSize(10);

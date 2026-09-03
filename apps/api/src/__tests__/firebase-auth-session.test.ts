@@ -4,6 +4,7 @@ type AuthServiceCtor = typeof import('../auth/auth.service.js').AuthService;
 
 const mockIdentityRepo = {
   findById: jest.fn<() => Promise<unknown>>(),
+  findByFirebaseUid: jest.fn<() => Promise<unknown>>(),
   findByLegacyUid: jest.fn<() => Promise<unknown>>(),
   findByEmail: jest.fn<() => Promise<unknown>>(),
   updateEmail: jest.fn<() => Promise<void>>(),

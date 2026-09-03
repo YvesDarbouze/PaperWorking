@@ -7,6 +7,7 @@ import {
   type SubscriptionRecord,
 } from './converters/subscription.converter.js';
 import { documentData, requireFirestore, type FirestoreClientFactory } from './repositories/firestore-access.js';
+import { userDocumentRefByFirebaseUid } from './user-doc-resolver.js';
 import { optionalString } from './converters/timestamp.js';
 
 type BillingUpdateData = Partial<
@@ -29,7 +30,9 @@ async function syncUserBillingSnapshot(
     payload.stripeSubscriptionId = fields.stripeSubscriptionId;
   }
 
-  await db.collection(FIRESTORE_COLLECTIONS.users).doc(userId).set(payload, { merge: true });
+  const userRef = await userDocumentRefByFirebaseUid(db, userId);
+  if (!userRef) return;
+  await userRef.set(payload, { merge: true });
 }
 
 async function readSubscriptionDoc(
@@ -42,8 +45,9 @@ async function readSubscriptionDoc(
     return subscriptionFromFirestore(subSnap.id, subData);
   }
 
-  const userSnap = await db.collection(FIRESTORE_COLLECTIONS.users).doc(userId).get();
-  const userData = documentData(userSnap);
+  const userRef = await userDocumentRefByFirebaseUid(db, userId);
+  const userSnap = userRef ? await userRef.get() : null;
+  const userData = userSnap ? documentData(userSnap) : null;
   if (!userData) return null;
   return subscriptionFromUserSnapshot(userId, userData);
 }

@@ -92,7 +92,7 @@ export class AuthService {
     const existing = await this.identityUserRepository.findByEmail('dev@paperworking.test');
     if (!existing) {
       await this.identityUserRepository.createUser({
-        id: uid,
+        firebaseUid: uid,
         email: 'dev@paperworking.test',
         accountType: 'investor',
       });

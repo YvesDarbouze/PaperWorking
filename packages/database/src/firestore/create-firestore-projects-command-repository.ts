@@ -5,6 +5,7 @@ import { FirestoreOrganizationMemberRepository } from './repositories/organizati
 import { FirestoreProjectRepository } from './repositories/project.repository.js';
 import { documentData, requireFirestore, type FirestoreClientFactory } from './repositories/firestore-access.js';
 import { projectReadModelToStored } from './project-to-stored.js';
+import { userDocumentRefByFirebaseUid } from './user-doc-resolver.js';
 
 type ProjectCreateData = {
   name: string;
@@ -54,7 +55,8 @@ async function ensurePersonalOrganization(
     });
   }
 
-  const userRef = db.collection(FIRESTORE_COLLECTIONS.users).doc(userId);
+  const userRef = await userDocumentRefByFirebaseUid(db, userId);
+  if (!userRef) return;
   const userSnap = await userRef.get();
   const userData = documentData(userSnap);
   if (userData && !userData.personalOrganizationId) {

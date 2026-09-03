@@ -1,6 +1,7 @@
 /** Matches @paperworking/services IdentityUserRow (avoid circular package deps). */
 type IdentityUserRow = {
   id: string;
+  documentId: string;
   email: string;
   accountType?: string | null;
   role?: string | null;
@@ -14,10 +15,14 @@ import {
   userEmailUpdatePayload,
 } from './converters/user-write.js';
 import { documentData, requireFirestore, type FirestoreClientFactory } from './repositories/firestore-access.js';
+import { resolveUserDocumentByFirebaseUid } from './user-doc-resolver.js';
+import { userDocumentIdFromEmail } from './user-document-id.js';
 
-function toIdentityRow(model: ReturnType<typeof userFromFirestore>): IdentityUserRow {
+function toIdentityRow(documentId: string, data: Record<string, unknown>): IdentityUserRow {
+  const model = userFromFirestore(documentId, data);
   return {
     id: model.id,
+    documentId,
     email: model.email ?? '',
     accountType: model.accountType,
     role: model.role,
@@ -42,7 +47,7 @@ export function createFirestoreIdentityUserRepository(
     if (!doc) return null;
     const data = documentData(doc);
     if (!data) return null;
-    return toIdentityRow(userFromFirestore(doc.id, data));
+    return toIdentityRow(doc.id, data);
   }
 
   return {
@@ -50,7 +55,14 @@ export function createFirestoreIdentityUserRepository(
       const snap = await (await usersCol()).doc(id).get();
       const data = documentData(snap);
       if (!data) return null;
-      return toIdentityRow(userFromFirestore(snap.id, data));
+      return toIdentityRow(snap.id, data);
+    },
+
+    async findByFirebaseUid(uid: string): Promise<IdentityUserRow | null> {
+      const db = await requireFirestore(firestoreFactory);
+      const resolved = await resolveUserDocumentByFirebaseUid(db, uid);
+      if (!resolved) return null;
+      return toIdentityRow(resolved.documentId, resolved.data);
     },
 
     findByLegacyUid(uid: string): Promise<IdentityUserRow | null> {
@@ -58,24 +70,41 @@ export function createFirestoreIdentityUserRepository(
     },
 
     findByEmail(email: string): Promise<IdentityUserRow | null> {
-      return findDocByField('email', email.trim().toLowerCase());
+      const normalized = email.trim().toLowerCase();
+      return findDocByField('email', normalized);
     },
 
-    async updateEmail(id: string, email: string): Promise<void> {
-      await (await usersCol()).doc(id).set(userEmailUpdatePayload(email), { merge: true });
+    async updateEmail(documentId: string, email: string): Promise<void> {
+      await (await usersCol()).doc(documentId).set(userEmailUpdatePayload(email), { merge: true });
     },
 
     async updateAfterEmailRemap(
-      id: string,
-      data: { email: string; legacyFirebaseUid: string | null },
+      documentId: string,
+      data: { email: string; legacyFirebaseUid: string | null; firebaseUid?: string },
     ): Promise<void> {
       await (await usersCol())
-        .doc(id)
+        .doc(documentId)
         .set(userAfterRemapPayload(data), { merge: true });
     },
 
-    async createUser(data: { id: string; email: string; accountType: string }): Promise<void> {
-      await (await usersCol()).doc(data.id).set(userCreatePayload(data), { merge: false });
+    async createUser(data: {
+      firebaseUid: string;
+      email: string;
+      accountType: string;
+      displayName?: string;
+    }): Promise<void> {
+      const documentId = userDocumentIdFromEmail(data.email);
+      await (await usersCol())
+        .doc(documentId)
+        .set(
+          userCreatePayload({
+            firebaseUid: data.firebaseUid,
+            email: data.email.trim().toLowerCase(),
+            accountType: data.accountType,
+            displayName: data.displayName,
+          }),
+          { merge: false },
+        );
     },
 
     async remapPrimaryKey(oldId: string, newId: string): Promise<void> {
@@ -90,8 +119,7 @@ export function createFirestoreIdentityUserRepository(
         }
         const merged = {
           ...oldData,
-          uid: newId,
-          legacyFirebaseUid: oldData.legacyFirebaseUid ?? oldId,
+          email: typeof oldData.email === 'string' ? oldData.email.trim().toLowerCase() : oldData.email,
           updatedAt: new Date(),
         };
         tx.set(col.doc(newId), merged, { merge: true });

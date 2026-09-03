@@ -301,6 +301,8 @@ export {
   ReportsGenerateService,
   createReportsGenerateService,
   buildDemoPortfolioReport,
+  buildLivePortfolioReport,
+  ReportsGenerateValidationError,
   type ReportsReadRepository,
   type ReportProjectRow,
   type ReportsReadServiceDeps,
@@ -310,6 +312,7 @@ export {
   type ReportsGenerateInput,
   type GeneratedReportPayload,
   type ReportPdfExportPort,
+  type BuildLivePortfolioReportDeps,
 } from './reports/index.js';
 
 export {

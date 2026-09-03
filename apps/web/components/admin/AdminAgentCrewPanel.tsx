@@ -5,7 +5,7 @@ import {
   deleteAdminAgentFromBff,
   getAdminAgentCrewDetailFromBff,
   getAdminAgentCrewFromBff,
-  impersonateAgentViaLegacyNest,
+  impersonateAdminAgentFromBff,
 } from '@/lib/admin/admin-api';
 
 interface SyntheticAgent {
@@ -70,13 +70,7 @@ export default function AdminAgentCrewPanel() {
 
   const impersonate = async (agentId: string) => {
     setActionMessage(null);
-    const response = await impersonateAgentViaLegacyNest(
-      `/api/admin/agent-crew/${agentId}/impersonate`,
-      {
-        method: 'POST',
-        credentials: 'include',
-      },
-    );
+    const response = await impersonateAdminAgentFromBff(agentId);
     const body = (await response.json()) as { redirectUrl?: string; error?: string };
     if (!response.ok) {
       setError(body.error ?? 'Impersonation failed');

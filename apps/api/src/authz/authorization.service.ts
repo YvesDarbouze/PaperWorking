@@ -11,9 +11,8 @@ import {
   type StoredDeal,
   type StoredProject,
 } from '@paperworking/authz';
-import { createPrismaAuthzStore } from '@paperworking/database';
+import { createAuthzStore } from '@paperworking/database';
 import type { AuthUser } from '../auth/auth.types.js';
-import { PrismaService } from '../prisma/prisma.service.js';
 
 function mapAuthzError(error: unknown): never {
   if (error instanceof AuthzForbiddenError) {
@@ -27,16 +26,14 @@ function mapAuthzError(error: unknown): never {
 
 /**
  * Nest adapter for @paperworking/authz AuthorizationService.
- * Preserves V1 RBAC behavior; data access via Prisma AuthzStore until Firestore repos land.
+ * Preserves V1 RBAC behavior via runtime authz router (Firestore).
  */
 @Injectable()
 export class AuthorizationService {
   private readonly core: CoreAuthorizationService<StoredProject, StoredDeal>;
 
-  constructor(private readonly prisma: PrismaService) {
-    this.core = new CoreAuthorizationService(
-      createPrismaAuthzStore(prisma.client),
-    );
+  constructor() {
+    this.core = new CoreAuthorizationService(createAuthzStore());
   }
 
   hasPermission(user: AuthUser, permission: Permission): boolean {

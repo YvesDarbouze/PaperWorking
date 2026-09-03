@@ -2,7 +2,7 @@ import { useMockData, useMockAuth, isProductionRuntime } from './env';
 import { mockProvider } from './mock-provider';
 import { apiProvider } from './api-provider';
 
-export { useMockData, useMockAuth, isProductionRuntime } from './env';
+export { useMockData, useMockAuth, useDemoChatbot, isProductionRuntime } from './env';
 export { mockProvider } from './mock-provider';
 export { apiProvider } from './api-provider';
 

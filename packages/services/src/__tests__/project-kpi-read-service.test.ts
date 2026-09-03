@@ -7,7 +7,7 @@ import {
   type AuthzStore,
   type StoredProject,
 } from '@paperworking/authz';
-import { canonicalSeedDeal, deriveAllProjectMetrics } from '@paperworking/financial-engine';
+import { deriveAllProjectMetrics } from '@paperworking/financial-engine';
 import {
   createProjectKpiReadService,
   ProjectsReadValidationError,
@@ -90,8 +90,8 @@ describe('ProjectKpiReadService', () => {
 
     expect(result.success).toBe(true);
     expect(result.id).toBe('p1');
-    expect(result.kpis.scorecard.noi.value).not.toBeNull();
-    expect(result.kpis.scorecard.capRate.value).not.toBeNull();
+    expect(result.kpis.scorecard.noi.value).toBeNull();
+    expect(result.kpis.scorecard.capRate.value).toBeNull();
     expect(result.kpis.snapshotAt).toBeTruthy();
     expect(result.kpis.sourceStatus).toBe('partially_projected');
     expect(result.kpis.scorecardTrust.noi).toBe('PARTIALLY_PROJECTED');
@@ -102,11 +102,11 @@ describe('ProjectKpiReadService', () => {
     expect(result.recentActivityStatus).toBe('empty');
   });
 
-  it('matches canonical seed golden NOI when purchase price maps to engine inputs', async () => {
+  it('returns null NOI when only purchase price is stored (no income inputs)', async () => {
     const repository = makeRepository({
       findProjectKpiInputs: async () => ({
-        id: 'canonical-seed-deal-id',
-        purchasePrice: canonicalSeedDeal.purchase_price,
+        id: 'p-income-missing',
+        purchasePrice: 400_000,
         currentPhase: 3,
       }),
     });
@@ -115,8 +115,8 @@ describe('ProjectKpiReadService', () => {
         makeStore({
           findProjectById: async () => ({
             ...projectA,
-            id: 'canonical-seed-deal-id',
-            purchasePrice: canonicalSeedDeal.purchase_price,
+            id: 'p-income-missing',
+            purchasePrice: 400_000,
           }),
         }),
       ),
@@ -124,9 +124,9 @@ describe('ProjectKpiReadService', () => {
       deriveMetrics: deriveAllProjectMetrics,
     });
 
-    const result = await service.getCurrentProjectKpis(investor, 'canonical-seed-deal-id');
-    expect(result.kpis.scorecard.noi.value).toBeCloseTo(12485, 0);
-    expect(result.kpis.scorecard.capRate.value).toBeCloseTo(4.5, 1);
+    const result = await service.getCurrentProjectKpis(investor, 'p-income-missing');
+    expect(result.kpis.scorecard.noi.value).toBeNull();
+    expect(result.kpis.scorecard.capRate.value).toBeNull();
   });
 
   it('denies foreign project access', async () => {

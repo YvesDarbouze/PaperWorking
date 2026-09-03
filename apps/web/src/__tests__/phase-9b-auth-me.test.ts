@@ -1,4 +1,4 @@
-import { describe, expect, it, afterEach } from '@jest/globals';
+import { describe, expect, it, afterEach, beforeEach } from '@jest/globals';
 import { handleAuthMeGet } from '../../../api/src/routes/auth/me/handler.js';
 import {
   buildAuthUserFromPostgresUser,
@@ -18,6 +18,25 @@ function makeStore(profile: Parameters<typeof buildAuthUserFromPostgresUser>[0] 
   };
 }
 
+function firebaseIdentity(overrides?: Partial<SessionResolverDeps['identity']['firebase']>) {
+  return {
+    firebase: {
+      hasCredentials: () => true,
+      verifyIdToken: async () => ({
+        uid: 'uid-1',
+        email: 'a@example.com',
+        provider: 'firebase' as const,
+      }),
+      verifySessionCookie: async () => ({
+        uid: 'uid-1',
+        provider: 'firebase' as const,
+      }),
+      createSessionCookie: async () => 'cookie',
+      ...overrides,
+    },
+  };
+}
+
 function makeResolverDeps(
   store: SessionUserStore,
   identity: SessionResolverDeps['identity'],
@@ -32,16 +51,21 @@ function fakeJwt(payload: Record<string, unknown>): string {
 }
 
 describe('phase 9b — GET /api/auth/me authentication', () => {
+  beforeEach(() => {
+    process.env.USE_FIREBASE_AUTH = 'true';
+  });
+
   afterEach(() => {
     resetHandlerDepsForTests();
     delete process.env.USE_FIREBASE_AUTH;
   });
 
   it('accepts Authorization Bearer token', async () => {
+    const token = fakeJwt({ iss: 'https://securetoken.google.com/paperworking-97055' });
     const request = new Request('http://localhost/api/auth/me', {
-      headers: { Authorization: 'Bearer supabase-jwt' },
+      headers: { Authorization: `Bearer ${token}` },
     });
-    expect(sessionCredentialsFromRequest(request).bearerToken).toBe('supabase-jwt');
+    expect(sessionCredentialsFromRequest(request).bearerToken).toBe(token);
 
     const deps = makeResolverDeps(
       makeStore({
@@ -50,16 +74,13 @@ describe('phase 9b — GET /api/auth/me authentication', () => {
         accountType: 'investor',
         role: 'investor',
       }),
-      {
-        supabase: {
-          hasCredentials: () => true,
-          verifyAccessToken: async () => ({
-            uid: 'uid-1',
-            email: 'a@example.com',
-            provider: 'supabase',
-          }),
-        },
-      },
+      firebaseIdentity({
+        verifyIdToken: async () => ({
+          uid: 'uid-1',
+          email: 'a@example.com',
+          provider: 'firebase',
+        }),
+      }),
     );
 
     const user = await resolveAuthUserFromCredentials(
@@ -70,8 +91,9 @@ describe('phase 9b — GET /api/auth/me authentication', () => {
   });
 
   it('accepts __session cookie', async () => {
+    const sessionCookie = fakeJwt({ iss: 'https://session.firebase.google.com/paperworking-97055' });
     const request = new Request('http://localhost/api/auth/me', {
-      headers: { cookie: '__session=session-token' },
+      headers: { cookie: `__session=${sessionCookie}` },
     });
 
     const deps = makeResolverDeps(
@@ -81,16 +103,17 @@ describe('phase 9b — GET /api/auth/me authentication', () => {
         accountType: 'investor',
         role: 'investor',
       }),
-      {
-        supabase: {
-          hasCredentials: () => true,
-          verifyAccessToken: async () => ({
-            uid: 'uid-2',
-            email: 'b@example.com',
-            provider: 'supabase',
-          }),
-        },
-      },
+      firebaseIdentity({
+        verifySessionCookie: async () => ({
+          uid: 'uid-2',
+          provider: 'firebase',
+        }),
+        verifyIdToken: async () => ({
+          uid: 'uid-2',
+          email: 'b@example.com',
+          provider: 'firebase',
+        }),
+      }),
     );
 
     const user = await resolveAuthUserFromCredentials(
@@ -104,9 +127,7 @@ describe('phase 9b — GET /api/auth/me authentication', () => {
     const request = new Request('http://localhost/api/auth/me');
     const user = await resolveAuthUserFromCredentials(
       sessionCredentialsFromRequest(request),
-      makeResolverDeps(makeStore(null), {
-        supabase: { hasCredentials: () => true, verifyAccessToken: async () => ({ uid: 'x', provider: 'supabase' }) },
-      }),
+      makeResolverDeps(makeStore(null), firebaseIdentity()),
     );
     expect(user).toBeNull();
   });
@@ -119,11 +140,15 @@ describe('phase 9b — GET /api/auth/me authentication', () => {
     const user = await resolveAuthUserFromCredentials(
       sessionCredentialsFromRequest(request),
       makeResolverDeps(makeStore(null), {
-        supabase: {
+        firebase: {
           hasCredentials: () => true,
-          verifyAccessToken: async () => {
+          verifyIdToken: async () => {
             throw new Error('invalid token');
           },
+          verifySessionCookie: async () => {
+            throw new Error('invalid token');
+          },
+          createSessionCookie: async () => 'cookie',
         },
       }),
     );
@@ -131,7 +156,6 @@ describe('phase 9b — GET /api/auth/me authentication', () => {
   });
 
   it('resolves Firebase token when Firebase flag is enabled', async () => {
-    process.env.USE_FIREBASE_AUTH = 'true';
     const firebaseToken = fakeJwt({ iss: 'https://securetoken.google.com/paperworking-97055' });
     const request = new Request('http://localhost/api/auth/me', {
       headers: { Authorization: `Bearer ${firebaseToken}` },
@@ -146,24 +170,13 @@ describe('phase 9b — GET /api/auth/me authentication', () => {
           accountType: 'investor',
           role: 'Lead Investor',
         }),
-        {
-          supabase: {
-            hasCredentials: () => false,
-            verifyAccessToken: async () => {
-              throw new Error('supabase disabled');
-            },
-          },
-          firebase: {
-            hasCredentials: () => true,
-            verifyIdToken: async () => ({
-              uid: 'firebase-uid',
-              email: 'fb@example.com',
-              provider: 'firebase',
-            }),
-            verifySessionCookie: async () => ({ uid: 'firebase-uid', provider: 'firebase' }),
-            createSessionCookie: async () => 'cookie',
-          },
-        },
+        firebaseIdentity({
+          verifyIdToken: async () => ({
+            uid: 'firebase-uid',
+            email: 'fb@example.com',
+            provider: 'firebase',
+          }),
+        }),
       ),
     );
 
@@ -178,11 +191,20 @@ describe('phase 9b — GET /api/auth/me authentication', () => {
 });
 
 describe('phase 9b — DB-authoritative identity', () => {
+  beforeEach(() => {
+    process.env.USE_FIREBASE_AUTH = 'true';
+  });
+
+  afterEach(() => {
+    delete process.env.USE_FIREBASE_AUTH;
+  });
+
   it('does not elevate privileges via __acct display cookie', async () => {
+    const token = fakeJwt({ iss: 'https://securetoken.google.com/paperworking-97055' });
     const request = new Request('http://localhost/api/auth/me', {
       headers: {
         cookie: '__session=valid-token; __acct=admin',
-        Authorization: 'Bearer valid-token',
+        Authorization: `Bearer ${token}`,
       },
     });
 
@@ -196,13 +218,18 @@ describe('phase 9b — DB-authoritative identity', () => {
     const user = await resolveAuthUserFromCredentials(
       sessionCredentialsFromRequest(request),
       makeResolverDeps(makeStore(postgresProfile), {
-        supabase: {
+        firebase: {
           hasCredentials: () => true,
-          verifyAccessToken: async () => ({
+          verifyIdToken: async () => ({
             uid: 'uid-investor',
             email: 'user@example.com',
-            provider: 'supabase',
+            provider: 'firebase',
           }),
+          verifySessionCookie: async () => ({
+            uid: 'uid-investor',
+            provider: 'firebase',
+          }),
+          createSessionCookie: async () => 'cookie',
         },
       }),
     );
@@ -253,7 +280,6 @@ describe('phase 9b — resolveAuthUserFromRequest wiring', () => {
     expect(credentials.bearerToken).toBe('token-1');
     expect(credentials.sessionCookie).toBeUndefined();
 
-    // Wiring exists; full DB resolution is covered by handler-deps + services tests.
     expect(typeof resolveAuthUserFromRequest).toBe('function');
   });
 });

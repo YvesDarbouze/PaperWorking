@@ -5,7 +5,6 @@ import {
   isFirebaseSessionCookieToken,
   isSupabaseIssuedToken,
 } from './jwt-routing.js';
-import { createSupabaseIdentityVerifier } from './supabase-verifier.js';
 import type { IdentityVerificationDeps, VerifiedIdentity } from './types.js';
 
 export class IdentityVerificationError extends Error {
@@ -24,11 +23,6 @@ function mapFirebaseError(error: unknown): IdentityVerificationError {
   if (lower.includes('expired')) {
     return new IdentityVerificationError(message, 'expired_token');
   }
-  return new IdentityVerificationError(message, 'invalid_token');
-}
-
-function mapSupabaseError(error: unknown): IdentityVerificationError {
-  const message = error instanceof Error ? error.message : String(error);
   return new IdentityVerificationError(message, 'invalid_token');
 }
 
@@ -60,23 +54,8 @@ async function verifyFirebaseIdToken(
   }
 }
 
-async function verifySupabaseAccessToken(
-  token: string,
-  deps: IdentityVerificationDeps,
-): Promise<VerifiedIdentity> {
-  if (!deps.supabase?.hasCredentials()) {
-    throw new IdentityVerificationError('Supabase Auth not configured', 'provider_unavailable');
-  }
-  try {
-    return await deps.supabase.verifyAccessToken(token);
-  } catch (error) {
-    throw mapSupabaseError(error);
-  }
-}
-
 /**
- * Verify an access/ID token using issuer-based routing — no silent cross-IdP fallback
- * when Firebase mode is enabled (hides Firebase misconfiguration).
+ * Verify Firebase access/session tokens. Supabase tokens are rejected when Firebase mode is on.
  */
 export async function verifyAccessToken(
   accessToken: string | undefined | null,
@@ -88,9 +67,18 @@ export async function verifyAccessToken(
 
   const token = accessToken.trim();
   const firebaseEnabled = isFirebaseAuthEnabled();
-  const firebaseIssued = isFirebaseIssuedToken(token);
   const firebaseSession = isFirebaseSessionCookieToken(token);
+  const firebaseIssued = isFirebaseIssuedToken(token);
   const supabaseIssued = isSupabaseIssuedToken(token);
+
+  if (supabaseIssued) {
+    throw new IdentityVerificationError(
+      firebaseEnabled
+        ? 'Supabase tokens are not accepted when Firebase Auth is enabled'
+        : 'Supabase Auth is no longer supported',
+      'invalid_token',
+    );
+  }
 
   if (firebaseSession) {
     return verifyFirebaseSessionCookie(token, deps);
@@ -100,24 +88,11 @@ export async function verifyAccessToken(
     return verifyFirebaseIdToken(token, deps);
   }
 
-  if (supabaseIssued) {
-    return verifySupabaseAccessToken(token, deps);
-  }
-
   if (firebaseEnabled) {
     throw new IdentityVerificationError(
       'Unsupported identity token issuer',
       'invalid_token',
     );
-  }
-
-  // Legacy Supabase-only mode (Firebase flag off): preserve opaque-token fallback.
-  if (deps.supabase?.hasCredentials()) {
-    try {
-      return await deps.supabase.verifyAccessToken(token);
-    } catch (error) {
-      throw mapSupabaseError(error);
-    }
   }
 
   if (deps.firebase?.hasCredentials()) {
@@ -129,7 +104,7 @@ export async function verifyAccessToken(
   }
 
   throw new IdentityVerificationError(
-    'No identity provider configured',
+    'Firebase Auth not configured',
     'provider_unavailable',
   );
 }
@@ -137,7 +112,6 @@ export async function verifyAccessToken(
 export function createDefaultIdentityDeps(): IdentityVerificationDeps {
   return {
     firebase: createFirebaseIdentityVerifier(),
-    supabase: createSupabaseIdentityVerifier(),
   };
 }
 

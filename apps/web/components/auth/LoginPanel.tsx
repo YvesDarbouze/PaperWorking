@@ -64,8 +64,8 @@ export default function LoginPanel() {
     logout,
   } = useAuth();
 
-  const socialAuthReady = firebaseReady || supabaseReady;
-  const magicLinkSupported = supabaseReady && !firebaseReady;
+  const socialAuthReady = firebaseReady;
+  const magicLinkSupported = false;
 
   const urlMode = searchParams.get('mode');
   const accountType = searchParams.get('accountType') ?? 'investor';
@@ -118,7 +118,7 @@ export default function LoginPanel() {
 
   useEffect(() => {
     if (authLoading || isSubmitting || loadingProvider) return;
-    if (sessionReason === 'session_expired') return;
+    if (sessionReason === 'session_expired' || sessionReason === 'admin_denied') return;
     if (authenticated && !isSignUp) {
       const dest = resolveLoginRedirect({
         isNewUser: false,
@@ -246,7 +246,7 @@ export default function LoginPanel() {
     }
     if (!socialAuthReady) {
       setLocalError(
-        'Authentication is not configured. Enable Firebase or add NEXT_PUBLIC_SUPABASE_URL and NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY.',
+        'Authentication is not configured. Enable Firebase Auth (USE_FIREBASE_AUTH=true) and Firebase public config.',
       );
       return;
     }

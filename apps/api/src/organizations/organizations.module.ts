@@ -9,12 +9,11 @@ import {
   Query,
 } from '@nestjs/common';
 import { z } from 'zod';
+import { createOrganizationsRepository } from '@paperworking/database';
 import type { AuthUser } from '../auth/auth.types.js';
 import { CurrentUser } from '../auth/auth.types.js';
 import { AuthorizationService } from '../authz/authorization.service.js';
 import { ZodValidationPipe } from '../common/zod-validation.pipe.js';
-import { PrismaService } from '../prisma/prisma.service.js';
-import type { ApiPrismaClient } from '@paperworking/database';
 
 function slugifyName(name: string): string {
   const base = name
@@ -27,73 +26,48 @@ function slugifyName(name: string): string {
 
 @Injectable()
 export class OrganizationsService {
-  constructor(
-    private readonly prisma: PrismaService,
-    private readonly authz: AuthorizationService,
-  ) {}
+  private readonly organizationsRepository;
+
+  constructor(private readonly authz: AuthorizationService) {
+    this.organizationsRepository = createOrganizationsRepository();
+  }
 
   async listForUser(user: AuthUser) {
     const orgIds = await this.authz.resolveUserOrgIds(user.uid);
     if (orgIds.length === 0) {
       return { success: true, organizations: [] };
     }
-    const organizations = await this.prisma.organization.findMany({
-      where: { id: { in: orgIds } },
-      orderBy: { createdAt: 'asc' },
-    });
+    const organizations = await this.organizationsRepository.listByIds(orgIds);
     return { success: true, organizations };
   }
 
   async getById(user: AuthUser, organizationId: string) {
     await this.authz.assertOrgAccess(user, organizationId);
-    const organization = await this.prisma.organization.findUnique({
-      where: { id: organizationId },
-    });
+    const organization = await this.organizationsRepository.getById(organizationId);
     if (!organization) {
       throw new BadRequestException({ error: 'Organization not found' });
     }
     return { success: true, organization };
   }
 
-  /**
-   * Transactional org bootstrap: Organization + owner membership row.
-   */
   async create(user: AuthUser, body: { name: string; slug?: string }) {
     const name = body.name.trim();
     if (!name) {
       throw new BadRequestException({ error: 'name required' });
     }
 
-    let slug = (body.slug?.trim() || slugifyName(name)).toLowerCase();
-    const existingSlug = await this.prisma.organization.findUnique({ where: { slug } });
-    if (existingSlug) {
-      slug = `${slug}-${Date.now().toString(36).slice(-4)}`;
-    }
-
-    const result = await this.prisma.client.$transaction(async (tx: ApiPrismaClient) => {
-      const organization = await tx.organization.create({
-        data: {
-          name,
-          slug,
-          ownerId: user.uid,
-        },
-      });
-      const member = await tx.organizationMember.create({
-        data: {
-          organizationId: organization.id,
-          userId: user.uid,
-          email: user.email || undefined,
-          role: 'Owner',
-          status: 'active',
-        },
-      });
-      return { organization, member };
+    const slug = body.slug?.trim() || slugifyName(name);
+    const result = await this.organizationsRepository.createWithOwner({
+      name,
+      slug,
+      ownerId: user.uid,
+      ownerEmail: user.email ?? undefined,
     });
 
     return {
       success: true,
       organization: result.organization,
-      membership: result.member,
+      membership: result.membership,
     };
   }
 }

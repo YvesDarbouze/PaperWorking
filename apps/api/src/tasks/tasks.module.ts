@@ -9,67 +9,41 @@ import {
   Query,
 } from '@nestjs/common';
 import { z } from 'zod';
+import { createTaskAssignmentsRepository } from '@paperworking/database';
 import type { AuthUser } from '../auth/auth.types.js';
 import { CurrentUser } from '../auth/auth.types.js';
 import { AuthorizationService } from '../authz/authorization.service.js';
 import { RequirePermissions } from '../authz/require-permissions.decorator.js';
 import { ZodValidationPipe } from '../common/zod-validation.pipe.js';
-import { PrismaService } from '../prisma/prisma.service.js';
 
 @Injectable()
 export class TasksService {
-  constructor(
-    private readonly prisma: PrismaService,
-    private readonly authz: AuthorizationService,
-  ) {}
+  private readonly tasksRepository;
+
+  constructor(private readonly authz: AuthorizationService) {
+    this.tasksRepository = createTaskAssignmentsRepository();
+  }
 
   async list(user: AuthUser, projectId?: string, assigneeId?: string) {
     this.authz.assertPermission(user, 'projects.read');
 
-    // Never trust client assigneeId except self-filter (or admin).
     const trustedAssigneeFilter =
       assigneeId && (assigneeId === user.uid || user.isAdmin) ? assigneeId : undefined;
 
     if (projectId) {
       await this.authz.assertProjectAccess(user, projectId, 'projects.read');
-      const tasks = await this.prisma.taskAssignment.findMany({
-        where: {
-          projectId,
-          ...(trustedAssigneeFilter ? { assigneeId: trustedAssigneeFilter } : {}),
-        },
-        orderBy: { updatedAt: 'desc' },
-        take: 200,
-      });
+      const tasks = await this.tasksRepository.listByProjectId(
+        projectId,
+        trustedAssigneeFilter,
+      );
       return { success: true, tasks };
     }
 
-    // Unscoped list: only tasks the caller is assignee of OR on accessible projects.
-    const orgIds = await this.authz.resolveUserOrgIds(user.uid);
-    const tasks = await this.prisma.taskAssignment.findMany({
-      where: {
-        OR: [
-          { assigneeId: user.uid },
-          {
-            project: {
-              OR: [
-                { userId: user.uid },
-                { investorId: user.uid },
-                ...(orgIds.length ? [{ organizationId: { in: orgIds } }] : []),
-                {
-                  members: {
-                    some: { userId: user.uid, status: 'active' },
-                  },
-                },
-              ],
-            },
-          },
-        ],
-        ...(trustedAssigneeFilter ? { assigneeId: trustedAssigneeFilter } : {}),
-      },
-      orderBy: { updatedAt: 'desc' },
-      take: 200,
-    });
-    return { success: true, tasks };
+    const tasks = await this.tasksRepository.listForAssignee(user.uid);
+    const filtered = trustedAssigneeFilter
+      ? tasks.filter((task: { assigneeId: string }) => task.assigneeId === trustedAssigneeFilter)
+      : tasks;
+    return { success: true, tasks: filtered };
   }
 
   async create(user: AuthUser, body: Record<string, unknown>) {
@@ -86,7 +60,6 @@ export class TasksService {
       throw new BadRequestException({ error: 'projectId required' });
     }
 
-    // Ignore client organizationId / userId spoofing
     void body.organizationId;
     void body.userId;
 
@@ -99,24 +72,21 @@ export class TasksService {
 
     await this.authz.assertAssigneeInProjectScope(user, projectId, requestedAssignee);
 
-    const task = await this.prisma.taskAssignment.create({
-      data: {
-        title,
-        projectId,
-        assigneeId: requestedAssignee,
-        status: typeof body.status === 'string' ? body.status : 'open',
-        dueAt:
-          typeof body.dueAt === 'string' || body.dueAt instanceof Date
-            ? new Date(body.dueAt as string)
-            : undefined,
-        metadata: (body.metadata as object) || {},
-      },
+    const task = await this.tasksRepository.createTask({
+      title,
+      projectId,
+      assigneeId: requestedAssignee,
+      status: typeof body.status === 'string' ? body.status : 'open',
+      dueAt:
+        typeof body.dueAt === 'string' || body.dueAt instanceof Date
+          ? new Date(body.dueAt as string)
+          : undefined,
+      metadata: (body.metadata as Record<string, unknown>) || {},
     });
     return { success: true, task };
   }
 
   async assign(user: AuthUser, body: Record<string, unknown>) {
-    // body.userId is a spoof vector — map only through assigneeId after ACL
     const assigneeId =
       typeof body.assigneeId === 'string'
         ? body.assigneeId

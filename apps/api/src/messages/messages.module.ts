@@ -10,27 +10,22 @@ import {
   Query,
 } from '@nestjs/common';
 import { z } from 'zod';
+import { createMessagesRepository } from '@paperworking/database';
 import type { AuthUser } from '../auth/auth.types.js';
 import { CurrentUser } from '../auth/auth.types.js';
 import { AuthorizationService } from '../authz/authorization.service.js';
 import { ZodValidationPipe } from '../common/zod-validation.pipe.js';
-import { PrismaService } from '../prisma/prisma.service.js';
 
 @Injectable()
 export class MessagesService {
-  constructor(
-    private readonly prisma: PrismaService,
-    private readonly authz: AuthorizationService,
-  ) {}
+  private readonly messagesRepository;
+
+  constructor(private readonly authz: AuthorizationService) {
+    this.messagesRepository = createMessagesRepository();
+  }
 
   async listThreads(user: AuthUser) {
-    const messages = await this.prisma.message.findMany({
-      where: {
-        OR: [{ senderId: user.uid }, { recipientId: user.uid }],
-      },
-      orderBy: { createdAt: 'desc' },
-      take: 200,
-    });
+    const messages = await this.messagesRepository.listForParticipant(user.uid);
     const byThread = new Map<string, (typeof messages)[number]>();
     for (const m of messages) {
       if (!byThread.has(m.threadId)) byThread.set(m.threadId, m);
@@ -51,19 +46,11 @@ export class MessagesService {
     if (threadId) {
       await this.authz.assertThreadAccess(user, threadId);
     }
-    const messages = await this.prisma.message.findMany({
-      where: {
-        OR: [{ senderId: user.uid }, { recipientId: user.uid }],
-        ...(threadId ? { threadId } : {}),
-      },
-      orderBy: { createdAt: 'asc' },
-      take: 200,
-    });
+    const messages = await this.messagesRepository.listForParticipant(user.uid, threadId);
     return { success: true, messages };
   }
 
   async create(user: AuthUser, body: Record<string, unknown>) {
-    // Never trust client identity spoof fields.
     void body.senderId;
     void body.organizationId;
     void body.userId;
@@ -86,7 +73,6 @@ export class MessagesService {
 
     let threadId: string;
     if (typeof body.threadId === 'string' && body.threadId.trim()) {
-      // Existing thread only — must already be a participant.
       await this.authz.assertThreadAccess(user, body.threadId.trim());
       threadId = body.threadId.trim();
     } else {
@@ -103,28 +89,20 @@ export class MessagesService {
       attachmentProjectId = body.attachmentProjectId;
     }
 
-    const message = await this.prisma.message.create({
-      data: {
-        threadId,
-        senderId: user.uid,
-        recipientId,
-        subject,
-        body: messageBody,
-        attachmentProjectId,
-      },
+    const message = await this.messagesRepository.createMessage({
+      threadId,
+      senderId: user.uid,
+      recipientId,
+      subject,
+      body: messageBody,
+      attachmentProjectId,
     });
     return { success: true, message };
   }
 
   async thread(user: AuthUser, threadId: string) {
     await this.authz.assertThreadAccess(user, threadId);
-    const messages = await this.prisma.message.findMany({
-      where: {
-        threadId,
-        OR: [{ senderId: user.uid }, { recipientId: user.uid }],
-      },
-      orderBy: { createdAt: 'asc' },
-    });
+    const messages = await this.messagesRepository.listForParticipant(user.uid, threadId);
     return { success: true, threadId, messages };
   }
 }

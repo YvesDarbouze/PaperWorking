@@ -18,8 +18,9 @@ export default async function AdminLayout({ children }: { children: React.ReactN
   }
 
   // Authorization uses DB-authoritative isAdmin — __acct is display-only and not consulted.
+  // Logged-in non-admins go to dashboard (not login) to avoid redirect loops with LoginPanel.
   if (!isAuthorizedAdmin(authUser)) {
-    redirect('/login?accountType=admin&redirectTo=/admin');
+    redirect('/dashboard?reason=admin_denied');
   }
 
   return <AdminPortalShell>{children}</AdminPortalShell>;

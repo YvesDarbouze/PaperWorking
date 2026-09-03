@@ -34,15 +34,11 @@ export async function resolveAuthUserFromRequest(
 
 /**
  * Resolve AuthUser from Next server context (cookies + Authorization header).
- * Uses shared @paperworking/services session resolver + Postgres profile.
+ * Uses shared @paperworking/services session resolver + Firestore profile.
  */
 export async function resolveServerAuthUser(
   credentials?: ServerSessionCredentials,
 ): Promise<AuthUser | null> {
-  if (!process.env.DATABASE_URL?.trim()) {
-    return null;
-  }
-
   const deps = buildHandlerDeps();
 
   let sessionCookie = credentials?.sessionCookie;

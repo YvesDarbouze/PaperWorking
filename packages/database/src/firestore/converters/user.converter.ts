@@ -18,6 +18,9 @@ export function userFromFirestore(
       personalOrganizationId:
         optionalString(data.personalOrganizationId) ?? optionalString(data.organizationId),
       legacyFirebaseUid: optionalString(data.legacyFirebaseUid),
+      subscriptionPlan: optionalString(data.subscriptionPlan),
+      subscriptionStatus: optionalString(data.subscriptionStatus),
+      stripeSubscriptionId: optionalString(data.stripeSubscriptionId),
       createdAt: toDate(data.createdAt, 'createdAt'),
       updatedAt: toDate(data.updatedAt, 'updatedAt'),
     };

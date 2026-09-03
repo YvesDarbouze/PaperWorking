@@ -4,11 +4,10 @@ import { AuthModule } from './auth/auth.module.js';
 import { AuthzModule } from './authz/authz.module.js';
 import { HealthModule } from './health/health.module.js';
 import { Wave1Modules } from './modules.js';
-import { PrismaModule } from './prisma/prisma.module.js';
 
 /**
  * NestJS is the sole HTTP API host (Cloud Run).
- * Controllers → Guards → DTO → Services → Prisma → Supabase.
+ * Controllers → Guards → DTO → Services → Firestore.
  */
 @Module({
   imports: [
@@ -16,7 +15,6 @@ import { PrismaModule } from './prisma/prisma.module.js';
       isGlobal: true,
       envFilePath: ['.env', '../../.env', '../../../.env'],
     }),
-    PrismaModule,
     AuthModule,
     AuthzModule,
     HealthModule,

@@ -7,17 +7,15 @@ import {
   createStripeWebhookService,
 } from '@paperworking/services';
 import {
-  createPrismaAuthzStore,
-  createPrismaBillingSubscriptionRepository,
+  createAuthzStore,
+  createBillingSubscriptionRepository,
   createStripeBillingProvider,
 } from '@paperworking/database';
-import type { PrismaService } from '../prisma/prisma.service.js';
 
-export function buildNestBillingServices(prisma: PrismaService) {
-  const client = prisma.client;
-  const repository = createPrismaBillingSubscriptionRepository(client);
+export function buildNestBillingServices() {
+  const repository = createBillingSubscriptionRepository();
   const provider = createStripeBillingProvider();
-  const authz = new CoreAuthorizationService(createPrismaAuthzStore(client));
+  const authz = new CoreAuthorizationService(createAuthzStore());
 
   return {
     read: createBillingReadService({ repository }),

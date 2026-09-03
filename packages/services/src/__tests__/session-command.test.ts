@@ -2,6 +2,12 @@ import { describe, expect, it, jest, beforeEach } from '@jest/globals';
 import { SessionCommandService } from '../auth/session-command.service.js';
 import type { IdentityProvisioningService } from '../auth/types.js';
 
+function fakeJwt(payload: Record<string, unknown>): string {
+  const header = Buffer.from(JSON.stringify({ alg: 'RS256' })).toString('base64url');
+  const body = Buffer.from(JSON.stringify(payload)).toString('base64url');
+  return `${header}.${body}.signature`;
+}
+
 describe('SessionCommandService', () => {
   const identityProvisioning: IdentityProvisioningService = {
     provisionFromVerifiedIdentity: jest.fn(async () => ({
@@ -47,31 +53,39 @@ describe('SessionCommandService', () => {
   });
 
   it('establishes nest session cookies from authoritative AuthUser', async () => {
+    process.env.USE_FIREBASE_AUTH = 'true';
+    const accessToken = fakeJwt({ iss: 'https://securetoken.google.com/paperworking-97055' });
     const service = new SessionCommandService();
     const result = await service.establishSession({
-      accessToken: 'valid-token',
+      accessToken,
       accountType: 'admin',
       identity: {
-        supabase: {
+        firebase: {
           hasCredentials: () => true,
-          verifyAccessToken: jest.fn(async () => ({
+          verifyIdToken: jest.fn(async () => ({
             uid: 'user-1',
             email: 'user@example.com',
-            provider: 'supabase' as const,
+            provider: 'firebase' as const,
           })),
+          verifySessionCookie: jest.fn(async () => ({
+            uid: 'user-1',
+            provider: 'firebase' as const,
+          })),
+          createSessionCookie: jest.fn(async () => 'session-cookie'),
         },
       },
       identityProvisioning,
       subscriptionLookup,
       policy: 'nest',
     });
+    delete process.env.USE_FIREBASE_AUTH;
 
     expect(result.ok).toBe(true);
     if (result.ok) {
       expect(result.uid).toBe('user-1');
       const names = result.cookies.map((c) => c.name);
       expect(names).toEqual(expect.arrayContaining(['__session', '__acct', '__sub']));
-      expect(result.cookies.find((c) => c.name === '__session')?.value).toBe('valid-token');
+      expect(result.cookies.find((c) => c.name === '__session')?.value).toBe(accessToken);
       expect(identityProvisioning.provisionFromVerifiedIdentity).toHaveBeenCalled();
     }
   });

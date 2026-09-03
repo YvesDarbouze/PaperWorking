@@ -16,7 +16,7 @@ import {
 } from '@paperworking/services';
 import type { AuthUser } from '../auth/auth.types.js';
 import { CurrentUser } from '../auth/auth.types.js';
-import { PrismaService } from '../prisma/prisma.service.js';
+import { createUserSettingsRepository } from '@paperworking/database';
 import { buildNestProfileServices, type NestProfileServices } from './settings-factory.js';
 
 /** Writable settings sections for normal users. */
@@ -49,9 +49,11 @@ const FORBIDDEN_FIELDS = new Set([
 @Injectable()
 export class SettingsService {
   private readonly profileServices: NestProfileServices;
+  private readonly userSettings;
 
-  constructor(private readonly prisma: PrismaService) {
-    this.profileServices = buildNestProfileServices(this.prisma);
+  constructor() {
+    this.profileServices = buildNestProfileServices();
+    this.userSettings = createUserSettingsRepository();
   }
 
   private sectionFromPath(path: string): string {
@@ -106,18 +108,15 @@ export class SettingsService {
       }
     }
 
-    const row = await this.prisma.user.findFirst({
-      where: { OR: [{ id: user.uid }, { legacyFirebaseUid: user.uid }] },
-    });
-    const settings =
-      row?.settings && typeof row.settings === 'object'
-        ? (row.settings as Record<string, unknown>)
-        : {};
+    const row = await this.userSettings.getSettingsSection(user.uid, section);
+    if (!row) {
+      return { success: false, error: 'User not found' };
+    }
 
     return {
       success: true,
       section,
-      settings: settings[section] ?? {},
+      settings: row.sectionValue ?? {},
     };
   }
 
@@ -143,26 +142,11 @@ export class SettingsService {
 
     const safeBody = this.stripForbidden(body);
 
-    const row = await this.prisma.user.findFirst({
-      where: { OR: [{ id: user.uid }, { legacyFirebaseUid: user.uid }] },
-    });
-    if (!row) {
+    const updated = await this.userSettings.updateSettingsSection(user.uid, section, safeBody);
+    if (!updated) {
       return { success: false, error: 'User not found' };
     }
-
-    const existing =
-      row.settings && typeof row.settings === 'object'
-        ? { ...(row.settings as Record<string, unknown>) }
-        : {};
-    existing[section] = {
-      ...((existing[section] as object) || {}),
-      ...safeBody,
-    };
-    const updated = await this.prisma.user.update({
-      where: { id: row.id },
-      data: { settings: existing as object },
-    });
-    return { success: true, section, settings: existing[section], userId: updated.id };
+    return { success: true, section, settings: updated.settings, userId: updated.userId };
   }
 
   async mutate(
@@ -178,19 +162,8 @@ export class SettingsService {
       if (section === 'profile') {
         throw new ForbiddenException({ error: 'Cannot delete profile section' });
       }
-      const row = await this.prisma.user.findFirst({
-        where: { OR: [{ id: user.uid }, { legacyFirebaseUid: user.uid }] },
-      });
-      if (!row) return { success: false, error: 'User not found' };
-      const existing =
-        row.settings && typeof row.settings === 'object'
-          ? { ...(row.settings as Record<string, unknown>) }
-          : {};
-      delete existing[section];
-      await this.prisma.user.update({
-        where: { id: row.id },
-        data: { settings: existing as object },
-      });
+      const deleted = await this.userSettings.deleteSettingsSection(user.uid, section);
+      if (!deleted) return { success: false, error: 'User not found' };
       return { success: true, section, deleted: true };
     }
     return this.put(user, path, body);

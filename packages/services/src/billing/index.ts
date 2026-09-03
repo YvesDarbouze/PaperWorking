@@ -3,6 +3,8 @@ export {
   STARTING_PRICE,
   getCanonicalPlanName,
   listConfiguredStripePriceIds,
+  mapStripeSubscriptionStatusForPersistence,
+  resolvePlanFromStripePriceId,
   resolvePlanId,
   resolveStripePriceId,
   validateAllowlistedPriceId,

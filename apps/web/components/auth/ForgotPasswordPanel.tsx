@@ -9,7 +9,7 @@ import { AUTH_ROUTES } from '@/lib/auth/routes';
 
 export default function ForgotPasswordPanel() {
   const { resetPassword, firebaseReady, supabaseReady, error: authError, clearError } = useAuth();
-  const authProviderReady = firebaseReady || supabaseReady;
+  const authProviderReady = firebaseReady;
   const [submitting, setSubmitting] = useState(false);
   const [success, setSuccess] = useState(false);
   const [submittedEmail, setSubmittedEmail] = useState('');
@@ -87,7 +87,7 @@ export default function ForgotPasswordPanel() {
       {!authProviderReady ? (
         <div className="mb-4">
           <AuthNotice>
-            Authentication is not configured yet. Enable Firebase or add NEXT_PUBLIC_SUPABASE_* env
+            Authentication is not configured yet. Enable Firebase Auth and public Firebase config.
             vars to send reset emails.
           </AuthNotice>
         </div>

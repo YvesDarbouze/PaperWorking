@@ -16,7 +16,7 @@ import { VendorsModule } from './vendors/vendors.module.js';
 
 /**
  * Wave-1 Nest domain modules for AppModule import.
- * AuthModule / PrismaModule / HealthModule are registered separately.
+ * AuthModule / HealthModule are registered separately.
  */
 export const Wave1Modules = [
   OrganizationsModule,

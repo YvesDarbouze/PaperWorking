@@ -7,12 +7,8 @@ import { isBffApiPath } from '../../lib/api/bff-fetch';
 const here = dirname(fileURLToPath(import.meta.url));
 const webRoot = join(here, '../..');
 
-/** Privileged admin exception — impersonation retained on legacy Nest (Phase B18). */
-const API_FETCH_ALLOWLIST = new Set([
-  'components/admin/AdminAgentCrewPanel.tsx',
-  'lib/admin/admin-api.ts',
-  'lib/api/client.ts',
-]);
+/** Phase D — no production browser apiFetch callers. */
+const API_FETCH_ALLOWLIST = new Set<string>();
 
 function walkTsx(dir: string, out: string[] = []): string[] {
   for (const entry of readdirSync(dir)) {
@@ -84,14 +80,8 @@ describe('phase B17 — global browser transport guard (admin-only apiFetch)', (
     expect(violations).toEqual([]);
   });
 
-  it('allowlisted apiFetch callers are privileged admin exception only after B18', () => {
-    expect([...API_FETCH_ALLOWLIST].sort()).toEqual(
-      [
-        'components/admin/AdminAgentCrewPanel.tsx',
-        'lib/admin/admin-api.ts',
-        'lib/api/client.ts',
-      ].sort(),
-    );
+  it('allowlisted apiFetch callers removed after Phase D', () => {
+    expect([...API_FETCH_ALLOWLIST]).toEqual([]);
   });
 });
 
@@ -112,7 +102,7 @@ describe('phase B17 — bffFetch avoids NEXT_PUBLIC_API_URL for profile/insights
 });
 
 describe('phase B17 — admin endpoint inventory (B18 prep)', () => {
-  it('documents B18 admin transport: BFF reads + privileged impersonation exception', () => {
+  it('documents admin transport: BFF reads + same-origin impersonation (Phase D)', () => {
     const adminUi = readFileSync(join(webRoot, 'components/admin/admin-ui.tsx'), 'utf8');
     const overview = readFileSync(join(webRoot, 'components/admin/AdminOverviewPanel.tsx'), 'utf8');
     const lender = readFileSync(join(webRoot, 'components/admin/AdminLenderConfigPanel.tsx'), 'utf8');
@@ -121,7 +111,7 @@ describe('phase B17 — admin endpoint inventory (B18 prep)', () => {
     expect(adminUi).toContain('getAdminOpsFromBff');
     expect(overview).toContain('getAdminRentcastUsageFromBff');
     expect(lender).toContain('getAdminLenderRatesFromBff');
-    expect(crew).toContain('impersonateAgentViaLegacyNest');
+    expect(crew).toContain('impersonateAdminAgentFromBff');
     expect(crew).toContain('deleteAdminAgentFromBff');
   });
 });

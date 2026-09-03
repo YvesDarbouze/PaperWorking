@@ -8,12 +8,8 @@ const here = dirname(fileURLToPath(import.meta.url));
 const webRoot = join(here, '../..');
 const repoRoot = join(webRoot, '../..');
 
-/** Privileged admin exception — impersonation retained on legacy Nest transport. */
-const API_FETCH_ALLOWLIST = new Set([
-  'components/admin/AdminAgentCrewPanel.tsx',
-  'lib/admin/admin-api.ts',
-  'lib/api/client.ts',
-]);
+/** Phase D — no production browser apiFetch callers remain (client.ts defines it only). */
+const API_FETCH_ALLOWLIST = new Set<string>();
 
 function readWeb(rel: string): string {
   return readFileSync(join(webRoot, rel), 'utf8');
@@ -52,22 +48,21 @@ describe('V1 certification correction — project routes', () => {
 });
 
 describe('V1 certification correction — browser Nest transport', () => {
-  it('only allowlisted files reference apiFetch(', () => {
+  it('no production browser modules reference apiFetch(', () => {
     const violations: string[] = [];
     for (const rel of walkTs(webRoot)) {
       if (rel.includes('/src/__tests__/')) continue;
       const content = readWeb(rel);
-      if (!content.includes('apiFetch(')) continue;
-      if (rel === 'lib/api/client.ts') continue;
-      if (!API_FETCH_ALLOWLIST.has(rel)) violations.push(rel);
+      if (content.includes('apiFetch(')) violations.push(rel);
     }
     expect(violations).toEqual([]);
   });
 
-  it('single production impersonation caller uses legacy Nest helper', () => {
+  it('impersonation uses same-origin BFF helper (Phase D)', () => {
     const panel = readWeb('components/admin/AdminAgentCrewPanel.tsx');
-    expect(panel).toContain('impersonateAgentViaLegacyNest');
-    expect(panel).toContain('/impersonate');
+    const adminApi = readWeb('lib/admin/admin-api.ts');
+    expect(panel).toContain('impersonateAdminAgentFromBff');
+    expect(adminApi).toContain('/impersonate');
   });
 });
 

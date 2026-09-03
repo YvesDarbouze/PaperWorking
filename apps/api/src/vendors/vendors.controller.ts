@@ -28,8 +28,8 @@ export class VendorServicesController {
   constructor(private readonly vendors: VendorsService) {}
 
   @Get()
-  list() {
-    return this.vendors.listServices();
+  list(@CurrentUser() user: AuthUser) {
+    return this.vendors.listServices(user);
   }
 
   @Post()

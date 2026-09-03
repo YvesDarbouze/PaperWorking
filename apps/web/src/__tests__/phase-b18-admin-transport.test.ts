@@ -7,12 +7,8 @@ import { isBffApiPath } from '../../lib/api/bff-fetch';
 const here = dirname(fileURLToPath(import.meta.url));
 const webRoot = join(here, '../..');
 
-/** Privileged admin exception — impersonation retained on legacy Nest transport. */
-const API_FETCH_ALLOWLIST = new Set([
-  'components/admin/AdminAgentCrewPanel.tsx',
-  'lib/admin/admin-api.ts',
-  'lib/api/client.ts',
-]);
+/** Phase D — no production browser apiFetch callers. */
+const API_FETCH_ALLOWLIST = new Set<string>();
 
 function walkTsx(dir: string, out: string[] = []): string[] {
   for (const entry of readdirSync(dir)) {
@@ -58,7 +54,7 @@ describe('phase B18 — admin BFF transport', () => {
 });
 
 describe('phase B18 — global browser transport guard', () => {
-  it('only privileged impersonation may use apiFetch', () => {
+  it('no production browser modules use apiFetch', () => {
     const files = walkTsx(webRoot);
     const violations: string[] = [];
 
@@ -75,18 +71,18 @@ describe('phase B18 — global browser transport guard', () => {
     expect(violations).toEqual([]);
   });
 
-  it('impersonation remains explicit legacy Nest call', () => {
+  it('impersonation uses same-origin BFF (Phase D)', () => {
     const panel = readFileSync(join(webRoot, 'components/admin/AdminAgentCrewPanel.tsx'), 'utf8');
-    expect(panel).toContain('impersonateAgentViaLegacyNest');
-    expect(panel).toContain('/impersonate');
+    const adminApi = readFileSync(join(webRoot, 'lib/admin/admin-api.ts'), 'utf8');
+    expect(panel).toContain('impersonateAdminAgentFromBff');
+    expect(adminApi).toContain('/impersonate');
   });
 });
 
 describe('phase B18 — NEXT_PUBLIC_API_URL scope', () => {
-  it('client.ts documents privileged-exception-only usage', () => {
-    const source = readFileSync(join(webRoot, 'lib/api/client.ts'), 'utf8');
-    expect(source).toContain('impersonate');
-    expect(source).toContain('NEXT_PUBLIC_API_URL');
+  it('client.ts is not imported by admin browser modules', () => {
+    const adminApi = readFileSync(join(webRoot, 'lib/admin/admin-api.ts'), 'utf8');
+    expect(adminApi).not.toContain("from '@/lib/api/client'");
   });
 
   it('migrated admin modules avoid direct NEXT_PUBLIC_API_URL reads', () => {

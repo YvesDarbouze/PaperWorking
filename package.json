@@ -24,7 +24,9 @@
     "verify:integration": "npm run test --workspace=@paperworking/integration",
     "test:e2e": "npm run test:e2e --workspace=@paperworking/e2e",
     "verify": "npm run build && npm run typecheck --workspaces --if-present && npm run test --workspaces --if-present",
-    "deploy:api": "bash scripts/deploy-api-cloud-run.sh"
+    "deploy:api": "bash scripts/deploy-api-cloud-run.sh",
+    "firestore:wipe": "node scripts/firestore-wipe-all.mjs",
+    "firestore:bootstrap": "node scripts/firestore-bootstrap-v1.mjs"
   },
   "engines": {
     "node": ">=20"

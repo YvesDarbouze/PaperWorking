@@ -70,12 +70,9 @@ describe('GET /api/auth/sessions handler', () => {
 
 describe('parity: Nest listSessions and shared handler', () => {
   it('AuthService.listSessions delegates to buildAuthSessionsResponse', async () => {
+    process.env.DATABASE_READ_MODE = 'firestore';
     const { AuthService } = await import('../auth/auth.service.js');
-    const prisma = {
-      user: { findFirst: async () => null, upsert: async () => ({}) },
-      subscription: { findFirst: async () => null },
-    };
-    const auth = new AuthService(prisma as never);
+    const auth = new AuthService();
     const nest = await auth.listSessions(investorUser, 'TestAgent/1.0');
 
     expect(nest).toMatchObject({

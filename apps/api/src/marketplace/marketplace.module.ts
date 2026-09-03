@@ -1,8 +1,8 @@
 import { Module } from '@nestjs/common';
 import {
-  createPrismaMarketplaceProfileReadRepository,
-  createPrismaMarketplaceInvestorsReadRepository,
-  createPrismaMarketplaceFollowCommandRepository,
+  createMarketplaceProfileReadRepository,
+  createMarketplaceInvestorsReadRepository,
+  createMarketplaceFollowCommandRepository,
 } from '@paperworking/database';
 import {
   MarketplaceProfileReadService,
@@ -12,7 +12,6 @@ import {
   createMarketplaceInvestorsReadService,
   createMarketplaceFollowCommandService,
 } from '@paperworking/services';
-import { PrismaService } from '../prisma/prisma.service.js';
 import {
   InvestorFollowersController,
   MarketplaceController,
@@ -25,27 +24,24 @@ import { MarketplaceService } from './marketplace.service.js';
     MarketplaceService,
     {
       provide: MarketplaceProfileReadService,
-      useFactory: (prisma: PrismaService) =>
+      useFactory: () =>
         createMarketplaceProfileReadService({
-          repository: createPrismaMarketplaceProfileReadRepository(prisma.client),
+          repository: createMarketplaceProfileReadRepository(),
         }),
-      inject: [PrismaService],
     },
     {
       provide: MarketplaceInvestorsReadService,
-      useFactory: (prisma: PrismaService) =>
+      useFactory: () =>
         createMarketplaceInvestorsReadService({
-          repository: createPrismaMarketplaceInvestorsReadRepository(prisma.client),
+          repository: createMarketplaceInvestorsReadRepository(),
         }),
-      inject: [PrismaService],
     },
     {
       provide: MarketplaceFollowCommandService,
-      useFactory: (prisma: PrismaService) =>
+      useFactory: () =>
         createMarketplaceFollowCommandService({
-          repository: createPrismaMarketplaceFollowCommandRepository(prisma.client),
+          repository: createMarketplaceFollowCommandRepository(),
         }),
-      inject: [PrismaService],
     },
   ],
   exports: [MarketplaceService],

@@ -2,6 +2,7 @@ export interface AdminAuthContext {
   uid: string;
   role: string;
   isAdmin: boolean;
+  email?: string | null;
 }
 
 export interface AdminAuthFailure {

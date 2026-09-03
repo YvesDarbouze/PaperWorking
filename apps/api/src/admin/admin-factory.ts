@@ -6,14 +6,12 @@ import {
   createAdminOpsReadService,
   createAdminRentcastReadService,
 } from '@paperworking/services';
-import { createPrismaAdminReadRepository, createPrismaAuthzStore } from '@paperworking/database';
-import type { PrismaService } from '../prisma/prisma.service.js';
+import { createAdminReadRepository, createAuthzStore } from '@paperworking/database';
 
 /** Shared admin services for Nest /api/admin/* compatibility (Phase B18). */
-export function buildNestAdminServices(prisma: PrismaService) {
-  const client = prisma.client;
-  const authz = new CoreAuthorizationService(createPrismaAuthzStore(client));
-  const repository = createPrismaAdminReadRepository(client);
+export function buildNestAdminServices() {
+  const authz = new CoreAuthorizationService(createAuthzStore());
+  const repository = createAdminReadRepository();
 
   return {
     ops: createAdminOpsReadService({ authz, repository }),

@@ -65,6 +65,9 @@ type PostgresUserLike = {
   accountType?: string | null;
   role?: string | null;
   legacyFirebaseUid?: string | null;
+  subscriptionPlan?: string | null;
+  subscriptionStatus?: string | null;
+  stripeSubscriptionId?: string | null;
   createdAt: Date;
   updatedAt: Date;
 };
@@ -119,6 +122,9 @@ export function userFromPostgres(row: PostgresUserLike): UserReadModel {
     role: row.role ?? null,
     personalOrganizationId: null,
     legacyFirebaseUid: row.legacyFirebaseUid ?? null,
+    subscriptionPlan: row.subscriptionPlan ?? null,
+    subscriptionStatus: row.subscriptionStatus ?? null,
+    stripeSubscriptionId: row.stripeSubscriptionId ?? null,
     createdAt: row.createdAt,
     updatedAt: row.updatedAt,
   };

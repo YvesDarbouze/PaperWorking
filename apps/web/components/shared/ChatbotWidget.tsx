@@ -1,13 +1,13 @@
 'use client';
 
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { mockProvider, useMockData } from '@/lib/data';
+import { mockProvider, useDemoChatbot } from '@/lib/data';
 
 /**
  * Floating support chat — port of PaperWorking feature/update-all-UI ChatbotWidget.
  * Keeps v1 brand green (#00DD94) instead of brass/gold accents.
  * Icons: Material Symbols (v1 convention), not Lucide.
- * Only rendered when useMockData() is true (demo chatbot).
+ * Shown in non-production dev (useDemoChatbot); always hidden on App Hosting prod.
  */
 
 const STORAGE_KEY = 'pw-assistant-demo-chat';
@@ -88,7 +88,7 @@ function Icon({ name, size = 20 }: { name: string; size?: number }) {
 }
 
 export default function ChatbotWidget() {
-  if (!useMockData()) return null;
+  if (!useDemoChatbot()) return null;
 
   return <ChatbotWidgetInner />;
 }

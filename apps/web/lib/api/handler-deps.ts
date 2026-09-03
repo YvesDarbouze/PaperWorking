@@ -41,7 +41,6 @@ import {
   createAdminLenderReadService,
   createAdminAgentCrewReadService,
   createAdminAgentCrewCommandService,
-  createPrismaSessionUserStore,
   resolveAuthUserFromCredentials,
   sessionCommandService,
   type ProjectsReadService,
@@ -82,49 +81,48 @@ import {
   type SessionUserStore,
 } from '@paperworking/services';
 import {
-  createPrismaAuthzStore,
-  createPrismaIdentityUserRepository,
-  createPrismaProjectsReadRepository,
-  createPrismaProjectsCommandRepository,
-  createPrismaProjectKpiReadRepository,
-  createPrismaInboxReadRepository,
-  createPrismaInboxCommandRepository,
-  createPrismaPortfolioMetricsReadRepository,
-  createPrismaTeamMembersReadRepository,
-  createPrismaTeamCommandRepository,
-  createPrismaMarketplaceProfileReadRepository,
-  createPrismaMarketplaceInvestorsReadRepository,
-  createPrismaMarketplaceFollowCommandRepository,
-  createPrismaVendorsReadRepository,
-  createPrismaVendorPortalReadRepository,
-  createPrismaVendorPortalCommandRepository,
-  createPrismaDealsReadRepository,
-  createPrismaDealsCommandRepository,
-  createPrismaDealCommunicationRepository,
-  createPrismaProjectDocumentsRepository,
-  createPrismaBillingSubscriptionRepository,
-  createPrismaReportsReadRepository,
-  createPrismaPortfolioInsightsReadRepository,
-  createPrismaProfileSettingsRepository,
-  createPrismaAdminReadRepository,
+  createIdentityUserRepository,
+  createSessionUserStore,
+  createAuthProfileAccess,
+  createAuthzStore,
+  createProjectsReadRepository,
+  createProjectsCommandRepository,
+  createProjectKpiReadRepository,
+  createProjectDocumentsRepository,
+  createPortfolioMetricsReadRepository,
+  createPortfolioInsightsReadRepository,
+  createDealsReadRepository,
+  createDealsCommandRepository,
+  createDealCommunicationRepository,
+  createInboxReadRepository,
+  createInboxCommandRepository,
+  createTeamMembersReadRepository,
+  createTeamCommandRepository,
+  createMarketplaceProfileReadRepository,
+  createMarketplaceInvestorsReadRepository,
+  createMarketplaceFollowCommandRepository,
+  createVendorsReadRepository,
+  createVendorPortalReadRepository,
+  createVendorPortalCommandRepository,
+  createBillingSubscriptionRepository,
+  createReportsReadRepository,
+  createProfileSettingsRepository,
+  createAdminReadRepository,
+  createAdminCommandRepository,
   createReportPdfExportPort,
   createStripeBillingProvider,
   createFirebaseFileStorage,
   firebaseStorageHasCredentials,
   createUnavailableFileStorage,
-  getApiPrismaClient,
-  type ApiPrismaClient,
   type FileStoragePort,
 } from '@paperworking/database';
 import {
   createDefaultIdentityDeps,
-  isFirebaseAuthEnabled,
   type IdentityVerificationDeps,
 } from '@paperworking/identity';
 
 export type HandlerDeps = {
   health: HealthCheckDeps;
-  prisma: ApiPrismaClient;
   identity: IdentityVerificationDeps;
   sessionStore: SessionUserStore;
   sessionResolver: SessionResolverDeps;
@@ -172,24 +170,11 @@ let cachedAdminAgentCrewRead: AdminAgentCrewReadService | null = null;
 let cachedAdminAgentCrewCommand: AdminAgentCrewCommandService | null = null;
 
 function buildHealthDeps(): HealthCheckDeps {
-  const pingPostgres = async () => {
-    const client = requirePrismaClient();
-    await client.$queryRaw`SELECT 1`;
-  };
-
   return {
-    pingPostgres: process.env.DATABASE_URL ? pingPostgres : undefined,
     breakers: circuitBreakers,
     environment: process.env.NODE_ENV ?? 'development',
     appName: 'PaperWorking (Next.js)',
   };
-}
-
-function requirePrismaClient(): ApiPrismaClient {
-  if (!process.env.DATABASE_URL?.trim()) {
-    throw new Error('DATABASE_URL is not set — required for @paperworking/database client');
-  }
-  return getApiPrismaClient();
 }
 
 /**
@@ -203,14 +188,12 @@ function requirePrismaClient(): ApiPrismaClient {
  */
 export function buildHandlerDeps(): HandlerDeps {
   if (!cachedDeps) {
-    const prisma = requirePrismaClient();
     const identity = createDefaultIdentityDeps();
-    const sessionStore = createPrismaSessionUserStore(prisma);
-    const authzStore = createPrismaAuthzStore(prisma);
+    const sessionStore = createSessionUserStore();
+    const authzStore = createAuthzStore();
 
     cachedDeps = {
       health: buildHealthDeps(),
-      prisma,
       identity,
       sessionStore,
       sessionResolver: { identity, store: sessionStore },
@@ -268,7 +251,7 @@ export function buildProjectsReadService(deps: HandlerDeps = buildHandlerDeps())
   if (!cachedProjectsRead) {
     cachedProjectsRead = createProjectsReadService({
       authz: deps.authorization,
-      repository: createPrismaProjectsReadRepository(deps.prisma),
+      repository: createProjectsReadRepository(),
     });
   }
   return cachedProjectsRead;
@@ -281,7 +264,7 @@ export function buildProjectsCommandService(
   if (!cachedProjectsCommand) {
     cachedProjectsCommand = createProjectsCommandService({
       authz: deps.authorization,
-      repository: createPrismaProjectsCommandRepository(deps.prisma),
+      repository: createProjectsCommandRepository(),
     });
   }
   return cachedProjectsCommand;
@@ -294,7 +277,7 @@ export function buildProjectKpiReadService(
   if (!cachedProjectKpiRead) {
     cachedProjectKpiRead = createProjectKpiReadService({
       authz: deps.authorization,
-      repository: createPrismaProjectKpiReadRepository(deps.prisma),
+      repository: createProjectKpiReadRepository(),
     });
   }
   return cachedProjectKpiRead;
@@ -304,7 +287,7 @@ export function buildProjectKpiReadService(
 export function buildInboxReadService(deps: HandlerDeps = buildHandlerDeps()): InboxReadService {
   if (!cachedInboxRead) {
     cachedInboxRead = createInboxReadService({
-      repository: createPrismaInboxReadRepository(deps.prisma),
+      repository: createInboxReadRepository(),
     });
   }
   return cachedInboxRead;
@@ -316,7 +299,7 @@ export function buildInboxCommandService(
 ): InboxCommandService {
   if (!cachedInboxCommand) {
     cachedInboxCommand = createInboxCommandService({
-      repository: createPrismaInboxCommandRepository(deps.prisma),
+      repository: createInboxCommandRepository(),
     });
   }
   return cachedInboxCommand;
@@ -329,7 +312,7 @@ export function buildPortfolioMetricsReadService(
   if (!cachedPortfolioMetricsRead) {
     cachedPortfolioMetricsRead = createPortfolioMetricsReadService({
       authz: deps.authorization,
-      repository: createPrismaPortfolioMetricsReadRepository(deps.prisma),
+      repository: createPortfolioMetricsReadRepository(),
     });
   }
   return cachedPortfolioMetricsRead;
@@ -342,7 +325,7 @@ export function buildTeamMembersReadService(
   if (!cachedTeamMembersRead) {
     cachedTeamMembersRead = createTeamMembersReadService({
       authz: deps.authorization,
-      repository: createPrismaTeamMembersReadRepository(deps.prisma),
+      repository: createTeamMembersReadRepository(),
     });
   }
   return cachedTeamMembersRead;
@@ -355,7 +338,7 @@ export function buildTeamCommandService(
   if (!cachedTeamCommand) {
     cachedTeamCommand = createTeamCommandService({
       authz: deps.authorization,
-      repository: createPrismaTeamCommandRepository(deps.prisma),
+      repository: createTeamCommandRepository(),
     });
   }
   return cachedTeamCommand;
@@ -367,7 +350,7 @@ export function buildMarketplaceProfileReadService(
 ): MarketplaceProfileReadService {
   if (!cachedMarketplaceProfileRead) {
     cachedMarketplaceProfileRead = createMarketplaceProfileReadService({
-      repository: createPrismaMarketplaceProfileReadRepository(deps.prisma),
+      repository: createMarketplaceProfileReadRepository(),
     });
   }
   return cachedMarketplaceProfileRead;
@@ -379,7 +362,7 @@ export function buildMarketplaceInvestorsReadService(
 ): MarketplaceInvestorsReadService {
   if (!cachedMarketplaceInvestorsRead) {
     cachedMarketplaceInvestorsRead = createMarketplaceInvestorsReadService({
-      repository: createPrismaMarketplaceInvestorsReadRepository(deps.prisma),
+      repository: createMarketplaceInvestorsReadRepository(),
     });
   }
   return cachedMarketplaceInvestorsRead;
@@ -391,7 +374,7 @@ export function buildMarketplaceFollowCommandService(
 ): MarketplaceFollowCommandService {
   if (!cachedMarketplaceFollowCommand) {
     cachedMarketplaceFollowCommand = createMarketplaceFollowCommandService({
-      repository: createPrismaMarketplaceFollowCommandRepository(deps.prisma),
+      repository: createMarketplaceFollowCommandRepository(),
     });
   }
   return cachedMarketplaceFollowCommand;
@@ -402,7 +385,7 @@ export function buildVendorsReadService(deps: HandlerDeps = buildHandlerDeps()):
   if (!cachedVendorsRead) {
     cachedVendorsRead = createVendorsReadService({
       authz: deps.authorization,
-      repository: createPrismaVendorsReadRepository(deps.prisma),
+      repository: createVendorsReadRepository(),
     });
   }
   return cachedVendorsRead;
@@ -414,7 +397,7 @@ export function buildVendorPortalReadService(
 ): VendorPortalReadService {
   if (!cachedVendorPortalRead) {
     cachedVendorPortalRead = createVendorPortalReadService({
-      repository: createPrismaVendorPortalReadRepository(deps.prisma),
+      repository: createVendorPortalReadRepository(),
     });
   }
   return cachedVendorPortalRead;
@@ -427,7 +410,7 @@ export function buildVendorPortalCommandService(
   if (!cachedVendorPortalCommand) {
     cachedVendorPortalCommand = createVendorPortalCommandService({
       authz: deps.authorization,
-      repository: createPrismaVendorPortalCommandRepository(deps.prisma),
+      repository: createVendorPortalCommandRepository(),
     });
   }
   return cachedVendorPortalCommand;
@@ -438,7 +421,7 @@ export function buildDealsReadService(deps: HandlerDeps = buildHandlerDeps()): D
   if (!cachedDealsRead) {
     cachedDealsRead = createDealsReadService({
       authz: deps.authorization,
-      repository: createPrismaDealsReadRepository(deps.prisma),
+      repository: createDealsReadRepository(),
     });
   }
   return cachedDealsRead;
@@ -451,7 +434,7 @@ export function buildDealsCommandService(
   if (!cachedDealsCommand) {
     cachedDealsCommand = createDealsCommandService({
       authz: deps.authorization,
-      repository: createPrismaDealsCommandRepository(deps.prisma),
+      repository: createDealsCommandRepository(),
     });
   }
   return cachedDealsCommand;
@@ -464,7 +447,7 @@ export function buildDealBroadcastService(
   if (!cachedDealBroadcast) {
     cachedDealBroadcast = createDealBroadcastService({
       authz: deps.authorization,
-      repository: createPrismaDealCommunicationRepository(deps.prisma),
+      repository: createDealCommunicationRepository(),
     });
   }
   return cachedDealBroadcast;
@@ -475,7 +458,7 @@ export function buildDealReplyService(deps: HandlerDeps = buildHandlerDeps()): D
   if (!cachedDealReply) {
     cachedDealReply = createDealReplyService({
       authz: deps.authorization,
-      repository: createPrismaDealCommunicationRepository(deps.prisma),
+      repository: createDealCommunicationRepository(),
     });
   }
   return cachedDealReply;
@@ -497,7 +480,7 @@ export function buildProjectDocumentsReadService(
   if (!cachedProjectDocumentsRead) {
     cachedProjectDocumentsRead = createProjectDocumentsReadService({
       authz: deps.authorization,
-      repository: createPrismaProjectDocumentsRepository(deps.prisma),
+      repository: createProjectDocumentsRepository(),
       storage: buildFileStoragePort(),
     });
   }
@@ -511,15 +494,15 @@ export function buildProjectDocumentsCommandService(
   if (!cachedProjectDocumentsCommand) {
     cachedProjectDocumentsCommand = createProjectDocumentsCommandService({
       authz: deps.authorization,
-      repository: createPrismaProjectDocumentsRepository(deps.prisma),
+      repository: createProjectDocumentsRepository(),
       storage: buildFileStoragePort(),
     });
   }
   return cachedProjectDocumentsCommand;
 }
 
-function buildBillingRepository(deps: HandlerDeps = buildHandlerDeps()) {
-  return createPrismaBillingSubscriptionRepository(deps.prisma);
+function buildBillingRepository(_deps: HandlerDeps = buildHandlerDeps()) {
+  return createBillingSubscriptionRepository();
 }
 
 function buildBillingProvider() {
@@ -581,7 +564,7 @@ export function buildReportsReadService(deps: HandlerDeps = buildHandlerDeps()):
   if (!cachedReportsRead) {
     cachedReportsRead = createReportsReadService({
       authz: deps.authorization,
-      repository: createPrismaReportsReadRepository(deps.prisma),
+      repository: createReportsReadRepository(),
     });
   }
   return cachedReportsRead;
@@ -595,6 +578,8 @@ export function buildReportsGenerateService(
     cachedReportsGenerate = createReportsGenerateService({
       authz: deps.authorization,
       pdfExport: createReportPdfExportPort(),
+      reportsRepository: createReportsReadRepository(),
+      kpiRepository: createProjectKpiReadRepository(),
     });
   }
   return cachedReportsGenerate;
@@ -604,7 +589,7 @@ export function buildReportsGenerateService(
 export function buildProfileReadService(deps: HandlerDeps = buildHandlerDeps()): ProfileReadService {
   if (!cachedProfileRead) {
     cachedProfileRead = createProfileReadService({
-      repository: createPrismaProfileSettingsRepository(deps.prisma),
+      repository: createProfileSettingsRepository(),
     });
   }
   return cachedProfileRead;
@@ -616,7 +601,7 @@ export function buildProfileCommandService(
 ): ProfileCommandService {
   if (!cachedProfileCommand) {
     cachedProfileCommand = createProfileCommandService({
-      repository: createPrismaProfileSettingsRepository(deps.prisma),
+      repository: createProfileSettingsRepository(),
     });
   }
   return cachedProfileCommand;
@@ -629,14 +614,14 @@ export function buildPortfolioInsightsReadService(
   if (!cachedPortfolioInsightsRead) {
     cachedPortfolioInsightsRead = createPortfolioInsightsReadService({
       authz: deps.authorization,
-      repository: createPrismaPortfolioInsightsReadRepository(deps.prisma),
+      repository: createPortfolioInsightsReadRepository(),
     });
   }
   return cachedPortfolioInsightsRead;
 }
 
-function adminRepository(deps: HandlerDeps = buildHandlerDeps()) {
-  return createPrismaAdminReadRepository(deps.prisma);
+function adminRepository(_deps: HandlerDeps = buildHandlerDeps()) {
+  return createAdminReadRepository();
 }
 
 /** Shared admin ops read service for Next GET /api/admin/ops (Phase B18). */
@@ -696,43 +681,33 @@ export function buildAdminAgentCrewCommandService(
   return cachedAdminAgentCrewCommand;
 }
 
-/** Prisma-backed deps for GET /api/auth/me handler. */
-export function buildAuthMeDeps(deps: HandlerDeps = buildHandlerDeps()): AuthMeDeps {
-  const { prisma } = deps;
+/** Admin command repository (audit log, synthetic agent lookup) for privileged BFF routes. */
+export function buildAdminCommandRepository(
+  _deps: HandlerDeps = buildHandlerDeps(),
+): ReturnType<typeof createAdminCommandRepository> {
+  return createAdminCommandRepository();
+}
+
+/** Auth profile deps for GET /api/auth/me handler. */
+export function buildAuthMeDeps(_deps: HandlerDeps = buildHandlerDeps()): AuthMeDeps {
+  const profile = createAuthProfileAccess();
   return {
-    findUser: (uid) =>
-      prisma.user.findFirst({
-        where: { OR: [{ id: uid }, { legacyFirebaseUid: uid }] },
-      }),
-    findSubscription: (userId) =>
-      prisma.subscription.findFirst({
-        where: { userId },
-        orderBy: { updatedAt: 'desc' },
-      }),
+    findUser: profile.findUser,
+    findSubscription: profile.findSubscription,
   };
 }
 
 /** Shared auth command services for Nest/Next session convergence (P1). */
 export function buildSharedAuthServices(deps: HandlerDeps = buildHandlerDeps()) {
-  const { prisma, identity, sessionStore } = deps;
-  const repository = createPrismaIdentityUserRepository(prisma);
+  const { identity, sessionStore } = deps;
+  const repository = createIdentityUserRepository();
+  const profile = createAuthProfileAccess();
   const identityProvisioning = createIdentityProvisioningService({
     repository,
     sessionStore,
   });
   const subscriptionLookup = {
-    findForUserId: async (userId: string) => {
-      const user = await prisma.user.findFirst({
-        where: { OR: [{ id: userId }, { legacyFirebaseUid: userId }] },
-      });
-      const subscription = user
-        ? await prisma.subscription.findFirst({
-            where: { userId: user.id },
-            orderBy: { updatedAt: 'desc' },
-          })
-        : null;
-      return subscription ? { plan: subscription.plan, status: subscription.status } : null;
-    },
+    findForUserId: profile.findSubscriptionForUid,
   };
 
   return {
@@ -745,14 +720,13 @@ export function buildSharedAuthServices(deps: HandlerDeps = buildHandlerDeps()) 
 
 /** Firebase/Supabase session exchange for POST/DELETE /api/auth/session. */
 export function buildSessionPostDeps(deps: HandlerDeps = buildHandlerDeps()): SessionPostDeps {
-  const { prisma, identity } = deps;
+  const { identity } = deps;
   const firebase = identity.firebase;
-  const supabase = identity.supabase;
   const shared = buildSharedAuthServices(deps);
+  const profile = createAuthProfileAccess();
 
   return {
-    hasCredentials: () =>
-      Boolean(firebase?.hasCredentials() || supabase?.hasCredentials()),
+    hasCredentials: () => Boolean(firebase?.hasCredentials()),
     establishSharedSession: async ({ idToken, sessionId }) =>
       shared.sessionCommand.establishSession({
         accessToken: idToken,
@@ -767,37 +741,21 @@ export function buildSessionPostDeps(deps: HandlerDeps = buildHandlerDeps()): Se
         sessionId,
       }),
     verifyIdToken: async (token) => {
-      if (isFirebaseAuthEnabled() && firebase?.hasCredentials()) {
-        const verified = await firebase.verifyIdToken(token);
-        return { uid: verified.uid };
-      }
-      if (supabase?.hasCredentials()) {
-        const verified = await supabase.verifyAccessToken(token);
-        return { uid: verified.uid };
-      }
       if (firebase?.hasCredentials()) {
         const verified = await firebase.verifyIdToken(token);
         return { uid: verified.uid };
       }
-      throw new Error('No identity provider configured');
+      throw new Error('Firebase Auth not configured');
     },
     createSessionCookie: firebase?.hasCredentials()
       ? (idToken, expiresInMs) => firebase.createSessionCookie(idToken, expiresInMs)
       : undefined,
     getUserProfile: async (uid) => {
-      const user = await prisma.user.findFirst({
-        where: { OR: [{ id: uid }, { legacyFirebaseUid: uid }] },
-      });
-      const subscription = user
-        ? await prisma.subscription.findFirst({
-            where: { userId: user.id },
-            orderBy: { updatedAt: 'desc' },
-          })
-        : null;
+      const subscription = await profile.findSubscriptionForUid(uid);
       return {
         subscriptionPlan: subscription?.plan ?? 'Individual',
         subscriptionStatus: subscription?.status ?? 'inactive',
-        accountType: user?.accountType ?? 'investor',
+        accountType: 'investor',
       };
     },
   };

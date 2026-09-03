@@ -1,10 +1,10 @@
 import { Module } from '@nestjs/common';
 import { AuthorizationService as CoreAuthorizationService } from '@paperworking/authz';
 import {
-  createPrismaAuthzStore,
-  createPrismaVendorsReadRepository,
-  createPrismaVendorPortalReadRepository,
-  createPrismaVendorPortalCommandRepository,
+  createAuthzStore,
+  createVendorsReadRepository,
+  createVendorPortalReadRepository,
+  createVendorPortalCommandRepository,
 } from '@paperworking/database';
 import {
   VendorsReadService,
@@ -14,7 +14,6 @@ import {
   createVendorPortalReadService,
   createVendorPortalCommandService,
 } from '@paperworking/services';
-import { PrismaService } from '../prisma/prisma.service.js';
 import {
   VendorPortalController,
   VendorServicesController,
@@ -28,29 +27,26 @@ import { VendorsService } from './vendors.service.js';
     VendorsService,
     {
       provide: VendorsReadService,
-      useFactory: (prisma: PrismaService) =>
+      useFactory: () =>
         createVendorsReadService({
-          authz: new CoreAuthorizationService(createPrismaAuthzStore(prisma.client)),
-          repository: createPrismaVendorsReadRepository(prisma.client),
+          authz: new CoreAuthorizationService(createAuthzStore()),
+          repository: createVendorsReadRepository(),
         }),
-      inject: [PrismaService],
     },
     {
       provide: VendorPortalReadService,
-      useFactory: (prisma: PrismaService) =>
+      useFactory: () =>
         createVendorPortalReadService({
-          repository: createPrismaVendorPortalReadRepository(prisma.client),
+          repository: createVendorPortalReadRepository(),
         }),
-      inject: [PrismaService],
     },
     {
       provide: VendorPortalCommandService,
-      useFactory: (prisma: PrismaService) =>
+      useFactory: () =>
         createVendorPortalCommandService({
-          authz: new CoreAuthorizationService(createPrismaAuthzStore(prisma.client)),
-          repository: createPrismaVendorPortalCommandRepository(prisma.client),
+          authz: new CoreAuthorizationService(createAuthzStore()),
+          repository: createVendorPortalCommandRepository(),
         }),
-      inject: [PrismaService],
     },
   ],
   exports: [VendorsService],

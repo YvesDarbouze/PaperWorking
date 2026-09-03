@@ -18,6 +18,7 @@ const ALLOWED_PREFIXES = [
   '/reports',
   '/insights',
   '/onboarding',
+  '/admin',
 ] as const;
 
 /**

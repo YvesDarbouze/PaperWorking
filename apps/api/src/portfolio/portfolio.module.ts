@@ -1,8 +1,8 @@
 import { Controller, Get, Injectable, Module } from '@nestjs/common';
 import { AuthorizationService as CoreAuthorizationService } from '@paperworking/authz';
 import {
-  createPrismaAuthzStore,
-  createPrismaPortfolioMetricsReadRepository,
+  createAuthzStore,
+  createPortfolioMetricsReadRepository,
 } from '@paperworking/database';
 import {
   PortfolioMetricsReadService,
@@ -10,7 +10,6 @@ import {
 } from '@paperworking/services';
 import type { AuthUser } from '../auth/auth.types.js';
 import { CurrentUser } from '../auth/auth.types.js';
-import { PrismaService } from '../prisma/prisma.service.js';
 
 @Injectable()
 export class PortfolioService {
@@ -37,12 +36,11 @@ export class PortfolioController {
     PortfolioService,
     {
       provide: PortfolioMetricsReadService,
-      useFactory: (prisma: PrismaService) =>
+      useFactory: () =>
         createPortfolioMetricsReadService({
-          authz: new CoreAuthorizationService(createPrismaAuthzStore(prisma.client)),
-          repository: createPrismaPortfolioMetricsReadRepository(prisma.client),
+          authz: new CoreAuthorizationService(createAuthzStore()),
+          repository: createPortfolioMetricsReadRepository(),
         }),
-      inject: [PrismaService],
     },
   ],
   exports: [PortfolioService],

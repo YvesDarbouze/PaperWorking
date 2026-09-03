@@ -2,10 +2,27 @@ import { describe, expect, it, jest, beforeEach, beforeAll } from '@jest/globals
 import { AuthorizationService, type AuthzStore } from '@paperworking/authz';
 import { validateCsrf } from '@paperworking/authz';
 
-process.env.DATABASE_URL =
-  process.env.DATABASE_URL || 'postgresql://test:test@127.0.0.1:5432/test';
-
 type AuthServiceCtor = typeof import('../auth/auth.service.js').AuthService;
+
+const mockIdentityRepo = {
+  findById: jest.fn<() => Promise<unknown>>(),
+  findByLegacyUid: jest.fn<() => Promise<unknown>>(),
+  findByEmail: jest.fn<() => Promise<unknown>>(),
+  updateEmail: jest.fn<() => Promise<void>>(),
+  updateAfterEmailRemap: jest.fn<() => Promise<void>>(),
+  createUser: jest.fn<() => Promise<void>>(),
+  remapPrimaryKey: jest.fn<() => Promise<void>>(),
+};
+
+const mockSessionStore = {
+  findUserByUid: jest.fn<() => Promise<unknown>>(),
+};
+
+const mockAuthProfile = {
+  findUser: jest.fn<() => Promise<unknown>>(),
+  findSubscription: jest.fn<() => Promise<unknown>>(),
+  findSubscriptionForUid: jest.fn<() => Promise<unknown>>(),
+};
 
 function fakeJwt(payload: Record<string, unknown>): string {
   const header = Buffer.from(JSON.stringify({ alg: 'RS256' })).toString('base64url');
@@ -25,7 +42,7 @@ const SUPABASE_TOKEN = fakeJwt({
 function makeFirebaseIdentityDeps() {
   const firebase = {
     hasCredentials: jest.fn(() => true),
-    verifyIdToken: jest.fn(async (token: string) => ({
+    verifyIdToken: jest.fn(async () => ({
       uid: 'firebase-user-1',
       email: 'firebase@example.com',
       provider: 'firebase' as const,
@@ -33,31 +50,18 @@ function makeFirebaseIdentityDeps() {
     verifySessionCookie: jest.fn(),
     createSessionCookie: jest.fn(),
   };
-  const supabase = {
-    hasCredentials: jest.fn(() => true),
-    verifyAccessToken: jest.fn(async () => ({
-      uid: 'supabase-user-1',
-      email: 'supabase@example.com',
-      provider: 'supabase' as const,
-    })),
-  };
-  return { firebase, supabase };
+  return { firebase };
 }
 
 describe('Firebase Auth parallel (AuthService)', () => {
   let AuthService: AuthServiceCtor;
-  const prisma = {
-    user: {
-      findFirst: jest.fn(),
-      findUnique: jest.fn(),
-      create: jest.fn(),
-      update: jest.fn(),
-    },
-    subscription: { findFirst: jest.fn().mockResolvedValue(null) },
-    client: {},
-  };
 
   beforeAll(async () => {
+    await jest.unstable_mockModule('@paperworking/database', () => ({
+      createSessionUserStore: () => mockSessionStore,
+      createIdentityUserRepository: () => mockIdentityRepo,
+      createAuthProfileAccess: () => mockAuthProfile,
+    }));
     ({ AuthService } = await import('../auth/auth.service.js'));
   });
 
@@ -65,51 +69,37 @@ describe('Firebase Auth parallel (AuthService)', () => {
     jest.clearAllMocks();
     delete process.env.USE_FIREBASE_AUTH;
     delete process.env.NEXT_PUBLIC_USE_FIREBASE_AUTH;
+    process.env.DATABASE_READ_MODE = 'firestore';
     process.env.NODE_ENV = 'test';
     process.env.ENABLE_MOCK_AUTH = 'false';
+    mockAuthProfile.findSubscriptionForUid.mockResolvedValue(null);
   });
 
-  it('uses Supabase verifier when Firebase flag is off', async () => {
+  it('rejects Supabase tokens when Firebase mode is on', async () => {
+    process.env.USE_FIREBASE_AUTH = 'true';
     const deps = makeFirebaseIdentityDeps();
-    const auth = new AuthService(prisma as never, deps as never);
-    const cookies: Array<{ name: string; value: string }> = [];
-    const res = { cookie: (n: string, v: string) => cookies.push({ name: n, value: v }) };
-
-    prisma.user.findUnique.mockResolvedValueOnce({
-      id: 'supabase-user-1',
-      email: 'supabase@example.com',
-      accountType: 'investor',
-      role: 'investor',
-    });
-    prisma.user.update.mockResolvedValue({});
-    prisma.user.findFirst.mockResolvedValue({
-      id: 'supabase-user-1',
-      email: 'supabase@example.com',
-      accountType: 'investor',
-      role: 'investor',
-    });
+    const auth = new AuthService(deps as never);
+    const res = { cookie: jest.fn() };
 
     const result = await auth.createSession(res as never, {
       accessToken: SUPABASE_TOKEN,
       accountType: 'investor',
     });
 
-    expect(result).toEqual({ ok: true, uid: 'supabase-user-1' });
-    expect(deps.supabase.verifyAccessToken).toHaveBeenCalled();
+    expect(result).toMatchObject({ status: 401 });
     expect(deps.firebase.verifyIdToken).not.toHaveBeenCalled();
   });
 
   it('uses Firebase verifier when flag is on and token is Firebase-issued', async () => {
     process.env.USE_FIREBASE_AUTH = 'true';
     const deps = makeFirebaseIdentityDeps();
-    const auth = new AuthService(prisma as never, deps as never);
+    const auth = new AuthService(deps as never);
     const res = { cookie: jest.fn() };
 
-    prisma.user.findUnique.mockResolvedValueOnce(null);
-    prisma.user.findFirst.mockResolvedValueOnce(null);
-    prisma.user.findUnique.mockResolvedValueOnce(null);
-    prisma.user.create.mockResolvedValue({});
-    prisma.user.findFirst.mockResolvedValue({
+    mockIdentityRepo.findById.mockResolvedValue(null);
+    mockIdentityRepo.findByLegacyUid.mockResolvedValue(null);
+    mockIdentityRepo.findByEmail.mockResolvedValue(null);
+    mockSessionStore.findUserByUid.mockResolvedValue({
       id: 'firebase-user-1',
       email: 'firebase@example.com',
       accountType: 'investor',
@@ -123,10 +113,9 @@ describe('Firebase Auth parallel (AuthService)', () => {
 
     expect(result).toEqual({ ok: true, uid: 'firebase-user-1' });
     expect(deps.firebase.verifyIdToken).toHaveBeenCalledWith(FIREBASE_TOKEN);
-    expect(deps.supabase.verifyAccessToken).not.toHaveBeenCalled();
-    expect(prisma.user.create).toHaveBeenCalledWith(
+    expect(mockIdentityRepo.createUser).toHaveBeenCalledWith(
       expect.objectContaining({
-        data: expect.objectContaining({ accountType: 'investor' }),
+        accountType: 'investor',
       }),
     );
   });
@@ -135,7 +124,7 @@ describe('Firebase Auth parallel (AuthService)', () => {
     process.env.USE_FIREBASE_AUTH = 'true';
     const deps = makeFirebaseIdentityDeps();
     deps.firebase.verifyIdToken.mockRejectedValue(new Error('Firebase ID token has expired'));
-    const auth = new AuthService(prisma as never, deps as never);
+    const auth = new AuthService(deps as never);
     const res = { cookie: jest.fn() };
 
     const result = await auth.createSession(res as never, {
@@ -147,7 +136,7 @@ describe('Firebase Auth parallel (AuthService)', () => {
 
   it('resolveUserFromRequest returns null for missing session', async () => {
     const deps = makeFirebaseIdentityDeps();
-    const auth = new AuthService(prisma as never, deps as never);
+    const auth = new AuthService(deps as never);
     const user = await auth.resolveUserFromRequest({ headers: {}, cookies: {} } as never);
     expect(user).toBeNull();
   });

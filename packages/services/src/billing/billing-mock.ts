@@ -4,6 +4,7 @@ import { getCanonicalPlanName, PLAN_CATALOG } from './plans.js';
 export const MOCK_SESSION_PREFIX = 'cs_test_mock_';
 
 export function shouldUseMockBilling(): boolean {
+  if (process.env.NODE_ENV === 'production') return false;
   if (process.env.STRIPE_PROVIDER === 'mock') return true;
   return !process.env.STRIPE_SECRET_KEY?.trim();
 }

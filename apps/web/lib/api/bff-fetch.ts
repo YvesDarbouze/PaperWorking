@@ -75,5 +75,6 @@ export function isBffApiPath(path: string): boolean {
   if (normalized === '/api/admin/lender-checklists') return true;
   if (normalized === '/api/admin/agent-crew') return true;
   if (/^\/api\/admin\/agent-crew\/[^/]+$/.test(normalized)) return true;
+  if (/^\/api\/admin\/agent-crew\/[^/]+\/impersonate$/.test(normalized)) return true;
   return /^\/api\/projects\/[^/]+$/.test(normalized);
 }

@@ -15,15 +15,17 @@ import type { AuthUser } from '../auth/auth.types.js';
 import { CurrentUser } from '../auth/auth.types.js';
 import { Roles } from '../auth/auth.types.js';
 import { RequirePermissions } from '../authz/require-permissions.decorator.js';
-import { PrismaService } from '../prisma/prisma.service.js';
 import { buildNestAdminServices, type NestAdminServices } from './admin-factory.js';
+import { createAdminCommandRepository } from '@paperworking/database';
 
 @Injectable()
 export class AdminService {
   private readonly admin: NestAdminServices;
+  private readonly adminCommand;
 
-  constructor(private readonly prisma: PrismaService) {
-    this.admin = buildNestAdminServices(this.prisma);
+  constructor() {
+    this.admin = buildNestAdminServices();
+    this.adminCommand = createAdminCommandRepository();
   }
 
   private mapError(err: unknown): never {
@@ -71,23 +73,18 @@ export class AdminService {
 
   /** Retained on Nest — privileged identity boundary (Phase B18). */
   async impersonate(actor: AuthUser, id: string) {
-    const agent = await this.prisma.user.findFirst({
-      where: { id, syntheticAgent: true },
-      select: { id: true, email: true, displayName: true, name: true, agentPersona: true },
-    });
+    const agent = await this.adminCommand.findSyntheticAgentById(id);
     if (!agent) throw new NotFoundException({ error: 'Agent not found' });
-    await this.prisma.adminAuditLog.create({
-      data: {
-        actorUid: actor.uid,
-        actorEmail: actor.email || 'unknown',
-        actorRole: actor.role || 'admin',
-        action: 'agent.impersonate',
-        targetResource: 'user',
-        targetResourceId: id,
-        status: 'SUCCESS',
-        entryHash: `impersonate:${id}:${Date.now()}`,
-        metadata: { agentPersona: agent.agentPersona },
-      },
+    await this.adminCommand.writeAuditLog({
+      actorUid: actor.uid,
+      actorEmail: actor.email || 'unknown',
+      actorRole: actor.role || 'admin',
+      action: 'agent.impersonate',
+      targetResource: 'user',
+      targetResourceId: id,
+      status: 'SUCCESS',
+      entryHash: `impersonate:${id}:${Date.now()}`,
+      metadata: { agentPersona: agent.agentPersona },
     });
     return {
       success: true,

@@ -48,52 +48,63 @@ function hasRealPurchasePrice(project: ProjectKpiInputRow): boolean {
 
 /**
  * Classifies engine input provenance without altering buildProjectKpiEngineInputs values.
- * purchasePrice may come from Postgres; all other material inputs still use canonical defaults today.
+ * Firestore project fields are authoritative; missing income inputs are unavailable (not seeded).
  */
 export function auditProjectKpiInputProvenance(
   project: ProjectKpiInputRow,
 ): ProjectKpiProvenanceSummary {
   const realPurchase = hasRealPurchasePrice(project);
+  const phase =
+    project.phaseData && typeof project.phaseData === 'object' && !Array.isArray(project.phaseData)
+      ? (project.phaseData as Record<string, unknown>)
+      : null;
+
+  const fieldFromPhase = (key: string): KpiInputProvenanceClass =>
+    phase && phase[key] !== undefined && phase[key] !== null ? 'REAL_DB' : 'UNAVAILABLE';
 
   const inputProvenance: ProjectKpiInputProvenance = {
-    purchase_price: realPurchase ? 'REAL_DB' : 'CANONICAL_DEFAULT',
-    property_value: realPurchase ? 'DERIVED_FROM_REAL_DB' : 'CANONICAL_DEFAULT',
-    total_cash_invested: realPurchase ? 'DERIVED_FROM_REAL_DB' : 'CANONICAL_DEFAULT',
-    loan_amount: realPurchase ? 'DERIVED_FROM_REAL_DB' : 'CANONICAL_DEFAULT',
-    gross_scheduled_rent: 'CANONICAL_DEFAULT',
-    vacancy_rate: 'CANONICAL_DEFAULT',
-    other_income: 'CANONICAL_DEFAULT',
-    operating_expenses: 'CANONICAL_DEFAULT',
-    interest_rate: 'CANONICAL_DEFAULT',
-    loan_term_years: 'CANONICAL_DEFAULT',
-    total_units: 'CANONICAL_DEFAULT',
-    occupied_units: 'CANONICAL_DEFAULT',
-    appreciation_rate_pct: 'CANONICAL_DEFAULT',
+    purchase_price: realPurchase ? 'REAL_DB' : 'UNAVAILABLE',
+    property_value: realPurchase ? 'DERIVED_FROM_REAL_DB' : 'UNAVAILABLE',
+    total_cash_invested: realPurchase ? 'DERIVED_FROM_REAL_DB' : 'UNAVAILABLE',
+    loan_amount: realPurchase ? 'DERIVED_FROM_REAL_DB' : 'UNAVAILABLE',
+    gross_scheduled_rent: fieldFromPhase('gross_scheduled_rent'),
+    vacancy_rate: fieldFromPhase('vacancy_rate'),
+    other_income: fieldFromPhase('other_income'),
+    operating_expenses: fieldFromPhase('operating_expenses'),
+    interest_rate: fieldFromPhase('interest_rate'),
+    loan_term_years: fieldFromPhase('loan_term_years'),
+    total_units: fieldFromPhase('total_units'),
+    occupied_units: fieldFromPhase('occupied_units'),
+    appreciation_rate_pct: fieldFromPhase('appreciation_rate_pct'),
   };
 
-  const usesCanonicalDefaults = Object.values(inputProvenance).some(
-    (c) => c === 'CANONICAL_DEFAULT',
-  );
+  const hasIncomeInputs =
+    inputProvenance.gross_scheduled_rent === 'REAL_DB' &&
+    inputProvenance.operating_expenses === 'REAL_DB';
 
-  const sourceStatus: ProjectKpiSourceStatus = realPurchase
-    ? 'partially_projected'
-    : usesCanonicalDefaults
-      ? 'projected'
-      : 'actual';
+  const usesCanonicalDefaults = false;
 
-  const incomeOpexDefault = inputProvenance.gross_scheduled_rent === 'CANONICAL_DEFAULT';
-  const purchaseRealOrDefault = realPurchase ? 'PARTIALLY_PROJECTED' : 'PROJECTED';
+  const sourceStatus: ProjectKpiSourceStatus = hasIncomeInputs
+    ? realPurchase
+      ? 'actual'
+      : 'projected'
+    : realPurchase
+      ? 'partially_projected'
+      : 'projected';
+
+  const incomeUnavailable = !hasIncomeInputs;
+  const purchaseRealOrDefault = realPurchase ? 'PARTIALLY_PROJECTED' : 'UNAVAILABLE';
 
   const scorecardTrust: Record<string, KpiOutputTrustClass> = {
-    noi: incomeOpexDefault ? purchaseRealOrDefault : 'ACTUAL',
-    capRate: incomeOpexDefault ? purchaseRealOrDefault : 'ACTUAL',
-    cashOnCash: incomeOpexDefault ? purchaseRealOrDefault : 'ACTUAL',
+    noi: incomeUnavailable ? purchaseRealOrDefault : realPurchase ? 'ACTUAL' : 'PROJECTED',
+    capRate: incomeUnavailable ? purchaseRealOrDefault : realPurchase ? 'ACTUAL' : 'PROJECTED',
+    cashOnCash: incomeUnavailable ? purchaseRealOrDefault : realPurchase ? 'ACTUAL' : 'PROJECTED',
     irr: 'PROJECTED',
-    cashFlow: incomeOpexDefault ? purchaseRealOrDefault : 'ACTUAL',
-    grm: incomeOpexDefault ? 'PROJECTED' : 'ACTUAL',
-    dscr: incomeOpexDefault ? purchaseRealOrDefault : 'ACTUAL',
-    occupancyRate: 'PROJECTED',
-    expenseRatio: incomeOpexDefault ? 'PROJECTED' : 'ACTUAL',
+    cashFlow: incomeUnavailable ? purchaseRealOrDefault : realPurchase ? 'ACTUAL' : 'PROJECTED',
+    grm: incomeUnavailable ? 'UNAVAILABLE' : 'ACTUAL',
+    dscr: incomeUnavailable ? purchaseRealOrDefault : realPurchase ? 'ACTUAL' : 'PROJECTED',
+    occupancyRate: fieldFromPhase('occupied_units') === 'REAL_DB' ? 'ACTUAL' : 'UNAVAILABLE',
+    expenseRatio: incomeUnavailable ? 'UNAVAILABLE' : 'ACTUAL',
     longTermAppreciation: 'PROJECTED',
   };
 

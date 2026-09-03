@@ -220,7 +220,7 @@ export default function NewProjectPage() {
       }
 
       setTimeout(() => {
-        router.push('/dashboard?projectCreated=true');
+        router.push('/projects?created=1');
       }, 600);
     } catch {
       setIsLaunching(false);

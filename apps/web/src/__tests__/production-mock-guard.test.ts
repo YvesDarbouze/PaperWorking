@@ -1,5 +1,5 @@
 import { afterEach, beforeEach, describe, expect, it } from '@jest/globals';
-import { isProductionRuntime, useMockData, useMockAuth } from '../../lib/data/env';
+import { isProductionRuntime, useDemoChatbot, useMockData, useMockAuth } from '../../lib/data/env';
 
 describe('production mock safety', () => {
   const originalEnv = process.env;
@@ -46,5 +46,25 @@ describe('production mock safety', () => {
   it('isProductionRuntime tracks NODE_ENV', () => {
     setNodeEnv('production');
     expect(isProductionRuntime()).toBe(true);
+  });
+
+  it('useDemoChatbot is false in production', () => {
+    setNodeEnv('production');
+    delete process.env.NEXT_PUBLIC_ENABLE_DEMO_CHATBOT;
+    expect(useDemoChatbot()).toBe(false);
+  });
+
+  it('useDemoChatbot defaults true in development even when mock data is off', () => {
+    setNodeEnv('development');
+    process.env.NEXT_PUBLIC_USE_MOCK_DATA = 'false';
+    delete process.env.NEXT_PUBLIC_ENABLE_DEMO_CHATBOT;
+    expect(useMockData()).toBe(false);
+    expect(useDemoChatbot()).toBe(true);
+  });
+
+  it('useDemoChatbot respects explicit false in development', () => {
+    setNodeEnv('development');
+    process.env.NEXT_PUBLIC_ENABLE_DEMO_CHATBOT = 'false';
+    expect(useDemoChatbot()).toBe(false);
   });
 });

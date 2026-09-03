@@ -118,4 +118,44 @@ export function getCanonicalPlanName(planId: PlanId): string {
   return PLAN_CATALOG[planId]?.canonicalName ?? planId;
 }
 
+/** Reverse lookup: Stripe price ID → configured plan (env allowlist). */
+export function resolvePlanFromStripePriceId(
+  priceId: string,
+): { planId: PlanId; canonicalName: string } | null {
+  const trimmed = priceId.trim();
+  if (!trimmed) return null;
+
+  for (const planId of Object.keys(PLAN_CATALOG) as PlanId[]) {
+    const plan = PLAN_CATALOG[planId];
+    for (const interval of ['monthly', 'annual'] as const) {
+      for (const envName of plan.envVars[interval]) {
+        if (process.env[envName]?.trim() === trimmed) {
+          return { planId, canonicalName: plan.canonicalName };
+        }
+      }
+    }
+  }
+  return null;
+}
+
+/**
+ * Stripe subscription.status → app status (matches StripeWebhookService updated/deleted paths).
+ */
+export function mapStripeSubscriptionStatusForPersistence(
+  stripeStatus: string,
+  options?: { deleted?: boolean; existingStatus?: string | null },
+): string {
+  if (options?.deleted) return 'canceled';
+  const status = stripeStatus.trim().toLowerCase();
+  if (
+    status === 'active' ||
+    status === 'trialing' ||
+    status === 'past_due' ||
+    status === 'canceled'
+  ) {
+    return status;
+  }
+  return options?.existingStatus ?? 'inactive';
+}
+
 export const STARTING_PRICE = Math.min(...Object.values(PLAN_CATALOG).map((p) => p.monthlyPrice));

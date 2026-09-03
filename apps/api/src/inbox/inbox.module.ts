@@ -11,10 +11,7 @@ import {
   Post,
 } from '@nestjs/common';
 import { z } from 'zod';
-import {
-  createPrismaInboxReadRepository,
-  createPrismaInboxCommandRepository,
-} from '@paperworking/database';
+import { createInboxReadRepository, createInboxCommandRepository } from '@paperworking/database';
 import {
   InboxReadService,
   InboxCommandService,
@@ -26,23 +23,24 @@ import type { AuthUser } from '../auth/auth.types.js';
 import { CurrentUser } from '../auth/auth.types.js';
 import { AuthorizationService } from '../authz/authorization.service.js';
 import { ZodValidationPipe } from '../common/zod-validation.pipe.js';
-import { PrismaService } from '../prisma/prisma.service.js';
 
 @Injectable()
 export class InboxService {
+  private readonly inboxCommandRepository;
+
   constructor(
-    private readonly prisma: PrismaService,
     private readonly authz: AuthorizationService,
     private readonly inboxRead: InboxReadService,
     private readonly inboxCommand: InboxCommandService,
-  ) {}
+  ) {
+    this.inboxCommandRepository = createInboxCommandRepository();
+  }
 
   async list(user: AuthUser) {
     return this.inboxRead.listInbox(user);
   }
 
   async create(user: AuthUser, body: Record<string, unknown>) {
-    // Ignore spoof fields — recipient resolved via AuthorizationService only.
     void body.organizationId;
     void body.senderUid;
 
@@ -51,16 +49,14 @@ export class InboxService {
       typeof body.recipientUid === 'string' ? body.recipientUid : undefined,
     );
 
-    const item = await this.prisma.inboxItem.create({
-      data: {
-        recipientUid,
-        senderUid: user.uid,
-        type: typeof body.type === 'string' ? body.type : 'notification',
-        title: String(body.title || 'Notification'),
-        body: typeof body.body === 'string' ? body.body : undefined,
-        href: typeof body.href === 'string' ? body.href : undefined,
-        metadata: (body.metadata as object) || {},
-      },
+    const item = await this.inboxCommandRepository.createItem({
+      recipientUid,
+      senderUid: user.uid,
+      type: typeof body.type === 'string' ? body.type : 'notification',
+      title: String(body.title || 'Notification'),
+      body: typeof body.body === 'string' ? body.body : undefined,
+      href: typeof body.href === 'string' ? body.href : undefined,
+      metadata: (body.metadata as Record<string, unknown>) || {},
     });
     return { success: true, item };
   }
@@ -141,19 +137,17 @@ export class InboxController {
     InboxService,
     {
       provide: InboxReadService,
-      useFactory: (prisma: PrismaService) =>
+      useFactory: () =>
         createInboxReadService({
-          repository: createPrismaInboxReadRepository(prisma.client),
+          repository: createInboxReadRepository(),
         }),
-      inject: [PrismaService],
     },
     {
       provide: InboxCommandService,
-      useFactory: (prisma: PrismaService) =>
+      useFactory: () =>
         createInboxCommandService({
-          repository: createPrismaInboxCommandRepository(prisma.client),
+          repository: createInboxCommandRepository(),
         }),
-      inject: [PrismaService],
     },
   ],
   exports: [InboxService],

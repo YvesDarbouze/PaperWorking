@@ -10,8 +10,13 @@ export {
   ReportsGenerateService,
   createReportsGenerateService,
   buildDemoPortfolioReport,
+  ReportsGenerateValidationError,
   type ReportsGenerateServiceDeps,
   type ReportsGenerateInput,
   type GeneratedReportPayload,
   type ReportPdfExportPort,
 } from './reports-generate-service.js';
+export {
+  buildLivePortfolioReport,
+  type BuildLivePortfolioReportDeps,
+} from './build-live-portfolio-report.js';

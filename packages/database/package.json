@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "type": "module",
-  "description": "Firestore + Neon/Prisma repositories and sync layer (migration Phase 1+)",
+  "description": "Firestore repositories and Firebase storage adapters",
   "main": "./dist/src/index.js",
   "types": "./dist/src/index.d.ts",
   "exports": {
@@ -13,33 +13,19 @@
     }
   },
   "scripts": {
-    "generate": "prisma generate --config prisma.config.ts",
-    "migrate:dev": "prisma migrate dev --config prisma.config.ts",
-    "migrate:deploy": "prisma migrate deploy --config prisma.config.ts",
-    "db:push": "prisma db push --config prisma.config.ts --accept-data-loss",
-    "prebuild": "npm run generate",
     "build": "tsc -p tsconfig.json",
-    "typecheck": "npm run generate && tsc -p tsconfig.json --noEmit",
-    "test": "node --experimental-vm-modules ../../node_modules/jest/bin/jest.js",
-    "seed": "node --import tsx prisma/seed.ts"
+    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "test": "node --experimental-vm-modules ../../node_modules/jest/bin/jest.js"
   },
   "dependencies": {
     "@paperworking/authz": "file:../authz",
     "@paperworking/validation": "file:../validation",
-    "@prisma/adapter-neon": "^7.10.0",
-    "@prisma/adapter-pg": "^7.10.0",
-    "@prisma/client": "^7.7.0",
-    "@neondatabase/serverless": "^1.0.0",
     "firebase-admin": "^13.4.0",
     "pdfkit": "^0.17.1",
-    "pg": "^8.23.0",
     "stripe": "^18.0.0"
   },
   "devDependencies": {
     "@types/pdfkit": "^0.13.9",
-    "@types/pg": "^8.23.1",
-    "prisma": "^7.7.0",
-    "tsx": "^4.19.0",
     "typescript": "^5.8.3"
   }
 }

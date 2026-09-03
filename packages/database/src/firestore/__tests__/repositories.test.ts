@@ -2,7 +2,6 @@ import { describe, expect, it } from '@jest/globals';
 import { FIRESTORE_COLLECTIONS } from '../admin.js';
 import {
   FirestoreReadNotConfiguredError,
-  FirestoreReadNotImplementedError,
 } from '../errors.js';
 import { FirestoreOrganizationMemberRepository } from '../repositories/organization-member.repository.js';
 import { FirestoreOrganizationRepository } from '../repositories/organization.repository.js';
@@ -155,10 +154,23 @@ describe('firestore read repositories', () => {
     await expect(repo.getById('uid-1')).rejects.toBeInstanceOf(FirestoreReadNotConfiguredError);
   });
 
-  it('blocks write operations explicitly', () => {
-    const repo = new FirestoreProjectRepository(createMockFirestoreFactory(seedStore()));
-    expect(() => repo.create()).toThrow(FirestoreReadNotImplementedError);
-    expect(() => repo.update()).toThrow(FirestoreReadNotImplementedError);
-    expect(() => repo.delete()).toThrow(FirestoreReadNotImplementedError);
+  it('creates and updates a project in Firestore', async () => {
+    const factory = createMockFirestoreFactory(new MockFirestore());
+    const repo = new FirestoreProjectRepository(factory);
+    const created = await repo.create({
+      name: '789 Pine',
+      address: '789 Pine St',
+      city: 'Austin',
+      state: 'TX',
+      zip: '78703',
+      userId: 'uid-1',
+      organizationId: 'org-1',
+    });
+    expect(created.name).toBe('789 Pine');
+    expect(created.currentPhase).toBe(1);
+
+    const updated = await repo.update(created.id, { status: 'hold', currentPhase: 3 });
+    expect(updated.status).toBe('hold');
+    expect(updated.currentPhase).toBe(3);
   });
 });

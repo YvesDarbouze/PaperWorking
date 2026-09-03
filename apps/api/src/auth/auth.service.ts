@@ -8,23 +8,20 @@ import {
   buildAuthUserForUid,
   buildSessionCookieDescriptors,
   createIdentityProvisioningService,
-  createPrismaSessionUserStore,
   resolveAuthUserFromAccessToken,
   sessionCommandService,
   type SessionUserStore,
 } from '@paperworking/services';
 import type { AuthUser } from '@paperworking/authz';
-import { createPrismaIdentityUserRepository, type ApiPrismaClient } from '@paperworking/database';
-import { PrismaService } from '../prisma/prisma.service.js';
+import {
+  createAuthProfileAccess,
+  createIdentityUserRepository,
+  createSessionUserStore,
+} from '@paperworking/database';
 import { readCookie } from './auth-cookies.js';
 import { SESSION_COOKIE } from './auth.types.js';
 import { buildAuthMeResponse } from '../routes/auth/me/handler.js';
 import { buildAuthSessionsResponse } from '../routes/auth/sessions/handler.js';
-
-function resolveApiPrismaClient(prisma: PrismaService): ApiPrismaClient {
-  if (prisma.client?.user) return prisma.client;
-  return prisma as unknown as ApiPrismaClient;
-}
 
 @Injectable()
 export class AuthService {
@@ -33,15 +30,13 @@ export class AuthService {
   private readonly sessionStore: SessionUserStore;
   private readonly identityUserRepository;
   private readonly identityProvisioning;
+  private readonly authProfile;
 
-  constructor(
-    private readonly prisma: PrismaService,
-    @Optional() identityDeps?: IdentityVerificationDeps,
-  ) {
+  constructor(@Optional() identityDeps?: IdentityVerificationDeps) {
     this.identityDeps = identityDeps ?? createDefaultIdentityDeps();
-    const prismaClient = resolveApiPrismaClient(this.prisma);
-    this.sessionStore = createPrismaSessionUserStore(prismaClient);
-    this.identityUserRepository = createPrismaIdentityUserRepository(prismaClient);
+    this.sessionStore = createSessionUserStore();
+    this.identityUserRepository = createIdentityUserRepository();
+    this.authProfile = createAuthProfileAccess();
     this.identityProvisioning = createIdentityProvisioningService({
       repository: this.identityUserRepository,
       sessionStore: this.sessionStore,
@@ -94,18 +89,15 @@ export class AuthService {
 
   private async ensureDevUser(): Promise<AuthUser> {
     const uid = '00000000-0000-4000-8000-000000000001';
-    await this.prisma.user.upsert({
-      where: { email: 'dev@paperworking.test' },
-      create: {
+    const existing = await this.identityUserRepository.findByEmail('dev@paperworking.test');
+    if (!existing) {
+      await this.identityUserRepository.createUser({
         id: uid,
         email: 'dev@paperworking.test',
-        name: 'Dev User',
-        displayName: 'Dev User',
         accountType: 'investor',
-      },
-      update: {},
-    });
-    return this.toAuthUser(uid);
+      });
+    }
+    return this.toAuthUser(existing?.id ?? uid);
   }
 
   private async toAuthUser(uid: string): Promise<AuthUser> {
@@ -185,15 +177,8 @@ export class AuthService {
 
   async getMe(user: AuthUser) {
     return buildAuthMeResponse(user, {
-      findUser: (uid) =>
-        this.prisma.user.findFirst({
-          where: { OR: [{ id: uid }, { legacyFirebaseUid: uid }] },
-        }),
-      findSubscription: (userId) =>
-        this.prisma.subscription.findFirst({
-          where: { userId },
-          orderBy: { updatedAt: 'desc' },
-        }),
+      findUser: this.authProfile.findUser,
+      findSubscription: this.authProfile.findSubscription,
     });
   }
 
@@ -203,24 +188,12 @@ export class AuthService {
 
   private subscriptionLookup() {
     return {
-      findForUserId: async (userId: string) => {
-        const user = await this.prisma.user.findFirst({
-          where: { OR: [{ id: userId }, { legacyFirebaseUid: userId }] },
-        });
-        const sub = await this.prisma.subscription.findFirst({
-          where: { userId: user?.id || userId },
-          orderBy: { updatedAt: 'desc' },
-        });
-        return sub ? { plan: sub.plan, status: sub.status } : null;
-      },
+      findForUserId: this.authProfile.findSubscriptionForUid,
     };
   }
 
   private hasIdentityCredentials(): boolean {
-    return (
-      Boolean(this.identityDeps.supabase?.hasCredentials()) ||
-      Boolean(this.identityDeps.firebase?.hasCredentials())
-    );
+    return Boolean(this.identityDeps.firebase?.hasCredentials());
   }
 }
 

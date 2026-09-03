@@ -12,6 +12,9 @@ export type UserReadModel = {
   role: string | null;
   personalOrganizationId: string | null;
   legacyFirebaseUid: string | null;
+  subscriptionPlan: string | null;
+  subscriptionStatus: string | null;
+  stripeSubscriptionId: string | null;
   createdAt: Date;
   updatedAt: Date;
 };

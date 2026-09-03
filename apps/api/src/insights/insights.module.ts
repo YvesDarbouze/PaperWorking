@@ -2,7 +2,6 @@ import { Controller, ForbiddenException, Get, Injectable, Module, Query } from '
 import { AuthzForbiddenError } from '@paperworking/authz';
 import type { AuthUser } from '../auth/auth.types.js';
 import { CurrentUser } from '../auth/auth.types.js';
-import { PrismaService } from '../prisma/prisma.service.js';
 import {
   buildNestPortfolioInsightsService,
   type NestPortfolioInsightsService,
@@ -12,8 +11,8 @@ import {
 export class InsightsService {
   private readonly portfolioInsights: NestPortfolioInsightsService;
 
-  constructor(private readonly prisma: PrismaService) {
-    this.portfolioInsights = buildNestPortfolioInsightsService(this.prisma);
+  constructor() {
+    this.portfolioInsights = buildNestPortfolioInsightsService();
   }
 
   async getInsights(user: AuthUser, scope?: string) {

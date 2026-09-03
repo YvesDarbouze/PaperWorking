@@ -50,5 +50,9 @@ export function getAdminLenderChecklistsFromBff() {
   });
 }
 
-/** Privileged identity operation — intentionally retained on legacy Nest transport (Phase B18). */
-export { apiFetch as impersonateAgentViaLegacyNest } from '@/lib/api/client';
+export function impersonateAdminAgentFromBff(agentId: string) {
+  return bffFetch(`/api/admin/agent-crew/${encodeURIComponent(agentId)}/impersonate`, {
+    method: 'POST',
+    credentials: 'include',
+  });
+}

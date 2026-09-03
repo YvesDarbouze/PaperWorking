@@ -5,7 +5,6 @@ import {
   fetchSessionProfile,
 } from '../../lib/auth/session-client.js';
 import { syncNestSession as syncFirebaseSession } from '../../lib/firebase/auth-client.js';
-import { syncNestSession as syncSupabaseSession } from '../../lib/supabase/auth-client.js';
 
 describe('same-origin auth transport — authUrl / authFetch', () => {
   const originalFetch = global.fetch;
@@ -133,32 +132,6 @@ describe('same-origin auth transport — Firebase session sync', () => {
       '/api/auth/session',
       expect.objectContaining({ method: 'DELETE' }),
     );
-  });
-});
-
-describe('same-origin auth transport — Supabase session sync', () => {
-  const originalFetch = global.fetch;
-
-  beforeEach(() => {
-    global.fetch = jest.fn(async () =>
-      new Response(JSON.stringify({ status: 'success', uid: 'supabase-uid-1' }), {
-        status: 200,
-        headers: { 'Content-Type': 'application/json' },
-      }),
-    ) as typeof fetch;
-  });
-
-  afterEach(() => {
-    global.fetch = originalFetch;
-  });
-
-  it('Supabase syncNestSession sends idToken alias for Next handler', async () => {
-    await syncSupabaseSession('supabase-access-token', 'vendor');
-    const init = (global.fetch as jest.Mock).mock.calls[0]?.[1] as RequestInit;
-    const body = JSON.parse(String(init.body)) as { idToken?: string; accessToken?: string };
-    expect(body.idToken).toBe('supabase-access-token');
-    expect(body.accessToken).toBe('supabase-access-token');
-    expect((global.fetch as jest.Mock).mock.calls[0]?.[0]).toBe('/api/auth/session');
   });
 });
 

@@ -82,8 +82,7 @@ export function resolveSyncMode(): SyncMode {
   if (raw === 'firestore' || raw === 'neon' || raw === 'postgres' || raw === 'dual') {
     return raw;
   }
-  // Default during migration: Postgres/Neon authoritative (V1), dual-write off until Phase 11.
-  return 'postgres';
+  return 'firestore';
 }
 
 export function getEntityAuthority(entity: string): EntityAuthority | undefined {

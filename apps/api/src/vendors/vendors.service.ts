@@ -16,8 +16,11 @@ import {
   type VendorPortalProfileUpdateInput,
   type VendorPortalRequestUpdateInput,
 } from '@paperworking/services';
+import {
+  createVendorPortalCommandRepository,
+  createVendorsReadRepository,
+} from '@paperworking/database';
 import { AuthorizationService } from '../authz/authorization.service.js';
-import { PrismaService } from '../prisma/prisma.service.js';
 
 function mapVendorPortalError(error: unknown): never {
   if (error instanceof AuthzForbiddenError) {
@@ -34,37 +37,33 @@ function mapVendorPortalError(error: unknown): never {
 
 @Injectable()
 export class VendorsService {
+  private readonly vendorsReadRepository;
+  private readonly vendorPortalCommandRepository;
+
   constructor(
-    private readonly prisma: PrismaService,
     private readonly authz: AuthorizationService,
     private readonly vendorsRead: VendorsReadService,
     private readonly vendorPortalRead: VendorPortalReadService,
     private readonly vendorPortalCommand: VendorPortalCommandService,
-  ) {}
+  ) {
+    this.vendorsReadRepository = createVendorsReadRepository();
+    this.vendorPortalCommandRepository = createVendorPortalCommandRepository();
+  }
 
   async list(user: AuthUser, q?: string) {
     return this.vendorsRead.listVendors(user, q);
   }
 
-  async listServices() {
-    const vendors = await this.prisma.vendor.findMany({
-      select: { id: true, name: true, type: true, contactEmail: true },
-      orderBy: { name: 'asc' },
-    });
-    const services = vendors.map(
-      (v: {
-        id: string;
-        name: string;
-        type: string;
-        contactEmail: string | null;
-      }) => ({
-        id: v.id,
-        vendorId: v.id,
-        name: v.name,
-        category: v.type,
-        contactEmail: v.contactEmail,
-      }),
-    );
+  async listServices(user: AuthUser) {
+    const orgIds = await this.authz.resolveUserOrgIds(user.uid);
+    const vendors = await this.vendorsReadRepository.listVendors({ organizationIds: orgIds });
+    const services = vendors.map((v: { id: string; name: string; type: string; contactEmail?: string | null }) => ({
+      id: v.id,
+      vendorId: v.id,
+      name: v.name,
+      category: v.type,
+      contactEmail: v.contactEmail,
+    }));
     return { success: true, services };
   }
 
@@ -91,18 +90,16 @@ export class VendorsService {
       });
     }
 
-    const vendor = await this.prisma.vendor.create({
-      data: {
-        organizationId,
-        name,
-        type,
-        contactEmail:
-          typeof body.contactEmail === 'string'
-            ? body.contactEmail
-            : user.email || undefined,
-        contactPhone:
-          typeof body.contactPhone === 'string' ? body.contactPhone : undefined,
-      },
+    const vendor = await this.vendorPortalCommandRepository.createVendor({
+      organizationId,
+      name,
+      type,
+      contactEmail:
+        typeof body.contactEmail === 'string'
+          ? body.contactEmail
+          : user.email || undefined,
+      contactPhone:
+        typeof body.contactPhone === 'string' ? body.contactPhone : undefined,
     });
     return { success: true, service: vendor, vendor };
   }

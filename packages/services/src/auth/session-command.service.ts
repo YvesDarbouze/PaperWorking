@@ -32,10 +32,7 @@ export type EstablishSessionInput = {
 };
 
 function hasIdentityCredentials(identity: IdentityVerificationDeps): boolean {
-  return (
-    Boolean(identity.supabase?.hasCredentials()) ||
-    Boolean(identity.firebase?.hasCredentials())
-  );
+  return Boolean(identity.firebase?.hasCredentials());
 }
 
 /**

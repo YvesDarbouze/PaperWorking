@@ -12,7 +12,7 @@ import {
 } from '@paperworking/services';
 import type { AuthUser } from '../auth/auth.types.js';
 import { AuthzNotFoundError } from '@paperworking/authz';
-import { PrismaService } from '../prisma/prisma.service.js';
+import { createMarketplaceFollowCommandRepository } from '@paperworking/database';
 
 function mapInvestorNotFound(error: unknown): never {
   if (error instanceof AuthzNotFoundError) {
@@ -30,12 +30,15 @@ function mapFollowCommandError(error: unknown): never {
 
 @Injectable()
 export class MarketplaceService {
+  private readonly followRepository;
+
   constructor(
-    private readonly prisma: PrismaService,
     private readonly marketplaceProfileRead: MarketplaceProfileReadService,
     private readonly marketplaceInvestorsRead: MarketplaceInvestorsReadService,
     private readonly marketplaceFollowCommand: MarketplaceFollowCommandService,
-  ) {}
+  ) {
+    this.followRepository = createMarketplaceFollowCommandRepository();
+  }
 
   async listings() {
     return this.marketplaceInvestorsRead.listListings();
@@ -69,14 +72,8 @@ export class MarketplaceService {
   }
 
   async listFollowers(user: AuthUser) {
-    const following = await this.prisma.investorFollower.findMany({
-      where: { followerUid: user.uid },
-      orderBy: { createdAt: 'desc' },
-    });
-    const followers = await this.prisma.investorFollower.findMany({
-      where: { targetUid: user.uid },
-      orderBy: { createdAt: 'desc' },
-    });
+    const following = await this.followRepository.listFollowing(user.uid);
+    const followers = await this.followRepository.listFollowers(user.uid);
     return { success: true, following, followers };
   }
 

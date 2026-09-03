@@ -3,6 +3,7 @@ import {
   IdentityVerificationError,
   verifyAccessToken,
   isFirebaseIssuedToken,
+  isFirebaseSessionCookieToken,
   isSupabaseIssuedToken,
 } from '../index.js';
 
@@ -24,11 +25,19 @@ describe('JWT routing', () => {
     expect(isSupabaseIssuedToken(token)).toBe(true);
     expect(isFirebaseIssuedToken(token)).toBe(false);
   });
+
+  it('detects Firebase session cookies with project-scoped issuer', () => {
+    const legacy = fakeJwt({ iss: 'https://session.firebase.google.com' });
+    const scoped = fakeJwt({ iss: 'https://session.firebase.google.com/paperworking-97055' });
+    expect(isFirebaseSessionCookieToken(legacy)).toBe(true);
+    expect(isFirebaseSessionCookieToken(scoped)).toBe(true);
+    expect(isFirebaseIssuedToken(scoped)).toBe(false);
+  });
 });
 
-describe('verifyAccessToken router', () => {
+describe('verifyAccessToken router (Firebase-only)', () => {
   beforeEach(() => {
-    delete process.env.USE_FIREBASE_AUTH;
+    process.env.USE_FIREBASE_AUTH = 'true';
     delete process.env.NEXT_PUBLIC_USE_FIREBASE_AUTH;
   });
 
@@ -39,7 +48,6 @@ describe('verifyAccessToken router', () => {
   });
 
   it('routes Firebase token when flag is on', async () => {
-    process.env.USE_FIREBASE_AUTH = 'true';
     const firebase = {
       hasCredentials: () => true,
       verifyIdToken: jest.fn(async () => ({
@@ -56,21 +64,22 @@ describe('verifyAccessToken router', () => {
     expect(firebase.verifyIdToken).toHaveBeenCalledWith(token);
   });
 
-  it('uses Supabase when Firebase flag is off', async () => {
-    const supabase = {
+  it('rejects Supabase-issued tokens', async () => {
+    const firebase = {
       hasCredentials: () => true,
-      verifyAccessToken: jest.fn(async () => ({
-        uid: 'sb-1',
-        provider: 'supabase' as const,
-      })),
+      verifyIdToken: jest.fn(),
+      verifySessionCookie: jest.fn(),
+      createSessionCookie: jest.fn(),
     };
     const token = fakeJwt({ iss: 'https://abc.supabase.co/auth/v1' });
-    const identity = await verifyAccessToken(token, { supabase });
-    expect(identity.uid).toBe('sb-1');
+    await expect(verifyAccessToken(token, { firebase })).rejects.toMatchObject({
+      code: 'invalid_token',
+      message: expect.stringContaining('Supabase tokens are not accepted'),
+    });
+    expect(firebase.verifyIdToken).not.toHaveBeenCalled();
   });
 
   it('maps Firebase expired token errors', async () => {
-    process.env.USE_FIREBASE_AUTH = 'true';
     const firebase = {
       hasCredentials: () => true,
       verifyIdToken: jest.fn(async () => {
@@ -79,53 +88,13 @@ describe('verifyAccessToken router', () => {
       verifySessionCookie: jest.fn(),
       createSessionCookie: jest.fn(),
     };
-    const supabase = {
-      hasCredentials: () => true,
-      verifyAccessToken: jest.fn(async () => ({
-        uid: 'sb-fallback',
-        provider: 'supabase' as const,
-      })),
-    };
     const token = fakeJwt({ iss: 'https://securetoken.google.com/demo' });
-    await expect(verifyAccessToken(token, { firebase, supabase })).rejects.toMatchObject({
+    await expect(verifyAccessToken(token, { firebase })).rejects.toMatchObject({
       code: 'expired_token',
     });
-    expect(supabase.verifyAccessToken).not.toHaveBeenCalled();
-  });
-
-  it('does not fall back to Supabase when Firebase verification fails', async () => {
-    process.env.USE_FIREBASE_AUTH = 'true';
-    const firebase = {
-      hasCredentials: () => true,
-      verifyIdToken: jest.fn(async () => {
-        throw new Error('Firebase ID token has invalid signature');
-      }),
-      verifySessionCookie: jest.fn(),
-      createSessionCookie: jest.fn(),
-    };
-    const supabase = {
-      hasCredentials: () => true,
-      verifyAccessToken: jest.fn(async () => ({
-        uid: 'sb-fallback',
-        provider: 'supabase' as const,
-      })),
-    };
-    const token = fakeJwt({ iss: 'https://securetoken.google.com/demo' });
-    await expect(verifyAccessToken(token, { firebase, supabase })).rejects.toMatchObject({
-      code: 'invalid_token',
-    });
-    expect(supabase.verifyAccessToken).not.toHaveBeenCalled();
   });
 
   it('rejects unknown issuer when Firebase mode is enabled', async () => {
-    process.env.USE_FIREBASE_AUTH = 'true';
-    const supabase = {
-      hasCredentials: () => true,
-      verifyAccessToken: jest.fn(async () => ({
-        uid: 'sb-fallback',
-        provider: 'supabase' as const,
-      })),
-    };
     const token = fakeJwt({ iss: 'https://unknown.example.com' });
     await expect(
       verifyAccessToken(token, {
@@ -135,39 +104,14 @@ describe('verifyAccessToken router', () => {
           verifySessionCookie: jest.fn(),
           createSessionCookie: jest.fn(),
         },
-        supabase,
       }),
     ).rejects.toMatchObject({
       code: 'invalid_token',
       message: expect.stringContaining('Unsupported identity token issuer'),
     });
-    expect(supabase.verifyAccessToken).not.toHaveBeenCalled();
-  });
-
-  it('routes Supabase-issued tokens to Supabase verifier only', async () => {
-    process.env.USE_FIREBASE_AUTH = 'true';
-    const supabase = {
-      hasCredentials: () => true,
-      verifyAccessToken: jest.fn(async () => ({
-        uid: 'sb-legacy',
-        provider: 'supabase' as const,
-      })),
-    };
-    const firebase = {
-      hasCredentials: () => true,
-      verifyIdToken: jest.fn(),
-      verifySessionCookie: jest.fn(),
-      createSessionCookie: jest.fn(),
-    };
-    const token = fakeJwt({ iss: 'https://abc.supabase.co/auth/v1' });
-    const identity = await verifyAccessToken(token, { supabase, firebase });
-    expect(identity.uid).toBe('sb-legacy');
-    expect(supabase.verifyAccessToken).toHaveBeenCalledWith(token);
-    expect(firebase.verifyIdToken).not.toHaveBeenCalled();
   });
 
   it('routes Firebase session cookies to verifySessionCookie', async () => {
-    process.env.USE_FIREBASE_AUTH = 'true';
     const firebase = {
       hasCredentials: () => true,
       verifyIdToken: jest.fn(),

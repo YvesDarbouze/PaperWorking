@@ -14,13 +14,6 @@ export {
 } from './errors.js';
 
 export {
-  getDatabaseReadMode,
-  isFirestoreReadMode,
-  isFirestoreShadowReadsEnabled,
-  type DatabaseReadMode,
-} from './read-mode.js';
-
-export {
   compareReadModels,
   logShadowReadMismatches,
   userFromPostgres,
@@ -45,5 +38,8 @@ export {
   requireFirestore,
   documentData,
 } from './repositories/index.js';
+
+export { createFirestoreIdentityUserRepository } from './create-firestore-identity-user-repository.js';
+export { createFirestoreSessionUserStore } from './create-firestore-session-user-store.js';
 
 export const FIRESTORE_PACKAGE_STATUS = 'phase-7-read-repositories' as const;

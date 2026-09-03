@@ -1,4 +1,4 @@
-import { describe, expect, it, afterEach } from '@jest/globals';
+import { describe, expect, it, afterEach, beforeEach } from '@jest/globals';
 import {
   buildAuthSessionsResponse,
   handleAuthSessionsGet,
@@ -31,6 +31,25 @@ function fakeJwt(payload: Record<string, unknown>): string {
   return `${header}.${body}.signature`;
 }
 
+function firebaseIdentity(overrides?: Partial<SessionResolverDeps['identity']['firebase']>) {
+  return {
+    firebase: {
+      hasCredentials: () => true,
+      verifyIdToken: async () => ({
+        uid: 'uid-1',
+        email: 'a@example.com',
+        provider: 'firebase' as const,
+      }),
+      verifySessionCookie: async () => ({
+        uid: 'uid-1',
+        provider: 'firebase' as const,
+      }),
+      createSessionCookie: async () => 'cookie',
+      ...overrides,
+    },
+  };
+}
+
 function makeResolverDeps(
   store: SessionUserStore,
   identity: SessionResolverDeps['identity'],
@@ -39,14 +58,19 @@ function makeResolverDeps(
 }
 
 describe('phase 9c — GET /api/auth/sessions authentication', () => {
+  beforeEach(() => {
+    process.env.USE_FIREBASE_AUTH = 'true';
+  });
+
   afterEach(() => {
     resetHandlerDepsForTests();
     delete process.env.USE_FIREBASE_AUTH;
   });
 
   it('accepts Authorization Bearer token', async () => {
+    const token = fakeJwt({ iss: 'https://securetoken.google.com/paperworking-97055' });
     const request = new Request('http://localhost/api/auth/sessions', {
-      headers: { Authorization: 'Bearer supabase-jwt' },
+      headers: { Authorization: `Bearer ${token}` },
     });
 
     const user = await resolveAuthUserFromCredentials(
@@ -58,16 +82,13 @@ describe('phase 9c — GET /api/auth/sessions authentication', () => {
           accountType: 'investor',
           role: 'investor',
         }),
-        {
-          supabase: {
-            hasCredentials: () => true,
-            verifyAccessToken: async () => ({
-              uid: 'uid-1',
-              email: 'a@example.com',
-              provider: 'supabase',
-            }),
-          },
-        },
+        firebaseIdentity({
+          verifyIdToken: async () => ({
+            uid: 'uid-1',
+            email: 'a@example.com',
+            provider: 'firebase',
+          }),
+        }),
       ),
     );
 
@@ -75,8 +96,9 @@ describe('phase 9c — GET /api/auth/sessions authentication', () => {
   });
 
   it('accepts __session cookie', async () => {
+    const sessionCookie = fakeJwt({ iss: 'https://session.firebase.google.com/paperworking-97055' });
     const request = new Request('http://localhost/api/auth/sessions', {
-      headers: { cookie: '__session=session-token' },
+      headers: { cookie: `__session=${sessionCookie}` },
     });
 
     const user = await resolveAuthUserFromCredentials(
@@ -88,16 +110,17 @@ describe('phase 9c — GET /api/auth/sessions authentication', () => {
           accountType: 'investor',
           role: 'investor',
         }),
-        {
-          supabase: {
-            hasCredentials: () => true,
-            verifyAccessToken: async () => ({
-              uid: 'uid-2',
-              email: 'b@example.com',
-              provider: 'supabase',
-            }),
-          },
-        },
+        firebaseIdentity({
+          verifySessionCookie: async () => ({
+            uid: 'uid-2',
+            provider: 'firebase',
+          }),
+          verifyIdToken: async () => ({
+            uid: 'uid-2',
+            email: 'b@example.com',
+            provider: 'firebase',
+          }),
+        }),
       ),
     );
 
@@ -108,12 +131,7 @@ describe('phase 9c — GET /api/auth/sessions authentication', () => {
     const request = new Request('http://localhost/api/auth/sessions');
     const user = await resolveAuthUserFromCredentials(
       sessionCredentialsFromRequest(request),
-      makeResolverDeps(makeStore(null), {
-        supabase: {
-          hasCredentials: () => true,
-          verifyAccessToken: async () => ({ uid: 'x', provider: 'supabase' }),
-        },
-      }),
+      makeResolverDeps(makeStore(null), firebaseIdentity()),
     );
     expect(user).toBeNull();
   });
@@ -126,11 +144,15 @@ describe('phase 9c — GET /api/auth/sessions authentication', () => {
     const user = await resolveAuthUserFromCredentials(
       sessionCredentialsFromRequest(request),
       makeResolverDeps(makeStore(null), {
-        supabase: {
+        firebase: {
           hasCredentials: () => true,
-          verifyAccessToken: async () => {
+          verifyIdToken: async () => {
             throw new Error('invalid token');
           },
+          verifySessionCookie: async () => {
+            throw new Error('invalid token');
+          },
+          createSessionCookie: async () => 'cookie',
         },
       }),
     );
@@ -144,7 +166,6 @@ describe('phase 9c — GET /api/auth/sessions authentication', () => {
   });
 
   it('resolves Firebase token when Firebase flag is enabled', async () => {
-    process.env.USE_FIREBASE_AUTH = 'true';
     const firebaseToken = fakeJwt({ iss: 'https://securetoken.google.com/paperworking-97055' });
     const request = new Request('http://localhost/api/auth/sessions', {
       headers: { Authorization: `Bearer ${firebaseToken}` },
@@ -159,24 +180,13 @@ describe('phase 9c — GET /api/auth/sessions authentication', () => {
           accountType: 'investor',
           role: 'Lead Investor',
         }),
-        {
-          supabase: {
-            hasCredentials: () => false,
-            verifyAccessToken: async () => {
-              throw new Error('supabase disabled');
-            },
-          },
-          firebase: {
-            hasCredentials: () => true,
-            verifyIdToken: async () => ({
-              uid: 'firebase-uid',
-              email: 'fb@example.com',
-              provider: 'firebase',
-            }),
-            verifySessionCookie: async () => ({ uid: 'firebase-uid', provider: 'firebase' }),
-            createSessionCookie: async () => 'cookie',
-          },
-        },
+        firebaseIdentity({
+          verifyIdToken: async () => ({
+            uid: 'firebase-uid',
+            email: 'fb@example.com',
+            provider: 'firebase',
+          }),
+        }),
       ),
     );
 
@@ -185,11 +195,20 @@ describe('phase 9c — GET /api/auth/sessions authentication', () => {
 });
 
 describe('phase 9c — DB-authoritative identity', () => {
+  beforeEach(() => {
+    process.env.USE_FIREBASE_AUTH = 'true';
+  });
+
+  afterEach(() => {
+    delete process.env.USE_FIREBASE_AUTH;
+  });
+
   it('does not elevate or change uid via __acct display cookie', async () => {
+    const token = fakeJwt({ iss: 'https://securetoken.google.com/paperworking-97055' });
     const request = new Request('http://localhost/api/auth/sessions', {
       headers: {
         cookie: '__session=valid-token; __acct=admin',
-        Authorization: 'Bearer valid-token',
+        Authorization: `Bearer ${token}`,
       },
     });
 
@@ -202,16 +221,13 @@ describe('phase 9c — DB-authoritative identity', () => {
           accountType: 'investor',
           role: 'investor',
         }),
-        {
-          supabase: {
-            hasCredentials: () => true,
-            verifyAccessToken: async () => ({
-              uid: 'uid-investor',
-              email: 'user@example.com',
-              provider: 'supabase',
-            }),
-          },
-        },
+        firebaseIdentity({
+          verifyIdToken: async () => ({
+            uid: 'uid-investor',
+            email: 'user@example.com',
+            provider: 'firebase',
+          }),
+        }),
       ),
     );
 

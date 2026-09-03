@@ -3,6 +3,14 @@ import {
   deriveAllProjectMetrics,
   canonicalSeedDeal,
 } from '@paperworking/financial-engine';
+import {
+  buildLivePortfolioReport,
+  ReportsGenerateValidationError,
+} from './build-live-portfolio-report.js';
+import type { ReportsReadRepository } from './reports-read-repository.js';
+import type { ProjectKpiReadRepository } from '../projects/project-kpi-read-repository.js';
+
+export { ReportsGenerateValidationError } from './build-live-portfolio-report.js';
 
 export type GeneratedReportPayload = {
   reportId: string;
@@ -12,6 +20,14 @@ export type GeneratedReportPayload = {
   executiveSummary: string;
   metrics: Awaited<ReturnType<typeof deriveAllProjectMetrics>>;
   csvContent?: string;
+  projectCount?: number;
+  insufficientProjectCount?: number;
+  projects?: Array<{
+    id: string;
+    name: string | null;
+    noi: number | null;
+    capRate: number | null;
+  }>;
 };
 
 export type ReportPdfExportPort = {
@@ -23,15 +39,12 @@ const VALID_TYPES = new Set(['monthly', 'quarterly', 'yearly', 'overall']);
 function normalizeType(input?: string): GeneratedReportPayload['type'] {
   const value = (input || 'quarterly').toLowerCase();
   if (VALID_TYPES.has(value)) return value as GeneratedReportPayload['type'];
-  if (value === 'monthly' || value === 'quarterly' || value === 'yearly') {
-    return value as GeneratedReportPayload['type'];
-  }
   return 'quarterly';
 }
 
 /**
- * Demo/stub report builder — uses financial-engine seed metrics, not live portfolio data.
- * Matches legacy V0 generate handler semantics (honest stub, not production ledger export).
+ * Demo report builder — test/fixture only. Uses financial-engine seed metrics.
+ * Production routes must use buildLivePortfolioReport via ReportsGenerateService.
  */
 export async function buildDemoPortfolioReport(
   typeInput?: string,
@@ -71,12 +84,16 @@ export async function buildDemoPortfolioReport(
 export type ReportsGenerateServiceDeps = {
   authz: AuthorizationService;
   pdfExport: ReportPdfExportPort;
+  reportsRepository: ReportsReadRepository;
+  kpiRepository: ProjectKpiReadRepository;
+  deriveMetrics?: typeof deriveAllProjectMetrics;
 };
 
 export type ReportsGenerateInput = {
   type?: unknown;
   period?: unknown;
   format?: unknown;
+  projectId?: unknown;
 };
 
 export class ReportsGenerateService {
@@ -87,10 +104,21 @@ export class ReportsGenerateService {
     filename: string;
     body: Buffer | string;
   }> {
-    this.deps.authz.assertPermission(user, 'projects.read');
     const format = input.format === 'csv' ? 'csv' : 'pdf';
-    const typeRaw = typeof input.type === 'string' ? input.type : typeof input.period === 'string' ? input.period : undefined;
-    const report = await buildDemoPortfolioReport(typeRaw, format);
+    const typeRaw =
+      typeof input.type === 'string'
+        ? input.type
+        : typeof input.period === 'string'
+          ? input.period
+          : undefined;
+    const projectId =
+      typeof input.projectId === 'string' && input.projectId.trim()
+        ? input.projectId.trim()
+        : undefined;
+
+    const report = await buildLivePortfolioReport(user, this.deps, typeRaw, format, {
+      projectId,
+    });
 
     if (format === 'csv') {
       return {

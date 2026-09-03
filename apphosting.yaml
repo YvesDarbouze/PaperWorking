@@ -88,15 +88,6 @@ env:
     availability:
       - RUNTIME
 
-  # Nest Cloud Run base URL for browser apiFetch on unmigrated routes (billing, portfolio reports, etc.).
-  # NEXT_PUBLIC_* is inlined at `next build` — MUST be available at BUILD time.
-  # Plain value (not Secret Manager): this URL is public in the client bundle anyway.
-  - variable: NEXT_PUBLIC_API_URL
-    value: "https://paperworking-api-779101817926.us-east4.run.app"
-    availability:
-      - BUILD
-      - RUNTIME
-
   # ─── Auth (V0 parity — Firebase Google/Facebook popup) ───────────────────
   - variable: USE_FIREBASE_AUTH
     value: "true"
@@ -217,17 +208,6 @@ env:
 
   - variable: BRIDGE_WEBHOOK_SECRET
     secret: BRIDGE_WEBHOOK_SECRET
-    availability:
-      - RUNTIME
-
-  # ─── Database (Neon PostgreSQL) ────────────────────────────────────────────
-  - variable: DATABASE_URL
-    secret: DATABASE_URL
-    availability:
-      - RUNTIME
-
-  - variable: DIRECT_URL
-    secret: DIRECT_URL
     availability:
       - RUNTIME
 

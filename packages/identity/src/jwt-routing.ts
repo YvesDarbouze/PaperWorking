@@ -22,8 +22,14 @@ export function isSupabaseIssuedToken(token: string): boolean {
   return iss?.includes('supabase.co/auth') ?? false;
 }
 
-/** Firebase Admin session cookies (Next adapter path) use this issuer. */
+const FIREBASE_SESSION_COOKIE_ISSUER_PREFIX = 'https://session.firebase.google.com';
+
+/** Firebase Admin session cookies (Next adapter path) use this issuer prefix. */
 export function isFirebaseSessionCookieToken(token: string): boolean {
   const iss = peekTokenIssuer(token);
-  return iss === 'https://session.firebase.google.com';
+  if (!iss) return false;
+  return (
+    iss === FIREBASE_SESSION_COOKIE_ISSUER_PREFIX ||
+    iss.startsWith(`${FIREBASE_SESSION_COOKIE_ISSUER_PREFIX}/`)
+  );
 }

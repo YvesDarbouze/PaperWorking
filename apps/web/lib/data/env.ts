@@ -45,3 +45,15 @@ export function useMockData(): boolean {
 export function useMockAuth(): boolean {
   return useMockData();
 }
+
+/**
+ * Demo support chatbot (local scripted replies) — on in dev by default,
+ * always off in production. Decoupled from useMockData() so real API/auth
+ * can run while the floating widget is visible locally.
+ */
+export function useDemoChatbot(): boolean {
+  if (isProductionRuntime()) return false;
+  const flag = process.env.NEXT_PUBLIC_ENABLE_DEMO_CHATBOT;
+  if (flag === 'false' || flag === '0') return false;
+  return true;
+}

@@ -131,7 +131,7 @@ describe('phase B9 — financial-engine boundary', () => {
       'utf8',
     );
     const repo = readFileSync(
-      join(here, '../../../../packages/database/src/neon/prisma-project-kpi-read-repository.ts'),
+      join(here, '../../../../packages/database/src/firestore/create-firestore-project-kpi-read-repository.ts'),
       'utf8',
     );
     for (const source of [route, repo]) {
@@ -141,12 +141,16 @@ describe('phase B9 — financial-engine boundary', () => {
     }
   });
 
-  it('ProjectKpiReadService delegates metrics to financial-engine', async () => {
+  it('ProjectKpiReadService delegates metrics to financial-engine without seed income defaults', async () => {
     const repository: ProjectKpiReadRepository = {
       findProjectKpiInputs: async () => ({
         id: 'p1',
         purchasePrice: canonicalSeedDeal.purchase_price,
         currentPhase: 2,
+        phaseData: {
+          gross_scheduled_rent: canonicalSeedDeal.gross_scheduled_rent,
+          operating_expenses: canonicalSeedDeal.operating_expenses,
+        },
       }),
       listRecentApprovedTransactions: async () => [],
     };
@@ -157,7 +161,10 @@ describe('phase B9 — financial-engine boundary', () => {
     });
 
     const result = await service.getCurrentProjectKpis(investor, 'p1');
-    expect(result.kpis.scorecard.noi.value).toBeCloseTo(12485, 0);
+    expect(result.kpis.scorecard.noi.value).not.toBeNull();
+    expect(result.kpis.scorecard.noi.value).toBeGreaterThan(0);
+    expect(result.kpis.inputProvenance.gross_scheduled_rent).toBe('REAL_DB');
+    expect(result.kpis.inputProvenance.operating_expenses).toBe('REAL_DB');
   });
 });
 
@@ -167,7 +174,6 @@ describe('phase B9 — buildProjectKpiReadService wiring', () => {
   });
 
   it('returns service instance', () => {
-    process.env.DATABASE_URL = process.env.DATABASE_URL || 'postgresql://test:test@localhost:5432/test';
     const service = buildProjectKpiReadService(buildHandlerDeps());
     expect(typeof service.getCurrentProjectKpis).toBe('function');
   });

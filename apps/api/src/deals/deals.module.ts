@@ -1,10 +1,10 @@
 import { Module } from '@nestjs/common';
 import { AuthorizationService as CoreAuthorizationService } from '@paperworking/authz';
 import {
-  createPrismaAuthzStore,
-  createPrismaDealsReadRepository,
-  createPrismaDealsCommandRepository,
-  createPrismaDealCommunicationRepository,
+  createAuthzStore,
+  createDealsReadRepository,
+  createDealsCommandRepository,
+  createDealCommunicationRepository,
 } from '@paperworking/database';
 import {
   DealsReadService,
@@ -16,7 +16,6 @@ import {
   createDealBroadcastService,
   createDealReplyService,
 } from '@paperworking/services';
-import { PrismaService } from '../prisma/prisma.service.js';
 import { DealInvitationsController, DealsController } from './deals.controller.js';
 import { DealsService } from './deals.service.js';
 
@@ -26,39 +25,35 @@ import { DealsService } from './deals.service.js';
     DealsService,
     {
       provide: DealsReadService,
-      useFactory: (prisma: PrismaService) =>
+      useFactory: () =>
         createDealsReadService({
-          authz: new CoreAuthorizationService(createPrismaAuthzStore(prisma.client)),
-          repository: createPrismaDealsReadRepository(prisma.client),
+          authz: new CoreAuthorizationService(createAuthzStore()),
+          repository: createDealsReadRepository(),
         }),
-      inject: [PrismaService],
     },
     {
       provide: DealsCommandService,
-      useFactory: (prisma: PrismaService) =>
+      useFactory: () =>
         createDealsCommandService({
-          authz: new CoreAuthorizationService(createPrismaAuthzStore(prisma.client)),
-          repository: createPrismaDealsCommandRepository(prisma.client),
+          authz: new CoreAuthorizationService(createAuthzStore()),
+          repository: createDealsCommandRepository(),
         }),
-      inject: [PrismaService],
     },
     {
       provide: DealBroadcastService,
-      useFactory: (prisma: PrismaService) =>
+      useFactory: () =>
         createDealBroadcastService({
-          authz: new CoreAuthorizationService(createPrismaAuthzStore(prisma.client)),
-          repository: createPrismaDealCommunicationRepository(prisma.client),
+          authz: new CoreAuthorizationService(createAuthzStore()),
+          repository: createDealCommunicationRepository(),
         }),
-      inject: [PrismaService],
     },
     {
       provide: DealReplyService,
-      useFactory: (prisma: PrismaService) =>
+      useFactory: () =>
         createDealReplyService({
-          authz: new CoreAuthorizationService(createPrismaAuthzStore(prisma.client)),
-          repository: createPrismaDealCommunicationRepository(prisma.client),
+          authz: new CoreAuthorizationService(createAuthzStore()),
+          repository: createDealCommunicationRepository(),
         }),
-      inject: [PrismaService],
     },
   ],
   exports: [DealsService],

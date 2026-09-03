@@ -23,4 +23,4 @@ export function isFirebaseAuthEmulator(): boolean {
   return Boolean(process.env.FIREBASE_AUTH_EMULATOR_HOST?.trim());
 }
 
-export const IDENTITY_PACKAGE_STATUS = 'phase-f2-f3-parallel' as const;
+export const IDENTITY_PACKAGE_STATUS = 'phase-e-firebase-only' as const;

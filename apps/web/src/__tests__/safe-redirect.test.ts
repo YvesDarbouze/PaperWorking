@@ -8,6 +8,8 @@ describe('safe redirect', () => {
   it('allows internal dashboard paths', () => {
     expect(sanitizeRedirectPath('/dashboard')).toBe('/dashboard');
     expect(sanitizeRedirectPath('/projects/new')).toBe('/projects/new');
+    expect(sanitizeRedirectPath('/admin')).toBe('/admin');
+    expect(sanitizeRedirectPath('/admin/users')).toBe('/admin/users');
   });
 
   it('rejects external and javascript URLs', () => {

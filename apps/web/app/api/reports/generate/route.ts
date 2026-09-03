@@ -5,7 +5,7 @@ import { resolveAuthUserFromRequest } from '@/lib/api/server-session';
 
 export const dynamic = 'force-dynamic';
 
-/** POST /api/reports/generate — demo PDF/CSV export (financial-engine seed metrics). */
+/** POST /api/reports/generate — live Firestore portfolio PDF/CSV export. */
 export async function POST(request: Request) {
   const user = await resolveAuthUserFromRequest(request);
   if (!user) {

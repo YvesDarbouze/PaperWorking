@@ -12,15 +12,14 @@ import {
   BillingValidationError,
 } from '@paperworking/services';
 import type { AuthUser } from '../auth/auth.types.js';
-import { PrismaService } from '../prisma/prisma.service.js';
 import { buildNestBillingServices, type NestBillingServices } from './payments-factory.js';
 
 @Injectable()
 export class PaymentsService {
   private readonly billing: NestBillingServices;
 
-  constructor(private readonly prisma: PrismaService) {
-    this.billing = buildNestBillingServices(this.prisma);
+  constructor() {
+    this.billing = buildNestBillingServices();
   }
 
   private parseBillingPath(reqPath: string): string[] {

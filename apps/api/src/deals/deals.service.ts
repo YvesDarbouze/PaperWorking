@@ -17,7 +17,7 @@ import {
   type DealReplyInput,
 } from '@paperworking/services';
 import { AuthorizationService } from '../authz/authorization.service.js';
-import { PrismaService } from '../prisma/prisma.service.js';
+import { createDealCommunicationRepository } from '@paperworking/database';
 
 function mapDealsCoreError(error: unknown): never {
   if (error instanceof DealsCommandValidationError) {
@@ -37,14 +37,17 @@ function mapDealsCoreError(error: unknown): never {
 
 @Injectable()
 export class DealsService {
+  private readonly dealCommunication;
+
   constructor(
-    private readonly prisma: PrismaService,
     private readonly authz: AuthorizationService,
     private readonly dealsRead: DealsReadService,
     private readonly dealsCommand: DealsCommandService,
     private readonly dealBroadcast: DealBroadcastService,
     private readonly dealReply: DealReplyService,
-  ) {}
+  ) {
+    this.dealCommunication = createDealCommunicationRepository();
+  }
 
   async list(user: AuthUser, q?: string, tab?: string) {
     try {
@@ -105,11 +108,9 @@ export class DealsService {
 
   async listInvitations(user: AuthUser) {
     this.authz.assertPermission(user, 'deals.read');
-    const invitations = await this.prisma.dealInvitation.findMany({
-      where: {
-        OR: [{ inviteeUserId: user.uid }, { inviteeEmail: user.email || undefined }],
-      },
-      orderBy: { createdAt: 'desc' },
+    const invitations = await this.dealCommunication.listInvitationsForUser({
+      uid: user.uid,
+      email: user.email ?? undefined,
     });
     return { success: true, invitations };
   }
@@ -121,14 +122,12 @@ export class DealsService {
       throw new BadRequestException({ error: 'dealId and inviteeEmail required' });
     }
     await this.authz.assertDealAccess(user, dealId, 'deals.update');
-    const invitation = await this.prisma.dealInvitation.create({
-      data: {
-        dealId,
-        inviteeEmail,
-        inviteeUserId:
-          typeof body.inviteeUserId === 'string' ? body.inviteeUserId : undefined,
-        businessCardShared: Boolean(body.businessCardShared),
-      },
+    const invitation = await this.dealCommunication.createStandaloneInvitation({
+      dealId,
+      inviteeEmail,
+      inviteeUserId:
+        typeof body.inviteeUserId === 'string' ? body.inviteeUserId : undefined,
+      businessCardShared: Boolean(body.businessCardShared),
     });
     return { success: true, invitation };
   }

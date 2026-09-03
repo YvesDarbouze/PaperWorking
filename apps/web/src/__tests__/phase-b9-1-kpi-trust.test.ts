@@ -17,23 +17,15 @@ import { fileURLToPath } from 'node:url';
 const here = dirname(fileURLToPath(import.meta.url));
 
 describe('phase B9.1 — KPI provenance metadata', () => {
-  it('ProjectKpiReadService exposes trust metadata without changing scorecard numbers', async () => {
+  it('ProjectKpiReadService exposes trust metadata without seed-blended income inputs', async () => {
     const repository: ProjectKpiReadRepository = {
       findProjectKpiInputs: async () => ({
         id: 'p1',
-        purchasePrice: canonicalSeedDeal.purchase_price,
+        purchasePrice: 500_000,
         currentPhase: 2,
       }),
       listRecentApprovedTransactions: async () => [],
     };
-
-    const baseline = await deriveAllProjectMetrics('p1', {
-      mockData: {
-        ...canonicalSeedDeal,
-        purchase_price: canonicalSeedDeal.purchase_price,
-        property_value: canonicalSeedDeal.purchase_price,
-      },
-    });
 
     const service = createProjectKpiReadService({
       authz: {
@@ -52,9 +44,10 @@ describe('phase B9.1 — KPI provenance metadata', () => {
       'p1',
     );
 
-    expect(result.kpis.scorecard.noi.value).toBe(baseline.scorecard.noi.value);
-    expect(result.kpis.scorecard.capRate.value).toBe(baseline.scorecard.capRate.value);
+    expect(result.kpis.scorecard.noi.value).toBeNull();
+    expect(result.kpis.scorecard.capRate.value).toBeNull();
     expect(result.kpis.sourceStatus).toBe('partially_projected');
+    expect(result.kpis.inputProvenance.gross_scheduled_rent).toBe('UNAVAILABLE');
     expect(result.trendStatus).toBe('demo');
     expect(result.recentActivityStatus).toBe('empty');
   });
@@ -99,7 +92,7 @@ describe('phase B9.1 — input audit table sanity', () => {
       purchasePrice: 500_000,
     });
     expect(summary.inputProvenance.purchase_price).toBe('REAL_DB');
-    expect(summary.inputProvenance.gross_scheduled_rent).toBe('CANONICAL_DEFAULT');
-    expect(summary.inputProvenance.operating_expenses).toBe('CANONICAL_DEFAULT');
+    expect(summary.inputProvenance.gross_scheduled_rent).toBe('UNAVAILABLE');
+    expect(summary.inputProvenance.operating_expenses).toBe('UNAVAILABLE');
   });
 });

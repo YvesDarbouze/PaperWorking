@@ -16,15 +16,14 @@ import type { AuthUser } from '../auth/auth.types.js';
 import { CurrentUser } from '../auth/auth.types.js';
 import { AuthzForbiddenError, AuthzNotFoundError } from '@paperworking/authz';
 import { ZodValidationPipe } from '../common/zod-validation.pipe.js';
-import { PrismaService } from '../prisma/prisma.service.js';
 import { buildNestReportsServices, type NestReportsServices } from './reports-factory.js';
 
 @Injectable()
 export class ReportsService {
   private readonly reports: NestReportsServices;
 
-  constructor(private readonly prisma: PrismaService) {
-    this.reports = buildNestReportsServices(this.prisma);
+  constructor() {
+    this.reports = buildNestReportsServices();
   }
 
   private mapError(err: unknown): never {

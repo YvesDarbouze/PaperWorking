@@ -5,8 +5,6 @@ const nextConfig: NextConfig = {
   output: 'standalone',
   // Keep Supabase out of the SSR bundle — avoids Next OTEL stub conflicts.
   serverExternalPackages: [
-    '@supabase/supabase-js',
-    '@supabase/auth-js',
     'firebase-admin',
     'firebase',
     'firebase/app',

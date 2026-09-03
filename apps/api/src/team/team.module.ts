@@ -13,9 +13,10 @@ import {
 import type { Request } from 'express';
 import { AuthorizationService as CoreAuthorizationService } from '@paperworking/authz';
 import {
-  createPrismaAuthzStore,
-  createPrismaTeamMembersReadRepository,
-  createPrismaTeamCommandRepository,
+  createAuthzStore,
+  createTeamMembersReadRepository,
+  createTeamCommandRepository,
+  createProjectMembersRepository,
 } from '@paperworking/database';
 import {
   TeamMembersReadService,
@@ -31,16 +32,18 @@ import type { AuthUser } from '../auth/auth.types.js';
 import { CurrentUser } from '../auth/auth.types.js';
 import { AuthorizationService } from '../authz/authorization.service.js';
 import { RequirePermissions } from '../authz/require-permissions.decorator.js';
-import { PrismaService } from '../prisma/prisma.service.js';
 
 @Injectable()
 export class TeamService {
+  private readonly projectMembers;
+
   constructor(
-    private readonly prisma: PrismaService,
     private readonly authz: AuthorizationService,
     private readonly teamMembersRead: TeamMembersReadService,
     private readonly teamCommand: TeamCommandService,
-  ) {}
+  ) {
+    this.projectMembers = createProjectMembersRepository();
+  }
 
   async listMembers(user: AuthUser, organizationId?: string) {
     return this.teamMembersRead.listTeamMembers(user, { organizationId });
@@ -134,11 +137,7 @@ export class TeamService {
       });
     }
     await this.authz.assertProjectAccess(user, projectId, 'projects.read');
-    const members = await this.prisma.client.projectMember.findMany({
-      where: { projectId },
-      orderBy: { createdAt: 'desc' },
-      take: 200,
-    });
+    const members = await this.projectMembers.listByProjectId(projectId);
     return { success: true, members };
   }
 
@@ -146,14 +145,12 @@ export class TeamService {
     const projectId = String(body.projectId || '');
     if (!projectId) return { success: false, error: 'projectId required' };
     await this.authz.assertProjectAccess(user, projectId, 'projects.update');
-    const member = await this.prisma.client.projectMember.create({
-      data: {
-        projectId,
-        userId: typeof body.userId === 'string' ? body.userId : undefined,
-        email: typeof body.email === 'string' ? body.email : undefined,
-        role: typeof body.role === 'string' ? body.role : 'member',
-        status: 'active',
-      },
+    const member = await this.projectMembers.createMember({
+      projectId,
+      userId: typeof body.userId === 'string' ? body.userId : undefined,
+      email: typeof body.email === 'string' ? body.email : undefined,
+      role: typeof body.role === 'string' ? body.role : 'member',
+      status: 'active',
     });
     return { success: true, member };
   }
@@ -240,21 +237,19 @@ export class ProjectMembersController {
     TeamService,
     {
       provide: TeamMembersReadService,
-      useFactory: (prisma: PrismaService) =>
+      useFactory: () =>
         createTeamMembersReadService({
-          authz: new CoreAuthorizationService(createPrismaAuthzStore(prisma.client)),
-          repository: createPrismaTeamMembersReadRepository(prisma.client),
+          authz: new CoreAuthorizationService(createAuthzStore()),
+          repository: createTeamMembersReadRepository(),
         }),
-      inject: [PrismaService],
     },
     {
       provide: TeamCommandService,
-      useFactory: (prisma: PrismaService) =>
+      useFactory: () =>
         createTeamCommandService({
-          authz: new CoreAuthorizationService(createPrismaAuthzStore(prisma.client)),
-          repository: createPrismaTeamCommandRepository(prisma.client),
+          authz: new CoreAuthorizationService(createAuthzStore()),
+          repository: createTeamCommandRepository(),
         }),
-      inject: [PrismaService],
     },
   ],
   exports: [TeamService],

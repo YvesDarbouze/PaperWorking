@@ -27,9 +27,11 @@ function makeDeps(store: SessionUserStore, identity: SessionResolverDeps['identi
 describe('shared session resolver', () => {
   it('returns null for missing token', async () => {
     const deps = makeDeps(makeStore(null), {
-      supabase: {
+      firebase: {
         hasCredentials: () => true,
-        verifyAccessToken: async () => ({ uid: 'u1', provider: 'supabase' }),
+        verifyIdToken: async () => ({ uid: 'u1', provider: 'firebase' }),
+        verifySessionCookie: async () => ({ uid: 'u1', provider: 'firebase' }),
+        createSessionCookie: async () => 'cookie',
       },
     });
     await expect(resolveAuthUserFromAccessToken(undefined, deps)).resolves.toBeNull();
@@ -37,11 +39,15 @@ describe('shared session resolver', () => {
 
   it('returns null for invalid token', async () => {
     const deps = makeDeps(makeStore(null), {
-      supabase: {
+      firebase: {
         hasCredentials: () => true,
-        verifyAccessToken: async () => {
+        verifyIdToken: async () => {
           throw new Error('bad token');
         },
+        verifySessionCookie: async () => {
+          throw new Error('bad token');
+        },
+        createSessionCookie: async () => 'cookie',
       },
     });
     await expect(resolveAuthUserFromAccessToken('bad', deps)).resolves.toBeNull();
@@ -94,7 +100,8 @@ describe('shared session resolver', () => {
     expect(normalizeClientAccountType('ADMIN')).toBe('investor');
   });
 
-  it('resolves AuthUser after Supabase token verification', async () => {
+  it('resolves AuthUser after Firebase token verification', async () => {
+    process.env.USE_FIREBASE_AUTH = 'true';
     const deps = makeDeps(
       makeStore({
         id: '11111111-1111-4111-8111-111111111111',
@@ -103,24 +110,33 @@ describe('shared session resolver', () => {
         role: 'investor',
       }),
       {
-        supabase: {
+        firebase: {
           hasCredentials: () => true,
-          verifyAccessToken: async () => ({
+          verifyIdToken: async () => ({
             uid: '11111111-1111-4111-8111-111111111111',
             email: 'investor@example.com',
-            provider: 'supabase',
+            provider: 'firebase',
           }),
+          verifySessionCookie: async () => ({
+            uid: '11111111-1111-4111-8111-111111111111',
+            provider: 'firebase',
+          }),
+          createSessionCookie: async () => 'cookie',
         },
-        firebase: { hasCredentials: () => false },
       },
     );
 
-    const user = await resolveAuthUserFromAccessToken('supabase-jwt', deps);
+    const user = await resolveAuthUserFromAccessToken(
+      fakeJwt({ iss: 'https://securetoken.google.com/paperworking-97055' }),
+      deps,
+    );
+    delete process.env.USE_FIREBASE_AUTH;
     expect(user?.uid).toBe('11111111-1111-4111-8111-111111111111');
     expect(user?.accountType).toBe('investor');
   });
 
-  it('resolves AuthUser after Firebase token when Firebase flag is enabled', async () => {
+  it('resolves AuthUser after Firebase session cookie', async () => {
+    process.env.USE_FIREBASE_AUTH = 'true';
     const deps = makeDeps(
       makeStore({
         id: 'firebase-uid-1',
@@ -129,7 +145,6 @@ describe('shared session resolver', () => {
         role: 'Lead Investor',
       }),
       {
-        supabase: { hasCredentials: () => false },
         firebase: {
           hasCredentials: () => true,
           verifyIdToken: async () => ({
@@ -146,9 +161,8 @@ describe('shared session resolver', () => {
       },
     );
 
-    process.env.USE_FIREBASE_AUTH = 'true';
     const user = await resolveAuthUserFromAccessToken(
-      fakeJwt({ iss: 'https://securetoken.google.com/paperworking-97055' }),
+      fakeJwt({ iss: 'https://session.firebase.google.com/paperworking-97055' }),
       deps,
     );
     delete process.env.USE_FIREBASE_AUTH;
@@ -158,6 +172,7 @@ describe('shared session resolver', () => {
 
 describe('parity: same identity + same Postgres row => same AuthUser', () => {
   it('matches direct buildAuthUserFromPostgresUser semantics', async () => {
+    process.env.USE_FIREBASE_AUTH = 'true';
     const row = {
       id: 'uid-parity',
       email: 'parity@example.com',
@@ -167,17 +182,26 @@ describe('parity: same identity + same Postgres row => same AuthUser', () => {
     const direct = buildAuthUserFromPostgresUser(row, 'uid-parity');
 
     const deps = makeDeps(makeStore(row), {
-      supabase: {
+      firebase: {
         hasCredentials: () => true,
-        verifyAccessToken: async () => ({
+        verifyIdToken: async () => ({
           uid: 'uid-parity',
           email: 'parity@example.com',
-          provider: 'supabase',
+          provider: 'firebase',
         }),
+        verifySessionCookie: async () => ({
+          uid: 'uid-parity',
+          provider: 'firebase',
+        }),
+        createSessionCookie: async () => 'cookie',
       },
     });
 
-    const resolved = await resolveAuthUserFromAccessToken('token', deps);
+    const resolved = await resolveAuthUserFromAccessToken(
+      fakeJwt({ iss: 'https://securetoken.google.com/paperworking-97055' }),
+      deps,
+    );
+    delete process.env.USE_FIREBASE_AUTH;
     expect(resolved).toEqual(direct);
   });
 });

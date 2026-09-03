@@ -1,6 +1,8 @@
 'use client';
 
 import Link from 'next/link';
+import { useAuth } from '@/context/AuthContext';
+import { resolveAppHomeRoute } from '@/lib/auth/post-auth-redirect';
 
 // TODO(VERIFY): Confirm demo KPIs show real, non-zero values before promoting demo content.
 
@@ -87,6 +89,9 @@ function HeroDealCard() {
 
 /* ─── Hero Component (Section 1) ─── */
 export default function LandingHero() {
+  const { authenticated, loading, profile } = useAuth();
+  const appHomeHref = resolveAppHomeRoute(profile?.accountType);
+
   return (
     <section className="relative w-full overflow-hidden" style={{ paddingTop: 72 }}>
 
@@ -135,19 +140,36 @@ export default function LandingHero() {
           {/* TWO buttons directly underneath the demo KPI card + microcopy */}
           <div className="flex flex-col items-center gap-2 w-full">
             <div className="flex flex-col sm:flex-row items-center justify-center gap-3 w-full">
-              <Link
-                href="/pricing"
-                className="luminous-button relative overflow-hidden px-6 py-3 min-h-[44px] rounded-full font-semibold text-[14px] tracking-[-0.01em] inline-flex items-center justify-center gap-2 group cursor-pointer type-cta w-full sm:w-auto text-center"
-              >
-                <span
-                  className="absolute inset-0 bg-gradient-to-r from-transparent via-white/12 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-700 pointer-events-none"
-                  aria-hidden
-                />
-                <span>Start Free 14-Day Trial</span>
-                <span className="material-symbols-outlined text-[18px] group-hover:translate-x-1 transition-transform">
-                  arrow_forward
-                </span>
-              </Link>
+              {!loading && authenticated ? (
+                <Link
+                  href={appHomeHref}
+                  className="luminous-button relative overflow-hidden px-6 py-3 min-h-[44px] rounded-full font-semibold text-[14px] tracking-[-0.01em] inline-flex items-center justify-center gap-2 group cursor-pointer type-cta w-full sm:w-auto text-center"
+                >
+                  <span
+                    className="absolute inset-0 bg-gradient-to-r from-transparent via-white/12 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-700 pointer-events-none"
+                    aria-hidden
+                  />
+                  <span className="material-symbols-outlined text-[18px]">dashboard</span>
+                  <span>Go to Dashboard</span>
+                  <span className="material-symbols-outlined text-[18px] group-hover:translate-x-1 transition-transform">
+                    arrow_forward
+                  </span>
+                </Link>
+              ) : (
+                <Link
+                  href="/pricing"
+                  className="luminous-button relative overflow-hidden px-6 py-3 min-h-[44px] rounded-full font-semibold text-[14px] tracking-[-0.01em] inline-flex items-center justify-center gap-2 group cursor-pointer type-cta w-full sm:w-auto text-center"
+                >
+                  <span
+                    className="absolute inset-0 bg-gradient-to-r from-transparent via-white/12 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-700 pointer-events-none"
+                    aria-hidden
+                  />
+                  <span>Start Free 14-Day Trial</span>
+                  <span className="material-symbols-outlined text-[18px] group-hover:translate-x-1 transition-transform">
+                    arrow_forward
+                  </span>
+                </Link>
+              )}
 
               <Link
                 href="/support/metrics"
@@ -160,7 +182,9 @@ export default function LandingHero() {
               </Link>
             </div>
             <p className="text-[12px] text-on-surface-variant/70 text-center type-caption">
-              Free 14-day trial.
+              {!loading && authenticated
+                ? 'Welcome back — pick up where you left off.'
+                : 'Free 14-day trial.'}
             </p>
           </div>
         </div>

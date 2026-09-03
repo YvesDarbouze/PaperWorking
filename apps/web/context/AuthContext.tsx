@@ -74,7 +74,15 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const clearError = useCallback(() => setError(null), []);
 
   const refresh = useCallback(async () => {
-    const session = await fetchSessionProfile();
+    let session = await fetchSessionProfile();
+    if (!session.authenticated && firebaseReady) {
+      try {
+        await syncSessionFromFirebase();
+        session = await fetchSessionProfile();
+      } catch {
+        // Session re-sync failed — remain unauthenticated until explicit login.
+      }
+    }
     setAuthenticated(session.authenticated);
     if (session.authenticated) {
       setProfile({
@@ -85,7 +93,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     } else {
       setProfile(null);
     }
-  }, []);
+  }, [firebaseReady]);
 
   useEffect(() => {
     let cancelled = false;

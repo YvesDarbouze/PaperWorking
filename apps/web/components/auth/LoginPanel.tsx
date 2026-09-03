@@ -420,29 +420,29 @@ export default function LoginPanel() {
                 <AuthFieldError message={fieldErrors.password} />
               </div>
 
-              <div className="mt-2 flex items-center justify-between">
+              <button
+                type="submit"
+                disabled={isSubmitting || !!loadingProvider}
+                className="auth-button-luminous mt-2"
+              >
+                {isSubmitting ? 'Signing in…' : 'Sign In'}
+              </button>
+
+              <div className="flex flex-col gap-2.5 sm:flex-row sm:items-center sm:justify-between">
                 <button
                   type="button"
                   onClick={() => setIsSignUp(true)}
-                  className="border-0 bg-transparent p-0 text-xs text-white/55 hover:text-white"
+                  className="auth-button-secondary !w-auto flex-1 px-4 py-2.5 text-xs"
                 >
                   Create an account
                 </button>
                 <Link
                   href={AUTH_ROUTES.forgotPassword}
-                  className="text-xs text-white/55 no-underline hover:text-white"
+                  className="text-center text-xs font-medium text-white/55 no-underline hover:text-white sm:text-right"
                 >
                   Forgot password?
                 </Link>
               </div>
-
-              <button
-                type="submit"
-                disabled={isSubmitting || !!loadingProvider}
-                className="auth-button-luminous disabled:opacity-50"
-              >
-                {isSubmitting ? 'Signing in…' : 'Sign In'}
-              </button>
             </form>
           ) : null}
 
@@ -556,19 +556,19 @@ export default function LoginPanel() {
               <AuthFieldError message={fieldErrors.acceptTerms} />
 
               <button
-                type="button"
-                onClick={() => setIsSignUp(false)}
-                className="border-0 bg-transparent p-0 text-xs text-white/55 hover:text-white"
+                type="submit"
+                disabled={isSubmitting || !!loadingProvider}
+                className="auth-button-luminous mt-2"
               >
-                Already have an account? Sign in
+                {isSubmitting ? 'Creating…' : 'Create Account'}
               </button>
 
               <button
-                type="submit"
-                disabled={isSubmitting || !!loadingProvider}
-                className="auth-button-luminous disabled:opacity-50"
+                type="button"
+                onClick={() => setIsSignUp(false)}
+                className="auth-button-secondary py-2.5 text-xs"
               >
-                {isSubmitting ? 'Creating…' : 'Create Account'}
+                Already have an account? Sign in
               </button>
             </form>
           ) : null}
@@ -628,12 +628,12 @@ export default function LoginPanel() {
           ) : null}
         </div>
 
-        <p className="mt-8 text-center text-xs text-white/55">
-          New to PaperWorking?{' '}
-          <Link href="/pricing" className="font-semibold text-white no-underline hover:opacity-90">
+        <div className="mt-8 flex w-full flex-col items-center gap-3">
+          <p className="text-center text-xs text-white/55">New to PaperWorking?</p>
+          <Link href="/pricing" className="auth-link-button w-full sm:w-auto">
             Start your 14-day trial
           </Link>
-        </p>
+        </div>
       </div>
     </AuthCard>
   );

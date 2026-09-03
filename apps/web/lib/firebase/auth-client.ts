@@ -58,10 +58,20 @@ export async function syncNestSession(
   await authFetch('/api/auth/session', { method: 'DELETE', credentials: 'include' });
 }
 
-export async function syncSessionFromFirebase(accountType?: string) {
+/** Wait until Firebase restores persisted auth state (onAuthStateChanged initial callback). */
+async function waitForFirebaseAuthReady(): Promise<import('firebase/auth').User | null> {
   const authMod: FirebaseAuthModule = await import('firebase/auth');
   const auth = await getFirebaseAuth();
-  const user = auth.currentUser;
+  return new Promise((resolve) => {
+    const unsubscribe = authMod.onAuthStateChanged(auth, (user) => {
+      unsubscribe();
+      resolve(user);
+    });
+  });
+}
+
+export async function syncSessionFromFirebase(accountType?: string) {
+  const user = await waitForFirebaseAuthReady();
   if (user) {
     const idToken = await user.getIdToken();
     await syncNestSession(idToken, accountType);

@@ -10,9 +10,13 @@ export type CreateIdentityProvisioningServiceInput = {
   onRemap?: (oldId: string, newId: string, email: string) => void;
 };
 
+function emailDocId(email: string): string {
+  return email.trim().toLowerCase();
+}
+
 /**
- * Find/create/update authoritative Neon user identity from a verified IdP token.
- * Does not perform HTTP, authorization, or subscription logic.
+ * Find/create/update authoritative user identity from a verified IdP token.
+ * Firestore user documents use lowercase email as document id for console readability.
  */
 export function createIdentityProvisioningService(
   input: CreateIdentityProvisioningServiceInput,
@@ -25,40 +29,39 @@ export function createIdentityProvisioningService(
       accountType: string,
     ): Promise<AuthUser> {
       const authUserId = verified.uid;
-      const normalizedEmail = (verified.email || '').trim().toLowerCase();
+      const normalizedEmail = emailDocId(verified.email || '');
       if (!normalizedEmail) {
         throw new Error('Identity user email is required to provision application User');
       }
 
-      const byId = await repository.findById(authUserId);
-      if (byId) {
-        await repository.updateEmail(byId.id, normalizedEmail);
-        return buildAuthUserForUid(byId.id, sessionStore);
-      }
+      const targetDocumentId = emailDocId(normalizedEmail);
 
-      const byLegacy = await repository.findByLegacyUid(authUserId);
-      if (byLegacy) {
-        if (byLegacy.id !== authUserId) {
-          await repository.remapPrimaryKey(byLegacy.id, authUserId);
+      const byUid = await repository.findByFirebaseUid(authUserId);
+      if (byUid) {
+        if (byUid.documentId !== targetDocumentId) {
+          onRemap?.(byUid.documentId, targetDocumentId, normalizedEmail);
+          await repository.remapPrimaryKey(byUid.documentId, targetDocumentId);
         }
+        await repository.updateEmail(targetDocumentId, normalizedEmail);
         return buildAuthUserForUid(authUserId, sessionStore);
       }
 
       const byEmail = await repository.findByEmail(normalizedEmail);
       if (byEmail) {
-        if (byEmail.id !== authUserId) {
-          onRemap?.(byEmail.id, authUserId, normalizedEmail);
-          await repository.remapPrimaryKey(byEmail.id, authUserId);
+        if (byEmail.documentId !== targetDocumentId) {
+          onRemap?.(byEmail.documentId, targetDocumentId, normalizedEmail);
+          await repository.remapPrimaryKey(byEmail.documentId, targetDocumentId);
         }
-        await repository.updateAfterEmailRemap(authUserId, {
+        await repository.updateAfterEmailRemap(targetDocumentId, {
           email: normalizedEmail,
           legacyFirebaseUid: byEmail.legacyFirebaseUid ?? byEmail.id,
+          firebaseUid: authUserId,
         });
         return buildAuthUserForUid(authUserId, sessionStore);
       }
 
       await repository.createUser({
-        id: authUserId,
+        firebaseUid: authUserId,
         email: normalizedEmail,
         accountType,
       });

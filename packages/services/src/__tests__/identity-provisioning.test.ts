@@ -8,6 +8,7 @@ function makeRepository(
 ): IdentityUserRepository {
   return {
     findById: jest.fn(async () => null),
+    findByFirebaseUid: jest.fn(async () => null),
     findByLegacyUid: jest.fn(async () => null),
     findByEmail: jest.fn(async () => null),
     updateEmail: jest.fn(async () => undefined),
@@ -18,8 +19,7 @@ function makeRepository(
   };
 }
 
-function makeStore(profile: SessionUserStore extends infer _ ? never : never): SessionUserStore {
-  void profile;
+function makeStore(): SessionUserStore {
   return {
     findUserByUid: jest.fn(async () => ({
       id: 'user-new',
@@ -33,8 +33,9 @@ function makeStore(profile: SessionUserStore extends infer _ ? never : never): S
 describe('IdentityProvisioningService', () => {
   it('updates email only for existing user — never accountType', async () => {
     const repository = makeRepository({
-      findById: jest.fn(async () => ({
+      findByFirebaseUid: jest.fn(async () => ({
         id: 'user-existing',
+        documentId: 'investor@example.com',
         email: 'old@example.com',
         accountType: 'investor',
       })),
@@ -54,32 +55,36 @@ describe('IdentityProvisioningService', () => {
       'vendor',
     );
 
-    expect(repository.updateEmail).toHaveBeenCalledWith('user-existing', 'investor@example.com');
+    expect(repository.updateEmail).toHaveBeenCalledWith(
+      'investor@example.com',
+      'investor@example.com',
+    );
     expect(repository.createUser).not.toHaveBeenCalled();
     expect(authUser.accountType).toBe('investor');
   });
 
-  it('creates user with normalized accountType on first provision', async () => {
+  it('creates user with email document id on first provision', async () => {
     const repository = makeRepository();
-    const store = makeStore(null as never);
+    const store = makeStore();
     const service = createIdentityProvisioningService({ repository, sessionStore: store });
 
     await service.provisionFromVerifiedIdentity(
-      { uid: 'user-new', email: 'new@example.com', provider: 'supabase' },
+      { uid: 'user-new', email: 'new@example.com', provider: 'firebase' },
       'vendor',
     );
 
     expect(repository.createUser).toHaveBeenCalledWith({
-      id: 'user-new',
+      firebaseUid: 'user-new',
       email: 'new@example.com',
       accountType: 'vendor',
     });
   });
 
-  it('remaps legacy Firebase uid to authoritative id', async () => {
+  it('remaps legacy uid document id to email document id on login', async () => {
     const repository = makeRepository({
-      findByLegacyUid: jest.fn(async () => ({
-        id: 'legacy-id',
+      findByFirebaseUid: jest.fn(async () => ({
+        id: 'firebase-uid',
+        documentId: 'firebase-uid',
         email: 'user@example.com',
         accountType: 'investor',
         legacyFirebaseUid: 'firebase-uid',
@@ -100,7 +105,7 @@ describe('IdentityProvisioningService', () => {
       'investor',
     );
 
-    expect(repository.remapPrimaryKey).toHaveBeenCalledWith('legacy-id', 'firebase-uid');
+    expect(repository.remapPrimaryKey).toHaveBeenCalledWith('firebase-uid', 'user@example.com');
   });
 
   it('requires email from verified identity', async () => {

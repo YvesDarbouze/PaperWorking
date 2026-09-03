@@ -3,7 +3,8 @@ import { getFirestoreAdmin, FIRESTORE_COLLECTIONS } from '../admin.js';
 import { userFromFirestore } from '../converters/user.converter.js';
 import { FirestoreReadNotImplementedError } from '../errors.js';
 import type { UserReadModel } from '../types/read-models.js';
-import { documentData, requireFirestore, type FirestoreClientFactory } from './firestore-access.js';
+import { requireFirestore, type FirestoreClientFactory } from './firestore-access.js';
+import { resolveUserDocumentByFirebaseUid } from '../user-doc-resolver.js';
 
 export class FirestoreUserRepository {
   constructor(private readonly firestoreFactory: FirestoreClientFactory = getFirestoreAdmin) {}
@@ -13,13 +14,10 @@ export class FirestoreUserRepository {
   }
 
   async getById(uid: string): Promise<UserReadModel | null> {
-    const snap = await (await this.db())
-      .collection(FIRESTORE_COLLECTIONS.users)
-      .doc(uid)
-      .get();
-    const data = documentData(snap);
-    if (!data) return null;
-    return userFromFirestore(snap.id, data);
+    const db = await this.db();
+    const resolved = await resolveUserDocumentByFirebaseUid(db, uid);
+    if (!resolved) return null;
+    return userFromFirestore(resolved.documentId, resolved.data);
   }
 
   create(): never {

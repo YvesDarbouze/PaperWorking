@@ -2,8 +2,9 @@
 
 import Link from 'next/link';
 import { useEffect, useRef, useState } from 'react';
+import { resolveAppHomeRoute } from '@/lib/auth/post-auth-redirect';
 
-const MENU_ITEMS = [
+const SETTINGS_ITEMS = [
   { href: '/dashboard/settings/profile', icon: 'account_circle', label: 'Profile' },
   { href: '/dashboard/settings/billing', icon: 'payments', label: 'Billing' },
   { href: '/dashboard/team', icon: 'group', label: 'Team' },
@@ -44,6 +45,11 @@ export default function UserAccountMenu({
   const initial = name.charAt(0).toUpperCase();
   const roleText = roleLabel(accountType, role);
   const avatarBg = avatarHue(name);
+  const homeHref = resolveAppHomeRoute(accountType);
+  const menuItems = [
+    { href: homeHref, icon: 'dashboard', label: 'Dashboard' },
+    ...SETTINGS_ITEMS,
+  ] as const;
 
   useEffect(() => {
     if (!open) return;
@@ -101,7 +107,7 @@ export default function UserAccountMenu({
           className="absolute right-0 top-full z-50 mt-2 w-[220px] overflow-hidden rounded-2xl border border-white/10 bg-[#161318] py-2 shadow-[0_20px_50px_rgba(0,0,0,0.55)]"
         >
           <div className="px-1.5 pb-1.5">
-            {MENU_ITEMS.map((item) => (
+            {menuItems.map((item) => (
               <Link
                 key={item.href}
                 href={item.href}

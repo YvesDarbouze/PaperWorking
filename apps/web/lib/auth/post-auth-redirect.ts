@@ -3,7 +3,17 @@ import { sanitizeRedirectPath } from '@/lib/auth/safe-redirect';
 
 /** Portfolio — primary post-login / app entry destination. */
 export const DASHBOARD_ROUTE = '/dashboard';
+export const VENDOR_PORTAL_ROUTE = '/vendor-portal';
+export const ADMIN_ROUTE = '/admin';
 export const PRICING_ROUTE = '/pricing';
+
+/** Primary in-app destination after sign-in (account-type aware). */
+export function resolveAppHomeRoute(accountType?: string | null): string {
+  const acct = (accountType ?? 'investor').toLowerCase();
+  if (acct === 'vendor') return VENDOR_PORTAL_ROUTE;
+  if (acct === 'admin') return ADMIN_ROUTE;
+  return DASHBOARD_ROUTE;
+}
 
 export interface SessionStorageLike {
   getItem(key: string): string | null;

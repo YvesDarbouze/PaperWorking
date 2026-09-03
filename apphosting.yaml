@@ -84,7 +84,7 @@ env:
 
   # CSRF allowlist for POST/DELETE /api/auth/session (same-origin BFF on App Hosting).
   - variable: CORS_ORIGINS
-    value: "https://paperworker--paperworking-97055.us-east4.hosted.app"
+    value: "https://paperworking.co,https://www.paperworking.co,https://paperworker--paperworking-97055.us-east4.hosted.app"
     availability:
       - RUNTIME
 

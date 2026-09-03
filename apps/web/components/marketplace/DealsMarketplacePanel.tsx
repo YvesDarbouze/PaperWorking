@@ -7,7 +7,7 @@ import AddressSearch from '@/components/deals/AddressSearch';
 import DashboardPageHeader, {
   DashboardSecondaryButton,
 } from '@/components/dashboard/DashboardPageHeader';
-import { listDealsFromBff } from '@/lib/deals/deal-api';
+import { createDealFromBff, listDealsFromBff } from '@/lib/deals/deal-api';
 
 type DealsTab = 'discover' | 'my_activity';
 type ViewMode = 'grid' | 'map';
@@ -35,15 +35,18 @@ export default function DealsMarketplacePanel() {
   const [newPrice, setNewPrice] = useState('485000');
   const [newRehab, setNewRehab] = useState('68000');
   const [createSuccess, setCreateSuccess] = useState(false);
+  const [creating, setCreating] = useState(false);
+  const [createError, setCreateError] = useState<string | null>(null);
 
   const hasLoadedOnce = useRef(false);
 
-  const loadDeals = useCallback(async () => {
+  const loadDeals = useCallback(async (tabOverride?: DealsTab) => {
+    const activeTab = tabOverride ?? tab;
     if (!hasLoadedOnce.current) setLoading(true);
     else setRefreshing(true);
     setError(null);
     try {
-      const body = await listDealsFromBff({ tab });
+      const body = await listDealsFromBff({ tab: activeTab });
       setPayload(body as unknown as DealsPayload);
       setAssetFilter((current) => {
         if (current === 'all') return current;
@@ -92,14 +95,43 @@ export default function DealsMarketplacePanel() {
     setAssetFilter('all');
   }
 
-  function handleCreateDeal(e: React.FormEvent) {
+  async function handleCreateDeal(e: React.FormEvent) {
     e.preventDefault();
-    setCreateSuccess(true);
-    setTimeout(() => {
-      setCreateSuccess(false);
-      setIsCreateModalOpen(false);
-      loadDeals();
-    }, 1200);
+    setCreating(true);
+    setCreateError(null);
+
+    const visibility = newVisibility;
+    const nextTab: DealsTab = visibility === 'marketplace' ? 'discover' : 'my_activity';
+    const status = visibility === 'marketplace' ? ('published' as const) : ('draft' as const);
+
+    try {
+      await createDealFromBff({
+        address: newAddress.trim(),
+        purchasePrice: Number(newPrice) || 0,
+        rehabCost: Number(newRehab) || 0,
+        visibility,
+        status,
+      });
+
+      setTab(nextTab);
+      setQuery('');
+      setAssetFilter('all');
+      setCreateSuccess(true);
+
+      setTimeout(async () => {
+        setCreateSuccess(false);
+        setIsCreateModalOpen(false);
+        setNewAddress('');
+        setNewPrice('485000');
+        setNewRehab('68000');
+        setNewVisibility('marketplace');
+        await loadDeals(nextTab);
+      }, 1200);
+    } catch (err) {
+      setCreateError(err instanceof Error ? err.message : 'Failed to create deal');
+    } finally {
+      setCreating(false);
+    }
   }
 
   return (
@@ -114,7 +146,10 @@ export default function DealsMarketplacePanel() {
             </DashboardSecondaryButton>
             <button
               type="button"
-              onClick={() => setIsCreateModalOpen(true)}
+              onClick={() => {
+                setCreateError(null);
+                setIsCreateModalOpen(true);
+              }}
               className="inline-flex items-center gap-1.5 rounded-full bg-[#00DD94] px-4 py-2 text-xs font-semibold text-[#0a0a0f] transition hover:brightness-110"
             >
               <span className="material-symbols-outlined text-[16px]">add</span>
@@ -289,6 +324,11 @@ export default function DealsMarketplacePanel() {
               </div>
             ) : (
               <form onSubmit={handleCreateDeal} className="mt-5 space-y-4">
+                {createError ? (
+                  <div className="rounded-xl border border-red-400/30 bg-red-400/10 px-3 py-2 text-xs text-red-100">
+                    {createError}
+                  </div>
+                ) : null}
                 <div>
                   <label className="block text-xs font-medium text-white/70">
                     Property Address / Name
@@ -359,9 +399,10 @@ export default function DealsMarketplacePanel() {
                   </button>
                   <button
                     type="submit"
-                    className="rounded-xl bg-[#00DD94] px-5 py-2 text-xs font-semibold text-[#0a0a0f] hover:brightness-110"
+                    disabled={creating}
+                    className="rounded-xl bg-[#00DD94] px-5 py-2 text-xs font-semibold text-[#0a0a0f] hover:brightness-110 disabled:cursor-not-allowed disabled:opacity-60"
                   >
-                    Publish Deal
+                    {creating ? 'Publishing…' : 'Publish Deal'}
                   </button>
                 </div>
               </form>

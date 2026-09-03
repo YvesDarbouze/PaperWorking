@@ -1,4 +1,5 @@
 import { cookies, headers } from 'next/headers';
+import { redirect } from 'next/navigation';
 import type { AuthUser } from '@paperworking/authz';
 import { readCookieFromHeader, resolveAuthUserFromCredentials } from '@paperworking/services';
 import { SESSION_COOKIE } from '@/lib/auth/session-cookies';
@@ -63,4 +64,15 @@ export async function resolveServerAuthUser(
     { sessionCookie, bearerToken },
     deps.sessionResolver,
   );
+}
+
+/** Server Component gate — redirects when the session cookie is missing or invalid. */
+export async function requireServerAuthUser(
+  redirectTo = '/login?reason=session_expired',
+): Promise<AuthUser> {
+  const user = await resolveServerAuthUser();
+  if (!user) {
+    redirect(redirectTo);
+  }
+  return user;
 }

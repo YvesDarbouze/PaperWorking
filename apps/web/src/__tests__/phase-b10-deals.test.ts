@@ -122,6 +122,7 @@ describe('phase B10 — Next route wiring', () => {
     );
 
     expect(marketplace).toContain('listDealsFromBff');
+    expect(marketplace).toContain('createDealFromBff');
     expect(vendor).toContain('listDealsFromBff');
     expect(addressSearch).toContain('checkDealExistsFromBff');
     expect(wizard).toContain('createDealFromBff');

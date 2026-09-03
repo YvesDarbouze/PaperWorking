@@ -1,14 +1,13 @@
 'use client';
 
 import Link from 'next/link';
-import { usePathname, useRouter } from 'next/navigation';
+import { usePathname } from 'next/navigation';
 import { useAuth } from '@/context/AuthContext';
 import UserAccountMenu from '@/components/shared/UserAccountMenu';
 import { getPageLabel } from '@/lib/navigation/nav-contract';
 
 export default function DashboardTopBar() {
   const pathname = usePathname();
-  const router = useRouter();
   const { profile, logout } = useAuth();
   const pageLabel = getPageLabel(pathname || '/dashboard');
   const displayName = 'Account';
@@ -21,7 +20,8 @@ export default function DashboardTopBar() {
 
   async function handleLogout() {
     await logout();
-    router.push('/login');
+    // Hard navigation clears dashboard RSC cache and lands on marketing home.
+    window.location.assign('/');
   }
 
   return (

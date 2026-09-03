@@ -1,12 +1,12 @@
 'use client';
 
 import Link from 'next/link';
-import { usePathname, useRouter } from 'next/navigation';
+import { usePathname } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import Logo from '@/components/marketing/Logo';
 import UserAccountMenu from '@/components/shared/UserAccountMenu';
 import { useAuth } from '@/context/AuthContext';
-import { fetchSessionProfile } from '@/lib/auth/session-client';
+import { resolveAppHomeRoute } from '@/lib/auth/post-auth-redirect';
 
 const NAV_LINKS = [
   { label: 'How It Works', href: '/how-it-works' },
@@ -17,12 +17,11 @@ const NAV_LINKS = [
 
 export default function MarketingHeader() {
   const pathname = usePathname();
-  const router = useRouter();
-  const { logout } = useAuth();
+  const { logout, authenticated, loading, profile } = useAuth();
   const [mobileOpen, setMobileOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
-  const [authenticated, setAuthenticated] = useState(false);
-  const [accountType, setAccountType] = useState<string>('investor');
+  const accountType = profile?.accountType ?? 'investor';
+  const appHomeHref = resolveAppHomeRoute(accountType);
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 40);
@@ -30,28 +29,9 @@ export default function MarketingHeader() {
     return () => window.removeEventListener('scroll', onScroll);
   }, []);
 
-  useEffect(() => {
-    let cancelled = false;
-    fetchSessionProfile()
-      .then((profile) => {
-        if (cancelled) return;
-        setAuthenticated(Boolean(profile.authenticated));
-        setAccountType(profile.accountType ?? 'investor');
-      })
-      .catch(() => {
-        if (cancelled) return;
-        setAuthenticated(false);
-      });
-    return () => {
-      cancelled = true;
-    };
-  }, [pathname]);
-
   async function handleSignOut() {
     await logout();
-    setAuthenticated(false);
-    router.push('/');
-    router.refresh();
+    window.location.assign('/');
   }
 
   return (
@@ -86,14 +66,25 @@ export default function MarketingHeader() {
 
           {/* Right: Actions */}
           <div className="flex w-1/4 items-center justify-end gap-3.5">
-            {authenticated ? (
-              <UserAccountMenu
-                className="hidden md:block"
-                displayName="Account"
-                accountType={accountType}
-                role={accountType === 'vendor' ? 'Vendor Partner' : 'Investor'}
-                onSignOut={handleSignOut}
-              />
+            {loading ? (
+              <span className="hidden h-9 w-24 rounded-full bg-white/5 md:inline-block" aria-hidden />
+            ) : authenticated ? (
+              <>
+                <Link
+                  href={appHomeHref}
+                  className="hidden items-center gap-1.5 rounded-full bg-[color:var(--color-primary)] px-5 py-2.5 text-[13px] font-semibold tracking-[-0.01em] text-[#0a0a0f] no-underline transition hover:brightness-110 md:inline-flex"
+                >
+                  <span className="material-symbols-outlined text-[16px]">dashboard</span>
+                  Go to Dashboard
+                </Link>
+                <UserAccountMenu
+                  className="hidden md:block"
+                  displayName="Account"
+                  accountType={accountType}
+                  role={accountType === 'vendor' ? 'Vendor Partner' : 'Investor'}
+                  onSignOut={handleSignOut}
+                />
+              </>
             ) : (
               <>
                 <Link
@@ -180,11 +171,11 @@ export default function MarketingHeader() {
                     </p>
                   </div>
                   <Link
-                    href="/dashboard"
+                    href={appHomeHref}
                     className="flex items-center justify-center rounded-full bg-white px-4 py-3 text-[14px] font-semibold text-[#0a0a0f] no-underline"
                     onClick={() => setMobileOpen(false)}
                   >
-                    Dashboard
+                    Go to Dashboard
                   </Link>
                   <Link
                     href="/dashboard/settings/profile"

@@ -18,7 +18,10 @@ COPY apps/api/package.json ./apps/api/
 COPY packages/shared/package.json ./packages/shared/
 COPY packages/validation/package.json ./packages/validation/
 COPY packages/financial-engine/package.json ./packages/financial-engine/
+COPY packages/authz/package.json ./packages/authz/
+COPY packages/identity/package.json ./packages/identity/
 COPY packages/database/package.json ./packages/database/
+COPY packages/services/package.json ./packages/services/
 COPY packages/database/prisma ./packages/database/prisma/
 COPY packages/database/prisma.config.ts ./packages/database/
 
@@ -33,7 +36,10 @@ COPY tsconfig.base.json ./
 RUN npm run build --workspace=@paperworking/shared \
     --workspace=@paperworking/validation \
     --workspace=@paperworking/financial-engine \
+    --workspace=@paperworking/authz \
+    --workspace=@paperworking/identity \
     --workspace=@paperworking/database \
+    --workspace=@paperworking/services \
     --workspace=@paperworking/api \
     --workspace=@paperworking/web
 

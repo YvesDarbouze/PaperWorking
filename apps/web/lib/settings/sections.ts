@@ -1,0 +1,58 @@
+export const SETTINGS_SECTIONS = [
+  {
+    id: 'general',
+    title: 'General',
+    description: 'Timezone, language, and regional workspace preferences.',
+    href: '/dashboard/settings',
+    disabled: false,
+  },
+  {
+    id: 'profile',
+    title: 'Profile',
+    description: 'Name, email, and investor persona preferences.',
+    href: '/dashboard/settings/profile',
+    disabled: false,
+  },
+  {
+    id: 'marketplace-profile',
+    title: 'Marketplace profile',
+    description: 'Public investor / vendor card for discovery.',
+    href: '/dashboard/marketplace',
+    disabled: false,
+  },
+  {
+    id: 'team',
+    title: 'Team',
+    description: 'Seats, roles, and invitation controls.',
+    href: '/dashboard/team',
+    disabled: false,
+  },
+  {
+    id: 'notifications',
+    title: 'Notifications',
+    description: 'Deal alerts, report delivery, and vendor quote updates.',
+    href: '/dashboard/settings',
+    disabled: true,
+  },
+  {
+    id: 'billing',
+    title: 'Billing',
+    description: 'Plan, payment method, and invoices.',
+    href: '/dashboard/settings/billing',
+    disabled: false,
+  },
+  {
+    id: 'data',
+    title: 'Data & privacy',
+    description: 'Exports, retention, and GDPR tools.',
+    href: '/dashboard/settings/profile',
+    disabled: false,
+  },
+  {
+    id: 'audit',
+    title: 'Audit logs',
+    description: 'Security events and admin actions.',
+    href: '/dashboard/settings',
+    disabled: true,
+  },
+] as const;

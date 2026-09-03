@@ -1,6 +1,12 @@
 'use client';
 
 import { useCallback, useEffect, useState } from 'react';
+import {
+  deleteAdminAgentFromBff,
+  getAdminAgentCrewDetailFromBff,
+  getAdminAgentCrewFromBff,
+  impersonateAdminAgentFromBff,
+} from '@/lib/admin/admin-api';
 
 interface SyntheticAgent {
   id: string;
@@ -29,13 +35,8 @@ export default function AdminAgentCrewPanel() {
     setLoading(true);
     setError(null);
     try {
-      const response = await fetch('/api/admin/agent-crew', {
-        credentials: 'include',
-        cache: 'no-store',
-      });
-      const body = (await response.json()) as { agents?: SyntheticAgent[]; error?: string };
-      if (!response.ok) throw new Error(body.error ?? 'Failed to load agent crew');
-      const list = body.agents ?? [];
+      const body = await getAdminAgentCrewFromBff();
+      const list = (body.agents ?? []) as SyntheticAgent[];
       setAgents(list);
       setSelectedId((current) => current ?? list[0]?.id ?? null);
     } catch (loadError) {
@@ -54,12 +55,11 @@ export default function AdminAgentCrewPanel() {
     let cancelled = false;
 
     async function loadDetail() {
-      const response = await fetch(`/api/admin/agent-crew/${selectedId}`, {
-        credentials: 'include',
-        cache: 'no-store',
-      });
-      const body = (await response.json()) as { agent?: AgentDetail; error?: string };
-      if (!cancelled && response.ok) setDetail(body.agent ?? null);
+      if (!selectedId) return;
+      const body = await getAdminAgentCrewDetailFromBff(selectedId);
+      if (!cancelled && body.success !== false && body.agent) {
+        setDetail(body.agent as unknown as AgentDetail);
+      }
     }
 
     loadDetail();
@@ -70,10 +70,7 @@ export default function AdminAgentCrewPanel() {
 
   const impersonate = async (agentId: string) => {
     setActionMessage(null);
-    const response = await fetch(`/api/admin/agent-crew/${agentId}/impersonate`, {
-      method: 'POST',
-      credentials: 'include',
-    });
+    const response = await impersonateAdminAgentFromBff(agentId);
     const body = (await response.json()) as { redirectUrl?: string; error?: string };
     if (!response.ok) {
       setError(body.error ?? 'Impersonation failed');
@@ -84,10 +81,7 @@ export default function AdminAgentCrewPanel() {
 
   const removeAgent = async (agentId: string) => {
     setActionMessage(null);
-    const response = await fetch(`/api/admin/agent-crew/${agentId}`, {
-      method: 'DELETE',
-      credentials: 'include',
-    });
+    const response = await deleteAdminAgentFromBff(agentId);
     const body = (await response.json()) as { message?: string; error?: string };
     if (!response.ok) {
       setError(body.error ?? 'Delete failed');
@@ -101,16 +95,16 @@ export default function AdminAgentCrewPanel() {
 
   if (loading) {
     return (
-      <div className="mx-auto max-w-[1280px] px-4 py-8 text-sm text-black/55 md:px-8">
+      <div className="w-full py-4 text-sm text-black/55">
         Loading agent crew…
       </div>
     );
   }
 
   return (
-    <div className="mx-auto max-w-[1280px] space-y-6 px-4 py-6 md:px-8 md:py-8">
+    <div className="w-full min-w-0 space-y-6">
       <section>
-        <h2 className="text-3xl font-semibold tracking-[-0.02em]">Synthetic agent crew</h2>
+        <h2 className="text-2xl font-extralight tracking-tight sm:text-3xl">Synthetic agent crew</h2>
         <p className="mt-2 text-sm text-black/60">
           `handleAdminAgentCrewGet`, detail, impersonate, and delete adapters.
         </p>

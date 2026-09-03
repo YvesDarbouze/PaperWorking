@@ -1,50 +1,14 @@
-import { cookies } from 'next/headers';
-import { NextResponse } from 'next/server';
-import {
-  ACCT_COOKIE,
-  decodeSubCookie,
-  DEV_MOCK_SESSION_TOKEN,
-  SESSION_COOKIE,
-  SUB_COOKIE,
-  type SessionProfile,
-} from '@/lib/auth/session-cookies';
+import { handleAuthMeGet } from '@paperworking/api';
+import { buildAuthMeDeps, buildHandlerDeps } from '@/lib/api/handler-deps';
+import { toNextResponse } from '@/lib/api/adapt-route-result';
+import { resolveAuthUserFromRequest } from '@/lib/api/server-session';
 
-export async function GET(): Promise<NextResponse<SessionProfile>> {
-  const cookieStore = await cookies();
-  const session = cookieStore.get(SESSION_COOKIE)?.value;
+export const dynamic = 'force-dynamic';
 
-  if (!session) {
-    return NextResponse.json(
-      {
-        authenticated: false,
-        accountType: 'investor',
-        subscriptionPlan: 'None',
-        subscriptionStatus: 'inactive',
-      },
-      { status: 401 },
-    );
-  }
-
-  const accountType = cookieStore.get(ACCT_COOKIE)?.value ?? 'investor';
-  let subscription = decodeSubCookie(cookieStore.get(SUB_COOKIE)?.value);
-
-  // Mock/dev sessions default to an active Individual plan so Deals is not paywalled locally.
-  const isMock = session === DEV_MOCK_SESSION_TOKEN;
-  if (
-    isMock &&
-    (subscription.status === 'inactive' ||
-      !subscription.status ||
-      subscription.plan === 'None' ||
-      subscription.plan.toLowerCase() === 'none')
-  ) {
-    subscription = { plan: 'Individual', status: 'active' };
-  }
-
-  return NextResponse.json({
-    authenticated: true,
-    accountType,
-    subscriptionPlan: subscription.plan,
-    subscriptionStatus: subscription.status,
-    mode: isMock ? 'mock' : 'session',
-  });
+/** GET /api/auth/me — DB-authoritative session via shared Phase 9A resolver. */
+export async function GET(request: Request) {
+  const deps = buildHandlerDeps();
+  const user = await resolveAuthUserFromRequest(request, deps);
+  const result = await handleAuthMeGet(user, buildAuthMeDeps(deps));
+  return toNextResponse(result);
 }

@@ -6,9 +6,12 @@ dist/
 coverage/
 *.tsbuildinfo
 .env
-.env.local
+.env.*
+!.env.example
+!**/.env.example
 .DS_Store
 playwright-report/
 test-results/
 tests/e2e/playwright-report/
 tests/e2e/test-results/
+mock-data/

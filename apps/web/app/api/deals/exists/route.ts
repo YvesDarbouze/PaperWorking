@@ -1,21 +1,20 @@
-import { handleDealsExistsGet } from '@paperworking/api';
-import { toNextResponse } from '@/lib/api/adapt-route-result';
-import { findSeedDealBySlug } from '@/lib/marketplace/seed-data';
-import { tryDevSessionAuth } from '@/lib/projects/dev-session-auth';
+import { NextResponse } from 'next/server';
+import { buildDealsReadService } from '@/lib/api/handler-deps';
+import { dealsErrorResponse } from '@/lib/api/deal-route-errors';
 
+export const dynamic = 'force-dynamic';
+
+/** GET /api/deals/exists — public slug collision probe (marketplace-published only). */
 export async function GET(request: Request) {
   const url = new URL(request.url);
-  const auth = await tryDevSessionAuth();
+  const slug = url.searchParams.get('slug') ?? url.searchParams.get('id') ?? undefined;
 
-  const result = await handleDealsExistsGet(
-    {
-      slug: url.searchParams.get('slug') ?? undefined,
-      userId: auth?.uid ?? 'user_guest',
-    },
-    {
-      findBySlug: async (normalizedSlug) => findSeedDealBySlug(normalizedSlug),
-    },
-  );
-
-  return toNextResponse(result);
+  try {
+    const result = await buildDealsReadService().dealExists(slug ?? undefined);
+    return NextResponse.json(result);
+  } catch (error) {
+    const mapped = dealsErrorResponse(error);
+    if (mapped) return mapped;
+    return NextResponse.json({ exists: false, deal: null });
+  }
 }

@@ -1,0 +1,371 @@
+# API Wiring Checklist (PaperWorking_v1)
+
+**Cập nhật:** 2026-08-27
+
+Mở bằng Excel (khuyên dùng):
+- [`API_WIRING_CHECKLIST.csv`](./API_WIRING_CHECKLIST.csv) — double-click hoặc File → Open trong Excel
+- [`API_WIRING_CHECKLIST.tsv`](./API_WIRING_CHECKLIST.tsv) — tab-separated (paste ổn định)
+
+Tổng quan gap mới: [`API_GAP_OVERVIEW.md`](./API_GAP_OVERVIEW.md).
+
+Không copy bảng markdown có dấu `|` sang Excel (hay bị lệch cột).
+
+---
+
+## 1. Tóm tắt (kiểu bạn hỏi — copy OK sang Sheets)
+
+Cột: **ID · Router · Path · Trạng thái · Lý do**
+
+| ID | Router | Path | Trạng thái | Lý do |
+|---|---|---|---|---|
+| api1–2 | Auth | /api/auth/session, /api/auth/me | Đã kết nối (live) | Firebase Admin + cookie |
+| api3–4 | Dashboard | /api/portfolio/metrics, /api/marketplace/profile | Đã kết nối (seed) | Command Center fetch; data seed |
+| api5–7 | Projects | /api/projects, /[id], /kpis/current | Đã kết nối (seed) | UI gọi GET; CRUD/phases/docs chưa |
+| api8 | Insights | /api/insights | Đã kết nối (seed) | Seed userId=dev-user-1 |
+| api9–11 | Reports | /api/reports/portfolio, /generate, /[period] | Đã kết nối (partial) | Handler có; data mỏng |
+| api12–15 | Marketplace | /api/marketplace/listings, investors, follow… | Đã kết nối (seed) | Seed |
+| api16–17 | Deals | /api/deals, /deals/exists | Đã kết nối (seed) | Seed |
+| api18 | Vendors | /api/vendors | Đã kết nối (seed) | Seed |
+| api19–20 | Vendor portal | /api/vendor-portal/profile, /requests | Đã kết nối (seed) | Seed / dev store |
+| api21–27 | Admin | /api/admin/ops, agent-crew, lender-*, rentcast | Đã kết nối (seed) | Seed ops |
+| api28 | Ops | /api/health | Đã kết nối (live) | Ops only — không UI |
+| — | Inbox | /api/inbox, /api/inbox/[id] | Đã kết nối (seed) 2026-08-27 | GET list + PATCH/DELETE; UI InboxNotificationCenter |
+| — | Messages / team members | /api/messages*, /api/team*, membership | Route sẵn (seed) | Team Directory UI còn seed local |
+| — | Settings | /api/settings/* | Đã kết nối (seed) 2026-08-27 | Profile panel fetch/put |
+| — | Billing | /api/billing/* | Đã kết nối (seed) 2026-08-27 | Preview panel; Stripe thật chưa |
+| — | Auth extras | magic-link, reset-password, sessions | Đã kết nối (seed) 2026-08-27 | 2FA / change-password / revoke còn thiếu |
+| — | Projects (còn lại) | /api/projects/create, phases, docs… (39) | Chưa kết nối | Handler có; UI chưa gọi |
+| — | Stripe | /api/stripe/* | Chưa kết nối | Checkout/portal chưa adapter |
+
+**Cách paste tóm tắt vào Excel:** chọn bảng trên → copy → Excel → Paste → **Data → Text to Columns** nếu cần, hoặc dùng file CSV bên dưới.
+
+---
+
+## 2. Snapshot
+
+| Layer | Count |
+|---|---|
+| Handlers `@paperworking/api` | ~297 |
+| Next route files | **49** |
+| UI đã fetch (ước lượng) | ~35+ |
+| Chưa Next adapter | ~240+ |
+| Broken UI fetch | 0 |
+
+---
+
+## 3. Bảng đầy đủ (1 dòng = 1 API) — dùng file CSV/TSV
+
+Cột đầy đủ: `ID | Router | Method | Path | Trạng thái | Lý do | UI / Page`
+
+Mở trực tiếp:
+
+`API_WIRING_CHECKLIST.csv` / `API_WIRING_CHECKLIST.tsv`
+
+| ID | Router | Method | Path | Trạng thái | Lý do | UI / Page |
+|---|---|---|---|---|---|---|
+| api1 | Auth | POST/DELETE | /api/auth/session | Đã kết nối (live) | Firebase Admin verifyIdToken + cookie | LoginPanel / logout |
+| api2 | Auth | GET | /api/auth/me | Đã kết nối (live) | Cookie session | AuthContext, header |
+| api3 | Dashboard | GET | /api/portfolio/metrics | Đã kết nối (seed) | Seed deps trong adapter | CommandCenterPanel |
+| api4 | Dashboard | GET | /api/marketplace/profile | Đã kết nối (seed) | Seed | CommandCenterPanel |
+| api5 | Projects | GET | /api/projects | Đã kết nối (seed) | Seed listProjects; CRUD/phases/docs chưa nối | ProjectsListPanel |
+| api6 | Projects | GET | /api/projects/[id] | Đã kết nối (seed) | Seed getProject | ProjectWorkspaceProvider |
+| api7 | Projects | GET | /api/projects/[id]/kpis/current | Đã kết nối (seed) | Seed / fixture | Insights / Scorecard |
+| api8 | Insights | GET | /api/insights | Đã kết nối (seed) | Seed userId=dev-user-1 | PortfolioInsightsPanel |
+| api9 | Reports | GET | /api/reports/portfolio | Đã kết nối (partial) | Handler data mỏng | PortfolioReportsPanel |
+| api10 | Reports | POST | /api/reports/generate | Đã kết nối (partial) | Handler | PortfolioReportsPanel |
+| api11 | Reports | GET | /api/reports/[period] | Đã kết nối (partial) | Handler | ProjectReportsPanel |
+| api12 | Marketplace | GET | /api/marketplace/listings | Đã kết nối (seed) | Seed | VendorMarketplacePanel |
+| api13 | Marketplace | GET | /api/marketplace/investors | Đã kết nối (seed) | Seed | VendorMarketplacePanel |
+| api14 | Marketplace | GET | /api/marketplace/investors/[id] | Đã kết nối (seed) | Seed | InvestorProfilePanel |
+| api15 | Marketplace | POST | /api/marketplace/investors/follow | Đã kết nối (seed) | Seed / in-memory | Follow buttons |
+| api16 | Deals | GET | /api/deals | Đã kết nối (seed) | Seed | DealsMarketplacePanel |
+| api17 | Deals | GET | /api/deals/exists | Đã kết nối (seed) | Seed | DealDetailPanel |
+| api18 | Vendors | GET | /api/vendors | Đã kết nối (seed) | Seed | VendorMarketplacePanel |
+| api19 | Vendor portal | GET/PUT | /api/vendor-portal/profile | Đã kết nối (seed) | Seed / dev store | VendorProfilePanel |
+| api20 | Vendor portal | GET/PUT | /api/vendor-portal/requests | Đã kết nối (seed) | Seed | VendorRequestsPanel |
+| api21 | Admin | GET | /api/admin/ops | Đã kết nối (seed) | Seed ops | Admin panels |
+| api22 | Admin | GET | /api/admin/agent-crew | Đã kết nối (seed) | Seed | AdminAgentCrewPanel |
+| api23 | Admin | GET/DELETE | /api/admin/agent-crew/[id] | Đã kết nối (seed) | Seed | AdminAgentCrewPanel |
+| api24 | Admin | POST | /api/admin/agent-crew/[id]/impersonate | Đã kết nối (seed) | Seed | AdminAgentCrewPanel |
+| api25 | Admin | GET | /api/admin/lender-rates | Đã kết nối (seed) | Seed | LenderConfig / Overview |
+| api26 | Admin | GET | /api/admin/lender-checklists | Đã kết nối (seed) | Seed | LenderConfig / Overview |
+| api27 | Admin | GET | /api/admin/rentcast-usage | Đã kết nối (seed) | Seed | AdminOverview |
+| api28 | Ops | GET | /api/health | Đã kết nối (live) | Ops only — không UI dashboard | Smoke / health |
+| — | Inbox / search | — | /api/inbox*, /api/messages* | Chưa kết nối | UI dùng INBOX_THREADS seed, không fetch | /dashboard/inbox |
+| — | Team | — | /api/team* | Chưa kết nối | TEAM_MEMBERS seed, không fetch | /dashboard/team |
+| — | Settings | — | /api/settings* | Chưa kết nối | Preview / localStorage, không fetch | /dashboard/settings/* |
+| — | Settings / Billing | — | /api/billing*, /api/stripe/* | Chưa kết nối | Billing preview; chưa adapter Stripe | settings billing |
+| api29 | projects | PATCH | /api/projects/[id]/acquisition | Chưa kết nối (high) | UI chỉ gọi GET list/detail/KPI; CRUD/phases/docs còn handler-only + workspace seed. Handler: handleProjectsAcquisitionPatch | — |
+| api30 | projects | GET | /api/projects/[id]/capital-stack/export | Chưa kết nối (high) | UI chỉ gọi GET list/detail/KPI; CRUD/phases/docs còn handler-only + workspace seed. Handler: handleProjectsCapitalStackExportGet | — |
+| api31 | projects | GET | /api/projects/[id]/commitments | Chưa kết nối (high) | UI chỉ gọi GET list/detail/KPI; CRUD/phases/docs còn handler-only + workspace seed. Handler: handleProjectCommitmentsGet | — |
+| api32 | projects | POST | /api/projects/[id]/commitments | Chưa kết nối (high) | UI chỉ gọi GET list/detail/KPI; CRUD/phases/docs còn handler-only + workspace seed. Handler: handleProjectCommitmentsPost | — |
+| api33 | projects | DELETE | /api/projects/[id]/commitments/[cId] | Chưa kết nối (high) | UI chỉ gọi GET list/detail/KPI; CRUD/phases/docs còn handler-only + workspace seed. Handler: handleProjectCommitmentDelete | — |
+| api34 | projects | PATCH | /api/projects/[id]/commitments/[cId] | Chưa kết nối (high) | UI chỉ gọi GET list/detail/KPI; CRUD/phases/docs còn handler-only + workspace seed. Handler: handleProjectCommitmentPatch | — |
+| api35 | projects | GET | /api/projects/[id]/dealUpdates | Chưa kết nối (high) | UI chỉ gọi GET list/detail/KPI; CRUD/phases/docs còn handler-only + workspace seed. Handler: handleProjectDealUpdatesGet | — |
+| api36 | projects | POST | /api/projects/[id]/dealUpdates | Chưa kết nối (high) | UI chỉ gọi GET list/detail/KPI; CRUD/phases/docs còn handler-only + workspace seed. Handler: handleProjectDealUpdatesPost | — |
+| api37 | projects | GET | /api/projects/[id]/documents | Chưa kết nối (high) | UI chỉ gọi GET list/detail/KPI; CRUD/phases/docs còn handler-only + workspace seed. Handler: handleProjectsDocumentsGet | — |
+| api38 | projects | POST | /api/projects/[id]/documents | Chưa kết nối (high) | UI chỉ gọi GET list/detail/KPI; CRUD/phases/docs còn handler-only + workspace seed. Handler: handleProjectsDocumentsPost | — |
+| api39 | projects | GET | /api/projects/[id]/documents/[docId]/download | Chưa kết nối (high) | UI chỉ gọi GET list/detail/KPI; CRUD/phases/docs còn handler-only + workspace seed. Handler: handleProjectsDocumentDownloadGet | — |
+| api40 | projects | PATCH | /api/projects/[id]/exit | Chưa kết nối (high) | UI chỉ gọi GET list/detail/KPI; CRUD/phases/docs còn handler-only + workspace seed. Handler: handleProjectsExitPatch | — |
+| api41 | projects | PATCH | /api/projects/[id]/hold | Chưa kết nối (high) | UI chỉ gọi GET list/detail/KPI; CRUD/phases/docs còn handler-only + workspace seed. Handler: handleProjectsHoldPatch | — |
+| api42 | projects | POST | /api/projects/[id]/hold/auto-advance | Chưa kết nối (high) | UI chỉ gọi GET list/detail/KPI; CRUD/phases/docs còn handler-only + workspace seed. Handler: handleProjectsHoldAutoAdvancePost | — |
+| api43 | projects | GET | /api/projects/[id]/hold/registry | Chưa kết nối (high) | UI chỉ gọi GET list/detail/KPI; CRUD/phases/docs còn handler-only + workspace seed. Handler: handleProjectsHoldRegistryGet | — |
+| api44 | projects | PATCH | /api/projects/[id]/hold/registry | Chưa kết nối (high) | UI chỉ gọi GET list/detail/KPI; CRUD/phases/docs còn handler-only + workspace seed. Handler: handleProjectsHoldRegistryPatch | — |
+| api45 | projects | PATCH | /api/projects/[id]/inquiries/[inquiryId] | Chưa kết nối (high) | UI chỉ gọi GET list/detail/KPI; CRUD/phases/docs còn handler-only + workspace seed. Handler: handleProjectsInquiryPatch | — |
+| api46 | projects | GET | /api/projects/[id]/kpis/breakdown | Chưa kết nối (high) | UI chỉ gọi GET list/detail/KPI; CRUD/phases/docs còn handler-only + workspace seed. Handler: handleProjectKpisBreakdownGet | — |
+| api47 | projects | GET | /api/projects/[id]/kpis/impact-preview | Chưa kết nối (high) | UI chỉ gọi GET list/detail/KPI; CRUD/phases/docs còn handler-only + workspace seed. Handler: handleProjectKpisImpactPreviewGet | — |
+| api48 | projects | POST | /api/projects/[id]/kpis/recalculate | Chưa kết nối (high) | UI chỉ gọi GET list/detail/KPI; CRUD/phases/docs còn handler-only + workspace seed. Handler: handleProjectKpisRecalculatePost | — |
+| api49 | projects | GET | /api/projects/[id]/lender-package | Chưa kết nối (high) | UI chỉ gọi GET list/detail/KPI; CRUD/phases/docs còn handler-only + workspace seed. Handler: handleProjectsLenderPackageGet | — |
+| api50 | projects | POST | /api/projects/[id]/lender-package | Chưa kết nối (high) | UI chỉ gọi GET list/detail/KPI; CRUD/phases/docs còn handler-only + workspace seed. Handler: handleProjectsLenderPackagePost | — |
+| api51 | projects | DELETE | /api/projects/[id]/lender-package/[itemId] | Chưa kết nối (high) | UI chỉ gọi GET list/detail/KPI; CRUD/phases/docs còn handler-only + workspace seed. Handler: handleProjectsLenderPackageItemDelete | — |
+| api52 | projects | PATCH | /api/projects/[id]/lender-package/[itemId] | Chưa kết nối (high) | UI chỉ gọi GET list/detail/KPI; CRUD/phases/docs còn handler-only + workspace seed. Handler: handleProjectsLenderPackageItemPatch | — |
+| api53 | projects | POST | /api/projects/[id]/lender-package/debt-folder | Chưa kết nối (high) | UI chỉ gọi GET list/detail/KPI; CRUD/phases/docs còn handler-only + workspace seed. Handler: handleProjectsLenderPackageDebtFolderPost | — |
+| api54 | projects | GET | /api/projects/[id]/loan-estimates | Chưa kết nối (high) | UI chỉ gọi GET list/detail/KPI; CRUD/phases/docs còn handler-only + workspace seed. Handler: handleProjectsLoanEstimatesGet | — |
+| api55 | projects | POST | /api/projects/[id]/loan-estimates | Chưa kết nối (high) | UI chỉ gọi GET list/detail/KPI; CRUD/phases/docs còn handler-only + workspace seed. Handler: handleProjectsLoanEstimatesPost | — |
+| api56 | projects | DELETE | /api/projects/[id]/loan-estimates/[estimateId] | Chưa kết nối (high) | UI chỉ gọi GET list/detail/KPI; CRUD/phases/docs còn handler-only + workspace seed. Handler: handleProjectsLoanEstimateDelete | — |
+| api57 | projects | POST | /api/projects/[id]/loan-estimates/[estimateId]/choose | Chưa kết nối (high) | UI chỉ gọi GET list/detail/KPI; CRUD/phases/docs còn handler-only + workspace seed. Handler: handleProjectsLoanEstimateChoosePost | — |
+| api58 | projects | GET | /api/projects/[id]/loans | Chưa kết nối (high) | UI chỉ gọi GET list/detail/KPI; CRUD/phases/docs còn handler-only + workspace seed. Handler: handleProjectsLoansGet | — |
+| api59 | projects | POST | /api/projects/[id]/loans | Chưa kết nối (high) | UI chỉ gọi GET list/detail/KPI; CRUD/phases/docs còn handler-only + workspace seed. Handler: handleProjectsLoansPost | — |
+| api60 | projects | POST | /api/projects/[id]/proof-of-funds | Chưa kết nối (high) | UI chỉ gọi GET list/detail/KPI; CRUD/phases/docs còn handler-only + workspace seed. Handler: handleProjectProofOfFundsPost | — |
+| api61 | projects | PATCH | /api/projects/[id]/purchase | Chưa kết nối (high) | UI chỉ gọi GET list/detail/KPI; CRUD/phases/docs còn handler-only + workspace seed. Handler: handleProjectsPurchasePatch | — |
+| api62 | projects | GET | /api/projects/[id]/timeline | Chưa kết nối (high) | UI chỉ gọi GET list/detail/KPI; CRUD/phases/docs còn handler-only + workspace seed. Handler: handleProjectTimelineGet | — |
+| api63 | projects | GET | /api/projects/[id]/transactions | Chưa kết nối (high) | UI chỉ gọi GET list/detail/KPI; CRUD/phases/docs còn handler-only + workspace seed. Handler: handleProjectTransactionsGet | — |
+| api64 | projects | PATCH | /api/projects/[id]/visibility | Chưa kết nối (high) | UI chỉ gọi GET list/detail/KPI; CRUD/phases/docs còn handler-only + workspace seed. Handler: handleProjectVisibilityPatch | — |
+| api65 | projects | POST | /api/projects/create | Chưa kết nối (high) | UI chỉ gọi GET list/detail/KPI; CRUD/phases/docs còn handler-only + workspace seed. Handler: handleProjectsCreatePost | — |
+| api66 | projects | POST | /api/projects/rehab | Chưa kết nối (high) | UI chỉ gọi GET list/detail/KPI; CRUD/phases/docs còn handler-only + workspace seed. Handler: handleProjectsRehabPost | — |
+| api67 | projects | POST | /api/projects/todos | Chưa kết nối (high) | UI chỉ gọi GET list/detail/KPI; CRUD/phases/docs còn handler-only + workspace seed. Handler: handleProjectsTodosPost | — |
+| api68 | auth | POST | /api/auth/2fa/[action] | Chưa kết nối (high) | Session/me đã nối; magic-link/2FA/sessions list chưa có route Next. Handler: handleAuthTwoFaPost | — |
+| api69 | auth | POST | /api/auth/change-password | Chưa kết nối (high) | Session/me đã nối; magic-link/2FA/sessions list chưa có route Next. Handler: handleAuthChangePasswordPost | — |
+| api70 | auth | GET | /api/auth/ip | Chưa kết nối (high) | Session/me đã nối; magic-link/2FA/sessions list chưa có route Next. Handler: handleAuthIpGet | — |
+| api71 | auth | POST | /api/auth/magic-link | Đã kết nối (seed) 2026-08-27 | Dev no-op email sender. Handler: handleAuthMagicLinkPost | apps/web/app/api/auth/magic-link |
+| api72 | auth | POST | /api/auth/reset-password | Đã kết nối (seed) 2026-08-27 | Dev no-op email sender. Handler: handleAuthResetPasswordPost | apps/web/app/api/auth/reset-password |
+| api73 | auth | POST | /api/auth/revoke | Chưa kết nối (high) | Session/me đã nối; magic-link/2FA/sessions list chưa có route Next. Handler: handleAuthRevokePost | — |
+| api74 | auth | GET | /api/auth/sessions | Đã kết nối (seed) 2026-08-27 | ProfileSettingsPanel fetch. Handler: handleSessionsGet | apps/web/app/api/auth/sessions |
+| api75 | stripe | POST | /api/stripe/checkout | Chưa kết nối (high) | Checkout/portal handlers có; chưa Next adapter + UI billing thật. Handler: handleStripeCheckoutPost | — |
+| api76 | stripe | POST | /api/stripe/invoices | Chưa kết nối (high) | Checkout/portal handlers có; chưa Next adapter + UI billing thật. Handler: handleStripeInvoicesPost | — |
+| api77 | stripe | POST | /api/stripe/payment-method | Chưa kết nối (high) | Checkout/portal handlers có; chưa Next adapter + UI billing thật. Handler: handleStripePaymentMethodPost | — |
+| api78 | stripe | POST | /api/stripe/portal | Chưa kết nối (high) | Checkout/portal handlers có; chưa Next adapter + UI billing thật. Handler: handleStripePortalPost | — |
+| api79 | stripe | GET | /api/stripe/session-status | Chưa kết nối (high) | Checkout/portal handlers có; chưa Next adapter + UI billing thật. Handler: handleStripeSessionStatusGet | — |
+| api80 | stripe | POST | /api/stripe/subscription | Chưa kết nối (high) | Checkout/portal handlers có; chưa Next adapter + UI billing thật. Handler: handleStripeSubscriptionPost | — |
+| api81 | stripe | POST | /api/stripe/webhook | Chưa kết nối (high) | Checkout/portal handlers có; chưa Next adapter + UI billing thật. Handler: handleStripeWebhookPost | — |
+| api82 | inbox | POST | /api/inbox | Đã kết nối (seed) 2026-08-27 | Seed store + InboxNotificationCenter. Handler: handleInboxPost | apps/web/app/api/inbox |
+| api83 | inbox | DELETE | /api/inbox/[id] | Đã kết nối (seed) 2026-08-27 | Inbox UI DELETE. Handler: handleInboxByIdDelete | apps/web/app/api/inbox/[id] |
+| api84 | inbox | PATCH | /api/inbox/[id] | Đã kết nối (seed) 2026-08-27 | Inbox UI mark read/archive. Handler: handleInboxByIdPatch | apps/web/app/api/inbox/[id] |
+| api85 | inbox | POST | /api/inbox/[id]/actions | Chưa kết nối (high) | Inbox UI dùng INBOX_THREADS seed, không fetch /api/inbox*. Handler: handleInboxActionsPost | — |
+| api86 | inbox | POST | /api/inbox/backfill | Chưa kết nối (high) | Inbox UI dùng INBOX_THREADS seed, không fetch /api/inbox*. Handler: handleInboxBackfillPost | — |
+| api87 | billing | DELETE | /api/billing/* | Đã kết nối (seed) 2026-08-27 | Next catch-all adapter. Handler: handleBillingDelete | apps/web/app/api/billing/[[...action]] |
+| api88 | billing | GET | /api/billing/* | Đã kết nối (seed) 2026-08-27 | BillingPreviewPanel fetch. Handler: handleBillingGet | apps/web/app/api/billing/[[...action]] |
+| api89 | billing | POST | /api/billing/* | Đã kết nối (seed) 2026-08-27 | Next catch-all adapter. Handler: handleBillingPost | apps/web/app/api/billing/[[...action]] |
+| api90 | billing | PUT | /api/billing/* | Đã kết nối (seed) 2026-08-27 | Next catch-all adapter. Handler: handleBillingPut | apps/web/app/api/billing/[[...action]] |
+| api91 | messages | GET | /api/messages | Đã kết nối (seed) | Route sẵn; search UI có thể còn seed client. Handler: handleMessagesGet | apps/web/app/api/messages |
+| api92 | messages | POST | /api/messages | Đã kết nối (seed) | Route sẵn. Handler: handleMessagesPost | apps/web/app/api/messages |
+| api93 | messages | PATCH | /api/messages/[id]/read | Chưa kết nối (high) | Read-mark path riêng chưa adapter. Handler: handleMessageReadPatch | — |
+| api94 | messages | GET | /api/messages/thread/[threadId] | Đã kết nối (seed) | Route sẵn. Handler: handleMessagesThreadGet | apps/web/app/api/messages/thread/[threadId] |
+| api95 | settings | DELETE | /api/settings/* | Đã kết nối (seed) 2026-08-27 | Catch-all adapter. Handler: handleSettingsDelete | apps/web/app/api/settings/[[...section]] |
+| api96 | settings | GET | /api/settings/* | Đã kết nối (seed) 2026-08-27 | ProfileSettingsPanel. Handler: handleSettingsGet | apps/web/app/api/settings/[[...section]] |
+| api97 | settings | POST | /api/settings/* | Đã kết nối (seed) 2026-08-27 | Catch-all adapter. Handler: handleSettingsPost | apps/web/app/api/settings/[[...section]] |
+| api98 | settings | PUT | /api/settings/* | Đã kết nối (seed) 2026-08-27 | Profile PUT. Handler: handleSettingsPut | apps/web/app/api/settings/[[...section]] |
+| api99 | team | DELETE | /api/team/* | Đã kết nối (seed) | Route sẵn; Team Directory UI còn seed. Handler: handleTeamDelete | apps/web/app/api/team/[[...action]] |
+| api100 | team | GET | /api/team/* | Đã kết nối (seed) | Route sẵn; UI chưa fetch. Handler: handleTeamGet | apps/web/app/api/team/[[...action]] |
+| api101 | team | POST | /api/team/* | Đã kết nối (seed) | Route sẵn; UI chưa fetch. Handler: handleTeamPost | apps/web/app/api/team/[[...action]] |
+| api102 | team | PUT | /api/team/* | Đã kết nối (seed) | Route sẵn; UI chưa fetch. Handler: handleTeamPut | apps/web/app/api/team/[[...action]] |
+| api103 | reil | POST | /api/reil/cron/refresh | Chưa kết nối (med) | REIL engine handlers; UI project chưa gọi các path này. Handler: handleReilCronRefreshPost | — |
+| api104 | reil | GET | /api/reil/listings | Chưa kết nối (med) | REIL engine handlers; UI project chưa gọi các path này. Handler: handleReilListingsGet | — |
+| api105 | reil | GET | /api/reil/market-stats | Chưa kết nối (med) | REIL engine handlers; UI project chưa gọi các path này. Handler: handleReilMarketStatsGet | — |
+| api106 | reil | GET | /api/reil/projects | Chưa kết nối (med) | REIL engine handlers; UI project chưa gọi các path này. Handler: handleReilProjectsGet | — |
+| api107 | reil | POST | /api/reil/projects | Chưa kết nối (med) | REIL engine handlers; UI project chưa gọi các path này. Handler: handleReilProjectsPost | — |
+| api108 | reil | GET | /api/reil/projects/[id] | Chưa kết nối (med) | REIL engine handlers; UI project chưa gọi các path này. Handler: handleReilProjectByIdGet | — |
+| api109 | reil | PATCH | /api/reil/projects/[id] | Chưa kết nối (med) | REIL engine handlers; UI project chưa gọi các path này. Handler: handleReilProjectByIdPatch | — |
+| api110 | reil | GET | /api/reil/projects/[id]/assignments | Chưa kết nối (med) | REIL engine handlers; UI project chưa gọi các path này. Handler: handleReilProjectAssignmentsGet | — |
+| api111 | reil | POST | /api/reil/projects/[id]/assignments | Chưa kết nối (med) | REIL engine handlers; UI project chưa gọi các path này. Handler: handleReilProjectAssignmentsPost | — |
+| api112 | reil | PATCH | /api/reil/projects/[id]/assignments/[aid] | Chưa kết nối (med) | REIL engine handlers; UI project chưa gọi các path này. Handler: handleReilProjectAssignmentPatch | — |
+| api113 | reil | GET | /api/reil/projects/[id]/closing-ledger/export | Chưa kết nối (med) | REIL engine handlers; UI project chưa gọi các path này. Handler: handleReilClosingLedgerExportGet | — |
+| api114 | reil | POST | /api/reil/projects/[id]/invite | Chưa kết nối (med) | REIL engine handlers; UI project chưa gọi các path này. Handler: handleReilProjectInvitePost | — |
+| api115 | reil | POST | /api/reil/projects/[id]/property | Chưa kết nối (med) | REIL engine handlers; UI project chưa gọi các path này. Handler: handleReilProjectPropertyPost | — |
+| api116 | reil | GET | /api/reil/projects/[id]/status | Chưa kết nối (med) | REIL engine handlers; UI project chưa gọi các path này. Handler: handleReilProjectStatusGet | — |
+| api117 | reil | POST | /api/reil/projects/[id]/status | Chưa kết nối (med) | REIL engine handlers; UI project chưa gọi các path này. Handler: handleReilProjectStatusPost | — |
+| api118 | reil | GET | /api/reil/projects/[id]/terms | Chưa kết nối (med) | REIL engine handlers; UI project chưa gọi các path này. Handler: handleReilProjectTermsGet | — |
+| api119 | reil | POST | /api/reil/projects/[id]/terms | Chưa kết nối (med) | REIL engine handlers; UI project chưa gọi các path này. Handler: handleReilProjectTermsPost | — |
+| api120 | reil | GET | /api/reil/projects/[id]/valuation | Chưa kết nối (med) | REIL engine handlers; UI project chưa gọi các path này. Handler: handleReilProjectValuationGet | — |
+| api121 | reil | POST | /api/reil/projects/[id]/valuation | Chưa kết nối (med) | REIL engine handlers; UI project chưa gọi các path này. Handler: handleReilProjectValuationPost | — |
+| api122 | invitations | GET | /api/invitations/[token] | Chưa kết nối (med) | Invite flows; UI team chưa gọi. Handler: handleInvitationsTokenGet | — |
+| api123 | invitations | POST | /api/invitations/[token]/ask | Chưa kết nối (med) | Invite flows; UI team chưa gọi. Handler: handleInvitationsTokenAskPost | — |
+| api124 | invitations | DELETE | /api/invitations/[token]/indication | Chưa kết nối (med) | Invite flows; UI team chưa gọi. Handler: handleInvitationsIndicationDelete | — |
+| api125 | invitations | POST | /api/invitations/[token]/indication | Chưa kết nối (med) | Invite flows; UI team chưa gọi. Handler: handleInvitationsIndicationPost | — |
+| api126 | invitations | POST | /api/invitations/[token]/subscribe | Chưa kết nối (med) | Invite flows; UI team chưa gọi. Handler: handleInvitationsSubscribePost | — |
+| api127 | invitations | POST | /api/invitations/[token]/subscription | Chưa kết nối (med) | Invite flows; UI team chưa gọi. Handler: handleInvitationsSubscriptionPost | — |
+| api128 | invitations | GET | /api/invitations/[token]/updates | Chưa kết nối (med) | Invite flows; UI team chưa gọi. Handler: handleInvitationsUpdatesGet | — |
+| api129 | invitations | GET | /api/invitations/accept | Chưa kết nối (med) | Invite flows; UI team chưa gọi. Handler: handleInvitationsAcceptGet | — |
+| api130 | invitations | POST | /api/invitations/broadcast | Chưa kết nối (med) | Invite flows; UI team chưa gọi. Handler: handleInvitationsBroadcastPost | — |
+| api131 | invitations | POST | /api/invitations/respond | Chưa kết nối (med) | Invite flows; UI team chưa gọi. Handler: handleInvitationsRespondPost | — |
+| api132 | invitations | POST | /api/invitations/send | Chưa kết nối (med) | Invite flows; UI team chưa gọi. Handler: handleInvitationsSendPost | — |
+| api133 | plaid | GET | /api/plaid/connections | Chưa kết nối (med) | Banking handlers có; chưa UI/adapter Next. Handler: handlePlaidConnectionsGet | — |
+| api134 | plaid | DELETE | /api/plaid/connections/[connectionId] | Chưa kết nối (med) | Banking handlers có; chưa UI/adapter Next. Handler: handlePlaidConnectionByIdDelete | — |
+| api135 | plaid | POST | /api/plaid/connections/[connectionId]/disconnect | Chưa kết nối (med) | Banking handlers có; chưa UI/adapter Next. Handler: handlePlaidConnectionDisconnectPost | — |
+| api136 | plaid | DELETE | /api/plaid/connections/[connectionId]/pause | Chưa kết nối (med) | Banking handlers có; chưa UI/adapter Next. Handler: handlePlaidConnectionPauseDelete | — |
+| api137 | plaid | POST | /api/plaid/connections/[connectionId]/pause | Chưa kết nối (med) | Banking handlers có; chưa UI/adapter Next. Handler: handlePlaidConnectionPausePost | — |
+| api138 | plaid | POST | /api/plaid/create-link-token | Chưa kết nối (med) | Banking handlers có; chưa UI/adapter Next. Handler: handlePlaidCreateLinkTokenPost | — |
+| api139 | plaid | POST | /api/plaid/exchange-public-token | Chưa kết nối (med) | Banking handlers có; chưa UI/adapter Next. Handler: handlePlaidExchangePublicTokenPost | — |
+| api140 | plaid | POST | /api/plaid/exchange-v2 | Chưa kết nối (med) | Banking handlers có; chưa UI/adapter Next. Handler: handlePlaidExchangePost | — |
+| api141 | plaid | POST | /api/plaid/exchange-v2 | Chưa kết nối (med) | Banking handlers có; chưa UI/adapter Next. Handler: handlePlaidExchangeV2Post | — |
+| api142 | plaid | GET | /api/plaid/liabilities | Chưa kết nối (med) | Banking handlers có; chưa UI/adapter Next. Handler: handlePlaidLiabilitiesGet | — |
+| api143 | tax | POST | /api/tax/1040-es | Chưa kết nối (med) | Handler đã extract; chưa tạo apps/web/app/api adapter. Handler: handleTax1040EsPost | — |
+| api144 | tax | POST | /api/tax/package | Chưa kết nối (med) | Handler đã extract; chưa tạo apps/web/app/api adapter. Handler: handleTaxPackagePost | — |
+| api145 | tax | GET | /api/tax/share | Chưa kết nối (med) | Handler đã extract; chưa tạo apps/web/app/api adapter. Handler: handleTaxShareGet | — |
+| api146 | tax | POST | /api/tax/share | Chưa kết nối (med) | Handler đã extract; chưa tạo apps/web/app/api adapter. Handler: handleTaxSharePost | — |
+| api147 | tax | GET | /api/tax/share/[token] | Chưa kết nối (med) | Handler đã extract; chưa tạo apps/web/app/api adapter. Handler: handleTaxShareTokenGet | — |
+| api148 | tax | POST | /api/tax/share/revoke | Chưa kết nối (med) | Handler đã extract; chưa tạo apps/web/app/api adapter. Handler: handleTaxShareRevokePost | — |
+| api149 | cron | GET | /api/cron/bridge-sync | Chưa kết nối (low) | Job server-side; không cần UI; chưa mount cron routes. Handler: handleCronBridgeSyncGet | — |
+| api150 | cron | GET | /api/cron/consent-audit | Chưa kết nối (low) | Job server-side; không cần UI; chưa mount cron routes. Handler: handleCronConsentAuditGet | — |
+| api151 | cron | GET | /api/cron/daily-sync | Chưa kết nối (low) | Job server-side; không cần UI; chưa mount cron routes. Handler: handleCronDailySyncGet | — |
+| api152 | cron | GET | /api/cron/lender-package-reminders | Chưa kết nối (low) | Job server-side; không cần UI; chưa mount cron routes. Handler: handleCronLenderPackageRemindersGet | — |
+| api153 | cron | GET | /api/cron/lifecycle-alerts | Chưa kết nối (low) | Job server-side; không cần UI; chưa mount cron routes. Handler: handleCronLifecycleAlertsGet | — |
+| api154 | cron | GET | /api/cron/process-daily-kpis | Chưa kết nối (low) | Job server-side; không cần UI; chưa mount cron routes. Handler: handleCronProcessDailyKpisGet | — |
+| api155 | cron | GET | /api/cron/process-deletions | Chưa kết nối (low) | Job server-side; không cần UI; chưa mount cron routes. Handler: handleCronProcessDeletionsGet | — |
+| api156 | cron | GET | /api/cron/process-email-notifications | Chưa kết nối (low) | Job server-side; không cần UI; chưa mount cron routes. Handler: handleCronProcessEmailNotificationsGet | — |
+| api157 | cron | GET | /api/cron/process-team-invites | Chưa kết nối (low) | Job server-side; không cần UI; chưa mount cron routes. Handler: handleCronProcessTeamInvitesGet | — |
+| api158 | cron | GET | /api/cron/refresh-place-ids | Chưa kết nối (low) | Job server-side; không cần UI; chưa mount cron routes. Handler: handleCronRefreshPlaceIdsGet | — |
+| api159 | cron | GET | /api/cron/retry-failed-connections | Chưa kết nối (low) | Job server-side; không cần UI; chưa mount cron routes. Handler: handleCronRetryFailedConnectionsGet | — |
+| api160 | cron | GET | /api/cron/send-digest | Chưa kết nối (low) | Job server-side; không cần UI; chưa mount cron routes. Handler: handleCronSendDigestGet | — |
+| api161 | cron | GET | /api/cron/snapshots | Chưa kết nối (low) | Job server-side; không cần UI; chưa mount cron routes. Handler: handleCronSnapshotsGet | — |
+| api162 | cron | GET | /api/cron/sync-financial-transactions | Chưa kết nối (low) | Job server-side; không cần UI; chưa mount cron routes. Handler: handleCronSyncFinancialTransactionsGet | — |
+| api163 | cron | GET | /api/cron/sync-liabilities | Chưa kết nối (low) | Job server-side; không cần UI; chưa mount cron routes. Handler: handleCronSyncLiabilitiesGet | — |
+| api164 | cron | GET | /api/cron/sync-plaid-liabilities | Chưa kết nối (low) | Job server-side; không cần UI; chưa mount cron routes. Handler: handleCronSyncPlaidLiabilitiesGet | — |
+| api165 | cron | GET | /api/cron/sync-transactions | Chưa kết nối (low) | Job server-side; không cần UI; chưa mount cron routes. Handler: handleCronSyncTransactionsGet | — |
+| api166 | webhooks | POST | /api/webhooks/bridge | Chưa kết nối (low) | Server-to-server; chưa mount webhook routes trên Next. Handler: handleBridgeWebhookPost | — |
+| api167 | webhooks | POST | /api/webhooks/docusign | Chưa kết nối (low) | Server-to-server; chưa mount webhook routes trên Next. Handler: handleDocuSignWebhookPost | — |
+| api168 | webhooks | GET | /api/webhooks/email-reply | Chưa kết nối (low) | Server-to-server; chưa mount webhook routes trên Next. Handler: handleEmailReplyGet | — |
+| api169 | webhooks | POST | /api/webhooks/email-reply | Chưa kết nối (low) | Server-to-server; chưa mount webhook routes trên Next. Handler: handleEmailReplyPost | — |
+| api170 | webhooks | POST | /api/webhooks/emails | Chưa kết nối (low) | Server-to-server; chưa mount webhook routes trên Next. Handler: handleInboundEmailsWebhookPost | — |
+| api171 | webhooks | POST | /api/webhooks/inbound-email | Chưa kết nối (low) | Server-to-server; chưa mount webhook routes trên Next. Handler: handleInboundEmailParsePost | — |
+| api172 | webhooks | POST | /api/webhooks/plaid | Chưa kết nối (low) | Server-to-server; chưa mount webhook routes trên Next. Handler: handlePlaidWebhookPost | — |
+| api173 | webhooks | GET | /api/webhooks/sendgrid | Chưa kết nối (low) | Server-to-server; chưa mount webhook routes trên Next. Handler: handleSendGridWebhookGet | — |
+| api174 | webhooks | POST | /api/webhooks/sendgrid | Chưa kết nối (low) | Server-to-server; chưa mount webhook routes trên Next. Handler: handleSendGridWebhookPost | — |
+| api175 | webhooks | POST | /api/webhooks/sourcing | Chưa kết nối (low) | Server-to-server; chưa mount webhook routes trên Next. Handler: handleWebhooksSourcingPost | — |
+| api176 | reconciliations | GET | /api/reconciliations | Chưa kết nối (low) | Handler đã extract; chưa tạo apps/web/app/api adapter. Handler: handleReconciliationsGet | — |
+| api177 | reconciliations | POST | /api/reconciliations | Chưa kết nối (low) | Handler đã extract; chưa tạo apps/web/app/api adapter. Handler: handleReconciliationsPost | — |
+| api178 | reconciliations | GET | /api/reconciliations/[periodId] | Chưa kết nối (low) | Handler đã extract; chưa tạo apps/web/app/api adapter. Handler: handleReconciliationPeriodGet | — |
+| api179 | reconciliations | POST | /api/reconciliations/[periodId]/finalize | Chưa kết nối (low) | Handler đã extract; chưa tạo apps/web/app/api adapter. Handler: handleReconciliationFinalizePost | — |
+| api180 | reconciliations | POST | /api/reconciliations/[periodId]/match | Chưa kết nối (low) | Handler đã extract; chưa tạo apps/web/app/api adapter. Handler: handleReconciliationMatchPost | — |
+| api181 | reconciliations | GET | /api/reconciliations/[periodId]/report | Chưa kết nối (low) | Handler đã extract; chưa tạo apps/web/app/api adapter. Handler: handleReconciliationReportGet | — |
+| api182 | reconciliations | POST | /api/reconciliations/items/[itemId]/adjust | Chưa kết nối (low) | Handler đã extract; chưa tạo apps/web/app/api adapter. Handler: handleReconciliationItemAdjustPost | — |
+| api183 | reconciliations | POST | /api/reconciliations/items/[itemId]/verify | Chưa kết nối (low) | Handler đã extract; chưa tạo apps/web/app/api adapter. Handler: handleReconciliationItemVerifyPost | — |
+| api184 | bridge | GET | /api/bridge/agents | Chưa kết nối (low) | Handler đã extract; chưa tạo apps/web/app/api adapter. Handler: handleBridgeAgentsGet | — |
+| api185 | bridge | GET | /api/bridge/metadata | Chưa kết nối (low) | Handler đã extract; chưa tạo apps/web/app/api adapter. Handler: handleBridgeMetadataGet | — |
+| api186 | bridge | GET | /api/bridge/offices | Chưa kết nối (low) | Handler đã extract; chưa tạo apps/web/app/api adapter. Handler: handleBridgeOfficesGet | — |
+| api187 | bridge | GET | /api/bridge/openhouses | Chưa kết nối (low) | Handler đã extract; chưa tạo apps/web/app/api adapter. Handler: handleBridgeOpenhousesGet | — |
+| api188 | bridge | GET | /api/bridge/search | Chưa kết nối (low) | Handler đã extract; chưa tạo apps/web/app/api adapter. Handler: handleBridgeSearchGet | — |
+| api189 | bridge | GET | /api/bridge/sync | Chưa kết nối (low) | Handler đã extract; chưa tạo apps/web/app/api adapter. Handler: handleBridgeSyncGet | — |
+| api190 | bridge | POST | /api/bridge/sync | Chưa kết nối (low) | Handler đã extract; chưa tạo apps/web/app/api adapter. Handler: handleBridgeSyncPost | — |
+| api191 | integrations | GET | /api/integrations/[provider]/authorize|callback | Chưa kết nối (low) | Handler đã extract; chưa tạo apps/web/app/api adapter. Handler: handleIntegrationsActionGet | — |
+| api192 | integrations | DELETE | /api/integrations/[provider]/disconnect | Chưa kết nối (low) | Handler đã extract; chưa tạo apps/web/app/api adapter. Handler: handleIntegrationsActionDelete | — |
+| api193 | integrations | GET | /api/integrations/google-drive/authorize | Chưa kết nối (low) | Handler đã extract; chưa tạo apps/web/app/api adapter. Handler: handleIntegrationsGoogleDriveAuthorizeGet | — |
+| api194 | integrations | GET | /api/integrations/google-drive/callback | Chưa kết nối (low) | Handler đã extract; chưa tạo apps/web/app/api adapter. Handler: handleIntegrationsGoogleDriveCallbackGet | — |
+| api195 | integrations | POST | /api/integrations/mls/connect | Chưa kết nối (low) | Handler đã extract; chưa tạo apps/web/app/api adapter. Handler: handleIntegrationsMlsConnectPost | — |
+| api196 | integrations | GET | /api/integrations/status | Chưa kết nối (low) | Handler đã extract; chưa tạo apps/web/app/api adapter. Handler: handleIntegrationsStatusGet | — |
+| api197 | rules | POST | /api/rules | Chưa kết nối (low) | Handler đã extract; chưa tạo apps/web/app/api adapter. Handler: handleRulesPost | — |
+| api198 | rules | DELETE | /api/rules/[id] | Chưa kết nối (low) | Handler đã extract; chưa tạo apps/web/app/api adapter. Handler: handleRulesDelete | — |
+| api199 | rules | PUT | /api/rules/[id] | Chưa kết nối (low) | Handler đã extract; chưa tạo apps/web/app/api adapter. Handler: handleRulesPut | — |
+| api200 | rules | POST | /api/rules/[id]/apply | Chưa kết nối (low) | Handler đã extract; chưa tạo apps/web/app/api adapter. Handler: handleRulesApplyPost | — |
+| api201 | rules | GET | /api/rules/project/[projectId] | Chưa kết nối (low) | Handler đã extract; chưa tạo apps/web/app/api adapter. Handler: handleRulesProjectGet | — |
+| api202 | rules | GET | /api/rules/project/[projectId]/suggestions | Chưa kết nối (low) | Handler đã extract; chưa tạo apps/web/app/api adapter. Handler: handleRulesProjectSuggestionsGet | — |
+| api203 | financial-transactions | POST | /api/financial-transactions/[id]/approve | Chưa kết nối (low) | Handler đã extract; chưa tạo apps/web/app/api adapter. Handler: handleFinancialTransactionApprovePost | — |
+| api204 | financial-transactions | POST | /api/financial-transactions/[id]/classify | Chưa kết nối (low) | Handler đã extract; chưa tạo apps/web/app/api adapter. Handler: handleFinancialTransactionClassifyPost | — |
+| api205 | financial-transactions | POST | /api/financial-transactions/bulk-classify | Chưa kết nối (low) | Handler đã extract; chưa tạo apps/web/app/api adapter. Handler: handleFinancialTransactionsBulkClassifyPost | — |
+| api206 | financial-transactions | GET | /api/financial-transactions/project/[projectId] | Chưa kết nối (low) | Handler đã extract; chưa tạo apps/web/app/api adapter. Handler: handleFinancialTransactionsByProjectGet | — |
+| api207 | financial-transactions | GET | /api/financial-transactions/project/[projectId] | Chưa kết nối (low) | Handler đã extract; chưa tạo apps/web/app/api adapter. Handler: handleFinancialTransactionsListGet | — |
+| api208 | identity | POST | /api/identity/appeal | Chưa kết nối (low) | Handler đã extract; chưa tạo apps/web/app/api adapter. Handler: handleIdentityAppealPost | — |
+| api209 | identity | POST | /api/identity/claim/bind-token | Chưa kết nối (low) | Handler đã extract; chưa tạo apps/web/app/api adapter. Handler: handleIdentityClaimBindTokenPost | — |
+| api210 | identity | POST | /api/identity/claim/start | Chưa kết nối (low) | Handler đã extract; chưa tạo apps/web/app/api adapter. Handler: handleIdentityClaimStartPost | — |
+| api211 | identity | POST | /api/identity/claim/verify | Chưa kết nối (low) | Handler đã extract; chưa tạo apps/web/app/api adapter. Handler: handleIdentityClaimVerifyPost | — |
+| api212 | identity | POST | /api/identity/report-spam | Chưa kết nối (low) | Handler đã extract; chưa tạo apps/web/app/api adapter. Handler: handleIdentityReportSpamPost | — |
+| api213 | places | POST | /api/places/autocomplete | Chưa kết nối (low) | Handler đã extract; chưa tạo apps/web/app/api adapter. Handler: handlePlacesAutocompletePost | — |
+| api214 | places | POST | /api/places/autocomplete-public | Chưa kết nối (low) | Handler đã extract; chưa tạo apps/web/app/api adapter. Handler: handlePlacesAutocompletePublicPost | — |
+| api215 | places | POST | /api/places/details | Chưa kết nối (low) | Handler đã extract; chưa tạo apps/web/app/api adapter. Handler: handlePlacesDetailsPost | — |
+| api216 | places | GET | /api/places/geocode | Chưa kết nối (low) | Handler đã extract; chưa tạo apps/web/app/api adapter. Handler: handlePlacesGeocodeGet | — |
+| api217 | places | POST | /api/places/validate | Chưa kết nối (low) | Handler đã extract; chưa tạo apps/web/app/api adapter. Handler: handlePlacesValidatePost | — |
+| api218 | calendar | GET | /api/calendar/auth | Chưa kết nối (low) | Handler đã extract; chưa tạo apps/web/app/api adapter. Handler: handleCalendarAuthGet | — |
+| api219 | calendar | GET | /api/calendar/callback | Chưa kết nối (low) | Handler đã extract; chưa tạo apps/web/app/api adapter. Handler: handleCalendarCallbackGet | — |
+| api220 | calendar | GET | /api/calendar/events | Chưa kết nối (low) | Handler đã extract; chưa tạo apps/web/app/api adapter. Handler: handleCalendarEventsGet | — |
+| api221 | calendar | POST | /api/calendar/sync | Chưa kết nối (low) | Handler đã extract; chưa tạo apps/web/app/api adapter. Handler: handleCalendarSyncPost | — |
+| api222 | insights | GET | /api/insights/market | Chưa kết nối (low) | Handler đã extract; chưa tạo apps/web/app/api adapter. Handler: handleInsightsMarketGet | — |
+| api223 | insights | GET | /api/insights/metrics | Chưa kết nối (low) | Handler đã extract; chưa tạo apps/web/app/api adapter. Handler: handleInsightsMetricsGet | — |
+| api224 | insights | GET | /api/insights/portfolio | Chưa kết nối (low) | Handler đã extract; chưa tạo apps/web/app/api adapter. Handler: handleInsightsPortfolioGet | — |
+| api225 | insights | GET | /api/insights/trends | Chưa kết nối (low) | Handler đã extract; chưa tạo apps/web/app/api adapter. Handler: handleInsightsTrendsGet | — |
+| api226 | transactions | PATCH | /api/transactions/[id]/attribution | Chưa kết nối (low) | Handler đã extract; chưa tạo apps/web/app/api adapter. Handler: handleTransactionAttributionPatch | — |
+| api227 | transactions | POST | /api/transactions/[id]/attribution/search | Chưa kết nối (low) | Handler đã extract; chưa tạo apps/web/app/api adapter. Handler: handleTransactionAttributionSearchPost | — |
+| api228 | transactions | POST | /api/transactions/[id]/identify | Chưa kết nối (low) | Handler đã extract; chưa tạo apps/web/app/api adapter. Handler: handleTransactionIdentifyPost | — |
+| api229 | transactions | GET | /api/transactions/project/[projectId]/identification-suggestions | Chưa kết nối (low) | Handler đã extract; chưa tạo apps/web/app/api adapter. Handler: handleTransactionIdentificationSuggestionsGet | — |
+| api230 | account | GET | /api/account/data/delete | Chưa kết nối (low) | Handler đã extract; chưa tạo apps/web/app/api adapter. Handler: handleAccountDataDeleteGet | — |
+| api231 | account | POST | /api/account/data/delete | Chưa kết nối (low) | Handler đã extract; chưa tạo apps/web/app/api adapter. Handler: handleAccountDataDeletePost | — |
+| api232 | account | POST | /api/account/data/download | Chưa kết nối (low) | Handler đã extract; chưa tạo apps/web/app/api adapter. Handler: handleAccountDataDownloadPost | — |
+| api233 | packages | POST | /api/packages/share | Chưa kết nối (low) | Handler đã extract; chưa tạo apps/web/app/api adapter. Handler: handlePackagesSharePost | — |
+| api234 | packages | GET | /api/packages/share/[token] | Chưa kết nối (low) | Handler đã extract; chưa tạo apps/web/app/api adapter. Handler: handlePackagesShareTokenGet | — |
+| api235 | packages | DELETE | /api/packages/share | Chưa kết nối (low) | Handler đã extract; chưa tạo apps/web/app/api adapter. Handler: handlePackagesShareDelete | — |
+| api236 | workspace | GET | /api/workspace | Chưa kết nối (low) | Handler đã extract; chưa tạo apps/web/app/api adapter. Handler: handleWorkspaceGet | — |
+| api237 | workspace | PUT | /api/workspace | Chưa kết nối (low) | Handler đã extract; chưa tạo apps/web/app/api adapter. Handler: handleWorkspacePut | — |
+| api238 | workspace | POST | /api/workspace/[action] | Chưa kết nối (low) | Handler đã extract; chưa tạo apps/web/app/api adapter. Handler: handleWorkspacePost | — |
+| api239 | bids | POST | /api/bids | Chưa kết nối (low) | Handler đã extract; chưa tạo apps/web/app/api adapter. Handler: handleBidsPost | — |
+| api240 | bids | PUT | /api/bids | Chưa kết nối (low) | Handler đã extract; chưa tạo apps/web/app/api adapter. Handler: handleBidsPut | — |
+| api241 | data | GET | /api/data/* | Chưa kết nối (low) | Handler đã extract; chưa tạo apps/web/app/api adapter. Handler: handleDataGet | — |
+| api242 | data | POST | /api/data/* | Chưa kết nối (low) | Handler đã extract; chưa tạo apps/web/app/api adapter. Handler: handleDataPost | — |
+| api243 | e2e | GET | /api/e2e/follows | Chưa kết nối (low) | Handler đã extract; chưa tạo apps/web/app/api adapter. Handler: handleE2eFollowsGet | — |
+| api244 | e2e | POST | /api/e2e/follows | Chưa kết nối (low) | Handler đã extract; chưa tạo apps/web/app/api adapter. Handler: handleE2eFollowsPost | — |
+| api245 | esign | POST | /api/esign/create | Chưa kết nối (low) | Handler đã extract; chưa tạo apps/web/app/api adapter. Handler: handleEsignCreatePost | — |
+| api246 | esign | GET | /api/esign/status/[envelopeId] | Chưa kết nối (low) | Handler đã extract; chưa tạo apps/web/app/api adapter. Handler: handleEsignStatusGet | — |
+| api247 | events | POST | /api/events | Chưa kết nối (low) | Handler đã extract; chưa tạo apps/web/app/api adapter. Handler: handleEventsPost | — |
+| api248 | events | GET | /api/events/stream | Chưa kết nối (low) | Handler đã extract; chưa tạo apps/web/app/api adapter. Handler: handleEventsStreamGet | — |
+| api249 | financial | GET | /api/financial/transactions | Chưa kết nối (low) | Handler đã extract; chưa tạo apps/web/app/api adapter. Handler: handleFinancialTransactionsGet | — |
+| api250 | financial | POST | /api/financial/transactions | Chưa kết nối (low) | Handler đã extract; chưa tạo apps/web/app/api adapter. Handler: handleFinancialTransactionsPost | — |
+| api251 | invest | GET | /api/invest/[token] | Chưa kết nối (low) | Handler đã extract; chưa tạo apps/web/app/api adapter. Handler: handleInvestTokenGet | — |
+| api252 | invest | POST | /api/invest/[token] | Chưa kết nối (low) | Handler đã extract; chưa tạo apps/web/app/api adapter. Handler: handleInvestTokenPost | — |
+| api253 | invites | GET | /api/invites | Chưa kết nối (low) | Handler đã extract; chưa tạo apps/web/app/api adapter. Handler: handleInvitesGet | — |
+| api254 | invites | POST | /api/invites | Chưa kết nối (low) | Handler đã extract; chưa tạo apps/web/app/api adapter. Handler: handleInvitesPost | — |
+| api255 | mcp | GET | /api/mcp/[transport] | Chưa kết nối (low) | Handler đã extract; chưa tạo apps/web/app/api adapter. Handler: handleMcpTransportGet | — |
+| api256 | mcp | POST | /api/mcp/[transport] | Chưa kết nối (low) | Handler đã extract; chưa tạo apps/web/app/api adapter. Handler: handleMcpTransportPost | — |
+| api257 | notifications | POST | /api/notifications/deadline-alert | Chưa kết nối (low) | Handler đã extract; chưa tạo apps/web/app/api adapter. Handler: handleNotificationsDeadlineAlertPost | — |
+| api258 | notifications | POST | /api/notifications/test | Chưa kết nối (low) | Handler đã extract; chưa tạo apps/web/app/api adapter. Handler: handleNotificationsTestPost | — |
+| api259 | security | GET | /api/security/settings | Chưa kết nối (low) | Handler đã extract; chưa tạo apps/web/app/api adapter. Handler: handleSecuritySettingsGet | — |
+| api260 | security | PUT | /api/security/settings | Chưa kết nối (low) | Handler đã extract; chưa tạo apps/web/app/api adapter. Handler: handleSecuritySettingsPut | — |
+| api261 | street-view | GET | /api/street-view | Chưa kết nối (low) | Handler đã extract; chưa tạo apps/web/app/api adapter. Handler: handleStreetViewGet | — |
+| api262 | street-view | POST | /api/street-view | Chưa kết nối (low) | Handler đã extract; chưa tạo apps/web/app/api adapter. Handler: handleStreetViewPost | — |
+| api263 | user | GET | /api/user/notification-preferences | Chưa kết nối (low) | Handler đã extract; chưa tạo apps/web/app/api adapter. Handler: handleNotificationPreferencesGet | — |
+| api264 | user | PUT | /api/user/notification-preferences | Chưa kết nối (low) | Handler đã extract; chưa tạo apps/web/app/api adapter. Handler: handleNotificationPreferencesPut | — |
+| api265 | worker | GET | /api/worker/drain | Chưa kết nối (low) | Handler đã extract; chưa tạo apps/web/app/api adapter. Handler: handleWorkerDrainGet | — |
+| api266 | worker | POST | /api/worker/drain | Chưa kết nối (low) | Handler đã extract; chưa tạo apps/web/app/api adapter. Handler: handleWorkerDrainPost | — |
+| api267 | admin | DELETE | /api/admin/agent-crew/purge-all | Chưa kết nối (low) | ops/agent-crew đã nối; purge-all chưa. Handler: handleAdminAgentCrewPurgeAllDelete | — |
+| api268 | changelog | GET | /api/changelog/metadata | Chưa kết nối (low) | Handler đã extract; chưa tạo apps/web/app/api adapter. Handler: handleChangelogMetadataGet | — |
+| api269 | closing | POST | /api/closing/title-search | Chưa kết nối (low) | Handler đã extract; chưa tạo apps/web/app/api adapter. Handler: handleClosingTitleSearchPost | — |
+| api270 | config | GET | /api/config/attorney-states | Chưa kết nối (low) | Handler đã extract; chưa tạo apps/web/app/api adapter. Handler: handleAttorneyStatesGet | — |
+| api271 | contact | POST | /api/contact | Chưa kết nối (low) | Handler đã extract; chưa tạo apps/web/app/api adapter. Handler: handleContactPost | — |
+| api272 | dashboard | GET | /api/dashboard | Chưa kết nối (low) | Handler đã extract; chưa tạo apps/web/app/api adapter. Handler: handleDashboardGet | — |
+| api273 | deal-analyzer | POST | /api/deal-analyzer/property-lookup | Chưa kết nối (low) | Handler đã extract; chưa tạo apps/web/app/api adapter. Handler: handleDealAnalyzerPropertyLookupPost | — |
+| api274 | deals | POST | /api/deals/broadcast | Chưa kết nối (low) | Handler đã extract; chưa tạo apps/web/app/api adapter. Handler: handleDealsBroadcastPost | — |
+| api275 | drive | POST | /api/drive/provision | Chưa kết nối (low) | Handler đã extract; chưa tạo apps/web/app/api adapter. Handler: handleDriveProvisionPost | — |
+| api276 | emails | POST | /api/emails/send | Chưa kết nối (low) | Handler đã extract; chưa tạo apps/web/app/api adapter. Handler: handleEmailsSendPost | — |
+| api277 | entitlements | GET | /api/entitlements/project-count | Chưa kết nối (low) | Handler đã extract; chưa tạo apps/web/app/api adapter. Handler: handleEntitlementsProjectCountGet | — |
+| api278 | exit | POST | /api/exit/complete | Chưa kết nối (low) | Handler đã extract; chưa tạo apps/web/app/api adapter. Handler: handleExitCompletePost | — |
+| api279 | fund | POST | /api/fund/close-deal | Chưa kết nối (low) | Handler đã extract; chưa tạo apps/web/app/api adapter. Handler: handleFundCloseDealPost | — |
+| api280 | investor | GET | /api/investor/timeline | Chưa kết nối (low) | Handler đã extract; chưa tạo apps/web/app/api adapter. Handler: handleInvestorTimelineGet | — |
+| api281 | lawyers | GET | /api/lawyers | Chưa kết nối (low) | Handler đã extract; chưa tạo apps/web/app/api adapter. Handler: handleLawyersGet | — |
+| api282 | loi | POST | /api/loi/generate | Chưa kết nối (low) | Handler đã extract; chưa tạo apps/web/app/api adapter. Handler: handleLoiGeneratePost | — |
+| api283 | map-tile | GET | /api/map-tile | Chưa kết nối (low) | Handler đã extract; chưa tạo apps/web/app/api adapter. Handler: handleMapTileGet | — |
+| api284 | market-vitals | GET | /api/market-vitals | Chưa kết nối (low) | Handler đã extract; chưa tạo apps/web/app/api adapter. Handler: handleMarketVitalsGet | — |
+| api285 | mls | GET | /api/mls/search | Chưa kết nối (low) | Handler đã extract; chưa tạo apps/web/app/api adapter. Handler: handleMlsSearchGet | — |
+| api286 | permits | GET | /api/permits | Chưa kết nối (low) | Handler đã extract; chưa tạo apps/web/app/api adapter. Handler: handlePermitsGet | — |
+| api287 | presence | POST | /api/presence/heartbeat | Chưa kết nối (low) | Handler đã extract; chưa tạo apps/web/app/api adapter. Handler: handlePresenceHeartbeatPost | — |
+| api288 | rent-history | POST | /api/rent-history/import | Chưa kết nối (low) | Handler đã extract; chưa tạo apps/web/app/api adapter. Handler: handleRentHistoryImportPost | — |
+| api289 | reporting | POST | /api/reporting/export | Chưa kết nối (low) | Handler đã extract; chưa tạo apps/web/app/api adapter. Handler: handleReportingExportPost | — |
+| api290 | tasks | POST | /api/tasks/assign | Chưa kết nối (low) | Handler đã extract; chưa tạo apps/web/app/api adapter. Handler: handleTasksAssignPost | — |
+| api291 | unsubscribe | POST | /api/unsubscribe | Chưa kết nối (low) | Handler đã extract; chưa tạo apps/web/app/api adapter. Handler: handleUnsubscribePost | — |
+| api292 | upload | POST | /api/upload | Chưa kết nối (low) | Handler đã extract; chưa tạo apps/web/app/api adapter. Handler: handleUploadPost | — |
+| api293 | vendors | POST | /api/vendors/request | Chưa kết nối (low) | Handler đã extract; chưa tạo apps/web/app/api adapter. Handler: handleVendorsRequestPost | — |
+| api294 | waitlist | POST | /api/waitlist | Chưa kết nối (low) | Handler đã extract; chưa tạo apps/web/app/api adapter. Handler: handleWaitlistPost | — |
+| api295 | zoning-scan | POST | /api/zoning-scan | Chưa kết nối (low) | Handler đã extract; chưa tạo apps/web/app/api adapter. Handler: handleZoningScanPost | — |
+
+## Ghi chú
+
+- **Đã kết nối (live)** = Firebase/real data
+- **Đã kết nối (seed)** = có Next route + UI fetch, data seed
+- **Chưa kết nối** = handler trong package, chưa có `route.ts` hoặc UI chưa fetch
+- Inventory gốc: `API_CONNECTION_STATUS.md` §C.1, `list_APIs_.md`

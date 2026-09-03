@@ -1,0 +1,33 @@
+{
+  "name": "@paperworking/services",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Framework-independent application use-cases extracted from Nest modules",
+  "main": "./dist/src/index.js",
+  "types": "./dist/src/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/src/index.d.ts",
+      "import": "./dist/src/index.js"
+    }
+  },
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "test": "node --experimental-vm-modules ../../node_modules/jest/bin/jest.js"
+  },
+  "dependencies": {
+    "@paperworking/authz": "file:../authz",
+    "@paperworking/database": "file:../database",
+    "@paperworking/financial-engine": "file:../financial-engine",
+    "@paperworking/identity": "file:../identity",
+    "@paperworking/validation": "file:../validation"
+  },
+  "devDependencies": {
+    "@types/jest": "^29.5.14",
+    "jest": "^29.7.0",
+    "ts-jest": "^29.4.0",
+    "typescript": "^5.8.3"
+  }
+}

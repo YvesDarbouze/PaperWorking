@@ -11,7 +11,7 @@ export const metadata: Metadata = {
 
 export default function AuthActionPage() {
   return (
-    <div className="min-h-screen bg-[#f9f9fb] px-4 py-12 text-[#0d0a0b] dark:bg-[#0d0d12] dark:text-[#fdfffc]">
+    <div className="min-h-screen bg-[#0a0a0f] px-4 py-12 text-[#fdfffc]">
       <div className="mx-auto mb-8 max-w-md text-center">
         <Logo href="/" />
       </div>
@@ -20,11 +20,11 @@ export default function AuthActionPage() {
           <AuthActionPanel />
         </Suspense>
       </div>
-      <p className="mx-auto mt-8 max-w-md text-center text-xs text-[#6e7180]">
+      <p className="mx-auto mt-8 max-w-md text-center text-xs text-white/45">
         Firebase action codes (`mode`, `oobCode`) render here. Full verification connects at cutover.
       </p>
       <p className="mt-3 text-center">
-        <Link href="/login" className="text-sm text-[#454955] underline-offset-2 hover:underline dark:text-[#fdfffc]">
+        <Link href="/login" className="text-sm text-white/70 underline-offset-2 hover:text-white hover:underline">
           Return to sign in
         </Link>
       </p>

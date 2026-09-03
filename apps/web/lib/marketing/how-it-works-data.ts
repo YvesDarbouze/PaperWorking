@@ -4,7 +4,7 @@ export const HOW_IT_WORKS_PHASE_CARDS = [
     num: 'PHASE 01',
     title: 'Acquisition',
     description:
-      'Acquisition: Decide if the deal works before you buy. The Deal Analyzer pulls live property data, an automated valuation, and projected cap rate, IRR, and cash-on-cash.',
+      'Acquisition: Decide if the deal works before you buy. The Deal Calculator pulls live property data, an automated valuation, and projected cap rate, IRR, and cash-on-cash.',
   },
   {
     num: 'PHASE 02',

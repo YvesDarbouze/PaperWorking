@@ -12,7 +12,7 @@ export const metadata: Metadata = {
 export default async function VendorPortalLayout({ children }: { children: React.ReactNode }) {
   const cookieStore = await cookies();
   if (!cookieStore.get(SESSION_COOKIE)?.value) {
-    redirect('/login');
+    redirect('/login?reason=session_expired');
   }
 
   return <VendorPortalShell>{children}</VendorPortalShell>;

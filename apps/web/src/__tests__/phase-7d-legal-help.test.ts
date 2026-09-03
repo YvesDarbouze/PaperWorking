@@ -19,11 +19,16 @@ describe('phase 7d — legal & help pages', () => {
     const hrefs = FOOTER_COLUMNS.flatMap((column) => column.links.map((link) => link.href));
     const implemented = new Set([
       '/how-it-works',
+      '/marketplaces',
       '/pricing',
+      '/changelog',
       '/support',
+      '/support/glossary',
+      '/support/metrics',
       '/help',
       '/login',
       '/signup',
+      '/forgot-password',
       '/contact',
       '/privacy',
       '/terms',

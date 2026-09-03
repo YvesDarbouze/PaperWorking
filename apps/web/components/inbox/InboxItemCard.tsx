@@ -1,6 +1,6 @@
 'use client';
 
-import type { InboxItemType, InboxThread } from '@/lib/dashboard/shell-seed';
+import type { InboxItemType, InboxThread } from '@/lib/inbox/types';
 
 function categoryInfo(type: InboxItemType): { label: string; icon: string; color: string } {
   switch (type) {

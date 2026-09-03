@@ -3,10 +3,13 @@
 import Link from 'next/link';
 import { useState } from 'react';
 import AuthCard, { AuthBackLink, AuthFieldError, AuthNotice } from '@/components/auth/AuthCard';
+import { useAuth } from '@/context/AuthContext';
 import { forgotPasswordSchema } from '@/lib/auth/schemas';
 import { AUTH_ROUTES } from '@/lib/auth/routes';
 
 export default function ForgotPasswordPanel() {
+  const { resetPassword, firebaseReady, supabaseReady, error: authError, clearError } = useAuth();
+  const authProviderReady = firebaseReady;
   const [submitting, setSubmitting] = useState(false);
   const [success, setSuccess] = useState(false);
   const [submittedEmail, setSubmittedEmail] = useState('');
@@ -15,6 +18,7 @@ export default function ForgotPasswordPanel() {
   async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
     setErrors({});
+    clearError();
     setSubmitting(true);
 
     const formData = new FormData(event.currentTarget);
@@ -27,9 +31,15 @@ export default function ForgotPasswordPanel() {
       return;
     }
 
-    setSubmittedEmail(email);
-    setSuccess(true);
-    setSubmitting(false);
+    try {
+      await resetPassword(parsed.data.email);
+      setSubmittedEmail(parsed.data.email);
+      setSuccess(true);
+    } catch {
+      /* authError set in context */
+    } finally {
+      setSubmitting(false);
+    }
   }
 
   if (success) {
@@ -39,14 +49,18 @@ export default function ForgotPasswordPanel() {
           <h1 className="mb-2 text-2xl font-semibold">Check your inbox</h1>
           <p className="mb-6 text-sm leading-relaxed text-[rgba(253,255,252,0.65)]">
             A reset link was sent to <span className="font-medium text-[#fdfffc]">{submittedEmail}</span>.
-            Reset email delivery connects when SendGrid + Firebase auth are live in production.
           </p>
-          <AuthNotice>We never confirm whether an email exists in the system to prevent account enumeration.</AuthNotice>
+          <AuthNotice>
+            We never confirm whether an email exists in the system to prevent account enumeration.
+          </AuthNotice>
           <div className="mt-6 space-y-3">
             <button type="button" className="auth-button-secondary" onClick={() => setSuccess(false)}>
               Try a different email
             </button>
-            <Link href={AUTH_ROUTES.login} className="auth-button-secondary inline-flex items-center justify-center no-underline">
+            <Link
+              href={AUTH_ROUTES.login}
+              className="auth-button-secondary inline-flex items-center justify-center no-underline"
+            >
               Return to sign in
             </Link>
           </div>
@@ -64,13 +78,30 @@ export default function ForgotPasswordPanel() {
         </p>
       </div>
 
+      {authError ? (
+        <div className="mb-4 rounded-xl border border-red-800/30 bg-red-950/40 px-4 py-3 text-xs text-red-300">
+          {authError}
+        </div>
+      ) : null}
+
+      {!authProviderReady ? (
+        <div className="mb-4">
+          <AuthNotice>
+            Authentication is not configured yet. Enable Firebase Auth and public Firebase config.
+            vars to send reset emails.
+          </AuthNotice>
+        </div>
+      ) : null}
+
       <form className="space-y-4" onSubmit={handleSubmit}>
         <div>
-          <label className="auth-label" htmlFor="email">Email</label>
+          <label className="auth-label" htmlFor="email">
+            Email
+          </label>
           <input id="email" name="email" type="email" className="auth-input" autoComplete="email" />
           <AuthFieldError message={errors.email} />
         </div>
-        <button type="submit" className="auth-button-primary" disabled={submitting}>
+        <button type="submit" className="auth-button-luminous" disabled={submitting || !authProviderReady}>
           {submitting ? 'Sending…' : 'Send reset link'}
         </button>
       </form>

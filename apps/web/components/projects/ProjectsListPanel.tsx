@@ -1,11 +1,13 @@
 'use client';
 
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import { useEffect, useMemo, useState, type CSSProperties } from 'react';
 import ProjectFolderCard from '@/components/projects/ProjectFolderCard';
 import REILKanBan from '@/components/projects/REILKanBan';
 import { PHASE_LABELS } from '@/lib/projects/phase-utils';
 import type { LegacyProjectPhase, ProjectSummary } from '@/lib/projects/types';
+import { bffFetch } from '@/lib/api/bff-fetch';
 
 type ViewMode = 'kanban' | 'list';
 type PhaseFilter = '' | '1' | '2' | '3' | '4';
@@ -44,6 +46,7 @@ function selectStyle(active = false): CSSProperties {
 }
 
 export default function ProjectsListPanel() {
+  const router = useRouter();
   const [projects, setProjects] = useState<ProjectSummary[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -60,7 +63,7 @@ export default function ProjectsListPanel() {
       setLoading(true);
       setError(null);
       try {
-        const response = await fetch('/api/projects', { credentials: 'include', cache: 'no-store' });
+        const response = await bffFetch('/api/projects', { credentials: 'include', cache: 'no-store' });
         const body = (await response.json()) as {
           projects?: Array<Record<string, unknown>>;
           error?: string;
@@ -138,8 +141,7 @@ export default function ProjectsListPanel() {
   }
 
   function handleCreateProject() {
-    // Wizard not migrated yet — keep user on projects surface.
-    window.alert('Create Project wizard connects in a later wave. Seed projects are available below.');
+    router.push('/projects/new');
   }
 
   return (

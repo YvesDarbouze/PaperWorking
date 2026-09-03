@@ -1,43 +1,74 @@
 @import "tailwindcss";
 
+@theme {
+  --color-primary: #00dd94;
+  --color-accent: #00dd94;
+  --color-primary-emerald: #00DD94;
+  --color-light-green: #00B67A;
+  --color-on-surface: #fdfffc;
+  --color-on-surface-variant: #c8c9cc;
+  --color-surface-container-low: #1e1b20;
+  --color-surface-container-high: #2a272c;
+  --color-secondary: #9e9da0;
+  --color-tertiary: #c4a35a;
+  --color-outline: rgba(253, 255, 252, 0.08);
+  --color-background: #0a0a0f;
+  --font-jetbrains: var(--font-jetbrains-mono), monospace;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
 :root {
   --color-background: #fdfffc;
   --color-surface: #fdfffc;
   --color-surface-container-low: #f3f6f3;
-  --color-on-surface: #0d0a0b;
+  --color-on-surface: #0a0a0f;
   --color-on-surface-variant: #454955;
   --color-primary: #454955;
-  --color-outline: rgba(13, 10, 11, 0.08);
-  --nav-border: rgba(13, 10, 11, 0.07);
-  --cta-bg: #0d0a0b;
+  --color-accent: #00B67A;
+  --color-outline: rgba(10, 10, 15, 0.08);
+  --nav-border: rgba(10, 10, 15, 0.07);
+  --cta-bg: #0a0a0f;
   --cta-text: #fdfffc;
 }
 
 html.dark {
-  --color-background: #0d0a0b;
+  --color-background: #0a0a0f;
   --color-surface: #121014;
   --color-surface-container-low: #1e1b20;
   --color-on-surface: #fdfffc;
   --color-on-surface-variant: #c8c9cc;
   --color-primary: #00DD94;
+  --color-accent: #00DD94;
   --color-outline: rgba(253, 255, 252, 0.08);
   --nav-border: rgba(253, 255, 252, 0.07);
   --cta-bg: #00DD94;
-  --cta-text: #0d0a0b;
+  --cta-text: #0a0a0f;
 }
 
 /* Marketing surfaces match v0 dark landing */
 .marketing-shell {
-  --color-background: #0d0a0b;
+  --color-background: #0a0a0f;
   --color-surface: #121014;
   --color-surface-container-low: #1e1b20;
   --color-on-surface: #fdfffc;
   --color-on-surface-variant: #c8c9cc;
   --color-primary: #00dd94;
+  --color-accent: #00dd94;
+  --color-secondary: #9e9da0;
+  --color-tertiary: #c4a35a;
   --color-outline: rgba(253, 255, 252, 0.08);
   --nav-border: rgba(253, 255, 252, 0.07);
   --cta-bg: #ffffff;
-  --cta-text: #0d0a0b;
+  --cta-text: #0a0a0f;
+  --color-glass-panel-bg: rgba(255, 255, 255, 0.03);
+  --color-glass-panel-border: rgba(255, 255, 255, 0.1);
+  --color-glass-panel-shadow: inset 0 0 20px rgba(255, 255, 255, 0.02);
+  --pw-btn-primary-bg: #00dd94;
+  --pw-btn-primary-text: #0a0a0f;
+  --pw-btn-primary-hover-bg: #00f0a0;
   color: var(--color-on-surface);
   background: var(--color-background);
 }
@@ -48,6 +79,36 @@ html.dark {
 
 .marketing-shell .glass-card {
   background: linear-gradient(135deg, rgba(30, 27, 32, 0.65) 0%, rgba(13, 10, 11, 0.82) 100%);
+}
+
+.marketing-shell .glass-panel {
+  background: var(--color-glass-panel-bg);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid var(--color-glass-panel-border);
+  box-shadow: var(--color-glass-panel-shadow);
+}
+
+.marketing-shell .font-jetbrains {
+  font-family: var(--font-jetbrains-mono), monospace;
+}
+
+.marketing-shell .luminous-button {
+  background-color: var(--pw-btn-primary-bg);
+  color: var(--pw-btn-primary-text);
+  border-radius: 9999px;
+  box-shadow: 0 0 20px -5px rgba(0, 221, 148, 0.35);
+  transition: all 0.3s ease;
+}
+
+.marketing-shell .luminous-button:hover {
+  background-color: var(--pw-btn-primary-hover-bg);
+  box-shadow: 0 0 25px -2px rgba(0, 221, 148, 0.5);
+  transform: translateY(-1px);
+}
+
+.marketing-shell .luminous-button:active {
+  transform: scale(0.97);
 }
 
 body {
@@ -100,7 +161,7 @@ body {
 }
 
 .auth-layout {
-  background-color: #0d0a0b;
+  background-color: #0a0a0f;
   color: #fdfffc;
   background-image:
     radial-gradient(circle at 50% 50%, rgba(69, 73, 85, 0.08) 0%, transparent 50%),
@@ -148,7 +209,7 @@ body {
   border-radius: 12px;
   border: 1px solid rgba(255, 255, 255, 0.12);
   background: #fdfffc;
-  color: #0d0a0b;
+  color: #0a0a0f;
   padding: 12px 16px;
   font-size: 14px;
   font-weight: 600;
@@ -191,7 +252,7 @@ body {
   --color-surface: #121014;
   background:
     radial-gradient(circle at top right, rgba(0, 221, 148, 0.08), transparent 30%),
-    #0d0a0b;
+    #0a0a0f;
 }
 
 .material-symbols-outlined {

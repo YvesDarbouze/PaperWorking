@@ -1,17 +1,20 @@
 # API Connection Status
 
-**Last audited:** 2026-08-22
+**Last audited:** 2026-08-27
 
 Companion to [list_APIs_.md](./list_APIs_.md). Use this to track what is live in Next.js vs still handler-only.
+
+**Checklist có lý do từng path:** [API_WIRING_CHECKLIST.md](./API_WIRING_CHECKLIST.md)  
+**Tổng quan gap (2026-08-27):** [API_GAP_OVERVIEW.md](./API_GAP_OVERVIEW.md)
 
 ## Snapshot
 
 | Layer | Count |
 |---|---|
 | Handlers in `@paperworking/api` (documented) | **297** |
-| Next.js web adapters (`apps/web/app/api`) | **27** route files / **31** method+path |
-| Adapters with UI `fetch` | **26** paths (all adapters except `/api/health`) |
-| Handlers **not** wired to Next | **~269** |
+| Next.js web adapters (`apps/web/app/api`) | **49** route files |
+| Adapters with UI `fetch` | **~35+** paths |
+| Handlers **not** wired to Next | **~240+** |
 | UI fetch → missing route (broken) | **0** |
 
 ## A. Connected (web route + UI)

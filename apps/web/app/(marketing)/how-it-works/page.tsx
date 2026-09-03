@@ -1,5 +1,4 @@
 import type { Metadata } from 'next';
-import ChatbotWidget from '@/components/marketing/ChatbotWidget';
 import HowItWorks from '@/components/marketing/HowItWorks';
 
 export const metadata: Metadata = {
@@ -9,10 +8,5 @@ export const metadata: Metadata = {
 };
 
 export default function HowItWorksPage() {
-  return (
-    <>
-      <HowItWorks />
-      <ChatbotWidget />
-    </>
-  );
+  return <HowItWorks />;
 }

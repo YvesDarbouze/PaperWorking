@@ -2,6 +2,8 @@ import * as api from '@paperworking/api';
 
 const WEB_ADAPTER_ROUTES: Array<{ path: string; handlers: string[] }> = [
   { path: 'GET /api/health', handlers: ['handleHealthGet'] },
+  { path: 'GET /api/auth/me', handlers: ['handleAuthMeGet'] },
+  { path: 'GET /api/auth/sessions', handlers: ['handleAuthSessionsGet'] },
   { path: 'POST/DELETE /api/auth/session', handlers: ['handleSessionPost', 'handleSessionDelete'] },
   { path: 'GET /api/projects', handlers: ['handleProjectsListGet'] },
   { path: 'GET /api/projects/[id]', handlers: ['handleProjectGet'] },
@@ -36,7 +38,7 @@ describe('integration — web adapter handler registry', () => {
     }
   });
 
-  it('covers 24 handler-backed routes (health + auth/me + vendor profile inline)', () => {
-    expect(WEB_ADAPTER_ROUTES.length).toBe(24);
+  it('covers 26 handler-backed routes (health + auth/me + auth/sessions + vendor profile inline)', () => {
+    expect(WEB_ADAPTER_ROUTES.length).toBe(26);
   });
 });

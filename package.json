@@ -9,15 +9,24 @@
     "tests/*"
   ],
   "scripts": {
-    "dev": "npm run dev --workspace=@paperworking/web",
-    "start": "npm run start --workspace=@paperworking/web",
-    "build": "npm run build --workspaces --if-present",
+    "dev": "npm --prefix apps/web run dev",
+    "start": "npm --prefix apps/web run start",
+    "start:api": "npm run start:api --workspace=@paperworking/api",
+    "dev:api": "npm run dev:api --workspace=@paperworking/api",
+    "db:push": "bash scripts/db-push.sh",
+    "build:libs": "npm --prefix packages/shared run build && npm --prefix packages/validation run build && npm --prefix packages/financial-engine run build && npm --prefix packages/authz run build && npm --prefix packages/identity run build && npm --prefix packages/database run build && npm --prefix packages/services run build",
+    "build": "npm run build:libs && npm --prefix apps/api run build && npm --prefix apps/web run build",
+    "apphosting:build": "bash scripts/apphosting-build.sh",
+    "build:apphosting": "bash scripts/apphosting-build.sh",
     "typecheck": "npm run typecheck --workspaces --if-present",
     "test": "npm run test --workspaces --if-present",
     "lint": "npm run lint --workspaces --if-present",
     "verify:integration": "npm run test --workspace=@paperworking/integration",
     "test:e2e": "npm run test:e2e --workspace=@paperworking/e2e",
-    "verify": "npm run build --workspace=@paperworking/shared --workspace=@paperworking/validation --workspace=@paperworking/database --workspace=@paperworking/financial-engine --workspace=@paperworking/api && npm run typecheck --workspaces --if-present && npm run test --workspaces --if-present && npm run build --workspaces --if-present"
+    "verify": "npm run build && npm run typecheck --workspaces --if-present && npm run test --workspaces --if-present",
+    "deploy:api": "bash scripts/deploy-api-cloud-run.sh",
+    "firestore:wipe": "node scripts/firestore-wipe-all.mjs",
+    "firestore:bootstrap": "node scripts/firestore-bootstrap-v1.mjs"
   },
   "engines": {
     "node": ">=20"

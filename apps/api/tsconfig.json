@@ -3,11 +3,18 @@
   "compilerOptions": {
     "outDir": "./dist",
     "rootDir": "./src",
-    "resolveJsonModule": true
+    "resolveJsonModule": true,
+    "experimentalDecorators": true,
+    "emitDecoratorMetadata": true,
+    "declaration": false,
+    "declarationMap": false
   },
   "include": ["src/**/*"],
   "exclude": ["src/**/*.test.ts"],
   "references": [
+    { "path": "../../packages/authz" },
+    { "path": "../../packages/identity" },
+    { "path": "../../packages/services" },
     { "path": "../../packages/shared" },
     { "path": "../../packages/financial-engine" },
     { "path": "../../packages/database" }

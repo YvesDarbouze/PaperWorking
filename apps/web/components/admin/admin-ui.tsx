@@ -1,6 +1,7 @@
 'use client';
 
 import { useCallback, useEffect, useState } from 'react';
+import { getAdminOpsFromBff } from '@/lib/admin/admin-api';
 
 export function useAdminOpsSection<T>(section: string) {
   const [data, setData] = useState<T | null>(null);
@@ -11,13 +12,15 @@ export function useAdminOpsSection<T>(section: string) {
     setLoading(true);
     setError(null);
     try {
-      const res = await fetch(`/api/admin/ops?section=${section}`, {
-        credentials: 'include',
-        cache: 'no-store',
-      });
-      const body = (await res.json()) as { data?: T; error?: string };
-      if (!res.ok) throw new Error(body.error ?? `Failed to load ${section}`);
-      setData(body.data ?? null);
+      const body = await getAdminOpsFromBff<Record<string, unknown> & { data?: T; error?: string }>(
+        section,
+      );
+      if (body.data !== undefined) {
+        setData(body.data);
+      } else {
+        const { success: _s, section: _sec, ...rest } = body;
+        setData(rest as T);
+      }
     } catch (err) {
       setError(err instanceof Error ? err.message : `Failed to load ${section}`);
       setData(null);
@@ -45,11 +48,20 @@ export function AdminPageShell({
   children: React.ReactNode;
 }) {
   return (
-    <div className="mx-auto max-w-[1280px] space-y-6 px-4 py-6 md:px-8 md:py-8">
+    <div className="w-full min-w-0 space-y-4 sm:space-y-6">
       <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
-        <div>
-          <h2 className="text-3xl font-semibold tracking-[-0.02em]">{title}</h2>
-          {subtitle ? <p className="mt-2 max-w-[70ch] text-sm text-black/60">{subtitle}</p> : null}
+        <div className="min-w-0">
+          <h2
+            className="text-2xl font-extralight tracking-tight sm:text-3xl"
+            style={{ color: 'var(--text-primary)' }}
+          >
+            {title}
+          </h2>
+          {subtitle ? (
+            <p className="mt-2 max-w-prose text-sm" style={{ color: 'var(--text-secondary)' }}>
+              {subtitle}
+            </p>
+          ) : null}
         </div>
         {actions ? <div className="flex flex-wrap gap-2">{actions}</div> : null}
       </div>

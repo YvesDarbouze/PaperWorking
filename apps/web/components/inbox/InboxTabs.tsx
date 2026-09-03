@@ -1,6 +1,6 @@
 'use client';
 
-import { INBOX_TABS, type InboxTabId } from '@/lib/dashboard/shell-seed';
+import { INBOX_TABS, type InboxTabId } from '@/lib/inbox/types';
 
 export default function InboxTabs({
   activeTab,

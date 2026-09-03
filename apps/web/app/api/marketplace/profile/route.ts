@@ -1,21 +1,24 @@
-import { handleMarketplaceProfileGet } from '@paperworking/api';
-import { toNextResponse } from '@/lib/api/adapt-route-result';
-import { SEED_DEV_USER_PROFILE } from '@/lib/marketplace/seed-data';
-import {
-  isDevAuthFailure,
-  requireDevSessionAuth,
-} from '@/lib/projects/dev-session-auth';
+import { NextResponse } from 'next/server';
+import { buildMarketplaceProfileReadService } from '@/lib/api/handler-deps';
+import { resolveAuthUserFromRequest } from '@/lib/api/server-session';
 
-export async function GET() {
-  const auth = await requireDevSessionAuth();
+export const dynamic = 'force-dynamic';
 
-  const result = await handleMarketplaceProfileGet({
-    requireAuth: async () => {
-      if (isDevAuthFailure(auth)) return auth;
-      return { uid: auth.uid };
-    },
-    getUserDoc: async () => SEED_DEV_USER_PROFILE,
-  });
+/** GET /api/marketplace/profile — self-scoped marketplace profile for authenticated user. */
+export async function GET(request: Request) {
+  const user = await resolveAuthUserFromRequest(request);
+  if (!user) {
+    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+  }
 
-  return toNextResponse(result);
+  try {
+    const result = await buildMarketplaceProfileReadService().getMarketplaceProfile(user);
+    return NextResponse.json(result);
+  } catch (error) {
+    const message = error instanceof Error ? error.message : 'Unknown error';
+    return NextResponse.json(
+      { error: 'Failed to fetch marketplace profile', details: message },
+      { status: 500 },
+    );
+  }
 }

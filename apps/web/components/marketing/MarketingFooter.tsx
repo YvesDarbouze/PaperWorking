@@ -72,6 +72,15 @@ export default function MarketingFooter() {
             ))}
           </div>
         </div>
+
+        <div className="mt-8 border-t pt-6 text-center" style={{ borderColor: 'rgba(253, 255, 252, 0.06)' }}>
+          <p
+            className="mx-auto max-w-[960px] text-[12px] leading-relaxed text-center"
+            style={{ color: 'var(--color-on-surface-variant)', opacity: 0.45 }}
+          >
+            PaperWorking is a project management software platform, not an investment advisor or registered broker-dealer. Marketplace listings are for operational deal organization and tracking soft interest only; they do not constitute offers to sell securities.
+          </p>
+        </div>
       </div>
     </footer>
   );

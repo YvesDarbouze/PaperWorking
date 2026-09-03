@@ -1,21 +1,36 @@
-import { projectSchema, type User, userSchema } from '@paperworking/validation';
-import type { FirestoreReader } from '../types.js';
+import type { Firestore } from 'firebase-admin/firestore';
+import { getFirestoreAdmin, FIRESTORE_COLLECTIONS } from '../admin.js';
+import { userFromFirestore } from '../converters/user.converter.js';
+import { FirestoreReadNotImplementedError } from '../errors.js';
+import type { UserReadModel } from '../types/read-models.js';
+import { documentData, requireFirestore, type FirestoreClientFactory } from './firestore-access.js';
 
 export class FirestoreUserRepository {
-  constructor(private readonly db: FirestoreReader) {}
+  constructor(private readonly firestoreFactory: FirestoreClientFactory = getFirestoreAdmin) {}
 
-  async getValidated(uid: string): Promise<User | null> {
-    const snap = await this.db.collection('users').doc(uid).get();
-    if (!snap.exists) return null;
+  private async db(): Promise<Firestore> {
+    return requireFirestore(this.firestoreFactory);
+  }
 
-    const parsed = userSchema.safeParse({ uid: snap.id, ...snap.data() });
-    if (!parsed.success) {
-      throw new Error(`Firestore user "${uid}" failed validation: ${parsed.error.message}`);
-    }
+  async getById(uid: string): Promise<UserReadModel | null> {
+    const snap = await (await this.db())
+      .collection(FIRESTORE_COLLECTIONS.users)
+      .doc(uid)
+      .get();
+    const data = documentData(snap);
+    if (!data) return null;
+    return userFromFirestore(snap.id, data);
+  }
 
-    return parsed.data;
+  create(): never {
+    throw new FirestoreReadNotImplementedError('UserRepository.create');
+  }
+
+  update(): never {
+    throw new FirestoreReadNotImplementedError('UserRepository.update');
+  }
+
+  delete(): never {
+    throw new FirestoreReadNotImplementedError('UserRepository.delete');
   }
 }
-
-/** Re-export project schema helper for callers that need field-level mapping docs. */
-export { projectSchema };

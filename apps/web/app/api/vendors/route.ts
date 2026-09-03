@@ -1,52 +1,30 @@
-import { handleVendorsGet, type VendorRecord } from '@paperworking/api';
-import { toNextResponse } from '@/lib/api/adapt-route-result';
-import { SEED_MARKETPLACE_VENDORS } from '@/lib/marketplace/seed-data';
-import {
-  isDevAuthFailure,
-  requireDevSessionAuth,
-} from '@/lib/projects/dev-session-auth';
+import { NextResponse } from 'next/server';
+import { buildVendorsReadService } from '@/lib/api/handler-deps';
+import { marketplaceVendorReadErrorResponse } from '@/lib/api/marketplace-route-errors';
+import { resolveAuthUserFromRequest } from '@/lib/api/server-session';
 
+export const dynamic = 'force-dynamic';
+
+/** GET /api/vendors — authenticated vendor directory for caller org scope. */
 export async function GET(request: Request) {
+  const user = await resolveAuthUserFromRequest(request);
+  if (!user) {
+    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+  }
+
   const url = new URL(request.url);
-  const auth = await requireDevSessionAuth();
+  const q = url.searchParams.get('q') ?? undefined;
 
-  const result = await handleVendorsGet(
-    {
-      state: url.searchParams.get('state'),
-      type: url.searchParams.get('type'),
-      search: url.searchParams.get('search'),
-      query: url.searchParams.get('query'),
-      location: url.searchParams.get('location'),
-      city: url.searchParams.get('city'),
-      zip: url.searchParams.get('zip'),
-      id: url.searchParams.get('id'),
-    },
-    {
-      requireAuth: async () => {
-        if (isDevAuthFailure(auth)) return auth;
-        return { uid: auth.uid };
-      },
-      getVendorById: async (id) => {
-        const match = SEED_MARKETPLACE_VENDORS.find((v) => v.id === id || v.uid === id);
-        return (match as VendorRecord | undefined) ?? null;
-      },
-      listVendors: async ({ type }) => {
-        let vendors = SEED_MARKETPLACE_VENDORS as VendorRecord[];
-        if (type && type !== 'All') {
-          const needle = type.toLowerCase();
-          vendors = vendors.filter((v) => {
-            const vendorType = String(v.type ?? '').toLowerCase();
-            if (needle === 'lawyer') return vendorType === 'lawyer' || vendorType === 'attorney';
-            if (needle === 'listing agent') {
-              return vendorType === 'listing agent' || vendorType === 'agent';
-            }
-            return vendorType === needle;
-          });
-        }
-        return vendors;
-      },
-    },
-  );
-
-  return toNextResponse(result);
+  try {
+    const result = await buildVendorsReadService().listVendors(user, q);
+    return NextResponse.json(result);
+  } catch (error) {
+    const mapped = marketplaceVendorReadErrorResponse(error);
+    if (mapped) return mapped;
+    const message = error instanceof Error ? error.message : 'Unknown error';
+    return NextResponse.json(
+      { error: 'Failed to fetch vendors', details: message },
+      { status: 500 },
+    );
+  }
 }

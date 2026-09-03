@@ -1,21 +1,25 @@
-import { handleAdminLenderRatesGet } from '@paperworking/api';
-import { toNextResponse } from '@/lib/api/adapt-route-result';
-import {
-  isDevAdminAuthFailure,
-  requireDevAdminAuth,
-} from '@/lib/admin/dev-admin-auth';
-import { SEED_LENDER_RATES_DOC } from '@/lib/admin/seed-data';
+import { NextResponse } from 'next/server';
+import { adminErrorResponse } from '@/lib/api/admin-route-errors';
+import { buildAdminLenderReadService } from '@/lib/api/handler-deps';
+import { isAuthorizedAdmin, resolveAuthUserFromRequest } from '@/lib/api/server-session';
 
-export async function GET() {
-  const auth = await requireDevAdminAuth();
+export const dynamic = 'force-dynamic';
 
-  const result = await handleAdminLenderRatesGet({
-    requireAdmin: async () => {
-      if (isDevAdminAuthFailure(auth)) return auth;
-      return auth;
-    },
-    getConfigDoc: async () => SEED_LENDER_RATES_DOC,
-  });
+/** GET /api/admin/lender-rates — admin lender rate sheet (no secrets). */
+export async function GET(request: Request) {
+  const user = await resolveAuthUserFromRequest(request);
+  if (!user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+  if (!isAuthorizedAdmin(user)) {
+    return NextResponse.json({ error: 'Forbidden', reason: 'admin_required' }, { status: 403 });
+  }
 
-  return toNextResponse(result);
+  try {
+    const result = await buildAdminLenderReadService().getRates(user);
+    return NextResponse.json(result);
+  } catch (error) {
+    const mapped = adminErrorResponse(error);
+    if (mapped) return mapped;
+    const message = error instanceof Error ? error.message : 'Unknown error';
+    return NextResponse.json({ error: 'Failed to load lender rates', details: message }, { status: 500 });
+  }
 }

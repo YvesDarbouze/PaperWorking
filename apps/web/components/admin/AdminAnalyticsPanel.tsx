@@ -7,6 +7,7 @@ import {
   StatusPill,
   useAdminOpsSection,
 } from '@/components/admin/admin-ui';
+import { isProductionRuntime } from '@/lib/data/env';
 
 interface AnalyticsPayload {
   userGrowth: { thisMonth: number; lastMonth: number; wow: string };
@@ -27,6 +28,7 @@ interface AnalyticsPayload {
 export default function AdminAnalyticsPanel() {
   const { data, loading, error, reload } = useAdminOpsSection<AnalyticsPayload>('analytics');
   const [tab, setTab] = useState<'platform' | 'plaid'>('platform');
+  const plaidTabAllowed = !isProductionRuntime();
 
   if (loading || error || !data) {
     return (
@@ -35,6 +37,17 @@ export default function AdminAnalyticsPanel() {
       </AdminPageShell>
     );
   }
+
+  const tabs = (
+    [
+      { id: 'platform' as const, label: 'Platform usage' },
+      ...(plaidTabAllowed
+        ? ([{ id: 'plaid' as const, label: 'Plaid & support' }] as const)
+        : []),
+    ] as const
+  );
+
+  const activeTab = plaidTabAllowed ? tab : 'platform';
 
   return (
     <AdminPageShell
@@ -51,18 +64,13 @@ export default function AdminAnalyticsPanel() {
       }
     >
       <div className="flex gap-2">
-        {(
-          [
-            { id: 'platform' as const, label: 'Platform usage' },
-            { id: 'plaid' as const, label: 'Plaid & support' },
-          ] as const
-        ).map((item) => (
+        {tabs.map((item) => (
           <button
             key={item.id}
             type="button"
             onClick={() => setTab(item.id)}
             className={`rounded-full px-4 py-2 text-sm font-semibold ${
-              tab === item.id ? 'bg-black text-white' : 'border border-black/10 bg-white'
+              activeTab === item.id ? 'bg-black text-white' : 'border border-black/10 bg-white'
             }`}
           >
             {item.label}
@@ -70,7 +78,13 @@ export default function AdminAnalyticsPanel() {
         ))}
       </div>
 
-      {tab === 'platform' ? (
+      {!plaidTabAllowed ? (
+        <p className="rounded-xl border border-amber-500/30 bg-amber-50 px-4 py-3 text-sm text-amber-900">
+          Plaid analytics are Wave-2 and unavailable in production launch scope.
+        </p>
+      ) : null}
+
+      {activeTab === 'platform' ? (
         <>
           <section className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
             <article className="rounded-2xl border border-black/10 bg-white p-5">

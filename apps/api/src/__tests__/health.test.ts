@@ -17,7 +17,7 @@ describe('GET /api/health', () => {
     expect(result.status).toBe(200);
     expect(result.body).toMatchObject({
       ok: true,
-      status: { postgres: 'healthy', firestore: 'healthy' },
+      status: { postgres: 'healthy' },
     });
   });
 

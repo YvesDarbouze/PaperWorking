@@ -1,41 +1,31 @@
-import { handleProjectKpisCurrentGet } from '@paperworking/api';
-import { toNextResponse } from '@/lib/api/adapt-route-result';
-import { recalculateSeedProjectKpis } from '@/lib/insights/adapters';
-import {
-  isDevAuthFailure,
-  requireDevSessionAuth,
-} from '@/lib/projects/dev-session-auth';
+import { NextResponse } from 'next/server';
+import { buildProjectKpiReadService } from '@/lib/api/handler-deps';
+import { projectsReadErrorResponse } from '@/lib/api/project-route-errors';
+import { resolveAuthUserFromRequest } from '@/lib/api/server-session';
 
-export async function GET(
-  _request: Request,
-  context: { params: Promise<{ id: string }> },
-) {
+export const dynamic = 'force-dynamic';
+
+type RouteContext = { params: Promise<{ id: string }> };
+
+/** GET /api/projects/[id]/kpis/current — authorized project KPI scorecard. */
+export async function GET(request: Request, context: RouteContext) {
+  const user = await resolveAuthUserFromRequest(request);
+  if (!user) {
+    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+  }
+
   const { id } = await context.params;
-  const auth = await requireDevSessionAuth();
 
-  const result = await handleProjectKpisCurrentGet(id, {
-    requireAuth: async () => {
-      if (isDevAuthFailure(auth)) return auth;
-      return { uid: auth.uid };
-    },
-    recalculateKpis: recalculateSeedProjectKpis,
-    loadRecentTransactions: async (projectId) => [
-      {
-        id: `${projectId}-tx-1`,
-        payee: 'Property Manager',
-        category: 'MANAGEMENT',
-        amount: 240,
-        transactionDate: '2026-08-01',
-      },
-      {
-        id: `${projectId}-tx-2`,
-        payee: 'Tenant — Unit A',
-        category: 'RENT_INCOME',
-        amount: 3200,
-        transactionDate: '2026-08-05',
-      },
-    ],
-  });
-
-  return toNextResponse(result);
+  try {
+    const result = await buildProjectKpiReadService().getCurrentProjectKpis(user, id);
+    return NextResponse.json(result);
+  } catch (error) {
+    const mapped = projectsReadErrorResponse(error);
+    if (mapped) return mapped;
+    const message = error instanceof Error ? error.message : 'Unknown error';
+    return NextResponse.json(
+      { error: 'Failed to fetch project KPIs', details: message },
+      { status: 500 },
+    );
+  }
 }

@@ -9,9 +9,16 @@ export type LoadAgentForImpersonationFn = (
   agentId: string,
 ) => Promise<{ id: string; email: string; name: string; persona?: string } | null>;
 
+export type RecordImpersonationAuditFn = (input: {
+  actor: { uid: string; email?: string | null; role?: string | null };
+  agentId: string;
+  agentPersona?: string;
+}) => Promise<void>;
+
 export interface AdminAgentCrewImpersonatePostDeps {
   requireAdmin?: RequireAdminFn;
   loadAgent?: LoadAgentForImpersonationFn;
+  recordAudit?: RecordImpersonationAuditFn;
 }
 
 /**
@@ -42,6 +49,14 @@ export async function handleAdminAgentCrewImpersonatePost(
 
     if (!agent) {
       return jsonResponse(404, { error: 'Agent not found' });
+    }
+
+    if (deps.recordAudit) {
+      await deps.recordAudit({
+        actor: auth,
+        agentId: agent.id,
+        agentPersona: agent.persona,
+      });
     }
 
     const cookies = buildImpersonationCookies({

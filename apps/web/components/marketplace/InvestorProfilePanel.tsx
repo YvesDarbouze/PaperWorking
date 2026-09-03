@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
+import { getMarketplaceInvestorFromBff, setMarketplaceInvestorFollowFromBff } from '@/lib/marketplace/marketplace-api';
 
 interface InvestorDetailPayload {
   profile?: {
@@ -30,12 +31,9 @@ export default function InvestorProfilePanel({ investorId }: { investorId: strin
       setLoading(true);
       setError(null);
       try {
-        const response = await fetch(`/api/marketplace/investors/${investorId}`, {
-          credentials: 'include',
-          cache: 'no-store',
-        });
-        const body = (await response.json()) as InvestorDetailPayload & { error?: string };
-        if (!response.ok) throw new Error(body.error ?? 'Investor not found');
+        const body = (await getMarketplaceInvestorFromBff(investorId)) as InvestorDetailPayload & {
+          error?: string;
+        };
         if (!cancelled) {
           setPayload(body);
           setIsFollowing(Boolean(body.isFollowing));
@@ -56,13 +54,15 @@ export default function InvestorProfilePanel({ investorId }: { investorId: strin
   }, [investorId]);
 
   const toggleFollow = async () => {
-    const response = await fetch('/api/marketplace/investors/follow', {
-      method: 'POST',
-      credentials: 'include',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ targetUid: investorId, follow: !isFollowing }),
-    });
-    if (response.ok) setIsFollowing((current) => !current);
+    try {
+      await setMarketplaceInvestorFollowFromBff({
+        targetUid: investorId,
+        follow: !isFollowing,
+      });
+      setIsFollowing((current) => !current);
+    } catch {
+      // keep server-authoritative follow state on failure
+    }
   };
 
   if (loading) {
@@ -84,7 +84,7 @@ export default function InvestorProfilePanel({ investorId }: { investorId: strin
   const { profile } = payload;
 
   return (
-    <div className="mx-auto max-w-[960px] space-y-8 px-4 py-6 md:px-8 md:py-8">
+    <div className="w-full min-w-0 space-y-8 px-4 py-6 md:px-8 md:py-8">
       <Link href="/dashboard/marketplace" className="text-sm text-white/60 underline-offset-4 hover:underline">
         ← Back to marketplace
       </Link>

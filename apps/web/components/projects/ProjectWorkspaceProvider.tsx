@@ -3,6 +3,7 @@
 import { createContext, useContext, useEffect, useMemo, useState, type ReactNode } from 'react';
 import ProjectWorkspaceShell from '@/components/projects/ProjectWorkspaceShell';
 import type { ProjectWorkspace } from '@/lib/projects/types';
+import { bffFetch } from '@/lib/api/bff-fetch';
 
 interface ProjectWorkspaceContextValue {
   project: ProjectWorkspace | null;
@@ -37,7 +38,7 @@ export default function ProjectWorkspaceProvider({
       setLoading(true);
       setError(null);
       try {
-        const response = await fetch(`/api/projects/${projectId}`, {
+        const response = await bffFetch(`/api/projects/${projectId}`, {
           credentials: 'include',
           cache: 'no-store',
         });

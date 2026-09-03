@@ -1,0 +1,80 @@
+rules_version = '2';
+
+// Migration-phase Firestore rules (Phase 1 scaffold).
+// Server-side writes use Firebase Admin SDK + AuthorizationService.
+// Client direct access is restricted until entity repositories are verified.
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function isSelf(uid) {
+      return isSignedIn() && request.auth.uid == uid;
+    }
+
+    // Users may read their own profile document only.
+    match /users/{uid} {
+      allow read: if isSelf(uid);
+      allow write: if false;
+    }
+
+    // Operational collections — server-authoritative during migration.
+    match /organizations/{orgId} {
+      allow read, write: if false;
+    }
+
+    match /organizationMembers/{membershipId} {
+      allow read, write: if false;
+    }
+
+    match /projects/{projectId} {
+      allow read, write: if false;
+    }
+
+    match /projectMembers/{membershipId} {
+      allow read, write: if false;
+    }
+
+    match /dealListings/{listingId} {
+      allow read, write: if false;
+    }
+
+    match /dealInvitations/{invitationId} {
+      allow read, write: if false;
+    }
+
+    match /inboxItems/{itemId} {
+      allow read, write: if false;
+    }
+
+    match /notifications/{notificationId} {
+      allow read, write: if false;
+    }
+
+    match /messageThreads/{threadId} {
+      allow read, write: if false;
+    }
+
+    match /messages/{messageId} {
+      allow read, write: if false;
+    }
+
+    match /taskAssignments/{taskId} {
+      allow read, write: if false;
+    }
+
+    match /vendorServices/{serviceId} {
+      allow read, write: if false;
+    }
+
+    match /systemConfig/{docId} {
+      allow read, write: if false;
+    }
+
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}

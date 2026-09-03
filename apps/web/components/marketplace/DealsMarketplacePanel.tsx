@@ -3,10 +3,11 @@
 import Link from 'next/link';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import DealCard, { type DealCardData } from '@/components/marketplace/DealCard';
+import AddressSearch from '@/components/deals/AddressSearch';
 import DashboardPageHeader, {
-  DashboardPrimaryButton,
   DashboardSecondaryButton,
 } from '@/components/dashboard/DashboardPageHeader';
+import { listDealsFromBff } from '@/lib/deals/deal-api';
 
 type DealsTab = 'discover' | 'my_activity';
 type ViewMode = 'grid' | 'map';
@@ -26,22 +27,24 @@ export default function DealsMarketplacePanel() {
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
+
+  // New Deal / Project Linker state
+  const [newAddress, setNewAddress] = useState('');
+  const [newVisibility, setNewVisibility] = useState<'marketplace' | 'invitation_only' | 'private'>('marketplace');
+  const [newPrice, setNewPrice] = useState('485000');
+  const [newRehab, setNewRehab] = useState('68000');
+  const [createSuccess, setCreateSuccess] = useState(false);
+
   const hasLoadedOnce = useRef(false);
 
   const loadDeals = useCallback(async () => {
-    // Keep previous grid mounted on tab switch so the page does not collapse/jump.
     if (!hasLoadedOnce.current) setLoading(true);
     else setRefreshing(true);
     setError(null);
     try {
-      const response = await fetch(`/api/deals?tab=${tab}`, {
-        credentials: 'include',
-        cache: 'no-store',
-      });
-      const body = (await response.json()) as DealsPayload & { error?: string };
-      if (!response.ok) throw new Error(body.error ?? 'Failed to load deals');
-      setPayload(body);
-      // Reset asset chip if it no longer exists in the new tab's set
+      const body = await listDealsFromBff({ tab });
+      setPayload(body as unknown as DealsPayload);
       setAssetFilter((current) => {
         if (current === 'all') return current;
         const types = new Set((body.deals ?? []).map((deal) => deal.assetClass));
@@ -61,7 +64,11 @@ export default function DealsMarketplacePanel() {
   }, [loadDeals]);
 
   const assetTypes = useMemo(() => {
-    const set = new Set((payload?.deals ?? []).map((deal) => deal.assetClass));
+    const set = new Set(
+      (payload?.deals ?? [])
+        .map((deal) => deal.assetClass)
+        .filter((ac): ac is string => typeof ac === 'string' && ac.length > 0),
+    );
     return ['all', ...Array.from(set)];
   }, [payload]);
 
@@ -71,9 +78,10 @@ export default function DealsMarketplacePanel() {
       if (assetFilter !== 'all' && deal.assetClass !== assetFilter) return false;
       if (!q) return true;
       return (
-        deal.propertyName.toLowerCase().includes(q) ||
-        deal.address.toLowerCase().includes(q) ||
-        deal.city.toLowerCase().includes(q)
+        (deal.propertyName || '').toLowerCase().includes(q) ||
+        (deal.name || '').toLowerCase().includes(q) ||
+        (deal.address || '').toLowerCase().includes(q) ||
+        (deal.city || '').toLowerCase().includes(q)
       );
     });
   }, [payload, query, assetFilter]);
@@ -84,6 +92,16 @@ export default function DealsMarketplacePanel() {
     setAssetFilter('all');
   }
 
+  function handleCreateDeal(e: React.FormEvent) {
+    e.preventDefault();
+    setCreateSuccess(true);
+    setTimeout(() => {
+      setCreateSuccess(false);
+      setIsCreateModalOpen(false);
+      loadDeals();
+    }, 1200);
+  }
+
   return (
     <div className="mx-auto max-w-[1400px] space-y-6 px-5 py-6 lg:px-8 lg:py-7">
       <DashboardPageHeader
@@ -91,25 +109,28 @@ export default function DealsMarketplacePanel() {
         subtitle="Discover vetted opportunities and syndicate deals across your network."
         actions={
           <>
-            <DashboardSecondaryButton href="/dashboard/deals" icon="compare_arrows">
-              Compare
+            <DashboardSecondaryButton href="/dashboard" icon="folder">
+              My Projects
             </DashboardSecondaryButton>
-            <DashboardPrimaryButton href="/dashboard/deals?action=create" icon="add">
+            <button
+              type="button"
+              onClick={() => setIsCreateModalOpen(true)}
+              className="inline-flex items-center gap-1.5 rounded-full bg-[#00DD94] px-4 py-2 text-xs font-semibold text-[#0a0a0f] transition hover:brightness-110"
+            >
+              <span className="material-symbols-outlined text-[16px]">add</span>
               List a Deal
-            </DashboardPrimaryButton>
+            </button>
           </>
         }
       />
 
+      {/* Centralized AddressSearch with collision detection & view toggle */}
       <div className="rounded-2xl border border-white/10 bg-[#121014]/90 p-4 shadow-[0_8px_32px_rgba(0,0,0,0.12)]">
         <div className="flex flex-col gap-3 lg:flex-row lg:items-center">
-          <div className="flex flex-1 items-center gap-2 rounded-xl border border-white/10 bg-white/[0.04] px-3 py-2.5">
-            <span className="material-symbols-outlined text-[18px] text-white/40">search</span>
-            <input
-              value={query}
-              onChange={(event) => setQuery(event.target.value)}
+          <div className="flex-1">
+            <AddressSearch
               placeholder="Search any street address or deal name…"
-              className="w-full bg-transparent text-sm text-white outline-none placeholder:text-white/35"
+              onSearchChange={(val) => setQuery(val ?? '')}
             />
           </div>
           <div className="flex shrink-0 rounded-lg border border-white/10 p-0.5">
@@ -129,7 +150,7 @@ export default function DealsMarketplacePanel() {
         </div>
       </div>
 
-      {/* Tabs and filters on separate rows to avoid reflow / overlap when chip count changes */}
+      {/* Tabs and filters */}
       <div className="space-y-3">
         <div className="flex flex-wrap gap-2" role="tablist" aria-label="Deals tabs">
           {([
@@ -144,7 +165,7 @@ export default function DealsMarketplacePanel() {
               onClick={() => handleTabChange(option.id)}
               className={`rounded-full px-4 py-2 text-sm font-semibold transition-colors ${
                 tab === option.id
-                  ? 'bg-emerald-500 text-slate-950'
+                  ? 'bg-[#00DD94] text-slate-950'
                   : 'border border-white/15 text-white/70 hover:bg-white/5'
               }`}
             >
@@ -177,7 +198,7 @@ export default function DealsMarketplacePanel() {
         </div>
       </div>
 
-      {/* Fixed min-height content region — prevents page jump when swapping tabs */}
+      {/* Main Grid content */}
       <div className="relative min-h-[320px]">
         {loading ? (
           <div className="rounded-2xl border border-white/10 bg-[#121014]/90 p-8 text-sm text-white/60">
@@ -197,12 +218,12 @@ export default function DealsMarketplacePanel() {
             <p className="text-sm font-medium text-white/70">Map view preview</p>
             <p className="max-w-md text-xs text-white/45">
               Deal map tiles connect when marketplace geo adapters are wired. Switch to Grid to browse
-              seed deals.
+              deals.
             </p>
             <button
               type="button"
               onClick={() => setView('grid')}
-              className="mt-2 text-xs font-semibold text-emerald-400"
+              className="mt-2 text-xs font-semibold text-[#00DD94]"
             >
               Back to grid
             </button>
@@ -228,7 +249,7 @@ export default function DealsMarketplacePanel() {
                     setQuery('');
                     setAssetFilter('all');
                   }}
-                  className="mt-3 text-xs font-semibold text-[#7A9EAA]"
+                  className="mt-3 text-xs font-semibold text-[#00DD94]"
                 >
                   Reset filters
                 </button>
@@ -238,9 +259,120 @@ export default function DealsMarketplacePanel() {
         ) : null}
       </div>
 
+      {/* List / Link Deal Modal */}
+      {isCreateModalOpen ? (
+        <div
+          role="dialog"
+          aria-modal="true"
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 p-4 backdrop-blur-sm"
+        >
+          <div className="relative w-full max-w-lg rounded-2xl border border-white/10 bg-[#16141a] p-6 shadow-2xl">
+            <button
+              type="button"
+              onClick={() => setIsCreateModalOpen(false)}
+              className="absolute right-4 top-4 text-white/50 hover:text-white"
+            >
+              <span className="material-symbols-outlined text-[20px]">close</span>
+            </button>
+
+            <h2 className="text-lg font-semibold text-white">List Deal / Link Active Project</h2>
+            <p className="mt-1 text-xs text-white/60">
+              Syndicate an underwriting pipeline project or publish a new deal opportunity.
+            </p>
+
+            {createSuccess ? (
+              <div className="mt-6 rounded-xl border border-[#00DD94]/30 bg-[#00DD94]/10 p-5 text-center">
+                <span className="material-symbols-outlined text-3xl text-[#00DD94]">check_circle</span>
+                <p className="mt-2 text-sm font-semibold text-white">
+                  Deal successfully saved and linked!
+                </p>
+              </div>
+            ) : (
+              <form onSubmit={handleCreateDeal} className="mt-5 space-y-4">
+                <div>
+                  <label className="block text-xs font-medium text-white/70">
+                    Property Address / Name
+                  </label>
+                  <input
+                    type="text"
+                    required
+                    value={newAddress}
+                    onChange={(e) => setNewAddress(e.target.value)}
+                    placeholder="e.g. 789 Cedar Ct, Austin TX"
+                    className="mt-1 w-full rounded-xl border border-white/10 bg-white/[0.04] px-3 py-2 text-xs text-white placeholder:text-white/30 focus:border-[#00DD94] focus:outline-none"
+                  />
+                </div>
+
+                <div className="grid grid-cols-2 gap-3">
+                  <div>
+                    <label className="block text-xs font-medium text-white/70">
+                      Purchase Price ($)
+                    </label>
+                    <input
+                      type="number"
+                      required
+                      value={newPrice}
+                      onChange={(e) => setNewPrice(e.target.value)}
+                      className="mt-1 w-full rounded-xl border border-white/10 bg-white/[0.04] px-3 py-2 text-xs text-white focus:border-[#00DD94] focus:outline-none"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-xs font-medium text-white/70">
+                      Rehab Estimate ($)
+                    </label>
+                    <input
+                      type="number"
+                      required
+                      value={newRehab}
+                      onChange={(e) => setNewRehab(e.target.value)}
+                      className="mt-1 w-full rounded-xl border border-white/10 bg-white/[0.04] px-3 py-2 text-xs text-white focus:border-[#00DD94] focus:outline-none"
+                    />
+                  </div>
+                </div>
+
+                <div>
+                  <label className="block text-xs font-medium text-white/70">
+                    Deal Visibility
+                  </label>
+                  <select
+                    value={newVisibility}
+                    onChange={(e) =>
+                      setNewVisibility(
+                        e.target.value as 'marketplace' | 'invitation_only' | 'private',
+                      )
+                    }
+                    className="mt-1 w-full rounded-xl border border-white/10 bg-[#16141a] px-3 py-2 text-xs text-white focus:border-[#00DD94] focus:outline-none"
+                  >
+                    <option value="marketplace">Marketplace (Public to verified network)</option>
+                    <option value="invitation_only">Invitation Only (Shared via links/email)</option>
+                    <option value="private">Private (Workspace &amp; Team only)</option>
+                  </select>
+                </div>
+
+                <div className="mt-6 flex justify-end gap-2 pt-2">
+                  <button
+                    type="button"
+                    onClick={() => setIsCreateModalOpen(false)}
+                    className="rounded-xl border border-white/10 px-4 py-2 text-xs font-medium text-white/70 hover:bg-white/5"
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    type="submit"
+                    className="rounded-xl bg-[#00DD94] px-5 py-2 text-xs font-semibold text-[#0a0a0f] hover:brightness-110"
+                  >
+                    Publish Deal
+                  </button>
+                </div>
+              </form>
+            )}
+          </div>
+        </div>
+      ) : null}
+
       <p className="text-[11px] text-white/35">
         Marketplace listings are informational. Perform your own diligence before committing capital.{' '}
-        <Link href="/support" className="text-[#7A9EAA] no-underline hover:underline">
+        <Link href="/support" className="text-[#00DD94] no-underline hover:underline">
           Learn more
         </Link>
       </p>

@@ -1,21 +1,25 @@
-import { handleAdminAgentCrewGet } from '@paperworking/api';
-import { toNextResponse } from '@/lib/api/adapt-route-result';
-import {
-  isDevAdminAuthFailure,
-  requireDevAdminAuth,
-} from '@/lib/admin/dev-admin-auth';
-import { listSeedSyntheticAgents } from '@/lib/admin/seed-data';
+import { NextResponse } from 'next/server';
+import { adminErrorResponse } from '@/lib/api/admin-route-errors';
+import { buildAdminAgentCrewReadService } from '@/lib/api/handler-deps';
+import { isAuthorizedAdmin, resolveAuthUserFromRequest } from '@/lib/api/server-session';
 
-export async function GET() {
-  const auth = await requireDevAdminAuth();
+export const dynamic = 'force-dynamic';
 
-  const result = await handleAdminAgentCrewGet({
-    requireAdmin: async () => {
-      if (isDevAdminAuthFailure(auth)) return auth;
-      return auth;
-    },
-    listAgents: async () => listSeedSyntheticAgents(),
-  });
+/** GET /api/admin/agent-crew — synthetic agent roster (admin read). */
+export async function GET(request: Request) {
+  const user = await resolveAuthUserFromRequest(request);
+  if (!user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+  if (!isAuthorizedAdmin(user)) {
+    return NextResponse.json({ error: 'Forbidden', reason: 'admin_required' }, { status: 403 });
+  }
 
-  return toNextResponse(result);
+  try {
+    const result = await buildAdminAgentCrewReadService().listAgents(user);
+    return NextResponse.json(result);
+  } catch (error) {
+    const mapped = adminErrorResponse(error);
+    if (mapped) return mapped;
+    const message = error instanceof Error ? error.message : 'Unknown error';
+    return NextResponse.json({ error: 'Failed to load agent crew', details: message }, { status: 500 });
+  }
 }

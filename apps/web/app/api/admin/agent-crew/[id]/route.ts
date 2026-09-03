@@ -1,58 +1,57 @@
+import { NextResponse } from 'next/server';
+import { adminErrorResponse } from '@/lib/api/admin-route-errors';
 import {
-  handleAdminAgentCrewByIdDelete,
-  handleAdminAgentCrewByIdGet,
-  handleAdminAgentCrewImpersonatePost,
-} from '@paperworking/api';
-import { toNextResponse } from '@/lib/api/adapt-route-result';
-import {
-  isDevAdminAuthFailure,
-  requireDevAdminAuth,
-} from '@/lib/admin/dev-admin-auth';
-import {
-  deleteSeedSyntheticAgent,
-  getSeedSyntheticAgent,
-} from '@/lib/admin/seed-data';
+  buildAdminAgentCrewCommandService,
+  buildAdminAgentCrewReadService,
+} from '@/lib/api/handler-deps';
+import { isAuthorizedAdmin, resolveAuthUserFromRequest } from '@/lib/api/server-session';
 
-async function adminDeps() {
-  const auth = await requireDevAdminAuth();
-  return {
-    requireAdmin: async () => {
-      if (isDevAdminAuthFailure(auth)) return auth;
-      return auth;
-    },
-  };
+export const dynamic = 'force-dynamic';
+
+type RouteContext = { params: Promise<{ id: string }> };
+
+/** GET /api/admin/agent-crew/:id — synthetic agent detail (admin read). */
+export async function GET(request: Request, context: RouteContext) {
+  const user = await resolveAuthUserFromRequest(request);
+  if (!user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+  if (!isAuthorizedAdmin(user)) {
+    return NextResponse.json({ error: 'Forbidden', reason: 'admin_required' }, { status: 403 });
+  }
+
+  const { id } = await context.params;
+  try {
+    const result = await buildAdminAgentCrewReadService().getAgent(user, id);
+    if (!result.success) {
+      return NextResponse.json(result, { status: 404 });
+    }
+    return NextResponse.json(result);
+  } catch (error) {
+    const mapped = adminErrorResponse(error);
+    if (mapped) return mapped;
+    const message = error instanceof Error ? error.message : 'Unknown error';
+    return NextResponse.json({ error: 'Failed to load agent detail', details: message }, { status: 500 });
+  }
 }
 
-export async function GET(
-  _request: Request,
-  context: { params: Promise<{ id: string }> },
-) {
+/** DELETE /api/admin/agent-crew/:id — delete synthetic agent (admin mutation). */
+export async function DELETE(request: Request, context: RouteContext) {
+  const user = await resolveAuthUserFromRequest(request);
+  if (!user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+  if (!isAuthorizedAdmin(user)) {
+    return NextResponse.json({ error: 'Forbidden', reason: 'admin_required' }, { status: 403 });
+  }
+
   const { id } = await context.params;
-  const deps = await adminDeps();
-
-  const result = await handleAdminAgentCrewByIdGet(id, {
-    ...deps,
-    loadAgent: async (agentId) => getSeedSyntheticAgent(agentId),
-  });
-
-  return toNextResponse(result);
-}
-
-export async function DELETE(
-  _request: Request,
-  context: { params: Promise<{ id: string }> },
-) {
-  const { id } = await context.params;
-  const deps = await adminDeps();
-
-  const result = await handleAdminAgentCrewByIdDelete(id, {
-    ...deps,
-    deleteAgent: async (agentId) => {
-      const deleted = deleteSeedSyntheticAgent(agentId);
-      if (!deleted) throw new Error('Agent not found');
-      return deleted;
-    },
-  });
-
-  return toNextResponse(result);
+  try {
+    const result = await buildAdminAgentCrewCommandService().deleteAgent(user, id);
+    if (!result.success) {
+      return NextResponse.json(result, { status: 404 });
+    }
+    return NextResponse.json(result);
+  } catch (error) {
+    const mapped = adminErrorResponse(error);
+    if (mapped) return mapped;
+    const message = error instanceof Error ? error.message : 'Unknown error';
+    return NextResponse.json({ error: 'Failed to delete agent', details: message }, { status: 500 });
+  }
 }

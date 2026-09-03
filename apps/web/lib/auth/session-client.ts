@@ -1,5 +1,7 @@
 import { DASHBOARD_ROUTE, resolvePostAuthDestination } from '@/lib/auth/post-auth-redirect';
 import { DEV_MOCK_SESSION_TOKEN } from '@/lib/auth/session-cookies';
+import { authFetch } from '@/lib/auth/auth-fetch';
+import { useMockAuth } from '@/lib/data';
 
 export interface CreateSessionResult {
   ok: boolean;
@@ -13,13 +15,22 @@ export async function fetchSessionProfile(): Promise<{
   subscriptionPlan?: string;
   subscriptionStatus?: string;
 }> {
-  const response = await fetch('/api/auth/me', { credentials: 'include', cache: 'no-store' });
-  if (!response.ok) return { authenticated: false };
-  return response.json();
+  try {
+    const response = await authFetch('/api/auth/me', { credentials: 'include', cache: 'no-store' });
+    if (!response.ok) return { authenticated: false };
+    return response.json();
+  } catch {
+    // API unreachable (not running, CORS, offline) — treat as logged out.
+    return { authenticated: false };
+  }
 }
 
 export async function createDevSession(accountType = 'investor'): Promise<CreateSessionResult> {
-  const response = await fetch('/api/auth/session', {
+  if (!useMockAuth()) {
+    throw new Error('Supabase Auth is required');
+  }
+
+  const response = await authFetch('/api/auth/session', {
     method: 'POST',
     credentials: 'include',
     headers: { 'Content-Type': 'application/json' },
@@ -37,11 +48,15 @@ export async function createDevSession(accountType = 'investor'): Promise<Create
 }
 
 export async function destroySession(): Promise<boolean> {
-  const response = await fetch('/api/auth/session', {
-    method: 'DELETE',
-    credentials: 'include',
-  });
-  return response.ok;
+  try {
+    const response = await authFetch('/api/auth/session', {
+      method: 'DELETE',
+      credentials: 'include',
+    });
+    return response.ok;
+  } catch {
+    return false;
+  }
 }
 
 export function resolveLoginRedirect(options?: {

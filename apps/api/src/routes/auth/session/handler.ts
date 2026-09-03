@@ -17,6 +17,7 @@ import {
   hasAdminCredentials,
   parseDeviceFromUserAgent,
 } from '../../../lib/auth/session-constants.js';
+import type { EstablishSessionResult } from '@paperworking/services';
 
 export interface SessionPostBody {
   idToken?: string;
@@ -42,6 +43,11 @@ export interface SessionPostDeps {
   createSessionCookie?: (idToken: string, expiresInMs: number) => Promise<string>;
   getUserProfile?: (uid: string) => Promise<UserSessionProfile>;
   trackSession?: (input: SessionTrackInput) => Promise<void>;
+  /** Shared SessionCommandService path — provisions user and builds cookie descriptors. */
+  establishSharedSession?: (input: {
+    idToken: string;
+    sessionId: string;
+  }) => Promise<EstablishSessionResult>;
   env?: {
     nodeEnv?: string;
     enableMockAuth?: boolean;
@@ -116,7 +122,10 @@ export async function handleSessionPost(
   }
 
   const nodeEnv = deps.env?.nodeEnv ?? process.env.NODE_ENV ?? 'development';
-  const enableMockAuth = deps.env?.enableMockAuth ?? process.env.ENABLE_MOCK_AUTH === 'true';
+  // Production can never enable mock auth, even if ENABLE_MOCK_AUTH=true.
+  const requestedMock =
+    deps.env?.enableMockAuth ?? process.env.ENABLE_MOCK_AUTH === 'true';
+  const enableMockAuth = nodeEnv !== 'production' && Boolean(requestedMock);
   const hasCredentials = deps.hasCredentials ?? hasAdminCredentials;
 
   if (!hasCredentials()) {
@@ -143,11 +152,60 @@ export async function handleSessionPost(
 
   const verifyIdToken = deps.verifyIdToken;
   const createSessionCookie = deps.createSessionCookie;
-  if (!verifyIdToken) {
+  const establishSharedSession = deps.establishSharedSession;
+  if (!verifyIdToken && !establishSharedSession) {
     return jsonResponse(503, { error: 'Auth service unavailable' });
   }
 
   try {
+    const sessionId = crypto.randomUUID();
+    const userAgent = request.headers.get('user-agent') || 'Unknown';
+    const ipAddress =
+      request.headers.get('x-forwarded-for') ||
+      request.headers.get('x-real-ip') ||
+      'Unknown';
+
+    if (establishSharedSession) {
+      const shared = await establishSharedSession({ idToken, sessionId });
+      if (!shared.ok) {
+        console.error(
+          '[POST /api/auth/session] establishSession failed:',
+          shared.status,
+          shared.body,
+        );
+        return jsonResponse(shared.status, shared.body as Record<string, unknown>);
+      }
+
+      if (deps.trackSession) {
+        try {
+          await deps.trackSession({
+            uid: shared.uid,
+            sessionId,
+            device: parseDeviceFromUserAgent(userAgent),
+            userAgent,
+            ipAddress,
+          });
+        } catch {
+          // Non-fatal — mirrors source behavior
+        }
+      }
+
+      return jsonResponse(
+        200,
+        { status: 'success', uid: shared.uid },
+        undefined,
+        shared.cookies.map((c) => ({
+          name: c.name,
+          value: c.value,
+          options: c.options as CookieOptions,
+        })),
+      );
+    }
+
+    if (!verifyIdToken) {
+      return jsonResponse(503, { error: 'Auth service unavailable' });
+    }
+
     let decoded: { uid: string };
     try {
       decoded = await verifyIdToken(idToken);
@@ -169,25 +227,20 @@ export async function handleSessionPost(
     }
 
     const profile = deps.getUserProfile
-      ? await deps.getUserProfile(decoded.uid)
+      ? await deps.getUserProfile(decoded!.uid)
       : {
           subscriptionPlan: 'None',
           subscriptionStatus: 'inactive',
           accountType: 'investor',
         };
 
-    const userAgent = request.headers.get('user-agent') || 'Unknown';
-    const ipAddress =
-      request.headers.get('x-forwarded-for') ||
-      request.headers.get('x-real-ip') ||
-      'Unknown';
-    const sessionId = crypto.randomUUID();
+    const legacySessionId = crypto.randomUUID();
 
     if (deps.trackSession) {
       try {
         await deps.trackSession({
-          uid: decoded.uid,
-          sessionId,
+          uid: decoded!.uid,
+          sessionId: legacySessionId,
           device: parseDeviceFromUserAgent(userAgent),
           userAgent,
           ipAddress,
@@ -197,10 +250,10 @@ export async function handleSessionPost(
       }
     }
 
-    const cookieOpts = prodCookieOpts();
+    const cookieOpts = nodeEnv === 'production' ? prodCookieOpts() : devCookieOpts();
     return jsonResponse(
       200,
-      { status: 'success', uid: decoded.uid },
+      { status: 'success', uid: decoded!.uid },
       undefined,
       [
         { name: SESSION_COOKIE, value: cookieValue, options: cookieOpts },
@@ -210,7 +263,7 @@ export async function handleSessionPost(
           options: { ...cookieOpts, httpOnly: false },
         },
         { name: ACCT_COOKIE, value: profile.accountType, options: cookieOpts },
-        { name: SESSION_ID_COOKIE, value: sessionId, options: { ...cookieOpts, httpOnly: false } },
+        { name: SESSION_ID_COOKIE, value: legacySessionId, options: { ...cookieOpts, httpOnly: false } },
       ],
     );
   } catch (err: unknown) {

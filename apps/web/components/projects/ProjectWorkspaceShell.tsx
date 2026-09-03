@@ -76,7 +76,7 @@ export default function ProjectWorkspaceShell({
         </nav>
       </header>
 
-      <main className="mx-auto max-w-7xl px-4 py-6 md:px-6">{children}</main>
+      <main className="w-full min-w-0 px-4 py-5 sm:px-5 sm:py-6 lg:px-6 xl:px-8">{children}</main>
     </div>
   );
 }

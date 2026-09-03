@@ -41,18 +41,12 @@ export default function PricingSection() {
 
       <div className="relative z-10">
         <div className="mx-auto max-w-[1100px] px-6 pb-6 pt-8 text-center md:pb-8 md:pt-12 lg:px-8">
-          <p className="mb-2.5 font-[family-name:var(--font-jetbrains-mono)] text-[10px] font-medium uppercase tracking-[0.12em] text-[color:var(--color-primary)]">
-            Real Estate Bloomberg Terminal
-          </p>
-
-          <h1 className="landing-display mx-auto mb-3 max-w-[1000px] font-semibold leading-[1.15] tracking-[-0.02em] text-white">
-            The average stock trade is $5000, the average Real Estate deal is $429,000. Why do stock
-            investors have better fintech apps?
+          <h1 className="landing-display mx-auto mb-3 max-w-[1000px] font-semibold leading-[1.15] tracking-[-0.02em] text-white uppercase">
+            REAL ESTATE BLOOMBERG TERMINAL
           </h1>
 
-          <p className="mx-auto max-w-3xl text-sm leading-[1.6] text-white/65 sm:text-base">
-            PaperWorking is the Bloomberg Terminal for serious Real Estate Investors. For people who
-            understand the advantage sober data gives them.
+          <p className="mx-auto max-w-3xl text-base leading-[1.6] text-white/65 sm:text-lg">
+            The average stock trade is $5,000. The average real estate deal is $429,000. Why do stock investors have better fintech apps?
           </p>
         </div>
 
@@ -98,10 +92,10 @@ export default function PricingSection() {
             {PRICING_PLANS.map((plan) => (
               <div
                 key={plan.id}
-                className={`glass-card relative flex h-full flex-col rounded-[24px] border p-7 transition-all duration-300 ${
+                className={`relative flex h-full flex-col rounded-2xl border bg-white/[0.03] backdrop-blur-[12px] p-7 transition-all duration-300 ${
                   plan.highlighted
-                    ? 'border-[color:var(--color-primary)]/40 bg-white/[0.05] shadow-[0_0_50px_-12px_rgba(0,221,148,0.25)]'
-                    : 'border-white/10 bg-white/[0.03]'
+                    ? 'border-[#00DD94]/40 shadow-[0_0_50px_-12px_rgba(0,221,148,0.25)]'
+                    : 'border-white/10 shadow-md'
                 }`}
               >
                 <div className="border-b border-white/[0.08] pb-5">
@@ -109,14 +103,14 @@ export default function PricingSection() {
                     <h3
                       className={`text-2xl font-semibold tracking-tight ${
                         plan.highlighted
-                          ? 'text-[color:var(--color-primary)]'
+                          ? 'text-[#00DD94]'
                           : 'text-white'
                       }`}
                     >
                       {plan.name}
                     </h3>
                     {plan.badge ? (
-                      <span className="rounded-full border border-[color:var(--color-primary)]/30 bg-[color:var(--color-primary)]/10 px-3 py-1 font-[family-name:var(--font-jetbrains-mono)] text-[10px] font-medium uppercase tracking-widest text-[color:var(--color-primary)]">
+                      <span className="absolute -top-3 right-6 rounded-full bg-[#00DD94] text-[#0a0a0f] px-3.5 py-1 font-[family-name:var(--font-jetbrains-mono)] text-[10px] font-bold uppercase tracking-wider">
                         {plan.badge}
                       </span>
                     ) : null}
@@ -138,16 +132,21 @@ export default function PricingSection() {
                       ? `billed annually ($${plan.annualPrice}/year)`
                       : 'billed monthly'}
                   </p>
+                  <p className="mt-2 text-[11px] leading-relaxed text-white/50">
+                    {plan.id === 'vendor'
+                      ? '14-day trial · No charge until day 15'
+                      : '14-day trial · No charge until day 15 · Export your data anytime'}
+                  </p>
                 </div>
 
                 <div className="py-5">
                   <button
                     type="button"
                     onClick={() => handleSelect(plan)}
-                    className={`w-full cursor-pointer rounded-full py-3.5 text-sm font-semibold transition-all duration-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--color-primary)] ${
+                    className={`w-full cursor-pointer rounded-full py-3.5 text-sm font-semibold transition-all duration-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#00DD94] ${
                       plan.highlighted
-                        ? 'bg-[color:var(--color-primary)] text-[#0d0a0b] shadow-[0_0_24px_-4px_rgba(0,221,148,0.45)]'
-                        : 'border border-[color:var(--color-primary)]/40 text-[color:var(--color-primary)] hover:bg-[color:var(--color-primary)]/10'
+                        ? 'bg-[#00DD94] text-[#0a0a0f] border-none shadow-[0_0_24px_-4px_rgba(0,221,148,0.45)] hover:opacity-90'
+                        : 'border border-white/20 text-white bg-transparent hover:bg-white/10 hover:border-white/30'
                     }`}
                   >
                     {plan.cta}
@@ -164,8 +163,8 @@ export default function PricingSection() {
                         <span
                           className={`material-symbols-outlined mt-0.5 shrink-0 text-[16px] ${
                             plan.highlighted
-                              ? 'text-[color:var(--color-primary)]'
-                              : 'text-[color:var(--color-primary)]/70'
+                              ? 'text-[#00DD94]'
+                              : 'text-[#00DD94]/70'
                           }`}
                           style={{ fontVariationSettings: "'FILL' 1" }}
                         >

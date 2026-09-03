@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { BILLING_PREVIEW, PROFILE_PREVIEW } from '@/lib/dashboard/shell-seed';
+import { loadBillingPreview, loadProfilePreview } from '@/lib/data';
 
 const TIMEZONES = [
   { value: 'America/New_York', label: 'Eastern Time (ET)' },
@@ -48,6 +48,8 @@ export default function GeneralSettingsPanel() {
   const [prefsLoading, setPrefsLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [saved, setSaved] = useState(false);
+  const [accountType, setAccountType] = useState('—');
+  const [planLabel, setPlanLabel] = useState('—');
 
   const [showLangRequest, setShowLangRequest] = useState(false);
   const [requestedLanguage, setRequestedLanguage] = useState<string | null>(null);
@@ -73,6 +75,30 @@ export default function GeneralSettingsPanel() {
     } finally {
       setPrefsLoading(false);
     }
+  }, []);
+
+  useEffect(() => {
+    let cancelled = false;
+    async function loadAccount() {
+      try {
+        const [profile, billing] = await Promise.all([
+          loadProfilePreview(),
+          loadBillingPreview(),
+        ]);
+        if (cancelled) return;
+        setAccountType(String(profile.accountType || profile.role || '—'));
+        setPlanLabel(String(billing.plan || '—'));
+      } catch {
+        if (!cancelled) {
+          setAccountType('—');
+          setPlanLabel('—');
+        }
+      }
+    }
+    loadAccount();
+    return () => {
+      cancelled = true;
+    };
   }, []);
 
   useEffect(() => {
@@ -277,7 +303,7 @@ export default function GeneralSettingsPanel() {
                   Account Type
                 </p>
                 <p className="text-sm font-bold capitalize text-white">
-                  {PROFILE_PREVIEW.accountType}
+                  {accountType}
                 </p>
               </div>
               <span className="material-symbols-outlined text-xl text-emerald-400">badge</span>
@@ -288,7 +314,7 @@ export default function GeneralSettingsPanel() {
                 <p className="mb-0.5 text-xs font-medium uppercase tracking-[0.5px] text-white/45">
                   Plan
                 </p>
-                <p className="text-sm font-bold text-white">{BILLING_PREVIEW.plan}</p>
+                <p className="text-sm font-bold text-white">{planLabel}</p>
               </div>
               <span className="material-symbols-outlined text-xl text-emerald-400">
                 workspace_premium

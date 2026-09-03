@@ -212,32 +212,5 @@ export const TAB_CATEGORIES: Record<PeriodTab, ReportCategory[]> = {
   'By Property': ['Monthly', 'Quarterly', 'Annual', 'Lender (SREO)'],
 };
 
-export const PHASE_BREAKDOWN_SEED: Array<{
-  phase: string;
-  label: string;
-  amount: number;
-  count: number;
-  unconfidentCount: number;
-}> = [
-  {
-    phase: 'acquisition',
-    label: 'Acquisition spend',
-    amount: 18400,
-    count: 4,
-    unconfidentCount: 1,
-  },
-  {
-    phase: 'hold',
-    label: 'Hold / operations',
-    amount: 28620,
-    count: 18,
-    unconfidentCount: 2,
-  },
-  {
-    phase: 'exit',
-    label: 'Exit / disposition',
-    amount: 9200,
-    count: 3,
-    unconfidentCount: 0,
-  },
-];
+/** Fixture data lives in /mockdata — re-exported for existing catalog imports. */
+export { PHASE_BREAKDOWN_SEED } from '../../../../mockdata/reports/phase-breakdown';

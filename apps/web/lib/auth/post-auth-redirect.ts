@@ -1,4 +1,5 @@
 import { AUTH_ROUTES } from './routes';
+import { sanitizeRedirectPath } from '@/lib/auth/safe-redirect';
 
 /** Portfolio — primary post-login / app entry destination. */
 export const DASHBOARD_ROUTE = '/dashboard';
@@ -54,7 +55,7 @@ export function resolvePostAuthDestination(
   storage: SessionStorageLike | null = null,
 ): string {
   if (!storage) {
-    return urlRedirectTo || DASHBOARD_ROUTE;
+    return sanitizeRedirectPath(urlRedirectTo, DASHBOARD_ROUTE);
   }
 
   if (hasActiveSubscription) {
@@ -74,13 +75,13 @@ export function resolvePostAuthDestination(
 
   if (urlRedirectTo) {
     storage.removeItem('pw_auth_redirect');
-    return urlRedirectTo;
+    return sanitizeRedirectPath(urlRedirectTo, DASHBOARD_ROUTE);
   }
 
   const savedRedirect = storage.getItem('pw_auth_redirect');
   if (savedRedirect) {
     storage.removeItem('pw_auth_redirect');
-    return savedRedirect;
+    return sanitizeRedirectPath(savedRedirect, DASHBOARD_ROUTE);
   }
 
   if (isNewUser) {

@@ -1,28 +1,26 @@
 import { NextResponse } from 'next/server';
-import { getAdminOpsSection } from '@/lib/admin/seed-data';
-import {
-  isDevAdminAuthFailure,
-  requireDevAdminAuth,
-} from '@/lib/admin/dev-admin-auth';
+import { adminErrorResponse } from '@/lib/api/admin-route-errors';
+import { buildAdminOpsReadService } from '@/lib/api/handler-deps';
+import { isAuthorizedAdmin, resolveAuthUserFromRequest } from '@/lib/api/server-session';
 
-/**
- * GET /api/admin/ops?section=overview|users|subscriptions|tickets|audit|analytics|marketplace
- * Seed-backed ops payload for admin panels ported from v0.
- */
+export const dynamic = 'force-dynamic';
+
+/** GET /api/admin/ops?section=* — admin-only platform ops read. */
 export async function GET(request: Request) {
-  const auth = await requireDevAdminAuth();
-  if (isDevAdminAuthFailure(auth)) {
-    return NextResponse.json(auth.body, { status: auth.status });
+  const user = await resolveAuthUserFromRequest(request);
+  if (!user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+  if (!isAuthorizedAdmin(user)) {
+    return NextResponse.json({ error: 'Forbidden', reason: 'admin_required' }, { status: 403 });
   }
 
-  const section = new URL(request.url).searchParams.get('section') ?? 'overview';
-  const payload = getAdminOpsSection(section);
-  if (!payload) {
-    return NextResponse.json(
-      { error: `Unknown section: ${section}` },
-      { status: 400 },
-    );
+  const section = new URL(request.url).searchParams.get('section') ?? undefined;
+  try {
+    const result = await buildAdminOpsReadService().getOpsSection(user, section);
+    return NextResponse.json(result);
+  } catch (error) {
+    const mapped = adminErrorResponse(error);
+    if (mapped) return mapped;
+    const message = error instanceof Error ? error.message : 'Unknown error';
+    return NextResponse.json({ error: 'Failed to load admin ops', details: message }, { status: 500 });
   }
-
-  return NextResponse.json({ success: true, section, data: payload });
 }

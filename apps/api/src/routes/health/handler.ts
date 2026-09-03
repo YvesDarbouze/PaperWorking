@@ -75,7 +75,7 @@ export async function handleHealthGet(deps: HealthCheckDeps = {}): Promise<Route
   if (!isHealthy || postgresStatus === 'unhealthy') {
     return jsonResponse(503, {
       ok: false,
-      status: { postgres: postgresStatus, firestore: 'healthy' },
+      status: { postgres: postgresStatus },
       services,
       timestamp,
     });
@@ -83,7 +83,7 @@ export async function handleHealthGet(deps: HealthCheckDeps = {}): Promise<Route
 
   return jsonResponse(200, {
     ok: true,
-    status: { postgres: 'healthy', firestore: 'healthy' },
+    status: { postgres: 'healthy' },
     app: appName,
     environment,
     timestamp,

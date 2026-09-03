@@ -101,7 +101,9 @@ export default function ProjectFolderCard({ project }: { project: ProjectSummary
         }
       : {
           label: 'Est. Exit',
-          value: formatCurrency(project.estimatedExitValue ?? project.purchasePrice * 1.25),
+          value: project.estimatedExitValue
+            ? formatCurrency(project.estimatedExitValue)
+            : 'Unavailable',
         };
 
   return (
@@ -169,17 +171,26 @@ export default function ProjectFolderCard({ project }: { project: ProjectSummary
           {project.propertyName}
         </h3>
         <div className="flex items-center justify-between gap-1 text-sm text-white/55">
-          {project.address ? (
+          {project.dealId || project.dealSlug ? (
             <Link
-              href={`/deals/${project.propertyName.toLowerCase().replace(/[^a-z0-9]+/g, '')}`}
+              href={`/deals/${project.dealSlug || project.propertyName.toLowerCase().replace(/[^a-z0-9]+/g, '')}/detail`}
               onClick={(event) => event.stopPropagation()}
-              className="flex items-center gap-1 truncate text-[#34d399] no-underline hover:underline"
+              className="flex items-center gap-1 truncate text-[#00DD94] no-underline hover:underline"
             >
               <span className="material-symbols-outlined text-[14px]">location_on</span>
-              <span className="truncate">{project.address}</span>
+              <span className="truncate">{project.dealAddress || project.address}</span>
             </Link>
           ) : (
-            <span className="truncate">{project.city}</span>
+            <div className="flex items-center justify-between w-full">
+              <span className="truncate text-xs text-white/45">{project.address || project.city}</span>
+              <Link
+                href={`/projects/new?step=2&projectId=${project.id}`}
+                onClick={(event) => event.stopPropagation()}
+                className="inline-flex items-center gap-1 rounded-md border border-[#00DD94]/30 bg-[#00DD94]/10 px-2 py-0.5 text-[11px] font-semibold text-[#00DD94] hover:bg-[#00DD94]/20 transition"
+              >
+                Link a deal
+              </Link>
+            </div>
           )}
         </div>
       </div>

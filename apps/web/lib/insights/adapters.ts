@@ -96,27 +96,47 @@ export function formatMetricValue(value: number | null, suffix = ''): string {
 
 export function scorecardEntries(
   scorecard: ProjectMetricsResult['scorecard'],
-): Array<{ key: string; label: string; display: string }> {
-  return [
-    { key: 'noi', label: 'NOI', display: formatMetricValue(scorecard.noi.value) },
-    { key: 'capRate', label: 'Cap rate', display: formatMetricValue(scorecard.capRate.value, '%') },
-    {
-      key: 'cashOnCash',
-      label: 'Cash-on-cash',
-      display: formatMetricValue(scorecard.cashOnCash.value, '%'),
-    },
-    { key: 'irr', label: 'IRR', display: formatMetricValue(scorecard.irr.value, '%') },
-    { key: 'cashFlow', label: 'Cash flow', display: formatMetricValue(scorecard.cashFlow.value) },
-    { key: 'dscr', label: 'DSCR', display: formatMetricValue(scorecard.dscr.value, 'x') },
-    {
-      key: 'occupancyRate',
-      label: 'Occupancy',
-      display: formatMetricValue(scorecard.occupancyRate.value, '%'),
-    },
-    {
-      key: 'expenseRatio',
-      label: 'Expense ratio',
-      display: formatMetricValue(scorecard.expenseRatio.value, '%'),
-    },
+): Array<{ key: string; label: string; display: string; projected: boolean; missingInputs: boolean }> {
+  const rows: Array<{
+    key: keyof ProjectMetricsResult['scorecard'];
+    label: string;
+    suffix?: string;
+  }> = [
+    { key: 'noi', label: 'NOI' },
+    { key: 'capRate', label: 'Cap rate', suffix: '%' },
+    { key: 'cashOnCash', label: 'Cash-on-cash', suffix: '%' },
+    { key: 'irr', label: 'IRR', suffix: '%' },
+    { key: 'cashFlow', label: 'Cash flow' },
+    { key: 'dscr', label: 'DSCR', suffix: 'x' },
+    { key: 'occupancyRate', label: 'Occupancy', suffix: '%' },
+    { key: 'expenseRatio', label: 'Expense ratio', suffix: '%' },
   ];
+
+  return rows.map(({ key, label, suffix }) => {
+    const metric = scorecard[key];
+    return {
+      key,
+      label,
+      display: formatMetricValue(metric.value, suffix),
+      projected: Boolean(metric.projected),
+      missingInputs: Boolean(metric.missingInputs?.length),
+    };
+  });
+}
+
+export function scorecardSourceStatusCopy(sourceStatus?: string): string {
+  if (sourceStatus === 'partially_projected') {
+    return 'Uses stored purchase price with projected rent, opex, and debt assumptions until project financial inputs are captured.';
+  }
+  if (sourceStatus === 'projected') {
+    return 'Projected from canonical underwriting defaults — not actual operating history.';
+  }
+  return 'Derived from stored project financial inputs.';
+}
+
+export function trendStatusCopy(trendStatus?: string): string | null {
+  if (trendStatus === 'demo') {
+    return 'Illustrative demo trend — not historical actual performance.';
+  }
+  return null;
 }

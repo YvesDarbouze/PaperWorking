@@ -1,22 +1,30 @@
 'use client';
 
-import { FormEvent, useMemo, useState } from 'react';
-import { PROFILE_PREVIEW } from '@/lib/dashboard/shell-seed';
+import { FormEvent, useEffect, useMemo, useState } from 'react';
+import { loadProfilePreview } from '@/lib/data';
+import { updateProfileFromBff } from '@/lib/settings/profile-api';
+import { authFetch } from '@/lib/auth/auth-fetch';
 
 const inputClass =
   'w-full rounded-lg border border-white/10 bg-[#0d0a0b] px-4 h-10 text-sm text-white outline-none transition placeholder:text-white/30 focus:border-emerald-500/40 focus:ring-1 focus:ring-emerald-500/30';
+
+type SessionRow = { id: string; label: string; detail: string; current: boolean };
+type ActivityRow = { id: string; title: string; time: string };
 
 /**
  * Profile & Security Settings — port of PaperWorking
  * `/dashboard/settings/profile` (Luminous Glass Terminal layout).
  */
 export default function ProfileSettingsPanel() {
-  const [firstName, setFirstName] = useState<string>(PROFILE_PREVIEW.firstName);
-  const [lastName, setLastName] = useState<string>(PROFILE_PREVIEW.lastName);
-  const [phone, setPhone] = useState<string>(PROFILE_PREVIEW.phone);
-  const [company, setCompany] = useState<string>(PROFILE_PREVIEW.organization);
+  const [firstName, setFirstName] = useState('');
+  const [lastName, setLastName] = useState('');
+  const [email, setEmail] = useState('');
+  const [phone, setPhone] = useState('');
+  const [company, setCompany] = useState('');
+  const [role, setRole] = useState('');
   const [saving, setSaving] = useState(false);
   const [saved, setSaved] = useState(false);
+  const [loadError, setLoadError] = useState<string | null>(null);
 
   const [currentPwd, setCurrentPwd] = useState('');
   const [newPwd, setNewPwd] = useState('');
@@ -26,14 +34,12 @@ export default function ProfileSettingsPanel() {
   const [pwdError, setPwdError] = useState<string | null>(null);
   const [pwdSuccess, setPwdSuccess] = useState(false);
 
-  const [mfaEnabled, setMfaEnabled] = useState<boolean>(PROFILE_PREVIEW.mfaEnabled);
+  const [mfaEnabled, setMfaEnabled] = useState(false);
   const [revoking, setRevoking] = useState(false);
   const [revokeSuccess, setRevokeSuccess] = useState(false);
-  const [sessions, setSessions] = useState(() => [...PROFILE_PREVIEW.sessions]);
-
-  const [claimedEmails, setClaimedEmails] = useState<string[]>([
-    ...PROFILE_PREVIEW.claimedEmails,
-  ]);
+  const [sessions, setSessions] = useState<SessionRow[]>([]);
+  const [activity, setActivity] = useState<ActivityRow[]>([]);
+  const [claimedEmails, setClaimedEmails] = useState<string[]>([]);
   const [claimEmail, setClaimEmail] = useState('');
   const [claimCode, setClaimCode] = useState('');
   const [claimStep, setClaimStep] = useState<'start' | 'verify' | 'success'>('start');
@@ -43,6 +49,93 @@ export default function ProfileSettingsPanel() {
   const [isDeletionPending, setIsDeletionPending] = useState(false);
   const [deletionDate, setDeletionDate] = useState<Date | null>(null);
   const [deleting, setDeleting] = useState(false);
+
+  useEffect(() => {
+    let cancelled = false;
+    (async () => {
+      try {
+        const [preview, sessionsRes] = await Promise.all([
+          loadProfilePreview(),
+          authFetch('/api/auth/sessions', { credentials: 'include' }).catch(() => null),
+        ]);
+        if (cancelled) return;
+
+        const p = preview as Record<string, unknown>;
+        const first =
+          typeof p.firstName === 'string'
+            ? p.firstName
+            : String(p.displayName ?? p.name ?? '')
+                .split(/\s+/)
+                .filter(Boolean)[0] ?? '';
+        const last =
+          typeof p.lastName === 'string'
+            ? p.lastName
+            : String(p.displayName ?? p.name ?? '')
+                .split(/\s+/)
+                .filter(Boolean)
+                .slice(1)
+                .join(' ');
+        setFirstName(first);
+        setLastName(last);
+        setEmail(String(p.email ?? ''));
+        setPhone(String(p.phone ?? ''));
+        setCompany(String(p.company ?? p.organization ?? p.companyName ?? ''));
+        setRole(String(p.role ?? p.accountType ?? ''));
+        if (typeof p.mfaEnabled === 'boolean') setMfaEnabled(p.mfaEnabled);
+        if (typeof p.twoFaEnabled === 'boolean') setMfaEnabled(p.twoFaEnabled);
+        if (Array.isArray(p.claimedEmails)) {
+          setClaimedEmails(p.claimedEmails.map(String));
+        }
+        if (Array.isArray(p.activity)) {
+          setActivity(
+            p.activity.map((item, i) => {
+              const row = item as Record<string, unknown>;
+              return {
+                id: String(row.id ?? `a-${i}`),
+                title: String(row.title ?? ''),
+                time: String(row.time ?? ''),
+              };
+            }),
+          );
+        }
+        if (Array.isArray(p.sessions) && p.sessions.length > 0) {
+          setSessions(
+            p.sessions.map((s, i) => {
+              const row = s as Record<string, unknown>;
+              return {
+                id: String(row.id ?? `sess-${i}`),
+                label: String(row.label ?? 'Device'),
+                detail: String(row.detail ?? 'Active session'),
+                current: Boolean(row.current),
+              };
+            }),
+          );
+        }
+
+        if (sessionsRes?.ok) {
+          const list = (await sessionsRes.json()) as Array<Record<string, unknown>>;
+          if (!cancelled && Array.isArray(list) && list.length > 0) {
+            setSessions(
+              list.map((s) => ({
+                id: String(s.id),
+                label: String(s.device ?? 'Device'),
+                detail: [s.location, s.ip].filter(Boolean).join(' · ') || 'Active session',
+                current: Boolean(s.isCurrent),
+              })),
+            );
+          }
+        }
+        setLoadError(null);
+      } catch (err) {
+        if (!cancelled) {
+          setLoadError(err instanceof Error ? err.message : 'Failed to load profile');
+        }
+      }
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, []);
 
   const initials = `${firstName?.[0] || ''}${lastName?.[0] || ''}`.toUpperCase() || 'U';
 
@@ -55,10 +148,28 @@ export default function ProfileSettingsPanel() {
   async function handleSaveProfile(e: FormEvent) {
     e.preventDefault();
     setSaving(true);
-    await new Promise((r) => setTimeout(r, 400));
-    setSaving(false);
-    setSaved(true);
-    setTimeout(() => setSaved(false), 3000);
+    try {
+      const { ok, profile } = await updateProfileFromBff({
+        firstName,
+        lastName,
+        phone,
+        companyName: company,
+      });
+      if (!ok) return;
+      if (profile) {
+        setFirstName(profile.firstName);
+        setLastName(profile.lastName);
+        setPhone(profile.phone);
+        setCompany(profile.organization);
+        setRole(profile.role);
+      }
+      setSaved(true);
+      setTimeout(() => setSaved(false), 3000);
+    } catch {
+      /* keep UI optimistic */
+    } finally {
+      setSaving(false);
+    }
   }
 
   async function handlePasswordChange(e: FormEvent) {
@@ -145,6 +256,12 @@ export default function ProfileSettingsPanel() {
         </div>
       </div>
 
+      {loadError ? (
+        <div className="rounded-2xl border border-rose-500/30 bg-rose-500/10 px-4 py-3 text-sm text-rose-200">
+          Unable to load profile: {loadError}
+        </div>
+      ) : null}
+
       <div className="grid grid-cols-12 gap-6 lg:gap-8">
         {/* Hero */}
         <section className="relative col-span-12 flex items-center justify-between overflow-hidden rounded-2xl border border-white/10 bg-[#161318]/90 p-6 transition-all duration-200 hover:shadow-md">
@@ -173,7 +290,7 @@ export default function ProfileSettingsPanel() {
               </h2>
               <div className="flex items-center gap-2 text-sm text-white/50">
                 <span className="material-symbols-outlined text-[16px]">mail</span>
-                <span className="font-mono text-emerald-300/80">{PROFILE_PREVIEW.email}</span>
+                <span className="font-mono text-emerald-300/80">{email || '—'}</span>
               </div>
             </div>
           </div>
@@ -181,7 +298,7 @@ export default function ProfileSettingsPanel() {
           <div className="relative z-10 hidden md:block">
             <span className="inline-flex items-center gap-1.5 rounded-full border border-emerald-500/20 bg-emerald-500/10 px-3 py-1 text-xs font-semibold tracking-wide text-emerald-300">
               <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-emerald-400" />
-              {PROFILE_PREVIEW.role}
+              {role || 'Account'}
             </span>
           </div>
         </section>
@@ -267,7 +384,7 @@ export default function ProfileSettingsPanel() {
               </label>
               <div className="flex h-10 cursor-not-allowed items-center gap-2 rounded-lg border border-white/10 bg-white/[0.02] px-4 text-sm text-white/50">
                 <span className="material-symbols-outlined text-[16px] text-white/35">lock</span>
-                {PROFILE_PREVIEW.email}
+                {email || '—'}
               </div>
             </div>
 
@@ -568,7 +685,7 @@ export default function ProfileSettingsPanel() {
           {claimStep === 'success' ? (
             <p className="flex items-center gap-2 text-sm text-emerald-400">
               <span className="material-symbols-outlined text-[18px]">check_circle</span>
-              Email claimed successfully (seed preview).
+              Email claimed successfully.
               <button
                 type="button"
                 onClick={() => {
@@ -590,22 +707,26 @@ export default function ProfileSettingsPanel() {
             <span className="material-symbols-outlined text-xl text-emerald-400">timeline</span>
             <h3 className="text-base font-semibold text-[#fdfffc]">Recent Activity</h3>
           </div>
-          <ul className="space-y-0">
-            {PROFILE_PREVIEW.activity.map((item, i) => (
-              <li
-                key={item.id}
-                className={`flex items-start gap-4 py-3 ${
-                  i < PROFILE_PREVIEW.activity.length - 1 ? 'border-b border-white/6' : ''
-                }`}
-              >
-                <span className="mt-1.5 h-2 w-2 shrink-0 rounded-full bg-emerald-400/80" />
-                <div className="min-w-0 flex-1">
-                  <p className="text-sm text-white/85">{item.title}</p>
-                  <p className="text-[11px] text-white/40">{item.time}</p>
-                </div>
-              </li>
-            ))}
-          </ul>
+          {activity.length === 0 ? (
+            <p className="text-sm text-white/45">No recent activity.</p>
+          ) : (
+            <ul className="space-y-0">
+              {activity.map((item, i) => (
+                <li
+                  key={item.id}
+                  className={`flex items-start gap-4 py-3 ${
+                    i < activity.length - 1 ? 'border-b border-white/6' : ''
+                  }`}
+                >
+                  <span className="mt-1.5 h-2 w-2 shrink-0 rounded-full bg-emerald-400/80" />
+                  <div className="min-w-0 flex-1">
+                    <p className="text-sm text-white/85">{item.title}</p>
+                    <p className="text-[11px] text-white/40">{item.time}</p>
+                  </div>
+                </li>
+              ))}
+            </ul>
+          )}
         </section>
 
         {/* GDPR Data Erasure */}

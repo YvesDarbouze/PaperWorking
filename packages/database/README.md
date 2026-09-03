@@ -33,7 +33,7 @@ const firestoreProject = await db.firestoreProjects.getValidated('proj_123');
 | Project (Firestore) | `FirestoreProjectRepository` | Canonical `projectSchema` validation |
 | User (Firestore) | `FirestoreUserRepository` | Canonical `userSchema` validation |
 
-See [DATABASE_MAP.md](../../docs/DATABASE_MAP.md) for overlap/risk documentation.
+See [docs/README.md](../../docs/README.md) and [FIRESTORE_COLLECTION_BLUEPRINT_v1.md](../../docs/FIRESTORE_COLLECTION_BLUEPRINT_v1.md) for Firestore schema documentation.
 
 ## Commands
 

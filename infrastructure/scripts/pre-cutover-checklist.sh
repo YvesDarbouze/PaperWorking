@@ -39,7 +39,7 @@ run_step "Production mock-auth guard" bash -c '
   exit 0
 '
 
-run_step "Cutover plan document exists" test -f docs/PHASE_7_CUTOVER_PLAN.md
+run_step "Production launch checklist exists" test -f docs/PRODUCTION_LAUNCH_CHECKLIST.md
 
 run_step "API inventory exists" test -f docs/list_APIs_.md
 
@@ -52,7 +52,7 @@ fi
 
 echo "Automated pre-cutover checks passed."
 echo ""
-echo "Manual steps still required (see docs/PHASE_7_CUTOVER_PLAN.md):"
+echo "Manual steps still required (see docs/PRODUCTION_LAUNCH_CHECKLIST.md):"
 echo "  - Founder approval for cutover strategy and maintenance window"
 echo "  - Preview URL deploy + Phase 6 manual checklist"
 echo "  - Stripe/SendGrid webhook verification on preview"

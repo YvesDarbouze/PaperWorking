@@ -78,17 +78,10 @@ bash infrastructure/scripts/deploy-preview.sh  # Docker preview build
 
 ## Documentation
 
-- [CURRENT_ARCHITECTURE.md](./docs/CURRENT_ARCHITECTURE.md)
-- [MIGRATION_PLAN.md](./docs/MIGRATION_PLAN.md)
-- [PHASE_6_VERIFICATION.md](./docs/PHASE_6_VERIFICATION.md)
-- [PHASE_7_CUTOVER_PLAN.md](./docs/PHASE_7_CUTOVER_PLAN.md)
-- [MIGRATION_COMPLETE.md](./docs/MIGRATION_COMPLETE.md) — final build status
-- [FOUNDER_HANDOFF.md](./docs/FOUNDER_HANDOFF.md) — email template (English)
-- [FOUNDER_EMAIL_VI.md](./docs/FOUNDER_EMAIL_VI.md) — email tiếng Việt gửi founder
-- [FOUNDER_APPROVAL.md](./docs/FOUNDER_APPROVAL.md)
-- [list_APIs_.md](./docs/list_APIs_.md)
-- [DATABASE_MAP.md](./docs/DATABASE_MAP.md)
-- [RBAC.md](./docs/RBAC.md)
-- [REIL.md](./docs/REIL.md)
-- [INSIGHTS.md](./docs/INSIGHTS.md)
-# PaperWorking_v1
+See **[docs/README.md](./docs/README.md)** for the full index. Key references:
+
+- [ARCHITECTURE_TREE_FIREBASE.md](./docs/ARCHITECTURE_TREE_FIREBASE.md) — system architecture
+- [FIRESTORE_V1_COLLECTIONS_SETUP_GUIDE.md](./docs/FIRESTORE_V1_COLLECTIONS_SETUP_GUIDE.md) — Firestore setup
+- [RBAC.md](./docs/RBAC.md) · [REIL.md](./docs/REIL.md) · [INSIGHTS.md](./docs/INSIGHTS.md)
+- [list_APIs_.md](./docs/list_APIs_.md) — API inventory
+- [PRODUCTION_LAUNCH_CHECKLIST.md](./docs/PRODUCTION_LAUNCH_CHECKLIST.md) — go-live checklist

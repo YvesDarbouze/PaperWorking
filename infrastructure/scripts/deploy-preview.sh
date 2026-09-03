@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # Build migration Docker image locally (preview deploy prep).
-# Production Firebase deploy requires founder approval — see docs/PHASE_7_CUTOVER_PLAN.md
+# Production Firebase deploy checklist — see docs/PRODUCTION_LAUNCH_CHECKLIST.md
 set -euo pipefail
 
 ROOT="$(cd "$(dirname "$0")/../.." && pwd)"

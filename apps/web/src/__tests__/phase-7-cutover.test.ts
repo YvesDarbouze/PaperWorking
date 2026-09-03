@@ -7,8 +7,8 @@ const REPO_ROOT = join(fileURLToPath(new URL('.', import.meta.url)), '../../../.
 
 describe('phase 7 — cutover planning status', () => {
   it('includes cutover planning artifacts', () => {
-    expect(existsSync(join(REPO_ROOT, 'docs/PHASE_7_CUTOVER_PLAN.md'))).toBe(true);
-    expect(existsSync(join(REPO_ROOT, 'docs/FOUNDER_APPROVAL.md'))).toBe(true);
+    expect(existsSync(join(REPO_ROOT, 'docs/README.md'))).toBe(true);
+    expect(existsSync(join(REPO_ROOT, 'docs/PRODUCTION_LAUNCH_CHECKLIST.md'))).toBe(true);
     expect(existsSync(join(REPO_ROOT, 'infrastructure/Dockerfile'))).toBe(true);
     expect(existsSync(join(REPO_ROOT, 'infrastructure/apphosting.migration.yaml.template'))).toBe(true);
     expect(existsSync(join(REPO_ROOT, 'infrastructure/scripts/pre-cutover-checklist.sh'))).toBe(true);

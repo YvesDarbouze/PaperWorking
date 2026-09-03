@@ -33,7 +33,7 @@
 
 | Entity | Document ID | Ví dụ |
 |--------|-------------|-------|
-| User | Firebase Auth **UID** | `kR3abc...` (28 ký tự) |
+| User | **Email** (lowercase) | `user@example.com` — field `uid` giữ Firebase Auth UID |
 | Organization | `org_{slug}` hoặc UUID | `org_me_kR3abc` |
 | Organization member | `{orgId}_{userId}` | `org_me_kR3abc_kR3abc` |
 | Project | `proj_{uuid}` hoặc UUID | `proj_a1b2c3` |

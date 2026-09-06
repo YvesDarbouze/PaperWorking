@@ -135,10 +135,15 @@ export default function AdminOverviewPanel() {
                 <div key={bar.label} className="flex flex-1 flex-col items-center gap-2">
                   <span className="text-xs font-semibold">{money(bar.value)}</span>
                   <div
-                    className="w-full rounded-t bg-black"
-                    style={{ height: `${Math.max(8, (bar.value / maxBar) * 100)}%` }}
+                    className="w-full rounded-t"
+                    style={{
+                      height: `${Math.max(8, (bar.value / maxBar) * 100)}%`,
+                      background: 'var(--text-primary)',
+                    }}
                   />
-                  <span className="text-xs text-black/50">{bar.label}</span>
+                  <span className="text-xs" style={{ color: 'var(--text-secondary)' }}>
+                    {bar.label}
+                  </span>
                 </div>
               ))}
             </div>
@@ -190,9 +195,10 @@ export default function AdminOverviewPanel() {
             <div className="flex flex-col gap-2">
               {[
                 { href: '/admin/users', label: 'Manage users', icon: 'group' },
-                { href: '/admin/tickets', label: 'Open tickets', icon: 'confirmation_number' },
-                { href: '/admin/subscriptions', label: 'Dunning queue', icon: 'credit_card' },
-                { href: '/admin/agent-crew', label: 'Agent crew QA', icon: 'smart_toy' },
+                { href: '/admin/projects', label: 'Browse projects', icon: 'folder_open' },
+                { href: '/admin/organizations', label: 'Organizations', icon: 'corporate_fare' },
+                { href: '/admin/subscriptions', label: 'Billing queue', icon: 'credit_card' },
+                { href: '/admin/integrations', label: 'Integrations', icon: 'hub' },
               ].map((action) => (
                 <Link
                   key={action.href}
@@ -216,7 +222,7 @@ export default function AdminOverviewPanel() {
               className="mb-3 text-xs font-bold uppercase tracking-widest"
               style={{ color: 'var(--text-secondary)' }}
             >
-              Infra adapters
+              Integrations
             </p>
             <div className="grid grid-cols-2 gap-3 text-sm">
               <div>
@@ -236,6 +242,12 @@ export default function AdminOverviewPanel() {
                 <p className="font-semibold">{infra.checklists ?? '…'}</p>
               </div>
             </div>
+            <Link
+              href="/admin/integrations"
+              className="mt-4 inline-block text-xs font-semibold underline"
+            >
+              View all integrations
+            </Link>
           </article>
         </div>
       </section>

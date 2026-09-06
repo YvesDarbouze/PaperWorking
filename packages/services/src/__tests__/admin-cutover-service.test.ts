@@ -38,6 +38,7 @@ function repository(overrides: Partial<AdminReadRepository> = {}): AdminReadRepo
     countSubscriptions: jest.fn(async () => 3),
     countProjects: jest.fn(async () => 5),
     countListings: jest.fn(async () => 2),
+    countVendors: jest.fn(async () => 0),
     listRecentUsers: jest.fn(async () => []),
     listRecentAuditEvents: jest.fn(async () => []),
     listRecentSubscriptions: jest.fn(async () => []),

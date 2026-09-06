@@ -7,9 +7,11 @@ import {
   createAdminLenderReadService,
   createAdminOpsReadService,
   createAdminRentcastReadService,
+  createAdminUserCommandService,
 } from '@paperworking/services';
 import { FIRESTORE_COLLECTIONS, resetFirestoreAdminForTests } from '../admin.js';
 import { createFirestoreAdminReadRepository } from '../create-firestore-admin-read-repository.js';
+import { createFirestoreAdminCommandRepository } from '../create-firestore-admin-command-repository.js';
 import { createFirestoreAuthzStore } from '../create-firestore-authz-store.js';
 import { createMockFirestoreFactory, MockFirestore, ts } from './mock-firestore.js';
 import { createAdminReadRepository } from '../../runtime/admin-data-store.js';
@@ -59,6 +61,8 @@ describe('Firestore admin read repository and services', () => {
           email: 'investor@example.com',
           displayName: 'Investor One',
           accountType: 'investor',
+          role: 'Lead Investor',
+          orgRole: 'Lead Investor',
           createdAt: ts('2026-02-01'),
           updatedAt: ts('2026-02-02'),
         },
@@ -74,6 +78,37 @@ describe('Firestore admin read repository and services', () => {
           agentPersona: 'investor',
           createdAt: ts('2026-01-10'),
           updatedAt: ts('2026-03-01'),
+        },
+      },
+    ]);
+    mock.seed(FIRESTORE_COLLECTIONS.organizations, [
+      {
+        id: 'org-1',
+        data: {
+          id: 'org-1',
+          name: 'Atlas Syndicate',
+          ownerId: 'uid-investor',
+          createdAt: ts('2026-02-05'),
+        },
+      },
+    ]);
+    mock.seed(FIRESTORE_COLLECTIONS.organizationMembers, [
+      {
+        id: 'org-1_uid-investor',
+        data: {
+          organizationId: 'org-1',
+          userId: 'uid-investor',
+          email: 'investor@example.com',
+          status: 'active',
+        },
+      },
+      {
+        id: 'org-1_uid-admin',
+        data: {
+          organizationId: 'org-1',
+          userId: 'uid-admin',
+          email: 'admin@paperworking.test',
+          status: 'active',
         },
       },
     ]);
@@ -135,6 +170,8 @@ describe('Firestore admin read repository and services', () => {
           targetResource: 'ops',
           targetResourceId: null,
           status: 'success',
+          entryHash: 'abc123def4567890',
+          metadata: { ip: '127.0.0.1' },
         },
       },
     ]);
@@ -235,12 +272,144 @@ describe('Firestore admin read repository and services', () => {
     expect(result.activity?.[0]?.type).toBe('audit');
   });
 
+  function commandRepository() {
+    return createFirestoreAdminCommandRepository(firestoreFactory());
+  }
+
+  function userCommandService() {
+    return createAdminUserCommandService({
+      authz: authz(),
+      readRepository: repository(),
+      commandRepository: commandRepository(),
+    });
+  }
+
   it('returns users section from Firestore users collection', async () => {
     const service = createAdminOpsReadService({ authz: authz(), repository: repository() });
     const result = await service.getOpsSection(admin, 'users');
     expect(result.total).toBe(3);
     expect(result.users?.length).toBeGreaterThan(0);
-    expect(result.users?.[0]).toHaveProperty('email');
+    expect(result.users?.[0]).toMatchObject({
+      email: expect.any(String),
+      accountType: expect.any(String),
+      accountTypeLabel: expect.any(String),
+      jobTitle: expect.any(String),
+      orgRole: expect.any(String),
+      documentId: expect.any(String),
+    });
+    const investorRow = result.users?.find((row) => row.email === 'investor@example.com');
+    expect(investorRow?.jobTitle).toBe('Lead Investor');
+    expect(investorRow?.orgRole).toBe('Lead Investor');
+    expect(investorRow?.accountTypeLabel).toBe('Investor');
+  });
+
+  it('updates account type with audit log entry', async () => {
+    const service = userCommandService();
+    const result = await service.updateAccountType(admin, 'uid-investor', 'vendor');
+    expect(result.user.accountType).toBe('vendor');
+    expect(result.user.accountTypeLabel).toBe('Vendor');
+
+    const reread = await repository().findUserByLookupId('uid-investor');
+    expect(reread?.accountType).toBe('vendor');
+
+    const audit = await repository().listRecentAuditEvents(5);
+    expect(audit[0]?.action).toBe('user.accountType.update');
+    expect(audit[0]?.targetResource).toBe('user');
+  });
+
+  it('returns projects section from Firestore', async () => {
+    const service = createAdminOpsReadService({ authz: authz(), repository: repository() });
+    const result = await service.getOpsSection(admin, 'projects');
+    expect(result.total).toBe(2);
+    expect(result.projects?.length).toBe(2);
+    expect(result.projects?.[0]).toMatchObject({
+      id: expect.any(String),
+      name: expect.any(String),
+      ownerId: expect.any(String),
+    });
+  });
+
+  it('returns organizations section from Firestore', async () => {
+    const service = createAdminOpsReadService({ authz: authz(), repository: repository() });
+    const result = await service.getOpsSection(admin, 'organizations');
+    expect(result.total).toBe(1);
+    expect(result.organizations?.[0]).toMatchObject({
+      id: 'org-1',
+      name: 'Atlas Syndicate',
+      memberCount: 2,
+    });
+  });
+
+  it('returns subscriptions with customer email and name instead of raw uid', async () => {
+    const service = createAdminOpsReadService({ authz: authz(), repository: repository() });
+    const result = await service.getOpsSection(admin, 'subscriptions');
+    expect(result.recent?.[0]?.customer).toBe('Investor One (investor@example.com)');
+    expect(result.recent?.[0]?.customer).not.toMatch(/^uid-/);
+  });
+
+  it('resolves subscription customer when user document id is email', async () => {
+    mock.seed(FIRESTORE_COLLECTIONS.users, [
+      {
+        id: 'billing@example.com',
+        data: {
+          uid: 'uid-billing',
+          email: 'billing@example.com',
+          displayName: 'Billing User',
+          accountType: 'investor',
+          createdAt: ts('2026-03-01'),
+          updatedAt: ts('2026-03-01'),
+        },
+      },
+    ]);
+    mock.seed(FIRESTORE_COLLECTIONS.subscriptions, [
+      {
+        id: 'uid-billing',
+        data: {
+          userId: 'uid-billing',
+          plan: 'Team',
+          status: 'active',
+          updatedAt: ts('2026-03-04'),
+        },
+      },
+    ]);
+    const service = createAdminOpsReadService({ authz: authz(), repository: repository() });
+    const result = await service.getOpsSection(admin, 'subscriptions');
+    expect(result.recent?.[0]?.customer).toBe('Billing User (billing@example.com)');
+  });
+
+  it('returns marketplace metrics shaped for admin UI', async () => {
+    const service = createAdminOpsReadService({ authz: authz(), repository: repository() });
+    const result = await service.getOpsSection(admin, 'marketplace');
+    expect(Array.isArray(result.funnel)).toBe(true);
+    expect(result.funnel?.length).toBeGreaterThan(0);
+    expect(result).toMatchObject({
+      liveVendors: expect.any(Number),
+      openPipeline: 1,
+      matchRate: expect.any(Number),
+    });
+    expect(result.jurisdictionVariance).toEqual([]);
+  });
+
+  it('returns audit logs shaped for admin UI', async () => {
+    const service = createAdminOpsReadService({ authz: authz(), repository: repository() });
+    const result = await service.getOpsSection(admin, 'audit');
+    expect(result).toMatchObject({
+      chainIntact: true,
+      critical: 0,
+      warnings: 0,
+      total: 1,
+    });
+    expect(Array.isArray(result.logs)).toBe(true);
+    expect(result.logs?.[0]).toMatchObject({
+      id: 'audit-1',
+      seq: 1,
+      severity: 'info',
+      action: 'admin.view',
+      actor: 'admin@paperworking.test',
+      target: 'ops',
+      ip: '127.0.0.1',
+      hash: 'abc123def456',
+    });
   });
 
   it('reads persisted RentCast usage from systemConfig', async () => {

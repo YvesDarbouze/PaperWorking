@@ -1,4 +1,5 @@
 import type { Firestore } from 'firebase-admin/firestore';
+import { FieldValue } from 'firebase-admin/firestore';
 
 type WhereFilter = {
   field: string;
@@ -50,6 +51,21 @@ class MockDocumentReference {
 
   async set(data: Record<string, unknown>, options?: { merge?: boolean }): Promise<void> {
     this.store.setDocument(this.collectionName, this.id, data, options?.merge ?? false);
+  }
+
+  async update(data: Record<string, unknown>): Promise<void> {
+    const existing = this.store.getDocument(this.collectionName, this.id) ?? {};
+    const merged: Record<string, unknown> = { ...existing };
+    for (const [key, value] of Object.entries(data)) {
+      if (value instanceof FieldValue || String(value).includes('FieldTransform')) {
+        if (String(value).includes('delete')) {
+          delete merged[key];
+        }
+        continue;
+      }
+      merged[key] = value;
+    }
+    this.store.setDocument(this.collectionName, this.id, merged, false);
   }
 
   async delete(): Promise<void> {

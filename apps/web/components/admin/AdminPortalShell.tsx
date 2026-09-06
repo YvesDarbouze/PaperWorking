@@ -4,35 +4,17 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import Logo from '@/components/marketing/Logo';
+import {
+  ADMIN_PRIMARY_NAV,
+  ADMIN_ROUTE_LABELS,
+  ADMIN_SECONDARY_NAV,
+} from '@/lib/admin/admin-nav';
 
-const PRIMARY_NAV = [
-  { id: 'overview', label: 'Overview', href: '/admin', icon: 'dashboard', exact: true },
-  { id: 'users', label: 'Users', href: '/admin/users', icon: 'group' },
-  { id: 'subscriptions', label: 'Billing', href: '/admin/subscriptions', icon: 'credit_card' },
-  { id: 'tickets', label: 'Tickets', href: '/admin/tickets', icon: 'confirmation_number' },
-  { id: 'audit', label: 'Audit Logs', href: '/admin/audit', icon: 'shield' },
-  { id: 'analytics', label: 'Analytics', href: '/admin/analytics', icon: 'bar_chart' },
-] as const;
-
-const SECONDARY_NAV = [
-  { id: 'marketplace', label: 'Marketplace', href: '/admin/marketplace', icon: 'storefront' },
-  { id: 'agent-crew', label: 'Agent crew', href: '/admin/agent-crew', icon: 'smart_toy' },
-  { id: 'lender-config', label: 'Lender config', href: '/admin/lender-config', icon: 'account_balance' },
-] as const;
-
+const PRIMARY_NAV = ADMIN_PRIMARY_NAV;
+const SECONDARY_NAV = ADMIN_SECONDARY_NAV;
 const ALL_NAV = [...PRIMARY_NAV, ...SECONDARY_NAV];
 
-const ROUTE_LABELS: Record<string, string> = {
-  '/admin': 'Overview',
-  '/admin/users': 'User Management',
-  '/admin/subscriptions': 'Billing & Subscriptions',
-  '/admin/tickets': 'Support Tickets',
-  '/admin/audit': 'Audit Logs',
-  '/admin/analytics': 'Analytics',
-  '/admin/marketplace': 'Marketplace Ops',
-  '/admin/agent-crew': 'Agent Crew',
-  '/admin/lender-config': 'Lender Config',
-};
+const ROUTE_LABELS = ADMIN_ROUTE_LABELS;
 
 function NavLink({
   item,
@@ -106,20 +88,6 @@ function SidebarBody({ onNavigate }: { onNavigate?: () => void }) {
           ))}
         </ul>
       </nav>
-
-      <div className="shrink-0 border-t border-black/10 px-3 py-4">
-        <Link
-          href="/dashboard"
-          onClick={onNavigate}
-          className="flex items-center gap-2 px-4 py-2.5 text-xs font-bold uppercase tracking-[0.15em] text-black/55 transition hover:bg-black/[0.03] hover:text-black"
-        >
-          <span className="material-symbols-outlined text-[18px]">arrow_back</span>
-          Back to Dashboard
-        </Link>
-        <p className="px-4 pt-3 text-[9px] font-bold uppercase tracking-[0.25em] text-black/35">
-          PaperWorking Admin
-        </p>
-      </div>
     </>
   );
 }

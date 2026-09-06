@@ -40,7 +40,7 @@ export default function AdminAuditPanel() {
   return (
     <AdminPageShell
       title="Audit logs"
-      subtitle="Platform audit feed — seed port of v0 /admin/audit."
+      subtitle="Platform audit feed from Firestore auditLogs."
       actions={
         <>
           <button
@@ -48,7 +48,7 @@ export default function AdminAuditPanel() {
             onClick={() => {
               const csv = [
                 'seq,severity,action,actor,target,at,hash',
-                ...data.logs.map(
+                ...(data.logs ?? []).map(
                   (l) =>
                     `${l.seq},${l.severity},${l.action},${l.actor},${l.target},${l.at},${l.hash}`,
                 ),
@@ -108,7 +108,14 @@ export default function AdminAuditPanel() {
             </tr>
           </thead>
           <tbody>
-            {data.logs.map((log) => (
+            {(data.logs ?? []).length === 0 ? (
+              <tr>
+                <td colSpan={7} className="px-4 py-8 text-center text-sm text-black/50">
+                  No audit events yet.
+                </td>
+              </tr>
+            ) : null}
+            {(data.logs ?? []).map((log) => (
               <tr key={log.id} className="border-t border-black/5">
                 <td className="px-4 py-3 font-mono text-xs">#{log.seq}</td>
                 <td className="px-4 py-3">

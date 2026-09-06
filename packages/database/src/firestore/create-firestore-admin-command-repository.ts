@@ -69,6 +69,30 @@ export function createFirestoreAdminCommandRepository(
       };
     },
 
+    async updateUserAccountType(input: {
+      documentId: string;
+      accountType: string;
+      clearPlatformAdminRole: boolean;
+    }): Promise<void> {
+      const db = await requireFirestore(firestoreFactory);
+      const ref = db.collection(FIRESTORE_COLLECTIONS.users).doc(input.documentId);
+      const snap = await ref.get();
+      if (!snap.exists) {
+        throw new Error('User not found');
+      }
+
+      const update: Record<string, unknown> = {
+        accountType: input.accountType,
+        updatedAt: FieldValue.serverTimestamp(),
+      };
+
+      if (input.clearPlatformAdminRole) {
+        update.role = FieldValue.delete();
+      }
+
+      await ref.update(update);
+    },
+
     async findSyntheticAgentById(id: string) {
       const db = await requireFirestore(firestoreFactory);
       const direct = await db.collection(FIRESTORE_COLLECTIONS.users).doc(id).get();

@@ -28,12 +28,12 @@ export default function AdminMarketplacePanel() {
     );
   }
 
-  const maxFunnel = Math.max(...data.funnel.map((f) => f.count), 1);
+  const maxFunnel = Math.max(...(data.funnel ?? []).map((f) => f.count), 1);
 
   return (
     <AdminPageShell
       title="Marketplace ops"
-      subtitle="Seed port of v0 /admin/marketplace."
+      subtitle="Live listing and vendor counts from Firestore."
       actions={
         <>
           <Link
@@ -72,12 +72,16 @@ export default function AdminMarketplacePanel() {
             Jurisdiction variance
           </p>
           <ul className="space-y-2 text-sm">
-            {data.jurisdictionVariance.map((row) => (
-              <li key={row.name} className="flex justify-between border-b border-black/5 pb-2">
-                <span className="font-semibold">{row.name}</span>
-                <span>{row.variance.toFixed(1)}%</span>
-              </li>
-            ))}
+            {(data.jurisdictionVariance ?? []).length === 0 ? (
+              <li className="text-black/55">No jurisdiction variance data yet.</li>
+            ) : (
+              data.jurisdictionVariance.map((row) => (
+                <li key={row.name} className="flex justify-between border-b border-black/5 pb-2">
+                  <span className="font-semibold">{row.name}</span>
+                  <span>{row.variance.toFixed(1)}%</span>
+                </li>
+              ))
+            )}
           </ul>
           <p className="mt-4 rounded-xl bg-black/5 p-3 text-xs text-black/60">
             Avg quote latency {data.avgLatencyHours}h · sample metrics marked for diligence.
@@ -89,7 +93,7 @@ export default function AdminMarketplacePanel() {
             Liquidity funnel
           </p>
           <ul className="space-y-3">
-            {data.funnel.map((step) => (
+            {(data.funnel ?? []).map((step) => (
               <li key={step.step}>
                 <div className="mb-1 flex justify-between text-sm">
                   <span>{step.step}</span>

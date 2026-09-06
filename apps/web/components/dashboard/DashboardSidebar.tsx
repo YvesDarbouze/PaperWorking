@@ -45,9 +45,10 @@ function SidebarLink({
 export default function DashboardSidebar() {
   const pathname = usePathname();
   const router = useRouter();
-  const { navContext } = useAuth();
+  const { navContext, profile } = useAuth();
   const primary = resolvePrimaryNav(navContext);
   const account = resolveAccountNav(navContext);
+  const showAdminLink = profile?.isAdmin === true;
 
   function handleNavigate(item: NavItem, event: MouseEvent) {
     if (!item.isLocked) return;
@@ -93,6 +94,33 @@ export default function DashboardSidebar() {
             isActive={isNavItemActive(pathname || '', item.href)}
           />
         ))}
+
+        {showAdminLink ? (
+          <>
+            <p className="px-3 pb-2 pt-5 text-[11px] font-semibold uppercase tracking-[0.1em] text-white/45">
+              Platform
+            </p>
+            <Link
+              href="/admin"
+              className="group relative flex items-center gap-2.5 rounded-lg px-3 py-2.5 transition-all duration-150"
+              style={{
+                background: pathname?.startsWith('/admin')
+                  ? 'rgba(69, 73, 85, 0.25)'
+                  : 'transparent',
+                color: pathname?.startsWith('/admin')
+                  ? 'rgba(253,255,252,0.92)'
+                  : 'rgba(253,255,252,0.65)',
+                border: pathname?.startsWith('/admin')
+                  ? '1px solid rgba(255,255,255,0.10)'
+                  : '1px solid transparent',
+                textDecoration: 'none',
+              }}
+            >
+              <span className="material-symbols-outlined text-[20px]">shield</span>
+              <span className="flex-1 truncate text-sm font-medium">Admin Panel</span>
+            </Link>
+          </>
+        ) : null}
       </nav>
     </aside>
   );

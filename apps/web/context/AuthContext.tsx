@@ -32,6 +32,7 @@ export interface AuthProfile {
   accountType: string;
   subscriptionPlan: string;
   subscriptionStatus: string;
+  isAdmin?: boolean;
 }
 
 interface AuthContextValue {
@@ -89,6 +90,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         accountType: session.accountType ?? 'investor',
         subscriptionPlan: session.subscriptionPlan ?? 'Individual',
         subscriptionStatus: session.subscriptionStatus ?? 'active',
+        isAdmin: session.isAdmin === true,
       });
     } else {
       setProfile(null);

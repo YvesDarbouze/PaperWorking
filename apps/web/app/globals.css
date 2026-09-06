@@ -332,6 +332,22 @@ body {
     #0a0a0f;
 }
 
+/* Admin portal — light institutional shell (ported from v0 /admin; uses --bg-* tokens) */
+.admin-context {
+  --bg-canvas: #eef0f2;
+  --bg-surface: #ffffff;
+  --border-ui: rgba(10, 10, 15, 0.1);
+  --text-primary: #0a0a0f;
+  --text-secondary: #595959;
+  --radius-lg: 1rem;
+  color: var(--text-primary);
+  background: var(--bg-canvas);
+}
+
+.admin-context .material-symbols-outlined {
+  font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+}
+
 .material-symbols-outlined {
   font-family: 'Material Symbols Outlined';
   font-weight: normal;

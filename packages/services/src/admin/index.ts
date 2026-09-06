@@ -1,5 +1,18 @@
 export { assertAdminUser } from './assert-admin.js';
-export type { AdminReadRepository, AdminSyntheticAgentRow } from './admin-read-repository.js';
+export {
+  ADMIN_ASSIGNABLE_ACCOUNT_TYPES,
+  formatAccountTypeLabel,
+  normalizeAdminAssignableAccountType,
+  type AdminAssignableAccountType,
+} from './admin-account-types.js';
+export {
+  AdminUserCommandService,
+  AdminUserCommandError,
+  createAdminUserCommandService,
+  type AdminUserCommandServiceDeps,
+  type AdminUserCommandRepository,
+} from './admin-user-command-service.js';
+export type { AdminReadRepository, AdminSyntheticAgentRow, AdminUserListRow, AdminProjectListRow, AdminOrganizationListRow } from './admin-read-repository.js';
 export {
   AdminOpsReadService,
   createAdminOpsReadService,

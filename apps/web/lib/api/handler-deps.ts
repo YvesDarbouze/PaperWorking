@@ -41,6 +41,7 @@ import {
   createAdminLenderReadService,
   createAdminAgentCrewReadService,
   createAdminAgentCrewCommandService,
+  createAdminUserCommandService,
   resolveAuthUserFromCredentials,
   sessionCommandService,
   type ProjectsReadService,
@@ -77,6 +78,7 @@ import {
   type AdminLenderReadService,
   type AdminAgentCrewReadService,
   type AdminAgentCrewCommandService,
+  type AdminUserCommandService,
   type SessionResolverDeps,
   type SessionUserStore,
 } from '@paperworking/services';
@@ -168,6 +170,7 @@ let cachedAdminRentcastRead: AdminRentcastReadService | null = null;
 let cachedAdminLenderRead: AdminLenderReadService | null = null;
 let cachedAdminAgentCrewRead: AdminAgentCrewReadService | null = null;
 let cachedAdminAgentCrewCommand: AdminAgentCrewCommandService | null = null;
+let cachedAdminUserCommand: AdminUserCommandService | null = null;
 
 function buildHealthDeps(): HealthCheckDeps {
   return {
@@ -244,6 +247,7 @@ export function resetHandlerDepsForTests(): void {
   cachedAdminLenderRead = null;
   cachedAdminAgentCrewRead = null;
   cachedAdminAgentCrewCommand = null;
+  cachedAdminUserCommand = null;
 }
 
 /** Shared project read service for Next GET /api/projects* adapters (Phase B1). */
@@ -679,6 +683,23 @@ export function buildAdminAgentCrewCommandService(
     });
   }
   return cachedAdminAgentCrewCommand;
+}
+
+export function buildAdminUserCommandService(
+  deps: HandlerDeps = buildHandlerDeps(),
+): AdminUserCommandService {
+  if (!cachedAdminUserCommand) {
+    const commandRepository = createAdminCommandRepository();
+    cachedAdminUserCommand = createAdminUserCommandService({
+      authz: deps.authorization,
+      readRepository: adminRepository(deps),
+      commandRepository: {
+        updateUserAccountType: (input) => commandRepository.updateUserAccountType(input),
+        writeAuditLog: (input) => commandRepository.writeAuditLog(input),
+      },
+    });
+  }
+  return cachedAdminUserCommand;
 }
 
 /** Admin command repository (audit log, synthetic agent lookup) for privileged BFF routes. */

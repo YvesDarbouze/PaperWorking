@@ -14,6 +14,7 @@ export async function fetchSessionProfile(): Promise<{
   accountType?: string;
   subscriptionPlan?: string;
   subscriptionStatus?: string;
+  isAdmin?: boolean;
 }> {
   try {
     const response = await authFetch('/api/auth/me', { credentials: 'include', cache: 'no-store' });

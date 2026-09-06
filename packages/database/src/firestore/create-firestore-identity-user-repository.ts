@@ -12,6 +12,7 @@ import { userFromFirestore } from './converters/user.converter.js';
 import {
   userAfterRemapPayload,
   userCreatePayload,
+  userDisplayNamePayload,
   userEmailUpdatePayload,
 } from './converters/user-write.js';
 import { documentData, requireFirestore, type FirestoreClientFactory } from './repositories/firestore-access.js';
@@ -105,6 +106,12 @@ export function createFirestoreIdentityUserRepository(
           }),
           { merge: false },
         );
+    },
+
+    async updateDisplayName(documentId: string, displayName: string): Promise<void> {
+      const payload = userDisplayNamePayload(displayName);
+      if (Object.keys(payload).length === 0) return;
+      await (await usersCol()).doc(documentId).set(payload, { merge: true });
     },
 
     async remapPrimaryKey(oldId: string, newId: string): Promise<void> {

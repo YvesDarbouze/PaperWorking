@@ -10,6 +10,8 @@ export default function ProjectOverviewContent() {
   const { project } = useProjectWorkspace();
   if (!project) return null;
 
+  const todos = project.todos ?? [];
+  const documents = project.documents ?? [];
   const storageUsedMb = (project.storage_used_bytes / (1024 * 1024)).toFixed(2);
   const storageQuotaMb = (project.storageQuotaBytes / (1024 * 1024)).toFixed(0);
 
@@ -61,11 +63,11 @@ export default function ProjectOverviewContent() {
           <div className="mb-4 flex items-center justify-between">
             <h2 className="text-lg font-semibold">Phase todos</h2>
             <span className="text-xs text-white/55">
-              {project.todos.filter((todo) => todo.status === 'completed').length} / {project.todos.length} done
+              {todos.filter((todo) => todo.status === 'completed').length} / {todos.length} done
             </span>
           </div>
           <div className="space-y-3">
-            {project.todos.map((todo) => (
+            {todos.map((todo) => (
               <div
                 key={todo.id}
                 className="rounded-xl border border-white/10 bg-black/30 px-4 py-3 text-sm"
@@ -82,7 +84,7 @@ export default function ProjectOverviewContent() {
         <article className="rounded-2xl border border-white/10 bg-black/25 p-5 lg:col-span-3">
           <h2 className="mb-4 text-lg font-semibold">Document vault</h2>
           <div className="space-y-2">
-            {project.documents.map((doc) => (
+            {documents.map((doc) => (
               <div
                 key={doc.doc_id}
                 className="rounded-lg border border-white/10 bg-white/[0.03] px-3 py-2 text-xs"

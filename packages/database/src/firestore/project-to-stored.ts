@@ -19,5 +19,7 @@ export function projectReadModelToStored(project: ProjectReadModel): StoredProje
     status: project.status,
     currentPhase: project.currentPhase ?? 1,
     visibility: project.visibility,
+    dealId: project.dealId ?? null,
+    dealSlug: project.dealSlug ?? null,
   };
 }

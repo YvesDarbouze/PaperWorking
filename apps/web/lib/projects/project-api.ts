@@ -26,6 +26,8 @@ export type CreateProjectPayload = {
   zip?: string;
   purchasePrice?: number;
   organizationId?: string;
+  dealId?: string;
+  dealSlug?: string;
 };
 
 export type PatchProjectPayload = Record<string, unknown>;

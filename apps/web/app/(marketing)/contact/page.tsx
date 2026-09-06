@@ -1,5 +1,6 @@
 import Link from 'next/link';
 import type { Metadata } from 'next';
+import ContactInquiryForm from '@/components/marketing/ContactInquiryForm';
 import { CONTACT_CHANNELS } from '@/lib/marketing/support-data';
 
 export const metadata: Metadata = {
@@ -19,7 +20,7 @@ export default function ContactPage() {
           className="mx-auto max-w-[52ch] text-base leading-relaxed"
           style={{ color: 'var(--color-on-surface-variant)' }}
         >
-          Migration preview — live routing to hi@paperworking.co lands after SendGrid cutover.
+          Send a message below or reach us through the channel that fits your plan.
         </p>
       </section>
 
@@ -39,17 +40,17 @@ export default function ContactPage() {
       </section>
 
       <section className="pw-card mx-auto max-w-xl p-6">
-        <h2 className="mb-4 text-xl font-semibold">General inquiry</h2>
-        <p className="mb-4 text-sm" style={{ color: 'var(--color-on-surface-variant)' }}>
-          Form submission connects in a later phase. For now, email{' '}
-          <Link href="mailto:hi@paperworking.co" className="underline-offset-2 hover:underline">
-            hi@paperworking.co
-          </Link>
-          .
+        <h2 className="mb-2 text-xl font-semibold">General inquiry</h2>
+        <p className="mb-6 text-sm" style={{ color: 'var(--color-on-surface-variant)' }}>
+          We typically respond within one business day. Investment Team accounts receive priority
+          handling during business hours.
         </p>
-        <Link href="/support" className="pw-pill-cta inline-flex w-fit">
-          Visit support center
-        </Link>
+        <ContactInquiryForm />
+        <div className="mt-6 border-t border-white/8 pt-4">
+          <Link href="/support" className="text-sm underline-offset-2 hover:underline">
+            Visit support center →
+          </Link>
+        </div>
       </section>
     </div>
   );

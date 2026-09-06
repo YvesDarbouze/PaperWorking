@@ -4,6 +4,8 @@ export type IdentityProvider = 'firebase';
 export type VerifiedIdentity = {
   uid: string;
   email?: string;
+  /** Firebase `name` claim / profile display name when present. */
+  displayName?: string;
   provider: IdentityProvider;
 };
 

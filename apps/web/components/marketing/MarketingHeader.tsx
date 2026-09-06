@@ -7,13 +7,7 @@ import Logo from '@/components/marketing/Logo';
 import UserAccountMenu from '@/components/shared/UserAccountMenu';
 import { useAuth } from '@/context/AuthContext';
 import { resolveAppHomeRoute } from '@/lib/auth/post-auth-redirect';
-
-const NAV_LINKS = [
-  { label: 'How It Works', href: '/how-it-works' },
-  { label: 'Marketplaces', href: '/marketplaces' },
-  { label: 'Pricing', href: '/pricing' },
-  { label: 'Support', href: '/support' },
-];
+import { MARKETING_NAV_LINKS } from '@/lib/marketing/content';
 
 export default function MarketingHeader() {
   const pathname = usePathname();
@@ -52,7 +46,7 @@ export default function MarketingHeader() {
 
           {/* Center: Nav links */}
           <div className="hidden items-center gap-7 md:flex">
-            {NAV_LINKS.map((link) => (
+            {MARKETING_NAV_LINKS.map((link) => (
               <Link
                 key={link.href}
                 href={link.href}
@@ -146,7 +140,7 @@ export default function MarketingHeader() {
 
             {/* Navigation links */}
             <div className="flex-1 space-y-1 overflow-y-auto px-3 py-4">
-              {NAV_LINKS.map((link) => (
+              {MARKETING_NAV_LINKS.map((link) => (
                 <Link
                   key={link.href}
                   href={link.href}

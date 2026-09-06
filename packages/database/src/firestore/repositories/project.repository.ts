@@ -16,6 +16,8 @@ export type FirestoreProjectCreateInput = {
   purchasePrice?: number;
   organizationId?: string;
   userId: string;
+  dealId?: string;
+  dealSlug?: string;
 };
 
 export class FirestoreProjectRepository {
@@ -146,6 +148,8 @@ export class FirestoreProjectRepository {
         estimatedARV: 0,
         costs: [],
       },
+      ...(data.dealId ? { dealId: data.dealId } : {}),
+      ...(data.dealSlug ? { dealSlug: data.dealSlug } : {}),
       members: {
         [data.userId]: {
           uid: data.userId,
@@ -205,6 +209,7 @@ export class FirestoreProjectRepository {
       'visibility',
       'currentPhase',
       'dealId',
+      'dealSlug',
       'organizationId',
     ] as const) {
       if (patch[key] !== undefined) {

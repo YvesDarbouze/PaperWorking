@@ -14,6 +14,7 @@ function makeRepository(
     updateEmail: jest.fn(async () => undefined),
     updateAfterEmailRemap: jest.fn(async () => undefined),
     createUser: jest.fn(async () => undefined),
+    updateDisplayName: jest.fn(async () => undefined),
     remapPrimaryKey: jest.fn(async () => undefined),
     ...overrides,
   };
@@ -69,7 +70,7 @@ describe('IdentityProvisioningService', () => {
     const service = createIdentityProvisioningService({ repository, sessionStore: store });
 
     await service.provisionFromVerifiedIdentity(
-      { uid: 'user-new', email: 'new@example.com', provider: 'firebase' },
+      { uid: 'user-new', email: 'new@example.com', provider: 'firebase', displayName: 'New User' },
       'vendor',
     );
 
@@ -77,6 +78,7 @@ describe('IdentityProvisioningService', () => {
       firebaseUid: 'user-new',
       email: 'new@example.com',
       accountType: 'vendor',
+      displayName: 'New User',
     });
   });
 

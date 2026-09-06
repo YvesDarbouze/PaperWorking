@@ -71,7 +71,7 @@ export default function ProjectsListPanel() {
         if (!response.ok) throw new Error(body.error ?? 'Failed to load projects');
         const mapped = (body.projects ?? []).map((row) => ({
           id: String(row.id ?? ''),
-          propertyName: String(row.propertyName ?? ''),
+          propertyName: String(row.propertyName ?? row.name ?? row.title ?? ''),
           address: String(row.address ?? ''),
           city: String(row.city ?? ''),
           currentPhase: row.currentPhase as ProjectSummary['currentPhase'],
@@ -85,6 +85,14 @@ export default function ProjectsListPanel() {
             typeof row.ownershipPercentage === 'number' ? row.ownershipPercentage : 100,
           estimatedExitValue:
             typeof row.estimatedExitValue === 'number' ? row.estimatedExitValue : undefined,
+          dealId: row.dealId != null && row.dealId !== '' ? String(row.dealId) : null,
+          dealSlug: row.dealSlug != null && row.dealSlug !== '' ? String(row.dealSlug) : null,
+          dealAddress:
+            row.dealAddress != null && row.dealAddress !== ''
+              ? String(row.dealAddress)
+              : row.address
+                ? String(row.address)
+                : null,
         }));
         if (!cancelled) setProjects(mapped);
       } catch (loadError) {

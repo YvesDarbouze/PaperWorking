@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { loadBillingPreview, loadProfilePreview } from '@/lib/data';
+import { useAuth } from '@/context/AuthContext';
 
 const TIMEZONES = [
   { value: 'America/New_York', label: 'Eastern Time (ET)' },
@@ -43,6 +44,7 @@ const DELETE_STEPS = [
  * (Regional Preferences, Account Overview, Danger Zone).
  */
 export default function GeneralSettingsPanel() {
+  const { profile: authProfile } = useAuth();
   const [timezone, setTimezone] = useState('America/New_York');
   const [savedTimezone, setSavedTimezone] = useState('America/New_York');
   const [prefsLoading, setPrefsLoading] = useState(true);
@@ -81,17 +83,26 @@ export default function GeneralSettingsPanel() {
     let cancelled = false;
     async function loadAccount() {
       try {
-        const [profile, billing] = await Promise.all([
+        const [profilePreview, billing] = await Promise.all([
           loadProfilePreview(),
           loadBillingPreview(),
         ]);
         if (cancelled) return;
-        setAccountType(String(profile.accountType || profile.role || '—'));
-        setPlanLabel(String(billing.plan || '—'));
+        const acct =
+          profilePreview.accountType ||
+          profilePreview.role ||
+          authProfile?.accountType ||
+          'investor';
+        setAccountType(acct && acct !== '—' ? acct : (authProfile?.accountType ?? 'investor'));
+        const plan =
+          billing.plan && billing.plan !== '—'
+            ? billing.plan
+            : authProfile?.subscriptionPlan ?? profilePreview.subscriptionPlan ?? 'Individual';
+        setPlanLabel(String(plan));
       } catch {
         if (!cancelled) {
-          setAccountType('—');
-          setPlanLabel('—');
+          setAccountType(authProfile?.accountType ?? 'investor');
+          setPlanLabel(authProfile?.subscriptionPlan ?? 'Individual');
         }
       }
     }
@@ -99,7 +110,7 @@ export default function GeneralSettingsPanel() {
     return () => {
       cancelled = true;
     };
-  }, []);
+  }, [authProfile?.accountType, authProfile?.subscriptionPlan]);
 
   useEffect(() => {
     if (jobStatus !== 'in_progress') return;

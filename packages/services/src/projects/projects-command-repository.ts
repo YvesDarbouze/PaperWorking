@@ -29,6 +29,8 @@ export type ProjectCreateData = {
   purchasePrice?: number;
   organizationId?: string;
   userId: string;
+  dealId?: string;
+  dealSlug?: string;
 };
 
 export type ProjectsCommandRepository = {

@@ -47,6 +47,8 @@ export function projectFromFirestore(
         lifecyclePhaseToNumber(data.lifecyclePhase),
       visibility: optionalString(data.visibility),
       purchasePrice: optionalNumber(data.purchasePrice),
+      dealId: optionalString(data.dealId) ?? null,
+      dealSlug: optionalString(data.dealSlug) ?? optionalString(data.slug) ?? null,
       reilProjectId: optionalString(data.reilProjectId),
       createdAt: toDate(data.createdAt, 'createdAt'),
       updatedAt: toDate(data.updatedAt, 'updatedAt'),

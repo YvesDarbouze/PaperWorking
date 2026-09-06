@@ -1,6 +1,16 @@
 import { FieldValue } from 'firebase-admin/firestore';
 import { displayNameFromEmail } from '../user-document-id.js';
 
+export function userDisplayNamePayload(displayName: string): Record<string, unknown> {
+  const trimmed = displayName.trim();
+  if (!trimmed) return {};
+  return {
+    displayName: trimmed,
+    name: trimmed,
+    updatedAt: FieldValue.serverTimestamp(),
+  };
+}
+
 export function userCreatePayload(input: {
   firebaseUid: string;
   email: string;

@@ -16,6 +16,8 @@ type ProjectCreateData = {
   purchasePrice?: number;
   organizationId?: string;
   userId: string;
+  dealId?: string;
+  dealSlug?: string;
 };
 
 async function ensurePersonalOrganization(

@@ -135,6 +135,7 @@ export function createFirebaseIdentityVerifier(): FirebaseIdentityVerifier {
       return {
         uid: decoded.uid,
         email: decoded.email,
+        displayName: typeof decoded.name === 'string' ? decoded.name : undefined,
         provider: 'firebase',
       };
     },
@@ -148,6 +149,7 @@ export function createFirebaseIdentityVerifier(): FirebaseIdentityVerifier {
       return {
         uid: decoded.uid,
         email: decoded.email,
+        displayName: typeof decoded.name === 'string' ? decoded.name : undefined,
         provider: 'firebase',
       };
     },

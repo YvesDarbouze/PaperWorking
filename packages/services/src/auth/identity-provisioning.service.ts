@@ -14,6 +14,16 @@ function emailDocId(email: string): string {
   return email.trim().toLowerCase();
 }
 
+async function syncDisplayNameFromIdentity(
+  repository: IdentityUserRepository,
+  documentId: string,
+  displayName?: string,
+): Promise<void> {
+  const trimmed = displayName?.trim();
+  if (!trimmed) return;
+  await repository.updateDisplayName(documentId, trimmed);
+}
+
 /**
  * Find/create/update authoritative user identity from a verified IdP token.
  * Firestore user documents use lowercase email as document id for console readability.
@@ -43,6 +53,7 @@ export function createIdentityProvisioningService(
           await repository.remapPrimaryKey(byUid.documentId, targetDocumentId);
         }
         await repository.updateEmail(targetDocumentId, normalizedEmail);
+        await syncDisplayNameFromIdentity(repository, targetDocumentId, verified.displayName);
         return buildAuthUserForUid(authUserId, sessionStore);
       }
 
@@ -57,6 +68,7 @@ export function createIdentityProvisioningService(
           legacyFirebaseUid: byEmail.legacyFirebaseUid ?? byEmail.id,
           firebaseUid: authUserId,
         });
+        await syncDisplayNameFromIdentity(repository, targetDocumentId, verified.displayName);
         return buildAuthUserForUid(authUserId, sessionStore);
       }
 
@@ -64,6 +76,7 @@ export function createIdentityProvisioningService(
         firebaseUid: authUserId,
         email: normalizedEmail,
         accountType,
+        displayName: verified.displayName,
       });
       return buildAuthUserForUid(authUserId, sessionStore);
     },

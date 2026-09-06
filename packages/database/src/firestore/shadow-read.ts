@@ -176,6 +176,8 @@ export function projectFromPostgres(row: PostgresProjectLike): ProjectReadModel 
     currentPhase: row.currentPhase,
     visibility: row.visibility ?? null,
     purchasePrice: row.purchasePrice ?? null,
+    dealId: null,
+    dealSlug: null,
     reilProjectId: null,
     createdAt: row.createdAt,
     updatedAt: row.updatedAt,

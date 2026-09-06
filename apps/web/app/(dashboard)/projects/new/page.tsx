@@ -5,7 +5,7 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import AddressSearch from '@/components/deals/AddressSearch';
 import type { CollisionDeal } from '@/components/deals/CollisionModal';
-import { createProjectFromBff, patchProjectFromBff } from '@/lib/projects/project-api';
+import { createProjectFromBff } from '@/lib/projects/project-api';
 import { createDealFromBff } from '@/lib/deals/deal-api';
 import { loadTeamDirectory, mockProvider, useMockData } from '@/lib/data';
 import type { ProjectWorkspace } from '@/lib/projects/types';
@@ -210,18 +210,15 @@ export default function NewProjectPage() {
         const created = await createProjectFromBff({
           propertyName: projectName || 'New Project',
           address: dealAddress || undefined,
+          dealId: dealId || undefined,
+          dealSlug: dealSlug || undefined,
         });
         if (!created?.id) {
           throw new Error('Project created without server id');
         }
-        if (dealId) {
-          await patchProjectFromBff(created.id, { dealId });
-        }
       }
 
-      setTimeout(() => {
-        router.push('/projects?created=1');
-      }, 600);
+      window.location.assign('/projects?created=1');
     } catch {
       setIsLaunching(false);
       setValidationError('Unable to create project. Please try again.');

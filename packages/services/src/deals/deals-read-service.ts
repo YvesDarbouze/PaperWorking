@@ -64,6 +64,19 @@ export class DealsReadService {
 
     return { exists: false, deal: null };
   }
+
+  /** Public marketplace feed — no auth required. */
+  async listPublicMarketplaceDeals(q?: string): Promise<DealsListResult> {
+    const deals = await this.deps.repository.listDeals({
+      accessOr: [
+        {
+          AND: [{ visibility: 'marketplace' as const }, { status: 'published' as const }],
+        },
+      ],
+      q: q?.trim() || undefined,
+    });
+    return { success: true, total: deals.length, deals };
+  }
 }
 
 export function createDealsReadService(deps: DealsReadServiceDeps): DealsReadService {

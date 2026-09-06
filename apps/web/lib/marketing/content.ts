@@ -13,6 +13,7 @@ export const MARKETING_NAV_LINKS: NavLink[] = [
   { label: 'Marketplaces', href: '/marketplaces' },
   { label: 'Pricing', href: '/pricing' },
   { label: 'Support', href: '/support' },
+  { label: 'Contact', href: '/contact' },
 ];
 
 /** Footer columns — matches PaperWorking v0 LandingFooter. */

@@ -56,6 +56,7 @@ export type IdentityUserRepository = {
     accountType: string;
     displayName?: string;
   }): Promise<void>;
+  updateDisplayName(documentId: string, displayName: string): Promise<void>;
   remapPrimaryKey(oldId: string, newId: string): Promise<void>;
 };
 

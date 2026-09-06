@@ -55,6 +55,8 @@ export type ProjectReadModel = {
   currentPhase: number | null;
   visibility: string | null;
   purchasePrice: number | null;
+  dealId: string | null;
+  dealSlug: string | null;
   reilProjectId: string | null;
   createdAt: Date;
   updatedAt: Date;

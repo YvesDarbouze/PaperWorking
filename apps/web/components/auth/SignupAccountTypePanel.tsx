@@ -2,7 +2,7 @@
 
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useEffect, useState } from 'react';
-import AuthCard, { AuthNotice } from '@/components/auth/AuthCard';
+import AuthCard from '@/components/auth/AuthCard';
 import { buildSignupLoginUrl } from '@/lib/auth/post-auth-redirect';
 import { SIGNUP_ACCOUNT_TYPES, type SignupAccountType } from '@/lib/auth/routes';
 
@@ -60,10 +60,6 @@ export default function SignupAccountTypePanel() {
       <button type="button" className="auth-button-primary" disabled={isNavigating} onClick={handleContinue}>
         {isNavigating ? 'Continuing…' : 'Continue to sign up'}
       </button>
-
-      <div className="mt-4">
-        <AuthNotice>Social sign-in connects when Firebase client auth is wired at cutover.</AuthNotice>
-      </div>
     </AuthCard>
   );
 }

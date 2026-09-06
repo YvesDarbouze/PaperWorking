@@ -20,6 +20,8 @@ function parseCreateBody(body: unknown): CreateProjectInput {
       typeof record.purchasePrice === 'number' ? record.purchasePrice : undefined,
     organizationId:
       typeof record.organizationId === 'string' ? record.organizationId : undefined,
+    dealId: typeof record.dealId === 'string' ? record.dealId : undefined,
+    dealSlug: typeof record.dealSlug === 'string' ? record.dealSlug : undefined,
   };
 }
 

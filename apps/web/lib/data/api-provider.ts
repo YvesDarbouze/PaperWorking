@@ -88,10 +88,11 @@ export const apiProvider = {
       phaseLegend: [],
     };
 
-    const [metricsRes, profileRes, projectsRes] = await Promise.all([
+    const [metricsRes, profileRes, projectsRes, settingsRes] = await Promise.all([
       bffFetch('/api/portfolio/metrics?period=monthly', { credentials: 'include', cache: 'no-store' }),
       bffFetch('/api/marketplace/profile', { credentials: 'include', cache: 'no-store' }),
       bffFetch('/api/projects', { credentials: 'include', cache: 'no-store' }),
+      bffFetch('/api/settings/profile', { credentials: 'include', cache: 'no-store' }),
     ]);
 
     if (metricsRes.ok) {
@@ -143,6 +144,21 @@ export const apiProvider = {
       }
       if (body.profile?.followerCount != null) {
         empty.profileCard.followers = body.profile.followerCount;
+      }
+    }
+
+    if (settingsRes.ok) {
+      const body = (await settingsRes.json()) as {
+        settings?: { displayName?: string; name?: string };
+      };
+      const settingsName = body.settings?.displayName ?? body.settings?.name;
+      if (
+        settingsName &&
+        (!empty.profileCard.displayName ||
+          empty.profileCard.displayName === 'Investor' ||
+          empty.profileCard.displayName === 'Account')
+      ) {
+        empty.profileCard.displayName = settingsName;
       }
     }
 

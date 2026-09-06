@@ -3,6 +3,7 @@
 import { createContext, useContext, useEffect, useMemo, useState, type ReactNode } from 'react';
 import ProjectWorkspaceShell from '@/components/projects/ProjectWorkspaceShell';
 import type { ProjectWorkspace } from '@/lib/projects/types';
+import { normalizeProjectWorkspace } from '@/lib/projects/normalize-workspace';
 import { bffFetch } from '@/lib/api/bff-fetch';
 
 interface ProjectWorkspaceContextValue {
@@ -42,9 +43,14 @@ export default function ProjectWorkspaceProvider({
           credentials: 'include',
           cache: 'no-store',
         });
-        const body = (await response.json()) as { project?: ProjectWorkspace; error?: string };
+        const body = (await response.json()) as {
+          project?: Record<string, unknown>;
+          error?: string;
+        };
         if (!response.ok) throw new Error(body.error ?? 'Project not found');
-        if (!cancelled) setProject(body.project ?? null);
+        if (!cancelled) {
+          setProject(body.project ? normalizeProjectWorkspace(body.project) : null);
+        }
       } catch (loadError) {
         if (!cancelled) {
           setError(loadError instanceof Error ? loadError.message : 'Failed to load project');

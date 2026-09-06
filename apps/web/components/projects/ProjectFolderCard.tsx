@@ -180,9 +180,14 @@ export default function ProjectFolderCard({ project }: { project: ProjectSummary
               <span className="material-symbols-outlined text-[14px]">location_on</span>
               <span className="truncate">{project.dealAddress || project.address}</span>
             </Link>
+          ) : project.address ? (
+            <span className="flex items-center gap-1 truncate text-xs text-white/45">
+              <span className="material-symbols-outlined text-[14px]">location_on</span>
+              <span className="truncate">{project.address}</span>
+            </span>
           ) : (
             <div className="flex items-center justify-between w-full">
-              <span className="truncate text-xs text-white/45">{project.address || project.city}</span>
+              <span className="truncate text-xs text-white/45">{project.city || 'No address'}</span>
               <Link
                 href={`/projects/new?step=2&projectId=${project.id}`}
                 onClick={(event) => event.stopPropagation()}

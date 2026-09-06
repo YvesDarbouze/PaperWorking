@@ -28,8 +28,8 @@ const nextConfig: NextConfig = {
       { source: '/dashboard/command-center', destination: '/dashboard', permanent: false },
       { source: '/dashboard/projects', destination: '/projects', permanent: false },
       { source: '/dashboard/projects/:id', destination: '/project/:id', permanent: false },
-      { source: '/deal-analyzer', destination: '/deal-calculator', permanent: false },
-      { source: '/dashboard/deal-analyzer', destination: '/dashboard/deal-calculator', permanent: false },
+      { source: '/deal-analyzer', destination: '/dashboard/deals', permanent: false },
+      { source: '/dashboard/deal-analyzer', destination: '/dashboard/deals', permanent: false },
     ];
   },
 };

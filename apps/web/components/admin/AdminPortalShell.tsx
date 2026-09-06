@@ -5,7 +5,7 @@ import { usePathname, useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import AdminAccountMenu from '@/components/admin/AdminAccountMenu';
 import Logo from '@/components/marketing/Logo';
-import { useAuth } from '@/context/AuthContext';
+import { performClientLogout } from '@/lib/auth/client-logout';
 import {
   ADMIN_PRIMARY_NAV,
   ADMIN_ROUTE_LABELS,
@@ -101,11 +101,10 @@ function SidebarBody({ onNavigate }: { onNavigate?: () => void }) {
 export default function AdminPortalShell({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
   const router = useRouter();
-  const { logout } = useAuth();
   const [menuOpen, setMenuOpen] = useState(false);
 
   async function handleSignOut() {
-    await logout();
+    await performClientLogout();
     router.replace('/login?accountType=admin&redirectTo=/admin');
   }
 

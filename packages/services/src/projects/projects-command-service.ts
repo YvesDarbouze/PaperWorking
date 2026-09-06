@@ -15,6 +15,8 @@ export type CreateProjectInput = {
   zip?: string;
   purchasePrice?: number;
   organizationId?: string;
+  dealId?: string;
+  dealSlug?: string;
 };
 
 export type UpdateProjectInput = Record<string, unknown>;
@@ -46,6 +48,7 @@ const PATCH_ALLOWED_FIELDS = [
   'visibility',
   'currentPhase',
   'dealId',
+  'dealSlug',
 ] as const;
 
 /**
@@ -77,6 +80,12 @@ export class ProjectsCommandService {
       input.organizationId,
     );
 
+    let dealId: string | undefined;
+    if (typeof input.dealId === 'string' && input.dealId.trim()) {
+      await this.deps.authz.assertDealAccess(user, input.dealId.trim(), 'deals.update');
+      dealId = input.dealId.trim();
+    }
+
     const project = await this.deps.repository.create({
       name,
       address: input.address,
@@ -86,6 +95,8 @@ export class ProjectsCommandService {
       purchasePrice: input.purchasePrice,
       organizationId,
       userId: user.uid,
+      dealId,
+      dealSlug: typeof input.dealSlug === 'string' ? input.dealSlug.trim() || undefined : undefined,
     });
 
     return { success: true, project };

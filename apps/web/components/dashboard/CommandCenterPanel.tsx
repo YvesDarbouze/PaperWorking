@@ -241,8 +241,8 @@ export default function CommandCenterPanel() {
               href="/dashboard/deals"
               className="flex items-center gap-1.5 rounded-lg border border-white/10 bg-white/[0.05] px-3.5 py-2 text-[12px] font-semibold text-white/70 no-underline transition-colors hover:text-white"
             >
-              <span className="material-symbols-outlined text-[15px]">query_stats</span>
-              Deal Calculator
+              <span className="material-symbols-outlined text-[15px]">storefront</span>
+              Browse Deals
             </Link>
             <Link
               href="/projects"

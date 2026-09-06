@@ -33,8 +33,7 @@ export const FOOTER_COLUMNS: FooterColumn[] = [
       { label: 'Support Center', href: '/support' },
       { label: 'Real Estate Glossary', href: '/support/glossary' },
       { label: 'The Playbook (33 Metrics)', href: '/support/metrics' },
-      { label: 'Knowledge Base', href: '/help' },
-      { label: 'Blog', href: '/help' },
+      { label: 'Help', href: '/help' },
     ],
   },
   {

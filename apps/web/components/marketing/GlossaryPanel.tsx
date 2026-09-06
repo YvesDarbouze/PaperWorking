@@ -1,7 +1,9 @@
 'use client';
 
 import Link from 'next/link';
-import { useMemo, useState } from 'react';
+import { useSearchParams } from 'next/navigation';
+import { useEffect, useMemo, useState } from 'react';
+import SupportResourceSelects from '@/components/marketing/SupportResourceSelects';
 import {
   GLOSSARY_CATEGORIES,
   GLOSSARY_TERMS,
@@ -10,8 +12,16 @@ import {
 
 /** Ported from PaperWorking `/support/glossary`. */
 export default function GlossaryPanel() {
+  const searchParams = useSearchParams();
   const [activeCategory, setActiveCategory] = useState<GlossaryCategory | 'all'>('all');
   const [searchQuery, setSearchQuery] = useState('');
+
+  useEffect(() => {
+    const category = searchParams.get('category');
+    if (!category) return;
+    const valid = GLOSSARY_CATEGORIES.some((cat) => cat.id === category);
+    if (valid) setActiveCategory(category as GlossaryCategory);
+  }, [searchParams]);
 
   const filteredTerms = useMemo(() => {
     let items = GLOSSARY_TERMS;
@@ -68,6 +78,10 @@ export default function GlossaryPanel() {
           <p className="mx-auto mb-10 max-w-xl text-base leading-relaxed text-white/65 sm:text-lg">
             Industry terminology and PaperWorking platform definitions — from ARV to Zoning Scan.
           </p>
+
+          <div className="mx-auto mb-8 max-w-2xl text-left">
+            <SupportResourceSelects />
+          </div>
 
           <div className="relative mx-auto mb-8 max-w-md">
             <span className="material-symbols-outlined pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-[18px] text-white/40">

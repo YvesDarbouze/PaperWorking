@@ -1,7 +1,9 @@
 'use client';
 
 import Link from 'next/link';
-import { useMemo, useState } from 'react';
+import { useSearchParams } from 'next/navigation';
+import { useEffect, useMemo, useState } from 'react';
+import SupportResourceSelects from '@/components/marketing/SupportResourceSelects';
 import {
   PLAYBOOK_CATEGORIES,
   PLAYBOOK_METRICS,
@@ -10,8 +12,16 @@ import {
 
 /** Ported from PaperWorking `/support/metrics` — The Playbook (33 metrics). */
 export default function MetricsPlaybookPanel() {
+  const searchParams = useSearchParams();
   const [activeCategory, setActiveCategory] = useState<MetricCategory | 'all'>('all');
   const [searchQuery, setSearchQuery] = useState('');
+
+  useEffect(() => {
+    const category = searchParams.get('category');
+    if (!category) return;
+    const valid = PLAYBOOK_CATEGORIES.some((cat) => cat.id === category);
+    if (valid) setActiveCategory(category as MetricCategory);
+  }, [searchParams]);
 
   const filteredMetrics = useMemo(() => {
     let items = PLAYBOOK_METRICS;
@@ -48,6 +58,10 @@ export default function MetricsPlaybookPanel() {
           Real estate is document-heavy. PaperWorking transforms raw closing statements, property tax
           assessments, leases, and receipts into 33 real-time performance metrics automatically.
         </p>
+      </div>
+
+      <div className="mb-10 max-w-2xl">
+        <SupportResourceSelects />
       </div>
 
       <div className="mb-10 space-y-6">

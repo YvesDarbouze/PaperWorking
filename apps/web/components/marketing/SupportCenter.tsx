@@ -2,6 +2,7 @@
 
 import Link from 'next/link';
 import { useMemo, useState } from 'react';
+import SupportResourceSelects from '@/components/marketing/SupportResourceSelects';
 import {
   POPULAR_SEARCHES,
   SUPPORT_ARTICLES,
@@ -191,7 +192,16 @@ export default function SupportCenter() {
       </section>
 
       <section className="mx-auto max-w-[1200px] px-5 pb-12 md:px-8">
-        <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+        <div className="mb-6">
+          <p className="mb-1.5 font-[family-name:var(--font-jetbrains-mono)] text-[10px] uppercase tracking-[0.1em] text-[color:var(--color-primary)]/50">
+            Reference libraries
+          </p>
+          <h2 className="text-[20px] font-bold tracking-[-0.02em] text-white md:text-[22px]">
+            Glossary &amp; metrics playbook
+          </h2>
+        </div>
+        <SupportResourceSelects />
+        <div className="mt-6 grid grid-cols-1 gap-4 md:grid-cols-2">
           <Link
             href="/support/glossary"
             className="glass-card group flex min-h-[44px] items-center gap-5 rounded-xl border border-white/[0.08] p-5 no-underline transition-all hover:border-[color:var(--color-primary)]/20"

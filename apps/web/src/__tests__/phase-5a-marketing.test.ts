@@ -36,6 +36,7 @@ describe('phase 5a — marketing content', () => {
       'Marketplaces',
       'Pricing',
       'Support',
+      'Contact',
     ]);
     expect(MARKETING_NAV_LINKS.find((link) => link.label === 'Marketplaces')?.href).toBe(
       '/marketplaces',

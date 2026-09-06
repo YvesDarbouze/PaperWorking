@@ -239,6 +239,7 @@ export {
   type ContactPostDeps,
   type SupportTicketPayload,
 } from './routes/public/contact/handler.js';
+export type { ContactFormInput } from './lib/public/forms.js';
 export {
   handleWaitlistPost,
   type WaitlistPostDeps,

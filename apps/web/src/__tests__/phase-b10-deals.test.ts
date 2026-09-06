@@ -126,7 +126,8 @@ describe('phase B10 — Next route wiring', () => {
     expect(vendor).toContain('listDealsFromBff');
     expect(addressSearch).toContain('checkDealExistsFromBff');
     expect(wizard).toContain('createDealFromBff');
-    expect(wizard).toContain('patchProjectFromBff');
+    expect(wizard).toContain('createProjectFromBff');
+    expect(wizard).toContain('dealId: dealId || undefined');
     expect(marketplace).not.toMatch(/apiFetch\([^)]*\/api\/deals/);
   });
 
@@ -151,7 +152,8 @@ describe('phase B10 — project wizard linking', () => {
       'utf8',
     );
     expect(wizard).toContain('createProjectFromBff');
-    expect(wizard).toContain('patchProjectFromBff(created.id, { dealId })');
+    expect(wizard).toContain('dealId: dealId || undefined');
+    expect(wizard).toContain('dealSlug: dealSlug || undefined');
     expect(wizard).toContain('createDealFromBff(payload)');
     expect(wizard).not.toMatch(/createDealFromBff\([^)]*creatorId/);
   });

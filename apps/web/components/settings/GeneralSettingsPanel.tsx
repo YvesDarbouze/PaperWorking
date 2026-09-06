@@ -97,7 +97,7 @@ export default function GeneralSettingsPanel() {
         const plan =
           billing.plan && billing.plan !== '—'
             ? billing.plan
-            : authProfile?.subscriptionPlan ?? profilePreview.subscriptionPlan ?? 'Individual';
+            : authProfile?.subscriptionPlan ?? 'Individual';
         setPlanLabel(String(plan));
       } catch {
         if (!cancelled) {

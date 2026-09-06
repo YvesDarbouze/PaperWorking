@@ -47,7 +47,15 @@ export async function POST(request: Request, context: RouteContext) {
           persona: agent.agentPersona || 'investor',
         };
       },
-      recordAudit: async ({ actor, agentId, agentPersona }) => {
+      recordAudit: async ({
+        actor,
+        agentId,
+        agentPersona,
+      }: {
+        actor: { uid: string; email?: string | null; role?: string | null };
+        agentId: string;
+        agentPersona?: string;
+      }) => {
         await adminCommand.writeAuditLog({
           actorUid: actor.uid,
           actorEmail: actor.email || 'unknown',

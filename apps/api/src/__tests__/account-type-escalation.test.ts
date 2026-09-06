@@ -90,8 +90,9 @@ describe('AuthService accountType escalation prevention', () => {
       uid: 'user-existing',
       email: 'investor@example.com',
     });
-    mockIdentityRepo.findById.mockResolvedValue({
+    mockIdentityRepo.findByFirebaseUid.mockResolvedValue({
       id: 'user-existing',
+      documentId: 'investor@example.com',
       email: 'investor@example.com',
       accountType: 'investor',
     });
@@ -108,7 +109,7 @@ describe('AuthService accountType escalation prevention', () => {
     });
 
     expect(mockIdentityRepo.updateEmail).toHaveBeenCalledWith(
-      'user-existing',
+      'investor@example.com',
       'investor@example.com',
     );
     expect(mockIdentityRepo.createUser).not.toHaveBeenCalled();
@@ -119,7 +120,7 @@ describe('AuthService accountType escalation prevention', () => {
       uid: 'user-new',
       email: 'new@example.com',
     });
-    mockIdentityRepo.findById.mockResolvedValue(null);
+    mockIdentityRepo.findByFirebaseUid.mockResolvedValue(null);
     mockIdentityRepo.findByLegacyUid.mockResolvedValue(null);
     mockIdentityRepo.findByEmail.mockResolvedValue(null);
     mockSessionStore.findUserByUid.mockResolvedValue({
@@ -135,7 +136,7 @@ describe('AuthService accountType escalation prevention', () => {
     });
 
     expect(mockIdentityRepo.createUser).toHaveBeenCalledWith({
-      id: 'user-new',
+      firebaseUid: 'user-new',
       email: 'new@example.com',
       accountType: 'vendor',
     });

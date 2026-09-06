@@ -37,7 +37,7 @@ export async function POST(request: Request, context: RouteContext) {
           email: user.email,
         };
       },
-      loadAgent: async (agentId) => {
+      loadAgent: async (agentId: string) => {
         const agent = await adminCommand.findSyntheticAgentById(agentId);
         if (!agent) return null;
         return {

@@ -10,6 +10,7 @@ export default function SignupAccountTypePanel() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const invite = searchParams.get('invite');
+  const isTeamInvite = Boolean(invite);
   const [selectedType, setSelectedType] = useState<SignupAccountType>('investor');
   const [isNavigating, setIsNavigating] = useState(false);
 
@@ -36,9 +37,13 @@ export default function SignupAccountTypePanel() {
   return (
     <AuthCard className="w-full max-w-[520px]">
       <div className="mb-8 text-center">
-        <h1 className="mb-2 text-2xl font-semibold tracking-[-0.02em] md:text-3xl">Select account type</h1>
+        <h1 className="mb-2 text-2xl font-semibold tracking-[-0.02em] md:text-3xl">
+          {isTeamInvite ? 'Accept team invitation' : 'Select account type'}
+        </h1>
         <p className="mx-auto max-w-md text-sm leading-relaxed text-[rgba(253,255,252,0.65)]">
-          Create your account and start your first project. 14-day trial, no charge until day 15.
+          {isTeamInvite
+            ? 'Create your account to join the team. Your invite token is saved for the next step.'
+            : 'Create your account and start your first project. 14-day trial, no charge until day 15.'}
         </p>
       </div>
 

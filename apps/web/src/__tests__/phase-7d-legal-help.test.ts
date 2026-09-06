@@ -29,9 +29,14 @@ describe('phase 7d — legal & help pages', () => {
       '/login',
       '/signup',
       '/forgot-password',
+      '/invite',
       '/contact',
+      '/about',
+      '/careers',
       '/privacy',
       '/terms',
+      '/cookies',
+      '/subprocessors',
     ]);
     for (const href of hrefs) {
       expect(implemented.has(href)).toBe(true);

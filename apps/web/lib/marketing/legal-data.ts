@@ -58,3 +58,30 @@ export const TERMS_SECTIONS: LegalSection[] = [
 ];
 
 export const LEGAL_LAST_UPDATED = 'August 2026';
+
+export const COOKIES_SECTIONS: LegalSection[] = [
+  {
+    heading: 'What Are Cookies',
+    body: 'Cookies are small text files stored on your device when you visit a website. They help us recognize your browser, remember your preferences, and keep your session secure.',
+  },
+  {
+    heading: 'How We Use Cookies',
+    body: 'Essential cookies are required for authentication, session management, and security — including `__session`, `__acct`, and `__sub`. Preference cookies remember display settings and dashboard layout. Analytics cookies help us improve navigation and feature prioritization; they are optional and disabled by default in the migration preview.',
+  },
+  {
+    heading: 'Third-Party Cookies',
+    body: 'PaperWorking uses Firebase Authentication and Stripe for payment processing. These services may set their own cookies to maintain secure sessions. We only integrate with providers that meet our security and privacy standards.',
+  },
+  {
+    heading: 'Managing Your Preferences',
+    body: 'Most browsers let you block or delete cookies through their settings menu. Disabling essential cookies will prevent you from logging in to PaperWorking.',
+  },
+];
+
+export const ABOUT_PRINCIPLES = [
+  'Built for investors, not adapted for them. The four-phase lifecycle is the product\'s spine, not a feature.',
+  'Numbers over adjectives. We publish the 33 KPIs and their formulas; if a metric matters, you can check the math.',
+  'Your data is yours. Export everything, anytime. Cancel from Settings. No hostage negotiations.',
+  'Honest about what we do. PaperWorking tracks interest; it never moves money. It produces reports for your CPA; it doesn\'t file your taxes. It\'s project management software, not investment advice.',
+  'Community compounds. Tools bring investors here; the network of deals and professionals keeps them. Come for the tools, stay for the community.',
+] as const;

@@ -43,19 +43,19 @@ export const FOOTER_COLUMNS: FooterColumn[] = [
       { label: 'Sign In', href: '/login' },
       { label: 'Create Account', href: '/signup' },
       { label: 'Forgot Password', href: '/forgot-password' },
-      { label: 'Accept Team Invite', href: '/signup' },
+      { label: 'Accept Team Invite', href: '/invite' },
     ],
   },
   {
     heading: 'Company & Legal',
     links: [
-      { label: 'About', href: '/contact' },
-      { label: 'Careers', href: '/contact' },
+      { label: 'About', href: '/about' },
+      { label: 'Careers', href: '/careers' },
       { label: 'Contact', href: '/contact' },
       { label: 'Privacy', href: '/privacy' },
       { label: 'Terms', href: '/terms' },
-      { label: 'Cookies', href: '/privacy' },
-      { label: 'Subprocessors', href: '/privacy' },
+      { label: 'Cookies', href: '/cookies' },
+      { label: 'Subprocessors', href: '/subprocessors' },
     ],
   },
 ];
@@ -63,8 +63,8 @@ export const FOOTER_COLUMNS: FooterColumn[] = [
 export const FOOTER_BOTTOM_LINKS: NavLink[] = [
   { label: 'Privacy', href: '/privacy' },
   { label: 'Terms', href: '/terms' },
-  { label: 'Cookies', href: '/privacy' },
-  { label: 'Subprocessors', href: '/privacy' },
+  { label: 'Cookies', href: '/cookies' },
+  { label: 'Subprocessors', href: '/subprocessors' },
 ];
 
 export const HERO_CONTENT = {

@@ -1,4 +1,5 @@
 import type { Metadata } from 'next';
+import { Suspense } from 'react';
 import GlossaryPanel from '@/components/marketing/GlossaryPanel';
 
 export const metadata: Metadata = {
@@ -8,5 +9,9 @@ export const metadata: Metadata = {
 };
 
 export default function SupportGlossaryPage() {
-  return <GlossaryPanel />;
+  return (
+    <Suspense fallback={<div className="mx-auto max-w-3xl px-5 py-16 md:px-10">Loading glossary…</div>}>
+      <GlossaryPanel />
+    </Suspense>
+  );
 }

@@ -41,7 +41,8 @@
 
 | Doc | Mục đích |
 |-----|----------|
-| [list_APIs_.md](./list_APIs_.md) | Inventory route BFF + Nest |
+| [ROUTES_AND_APIS.md](./ROUTES_AND_APIS.md) | **Tổng hợp toàn bộ page routes + BFF API + link footer** |
+| [list_APIs_.md](./list_APIs_.md) | Inventory chi tiết 297 handler `@paperworking/api` |
 | [NEST_API_CLOUD_RUN.md](./NEST_API_CLOUD_RUN.md) | Deploy Nest API lên Cloud Run |
 | [PHASE_B14_FIREBASE_STORAGE_DEPLOYMENT.md](./PHASE_B14_FIREBASE_STORAGE_DEPLOYMENT.md) | Firebase Storage + App Hosting IAM |
 | [STRIPE_PRODUCTION_CHECKLIST.md](./STRIPE_PRODUCTION_CHECKLIST.md) | Go-live Stripe |

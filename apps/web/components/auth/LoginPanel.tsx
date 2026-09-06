@@ -5,9 +5,11 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import AuthCard, { AuthFieldError } from '@/components/auth/AuthCard';
 import { useAuth } from '@/context/AuthContext';
+import { ADMIN_ROUTE } from '@/lib/auth/post-auth-redirect';
 import { AUTH_ROUTES } from '@/lib/auth/routes';
 import { loginSchema, registerSchema } from '@/lib/auth/schemas';
 import { resolveLoginRedirect } from '@/lib/auth/session-client';
+import { useMockAuth } from '@/lib/data';
 
 type LoginMode = 'password' | 'magic-link';
 
@@ -54,6 +56,7 @@ export default function LoginPanel() {
     register: authRegister,
     loginWithGoogle,
     loginWithFacebook,
+    loginWithDevSession,
     sendMagicLink,
     error: authError,
     clearError,
@@ -71,6 +74,8 @@ export default function LoginPanel() {
   const accountType = searchParams.get('accountType') ?? 'investor';
   const redirectTo = searchParams.get('redirectTo') ?? searchParams.get('redirect') ?? '';
   const sessionReason = searchParams.get('reason');
+  const isAdminLogin = accountType === 'admin';
+  const mockAuthEnabled = useMockAuth();
 
   const [isSignUp, setIsSignUp] = useState(urlMode === 'signup');
   const [loginMode, setLoginMode] = useState<LoginMode>('password');
@@ -267,16 +272,42 @@ export default function LoginPanel() {
     }
   }
 
+  async function handleAdminSignIn() {
+    setLocalError(null);
+    clearError();
+    setIsSignUp(false);
+
+    if (mockAuthEnabled) {
+      setIsSubmitting(true);
+      try {
+        const result = await loginWithDevSession('admin');
+        if (!result.ok) {
+          setLocalError(result.error ?? 'Unable to start admin session');
+          return;
+        }
+        window.location.replace(ADMIN_ROUTE);
+      } finally {
+        setIsSubmitting(false);
+      }
+      return;
+    }
+
+    const params = new URLSearchParams();
+    params.set('accountType', 'admin');
+    params.set('redirectTo', ADMIN_ROUTE);
+    router.replace(`${AUTH_ROUTES.login}?${params.toString()}`);
+  }
+
   const bannerError = localError || authError;
 
   return (
-    <AuthCard>
+    <AuthCard className="w-full max-w-[480px] !p-5 md:!p-7">
       <div className="flex w-full flex-col items-center">
-        <div className="mb-6 text-center">
-          <h1 className="mb-2 font-thin text-xl tracking-tight text-white md:text-2xl">
+        <div className="mb-4 text-center">
+          <h1 className="mb-1 font-thin text-xl tracking-tight text-white md:text-2xl">
             {isSignUp ? 'Sign up' : 'Sign in'}
           </h1>
-          <p className="text-xs text-[rgba(253,255,252,0.55)] md:text-sm">
+          <p className="text-xs leading-snug text-[rgba(253,255,252,0.55)]">
             {isSignUp
               ? 'Create your account and start your first Project. 14-day trial, no charge until day 15.'
               : loginMode === 'magic-link'
@@ -286,38 +317,49 @@ export default function LoginPanel() {
         </div>
 
         {sessionReason === 'session_expired' && !bannerError ? (
-          <div className="mb-5 flex w-full items-start gap-3 rounded-xl border border-amber-800/30 bg-amber-950/40 px-4 py-3 text-amber-300">
+          <div className="mb-3 flex w-full items-start gap-2.5 rounded-xl border border-amber-800/30 bg-amber-950/40 px-3 py-2 text-amber-300">
             <span className="material-symbols-outlined mt-0.5 text-[16px] text-amber-400">
               shield
             </span>
-            <p className="text-xs font-medium leading-relaxed">
+            <p className="text-xs font-medium leading-snug">
               Your session expired. Please sign in again to continue.
             </p>
           </div>
         ) : null}
 
-        {bannerError ? (
-          <div className="mb-5 flex w-full items-start gap-3 rounded-xl border border-red-800/30 bg-red-950/40 px-4 py-3 text-red-300">
-            <span className="material-symbols-outlined mt-0.5 text-[16px] text-red-400">error</span>
-            <p className="text-xs font-medium leading-relaxed">{bannerError}</p>
+        {isAdminLogin && !isSignUp && !bannerError ? (
+          <div className="mb-3 flex w-full items-start gap-2.5 rounded-xl border border-violet-800/30 bg-violet-950/40 px-3 py-2 text-violet-200">
+            <span className="material-symbols-outlined mt-0.5 text-[16px] text-violet-300">
+              admin_panel_settings
+            </span>
+            <p className="text-xs font-medium leading-snug">
+              Platform admin sign-in — use credentials for an account with admin access in PaperWorking.
+            </p>
           </div>
         ) : null}
 
-        {/* Social */}
-        <div className="mb-5 flex w-full flex-col gap-3">
+        {bannerError ? (
+          <div className="mb-3 flex w-full items-start gap-2.5 rounded-xl border border-red-800/30 bg-red-950/40 px-3 py-2 text-red-300">
+            <span className="material-symbols-outlined mt-0.5 text-[16px] text-red-400">error</span>
+            <p className="text-xs font-medium leading-snug">{bannerError}</p>
+          </div>
+        ) : null}
+
+        {/* Social — side by side */}
+        <div className="mb-3 grid w-full grid-cols-2 gap-2">
           <button
             type="button"
             onClick={() => void handleSocial('google')}
             disabled={!!loadingProvider || isSubmitting}
-            className="auth-btn-social flex w-full items-center justify-center gap-3 py-3 disabled:opacity-50"
+            className="auth-btn-social flex items-center justify-center gap-2 px-2 py-2.5 disabled:opacity-50"
           >
             {loadingProvider === 'google' ? (
-              <span className="material-symbols-outlined animate-spin text-[20px]">progress_activity</span>
+              <span className="material-symbols-outlined animate-spin text-[18px]">progress_activity</span>
             ) : (
               <GoogleIcon />
             )}
-            <span className="text-xs font-semibold uppercase tracking-wider text-white">
-              Continue with Google
+            <span className="truncate text-[10px] font-semibold uppercase tracking-wide text-white sm:text-xs">
+              Google
             </span>
           </button>
 
@@ -325,21 +367,21 @@ export default function LoginPanel() {
             type="button"
             onClick={() => void handleSocial('facebook')}
             disabled={!!loadingProvider || isSubmitting}
-            className="auth-btn-social flex w-full items-center justify-center gap-3 py-3 disabled:opacity-50"
+            className="auth-btn-social flex items-center justify-center gap-2 px-2 py-2.5 disabled:opacity-50"
           >
             {loadingProvider === 'facebook' ? (
-              <span className="material-symbols-outlined animate-spin text-[20px]">progress_activity</span>
+              <span className="material-symbols-outlined animate-spin text-[18px]">progress_activity</span>
             ) : (
               <FacebookIcon />
             )}
-            <span className="text-xs font-semibold uppercase tracking-wider text-white">
-              Continue with Facebook
+            <span className="truncate text-[10px] font-semibold uppercase tracking-wide text-white sm:text-xs">
+              Facebook
             </span>
           </button>
         </div>
 
         {/* Or */}
-        <div className="mb-5 flex w-full items-center gap-3">
+        <div className="mb-3 flex w-full items-center gap-2">
           <div className="h-px flex-1 bg-white/5" />
           <span className="text-[10px] font-semibold uppercase tracking-widest text-white/40">Or</span>
           <div className="h-px flex-1 bg-white/5" />
@@ -348,7 +390,7 @@ export default function LoginPanel() {
         {/* Password / Magic Link toggle — magic link is Supabase-only during transition */}
         {magicLinkSupported ? (
         <div
-          className="mb-5 flex w-full rounded-xl border border-white/5 p-1"
+          className="mb-3 flex w-full rounded-xl border border-white/5 p-1"
           style={{ backgroundColor: 'rgba(13, 10, 11, 0.6)' }}
         >
           {(['password', 'magic-link'] as const).map((mode) => (
@@ -374,10 +416,10 @@ export default function LoginPanel() {
         </div>
         ) : null}
 
-        <div className="relative w-full" style={{ minHeight: 220 }}>
+        <div className="relative w-full">
           {/* Sign in — password */}
           {loginMode === 'password' && !isSignUp ? (
-            <form onSubmit={handlePasswordLogin} className="w-full space-y-4">
+            <form onSubmit={handlePasswordLogin} className="w-full space-y-3">
               <div>
                 <label htmlFor="login-email" className="auth-label">
                   Email Address
@@ -388,7 +430,7 @@ export default function LoginPanel() {
                   type="email"
                   placeholder="name@example.com"
                   autoComplete="email"
-                  className="auth-input"
+                  className="auth-input !py-2.5"
                 />
                 <AuthFieldError message={fieldErrors.email} />
               </div>
@@ -404,13 +446,13 @@ export default function LoginPanel() {
                     type={showPassword ? 'text' : 'password'}
                     placeholder="Enter password"
                     autoComplete="current-password"
-                    className="auth-input pr-12"
+                    className="auth-input pr-12 !py-2.5"
                   />
                   <button
                     type="button"
                     onClick={() => setShowPassword((v) => !v)}
                     aria-label={showPassword ? 'Hide password' : 'Show password'}
-                    className="absolute right-4 top-1/2 -translate-y-1/2 text-white/45 hover:text-white"
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-white/45 hover:text-white"
                   >
                     <span className="material-symbols-outlined text-[18px]">
                       {showPassword ? 'visibility_off' : 'visibility'}
@@ -423,22 +465,22 @@ export default function LoginPanel() {
               <button
                 type="submit"
                 disabled={isSubmitting || !!loadingProvider}
-                className="auth-button-luminous mt-2"
+                className="auth-button-luminous !py-3"
               >
                 {isSubmitting ? 'Signing in…' : 'Sign In'}
               </button>
 
-              <div className="flex flex-col gap-2.5 sm:flex-row sm:items-center sm:justify-between">
+              <div className="flex flex-wrap items-center justify-between gap-x-3 gap-y-2 text-xs">
                 <button
                   type="button"
                   onClick={() => setIsSignUp(true)}
-                  className="auth-button-secondary !w-auto flex-1 px-4 py-2.5 text-xs"
+                  className="border-0 bg-transparent p-0 font-medium text-white/70 underline-offset-2 hover:text-white hover:underline"
                 >
                   Create an account
                 </button>
                 <Link
                   href={AUTH_ROUTES.forgotPassword}
-                  className="text-center text-xs font-medium text-white/55 no-underline hover:text-white sm:text-right"
+                  className="font-medium text-white/55 no-underline hover:text-white"
                 >
                   Forgot password?
                 </Link>
@@ -448,7 +490,7 @@ export default function LoginPanel() {
 
           {/* Sign up — password */}
           {loginMode === 'password' && isSignUp ? (
-            <form onSubmit={handleSignup} className="w-full space-y-4">
+            <form onSubmit={handleSignup} className="w-full space-y-3">
               <div>
                 <label htmlFor="signup-name" className="auth-label">
                   Full Name
@@ -628,12 +670,40 @@ export default function LoginPanel() {
           ) : null}
         </div>
 
-        <div className="mt-8 flex w-full flex-col items-center gap-3">
-          <p className="text-center text-xs text-white/55">New to PaperWorking?</p>
-          <Link href="/pricing" className="auth-link-button w-full sm:w-auto">
-            Start your 14-day trial
-          </Link>
-        </div>
+        {!isSignUp ? (
+          <div className="mt-4 w-full border-t border-white/10 pt-4">
+            <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+              <button
+                type="button"
+                onClick={() => void handleAdminSignIn()}
+                disabled={isSubmitting || !!loadingProvider || (isAdminLogin && !mockAuthEnabled)}
+                className="auth-button-secondary flex items-center justify-center gap-2 !py-2 text-xs disabled:opacity-50 sm:w-auto sm:px-4"
+              >
+                <span className="material-symbols-outlined text-[16px]">admin_panel_settings</span>
+                {mockAuthEnabled
+                  ? isAdminLogin
+                    ? 'Continue as admin (dev)'
+                    : 'Sign in as admin (dev)'
+                  : isAdminLogin
+                    ? 'Admin sign-in mode'
+                    : 'Sign in as admin'}
+              </button>
+              <p className="text-center text-xs text-white/55 sm:text-right">
+                New to PaperWorking?{' '}
+                <Link href="/pricing" className="font-semibold text-white no-underline hover:underline">
+                  Start your 14-day trial
+                </Link>
+              </p>
+            </div>
+          </div>
+        ) : (
+          <div className="mt-6 flex w-full flex-col items-center gap-2 border-t border-white/10 pt-4 text-center">
+            <p className="text-xs text-white/55">New to PaperWorking?</p>
+            <Link href="/pricing" className="auth-link-button w-full sm:w-auto">
+              Start your 14-day trial
+            </Link>
+          </div>
+        )}
       </div>
     </AuthCard>
   );

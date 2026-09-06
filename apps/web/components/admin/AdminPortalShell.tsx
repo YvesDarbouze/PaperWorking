@@ -1,9 +1,11 @@
 'use client';
 
 import Link from 'next/link';
-import { usePathname } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
+import AdminAccountMenu from '@/components/admin/AdminAccountMenu';
 import Logo from '@/components/marketing/Logo';
+import { useAuth } from '@/context/AuthContext';
 import {
   ADMIN_PRIMARY_NAV,
   ADMIN_ROUTE_LABELS,
@@ -98,7 +100,14 @@ function SidebarBody({ onNavigate }: { onNavigate?: () => void }) {
  */
 export default function AdminPortalShell({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
+  const router = useRouter();
+  const { logout } = useAuth();
   const [menuOpen, setMenuOpen] = useState(false);
+
+  async function handleSignOut() {
+    await logout();
+    router.replace('/login?accountType=admin&redirectTo=/admin');
+  }
 
   const pageTitle =
     (pathname && ROUTE_LABELS[pathname]) ||
@@ -212,12 +221,7 @@ export default function AdminPortalShell({ children }: { children: React.ReactNo
                 <span className="material-symbols-outlined text-[18px]">notifications</span>
                 <span className="absolute right-1.5 top-1.5 h-1.5 w-1.5 rounded-full bg-[#F06543]" />
               </button>
-              <div className="flex items-center gap-2 rounded-full border border-black/10 bg-white px-2 py-1.5 sm:px-3">
-                <span className="flex h-6 w-6 items-center justify-center rounded-full bg-black text-[10px] font-bold text-white">
-                  A
-                </span>
-                <span className="hidden text-xs font-semibold md:inline">Platform Admin</span>
-              </div>
+              <AdminAccountMenu onSignOut={handleSignOut} />
             </div>
           </div>
 

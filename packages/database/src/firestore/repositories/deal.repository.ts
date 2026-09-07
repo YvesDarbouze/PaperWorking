@@ -19,6 +19,7 @@ export type FirestoreDealCreateInput = {
   arv: number;
   holdingCosts: number;
   projectedRoi: number;
+  projectedMonthlyRent?: number;
   status: 'draft' | 'published' | 'funding' | 'closed' | 'archived';
   visibility: 'marketplace' | 'invitation_only' | 'private';
   creatorId: string;
@@ -165,6 +166,9 @@ export class FirestoreDealRepository {
       arv: data.arv,
       holdingCosts: data.holdingCosts,
       projectedRoi: data.projectedRoi,
+      ...(data.projectedMonthlyRent !== undefined
+        ? { projectedMonthlyRent: data.projectedMonthlyRent }
+        : {}),
       status: data.status,
       visibility: data.visibility,
       creatorId: data.creatorId,
@@ -187,6 +191,55 @@ export class FirestoreDealRepository {
       throw new Error(`Deal not found after create: ${id}`);
     }
     return created;
+  }
+
+  async updateBySlug(
+    slug: string,
+    patch: {
+      purchasePrice?: number;
+      rehabCost?: number;
+      arv?: number;
+      holdingCosts?: number;
+      projectedRoi?: number;
+      projectedMonthlyRent?: number;
+      status?: string;
+      visibility?: string;
+      projectId?: string;
+    },
+  ): Promise<DealReadModel> {
+    const existing = await this.findBySlug(slug);
+    if (!existing) {
+      throw new Error(`Deal not found: ${slug}`);
+    }
+
+    const db = await this.db();
+    const update: Record<string, unknown> = {
+      updatedAt: FieldValue.serverTimestamp(),
+    };
+
+    for (const key of [
+      'purchasePrice',
+      'rehabCost',
+      'arv',
+      'holdingCosts',
+      'projectedRoi',
+      'projectedMonthlyRent',
+      'status',
+      'visibility',
+      'projectId',
+    ] as const) {
+      if (patch[key] !== undefined) {
+        update[key] = patch[key];
+      }
+    }
+
+    await db.collection(FIRESTORE_COLLECTIONS.dealListings).doc(existing.id).set(update, { merge: true });
+
+    const updated = await this.getById(existing.id);
+    if (!updated) {
+      throw new Error(`Deal not found after update: ${existing.id}`);
+    }
+    return updated;
   }
 
   async findDealSummaryById(

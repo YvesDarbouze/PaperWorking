@@ -18,7 +18,15 @@ export type FirestoreProjectCreateInput = {
   userId: string;
   dealId?: string;
   dealSlug?: string;
+  financials?: Record<string, unknown>;
 };
+
+function mergeFinancials(
+  existing: Record<string, unknown> | undefined | null,
+  patch: Record<string, unknown>,
+): Record<string, unknown> {
+  return { ...(existing && typeof existing === 'object' ? existing : {}), ...patch };
+}
 
 export class FirestoreProjectRepository {
   constructor(private readonly firestoreFactory: FirestoreClientFactory = getFirestoreAdmin) {}
@@ -117,11 +125,36 @@ export class FirestoreProjectRepository {
     return rows;
   }
 
+  async getDocumentExtras(id: string): Promise<{
+    financials: Record<string, unknown> | null;
+    phaseData: unknown;
+  } | null> {
+    const snap = await (await this.db()).collection(FIRESTORE_COLLECTIONS.projects).doc(id).get();
+    const data = documentData(snap);
+    if (!data) return null;
+    const financials =
+      data.financials && typeof data.financials === 'object' && !Array.isArray(data.financials)
+        ? (data.financials as Record<string, unknown>)
+        : null;
+    return {
+      financials,
+      phaseData: data.phaseData ?? null,
+    };
+  }
+
   async create(data: FirestoreProjectCreateInput): Promise<ProjectReadModel> {
     const db = await this.db();
     const id = randomUUID();
     const now = FieldValue.serverTimestamp();
     const purchasePrice = data.purchasePrice ?? 0;
+    const baseFinancials = {
+      purchasePrice,
+      estimatedARV: 0,
+      costs: [] as unknown[],
+    };
+    const financials = data.financials
+      ? mergeFinancials(baseFinancials, data.financials)
+      : baseFinancials;
 
     const projectDoc: Record<string, unknown> = {
       id,
@@ -143,11 +176,7 @@ export class FirestoreProjectRepository {
       currentPhase: 1,
       visibility: 'private',
       purchasePrice,
-      financials: {
-        purchasePrice,
-        estimatedARV: 0,
-        costs: [],
-      },
+      financials,
       ...(data.dealId ? { dealId: data.dealId } : {}),
       ...(data.dealSlug ? { dealSlug: data.dealSlug } : {}),
       members: {
@@ -193,6 +222,8 @@ export class FirestoreProjectRepository {
       throw new Error(`Project not found: ${id}`);
     }
 
+    const existingData = documentData(existing) ?? {};
+
     const firestorePatch: Record<string, unknown> = {
       updatedAt: FieldValue.serverTimestamp(),
     };
@@ -223,6 +254,16 @@ export class FirestoreProjectRepository {
     }
     if (typeof patch.address === 'string') {
       firestorePatch.addressLine = patch.address;
+    }
+
+    if (patch.financialsMerge && patch.financials && typeof patch.financials === 'object') {
+      const prev =
+        existingData.financials && typeof existingData.financials === 'object'
+          ? (existingData.financials as Record<string, unknown>)
+          : {};
+      firestorePatch.financials = mergeFinancials(prev, patch.financials as Record<string, unknown>);
+    } else if (patch.financials && typeof patch.financials === 'object') {
+      firestorePatch.financials = patch.financials;
     }
 
     await ref.set(firestorePatch, { merge: true });

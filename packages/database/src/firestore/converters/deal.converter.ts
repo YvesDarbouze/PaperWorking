@@ -9,6 +9,7 @@ export type DealReadModel = {
   arv: number;
   holdingCosts: number;
   projectedRoi: number;
+  projectedMonthlyRent?: number;
   status: string;
   visibility: string;
   creatorId: string;
@@ -35,6 +36,7 @@ export function dealFromFirestore(id: string, data: Record<string, unknown>): De
     arv: optionalNumber(data.arv) ?? 0,
     holdingCosts: optionalNumber(data.holdingCosts) ?? 0,
     projectedRoi: optionalNumber(data.projectedRoi) ?? 0,
+    projectedMonthlyRent: optionalNumber(data.projectedMonthlyRent) ?? undefined,
     status: optionalString(data.status) ?? 'draft',
     visibility: optionalString(data.visibility) ?? 'private',
     creatorId,
@@ -55,9 +57,11 @@ export function dealToDealRecord(model: DealReadModel) {
     arv: model.arv,
     holdingCosts: model.holdingCosts,
     projectedRoi: model.projectedRoi,
+    projectedMonthlyRent: model.projectedMonthlyRent,
     status: model.status,
     visibility: model.visibility,
     creatorId: model.creatorId,
+    projectId: model.projectId,
     createdAt: model.createdAt,
     updatedAt: model.updatedAt,
   };

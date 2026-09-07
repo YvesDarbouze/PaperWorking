@@ -3,7 +3,7 @@ import Link from 'next/link';
 import { COOKIES_SECTIONS, LEGAL_LAST_UPDATED } from '@/lib/marketing/legal-data';
 
 export const metadata: Metadata = {
-  title: 'Cookie Policy | PaperWorking',
+  title: 'Cookie Policy',
   description:
     'How PaperWorking uses cookies and similar technologies to keep your session secure and improve your experience.',
 };

@@ -3,7 +3,7 @@ import Link from 'next/link';
 import { redirect } from 'next/navigation';
 
 export const metadata: Metadata = {
-  title: 'Accept Team Invite | PaperWorking',
+  title: 'Accept Team Invite',
   description: 'Accept a PaperWorking team invitation and join your organization.',
 };
 

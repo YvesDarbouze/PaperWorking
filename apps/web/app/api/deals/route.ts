@@ -20,6 +20,10 @@ function parseCreateBody(body: unknown): CreateDealInput {
       typeof record.holdingCosts === 'number' ? record.holdingCosts : undefined,
     projectedRoi:
       typeof record.projectedRoi === 'number' ? record.projectedRoi : undefined,
+    projectedMonthlyRent:
+      typeof record.projectedMonthlyRent === 'number'
+        ? record.projectedMonthlyRent
+        : undefined,
     status:
       record.status === 'draft' ||
       record.status === 'published' ||

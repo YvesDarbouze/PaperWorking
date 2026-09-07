@@ -26,6 +26,7 @@ export interface DealCardData {
   target?: number;
   purchasePrice?: number;
   price?: number;
+  rehabCost?: number;
   committedAmount?: number;
   committed?: number;
   investorCount?: number;
@@ -44,7 +45,10 @@ export default function DealCard({
   const [broadcastOpen, setBroadcastOpen] = useState(false);
 
   const name = deal.propertyName || deal.name || deal.address || 'Deal Opportunity';
-  const target = deal.fundingTarget ?? deal.target ?? 0;
+  const target =
+    deal.fundingTarget ??
+    deal.target ??
+    (deal.purchasePrice ?? deal.price ?? 0) + (deal.rehabCost ?? 0);
   const committed = deal.committedAmount ?? deal.committed ?? 0;
   const roi = deal.projectedRoi ?? deal.roi ?? 0;
   const progress = calculateFundingProgress(committed, target);

@@ -49,6 +49,26 @@ describe('POST /api/auth/session', () => {
     expect(result.cookies?.some((c) => c.name === '__session' && c.value === 'dev-token')).toBe(true);
   });
 
+  it('issues mock cookies even when Firebase credentials exist', async () => {
+    const request = mockRequest({ origin: 'http://localhost:3000' });
+    const result = await handleSessionPost(
+      request,
+      { idToken: 'mock_session_token_123' },
+      {
+        hasCredentials: () => true,
+        env: { nodeEnv: 'test', enableMockAuth: true },
+      },
+    );
+
+    expect(result.status).toBe(200);
+    expect(result.body).toMatchObject({ status: 'success', mode: 'dev-mock' });
+    expect(
+      result.cookies?.some(
+        (c) => c.name === '__session' && c.value === 'mock:mock_session_token_123',
+      ),
+    ).toBe(true);
+  });
+
   it('sets production cookies after token verification', async () => {
     const request = mockRequest({
       origin: 'http://localhost:3000',

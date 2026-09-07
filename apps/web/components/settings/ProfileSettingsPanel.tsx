@@ -328,22 +328,34 @@ export default function ProfileSettingsPanel() {
           <form onSubmit={handleSaveProfile} className="flex flex-1 flex-col space-y-6">
             <div className="grid grid-cols-1 gap-5 sm:grid-cols-2">
               <div>
-                <label className="mb-2 block text-xs font-semibold uppercase tracking-wider text-white/45">
+                <label
+                  htmlFor="profile-first-name"
+                  className="mb-2 block text-xs font-semibold uppercase tracking-wider text-white/45"
+                >
                   First Name
                 </label>
                 <input
+                  id="profile-first-name"
+                  name="firstName"
                   type="text"
+                  autoComplete="given-name"
                   value={firstName}
                   onChange={(e) => setFirstName(e.target.value)}
                   className={inputClass}
                 />
               </div>
               <div>
-                <label className="mb-2 block text-xs font-semibold uppercase tracking-wider text-white/45">
+                <label
+                  htmlFor="profile-last-name"
+                  className="mb-2 block text-xs font-semibold uppercase tracking-wider text-white/45"
+                >
                   Last Name
                 </label>
                 <input
+                  id="profile-last-name"
+                  name="lastName"
                   type="text"
+                  autoComplete="family-name"
                   value={lastName}
                   onChange={(e) => setLastName(e.target.value)}
                   className={inputClass}
@@ -353,11 +365,17 @@ export default function ProfileSettingsPanel() {
 
             <div className="grid grid-cols-1 gap-5 sm:grid-cols-2">
               <div>
-                <label className="mb-2 block text-xs font-semibold uppercase tracking-wider text-white/45">
+                <label
+                  htmlFor="profile-phone"
+                  className="mb-2 block text-xs font-semibold uppercase tracking-wider text-white/45"
+                >
                   Phone Number
                 </label>
                 <input
-                  type="text"
+                  id="profile-phone"
+                  name="phone"
+                  type="tel"
+                  autoComplete="tel"
                   value={phone}
                   onChange={(e) => setPhone(e.target.value)}
                   placeholder="(555) 123-4567"
@@ -365,11 +383,17 @@ export default function ProfileSettingsPanel() {
                 />
               </div>
               <div>
-                <label className="mb-2 block text-xs font-semibold uppercase tracking-wider text-white/45">
+                <label
+                  htmlFor="profile-company"
+                  className="mb-2 block text-xs font-semibold uppercase tracking-wider text-white/45"
+                >
                   Company Name
                 </label>
                 <input
+                  id="profile-company"
+                  name="company"
                   type="text"
+                  autoComplete="organization"
                   value={company}
                   onChange={(e) => setCompany(e.target.value)}
                   placeholder="Realty Corp LLC"
@@ -455,12 +479,18 @@ export default function ProfileSettingsPanel() {
 
           <form onSubmit={handlePasswordChange} className="flex flex-1 flex-col space-y-4">
             <div>
-              <label className="mb-2 block text-xs font-semibold uppercase tracking-wider text-white/45">
+              <label
+                htmlFor="profile-current-password"
+                className="mb-2 block text-xs font-semibold uppercase tracking-wider text-white/45"
+              >
                 Current Password
               </label>
               <div className="relative">
                 <input
+                  id="profile-current-password"
+                  name="currentPassword"
                   type={showPwd ? 'text' : 'password'}
+                  autoComplete="current-password"
                   value={currentPwd}
                   onChange={(e) => setCurrentPwd(e.target.value)}
                   required
@@ -478,11 +508,17 @@ export default function ProfileSettingsPanel() {
               </div>
             </div>
             <div>
-              <label className="mb-2 block text-xs font-semibold uppercase tracking-wider text-white/45">
+              <label
+                htmlFor="profile-new-password"
+                className="mb-2 block text-xs font-semibold uppercase tracking-wider text-white/45"
+              >
                 New Password
               </label>
               <input
+                id="profile-new-password"
+                name="newPassword"
                 type="password"
+                autoComplete="new-password"
                 value={newPwd}
                 onChange={(e) => setNewPwd(e.target.value)}
                 required
@@ -491,11 +527,17 @@ export default function ProfileSettingsPanel() {
               />
             </div>
             <div>
-              <label className="mb-2 block text-xs font-semibold uppercase tracking-wider text-white/45">
+              <label
+                htmlFor="profile-confirm-password"
+                className="mb-2 block text-xs font-semibold uppercase tracking-wider text-white/45"
+              >
                 Confirm New Password
               </label>
               <input
+                id="profile-confirm-password"
+                name="confirmPassword"
                 type="password"
+                autoComplete="new-password"
                 value={confirmPwd}
                 onChange={(e) => setConfirmPwd(e.target.value)}
                 required

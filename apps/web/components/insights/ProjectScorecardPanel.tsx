@@ -1,48 +1,64 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import { bffFetch } from '@/lib/api/bff-fetch';
 import { scorecardEntries, scorecardSourceStatusCopy } from '@/lib/insights/adapters';
 
 interface ProjectKpiPayload {
   success?: boolean;
-  kpis?: {
-    snapshotAt?: string;
-    sourceStatus?: string;
-    scorecard?: Record<string, { value: number | null; projected?: boolean }>;
-  };
+    kpis?: {
+      snapshotAt?: string;
+      sourceStatus?: string;
+      scorecardTrust?: Record<string, string>;
+      scorecard?: Record<string, { value: number | null; projected?: boolean }>;
+    };
 }
+
+export const PROJECT_KPIS_REFRESH_EVENT = 'project-kpis-refresh';
 
 export default function ProjectScorecardPanel({ projectId }: { projectId: string }) {
   const [payload, setPayload] = useState<ProjectKpiPayload | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [refreshToken, setRefreshToken] = useState(0);
+
+  const loadScorecard = useCallback(async (cancelledRef?: { current: boolean }) => {
+    setLoading(true);
+    setError(null);
+    try {
+      const response = await bffFetch(`/api/projects/${projectId}/kpis/current`, {
+        credentials: 'include',
+        cache: 'no-store',
+      });
+      const body = (await response.json()) as ProjectKpiPayload & { error?: string };
+      if (!response.ok) throw new Error(body.error ?? 'Failed to load scorecard');
+      if (!cancelledRef?.current) setPayload(body);
+    } catch (loadError) {
+      if (!cancelledRef?.current) {
+        setError(loadError instanceof Error ? loadError.message : 'Failed to load scorecard');
+      }
+    } finally {
+      if (!cancelledRef?.current) setLoading(false);
+    }
+  }, [projectId]);
 
   useEffect(() => {
-    let cancelled = false;
-    async function load() {
-      setLoading(true);
-      setError(null);
-      try {
-        const response = await bffFetch(`/api/projects/${projectId}/kpis/current`, {
-          credentials: 'include',
-          cache: 'no-store',
-        });
-        const body = (await response.json()) as ProjectKpiPayload & { error?: string };
-        if (!response.ok) throw new Error(body.error ?? 'Failed to load scorecard');
-        if (!cancelled) setPayload(body);
-      } catch (loadError) {
-        if (!cancelled) {
-          setError(loadError instanceof Error ? loadError.message : 'Failed to load scorecard');
-        }
-      } finally {
-        if (!cancelled) setLoading(false);
+    const cancelledRef = { current: false };
+    loadScorecard(cancelledRef);
+    return () => {
+      cancelledRef.current = true;
+    };
+  }, [loadScorecard, refreshToken]);
+
+  useEffect(() => {
+    function onRefresh(event: Event) {
+      const detail = (event as CustomEvent<{ projectId?: string }>).detail;
+      if (!detail?.projectId || detail.projectId === projectId) {
+        setRefreshToken((token) => token + 1);
       }
     }
-    load();
-    return () => {
-      cancelled = true;
-    };
+    window.addEventListener(PROJECT_KPIS_REFRESH_EVENT, onRefresh);
+    return () => window.removeEventListener(PROJECT_KPIS_REFRESH_EVENT, onRefresh);
   }, [projectId]);
 
   if (loading) {
@@ -63,6 +79,7 @@ export default function ProjectScorecardPanel({ projectId }: { projectId: string
 
   const entries = scorecardEntries(
     payload.kpis.scorecard as Parameters<typeof scorecardEntries>[0],
+    payload.kpis.scorecardTrust,
   );
 
   return (
@@ -93,7 +110,11 @@ export default function ProjectScorecardPanel({ projectId }: { projectId: string
                 <td className="px-4 py-3 font-medium">{entry.label}</td>
                 <td className="px-4 py-3 text-white/80">{entry.display}</td>
                 <td className="px-4 py-3 text-xs text-white/55">
-                  {entry.projected ? 'Projected' : 'Calculated'}
+                  {entry.unavailable
+                    ? 'Unavailable'
+                    : entry.projected
+                      ? 'Projected'
+                      : 'Calculated'}
                   {entry.missingInputs ? ' · inputs missing' : ''}
                 </td>
               </tr>

@@ -10,6 +10,8 @@ export const canonicalSeedDeal = {
   property_value: 279000,
   property_square_footage: 1800,
   number_of_units: 1,
+  total_units: 1,
+  occupied_units: 1,
 
   // Income
   gross_scheduled_rent: 24000,        // $2,000/mo × 12
@@ -55,6 +57,11 @@ export const canonicalSeedDeal = {
   market_risk_score: 4,
   operational_risk_score: 3,
   compliance_risk_score: 2,
+
+  // CapEx accounting inputs (NetSuite CapEx KPI)
+  ppe_previous_year: 50000,
+  ppe_current_year: 65000,
+  depreciation_current_year: 5000,
   compliant_items_count: 8,
   total_compliance_requirements: 8,
 };
@@ -62,16 +69,18 @@ export const canonicalSeedDeal = {
 export const expectedGoldenValues = {
   monthlyMortgagePayment: 1410.78,
   totalDebtService: 16929.36,
-  goi: 23280,
+  goi: 24000,
   operatingExpenses: 10795,
-  noi: 12485,
-  capRatePct: 4.5,
-  cashFlow: -4444.36,
-  cashOnCashPct: -7.96,
-  dscr: 0.74,
+  noi: 13205,
+  capexKpi: 20000,
+  capRatePct: 4.7,
+  cashFlow: -23724.36,
+  cashOnCashPct: -42.52,
+  dscr: 0.78,
   ltvPct: 80,
   equityToValuePct: 20,
   grm: 11.6,
   occupancyRatePct: 100,
-  expenseRatioPct: 46.37,
+  expenseRatioPct: 44.98,
+  riskAssessmentScore: 3.5,
 };

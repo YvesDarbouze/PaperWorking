@@ -20,9 +20,19 @@ export function createFirestoreDealsCommandRepository(
       return deal ? { id: deal.id } : null;
     },
 
+    async getBySlug(slug: string) {
+      const deal = await deals.findBySlug(slug);
+      return deal ? dealToDealRecord(deal) : null;
+    },
+
     async create(data: Parameters<FirestoreDealRepository['create']>[0]) {
       const created = await deals.create(data);
       return dealToDealRecord(created);
+    },
+
+    async updateBySlug(slug: string, patch: Parameters<FirestoreDealRepository['updateBySlug']>[1]) {
+      const updated = await deals.updateBySlug(slug, patch);
+      return dealToDealRecord(updated);
     },
   };
 }

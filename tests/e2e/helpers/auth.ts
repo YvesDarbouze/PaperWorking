@@ -20,7 +20,7 @@ export async function createDevSession(
     data: { idToken: DEV_MOCK_SESSION_TOKEN, accountType },
     headers: {
       'Content-Type': 'application/json',
-      Origin: process.env.E2E_BASE_URL ?? 'http://localhost:3000',
+      Origin: process.env.E2E_BASE_URL ?? 'http://127.0.0.1:3002',
     },
   });
 

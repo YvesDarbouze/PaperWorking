@@ -79,6 +79,24 @@ function makeRepository(
       createdAt: new Date(),
       updatedAt: new Date(),
     })),
+    getBySlug: jest.fn(async () => null),
+    updateBySlug: jest.fn(async (_slug, patch) => ({
+      id: 'deal-1',
+      slug: '100mainst',
+      address: '100 Main St',
+      purchasePrice: patch.purchasePrice ?? 0,
+      rehabCost: patch.rehabCost ?? 0,
+      arv: patch.arv ?? 0,
+      holdingCosts: patch.holdingCosts ?? 0,
+      projectedRoi: patch.projectedRoi ?? 0,
+      projectedMonthlyRent: patch.projectedMonthlyRent,
+      status: patch.status ?? 'draft',
+      visibility: patch.visibility ?? 'private',
+      creatorId: 'user-a',
+      projectId: patch.projectId ?? null,
+      createdAt: new Date(),
+      updatedAt: new Date(),
+    })),
     ...overrides,
   };
 }
@@ -101,6 +119,54 @@ describe('DealsCommandService', () => {
     expect(repository.create).toHaveBeenCalledWith(
       expect.objectContaining({ creatorId: 'user-a', address: '100 Main St' }),
     );
+  });
+
+  it('strips punctuation from client-supplied slugs', async () => {
+    const repository = makeRepository();
+    const service = createDealsCommandService({
+      authz: new AuthorizationService(makeStore()),
+      repository,
+    });
+
+    await service.createDeal(investor, {
+      address: '812 E2E Ave, Austin, TX 78704',
+      slug: '812e2eave,austin,tx78704',
+    });
+
+    expect(repository.create).toHaveBeenCalledWith(
+      expect.objectContaining({ slug: '812e2eaveaustintx78704' }),
+    );
+  });
+
+  it('decodes percent-encoded slugs on read', async () => {
+    const getBySlug = jest.fn(async (slug: string) =>
+      slug === '812e2eave,austin,tx78704'
+        ? {
+            id: 'deal-1',
+            slug: '812e2eave,austin,tx78704',
+            address: '812 E2E Ave',
+            creatorId: 'user-a',
+            projectId: 'p1',
+          }
+        : null,
+    );
+    const service = createDealsCommandService({
+      authz: new AuthorizationService(
+        makeStore({
+          findDealById: async () => ({
+            id: 'deal-1',
+            creatorId: 'user-a',
+            visibility: 'private',
+            status: 'draft',
+          }),
+        }),
+      ),
+      repository: makeRepository({ getBySlug }),
+    });
+
+    const result = await service.getDealBySlug(investor, '812e2eave%2Caustin%2Ctx78704');
+    expect(result.deal.id).toBe('deal-1');
+    expect(getBySlug).toHaveBeenCalledWith('812e2eave,austin,tx78704');
   });
 
   it('requires address', async () => {
@@ -168,6 +234,115 @@ describe('DealsCommandService', () => {
     };
     expect(createArg.creatorId).toBe('user-a');
     expect(createArg.creatorId).not.toBe('attacker');
+  });
+
+  it('resolves hyphenated client slug to slugified stored slug on PATCH', async () => {
+    const getBySlug = jest.fn(async (slug: string) =>
+      slug === 'e2edeal123'
+        ? {
+            id: 'deal-1',
+            slug: 'e2edeal123',
+            address: '100 E2E Test St',
+            purchasePrice: 300000,
+            rehabCost: 0,
+            arv: 0,
+            holdingCosts: 0,
+            projectedRoi: 0,
+            status: 'draft',
+            visibility: 'private',
+            creatorId: 'user-a',
+            projectId: 'p1',
+            createdAt: new Date(),
+            updatedAt: new Date(),
+          }
+        : null,
+    );
+    const updateBySlug = jest.fn(async (_slug: string, patch: { purchasePrice?: number }) => ({
+      id: 'deal-1',
+      slug: 'e2edeal123',
+      address: '100 E2E Test St',
+      purchasePrice: patch.purchasePrice ?? 300000,
+      rehabCost: 0,
+      arv: 0,
+      holdingCosts: 0,
+      projectedRoi: 0,
+      status: 'draft',
+      visibility: 'private',
+      creatorId: 'user-a',
+      projectId: 'p1',
+      createdAt: new Date(),
+      updatedAt: new Date(),
+    }));
+    const service = createDealsCommandService({
+      authz: new AuthorizationService(
+        makeStore({
+          findDealById: async () => ({
+            id: 'deal-1',
+            creatorId: 'user-a',
+            visibility: 'private',
+            status: 'draft',
+          }),
+        }),
+      ),
+      repository: makeRepository({ getBySlug, updateBySlug }),
+    });
+
+    const result = await service.updateDealBySlug(investor, 'e2e-deal-123', {
+      purchasePrice: 450000,
+      projectId: 'p1',
+    });
+
+    expect(result.deal.purchasePrice).toBe(450000);
+    expect(getBySlug).toHaveBeenCalledWith('e2e-deal-123');
+    expect(getBySlug).toHaveBeenCalledWith('e2edeal123');
+    expect(updateBySlug).toHaveBeenCalledWith(
+      'e2edeal123',
+      expect.objectContaining({ purchasePrice: 450000 }),
+    );
+  });
+
+  it('updates deal baseline by slug for authorized owner', async () => {
+    const repository = makeRepository({
+      getBySlug: async () => ({
+        id: 'deal-1',
+        slug: '100mainst',
+        address: '100 Main St',
+        purchasePrice: 400000,
+        rehabCost: 50000,
+        arv: 550000,
+        holdingCosts: 0,
+        projectedRoi: 0,
+        status: 'draft',
+        visibility: 'private',
+        creatorId: 'user-a',
+        projectId: 'p1',
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      }),
+      findById: async () => ({ id: 'deal-1' }),
+    });
+    const service = createDealsCommandService({
+      authz: new AuthorizationService(
+        makeStore({
+          findDealById: async () => ({
+            id: 'deal-1',
+            creatorId: 'user-a',
+            visibility: 'private',
+            status: 'draft',
+          }),
+        }),
+      ),
+      repository,
+    });
+
+    const result = await service.updateDealBySlug(investor, '100mainst', {
+      purchasePrice: 410000,
+      projectedMonthlyRent: 3200,
+      projectId: 'p1',
+    });
+
+    expect(result.deal.purchasePrice).toBe(410000);
+    expect(repository.updateBySlug).toHaveBeenCalled();
   });
 });
 

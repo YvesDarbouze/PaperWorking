@@ -122,10 +122,37 @@ export async function handleSessionPost(
   }
 
   const nodeEnv = deps.env?.nodeEnv ?? process.env.NODE_ENV ?? 'development';
-  // Production can never enable mock auth, even if ENABLE_MOCK_AUTH=true.
-  const requestedMock =
-    deps.env?.enableMockAuth ?? process.env.ENABLE_MOCK_AUTH === 'true';
-  const enableMockAuth = nodeEnv !== 'production' && Boolean(requestedMock);
+  const enableMockAuth = (() => {
+    if (nodeEnv === 'production') return false;
+    if (deps.env?.enableMockAuth === true) return true;
+    if (deps.env?.enableMockAuth === false) return false;
+    const mockAuthFlag = process.env.ENABLE_MOCK_AUTH;
+    if (mockAuthFlag === 'true' || mockAuthFlag === '1') return true;
+    if (mockAuthFlag === 'false' || mockAuthFlag === '0') return false;
+    const useMockFlag = process.env.USE_MOCK_DATA;
+    if (useMockFlag === 'false' || useMockFlag === '0') return false;
+    return nodeEnv === 'test' || useMockFlag === 'true' || useMockFlag === '1';
+  })();
+  const isMockToken = idToken.startsWith('mock');
+
+  if (enableMockAuth && isMockToken) {
+    const cookieOpts = devCookieOpts();
+    return jsonResponse(
+      200,
+      { status: 'success', mode: 'dev-mock' },
+      undefined,
+      [
+        { name: SESSION_COOKIE, value: `mock:${idToken}`, options: cookieOpts },
+        {
+          name: SUB_COOKIE,
+          value: encodeSubCookie('Individual', 'active'),
+          options: { ...cookieOpts, httpOnly: false },
+        },
+        { name: ACCT_COOKIE, value: 'investor', options: cookieOpts },
+      ],
+    );
+  }
+
   const hasCredentials = deps.hasCredentials ?? hasAdminCredentials;
 
   if (!hasCredentials()) {

@@ -18,6 +18,7 @@ type ProjectCreateData = {
   userId: string;
   dealId?: string;
   dealSlug?: string;
+  financials?: Record<string, unknown>;
 };
 
 async function ensurePersonalOrganization(
@@ -104,6 +105,10 @@ export function createFirestoreProjectsCommandRepository(
         }
         throw error;
       }
+    },
+
+    async getDocumentExtras(id: string) {
+      return projects.getDocumentExtras(id);
     },
   };
 }

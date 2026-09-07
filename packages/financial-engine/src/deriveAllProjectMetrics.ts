@@ -84,17 +84,16 @@ export function deriveAllProjectMetrics(
 
     const {
       purchase_price,
-      loan_amount = 0,
-      interest_rate = 0.065,
-      loan_term_years = 30,
+      loan_amount,
+      interest_rate,
+      loan_term_years,
       property_value = purchase_price,
-      gross_scheduled_rent = 0,
-      vacancy_rate = 5,
+      gross_scheduled_rent,
       other_income = 0,
       operating_expenses = projectData.operating_expenses || projectData.expenses || {},
-      total_cash_invested = projectData.total_cash_invested || projectData.down_payment_amount || (purchase_price * 0.2),
-      total_units = 1,
-      occupied_units = 1,
+      total_cash_invested = projectData.total_cash_invested || projectData.down_payment_amount,
+      total_units,
+      occupied_units,
       purchase_date,
       sale_price,
       selling_costs = 0,
@@ -103,7 +102,22 @@ export function deriveAllProjectMetrics(
       closing_costs = 0,
       depreciation_taken = 0,
       equity_investors = [],
+      ppe_previous_year,
+      ppe_current_year,
+      depreciation_current_year,
     } = projectData;
+
+    const hasPotentialRentalIncome =
+      typeof gross_scheduled_rent === 'number' && Number.isFinite(gross_scheduled_rent);
+    const hasLoanAmount = typeof loan_amount === 'number' && Number.isFinite(loan_amount);
+    const loanAmountValue = hasLoanAmount ? loan_amount : 0;
+    const hasLoanTerms =
+      hasLoanAmount &&
+      loanAmountValue > 0 &&
+      typeof interest_rate === 'number' &&
+      interest_rate > 0 &&
+      typeof loan_term_years === 'number' &&
+      loan_term_years > 0;
 
     // ── STEP 1: LOAN MATH (calls amortization engine) ───────────────────────
     let monthlyMortgagePayment: number | null = null;
@@ -111,11 +125,11 @@ export function deriveAllProjectMetrics(
     let monthlyInterest: number | null = null;
     let monthlyPrincipal: number | null = null;
 
-    if (loan_amount > 0 && interest_rate > 0 && loan_term_years > 0) {
+    if (hasLoanTerms) {
       const amort = computeAmortizationSchedule(
-        loan_amount,
-        interest_rate,
-        loan_term_years,
+        loanAmountValue,
+        interest_rate as number,
+        loan_term_years as number,
         purchase_date ? new Date(purchase_date) : asOfDate
       );
       monthlyMortgagePayment = amort.monthlyPayment;
@@ -124,18 +138,16 @@ export function deriveAllProjectMetrics(
         monthlyInterest = amort.schedule[0].interest;
         monthlyPrincipal = amort.schedule[0].principal;
       }
-    } else {
-      monthlyMortgagePayment = 0;
-      totalDebtService = 0;
-      monthlyInterest = 0;
-      monthlyPrincipal = 0;
     }
 
-    // ── STEP 2: INCOME AGGREGATION ──────────────────────────────────────────
+    // ── STEP 2: INCOME AGGREGATION (NetSuite GOI) ───────────────────────────
+    // GOI = Potential Rental Income + Other Income (vacancy is NOT deducted)
     const goiInputCheck = requireInputs(projectData, ['gross_scheduled_rent'], 'card_income');
     const goi = goiInputCheck.valid
-      ? Number((gross_scheduled_rent * (1 - vacancy_rate / 100) + other_income).toFixed(2))
+      ? Number(((gross_scheduled_rent as number) + (other_income ?? 0)).toFixed(2))
       : null;
+
+    const totalIncome = goi;
 
     // ── STEP 3: EXPENSE AGGREGATION (Canonical 8 Tags ONLY) ─────────────────
     const {
@@ -146,26 +158,69 @@ export function deriveAllProjectMetrics(
       utilities = 0,
       management = 0, // Handled below with BUG-8 lock check if pct provided
       HOA = 0,
-      capex = 0,
       management_fee_pct,
     } = operating_expenses;
 
-    // BUG-8 LOCK: Management Fee is strictly computed on Gross Scheduled Rent (NOT GOI or effective_rent)
+    // BUG-8 LOCK: Management Fee is strictly computed on Gross Scheduled Rent (NOT GOI)
     const computedManagementFee =
-      management_fee_pct !== undefined
-        ? (management_fee_pct / 100) * gross_scheduled_rent
+      management_fee_pct !== undefined && hasPotentialRentalIncome
+        ? (management_fee_pct / 100) * (gross_scheduled_rent as number)
         : management;
 
+    // Operating expenses for NOI — excludes CapEx reserve tag and financing
     const totalOperatingExpenses = Number(
       (tax + insurance + security + maintenance + utilities + computedManagementFee + HOA).toFixed(2)
     );
 
-    // ── STEP 4: CORE METRICS ────────────────────────────────────────────────
+    // NetSuite CapEx KPI: PP&E current − PP&E previous + Depreciation current year
+    const hasPpeInputs =
+      typeof ppe_previous_year === 'number' &&
+      Number.isFinite(ppe_previous_year) &&
+      typeof ppe_current_year === 'number' &&
+      Number.isFinite(ppe_current_year) &&
+      typeof depreciation_current_year === 'number' &&
+      Number.isFinite(depreciation_current_year);
+    const capexKpi = hasPpeInputs
+      ? Number(
+          (
+            (ppe_current_year as number) -
+            (ppe_previous_year as number) +
+            (depreciation_current_year as number)
+          ).toFixed(2),
+        )
+      : null;
+
+    // ── STEP 4: CORE METRICS (NetSuite NOI & Cash Flow) ─────────────────────
+    // NOI = Revenue − Operating Expenses (excludes financing and CapEx)
     const noi = goi !== null ? Number((goi - totalOperatingExpenses).toFixed(2)) : null;
 
+    // Cash Flow = Total Income − Total Expenses (OpEx + debt service + CapEx)
+    const cashFlowMissing: string[] = [];
+    if (totalIncome === null) cashFlowMissing.push('gross_scheduled_rent');
+
+    let debtServiceForCashFlow: number | null = null;
+    if (hasLoanAmount && loanAmountValue > 0) {
+      if (hasLoanTerms && totalDebtService !== null) {
+        debtServiceForCashFlow = totalDebtService;
+      } else {
+        cashFlowMissing.push('interest_rate', 'loan_term_years');
+      }
+    } else {
+      debtServiceForCashFlow = 0;
+    }
+
+    if (capexKpi === null) {
+      cashFlowMissing.push('ppe_previous_year', 'ppe_current_year', 'depreciation_current_year');
+    }
+
     const cashFlow =
-      noi !== null && totalDebtService !== null
-        ? Number((noi - totalDebtService).toFixed(2))
+      totalIncome !== null &&
+      debtServiceForCashFlow !== null &&
+      capexKpi !== null &&
+      cashFlowMissing.length === 0
+        ? Number(
+            (totalIncome - totalOperatingExpenses - debtServiceForCashFlow - capexKpi).toFixed(2),
+          )
         : null;
 
     const capRateCheck = requireInputs(projectData, ['purchase_price', 'gross_scheduled_rent'], 'card_acquisition');
@@ -174,31 +229,40 @@ export function deriveAllProjectMetrics(
       : null;
 
     const cocCheck = requireInputs(projectData, ['total_cash_invested'], 'card_capital');
-    const cashOnCash = cocCheck.valid && cashFlow !== null && total_cash_invested > 0
-      ? Number(((cashFlow / total_cash_invested) * 100).toFixed(2))
-      : null;
+    const cashOnCash =
+      cocCheck.valid && cashFlow !== null && typeof total_cash_invested === 'number' && total_cash_invested > 0
+        ? Number(((cashFlow / total_cash_invested) * 100).toFixed(2))
+        : null;
 
-    const grm = gross_scheduled_rent > 0 && property_value > 0
-      ? Number((property_value / gross_scheduled_rent).toFixed(1))
-      : null;
+    const grm =
+      hasPotentialRentalIncome && (gross_scheduled_rent as number) > 0 && property_value > 0
+        ? Number((property_value / (gross_scheduled_rent as number)).toFixed(1))
+        : null;
 
-    const dscr = noi !== null && totalDebtService && totalDebtService > 0
-      ? Number((noi / totalDebtService).toFixed(2))
-      : null;
+    const dscr =
+      noi !== null && totalDebtService !== null && totalDebtService > 0
+        ? Number((noi / totalDebtService).toFixed(2))
+        : null;
 
-    const occupancyRate = total_units > 0
-      ? Number(((occupied_units / total_units) * 100).toFixed(2))
-      : 100;
+    const occupancyRate =
+      typeof total_units === 'number' && total_units > 0 && typeof occupied_units === 'number'
+        ? Number(((occupied_units / total_units) * 100).toFixed(2))
+        : null;
 
     const expenseRatio = goi && goi > 0
       ? Number(((totalOperatingExpenses / goi) * 100).toFixed(2))
       : null;
 
-    const ltv = property_value > 0
-      ? Number(((loan_amount / property_value) * 100).toFixed(2))
-      : 0;
+    const ltv =
+      hasLoanAmount &&
+      loanAmountValue > 0 &&
+      typeof property_value === 'number' &&
+      property_value > 0
+        ? Number(((loanAmountValue / property_value) * 100).toFixed(2))
+        : null;
 
-    const equityToValue = Number((100 - ltv).toFixed(2));
+    const equityToValue =
+      ltv !== null ? Number((100 - ltv).toFixed(2)) : null;
 
     const interestCoverageRatio = noi !== null && monthlyInterest && monthlyInterest > 0
       ? Number((noi / (monthlyInterest * 12)).toFixed(2))
@@ -220,48 +284,107 @@ export function deriveAllProjectMetrics(
       holdingPeriodMonths = Math.max(1, Math.round((end.getTime() - start.getTime()) / (1000 * 60 * 60 * 24 * 30.4375)));
     }
 
-    const roi = capitalGainLoss !== null && total_cash_invested > 0
-      ? Number(((capitalGainLoss / total_cash_invested) * 100).toFixed(2))
-      : null;
+    const roi =
+      capitalGainLoss !== null &&
+      typeof total_cash_invested === 'number' &&
+      total_cash_invested > 0
+        ? Number(((capitalGainLoss / total_cash_invested) * 100).toFixed(2))
+        : null;
 
     const holdingPeriodYears = Math.max(0.08, holdingPeriodMonths / 12);
     const aar = roi !== null ? Number((roi / holdingPeriodYears).toFixed(2)) : null;
 
-    const totalReturnAmount = cashFlow !== null ? cashFlow * holdingPeriodYears + (capitalGainLoss || 0) : 0;
-    const equityMultiple = total_cash_invested > 0
-      ? Number(((totalReturnAmount + total_cash_invested) / total_cash_invested).toFixed(2))
-      : 1.0;
+    const totalReturnAmount =
+      cashFlow !== null
+        ? cashFlow * holdingPeriodYears + (capitalGainLoss || 0)
+        : capitalGainLoss ?? 0;
+    const hasRealCashFlowEvents =
+      Array.isArray(projectData.cash_flow_events) && projectData.cash_flow_events.length >= 2;
+    const cashFlowEvents: CashFlowEvent[] = hasRealCashFlowEvents
+      ? (projectData.cash_flow_events as CashFlowEvent[])
+      : [];
 
-    const paybackPeriod = cashFlow && cashFlow > 0
-      ? Number((total_cash_invested / cashFlow).toFixed(2))
-      : null;
+    const totalInvestedFromEvents = cashFlowEvents
+      .filter((cf) => cf.amount < 0)
+      .reduce((sum, cf) => sum + Math.abs(cf.amount), 0);
+    const totalReturnedFromEvents = cashFlowEvents
+      .filter((cf) => cf.amount > 0)
+      .reduce((sum, cf) => sum + cf.amount, 0);
+    const equityMultipleFromEvents =
+      hasRealCashFlowEvents &&
+      totalInvestedFromEvents > 0 &&
+      totalReturnedFromEvents > 0 &&
+      cashFlowEvents.some((cf) => cf.amount < 0) &&
+      cashFlowEvents.some((cf) => cf.amount > 0)
+        ? Number((totalReturnedFromEvents / totalInvestedFromEvents).toFixed(2))
+        : null;
 
-    const dom = projectData.days_on_market || 30;
+    const equityMultiple =
+      equityMultipleFromEvents ??
+      (hasRealCashFlowEvents &&
+      typeof total_cash_invested === 'number' &&
+      total_cash_invested > 0 &&
+      cashFlow !== null
+        ? Number(((totalReturnAmount + total_cash_invested) / total_cash_invested).toFixed(2))
+        : null);
+
+    const paybackPeriod =
+      cashFlow && cashFlow > 0 && typeof total_cash_invested === 'number' && total_cash_invested > 0
+        ? Number((total_cash_invested / cashFlow).toFixed(2))
+        : null;
+
+    const dom =
+      typeof projectData.days_on_market === 'number' ? projectData.days_on_market : null;
 
     // ── STEP 6: FUND-PHASE METRICS (delegated to fund-phase engine) ─────────
-    const cashFlowEvents: CashFlowEvent[] = [
-      { date: purchase_date || '2025-01-01', amount: -total_cash_invested },
-      { date: asOfDate.toISOString().split('T')[0], amount: total_cash_invested + totalReturnAmount },
-    ];
+    const fundPhaseRes =
+      cashFlowEvents.length >= 2
+        ? computeFundPhaseMetrics(
+            equity_investors.length > 0
+              ? equity_investors
+              : typeof total_cash_invested === 'number' && total_cash_invested > 0
+                ? [
+                    {
+                      id: 'inv_default',
+                      name: 'Default',
+                      capitalContributed: total_cash_invested,
+                      ownershipPct: 100,
+                    },
+                  ]
+                : [],
+            8,
+            [{ hurdleIrrPct: 8, lpSplitPct: 80, gpSplitPct: 20 }],
+            20,
+            cashFlowEvents,
+          )
+        : { irr: null, gpPromoteAmount: 0, totalPreferredReturnAccrued: 0, investorResults: [], tierDistributions: [] };
 
-    const fundPhaseRes = computeFundPhaseMetrics(
-      equity_investors.length > 0 ? equity_investors : [{ id: 'inv_default', name: 'Default', capitalContributed: total_cash_invested, ownershipPct: 100 }],
-      8, // 8% pref return
-      [{ hurdleIrrPct: 8, lpSplitPct: 80, gpSplitPct: 20 }],
-      20,
-      cashFlowEvents
-    );
+    // ── STEP 7: RISK & COMPLIANCE (NetSuite Risk Assessment) ────────────────
+    const financialRisk = projectData.financial_risk_score;
+    const marketRisk = projectData.market_risk_score;
+    const operationalRisk = projectData.operational_risk_score;
+    const complianceRisk = projectData.compliance_risk_score;
+    const hasAllRiskScores =
+      typeof financialRisk === 'number' &&
+      Number.isFinite(financialRisk) &&
+      typeof marketRisk === 'number' &&
+      Number.isFinite(marketRisk) &&
+      typeof operationalRisk === 'number' &&
+      Number.isFinite(operationalRisk) &&
+      typeof complianceRisk === 'number' &&
+      Number.isFinite(complianceRisk);
 
-    // ── STEP 7: RISK & COMPLIANCE ───────────────────────────────────────────
-    const riskAssessmentScore = Number(
-      (
-        ((dscr !== null && dscr < 1.0 ? 75 : 25) +
-          (ltv > 80 ? 70 : 30) +
-          (occupancyRate < 90 ? 65 : 20) +
-          (cashFlow !== null && cashFlow < 0 ? 80 : 20)) /
-        4
-      ).toFixed(2)
-    );
+    const riskAssessmentScore = hasAllRiskScores
+      ? Number(
+          (
+            ((financialRisk as number) +
+              (marketRisk as number) +
+              (operationalRisk as number) +
+              (complianceRisk as number)) /
+            4
+          ).toFixed(2),
+        )
+      : null;
 
     const complianceRate = projectData.compliance_checklist
       ? Number(
@@ -269,22 +392,39 @@ export function deriveAllProjectMetrics(
             (projectData.compliance_checklist.filter((item: any) => item.completed).length /
               projectData.compliance_checklist.length) *
             100
-          ).toFixed(2)
+          ).toFixed(2),
         )
-      : 100;
+      : null;
 
     // ── SCORECARD METRICS BUILD (10 Headline Metrics) ────────────────────────
-    const noiCheck = requireInputs(projectData, ['purchase_price', 'gross_scheduled_rent'], 'card_income');
+    const noiCheck = requireInputs(projectData, ['gross_scheduled_rent'], 'card_income');
     const scorecardNoi = buildMetricValue(noiCheck.valid ? noi : null, isProjected, noiCheck.missing, 'card_income');
     const scorecardCapRate = buildMetricValue(capRateCheck.valid ? capRate : null, isProjected, capRateCheck.missing, 'card_acquisition');
     const scorecardCoc = buildMetricValue(cocCheck.valid ? cashOnCash : null, isProjected, cocCheck.missing, 'card_capital');
-    const scorecardIrr = buildMetricValue(fundPhaseRes.irr, isProjected, [], 'card_fund');
-    const scorecardCashFlow = buildMetricValue(cashFlow, isProjected, [], 'card_cashflow');
+    const scorecardIrr = buildMetricValue(
+      fundPhaseRes.irr,
+      isProjected,
+      hasRealCashFlowEvents ? [] : ['cash_flow_events'],
+      'card_fund',
+    );
+    const scorecardCashFlow = buildMetricValue(
+      cashFlow,
+      isProjected,
+      cashFlowMissing,
+      'card_cashflow',
+    );
     const scorecardGrm = buildMetricValue(grm, isProjected, [], 'card_valuation');
     const scorecardDscr = buildMetricValue(dscr, isProjected, [], 'card_debt');
     const scorecardOccupancy = buildMetricValue(occupancyRate, isProjected, [], 'card_occupancy');
     const scorecardExpenseRatio = buildMetricValue(expenseRatio, isProjected, [], 'card_expenses');
-    const scorecardAppreciation = buildMetricValue(projectData.appreciation_rate_pct || 3.5, isProjected, [], 'card_market');
+    const scorecardAppreciation = buildMetricValue(
+      typeof projectData.appreciation_rate_pct === 'number'
+        ? projectData.appreciation_rate_pct
+        : null,
+      isProjected,
+      projectData.appreciation_rate_pct == null ? ['appreciation_rate_pct'] : [],
+      'card_market',
+    );
 
     // ── INSIGHTS METRICS BUILD (24 Metrics) ──────────────────────────────────
     return {
@@ -308,33 +448,102 @@ export function deriveAllProjectMetrics(
           equityToValue: buildMetricValue(equityToValue, isProjected),
           interestCoverageRatio: buildMetricValue(interestCoverageRatio, isProjected),
           roi: buildMetricValue(roi, isProjected),
-          capex: buildMetricValue(capex, isProjected),
-          goi: buildMetricValue(goi, isProjected),
+          capex: buildMetricValue(
+            capexKpi,
+            isProjected,
+            hasPpeInputs
+              ? []
+              : ['ppe_previous_year', 'ppe_current_year', 'depreciation_current_year'],
+            'card_capex',
+          ),
+          goi: buildMetricValue(goi, isProjected, goiInputCheck.missing, 'card_income'),
           aar: buildMetricValue(aar, isProjected),
           equityMultiple: buildMetricValue(equityMultiple, isProjected),
-          revenueGrowth: buildMetricValue(projectData.revenue_growth_pct || 4.2, isProjected),
+          revenueGrowth: buildMetricValue(
+            typeof projectData.revenue_growth_pct === 'number' ? projectData.revenue_growth_pct : null,
+            isProjected,
+          ),
         },
         operational: {
-          tenantTurnover: buildMetricValue(projectData.tenant_turnover_pct || 12.5, isProjected),
-          averageRentPerProperty: buildMetricValue(gross_scheduled_rent / 12, isProjected),
-          leaseRenewalRate: buildMetricValue(projectData.lease_renewal_rate_pct || 85, isProjected),
-          maintenanceCostPerUnit: buildMetricValue(maintenance / Math.max(1, total_units), isProjected),
+          tenantTurnover: buildMetricValue(
+            typeof projectData.tenant_turnover_pct === 'number' ? projectData.tenant_turnover_pct : null,
+            isProjected,
+          ),
+          averageRentPerProperty: buildMetricValue(
+            gross_scheduled_rent > 0 ? gross_scheduled_rent / 12 : null,
+            isProjected,
+          ),
+          leaseRenewalRate: buildMetricValue(
+            typeof projectData.lease_renewal_rate_pct === 'number'
+              ? projectData.lease_renewal_rate_pct
+              : null,
+            isProjected,
+          ),
+          maintenanceCostPerUnit: buildMetricValue(
+            typeof total_units === 'number' && total_units > 0 ? maintenance / total_units : null,
+            isProjected,
+          ),
           dom: buildMetricValue(dom, isProjected),
-          constructionCostPerSqFt: buildMetricValue(rehab_costs > 0 && projectData.total_sqft ? rehab_costs / projectData.total_sqft : 45, isProjected),
+          constructionCostPerSqFt: buildMetricValue(
+            rehab_costs > 0 && projectData.total_sqft
+              ? rehab_costs / projectData.total_sqft
+              : null,
+            isProjected,
+          ),
         },
         assetPortfolio: {
-          portfolioValueGrowth: buildMetricValue(5.8, isProjected),
+          portfolioValueGrowth: buildMetricValue(
+            typeof projectData.portfolio_value_growth_pct === 'number'
+              ? projectData.portfolio_value_growth_pct
+              : null,
+            isProjected,
+          ),
           paybackPeriod: buildMetricValue(paybackPeriod, isProjected),
-          yoyVarianceAvgSoldPrice: buildMetricValue(3.2, isProjected),
-          soldHomesPerInventory: buildMetricValue(0.18, isProjected),
-          demandGrowth: buildMetricValue(4.5, isProjected),
+          yoyVarianceAvgSoldPrice: buildMetricValue(
+            typeof projectData.yoy_avg_sold_price_pct === 'number'
+              ? projectData.yoy_avg_sold_price_pct
+              : null,
+            isProjected,
+          ),
+          soldHomesPerInventory: buildMetricValue(
+            typeof projectData.sold_homes_per_inventory === 'number'
+              ? projectData.sold_homes_per_inventory
+              : null,
+            isProjected,
+          ),
+          demandGrowth: buildMetricValue(
+            typeof projectData.demand_growth_pct === 'number' ? projectData.demand_growth_pct : null,
+            isProjected,
+          ),
         },
         marketingSales: {
-          listingToMeetingRatio: buildMetricValue(24.5, isProjected),
-          averageCommissionPerSale: buildMetricValue(5500, isProjected),
+          listingToMeetingRatio: buildMetricValue(
+            typeof projectData.listing_to_meeting_ratio === 'number'
+              ? projectData.listing_to_meeting_ratio
+              : null,
+            isProjected,
+          ),
+          averageCommissionPerSale: buildMetricValue(
+            typeof projectData.average_commission_per_sale === 'number'
+              ? projectData.average_commission_per_sale
+              : null,
+            isProjected,
+          ),
         },
         riskCompliance: {
-          riskAssessmentScore: buildMetricValue(riskAssessmentScore, isProjected),
+          riskAssessmentScore: buildMetricValue(
+            riskAssessmentScore,
+            isProjected,
+            hasAllRiskScores
+              ? []
+              : [
+                  'financial_risk_score',
+                  'market_risk_score',
+                  'operational_risk_score',
+                  'compliance_risk_score',
+                ],
+            'card_risk',
+          ),
           complianceRate: buildMetricValue(complianceRate, isProjected),
         },
       },

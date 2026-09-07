@@ -7,9 +7,11 @@ export type DealRecord = {
   arv: unknown;
   holdingCosts: unknown;
   projectedRoi: unknown;
+  projectedMonthlyRent?: unknown;
   status: string;
   visibility: string;
   creatorId: string;
+  projectId?: string | null;
   createdAt: Date;
   updatedAt: Date;
 };

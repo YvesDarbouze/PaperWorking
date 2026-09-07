@@ -28,6 +28,27 @@ import {
 import { useMockAuth } from '@/lib/data';
 import type { NavigationContext } from '@/lib/navigation/nav-contract';
 
+function authErrorMessage(err: unknown, fallback: string): string {
+  const code =
+    err && typeof err === 'object' && 'code' in err ? String((err as { code: unknown }).code) : '';
+  const raw = err instanceof Error ? err.message : '';
+  const haystack = `${code} ${raw}`;
+  if (
+    haystack.includes('auth/invalid-credential') ||
+    haystack.includes('auth/wrong-password') ||
+    haystack.includes('auth/user-not-found')
+  ) {
+    return 'Invalid email or password.';
+  }
+  if (haystack.includes('auth/too-many-requests')) {
+    return 'Too many attempts. Try again later.';
+  }
+  if (haystack.includes('auth/invalid-email')) {
+    return 'Enter a valid email address.';
+  }
+  return raw || fallback;
+}
+
 export interface AuthProfile {
   accountType: string;
   subscriptionPlan: string;
@@ -153,7 +174,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         }
         await refresh();
       } catch (err) {
-        const message = err instanceof Error ? err.message : 'Sign-in failed';
+        const message = authErrorMessage(err, 'Sign-in failed');
         setError(message);
         throw err;
       }

@@ -50,6 +50,7 @@ export interface ProjectWorkspace extends ProjectSummary {
   storageQuotaBytes: number;
   todos: ProjectTodo[];
   documents: ProjectDocument[];
+  financials?: Record<string, unknown> | null;
 }
 
 export const PROJECT_SUBROUTES = [

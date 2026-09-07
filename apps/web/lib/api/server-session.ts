@@ -1,11 +1,40 @@
 import { cookies, headers } from 'next/headers';
 import { redirect } from 'next/navigation';
 import type { AuthUser } from '@paperworking/authz';
-import { readCookieFromHeader, resolveAuthUserFromCredentials } from '@paperworking/services';
-import { SESSION_COOKIE } from '@/lib/auth/session-cookies';
+import {
+  buildAuthUserForUid,
+  readCookieFromHeader,
+  resolveAuthUserFromCredentials,
+} from '@paperworking/services';
+import { SESSION_COOKIE, DEV_MOCK_SESSION_TOKEN } from '@/lib/auth/session-cookies';
 import { buildHandlerDeps, type HandlerDeps } from './handler-deps';
 
 export { isAuthorizedAdmin } from './admin-gate';
+
+const DEV_MOCK_UID = '00000000-0000-4000-8000-000000000001';
+
+function mockAuthEnabled(): boolean {
+  if (process.env.NODE_ENV === 'production') return false;
+  const mockAuthFlag = process.env.ENABLE_MOCK_AUTH;
+  if (mockAuthFlag === 'true' || mockAuthFlag === '1') return true;
+  if (mockAuthFlag === 'false' || mockAuthFlag === '0') return false;
+  const useMockFlag = process.env.USE_MOCK_DATA;
+  if (useMockFlag === 'false' || useMockFlag === '0') return false;
+  return process.env.NODE_ENV === 'test' || useMockFlag === 'true' || useMockFlag === '1';
+}
+
+function isMockSessionValue(token: string): boolean {
+  return (
+    token.startsWith('mock:') ||
+    token === DEV_MOCK_SESSION_TOKEN ||
+    token.startsWith('mock_session')
+  );
+}
+
+async function resolveMockSessionUser(deps: HandlerDeps): Promise<AuthUser | null> {
+  if (process.env.NODE_ENV === 'production') return null;
+  return buildAuthUserForUid(DEV_MOCK_UID, deps.sessionResolver.store);
+}
 
 export type ServerSessionCredentials = {
   sessionCookie?: string | null;
@@ -27,8 +56,13 @@ export async function resolveAuthUserFromRequest(
   request: Request,
   deps: HandlerDeps = buildHandlerDeps(),
 ): Promise<AuthUser | null> {
+  const credentials = sessionCredentialsFromRequest(request);
+  const token = credentials.bearerToken ?? credentials.sessionCookie;
+  if (token && isMockSessionValue(token) && process.env.NODE_ENV !== 'production') {
+    return resolveMockSessionUser(deps);
+  }
   return resolveAuthUserFromCredentials(
-    sessionCredentialsFromRequest(request),
+    credentials,
     deps.sessionResolver,
   );
 }
@@ -58,6 +92,11 @@ export async function resolveServerAuthUser(
           ? authorization.slice('Bearer '.length).trim()
           : undefined;
     }
+  }
+
+  const token = bearerToken ?? sessionCookie;
+  if (token && isMockSessionValue(token) && process.env.NODE_ENV !== 'production') {
+    return resolveMockSessionUser(deps);
   }
 
   return resolveAuthUserFromCredentials(

@@ -86,7 +86,7 @@ export default function ProjectInsightsPanel({ projectId }: { projectId: string 
   }
 
   const scorecard = payload.kpis.scorecard as Parameters<typeof scorecardEntries>[0];
-  const cards = scorecardEntries(scorecard);
+  const cards = scorecardEntries(scorecard, payload.kpis.scorecardTrust);
 
   return (
     <div className="space-y-6">

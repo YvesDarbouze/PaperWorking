@@ -178,8 +178,9 @@ export default function LoginPanel() {
     try {
       await login(parsed.data.email, parsed.data.password, accountType);
       redirectAfterAuth(false);
-    } catch (err) {
-      setLocalError(err instanceof Error ? err.message : 'Incorrect email or password.');
+    } catch {
+      // AuthContext maps provider codes to friendly copy via `error`.
+      setLocalError(null);
     } finally {
       setIsSubmitting(false);
     }

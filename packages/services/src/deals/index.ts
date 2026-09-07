@@ -29,9 +29,15 @@ export {
 export {
   DealsCommandService,
   createDealsCommandService,
+  slugifyDealSlug,
+  decodeDealSlugParam,
+  dealSlugLookupCandidates,
   type DealsCommandServiceDeps,
   type CreateDealInput,
+  type UpdateDealInput,
   type DealCreateResult,
+  type DealUpdateResult,
+  type DealGetResult,
 } from './deals-command-service.js';
 export {
   DealBroadcastService,

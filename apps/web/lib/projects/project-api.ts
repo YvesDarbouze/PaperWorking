@@ -28,6 +28,7 @@ export type CreateProjectPayload = {
   organizationId?: string;
   dealId?: string;
   dealSlug?: string;
+  financials?: Record<string, unknown>;
 };
 
 export type PatchProjectPayload = Record<string, unknown>;
@@ -82,4 +83,16 @@ export async function patchProjectFromBff(
   });
   const data = await parseProjectMutationResponse<{ success: true; project: ProjectApiRecord }>(res);
   return data.project;
+}
+
+/** GET /api/projects — list projects visible to the signed-in user. */
+export async function listProjectsFromBff(): Promise<ProjectApiRecord[]> {
+  const res = await bffFetch('/api/projects', {
+    credentials: 'include',
+    cache: 'no-store',
+  });
+  const data = await parseProjectMutationResponse<{ success: true; projects: ProjectApiRecord[] }>(
+    res,
+  );
+  return data.projects ?? [];
 }

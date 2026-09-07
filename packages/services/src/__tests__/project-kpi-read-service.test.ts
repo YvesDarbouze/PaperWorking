@@ -102,6 +102,44 @@ describe('ProjectKpiReadService', () => {
     expect(result.recentActivityStatus).toBe('empty');
   });
 
+  it('returns scorecard KPIs from stored financials via engine bridge', async () => {
+    const repository = makeRepository({
+      findProjectKpiInputs: async () => ({
+        id: 'p-fin',
+        purchasePrice: 400_000,
+        currentPhase: 3,
+        financials: {
+          monthlyGrossRent: 3500,
+          vacancyRatePercent: 5,
+          operatingExpenseTaxes: 4800,
+          operatingExpenseInsurance: 1200,
+          loanAmount: 312_000,
+          loanInterestRate: 6.5,
+          loanTermYears: 30,
+          totalCashInvested: 88_000,
+        },
+      }),
+    });
+    const service = createProjectKpiReadService({
+      authz: new AuthorizationService(
+        makeStore({
+          findProjectById: async () => ({
+            ...projectA,
+            id: 'p-fin',
+            purchasePrice: 400_000,
+          }),
+        }),
+      ),
+      repository,
+      deriveMetrics: deriveAllProjectMetrics,
+    });
+
+    const result = await service.getCurrentProjectKpis(investor, 'p-fin');
+    expect(result.kpis.scorecard.noi.value).not.toBeNull();
+    expect(result.kpis.sourceStatus).toBe('actual');
+    expect(result.kpis.inputProvenance.gross_scheduled_rent).toBe('REAL_DB');
+  });
+
   it('returns null NOI when only purchase price is stored (no income inputs)', async () => {
     const repository = makeRepository({
       findProjectKpiInputs: async () => ({

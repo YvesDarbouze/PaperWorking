@@ -41,6 +41,7 @@
 
 | Doc | Mục đích |
 |-----|----------|
+| [KPI_VERIFICATION_REPORT.md](./KPI_VERIFICATION_REPORT.md) | **Audit 33 KPI NetSuite — formula wiring, defaults, UI, tests** |
 | [ROUTES_AND_APIS.md](./ROUTES_AND_APIS.md) | **Tổng hợp toàn bộ page routes + BFF API + link footer** |
 | [list_APIs_.md](./list_APIs_.md) | Inventory chi tiết 297 handler `@paperworking/api` |
 | [NEST_API_CLOUD_RUN.md](./NEST_API_CLOUD_RUN.md) | Deploy Nest API lên Cloud Run |

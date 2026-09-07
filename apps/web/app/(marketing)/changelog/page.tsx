@@ -2,7 +2,7 @@ import type { Metadata } from 'next';
 import Link from 'next/link';
 
 export const metadata: Metadata = {
-  title: 'Changelog | PaperWorking',
+  title: 'Changelog',
   description: 'Product updates and release notes for PaperWorking.',
 };
 

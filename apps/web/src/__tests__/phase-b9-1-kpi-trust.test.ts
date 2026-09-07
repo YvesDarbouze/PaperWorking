@@ -55,12 +55,14 @@ describe('phase B9.1 — KPI provenance metadata', () => {
   it('scorecardEntries preserves projected flag from financial-engine', async () => {
     const metrics = await deriveAllProjectMetrics('p1', { mockData: canonicalSeedDeal });
     const entries = scorecardEntries(metrics.scorecard);
-    expect(entries.every((entry) => entry.projected === true)).toBe(true);
+    expect(entries.filter((entry) => entry.display !== 'N/A').every((entry) => entry.projected)).toBe(
+      true,
+    );
     expect(entries[0]?.display).toBeTruthy();
   });
 
   it('UI copy helpers distinguish projected scorecard from demo trends', () => {
-    expect(scorecardSourceStatusCopy('partially_projected')).toContain('projected rent');
+    expect(scorecardSourceStatusCopy('partially_projected')).toContain('N/A');
     expect(trendStatusCopy('demo')).toContain('demo trend');
   });
 });

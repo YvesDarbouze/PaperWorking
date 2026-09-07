@@ -19,10 +19,10 @@ export default function ProjectWorkspaceShell({
   const shellTone = phaseStyle.shell;
 
   return (
-    <div className="min-h-screen text-white" style={{ backgroundColor: shellTone }}>
+    <div className="min-h-screen overflow-x-hidden text-white" style={{ backgroundColor: shellTone }}>
       <header className="sticky top-0 z-40 border-b border-white/10 bg-black/30 px-4 py-4 backdrop-blur-md md:px-6">
-        <div className="mx-auto flex max-w-7xl flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
-          <div className="flex items-center gap-3">
+        <div className="mx-auto flex max-w-7xl min-w-0 flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
+          <div className="flex min-w-0 flex-wrap items-center gap-3">
             <button
               type="button"
               onClick={() => router.push('/projects')}
@@ -30,9 +30,9 @@ export default function ProjectWorkspaceShell({
             >
               ← Projects
             </button>
-            <div>
-              <h1 className="text-xl font-semibold">{project.propertyName}</h1>
-              <p className="text-sm text-white/65">{project.address}</p>
+            <div className="min-w-0 flex-1">
+              <h1 className="truncate text-xl font-semibold">{project.propertyName}</h1>
+              <p className="truncate text-sm text-white/65">{project.address}</p>
             </div>
             <span
               className="rounded-full px-2.5 py-1 text-[11px] font-semibold uppercase tracking-[0.06em]"

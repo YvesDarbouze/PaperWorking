@@ -14,6 +14,7 @@ const createDealSchema = z.object({
   arv: z.coerce.number().optional(),
   holdingCosts: z.coerce.number().optional(),
   projectedRoi: z.coerce.number().optional(),
+  projectedMonthlyRent: z.coerce.number().optional(),
   status: z.enum(['draft', 'published', 'funding', 'closed', 'archived']).optional(),
   visibility: z.enum(['marketplace', 'invitation_only', 'private']).optional(),
   projectId: z.string().optional(),

@@ -256,6 +256,7 @@ export function buildProjectsReadService(deps: HandlerDeps = buildHandlerDeps())
     cachedProjectsRead = createProjectsReadService({
       authz: deps.authorization,
       repository: createProjectsReadRepository(),
+      commandRepository: createProjectsCommandRepository(),
     });
   }
   return cachedProjectsRead;

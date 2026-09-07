@@ -61,6 +61,7 @@ describe('phase 5e — insights adapters', () => {
     );
     expect(entries.length).toBeGreaterThan(0);
     expect(formatMetricValue(12.5, '%')).toBe('12.5%');
+    expect(formatMetricValue(-464.6)).toBe('-$464.60');
   });
 
   it('wires handleInsightsGet with seed loader', async () => {

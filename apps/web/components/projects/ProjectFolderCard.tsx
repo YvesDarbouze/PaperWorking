@@ -171,9 +171,9 @@ export default function ProjectFolderCard({ project }: { project: ProjectSummary
           {project.propertyName}
         </h3>
         <div className="flex items-center justify-between gap-1 text-sm text-white/55">
-          {project.dealId || project.dealSlug ? (
+          {project.dealSlug ? (
             <Link
-              href={`/deals/${project.dealSlug || project.propertyName.toLowerCase().replace(/[^a-z0-9]+/g, '')}/detail`}
+              href={`/deals/${project.dealSlug}/detail`}
               onClick={(event) => event.stopPropagation()}
               className="flex items-center gap-1 truncate text-[#00DD94] no-underline hover:underline"
             >

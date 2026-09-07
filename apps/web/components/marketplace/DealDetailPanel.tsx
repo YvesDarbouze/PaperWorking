@@ -7,7 +7,7 @@ import {
   formatDealCurrency,
 } from '@/lib/marketplace/format';
 import DealBroadcastModal from '@/components/marketplace/DealBroadcastModal';
-import { checkDealExistsFromBff } from '@/lib/deals/deal-api';
+import { getDealBySlugFromBff } from '@/lib/deals/deal-api';
 
 interface DealPreview {
   id: string;
@@ -15,7 +15,7 @@ interface DealPreview {
   name: string;
   address: string;
   price: number;
-  roi: number;
+  roi: number | null;
   status: string;
   visibility?: string;
   creatorName: string;
@@ -25,6 +25,33 @@ interface DealPreview {
   subStrategy?: string;
   projectId?: string | null;
   projectName?: string | null;
+}
+
+function asFiniteNumber(value: unknown): number | null {
+  const n = typeof value === 'number' ? value : Number(value);
+  return Number.isFinite(n) ? n : null;
+}
+
+function mapExistsDealToPreview(raw: Record<string, unknown>): DealPreview {
+  const purchase = asFiniteNumber(raw.purchasePrice ?? raw.price) ?? 0;
+  const rehab = asFiniteNumber(raw.rehabCost) ?? 0;
+  return {
+    id: String(raw.id ?? ''),
+    slug: String(raw.slug ?? ''),
+    name: String(raw.propertyName || raw.name || raw.address || 'Deal'),
+    address: String(raw.address ?? ''),
+    price: purchase,
+    roi: asFiniteNumber(raw.projectedRoi ?? raw.roi),
+    status: String(raw.status ?? 'draft'),
+    visibility: raw.visibility != null ? String(raw.visibility) : undefined,
+    creatorName: String(raw.creatorName || raw.creatorId || '—'),
+    committed: asFiniteNumber(raw.committedAmount ?? raw.committed) ?? 0,
+    target: asFiniteNumber(raw.fundingTarget ?? raw.target) ?? purchase + rehab,
+    assetClass: raw.assetClass != null ? String(raw.assetClass) : undefined,
+    subStrategy: raw.subStrategy != null ? String(raw.subStrategy) : undefined,
+    projectId: raw.projectId != null && raw.projectId !== '' ? String(raw.projectId) : null,
+    projectName: raw.projectName != null ? String(raw.projectName) : null,
+  };
 }
 
 export default function DealDetailPanel({ slug }: { slug: string }) {
@@ -40,9 +67,9 @@ export default function DealDetailPanel({ slug }: { slug: string }) {
       setLoading(true);
       setError(null);
       try {
-        const body = await checkDealExistsFromBff(slug);
-        if (!body.exists || !body.deal) throw new Error('Deal not found or not visible');
-        if (!cancelled) setDeal(body.deal as unknown as DealPreview);
+        const record = await getDealBySlugFromBff(slug);
+        if (!record) throw new Error('Deal not found or not visible');
+        if (!cancelled) setDeal(mapExistsDealToPreview(record as Record<string, unknown>));
       } catch (loadError) {
         if (!cancelled) {
           setError(loadError instanceof Error ? loadError.message : 'Failed to load deal');
@@ -106,7 +133,11 @@ export default function DealDetailPanel({ slug }: { slug: string }) {
           </button>
 
           <Link
-            href={`/dashboard?linkDeal=${encodeURIComponent(deal.slug)}`}
+            href={
+              deal.projectId
+                ? `/project/${deal.projectId}`
+                : `/dashboard?linkDeal=${encodeURIComponent(deal.slug)}`
+            }
             className="inline-flex items-center gap-1.5 rounded-full bg-[#00DD94] px-3 py-1.5 text-xs font-semibold text-[#0a0a0f] transition hover:brightness-110"
           >
             <span className="material-symbols-outlined text-[16px]">folder_open</span>
@@ -131,7 +162,7 @@ export default function DealDetailPanel({ slug }: { slug: string }) {
         {deal.projectId && (
           <div className="mt-2.5">
             <Link
-              href={`/projects/${deal.projectId}`}
+              href={`/project/${deal.projectId}`}
               className="inline-flex items-center gap-1.5 rounded-[8px] border border-[#00DD94]/20 bg-[#00DD94]/10 px-3 py-1 text-sm font-medium text-[#00DD94] transition hover:bg-[#00DD94]/20"
             >
               <span className="material-symbols-outlined text-[16px]">folder_open</span>
@@ -161,7 +192,10 @@ export default function DealDetailPanel({ slug }: { slug: string }) {
           { label: 'Purchase price', value: formatDealCurrency(deal.price) },
           { label: 'Funding target', value: formatDealCurrency(deal.target) },
           { label: 'Committed', value: formatDealCurrency(deal.committed) },
-          { label: 'Projected ROI', value: `${deal.roi.toFixed(1)}%` },
+          {
+            label: 'Projected ROI',
+            value: deal.roi == null ? 'N/A' : `${deal.roi.toFixed(1)}%`,
+          },
         ].map((item) => (
           <article key={item.label} className="rounded-2xl border border-white/8 bg-white/[0.03] p-4">
             <p className="text-[11px] uppercase tracking-[0.08em] text-white/45">{item.label}</p>
@@ -182,7 +216,7 @@ export default function DealDetailPanel({ slug }: { slug: string }) {
           />
         </div>
         <p className="mt-4 text-sm text-white/65">
-          Resolved via `handleDealsExistsGet` with visibility rules for marketplace, invitation-only, and private deals.
+          Deal numbers come from the stored underwriting baseline. Visibility follows marketplace, invitation-only, and private rules.
         </p>
       </section>
 
@@ -190,7 +224,7 @@ export default function DealDetailPanel({ slug }: { slug: string }) {
         dealId={deal.id}
         dealName={deal.name}
         dealAddress={deal.address}
-        dealRoi={deal.roi}
+        dealRoi={deal.roi ?? 0}
         isOpen={broadcastOpen}
         onClose={() => setBroadcastOpen(false)}
       />

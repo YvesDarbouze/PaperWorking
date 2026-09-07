@@ -23,6 +23,7 @@ export type CreateDealPayload = {
   arv?: number;
   holdingCosts?: number;
   projectedRoi?: number;
+  projectedMonthlyRent?: number;
   status?: 'draft' | 'published' | 'funding' | 'closed' | 'archived';
   visibility?: 'marketplace' | 'invitation_only' | 'private';
   projectId?: string;
@@ -30,6 +31,30 @@ export type CreateDealPayload = {
 };
 
 type JsonRecord = Record<string, unknown>;
+
+/** Undo encodeURIComponent so comma-containing slugs survive Next params + fetch. */
+export function decodeDealSlugParam(slug: string): string {
+  let current = slug.trim();
+  for (let i = 0; i < 3; i += 1) {
+    try {
+      const next = decodeURIComponent(current);
+      if (next === current) break;
+      current = next;
+    } catch {
+      break;
+    }
+  }
+  return current;
+}
+
+/** Match server slugifyDealSlug — letters and digits only. */
+export function slugifyDealSlug(input: string): string {
+  const base = input
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, '')
+    .slice(0, 48);
+  return base || `deal${Date.now().toString(36)}`;
+}
 
 async function parseDealMutationResponse<T extends JsonRecord>(res: Response): Promise<T> {
   let data: unknown;
@@ -73,7 +98,7 @@ export async function checkDealExistsFromBff(slug: string): Promise<{
   exists: boolean;
   deal: DealApiRecord | null;
 }> {
-  const res = await bffFetch(`/api/deals/exists?slug=${encodeURIComponent(slug)}`, {
+  const res = await bffFetch(`/api/deals/exists?slug=${encodeURIComponent(decodeDealSlugParam(slug))}`, {
     credentials: 'include',
     cache: 'no-store',
   });
@@ -134,4 +159,46 @@ export async function replyToDealFromBff(payload: DealReplyPayload, init: Reques
     body: JSON.stringify(payload),
   });
   return parseDealMutationResponse<{ success: true; message?: JsonRecord }>(res);
+}
+
+export type UpdateDealPayload = {
+  purchasePrice?: number;
+  rehabCost?: number;
+  arv?: number;
+  holdingCosts?: number;
+  projectedRoi?: number;
+  projectedMonthlyRent?: number;
+  status?: CreateDealPayload['status'];
+  visibility?: CreateDealPayload['visibility'];
+  projectId?: string;
+};
+
+/** GET /api/deals/:slug via same-origin BFF. */
+export async function getDealBySlugFromBff(slug: string): Promise<DealApiRecord> {
+  const decoded = decodeDealSlugParam(slug);
+  // Prefer canonical stored form; server also accepts hyphenated client slugs.
+  const lookup = slugifyDealSlug(decoded) || decoded;
+  const res = await bffFetch(`/api/deals/${encodeURIComponent(lookup)}`, {
+    credentials: 'include',
+    cache: 'no-store',
+  });
+  const data = await parseDealMutationResponse<{ success: true; deal: DealApiRecord }>(res);
+  return data.deal;
+}
+
+/** PATCH /api/deals/:slug via same-origin BFF. */
+export async function updateDealFromBff(
+  slug: string,
+  payload: UpdateDealPayload,
+): Promise<DealApiRecord> {
+  const decoded = decodeDealSlugParam(slug);
+  const lookup = slugifyDealSlug(decoded) || decoded;
+  const res = await bffFetch(`/api/deals/${encodeURIComponent(lookup)}`, {
+    method: 'PATCH',
+    credentials: 'include',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(payload),
+  });
+  const data = await parseDealMutationResponse<{ success: true; deal: DealApiRecord }>(res);
+  return data.deal;
 }

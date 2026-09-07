@@ -3,7 +3,6 @@ import type { Metadata } from 'next';
 import Logo from '@/components/marketing/Logo';
 
 export const metadata: Metadata = {
-  title: 'Sign In',
   robots: 'noindex, nofollow',
 };
 

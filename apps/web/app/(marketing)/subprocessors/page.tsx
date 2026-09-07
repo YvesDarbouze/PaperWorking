@@ -6,7 +6,7 @@ import {
 } from '@/lib/marketing/subprocessors-data';
 
 export const metadata: Metadata = {
-  title: 'Subprocessors Registry — PaperWorking',
+  title: 'Subprocessors Registry',
   description:
     'Registry of third-party subprocessors used by PaperWorking to process customer data, in compliance with GDPR Article 28.',
 };

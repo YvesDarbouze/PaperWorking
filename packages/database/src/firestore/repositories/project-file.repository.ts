@@ -122,11 +122,18 @@ export class FirestoreProjectFileRepository {
     const project = await this.projects.getById(projectId);
     if (!project) return null;
 
+    const financials =
+      data.financials && typeof data.financials === 'object' && !Array.isArray(data.financials)
+        ? (data.financials as Record<string, unknown>)
+        : null;
+
     return {
       id: project.id,
       purchasePrice: project.purchasePrice,
+      squareFootage: typeof data.squareFootage === 'number' ? data.squareFootage : null,
       currentPhase: project.currentPhase,
       phaseData: data.phaseData ?? data.kpiSummary ?? null,
+      financials,
     };
   }
 }

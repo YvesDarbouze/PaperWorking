@@ -243,7 +243,8 @@ export class AuthorizationService<
   }
 
   async accessibleProjectsWhere(user: AuthUser): Promise<Record<string, unknown>> {
-    if (user.isAdmin) return {};
+    // Investor dashboard metrics/reports must stay user-scoped even for platform admins.
+    // Cross-tenant project lists live on /admin, not GET /api/portfolio/metrics.
     const orgIds = await this.resolveUserOrgIds(user.uid);
     const or: Record<string, unknown>[] = [
       { userId: user.uid },

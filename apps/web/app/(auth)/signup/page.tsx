@@ -1,5 +1,10 @@
 import { Suspense } from 'react';
+import type { Metadata } from 'next';
 import SignupAccountTypePanel from '@/components/auth/SignupAccountTypePanel';
+
+export const metadata: Metadata = {
+  title: 'Create Account',
+};
 
 export default function SignupPage() {
   return (

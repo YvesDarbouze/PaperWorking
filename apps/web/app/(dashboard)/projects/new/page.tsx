@@ -6,7 +6,8 @@ import Link from 'next/link';
 import AddressSearch from '@/components/deals/AddressSearch';
 import type { CollisionDeal } from '@/components/deals/CollisionModal';
 import { createProjectFromBff } from '@/lib/projects/project-api';
-import { createDealFromBff } from '@/lib/deals/deal-api';
+import { createDealFromBff, getDealBySlugFromBff, slugifyDealSlug, updateDealFromBff } from '@/lib/deals/deal-api';
+import { buildProjectFinancialsFromDealBaseline } from '@/lib/projects/deal-financials-sync';
 import { loadTeamDirectory, mockProvider, useMockData } from '@/lib/data';
 import type { ProjectWorkspace } from '@/lib/projects/types';
 
@@ -40,6 +41,10 @@ export default function NewProjectPage() {
   const [dealSlug, setDealSlug] = useState<string | null>(null);
   const [dealAddress, setDealAddress] = useState<string | null>(null);
   const [dealName, setDealName] = useState<string | null>(null);
+  const [dealPurchasePrice, setDealPurchasePrice] = useState<number | null>(null);
+  const [dealRehabCost, setDealRehabCost] = useState<number | null>(null);
+  const [dealArv, setDealArv] = useState<number | null>(null);
+  const [dealMonthlyRent, setDealMonthlyRent] = useState<number | null>(null);
   const [draftDealCreated, setDraftDealCreated] = useState(false);
   const [isLaunching, setIsLaunching] = useState(false);
   const [validationError, setValidationError] = useState<string | null>(null);
@@ -99,27 +104,48 @@ export default function NewProjectPage() {
   }
 
   // Step 2: Handle Linking Existing Deal
-  function handleLinkExistingDeal(deal: CollisionDeal) {
+  async function handleLinkExistingDeal(deal: CollisionDeal) {
     setDealId(deal.id);
     setDealSlug(deal.slug);
     setDealAddress(deal.address);
     setDealName(deal.name || deal.propertyName || deal.address);
+    const price = deal.purchasePrice ?? deal.price;
+    if (typeof price === 'number' && Number.isFinite(price)) {
+      setDealPurchasePrice(price);
+    }
+
+    if (!useMockData() && deal.slug) {
+      try {
+        const linkedDeal = await getDealBySlugFromBff(deal.slug);
+        if (typeof linkedDeal.purchasePrice === 'number') {
+          setDealPurchasePrice(linkedDeal.purchasePrice);
+        }
+        if (typeof linkedDeal.rehabCost === 'number') {
+          setDealRehabCost(linkedDeal.rehabCost);
+        }
+        if (typeof linkedDeal.arv === 'number') {
+          setDealArv(linkedDeal.arv);
+        }
+        if (typeof linkedDeal.projectedMonthlyRent === 'number') {
+          setDealMonthlyRent(linkedDeal.projectedMonthlyRent);
+        }
+      } catch {
+        // Launch step re-fetches linked deal before create.
+      }
+    }
+
     setStep(3);
   }
 
   // Step 2: Handle Create New Deal for This Project (Collision alternative)
   async function handleCreateNewDealAnyway(deal: CollisionDeal) {
-    const slug = deal.slug || deal.address.toLowerCase().replace(/[^a-z0-9]/g, '');
+    const slug = slugifyDealSlug(deal.slug || deal.address);
     const payload = {
       slug,
       address: deal.address,
       status: 'draft' as const,
       visibility: 'private' as const,
-      purchasePrice: deal.purchasePrice || deal.price || 485000,
-      rehabCost: 50000,
-      arv: 620000,
-      holdingCosts: 15000,
-      projectedRoi: 15.5,
+      purchasePrice: deal.purchasePrice || deal.price,
     };
 
     if (useMockData()) {
@@ -154,11 +180,6 @@ export default function NewProjectPage() {
       address,
       status: 'draft' as const,
       visibility: 'private' as const,
-      purchasePrice: 450000,
-      rehabCost: 50000,
-      arv: 580000,
-      holdingCosts: 15000,
-      projectedRoi: 16.0,
     };
 
     if (useMockData()) {
@@ -187,18 +208,30 @@ export default function NewProjectPage() {
 
   // Step 3: Launch Project
   async function handleLaunchProject() {
+    if (!projectName.trim()) {
+      setValidationError('Project Name is required.');
+      setStep(1);
+      return;
+    }
+    if (!dealAddress?.trim()) {
+      setValidationError('Link a property deal before launching.');
+      setStep(2);
+      return;
+    }
+
     setIsLaunching(true);
+    setValidationError(null);
 
     try {
       const projectPayload = {
         id: projectId,
         project_id: projectId,
-        propertyName: projectName || 'New Project',
-        address: dealAddress || '1247 Elm Street, Austin, TX 78702',
-        property_address: dealAddress || '1247 Elm Street, Austin, TX 78702',
-        dealId: dealId || 'deal-mp-1',
-        dealSlug: dealSlug || '1247elmst',
-        dealAddress: dealAddress || '1247 Elm Street, Austin, TX 78702',
+        propertyName: projectName.trim(),
+        address: dealAddress,
+        property_address: dealAddress,
+        dealId: dealId || undefined,
+        dealSlug: dealSlug || undefined,
+        dealAddress,
         status: 'Active',
         currentPhase: 'acquisition' as const,
         phase: 'acquisition' as const,
@@ -207,21 +240,69 @@ export default function NewProjectPage() {
       if (useMockData()) {
         mockProvider.addProject(projectPayload as ProjectWorkspace);
       } else {
+        let purchasePrice = dealPurchasePrice ?? undefined;
+        let financials = buildProjectFinancialsFromDealBaseline({
+          purchasePrice: purchasePrice,
+          rehabCost: dealRehabCost ?? undefined,
+          arv: dealArv ?? undefined,
+          projectedMonthlyRent: dealMonthlyRent ?? undefined,
+        });
+
+        if (dealSlug) {
+          try {
+            const linkedDeal = await getDealBySlugFromBff(dealSlug);
+            purchasePrice =
+              typeof linkedDeal.purchasePrice === 'number'
+                ? linkedDeal.purchasePrice
+                : purchasePrice;
+            financials = buildProjectFinancialsFromDealBaseline({
+              purchasePrice:
+                typeof linkedDeal.purchasePrice === 'number'
+                  ? linkedDeal.purchasePrice
+                  : undefined,
+              rehabCost:
+                typeof linkedDeal.rehabCost === 'number' ? linkedDeal.rehabCost : undefined,
+              arv: typeof linkedDeal.arv === 'number' ? linkedDeal.arv : undefined,
+              projectedMonthlyRent:
+                typeof linkedDeal.projectedMonthlyRent === 'number'
+                  ? linkedDeal.projectedMonthlyRent
+                  : undefined,
+            });
+          } catch {
+            // Use wizard-captured deal fields when live deal fetch fails.
+          }
+        }
+
         const created = await createProjectFromBff({
-          propertyName: projectName || 'New Project',
-          address: dealAddress || undefined,
+          propertyName: projectName.trim(),
+          address: dealAddress,
+          purchasePrice,
           dealId: dealId || undefined,
           dealSlug: dealSlug || undefined,
+          financials: Object.keys(financials).length > 0 ? financials : undefined,
         });
         if (!created?.id) {
           throw new Error('Project created without server id');
         }
+        if (dealSlug) {
+          try {
+            await updateDealFromBff(dealSlug, { projectId: created.id });
+          } catch {
+            /* Project exists; deal back-link can be retried from the deal page. */
+          }
+        }
+        router.push(`/project/${created.id}`);
+        return;
       }
 
-      window.location.assign('/projects?created=1');
-    } catch {
+      router.push('/projects?created=1');
+    } catch (launchError) {
       setIsLaunching(false);
-      setValidationError('Unable to create project. Please try again.');
+      setValidationError(
+        launchError instanceof Error
+          ? launchError.message
+          : 'Unable to create project. Please try again.',
+      );
     }
   }
 
@@ -305,12 +386,15 @@ export default function NewProjectPage() {
 
             <form onSubmit={handleNextToProperty} className="space-y-6">
               <div>
-                <label className="block text-xs font-semibold text-white/80">
+                <label htmlFor="new-project-name" className="block text-xs font-semibold text-white/80">
                   Project Name <span className="text-[#00DD94]">*</span>
                 </label>
                 <input
+                  id="new-project-name"
+                  name="projectName"
                   type="text"
                   required
+                  aria-required="true"
                   value={projectName}
                   onChange={(e) => setProjectName(e.target.value)}
                   placeholder="e.g. Elm Street Flip & Expansion"
@@ -319,10 +403,12 @@ export default function NewProjectPage() {
               </div>
 
               <div>
-                <label className="block text-xs font-semibold text-white/80">
+                <label htmlFor="new-project-description" className="block text-xs font-semibold text-white/80">
                   Description
                 </label>
                 <textarea
+                  id="new-project-description"
+                  name="description"
                   rows={3}
                   value={description}
                   onChange={(e) => setDescription(e.target.value)}
@@ -476,12 +562,18 @@ export default function NewProjectPage() {
               </p>
             </div>
 
+            {validationError && (
+              <div className="mb-5 rounded-lg border border-red-500/20 bg-red-500/10 p-3 text-xs text-red-300">
+                {validationError}
+              </div>
+            )}
+
             {/* Summary Card */}
             <div className="space-y-4 rounded-xl border border-white/10 bg-white/[0.03] p-5">
               <div>
                 <p className="text-[10px] font-bold uppercase tracking-wider text-white/40">Project Name</p>
                 <p className="mt-0.5 text-base font-semibold text-white">
-                  {projectName || 'Elm Street Flip & Expansion'}
+                  {projectName.trim() || 'Not set'}
                 </p>
                 {description && <p className="mt-1 text-xs text-white/60">{description}</p>}
               </div>
@@ -491,7 +583,7 @@ export default function NewProjectPage() {
                 <div className="mt-1 flex items-center gap-2">
                   <span className="material-symbols-outlined text-[16px] text-[#00DD94]">location_on</span>
                   <p className="text-sm font-medium text-white">
-                    {dealAddress || '1247 Elm Street, Austin, TX 78702'}
+                    {dealAddress || 'No property linked yet'}
                   </p>
                 </div>
                 {dealName && (
@@ -528,7 +620,7 @@ export default function NewProjectPage() {
               <button
                 type="button"
                 onClick={handleLaunchProject}
-                disabled={isLaunching}
+                disabled={isLaunching || !projectName.trim() || !dealAddress}
                 className="inline-flex items-center gap-2 rounded-xl bg-[#00DD94] px-7 py-3 text-xs font-bold uppercase tracking-wider text-[#0a0a0f] hover:brightness-110 transition shadow-[0_4px_16px_rgba(0,221,148,0.3)] disabled:opacity-50"
               >
                 {isLaunching ? (

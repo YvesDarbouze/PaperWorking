@@ -1,5 +1,7 @@
 import type { AuthorizationService, AuthUser } from '@paperworking/authz';
 import { ProjectsCommandValidationError } from './projects-command-errors.js';
+import { mergeProjectFinancials } from './merge-project-financials.js';
+import { validateCashFlowEventSchedule } from '@paperworking/financial-engine';
 import type {
   ProjectCommandRecord,
   ProjectsCommandRepository,
@@ -17,6 +19,7 @@ export type CreateProjectInput = {
   organizationId?: string;
   dealId?: string;
   dealSlug?: string;
+  financials?: Record<string, unknown>;
 };
 
 export type UpdateProjectInput = Record<string, unknown>;
@@ -49,7 +52,12 @@ const PATCH_ALLOWED_FIELDS = [
   'currentPhase',
   'dealId',
   'dealSlug',
+  'financials',
 ] as const;
+
+function isRecord(value: unknown): value is Record<string, unknown> {
+  return typeof value === 'object' && value !== null && !Array.isArray(value);
+}
 
 /**
  * Framework-neutral mutation use-cases for POST/PATCH /api/projects*.
@@ -86,6 +94,11 @@ export class ProjectsCommandService {
       dealId = input.dealId.trim();
     }
 
+    const createFinancials =
+      isRecord(input.financials) && Object.keys(input.financials).length > 0
+        ? input.financials
+        : undefined;
+
     const project = await this.deps.repository.create({
       name,
       address: input.address,
@@ -97,6 +110,7 @@ export class ProjectsCommandService {
       userId: user.uid,
       dealId,
       dealSlug: typeof input.dealSlug === 'string' ? input.dealSlug.trim() || undefined : undefined,
+      financials: createFinancials,
     });
 
     return { success: true, project };
@@ -129,6 +143,19 @@ export class ProjectsCommandService {
     if (typeof input.dealId === 'string' && input.dealId.trim()) {
       await this.deps.authz.assertDealAccess(user, input.dealId.trim(), 'deals.update');
       patch.dealId = input.dealId.trim();
+    }
+
+    if (isRecord(input.financials)) {
+      const cashFlowErrors = validateCashFlowEventSchedule(
+        input.financials.cashFlowEvents ?? input.financials.cash_flow_events,
+      );
+      if (cashFlowErrors.length > 0) {
+        throw new ProjectsCommandValidationError(
+          cashFlowErrors.map((e) => e.message).join('; '),
+        );
+      }
+      patch.financials = input.financials;
+      patch.financialsMerge = true;
     }
 
     const project = await this.deps.repository.update(trimmed, patch);

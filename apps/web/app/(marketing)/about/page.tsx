@@ -3,7 +3,7 @@ import Link from 'next/link';
 import { ABOUT_PRINCIPLES } from '@/lib/marketing/legal-data';
 
 export const metadata: Metadata = {
-  title: 'About PaperWorking | Built for Serious Real Estate Investors',
+  title: 'About — Built for Serious Real Estate Investors',
   description:
     'PaperWorking is the real estate investment operating system. One place for every deal, dollar, and deadline — Acquisition, Fund, Hold, Exit.',
 };

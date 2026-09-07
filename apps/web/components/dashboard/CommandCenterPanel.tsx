@@ -245,7 +245,7 @@ export default function CommandCenterPanel() {
               Browse Deals
             </Link>
             <Link
-              href="/projects"
+              href="/projects/new?source=dashboard"
               className="flex items-center gap-1.5 rounded-lg border border-white/12 bg-[#454955]/90 px-3.5 py-2 text-[12px] font-semibold text-[#fdfffc] no-underline"
             >
               <span className="material-symbols-outlined text-[15px]">add</span>
@@ -595,9 +595,9 @@ export default function CommandCenterPanel() {
                       </div>
 
                       <div className="flex items-center justify-between text-[11px]">
-                        {project.dealId || project.dealSlug ? (
+                        {project.dealSlug ? (
                           <Link
-                            href={`/deals/${project.dealSlug || 'detail'}/detail`}
+                            href={`/deals/${project.dealSlug}/detail`}
                             className="flex items-center gap-1 text-[#00DD94] hover:underline"
                           >
                             <span className="material-symbols-outlined text-[14px]">location_on</span>
@@ -605,6 +605,13 @@ export default function CommandCenterPanel() {
                               {project.dealAddress || project.address || 'Linked deal'}
                             </span>
                           </Link>
+                        ) : project.dealId ? (
+                          <span className="flex items-center gap-1 truncate text-white/55">
+                            <span className="material-symbols-outlined text-[14px]">location_on</span>
+                            <span className="truncate max-w-[200px]">
+                              {project.dealAddress || project.address || 'Linked deal'}
+                            </span>
+                          </span>
                         ) : (
                           <Link
                             href={`/projects/new?step=2&projectId=${project.id}`}

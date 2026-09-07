@@ -3,15 +3,26 @@
 import { useState, useEffect } from 'react';
 import { useParams, useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
+import {
+  checkDealExistsFromBff,
+  createDealFromBff,
+  decodeDealSlugParam,
+  getDealBySlugFromBff,
+  updateDealFromBff,
+} from '@/lib/deals/deal-api';
+import { listProjectsFromBff, patchProjectFromBff } from '@/lib/projects/project-api';
+import { buildProjectFinancialsFromDealBaseline } from '@/lib/projects/deal-financials-sync';
+import { useMockData } from '@/lib/data';
 
 export default function DealCreationPage() {
   const params = useParams();
-  const slug = (params?.slug as string) || '';
+  const slug = decodeDealSlugParam((params?.slug as string) || '');
   const router = useRouter();
   const searchParams = useSearchParams();
 
   const collisionWarning = searchParams.get('collisionWarning');
   const creatorName = searchParams.get('creatorName') || 'Lead Investor';
+  const linkedProjectId = searchParams.get('fromProject');
 
   const [showWarning, setShowWarning] = useState(false);
   const [purchasePrice, setPurchasePrice] = useState('485000');
@@ -20,6 +31,10 @@ export default function DealCreationPage() {
   const [estRent, setEstRent] = useState('3800');
   const [visibility, setVisibility] = useState<'marketplace' | 'invitation_only' | 'private'>('marketplace');
   const [savedSuccess, setSavedSuccess] = useState(false);
+  const [saveError, setSaveError] = useState<string | null>(null);
+  const [isSaving, setIsSaving] = useState(false);
+  const [dealProjectId, setDealProjectId] = useState<string | null>(linkedProjectId);
+  const [dealAddress, setDealAddress] = useState<string | null>(null);
 
   useEffect(() => {
     if (collisionWarning === 'true') {
@@ -29,6 +44,81 @@ export default function DealCreationPage() {
     }
   }, [collisionWarning]);
 
+  useEffect(() => {
+    if (useMockData() || !slug) return;
+    let cancelled = false;
+    (async () => {
+      try {
+        const deal = await getDealBySlugFromBff(slug);
+        if (cancelled) return;
+        if (typeof deal.address === 'string' && deal.address.trim()) {
+          setDealAddress(deal.address.trim());
+        }
+        if (deal.purchasePrice != null) setPurchasePrice(String(deal.purchasePrice));
+        if (deal.rehabCost != null) setRehabEstimate(String(deal.rehabCost));
+        if (deal.arv != null) setArvEstimate(String(deal.arv));
+        if (deal.projectedMonthlyRent != null) setEstRent(String(deal.projectedMonthlyRent));
+        else setEstRent('');
+        if (
+          deal.visibility === 'marketplace' ||
+          deal.visibility === 'invitation_only' ||
+          deal.visibility === 'private'
+        ) {
+          setVisibility(deal.visibility);
+        }
+        if (typeof deal.projectId === 'string' && deal.projectId.trim()) {
+          setDealProjectId(deal.projectId);
+        } else {
+          try {
+            const projects = await listProjectsFromBff();
+            const linked = projects.find(
+              (project) => project.dealId === deal.id || project.dealSlug === slug,
+            );
+            if (linked?.id) setDealProjectId(String(linked.id));
+          } catch {
+            /* Project sync is optional when no link can be resolved. */
+          }
+        }
+      } catch {
+        // New deal slug — keep form defaults.
+      }
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, [slug]);
+
+  const formattedAddress =
+    dealAddress ||
+    (slug
+      ? slug.replace(/([0-9]+)([a-zA-Z]+)/, '$1 $2').replace(/st|ave|rd|dr|ln|ct|blvd/i, (m) => ` ${m.toUpperCase()}`)
+      : 'Property Address');
+
+  async function resolveLinkedProjectId(preferred?: string | null): Promise<string | null> {
+    if (preferred && preferred.trim()) return preferred.trim();
+    if (dealProjectId && dealProjectId.trim()) return dealProjectId.trim();
+    if (linkedProjectId && linkedProjectId.trim()) return linkedProjectId.trim();
+    try {
+      const deal = await getDealBySlugFromBff(slug);
+      if (typeof deal.projectId === 'string' && deal.projectId.trim()) {
+        setDealProjectId(deal.projectId);
+        return deal.projectId.trim();
+      }
+      const projects = await listProjectsFromBff();
+      const linked = projects.find(
+        (project) => project.dealId === deal.id || project.dealSlug === slug,
+      );
+      if (linked?.id) {
+        const id = String(linked.id);
+        setDealProjectId(id);
+        return id;
+      }
+    } catch {
+      /* Linked project may not exist yet for brand-new deal intake. */
+    }
+    return null;
+  }
+
   function handleDismiss() {
     setShowWarning(false);
     router.replace(`/deals/${slug}`);
@@ -37,17 +127,86 @@ export default function DealCreationPage() {
     }
   }
 
-  function handleSave(e: React.FormEvent) {
+  async function handleSave(e: React.FormEvent) {
     e.preventDefault();
-    setSavedSuccess(true);
-    setTimeout(() => {
-      router.push(`/dashboard/deals`);
-    }, 1200);
-  }
+    setIsSaving(true);
+    setSaveError(null);
 
-  const formattedAddress = slug
-    ? slug.replace(/([0-9]+)([a-zA-Z]+)/, '$1 $2').replace(/st|ave|rd|dr|ln|ct|blvd/i, (m) => ` ${m.toUpperCase()}`)
-    : 'Property Address';
+    const baseline = {
+      purchasePrice: Number(purchasePrice),
+      rehabCost: Number(rehabEstimate),
+      arv: Number(arvEstimate),
+      projectedMonthlyRent: Number(estRent),
+    };
+
+    try {
+      const projectId = await resolveLinkedProjectId(dealProjectId ?? linkedProjectId);
+
+      if (useMockData()) {
+        setSavedSuccess(true);
+        setTimeout(() => {
+          router.push(projectId ? `/project/${projectId}/scorecard` : `/dashboard/deals`);
+        }, 1200);
+        return;
+      }
+
+      let existingDeal = null;
+      try {
+        existingDeal = await getDealBySlugFromBff(slug);
+      } catch {
+        existingDeal = null;
+      }
+
+      if (!existingDeal) {
+        const exists = await checkDealExistsFromBff(slug);
+        if (!exists.exists) {
+          await createDealFromBff({
+            slug,
+            address: formattedAddress,
+            ...baseline,
+            visibility,
+            projectId: projectId ?? undefined,
+          });
+        }
+      }
+
+      const updatedDeal = await updateDealFromBff(slug, {
+        ...baseline,
+        visibility,
+        projectId: projectId ?? undefined,
+      });
+
+      const syncedProjectId =
+        projectId ||
+        (typeof updatedDeal.projectId === 'string' ? updatedDeal.projectId : null) ||
+        (await resolveLinkedProjectId(null));
+
+      if (syncedProjectId) {
+        try {
+          await patchProjectFromBff(syncedProjectId, {
+            purchasePrice: baseline.purchasePrice,
+            financials: buildProjectFinancialsFromDealBaseline(baseline),
+          });
+          setDealProjectId(syncedProjectId);
+        } catch (syncError) {
+          throw new Error(
+            syncError instanceof Error
+              ? `Deal saved, but linked project sync failed: ${syncError.message}`
+              : 'Deal saved, but linked project sync failed.',
+          );
+        }
+      }
+
+      setSavedSuccess(true);
+      setIsSaving(false);
+      setTimeout(() => {
+        router.push(syncedProjectId ? `/project/${syncedProjectId}/scorecard` : `/dashboard/deals`);
+      }, 1200);
+    } catch (err) {
+      setSaveError(err instanceof Error ? err.message : 'Failed to save deal baseline');
+      setIsSaving(false);
+    }
+  }
 
   return (
     <div className="mx-auto max-w-[840px] space-y-6 px-4 py-8 md:px-8">
@@ -125,10 +284,11 @@ export default function DealCreationPage() {
           <form onSubmit={handleSave} className="mt-6 space-y-5">
             <div className="grid gap-4 sm:grid-cols-2">
               <div>
-                <label className="block text-xs font-medium text-white/70">
+                <label htmlFor="deal-purchase-price" className="block text-xs font-medium text-white/70">
                   Target Purchase Price ($)
                 </label>
                 <input
+                  id="deal-purchase-price"
                   type="number"
                   required
                   value={purchasePrice}
@@ -138,10 +298,11 @@ export default function DealCreationPage() {
               </div>
 
               <div>
-                <label className="block text-xs font-medium text-white/70">
+                <label htmlFor="deal-rehab-estimate" className="block text-xs font-medium text-white/70">
                   Rehab Estimate ($)
                 </label>
                 <input
+                  id="deal-rehab-estimate"
                   type="number"
                   required
                   value={rehabEstimate}
@@ -151,10 +312,11 @@ export default function DealCreationPage() {
               </div>
 
               <div>
-                <label className="block text-xs font-medium text-white/70">
+                <label htmlFor="deal-arv-estimate" className="block text-xs font-medium text-white/70">
                   After Repair Value / ARV ($)
                 </label>
                 <input
+                  id="deal-arv-estimate"
                   type="number"
                   required
                   value={arvEstimate}
@@ -164,10 +326,11 @@ export default function DealCreationPage() {
               </div>
 
               <div>
-                <label className="block text-xs font-medium text-white/70">
+                <label htmlFor="deal-projected-rent" className="block text-xs font-medium text-white/70">
                   Projected Monthly Rent ($)
                 </label>
                 <input
+                  id="deal-projected-rent"
                   type="number"
                   required
                   value={estRent}
@@ -195,19 +358,24 @@ export default function DealCreationPage() {
             </div>
 
             <div className="flex items-center justify-end gap-3 pt-4 border-t border-white/5">
+              {saveError ? (
+                <p className="mr-auto text-xs text-red-300">{saveError}</p>
+              ) : null}
               <button
                 type="button"
                 onClick={() => router.push('/dashboard/deals')}
                 className="rounded-xl border border-white/10 px-5 py-2.5 text-xs font-medium text-white/70 hover:bg-white/5 transition"
+                disabled={isSaving}
               >
                 Cancel
               </button>
               <button
                 type="submit"
-                className="inline-flex items-center gap-1.5 rounded-xl bg-[#00DD94] px-6 py-2.5 text-xs font-semibold text-[#0a0a0f] hover:brightness-110 transition"
+                disabled={isSaving}
+                className="inline-flex items-center gap-1.5 rounded-xl bg-[#00DD94] px-6 py-2.5 text-xs font-semibold text-[#0a0a0f] hover:brightness-110 transition disabled:opacity-60"
               >
                 <span className="material-symbols-outlined text-[16px]">save</span>
-                Save to Pipeline as Baseline
+                {isSaving ? 'Saving…' : 'Save to Pipeline as Baseline'}
               </button>
             </div>
           </form>

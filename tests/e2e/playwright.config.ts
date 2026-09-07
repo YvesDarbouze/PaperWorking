@@ -13,7 +13,7 @@ export default defineConfig({
     ['html', { outputFolder: 'playwright-report', open: 'never' }],
   ],
   use: {
-    baseURL: process.env.E2E_BASE_URL ?? 'http://localhost:3000',
+    baseURL: process.env.E2E_BASE_URL ?? 'http://127.0.0.1:3002',
     trace: 'retain-on-failure',
     screenshot: 'only-on-failure',
     headless: true,
@@ -22,13 +22,15 @@ export default defineConfig({
   webServer: process.env.E2E_SKIP_WEBSERVER
     ? undefined
     : {
-        command: 'npm run dev',
+        command: 'PORT=3002 ENABLE_MOCK_AUTH=true USE_MOCK_DATA=false NEXT_PUBLIC_USE_MOCK_DATA=false npm run dev',
         cwd: '../../apps/web',
-        url: 'http://localhost:3000',
+        url: 'http://127.0.0.1:3002',
         reuseExistingServer: !process.env.CI,
         timeout: 120_000,
         env: {
           ENABLE_MOCK_AUTH: 'true',
+          USE_MOCK_DATA: 'false',
+          NEXT_PUBLIC_USE_MOCK_DATA: 'false',
           NODE_ENV: 'development',
         },
       },

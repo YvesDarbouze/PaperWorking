@@ -30,6 +30,11 @@ export type ProjectGetResult = {
 export type ProjectsReadServiceDeps = {
   authz: AuthorizationService;
   repository: ProjectsReadRepository;
+  commandRepository?: {
+    getDocumentExtras?(
+      id: string,
+    ): Promise<{ financials: Record<string, unknown> | null; phaseData: unknown } | null>;
+  };
 };
 
 /**
@@ -68,6 +73,27 @@ export class ProjectsReadService {
     return {
       success: true,
       project: serializeProject(project as StoredProject),
+    };
+  }
+
+  async getProjectDetail(user: AuthUser, projectId: string): Promise<ProjectGetResult & {
+    project: SerializedProject & {
+      financials?: Record<string, unknown> | null;
+      phaseData?: unknown;
+    };
+  }> {
+    const base = await this.getProjectById(user, projectId);
+    const extras = this.deps.commandRepository?.getDocumentExtras
+      ? await this.deps.commandRepository.getDocumentExtras(projectId.trim())
+      : null;
+
+    return {
+      success: true,
+      project: {
+        ...base.project,
+        financials: extras?.financials ?? null,
+        phaseData: extras?.phaseData ?? null,
+      },
     };
   }
 }

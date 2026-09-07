@@ -23,7 +23,7 @@ export async function GET(request: Request, context: RouteContext) {
   const { id } = await context.params;
 
   try {
-    const result = await buildProjectsReadService().getProjectById(user, id);
+    const result = await buildProjectsReadService().getProjectDetail(user, id);
     return NextResponse.json(result);
   } catch (error) {
     const mapped = projectsReadErrorResponse(error);

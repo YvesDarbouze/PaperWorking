@@ -3,7 +3,7 @@
 import { useState, useRef, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import CollisionModal, { type CollisionDeal } from '@/components/deals/CollisionModal';
-import { checkDealExistsFromBff } from '@/lib/deals/deal-api';
+import { checkDealExistsFromBff, slugifyDealSlug } from '@/lib/deals/deal-api';
 
 export interface AddressSearchProps {
   placeholder?: string;
@@ -56,7 +56,7 @@ export default function AddressSearch({
 
     if (onSelectAddress) onSelectAddress(targetAddress);
 
-    const slug = targetAddress.replace(/\s+/g, '').toLowerCase();
+    const slug = slugifyDealSlug(targetAddress);
 
     // Start loading spinner after 200ms delay to prevent visual flicker
     setLoading(true);

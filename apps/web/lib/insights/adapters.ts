@@ -81,22 +81,20 @@ export interface KpiMetricView {
 }
 
 export function formatMetricValue(value: number | null, suffix = ''): string {
-  if (value === null || Number.isNaN(value)) return '—';
+  if (value === null || Number.isNaN(value)) return 'N/A';
   if (suffix === '%') return `${value.toFixed(1)}%`;
   if (suffix === 'x') return `${value.toFixed(2)}x`;
-  if (Math.abs(value) >= 1000) {
-    return new Intl.NumberFormat('en-US', {
-      style: 'currency',
-      currency: 'USD',
-      maximumFractionDigits: 0,
-    }).format(value);
-  }
-  return `${value.toFixed(2)}${suffix}`;
+  return new Intl.NumberFormat('en-US', {
+    style: 'currency',
+    currency: 'USD',
+    maximumFractionDigits: Math.abs(value) >= 1000 ? 0 : 2,
+  }).format(value);
 }
 
 export function scorecardEntries(
   scorecard: ProjectMetricsResult['scorecard'],
-): Array<{ key: string; label: string; display: string; projected: boolean; missingInputs: boolean }> {
+  scorecardTrust?: Record<string, string>,
+): Array<{ key: string; label: string; display: string; projected: boolean; missingInputs: boolean; unavailable: boolean }> {
   const rows: Array<{
     key: keyof ProjectMetricsResult['scorecard'];
     label: string;
@@ -105,7 +103,7 @@ export function scorecardEntries(
     { key: 'noi', label: 'NOI' },
     { key: 'capRate', label: 'Cap rate', suffix: '%' },
     { key: 'cashOnCash', label: 'Cash-on-cash', suffix: '%' },
-    { key: 'irr', label: 'IRR', suffix: '%' },
+    { key: 'irr', label: 'IRR (requires cash-flow schedule)', suffix: '%' },
     { key: 'cashFlow', label: 'Cash flow' },
     { key: 'dscr', label: 'DSCR', suffix: 'x' },
     { key: 'occupancyRate', label: 'Occupancy', suffix: '%' },
@@ -114,19 +112,27 @@ export function scorecardEntries(
 
   return rows.map(({ key, label, suffix }) => {
     const metric = scorecard[key];
+    const trust = scorecardTrust?.[key];
+    const unavailable = metric.value === null;
+    const projected =
+      !unavailable &&
+      (trust === 'PROJECTED' ||
+        trust === 'PARTIALLY_PROJECTED' ||
+        (trust == null && Boolean(metric.projected)));
     return {
       key,
       label,
       display: formatMetricValue(metric.value, suffix),
-      projected: Boolean(metric.projected),
+      projected,
       missingInputs: Boolean(metric.missingInputs?.length),
+      unavailable,
     };
   });
 }
 
 export function scorecardSourceStatusCopy(sourceStatus?: string): string {
   if (sourceStatus === 'partially_projected') {
-    return 'Uses stored purchase price with projected rent, opex, and debt assumptions until project financial inputs are captured.';
+    return 'Uses stored purchase price. Rent, operating expenses, and debt remain N/A until those inputs are captured.';
   }
   if (sourceStatus === 'projected') {
     return 'Projected from canonical underwriting defaults — not actual operating history.';

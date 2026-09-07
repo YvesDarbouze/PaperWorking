@@ -31,9 +31,13 @@ export type ProjectCreateData = {
   userId: string;
   dealId?: string;
   dealSlug?: string;
+  financials?: Record<string, unknown>;
 };
 
 export type ProjectsCommandRepository = {
   create(data: ProjectCreateData): Promise<ProjectCommandRecord>;
   update(id: string, patch: Record<string, unknown>): Promise<ProjectCommandRecord>;
+  getDocumentExtras?(
+    id: string,
+  ): Promise<{ financials: Record<string, unknown> | null; phaseData: unknown } | null>;
 };

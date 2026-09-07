@@ -1,4 +1,5 @@
 import type { AuthorizationService, AuthUser } from '@paperworking/authz';
+import { dealSlugLookupCandidates } from './deals-command-service.js';
 import type { DealExistsPreview, DealRecord, DealsReadRepository } from './deals-read-repository.js';
 
 export type DealsListResult = {
@@ -52,10 +53,14 @@ export class DealsReadService {
    * Public slug/id probe — only confirms marketplace-published deals (no private leak).
    */
   async dealExists(slugOrId?: string): Promise<DealExistsResult> {
-    const trimmed = slugOrId?.trim();
-    if (!trimmed) return { exists: false, deal: null };
+    const candidates = dealSlugLookupCandidates(slugOrId ?? '');
+    if (candidates.length === 0) return { exists: false, deal: null };
 
-    const deal = await this.deps.repository.findBySlugOrId(trimmed);
+    let deal: DealExistsPreview | null = null;
+    for (const candidate of candidates) {
+      deal = await this.deps.repository.findBySlugOrId(candidate);
+      if (deal) break;
+    }
     if (!deal) return { exists: false, deal: null };
 
     if (deal.visibility === 'marketplace' && deal.status === 'published') {
@@ -63,6 +68,42 @@ export class DealsReadService {
     }
 
     return { exists: false, deal: null };
+  }
+
+  /**
+   * Authenticated slug probe — returns the caller's own deals plus marketplace-published deals.
+   */
+  async dealExistsForUser(user: AuthUser, slugOrId?: string): Promise<DealExistsResult> {
+    this.deps.authz.assertPermission(user, 'deals.read');
+
+    const candidates = dealSlugLookupCandidates(slugOrId ?? '');
+    if (candidates.length === 0) return { exists: false, deal: null };
+
+    let deal: DealRecord | null = null;
+    for (const candidate of candidates) {
+      deal = await this.deps.repository.findBySlug(candidate);
+      if (deal) break;
+    }
+    if (!deal) return { exists: false, deal: null };
+
+    const isOwner = deal.creatorId === user.uid;
+    const isPublicMarketplace =
+      deal.visibility === 'marketplace' && deal.status === 'published';
+
+    if (!isOwner && !isPublicMarketplace) {
+      return { exists: false, deal: null };
+    }
+
+    return {
+      exists: true,
+      deal: {
+        id: deal.id,
+        slug: deal.slug,
+        status: deal.status,
+        visibility: deal.visibility,
+        address: deal.address,
+      },
+    };
   }
 
   /** Public marketplace feed — no auth required. */

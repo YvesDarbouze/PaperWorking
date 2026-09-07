@@ -13,7 +13,18 @@ export type DashboardOverviewLive = {
     capitalDeployed: string;
     portfolioIrr: string;
   };
-  projectSummaries: Array<{ id: string; name: string; status?: string | null }>;
+  projectSummaries: Array<{
+    id: string;
+    name: string;
+    propertyName?: string;
+    status?: string | null;
+    currentPhase?: string;
+    phaseCompletionPct?: number;
+    dealId?: string | null;
+    dealSlug?: string | null;
+    dealAddress?: string | null;
+    address?: string;
+  }>;
   profileCard: {
     displayName: string;
     role: string;
@@ -164,12 +175,31 @@ export const apiProvider = {
 
     if (projectsRes.ok) {
       const body = (await projectsRes.json()) as {
-        projects?: Array<{ id: string; name?: string; title?: string; status?: string | null }>;
+        projects?: Array<{
+          id: string;
+          name?: string;
+          title?: string;
+          propertyName?: string;
+          status?: string | null;
+          currentPhase?: string;
+          phaseCompletionPct?: number;
+          dealId?: string | null;
+          dealSlug?: string | null;
+          dealAddress?: string | null;
+          address?: string | null;
+        }>;
       };
       empty.projectSummaries = (body.projects ?? []).map((p) => ({
         id: p.id,
-        name: p.name || p.title || p.id,
+        name: p.name || p.title || p.propertyName || p.id,
+        propertyName: p.propertyName || p.name || p.title || p.id,
         status: p.status,
+        currentPhase: p.currentPhase,
+        phaseCompletionPct: p.phaseCompletionPct,
+        dealId: p.dealId ?? null,
+        dealSlug: p.dealSlug ?? null,
+        dealAddress: p.dealAddress ?? p.address ?? null,
+        address: p.address ?? undefined,
       }));
     }
 

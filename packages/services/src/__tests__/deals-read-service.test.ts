@@ -105,7 +105,10 @@ function makeRepository(deals: typeof ownDeal[]): DealsReadRepository {
         address: deal.address,
       };
     }),
-    findBySlug: jest.fn(async () => null),
+    findBySlug: jest.fn(async (slug) => {
+      const deal = deals.find((d) => d.slug === slug);
+      return deal ?? null;
+    }),
   };
 }
 
@@ -143,6 +146,24 @@ describe('DealsReadService', () => {
     expect(privateProbe).toEqual({ exists: false, deal: null });
 
     const publicProbe = await service.dealExists('market');
+    expect(publicProbe.exists).toBe(true);
+    expect(publicProbe.deal?.id).toBe('public-mkt');
+  });
+
+  it('dealExistsForUser returns caller-owned private deals', async () => {
+    const service = createDealsReadService({
+      authz: new AuthorizationService(makeStore()),
+      repository: makeRepository([ownDeal, foreignDeal, publicDeal]),
+    });
+
+    const ownProbe = await service.dealExistsForUser(investor, 'own');
+    expect(ownProbe.exists).toBe(true);
+    expect(ownProbe.deal?.id).toBe('own-private');
+
+    const foreignProbe = await service.dealExistsForUser(investor, 'foreign');
+    expect(foreignProbe).toEqual({ exists: false, deal: null });
+
+    const publicProbe = await service.dealExistsForUser(investor, 'market');
     expect(publicProbe.exists).toBe(true);
     expect(publicProbe.deal?.id).toBe('public-mkt');
   });

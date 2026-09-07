@@ -5,6 +5,7 @@ import {
   reilPhaseOrderLabels,
 } from '@/lib/projects/phase-utils';
 import { useProjectWorkspace } from '@/components/projects/ProjectWorkspaceProvider';
+import ProjectFinancialInputsPanel from '@/components/projects/ProjectFinancialInputsPanel';
 
 export default function ProjectOverviewContent() {
   const { project } = useProjectWorkspace();
@@ -17,6 +18,11 @@ export default function ProjectOverviewContent() {
 
   return (
     <div className="space-y-6">
+      <ProjectFinancialInputsPanel
+        projectId={project.id}
+        purchasePrice={project.purchase_price}
+        financials={project.financials}
+      />
       <section className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
         {reilPhaseOrderLabels().map((step) => {
           const active = step.legacy === project.currentPhase;
@@ -67,6 +73,11 @@ export default function ProjectOverviewContent() {
             </span>
           </div>
           <div className="space-y-3">
+            {todos.length === 0 ? (
+              <p className="rounded-xl border border-white/10 bg-black/30 px-4 py-6 text-center text-sm text-white/45">
+                No phase todos yet.
+              </p>
+            ) : null}
             {todos.map((todo) => (
               <div
                 key={todo.id}

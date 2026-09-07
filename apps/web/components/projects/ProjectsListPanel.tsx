@@ -156,12 +156,12 @@ export default function ProjectsListPanel() {
     <div className="min-h-full px-5 pb-28 pt-6 lg:px-8 lg:pt-7">
       <div className="mb-8 flex flex-col items-start justify-between gap-5 md:flex-row md:items-center">
         <div>
-          <h2
+          <h1
             className="text-2xl font-bold tracking-tight"
             style={{ color: 'rgba(253,255,252,0.95)', letterSpacing: '-0.01em' }}
           >
             Projects
-          </h2>
+          </h1>
           <p className="mt-1 text-sm" style={{ color: 'rgba(253,255,252,0.45)' }}>
             {loading
               ? 'Loading projects…'

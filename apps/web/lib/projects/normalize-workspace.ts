@@ -49,12 +49,24 @@ export function normalizeProjectWorkspace(raw: Record<string, unknown>): Project
     phase: currentPhase,
     phase_completion_pct: Number(raw.phase_completion_pct ?? raw.phaseCompletionPct ?? 0),
     purchase_price: Number(raw.purchase_price ?? raw.purchasePrice ?? 0),
-    rehab_costs: Number(raw.rehab_costs ?? raw.rehabCost ?? raw.rehab_cost ?? 0),
+    rehab_costs: Number(
+      raw.rehab_costs ??
+        raw.rehabCost ??
+        raw.rehab_cost ??
+        (raw.financials && typeof raw.financials === 'object' && !Array.isArray(raw.financials)
+          ? (raw.financials as Record<string, unknown>).projectedRehabCost
+          : undefined) ??
+        0,
+    ),
     exit_strategy: String(raw.exit_strategy ?? raw.exitStrategy ?? '—'),
     entity_type: String(raw.entity_type ?? raw.entityType ?? '—'),
     storage_used_bytes: Number(raw.storage_used_bytes ?? 0),
     storageQuotaBytes: Number(raw.storageQuotaBytes ?? 1024 * 1024 * 1024),
     todos: Array.isArray(raw.todos) ? (raw.todos as ProjectWorkspace['todos']) : [],
     documents: Array.isArray(raw.documents) ? (raw.documents as ProjectWorkspace['documents']) : [],
+    financials:
+      raw.financials && typeof raw.financials === 'object' && !Array.isArray(raw.financials)
+        ? (raw.financials as Record<string, unknown>)
+        : null,
   };
 }

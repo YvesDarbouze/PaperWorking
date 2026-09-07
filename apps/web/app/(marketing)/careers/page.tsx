@@ -1,7 +1,7 @@
 import type { Metadata } from 'next';
 
 export const metadata: Metadata = {
-  title: 'Careers | PaperWorking',
+  title: 'Careers',
   description:
     'Join the team building the deal-intelligence platform for modern real estate investors.',
   robots: { index: false, follow: false },

@@ -1,8 +1,11 @@
 export type ProjectKpiInputRow = {
   id: string;
   purchasePrice?: number | null;
+  squareFootage?: number | null;
   currentPhase?: number | null;
   phaseData?: unknown;
+  /** Top-level project.financials — primary user input store per projectSchema. */
+  financials?: Record<string, unknown> | null;
 };
 
 export type RecentTransactionRow = {

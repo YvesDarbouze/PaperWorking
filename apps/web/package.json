@@ -24,6 +24,7 @@
     "@paperworking/shared": "file:../../packages/shared",
     "@paperworking/validation": "file:../../packages/validation",
     "firebase": "^11.10.0",
+    "firebase-admin": "^13.4.0",
     "next": "^15.3.0",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",

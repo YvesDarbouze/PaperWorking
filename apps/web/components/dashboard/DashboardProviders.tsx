@@ -1,7 +1,12 @@
 'use client';
 
+import { AuthProvider } from '@/context/AuthContext';
 import DashboardShell from '@/components/dashboard/DashboardShell';
 
 export default function DashboardProviders({ children }: { children: React.ReactNode }) {
-  return <DashboardShell>{children}</DashboardShell>;
+  return (
+    <AuthProvider>
+      <DashboardShell>{children}</DashboardShell>
+    </AuthProvider>
+  );
 }

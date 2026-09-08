@@ -19,8 +19,8 @@ export default function DashboardPageHeader({
           </h1>
           <span className="mt-0.5 flex items-center gap-1">
             <span className="relative flex h-2 w-2">
-              <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-60" />
-              <span className="relative inline-flex h-2 w-2 rounded-full bg-emerald-400" />
+              <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-[var(--status-live)] opacity-60" />
+              <span className="relative inline-flex h-2 w-2 rounded-full bg-[var(--status-live)]" />
             </span>
             <span className="text-[10px] font-bold uppercase tracking-[0.08em] text-white/45">
               Live

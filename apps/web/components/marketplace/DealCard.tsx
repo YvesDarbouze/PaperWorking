@@ -33,6 +33,16 @@ export interface DealCardData {
   creatorName?: string;
   projectId?: string | null;
   projectName?: string | null;
+  targetIrr?: number;
+  equityMultiple?: number;
+  minInvestment?: number;
+  holdPeriod?: string | number;
+  creatorId?: string;
+  isVerifiedOperator?: boolean;
+  imageUrl?: string;
+  lat?: number;
+  lng?: number;
+  createdAt?: string;
 }
 
 export default function DealCard({

@@ -24,6 +24,7 @@ function SidebarLink({
   return (
     <Link
       href={item.href}
+      data-testid={`sidebar-link-${item.id}`}
       onClick={(event) => onNavigate?.(item, event)}
       className="group relative flex items-center gap-2.5 rounded-lg px-3 py-2.5 transition-all duration-150"
       style={{
@@ -45,10 +46,9 @@ function SidebarLink({
 export default function DashboardSidebar() {
   const pathname = usePathname();
   const router = useRouter();
-  const { navContext, profile } = useAuth();
+  const { navContext } = useAuth();
   const primary = resolvePrimaryNav(navContext);
   const account = resolveAccountNav(navContext);
-  const showAdminLink = profile?.isAdmin === true;
 
   function handleNavigate(item: NavItem, event: MouseEvent) {
     if (!item.isLocked) return;
@@ -57,12 +57,12 @@ export default function DashboardSidebar() {
       return;
     }
     event.preventDefault();
-    router.push('/dashboard/settings/billing?paywall=deals');
+    router.push('/dashboard/settings?section=billing&paywall=deals');
   }
 
   return (
     <aside
-      className="hidden h-screen w-[240px] shrink-0 flex-col border-r border-white/6 bg-[#121014] md:flex"
+      className="hidden h-screen w-[240px] shrink-0 flex-col border-r border-white/6 bg-[var(--bg-surface)] md:flex"
     >
       <div className="border-b border-white/6 px-5 py-5">
         <Logo href="/dashboard" tone="dashboard" theme="dark" size={22} />
@@ -94,33 +94,6 @@ export default function DashboardSidebar() {
             isActive={isNavItemActive(pathname || '', item.href)}
           />
         ))}
-
-        {showAdminLink ? (
-          <>
-            <p className="px-3 pb-2 pt-5 text-[11px] font-semibold uppercase tracking-[0.1em] text-white/45">
-              Platform
-            </p>
-            <Link
-              href="/admin"
-              className="group relative flex items-center gap-2.5 rounded-lg px-3 py-2.5 transition-all duration-150"
-              style={{
-                background: pathname?.startsWith('/admin')
-                  ? 'rgba(69, 73, 85, 0.25)'
-                  : 'transparent',
-                color: pathname?.startsWith('/admin')
-                  ? 'rgba(253,255,252,0.92)'
-                  : 'rgba(253,255,252,0.65)',
-                border: pathname?.startsWith('/admin')
-                  ? '1px solid rgba(255,255,255,0.10)'
-                  : '1px solid transparent',
-                textDecoration: 'none',
-              }}
-            >
-              <span className="material-symbols-outlined text-[20px]">shield</span>
-              <span className="flex-1 truncate text-sm font-medium">Admin Panel</span>
-            </Link>
-          </>
-        ) : null}
       </nav>
     </aside>
   );

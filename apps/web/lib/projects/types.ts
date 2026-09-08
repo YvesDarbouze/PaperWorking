@@ -35,6 +35,7 @@ export interface ProjectSummary {
   dealId?: string | null;
   dealSlug?: string | null;
   dealAddress?: string | null;
+  underwriting?: import('@paperworking/validation').UnderwritingInputs | null;
 }
 
 export interface ProjectWorkspace extends ProjectSummary {

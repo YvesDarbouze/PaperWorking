@@ -12,9 +12,9 @@ export interface MetricDefinition {
 export const PLAYBOOK_CATEGORIES: { id: MetricCategory; label: string; icon: string }[] = [
   { id: 'financial', label: 'Financial Performance', icon: 'trending_up' },
   { id: 'operational', label: 'Operational Efficiency', icon: 'settings' },
-  { id: 'portfolio', label: 'Asset & Portfolio', icon: 'bar_chart' },
+  { id: 'portfolio', label: 'Asset and Portfolio Management', icon: 'bar_chart' },
   { id: 'marketing', label: 'Marketing & Sales', icon: 'check_circle' },
-  { id: 'risk', label: 'Risk & Compliance', icon: 'shield' },
+  { id: 'risk', label: 'Risk Management and Compliance Metrics', icon: 'shield' },
 ];
 
 export const PLAYBOOK_METRICS: MetricDefinition[] = [

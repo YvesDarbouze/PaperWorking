@@ -10,12 +10,14 @@ interface ProjectWorkspaceContextValue {
   project: ProjectWorkspace | null;
   loading: boolean;
   error: string | null;
+  updateProject: (next: ProjectWorkspace) => void;
 }
 
 const ProjectWorkspaceContext = createContext<ProjectWorkspaceContextValue>({
   project: null,
   loading: true,
   error: null,
+  updateProject: () => {},
 });
 
 export function useProjectWorkspace() {
@@ -66,7 +68,12 @@ export default function ProjectWorkspaceProvider({
   }, [projectId]);
 
   const value = useMemo(
-    () => ({ project, loading, error }),
+    () => ({
+      project,
+      loading,
+      error,
+      updateProject: (next: ProjectWorkspace) => setProject(next),
+    }),
     [project, loading, error],
   );
 

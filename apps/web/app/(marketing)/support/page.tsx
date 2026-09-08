@@ -1,4 +1,5 @@
 import type { Metadata } from 'next';
+import ChatbotWidget from '@/components/marketing/ChatbotWidget';
 import SupportCenter from '@/components/marketing/SupportCenter';
 
 export const metadata: Metadata = {
@@ -8,5 +9,10 @@ export const metadata: Metadata = {
 };
 
 export default function SupportPage() {
-  return <SupportCenter />;
+  return (
+    <>
+      <SupportCenter />
+      <ChatbotWidget />
+    </>
+  );
 }

@@ -2,11 +2,11 @@
 
 import Link from 'next/link';
 import { useEffect, useRef, useState } from 'react';
-import { resolveAppHomeRoute } from '@/lib/auth/post-auth-redirect';
+import { Button } from '@/components/ui/Button';
 
-const SETTINGS_ITEMS = [
-  { href: '/dashboard/settings/profile', icon: 'account_circle', label: 'Profile' },
-  { href: '/dashboard/settings/billing', icon: 'payments', label: 'Billing' },
+const MENU_ITEMS = [
+  { href: '/dashboard/profile', icon: 'account_circle', label: 'Profile' },
+  { href: '/dashboard/settings?section=billing', icon: 'payments', label: 'Billing' },
   { href: '/dashboard/team', icon: 'group', label: 'Team' },
   { href: '/dashboard/settings', icon: 'settings', label: 'Settings' },
 ] as const;
@@ -40,45 +40,66 @@ export default function UserAccountMenu({
   className?: string;
 }) {
   const [open, setOpen] = useState(false);
+  const [focusedIndex, setFocusedIndex] = useState(-1);
+  const triggerRef = useRef<HTMLButtonElement>(null);
   const rootRef = useRef<HTMLDivElement>(null);
+  const itemRefs = useRef<(HTMLAnchorElement | HTMLButtonElement | null)[]>([]);
+
   const name = displayName.trim() || 'User';
   const initial = name.charAt(0).toUpperCase();
   const roleText = roleLabel(accountType, role);
   const avatarBg = avatarHue(name);
-  const homeHref = resolveAppHomeRoute(accountType);
-  const menuItems = [
-    { href: homeHref, icon: 'dashboard', label: 'Dashboard' },
-    ...SETTINGS_ITEMS,
-  ] as const;
 
   useEffect(() => {
     if (!open) return;
+    setFocusedIndex(0);
+    const timer = setTimeout(() => {
+      itemRefs.current[0]?.focus();
+    }, 10);
+
     const onOut = (e: MouseEvent) => {
       if (rootRef.current && !rootRef.current.contains(e.target as Node)) setOpen(false);
     };
-    const onEsc = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') setOpen(false);
-    };
     document.addEventListener('mousedown', onOut);
-    document.addEventListener('keydown', onEsc);
     return () => {
+      clearTimeout(timer);
       document.removeEventListener('mousedown', onOut);
-      document.removeEventListener('keydown', onEsc);
     };
   }, [open]);
 
+  const totalItems = MENU_ITEMS.length + 1; // items + sign out
+
+  const handleKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === 'Escape') {
+      e.preventDefault();
+      setOpen(false);
+      triggerRef.current?.focus();
+    } else if (e.key === 'ArrowDown') {
+      e.preventDefault();
+      const next = (focusedIndex + 1) % totalItems;
+      setFocusedIndex(next);
+      itemRefs.current[next]?.focus();
+    } else if (e.key === 'ArrowUp') {
+      e.preventDefault();
+      const prev = (focusedIndex - 1 + totalItems) % totalItems;
+      setFocusedIndex(prev);
+      itemRefs.current[prev]?.focus();
+    }
+  };
+
   return (
-    <div ref={rootRef} className={`relative ${className}`}>
+    <div ref={rootRef} className={`relative ${className}`} onKeyDown={handleKeyDown}>
       <button
+        ref={triggerRef}
         type="button"
         onClick={() => setOpen((v) => !v)}
         aria-expanded={open}
         aria-haspopup="menu"
         aria-label={`Account menu for ${name}`}
-        className="flex items-center gap-2.5 rounded-2xl border border-[color:var(--color-primary)] bg-[#121014]/90 py-1.5 pl-1.5 pr-3 transition-colors hover:bg-white/[0.04]"
+        className="flex items-center gap-2 rounded-xl border border-[var(--border-subtle)] bg-transparent px-2.5 py-1.5 text-xs font-semibold text-[var(--text-primary)] transition-colors hover:border-white/20 hover:bg-white/[0.06] hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent)] focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--bg-base)]"
       >
         <span
-          className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full text-sm font-bold text-white"
+          className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full text-xs font-bold text-white"
           style={{ backgroundColor: avatarBg }}
           aria-hidden
         >
@@ -88,13 +109,14 @@ export default function UserAccountMenu({
           <span className="block truncate text-[11px] font-bold uppercase leading-tight tracking-[0.04em] text-white">
             {name}
           </span>
-          <span className="mt-0.5 block text-[9px] font-bold uppercase tracking-[0.12em] text-[color:var(--color-primary)]">
+          <span className="mt-0.5 block text-[9px] font-bold uppercase tracking-[0.12em] text-[var(--accent)]">
             {roleText}
           </span>
         </span>
         <span
-          className="material-symbols-outlined hidden text-[18px] text-white/40 sm:inline"
+          className="material-symbols-outlined hidden text-[16px] text-white/50 transition-transform sm:inline"
           style={{ transform: open ? 'rotate(180deg)' : undefined }}
+          aria-hidden
         >
           expand_more
         </span>
@@ -104,18 +126,25 @@ export default function UserAccountMenu({
         <div
           role="menu"
           aria-label="User menu"
-          className="absolute right-0 top-full z-50 mt-2 w-[220px] overflow-hidden rounded-2xl border border-white/10 bg-[#161318] py-2 shadow-[0_20px_50px_rgba(0,0,0,0.55)]"
+          className="absolute right-0 top-full z-50 mt-2 w-[220px] overflow-hidden rounded-xl border border-[var(--border-subtle)] bg-[var(--bg-elevated)] py-1.5 shadow-[0_20px_50px_rgba(0,0,0,0.55)]"
         >
-          <div className="px-1.5 pb-1.5">
-            {menuItems.map((item) => (
+          <div className="px-1 pb-1">
+            {MENU_ITEMS.map((item, idx) => (
               <Link
                 key={item.href}
+                ref={(el) => {
+                  itemRefs.current[idx] = el;
+                }}
                 href={item.href}
                 role="menuitem"
-                onClick={() => setOpen(false)}
-                className="flex items-center gap-3 rounded-xl px-3.5 py-2.5 text-[13.5px] font-medium text-white/70 no-underline transition-colors hover:bg-white/[0.05] hover:text-white"
+                tabIndex={focusedIndex === idx ? 0 : -1}
+                onClick={() => {
+                  setOpen(false);
+                  triggerRef.current?.focus();
+                }}
+                className="flex items-center gap-2.5 rounded-lg px-3 py-2 text-xs font-medium text-white/75 no-underline transition-colors hover:bg-white/[0.06] hover:text-white focus:bg-white/[0.08] focus:outline-none"
               >
-                <span className="material-symbols-outlined text-[18px] text-white/45">
+                <span className="material-symbols-outlined text-[16px] text-white/45">
                   {item.icon}
                 </span>
                 {item.label}
@@ -123,19 +152,24 @@ export default function UserAccountMenu({
             ))}
           </div>
 
-          <div className="px-3 pb-2 pt-1">
-            <button
+          <div className="border-t border-white/8 px-2 pt-1.5 pb-0.5">
+            <Button
+              ref={(el) => {
+                itemRefs.current[MENU_ITEMS.length] = el as HTMLButtonElement | null;
+              }}
               type="button"
-              role="menuitem"
+              roleVariant="default"
+              variant="secondary"
+              size="sm"
+              className="w-full justify-center text-xs"
               onClick={() => {
                 setOpen(false);
                 void onSignOut();
               }}
-              className="flex w-full items-center justify-center gap-2 rounded-xl bg-[color:var(--color-primary)] px-4 py-2.5 text-[13.5px] font-semibold text-white transition-opacity hover:opacity-90"
+              icon={<span className="material-symbols-outlined text-[15px]">logout</span>}
             >
-              <span className="material-symbols-outlined text-[18px]">logout</span>
               Sign out
-            </button>
+            </Button>
           </div>
         </div>
       ) : null}

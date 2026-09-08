@@ -1,3 +1,4 @@
+import ChatbotWidget from '@/components/marketing/ChatbotWidget';
 import LandingBelowFold from '@/components/marketing/LandingBelowFold';
 import LandingHero from '@/components/marketing/LandingHero';
 import DealCalculatorSection from '@/sections/DealCalculatorSection';
@@ -6,7 +7,7 @@ import HowItWorksHeader from '@/sections/HowItWorksHeader';
 import PhaseEngine from '@/sections/PhaseEngine';
 import PhaseWalkthrough from '@/sections/PhaseWalkthrough';
 
-/** Marketing landing — Yves UI sections; chatbot comes from AppProviders. */
+/** Marketing landing — v0 composition updated with Marketplace & How It Works flows. */
 export default function RootPage() {
   return (
     <>
@@ -17,6 +18,7 @@ export default function RootPage() {
       <PhaseEngine />
       <PhaseWalkthrough />
       <LandingBelowFold />
+      <ChatbotWidget />
     </>
   );
 }

@@ -348,3 +348,8 @@ export function useAuth(): AuthContextValue {
   if (!context) throw new Error('useAuth must be used within AuthProvider');
   return context;
 }
+
+/** Optional auth for additive widgets (assistant) that may render outside the provider. */
+export function useOptionalAuth(): AuthContextValue | null {
+  return useContext(AuthContext);
+}

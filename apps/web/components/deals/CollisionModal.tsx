@@ -131,6 +131,7 @@ export default function CollisionModal({
   return (
     <div
       role="dialog"
+      data-testid="collision-modal"
       aria-modal="true"
       aria-labelledby="collision-title"
       className="fixed inset-0 z-40 flex items-start justify-center bg-black/60 p-4 backdrop-blur-sm"

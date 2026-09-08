@@ -13,15 +13,17 @@
     "test": "node --experimental-vm-modules ../../node_modules/jest/bin/jest.js"
   },
   "dependencies": {
-    "firebase": "^11.10.0",
+    "@googlemaps/js-api-loader": "^1.16.10",
     "@opentelemetry/api": "^1.9.1",
     "@paperworking/api": "file:../api",
     "@paperworking/authz": "file:../../packages/authz",
     "@paperworking/database": "file:../../packages/database",
+    "@paperworking/financial-engine": "file:../../packages/financial-engine",
     "@paperworking/identity": "file:../../packages/identity",
     "@paperworking/services": "file:../../packages/services",
-    "@paperworking/financial-engine": "file:../../packages/financial-engine",
     "@paperworking/shared": "file:../../packages/shared",
+    "@paperworking/validation": "file:../../packages/validation",
+    "firebase": "^11.10.0",
     "next": "^15.3.0",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
@@ -29,6 +31,7 @@
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4",
+    "@types/google.maps": "^3.66.2",
     "@types/react": "^19",
     "@types/react-dom": "^19",
     "tailwindcss": "^4",

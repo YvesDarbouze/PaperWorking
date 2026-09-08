@@ -1,3 +1,5 @@
+import type { WaterfallResult } from './waterfall-engine.js';
+
 /**
  * Structured metric result types for the REI Metrics Engine.
  *
@@ -106,7 +108,37 @@ export type ProjectMetricsResult = {
     capitalGainLoss: number | null;
     holdingPeriodMonths: number | null;
     annualDepreciation: number | null;
+    /** Yves underwriting overlays — optional until engines populate them. */
+    totalCostBasis?: number | null;
+    estimatedARV?: number | null;
+    loanAmount?: number | null;
+    totalCashInvested?: number | null;
+    unleveredIrr?: number | null;
+    leveredIrr?: number | null;
+    npv?: number | null;
+    debtYield?: number | null;
+    breakEvenOccupancy?: number | null;
+    profitMarginOnCost?: number | null;
+    exitValuation?: number | null;
+    ltc?: number | null;
+    maxSupportableLoan?: number | null;
+    interestRate?: number | null;
+    balloonBalance?: number | null;
+    lpEquity?: number | null;
+    gpEquity?: number | null;
+    lpEquityPct?: number | null;
+    gpEquityPct?: number | null;
+    preferredReturn?: number | null;
+    annualRentGrowth?: number | null;
+    netSalesProceeds?: number | null;
+    investorProfitAtExit?: number | null;
+    lpIrr?: number | null;
+    gpIrr?: number | null;
+    lpEquityMultiple?: number | null;
+    gpEquityMultiple?: number | null;
+    waterfall?: WaterfallResult | null;
   };
+  sensitivity?: SensitivityResults;
 };
 
 /**
@@ -218,6 +250,44 @@ export const CANONICAL_EXPENSE_TAGS = [
   'HOA',
   'capex',
 ] as const;
+
+export interface ExitCapSensitivityPoint {
+  capRatePct: number;
+  deltaBps: number;
+  exitValuation: number;
+  unleveredIrr: number | null;
+  leveredIrr: number | null;
+}
+
+export interface RentGrowthSensitivityPoint {
+  rentShockPct: number;
+  annualGrossRent: number;
+  noi: number;
+  cashFlow: number;
+  dscr: number | null;
+}
+
+export interface VacancyStressPoint {
+  vacancyPct: number;
+  effectiveGrossIncome: number;
+  noi: number;
+  cashFlow: number;
+  dscr: number | null;
+}
+
+export interface HoldPeriodSensitivityPoint {
+  holdPeriodYears: number;
+  unleveredIrr: number | null;
+  leveredIrr: number | null;
+  equityMultiple: number | null;
+}
+
+export interface SensitivityResults {
+  exitCapSensitivity: ExitCapSensitivityPoint[];
+  rentGrowthSensitivity: RentGrowthSensitivityPoint[];
+  vacancyStressTest: VacancyStressPoint[];
+  holdPeriodSensitivity: HoldPeriodSensitivityPoint[];
+}
 
 export type CanonicalExpenseTag = typeof CANONICAL_EXPENSE_TAGS[number];
 export type ExpenseTag = CanonicalExpenseTag;

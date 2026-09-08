@@ -1,106 +1,30 @@
 'use client';
 
 import Link from 'next/link';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import DashboardPageHeader from '@/components/dashboard/DashboardPageHeader';
-import { loadProfilePreview } from '@/lib/data';
-
-type ProfilePreview = {
-  name: string;
-  email: string;
-  phone: string;
-  organization: string;
-  role: string;
-  mfaEnabled: boolean;
-  activity: Array<{ id: string; title: string; time: string }>;
-};
-
-const EMPTY_PROFILE: ProfilePreview = {
-  name: '',
-  email: '',
-  phone: '',
-  organization: '',
-  role: '—',
-  mfaEnabled: false,
-  activity: [],
-};
+import { PROFILE_PREVIEW } from '@/lib/dashboard/shell-seed';
 
 export default function ProfilePreviewPanel() {
-  const [profile, setProfile] = useState<ProfilePreview>(EMPTY_PROFILE);
-  const [name, setName] = useState('');
-  const [phone, setPhone] = useState('');
-  const [org, setOrg] = useState('');
+  const [name, setName] = useState<string>(PROFILE_PREVIEW.name);
+  const [phone, setPhone] = useState<string>(PROFILE_PREVIEW.phone);
+  const [org, setOrg] = useState<string>(PROFILE_PREVIEW.organization);
   const [saved, setSaved] = useState(false);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
 
-  useEffect(() => {
-    let cancelled = false;
-    async function load() {
-      setLoading(true);
-      setError(null);
-      try {
-        const data = await loadProfilePreview();
-        if (cancelled) return;
-        const next: ProfilePreview = {
-          name: String(data.name ?? ''),
-          email: String(data.email ?? ''),
-          phone: String(data.phone ?? ''),
-          organization: String(data.organization ?? ''),
-          role: String(data.role ?? '—'),
-          mfaEnabled: Boolean(data.mfaEnabled),
-          activity: Array.isArray(data.activity) ? data.activity : [],
-        };
-        setProfile(next);
-        setName(next.name);
-        setPhone(next.phone);
-        setOrg(next.organization);
-      } catch (loadError) {
-        if (!cancelled) {
-          setError(loadError instanceof Error ? loadError.message : 'Failed to load profile');
-        }
-      } finally {
-        if (!cancelled) setLoading(false);
-      }
-    }
-    load();
-    return () => {
-      cancelled = true;
-    };
-  }, []);
-
-  const initials = (name || '?')
+  const initials = name
     .split(/\s+/)
     .slice(0, 2)
     .map((part) => part[0])
     .join('')
     .toUpperCase();
 
-  if (loading) {
-    return (
-      <div className="w-full min-w-0 px-4 py-5 text-sm text-white/45 sm:px-5 lg:px-6 xl:px-8">
-        Loading profile…
-      </div>
-    );
-  }
-
-  if (error) {
-    return (
-      <div className="w-full min-w-0 px-4 py-5 sm:px-5 lg:px-6 xl:px-8">
-        <p className="rounded-2xl border border-red-400/20 bg-red-950/20 p-6 text-sm text-red-100">
-          {error}
-        </p>
-      </div>
-    );
-  }
-
   return (
-    <div className="w-full min-w-0 space-y-6 px-4 py-5 sm:px-5 sm:py-6 lg:px-6 lg:py-7 xl:px-8">
+    <div className="mx-auto max-w-[1100px] space-y-6 px-5 py-6 lg:px-8 lg:py-7">
       <Link href="/dashboard/settings" className="text-sm text-[#7A9EAA] no-underline hover:underline">
         ← Settings
       </Link>
 
-      <DashboardPageHeader title="Profile" subtitle={`${profile.role} · ${profile.email || '—'}`} />
+      <DashboardPageHeader title="Profile" subtitle={`${PROFILE_PREVIEW.role} · ${PROFILE_PREVIEW.email}`} />
 
       <section className="rounded-2xl border border-white/10 bg-[#121014]/90 p-6 shadow-[0_8px_32px_rgba(0,0,0,0.12)]">
         <div className="flex flex-col gap-5 sm:flex-row sm:items-center">
@@ -108,13 +32,13 @@ export default function ProfilePreviewPanel() {
             <div className="flex h-20 w-20 items-center justify-center rounded-full bg-[#454955] text-xl font-bold text-white">
               {initials}
             </div>
-            <span className="absolute bottom-1 right-1 h-3.5 w-3.5 rounded-full bg-emerald-400 ring-2 ring-[#121014]" />
+            <span className="absolute bottom-1 right-1 h-3.5 w-3.5 rounded-full bg-[var(--status-live)] ring-2 ring-[#121014]" />
           </div>
           <div>
-            <h2 className="text-xl font-semibold text-[#fdfffc]">{name || '—'}</h2>
-            <p className="text-sm text-white/55">{org || '—'}</p>
+            <h2 className="text-xl font-semibold text-[#fdfffc]">{name}</h2>
+            <p className="text-sm text-white/55">{org}</p>
             <p className="mt-1 text-[10px] font-bold uppercase tracking-wider text-[#627C85]">
-              {profile.role}
+              {PROFILE_PREVIEW.role}
             </p>
           </div>
         </div>
@@ -136,7 +60,7 @@ export default function ProfilePreviewPanel() {
           <label className="block text-sm">
             <span className="mb-1.5 block text-white/45">Email</span>
             <input
-              value={profile.email}
+              value={PROFILE_PREVIEW.email}
               readOnly
               className="w-full rounded-xl border border-white/10 bg-white/[0.02] px-3 py-2.5 text-white/60"
             />
@@ -163,7 +87,7 @@ export default function ProfilePreviewPanel() {
           onClick={() => setSaved(true)}
           className="mt-5 rounded-lg bg-[#454955] px-4 py-2 text-[12px] font-semibold text-white"
         >
-          {saved ? 'Saved' : 'Save changes'}
+          {saved ? 'Saved (seed preview)' : 'Save changes'}
         </button>
       </section>
 
@@ -177,7 +101,7 @@ export default function ProfilePreviewPanel() {
               <div>
                 <p className="font-medium text-white/85">Two-factor authentication</p>
                 <p className="text-xs text-white/45">
-                  {profile.mfaEnabled ? 'Enabled' : 'Not enabled'}
+                  {PROFILE_PREVIEW.mfaEnabled ? 'Enabled' : 'Not enabled (mock)'}
                 </p>
               </div>
               <button
@@ -190,7 +114,7 @@ export default function ProfilePreviewPanel() {
             <div className="flex items-center justify-between rounded-xl border border-white/8 px-3 py-3">
               <div>
                 <p className="font-medium text-white/85">Password</p>
-                <p className="text-xs text-white/45">Managed via Firebase Auth</p>
+                <p className="text-xs text-white/45">Last changed · seed preview</p>
               </div>
               <button
                 type="button"
@@ -206,18 +130,14 @@ export default function ProfilePreviewPanel() {
           <h3 className="mb-3 text-[11px] font-bold uppercase tracking-[0.08em] text-white/45">
             Recent activity
           </h3>
-          {profile.activity.length === 0 ? (
-            <p className="text-sm text-white/45">No recent activity</p>
-          ) : (
-            <ul className="space-y-3">
-              {profile.activity.map((item) => (
-                <li key={item.id} className="border-b border-white/6 pb-2 last:border-0">
-                  <p className="text-sm text-white/85">{item.title}</p>
-                  <p className="text-[11px] text-white/40">{item.time}</p>
-                </li>
-              ))}
-            </ul>
-          )}
+          <ul className="space-y-3">
+            {PROFILE_PREVIEW.activity.map((item) => (
+              <li key={item.id} className="border-b border-white/6 pb-2 last:border-0">
+                <p className="text-sm text-white/85">{item.title}</p>
+                <p className="text-[11px] text-white/40">{item.time}</p>
+              </li>
+            ))}
+          </ul>
         </article>
       </section>
 

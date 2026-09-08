@@ -102,7 +102,7 @@ export default function VendorSideSheet({
               <p className="text-sm font-medium text-white/55">{vendor.type}</p>
               <div className="mt-2 flex flex-wrap gap-1.5">
                 {vendor.verified ? (
-                  <span className="inline-flex items-center gap-1 rounded-full border border-emerald-400/20 bg-emerald-400/10 px-2 py-0.5 text-[9px] font-bold uppercase text-emerald-300">
+                  <span className="inline-flex items-center gap-1 rounded-full border border-[var(--status-live)]/30 bg-[var(--accent-subtle)] px-2 py-0.5 text-[9px] font-bold uppercase text-[var(--status-live)]">
                     <span className="material-symbols-outlined text-[12px]">verified</span>
                     Verified
                   </span>
@@ -133,7 +133,7 @@ export default function VendorSideSheet({
               <p className="mt-1 text-[9px] uppercase tracking-wider text-white/45">Starting Fee</p>
             </div>
             <div className="rounded-lg border border-white/[0.04] bg-white/[0.02] p-3 text-center">
-              <p className="text-[10px] font-bold uppercase text-emerald-300">{availabilityLabel}</p>
+              <p className="text-[10px] font-bold uppercase text-[var(--status-live)]">{availabilityLabel}</p>
               <p className="mt-1 text-[9px] uppercase tracking-wider text-white/45">Availability</p>
             </div>
           </div>

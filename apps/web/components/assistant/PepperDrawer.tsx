@@ -2,13 +2,15 @@
 
 import React, { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
+import { usePathname } from 'next/navigation';
 import { useAssistant } from './AssistantProvider';
 import { AVA_CONFIG } from '@/lib/assistant/config';
 import { HIGH_INTENT_CHIPS, isScrolledToBottom, type PromptChip } from '@/lib/assistant/lifecycle-state-machine';
 import { determineEscalationOptions, type EscalationOption } from '@/lib/assistant/escalation';
 import { useOptionalAuth } from '@/context/AuthContext';
 
-export default function AvaDrawer() {
+export default function PepperDrawer() {
+  const pathname = usePathname() || '/';
   const {
     isDrawerOpen,
     closeDrawer,
@@ -38,6 +40,7 @@ export default function AvaDrawer() {
   const [feedbackDesc, setFeedbackDesc] = useState('');
   const [feedbackStatus, setFeedbackStatus] = useState<string | null>(null);
   const [feedbackUpsellMsg, setFeedbackUpsellMsg] = useState<string | null>(null);
+  const [consentDiagnostics, setConsentDiagnostics] = useState(false);
 
   // Callback form state
   const [cbName, setCbName] = useState('');
@@ -116,10 +119,15 @@ export default function AvaDrawer() {
     setFeedbackStatus('Submitting...');
     setFeedbackUpsellMsg(null);
     try {
+      const shouldAttach = feedbackKind === 'bug' && consentDiagnostics;
       const res = await submitFeedback({
         kind: feedbackKind,
         title: feedbackTitle,
         description: feedbackDesc,
+        route: shouldAttach ? pathname : (feedbackKind !== 'bug' ? pathname : undefined),
+        errorContext: shouldAttach
+          ? `UserAgent: ${typeof navigator !== 'undefined' ? navigator.userAgent : 'browser'}; Screen: ${typeof window !== 'undefined' ? `${window.innerWidth}x${window.innerHeight}` : 'unknown'}`
+          : undefined,
       });
 
       if (res.upsell) {
@@ -131,6 +139,7 @@ export default function AvaDrawer() {
       setFeedbackStatus('Feedback sent successfully! A receipt has been emailed to you.');
       setFeedbackTitle('');
       setFeedbackDesc('');
+      setConsentDiagnostics(false);
     } catch {
       setFeedbackStatus('Unable to submit feedback. Please try again or email hi@paperworking.co.');
     }
@@ -481,6 +490,26 @@ export default function AvaDrawer() {
               />
             </div>
 
+            {feedbackKind === 'bug' && (
+              <div className="rounded-lg border border-white/10 bg-[#16141a] p-3 text-xs" data-testid="consent-diagnostics-container">
+                <label className="flex items-start gap-2.5 cursor-pointer select-none">
+                  <input
+                    type="checkbox"
+                    checked={consentDiagnostics}
+                    onChange={(e) => setConsentDiagnostics(e.target.checked)}
+                    data-testid="consent-diagnostics-checkbox"
+                    className="mt-0.5 rounded border-white/20 bg-white/10 text-[color:var(--color-primary)] focus:ring-0"
+                  />
+                  <div className="text-white/80">
+                    <span className="font-semibold text-white">Include current page URL and system diagnostics</span>
+                    <p className="text-[11px] text-white/50 mt-0.5 leading-normal">
+                      With your consent, attaches route ({pathname}) and client environment to help engineers reproduce.
+                    </p>
+                  </div>
+                </label>
+              </div>
+            )}
+
             {feedbackUpsellMsg && (
               <div
                 data-testid="feedback-upsell-banner"
@@ -644,3 +673,5 @@ export default function AvaDrawer() {
     </div>
   );
 }
+
+export { PepperDrawer as AvaDrawer };

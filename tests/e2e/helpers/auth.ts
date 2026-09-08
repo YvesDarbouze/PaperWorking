@@ -14,10 +14,11 @@ function mockAuthEnabled(): boolean {
 
 export async function createDevSession(
   request: APIRequestContext,
-  accountType: 'investor' | 'admin' | 'vendor' = 'investor',
+  accountType: 'investor' | 'admin' | 'vendor' | 'investment_team' = 'investor',
 ): Promise<void> {
+  const effectiveType = accountType === 'investment_team' ? 'admin' : accountType;
   const response = await request.post('/api/auth/session', {
-    data: { idToken: DEV_MOCK_SESSION_TOKEN, accountType },
+    data: { idToken: DEV_MOCK_SESSION_TOKEN, accountType: effectiveType },
     headers: {
       'Content-Type': 'application/json',
       Origin: process.env.E2E_BASE_URL ?? 'http://127.0.0.1:3002',
@@ -55,7 +56,7 @@ export async function loginViaForm(
  */
 export async function authenticateContext(
   context: BrowserContext,
-  accountType: 'investor' | 'admin' | 'vendor' = 'investor',
+  accountType: 'investor' | 'admin' | 'vendor' | 'investment_team' = 'investor',
 ): Promise<void> {
   if (mockAuthEnabled()) {
     await createDevSession(context.request, accountType);
@@ -72,7 +73,7 @@ export async function authenticateContext(
 
 export async function createDevSessionForContext(
   context: BrowserContext,
-  accountType: 'investor' | 'admin' | 'vendor' = 'investor',
+  accountType: 'investor' | 'admin' | 'vendor' | 'investment_team' = 'investor',
 ): Promise<void> {
   await authenticateContext(context, accountType);
 }

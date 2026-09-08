@@ -44,7 +44,7 @@ export const PEPPER_CONFIG: AssistantConfig = {
   agentName: process.env.NEXT_PUBLIC_ASSISTANT_NAME || 'Pepper',
 
   // Externalized model version so upgrades do not require client deploys
-  modelName: process.env.NEXT_PUBLIC_GEMINI_MODEL || 'gemini-2.5-flash-lite',
+  modelName: process.env.NEXT_PUBLIC_GEMINI_MODEL || 'gemini-2.5-flash',
 
   supportEmail: 'hi@paperworking.co',
   trialDurationDays: 14,

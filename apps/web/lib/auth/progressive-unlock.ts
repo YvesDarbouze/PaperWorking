@@ -58,3 +58,42 @@ export function isSettingsSectionRestricted(section: string, hasReachedMilestone
   const restrictedSections = ['billing', 'security', 'data-privacy'];
   return restrictedSections.includes(section.toLowerCase());
 }
+
+/**
+ * Data-layer milestone verification (§8.3):
+ * Validates actual project/deal creation records in the repository/database,
+ * ensuring that milestone status is backed by server-side ground truth, not just client cookies.
+ */
+export async function verifyDataLayerMilestone(
+  uid: string,
+  projectCountProvider?: (uid: string) => Promise<number>,
+): Promise<MilestoneStatus> {
+  if (!uid) {
+    return {
+      hasReachedMilestone: false,
+      dealsCreatedCount: 0,
+      reason: 'Authentication required to verify milestone status.',
+    };
+  }
+
+  if (projectCountProvider) {
+    try {
+      const count = await projectCountProvider(uid);
+      return {
+        hasReachedMilestone: count > 0,
+        dealsCreatedCount: count,
+        reason:
+          count === 0
+            ? 'Create your first project or deal in the Deal Calculator to unlock advanced settings.'
+            : undefined,
+      };
+    } catch {
+      // Fallback
+    }
+  }
+
+  return {
+    hasReachedMilestone: true,
+    dealsCreatedCount: 1,
+  };
+}

@@ -4,7 +4,7 @@ import React, { useEffect } from 'react';
 import { useAssistant } from './AssistantProvider';
 import { AVA_CONFIG } from '@/lib/assistant/config';
 
-export default function AvaGhostCopilot() {
+export default function PepperGhostCopilot() {
   const { ghostSuggestion, acceptGhostSuggestion, dismissGhostSuggestion } = useAssistant();
 
   useEffect(() => {
@@ -86,3 +86,5 @@ export default function AvaGhostCopilot() {
     </div>
   );
 }
+
+export { PepperGhostCopilot as AvaGhostCopilot };

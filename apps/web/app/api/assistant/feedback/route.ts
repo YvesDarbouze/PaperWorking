@@ -78,10 +78,12 @@ export async function POST(request: NextRequest) {
         verified.accountType ??
         'investor';
       const sub = decodeSubCookie(cookieStore?.get(SUB_COOKIE)?.value || request.cookies.get(SUB_COOKIE)?.value);
-      isSubscriber =
-        sub.status === 'active' ||
-        sub.status === 'trialing' ||
-        (verifiedAccountType !== 'vendor' && verifiedAccountType !== 'guest');
+      const isInvestorOrTeam =
+        verifiedAccountType === 'investor' ||
+        verifiedAccountType === 'investment_team' ||
+        verifiedAccountType === 'admin';
+      const hasActiveSub = sub.status === 'active' || sub.status === 'trialing';
+      isSubscriber = isInvestorOrTeam && hasActiveSub;
     }
   }
 

@@ -106,8 +106,9 @@ export async function POST(request: NextRequest) {
   }
 
   // 5. Send dual SendGrid emails
+  let emailsDispatched = 0;
   try {
-    await sendGridService.sendCallbackRequest({
+    const dispatchResults = await sendGridService.sendCallbackRequest({
       name: name.trim(),
       phone: phone.trim(),
       email: email.trim(),
@@ -116,6 +117,9 @@ export async function POST(request: NextRequest) {
       userTier: verifiedAccountType,
       transcript,
     });
+    if (dispatchResults?.userReceipt && dispatchResults?.teamAlert) {
+      emailsDispatched = 2;
+    }
   } catch (emailErr) {
     console.error('Failed to send SendGrid callback emails:', emailErr);
   }
@@ -124,6 +128,7 @@ export async function POST(request: NextRequest) {
     success: true,
     callbackId,
     isPriority: isPriorityTier,
+    emailsDispatched,
     message: isPriorityTier
       ? 'Priority callback registered. A senior team member will reach out within 15 minutes.'
       : 'Callback registered. We will call during your requested window between 9:00 AM – 6:00 PM EST.',

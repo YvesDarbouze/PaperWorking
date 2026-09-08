@@ -103,6 +103,32 @@ export function AssistantProvider({ children }: { children: React.ReactNode }) {
     return () => clearTimeout(timer);
   }, [pathname]);
 
+  // Phase 4: Simulated stall listener for tests or complex form idle detection
+  useEffect(() => {
+    const handleStallEvent = (e: Event) => {
+      const custom = e as CustomEvent<{ hint: string; fieldId?: string }>;
+      if (custom.detail?.hint) {
+        setGhostSuggestion({ text: custom.detail.hint, fieldId: custom.detail.fieldId });
+      }
+    };
+    window.addEventListener('pw:assistant:stall', handleStallEvent);
+    if (typeof window !== 'undefined') {
+      (window as unknown as { __pw_triggerStall?: (hint: string, fieldId?: string) => void }).__pw_triggerStall = (
+        hint: string,
+        fieldId?: string,
+      ) => {
+        setGhostSuggestion({ text: hint, fieldId });
+      };
+    }
+
+    return () => {
+      window.removeEventListener('pw:assistant:stall', handleStallEvent);
+      if (typeof window !== 'undefined') {
+        delete (window as unknown as { __pw_triggerStall?: (hint: string, fieldId?: string) => void }).__pw_triggerStall;
+      }
+    };
+  }, []);
+
   const dismissedSurfacesRef = useRef<Set<string>>(new Set());
   function hasPulseBeenBeenDismissedInMemory(surfaceId: string): boolean {
     return dismissedSurfacesRef.current.has(surfaceId) || hasPulseBeenDismissed(surfaceId);
@@ -331,7 +357,8 @@ export function AssistantProvider({ children }: { children: React.ReactNode }) {
         },
         body: JSON.stringify({
           ...payload,
-          route: payload.route || pathname,
+          route: payload.route,
+          errorContext: payload.errorContext,
         }),
       });
       return await res.json();

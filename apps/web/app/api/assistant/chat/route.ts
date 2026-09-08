@@ -88,9 +88,12 @@ export async function POST(request: NextRequest) {
       const sessionRef = db.collection('users').doc(uid).collection('assistant_sessions').doc(currentSessionId);
 
       const writePromise = (async () => {
+        const ttlDate = new Date();
+        ttlDate.setDate(ttlDate.getDate() + 90); // 90-day retention TTL policy
         await sessionRef.set(
           {
             updatedAt: new Date().toISOString(),
+            expireAt: ttlDate.toISOString(),
             accountType,
           },
           { merge: true },

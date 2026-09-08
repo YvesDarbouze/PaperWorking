@@ -4,7 +4,7 @@ import React from 'react';
 import { useAssistant } from './AssistantProvider';
 import { AVA_CONFIG } from '@/lib/assistant/config';
 
-export default function AvaLauncher() {
+export default function PepperLauncher() {
   const {
     currentPhase,
     isDrawerOpen,
@@ -109,3 +109,5 @@ export default function AvaLauncher() {
     </div>
   );
 }
+
+export { PepperLauncher as AvaLauncher };

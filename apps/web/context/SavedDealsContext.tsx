@@ -9,7 +9,7 @@ import React, {
   useMemo,
   type ReactNode,
 } from 'react';
-import { apiFetch } from '@/lib/api/client';
+import { bffFetch } from '@/lib/api/bff-fetch';
 import { useOptionalAuth } from '@/context/AuthContext';
 
 export const SAVED_DEALS_STORAGE_KEY = 'paperworking_saved_deals';
@@ -53,7 +53,7 @@ export function SavedDealsProvider({ children }: { children: ReactNode }) {
   // Synchronize with server profile
   const syncWithServer = useCallback(async (localSaves: string[]) => {
     try {
-      const res = await apiFetch('/api/marketplace/saved-deals');
+      const res = await bffFetch('/api/marketplace/saved-deals');
       if (res.ok) {
         const data = (await res.json()) as { authenticated?: boolean; savedDealIds?: string[] };
         if (data.authenticated && Array.isArray(data.savedDealIds)) {
@@ -62,7 +62,7 @@ export function SavedDealsProvider({ children }: { children: ReactNode }) {
           const unmergedLocal = localSaves.filter((id) => !serverSet.has(id));
 
           if (unmergedLocal.length > 0) {
-            const mergeRes = await apiFetch('/api/marketplace/saved-deals', {
+            const mergeRes = await bffFetch('/api/marketplace/saved-deals', {
               method: 'POST',
               headers: { 'Content-Type': 'application/json' },
               body: JSON.stringify({ mergeAnonymous: unmergedLocal }),
@@ -121,7 +121,7 @@ export function SavedDealsProvider({ children }: { children: ReactNode }) {
 
       // 2. Persist to server profile asynchronously
       try {
-        await apiFetch('/api/marketplace/saved-deals', {
+        await bffFetch('/api/marketplace/saved-deals', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({

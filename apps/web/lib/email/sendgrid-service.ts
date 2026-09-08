@@ -105,11 +105,14 @@ export class SendGridService {
       throw new SendGridPayloadError('Email must include text or HTML content.');
     }
 
-    const isTestEnv =
-      process.env.NODE_ENV === 'test' ||
+    const isMockKey =
       !this.apiKey ||
       this.apiKey.startsWith('mock-') ||
       this.apiKey === 'AIzaSyFakeKeyForLocalEmulatorTesting000';
+    if (process.env.NODE_ENV === 'production' && isMockKey) {
+      throw new SendGridAuthError('SENDGRID_API_KEY is required in production');
+    }
+    const isTestEnv = process.env.NODE_ENV === 'test' || isMockKey;
 
     // In mock/test/CI mode: record in inspection buffer and return success
     if (isTestEnv) {

@@ -5,12 +5,9 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import ComposeEmailModal from '@/components/inbox/ComposeEmailModal';
 import InboxItemCard from '@/components/inbox/InboxItemCard';
 import InboxTabs from '@/components/inbox/InboxTabs';
-import {
-  INBOX_TABS,
-  INBOX_THREADS,
-  type InboxTabId,
-  type InboxThread,
-} from '@/lib/dashboard/shell-seed';
+import { INBOX_TABS, type InboxTabId, type InboxThread } from '@/lib/inbox/types';
+import { loadInboxThreads } from '@/lib/data';
+import { bffFetch } from '@/lib/api/bff-fetch';
 
 function emptyCounts(): Record<InboxTabId, number> {
   return {
@@ -116,7 +113,8 @@ function NotifMoreMenu({
  * (two-pane list + reading pane, tabs, compose, mark-all-read).
  */
 export default function InboxNotificationCenter() {
-  const [items, setItems] = useState<InboxThread[]>(() => [...INBOX_THREADS]);
+  const [items, setItems] = useState<InboxThread[]>([]);
+  const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState<InboxTabId>('all');
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState('');
@@ -124,6 +122,30 @@ export default function InboxNotificationCenter() {
   const [readOverrides, setReadOverrides] = useState<Record<string, boolean>>({});
   const [archivedIds, setArchivedIds] = useState<Set<string>>(() => new Set());
   const [actionFlash, setActionFlash] = useState<string | null>(null);
+  const [loadError, setLoadError] = useState<string | null>(null);
+
+  useEffect(() => {
+    let cancelled = false;
+    (async () => {
+      setLoading(true);
+      try {
+        const threads = await loadInboxThreads();
+        if (cancelled) return;
+        setItems(Array.isArray(threads) ? threads : []);
+        setLoadError(null);
+      } catch (err) {
+        if (!cancelled) {
+          setItems([]);
+          setLoadError(err instanceof Error ? err.message : 'Failed to load inbox');
+        }
+      } finally {
+        if (!cancelled) setLoading(false);
+      }
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, []);
 
   const isUnread = useCallback(
     (item: InboxThread) => {
@@ -164,16 +186,36 @@ export default function InboxNotificationCenter() {
 
   function markRead(id: string) {
     setReadOverrides((prev) => ({ ...prev, [id]: true }));
+    void bffFetch(`/api/inbox/${id}`, {
+      method: 'PATCH',
+      credentials: 'include',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ read: true }),
+    }).catch(() => undefined);
   }
 
   function markUnread(id: string) {
     setReadOverrides((prev) => ({ ...prev, [id]: false }));
+    void bffFetch(`/api/inbox/${id}`, {
+      method: 'PATCH',
+      credentials: 'include',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ read: false }),
+    }).catch(() => undefined);
   }
 
   function markAllRead() {
     const next: Record<string, boolean> = { ...readOverrides };
     for (const item of items) {
-      if (!archivedIds.has(item.id)) next[item.id] = true;
+      if (!archivedIds.has(item.id)) {
+        next[item.id] = true;
+        void bffFetch(`/api/inbox/${item.id}`, {
+          method: 'PATCH',
+          credentials: 'include',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ read: true }),
+        }).catch(() => undefined);
+      }
     }
     setReadOverrides(next);
   }
@@ -181,11 +223,21 @@ export default function InboxNotificationCenter() {
   function archiveItem(id: string) {
     setArchivedIds((prev) => new Set(prev).add(id));
     if (selectedId === id) setSelectedId(null);
+    void bffFetch(`/api/inbox/${id}`, {
+      method: 'PATCH',
+      credentials: 'include',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ archived: true }),
+    }).catch(() => undefined);
   }
 
   function deleteItem(id: string) {
     setItems((prev) => prev.filter((i) => i.id !== id));
     if (selectedId === id) setSelectedId(null);
+    void bffFetch(`/api/inbox/${id}`, {
+      method: 'DELETE',
+      credentials: 'include',
+    }).catch(() => undefined);
   }
 
   function selectItem(id: string) {
@@ -195,7 +247,7 @@ export default function InboxNotificationCenter() {
 
   function executeAction() {
     if (!selectedItem) return;
-    setActionFlash(`Action queued for “${selectedItem.subject}” (seed preview).`);
+    setActionFlash(`Action queued for “${selectedItem.subject}”.`);
     markRead(selectedItem.id);
     setTimeout(() => setActionFlash(null), 2500);
   }
@@ -218,6 +270,11 @@ export default function InboxNotificationCenter() {
             <div className="flex items-center justify-between">
               <h1 className="text-2xl font-bold text-[#fdfffc]">Inbox</h1>
               <div className="flex items-center gap-2">
+                {loadError ? (
+                  <span className="hidden max-w-[140px] truncate text-[10px] text-amber-300/80 sm:inline">
+                    {loadError}
+                  </span>
+                ) : null}
                 {unreadTotal > 0 ? (
                   <span className="rounded border border-emerald-500/25 bg-emerald-500/10 px-2 py-0.5 font-mono text-[10px] font-bold text-emerald-300">
                     {unreadTotal} UNREAD
@@ -268,10 +325,20 @@ export default function InboxNotificationCenter() {
           />
 
           <div className="relative flex-1 overflow-y-auto">
-            {visibleItems.length === 0 ? (
+            {loading ? (
+              <div className="flex flex-col items-center justify-center px-6 py-16 text-center">
+                <p className="text-sm font-medium text-white/60">Loading notifications…</p>
+              </div>
+            ) : loadError ? (
+              <div className="flex flex-col items-center justify-center px-6 py-16 text-center">
+                <span className="material-symbols-outlined mb-3 text-5xl opacity-20">error</span>
+                <p className="text-sm font-medium text-rose-300/90">Unable to load inbox</p>
+                <p className="mt-1 text-xs text-white/35">{loadError}</p>
+              </div>
+            ) : visibleItems.length === 0 ? (
               <div className="flex flex-col items-center justify-center px-6 py-16 text-center">
                 <span className="material-symbols-outlined mb-3 text-5xl opacity-20">inbox</span>
-                <p className="text-sm font-medium text-white/60">No items in this view</p>
+                <p className="text-sm font-medium text-white/60">No notifications yet</p>
                 <p className="mt-1 text-xs text-white/35">
                   {searchQuery
                     ? 'Try a different search.'

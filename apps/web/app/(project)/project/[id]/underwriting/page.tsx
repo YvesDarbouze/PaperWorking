@@ -8,7 +8,7 @@ import {
   type UnderwritingInputs,
   getDefaultUnderwritingInputs,
 } from '@paperworking/validation';
-import { apiFetch } from '@/lib/api/client';
+import { bffFetch } from '@/lib/api/bff-fetch';
 
 export default function ProjectUnderwritingPage() {
   const { project, updateProject } = useProjectWorkspace();
@@ -34,7 +34,7 @@ export default function ProjectUnderwritingPage() {
   const handleSave = async (updatedValues: UnderwritingInputs) => {
     setIsSaving(true);
     try {
-      const response = await apiFetch(`/api/projects/${project.id}`, {
+      const response = await bffFetch(`/api/projects/${project.id}`, {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({

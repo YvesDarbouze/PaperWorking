@@ -16,14 +16,29 @@ let firestoreInstance: Firestore | null = null;
 let storageInstance: FirebaseStorage | null = null;
 let emulatorsConnected = false;
 
-function getClientConfig(): FirebaseClientConfig {
+function getClientConfig(): FirebaseClientConfig | null {
+  const apiKey = process.env.NEXT_PUBLIC_FIREBASE_API_KEY;
+  if (apiKey) {
+    return {
+      apiKey,
+      authDomain: process.env.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN,
+      projectId: process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID,
+      storageBucket: process.env.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET,
+      messagingSenderId: process.env.NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID,
+      appId: process.env.NEXT_PUBLIC_FIREBASE_APP_ID,
+    };
+  }
+
+  // Fake config is local/emulator only. Production must not fall back to demo data.
+  if (process.env.NODE_ENV === 'production') return null;
+
   return {
-    apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY || 'AIzaSyFakeKeyForLocalEmulatorTesting000',
-    authDomain: process.env.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN || 'demo-paperworking.firebaseapp.com',
-    projectId: process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID || 'demo-paperworking',
-    storageBucket: process.env.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET || 'demo-paperworking.appspot.com',
-    messagingSenderId: process.env.NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID || '100000000000',
-    appId: process.env.NEXT_PUBLIC_FIREBASE_APP_ID || '1:100000000000:web:abcdef1234567890',
+    apiKey: 'AIzaSyFakeKeyForLocalEmulatorTesting000',
+    authDomain: 'demo-paperworking.firebaseapp.com',
+    projectId: 'demo-paperworking',
+    storageBucket: 'demo-paperworking.appspot.com',
+    messagingSenderId: '100000000000',
+    appId: '1:100000000000:web:abcdef1234567890',
   };
 }
 
@@ -37,8 +52,10 @@ export function getFirebaseApp(): FirebaseApp | null {
   }
 
   if (!appInstance) {
+    const config = getClientConfig();
+    if (!config?.apiKey) return null;
     const existing = getApps();
-    appInstance = existing.length ? getApp() : initializeApp(getClientConfig());
+    appInstance = existing.length ? getApp() : initializeApp(config);
   }
 
   return appInstance;

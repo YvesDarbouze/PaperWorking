@@ -13,6 +13,7 @@ export const MARKETING_NAV_LINKS: NavLink[] = [
   { label: 'Marketplaces', href: '/marketplaces' },
   { label: 'Pricing', href: '/pricing' },
   { label: 'Support', href: '/support' },
+  { label: 'Contact', href: '/contact' },
 ];
 
 /** Footer columns — matches PaperWorking v0 LandingFooter. */
@@ -32,8 +33,7 @@ export const FOOTER_COLUMNS: FooterColumn[] = [
       { label: 'Support Center', href: '/support' },
       { label: 'Real Estate Glossary', href: '/support/glossary' },
       { label: 'The Playbook (33 Metrics)', href: '/support/metrics' },
-      { label: 'Knowledge Base', href: '/help' },
-      { label: 'Blog', href: '/help' },
+      { label: 'Help', href: '/help' },
     ],
   },
   {
@@ -43,19 +43,19 @@ export const FOOTER_COLUMNS: FooterColumn[] = [
       { label: 'Sign In', href: '/login' },
       { label: 'Create Account', href: '/signup' },
       { label: 'Forgot Password', href: '/forgot-password' },
-      { label: 'Accept Team Invite', href: '/signup' },
+      { label: 'Accept Team Invite', href: '/invite' },
     ],
   },
   {
     heading: 'Company & Legal',
     links: [
-      { label: 'About', href: '/contact' },
-      { label: 'Careers', href: '/contact' },
+      { label: 'About', href: '/about' },
+      { label: 'Careers', href: '/careers' },
       { label: 'Contact', href: '/contact' },
       { label: 'Privacy', href: '/privacy' },
       { label: 'Terms', href: '/terms' },
-      { label: 'Cookies', href: '/privacy' },
-      { label: 'Subprocessors', href: '/privacy' },
+      { label: 'Cookies', href: '/cookies' },
+      { label: 'Subprocessors', href: '/subprocessors' },
     ],
   },
 ];
@@ -63,8 +63,8 @@ export const FOOTER_COLUMNS: FooterColumn[] = [
 export const FOOTER_BOTTOM_LINKS: NavLink[] = [
   { label: 'Privacy', href: '/privacy' },
   { label: 'Terms', href: '/terms' },
-  { label: 'Cookies', href: '/privacy' },
-  { label: 'Subprocessors', href: '/privacy' },
+  { label: 'Cookies', href: '/cookies' },
+  { label: 'Subprocessors', href: '/subprocessors' },
 ];
 
 export const HERO_CONTENT = {

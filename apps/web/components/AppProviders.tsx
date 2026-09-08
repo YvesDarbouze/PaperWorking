@@ -5,9 +5,10 @@ import { AuthProvider } from '@/context/AuthContext';
 import { CompareProvider } from '@/context/CompareContext';
 import { SavedDealsProvider } from '@/context/SavedDealsContext';
 import { AssistantProvider } from '@/components/assistant/AssistantProvider';
-import PepperLauncher from '@/components/assistant/PepperLauncher';
-import PepperDrawer from '@/components/assistant/PepperDrawer';
-import PepperGhostCopilot from '@/components/assistant/PepperGhostCopilot';
+
+const PepperLauncher = dynamic(() => import('@/components/assistant/PepperLauncher'), { ssr: false });
+const PepperDrawer = dynamic(() => import('@/components/assistant/PepperDrawer'), { ssr: false });
+const PepperGhostCopilot = dynamic(() => import('@/components/assistant/PepperGhostCopilot'), { ssr: false });
 
 /** Client-only — mock gate differs SSR vs browser when only private env is set. */
 const ChatbotWidget = dynamic(() => import('@/components/shared/ChatbotWidget'), {

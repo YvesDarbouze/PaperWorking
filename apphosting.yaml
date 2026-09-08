@@ -23,7 +23,7 @@ scripts:
 env:
   # ─── Build config ──────────────────────────────────────────────────────────
   - variable: NODE_OPTIONS
-    value: "--max-old-space-size=8192"
+    value: "--max-old-space-size=4096"
     availability:
       - BUILD
 

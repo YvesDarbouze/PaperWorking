@@ -1,8 +1,14 @@
+import path from 'node:path';
+import { fileURLToPath } from 'node:url';
 import type { NextConfig } from 'next';
+
+const webDir = path.dirname(fileURLToPath(import.meta.url));
 
 const nextConfig: NextConfig = {
   reactStrictMode: true,
   output: 'standalone',
+  // App Hosting npm-installs apps/web and writes a second lockfile. Pin tracing to the monorepo root.
+  outputFileTracingRoot: path.join(webDir, '../..'),
   // Keep Supabase out of the SSR bundle — avoids Next OTEL stub conflicts.
   serverExternalPackages: [
     'firebase-admin',

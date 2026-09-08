@@ -37,7 +37,7 @@ for dir in \
   apps/api \
   apps/web; do
   echo "[apphosting-build] npm install in ${dir}"
-  npm install --prefix "${dir}" --no-fund --no-audit
+  npm install --prefix "${dir}" --no-fund --no-audit --no-package-lock
 done
 
 echo "[apphosting-build] building packages/shared"

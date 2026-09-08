@@ -25,6 +25,10 @@ export {
 } from './projects-command-service.js';
 export { buildProjectKpiEngineInputs } from './build-project-kpi-engine-inputs.js';
 export {
+  dealBaselineToFinancials,
+  type DealBaselineInput,
+} from './deal-baseline-to-financials.js';
+export {
   auditProjectKpiInputProvenance,
   CANONICAL_KPI_DEFAULT_FIELDS,
   canonicalDefaultPurchasePrice,

@@ -71,6 +71,8 @@ export {
   ProjectKpiReadService,
   createProjectKpiReadService,
   buildProjectKpiEngineInputs,
+  dealBaselineToFinancials,
+  type DealBaselineInput,
   buildMockKpiTrends,
   auditProjectKpiInputProvenance,
   CANONICAL_KPI_DEFAULT_FIELDS,

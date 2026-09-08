@@ -1,0 +1,1764 @@
+{
+  "base": "http://127.0.0.1:3000",
+  "generatedAt": "2026-09-07T12:51:37.115Z",
+  "totals": {
+    "checks": 69,
+    "ok": 69,
+    "overflow_x": 0,
+    "http_error": 0,
+    "error": 0
+  },
+  "issues": [],
+  "results": [
+    {
+      "viewport": "desktop",
+      "name": "desktop",
+      "width": 1440,
+      "height": 900,
+      "route": "home",
+      "path": "/",
+      "auth": false,
+      "status": "ok",
+      "error": null,
+      "metrics": {
+        "scrollWidth": 1440,
+        "clientWidth": 1440,
+        "overflowX": 0,
+        "hasHorizontalScroll": false,
+        "title": "PaperWorking — Real Estate Investment Operating System",
+        "h1": "Finally, Project Management software made for serious real estate investors and ",
+        "offenders": []
+      }
+    },
+    {
+      "viewport": "desktop",
+      "name": "desktop",
+      "width": 1440,
+      "height": 900,
+      "route": "login",
+      "path": "/login",
+      "auth": false,
+      "status": "ok",
+      "error": null,
+      "metrics": {
+        "scrollWidth": 1440,
+        "clientWidth": 1440,
+        "overflowX": 0,
+        "hasHorizontalScroll": false,
+        "title": "Sign In · PaperWorking",
+        "h1": "Sign in",
+        "offenders": []
+      }
+    },
+    {
+      "viewport": "desktop",
+      "name": "desktop",
+      "width": 1440,
+      "height": 900,
+      "route": "signup",
+      "path": "/signup",
+      "auth": false,
+      "status": "ok",
+      "error": null,
+      "metrics": {
+        "scrollWidth": 1440,
+        "clientWidth": 1440,
+        "overflowX": 0,
+        "hasHorizontalScroll": false,
+        "title": "Create Account · PaperWorking",
+        "h1": "Select account type",
+        "offenders": []
+      }
+    },
+    {
+      "viewport": "desktop",
+      "name": "desktop",
+      "width": 1440,
+      "height": 900,
+      "route": "forgot",
+      "path": "/forgot-password",
+      "auth": false,
+      "status": "ok",
+      "error": null,
+      "metrics": {
+        "scrollWidth": 1440,
+        "clientWidth": 1440,
+        "overflowX": 0,
+        "hasHorizontalScroll": false,
+        "title": "Reset Password · PaperWorking",
+        "h1": "Reset your password",
+        "offenders": []
+      }
+    },
+    {
+      "viewport": "desktop",
+      "name": "desktop",
+      "width": 1440,
+      "height": 900,
+      "route": "pricing",
+      "path": "/pricing",
+      "auth": false,
+      "status": "ok",
+      "error": null,
+      "metrics": {
+        "scrollWidth": 1440,
+        "clientWidth": 1440,
+        "overflowX": 0,
+        "hasHorizontalScroll": false,
+        "title": "Pricing · PaperWorking",
+        "h1": "REAL ESTATE BLOOMBERG TERMINAL",
+        "offenders": []
+      }
+    },
+    {
+      "viewport": "desktop",
+      "name": "desktop",
+      "width": 1440,
+      "height": 900,
+      "route": "how-it-works",
+      "path": "/how-it-works",
+      "auth": false,
+      "status": "ok",
+      "error": null,
+      "metrics": {
+        "scrollWidth": 1440,
+        "clientWidth": 1440,
+        "overflowX": 0,
+        "hasHorizontalScroll": false,
+        "title": "How It Works · PaperWorking",
+        "h1": "Four phases. One record. Thirty-three key datapoints.",
+        "offenders": []
+      }
+    },
+    {
+      "viewport": "desktop",
+      "name": "desktop",
+      "width": 1440,
+      "height": 900,
+      "route": "support",
+      "path": "/support",
+      "auth": false,
+      "status": "ok",
+      "error": null,
+      "metrics": {
+        "scrollWidth": 1440,
+        "clientWidth": 1440,
+        "overflowX": 0,
+        "hasHorizontalScroll": false,
+        "title": "Support Center · PaperWorking",
+        "h1": "What are you trying to figure out?",
+        "offenders": []
+      }
+    },
+    {
+      "viewport": "desktop",
+      "name": "desktop",
+      "width": 1440,
+      "height": 900,
+      "route": "privacy",
+      "path": "/privacy",
+      "auth": false,
+      "status": "ok",
+      "error": null,
+      "metrics": {
+        "scrollWidth": 1440,
+        "clientWidth": 1440,
+        "overflowX": 0,
+        "hasHorizontalScroll": false,
+        "title": "Privacy Policy · PaperWorking",
+        "h1": "Privacy Policy",
+        "offenders": []
+      }
+    },
+    {
+      "viewport": "desktop",
+      "name": "desktop",
+      "width": 1440,
+      "height": 900,
+      "route": "terms",
+      "path": "/terms",
+      "auth": false,
+      "status": "ok",
+      "error": null,
+      "metrics": {
+        "scrollWidth": 1440,
+        "clientWidth": 1440,
+        "overflowX": 0,
+        "hasHorizontalScroll": false,
+        "title": "Terms of Service · PaperWorking",
+        "h1": "Terms of Service",
+        "offenders": []
+      }
+    },
+    {
+      "viewport": "tablet",
+      "name": "tablet",
+      "width": 768,
+      "height": 1024,
+      "route": "home",
+      "path": "/",
+      "auth": false,
+      "status": "ok",
+      "error": null,
+      "metrics": {
+        "scrollWidth": 768,
+        "clientWidth": 768,
+        "overflowX": 0,
+        "hasHorizontalScroll": false,
+        "title": "PaperWorking — Real Estate Investment Operating System",
+        "h1": "Finally, Project Management software made for serious real estate investors and ",
+        "offenders": [
+          {
+            "tag": "span",
+            "className": "absolute inset-0 bg-gradient-to-r from-transparent via-white/12 to-transparent -translate-x-full group-hover:translate-x",
+            "right": 160,
+            "left": -67
+          }
+        ]
+      }
+    },
+    {
+      "viewport": "tablet",
+      "name": "tablet",
+      "width": 768,
+      "height": 1024,
+      "route": "login",
+      "path": "/login",
+      "auth": false,
+      "status": "ok",
+      "error": null,
+      "metrics": {
+        "scrollWidth": 768,
+        "clientWidth": 768,
+        "overflowX": 0,
+        "hasHorizontalScroll": false,
+        "title": "Sign In · PaperWorking",
+        "h1": "Sign in",
+        "offenders": []
+      }
+    },
+    {
+      "viewport": "tablet",
+      "name": "tablet",
+      "width": 768,
+      "height": 1024,
+      "route": "signup",
+      "path": "/signup",
+      "auth": false,
+      "status": "ok",
+      "error": null,
+      "metrics": {
+        "scrollWidth": 768,
+        "clientWidth": 768,
+        "overflowX": 0,
+        "hasHorizontalScroll": false,
+        "title": "Create Account · PaperWorking",
+        "h1": "Select account type",
+        "offenders": []
+      }
+    },
+    {
+      "viewport": "tablet",
+      "name": "tablet",
+      "width": 768,
+      "height": 1024,
+      "route": "forgot",
+      "path": "/forgot-password",
+      "auth": false,
+      "status": "ok",
+      "error": null,
+      "metrics": {
+        "scrollWidth": 768,
+        "clientWidth": 768,
+        "overflowX": 0,
+        "hasHorizontalScroll": false,
+        "title": "Reset Password · PaperWorking",
+        "h1": "Reset your password",
+        "offenders": []
+      }
+    },
+    {
+      "viewport": "tablet",
+      "name": "tablet",
+      "width": 768,
+      "height": 1024,
+      "route": "pricing",
+      "path": "/pricing",
+      "auth": false,
+      "status": "ok",
+      "error": null,
+      "metrics": {
+        "scrollWidth": 768,
+        "clientWidth": 768,
+        "overflowX": 0,
+        "hasHorizontalScroll": false,
+        "title": "Pricing · PaperWorking",
+        "h1": "REAL ESTATE BLOOMBERG TERMINAL",
+        "offenders": []
+      }
+    },
+    {
+      "viewport": "tablet",
+      "name": "tablet",
+      "width": 768,
+      "height": 1024,
+      "route": "how-it-works",
+      "path": "/how-it-works",
+      "auth": false,
+      "status": "ok",
+      "error": null,
+      "metrics": {
+        "scrollWidth": 768,
+        "clientWidth": 768,
+        "overflowX": 0,
+        "hasHorizontalScroll": false,
+        "title": "How It Works · PaperWorking",
+        "h1": "Four phases. One record. Thirty-three key datapoints.",
+        "offenders": [
+          {
+            "tag": "div",
+            "className": "absolute top-1/4 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-primary/5 rounded-full blur-[160px] p",
+            "right": 784,
+            "left": -16
+          }
+        ]
+      }
+    },
+    {
+      "viewport": "tablet",
+      "name": "tablet",
+      "width": 768,
+      "height": 1024,
+      "route": "support",
+      "path": "/support",
+      "auth": false,
+      "status": "ok",
+      "error": null,
+      "metrics": {
+        "scrollWidth": 768,
+        "clientWidth": 768,
+        "overflowX": 0,
+        "hasHorizontalScroll": false,
+        "title": "Support Center · PaperWorking",
+        "h1": "What are you trying to figure out?",
+        "offenders": []
+      }
+    },
+    {
+      "viewport": "tablet",
+      "name": "tablet",
+      "width": 768,
+      "height": 1024,
+      "route": "privacy",
+      "path": "/privacy",
+      "auth": false,
+      "status": "ok",
+      "error": null,
+      "metrics": {
+        "scrollWidth": 768,
+        "clientWidth": 768,
+        "overflowX": 0,
+        "hasHorizontalScroll": false,
+        "title": "Privacy Policy · PaperWorking",
+        "h1": "Privacy Policy",
+        "offenders": []
+      }
+    },
+    {
+      "viewport": "tablet",
+      "name": "tablet",
+      "width": 768,
+      "height": 1024,
+      "route": "terms",
+      "path": "/terms",
+      "auth": false,
+      "status": "ok",
+      "error": null,
+      "metrics": {
+        "scrollWidth": 768,
+        "clientWidth": 768,
+        "overflowX": 0,
+        "hasHorizontalScroll": false,
+        "title": "Terms of Service · PaperWorking",
+        "h1": "Terms of Service",
+        "offenders": []
+      }
+    },
+    {
+      "viewport": "mobile",
+      "name": "mobile",
+      "width": 390,
+      "height": 844,
+      "route": "home",
+      "path": "/",
+      "auth": false,
+      "status": "ok",
+      "error": null,
+      "metrics": {
+        "scrollWidth": 390,
+        "clientWidth": 390,
+        "overflowX": 0,
+        "hasHorizontalScroll": false,
+        "title": "PaperWorking — Real Estate Investment Operating System",
+        "h1": "Finally, Project Management software made for serious real estate investors and ",
+        "offenders": [
+          {
+            "tag": "div",
+            "className": "absolute top-0 right-0 w-[700px] h-[600px] bg-primary/8 blur-[160px] rounded-full pointer-events-none",
+            "right": 390,
+            "left": -310
+          },
+          {
+            "tag": "span",
+            "className": "absolute inset-0 bg-gradient-to-r from-transparent via-white/12 to-transparent -translate-x-full group-hover:translate-x",
+            "right": 24,
+            "left": -318
+          },
+          {
+            "tag": "div",
+            "className": "pointer-events-none absolute left-1/2 top-1/2 h-[450px] w-[450px] -translate-x-1/2 -translate-y-1/2 rounded-full bg-[col",
+            "right": 420,
+            "left": -30
+          }
+        ]
+      }
+    },
+    {
+      "viewport": "mobile",
+      "name": "mobile",
+      "width": 390,
+      "height": 844,
+      "route": "login",
+      "path": "/login",
+      "auth": false,
+      "status": "ok",
+      "error": null,
+      "metrics": {
+        "scrollWidth": 390,
+        "clientWidth": 390,
+        "overflowX": 0,
+        "hasHorizontalScroll": false,
+        "title": "Sign In · PaperWorking",
+        "h1": "Sign in",
+        "offenders": []
+      }
+    },
+    {
+      "viewport": "mobile",
+      "name": "mobile",
+      "width": 390,
+      "height": 844,
+      "route": "signup",
+      "path": "/signup",
+      "auth": false,
+      "status": "ok",
+      "error": null,
+      "metrics": {
+        "scrollWidth": 390,
+        "clientWidth": 390,
+        "overflowX": 0,
+        "hasHorizontalScroll": false,
+        "title": "Create Account · PaperWorking",
+        "h1": "Select account type",
+        "offenders": []
+      }
+    },
+    {
+      "viewport": "mobile",
+      "name": "mobile",
+      "width": 390,
+      "height": 844,
+      "route": "forgot",
+      "path": "/forgot-password",
+      "auth": false,
+      "status": "ok",
+      "error": null,
+      "metrics": {
+        "scrollWidth": 390,
+        "clientWidth": 390,
+        "overflowX": 0,
+        "hasHorizontalScroll": false,
+        "title": "Reset Password · PaperWorking",
+        "h1": "Reset your password",
+        "offenders": []
+      }
+    },
+    {
+      "viewport": "mobile",
+      "name": "mobile",
+      "width": 390,
+      "height": 844,
+      "route": "pricing",
+      "path": "/pricing",
+      "auth": false,
+      "status": "ok",
+      "error": null,
+      "metrics": {
+        "scrollWidth": 390,
+        "clientWidth": 390,
+        "overflowX": 0,
+        "hasHorizontalScroll": false,
+        "title": "Pricing · PaperWorking",
+        "h1": "REAL ESTATE BLOOMBERG TERMINAL",
+        "offenders": [
+          {
+            "tag": "div",
+            "className": "absolute -top-32 left-1/4 h-[500px] w-[500px] rounded-full bg-[color:var(--color-primary)]/[0.04] blur-[140px]",
+            "right": 598,
+            "left": 98
+          },
+          {
+            "tag": "div",
+            "className": "absolute bottom-0 right-0 h-[400px] w-[400px] rounded-full bg-sky-400/[0.04] blur-[140px]",
+            "right": 390,
+            "left": -10
+          }
+        ]
+      }
+    },
+    {
+      "viewport": "mobile",
+      "name": "mobile",
+      "width": 390,
+      "height": 844,
+      "route": "how-it-works",
+      "path": "/how-it-works",
+      "auth": false,
+      "status": "ok",
+      "error": null,
+      "metrics": {
+        "scrollWidth": 390,
+        "clientWidth": 390,
+        "overflowX": 0,
+        "hasHorizontalScroll": false,
+        "title": "How It Works · PaperWorking",
+        "h1": "Four phases. One record. Thirty-three key datapoints.",
+        "offenders": [
+          {
+            "tag": "div",
+            "className": "absolute top-1/4 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-primary/5 rounded-full blur-[160px] p",
+            "right": 595,
+            "left": -205
+          }
+        ]
+      }
+    },
+    {
+      "viewport": "mobile",
+      "name": "mobile",
+      "width": 390,
+      "height": 844,
+      "route": "support",
+      "path": "/support",
+      "auth": false,
+      "status": "ok",
+      "error": null,
+      "metrics": {
+        "scrollWidth": 390,
+        "clientWidth": 390,
+        "overflowX": 0,
+        "hasHorizontalScroll": false,
+        "title": "Support Center · PaperWorking",
+        "h1": "What are you trying to figure out?",
+        "offenders": [
+          {
+            "tag": "div",
+            "className": "pointer-events-none absolute left-1/2 top-0 h-[400px] w-[600px] -translate-x-1/2 rounded-full bg-[color:var(--color-prim",
+            "right": 495,
+            "left": -105
+          }
+        ]
+      }
+    },
+    {
+      "viewport": "mobile",
+      "name": "mobile",
+      "width": 390,
+      "height": 844,
+      "route": "privacy",
+      "path": "/privacy",
+      "auth": false,
+      "status": "ok",
+      "error": null,
+      "metrics": {
+        "scrollWidth": 390,
+        "clientWidth": 390,
+        "overflowX": 0,
+        "hasHorizontalScroll": false,
+        "title": "Privacy Policy · PaperWorking",
+        "h1": "Privacy Policy",
+        "offenders": []
+      }
+    },
+    {
+      "viewport": "mobile",
+      "name": "mobile",
+      "width": 390,
+      "height": 844,
+      "route": "terms",
+      "path": "/terms",
+      "auth": false,
+      "status": "ok",
+      "error": null,
+      "metrics": {
+        "scrollWidth": 390,
+        "clientWidth": 390,
+        "overflowX": 0,
+        "hasHorizontalScroll": false,
+        "title": "Terms of Service · PaperWorking",
+        "h1": "Terms of Service",
+        "offenders": []
+      }
+    },
+    {
+      "viewport": "desktop",
+      "name": "desktop",
+      "width": 1440,
+      "height": 900,
+      "route": "dashboard",
+      "path": "/dashboard",
+      "auth": true,
+      "status": "ok",
+      "error": null,
+      "metrics": {
+        "scrollWidth": 1440,
+        "clientWidth": 1440,
+        "overflowX": 0,
+        "hasHorizontalScroll": false,
+        "title": "Dashboard · PaperWorking",
+        "h1": null,
+        "offenders": []
+      }
+    },
+    {
+      "viewport": "desktop",
+      "name": "desktop",
+      "width": 1440,
+      "height": 900,
+      "route": "projects",
+      "path": "/projects",
+      "auth": true,
+      "status": "ok",
+      "error": null,
+      "metrics": {
+        "scrollWidth": 1440,
+        "clientWidth": 1440,
+        "overflowX": 0,
+        "hasHorizontalScroll": false,
+        "title": "Dashboard · PaperWorking",
+        "h1": "Projects",
+        "offenders": []
+      }
+    },
+    {
+      "viewport": "desktop",
+      "name": "desktop",
+      "width": 1440,
+      "height": 900,
+      "route": "projects-new",
+      "path": "/projects/new",
+      "auth": true,
+      "status": "ok",
+      "error": null,
+      "metrics": {
+        "scrollWidth": 1440,
+        "clientWidth": 1440,
+        "overflowX": 0,
+        "hasHorizontalScroll": false,
+        "title": "Dashboard · PaperWorking",
+        "h1": "Project Basics",
+        "offenders": []
+      }
+    },
+    {
+      "viewport": "desktop",
+      "name": "desktop",
+      "width": 1440,
+      "height": 900,
+      "route": "project",
+      "path": "/project/46825ef3-1b3e-441d-b422-61c181a01e4b",
+      "auth": true,
+      "status": "ok",
+      "error": null,
+      "metrics": {
+        "scrollWidth": 1440,
+        "clientWidth": 1440,
+        "overflowX": 0,
+        "hasHorizontalScroll": false,
+        "title": "Project Workspace · PaperWorking",
+        "h1": null,
+        "offenders": []
+      }
+    },
+    {
+      "viewport": "desktop",
+      "name": "desktop",
+      "width": 1440,
+      "height": 900,
+      "route": "scorecard",
+      "path": "/project/46825ef3-1b3e-441d-b422-61c181a01e4b/scorecard",
+      "auth": true,
+      "status": "ok",
+      "error": null,
+      "metrics": {
+        "scrollWidth": 1440,
+        "clientWidth": 1440,
+        "overflowX": 0,
+        "hasHorizontalScroll": false,
+        "title": "Project Workspace · PaperWorking",
+        "h1": null,
+        "offenders": []
+      }
+    },
+    {
+      "viewport": "desktop",
+      "name": "desktop",
+      "width": 1440,
+      "height": 900,
+      "route": "insights",
+      "path": "/project/46825ef3-1b3e-441d-b422-61c181a01e4b/insights",
+      "auth": true,
+      "status": "ok",
+      "error": null,
+      "metrics": {
+        "scrollWidth": 1440,
+        "clientWidth": 1440,
+        "overflowX": 0,
+        "hasHorizontalScroll": false,
+        "title": "Project Workspace · PaperWorking",
+        "h1": null,
+        "offenders": []
+      }
+    },
+    {
+      "viewport": "desktop",
+      "name": "desktop",
+      "width": 1440,
+      "height": 900,
+      "route": "deals",
+      "path": "/deals",
+      "auth": true,
+      "status": "ok",
+      "error": null,
+      "metrics": {
+        "scrollWidth": 1440,
+        "clientWidth": 1440,
+        "overflowX": 0,
+        "hasHorizontalScroll": false,
+        "title": "Dashboard · PaperWorking",
+        "h1": "Deals Marketplace",
+        "offenders": []
+      }
+    },
+    {
+      "viewport": "desktop",
+      "name": "desktop",
+      "width": 1440,
+      "height": 900,
+      "route": "deal-detail",
+      "path": "/deals/900mcgmlaveaustintx78702",
+      "auth": true,
+      "status": "ok",
+      "error": null,
+      "metrics": {
+        "scrollWidth": 1440,
+        "clientWidth": 1440,
+        "overflowX": 0,
+        "hasHorizontalScroll": false,
+        "title": "Deal Detail · PaperWorking",
+        "h1": "Underwrite & Create Deal",
+        "offenders": []
+      }
+    },
+    {
+      "viewport": "desktop",
+      "name": "desktop",
+      "width": 1440,
+      "height": 900,
+      "route": "inbox",
+      "path": "/dashboard/inbox",
+      "auth": true,
+      "status": "ok",
+      "error": null,
+      "metrics": {
+        "scrollWidth": 1440,
+        "clientWidth": 1440,
+        "overflowX": 0,
+        "hasHorizontalScroll": false,
+        "title": "Inbox",
+        "h1": "Inbox",
+        "offenders": [
+          {
+            "tag": "div",
+            "className": "pointer-events-none absolute -right-40 -top-40 h-96 w-96 rounded-full bg-[#454955]/5 blur-[100px]",
+            "right": 1600,
+            "left": 1216
+          }
+        ]
+      }
+    },
+    {
+      "viewport": "desktop",
+      "name": "desktop",
+      "width": 1440,
+      "height": 900,
+      "route": "marketplace",
+      "path": "/dashboard/marketplace",
+      "auth": true,
+      "status": "ok",
+      "error": null,
+      "metrics": {
+        "scrollWidth": 1440,
+        "clientWidth": 1440,
+        "overflowX": 0,
+        "hasHorizontalScroll": false,
+        "title": "PaperWorking — Vendor Marketplace",
+        "h1": "Vendor Marketplace",
+        "offenders": []
+      }
+    },
+    {
+      "viewport": "desktop",
+      "name": "desktop",
+      "width": 1440,
+      "height": 900,
+      "route": "profile",
+      "path": "/dashboard/settings/profile",
+      "auth": true,
+      "status": "ok",
+      "error": null,
+      "metrics": {
+        "scrollWidth": 1440,
+        "clientWidth": 1440,
+        "overflowX": 0,
+        "hasHorizontalScroll": false,
+        "title": "Profile",
+        "h1": "Settings",
+        "offenders": [
+          {
+            "tag": "div",
+            "className": "pointer-events-none absolute -right-20 -top-20 h-72 w-72 rounded-full bg-emerald-500/10 blur-[120px]",
+            "right": 1463,
+            "left": 1175
+          },
+          {
+            "tag": "div",
+            "className": "pointer-events-none absolute right-0 top-0 -z-10 h-40 w-40 translate-x-1/2 -translate-y-1/2 rounded-full bg-red-500/5 bl",
+            "right": 1463,
+            "left": 1303
+          }
+        ]
+      }
+    },
+    {
+      "viewport": "desktop",
+      "name": "desktop",
+      "width": 1440,
+      "height": 900,
+      "route": "billing",
+      "path": "/dashboard/settings/billing",
+      "auth": true,
+      "status": "ok",
+      "error": null,
+      "metrics": {
+        "scrollWidth": 1440,
+        "clientWidth": 1440,
+        "overflowX": 0,
+        "hasHorizontalScroll": false,
+        "title": "Dashboard · PaperWorking",
+        "h1": "Settings",
+        "offenders": []
+      }
+    },
+    {
+      "viewport": "desktop",
+      "name": "desktop",
+      "width": 1440,
+      "height": 900,
+      "route": "reports",
+      "path": "/dashboard/reports",
+      "auth": true,
+      "status": "ok",
+      "error": null,
+      "metrics": {
+        "scrollWidth": 1440,
+        "clientWidth": 1440,
+        "overflowX": 0,
+        "hasHorizontalScroll": false,
+        "title": "Reports",
+        "h1": "descriptionTax Intelligence",
+        "offenders": []
+      }
+    },
+    {
+      "viewport": "desktop",
+      "name": "desktop",
+      "width": 1440,
+      "height": 900,
+      "route": "team",
+      "path": "/dashboard/team",
+      "auth": true,
+      "status": "ok",
+      "error": null,
+      "metrics": {
+        "scrollWidth": 1440,
+        "clientWidth": 1440,
+        "overflowX": 0,
+        "hasHorizontalScroll": false,
+        "title": "Team",
+        "h1": null,
+        "offenders": []
+      }
+    },
+    {
+      "viewport": "tablet",
+      "name": "tablet",
+      "width": 768,
+      "height": 1024,
+      "route": "dashboard",
+      "path": "/dashboard",
+      "auth": true,
+      "status": "ok",
+      "error": null,
+      "metrics": {
+        "scrollWidth": 768,
+        "clientWidth": 768,
+        "overflowX": 0,
+        "hasHorizontalScroll": false,
+        "title": "Dashboard · PaperWorking",
+        "h1": null,
+        "offenders": []
+      }
+    },
+    {
+      "viewport": "tablet",
+      "name": "tablet",
+      "width": 768,
+      "height": 1024,
+      "route": "projects",
+      "path": "/projects",
+      "auth": true,
+      "status": "ok",
+      "error": null,
+      "metrics": {
+        "scrollWidth": 768,
+        "clientWidth": 768,
+        "overflowX": 0,
+        "hasHorizontalScroll": false,
+        "title": "Dashboard · PaperWorking",
+        "h1": "Projects",
+        "offenders": []
+      }
+    },
+    {
+      "viewport": "tablet",
+      "name": "tablet",
+      "width": 768,
+      "height": 1024,
+      "route": "projects-new",
+      "path": "/projects/new",
+      "auth": true,
+      "status": "ok",
+      "error": null,
+      "metrics": {
+        "scrollWidth": 768,
+        "clientWidth": 768,
+        "overflowX": 0,
+        "hasHorizontalScroll": false,
+        "title": "Dashboard · PaperWorking",
+        "h1": "Project Basics",
+        "offenders": []
+      }
+    },
+    {
+      "viewport": "tablet",
+      "name": "tablet",
+      "width": 768,
+      "height": 1024,
+      "route": "project",
+      "path": "/project/46825ef3-1b3e-441d-b422-61c181a01e4b",
+      "auth": true,
+      "status": "ok",
+      "error": null,
+      "metrics": {
+        "scrollWidth": 768,
+        "clientWidth": 768,
+        "overflowX": 0,
+        "hasHorizontalScroll": false,
+        "title": "Project Workspace · PaperWorking",
+        "h1": null,
+        "offenders": []
+      }
+    },
+    {
+      "viewport": "tablet",
+      "name": "tablet",
+      "width": 768,
+      "height": 1024,
+      "route": "scorecard",
+      "path": "/project/46825ef3-1b3e-441d-b422-61c181a01e4b/scorecard",
+      "auth": true,
+      "status": "ok",
+      "error": null,
+      "metrics": {
+        "scrollWidth": 768,
+        "clientWidth": 768,
+        "overflowX": 0,
+        "hasHorizontalScroll": false,
+        "title": "Project Workspace · PaperWorking",
+        "h1": null,
+        "offenders": []
+      }
+    },
+    {
+      "viewport": "tablet",
+      "name": "tablet",
+      "width": 768,
+      "height": 1024,
+      "route": "insights",
+      "path": "/project/46825ef3-1b3e-441d-b422-61c181a01e4b/insights",
+      "auth": true,
+      "status": "ok",
+      "error": null,
+      "metrics": {
+        "scrollWidth": 768,
+        "clientWidth": 768,
+        "overflowX": 0,
+        "hasHorizontalScroll": false,
+        "title": "Project Workspace · PaperWorking",
+        "h1": null,
+        "offenders": []
+      }
+    },
+    {
+      "viewport": "tablet",
+      "name": "tablet",
+      "width": 768,
+      "height": 1024,
+      "route": "deals",
+      "path": "/deals",
+      "auth": true,
+      "status": "ok",
+      "error": null,
+      "metrics": {
+        "scrollWidth": 768,
+        "clientWidth": 768,
+        "overflowX": 0,
+        "hasHorizontalScroll": false,
+        "title": "Dashboard · PaperWorking",
+        "h1": "Deals Marketplace",
+        "offenders": []
+      }
+    },
+    {
+      "viewport": "tablet",
+      "name": "tablet",
+      "width": 768,
+      "height": 1024,
+      "route": "deal-detail",
+      "path": "/deals/900mcgmlaveaustintx78702",
+      "auth": true,
+      "status": "ok",
+      "error": null,
+      "metrics": {
+        "scrollWidth": 768,
+        "clientWidth": 768,
+        "overflowX": 0,
+        "hasHorizontalScroll": false,
+        "title": "Deal Detail · PaperWorking",
+        "h1": "Underwrite & Create Deal",
+        "offenders": []
+      }
+    },
+    {
+      "viewport": "tablet",
+      "name": "tablet",
+      "width": 768,
+      "height": 1024,
+      "route": "inbox",
+      "path": "/dashboard/inbox",
+      "auth": true,
+      "status": "ok",
+      "error": null,
+      "metrics": {
+        "scrollWidth": 768,
+        "clientWidth": 768,
+        "overflowX": 0,
+        "hasHorizontalScroll": false,
+        "title": "Inbox",
+        "h1": "Inbox",
+        "offenders": [
+          {
+            "tag": "button",
+            "id": "inbox-tab-vendor",
+            "className": "inline-flex shrink-0 cursor-pointer items-center gap-2 whitespace-nowrap rounded-xl border px-3.5 py-2 text-[12px] font-",
+            "right": 795,
+            "left": 643,
+            "text": "work\nVendor Bids"
+          },
+          {
+            "tag": "span",
+            "className": "text-[#9E9DA0]",
+            "right": 778,
+            "left": 692,
+            "text": "Vendor Bids"
+          },
+          {
+            "tag": "button",
+            "id": "inbox-tab-team",
+            "className": "inline-flex shrink-0 cursor-pointer items-center gap-2 whitespace-nowrap rounded-xl border px-3.5 py-2 text-[12px] font-",
+            "right": 908,
+            "left": 803,
+            "text": "group\nTeam"
+          },
+          {
+            "tag": "span",
+            "className": "material-symbols-outlined shrink-0 text-[16px] leading-none text-[#9E9DA0]",
+            "right": 844,
+            "left": 820,
+            "text": "group"
+          },
+          {
+            "tag": "span",
+            "className": "text-[#9E9DA0]",
+            "right": 891,
+            "left": 852,
+            "text": "Team"
+          },
+          {
+            "tag": "button",
+            "id": "inbox-tab-system",
+            "className": "inline-flex shrink-0 cursor-pointer items-center gap-2 whitespace-nowrap rounded-xl border px-3.5 py-2 text-[12px] font-",
+            "right": 1035,
+            "left": 916,
+            "text": "warning\nSystem"
+          },
+          {
+            "tag": "span",
+            "className": "material-symbols-outlined shrink-0 text-[16px] leading-none text-[#9E9DA0]",
+            "right": 957,
+            "left": 933,
+            "text": "warning"
+          },
+          {
+            "tag": "span",
+            "className": "text-[#9E9DA0]",
+            "right": 1018,
+            "left": 965,
+            "text": "System"
+          }
+        ]
+      }
+    },
+    {
+      "viewport": "tablet",
+      "name": "tablet",
+      "width": 768,
+      "height": 1024,
+      "route": "marketplace",
+      "path": "/dashboard/marketplace",
+      "auth": true,
+      "status": "ok",
+      "error": null,
+      "metrics": {
+        "scrollWidth": 768,
+        "clientWidth": 768,
+        "overflowX": 0,
+        "hasHorizontalScroll": false,
+        "title": "PaperWorking — Vendor Marketplace",
+        "h1": "Vendor Marketplace",
+        "offenders": []
+      }
+    },
+    {
+      "viewport": "tablet",
+      "name": "tablet",
+      "width": 768,
+      "height": 1024,
+      "route": "profile",
+      "path": "/dashboard/settings/profile",
+      "auth": true,
+      "status": "ok",
+      "error": null,
+      "metrics": {
+        "scrollWidth": 768,
+        "clientWidth": 768,
+        "overflowX": 0,
+        "hasHorizontalScroll": false,
+        "title": "Profile",
+        "h1": "Settings",
+        "offenders": [
+          {
+            "tag": "section",
+            "className": "relative col-span-12 flex items-center justify-between overflow-hidden rounded-2xl border border-white/10 bg-[#161318]/9",
+            "right": 796,
+            "left": 532,
+            "text": "U\nphoto_camera\nedit\nmail\n—\nAccount"
+          },
+          {
+            "tag": "div",
+            "className": "pointer-events-none absolute -right-20 -top-20 h-72 w-72 rounded-full bg-emerald-500/10 blur-[120px]",
+            "right": 875,
+            "left": 587
+          },
+          {
+            "tag": "div",
+            "className": "relative z-10 hidden md:block",
+            "right": 814,
+            "left": 725,
+            "text": "Account"
+          },
+          {
+            "tag": "span",
+            "className": "inline-flex items-center gap-1.5 rounded-full border border-emerald-500/20 bg-emerald-500/10 px-3 py-1 text-xs font-semi",
+            "right": 814,
+            "left": 725,
+            "text": "Account"
+          },
+          {
+            "tag": "section",
+            "className": "relative col-span-12 flex flex-col overflow-hidden rounded-2xl border border-white/10 bg-[#161318]/90 p-6 lg:col-span-7",
+            "right": 796,
+            "left": 532,
+            "text": "person\nPersonal Information\nProfile Completeness\n0%\nFIRST NA"
+          },
+          {
+            "tag": "div",
+            "className": "mb-6 flex items-center justify-between border-b border-white/10 pb-4",
+            "right": 771,
+            "left": 557,
+            "text": "person\nPersonal Information"
+          },
+          {
+            "tag": "div",
+            "className": "mb-6 space-y-2",
+            "right": 771,
+            "left": 557,
+            "text": "Profile Completeness\n0%"
+          },
+          {
+            "tag": "div",
+            "className": "flex items-center justify-between text-xs",
+            "right": 771,
+            "left": 557,
+            "text": "Profile Completeness\n0%"
+          }
+        ]
+      }
+    },
+    {
+      "viewport": "tablet",
+      "name": "tablet",
+      "width": 768,
+      "height": 1024,
+      "route": "billing",
+      "path": "/dashboard/settings/billing",
+      "auth": true,
+      "status": "ok",
+      "error": null,
+      "metrics": {
+        "scrollWidth": 768,
+        "clientWidth": 768,
+        "overflowX": 0,
+        "hasHorizontalScroll": false,
+        "title": "Dashboard · PaperWorking",
+        "h1": "Settings",
+        "offenders": []
+      }
+    },
+    {
+      "viewport": "tablet",
+      "name": "tablet",
+      "width": 768,
+      "height": 1024,
+      "route": "reports",
+      "path": "/dashboard/reports",
+      "auth": true,
+      "status": "ok",
+      "error": null,
+      "metrics": {
+        "scrollWidth": 768,
+        "clientWidth": 768,
+        "overflowX": 0,
+        "hasHorizontalScroll": false,
+        "title": "Reports",
+        "h1": "descriptionTax Intelligence",
+        "offenders": []
+      }
+    },
+    {
+      "viewport": "tablet",
+      "name": "tablet",
+      "width": 768,
+      "height": 1024,
+      "route": "team",
+      "path": "/dashboard/team",
+      "auth": true,
+      "status": "ok",
+      "error": null,
+      "metrics": {
+        "scrollWidth": 768,
+        "clientWidth": 768,
+        "overflowX": 0,
+        "hasHorizontalScroll": false,
+        "title": "Team",
+        "h1": null,
+        "offenders": []
+      }
+    },
+    {
+      "viewport": "mobile",
+      "name": "mobile",
+      "width": 390,
+      "height": 844,
+      "route": "dashboard",
+      "path": "/dashboard",
+      "auth": true,
+      "status": "ok",
+      "error": null,
+      "metrics": {
+        "scrollWidth": 390,
+        "clientWidth": 390,
+        "overflowX": 0,
+        "hasHorizontalScroll": false,
+        "title": "Dashboard · PaperWorking",
+        "h1": null,
+        "offenders": []
+      }
+    },
+    {
+      "viewport": "mobile",
+      "name": "mobile",
+      "width": 390,
+      "height": 844,
+      "route": "projects",
+      "path": "/projects",
+      "auth": true,
+      "status": "ok",
+      "error": null,
+      "metrics": {
+        "scrollWidth": 390,
+        "clientWidth": 390,
+        "overflowX": 0,
+        "hasHorizontalScroll": false,
+        "title": "Dashboard · PaperWorking",
+        "h1": "Projects",
+        "offenders": []
+      }
+    },
+    {
+      "viewport": "mobile",
+      "name": "mobile",
+      "width": 390,
+      "height": 844,
+      "route": "projects-new",
+      "path": "/projects/new",
+      "auth": true,
+      "status": "ok",
+      "error": null,
+      "metrics": {
+        "scrollWidth": 390,
+        "clientWidth": 390,
+        "overflowX": 0,
+        "hasHorizontalScroll": false,
+        "title": "Dashboard · PaperWorking",
+        "h1": "Project Basics",
+        "offenders": []
+      }
+    },
+    {
+      "viewport": "mobile",
+      "name": "mobile",
+      "width": 390,
+      "height": 844,
+      "route": "project",
+      "path": "/project/46825ef3-1b3e-441d-b422-61c181a01e4b",
+      "auth": true,
+      "status": "ok",
+      "error": null,
+      "metrics": {
+        "scrollWidth": 390,
+        "clientWidth": 390,
+        "overflowX": 0,
+        "hasHorizontalScroll": false,
+        "title": "Project Workspace · PaperWorking",
+        "h1": null,
+        "offenders": []
+      }
+    },
+    {
+      "viewport": "mobile",
+      "name": "mobile",
+      "width": 390,
+      "height": 844,
+      "route": "scorecard",
+      "path": "/project/46825ef3-1b3e-441d-b422-61c181a01e4b/scorecard",
+      "auth": true,
+      "status": "ok",
+      "error": null,
+      "metrics": {
+        "scrollWidth": 390,
+        "clientWidth": 390,
+        "overflowX": 0,
+        "hasHorizontalScroll": false,
+        "title": "Project Workspace · PaperWorking",
+        "h1": null,
+        "offenders": []
+      }
+    },
+    {
+      "viewport": "mobile",
+      "name": "mobile",
+      "width": 390,
+      "height": 844,
+      "route": "insights",
+      "path": "/project/46825ef3-1b3e-441d-b422-61c181a01e4b/insights",
+      "auth": true,
+      "status": "ok",
+      "error": null,
+      "metrics": {
+        "scrollWidth": 390,
+        "clientWidth": 390,
+        "overflowX": 0,
+        "hasHorizontalScroll": false,
+        "title": "Project Workspace · PaperWorking",
+        "h1": null,
+        "offenders": []
+      }
+    },
+    {
+      "viewport": "mobile",
+      "name": "mobile",
+      "width": 390,
+      "height": 844,
+      "route": "deals",
+      "path": "/deals",
+      "auth": true,
+      "status": "ok",
+      "error": null,
+      "metrics": {
+        "scrollWidth": 390,
+        "clientWidth": 390,
+        "overflowX": 0,
+        "hasHorizontalScroll": false,
+        "title": "Dashboard · PaperWorking",
+        "h1": "Deals Marketplace",
+        "offenders": []
+      }
+    },
+    {
+      "viewport": "mobile",
+      "name": "mobile",
+      "width": 390,
+      "height": 844,
+      "route": "deal-detail",
+      "path": "/deals/900mcgmlaveaustintx78702",
+      "auth": true,
+      "status": "ok",
+      "error": null,
+      "metrics": {
+        "scrollWidth": 390,
+        "clientWidth": 390,
+        "overflowX": 0,
+        "hasHorizontalScroll": false,
+        "title": "Deal Detail · PaperWorking",
+        "h1": "Underwrite & Create Deal",
+        "offenders": []
+      }
+    },
+    {
+      "viewport": "mobile",
+      "name": "mobile",
+      "width": 390,
+      "height": 844,
+      "route": "inbox",
+      "path": "/dashboard/inbox",
+      "auth": true,
+      "status": "ok",
+      "error": null,
+      "metrics": {
+        "scrollWidth": 390,
+        "clientWidth": 390,
+        "overflowX": 0,
+        "hasHorizontalScroll": false,
+        "title": "Inbox",
+        "h1": "Inbox",
+        "offenders": [
+          {
+            "tag": "button",
+            "id": "inbox-tab-vendor",
+            "className": "inline-flex shrink-0 cursor-pointer items-center gap-2 whitespace-nowrap rounded-xl border px-3.5 py-2 text-[12px] font-",
+            "right": 496,
+            "left": 361,
+            "text": "work\nVendor Bids"
+          },
+          {
+            "tag": "span",
+            "className": "material-symbols-outlined shrink-0 text-[16px] leading-none text-[#9E9DA0]",
+            "right": 400,
+            "left": 376,
+            "text": "work"
+          },
+          {
+            "tag": "span",
+            "className": "text-[#9E9DA0]",
+            "right": 481,
+            "left": 408,
+            "text": "Vendor Bids"
+          },
+          {
+            "tag": "button",
+            "id": "inbox-tab-team",
+            "className": "inline-flex shrink-0 cursor-pointer items-center gap-2 whitespace-nowrap rounded-xl border px-3.5 py-2 text-[12px] font-",
+            "right": 600,
+            "left": 504,
+            "text": "group\nTeam"
+          },
+          {
+            "tag": "span",
+            "className": "material-symbols-outlined shrink-0 text-[16px] leading-none text-[#9E9DA0]",
+            "right": 543,
+            "left": 519,
+            "text": "group"
+          },
+          {
+            "tag": "span",
+            "className": "text-[#9E9DA0]",
+            "right": 585,
+            "left": 551,
+            "text": "Team"
+          },
+          {
+            "tag": "button",
+            "id": "inbox-tab-system",
+            "className": "inline-flex shrink-0 cursor-pointer items-center gap-2 whitespace-nowrap rounded-xl border px-3.5 py-2 text-[12px] font-",
+            "right": 715,
+            "left": 608,
+            "text": "warning\nSystem"
+          },
+          {
+            "tag": "span",
+            "className": "material-symbols-outlined shrink-0 text-[16px] leading-none text-[#9E9DA0]",
+            "right": 647,
+            "left": 623,
+            "text": "warning"
+          }
+        ]
+      }
+    },
+    {
+      "viewport": "mobile",
+      "name": "mobile",
+      "width": 390,
+      "height": 844,
+      "route": "marketplace",
+      "path": "/dashboard/marketplace",
+      "auth": true,
+      "status": "ok",
+      "error": null,
+      "metrics": {
+        "scrollWidth": 390,
+        "clientWidth": 390,
+        "overflowX": 0,
+        "hasHorizontalScroll": false,
+        "title": "PaperWorking — Vendor Marketplace",
+        "h1": "Vendor Marketplace",
+        "offenders": []
+      }
+    },
+    {
+      "viewport": "mobile",
+      "name": "mobile",
+      "width": 390,
+      "height": 844,
+      "route": "profile",
+      "path": "/dashboard/settings/profile",
+      "auth": true,
+      "status": "ok",
+      "error": null,
+      "metrics": {
+        "scrollWidth": 390,
+        "clientWidth": 390,
+        "overflowX": 0,
+        "hasHorizontalScroll": false,
+        "title": "Profile",
+        "h1": "Settings",
+        "offenders": [
+          {
+            "tag": "a",
+            "className": "inline-flex h-10 shrink-0 items-center gap-2 rounded-lg border px-4 text-xs font-semibold no-underline transition-all bo",
+            "right": 491,
+            "left": 393,
+            "text": "group\nTeam"
+          },
+          {
+            "tag": "span",
+            "className": "material-symbols-outlined text-base",
+            "right": 434,
+            "left": 410,
+            "text": "group"
+          },
+          {
+            "tag": "a",
+            "className": "inline-flex h-10 shrink-0 items-center gap-2 rounded-lg border px-4 text-xs font-semibold no-underline transition-all bo",
+            "right": 601,
+            "left": 499,
+            "text": "payments\nBilling"
+          },
+          {
+            "tag": "span",
+            "className": "material-symbols-outlined text-base",
+            "right": 540,
+            "left": 516,
+            "text": "payments"
+          },
+          {
+            "tag": "span",
+            "className": "inline-flex h-10 shrink-0 items-center gap-2 rounded-lg border border-transparent px-4 text-xs font-semibold text-white/",
+            "right": 749,
+            "left": 609,
+            "text": "notifications\nNotifications"
+          },
+          {
+            "tag": "span",
+            "className": "material-symbols-outlined text-base",
+            "right": 650,
+            "left": 626,
+            "text": "notifications"
+          },
+          {
+            "tag": "a",
+            "className": "inline-flex h-10 shrink-0 items-center gap-2 rounded-lg border px-4 text-xs font-semibold no-underline transition-all bo",
+            "right": 907,
+            "left": 757,
+            "text": "security\nData & Privacy"
+          },
+          {
+            "tag": "span",
+            "className": "material-symbols-outlined text-base",
+            "right": 798,
+            "left": 774,
+            "text": "security"
+          }
+        ]
+      }
+    },
+    {
+      "viewport": "mobile",
+      "name": "mobile",
+      "width": 390,
+      "height": 844,
+      "route": "billing",
+      "path": "/dashboard/settings/billing",
+      "auth": true,
+      "status": "ok",
+      "error": null,
+      "metrics": {
+        "scrollWidth": 390,
+        "clientWidth": 390,
+        "overflowX": 0,
+        "hasHorizontalScroll": false,
+        "title": "Dashboard · PaperWorking",
+        "h1": "Settings",
+        "offenders": [
+          {
+            "tag": "a",
+            "className": "inline-flex h-10 shrink-0 items-center gap-2 rounded-lg border px-4 text-xs font-semibold no-underline transition-all bo",
+            "right": 491,
+            "left": 393,
+            "text": "group\nTeam"
+          },
+          {
+            "tag": "span",
+            "className": "material-symbols-outlined text-base",
+            "right": 434,
+            "left": 410,
+            "text": "group"
+          },
+          {
+            "tag": "a",
+            "className": "inline-flex h-10 shrink-0 items-center gap-2 rounded-lg border px-4 text-xs font-semibold no-underline transition-all bo",
+            "right": 601,
+            "left": 499,
+            "text": "payments\nBilling"
+          },
+          {
+            "tag": "span",
+            "className": "material-symbols-outlined text-base",
+            "right": 540,
+            "left": 516,
+            "text": "payments"
+          },
+          {
+            "tag": "span",
+            "className": "inline-flex h-10 shrink-0 items-center gap-2 rounded-lg border border-transparent px-4 text-xs font-semibold text-white/",
+            "right": 749,
+            "left": 609,
+            "text": "notifications\nNotifications"
+          },
+          {
+            "tag": "span",
+            "className": "material-symbols-outlined text-base",
+            "right": 650,
+            "left": 626,
+            "text": "notifications"
+          },
+          {
+            "tag": "a",
+            "className": "inline-flex h-10 shrink-0 items-center gap-2 rounded-lg border px-4 text-xs font-semibold no-underline transition-all bo",
+            "right": 907,
+            "left": 757,
+            "text": "security\nData & Privacy"
+          },
+          {
+            "tag": "span",
+            "className": "material-symbols-outlined text-base",
+            "right": 798,
+            "left": 774,
+            "text": "security"
+          }
+        ]
+      }
+    },
+    {
+      "viewport": "mobile",
+      "name": "mobile",
+      "width": 390,
+      "height": 844,
+      "route": "reports",
+      "path": "/dashboard/reports",
+      "auth": true,
+      "status": "ok",
+      "error": null,
+      "metrics": {
+        "scrollWidth": 390,
+        "clientWidth": 390,
+        "overflowX": 0,
+        "hasHorizontalScroll": false,
+        "title": "Reports",
+        "h1": "descriptionTax Intelligence",
+        "offenders": []
+      }
+    },
+    {
+      "viewport": "mobile",
+      "name": "mobile",
+      "width": 390,
+      "height": 844,
+      "route": "team",
+      "path": "/dashboard/team",
+      "auth": true,
+      "status": "ok",
+      "error": null,
+      "metrics": {
+        "scrollWidth": 390,
+        "clientWidth": 390,
+        "overflowX": 0,
+        "hasHorizontalScroll": false,
+        "title": "Team",
+        "h1": null,
+        "offenders": []
+      }
+    }
+  ]
+}

@@ -3,7 +3,7 @@ import {
   handlePortfolioMetricsGet,
   handleSessionPost,
 } from '@paperworking/api';
-import { deriveAllProjectMetrics, canonicalSeedDeal } from '@paperworking/financial-engine';
+import { canonicalSeedDeal, deriveAllProjectMetrics, expectedGoldenValues } from '@paperworking/financial-engine';
 import { mockRequest } from '../helpers/mock-request.js';
 
 describe('integration — auth flow (session → portfolio)', () => {
@@ -34,7 +34,7 @@ describe('integration — auth flow (session → portfolio)', () => {
       portfolio: { portfolioNoi: number; totalActiveProjects: number };
     };
     expect(body.portfolio.totalActiveProjects).toBe(1);
-    expect(body.portfolio.portfolioNoi).toBeCloseTo(12485, 0);
+    expect(body.portfolio.portfolioNoi).toBeCloseTo(expectedGoldenValues.noi, 0);
   });
 
   it('rejects cross-site session creation (CSRF gate)', async () => {

@@ -20,6 +20,7 @@ interface ProjectKpiPayload {
   trendStatus?: string;
   kpis?: {
     sourceStatus?: string;
+    scorecardTrust?: Record<string, string>;
     scorecard?: Record<
       string,
       { value: number | null; projected?: boolean; missingInputs?: string[] }

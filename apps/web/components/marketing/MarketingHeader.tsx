@@ -40,12 +40,12 @@ export default function MarketingHeader() {
           aria-label="Main navigation"
         >
           {/* Left: Logo */}
-          <div className="flex w-1/4 items-center">
+          <div className="flex min-w-0 flex-1 items-center lg:w-1/4 lg:flex-none">
             <Logo href="/" tone="auth" size="h-8" theme="dark" />
           </div>
 
-          {/* Center: Nav links */}
-          <div className="hidden items-center gap-7 md:flex">
+          {/* Center: Nav links — lg+ only; tablet uses hamburger to avoid header overflow */}
+          <div className="hidden items-center gap-7 lg:flex">
             {MARKETING_NAV_LINKS.map((link) => (
               <Link
                 key={link.href}
@@ -59,20 +59,20 @@ export default function MarketingHeader() {
           </div>
 
           {/* Right: Actions */}
-          <div className="flex w-1/4 items-center justify-end gap-3.5">
+          <div className="flex shrink-0 items-center justify-end gap-3.5 md:w-auto lg:w-1/4">
             {loading ? (
-              <span className="hidden h-9 w-24 rounded-full bg-white/5 md:inline-block" aria-hidden />
+              <span className="hidden h-9 w-24 rounded-full bg-white/5 lg:inline-block" aria-hidden />
             ) : authenticated ? (
               <>
                 <Link
                   href={appHomeHref}
-                  className="hidden items-center gap-1.5 rounded-full bg-[color:var(--color-primary)] px-5 py-2.5 text-[13px] font-semibold tracking-[-0.01em] text-[#0a0a0f] no-underline transition hover:brightness-110 md:inline-flex"
+                  className="hidden items-center gap-1.5 rounded-full bg-[color:var(--color-primary)] px-5 py-2.5 text-[13px] font-semibold tracking-[-0.01em] text-[#0a0a0f] no-underline transition hover:brightness-110 lg:inline-flex"
                 >
                   <span className="material-symbols-outlined text-[16px]">dashboard</span>
                   Go to Dashboard
                 </Link>
                 <UserAccountMenu
-                  className="hidden md:block"
+                  className="hidden lg:block"
                   displayName="Account"
                   accountType={accountType}
                   role={accountType === 'vendor' ? 'Vendor Partner' : 'Investor'}
@@ -83,23 +83,23 @@ export default function MarketingHeader() {
               <>
                 <Link
                   href="/login"
-                  className="hidden text-[13.5px] font-medium text-white/70 no-underline hover:text-white transition-colors md:inline-flex"
+                  className="hidden text-[13.5px] font-medium text-white/70 no-underline hover:text-white transition-colors lg:inline-flex"
                 >
                   Log in
                 </Link>
                 <Link
                   href="/signup"
-                  className="hidden items-center gap-1.5 rounded-full bg-[color:var(--color-primary)] px-5 py-2.5 text-[13px] font-semibold tracking-[-0.01em] text-[#0a0a0f] no-underline hover:brightness-110 transition md:inline-flex"
+                  className="hidden items-center gap-1.5 rounded-full bg-[color:var(--color-primary)] px-5 py-2.5 text-[13px] font-semibold tracking-[-0.01em] text-[#0a0a0f] no-underline hover:brightness-110 transition lg:inline-flex"
                 >
                   Start Free 14-Day Trial
                 </Link>
               </>
             )}
 
-            {/* Mobile hamburger menu */}
+            {/* Tablet + mobile hamburger menu */}
             <button
               type="button"
-              className="inline-flex h-10 w-10 items-center justify-center rounded-xl text-white md:hidden"
+              className="inline-flex h-10 w-10 items-center justify-center rounded-xl text-white lg:hidden"
               aria-expanded={mobileOpen}
               aria-label={mobileOpen ? 'Close menu' : 'Open menu'}
               onClick={() => setMobileOpen((open) => !open)}
@@ -112,9 +112,9 @@ export default function MarketingHeader() {
         </nav>
       </header>
 
-      {/* Mobile Drawer (glass slide-out drawer from right) */}
+      {/* Mobile/Tablet Drawer (glass slide-out drawer from right) */}
       {mobileOpen ? (
-        <div className="fixed inset-0 z-[60] md:hidden">
+        <div className="fixed inset-0 z-[60] lg:hidden">
           {/* Backdrop */}
           <button
             type="button"

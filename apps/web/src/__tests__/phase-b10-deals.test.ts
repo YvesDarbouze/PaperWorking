@@ -199,6 +199,10 @@ describe('phase B10 — security', () => {
     const repository: DealsCommandRepository = {
       findBySlug: async () => null,
       findById: async () => null,
+      getBySlug: async () => null,
+      updateBySlug: async () => {
+        throw new Error('should not update');
+      },
       create: async () => {
         throw new Error('should not create');
       },

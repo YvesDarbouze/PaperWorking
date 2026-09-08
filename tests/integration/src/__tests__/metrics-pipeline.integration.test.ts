@@ -2,6 +2,7 @@ import { handlePortfolioMetricsGet, handleProjectKpisCurrentGet } from '@paperwo
 import {
   canonicalSeedDeal,
   deriveAllProjectMetrics,
+  expectedGoldenValues,
 } from '@paperworking/financial-engine';
 
 describe('integration — metrics pipeline (financial-engine authority)', () => {
@@ -25,7 +26,7 @@ describe('integration — metrics pipeline (financial-engine authority)', () => 
     };
 
     expect(body.portfolio.portfolioNoi).toBeCloseTo(engineResult.scorecard.noi.value, 0);
-    expect(body.projectMetrics[0]?.scorecard.noi.value).toBeCloseTo(12485, 0);
+    expect(body.projectMetrics[0]?.scorecard.noi.value).toBeCloseTo(expectedGoldenValues.noi, 0);
   });
 
   it('project KPI handler uses same engine golden values', async () => {
@@ -46,7 +47,7 @@ describe('integration — metrics pipeline (financial-engine authority)', () => 
     const body = result.body as {
       kpis: { scorecard: { noi: { value: number }; capRate: { value: number } } };
     };
-    expect(body.kpis.scorecard.noi.value).toBeCloseTo(12485, 0);
-    expect(body.kpis.scorecard.capRate.value).toBeCloseTo(4.5, 1);
+    expect(body.kpis.scorecard.noi.value).toBeCloseTo(expectedGoldenValues.noi, 0);
+    expect(body.kpis.scorecard.capRate.value).toBeCloseTo(expectedGoldenValues.capRatePct, 1);
   });
 });

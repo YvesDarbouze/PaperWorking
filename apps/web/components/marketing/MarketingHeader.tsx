@@ -1,21 +1,26 @@
 'use client';
 
 import Link from 'next/link';
-import { usePathname } from 'next/navigation';
-import { useEffect, useState } from 'react';
+import { usePathname, useRouter } from 'next/navigation';
+import { useEffect, useRef, useState } from 'react';
 import Logo from '@/components/marketing/Logo';
 import UserAccountMenu from '@/components/shared/UserAccountMenu';
-import { useAuth } from '@/context/AuthContext';
-import { resolveAppHomeRoute } from '@/lib/auth/post-auth-redirect';
-import { MARKETING_NAV_LINKS } from '@/lib/marketing/content';
+import { destroySession, fetchSessionProfile } from '@/lib/auth/session-client';
+import { PROFILE_CARD } from '@/lib/dashboard/content';
+
+const NAV_LINKS = [
+  { label: 'How it works', href: '/#how-it-works' },
+  { label: 'Pricing', href: '/pricing' },
+  { label: 'Marketplace', href: '/#marketplace' },
+];
 
 export default function MarketingHeader() {
   const pathname = usePathname();
-  const { logout, authenticated, loading, profile } = useAuth();
+  const router = useRouter();
   const [mobileOpen, setMobileOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
-  const accountType = profile?.accountType ?? 'investor';
-  const appHomeHref = resolveAppHomeRoute(accountType);
+  const [authenticated, setAuthenticated] = useState(false);
+  const [accountType, setAccountType] = useState<string>('investor');
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 40);
@@ -23,9 +28,23 @@ export default function MarketingHeader() {
     return () => window.removeEventListener('scroll', onScroll);
   }, []);
 
+  useEffect(() => {
+    let cancelled = false;
+    fetchSessionProfile().then((profile) => {
+      if (cancelled) return;
+      setAuthenticated(Boolean(profile.authenticated));
+      setAccountType(profile.accountType ?? 'investor');
+    });
+    return () => {
+      cancelled = true;
+    };
+  }, [pathname]);
+
   async function handleSignOut() {
-    await logout();
-    window.location.assign('/');
+    await destroySession();
+    setAuthenticated(false);
+    router.push('/');
+    router.refresh();
   }
 
   return (
@@ -40,13 +59,13 @@ export default function MarketingHeader() {
           aria-label="Main navigation"
         >
           {/* Left: Logo */}
-          <div className="flex min-w-0 flex-1 items-center lg:w-1/4 lg:flex-none">
+          <div className="flex w-1/4 items-center">
             <Logo href="/" tone="auth" size="h-8" theme="dark" />
           </div>
 
-          {/* Center: Nav links — lg+ only; tablet uses hamburger to avoid header overflow */}
+          {/* Center: Nav links */}
           <div className="hidden items-center gap-7 lg:flex">
-            {MARKETING_NAV_LINKS.map((link) => (
+            {NAV_LINKS.map((link) => (
               <Link
                 key={link.href}
                 href={link.href}
@@ -59,26 +78,15 @@ export default function MarketingHeader() {
           </div>
 
           {/* Right: Actions */}
-          <div className="flex shrink-0 items-center justify-end gap-3.5 md:w-auto lg:w-1/4">
-            {loading ? (
-              <span className="hidden h-9 w-24 rounded-full bg-white/5 lg:inline-block" aria-hidden />
-            ) : authenticated ? (
-              <>
-                <Link
-                  href={appHomeHref}
-                  className="hidden items-center gap-1.5 rounded-full bg-[color:var(--color-primary)] px-5 py-2.5 text-[13px] font-semibold tracking-[-0.01em] text-[#0a0a0f] no-underline transition hover:brightness-110 lg:inline-flex"
-                >
-                  <span className="material-symbols-outlined text-[16px]">dashboard</span>
-                  Go to Dashboard
-                </Link>
-                <UserAccountMenu
-                  className="hidden lg:block"
-                  displayName="Account"
-                  accountType={accountType}
-                  role={accountType === 'vendor' ? 'Vendor Partner' : 'Investor'}
-                  onSignOut={handleSignOut}
-                />
-              </>
+          <div className="flex w-1/4 items-center justify-end gap-3.5">
+            {authenticated ? (
+              <UserAccountMenu
+                className="hidden lg:block"
+                displayName={PROFILE_CARD.displayName}
+                accountType={accountType}
+                role={PROFILE_CARD.role}
+                onSignOut={handleSignOut}
+              />
             ) : (
               <>
                 <Link
@@ -89,14 +97,14 @@ export default function MarketingHeader() {
                 </Link>
                 <Link
                   href="/signup"
-                  className="hidden items-center gap-1.5 rounded-full bg-[color:var(--color-primary)] px-5 py-2.5 text-[13px] font-semibold tracking-[-0.01em] text-[#0a0a0f] no-underline hover:brightness-110 transition lg:inline-flex"
+                  className="hidden items-center gap-1.5 rounded-[10px] bg-[color:var(--color-primary)] px-5 py-2.5 text-[13px] font-semibold tracking-[-0.01em] text-[#0a0a0f] no-underline hover:brightness-110 transition lg:inline-flex"
                 >
-                  Start Free 14-Day Trial
+                  Get started
                 </Link>
               </>
             )}
 
-            {/* Tablet + mobile hamburger menu */}
+            {/* Mobile hamburger menu */}
             <button
               type="button"
               className="inline-flex h-10 w-10 items-center justify-center rounded-xl text-white lg:hidden"
@@ -112,7 +120,7 @@ export default function MarketingHeader() {
         </nav>
       </header>
 
-      {/* Mobile/Tablet Drawer (glass slide-out drawer from right) */}
+      {/* Mobile Drawer (glass slide-out drawer from right) */}
       {mobileOpen ? (
         <div className="fixed inset-0 z-[60] lg:hidden">
           {/* Backdrop */}
@@ -140,7 +148,7 @@ export default function MarketingHeader() {
 
             {/* Navigation links */}
             <div className="flex-1 space-y-1 overflow-y-auto px-3 py-4">
-              {MARKETING_NAV_LINKS.map((link) => (
+              {NAV_LINKS.map((link) => (
                 <Link
                   key={link.href}
                   href={link.href}
@@ -158,18 +166,18 @@ export default function MarketingHeader() {
                 <>
                   <div className="rounded-2xl border border-[color:var(--color-primary)]/40 bg-white/[0.03] px-4 py-3">
                     <p className="text-[11px] font-bold uppercase tracking-[0.04em] text-white">
-                      Account
+                      {PROFILE_CARD.displayName}
                     </p>
                     <p className="mt-0.5 text-[9px] font-bold uppercase tracking-[0.12em] text-[color:var(--color-primary)]">
-                      {accountType === 'vendor' ? 'Vendor Partner' : 'Investor'}
+                      {PROFILE_CARD.role}
                     </p>
                   </div>
                   <Link
-                    href={appHomeHref}
+                    href="/dashboard"
                     className="flex items-center justify-center rounded-full bg-white px-4 py-3 text-[14px] font-semibold text-[#0a0a0f] no-underline"
                     onClick={() => setMobileOpen(false)}
                   >
-                    Go to Dashboard
+                    Dashboard
                   </Link>
                   <Link
                     href="/dashboard/settings/profile"
@@ -197,15 +205,15 @@ export default function MarketingHeader() {
                     className="flex w-full items-center justify-center rounded-xl border border-white/15 px-4 py-3 text-[14px] font-medium text-white no-underline hover:bg-white/5"
                     onClick={() => setMobileOpen(false)}
                   >
-                  Log in
-                </Link>
-                <Link
-                  href="/signup"
-                  className="flex items-center justify-center rounded-full bg-[color:var(--color-primary)] px-4 py-3 text-[14px] font-semibold text-[#0a0a0f] no-underline hover:brightness-110 transition"
-                  onClick={() => setMobileOpen(false)}
-                >
-                  Start Free 14-Day Trial
-                </Link>
+                    Log in
+                  </Link>
+                  <Link
+                    href="/signup"
+                    className="flex items-center justify-center rounded-[10px] bg-[color:var(--color-primary)] px-4 py-3 text-[14px] font-semibold text-[#0a0a0f] no-underline hover:brightness-110 transition"
+                    onClick={() => setMobileOpen(false)}
+                  >
+                    Get started
+                  </Link>
                 </>
               )}
             </div>

@@ -979,7 +979,12 @@ export {
   validatePublicAutocompleteBody,
   stripPublicPredictions,
   PLACES_CORS_HEADERS,
+  type PlacePrediction,
 } from './lib/places/autocomplete.js';
+export {
+  isValidSessionToken,
+  verifySessionToken,
+} from './lib/auth/user-store.js';
 export {
   handleInsightsPortfolioGet,
   type InsightsPortfolioGetDeps,
@@ -1465,6 +1470,10 @@ export {
 export { handleEventsPost } from './routes/events/handler.js';
 export { handleLawyersGet } from './routes/lawyers/handler.js';
 export { handleMapTileGet } from './routes/map-tile/handler.js';
+export {
+  mapRawDealToPayload,
+  mapRawDealsToPayloads,
+} from './lib/deals/map-deal.js';
 export { handleMarketVitalsGet } from './routes/market-vitals/handler.js';
 export { handleMlsSearchGet } from './routes/mls/search/handler.js';
 export { handleNotificationsDeadlineAlertPost } from './routes/notifications/deadline-alert/handler.js';

@@ -1,3 +1,4 @@
+import { Suspense } from 'react';
 import type { Metadata } from 'next';
 import PortfolioInsightsPanel from '@/components/insights/PortfolioInsightsPanel';
 
@@ -8,5 +9,9 @@ export const metadata: Metadata = {
 
 /** Route: `/dashboard/insights` — mirrors PaperWorking `src/app/dashboard/insights/page.tsx`. */
 export default function InsightsPage() {
-  return <PortfolioInsightsPanel />;
+  return (
+    <Suspense fallback={<div className="min-h-screen p-8 text-white/50">Loading Insights…</div>}>
+      <PortfolioInsightsPanel />
+    </Suspense>
+  );
 }

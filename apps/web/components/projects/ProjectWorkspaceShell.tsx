@@ -19,10 +19,10 @@ export default function ProjectWorkspaceShell({
   const shellTone = phaseStyle.shell;
 
   return (
-    <div className="min-h-screen overflow-x-hidden text-white" style={{ backgroundColor: shellTone }}>
+    <div className="min-h-screen text-white" style={{ backgroundColor: shellTone }}>
       <header className="sticky top-0 z-40 border-b border-white/10 bg-black/30 px-4 py-4 backdrop-blur-md md:px-6">
-        <div className="mx-auto flex max-w-7xl min-w-0 flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
-          <div className="flex min-w-0 flex-wrap items-center gap-3">
+        <div className="mx-auto flex max-w-7xl flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
+          <div className="flex items-center gap-3">
             <button
               type="button"
               onClick={() => router.push('/projects')}
@@ -30,9 +30,9 @@ export default function ProjectWorkspaceShell({
             >
               ← Projects
             </button>
-            <div className="min-w-0 flex-1">
-              <h1 className="truncate text-xl font-semibold">{project.propertyName}</h1>
-              <p className="truncate text-sm text-white/65">{project.address}</p>
+            <div>
+              <h1 className="text-xl font-semibold">{project.propertyName}</h1>
+              <p className="text-sm text-white/65">{project.address}</p>
             </div>
             <span
               className="rounded-full px-2.5 py-1 text-[11px] font-semibold uppercase tracking-[0.06em]"
@@ -44,10 +44,10 @@ export default function ProjectWorkspaceShell({
 
           <div className="flex items-center gap-3 text-sm">
             <span className="text-white/60">Phase completion</span>
-            <span className="font-semibold text-emerald-300">{project.phase_completion_pct}%</span>
+            <span className="font-semibold text-[var(--accent)]">{project.phase_completion_pct}%</span>
             <div className="h-2 w-24 overflow-hidden rounded-full bg-black/40">
               <div
-                className="h-full bg-emerald-400"
+                className="h-full bg-[var(--accent)]"
                 style={{ width: `${project.phase_completion_pct}%` }}
               />
             </div>
@@ -76,7 +76,7 @@ export default function ProjectWorkspaceShell({
         </nav>
       </header>
 
-      <main className="w-full min-w-0 px-4 py-5 sm:px-5 sm:py-6 lg:px-6 xl:px-8">{children}</main>
+      <main className="mx-auto max-w-7xl px-4 py-6 md:px-6">{children}</main>
     </div>
   );
 }

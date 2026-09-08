@@ -1,5 +1,5 @@
 import type { Metadata } from 'next';
-import { Suspense } from 'react';
+import ChatbotWidget from '@/components/marketing/ChatbotWidget';
 import MetricsPlaybookPanel from '@/components/marketing/MetricsPlaybookPanel';
 
 export const metadata: Metadata = {
@@ -10,8 +10,9 @@ export const metadata: Metadata = {
 
 export default function SupportMetricsPage() {
   return (
-    <Suspense fallback={<div className="mx-auto max-w-3xl px-5 py-16 md:px-10">Loading metrics…</div>}>
+    <>
       <MetricsPlaybookPanel />
-    </Suspense>
+      <ChatbotWidget />
+    </>
   );
 }

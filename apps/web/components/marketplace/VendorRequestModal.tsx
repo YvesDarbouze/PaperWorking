@@ -88,7 +88,7 @@ export function VendorRequestModal({ isOpen, vendor, onClose }: VendorRequestMod
 
         {done ? (
           <div className="space-y-4">
-            <p className="text-sm text-emerald-300">
+            <p className="text-sm text-[var(--accent)]">
               Quote request recorded for {vendor.companyName}. They will follow up outside the platform.
             </p>
             <button

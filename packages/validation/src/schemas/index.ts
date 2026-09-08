@@ -64,6 +64,24 @@ export {
   type ProjectFinancials,
 } from './projectSchema.js';
 
+export {
+  interestRateTypeEnum,
+  floatingIndexEnum,
+  underwritingAcquisitionSchema,
+  underwritingRentRollSchema,
+  underwritingDebtSchema,
+  underwritingExitSchema,
+  underwritingHurdlesSchema,
+  underwritingInputsSchema,
+  getDefaultUnderwritingInputs,
+  type UnderwritingAcquisition,
+  type UnderwritingRentRoll,
+  type UnderwritingDebt,
+  type UnderwritingExit,
+  type UnderwritingHurdles,
+  type UnderwritingInputs,
+} from './underwritingSchema.js';
+
 // ── Property Metric Snapshot ───────────────────────────────
 export {
   periodTypeEnum,
